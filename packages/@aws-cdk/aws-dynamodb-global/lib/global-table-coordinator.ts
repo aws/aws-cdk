@@ -2,6 +2,7 @@ import * as path from 'path';
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { GlobalTableProps } from './aws-dynamodb-global';
 
 /**
@@ -9,7 +10,7 @@ import { GlobalTableProps } from './aws-dynamodb-global';
  * together all the DynamoDB tables into a global table
  */
 export class GlobalTableCoordinator extends cdk.Stack {
-  constructor(scope: cdk.Construct, id: string, props: GlobalTableProps) {
+  constructor(scope: Construct, id: string, props: GlobalTableProps) {
     super(scope, id, props);
     const lambdaFunction = new lambda.SingletonFunction(this, 'SingletonLambda', {
       code: lambda.Code.fromAsset(path.resolve(__dirname, '../', 'lambda-packages', 'aws-global-table-coordinator', 'lib')),

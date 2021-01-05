@@ -1,5 +1,6 @@
 import * as events from '@aws-cdk/aws-events';
-import { Construct, ResourceEnvironment, Stack, Token, TokenComparison } from '@aws-cdk/core';
+import { ResourceEnvironment, Stack, Token, TokenComparison } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { ActionBindOptions, ActionConfig, ActionProperties, IAction, IPipeline, IStage } from '../action';
 
 /**

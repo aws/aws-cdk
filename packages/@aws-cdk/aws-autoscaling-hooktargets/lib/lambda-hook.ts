@@ -3,7 +3,7 @@ import * as kms from '@aws-cdk/aws-kms';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as sns from '@aws-cdk/aws-sns';
 import * as subs from '@aws-cdk/aws-sns-subscriptions';
-import { Construct } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { TopicHook } from './topic-hook';
 
 /**

@@ -2,7 +2,8 @@ import * as path from 'path';
 import * as cfn from '@aws-cdk/aws-cloudformation';
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
-import { Construct, Duration, Token } from '@aws-cdk/core';
+import { Duration, Token } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CfnClusterProps } from './eks.generated';
 import { KubectlLayer } from './kubectl-layer';
 

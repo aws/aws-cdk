@@ -10,6 +10,7 @@ import * as route53 from '@aws-cdk/aws-route53';
 import * as sqs from '@aws-cdk/aws-sqs';
 import * as cdk from '@aws-cdk/core';
 import * as customresources from '@aws-cdk/custom-resources';
+import { Construct } from 'constructs';
 
 export interface TaskRecordManagerProps {
   service: ecs.Ec2Service | ecs.FargateService;
@@ -21,8 +22,8 @@ export interface TaskRecordManagerProps {
  * An event-driven serverless app to maintain a list of public ips in a Route 53
  * hosted zone.
  */
-export class TaskRecordManager extends cdk.Construct {
-  constructor(scope: cdk.Construct, id: string, props: TaskRecordManagerProps) {
+export class TaskRecordManager extends Construct {
+  constructor(scope: Construct, id: string, props: TaskRecordManagerProps) {
     super(scope, id);
 
     // Poison pills go here.

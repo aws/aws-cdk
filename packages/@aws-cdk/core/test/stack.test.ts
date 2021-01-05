@@ -1,8 +1,9 @@
 import * as cxapi from '@aws-cdk/cx-api';
+import { Construct } from 'constructs';
 import { nodeunitShim, Test } from 'nodeunit-shim';
 import {
   App, CfnCondition, CfnInclude, CfnOutput, CfnParameter,
-  CfnResource, Construct, Lazy, ScopedAws, Stack, validateString, ISynthesisSession, Tags, LegacyStackSynthesizer, DefaultStackSynthesizer,
+  CfnResource, Lazy, ScopedAws, Stack, validateString, ISynthesisSession, Tags, LegacyStackSynthesizer, DefaultStackSynthesizer,
 } from '../lib';
 import { Intrinsic } from '../lib/private/intrinsic';
 import { resolveReferences } from '../lib/private/refs';
@@ -988,7 +989,7 @@ nodeunitShim({
     let called = false;
 
     class MyStack extends Stack {
-      synthesize(session: ISynthesisSession) {
+      _synthesizeTemplate(session: ISynthesisSession) {
         called = true;
         test.ok(session.outdir);
         test.equal(session.assembly.outdir, session.outdir);

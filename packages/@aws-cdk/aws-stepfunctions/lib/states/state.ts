@@ -1,4 +1,3 @@
-import * as cdk from '@aws-cdk/core';
 import { IConstruct, Construct, Node } from 'constructs';
 import { Condition } from '../condition';
 import { JsonPath } from '../fields';
@@ -60,7 +59,7 @@ export interface StateProps {
 /**
  * Base class for all other state classes
  */
-export abstract class State extends cdk.Construct implements IChainable {
+export abstract class State extends Construct implements IChainable {
   /**
    * Add a prefix to the stateId of all States found in a construct tree
    */
@@ -184,6 +183,15 @@ export abstract class State extends cdk.Construct implements IChainable {
     this.parameters = props.parameters;
     this.outputPath = props.outputPath;
     this.resultPath = props.resultPath;
+
+    this.node.addValidation({ validate: () => this.validateState() });
+  }
+
+  /**
+   * Allows the state to validate itself.
+   */
+  protected validateState(): string[] {
+    return [];
   }
 
   public get id() {

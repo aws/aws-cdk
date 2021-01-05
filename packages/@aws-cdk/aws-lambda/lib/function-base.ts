@@ -1,7 +1,8 @@
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
-import { ConstructNode, IResource, Resource, Token } from '@aws-cdk/core';
+import { IResource, Resource, Token } from '@aws-cdk/core';
+import { Node } from 'constructs';
 import { AliasOptions } from './alias';
 import { EventInvokeConfig, EventInvokeConfigOptions } from './event-invoke-config';
 import { IEventSource } from './event-source';
@@ -54,7 +55,7 @@ export interface IFunction extends IResource, ec2.IConnectable, iam.IGrantable {
   /**
    * The construct node where permissions are attached.
    */
-  readonly permissionsNode: ConstructNode;
+  readonly permissionsNode: Node;
 
   /**
    * Adds an event source that maps to this AWS Lambda function.
@@ -201,7 +202,7 @@ export abstract class FunctionBase extends Resource implements IFunction {
   /**
    * The construct node where permissions are attached.
    */
-  public abstract readonly permissionsNode: ConstructNode;
+  public abstract readonly permissionsNode: Node;
 
   /**
    * Whether the addPermission() call adds any permissions
@@ -360,7 +361,7 @@ export abstract class FunctionBase extends Resource implements IFunction {
    * For use internally for constructs, when the tree is set up in non-standard ways. Ex: SingletonFunction.
    * @internal
    */
-  protected _functionNode(): ConstructNode {
+  protected _functionNode(): Node {
     return this.node;
   }
 

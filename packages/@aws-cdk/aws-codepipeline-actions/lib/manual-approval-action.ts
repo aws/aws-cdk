@@ -1,7 +1,7 @@
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as sns from '@aws-cdk/aws-sns';
 import * as subs from '@aws-cdk/aws-sns-subscriptions';
-import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { Action } from './action';
 
 /**
@@ -60,7 +60,7 @@ export class ManualApprovalAction extends Action {
     return this._notificationTopic;
   }
 
-  protected bound(scope: cdk.Construct, _stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
+  protected bound(scope: Construct, _stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
   codepipeline.ActionConfig {
     if (this.props.notificationTopic) {
       this._notificationTopic = this.props.notificationTopic;

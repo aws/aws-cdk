@@ -4,6 +4,7 @@
 /* eslint-disable max-len */
 
 import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 
 /**
  * Properties for defining a `AWS::ApiGatewayV2::Api`
@@ -288,7 +289,7 @@ export class CfnApiV2 extends cdk.CfnResource implements cdk.IInspectable {
    * @param id    - scoped id of the resource
    * @param props - resource properties
    */
-  constructor(scope: cdk.Construct, id: string, props: CfnApiV2Props = {}) {
+  constructor(scope: Construct, id: string, props: CfnApiV2Props = {}) {
     super(scope, id, { type: CfnApiV2.CFN_RESOURCE_TYPE_NAME, properties: props });
 
     this.apiKeySelectionExpression = props.apiKeySelectionExpression;
@@ -616,7 +617,7 @@ export class CfnApiMappingV2 extends cdk.CfnResource implements cdk.IInspectable
    * @param id    - scoped id of the resource
    * @param props - resource properties
    */
-  constructor(scope: cdk.Construct, id: string, props: CfnApiMappingV2Props) {
+  constructor(scope: Construct, id: string, props: CfnApiMappingV2Props) {
     super(scope, id, { type: CfnApiMappingV2.CFN_RESOURCE_TYPE_NAME, properties: props });
     cdk.requireProperty(props, 'apiId', this);
     cdk.requireProperty(props, 'domainName', this);
@@ -842,7 +843,7 @@ export class CfnAuthorizerV2 extends cdk.CfnResource implements cdk.IInspectable
    * @param id    - scoped id of the resource
    * @param props - resource properties
    */
-  constructor(scope: cdk.Construct, id: string, props: CfnAuthorizerV2Props) {
+  constructor(scope: Construct, id: string, props: CfnAuthorizerV2Props) {
     super(scope, id, { type: CfnAuthorizerV2.CFN_RESOURCE_TYPE_NAME, properties: props });
     cdk.requireProperty(props, 'apiId', this);
     cdk.requireProperty(props, 'authorizerType', this);
@@ -1047,7 +1048,7 @@ export class CfnDeploymentV2 extends cdk.CfnResource implements cdk.IInspectable
    * @param id    - scoped id of the resource
    * @param props - resource properties
    */
-  constructor(scope: cdk.Construct, id: string, props: CfnDeploymentV2Props) {
+  constructor(scope: Construct, id: string, props: CfnDeploymentV2Props) {
     super(scope, id, { type: CfnDeploymentV2.CFN_RESOURCE_TYPE_NAME, properties: props });
     cdk.requireProperty(props, 'apiId', this);
 
@@ -1192,7 +1193,7 @@ export class CfnDomainNameV2 extends cdk.CfnResource implements cdk.IInspectable
    * @param id    - scoped id of the resource
    * @param props - resource properties
    */
-  constructor(scope: cdk.Construct, id: string, props: CfnDomainNameV2Props) {
+  constructor(scope: Construct, id: string, props: CfnDomainNameV2Props) {
     super(scope, id, { type: CfnDomainNameV2.CFN_RESOURCE_TYPE_NAME, properties: props });
     cdk.requireProperty(props, 'domainName', this);
     this.attrRegionalDomainName = cdk.Token.asString(this.getAtt('RegionalDomainName'));
@@ -1546,7 +1547,7 @@ export class CfnIntegrationV2 extends cdk.CfnResource implements cdk.IInspectabl
    * @param id    - scoped id of the resource
    * @param props - resource properties
    */
-  constructor(scope: cdk.Construct, id: string, props: CfnIntegrationV2Props) {
+  constructor(scope: Construct, id: string, props: CfnIntegrationV2Props) {
     super(scope, id, { type: CfnIntegrationV2.CFN_RESOURCE_TYPE_NAME, properties: props });
     cdk.requireProperty(props, 'apiId', this);
     cdk.requireProperty(props, 'integrationType', this);
@@ -1762,7 +1763,7 @@ export class CfnIntegrationResponseV2 extends cdk.CfnResource implements cdk.IIn
    * @param id    - scoped id of the resource
    * @param props - resource properties
    */
-  constructor(scope: cdk.Construct, id: string, props: CfnIntegrationResponseV2Props) {
+  constructor(scope: Construct, id: string, props: CfnIntegrationResponseV2Props) {
     super(scope, id, { type: CfnIntegrationResponseV2.CFN_RESOURCE_TYPE_NAME, properties: props });
     cdk.requireProperty(props, 'apiId', this);
     cdk.requireProperty(props, 'integrationId', this);
@@ -1937,7 +1938,7 @@ export class CfnModelV2 extends cdk.CfnResource implements cdk.IInspectable {
    * @param id    - scoped id of the resource
    * @param props - resource properties
    */
-  constructor(scope: cdk.Construct, id: string, props: CfnModelV2Props) {
+  constructor(scope: Construct, id: string, props: CfnModelV2Props) {
     super(scope, id, { type: CfnModelV2.CFN_RESOURCE_TYPE_NAME, properties: props });
     cdk.requireProperty(props, 'apiId', this);
     cdk.requireProperty(props, 'name', this);
@@ -2205,7 +2206,7 @@ export class CfnRouteV2 extends cdk.CfnResource implements cdk.IInspectable {
    * @param id    - scoped id of the resource
    * @param props - resource properties
    */
-  constructor(scope: cdk.Construct, id: string, props: CfnRouteV2Props) {
+  constructor(scope: Construct, id: string, props: CfnRouteV2Props) {
     super(scope, id, { type: CfnRouteV2.CFN_RESOURCE_TYPE_NAME, properties: props });
     cdk.requireProperty(props, 'apiId', this);
     cdk.requireProperty(props, 'routeKey', this);
@@ -2452,7 +2453,7 @@ export class CfnRouteResponseV2 extends cdk.CfnResource implements cdk.IInspecta
    * @param id    - scoped id of the resource
    * @param props - resource properties
    */
-  constructor(scope: cdk.Construct, id: string, props: CfnRouteResponseV2Props) {
+  constructor(scope: Construct, id: string, props: CfnRouteResponseV2Props) {
     super(scope, id, { type: CfnRouteResponseV2.CFN_RESOURCE_TYPE_NAME, properties: props });
     cdk.requireProperty(props, 'apiId', this);
     cdk.requireProperty(props, 'routeId', this);
@@ -2757,7 +2758,7 @@ export class CfnStageV2 extends cdk.CfnResource implements cdk.IInspectable {
    * @param id    - scoped id of the resource
    * @param props - resource properties
    */
-  constructor(scope: cdk.Construct, id: string, props: CfnStageV2Props) {
+  constructor(scope: Construct, id: string, props: CfnStageV2Props) {
     super(scope, id, { type: CfnStageV2.CFN_RESOURCE_TYPE_NAME, properties: props });
     cdk.requireProperty(props, 'apiId', this);
     cdk.requireProperty(props, 'stageName', this);

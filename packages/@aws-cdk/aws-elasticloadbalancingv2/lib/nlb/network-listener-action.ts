@@ -1,4 +1,5 @@
-import { Construct, Duration } from '@aws-cdk/core';
+import { Duration } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CfnListener } from '../elasticloadbalancingv2.generated';
 import { IListenerAction } from '../shared/listener-action';
 import { INetworkListener } from './network-listener';

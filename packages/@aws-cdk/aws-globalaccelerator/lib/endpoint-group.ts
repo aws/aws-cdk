@@ -113,7 +113,7 @@ export interface EndpointGroupProps {
 /**
  * The class for endpoint configuration
  */
-export class EndpointConfiguration extends cdk.Construct {
+export class EndpointConfiguration extends Construct {
   /**
    * The property containing all the configuration to be rendered
    */

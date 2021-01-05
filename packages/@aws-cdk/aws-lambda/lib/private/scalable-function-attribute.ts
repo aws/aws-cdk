@@ -1,5 +1,6 @@
 import * as appscaling from '@aws-cdk/aws-applicationautoscaling';
-import { Construct, Token } from '@aws-cdk/core';
+import { Token } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { IScalableFunctionAttribute, UtilizationScalingOptions } from '../scalable-attribute-api';
 
 /**

@@ -92,6 +92,12 @@ abstract class KeyBase extends Resource implements IKey {
    */
   private readonly aliases: Alias[] = [];
 
+  constructor(scope: Construct, id: string) {
+    super(scope, id);
+
+    this.node.addValidation({ validate: () => this.policy?.validateForResourcePolicy() ?? [] });
+  }
+
   /**
    * Defines a new alias for the key.
    */
@@ -121,12 +127,6 @@ abstract class KeyBase extends Resource implements IKey {
 
     this.policy.addStatements(statement);
     return { statementAdded: true, policyDependable: this.policy };
-  }
-
-  protected validate(): string[] {
-    const errors = super.validate();
-    errors.push(...this.policy?.validateForResourcePolicy() || []);
-    return errors;
   }
 
   /**

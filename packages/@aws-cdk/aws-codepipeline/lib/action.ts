@@ -1,7 +1,8 @@
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
 import * as s3 from '@aws-cdk/aws-s3';
-import { Construct, IResource } from '@aws-cdk/core';
+import { IResource } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { Artifact } from './artifact';
 
 export enum ActionCategory {

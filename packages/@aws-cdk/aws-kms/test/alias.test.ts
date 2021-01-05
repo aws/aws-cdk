@@ -1,6 +1,7 @@
 import '@aws-cdk/assert/jest';
 import { ArnPrincipal, PolicyStatement } from '@aws-cdk/aws-iam';
-import { App, CfnOutput, Construct, Stack } from '@aws-cdk/core';
+import { App, CfnOutput, Stack } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { Alias } from '../lib/alias';
 import { IKey, Key } from '../lib/key';
 

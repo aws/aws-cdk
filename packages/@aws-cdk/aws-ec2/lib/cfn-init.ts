@@ -1,6 +1,7 @@
 import * as crypto from 'crypto';
 import * as iam from '@aws-cdk/aws-iam';
-import { Aws, CfnResource, Construct } from '@aws-cdk/core';
+import { Aws, CfnResource } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { InitElement } from './cfn-init-elements';
 import { OperatingSystemType } from './machine-image';
 import { InitBindOptions, InitElementConfig, InitElementType, InitPlatform } from './private/cfn-init-internal';

@@ -274,7 +274,7 @@ export interface AwsCustomResourceProps {
  * You can specify exactly which calls are invoked for the 'CREATE', 'UPDATE' and 'DELETE' life cycle events.
  *
  */
-export class AwsCustomResource extends cdk.Construct implements iam.IGrantable {
+export class AwsCustomResource extends Construct implements iam.IGrantable {
 
   private static breakIgnoreErrorsCircuit(sdkCalls: Array<AwsSdkCall | undefined>, caller: string) {
 

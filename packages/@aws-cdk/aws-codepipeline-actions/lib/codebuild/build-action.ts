@@ -2,6 +2,7 @@ import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { BitBucketSourceAction } from '..';
 import { Action } from '../action';
 
@@ -132,7 +133,7 @@ export class CodeBuildAction extends Action {
     return this.variableExpression(variableName);
   }
 
-  protected bound(scope: cdk.Construct, _stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
+  protected bound(scope: Construct, _stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
   codepipeline.ActionConfig {
     // check for a cross-account action if there are any outputs
     if ((this.actionProperties.outputs || []).length > 0) {

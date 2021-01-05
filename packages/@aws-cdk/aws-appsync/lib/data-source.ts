@@ -10,10 +10,6 @@ import { CfnDataSource } from './appsync.generated';
 import { IGraphqlApi } from './graphqlapi-base';
 import { BaseResolverProps, Resolver } from './resolver';
 
-// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
-// eslint-disable-next-line
-import { Construct as CoreConstruct } from '@aws-cdk/core';
-
 /**
  * Base properties for an AppSync datasource
  */
@@ -91,7 +87,7 @@ export interface ExtendedDataSourceProps {
 /**
  * Abstract AppSync datasource implementation. Do not use directly but use subclasses for concrete datasources
  */
-export abstract class BaseDataSource extends CoreConstruct {
+export abstract class BaseDataSource extends Construct {
   /**
    * the name of the data source
    */

@@ -1,5 +1,6 @@
+import { Construct } from 'constructs';
 import { nodeunitShim, Test } from 'nodeunit-shim';
-import { App, CfnOutput, CfnResource, Construct, PhysicalName, Resource, Stack } from '../lib';
+import { App, CfnOutput, CfnResource, PhysicalName, Resource, Stack } from '../lib';
 import { toCloudFormation } from './util';
 
 /* eslint-disable quote-props */

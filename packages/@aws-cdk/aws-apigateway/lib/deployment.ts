@@ -1,5 +1,5 @@
 import * as crypto from 'crypto';
-import { Construct as CoreConstruct, Lazy, RemovalPolicy, Resource, CfnResource } from '@aws-cdk/core';
+import { Lazy, RemovalPolicy, Resource, CfnResource } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnDeployment } from './apigateway.generated';
 import { Method } from './method';
@@ -133,7 +133,7 @@ class LatestDeploymentResource extends CfnDeployment {
   private readonly originalLogicalId: string;
   private readonly api: IRestApi;
 
-  constructor(scope: CoreConstruct, id: string, props: LatestDeploymentResourceProps) {
+  constructor(scope: Construct, id: string, props: LatestDeploymentResourceProps) {
     super(scope, id, {
       description: props.description,
       restApiId: props.restApi.restApiId,

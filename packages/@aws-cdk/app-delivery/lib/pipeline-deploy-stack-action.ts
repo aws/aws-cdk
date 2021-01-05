@@ -5,6 +5,7 @@ import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 
 export interface PipelineDeployStackActionProps {
   /**
@@ -147,7 +148,7 @@ export class PipelineDeployStackAction implements codepipeline.IAction {
     });
   }
 
-  public bind(scope: cdk.Construct, stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
+  public bind(scope: Construct, stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
   codepipeline.ActionConfig {
     if (this.stack.environment !== cdk.Stack.of(scope).environment) {
       // FIXME: Add the necessary to extend to stacks in a different account

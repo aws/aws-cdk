@@ -1,5 +1,6 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 
 /**
  * A Lambda-based custom resource handler that provisions S3 bucket
@@ -18,14 +19,14 @@ import * as cdk from '@aws-cdk/core';
  * Sadly, we can't use @aws-cdk/aws-lambda as it will introduce a dependency
  * cycle, so this uses raw `cdk.Resource`s.
  */
-export class NotificationsResourceHandler extends cdk.Construct {
+export class NotificationsResourceHandler extends Construct {
   /**
    * Defines a stack-singleton lambda function with the logic for a CloudFormation custom
    * resource that provisions bucket notification configuration for a bucket.
    *
    * @returns The ARN of the custom resource lambda function.
    */
-  public static singleton(context: cdk.Construct) {
+  public static singleton(context: Construct) {
     const root = cdk.Stack.of(context);
 
     // well-known logical id to ensure stack singletonity
@@ -44,7 +45,7 @@ export class NotificationsResourceHandler extends cdk.Construct {
    */
   public readonly functionArn: string;
 
-  constructor(scope: cdk.Construct, id: string) {
+  constructor(scope: Construct, id: string) {
     super(scope, id);
 
     const role = new iam.Role(this, 'Role', {

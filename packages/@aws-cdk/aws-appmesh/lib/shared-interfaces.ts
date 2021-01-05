@@ -1,4 +1,5 @@
 import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CfnVirtualGateway, CfnVirtualNode } from './appmesh.generated';
 
 /**
@@ -155,7 +156,7 @@ export abstract class AccessLog {
    * Called when the AccessLog type is initialized. Can be used to enforce
    * mutual exclusivity with future properties
    */
-  public abstract bind(scope: cdk.Construct): AccessLogConfig;
+  public abstract bind(scope: Construct): AccessLogConfig;
 }
 
 /**
@@ -174,7 +175,7 @@ class FileAccessLog extends AccessLog {
     this.filePath = filePath;
   }
 
-  public bind(_scope: cdk.Construct): AccessLogConfig {
+  public bind(_scope: Construct): AccessLogConfig {
     return {
       virtualNodeAccessLog: {
         file: {

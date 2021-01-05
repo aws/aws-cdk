@@ -9,13 +9,8 @@ enum CoreTypesFqn {
   ResolvableInterface = '@aws-cdk/core.IResolvable',
   PhysicalName = '@aws-cdk/core.PhysicalName',
 
-  BaseConstruct = 'constructs.Construct',
-  BaseConstructInterface = 'constructs.Construct',
-
-  /** @deprecated - use BaseConstruct */
-  Construct = '@aws-cdk/core.Construct',
-  /** @deprecated - use BaseConstructInterface */
-  ConstructInterface = '@aws-cdk/core.IConstruct',
+  Construct = 'constructs.Construct',
+  ConstructInterface = 'constructs.IConstruct',
 }
 
 export class CoreTypes {
@@ -102,7 +97,7 @@ export class CoreTypes {
    * @returns `classType` for the core type Construct
    */
   public get baseConstructClass() {
-    return this.sys.findClass(CoreTypesFqn.BaseConstruct);
+    return this.sys.findClass(CoreTypesFqn.Construct);
   }
 
   /**
@@ -117,7 +112,7 @@ export class CoreTypes {
    * @returns `interfacetype` for the core type Construct
    */
   public get baseConstructInterface() {
-    return this.sys.findInterface(CoreTypesFqn.BaseConstructInterface);
+    return this.sys.findInterface(CoreTypesFqn.ConstructInterface);
   }
 
   /**

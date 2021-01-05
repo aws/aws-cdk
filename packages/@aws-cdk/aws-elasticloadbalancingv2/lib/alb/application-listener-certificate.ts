@@ -1,4 +1,3 @@
-import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnListenerCertificate } from '../elasticloadbalancingv2.generated';
 import { IListenerCertificate } from '../shared/listener-certificate';
@@ -36,7 +35,7 @@ export interface ApplicationListenerCertificateProps {
 /**
  * Add certificates to a listener
  */
-export class ApplicationListenerCertificate extends cdk.Construct {
+export class ApplicationListenerCertificate extends Construct {
   constructor(scope: Construct, id: string, props: ApplicationListenerCertificateProps) {
     super(scope, id);
 

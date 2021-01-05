@@ -175,7 +175,7 @@ export interface BucketDeploymentProps {
   readonly vpcSubnets?: ec2.SubnetSelection;
 }
 
-export class BucketDeployment extends cdk.Construct {
+export class BucketDeployment extends Construct {
   constructor(scope: Construct, id: string, props: BucketDeploymentProps) {
     super(scope, id);
 

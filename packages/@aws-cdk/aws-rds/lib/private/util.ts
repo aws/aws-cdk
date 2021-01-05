@@ -1,6 +1,7 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as s3 from '@aws-cdk/aws-s3';
-import { Construct, CfnDeletionPolicy, CfnResource, RemovalPolicy } from '@aws-cdk/core';
+import { CfnDeletionPolicy, CfnResource, RemovalPolicy } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { DatabaseSecret } from '../database-secret';
 import { IEngine } from '../engine';
 import { Credentials } from '../props';

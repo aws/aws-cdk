@@ -24,7 +24,7 @@ export interface LinuxParametersProps {
 /**
  * Linux-specific options that are applied to the container.
  */
-export class LinuxParameters extends cdk.Construct {
+export class LinuxParameters extends Construct {
   /**
    * Whether the init process is enabled
    */

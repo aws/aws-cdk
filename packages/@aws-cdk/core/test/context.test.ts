@@ -1,5 +1,6 @@
+import { Construct } from 'constructs';
 import { nodeunitShim, Test } from 'nodeunit-shim';
-import { Construct, Stack } from '../lib';
+import { Stack } from '../lib';
 import { ContextProvider } from '../lib/context-provider';
 import { synthesize } from '../lib/private/synthesis';
 

@@ -65,7 +65,7 @@ export interface LogRetentionRetryOptions {
  * Log group can be created in the region that is different from stack region by
  * specifying `logGroupRegion`
  */
-export class LogRetention extends cdk.Construct {
+export class LogRetention extends Construct {
 
   /**
    * The ARN of the LogGroup.
@@ -124,7 +124,7 @@ export class LogRetention extends cdk.Construct {
 /**
  * Private provider Lambda function to support the log retention custom resource.
  */
-class LogRetentionFunction extends cdk.Construct {
+class LogRetentionFunction extends Construct {
   public readonly functionArn: cdk.Reference;
 
   constructor(scope: Construct, id: string, props: LogRetentionProps) {
@@ -169,7 +169,7 @@ class LogRetentionFunction extends cdk.Construct {
       if (cdk.CfnResource.isCfnResource(child)) {
         resource.addDependsOn(child);
       }
-      if (cdk.Construct.isConstruct(child) && child.node.defaultChild && cdk.CfnResource.isCfnResource(child.node.defaultChild)) {
+      if (Construct.isConstruct(child) && child.node.defaultChild && cdk.CfnResource.isCfnResource(child.node.defaultChild)) {
         resource.addDependsOn(child.node.defaultChild);
       }
     });

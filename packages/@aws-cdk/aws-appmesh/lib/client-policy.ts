@@ -1,5 +1,5 @@
 import * as acmpca from '@aws-cdk/aws-acmpca';
-import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CfnVirtualNode } from './appmesh.generated';
 
 enum CertificateType {
@@ -71,7 +71,7 @@ export abstract class ClientPolicy {
   /**
    * Returns Trust context based on trust type.
    */
-  public abstract bind(scope: cdk.Construct): ClientPolicyConfig;
+  public abstract bind(scope: Construct): ClientPolicyConfig;
 
 }
 
@@ -81,7 +81,7 @@ class ClientPolicyImpl extends ClientPolicy {
     private readonly certificateChain: string | undefined,
     private readonly certificateAuthorityArns: acmpca.ICertificateAuthority[] | undefined) { super(); }
 
-  public bind(_scope: cdk.Construct): ClientPolicyConfig {
+  public bind(_scope: Construct): ClientPolicyConfig {
     if (this.certificateType === CertificateType.ACMPCA && this.certificateAuthorityArns?.map(certificateArn =>
       certificateArn.certificateAuthorityArn).length === 0) {
       throw new Error('You must provide at least one Certificate Authority when creating an ACM Trust ClientPolicy');

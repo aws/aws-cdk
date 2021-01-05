@@ -1,7 +1,8 @@
 import * as path from 'path';
 import { CustomResource, CustomResourceProvider } from '@aws-cdk/aws-cloudformation';
 import * as lambda from '@aws-cdk/aws-lambda';
-import { Construct, Duration, Names, Stack } from '@aws-cdk/core';
+import { Duration, Names, Stack } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { Cluster } from './cluster';
 import { KubectlLayer } from './kubectl-layer';
 

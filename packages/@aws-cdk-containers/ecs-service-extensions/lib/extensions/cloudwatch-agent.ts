@@ -1,6 +1,6 @@
 import * as ecs from '@aws-cdk/aws-ecs';
 import * as iam from '@aws-cdk/aws-iam';
-import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { Service } from '../service';
 import { ServiceExtension } from './extension-interfaces';
 
@@ -28,7 +28,7 @@ export class CloudwatchAgentExtension extends ServiceExtension {
     super('cloudwatchAgent');
   }
 
-  public prehook(service: Service, scope: cdk.Construct) {
+  public prehook(service: Service, scope: Construct) {
     this.parentService = service;
     this.scope = scope;
   }

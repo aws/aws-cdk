@@ -1,4 +1,5 @@
 import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CfnVirtualNode } from './appmesh.generated';
 import { validateHealthChecks } from './private/utils';
 import { HealthCheck, Protocol, HttpTimeout, GrpcTimeout, TcpTimeout } from './shared-interfaces';
@@ -103,7 +104,7 @@ export abstract class VirtualNodeListener {
   /**
    * Binds the current object when adding Listener to a VirtualNode
    */
-  public abstract bind(scope: cdk.Construct): VirtualNodeListenerConfig;
+  public abstract bind(scope: Construct): VirtualNodeListenerConfig;
 
 }
 
@@ -113,7 +114,7 @@ class VirtualNodeListenerImpl extends VirtualNodeListener {
     private readonly timeout: HttpTimeout | undefined,
     private readonly port: number = 8080) { super(); }
 
-  public bind(_scope: cdk.Construct): VirtualNodeListenerConfig {
+  public bind(_scope: Construct): VirtualNodeListenerConfig {
     return {
       listener: {
         portMapping: {
