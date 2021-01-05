@@ -202,6 +202,11 @@ size of the AWS Lambda resource handler.
 > NOTE: a new AWS Lambda handler will be created in your stack for each memory
 > limit configuration.
 
+## EFS for large (> 500 mb) deployments.
+
+The temporary disk space used for the deployment lambda is limited to 500 mb. To enable larger deployments
+you can use `enableTempEfsStorage` and `vpc` to attach an EFS volume to be used as temporary storage.
+
 ## Notes
 
 - This library uses an AWS CloudFormation custom resource which about 10MiB in

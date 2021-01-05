@@ -114,8 +114,13 @@ def handler(event, context):
 #---------------------------------------------------------------------------------------------------
 # populate all files from s3_source_zips to a destination bucket
 def s3_deploy(s3_source_zips, s3_dest, user_metadata, system_metadata, prune):
-    # create a temporary working directory
-    workdir=tempfile.mkdtemp()
+    # create a temporary working directory in /tmp or if enabled an attached efs volume
+    if 'EFS_ENABLED' in os.environ:
+        workdir = "/mnt/efs_tmp/" + str(uuid4())
+        os.mkdir(workdir)
+    else:
+        workdir=tempfile.mkdtemp()
+    
     logger.info("| workdir: %s" % workdir)
 
     # create a directory into which we extract the contents of the zip file
