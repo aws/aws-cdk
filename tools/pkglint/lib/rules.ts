@@ -1357,7 +1357,9 @@ export class ConstructsDependency extends ValidationRule {
   public validate(pkg: PackageJson) {
     const REQUIRED_VERSION = '10.0.0-pre.5';
 
-    if (pkg.devDependencies?.constructs && pkg.devDependencies?.constructs !== REQUIRED_VERSION) {
+    // require a "constructs" dependency if there's a @aws-cdk/core dependency
+    const requiredDev = pkg.getDevDependency('@aws-cdk/core') && !pkg.getDevDependency('constructs');
+    if (requiredDev || (pkg.devDependencies?.constructs && pkg.devDependencies?.constructs !== REQUIRED_VERSION)) {
       pkg.report({
         ruleName: this.name,
         message: `"constructs" must have a version requirement ${REQUIRED_VERSION}`,
@@ -1367,7 +1369,8 @@ export class ConstructsDependency extends ValidationRule {
       });
     }
 
-    if (pkg.dependencies.constructs && pkg.dependencies.constructs !== REQUIRED_VERSION) {
+    const requiredDep = pkg.dependencies?.['@aws-cdk/core'] && !pkg.dependencies?.constructs;
+    if (requiredDep || (pkg.dependencies.constructs && pkg.dependencies.constructs !== REQUIRED_VERSION)) {
       pkg.report({
         ruleName: this.name,
         message: `"constructs" must have a version requirement ${REQUIRED_VERSION}`,
