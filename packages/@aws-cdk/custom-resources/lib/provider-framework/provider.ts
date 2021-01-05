@@ -3,7 +3,7 @@ import * as cfn from '@aws-cdk/aws-cloudformation';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as logs from '@aws-cdk/aws-logs';
-import { Construct as CoreConstruct, Duration } from '@aws-cdk/core';
+import { Duration } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import * as consts from './runtime/consts';
 import { calculateRetryPolicy } from './util';
@@ -94,7 +94,7 @@ export interface ProviderProps {
 /**
  * Defines an AWS CloudFormation custom resource provider.
  */
-export class Provider extends CoreConstruct implements cfn.ICustomResourceProvider {
+export class Provider extends Construct implements cfn.ICustomResourceProvider {
 
   /**
    * The user-defined AWS Lambda function which is invoked for all resource
@@ -162,7 +162,7 @@ export class Provider extends CoreConstruct implements cfn.ICustomResourceProvid
    * Called by `CustomResource` which uses this provider.
    * @deprecated use `provider.serviceToken` instead
    */
-  public bind(_: CoreConstruct): cfn.CustomResourceProviderConfig {
+  public bind(_: Construct): cfn.CustomResourceProviderConfig {
     return {
       serviceToken: this.entrypoint.functionArn,
     };

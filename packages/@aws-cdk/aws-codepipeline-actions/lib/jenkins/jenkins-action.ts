@@ -1,5 +1,5 @@
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
-import { Construct } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { Action } from '../action';
 import { IJenkinsProvider, jenkinsArtifactsBounds } from './jenkins-provider';
 

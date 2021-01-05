@@ -2,10 +2,9 @@ import * as lambda from '@aws-cdk/aws-lambda';
 import * as sns from '@aws-cdk/aws-sns';
 import * as sns_subscriptions from '@aws-cdk/aws-sns-subscriptions';
 import * as sqs from '@aws-cdk/aws-sqs';
-import { App, CfnParameter, Construct, Stack } from '@aws-cdk/core';
+import { App, CfnParameter, Stack } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import * as cfn from '../lib';
-
-/* eslint-disable cdk/no-core-construct */
 
 interface MyNestedStackProps {
   readonly subscriber?: sqs.Queue;

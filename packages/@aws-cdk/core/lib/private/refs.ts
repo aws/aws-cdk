@@ -3,10 +3,10 @@
 // ----------------------------------------------------
 import * as cxapi from '@aws-cdk/cx-api';
 
+import { Construct, IConstruct } from 'constructs';
 import { CfnElement } from '../cfn-element';
 import { CfnOutput } from '../cfn-output';
 import { CfnParameter } from '../cfn-parameter';
-import { Construct, IConstruct } from '../construct-compat';
 import { FeatureFlags } from '../feature-flags';
 import { Names } from '../names';
 import { Reference } from '../reference';

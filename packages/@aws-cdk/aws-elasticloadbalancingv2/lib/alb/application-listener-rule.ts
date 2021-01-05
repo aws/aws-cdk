@@ -194,7 +194,7 @@ export interface RedirectResponse {
 /**
  * Define a new listener rule
  */
-export class ApplicationListenerRule extends cdk.Construct {
+export class ApplicationListenerRule extends Construct {
   /**
    * The ARN of this rule
    */
@@ -260,6 +260,8 @@ export class ApplicationListenerRule extends cdk.Construct {
     }
 
     this.listenerRuleArn = resource.ref;
+
+    this.node.addValidation({ validate: () => this.validateListenerRule() });
   }
 
   /**
@@ -350,7 +352,7 @@ export class ApplicationListenerRule extends cdk.Construct {
   /**
    * Validate the rule
    */
-  protected validate() {
+  private validateListenerRule() {
     if (this.action === undefined) {
       return ['Listener rule needs at least one action'];
     }

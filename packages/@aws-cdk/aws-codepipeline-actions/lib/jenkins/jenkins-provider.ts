@@ -1,6 +1,5 @@
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
-import * as cdk from '@aws-cdk/core';
-import { Construct } from 'constructs';
+import { Construct, IConstruct } from 'constructs';
 import { CustomActionRegistration } from '../custom-action-registration';
 
 /**
@@ -12,7 +11,7 @@ import { CustomActionRegistration } from '../custom-action-registration';
  * If you want to reference an already registered provider,
  * use the {@link JenkinsProvider#fromJenkinsProviderAttributes} method.
  */
-export interface IJenkinsProvider extends cdk.IConstruct {
+export interface IJenkinsProvider extends IConstruct {
   readonly providerName: string;
   readonly serverUrl: string;
   readonly version: string;
@@ -103,7 +102,7 @@ export interface JenkinsProviderProps {
   readonly forTest?: boolean;
 }
 
-export abstract class BaseJenkinsProvider extends cdk.Construct implements IJenkinsProvider {
+export abstract class BaseJenkinsProvider extends Construct implements IJenkinsProvider {
   public abstract readonly providerName: string;
   public abstract readonly serverUrl: string;
   public readonly version: string;

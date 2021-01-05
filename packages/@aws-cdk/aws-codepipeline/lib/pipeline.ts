@@ -3,7 +3,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as s3 from '@aws-cdk/aws-s3';
 import {
-  App, BootstraplessSynthesizer, Construct as CoreConstruct, DefaultStackSynthesizer,
+  App, BootstraplessSynthesizer, DefaultStackSynthesizer,
   IStackSynthesizer, Lazy, Names, PhysicalName, RemovalPolicy, Resource, Stack, Token,
 } from '@aws-cdk/core';
 import { Construct } from 'constructs';
@@ -315,6 +315,8 @@ export class Pipeline extends PipelineBase {
     for (const stage of props.stages || []) {
       this.addStage(stage);
     }
+
+    this.node.addValidation({ validate: () => this.validatePipeline() });
   }
 
   /**
@@ -393,7 +395,7 @@ export class Pipeline extends PipelineBase {
   }
 
   /** @internal */
-  public _attachActionToPipeline(stage: Stage, action: IAction, actionScope: CoreConstruct): FullActionDescriptor {
+  public _attachActionToPipeline(stage: Stage, action: IAction, actionScope: Construct): FullActionDescriptor {
     const richAction = new RichAction(action, this);
 
     // handle cross-region actions here
@@ -429,9 +431,8 @@ export class Pipeline extends PipelineBase {
    * Validation happens according to the rules documented at
    *
    * https://docs.aws.amazon.com/codepipeline/latest/userguide/reference-pipeline-structure.html#pipeline-requirements
-   * @override
    */
-  protected validate(): string[] {
+  private validatePipeline(): string[] {
     return [
       ...this.validateSourceActionLocations(),
       ...this.validateHasStages(),

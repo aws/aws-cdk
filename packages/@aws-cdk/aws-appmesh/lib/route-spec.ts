@@ -1,4 +1,4 @@
-import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CfnRoute } from './appmesh.generated';
 import { Protocol, HttpTimeout, GrpcTimeout, TcpTimeout } from './shared-interfaces';
 import { IVirtualNode } from './virtual-node';
@@ -176,7 +176,7 @@ export abstract class RouteSpec {
    * Called when the GatewayRouteSpec type is initialized. Can be used to enforce
    * mutual exclusivity with future properties
    */
-  public abstract bind(scope: cdk.Construct): RouteSpecConfig;
+  public abstract bind(scope: Construct): RouteSpecConfig;
 }
 
 class HttpRouteSpec extends RouteSpec {
@@ -208,7 +208,7 @@ class HttpRouteSpec extends RouteSpec {
     this.timeout = props.timeout;
   }
 
-  public bind(_scope: cdk.Construct): RouteSpecConfig {
+  public bind(_scope: Construct): RouteSpecConfig {
     const prefixPath = this.match ? this.match.prefixPath : '/';
     if (prefixPath[0] != '/') {
       throw new Error(`Prefix Path must start with \'/\', got: ${prefixPath}`);
@@ -246,7 +246,7 @@ class TcpRouteSpec extends RouteSpec {
     this.timeout = props.timeout;
   }
 
-  public bind(_scope: cdk.Construct): RouteSpecConfig {
+  public bind(_scope: Construct): RouteSpecConfig {
     return {
       tcpRouteSpec: {
         action: {
@@ -270,7 +270,7 @@ class GrpcRouteSpec extends RouteSpec {
     this.timeout = props.timeout;
   }
 
-  public bind(_scope: cdk.Construct): RouteSpecConfig {
+  public bind(_scope: Construct): RouteSpecConfig {
     return {
       grpcRouteSpec: {
         action: {
