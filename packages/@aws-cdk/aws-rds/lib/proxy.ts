@@ -447,13 +447,15 @@ export class DatabaseProxy extends DatabaseProxyBase
       throw new Error('Cannot specify both dbInstanceIdentifiers and dbClusterIdentifiers');
     }
 
-    new CfnDBProxyTargetGroup(this, 'ProxyTargetGroup', {
+    const proxyTargetGroup = new CfnDBProxyTargetGroup(this, 'ProxyTargetGroup', {
       targetGroupName: 'default',
       dbProxyName: this.dbProxyName,
       dbInstanceIdentifiers,
       dbClusterIdentifiers,
       connectionPoolConfigurationInfo: toConnectionPoolConfigurationInfo(props),
     });
+
+    bindResult.dbClusters?.forEach((c) => proxyTargetGroup.node.addDependency(c));
   }
 
   /**
