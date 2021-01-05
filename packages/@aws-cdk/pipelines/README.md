@@ -655,6 +655,10 @@ These command lines explained:
 > Make sure you trust all the code and dependencies that make up your CDK app.
 > Check with the appropriate department within your organization to decide on the
 > proper policy to use.
+>
+> On this note, if you have an account dedicated to CI/CD pipelines you can tailored
+> the permission granted to only allow pipelines' resources to be deployed by bootstraping 
+> it with the `--template` option with a template such as [this one](https://raw.githubusercontent.com/aws-samples/aws-bootstrap-kit-examples/main/source/1-SDLC-organization/lib/cdk-bootstrap-template.yml).
 
 ### Migrating from old bootstrap stack
 
