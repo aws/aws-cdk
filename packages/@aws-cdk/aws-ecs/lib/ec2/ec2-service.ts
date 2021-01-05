@@ -186,8 +186,7 @@ export class Ec2Service extends BaseService implements IEc2Service {
 
     super(scope, id, {
       ...props,
-      // If daemon, desiredCount must be undefined and that's what we want. Otherwise, default to 1.
-      desiredCount: props.daemon || props.desiredCount !== undefined ? props.desiredCount : 1,
+      desiredCount: props.desiredCount,
       maxHealthyPercent: props.daemon && props.maxHealthyPercent === undefined ? 100 : props.maxHealthyPercent,
       minHealthyPercent: props.daemon && props.minHealthyPercent === undefined ? 0 : props.minHealthyPercent,
       launchType: LaunchType.EC2,

@@ -1,5 +1,5 @@
 import * as iam from '@aws-cdk/aws-iam';
-import { FeatureFlags, IResource, RemovalPolicy, Resource, Stack } from '@aws-cdk/core';
+import { FeatureFlags, IResource, RemovalPolicy, Resource, Stack, Duration } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import { IConstruct, Construct } from 'constructs';
 import { Alias } from './alias';
@@ -330,6 +330,22 @@ export interface KeyProps {
    * @deprecated redundant with the '@aws-cdk/aws-kms:defaultKeyPolicies' feature flag
    */
   readonly trustAccountIdentities?: boolean;
+
+  /**
+   * Specifies the number of days in the waiting period before
+   * AWS KMS deletes a CMK that has been removed from a CloudFormation stack.
+   *
+   * When you remove a customer master key (CMK) from a CloudFormation stack, AWS KMS schedules the CMK for deletion
+   * and starts the mandatory waiting period. The PendingWindowInDays property determines the length of waiting period.
+   * During the waiting period, the key state of CMK is Pending Deletion, which prevents the CMK from being used in
+   * cryptographic operations. When the waiting period expires, AWS KMS permanently deletes the CMK.
+   *
+   * Enter a value between 7 and 30 days.
+   *
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-kms-key.html#cfn-kms-key-pendingwindowindays
+   * @default - 30 days
+   */
+  readonly pendingWindow?: Duration;
 }
 
 /**
@@ -400,11 +416,20 @@ export class Key extends KeyBase {
       }
     }
 
+    let pendingWindowInDays;
+    if (props.pendingWindow) {
+      pendingWindowInDays = props.pendingWindow.toDays();
+      if (pendingWindowInDays < 7 || pendingWindowInDays > 30) {
+        throw new Error(`'pendingWindow' value must between 7 and 30 days. Received: ${pendingWindowInDays}`);
+      }
+    }
+
     const resource = new CfnKey(this, 'Resource', {
       description: props.description,
       enableKeyRotation: props.enableKeyRotation,
       enabled: props.enabled,
       keyPolicy: this.policy,
+      pendingWindowInDays: pendingWindowInDays,
     });
 
     this.keyArn = resource.attrArn;

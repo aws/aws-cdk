@@ -47,7 +47,7 @@
     "@types/minimatch": "^3.0.3",
     "@types/mockery": "^1.4.29",
     "@types/node": "^10.17.48",
-    "@types/promptly": "^3.0.0",
+    "@types/promptly": "^3.0.1",
     "@types/semver": "^7.3.4",
     "@types/sinon": "^9.0.9",
     "@types/table": "^5.0.0",

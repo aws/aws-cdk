@@ -103,6 +103,60 @@ export = {
 
       test.done();
     },
+
+    'specify fifo without contentBasedDeduplication'(test: Test) {
+      const stack = new cdk.Stack();
+
+      new sns.Topic(stack, 'MyTopic', {
+        fifo: true,
+      });
+
+      expect(stack).toMatch({
+        'Resources': {
+          'MyTopic86869434': {
+            'Type': 'AWS::SNS::Topic',
+            'Properties': {
+              'FifoTopic': true,
+            },
+          },
+        },
+      });
+
+      test.done();
+    },
+
+    'specify fifo with contentBasedDeduplication'(test: Test) {
+      const stack = new cdk.Stack();
+
+      new sns.Topic(stack, 'MyTopic', {
+        contentBasedDeduplication: true,
+        fifo: true,
+      });
+
+      expect(stack).toMatch({
+        'Resources': {
+          'MyTopic86869434': {
+            'Type': 'AWS::SNS::Topic',
+            'Properties': {
+              'ContentBasedDeduplication': true,
+              'FifoTopic': true,
+            },
+          },
+        },
+      });
+
+      test.done();
+    },
+
+    'throw with contentBasedDeduplication on non-fifo topic'(test: Test) {
+      const stack = new cdk.Stack();
+
+      test.throws(() => new sns.Topic(stack, 'MyTopic', {
+        contentBasedDeduplication: true,
+      }), /Content based deduplication can only be enabled for FIFO SNS topics./);
+
+      test.done();
+    },
   },
 
   'can add a policy to the topic'(test: Test) {
