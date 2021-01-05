@@ -215,7 +215,7 @@ export = {
             'codecommit::',
             { Ref: 'AWS::Region' },
             '://',
-            { 'Fn::GetAtt': ['RepostiryBFEF3BB6', 'Name'] },
+            { 'Fn::GetAtt': ['Repository22E53BBD', 'Name'] },
           ],
         ],
       });
