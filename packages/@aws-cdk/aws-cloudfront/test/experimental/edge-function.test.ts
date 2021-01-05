@@ -1,3 +1,4 @@
+import * as path from 'path';
 import '@aws-cdk/assert/jest';
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as iam from '@aws-cdk/aws-iam';
@@ -225,6 +226,23 @@ test('metric methods', () => {
     expect(metric.namespace).toEqual('AWS/Lambda');
     expect(metric.region).toEqual('us-east-1');
   }
+});
+
+test('cross-region stack supports new-style synthesis with assets', () => {
+  app = new cdk.App({
+    context: { '@aws-cdk/core:newStyleStackSynthesis': true },
+  });
+  stack = new cdk.Stack(app, 'Stack', {
+    env: { account: '111111111111', region: 'testregion' },
+  });
+
+  new cloudfront.experimental.EdgeFunction(stack, 'MyFn', {
+    code: lambda.Code.fromAsset(path.join(__dirname, 'my-lambda-handler')),
+    handler: 'index.handler',
+    runtime: lambda.Runtime.PYTHON_3_8,
+  });
+
+  expect(() => app.synth()).not.toThrow();
 });
 
 function defaultEdgeFunctionProps(stackId?: string) {

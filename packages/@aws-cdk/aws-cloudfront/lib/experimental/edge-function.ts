@@ -6,9 +6,9 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as ssm from '@aws-cdk/aws-ssm';
 import {
-  BootstraplessSynthesizer, CfnResource, ConstructNode,
+  CfnResource, ConstructNode,
   CustomResource, CustomResourceProvider, CustomResourceProviderRuntime,
-  DefaultStackSynthesizer, IStackSynthesizer, Resource, Stack, Stage, Token,
+  Resource, Stack, Stage, Token,
 } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 
@@ -30,6 +30,9 @@ export interface EdgeFunctionProps extends lambda.FunctionProps {
  *
  * Convenience resource for requesting a Lambda function in the 'us-east-1' region for use with Lambda@Edge.
  * Implements several restrictions enforced by Lambda@Edge.
+ *
+ * Note that this construct requires that the 'us-east-1' region has been bootstrapped.
+ * See https://docs.aws.amazon.com/cdk/latest/guide/bootstrapping.html or 'cdk bootstrap --help' for options.
  *
  * @resource AWS::Lambda::Function
  * @experimental
@@ -214,7 +217,6 @@ export class EdgeFunction extends Resource implements lambda.IVersion {
     let edgeStack = stage.node.tryFindChild(edgeStackId) as Stack;
     if (!edgeStack) {
       edgeStack = new Stack(stage, edgeStackId, {
-        synthesizer: crossRegionSupportSynthesizer(this.stack),
         env: { region: EdgeFunction.EDGE_REGION },
       });
     }
@@ -228,21 +230,6 @@ interface FunctionConfig {
   readonly edgeFunction: lambda.Function;
   readonly edgeArn: string;
   readonly functionStack: Stack;
-}
-
-// Stolen (and modified) from `@aws-cdk/aws-codepipeline`'s `Pipeline`.
-function crossRegionSupportSynthesizer(stack: Stack): IStackSynthesizer | undefined {
-  // If we have the new synthesizer we need a bootstrapless copy of it,
-  // because we don't want to require bootstrapping the environment
-  // of the account in this replication region.
-  // Otherwise, return undefined to use the default.
-  const scopeStackSynthesizer = stack.synthesizer;
-  return (scopeStackSynthesizer instanceof DefaultStackSynthesizer)
-    ? new BootstraplessSynthesizer({
-      deployRoleArn: scopeStackSynthesizer.deployRoleArn,
-      cloudFormationExecutionRoleArn: scopeStackSynthesizer.cloudFormationExecutionRoleArn,
-    })
-    : undefined;
 }
 
 function addEdgeLambdaToRoleTrustStatement(role: iam.IRole) {
