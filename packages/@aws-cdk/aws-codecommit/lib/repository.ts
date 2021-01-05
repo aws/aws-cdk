@@ -1,7 +1,7 @@
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
 import { IResource, Lazy, Resource, Stack } from '@aws-cdk/core';
-import { IConstruct, Construct } from 'constructs';
+import { Construct } from 'constructs';
 import { CfnRepository } from './codecommit.generated';
 
 export interface IRepository extends IResource {
@@ -305,9 +305,9 @@ export class Repository extends RepositoryBase {
     class Import extends RepositoryBase {
       public readonly repositoryArn = repositoryArn;
       public readonly repositoryName = repositoryName;
-      public readonly repositoryCloneUrlHttp = Repository.makeCloneUrl(stack, repositoryName, 'https', region);
-      public readonly repositoryCloneUrlSsh = Repository.makeCloneUrl(stack, repositoryName, 'ssh', region);
-      public readonly repositoryCloneUrlGrc = Repository.makeCloneUrl(stack, repositoryName, 'grc', region);
+      public readonly repositoryCloneUrlHttp = makeCloneUrl(stack, repositoryName, 'https', region);
+      public readonly repositoryCloneUrlSsh = makeCloneUrl(stack, repositoryName, 'ssh', region);
+      public readonly repositoryCloneUrlGrc = makeCloneUrl(stack, repositoryName, 'grc', region);
     }
 
     return new Import(scope, id);
@@ -318,30 +318,16 @@ export class Repository extends RepositoryBase {
 
     class Import extends RepositoryBase {
       public repositoryName = repositoryName;
-      public repositoryArn = Repository.arnForLocalRepository(repositoryName, scope);
-      public readonly repositoryCloneUrlHttp = Repository.makeCloneUrl(stack, repositoryName, 'https');
-      public readonly repositoryCloneUrlSsh = Repository.makeCloneUrl(stack, repositoryName, 'ssh');
-      public readonly repositoryCloneUrlGrc = Repository.makeCloneUrl(stack, repositoryName, 'grc');
+      public repositoryArn = Stack.of(scope).formatArn({
+        service: 'codecommit',
+        resource: repositoryName,
+      });
+      public readonly repositoryCloneUrlHttp = makeCloneUrl(stack, repositoryName, 'https');
+      public readonly repositoryCloneUrlSsh = makeCloneUrl(stack, repositoryName, 'ssh');
+      public readonly repositoryCloneUrlGrc = makeCloneUrl(stack, repositoryName, 'grc');
     }
 
     return new Import(scope, id);
-  }
-
-  private static makeCloneUrl(stack: Stack, repositoryName: string, protocol: 'https' | 'ssh' | 'grc', region?: string) {
-    switch (protocol) {
-      case 'https':
-      case 'ssh':
-        return `${protocol}://git-codecommit.${region ?? stack.region}.${stack.urlSuffix}/v1/repos/${repositoryName}`;
-      case 'grc':
-        return `codecommit::${region ?? stack.region}://${repositoryName}`;
-    }
-  }
-
-  private static arnForLocalRepository(repositoryName: string, scope: IConstruct): string {
-    return Stack.of(scope).formatArn({
-      service: 'codecommit',
-      resource: repositoryName,
-    });
   }
 
   public readonly repositoryArn: string;
@@ -349,7 +335,6 @@ export class Repository extends RepositoryBase {
   public readonly repositoryCloneUrlHttp: string;
   public readonly repositoryCloneUrlSsh: string;
   public readonly repositoryCloneUrlGrc: string;
-  private readonly repository: CfnRepository;
   private readonly triggers = new Array<CfnRepository.RepositoryTriggerProperty>();
 
   constructor(scope: Construct, id: string, props: RepositoryProps) {
@@ -357,20 +342,20 @@ export class Repository extends RepositoryBase {
       physicalName: props.repositoryName,
     });
 
-    this.repository = new CfnRepository(this, 'Resource', {
+    const repository = new CfnRepository(this, 'Resource', {
       repositoryName: props.repositoryName,
       repositoryDescription: props.description,
       triggers: Lazy.any({ produce: () => this.triggers }, { omitEmptyArray: true }),
     });
 
-    this.repositoryName = this.getResourceNameAttribute(this.repository.attrName);
-    this.repositoryArn = this.getResourceArnAttribute(this.repository.attrArn, {
+    this.repositoryName = this.getResourceNameAttribute(repository.attrName);
+    this.repositoryArn = this.getResourceArnAttribute(repository.attrArn, {
       service: 'codecommit',
       resource: this.physicalName,
     });
-    this.repositoryCloneUrlHttp = this.repository.attrCloneUrlHttp;
-    this.repositoryCloneUrlSsh = this.repository.attrCloneUrlSsh;
-    this.repositoryCloneUrlGrc = Repository.makeCloneUrl(Stack.of(this), this.repositoryName, 'grc');
+    this.repositoryCloneUrlHttp = repository.attrCloneUrlHttp;
+    this.repositoryCloneUrlSsh = repository.attrCloneUrlSsh;
+    this.repositoryCloneUrlGrc = makeCloneUrl(Stack.of(this), this.repositoryName, 'grc');
   }
 
   /**
@@ -446,4 +431,17 @@ export enum RepositoryEventTrigger {
   UPDATE_REF = 'updateReference',
   CREATE_REF = 'createReference',
   DELETE_REF = 'deleteReference'
+}
+
+/**
+ * Returns the clone URL for a protocol
+ */
+function makeCloneUrl(stack: Stack, repositoryName: string, protocol: 'https' | 'ssh' | 'grc', region?: string) {
+  switch (protocol) {
+    case 'https':
+    case 'ssh':
+      return `${protocol}://git-codecommit.${region ?? stack.region}.${stack.urlSuffix}/v1/repos/${repositoryName}`;
+    case 'grc':
+      return `codecommit::${region ?? stack.region}://${repositoryName}`;
+  }
 }

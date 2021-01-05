@@ -204,7 +204,7 @@ export = {
     'HTTPS (GRC) clone URL'(test: Test) {
       const stack = new Stack();
 
-      const repository = new Repository(stack, 'Repostiry', {
+      const repository = new Repository(stack, 'Repository', {
         repositoryName: 'my-repo',
       });
 
