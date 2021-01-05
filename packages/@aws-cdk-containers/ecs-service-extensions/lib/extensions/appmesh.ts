@@ -5,6 +5,7 @@ import * as ecs from '@aws-cdk/aws-ecs';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import * as regionInfo from '@aws-cdk/region-info';
+import { Construct } from 'constructs';
 import { Service } from '../service';
 import { Container } from './container';
 import { ServiceExtension, ServiceBuild } from './extension-interfaces';
@@ -63,7 +64,7 @@ export class AppMeshExtension extends ServiceExtension {
     }
   }
 
-  public prehook(service: Service, scope: cdk.Construct) {
+  public prehook(service: Service, scope: Construct) {
     this.parentService = service;
     this.scope = scope;
 

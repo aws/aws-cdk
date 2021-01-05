@@ -1,6 +1,6 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecs from '@aws-cdk/aws-ecs';
-import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { IEnvironment } from './environment';
 import { EnvironmentCapacityType, ServiceBuild } from './extensions/extension-interfaces';
 import { ServiceDescription } from './service-description';
@@ -24,7 +24,7 @@ export interface ServiceProps {
  * A service builder class. This construct support various extensions
  * which can construct an ECS service progressively.
  */
-export class Service extends cdk.Construct {
+export class Service extends Construct {
   /**
    * The underlying ECS service that was created
    */
@@ -72,9 +72,9 @@ export class Service extends cdk.Construct {
    */
   private urls: Record<string, string> = {};
 
-  private readonly scope: cdk.Construct;
+  private readonly scope: Construct;
 
-  constructor(scope: cdk.Construct, id: string, props: ServiceProps) {
+  constructor(scope: Construct, id: string, props: ServiceProps) {
     super(scope, id);
 
     this.scope = scope;

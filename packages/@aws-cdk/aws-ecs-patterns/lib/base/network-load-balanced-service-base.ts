@@ -256,7 +256,7 @@ export interface NetworkLoadBalancedTaskImageOptions {
 /**
  * The base class for NetworkLoadBalancedEc2Service and NetworkLoadBalancedFargateService services.
  */
-export abstract class NetworkLoadBalancedServiceBase extends cdk.Construct {
+export abstract class NetworkLoadBalancedServiceBase extends Construct {
   /**
    * The desired number of instantiations of the task definition to keep running on the service.
    */
@@ -361,7 +361,7 @@ export abstract class NetworkLoadBalancedServiceBase extends cdk.Construct {
   /**
    * Returns the default cluster.
    */
-  protected getDefaultCluster(scope: cdk.Construct, vpc?: IVpc): Cluster {
+  protected getDefaultCluster(scope: Construct, vpc?: IVpc): Cluster {
     // magic string to avoid collision with user-defined constructs
     const DEFAULT_CLUSTER_ID = `EcsDefaultClusterMnL3mNNYN${vpc ? vpc.node.id : ''}`;
     const stack = cdk.Stack.of(scope);

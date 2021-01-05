@@ -5,7 +5,7 @@ import { ITargetGroup, TargetGroupImportProps } from './base-target-group';
 /**
  * Base internal class for existing target groups
  */
-export abstract class ImportedTargetGroupBase extends cdk.Construct implements ITargetGroup {
+export abstract class ImportedTargetGroupBase extends Construct implements ITargetGroup {
   /**
    * ARN of the target group
    */

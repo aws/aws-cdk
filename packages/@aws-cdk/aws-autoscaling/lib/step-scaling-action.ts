@@ -1,4 +1,4 @@
-import { Construct as CoreConstruct, Duration, Lazy } from '@aws-cdk/core';
+import { Duration, Lazy } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { IAutoScalingGroup } from './auto-scaling-group';
 import { CfnScalingPolicy } from './autoscaling.generated';
@@ -60,7 +60,7 @@ export interface StepScalingActionProps {
  *
  * This Action must be used as the target of a CloudWatch alarm to take effect.
  */
-export class StepScalingAction extends CoreConstruct {
+export class StepScalingAction extends Construct {
   /**
    * ARN of the scaling policy
    */
