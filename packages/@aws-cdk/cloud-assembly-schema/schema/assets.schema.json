@@ -80,14 +80,6 @@
                 "executable": {
                     "description": "The filesystem object to upload\n\nThis path is relative to the asset manifest location.",
                     "type": "string"
-                },
-                "packaging": {
-                    "description": "Packaging method (Default FILE)",
-                    "enum": [
-                        "file",
-                        "zip"
-                    ],
-                    "type": "string"
                 }
             },
             "required": [

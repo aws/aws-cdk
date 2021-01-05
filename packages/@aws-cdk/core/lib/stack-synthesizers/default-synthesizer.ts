@@ -321,7 +321,7 @@ export class DefaultStackSynthesizer extends StackSynthesizer {
     assertBound(this.stack);
     assertBound(this.bucketName);
 
-    const objectKey = this.bucketPrefix + asset.sourceHash + (asset.packaging === FileAssetPackaging.ZIP_DIRECTORY ? '.zip' : '');
+    const objectKey = this.bucketPrefix + asset.sourceHash;
 
     const destinations = {
       [this.manifestEnvName]: {
@@ -335,7 +335,6 @@ export class DefaultStackSynthesizer extends StackSynthesizer {
 
     const externalSource = {
       executable: asset.executable,
-      packaging: asset.packaging,
     };
 
     // Add to manifest

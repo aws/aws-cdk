@@ -135,11 +135,6 @@ export interface ExternalFileAssetSource {
    * the path of the asset on stdout.
    */
   readonly executable: string;
-
-  /**
-   * Which type of packaging to perform.
-   */
-  readonly packaging: FileAssetPackaging;
 }
 
 /**
