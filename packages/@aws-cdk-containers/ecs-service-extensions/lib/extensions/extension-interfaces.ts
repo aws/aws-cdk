@@ -1,5 +1,6 @@
 import * as ecs from '@aws-cdk/aws-ecs';
 import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { Service } from '../service';
 
 /**
@@ -105,7 +106,7 @@ export abstract class ServiceExtension {
    * the extension is told what Service it is now working on.
    */
   protected parentService!: Service;
-  protected scope!: cdk.Construct;
+  protected scope!: Construct;
 
   // A list of other extensions which want to mutate the
   // container definition for this extension.
@@ -154,7 +155,7 @@ export abstract class ServiceExtension {
    * @param parent - The parent service which this extension has been added to
    * @param scope - The scope that this extension should create resources in
    */
-  public prehook(parent: Service, scope: cdk.Construct) {
+  public prehook(parent: Service, scope: Construct) {
     this.parentService = parent;
     this.scope = scope;
   }

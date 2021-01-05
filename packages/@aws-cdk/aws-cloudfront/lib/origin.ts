@@ -1,4 +1,5 @@
-import { Construct, Duration, Token } from '@aws-cdk/core';
+import { Duration, Token } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CfnDistribution } from './cloudfront.generated';
 
 /**

@@ -1,6 +1,6 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
-import { FeatureFlags, Fn, IResource, RemovalPolicy, Resource, SecretValue, Stack, Token } from '@aws-cdk/core';
+import { FeatureFlags, Fn, IResource, RemovalPolicy, Resource, ResourceProps, SecretValue, Stack, Token } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import { IConstruct, Construct } from 'constructs';
 import { ResourcePolicy } from './policy';
@@ -178,6 +178,12 @@ abstract class SecretBase extends Resource implements ISecret {
 
   private policy?: ResourcePolicy;
 
+  constructor(scope: Construct, id: string, props: ResourceProps = {}) {
+    super(scope, id, props);
+
+    this.node.addValidation({ validate: () => this.policy?.document.validateForResourcePolicy() ?? [] });
+  }
+
   public get secretFullArn(): string | undefined { return this.secretArn; }
 
   public grantRead(grantee: iam.IGrantable, versionStages?: string[]): iam.Grant {
@@ -249,12 +255,6 @@ abstract class SecretBase extends Resource implements ISecret {
       return { statementAdded: true, policyDependable: this.policy };
     }
     return { statementAdded: false };
-  }
-
-  protected validate(): string[] {
-    const errors = super.validate();
-    errors.push(...this.policy?.document.validateForResourcePolicy() || []);
-    return errors;
   }
 
   public denyAccountRootDelete() {

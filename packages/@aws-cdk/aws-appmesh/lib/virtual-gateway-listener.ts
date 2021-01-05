@@ -1,4 +1,5 @@
 import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CfnVirtualGateway } from './appmesh.generated';
 import { validateHealthChecks } from './private/utils';
 import { HealthCheck, Protocol } from './shared-interfaces';
@@ -80,7 +81,7 @@ export abstract class VirtualGatewayListener {
    * Called when the GatewayListener type is initialized. Can be used to enforce
    * mutual exclusivity
    */
-  public abstract bind(scope: cdk.Construct): VirtualGatewayListenerConfig;
+  public abstract bind(scope: Construct): VirtualGatewayListenerConfig;
 }
 
 /**
@@ -116,7 +117,7 @@ class HttpGatewayListener extends VirtualGatewayListener {
    * Called when the GatewayListener type is initialized. Can be used to enforce
    * mutual exclusivity
    */
-  public bind(_scope: cdk.Construct): VirtualGatewayListenerConfig {
+  public bind(_scope: Construct): VirtualGatewayListenerConfig {
     return {
       listener: {
         portMapping: {
@@ -172,7 +173,7 @@ class GrpcGatewayListener extends VirtualGatewayListener {
    * Called when the GatewayListener type is initialized. Can be used to enforce
    * mutual exclusivity
    */
-  public bind(_scope: cdk.Construct): VirtualGatewayListenerConfig {
+  public bind(_scope: Construct): VirtualGatewayListenerConfig {
     return {
       listener: {
         portMapping: {

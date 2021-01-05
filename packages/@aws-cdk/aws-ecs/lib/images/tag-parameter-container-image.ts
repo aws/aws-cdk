@@ -1,5 +1,6 @@
 import * as ecr from '@aws-cdk/aws-ecr';
 import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { ContainerDefinition } from '../container-definition';
 import { ContainerImage, ContainerImageConfig } from '../container-image';
 
@@ -21,7 +22,7 @@ export class TagParameterContainerImage extends ContainerImage {
     this.repository = repository;
   }
 
-  public bind(scope: cdk.Construct, containerDefinition: ContainerDefinition): ContainerImageConfig {
+  public bind(scope: Construct, containerDefinition: ContainerDefinition): ContainerImageConfig {
     this.repository.grantPull(containerDefinition.taskDefinition.obtainExecutionRole());
     const imageTagParameter = new cdk.CfnParameter(scope, 'ImageTagParam');
     this.imageTagParameter = imageTagParameter;

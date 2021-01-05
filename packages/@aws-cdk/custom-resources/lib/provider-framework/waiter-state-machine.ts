@@ -1,6 +1,7 @@
 import { Grant, IGrantable, PolicyStatement, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
 import { IFunction } from '@aws-cdk/aws-lambda';
-import { CfnResource, Construct, Duration, Stack } from '@aws-cdk/core';
+import { CfnResource, Duration, Stack } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 
 export interface WaiterStateMachineProps {
   /**

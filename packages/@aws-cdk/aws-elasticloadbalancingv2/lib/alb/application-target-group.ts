@@ -1,6 +1,6 @@
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as ec2 from '@aws-cdk/aws-ec2';
-import { Annotations, Construct as CoreConstruct, Duration } from '@aws-cdk/core';
+import { Annotations, Duration } from '@aws-cdk/core';
 import { IConstruct, Construct } from 'constructs';
 import { ApplicationELBMetrics } from '../elasticloadbalancingv2-canned-metrics.generated';
 import {
@@ -161,7 +161,7 @@ export class ApplicationTargetGroup extends TargetGroupBase implements IApplicat
       listener.registerConnectable(member.connectable, member.portRange);
     }
     this.listeners.push(listener);
-    this.loadBalancerAttachedDependencies.add((associatingConstruct || listener) as CoreConstruct);
+    this.loadBalancerAttachedDependencies.add(associatingConstruct ?? listener);
   }
 
   /**
@@ -306,8 +306,8 @@ export class ApplicationTargetGroup extends TargetGroupBase implements IApplicat
     });
   }
 
-  protected validate(): string[] {
-    const ret = super.validate();
+  protected validateTargetGroup(): string[] {
+    const ret = super.validateTargetGroup();
 
     if (this.targetType !== undefined && this.targetType !== TargetType.LAMBDA
       && (this.protocol === undefined || this.port === undefined)) {
