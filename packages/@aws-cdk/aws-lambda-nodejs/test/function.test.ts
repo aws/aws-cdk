@@ -2,6 +2,7 @@ import '@aws-cdk/assert/jest';
 import * as fs from 'fs';
 import * as path from 'path';
 import { ABSENT } from '@aws-cdk/assert';
+import { Vpc } from '@aws-cdk/aws-ec2';
 import { Runtime } from '@aws-cdk/aws-lambda';
 import { Stack } from '@aws-cdk/core';
 import { NodejsFunction } from '../lib';
@@ -52,13 +53,15 @@ test('NodejsFunction with .js handler', () => {
 test('NodejsFunction with container env vars', () => {
   // WHEN
   new NodejsFunction(stack, 'handler1', {
-    bundlingEnvironment: {
-      KEY: 'VALUE',
+    bundling: {
+      environment: {
+        KEY: 'VALUE',
+      },
     },
   });
 
   expect(Bundling.bundle).toHaveBeenCalledWith(expect.objectContaining({
-    bundlingEnvironment: {
+    environment: {
       KEY: 'VALUE',
     },
   }));
@@ -104,6 +107,22 @@ test('throws with non existing lock file', () => {
   })).toThrow(/Lock file at \/does\/not\/exist.lock doesn't exist/);
 });
 
+test('throws when depsLockFilePath is not a file', () => {
+  expect(() => new NodejsFunction(stack, 'handler1', {
+    depsLockFilePath: __dirname,
+  })).toThrow(/\`depsLockFilePath\` should point to a file/);
+});
+
+test('resolves depsLockFilePath to an absolute path', () => {
+  new NodejsFunction(stack, 'handler1', {
+    depsLockFilePath: './package.json',
+  });
+
+  expect(Bundling.bundle).toHaveBeenCalledWith(expect.objectContaining({
+    depsLockFilePath: expect.stringMatching(/@aws-cdk\/aws-lambda-nodejs\/package.json$/),
+  }));
+});
+
 test('resolves entry to an absolute path', () => {
   // WHEN
   new NodejsFunction(stack, 'fn', {
@@ -136,5 +155,35 @@ test('can opt-out of connection reuse for aws sdk', () => {
 
   expect(stack).toHaveResource('AWS::Lambda::Function', {
     Environment: ABSENT,
+  });
+});
+
+test('NodejsFunction in a VPC', () => {
+  // GIVEN
+  const vpc = new Vpc(stack, 'Vpc');
+
+  // WHEN
+  new NodejsFunction(stack, 'handler1', { vpc });
+
+  // THEN
+  expect(stack).toHaveResource('AWS::Lambda::Function', {
+    VpcConfig: {
+      SecurityGroupIds: [
+        {
+          'Fn::GetAtt': [
+            'handler1SecurityGroup30688A62',
+            'GroupId',
+          ],
+        },
+      ],
+      SubnetIds: [
+        {
+          Ref: 'VpcPrivateSubnet1Subnet536B997A',
+        },
+        {
+          Ref: 'VpcPrivateSubnet2Subnet3788AAA1',
+        },
+      ],
+    },
   });
 });
