@@ -79,7 +79,10 @@
             "properties": {
                 "executable": {
                     "description": "The filesystem object to upload\n\nThis path is relative to the asset manifest location.",
-                    "type": "string"
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 }
             },
             "required": [
@@ -174,7 +177,10 @@
             "properties": {
                 "executable": {
                     "description": "A command-line executable that returns the name of a local\nDocker image on stdout after being run.",
-                    "type": "string"
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 }
             },
             "required": [

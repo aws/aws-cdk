@@ -134,7 +134,7 @@ export interface ExternalFileAssetSource {
    * The executable to stage the asset, which returns
    * the path of the asset on stdout.
    */
-  readonly executable: string;
+  readonly executable: string[];
 }
 
 /**
@@ -213,7 +213,7 @@ export interface ExternalDockerImageAssetSource {
    * The executable to build the asset, which returns
    * the image name of the asset on stdout.
    */
-  readonly executable: string;
+  readonly executable: string[];
 }
 
 /**

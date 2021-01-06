@@ -63,7 +63,7 @@ export interface ExternalDockerImageSource {
    * A command-line executable that returns the name of a local
    * Docker image on stdout after being run.
    */
-  readonly executable: string;
+  readonly executable: string[];
 }
 
 /**

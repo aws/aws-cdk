@@ -65,7 +65,7 @@ export interface ExternalFileSource {
    *
    * This path is relative to the asset manifest location.
    */
-  readonly executable: string;
+  readonly executable: string[];
 }
 
 /**

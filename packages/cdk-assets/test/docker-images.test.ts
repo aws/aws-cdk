@@ -148,12 +148,6 @@ describe('external assets', () => {
   });
 
   test('upload externally generated Docker image', async () => {
-    aws.mockEcr.getAuthorizationToken = mockedApiResult({
-      authorizationData: [
-        { authorizationToken: 'dXNlcjpwYXNz', proxyEndpoint: 'https://proxy.com/' },
-      ],
-    });
-
     mockSpawn({ commandLine: ['sometool'], stdout: externalTag });
 
     await pub.publish();

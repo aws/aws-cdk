@@ -74,7 +74,7 @@ export class ContainerImageAssetHandler implements IAssetHandler {
   private buildExternalAsset(asset: ExternalDockerImageSource): Promise<string> {
     this.host.emitMessage(EventType.BUILD, `Building Docker image using command '${asset.executable}'`);
 
-    return shell(asset.executable.split(' '));
+    return shell(asset.executable);
   }
 
   private async buildImage(): Promise<void> {
