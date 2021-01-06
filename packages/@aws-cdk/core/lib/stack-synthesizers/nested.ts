@@ -1,4 +1,10 @@
-import { DockerImageAssetLocation, DockerImageAssetSource, FileAssetLocation, FileAssetSource } from '../assets';
+import {
+  DockerImageAssetLocation,
+  DockerImageAssetSource, ExternalDockerImageAssetSource,
+  ExternalFileAssetSource,
+  FileAssetLocation,
+  FileAssetSource,
+} from '../assets';
 import { ISynthesisSession } from '../construct-compat';
 import { Stack } from '../stack';
 import { assertBound } from './_shared';
@@ -30,10 +36,18 @@ export class NestedStackSynthesizer extends StackSynthesizer {
     return this.parentDeployment.addFileAsset(asset);
   }
 
+  public addExternalFileAsset(asset: ExternalFileAssetSource): FileAssetLocation {
+    return this.parentDeployment.addExternalFileAsset(asset);
+  }
+
   public addDockerImageAsset(asset: DockerImageAssetSource): DockerImageAssetLocation {
     // Forward to parent deployment. By the magic of cross-stack references any parameter
     // returned and used will magically be forwarded to the nested stack.
     return this.parentDeployment.addDockerImageAsset(asset);
+  }
+
+  public addExternalDockerImageAsset(asset: ExternalDockerImageAssetSource): DockerImageAssetLocation {
+    return this.parentDeployment.addExternalDockerImageAsset(asset);
   }
 
   public synthesize(session: ISynthesisSession): void {

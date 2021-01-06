@@ -233,8 +233,8 @@ export class DefaultStackSynthesizer extends StackSynthesizer {
   private qualifier?: string;
   private bucketPrefix?: string
 
-  protected readonly files: NonNullable<cxschema.AssetManifest['files']> = {};
-  protected readonly dockerImages: NonNullable<cxschema.AssetManifest['dockerImages']> = {};
+  private readonly files: NonNullable<cxschema.AssetManifest['files']> = {};
+  private readonly dockerImages: NonNullable<cxschema.AssetManifest['dockerImages']> = {};
 
   constructor(private readonly props: DefaultStackSynthesizerProps = {}) {
     super();

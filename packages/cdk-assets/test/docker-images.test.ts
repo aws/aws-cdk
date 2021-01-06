@@ -28,6 +28,24 @@ beforeEach(() => {
         },
       },
     }),
+    '/external/cdk.out/assets.json': JSON.stringify({
+      version: Manifest.version(),
+      dockerImages: {
+        theExternalAsset: {
+          externalSource: {
+            executable: 'sometool',
+          },
+          destinations: {
+            theDestination: {
+              region: 'us-north-50',
+              assumeRoleArn: 'arn:aws:role',
+              repositoryName: 'repo',
+              imageTag: 'ghijkl',
+            },
+          },
+        },
+      },
+    }),
     '/simple/cdk.out/dockerdir/Dockerfile': 'FROM scratch',
     '/abs/cdk.out/assets.json': JSON.stringify({
       version: Manifest.version(),
@@ -119,6 +137,32 @@ describe('with a complete manifest', () => {
     );
 
     await pub.publish();
+  });
+});
+
+describe('external assets', () => {
+  let pub: AssetPublishing;
+  const externalTag = 'external:tag';
+  beforeEach(() => {
+    pub = new AssetPublishing(AssetManifest.fromPath('/external/cdk.out'), { aws });
+  });
+
+  test('upload externally generated Docker image', async () => {
+    aws.mockEcr.getAuthorizationToken = mockedApiResult({
+      authorizationData: [
+        { authorizationToken: 'dXNlcjpwYXNz', proxyEndpoint: 'https://proxy.com/' },
+      ],
+    });
+
+    mockSpawn({ commandLine: ['sometool'], stdout: externalTag });
+
+    await pub.publish();
+
+    expect(aws.mockEcr.describeImages).not.toHaveBeenCalled();
+    expect(aws.ecrClient).toHaveBeenCalledWith(expect.objectContaining({
+      region: 'us-north-50',
+      assumeRoleArn: 'arn:aws:role',
+    }));
   });
 });
 

@@ -1,20 +1,21 @@
 import { createReadStream, promises as fs } from 'fs';
 import * as path from 'path';
-import { FileAssetPackaging } from '@aws-cdk/cloud-assembly-schema';
+import { ExternalFileSource, FileAssetPackaging, FileSource } from '@aws-cdk/cloud-assembly-schema';
 import { FileManifestEntry } from '../../asset-manifest';
 import { EventType } from '../../progress';
 import { zipDirectory } from '../archive';
 import { IAssetHandler, IHandlerHost } from '../asset-handler';
 import { pathExists } from '../fs-extra';
 import { replaceAwsPlaceholders } from '../placeholders';
+import { shell } from '../shell';
 
 export class FileAssetHandler implements IAssetHandler {
   private readonly fileCacheRoot: string;
 
   constructor(
-    protected readonly workDir: string,
-    protected readonly asset: FileManifestEntry,
-    protected readonly host: IHandlerHost) {
+    private readonly workDir: string,
+    private readonly asset: FileManifestEntry,
+    private readonly host: IHandlerHost) {
     this.fileCacheRoot = path.join(workDir, '.cache');
   }
 
@@ -43,8 +44,9 @@ export class FileAssetHandler implements IAssetHandler {
     }
 
     if (this.host.aborted) { return; }
-    const publishFile = await this.packageFile();
-    const contentType = this.asset.source!.packaging === FileAssetPackaging.ZIP_DIRECTORY ? 'application/zip' : undefined;
+    const publishFile = this.asset.externalSource ?
+      await this.externalPackageFile(this.asset.externalSource) : await this.packageFile(this.asset.source!);
+    const contentType = this.asset.externalSource || this.asset.source!.packaging === FileAssetPackaging.ZIP_DIRECTORY ? 'application/zip' : undefined;
 
     this.host.emitMessage(EventType.UPLOAD, `Upload ${s3Url}`);
     await s3.upload({
@@ -55,8 +57,7 @@ export class FileAssetHandler implements IAssetHandler {
     }).promise();
   }
 
-  protected async packageFile(): Promise<string> {
-    const source = this.asset.source!;
+  private async packageFile(source: FileSource): Promise<string> {
     const fullPath = path.resolve(this.workDir, source.path);
 
     if (source.packaging === FileAssetPackaging.ZIP_DIRECTORY) {
@@ -74,6 +75,12 @@ export class FileAssetHandler implements IAssetHandler {
     } else {
       return fullPath;
     }
+  }
+
+  private externalPackageFile(source: ExternalFileSource): Promise<string> {
+    this.host.emitMessage(EventType.BUILD, `Building asset source using command: '${source.executable}'`);
+
+    return shell(source.executable.split(' '));
   }
 }
 

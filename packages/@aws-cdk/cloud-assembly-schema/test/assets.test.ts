@@ -21,6 +21,18 @@ describe('Docker image asset', () => {
               },
             },
           },
+          externalAsset: {
+            externalSource: {
+              executable: 'sometool',
+            },
+            destinations: {
+              dest: {
+                region: 'us-north-20',
+                repositoryName: 'REPO',
+                imageTag: 'TAG',
+              },
+            },
+          },
         },
       });
     }).not.toThrow();
@@ -33,6 +45,10 @@ describe('Docker image asset', () => {
         dockerImages: {
           asset: {
             source: {},
+            destinations: {},
+          },
+          externalAsset: {
+            externalSource: {},
             destinations: {},
           },
         },
@@ -51,6 +67,18 @@ describe('File asset', () => {
             asset: {
               source: {
                 path: 'a/b/c',
+              },
+              destinations: {
+                dest: {
+                  region: 'us-north-20',
+                  bucketName: 'Bouquet',
+                  objectKey: 'key',
+                },
+              },
+            },
+            externalAsset: {
+              externalSource: {
+                executable: 'sometool',
               },
               destinations: {
                 dest: {
@@ -100,6 +128,18 @@ describe('File asset', () => {
             asset: {
               source: {
                 path: 3,
+              },
+              destinations: {
+                dest: {
+                  region: 'us-north-20',
+                  bucketName: 'Bouquet',
+                  objectKey: 'key',
+                },
+              },
+            },
+            externalAsset: {
+              externalSource: {
+                executable: 'sometool',
               },
               destinations: {
                 dest: {

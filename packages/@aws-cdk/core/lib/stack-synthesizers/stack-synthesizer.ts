@@ -40,7 +40,7 @@ export abstract class StackSynthesizer implements IStackSynthesizer {
    * Returns the parameters that can be used to refer to the asset inside the template.
    */
   public addExternalFileAsset(_: ExternalFileAssetSource): FileAssetLocation {
-    throw new Error('addExternalFileAsset not supported.');
+    throw new Error(`The StackSynthesizer (${this.constructor.name}) does not support external assets. Try using a 'DefaultStackSynthesizer' instead.`);
   }
 
   /**
@@ -56,7 +56,7 @@ export abstract class StackSynthesizer implements IStackSynthesizer {
    * Returns the parameters that can be used to refer to the asset inside the template.
    */
   public addExternalDockerImageAsset(_: ExternalDockerImageAssetSource): DockerImageAssetLocation {
-    throw new Error('addExternalFileAsset not supported.');
+    throw new Error(`The StackSynthesizer (${this.constructor.name}) does not support external assets. Try using a 'DefaultStackSynthesizer' instead.`);
   }
 
   /**
