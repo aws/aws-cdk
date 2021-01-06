@@ -21,6 +21,17 @@ new kms.Key(this, 'MyKey', {
 });
 ```
 
+Define a KMS key with waiting period:
+
+Specifies the number of days in the waiting period before AWS KMS deletes a CMK that has been removed from a CloudFormation stack.
+
+```ts
+const key = new kms.Key(this, 'MyKey', {
+  pendingWindow: 10 // Default to 30 Days
+});
+```
+
+
 Add a couple of aliases:
 
 ```ts

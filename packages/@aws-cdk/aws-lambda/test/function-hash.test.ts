@@ -124,7 +124,7 @@ describe('function hash', () => {
 
   describe('impact of env variables order on hash', () => {
 
-    test('without "currentVersion", we preserve old behavior to avoid unnesesary invalidation of templates', () => {
+    test('without "currentVersion", we preserve old behavior to avoid unnecessary invalidation of templates', () => {
       const stack1 = new Stack();
       const fn1 = new lambda.Function(stack1, 'MyFunction', {
         runtime: lambda.Runtime.NODEJS_12_X,
