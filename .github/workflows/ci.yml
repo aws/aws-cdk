@@ -1,0 +1,15 @@
+name: CI
+
+on:
+  push: {}
+  workflow_dispatch: {}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container: jsii/superchain
+    steps:
+      - name: Check Out
+        uses: actions/checkout@v2
+      - name: Echo
+        run: echo hello
