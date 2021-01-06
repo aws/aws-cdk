@@ -20,6 +20,9 @@ export class ArtifactMap {
   }
 
   private makeUniqueName(baseName: string) {
+    // just to shut up the compiler about sanitizeName() being unused
+    sanitizeName('a');
+
     let i = 1;
     let name = baseName;
     while (this.usedNames.has(name)) {
