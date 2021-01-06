@@ -334,6 +334,33 @@ nodeunitShim({
     test.done();
   },
 
+  'bucketKeyEnabled can be enabled'(test: Test) {
+    const stack = new cdk.Stack();
+
+    new s3.Bucket(stack, 'MyBucket', { bucketKeyEnabled: true, encryption: s3.BucketEncryption.KMS });
+
+    expect(stack).to(haveResource('AWS::S3::Bucket', {
+      'BucketEncryption': {
+        'ServerSideEncryptionConfiguration': [
+          {
+            'BucketKeyEnabled': true,
+            'ServerSideEncryptionByDefault': {
+              'KMSMasterKeyID': {
+                'Fn::GetAtt': [
+                  'MyBucketKeyC17130CF',
+                  'Arn',
+                ],
+              },
+              'SSEAlgorithm': 'aws:kms',
+            },
+          },
+        ],
+      },
+    }),
+    );
+    test.done();
+  },
+
   'bucket with versioning turned on'(test: Test) {
     const stack = new cdk.Stack();
     new s3.Bucket(stack, 'MyBucket', {
