@@ -261,7 +261,7 @@ export class Cluster extends Resource implements ICluster {
     } else {
       // Tie instances to cluster
       switch (options.machineImageType) {
-          // Bottlerocket AMI
+        // Bottlerocket AMI
         case MachineImageType.BOTTLEROCKET: {
           autoScalingGroup.addUserData(
             // Connect to the cluster

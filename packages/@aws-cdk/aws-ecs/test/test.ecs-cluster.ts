@@ -755,7 +755,7 @@ export = {
     test.done();
   },
 
-  "configures userdata with powershell if windows machine image is specified"(test: Test) {
+  'configures userdata with powershell if windows machine image is specified'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -769,40 +769,40 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource("AWS::AutoScaling::LaunchConfiguration", {
+    expect(stack).to(haveResource('AWS::AutoScaling::LaunchConfiguration', {
       ImageId: {
-        Ref: "SsmParameterValueawsserviceecsoptimizedamiwindowsserver2019englishfullrecommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
+        Ref: 'SsmParameterValueawsserviceecsoptimizedamiwindowsserver2019englishfullrecommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter',
       },
-      InstanceType: "t2.micro",
+      InstanceType: 't2.micro',
       IamInstanceProfile: {
-        Ref: "EcsClusterWindowsAutoScalingGroupInstanceProfile65DFA6BB"
+        Ref: 'EcsClusterWindowsAutoScalingGroupInstanceProfile65DFA6BB',
       },
       SecurityGroups: [
         {
-          "Fn::GetAtt": [
-            "EcsClusterWindowsAutoScalingGroupInstanceSecurityGroupDA468DF1",
-            "GroupId"
-          ]
-        }
+          'Fn::GetAtt': [
+            'EcsClusterWindowsAutoScalingGroupInstanceSecurityGroupDA468DF1',
+            'GroupId',
+          ],
+        },
       ],
       UserData: {
-        "Fn::Base64": {
-          "Fn::Join": [
-            "",
+        'Fn::Base64': {
+          'Fn::Join': [
+            '',
             [
-              "<powershell>Remove-Item -Recurse C:\\ProgramData\\Amazon\\ECS\\Cache\nImport-Module ECSTools\n[Environment]::SetEnvironmentVariable(\"ECS_CLUSTER\", \"",
+              '<powershell>Remove-Item -Recurse C:\\ProgramData\\Amazon\\ECS\\Cache\nImport-Module ECSTools\n[Environment]::SetEnvironmentVariable("ECS_CLUSTER", "',
               {
-                Ref: "EcsCluster97242B84"
+                Ref: 'EcsCluster97242B84',
               },
               "\", \"Machine\")\n[Environment]::SetEnvironmentVariable(\"ECS_ENABLE_AWSLOGS_EXECUTIONROLE_OVERRIDE\", \"true\", \"Machine\")\n[Environment]::SetEnvironmentVariable(\"ECS_AVAILABLE_LOGGING_DRIVERS\", \"[\"json-file\",\"awslogs\"]\", \"Machine\")\n[Environment]::SetEnvironmentVariable(\"ECS_ENABLE_TASK_IAM_ROLE\", \"true\", \"Machine\")\nInitialize-ECSAgent -Cluster '",
               {
-                Ref: "EcsCluster97242B84"
+                Ref: 'EcsCluster97242B84',
               },
-              "' -EnableTaskIAMRole'</powershell>"
-            ]
-          ]
-        }
-      }
+              "' -EnableTaskIAMRole'</powershell>",
+            ],
+          ],
+        },
+      },
     }));
 
     test.done();
