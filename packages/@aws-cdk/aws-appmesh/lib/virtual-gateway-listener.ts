@@ -122,49 +122,50 @@ class VirtualGatewayListenerImpl extends VirtualGatewayListener {
           port: this.port,
           protocol: this.protocol,
         },
-        healthCheck: this.healthCheck ? this.renderHealthCheck(this.healthCheck, this.protocol, this.port): undefined,
-        tls: this.renderTls(tlsConfig),
+        healthCheck: this.healthCheck ? renderHealthCheck(this.healthCheck, this.protocol, this.port): undefined,
+        tls: renderTls(tlsConfig),
       },
     };
   }
 
-  /**
-   * Renders the TLS config for a listener
-   */
-  private renderTls(tlsCertificateConfig: TlsCertificateConfig | undefined): CfnVirtualGateway.VirtualGatewayListenerTlsProperty | undefined {
-    if (tlsCertificateConfig === undefined) { return undefined; }
+}
 
-    return {
-      certificate: tlsCertificateConfig.tlsCertificate,
-      mode: tlsCertificateConfig.tlsMode.toString(),
-    };
+/**
+ * Renders the TLS config for a listener
+ */
+function renderTls(tlsCertificateConfig: TlsCertificateConfig | undefined): CfnVirtualGateway.VirtualGatewayListenerTlsProperty | undefined {
+  if (tlsCertificateConfig === undefined) { return undefined; }
+
+  return {
+    certificate: tlsCertificateConfig.tlsCertificate,
+    mode: tlsCertificateConfig.tlsMode.toString(),
+  };
+}
+
+function renderHealthCheck(hc: HealthCheck, listenerProtocol: Protocol,
+  listenerPort: number): CfnVirtualGateway.VirtualGatewayHealthCheckPolicyProperty {
+
+  if (hc.protocol === Protocol.TCP) {
+    throw new Error('TCP health checks are not permitted for gateway listeners');
   }
 
-  private renderHealthCheck(
-    hc: HealthCheck, listenerProtocol: Protocol, listenerPort: number): CfnVirtualGateway.VirtualGatewayHealthCheckPolicyProperty {
-
-    if (hc.protocol === Protocol.TCP) {
-      throw new Error('TCP health checks are not permitted for gateway listeners');
-    }
-
-    if (hc.protocol === Protocol.GRPC && hc.path) {
-      throw new Error('The path property cannot be set with Protocol.GRPC');
-    }
-
-    const protocol = hc.protocol? hc.protocol : listenerProtocol;
-
-    const healthCheck: CfnVirtualGateway.VirtualGatewayHealthCheckPolicyProperty = {
-      healthyThreshold: hc.healthyThreshold || 2,
-      intervalMillis: (hc.interval || cdk.Duration.seconds(5)).toMilliseconds(), // min
-      path: hc.path || ((protocol === Protocol.HTTP || protocol === Protocol.HTTP2) ? '/' : undefined),
-      port: hc.port || listenerPort,
-      protocol: hc.protocol || listenerProtocol,
-      timeoutMillis: (hc.timeout || cdk.Duration.seconds(2)).toMilliseconds(),
-      unhealthyThreshold: hc.unhealthyThreshold || 2,
-    };
-
-    validateHealthChecks(healthCheck);
-
-    return healthCheck;
+  if (hc.protocol === Protocol.GRPC && hc.path) {
+    throw new Error('The path property cannot be set with Protocol.GRPC');
   }
+
+  const protocol = hc.protocol? hc.protocol : listenerProtocol;
+
+  const healthCheck: CfnVirtualGateway.VirtualGatewayHealthCheckPolicyProperty = {
+    healthyThreshold: hc.healthyThreshold || 2,
+    intervalMillis: (hc.interval || cdk.Duration.seconds(5)).toMilliseconds(), // min
+    path: hc.path || ((protocol === Protocol.HTTP || protocol === Protocol.HTTP2) ? '/' : undefined),
+    port: hc.port || listenerPort,
+    protocol: hc.protocol || listenerProtocol,
+    timeoutMillis: (hc.timeout || cdk.Duration.seconds(2)).toMilliseconds(),
+    unhealthyThreshold: hc.unhealthyThreshold || 2,
+  };
+
+  validateHealthChecks(healthCheck);
+
+  return healthCheck;
 }
