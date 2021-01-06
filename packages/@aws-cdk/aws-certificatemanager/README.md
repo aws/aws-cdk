@@ -110,6 +110,7 @@ new acm.DnsValidatedCertificate(this, 'CrossRegionCertificate', {
   domainName: 'hello.example.com',
   hostedZone: myHostedZone,
   region: 'us-east-1',
+  certificateTags: [{Key: "TagKey", Value: "Value"}],
 });
 ```
 
