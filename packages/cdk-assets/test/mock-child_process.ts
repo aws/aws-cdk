@@ -42,7 +42,7 @@ export function mockSpawn(...invocations: Invocation[]) {
       child.stderr = new events.EventEmitter();
 
       if (invocation.stdout) {
-        mockEmit(child.stdout, 'data', invocation.stdout);
+        mockEmit(child.stdout, 'data', Buffer.from(invocation.stdout));
       }
       mockEmit(child, 'close', invocation.exitCode ?? 0);
 
