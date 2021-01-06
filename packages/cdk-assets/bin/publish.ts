@@ -86,6 +86,10 @@ class DefaultAwsClient implements IAws {
     return new this.AWS.ECR(await this.awsOptions(options));
   }
 
+  public async discoverPartition(): Promise<string> {
+    return (await this.discoverCurrentAccount()).partition;
+  }
+
   public async discoverDefaultRegion(): Promise<string> {
     return this.AWS.config.region || 'us-east-1';
   }
