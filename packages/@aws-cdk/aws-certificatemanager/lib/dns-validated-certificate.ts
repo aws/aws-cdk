@@ -46,6 +46,13 @@ export interface DnsValidatedCertificateProps extends CertificateProps {
    * @default - A new role will be created
    */
   readonly customResourceRole?: iam.IRole;
+
+  /**
+   * Tags to add to the requested certificate
+   *
+   * @default - None
+   */
+  readonly certificateTags?: {Key: string, Value: string}[];
 }
 
 /**
@@ -102,6 +109,7 @@ export class DnsValidatedCertificate extends cdk.Resource implements ICertificat
         HostedZoneId: this.hostedZoneId,
         Region: props.region,
         Route53Endpoint: props.route53Endpoint,
+        CertificateTags: props.certificateTags || [],
       },
     });
 

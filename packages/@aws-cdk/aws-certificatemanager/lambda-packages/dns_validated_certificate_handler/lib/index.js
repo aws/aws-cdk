@@ -75,9 +75,10 @@ let report = function(event, context, responseStatus, physicalResourceId, respon
  * @param {string} requestId the CloudFormation request ID
  * @param {string} domainName the Common Name (CN) field for the requested certificate
  * @param {string} hostedZoneId the Route53 Hosted Zone ID
+ * @param {{Key: string, Value: string}[]} certificateTags the Tags to add to the requested certificate
  * @returns {string} Validated certificate ARN
  */
-const requestCertificate = async function(requestId, domainName, subjectAlternativeNames, hostedZoneId, region, route53Endpoint) {
+const requestCertificate = async function(requestId, domainName, subjectAlternativeNames, hostedZoneId, region, route53Endpoint, certificateTags) {
   const crypto = require('crypto');
   const acm = new aws.ACM({ region });
   const route53 = route53Endpoint ? new aws.Route53({endpoint: route53Endpoint}) : new aws.Route53();
@@ -127,6 +128,15 @@ const requestCertificate = async function(requestId, domainName, subjectAlternat
   }
   if (!records) {
     throw new Error(`Response from describeCertificate did not contain DomainValidationOptions after ${maxAttempts} attempts.`)
+  }
+
+  if (certificateTags.length > 0) {
+    console.log(`Tagging ${reqCertResponse.CertificateArn}`);
+
+    await acm.addTagsToCertificate({
+      CertificateArn: reqCertResponse.CertificateArn,
+      Tags: certificateTags,
+    }).promise();
   }
 
   console.log(`Upserting ${records.length} DNS records into zone ${hostedZoneId}:`);
@@ -240,6 +250,7 @@ exports.certificateRequestHandler = async function(event, context) {
           event.ResourceProperties.HostedZoneId,
           event.ResourceProperties.Region,
           event.ResourceProperties.Route53Endpoint,
+          event.ResourceProperties.CertificateTags,
         );
         responseData.Arn = physicalResourceId = certificateArn;
         break;
