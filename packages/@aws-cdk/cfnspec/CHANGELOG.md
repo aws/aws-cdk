@@ -1,3 +1,22 @@
+
+# Serverless Application Model (SAM) Resource Specification v2016-10-31
+
+## New Resource Types
+
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::Serverless::LayerVersion ContentUri.PrimitiveType (__deleted__)
+* AWS::Serverless::LayerVersion ContentUri.PrimitiveTypes (__added__)
+* AWS::Serverless::LayerVersion ContentUri.Types (__added__)
+
+## Property Type Changes
+
+* AWS::Serverless::LayerVersion.S3Location (__added__)
+
 # CloudFormation Resource Specification v22.0.0
 
 ## New Resource Types
