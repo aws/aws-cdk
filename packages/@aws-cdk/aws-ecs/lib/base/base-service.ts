@@ -105,7 +105,8 @@ export interface BaseServiceOptions {
   /**
    * The desired number of instantiations of the task definition to keep running on the service.
    *
-   * @default 1
+   * @default - When creating the service, default is 1; when updating the service, default uses
+   * the current task number.
    */
   readonly desiredCount?: number;
 
@@ -363,6 +364,10 @@ export abstract class BaseService extends Resource
       deploymentConfiguration: {
         maximumPercent: props.maxHealthyPercent || 200,
         minimumHealthyPercent: props.minHealthyPercent === undefined ? 50 : props.minHealthyPercent,
+        deploymentCircuitBreaker: props.circuitBreaker ? {
+          enable: true,
+          rollback: props.circuitBreaker.rollback ?? false,
+        } : undefined,
       },
       propagateTags: props.propagateTags === PropagatedTagSource.NONE ? undefined : props.propagateTags,
       enableEcsManagedTags: props.enableECSManagedTags === undefined ? false : props.enableECSManagedTags,
@@ -375,16 +380,6 @@ export abstract class BaseService extends Resource
       ...additionalProps,
     });
 
-    if (props.circuitBreaker) {
-      const deploymentConfiguration = {
-        DeploymentCircuitBreaker: {
-          Enable: true,
-          Rollback: props.circuitBreaker.rollback ?? false,
-        },
-      };
-      // TODO: fix this when this property is available in CfnService
-      this.resource.addPropertyOverride('DeploymentConfiguration', deploymentConfiguration);
-    };
     if (props.deploymentController?.type === DeploymentControllerType.EXTERNAL) {
       Annotations.of(this).addWarning('taskDefinition and launchType are blanked out when using external deployment controller.');
     }
