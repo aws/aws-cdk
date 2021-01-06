@@ -52,7 +52,7 @@ export class ContainerImageAssetHandler implements IAssetHandler {
     // Login before build so that the Dockerfile can reference images in the ECR repo
     await this.docker.login(ecr);
 
-    if (!(await this.isImageCached())) {
+    if (await this.isImageCached()) {
       return undefined;
     }
 
