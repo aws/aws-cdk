@@ -46,41 +46,45 @@ export class FileAssetHandler implements IAssetHandler {
     if (this.host.aborted) { return; }
     const publishFile = this.asset.externalSource ?
       await this.externalPackageFile(this.asset.externalSource) : await this.packageFile(this.asset.source!);
-    const contentType = this.asset.externalSource || this.asset.source!.packaging === FileAssetPackaging.ZIP_DIRECTORY ? 'application/zip' : undefined;
 
     this.host.emitMessage(EventType.UPLOAD, `Upload ${s3Url}`);
     await s3.upload({
       Bucket: destination.bucketName,
       Key: destination.objectKey,
-      Body: createReadStream(publishFile),
-      ContentType: contentType,
+      Body: createReadStream(publishFile.packagedPath),
+      ContentType: publishFile.contentType,
     }).promise();
   }
 
-  private async packageFile(source: FileSource): Promise<string> {
+  private async packageFile(source: FileSource): Promise<PackagedFileAsset> {
     const fullPath = path.resolve(this.workDir, source.path);
 
     if (source.packaging === FileAssetPackaging.ZIP_DIRECTORY) {
-      await fs.mkdir(this.fileCacheRoot, { recursive: true });
-      const ret = path.join(this.fileCacheRoot, `${this.asset.id.assetId}.zip`);
+      const contentType = 'application/zip';
 
-      if (await pathExists(ret)) {
-        this.host.emitMessage(EventType.CACHED, `From cache ${ret}`);
-        return ret;
+      await fs.mkdir(this.fileCacheRoot, { recursive: true });
+      const packagedPath = path.join(this.fileCacheRoot, `${this.asset.id.assetId}.zip`);
+
+      if (await pathExists(packagedPath)) {
+        this.host.emitMessage(EventType.CACHED, `From cache ${path}`);
+        return { packagedPath, contentType };
       }
 
-      this.host.emitMessage(EventType.BUILD, `Zip ${fullPath} -> ${ret}`);
-      await zipDirectory(fullPath, ret);
-      return ret;
+      this.host.emitMessage(EventType.BUILD, `Zip ${fullPath} -> ${path}`);
+      await zipDirectory(fullPath, packagedPath);
+      return { packagedPath, contentType };
     } else {
-      return fullPath;
+      return { packagedPath: fullPath };
     }
   }
 
-  private externalPackageFile(source: ExternalFileSource): Promise<string> {
+  private async externalPackageFile(source: ExternalFileSource): Promise<PackagedFileAsset> {
     this.host.emitMessage(EventType.BUILD, `Building asset source using command: '${source.executable}'`);
 
-    return shell(source.executable.split(' '));
+    return {
+      packagedPath: await shell(source.executable.split(' ')),
+      contentType: 'application/zip',
+    };
   }
 }
 
@@ -115,4 +119,22 @@ async function objectExists(s3: AWS.S3, bucket: string, key: string) {
    */
   const response = await s3.listObjectsV2({ Bucket: bucket, Prefix: key, MaxKeys: 1 }).promise();
   return response.Contents != null && response.Contents.some(object => object.Key === key);
+}
+
+
+/**
+ * A packaged asset which can be uploaded (either a single file or directory)
+ */
+interface PackagedFileAsset {
+  /**
+   * Path of the file or directory
+   */
+  readonly packagedPath: string;
+
+  /**
+   * Content type to be added in the S3 upload action
+   *
+   * @default - No content type
+   */
+  readonly contentType?: string;
 }
