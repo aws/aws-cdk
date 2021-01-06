@@ -1,7 +1,11 @@
+/* eslint-disable jest/expect-expect */
 import '@aws-cdk/assert/jest';
+import * as assert from '@aws-cdk/assert';
 import { Metric, Statistic } from '@aws-cdk/aws-cloudwatch';
 import { Subnet, Vpc, EbsDeviceVolumeType } from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
+import * as kms from '@aws-cdk/aws-kms';
+import * as logs from '@aws-cdk/aws-logs';
 import { App, Stack, Duration, SecretValue } from '@aws-cdk/core';
 import { Domain, ElasticsearchVersion } from '../lib';
 
@@ -23,6 +27,44 @@ const readWriteActions = [
   ...readActions,
   ...writeActions,
 ];
+
+test('grants kms permissions if needed', () => {
+
+  const key = new kms.Key(stack, 'Key');
+
+  new Domain(stack, 'Domain', {
+    version: ElasticsearchVersion.V7_1,
+    encryptionAtRest: {
+      kmsKey: key,
+    },
+    // so that the access policy custom resource will be used.
+    useUnsignedBasicAuth: true,
+  });
+
+  const expectedPolicy = {
+    Statement: [
+      {
+        Action: [
+          'kms:List*',
+          'kms:Describe*',
+          'kms:CreateGrant',
+        ],
+        Effect: 'Allow',
+        Resource: {
+          'Fn::GetAtt': [
+            'Key961B73FD',
+            'Arn',
+          ],
+        },
+      },
+    ],
+    Version: '2012-10-17',
+  };
+
+  const resources = assert.expect(stack).value.Resources;
+  expect(resources.AWS679f53fac002430cb0da5b7982bd2287ServiceRoleDefaultPolicyD28E1A5E.Properties.PolicyDocument).toStrictEqual(expectedPolicy);
+
+});
 
 test('minimal example renders correctly', () => {
   new Domain(stack, 'Domain', { version: ElasticsearchVersion.V7_1 });
@@ -47,6 +89,9 @@ test('minimal example renders correctly', () => {
       Enabled: false,
     },
     LogPublishingOptions: {
+      AUDIT_LOGS: {
+        Enabled: false,
+      },
       ES_APPLICATION_LOGS: {
         Enabled: false,
       },
@@ -61,6 +106,19 @@ test('minimal example renders correctly', () => {
       Enabled: false,
     },
   });
+});
+
+test('can enable version upgrade update policy', () => {
+  new Domain(stack, 'Domain', {
+    version: ElasticsearchVersion.V7_1,
+    enableVersionUpgrade: true,
+  });
+
+  expect(stack).toHaveResource('AWS::Elasticsearch::Domain', {
+    UpdatePolicy: {
+      EnableVersionUpgrade: true,
+    },
+  }, assert.ResourcePart.CompleteDefinition);
 });
 
 describe('log groups', () => {
@@ -81,7 +139,7 @@ describe('log groups', () => {
         SEARCH_SLOW_LOGS: {
           CloudWatchLogsLogGroupArn: {
             'Fn::GetAtt': [
-              'SlowSearchLogsE00DC2E7',
+              'DomainSlowSearchLogs5B35A97A',
               'Arn',
             ],
           },
@@ -113,7 +171,7 @@ describe('log groups', () => {
         INDEX_SLOW_LOGS: {
           CloudWatchLogsLogGroupArn: {
             'Fn::GetAtt': [
-              'SlowIndexLogsAD49DED0',
+              'DomainSlowIndexLogsFE2F1061',
               'Arn',
             ],
           },
@@ -136,11 +194,321 @@ describe('log groups', () => {
         ES_APPLICATION_LOGS: {
           CloudWatchLogsLogGroupArn: {
             'Fn::GetAtt': [
+              'DomainAppLogs21698C1B',
+              'Arn',
+            ],
+          },
+          Enabled: true,
+        },
+        SEARCH_SLOW_LOGS: {
+          Enabled: false,
+        },
+        INDEX_SLOW_LOGS: {
+          Enabled: false,
+        },
+      },
+    });
+  });
+
+  test('auditLogEnabled should create a custom log group', () => {
+    new Domain(stack, 'Domain', {
+      version: ElasticsearchVersion.V7_4,
+      logging: {
+        auditLogEnabled: true,
+      },
+      fineGrainedAccessControl: {
+        masterUserName: 'username',
+      },
+      nodeToNodeEncryption: true,
+      encryptionAtRest: {
+        enabled: true,
+      },
+      enforceHttps: true,
+    });
+
+    expect(stack).toHaveResourceLike('AWS::Elasticsearch::Domain', {
+      LogPublishingOptions: {
+        AUDIT_LOGS: {
+          CloudWatchLogsLogGroupArn: {
+            'Fn::GetAtt': [
+              'DomainAuditLogs608E0FA6',
+              'Arn',
+            ],
+          },
+          Enabled: true,
+        },
+        ES_APPLICATION_LOGS: {
+          Enabled: false,
+        },
+        SEARCH_SLOW_LOGS: {
+          Enabled: false,
+        },
+        INDEX_SLOW_LOGS: {
+          Enabled: false,
+        },
+      },
+    });
+  });
+
+  test('two domains with logging enabled can be created in same stack', () => {
+    new Domain(stack, 'Domain1', {
+      version: ElasticsearchVersion.V7_7,
+      logging: {
+        appLogEnabled: true,
+        slowSearchLogEnabled: true,
+        slowIndexLogEnabled: true,
+      },
+    });
+    new Domain(stack, 'Domain2', {
+      version: ElasticsearchVersion.V7_7,
+      logging: {
+        appLogEnabled: true,
+        slowSearchLogEnabled: true,
+        slowIndexLogEnabled: true,
+      },
+    });
+    expect(stack).toHaveResourceLike('AWS::Elasticsearch::Domain', {
+      LogPublishingOptions: {
+        ES_APPLICATION_LOGS: {
+          CloudWatchLogsLogGroupArn: {
+            'Fn::GetAtt': [
+              'Domain1AppLogs6E8D1D67',
+              'Arn',
+            ],
+          },
+          Enabled: true,
+        },
+        SEARCH_SLOW_LOGS: {
+          CloudWatchLogsLogGroupArn: {
+            'Fn::GetAtt': [
+              'Domain1SlowSearchLogs8F3B0506',
+              'Arn',
+            ],
+          },
+          Enabled: true,
+        },
+        INDEX_SLOW_LOGS: {
+          CloudWatchLogsLogGroupArn: {
+            'Fn::GetAtt': [
+              'Domain1SlowIndexLogs9354D098',
+              'Arn',
+            ],
+          },
+          Enabled: true,
+        },
+      },
+    });
+    expect(stack).toHaveResourceLike('AWS::Elasticsearch::Domain', {
+      LogPublishingOptions: {
+        ES_APPLICATION_LOGS: {
+          CloudWatchLogsLogGroupArn: {
+            'Fn::GetAtt': [
+              'Domain2AppLogs810876E2',
+              'Arn',
+            ],
+          },
+          Enabled: true,
+        },
+        SEARCH_SLOW_LOGS: {
+          CloudWatchLogsLogGroupArn: {
+            'Fn::GetAtt': [
+              'Domain2SlowSearchLogs0C75F64B',
+              'Arn',
+            ],
+          },
+          Enabled: true,
+        },
+        INDEX_SLOW_LOGS: {
+          CloudWatchLogsLogGroupArn: {
+            'Fn::GetAtt': [
+              'Domain2SlowIndexLogs0CB900D0',
+              'Arn',
+            ],
+          },
+          Enabled: true,
+        },
+      },
+    });
+  });
+
+  test('log group policy is uniquely named for each domain', () => {
+    new Domain(stack, 'Domain1', {
+      version: ElasticsearchVersion.V7_4,
+      logging: {
+        appLogEnabled: true,
+      },
+    });
+    new Domain(stack, 'Domain2', {
+      version: ElasticsearchVersion.V7_4,
+      logging: {
+        appLogEnabled: true,
+      },
+    });
+
+    // Domain1
+    expect(stack).toHaveResourceLike('Custom::CloudwatchLogResourcePolicy', {
+      Create: {
+        parameters: {
+          policyName: 'ESLogPolicyc836fd92f07ec41eb70c2f6f08dc4b43cfb7c25391',
+        },
+      },
+    });
+    // Domain2
+    expect(stack).toHaveResourceLike('Custom::CloudwatchLogResourcePolicy', {
+      Create: {
+        parameters: {
+          policyName: 'ESLogPolicyc8f05f015be3baf6ec1ee06cd1ee5cc8706ebbe5b2',
+        },
+      },
+    });
+  });
+
+  test('enabling audit logs throws without fine grained access control enabled', () => {
+    expect(() => new Domain(stack, 'Domain', {
+      version: ElasticsearchVersion.V6_7,
+      logging: {
+        auditLogEnabled: true,
+      },
+    })).toThrow(/Fine-grained access control is required when audit logs publishing is enabled\./);
+  });
+
+  test('slowSearchLogGroup should use a custom log group', () => {
+    new Domain(stack, 'Domain', {
+      version: ElasticsearchVersion.V7_4,
+      logging: {
+        slowSearchLogEnabled: true,
+        slowSearchLogGroup: new logs.LogGroup(stack, 'SlowSearchLogs', {
+          retention: logs.RetentionDays.THREE_MONTHS,
+        }),
+      },
+    });
+
+    expect(stack).toHaveResourceLike('AWS::Elasticsearch::Domain', {
+      LogPublishingOptions: {
+        AUDIT_LOGS: {
+          Enabled: false,
+        },
+        ES_APPLICATION_LOGS: {
+          Enabled: false,
+        },
+        SEARCH_SLOW_LOGS: {
+          CloudWatchLogsLogGroupArn: {
+            'Fn::GetAtt': [
+              'SlowSearchLogsE00DC2E7',
+              'Arn',
+            ],
+          },
+          Enabled: true,
+        },
+        INDEX_SLOW_LOGS: {
+          Enabled: false,
+        },
+      },
+    });
+  });
+
+  test('slowIndexLogEnabled should use a custom log group', () => {
+    new Domain(stack, 'Domain', {
+      version: ElasticsearchVersion.V7_4,
+      logging: {
+        slowIndexLogEnabled: true,
+        slowIndexLogGroup: new logs.LogGroup(stack, 'SlowIndexLogs', {
+          retention: logs.RetentionDays.THREE_MONTHS,
+        }),
+      },
+    });
+
+    expect(stack).toHaveResourceLike('AWS::Elasticsearch::Domain', {
+      LogPublishingOptions: {
+        AUDIT_LOGS: {
+          Enabled: false,
+        },
+        ES_APPLICATION_LOGS: {
+          Enabled: false,
+        },
+        SEARCH_SLOW_LOGS: {
+          Enabled: false,
+        },
+        INDEX_SLOW_LOGS: {
+          CloudWatchLogsLogGroupArn: {
+            'Fn::GetAtt': [
+              'SlowIndexLogsAD49DED0',
+              'Arn',
+            ],
+          },
+          Enabled: true,
+        },
+      },
+    });
+  });
+
+  test('appLogGroup should use a custom log group', () => {
+    new Domain(stack, 'Domain', {
+      version: ElasticsearchVersion.V7_4,
+      logging: {
+        appLogEnabled: true,
+        appLogGroup: new logs.LogGroup(stack, 'AppLogs', {
+          retention: logs.RetentionDays.THREE_MONTHS,
+        }),
+      },
+    });
+
+    expect(stack).toHaveResourceLike('AWS::Elasticsearch::Domain', {
+      LogPublishingOptions: {
+        AUDIT_LOGS: {
+          Enabled: false,
+        },
+        ES_APPLICATION_LOGS: {
+          CloudWatchLogsLogGroupArn: {
+            'Fn::GetAtt': [
               'AppLogsC5DF83A6',
               'Arn',
             ],
           },
           Enabled: true,
+        },
+        SEARCH_SLOW_LOGS: {
+          Enabled: false,
+        },
+        INDEX_SLOW_LOGS: {
+          Enabled: false,
+        },
+      },
+    });
+  });
+
+  test('auditLOgGroup should use a custom log group', () => {
+    new Domain(stack, 'Domain', {
+      version: ElasticsearchVersion.V7_4,
+      fineGrainedAccessControl: {
+        masterUserName: 'username',
+      },
+      nodeToNodeEncryption: true,
+      encryptionAtRest: {
+        enabled: true,
+      },
+      enforceHttps: true,
+      logging: {
+        auditLogEnabled: true,
+        auditLogGroup: new logs.LogGroup(stack, 'AuditLogs', {
+          retention: logs.RetentionDays.THREE_MONTHS,
+        }),
+      },
+    });
+
+    expect(stack).toHaveResourceLike('AWS::Elasticsearch::Domain', {
+      LogPublishingOptions: {
+        AUDIT_LOGS: {
+          CloudWatchLogsLogGroupArn: {
+            'Fn::GetAtt': [
+              'AuditLogsB945E340',
+              'Arn',
+            ],
+          },
+          Enabled: true,
+        },
+        ES_APPLICATION_LOGS: {
+          Enabled: false,
         },
         SEARCH_SLOW_LOGS: {
           Enabled: false,

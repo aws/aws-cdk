@@ -1204,4 +1204,42 @@ export = {
 
     test.done();
   },
+
+  'can set publiclyAccessible to false with public subnets'(test: Test) {
+    new rds.DatabaseInstance(stack, 'Instance', {
+      engine: rds.DatabaseInstanceEngine.mysql({
+        version: rds.MysqlEngineVersion.VER_8_0_19,
+      }),
+      vpc,
+      vpcSubnets: {
+        subnetType: ec2.SubnetType.PUBLIC,
+      },
+      publiclyAccessible: false,
+    });
+
+    expect(stack).to(haveResource('AWS::RDS::DBInstance', {
+      PubliclyAccessible: false,
+    }));
+
+    test.done();
+  },
+
+  'can set publiclyAccessible to true with private subnets'(test: Test) {
+    new rds.DatabaseInstance(stack, 'Instance', {
+      engine: rds.DatabaseInstanceEngine.mysql({
+        version: rds.MysqlEngineVersion.VER_8_0_19,
+      }),
+      vpc,
+      vpcSubnets: {
+        subnetType: ec2.SubnetType.PRIVATE,
+      },
+      publiclyAccessible: true,
+    });
+
+    expect(stack).to(haveResource('AWS::RDS::DBInstance', {
+      PubliclyAccessible: true,
+    }));
+
+    test.done();
+  },
 };

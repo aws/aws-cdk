@@ -68,7 +68,8 @@ if ! ${SKIP_DOWNLOAD:-false}; then
     mkdir -p $tmpdir
 
     echo "Installing from NPM..." >&2
-    (cd $tmpdir && npm install --prefix $tmpdir $existing_names)
+    # use npm7 to automatically install peer dependencies
+    (cd $tmpdir && npx npm@^7.0.0 install --prefix $tmpdir $existing_names)
 fi
 
 #----------------------------------------------------------------------
