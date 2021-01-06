@@ -1,3 +1,4 @@
+import * as path from 'path';
 import '@aws-cdk/assert/jest';
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as iam from '@aws-cdk/aws-iam';
@@ -158,6 +159,32 @@ describe('stacks', () => {
     const fn2Stack = app.node.findChild(fn2StackId) as cdk.Stack;
     expect(fn2Stack).toCountResources('AWS::Lambda::Function', 1);
   });
+
+  test('cross-region stack supports defining functions within stages', () => {
+    app = new cdk.App();
+    const stage = new cdk.Stage(app, 'Stage');
+    stack = new cdk.Stack(stage, 'Stack', {
+      env: { account: '111111111111', region: 'testregion' },
+    });
+
+    new cloudfront.experimental.EdgeFunction(stack, 'MyFn', defaultEdgeFunctionProps());
+
+    // Because 'expect(stack)' doesn't work correctly for stacks in nested assemblies
+    const stackArtifact = stage.synth().getStackArtifact(stack.artifactId);
+    expect(stackArtifact).toHaveResourceLike('AWS::Lambda::Function', {
+      Handler: '__entrypoint__.handler',
+      Role: {
+        'Fn::GetAtt': ['CustomCrossRegionStringParameterReaderCustomResourceProviderRole71CD6825', 'Arn'],
+      },
+    });
+    expect(stackArtifact).toHaveResource('Custom::CrossRegionStringParameterReader', {
+      ServiceToken: {
+        'Fn::GetAtt': ['CustomCrossRegionStringParameterReaderCustomResourceProviderHandler65B5F33A', 'Arn'],
+      },
+      Region: 'us-east-1',
+      ParameterName: 'EdgeFunctionArnMyFn',
+    });
+  });
 });
 
 test('addAlias() creates alias in function stack', () => {
@@ -199,6 +226,23 @@ test('metric methods', () => {
     expect(metric.namespace).toEqual('AWS/Lambda');
     expect(metric.region).toEqual('us-east-1');
   }
+});
+
+test('cross-region stack supports new-style synthesis with assets', () => {
+  app = new cdk.App({
+    context: { '@aws-cdk/core:newStyleStackSynthesis': true },
+  });
+  stack = new cdk.Stack(app, 'Stack', {
+    env: { account: '111111111111', region: 'testregion' },
+  });
+
+  new cloudfront.experimental.EdgeFunction(stack, 'MyFn', {
+    code: lambda.Code.fromAsset(path.join(__dirname, 'my-lambda-handler')),
+    handler: 'index.handler',
+    runtime: lambda.Runtime.PYTHON_3_8,
+  });
+
+  expect(() => app.synth()).not.toThrow();
 });
 
 function defaultEdgeFunctionProps(stackId?: string) {
