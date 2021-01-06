@@ -6,6 +6,7 @@ export * from './capacity-provider';
 export * from './container-definition';
 export * from './container-image';
 export * from './cluster';
+export * from './environment-file';
 export * from './firelens-log-router';
 export * from './placement';
 
@@ -20,6 +21,7 @@ export * from './linux-parameters';
 export * from './images/asset-image';
 export * from './images/repository';
 export * from './images/ecr';
+export * from './images/tag-parameter-container-image';
 
 export * from './log-drivers/aws-log-driver';
 export * from './log-drivers/base-log-driver';

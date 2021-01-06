@@ -1,10 +1,12 @@
 # CDK Construct library for higher-level ECS Constructs
 <!--BEGIN STABILITY BANNER-->
+
 ---
 
 ![cdk-constructs: Stable](https://img.shields.io/badge/cdk--constructs-stable-success.svg?style=for-the-badge)
 
 ---
+
 <!--END STABILITY BANNER-->
 
 This library provides higher-level Amazon ECS constructs which follow common architectural patterns. It contains:
@@ -65,6 +67,10 @@ Fargate services will use the `LATEST` platform version by default, but you can 
 Fargate services use the default VPC Security Group unless one or more are provided using the `securityGroups` property in the constructor.
 
 By setting `redirectHTTP` to true, CDK will automatically create a listener on port 80 that redirects HTTP traffic to the HTTPS port.
+
+If you specify the option `recordType` you can decide if you want the construct to use CNAME or Route53-Aliases as record sets.
+
+If you need to encrypt the traffic between the load balancer and the ECS tasks, you can set the `targetProtocol` to `HTTPS`.
 
 Additionally, if more than one application target group are needed, instantiate one of the following:
 
@@ -152,6 +158,8 @@ const loadBalancedFargateService = new ecsPatterns.NetworkLoadBalancedFargateSer
 The CDK will create a new Amazon ECS cluster if you specify a VPC and omit `cluster`. If you deploy multiple services the CDK will only create one cluster per VPC.
 
 If `cluster` and `vpc` are omitted, the CDK creates a new VPC with subnets in two Availability Zones and a cluster within this VPC.
+
+If you specify the option `recordType` you can decide if you want the construct to use CNAME or Route53-Aliases as record sets.
 
 Additionally, if more than one network target group is needed, instantiate one of the following:
 
@@ -256,7 +264,8 @@ const queueProcessingEc2Service = new QueueProcessingEc2Service(stack, 'Service'
     TEST_ENVIRONMENT_VARIABLE2: "test environment variable 2 value"
   },
   queue,
-  maxScalingCapacity: 5
+  maxScalingCapacity: 5,
+  containerName: 'test',
 });
 ```
 
@@ -275,7 +284,8 @@ const queueProcessingFargateService = new QueueProcessingFargateService(stack, '
     TEST_ENVIRONMENT_VARIABLE2: "test environment variable 2 value"
   },
   queue,
-  maxScalingCapacity: 5
+  maxScalingCapacity: 5,
+  containerName: 'test',
 });
 ```
 
@@ -294,7 +304,8 @@ const ecsScheduledTask = new ScheduledEc2Task(stack, 'ScheduledTask', {
     memoryLimitMiB: 256,
     environment: { name: 'TRIGGER', value: 'CloudWatch Events' },
   },
-  schedule: events.Schedule.expression('rate(1 minute)')
+  schedule: events.Schedule.expression('rate(1 minute)'),
+  ruleName: 'sample-scheduled-task-rule'
 });
 ```
 
@@ -363,6 +374,25 @@ scalableTarget.scaleOnMemoryUtilization('MemoryScaling', {
 });
 ```
 
+### Change the default Deployment Controller
+
+```ts
+import { ApplicationLoadBalancedFargateService } from './application-load-balanced-fargate-service';
+
+const loadBalancedFargateService = new ApplicationLoadBalancedFargateService(stack, 'Service', {
+  cluster,
+  memoryLimitMiB: 1024,
+  desiredCount: 1,
+  cpu: 512,
+  taskImageOptions: {
+    image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+  },
+  deploymentController: {
+    type: ecs.DeploymentControllerType.CODE_DEPLOY,
+  },
+});
+```
+
 ### Set deployment configuration on QueueProcessingService
 
 ```ts
@@ -381,3 +411,19 @@ const queueProcessingFargateService = new QueueProcessingFargateService(stack, '
 });
 ```
 
+### Select specific vpc subnets for ApplicationLoadBalancedFargateService
+
+```ts
+const loadBalancedFargateService = new ApplicationLoadBalancedFargateService(stack, 'Service', {
+  cluster,
+  memoryLimitMiB: 1024,
+  desiredCount: 1,
+  cpu: 512,
+  taskImageOptions: {
+    image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+  },
+  vpcSubnets: {
+    subnets: [ec2.Subnet.fromSubnetId(stack, 'subnet', 'VpcISOLATEDSubnet1Subnet80F07FA0')],
+  },
+});
+```

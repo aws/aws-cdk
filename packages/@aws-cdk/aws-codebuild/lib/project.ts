@@ -7,17 +7,19 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
-import { Aws, Duration, IResource, Lazy, Names, PhysicalName, Resource, Stack } from '@aws-cdk/core';
+import { Aws, Duration, IResource, Lazy, Names, PhysicalName, Resource, SecretValue, Stack, Tokenization } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { IArtifacts } from './artifacts';
 import { BuildSpec } from './build-spec';
 import { Cache } from './cache';
+import { CodeBuildMetrics } from './codebuild-canned-metrics.generated';
 import { CfnProject } from './codebuild.generated';
 import { CodePipelineArtifacts } from './codepipeline-artifacts';
 import { IFileSystemLocation } from './file-location';
 import { NoArtifacts } from './no-artifacts';
 import { NoSource } from './no-source';
 import { runScriptLinuxBuildSpec, S3_BUCKET_ENV, S3_KEY_ENV } from './private/run-script-linux-build-spec';
+import { LoggingOptions } from './project-logs';
 import { renderReportGroupArn } from './report-group-utils';
 import { ISource } from './source';
 import { CODEPIPELINE_SOURCE_ARTIFACTS_TYPE, NO_SOURCE_TYPE } from './source-types';
@@ -339,11 +341,8 @@ abstract class ProjectBase extends Resource implements IProject {
    *
    * @default sum over 5 minutes
    */
-  public metricBuilds(props?: cloudwatch.MetricOptions) {
-    return this.metric('Builds', {
-      statistic: 'sum',
-      ...props,
-    });
+  public metricBuilds(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return this.cannedMetric(CodeBuildMetrics.buildsSum, props);
   }
 
   /**
@@ -355,11 +354,8 @@ abstract class ProjectBase extends Resource implements IProject {
    *
    * @default average over 5 minutes
    */
-  public metricDuration(props?: cloudwatch.MetricOptions) {
-    return this.metric('Duration', {
-      statistic: 'avg',
-      ...props,
-    });
+  public metricDuration(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return this.cannedMetric(CodeBuildMetrics.durationAverage, props);
   }
 
   /**
@@ -371,11 +367,8 @@ abstract class ProjectBase extends Resource implements IProject {
    *
    * @default sum over 5 minutes
    */
-  public metricSucceededBuilds(props?: cloudwatch.MetricOptions) {
-    return this.metric('SucceededBuilds', {
-      statistic: 'sum',
-      ...props,
-    });
+  public metricSucceededBuilds(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return this.cannedMetric(CodeBuildMetrics.succeededBuildsSum, props);
   }
 
   /**
@@ -388,11 +381,17 @@ abstract class ProjectBase extends Resource implements IProject {
    *
    * @default sum over 5 minutes
    */
-  public metricFailedBuilds(props?: cloudwatch.MetricOptions) {
-    return this.metric('FailedBuilds', {
-      statistic: 'sum',
+  public metricFailedBuilds(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return this.cannedMetric(CodeBuildMetrics.failedBuildsSum, props);
+  }
+
+  private cannedMetric(
+    fn: (dims: { ProjectName: string }) => cloudwatch.MetricProps,
+    props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return new cloudwatch.Metric({
+      ...fn({ ProjectName: this.projectName }),
       ...props,
-    });
+    }).attachTo(this);
   }
 }
 
@@ -467,6 +466,17 @@ export interface CommonProjectProps {
   readonly environmentVariables?: { [name: string]: BuildEnvironmentVariable };
 
   /**
+   * Whether to check for the presence of any secrets in the environment variables of the default type, BuildEnvironmentVariableType.PLAINTEXT.
+   * Since using a secret for the value of that kind of variable would result in it being displayed in plain text in the AWS Console,
+   * the construct will throw an exception if it detects a secret was passed there.
+   * Pass this property as false if you want to skip this validation,
+   * and keep using a secret in a plain text environment variable.
+   *
+   * @default true
+   */
+  readonly checkSecretsInPlainTextEnvVariables?: boolean;
+
+  /**
    * The physical, human-readable name of the CodeBuild Project.
    *
    * @default - Name is automatically generated.
@@ -538,6 +548,13 @@ export interface CommonProjectProps {
    * @see https://docs.aws.amazon.com/codebuild/latest/userguide/test-report-group-naming.html
    */
   readonly grantReportGroupPermissions?: boolean;
+
+  /**
+   * Information about logs for the build project. A project can create logs in Amazon CloudWatch Logs, an S3 bucket, or both.
+   *
+   * @default - no log configuration is set
+   */
+  readonly logging?: LoggingOptions;
 }
 
 export interface ProjectProps extends CommonProjectProps {
@@ -653,15 +670,39 @@ export class Project extends ProjectBase {
    * which is the representation of environment variables in CloudFormation.
    *
    * @param environmentVariables the map of string to environment variables
+   * @param validateNoPlainTextSecrets whether to throw an exception
+   *   if any of the plain text environment variables contain secrets, defaults to 'false'
    * @returns an array of {@link CfnProject.EnvironmentVariableProperty} instances
    */
-  public static serializeEnvVariables(environmentVariables: { [name: string]: BuildEnvironmentVariable }):
-  CfnProject.EnvironmentVariableProperty[] {
-    return Object.keys(environmentVariables).map(name => ({
-      name,
-      type: environmentVariables[name].type || BuildEnvironmentVariableType.PLAINTEXT,
-      value: environmentVariables[name].value,
-    }));
+  public static serializeEnvVariables(environmentVariables: { [name: string]: BuildEnvironmentVariable },
+    validateNoPlainTextSecrets: boolean = false): CfnProject.EnvironmentVariableProperty[] {
+
+    const ret = new Array<CfnProject.EnvironmentVariableProperty>();
+
+    for (const [name, envVariable] of Object.entries(environmentVariables)) {
+      const cfnEnvVariable: CfnProject.EnvironmentVariableProperty = {
+        name,
+        type: envVariable.type || BuildEnvironmentVariableType.PLAINTEXT,
+        value: envVariable.value?.toString(),
+      };
+      ret.push(cfnEnvVariable);
+
+      // validate that the plain-text environment variables don't contain any secrets in them
+      if (validateNoPlainTextSecrets && cfnEnvVariable.type === BuildEnvironmentVariableType.PLAINTEXT) {
+        const fragments = Tokenization.reverseString(cfnEnvVariable.value);
+        for (const token of fragments.tokens) {
+          if (token instanceof SecretValue) {
+            throw new Error(`Plaintext environment variable '${name}' contains a secret value! ` +
+              'This means the value of this variable will be visible in plain text in the AWS Console. ' +
+              "Please consider using CodeBuild's SecretsManager environment variables feature instead. " +
+              "If you'd like to continue with having this secret in the plaintext environment variables, " +
+              'please set the checkSecretsInPlainTextEnvVariables property to false');
+          }
+        }
+      }
+    }
+
+    return ret;
   }
 
   public readonly grantPrincipal: iam.IPrincipal;
@@ -755,22 +796,23 @@ export class Project extends ProjectBase {
       },
       artifacts: artifactsConfig.artifactsProperty,
       serviceRole: this.role.roleArn,
-      environment: this.renderEnvironment(props.environment, environmentVariables),
-      fileSystemLocations: Lazy.anyValue({ produce: () => this.renderFileSystemLocations() }),
+      environment: this.renderEnvironment(props, environmentVariables),
+      fileSystemLocations: Lazy.any({ produce: () => this.renderFileSystemLocations() }),
       // lazy, because we have a setter for it in setEncryptionKey
       // The 'alias/aws/s3' default is necessary because leaving the `encryptionKey` field
       // empty will not remove existing encryptionKeys during an update (ref. t/D17810523)
-      encryptionKey: Lazy.stringValue({ produce: () => this._encryptionKey ? this._encryptionKey.keyArn : 'alias/aws/s3' }),
+      encryptionKey: Lazy.string({ produce: () => this._encryptionKey ? this._encryptionKey.keyArn : 'alias/aws/s3' }),
       badgeEnabled: props.badge,
       cache: cache._toCloudFormation(),
       name: this.physicalName,
       timeoutInMinutes: props.timeout && props.timeout.toMinutes(),
-      secondarySources: Lazy.anyValue({ produce: () => this.renderSecondarySources() }),
-      secondarySourceVersions: Lazy.anyValue({ produce: () => this.renderSecondarySourceVersions() }),
-      secondaryArtifacts: Lazy.anyValue({ produce: () => this.renderSecondaryArtifacts() }),
+      secondarySources: Lazy.any({ produce: () => this.renderSecondarySources() }),
+      secondarySourceVersions: Lazy.any({ produce: () => this.renderSecondarySourceVersions() }),
+      secondaryArtifacts: Lazy.any({ produce: () => this.renderSecondaryArtifacts() }),
       triggers: sourceConfig.buildTriggers,
       sourceVersion: sourceConfig.sourceVersion,
       vpcConfig: this.configureVpc(props),
+      logsConfig: this.renderLoggingConfiguration(props.logging),
     });
 
     this.addVpcRequiredPermissions(props, resource);
@@ -783,6 +825,7 @@ export class Project extends ProjectBase {
     this.projectName = this.getResourceNameAttribute(resource.ref);
 
     this.addToRolePolicy(this.createLoggingPermission());
+    this.addEnvVariablesPermissions(props.environmentVariables);
     // add permissions to create and use test report groups
     // with names starting with the project's name,
     // unless the customer explicitly opts out of it
@@ -914,9 +957,62 @@ export class Project extends ProjectBase {
     });
   }
 
+  private addEnvVariablesPermissions(environmentVariables: { [name: string]: BuildEnvironmentVariable } | undefined): void {
+    this.addParameterStorePermissions(environmentVariables);
+    this.addSecretsManagerPermissions(environmentVariables);
+  }
+
+  private addParameterStorePermissions(environmentVariables: { [name: string]: BuildEnvironmentVariable } | undefined): void {
+    const resources = Object.values(environmentVariables || {})
+      .filter(envVariable => envVariable.type === BuildEnvironmentVariableType.PARAMETER_STORE)
+      .map(envVariable =>
+        // If the parameter name starts with / the resource name is not separated with a double '/'
+        // arn:aws:ssm:region:1111111111:parameter/PARAM_NAME
+        (envVariable.value as string).startsWith('/')
+          ? (envVariable.value as string).substr(1)
+          : envVariable.value)
+      .map(envVariable => Stack.of(this).formatArn({
+        service: 'ssm',
+        resource: 'parameter',
+        resourceName: envVariable,
+      }));
+
+    if (resources.length === 0) {
+      return;
+    }
+
+    this.addToRolePolicy(new iam.PolicyStatement({
+      actions: ['ssm:GetParameters'],
+      resources,
+    }));
+  }
+
+  private addSecretsManagerPermissions(environmentVariables: { [name: string]: BuildEnvironmentVariable } | undefined): void {
+    const resources = Object.values(environmentVariables || {})
+      .filter(envVariable => envVariable.type === BuildEnvironmentVariableType.SECRETS_MANAGER)
+      .map(envVariable => Stack.of(this).formatArn({
+        service: 'secretsmanager',
+        resource: 'secret',
+        // we don't know the exact ARN of the Secret just from its name, but we can get close
+        resourceName: `${envVariable.value}-??????`,
+        sep: ':',
+      }));
+
+    if (resources.length === 0) {
+      return;
+    }
+
+    this.addToRolePolicy(new iam.PolicyStatement({
+      actions: ['secretsmanager:GetSecretValue'],
+      resources,
+    }));
+  }
+
   private renderEnvironment(
-    env: BuildEnvironment = {},
+    props: ProjectProps,
     projectVars: { [name: string]: BuildEnvironmentVariable } = {}): CfnProject.EnvironmentProperty {
+
+    const env = props.environment ?? {};
     const vars: { [name: string]: BuildEnvironmentVariable } = {};
     const containerVars = env.environmentVariables || {};
 
@@ -971,7 +1067,9 @@ export class Project extends ProjectBase {
         : undefined,
       privilegedMode: env.privileged || false,
       computeType: env.computeType || this.buildImage.defaultComputeType,
-      environmentVariables: hasEnvironmentVars ? Project.serializeEnvVariables(vars) : undefined,
+      environmentVariables: hasEnvironmentVars
+        ? Project.serializeEnvVariables(vars, props.checkSecretsInPlainTextEnvVariables ?? true)
+        : undefined,
     };
   }
 
@@ -1033,6 +1131,46 @@ export class Project extends ProjectBase {
       vpcId: props.vpc.vpcId,
       subnets: props.vpc.selectSubnets(props.subnetSelection).subnetIds,
       securityGroupIds: this.connections.securityGroups.map(s => s.securityGroupId),
+    };
+  }
+
+  private renderLoggingConfiguration(props: LoggingOptions | undefined): CfnProject.LogsConfigProperty | undefined {
+    if (props === undefined) {
+      return undefined;
+    }
+
+    let s3Config: CfnProject.S3LogsConfigProperty|undefined = undefined;
+    let cloudwatchConfig: CfnProject.CloudWatchLogsConfigProperty|undefined = undefined;
+
+    if (props.s3) {
+      const s3Logs = props.s3;
+      s3Config = {
+        status: (s3Logs.enabled ?? true) ? 'ENABLED' : 'DISABLED',
+        location: `${s3Logs.bucket.bucketName}` + (s3Logs.prefix ? `/${s3Logs.prefix}` : ''),
+        encryptionDisabled: s3Logs.encrypted,
+      };
+      s3Logs.bucket?.grantWrite(this);
+    }
+
+    if (props.cloudWatch) {
+      const cloudWatchLogs = props.cloudWatch;
+      const status = (cloudWatchLogs.enabled ?? true) ? 'ENABLED' : 'DISABLED';
+
+      if (status === 'ENABLED' && !(cloudWatchLogs.logGroup)) {
+        throw new Error('Specifying a LogGroup is required if CloudWatch logging for CodeBuild is enabled');
+      }
+      cloudWatchLogs.logGroup?.grantWrite(this);
+
+      cloudwatchConfig = {
+        status,
+        groupName: cloudWatchLogs.logGroup?.logGroupName,
+        streamName: cloudWatchLogs.prefix,
+      };
+    }
+
+    return {
+      s3Logs: s3Config,
+      cloudWatchLogs: cloudwatchConfig,
     };
   }
 

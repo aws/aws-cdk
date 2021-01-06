@@ -21,7 +21,7 @@ export = {
 
       new appmesh.VirtualGateway(stack, 'httpGateway', {
         mesh: mesh,
-        listeners: [appmesh.VirtualGatewayListener.httpGatewayListener({
+        listeners: [appmesh.VirtualGatewayListener.http({
           port: 443,
           healthCheck: {
             interval: cdk.Duration.seconds(10),
@@ -31,7 +31,7 @@ export = {
 
       new appmesh.VirtualGateway(stack, 'http2Gateway', {
         mesh: mesh,
-        listeners: [appmesh.VirtualGatewayListener.http2GatewayListener({
+        listeners: [appmesh.VirtualGatewayListener.http2({
           port: 443,
           healthCheck: {
             interval: cdk.Duration.seconds(10),
@@ -113,7 +113,7 @@ export = {
 
       new appmesh.VirtualGateway(stack, 'testGateway', {
         virtualGatewayName: 'test-gateway',
-        listeners: [appmesh.VirtualGatewayListener.grpcGatewayListener({
+        listeners: [appmesh.VirtualGatewayListener.grpc({
           port: 80,
           healthCheck: {
           },
@@ -174,7 +174,7 @@ export = {
 
       virtualGateway.addGatewayRoute('testGatewayRoute', {
         gatewayRouteName: 'test-gateway-route',
-        routeSpec: appmesh.GatewayRouteSpec.httpRouteSpec({
+        routeSpec: appmesh.GatewayRouteSpec.http({
           routeTarget: virtualService,
         }),
       });
@@ -218,13 +218,13 @@ export = {
       const virtualGateway = mesh.addVirtualGateway('gateway');
       virtualGateway.addGatewayRoute('testGatewayRoute', {
         gatewayRouteName: 'test-gateway-route',
-        routeSpec: appmesh.GatewayRouteSpec.httpRouteSpec({
+        routeSpec: appmesh.GatewayRouteSpec.http({
           routeTarget: virtualService,
         }),
       });
       virtualGateway.addGatewayRoute('testGatewayRoute2', {
         gatewayRouteName: 'test-gateway-route-2',
-        routeSpec: appmesh.GatewayRouteSpec.httpRouteSpec({
+        routeSpec: appmesh.GatewayRouteSpec.http({
           routeTarget: virtualService,
         }),
       });
@@ -239,20 +239,84 @@ export = {
     },
   },
 
-  'Can export and import VirtualGateway and perform actions'(test: Test) {
+  'When creating a VirtualGateway with backend defaults': {
+    'should add backend defaults to the VirtualGateway'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      // WHEN
+      const mesh = new appmesh.Mesh(stack, 'mesh', {
+        meshName: 'test-mesh',
+      });
+
+      new appmesh.VirtualGateway(stack, 'virtual-gateway', {
+        virtualGatewayName: 'virtual-gateway',
+        mesh: mesh,
+        backendsDefaultClientPolicy: appmesh.ClientPolicy.fileTrust({
+          certificateChain: 'path-to-certificate',
+        }),
+      });
+
+      // THEN
+      expect(stack).to(haveResourceLike('AWS::AppMesh::VirtualGateway', {
+        VirtualGatewayName: 'virtual-gateway',
+        Spec: {
+          BackendDefaults: {
+            ClientPolicy: {
+              TLS: {
+                Validation: {
+                  Trust: {
+                    File: {
+                      CertificateChain: 'path-to-certificate',
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      }));
+
+      test.done();
+    },
+  },
+
+  'Can import VirtualGateways using an ARN'(test: Test) {
     const app = new cdk.App();
     // GIVEN
     const stack = new cdk.Stack(app, 'Imports', {
       env: { account: '123456789012', region: 'us-east-1' },
     });
+    const meshName = 'testMesh';
+    const virtualGatewayName = 'test-gateway';
+    const arn = `arn:aws:appmesh:us-east-1:123456789012:mesh/${meshName}/virtualGateway/${virtualGatewayName}`;
 
     // WHEN
-    const virtualGateway2 = appmesh.VirtualGateway.fromVirtualGatewayArn(
-      stack, 'importedGateway2', 'arn:aws:appmesh:us-east-1:123456789012:mesh/testMesh/virtualGateway/test-gateway');
-
+    const virtualGateway = appmesh.VirtualGateway.fromVirtualGatewayArn(
+      stack, 'importedGateway', arn);
     // THEN
-    test.equal(virtualGateway2.mesh.meshName, 'testMesh');
-    test.equal(virtualGateway2.virtualGatewayName, 'test-gateway');
+    test.equal(virtualGateway.mesh.meshName, meshName);
+    test.equal(virtualGateway.virtualGatewayName, virtualGatewayName);
+    test.done();
+  },
+  'Can import VirtualGateways using attributes'(test: Test) {
+    const app = new cdk.App();
+    // GIVEN
+    const stack = new cdk.Stack(app, 'Imports', {
+      env: { account: '123456789012', region: 'us-east-1' },
+    });
+    const meshName = 'testMesh';
+    const virtualGatewayName = 'test-gateway';
+
+    // WHEN
+    const virtualGateway = appmesh.VirtualGateway.fromVirtualGatewayAttributes(stack, 'importedGateway', {
+      mesh: appmesh.Mesh.fromMeshName(stack, 'Mesh', meshName),
+      virtualGatewayName: virtualGatewayName,
+    });
+    // THEN
+    test.equal(virtualGateway.mesh.meshName, meshName);
+    test.equal(virtualGateway.virtualGatewayName, virtualGatewayName);
+
     test.done();
   },
 };

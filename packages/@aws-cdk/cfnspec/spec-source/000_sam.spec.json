@@ -557,6 +557,17 @@
                 }
             }
         },
+        "AWS::Serverless::Function.ProvisionedConcurrencyConfig": {
+            "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#provisioned-concurrency-config-object",
+            "Properties": {
+                "ProvisionedConcurrentExecutions": {
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#provisioned-concurrency-config-object",
+                    "PrimitiveType": "String",
+                    "Required": true,
+                    "UpdateType": "Immutable"
+                }
+            }
+        },
         "AWS::Serverless::Function.QueueSAMPT": {
             "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/docs/policy_templates.rst",
             "Properties": {
@@ -1492,6 +1503,12 @@
                     "Types": [
                         "IAMPolicyDocument"
                     ],
+                    "UpdateType": "Immutable"
+                },
+                "ProvisionedConcurrencyConfig": {
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction",
+                    "Required": false,
+                    "Type": "ProvisionedConcurrencyConfig",
                     "UpdateType": "Immutable"
                 },
                 "ReservedConcurrentExecutions": {

@@ -2,7 +2,7 @@ import * as fs from 'fs';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
 import { nodeunitShim, Test } from 'nodeunit-shim';
-import { App, CfnResource, DefaultStackSynthesizer, FileAssetPackaging, Stack } from '../../lib';
+import { App, Aws, CfnResource, DefaultStackSynthesizer, FileAssetPackaging, Stack } from '../../lib';
 import { evaluateCFN } from '../evaluate-cfn';
 
 const CFN_CONTEXT = {
@@ -218,6 +218,65 @@ nodeunitShim({
 
     test.done();
   },
+
+
+  'synthesis with bucketPrefix'(test: Test) {
+    // GIVEN
+    const myapp = new App();
+
+    // WHEN
+    const mystack = new Stack(myapp, 'mystack-bucketPrefix', {
+      synthesizer: new DefaultStackSynthesizer({
+        fileAssetsBucketName: 'file-asset-bucket',
+        fileAssetPublishingRoleArn: 'file:role:arn',
+        fileAssetPublishingExternalId: 'file-external-id',
+        bucketPrefix: '000000000000/',
+      }),
+    });
+
+    mystack.synthesizer.addFileAsset({
+      fileName: __filename,
+      packaging: FileAssetPackaging.FILE,
+      sourceHash: 'file-asset-hash-with-prefix',
+    });
+
+    // WHEN
+    const asm = myapp.synth();
+
+    // THEN - we have an asset manifest with both assets and the stack template in there
+    const manifest = readAssetManifest(asm);
+
+    // THEN
+    test.deepEqual(manifest.files?.['file-asset-hash-with-prefix']?.destinations?.['current_account-current_region'], {
+      bucketName: 'file-asset-bucket',
+      objectKey: '000000000000/file-asset-hash-with-prefix',
+      assumeRoleArn: 'file:role:arn',
+      assumeRoleExternalId: 'file-external-id',
+    });
+
+    test.done();
+  },
+
+  'cannot use same synthesizer for multiple stacks'(test: Test) {
+    // GIVEN
+    const synthesizer = new DefaultStackSynthesizer();
+
+    // WHEN
+    new Stack(app, 'Stack2', { synthesizer });
+    test.throws(() => {
+      new Stack(app, 'Stack3', { synthesizer });
+    }, /A StackSynthesizer can only be used for one Stack/);
+    test.done();
+  },
+});
+
+test('get an exception when using tokens for parameters', () => {
+  expect(() => {
+    // GIVEN
+    new DefaultStackSynthesizer({
+      fileAssetsBucketName: `my-bucket-${Aws.REGION}`,
+    });
+  }).toThrow(/cannot contain tokens/);
 });
 
 /**

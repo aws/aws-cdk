@@ -40,7 +40,7 @@ export class ListenerAction implements IListenerAction {
         onUnauthenticatedRequest: options.onUnauthenticatedRequest,
         scope: options.scope,
         sessionCookieName: options.sessionCookieName,
-        sessionTimeout: options.sessionTimeout?.toSeconds(),
+        sessionTimeout: options.sessionTimeout?.toSeconds().toString(),
       },
     }, options.next);
   }

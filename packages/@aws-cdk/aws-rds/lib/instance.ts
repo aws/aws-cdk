@@ -12,7 +12,7 @@ import { Endpoint } from './endpoint';
 import { IInstanceEngine } from './instance-engine';
 import { IOptionGroup } from './option-group';
 import { IParameterGroup } from './parameter-group';
-import { applyRemovalPolicy, DEFAULT_PASSWORD_EXCLUDE_CHARS, defaultDeletionProtection, engineDescription, setupS3ImportExport } from './private/util';
+import { applyRemovalPolicy, DEFAULT_PASSWORD_EXCLUDE_CHARS, defaultDeletionProtection, engineDescription, renderCredentials, setupS3ImportExport } from './private/util';
 import { Credentials, PerformanceInsightRetention, RotationMultiUserOptions, RotationSingleUserOptions, SnapshotCredentials } from './props';
 import { DatabaseProxy, DatabaseProxyOptions, ProxyTarget } from './proxy';
 import { CfnDBInstance, CfnDBInstanceProps } from './rds.generated';
@@ -593,6 +593,13 @@ export interface DatabaseInstanceNewProps {
    * @default - None
    */
   readonly s3ExportBuckets?: s3.IBucket[];
+
+  /**
+   * Indicates whether the DB instance is an internet-facing instance.
+   *
+   * @default - `true` if `vpcSubnets` is `subnetType: SubnetType.PUBLIC`, `false` otherwise
+   */
+  readonly publiclyAccessible?: boolean;
 }
 
 /**
@@ -643,7 +650,7 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
 
     this.connections = new ec2.Connections({
       securityGroups,
-      defaultPort: ec2.Port.tcp(Lazy.numberValue({ produce: () => this.instanceEndpoint.port })),
+      defaultPort: ec2.Port.tcp(Lazy.number({ produce: () => this.instanceEndpoint.port })),
     });
 
     let monitoringRole;
@@ -683,13 +690,13 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
       availabilityZone: props.multiAz ? undefined : props.availabilityZone,
       backupRetentionPeriod: props.backupRetention ? props.backupRetention.toDays() : undefined,
       copyTagsToSnapshot: props.copyTagsToSnapshot !== undefined ? props.copyTagsToSnapshot : true,
-      dbInstanceClass: Lazy.stringValue({ produce: () => `db.${this.instanceType}` }),
+      dbInstanceClass: Lazy.string({ produce: () => `db.${this.instanceType}` }),
       dbInstanceIdentifier: props.instanceIdentifier,
       dbSubnetGroupName: subnetGroup.subnetGroupName,
       deleteAutomatedBackups: props.deleteAutomatedBackups,
       deletionProtection: defaultDeletionProtection(props.deletionProtection, props.removalPolicy),
       enableCloudwatchLogsExports: this.cloudwatchLogsExports,
-      enableIamDatabaseAuthentication: Lazy.anyValue({ produce: () => this.enableIamAuthentication }),
+      enableIamDatabaseAuthentication: Lazy.any({ produce: () => this.enableIamAuthentication }),
       enablePerformanceInsights: enablePerformanceInsights || props.enablePerformanceInsights, // fall back to undefined if not set,
       iops,
       monitoringInterval: props.monitoringInterval && props.monitoringInterval.toSeconds(),
@@ -704,7 +711,7 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
       preferredBackupWindow: props.preferredBackupWindow,
       preferredMaintenanceWindow: props.preferredMaintenanceWindow,
       processorFeatures: props.processorFeatures && renderProcessorFeatures(props.processorFeatures),
-      publiclyAccessible: this.vpcPlacement && this.vpcPlacement.subnetType === ec2.SubnetType.PUBLIC,
+      publiclyAccessible: props.publiclyAccessible ?? (this.vpcPlacement && this.vpcPlacement.subnetType === ec2.SubnetType.PUBLIC),
       storageType,
       vpcSecurityGroups: securityGroups.map(s => s.securityGroupId),
       maxAllocatedStorage: props.maxAllocatedStorage,
@@ -947,14 +954,7 @@ export class DatabaseInstance extends DatabaseInstanceSource implements IDatabas
   constructor(scope: Construct, id: string, props: DatabaseInstanceProps) {
     super(scope, id, props);
 
-    let credentials = props.credentials ?? Credentials.fromUsername(props.engine.defaultUsername ?? 'admin');
-    if (!credentials.secret && !credentials.password) {
-      credentials = Credentials.fromSecret(new DatabaseSecret(this, 'Secret', {
-        username: credentials.username,
-        encryptionKey: credentials.encryptionKey,
-        excludeCharacters: credentials.excludeCharacters,
-      }));
-    }
+    const credentials = renderCredentials(this, props.engine, props.credentials);
     const secret = credentials.secret;
 
     const instance = new CfnDBInstance(this, 'Resource', {
@@ -1032,6 +1032,7 @@ export class DatabaseInstanceFromSnapshot extends DatabaseInstanceSource impleme
         username: credentials.username,
         encryptionKey: credentials.encryptionKey,
         excludeCharacters: credentials.excludeCharacters,
+        replaceOnPasswordCriteriaChanges: credentials.replaceOnPasswordCriteriaChanges,
       });
     }
 

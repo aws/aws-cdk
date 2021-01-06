@@ -1,7 +1,8 @@
 import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnVirtualService } from './appmesh.generated';
-import { IMesh } from './mesh';
+import { ClientPolicy } from './client-policy';
+import { IMesh, Mesh } from './mesh';
 import { IVirtualNode } from './virtual-node';
 import { IVirtualRouter } from './virtual-router';
 
@@ -22,6 +23,16 @@ export interface IVirtualService extends cdk.IResource {
    * @attribute
    */
   readonly virtualServiceArn: string;
+
+  /**
+   * The Mesh which the VirtualService belongs to
+   */
+  readonly mesh: IMesh;
+
+  /**
+   * Client policy for this Virtual Service
+   */
+  readonly clientPolicy?: ClientPolicy;
 }
 
 /**
@@ -52,6 +63,13 @@ export interface VirtualServiceBaseProps {
    * @default - At most one of virtualRouter and virtualNode is allowed.
    */
   readonly virtualNode?: IVirtualNode;
+
+  /**
+   * Client policy for this Virtual Service
+   *
+   * @default - none
+   */
+  readonly clientPolicy?: ClientPolicy;
 }
 
 /**
@@ -59,7 +77,7 @@ export interface VirtualServiceBaseProps {
  */
 export interface VirtualServiceProps extends VirtualServiceBaseProps {
   /**
-   * The AppMesh mesh name for which the VirtualService belongs to
+   * The Mesh which the VirtualService belongs to
    */
   readonly mesh: IMesh;
 }
@@ -76,19 +94,28 @@ export class VirtualService extends cdk.Resource implements IVirtualService {
    * Import an existing VirtualService given an ARN
    */
   public static fromVirtualServiceArn(scope: Construct, id: string, virtualServiceArn: string): IVirtualService {
-    return new ImportedVirtualService(scope, id, {
-      virtualServiceArn,
-    });
+    return new class extends cdk.Resource implements IVirtualService {
+      readonly virtualServiceArn = virtualServiceArn;
+      private readonly parsedArn = cdk.Fn.split('/', cdk.Stack.of(scope).parseArn(virtualServiceArn).resourceName!);
+      readonly virtualServiceName = cdk.Fn.select(2, this.parsedArn);
+      readonly mesh = Mesh.fromMeshName(this, 'Mesh', cdk.Fn.select(0, this.parsedArn));
+    }(scope, id);
   }
 
   /**
-   * Import an existing VirtualService given mesh and service names
+   * Import an existing VirtualService given its attributes
    */
-  public static fromVirtualServiceName(scope: Construct, id: string, meshName: string, virtualServiceName: string): IVirtualService {
-    return new ImportedVirtualService(scope, id, {
-      meshName,
-      virtualServiceName,
-    });
+  public static fromVirtualServiceAttributes(scope: Construct, id: string, attrs: VirtualServiceAttributes): IVirtualService {
+    return new class extends cdk.Resource implements IVirtualService {
+      readonly virtualServiceName = attrs.virtualServiceName;
+      readonly mesh = attrs.mesh;
+      readonly clientPolicy = attrs.clientPolicy;
+      readonly virtualServiceArn = cdk.Stack.of(this).formatArn({
+        service: 'appmesh',
+        resource: `mesh/${attrs.mesh.meshName}/virtualService`,
+        resourceName: this.virtualServiceName,
+      });
+    }(scope, id);
   }
 
   /**
@@ -101,12 +128,18 @@ export class VirtualService extends cdk.Resource implements IVirtualService {
    */
   public readonly virtualServiceArn: string;
 
+  /**
+   * The Mesh which the VirtualService belongs to
+   */
+  public readonly mesh: IMesh;
+
+  public readonly clientPolicy?: ClientPolicy;
+
   private readonly virtualServiceProvider?: CfnVirtualService.VirtualServiceProviderProperty;
-  private readonly mesh: IMesh;
 
   constructor(scope: Construct, id: string, props: VirtualServiceProps) {
     super(scope, id, {
-      physicalName: props.virtualServiceName || cdk.Lazy.stringValue({ produce: () => cdk.Names.uniqueId(this) }),
+      physicalName: props.virtualServiceName || cdk.Lazy.string({ produce: () => cdk.Names.uniqueId(this) }),
     });
 
     if (props.virtualNode && props.virtualRouter) {
@@ -114,6 +147,7 @@ export class VirtualService extends cdk.Resource implements IVirtualService {
     }
 
     this.mesh = props.mesh;
+    this.clientPolicy = props.clientPolicy;
 
     // Check which provider to use node or router (or neither)
     if (props.virtualRouter) {
@@ -159,60 +193,21 @@ export class VirtualService extends cdk.Resource implements IVirtualService {
 /**
  * Interface with properties ncecessary to import a reusable VirtualService
  */
-interface VirtualServiceAttributes {
-  /**
-   * The Amazon Resource Name (ARN) for the virtual service
-   *
-   * @default - Required if virtualServiceName and virtualMeshName are not supplied.
-   */
-  readonly virtualServiceArn?: string;
-
-  /**
-   * The name of the VirtualService, it is recommended this follows the fully-qualified domain name format.
-   *
-   * @default - Required if virtualServiceArn is not supplied.
-   */
-  readonly virtualServiceName?: string;
-
-  /**
-   * The name of the service mesh that the virtual service resides in
-   *
-   * Used to derive ARN from mesh name if ARN not provided
-   *
-   * @default - Required if virtualServiceArn is not supplied.
-   */
-  readonly meshName?: string;
-}
-
-/**
- * Returns properties that allows a VirtualService to be imported
- */
-class ImportedVirtualService extends cdk.Resource implements IVirtualService {
+export interface VirtualServiceAttributes {
   /**
    * The name of the VirtualService, it is recommended this follows the fully-qualified domain name format.
    */
-  public readonly virtualServiceName: string;
+  readonly virtualServiceName: string;
 
   /**
-   * The Amazon Resource Name (ARN) for the virtual service
+   * The Mesh which the VirtualService belongs to
    */
-  public readonly virtualServiceArn: string;
+  readonly mesh: IMesh;
 
-  constructor(scope: Construct, id: string, props: VirtualServiceAttributes) {
-    super(scope, id);
-
-    if (props.virtualServiceArn) {
-      this.virtualServiceArn = props.virtualServiceArn;
-      this.virtualServiceName = cdk.Fn.select(2, cdk.Fn.split('/', cdk.Stack.of(scope).parseArn(props.virtualServiceArn).resourceName!));
-    } else if (props.virtualServiceName && props.meshName) {
-      this.virtualServiceName = props.virtualServiceName;
-      this.virtualServiceArn = cdk.Stack.of(this).formatArn({
-        service: 'appmesh',
-        resource: `mesh/${props.meshName}/virtualService`,
-        resourceName: this.virtualServiceName,
-      });
-    } else {
-      throw new Error('Need either arn or both names');
-    }
-  }
+  /**
+   * Client policy for this Virtual Service
+   *
+   * @default - none
+   */
+  readonly clientPolicy?: ClientPolicy;
 }

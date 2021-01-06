@@ -1,7 +1,7 @@
-import * as fs from 'fs';
-import * as path from 'path';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
+import * as fs from 'fs';
+import * as path from 'path';
 import { DockerImageAssetLocation, DockerImageAssetSource, FileAssetLocation, FileAssetPackaging, FileAssetSource } from '../assets';
 import { Fn } from '../cfn-fn';
 import { CfnParameter } from '../cfn-parameter';
@@ -9,8 +9,8 @@ import { CfnRule } from '../cfn-rule';
 import { ISynthesisSession } from '../construct-compat';
 import { Stack } from '../stack';
 import { Token } from '../token';
-import { assertBound, contentHash } from './_shared';
 import { StackSynthesizer } from './stack-synthesizer';
+import { assertBound, contentHash } from './_shared';
 
 export const BOOTSTRAP_QUALIFIER_CONTEXT = '@aws-cdk/core:bootstrapQualifier';
 
@@ -150,6 +150,14 @@ export interface DefaultStackSynthesizerProps {
    * @default true
    */
   readonly generateBootstrapVersionRule?: boolean;
+
+  /**
+   * bucketPrefix to use while storing S3 Assets
+   *
+   *
+   * @default - DefaultStackSynthesizer.DEFAULT_FILE_ASSET_PREFIX
+   */
+  readonly bucketPrefix?: string;
 }
 
 /**
@@ -202,6 +210,11 @@ export class DefaultStackSynthesizer extends StackSynthesizer {
    */
   public static readonly DEFAULT_FILE_ASSET_KEY_ARN_EXPORT_NAME = 'CdkBootstrap-${Qualifier}-FileAssetKeyArn';
 
+  /**
+   * Default file asset prefix
+   */
+  public static readonly DEFAULT_FILE_ASSET_PREFIX = '';
+
   private _stack?: Stack;
   private bucketName?: string;
   private repositoryName?: string;
@@ -210,15 +223,38 @@ export class DefaultStackSynthesizer extends StackSynthesizer {
   private fileAssetPublishingRoleArn?: string;
   private imageAssetPublishingRoleArn?: string;
   private qualifier?: string;
+  private bucketPrefix?: string
 
   private readonly files: NonNullable<cxschema.AssetManifest['files']> = {};
   private readonly dockerImages: NonNullable<cxschema.AssetManifest['dockerImages']> = {};
 
   constructor(private readonly props: DefaultStackSynthesizerProps = {}) {
     super();
+
+    for (const key in props) {
+      if (props.hasOwnProperty(key)) {
+        validateNoToken(key as keyof DefaultStackSynthesizerProps);
+      }
+    }
+
+    function validateNoToken<A extends keyof DefaultStackSynthesizerProps>(key: A) {
+      const prop = props[key];
+      if (typeof prop === 'string' && Token.isUnresolved(prop)) {
+        throw new Error(`DefaultSynthesizer property '${key}' cannot contain tokens; only the following placeholder strings are allowed: ` + [
+          '${Qualifier}',
+          cxapi.EnvironmentPlaceholders.CURRENT_REGION,
+          cxapi.EnvironmentPlaceholders.CURRENT_ACCOUNT,
+          cxapi.EnvironmentPlaceholders.CURRENT_PARTITION,
+        ].join(', '));
+      }
+    }
   }
 
   public bind(stack: Stack): void {
+    if (this._stack !== undefined) {
+      throw new Error('A StackSynthesizer can only be used for one Stack: create a new instance to use with a different Stack');
+    }
+
     this._stack = stack;
 
     const qualifier = this.props.qualifier ?? stack.node.tryGetContext(BOOTSTRAP_QUALIFIER_CONTEXT) ?? DefaultStackSynthesizer.DEFAULT_QUALIFIER;
@@ -246,14 +282,14 @@ export class DefaultStackSynthesizer extends StackSynthesizer {
     this._cloudFormationExecutionRoleArn = specialize(this.props.cloudFormationExecutionRole ?? DefaultStackSynthesizer.DEFAULT_CLOUDFORMATION_ROLE_ARN);
     this.fileAssetPublishingRoleArn = specialize(this.props.fileAssetPublishingRoleArn ?? DefaultStackSynthesizer.DEFAULT_FILE_ASSET_PUBLISHING_ROLE_ARN);
     this.imageAssetPublishingRoleArn = specialize(this.props.imageAssetPublishingRoleArn ?? DefaultStackSynthesizer.DEFAULT_IMAGE_ASSET_PUBLISHING_ROLE_ARN);
+    this.bucketPrefix = specialize(this.props.bucketPrefix ?? DefaultStackSynthesizer.DEFAULT_FILE_ASSET_PREFIX);
     /* eslint-enable max-len */
   }
 
   public addFileAsset(asset: FileAssetSource): FileAssetLocation {
     assertBound(this.stack);
     assertBound(this.bucketName);
-
-    const objectKey = asset.sourceHash + (asset.packaging === FileAssetPackaging.ZIP_DIRECTORY ? '.zip' : '');
+    const objectKey = this.bucketPrefix + asset.sourceHash + (asset.packaging === FileAssetPackaging.ZIP_DIRECTORY ? '.zip' : '');
 
     // Add to manifest
     this.files[asset.sourceHash] = {
