@@ -12,7 +12,7 @@ jobs:
       - name: Check Out
         uses: actions/checkout@v2
       - uses: satackey/action-docker-layer-caching@v0.0.11
-          # Ignore the failure of a step and avoid terminating the job.
-          continue-on-error: true
+        # Ignore the failure of a step and avoid terminating the job.
+        continue-on-error: true
       # - name: Build
       #   run: /bin/bash ./build.sh && git diff-index --exit-code --ignore-space-at-eol --stat HEAD
