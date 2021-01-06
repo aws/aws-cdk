@@ -1,11 +1,13 @@
 name: CI
 
 on:
-  push: {}
+  pull_request: {}
+  # enable manual trigger - useful for debugging.
   workflow_dispatch: {}
 
 jobs:
   build:
+    name: build (poc - can be ignored)
     runs-on: ubuntu-latest
     container: jsii/superchain
     steps:
