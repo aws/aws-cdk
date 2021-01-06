@@ -232,32 +232,7 @@ export class Cluster extends Resource implements ICluster {
     this.connections.connections.addSecurityGroup(...autoScalingGroup.connections.securityGroups);
 
     if ( autoScalingGroup.osType === ec2.OperatingSystemType.WINDOWS ) {
-
-      // clear the cache of the agent
-      autoScalingGroup.addUserData('Remove-Item -Recurse C:\\ProgramData\\Amazon\\ECS\\Cache');
-
-      // pull the latest ECS Tools
-      autoScalingGroup.addUserData('Import-Module ECSTools');
-
-      // set the cluster name environment variable
-      autoScalingGroup.addUserData(`[Environment]::SetEnvironmentVariable("ECS_CLUSTER", "${this.clusterName}", "Machine")`);
-      autoScalingGroup.addUserData('[Environment]::SetEnvironmentVariable("ECS_ENABLE_AWSLOGS_EXECUTIONROLE_OVERRIDE", "true", "Machine")');
-      // tslint:disable-next-line: max-line-length
-      autoScalingGroup.addUserData('[Environment]::SetEnvironmentVariable("ECS_AVAILABLE_LOGGING_DRIVERS", "[\"json-file\",\"awslogs\"]", "Machine")');
-
-      // enable instance draining
-      if (autoScalingGroup.spotPrice && options.spotInstanceDraining) {
-        autoScalingGroup.addUserData('[Environment]::SetEnvironmentVariable("ECS_ENABLE_SPOT_INSTANCE_DRAINING", "true", "Machine")');
-      }
-
-      // enable task iam role
-      if (!options.canContainersAccessInstanceRole) {
-        autoScalingGroup.addUserData('[Environment]::SetEnvironmentVariable("ECS_ENABLE_TASK_IAM_ROLE", "true", "Machine")');
-        autoScalingGroup.addUserData(`Initialize-ECSAgent -Cluster '${this.clusterName}' -EnableTaskIAMRole'`);
-      } else {
-        autoScalingGroup.addUserData(`Initialize-ECSAgent -Cluster '${this.clusterName}'`);
-      }
-
+      this.configureWindowsAutoScalingGroup(autoScalingGroup, options);
     } else {
       // Tie instances to cluster
       switch (options.machineImageType) {
@@ -345,6 +320,33 @@ export class Cluster extends Resource implements ICluster {
         drainTime: options.taskDrainTime,
         topicEncryptionKey: options.topicEncryptionKey,
       });
+    }
+  }
+
+  private configureWindowsAutoScalingGroup(autoScalingGroup: autoscaling.AutoScalingGroup, options: AddAutoScalingGroupCapacityOptions = {}) {
+    // clear the cache of the agent
+    autoScalingGroup.addUserData('Remove-Item -Recurse C:\\ProgramData\\Amazon\\ECS\\Cache');
+
+    // pull the latest ECS Tools
+    autoScalingGroup.addUserData('Import-Module ECSTools');
+
+    // set the cluster name environment variable
+    autoScalingGroup.addUserData(`[Environment]::SetEnvironmentVariable("ECS_CLUSTER", "${this.clusterName}", "Machine")`);
+    autoScalingGroup.addUserData('[Environment]::SetEnvironmentVariable("ECS_ENABLE_AWSLOGS_EXECUTIONROLE_OVERRIDE", "true", "Machine")');
+    // tslint:disable-next-line: max-line-length
+    autoScalingGroup.addUserData('[Environment]::SetEnvironmentVariable("ECS_AVAILABLE_LOGGING_DRIVERS", "[\"json-file\",\"awslogs\"]", "Machine")');
+
+    // enable instance draining
+    if (autoScalingGroup.spotPrice && options.spotInstanceDraining) {
+      autoScalingGroup.addUserData('[Environment]::SetEnvironmentVariable("ECS_ENABLE_SPOT_INSTANCE_DRAINING", "true", "Machine")');
+    }
+
+    // enable task iam role
+    if (!options.canContainersAccessInstanceRole) {
+      autoScalingGroup.addUserData('[Environment]::SetEnvironmentVariable("ECS_ENABLE_TASK_IAM_ROLE", "true", "Machine")');
+      autoScalingGroup.addUserData(`Initialize-ECSAgent -Cluster '${this.clusterName}' -EnableTaskIAMRole'`);
+    } else {
+      autoScalingGroup.addUserData(`Initialize-ECSAgent -Cluster '${this.clusterName}'`);
     }
   }
 
