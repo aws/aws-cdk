@@ -1,12 +1,13 @@
-import * as crypto from 'crypto';
 import * as path from 'path';
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
+// hack, as this is not exported by the Lambda module
+import { calculateFunctionHash } from '@aws-cdk/aws-lambda/lib/function-hash';
 import * as ssm from '@aws-cdk/aws-ssm';
 import {
-  CfnResource, ConstructNode,
+  ConstructNode,
   CustomResource, CustomResourceProvider, CustomResourceProviderRuntime,
   Resource, Stack, Stage, Token,
 } from '@aws-cdk/core';
@@ -240,17 +241,4 @@ function addEdgeLambdaToRoleTrustStatement(role: iam.IRole) {
     statement.addActions(edgeLambdaServicePrincipal.assumeRoleAction);
     role.assumeRolePolicy.addStatements(statement);
   }
-}
-
-// Stolen from @aws-lambda/lib/function-hash.ts, which isn't currently exported.
-// This should be DRY'ed up (exported by @aws-lambda) before this is marked as stable.
-function calculateFunctionHash(fn: lambda.Function) {
-  const stack = Stack.of(fn);
-  const functionResource = fn.node.defaultChild as CfnResource;
-  // render the cloudformation resource from this function
-  const config = stack.resolve((functionResource as any)._toCloudFormation());
-
-  const hash = crypto.createHash('md5');
-  hash.update(JSON.stringify(config));
-  return hash.digest('hex');
 }
