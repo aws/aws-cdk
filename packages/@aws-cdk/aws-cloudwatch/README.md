@@ -324,6 +324,17 @@ dashboard.addWidgets(new SingleValueWidget({
 }));
 ```
 
+Show as many digits as can fit, before rounding.
+
+```ts
+dashboard.addWidgets(new SingleValueWidget({
+  // ..
+  // ..
+
+  fullPrecision: true,
+}));
+```
+
 ### Text widget
 
 A text widget shows an arbitrary piece of MarkDown. Use this to add explanations

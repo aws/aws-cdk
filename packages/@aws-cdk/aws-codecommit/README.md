@@ -27,6 +27,9 @@ const repo = new codecommit.Repository(this, 'Repository' ,{
 });
 ```
 
+Use the `repositoryCloneUrlHttp`, `repositoryCloneUrlSsh` or `repositoryCloneUrlGrc`
+property to clone your repository.
+
 To add an Amazon SNS trigger to your repository:
 
 ```ts
