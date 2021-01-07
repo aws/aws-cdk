@@ -1,6 +1,6 @@
 import { Construct } from 'constructs';
+import { ExecutionGraph, PipelineGraph } from '../../graph';
 import { AssetPublishingStrategy } from '../asset-publishing';
-import { ExecutionGraph, PipelineGraph } from '../graph';
 
 export abstract class Deployment {
   public abstract produceExecutionGraph(options: AddDeploymentToGraphOptions): ExecutionGraph;

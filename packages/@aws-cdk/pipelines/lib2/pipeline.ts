@@ -1,12 +1,12 @@
 import { Stage } from '@aws-cdk/core';
 import { Construct } from 'constructs';
-import { Approver } from './approver';
-import { AssetPublishingStrategy } from './asset-publishing';
 import { Backend } from './backend';
-import { Deployment, CdkStageDeployment } from './deployment';
+import { Approver } from './frontend/approver';
+import { AssetPublishingStrategy } from './frontend/asset-publishing';
+import { Deployment, CdkStageDeployment } from './frontend/deployment';
+import { Source } from './frontend/source';
+import { Synth } from './frontend/synth';
 import { ExecutionGraph, PipelineGraph } from './graph';
-import { Source } from './source';
-import { Synth } from './synth';
 
 // v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
 // eslint-disable-next-line

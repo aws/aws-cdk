@@ -1,8 +1,8 @@
 import * as path from 'path';
 import { AddSynthToGraphOptions, Synth } from '.';
-import { cloudAssemblyBuildSpecDir } from '../../lib/private/construct-internals';
-import { toPosixPath } from '../../lib/private/fs';
-import { ExecutionArtifact, ExecutionShellAction } from '../graph';
+import { cloudAssemblyBuildSpecDir } from '../../../lib/private/construct-internals';
+import { toPosixPath } from '../../../lib/private/fs';
+import { ExecutionArtifact, ExecutionShellAction } from '../../graph';
 import { CommandImage } from '../image';
 
 export interface StandardSynthProps {

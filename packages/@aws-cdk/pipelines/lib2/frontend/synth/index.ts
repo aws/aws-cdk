@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { ExecutionGraph, PipelineGraph } from '../graph';
+import { ExecutionGraph, PipelineGraph } from '../../graph';
 import { NpmSynth, StandardSynthProps } from './npm-synth';
 
 export interface AddSynthToGraphOptions {

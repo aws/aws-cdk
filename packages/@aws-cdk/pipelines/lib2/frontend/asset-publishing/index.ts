@@ -1,5 +1,5 @@
-import { AssetType } from '../../lib/actions/publish-assets-action';
-import { ExecutionGraph, PipelineGraph } from '../graph';
+import { AssetType } from '../../../lib/actions/publish-assets-action';
+import { ExecutionGraph, PipelineGraph } from '../../graph';
 
 export abstract class AssetPublishingStrategy {
   public static prepublishAll(_sharedCodeBuild: boolean = false): AssetPublishingStrategy {

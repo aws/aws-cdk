@@ -1,4 +1,4 @@
-import { ExecutionSourceAction, SourceType } from '../graph/source-actions';
+import { ExecutionSourceAction, SourceType } from '../../graph/source-actions';
 import { AddSourceToGraphOptions, Source } from './index';
 import { Authentication } from './source-authentication';
 

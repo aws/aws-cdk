@@ -1,4 +1,4 @@
-import { CommandImage } from '../image';
+import { CommandImage } from '../frontend/image';
 import { ExecutionAction, ExecutionArtifact } from './index';
 
 export interface ShellArtifact {

@@ -2,11 +2,11 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { Stack, Stage } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
-import { AssetManifestReader, DockerImageManifestEntry, FileManifestEntry } from '../../lib/private/asset-manifest';
-import { appOf, assemblyBuilderOf } from '../../lib/private/construct-internals';
-import { toPosixPath } from '../../lib/private/fs';
+import { AssetManifestReader, DockerImageManifestEntry, FileManifestEntry } from '../../../lib/private/asset-manifest';
+import { appOf, assemblyBuilderOf } from '../../../lib/private/construct-internals';
+import { toPosixPath } from '../../../lib/private/fs';
+import { CreateChangeSetAction, ExecuteChangeSetAction, ExecutionGraph } from '../../graph';
 import { Approver } from '../approver';
-import { CreateChangeSetAction, ExecuteChangeSetAction, ExecutionGraph } from '../graph';
 import { AddDeploymentToGraphOptions, Deployment } from './index';
 
 export interface CdkStageDeploymentProps {

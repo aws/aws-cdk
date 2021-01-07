@@ -1,4 +1,4 @@
-import { ExecutionGraph, PipelineGraph } from '../graph';
+import { ExecutionGraph, PipelineGraph } from '../../graph';
 import { GitHubSource, GitHubSourceProps } from './github-source';
 
 export abstract class Source {

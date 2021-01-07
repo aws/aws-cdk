@@ -1,4 +1,4 @@
-import { ExecutionGraph, PipelineGraph } from '../graph';
+import { ExecutionGraph, PipelineGraph } from '../../graph';
 
 export abstract class Approver {
   public static shellScript(): Approver {
