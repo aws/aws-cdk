@@ -87,6 +87,35 @@ export interface ILocalBundling {
   tryBundle(outputDir: string, options: BundlingOptions): boolean;
 }
 
+export class BundlingDockerContainer {
+
+  constructor(public readonly id: string) {}
+
+  public copyFrom(containerPath: string, hostPath: string) {
+    return this.cp(`${this.id}:${containerPath}`, hostPath);
+  }
+
+  public copyTo(hostPath: string, containerPath: string) {
+    return this.cp(hostPath, `${this.id}:${containerPath}`);
+  }
+
+  public start() {
+    dockerExec(['start', this.id]);
+  }
+
+  public remove() {
+    dockerExec(['rm', '-v', this.id]);
+  }
+
+  private cp(src: string, dst: string) {
+    try {
+      dockerExec(['cp', src, dst]);
+    } catch (err) {
+      throw new Error(`Failed to copy files from ${src} to ${dst}: ${err}`);
+    }
+  }
+}
+
 /**
  * A Docker image used for asset bundling
  */
@@ -150,46 +179,58 @@ export class BundlingDockerImage {
    * Runs a Docker image
    */
   public run(options: DockerRunOptions = {}) {
+    const container = this.create(options);
+
     const volumes = options.volumes || [];
-    const environment = options.environment || {};
-    const command = options.command || [];
 
-    const dockerArgs: string[] = [
-      'run', '--rm',
-      ...options.user
-        ? ['-u', options.user]
-        : [],
-      ...flatten(volumes.map(v => ['-v', `${v.hostPath}:${v.containerPath}:${v.consistency ?? DockerVolumeConsistency.DELEGATED}`])),
-      ...flatten(Object.entries(environment).map(([k, v]) => ['--env', `${k}=${v}`])),
-      ...options.workingDirectory
-        ? ['-w', options.workingDirectory]
-        : [],
-      this.image,
-      ...command,
-    ];
+    for (const v of volumes) {
+      container.copyTo(v.hostPath, `${v.containerPath}:${v.consistency ?? DockerVolumeConsistency.DELEGATED}`);
+    }
 
-    dockerExec(dockerArgs);
+    container.start();
+
+    for (const v of volumes) {
+      container.copyFrom(`${v.containerPath}:${v.consistency ?? DockerVolumeConsistency.DELEGATED}`, v.hostPath);
+    }
+
   }
 
   /**
    * Copies a file or directory out of the Docker image to the local filesystem
    */
   public cp(imagePath: string, outputPath: string) {
-    const { stdout } = dockerExec(['create', this.image]);
+    const container = this.create();
+    try {
+      container.copyFrom(imagePath, outputPath);
+    } finally {
+      container.remove();
+    }
+  }
+
+  public create(options?: DockerCreateOptions): BundlingDockerContainer {
+
+    const environment = options?.environment || {};
+    const command = options?.command || [];
+
+    const dockerArgs: string[] = [
+      'create',
+      ...options?.user
+        ? ['-u', options.user]
+        : [],
+      ...flatten(Object.entries(environment).map(([k, v]) => ['--env', `${k}=${v}`])),
+      ...options?.workingDirectory
+        ? ['-w', options.workingDirectory]
+        : [],
+      this.image,
+      ...command,
+    ];
+
+    const { stdout } = dockerExec(dockerArgs);
     const match = stdout.toString().match(/([0-9a-f]{16,})/);
     if (!match) {
       throw new Error('Failed to extract container ID from Docker create output');
     }
-
-    const containerId = match[1];
-    const containerPath = `${containerId}:${imagePath}`;
-    try {
-      dockerExec(['cp', containerPath, outputPath]);
-    } catch (err) {
-      throw new Error(`Failed to copy files from ${containerPath} to ${outputPath}: ${err}`);
-    } finally {
-      dockerExec(['rm', '-v', containerId]);
-    }
+    return new BundlingDockerContainer(match[1]);
   }
 }
 
@@ -235,22 +276,16 @@ export enum DockerVolumeConsistency {
 }
 
 /**
- * Docker run options
+ * Docker create options
  */
-export interface DockerRunOptions {
+export interface DockerCreateOptions {
+
   /**
    * The command to run in the container.
    *
    * @default - run the command defined in the image
    */
   readonly command?: string[];
-
-  /**
-   * Docker volumes to mount.
-   *
-   * @default - no volumes are mounted
-   */
-  readonly volumes?: DockerVolume[];
 
   /**
    * The environment variables to pass to the container.
@@ -272,6 +307,21 @@ export interface DockerRunOptions {
    * @default - root or image default
    */
   readonly user?: string;
+
+}
+
+/**
+ * Docker run options
+ */
+export interface DockerRunOptions extends DockerCreateOptions {
+
+  /**
+   * Docker volumes to mount.
+   *
+   * @default - no volumes are mounted
+   */
+  readonly volumes?: DockerVolume[];
+
 }
 
 /**
@@ -297,7 +347,7 @@ function flatten(x: string[][]) {
   return Array.prototype.concat([], ...x);
 }
 
-function dockerExec(args: string[], options?: SpawnSyncOptions) {
+export function dockerExec(args: string[], options?: SpawnSyncOptions) {
   const prog = process.env.CDK_DOCKER ?? 'docker';
   const proc = spawnSync(prog, args, options ?? {
     stdio: [ // show Docker output
