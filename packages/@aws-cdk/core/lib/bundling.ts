@@ -87,7 +87,7 @@ export interface ILocalBundling {
   tryBundle(outputDir: string, options: BundlingOptions): boolean;
 }
 
-export class BundlingDockerContainer {
+class BundlingDockerContainer {
 
   constructor(public readonly id: string) {}
 
@@ -180,18 +180,20 @@ export class BundlingDockerImage {
    */
   public run(options: DockerRunOptions = {}) {
     const container = this.create(options);
+    try {
+      const volumes = options.volumes || [];
 
-    const volumes = options.volumes || [];
-
-    for (const v of volumes) {
-      container.copyTo(v.hostPath, `${v.containerPath}:${v.consistency ?? DockerVolumeConsistency.DELEGATED}`);
+      for (const v of volumes) {
+        container.copyTo(v.hostPath, `${v.containerPath}:${v.consistency ?? DockerVolumeConsistency.DELEGATED}`);
+      }
+      container.start();
+      for (const v of volumes) {
+        container.copyFrom(`${v.containerPath}:${v.consistency ?? DockerVolumeConsistency.DELEGATED}`, v.hostPath);
+      }
+    } finally {
+      container.remove();
     }
 
-    container.start();
-
-    for (const v of volumes) {
-      container.copyFrom(`${v.containerPath}:${v.consistency ?? DockerVolumeConsistency.DELEGATED}`, v.hostPath);
-    }
 
   }
 
@@ -207,7 +209,7 @@ export class BundlingDockerImage {
     }
   }
 
-  public create(options?: DockerCreateOptions): BundlingDockerContainer {
+  private create(options?: DockerCreateOptions): BundlingDockerContainer {
 
     const environment = options?.environment || {};
     const command = options?.command || [];
@@ -225,7 +227,13 @@ export class BundlingDockerImage {
       ...command,
     ];
 
-    const { stdout } = dockerExec(dockerArgs);
+    const { stdout } = dockerExec(dockerArgs, {
+      stdio: [
+        'ignore', // ignore stdin
+        'pipe', // pipe stdout
+        process.stderr, // redirect stderr to stdout
+      ],
+    });
     const match = stdout.toString().match(/([0-9a-f]{16,})/);
     if (!match) {
       throw new Error('Failed to extract container ID from Docker create output');
