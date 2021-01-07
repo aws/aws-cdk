@@ -17,7 +17,7 @@ export interface Invocation {
   prefix?: boolean;
 }
 
-export function mockSpawn(...invocations: Invocation[]) {
+export function mockSpawn(...invocations: Invocation[]): () => void {
   let mock = (child_process.spawn as any);
   for (const _invocation of invocations) {
     const invocation = _invocation; // Mirror into variable for closure
@@ -53,6 +53,10 @@ export function mockSpawn(...invocations: Invocation[]) {
   mock.mockImplementation((binary: string, args: string[], _options: any) => {
     throw new Error(`Did not expect call of ${JSON.stringify([binary, ...args])}`);
   });
+
+  return () => {
+    expect(mock).toHaveBeenCalledTimes(invocations.length);
+  };
 }
 
 /**

@@ -86,7 +86,7 @@ export class FileAssetHandler implements IAssetHandler {
     this.host.emitMessage(EventType.BUILD, `Building asset source using command: '${executable}'`);
 
     return {
-      packagedPath: await shell(executable),
+      packagedPath: (await shell(executable, { quiet: true })).trim(),
       contentType: 'application/zip',
     };
   }

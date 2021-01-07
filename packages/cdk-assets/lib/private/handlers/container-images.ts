@@ -74,7 +74,7 @@ export class ContainerImageAssetHandler implements IAssetHandler {
     this.host.emitMessage(EventType.BUILD, `Building Docker image using command '${executable}'`);
     if (this.host.aborted) { return undefined; }
 
-    return shell(executable);
+    return (await shell(executable, { quiet: true })).trim();
   }
 
   private async buildImage(localTagName: string): Promise<void> {

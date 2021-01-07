@@ -34,7 +34,7 @@ beforeEach(() => {
       version: Manifest.version(),
       dockerImages: {
         theExternalAsset: {
-          externalSource: {
+          source: {
             executable: ['sometool'],
           },
           destinations: {
@@ -112,7 +112,7 @@ describe('with a complete manifest', () => {
       ],
     });
 
-    mockSpawn(
+    const expectAllSpawns = mockSpawn(
       { commandLine: ['docker', 'login', '--username', 'user', '--password-stdin', 'https://proxy.com/'] },
       { commandLine: ['docker', 'inspect', 'cdkasset-theasset'] },
       { commandLine: ['docker', 'tag', 'cdkasset-theasset', '12345.amazonaws.com/repo:abcdef'] },
@@ -121,6 +121,7 @@ describe('with a complete manifest', () => {
 
     await pub.publish();
 
+    expectAllSpawns();
     expect(true).toBeTruthy(); // Expect no exception, satisfy linter
   });
 
@@ -132,7 +133,7 @@ describe('with a complete manifest', () => {
       ],
     });
 
-    mockSpawn(
+    const expectAllSpawns = mockSpawn(
       { commandLine: ['docker', 'login', '--username', 'user', '--password-stdin', 'https://proxy.com/'] },
       { commandLine: ['docker', 'inspect', 'cdkasset-theasset'], exitCode: 1 },
       { commandLine: ['docker', 'build', '--tag', 'cdkasset-theasset', '.'], cwd: absoluteDockerPath },
@@ -142,6 +143,7 @@ describe('with a complete manifest', () => {
 
     await pub.publish();
 
+    expectAllSpawns();
     expect(true).toBeTruthy(); // Expect no exception, satisfy linter
   });
 });
@@ -154,27 +156,27 @@ describe('external assets', () => {
   });
 
   test('upload externally generated Docker image', async () => {
-    aws.mockEcr.describeImages = mockedApiResult({ /* No error == image exists */ });
+    aws.mockEcr.describeImages = mockedApiFailure('ImageNotFoundException', 'File does not exist');
     aws.mockEcr.getAuthorizationToken = mockedApiResult({
       authorizationData: [
         { authorizationToken: 'dXNlcjpwYXNz', proxyEndpoint: 'https://proxy.com/' },
       ],
     });
 
-    mockSpawn(
+    const expectAllSpawns = mockSpawn(
       { commandLine: ['docker', 'login', '--username', 'user', '--password-stdin', 'https://proxy.com/'] },
       { commandLine: ['sometool'], stdout: externalTag },
-      { commandLine: ['docker', 'tag', 'cdkasset-theexternalasset', externalTag] },
-      { commandLine: ['docker', 'push', externalTag] },
+      { commandLine: ['docker', 'tag', externalTag, '12345.amazonaws.com/repo:ghijkl'] },
+      { commandLine: ['docker', 'push', '12345.amazonaws.com/repo:ghijkl'] },
     );
 
     await pub.publish();
 
-    expect(aws.mockEcr.describeImages).not.toHaveBeenCalled();
     expect(aws.ecrClient).toHaveBeenCalledWith(expect.objectContaining({
       region: 'us-north-50',
       assumeRoleArn: 'arn:aws:role',
     }));
+    expectAllSpawns();
   });
 });
 
@@ -188,7 +190,7 @@ test('correctly identify Docker directory if path is absolute', async () => {
     ],
   });
 
-  mockSpawn(
+  const expectAllSpawns = mockSpawn(
     // Only care about the 'build' command line
     { commandLine: ['docker', 'login'], prefix: true },
     { commandLine: ['docker', 'inspect'], exitCode: 1, prefix: true },
@@ -200,4 +202,5 @@ test('correctly identify Docker directory if path is absolute', async () => {
   await pub.publish();
 
   expect(true).toBeTruthy(); // Expect no exception, satisfy linter
+  expectAllSpawns();
 });

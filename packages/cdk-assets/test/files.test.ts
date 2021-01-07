@@ -55,7 +55,7 @@ beforeEach(() => {
       version: Manifest.version(),
       files: {
         externalAsset: {
-          externalSource: {
+          source: {
             executable: ['sometool'],
           },
           destinations: {
@@ -178,7 +178,7 @@ describe('external assets', () => {
   test('upload external asset correctly', async () => {
     aws.mockS3.listObjectsV2 = mockedApiResult({ Contents: undefined });
     aws.mockS3.upload = mockUpload('FILE_CONTENTS');
-    mockSpawn({ commandLine: ['sometool'], stdout: ABS_PATH });
+    const expectAllSpawns = mockSpawn({ commandLine: ['sometool'], stdout: ABS_PATH });
 
     await pub.publish();
 
@@ -186,5 +186,7 @@ describe('external assets', () => {
       region: 'us-north-50',
       assumeRoleArn: 'arn:aws:role',
     }));
+
+    expectAllSpawns();
   });
 });
