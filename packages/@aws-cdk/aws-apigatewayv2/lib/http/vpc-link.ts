@@ -99,10 +99,10 @@ export class VpcLink extends Resource implements IVpcLink {
 
     this.vpcLinkId = cfnResource.ref;
 
-    this.addSubnets(...props.vpc.privateSubnets);
-
-    if (props.subnets) {
+    if (props.subnets && props.subnets.length) {
       this.addSubnets(...props.subnets);
+    } else {
+      this.addSubnets(...props.vpc.privateSubnets);
     }
 
     if (props.securityGroups) {
