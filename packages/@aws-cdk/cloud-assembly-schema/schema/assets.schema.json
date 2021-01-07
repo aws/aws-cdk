@@ -34,7 +34,7 @@
             "properties": {
                 "source": {
                     "$ref": "#/definitions/FileSource",
-                    "description": "Source description for file assets (Default none, must be defined if externalSource is undefined)"
+                    "description": "Source description for file assets"
                 },
                 "destinations": {
                     "description": "Destinations for this file asset",

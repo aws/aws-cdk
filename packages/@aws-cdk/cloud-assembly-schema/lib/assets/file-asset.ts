@@ -6,7 +6,6 @@ import { AwsDestination } from './aws-destination';
 export interface FileAsset {
   /**
    * Source description for file assets
-   * @default none, must be defined if externalSource is undefined
    */
   readonly source: FileSource;
 

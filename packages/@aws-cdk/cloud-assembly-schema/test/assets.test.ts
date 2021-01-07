@@ -22,7 +22,7 @@ describe('Docker image asset', () => {
             },
           },
           externalAsset: {
-            externalSource: {
+            source: {
               executable: ['sometool'],
             },
             destinations: {
@@ -44,16 +44,18 @@ describe('Docker image asset', () => {
         version: Manifest.version(),
         dockerImages: {
           asset: {
-            source: {},
+            source: {
+              directory: true,
+            },
             destinations: {},
           },
           externalAsset: {
-            externalSource: {},
+            source: {},
             destinations: {},
           },
         },
       });
-    }).toThrow(/instance\.dockerImages\.asset\.source requires property \"directory\"/);
+    }).toThrow(/instance\.dockerImages\.asset\.source\.directory is not of a type\(s\) string/);
   });
 });
 
@@ -77,7 +79,7 @@ describe('File asset', () => {
               },
             },
             externalAsset: {
-              externalSource: {
+              source: {
                 executable: ['sometool'],
               },
               destinations: {
@@ -138,7 +140,7 @@ describe('File asset', () => {
               },
             },
             externalAsset: {
-              externalSource: {
+              source: {
                 executable: ['sometool'],
               },
               destinations: {
