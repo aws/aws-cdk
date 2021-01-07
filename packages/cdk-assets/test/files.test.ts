@@ -10,6 +10,8 @@ const ABS_PATH = '/simple/cdk.out/some_external_file';
 
 let aws: ReturnType<typeof mockAws>;
 beforeEach(() => {
+  jest.resetAllMocks();
+
   mockfs({
     '/simple/cdk.out/assets.json': JSON.stringify({
       version: Manifest.version(),

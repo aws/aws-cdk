@@ -9,6 +9,8 @@ import { mockSpawn } from './mock-child_process';
 let aws: ReturnType<typeof mockAws>;
 const absoluteDockerPath = '/simple/cdk.out/dockerdir';
 beforeEach(() => {
+  jest.resetAllMocks();
+
   mockfs({
     '/simple/cdk.out/assets.json': JSON.stringify({
       version: Manifest.version(),
@@ -118,6 +120,8 @@ describe('with a complete manifest', () => {
     );
 
     await pub.publish();
+
+    expect(true).toBeTruthy(); // Expect no exception, satisfy linter
   });
 
   test('build and upload docker image if not exists anywhere', async () => {
@@ -137,6 +141,8 @@ describe('with a complete manifest', () => {
     );
 
     await pub.publish();
+
+    expect(true).toBeTruthy(); // Expect no exception, satisfy linter
   });
 });
 
@@ -192,4 +198,6 @@ test('correctly identify Docker directory if path is absolute', async () => {
   );
 
   await pub.publish();
+
+  expect(true).toBeTruthy(); // Expect no exception, satisfy linter
 });
