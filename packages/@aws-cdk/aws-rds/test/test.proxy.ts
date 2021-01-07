@@ -1,4 +1,4 @@
-import { ABSENT, expect, haveResourceLike } from '@aws-cdk/assert';
+import { ABSENT, expect, haveResourceLike, ResourcePart } from '@aws-cdk/assert';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import { AccountPrincipal, Role } from '@aws-cdk/aws-iam';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
@@ -260,6 +260,44 @@ export = {
         Version: '2012-10-17',
       },
     }));
+
+    test.done();
+  },
+
+  'DBProxyTargetGroup should have dependency on the proxy targets'(test: Test) {
+    // GIVEN
+    const cluster = new rds.DatabaseCluster(stack, 'cluster', {
+      engine: rds.DatabaseClusterEngine.AURORA,
+      instanceProps: {
+        vpc,
+      },
+    });
+
+    //WHEN
+    new rds.DatabaseProxy(stack, 'proxy', {
+      proxyTarget: rds.ProxyTarget.fromCluster(cluster),
+      secrets: [cluster.secret!],
+      vpc,
+    });
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::RDS::DBProxyTargetGroup', {
+      Properties: {
+        DBProxyName: {
+          Ref: 'proxy3A1DA9C7',
+        },
+        TargetGroupName: 'default',
+      },
+      DependsOn: [
+        'clusterInstance183584D40',
+        'clusterInstance23D1AD8B2',
+        'cluster611F8AFF',
+        'clusterSecretAttachment69BFCEC4',
+        'clusterSecretE349B730',
+        'clusterSecurityGroupF441DCEA',
+        'clusterSubnets81E3593F',
+      ],
+    }, ResourcePart.CompleteDefinition));
 
     test.done();
   },
