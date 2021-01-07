@@ -653,7 +653,7 @@ class ImportedApplicationListener extends ExternalApplicationListener {
     if (props.securityGroup) {
       securityGroup = props.securityGroup;
     } else if (props.securityGroupId) {
-      securityGroup = ec2.SecurityGroup.fromSecurityGroupId(scope, 'SecurityGroup', props.securityGroupId, {
+      securityGroup = ec2.SecurityGroup.fromSecurityGroupId(this, 'SecurityGroup', props.securityGroupId, {
         allowAllOutbound: props.securityGroupAllowsAllOutbound,
       });
     } else {
