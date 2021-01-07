@@ -51,7 +51,7 @@ describe('VpcLink', () => {
     // WHEN
     new VpcLink(stack, 'VpcLink', {
       vpc,
-      subnets: [subnet1, subnet2],
+      subnets: { subnets: [subnet1, subnet2] },
       securityGroups: [sg1, sg2, sg3],
     });
 
@@ -86,32 +86,6 @@ describe('VpcLink', () => {
           ],
         },
       ],
-    });
-  });
-
-  test('empty subnets adds VPCs subnets', () => {
-    // GIVEN
-    const stack = new Stack();
-    const vpc = new ec2.Vpc(stack, 'VPC');
-
-    // WHEN
-    new VpcLink(stack, 'VpcLink', {
-      vpc,
-      subnets: [],
-    });
-
-    // THEN
-    expect(stack).toHaveResource('AWS::ApiGatewayV2::VpcLink', {
-      Name: 'VpcLink',
-      SubnetIds: [
-        {
-          Ref: 'VPCPrivateSubnet1Subnet8BCA10E0',
-        },
-        {
-          Ref: 'VPCPrivateSubnet2SubnetCFCDAA7A',
-        },
-      ],
-      SecurityGroupIds: [],
     });
   });
 
