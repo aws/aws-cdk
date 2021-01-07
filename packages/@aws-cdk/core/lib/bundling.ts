@@ -87,20 +87,34 @@ export interface ILocalBundling {
   tryBundle(outputDir: string, options: BundlingOptions): boolean;
 }
 
+interface DockerStartOptions {
+
+  /**
+   * Attach STDOUT/STDERR and forward signals.
+   *
+   * @default false
+   */
+  readonly attach?: boolean;
+}
+
 class BundlingDockerContainer {
 
   constructor(public readonly id: string) {}
-
-  public copyFrom(containerPath: string, hostPath: string) {
-    return this.cp(`${this.id}:${containerPath}`, hostPath);
-  }
 
   public copyTo(hostPath: string, containerPath: string) {
     return this.cp(hostPath, `${this.id}:${containerPath}`);
   }
 
-  public start() {
-    dockerExec(['start', this.id]);
+  public copyFrom(containerPath: string, hostPath: string) {
+    return this.cp(`${this.id}:${containerPath}`, hostPath);
+  }
+
+  public start(options: DockerStartOptions = {}) {
+    const args = ['start'];
+    if (options.attach ?? false) {
+      args.push('-a');
+    }
+    dockerExec([...args, this.id]);
   }
 
   public remove() {
@@ -184,11 +198,11 @@ export class BundlingDockerImage {
       const volumes = options.volumes || [];
 
       for (const v of volumes) {
-        container.copyTo(v.hostPath, v.containerPath);
+        container.copyTo(`${v.hostPath}/.`, v.containerPath);
       }
       container.start();
       for (const v of volumes) {
-        container.copyFrom(v.containerPath, v.hostPath);
+        container.copyFrom(`${v.containerPath}/.`, v.hostPath);
       }
     } finally {
       container.remove();
