@@ -33,7 +33,7 @@ beforeEach(() => {
       dockerImages: {
         theExternalAsset: {
           externalSource: {
-            executable: 'sometool',
+            executable: ['sometool'],
           },
           destinations: {
             theDestination: {
@@ -148,7 +148,19 @@ describe('external assets', () => {
   });
 
   test('upload externally generated Docker image', async () => {
-    mockSpawn({ commandLine: ['sometool'], stdout: externalTag });
+    aws.mockEcr.describeImages = mockedApiResult({ /* No error == image exists */ });
+    aws.mockEcr.getAuthorizationToken = mockedApiResult({
+      authorizationData: [
+        { authorizationToken: 'dXNlcjpwYXNz', proxyEndpoint: 'https://proxy.com/' },
+      ],
+    });
+
+    mockSpawn(
+      { commandLine: ['docker', 'login', '--username', 'user', '--password-stdin', 'https://proxy.com/'] },
+      { commandLine: ['sometool'], stdout: externalTag },
+      { commandLine: ['docker', 'tag', 'cdkasset-theexternalasset', externalTag] },
+      { commandLine: ['docker', 'push', externalTag] },
+    );
 
     await pub.publish();
 

@@ -30,7 +30,7 @@ export class ContainerImageAssetHandler implements IAssetHandler {
     }
 
     const imageUri = this.asset.externalSource ?
-      await this.buildExternalAsset(this.asset.externalSource) : await this.buildAsset(destination, ecr, repoUri);
+      await this.buildExternalAsset(this.asset.externalSource, ecr) : await this.buildAsset(destination, ecr, repoUri);
 
     if (imageUri === undefined) {
       return;
@@ -71,8 +71,11 @@ export class ContainerImageAssetHandler implements IAssetHandler {
     return true;
   }
 
-  private buildExternalAsset(asset: ExternalDockerImageSource): Promise<string> {
+  private async buildExternalAsset(asset: ExternalDockerImageSource, ecr: AWS.ECR): Promise<string> {
     this.host.emitMessage(EventType.BUILD, `Building Docker image using command '${asset.executable}'`);
+
+    // Login before build so that the Dockerfile can reference images in the ECR repo
+    await this.docker.login(ecr);
 
     return shell(asset.executable);
   }

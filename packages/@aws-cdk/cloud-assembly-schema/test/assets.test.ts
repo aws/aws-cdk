@@ -23,7 +23,7 @@ describe('Docker image asset', () => {
           },
           externalAsset: {
             externalSource: {
-              executable: 'sometool',
+              executable: ['sometool'],
             },
             destinations: {
               dest: {
@@ -78,7 +78,7 @@ describe('File asset', () => {
             },
             externalAsset: {
               externalSource: {
-                executable: 'sometool',
+                executable: ['sometool'],
               },
               destinations: {
                 dest: {
@@ -139,7 +139,7 @@ describe('File asset', () => {
             },
             externalAsset: {
               externalSource: {
-                executable: 'sometool',
+                executable: ['sometool'],
               },
               destinations: {
                 dest: {

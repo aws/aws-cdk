@@ -54,7 +54,7 @@ beforeEach(() => {
       files: {
         externalAsset: {
           externalSource: {
-            executable: 'sometool',
+            executable: ['sometool'],
           },
           destinations: {
             theDestination: {
@@ -174,18 +174,6 @@ describe('external assets', () => {
   test('upload external asset correctly', async () => {
     aws.mockS3.listObjectsV2 = mockedApiResult({ Contents: undefined });
     aws.mockS3.upload = mockUpload('FILE_CONTENTS');
-    mockSpawn({ commandLine: ['sometool'], stdout: ABS_PATH });
-
-    await pub.publish();
-
-    expect(aws.s3Client).toHaveBeenCalledWith(expect.objectContaining({
-      region: 'us-north-60',
-      assumeRoleArn: 'arn:aws:role',
-    }));
-  });
-
-  test('pass destination properties to AWS client', async () => {
-    aws.mockS3.listObjectsV2 = mockedApiResult({ Contents: undefined });
     mockSpawn({ commandLine: ['sometool'], stdout: ABS_PATH });
 
     await pub.publish();
