@@ -176,7 +176,7 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@types/lodash": "^4.14.165",
+    "@types/lodash": "^4.14.167",
     "@types/minimatch": "^3.0.3",
     "@types/node": "^10.17.48",
     "@types/sinon": "^9.0.9",
