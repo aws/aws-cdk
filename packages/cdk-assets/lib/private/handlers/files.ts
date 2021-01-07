@@ -1,6 +1,6 @@
 import { createReadStream, promises as fs } from 'fs';
 import * as path from 'path';
-import { ExternalFileSource, FileAssetPackaging, FileSource } from '@aws-cdk/cloud-assembly-schema';
+import { FileAssetPackaging, FileSource } from '@aws-cdk/cloud-assembly-schema';
 import { FileManifestEntry } from '../../asset-manifest';
 import { EventType } from '../../progress';
 import { zipDirectory } from '../archive';
@@ -44,8 +44,8 @@ export class FileAssetHandler implements IAssetHandler {
     }
 
     if (this.host.aborted) { return; }
-    const publishFile = this.asset.externalSource ?
-      await this.externalPackageFile(this.asset.externalSource) : await this.packageFile(this.asset.source!);
+    const publishFile = this.asset.source.executable ?
+      await this.externalPackageFile(this.asset.source.executable) : await this.packageFile(this.asset.source);
 
     this.host.emitMessage(EventType.UPLOAD, `Upload ${s3Url}`);
     await s3.upload({
@@ -57,6 +57,10 @@ export class FileAssetHandler implements IAssetHandler {
   }
 
   private async packageFile(source: FileSource): Promise<PackagedFileAsset> {
+    if (!source.path) {
+      throw new Error(`'path' is expected in the File asset source, got: ${JSON.stringify(source)}`);
+    }
+
     const fullPath = path.resolve(this.workDir, source.path);
 
     if (source.packaging === FileAssetPackaging.ZIP_DIRECTORY) {
@@ -78,11 +82,11 @@ export class FileAssetHandler implements IAssetHandler {
     }
   }
 
-  private async externalPackageFile(source: ExternalFileSource): Promise<PackagedFileAsset> {
-    this.host.emitMessage(EventType.BUILD, `Building asset source using command: '${source.executable}'`);
+  private async externalPackageFile(executable: string[]): Promise<PackagedFileAsset> {
+    this.host.emitMessage(EventType.BUILD, `Building asset source using command: '${executable}'`);
 
     return {
-      packagedPath: await shell(source.executable),
+      packagedPath: await shell(executable),
       contentType: 'application/zip',
     };
   }

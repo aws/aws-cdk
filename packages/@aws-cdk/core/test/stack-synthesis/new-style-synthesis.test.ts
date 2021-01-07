@@ -243,9 +243,6 @@ nodeunitShim({
     // WHEN
     const asm = myapp.synth();
 
-    // THEN -- the S3 url is advertised on the stack artifact
-    const stackArtifact = asm.getStackArtifact('mystack-bucketPrefix');
-
     // THEN - we have an asset manifest with both assets and the stack template in there
     const manifest = readAssetManifest(asm);
 
@@ -256,10 +253,6 @@ nodeunitShim({
       assumeRoleArn: 'file:role:arn',
       assumeRoleExternalId: 'file-external-id',
     });
-
-    const templateHash = last(stackArtifact.stackTemplateAssetObjectUrl?.split('/'));
-
-    test.equals(stackArtifact.stackTemplateAssetObjectUrl, `s3://file-asset-bucket/000000000000/${templateHash}`);
 
     test.done();
   },

@@ -1,21 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { nodeunitShim, Test } from 'nodeunit-shim';
-import {
-  App,
-  AssetStaging,
-  CustomResourceProvider,
-  CustomResourceProviderRuntime,
-  DockerImageAssetLocation,
-  DockerImageAssetSource,
-  Duration,
-  ExternalDockerImageAssetSource, ExternalFileAssetSource,
-  FileAssetLocation,
-  FileAssetSource,
-  ISynthesisSession,
-  Size,
-  Stack,
-} from '../../lib';
+import { App, AssetStaging, CustomResourceProvider, CustomResourceProviderRuntime, DockerImageAssetLocation, DockerImageAssetSource, Duration, FileAssetLocation, FileAssetSource, ISynthesisSession, Size, Stack } from '../../lib';
 import { toCloudFormation } from '../util';
 
 const TEST_HANDLER = `${__dirname}/mock-provider`;
@@ -153,14 +139,6 @@ nodeunitShim({
         },
 
         addDockerImageAsset(_asset: DockerImageAssetSource): DockerImageAssetLocation {
-          return { imageUri: '', repositoryName: '' };
-        },
-
-        addExternalFileAsset(_asset: ExternalFileAssetSource): FileAssetLocation {
-          return { bucketName: '', httpUrl: '', objectKey: '', s3ObjectUrl: '', s3Url: '', kmsKeyArn: '' };
-        },
-
-        addExternalDockerImageAsset(_asset: ExternalDockerImageAssetSource): DockerImageAssetLocation {
           return { imageUri: '', repositoryName: '' };
         },
 

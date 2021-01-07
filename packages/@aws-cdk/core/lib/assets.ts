@@ -107,39 +107,31 @@ export interface FileAssetSource {
   readonly sourceHash: string;
 
   /**
+   * An external command that will produce the packaged asset.
+   *
+   * The command should produce the location of a ZIP file on `stdout`.
+   *
+   * @default - Exactly one of `directory` and `executable` is required
+   */
+  readonly executable?: string[];
+
+  /**
    * The path, relative to the root of the cloud assembly, in which this asset
    * source resides. This can be a path to a file or a directory, dependning on the
    * packaging type.
+   *
+   * @default - Exactly one of `directory` and `executable` is required
    */
-  readonly fileName: string;
+  readonly fileName?: string;
 
   /**
    * Which type of packaging to perform.
+   *
+   * @default - Required if `fileName` is specified.
    */
-  readonly packaging: FileAssetPackaging;
+  readonly packaging?: FileAssetPackaging;
 }
 
-/**
- * Represents an external source for a file asset.
- */
-export interface ExternalFileAssetSource {
-  /**
-   * A hash on the content source. This hash is used to uniquely identify this
-   * asset throughout the system. If this value doesn't change, the asset will
-   * not be rebuilt or republished.
-   */
-  readonly sourceHash: string;
-
-  /**
-   * The executable to stage the asset, which returns
-   * the path of the asset on stdout.
-   */
-  readonly executable: string[];
-}
-
-/**
- * Represents a source for a Docker image asset.
- */
 export interface DockerImageAssetSource {
   /**
    * The hash of the contents of the docker build context. This hash is used
@@ -152,10 +144,21 @@ export interface DockerImageAssetSource {
   readonly sourceHash: string;
 
   /**
+   * An external command that will produce the packaged asset.
+   *
+   * The command should produce the name of a local Docker image on `stdout`.
+   *
+   * @default - Exactly one of `directoryName` and `executable` is required
+   */
+  readonly executable?: string[];
+
+  /**
    * The directory where the Dockerfile is stored, must be relative
    * to the cloud assembly root.
+   *
+   * @default - Exactly one of `directoryName` and `executable` is required
    */
-  readonly directoryName: string;
+  readonly directoryName?: string;
 
   /**
    * Build args to pass to the `docker build` command.
@@ -164,6 +167,8 @@ export interface DockerImageAssetSource {
    * values cannot refer to unresolved tokens (such as `lambda.functionArn` or
    * `queue.queueUrl`).
    *
+   * Only allowed when `directoryName` is specified.
+   *
    * @default - no build args are passed
    */
   readonly dockerBuildArgs?: { [key: string]: string };
@@ -171,12 +176,16 @@ export interface DockerImageAssetSource {
   /**
    * Docker target to build to
    *
+   * Only allowed when `directoryName` is specified.
+   *
    * @default - no target
    */
   readonly dockerBuildTarget?: string;
 
   /**
    * Path to the Dockerfile (relative to the directory).
+   *
+   * Only allowed when `directoryName` is specified.
    *
    * @default - no file
    */
@@ -193,27 +202,6 @@ export interface DockerImageAssetSource {
    * @deprecated repository name should be specified at the environment-level and not at the image level
    */
   readonly repositoryName?: string;
-}
-
-/**
- * Represents an external source for a Docker image asset.
- */
-export interface ExternalDockerImageAssetSource {
-  /**
-   * The hash of the contents of the docker build context. This hash is used
-   * throughout the system to identify this image and avoid duplicate work
-   * in case the source did not change.
-   *
-   * NOTE: this means that if you wish to update your docker image, you
-   * must make a modification to the source (e.g. add some metadata to your Dockerfile).
-   */
-  readonly sourceHash: string;
-
-  /**
-   * The executable to build the asset, which returns
-   * the image name of the asset on stdout.
-   */
-  readonly executable: string[];
 }
 
 /**

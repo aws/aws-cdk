@@ -1,14 +1,8 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import {
-  AssetManifest as AssetManifestSchema,
-  DockerImageDestination,
-  DockerImageSource,
-  ExternalDockerImageSource,
-  ExternalFileSource,
-  FileDestination,
-  FileSource,
-  Manifest,
+  AssetManifest as AssetManifestSchema, DockerImageDestination, DockerImageSource,
+  FileDestination, FileSource, Manifest,
 } from '@aws-cdk/cloud-assembly-schema';
 
 /**
@@ -99,7 +93,7 @@ export class AssetManifest {
       ...describeAssets('docker-image', this.manifest.dockerImages || {}),
     ];
 
-    function describeAssets(type: string, assets: Record<string, { source?: any, destinations: Record<string, any>, externalSource?: any }>) {
+    function describeAssets(type: string, assets: Record<string, { source: any, destinations: Record<string, any> }>) {
       const ret = new Array<string>();
       for (const [assetId, asset] of Object.entries(assets || {})) {
         ret.push(`${assetId} ${type} ${JSON.stringify(asset.source)}`);
@@ -116,18 +110,18 @@ export class AssetManifest {
    */
   public get entries(): IManifestEntry[] {
     return [
-      ...makeEntries(this.manifest.files ?? {}, FileManifestEntry),
-      ...makeEntries(this.manifest.dockerImages ?? {}, DockerImageManifestEntry),
+      ...makeEntries(this.manifest.files || {}, FileManifestEntry),
+      ...makeEntries(this.manifest.dockerImages || {}, DockerImageManifestEntry),
     ];
 
-    function makeEntries<A, B, C, D>(
-      assets: Record<string, { source?: A, destinations: Record<string, B>, externalSource?: C }>,
-      ctor: new (id: DestinationIdentifier, source: A | undefined, destination: B, externalSource: C | undefined) => D): D[] {
+    function makeEntries<A, B, C>(
+      assets: Record<string, { source: A, destinations: Record<string, B> }>,
+      ctor: new (id: DestinationIdentifier, source: A, destination: B) => C): C[] {
 
-      const ret = new Array<D>();
+      const ret = new Array<C>();
       for (const [assetId, asset] of Object.entries(assets)) {
         for (const [destId, destination] of Object.entries(asset.destinations)) {
-          ret.push(new ctor(new DestinationIdentifier(assetId, destId), asset.source, destination, asset.externalSource));
+          ret.push(new ctor(new DestinationIdentifier(assetId, destId), asset.source, destination));
         }
       }
       return ret;
@@ -176,17 +170,11 @@ export class FileManifestEntry implements IManifestEntry {
     /** Identifier for this asset */
     public readonly id: DestinationIdentifier,
     /** Source of the file asset */
-    public readonly source: FileSource | undefined,
+    public readonly source: FileSource,
     /** Destination for the file asset */
     public readonly destination: FileDestination,
-    /** External source of the file asset */
-    public readonly externalSource?: ExternalFileSource,
   ) {
-    if (source === undefined && externalSource === undefined) {
-      throw new Error('One of source or externalSource must be defined.');
-    }
-
-    this.genericSource = source ?? externalSource!;
+    this.genericSource = source;
     this.genericDestination = destination;
   }
 }
@@ -203,17 +191,11 @@ export class DockerImageManifestEntry implements IManifestEntry {
     /** Identifier for this asset */
     public readonly id: DestinationIdentifier,
     /** Source of the file asset */
-    public readonly source: DockerImageSource | undefined,
+    public readonly source: DockerImageSource,
     /** Destination for the file asset */
     public readonly destination: DockerImageDestination,
-    /** External source of the file asset */
-    public readonly externalSource?: ExternalDockerImageSource,
   ) {
-    if (source === undefined && externalSource === undefined) {
-      throw new Error('One of source or externalSource must be defined.');
-    }
-
-    this.genericSource = source ?? externalSource!;
+    this.genericSource = source;
     this.genericDestination = destination;
   }
 }

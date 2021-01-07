@@ -33,12 +33,8 @@
             "type": "object",
             "properties": {
                 "source": {
-                    "description": "Source description for file assets (Default none, must be defined if externalSource is undefined)",
-                    "$ref": "#/definitions/FileSource"
-                },
-                "externalSource": {
-                    "description": "External source description for file assets (Default none, must be defined if source is undefined)",
-                    "$ref": "#/definitions/ExternalFileSource"
+                    "$ref": "#/definitions/FileSource",
+                    "description": "Source description for file assets (Default none, must be defined if externalSource is undefined)"
                 },
                 "destinations": {
                     "description": "Destinations for this file asset",
@@ -49,45 +45,34 @@
                 }
             },
             "required": [
-                "destinations"
+                "destinations",
+                "source"
             ]
         },
         "FileSource": {
             "description": "Describe the source of a file asset",
             "type": "object",
             "properties": {
+                "executable": {
+                    "description": "External command which will produce the file asset to upload. (Default - Exactly one of `executable` and `path` is required.)",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
                 "path": {
-                    "description": "The filesystem object to upload\n\nThis path is relative to the asset manifest location.",
+                    "description": "The filesystem object to upload\n\nThis path is relative to the asset manifest location. (Default - Exactly one of `executable` and `path` is required.)",
                     "type": "string"
                 },
                 "packaging": {
-                    "description": "Packaging method (Default FILE)",
+                    "description": "Packaging method\n\nOnly allowed when `path` is specified. (Default FILE)",
                     "enum": [
                         "file",
                         "zip"
                     ],
                     "type": "string"
                 }
-            },
-            "required": [
-                "path"
-            ]
-        },
-        "ExternalFileSource": {
-            "description": "Describe the source of an external file asset",
-            "type": "object",
-            "properties": {
-                "executable": {
-                    "description": "The filesystem object to upload\n\nThis path is relative to the asset manifest location.",
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                }
-            },
-            "required": [
-                "executable"
-            ]
+            }
         },
         "FileDestination": {
             "description": "Where in S3 a file asset needs to be published",
@@ -124,12 +109,8 @@
             "type": "object",
             "properties": {
                 "source": {
-                    "description": "Source description for file assets (Default none, must be defined if externalSource is undefined)",
-                    "$ref": "#/definitions/DockerImageSource"
-                },
-                "externalSource": {
-                    "description": "External source description for file assets (Default none, must be defined if source is undefined)",
-                    "$ref": "#/definitions/ExternalDockerImageSource"
+                    "$ref": "#/definitions/DockerImageSource",
+                    "description": "Source description for file assets"
                 },
                 "destinations": {
                     "description": "Destinations for this file asset",
@@ -140,7 +121,8 @@
                 }
             },
             "required": [
-                "destinations"
+                "destinations",
+                "source"
             ]
         },
         "DockerImageSource": {
@@ -148,44 +130,32 @@
             "type": "object",
             "properties": {
                 "directory": {
-                    "description": "The directory containing the Docker image build instructions.\n\nThis path is relative to the asset manifest location.",
+                    "description": "The directory containing the Docker image build instructions.\n\nThis path is relative to the asset manifest location. (Default - Exactly one of `directory` and `executable` is required)",
                     "type": "string"
                 },
+                "executable": {
+                    "description": "A command-line executable that returns the name of a local\nDocker image on stdout after being run. (Default - Exactly one of `directory` and `executable` is required)",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
                 "dockerFile": {
-                    "description": "The name of the file with build instructions (Default Dockerfile)",
+                    "description": "The name of the file with build instructions\n\nOnly allowed when `directory` is set. (Default Dockerfile)",
                     "type": "string"
                 },
                 "dockerBuildTarget": {
-                    "description": "Target build stage in a Dockerfile with multiple build stages (Default - The last stage in the Dockerfile)",
+                    "description": "Target build stage in a Dockerfile with multiple build stages\n\nOnly allowed when `directory` is set. (Default - The last stage in the Dockerfile)",
                     "type": "string"
                 },
                 "dockerBuildArgs": {
-                    "description": "Additional build arguments (Default - No additional build arguments)",
+                    "description": "Additional build arguments\n\nOnly allowed when `directory` is set. (Default - No additional build arguments)",
                     "type": "object",
                     "additionalProperties": {
                         "type": "string"
                     }
                 }
-            },
-            "required": [
-                "directory"
-            ]
-        },
-        "ExternalDockerImageSource": {
-            "description": "Properties for how to produce a Docker image from an external source",
-            "type": "object",
-            "properties": {
-                "executable": {
-                    "description": "A command-line executable that returns the name of a local\nDocker image on stdout after being run.",
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                }
-            },
-            "required": [
-                "executable"
-            ]
+            }
         },
         "DockerImageDestination": {
             "description": "Where to publish docker images",

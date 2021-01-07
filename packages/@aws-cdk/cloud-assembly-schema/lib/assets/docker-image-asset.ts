@@ -6,15 +6,8 @@ import { AwsDestination } from './aws-destination';
 export interface DockerImageAsset {
   /**
    * Source description for file assets
-   * @default none, must be defined if externalSource is undefined
    */
-  readonly source?: DockerImageSource;
-
-  /**
-   * External source description for file assets
-   * @default none, must be defined if source is undefined
-   */
-  readonly externalSource?: ExternalDockerImageSource;
+  readonly source: DockerImageSource;
 
   /**
    * Destinations for this file asset
@@ -30,11 +23,23 @@ export interface DockerImageSource {
    * The directory containing the Docker image build instructions.
    *
    * This path is relative to the asset manifest location.
+   *
+   * @default - Exactly one of `directory` and `executable` is required
    */
-  readonly directory: string;
+  readonly directory?: string;
+
+  /**
+   * A command-line executable that returns the name of a local
+   * Docker image on stdout after being run.
+   *
+   * @default - Exactly one of `directory` and `executable` is required
+   */
+  readonly executable?: string[];
 
   /**
    * The name of the file with build instructions
+   *
+   * Only allowed when `directory` is set.
    *
    * @default "Dockerfile"
    */
@@ -43,6 +48,8 @@ export interface DockerImageSource {
   /**
    * Target build stage in a Dockerfile with multiple build stages
    *
+   * Only allowed when `directory` is set.
+   *
    * @default - The last stage in the Dockerfile
    */
   readonly dockerBuildTarget?: string;
@@ -50,20 +57,11 @@ export interface DockerImageSource {
   /**
    * Additional build arguments
    *
+   * Only allowed when `directory` is set.
+   *
    * @default - No additional build arguments
    */
   readonly dockerBuildArgs?: { [name: string]: string };
-}
-
-/**
- * Properties for how to produce a Docker image from an external source
- */
-export interface ExternalDockerImageSource {
-  /**
-   * A command-line executable that returns the name of a local
-   * Docker image on stdout after being run.
-   */
-  readonly executable: string[];
 }
 
 /**

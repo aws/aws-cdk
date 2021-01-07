@@ -8,13 +8,7 @@ export interface FileAsset {
    * Source description for file assets
    * @default none, must be defined if externalSource is undefined
    */
-  readonly source?: FileSource;
-
-  /**
-   * External source description for file assets
-   * @default none, must be defined if source is undefined
-   */
-  readonly externalSource?: ExternalFileSource;
+  readonly source: FileSource;
 
   /**
    * Destinations for this file asset
@@ -42,30 +36,29 @@ export enum FileAssetPackaging {
  */
 export interface FileSource {
   /**
+   * External command which will produce the file asset to upload.
+   *
+   * @default - Exactly one of `executable` and `path` is required.
+   */
+  readonly executable?: string[];
+
+  /**
    * The filesystem object to upload
    *
    * This path is relative to the asset manifest location.
+   *
+   * @default - Exactly one of `executable` and `path` is required.
    */
-  readonly path: string;
+  readonly path?: string;
 
   /**
    * Packaging method
    *
+   * Only allowed when `path` is specified.
+   *
    * @default FILE
    */
   readonly packaging?: FileAssetPackaging;
-}
-
-/**
- * Describe the source of an external file asset
- */
-export interface ExternalFileSource {
-  /**
-   * The filesystem object to upload
-   *
-   * This path is relative to the asset manifest location.
-   */
-  readonly executable: string[];
 }
 
 /**

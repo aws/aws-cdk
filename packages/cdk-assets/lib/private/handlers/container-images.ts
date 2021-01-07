@@ -1,5 +1,5 @@
 import * as path from 'path';
-import { DockerImageDestination, ExternalDockerImageSource } from '@aws-cdk/cloud-assembly-schema';
+import { DockerImageDestination } from '@aws-cdk/cloud-assembly-schema';
 import { DockerImageManifestEntry } from '../../asset-manifest';
 import { EventType } from '../../progress';
 import { IAssetHandler, IHandlerHost } from '../asset-handler';
@@ -8,15 +8,12 @@ import { replaceAwsPlaceholders } from '../placeholders';
 import { shell } from '../shell';
 
 export class ContainerImageAssetHandler implements IAssetHandler {
-  private readonly localTagName: string;
   private readonly docker = new Docker(m => this.host.emitMessage(EventType.DEBUG, m));
 
   constructor(
     private readonly workDir: string,
     private readonly asset: DockerImageManifestEntry,
     private readonly host: IHandlerHost) {
-
-    this.localTagName = `cdkasset-${this.asset.id.assetId.toLowerCase()}`;
   }
 
   public async publish(): Promise<void> {
@@ -29,20 +26,6 @@ export class ContainerImageAssetHandler implements IAssetHandler {
       throw new Error(`No ECR repository named '${destination.repositoryName}' in account ${account}. Is this account bootstrapped?`);
     }
 
-    const imageUri = this.asset.externalSource ?
-      await this.buildExternalAsset(this.asset.externalSource, ecr) : await this.buildAsset(destination, ecr, repoUri);
-
-    if (imageUri === undefined) {
-      return;
-    }
-
-    this.host.emitMessage(EventType.UPLOAD, `Push ${imageUri}`);
-    if (this.host.aborted) { return; }
-    await this.docker.tag(this.localTagName, imageUri);
-    await this.docker.push(imageUri);
-  }
-
-  private async buildAsset(destination: DockerImageDestination, ecr: AWS.ECR, repoUri: string): Promise<string | undefined> {
     const imageUri = `${repoUri}:${destination.imageTag}`;
 
     if (!(await this.checkImageUriExists(imageUri, ecr, destination)) || this.host.aborted) {
@@ -52,13 +35,29 @@ export class ContainerImageAssetHandler implements IAssetHandler {
     // Login before build so that the Dockerfile can reference images in the ECR repo
     await this.docker.login(ecr);
 
-    if (await this.isImageCached()) {
-      return undefined;
+    const localTagName = this.asset.source.executable ?
+      await this.buildExternalAsset(this.asset.source.executable) : await this.buildAsset();
+
+    if (localTagName === undefined || this.host.aborted) {
+      return;
     }
 
-    await this.buildImage();
+    this.host.emitMessage(EventType.UPLOAD, `Push ${imageUri}`);
+    if (this.host.aborted) { return; }
+    await this.docker.tag(localTagName, imageUri);
+    await this.docker.push(imageUri);
+  }
 
-    return imageUri;
+  private async buildAsset(): Promise<string | undefined> {
+    const localTagName = `cdkasset-${this.asset.id.assetId.toLowerCase()}`;
+
+    if (!(await this.isImageCached(localTagName))) {
+      if (this.host.aborted) { return undefined; }
+
+      await this.buildImage(localTagName);
+    }
+
+    return localTagName;
   }
 
   private async checkImageUriExists(imageUri: string, ecr: AWS.ECR, destination: DockerImageDestination): Promise<boolean> {
@@ -71,32 +70,34 @@ export class ContainerImageAssetHandler implements IAssetHandler {
     return true;
   }
 
-  private async buildExternalAsset(asset: ExternalDockerImageSource, ecr: AWS.ECR): Promise<string> {
-    this.host.emitMessage(EventType.BUILD, `Building Docker image using command '${asset.executable}'`);
+  private async buildExternalAsset(executable: string[]): Promise<string | undefined> {
+    this.host.emitMessage(EventType.BUILD, `Building Docker image using command '${executable}'`);
+    if (this.host.aborted) { return undefined; }
 
-    // Login before build so that the Dockerfile can reference images in the ECR repo
-    await this.docker.login(ecr);
-
-    return shell(asset.executable);
+    return shell(executable);
   }
 
-  private async buildImage(): Promise<void> {
-    const source = this.asset.source!;
+  private async buildImage(localTagName: string): Promise<void> {
+    const source = this.asset.source;
+    if (!source.directory) {
+      throw new Error(`'directory' is expected in the DockerImage asset source, got: ${JSON.stringify(source)}`);
+    }
+
     const fullPath = path.resolve(this.workDir, source.directory);
     this.host.emitMessage(EventType.BUILD, `Building Docker image at ${fullPath}`);
 
     await this.docker.build({
       directory: fullPath,
-      tag: this.localTagName,
+      tag: localTagName,
       buildArgs: source.dockerBuildArgs,
       target: source.dockerBuildTarget,
       file: source.dockerFile,
     });
   }
 
-  private async isImageCached(): Promise<boolean> {
-    if (await this.docker.exists(this.localTagName)) {
-      this.host.emitMessage(EventType.CACHED, `Cached ${this.localTagName}`);
+  private async isImageCached(localTagName: string): Promise<boolean> {
+    if (await this.docker.exists(localTagName)) {
+      this.host.emitMessage(EventType.CACHED, `Cached ${localTagName}`);
       return true;
     }
 
