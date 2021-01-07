@@ -184,11 +184,11 @@ export class BundlingDockerImage {
       const volumes = options.volumes || [];
 
       for (const v of volumes) {
-        container.copyTo(v.hostPath, `${v.containerPath}:${v.consistency ?? DockerVolumeConsistency.DELEGATED}`);
+        container.copyTo(v.hostPath, v.containerPath);
       }
       container.start();
       for (const v of volumes) {
-        container.copyFrom(`${v.containerPath}:${v.consistency ?? DockerVolumeConsistency.DELEGATED}`, v.hostPath);
+        container.copyFrom(v.containerPath, v.hostPath);
       }
     } finally {
       container.remove();
