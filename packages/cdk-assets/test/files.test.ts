@@ -153,6 +153,8 @@ test('correctly identify asset path if path is absolute', async () => {
   aws.mockS3.upload = mockUpload('FILE_CONTENTS');
 
   await pub.publish();
+
+  expect(true).toBeTruthy(); // No exception, satisfy linter
 });
 
 describe('external assets', () => {

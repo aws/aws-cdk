@@ -1,7 +1,7 @@
-import * as cxschema from '@aws-cdk/cloud-assembly-schema';
-import * as cxapi from '@aws-cdk/cx-api';
 import * as fs from 'fs';
 import * as path from 'path';
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
+import * as cxapi from '@aws-cdk/cx-api';
 import {
   DockerImageAssetLocation,
   DockerImageAssetSource,
@@ -17,8 +17,8 @@ import { CfnRule } from '../cfn-rule';
 import { ISynthesisSession } from '../construct-compat';
 import { Stack } from '../stack';
 import { Token } from '../token';
-import { StackSynthesizer } from './stack-synthesizer';
 import { assertBound, contentHash } from './_shared';
+import { StackSynthesizer } from './stack-synthesizer';
 
 export const BOOTSTRAP_QUALIFIER_CONTEXT = '@aws-cdk/core:bootstrapQualifier';
 
@@ -295,84 +295,42 @@ export class DefaultStackSynthesizer extends StackSynthesizer {
   }
 
   public addFileAsset(asset: FileAssetSource): FileAssetLocation {
-    assertBound(this.stack);
-    assertBound(this.bucketName);
-
     const objectKey = this.bucketPrefix + asset.sourceHash + (asset.packaging === FileAssetPackaging.ZIP_DIRECTORY ? '.zip' : '');
 
-    const destinations = {
-      [this.manifestEnvName]: {
-        bucketName: this.bucketName,
-        objectKey,
-        region: resolvedOr(this.stack.region, undefined),
-        assumeRoleArn: this.fileAssetPublishingRoleArn,
-        assumeRoleExternalId: this.props.fileAssetPublishingExternalId,
-      },
-    };
-
-    const source = {
-      path: asset.fileName,
-      packaging: asset.packaging,
-    };
+    const dest = this.determineFileAssetDestination(objectKey);
 
     // Add to manifest
     this.files[asset.sourceHash] = {
-      source,
-      destinations,
+      source: {
+        path: asset.fileName,
+        packaging: asset.packaging,
+      },
+      destinations: {
+        [this.manifestEnvName]: dest.manifest,
+      },
     };
 
-    const { region, urlSuffix } = stackLocationOrInstrinsics(this.stack);
-    const httpUrl = cfnify(`https://s3.${region}.${urlSuffix}/${this.bucketName}/${objectKey}`);
-    const s3ObjectUrl = cfnify(`s3://${this.bucketName}/${objectKey}`);
-
-    // Return CFN expression
-    return {
-      bucketName: cfnify(this.bucketName),
-      objectKey,
-      httpUrl,
-      s3ObjectUrl,
-      s3Url: httpUrl,
-    };
+    // Return CloudFormation reference
+    return dest.cloudFormation;
   }
 
   public addExternalFileAsset(asset: ExternalFileAssetSource): FileAssetLocation {
-    assertBound(this.stack);
-    assertBound(this.bucketName);
+    const objectKey = this.bucketPrefix + asset.sourceHash + '.zip'; // Always a ZIP
 
-    const objectKey = this.bucketPrefix + asset.sourceHash;
-
-    const destinations = {
-      [this.manifestEnvName]: {
-        bucketName: this.bucketName,
-        objectKey,
-        region: resolvedOr(this.stack.region, undefined),
-        assumeRoleArn: this.fileAssetPublishingRoleArn,
-        assumeRoleExternalId: this.props.fileAssetPublishingExternalId,
-      },
-    };
-
-    const externalSource = {
-      executable: asset.executable,
-    };
+    const dest = this.determineFileAssetDestination(objectKey);
 
     // Add to manifest
     this.files[asset.sourceHash] = {
-      externalSource,
-      destinations,
+      externalSource: {
+        executable: asset.executable,
+      },
+      destinations: {
+        [this.manifestEnvName]: dest.manifest,
+      },
     };
 
-    const { region, urlSuffix } = stackLocationOrInstrinsics(this.stack);
-    const httpUrl = cfnify(`https://s3.${region}.${urlSuffix}/${this.bucketName}/${objectKey}`);
-    const s3ObjectUrl = cfnify(`s3://${this.bucketName}/${objectKey}`);
-
-    // Return CFN expression
-    return {
-      bucketName: cfnify(this.bucketName),
-      objectKey,
-      httpUrl,
-      s3ObjectUrl,
-      s3Url: httpUrl,
-    };
+    // Return CloudFormation reference
+    return dest.cloudFormation;
   }
 
   public addExternalDockerImageAsset(asset: ExternalDockerImageAssetSource): DockerImageAssetLocation {
@@ -381,33 +339,19 @@ export class DefaultStackSynthesizer extends StackSynthesizer {
 
     const imageTag = asset.sourceHash;
 
-    const destinations = {
-      [this.manifestEnvName]: {
-        repositoryName: this.repositoryName,
-        imageTag,
-        region: resolvedOr(this.stack.region, undefined),
-        assumeRoleArn: this.imageAssetPublishingRoleArn,
-        assumeRoleExternalId: this.props.imageAssetPublishingExternalId,
-      },
-    };
-
-    const externalSource = {
-      executable: asset.executable,
-    };
+    const dest = this.determineDockerImageAssetDestination(imageTag);
 
     // Add to manifest
     this.dockerImages[imageTag] = {
-      externalSource,
-      destinations,
+      externalSource: {
+        executable: asset.executable,
+      },
+      destinations: {
+        [this.manifestEnvName]: dest.manifest,
+      },
     };
 
-    const { account, region, urlSuffix } = stackLocationOrInstrinsics(this.stack);
-
-    // Return CFN expression
-    return {
-      repositoryName: cfnify(this.repositoryName),
-      imageUri: cfnify(`${account}.dkr.ecr.${region}.${urlSuffix}/${this.repositoryName}:${imageTag}`),
-    };
+    return dest.cloudFormation;
   }
 
   public addDockerImageAsset(asset: DockerImageAssetSource): DockerImageAssetLocation {
@@ -416,36 +360,22 @@ export class DefaultStackSynthesizer extends StackSynthesizer {
 
     const imageTag = asset.sourceHash;
 
-    const destinations = {
-      [this.manifestEnvName]: {
-        repositoryName: this.repositoryName,
-        imageTag,
-        region: resolvedOr(this.stack.region, undefined),
-        assumeRoleArn: this.imageAssetPublishingRoleArn,
-        assumeRoleExternalId: this.props.imageAssetPublishingExternalId,
-      },
-    };
-
-    const source = {
-      directory: asset.directoryName,
-      dockerBuildArgs: asset.dockerBuildArgs,
-      dockerBuildTarget: asset.dockerBuildTarget,
-      dockerFile: asset.dockerFile,
-    };
+    const dest = this.determineDockerImageAssetDestination(imageTag);
 
     // Add to manifest
     this.dockerImages[imageTag] = {
-      source,
-      destinations,
+      source: {
+        directory: asset.directoryName,
+        dockerBuildArgs: asset.dockerBuildArgs,
+        dockerBuildTarget: asset.dockerBuildTarget,
+        dockerFile: asset.dockerFile,
+      },
+      destinations: {
+        [this.manifestEnvName]: dest.manifest,
+      },
     };
 
-    const { account, region, urlSuffix } = stackLocationOrInstrinsics(this.stack);
-
-    // Return CFN expression
-    return {
-      repositoryName: cfnify(this.repositoryName),
-      imageUri: cfnify(`${account}.dkr.ecr.${region}.${urlSuffix}/${this.repositoryName}:${imageTag}`),
-    };
+    return dest.cloudFormation;
   }
 
   /**
@@ -573,6 +503,59 @@ export class DefaultStackSynthesizer extends StackSynthesizer {
       resolvedOr(this.stack.region, 'current_region'),
     ].join('-');
   }
+
+  /**
+   * Calculation destinations for a file asset
+   */
+  private determineFileAssetDestination(objectKey: string): FileAssetDestination {
+    assertBound(this.stack);
+    assertBound(this.bucketName);
+
+    const { region, urlSuffix } = stackLocationOrInstrinsics(this.stack);
+    const httpUrl = cfnify(`https://s3.${region}.${urlSuffix}/${this.bucketName}/${objectKey}`);
+    const s3ObjectUrl = cfnify(`s3://${this.bucketName}/${objectKey}`);
+
+    return {
+      manifest: {
+        bucketName: this.bucketName,
+        objectKey,
+        region: resolvedOr(this.stack.region, undefined),
+        assumeRoleArn: this.fileAssetPublishingRoleArn,
+        assumeRoleExternalId: this.props.fileAssetPublishingExternalId,
+      },
+      cloudFormation: {
+        bucketName: cfnify(this.bucketName),
+        objectKey,
+        httpUrl,
+        s3ObjectUrl,
+        s3Url: httpUrl,
+      },
+    };
+  }
+
+  /**
+   * Calculation destinations for a container asset
+   */
+  private determineDockerImageAssetDestination(imageTag: string): DockerImageAssetDestination {
+    assertBound(this.stack);
+    assertBound(this.repositoryName);
+
+    const { account, region, urlSuffix } = stackLocationOrInstrinsics(this.stack);
+
+    return {
+      manifest: {
+        repositoryName: this.repositoryName,
+        imageTag,
+        region: resolvedOr(this.stack.region, undefined),
+        assumeRoleArn: this.imageAssetPublishingRoleArn,
+        assumeRoleExternalId: this.props.imageAssetPublishingExternalId,
+      },
+      cloudFormation: {
+        repositoryName: cfnify(this.repositoryName),
+        imageUri: cfnify(`${account}.dkr.ecr.${region}.${urlSuffix}/${this.repositoryName}:${imageTag}`),
+      },
+    };
+  }
 }
 
 /**
@@ -657,4 +640,40 @@ function range(startIncl: number, endExcl: number) {
     ret.push(i);
   }
   return ret;
+}
+
+/**
+ * The destination for a file asset
+ *
+ * Contains both the physical destination (where the file will be uploaded)
+ * as well as the logical destination (how we're going to refer to it in CloudFormation).
+ */
+interface FileAssetDestination {
+  /**
+   * Manifest location (physical destination)
+   */
+  readonly manifest: cxschema.FileDestination;
+
+  /**
+   * CloudFormation reference (reference to destination)
+   */
+  readonly cloudFormation: FileAssetLocation;
+}
+
+/**
+ * The destination for a docker image asset
+ *
+ * Contains both the physical destination (where the image will be uploaded)
+ * as well as the logical destination (how we're going to refer to it in CloudFormation).
+ */
+interface DockerImageAssetDestination {
+  /**
+   * Manifest location (physical destination)
+   */
+  readonly manifest: cxschema.DockerImageDestination;
+
+  /**
+   * CloudFormation reference (reference to destination)
+   */
+  readonly cloudFormation: DockerImageAssetLocation;
 }
