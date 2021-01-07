@@ -15,7 +15,7 @@ export interface LambdaRestApiProps extends RestApiProps {
   readonly handler: lambda.IFunction;
 
   /**
-   * Integration options, such as request/resopnse mapping, content handling
+   * Integration options, such as request/response mapping, content handling
    *
    * @default - no options.
    */
