@@ -85,7 +85,7 @@ nodeunitShim({
 
     test.done();
   },
-  'x86-64 instances use x86-64 ssm agent package'(test: Test) {
+  'x86-64 instances use x86-64 image by default'(test: Test) {
     // GIVEN
     const stack = new Stack();
     const vpc = new Vpc(stack, 'VPC');
@@ -97,14 +97,14 @@ nodeunitShim({
 
     // THEN
     expect(stack).to(haveResource('AWS::EC2::Instance', {
-      UserData: {
-        'Fn::Base64': '#!/bin/bash\nyum install -y https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_amd64/amazon-ssm-agent.rpm',
+      ImageId: {
+        Ref: 'SsmParameterValueawsserviceamiamazonlinuxlatestamzn2amihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter',
       },
     }));
 
     test.done();
   },
-  'arm instances use arm ssm agent package'(test: Test) {
+  'arm instances use arm image by default'(test: Test) {
     // GIVEN
     const stack = new Stack();
     const vpc = new Vpc(stack, 'VPC');
@@ -117,8 +117,8 @@ nodeunitShim({
 
     // THEN
     expect(stack).to(haveResource('AWS::EC2::Instance', {
-      UserData: {
-        'Fn::Base64': '#!/bin/bash\nyum install -y https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_arm64/amazon-ssm-agent.rpm',
+      ImageId: {
+        Ref: 'SsmParameterValueawsserviceamiamazonlinuxlatestamzn2amihvmarm64gp2C96584B6F00A464EAD1953AFF4B05118Parameter',
       },
     }));
 

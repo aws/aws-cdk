@@ -155,7 +155,7 @@ export class BastionHostLinux extends Resource implements IInstance {
       instanceType,
       machineImage: props.machineImage ?? MachineImage.latestAmazonLinux({
         generation: AmazonLinuxGeneration.AMAZON_LINUX_2,
-        cpuType: instanceType.architecture as string as AmazonLinuxCpuType,
+        cpuType: this.toAmazonLinuxCpuType(instanceType.architecture),
       }),
       vpcSubnets: props.subnetSelection ?? {},
       blockDevices: props.blockDevices ?? undefined,
@@ -177,7 +177,6 @@ export class BastionHostLinux extends Resource implements IInstance {
     this.instancePrivateDnsName = this.instance.instancePrivateDnsName;
     this.instancePublicIp = this.instance.instancePublicIp;
     this.instancePublicDnsName = this.instance.instancePublicDnsName;
-    this.applyUserData();
 
     new CfnOutput(this, 'BastionHostId', {
       description: 'Instance ID of the bastion host. Use this to connect via SSM Session Manager',
@@ -186,12 +185,17 @@ export class BastionHostLinux extends Resource implements IInstance {
   }
 
   /**
-   * Install the architecture-appropriate SSM Agent package
+   * Returns the AmazonLinuxCpuType corresponding to the given instance architecture
+   * @param architecture the instance architecture value to convert
    */
-  private applyUserData(): void {
-    const instanceType = new InstanceType(this.instance.instance.instanceType!);
-    const ssmAgentArch = instanceType.architecture === InstanceArchitecture.ARM_64 ? 'linux_arm64' : 'linux_amd64';
-    this.instance.addUserData(`yum install -y https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/${ssmAgentArch}/amazon-ssm-agent.rpm`);
+  private toAmazonLinuxCpuType(architecture: InstanceArchitecture): AmazonLinuxCpuType {
+    if (architecture === InstanceArchitecture.ARM_64) {
+      return AmazonLinuxCpuType.ARM_64;
+    } else if (architecture === InstanceArchitecture.X86_64) {
+      return AmazonLinuxCpuType.X86_64;
+    }
+
+    throw new Error(`Unsupported instance architecture '${architecture}'`);
   }
 
   /**

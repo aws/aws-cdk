@@ -591,13 +591,7 @@ export class InstanceType {
     return new InstanceType(`${instanceClass}.${instanceSize}`);
   }
 
-  /**
-   * The instance's CPU architecture
-   */
-  public readonly architecture: InstanceArchitecture;
-
   constructor(private readonly instanceTypeIdentifier: string) {
-    this.architecture = this.resolveArchitecture();
   }
 
   /**
@@ -608,13 +602,17 @@ export class InstanceType {
   }
 
   /**
-   * Returns the CPU architecture for the instance type
+   * The instance's CPU architecture
    */
-  private resolveArchitecture(): InstanceArchitecture {
+  public get architecture(): InstanceArchitecture {
     const instanceClass = this.instanceTypeIdentifier.split('.')[0];
 
-    // Graviton-based (a1, t4g, c6g, c6gd, c6gn, m6g, m6gd, r6g, r6gd)
-    if (/^a1|[cmrt][\d]g[dn]?$/.test(instanceClass)) {
+    // We need to check the instance family part and capabilities part
+    // of the instance class to determine if it is Graviton-powered
+    const gravitonPattern = /^a\d/; // Matches instance classes based on first-gen Graviton family
+    const graviton2Pattern = /^[a-z]\d{1,2}(?=g)/; // Matches instance classes having the Graviton2 (`g`) capability
+
+    if (gravitonPattern.test(instanceClass) || graviton2Pattern.test(instanceClass)) {
       return InstanceArchitecture.ARM_64;
     }
 
