@@ -90,17 +90,16 @@ An asset manifest looks like this:
         }
       }
     },
-    "7aac5b80b050e7e4e168f84feffa5893": {
+    "3dfe2b80b050e7e4e168f84feff678d4": {
       "source": {
-        "path": "some_directory",
-        "packaging": "zip"
+        "executable": ["myzip"]
       },
       "destinations": {
         "us-east-1": {
           "region": "us-east-1",
           "assumeRoleArn": "arn:aws:iam::12345789012:role/my-account",
-          "bucketName": "MyBucket",
-          "objectKey": "7aac5b80b050e7e4e168f84feffa5893.zip"
+          "bucketName": "MySpecialBucket",
+          "objectKey": "3dfe2b80b050e7e4e168f84feff678d4.zip"
         }
       }
     },
@@ -121,8 +120,8 @@ An asset manifest looks like this:
       }
     },
     "d92753c58a86f7b8c68a4591c4f9cf28": {
-      "externalSource": {
-        "executable": "mytool package dockerdir",
+      "source": {
+        "executable": ["mytool", "package", "dockerdir"],
       },
       "destinations": {
         "us-east-1": {
