@@ -97,6 +97,14 @@ httpApi.addRoutes({
 
 The URL to the endpoint can be retrieved via the `apiEndpoint` attribute.
 
+The default `execute-api` endpoint for this HTTP API is enabled by default. Use `disableExecuteApiEndpoint` to disable this.
+
+```ts
+const httpApi = new HttpApi(stack, 'HttpApi', {
+  disableExecuteApiEndpoint: true,
+});
+```
+
 The `defaultIntegration` option while defining HTTP APIs lets you create a default catch-all integration that is
 matched when a client reaches a route that is not explicitly defined.
 
