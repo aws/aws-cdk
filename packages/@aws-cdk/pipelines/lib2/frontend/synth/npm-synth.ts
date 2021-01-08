@@ -24,7 +24,7 @@ export interface StandardSynthProps {
 }
 
 export class NpmSynth extends Synth {
-  constructor(private readonly props: StandardSynthProps) {
+  constructor(private readonly props: StandardSynthProps = {}) {
     super();
   }
 
@@ -62,7 +62,6 @@ export class NpmSynth extends Synth {
       ],
     });
 
-    asm.producedBy(action);
     options.parent.add(action);
     options.root.setCloudAssemblyArtifact(asm);
   }

@@ -1,6 +1,5 @@
 import { Construct } from 'constructs';
 import { ExecutionGraph, PipelineGraph } from '../../graph';
-import { NpmSynth, StandardSynthProps } from './npm-synth';
 
 export interface AddSynthToGraphOptions {
   readonly root: PipelineGraph;
@@ -9,9 +8,11 @@ export interface AddSynthToGraphOptions {
 }
 
 export abstract class Synth {
-  public static standardNpm(props: StandardSynthProps): Synth {
+  public static standardNpm(props?: StandardSynthProps): Synth {
     return new NpmSynth(props);
   }
 
   public abstract addToExecutionGraph(options: AddSynthToGraphOptions): void;
 }
+
+import { NpmSynth, StandardSynthProps } from './npm-synth';

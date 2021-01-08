@@ -2,8 +2,8 @@ import { AssetType } from '../../../lib/actions/publish-assets-action';
 import { ExecutionGraph, PipelineGraph } from '../../graph';
 
 export abstract class AssetPublishingStrategy {
-  public static prepublishAll(_sharedCodeBuild: boolean = false): AssetPublishingStrategy {
-    throw new Error('Method not implemented.');
+  public static prepublishAll(): AssetPublishingStrategy {
+    return new PrepublishAssets();
   }
 
   public static jitPublishing(): AssetPublishingStrategy {
@@ -37,3 +37,5 @@ export interface PublishAssetOptions {
    */
   readonly assetType: AssetType;
 }
+
+import { PrepublishAssets } from './prepublish-assets';

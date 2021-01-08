@@ -83,7 +83,7 @@ export class CdkStageDeployment extends Deployment {
         assumeRoleArn: stackArtifact.assumeRoleArn,
       });
 
-      graph.add(prepareAction, executeAction);
+      stackGraph.add(prepareAction, executeAction);
       executeAction.dependOn(prepareAction);
 
       this.publishAssetDependencies(stackArtifact, graph, options);

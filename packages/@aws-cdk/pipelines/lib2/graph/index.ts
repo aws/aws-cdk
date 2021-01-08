@@ -1,5 +1,4 @@
 import { addAll, extract, flatMap, flatten } from '../_util';
-import { ExecutionSourceAction } from './source-actions';
 import { topoSort } from './toposort';
 
 export abstract class ExecutionNode {
@@ -10,6 +9,9 @@ export abstract class ExecutionNode {
   }
 
   public dependOn(...dependencies: ExecutionNode[]) {
+    if (dependencies.includes(this)) {
+      throw new Error(`Cannot add dependency on self: ${this}`);
+    }
     this.dependencies.push(...dependencies);
   }
 
@@ -96,7 +98,27 @@ export class ExecutionGraph extends ExecutionNode {
     }
 
     const projectedDependencies = projectDependencies(this.deepDependencies(), (node) => descendantsMap.get(node) ?? []);
-    return topoSort(this.nodes, projectedDependencies);
+    return topoSort(new Set(projectedDependencies.keys()), projectedDependencies);
+  }
+
+  public consoleLog(indent: number = 0) {
+    // eslint-disable-next-line no-console
+    console.log(' '.repeat(indent) + this + depString(this));
+    for (const node of this.nodes) {
+      if (node instanceof ExecutionGraph) {
+        node.consoleLog(indent + 2);
+      } else {
+        // eslint-disable-next-line no-console
+        console.log(' '.repeat(indent + 2) + node + depString(node));
+      }
+    }
+
+    function depString(node: ExecutionNode) {
+      if (node.dependencies.length > 0) {
+        return ` -> ${Array.from(node.dependencies).join(', ')}`;
+      }
+      return '';
+    }
   }
 
   /**
@@ -185,7 +207,7 @@ export class ExecutionArtifact {
 
   public producedBy(producer?: ExecutionAction) {
     if (this._producer) {
-      throw new Error('Artifact already has a producer');
+      throw new Error(`Artifact already has a producer (${this._producer}) while setting producer: ${producer}`);
     }
     this._producer = producer;
   }
@@ -208,9 +230,11 @@ function projectDependencies(dependencies: Map<ExecutionNode, Set<ExecutionNode>
     }
   }
 
-  // Project values
+  // Project values. Ignore self-dependencies, they were just between nodes that were collapsed into the same node.
   for (const [node, deps] of dependencies.entries()) {
-    dependencies.set(node, new Set(flatMap(deps, project)));
+    const depset = new Set(flatMap(deps, project));
+    depset.delete(node);
+    dependencies.set(node, depset);
   }
 
   return dependencies;
@@ -225,8 +249,25 @@ export function commonAncestor(xs: Iterable<ExecutionNode>) {
     paths.push(rootPath(x));
   }
 
+  if (paths.length === 0) {
+    throw new Error('Cannot find common ancestor between an empty set of nodes');
+  }
+  if (paths.length === 1) {
+    const path = paths[0];
+
+    if (path.length < 2) {
+      throw new Error(`Cannot find ancestor of node without ancestor: ${path[0]}`);
+    }
+    return path[path.length - 2];
+  }
+
+  const originalPaths = [...paths];
+
   // Remove the first element of every path as long as the 2nd elements are all
   // the same -- this leaves the shared element in first place.
+  //
+  //   A, B, C, 1, 2    }---> C
+  //   A, B, C, 3       }
   while (paths.every(path => paths[0].length >= 2 && path.length >= 2 && path[1] === paths[0][1])) {
     for (const path of paths) {
       path.shift();
@@ -235,7 +276,7 @@ export function commonAncestor(xs: Iterable<ExecutionNode>) {
 
   // If any of the paths are left with 1 element, there's no shared parent.
   if (paths.some(path => path.length < 2)) {
-    throw new Error('Could not determine a shared parent between nodes');
+    throw new Error(`Could not determine a shared parent between nodes: ${originalPaths.map(nodes => nodes.map(n => n.name).join('/'))}`);
   }
 
   return paths[0][0];
@@ -259,6 +300,8 @@ function rootPath(x: ExecutionNode): ExecutionNode[] {
   return ret;
 }
 
+// eslint-disable-next-line import/order
+import { ExecutionSourceAction } from './source-actions';
 export * from './source-actions';
 export * from './shell-action';
 export * from './cloudformation-actions';

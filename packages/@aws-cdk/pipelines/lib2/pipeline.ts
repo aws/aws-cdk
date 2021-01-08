@@ -34,7 +34,7 @@ export interface CdkPipelineProps {
    *
    * Sources are optional for some backends.
    */
-  readonly sources?: Source[];
+  readonly source?: Source;
 
   /**
    * Synth commands
@@ -66,9 +66,7 @@ export class CdkPipeline extends CoreConstruct {
     this.backend = props.backend ?? Backend.codePipeline();
     this.assetPublishing = props.assetPublishing ?? AssetPublishingStrategy.prepublishAll();
 
-    for (const source of props.sources ?? []) {
-      source.addToExecutionGraph({ root: this.graph, parent: this.graph.sourceStage });
-    }
+    props.source?.addToExecutionGraph({ root: this.graph, parent: this.graph.sourceStage });
     props.synth.addToExecutionGraph({ parent: this.graph.synthStage, root: this.graph, scope: this });
   }
 

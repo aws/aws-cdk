@@ -1,6 +1,5 @@
 import { Construct } from 'constructs';
 import { PipelineGraph } from '../graph';
-import { CodePipelineBackend, CodePipelineBackendProps } from './codepipeline';
 
 export interface RenderBackendOptions {
   readonly scope: Construct;
@@ -15,3 +14,4 @@ export abstract class Backend {
   public abstract renderBackend(options: RenderBackendOptions): void;
 }
 
+import { CodePipelineBackend, CodePipelineBackendProps } from './codepipeline';

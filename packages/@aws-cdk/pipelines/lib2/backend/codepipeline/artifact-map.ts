@@ -20,11 +20,8 @@ export class ArtifactMap {
   }
 
   private makeUniqueName(baseName: string) {
-    // just to shut up the compiler about sanitizeName() being unused
-    sanitizeName('a');
-
     let i = 1;
-    let name = baseName;
+    let name = sanitizeArtifactName(baseName);
     while (this.usedNames.has(name)) {
       name = `${baseName}${++i}`;
     }
@@ -32,6 +29,7 @@ export class ArtifactMap {
   }
 }
 
-function sanitizeName(x: string): string {
-  return x.replace(/[^A-Za-z0-9.@\-_]/g, '_');
+function sanitizeArtifactName(x: string): string {
+  // FIXME: Does this REALLY not allow '.'? The docs don't mention it, but action names etc. do!
+  return x.replace(/[^A-Za-z0-9@\-_]/g, '_');
 }
