@@ -128,6 +128,12 @@ export interface HttpApiProps {
    * @default - no default domain mapping configured. meaningless if `createDefaultStage` is `false`.
    */
   readonly defaultDomainMapping?: DefaultDomainMappingOptions;
+
+  /**
+   * Specifies whether clients can invoke your API by using the default execute-api endpoint.
+   * @default - execute-api endpoint enabled.
+   */
+  readonly disableExecuteApiEndpoint?: boolean;
 }
 
 /**
@@ -324,6 +330,7 @@ export class HttpApi extends HttpApiBase {
       protocolType: 'HTTP',
       corsConfiguration,
       description: props?.description,
+      disableExecuteApiEndpoint: props?.disableExecuteApiEndpoint,
     };
 
     const resource = new CfnApi(this, 'Resource', apiProps);

@@ -215,6 +215,19 @@ describe('HttpApi', () => {
     });
   });
 
+  test('disableExecuteApiEndpoint is enabled', () => {
+    const stack = new Stack();
+    new HttpApi(stack, 'api', {
+      disableExecuteApiEndpoint: true,
+    });
+
+    expect(stack).toHaveResource('AWS::ApiGatewayV2::Api', {
+      Name: 'api',
+      ProtocolType: 'HTTP',
+      DisableExecuteApiEndpoint: true,
+    });
+  });
+
   test('can add a vpc links', () => {
     // GIVEN
     const stack = new Stack();
