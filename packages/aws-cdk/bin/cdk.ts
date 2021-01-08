@@ -69,7 +69,7 @@ async function parseCommandLineArguments() {
     )
     .command(['synthesize [STACKS..]', 'synth [STACKS..]'], 'Synthesizes and prints the CloudFormation template for this stack', yargs => yargs
       .option('exclusively', { type: 'boolean', alias: 'e', desc: 'Only synthesize requested stacks, don\'t include dependencies' })
-      .option('no-stdout', { type: 'boolean', desc: 'Do not output CloudFormation Template to stdout', default: false }))
+      .option('quiet', { type: 'boolean', alias: 'q', desc: 'Do not output CloudFormation Template to stdout', default: false }))
     .command('bootstrap [ENVIRONMENTS..]', 'Deploys the CDK toolkit stack into an AWS environment', yargs => yargs
       .option('bootstrap-bucket-name', { type: 'string', alias: ['b', 'toolkit-bucket-name'], desc: 'The name of the CDK toolkit bucket; bucket will be created and must not exist', default: undefined })
       .option('bootstrap-kms-key-id', { type: 'string', desc: 'AWS KMS master key ID used for the SSE-KMS encryption', default: undefined, conflicts: 'bootstrap-customer-key' })
@@ -329,7 +329,7 @@ async function initCommandLine() {
 
       case 'synthesize':
       case 'synth':
-        return cli.synth(args.STACKS, args.exclusively, args['no-stdout']);
+        return cli.synth(args.STACKS, args.exclusively, args.quiet);
 
       case 'metadata':
         return cli.metadata(args.STACK);
