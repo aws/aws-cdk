@@ -45,7 +45,7 @@ nodeunitShim({
     test.done();
   },
 
-  'when Feature Flag is ommit, should not give error'(test: Test) {
+  'when stackResourceLimit is default, should give error'(test: Test) {
     // GIVEN
     const app = new App({});
 
@@ -56,18 +56,40 @@ nodeunitShim({
       new CfnResource(stack, `MyResource-${index}`, { type: 'MyResourceType' });
     }
 
-    test.ok(() => {
+    test.throws(() => {
       app.synth();
-    });
+    }, 'Number of resources: 1000 is greater than allowed maximum of 500');
 
     test.done();
   },
 
-  'when Feature Flag is enable, should give error'(test: Test) {
+  'when stackResourceLimit is defined, should give the proper error'(test: Test) {
     // GIVEN
     const app = new App({
       context: {
-        [cxapi.VALIDATE_STACK_RESOURCE_LIMIT]: true,
+        '@aws-cdk/core:stackResourceLimit': 100,
+      },
+    });
+
+    const stack = new Stack(app, 'MyStack');
+
+    // WHEN
+    for (let index = 0; index < 200; index++) {
+      new CfnResource(stack, `MyResource-${index}`, { type: 'MyResourceType' });
+    }
+
+    test.throws(() => {
+      app.synth();
+    }, 'Number of resources: 200 is greater than allowed maximum of 100');
+
+    test.done();
+  },
+
+  'when stackResourceLimit is 0, should not give error'(test: Test) {
+    // GIVEN
+    const app = new App({
+      context: {
+        '@aws-cdk/core:stackResourceLimit': 0,
       },
     });
 
@@ -78,32 +100,9 @@ nodeunitShim({
       new CfnResource(stack, `MyResource-${index}`, { type: 'MyResourceType' });
     }
 
-    test.throws(() => {
+    test.doesNotThrow(() => {
       app.synth();
-      // eslint-disable-next-line max-len
-    }, 'Number of resources: 1000 is greater than allowed maximum of 500');
-
-    test.done();
-  },
-
-  'when Feature Flag is enable, and maxResources defined, should give the proper error'(test: Test) {
-    // GIVEN
-    const app = new App({
-      context: {
-        [cxapi.VALIDATE_STACK_RESOURCE_LIMIT]: true,
-      },
     });
-
-    const stack = new Stack(app, 'MyStack', { maxResources: 100 });
-
-    // WHEN
-    for (let index = 0; index < 200; index++) {
-      new CfnResource(stack, `MyResource-${index}`, { type: 'MyResourceType' });
-    }
-
-    test.throws(() => {
-      app.synth();
-    }, 'Number of resources: 200 is greater than allowed maximum of 100');
 
     test.done();
   },
