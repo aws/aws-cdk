@@ -23,7 +23,7 @@ export interface HttpGatewayListenerOptions {
   readonly healthCheck?: HealthCheck;
 
   /**
-   * Represents the listener certificate
+   * Represents the configuration for enabling TLS on a listener
    *
    * @default - none
    */
@@ -123,7 +123,7 @@ class VirtualGatewayListenerImpl extends VirtualGatewayListener {
           protocol: this.protocol,
         },
         healthCheck: this.healthCheck ? renderHealthCheck(this.healthCheck, this.protocol, this.port): undefined,
-        tls: renderTls(tlsConfig),
+        tls: tlsConfig ? renderTls(tlsConfig) : undefined,
       },
     };
   }
@@ -133,9 +133,7 @@ class VirtualGatewayListenerImpl extends VirtualGatewayListener {
 /**
  * Renders the TLS config for a listener
  */
-function renderTls(tlsCertificateConfig: TlsCertificateConfig | undefined): CfnVirtualGateway.VirtualGatewayListenerTlsProperty | undefined {
-  if (tlsCertificateConfig === undefined) { return undefined; }
-
+function renderTls(tlsCertificateConfig: TlsCertificateConfig): CfnVirtualGateway.VirtualGatewayListenerTlsProperty {
   return {
     certificate: tlsCertificateConfig.tlsCertificate,
     mode: tlsCertificateConfig.tlsMode.toString(),

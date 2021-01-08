@@ -115,7 +115,7 @@ class AcmTlsCertificate extends TlsCertificate {
 
   constructor(props: AcmCertificateOptions) {
     super();
-    this.tlsMode = props.tlsMode ? props.tlsMode : TlsMode.DISABLED;
+    this.tlsMode = props.tlsMode;
     this.acmCertificate = props.certificate;
   }
 
@@ -154,7 +154,7 @@ class FileTlsCertificate extends TlsCertificate {
 
   constructor(props: FileCertificateOptions) {
     super();
-    this.tlsMode = props.tlsMode ? props.tlsMode : TlsMode.DISABLED;
+    this.tlsMode = props.tlsMode;
     this.certificateChain = props.certificateChainPath;
     this.privateKey = props.privateKeyPath;
   }

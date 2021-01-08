@@ -33,7 +33,7 @@ interface VirtualNodeListenerCommonOptions {
   readonly healthCheck?: HealthCheck;
 
   /**
-   * Represents the listener certificate
+   * Represents the configuration for enabling TLS on a listener
    *
    * @default - none
    */
@@ -132,7 +132,7 @@ class VirtualNodeListenerImpl extends VirtualNodeListener {
         },
         healthCheck: this.healthCheck ? this.renderHealthCheck(this.healthCheck) : undefined,
         timeout: this.timeout ? this.renderTimeout(this.timeout) : undefined,
-        tls: this.renderTls(tlsConfig),
+        tls: tlsConfig ? this.renderTls(tlsConfig) : undefined,
       },
     };
   }
@@ -140,9 +140,7 @@ class VirtualNodeListenerImpl extends VirtualNodeListener {
   /**
    * Renders the TLS config for a listener
    */
-  private renderTls(tlsCertificateConfig: TlsCertificateConfig | undefined): CfnVirtualNode.ListenerTlsProperty | undefined {
-    if (tlsCertificateConfig === undefined) { return undefined; }
-
+  private renderTls(tlsCertificateConfig: TlsCertificateConfig): CfnVirtualNode.ListenerTlsProperty {
     return {
       certificate: tlsCertificateConfig.tlsCertificate,
       mode: tlsCertificateConfig.tlsMode.toString(),
