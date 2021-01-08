@@ -323,6 +323,7 @@ export class Nodegroup extends Resource implements INodegroup {
       subnets: this.cluster.vpc.selectSubnets(props.subnets).subnetIds,
       // AmyType is not allowed by CFN when specifying an image id in your launch template.
       amiType: props.launchTemplateSpec === undefined ? determinedAmiType : undefined,
+      capacityType: props.capacityType ? props.capacityType.valueOf() : undefined,
       diskSize: props.diskSize,
       forceUpdateEnabled: props.forceUpdate ?? true,
       instanceTypes: props.instanceTypes ? props.instanceTypes.map(t => t.toString()) :
@@ -341,10 +342,6 @@ export class Nodegroup extends Resource implements INodegroup {
       },
       tags: props.tags,
     });
-
-    if (props.capacityType) {
-      resource.addPropertyOverride('CapacityType', props.capacityType.valueOf());
-    }
 
     if (props.launchTemplateSpec) {
       if (props.diskSize) {
