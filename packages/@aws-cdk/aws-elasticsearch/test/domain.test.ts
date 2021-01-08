@@ -1,9 +1,10 @@
 /* eslint-disable jest/expect-expect */
 import '@aws-cdk/assert/jest';
-import { ResourcePart } from '@aws-cdk/assert';
+import * as assert from '@aws-cdk/assert';
 import { Metric, Statistic } from '@aws-cdk/aws-cloudwatch';
 import { Subnet, Vpc, EbsDeviceVolumeType } from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
+import * as kms from '@aws-cdk/aws-kms';
 import * as logs from '@aws-cdk/aws-logs';
 import { App, Stack, Duration, SecretValue } from '@aws-cdk/core';
 import { Domain, ElasticsearchVersion } from '../lib';
@@ -26,6 +27,44 @@ const readWriteActions = [
   ...readActions,
   ...writeActions,
 ];
+
+test('grants kms permissions if needed', () => {
+
+  const key = new kms.Key(stack, 'Key');
+
+  new Domain(stack, 'Domain', {
+    version: ElasticsearchVersion.V7_1,
+    encryptionAtRest: {
+      kmsKey: key,
+    },
+    // so that the access policy custom resource will be used.
+    useUnsignedBasicAuth: true,
+  });
+
+  const expectedPolicy = {
+    Statement: [
+      {
+        Action: [
+          'kms:List*',
+          'kms:Describe*',
+          'kms:CreateGrant',
+        ],
+        Effect: 'Allow',
+        Resource: {
+          'Fn::GetAtt': [
+            'Key961B73FD',
+            'Arn',
+          ],
+        },
+      },
+    ],
+    Version: '2012-10-17',
+  };
+
+  const resources = assert.expect(stack).value.Resources;
+  expect(resources.AWS679f53fac002430cb0da5b7982bd2287ServiceRoleDefaultPolicyD28E1A5E.Properties.PolicyDocument).toStrictEqual(expectedPolicy);
+
+});
 
 test('minimal example renders correctly', () => {
   new Domain(stack, 'Domain', { version: ElasticsearchVersion.V7_1 });
@@ -79,7 +118,7 @@ test('can enable version upgrade update policy', () => {
     UpdatePolicy: {
       EnableVersionUpgrade: true,
     },
-  }, ResourcePart.CompleteDefinition);
+  }, assert.ResourcePart.CompleteDefinition);
 });
 
 describe('log groups', () => {
