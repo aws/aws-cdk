@@ -256,17 +256,17 @@ export = {
               '',
               [
                 'arn:',
-                anything(),//partition
+                anything(), //partition
                 stringLike(':rds-db:'),
-                anything(),//region
+                anything(), //region
                 ':',
-                anything(),//account
+                anything(), //account
                 stringLike(':dbuser:'),
-                anything(),//proxy-id
-                stringLike(`/${databaseUser}`)
-              ]
-            ]
-          }
+                anything(), //proxy-id
+                stringLike(`/${databaseUser}`),
+              ],
+            ],
+          },
         }],
         Version: '2012-10-17',
       },

@@ -332,14 +332,14 @@ abstract class DatabaseProxyBase extends cdk.Resource implements IDatabaseProxy 
   public abstract readonly endpoint: string;
 
   public grantConnect(grantee: iam.IGrantable, databaseUser: string): iam.Grant {
-    let parsedArn = {...cdk.Arn.parse(this.dbProxyArn, ':')};
+    let parsedArn = { ...cdk.Arn.parse(this.dbProxyArn, ':') };
     parsedArn.service = 'rds-db';
     parsedArn.resource = 'dbuser';
     parsedArn.resourceName = `${parsedArn.resourceName}/${databaseUser}`;
     return iam.Grant.addToPrincipal({
       grantee,
-      actions:      ['rds-db:connect'],
-      resourceArns: [cdk.Arn.format(parsedArn, cdk.Stack.of(this))]
+      actions: ['rds-db:connect'],
+      resourceArns: [cdk.Arn.format(parsedArn, cdk.Stack.of(this))],
     });
   }
 }
