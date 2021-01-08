@@ -154,7 +154,7 @@ class LogRetentionFunction extends Construct {
       type: 'AWS::Lambda::Function',
       properties: {
         Handler: 'index.handler',
-        Runtime: 'nodejs10.x',
+        Runtime: 'nodejs12.x',
         Code: {
           S3Bucket: asset.s3BucketName,
           S3Key: asset.s3ObjectKey,
