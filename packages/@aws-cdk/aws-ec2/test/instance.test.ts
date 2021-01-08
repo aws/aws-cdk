@@ -109,7 +109,10 @@ nodeunitShim({
   },
   'instance architecture is correctly discerned for arm instances'(test: Test) {
     // GIVEN
-    const sampleInstanceClasses = ['a1', 't4g', 'c6g', 'c6gd', 'c6gn', 'm6g', 'm6gd', 'r6g', 'r6gd']; // Graviton-based
+    const sampleInstanceClasses = [
+      'a1', 't4g', 'c6g', 'c6gd', 'c6gn', 'm6g', 'm6gd', 'r6g', 'r6gd', // current Graviton-based instance classes
+      'a13', 't11g', 'y10ng', 'z11ngd', // theoretical future Graviton-based instance classes
+    ];
 
     for (const instanceClass of sampleInstanceClasses) {
       // WHEN

@@ -605,14 +605,14 @@ export class InstanceType {
    * The instance's CPU architecture
    */
   public get architecture(): InstanceArchitecture {
-    const instanceClass = this.instanceTypeIdentifier.split('.')[0];
+    // capture the family, generation, and capabilities portion of the instance type
+    const instanceTypePattern = this.instanceTypeIdentifier.match(/^([a-z]+)(\d{1,2})([a-z]*)\..*$/);
+    const family = instanceTypePattern![1];
+    const capabilities = instanceTypePattern![3];
 
-    // We need to check the instance family part and capabilities part
-    // of the instance class to determine if it is Graviton-powered
-    const gravitonPattern = /^a\d/; // Matches instance classes based on first-gen Graviton family
-    const graviton2Pattern = /^[a-z]\d{1,2}(?=g)/; // Matches instance classes having the Graviton2 (`g`) capability
-
-    if (gravitonPattern.test(instanceClass) || graviton2Pattern.test(instanceClass)) {
+    // Instance family `a` are first-gen Graviton instances
+    // Capability `g` indicates the instance is Graviton2 powered
+    if (family === 'a' || capabilities.includes('g')) {
       return InstanceArchitecture.ARM_64;
     }
 
