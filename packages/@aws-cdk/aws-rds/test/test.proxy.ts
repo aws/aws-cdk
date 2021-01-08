@@ -1,4 +1,4 @@
-import { ABSENT, expect, haveResourceLike, ResourcePart } from '@aws-cdk/assert';
+import { ABSENT, expect, haveResourceLike, stringLike, anything, ResourcePart } from '@aws-cdk/assert';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import { AccountPrincipal, Role } from '@aws-cdk/aws-iam';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
@@ -242,7 +242,8 @@ export = {
     const role = new Role(stack, 'DBProxyRole', {
       assumedBy: new AccountPrincipal(stack.account),
     });
-    proxy.grantConnect(role);
+    const databaseUser = 'test';
+    proxy.grantConnect(role, databaseUser);
 
     // THEN
     expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
@@ -251,11 +252,21 @@ export = {
           Effect: 'Allow',
           Action: 'rds-db:connect',
           Resource: {
-            'Fn::GetAtt': [
-              'ProxyCB0DFB71',
-              'DBProxyArn',
-            ],
-          },
+            'Fn::Join': [
+              '',
+              [
+                'arn:',
+                anything(),//partition
+                stringLike(':rds-db:'),
+                anything(),//region
+                ':',
+                anything(),//account
+                stringLike(':dbuser:'),
+                anything(),//proxy-id
+                stringLike(`/${databaseUser}`)
+              ]
+            ]
+          }
         }],
         Version: '2012-10-17',
       },
