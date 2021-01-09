@@ -22,6 +22,7 @@ test('default file system is created correctly', () => {
     DeletionPolicy: 'Retain',
     UpdateReplacePolicy: 'Retain',
   }, ResourcePart.CompleteDefinition));
+  expectCDK(stack).to(haveResource('AWS::EFS::MountTarget'));
   expectCDK(stack).to(haveResource('AWS::EC2::SecurityGroup'));
 });
 
