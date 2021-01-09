@@ -149,7 +149,7 @@ export class BundlingDockerContainer {
    * Remove the container and all associated volumes.
    */
   public remove() {
-    dockerExec(['rm', '-v', this.id]);
+    dockerExec(['rm', '-vf', this.id]);
   }
 
   private cp(src: string, dst: string) {
