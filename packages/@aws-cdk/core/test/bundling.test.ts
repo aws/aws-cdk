@@ -3,7 +3,44 @@ import * as crypto from 'crypto';
 import * as path from 'path';
 import { nodeunitShim, Test } from 'nodeunit-shim';
 import * as sinon from 'sinon';
-import { BundlingDockerImage, FileSystem } from '../lib';
+import { BundlingDockerImage, FileSystem, DockerVolume } from '../lib';
+
+const CONTAINER_ID = '6dd99c4b40b43d339a3a9140f5b6608014dbc74862636844f7378e4f664bb563';
+
+function assertDockerRun(test: Test, spawnSyncStub: sinon.SinonSpyCallApi, volumes: DockerVolume[], args: string[]) {
+
+  test.ok(spawnSyncStub.calledWith('docker', ['create', ...args], {
+    stdio: ['ignore', 'pipe', process.stdout],
+  }));
+
+  for (const volume of volumes) {
+    test.ok(spawnSyncStub.calledWith('docker', [
+      'cp',
+      `${volume.hostPath}/.`,
+      `${CONTAINER_ID}:${volume.containerPath}`,
+    ]));
+  }
+
+  test.ok(spawnSyncStub.calledWith('docker', [
+    'start',
+    CONTAINER_ID,
+  ]));
+
+  for (const volume of volumes) {
+    test.ok(spawnSyncStub.calledWith('docker', [
+      'cp',
+      `${CONTAINER_ID}:${volume.containerPath}/.`,
+      volume.hostPath,
+    ]));
+  }
+
+  test.ok(spawnSyncStub.calledWith('docker', [
+    'rm',
+    '-v',
+    CONTAINER_ID,
+  ]));
+
+}
 
 nodeunitShim({
   'tearDown'(callback: any) {
@@ -15,34 +52,36 @@ nodeunitShim({
     const spawnSyncStub = sinon.stub(child_process, 'spawnSync').returns({
       status: 0,
       stderr: Buffer.from('stderr'),
-      stdout: Buffer.from('stdout'),
+      stdout: Buffer.from(CONTAINER_ID),
       pid: 123,
       output: ['stdout', 'stderr'],
       signal: null,
     });
 
     const image = BundlingDockerImage.fromRegistry('alpine');
+    const volumes = [{ hostPath: '/host-path', containerPath: '/container-path' }];
     image.run({
       command: ['cool', 'command'],
       environment: {
         VAR1: 'value1',
         VAR2: 'value2',
       },
-      volumes: [{ hostPath: '/host-path', containerPath: '/container-path' }],
+      volumes,
       workingDirectory: '/working-directory',
       user: 'user:group',
     });
 
-    test.ok(spawnSyncStub.calledWith('docker', [
-      'run', '--rm',
+    const args = [
       '-u', 'user:group',
-      '-v', '/host-path:/container-path:delegated',
       '--env', 'VAR1=value1',
       '--env', 'VAR2=value2',
       '-w', '/working-directory',
       'alpine',
       'cool', 'command',
-    ], { stdio: ['ignore', process.stderr, 'inherit'] }));
+    ];
+
+    assertDockerRun(test, spawnSyncStub, volumes, args);
+
     test.done();
   },
 
@@ -50,7 +89,7 @@ nodeunitShim({
     const spawnSyncStub = sinon.stub(child_process, 'spawnSync').returns({
       status: 0,
       stderr: Buffer.from('stderr'),
-      stdout: Buffer.from('stdout'),
+      stdout: Buffer.from(CONTAINER_ID),
       pid: 123,
       output: ['stdout', 'stderr'],
       signal: null,
@@ -81,10 +120,8 @@ nodeunitShim({
       'docker-path',
     ]));
 
-    test.ok(spawnSyncStub.secondCall.calledWith('docker', [
-      'run', '--rm',
-      tag,
-    ]));
+    assertDockerRun(test, spawnSyncStub, [], [tag]);
+
     test.done();
   },
 

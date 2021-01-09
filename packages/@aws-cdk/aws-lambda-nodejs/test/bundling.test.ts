@@ -2,7 +2,7 @@ import * as child_process from 'child_process';
 import * as os from 'os';
 import * as path from 'path';
 import { Code, Runtime } from '@aws-cdk/aws-lambda';
-import { AssetHashType, BundlingDockerImage } from '@aws-cdk/core';
+import { AssetHashType, BundlingDockerImage, BundlingDockerContainer } from '@aws-cdk/core';
 import { version as delayVersion } from 'delay/package.json';
 import { Bundling } from '../lib/bundling';
 import { LogLevel } from '../lib/types';
@@ -23,6 +23,7 @@ beforeEach(() => {
     cp: () => {},
     run: () => {},
     toJSON: () => 'built-image',
+    create: () => new BundlingDockerContainer('container-id'),
   });
 });
 

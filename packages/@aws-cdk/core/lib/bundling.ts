@@ -87,7 +87,10 @@ export interface ILocalBundling {
   tryBundle(outputDir: string, options: BundlingOptions): boolean;
 }
 
-interface DockerStartOptions {
+/**
+ * Options for starting a container.
+ */
+export interface DockerStartOptions {
 
   /**
    * Attach STDOUT/STDERR and forward signals.
@@ -97,18 +100,43 @@ interface DockerStartOptions {
   readonly attach?: boolean;
 }
 
-class BundlingDockerContainer {
+/**
+ * A docker container used for asset bundling.
+ */
+export class BundlingDockerContainer {
 
-  constructor(public readonly id: string) {}
+  constructor(
+    /**
+     * The container id.
+     */
+    public readonly id: string,
+  ) {}
 
+  /**
+   * Copy files/directories from the host to the container.
+   *
+   * @param hostPath source path on the host.
+   * @param containerPath destination path in the container.
+   */
   public copyTo(hostPath: string, containerPath: string) {
     return this.cp(hostPath, `${this.id}:${containerPath}`);
   }
 
+  /**
+   * Copy files/directories from the container to the host.
+   *
+   * @param containerPath source path in the container.
+   * @param hostPath destination path on the host.
+   */
   public copyFrom(containerPath: string, hostPath: string) {
     return this.cp(`${this.id}:${containerPath}`, hostPath);
   }
 
+  /**
+   * Start the container.
+   *
+   * @param options start options.
+   */
   public start(options: DockerStartOptions = {}) {
     const args = ['start'];
     if (options.attach ?? false) {
@@ -117,6 +145,9 @@ class BundlingDockerContainer {
     dockerExec([...args, this.id]);
   }
 
+  /**
+   * Remove the container and all associated volumes.
+   */
   public remove() {
     dockerExec(['rm', '-v', this.id]);
   }
@@ -196,7 +227,6 @@ export class BundlingDockerImage {
     const container = this.create(options);
     try {
       const volumes = options.volumes || [];
-
       for (const v of volumes) {
         container.copyTo(`${v.hostPath}/.`, v.containerPath);
       }
@@ -223,7 +253,15 @@ export class BundlingDockerImage {
     }
   }
 
-  private create(options?: DockerCreateOptions): BundlingDockerContainer {
+  /**
+   * Create an container instance from this image.
+   * Note that the container is only created, not started. To start the container, call `.start()`
+   * on the return value.
+   *
+   * @see BundlingDockerContainer
+   * @param options create options.
+   */
+  public create(options: DockerCreateOptions = {}): BundlingDockerContainer {
 
     const environment = options?.environment || {};
     const command = options?.command || [];
@@ -245,7 +283,7 @@ export class BundlingDockerImage {
       stdio: [
         'ignore', // ignore stdin
         'pipe', // pipe stdout
-        process.stderr, // redirect stderr to stdout
+        process.stdout, // redirect stderr to stdout
       ],
     });
     const match = stdout.toString().match(/([0-9a-f]{16,})/);
@@ -371,6 +409,7 @@ function flatten(x: string[][]) {
 
 export function dockerExec(args: string[], options?: SpawnSyncOptions) {
   const prog = process.env.CDK_DOCKER ?? 'docker';
+  throw new Error(`about to run: ${prog} ${args.join(' ')}`);
   const proc = spawnSync(prog, args, options ?? {
     stdio: [ // show Docker output
       'ignore', // ignore stdio
