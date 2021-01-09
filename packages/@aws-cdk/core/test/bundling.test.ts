@@ -36,7 +36,7 @@ function assertDockerRun(test: Test, spawnSyncStub: sinon.SinonSpyCallApi, volum
 
   test.ok(spawnSyncStub.calledWith('docker', [
     'rm',
-    '-v',
+    '-vf',
     CONTAINER_ID,
   ]));
 
@@ -226,7 +226,7 @@ nodeunitShim({
     // THEN
     test.ok(spawnSyncStub.calledWith(sinon.match.any, ['create', 'alpine'], sinon.match.any));
     test.ok(spawnSyncStub.calledWith(sinon.match.any, ['cp', `${containerId}:/foo/bar`, '/baz'], sinon.match.any));
-    test.ok(spawnSyncStub.calledWith(sinon.match.any, ['rm', '-v', containerId]));
+    test.ok(spawnSyncStub.calledWith(sinon.match.any, ['rm', '-vf', containerId]));
 
     test.done();
   },
@@ -259,7 +259,7 @@ nodeunitShim({
     }, /Failed.*copy/i);
 
     // THEN
-    test.ok(spawnSyncStub.calledWith(sinon.match.any, ['rm', '-v', containerId]));
+    test.ok(spawnSyncStub.calledWith(sinon.match.any, ['rm', '-vf', containerId]));
     test.done();
   },
 });

@@ -21,7 +21,7 @@ if echo "$@" | grep -q "create "; then
 fi
 
 # no-op removal since we haven't really started anything.
-if echo "$@" | grep -q "rm -v ${CONTAINER_ID}"; then
+if echo "$@" | grep -q "rm -vf ${CONTAINER_ID}"; then
   exit 0
 fi
 

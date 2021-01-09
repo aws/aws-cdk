@@ -816,6 +816,6 @@ function createExpectedRunSequence(app: App, sourcePath: string, image: string, 
     ]);
   }
 
-  sequence.push( `rm -v ${CONTAINER_ID}`);
+  sequence.push(`rm -vf ${CONTAINER_ID}`);
   return sequence.join('\n');
 }
