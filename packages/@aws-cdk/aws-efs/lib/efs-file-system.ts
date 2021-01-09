@@ -273,9 +273,8 @@ export class FileSystem extends Resource implements IFileSystem {
     });
 
     this.mountTargetsAvailable = [];
-    if (props.vpcSubnets === undefined) return;
 
-    const subnets = props.vpc.selectSubnets(props.vpcSubnets);
+    const subnets = props.vpc.selectSubnets(props.vpcSubnets ?? { onePerAz: true });
 
     // We now have to create the mount target for each of the mentioned subnet
     let mountTargetCount = 0;

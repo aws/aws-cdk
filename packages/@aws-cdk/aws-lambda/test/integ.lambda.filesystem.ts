@@ -15,7 +15,6 @@ const vpc = new ec2.Vpc(stack, 'Vpc', {
 
 const fileSystem = new efs.FileSystem(stack, 'Efs', {
   vpc,
-  vpcSubnets: vpc.selectSubnets(undefined),
   removalPolicy: cdk.RemovalPolicy.DESTROY,
 });
 

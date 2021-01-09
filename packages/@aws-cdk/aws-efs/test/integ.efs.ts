@@ -9,7 +9,6 @@ const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 3, natGateways: 1 });
 
 const fileSystem = new FileSystem(stack, 'FileSystem', {
   vpc,
-  vpcSubnets: vpc.selectSubnets(undefined),
 });
 
 fileSystem.addAccessPoint('AccessPoint', {
