@@ -104,7 +104,7 @@ export = {
       test.done();
     },
 
-    // NOTE: This test case should become invalid when workaround to CloudFormation issue 12386 is removed
+    // NOTE: This test case should be invalid when CloudFormation problem reported in CDK issue 12386 is resolved
     // see https://github.com/aws/aws-cdk/issues/12386
     'throw with missing topicName on fifo topic'(test: Test) {
       const stack = new cdk.Stack();

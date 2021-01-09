@@ -81,7 +81,7 @@ export class Topic extends TopicBase {
     });
 
     if (props.fifo && !props.topicName) {
-      // NOTE: Workaround until issue 12386 reported in CloudFormation roadmap is resolved
+      // NOTE: Workaround for CloudFormation problem reported in CDK issue 12386
       // see https://github.com/aws/aws-cdk/issues/12386
       throw new Error('FIFO SNS topics must be given a topic name.');
     }
