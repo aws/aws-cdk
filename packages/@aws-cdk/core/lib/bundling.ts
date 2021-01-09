@@ -409,7 +409,7 @@ function flatten(x: string[][]) {
 
 export function dockerExec(args: string[], options?: SpawnSyncOptions) {
   const prog = process.env.CDK_DOCKER ?? 'docker';
-  throw new Error(`about to run: ${prog} ${args.join(' ')}`);
+  // throw new Error(`about to run: ${prog} ${args.join(' ')}`);
   const proc = spawnSync(prog, args, options ?? {
     stdio: [ // show Docker output
       'ignore', // ignore stdio

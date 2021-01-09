@@ -9,6 +9,9 @@ import { App, AssetHashType, AssetStaging, BundlingDockerImage, BundlingOptions,
 const STUB_INPUT_FILE = '/tmp/docker-stub.input';
 const STUB_INPUT_CONCAT_FILE = '/tmp/docker-stub.input.concat';
 
+const CONTAINER_ID = '6dd99c4b40b43d339a3a9140f5b6608014dbc74862636844f7378e4f664bb563';
+const ASSET_HASH = 'b1e32e86b3523f2fa512eb99180ee2975a50a4439e63e8badd153f2a68d61aa4';
+
 enum DockerStubCommand {
   SUCCESS = 'DOCKER_STUB_SUCCESS',
   FAIL = 'DOCKER_STUB_FAIL',
@@ -152,8 +155,7 @@ nodeunitShim({
     // THEN
     const assembly = app.synth();
     test.deepEqual(
-      readDockerStubInput(),
-      `run --rm ${USER_ARG} -v /input:/asset-input:delegated -v /output:/asset-output:delegated -w /asset-input alpine DOCKER_STUB_SUCCESS`,
+      readDockerStubInputConcat(), createExpectedRunSequence(app, directory, 'alpine', '', DockerStubCommand.SUCCESS),
     );
     test.deepEqual(fs.readdirSync(assembly.directory), [
       'asset.b1e32e86b3523f2fa512eb99180ee2975a50a4439e63e8badd153f2a68d61aa4',
@@ -235,8 +237,7 @@ nodeunitShim({
 
     // We're testing that docker was run exactly once even though there are two bundling assets.
     test.deepEqual(
-      readDockerStubInputConcat(),
-      `run --rm ${USER_ARG} -v /input:/asset-input:delegated -v /output:/asset-output:delegated -w /asset-input alpine DOCKER_STUB_SUCCESS`,
+      readDockerStubInputConcat(), createExpectedRunSequence(app, directory, 'alpine', '', DockerStubCommand.SUCCESS),
     );
 
     test.deepEqual(fs.readdirSync(assembly.directory), [
@@ -282,8 +283,7 @@ nodeunitShim({
     // We're testing that docker was run exactly once even though there are two bundling assets
     // and that the hash is based on the output
     test.deepEqual(
-      readDockerStubInputConcat(),
-      `run --rm ${USER_ARG} -v /input:/asset-input:delegated -v /output:/asset-output:delegated -w /asset-input alpine DOCKER_STUB_SUCCESS`,
+      readDockerStubInputConcat(), createExpectedRunSequence(app, directory, 'alpine', '', DockerStubCommand.SUCCESS),
     );
 
     test.deepEqual(fs.readdirSync(assembly.directory), [
@@ -332,9 +332,10 @@ nodeunitShim({
     // We're testing that docker was run twice - once for each set of bundler options
     // operating on the same source asset.
     test.deepEqual(
-      readDockerStubInputConcat(),
-      `run --rm ${USER_ARG} -v /input:/asset-input:delegated -v /output:/asset-output:delegated -w /asset-input alpine DOCKER_STUB_SUCCESS\n` +
-      `run --rm ${USER_ARG} -v /input:/asset-input:delegated -v /output:/asset-output:delegated --env UNIQUE_ENV_VAR=SOMEVALUE -w /asset-input alpine DOCKER_STUB_SUCCESS`,
+      readDockerStubInputConcat(), [
+        createExpectedRunSequence(app, directory, 'alpine', '', DockerStubCommand.SUCCESS),
+        createExpectedRunSequence(app, directory, 'alpine', '--env UNIQUE_ENV_VAR=SOMEVALUE', DockerStubCommand.SUCCESS),
+      ].join('\n'),
     );
 
     test.deepEqual(fs.readdirSync(assembly.directory), [
@@ -452,8 +453,7 @@ nodeunitShim({
     const app2Assembly = app2.synth();
 
     test.deepEqual(
-      readDockerStubInputConcat(),
-      `run --rm ${USER_ARG} -v /input:/asset-input:delegated -v /output:/asset-output:delegated -w /asset-input alpine DOCKER_STUB_SUCCESS`,
+      readDockerStubInputConcat(), createExpectedRunSequence(app, directory, 'alpine', '', DockerStubCommand.SUCCESS),
     );
 
     test.equals(appAssembly.directory, app2Assembly.directory);
@@ -484,8 +484,7 @@ nodeunitShim({
     }), /Bundling did not produce any output/);
 
     test.equal(
-      readDockerStubInput(),
-      `run --rm ${USER_ARG} -v /input:/asset-input:delegated -v /output:/asset-output:delegated -w /asset-input alpine DOCKER_STUB_SUCCESS_NO_OUTPUT`,
+      readDockerStubInputConcat(), createExpectedRunSequence(app, directory, 'alpine', '', DockerStubCommand.SUCCESS_NO_OUTPUT),
     );
     test.done();
   },
@@ -508,8 +507,7 @@ nodeunitShim({
 
     // THEN
     test.equal(
-      readDockerStubInput(),
-      `run --rm ${USER_ARG} -v /input:/asset-input:delegated -v /output:/asset-output:delegated -w /asset-input alpine DOCKER_STUB_SUCCESS`,
+      readDockerStubInputConcat(), createExpectedRunSequence(app, directory, 'alpine', '', DockerStubCommand.SUCCESS),
     );
     test.equal(asset.assetHash, '33cbf2cae5432438e0f046bc45ba8c3cef7b6afcf47b59d1c183775c1918fb1f');
 
@@ -640,8 +638,7 @@ nodeunitShim({
       },
     }), /Failed to bundle asset stack\/Asset/);
     test.equal(
-      readDockerStubInput(),
-      `run --rm ${USER_ARG} -v /input:/asset-input:delegated -v /output:/asset-output:delegated -w /asset-input this-is-an-invalid-docker-image DOCKER_STUB_FAIL`,
+      readDockerStubInputConcat(), createExpectedRunSequence(app, directory, 'this-is-an-invalid-docker-image', '', DockerStubCommand.FAIL),
     );
 
     test.done();
@@ -675,7 +672,7 @@ nodeunitShim({
     // THEN
     test.ok(dir && /asset.[0-9a-f]{16,}/.test(dir));
     test.equals(opts?.command?.[0], DockerStubCommand.SUCCESS);
-    test.throws(() => readDockerStubInput());
+    test.throws(() => readDockerStubInputConcat());
 
     if (dir) {
       fs.removeSync(path.join(dir, 'hello.txt'));
@@ -705,7 +702,7 @@ nodeunitShim({
     });
 
     // THEN
-    test.ok(readDockerStubInput());
+    test.ok(readDockerStubInputConcat());
 
     test.done();
   },
@@ -727,7 +724,7 @@ nodeunitShim({
       },
     });
 
-    test.throws(() => readDockerStubInput()); // Bundling did not run
+    test.throws(() => readDockerStubInputConcat()); // Bundling did not run
     test.equal(asset.sourcePath, directory);
     test.equal(asset.stagedPath, directory);
     test.equal(asset.relativeStagedPath(stack), directory);
@@ -754,8 +751,7 @@ nodeunitShim({
     });
 
     test.equal(
-      readDockerStubInput(),
-      `run --rm ${USER_ARG} -v /input:/asset-input:delegated -v /output:/asset-output:delegated -w /asset-input alpine DOCKER_STUB_SUCCESS`,
+      readDockerStubInputConcat(), createExpectedRunSequence(app, directory, 'alpine', '', DockerStubCommand.SUCCESS),
     );
     test.equal(asset.assetHash, '33cbf2cae5432438e0f046bc45ba8c3cef7b6afcf47b59d1c183775c1918fb1f'); // hash of MyStack/Asset
 
@@ -780,8 +776,7 @@ nodeunitShim({
     });
 
     test.equal(
-      readDockerStubInput(),
-      `run --rm ${USER_ARG} -v /input:/asset-input:delegated -v /output:/asset-output:delegated -w /asset-input alpine DOCKER_STUB_SUCCESS`,
+      readDockerStubInputConcat(), createExpectedRunSequence(app, directory, 'alpine', '', DockerStubCommand.SUCCESS),
     );
     test.equal(asset.assetHash, '33cbf2cae5432438e0f046bc45ba8c3cef7b6afcf47b59d1c183775c1918fb1f'); // hash of MyStack/Asset
 
@@ -794,15 +789,33 @@ function readAndCleanDockerStubInput(file: string) {
   return fs
     .readFileSync(file, 'utf-8')
     .trim()
-    .replace(/-v ([^:]+):\/asset-input/g, '-v /input:/asset-input')
-    .replace(/-v ([^:]+):\/asset-output/g, '-v /output:/asset-output');
+    // we don't know the output directory in advance so we replace it with a hard-coded
+    // value in order to assert on the commands.
+    .replace(/asset\.\w*/g, `asset.${ASSET_HASH}`)
+    .replace(/bundling-temp-\w*/g, `asset.${ASSET_HASH}`);
+
 }
 
-// Last docker input since last teardown
-function readDockerStubInput() {
-  return readAndCleanDockerStubInput(STUB_INPUT_FILE);
-}
 // Concatenated docker inputs since last teardown
 function readDockerStubInputConcat() {
   return readAndCleanDockerStubInput(STUB_INPUT_CONCAT_FILE);
+}
+
+function createExpectedRunSequence(app: App, sourcePath: string, image: string, env: string, command: DockerStubCommand) {
+  const sequence = [
+    `create ${USER_ARG}${env !== '' ? ` ${env}` : ''} -w /asset-input ${image} ${command.valueOf()}`,
+    `cp ${sourcePath}/. ${CONTAINER_ID}:/asset-input`,
+    `cp ${app.outdir}/asset.${ASSET_HASH}/. ${CONTAINER_ID}:/asset-output`,
+    `start ${CONTAINER_ID}`,
+  ];
+
+  if (command !== DockerStubCommand.FAIL) {
+    sequence.push(...[
+      `cp ${CONTAINER_ID}:/asset-input/. ${sourcePath}`,
+      `cp ${CONTAINER_ID}:/asset-output/. ${app.outdir}/asset.${ASSET_HASH}`,
+    ]);
+  }
+
+  sequence.push( `rm -v ${CONTAINER_ID}`);
+  return sequence.join('\n');
 }
