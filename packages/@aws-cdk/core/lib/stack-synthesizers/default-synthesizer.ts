@@ -1,7 +1,7 @@
-import * as fs from 'fs';
-import * as path from 'path';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
+import * as fs from 'fs';
+import * as path from 'path';
 import { DockerImageAssetLocation, DockerImageAssetSource, FileAssetLocation, FileAssetPackaging, FileAssetSource } from '../assets';
 import { Fn } from '../cfn-fn';
 import { CfnParameter } from '../cfn-parameter';
@@ -9,8 +9,8 @@ import { CfnRule } from '../cfn-rule';
 import { ISynthesisSession } from '../construct-compat';
 import { Stack } from '../stack';
 import { Token } from '../token';
-import { assertBound, contentHash } from './_shared';
 import { StackSynthesizer } from './stack-synthesizer';
+import { assertBound, contentHash } from './_shared';
 
 export const BOOTSTRAP_QUALIFIER_CONTEXT = '@aws-cdk/core:bootstrapQualifier';
 
@@ -230,6 +230,24 @@ export class DefaultStackSynthesizer extends StackSynthesizer {
 
   constructor(private readonly props: DefaultStackSynthesizerProps = {}) {
     super();
+
+    for (const key in props) {
+      if (props.hasOwnProperty(key)) {
+        validateNoToken(key as keyof DefaultStackSynthesizerProps);
+      }
+    }
+
+    function validateNoToken<A extends keyof DefaultStackSynthesizerProps>(key: A) {
+      const prop = props[key];
+      if (typeof prop === 'string' && Token.isUnresolved(prop)) {
+        throw new Error(`DefaultSynthesizer property '${key}' cannot contain tokens; only the following placeholder strings are allowed: ` + [
+          '${Qualifier}',
+          cxapi.EnvironmentPlaceholders.CURRENT_REGION,
+          cxapi.EnvironmentPlaceholders.CURRENT_ACCOUNT,
+          cxapi.EnvironmentPlaceholders.CURRENT_PARTITION,
+        ].join(', '));
+      }
+    }
   }
 
   public bind(stack: Stack): void {
@@ -424,7 +442,7 @@ export class DefaultStackSynthesizer extends StackSynthesizer {
     //
     // Instead, we'll have a protocol with the CLI that we put an 's3://.../...' URL here, and the CLI
     // is going to resolve it to the correct 'https://.../' URL before it gives it to CloudFormation.
-    return `s3://${this.bucketName}/${sourceHash}`;
+    return `s3://${this.bucketName}/${this.bucketPrefix}${sourceHash}`;
   }
 
   /**

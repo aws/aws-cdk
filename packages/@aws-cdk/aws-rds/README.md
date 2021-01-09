@@ -127,6 +127,40 @@ Creating a "production" Oracle database instance with option and parameter group
 
 [example of setting up a production oracle instance](test/integ.instance.lit.ts)
 
+## Setting Public Accessibility
+
+You can set public accessibility for the database instance or cluster using the `publiclyAccessible` property.
+If you specify `true`, it creates an instance with a publicly resolvable DNS name, which resolves to a public IP address.
+If you specify `false`, it creates an internal instance with a DNS name that resolves to a private IP address.
+The default value depends on `vpcSubnets`.
+It will be `true` if `vpcSubnets` is `subnetType: SubnetType.PUBLIC`, `false` otherwise.
+
+```ts
+// Setting public accessibility for DB instance
+new rds.DatabaseInstance(stack, 'Instance', {
+  engine: rds.DatabaseInstanceEngine.mysql({
+    version: rds.MysqlEngineVersion.VER_8_0_19,
+  }),
+  vpc,
+  vpcSubnets: {
+    subnetType: ec2.SubnetType.PRIVATE,
+  },
+  publiclyAccessible: true,
+});
+
+// Setting public accessibility for DB cluster
+new rds.DatabaseCluster(stack, 'DatabaseCluster', {
+  engine: DatabaseClusterEngine.AURORA,
+  instanceProps: {
+    vpc,
+    vpcSubnets: {
+      subnetType: ec2.SubnetType.PRIVATE,
+    },
+    publiclyAccessible: true,
+  },
+});
+```
+
 ## Instance events
 
 To define Amazon CloudWatch event rules for database instances, use the `onEvent`
@@ -244,6 +278,24 @@ const instance = new rds.DatabaseInstance(stack, 'Instance', {
 });
 const role = new Role(stack, 'DBRole', { assumedBy: new AccountPrincipal(stack.account) });
 instance.grantConnect(role); // Grant the role connection access to the DB.
+```
+
+The following example shows granting connection access for RDS Proxy to an IAM role.
+
+```ts
+const cluster = new rds.DatabaseCluster(stack, 'Database'{
+  engine: rds.DatabaseClusterEngine.AURORA,
+  instanceProps: { vpc },
+});
+
+const proxy = new rds.DatabaseProxy(stack, 'Proxy', {
+  proxyTarget: rds.ProxyTarget.fromCluster(cluster),
+  secrets: [cluster.secret!],
+  vpc,
+});
+
+const role = new Role(stack, 'DBProxyRole', { assumedBy: new AccountPrincipal(stack.account) });
+proxy.grantConnect(role); // Grant the role connection access to the DB Proxy.
 ```
 
 **Note**: In addition to the setup above, a database user will need to be created to support IAM auth.
@@ -407,7 +459,7 @@ new rds.OptionGroup(stack, 'Options', {
 
 ## Serverless
 
-[Amazon Aurora Serverless]((https://aws.amazon.com/rds/aurora/serverless/)) is an on-demand, auto-scaling configuration for Amazon
+[Amazon Aurora Serverless](https://aws.amazon.com/rds/aurora/serverless/) is an on-demand, auto-scaling configuration for Amazon
 Aurora. The database will automatically start up, shut down, and scale capacity
 up or down based on your application's needs. It enables you to run your database
 in the cloud without managing any database instances.

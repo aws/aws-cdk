@@ -2,6 +2,7 @@ import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import { IProfilingGroup, ProfilingGroup, ComputePlatform } from '@aws-cdk/aws-codeguruprofiler';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
+import * as kms from '@aws-cdk/aws-kms';
 import * as logs from '@aws-cdk/aws-logs';
 import * as sqs from '@aws-cdk/aws-sqs';
 import { Annotations, CfnResource, Duration, Fn, Lazy, Names, Stack } from '@aws-cdk/core';
@@ -282,6 +283,13 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
    * @default false
    */
   readonly allowPublicSubnet?: boolean;
+
+  /**
+   * The AWS KMS key that's used to encrypt your function's environment variables.
+   *
+   * @default - AWS Lambda creates and uses an AWS managed customer master key (CMK).
+   */
+  readonly environmentEncryption?: kms.IKey;
 }
 
 export interface FunctionProps extends FunctionOptions {
@@ -595,7 +603,13 @@ export class Function extends FunctionBase {
 
     this.deadLetterQueue = this.buildDeadLetterQueue(props);
 
-    const UNDEFINED_MARKER = '$$$undefined';
+    let fileSystemConfigs: CfnFunction.FileSystemConfigProperty[] | undefined = undefined;
+    if (props.filesystem) {
+      fileSystemConfigs = [{
+        arn: props.filesystem.config.arn,
+        localMountPath: props.filesystem.config.localMountPath,
+      }];
+    }
 
     const resource: CfnFunction = new CfnFunction(this, 'Resource', {
       functionName: this.physicalName,
@@ -608,10 +622,10 @@ export class Function extends FunctionBase {
         imageUri: code.image?.imageUri,
       },
       layers: Lazy.list({ produce: () => this.layers.map(layer => layer.layerVersionArn) }, { omitEmpty: true }),
-      handler: props.handler === Handler.FROM_IMAGE ? UNDEFINED_MARKER : props.handler,
+      handler: props.handler === Handler.FROM_IMAGE ? undefined : props.handler,
       timeout: props.timeout && props.timeout.toSeconds(),
       packageType: props.runtime === Runtime.FROM_IMAGE ? 'Image' : undefined,
-      runtime: props.runtime === Runtime.FROM_IMAGE ? UNDEFINED_MARKER : props.runtime?.name,
+      runtime: props.runtime === Runtime.FROM_IMAGE ? undefined : props.runtime.name,
       role: this.role.roleArn,
       // Uncached because calling '_checkEdgeCompatibility', which gets called in the resolve of another
       // Token, actually *modifies* the 'environment' map.
@@ -625,16 +639,9 @@ export class Function extends FunctionBase {
         command: code.image?.cmd,
         entryPoint: code.image?.entrypoint,
       }),
+      kmsKeyArn: props.environmentEncryption?.keyArn,
+      fileSystemConfigs,
     });
-
-    // since patching the CFN spec to make Runtime and Handler optional causes a
-    // change in the order of the JSON keys, which results in a change of
-    // function hash (and invalidation of all lambda functions everywhere), we
-    // are using a marker to indicate this fields needs to be erased using an
-    // escape hatch. this should be fixed once the new spec is published and a
-    // patch is no longer needed.
-    if (resource.runtime === UNDEFINED_MARKER) { resource.addPropertyOverride('Runtime', undefined); }
-    if (resource.handler === UNDEFINED_MARKER) { resource.addPropertyOverride('Handler', undefined); }
 
     resource.node.addDependency(this.role);
 
@@ -686,15 +693,6 @@ export class Function extends FunctionBase {
       if (config.dependency) {
         this.node.addDependency(...config.dependency);
       }
-
-      resource.addPropertyOverride('FileSystemConfigs',
-        [
-          {
-            LocalMountPath: config.localMountPath,
-            Arn: config.arn,
-          },
-        ],
-      );
     }
   }
 
