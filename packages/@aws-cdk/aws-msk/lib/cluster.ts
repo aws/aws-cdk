@@ -109,8 +109,8 @@ export class Cluster extends ClusterBase {
     }
 
     if (
-      props.clientAuthenticationConfiguration?.tls?.certificateAuthorityArns &&
-      props.clientAuthenticationConfiguration?.sasl?.scram
+      props.clientAuthentication?.tls?.certificateAuthorityArns &&
+      props.clientAuthentication?.sasl?.scram
     ) {
       core.Annotations.of(this).addError(
         'Only one of SASL/SCRAM or TLS client authentication can be set.',
@@ -118,18 +118,18 @@ export class Cluster extends ClusterBase {
     }
 
     if (
-      props.encryptionInTransitConfig?.clientBroker ===
+      props.encryptionInTransit?.clientBroker ===
         ClientBrokerEncryption.PLAINTEXT &&
-      (props.clientAuthenticationConfiguration?.tls?.certificateAuthorityArns ||
-        props.clientAuthenticationConfiguration?.sasl?.scram)
+      (props.clientAuthentication?.tls?.certificateAuthorityArns ||
+        props.clientAuthentication?.sasl?.scram)
     ) {
       core.Annotations.of(this).addError(
         'To enable client authentication, you must enabled TLS-encrypted traffic between clients and brokers.',
       );
     } else if (
-      props.encryptionInTransitConfig?.clientBroker ===
+      props.encryptionInTransit?.clientBroker ===
         ClientBrokerEncryption.TLS_PLAINTEXT &&
-      props.clientAuthenticationConfiguration?.sasl?.scram
+      props.clientAuthentication?.sasl?.scram
     ) {
       core.Annotations.of(this).addError(
         'To enable SASL/SCRAM authentication, you must only allow TLS-encrypted traffic between clients and brokers.',
@@ -161,20 +161,20 @@ export class Cluster extends ClusterBase {
 
     const encryptionInTransit = {
       clientBroker:
-        props.encryptionInTransitConfig?.clientBroker ??
+        props.encryptionInTransit?.clientBroker ??
         ClientBrokerEncryption.TLS,
-      inCluster: props.encryptionInTransitConfig?.enableInCluster ?? true,
+      inCluster: props.encryptionInTransit?.enableInCluster ?? true,
     };
 
     const openMonitoring =
-      props.monitoringConfiguration?.enableJmxExporter ||
-      props.monitoringConfiguration?.enablePrometheusNodeExporter
+      props.monitoring?.enableJmxExporter ||
+      props.monitoring?.enablePrometheusNodeExporter
         ? {
           prometheus: {
-            jmxExporter: props.monitoringConfiguration?.enableJmxExporter
+            jmxExporter: props.monitoring?.enableJmxExporter
               ? { enabledInBroker: true }
               : undefined,
-            nodeExporter: props.monitoringConfiguration
+            nodeExporter: props.monitoring
               ?.enablePrometheusNodeExporter
               ? { enabledInBroker: true }
               : undefined,
@@ -186,28 +186,28 @@ export class Cluster extends ClusterBase {
       brokerLogs: {
         cloudWatchLogs: {
           enabled:
-            props.brokerLoggingConfiguration?.cloudwatchLogGroup !== undefined,
+            props.logging?.cloudwatchLogGroup !== undefined,
           logGroup:
-            props.brokerLoggingConfiguration?.cloudwatchLogGroup?.logGroupName,
+            props.logging?.cloudwatchLogGroup?.logGroupName,
         },
         firehose: {
           enabled:
-            props.brokerLoggingConfiguration?.firehoseDeliveryStreamArn !==
+            props.logging?.firehoseDeliveryStreamArn !==
             undefined,
           deliveryStream:
-            props.brokerLoggingConfiguration?.firehoseDeliveryStreamArn,
+            props.logging?.firehoseDeliveryStreamArn,
         },
         s3: {
-          enabled: props.brokerLoggingConfiguration?.s3?.bucket !== undefined,
-          bucket: props.brokerLoggingConfiguration?.s3?.bucket.bucketName,
-          prefix: props.brokerLoggingConfiguration?.s3?.prefix,
+          enabled: props.logging?.s3?.bucket !== undefined,
+          bucket: props.logging?.s3?.bucket.bucketName,
+          prefix: props.logging?.s3?.prefix,
         },
       },
     };
 
     if (
-      props.clientAuthenticationConfiguration?.sasl?.scram &&
-      props.clientAuthenticationConfiguration?.sasl?.key === undefined
+      props.clientAuthentication?.sasl?.scram &&
+      props.clientAuthentication?.sasl?.key === undefined
     ) {
       const key = new kms.Key(this, 'SASLKey', {
         description:
@@ -238,20 +238,20 @@ export class Cluster extends ClusterBase {
         }),
       );
     }
-    const clientAuthentication = props.clientAuthenticationConfiguration
+    const clientAuthentication = props.clientAuthentication
       ? {
-        sasl: props.clientAuthenticationConfiguration?.sasl?.scram
+        sasl: props.clientAuthentication?.sasl?.scram
           ? {
             scram: {
-              enabled: props.clientAuthenticationConfiguration?.sasl.scram,
+              enabled: props.clientAuthentication?.sasl.scram,
             },
           }
           : undefined,
-        tls: props.clientAuthenticationConfiguration?.tls
+        tls: props.clientAuthentication?.tls
           ?.certificateAuthorityArns
           ? {
             certificateAuthorityArnList:
-                  props.clientAuthenticationConfiguration?.tls
+                  props.clientAuthentication?.tls
                     ?.certificateAuthorityArns,
           }
           : undefined,
@@ -283,7 +283,7 @@ export class Cluster extends ClusterBase {
         encryptionInTransit,
       },
       configurationInfo: props.configurationInfo,
-      enhancedMonitoring: props.monitoringConfiguration?.clusterMonitoringLevel,
+      enhancedMonitoring: props.monitoring?.clusterMonitoringLevel,
       openMonitoring: openMonitoring,
       loggingInfo: loggingInfo,
       clientAuthentication: clientAuthentication,

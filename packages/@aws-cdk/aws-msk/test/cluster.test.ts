@@ -91,10 +91,10 @@ describe('MSK Cluster', () => {
           brokerNodeGroupProps: {
             vpc,
           },
-          encryptionInTransitConfig: {
+          encryptionInTransit: {
             clientBroker: msk.ClientBrokerEncryption.PLAINTEXT,
           },
-          clientAuthenticationConfiguration: {
+          clientAuthentication: {
             tls: {
               certificateAuthorityArns: [
                 'arn:aws:acm-pca:us-west-2:1234567890:certificate-authority/11111111-1111-1111-1111-111111111111',
@@ -118,10 +118,10 @@ describe('MSK Cluster', () => {
           brokerNodeGroupProps: {
             vpc,
           },
-          encryptionInTransitConfig: {
+          encryptionInTransit: {
             clientBroker: msk.ClientBrokerEncryption.PLAINTEXT,
           },
-          clientAuthenticationConfiguration: {
+          clientAuthentication: {
             sasl: {
               scram: true,
             },
@@ -140,10 +140,10 @@ describe('MSK Cluster', () => {
           brokerNodeGroupProps: {
             vpc,
           },
-          encryptionInTransitConfig: {
+          encryptionInTransit: {
             clientBroker: msk.ClientBrokerEncryption.TLS_PLAINTEXT,
           },
-          clientAuthenticationConfiguration: {
+          clientAuthentication: {
             sasl: {
               scram: true,
             },
@@ -164,10 +164,10 @@ describe('MSK Cluster', () => {
           brokerNodeGroupProps: {
             vpc,
           },
-          encryptionInTransitConfig: {
+          encryptionInTransit: {
             clientBroker: msk.ClientBrokerEncryption.TLS,
           },
-          clientAuthenticationConfiguration: {
+          clientAuthentication: {
             sasl: {
               scram: true,
             },
@@ -268,10 +268,10 @@ describe('MSK Cluster', () => {
         brokerNodeGroupProps: {
           vpc,
         },
-        encryptionInTransitConfig: {
+        encryptionInTransit: {
           clientBroker: msk.ClientBrokerEncryption.PLAINTEXT,
         },
-        clientAuthenticationConfiguration: {
+        clientAuthentication: {
           sasl: {
             scram: true,
           },
@@ -333,7 +333,7 @@ describe('MSK Cluster', () => {
         brokerNodeGroupProps: {
           vpc,
         },
-        brokerLoggingConfiguration: {
+        logging: {
           cloudwatchLogGroup: new logs.LogGroup(stack, 'LogGroup'),
         },
       });
@@ -358,7 +358,7 @@ describe('MSK Cluster', () => {
         brokerNodeGroupProps: {
           vpc,
         },
-        brokerLoggingConfiguration: {
+        logging: {
           s3: { bucket: new s3.Bucket(stack, 'Bucket') },
         },
       });
@@ -383,7 +383,7 @@ describe('MSK Cluster', () => {
         brokerNodeGroupProps: {
           vpc,
         },
-        brokerLoggingConfiguration: {
+        logging: {
           firehoseDeliveryStreamArn:
             'arn:aws:firehose:us-west-2:111111111111:deliverystream/a-stream',
         },

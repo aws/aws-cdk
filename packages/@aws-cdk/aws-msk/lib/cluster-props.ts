@@ -40,26 +40,26 @@ export interface ClusterProps {
    *
    * @default - DEFAULT monitoring level
    */
-  readonly monitoringConfiguration?: MonitoringConfiguration;
+  readonly monitoring?: MonitoringConfiguration;
   /**
    * Configure your MSK cluster to send broker logs to different destination types.
    *
    * @default - disabled
    */
-  readonly brokerLoggingConfiguration?: BrokerLoggingConfiguration;
+  readonly logging?: BrokerLogging;
   /**
    * Config details for encryption in transit.
    *
    * @default - enabled
    */
-  readonly encryptionInTransitConfig?: EncryptionInTransitConfig;
+  readonly encryptionInTransit?: EncryptionInTransitConfig;
   /**
    * Configuration properties for client authentication.
    * MSK supports using private TLS certificates or SASL/SCRAM to authenticate the identity of clients.
    *
    * @default - disabled
    */
-  readonly clientAuthenticationConfiguration?: ClientAuthenticationConfig;
+  readonly clientAuthentication?: ClientAuthenticationConfig;
   /**
    * What to do when this resource is deleted from a stack.
    *
@@ -213,7 +213,7 @@ export interface MonitoringConfiguration {
 /**
  * Configuration details related to broker logs.
  */
-export interface BrokerLoggingConfiguration {
+export interface BrokerLogging {
   /**
    * The Kinesis Data Firehose delivery stream that is the destination for broker logs.
    *

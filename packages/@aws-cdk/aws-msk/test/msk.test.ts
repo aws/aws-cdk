@@ -36,22 +36,22 @@ test('Snapshot test with all values set', () => {
         },
       },
     },
-    encryptionInTransitConfig: {
+    encryptionInTransit: {
       clientBroker: ClientBrokerEncryption.TLS,
     },
-    clientAuthenticationConfiguration: {
+    clientAuthentication: {
       tls: {
         certificateAuthorityArns: [
           'arn:aws:acm-pca:us-west-2:1234567890:certificate-authority/11111111-1111-1111-1111-111111111111',
         ],
       },
     },
-    monitoringConfiguration: {
+    monitoring: {
       enableJmxExporter: true,
       enablePrometheusNodeExporter: true,
       clusterMonitoringLevel: ClusterMonitoringLevel.PER_TOPIC_PER_BROKER,
     },
-    brokerLoggingConfiguration: {
+    logging: {
       s3: {
         bucket: s3.Bucket.fromBucketName(stack, 'Bucket', 'a-bucket'),
       },
