@@ -288,20 +288,16 @@ export class Nodegroup extends Resource implements INodegroup {
       Annotations.of(this).addWarning('"instanceType" is deprecated and will be removed in the next major version. please use "instanceTypes" instead');
     }
     const instanceTypes = props.instanceTypes ?? (props.instanceType ? [props.instanceType] : undefined);
-    let amiType = props.amiType;
+    let expectedAmiType = undefined;
 
     if (instanceTypes && instanceTypes.length > 0) {
       // if the user explicitly configured instance types, we can calculate the expected ami type.
-      const expectedAmiType = getAmiType(instanceTypes);
+      expectedAmiType = getAmiType(instanceTypes);
 
       // if the user explicitly configured an ami type, make sure its the expected one.
       if (props.amiType && props.amiType !== expectedAmiType) {
         throw new Error(`The specified AMI does not match the instance types architecture, either specify ${expectedAmiType} or dont specify any`);
       }
-
-      // if amiType is undefined at this point, this applies a default.
-      // if amiType has a value, it must be the same as expectedAmiType.
-      amiType = expectedAmiType;
     }
 
     if (!props.nodeRole) {
@@ -322,8 +318,11 @@ export class Nodegroup extends Resource implements INodegroup {
       nodegroupName: props.nodegroupName,
       nodeRole: this.role.roleArn,
       subnets: this.cluster.vpc.selectSubnets(props.subnets).subnetIds,
-      // AmyType is not allowed by CFN when specifying an image id in your launch template.
-      amiType: props.launchTemplateSpec === undefined ? amiType : undefined,
+
+      // if a launch template is configured, we cannot apply the default since it
+      // might exist in the launch template as well, causing a deployment failure.
+      amiType: props.launchTemplateSpec !== undefined ? props.amiType : (props.amiType ?? expectedAmiType),
+
       capacityType: props.capacityType ? props.capacityType.valueOf() : undefined,
       diskSize: props.diskSize,
       forceUpdateEnabled: props.forceUpdate ?? true,
