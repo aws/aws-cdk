@@ -326,6 +326,9 @@ export class Nodegroup extends Resource implements INodegroup {
       capacityType: props.capacityType ? props.capacityType.valueOf() : undefined,
       diskSize: props.diskSize,
       forceUpdateEnabled: props.forceUpdate ?? true,
+
+      // note that we don't check if a launch template is configured here (even though it might configure instance types as well)
+      // because this doesn't have a default value, meaning the user had to explicitly configure this.
       instanceTypes: instanceTypes?.map(t => t.toString()),
       labels: props.labels,
       releaseVersion: props.releaseVersion,
