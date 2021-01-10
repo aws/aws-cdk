@@ -80,9 +80,7 @@ export class Cluster extends ClusterBase {
 
     const brokerNodeGroupProps = props.brokerNodeGroupProps;
 
-    const subnetSelection = brokerNodeGroupProps.vpc.selectSubnets({
-      ...brokerNodeGroupProps.vpcSubnets,
-    });
+    const subnetSelection = brokerNodeGroupProps.vpc.selectSubnets(brokerNodeGroupProps.vpcSubnets);
 
     this._connections = new ec2.Connections({
       securityGroups: brokerNodeGroupProps.securityGroups ?? [
