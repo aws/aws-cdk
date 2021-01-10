@@ -292,16 +292,16 @@ export class Nodegroup extends Resource implements INodegroup {
 
     if (instanceTypes && instanceTypes.length > 0) {
       // if the user explicitly configured instance types, we can calculate the expected ami type.
-      const determinedAmiType = determineApiType(instanceTypes);
+      const expectedAmiType = getApiType(instanceTypes);
 
       // if the user explicitly configured an ami type, make sure its the expected one.
-      if (props.amiType && props.amiType !== determinedAmiType) {
-        throw new Error(`The specified AMI does not match the instance types architecture, either specify ${determinedAmiType} or dont specify any`);
+      if (props.amiType && props.amiType !== expectedAmiType) {
+        throw new Error(`The specified AMI does not match the instance types architecture, either specify ${expectedAmiType} or dont specify any`);
       }
 
       // if amiType is undefined at this point, this applies a default.
-      // if amiType has a value, it must be the same as determinedAmiType.
-      amiType = determinedAmiType;
+      // if amiType has a value, it must be the same as expectedAmiType.
+      amiType = expectedAmiType;
     }
 
     if (!props.nodeRole) {
@@ -392,9 +392,9 @@ function getAmiTypeForInstanceType(instanceType: InstanceType) {
           NodegroupAmiType.AL2_X86_64;
 }
 
-function determineApiType(instanceTypes: InstanceType[]) {
+function getApiType(instanceTypes: InstanceType[]) {
   const amiTypes = new Set(instanceTypes.map(i => getAmiTypeForInstanceType(i)));
-  if (amiTypes.size == 0) {
+  if (amiTypes.size == 0) { // protective code, the current implementation will never result in this.
     throw new Error(`Cannot determine any ami type comptaible with instance types: ${instanceTypes.map(i => i.toString).join(',')}`);
   }
   if (amiTypes.size > 1) {
