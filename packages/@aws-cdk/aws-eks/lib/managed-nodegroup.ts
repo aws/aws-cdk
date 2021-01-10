@@ -291,7 +291,7 @@ export class Nodegroup extends Resource implements INodegroup {
     let defaultAmiType = undefined;
 
     if (instanceTypes && instanceTypes.length > 0) {
-      // if the user explicitly configured instance types, we can calculate the expected ami type.
+      // if the user explicitly configured instance types, we can calculate the default ami type.
       defaultAmiType = getAmiType(instanceTypes);
 
       // if the user explicitly configured an ami type, make sure its the same as the default one.
