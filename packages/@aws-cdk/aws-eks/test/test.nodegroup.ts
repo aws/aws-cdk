@@ -10,6 +10,32 @@ import { testFixture } from './util';
 const CLUSTER_VERSION = eks.KubernetesVersion.V1_18;
 
 export = {
+
+  'ami type is taken as is when no instance types are configured'(test: Test) {
+
+    // GIVEN
+    const { stack, vpc } = testFixture();
+
+    // WHEN
+    const cluster = new eks.Cluster(stack, 'Cluster', {
+      vpc,
+      defaultCapacity: 0,
+      version: CLUSTER_VERSION,
+    });
+    new eks.Nodegroup(stack, 'Nodegroup', {
+      cluster,
+      amiType: eks.NodegroupAmiType.AL2_X86_64_GPU,
+    });
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::EKS::Nodegroup', {
+      AmiType: 'AL2_x86_64_GPU',
+    }));
+
+    test.done();
+
+  },
+
   'create nodegroup correctly'(test: Test) {
     // GIVEN
     const { stack, vpc } = testFixture();
