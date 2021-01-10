@@ -327,7 +327,7 @@ export class Nodegroup extends Resource implements INodegroup {
       capacityType: props.capacityType ? props.capacityType.valueOf() : undefined,
       diskSize: props.diskSize,
       forceUpdateEnabled: props.forceUpdate ?? true,
-      instanceTypes: instanceTypes ? instanceTypes.map(t => t.toString()) : undefined,
+      instanceTypes: instanceTypes?.map(t => t.toString()),
       labels: props.labels,
       releaseVersion: props.releaseVersion,
       remoteAccess: props.remoteAccess ? {
