@@ -5,27 +5,50 @@ import { CfnConnection } from './glue.generated';
 
 /**
  * The type of the glue connection
+ *
+ * If you need to use a connection type that doesn't exist as a static member, you
+ * can instantiate a `ConnectionType` object, e.g: `new ConnectionType('NEW_TYPE')`.
  */
-export enum ConnectionType {
+export class ConnectionType {
+  /** A list of all known `ConnectionType`s. */
+  public static readonly ALL = new Array<ConnectionType>();
+
   /**
    * Designates a connection to a database through Java Database Connectivity (JDBC).
    */
-  JDBC = 'JDBC',
+  public static readonly JDBC = new ConnectionType('JDBC');
 
   /**
    * Designates a connection to an Apache Kafka streaming platform.
    */
-  KAFKA = 'KAFKA',
+  public static readonly KAFKA = new ConnectionType('KAFKA');
 
   /**
    * Designates a connection to a MongoDB document database.
    */
-  MONGODB = 'MONGODB',
+  public static readonly MONGODB = new ConnectionType('MONGODB');
 
   /**
    * Designates a network connection to a data source within an Amazon Virtual Private Cloud environment (Amazon VPC).
    */
-  NETWORK = 'NETWORK'
+  public static readonly NETWORK = new ConnectionType('NETWORK');
+
+  /**
+   * The name of this ConnectionType, as expected by Connection resource.
+   */
+  public readonly name: string;
+
+  constructor(name: string) {
+    this.name = name;
+    ConnectionType.ALL.push(this);
+  }
+
+  /**
+   * The connection type name as expected by Connection resource.
+   */
+  public toString(): string {
+    return this.name;
+  }
 }
 
 /**
@@ -155,7 +178,7 @@ export class Connection extends cdk.Resource implements IConnection {
       catalogId: cdk.Aws.ACCOUNT_ID,
       connectionInput: {
         connectionProperties: props.connectionProperties,
-        connectionType: props.connectionType,
+        connectionType: props.connectionType.name,
         description: props.description,
         matchCriteria: props.matchCriteria,
         name: props.connectionName,
