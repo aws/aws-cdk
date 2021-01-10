@@ -227,10 +227,6 @@ export interface NodegroupProps extends NodegroupOptions {
  */
 export class Nodegroup extends Resource implements INodegroup {
   /**
-   * Default instanceTypes
-   */
-  public static readonly DEFAULT_INSTANCE_TYPES = [new InstanceType('t3.medium')];
-  /**
    * Import the Nodegroup from attributes
    */
   public static fromNodegroupName(scope: Construct, id: string, nodegroupName: string): INodegroup {
@@ -291,16 +287,15 @@ export class Nodegroup extends Resource implements INodegroup {
     if (props.instanceType) {
       Annotations.of(this).addWarning('"instanceType" is deprecated and will be removed in the next major version. please use "instanceTypes" instead');
     }
-    const instanceTypes = props.instanceTypes ?? (props.instanceType ? [props.instanceType] : Nodegroup.DEFAULT_INSTANCE_TYPES);
-    // get unique AMI types from instanceTypes
-    const uniqAmiTypes = getAmiTypes(instanceTypes);
-    // uniqAmiTypes.length should be at least 1
-    if (uniqAmiTypes.length > 1) {
-      throw new Error('instanceTypes of different CPU architectures is not allowed');
-    }
-    const determinedAmiType = uniqAmiTypes[0];
-    if (props.amiType && props.amiType !== determinedAmiType) {
-      throw new Error(`The specified AMI does not match the instance types architecture, either specify ${determinedAmiType} or dont specify any`);
+    const instanceTypes = props.instanceTypes ?? (props.instanceType ? [props.instanceType] : undefined);
+    let amiType = props.amiType;
+
+    if (instanceTypes && instanceTypes.length > 0) {
+      const determinedAmiType = determineApiType(instanceTypes);
+      if (props.amiType && props.amiType !== determinedAmiType) {
+        throw new Error(`The specified AMI does not match the instance types architecture, either specify ${determinedAmiType} or dont specify any`);
+      }
+      amiType = determinedAmiType;
     }
 
     if (!props.nodeRole) {
@@ -322,12 +317,11 @@ export class Nodegroup extends Resource implements INodegroup {
       nodeRole: this.role.roleArn,
       subnets: this.cluster.vpc.selectSubnets(props.subnets).subnetIds,
       // AmyType is not allowed by CFN when specifying an image id in your launch template.
-      amiType: props.launchTemplateSpec === undefined ? determinedAmiType : undefined,
+      amiType: props.launchTemplateSpec === undefined ? amiType : undefined,
       capacityType: props.capacityType ? props.capacityType.valueOf() : undefined,
       diskSize: props.diskSize,
       forceUpdateEnabled: props.forceUpdate ?? true,
-      instanceTypes: props.instanceTypes ? props.instanceTypes.map(t => t.toString()) :
-        props.instanceType ? [props.instanceType.toString()] : undefined,
+      instanceTypes: instanceTypes ? instanceTypes.map(t => t.toString()) : undefined,
       labels: props.labels,
       releaseVersion: props.releaseVersion,
       remoteAccess: props.remoteAccess ? {
@@ -392,8 +386,13 @@ function getAmiTypeForInstanceType(instanceType: InstanceType) {
           NodegroupAmiType.AL2_X86_64;
 }
 
-function getAmiTypes(instanceType: InstanceType[]) {
-  const amiTypes = instanceType.map(i =>getAmiTypeForInstanceType(i));
-  // retuen unique AMI types
-  return [...new Set(amiTypes)];
+function determineApiType(instanceTypes: InstanceType[]) {
+  const amiTypes = new Set(instanceTypes.map(i => getAmiTypeForInstanceType(i)));
+  if (amiTypes.size == 0) {
+    throw new Error(`Cannot determine any ami type comptaible with instance types: ${instanceTypes.map(i => i.toString).join(',')}`);
+  }
+  if (amiTypes.size > 1) {
+    throw new Error('instanceTypes of different CPU architectures is not allowed');
+  }
+  return amiTypes.values().next().value;
 }
