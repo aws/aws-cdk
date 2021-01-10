@@ -292,7 +292,7 @@ export class Nodegroup extends Resource implements INodegroup {
 
     if (instanceTypes && instanceTypes.length > 0) {
       // if the user explicitly configured instance types, we can calculate the expected ami type.
-      const expectedAmiType = getApiType(instanceTypes);
+      const expectedAmiType = getAmiType(instanceTypes);
 
       // if the user explicitly configured an ami type, make sure its the expected one.
       if (props.amiType && props.amiType !== expectedAmiType) {
@@ -392,7 +392,7 @@ function getAmiTypeForInstanceType(instanceType: InstanceType) {
           NodegroupAmiType.AL2_X86_64;
 }
 
-function getApiType(instanceTypes: InstanceType[]) {
+function getAmiType(instanceTypes: InstanceType[]) {
   const amiTypes = new Set(instanceTypes.map(i => getAmiTypeForInstanceType(i)));
   if (amiTypes.size == 0) { // protective code, the current implementation will never result in this.
     throw new Error(`Cannot determine any ami type comptaible with instance types: ${instanceTypes.map(i => i.toString).join(',')}`);
