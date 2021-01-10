@@ -31,9 +31,7 @@ export = {
     expect(stack).to(haveResourceLike('AWS::EKS::Nodegroup', {
       AmiType: 'AL2_x86_64_GPU',
     }));
-
     test.done();
-
   },
 
   'create nodegroup correctly'(test: Test) {
