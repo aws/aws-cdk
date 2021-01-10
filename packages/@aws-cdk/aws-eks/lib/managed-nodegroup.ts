@@ -288,16 +288,15 @@ export class Nodegroup extends Resource implements INodegroup {
       Annotations.of(this).addWarning('"instanceType" is deprecated and will be removed in the next major version. please use "instanceTypes" instead');
     }
     const instanceTypes = props.instanceTypes ?? (props.instanceType ? [props.instanceType] : undefined);
-    let defaultAmiType = undefined;
+    let expectedAmiType = undefined;
 
     if (instanceTypes && instanceTypes.length > 0) {
-      // if the user explicitly configured instance types, we can calculate the default ami type.
-      defaultAmiType = getAmiType(instanceTypes);
+      // if the user explicitly configured instance types, we can calculate the expected ami type.
+      expectedAmiType = getAmiType(instanceTypes);
 
-      // if the user explicitly configured an ami type, make sure its the same as the default one.
-      // the naming here is a little confusing, the "default" is actually also the "expected".
-      if (props.amiType && props.amiType !== defaultAmiType) {
-        throw new Error(`The specified AMI does not match the instance types architecture, either specify ${defaultAmiType} or dont specify any`);
+      // if the user explicitly configured an ami type, make sure its the same as the expected one.
+      if (props.amiType && props.amiType !== expectedAmiType) {
+        throw new Error(`The specified AMI does not match the instance types architecture, either specify ${expectedAmiType} or dont specify any`);
       }
     }
 
@@ -320,9 +319,9 @@ export class Nodegroup extends Resource implements INodegroup {
       nodeRole: this.role.roleArn,
       subnets: this.cluster.vpc.selectSubnets(props.subnets).subnetIds,
 
-      // if a launch template is configured, we cannot apply the default since it
+      // if a launch template is configured, we cannot apply a default since it
       // might exist in the launch template as well, causing a deployment failure.
-      amiType: props.launchTemplateSpec !== undefined ? props.amiType : (props.amiType ?? defaultAmiType),
+      amiType: props.launchTemplateSpec !== undefined ? props.amiType : (props.amiType ?? expectedAmiType),
 
       capacityType: props.capacityType ? props.capacityType.valueOf() : undefined,
       diskSize: props.diskSize,
