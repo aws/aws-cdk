@@ -33,6 +33,27 @@ new glue.Database(stack, 'MyDatabase', {
 });
 ```
 
+## SecurityConfiguration
+
+A `SecurityConfiguration` is a set of security properties that can be used by AWS Glue to encrypt data at rest.
+
+```ts
+new glue.SecurityConfiguration(stack, 'MySecurityConfiguration', {
+  securityConfigurationName: 'name',
+  cloudWatchEncryption: {
+    mode: 'SSE-KMS',
+    kmsKey: key,
+  },
+  jobBookmarksEncryption: {
+    mode: 'CSE-KMS',
+    kmsKey: key,
+  },
+});
+```
+
+See [documentation](https://docs.aws.amazon.com/glue/latest/dg/encryption-security-configuration.html) for more info for Glue encrypting data written by Crawlers, Jobs, and Development Endpoints.
+
+
 ## Table
 
 A Glue table describes a table of data in S3: its structure (column names and types), location of data (S3 objects with a common prefix in a S3 bucket), and format for the files (Json, Avro, Parquet, etc.):
