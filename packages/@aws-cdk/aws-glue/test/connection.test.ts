@@ -79,6 +79,26 @@ test('a connection with a name and description', () => {
   }));
 });
 
+test('a connection with a custom type', () => {
+  const stack = new cdk.Stack();
+  new glue.Connection(stack, 'Connection', {
+    connectionName: 'name',
+    description: 'description',
+    connectionType: new glue.ConnectionType('CUSTOM_TYPE'),
+  });
+
+  expect(stack).to(haveResource('AWS::Glue::Connection', {
+    CatalogId: {
+      Ref: 'AWS::AccountId',
+    },
+    ConnectionInput: {
+      ConnectionType: 'CUSTOM_TYPE',
+      Name: 'name',
+      Description: 'description',
+    },
+  }));
+});
+
 test('a connection with match criteria', () => {
   const stack = new cdk.Stack();
   new glue.Connection(stack, 'Connection', {
