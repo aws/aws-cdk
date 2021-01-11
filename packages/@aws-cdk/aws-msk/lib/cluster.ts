@@ -449,8 +449,7 @@ export class Cluster extends ClusterBase {
     if (
       props.encryptionInTransit?.clientBroker ===
         ClientBrokerEncryption.PLAINTEXT &&
-      (props.clientAuthentication?.tlsProps?.certificateAuthorityArns ||
-        props.clientAuthentication?.saslProps?.scram)
+      props.clientAuthentication
     ) {
       core.Annotations.of(this).addError(
         'To enable client authentication, you must enabled TLS-encrypted traffic between clients and brokers.',
