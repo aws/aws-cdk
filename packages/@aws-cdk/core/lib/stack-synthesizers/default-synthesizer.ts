@@ -384,6 +384,7 @@ export class DefaultStackSynthesizer extends StackSynthesizer {
       cloudFormationExecutionRoleArn: this._cloudFormationExecutionRoleArn,
       stackTemplateAssetObjectUrl: templateManifestUrl,
       requiresBootstrapStackVersion: MIN_BOOTSTRAP_STACK_VERSION,
+      bootstrapStackVersionSsmParameter: `/cdk-bootstrap/${this.qualifier}/version`,
       additionalDependencies: [artifactId],
     });
   }
@@ -467,6 +468,7 @@ export class DefaultStackSynthesizer extends StackSynthesizer {
       properties: {
         file: manifestFile,
         requiresBootstrapStackVersion: MIN_BOOTSTRAP_STACK_VERSION,
+        bootstrapStackVersionSsmParameter: `/cdk-bootstrap/${this.qualifier}/version`,
       },
     });
 

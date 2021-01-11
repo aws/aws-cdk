@@ -28,7 +28,7 @@ export interface MockSdkProviderOptions {
  * actually will be called.
  */
 export class MockSdkProvider extends SdkProvider {
-  private readonly sdk: ISDK;
+  public readonly sdk: ISDK;
 
   constructor(options: MockSdkProviderOptions = {}) {
     super(FAKE_CREDENTIAL_CHAIN, 'bermuda-triangle-1337', { customUserAgent: 'aws-cdk/jest' });
@@ -83,6 +83,13 @@ export class MockSdkProvider extends SdkProvider {
    */
   public stubELBv2(stubs: SyncHandlerSubsetOf<AWS.ELBv2>) {
     (this.sdk as any).elbv2 = jest.fn().mockReturnValue(partialAwsService<AWS.ELBv2>(stubs));
+  }
+
+  /**
+   * Replace the SSM client with the given object
+   */
+  public stubSSM(stubs: SyncHandlerSubsetOf<AWS.SSM>) {
+    (this.sdk as any).ssm = jest.fn().mockReturnValue(partialAwsService<AWS.SSM>(stubs));
   }
 }
 

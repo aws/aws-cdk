@@ -43,7 +43,7 @@ export class ToolkitStackInfo {
 
 }
 
-interface ToolkitResorcesInfoProps {
+export interface ToolkitResorcesInfoProps {
   bucketName: string;
   bucketDomainName: string;
   version: number;
@@ -89,11 +89,29 @@ export class ToolkitResourcesInfo {
   public readonly bucketName: string;
   public readonly bucketUrl: string;
   public readonly version: number;
+  private readonly ssmCache = new Map<string, number>();
 
   constructor(private readonly sdk: ISDK, { bucketName, bucketDomainName, version }: ToolkitResorcesInfoProps) {
     this.bucketName = bucketName;
     this.bucketUrl = `https://${bucketDomainName}`;
     this.version = version;
+  }
+
+  /**
+   * Validate that the bootstrap stack version matches or exceeds the expected version
+   *
+   * Use the SSM parameter name to read the version number if given, otherwise use the version
+   * discovered on the bootstrap stack.
+   *
+   * Pass in the SSM parameter name so we can cache the lookups an don't need to do the same
+   * lookup again and again for every artifact.
+   */
+  public async validateVersion(expectedVersion: number, ssmParameterName: string | undefined) {
+    const version = ssmParameterName !== undefined ? await this.versionFromSsmParameter(ssmParameterName) : this.version;
+
+    if (expectedVersion > version) {
+      throw new Error(`publishing assets requires bootstrap stack version '${expectedVersion}', found '${version}'. Please run 'cdk bootstrap' with a newer CLI version.`);
+    }
   }
 
   /**
@@ -133,6 +151,25 @@ export class ToolkitResourcesInfo {
     await ecr.putImageScanningConfiguration({ repositoryName, imageScanningConfiguration: { scanOnPush: true } }).promise();
 
     return { repositoryUri };
+  }
+
+  /**
+   * Read a version from an SSM parameter, cached
+   */
+  private async versionFromSsmParameter(parameterName: string): Promise<number> {
+    const existing = this.ssmCache.get(parameterName);
+    if (existing !== undefined) { return existing; }
+
+    const ssm = this.sdk.ssm();
+    const result = await ssm.getParameter({ Name: parameterName }).promise();
+
+    const asNumber = parseInt(`${result.Parameter?.Value}`, 10);
+    if (isNaN(asNumber)) {
+      throw new Error(`SSM parameter ${parameterName} not a number: ${result.Parameter?.Value}`);
+    }
+
+    this.ssmCache.set(parameterName, asNumber);
+    return asNumber;
   }
 }
 

@@ -161,7 +161,11 @@ export class CloudFormationDeployments {
     await this.publishStackAssets(options.stack, toolkitInfo);
 
     // Do a verification of the bootstrap stack version
-    this.validateBootstrapStackVersion(options.stack.stackName, options.stack.requiresBootstrapStackVersion, toolkitInfo);
+    await this.validateBootstrapStackVersion(
+      options.stack.stackName,
+      options.stack.requiresBootstrapStackVersion,
+      options.stack.bootstrapStackVersionSsmParameter,
+      toolkitInfo);
 
     return deployStack({
       stack: options.stack,
@@ -263,7 +267,11 @@ export class CloudFormationDeployments {
     const assetArtifacts = stack.dependencies.filter(isAssetManifestArtifact);
 
     for (const assetArtifact of assetArtifacts) {
-      this.validateBootstrapStackVersion(stack.stackName, assetArtifact.requiresBootstrapStackVersion, bootstrapStack);
+      await this.validateBootstrapStackVersion(
+        stack.stackName,
+        assetArtifact.requiresBootstrapStackVersion,
+        assetArtifact.bootstrapStackVersionSsmParameter,
+        bootstrapStack);
 
       const manifest = AssetManifest.fromFile(assetArtifact.file);
       await publishAssets(manifest, this.sdkProvider, stackEnv);
@@ -273,9 +281,10 @@ export class CloudFormationDeployments {
   /**
    * Validate that the bootstrap stack has the right version for this stack
    */
-  private validateBootstrapStackVersion(
+  private async validateBootstrapStackVersion(
     stackName: string,
     requiresBootstrapStackVersion: number | undefined,
+    bootstrapStackVersionSsmParameter: string | undefined,
     bootstrapStack: ToolkitResourcesInfo | undefined) {
 
     if (requiresBootstrapStackVersion === undefined) { return; }
@@ -284,8 +293,10 @@ export class CloudFormationDeployments {
       throw new Error(`${stackName}: publishing assets requires bootstrap stack version '${requiresBootstrapStackVersion}', no bootstrap stack found. Please run 'cdk bootstrap'.`);
     }
 
-    if (requiresBootstrapStackVersion > bootstrapStack.version) {
-      throw new Error(`${stackName}: publishing assets requires bootstrap stack version '${requiresBootstrapStackVersion}', found '${bootstrapStack.version}'. Please run 'cdk bootstrap' with a newer CLI version.`);
+    try {
+      await bootstrapStack.validateVersion(requiresBootstrapStackVersion, bootstrapStackVersionSsmParameter);
+    } catch (e) {
+      throw new Error(`${stackName}: ${e.message}`);
     }
   }
 }
