@@ -1181,6 +1181,7 @@ export class Cluster extends ClusterBase {
       bootstrapOptions: options.bootstrapOptions,
       bootstrapEnabled: options.bootstrapEnabled,
       machineImageType: options.machineImageType,
+      addSpotInterruptHandler: options.addSpotInterruptHandler,
     });
 
     if (nodeTypeForInstanceType(options.instanceType) === NodeType.INFERENTIA) {
@@ -1290,8 +1291,9 @@ export class Cluster extends ClusterBase {
       });
     }
 
+    const addSpotInterruptHandler = options.addSpotInterruptHandler ?? true;
     // if this is an ASG with spot instances, install the spot interrupt handler (only if kubectl is enabled).
-    if (autoScalingGroup.spotPrice) {
+    if (autoScalingGroup.spotPrice && addSpotInterruptHandler) {
       this.addSpotInterruptHandler();
     }
   }
@@ -1580,6 +1582,14 @@ export interface AutoScalingGroupCapacityOptions extends autoscaling.CommonAutoS
    * @default MachineImageType.AMAZON_LINUX_2
    */
   readonly machineImageType?: MachineImageType;
+
+  /**
+   * Installs the AWS spot instance interrupt handler on the cluster if it's not
+   * already added.
+   *
+   * @default true
+   */
+  readonly addSpotInterruptHandler?: boolean;
 }
 
 /**
@@ -1671,6 +1681,14 @@ export interface AutoScalingGroupOptions {
    * @default MachineImageType.AMAZON_LINUX_2
    */
   readonly machineImageType?: MachineImageType;
+
+  /**
+   * Installs the AWS spot instance interrupt handler on the cluster if it's not
+   * already added.
+   *
+   * @default true
+   */
+  readonly addSpotInterruptHandler?: boolean;
 }
 
 /**

@@ -188,6 +188,30 @@ export = {
 
   },
 
+  'spot interrupt handler is not added if addSpotInterruptHandler is false when connecting self-managed nodes'(test: Test) {
+
+    // GIVEN
+    const { stack, vpc } = testFixture();
+    const cluster = new eks.Cluster(stack, 'Cluster', {
+      vpc,
+      defaultCapacity: 0,
+      version: CLUSTER_VERSION,
+      prune: false,
+    });
+
+    const selfManaged = new asg.AutoScalingGroup(stack, 'self-managed', {
+      instanceType: new ec2.InstanceType('t2.medium'),
+      vpc: vpc,
+      machineImage: new ec2.AmazonLinuxImage(),
+    });
+
+    // WHEN
+    cluster.connectAutoScalingGroupCapacity(selfManaged, { addSpotInterruptHandler: false });
+
+    expect(stack).notTo(haveResource(eks.HelmChart.RESOURCE_TYPE));
+    test.done();
+  },
+
   'throws when a non cdk8s chart construct is added as cdk8s chart'(test: Test) {
 
     const { stack } = testFixture();
@@ -1289,6 +1313,23 @@ export = {
             Namespace: 'kube-system',
             Repository: 'https://aws.github.io/eks-charts',
           }));
+          test.done();
+        },
+
+        'interrupt handler is not added when addSpotInterruptHandler is false'(test: Test) {
+          // GIVEN
+          const { stack } = testFixtureNoVpc();
+          const cluster = new eks.Cluster(stack, 'Cluster', { defaultCapacity: 0, version: CLUSTER_VERSION, prune: false });
+
+          // WHEN
+          cluster.addAutoScalingGroupCapacity('MyCapcity', {
+            instanceType: new ec2.InstanceType('m3.xlarge'),
+            spotPrice: '0.01',
+            addSpotInterruptHandler: false,
+          });
+
+          // THEN
+          expect(stack).notTo(haveResource(eks.HelmChart.RESOURCE_TYPE));
           test.done();
         },
 
