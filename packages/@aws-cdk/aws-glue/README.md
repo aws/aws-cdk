@@ -48,6 +48,10 @@ new glue.SecurityConfiguration(stack, 'MySecurityConfiguration', {
     mode: 'CSE-KMS',
     kmsKey: key,
   },
+  s3Encryption: {
+    mode: 'SSE-KMS',
+    kmsKey: key,
+  },
 });
 ```
 

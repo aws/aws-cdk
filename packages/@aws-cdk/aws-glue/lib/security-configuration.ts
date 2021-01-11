@@ -30,13 +30,12 @@ export interface SecurityConfigurationAttributes {
 export interface S3Encryption {
   /**
    * Encryption mode
-   * @default depending on whether a kms key is provided or not, it can be disabled
    */
-  readonly mode?: 'DISABLED' | 'SSE-KMS' | 'SSE-S3';
+  readonly mode: 'DISABLED' | 'SSE-KMS' | 'SSE-S3';
 
   /**
    * The KMS key to be used to encrypt the data.
-   * @default depending on the mode
+   * @default no kms key if mode = 'DISABLED' or 'SSE-S3'. A key must be provided for 'SSE-KMS'
    */
   readonly kmsKey?: kms.IKey,
 }
@@ -47,14 +46,12 @@ export interface S3Encryption {
 export interface CloudWatchEncryption {
   /**
    * Encryption mode
-   * @default depending on whether a kms key is provided or not, it can be disabled
-   *
    */
-  readonly mode?: 'DISABLED' | 'SSE-KMS';
+  readonly mode: 'DISABLED' | 'SSE-KMS';
 
   /**
    * The KMS key to be used to encrypt the data.
-   * @default kms key must be provided if mode is not disabled
+   * @default kms key must be provided if mode is not 'DISABLED'
    */
   readonly kmsKey?: kms.IKey,
 }
@@ -65,13 +62,12 @@ export interface CloudWatchEncryption {
 export interface JobBookmarksEncryption {
   /**
    * Encryption mode
-   * @default depending on whether a kms key is provided or not, it can be disabled
    */
-  readonly mode?: 'DISABLED' | 'CSE-KMS';
+  readonly mode: 'DISABLED' | 'CSE-KMS';
 
   /**
    * The KMS key to be used to encrypt the data.
-   * @default kms key must be provided if mode is not disabled
+   * @default kms key must be provided if mode is not 'DISABLED'
    */
   readonly kmsKey?: kms.IKey,
 }
@@ -98,10 +94,10 @@ export interface SecurityConfigurationProps {
   readonly jobBookmarksEncryption?: JobBookmarksEncryption,
 
   /**
-   * The encyption configuration for Amazon Simple Storage Service (Amazon S3) data.
+   * The encryption configuration for Amazon Simple Storage Service (Amazon S3) data.
    * @default no s3 encryptions
    */
-  readonly s3Encryptions?: S3Encryption[],
+  readonly s3Encryption?: S3Encryption,
 }
 
 /**
@@ -131,6 +127,12 @@ export class SecurityConfiguration extends cdk.Resource implements ISecurityConf
     return new Import(scope, id);
   }
 
+  private static checkKmsKeyCompatibleWithMode(encryption?: {mode: string, kmsKey?: kms.IKey}): void {
+    if (encryption && /KMS/.test(encryption.mode) && encryption.kmsKey == undefined) {
+      throw new Error(`${encryption.mode} requires providing a kms key`);
+    }
+  }
+
   /**
    * The name of the security configuration
    * @attribute
@@ -142,10 +144,12 @@ export class SecurityConfiguration extends cdk.Resource implements ISecurityConf
       physicalName: props.securityConfigurationName,
     });
 
-    const s3Encryptions = props.s3Encryptions ? props.s3Encryptions.map((s3Encryption) => ({
-      s3EncryptionMode: s3Encryption.mode,
-      kmsKeyArn: s3Encryption.kmsKey ? s3Encryption.kmsKey.keyArn : undefined,
-    })) : undefined;
+    if (props.s3Encryption == undefined && props.cloudWatchEncryption == undefined && props.jobBookmarksEncryption == undefined) {
+      throw new Error('One of cloudWatchEncryption, jobBookmarksEncryption or s3Encryption must be defined');
+    }
+    SecurityConfiguration.checkKmsKeyCompatibleWithMode(props.cloudWatchEncryption);
+    SecurityConfiguration.checkKmsKeyCompatibleWithMode(props.jobBookmarksEncryption);
+    SecurityConfiguration.checkKmsKeyCompatibleWithMode(props.s3Encryption);
 
     const cloudWatchEncryption = props.cloudWatchEncryption ? {
       cloudWatchEncryptionMode: props.cloudWatchEncryption.mode,
@@ -156,6 +160,12 @@ export class SecurityConfiguration extends cdk.Resource implements ISecurityConf
       jobBookmarksEncryptionMode: props.jobBookmarksEncryption.mode,
       kmsKeyArn: props.jobBookmarksEncryption.kmsKey ? props.jobBookmarksEncryption.kmsKey.keyArn : undefined,
     } : undefined;
+
+    // NOTE: CloudFormations errors out if array is of length > 1. That's why the props don't expose an array
+    const s3Encryptions = props.s3Encryption ? [{
+      s3EncryptionMode: props.s3Encryption.mode,
+      kmsKeyArn: props.s3Encryption.kmsKey ? props.s3Encryption.kmsKey.keyArn : undefined,
+    }] : undefined;
 
     const resource = new CfnSecurityConfiguration(this, 'Resource', {
       name: props.securityConfigurationName,
