@@ -320,6 +320,34 @@ const provider = new iam.OpenIdConnectProvider(this, 'MyProvider', {
 const principal = new iam.OpenIdConnectPrincipal(provider);
 ```
 
+## Users
+
+IAM manages users for your AWS account. To create a new user:
+
+```ts
+const user = new User(this, 'MyUser');
+```
+
+To import an existing user by name [with path](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_identifiers.html#identifiers-friendly-names):
+
+```ts
+const user = User.fromUserName(stack, 'MyImportedUserByName', 'johnsmith');
+```
+
+To import an existing user by ARN:
+
+```ts
+const user = User.fromUserArn(this, 'MyImportedUserByArn', 'arn:aws:iam::123456789012:user/johnsmith');
+```
+
+To import an existing user by attributes:
+
+```ts
+const user = User.fromUserAttributes(stack, 'MyImportedUserByAttributes', {
+  userArn: 'arn:aws:iam::123456789012:user/johnsmith',
+});
+```
+
 ## Features
 
  * Policy name uniqueness is enforced. If two policies by the same name are attached to the same
