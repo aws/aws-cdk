@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { randomString, withDefaultFixture } from './cdk-helpers';
-import { integTest } from './test-helpers';
+import { randomString, withDefaultFixture } from '../helpers/cdk';
+import { integTest } from '../helpers/test-helpers';
 
 jest.setTimeout(600_000);
 

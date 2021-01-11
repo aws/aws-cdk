@@ -315,6 +315,29 @@ export interface IDatabaseProxy extends cdk.IResource {
    * @attribute
    */
   readonly endpoint: string;
+
+  /**
+   * Grant the given identity connection access to the proxy.
+   */
+  grantConnect(grantee: iam.IGrantable): iam.Grant;
+}
+
+/**
+ * Represents an RDS Database Proxy.
+ *
+ */
+abstract class DatabaseProxyBase extends cdk.Resource implements IDatabaseProxy {
+  public abstract readonly dbProxyName: string;
+  public abstract readonly dbProxyArn: string;
+  public abstract readonly endpoint: string;
+
+  public grantConnect(grantee: iam.IGrantable): iam.Grant {
+    return iam.Grant.addToPrincipal({
+      grantee,
+      actions: ['rds-db:connect'],
+      resourceArns: [this.dbProxyArn],
+    });
+  }
 }
 
 /**
@@ -322,8 +345,8 @@ export interface IDatabaseProxy extends cdk.IResource {
  *
  * @resource AWS::RDS::DBProxy
  */
-export class DatabaseProxy extends cdk.Resource
-  implements IDatabaseProxy, ec2.IConnectable, secretsmanager.ISecretAttachmentTarget {
+export class DatabaseProxy extends DatabaseProxyBase
+  implements ec2.IConnectable, secretsmanager.ISecretAttachmentTarget {
   /**
    * Import an existing database proxy.
    */
@@ -332,7 +355,7 @@ export class DatabaseProxy extends cdk.Resource
     id: string,
     attrs: DatabaseProxyAttributes,
   ): IDatabaseProxy {
-    class Import extends cdk.Resource implements IDatabaseProxy {
+    class Import extends DatabaseProxyBase {
       public readonly dbProxyName = attrs.dbProxyName;
       public readonly dbProxyArn = attrs.dbProxyArn;
       public readonly endpoint = attrs.endpoint;
@@ -424,13 +447,15 @@ export class DatabaseProxy extends cdk.Resource
       throw new Error('Cannot specify both dbInstanceIdentifiers and dbClusterIdentifiers');
     }
 
-    new CfnDBProxyTargetGroup(this, 'ProxyTargetGroup', {
+    const proxyTargetGroup = new CfnDBProxyTargetGroup(this, 'ProxyTargetGroup', {
       targetGroupName: 'default',
       dbProxyName: this.dbProxyName,
       dbInstanceIdentifiers,
       dbClusterIdentifiers,
       connectionPoolConfigurationInfo: toConnectionPoolConfigurationInfo(props),
     });
+
+    bindResult.dbClusters?.forEach((c) => proxyTargetGroup.node.addDependency(c));
   }
 
   /**

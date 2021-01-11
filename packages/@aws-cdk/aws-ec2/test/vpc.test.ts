@@ -1,5 +1,5 @@
 import { countResources, expect, haveResource, haveResourceLike, isSuperObject, MatchStyle } from '@aws-cdk/assert';
-import { CfnOutput, Lazy, Stack, Tags } from '@aws-cdk/core';
+import { CfnOutput, CfnResource, Fn, Lazy, Stack, Tags } from '@aws-cdk/core';
 import { nodeunitShim, Test } from 'nodeunit-shim';
 import {
   AclCidr, AclTraffic, BastionHostLinux, CfnSubnet, CfnVPC, SubnetFilter, DefaultInstanceTenancy, GenericLinuxImage,
@@ -1224,6 +1224,36 @@ nodeunitShim({
       // THEN
       test.deepEqual(subnetIds.length, 1);
       test.deepEqual(subnetIds[0], vpc.privateSubnets[0].subnetId);
+      test.done();
+    },
+
+    'fromVpcAttributes using imported refs'(test: Test) {
+      // GIVEN
+      const stack = getTestStack();
+
+      const vpcId = Fn.importValue('myVpcId');
+      const availabilityZones = Fn.split(',', Fn.importValue('myAvailabilityZones'));
+      const publicSubnetIds = Fn.split(',', Fn.importValue('myPublicSubnetIds'));
+
+      // WHEN
+      const vpc = Vpc.fromVpcAttributes(stack, 'VPC', {
+        vpcId,
+        availabilityZones,
+        publicSubnetIds,
+      });
+
+      new CfnResource(stack, 'Resource', {
+        type: 'Some::Resource',
+        properties: {
+          subnetIds: vpc.selectSubnets().subnetIds,
+        },
+      });
+
+      // THEN - No exception
+      expect(stack).to(haveResource('Some::Resource', {
+        subnetIds: { 'Fn::Split': [',', { 'Fn::ImportValue': 'myPublicSubnetIds' }] },
+      }));
+
       test.done();
     },
 
