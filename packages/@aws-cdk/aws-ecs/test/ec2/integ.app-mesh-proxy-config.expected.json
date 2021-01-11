@@ -867,7 +867,7 @@
           },
           {
             "Essential": true,
-            "Image": "envoyproxy/envoy",
+            "Image": "envoyproxy/envoy:v1.16.2",
             "Memory": 256,
             "Name": "envoy"
           }
@@ -923,7 +923,6 @@
           "MaximumPercent": 200,
           "MinimumHealthyPercent": 50
         },
-        "DesiredCount": 1,
         "EnableECSManagedTags": false,
         "LaunchType": "EC2",
         "NetworkConfiguration": {
