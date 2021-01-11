@@ -375,6 +375,23 @@ cluster.connectAutoScalingGroupCapacity(asg);
 
 This will add the necessary user-data and configure all connections, roles, and tags needed for the instances in the auto-scaling group to properly join the cluster.
 
+`addAutoScalingGroupCapacity` and `connectAutoScalingGroupCapacity` add spot interrupt handler by default, to disable default behavior, set `addSpotInterruptHandler` to false.
+
+```ts
+cluster.addAutoScalingGroupCapacity("spot", {
+  instanceType: new ec2.InstanceType("t3.large"),
+  minCapacity: 2,
+  addSpotInterruptHandler: false,
+});
+```
+
+```ts
+const asg = new ec2.AutoScalingGroup(...)
+cluster.connectAutoScalingGroupCapacity(asg, {
+  addSpotInterruptHandler: false
+});
+```
+
 #### Spot Instances
 
 When using self-managed nodes, you can configure the capacity to use spot instances, greatly reducing capacity cost.
