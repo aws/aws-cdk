@@ -2,7 +2,7 @@ import * as fs from 'fs';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
 import { nodeunitShim, Test } from 'nodeunit-shim';
-import { App, CfnResource, DefaultStackSynthesizer, FileAssetPackaging, Stack } from '../../lib';
+import { App, Aws, CfnResource, DefaultStackSynthesizer, FileAssetPackaging, Stack } from '../../lib';
 import { evaluateCFN } from '../evaluate-cfn';
 
 const CFN_CONTEXT = {
@@ -243,6 +243,9 @@ nodeunitShim({
     // WHEN
     const asm = myapp.synth();
 
+    // THEN -- the S3 url is advertised on the stack artifact
+    const stackArtifact = asm.getStackArtifact('mystack-bucketPrefix');
+
     // THEN - we have an asset manifest with both assets and the stack template in there
     const manifest = readAssetManifest(asm);
 
@@ -254,8 +257,33 @@ nodeunitShim({
       assumeRoleExternalId: 'file-external-id',
     });
 
+    const templateHash = last(stackArtifact.stackTemplateAssetObjectUrl?.split('/'));
+
+    test.equals(stackArtifact.stackTemplateAssetObjectUrl, `s3://file-asset-bucket/000000000000/${templateHash}`);
+
     test.done();
   },
+
+  'cannot use same synthesizer for multiple stacks'(test: Test) {
+    // GIVEN
+    const synthesizer = new DefaultStackSynthesizer();
+
+    // WHEN
+    new Stack(app, 'Stack2', { synthesizer });
+    test.throws(() => {
+      new Stack(app, 'Stack3', { synthesizer });
+    }, /A StackSynthesizer can only be used for one Stack/);
+    test.done();
+  },
+});
+
+test('get an exception when using tokens for parameters', () => {
+  expect(() => {
+    // GIVEN
+    new DefaultStackSynthesizer({
+      fileAssetsBucketName: `my-bucket-${Aws.REGION}`,
+    });
+  }).toThrow(/cannot contain tokens/);
 });
 
 /**

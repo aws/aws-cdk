@@ -1,5 +1,6 @@
-## Amazon CloudWatch Construct Library
+# Amazon CloudWatch Construct Library
 <!--BEGIN STABILITY BANNER-->
+
 ---
 
 ![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)
@@ -7,6 +8,7 @@
 ![cdk-constructs: Stable](https://img.shields.io/badge/cdk--constructs-stable-success.svg?style=for-the-badge)
 
 ---
+
 <!--END STABILITY BANNER-->
 
 ## Metric objects
@@ -319,6 +321,17 @@ to a graph of the value over time):
 ```ts
 dashboard.addWidgets(new SingleValueWidget({
   metrics: [visitorCount, purchaseCount],
+}));
+```
+
+Show as many digits as can fit, before rounding.
+
+```ts
+dashboard.addWidgets(new SingleValueWidget({
+  // ..
+  // ..
+
+  fullPrecision: true,
 }));
 ```
 

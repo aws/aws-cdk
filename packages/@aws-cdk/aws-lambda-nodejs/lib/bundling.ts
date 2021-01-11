@@ -51,9 +51,11 @@ export class Bundling implements cdk.BundlingOptions {
   public readonly image: cdk.BundlingDockerImage;
   public readonly command: string[];
   public readonly environment?: { [key: string]: string };
+  public readonly workingDirectory: string;
   public readonly local?: cdk.ILocalBundling;
 
   private readonly relativeEntryPath: string;
+  private readonly relativeTsconfigPath?: string;
   private readonly externals: string[];
 
   constructor(private readonly props: BundlingProps) {
@@ -64,15 +66,19 @@ export class Bundling implements cdk.BundlingOptions {
     const projectRoot = path.dirname(props.depsLockFilePath);
     this.relativeEntryPath = path.relative(projectRoot, path.resolve(props.entry));
 
+    if (props.tsconfig) {
+      this.relativeTsconfigPath = path.relative(projectRoot, path.resolve(props.tsconfig));
+    }
+
     this.externals = [
-      ...this.props.externalModules ?? ['aws-sdk'], // Mark aws-sdk as external by default (available in the runtime)
-      ...this.props.nodeModules ?? [], // Mark the modules that we are going to install as externals also
+      ...props.externalModules ?? ['aws-sdk'], // Mark aws-sdk as external by default (available in the runtime)
+      ...props.nodeModules ?? [], // Mark the modules that we are going to install as externals also
     ];
 
     // Docker bundling
     const shouldBuildImage = props.forceDockerBundling || !Bundling.runsLocally;
     this.image = shouldBuildImage
-      ? props.bundlingDockerImage ?? cdk.BundlingDockerImage.fromAsset(path.join(__dirname, '../lib'), {
+      ? props.dockerImage ?? cdk.BundlingDockerImage.fromAsset(path.join(__dirname, '../lib'), {
         buildArgs: {
           ...props.buildArgs ?? {},
           IMAGE: props.runtime.bundlingDockerImage.image,
@@ -83,7 +89,10 @@ export class Bundling implements cdk.BundlingOptions {
 
     const bundlingCommand = this.createBundlingCommand(cdk.AssetStaging.BUNDLING_INPUT_DIR, cdk.AssetStaging.BUNDLING_OUTPUT_DIR);
     this.command = ['bash', '-c', bundlingCommand];
-    this.environment = props.bundlingEnvironment;
+    this.environment = props.environment;
+    // Bundling sets the working directory to cdk.AssetStaging.BUNDLING_INPUT_DIR
+    // and we want to force npx to use the globally installed esbuild.
+    this.workingDirectory = '/';
 
     // Local bundling
     if (!props.forceDockerBundling) { // only if Docker is not forced
@@ -106,7 +115,7 @@ export class Bundling implements cdk.BundlingOptions {
               localCommand,
             ],
             {
-              env: { ...process.env, ...props.bundlingEnvironment ?? {} },
+              env: { ...process.env, ...props.environment ?? {} },
               stdio: [ // show output
                 'ignore', // ignore stdio
                 process.stderr, // redirect stdout to stderr
@@ -127,6 +136,7 @@ export class Bundling implements cdk.BundlingOptions {
 
     const npx = osPlatform === 'win32' ? 'npx.cmd' : 'npx';
     const loaders = Object.entries(this.props.loader ?? {});
+    const defines = Object.entries(this.props.define ?? {});
 
     const esbuildCommand: string = [
       npx, 'esbuild',
@@ -138,6 +148,13 @@ export class Bundling implements cdk.BundlingOptions {
       ...this.props.sourceMap ? ['--sourcemap'] : [],
       ...this.externals.map(external => `--external:${external}`),
       ...loaders.map(([ext, name]) => `--loader:${ext}=${name}`),
+      ...defines.map(([key, value]) => `--define:${key}=${value}`),
+      ...this.props.logLevel ? [`--log-level=${this.props.logLevel}`] : [],
+      ...this.props.keepNames ? ['--keep-names'] : [],
+      ...this.relativeTsconfigPath ? [`--tsconfig=${pathJoin(inputDir, this.relativeTsconfigPath)}`] : [],
+      ...this.props.metafile ? [`--metafile=${pathJoin(outputDir, 'index.meta.json')}`] : [],
+      ...this.props.banner ? [`--banner='${this.props.banner}'`] : [],
+      ...this.props.footer ? [`--footer='${this.props.footer}'`] : [],
     ].join(' ');
 
     let depsCommand = '';
@@ -169,7 +186,13 @@ export class Bundling implements cdk.BundlingOptions {
       ]);
     }
 
-    return chain([esbuildCommand, depsCommand]);
+    return chain([
+      ...this.props.commandHooks?.beforeBundling(inputDir, outputDir) ?? [],
+      esbuildCommand,
+      ...(this.props.nodeModules && this.props.commandHooks?.beforeInstall(inputDir, outputDir)) ?? [],
+      depsCommand,
+      ...this.props.commandHooks?.afterBundling(inputDir, outputDir) ?? [],
+    ]);
   }
 }
 
