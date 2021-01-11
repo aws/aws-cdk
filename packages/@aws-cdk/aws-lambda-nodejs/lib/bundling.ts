@@ -136,6 +136,7 @@ export class Bundling implements cdk.BundlingOptions {
 
     const npx = osPlatform === 'win32' ? 'npx.cmd' : 'npx';
     const loaders = Object.entries(this.props.loader ?? {});
+    const defines = Object.entries(this.props.define ?? {});
 
     const esbuildCommand: string = [
       npx, 'esbuild',
@@ -147,6 +148,7 @@ export class Bundling implements cdk.BundlingOptions {
       ...this.props.sourceMap ? ['--sourcemap'] : [],
       ...this.externals.map(external => `--external:${external}`),
       ...loaders.map(([ext, name]) => `--loader:${ext}=${name}`),
+      ...defines.map(([key, value]) => `--define:${key}=${value}`),
       ...this.props.logLevel ? [`--log-level=${this.props.logLevel}`] : [],
       ...this.props.keepNames ? ['--keep-names'] : [],
       ...this.relativeTsconfigPath ? [`--tsconfig=${pathJoin(inputDir, this.relativeTsconfigPath)}`] : [],

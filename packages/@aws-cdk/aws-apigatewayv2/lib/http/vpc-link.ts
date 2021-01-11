@@ -39,7 +39,7 @@ export interface VpcLinkProps {
    *
    * @default - private subnets of the provided VPC. Use `addSubnets` to add more subnets
    */
-  readonly subnets?: ec2.ISubnet[];
+  readonly subnets?: ec2.SubnetSelection;
 
   /**
    * A list of security groups for the VPC link.
@@ -99,11 +99,8 @@ export class VpcLink extends Resource implements IVpcLink {
 
     this.vpcLinkId = cfnResource.ref;
 
-    this.addSubnets(...props.vpc.privateSubnets);
-
-    if (props.subnets) {
-      this.addSubnets(...props.subnets);
-    }
+    const { subnets } = props.vpc.selectSubnets(props.subnets ?? { subnetType: ec2.SubnetType.PRIVATE });
+    this.addSubnets(...subnets);
 
     if (props.securityGroups) {
       this.addSecurityGroups(...props.securityGroups);

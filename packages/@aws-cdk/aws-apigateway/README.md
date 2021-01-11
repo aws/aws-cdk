@@ -109,7 +109,7 @@ item.addMethod('DELETE', new apigateway.HttpIntegration('http://amazon.com'));
 ### Breaking up Methods and Resources across Stacks
 
 It is fairly common for REST APIs with a large number of Resources and Methods to hit the [CloudFormation
-limit](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/cloudformation-limits.html) of 200 resources per
+limit](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/cloudformation-limits.html) of 500 resources per
 stack.
 
 To help with this, Resources and Methods for the same REST API can be re-organized across multiple stacks. A common

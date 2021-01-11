@@ -44,7 +44,7 @@ const canary = new synthetics.Canary(this, 'MyCanary', {
     code: synthetics.Code.fromAsset(path.join(__dirname, 'canary')),
     handler: 'index.handler',
   }),
-  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_2_0,
+  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_2_2,
 });
 ```
 
@@ -84,7 +84,7 @@ The canary will automatically produce a CloudWatch Dashboard:
 
 ![UI Screenshot](images/ui-screenshot.png)
 
-The Canary code will be executed in a lambda function created by Synthetics on your behalf. The Lambda function includes a custom [runtime](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries_Library.html) provided by Synthetics. The provided runtime includes a variety of handy tools such as [Puppeteer](https://www.npmjs.com/package/puppeteer-core) and Chromium. The default runtime is `syn-nodejs-2.0`.
+The Canary code will be executed in a lambda function created by Synthetics on your behalf. The Lambda function includes a custom [runtime](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries_Library.html) provided by Synthetics. The provided runtime includes a variety of handy tools such as [Puppeteer](https://www.npmjs.com/package/puppeteer-core) (for nodejs based one) and Chromium.
 
 To learn more about Synthetics capabilities, check out the [docs](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries.html).
 
@@ -107,7 +107,7 @@ const canary = new Canary(this, 'MyCanary', {
     code: synthetics.Code.fromInline('/* Synthetics handler code */'),
     handler: 'index.handler', // must be 'index.handler'
   }),
-  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_2_0,
+  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_2_2,
 });
 
 // To supply the code from your local filesystem:
@@ -116,7 +116,7 @@ const canary = new Canary(this, 'MyCanary', {
     code: synthetics.Code.fromAsset(path.join(__dirname, 'canary')),
     handler: 'index.handler', // must end with '.handler'
   }),
-  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_2_0,
+  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_2_2,
 });
 
 // To supply the code from a S3 bucket:
@@ -125,7 +125,7 @@ const canary = new Canary(this, 'MyCanary', {
     code: synthetics.Code.fromBucket(bucket, 'canary.zip'),
     handler: 'index.handler', // must end with '.handler'
   }),
-  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_2_0,
+  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_2_2,
 });
 ```
 
