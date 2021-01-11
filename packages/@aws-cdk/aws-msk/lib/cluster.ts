@@ -261,7 +261,7 @@ export class Cluster extends ClusterBase {
     const resource = new CfnCluster(this, 'Resource', {
       clusterName: props.clusterName,
       kafkaVersion:
-        props.kafkaVersion?.version ?? KafkaVersion.of('2.2.1').version,
+        props.kafkaVersion?.version ?? KafkaVersion.V2_2_1.version,
       numberOfBrokerNodes:
         props.numberOfBrokerNodes !== undefined ? props.numberOfBrokerNodes : 1,
       brokerNodeGroupInfo: {
