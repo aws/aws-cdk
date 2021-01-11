@@ -605,10 +605,14 @@ export class InstanceType {
    * The instance's CPU architecture
    */
   public get architecture(): InstanceArchitecture {
-    // capture the family, generation, and capabilities portion of the instance type
-    const instanceTypePattern = this.instanceTypeIdentifier.match(/^([a-z]+)(\d{1,2})([a-z]*)\..*$/);
-    const family = instanceTypePattern![1];
-    const capabilities = instanceTypePattern![3];
+    // capture the family, generation, capabilities, and size portions of the instance type id
+    const instanceTypeComponents = this.instanceTypeIdentifier.match(/^([a-z]+)(\d{1,2})([a-z]*)\.([a-z0-9]+)$/);
+    if (instanceTypeComponents == null) {
+      throw new Error('Malformed instance type identifier');
+    }
+
+    const family = instanceTypeComponents[1];
+    const capabilities = instanceTypeComponents[3];
 
     // Instance family `a` are first-gen Graviton instances
     // Capability `g` indicates the instance is Graviton2 powered

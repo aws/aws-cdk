@@ -60,10 +60,10 @@ export interface BastionHostLinuxProps {
   readonly instanceType?: InstanceType;
 
   /**
-   * The machine image to use
+   * The machine image to use, assumed to have SSM Agent preinstalled.
    *
    * @default - An Amazon Linux 2 image which is kept up-to-date automatically (the instance
-   * may be replaced on every deployment).
+   * may be replaced on every deployment) and already has SSM Agent installed.
    */
   readonly machineImage?: IMachineImage;
 

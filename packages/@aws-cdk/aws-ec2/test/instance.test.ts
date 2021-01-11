@@ -116,7 +116,7 @@ nodeunitShim({
 
     for (const instanceClass of sampleInstanceClasses) {
       // WHEN
-      const instanceType = InstanceType.of(instanceClass as InstanceClass, InstanceSize.NANO);
+      const instanceType = InstanceType.of(instanceClass as InstanceClass, InstanceSize.XLARGE18);
 
       // THEN
       expect(instanceType.architecture).toBe(InstanceArchitecture.ARM_64);
@@ -130,7 +130,7 @@ nodeunitShim({
 
     for (const instanceClass of sampleInstanceClasses) {
       // WHEN
-      const instanceType = InstanceType.of(instanceClass as InstanceClass, InstanceSize.NANO);
+      const instanceType = InstanceType.of(instanceClass as InstanceClass, InstanceSize.XLARGE18);
 
       // THEN
       expect(instanceType.architecture).toBe(InstanceArchitecture.X86_64);
@@ -138,7 +138,25 @@ nodeunitShim({
 
     test.done();
   },
+  'instance architecture throws an error when instance type is invalid'(test: Test) {
+    // GIVEN
+    const malformedInstanceTypes = ['t4', 't4g.nano.', 't4gnano', ''];
 
+    for (const malformedInstanceType of malformedInstanceTypes) {
+      // WHEN
+      const instanceType = new InstanceType(malformedInstanceType);
+
+      // THEN
+      try {
+        instanceType.architecture;
+        expect(true).toBe(false); // The line above should have thrown an error
+      } catch (err) {
+        expect(err.message).toBe('Malformed instance type identifier');
+      }
+    }
+
+    test.done();
+  },
   blockDeviceMappings: {
     'can set blockDeviceMappings'(test: Test) {
       // WHEN
