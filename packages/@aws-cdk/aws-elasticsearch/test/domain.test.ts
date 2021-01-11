@@ -175,12 +175,6 @@ describe('log groups', () => {
           },
           Enabled: true,
         },
-        SEARCH_SLOW_LOGS: {
-          Enabled: false,
-        },
-        INDEX_SLOW_LOGS: {
-          Enabled: false,
-        },
       },
     });
   });
@@ -211,15 +205,6 @@ describe('log groups', () => {
             ],
           },
           Enabled: true,
-        },
-        ES_APPLICATION_LOGS: {
-          Enabled: false,
-        },
-        SEARCH_SLOW_LOGS: {
-          Enabled: false,
-        },
-        INDEX_SLOW_LOGS: {
-          Enabled: false,
         },
       },
     });
@@ -360,12 +345,6 @@ describe('log groups', () => {
 
     expect(stack).toHaveResourceLike('AWS::Elasticsearch::Domain', {
       LogPublishingOptions: {
-        AUDIT_LOGS: {
-          Enabled: false,
-        },
-        ES_APPLICATION_LOGS: {
-          Enabled: false,
-        },
         SEARCH_SLOW_LOGS: {
           CloudWatchLogsLogGroupArn: {
             'Fn::GetAtt': [
@@ -374,9 +353,6 @@ describe('log groups', () => {
             ],
           },
           Enabled: true,
-        },
-        INDEX_SLOW_LOGS: {
-          Enabled: false,
         },
       },
     });
@@ -395,15 +371,6 @@ describe('log groups', () => {
 
     expect(stack).toHaveResourceLike('AWS::Elasticsearch::Domain', {
       LogPublishingOptions: {
-        AUDIT_LOGS: {
-          Enabled: false,
-        },
-        ES_APPLICATION_LOGS: {
-          Enabled: false,
-        },
-        SEARCH_SLOW_LOGS: {
-          Enabled: false,
-        },
         INDEX_SLOW_LOGS: {
           CloudWatchLogsLogGroupArn: {
             'Fn::GetAtt': [
@@ -430,9 +397,6 @@ describe('log groups', () => {
 
     expect(stack).toHaveResourceLike('AWS::Elasticsearch::Domain', {
       LogPublishingOptions: {
-        AUDIT_LOGS: {
-          Enabled: false,
-        },
         ES_APPLICATION_LOGS: {
           CloudWatchLogsLogGroupArn: {
             'Fn::GetAtt': [
@@ -475,15 +439,6 @@ describe('log groups', () => {
             ],
           },
           Enabled: true,
-        },
-        ES_APPLICATION_LOGS: {
-          Enabled: false,
-        },
-        SEARCH_SLOW_LOGS: {
-          Enabled: false,
-        },
-        INDEX_SLOW_LOGS: {
-          Enabled: false,
         },
       },
     });
