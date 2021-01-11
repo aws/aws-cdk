@@ -248,6 +248,8 @@ export class AssetCode extends Code {
         path: this.path,
         ...this.options,
       });
+    } else if (cdk.Stack.of(this.asset) !== cdk.Stack.of(scope)) {
+      throw new Error(`Asset is already associated with another stack '${cdk.Stack.of(this.asset).stackName}'.`);
     }
 
     if (!this.asset.isZipArchive) {
