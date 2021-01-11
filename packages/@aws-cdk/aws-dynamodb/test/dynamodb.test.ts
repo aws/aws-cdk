@@ -765,6 +765,7 @@ test('if an encryption key is included, encrypt/decrypt permissions are also add
                   'dynamodb:Query',
                   'dynamodb:GetItem',
                   'dynamodb:Scan',
+                  'dynamodb:ConditionCheckItem',
                   'dynamodb:BatchWriteItem',
                   'dynamodb:PutItem',
                   'dynamodb:UpdateItem',
@@ -1837,7 +1838,7 @@ describe('grants', () => {
 
   test('"grantReadData" allows the principal to read data from the table', () => {
     testGrant(
-      ['BatchGetItem', 'GetRecords', 'GetShardIterator', 'Query', 'GetItem', 'Scan'], (p, t) => t.grantReadData(p));
+      ['BatchGetItem', 'GetRecords', 'GetShardIterator', 'Query', 'GetItem', 'Scan', 'ConditionCheckItem'], (p, t) => t.grantReadData(p));
   });
 
   test('"grantWriteData" allows the principal to write data to the table', () => {
@@ -1848,7 +1849,7 @@ describe('grants', () => {
   test('"grantReadWriteData" allows the principal to read/write data', () => {
     testGrant([
       'BatchGetItem', 'GetRecords', 'GetShardIterator', 'Query', 'GetItem', 'Scan',
-      'BatchWriteItem', 'PutItem', 'UpdateItem', 'DeleteItem',
+      'ConditionCheckItem', 'BatchWriteItem', 'PutItem', 'UpdateItem', 'DeleteItem',
     ], (p, t) => t.grantReadWriteData(p));
   });
 
@@ -2009,6 +2010,7 @@ describe('grants', () => {
               'dynamodb:Query',
               'dynamodb:GetItem',
               'dynamodb:Scan',
+              'dynamodb:ConditionCheckItem',
             ],
             'Effect': 'Allow',
             'Resource': [
@@ -2160,6 +2162,7 @@ describe('import', () => {
               'dynamodb:Query',
               'dynamodb:GetItem',
               'dynamodb:Scan',
+              'dynamodb:ConditionCheckItem',
             ],
             'Effect': 'Allow',
             'Resource': [
@@ -2201,6 +2204,7 @@ describe('import', () => {
               'dynamodb:Query',
               'dynamodb:GetItem',
               'dynamodb:Scan',
+              'dynamodb:ConditionCheckItem',
               'dynamodb:BatchWriteItem',
               'dynamodb:PutItem',
               'dynamodb:UpdateItem',
@@ -2346,6 +2350,7 @@ describe('import', () => {
                 'dynamodb:Query',
                 'dynamodb:GetItem',
                 'dynamodb:Scan',
+                'dynamodb:ConditionCheckItem',
               ],
               Resource: [
                 {
@@ -2479,6 +2484,7 @@ describe('global', () => {
               'dynamodb:Query',
               'dynamodb:GetItem',
               'dynamodb:Scan',
+              'dynamodb:ConditionCheckItem',
             ],
             Effect: 'Allow',
             Resource: [
@@ -2632,6 +2638,7 @@ describe('global', () => {
               'dynamodb:Query',
               'dynamodb:GetItem',
               'dynamodb:Scan',
+              'dynamodb:ConditionCheckItem',
             ],
             Effect: 'Allow',
             Resource: [
