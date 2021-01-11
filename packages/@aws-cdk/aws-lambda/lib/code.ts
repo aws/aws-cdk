@@ -232,7 +232,7 @@ export class InlineCode extends Code {
  */
 export class AssetCode extends Code {
   public readonly isInline = false;
-  private assets: Record<string, s3_assets.Asset> = {};
+  private asset?: s3_assets.Asset;
 
   /**
    * @param path The path to the asset file or directory.
@@ -242,43 +242,35 @@ export class AssetCode extends Code {
   }
 
   public bind(scope: cdk.Construct): CodeConfig {
-    const stackPath = cdk.Stack.of(scope).node.path; // use path instead of name to account for Stage.
-    let asset: s3_assets.Asset;
-    if (stackPath in this.assets) {
-      // If the same AssetCode is used multiple times, retain only the first instantiation.
-      asset = this.assets[stackPath];
-    } else {
-      asset = new s3_assets.Asset(scope, 'Code', {
+    // If the same AssetCode is used multiple times, retain only the first instantiation.
+    if (!this.asset) {
+      this.asset = new s3_assets.Asset(scope, 'Code', {
         path: this.path,
         ...this.options,
       });
-      this.assets[stackPath] = asset;
     }
 
-    if (!asset.isZipArchive) {
+    if (!this.asset.isZipArchive) {
       throw new Error(`Asset must be a .zip file or a directory (${this.path})`);
     }
 
     return {
       s3Location: {
-        bucketName: asset.s3BucketName,
-        objectKey: asset.s3ObjectKey,
+        bucketName: this.asset.s3BucketName,
+        objectKey: this.asset.s3ObjectKey,
       },
     };
   }
 
   public bindToResource(resource: cdk.CfnResource, options: ResourceBindOptions = { }) {
-    const stackPath = cdk.Stack.of(resource).node.path;
-    const asset = this.assets[stackPath];
-
-    if (!asset) {
+    if (!this.asset) {
       throw new Error('bindToResource() must be called after bind()');
     }
 
     const resourceProperty = options.resourceProperty || 'Code';
 
     // https://github.com/aws/aws-cdk/issues/1432
-    asset.addResourceMetadata(resource, resourceProperty);
+    this.asset.addResourceMetadata(resource, resourceProperty);
   }
 }
 

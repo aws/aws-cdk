@@ -77,34 +77,6 @@ describe('code', () => {
         },
       }, ResourcePart.CompleteDefinition);
     });
-
-    test('can be used in multiple stacks', () => {
-      // GIVEN
-      const app = new cdk.App();
-      const stack1 = new cdk.Stack(app, 'Stack1');
-      const stack2 = new cdk.Stack(app, 'Stack2');
-      const asset = lambda.Code.fromAsset(path.join(__dirname, 'my-lambda-handler'));
-
-      // WHEN
-      new lambda.Function(stack1, 'Func', {
-        code: asset,
-        runtime: lambda.Runtime.NODEJS_12_X,
-        handler: 'foom',
-      });
-      new lambda.Function(stack2, 'Func', {
-        code: asset,
-        runtime: lambda.Runtime.NODEJS_12_X,
-        handler: 'foom',
-      });
-
-      // THEN
-      const assembly = app.synth();
-      const synthesized1 = assembly.getStackArtifact(stack1.artifactId);
-      const synthesized2 = assembly.getStackArtifact(stack2.artifactId);
-
-      expect(synthesized1.assets.length).toEqual(1);
-      expect(synthesized2.assets.length).toEqual(1);
-    });
   });
 
   describe('lambda.Code.fromCfnParameters', () => {
