@@ -316,27 +316,24 @@ export class Cluster extends ClusterBase {
    * @returns - The connection string to use to connect to the Apache ZooKeeper cluster.
    */
   private _zookeeperConnectionString(responseField: string): string {
-    const zookeeperConnect = new cr.AwsCustomResource(
-      this,
-      'ZookeeperConnect',
-      {
-        onUpdate: {
-          service: 'Kafka',
-          action: 'describeCluster',
-          parameters: {
-            ClusterArn: this.clusterArn,
+    return core.Lazy.stringValue({
+      produce: () =>
+        new cr.AwsCustomResource(this, `ZookeeperConnect${responseField}`, {
+          onUpdate: {
+            service: 'Kafka',
+            action: 'describeCluster',
+            parameters: {
+              ClusterArn: this.clusterArn,
+            },
+            physicalResourceId: cr.PhysicalResourceId.of(
+              'ZooKeeperConnectionString'
+            ),
           },
-          physicalResourceId: cr.PhysicalResourceId.of(
-            'ZooKeeperConnectionString',
-          ),
-        },
-        policy: cr.AwsCustomResourcePolicy.fromSdkCalls({
-          resources: [this.clusterArn],
-        }),
-      },
-    );
-
-    return zookeeperConnect.getResponseField(`ClusterInfo.${responseField}`);
+          policy: cr.AwsCustomResourcePolicy.fromSdkCalls({
+            resources: [this.clusterArn],
+          }),
+        }).getResponseField(`ClusterInfo.${responseField}`),
+    });
   }
 
   /**
@@ -370,25 +367,22 @@ export class Cluster extends ClusterBase {
    * @returns - A string containing one or more hostname:port pairs.
    */
   private _bootstrapBrokers(responseField: string): string {
-    const bootstrapBrokers = new cr.AwsCustomResource(
-      this,
-      'BootstrapBrokers',
-      {
-        onUpdate: {
-          service: 'Kafka',
-          action: 'getBootstrapBrokers',
-          parameters: {
-            ClusterArn: this.clusterArn,
+    return core.Lazy.stringValue({
+      produce: () =>
+        new cr.AwsCustomResource(this, `BootstrapBrokers${responseField}`, {
+          onUpdate: {
+            service: 'Kafka',
+            action: 'getBootstrapBrokers',
+            parameters: {
+              ClusterArn: this.clusterArn,
+            },
+            physicalResourceId: cr.PhysicalResourceId.of('BootstrapBrokers'),
           },
-          physicalResourceId: cr.PhysicalResourceId.of('BootstrapBrokers'),
-        },
-        policy: cr.AwsCustomResourcePolicy.fromSdkCalls({
-          resources: [this.clusterArn],
-        }),
-      },
-    );
-
-    return bootstrapBrokers.getResponseField(responseField);
+          policy: cr.AwsCustomResourcePolicy.fromSdkCalls({
+            resources: [this.clusterArn],
+          }),
+        }).getResponseField(responseField),
+    });
   }
   /**
    * Get the list of brokers that a client application can use to bootstrap
