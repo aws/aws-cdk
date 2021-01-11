@@ -143,13 +143,6 @@ export interface StackProps {
    * 'aws:cdk:version-reporting' context key
    */
   readonly analyticsReporting?: boolean;
-
-  /**
-   * The maximum of Resources inside a Stack.
-   *
-   * @default 500
-   */
-  readonly maxResources?: number;
 }
 
 /**
@@ -314,11 +307,6 @@ export class Stack extends CoreConstruct implements ITaggable {
   public readonly _versionReportingEnabled: boolean;
 
   /**
-   * The maximum of Resources inside a Stack.
-   */
-  public readonly maxResources: number;
-
-  /**
    * Logical ID generation strategy
    */
   private readonly _logicalIds: LogicalIDs;
@@ -373,7 +361,6 @@ export class Stack extends CoreConstruct implements ITaggable {
     this.region = region;
     this.environment = environment;
     this.terminationProtection = props.terminationProtection;
-    this.maxResources = props.maxResources ?? this.node.tryGetContext(STACK_RESOURCE_LIMIT_CONTEXT) ?? MAX_RESOURCES;
 
     if (props.description !== undefined) {
       // Max length 1024 bytes
@@ -933,6 +920,15 @@ export class Stack extends CoreConstruct implements ITaggable {
       region,
       environment: cxapi.EnvironmentUtils.format(envAccount, envRegion),
     };
+  }
+  
+  /**
+   * Maximum number of resources in the stack
+   *
+   * Set to 0 to mean "unlimited".
+   */
+  private get maxResources(): number {
+    return parseInt(this.node.tryGetContext(STACK_RESOURCE_LIMIT_CONTEXT), 10) ?? MAX_RESOURCES;
   }
 
   /**
