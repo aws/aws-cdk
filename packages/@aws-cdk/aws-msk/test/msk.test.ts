@@ -47,7 +47,7 @@ test('Snapshot test with all values set', () => {
       },
     },
     monitoring: {
-      enableJmxExporter: true,
+      enablePrometheusJmxExporter: true,
       enablePrometheusNodeExporter: true,
       clusterMonitoringLevel: ClusterMonitoringLevel.PER_TOPIC_PER_BROKER,
     },

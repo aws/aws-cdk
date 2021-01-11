@@ -170,11 +170,11 @@ export class Cluster extends ClusterBase {
     };
 
     const openMonitoring =
-      props.monitoring?.enableJmxExporter ||
+      props.monitoring?.enablePrometheusJmxExporter ||
       props.monitoring?.enablePrometheusNodeExporter
-        ? {
-          prometheus: {
-            jmxExporter: props.monitoring?.enableJmxExporter
+      ? {
+        prometheus: {
+            jmxExporter: props.monitoring?.enablePrometheusJmxExporter
               ? { enabledInBroker: true }
               : undefined,
             nodeExporter: props.monitoring

@@ -203,7 +203,7 @@ export interface MonitoringConfiguration {
    *
    * @default false
    */
-  readonly enableJmxExporter?: boolean;
+  readonly enablePrometheusJmxExporter?: boolean;
   /**
    * Indicates whether you want to enable or disable the Prometheus Node Exporter.
    *
