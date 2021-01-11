@@ -231,8 +231,8 @@ export class Cluster extends ClusterBase {
           resources: ['*'],
           conditions: {
             StringEquals: {
-              'kms:ViaService': `secretsmanager.${core.Aws.REGION}.amazonaws.com`,
-              'kms:CallerAccount': core.Aws.ACCOUNT_ID,
+              'kms:ViaService': `secretsmanager.${core.Stack.of(this).region}.amazonaws.com`,
+              'kms:CallerAccount': core.Stack.of(this).account,
             },
           },
         }),
