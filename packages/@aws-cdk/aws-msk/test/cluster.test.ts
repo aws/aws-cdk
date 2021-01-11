@@ -535,50 +535,6 @@ describe('MSK Cluster', () => {
     // THEN
     expect(SynthUtils.toCloudFormation(stack)).toMatchSnapshot();
   });
-
-  // describe('bootstrap broker helper functions', () => {
-  //   let cluster: msk.Cluster;
-
-  //   beforeEach(() => {
-  //     cluster = new msk.Cluster(stack, 'Cluster', {
-  //       clusterName: 'a-cluster',
-  //       brokerNodeGroupProps: { vpc: new ec2.Vpc(stack, 'VPC') },
-  //     });
-  //   });
-
-  //   test('bootstrapBrokers queries standard bootstrap broker config', () => {
-  //     cluster.bootstrapBrokers;
-  //     expect(stack).toHaveResourceLike('Custom::AWS', {
-  //       service: 'Kafka',
-  //       action: 'getBootstrapBrokers',
-  //       parameters: {
-  //         ClusterArn: {
-  //           Ref: 'ClusterEB0386A7',
-  //         },
-  //       },
-  //       physicalResourceId: {
-  //         id: 'BootstrapBrokers',
-  //       },
-  //     });
-  //   });
-
-  //   test('bootstrapBrokers queries tls bootstrap broker config', () => {
-  //     const x = cluster.bootstrapBrokersTls;
-  //     console.log(x);
-  //     expect(stack).toHaveResourceLike('Custom::AWS', {
-  //       service: 'Kafka',
-  //       action: 'getBootstrapBrokers',
-  //       parameters: {
-  //         ClusterArn: {
-  //           Ref: 'ClusterEB0386A7',
-  //         },
-  //       },
-  //       physicalResourceId: {
-  //         id: 'BootstrapBrokersTls',
-  //       },
-  //     });
-  //   });
-  // });
 });
 
 function testStack() {
