@@ -139,6 +139,16 @@ export interface BundlingOptions {
   readonly environment?: { [key: string]: string; };
 
   /**
+   * Replace global identifiers with constant expressions.
+   *
+   * @example { 'process.env.DEBUG': 'true' }
+   * @example { 'process.env.API_KEY': JSON.stringify('xxx-xxxx-xxx') }
+   *
+   * @default - no replacements are made
+   */
+  readonly define?: { [key: string]: string };
+
+  /**
    * A list of modules that should be considered as externals (already available
    * in the runtime).
    *
