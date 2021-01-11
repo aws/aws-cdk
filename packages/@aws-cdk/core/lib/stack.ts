@@ -928,7 +928,8 @@ export class Stack extends CoreConstruct implements ITaggable {
    * Set to 0 to mean "unlimited".
    */
   private get maxResources(): number {
-    return parseInt(this.node.tryGetContext(STACK_RESOURCE_LIMIT_CONTEXT), 10) ?? MAX_RESOURCES;
+    const contextLimit = this.node.tryGetContext(STACK_RESOURCE_LIMIT_CONTEXT);
+    return contextLimit !== undefined ? parseInt(contextLimit, 10) : MAX_RESOURCES;
   }
 
   /**
