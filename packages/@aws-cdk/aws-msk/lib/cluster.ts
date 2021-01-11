@@ -260,8 +260,6 @@ export class Cluster extends ClusterBase {
         props.numberOfBrokerNodes !== undefined ? props.numberOfBrokerNodes : 1,
       brokerNodeGroupInfo: {
         instanceType,
-        brokerAzDistribution:
-          brokerNodeGroupProps.brokerAzDistribution || 'DEFAULT',
         clientSubnets: subnetSelection.subnetIds,
         securityGroups: this.connections.securityGroups.map(
           (group) => group.securityGroupId,
