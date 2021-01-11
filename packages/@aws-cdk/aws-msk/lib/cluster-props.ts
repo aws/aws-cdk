@@ -59,7 +59,7 @@ export interface ClusterProps {
    *
    * @default - disabled
    */
-  readonly clientAuthentication?: ClientAuthenticationConfig;
+  readonly clientAuthentication?: ClientAuthentication;
   /**
    * What to do when this resource is deleted from a stack.
    *
@@ -293,27 +293,9 @@ export interface EncryptionInTransitConfig {
 }
 
 /**
- * Configuration properties for client authentication.
+ * SASL authentication properties
  */
-export interface ClientAuthenticationConfig {
-  /**
-   * SASL authentication configuration
-   *
-   * @default - disabled
-   */
-  readonly sasl?: SaslAuthConfig;
-  /**
-   * TLS authentication configuration
-   *
-   * @default - disabled
-   */
-  readonly tls?: TlsAuthConfig;
-}
-
-/**
- * SASL authentication configuration
- */
-export interface SaslAuthConfig {
+export interface SaslAuthProps {
   /**
    * Enable SASL/SCRAM authentication.
    *
@@ -332,13 +314,41 @@ export interface SaslAuthConfig {
 }
 
 /**
- * TLS authentication configuration
+ * TLS authentication properties
  */
-export interface TlsAuthConfig {
+export interface TlsAuthProps {
   /**
    * List of ACM Certificate Authorities to enable TLS authentication.
    *
    * @default - none
    */
   readonly certificateAuthorityArns?: string[];
+}
+
+/**
+ * Configuration properties for client authentication.
+ */
+export class ClientAuthentication {
+  /**
+   * SASL authentication
+   */
+  public static sasl(props: SaslAuthProps): ClientAuthentication {
+    return new ClientAuthentication(props, undefined);
+  }
+
+  /**
+   * TLS authentication
+   */
+  public static tls(props: TlsAuthProps): ClientAuthentication {
+    return new ClientAuthentication(undefined, props);
+  }
+
+  /**
+   * @param saslProps - properties for SASL authentication
+   * @param tlsProps - properties for TLS authentication
+   */
+  private constructor(
+    public readonly saslProps?: SaslAuthProps,
+    public readonly tlsProps?: TlsAuthProps,
+  ) {}
 }

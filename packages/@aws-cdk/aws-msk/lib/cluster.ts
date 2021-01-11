@@ -107,24 +107,15 @@ export class Cluster extends ClusterBase {
     ) {
       core.Annotations.of(this).addError(
         'The cluster name must only contain alphanumeric characters and have a maximum length of 64 characters.' +
-          `got: '${props.clusterName}. length: ${props.clusterName.length}'`,
-      );
-    }
-
-    if (
-      props.clientAuthentication?.tls?.certificateAuthorityArns &&
-      props.clientAuthentication?.sasl?.scram
-    ) {
-      core.Annotations.of(this).addError(
-        'Only one of SASL/SCRAM or TLS client authentication can be set.',
+          `got: '${props.clusterName}. length: ${props.clusterName.length}'`
       );
     }
 
     if (
       props.encryptionInTransit?.clientBroker ===
         ClientBrokerEncryption.PLAINTEXT &&
-      (props.clientAuthentication?.tls?.certificateAuthorityArns ||
-        props.clientAuthentication?.sasl?.scram)
+      (props.clientAuthentication?.tlsProps?.certificateAuthorityArns ||
+        props.clientAuthentication?.saslProps?.scram)
     ) {
       core.Annotations.of(this).addError(
         'To enable client authentication, you must enabled TLS-encrypted traffic between clients and brokers.',
@@ -132,7 +123,7 @@ export class Cluster extends ClusterBase {
     } else if (
       props.encryptionInTransit?.clientBroker ===
         ClientBrokerEncryption.TLS_PLAINTEXT &&
-      props.clientAuthentication?.sasl?.scram
+      props.clientAuthentication?.saslProps?.scram
     ) {
       core.Annotations.of(this).addError(
         'To enable SASL/SCRAM authentication, you must only allow TLS-encrypted traffic between clients and brokers.',
@@ -209,8 +200,8 @@ export class Cluster extends ClusterBase {
     };
 
     if (
-      props.clientAuthentication?.sasl?.scram &&
-      props.clientAuthentication?.sasl?.key === undefined
+      props.clientAuthentication?.saslProps?.scram &&
+      props.clientAuthentication?.saslProps?.key === undefined
     ) {
       this.saslScramAuthenticationKey = new kms.Key(this, 'SASLKey', {
         description:
@@ -244,18 +235,17 @@ export class Cluster extends ClusterBase {
     }
     const clientAuthentication = props.clientAuthentication
       ? {
-        sasl: props.clientAuthentication?.sasl?.scram
-          ? {
-            scram: {
-              enabled: props.clientAuthentication?.sasl.scram,
-            },
-          }
-          : undefined,
-        tls: props.clientAuthentication?.tls
-          ?.certificateAuthorityArns
-          ? {
-            certificateAuthorityArnList:
-                  props.clientAuthentication?.tls
+          sasl: props.clientAuthentication?.saslProps?.scram
+            ? {
+                scram: {
+                  enabled: props.clientAuthentication?.saslProps.scram,
+                },
+              }
+            : undefined,
+          tls: props.clientAuthentication?.tlsProps?.certificateAuthorityArns
+            ? {
+                certificateAuthorityArnList:
+                  props.clientAuthentication?.tlsProps
                     ?.certificateAuthorityArns,
           }
           : undefined,

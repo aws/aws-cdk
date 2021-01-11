@@ -94,13 +94,11 @@ describe('MSK Cluster', () => {
           encryptionInTransit: {
             clientBroker: msk.ClientBrokerEncryption.PLAINTEXT,
           },
-          clientAuthentication: {
-            tls: {
-              certificateAuthorityArns: [
-                'arn:aws:acm-pca:us-west-2:1234567890:certificate-authority/11111111-1111-1111-1111-111111111111',
-              ],
-            },
-          },
+          clientAuthentication: msk.ClientAuthentication.tls({
+            certificateAuthorityArns: [
+              'arn:aws:acm-pca:us-west-2:1234567890:certificate-authority/11111111-1111-1111-1111-111111111111'
+            ],
+          }),
         });
 
         const synthedStack = SynthUtils.synthesize(stack);
@@ -121,11 +119,9 @@ describe('MSK Cluster', () => {
           encryptionInTransit: {
             clientBroker: msk.ClientBrokerEncryption.PLAINTEXT,
           },
-          clientAuthentication: {
-            sasl: {
-              scram: true,
-            },
-          },
+          clientAuthentication: msk.ClientAuthentication.sasl({
+            scram: true,
+          }),
         });
         const synthedStack = SynthUtils.synthesize(stack);
         const meta = synthedStack.findMetadataByType('aws:cdk:error');
@@ -143,11 +139,9 @@ describe('MSK Cluster', () => {
           encryptionInTransit: {
             clientBroker: msk.ClientBrokerEncryption.TLS_PLAINTEXT,
           },
-          clientAuthentication: {
-            sasl: {
-              scram: true,
-            },
-          },
+          clientAuthentication: msk.ClientAuthentication.sasl({
+            scram: true,
+          }),
         });
         const synthedStack = SynthUtils.synthesize(stack);
         const meta = synthedStack.findMetadataByType('aws:cdk:error');
@@ -167,11 +161,9 @@ describe('MSK Cluster', () => {
           encryptionInTransit: {
             clientBroker: msk.ClientBrokerEncryption.TLS,
           },
-          clientAuthentication: {
-            sasl: {
-              scram: true,
-            },
-          },
+          clientAuthentication: msk.ClientAuthentication.sasl({
+            scram: true,
+          }),
         });
       });
 
@@ -260,33 +252,6 @@ describe('MSK Cluster', () => {
           },
         });
       });
-    });
-
-    test('fails if more than one authentication method is enabled', () => {
-      new msk.Cluster(stack, 'Cluster', {
-        clusterName: 'cluster',
-        brokerNodeGroupProps: {
-          vpc,
-        },
-        encryptionInTransit: {
-          clientBroker: msk.ClientBrokerEncryption.PLAINTEXT,
-        },
-        clientAuthentication: {
-          sasl: {
-            scram: true,
-          },
-          tls: {
-            certificateAuthorityArns: [
-              'arn:aws:acm-pca:us-west-2:1234567890:certificate-authority/11111111-1111-1111-1111-111111111111',
-            ],
-          },
-        },
-      });
-      const synthedStack = SynthUtils.synthesize(stack);
-      const meta = synthedStack.findMetadataByType('aws:cdk:error');
-      expect(meta[0].data).toEqual(
-        'Only one of SASL/SCRAM or TLS client authentication can be set.',
-      );
     });
   });
 
@@ -501,13 +466,11 @@ describe('MSK Cluster', () => {
       encryptionInTransit: {
         clientBroker: msk.ClientBrokerEncryption.TLS,
       },
-      clientAuthentication: {
-        tls: {
-          certificateAuthorityArns: [
-            'arn:aws:acm-pca:us-west-2:1234567890:certificate-authority/11111111-1111-1111-1111-111111111111',
-          ],
-        },
-      },
+      clientAuthentication: msk.ClientAuthentication.tls({
+        certificateAuthorityArns: [
+          "arn:aws:acm-pca:us-west-2:1234567890:certificate-authority/11111111-1111-1111-1111-111111111111",
+        ],
+      }),
       monitoring: {
         enablePrometheusJmxExporter: true,
         enablePrometheusNodeExporter: true,
