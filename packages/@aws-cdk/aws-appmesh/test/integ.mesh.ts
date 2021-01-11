@@ -30,7 +30,7 @@ const virtualService = mesh.addVirtualService('service', {
 });
 
 const node = mesh.addVirtualNode('node', {
-  dnsHostName: `node1.${namespace.namespaceName}`,
+  serviceDiscovery: appmesh.ServiceDiscovery.dns(`node1.${namespace.namespaceName}`),
   listeners: [appmesh.VirtualNodeListener.http({
     healthCheck: {
       healthyThreshold: 3,
@@ -59,13 +59,17 @@ router.addRoute('route-1', {
     match: {
       prefixPath: '/',
     },
+    timeout: {
+      idle: cdk.Duration.seconds(10),
+      perRequest: cdk.Duration.seconds(10),
+    },
   }),
 });
 
 const certificateAuthorityArn = 'arn:aws:acm-pca:us-east-1:123456789012:certificate-authority/12345678-1234-1234-1234-123456789012';
 
 const node2 = mesh.addVirtualNode('node2', {
-  dnsHostName: `node2.${namespace.namespaceName}`,
+  serviceDiscovery: appmesh.ServiceDiscovery.dns(`node2.${namespace.namespaceName}`),
   listeners: [appmesh.VirtualNodeListener.http({
     healthCheck: {
       healthyThreshold: 3,
@@ -89,7 +93,7 @@ const node2 = mesh.addVirtualNode('node2', {
 });
 
 const node3 = mesh.addVirtualNode('node3', {
-  dnsHostName: `node3.${namespace.namespaceName}`,
+  serviceDiscovery: appmesh.ServiceDiscovery.dns(`node3.${namespace.namespaceName}`),
   listeners: [appmesh.VirtualNodeListener.http({
     healthCheck: {
       healthyThreshold: 3,
@@ -118,6 +122,10 @@ router.addRoute('route-2', {
     match: {
       prefixPath: '/path2',
     },
+    timeout: {
+      idle: cdk.Duration.seconds(11),
+      perRequest: cdk.Duration.seconds(11),
+    },
   }),
 });
 
@@ -129,6 +137,9 @@ router.addRoute('route-3', {
         weight: 20,
       },
     ],
+    timeout: {
+      idle: cdk.Duration.seconds(12),
+    },
   }),
 });
 

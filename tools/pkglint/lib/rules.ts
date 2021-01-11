@@ -147,6 +147,7 @@ export class ThirdPartyAttributions extends ValidationRule {
       return;
     }
     const bundled = pkg.getAllBundledDependencies().filter(dep => !dep.startsWith('@aws-cdk'));
+    const attribution = pkg.json.pkglint?.attribution ?? [];
     const noticePath = path.join(pkg.packageRoot, 'NOTICE');
     const lines = fs.existsSync(noticePath)
       ? fs.readFileSync(noticePath, { encoding: 'utf8' }).split('\n')
@@ -164,9 +165,9 @@ export class ThirdPartyAttributions extends ValidationRule {
       }
     }
     for (const attr of attributions) {
-      if (!bundled.includes(attr)) {
+      if (!bundled.includes(attr) && !attribution.includes(attr)) {
         pkg.report({
-          message: `Unnecessary attribution found for dependency '${attr}' in NOTICE file.`,
+          message: `Unnecessary attribution found for dependency '${attr}' in NOTICE file. Attribution is determined from package.json (all "bundledDependencies" or the list in "pkglint.attribution")`,
           ruleName: this.name,
         });
       }

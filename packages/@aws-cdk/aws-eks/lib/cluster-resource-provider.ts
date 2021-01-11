@@ -1,4 +1,5 @@
 import * as path from 'path';
+import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import { Duration, NestedStack, Stack } from '@aws-cdk/core';
@@ -17,6 +18,21 @@ export interface ClusterResourceProviderProps {
    * The IAM role to assume in order to interact with the cluster.
    */
   readonly adminRole: iam.IRole;
+
+  /**
+   * The VPC to provision the functions in.
+   */
+  readonly vpc?: ec2.IVpc;
+
+  /**
+   * The subnets to place the functions in.
+   */
+  readonly subnets?: ec2.ISubnet[];
+
+  /**
+   * Environment to add to the handler.
+   */
+  readonly environment?: { [key: string]: string };
 }
 
 /**
@@ -46,8 +62,11 @@ export class ClusterResourceProvider extends NestedStack {
       code: lambda.Code.fromAsset(HANDLER_DIR),
       description: 'onEvent handler for EKS cluster resource provider',
       runtime: HANDLER_RUNTIME,
+      environment: props.environment,
       handler: 'index.onEvent',
       timeout: Duration.minutes(1),
+      vpc: props.subnets ? props.vpc : undefined,
+      vpcSubnets: props.subnets ? { subnets: props.subnets } : undefined,
     });
 
     const isComplete = new lambda.Function(this, 'IsCompleteHandler', {
@@ -56,6 +75,8 @@ export class ClusterResourceProvider extends NestedStack {
       runtime: HANDLER_RUNTIME,
       handler: 'index.isComplete',
       timeout: Duration.minutes(1),
+      vpc: props.subnets ? props.vpc : undefined,
+      vpcSubnets: props.subnets ? { subnets: props.subnets } : undefined,
     });
 
     this.provider = new cr.Provider(this, 'Provider', {
@@ -63,6 +84,8 @@ export class ClusterResourceProvider extends NestedStack {
       isCompleteHandler: isComplete,
       totalTimeout: Duration.hours(1),
       queryInterval: Duration.minutes(1),
+      vpc: props.subnets ? props.vpc : undefined,
+      vpcSubnets: props.subnets ? { subnets: props.subnets } : undefined,
     });
 
     props.adminRole.grant(onEvent.role!, 'sts:AssumeRole');
