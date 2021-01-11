@@ -921,7 +921,7 @@ export class Stack extends CoreConstruct implements ITaggable {
       environment: cxapi.EnvironmentUtils.format(envAccount, envRegion),
     };
   }
-  
+
   /**
    * Maximum number of resources in the stack
    *
