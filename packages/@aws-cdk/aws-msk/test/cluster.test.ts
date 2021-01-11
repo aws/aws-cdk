@@ -442,7 +442,7 @@ describe('MSK Cluster', () => {
       clusterName: 'cluster',
       brokerNodeGroupProps: {
         vpc,
-        storageInfo: { ebsStorageInfo: { kmsKey: new kms.Key(stack, 'Key') } },
+        storageInfo: { ebsStorageInfo: { encryptionKey: new kms.Key(stack, 'Key') } },
       },
     });
 
@@ -490,7 +490,7 @@ describe('MSK Cluster', () => {
         storageInfo: {
           ebsStorageInfo: {
             volumeSize: 100,
-            kmsKey: kms.Key.fromKeyArn(
+            encryptionKey: kms.Key.fromKeyArn(
               stack,
               'kms',
               'arn:aws:kms:us-east-1:111122223333:key/1234abc',

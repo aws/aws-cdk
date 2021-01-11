@@ -155,10 +155,10 @@ export class Cluster extends ClusterBase {
       );
 
     const encryptionAtRest = brokerNodeGroupProps.storageInfo?.ebsStorageInfo
-      ?.kmsKey
+      ?.encryptionKey
       ? {
         dataVolumeKmsKeyId:
-            brokerNodeGroupProps.storageInfo.ebsStorageInfo.kmsKey.keyId,
+            brokerNodeGroupProps.storageInfo.ebsStorageInfo.encryptionKey.keyId,
       }
       : undefined; // MSK will create the managed key
 

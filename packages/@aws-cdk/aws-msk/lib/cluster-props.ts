@@ -145,7 +145,7 @@ export interface EbsStorageInfo {
    *
    * @default Uses AWS managed CMK (aws/kafka)
    */
-  readonly kmsKey?: kms.IKey;
+  readonly encryptionKey?: kms.IKey;
 }
 
 /**
