@@ -470,114 +470,63 @@ export interface StandardAttributesMask {
 export class ClientAttributes {
 
   /**
-   * Creates a custom ClientAttributes with the specified attributes
-   * @param standard a mask with the standard attributes to include in the set
-   * @param custom a list of custom attributes to add to the set
-   */
-  public static from(standard: StandardAttributesMask, custom?: string[]): ClientAttributes {
-    const aux = new Set(custom);
-    if (standard.address === true) { aux.add('address'); }
-    if (standard.birthdate === true) { aux.add('birthdate'); }
-    if (standard.email === true) { aux.add('email'); }
-    if (standard.familyName === true) { aux.add('family_name'); }
-    if (standard.fullname === true) { aux.add('name'); }
-    if (standard.gender === true) { aux.add('gender'); }
-    if (standard.givenName === true) { aux.add('given_name'); }
-    if (standard.lastUpdateTime === true) { aux.add('updated_at'); }
-    if (standard.locale === true) { aux.add('locale'); }
-    if (standard.middleName === true) { aux.add('middle_name'); }
-    if (standard.nickname === true) { aux.add('nickname'); }
-    if (standard.phoneNumber === true) { aux.add('phone_number'); }
-    if (standard.preferredUsername === true) { aux.add('preferred_username'); }
-    if (standard.profilePage === true) { aux.add('profile'); }
-    if (standard.profilePicture === true) { aux.add('picture'); }
-    if (standard.timezone === true) { aux.add('zoneinfo'); }
-    if (standard.emailVerified === true) { aux.add('email_verified'); }
-    if (standard.phoneNumberVerified === true) { aux.add('phone_number_verified'); }
-    if (standard.website === true) { aux.add('website'); }
-    return new ClientAttributes(aux);
-  }
-
-  /**
    * Creates an empty ClientAttributes
    */
   public static empty(): ClientAttributes {
-    return new ClientAttributes(new Set());
-  }
-
-  /**
-   * Creates an attributes set with all default Cognito Attributes
-   * from https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-attributes.html
-   *
-   * @note there are some attributes (i.e. `verified_email` and `verified_phone_number`)
-   * that should be kept readonly by most clients. @see `ClientAttributes.profileWritable`
-   * @param custom a list of custom attributes to add to the set
-   */
-  public static allStandard(custom?: string[]): ClientAttributes {
-    let standardAttributes: StandardAttributesMask = {
-      address: true,
-      birthdate: true,
-      email: true,
-      familyName: true,
-      fullname: true,
-      gender: true,
-      givenName: true,
-      lastUpdateTime: true,
-      locale: true,
-      middleName: true,
-      nickname: true,
-      phoneNumber: true,
-      preferredUsername: true,
-      profilePage: true,
-      profilePicture: true,
-      timezone: true,
-      emailVerified: true,
-      phoneNumberVerified: true,
-      website: true,
-    };
-    return ClientAttributes.from(standardAttributes, custom);
-  }
-
-  /**
-   * Creates an attributes set with all Cognito Attributes except verified_email and verified_phone_number
-   * from https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-attributes.html
-   *
-   * @note there are some attributes (i.e. `verified_email` and `verified_phone_number`)
-   * that should be kept readonly by most clients.
-   * @param custom a list of custom attributes to add to the set
-   */
-  public static profileWritable(custom?: string[]): ClientAttributes {
-    let standardAttributes: StandardAttributesMask = {
-      address: true,
-      birthdate: true,
-      email: true,
-      familyName: true,
-      fullname: true,
-      gender: true,
-      givenName: true,
-      lastUpdateTime: true,
-      locale: true,
-      middleName: true,
-      nickname: true,
-      phoneNumber: true,
-      preferredUsername: true,
-      profilePage: true,
-      profilePicture: true,
-      timezone: true,
-      emailVerified: false,
-      phoneNumberVerified: false,
-      website: true,
-    };
-    return ClientAttributes.from(standardAttributes, custom);
+    return new ClientAttributes();
   }
 
   /**
    * The set of attributes
    */
-  private readonly attributesSet: Set<string> = new Set<string>();
+  private readonly attributesSet: Set<string>;
 
-  private constructor(attributesSet: Set<string>) {
-    this.attributesSet = attributesSet;
+  private constructor(attributesSet?: Set<string>) {
+    this.attributesSet = attributesSet ?? new Set<string>();
+  }
+
+  /**
+   * Creates a custom ClientAttributes with the specified attributes
+   * @param attributes a list of standard attributes to add to the set
+   */
+  public withStandardAttributes(attributes: StandardAttributesMask): ClientAttributes {
+    let attributesSet = new Set(this.attributesSet);
+    if (attributes.address === true) { attributesSet.add('address'); }
+    if (attributes.birthdate === true) { attributesSet.add('birthdate'); }
+    if (attributes.email === true) { attributesSet.add('email'); }
+    if (attributes.familyName === true) { attributesSet.add('family_name'); }
+    if (attributes.fullname === true) { attributesSet.add('name'); }
+    if (attributes.gender === true) { attributesSet.add('gender'); }
+    if (attributes.givenName === true) { attributesSet.add('given_name'); }
+    if (attributes.lastUpdateTime === true) { attributesSet.add('updated_at'); }
+    if (attributes.locale === true) { attributesSet.add('locale'); }
+    if (attributes.middleName === true) { attributesSet.add('middle_name'); }
+    if (attributes.nickname === true) { attributesSet.add('nickname'); }
+    if (attributes.phoneNumber === true) { attributesSet.add('phone_number'); }
+    if (attributes.preferredUsername === true) { attributesSet.add('preferred_username'); }
+    if (attributes.profilePage === true) { attributesSet.add('profile'); }
+    if (attributes.profilePicture === true) { attributesSet.add('picture'); }
+    if (attributes.timezone === true) { attributesSet.add('zoneinfo'); }
+    if (attributes.emailVerified === true) { attributesSet.add('email_verified'); }
+    if (attributes.phoneNumberVerified === true) { attributesSet.add('phone_number_verified'); }
+    if (attributes.website === true) { attributesSet.add('website'); }
+    return new ClientAttributes(attributesSet);
+  }
+
+  /**
+   * Creates a custom ClientAttributes with the specified attributes
+   * @param attributes a list of custom attributes to add to the set
+   */
+  public withCustomAttributes(...attributes: string[]): ClientAttributes {
+    let attributesSet: Set<string> = new Set(this.attributesSet);
+    for (let attribute of attributes) {
+      // custom attributes MUST begin with `custom:`, so add the string if not present
+      if (!attribute.startsWith('custom:')) {
+        attribute = 'custom:' + attribute;
+      }
+      attributesSet.add(attribute);
+    }
+    return new ClientAttributes(attributesSet);
   }
 
   /**

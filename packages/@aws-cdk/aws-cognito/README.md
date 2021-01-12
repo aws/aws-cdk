@@ -580,10 +580,18 @@ The default behaviour is to allow read and write permissions on all attributes.
 
 ```ts
 const pool = new cognito.UserPool(this, 'Pool');
+// create a set of attributes that the client will be allowed to set
+const clientWriteAttributes = ClientAttributes.empty()
+  .withStandardAttributes({name: true, email: true})
+  .withCustomAttributes(['favouritePizza']);
+// read attributes are usually more than the writable ones
+const clientReadAttributes = clientWriteAttributes
+  .withStandardAttributes({emailVerified: true})
+  .withCustomAttributes(['pointsEarned']);
 pool.addClient('app-client', {
   // ...
-  readAttributes: ClientAttributes.allStandard(['custom:my_attribute_1', 'custom:my_attribute_2']),
-  writeAttributes: ClientAttributes.from({name: true, locale: true}),
+  readAttributes: clientReadAttributes,
+  writeAttributes: clientWriteAttributes,
 });
 ```
 

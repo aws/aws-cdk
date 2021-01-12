@@ -193,7 +193,27 @@ describe('User Pool Attributes', () => {
       const customAttributes = ['custom:my_attribute'];
 
       // WHEN
-      const clientAttributes = ClientAttributes.allStandard(customAttributes);
+      const clientAttributes = ClientAttributes.empty().withStandardAttributes({
+        address: true,
+        birthdate: true,
+        email: true,
+        emailVerified: true,
+        familyName: true,
+        fullname: true,
+        gender: true,
+        givenName: true,
+        lastUpdateTime: true,
+        locale: true,
+        middleName: true,
+        nickname: true,
+        phoneNumber: true,
+        phoneNumberVerified: true,
+        preferredUsername: true,
+        profilePage: true,
+        profilePicture: true,
+        timezone: true,
+        website: true,
+      }).withCustomAttributes(...customAttributes);
       const attributes = clientAttributes.attributes();
 
       // THEN
@@ -204,24 +224,40 @@ describe('User Pool Attributes', () => {
       expect(attributes).toContain('custom:my_attribute');
     });
 
-    test('create ClientAttributes with profileWritable attributes', () => {
+    test('create ClientAttributes copying another one', () => {
       // GIVEN
-      const clientAttributes = ClientAttributes.profileWritable();
-      const attributes = clientAttributes.attributes();
+      const original = ClientAttributes.empty()
+        .withStandardAttributes({ email: true })
+        .withCustomAttributes('custom1');
+      const copied = original
+        .withStandardAttributes({ emailVerified: true })
+        .withCustomAttributes('custom2');
+
+      // WHEN
+      const originalAttributes = original.attributes();
+      const copiedAttributes = copied.attributes();
 
       // THEN
-      expect(attributes.length).toEqual(17);
-      expect(attributes).toContain('preferred_username');
-      expect(attributes).not.toContain('email_verified');
-      expect(attributes).not.toContain('phone_number_verified');
+      expect(originalAttributes.length).toEqual(2);
+      expect(copiedAttributes.length).toEqual(4);
+      // originals MUST NOT contain the added ones
+      expect(originalAttributes).toContain('email');
+      expect(originalAttributes).toContain('custom:custom1');
+      expect(originalAttributes).not.toContain('email_verified');
+      expect(originalAttributes).not.toContain('custom:custom2');
+      // copied MUST contain all attributes
+      expect(copiedAttributes).toContain('email');
+      expect(copiedAttributes).toContain('custom:custom1');
+      expect(copiedAttributes).toContain('email_verified');
+      expect(copiedAttributes).toContain('custom:custom2');
     });
 
     test('create ClientAttributes with custom attributes only', () => {
       // GIVEN
-      const customAttributes = ['custom:my_first', 'custom:my_second'];
+      const customAttributes = ['custom:my_first', 'my_second'];
 
       // WHEN
-      const clientAttributes = ClientAttributes.from({}, customAttributes);
+      const clientAttributes = ClientAttributes.empty().withCustomAttributes(...customAttributes);
       const attributes = clientAttributes.attributes();
 
       // EXPECT

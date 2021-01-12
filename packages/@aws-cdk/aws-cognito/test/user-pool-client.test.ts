@@ -848,8 +848,28 @@ describe('User Pool Client', () => {
       // GIVEN
       const stack = new Stack();
       const pool = new UserPool(stack, 'Pool');
-      const writeAttributes = ClientAttributes.profileWritable(['custom:my_first']);
-      const readAttributes = ClientAttributes.allStandard();
+      const writeAttributes = ClientAttributes.empty().withCustomAttributes('my_first').withStandardAttributes({ givenName: true, familyName: true });
+      const readAttributes = ClientAttributes.empty().withStandardAttributes({
+        address: true,
+        birthdate: true,
+        email: true,
+        emailVerified: true,
+        familyName: true,
+        fullname: true,
+        gender: true,
+        givenName: true,
+        lastUpdateTime: true,
+        locale: true,
+        middleName: true,
+        nickname: true,
+        phoneNumber: true,
+        phoneNumberVerified: true,
+        preferredUsername: true,
+        profilePage: true,
+        profilePicture: true,
+        timezone: true,
+        website: true,
+      });
 
       // WHEN
       pool.addClient('Client', {
@@ -860,7 +880,7 @@ describe('User Pool Client', () => {
       // EXPECT
       expect(stack).toHaveResourceLike('AWS::Cognito::UserPoolClient', {
         ReadAttributes: arrayWith('name', 'given_name', 'family_name', 'middle_name', 'nickname', 'preferred_username', 'profile', 'picture', 'website', 'email', 'email_verified', 'gender', 'birthdate', 'zoneinfo', 'locale', 'phone_number', 'phone_number_verified', 'address', 'updated_at'),
-        WriteAttributes: arrayWith('name', 'given_name', 'family_name', 'middle_name', 'nickname', 'preferred_username', 'profile', 'picture', 'website', 'email', 'gender', 'birthdate', 'zoneinfo', 'locale', 'phone_number', 'address', 'updated_at', 'custom:my_first'),
+        WriteAttributes: arrayWith('given_name', 'family_name', 'custom:my_first'),
       });
     });
   });
