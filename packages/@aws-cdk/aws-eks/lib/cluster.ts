@@ -1684,7 +1684,7 @@ export interface AutoScalingGroupOptions {
 
   /**
    * Installs the AWS spot instance interrupt handler on the cluster if it's not
-   * already added.
+   * already added. Only relevant if `spotPrice` is configured on the auto-scaling group.
    *
    * @default true
    */
