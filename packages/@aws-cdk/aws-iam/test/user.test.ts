@@ -81,7 +81,7 @@ describe('IAM user', () => {
     });
   });
 
-  test('imported user has an ARN', () => {
+  test('user imported by user name has an ARN', () => {
     // GIVEN
     const stack = new Stack();
 
@@ -92,6 +92,32 @@ describe('IAM user', () => {
     expect(stack.resolve(user.userArn)).toStrictEqual({
       'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::', { Ref: 'AWS::AccountId' }, ':user/MyUserName']],
     });
+  });
+
+  test('user imported by user ARN has a name', () => {
+    // GIVEN
+    const stack = new Stack();
+    const userName = 'MyUserName';
+
+    // WHEN
+    const user = User.fromUserArn(stack, 'import', `arn:aws:iam::account-id:user/${userName}`);
+
+    // THEN
+    expect(stack.resolve(user.userName)).toStrictEqual(userName);
+  });
+
+  test('user imported by user attributes has a name', () => {
+    // GIVEN
+    const stack = new Stack();
+    const userName = 'MyUserName';
+
+    // WHEN
+    const user = User.fromUserAttributes(stack, 'import', {
+      userArn: `arn:aws:iam::account-id:user/${userName}`,
+    });
+
+    // THEN
+    expect(stack.resolve(user.userName)).toStrictEqual(userName);
   });
 
   test('add to policy of imported user', () => {
