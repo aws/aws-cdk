@@ -1585,7 +1585,7 @@ export interface AutoScalingGroupCapacityOptions extends autoscaling.CommonAutoS
 
   /**
    * Installs the AWS spot instance interrupt handler on the cluster if it's not
-   * already added.
+   * already added. Only relevant if `spotPrice` is used.
    *
    * @default true
    */
