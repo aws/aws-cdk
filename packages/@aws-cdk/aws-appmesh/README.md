@@ -241,6 +241,44 @@ The `backends` property can be added with `node.addBackend()`. We define a virtu
 
 The `backendsDefaultClientPolicy` property are added to the node while creating the virtual node. These are virtual node's service backends client policy defaults.
 
+## Adding TLS to a listener
+
+The `tlsCertificate` property can be added to a Virtual Node listener or Virtual Gateway listener to add TLS configuration. 
+A certificate from AWS Certificate Manager can be incorporated or a customer provided certificate can be specified with a `certificateChain` path file and a `privateKey` file path.
+
+```typescript
+import * as certificatemanager from '@aws-cdk/aws-certificatemanager';
+
+// A Virtual Node with listener TLS from an ACM provided certificate
+const cert = new certificatemanager.Certificate(this, 'cert', {...});
+
+const node = new appmesh.VirtualNode(stack, 'node', {
+  mesh,
+  dnsHostName: 'node',
+  listeners: [appmesh.VirtualNodeListener.grpc({
+    port: 80,
+    tlsCertificate: appmesh.TlsCertificate.acm({
+      certificate: cert,
+      tlsMode: TlsMode.STRICT,
+    }),
+  })],
+});
+
+// A Virtual Gateway with listener TLS from a customer provided file certificate
+const gateway = new appmesh.VirtualGateway(this, 'gateway', {
+  mesh: mesh,
+  listeners: [appmesh.VirtualGatewayListener.grpc({
+    port: 8080,
+    tlsCertificate: appmesh.TlsCertificate.file({
+      certificateChain: 'path/to/certChain',
+      privateKey: 'path/to/privateKey',
+      tlsMode: TlsMode.STRICT,
+    }),
+  })],
+  virtualGatewayName: 'gateway',
+});
+```
+
 ## Adding a Route
 
 A `route` is associated with a virtual router, and it's used to match requests for a virtual router and distribute traffic accordingly to its associated virtual nodes.
