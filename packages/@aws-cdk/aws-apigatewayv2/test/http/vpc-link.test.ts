@@ -51,7 +51,7 @@ describe('VpcLink', () => {
     // WHEN
     new VpcLink(stack, 'VpcLink', {
       vpc,
-      subnets: [subnet1, subnet2],
+      subnets: { subnets: [subnet1, subnet2] },
       securityGroups: [sg1, sg2, sg3],
     });
 
@@ -59,12 +59,6 @@ describe('VpcLink', () => {
     expect(stack).toHaveResource('AWS::ApiGatewayV2::VpcLink', {
       Name: 'VpcLink',
       SubnetIds: [
-        {
-          Ref: 'VPCPrivateSubnet1Subnet8BCA10E0',
-        },
-        {
-          Ref: 'VPCPrivateSubnet2SubnetCFCDAA7A',
-        },
         {
           Ref: 'subnet1Subnet16A4B3BD',
         },
@@ -180,7 +174,13 @@ describe('VpcLink', () => {
     const stack = new Stack();
 
     // WHEN
-    VpcLink.fromVpcLinkId(stack, 'ImportedVpcLink', 'vpclink-id');
+    VpcLink.fromVpcLinkAttributes(stack, 'ImportedVpcLink', {
+      vpcLinkId: 'vpclink-id',
+      vpc: ec2.Vpc.fromVpcAttributes(stack, 'ImportedVpc', {
+        vpcId: 'vpc-12345',
+        availabilityZones: ['us-east-1'],
+      }),
+    });
 
     // THEN
     expect(stack).not.toHaveResource('AWS::ApiGatewayV2::VpcLink');

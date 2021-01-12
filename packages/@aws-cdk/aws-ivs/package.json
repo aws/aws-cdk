@@ -1,0 +1,110 @@
+{
+  "name": "@aws-cdk/aws-ivs",
+  "version": "0.0.0",
+  "description": "The CDK Construct Library for AWS::IVS",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "jsii": {
+    "outdir": "dist",
+    "projectReferences": true,
+    "targets": {
+      "dotnet": {
+        "namespace": "Amazon.CDK.AWS.IVS",
+        "packageId": "Amazon.CDK.AWS.IVS",
+        "signAssembly": true,
+        "assemblyOriginatorKeyFile": "../../key.snk",
+        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
+      },
+      "java": {
+        "package": "software.amazon.awscdk.services.ivs",
+        "maven": {
+          "groupId": "software.amazon.awscdk",
+          "artifactId": "ivs"
+        }
+      },
+      "python": {
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ],
+        "distName": "aws-cdk.aws-ivs",
+        "module": "aws_cdk.aws_ivs"
+      }
+    }
+  },
+  "awslint": {
+    "exclude": [
+      "props-physical-name:@aws-cdk/aws-ivs.ChannelProps",
+      "props-physical-name:@aws-cdk/aws-ivs.StreamKeyProps",
+      "props-physical-name:@aws-cdk/aws-ivs.PlaybackKeyPairProps",
+      "from-method:@aws-cdk/aws-ivs.StreamKey",
+      "from-method:@aws-cdk/aws-ivs.PlaybackKeyPair"
+    ]
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aws/aws-cdk.git",
+    "directory": "packages/@aws-cdk/aws-ivs"
+  },
+  "homepage": "https://github.com/aws/aws-cdk",
+  "scripts": {
+    "build": "cdk-build",
+    "watch": "cdk-watch",
+    "lint": "cdk-lint",
+    "test": "cdk-test",
+    "integ": "cdk-integ",
+    "pkglint": "pkglint -f",
+    "package": "cdk-package",
+    "awslint": "cdk-awslint",
+    "cfn2ts": "cfn2ts",
+    "build+test+package": "npm run build+test && npm run package",
+    "build+test": "npm run build && npm test",
+    "compat": "cdk-compat",
+    "gen": "cfn2ts",
+    "rosetta:extract": "yarn --silent jsii-rosetta extract"
+  },
+  "cdk-build": {
+    "cloudformation": "AWS::IVS",
+    "jest": true,
+    "env": {
+      "AWSLINT_BASE_CONSTRUCT": "true"
+    }
+  },
+  "keywords": [
+    "aws",
+    "cdk",
+    "ivs",
+    "constructs",
+    "AWS::IVS",
+    "aws-ivs"
+  ],
+  "author": {
+    "name": "Amazon Web Services",
+    "url": "https://aws.amazon.com",
+    "organization": true
+  },
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "@aws-cdk/assert": "0.0.0",
+    "cdk-build-tools": "0.0.0",
+    "cdk-integ-tools": "0.0.0",
+    "cfn2ts": "0.0.0",
+    "pkglint": "0.0.0"
+  },
+  "dependencies": {
+    "@aws-cdk/core": "0.0.0",
+    "constructs": "^3.2.0"
+  },
+  "peerDependencies": {
+    "@aws-cdk/core": "0.0.0",
+    "constructs": "^3.2.0"
+  },
+  "engines": {
+    "node": ">= 10.13.0 <13 || >=13.7.0"
+  },
+  "stability": "experimental",
+  "maturity": "experimental",
+  "awscdkio": {
+    "announce": false
+  }
+}

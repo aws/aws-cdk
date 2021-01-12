@@ -219,6 +219,13 @@ export interface CloudAssemblyBuilderProps {
    * @default - Same as the manifest outdir
    */
   readonly assetOutdir?: string;
+
+  /**
+   * If this builder is for a nested assembly, the parent assembly builder
+   *
+   * @default - This is a root assembly
+   */
+  readonly parentBuilder?: CloudAssemblyBuilder;
 }
 
 /**
@@ -237,6 +244,7 @@ export class CloudAssemblyBuilder {
 
   private readonly artifacts: { [id: string]: cxschema.ArtifactManifest } = { };
   private readonly missing = new Array<cxschema.MissingContext>();
+  private readonly parentBuilder?: CloudAssemblyBuilder;
 
   /**
    * Initializes a cloud assembly builder.
@@ -245,6 +253,7 @@ export class CloudAssemblyBuilder {
   constructor(outdir?: string, props: CloudAssemblyBuilderProps = {}) {
     this.outdir = determineOutputDirectory(outdir);
     this.assetOutdir = props.assetOutdir ?? this.outdir;
+    this.parentBuilder = props.parentBuilder;
 
     // we leverage the fact that outdir is long-lived to avoid staging assets into it
     // that were already staged (copying can be expensive). this is achieved by the fact
@@ -270,6 +279,8 @@ export class CloudAssemblyBuilder {
     if (this.missing.every(m => m.key !== missing.key)) {
       this.missing.push(missing);
     }
+    // Also report in parent
+    this.parentBuilder?.addMissing(missing);
   }
 
   /**
@@ -320,6 +331,7 @@ export class CloudAssemblyBuilder {
     return new CloudAssemblyBuilder(innerAsmDir, {
       // Reuse the same asset output directory as the current Casm builder
       assetOutdir: this.assetOutdir,
+      parentBuilder: this,
     });
   }
 }

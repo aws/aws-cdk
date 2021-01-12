@@ -302,7 +302,7 @@ export class SageMakerCreateTrainingJob extends sfn.TaskStateBase implements iam
     return config
       ? {
         VpcConfig: {
-          SecurityGroupIds: Lazy.listValue({ produce: () => this.securityGroups.map((sg) => sg.securityGroupId) }),
+          SecurityGroupIds: Lazy.list({ produce: () => this.securityGroups.map((sg) => sg.securityGroupId) }),
           Subnets: this.subnets,
         },
       }

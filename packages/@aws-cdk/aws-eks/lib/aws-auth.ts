@@ -39,6 +39,7 @@ export class AwsAuth extends CoreConstruct {
 
     new KubernetesManifest(this, 'manifest', {
       cluster: props.cluster,
+      overwrite: true, // this config map is auto-created by the cluster
       manifest: [
         {
           apiVersion: 'v1',
@@ -115,7 +116,7 @@ export class AwsAuth extends CoreConstruct {
   }
 
   private synthesizeMapRoles() {
-    return Lazy.anyValue({
+    return Lazy.any({
       produce: () => this.stack.toJsonString(this.roleMappings.map(m => ({
         rolearn: m.role.roleArn,
         username: m.mapping.username ?? m.role.roleArn,
@@ -125,7 +126,7 @@ export class AwsAuth extends CoreConstruct {
   }
 
   private synthesizeMapUsers() {
-    return Lazy.anyValue({
+    return Lazy.any({
       produce: () => this.stack.toJsonString(this.userMappings.map(m => ({
         userarn: m.user.userArn,
         username: m.mapping.username ?? m.user.userArn,
@@ -135,7 +136,7 @@ export class AwsAuth extends CoreConstruct {
   }
 
   private synthesizeMapAccounts() {
-    return Lazy.anyValue({
+    return Lazy.any({
       produce: () => this.stack.toJsonString(this.accounts),
     });
   }

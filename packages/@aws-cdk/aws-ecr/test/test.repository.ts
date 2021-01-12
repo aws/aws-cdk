@@ -28,7 +28,7 @@ export = {
     test.done();
   },
 
-  'repository creation with imageScanOnPush creates custom resource'(test: Test) {
+  'repository creation with imageScanOnPush'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -36,7 +36,11 @@ export = {
     new ecr.Repository(stack, 'Repo', { imageScanOnPush: true });
 
     // THEN
-    expect(stack).to(haveResource('Custom::ECRImageScanOnPush'));
+    expect(stack).to(haveResource('AWS::ECR::Repository', {
+      ImageScanningConfiguration: {
+        scanOnPush: true,
+      },
+    }));
     test.done();
   },
 
