@@ -188,7 +188,7 @@ export = {
 
   },
 
-  'spot interrupt handler is not added if addSpotInterruptHandler is false when connecting self-managed nodes'(test: Test) {
+  'spot interrupt handler is not added if spotInterruptHandler is false when connecting self-managed nodes'(test: Test) {
 
     // GIVEN
     const { stack, vpc } = testFixture();
@@ -206,9 +206,9 @@ export = {
     });
 
     // WHEN
-    cluster.connectAutoScalingGroupCapacity(selfManaged, { addSpotInterruptHandler: false });
+    cluster.connectAutoScalingGroupCapacity(selfManaged, { spotInterruptHandler: false });
 
-    expect(stack).notTo(haveResource(eks.HelmChart.RESOURCE_TYPE));
+    test.equal(cluster.node.findAll().filter(c => c.node.id === 'chart-spot-interrupt-handler').length, 0);
     test.done();
   },
 
@@ -1316,7 +1316,7 @@ export = {
           test.done();
         },
 
-        'interrupt handler is not added when addSpotInterruptHandler is false'(test: Test) {
+        'interrupt handler is not added when spotInterruptHandler is false'(test: Test) {
           // GIVEN
           const { stack } = testFixtureNoVpc();
           const cluster = new eks.Cluster(stack, 'Cluster', { defaultCapacity: 0, version: CLUSTER_VERSION, prune: false });
@@ -1325,11 +1325,11 @@ export = {
           cluster.addAutoScalingGroupCapacity('MyCapcity', {
             instanceType: new ec2.InstanceType('m3.xlarge'),
             spotPrice: '0.01',
-            addSpotInterruptHandler: false,
+            spotInterruptHandler: false,
           });
 
           // THEN
-          expect(stack).notTo(haveResource(eks.HelmChart.RESOURCE_TYPE));
+          test.equal(cluster.node.findAll().filter(c => c.node.id === 'chart-spot-interrupt-handler').length, 0);
           test.done();
         },
 

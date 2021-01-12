@@ -375,23 +375,6 @@ cluster.connectAutoScalingGroupCapacity(asg);
 
 This will add the necessary user-data and configure all connections, roles, and tags needed for the instances in the auto-scaling group to properly join the cluster.
 
-`addAutoScalingGroupCapacity` and `connectAutoScalingGroupCapacity` add spot interrupt handler by default, to disable default behavior, set `addSpotInterruptHandler` to false.
-
-```ts
-cluster.addAutoScalingGroupCapacity("spot", {
-  instanceType: new ec2.InstanceType("t3.large"),
-  minCapacity: 2,
-  addSpotInterruptHandler: false,
-});
-```
-
-```ts
-const asg = new ec2.AutoScalingGroup(...)
-cluster.connectAutoScalingGroupCapacity(asg, {
-  addSpotInterruptHandler: false
-});
-```
-
 #### Spot Instances
 
 When using self-managed nodes, you can configure the capacity to use spot instances, greatly reducing capacity cost.
@@ -417,6 +400,8 @@ terminated.
 > Handler Version: [1.7.0](https://github.com/aws/aws-node-termination-handler/releases/tag/v1.7.0)
 >
 > Chart Version: [0.9.5](https://github.com/aws/eks-charts/blob/v0.0.28/stable/aws-node-termination-handler/Chart.yaml)
+
+`addAutoScalingGroupCapacity` and `connectAutoScalingGroupCapacity` add spot interrupt handler by default, to disable this default behavior, set `spotInterruptHandler` to false.
 
 #### Bottlerocket
 

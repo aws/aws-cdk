@@ -1181,7 +1181,7 @@ export class Cluster extends ClusterBase {
       bootstrapOptions: options.bootstrapOptions,
       bootstrapEnabled: options.bootstrapEnabled,
       machineImageType: options.machineImageType,
-      addSpotInterruptHandler: options.addSpotInterruptHandler,
+      spotInterruptHandler: options.spotInterruptHandler,
     });
 
     if (nodeTypeForInstanceType(options.instanceType) === NodeType.INFERENTIA) {
@@ -1291,7 +1291,7 @@ export class Cluster extends ClusterBase {
       });
     }
 
-    const addSpotInterruptHandler = options.addSpotInterruptHandler ?? true;
+    const addSpotInterruptHandler = options.spotInterruptHandler ?? true;
     // if this is an ASG with spot instances, install the spot interrupt handler (only if kubectl is enabled).
     if (autoScalingGroup.spotPrice && addSpotInterruptHandler) {
       this.addSpotInterruptHandler();
@@ -1589,7 +1589,7 @@ export interface AutoScalingGroupCapacityOptions extends autoscaling.CommonAutoS
    *
    * @default true
    */
-  readonly addSpotInterruptHandler?: boolean;
+  readonly spotInterruptHandler?: boolean;
 }
 
 /**
@@ -1688,7 +1688,7 @@ export interface AutoScalingGroupOptions {
    *
    * @default true
    */
-  readonly addSpotInterruptHandler?: boolean;
+  readonly spotInterruptHandler?: boolean;
 }
 
 /**
