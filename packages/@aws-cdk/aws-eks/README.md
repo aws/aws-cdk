@@ -401,7 +401,7 @@ terminated.
 >
 > Chart Version: [0.9.5](https://github.com/aws/eks-charts/blob/v0.0.28/stable/aws-node-termination-handler/Chart.yaml)
 
-`addAutoScalingGroupCapacity` and `connectAutoScalingGroupCapacity` add spot interrupt handler by default, to disable this default behavior, set `spotInterruptHandler` to false.
+To disable the installation the termination handler, set the `spotInterruptHandler` property to `false`. This applies both to `addAutoScalingGroupCapacity` and `connectAutoScalingGroupCapacity`.
 
 #### Bottlerocket
 
