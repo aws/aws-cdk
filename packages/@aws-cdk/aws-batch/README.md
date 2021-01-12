@@ -100,6 +100,12 @@ In this situation, Batch will allocate **Job A** to compute resource #1 because 
 
 The alternative would be to use the `BEST_FIT_PROGRESSIVE` strategy in order for the remaining job to be handled in larger containers regardless of vCPU requirement and costs.
 
+If new allocation strategies are added in the future, the following can be used as an escape hatch to take advantage of it right away:
+
+```ts
+batch.AllocationStrategy.fromString('NEWLY_ADDED_STRATEGY');
+```
+
 ### Launch template support
 
 Simply define your Launch Template:

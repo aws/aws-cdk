@@ -30,14 +30,14 @@ export class AllocationStrategy {
    * Batch will use the best fitting instance type will be used
    * when assigning a batch job in this compute environment.
    */
-  public static readonly BEST_FIT = new AllocationStrategy('BEST_FIT');
+  public static readonly BEST_FIT = AllocationStrategy.fromString('BEST_FIT');
 
   /**
    * Batch will select additional instance types that are large enough to
    * meet the requirements of the jobs in the queue, with a preference for
    * instance types with a lower cost per unit vCPU.
    */
-  public static readonly BEST_FIT_PROGRESSIVE = new AllocationStrategy('BEST_FIT_PROGRESSIVE');
+  public static readonly BEST_FIT_PROGRESSIVE = AllocationStrategy.fromString('BEST_FIT_PROGRESSIVE');
 
   /**
    * This is only available for Spot Instance compute resources and will select
@@ -45,7 +45,7 @@ export class AllocationStrategy {
    * the jobs in the queue, with a preference for instance types that are less
    * likely to be interrupted.
    */
-  public static readonly SPOT_CAPACITY_OPTIMIZED = new AllocationStrategy('SPOT_CAPACITY_OPTIMIZED');
+  public static readonly SPOT_CAPACITY_OPTIMIZED = AllocationStrategy.fromString('SPOT_CAPACITY_OPTIMIZED');
 
   /**
    * Create an allocation strategy from a string.
