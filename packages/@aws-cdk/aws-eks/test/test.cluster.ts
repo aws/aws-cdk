@@ -203,6 +203,7 @@ export = {
       instanceType: new ec2.InstanceType('t2.medium'),
       vpc: vpc,
       machineImage: new ec2.AmazonLinuxImage(),
+      spotPrice: '0.1',
     });
 
     // WHEN
