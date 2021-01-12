@@ -15,4 +15,6 @@ nyc.config.js
 !.eslintrc.js
 !jest.config.js
 
+!lib/experimental/edge-function/index.js
+
 junit.xml

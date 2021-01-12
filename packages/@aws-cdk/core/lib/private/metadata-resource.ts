@@ -51,7 +51,7 @@ export class MetadataResource extends Construct {
       const resource = new CfnResource(this, 'Default', {
         type: 'AWS::CDK::Metadata',
         properties: {
-          Modules: Lazy.stringValue({ produce: () => MetadataResource.modulesProperty() }),
+          Modules: Lazy.string({ produce: () => MetadataResource.modulesProperty() }),
         },
       });
 

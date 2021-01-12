@@ -43,6 +43,7 @@ export type Arguments = {
   readonly _: [Command, ...string[]];
   readonly exclusively?: boolean;
   readonly STACKS?: string[];
+  readonly lookups?: boolean;
   readonly [name: string]: unknown;
 };
 
@@ -97,7 +98,8 @@ export class Configuration {
     this.context = new Context(
       this.commandLineContext,
       this.projectConfig.subSettings([CONTEXT_KEY]).makeReadOnly(),
-      this.projectContext);
+      this.projectContext,
+      userConfig.subSettings([CONTEXT_KEY]).makeReadOnly());
 
     // Build settings from what's left
     this.settings = this.defaultConfig
@@ -245,6 +247,7 @@ export class Settings {
       output: argv.output,
       progress: argv.progress,
       bundlingStacks,
+      lookups: argv.lookups,
     });
   }
 

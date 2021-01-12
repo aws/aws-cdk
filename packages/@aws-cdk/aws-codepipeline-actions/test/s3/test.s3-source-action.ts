@@ -182,13 +182,13 @@ export = {
       const bucket = new s3.Bucket(stack, 'MyBucket');
       const sourceStage = minimalPipeline(stack, {
         bucket,
-        bucketKey: Lazy.stringValue({ produce: () => 'my-bucket-key1' }),
+        bucketKey: Lazy.string({ produce: () => 'my-bucket-key1' }),
         trigger: cpactions.S3Trigger.EVENTS,
       });
       sourceStage.addAction(new cpactions.S3SourceAction({
         actionName: 'Source2',
         bucket,
-        bucketKey: Lazy.stringValue({ produce: () => 'my-bucket-key2' }),
+        bucketKey: Lazy.string({ produce: () => 'my-bucket-key2' }),
         trigger: cpactions.S3Trigger.EVENTS,
         output: new codepipeline.Artifact(),
       }));

@@ -80,7 +80,8 @@ export class SageMakerCreateEndpointConfig extends sfn.TaskStateBase {
       KmsKeyId: this.props.kmsKey?.keyId,
       ProductionVariants: this.props.productionVariants.map((variant) => ({
         InitialInstanceCount: variant.initialInstanceCount ? variant.initialInstanceCount : 1,
-        InstanceType: `ml.${variant.instanceType}`,
+        InstanceType: sfn.JsonPath.isEncodedJsonPath(variant.instanceType.toString())
+          ? variant.instanceType.toString() : `ml.${variant.instanceType}`,
         ModelName: variant.modelName,
         VariantName: variant.variantName,
         AcceleratorType: variant.acceleratorType,
