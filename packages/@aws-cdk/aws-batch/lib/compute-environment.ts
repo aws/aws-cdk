@@ -24,19 +24,20 @@ export enum ComputeResourceType {
  * Properties for how to prepare compute resources
  * that are provisioned for a compute environment.
  */
-export enum AllocationStrategy {
+export class AllocationStrategy {
+
   /**
    * Batch will use the best fitting instance type will be used
    * when assigning a batch job in this compute environment.
    */
-  BEST_FIT = 'BEST_FIT',
+  public static readonly BEST_FIT = new AllocationStrategy('BEST_FIT');
 
   /**
    * Batch will select additional instance types that are large enough to
    * meet the requirements of the jobs in the queue, with a preference for
    * instance types with a lower cost per unit vCPU.
    */
-  BEST_FIT_PROGRESSIVE = 'BEST_FIT_PROGRESSIVE',
+  public static readonly BEST_FIT_PROGRESSIVE = new AllocationStrategy('BEST_FIT_PROGRESSIVE');
 
   /**
    * This is only available for Spot Instance compute resources and will select
@@ -44,7 +45,28 @@ export enum AllocationStrategy {
    * the jobs in the queue, with a preference for instance types that are less
    * likely to be interrupted.
    */
-  SPOT_CAPACITY_OPTIMIZED = 'SPOT_CAPACITY_OPTIMIZED',
+  public static readonly SPOT_CAPACITY_OPTIMIZED = new AllocationStrategy('SPOT_CAPACITY_OPTIMIZED');
+
+  /**
+   * Create an allocation strategy from a string.
+   * Meant to be an escape hatch in case new allocation strategies are added.
+   */
+  public static fromString(strategy: string): AllocationStrategy {
+    return new AllocationStrategy(strategy);
+  }
+
+  private readonly strategy: string;
+  private constructor(strategy: string) {
+    this.strategy = strategy;
+  }
+
+  /**
+   * String representation of the allocation strategy.
+   */
+  public toString(): string {
+    return this.strategy;
+  }
+
 }
 
 /**
@@ -341,11 +363,11 @@ export class ComputeEnvironment extends Resource implements IComputeEnvironment 
     // Only allow compute resources to be set when using MANAGED type
     if (props.computeResources && this.isManaged(props)) {
       computeResources = {
-        allocationStrategy: props.computeResources.allocationStrategy
+        allocationStrategy: props.computeResources?.allocationStrategy?.toString()
          || (
            props.computeResources.type === ComputeResourceType.SPOT
-             ? AllocationStrategy.SPOT_CAPACITY_OPTIMIZED
-             : AllocationStrategy.BEST_FIT
+             ? AllocationStrategy.SPOT_CAPACITY_OPTIMIZED.toString()
+             : AllocationStrategy.BEST_FIT.toString()
          ),
         bidPercentage: props.computeResources.bidPercentage,
         desiredvCpus: props.computeResources.desiredvCpus,

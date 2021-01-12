@@ -31,7 +31,7 @@ describe('Batch Compute Evironment', () => {
     expectedManagedDefaultComputeProps = (overrides: any) => {
       return {
         ComputeResources: {
-          AllocationStrategy: batch.AllocationStrategy.BEST_FIT,
+          AllocationStrategy: batch.AllocationStrategy.BEST_FIT.toString(),
           InstanceRole: {
             'Fn::GetAtt': [
               'testcomputeenvInstanceProfileCBD87EAB',
@@ -213,7 +213,7 @@ describe('Batch Compute Evironment', () => {
           ],
         },
         ComputeResources: {
-          AllocationStrategy: batch.AllocationStrategy.BEST_FIT,
+          AllocationStrategy: batch.AllocationStrategy.BEST_FIT.toString(),
           DesiredvCpus: props.computeResources.desiredvCpus,
           Ec2KeyPair: props.computeResources.ec2KeyPair,
           ImageId: {
@@ -250,6 +250,30 @@ describe('Batch Compute Evironment', () => {
             'Name': 'AWS Batch Instance - C4OnDemand',
             'Tag Other': 'Has other value',
           },
+          Type: 'EC2',
+        },
+      }, ResourcePart.Properties));
+    });
+
+    test('renders with an escape hatch allocation strategy', () => {
+      // WHEN
+      const props = {
+        computeEnvironmentName: 'my-test-compute-env',
+        computeResources: {
+          allocationStrategy: batch.AllocationStrategy.fromString('NEWLY_ADDED'),
+          vpc,
+        } as batch.ComputeResources,
+        managed: true,
+      };
+
+      new batch.ComputeEnvironment(stack, 'test-compute-env', props);
+
+      // THEN
+      expect(stack).to(haveResourceLike('AWS::Batch::ComputeEnvironment', {
+        ComputeEnvironmentName: 'my-test-compute-env',
+        Type: 'MANAGED',
+        ComputeResources: {
+          AllocationStrategy: 'NEWLY_ADDED',
           Type: 'EC2',
         },
       }, ResourcePart.Properties));
