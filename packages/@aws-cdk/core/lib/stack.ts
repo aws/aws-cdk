@@ -27,7 +27,11 @@ import { Construct as CoreConstruct } from './construct-compat';
 const STACK_SYMBOL = Symbol.for('@aws-cdk/core.Stack');
 const MY_STACK_CACHE = Symbol.for('@aws-cdk/core.Stack.myStack');
 
+export const STACK_RESOURCE_LIMIT_CONTEXT = '@aws-cdk/core:stackResourceLimit';
+
 const VALID_STACK_NAME_REGEX = /^[A-Za-z][A-Za-z0-9-]*$/;
+
+const MAX_RESOURCES = 500;
 
 export interface StackProps {
   /**
@@ -753,6 +757,17 @@ export class Stack extends CoreConstruct implements ITaggable {
 
     // write the CloudFormation template as a JSON file
     const outPath = path.join(builder.outdir, this.templateFile);
+
+    if (this.maxResources > 0) {
+      const resources = template.Resources || {};
+      const numberOfResources = Object.keys(resources).length;
+
+      if (numberOfResources > this.maxResources) {
+        throw new Error(`Number of resources: ${numberOfResources} is greater than allowed maximum of ${this.maxResources}`);
+      } else if (numberOfResources >= (this.maxResources * 0.8)) {
+        Annotations.of(this).addInfo(`Number of resources: ${numberOfResources} is approaching allowed maximum of ${this.maxResources}`);
+      }
+    }
     fs.writeFileSync(outPath, JSON.stringify(template, undefined, 2));
 
     for (const ctx of this._missingContext) {
@@ -905,6 +920,16 @@ export class Stack extends CoreConstruct implements ITaggable {
       region,
       environment: cxapi.EnvironmentUtils.format(envAccount, envRegion),
     };
+  }
+
+  /**
+   * Maximum number of resources in the stack
+   *
+   * Set to 0 to mean "unlimited".
+   */
+  private get maxResources(): number {
+    const contextLimit = this.node.tryGetContext(STACK_RESOURCE_LIMIT_CONTEXT);
+    return contextLimit !== undefined ? parseInt(contextLimit, 10) : MAX_RESOURCES;
   }
 
   /**

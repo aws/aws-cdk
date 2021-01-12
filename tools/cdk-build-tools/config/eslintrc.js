@@ -197,6 +197,7 @@ module.exports = {
     }],
 
     // Overrides for plugin:jest/recommended
+    "jest/expect-expect": "off",
     "jest/no-conditional-expect": "off",
     "jest/no-done-callback": "off", // Far too many of these in the codebase.
     "jest/no-standalone-expect": "off", // nodeunitShim confuses this check.

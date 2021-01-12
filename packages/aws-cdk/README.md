@@ -115,6 +115,9 @@ $ cdk synth
 
 $ # Synthesize cloud assembly for StackName, but don't include dependencies
 $ cdk synth MyStackName --exclusively
+
+$ # Synthesize cloud assembly for StackName, but don't cloudFormation template output to STDOUT
+$ cdk synth MyStackName --quiet
 ```
 
 See the [AWS Documentation](https://docs.aws.amazon.com/cdk/latest/guide/apps.html#apps_cloud_assembly) to learn more about cloud assemblies.
