@@ -1,5 +1,6 @@
-## AWS CodeCommit Construct Library
+# AWS CodeCommit Construct Library
 <!--BEGIN STABILITY BANNER-->
+
 ---
 
 ![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)
@@ -7,6 +8,7 @@
 ![cdk-constructs: Stable](https://img.shields.io/badge/cdk--constructs-stable-success.svg?style=for-the-badge)
 
 ---
+
 <!--END STABILITY BANNER-->
 
 AWS CodeCommit is a version control service that enables you to privately store and manage Git repositories in the AWS cloud.
@@ -24,6 +26,9 @@ const repo = new codecommit.Repository(this, 'Repository' ,{
     description: 'Some description.', // optional property
 });
 ```
+
+Use the `repositoryCloneUrlHttp`, `repositoryCloneUrlSsh` or `repositoryCloneUrlGrc`
+property to clone your repository.
 
 To add an Amazon SNS trigger to your repository:
 

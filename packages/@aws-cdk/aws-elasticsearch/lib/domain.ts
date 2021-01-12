@@ -66,6 +66,12 @@ export class ElasticsearchVersion {
   /** AWS Elasticsearch 7.7 */
   public static readonly V7_7 = ElasticsearchVersion.of('7.7');
 
+  /** AWS Elasticsearch 7.8 */
+  public static readonly V7_8 = ElasticsearchVersion.of('7.8');
+
+  /** AWS Elasticsearch 7.9 */
+  public static readonly V7_9 = ElasticsearchVersion.of('7.9');
+
   /**
    * Custom Elasticsearch version
    * @param version custom version number
@@ -244,6 +250,21 @@ export interface LoggingOptions {
    * @default - a new log group is created if app logging is enabled
    */
   readonly appLogGroup?: logs.ILogGroup;
+
+  /**
+   * Specify if Elasticsearch audit logging should be set up.
+   * Requires Elasticsearch version 6.7 or later and fine grained access control to be enabled.
+   *
+   * @default - false
+   */
+  readonly auditLogEnabled?: boolean;
+
+  /**
+   * Log Elasticsearch audit logs to this log group.
+   *
+   * @default - a new log group is created if audit logging is enabled
+   */
+  readonly auditLogGroup?: logs.ILogGroup;
 }
 
 /**
@@ -496,6 +517,16 @@ export interface DomainProps {
    * @default - false
    */
   readonly useUnsignedBasicAuth?: boolean;
+
+  /**
+   * To upgrade an Amazon ES domain to a new version of Elasticsearch rather than replacing the entire
+   * domain resource, use the EnableVersionUpgrade update policy.
+   *
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-attribute-updatepolicy.html#cfn-attributes-updatepolicy-upgradeelasticsearchdomain
+   * @default - false
+   */
+  readonly enableVersionUpgrade?: boolean;
+
 }
 
 /**
@@ -871,7 +902,7 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
         ClientId: this.stack.account,
       },
       ...props,
-    });
+    }).attachTo(this);
   }
 
   /**
@@ -1067,6 +1098,7 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
 
     return grant;
   }
+
 }
 
 
@@ -1162,6 +1194,13 @@ export class Domain extends DomainBase implements IDomain {
   public readonly appLogGroup?: logs.ILogGroup;
 
   /**
+   * Log group that audit logs are logged to.
+   *
+   * @attribute
+   */
+  public readonly auditLogGroup?: logs.ILogGroup;
+
+  /**
    * Master user password if fine grained access control is configured.
    */
   public readonly masterUserPassword?: cdk.SecretValue;
@@ -1240,7 +1279,7 @@ export class Domain extends DomainBase implements IDomain {
       effect: iam.Effect.ALLOW,
       actions: ['es:ESHttp*'],
       principals: [new iam.Anyone()],
-      resources: [cdk.Lazy.stringValue({ produce: () => `${this.domainArn}/*` })],
+      resources: [cdk.Lazy.string({ produce: () => `${this.domainArn}/*` })],
     });
 
     const masterUserArn = props.fineGrainedAccessControl?.masterUserArn;
@@ -1364,6 +1403,12 @@ export class Domain extends DomainBase implements IDomain {
       }
     }
 
+    // Validate fine grained access control enabled for audit logs, per
+    // https://aws.amazon.com/about-aws/whats-new/2020/09/elasticsearch-audit-logs-now-available-on-amazon-elasticsearch-service/
+    if (props.logging?.auditLogEnabled && !advancedSecurityEnabled) {
+      throw new Error('Fine-grained access control is required when audit logs publishing is enabled.');
+    }
+
     let cfnVpcOptions: CfnDomain.VPCOptionsProperty | undefined;
     if (props.vpcOptions) {
       cfnVpcOptions = {
@@ -1377,7 +1422,7 @@ export class Domain extends DomainBase implements IDomain {
 
     if (props.logging?.slowSearchLogEnabled) {
       this.slowSearchLogGroup = props.logging.slowSearchLogGroup ??
-        new logs.LogGroup(scope, 'SlowSearchLogs', {
+        new logs.LogGroup(this, 'SlowSearchLogs', {
           retention: logs.RetentionDays.ONE_MONTH,
         });
 
@@ -1386,7 +1431,7 @@ export class Domain extends DomainBase implements IDomain {
 
     if (props.logging?.slowIndexLogEnabled) {
       this.slowIndexLogGroup = props.logging.slowIndexLogGroup ??
-        new logs.LogGroup(scope, 'SlowIndexLogs', {
+        new logs.LogGroup(this, 'SlowIndexLogs', {
           retention: logs.RetentionDays.ONE_MONTH,
         });
 
@@ -1395,11 +1440,20 @@ export class Domain extends DomainBase implements IDomain {
 
     if (props.logging?.appLogEnabled) {
       this.appLogGroup = props.logging.appLogGroup ??
-        new logs.LogGroup(scope, 'AppLogs', {
+        new logs.LogGroup(this, 'AppLogs', {
           retention: logs.RetentionDays.ONE_MONTH,
         });
 
       logGroups.push(this.appLogGroup);
+    };
+
+    if (props.logging?.auditLogEnabled) {
+      this.auditLogGroup = props.logging.auditLogGroup ??
+          new logs.LogGroup(this, 'AuditLogs', {
+            retention: logs.RetentionDays.ONE_MONTH,
+          });
+
+      logGroups.push(this.auditLogGroup);
     };
 
     let logGroupResourcePolicy: LogGroupResourcePolicy | null = null;
@@ -1413,10 +1467,41 @@ export class Domain extends DomainBase implements IDomain {
 
       // Use a custom resource to set the log group resource policy since it is not supported by CDK and cfn.
       // https://github.com/aws/aws-cdk/issues/5343
-      logGroupResourcePolicy = new LogGroupResourcePolicy(this, 'ESLogGroupPolicy', {
-        policyName: 'ESLogPolicy',
+      logGroupResourcePolicy = new LogGroupResourcePolicy(this, `ESLogGroupPolicy${this.node.addr}`, {
+        // create a cloudwatch logs resource policy name that is unique to this domain instance
+        policyName: `ESLogPolicy${this.node.addr}`,
         policyStatements: [logPolicyStatement],
       });
+    }
+
+    const logPublishing: Record<string, any> = {};
+
+    if (this.appLogGroup) {
+      logPublishing.ES_APPLICATION_LOGS = {
+        enabled: true,
+        cloudWatchLogsLogGroupArn: this.appLogGroup.logGroupArn,
+      };
+    }
+
+    if (this.slowSearchLogGroup) {
+      logPublishing.SEARCH_SLOW_LOGS = {
+        enabled: true,
+        cloudWatchLogsLogGroupArn: this.slowSearchLogGroup.logGroupArn,
+      };
+    }
+
+    if (this.slowIndexLogGroup) {
+      logPublishing.INDEX_SLOW_LOGS = {
+        enabled: true,
+        cloudWatchLogsLogGroupArn: this.slowIndexLogGroup.logGroupArn,
+      };
+    }
+
+    if (this.auditLogGroup) {
+      logPublishing.AUDIT_LOGS = {
+        enabled: this.auditLogGroup != null,
+        cloudWatchLogsLogGroupArn: this.auditLogGroup?.logGroupArn,
+      };
     }
 
     // Create the domain
@@ -1451,20 +1536,7 @@ export class Domain extends DomainBase implements IDomain {
           : undefined,
       },
       nodeToNodeEncryptionOptions: { enabled: nodeToNodeEncryptionEnabled },
-      logPublishingOptions: {
-        ES_APPLICATION_LOGS: {
-          enabled: this.appLogGroup != null,
-          cloudWatchLogsLogGroupArn: this.appLogGroup?.logGroupArn,
-        },
-        SEARCH_SLOW_LOGS: {
-          enabled: this.slowSearchLogGroup != null,
-          cloudWatchLogsLogGroupArn: this.slowSearchLogGroup?.logGroupArn,
-        },
-        INDEX_SLOW_LOGS: {
-          enabled: this.slowIndexLogGroup != null,
-          cloudWatchLogsLogGroupArn: this.slowIndexLogGroup?.logGroupArn,
-        },
-      },
+      logPublishingOptions: logPublishing,
       cognitoOptions: {
         enabled: props.cognitoKibanaAuth != null,
         identityPoolId: props.cognitoKibanaAuth?.identityPoolId,
@@ -1492,6 +1564,13 @@ export class Domain extends DomainBase implements IDomain {
         : undefined,
     });
 
+    if (props.enableVersionUpgrade) {
+      this.domain.cfnOptions.updatePolicy = {
+        ...this.domain.cfnOptions.updatePolicy,
+        enableVersionUpgrade: props.enableVersionUpgrade,
+      };
+    }
+
     if (logGroupResourcePolicy) { this.domain.node.addDependency(logGroupResourcePolicy); }
 
     if (props.domainName) { this.node.addMetadata('aws:cdk:hasPhysicalName', props.domainName); }
@@ -1516,6 +1595,21 @@ export class Domain extends DomainBase implements IDomain {
         domainArn: this.domainArn,
         accessPolicies: accessPolicyStatements,
       });
+
+      if (props.encryptionAtRest?.kmsKey) {
+
+        // https://docs.aws.amazon.com/elasticsearch-service/latest/developerguide/encryption-at-rest.html
+
+        // these permissions are documented as required during domain creation.
+        // while not strictly documented for updates as well, it stands to reason that an update
+        // operation might require these in case the cluster uses a kms key.
+        // empircal evidence shows this is indeed required: https://github.com/aws/aws-cdk/issues/11412
+        accessPolicy.grantPrincipal.addToPrincipalPolicy(new iam.PolicyStatement({
+          actions: ['kms:List*', 'kms:Describe*', 'kms:CreateGrant'],
+          resources: [props.encryptionAtRest.kmsKey.keyArn],
+          effect: iam.Effect.ALLOW,
+        }));
+      }
 
       accessPolicy.node.addDependency(this.domain);
     }

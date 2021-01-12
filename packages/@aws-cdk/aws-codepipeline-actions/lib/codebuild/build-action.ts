@@ -77,6 +77,24 @@ export interface CodeBuildActionProps extends codepipeline.CommonAwsActionProps 
    * @default - No additional environment variables are specified.
    */
   readonly environmentVariables?: { [name: string]: codebuild.BuildEnvironmentVariable };
+
+  /**
+   * Whether to check for the presence of any secrets in the environment variables of the default type, BuildEnvironmentVariableType.PLAINTEXT.
+   * Since using a secret for the value of that kind of variable would result in it being displayed in plain text in the AWS Console,
+   * the construct will throw an exception if it detects a secret was passed there.
+   * Pass this property as false if you want to skip this validation,
+   * and keep using a secret in a plain text environment variable.
+   *
+   * @default true
+   */
+  readonly checkSecretsInPlainTextEnvVariables?: boolean;
+
+  /**
+   * Trigger a batch build.
+   *
+   * @default false
+   */
+  readonly executeBatchBuild?: boolean;
 }
 
 /**
@@ -132,8 +150,8 @@ export class CodeBuildAction extends Action {
       resources: [this.props.project.projectArn],
       actions: [
         'codebuild:BatchGetBuilds',
-        'codebuild:StartBuild',
-        'codebuild:StopBuild',
+        `codebuild:${this.props.executeBatchBuild ? 'StartBuildBatch' : 'StartBuild'}`,
+        `codebuild:${this.props.executeBatchBuild ? 'StopBuildBatch' : 'StopBuild'}`,
       ],
     }));
 
@@ -170,11 +188,15 @@ export class CodeBuildAction extends Action {
     const configuration: any = {
       ProjectName: this.props.project.projectName,
       EnvironmentVariables: this.props.environmentVariables &&
-        cdk.Stack.of(scope).toJsonString(codebuild.Project.serializeEnvVariables(this.props.environmentVariables)),
+        cdk.Stack.of(scope).toJsonString(codebuild.Project.serializeEnvVariables(this.props.environmentVariables,
+          this.props.checkSecretsInPlainTextEnvVariables ?? true)),
     };
     if ((this.actionProperties.inputs || []).length > 1) {
       // lazy, because the Artifact name might be generated lazily
-      configuration.PrimarySource = cdk.Lazy.stringValue({ produce: () => this.props.input.artifactName });
+      configuration.PrimarySource = cdk.Lazy.string({ produce: () => this.props.input.artifactName });
+    }
+    if (this.props.executeBatchBuild) {
+      configuration.BatchEnabled = 'true';
     }
     return {
       configuration,

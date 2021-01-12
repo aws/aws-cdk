@@ -183,7 +183,7 @@ export class FargateProfile extends CoreConstruct implements ITaggable {
           podExecutionRoleArn: this.podExecutionRole.roleArn,
           selectors: props.selectors,
           subnets,
-          tags: Lazy.anyValue({ produce: () => this.tags.renderTags() }),
+          tags: Lazy.any({ produce: () => this.tags.renderTags() }),
         },
       },
     });

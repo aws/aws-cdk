@@ -1,5 +1,6 @@
-## Amazon Simple Queue Service Construct Library
+# Amazon Simple Queue Service Construct Library
 <!--BEGIN STABILITY BANNER-->
+
 ---
 
 ![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)
@@ -7,6 +8,7 @@
 ![cdk-constructs: Stable](https://img.shields.io/badge/cdk--constructs-stable-success.svg?style=for-the-badge)
 
 ---
+
 <!--END STABILITY BANNER-->
 
 Amazon Simple Queue Service (SQS) is a fully managed message queuing service that 
@@ -16,7 +18,7 @@ operating message oriented middleware, and empowers developers to focus on diffe
 Using SQS, you can send, store, and receive messages between software components at any volume, 
 without losing messages or requiring other services to be available. 
 
-### Installation
+## Installation
 
 Import to your project:
 
@@ -24,7 +26,7 @@ Import to your project:
 import * as sqs from '@aws-cdk/aws-sqs';
 ```
 
-### Basic usage
+## Basic usage
 
 
 Here's how to add a basic queue to your application:
@@ -33,7 +35,7 @@ Here's how to add a basic queue to your application:
 new sqs.Queue(this, 'Queue');
 ```
 
-### Encryption
+## Encryption
 
 If you want to encrypt the queue contents, set the `encryption` property. You can have
 the messages encrypted with a key that SQS manages for you, or a key that you
@@ -54,7 +56,7 @@ new sqs.Queue(this, 'Queue', {
 });
 ```
 
-### First-In-First-Out (FIFO) queues
+## First-In-First-Out (FIFO) queues
 
 FIFO queues give guarantees on the order in which messages are dequeued, and have additional
 features in order to help guarantee exactly-once processing. For more information, see

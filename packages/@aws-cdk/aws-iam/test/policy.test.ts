@@ -1,7 +1,7 @@
 import { ResourcePart } from '@aws-cdk/assert';
 import '@aws-cdk/assert/jest';
 import { App, CfnResource, Stack } from '@aws-cdk/core';
-import { AnyPrincipal, CfnPolicy, Group, Policy, PolicyStatement, Role, ServicePrincipal, User } from '../lib';
+import { AnyPrincipal, CfnPolicy, Group, Policy, PolicyDocument, PolicyStatement, Role, ServicePrincipal, User } from '../lib';
 
 /* eslint-disable quote-props */
 
@@ -52,6 +52,42 @@ describe('IAM policy', () => {
     });
   });
 
+  test('policy from policy document alone', () => {
+    const policy = new Policy(stack, 'MyPolicy', {
+      policyName: 'MyPolicyName',
+      document: PolicyDocument.fromJson({
+        Statement: [
+          {
+            Action: 'sqs:SendMessage',
+            Effect: 'Allow',
+            Resource: '*',
+          },
+        ],
+      }),
+    });
+
+    const group = new Group(stack, 'MyGroup');
+    group.attachInlinePolicy(policy);
+
+    expect(stack).toMatchTemplate({
+      Resources: {
+        MyPolicy39D66CF6: {
+          Type: 'AWS::IAM::Policy',
+          Properties: {
+            PolicyName: 'MyPolicyName',
+            Groups: [{ Ref: 'MyGroupCBA54B1B' }],
+            PolicyDocument: {
+              Statement: [
+                { Action: 'sqs:SendMessage', Effect: 'Allow', Resource: '*' },
+              ],
+              Version: '2012-10-17',
+            },
+          },
+        },
+        MyGroupCBA54B1B: { Type: 'AWS::IAM::Group' },
+      },
+    });
+  });
   test('policy name can be omitted, in which case the logical id will be used', () => {
     const policy = new Policy(stack, 'MyPolicy');
     policy.addStatements(new PolicyStatement({ resources: ['*'], actions: ['sqs:SendMessage'] }));

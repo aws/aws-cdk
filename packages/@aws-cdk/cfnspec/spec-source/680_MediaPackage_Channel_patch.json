@@ -1,0 +1,15 @@
+{
+  "ResourceTypes": {
+    "AWS::MediaPackage::Channel": {
+      "patch": {
+        "description": "remove the unusable attribute HlsIngest, which represents a complex type and cannot be directly converted to a primitive type",
+        "operations": [
+          {
+            "op": "remove",
+            "path": "/Attributes/HlsIngest"
+          }
+        ]
+      }
+    }
+  }
+}

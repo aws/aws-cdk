@@ -22,6 +22,9 @@ test('Renders minimal example with just a domain name', () => {
     domainName: 'www.example.com',
     customOriginConfig: {
       originProtocolPolicy: 'https-only',
+      originSslProtocols: [
+        'TLSv1.2',
+      ],
     },
   });
 });
@@ -37,6 +40,7 @@ test('renders an example with all available props', () => {
     httpsPort: 8443,
     readTimeout: Duration.seconds(45),
     keepaliveTimeout: Duration.seconds(3),
+    originSslProtocols: [cloudfront.OriginSslPolicy.TLS_V1_2],
   });
   const originBindConfig = origin.bind(stack, { originId: 'StackOrigin029E19582' });
 
@@ -52,6 +56,9 @@ test('renders an example with all available props', () => {
     }],
     customOriginConfig: {
       originProtocolPolicy: 'match-viewer',
+      originSslProtocols: [
+        'TLSv1.2',
+      ],
       httpPort: 8080,
       httpsPort: 8443,
       originReadTimeout: 45,

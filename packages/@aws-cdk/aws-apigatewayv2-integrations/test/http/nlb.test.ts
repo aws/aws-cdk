@@ -74,7 +74,6 @@ describe('HttpNlbIntegration', () => {
     });
   });
 
-
   test('method option is correctly recognized', () => {
     // GIVEN
     const stack = new Stack();
@@ -98,5 +97,20 @@ describe('HttpNlbIntegration', () => {
     expect(stack).toHaveResource('AWS::ApiGatewayV2::Integration', {
       IntegrationMethod: 'PATCH',
     });
+  });
+
+  test('fails when imported NLB is used without specifying vpcLink', () => {
+    const stack = new Stack();
+    const listener = elbv2.NetworkListener.fromNetworkListenerArn(stack, 'Listener',
+      'arn:aws:elasticloadbalancing:us-east-1:012345655:listener/net/myloadbalancer/lb-12345/listener-12345');
+    const api = new HttpApi(stack, 'HttpApi');
+
+    expect(() => new HttpRoute(stack, 'HttpProxyPrivateRoute', {
+      httpApi: api,
+      integration: new HttpNlbIntegration({
+        listener,
+      }),
+      routeKey: HttpRouteKey.with('/pets'),
+    })).toThrow(/vpcLink property must be specified/);
   });
 });

@@ -1,5 +1,6 @@
-## Amazon ECS Construct Library
+# Amazon ECS Construct Library
 <!--BEGIN STABILITY BANNER-->
+
 ---
 
 ![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)
@@ -7,6 +8,7 @@
 ![cdk-constructs: Stable](https://img.shields.io/badge/cdk--constructs-stable-success.svg?style=for-the-badge)
 
 ---
+
 <!--END STABILITY BANNER-->
 
 This package contains constructs for working with **Amazon Elastic Container
@@ -207,6 +209,7 @@ const fargateTaskDefinition = new ecs.FargateTaskDefinition(this, 'TaskDef', {
   cpu: 256
 });
 ```
+
 To add containers to a task definition, call `addContainer()`:
 
 ```ts
@@ -276,18 +279,18 @@ const taskDefinition = new ecs.TaskDefinition(this, 'TaskDef', {
 Images supply the software that runs inside the container. Images can be
 obtained from either DockerHub or from ECR repositories, or built directly from a local Dockerfile.
 
-* `ecs.ContainerImage.fromRegistry(imageName)`: use a public image.
-* `ecs.ContainerImage.fromRegistry(imageName, { credentials: mySecret })`: use a private image that requires credentials.
-* `ecs.ContainerImage.fromEcrRepository(repo, tag)`: use the given ECR repository as the image
+- `ecs.ContainerImage.fromRegistry(imageName)`: use a public image.
+- `ecs.ContainerImage.fromRegistry(imageName, { credentials: mySecret })`: use a private image that requires credentials.
+- `ecs.ContainerImage.fromEcrRepository(repo, tag)`: use the given ECR repository as the image
   to start. If no tag is provided, "latest" is assumed.
-* `ecs.ContainerImage.fromAsset('./image')`: build and upload an
+- `ecs.ContainerImage.fromAsset('./image')`: build and upload an
   image directly from a `Dockerfile` in your source directory.
-* `ecs.ContainerImage.fromDockerImageAsset(asset)`: uses an existing
+- `ecs.ContainerImage.fromDockerImageAsset(asset)`: uses an existing
   `@aws-cdk/aws-ecr-assets.DockerImageAsset` as a container image.
 
 ### Environment variables
 
-To pass environment variables to the container, use the `environment` and `secrets` props.
+To pass environment variables to the container, you can use the `environment`, `environmentFiles`, and `secrets` props.
 
 ```ts
 taskDefinition.addContainer('container', {
@@ -296,15 +299,21 @@ taskDefinition.addContainer('container', {
   environment: { // clear text, not for sensitive data
     STAGE: 'prod',
   },
+  environmentFiles: [ // list of environment files hosted either on local disk or S3
+    ecs.EnvironmentFile.fromAsset('./demo-env-file.env'),
+    ecs.EnvironmentFile.fromBucket(s3Bucket, 'assets/demo-env-file.env'),
+  ],
   secrets: { // Retrieved from AWS Secrets Manager or AWS Systems Manager Parameter Store at container start-up.
     SECRET: ecs.Secret.fromSecretsManager(secret),
-    DB_PASSWORD: ecs.Secret.fromSecretsManager(dbSecret, 'password'), // Reference a specific JSON field
+    DB_PASSWORD: ecs.Secret.fromSecretsManager(dbSecret, 'password'), // Reference a specific JSON field, (requires platform version 1.4.0 or later for Fargate tasks)
     PARAMETER: ecs.Secret.fromSsmParameter(parameter),
   }
 });
 ```
 
-The task execution role is automatically granted read permissions on the secrets/parameters.
+The task execution role is automatically granted read permissions on the secrets/parameters. Support for environment
+files is restricted to the EC2 launch type for files hosted on S3. Further details provided in the AWS documentation
+about [specifying environment variables](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/taskdef-envfiles.html).
 
 ## Service
 
@@ -322,8 +331,24 @@ const service = new ecs.FargateService(this, 'Service', {
   desiredCount: 5
 });
 ```
+
 `Services` by default will create a security group if not provided.
 If you'd like to specify which security groups to use you can override the `securityGroups` property.
+
+### Deployment circuit breaker and rollback
+
+Amazon ECS [deployment circuit breaker](https://aws.amazon.com/tw/blogs/containers/announcing-amazon-ecs-deployment-circuit-breaker/)
+automatically rolls back unhealthy service deployments without the need for manual intervention. Use `circuitBreaker` to enable
+deployment circuit breaker and optionally enable `rollback` for automatic rollback. See [Using the deployment circuit breaker](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/deployment-type-ecs.html)
+for more details.
+
+```ts
+const service = new ecs.FargateService(stack, 'Service', {
+  cluster,
+  taskDefinition,
+  circuitBreaker: { rollback: true },
+});
+```
 
 ### Include an application/network load balancer
 
@@ -388,6 +413,7 @@ See the [ecs/cross-stack-load-balancer example](https://github.com/aws-samples/a
 for the alternatives.
 
 ### Include a classic load balancer
+
 `Services` can also be directly attached to a classic load balancer as targets:
 
 ```ts
@@ -417,8 +443,8 @@ lb.addTarget(service.loadBalancerTarget{
 
 There are two higher-level constructs available which include a load balancer for you that can be found in the aws-ecs-patterns module:
 
-* `LoadBalancedFargateService`
-* `LoadBalancedEc2Service`
+- `LoadBalancedFargateService`
+- `LoadBalancedEc2Service`
 
 ## Task Auto-Scaling
 

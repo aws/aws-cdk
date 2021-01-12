@@ -137,6 +137,9 @@ describe('With website-configured bucket', () => {
       domainName: bucket.bucketWebsiteDomainName,
       customOriginConfig: {
         originProtocolPolicy: 'http-only',
+        originSslProtocols: [
+          'TLSv1.2',
+        ],
       },
     });
   });
@@ -155,6 +158,9 @@ describe('With website-configured bucket', () => {
       originPath: '/assets',
       customOriginConfig: {
         originProtocolPolicy: 'http-only',
+        originSslProtocols: [
+          'TLSv1.2',
+        ],
       },
     });
   });

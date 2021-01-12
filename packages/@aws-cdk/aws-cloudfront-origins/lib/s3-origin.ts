@@ -5,8 +5,6 @@ import { HttpOrigin } from './http-origin';
 
 /**
  * Properties to use to customize an S3 Origin.
- *
- * @experimental
  */
 export interface S3OriginProps {
   /**
@@ -30,8 +28,6 @@ export interface S3OriginProps {
  * If the bucket is configured for website hosting, this origin will be configured to use the bucket as an
  * HTTP server origin and will use the bucket's configured website redirects and error handling. Otherwise,
  * the origin is created as a bucket origin and will use CloudFront's redirect and error handling.
- *
- * @experimental
  */
 export class S3Origin implements cloudfront.IOrigin {
   private readonly origin: cloudfront.IOrigin;

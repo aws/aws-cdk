@@ -1,18 +1,29 @@
-## AWS::APIGatewayv2 Construct Library
+# AWS::APIGatewayv2 Construct Library
 <!--BEGIN STABILITY BANNER-->
----
-
-| Features | Stability |
-| --- | --- |
-| CFN Resources | ![Stable](https://img.shields.io/badge/stable-success.svg?style=for-the-badge) |
-| Higher level constructs for HTTP APIs | ![Experimental](https://img.shields.io/badge/experimental-important.svg?style=for-the-badge) |
-| Higher level constructs for Websocket APIs | ![Not Implemented](https://img.shields.io/badge/not--implemented-black.svg?style=for-the-badge) |
-
-> **CFN Resources:** All classes with the `Cfn` prefix in this module ([CFN Resources](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) are always stable and safe to use.
-
-> **Experimental:** Higher level constructs in this module that are marked as experimental are under active development. They are subject to non-backward compatible changes or removal in any future version. These are not subject to the [Semantic Versioning](https://semver.org/) model and breaking changes will be announced in the release notes. This means that while you may use them, you may need to update your source code when upgrading to a newer version of this package.
 
 ---
+
+Features                                   | Stability
+-------------------------------------------|--------------------------------------------------------
+CFN Resources                              | ![Stable](https://img.shields.io/badge/stable-success.svg?style=for-the-badge)
+Higher level constructs for HTTP APIs      | ![Experimental](https://img.shields.io/badge/experimental-important.svg?style=for-the-badge)
+Higher level constructs for Websocket APIs | ![Not Implemented](https://img.shields.io/badge/not--implemented-black.svg?style=for-the-badge)
+
+> **CFN Resources:** All classes with the `Cfn` prefix in this module ([CFN Resources]) are always
+> stable and safe to use.
+>
+> [CFN Resources]: https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib
+
+<!-- -->
+
+> **Experimental:** Higher level constructs in this module that are marked as experimental are
+> under active development. They are subject to non-backward compatible changes or removal in any
+> future version. These are not subject to the [Semantic Versioning](https://semver.org/) model and
+> breaking changes will be announced in the release notes. This means that while you may use them,
+> you may need to update your source code when upgrading to a newer version of this package.
+
+---
+
 <!--END STABILITY BANNER-->
 
 ## Table of Contents
@@ -52,14 +63,13 @@ path, such as, `GET /books`. Learn more at [Working with
 routes](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-routes.html). Use the `ANY` method
 to match any methods for a route that are not explicitly defined.
 
-Integrations define how the HTTP API responds when a client reaches a specific Route. HTTP APIs support two types of
-integrations - Lambda proxy integration and HTTP proxy integration. Learn more at [Configuring
-integrations](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-integrations.html).
+Integrations define how the HTTP API responds when a client reaches a specific Route. HTTP APIs support Lambda proxy
+integration, HTTP proxy integration and, AWS service integrations, also known as private integrations. Learn more at
+[Configuring integrations](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-integrations.html).
 
-The code snippet below configures a route `GET /books` with an HTTP proxy integration and uses the `ANY` method to
-proxy all other HTTP method calls to `/books` to a lambda proxy.
-
-The URL to the endpoint can be retrieved via the `apiEndpoint` attribute.
+Integrations are available at the `aws-apigatewayv2-integrations` module and more information is available in that module.
+As an early example, the following code snippet configures a route `GET /books` with an HTTP proxy integration all
+configures all other HTTP method calls to `/books` to a lambda proxy.
 
 ```ts
 const getBooksIntegration = new HttpProxyIntegration({
@@ -84,6 +94,8 @@ httpApi.addRoutes({
   integration: booksDefaultIntegration,
 });
 ```
+
+The URL to the endpoint can be retrieved via the `apiEndpoint` attribute.
 
 The `defaultIntegration` option while defining HTTP APIs lets you create a default catch-all integration that is
 matched when a client reaches a route that is not explicitly defined.
@@ -211,16 +223,15 @@ These metrics can be referred to using the metric APIs available on the `HttpApi
 The APIs with the `metric` prefix can be used to get reference to specific metrics for this API. For example,
 the method below refers to the client side errors metric for this API.
 
-```
+```ts
 const api = new apigw.HttpApi(stack, 'my-api');
 const clientErrorMetric = api.metricClientError();
-
 ```
 
 Please note that this will return a metric for all the stages defined in the api. It is also possible to refer to metrics for a specific Stage using
 the `metric` methods from the `Stage` construct.
 
-```
+```ts
 const api = new apigw.HttpApi(stack, 'my-api');
 const stage = new HttpStage(stack, 'Stage', {
    httpApi: api,

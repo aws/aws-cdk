@@ -1,6 +1,6 @@
 import { Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import { Alarm, AlarmWidget, Color, GraphWidget, LegendPosition, LogQueryWidget, Metric, Shading, SingleValueWidget, LogQueryVisualizationType } from '../lib';
+import { Alarm, AlarmWidget, Color, GraphWidget, GraphWidgetView, LegendPosition, LogQueryWidget, Metric, Shading, SingleValueWidget, LogQueryVisualizationType } from '../lib';
 
 export = {
   'add stacked property to graphs'(test: Test) {
@@ -61,6 +61,35 @@ export = {
     test.done();
   },
 
+  'add metrics to graphs on either axis lazily'(test: Test) {
+    // WHEN
+    const stack = new Stack();
+    const widget = new GraphWidget({
+      title: 'My fancy graph',
+    });
+    widget.addLeftMetric(new Metric({ namespace: 'CDK', metricName: 'Test' }));
+    widget.addRightMetric(new Metric({ namespace: 'CDK', metricName: 'Tast' }));
+
+    // THEN
+    test.deepEqual(stack.resolve(widget.toJson()), [{
+      type: 'metric',
+      width: 6,
+      height: 6,
+      properties: {
+        view: 'timeSeries',
+        title: 'My fancy graph',
+        region: { Ref: 'AWS::Region' },
+        metrics: [
+          ['CDK', 'Test'],
+          ['CDK', 'Tast', { yAxis: 'right' }],
+        ],
+        yAxis: {},
+      },
+    }]);
+
+    test.done();
+  },
+
   'label and color are respected in constructor'(test: Test) {
     // WHEN
     const stack = new Stack();
@@ -79,6 +108,30 @@ export = {
         metrics: [
           ['CDK', 'Test', { label: 'MyMetric', color: '000000' }],
         ],
+        yAxis: {},
+      },
+    }]);
+
+    test.done();
+  },
+
+  'bar view'(test: Test) {
+    // WHEN
+    const stack = new Stack();
+    const widget = new GraphWidget({
+      title: 'Test widget',
+      view: GraphWidgetView.BAR,
+    });
+
+    // THEN
+    test.deepEqual(stack.resolve(widget.toJson()), [{
+      type: 'metric',
+      width: 6,
+      height: 6,
+      properties: {
+        view: 'bar',
+        title: 'Test widget',
+        region: { Ref: 'AWS::Region' },
         yAxis: {},
       },
     }]);
@@ -498,6 +551,35 @@ export = {
           ['CDK', 'Test'],
         ],
         setPeriodToTimeRange: true,
+      },
+    }]);
+
+    test.done();
+  },
+
+  'add singleValueFullPrecision to singleValueWidget'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    const metric = new Metric({ namespace: 'CDK', metricName: 'Test' });
+
+    // WHEN
+    const widget = new SingleValueWidget({
+      metrics: [metric],
+      fullPrecision: true,
+    });
+
+    // THEN
+    test.deepEqual(stack.resolve(widget.toJson()), [{
+      type: 'metric',
+      width: 6,
+      height: 3,
+      properties: {
+        view: 'singleValue',
+        region: { Ref: 'AWS::Region' },
+        metrics: [
+          ['CDK', 'Test'],
+        ],
+        singleValueFullPrecision: true,
       },
     }]);
 

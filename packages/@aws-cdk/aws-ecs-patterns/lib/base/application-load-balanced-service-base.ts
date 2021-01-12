@@ -1,9 +1,9 @@
 import { Certificate, CertificateValidation, ICertificate } from '@aws-cdk/aws-certificatemanager';
 import { IVpc } from '@aws-cdk/aws-ec2';
-import { AwsLogDriver, BaseService, CloudMapOptions, Cluster, ContainerImage, ICluster, LogDriver, PropagatedTagSource, Secret } from '@aws-cdk/aws-ecs';
+import { AwsLogDriver, BaseService, CloudMapOptions, Cluster, ContainerImage, DeploymentController, ICluster, LogDriver, PropagatedTagSource, Secret } from '@aws-cdk/aws-ecs';
 import {
   ApplicationListener, ApplicationLoadBalancer, ApplicationProtocol, ApplicationTargetGroup,
-  IApplicationLoadBalancer, ListenerCertificate, ListenerAction,
+  IApplicationLoadBalancer, ListenerCertificate, ListenerAction, AddApplicationTargetsProps,
 } from '@aws-cdk/aws-elasticloadbalancingv2';
 import { IRole } from '@aws-cdk/aws-iam';
 import { ARecord, IHostedZone, RecordTarget, CnameRecord } from '@aws-cdk/aws-route53';
@@ -87,6 +87,15 @@ export interface ApplicationLoadBalancedServiceBaseProps {
    * created for the load balancer's specified domain name.
    */
   readonly certificate?: ICertificate;
+
+  /**
+   * The protocol for connections from the load balancer to the ECS tasks.
+   * The default target port is determined from the protocol (port 80 for
+   * HTTP, port 443 for HTTPS).
+   *
+   * @default HTTP.
+   */
+  readonly targetProtocol?: ApplicationProtocol;
 
   /**
    * The protocol for connections from clients to the load balancer.
@@ -203,6 +212,14 @@ export interface ApplicationLoadBalancedServiceBaseProps {
    * @default ApplicationLoadBalancedServiceRecordType.ALIAS
    */
   readonly recordType?: ApplicationLoadBalancedServiceRecordType;
+
+  /**
+   * Specifies which deployment controller to use for the service. For more information, see
+   * [Amazon ECS Deployment Types](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/deployment-types.html)
+   *
+   * @default - Rolling update (ECS)
+   */
+  readonly deploymentController?: DeploymentController;
 }
 
 export interface ApplicationLoadBalancedTaskImageOptions {
@@ -369,8 +386,8 @@ export abstract class ApplicationLoadBalancedServiceBase extends cdk.Construct {
       throw new Error('The HTTPS protocol must be used when redirecting HTTP traffic');
     }
 
-    const targetProps = {
-      port: 80,
+    const targetProps: AddApplicationTargetsProps = {
+      protocol: props.targetProtocol ?? ApplicationProtocol.HTTP,
     };
 
     this.listener = loadBalancer.addListener('PublicListener', {

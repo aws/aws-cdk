@@ -294,7 +294,7 @@ export class EcsRunTask extends sfn.TaskStateBase implements ec2.IConnectable {
       AwsvpcConfiguration: {
         AssignPublicIp: this.props.assignPublicIp ? (this.props.assignPublicIp ? 'ENABLED' : 'DISABLED') : undefined,
         Subnets: this.props.cluster.vpc.selectSubnets(subnetSelection).subnetIds,
-        SecurityGroups: cdk.Lazy.listValue({ produce: () => this.securityGroups?.map(sg => sg.securityGroupId) }),
+        SecurityGroups: cdk.Lazy.list({ produce: () => this.securityGroups?.map(sg => sg.securityGroupId) }),
       },
     };
 

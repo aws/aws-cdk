@@ -45,6 +45,68 @@ nodeunitShim({
     test.done();
   },
 
+  'when stackResourceLimit is default, should give error'(test: Test) {
+    // GIVEN
+    const app = new App({});
+
+    const stack = new Stack(app, 'MyStack');
+
+    // WHEN
+    for (let index = 0; index < 1000; index++) {
+      new CfnResource(stack, `MyResource-${index}`, { type: 'MyResourceType' });
+    }
+
+    test.throws(() => {
+      app.synth();
+    }, 'Number of resources: 1000 is greater than allowed maximum of 500');
+
+    test.done();
+  },
+
+  'when stackResourceLimit is defined, should give the proper error'(test: Test) {
+    // GIVEN
+    const app = new App({
+      context: {
+        '@aws-cdk/core:stackResourceLimit': 100,
+      },
+    });
+
+    const stack = new Stack(app, 'MyStack');
+
+    // WHEN
+    for (let index = 0; index < 200; index++) {
+      new CfnResource(stack, `MyResource-${index}`, { type: 'MyResourceType' });
+    }
+
+    test.throws(() => {
+      app.synth();
+    }, 'Number of resources: 200 is greater than allowed maximum of 100');
+
+    test.done();
+  },
+
+  'when stackResourceLimit is 0, should not give error'(test: Test) {
+    // GIVEN
+    const app = new App({
+      context: {
+        '@aws-cdk/core:stackResourceLimit': 0,
+      },
+    });
+
+    const stack = new Stack(app, 'MyStack');
+
+    // WHEN
+    for (let index = 0; index < 1000; index++) {
+      new CfnResource(stack, `MyResource-${index}`, { type: 'MyResourceType' });
+    }
+
+    test.doesNotThrow(() => {
+      app.synth();
+    });
+
+    test.done();
+  },
+
   'stack.templateOptions can be used to set template-level options'(test: Test) {
     const stack = new Stack();
 
@@ -261,6 +323,39 @@ nodeunitShim({
     test.done();
   },
 
+  'Cross-stack export names account for stack name lengths'(test: Test) {
+    // GIVEN
+    const app = new App();
+    const stack1 = new Stack(app, 'Stack1', {
+      stackName: 'SoThisCouldPotentiallyBeAVeryLongStackName',
+    });
+    let scope: Construct = stack1;
+
+    // WHEN - deeply nested
+    for (let i = 0; i < 50; i++) {
+      scope = new Construct(scope, `ChildConstruct${i}`);
+    }
+
+    const resource1 = new CfnResource(scope, 'Resource', { type: 'BLA' });
+    const stack2 = new Stack(app, 'Stack2');
+
+    // WHEN - used in another resource
+    new CfnResource(stack2, 'SomeResource', {
+      type: 'AWS::Some::Resource',
+      properties: {
+        someProperty: new Intrinsic(resource1.ref),
+      },
+    });
+
+    // THEN
+    const assembly = app.synth();
+    const template1 = assembly.getStackByName(stack1.stackName).template;
+
+    const theOutput = template1.Outputs[Object.keys(template1.Outputs)[0]];
+    expect(theOutput.Export.Name.length).toEqual(255);
+    test.done();
+  },
+
   'Cross-stack reference export names are relative to the stack (when the flag is set)'(test: Test) {
     // GIVEN
     const app = new App({
@@ -309,7 +404,7 @@ nodeunitShim({
     const stack2 = new Stack(app, 'Stack2');
 
     // WHEN - used in another stack
-    new CfnParameter(stack2, 'SomeParameter', { type: 'String', default: Lazy.stringValue({ produce: () => account1 }) });
+    new CfnParameter(stack2, 'SomeParameter', { type: 'String', default: Lazy.string({ produce: () => account1 }) });
 
     const assembly = app.synth();
     const template1 = assembly.getStackByName(stack1.stackName).template;

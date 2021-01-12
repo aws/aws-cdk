@@ -42,7 +42,7 @@ export interface RunEcsEc2TaskProps extends CommonEcsRunTaskProps {
 /**
  * Run an ECS/EC2 Task in a StepFunctions workflow
  *
- * @deprecated - replaced by `EcsEc2RunTask`
+ * @deprecated - replaced by `EcsRunTask`
  */
 export class RunEcsEc2Task extends EcsRunTaskBase {
   constructor(props: RunEcsEc2TaskProps) {

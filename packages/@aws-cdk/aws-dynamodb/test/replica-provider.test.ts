@@ -3,6 +3,17 @@ import * as AWS from 'aws-sdk-mock';
 import * as sinon from 'sinon';
 import { isCompleteHandler, onEventHandler } from '../lib/replica-handler';
 
+let oldConsoleLog: any;
+
+beforeAll(() => {
+  oldConsoleLog = global.console.log;
+  global.console.log = jest.fn();
+});
+
+afterAll(() => {
+  global.console.log = oldConsoleLog;
+});
+
 AWS.setSDK(require.resolve('aws-sdk'));
 
 const createEvent: OnEventRequest = {

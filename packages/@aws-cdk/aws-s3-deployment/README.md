@@ -1,13 +1,18 @@
-## AWS S3 Deployment Construct Library
-
+# AWS S3 Deployment Construct Library
 <!--BEGIN STABILITY BANNER-->
+
 ---
 
 ![cdk-constructs: Experimental](https://img.shields.io/badge/cdk--constructs-experimental-important.svg?style=for-the-badge)
 
-> The APIs of higher level constructs in this module are experimental and under active development. They are subject to non-backward compatible changes or removal in any future version. These are not subject to the [Semantic Versioning](https://semver.org/) model and breaking changes will be announced in the release notes. This means that while you may use them, you may need to update your source code when upgrading to a newer version of this package.
+> The APIs of higher level constructs in this module are experimental and under active development.
+> They are subject to non-backward compatible changes or removal in any future version. These are
+> not subject to the [Semantic Versioning](https://semver.org/) model and breaking changes will be
+> announced in the release notes. This means that while you may use them, you may need to update
+> your source code when upgrading to a newer version of this package.
 
 ---
+
 <!--END STABILITY BANNER-->
 
 > __Status: Experimental__
@@ -71,7 +76,7 @@ By default, files in the destination bucket that don't exist in the source will 
 when the `BucketDeployment` resource is created or updated. You can use the option `prune: false` to disable
 this behavior, in which case the files will not be deleted.
 
-```typescript
+```ts
 new s3deploy.BucketDeployment(this, 'DeployMeWithoutDeletingFilesOnDestination', {
   sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
   destinationBucket,
@@ -83,7 +88,7 @@ This option also enables you to specify multiple bucket deployments for the same
 each with its own characteristics. For example, you can set different cache-control headers
 based on file extensions:
 
-```typescript
+```ts
 new BucketDeployment(this, 'BucketDeployment', {
   sources: [Source.asset('./website', { exclude: ['index.html' })],
   destinationBucket: bucket,
@@ -199,24 +204,24 @@ size of the AWS Lambda resource handler.
 
 ## Notes
 
- * This library uses an AWS CloudFormation custom resource which about 10MiB in
-   size. The code of this resource is bundled with this library.
- * AWS Lambda execution time is limited to 15min. This limits the amount of data which can
-   be deployed into the bucket by this timeout.
- * When the `BucketDeployment` is removed from the stack, the contents are retained
-   in the destination bucket ([#952](https://github.com/aws/aws-cdk/issues/952)).
- * Bucket deployment _only happens_ during stack create/update. This means that
-   if you wish to update the contents of the destination, you will need to
-   change the source s3 key (or bucket), so that the resource will be updated.
-   This is inline with best practices. If you use local disk assets, this will
-   happen automatically whenever you modify the asset, since the S3 key is based
-   on a hash of the asset contents.
+- This library uses an AWS CloudFormation custom resource which about 10MiB in
+  size. The code of this resource is bundled with this library.
+- AWS Lambda execution time is limited to 15min. This limits the amount of data
+  which can be deployed into the bucket by this timeout.
+- When the `BucketDeployment` is removed from the stack, the contents are retained
+  in the destination bucket ([#952](https://github.com/aws/aws-cdk/issues/952)).
+- Bucket deployment _only happens_ during stack create/update. This means that
+  if you wish to update the contents of the destination, you will need to
+  change the source s3 key (or bucket), so that the resource will be updated.
+  This is inline with best practices. If you use local disk assets, this will
+  happen automatically whenever you modify the asset, since the S3 key is based
+  on a hash of the asset contents.
 
 ## Development
 
 The custom resource is implemented in Python 3.6 in order to be able to leverage
-the AWS CLI for "aws sync". The code is under [`lambda/src`](./lambda/src) and
-unit tests are under [`lambda/test`](./lambda/test).
+the AWS CLI for "aws sync". The code is under [`lib/lambda`](https://github.com/aws/aws-cdk/tree/master/packages/%40aws-cdk/aws-s3-deployment/lib/lambda) and
+unit tests are under [`test/lambda`](https://github.com/aws/aws-cdk/tree/master/packages/%40aws-cdk/aws-s3-deployment/test/lambda).
 
 This package requires Python 3.6 during build time in order to create the custom
 resource Lambda bundle and test it. It also relies on a few bash scripts, so

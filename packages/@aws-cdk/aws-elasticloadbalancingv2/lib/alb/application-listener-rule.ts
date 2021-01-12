@@ -231,8 +231,8 @@ export class ApplicationListenerRule extends cdk.Construct {
     const resource = new CfnListenerRule(this, 'Resource', {
       listenerArn: props.listener.listenerArn,
       priority: props.priority,
-      conditions: cdk.Lazy.anyValue({ produce: () => this.renderConditions() }),
-      actions: cdk.Lazy.anyValue({ produce: () => this.action ? this.action.renderActions() : [] }),
+      conditions: cdk.Lazy.any({ produce: () => this.renderConditions() }),
+      actions: cdk.Lazy.any({ produce: () => this.action ? this.action.renderActions() : [] }),
     });
 
     if (props.hostHeader) {

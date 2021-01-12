@@ -1,0 +1,31 @@
+{
+  "ResourceTypes": {
+    "AWS::AutoScaling::AutoScalingGroup": {
+      "patch": {
+        "description": "remove (presumed accidentally included) new autoscaling group attributes",
+        "operations": [
+          {
+            "op": "remove",
+            "path": "/Attributes/LaunchConfigurationName"
+          },
+          {
+            "op": "remove",
+            "path": "/Attributes/LaunchTemplateSpecification"
+          },
+          {
+            "op": "remove",
+            "path": "/Attributes/MixedInstancesPolicy"
+          },
+          {
+            "op": "remove",
+            "path": "/Attributes/PlacementGroup"
+          },
+          {
+            "op": "remove",
+            "path": "/Attributes/VPCZoneIdentifier"
+          }
+        ]
+      }
+    }
+  }
+}

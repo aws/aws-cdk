@@ -765,6 +765,7 @@ test('if an encryption key is included, encrypt/decrypt permissions are also add
                   'dynamodb:Query',
                   'dynamodb:GetItem',
                   'dynamodb:Scan',
+                  'dynamodb:ConditionCheckItem',
                   'dynamodb:BatchWriteItem',
                   'dynamodb:PutItem',
                   'dynamodb:UpdateItem',
@@ -836,27 +837,40 @@ test('when specifying PAY_PER_REQUEST billing mode', () => {
   );
 });
 
-test('error when specifying read or write capacity with a PAY_PER_REQUEST billing mode', () => {
-  const stack = new Stack();
-  expect(() => new Table(stack, 'Table A', {
-    tableName: TABLE_NAME,
-    billingMode: BillingMode.PAY_PER_REQUEST,
-    partitionKey: TABLE_PARTITION_KEY,
-    readCapacity: 1,
-  })).toThrow(/PAY_PER_REQUEST/);
-  expect(() => new Table(stack, 'Table B', {
-    tableName: TABLE_NAME,
-    billingMode: BillingMode.PAY_PER_REQUEST,
-    partitionKey: TABLE_PARTITION_KEY,
-    writeCapacity: 1,
-  })).toThrow(/PAY_PER_REQUEST/);
-  expect(() => new Table(stack, 'Table C', {
-    tableName: TABLE_NAME,
-    billingMode: BillingMode.PAY_PER_REQUEST,
-    partitionKey: TABLE_PARTITION_KEY,
-    readCapacity: 1,
-    writeCapacity: 1,
-  })).toThrow(/PAY_PER_REQUEST/);
+describe('when billing mode is PAY_PER_REQUEST', () => {
+  let stack: Stack;
+
+  beforeEach(() => {
+    stack = new Stack();
+  });
+
+  test('creating the Table fails when readCapacity is specified', () => {
+    expect(() => new Table(stack, 'Table A', {
+      tableName: TABLE_NAME,
+      partitionKey: TABLE_PARTITION_KEY,
+      billingMode: BillingMode.PAY_PER_REQUEST,
+      readCapacity: 1,
+    })).toThrow(/PAY_PER_REQUEST/);
+  });
+
+  test('creating the Table fails when writeCapacity is specified', () => {
+    expect(() => new Table(stack, 'Table B', {
+      tableName: TABLE_NAME,
+      partitionKey: TABLE_PARTITION_KEY,
+      billingMode: BillingMode.PAY_PER_REQUEST,
+      writeCapacity: 1,
+    })).toThrow(/PAY_PER_REQUEST/);
+  });
+
+  test('creating the Table fails when both readCapacity and writeCapacity are specified', () => {
+    expect(() => new Table(stack, 'Table C', {
+      tableName: TABLE_NAME,
+      partitionKey: TABLE_PARTITION_KEY,
+      billingMode: BillingMode.PAY_PER_REQUEST,
+      readCapacity: 1,
+      writeCapacity: 1,
+    })).toThrow(/PAY_PER_REQUEST/);
+  });
 });
 
 test('when adding a global secondary index with hash key only', () => {
@@ -1817,14 +1831,14 @@ describe('grants', () => {
     });
   });
 
-  test('"grant" allows adding arbitrary actions associated with this table resource', () => {
+  test('"grant" allows adding arbitrary actions associated with this table resource (via testGrant)', () => {
     testGrant(
       ['action1', 'action2'], (p, t) => t.grant(p, 'dynamodb:action1', 'dynamodb:action2'));
   });
 
   test('"grantReadData" allows the principal to read data from the table', () => {
     testGrant(
-      ['BatchGetItem', 'GetRecords', 'GetShardIterator', 'Query', 'GetItem', 'Scan'], (p, t) => t.grantReadData(p));
+      ['BatchGetItem', 'GetRecords', 'GetShardIterator', 'Query', 'GetItem', 'Scan', 'ConditionCheckItem'], (p, t) => t.grantReadData(p));
   });
 
   test('"grantWriteData" allows the principal to write data to the table', () => {
@@ -1835,7 +1849,7 @@ describe('grants', () => {
   test('"grantReadWriteData" allows the principal to read/write data', () => {
     testGrant([
       'BatchGetItem', 'GetRecords', 'GetShardIterator', 'Query', 'GetItem', 'Scan',
-      'BatchWriteItem', 'PutItem', 'UpdateItem', 'DeleteItem',
+      'ConditionCheckItem', 'BatchWriteItem', 'PutItem', 'UpdateItem', 'DeleteItem',
     ], (p, t) => t.grantReadWriteData(p));
   });
 
@@ -1996,6 +2010,7 @@ describe('grants', () => {
               'dynamodb:Query',
               'dynamodb:GetItem',
               'dynamodb:Scan',
+              'dynamodb:ConditionCheckItem',
             ],
             'Effect': 'Allow',
             'Resource': [
@@ -2147,6 +2162,7 @@ describe('import', () => {
               'dynamodb:Query',
               'dynamodb:GetItem',
               'dynamodb:Scan',
+              'dynamodb:ConditionCheckItem',
             ],
             'Effect': 'Allow',
             'Resource': [
@@ -2188,6 +2204,7 @@ describe('import', () => {
               'dynamodb:Query',
               'dynamodb:GetItem',
               'dynamodb:Scan',
+              'dynamodb:ConditionCheckItem',
               'dynamodb:BatchWriteItem',
               'dynamodb:PutItem',
               'dynamodb:UpdateItem',
@@ -2333,6 +2350,7 @@ describe('import', () => {
                 'dynamodb:Query',
                 'dynamodb:GetItem',
                 'dynamodb:Scan',
+                'dynamodb:ConditionCheckItem',
               ],
               Resource: [
                 {
@@ -2466,6 +2484,7 @@ describe('global', () => {
               'dynamodb:Query',
               'dynamodb:GetItem',
               'dynamodb:Scan',
+              'dynamodb:ConditionCheckItem',
             ],
             Effect: 'Allow',
             Resource: [
@@ -2619,6 +2638,7 @@ describe('global', () => {
               'dynamodb:Query',
               'dynamodb:GetItem',
               'dynamodb:Scan',
+              'dynamodb:ConditionCheckItem',
             ],
             Effect: 'Allow',
             Resource: [
@@ -2766,12 +2786,12 @@ describe('global', () => {
     });
   });
 
-  test('throws with PROVISIONED billing mode', () => {
+  test('throws when PROVISIONED billing mode is used without auto-scaled writes', () => {
     // GIVEN
     const stack = new Stack();
 
-    // THEN
-    expect(() => new Table(stack, 'Table', {
+    // WHEN
+    new Table(stack, 'Table', {
       partitionKey: {
         name: 'id',
         type: AttributeType.STRING,
@@ -2781,7 +2801,65 @@ describe('global', () => {
         'eu-central-1',
       ],
       billingMode: BillingMode.PROVISIONED,
-    })).toThrow(/`PAY_PER_REQUEST`/);
+    });
+
+    // THEN
+    expect(() => {
+      SynthUtils.synthesize(stack);
+    }).toThrow(/A global Table that uses PROVISIONED as the billing mode needs auto-scaled write capacity/);
+  });
+
+  test('throws when PROVISIONED billing mode is used with auto-scaled writes, but without a policy', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    const table = new Table(stack, 'Table', {
+      partitionKey: {
+        name: 'id',
+        type: AttributeType.STRING,
+      },
+      replicationRegions: [
+        'eu-west-2',
+        'eu-central-1',
+      ],
+      billingMode: BillingMode.PROVISIONED,
+    });
+    table.autoScaleWriteCapacity({
+      minCapacity: 1,
+      maxCapacity: 10,
+    });
+
+    // THEN
+    expect(() => {
+      SynthUtils.synthesize(stack);
+    }).toThrow(/A global Table that uses PROVISIONED as the billing mode needs auto-scaled write capacity with a policy/);
+  });
+
+  test('allows PROVISIONED billing mode when auto-scaled writes with a policy are specified', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    const table = new Table(stack, 'Table', {
+      partitionKey: {
+        name: 'id',
+        type: AttributeType.STRING,
+      },
+      replicationRegions: [
+        'eu-west-2',
+        'eu-central-1',
+      ],
+      billingMode: BillingMode.PROVISIONED,
+    });
+    table.autoScaleWriteCapacity({
+      minCapacity: 1,
+      maxCapacity: 10,
+    }).scaleOnUtilization({ targetUtilizationPercent: 75 });
+
+    expect(stack).toHaveResourceLike('AWS::DynamoDB::Table', {
+      BillingMode: ABSENT, // PROVISIONED is the default
+    });
   });
 
   test('throws when stream is set and not set to NEW_AND_OLD_IMAGES', () => {

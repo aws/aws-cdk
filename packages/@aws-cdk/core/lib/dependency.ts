@@ -58,9 +58,13 @@ const DEPENDABLE_SYMBOL = Symbol.for('@aws-cdk/core.DependableTrait');
  * const roots = DependableTrait.get(construct).dependencyRoots;
  *
  * // Definition
- * DependableTrait.implement(construct, {
- *   get dependencyRoots() { return []; }
- * });
+ * class TraitImplementation implements DependableTrait {
+ *   public readonly dependencyRoots: IConstruct[];
+ *   constructor() {
+ *     this.dependencyRoots = [constructA, constructB, constructC];
+ *   }
+ * }
+ * DependableTrait.implement(construct, new TraitImplementation());
  *
  * @experimental
  */

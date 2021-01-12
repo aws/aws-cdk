@@ -437,8 +437,6 @@
                 "ecs:Poll",
                 "ecs:StartTelemetrySession"
               ],
-              "Effect": "Allow",
-              "Resource": "*",
               "Condition": {
                 "ArnEquals": {
                   "ecs:cluster": {
@@ -448,7 +446,9 @@
                     ]
                   }
                 }
-              }
+              },
+              "Effect": "Allow",
+              "Resource": "*"
             },
             {
               "Action": [
@@ -636,8 +636,6 @@
                 "ecs:DescribeContainerInstances",
                 "ecs:DescribeTasks"
               ],
-              "Effect": "Allow",
-              "Resource": "*",
               "Condition": {
                 "ArnEquals": {
                   "ecs:cluster": {
@@ -647,7 +645,9 @@
                     ]
                   }
                 }
-              }
+              },
+              "Effect": "Allow",
+              "Resource": "*"
             },
             {
               "Action": [
@@ -867,15 +867,15 @@
           },
           {
             "Essential": true,
-            "Image": "envoyproxy/envoy",
+            "Image": "envoyproxy/envoy:v1.16.2",
             "Memory": 256,
             "Name": "envoy"
           }
         ],
         "Family": "awsecsintegTaskDef6FDFB69A",
         "IpcMode": "host",
-        "PidMode": "task",
         "NetworkMode": "awsvpc",
+        "PidMode": "task",
         "ProxyConfiguration": {
           "ContainerName": "envoy",
           "ProxyConfigurationProperties": [
@@ -923,7 +923,6 @@
           "MaximumPercent": 200,
           "MinimumHealthyPercent": 50
         },
-        "DesiredCount": 1,
         "EnableECSManagedTags": false,
         "LaunchType": "EC2",
         "NetworkConfiguration": {

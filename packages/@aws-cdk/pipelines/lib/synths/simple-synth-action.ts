@@ -8,6 +8,7 @@ import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
 import { Construct, Stack } from '@aws-cdk/core';
 import { cloudAssemblyBuildSpecDir } from '../private/construct-internals';
+import { toPosixPath } from '../private/fs';
 import { copyEnvironmentVariables, filterEmpty } from './_util';
 
 /**
@@ -373,7 +374,7 @@ export class SimpleSynthAction implements codepipeline.IAction, iam.IGrantable {
       // using secondary artifacts or not.
 
       const cloudAsmArtifactSpec = {
-        'base-directory': path.join(self.props.subdirectory ?? '.', cloudAssemblyBuildSpecDir(scope)),
+        'base-directory': toPosixPath(path.join(self.props.subdirectory ?? '.', cloudAssemblyBuildSpecDir(scope))),
         'files': '**/*',
       };
 
@@ -388,7 +389,7 @@ export class SimpleSynthAction implements codepipeline.IAction, iam.IGrantable {
             throw new Error('You must give the output artifact a name');
           }
           secondary[art.artifact.artifactName] = {
-            'base-directory': path.join(self.props.subdirectory ?? '.', art.directory),
+            'base-directory': toPosixPath(path.join(self.props.subdirectory ?? '.', art.directory)),
             'files': '**/*',
           };
         });

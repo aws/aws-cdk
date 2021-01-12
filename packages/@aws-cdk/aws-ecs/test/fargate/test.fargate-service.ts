@@ -3,6 +3,7 @@ import * as appscaling from '@aws-cdk/aws-applicationautoscaling';
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
+import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import * as cloudmap from '@aws-cdk/aws-servicediscovery';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
@@ -39,7 +40,6 @@ export = {
           MaximumPercent: 200,
           MinimumHealthyPercent: 50,
         },
-        DesiredCount: 1,
         LaunchType: LaunchType.FARGATE,
         EnableECSManagedTags: false,
         NetworkConfiguration: {
@@ -211,6 +211,7 @@ export = {
         deploymentController: {
           type: ecs.DeploymentControllerType.CODE_DEPLOY,
         },
+        circuitBreaker: { rollback: true },
         securityGroup: new ec2.SecurityGroup(stack, 'SecurityGroup1', {
           allowAllOutbound: true,
           description: 'Example',
@@ -234,6 +235,10 @@ export = {
         DeploymentConfiguration: {
           MaximumPercent: 150,
           MinimumHealthyPercent: 55,
+          DeploymentCircuitBreaker: {
+            Enable: true,
+            Rollback: true,
+          },
         },
         DeploymentController: {
           Type: ecs.DeploymentControllerType.CODE_DEPLOY,
@@ -301,6 +306,31 @@ export = {
       test.done();
     },
 
+    'throws whith secret json field on unsupported platform version'(test: Test) {
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      const taskDefinition = new ecs.FargateTaskDefinition(stack, 'TaksDef');
+      const secret = new secretsmanager.Secret(stack, 'Secret');
+      taskDefinition.addContainer('BaseContainer', {
+        image: ecs.ContainerImage.fromRegistry('test'),
+        secrets: {
+          SECRET_KEY: ecs.Secret.fromSecretsManager(secret, 'specificKey'),
+        },
+      });
+
+      // THEN
+      test.throws(() => {
+        new ecs.FargateService(stack, 'FargateService', {
+          cluster,
+          taskDefinition,
+          platformVersion: ecs.FargatePlatformVersion.VERSION1_3,
+        });
+      }, new RegExp(`uses at least one container that references a secret JSON field.+platform version ${ecs.FargatePlatformVersion.VERSION1_4} or later`));
+
+      test.done();
+    },
+
     'ignore task definition and launch type if deployment controller is set to be EXTERNAL'(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();
@@ -333,7 +363,6 @@ export = {
         DeploymentController: {
           Type: 'EXTERNAL',
         },
-        DesiredCount: 1,
         EnableECSManagedTags: false,
         NetworkConfiguration: {
           AwsvpcConfiguration: {
@@ -512,7 +541,6 @@ export = {
           MaximumPercent: 200,
           MinimumHealthyPercent: 50,
         },
-        DesiredCount: 1,
         LaunchType: LaunchType.FARGATE,
         EnableECSManagedTags: false,
         NetworkConfiguration: {
@@ -1756,6 +1784,38 @@ export = {
       // THEN
       test.deepEqual(stack.resolve(service.serviceArn), stack.resolve(`arn:${pseudo.partition}:ecs:${pseudo.region}:${pseudo.accountId}:service/my-http-service`));
       test.equal(service.serviceName, 'my-http-service');
+
+      test.done();
+    },
+
+    'with circuit breaker'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const cluster = new ecs.Cluster(stack, 'EcsCluster');
+      const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
+
+      taskDefinition.addContainer('Container', {
+        image: ecs.ContainerImage.fromRegistry('hello'),
+      });
+
+      // WHEN
+      new ecs.FargateService(stack, 'EcsService', {
+        cluster,
+        taskDefinition,
+        circuitBreaker: { rollback: true },
+      });
+
+      // THEN
+      expect(stack).to(haveResource('AWS::ECS::Service', {
+        DeploymentConfiguration: {
+          MaximumPercent: 200,
+          MinimumHealthyPercent: 50,
+          DeploymentCircuitBreaker: {
+            Enable: true,
+            Rollback: true,
+          },
+        },
+      }));
 
       test.done();
     },

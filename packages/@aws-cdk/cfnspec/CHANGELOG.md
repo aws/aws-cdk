@@ -1,3 +1,596 @@
+# CloudFormation Resource Specification v22.0.0
+
+## New Resource Types
+
+* AWS::AuditManager::Assessment
+* AWS::CloudFormation::ModuleDefaultVersion
+* AWS::CloudFormation::ModuleVersion
+* AWS::DevOpsGuru::NotificationChannel
+* AWS::DevOpsGuru::ResourceCollection
+* AWS::EC2::NetworkInsightsAnalysis
+* AWS::EC2::NetworkInsightsPath
+* AWS::ECR::PublicRepository
+* AWS::ElastiCache::User
+* AWS::ElastiCache::UserGroup
+* AWS::GreengrassV2::ComponentVersion
+* AWS::IoTSiteWise::AccessPolicy
+* AWS::IoTSiteWise::Dashboard
+* AWS::IoTSiteWise::Portal
+* AWS::IoTSiteWise::Project
+* AWS::IoTWireless::Destination
+* AWS::IoTWireless::DeviceProfile
+* AWS::IoTWireless::ServiceProfile
+* AWS::IoTWireless::WirelessDevice
+* AWS::IoTWireless::WirelessGateway
+* AWS::LicenseManager::Grant
+* AWS::LicenseManager::License
+* AWS::MWAA::Environment
+* AWS::SSO::InstanceAccessControlAttributeConfiguration
+* AWS::SageMaker::DataQualityJobDefinition
+* AWS::SageMaker::Device
+* AWS::SageMaker::DeviceFleet
+* AWS::SageMaker::ModelBiasJobDefinition
+* AWS::SageMaker::ModelExplainabilityJobDefinition
+* AWS::SageMaker::ModelPackageGroup
+* AWS::SageMaker::ModelQualityJobDefinition
+* AWS::SageMaker::Pipeline
+* AWS::SageMaker::Project
+
+## Attribute Changes
+
+* AWS::NetworkFirewall::LoggingConfiguration FirewallArn (__deleted__)
+* AWS::NetworkFirewall::LoggingConfiguration FirewallName (__deleted__)
+* AWS::NetworkFirewall::RuleGroup RuleGroupId (__added__)
+* AWS::SageMaker::MonitoringSchedule MonitoringScheduleArn (__added__)
+
+## Property Changes
+
+* AWS::AutoScaling::LaunchConfiguration MetadataOptions.Type (__changed__)
+  * Old: MetadataOption
+  * New: MetadataOptions
+* AWS::Batch::JobDefinition PlatformCapabilities (__added__)
+* AWS::Batch::JobDefinition PropagateTags (__added__)
+* AWS::CloudFormation::StackSet PermissionModel.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::CloudFormation::StackSet StackSetName.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::CodeArtifact::Domain EncryptionKey (__added__)
+* AWS::CodeArtifact::Repository DomainName (__added__)
+* AWS::CodeArtifact::Repository DomainOwner (__added__)
+* AWS::CodeGuruReviewer::RepositoryAssociation Tags (__added__)
+* AWS::DLM::LifecyclePolicy Tags (__added__)
+* AWS::EC2::Instance EnclaveOptions (__added__)
+* AWS::EC2::Volume Throughput (__added__)
+* AWS::EKS::Nodegroup CapacityType (__added__)
+* AWS::ElastiCache::ReplicationGroup UserGroupIds (__added__)
+* AWS::Events::Archive ArchiveName (__added__)
+* AWS::IoT::TopicRuleDestination VpcProperties (__added__)
+* AWS::Kendra::Index UserContextPolicy (__added__)
+* AWS::Kendra::Index UserTokenConfigurations (__added__)
+* AWS::Lambda::EventSourceMapping FunctionResponseTypes (__added__)
+* AWS::Lambda::EventSourceMapping SelfManagedEventSource (__added__)
+* AWS::Lambda::EventSourceMapping EventSourceArn.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::Lambda::Function ImageConfig (__added__)
+* AWS::Lambda::Function PackageType (__added__)
+* AWS::Lambda::Function Handler.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::Lambda::Function Runtime.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::NetworkFirewall::Firewall Tags.DuplicatesAllowed (__added__)
+* AWS::NetworkFirewall::Firewall Tags.ItemType (__added__)
+* AWS::NetworkFirewall::Firewall Tags.Type (__changed__)
+  * Old: Tags
+  * New: List
+* AWS::NetworkFirewall::FirewallPolicy Tags.DuplicatesAllowed (__added__)
+* AWS::NetworkFirewall::FirewallPolicy Tags.ItemType (__added__)
+* AWS::NetworkFirewall::FirewallPolicy Tags.Type (__changed__)
+  * Old: Tags
+  * New: List
+* AWS::NetworkFirewall::LoggingConfiguration FirewallArn (__added__)
+* AWS::NetworkFirewall::LoggingConfiguration FirewallName (__added__)
+* AWS::NetworkFirewall::RuleGroup RuleGroupId (__deleted__)
+* AWS::NetworkFirewall::RuleGroup Tags.DuplicatesAllowed (__added__)
+* AWS::NetworkFirewall::RuleGroup Tags.ItemType (__added__)
+* AWS::NetworkFirewall::RuleGroup Tags.Type (__changed__)
+  * Old: Tags
+  * New: List
+* AWS::SageMaker::Endpoint DeploymentConfig (__added__)
+* AWS::SageMaker::MonitoringSchedule MonitoringScheduleArn (__deleted__)
+* AWS::SageMaker::MonitoringSchedule MonitoringScheduleName.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+
+## Property Type Changes
+
+* AWS::AutoScaling::LaunchConfiguration.MetadataOption (__removed__)
+* AWS::Glue::Database.DataLakePrincipal (__removed__)
+* AWS::Glue::Database.PrincipalPrivileges (__removed__)
+* AWS::NetworkFirewall::Firewall.Tags (__removed__)
+* AWS::NetworkFirewall::FirewallPolicy.Tags (__removed__)
+* AWS::NetworkFirewall::RuleGroup.Tags (__removed__)
+* AWS::Transfer::Server.SecurityGroupId (__removed__)
+* AWS::AppFlow::Flow.IncrementalPullConfig (__added__)
+* AWS::AppFlow::Flow.UpsolverDestinationProperties (__added__)
+* AWS::AppFlow::Flow.UpsolverS3OutputFormatConfig (__added__)
+* AWS::ApplicationInsights::Application.JMXPrometheusExporter (__added__)
+* AWS::AutoScaling::LaunchConfiguration.MetadataOptions (__added__)
+* AWS::Batch::JobDefinition.FargatePlatformConfiguration (__added__)
+* AWS::Batch::JobDefinition.NetworkConfiguration (__added__)
+* AWS::Cognito::UserPool.CustomEmailSender (__added__)
+* AWS::Cognito::UserPool.CustomSMSSender (__added__)
+* AWS::EC2::Instance.EnclaveOptions (__added__)
+* AWS::EC2::SpotFleet.SpotCapacityRebalance (__added__)
+* AWS::EC2::SpotFleet.SpotMaintenanceStrategies (__added__)
+* AWS::ECS::Service.DeploymentCircuitBreaker (__added__)
+* AWS::Glue::Partition.SchemaId (__added__)
+* AWS::Glue::Partition.SchemaReference (__added__)
+* AWS::Glue::Table.SchemaId (__added__)
+* AWS::Glue::Table.SchemaReference (__added__)
+* AWS::IoT::TopicRuleDestination.VpcDestinationProperties (__added__)
+* AWS::Kendra::DataSource.ConfluenceAttachmentConfiguration (__added__)
+* AWS::Kendra::DataSource.ConfluenceAttachmentFieldMappingsList (__added__)
+* AWS::Kendra::DataSource.ConfluenceAttachmentToIndexFieldMapping (__added__)
+* AWS::Kendra::DataSource.ConfluenceBlogConfiguration (__added__)
+* AWS::Kendra::DataSource.ConfluenceBlogFieldMappingsList (__added__)
+* AWS::Kendra::DataSource.ConfluenceBlogToIndexFieldMapping (__added__)
+* AWS::Kendra::DataSource.ConfluenceConfiguration (__added__)
+* AWS::Kendra::DataSource.ConfluencePageConfiguration (__added__)
+* AWS::Kendra::DataSource.ConfluencePageFieldMappingsList (__added__)
+* AWS::Kendra::DataSource.ConfluencePageToIndexFieldMapping (__added__)
+* AWS::Kendra::DataSource.ConfluenceSpaceConfiguration (__added__)
+* AWS::Kendra::DataSource.ConfluenceSpaceFieldMappingsList (__added__)
+* AWS::Kendra::DataSource.ConfluenceSpaceList (__added__)
+* AWS::Kendra::DataSource.ConfluenceSpaceToIndexFieldMapping (__added__)
+* AWS::Kendra::Index.JsonTokenTypeConfiguration (__added__)
+* AWS::Kendra::Index.JwtTokenTypeConfiguration (__added__)
+* AWS::Kendra::Index.UserTokenConfiguration (__added__)
+* AWS::Kendra::Index.UserTokenConfigurationList (__added__)
+* AWS::Lambda::EventSourceMapping.Endpoints (__added__)
+* AWS::Lambda::EventSourceMapping.SelfManagedEventSource (__added__)
+* AWS::Lambda::Function.ImageConfig (__added__)
+* AWS::S3::Bucket.ReplicaModifications (__added__)
+* AWS::SageMaker::Endpoint.Alarm (__added__)
+* AWS::SageMaker::Endpoint.AutoRollbackConfig (__added__)
+* AWS::SageMaker::Endpoint.BlueGreenUpdatePolicy (__added__)
+* AWS::SageMaker::Endpoint.CapacitySize (__added__)
+* AWS::SageMaker::Endpoint.DeploymentConfig (__added__)
+* AWS::SageMaker::Endpoint.TrafficRoutingConfig (__added__)
+* AWS::AppFlow::Flow.DestinationConnectorProperties Upsolver (__added__)
+* AWS::AppFlow::Flow.SourceFlowConfig IncrementalPullConfig (__added__)
+* AWS::ApplicationInsights::Application.ConfigurationDetails JMXPrometheusExporter (__added__)
+* AWS::Batch::ComputeEnvironment.ComputeResources InstanceRole.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::Batch::ComputeEnvironment.ComputeResources InstanceTypes.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::Batch::ComputeEnvironment.ComputeResources MinvCpus.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::Batch::ComputeEnvironment.ComputeResources SecurityGroupIds.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::Batch::ComputeEnvironment.ComputeResources Subnets.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::Batch::JobDefinition.ContainerProperties FargatePlatformConfiguration (__added__)
+* AWS::Batch::JobDefinition.ContainerProperties NetworkConfiguration (__added__)
+* AWS::Cognito::UserPool.LambdaConfig CustomEmailSender (__added__)
+* AWS::Cognito::UserPool.LambdaConfig CustomSMSSender (__added__)
+* AWS::Cognito::UserPool.LambdaConfig KMSKeyID (__added__)
+* AWS::EC2::SpotFleet.LaunchTemplateOverrides Priority (__added__)
+* AWS::EC2::SpotFleet.SpotFleetRequestConfigData InstancePoolsToUseCount (__added__)
+* AWS::EC2::SpotFleet.SpotFleetRequestConfigData OnDemandAllocationStrategy (__added__)
+* AWS::EC2::SpotFleet.SpotFleetRequestConfigData OnDemandMaxTotalPrice (__added__)
+* AWS::EC2::SpotFleet.SpotFleetRequestConfigData OnDemandTargetCapacity (__added__)
+* AWS::EC2::SpotFleet.SpotFleetRequestConfigData SpotMaintenanceStrategies (__added__)
+* AWS::EC2::SpotFleet.SpotFleetRequestConfigData SpotMaxTotalPrice (__added__)
+* AWS::ECS::Service.DeploymentConfiguration DeploymentCircuitBreaker (__added__)
+* AWS::Elasticsearch::Domain.DomainEndpointOptions CustomEndpoint (__added__)
+* AWS::Elasticsearch::Domain.DomainEndpointOptions CustomEndpointCertificateArn (__added__)
+* AWS::Elasticsearch::Domain.DomainEndpointOptions CustomEndpointEnabled (__added__)
+* AWS::Glue::Database.DatabaseInput CreateTableDefaultPermissions (__deleted__)
+* AWS::Glue::Partition.StorageDescriptor SchemaReference (__added__)
+* AWS::Glue::Table.StorageDescriptor SchemaReference (__added__)
+* AWS::Kendra::DataSource.DataSourceConfiguration ConfluenceConfiguration (__added__)
+* AWS::Kendra::DataSource.OneDriveConfiguration DisableLocalGroups (__added__)
+* AWS::Kendra::DataSource.SharePointConfiguration DisableLocalGroups (__added__)
+* AWS::Lambda::Function.Code ImageUri (__added__)
+* AWS::S3::Bucket.ServerSideEncryptionRule BucketKeyEnabled (__added__)
+* AWS::S3::Bucket.SourceSelectionCriteria ReplicaModifications (__added__)
+* AWS::SageMaker::MonitoringSchedule.MonitoringScheduleConfig MonitoringJobDefinitionName (__added__)
+* AWS::SageMaker::MonitoringSchedule.MonitoringScheduleConfig MonitoringType (__added__)
+* AWS::SageMaker::MonitoringSchedule.MonitoringScheduleConfig MonitoringJobDefinition.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::Transfer::Server.EndpointDetails SecurityGroupIds.ItemType (__deleted__)
+* AWS::Transfer::Server.EndpointDetails SecurityGroupIds.PrimitiveItemType (__added__)
+
+# Serverless Application Model (SAM) Resource Specification v2016-10-31
+
+## New Resource Types
+
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::Serverless::Function ProvisionedConcurrencyConfig (__added__)
+
+## Property Type Changes
+
+* AWS::Serverless::Function.ProvisionedConcurrencyConfig (__added__)
+
+# CloudFormation Resource Specification v21.0.0
+
+## New Resource Types
+
+* AWS::CloudFront::KeyGroup
+* AWS::CloudFront::PublicKey
+* AWS::Glue::Registry
+* AWS::Glue::Schema
+* AWS::Glue::SchemaVersion
+* AWS::Glue::SchemaVersionMetadata
+* AWS::IoT::TopicRuleDestination
+* AWS::Lambda::CodeSigningConfig
+* AWS::NetworkFirewall::Firewall
+* AWS::NetworkFirewall::FirewallPolicy
+* AWS::NetworkFirewall::LoggingConfiguration
+* AWS::NetworkFirewall::RuleGroup
+* AWS::S3::StorageLens
+* AWS::Signer::ProfilePermission
+* AWS::Signer::SigningProfile
+
+## Attribute Changes
+
+* AWS::SageMaker::MonitoringSchedule CreationTime (__added__)
+* AWS::SageMaker::MonitoringSchedule LastModifiedTime (__added__)
+
+## Property Changes
+
+* AWS::Amplify::App CustomHeaders (__added__)
+* AWS::DataBrew::Recipe ProjectName (__deleted__)
+* AWS::DataBrew::Recipe Version (__deleted__)
+* AWS::Events::EventBusPolicy Statement (__added__)
+* AWS::Events::EventBusPolicy Action.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::Events::EventBusPolicy Principal.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::Glue::MLTransform TransformEncryption (__added__)
+* AWS::KMS::Key KeySpec (__added__)
+* AWS::Lambda::Function CodeSigningConfigArn (__added__)
+* AWS::SageMaker::MonitoringSchedule CreationTime (__deleted__)
+* AWS::SageMaker::MonitoringSchedule LastModifiedTime (__deleted__)
+
+## Property Type Changes
+
+* AWS::Batch::ComputeEnvironment.Ec2ConfigurationObject (__added__)
+* AWS::DLM::LifecyclePolicy.Action (__added__)
+* AWS::DLM::LifecyclePolicy.CrossRegionCopyAction (__added__)
+* AWS::DLM::LifecyclePolicy.EncryptionConfiguration (__added__)
+* AWS::DLM::LifecyclePolicy.EventParameters (__added__)
+* AWS::DLM::LifecyclePolicy.EventSource (__added__)
+* AWS::DLM::LifecyclePolicy.ShareRule (__added__)
+* AWS::EC2::LaunchTemplate.EnclaveOptions (__added__)
+* AWS::Glue::Database.DataLakePrincipal (__added__)
+* AWS::Glue::Database.DatabaseIdentifier (__added__)
+* AWS::Glue::Database.PrincipalPrivileges (__added__)
+* AWS::Glue::MLTransform.MLUserDataEncryption (__added__)
+* AWS::Glue::MLTransform.TransformEncryption (__added__)
+* AWS::Glue::Table.TableIdentifier (__added__)
+* AWS::SageMaker::Model.MultiModelConfig (__added__)
+* AWS::Batch::ComputeEnvironment.ComputeResources Ec2Configuration (__added__)
+* AWS::CloudFront::Distribution.CacheBehavior TrustedKeyGroups (__added__)
+* AWS::CloudFront::Distribution.DefaultCacheBehavior TrustedKeyGroups (__added__)
+* AWS::DLM::LifecyclePolicy.PolicyDetails Actions (__added__)
+* AWS::DLM::LifecyclePolicy.PolicyDetails EventSource (__added__)
+* AWS::DLM::LifecyclePolicy.PolicyDetails ResourceTypes.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::DLM::LifecyclePolicy.PolicyDetails Schedules.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::DLM::LifecyclePolicy.PolicyDetails TargetTags.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::DLM::LifecyclePolicy.Schedule ShareRules (__added__)
+* AWS::DataBrew::Recipe.RecipeStep Action.PrimitiveType (__deleted__)
+* AWS::EC2::LaunchTemplate.LaunchTemplateData EnclaveOptions (__added__)
+* AWS::Glue::Connection.ConnectionInput ConnectionProperties.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::Glue::Crawler.S3Target ConnectionName (__added__)
+* AWS::Glue::Database.DatabaseInput CreateTableDefaultPermissions (__added__)
+* AWS::Glue::Database.DatabaseInput TargetDatabase (__added__)
+* AWS::Glue::Table.TableInput TargetTable (__added__)
+* AWS::SageMaker::Model.ContainerDefinition MultiModelConfig (__added__)
+* AWS::Synthetics::Canary.RunConfig EnvironmentVariables (__added__)
+
+
+# CloudFormation Resource Specification v20.3.0
+
+## New Resource Types
+
+* AWS::DataBrew::Dataset
+* AWS::DataBrew::Job
+* AWS::DataBrew::Project
+* AWS::DataBrew::Recipe
+* AWS::DataBrew::Schedule
+
+## Attribute Changes
+
+* AWS::ElasticLoadBalancingV2::Listener ListenerArn (__added__)
+
+## Property Changes
+
+* AWS::CodeStar::GitHubRepository ConnectionArn (__added__)
+* AWS::CodeStar::GitHubRepository RepositoryAccessToken.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::DMS::ReplicationInstance AvailabilityZone.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::EC2::ClientVpnEndpoint ClientConnectOptions (__added__)
+* AWS::EC2::VPCEndpointService GatewayLoadBalancerArns (__added__)
+* AWS::ElasticLoadBalancingV2::Listener AlpnPolicy.DuplicatesAllowed (__deleted__)
+* AWS::Lambda::EventSourceMapping PartialBatchResponse (__added__)
+* AWS::Lambda::EventSourceMapping TumblingWindowInSeconds (__added__)
+
+## Property Type Changes
+
+* AWS::AppMesh::VirtualGateway.VirtualGatewayConnectionPool (__added__)
+* AWS::AppMesh::VirtualGateway.VirtualGatewayGrpcConnectionPool (__added__)
+* AWS::AppMesh::VirtualGateway.VirtualGatewayHttp2ConnectionPool (__added__)
+* AWS::AppMesh::VirtualGateway.VirtualGatewayHttpConnectionPool (__added__)
+* AWS::AppMesh::VirtualNode.OutlierDetection (__added__)
+* AWS::AppMesh::VirtualNode.VirtualNodeConnectionPool (__added__)
+* AWS::AppMesh::VirtualNode.VirtualNodeGrpcConnectionPool (__added__)
+* AWS::AppMesh::VirtualNode.VirtualNodeHttp2ConnectionPool (__added__)
+* AWS::AppMesh::VirtualNode.VirtualNodeHttpConnectionPool (__added__)
+* AWS::AppMesh::VirtualNode.VirtualNodeTcpConnectionPool (__added__)
+* AWS::EC2::ClientVpnEndpoint.ClientConnectOptions (__added__)
+* AWS::AppFlow::ConnectorProfile.SalesforceConnectorProfileCredentials ClientCredentialsArn (__added__)
+* AWS::AppMesh::VirtualGateway.VirtualGatewayListener ConnectionPool (__added__)
+* AWS::AppMesh::VirtualNode.Listener ConnectionPool (__added__)
+* AWS::AppMesh::VirtualNode.Listener OutlierDetection (__added__)
+* AWS::ElasticLoadBalancingV2::Listener.Action AuthenticateCognitoConfig.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticloadbalancingv2-listener-defaultactions.html#cfn-elasticloadbalancingv2-listener-action-authenticatecognitoconfig
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticloadbalancingv2-listener-action.html#cfn-elasticloadbalancingv2-listener-action-authenticatecognitoconfig
+* AWS::ElasticLoadBalancingV2::Listener.Action AuthenticateOidcConfig.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticloadbalancingv2-listener-defaultactions.html#cfn-elasticloadbalancingv2-listener-action-authenticateoidcconfig
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticloadbalancingv2-listener-action.html#cfn-elasticloadbalancingv2-listener-action-authenticateoidcconfig
+* AWS::ElasticLoadBalancingV2::Listener.Action FixedResponseConfig.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticloadbalancingv2-listener-defaultactions.html#cfn-elasticloadbalancingv2-listener-action-fixedresponseconfig
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticloadbalancingv2-listener-action.html#cfn-elasticloadbalancingv2-listener-action-fixedresponseconfig
+* AWS::ElasticLoadBalancingV2::Listener.Action ForwardConfig.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticloadbalancingv2-listener-defaultactions.html#cfn-elasticloadbalancingv2-listener-action-forwardconfig
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticloadbalancingv2-listener-action.html#cfn-elasticloadbalancingv2-listener-action-forwardconfig
+* AWS::ElasticLoadBalancingV2::Listener.Action Order.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticloadbalancingv2-listener-defaultactions.html#cfn-elasticloadbalancingv2-listener-action-order
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticloadbalancingv2-listener-action.html#cfn-elasticloadbalancingv2-listener-action-order
+* AWS::ElasticLoadBalancingV2::Listener.Action RedirectConfig.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticloadbalancingv2-listener-defaultactions.html#cfn-elasticloadbalancingv2-listener-action-redirectconfig
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticloadbalancingv2-listener-action.html#cfn-elasticloadbalancingv2-listener-action-redirectconfig
+* AWS::ElasticLoadBalancingV2::Listener.Action TargetGroupArn.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticloadbalancingv2-listener-defaultactions.html#cfn-elasticloadbalancingv2-listener-defaultactions-targetgrouparn
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticloadbalancingv2-listener-action.html#cfn-elasticloadbalancingv2-listener-action-targetgrouparn
+* AWS::ElasticLoadBalancingV2::Listener.Action Type.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticloadbalancingv2-listener-defaultactions.html#cfn-elasticloadbalancingv2-listener-defaultactions-type
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticloadbalancingv2-listener-action.html#cfn-elasticloadbalancingv2-listener-action-type
+* AWS::ElasticLoadBalancingV2::Listener.AuthenticateCognitoConfig AuthenticationRequestExtraParams.DuplicatesAllowed (__deleted__)
+* AWS::ElasticLoadBalancingV2::Listener.AuthenticateCognitoConfig SessionTimeout.PrimitiveType (__changed__)
+  * Old: Long
+  * New: String
+* AWS::ElasticLoadBalancingV2::Listener.AuthenticateOidcConfig AuthenticationRequestExtraParams.DuplicatesAllowed (__deleted__)
+* AWS::ElasticLoadBalancingV2::Listener.AuthenticateOidcConfig SessionTimeout.PrimitiveType (__changed__)
+  * Old: Long
+  * New: String
+* AWS::ElasticLoadBalancingV2::Listener.Certificate CertificateArn.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticloadbalancingv2-listener-certificates.html#cfn-elasticloadbalancingv2-listener-certificates-certificatearn
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticloadbalancingv2-listener-certificate.html#cfn-elasticloadbalancingv2-listener-certificate-certificatearn
+
+
+# CloudFormation Resource Specification v20.2.0
+
+## New Resource Types
+
+* AWS::CloudWatch::MetricStream
+* AWS::Events::Archive
+* AWS::IoT::DomainConfiguration
+* AWS::RDS::GlobalCluster
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::CodeArtifact::Domain Tags (__added__)
+* AWS::CodeArtifact::Repository Tags (__added__)
+* AWS::Kendra::DataSource DataSourceConfiguration.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::Kendra::DataSource RoleArn.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::S3::Bucket IntelligentTieringConfigurations (__added__)
+* AWS::S3::Bucket OwnershipControls (__added__)
+* AWS::SecretsManager::ResourcePolicy BlockPublicPolicy (__added__)
+
+## Property Type Changes
+
+* AWS::Batch::JobDefinition.EvaluateOnExit (__added__)
+* AWS::S3::Bucket.IntelligentTieringConfiguration (__added__)
+* AWS::S3::Bucket.OwnershipControls (__added__)
+* AWS::S3::Bucket.OwnershipControlsRule (__added__)
+* AWS::S3::Bucket.Tiering (__added__)
+* AWS::Batch::JobDefinition.RetryStrategy EvaluateOnExit (__added__)
+* AWS::EC2::LaunchTemplate.CapacityReservationTarget CapacityReservationResourceGroupArn (__added__)
+* AWS::EC2::LaunchTemplate.NetworkInterface AssociateCarrierIpAddress (__added__)
+* AWS::EC2::LaunchTemplate.NetworkInterface NetworkCardIndex (__added__)
+* AWS::Kendra::DataSource.S3DataSourceConfiguration InclusionPatterns (__added__)
+
+
+# CloudFormation Resource Specification v20.0.0
+
+## New Resource Types
+
+* AWS::IVS::Channel
+* AWS::IVS::PlaybackKeyPair
+* AWS::IVS::StreamKey
+* AWS::IoTSiteWise::Asset
+* AWS::IoTSiteWise::AssetModel
+* AWS::IoTSiteWise::Gateway
+* AWS::MediaPackage::Asset
+* AWS::MediaPackage::Channel
+* AWS::MediaPackage::OriginEndpoint
+* AWS::MediaPackage::PackagingConfiguration
+* AWS::MediaPackage::PackagingGroup
+
+## Attribute Changes
+
+* AWS::AutoScaling::AutoScalingGroup LaunchConfigurationName (__added__)
+* AWS::AutoScaling::AutoScalingGroup LaunchTemplateSpecification (__added__)
+* AWS::AutoScaling::AutoScalingGroup MixedInstancesPolicy (__added__)
+* AWS::AutoScaling::AutoScalingGroup PlacementGroup (__added__)
+* AWS::AutoScaling::AutoScalingGroup VPCZoneIdentifier (__added__)
+* AWS::EC2::Subnet OutpostArn (__added__)
+
+## Property Changes
+
+* AWS::AmazonMQ::Broker LdapMetadata (__deleted__)
+* AWS::AppSync::ApiKey ApiKeyId (__added__)
+* AWS::AppSync::FunctionConfiguration SyncConfig (__added__)
+* AWS::Athena::NamedQuery WorkGroup (__added__)
+* AWS::AutoScaling::AutoScalingGroup CapacityRebalance (__added__)
+* AWS::AutoScaling::LaunchConfiguration MetadataOptions (__added__)
+* AWS::Batch::ComputeEnvironment Tags (__added__)
+* AWS::Batch::JobDefinition Tags (__added__)
+* AWS::Batch::JobQueue Tags (__added__)
+* AWS::EC2::ClientVpnEndpoint SelfServicePortal (__added__)
+* AWS::EC2::Route CarrierGatewayId (__added__)
+* AWS::EC2::Route LocalGatewayId (__added__)
+* AWS::EC2::Route VpcEndpointId (__added__)
+* AWS::EC2::Subnet OutpostArn (__added__)
+* AWS::EC2::VPCEndpointService ApplianceLoadBalancerArns (__deleted__)
+* AWS::EMR::Cluster LogEncryptionKmsKeyId (__added__)
+* AWS::EMR::Cluster ManagedScalingPolicy (__added__)
+* AWS::EMR::Cluster StepConcurrencyLevel (__added__)
+* AWS::ElastiCache::ReplicationGroup GlobalReplicationGroupId (__added__)
+* AWS::ElastiCache::ReplicationGroup MultiAZEnabled.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::ElasticLoadBalancingV2::Listener Port.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::ElasticLoadBalancingV2::Listener Protocol.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::ElasticLoadBalancingV2::LoadBalancer SubnetMappings.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::GameLift::MatchmakingConfiguration FlexMatchMode (__added__)
+* AWS::GameLift::MatchmakingConfiguration GameSessionQueueArns.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::GlobalAccelerator::EndpointGroup PortOverrides (__added__)
+* AWS::KinesisFirehose::DeliveryStream DeliveryStreamEncryptionConfigurationInput (__added__)
+* AWS::KinesisFirehose::DeliveryStream Tags (__added__)
+* AWS::KinesisFirehose::DeliveryStream KinesisStreamSourceConfiguration.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::LakeFormation::DataLakeSettings TrustedResourceOwners (__added__)
+* AWS::Lambda::EventSourceMapping Queues (__added__)
+* AWS::Lambda::EventSourceMapping SourceAccessConfigurations (__added__)
+* AWS::Logs::LogGroup KmsKeyId (__added__)
+* AWS::Logs::LogGroup LogGroupName.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-logs-loggroup.html#cfn-cwl-loggroup-loggroupname
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-logs-loggroup.html#cfn-logs-loggroup-loggroupname
+* AWS::Logs::LogGroup RetentionInDays.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-logs-loggroup.html#cfn-cwl-loggroup-retentionindays
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-logs-loggroup.html#cfn-logs-loggroup-retentionindays
+* AWS::RDS::DBCluster GlobalClusterIdentifier (__added__)
+* AWS::RDS::DBCluster Engine.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Conditional
+* AWS::RDS::DBCluster EngineVersion.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::RDS::DBInstance Engine.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Conditional
+* AWS::SNS::Subscription SubscriptionRoleArn (__added__)
+* AWS::SNS::Topic FifoTopic (__added__)
+
+## Property Type Changes
+
+* AWS::AmazonMQ::Broker.InterBrokerCred (__removed__)
+* AWS::AmazonMQ::Broker.LdapMetadata (__removed__)
+* AWS::AmazonMQ::Broker.ServerMetadata (__removed__)
+* AWS::AppSync::FunctionConfiguration.LambdaConflictHandlerConfig (__added__)
+* AWS::AppSync::FunctionConfiguration.SyncConfig (__added__)
+* AWS::AutoScaling::LaunchConfiguration.MetadataOption (__added__)
+* AWS::CloudFront::Distribution.OriginShield (__added__)
+* AWS::EMR::Cluster.ComputeLimits (__added__)
+* AWS::EMR::Cluster.ManagedScalingPolicy (__added__)
+* AWS::EMR::Cluster.OnDemandProvisioningSpecification (__added__)
+* AWS::EMR::InstanceFleetConfig.OnDemandProvisioningSpecification (__added__)
+* AWS::Events::Rule.DeadLetterConfig (__added__)
+* AWS::Events::Rule.RedshiftDataParameters (__added__)
+* AWS::Events::Rule.RetryPolicy (__added__)
+* AWS::GlobalAccelerator::EndpointGroup.PortOverride (__added__)
+* AWS::KinesisFirehose::DeliveryStream.DeliveryStreamEncryptionConfigurationInput (__added__)
+* AWS::Lambda::EventSourceMapping.SourceAccessConfiguration (__added__)
+* AWS::SageMaker::Model.ImageConfig (__added__)
+* AWS::Transfer::Server.SecurityGroupId (__added__)
+* AWS::AutoScaling::AutoScalingGroup.LaunchTemplateOverrides LaunchTemplateSpecification (__added__)
+* AWS::CloudFront::Distribution.Origin OriginShield (__added__)
+* AWS::DLM::LifecyclePolicy.Parameters NoReboot (__added__)
+* AWS::EC2::ClientVpnEndpoint.FederatedAuthenticationRequest SelfServiceSAMLProviderArn (__added__)
+* AWS::EMR::Cluster.InstanceFleetProvisioningSpecifications OnDemandSpecification (__added__)
+* AWS::EMR::Cluster.InstanceFleetProvisioningSpecifications SpotSpecification.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::EMR::Cluster.SpotProvisioningSpecification AllocationStrategy (__added__)
+* AWS::EMR::InstanceFleetConfig.InstanceFleetProvisioningSpecifications OnDemandSpecification (__added__)
+* AWS::EMR::InstanceFleetConfig.InstanceFleetProvisioningSpecifications SpotSpecification.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::EMR::InstanceFleetConfig.SpotProvisioningSpecification AllocationStrategy (__added__)
+* AWS::ElasticLoadBalancingV2::LoadBalancer.SubnetMapping IPv6Address (__added__)
+* AWS::ElasticLoadBalancingV2::TargetGroup.Matcher HttpCode.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::Elasticsearch::Domain.ElasticsearchClusterConfig WarmCount (__added__)
+* AWS::Elasticsearch::Domain.ElasticsearchClusterConfig WarmEnabled (__added__)
+* AWS::Elasticsearch::Domain.ElasticsearchClusterConfig WarmType (__added__)
+* AWS::Events::Rule.Target DeadLetterConfig (__added__)
+* AWS::Events::Rule.Target RedshiftDataParameters (__added__)
+* AWS::Events::Rule.Target RetryPolicy (__added__)
+* AWS::KinesisFirehose::DeliveryStream.KinesisStreamSourceConfiguration KinesisStreamARN.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::KinesisFirehose::DeliveryStream.KinesisStreamSourceConfiguration RoleARN.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::S3::Bucket.Metrics EventThreshold.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::S3::Bucket.SourceSelectionCriteria SseKmsEncryptedObjects.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::SageMaker::Model.ContainerDefinition ImageConfig (__added__)
+* AWS::Transfer::Server.EndpointDetails SecurityGroupIds (__added__)
+
+
 # CloudFormation Resource Specification v18.7.0
 
 ## New Resource Types

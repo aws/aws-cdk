@@ -78,6 +78,74 @@ test('manual approval is inserted in correct location', () => {
   });
 });
 
+test('extra space for sequential intermediary actions is reserved', () => {
+  // WHEN
+  pipeline.addApplicationStage(new TwoStackApp(app, 'MyApp'), {
+    extraRunOrderSpace: 1,
+  });
+
+  // THEN
+  expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
+    Stages: arrayWith({
+      Name: 'MyApp',
+      Actions: sortedByRunOrder([
+        objectLike({
+          Name: 'Stack1.Prepare',
+          RunOrder: 1,
+        }),
+        objectLike({
+          Name: 'Stack1.Deploy',
+          RunOrder: 3,
+        }),
+        objectLike({
+          Name: 'Stack2.Prepare',
+          RunOrder: 4,
+        }),
+        objectLike({
+          Name: 'Stack2.Deploy',
+          RunOrder: 6,
+        }),
+      ]),
+    }),
+  });
+});
+
+test('combination of manual approval and extraRunOrderSpace', () => {
+  // WHEN
+  pipeline.addApplicationStage(new OneStackApp(app, 'MyApp'), {
+    extraRunOrderSpace: 1,
+    manualApprovals: true,
+  });
+
+  // THEN
+  expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
+    Stages: arrayWith({
+      Name: 'MyApp',
+      Actions: sortedByRunOrder([
+        objectLike({
+          Name: 'Stack1.Prepare',
+          RunOrder: 1,
+        }),
+        objectLike({
+          Name: 'ManualApproval',
+          RunOrder: 2,
+        }),
+        objectLike({
+          Name: 'Stack1.Deploy',
+          RunOrder: 4,
+        }),
+      ]),
+    }),
+  });
+});
+
+class OneStackApp extends Stage {
+  constructor(scope: Construct, id: string, props?: StageProps) {
+    super(scope, id, props);
+
+    new BucketStack(this, 'Stack1');
+  }
+}
 
 class TwoStackApp extends Stage {
   constructor(scope: Construct, id: string, props?: StageProps) {

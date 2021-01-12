@@ -2,6 +2,8 @@ export * from './alias';
 export * from './dlq';
 export * from './function-base';
 export * from './function';
+export * from './handler';
+export * from './image-function';
 export * from './layers';
 export * from './permission';
 export * from './runtime';

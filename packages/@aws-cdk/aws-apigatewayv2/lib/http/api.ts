@@ -1,4 +1,4 @@
-import { Metric, MetricOptions } from '@aws-cdk/aws-cloudwatch';
+import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import { Duration, IResource, Resource } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnApi, CfnApiProps } from '../apigatewayv2.generated';
@@ -19,6 +19,12 @@ export interface IHttpApi extends IResource {
   readonly httpApiId: string;
 
   /**
+   * The default endpoint for an API
+   * @attribute
+   */
+  readonly apiEndpoint: string;
+
+  /**
    * The default stage
    */
   readonly defaultStage?: HttpStage;
@@ -28,35 +34,35 @@ export interface IHttpApi extends IResource {
    *
    * @default - average over 5 minutes
    */
-  metric(metricName: string, props?: MetricOptions): Metric;
+  metric(metricName: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 
   /**
    * Metric for the number of client-side errors captured in a given period.
    *
    * @default - sum over 5 minutes
    */
-  metricClientError(props?: MetricOptions): Metric;
+  metricClientError(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 
   /**
    * Metric for the number of server-side errors captured in a given period.
    *
    * @default - sum over 5 minutes
    */
-  metricServerError(props?: MetricOptions): Metric;
+  metricServerError(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 
   /**
    * Metric for the amount of data processed in bytes.
    *
    * @default - sum over 5 minutes
    */
-  metricDataProcessed(props?: MetricOptions): Metric;
+  metricDataProcessed(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 
   /**
    * Metric for the total number API requests in a given period.
    *
    * @default - SampleCount over 5 minutes
    */
-  metricCount(props?: MetricOptions): Metric;
+  metricCount(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 
   /**
    * Metric for the time between when API Gateway relays a request to the backend
@@ -64,7 +70,7 @@ export interface IHttpApi extends IResource {
    *
    * @default - no statistic
    */
-  metricIntegrationLatency(props?: MetricOptions): Metric;
+  metricIntegrationLatency(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 
   /**
    * The time between when API Gateway receives a request from a client
@@ -73,7 +79,7 @@ export interface IHttpApi extends IResource {
    *
    * @default - no statistic
    */
-  metricLatency(props?: MetricOptions): Metric;
+  metricLatency(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 
   /**
    * Add a new VpcLink
@@ -184,10 +190,11 @@ export interface AddRoutesOptions extends BatchHttpRouteOptions {
 abstract class HttpApiBase extends Resource implements IHttpApi { // note that this is not exported
 
   public abstract readonly httpApiId: string;
+  public abstract readonly apiEndpoint: string;
   private vpcLinks: Record<string, VpcLink> = {};
 
-  public metric(metricName: string, props?: MetricOptions): Metric {
-    return new Metric({
+  public metric(metricName: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return new cloudwatch.Metric({
       namespace: 'AWS/ApiGateway',
       metricName,
       dimensions: { ApiId: this.httpApiId },
@@ -195,27 +202,27 @@ abstract class HttpApiBase extends Resource implements IHttpApi { // note that t
     }).attachTo(this);
   }
 
-  public metricClientError(props?: MetricOptions): Metric {
+  public metricClientError(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return this.metric('4XXError', { statistic: 'Sum', ...props });
   }
 
-  public metricServerError(props?: MetricOptions): Metric {
+  public metricServerError(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return this.metric('5XXError', { statistic: 'Sum', ...props });
   }
 
-  public metricDataProcessed(props?: MetricOptions): Metric {
+  public metricDataProcessed(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return this.metric('DataProcessed', { statistic: 'Sum', ...props });
   }
 
-  public metricCount(props?: MetricOptions): Metric {
+  public metricCount(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return this.metric('Count', { statistic: 'SampleCount', ...props });
   }
 
-  public metricIntegrationLatency(props?: MetricOptions): Metric {
+  public metricIntegrationLatency(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return this.metric('IntegrationLatency', props);
   }
 
-  public metricLatency(props?: MetricOptions): Metric {
+  public metricLatency(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return this.metric('Latency', props);
   }
 
@@ -234,6 +241,21 @@ abstract class HttpApiBase extends Resource implements IHttpApi { // note that t
 }
 
 /**
+ * Attributes for importing an HttpApi into the CDK
+ */
+export interface HttpApiAttributes {
+  /**
+   * The identifier of the HttpApi
+   */
+  readonly httpApiId: string;
+  /**
+   * The endpoint URL of the HttpApi
+   * @default - throws an error if apiEndpoint is accessed.
+   */
+  readonly apiEndpoint?: string;
+}
+
+/**
  * Create a new API Gateway HTTP API endpoint.
  * @resource AWS::ApiGatewayV2::Api
  */
@@ -241,9 +263,17 @@ export class HttpApi extends HttpApiBase {
   /**
    * Import an existing HTTP API into this CDK app.
    */
-  public static fromApiId(scope: Construct, id: string, httpApiId: string): IHttpApi {
+  public static fromHttpApiAttributes(scope: Construct, id: string, attrs: HttpApiAttributes): IHttpApi {
     class Import extends HttpApiBase {
-      public readonly httpApiId = httpApiId;
+      public readonly httpApiId = attrs.httpApiId;
+      private readonly _apiEndpoint = attrs.apiEndpoint;
+
+      public get apiEndpoint(): string {
+        if (!this._apiEndpoint) {
+          throw new Error('apiEndpoint is not configured on the imported HttpApi.');
+        }
+        return this._apiEndpoint;
+      }
     }
     return new Import(scope, id);
   }
@@ -252,13 +282,7 @@ export class HttpApi extends HttpApiBase {
    * A human friendly name for this HTTP API. Note that this is different from `httpApiId`.
    */
   public readonly httpApiName?: string;
-
   public readonly httpApiId: string;
-
-  /**
-   * The default endpoint for an API
-   * @attribute
-   */
   public readonly apiEndpoint: string;
 
   /**

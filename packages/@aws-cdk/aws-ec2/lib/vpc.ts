@@ -936,7 +936,7 @@ export interface SubnetConfiguration {
    *
    * When true, the IP space for the subnet is reserved but no actual
    * resources are provisioned. This space is only dependent on the
-   * number of availibility zones and on `cidrMask` - all other subnet
+   * number of availability zones and on `cidrMask` - all other subnet
    * properties are ignored.
    *
    * @default false
@@ -1010,7 +1010,16 @@ export class Vpc extends VpcBase {
   ];
 
   /**
-   * Import an exported VPC
+   * Import a VPC by supplying all attributes directly
+   *
+   * NOTE: using `fromVpcAttributes()` with deploy-time parameters (like a `Fn.importValue()` or
+   * `CfnParameter` to represent a list of subnet IDs) sometimes accidentally works. It happens
+   * to work for constructs that need a list of subnets (like `AutoScalingGroup` and `eks.Cluster`)
+   * but it does not work for constructs that need individual subnets (like
+   * `Instance`). See https://github.com/aws/aws-cdk/issues/4118 for more
+   * information.
+   *
+   * Prefer to use `Vpc.fromLookup()` instead.
    */
   public static fromVpcAttributes(scope: Construct, id: string, attrs: VpcAttributes): IVpc {
     return new ImportedVpc(scope, id, attrs, false);
@@ -1342,9 +1351,9 @@ export class Vpc extends VpcBase {
     }
 
     const totalRemaining = remainingSpaceSubnets.length * this.availabilityZones.length;
-    const cidrMaskForRemaing = this.networkBuilder.maskForRemainingSubnets(totalRemaining);
+    const cidrMaskForRemaining = this.networkBuilder.maskForRemainingSubnets(totalRemaining);
     for (const subnet of remainingSpaceSubnets) {
-      this.createSubnetResources(subnet, cidrMaskForRemaing);
+      this.createSubnetResources(subnet, cidrMaskForRemaining);
     }
   }
 
@@ -1486,6 +1495,12 @@ export class Subnet extends Resource implements ISubnet {
   public readonly subnetIpv6CidrBlocks: string[];
 
   /**
+   * The Amazon Resource Name (ARN) of the Outpost for this subnet (if one exists).
+   * @attribute
+   */
+  public readonly subnetOutpostArn: string;
+
+  /**
    * @attribute
    */
   public readonly subnetNetworkAclAssociationId: string;
@@ -1525,11 +1540,12 @@ export class Subnet extends Resource implements ISubnet {
     this.subnetVpcId = subnet.attrVpcId;
     this.subnetAvailabilityZone = subnet.attrAvailabilityZone;
     this.subnetIpv6CidrBlocks = subnet.attrIpv6CidrBlocks;
+    this.subnetOutpostArn = subnet.attrOutpostArn;
 
     // subnet.attrNetworkAclAssociationId is the default ACL after the subnet
     // was just created. However, the ACL can be replaced at a later time.
     this._networkAcl = NetworkAcl.fromNetworkAclId(this, 'Acl', subnet.attrNetworkAclAssociationId);
-    this.subnetNetworkAclAssociationId = Lazy.stringValue({ produce: () => this._networkAcl.networkAclId });
+    this.subnetNetworkAclAssociationId = Lazy.string({ produce: () => this._networkAcl.networkAclId });
     this.node.defaultChild = subnet;
 
     const table = new CfnRouteTable(this, 'RouteTable', {
@@ -1573,7 +1589,7 @@ export class Subnet extends Resource implements ISubnet {
    * explicit DENY entries that you add.
    *
    * You can replace it with a custom ACL which denies all traffic except
-   * the explic it ALLOW entries that you add by creating a `NetworkAcl`
+   * the explicit ALLOW entries that you add by creating a `NetworkAcl`
    * object and calling `associateNetworkAcl()`.
    */
   public get networkAcl(): INetworkAcl {
@@ -1920,7 +1936,21 @@ class ImportedSubnet extends Resource implements ISubnet, IPublicSubnet, IPrivat
     super(scope, id);
 
     if (!attrs.routeTableId) {
-      const ref = Token.isUnresolved(attrs.subnetId)
+      // The following looks a little weird, but comes down to:
+      //
+      // * Is the subnetId itself unresolved ({ Ref: Subnet }); or
+      // * Was it the accidentally extracted first element of a list-encoded
+      //   token? ({ Fn::ImportValue: Subnets } => ['#{Token[1234]}'] =>
+      //   '#{Token[1234]}'
+      //
+      // There's no other API to test for the second case than to the string back into
+      // a list and see if the combination is Unresolved.
+      //
+      // In both cases we can't output the subnetId literally into the metadata (because it'll
+      // be useless). In the 2nd case even, if we output it to metadata, the `resolve()` call
+      // that gets done on the metadata will even `throw`, because the '#{Token}' value will
+      // occur in an illegal position (not in a list context).
+      const ref = Token.isUnresolved(attrs.subnetId) || Token.isUnresolved([attrs.subnetId])
         ? `at '${Node.of(scope).path}/${id}'`
         : `'${attrs.subnetId}'`;
       // eslint-disable-next-line max-len
