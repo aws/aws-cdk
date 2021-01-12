@@ -1,7 +1,7 @@
 import { ABSENT, arrayWith } from '@aws-cdk/assert';
 import '@aws-cdk/assert/jest';
 import { Stack, Duration } from '@aws-cdk/core';
-import { OAuthScope, ResourceServerScope, UserPool, UserPoolClient, UserPoolClientIdentityProvider, UserPoolIdentityProvider, AttributeSet } from '../lib';
+import { OAuthScope, ResourceServerScope, UserPool, UserPoolClient, UserPoolClientIdentityProvider, UserPoolIdentityProvider, ClientAttributes } from '../lib';
 
 describe('User Pool Client', () => {
   test('default setup', () => {
@@ -848,8 +848,8 @@ describe('User Pool Client', () => {
       // GIVEN
       const stack = new Stack();
       const pool = new UserPool(stack, 'Pool');
-      const writeAttributes = AttributeSet.profileWritable(['custom:my_first']);
-      const readAttributes = AttributeSet.allStandard();
+      const writeAttributes = ClientAttributes.profileWritable(['custom:my_first']);
+      const readAttributes = ClientAttributes.allStandard();
 
       // WHEN
       pool.addClient('Client', {

@@ -1,5 +1,5 @@
 import { App, Stack } from '@aws-cdk/core';
-import { OAuthScope, UserPool, AttributeSet } from '../lib';
+import { OAuthScope, UserPool, ClientAttributes } from '../lib';
 
 const app = new App();
 const stack = new Stack(app, 'integ-user-pool-client-explicit-props');
@@ -30,5 +30,5 @@ userpool.addClient('myuserpoolclient', {
     callbackUrls: ['https://redirect-here.myapp.com'],
   },
   preventUserExistenceErrors: true,
-  writeAttributes: AttributeSet.profileWritable(['custom:attribute_one', 'custom:attribute_two']),
+  writeAttributes: ClientAttributes.profileWritable(['custom:attribute_one', 'custom:attribute_two']),
 });

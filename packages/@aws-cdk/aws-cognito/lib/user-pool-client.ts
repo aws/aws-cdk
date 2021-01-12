@@ -2,7 +2,7 @@ import { IResource, Resource, Duration } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnUserPoolClient } from './cognito.generated';
 import { IUserPool } from './user-pool';
-import { AttributeSet } from './user-pool-attr';
+import { ClientAttributes } from './user-pool-attr';
 import { IUserPoolResourceServer, ResourceServerScope } from './user-pool-resource-server';
 
 /**
@@ -279,14 +279,14 @@ export interface UserPoolClientOptions {
    * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-attributes.html#user-pool-settings-attribute-permissions-and-scopes
    * @default undefined - all attributes will be readable
    */
-  readonly readAttributes?: AttributeSet;
+  readonly readAttributes?: ClientAttributes;
 
   /**
    * The set of attributes this client will be able to write.
    * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-attributes.html#user-pool-settings-attribute-permissions-and-scopes
    * @default undefined - all attributes will be writable
    */
-  readonly writeAttributes?: AttributeSet;
+  readonly writeAttributes?: ClientAttributes;
 }
 
 /**

@@ -1,6 +1,6 @@
 import '@aws-cdk/assert/jest';
 import { CfnParameter, Stack } from '@aws-cdk/core';
-import { BooleanAttribute, CustomAttributeConfig, DateTimeAttribute, ICustomAttribute, NumberAttribute, StringAttribute, AttributeSet } from '../lib';
+import { BooleanAttribute, CustomAttributeConfig, DateTimeAttribute, ICustomAttribute, NumberAttribute, StringAttribute, ClientAttributes } from '../lib';
 
 describe('User Pool Attributes', () => {
 
@@ -179,22 +179,22 @@ describe('User Pool Attributes', () => {
     });
   });
 
-  describe('AttributeSet', () => {
-    test('create empty AttributeSet', () => {
+  describe('ClientAttributes', () => {
+    test('create empty ClientAttributes', () => {
       // WHEN
-      const attributeSet = AttributeSet.empty();
+      const clientAttributes = ClientAttributes.empty();
 
       // THEN
-      expect(attributeSet.attributes()).toStrictEqual([]);
+      expect(clientAttributes.attributes()).toStrictEqual([]);
     });
 
-    test('create AttributeSet with all standard attributes', () => {
+    test('create ClientAttributes with all standard attributes', () => {
       // GIVEN
       const customAttributes = ['custom:my_attribute'];
 
       // WHEN
-      const attributeSet = AttributeSet.allStandard(customAttributes);
-      const attributes = attributeSet.attributes();
+      const clientAttributes = ClientAttributes.allStandard(customAttributes);
+      const attributes = clientAttributes.attributes();
 
       // THEN
       expect(attributes.length).toEqual(20);
@@ -204,10 +204,10 @@ describe('User Pool Attributes', () => {
       expect(attributes).toContain('custom:my_attribute');
     });
 
-    test('create AttributeSet with profileWritable attributes', () => {
+    test('create ClientAttributes with profileWritable attributes', () => {
       // GIVEN
-      const attributeSet = AttributeSet.profileWritable();
-      const attributes = attributeSet.attributes();
+      const clientAttributes = ClientAttributes.profileWritable();
+      const attributes = clientAttributes.attributes();
 
       // THEN
       expect(attributes.length).toEqual(17);
@@ -216,13 +216,13 @@ describe('User Pool Attributes', () => {
       expect(attributes).not.toContain('phone_number_verified');
     });
 
-    test('create AttributeSet with custom attributes only', () => {
+    test('create ClientAttributes with custom attributes only', () => {
       // GIVEN
       const customAttributes = ['custom:my_first', 'custom:my_second'];
 
       // WHEN
-      const attributeSet = AttributeSet.from({}, customAttributes);
-      const attributes = attributeSet.attributes();
+      const clientAttributes = ClientAttributes.from({}, customAttributes);
+      const attributes = clientAttributes.attributes();
 
       // EXPECT
       expect(attributes.length).toEqual(2);

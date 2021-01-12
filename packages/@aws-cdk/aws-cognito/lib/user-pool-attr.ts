@@ -467,14 +467,14 @@ export interface StandardAttributesMask {
 /**
  * A set of attributes, useful to set Read and Write attributes
  */
-export class AttributeSet {
+export class ClientAttributes {
 
   /**
-   * Creates a custom AttributeSet with the specified attributes
+   * Creates a custom ClientAttributes with the specified attributes
    * @param standard a mask with the standard attributes to include in the set
    * @param custom a list of custom attributes to add to the set
    */
-  public static from(standard: StandardAttributesMask, custom?: string[]): AttributeSet {
+  public static from(standard: StandardAttributesMask, custom?: string[]): ClientAttributes {
     const aux = new Set(custom);
     if (standard.address === true) { aux.add('address'); }
     if (standard.birthdate === true) { aux.add('birthdate'); }
@@ -495,14 +495,14 @@ export class AttributeSet {
     if (standard.emailVerified === true) { aux.add('email_verified'); }
     if (standard.phoneNumberVerified === true) { aux.add('phone_number_verified'); }
     if (standard.website === true) { aux.add('website'); }
-    return new AttributeSet(aux);
+    return new ClientAttributes(aux);
   }
 
   /**
-   * Creates an empty AttributeSet
+   * Creates an empty ClientAttributes
    */
-  public static empty(): AttributeSet {
-    return new AttributeSet(new Set());
+  public static empty(): ClientAttributes {
+    return new ClientAttributes(new Set());
   }
 
   /**
@@ -510,10 +510,10 @@ export class AttributeSet {
    * from https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-attributes.html
    *
    * @note there are some attributes (i.e. `verified_email` and `verified_phone_number`)
-   * that should be kept readonly by most clients. @see `AttributeSet.profileWritable`
+   * that should be kept readonly by most clients. @see `ClientAttributes.profileWritable`
    * @param custom a list of custom attributes to add to the set
    */
-  public static allStandard(custom?: string[]): AttributeSet {
+  public static allStandard(custom?: string[]): ClientAttributes {
     let standardAttributes: StandardAttributesMask = {
       address: true,
       birthdate: true,
@@ -535,7 +535,7 @@ export class AttributeSet {
       phoneNumberVerified: true,
       website: true,
     };
-    return AttributeSet.from(standardAttributes, custom);
+    return ClientAttributes.from(standardAttributes, custom);
   }
 
   /**
@@ -546,7 +546,7 @@ export class AttributeSet {
    * that should be kept readonly by most clients.
    * @param custom a list of custom attributes to add to the set
    */
-  public static profileWritable(custom?: string[]): AttributeSet {
+  public static profileWritable(custom?: string[]): ClientAttributes {
     let standardAttributes: StandardAttributesMask = {
       address: true,
       birthdate: true,
@@ -568,23 +568,23 @@ export class AttributeSet {
       phoneNumberVerified: false,
       website: true,
     };
-    return AttributeSet.from(standardAttributes, custom);
+    return ClientAttributes.from(standardAttributes, custom);
   }
 
   /**
    * The set of attributes
    */
-  private readonly attributeSet: Set<string> = new Set<string>();
+  private readonly attributesSet: Set<string> = new Set<string>();
 
-  private constructor(attributeSet: Set<string>) {
-    this.attributeSet = attributeSet;
+  private constructor(attributesSet: Set<string>) {
+    this.attributesSet = attributesSet;
   }
 
   /**
-   * The list of attributes represented by this AttributeSet
+   * The list of attributes represented by this ClientAttributes
    */
   public attributes(): string[] {
     // sorting is unnecessary but it simplify testing
-    return Array.from(this.attributeSet).sort();
+    return Array.from(this.attributesSet).sort();
   }
 }
