@@ -53,22 +53,26 @@
             "description": "Describe the source of a file asset",
             "type": "object",
             "properties": {
+                "executable": {
+                    "description": "External command which will produce the file asset to upload. (Default - Exactly one of `executable` and `path` is required.)",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
                 "path": {
-                    "description": "The filesystem object to upload\n\nThis path is relative to the asset manifest location.",
+                    "description": "The filesystem object to upload\n\nThis path is relative to the asset manifest location. (Default - Exactly one of `executable` and `path` is required.)",
                     "type": "string"
                 },
                 "packaging": {
-                    "description": "Packaging method (Default FILE)",
+                    "description": "Packaging method\n\nOnly allowed when `path` is specified. (Default FILE)",
                     "enum": [
                         "file",
                         "zip"
                     ],
                     "type": "string"
                 }
-            },
-            "required": [
-                "path"
-            ]
+            }
         },
         "FileDestination": {
             "description": "Where in S3 a file asset needs to be published",
@@ -126,28 +130,32 @@
             "type": "object",
             "properties": {
                 "directory": {
-                    "description": "The directory containing the Docker image build instructions.\n\nThis path is relative to the asset manifest location.",
+                    "description": "The directory containing the Docker image build instructions.\n\nThis path is relative to the asset manifest location. (Default - Exactly one of `directory` and `executable` is required)",
                     "type": "string"
                 },
+                "executable": {
+                    "description": "A command-line executable that returns the name of a local\nDocker image on stdout after being run. (Default - Exactly one of `directory` and `executable` is required)",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
                 "dockerFile": {
-                    "description": "The name of the file with build instructions (Default Dockerfile)",
+                    "description": "The name of the file with build instructions\n\nOnly allowed when `directory` is set. (Default Dockerfile)",
                     "type": "string"
                 },
                 "dockerBuildTarget": {
-                    "description": "Target build stage in a Dockerfile with multiple build stages (Default - The last stage in the Dockerfile)",
+                    "description": "Target build stage in a Dockerfile with multiple build stages\n\nOnly allowed when `directory` is set. (Default - The last stage in the Dockerfile)",
                     "type": "string"
                 },
                 "dockerBuildArgs": {
-                    "description": "Additional build arguments (Default - No additional build arguments)",
+                    "description": "Additional build arguments\n\nOnly allowed when `directory` is set. (Default - No additional build arguments)",
                     "type": "object",
                     "additionalProperties": {
                         "type": "string"
                     }
                 }
-            },
-            "required": [
-                "directory"
-            ]
+            }
         },
         "DockerImageDestination": {
             "description": "Where to publish docker images",
