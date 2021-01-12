@@ -23,11 +23,23 @@ export interface DockerImageSource {
    * The directory containing the Docker image build instructions.
    *
    * This path is relative to the asset manifest location.
+   *
+   * @default - Exactly one of `directory` and `executable` is required
    */
-  readonly directory: string;
+  readonly directory?: string;
+
+  /**
+   * A command-line executable that returns the name of a local
+   * Docker image on stdout after being run.
+   *
+   * @default - Exactly one of `directory` and `executable` is required
+   */
+  readonly executable?: string[];
 
   /**
    * The name of the file with build instructions
+   *
+   * Only allowed when `directory` is set.
    *
    * @default "Dockerfile"
    */
@@ -36,12 +48,16 @@ export interface DockerImageSource {
   /**
    * Target build stage in a Dockerfile with multiple build stages
    *
+   * Only allowed when `directory` is set.
+   *
    * @default - The last stage in the Dockerfile
    */
   readonly dockerBuildTarget?: string;
 
   /**
    * Additional build arguments
+   *
+   * Only allowed when `directory` is set.
    *
    * @default - No additional build arguments
    */
