@@ -277,14 +277,14 @@ export interface UserPoolClientOptions {
   /**
    * The set of attributes this client will be able to read.
    * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-attributes.html#user-pool-settings-attribute-permissions-and-scopes
-   * @default undefined - all attributes will be readable
+   * @default - all standard and custom attributes
    */
   readonly readAttributes?: ClientAttributes;
 
   /**
    * The set of attributes this client will be able to write.
    * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-attributes.html#user-pool-settings-attribute-permissions-and-scopes
-   * @default undefined - all attributes will be writable
+   * @default - all standard and custom attributes
    */
   readonly writeAttributes?: ClientAttributes;
 }
