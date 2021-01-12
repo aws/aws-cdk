@@ -95,9 +95,7 @@ httpApi.addRoutes({
 });
 ```
 
-The URL to the endpoint can be retrieved via the `apiEndpoint` attribute.
-
-The default `execute-api` endpoint for this HTTP API is enabled by default. Use `disableExecuteApiEndpoint` to disable this.
+The URL to the endpoint can be retrieved via the `apiEndpoint` attribute. By default this URL is enabled for clients. Use `disableExecuteApiEndpoint` to disable it.
 
 ```ts
 const httpApi = new HttpApi(stack, 'HttpApi', {
