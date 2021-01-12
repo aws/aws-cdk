@@ -345,7 +345,7 @@ export class DateTimeAttribute implements ICustomAttribute {
 /**
  * This interface contains all standard attributes recognized by Cognito
  * from https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-attributes.html
- * including `preferred_email` and `preferred_phone_number`
+ * including `email_verified` and `phone_number_verified`
  */
 export interface StandardAttributesMask {
   /**
