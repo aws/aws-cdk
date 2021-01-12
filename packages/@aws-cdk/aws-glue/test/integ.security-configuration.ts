@@ -12,13 +12,13 @@ const key = new kms.Key(stack, 'Key');
 new glue.SecurityConfiguration(stack, 'DisabledKeylessSC', {
   securityConfigurationName: 'DisabledKeylessSC',
   jobBookmarksEncryption: {
-    mode: 'DISABLED',
+    mode: glue.JobBookmarksEncryptionMode.DISABLED,
   },
   cloudWatchEncryption: {
-    mode: 'DISABLED',
+    mode: glue.CloudWatchEncryptionMode.DISABLED,
   },
   s3Encryption: {
-    mode: 'DISABLED',
+    mode: glue.S3EncryptionMode.DISABLED,
   },
 });
 
@@ -26,15 +26,15 @@ new glue.SecurityConfiguration(stack, 'DisabledKeylessSC', {
 new glue.SecurityConfiguration(stack, 'EnabledSC', {
   securityConfigurationName: 'EnabledSC',
   jobBookmarksEncryption: {
-    mode: 'CSE-KMS',
+    mode: glue.JobBookmarksEncryptionMode.CLIENT_SIDE_KMS,
     kmsKey: key,
   },
   cloudWatchEncryption: {
-    mode: 'SSE-KMS',
+    mode: glue.CloudWatchEncryptionMode.KMS,
     kmsKey: key,
   },
   s3Encryption: {
-    mode: 'SSE-KMS',
+    mode: glue.S3EncryptionMode.KMS,
     kmsKey: key,
   },
 });
@@ -43,7 +43,7 @@ new glue.SecurityConfiguration(stack, 'EnabledSC', {
 new glue.SecurityConfiguration(stack, 'S3SC', {
   securityConfigurationName: 'S3SC',
   s3Encryption: {
-    mode: 'SSE-S3',
+    mode: glue.S3EncryptionMode.S3_MANAGED,
   },
 });
 

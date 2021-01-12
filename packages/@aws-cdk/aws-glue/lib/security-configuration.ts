@@ -4,76 +4,134 @@ import * as constructs from 'constructs';
 import { CfnSecurityConfiguration } from './glue.generated';
 
 /**
- * Interface representing a created or an imported {@link SecurityConfiguration}
+ * Interface representing a created or an imported {@link SecurityConfiguration}.
  */
 export interface ISecurityConfiguration extends cdk.IResource {
   /**
-   * The name of the security configuration
+   * The name of the security configuration.
    * @attribute
    */
   readonly securityConfigurationName: string;
 }
 
 /**
- * Attributes for importing {@link SecurityConfiguration}
+ * Attributes for importing {@link SecurityConfiguration}.
  */
 export interface SecurityConfigurationAttributes {
   /**
-   * The name of the security configuration
+   * The name of the security configuration.
    */
   readonly securityConfigurationName: string;
 }
 
 /**
- * S3 encryption configuration
+ * Encryption mode for S3.
+ */
+export enum S3EncryptionMode {
+  /**
+   * No encryption.
+   */
+  DISABLED = 'DISABLED',
+
+  /**
+   * Server side encryption (SSE) with an Amazon S3-managed key.
+   *
+   * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingServerSideEncryption.html
+   */
+  S3_MANAGED = 'SSE-S3',
+
+  /**
+   * Server-side encryption (SSE) with an AWS KMS key managed by the account owner.
+   *
+   * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingKMSEncryption.html
+   */
+  KMS = 'SSE-KMS',
+}
+
+/**
+ * Encryption mode for CloudWatch Logs.
+ */
+export enum CloudWatchEncryptionMode {
+  /**
+   * No encryption.
+   */
+  DISABLED = 'DISABLED',
+
+  /**
+   * Server-side encryption (SSE) with an AWS KMS key managed by the account owner.
+   *
+   * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingKMSEncryption.html
+   */
+  KMS = 'SSE-KMS',
+}
+
+/**
+ * Encryption mode for Job Bookmarks.
+ */
+export enum JobBookmarksEncryptionMode {
+  /**
+   * No encryption.
+   */
+  DISABLED = 'DISABLED',
+
+  /**
+   * Client-side encryption (CSE) with an AWS KMS key managed by the account owner.
+   *
+   * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingClientSideEncryption.html
+   */
+  CLIENT_SIDE_KMS = 'CSE-KMS',
+}
+
+/**
+ * S3 encryption configuration.
  */
 export interface S3Encryption {
   /**
-   * Encryption mode
+   * Encryption mode.
    */
-  readonly mode: 'DISABLED' | 'SSE-KMS' | 'SSE-S3';
+  readonly mode: S3EncryptionMode,
 
   /**
    * The KMS key to be used to encrypt the data.
-   * @default no kms key if mode = 'DISABLED' or 'SSE-S3'. A key must be provided for 'SSE-KMS'
+   * @default no kms key if mode = DISABLED or S3_MANAGED. A key must be provided for KMS mode.
    */
   readonly kmsKey?: kms.IKey,
 }
 
 /**
- * CloudWatch Logs encryption configuration
+ * CloudWatch Logs encryption configuration.
  */
 export interface CloudWatchEncryption {
   /**
    * Encryption mode
    */
-  readonly mode: 'DISABLED' | 'SSE-KMS';
+  readonly mode: CloudWatchEncryptionMode;
 
   /**
    * The KMS key to be used to encrypt the data.
-   * @default kms key must be provided if mode is not 'DISABLED'
+   * @default no kms key if mode = DISABLED. A key must be provided otherwise.
    */
   readonly kmsKey?: kms.IKey,
 }
 
 /**
- * Job bookmarks encryption configuration
+ * Job bookmarks encryption configuration.
  */
 export interface JobBookmarksEncryption {
   /**
-   * Encryption mode
+   * Encryption mode.
    */
-  readonly mode: 'DISABLED' | 'CSE-KMS';
+  readonly mode: JobBookmarksEncryptionMode;
 
   /**
    * The KMS key to be used to encrypt the data.
-   * @default kms key must be provided if mode is not 'DISABLED'
+   * @default no kms key if mode = DISABLED. A key must be provided otherwise.
    */
   readonly kmsKey?: kms.IKey,
 }
 
 /**
- * Constructions properties of {@link SecurityConfiguration}
+ * Constructions properties of {@link SecurityConfiguration}.
  */
 export interface SecurityConfigurationProps {
   /**
@@ -82,20 +140,20 @@ export interface SecurityConfigurationProps {
   readonly securityConfigurationName: string;
 
   /**
-   * The encryption configuration for Amazon CloudWatch.
-   * @default no cloudwatch encryption
+   * The encryption configuration for Amazon CloudWatch Logs.
+   * @default no cloudwatch logs encryption.
    */
   readonly cloudWatchEncryption?: CloudWatchEncryption,
 
   /**
-   * The encryption configuration for job bookmarks.
-   * @default no job bookmarks encryption
+   * The encryption configuration for Glue Job Bookmarks.
+   * @default no job bookmarks encryption.
    */
   readonly jobBookmarksEncryption?: JobBookmarksEncryption,
 
   /**
    * The encryption configuration for Amazon Simple Storage Service (Amazon S3) data.
-   * @default no s3 encryptions
+   * @default no s3 encryption.
    */
   readonly s3Encryption?: S3Encryption,
 }
@@ -116,7 +174,7 @@ export class SecurityConfiguration extends cdk.Resource implements ISecurityConf
    *
    * @param scope The scope creating construct (usually `this`).
    * @param id The construct's id.
-   * @param attrs Import attributes
+   * @param attrs Import attributes.
    */
   public static fromSecurityConfigurationAttributes(scope: constructs.Construct, id: string,
     attrs: SecurityConfigurationAttributes): ISecurityConfiguration {
@@ -134,7 +192,7 @@ export class SecurityConfiguration extends cdk.Resource implements ISecurityConf
   }
 
   /**
-   * The name of the security configuration
+   * The name of the security configuration.
    * @attribute
    */
   public readonly securityConfigurationName: string;

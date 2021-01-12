@@ -20,7 +20,7 @@ test('a security configuration with cloudwatch encryption configuration', () => 
   new glue.SecurityConfiguration(stack, 'SecurityConfiguration', {
     securityConfigurationName: 'name',
     cloudWatchEncryption: {
-      mode: 'SSE-KMS',
+      mode: glue.CloudWatchEncryptionMode.KMS,
       kmsKey: key,
     },
   });
@@ -42,7 +42,7 @@ test('a security configuration with cloudwatch encryption configuration requirin
   expect(() => new glue.SecurityConfiguration(stack, 'SecurityConfiguration', {
     securityConfigurationName: 'name',
     cloudWatchEncryption: {
-      mode: 'SSE-KMS',
+      mode: glue.CloudWatchEncryptionMode.KMS,
     },
   })).toThrowError(/SSE-KMS requires providing a kms key/);
 });
@@ -53,7 +53,7 @@ test('a security configuration with cloudwatch encryption configuration not requ
   new glue.SecurityConfiguration(stack, 'SecurityConfiguration', {
     securityConfigurationName: 'name',
     cloudWatchEncryption: {
-      mode: 'DISABLED',
+      mode: glue.CloudWatchEncryptionMode.DISABLED,
     },
   });
 
@@ -75,14 +75,14 @@ test('a security configuration with all encryption configs', () => {
   new glue.SecurityConfiguration(stack, 'SecurityConfiguration', {
     securityConfigurationName: 'name',
     cloudWatchEncryption: {
-      mode: 'DISABLED',
+      mode: glue.CloudWatchEncryptionMode.DISABLED,
     },
     jobBookmarksEncryption: {
-      mode: 'CSE-KMS',
+      mode: glue.JobBookmarksEncryptionMode.CLIENT_SIDE_KMS,
       kmsKey: key,
     },
     s3Encryption: {
-      mode: 'SSE-S3',
+      mode: glue.S3EncryptionMode.S3_MANAGED,
     },
   });
 
