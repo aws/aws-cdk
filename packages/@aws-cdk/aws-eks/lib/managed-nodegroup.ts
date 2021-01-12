@@ -394,6 +394,9 @@ function getAmiTypeForInstanceType(instanceType: InstanceType) {
           NodegroupAmiType.AL2_X86_64;
 }
 
+// this function examines the CPU architecture of every instance type and determines
+// what ami type is compatible for all of them. it either throws or produces a single value because
+// instance types of different CPU architectures are not supported.
 function getAmiType(instanceTypes: InstanceType[]) {
   const amiTypes = new Set(instanceTypes.map(i => getAmiTypeForInstanceType(i)));
   if (amiTypes.size == 0) { // protective code, the current implementation will never result in this.
