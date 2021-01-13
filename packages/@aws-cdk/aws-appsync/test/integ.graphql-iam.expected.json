@@ -93,6 +93,7 @@
                 "dynamodb:Query",
                 "dynamodb:GetItem",
                 "dynamodb:Scan",
+                "dynamodb:ConditionCheckItem",
                 "dynamodb:BatchWriteItem",
                 "dynamodb:PutItem",
                 "dynamodb:UpdateItem",
@@ -149,7 +150,7 @@
         }
       }
     },
-    "ApidsQuerygetTestResolverCCED7EC2": {
+    "ApiQuerygetTestResolver4C1F8B0C": {
       "Type": "AWS::AppSync::Resolver",
       "Properties": {
         "ApiId": {
@@ -170,7 +171,7 @@
         "ApiSchema510EECD7"
       ]
     },
-    "ApidsQuerygetTestsResolver952F49EE": {
+    "ApiQuerygetTestsResolver025B8E0A": {
       "Type": "AWS::AppSync::Resolver",
       "Properties": {
         "ApiId": {
@@ -191,7 +192,7 @@
         "ApiSchema510EECD7"
       ]
     },
-    "ApidsMutationaddTestResolverBCF0400B": {
+    "ApiMutationaddTestResolver7A08AE91": {
       "Type": "AWS::AppSync::Resolver",
       "Properties": {
         "ApiId": {

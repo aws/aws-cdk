@@ -25,6 +25,7 @@ tsconfig.json
 !lib/init-templates/**/jest.config.js
 
 !test/integ/cli/jest.config.js
+!test/integ/uberpackage/jest.config.js
 !test/integ/cli-regression-patches/**/*
 
 .DS_Store

@@ -43,8 +43,6 @@ export interface IDistribution extends IResource {
 
 /**
  * Attributes used to import a Distribution.
- *
- * @experimental
  */
 export interface DistributionAttributes {
   /**
@@ -69,8 +67,6 @@ interface BoundOrigin extends OriginBindOptions, OriginBindConfig {
 
 /**
  * Properties for a Distribution
- *
- * @experimental
  */
 export interface DistributionProps {
   /**
@@ -210,12 +206,20 @@ export interface DistributionProps {
    * @default - No custom error responses.
    */
   readonly errorResponses?: ErrorResponse[];
+
+  /**
+    * The minimum version of the SSL protocol that you want CloudFront to use for HTTPS connections.
+    *
+    * CloudFront serves your objects only to browsers or devices that support at
+    * least the SSL version that you specify.
+    *
+    * @default SecurityPolicyProtocol.TLS_V1_2_2019
+    */
+  readonly minimumProtocolVersion?: SecurityPolicyProtocol;
 }
 
 /**
  * A CloudFront distribution with associated origin(s) and caching behavior(s).
- *
- * @experimental
  */
 export class Distribution extends Resource implements IDistribution {
 
@@ -290,7 +294,7 @@ export class Distribution extends Resource implements IDistribution {
         logging: this.renderLogging(props),
         priceClass: props.priceClass ?? undefined,
         restrictions: this.renderRestrictions(props.geoRestriction),
-        viewerCertificate: this.certificate ? this.renderViewerCertificate(this.certificate) : undefined,
+        viewerCertificate: this.certificate ? this.renderViewerCertificate(this.certificate, props.minimumProtocolVersion) : undefined,
         webAclId: props.webAclId,
       },
     });
@@ -393,21 +397,18 @@ export class Distribution extends Resource implements IDistribution {
 
   private renderErrorResponses(): CfnDistribution.CustomErrorResponseProperty[] | undefined {
     if (this.errorResponses.length === 0) { return undefined; }
-    function validateCustomErrorResponse(errorResponse: ErrorResponse) {
-      if (errorResponse.responsePagePath && !errorResponse.responseHttpStatus) {
-        throw new Error('\'responseCode\' must be provided if \'responsePagePath\' is defined');
-      }
-      if (!errorResponse.responseHttpStatus && !errorResponse.ttl) {
-        throw new Error('A custom error response without either a \'responseCode\' or \'errorCachingMinTtl\' is not valid.');
-      }
-    }
-    this.errorResponses.forEach(e => validateCustomErrorResponse(e));
 
     return this.errorResponses.map(errorConfig => {
+      if (!errorConfig.responseHttpStatus && !errorConfig.ttl && !errorConfig.responsePagePath) {
+        throw new Error('A custom error response without either a \'responseHttpStatus\', \'ttl\' or \'responsePagePath\' is not valid.');
+      }
+
       return {
         errorCachingMinTtl: errorConfig.ttl?.toSeconds(),
         errorCode: errorConfig.httpStatus,
-        responseCode: errorConfig.responseHttpStatus,
+        responseCode: errorConfig.responsePagePath
+          ? errorConfig.responseHttpStatus ?? errorConfig.httpStatus
+          : errorConfig.responseHttpStatus,
         responsePagePath: errorConfig.responsePagePath,
       };
     });
@@ -436,11 +437,12 @@ export class Distribution extends Resource implements IDistribution {
     } : undefined;
   }
 
-  private renderViewerCertificate(certificate: acm.ICertificate): CfnDistribution.ViewerCertificateProperty {
+  private renderViewerCertificate(certificate: acm.ICertificate,
+    minimumProtocolVersion: SecurityPolicyProtocol = SecurityPolicyProtocol.TLS_V1_2_2019) : CfnDistribution.ViewerCertificateProperty {
     return {
       acmCertificateArn: certificate.certificateArn,
       sslSupportMethod: SSLMethod.SNI,
-      minimumProtocolVersion: SecurityPolicyProtocol.TLS_V1_2_2019,
+      minimumProtocolVersion: minimumProtocolVersion,
     };
   }
 }
@@ -558,8 +560,6 @@ export class CachedMethods {
 
 /**
  * Options for configuring custom error responses.
- *
- * @experimental
  */
 export interface ErrorResponse {
   /**
@@ -577,7 +577,7 @@ export interface ErrorResponse {
    *
    * If you specify a value for `responseHttpStatus`, you must also specify a value for `responsePagePath`.
    *
-   * @default - not set, the error code will be returned as the response code.
+   * @default - the error code will be returned as the response code.
    */
   readonly responseHttpStatus?: number;
   /**
@@ -611,7 +611,7 @@ export enum LambdaEdgeEventType {
   VIEWER_REQUEST = 'viewer-request',
 
   /**
-   * The viewer-response specifies the outgoing reponse
+   * The viewer-response specifies the outgoing response
    */
   VIEWER_RESPONSE = 'viewer-response',
 }
@@ -643,8 +643,6 @@ export interface EdgeLambda {
 
 /**
  * Options for adding a new behavior to a Distribution.
- *
- * @experimental
  */
 export interface AddBehaviorOptions {
   /**
@@ -712,8 +710,6 @@ export interface AddBehaviorOptions {
 
 /**
  * Options for creating a new behavior.
- *
- * @experimental
  */
 export interface BehaviorOptions extends AddBehaviorOptions {
   /**
