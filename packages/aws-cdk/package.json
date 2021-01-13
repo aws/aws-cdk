@@ -77,7 +77,7 @@
     "camelcase": "^6.2.0",
     "cdk-assets": "0.0.0",
     "colors": "^1.4.0",
-    "decamelize": "^4.0.0",
+    "decamelize": "^5.0.0",
     "fs-extra": "^9.0.1",
     "glob": "^7.1.6",
     "json-diff": "^0.5.4",
