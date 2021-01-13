@@ -267,7 +267,7 @@ describe('HttpApi', () => {
     });
   });
 
-  test('apiEndpoint is exported when disableExecuteApiEndpoint is not true', () => {
+  test('apiEndpoint is exported', () => {
     const stack = new Stack();
     const api = new HttpApi(stack, 'api');
 
