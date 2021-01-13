@@ -1,4 +1,5 @@
 import * as acmpca from '@aws-cdk/aws-acmpca';
+import * as acm from '@aws-cdk/aws-certificatemanager';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as cloudmap from '@aws-cdk/aws-servicediscovery';
 import * as cdk from '@aws-cdk/core';
@@ -29,6 +30,10 @@ const virtualService = mesh.addVirtualService('service', {
   virtualServiceName: 'service1.domain.local',
 });
 
+const cert = new acm.Certificate(stack, 'cert', {
+  domainName: `node1.${namespace.namespaceName}`,
+});
+
 const node = mesh.addVirtualNode('node', {
   serviceDiscovery: appmesh.ServiceDiscovery.dns(`node1.${namespace.namespaceName}`),
   listeners: [appmesh.VirtualNodeListener.http({
@@ -36,6 +41,10 @@ const node = mesh.addVirtualNode('node', {
       healthyThreshold: 3,
       path: '/check-path',
     },
+    tlsCertificate: appmesh.TlsCertificate.acm({
+      certificate: cert,
+      tlsMode: appmesh.TlsMode.STRICT,
+    }),
   })],
   backends: [
     virtualService,
@@ -58,6 +67,10 @@ router.addRoute('route-1', {
     ],
     match: {
       prefixPath: '/',
+    },
+    timeout: {
+      idle: cdk.Duration.seconds(10),
+      perRequest: cdk.Duration.seconds(10),
     },
   }),
 });
@@ -118,6 +131,10 @@ router.addRoute('route-2', {
     match: {
       prefixPath: '/path2',
     },
+    timeout: {
+      idle: cdk.Duration.seconds(11),
+      perRequest: cdk.Duration.seconds(11),
+    },
   }),
 });
 
@@ -129,6 +146,9 @@ router.addRoute('route-3', {
         weight: 20,
       },
     ],
+    timeout: {
+      idle: cdk.Duration.seconds(12),
+    },
   }),
 });
 
@@ -144,6 +164,11 @@ new appmesh.VirtualGateway(stack, 'gateway2', {
     healthCheck: {
       interval: cdk.Duration.seconds(10),
     },
+    tlsCertificate: appmesh.TlsCertificate.file({
+      certificateChainPath: 'path/to/certChain',
+      privateKeyPath: 'path/to/privateKey',
+      tlsMode: appmesh.TlsMode.STRICT,
+    }),
   })],
 });
 

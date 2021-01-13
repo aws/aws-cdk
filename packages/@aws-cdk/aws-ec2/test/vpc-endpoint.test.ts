@@ -1,7 +1,7 @@
 import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
 import { AnyPrincipal, PolicyStatement } from '@aws-cdk/aws-iam';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
-import { ContextProvider, Stack } from '@aws-cdk/core';
+import { ContextProvider, Fn, Stack } from '@aws-cdk/core';
 import { nodeunitShim, Test } from 'nodeunit-shim';
 // eslint-disable-next-line max-len
 import { GatewayVpcEndpoint, GatewayVpcEndpointAwsService, InterfaceVpcEndpoint, InterfaceVpcEndpointAwsService, InterfaceVpcEndpointService, SecurityGroup, SubnetType, Vpc } from '../lib';
@@ -290,6 +290,24 @@ nodeunitShim({
       test.done();
     },
 
+    'import/export without security group'(test: Test) {
+      // GIVEN
+      const stack2 = new Stack();
+
+      // WHEN
+      const importedEndpoint = InterfaceVpcEndpoint.fromInterfaceVpcEndpointAttributes(stack2, 'ImportedEndpoint', {
+        vpcEndpointId: 'vpc-endpoint-id',
+        port: 80,
+      });
+      importedEndpoint.connections.allowDefaultPortFromAnyIpv4();
+
+      // THEN
+      test.deepEqual(importedEndpoint.vpcEndpointId, 'vpc-endpoint-id');
+      test.deepEqual(importedEndpoint.connections.securityGroups.length, 0);
+
+      test.done();
+    },
+
     'with existing security groups'(test: Test) {
       // GIVEN
       const stack = new Stack();
@@ -517,6 +535,76 @@ nodeunitShim({
         ],
       }));
 
+      test.done();
+    },
+    'lookupSupportedAzs fails if account is unresolved'(test: Test) {
+      // GIVEN
+      const stack = new Stack(undefined, 'TestStack', { env: { region: 'us-east-1' } });
+      const vpc = new Vpc(stack, 'VPC');
+      // WHEN
+      test.throws(() =>vpc.addInterfaceEndpoint('YourService', {
+        service: {
+          name: 'com.amazonaws.vpce.us-east-1.vpce-svc-uuddlrlrbastrtsvc',
+          port: 443,
+        },
+        lookupSupportedAzs: true,
+      }));
+      test.done();
+    },
+    'lookupSupportedAzs fails if region is unresolved'(test: Test) {
+      // GIVEN
+      const stack = new Stack(undefined, 'TestStack', { env: { account: '123456789012' } });
+      const vpc = new Vpc(stack, 'VPC');
+      // WHEN
+      test.throws(() =>vpc.addInterfaceEndpoint('YourService', {
+        service: {
+          name: 'com.amazonaws.vpce.us-east-1.vpce-svc-uuddlrlrbastrtsvc',
+          port: 443,
+        },
+        lookupSupportedAzs: true,
+      }));
+      test.done();
+    },
+    'lookupSupportedAzs fails if subnet AZs are tokens'(test: Test) {
+      // GIVEN
+      const stack = new Stack(undefined, 'TestStack', { env: { account: '123456789012', region: 'us-east-1' } });
+      const tokenAZs = [
+        'us-east-1a',
+        Fn.select(1, Fn.getAzs()),
+        Fn.select(2, Fn.getAzs()),
+      ];
+      // Setup context for stack AZs
+      stack.node.setContext(
+        ContextProvider.getKey(stack, {
+          provider: cxschema.ContextProvider.AVAILABILITY_ZONE_PROVIDER,
+        }).key,
+        tokenAZs);
+      const vpc = new Vpc(stack, 'VPC');
+
+      // WHEN
+      test.throws(() =>vpc.addInterfaceEndpoint('YourService', {
+        service: {
+          name: 'com.amazonaws.vpce.us-east-1.vpce-svc-uuddlrlrbastrtsvc',
+          port: 443,
+        },
+        lookupSupportedAzs: true,
+      }));
+      test.done();
+    },
+    'vpc endpoint fails if no subnets provided'(test: Test) {
+      // GIVEN
+      const stack = new Stack(undefined, 'TestStack', { env: { account: '123456789012', region: 'us-east-1' } });
+      const vpc = new Vpc(stack, 'VPC');
+      // WHEN
+      test.throws(() =>vpc.addInterfaceEndpoint('YourService', {
+        service: {
+          name: 'com.amazonaws.vpce.us-east-1.vpce-svc-uuddlrlrbastrtsvc',
+          port: 443,
+        },
+        subnets: vpc.selectSubnets({
+          subnets: [],
+        }),
+      }));
       test.done();
     },
   },
