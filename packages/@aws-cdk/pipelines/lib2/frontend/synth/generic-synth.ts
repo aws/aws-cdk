@@ -3,18 +3,23 @@ import { AddSynthToGraphOptions, Synth } from '.';
 import { cloudAssemblyBuildSpecDir } from '../../../lib/private/construct-internals';
 import { toPosixPath } from '../../../lib/private/fs';
 import { ExecutionArtifact, ExecutionShellAction } from '../../graph';
-import { CommandImage } from '../image';
+import { CommandImage, ComputeType } from '../../shared';
 
-export interface StandardSynthProps {
+export interface GenericSynthProps {
   readonly installCommands?: string[];
   readonly buildCommands?: string[];
   readonly synthCommands?: string[];
   readonly testCommands?: string[];
   readonly image?: CommandImage;
-  readonly synthBuildsDockerImages?: boolean;
+
+  /**
+   * Set this to `true` when using packaging
+   */
+  readonly synthUsesDocker?: boolean;
   readonly testReports?: boolean;
   readonly subdirectory?: string;
   readonly environmentVariables?: Record<string, string>;
+  readonly computeType?: ComputeType;
 
   // TODO: How to specify additional inputs and outputs??
 
@@ -23,8 +28,8 @@ export interface StandardSynthProps {
   // TODO: How to specify additional policies?
 }
 
-export class NpmSynth extends Synth {
-  constructor(private readonly props: StandardSynthProps = {}) {
+export class GenericSynth extends Synth {
+  constructor(private readonly props: GenericSynthProps = {}) {
     super();
   }
 
@@ -47,7 +52,8 @@ export class NpmSynth extends Synth {
         ...this.props.synthCommands ?? ['npx cdk synth'],
       ],
       image: this.props.image,
-      buildsDockerImages: this.props.synthBuildsDockerImages,
+      computeType: this.props.computeType,
+      buildsDockerImages: this.props.synthUsesDocker,
       testReports: this.props.testReports,
       environmentVariables: this.props.environmentVariables,
       inputs: options.root.sourceArtifacts.map(artifact => ({

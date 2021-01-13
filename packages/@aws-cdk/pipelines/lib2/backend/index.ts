@@ -15,3 +15,4 @@ export abstract class Backend {
 }
 
 import { CodePipelineBackend, CodePipelineBackendProps } from './codepipeline';
+export * from './codepipeline/codepipeline-image';

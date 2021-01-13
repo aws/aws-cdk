@@ -1,6 +1,6 @@
 import { ExecutionSourceAction, SourceType } from '../../graph/source-actions';
+import { Authentication } from '../../shared/source-authentication';
 import { AddSourceToGraphOptions, Source } from './index';
-import { Authentication } from './source-authentication';
 
 export interface GitHubSourceProps {
   /**

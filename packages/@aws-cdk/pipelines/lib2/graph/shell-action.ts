@@ -1,4 +1,5 @@
-import { CommandImage } from '../frontend/image';
+import { ComputeType } from '../shared';
+import { CommandImage } from '../shared/image';
 import { ExecutionAction, ExecutionArtifact } from './index';
 
 export interface ShellArtifact {
@@ -10,6 +11,7 @@ export interface ExecutionShellActionProps {
   readonly installCommands?: string[];
   readonly buildCommands?: string[];
   readonly image?: CommandImage;
+  readonly computeType?: ComputeType;
   readonly buildsDockerImages?: boolean;
   readonly testReports?: boolean;
   readonly environmentVariables?: Record<string, string>;
@@ -25,6 +27,7 @@ export class ExecutionShellAction extends ExecutionAction {
   public readonly image: CommandImage;
   public readonly buildsDockerImages: boolean;
   public readonly environmentVariables: Record<string, string>;
+  public readonly computeType: ComputeType;
 
   constructor(name: string, public readonly props: ExecutionShellActionProps) {
     super(name);
@@ -34,6 +37,7 @@ export class ExecutionShellAction extends ExecutionAction {
     this.installCommands = props.installCommands ?? [];
     this.buildCommands = props.buildCommands ?? [];
     this.image = props.image ?? CommandImage.GENERIC_LINUX;
+    this.computeType = props.computeType ?? ComputeType.DEFAULT;
     this.buildsDockerImages = props.buildsDockerImages ?? false;
     this.environmentVariables = props.environmentVariables ?? {};
 

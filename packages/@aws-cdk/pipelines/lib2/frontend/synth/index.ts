@@ -8,11 +8,27 @@ export interface AddSynthToGraphOptions {
 }
 
 export abstract class Synth {
-  public static standardNpm(props?: StandardSynthProps): Synth {
-    return new NpmSynth(props);
+  public static standardNpm(props?: GenericSynthProps): Synth {
+    return Synth.generic({
+      ...props,
+      installCommands: props?.installCommands ?? ['npm ci'],
+      synthCommands: props?.synthCommands ?? ['npx cdk synth'],
+    });
+  }
+
+  public static standardYarn(props?: GenericSynthProps): Synth {
+    return Synth.generic({
+      ...props,
+      installCommands: props?.installCommands ?? ['yarn install --frozen-lockfile'],
+      synthCommands: props?.synthCommands ?? ['yarn run cdk synth'],
+    });
+  }
+
+  public static generic(props?: GenericSynthProps): Synth {
+    return new GenericSynth(props);
   }
 
   public abstract addToExecutionGraph(options: AddSynthToGraphOptions): void;
 }
 
-import { NpmSynth, StandardSynthProps } from './npm-synth';
+import { GenericSynth, GenericSynthProps } from './generic-synth';

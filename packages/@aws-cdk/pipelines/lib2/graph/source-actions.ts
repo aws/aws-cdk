@@ -1,5 +1,5 @@
 import { Source } from '../frontend/source';
-import { Authentication } from '../frontend/source/source-authentication';
+import { Authentication } from '../shared/source-authentication';
 import { ExecutionAction, ExecutionArtifact } from './index';
 
 export enum SourceType {

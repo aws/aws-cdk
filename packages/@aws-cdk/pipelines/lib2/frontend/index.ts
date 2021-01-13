@@ -1,4 +1,3 @@
-export * from './image';
 export * from './artifact';
 export * from './approver';
 export * from './asset-publishing';

@@ -8,7 +8,9 @@ import * as iam from '@aws-cdk/aws-iam';
 import { Construct, Stack } from '@aws-cdk/core';
 import { mapValues, noEmptyObject } from '../../_util';
 import { ExecutionShellAction, ShellArtifact } from '../../graph';
+import { CommandImage, ComputeType } from '../../shared';
 import { ArtifactMap } from './artifact-map';
+import { CodePipelineImage } from './codepipeline-image';
 
 /**
  * Construction props for SimpleSynthAction
@@ -70,6 +72,21 @@ export interface CodePipelineShellActionProps {
    * Include a hash of the build config into the invocation
    */
   readonly includeBuildHashInPipeline?: boolean;
+
+  /**
+   * Compute type
+   *
+   * @default - CodeBuild default
+   */
+  readonly computeType?: ComputeType;
+
+  /**
+   * Command image
+   *
+   * @default - CodeBuild default
+   */
+  readonly commandImage?: CommandImage;
+
 }
 
 /**
@@ -156,7 +173,8 @@ export class CodePipelineShellAction implements codepipeline.IAction, iam.IGrant
     // TODO: Change image
     // TODO: Customize ComputeType
     const environment: codebuild.BuildEnvironment = {
-      buildImage: codebuild.LinuxBuildImage.STANDARD_4_0,
+      buildImage: translateBuildImage(base.image),
+      computeType: translateComputeType(base.computeType),
       privileged: base.buildsDockerImages ? true : undefined,
       environmentVariables: noEmptyObject(mapValues(base.environmentVariables, value => ({ value }))),
     };
@@ -277,4 +295,26 @@ function serializeBuildEnvironment(env: codebuild.BuildEnvironment) {
     imagePullPrincipalType: env.buildImage?.imagePullPrincipalType,
     secretsManagerArn: env.buildImage?.secretsManagerCredentials?.secretArn,
   };
+}
+
+function translateComputeType(computeType: ComputeType): codebuild.ComputeType | undefined {
+  switch (computeType.computeTypeClass) {
+    case 'default': return undefined;
+    case 'large': return codebuild.ComputeType.LARGE;
+    case 'medium': return codebuild.ComputeType.MEDIUM;
+    case 'small': return codebuild.ComputeType.SMALL;
+    default:
+      throw new Error(`Unrecognized compute type for CodeBuild pipelines: ${computeType.computeTypeClass}`);
+  }
+}
+
+function translateBuildImage(image: CommandImage): codebuild.IBuildImage {
+  if (image === CommandImage.GENERIC_LINUX) { return codebuild.LinuxBuildImage.STANDARD_4_0; }
+  if (image === CommandImage.GENERIC_WINDOWS) { return codebuild.WindowsBuildImage.WINDOWS_BASE_2_0; }
+
+  if (image instanceof CodePipelineImage) {
+    if (image.codeBuildImage) { return image.codeBuildImage; }
+  }
+
+  throw new Error(`Don't know how to get CodeBuild image from: ${image}`);
 }
