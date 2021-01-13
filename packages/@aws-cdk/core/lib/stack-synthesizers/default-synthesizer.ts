@@ -1,7 +1,7 @@
-import * as cxschema from '@aws-cdk/cloud-assembly-schema';
-import * as cxapi from '@aws-cdk/cx-api';
 import * as fs from 'fs';
 import * as path from 'path';
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
+import * as cxapi from '@aws-cdk/cx-api';
 import { DockerImageAssetLocation, DockerImageAssetSource, FileAssetLocation, FileAssetPackaging, FileAssetSource } from '../assets';
 import { Fn } from '../cfn-fn';
 import { CfnParameter } from '../cfn-parameter';
@@ -9,8 +9,8 @@ import { CfnRule } from '../cfn-rule';
 import { ISynthesisSession } from '../construct-compat';
 import { Stack } from '../stack';
 import { Token } from '../token';
-import { StackSynthesizer } from './stack-synthesizer';
 import { assertBound, contentHash } from './_shared';
+import { StackSynthesizer } from './stack-synthesizer';
 
 export const BOOTSTRAP_QUALIFIER_CONTEXT = '@aws-cdk/core:bootstrapQualifier';
 
@@ -289,12 +289,15 @@ export class DefaultStackSynthesizer extends StackSynthesizer {
   public addFileAsset(asset: FileAssetSource): FileAssetLocation {
     assertBound(this.stack);
     assertBound(this.bucketName);
+    validateFileAssetSource(asset);
+
     const objectKey = this.bucketPrefix + asset.sourceHash + (asset.packaging === FileAssetPackaging.ZIP_DIRECTORY ? '.zip' : '');
 
     // Add to manifest
     this.files[asset.sourceHash] = {
       source: {
         path: asset.fileName,
+        executable: asset.executable,
         packaging: asset.packaging,
       },
       destinations: {
@@ -325,12 +328,14 @@ export class DefaultStackSynthesizer extends StackSynthesizer {
   public addDockerImageAsset(asset: DockerImageAssetSource): DockerImageAssetLocation {
     assertBound(this.stack);
     assertBound(this.repositoryName);
+    validateDockerImageAssetSource(asset);
 
     const imageTag = asset.sourceHash;
 
     // Add to manifest
     this.dockerImages[asset.sourceHash] = {
       source: {
+        executable: asset.executable,
         directory: asset.directoryName,
         dockerBuildArgs: asset.dockerBuildArgs,
         dockerBuildTarget: asset.dockerBuildTarget,
@@ -442,7 +447,7 @@ export class DefaultStackSynthesizer extends StackSynthesizer {
     //
     // Instead, we'll have a protocol with the CLI that we put an 's3://.../...' URL here, and the CLI
     // is going to resolve it to the correct 'https://.../' URL before it gives it to CloudFormation.
-    return `s3://${this.bucketName}/${sourceHash}`;
+    return `s3://${this.bucketName}/${this.bucketPrefix}${sourceHash}`;
   }
 
   /**
@@ -565,4 +570,31 @@ function range(startIncl: number, endExcl: number) {
     ret.push(i);
   }
   return ret;
+}
+
+
+function validateFileAssetSource(asset: FileAssetSource) {
+  if (!!asset.executable === !!asset.fileName) {
+    throw new Error(`Exactly one of 'fileName' or 'executable' is required, got: ${JSON.stringify(asset)}`);
+  }
+
+  if (!!asset.packaging !== !!asset.fileName) {
+    throw new Error(`'packaging' is expected in combination with 'fileName', got: ${JSON.stringify(asset)}`);
+  }
+}
+
+function validateDockerImageAssetSource(asset: DockerImageAssetSource) {
+  if (!!asset.executable === !!asset.directoryName) {
+    throw new Error(`Exactly one of 'directoryName' or 'executable' is required, got: ${JSON.stringify(asset)}`);
+  }
+
+  check('dockerBuildArgs');
+  check('dockerBuildTarget');
+  check('dockerFile');
+
+  function check<K extends keyof DockerImageAssetSource>(key: K) {
+    if (asset[key] && !asset.directoryName) {
+      throw new Error(`'${key}' is only allowed in combination with 'directoryName', got: ${JSON.stringify(asset)}`);
+    }
+  }
 }
