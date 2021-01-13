@@ -97,6 +97,32 @@ describe('Rds Data Source configuration', () => {
     });
   });
 
+  test('rds cluster arn saved to RdsHttpEndpointConfig', () => {
+    // WHEN
+    api.addRdsDataSource('ds', cluster, secret);
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::AppSync::DataSource', {
+      Type: 'RELATIONAL_DATABASE',
+      RelationalDatabaseConfig: {
+        RdsHttpEndpointConfig: {
+          AwsRegion: { Ref: 'AWS::Region' },
+          AwsSecretStoreArn: { Ref: 'AuroraSecret41E6E877' },
+          DbClusterIdentifier: {
+            'Fn::Join': ['', ['arn:',
+              { Ref: 'AWS::Partition' },
+              ':rds:',
+              { Ref: 'AWS::Region' },
+              ':',
+              { Ref: 'AWS::AccountId' },
+              ':cluster:',
+              { Ref: 'AuroraCluster23D869C0' }]],
+          },
+        },
+      },
+    });
+  });
+
   test('default configuration produces name identical to the id', () => {
     // WHEN
     api.addRdsDataSource('ds', cluster, secret);

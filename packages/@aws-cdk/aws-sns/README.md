@@ -21,6 +21,21 @@ const topic = new sns.Topic(this, 'Topic', {
 });
 ```
 
+Add a FIFO SNS topic with content-based de-duplication to your stack:
+
+```ts
+import * as sns from '@aws-cdk/aws-sns';
+
+const topic = new sns.Topic(this, 'Topic', {
+    contentBasedDeduplication: true,
+    displayName: 'Customer subscription topic',
+    fifo: true,
+    topicName: 'customerTopic',
+});
+```
+
+Note that FIFO topics require a topic name to be provided. The required `.fifo` suffix will be automatically added to the topic name if it is not explicitly provided.
+
 ## Subscriptions
 
 Various subscriptions can be added to the topic by calling the
