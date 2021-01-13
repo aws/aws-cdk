@@ -1450,7 +1450,7 @@ export class Cluster extends ClusterBase {
         repository: 'https://aws.github.io/eks-charts',
         namespace: 'kube-system',
         values: {
-          nodeSelector:{
+          nodeSelector: {
             lifecycle: LifecycleLabel.SPOT,
           }
         },
