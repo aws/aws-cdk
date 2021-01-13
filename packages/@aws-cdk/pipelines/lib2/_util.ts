@@ -55,3 +55,8 @@ export function noEmptyObject<A>(xs: Record<string, A>): Record<string, A> | und
   if (Object.keys(xs).length === 0) { return undefined; }
   return xs;
 }
+
+export function maybeSuffix(x: string | undefined, suffix: string): string | undefined {
+  if (x === undefined) { return undefined; }
+  return `${x}${suffix}`;
+}

@@ -6,8 +6,8 @@ import { Aws, SecretValue, Stack } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Construct, Node } from 'constructs';
 import { embeddedAsmPath } from '../../lib/private/construct-internals';
-import { enumerate, expectProp, flatten } from '../_util';
-import { ExecutionAction, ExecutionGraph, ExecutionNode, ExecutionSourceAction, commonAncestor, SourceType, ancestorPath, ExecutionShellAction, PipelineGraph, CreateChangeSetAction, ExecuteChangeSetAction } from '../graph';
+import { enumerate, expectProp, flatten, maybeSuffix } from '../_util';
+import { ExecutionAction, ExecutionGraph, ExecutionNode, ExecutionSourceAction, commonAncestor, SourceType, ancestorPath, ExecutionShellAction, PipelineGraph, CreateChangeSetAction, ExecuteChangeSetAction, ManualApprovalAction } from '../graph';
 import { ArtifactMap } from './codepipeline/artifact-map';
 import { CodePipelineShellAction } from './codepipeline/shell-action';
 import { Backend, RenderBackendOptions } from './index';
@@ -79,7 +79,7 @@ export class CodePipelineBackend extends Backend {
 
   private addSelfMutateStage(executionGraph: PipelineGraph) {
     const installSuffix = this.props.cdkCliVersion ? `@${this.props.cdkCliVersion}` : '';
-    const pipelineStackName = Stack.of(this.pipeline);
+    const pipelineStackName = Stack.of(this.pipeline).stackName;
 
     this.pipeline.addStage({
       stageName: 'UpdatePipeline',
@@ -87,6 +87,7 @@ export class CodePipelineBackend extends Backend {
         new CodePipelineShellAction({
           runOrder: 1,
           actionName: 'SelfMutate',
+          projectName: maybeSuffix(this.props.pipelineName, '-selfupdate'),
           vpc: this.props.vpc,
           subnetSelection: this.props.subnetSelection,
           artifactMap: this.artifacts,
@@ -168,8 +169,8 @@ export class CodePipelineBackend extends Backend {
       const changeSetProps = options.node.props;
       return new cpa.CloudFormationCreateReplaceChangeSetAction({
         actionName: actionName(options.node, options.sharedParent),
-        changeSetName,
         runOrder: options.runOrder,
+        changeSetName,
         stackName: changeSetProps.stackName,
         templatePath: this.artifacts.toCodePipeline(changeSetProps.templateArtifact).atPath(changeSetProps.templatePath),
         adminPermissions: true,
@@ -186,8 +187,8 @@ export class CodePipelineBackend extends Backend {
       const executeProps = options.node.props;
       return new cpa.CloudFormationExecuteChangeSetAction({
         actionName: actionName(options.node, options.sharedParent),
-        changeSetName,
         runOrder: options.runOrder,
+        changeSetName,
         stackName: executeProps.stackName,
         role: this.roleFromPlaceholderArn(this.pipeline, executeProps.region, executeProps.account, executeProps.assumeRoleArn),
         region: executeProps.region,
@@ -196,7 +197,15 @@ export class CodePipelineBackend extends Backend {
       });
     }
 
-    throw new Error(`Don't know how to make CodePipeline Action from ${options.node}`);
+    if (options.node instanceof ManualApprovalAction) {
+      return new cpa.ManualApprovalAction({
+        actionName: actionName(options.node, options.sharedParent),
+        runOrder: options.runOrder,
+        additionalInformation: options.node.comment,
+      });
+    }
+
+    throw new Error(`Execution node ${options.node} is not supported for CodePipeline-backed pipelines`);
   }
 
   private makeSourceAction(source: ExecutionSourceAction, options: MakeActionOptions): cp.IAction {

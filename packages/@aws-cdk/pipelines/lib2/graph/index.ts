@@ -30,7 +30,7 @@ export abstract class ExecutionNode {
   }
 
   public toString() {
-    return `Node(${this.name})`;
+    return `${this.constructor.name}(${this.name})`;
   }
 }
 
@@ -305,3 +305,4 @@ import { ExecutionSourceAction } from './source-actions';
 export * from './source-actions';
 export * from './shell-action';
 export * from './cloudformation-actions';
+export * from './manual-approval-action';

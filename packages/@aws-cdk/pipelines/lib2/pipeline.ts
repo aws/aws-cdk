@@ -52,6 +52,13 @@ export interface CdkPipelineProps {
    * @default CodePipeline
    */
   readonly backend?: Backend;
+
+  /**
+   * CLI version to use
+   *
+   * @default - Latest
+   */
+  readonly cdkCliVersion?: string;
 }
 
 export class CdkPipeline extends CoreConstruct {
@@ -102,6 +109,7 @@ export class CdkPipeline extends CoreConstruct {
       throw new Error('Can only call build() once');
     }
     this.backend.renderBackend({ scope: this, executionGraph: this.graph });
+    this.built = true;
   }
 
   protected prepare() {
