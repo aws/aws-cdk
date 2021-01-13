@@ -66,6 +66,12 @@ export class ElasticsearchVersion {
   /** AWS Elasticsearch 7.7 */
   public static readonly V7_7 = ElasticsearchVersion.of('7.7');
 
+  /** AWS Elasticsearch 7.8 */
+  public static readonly V7_8 = ElasticsearchVersion.of('7.8');
+
+  /** AWS Elasticsearch 7.9 */
+  public static readonly V7_9 = ElasticsearchVersion.of('7.9');
+
   /**
    * Custom Elasticsearch version
    * @param version custom version number
@@ -511,6 +517,16 @@ export interface DomainProps {
    * @default - false
    */
   readonly useUnsignedBasicAuth?: boolean;
+
+  /**
+   * To upgrade an Amazon ES domain to a new version of Elasticsearch rather than replacing the entire
+   * domain resource, use the EnableVersionUpgrade update policy.
+   *
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-attribute-updatepolicy.html#cfn-attributes-updatepolicy-upgradeelasticsearchdomain
+   * @default - false
+   */
+  readonly enableVersionUpgrade?: boolean;
+
 }
 
 /**
@@ -1458,6 +1474,36 @@ export class Domain extends DomainBase implements IDomain {
       });
     }
 
+    const logPublishing: Record<string, any> = {};
+
+    if (this.appLogGroup) {
+      logPublishing.ES_APPLICATION_LOGS = {
+        enabled: true,
+        cloudWatchLogsLogGroupArn: this.appLogGroup.logGroupArn,
+      };
+    }
+
+    if (this.slowSearchLogGroup) {
+      logPublishing.SEARCH_SLOW_LOGS = {
+        enabled: true,
+        cloudWatchLogsLogGroupArn: this.slowSearchLogGroup.logGroupArn,
+      };
+    }
+
+    if (this.slowIndexLogGroup) {
+      logPublishing.INDEX_SLOW_LOGS = {
+        enabled: true,
+        cloudWatchLogsLogGroupArn: this.slowIndexLogGroup.logGroupArn,
+      };
+    }
+
+    if (this.auditLogGroup) {
+      logPublishing.AUDIT_LOGS = {
+        enabled: this.auditLogGroup != null,
+        cloudWatchLogsLogGroupArn: this.auditLogGroup?.logGroupArn,
+      };
+    }
+
     // Create the domain
     this.domain = new CfnDomain(this, 'Resource', {
       domainName: this.physicalName,
@@ -1490,24 +1536,7 @@ export class Domain extends DomainBase implements IDomain {
           : undefined,
       },
       nodeToNodeEncryptionOptions: { enabled: nodeToNodeEncryptionEnabled },
-      logPublishingOptions: {
-        AUDIT_LOGS: {
-          enabled: this.auditLogGroup != null,
-          cloudWatchLogsLogGroupArn: this.auditLogGroup?.logGroupArn,
-        },
-        ES_APPLICATION_LOGS: {
-          enabled: this.appLogGroup != null,
-          cloudWatchLogsLogGroupArn: this.appLogGroup?.logGroupArn,
-        },
-        SEARCH_SLOW_LOGS: {
-          enabled: this.slowSearchLogGroup != null,
-          cloudWatchLogsLogGroupArn: this.slowSearchLogGroup?.logGroupArn,
-        },
-        INDEX_SLOW_LOGS: {
-          enabled: this.slowIndexLogGroup != null,
-          cloudWatchLogsLogGroupArn: this.slowIndexLogGroup?.logGroupArn,
-        },
-      },
+      logPublishingOptions: logPublishing,
       cognitoOptions: {
         enabled: props.cognitoKibanaAuth != null,
         identityPoolId: props.cognitoKibanaAuth?.identityPoolId,
@@ -1535,6 +1564,13 @@ export class Domain extends DomainBase implements IDomain {
         : undefined,
     });
 
+    if (props.enableVersionUpgrade) {
+      this.domain.cfnOptions.updatePolicy = {
+        ...this.domain.cfnOptions.updatePolicy,
+        enableVersionUpgrade: props.enableVersionUpgrade,
+      };
+    }
+
     if (logGroupResourcePolicy) { this.domain.node.addDependency(logGroupResourcePolicy); }
 
     if (props.domainName) { this.node.addMetadata('aws:cdk:hasPhysicalName', props.domainName); }
@@ -1559,6 +1595,21 @@ export class Domain extends DomainBase implements IDomain {
         domainArn: this.domainArn,
         accessPolicies: accessPolicyStatements,
       });
+
+      if (props.encryptionAtRest?.kmsKey) {
+
+        // https://docs.aws.amazon.com/elasticsearch-service/latest/developerguide/encryption-at-rest.html
+
+        // these permissions are documented as required during domain creation.
+        // while not strictly documented for updates as well, it stands to reason that an update
+        // operation might require these in case the cluster uses a kms key.
+        // empircal evidence shows this is indeed required: https://github.com/aws/aws-cdk/issues/11412
+        accessPolicy.grantPrincipal.addToPrincipalPolicy(new iam.PolicyStatement({
+          actions: ['kms:List*', 'kms:Describe*', 'kms:CreateGrant'],
+          resources: [props.encryptionAtRest.kmsKey.keyArn],
+          effect: iam.Effect.ALLOW,
+        }));
+      }
 
       accessPolicy.node.addDependency(this.domain);
     }
