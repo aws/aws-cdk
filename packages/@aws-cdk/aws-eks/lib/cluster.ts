@@ -1452,7 +1452,7 @@ export class Cluster extends ClusterBase {
         values: {
           nodeSelector: {
             lifecycle: LifecycleLabel.SPOT,
-          }
+          },
         },
       });
     }
