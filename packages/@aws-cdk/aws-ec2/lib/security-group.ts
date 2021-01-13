@@ -322,7 +322,7 @@ export class SecurityGroup extends SecurityGroupBase {
   /**
    * Import an existing security group into this app.
    *
-   * This method will assume that the Security Group has a rule in it which allows 
+   * This method will assume that the Security Group has a rule in it which allows
    * all outbound traffic, and so will not add egress rules to the imported Security
    * Group (only ingress rules).
    *
