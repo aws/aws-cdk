@@ -289,17 +289,24 @@ export class HttpApi extends HttpApiBase {
    */
   public readonly httpApiName?: string;
   public readonly httpApiId: string;
-  public readonly apiEndpoint: string;
+
+  /**
+   * Specifies whether clients can invoke this HTTP API by using the default execute-api endpoint.
+   */
+  public readonly disableExecuteApiEndpoint?: boolean;
 
   /**
    * default stage of the api resource
    */
   public readonly defaultStage: HttpStage | undefined;
 
+  private readonly _apiEndpoint: string;
+
   constructor(scope: Construct, id: string, props?: HttpApiProps) {
     super(scope, id);
 
     this.httpApiName = props?.apiName ?? id;
+    this.disableExecuteApiEndpoint = props?.disableExecuteApiEndpoint;
 
     let corsConfiguration: CfnApi.CorsProperty | undefined;
     if (props?.corsPreflight) {
@@ -330,12 +337,12 @@ export class HttpApi extends HttpApiBase {
       protocolType: 'HTTP',
       corsConfiguration,
       description: props?.description,
-      disableExecuteApiEndpoint: props?.disableExecuteApiEndpoint,
+      disableExecuteApiEndpoint: this.disableExecuteApiEndpoint,
     };
 
     const resource = new CfnApi(this, 'Resource', apiProps);
     this.httpApiId = resource.ref;
-    this.apiEndpoint = resource.attrApiEndpoint;
+    this._apiEndpoint = resource.attrApiEndpoint;
 
     if (props?.defaultIntegration) {
       new HttpRoute(this, 'DefaultRoute', {
@@ -362,6 +369,16 @@ export class HttpApi extends HttpApiBase {
       throw new Error('defaultDomainMapping not supported with createDefaultStage disabled',
       );
     }
+  }
+
+  /**
+   * Get the default endpoint for this API.
+   */
+  public get apiEndpoint(): string {
+    if (this.disableExecuteApiEndpoint) {
+      throw new Error('apiEndpoint is not accessible when disableExecuteApiEndpoint is set to true.');
+    }
+    return this._apiEndpoint;
   }
 
   /**

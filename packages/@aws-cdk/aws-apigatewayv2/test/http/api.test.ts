@@ -267,11 +267,22 @@ describe('HttpApi', () => {
     });
   });
 
-  test('apiEndpoint is exported', () => {
+  test('apiEndpoint is exported when disableExecuteApiEndpoint is not true', () => {
     const stack = new Stack();
     const api = new HttpApi(stack, 'api');
 
     expect(api.apiEndpoint).toBeDefined();
+  });
+
+  test('throws when accessing apiEndpoint and disableExecuteApiEndpoint is true', () => {
+    const stack = new Stack();
+    const api = new HttpApi(stack, 'api', {
+      disableExecuteApiEndpoint: true,
+    });
+
+    expect(() => api.apiEndpoint).toThrow(
+      /apiEndpoint is not accessible when disableExecuteApiEndpoint is set to true./,
+    );
   });
 
   test('apiEndpoint for imported', () => {
