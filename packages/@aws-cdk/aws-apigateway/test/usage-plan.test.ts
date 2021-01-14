@@ -206,7 +206,7 @@ describe('usage plan', () => {
     }, ResourcePart.Properties);
   });
 
-  test('UsagePlanKeys have unique names', () => {
+  test('UsagePlanKeys have unique logical ids', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'my-stack');
