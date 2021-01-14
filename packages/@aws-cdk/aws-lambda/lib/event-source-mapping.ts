@@ -8,8 +8,10 @@ export interface EventSourceMappingOptions {
   /**
    * The Amazon Resource Name (ARN) of the event source. Any record added to
    * this stream can invoke the Lambda function.
+   *
+   * @default - not set
    */
-  readonly eventSourceArn: string;
+  readonly eventSourceArn?: string;
 
   /**
    * The largest number of records that AWS Lambda will retrieve from your event
@@ -103,9 +105,18 @@ export interface EventSourceMappingOptions {
   readonly kafkaTopic?: string;
 
   /**
-   * The Secrets Manager secret that stores your broker credentials.
+   * The Secrets Manager secret ARN that stores your broker credentials.
+   *
+   * @default - no configuration
    */
-  readonly sourceAccessConfiguration?: SourceAccessConfiguration
+  readonly kafkaSecretArn?: string
+
+  /**
+   * A list of Kafka bootstrap servers to connect to your self managed Kafka cluster
+   *
+   * @default - none
+   */
+  readonly kafkaBootstrapServers?: string[]
 }
 
 /**
@@ -201,7 +212,9 @@ export class EventSourceMapping extends cdk.Resource implements IEventSourceMapp
       maximumRetryAttempts: props.retryAttempts,
       parallelizationFactor: props.parallelizationFactor,
       topics: props.kafkaTopic !== undefined ? [props.kafkaTopic] : undefined,
-      sourceAccessConfigurations: props.sourceAccessConfiguration !== undefined ? [props.sourceAccessConfiguration] : undefined,
+      sourceAccessConfigurations: props.kafkaSecretArn !== undefined ? [{ type: 'BASIC_AUTH', uri: props.kafkaSecretArn }] : undefined,
+      // eslint-disable-next-line max-len
+      selfManagedEventSource: props.kafkaBootstrapServers !== undefined ? { endpoints: { kafkaBootstrapServers: props.kafkaBootstrapServers } } : undefined,
     });
     this.eventSourceMappingId = cfnEventSourceMapping.ref;
   }
@@ -225,16 +238,3 @@ export enum StartingPosition {
   LATEST = 'LATEST',
 }
 
-/**
- * The Secrets Manager secret that stores your broker credentials. To encrypt the secret, you can use customer or service managed keys. When using a customer managed KMS key, the Lambda execution role requires kms:Decrypt permissions.
- */
-export interface SourceAccessConfiguration {
-  /**
-   * Set the value to BASIC_AUTH.
-   */
-  type?: string,
-  /**
-   * The ARN of the AWS Secrets Manager secret.
-   */
-  uri?: string
-}
