@@ -435,6 +435,8 @@ CPU and memory. Similarly, when you scale down the task count, Amazon ECS must d
 which tasks to terminate. You can apply task placement strategies and constraints to
 customize how Amazon ECS places and terminates tasks. Learn more about [task placement](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task-placement.html)
 
+The latest ACTIVE revision of the passed task definition is used for running the task.
+
 The following example runs a job from a task definition on EC2
 
 ```ts
@@ -488,7 +490,8 @@ isolation by design. Learn more about [Fargate](https://aws.amazon.com/fargate/)
 
 The Fargate launch type allows you to run your containerized applications without the need
 to provision and manage the backend infrastructure. Just register your task definition and
-Fargate launches the container for you.
+Fargate launches the container for you. The latest ACTIVE revision of the passed 
+task definition is used for running the task.
 
 The following example runs a job from a task definition on Fargate
 
@@ -524,6 +527,18 @@ const runTask = new tasks.EcsRunTask(stack, 'RunFargate', {
     environment: [{ name: 'SOME_KEY', value: sfn.JsonPath.stringAt('$.SomeKey') }],
   }],
   launchTarget: new tasks.EcsFargateLaunchTarget(),
+});
+```
+
+You can set the `useTaskDefinitionFamily` prop to true if you want the task to be run using latest ACTIVE revision
+of the task definition family. By default the task is ran using the  
+
+```ts
+const runTask = new tasks.EcsRunTask(stack, 'RunFargate', {
+  ...
+  taskDefinition,
+  useTaskDefinitionFamily: true,
+  ...
 });
 ```
 

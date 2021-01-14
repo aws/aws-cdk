@@ -279,7 +279,7 @@ export class EcsRunTask extends sfn.TaskStateBase implements ec2.IConnectable {
       Resource: integrationResourceArn('ecs', 'runTask', this.integrationPattern),
       Parameters: sfn.FieldUtils.renderObject({
         Cluster: this.props.cluster.clusterArn,
-        TaskDefinition: this.props.taskDefinition.taskDefinitionArn,
+        TaskDefinition: this.props.taskDefinition.family,
         NetworkConfiguration: this.networkConfiguration,
         Overrides: renderOverrides(this.props.containerOverrides),
         ...this.props.launchTarget.bind(this, { taskDefinition: this.props.taskDefinition, cluster: this.props.cluster }).parameters,
@@ -318,7 +318,7 @@ export class EcsRunTask extends sfn.TaskStateBase implements ec2.IConnectable {
     const policyStatements = [
       new iam.PolicyStatement({
         actions: ['ecs:RunTask'],
-        resources: [this.props.taskDefinition.taskDefinitionArn],
+        resources: [this.getTaskDefinitionFamilyArn()],
       }),
       new iam.PolicyStatement({
         actions: ['ecs:StopTask', 'ecs:DescribeTasks'],
@@ -346,6 +346,21 @@ export class EcsRunTask extends sfn.TaskStateBase implements ec2.IConnectable {
     }
 
     return policyStatements;
+  }
+
+  private getTaskDefinitionFamilyArn(): string {
+    let { resource, service, sep, resourceName } = cdk.Stack.of(this).parseArn(this.props.taskDefinition.taskDefinitionArn);
+
+    if (resourceName) {
+      resourceName = resourceName.split(':')[0];
+    }
+
+    return cdk.Stack.of(this).formatArn({
+      resource,
+      service,
+      sep,
+      resourceName,
+    });
   }
 
   private taskExecutionRoles(): iam.IRole[] {
