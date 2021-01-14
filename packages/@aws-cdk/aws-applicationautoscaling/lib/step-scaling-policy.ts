@@ -5,6 +5,10 @@ import { Construct } from 'constructs';
 import { IScalableTarget } from './scalable-target';
 import { AdjustmentType, MetricAggregationType, StepScalingAction } from './step-scaling-action';
 
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct as CoreConstruct } from '@aws-cdk/core';
+
 export interface BasicStepScalingPolicyProps {
   /**
    * Metric to scale on.
@@ -210,7 +214,7 @@ class StepScalingAlarmAction implements cloudwatch.IAlarmAction {
   constructor(private readonly stepScalingAction: StepScalingAction) {
   }
 
-  public bind(_scope: cdk.Construct, _alarm: cloudwatch.IAlarm): cloudwatch.AlarmActionConfig {
+  public bind(_scope: CoreConstruct, _alarm: cloudwatch.IAlarm): cloudwatch.AlarmActionConfig {
     return { alarmActionArn: this.stepScalingAction.scalingPolicyArn };
   }
 }

@@ -9,12 +9,7 @@ const BANNED_TYPES = [ 'IConstruct', 'Construct' ];
 export function create(context: Rule.RuleContext): Rule.NodeListener {
   return {
 
-    // `node` is a type from @typescript-eslint/typescript-estree, but using 'any' for now
-    // since it's incompatible with eslint.Rule namespace. Waiting for better compatibility in
-    // https://github.com/typescript-eslint/typescript-eslint/tree/1765a178e456b152bd48192eb5db7e8541e2adf2/packages/experimental-utils#note
-    // Meanwhile, use a debugger to explore the AST node.
-
-    Program(_node: any) {
+    Program: ()  => {
       if (!isTestFile(context.getFilename())) {
         return;
       }
@@ -22,10 +17,11 @@ export function create(context: Rule.RuleContext): Rule.NodeListener {
       importsFixed = false;
     },
 
-    ImportDeclaration(node: any) {
+    ImportDeclaration: node => {
       if (!isTestFile(context.getFilename())) {
         return;
       }
+
       if (node.source.value === '@aws-cdk/core') {
         node.specifiers.forEach((s: any) => {
           if (s.type === 'ImportSpecifier' && BANNED_TYPES.includes(s.imported.name)) {
@@ -56,6 +52,7 @@ export function create(context: Rule.RuleContext): Rule.NodeListener {
         return;
       }
       // Only apply rule to bindings (variables and function parameters)
+
       const typeAnnotation = node.typeAnnotation?.typeAnnotation
       if (!typeAnnotation) {
         return;
@@ -130,10 +127,10 @@ export function create(context: Rule.RuleContext): Rule.NodeListener {
         return;
       }
 
-      function findImportNode(locaName: string): Node | undefined {
+      function findImportNode(localName: string): Node | undefined {
         return BANNED_TYPES.map(typeName => {
           const val = importCache.find({ fileName: context.getFilename(), typeName });
-          if (val && val.localName === locaName) {
+          if (val && val.localName === localName) {
             return val.importNode;
           }
           return undefined;

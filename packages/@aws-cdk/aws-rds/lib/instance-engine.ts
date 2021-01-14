@@ -100,7 +100,7 @@ export interface IInstanceEngine extends IEngine {
   /**
    * Method called when the engine is used to create a new instance.
    */
-  bindToInstance(scope: core.Construct, options: InstanceEngineBindOptions): InstanceEngineConfig;
+  bindToInstance(scope: Construct, options: InstanceEngineBindOptions): InstanceEngineConfig;
 }
 
 interface InstanceEngineBaseProps {
@@ -134,7 +134,7 @@ abstract class InstanceEngineBase implements IInstanceEngine {
     this.engineFamily = props.engineFamily;
   }
 
-  public bindToInstance(_scope: core.Construct, options: InstanceEngineBindOptions): InstanceEngineConfig {
+  public bindToInstance(_scope: Construct, options: InstanceEngineBindOptions): InstanceEngineConfig {
     if (options.timezone && !this.supportsTimezone) {
       throw new Error(`timezone property can not be configured for ${this.engineType}`);
     }
@@ -261,7 +261,7 @@ class MariaDbInstanceEngine extends InstanceEngineBase {
     });
   }
 
-  public bindToInstance(scope: core.Construct, options: InstanceEngineBindOptions): InstanceEngineConfig {
+  public bindToInstance(scope: Construct, options: InstanceEngineBindOptions): InstanceEngineConfig {
     if (options.domain) {
       throw new Error(`domain property cannot be configured for ${this.engineType}`);
     }
@@ -828,7 +828,7 @@ abstract class OracleInstanceEngineBase extends InstanceEngineBase {
     });
   }
 
-  public bindToInstance(scope: core.Construct, options: InstanceEngineBindOptions): InstanceEngineConfig {
+  public bindToInstance(scope: Construct, options: InstanceEngineBindOptions): InstanceEngineConfig {
     const config = super.bindToInstance(scope, options);
 
     let optionGroup = options.optionGroup;
@@ -1097,7 +1097,7 @@ abstract class SqlServerInstanceEngineBase extends InstanceEngineBase {
     });
   }
 
-  public bindToInstance(scope: core.Construct, options: InstanceEngineBindOptions): InstanceEngineConfig {
+  public bindToInstance(scope: Construct, options: InstanceEngineBindOptions): InstanceEngineConfig {
     const config = super.bindToInstance(scope, options);
 
     let optionGroup = options.optionGroup;

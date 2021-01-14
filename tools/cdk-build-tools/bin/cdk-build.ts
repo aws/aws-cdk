@@ -29,6 +29,11 @@ async function main() {
       desc: 'execute gen script',
       default: true,
     })
+    .option('fix', {
+      type: 'boolean',
+      desc: 'run eslint with --fix',
+      default: false,
+    })
     .argv;
 
   const options = cdkBuildOptions();
@@ -46,7 +51,7 @@ async function main() {
 
   const overrides: CompilerOverrides = { eslint: args.eslint, jsii: args.jsii, tsc: args.tsc };
   await compileCurrentPackage(options, timers, overrides);
-  await lintCurrentPackage(options, overrides);
+  await lintCurrentPackage(options, { ...overrides, fix: args.fix });
 
   if (options.post) {
     await shell(options.post, { timers, env });

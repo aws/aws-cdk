@@ -3,6 +3,10 @@ import { CfnGatewayRoute } from './appmesh.generated';
 import { Protocol } from './shared-interfaces';
 import { IVirtualService } from './virtual-service';
 
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct } from '@aws-cdk/core';
+
 /**
  * The criterion for determining a request match for this GatewayRoute
  */
@@ -119,7 +123,7 @@ export abstract class GatewayRouteSpec {
    * Called when the GatewayRouteSpec type is initialized. Can be used to enforce
    * mutual exclusivity with future properties
    */
-  public abstract bind(scope: cdk.Construct): GatewayRouteSpecConfig;
+  public abstract bind(scope: Construct): GatewayRouteSpecConfig;
 }
 
 class HttpGatewayRouteSpec extends GatewayRouteSpec {
@@ -147,7 +151,7 @@ class HttpGatewayRouteSpec extends GatewayRouteSpec {
     this.match = options.match;
   }
 
-  public bind(_scope: cdk.Construct): GatewayRouteSpecConfig {
+  public bind(_scope: Construct): GatewayRouteSpecConfig {
     const prefixPath = this.match ? this.match.prefixPath : '/';
     if (prefixPath[0] != '/') {
       throw new Error(`Prefix Path must start with \'/\', got: ${prefixPath}`);
@@ -190,7 +194,7 @@ class GrpcGatewayRouteSpec extends GatewayRouteSpec {
     this.routeTarget = options.routeTarget;
   }
 
-  public bind(_scope: cdk.Construct): GatewayRouteSpecConfig {
+  public bind(_scope: Construct): GatewayRouteSpecConfig {
     return {
       grpcSpecConfig: {
         action: {

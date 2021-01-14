@@ -2,6 +2,10 @@ import * as cloudmap from '@aws-cdk/aws-servicediscovery';
 import * as cdk from '@aws-cdk/core';
 import { CfnVirtualNode } from './appmesh.generated';
 
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct } from '@aws-cdk/core';
+
 
 /**
  * Represents the properties needed to define CloudMap Service Discovery
@@ -63,7 +67,7 @@ export abstract class ServiceDiscovery {
   /**
    * Binds the current object when adding Service Discovery to a VirtualNode
    */
-  public abstract bind(scope: cdk.Construct): ServiceDiscoveryConfig;
+  public abstract bind(scope: Construct): ServiceDiscoveryConfig;
 }
 
 class DnsServiceDiscovery extends ServiceDiscovery {
@@ -74,7 +78,7 @@ class DnsServiceDiscovery extends ServiceDiscovery {
     this.hostname = hostname;
   }
 
-  public bind(_scope: cdk.Construct): ServiceDiscoveryConfig {
+  public bind(_scope: Construct): ServiceDiscoveryConfig {
     return {
       dns: {
         hostname: this.hostname,
@@ -93,7 +97,7 @@ class CloudMapServiceDiscovery extends ServiceDiscovery {
     this.instanceAttributes = options.instanceAttributes;
   }
 
-  public bind(_scope: cdk.Construct): ServiceDiscoveryConfig {
+  public bind(_scope: Construct): ServiceDiscoveryConfig {
     return {
       cloudmap: {
         namespaceName: this.service.namespace.namespaceName,

@@ -2,6 +2,10 @@ import * as cdk from '@aws-cdk/core';
 import { CfnVirtualRouter } from './appmesh.generated';
 import { Protocol } from './shared-interfaces';
 
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct } from '@aws-cdk/core';
+
 /**
  * Properties for a VirtualRouter listener
  */
@@ -56,7 +60,7 @@ export abstract class VirtualRouterListener {
    * Called when the VirtualRouterListener type is initialized. Can be used to enforce
    * mutual exclusivity
    */
-  public abstract bind(scope: cdk.Construct): VirtualRouterListenerConfig;
+  public abstract bind(scope: Construct): VirtualRouterListenerConfig;
 }
 
 class VirtualRouterListenerImpl extends VirtualRouterListener {
@@ -69,7 +73,7 @@ class VirtualRouterListenerImpl extends VirtualRouterListener {
     this.port = port ?? 8080;
   }
 
-  bind(_scope: cdk.Construct): VirtualRouterListenerConfig {
+  bind(_scope: Construct): VirtualRouterListenerConfig {
     return {
       listener: {
         portMapping: {
