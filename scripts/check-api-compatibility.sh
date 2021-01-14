@@ -55,14 +55,21 @@ if ! ${SKIP_DOWNLOAD:-false}; then
     existing_names=$(echo "$jsii_package_dirs" | xargs -n1 -P4 -I {} bash -c 'dirs_to_existing_names "$@"' _ {})
     echo " Done." >&2
 
-    current_version=$(node -p 'require("./lerna.json").version')
-    echo "Current version in lerna.json is $current_version"
-    if ! ${DOWNLOAD_LATEST:-false} && package_exists_on_npm aws-cdk $current_version; then
-        echo "Using package version ${current_version} as baseline"
-        existing_names=$(echo "$existing_names" | sed -e "s/$/@$current_version/")
-    else
-        echo "However, using the latest version from NPM as the baseline"
+    version=$(node -p 'require("./scripts/resolve-version.js").version')
+    echo "Last published version is $version."
+
+    if ! package_exists_on_npm aws-cdk $version; then
+      # occurs within a release PR where the version is bumped but is not yet published to npm.
+      if [ -z ${NPM_DISTTAG:-} ]; then
+        echo "env variable NPM_DISTTAG is not set. Failing."
+        exit 1
+      fi
+      echo "NPM_DISTTAG set to ${NPM_DISTTAG}."
+      version=$NPM_DISTTAG
     fi
+
+    echo "Using version '$version' as the baseline..."
+    existing_names=$(echo "$existing_names" | sed -e "s/$/@$version/")
 
     rm -rf $tmpdir
     mkdir -p $tmpdir
