@@ -1,7 +1,7 @@
 # Automatically approve PRs that merge master forward to v2-main
 #
 # Only does approvals! mergify takes care of the actual merge.
-name: Auto-approve forward merges onto v2-main
+name: Auto-approve automated PRs around CDK v2
 on:
   pull_request:
     types:
@@ -21,6 +21,6 @@ jobs:
       if: >
         github.event.pull_request.user.login == 'aws-cdk-automation'
         && github.event.pull_request.base.ref == 'v2-main'
-        && contains(github.event.pull_request.labels.*.name, 'pr/forward-merge')
+        && contains(github.event.pull_request.labels.*.name, 'pr/auto-approve')
       with:
         github-token: "${{ secrets.GITHUB_TOKEN }}"
