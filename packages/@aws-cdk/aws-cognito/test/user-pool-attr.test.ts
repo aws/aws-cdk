@@ -1,6 +1,7 @@
 import '@aws-cdk/assert/jest';
 import { CfnParameter, Stack } from '@aws-cdk/core';
 import { BooleanAttribute, CustomAttributeConfig, DateTimeAttribute, ICustomAttribute, NumberAttribute, StringAttribute, ClientAttributes } from '../lib';
+import { StandardAttributeNames } from '../lib/private/attr-names';
 
 describe('User Pool Attributes', () => {
 
@@ -264,6 +265,27 @@ describe('User Pool Attributes', () => {
       expect(attributes.length).toEqual(2);
       expect(attributes).toContain('custom:my_first');
       expect(attributes).toContain('custom:my_second');
+    });
+
+    test('create ClientAttributes with all StandardAttributeNames', () => {
+      // this test is intended to check if changes in the `StandardAttributeNames` constant
+      // does not reflect as changes in the `StandardAttributesMask`
+      // GIVEN
+      let allStandardAttributes = {} as any;
+      let standardAttributeNamesCount = 0; // the count of StandardAttributeNames
+      // iterate through the standard attribute names
+      for (const attributeKey in StandardAttributeNames) {
+        standardAttributeNamesCount += 1;
+        expect(StandardAttributeNames).toHaveProperty(attributeKey);
+        // add the standard attribute
+        allStandardAttributes[attributeKey] = true;
+      }
+
+      // WHEN
+      const attributes = ClientAttributes.empty().withStandardAttributes(allStandardAttributes).attributes();
+
+      // EXPECT
+      expect(attributes.length).toEqual(standardAttributeNamesCount);
     });
   });
 });

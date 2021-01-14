@@ -1,4 +1,5 @@
 import { Token } from '@aws-cdk/core';
+import { StandardAttributeNames } from './private/attr-names';
 
 /**
  * The set of standard attributes that can be marked as required or mutable.
@@ -107,6 +108,18 @@ export interface StandardAttributes {
    * @default - see the defaults under `StandardAttribute`
    */
   readonly website?: StandardAttribute;
+
+  /**
+   * Whether the email address has been verified.
+   * @default - see the defaults under `StandardAttribute`
+   */
+  readonly emailVerified?: StandardAttribute;
+
+  /**
+   * Whether the phone number has been verified.
+   * @default - see the defaults under `StandardAttribute`
+   */
+  readonly phoneNumberVerified?: StandardAttribute;
 }
 
 /**
@@ -445,6 +458,12 @@ export interface StandardAttributesMask {
   readonly lastUpdateTime?: boolean;
 
   /**
+   * The URL to the user's web page or blog.
+   * @default false
+   */
+  readonly website?: boolean;
+
+  /**
    * Whether the email address has been verified.
    * @default false
    */
@@ -455,12 +474,6 @@ export interface StandardAttributesMask {
    * @default false
    */
   readonly phoneNumberVerified?: boolean;
-
-  /**
-   * The URL to the user's web page or blog.
-   * @default false
-   */
-  readonly website?: boolean;
 }
 
 
@@ -491,25 +504,14 @@ export class ClientAttributes {
    */
   public withStandardAttributes(attributes: StandardAttributesMask): ClientAttributes {
     let attributesSet = new Set(this.attributesSet);
-    if (attributes.address === true) { attributesSet.add('address'); }
-    if (attributes.birthdate === true) { attributesSet.add('birthdate'); }
-    if (attributes.email === true) { attributesSet.add('email'); }
-    if (attributes.familyName === true) { attributesSet.add('family_name'); }
-    if (attributes.fullname === true) { attributesSet.add('name'); }
-    if (attributes.gender === true) { attributesSet.add('gender'); }
-    if (attributes.givenName === true) { attributesSet.add('given_name'); }
-    if (attributes.lastUpdateTime === true) { attributesSet.add('updated_at'); }
-    if (attributes.locale === true) { attributesSet.add('locale'); }
-    if (attributes.middleName === true) { attributesSet.add('middle_name'); }
-    if (attributes.nickname === true) { attributesSet.add('nickname'); }
-    if (attributes.phoneNumber === true) { attributesSet.add('phone_number'); }
-    if (attributes.preferredUsername === true) { attributesSet.add('preferred_username'); }
-    if (attributes.profilePage === true) { attributesSet.add('profile'); }
-    if (attributes.profilePicture === true) { attributesSet.add('picture'); }
-    if (attributes.timezone === true) { attributesSet.add('zoneinfo'); }
-    if (attributes.emailVerified === true) { attributesSet.add('email_verified'); }
-    if (attributes.phoneNumberVerified === true) { attributesSet.add('phone_number_verified'); }
-    if (attributes.website === true) { attributesSet.add('website'); }
+    // iterate through key-values in the `StandardAttributeNames` constant
+    // to get the value for all attributes
+    for (const attributeKey in StandardAttributeNames) {
+      if ((attributes as any)[attributeKey] === true) {
+        const attributeName = (StandardAttributeNames as any)[attributeKey];
+        attributesSet.add(attributeName);
+      }
+    }
     return new ClientAttributes(attributesSet);
   }
 
