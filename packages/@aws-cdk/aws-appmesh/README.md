@@ -130,7 +130,7 @@ mesh.addVirtualService('virtual-service', {
 
 A `virtual node` acts as a logical pointer to a particular task group, such as an Amazon ECS service or a Kubernetes deployment.
 
-When you create a `virtual node`, you must specify the DNS service discovery hostname for your task group. Any inbound traffic that your `virtual node` expects should be specified as a listener. Any outbound traffic that your `virtual node` expects to reach should be specified as a backend.
+When you create a `virtual node`, any inbound traffic that your `virtual node` expects should be specified as a listener. Any outbound traffic that your `virtual node` expects to reach should be specified as a backend.
 
 The response metadata for your new `virtual node` contains the Amazon Resource Name (ARN) that is associated with the `virtual node`. Set this value (either the full ARN or the truncated resource name) as the APPMESH_VIRTUAL_NODE_NAME environment variable for your task group's Envoy proxy container in your task definition or pod spec. For example, the value could be mesh/default/virtualNode/simpleapp. This is then mapped to the node.id and node.cluster Envoy parameters.
 
@@ -146,7 +146,9 @@ const namespace = new servicediscovery.PrivateDnsNamespace(this, 'test-namespace
 const service = namespace.createService('Svc');
 
 const node = mesh.addVirtualNode('virtual-node', {
-  cloudMapService: service,
+  serviceDiscovery: appmesh.ServiceDiscovery.cloudMap({
+    service: service,
+  }),
   listeners: [appmesh.VirtualNodeListener.httpNodeListener({
     port: 8081,
     healthCheck: {
@@ -163,12 +165,46 @@ const node = mesh.addVirtualNode('virtual-node', {
 });
 ```
 
-Create a `VirtualNode` with the the constructor and add tags.
+Create a `VirtualNode` with the constructor and add tags.
 
 ```ts
 const node = new VirtualNode(this, 'node', {
   mesh,
-  cloudMapService: service,
+  serviceDiscovery: appmesh.ServiceDiscovery.cloudMap({
+    service: service,
+  }),
+  listeners: [appmesh.VirtualNodeListener.httpNodeListener({
+    port: 8080,
+    healthCheck: {
+      healthyThreshold: 3,
+      interval: Duration.seconds(5), // min
+      path: '/ping',
+      port: 8080,
+      protocol: Protocol.HTTP,
+      timeout: Duration.seconds(2), // min
+      unhealthyThreshold: 2,
+    },
+    timeout: {
+      idle: cdk.Duration.seconds(5),
+    },
+  })],
+  backendsDefaultClientPolicy: appmesh.ClientPolicy.fileTrust({
+    certificateChain: '/keys/local_cert_chain.pem',
+  }),
+  accessLog: appmesh.AccessLog.fromFilePath('/dev/stdout'),
+});
+
+cdk.Tag.add(node, 'Environment', 'Dev');
+```
+
+Create a `VirtualNode` with the constructor and add backend virtual service.
+
+```ts
+const node = new VirtualNode(this, 'node', {
+  mesh,
+  serviceDiscovery: appmesh.ServiceDiscovery.cloudMap({
+    service: service,
+  }),
   listeners: [appmesh.VirtualNodeListener.httpNodeListener({
     port: 8080,
     healthCheck: {
@@ -187,10 +223,61 @@ const node = new VirtualNode(this, 'node', {
   accessLog: appmesh.AccessLog.fromFilePath('/dev/stdout'),
 });
 
-cdk.Tag.add(node, 'Environment', 'Dev');
+const virtualService = new appmesh.VirtualService(stack, 'service-1', {
+  serviceDiscovery: appmesh.ServiceDiscovery.dns('service1.domain.local'),
+  mesh,
+  clientPolicy: appmesh.ClientPolicy.fileTrust({
+    certificateChain: '/keys/local_cert_chain.pem',
+    ports: [8080, 8081],
+  }),
+});
+
+node.addBackend(virtualService);
 ```
 
 The `listeners` property can be left blank and added later with the `node.addListener()` method. The `healthcheck` and `timeout` properties are optional but if specifying a listener, the `port` must be added.
+
+The `backends` property can be added with `node.addBackend()`. We define a virtual service and add it to the virtual node to allow egress traffic to other node.
+
+The `backendsDefaultClientPolicy` property are added to the node while creating the virtual node. These are virtual node's service backends client policy defaults.
+
+## Adding TLS to a listener
+
+The `tlsCertificate` property can be added to a Virtual Node listener or Virtual Gateway listener to add TLS configuration. 
+A certificate from AWS Certificate Manager can be incorporated or a customer provided certificate can be specified with a `certificateChain` path file and a `privateKey` file path.
+
+```typescript
+import * as certificatemanager from '@aws-cdk/aws-certificatemanager';
+
+// A Virtual Node with listener TLS from an ACM provided certificate
+const cert = new certificatemanager.Certificate(this, 'cert', {...});
+
+const node = new appmesh.VirtualNode(stack, 'node', {
+  mesh,
+  dnsHostName: 'node',
+  listeners: [appmesh.VirtualNodeListener.grpc({
+    port: 80,
+    tlsCertificate: appmesh.TlsCertificate.acm({
+      certificate: cert,
+      tlsMode: TlsMode.STRICT,
+    }),
+  })],
+});
+
+// A Virtual Gateway with listener TLS from a customer provided file certificate
+const gateway = new appmesh.VirtualGateway(this, 'gateway', {
+  mesh: mesh,
+  listeners: [appmesh.VirtualGatewayListener.grpc({
+    port: 8080,
+    tlsCertificate: appmesh.TlsCertificate.file({
+      certificateChain: 'path/to/certChain',
+      privateKey: 'path/to/privateKey',
+      tlsMode: TlsMode.STRICT,
+    }),
+  })],
+  virtualGatewayName: 'gateway',
+});
+```
 
 ## Adding a Route
 
@@ -240,6 +327,7 @@ The `tcp()`, `http()` and `http2()` methods provide the spec necessary to define
 
 For HTTP based routes, the match field can be used to match on a route prefix.
 By default, an HTTP based route will match on `/`. All matches must start with a leading `/`.
+The timeout field can also be specified for `idle` and `perRequest` timeouts.
 
 ```ts
 router.addRoute('route-http', {
@@ -251,6 +339,10 @@ router.addRoute('route-http', {
     ],
     match: {
       serviceName: 'my-service.default.svc.cluster.local',
+    },
+    timeout:  {
+      idle : Duration.seconds(2),
+      perRequest: Duration.seconds(1),
     },
   }),
 });
@@ -269,6 +361,8 @@ using rules defined in gateway routes which can be added to your virtual gateway
 Create a virtual gateway with the constructor:
 
 ```ts
+const certificateAuthorityArn = 'arn:aws:acm-pca:us-east-1:123456789012:certificate-authority/12345678-1234-1234-1234-123456789012';
+
 const gateway = new appmesh.VirtualGateway(stack, 'gateway', {
   mesh: mesh,
   listeners: [appmesh.VirtualGatewayListener.http({
@@ -277,6 +371,10 @@ const gateway = new appmesh.VirtualGateway(stack, 'gateway', {
       interval: cdk.Duration.seconds(10),
     },
   })],
+  backendsDefaultClientPolicy: appmesh.ClientPolicy.acmTrust({
+    certificateAuthorities: [acmpca.CertificateAuthority.fromCertificateAuthorityArn(stack, 'certificate', certificateAuthorityArn)],
+    ports: [8080, 8081],
+  }),
   accessLog: appmesh.AccessLog.fromFilePath('/dev/stdout'),
   virtualGatewayName: 'virtualGateway',
 });
@@ -299,6 +397,8 @@ const gateway = mesh.addVirtualGateway('gateway', {
 
 The listeners field can be omitted which will default to an HTTP Listener on port 8080.
 A gateway route can be added using the `gateway.addGatewayRoute()` method.
+
+The `backendsDefaultClientPolicy` property are added to the node while creating the virtual gateway. These are virtual gateway's service backends client policy defaults.
 
 ## Adding a Gateway Route
 

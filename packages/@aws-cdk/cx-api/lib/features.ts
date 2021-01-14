@@ -66,6 +66,30 @@ export const DOCKER_IGNORE_SUPPORT = '@aws-cdk/aws-ecr-assets:dockerIgnoreSuppor
 export const SECRETS_MANAGER_PARSE_OWNED_SECRET_NAME = '@aws-cdk/aws-secretsmanager:parseOwnedSecretName';
 
 /**
+ * KMS Keys start with a default key policy that grants the account access to administer the key,
+ * mirroring the behavior of the KMS SDK/CLI/Console experience. Users may override the default key
+ * policy by specifying their own.
+ *
+ * If this flag is not set, the default key policy depends on the setting of the `trustAccountIdentities`
+ * flag. If false (the default, for backwards-compatibility reasons), the default key policy somewhat
+ * resemebles the default admin key policy, but with the addition of 'GenerateDataKey' permissions. If
+ * true, the policy matches what happens when this feature flag is set.
+ *
+ * Additionally, if this flag is not set and the user supplies a custom key policy, this will be appended
+ * to the key's default policy (rather than replacing it).
+ */
+export const KMS_DEFAULT_KEY_POLICIES = '@aws-cdk/aws-kms:defaultKeyPolicies';
+
+/**
+ * Change the old 's3:PutObject*' permission to 's3:PutObject' on Bucket,
+ * as the former includes 's3:PutObjectAcl',
+ * which allows changing the visibility of an object written to the Bucket.
+ * Use a feature flag to make sure existing customers who might be relying
+ * on the overly-broad permissions are not broken.
+ */
+export const S3_GRANT_WRITE_WITHOUT_ACL = '@aws-cdk/aws-s3:grantWriteWithoutAcl';
+
+/**
  * This map includes context keys and values for feature flags that enable
  * capabilities "from the future", which we could not introduce as the default
  * behavior due to backwards compatibility for existing projects.
@@ -84,6 +108,8 @@ export const FUTURE_FLAGS = {
   [STACK_RELATIVE_EXPORTS_CONTEXT]: 'true',
   [DOCKER_IGNORE_SUPPORT]: true,
   [SECRETS_MANAGER_PARSE_OWNED_SECRET_NAME]: true,
+  [KMS_DEFAULT_KEY_POLICIES]: true,
+  [S3_GRANT_WRITE_WITHOUT_ACL]: true,
 
   // We will advertise this flag when the feature is complete
   // [NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: 'true',
@@ -100,6 +126,8 @@ const FUTURE_FLAGS_DEFAULTS: { [key: string]: boolean } = {
   [NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false,
   [DOCKER_IGNORE_SUPPORT]: false,
   [SECRETS_MANAGER_PARSE_OWNED_SECRET_NAME]: false,
+  [KMS_DEFAULT_KEY_POLICIES]: false,
+  [S3_GRANT_WRITE_WITHOUT_ACL]: false,
 };
 
 export function futureFlagDefault(flag: string): boolean {

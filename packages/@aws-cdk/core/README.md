@@ -486,6 +486,20 @@ const sum = new Sum(this, 'MySum', { lhs: 40, rhs: 2 });
 new CfnOutput(this, 'Result', { value: Token.asString(sum.result) });
 ```
 
+To access the ARN of the provider's AWS Lambda function role, use the `getOrCreateProvider()`
+built-in singleton method:
+
+```ts
+const provider = CustomResourceProvider.getOrCreateProvider(this, 'Custom::MyCustomResourceType', {
+  codeDirectory: `${__dirname}/my-handler`,
+  runtime: CustomResourceProviderRuntime.NODEJS_12, // currently the only supported runtime
+});
+
+const roleArn = provider.roleArn;
+```
+
+This role ARN can then be used in resource-based IAM policies.
+
 #### The Custom Resource Provider Framework
 
 The [`@aws-cdk/custom-resources`] module includes an advanced framework for
@@ -829,3 +843,11 @@ IAM operator, we need it in the *key* of a `StringEquals` condition. JSON keys
 *must be* strings, so to circumvent this limitation, we use `CfnJson`
 to "delay" the rendition of this template section to deploy-time. This means
 that the value of `StringEquals` in the template will be `{ "Fn::GetAtt": [ "ConditionJson", "Value" ] }`, and will only "expand" to the operator we synthesized during deployment.
+
+### Stack Resource Limit
+
+When deploying to AWS CloudFormation, it needs to keep in check the amount of resources being added inside a Stack. Currently it's possible to check the limits in the [AWS CloudFormation quotas](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/cloudformation-limits.html) page.
+
+It's possible to synthesize the project with more Resources than the allowed (or even reduce the number of Resources).
+
+Set the context key `@aws-cdk/core:stackResourceLimit` with the proper value, being 0 for disable the limit of resources.

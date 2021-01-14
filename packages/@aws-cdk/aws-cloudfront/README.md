@@ -3,30 +3,9 @@
 
 ---
 
-Features                                              | Stability
-------------------------------------------------------|---------------------------------------------
-CFN Resources                                         | ![Stable](https://img.shields.io/badge/stable-success.svg?style=for-the-badge)
-Higher level constructs for Distribution              | ![Developer Preview](https://img.shields.io/badge/developer--preview-informational.svg?style=for-the-badge)
-Higher level constructs for CloudFrontWebDistribution | ![Stable](https://img.shields.io/badge/stable-success.svg?style=for-the-badge)
+![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)
 
-> **CFN Resources:** All classes with the `Cfn` prefix in this module ([CFN Resources]) are always
-> stable and safe to use.
->
-> [CFN Resources]: https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib
-
-<!-- -->
-
-> **Developer Preview:** Higher level constructs in this module that are marked as developer
-> preview have completed their phase of active development and are looking for adoption and
-> feedback. While the same caveats around non-backward compatible as Experimental constructs apply,
-> they will undergo fewer breaking changes. Just as with Experimental constructs, these are not
-> subject to the [Semantic Versioning](https://semver.org/) model and breaking changes will be
-> announced in the release notes.
-
-<!-- -->
-
-> **Stable:** Higher level constructs in this module that are marked stable will not undergo any
-> breaking changes. They will strictly follow the [Semantic Versioning](https://semver.org/) model.
+![cdk-constructs: Stable](https://img.shields.io/badge/cdk--constructs-stable-success.svg?style=for-the-badge)
 
 ---
 
@@ -37,9 +16,7 @@ your users. CloudFront delivers your content through a worldwide network of data
 you're serving with CloudFront, the user is routed to the edge location that provides the lowest latency, so that content is delivered with the best
 possible performance.
 
-## Distribution API - Developer Preview
-
-![Developer Preview](https://img.shields.io/badge/developer--preview-informational.svg?style=for-the-badge)
+## Distribution API
 
 The `Distribution` API is currently being built to replace the existing `CloudFrontWebDistribution` API. The `Distribution` API is optimized for the
 most common use cases of CloudFront distributions (e.g., single origin and behavior, few customizations) while still providing the ability for more
@@ -129,6 +106,16 @@ new cloudfront.Distribution(this, 'myDist', {
   defaultBehavior: { origin: new origins.S3Origin(myBucket) },
   domainNames: ['www.example.com'],
   certificate: myCertificate,
+});
+```
+
+However, you can customize the minimum protocol version for the certificate while creating the distribution using `minimumProtocolVersion` property.
+
+```ts
+new cloudfront.Distribution(this, 'myDist', {
+  defaultBehavior: { origin: new origins.S3Origin(myBucket) },
+  domainNames: ['www.example.com'],
+  minimumProtocolVersion: SecurityPolicyProtocol.TLS_V1_2016
 });
 ```
 
@@ -259,7 +246,7 @@ You can author Node.js or Python functions in the US East (N. Virginia) region,
 and then execute them in AWS locations globally that are closer to the viewer,
 without provisioning or managing servers.
 Lambda@Edge functions are associated with a specific behavior and event type.
-Lambda@Edge can be used rewrite URLs,
+Lambda@Edge can be used to rewrite URLs,
 alter responses based on headers or cookies,
 or authorize requests based on headers or authorization tokens.
 
@@ -288,6 +275,8 @@ new cloudfront.Distribution(this, 'myDist', {
 > To make it easier to request functions for Lambda@Edge, the `EdgeFunction` construct can be used.
 > The `EdgeFunction` construct will automatically request a function in `us-east-1`, regardless of the region of the current stack.
 > `EdgeFunction` has the same interface as `Function` and can be created and used interchangably.
+> Please note that using `EdgeFunction` requires that the `us-east-1` region has been bootstrapped.
+> See https://docs.aws.amazon.com/cdk/latest/guide/bootstrapping.html for more about bootstrapping regions.
 
 If the stack is in `us-east-1`, a "normal" `lambda.Function` can be used instead of an `EdgeFunction`.
 
@@ -296,6 +285,25 @@ const myFunc = new lambda.Function(this, 'MyFunction', {
   runtime: lambda.Runtime.NODEJS_10_X,
   handler: 'index.handler',
   code: lambda.Code.fromAsset(path.join(__dirname, 'lambda-handler')),
+});
+```
+
+If the stack is not in `us-east-1`, and you need references from different applications on the same account,
+you can also set a specific stack ID for each Lamba@Edge.
+
+```ts
+const myFunc1 = new cloudfront.experimental.EdgeFunction(this, 'MyFunction1', {
+  runtime: lambda.Runtime.NODEJS_10_X,
+  handler: 'index.handler',
+  code: lambda.Code.fromAsset(path.join(__dirname, 'lambda-handler1')),
+  stackId: 'edge-lambda-stack-id-1'
+});
+
+const myFunc2 = new cloudfront.experimental.EdgeFunction(this, 'MyFunction2', {
+  runtime: lambda.Runtime.NODEJS_10_X,
+  handler: 'index.handler',
+  code: lambda.Code.fromAsset(path.join(__dirname, 'lambda-handler2')),
+  stackId: 'edge-lambda-stack-id-2'
 });
 ```
 
@@ -384,11 +392,10 @@ const distribution = cloudfront.Distribution.fromDistributionAttributes(scope, '
 });
 ```
 
-## CloudFrontWebDistribution API - Stable
+## CloudFrontWebDistribution API
 
-![cdk-constructs: Stable](https://img.shields.io/badge/cdk--constructs-stable-success.svg?style=for-the-badge)
-
-A CloudFront construct - for setting up the AWS CDN with ease!
+> The `CloudFrontWebDistribution` construct is the original construct written for working with CloudFront distributions.
+> Users are encouraged to use the newer `Distribution` instead, as it has a simpler interface and receives new features faster.
 
 Example usage:
 

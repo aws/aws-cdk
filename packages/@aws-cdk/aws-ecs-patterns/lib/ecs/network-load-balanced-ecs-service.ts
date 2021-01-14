@@ -129,6 +129,7 @@ export class NetworkLoadBalancedEc2Service extends NetworkLoadBalancedServiceBas
       propagateTags: props.propagateTags,
       enableECSManagedTags: props.enableECSManagedTags,
       cloudMapOptions: props.cloudMapOptions,
+      deploymentController: props.deploymentController,
     });
     this.addServiceAsTarget(this.service);
   }
