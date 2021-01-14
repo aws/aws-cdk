@@ -101,6 +101,11 @@ export interface EventSourceMappingOptions {
    * @default - no topic
    */
   readonly kafkaTopic?: string;
+
+  /**
+   * The Secrets Manager secret that stores your broker credentials.
+   */
+  readonly sourceAccessConfiguration?: SourceAccessConfiguration
 }
 
 /**
@@ -196,6 +201,7 @@ export class EventSourceMapping extends cdk.Resource implements IEventSourceMapp
       maximumRetryAttempts: props.retryAttempts,
       parallelizationFactor: props.parallelizationFactor,
       topics: props.kafkaTopic !== undefined ? [props.kafkaTopic] : undefined,
+      sourceAccessConfigurations: props.sourceAccessConfiguration !== undefined ? [props.sourceAccessConfiguration] : undefined,
     });
     this.eventSourceMappingId = cfnEventSourceMapping.ref;
   }
@@ -217,4 +223,18 @@ export enum StartingPosition {
    * always read the most recent data in the shard
    */
   LATEST = 'LATEST',
+}
+
+/**
+ * The Secrets Manager secret that stores your broker credentials. To encrypt the secret, you can use customer or service managed keys. When using a customer managed KMS key, the Lambda execution role requires kms:Decrypt permissions.
+ */
+export interface SourceAccessConfiguration {
+  /**
+   * Set the value to BASIC_AUTH.
+   */
+  type?: string,
+  /**
+   * The ARN of the AWS Secrets Manager secret.
+   */
+  uri?: string
 }
