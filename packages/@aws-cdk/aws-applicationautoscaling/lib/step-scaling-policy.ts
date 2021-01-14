@@ -61,7 +61,7 @@ export interface StepScalingPolicyProps extends BasicStepScalingPolicyProps {
 }
 
 /**
- * Define a acaling strategy which scales depending on absolute values of some metric.
+ * Define a scaling strategy which scales depending on absolute values of some metric.
  *
  * You can specify the scaling behavior for various values of the metric.
  *

@@ -425,6 +425,10 @@ export class AuroraPostgresEngineVersion {
   public static readonly VER_9_6_16 = AuroraPostgresEngineVersion.of('9.6.16', '9.6');
   /** Version "9.6.17". */
   public static readonly VER_9_6_17 = AuroraPostgresEngineVersion.of('9.6.17', '9.6');
+  /** Version "9.6.18". */
+  public static readonly VER_9_6_18 = AuroraPostgresEngineVersion.of('9.6.18', '9.6');
+  /** Version "9.6.19". */
+  public static readonly VER_9_6_19 = AuroraPostgresEngineVersion.of('9.6.19', '9.6');
   /** Version "10.4". */
   public static readonly VER_10_4 = AuroraPostgresEngineVersion.of('10.4', '10');
   /** Version "10.5". */
@@ -437,6 +441,10 @@ export class AuroraPostgresEngineVersion {
   public static readonly VER_10_11 = AuroraPostgresEngineVersion.of('10.11', '10', { s3Import: true, s3Export: true });
   /** Version "10.12". */
   public static readonly VER_10_12 = AuroraPostgresEngineVersion.of('10.12', '10', { s3Import: true, s3Export: true });
+  /** Version "10.13". */
+  public static readonly VER_10_13 = AuroraPostgresEngineVersion.of('10.13', '10', { s3Import: true, s3Export: true });
+  /** Version "10.14". */
+  public static readonly VER_10_14 = AuroraPostgresEngineVersion.of('10.14', '10', { s3Import: true, s3Export: true });
   /** Version "11.4". */
   public static readonly VER_11_4 = AuroraPostgresEngineVersion.of('11.4', '11', { s3Import: true });
   /** Version "11.6". */
