@@ -255,8 +255,11 @@ export = {
     const event = new EventBus(stack, 'Bus');
 
     event.archive({
-      account: [stack.account],
-    }, 'MyArchive');
+      eventPattern: {
+        account: [stack.account],
+      },
+      archiveName: 'MyArchive',
+    });
 
     // THEN
     expect(stack).to(haveResource('AWS::Events::EventBus', {
@@ -305,8 +308,11 @@ export = {
     const importedBus = EventBus.fromEventBusArn(stack, 'ImportedBus', bus.eventBusArn);
 
     importedBus.archive({
-      account: [stack.account],
-    }, 'MyArchive');
+      eventPattern: {
+        account: [stack.account],
+      },
+      archiveName: 'MyArchive',
+    });
 
     // THEN
     expect(stack).to(haveResource('AWS::Events::EventBus', {

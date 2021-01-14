@@ -5,13 +5,13 @@ import { EventPattern } from './event-pattern';
 import { CfnArchive } from './events.generated';
 
 /**
- * The event archive properties
+ * The event archive base properties
  */
-export interface ArchiveProps {
+export interface BaseArchiveProps {
   /**
    * The name of the archive.
    *
-   * @default - none
+   * @default - Automatically generated
    */
   readonly archiveName?: string;
   /**
@@ -29,6 +29,13 @@ export interface ArchiveProps {
    * @default - Infinite
    */
   readonly retention?: Duration;
+}
+
+
+/**
+ * The event archive properties
+ */
+export interface ArchiveProps extends BaseArchiveProps {
   /**
    * The event source associated with the archive.
    */

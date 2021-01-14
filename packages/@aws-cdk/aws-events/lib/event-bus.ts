@@ -1,8 +1,7 @@
 import * as iam from '@aws-cdk/aws-iam';
-import { Duration, IResource, Lazy, Names, Resource, Stack, Token } from '@aws-cdk/core';
+import { IResource, Lazy, Names, Resource, Stack, Token } from '@aws-cdk/core';
 import { Construct } from 'constructs';
-import { Archive } from './archive';
-import { EventPattern } from './event-pattern';
+import { Archive, BaseArchiveProps } from './archive';
 import { CfnEventBus } from './events.generated';
 
 /**
@@ -45,17 +44,9 @@ export interface IEventBus extends IResource {
    * When you create an archive, incoming events might not immediately start being sent to the archive.
    * Allow a short period of time for changes to take effect.
    *
-   * @param eventPattern An event pattern to use to filter events sent to the archive.
-   * @param archiveName The name of the archive.
-   * @param description A description for the archive.
-   * @param retention The number of days to retain events for. Default value is 0. If set to 0, events are retained indefinitely.
+   * @param props Properties of the archive
    */
-  archive(
-    eventPattern: EventPattern,
-    archiveName?: string,
-    description?: string,
-    retention?: Duration,
-  ): Archive;
+  archive(props: BaseArchiveProps): Archive;
 }
 
 /**
@@ -137,18 +128,13 @@ abstract class EventBusBase extends Resource implements IEventBus {
    */
   public abstract readonly eventSourceName?: string;
 
-  public archive(
-    eventPattern: EventPattern,
-    archiveName?: string,
-    description?: string,
-    retention?: Duration,
-  ): Archive {
+  public archive(props: BaseArchiveProps): Archive {
     return new Archive(this, 'Archive', {
       sourceEventBus: this,
-      description: description || Lazy.string({ produce: () => `Event Archive for ${this.eventBusName} Event Bus` }),
-      eventPattern: eventPattern,
-      retention: retention,
-      archiveName: archiveName,
+      description: props.description || Lazy.string({ produce: () => `Event Archive for ${this.eventBusName} Event Bus` }),
+      eventPattern: props.eventPattern,
+      retention: props.retention,
+      archiveName: props.archiveName,
     });
   }
 }
