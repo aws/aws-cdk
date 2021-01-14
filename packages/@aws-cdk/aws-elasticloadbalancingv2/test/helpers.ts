@@ -1,5 +1,4 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
-import * as cdk from '@aws-cdk/core';
 import * as constructs from 'constructs';
 import * as elbv2 from '../lib';
 

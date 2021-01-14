@@ -1,4 +1,3 @@
-import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnListenerCertificate } from '../elasticloadbalancingv2.generated';
 import { IListenerCertificate } from '../shared/listener-certificate';
