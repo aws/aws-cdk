@@ -366,8 +366,8 @@ export class MaturitySetting extends ValidationRule {
     // to see if this package has L1s.
     const hasL1 = !!pkg.json['cdk-build']?.cloudformation;
 
-    const libFiles = glob.sync('lib/*.ts', {
-      ignore: 'lib/*.d.ts', // ignore the generated TS declaration files
+    const libFiles = glob.sync('lib/**/*.ts', {
+      ignore: 'lib/**/*.d.ts', // ignore the generated TS declaration files
     });
     const hasL2 = libFiles.some(f => !f.endsWith('.generated.ts') && !f.endsWith('index.ts'));
 
