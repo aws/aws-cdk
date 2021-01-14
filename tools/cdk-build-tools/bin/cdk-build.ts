@@ -26,12 +26,12 @@ async function main() {
     })
     .option('gen', {
       type: 'boolean',
-      desc: 'execute gen script',
+      desc: 'Execute gen script',
       default: true,
     })
     .option('fix', {
       type: 'boolean',
-      desc: 'run eslint with --fix',
+      desc: 'Fix linter errors',
       default: false,
     })
     .argv;
