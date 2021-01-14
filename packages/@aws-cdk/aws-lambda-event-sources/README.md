@@ -207,6 +207,55 @@ myFunction.addEventSource(new KinesisEventSource(stream, {
 }));
 ```
 
+## Kafka
+
+You can write Lambda functions to process data either from [Amazon MSK](https://docs.aws.amazon.com/lambda/latest/dg/with-msk.html) or a [self managed Kafka](https://docs.aws.amazon.com/lambda/latest/dg/kafka-smaa.html) cluster.
+
+To set up Amazon MSK as an event source use the following, you also have to set up a secret as described [here](https://docs.aws.amazon.com/msk/latest/developerguide/msk-password.html). 
+
+```ts
+import * as lambda from '@aws-cdk/aws-lambda';
+import { Secret } from '@aws-cdk/aws-secretmanager';
+import { ManagedKafkaEventSource } from '@aws-cdk/aws-lambda-event-sources';
+
+// The ARN of your cluster
+const clusterArn = 'arn:aws:kafka:us-east-1:0123456789019:cluster/SalesCluster/abcd1234-abcd-cafe-abab-9876543210ab-4'
+
+// The Kafka topic you want to subscribe to
+const topic = 'some-cool-topic'
+
+// The secret that allows access to your MSK cluster
+// You still have to make sure that it is associated with your cluster as described in the documentation
+const secret = new Secret(this, 'Secret', { secretName: 'AmazonMSK_KafkaSecret' });
+
+myFunction.addEventSource(new ManagedKafkaEventSource(clusterArn, topic, secret, {
+  batchSize: 100, // default
+  startingPosition: lambda.StartingPosition.TRIM_HORIZON
+}));
+```
+
+To set up a self managed Kafka cluster as an event source use the following, you have to set up a secret as described [here](https://docs.aws.amazon.com/lambda/latest/dg/smaa-permissions.html#smaa-permissions-add-secret):
+
+```ts
+import * as lambda from '@aws-cdk/aws-lambda';
+import { Secret } from '@aws-cdk/aws-secretmanager';
+import { SelfManagedKafkaEventSource } from '@aws-cdk/aws-lambda-event-sources';
+
+// The list of Kafka brokers
+const bootstrapServers = ['kafka-broker:9092']
+
+// The Kafka topic you want to subscribe to
+const topic = 'some-cool-topic'
+
+// The secret that allows access to your self hosted Kafka cluster
+const secret = Secret.fromSecretAttributes(this, 'Secret', { secretName: 'AmazonMSK_KafkaSecret' });
+
+myFunction.addEventSource(new SelfManagedKafkaEventSource(bootstrapServers, topic, secret, {
+  batchSize: 100, // default
+  startingPosition: lambda.StartingPosition.TRIM_HORIZON
+}));
+```
+
 ## Roadmap
 
 Eventually, this module will support all the event sources described under
