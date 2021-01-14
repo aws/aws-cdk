@@ -787,7 +787,7 @@ test('Create Cluster with InstanceFleet OnDemand AllocationStrategy', () => {
         }],
         launchSpecifications: {
           onDemandSpecification: {
-            allocationStrategy: "lowest-price"
+            allocationStrategy: EmrCreateCluster.AllocationStrategy.LOWEST_PRICE,
           },
         },
         name: 'Master',
@@ -848,7 +848,7 @@ test('Create Cluster with InstanceFleet OnDemand AllocationStrategy', () => {
           }],
           LaunchSpecifications: {
             OnDemandSpecification: {
-              AllocationStrategy: "lowest-price"
+              AllocationStrategy: 'lowest-price',
             },
           },
           Name: 'Master',

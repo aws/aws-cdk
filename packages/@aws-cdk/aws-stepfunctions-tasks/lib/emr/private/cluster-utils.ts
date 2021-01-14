@@ -122,7 +122,7 @@ export function InstanceTypeConfigPropertyToJson(property: EmrCreateCluster.Inst
  */
 export function SpotProvisioningSpecificationPropertyToJson(property: EmrCreateCluster.SpotProvisioningSpecificationProperty) {
   return {
-    AllocationStrategy: cdk.stringToCloudFormation(property.allocationStrategy),
+    AllocationStrategy: cdk.stringToCloudFormation(property.allocationStrategy?.name),
     BlockDurationMinutes: cdk.numberToCloudFormation(property.blockDurationMinutes),
     TimeoutAction: cdk.stringToCloudFormation(property.timeoutAction?.valueOf()),
     TimeoutDurationMinutes: cdk.numberToCloudFormation(property.timeoutDurationMinutes),
@@ -136,7 +136,7 @@ export function SpotProvisioningSpecificationPropertyToJson(property: EmrCreateC
  */
 export function OnDemandProvisioningSpecificationPropertyToJson(property: EmrCreateCluster.OnDemandProvisioningSpecificationProperty) {
   return {
-    AllocationStrategy: cdk.stringToCloudFormation(property.allocationStrategy),
+    AllocationStrategy: cdk.stringToCloudFormation(property.allocationStrategy?.name),
   };
 }
 

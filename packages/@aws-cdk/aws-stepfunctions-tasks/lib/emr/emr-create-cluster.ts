@@ -563,6 +563,33 @@ export namespace EmrCreateCluster {
   }
 
   /**
+   * Different allocation strategies that can be used by the EMR cluster
+   */
+  export class AllocationStrategy {
+    /** lowest-price allocation strategy. */
+    public static readonly LOWEST_PRICE = new AllocationStrategy('lowest-price');
+    /** capacity-optimized allocation strategy */
+    public static readonly CAPACITY_OPTIMIZED = new AllocationStrategy('capacity-optimized');
+
+    /**
+     * Create a new AllocationStrategy with an arbitrary allocation strategy.
+     *
+     * @param customAllocationStrategy the allocation strategy string,
+     *   for example "lowest-price"
+     */
+    public static of(customAllocationStrategy: string): AllocationStrategy {
+      return new AllocationStrategy(customAllocationStrategy);
+    }
+
+    /** The name of the allocation strategy to be used in EMR task parameters */
+    public readonly name: string;
+
+    private constructor(name: string) {
+      this.name = name;
+    }
+  }
+
+  /**
    * The launch specification for Spot Instances in the fleet, which determines the defined duration, provisioning timeout behavior, and allocation strategy.
    *
    * @see https://docs.aws.amazon.com/emr/latest/APIReference/API_SpotProvisioningSpecification.html
@@ -573,8 +600,10 @@ export namespace EmrCreateCluster {
 
     /**
      * Specifies the strategy to use in launching Spot Instance fleets.
+     *
+     * @default AllocationStrategy.CAPACITY_OPTIMIZED
      */
-    readonly allocationStrategy?: String;
+    readonly allocationStrategy?: AllocationStrategy;
 
     /**
      * The defined duration for Spot instances (also known as Spot blocks) in minutes.
@@ -605,9 +634,10 @@ export namespace EmrCreateCluster {
 
     /**
      * Specifies the strategy to use in launching On-Demand Instance fleets.
+     *
+     * @default AllocationStrategy.LOWEST_PRICE
      */
-    readonly allocationStrategy?: String;
-
+    readonly allocationStrategy?: AllocationStrategy;
   }
 
   /**
@@ -621,14 +651,14 @@ export namespace EmrCreateCluster {
     /**
      * The launch specification for Spot Instances in the fleet, which determines the defined duration, provisioning timeout behavior, and allocation strategy.
      *
-     * @default No spotSpecification
+     * @default - None
      */
     readonly spotSpecification?: SpotProvisioningSpecificationProperty;
 
     /**
      * The launch specification for On-Demand Instances in the instance fleet, which determines the allocation strategy.
      *
-     * @default No onDemandSpecification
+     * @default - None
      */
     readonly onDemandSpecification?: OnDemandProvisioningSpecificationProperty;
   }
