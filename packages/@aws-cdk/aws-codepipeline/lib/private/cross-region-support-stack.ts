@@ -46,7 +46,7 @@ export interface CrossRegionSupportConstructProps {
   readonly createKmsKey?: boolean;
 }
 
-export class CrossRegionSupportConstruct extends cdk.Construct {
+export class CrossRegionSupportConstruct extends Construct {
   public readonly replicationBucket: s3.IBucket;
 
   constructor(scope: Construct, id: string, props: CrossRegionSupportConstructProps = {}) {
