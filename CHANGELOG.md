@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file. See [standa
 
 ## [1.85.0](https://github.com/aws/aws-cdk/compare/v1.84.0...v1.85.0) (2021-01-14)
 
-* **s3-deployment**: This version includes an important update, please upgrade to prevent deployment failure. This is in prepartion of Lambda deperaction of the request module in boto, more details are available in [AWS blog](https://aws.amazon.com/blogs/compute/upcoming-changes-to-the-python-sdk-in-aws-lambda/). Note, users of versions < `1.81.0` will not be impacted by this depreciation, but are still encoraged to upgrade to the latest version.
+* **s3-deployment**: This version includes an important update, please upgrade to prevent deployment failure. This is in prepartion of Lambda deperaction of the request module in boto, more details are available in [AWS blog](https://aws.amazon.com/blogs/compute/upcoming-changes-to-the-python-sdk-in-aws-lambda/). Note, users of versions < `1.81.0` will not be impacted by this deprecation, but are still encoraged to upgrade to the latest version.
 
 
 ### Features
