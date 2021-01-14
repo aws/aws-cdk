@@ -7,6 +7,10 @@ import { Container } from '../container';
 import { ServiceExtension, ServiceBuild, EnvironmentCapacityType } from '../extension-interfaces';
 import { TaskRecordManager } from './task-record-manager';
 
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct } from '@aws-cdk/core';
+
 export interface AssignPublicIpExtensionOptions {
   /**
    * Enable publishing task public IPs to a recordset in a Route 53 hosted zone.
@@ -52,7 +56,7 @@ export class AssignPublicIpExtension extends ServiceExtension {
     return Boolean(this.dns);
   }
 
-  public prehook(service: Service, _scope: cdk.Construct) {
+  public prehook(service: Service, _scope: Construct) {
     super.prehook(service, _scope);
 
     if (service.capacityType != EnvironmentCapacityType.FARGATE) {

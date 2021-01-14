@@ -1,5 +1,4 @@
 import * as acmpca from '@aws-cdk/aws-acmpca';
-import * as cdk from '@aws-cdk/core';
 import { CfnVirtualNode } from './appmesh.generated';
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main

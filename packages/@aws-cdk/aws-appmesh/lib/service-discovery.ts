@@ -1,5 +1,4 @@
 import * as cloudmap from '@aws-cdk/aws-servicediscovery';
-import * as cdk from '@aws-cdk/core';
 import { CfnVirtualNode } from './appmesh.generated';
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main

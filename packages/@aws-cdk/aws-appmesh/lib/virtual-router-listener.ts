@@ -1,4 +1,3 @@
-import * as cdk from '@aws-cdk/core';
 import { CfnVirtualRouter } from './appmesh.generated';
 import { Protocol } from './shared-interfaces';
 

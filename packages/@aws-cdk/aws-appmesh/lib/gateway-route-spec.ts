@@ -1,4 +1,3 @@
-import * as cdk from '@aws-cdk/core';
 import { CfnGatewayRoute } from './appmesh.generated';
 import { Protocol } from './shared-interfaces';
 import { IVirtualService } from './virtual-service';

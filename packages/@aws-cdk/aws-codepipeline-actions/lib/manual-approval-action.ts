@@ -4,6 +4,10 @@ import * as subs from '@aws-cdk/aws-sns-subscriptions';
 import * as cdk from '@aws-cdk/core';
 import { Action } from './action';
 
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct } from '@aws-cdk/core';
+
 /**
  * Construction properties of the {@link ManualApprovalAction}.
  */
@@ -60,7 +64,7 @@ export class ManualApprovalAction extends Action {
     return this._notificationTopic;
   }
 
-  protected bound(scope: cdk.Construct, _stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
+  protected bound(scope: Construct, _stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
   codepipeline.ActionConfig {
     if (this.props.notificationTopic) {
       this._notificationTopic = this.props.notificationTopic;
