@@ -1,5 +1,4 @@
 import * as iam from '@aws-cdk/aws-iam';
-import * as cdk from '@aws-cdk/core';
 import * as cr from '@aws-cdk/custom-resources';
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
