@@ -16,6 +16,11 @@ import { ImportCache } from '../private/import-cache';
 const importCache = new ImportCache();
 
 export function create(context: Rule.RuleContext): Rule.NodeListener {
+  // skip core
+  if (context.getFilename().includes('@aws-cdk/core')) {
+    return {};
+  }
+
   return {
     // collect all "import" statements. we will later use them to determine
     // exactly how to import `core.Construct`.
