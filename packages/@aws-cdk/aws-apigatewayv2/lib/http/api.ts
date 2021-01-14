@@ -1,4 +1,4 @@
-import { Metric, MetricOptions } from '@aws-cdk/aws-cloudwatch';
+import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import { Duration, IResource, Resource } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnApi, CfnApiProps } from '../apigatewayv2.generated';
@@ -19,6 +19,12 @@ export interface IHttpApi extends IResource {
   readonly httpApiId: string;
 
   /**
+   * The default endpoint for an API
+   * @attribute
+   */
+  readonly apiEndpoint: string;
+
+  /**
    * The default stage
    */
   readonly defaultStage?: HttpStage;
@@ -28,35 +34,35 @@ export interface IHttpApi extends IResource {
    *
    * @default - average over 5 minutes
    */
-  metric(metricName: string, props?: MetricOptions): Metric;
+  metric(metricName: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 
   /**
    * Metric for the number of client-side errors captured in a given period.
    *
    * @default - sum over 5 minutes
    */
-  metricClientError(props?: MetricOptions): Metric;
+  metricClientError(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 
   /**
    * Metric for the number of server-side errors captured in a given period.
    *
    * @default - sum over 5 minutes
    */
-  metricServerError(props?: MetricOptions): Metric;
+  metricServerError(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 
   /**
    * Metric for the amount of data processed in bytes.
    *
    * @default - sum over 5 minutes
    */
-  metricDataProcessed(props?: MetricOptions): Metric;
+  metricDataProcessed(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 
   /**
    * Metric for the total number API requests in a given period.
    *
    * @default - SampleCount over 5 minutes
    */
-  metricCount(props?: MetricOptions): Metric;
+  metricCount(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 
   /**
    * Metric for the time between when API Gateway relays a request to the backend
@@ -64,7 +70,7 @@ export interface IHttpApi extends IResource {
    *
    * @default - no statistic
    */
-  metricIntegrationLatency(props?: MetricOptions): Metric;
+  metricIntegrationLatency(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 
   /**
    * The time between when API Gateway receives a request from a client
@@ -73,7 +79,7 @@ export interface IHttpApi extends IResource {
    *
    * @default - no statistic
    */
-  metricLatency(props?: MetricOptions): Metric;
+  metricLatency(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 
   /**
    * Add a new VpcLink
@@ -122,6 +128,15 @@ export interface HttpApiProps {
    * @default - no default domain mapping configured. meaningless if `createDefaultStage` is `false`.
    */
   readonly defaultDomainMapping?: DefaultDomainMappingOptions;
+
+  /**
+   * Specifies whether clients can invoke your API using the default endpoint.
+   * By default, clients can invoke your API with the default
+   * `https://{api_id}.execute-api.{region}.amazonaws.com` endpoint. Enable
+   * this if you would like clients to use your custom domain name.
+   * @default false execute-api endpoint enabled.
+   */
+  readonly disableExecuteApiEndpoint?: boolean;
 }
 
 /**
@@ -184,10 +199,11 @@ export interface AddRoutesOptions extends BatchHttpRouteOptions {
 abstract class HttpApiBase extends Resource implements IHttpApi { // note that this is not exported
 
   public abstract readonly httpApiId: string;
+  public abstract readonly apiEndpoint: string;
   private vpcLinks: Record<string, VpcLink> = {};
 
-  public metric(metricName: string, props?: MetricOptions): Metric {
-    return new Metric({
+  public metric(metricName: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return new cloudwatch.Metric({
       namespace: 'AWS/ApiGateway',
       metricName,
       dimensions: { ApiId: this.httpApiId },
@@ -195,27 +211,27 @@ abstract class HttpApiBase extends Resource implements IHttpApi { // note that t
     }).attachTo(this);
   }
 
-  public metricClientError(props?: MetricOptions): Metric {
+  public metricClientError(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return this.metric('4XXError', { statistic: 'Sum', ...props });
   }
 
-  public metricServerError(props?: MetricOptions): Metric {
+  public metricServerError(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return this.metric('5XXError', { statistic: 'Sum', ...props });
   }
 
-  public metricDataProcessed(props?: MetricOptions): Metric {
+  public metricDataProcessed(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return this.metric('DataProcessed', { statistic: 'Sum', ...props });
   }
 
-  public metricCount(props?: MetricOptions): Metric {
+  public metricCount(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return this.metric('Count', { statistic: 'SampleCount', ...props });
   }
 
-  public metricIntegrationLatency(props?: MetricOptions): Metric {
+  public metricIntegrationLatency(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return this.metric('IntegrationLatency', props);
   }
 
-  public metricLatency(props?: MetricOptions): Metric {
+  public metricLatency(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return this.metric('Latency', props);
   }
 
@@ -234,6 +250,21 @@ abstract class HttpApiBase extends Resource implements IHttpApi { // note that t
 }
 
 /**
+ * Attributes for importing an HttpApi into the CDK
+ */
+export interface HttpApiAttributes {
+  /**
+   * The identifier of the HttpApi
+   */
+  readonly httpApiId: string;
+  /**
+   * The endpoint URL of the HttpApi
+   * @default - throws an error if apiEndpoint is accessed.
+   */
+  readonly apiEndpoint?: string;
+}
+
+/**
  * Create a new API Gateway HTTP API endpoint.
  * @resource AWS::ApiGatewayV2::Api
  */
@@ -241,9 +272,17 @@ export class HttpApi extends HttpApiBase {
   /**
    * Import an existing HTTP API into this CDK app.
    */
-  public static fromApiId(scope: Construct, id: string, httpApiId: string): IHttpApi {
+  public static fromHttpApiAttributes(scope: Construct, id: string, attrs: HttpApiAttributes): IHttpApi {
     class Import extends HttpApiBase {
-      public readonly httpApiId = httpApiId;
+      public readonly httpApiId = attrs.httpApiId;
+      private readonly _apiEndpoint = attrs.apiEndpoint;
+
+      public get apiEndpoint(): string {
+        if (!this._apiEndpoint) {
+          throw new Error('apiEndpoint is not configured on the imported HttpApi.');
+        }
+        return this._apiEndpoint;
+      }
     }
     return new Import(scope, id);
   }
@@ -252,24 +291,25 @@ export class HttpApi extends HttpApiBase {
    * A human friendly name for this HTTP API. Note that this is different from `httpApiId`.
    */
   public readonly httpApiName?: string;
-
   public readonly httpApiId: string;
 
   /**
-   * The default endpoint for an API
-   * @attribute
+   * Specifies whether clients can invoke this HTTP API by using the default execute-api endpoint.
    */
-  public readonly apiEndpoint: string;
+  public readonly disableExecuteApiEndpoint?: boolean;
 
   /**
    * default stage of the api resource
    */
   public readonly defaultStage: HttpStage | undefined;
 
+  private readonly _apiEndpoint: string;
+
   constructor(scope: Construct, id: string, props?: HttpApiProps) {
     super(scope, id);
 
     this.httpApiName = props?.apiName ?? id;
+    this.disableExecuteApiEndpoint = props?.disableExecuteApiEndpoint;
 
     let corsConfiguration: CfnApi.CorsProperty | undefined;
     if (props?.corsPreflight) {
@@ -300,11 +340,12 @@ export class HttpApi extends HttpApiBase {
       protocolType: 'HTTP',
       corsConfiguration,
       description: props?.description,
+      disableExecuteApiEndpoint: this.disableExecuteApiEndpoint,
     };
 
     const resource = new CfnApi(this, 'Resource', apiProps);
     this.httpApiId = resource.ref;
-    this.apiEndpoint = resource.attrApiEndpoint;
+    this._apiEndpoint = resource.attrApiEndpoint;
 
     if (props?.defaultIntegration) {
       new HttpRoute(this, 'DefaultRoute', {
@@ -331,6 +372,16 @@ export class HttpApi extends HttpApiBase {
       throw new Error('defaultDomainMapping not supported with createDefaultStage disabled',
       );
     }
+  }
+
+  /**
+   * Get the default endpoint for this API.
+   */
+  public get apiEndpoint(): string {
+    if (this.disableExecuteApiEndpoint) {
+      throw new Error('apiEndpoint is not accessible when disableExecuteApiEndpoint is set to true.');
+    }
+    return this._apiEndpoint;
   }
 
   /**

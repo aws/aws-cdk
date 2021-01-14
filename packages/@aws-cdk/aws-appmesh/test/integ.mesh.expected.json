@@ -515,6 +515,16 @@
             },
             "Match": {
               "Prefix": "/"
+            },
+            "Timeout": {
+              "Idle": {
+                "Unit": "ms",
+                "Value": 10000
+              },
+              "PerRequest": {
+                "Unit": "ms",
+                "Value": 10000
+              }
             }
           }
         },
@@ -553,6 +563,16 @@
             },
             "Match": {
               "Prefix": "/path2"
+            },
+            "Timeout": {
+              "Idle": {
+                "Unit": "ms",
+                "Value": 11000
+              },
+              "PerRequest": {
+                "Unit": "ms",
+                "Value": 11000
+              }
             }
           }
         },
@@ -588,6 +608,12 @@
                   "Weight": 20
                 }
               ]
+            },
+            "Timeout": {
+              "Idle": {
+                "Unit": "ms",
+                "Value": 12000
+              }
             }
           }
         },
@@ -621,6 +647,17 @@
           }
         },
         "VirtualServiceName": "service1.domain.local"
+      }
+    },
+    "cert56CA94EB": {
+      "Type": "AWS::CertificateManager::Certificate",
+      "Properties": {
+        "DomainName":"node1.domain.local",
+        "DomainValidationOptions": [{
+          "DomainName":"node1.domain.local",
+          "ValidationDomain":"local"
+        }],
+        "ValidationMethod": "EMAIL"
       }
     },
     "meshnode726C787D": {
@@ -669,6 +706,16 @@
               "PortMapping": {
                 "Port": 8080,
                 "Protocol": "http"
+              },
+              "TLS": {
+                "Certificate": {
+                  "ACM": {
+                    "CertificateArn": {
+                      "Ref": "cert56CA94EB"
+                    }
+                  }
+                },
+                "Mode": "STRICT"
               }
             }
           ],
@@ -691,6 +738,19 @@
           ]
         },
         "Spec": {
+          "BackendDefaults": {
+            "ClientPolicy": {
+              "TLS": {
+                "Validation": {
+                  "Trust": {
+                    "ACM": {
+                      "CertificateAuthorityArns": ["arn:aws:acm-pca:us-east-1:123456789012:certificate-authority/12345678-1234-1234-1234-123456789012"]
+                    }
+                  }
+                }
+              }
+            }
+          },
           "Backends": [
             {
               "VirtualService": {
@@ -739,6 +799,19 @@
           ]
         },
         "Spec": {
+          "BackendDefaults": {
+            "ClientPolicy": {
+              "TLS": {
+                "Validation": {
+                  "Trust": {
+                    "File": {
+                      "CertificateChain": "path-to-certificate"
+                    }
+                  }
+                }
+              }
+            }
+          },
           "Listeners": [
             {
               "HealthCheck": {
@@ -967,6 +1040,15 @@
               "PortMapping": {
                 "Port": 443,
                 "Protocol": "http"
+              },
+              "TLS": {
+                "Certificate": {
+                  "File": {
+                    "CertificateChain": "path/to/certChain",
+                    "PrivateKey": "path/to/privateKey"
+                  }
+                },
+                "Mode": "STRICT"
               }
             }
           ]

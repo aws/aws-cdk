@@ -107,6 +107,22 @@ test('throws with non existing lock file', () => {
   })).toThrow(/Lock file at \/does\/not\/exist.lock doesn't exist/);
 });
 
+test('throws when depsLockFilePath is not a file', () => {
+  expect(() => new NodejsFunction(stack, 'handler1', {
+    depsLockFilePath: __dirname,
+  })).toThrow(/\`depsLockFilePath\` should point to a file/);
+});
+
+test('resolves depsLockFilePath to an absolute path', () => {
+  new NodejsFunction(stack, 'handler1', {
+    depsLockFilePath: './package.json',
+  });
+
+  expect(Bundling.bundle).toHaveBeenCalledWith(expect.objectContaining({
+    depsLockFilePath: expect.stringMatching(/@aws-cdk\/aws-lambda-nodejs\/package.json$/),
+  }));
+});
+
 test('resolves entry to an absolute path', () => {
   // WHEN
   new NodejsFunction(stack, 'fn', {

@@ -515,7 +515,7 @@ for more details about using CloudFormation in CodePipeline.
 
 #### Actions defined by this package
 
-This package defines the following actions:
+This package contains the following CloudFormation actions:
 
 * **CloudFormationCreateUpdateStackAction** - Deploy a CloudFormation template directly from the pipeline. The indicated stack is created,
   or updated if it already exists. If the stack is in a failure state, deployment will fail (unless `replaceOnFailure`
@@ -657,6 +657,18 @@ const deployStage = pipeline.addStage({
 
 [image definition file]: https://docs.aws.amazon.com/codepipeline/latest/userguide/pipelines-create.html#pipelines-create-image-definitions
 
+#### Deploying ECS applications stored in a separate source code repository
+
+The idiomatic CDK way of deploying an ECS application is to have your Dockerfiles and your CDK code in the same source code repository,
+leveraging [Docker Assets])(https://docs.aws.amazon.com/cdk/latest/guide/assets.html#assets_types_docker),
+and use the [CDK Pipelines module](https://docs.aws.amazon.com/cdk/api/latest/docs/pipelines-readme.html).
+
+However, if you want to deploy a Docker application whose source code is kept in a separate version control repository than the CDK code,
+you can use the `TagParameterContainerImage` class from the ECS module.
+Here's an example:
+
+[example ECS pipeline for an application in a separate source code repository](test/integ.pipeline-ecs-separate-source.lit.ts)
+
 ### AWS S3 Deployment
 
 To use an S3 Bucket as a deployment target in CodePipeline:
@@ -674,6 +686,70 @@ const deployAction = new codepipeline_actions.S3DeployAction({
 const deployStage = pipeline.addStage({
   stageName: 'Deploy',
   actions: [deployAction],
+});
+```
+
+#### Invalidating the CloudFront cache when deploying to S3
+
+There is currently no native support in CodePipeline for invalidating a CloudFront cache after deployment.
+One workaround is to add another build step after the deploy step,
+and use the AWS CLI to invalidate the cache:
+
+```ts
+// Create a Cloudfront Web Distribution
+const distribution = new cloudfront.Distribution(this, `Distribution`, {
+  // ...
+});
+
+// Create the build project that will invalidate the cache
+const invalidateBuildProject = new codebuild.PipelineProject(this, `InvalidateProject`, {
+  buildSpec: codebuild.BuildSpec.fromObject({
+    version: '0.2',
+    phases: {
+      build: {
+        commands:[
+          'aws cloudfront create-invalidation --distribution-id ${CLOUDFRONT_ID} --paths "/*"',
+          // Choose whatever files or paths you'd like, or all files as specified here
+        ],
+      },
+    },
+  }),
+  environmentVariables: {
+    CLOUDFRONT_ID: { value: distribution.distributionId },
+  },
+});
+
+// Add Cloudfront invalidation permissions to the project
+const distributionArn = `arn:aws:cloudfront::${this.account}:distribution/${distribution.distributionId}`;
+invalidateBuildProject.addToRolePolicy(new iam.PolicyStatement({
+  resources: [distributionArn],
+  actions: [
+    'cloudfront:CreateInvalidation',
+  ],
+}));
+
+// Create the pipeline (here only the S3 deploy and Invalidate cache build)
+new codepipeline.Pipeline(this, 'Pipeline', {
+  stages: [
+    // ...
+    {
+      stageName: 'Deploy',
+      actions: [
+        new codepipelineActions.S3DeployAction({
+          actionName: 'S3Deploy',
+          bucket: deployBucket,
+          input: deployInput,
+          runOrder: 1,
+        }),
+        new codepipelineActions.CodeBuildAction({
+          actionName: 'InvalidateCache',
+          project: invalidateBuildProject,
+          input: deployInput,
+          runOrder: 2,
+        }),
+      ],
+    },
+  ],
 });
 ```
 

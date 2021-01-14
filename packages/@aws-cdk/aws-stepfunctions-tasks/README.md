@@ -667,7 +667,7 @@ You can call the [`StartJobRun`](https://docs.aws.amazon.com/glue/latest/dg/aws-
 
 ```ts
 new GlueStartJobRun(stack, 'Task', {
-  jobName: 'my-glue-job',
+  glueJobName: 'my-glue-job',
   arguments: {
     key: 'value',
   },
@@ -832,6 +832,10 @@ You can call the [`CreateTransformJob`](https://docs.aws.amazon.com/sagemaker/la
 new sfn.SagemakerTransformTask(this, 'Batch Inference', {
   transformJobName: 'MyTransformJob',
   modelName: 'MyModelName',
+  modelClientOptions: {
+    invocationMaxRetries: 3,  // default is 0
+    invocationTimeout: cdk.Duration.minutes(5),  // default is 60 seconds
+  }
   role,
   transformInput: {
     transformDataSource: {

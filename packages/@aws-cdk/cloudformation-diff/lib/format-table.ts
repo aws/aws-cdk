@@ -32,7 +32,8 @@ function buildColumnConfig(widths: number[] | undefined): { [index: number]: tab
 
   const ret: { [index: number]: table.TableColumns } = {};
   widths.forEach((width, i) => {
-    ret[i] = { width, useWordWrap: true } as any; // 'useWordWrap' is not in @types/table
+    ret[i] = { width };
+
     if (width === undefined) {
       delete ret[i].width;
     }
