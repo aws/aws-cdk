@@ -44,6 +44,18 @@ export interface DeploymentController {
   readonly type?: DeploymentControllerType;
 }
 
+/**
+ * The deployment circuit breaker to use for the service
+ */
+export interface DeploymentCircuitBreaker {
+  /**
+   * Whether to enable rollback on deployment failure
+   * @default false
+   */
+  readonly rollback?: boolean;
+
+}
+
 export interface EcsTarget {
   /**
    * The name of the container.
@@ -93,7 +105,8 @@ export interface BaseServiceOptions {
   /**
    * The desired number of instantiations of the task definition to keep running on the service.
    *
-   * @default 1
+   * @default - When creating the service, default is 1; when updating the service, default uses
+   * the current task number.
    */
   readonly desiredCount?: number;
 
@@ -161,6 +174,13 @@ export interface BaseServiceOptions {
    * @default - Rolling update (ECS)
    */
   readonly deploymentController?: DeploymentController;
+
+  /**
+   * Whether to enable the deployment circuit breaker. If this property is defined, circuit breaker will be implicitly
+   * enabled.
+   * @default - disabled
+   */
+  readonly circuitBreaker?: DeploymentCircuitBreaker;
 }
 
 /**
@@ -344,6 +364,10 @@ export abstract class BaseService extends Resource
       deploymentConfiguration: {
         maximumPercent: props.maxHealthyPercent || 200,
         minimumHealthyPercent: props.minHealthyPercent === undefined ? 50 : props.minHealthyPercent,
+        deploymentCircuitBreaker: props.circuitBreaker ? {
+          enable: true,
+          rollback: props.circuitBreaker.rollback ?? false,
+        } : undefined,
       },
       propagateTags: props.propagateTags === PropagatedTagSource.NONE ? undefined : props.propagateTags,
       enableEcsManagedTags: props.enableECSManagedTags === undefined ? false : props.enableECSManagedTags,

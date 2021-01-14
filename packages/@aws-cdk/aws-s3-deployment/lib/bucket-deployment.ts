@@ -1,5 +1,3 @@
-import * as crypto from 'crypto';
-import * as fs from 'fs';
 import * as path from 'path';
 import * as cloudfront from '@aws-cdk/aws-cloudfront';
 import * as ec2 from '@aws-cdk/aws-ec2';
@@ -7,11 +5,9 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
+import { AwsCliLayer } from '@aws-cdk/lambda-layer-awscli';
 import { Construct } from 'constructs';
 import { ISource, SourceConfig } from './source';
-
-const handlerCodeBundle = path.join(__dirname, '..', 'lambda', 'bundle.zip');
-const handlerSourceDirectory = path.join(__dirname, '..', 'lambda', 'src');
 
 export interface BucketDeploymentProps {
   /**
@@ -187,11 +183,10 @@ export class BucketDeployment extends cdk.Construct {
       throw new Error('Distribution must be specified if distribution paths are specified');
     }
 
-    const assetHash = calcSourceHash(handlerSourceDirectory);
-
     const handler = new lambda.SingletonFunction(this, 'CustomResourceHandler', {
       uuid: this.renderSingletonUuid(props.memoryLimit),
-      code: lambda.Code.fromAsset(handlerCodeBundle, { assetHash }),
+      code: lambda.Code.fromAsset(path.join(__dirname, 'lambda')),
+      layers: [new AwsCliLayer(this, 'AwsCliLayer')],
       runtime: lambda.Runtime.PYTHON_3_6,
       handler: 'index.handler',
       lambdaPurpose: 'Custom::CDKBucketDeployment',
@@ -251,25 +246,6 @@ export class BucketDeployment extends cdk.Construct {
 
     return uuid;
   }
-}
-
-/**
- * We need a custom source hash calculation since the bundle.zip file
- * contains python dependencies installed during build and results in a
- * non-deterministic behavior.
- *
- * So we just take the `src/` directory of our custom resoruce code.
- */
-function calcSourceHash(srcDir: string): string {
-  const sha = crypto.createHash('sha256');
-  for (const file of fs.readdirSync(srcDir)) {
-    const data = fs.readFileSync(path.join(srcDir, file));
-    sha.update(`<file name=${file}>`);
-    sha.update(data);
-    sha.update('</file>');
-  }
-
-  return sha.digest('hex');
 }
 
 /**

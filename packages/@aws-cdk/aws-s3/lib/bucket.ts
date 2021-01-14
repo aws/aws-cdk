@@ -1,8 +1,13 @@
 import { EOL } from 'os';
+import * as path from 'path';
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
-import { Fn, IResource, Lazy, RemovalPolicy, Resource, Stack, Token } from '@aws-cdk/core';
+import {
+  Fn, IResource, Lazy, RemovalPolicy, Resource, Stack, Token,
+  CustomResource, CustomResourceProvider, CustomResourceProviderRuntime, FeatureFlags,
+} from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
 import { BucketPolicy } from './bucket-policy';
 import { IBucketNotificationDestination } from './destination';
@@ -11,6 +16,8 @@ import * as perms from './perms';
 import { LifecycleRule } from './rule';
 import { CfnBucket } from './s3.generated';
 import { parseBucketArn, parseBucketName } from './util';
+
+const AUTO_DELETE_OBJECTS_RESOURCE_TYPE = 'Custom::S3AutoDeleteObjects';
 
 export interface IBucket extends IResource {
   /**
@@ -154,6 +161,18 @@ export interface IBucket extends IResource {
    * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*')
    */
   grantPut(identity: iam.IGrantable, objectsKeyPattern?: any): iam.Grant;
+
+  /**
+   * Grant the given IAM identity permissions to modify the ACLs of objects in the given Bucket.
+   *
+   * If your application has the '@aws-cdk/aws-s3:grantWriteWithoutAcl' feature flag set,
+   * calling {@link grantWrite} or {@link grantReadWrite} no longer grants permissions to modify the ACLs of the objects;
+   * in this case, if you need to modify object ACLs, call this method explicitly.
+   *
+   * @param identity The principal
+   * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*')
+   */
+  grantPutAcl(identity: iam.IGrantable, objectsKeyPattern?: string): iam.Grant;
 
   /**
    * Grants s3:DeleteObject* permission to an IAM pricipal for objects
@@ -578,7 +597,7 @@ abstract class BucketBase extends Resource implements IBucket {
    * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*')
    */
   public grantWrite(identity: iam.IGrantable, objectsKeyPattern: any = '*') {
-    return this.grant(identity, perms.BUCKET_WRITE_ACTIONS, perms.KEY_WRITE_ACTIONS,
+    return this.grant(identity, this.writeActions, perms.KEY_WRITE_ACTIONS,
       this.bucketArn,
       this.arnForObjects(objectsKeyPattern));
   }
@@ -592,7 +611,12 @@ abstract class BucketBase extends Resource implements IBucket {
    * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*')
    */
   public grantPut(identity: iam.IGrantable, objectsKeyPattern: any = '*') {
-    return this.grant(identity, perms.BUCKET_PUT_ACTIONS, perms.KEY_WRITE_ACTIONS,
+    return this.grant(identity, this.putActions, perms.KEY_WRITE_ACTIONS,
+      this.arnForObjects(objectsKeyPattern));
+  }
+
+  public grantPutAcl(identity: iam.IGrantable, objectsKeyPattern: string = '*') {
+    return this.grant(identity, perms.BUCKET_PUT_ACL_ACTIONS, [],
       this.arnForObjects(objectsKeyPattern));
   }
 
@@ -619,7 +643,7 @@ abstract class BucketBase extends Resource implements IBucket {
    * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*')
    */
   public grantReadWrite(identity: iam.IGrantable, objectsKeyPattern: any = '*') {
-    const bucketActions = perms.BUCKET_READ_ACTIONS.concat(perms.BUCKET_WRITE_ACTIONS);
+    const bucketActions = perms.BUCKET_READ_ACTIONS.concat(this.writeActions);
     // we need unique permissions because some permissions are common between read and write key actions
     const keyActions = [...new Set([...perms.KEY_READ_ACTIONS, ...perms.KEY_WRITE_ACTIONS])];
 
@@ -665,6 +689,19 @@ abstract class BucketBase extends Resource implements IBucket {
       grantee: new iam.Anyone(),
       resource: this,
     });
+  }
+
+  private get writeActions(): string[] {
+    return [
+      ...perms.BUCKET_DELETE_ACTIONS,
+      ...this.putActions,
+    ];
+  }
+
+  private get putActions(): string[] {
+    return FeatureFlags.of(this).isEnabled(cxapi.S3_GRANT_WRITE_WITHOUT_ACL)
+      ? perms.BUCKET_PUT_ACTIONS
+      : perms.LEGACY_BUCKET_PUT_ACTIONS;
   }
 
   private urlJoin(...components: string[]): string {
@@ -1042,6 +1079,16 @@ export interface BucketProps {
   readonly removalPolicy?: RemovalPolicy;
 
   /**
+   * Whether all objects should be automatically deleted when the bucket is
+   * removed from the stack or when the stack is deleted.
+   *
+   * Requires the `removalPolicy` to be set to `RemovalPolicy.DESTROY`.
+   *
+   * @default false
+   */
+  readonly autoDeleteObjects?: boolean;
+
+  /**
    * Whether this bucket should have versioning turned on or not.
    *
    * @default false
@@ -1325,6 +1372,14 @@ export class Bucket extends BucketBase {
 
     if (props.publicReadAccess) {
       this.grantPublicAccess();
+    }
+
+    if (props.autoDeleteObjects) {
+      if (props.removalPolicy !== RemovalPolicy.DESTROY) {
+        throw new Error('Cannot use \'autoDeleteObjects\' property on a bucket without setting removal policy to \'DESTROY\'.');
+      }
+
+      this.enableAutoDeleteObjects();
     }
   }
 
@@ -1727,6 +1782,42 @@ export class Bucket extends BucketBase {
         prefix: inventory.objectsPrefix,
       };
     });
+  }
+
+  private enableAutoDeleteObjects() {
+    const provider = CustomResourceProvider.getOrCreateProvider(this, AUTO_DELETE_OBJECTS_RESOURCE_TYPE, {
+      codeDirectory: path.join(__dirname, 'auto-delete-objects-handler'),
+      runtime: CustomResourceProviderRuntime.NODEJS_12,
+    });
+
+    // Use a bucket policy to allow the custom resource to delete
+    // objects in the bucket
+    this.addToResourcePolicy(new iam.PolicyStatement({
+      actions: [
+        ...perms.BUCKET_READ_ACTIONS, // list objects
+        ...perms.BUCKET_DELETE_ACTIONS, // and then delete them
+      ],
+      resources: [
+        this.bucketArn,
+        this.arnForObjects('*'),
+      ],
+      principals: [new iam.ArnPrincipal(provider.roleArn)],
+    }));
+
+    const customResource = new CustomResource(this, 'AutoDeleteObjectsCustomResource', {
+      resourceType: AUTO_DELETE_OBJECTS_RESOURCE_TYPE,
+      serviceToken: provider.serviceToken,
+      properties: {
+        BucketName: this.bucketName,
+      },
+    });
+
+    // Ensure bucket policy is deleted AFTER the custom resource otherwise
+    // we don't have permissions to list and delete in the bucket.
+    // (add a `if` to make TS happy)
+    if (this.policy) {
+      customResource.node.addDependency(this.policy);
+    }
   }
 }
 

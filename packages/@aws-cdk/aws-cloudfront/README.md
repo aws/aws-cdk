@@ -109,6 +109,16 @@ new cloudfront.Distribution(this, 'myDist', {
 });
 ```
 
+However, you can customize the minimum protocol version for the certificate while creating the distribution using `minimumProtocolVersion` property.
+
+```ts
+new cloudfront.Distribution(this, 'myDist', {
+  defaultBehavior: { origin: new origins.S3Origin(myBucket) },
+  domainNames: ['www.example.com'],
+  minimumProtocolVersion: SecurityPolicyProtocol.TLS_V1_2016
+});
+```
+
 ### Multiple Behaviors & Origins
 
 Each distribution has a default behavior which applies to all requests to that distribution; additional behaviors may be specified for a
@@ -236,7 +246,7 @@ You can author Node.js or Python functions in the US East (N. Virginia) region,
 and then execute them in AWS locations globally that are closer to the viewer,
 without provisioning or managing servers.
 Lambda@Edge functions are associated with a specific behavior and event type.
-Lambda@Edge can be used rewrite URLs,
+Lambda@Edge can be used to rewrite URLs,
 alter responses based on headers or cookies,
 or authorize requests based on headers or authorization tokens.
 
@@ -265,6 +275,8 @@ new cloudfront.Distribution(this, 'myDist', {
 > To make it easier to request functions for Lambda@Edge, the `EdgeFunction` construct can be used.
 > The `EdgeFunction` construct will automatically request a function in `us-east-1`, regardless of the region of the current stack.
 > `EdgeFunction` has the same interface as `Function` and can be created and used interchangably.
+> Please note that using `EdgeFunction` requires that the `us-east-1` region has been bootstrapped.
+> See https://docs.aws.amazon.com/cdk/latest/guide/bootstrapping.html for more about bootstrapping regions.
 
 If the stack is in `us-east-1`, a "normal" `lambda.Function` can be used instead of an `EdgeFunction`.
 
@@ -273,6 +285,25 @@ const myFunc = new lambda.Function(this, 'MyFunction', {
   runtime: lambda.Runtime.NODEJS_10_X,
   handler: 'index.handler',
   code: lambda.Code.fromAsset(path.join(__dirname, 'lambda-handler')),
+});
+```
+
+If the stack is not in `us-east-1`, and you need references from different applications on the same account,
+you can also set a specific stack ID for each Lamba@Edge.
+
+```ts
+const myFunc1 = new cloudfront.experimental.EdgeFunction(this, 'MyFunction1', {
+  runtime: lambda.Runtime.NODEJS_10_X,
+  handler: 'index.handler',
+  code: lambda.Code.fromAsset(path.join(__dirname, 'lambda-handler1')),
+  stackId: 'edge-lambda-stack-id-1'
+});
+
+const myFunc2 = new cloudfront.experimental.EdgeFunction(this, 'MyFunction2', {
+  runtime: lambda.Runtime.NODEJS_10_X,
+  handler: 'index.handler',
+  code: lambda.Code.fromAsset(path.join(__dirname, 'lambda-handler2')),
+  stackId: 'edge-lambda-stack-id-2'
 });
 ```
 

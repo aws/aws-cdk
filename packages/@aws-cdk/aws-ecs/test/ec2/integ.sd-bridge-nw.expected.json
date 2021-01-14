@@ -437,8 +437,6 @@
                 "ecs:Poll",
                 "ecs:StartTelemetrySession"
               ],
-              "Effect": "Allow",
-              "Resource": "*",
               "Condition": {
                 "ArnEquals": {
                   "ecs:cluster": {
@@ -448,7 +446,9 @@
                     ]
                   }
                 }
-              }
+              },
+              "Effect": "Allow",
+              "Resource": "*"
             },
             {
               "Action": [
@@ -636,8 +636,6 @@
                 "ecs:DescribeContainerInstances",
                 "ecs:DescribeTasks"
               ],
-              "Effect": "Allow",
-              "Resource": "*",
               "Condition": {
                 "ArnEquals": {
                   "ecs:cluster": {
@@ -647,7 +645,9 @@
                     ]
                   }
                 }
-              }
+              },
+              "Effect": "Allow",
+              "Resource": "*"
             },
             {
               "Action": [
@@ -905,7 +905,6 @@
           "MaximumPercent": 200,
           "MinimumHealthyPercent": 50
         },
-        "DesiredCount": 1,
         "EnableECSManagedTags": false,
         "LaunchType": "EC2",
         "SchedulingStrategy": "REPLICA",
