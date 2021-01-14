@@ -530,18 +530,6 @@ const runTask = new tasks.EcsRunTask(stack, 'RunFargate', {
 });
 ```
 
-You can set the `useTaskDefinitionFamily` prop to true if you want the task to be run using latest ACTIVE revision
-of the task definition family. By default the task is ran using the  
-
-```ts
-const runTask = new tasks.EcsRunTask(stack, 'RunFargate', {
-  ...
-  taskDefinition,
-  useTaskDefinitionFamily: true,
-  ...
-});
-```
-
 ## EMR
 
 Step Functions supports Amazon EMR through the service integration pattern.
