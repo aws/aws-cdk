@@ -563,13 +563,19 @@ export namespace EmrCreateCluster {
   }
 
   /**
-   * The launch specification for Spot instances in the instance fleet, which determines the defined duration and provisioning timeout behavior.
+   * The launch specification for Spot Instances in the fleet, which determines the defined duration, provisioning timeout behavior, and allocation strategy.
    *
    * @see https://docs.aws.amazon.com/emr/latest/APIReference/API_SpotProvisioningSpecification.html
    *
    * @experimental
    */
   export interface SpotProvisioningSpecificationProperty {
+
+    /**
+     * Specifies the strategy to use in launching Spot Instance fleets.
+     */
+    readonly allocationStrategy?: String;
+
     /**
      * The defined duration for Spot instances (also known as Spot blocks) in minutes.
      *
@@ -589,7 +595,23 @@ export namespace EmrCreateCluster {
   }
 
   /**
-   * The launch specification for Spot instances in the fleet, which determines the defined duration and provisioning timeout behavior.
+   * The launch specification for On-demand instances in the instance fleet, which determines the allocation strategy.
+   *
+   * @see https://docs.aws.amazon.com/emr/latest/APIReference/API_OnDemandProvisioningSpecification.html
+   *
+   * @experimental
+   */
+  export interface OnDemandProvisioningSpecificationProperty {
+
+    /**
+     * Specifies the strategy to use in launching On-Demand Instance fleets.
+     */
+    readonly allocationStrategy?: String;
+
+  }
+
+  /**
+   * The launch specification for Spot Instances in the fleet, which determines the defined duration, provisioning timeout behavior, and allocation strategy.
    *
    * @see https://docs.aws.amazon.com/emr/latest/APIReference/API_InstanceFleetProvisioningSpecifications.html
    *
@@ -597,10 +619,20 @@ export namespace EmrCreateCluster {
    */
   export interface InstanceFleetProvisioningSpecificationsProperty {
     /**
-     * The launch specification for Spot instances in the fleet, which determines the defined duration and provisioning timeout behavior.
+     * The launch specification for Spot Instances in the fleet, which determines the defined duration, provisioning timeout behavior, and allocation strategy.
+     *
+     * @default No spotSpecification
      */
-    readonly spotSpecification: SpotProvisioningSpecificationProperty;
+    readonly spotSpecification?: SpotProvisioningSpecificationProperty;
+
+    /**
+     * The launch specification for On-Demand Instances in the instance fleet, which determines the allocation strategy.
+     *
+     * @default No onDemandSpecification
+     */
+    readonly onDemandSpecification?: OnDemandProvisioningSpecificationProperty;
   }
+
 
   /**
    * The configuration that defines an instance fleet.
