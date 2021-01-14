@@ -35,15 +35,18 @@ EventBridge.
 
 Use the `LambdaFunction` target to invoke a lambda function.
 
-The code snippet below creates an event rule with a Lambda function as a target triggered for every events from `aws.ec2` source. You can optionally attach a [dead letter queue](https://docs.aws.amazon.com/eventbridge/latest/userguide/rule-dlq.html).
+The code snippet below creates an event rule with a Lambda function as a target
+triggered for every events from `aws.ec2` source. You can optionally attach a
+[dead letter queue](https://docs.aws.amazon.com/eventbridge/latest/userguide/rule-dlq.html).
 
 ```ts
 import * as lambda from "@aws-cdk/aws-lambda";
 import * as events from "@aws-cdk/aws-events";
+import * as sqs from "@aws-cdk/aws-sqs";
 import * as targets from "@aws-cdk/aws-events-targets";
 
 const fn = new lambda.Function(this, 'MyFunc', {
-  runtime: lambda.Runtime.NODEJS_10_X,
+  runtime: lambda.Runtime.NODEJS_12_X,
   handler: 'index.handler',
   code: lambda.Code.fromInline(`exports.handler = ${handler.toString()}`),
 });
