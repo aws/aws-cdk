@@ -1,4 +1,3 @@
-import * as cdk from '@aws-cdk/core';
 import { IConstruct, Construct, Node } from 'constructs';
 import { Condition } from '../condition';
 import { JsonPath } from '../fields';

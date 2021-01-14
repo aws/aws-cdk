@@ -1,4 +1,3 @@
-import * as cdk from '@aws-cdk/core';
 import { Chain } from './chain';
 import { Parallel, ParallelProps } from './states/parallel';
 import { State } from './states/state';
