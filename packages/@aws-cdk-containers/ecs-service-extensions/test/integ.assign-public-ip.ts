@@ -41,7 +41,7 @@ nameDescription.add(new Container({
   cpu: 256,
   memoryMiB: 512,
   trafficPort: 80,
-  image: ContainerImage.fromRegistry('nathanpeck/name'),
+  image: ContainerImage.fromAsset('./test-apps/name'),
   environment: {
     PORT: '80',
   },

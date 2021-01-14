@@ -15,7 +15,7 @@ nameDescription.add(new Container({
   cpu: 1024,
   memoryMiB: 2048,
   trafficPort: 80,
-  image: ContainerImage.fromRegistry('nathanpeck/name'),
+  image: ContainerImage.fromAsset('./test-apps/name'),
   environment: {
     PORT: '80',
   },
@@ -40,7 +40,7 @@ greetingDescription.add(new Container({
   cpu: 1024,
   memoryMiB: 2048,
   trafficPort: 80,
-  image: ContainerImage.fromRegistry('nathanpeck/greeting'),
+  image: ContainerImage.fromAsset('./test-apps/greeting'),
   environment: {
     PORT: '80',
   },
@@ -65,7 +65,7 @@ greeterDescription.add(new Container({
   cpu: 1024,
   memoryMiB: 2048,
   trafficPort: 80,
-  image: ContainerImage.fromRegistry('nathanpeck/greeter'),
+  image: ContainerImage.fromAsset('./test-apps/greeter'),
   environment: {
     PORT: '80',
     GREETING_URL: 'http://greeting.production',

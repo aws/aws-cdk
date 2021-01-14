@@ -18,7 +18,7 @@ export = {
       cpu: 256,
       memoryMiB: 512,
       trafficPort: 80,
-      image: ecs.ContainerImage.fromRegistry('nathanpeck/name'),
+      image: ecs.ContainerImage.fromAsset('./test/test-apps/name'),
     }));
 
     new Service(stack, 'my-service', {
@@ -34,7 +34,25 @@ export = {
         {
           Cpu: 256,
           Essential: true,
-          Image: 'nathanpeck/name',
+          Image: {
+            'Fn::Join': [
+              '',
+              [
+                {
+                  Ref: 'AWS::AccountId',
+                },
+                '.dkr.ecr.',
+                {
+                  Ref: 'AWS::Region',
+                },
+                '.',
+                {
+                  Ref: 'AWS::URLSuffix',
+                },
+                '/aws-cdk/assets:60341149fe82758ccf014503a67584e45b1d826cf7394debf42572ac8669ca60',
+              ],
+            ],
+          },
           Memory: 512,
           Name: 'app',
           PortMappings: [
@@ -89,7 +107,7 @@ export = {
       cpu: 256,
       memoryMiB: 512,
       trafficPort: 80,
-      image: ecs.ContainerImage.fromRegistry('nathanpeck/name'),
+      image: ecs.ContainerImage.fromAsset('./test/test-apps/name'),
     }));
 
     new Service(stack, 'my-service', {
@@ -105,7 +123,25 @@ export = {
         {
           Cpu: 256,
           Essential: true,
-          Image: 'nathanpeck/name',
+          Image: {
+            'Fn::Join': [
+              '',
+              [
+                {
+                  Ref: 'AWS::AccountId',
+                },
+                '.dkr.ecr.',
+                {
+                  Ref: 'AWS::Region',
+                },
+                '.',
+                {
+                  Ref: 'AWS::URLSuffix',
+                },
+                '/aws-cdk/assets:60341149fe82758ccf014503a67584e45b1d826cf7394debf42572ac8669ca60',
+              ],
+            ],
+          },
           Memory: 512,
           Name: 'app',
           PortMappings: [
@@ -164,7 +200,7 @@ export = {
       cpu: 256,
       memoryMiB: 512,
       trafficPort: 80,
-      image: ecs.ContainerImage.fromRegistry('nathanpeck/name'),
+      image: ecs.ContainerImage.fromAsset('./test/test-apps/name'),
     }));
 
     new Service(stack, 'my-service', {
@@ -180,7 +216,25 @@ export = {
         {
           Cpu: 256,
           Essential: true,
-          Image: 'nathanpeck/name',
+          Image: {
+            'Fn::Join': [
+              '',
+              [
+                {
+                  Ref: 'AWS::AccountId',
+                },
+                '.dkr.ecr.',
+                {
+                  Ref: 'AWS::Region',
+                },
+                '.',
+                {
+                  Ref: 'AWS::URLSuffix',
+                },
+                '/aws-cdk/assets:60341149fe82758ccf014503a67584e45b1d826cf7394debf42572ac8669ca60',
+              ],
+            ],
+          },
           Memory: 512,
           Name: 'app',
           PortMappings: [

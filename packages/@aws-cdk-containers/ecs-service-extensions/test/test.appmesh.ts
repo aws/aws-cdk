@@ -20,7 +20,7 @@ export = {
       cpu: 256,
       memoryMiB: 512,
       trafficPort: 80,
-      image: ecs.ContainerImage.fromRegistry('nathanpeck/name'),
+      image: ecs.ContainerImage.fromAsset('./test/test-apps/name'),
     }));
 
     const mesh = new appmesh.Mesh(stack, 'my-mesh');
@@ -48,7 +48,25 @@ export = {
             },
           ],
           Essential: true,
-          Image: 'nathanpeck/name',
+          Image: {
+            'Fn::Join': [
+              '',
+              [
+                {
+                  Ref: 'AWS::AccountId',
+                },
+                '.dkr.ecr.',
+                {
+                  Ref: 'AWS::Region',
+                },
+                '.',
+                {
+                  Ref: 'AWS::URLSuffix',
+                },
+                '/aws-cdk/assets:60341149fe82758ccf014503a67584e45b1d826cf7394debf42572ac8669ca60',
+              ],
+            ],
+          },
           Memory: 512,
           Name: 'app',
           PortMappings: [
@@ -276,7 +294,7 @@ export = {
       cpu: 256,
       memoryMiB: 512,
       trafficPort: 80,
-      image: ecs.ContainerImage.fromRegistry('nathanpeck/name'),
+      image: ecs.ContainerImage.fromAsset('./test/test-apps/name'),
     }));
     serviceDescription.add(new ScaleOnCpuUtilization({
       initialTaskCount: 1,
@@ -317,7 +335,7 @@ export = {
       cpu: 256,
       memoryMiB: 512,
       trafficPort: 80,
-      image: ecs.ContainerImage.fromRegistry('nathanpeck/name'),
+      image: ecs.ContainerImage.fromAsset('./test/test-apps/name'),
     }));
     serviceDescription.add(new ScaleOnCpuUtilization({
       initialTaskCount: 2,
@@ -358,7 +376,7 @@ export = {
       cpu: 256,
       memoryMiB: 512,
       trafficPort: 80,
-      image: ecs.ContainerImage.fromRegistry('nathanpeck/name'),
+      image: ecs.ContainerImage.fromAsset('./test/test-apps/name'),
     }));
     serviceDescription.add(new ScaleOnCpuUtilization({
       initialTaskCount: 3,
@@ -440,7 +458,7 @@ export = {
       cpu: 256,
       memoryMiB: 512,
       trafficPort: 80,
-      image: ecs.ContainerImage.fromRegistry('nathanpeck/name'),
+      image: ecs.ContainerImage.fromAsset('./test/test-apps/name'),
     }));
     serviceDescription.add(new ScaleOnCpuUtilization({
       initialTaskCount: 8,
@@ -481,7 +499,7 @@ export = {
       cpu: 256,
       memoryMiB: 512,
       trafficPort: 80,
-      image: ecs.ContainerImage.fromRegistry('nathanpeck/name'),
+      image: ecs.ContainerImage.fromAsset('./test/test-apps/name'),
       environment: {
         PORT: '80',
       },
@@ -493,7 +511,7 @@ export = {
       cpu: 256,
       memoryMiB: 512,
       trafficPort: 80,
-      image: ecs.ContainerImage.fromRegistry('nathanpeck/greeting'),
+      image: ecs.ContainerImage.fromAsset('./test/test-apps/greeting'),
       environment: {
         PORT: '80',
       },
@@ -505,7 +523,7 @@ export = {
       cpu: 256,
       memoryMiB: 512,
       trafficPort: 80,
-      image: ecs.ContainerImage.fromRegistry('nathanpeck/greeter'),
+      image: ecs.ContainerImage.fromAsset('./test/test-apps/greeter'),
       environment: {
         PORT: '80',
       },
@@ -551,7 +569,7 @@ export = {
       cpu: 1024,
       memoryMiB: 2048,
       trafficPort: 80,
-      image: ecs.ContainerImage.fromRegistry('nathanpeck/name'),
+      image: ecs.ContainerImage.fromAsset('./test/test-apps/name'),
       environment: {
         PORT: '80',
       },
@@ -569,7 +587,7 @@ export = {
       cpu: 1024,
       memoryMiB: 2048,
       trafficPort: 80,
-      image: ecs.ContainerImage.fromRegistry('nathanpeck/name'),
+      image: ecs.ContainerImage.fromAsset('./test/test-apps/name'),
       environment: {
         PORT: '80',
       },
