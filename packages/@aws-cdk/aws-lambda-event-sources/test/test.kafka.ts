@@ -27,36 +27,38 @@ export = {
       }));
 
     // THEN
-    // expect(stack).to(haveResource('AWS::IAM::Policy', {
-    //   'PolicyDocument': {
-    //     'Statement': [
-    //       {
-    //         'Action': 'dynamodb:ListStreams',
-    //         'Effect': 'Allow',
-    //         'Resource': '*',
-    //       },
-    //       {
-    //         'Action': [
-    //           'dynamodb:DescribeStream',
-    //           'dynamodb:GetRecords',
-    //           'dynamodb:GetShardIterator',
-    //         ],
-    //         'Effect': 'Allow',
-    //         'Resource': {
-    //           'Fn::GetAtt': [
-    //             'TD925BC7E',
-    //             'StreamArn',
-    //           ],
-    //         },
-    //       },
-    //     ],
-    //     'Version': '2012-10-17',
-    //   },
-    //   'PolicyName': 'FnServiceRoleDefaultPolicyC6A839BF',
-    //   'Roles': [{
-    //     'Ref': 'FnServiceRoleB9001A96',
-    //   }],
-    // }));
+    expect(stack).to(haveResource('AWS::IAM::Policy', {
+      'PolicyDocument': {
+        'Statement': [
+          {
+            'Action': [
+              'secretsmanager:GetSecretValue',
+              'secretsmanager:DescribeSecret',
+            ],
+            'Effect': 'Allow',
+            'Resource': {
+              'Ref': 'SecretA720EF05',
+            },
+          },
+          {
+            'Action': [
+              'kafka:DescribeCluster',
+              'kafka:GetBootstrapBrokers',
+              'kafka:ListScramSecrets',
+            ],
+            'Effect': 'Allow',
+            'Resource': 'some-arn',
+          },
+        ],
+        'Version': '2012-10-17',
+      },
+      'PolicyName': 'FnServiceRoleDefaultPolicyC6A839BF',
+      'Roles': [
+        {
+          'Ref': 'FnServiceRoleB9001A96',
+        },
+      ],
+    }));
 
     expect(stack).to(haveResource('AWS::Lambda::EventSourceMapping', {
       'EventSourceArn': clusterArn,

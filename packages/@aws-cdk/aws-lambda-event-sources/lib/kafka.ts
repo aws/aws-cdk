@@ -6,6 +6,9 @@ import { StreamEventSource, StreamEventSourceProps } from './stream';
 export interface KafkaEventSourceProps extends StreamEventSourceProps {
 }
 
+/**
+ * Use a MSK cluster as a streaming source for AWS Lambda
+ */
 export class ManagedKafkaEventSource extends StreamEventSource {
   constructor(
     readonly clusterArn: string,
@@ -39,10 +42,13 @@ export class ManagedKafkaEventSource extends StreamEventSource {
   }
 }
 
+/**
+ * Use a self hosted Kafka installation as a streaming source for AWS Lambda.
+ */
 export class SelfManagedKafkaEventSource extends StreamEventSource {
   constructor(
     readonly bootstrapServers: string[],
-    readonly kafkaTopic: string,
+    readonly topic: string,
     readonly secret: secretsmanager.ISecret,
     props: KafkaEventSourceProps) {
     super(props);
@@ -50,10 +56,10 @@ export class SelfManagedKafkaEventSource extends StreamEventSource {
 
   public bind(target: lambda.IFunction) {
     target.addEventSourceMapping(
-      `KafkaEventSource:${this.kafkaTopic}`,
+      `KafkaEventSource:${this.topic}`,
       this.enrichMappingOptions({
         kafkaBootstrapServers: this.bootstrapServers,
-        kafkaTopic: this.kafkaTopic,
+        kafkaTopic: this.topic,
         startingPosition: this.props.startingPosition,
         kafkaSecretArn: this.secret.secretArn,
       }),
