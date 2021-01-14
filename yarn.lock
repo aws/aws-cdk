@@ -9923,10 +9923,10 @@ typedarray@^0.0.6:
   resolved "https://registry.yarnpkg.com/typedarray/-/typedarray-0.0.6.tgz#867ac74e3864187b1d3d47d996a78ec5c8830777"
   integrity sha1-hnrHTjhkGHsdPUfZlqeOxciDB3c=
 
-typescript-json-schema@^0.46.0:
-  version "0.46.0"
-  resolved "https://registry.yarnpkg.com/typescript-json-schema/-/typescript-json-schema-0.46.0.tgz#45204ba80915db3608d01de5b839c470c053e716"
-  integrity sha512-9ktZr69Yh6iGTWVa3Ln0J+H6RyAoED9e68tz8k+0lIiCR+UZLvpvs9PqsSsE7aZ7Olvg0p161ls7JHldlA0Ocg==
+typescript-json-schema@^0.47.0:
+  version "0.47.0"
+  resolved "https://registry.yarnpkg.com/typescript-json-schema/-/typescript-json-schema-0.47.0.tgz#84dde5460b127c6774da81bf70b23c7e04857b13"
+  integrity sha512-A6NVwSOTSsNDHfaqDcDeKwwyXEeKqBHoAr20jcetnYj4e8C6zVFofAVhAuwsBXCRYiWEE/lyHrcxpsSpbIk0Mg==
   dependencies:
     "@types/json-schema" "^7.0.6"
     glob "^7.1.6"
