@@ -42,6 +42,7 @@ module.exports = {
   ignorePatterns: ['*.js', '*.d.ts', 'node_modules/', '*.generated.ts'],
   rules: {
     'cdk/no-core-construct': [ 'error' ],
+    'cdk/no-qualified-construct': [ 'error' ],
     // Require use of the `import { foo } from 'bar';` form instead of `import foo = require('bar');`
     '@typescript-eslint/no-require-imports': ['error'],
     '@typescript-eslint/indent': ['error', 2],
@@ -197,6 +198,7 @@ module.exports = {
     }],
 
     // Overrides for plugin:jest/recommended
+    "jest/expect-expect": "off",
     "jest/no-conditional-expect": "off",
     "jest/no-done-callback": "off", // Far too many of these in the codebase.
     "jest/no-standalone-expect": "off", // nodeunitShim confuses this check.
