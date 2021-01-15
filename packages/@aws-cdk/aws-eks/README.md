@@ -235,9 +235,8 @@ cluster.addNodegroupCapacity('extra-ng-spot', {
 You can specify a launch template that the node group will use. For example, this can be useful if you want to use
 a custom AMI or add custom user data.
 
-Since the custom user data is merged with the Amazon EKS user data, it must be encoded in the MIME multi-part
-archive format. Visit the [Launch Template Docs](https://docs.aws.amazon.com/eks/latest/userguide/launch-templates.html#launch-template-user-data)
-for insights.
+When supplying a custom user data script, it must be encoded in the MIME multi-part archive format, since Amazon EKS merges with its own user data. Visit the [Launch Template Docs](https://docs.aws.amazon.com/eks/latest/userguide/launch-templates.html#launch-template-user-data)
+for mode details.
 
 ```ts
 const userData = `MIME-Version: 1.0
