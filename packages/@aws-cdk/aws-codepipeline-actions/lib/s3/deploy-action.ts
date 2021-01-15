@@ -111,6 +111,12 @@ export class S3DeployAction extends Action {
     // pipeline needs permissions to write to the S3 bucket
     this.props.bucket.grantWrite(options.role);
 
+    if (this.props.accessControl !== undefined) {
+      // we need to modify the ACL settings of objects within the Bucket,
+      // so grant the Action's Role permissions to do that
+      this.props.bucket.grantPutAcl(options.role);
+    }
+
     // the Action Role also needs to read from the Pipeline's bucket
     options.bucket.grantRead(options.role);
 
