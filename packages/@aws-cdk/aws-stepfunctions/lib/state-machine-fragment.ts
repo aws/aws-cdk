@@ -1,13 +1,16 @@
-import * as cdk from '@aws-cdk/core';
 import { Chain } from './chain';
 import { Parallel, ParallelProps } from './states/parallel';
 import { State } from './states/state';
 import { IChainable, INextable } from './types';
 
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct } from '@aws-cdk/core';
+
 /**
  * Base class for reusable state machine fragments
  */
-export abstract class StateMachineFragment extends cdk.Construct implements IChainable {
+export abstract class StateMachineFragment extends Construct implements IChainable {
   /**
    * The start state of this state machine fragment
    */

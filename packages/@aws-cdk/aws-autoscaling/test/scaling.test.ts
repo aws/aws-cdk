@@ -7,6 +7,10 @@ import * as constructs from 'constructs';
 import { nodeunitShim, Test } from 'nodeunit-shim';
 import * as autoscaling from '../lib';
 
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct } from '@aws-cdk/core';
+
 nodeunitShim({
   'target tracking policies': {
     'cpu utilization'(test: Test) {
@@ -273,7 +277,7 @@ nodeunitShim({
   },
 });
 
-class ASGFixture extends cdk.Construct {
+class ASGFixture extends Construct {
   public readonly vpc: ec2.Vpc;
   public readonly asg: autoscaling.AutoScalingGroup;
 
