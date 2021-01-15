@@ -79,6 +79,7 @@ new codebuild.Project(this, 'MyProject', {
     bucket,
     path: 'path/to/file.zip',
   }),
+  supportBatchBuildType: true // optional, default is false
 });
 ```
 
@@ -92,7 +93,7 @@ const gitHubSource = codebuild.Source.gitHub({
   owner: 'awslabs',
   repo: 'aws-cdk',
   webhook: true, // optional, default: true if `webhookFilters` were provided, false otherwise
-  webhookTriggersBatchBuild: true, // optional, default is false
+  webhookTriggersBatchBuild: true, // optional, default is false. If true `supportBatchBuildType` required on project
   webhookFilters: [
     codebuild.FilterGroup
       .inEventOf(codebuild.EventAction.PUSH)
