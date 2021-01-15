@@ -485,6 +485,8 @@ interface ThirdPartyGitSourceProps extends GitSourceProps {
   /**
    * Trigger a batch build from a webhook instead of a standard one.
    *
+   * If you enable this you must also enable `supportBatchBuildType` on the project.
+   *
    * @default false
    */
   readonly webhookTriggersBatchBuild?: boolean;

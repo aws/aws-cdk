@@ -717,6 +717,68 @@ export = {
       test.done();
     },
 
+    'with supportBatchBuildType option'(test: Test) {
+      const stack = new cdk.Stack();
+
+      new codebuild.Project(stack, 'Project', {
+        source: codebuild.Source.gitHub({
+          owner: 'testowner',
+          repo: 'testrepo',
+        }),
+        supportBatchBuildType: true,
+      });
+
+      expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
+        BuildBatchConfig: {
+          ServiceRole: {
+            'Fn::GetAtt': [
+              'ProjectBatchServiceRoleF97A1CFB',
+              'Arn',
+            ],
+          },
+        },
+      }));
+
+      expect(stack).to(haveResourceLike('AWS::IAM::Role', {
+        AssumeRolePolicyDocument: {
+          Statement: [
+            {
+              Action: 'sts:AssumeRole',
+              Effect: 'Allow',
+              Principal: {
+                Service: 'codebuild.amazonaws.com',
+              },
+            },
+          ],
+          Version: '2012-10-17',
+        },
+      }));
+
+      expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Statement: [
+            {
+              Action: [
+                'codebuild:StartBuild',
+                'codebuild:StopBuild',
+                'codebuild:RetryBuild',
+              ],
+              Effect: 'Allow',
+              Resource: {
+                'Fn::GetAtt': [
+                  'ProjectC78D97AD',
+                  'Arn',
+                ],
+              },
+            },
+          ],
+          Version: '2012-10-17',
+        },
+      }));
+
+      test.done();
+    },
+
     'fail creating a Project when webhook false and webhookTriggersBatchBuild option'(test: Test) {
       [false, undefined].forEach((webhook) => {
         const stack = new cdk.Stack();
@@ -1276,11 +1338,11 @@ export = {
 
         expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
           'Artifacts':
-            {
-              'Name': ABSENT,
-              'ArtifactIdentifier': 'artifact1',
-              'OverrideArtifactName': true,
-            },
+          {
+            'Name': ABSENT,
+            'ArtifactIdentifier': 'artifact1',
+            'OverrideArtifactName': true,
+          },
         }));
 
         test.done();
@@ -1303,11 +1365,11 @@ export = {
 
         expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
           'Artifacts':
-            {
-              'ArtifactIdentifier': 'artifact1',
-              'Name': 'specificname',
-              'OverrideArtifactName': ABSENT,
-            },
+          {
+            'ArtifactIdentifier': 'artifact1',
+            'Name': 'specificname',
+            'OverrideArtifactName': ABSENT,
+          },
         }));
 
         test.done();
@@ -1481,7 +1543,7 @@ export = {
                 '',
                 [
                   '111',
-                  { twotwotwo: '222' },
+                  { twotwotwo: '222' },
                 ],
               ],
             },

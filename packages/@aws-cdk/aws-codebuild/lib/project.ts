@@ -592,6 +592,15 @@ export interface ProjectProps extends CommonProjectProps {
    * @see https://docs.aws.amazon.com/codebuild/latest/userguide/sample-multi-in-out.html
    */
   readonly secondaryArtifacts?: IArtifacts[];
+
+  /**
+   * Support the batch build type.
+   *
+   * Set to `true` if you want to be able to run this project as a batch build.
+   *
+   * @default false
+   */
+  readonly supportBatchBuildType?: boolean;
 }
 
 /**
@@ -729,6 +738,7 @@ export class Project extends ProjectBase {
   private readonly _secondaryArtifacts: CfnProject.ArtifactsProperty[];
   private _encryptionKey?: kms.IKey;
   private readonly _fileSystemLocations: CfnProject.ProjectFileSystemLocationProperty[];
+  private readonly _batchServiceRole?: iam.Role;
 
   constructor(scope: Construct, id: string, props: ProjectProps) {
     super(scope, id, {
@@ -739,7 +749,15 @@ export class Project extends ProjectBase {
       roleName: PhysicalName.GENERATE_IF_NEEDED,
       assumedBy: new iam.ServicePrincipal('codebuild.amazonaws.com'),
     });
+
     this.grantPrincipal = this.role;
+
+    if (props.supportBatchBuildType) {
+      this._batchServiceRole = new iam.Role(this, 'BatchServiceRole', {
+        roleName: PhysicalName.GENERATE_IF_NEEDED,
+        assumedBy: new iam.ServicePrincipal('codebuild.amazonaws.com'),
+      });
+    }
 
     this.buildImage = (props.environment && props.environment.buildImage) || LinuxBuildImage.STANDARD_1_0;
 
@@ -813,6 +831,9 @@ export class Project extends ProjectBase {
       sourceVersion: sourceConfig.sourceVersion,
       vpcConfig: this.configureVpc(props),
       logsConfig: this.renderLoggingConfiguration(props.logging),
+      buildBatchConfig: props.supportBatchBuildType && this._batchServiceRole ? {
+        serviceRole: this._batchServiceRole.roleArn,
+      } : undefined,
     });
 
     this.addVpcRequiredPermissions(props, resource);
@@ -823,6 +844,11 @@ export class Project extends ProjectBase {
       resourceName: this.physicalName,
     });
     this.projectName = this.getResourceNameAttribute(resource.ref);
+
+    this._batchServiceRole?.addToPrincipalPolicy(new iam.PolicyStatement({
+      resources: [this.projectArn],
+      actions: ['codebuild:StartBuild', 'codebuild:StopBuild', 'codebuild:RetryBuild'],
+    }));
 
     this.addToRolePolicy(this.createLoggingPermission());
     this.addEnvVariablesPermissions(props.environmentVariables);
@@ -912,7 +938,7 @@ export class Project extends ProjectBase {
       const keyStack = Stack.of(options.artifactBucket.encryptionKey);
       const projectStack = Stack.of(this);
       if (!(options.artifactBucket.encryptionKey instanceof kms.Key &&
-          (keyStack.account !== projectStack.account || keyStack.region !== projectStack.region))) {
+        (keyStack.account !== projectStack.account || keyStack.region !== projectStack.region))) {
         this.encryptionKey = options.artifactBucket.encryptionKey;
       }
     }
@@ -1139,8 +1165,8 @@ export class Project extends ProjectBase {
       return undefined;
     }
 
-    let s3Config: CfnProject.S3LogsConfigProperty|undefined = undefined;
-    let cloudwatchConfig: CfnProject.CloudWatchLogsConfigProperty|undefined = undefined;
+    let s3Config: CfnProject.S3LogsConfigProperty | undefined = undefined;
+    let cloudwatchConfig: CfnProject.CloudWatchLogsConfigProperty | undefined = undefined;
 
     if (props.s3) {
       const s3Logs = props.s3;
@@ -1221,8 +1247,8 @@ export class Project extends ProjectBase {
     const artifactsType = artifacts.type;
 
     if ((sourceType === CODEPIPELINE_SOURCE_ARTIFACTS_TYPE ||
-        artifactsType === CODEPIPELINE_SOURCE_ARTIFACTS_TYPE) &&
-        (sourceType !== artifactsType)) {
+      artifactsType === CODEPIPELINE_SOURCE_ARTIFACTS_TYPE) &&
+      (sourceType !== artifactsType)) {
       throw new Error('Both source and artifacts must be set to CodePipeline');
     }
   }
@@ -1350,10 +1376,10 @@ export interface IBuildImage {
 }
 
 /** Optional arguments to {@link IBuildImage.binder} - currently empty. */
-export interface BuildImageBindOptions {}
+export interface BuildImageBindOptions { }
 
 /** The return type from {@link IBuildImage.binder} - currently empty. */
-export interface BuildImageConfig {}
+export interface BuildImageConfig { }
 
 // @deprecated(not in tsdoc on purpose): add bind() to IBuildImage
 // and get rid of IBindableBuildImage
@@ -1377,7 +1403,7 @@ class ArmBuildImage implements IBuildImage {
   public validate(buildEnvironment: BuildEnvironment): string[] {
     const ret = [];
     if (buildEnvironment.computeType &&
-        buildEnvironment.computeType !== ComputeType.LARGE) {
+      buildEnvironment.computeType !== ComputeType.LARGE) {
       ret.push(`ARM images only support ComputeType '${ComputeType.LARGE}' - ` +
         `'${buildEnvironment.computeType}' was given`);
     }
