@@ -1778,8 +1778,10 @@ export interface BuildEnvironmentVariable {
   readonly type?: BuildEnvironmentVariableType;
 
   /**
-   * The value of the environment variable (or the name of the parameter in
-   * the SSM parameter store.)
+   * The value of the environment variable.
+   * For plain-text variables (the default), this is the literal value of variable.
+   * For SSM parameter variables, pass the name of the parameter here (`parameterName` property of `IParameter`).
+   * For SecretsManager variables secrets, pass the secret name here (`secretName` property of `ISecret`).
    */
   readonly value: any;
 }
