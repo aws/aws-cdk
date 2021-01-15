@@ -182,7 +182,7 @@ The following extensions come built-in, and ready to use.
 
   Usage:
 
-  ```
+  ```js
   new DatadogAgent({
     apmEnabled: true,
     traceAnalyticsEnabled: true,
