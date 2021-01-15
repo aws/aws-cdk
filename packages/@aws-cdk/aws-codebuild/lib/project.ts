@@ -1779,9 +1779,9 @@ export interface BuildEnvironmentVariable {
 
   /**
    * The value of the environment variable.
-   *
-   * For SSM parameters, use the parameter name {@link IParameter.parameterName}
-   * For SecretsManager secrets, use the secret name {@link ISecret.secretName}
+   * For plain-text variables (the default), this is the literal value of variable.
+   * For SSM parameter variables, pass the name of the parameter here (`parameterName` property of `IParameter`).
+   * For SecretsManager variables secrets, pass the secret name here (`secretName` property of `ISecret`).
    */
   readonly value: any;
 }
