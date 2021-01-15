@@ -265,8 +265,7 @@ cluster.addNodegroupCapacity('extra-ng', {
 
 ```
 
-When using a custom AMI, Amazon EKS doesn't merge any user data.
-Rather, you are responsible for supplying the required bootstrap commands for nodes to join the cluster.
+Note that when using a custom AMI, Amazon EKS doesn't merge any user data. Which means you do not need the multi-part encoding. and are responsible for supplying the required bootstrap commands for nodes to join the cluster.
 In the following example, `/ect/eks/bootstrap.sh` from the AMI will be used to bootstrap the node.
 
 ```ts
