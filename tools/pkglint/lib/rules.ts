@@ -286,8 +286,8 @@ export class MaturitySetting extends ValidationRule {
 
     const packageLevels = this.determinePackageLevels(pkg);
 
-    const hasL1s = packageLevels.findIndex(level => level === 'l1') !== -1;
-    const hasL2s = packageLevels.findIndex(level => level === 'l2') !== -1;
+    const hasL1s = packageLevels.some(level => level === 'l1');
+    const hasL2s = packageLevels.some(level => level === 'l2');
     if (hasL2s) {
       // validate that a package that contains L2s does not declare a 'cfn-only' maturity
       if (maturity === 'cfn-only') {
