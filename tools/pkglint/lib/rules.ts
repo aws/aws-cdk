@@ -1079,11 +1079,7 @@ export class MustHaveNodeEnginesDeclaration extends ValidationRule {
   public readonly name = 'package-info/engines';
 
   public validate(pkg: PackageJson): void {
-    if (pkg.json.private === true) {
-      return;
-    }
-
-    if (cdkMajorVersion() === 2) {
+    if (cdkMajorVersion() === 2 || pkg.json.name === 'aws-cdk-lib') {
       expectJSON(this.name, pkg, 'engines.node', '>= 14.15.0');
     } else {
       expectJSON(this.name, pkg, 'engines.node', '>= 10.13.0 <13 || >=13.7.0');
