@@ -1,4 +1,4 @@
-import { ABSENT, expect, haveResourceLike, stringLike, anything, ResourcePart } from '@aws-cdk/assert';
+import { ABSENT, expect, haveResourceLike, ResourcePart } from '@aws-cdk/assert';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import { AccountPrincipal, Role } from '@aws-cdk/aws-iam';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
@@ -8,6 +8,8 @@ import * as rds from '../lib';
 
 let stack: cdk.Stack;
 let vpc: ec2.IVpc;
+
+let importedDbProxy: rds.IDatabaseProxy;
 
 export = {
   'setUp'(cb: () => void) {
@@ -225,7 +227,67 @@ export = {
     test.done();
   },
 
-  'grantConnect should add IAM Policy with action rds-db:connect'(test: Test) {
+  'imported Proxies': {
+    'setUp'(cb: () => void) {
+      importedDbProxy = rds.DatabaseProxy.fromDatabaseProxyAttributes(stack, 'Proxy', {
+        dbProxyName: 'my-proxy',
+        dbProxyArn: 'arn:aws:rds:us-east-1:123456789012:my-proxy',
+        endpoint: 'my-endpoint',
+        securityGroups: [],
+      });
+
+      cb();
+    },
+
+    'grant rds-db:connect in grantConnect() with a dbUser explicitly passed'(test: Test) {
+      // WHEN
+      const role = new Role(stack, 'DBProxyRole', {
+        assumedBy: new AccountPrincipal(stack.account),
+      });
+      const databaseUser = 'test';
+      importedDbProxy.grantConnect(role, databaseUser);
+
+      // THEN
+      expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Statement: [{
+            Effect: 'Allow',
+            Action: 'rds-db:connect',
+            Resource: {
+              'Fn::Join': ['', [
+                'arn:',
+                { Ref: 'AWS::Partition' },
+                ':rds-db:',
+                { Ref: 'AWS::Region' },
+                ':',
+                { Ref: 'AWS::AccountId' },
+                ':dbuser:my-proxy/test',
+              ]],
+            },
+          }],
+          Version: '2012-10-17',
+        },
+      }));
+
+      test.done();
+    },
+
+    'throws when grantConnect() is used without a dbUser'(test: Test) {
+      // WHEN
+      const role = new Role(stack, 'DBProxyRole', {
+        assumedBy: new AccountPrincipal(stack.account),
+      });
+
+      // THEN
+      test.throws(() => {
+        importedDbProxy.grantConnect(role);
+      }, /For imported Database Proxies, the dbUser is required in grantConnect/);
+
+      test.done();
+    },
+  },
+
+  'new Proxy with a single Secret can use grantConnect() without a dbUser passed'(test: Test) {
     // GIVEN
     const cluster = new rds.DatabaseCluster(stack, 'Database', {
       engine: rds.DatabaseClusterEngine.AURORA,
@@ -242,8 +304,7 @@ export = {
     const role = new Role(stack, 'DBProxyRole', {
       assumedBy: new AccountPrincipal(stack.account),
     });
-    const databaseUser = 'test';
-    proxy.grantConnect(role, databaseUser);
+    proxy.grantConnect(role);
 
     // THEN
     expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
@@ -252,25 +313,53 @@ export = {
           Effect: 'Allow',
           Action: 'rds-db:connect',
           Resource: {
-            'Fn::Join': [
-              '',
-              [
-                'arn:',
-                anything(), //partition
-                stringLike(':rds-db:'),
-                anything(), //region
-                ':',
-                anything(), //account
-                stringLike(':dbuser:'),
-                anything(), //proxy-id
-                stringLike(`/${databaseUser}`),
-              ],
-            ],
+            'Fn::Join': ['', [
+              'arn:',
+              { Ref: 'AWS::Partition' },
+              ':rds-db:',
+              { Ref: 'AWS::Region' },
+              ':',
+              { Ref: 'AWS::AccountId' },
+              ':dbuser:',
+              { Ref: 'ProxyCB0DFB71' },
+              '/{{resolve:secretsmanager:',
+              { Ref: 'DatabaseSecretAttachmentE5D1B020' },
+              ':SecretString:username::}}',
+            ]],
           },
         }],
         Version: '2012-10-17',
       },
     }));
+
+    test.done();
+  },
+
+  'new Proxy with multiple Secrets cannot use grantConnect() without a dbUser passed'(test: Test) {
+    // GIVEN
+    const cluster = new rds.DatabaseCluster(stack, 'Database', {
+      engine: rds.DatabaseClusterEngine.AURORA,
+      instanceProps: { vpc },
+    });
+
+    const proxy = new rds.DatabaseProxy(stack, 'Proxy', {
+      proxyTarget: rds.ProxyTarget.fromCluster(cluster),
+      secrets: [
+        cluster.secret!,
+        new secretsmanager.Secret(stack, 'ProxySecret'),
+      ],
+      vpc,
+    });
+
+    // WHEN
+    const role = new Role(stack, 'DBProxyRole', {
+      assumedBy: new AccountPrincipal(stack.account),
+    });
+
+    // THEN
+    test.throws(() => {
+      proxy.grantConnect(role);
+    }, /When the Proxy contains multiple Secrets, you must pass a dbUser explicitly to grantConnect/);
 
     test.done();
   },
