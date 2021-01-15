@@ -342,7 +342,7 @@ export class Method extends Resource {
     }
 
     if (options.requestValidatorOptions) {
-      const validator = this.restApi.addRequestValidator('validator', options.requestValidatorOptions);
+      const validator = this.restApi.addRequestValidator(`${this.methodId}Validator`, options.requestValidatorOptions);
       return validator.requestValidatorId;
     }
 
