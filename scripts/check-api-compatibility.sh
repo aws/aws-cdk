@@ -33,11 +33,12 @@ jsii_package_dirs=$(list_jsii_packages)
 
 #----------------------------------------------------------------------
 
-# Input a directory, output the package name IF it exists on GitHub
+# Input a directory, output the package name IF it exists on npm
 dirs_to_existing_names() {
     local dir="$1"
+    local version="$2" # optional
     local name=$(package_name "$dir")
-    if package_exists_on_npm $name; then
+    if package_exists_on_npm $name $version; then
         echo "$name"
         echo -n "." >&2
     else
@@ -50,25 +51,27 @@ export -f package_exists_on_npm
 export -f dirs_to_existing_names
 
 if ! ${SKIP_DOWNLOAD:-false}; then
-    echo "Filtering on existing packages on NPM..." >&2
-    # In parallel
-    existing_names=$(echo "$jsii_package_dirs" | xargs -n1 -P4 -I {} bash -c 'dirs_to_existing_names "$@"' _ {})
-    echo " Done." >&2
-
+    echo "Determining version for the baseline..."
     version=$(node -p 'require("./scripts/resolve-version.js").version')
-    echo "Current version is $version."
+    echo " Current version is $version."
 
     if ! package_exists_on_npm aws-cdk $version; then
       # occurs within a release PR where the version is bumped but is not yet published to npm.
       if [ -z ${NPM_DISTTAG:-} ]; then
-        echo "env variable NPM_DISTTAG is not set. Failing."
+        echo "env variable NPM_DISTTAG is not set. Failing..."
         exit 1
       fi
-      echo "Current version not published. Setting version to NPM_DISTTAG (${NPM_DISTTAG})."
+      echo "  Current version not published. Setting version to NPM_DISTTAG (${NPM_DISTTAG})."
       version=$NPM_DISTTAG
     fi
 
-    echo "Using version '$version' as the baseline..."
+    echo "  Using version '$version' as the baseline."
+
+    echo "Filtering on existing packages on NPM..." >&2
+    # In parallel
+    existing_names=$(echo "$jsii_package_dirs" | xargs -n1 -P4 -I {} bash -c 'dirs_to_existing_names "$@"' _ {} $version)
+    echo " Done." >&2
+
     existing_names=$(echo "$existing_names" | sed -e "s/$/@$version/")
 
     rm -rf $tmpdir
