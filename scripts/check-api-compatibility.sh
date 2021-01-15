@@ -51,21 +51,21 @@ export -f package_exists_on_npm
 export -f dirs_to_existing_names
 
 if ! ${SKIP_DOWNLOAD:-false}; then
-    echo "Determining version for the baseline..."
+    echo "Determining version for the baseline..." >&2
     version=$(node -p 'require("./scripts/resolve-version.js").version')
-    echo " Current version is $version."
+    echo " Current version is $version." >&2
 
     if ! package_exists_on_npm aws-cdk $version; then
       # occurs within a release PR where the version is bumped but is not yet published to npm.
       if [ -z ${NPM_DISTTAG:-} ]; then
-        echo "env variable NPM_DISTTAG is not set. Failing..."
+        echo "env variable NPM_DISTTAG is not set. Failing..." >&2
         exit 1
       fi
-      echo "  Current version not published. Setting version to NPM_DISTTAG (${NPM_DISTTAG})."
+      echo "  Current version not published. Setting version to NPM_DISTTAG (${NPM_DISTTAG})." >&2
       version=$NPM_DISTTAG
     fi
 
-    echo "  Using version '$version' as the baseline."
+    echo "  Using version '$version' as the baseline." >&2
 
     echo "Filtering on existing packages on NPM..." >&2
     # In parallel
