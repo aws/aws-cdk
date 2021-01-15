@@ -1,6 +1,6 @@
 {
   "Resources": {
-    "MyProjectRole9BBE5233": {
+    "MyBatchProjectRole9252113B": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
@@ -17,7 +17,7 @@
         }
       }
     },
-    "MyProjectRoleDefaultPolicyB19B7C29": {
+    "MyBatchProjectRoleDefaultPolicy0EB10039": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
@@ -48,7 +48,7 @@
                       },
                       ":log-group:/aws/codebuild/",
                       {
-                        "Ref": "MyProject39F7B0AE"
+                        "Ref": "MyBatchProject0B8E069D"
                       }
                     ]
                   ]
@@ -71,7 +71,7 @@
                       },
                       ":log-group:/aws/codebuild/",
                       {
-                        "Ref": "MyProject39F7B0AE"
+                        "Ref": "MyBatchProject0B8E069D"
                       },
                       ":*"
                     ]
@@ -106,7 +106,7 @@
                     },
                     ":report-group/",
                     {
-                      "Ref": "MyProject39F7B0AE"
+                      "Ref": "MyBatchProject0B8E069D"
                     },
                     "-*"
                   ]
@@ -116,15 +116,15 @@
           ],
           "Version": "2012-10-17"
         },
-        "PolicyName": "MyProjectRoleDefaultPolicyB19B7C29",
+        "PolicyName": "MyBatchProjectRoleDefaultPolicy0EB10039",
         "Roles": [
           {
-            "Ref": "MyProjectRole9BBE5233"
+            "Ref": "MyBatchProjectRole9252113B"
           }
         ]
       }
     },
-    "MyProjectBatchServiceRole6B35CF0E": {
+    "MyBatchProjectBatchServiceRole5EDFDEB9": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
@@ -141,7 +141,7 @@
         }
       }
     },
-    "MyProjectBatchServiceRoleDefaultPolicy7A0E5721": {
+    "MyBatchProjectBatchServiceRoleDefaultPolicy390E73C4": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
@@ -155,7 +155,7 @@
               "Effect": "Allow",
               "Resource": {
                 "Fn::GetAtt": [
-                  "MyProject39F7B0AE",
+                  "MyBatchProject0B8E069D",
                   "Arn"
                 ]
               }
@@ -163,15 +163,15 @@
           ],
           "Version": "2012-10-17"
         },
-        "PolicyName": "MyProjectBatchServiceRoleDefaultPolicy7A0E5721",
+        "PolicyName": "MyBatchProjectBatchServiceRoleDefaultPolicy390E73C4",
         "Roles": [
           {
-            "Ref": "MyProjectBatchServiceRole6B35CF0E"
+            "Ref": "MyBatchProjectBatchServiceRole5EDFDEB9"
           }
         ]
       }
     },
-    "MyProject39F7B0AE": {
+    "MyBatchProject0B8E069D": {
       "Type": "AWS::CodeBuild::Project",
       "Properties": {
         "Artifacts": {
@@ -186,7 +186,7 @@
         },
         "ServiceRole": {
           "Fn::GetAtt": [
-            "MyProjectRole9BBE5233",
+            "MyBatchProjectRole9252113B",
             "Arn"
           ]
         },
@@ -197,7 +197,7 @@
         "BuildBatchConfig": {
           "ServiceRole": {
             "Fn::GetAtt": [
-              "MyProjectBatchServiceRole6B35CF0E",
+              "MyBatchProjectBatchServiceRole5EDFDEB9",
               "Arn"
             ]
           }

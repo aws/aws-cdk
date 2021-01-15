@@ -6,7 +6,7 @@ class TestStack extends cdk.Stack {
     super(scope, id);
 
     /// !show
-    new codebuild.Project(this, 'MyProject', {
+    new codebuild.Project(this, 'MyBatchProject', {
       supportBatchBuildType: true,
       buildSpec: codebuild.BuildSpec.fromObject({
         version: 0.2,
@@ -30,6 +30,6 @@ class TestStack extends cdk.Stack {
 
 const app = new cdk.App();
 
-new TestStack(app, 'codebuild-default-project');
+new TestStack(app, 'codebuild-batch-project');
 
 app.synth();
