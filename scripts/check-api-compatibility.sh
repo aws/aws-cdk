@@ -55,8 +55,7 @@ if ! ${SKIP_DOWNLOAD:-false}; then
     existing_names=$(echo "$jsii_package_dirs" | xargs -n1 -P4 -I {} bash -c 'dirs_to_existing_names "$@"' _ {})
     echo " Done." >&2
 
-    dirname=$(dirname $0)
-    version=$(node -p "require('$dirname/resolve-version.js').version")
+    version=$(node -p 'require("./scripts/resolve-version.js").version')
     echo "Current version is $version."
 
     if ! package_exists_on_npm aws-cdk $version; then
