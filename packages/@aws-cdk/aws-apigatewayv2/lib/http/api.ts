@@ -3,7 +3,7 @@ import { Duration, IResource, Resource } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnApi, CfnApiProps } from '../apigatewayv2.generated';
 import { DefaultDomainMappingOptions } from '../http/stage';
-import { IHttpRouteIntegration } from './integration';
+import { HttpIntegration, HttpRouteIntegrationConfig, IHttpRouteIntegration } from './integration';
 import { BatchHttpRouteOptions, HttpMethod, HttpRoute, HttpRouteKey } from './route';
 import { HttpStage, HttpStageOptions } from './stage';
 import { VpcLink, VpcLinkProps } from './vpc-link';
@@ -85,6 +85,12 @@ export interface IHttpApi extends IResource {
    * Add a new VpcLink
    */
   addVpcLink(options: VpcLinkProps): VpcLink
+
+  /**
+   * Add a http integration
+   * @internal
+   */
+  _addIntegration(config: HttpRouteIntegrationConfig): HttpIntegration;
 }
 
 /**
@@ -201,6 +207,7 @@ abstract class HttpApiBase extends Resource implements IHttpApi { // note that t
   public abstract readonly httpApiId: string;
   public abstract readonly apiEndpoint: string;
   private vpcLinks: Record<string, VpcLink> = {};
+  private httpIntegrations: Record<string, HttpIntegration> = {};
 
   public metric(metricName: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return new cloudwatch.Metric({
@@ -246,6 +253,29 @@ abstract class HttpApiBase extends Resource implements IHttpApi { // note that t
     this.vpcLinks[vpcId] = vpcLink;
 
     return vpcLink;
+  }
+
+  /**
+   * @internal
+   */
+  public _addIntegration(config: HttpRouteIntegrationConfig): HttpIntegration {
+    const configKey = JSON.stringify(config);
+    if (configKey in this.httpIntegrations) {
+      return this.httpIntegrations[configKey];
+    }
+
+    const integration = new HttpIntegration(this, `${this.node.id}-Integration`, {
+      httpApi: this,
+      integrationType: config.type,
+      integrationUri: config.uri,
+      method: config.method,
+      connectionId: config.connectionId,
+      connectionType: config.connectionType,
+      payloadFormatVersion: config.payloadFormatVersion,
+    });
+    this.httpIntegrations[configKey] = integration;
+
+    return integration;
   }
 }
 

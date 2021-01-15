@@ -574,7 +574,27 @@
         "ProtocolType": "HTTP"
       }
     },
-    "HttpProxyPrivateApiDefaultRouteDefaultRouteIntegration0AE210B0": {
+    "HttpProxyPrivateApiDefaultRoute1BDCA252": {
+      "Type": "AWS::ApiGatewayV2::Route",
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpProxyPrivateApiA55E154D"
+        },
+        "RouteKey": "$default",
+        "Target": {
+          "Fn::Join": [
+            "",
+            [
+              "integrations/",
+              {
+                "Ref": "HttpProxyPrivateApiHttpProxyPrivateApiIntegrationD20C58EE"
+              }
+            ]
+          ]
+        }
+      }
+    },
+    "HttpProxyPrivateApiHttpProxyPrivateApiIntegrationD20C58EE": {
       "Type": "AWS::ApiGatewayV2::Integration",
       "Properties": {
         "ApiId": {
@@ -593,26 +613,6 @@
           ]
         },
         "PayloadFormatVersion": "1.0"
-      }
-    },
-    "HttpProxyPrivateApiDefaultRoute1BDCA252": {
-      "Type": "AWS::ApiGatewayV2::Route",
-      "Properties": {
-        "ApiId": {
-          "Ref": "HttpProxyPrivateApiA55E154D"
-        },
-        "RouteKey": "$default",
-        "Target": {
-          "Fn::Join": [
-            "",
-            [
-              "integrations/",
-              {
-                "Ref": "HttpProxyPrivateApiDefaultRouteDefaultRouteIntegration0AE210B0"
-              }
-            ]
-          ]
-        }
       }
     },
     "HttpProxyPrivateApiDefaultStage18B3706E": {

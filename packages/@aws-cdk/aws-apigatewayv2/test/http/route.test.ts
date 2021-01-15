@@ -25,7 +25,7 @@ describe('HttpRoute', () => {
           [
             'integrations/',
             {
-              Ref: 'HttpRouteHttpRouteIntegration6EE0FE47',
+              Ref: 'HttpApiHttpApiIntegration995DE1C3',
             },
           ],
         ],
@@ -53,6 +53,25 @@ describe('HttpRoute', () => {
       PayloadFormatVersion: '2.0',
       IntegrationUri: 'some-uri',
     });
+  });
+
+  test('integration is only configured once if multiple routes are configured with it', () => {
+    const stack = new Stack();
+    const httpApi = new HttpApi(stack, 'HttpApi');
+    const integration = new DummyIntegration();
+
+    new HttpRoute(stack, 'HttpRoute1', {
+      httpApi,
+      integration,
+      routeKey: HttpRouteKey.with('/books', HttpMethod.GET),
+    });
+    new HttpRoute(stack, 'HttpRoute2', {
+      httpApi,
+      integration,
+      routeKey: HttpRouteKey.with('/books', HttpMethod.POST),
+    });
+
+    expect(stack).toCountResources('AWS::ApiGatewayV2::Integration', 1);
   });
 
   test('throws when path not start with /', () => {
