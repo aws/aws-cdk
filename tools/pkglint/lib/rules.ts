@@ -1079,7 +1079,11 @@ export class MustHaveNodeEnginesDeclaration extends ValidationRule {
   public readonly name = 'package-info/engines';
 
   public validate(pkg: PackageJson): void {
-    expectJSON(this.name, pkg, 'engines.node', '>= 10.13.0 <13 || >=13.7.0');
+    if (cdkMajorVersion() === 2) {
+      expectJSON(this.name, pkg, 'engines.node', '>= 14.15.0');
+    } else {
+      expectJSON(this.name, pkg, 'engines.node', '>= 10.13.0 <13 || >=13.7.0');
+    }
   }
 }
 
@@ -1508,9 +1512,7 @@ export class UbergenPackageVisibility extends ValidationRule {
   ];
 
   public validate(pkg: PackageJson): void {
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const releaseJson = require(`${__dirname}/../../../release.json`);
-    if (releaseJson.majorVersion === 2) {
+    if (cdkMajorVersion() === 2) {
       // Only packages in the publicPackages list should be "public". Everything else should be private.
       if (this.publicPackages.includes(pkg.json.name) && pkg.json.private === true) {
         pkg.report({
@@ -1612,4 +1614,10 @@ function toRegExp(str: string): RegExp {
 
 function readBannerFile(file: string): string {
   return fs.readFileSync(path.join(__dirname, 'banners', file), { encoding: 'utf-8' }).trim();
+}
+
+function cdkMajorVersion() {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const releaseJson = require(`${__dirname}/../../../release.json`);
+  return releaseJson.majorVersion as number;
 }
