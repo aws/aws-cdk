@@ -25,7 +25,7 @@ describe('HttpRoute', () => {
           [
             'integrations/',
             {
-              Ref: 'HttpApiHttpApiIntegration995DE1C3',
+              Ref: 'HttpApiHttpIntegration1EDD71AB9',
             },
           ],
         ],

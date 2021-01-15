@@ -264,7 +264,8 @@ abstract class HttpApiBase extends Resource implements IHttpApi { // note that t
       return this.httpIntegrations[configKey];
     }
 
-    const integration = new HttpIntegration(this, `${this.node.id}-Integration`, {
+    const count = Object.keys(this.httpIntegrations).length + 1;
+    const integration = new HttpIntegration(this, `HttpIntegration-${count}`, {
       httpApi: this,
       integrationType: config.type,
       integrationUri: config.uri,

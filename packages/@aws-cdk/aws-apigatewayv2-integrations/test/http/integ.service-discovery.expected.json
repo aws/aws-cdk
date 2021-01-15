@@ -587,14 +587,14 @@
             [
               "integrations/",
               {
-                "Ref": "HttpProxyPrivateApiHttpProxyPrivateApiIntegrationD20C58EE"
+                "Ref": "HttpProxyPrivateApiHttpIntegration18B0B2597"
               }
             ]
           ]
         }
       }
     },
-    "HttpProxyPrivateApiHttpProxyPrivateApiIntegrationD20C58EE": {
+    "HttpProxyPrivateApiHttpIntegration18B0B2597": {
       "Type": "AWS::ApiGatewayV2::Integration",
       "Properties": {
         "ApiId": {
