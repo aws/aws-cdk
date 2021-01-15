@@ -1,4 +1,4 @@
-import { CustomResource, Duration, Names, Stack } from '@aws-cdk/core';
+import {CustomResource, Duration, Names, RemovalPolicy, Stack} from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { ICluster } from './cluster';
 import { KubectlProvider } from './kubectl-provider';
@@ -65,6 +65,13 @@ export interface HelmChartOptions {
    * @default true
    */
   readonly createNamespace?: boolean;
+
+  /**
+   * The policy to apply when this resource is removed from the application.
+   *
+   * @default cdk.RemovalPolicy.Destroy
+   */
+  readonly removalPolicy?: RemovalPolicy;
 }
 
 /**
@@ -110,6 +117,7 @@ export class HelmChart extends CoreConstruct {
     new CustomResource(this, 'Resource', {
       serviceToken: provider.serviceToken,
       resourceType: HelmChart.RESOURCE_TYPE,
+      removalPolicy: props.removalPolicy,
       properties: {
         ClusterName: props.cluster.clusterName,
         RoleArn: provider.roleArn, // TODO: bake into the provider's environment
