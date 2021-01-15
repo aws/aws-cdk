@@ -1,7 +1,6 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecs from '@aws-cdk/aws-ecs';
 import * as route53 from '@aws-cdk/aws-route53';
-import * as cdk from '@aws-cdk/core';
 import { Service } from '../../service';
 import { Container } from '../container';
 import { ServiceExtension, ServiceBuild, EnvironmentCapacityType } from '../extension-interfaces';
