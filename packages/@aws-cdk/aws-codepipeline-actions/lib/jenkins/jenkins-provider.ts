@@ -3,6 +3,10 @@ import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CustomActionRegistration } from '../custom-action-registration';
 
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct as CoreConstruct } from '@aws-cdk/core';
+
 /**
  * A Jenkins provider.
  *
@@ -103,7 +107,7 @@ export interface JenkinsProviderProps {
   readonly forTest?: boolean;
 }
 
-export abstract class BaseJenkinsProvider extends cdk.Construct implements IJenkinsProvider {
+export abstract class BaseJenkinsProvider extends CoreConstruct implements IJenkinsProvider {
   public abstract readonly providerName: string;
   public abstract readonly serverUrl: string;
   public readonly version: string;
