@@ -10,6 +10,13 @@ export interface KafkaEventSourceProps extends StreamEventSourceProps {
  * Use a MSK cluster as a streaming source for AWS Lambda
  */
 export class ManagedKafkaEventSource extends StreamEventSource {
+  /**
+   * Create an event source for MSK
+   * @param clusterArn - the ARN of the MSK cluster
+   * @param topic - the Kafka topic to subscribe to
+   * @param secret - the secret with the Kafka credentials, see https://docs.aws.amazon.com/msk/latest/developerguide/msk-password.html for details
+   * @param props
+   */
   constructor(
     readonly clusterArn: string,
     readonly topic: string,
@@ -46,6 +53,13 @@ export class ManagedKafkaEventSource extends StreamEventSource {
  * Use a self hosted Kafka installation as a streaming source for AWS Lambda.
  */
 export class SelfManagedKafkaEventSource extends StreamEventSource {
+  /**
+   * Create an event source for a self managed Kafka cluster
+   * @param bootstrapServers - list of Kafka brokers
+   * @param topic - the Kafka topic to subscribe to
+   * @param secret - the secret with the Kafka credentials, see https://docs.aws.amazon.com/lambda/latest/dg/smaa-permissions.html#smaa-permissions-add-secret
+   * @param props
+   */
   constructor(
     readonly bootstrapServers: string[],
     readonly topic: string,
