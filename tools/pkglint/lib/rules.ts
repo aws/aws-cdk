@@ -1310,11 +1310,11 @@ export class FastFailingBuildScripts extends ValidationRule {
     const hasTest = 'test' in scripts;
     const hasPack = 'package' in scripts;
 
-    const cmdBuild = 'npm run build';
-    expectJSON(this.name, pkg, 'scripts.build+test', hasTest ? [cmdBuild, 'npm test'].join(' && ') : cmdBuild);
+    const cmdBuild = 'yarn build';
+    expectJSON(this.name, pkg, 'scripts.build+test', hasTest ? [cmdBuild, 'yarn test'].join(' && ') : cmdBuild);
 
-    const cmdBuildTest = 'npm run build+test';
-    expectJSON(this.name, pkg, 'scripts.build+test+package', hasPack ? [cmdBuildTest, 'npm run package'].join(' && ') : cmdBuildTest);
+    const cmdBuildTest = 'yarn build+test';
+    expectJSON(this.name, pkg, 'scripts.build+test+package', hasPack ? [cmdBuildTest, 'yarn package'].join(' && ') : cmdBuildTest);
   }
 }
 
