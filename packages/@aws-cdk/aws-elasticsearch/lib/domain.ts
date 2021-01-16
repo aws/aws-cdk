@@ -1515,6 +1515,36 @@ export class Domain extends DomainBase implements IDomain {
       });
     }
 
+    const logPublishing: Record<string, any> = {};
+
+    if (this.appLogGroup) {
+      logPublishing.ES_APPLICATION_LOGS = {
+        enabled: true,
+        cloudWatchLogsLogGroupArn: this.appLogGroup.logGroupArn,
+      };
+    }
+
+    if (this.slowSearchLogGroup) {
+      logPublishing.SEARCH_SLOW_LOGS = {
+        enabled: true,
+        cloudWatchLogsLogGroupArn: this.slowSearchLogGroup.logGroupArn,
+      };
+    }
+
+    if (this.slowIndexLogGroup) {
+      logPublishing.INDEX_SLOW_LOGS = {
+        enabled: true,
+        cloudWatchLogsLogGroupArn: this.slowIndexLogGroup.logGroupArn,
+      };
+    }
+
+    if (this.auditLogGroup) {
+      logPublishing.AUDIT_LOGS = {
+        enabled: this.auditLogGroup != null,
+        cloudWatchLogsLogGroupArn: this.auditLogGroup?.logGroupArn,
+      };
+    }
+
     // Create the domain
     this.domain = new CfnDomain(this, 'Resource', {
       domainName: this.physicalName,
@@ -1554,24 +1584,7 @@ export class Domain extends DomainBase implements IDomain {
           : undefined,
       },
       nodeToNodeEncryptionOptions: { enabled: nodeToNodeEncryptionEnabled },
-      logPublishingOptions: {
-        AUDIT_LOGS: {
-          enabled: this.auditLogGroup != null,
-          cloudWatchLogsLogGroupArn: this.auditLogGroup?.logGroupArn,
-        },
-        ES_APPLICATION_LOGS: {
-          enabled: this.appLogGroup != null,
-          cloudWatchLogsLogGroupArn: this.appLogGroup?.logGroupArn,
-        },
-        SEARCH_SLOW_LOGS: {
-          enabled: this.slowSearchLogGroup != null,
-          cloudWatchLogsLogGroupArn: this.slowSearchLogGroup?.logGroupArn,
-        },
-        INDEX_SLOW_LOGS: {
-          enabled: this.slowIndexLogGroup != null,
-          cloudWatchLogsLogGroupArn: this.slowIndexLogGroup?.logGroupArn,
-        },
-      },
+      logPublishingOptions: logPublishing,
       cognitoOptions: {
         enabled: props.cognitoKibanaAuth != null,
         identityPoolId: props.cognitoKibanaAuth?.identityPoolId,

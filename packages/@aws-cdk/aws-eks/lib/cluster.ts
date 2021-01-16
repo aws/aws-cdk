@@ -1181,6 +1181,7 @@ export class Cluster extends ClusterBase {
       bootstrapOptions: options.bootstrapOptions,
       bootstrapEnabled: options.bootstrapEnabled,
       machineImageType: options.machineImageType,
+      spotInterruptHandler: options.spotInterruptHandler,
     });
 
     if (nodeTypeForInstanceType(options.instanceType) === NodeType.INFERENTIA) {
@@ -1262,8 +1263,12 @@ export class Cluster extends ClusterBase {
     autoScalingGroup.role.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonEC2ContainerRegistryReadOnly'));
 
     // EKS Required Tags
+    // https://docs.aws.amazon.com/eks/latest/userguide/worker.html
     Tags.of(autoScalingGroup).add(`kubernetes.io/cluster/${this.clusterName}`, 'owned', {
       applyToLaunchedInstances: true,
+      // exclude security groups to avoid multiple "owned" security groups.
+      // (the cluster security group already has this tag)
+      excludeResourceTypes: ['AWS::EC2::SecurityGroup'],
     });
 
     // do not attempt to map the role if `kubectl` is not enabled for this
@@ -1286,8 +1291,9 @@ export class Cluster extends ClusterBase {
       });
     }
 
+    const addSpotInterruptHandler = options.spotInterruptHandler ?? true;
     // if this is an ASG with spot instances, install the spot interrupt handler (only if kubectl is enabled).
-    if (autoScalingGroup.spotPrice) {
+    if (autoScalingGroup.spotPrice && addSpotInterruptHandler) {
       this.addSpotInterruptHandler();
     }
   }
@@ -1576,6 +1582,14 @@ export interface AutoScalingGroupCapacityOptions extends autoscaling.CommonAutoS
    * @default MachineImageType.AMAZON_LINUX_2
    */
   readonly machineImageType?: MachineImageType;
+
+  /**
+   * Installs the AWS spot instance interrupt handler on the cluster if it's not
+   * already added. Only relevant if `spotPrice` is used.
+   *
+   * @default true
+   */
+  readonly spotInterruptHandler?: boolean;
 }
 
 /**
@@ -1667,6 +1681,14 @@ export interface AutoScalingGroupOptions {
    * @default MachineImageType.AMAZON_LINUX_2
    */
   readonly machineImageType?: MachineImageType;
+
+  /**
+   * Installs the AWS spot instance interrupt handler on the cluster if it's not
+   * already added. Only relevant if `spotPrice` is configured on the auto-scaling group.
+   *
+   * @default true
+   */
+  readonly spotInterruptHandler?: boolean;
 }
 
 /**
