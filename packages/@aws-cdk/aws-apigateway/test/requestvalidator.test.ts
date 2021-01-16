@@ -52,4 +52,46 @@ describe('request validator', () => {
       ValidateRequestParameters: true,
     });
   });
+
+  test('multiple validators using "requestValidatorOptions"', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const api = new apigateway.RestApi(stack, 'test-api', { cloudWatchRole: false, deploy: false });
+
+    // WHEN
+    new apigateway.Method(stack, 'post-method', {
+      httpMethod: 'POST',
+      resource: api.root,
+      options: {
+        requestValidatorOptions: {
+          validateRequestBody: true,
+          validateRequestParameters: false,
+        }
+      }
+    });
+    new apigateway.Method(stack, 'patch-method', {
+      httpMethod: 'PATCH',
+      resource: api.root,
+      options: {
+        requestValidatorOptions: {
+          validateRequestBody: true,
+          validateRequestParameters: true,
+        }
+      }
+    });
+
+    // THEN
+    expect(stack).toHaveResource('AWS::ApiGateway::RequestValidator', {
+      RestApiId: { Ref: stack.getLogicalId(api.node.findChild('Resource') as cdk.CfnElement) },
+      Name: 'my-model',
+      ValidateRequestBody: false,
+      ValidateRequestParameters: true,
+    });
+    expect(stack).toHaveResource('AWS::ApiGateway::RequestValidator', {
+      RestApiId: { Ref: stack.getLogicalId(api.node.findChild('Resource') as cdk.CfnElement) },
+      Name: 'my-model',
+      ValidateRequestBody: true,
+      ValidateRequestParameters: true,
+    });
+  });
 });
