@@ -1394,10 +1394,8 @@ export class Domain extends DomainBase implements IDomain {
       }
     }
 
-    if (elasticsearchVersionNum < 6.8) {
-      if (warmEnabled) {
-        throw new Error('UltraWarm requires Elasticsearch 6.8 or later.');
-      }
+    if (elasticsearchVersionNum < 6.8 && warmEnabled) {
+      throw new Error('UltraWarm requires Elasticsearch 6.8 or later.');
     }
 
     // Validate against instance type restrictions, per
