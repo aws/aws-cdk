@@ -82,7 +82,6 @@ test('minimal example renders correctly', () => {
       DedicatedMasterEnabled: false,
       InstanceCount: 1,
       InstanceType: 'r5.large.elasticsearch',
-      WarmEnabled: false,
       ZoneAwarenessEnabled: false,
     },
     ElasticsearchVersion: '7.1',

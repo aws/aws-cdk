@@ -30,20 +30,7 @@
         "EncryptionAtRestOptions": {
           "Enabled": false
         },
-        "LogPublishingOptions": {
-          "AUDIT_LOGS": {
-            "Enabled": false
-          },
-          "ES_APPLICATION_LOGS": {
-            "Enabled": false
-          },
-          "SEARCH_SLOW_LOGS": {
-            "Enabled": false
-          },
-          "INDEX_SLOW_LOGS": {
-            "Enabled": false
-          }
-        },
+        "LogPublishingOptions": {},
         "NodeToNodeEncryptionOptions": {
           "Enabled": false
         }

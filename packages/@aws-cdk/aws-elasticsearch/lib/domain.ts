@@ -1557,7 +1557,9 @@ export class Domain extends DomainBase implements IDomain {
           : undefined,
         instanceCount,
         instanceType,
-        warmEnabled,
+        warmEnabled: warmEnabled
+          ? warmEnabled
+          : undefined,
         warmCount: warmEnabled
           ? warmCount
           : undefined,

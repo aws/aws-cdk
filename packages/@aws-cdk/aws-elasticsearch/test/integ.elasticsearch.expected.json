@@ -150,7 +150,6 @@
           "DedicatedMasterEnabled": false,
           "InstanceCount": 1,
           "InstanceType": "r5.large.elasticsearch",
-          "WarmEnabled": false,
           "ZoneAwarenessEnabled": false
         },
         "ElasticsearchVersion": "7.1",
@@ -353,13 +352,13 @@
             ]
           }
         },
+        "Handler": "index.handler",
         "Role": {
           "Fn::GetAtt": [
             "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2",
             "Arn"
           ]
         },
-        "Handler": "index.handler",
         "Runtime": "nodejs12.x",
         "Timeout": 120
       },
@@ -517,7 +516,6 @@
           "DedicatedMasterEnabled": false,
           "InstanceCount": 1,
           "InstanceType": "r5.large.elasticsearch",
-          "WarmEnabled": false,
           "ZoneAwarenessEnabled": false
         },
         "ElasticsearchVersion": "7.1",
