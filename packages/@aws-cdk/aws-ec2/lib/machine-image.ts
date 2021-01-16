@@ -1,6 +1,6 @@
 import * as ssm from '@aws-cdk/aws-ssm';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
-import { Construct, ContextProvider, Stack, Token } from '@aws-cdk/core';
+import { Construct, ContextProvider, CfnMapping, Aws } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import { UserData } from './user-data';
 import { WindowsVersion } from './windows-versions';
@@ -363,22 +363,25 @@ export interface GenericWindowsImageProps {
  * manually specify an AMI map.
  */
 export class GenericLinuxImage implements IMachineImage {
-  constructor(private readonly amiMap: {[region: string]: string}, private readonly props: GenericLinuxImageProps = {}) {
+  private mapping: { [k1: string]: { [k2: string]: any } } = {};
+
+  /**
+   * A Linux image where you specify the AMI ID for every region
+   *
+   * @param amiMap For every region where you are deploying the stack,
+   * specify the AMI ID for that region.
+   * @param props Customize the image by supplying additional props
+   */
+  constructor(readonly amiMap: { [region: string]: string }, private readonly props: GenericLinuxImageProps = {}) {
+    for (const [region, ami] of Object.entries(amiMap)) {
+      this.mapping[region] = { ami };
+    }
   }
 
   public getImage(scope: Construct): MachineImageConfig {
-    const region = Stack.of(scope).region;
-    if (Token.isUnresolved(region)) {
-      throw new Error('Unable to determine AMI from AMI map since stack is region-agnostic');
-    }
-
-    const ami = region !== 'test-region' ? this.amiMap[region] : 'ami-12345';
-    if (!ami) {
-      throw new Error(`Unable to find AMI in AMI map: no AMI specified for region '${region}'`);
-    }
-
+    const amiMap = new CfnMapping(scope, 'AmiMap', { mapping: this.mapping });
     return {
-      imageId: ami,
+      imageId: amiMap.findInMap(Aws.REGION, 'ami'),
       userData: this.props.userData ?? UserData.forLinux(),
       osType: OperatingSystemType.LINUX,
     };
@@ -391,22 +394,25 @@ export class GenericLinuxImage implements IMachineImage {
  * Allows you to create a generic Windows EC2 , manually specify an AMI map.
  */
 export class GenericWindowsImage implements IMachineImage {
-  constructor(private readonly amiMap: {[region: string]: string}, private readonly props: GenericWindowsImageProps = {}) {
+  private mapping: { [k1: string]: { [k2: string]: any } } = {};
+
+  /**
+   * A Windows image where you specify the AMI ID for every region
+   *
+   * @param amiMap For every region where you are deploying the stack,
+   * specify the AMI ID for that region.
+   * @param props Customize the image by supplying additional props
+   */
+  constructor(readonly amiMap: {[region: string]: string}, private readonly props: GenericWindowsImageProps = {}) {
+    for (const [region, ami] of Object.entries(amiMap)) {
+      this.mapping[region] = { ami };
+    }
   }
 
   public getImage(scope: Construct): MachineImageConfig {
-    const region = Stack.of(scope).region;
-    if (Token.isUnresolved(region)) {
-      throw new Error('Unable to determine AMI from AMI map since stack is region-agnostic');
-    }
-
-    const ami = region !== 'test-region' ? this.amiMap[region] : 'ami-12345';
-    if (!ami) {
-      throw new Error(`Unable to find AMI in AMI map: no AMI specified for region '${region}'`);
-    }
-
+    const amiMap = new CfnMapping(scope, 'AmiMap', { mapping: this.mapping });
     return {
-      imageId: ami,
+      imageId: amiMap.findInMap(Aws.REGION, 'ami'),
       userData: this.props.userData ?? UserData.forWindows(),
       osType: OperatingSystemType.WINDOWS,
     };

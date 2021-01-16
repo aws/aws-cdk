@@ -895,7 +895,7 @@ nodeunitShim({
       // THEN
       expect(stack).to(countResources('AWS::EC2::Instance', 3));
       expect(stack).to(haveResource('AWS::EC2::Instance', {
-        ImageId: 'ami-1',
+        ImageId: { 'Fn::FindInMap': ['TheVPCPublicSubnet1NatInstanceAmiMap7BC63154', { Ref: 'AWS::Region' }, 'ami'] },
         InstanceType: 'q86.mega',
         SourceDestCheck: false,
       }));
