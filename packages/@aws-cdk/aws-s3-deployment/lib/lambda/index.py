@@ -7,10 +7,11 @@ import traceback
 import logging
 import shutil
 import boto3
+import contextlib
 from datetime import datetime
 from uuid import uuid4
 
-from botocore.vendored import requests
+from urllib.request import Request, urlopen
 from zipfile import ZipFile
 
 logger = logging.getLogger()
@@ -212,8 +213,9 @@ def cfn_send(event, context, responseStatus, responseData={}, physicalResourceId
     }
 
     try:
-        response = requests.put(responseUrl, data=body, headers=headers)
-        logger.info("| status code: " + response.reason)
+        request = Request(responseUrl, method='PUT', data=bytes(body.encode('utf-8')), headers=headers)
+        with contextlib.closing(urlopen(request)) as response:
+          logger.info("| status code: " + response.reason)
     except Exception as e:
         logger.error("| unable to send response to CloudFormation")
         logger.exception(e)

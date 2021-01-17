@@ -77,6 +77,26 @@ describe('code', () => {
         },
       }, ResourcePart.CompleteDefinition);
     });
+
+    test('fails if asset is bound with a second stack', () => {
+      // GIVEN
+      const asset = lambda.Code.fromAsset(path.join(__dirname, 'my-lambda-handler'));
+
+      const app = new cdk.App();
+      const stack1 = new cdk.Stack(app, 'Stack1');
+      new lambda.Function(stack1, 'Func', {
+        code: asset,
+        runtime: lambda.Runtime.NODEJS_10_X,
+        handler: 'foom',
+      });
+
+      const stack2 = new cdk.Stack(app, 'Stack2');
+      expect(() => new lambda.Function(stack2, 'Func', {
+        code: asset,
+        runtime: lambda.Runtime.NODEJS_10_X,
+        handler: 'foom',
+      })).toThrow(/already associated/);
+    });
   });
 
   describe('lambda.Code.fromCfnParameters', () => {
