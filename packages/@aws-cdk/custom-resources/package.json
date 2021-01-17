@@ -46,8 +46,8 @@
     "pkglint": "pkglint -f",
     "package": "cdk-package",
     "awslint": "cdk-awslint",
-    "build+test+package": "npm run build+test && npm run package",
-    "build+test": "npm run build && npm test",
+    "build+test+package": "yarn build+test && yarn package",
+    "build+test": "yarn build && yarn test",
     "compat": "cdk-compat",
     "gen": "cp -f $(node -p 'require.resolve(\"aws-sdk/apis/metadata.json\")') lib/aws-custom-resource/sdk-api-metadata.json && rm -rf test/aws-custom-resource/cdk.out",
     "rosetta:extract": "yarn --silent jsii-rosetta extract"
