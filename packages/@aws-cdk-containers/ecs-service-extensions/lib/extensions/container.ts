@@ -1,4 +1,5 @@
 import * as ecs from '@aws-cdk/aws-ecs';
+import { Construct } from 'constructs';
 import { Service } from '../service';
 import { ServiceExtension } from './extension-interfaces';
 
