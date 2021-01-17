@@ -140,7 +140,6 @@ export class PolicyStatement {
     }
     for (const principal of principals) {
       this.validatePolicyPrincipal(principal);
-
       const fragment = principal.policyFragment;
       mergePrincipal(this.principal, fragment.principalJson);
       this.addPrincipalConditions(fragment.conditions);
@@ -161,7 +160,6 @@ export class PolicyStatement {
     }
     for (const notPrincipal of notPrincipals) {
       this.validatePolicyPrincipal(notPrincipal);
-
       const fragment = notPrincipal.policyFragment;
       mergePrincipal(this.notPrincipal, fragment.principalJson);
       this.addPrincipalConditions(fragment.conditions);
