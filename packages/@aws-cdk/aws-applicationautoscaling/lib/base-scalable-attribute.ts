@@ -1,8 +1,11 @@
 import * as iam from '@aws-cdk/aws-iam';
-import { Construct } from 'constructs';
 import { ScalableTarget, ScalingSchedule, ServiceNamespace } from './scalable-target';
 import { BasicStepScalingPolicyProps } from './step-scaling-policy';
 import { BasicTargetTrackingScalingPolicyProps } from './target-tracking-scaling-policy';
+
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct } from 'constructs';
 
 /**
  * Properties for a ScalableTableAttribute
