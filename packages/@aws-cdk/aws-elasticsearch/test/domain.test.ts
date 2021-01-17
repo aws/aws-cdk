@@ -1033,6 +1033,16 @@ describe('custom error responses', () => {
     })).toThrow(error);
   });
 
+  test('error when Ultra Warm instance types do not start with ultrawarm', () => {
+    const error = /UltraWarm node instance type must start with "ultrawarm"./;
+    expect(() => new Domain(stack, 'Domain1', {
+      version: ElasticsearchVersion.V7_4,
+      capacity: {
+        warmInstanceType: 't3.small.elasticsearch',
+      },
+    })).toThrow(error);
+  });
+
   test('error when elasticsearchVersion is unsupported/unknown', () => {
     expect(() => new Domain(stack, 'Domain1', {
       version: ElasticsearchVersion.of('5.4'),

@@ -1272,6 +1272,10 @@ export class Domain extends DomainBase implements IDomain {
       throw new Error('Master, data and UltraWarm node instance types must end with ".elasticsearch".');
     }
 
+    if (!warmType.startsWith('ultrawarm')) {
+      throw new Error('UltraWarm node instance type must start with "ultrawarm".');
+    }
+
     const elasticsearchVersion = props.version.version;
     const elasticsearchVersionNum = parseVersion(props.version);
 
