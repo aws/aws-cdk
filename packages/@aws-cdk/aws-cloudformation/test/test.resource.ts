@@ -6,6 +6,10 @@ import { Construct } from 'constructs';
 import { Test, testCase } from 'nodeunit';
 import { CustomResource, CustomResourceProvider } from '../lib';
 
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct } from '@aws-cdk/core';
+
 /* eslint-disable cdk/no-core-construct */
 /* eslint-disable quote-props */
 

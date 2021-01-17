@@ -4,6 +4,10 @@ import { Bucket, EventType, NotificationKeyFilter } from '../bucket';
 import { BucketNotificationDestinationType, IBucketNotificationDestination } from '../destination';
 import { NotificationsResourceHandler } from './notifications-resource-handler';
 
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct } from '@aws-cdk/core';
+
 interface NotificationsProps {
   /**
    * The bucket to manage notifications for.

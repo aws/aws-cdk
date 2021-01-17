@@ -4,6 +4,10 @@ import { Construct } from 'constructs';
 import { ContainerDefinition } from '../container-definition';
 import { ContainerImage, ContainerImageConfig } from '../container-image';
 
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct } from '@aws-cdk/core';
+
 /**
  * A special type of {@link ContainerImage} that uses an ECR repository for the image,
  * but a CloudFormation Parameter for the tag of the image in that repository.

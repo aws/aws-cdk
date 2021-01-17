@@ -5,6 +5,10 @@ import { IEnvironment } from './environment';
 import { EnvironmentCapacityType, ServiceBuild } from './extensions/extension-interfaces';
 import { ServiceDescription } from './service-description';
 
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct } from '@aws-cdk/core';
+
 /**
  * The settings for an ECS Service
  */

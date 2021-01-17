@@ -1,7 +1,7 @@
 import { expect, haveResourceLike } from '@aws-cdk/assert';
+import * as acm from '@aws-cdk/aws-certificatemanager';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-
 import * as appmesh from '../lib';
 
 export = {
@@ -151,6 +151,142 @@ export = {
         },
         VirtualGatewayName: 'test-gateway',
       }));
+      test.done();
+    },
+
+    'with an http listener with a TLS certificate from ACM'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      // WHEN
+      const mesh = new appmesh.Mesh(stack, 'mesh', {
+        meshName: 'test-mesh',
+      });
+
+      const cert = new acm.Certificate(stack, 'cert', {
+        domainName: '',
+      });
+
+      new appmesh.VirtualGateway(stack, 'testGateway', {
+        virtualGatewayName: 'test-gateway',
+        mesh: mesh,
+        listeners: [appmesh.VirtualGatewayListener.http({
+          port: 8080,
+          tlsCertificate: appmesh.TlsCertificate.acm({
+            tlsMode: appmesh.TlsMode.STRICT,
+            certificate: cert,
+          }),
+        })],
+      });
+
+      // THEN
+      expect(stack).to(haveResourceLike('AWS::AppMesh::VirtualGateway', {
+        Spec: {
+          Listeners: [
+            {
+              TLS: {
+                Mode: appmesh.TlsMode.STRICT,
+                Certificate: {
+                  ACM: {
+                    CertificateArn: {
+                      Ref: 'cert56CA94EB',
+                    },
+                  },
+                },
+              },
+            },
+          ],
+        },
+      }));
+
+      test.done();
+    },
+
+    'with an grpc listener with a TLS certificate from file'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      // WHEN
+      const mesh = new appmesh.Mesh(stack, 'mesh', {
+        meshName: 'test-mesh',
+      });
+
+      new appmesh.VirtualGateway(stack, 'testGateway', {
+        virtualGatewayName: 'test-gateway',
+        mesh: mesh,
+        listeners: [appmesh.VirtualGatewayListener.grpc({
+          port: 8080,
+          tlsCertificate: appmesh.TlsCertificate.file({
+            certificateChainPath: 'path/to/certChain',
+            privateKeyPath: 'path/to/privateKey',
+            tlsMode: appmesh.TlsMode.STRICT,
+          }),
+        })],
+      });
+
+      // THEN
+      expect(stack).to(haveResourceLike('AWS::AppMesh::VirtualGateway', {
+        Spec: {
+          Listeners: [
+            {
+              TLS: {
+                Mode: appmesh.TlsMode.STRICT,
+                Certificate: {
+                  File: {
+                    CertificateChain: 'path/to/certChain',
+                    PrivateKey: 'path/to/privateKey',
+                  },
+                },
+              },
+            },
+          ],
+        },
+      }));
+
+      test.done();
+    },
+
+    'with an grpc listener with the TLS mode permissive'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      // WHEN
+      const mesh = new appmesh.Mesh(stack, 'mesh', {
+        meshName: 'test-mesh',
+      });
+
+      new appmesh.VirtualGateway(stack, 'testGateway', {
+        virtualGatewayName: 'test-gateway',
+        mesh: mesh,
+        listeners: [appmesh.VirtualGatewayListener.grpc({
+          port: 8080,
+          tlsCertificate: appmesh.TlsCertificate.file({
+            certificateChainPath: 'path/to/certChain',
+            privateKeyPath: 'path/to/privateKey',
+            tlsMode: appmesh.TlsMode.PERMISSIVE,
+          }),
+        })],
+      });
+
+      // THEN
+      expect(stack).to(haveResourceLike('AWS::AppMesh::VirtualGateway', {
+        Spec: {
+          Listeners: [
+            {
+              TLS: {
+                Mode: appmesh.TlsMode.PERMISSIVE,
+                Certificate: {
+                  File: {
+                    CertificateChain: 'path/to/certChain',
+                    PrivateKey: 'path/to/privateKey',
+                  },
+                },
+              },
+            },
+          ],
+        },
+      }));
+
       test.done();
     },
   },

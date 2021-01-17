@@ -6,6 +6,10 @@ import * as s3_assets from '@aws-cdk/aws-s3-assets';
 import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
 
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct } from '@aws-cdk/core';
+
 /**
  * Represents the Lambda Handler Code.
  */
@@ -249,6 +253,9 @@ export class AssetCode extends Code {
         path: this.path,
         ...this.options,
       });
+    } else if (cdk.Stack.of(this.asset) !== cdk.Stack.of(scope)) {
+      throw new Error(`Asset is already associated with another stack '${cdk.Stack.of(this.asset).stackName}'. ` +
+        'Create a new Code instance for every stack.');
     }
 
     if (!this.asset.isZipArchive) {
