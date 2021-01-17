@@ -4,7 +4,7 @@ import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import {
-  Fn, IResource, Lazy, RemovalPolicy, Resource, Stack, Token,
+  Fn, IResource, Lazy, RemovalPolicy, Resource, ResourceProps, Stack, Token,
   CustomResource, CustomResourceProvider, CustomResourceProviderRuntime, FeatureFlags,
 } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
