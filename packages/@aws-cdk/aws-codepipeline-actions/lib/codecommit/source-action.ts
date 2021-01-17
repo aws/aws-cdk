@@ -115,7 +115,6 @@ export class CodeCommitSourceAction extends Action {
   private readonly branch: string;
   private readonly props: CodeCommitSourceActionProps;
 
-
   constructor(props: CodeCommitSourceActionProps) {
     const branch = props.branch ?? 'master';
     if (!branch) {
