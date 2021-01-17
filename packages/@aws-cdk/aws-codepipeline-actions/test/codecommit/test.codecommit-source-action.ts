@@ -269,6 +269,63 @@ export = {
       test.done();
     },
 
+    'allows to enable full clone'(test: Test) {
+      const stack = new Stack();
+
+      const sourceOutput = new codepipeline.Artifact();
+      new codepipeline.Pipeline(stack, 'P', {
+        stages: [
+          {
+            stageName: 'Source',
+            actions: [
+              new cpactions.CodeCommitSourceAction({
+                actionName: 'CodeCommit',
+                repository: new codecommit.Repository(stack, 'R', {
+                  repositoryName: 'repository',
+                }),
+                branch: Lazy.string({ produce: () => 'my-branch' }),
+                output: sourceOutput,
+                codeBuildCloneOutput: true,
+              }),
+            ],
+          },
+          {
+            stageName: 'Build',
+            actions: [
+              new cpactions.CodeBuildAction({
+                actionName: 'Build',
+                project: new codebuild.PipelineProject(stack, 'CodeBuild'),
+                input: sourceOutput,
+              }),
+            ],
+          },
+        ],
+      });
+
+      expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
+        'Stages': [
+          {
+            'Name': 'Source',
+            'Actions': [{
+              'Configuration': {
+                'OutputArtifactFormat': 'CODEBUILD_CLONE_REF',
+              },
+            }],
+          },
+          {
+            'Name': 'Build',
+            'Actions': [
+              {
+                'Name': 'Build',
+              },
+            ],
+          },
+        ],
+      }));
+
+      test.done();
+    },
+
     'uses the role when passed'(test: Test) {
       const stack = new Stack();
 

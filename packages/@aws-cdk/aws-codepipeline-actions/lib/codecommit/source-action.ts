@@ -85,6 +85,19 @@ export interface CodeCommitSourceActionProps extends codepipeline.CommonAwsActio
    * @default a new role will be created.
    */
   readonly eventRole?: iam.IRole;
+
+  /**
+   * Whether the output should be the contents of the repository
+   * (which is the default),
+   * or a link that allows CodeBuild to clone the repository before building.
+   *
+   * **Note**: if this option is true,
+   * then only CodeBuild actions can use the resulting {@link output}.
+   *
+   * @default false
+   * @see https://docs.aws.amazon.com/codepipeline/latest/userguide/action-reference-CodeCommit.html
+   */
+  readonly codeBuildCloneOutput?: boolean;
 }
 
 /**
@@ -144,7 +157,7 @@ export class CodeCommitSourceAction extends Action {
     options.bucket.grantReadWrite(options.role);
 
     // https://docs.aws.amazon.com/codecommit/latest/userguide/auth-and-access-control-permissions-reference.html#aa-acp
-    options.role.addToPolicy(new iam.PolicyStatement({
+    options.role.addToPrincipalPolicy(new iam.PolicyStatement({
       resources: [this.props.repository.repositoryArn],
       actions: [
         'codecommit:GetBranch',
@@ -155,11 +168,23 @@ export class CodeCommitSourceAction extends Action {
       ],
     }));
 
+    if (this.props.codeBuildCloneOutput === true) {
+      options.role.addToPrincipalPolicy(new iam.PolicyStatement({
+        resources: [this.props.repository.repositoryArn],
+        actions: [
+          'codecommit:GetRepository',
+        ],
+      }));
+    }
+
     return {
       configuration: {
         RepositoryName: this.props.repository.repositoryName,
         BranchName: this.branch,
         PollForSourceChanges: this.props.trigger === CodeCommitTrigger.POLL,
+        OutputArtifactFormat: this.props.codeBuildCloneOutput === true
+          ? 'CODEBUILD_CLONE_REF'
+          : undefined,
       },
     };
   }
