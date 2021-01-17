@@ -1,4 +1,5 @@
 import * as acm from '@aws-cdk/aws-certificatemanager';
+import { Construct } from 'constructs';
 import { CfnVirtualNode } from './appmesh.generated';
 
 /**
