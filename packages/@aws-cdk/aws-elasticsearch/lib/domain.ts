@@ -124,6 +124,24 @@ export interface CapacityConfig {
    * @default - r5.large.elasticsearch
    */
   readonly dataNodeInstanceType?: string;
+
+  /**
+   * The number of UltraWarm nodes (instances) to use in the Amazon ES domain.
+   *
+   * @default - no UltraWarm nodes
+   */
+  readonly warmNodes?: number;
+
+  /**
+   * The instance type for your UltraWarm node, such as `ultrawarm1.medium.elasticsearch`.
+   * For valid values, see [UltraWarm Storage Limits]
+   * (https://docs.aws.amazon.com/elasticsearch-service/latest/developerguide/aes-limits.html#limits-ultrawarm)
+   * in the Amazon Elasticsearch Service Developer Guide.
+   *
+   * @default - ultrawarm1.medium.elasticsearch
+   */
+  readonly warmInstanceType?: string;
+
 }
 
 /**
@@ -1214,6 +1232,7 @@ export class Domain extends DomainBase implements IDomain {
     });
 
     const defaultInstanceType = 'r5.large.elasticsearch';
+    const warmDefaultInstanceType = 'ultrawarm1.medium.elasticsearch';
 
     const dedicatedMasterType =
       props.capacity?.masterNodeInstanceType?.toLowerCase() ??
@@ -1225,6 +1244,12 @@ export class Domain extends DomainBase implements IDomain {
       props.capacity?.dataNodeInstanceType?.toLowerCase() ??
       defaultInstanceType;
     const instanceCount = props.capacity?.dataNodes ?? 1;
+
+    const warmType =
+      props.capacity?.warmInstanceType?.toLowerCase() ??
+      warmDefaultInstanceType;
+    const warmCount = props.capacity?.warmNodes ?? 0;
+    const warmEnabled = warmCount > 0;
 
     const availabilityZoneCount =
       props.zoneAwareness?.availabilityZoneCount ?? 2;
@@ -1243,8 +1268,12 @@ export class Domain extends DomainBase implements IDomain {
       throw new Error('When providing vpc options you need to provide a subnet for each AZ you are using');
     };
 
-    if ([dedicatedMasterType, instanceType].some(t => !t.endsWith('.elasticsearch'))) {
-      throw new Error('Master and data node instance types must end with ".elasticsearch".');
+    if ([dedicatedMasterType, instanceType, warmType].some(t => !t.endsWith('.elasticsearch'))) {
+      throw new Error('Master, data and UltraWarm node instance types must end with ".elasticsearch".');
+    }
+
+    if (!warmType.startsWith('ultrawarm')) {
+      throw new Error('UltraWarm node instance type must start with "ultrawarm".');
     }
 
     const elasticsearchVersion = props.version.version;
@@ -1369,6 +1398,10 @@ export class Domain extends DomainBase implements IDomain {
       }
     }
 
+    if (elasticsearchVersionNum < 6.8 && warmEnabled) {
+      throw new Error('UltraWarm requires Elasticsearch 6.8 or later.');
+    }
+
     // Validate against instance type restrictions, per
     // https://docs.aws.amazon.com/elasticsearch-service/latest/developerguide/aes-supported-instance-types.html
     if (isInstanceType('i3') && ebsEnabled) {
@@ -1381,6 +1414,10 @@ export class Domain extends DomainBase implements IDomain {
 
     if (isInstanceType('t2.micro') && elasticsearchVersionNum > 2.3) {
       throw new Error('The t2.micro.elasticsearch instance type supports only Elasticsearch 1.5 and 2.3.');
+    }
+
+    if (isSomeInstanceType('t2', 't3') && warmEnabled) {
+      throw new Error('T2 and T3 instance types do not support UltraWarm storage.');
     }
 
     // Only R3 and I3 support instance storage, per
@@ -1407,6 +1444,12 @@ export class Domain extends DomainBase implements IDomain {
     // https://aws.amazon.com/about-aws/whats-new/2020/09/elasticsearch-audit-logs-now-available-on-amazon-elasticsearch-service/
     if (props.logging?.auditLogEnabled && !advancedSecurityEnabled) {
       throw new Error('Fine-grained access control is required when audit logs publishing is enabled.');
+    }
+
+    // Validate UltraWarm requirement for dedicated master nodes, per
+    // https://docs.aws.amazon.com/elasticsearch-service/latest/developerguide/ultrawarm.html
+    if (warmEnabled && !dedicatedMasterEnabled) {
+      throw new Error('Dedicated master node is required when UltraWarm storage is enabled.');
     }
 
     let cfnVpcOptions: CfnDomain.VPCOptionsProperty | undefined;
@@ -1518,6 +1561,15 @@ export class Domain extends DomainBase implements IDomain {
           : undefined,
         instanceCount,
         instanceType,
+        warmEnabled: warmEnabled
+          ? warmEnabled
+          : undefined,
+        warmCount: warmEnabled
+          ? warmCount
+          : undefined,
+        warmType: warmEnabled
+          ? warmType
+          : undefined,
         zoneAwarenessEnabled,
         zoneAwarenessConfig: zoneAwarenessEnabled
           ? { availabilityZoneCount }
