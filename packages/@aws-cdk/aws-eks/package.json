@@ -118,7 +118,7 @@
     "@aws-cdk/lambda-layer-kubectl": "0.0.0"
   },
   "engines": {
-    "node": ">= 10.13.0 <13 || >=13.7.0"
+    "node": ">= 14.15.0"
   },
   "awslint": {
     "exclude": [
