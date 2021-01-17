@@ -323,6 +323,54 @@ export = {
         ],
       }));
 
+      expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
+        'PolicyDocument': {
+          'Statement': [
+            {
+              'Action': [
+                'logs:CreateLogGroup',
+                'logs:CreateLogStream',
+                'logs:PutLogEvents',
+              ],
+            },
+            {},
+            {},
+            {},
+            {},
+            {
+              'Action': 'codecommit:GitPull',
+              'Effect': 'Allow',
+              'Resource': {
+                'Fn::GetAtt': [
+                  'RC21A1702',
+                  'Arn',
+                ],
+              },
+            },
+          ],
+        },
+      }));
+
+      expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
+        'PolicyDocument': {
+          'Statement': [
+            {},
+            {},
+            {},
+            {
+              'Action': 'codecommit:GetRepository',
+              'Effect': 'Allow',
+              'Resource': {
+                'Fn::GetAtt': [
+                  'RC21A1702',
+                  'Arn',
+                ],
+              },
+            },
+          ],
+        },
+      }));
+
       test.done();
     },
 

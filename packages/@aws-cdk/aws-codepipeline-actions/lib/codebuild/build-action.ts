@@ -8,6 +8,7 @@ import { Action } from '../action';
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
 // eslint-disable-next-line no-duplicate-imports, import/order
 import { Construct } from '@aws-cdk/core';
+import { CodeCommitSourceAction } from '../codecommit/source-action';
 
 /**
  * The type of the CodeBuild action that determines its CodePipeline Category -
@@ -176,15 +177,26 @@ export class CodeBuildAction extends Action {
       });
     }
 
-    // if any of the inputs come from the BitBucketSourceAction
-    // with codeBuildCloneOutput=true,
-    // grant the Project's Role to use the connection
     for (const inputArtifact of this.actionProperties.inputs || []) {
+      // if any of the inputs come from the BitBucketSourceAction
+      // with codeBuildCloneOutput=true,
+      // grant the Project's Role to use the connection
       const connectionArn = inputArtifact.getMetadata(BitBucketSourceAction._CONNECTION_ARN_PROPERTY);
       if (connectionArn) {
         this.props.project.addToRolePolicy(new iam.PolicyStatement({
           actions: ['codestar-connections:UseConnection'],
           resources: [connectionArn],
+        }));
+      }
+
+      // if any of the inputs come from the CodeCommitSourceAction
+      // with codeBuildCloneOutput=true,
+      // grant the Project's Role git pull access to the repository
+      const codecommitRepositoryArn = inputArtifact.getMetadata(CodeCommitSourceAction._FULL_CLONE_ARN_PROPERTY);
+      if (codecommitRepositoryArn) {
+        this.props.project.addToRolePolicy(new iam.PolicyStatement({
+          actions: ['codecommit:GitPull'],
+          resources: [codecommitRepositoryArn],
         }));
       }
     }

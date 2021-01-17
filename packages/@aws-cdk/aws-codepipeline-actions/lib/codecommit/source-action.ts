@@ -104,13 +104,26 @@ export interface CodeCommitSourceActionProps extends codepipeline.CommonAwsActio
  * CodePipeline Source that is provided by an AWS CodeCommit repository.
  */
 export class CodeCommitSourceAction extends Action {
+  /**
+   * The name of the property that holds the ARN of the CodeCommit Repository
+   * inside of the CodePipeline Artifact's metadata.
+   *
+   * @internal
+   */
+  public static readonly _FULL_CLONE_ARN_PROPERTY = 'CodeCommitCloneRepositoryArn';
+
   private readonly branch: string;
   private readonly props: CodeCommitSourceActionProps;
+
 
   constructor(props: CodeCommitSourceActionProps) {
     const branch = props.branch ?? 'master';
     if (!branch) {
       throw new Error("'branch' parameter cannot be an empty string");
+    }
+
+    if (props.codeBuildCloneOutput === true) {
+      props.output.setMetadata(CodeCommitSourceAction._FULL_CLONE_ARN_PROPERTY, props.repository.repositoryArn);
     }
 
     super({
