@@ -123,7 +123,8 @@ class VirtualNodeListenerImpl extends VirtualNodeListener {
     private readonly port: number = 8080,
     private readonly tlsCertificate: TlsCertificate | undefined) { super(); }
 
-  public bind(_scope: Construct): VirtualNodeListenerConfig {
+  public bind(scope: Construct): VirtualNodeListenerConfig {
+    const tlsConfig = this.tlsCertificate?.bind(scope);
     return {
       listener: {
         portMapping: {
