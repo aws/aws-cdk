@@ -115,7 +115,8 @@ class VirtualGatewayListenerImpl extends VirtualGatewayListener {
    * Called when the GatewayListener type is initialized. Can be used to enforce
    * mutual exclusivity
    */
-  public bind(_scope: Construct): VirtualGatewayListenerConfig {
+  public bind(scope: Construct): VirtualGatewayListenerConfig {
+    const tlsConfig = this.tlsCertificate?.bind(scope);
     return {
       listener: {
         portMapping: {
