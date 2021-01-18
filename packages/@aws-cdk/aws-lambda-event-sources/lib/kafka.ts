@@ -3,45 +3,66 @@ import * as lambda from '@aws-cdk/aws-lambda';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import { StreamEventSource, StreamEventSourceProps } from './stream';
 
+/**
+ * Properties for a Kafka event source
+ */
 export interface KafkaEventSourceProps extends StreamEventSourceProps {
+  /**
+   * the Kafka topic to subscribe to
+   */
+  readonly topic: string,
+  /**
+   * the secret with the Kafka credentials, see https://docs.aws.amazon.com/msk/latest/developerguide/msk-password.html for details
+   */
+  readonly secret: secretsmanager.ISecret
+}
+
+/**
+ * Properties for a MSK event source
+ */
+export interface ManagedKafkaEventSourceProps extends KafkaEventSourceProps {
+  /**
+   * the ARN of the MSK cluster
+   */
+  readonly clusterArn: string
+}
+
+/**
+ * Properties for a self managed Kafka cluster event source
+ */
+export interface SelfManagedKafkaEventSourceProps extends KafkaEventSourceProps {
+  /**
+   * list of Kafka brokers
+   */
+  readonly bootstrapServers: string[]
 }
 
 /**
  * Use a MSK cluster as a streaming source for AWS Lambda
  */
-export class ManagedKafkaEventSource extends StreamEventSource {
-  /**
-   * Create an event source for MSK
-   * @param clusterArn - the ARN of the MSK cluster
-   * @param topic - the Kafka topic to subscribe to
-   * @param secret - the secret with the Kafka credentials, see https://docs.aws.amazon.com/msk/latest/developerguide/msk-password.html for details
-   * @param props
-   */
-  constructor(
-    readonly clusterArn: string,
-    readonly topic: string,
-    readonly secret: secretsmanager.ISecret,
-    props: KafkaEventSourceProps) {
+export class ManagedKafkaEventSource extends StreamEventSource<ManagedKafkaEventSourceProps> {
+
+  constructor(props: ManagedKafkaEventSourceProps) {
     super(props);
   }
 
   public bind(target: lambda.IFunction) {
     target.addEventSourceMapping(
-      `KafkaEventSource:${this.topic}`,
+      `KafkaEventSource:${this.props.topic}`,
       this.enrichMappingOptions({
-        eventSourceArn: this.clusterArn,
+        eventSourceArn: this.props.clusterArn,
         startingPosition: this.props.startingPosition,
-        kafkaSecretArn: this.secret.secretArn,
-        kafkaTopic: this.topic,
+        kafkaSecretArn: this.props.secret.secretArn,
+        kafkaTopic: this.props.topic,
       }),
     );
 
-    this.secret.grantRead(target);
+    this.props.secret.grantRead(target);
 
     target.addToRolePolicy(new iam.PolicyStatement(
       {
         actions: ['kafka:DescribeCluster', 'kafka:GetBootstrapBrokers', 'kafka:ListScramSecrets'],
-        resources: [this.clusterArn],
+        resources: [this.props.clusterArn],
       },
     ));
 
@@ -52,32 +73,22 @@ export class ManagedKafkaEventSource extends StreamEventSource {
 /**
  * Use a self hosted Kafka installation as a streaming source for AWS Lambda.
  */
-export class SelfManagedKafkaEventSource extends StreamEventSource {
-  /**
-   * Create an event source for a self managed Kafka cluster
-   * @param bootstrapServers - list of Kafka brokers
-   * @param topic - the Kafka topic to subscribe to
-   * @param secret - the secret with the Kafka credentials, see https://docs.aws.amazon.com/lambda/latest/dg/smaa-permissions.html#smaa-permissions-add-secret
-   * @param props
-   */
-  constructor(
-    readonly bootstrapServers: string[],
-    readonly topic: string,
-    readonly secret: secretsmanager.ISecret,
-    props: KafkaEventSourceProps) {
+export class SelfManagedKafkaEventSource extends StreamEventSource<SelfManagedKafkaEventSourceProps> {
+
+  constructor(props: SelfManagedKafkaEventSourceProps) {
     super(props);
   }
 
   public bind(target: lambda.IFunction) {
     target.addEventSourceMapping(
-      `KafkaEventSource:${this.topic}`,
+      `KafkaEventSource:${this.props.topic}`,
       this.enrichMappingOptions({
-        kafkaBootstrapServers: this.bootstrapServers,
-        kafkaTopic: this.topic,
+        kafkaBootstrapServers: this.props.bootstrapServers,
+        kafkaTopic: this.props.topic,
         startingPosition: this.props.startingPosition,
-        kafkaSecretArn: this.secret.secretArn,
+        kafkaSecretArn: this.props.secret.secretArn,
       }),
     );
-    this.secret.grantRead(target);
+    this.props.secret.grantRead(target);
   }
 }

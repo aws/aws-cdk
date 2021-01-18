@@ -89,8 +89,8 @@ export interface StreamEventSourceProps {
 /**
  * Use an stream as an event source for AWS Lambda.
  */
-export abstract class StreamEventSource implements lambda.IEventSource {
-  protected constructor(protected readonly props: StreamEventSourceProps) {
+export abstract class StreamEventSource<T extends StreamEventSourceProps> implements lambda.IEventSource {
+  protected constructor(protected readonly props: T) {
   }
 
   public abstract bind(_target: lambda.IFunction): void;

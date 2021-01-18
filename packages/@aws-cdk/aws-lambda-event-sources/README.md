@@ -229,7 +229,10 @@ const topic = 'some-cool-topic'
 // You still have to make sure that it is associated with your cluster as described in the documentation
 const secret = new Secret(this, 'Secret', { secretName: 'AmazonMSK_KafkaSecret' });
 
-myFunction.addEventSource(new ManagedKafkaEventSource(clusterArn, topic, secret, {
+myFunction.addEventSource(new ManagedKafkaEventSource({
+  clusterArn: clusterArn,
+  topic: topic,
+  secret: secret,
   batchSize: 100, // default
   startingPosition: lambda.StartingPosition.TRIM_HORIZON
 }));
@@ -252,7 +255,10 @@ const topic = 'some-cool-topic'
 // The secret that allows access to your self hosted Kafka cluster
 const secret = Secret.fromSecretAttributes(this, 'Secret', { secretName: 'AmazonMSK_KafkaSecret' });
 
-myFunction.addEventSource(new SelfManagedKafkaEventSource(bootstrapServers, topic, secret, {
+myFunction.addEventSource(new SelfManagedKafkaEventSource({
+  bootstrapServers: bootstrapServers,
+  topic: topic,
+  secret: secret,
   batchSize: 100, // default
   startingPosition: lambda.StartingPosition.TRIM_HORIZON
 }));

@@ -17,10 +17,10 @@ export = {
 
     // WHEN
     fn.addEventSource(new sources.ManagedKafkaEventSource(
-      clusterArn,
-      kafkaTopic,
-      secret,
       {
+        clusterArn: clusterArn,
+        topic: kafkaTopic,
+        secret: secret,
         startingPosition: lambda.StartingPosition.TRIM_HORIZON,
       }));
 
@@ -91,10 +91,10 @@ export = {
 
     // WHEN
     fn.addEventSource(new sources.SelfManagedKafkaEventSource(
-      bootstrapServers,
-      kafkaTopic,
-      secret,
       {
+        bootstrapServers: bootstrapServers,
+        topic: kafkaTopic,
+        secret: secret,
         startingPosition: lambda.StartingPosition.TRIM_HORIZON,
       }));
 
