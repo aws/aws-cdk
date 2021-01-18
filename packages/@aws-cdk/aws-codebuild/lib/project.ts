@@ -44,6 +44,14 @@ export interface IProject extends IResource, iam.IGrantable, ec2.IConnectable {
   /** The IAM service Role of this Project. Undefined for imported Projects. */
   readonly role?: iam.IRole;
 
+  /** The batch IAM service Role of this Project. Undefined for imported Projects or Projects that have not configured batch builds. */
+  readonly batchRole?: iam.IRole;
+
+  /**
+   * Enable batch builds.
+   */
+  enableBatchBuilds(): void;
+
   addToRolePolicy(policyStatement: iam.PolicyStatement): void;
 
   /**
@@ -178,6 +186,9 @@ abstract class ProjectBase extends Resource implements IProject {
   /** The IAM service Role of this Project. */
   public abstract readonly role?: iam.IRole;
 
+  /** The IAM batch service Role of this Project. */
+  public abstract readonly batchRole?: iam.IRole;
+
   /**
    * Actual connections object for this Project.
    * May be unset, in which case this Project is not configured to use a VPC.
@@ -195,6 +206,11 @@ abstract class ProjectBase extends Resource implements IProject {
     }
     return this._connections;
   }
+
+  /**
+   * Enable batch builds.
+   */
+  public abstract enableBatchBuilds(): void
 
   /**
    * Add a permission only if there's a policy attached.
@@ -624,11 +640,14 @@ export class Project extends ProjectBase {
       public readonly projectArn = projectArn;
       public readonly projectName = Stack.of(scope).parseArn(projectArn).resourceName!;
       public readonly role?: iam.Role = undefined;
+      public readonly batchRole?: iam.Role = undefined;
 
       constructor(s: Construct, i: string) {
         super(s, i);
         this.grantPrincipal = new iam.UnknownPrincipal({ resource: this });
       }
+
+      public enableBatchBuilds(): void {}
     }
 
     return new Import(scope, id);
@@ -655,6 +674,7 @@ export class Project extends ProjectBase {
       public readonly projectArn: string;
       public readonly projectName: string;
       public readonly role?: iam.Role = undefined;
+      public readonly batchRole?: iam.Role = undefined;
 
       constructor(s: Construct, i: string) {
         super(s, i);
@@ -668,6 +688,8 @@ export class Project extends ProjectBase {
         this.grantPrincipal = new iam.UnknownPrincipal({ resource: this });
         this.projectName = projectName;
       }
+
+      public enableBatchBuilds(): void {}
     }
 
     return new Import(scope, id);
@@ -722,6 +744,13 @@ export class Project extends ProjectBase {
   public readonly role?: iam.IRole;
 
   /**
+   * The batch IAM role for this project. May be undefined if batch builds have not been enabled.
+   */
+  public get batchRole(): iam.IRole | undefined {
+    return this._batchServiceRole;
+  }
+
+  /**
    * The ARN of the project.
    */
   public readonly projectArn: string;
@@ -738,7 +767,7 @@ export class Project extends ProjectBase {
   private readonly _secondaryArtifacts: CfnProject.ArtifactsProperty[];
   private _encryptionKey?: kms.IKey;
   private readonly _fileSystemLocations: CfnProject.ProjectFileSystemLocationProperty[];
-  private readonly _batchServiceRole?: iam.Role;
+  private _batchServiceRole?: iam.Role;
 
   constructor(scope: Construct, id: string, props: ProjectProps) {
     super(scope, id, {
@@ -751,13 +780,6 @@ export class Project extends ProjectBase {
     });
 
     this.grantPrincipal = this.role;
-
-    if (props.supportBatchBuildType) {
-      this._batchServiceRole = new iam.Role(this, 'BatchServiceRole', {
-        roleName: PhysicalName.GENERATE_IF_NEEDED,
-        assumedBy: new iam.ServicePrincipal('codebuild.amazonaws.com'),
-      });
-    }
 
     this.buildImage = (props.environment && props.environment.buildImage) || LinuxBuildImage.STANDARD_1_0;
 
@@ -831,9 +853,14 @@ export class Project extends ProjectBase {
       sourceVersion: sourceConfig.sourceVersion,
       vpcConfig: this.configureVpc(props),
       logsConfig: this.renderLoggingConfiguration(props.logging),
-      buildBatchConfig: props.supportBatchBuildType && this._batchServiceRole ? {
-        serviceRole: this._batchServiceRole.roleArn,
-      } : undefined,
+      buildBatchConfig: Lazy.any({
+        produce: () => {
+          const config: CfnProject.ProjectBuildBatchConfigProperty | undefined = this._batchServiceRole ? {
+            serviceRole: this._batchServiceRole.roleArn,
+          } : undefined;
+          return config;
+        },
+      }),
     });
 
     this.addVpcRequiredPermissions(props, resource);
@@ -844,11 +871,6 @@ export class Project extends ProjectBase {
       resourceName: this.physicalName,
     });
     this.projectName = this.getResourceNameAttribute(resource.ref);
-
-    this._batchServiceRole?.addToPrincipalPolicy(new iam.PolicyStatement({
-      resources: [this.projectArn],
-      actions: ['codebuild:StartBuild', 'codebuild:StopBuild', 'codebuild:RetryBuild'],
-    }));
 
     this.addToRolePolicy(this.createLoggingPermission());
     this.addEnvVariablesPermissions(props.environmentVariables);
@@ -872,11 +894,31 @@ export class Project extends ProjectBase {
       this.encryptionKey = props.encryptionKey;
     }
 
+    if (props.supportBatchBuildType) {
+      this.enableBatchBuilds();
+    }
+
     // bind
     const bindFunction = (this.buildImage as any).bind;
     if (bindFunction) {
       bindFunction.call(this.buildImage, this, this, {});
     }
+  }
+
+  /**
+   * Enable batch builds.
+   */
+  public enableBatchBuilds(): void {
+    if (this._batchServiceRole) return;
+
+    this._batchServiceRole = new iam.Role(this, 'BatchServiceRole', {
+      roleName: PhysicalName.GENERATE_IF_NEEDED,
+      assumedBy: new iam.ServicePrincipal('codebuild.amazonaws.com'),
+    });
+    this._batchServiceRole.addToPrincipalPolicy(new iam.PolicyStatement({
+      resources: [this.projectArn],
+      actions: ['codebuild:StartBuild', 'codebuild:StopBuild', 'codebuild:RetryBuild'],
+    }));
   }
 
   /**

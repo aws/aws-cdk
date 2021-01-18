@@ -298,9 +298,7 @@ import * as codecommit from '@aws-cdk/aws-codecommit';
 const repository = new codecommit.Repository(this, 'MyRepository', {
   repositoryName: 'MyRepository',
 });
-const project = new codebuild.PipelineProject(this, 'MyProject', {
-  supportBatchBuildType: true // required with `executeBatchBuild` option
-});
+const project = new codebuild.PipelineProject(this, 'MyProject');
 
 const sourceOutput = new codepipeline.Artifact();
 const sourceAction = new codepipeline_actions.CodeCommitSourceAction({
@@ -313,7 +311,7 @@ const buildAction = new codepipeline_actions.CodeBuildAction({
   project,
   input: sourceOutput,
   outputs: [new codepipeline.Artifact()], // optional
-  executeBatchBuild: true // optional, defaults to false. If true `supportBatchBuildType` required on CodeBuild project
+  executeBatchBuild: true // optional, defaults to false
 });
 
 new codepipeline.Pipeline(this, 'MyPipeline', {

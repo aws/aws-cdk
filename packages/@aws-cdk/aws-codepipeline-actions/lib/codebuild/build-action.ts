@@ -96,7 +96,7 @@ export interface CodeBuildActionProps extends codepipeline.CommonAwsActionProps 
   /**
    * Trigger a batch build.
    *
-   * If you enable this you must also enable `supportBatchBuildType` on the CodeBuild project.
+   * Enabling this will enable batch builds on the CodeBuild project.
    *
    * @default false
    */
@@ -203,6 +203,7 @@ export class CodeBuildAction extends Action {
     }
     if (this.props.executeBatchBuild) {
       configuration.BatchEnabled = 'true';
+      this.props.project.enableBatchBuilds();
     }
     return {
       configuration,

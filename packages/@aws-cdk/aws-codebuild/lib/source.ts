@@ -485,7 +485,7 @@ interface ThirdPartyGitSourceProps extends GitSourceProps {
   /**
    * Trigger a batch build from a webhook instead of a standard one.
    *
-   * If you enable this you must also enable `supportBatchBuildType` on the project.
+   * Enabling this will enable batch builds on the CodeBuild project.
    *
    * @default false
    */
@@ -533,6 +533,11 @@ abstract class ThirdPartyGitSource extends GitSource {
     }
 
     const superConfig = super.bind(_scope, _project);
+
+    if (this.webhookTriggersBatchBuild) {
+      _project.enableBatchBuilds();
+    }
+
     return {
       sourceProperty: {
         ...superConfig.sourceProperty,
