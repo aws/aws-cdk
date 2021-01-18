@@ -117,8 +117,7 @@
       "docs-public-apis:@aws-cdk/aws-lambda-event-sources.KinesisEventSourceProps",
       "docs-public-apis:@aws-cdk/aws-lambda-event-sources.S3EventSourceProps",
       "props-default-doc:@aws-cdk/aws-lambda-event-sources.S3EventSourceProps.filters",
-      "docs-public-apis:@aws-cdk/aws-lambda-event-sources.SqsEventSourceProps",
-      "docs-public-apis:@aws-cdk/aws-lambda-event-sources.KafkaEventSourceProps"
+      "docs-public-apis:@aws-cdk/aws-lambda-event-sources.SqsEventSourceProps"
     ]
   },
   "awscdkio": {
