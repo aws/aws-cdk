@@ -6,8 +6,6 @@ import { Test } from 'nodeunit';
 import * as sources from '../lib';
 import { TestFunction } from './test-function';
 
-/* eslint-disable quote-props */
-
 export = {
   'MSK: sufficiently complex example'(test: Test) {
     // GIVEN
