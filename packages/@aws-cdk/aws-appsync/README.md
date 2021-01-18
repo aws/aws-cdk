@@ -107,9 +107,13 @@ const secret = new rds.DatabaseSecret(stack, 'AuroraSecret', {
   username: 'clusteradmin',
 });
 
-// Create the DB cluster, provide all values needed to customise the database.
-const cluster = new rds.DatabaseCluster(stack, 'AuroraCluster', {
-  engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_2_07_1 }),
+// The VPC ro place the cluster in
+const vpc = new ec2.Vpc(stack, 'AuroraVpc');
+
+// Create the serverless cluster, provide all values needed to customise the database.
+const cluster = new rds.ServerlessCluster(stack, 'AuroraCluster', {
+  engine: rds.DatabaseClusterEngine.AURORA_MYSQL,
+  vpc,
   credentials: { username: 'clusteradmin' },
   clusterIdentifier: 'db-endpoint-test',
   defaultDatabaseName: 'demos',
