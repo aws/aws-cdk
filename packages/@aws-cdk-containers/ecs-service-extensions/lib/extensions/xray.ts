@@ -1,7 +1,6 @@
 import * as ecs from '@aws-cdk/aws-ecs';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
-import { Construct } from 'constructs';
 import { Service } from '../service';
 import { ServiceExtension } from './extension-interfaces';
 
@@ -18,7 +17,7 @@ export class XRayExtension extends ServiceExtension {
   }
 
   // @ts-ignore - Ignore unused params that are required for abstract class extend
-  public prehook(service: Service, scope: Construct) {
+  public prehook(service: Service, scope: cdk.Construct) {
     this.parentService = service;
   }
 

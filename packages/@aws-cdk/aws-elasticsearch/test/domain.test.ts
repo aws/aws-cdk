@@ -89,10 +89,18 @@ test('minimal example renders correctly', () => {
       Enabled: false,
     },
     LogPublishingOptions: {
-      AUDIT_LOGS: assert.ABSENT,
-      ES_APPLICATION_LOGS: assert.ABSENT,
-      SEARCH_SLOW_LOGS: assert.ABSENT,
-      INDEX_SLOW_LOGS: assert.ABSENT,
+      AUDIT_LOGS: {
+        Enabled: false,
+      },
+      ES_APPLICATION_LOGS: {
+        Enabled: false,
+      },
+      SEARCH_SLOW_LOGS: {
+        Enabled: false,
+      },
+      INDEX_SLOW_LOGS: {
+        Enabled: false,
+      },
     },
     NodeToNodeEncryptionOptions: {
       Enabled: false,
@@ -125,6 +133,9 @@ describe('log groups', () => {
 
     expect(stack).toHaveResourceLike('AWS::Elasticsearch::Domain', {
       LogPublishingOptions: {
+        ES_APPLICATION_LOGS: {
+          Enabled: false,
+        },
         SEARCH_SLOW_LOGS: {
           CloudWatchLogsLogGroupArn: {
             'Fn::GetAtt': [
@@ -134,9 +145,9 @@ describe('log groups', () => {
           },
           Enabled: true,
         },
-        AUDIT_LOGS: assert.ABSENT,
-        ES_APPLICATION_LOGS: assert.ABSENT,
-        INDEX_SLOW_LOGS: assert.ABSENT,
+        INDEX_SLOW_LOGS: {
+          Enabled: false,
+        },
       },
     });
   });
@@ -151,6 +162,12 @@ describe('log groups', () => {
 
     expect(stack).toHaveResourceLike('AWS::Elasticsearch::Domain', {
       LogPublishingOptions: {
+        ES_APPLICATION_LOGS: {
+          Enabled: false,
+        },
+        SEARCH_SLOW_LOGS: {
+          Enabled: false,
+        },
         INDEX_SLOW_LOGS: {
           CloudWatchLogsLogGroupArn: {
             'Fn::GetAtt': [
@@ -160,9 +177,6 @@ describe('log groups', () => {
           },
           Enabled: true,
         },
-        AUDIT_LOGS: assert.ABSENT,
-        ES_APPLICATION_LOGS: assert.ABSENT,
-        SEARCH_SLOW_LOGS: assert.ABSENT,
       },
     });
   });
@@ -186,9 +200,12 @@ describe('log groups', () => {
           },
           Enabled: true,
         },
-        AUDIT_LOGS: assert.ABSENT,
-        SEARCH_SLOW_LOGS: assert.ABSENT,
-        INDEX_SLOW_LOGS: assert.ABSENT,
+        SEARCH_SLOW_LOGS: {
+          Enabled: false,
+        },
+        INDEX_SLOW_LOGS: {
+          Enabled: false,
+        },
       },
     });
   });
@@ -220,9 +237,15 @@ describe('log groups', () => {
           },
           Enabled: true,
         },
-        ES_APPLICATION_LOGS: assert.ABSENT,
-        SEARCH_SLOW_LOGS: assert.ABSENT,
-        INDEX_SLOW_LOGS: assert.ABSENT,
+        ES_APPLICATION_LOGS: {
+          Enabled: false,
+        },
+        SEARCH_SLOW_LOGS: {
+          Enabled: false,
+        },
+        INDEX_SLOW_LOGS: {
+          Enabled: false,
+        },
       },
     });
   });
@@ -273,7 +296,6 @@ describe('log groups', () => {
           },
           Enabled: true,
         },
-        AUDIT_LOGS: assert.ABSENT,
       },
     });
     expect(stack).toHaveResourceLike('AWS::Elasticsearch::Domain', {
@@ -305,7 +327,6 @@ describe('log groups', () => {
           },
           Enabled: true,
         },
-        AUDIT_LOGS: assert.ABSENT,
       },
     });
   });
@@ -364,6 +385,12 @@ describe('log groups', () => {
 
     expect(stack).toHaveResourceLike('AWS::Elasticsearch::Domain', {
       LogPublishingOptions: {
+        AUDIT_LOGS: {
+          Enabled: false,
+        },
+        ES_APPLICATION_LOGS: {
+          Enabled: false,
+        },
         SEARCH_SLOW_LOGS: {
           CloudWatchLogsLogGroupArn: {
             'Fn::GetAtt': [
@@ -373,9 +400,9 @@ describe('log groups', () => {
           },
           Enabled: true,
         },
-        AUDIT_LOGS: assert.ABSENT,
-        ES_APPLICATION_LOGS: assert.ABSENT,
-        INDEX_SLOW_LOGS: assert.ABSENT,
+        INDEX_SLOW_LOGS: {
+          Enabled: false,
+        },
       },
     });
   });
@@ -393,6 +420,15 @@ describe('log groups', () => {
 
     expect(stack).toHaveResourceLike('AWS::Elasticsearch::Domain', {
       LogPublishingOptions: {
+        AUDIT_LOGS: {
+          Enabled: false,
+        },
+        ES_APPLICATION_LOGS: {
+          Enabled: false,
+        },
+        SEARCH_SLOW_LOGS: {
+          Enabled: false,
+        },
         INDEX_SLOW_LOGS: {
           CloudWatchLogsLogGroupArn: {
             'Fn::GetAtt': [
@@ -402,9 +438,6 @@ describe('log groups', () => {
           },
           Enabled: true,
         },
-        AUDIT_LOGS: assert.ABSENT,
-        ES_APPLICATION_LOGS: assert.ABSENT,
-        SEARCH_SLOW_LOGS: assert.ABSENT,
       },
     });
   });
@@ -422,6 +455,9 @@ describe('log groups', () => {
 
     expect(stack).toHaveResourceLike('AWS::Elasticsearch::Domain', {
       LogPublishingOptions: {
+        AUDIT_LOGS: {
+          Enabled: false,
+        },
         ES_APPLICATION_LOGS: {
           CloudWatchLogsLogGroupArn: {
             'Fn::GetAtt': [
@@ -431,9 +467,12 @@ describe('log groups', () => {
           },
           Enabled: true,
         },
-        AUDIT_LOGS: assert.ABSENT,
-        SEARCH_SLOW_LOGS: assert.ABSENT,
-        INDEX_SLOW_LOGS: assert.ABSENT,
+        SEARCH_SLOW_LOGS: {
+          Enabled: false,
+        },
+        INDEX_SLOW_LOGS: {
+          Enabled: false,
+        },
       },
     });
   });
@@ -468,9 +507,15 @@ describe('log groups', () => {
           },
           Enabled: true,
         },
-        ES_APPLICATION_LOGS: assert.ABSENT,
-        SEARCH_SLOW_LOGS: assert.ABSENT,
-        INDEX_SLOW_LOGS: assert.ABSENT,
+        ES_APPLICATION_LOGS: {
+          Enabled: false,
+        },
+        SEARCH_SLOW_LOGS: {
+          Enabled: false,
+        },
+        INDEX_SLOW_LOGS: {
+          Enabled: false,
+        },
       },
     });
   });
