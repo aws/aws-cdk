@@ -52,3 +52,7 @@ incompatible-argument:@aws-cdk/aws-ecs.FargateTaskDefinition.<initializer>
 incompatible-argument:@aws-cdk/aws-ecs.FargateTaskDefinition.addVolume
 incompatible-argument:@aws-cdk/aws-ecs.TaskDefinition.<initializer>
 incompatible-argument:@aws-cdk/aws-ecs.TaskDefinition.addVolume
+
+# We made properties optional and it's really fine but our differ doesn't think so.
+weakened:@aws-cdk/cloud-assembly-schema.DockerImageSource
+weakened:@aws-cdk/cloud-assembly-schema.FileSource

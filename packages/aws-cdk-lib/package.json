@@ -116,6 +116,7 @@
     "@aws-cdk/aws-appstream": "0.0.0",
     "@aws-cdk/aws-appsync": "0.0.0",
     "@aws-cdk/aws-athena": "0.0.0",
+    "@aws-cdk/aws-auditmanager": "0.0.0",
     "@aws-cdk/aws-autoscaling": "0.0.0",
     "@aws-cdk/aws-autoscaling-common": "0.0.0",
     "@aws-cdk/aws-autoscaling-hooktargets": "0.0.0",
@@ -149,6 +150,7 @@
     "@aws-cdk/aws-config": "0.0.0",
     "@aws-cdk/aws-databrew": "0.0.0",
     "@aws-cdk/aws-datapipeline": "0.0.0",
+    "@aws-cdk/aws-datasync": "0.0.0",
     "@aws-cdk/aws-dax": "0.0.0",
     "@aws-cdk/aws-detective": "0.0.0",
     "@aws-cdk/aws-devopsguru": "0.0.0",
@@ -211,6 +213,7 @@
     "@aws-cdk/aws-logs-destinations": "0.0.0",
     "@aws-cdk/aws-macie": "0.0.0",
     "@aws-cdk/aws-managedblockchain": "0.0.0",
+    "@aws-cdk/aws-mediaconnect": "0.0.0",
     "@aws-cdk/aws-mediaconvert": "0.0.0",
     "@aws-cdk/aws-medialive": "0.0.0",
     "@aws-cdk/aws-mediapackage": "0.0.0",
@@ -287,7 +290,7 @@
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "engines": {
-    "node": ">= 10.13.0 <13 || >=13.7.0"
+    "node": ">= 14.15.0"
   },
   "keywords": [
     "aws",
