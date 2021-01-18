@@ -261,6 +261,18 @@ export enum InstanceClass {
   C6GD = 'c6gd',
 
   /**
+   * Compute optimized instances for high performance computing, 6th generation with Graviton2 processors
+   * and high network bandwidth capabilities
+   */
+  COMPUTE6_GRAVITON2_HIGH_NETWORK_BANDWITH = 'c6gn',
+
+  /**
+   * Compute optimized instances for high performance computing, 6th generation with Graviton2 processors
+   * and high network bandwidth capabilities
+   */
+  C6GN = 'c6gn',
+
+  /**
    * Storage-optimized instances, 2nd generation
    */
   STORAGE2 = 'd2',
