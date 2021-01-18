@@ -425,7 +425,7 @@ def read_aws_out():
 #   resourceProps: map to pass to "ResourceProperties"
 #   expected_status: "SUCCESS" or "FAILED"
 def invoke_handler(requestType, resourceProps, old_resource_props=None, physical_id=None, expected_status='SUCCESS'):
-    response_url = '<response-url>'
+    response_url = 'http://<response-url>'
 
     event={
         'ResponseURL': response_url,
@@ -443,24 +443,32 @@ def invoke_handler(requestType, resourceProps, old_resource_props=None, physical
         event['PhysicalResourceId'] = physical_id
 
     class ContextMock: log_stream_name = 'log_stream'
-    class ResponseMock: reason = 'OK'
+    class ResponseMock:
+      reason = 'OK'
+      # needed because the context manager calls this
+      close = lambda _: _
 
     context = ContextMock()
-    requests.put = MagicMock(return_value=ResponseMock())
+    index.urlopen = MagicMock(return_value=ResponseMock())
 
     #--------------------
     # invoke the handler
     #--------------------
     index.handler(event, context)
 
-    requests.put.assert_called_once()
-    (pos_args, kw_args) = requests.put.call_args
+    index.urlopen.assert_called_once()
+    (pos_args, _) = index.urlopen.call_args
 
-    actual_url = pos_args[0]
-    actual_data = kw_args['data']
+    actual_request = pos_args[0]
+    actual_url = actual_request.full_url
+    actual_data = actual_request.data
+    actual_method = actual_request.method
 
     if actual_url != response_url:
         raise Exception("Invalid url used for sending CFN response. expected=%s actual=%s" % (response_url, actual_url))
+
+    if actual_method != 'PUT':
+        raise Exception("Invalid method used for sending CFN response. expected=PUT actual=%s" % (actual_method,))
 
     resp = json.loads(actual_data)
 

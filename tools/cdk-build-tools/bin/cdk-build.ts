@@ -26,8 +26,13 @@ async function main() {
     })
     .option('gen', {
       type: 'boolean',
-      desc: 'execute gen script',
+      desc: 'Execute gen script',
       default: true,
+    })
+    .option('fix', {
+      type: 'boolean',
+      desc: 'Fix linter errors',
+      default: false,
     })
     .argv;
 
@@ -46,7 +51,7 @@ async function main() {
 
   const overrides: CompilerOverrides = { eslint: args.eslint, jsii: args.jsii, tsc: args.tsc };
   await compileCurrentPackage(options, timers, overrides);
-  await lintCurrentPackage(options, overrides);
+  await lintCurrentPackage(options, { ...overrides, fix: args.fix });
 
   if (options.post) {
     await shell(options.post, { timers, env });
