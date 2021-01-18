@@ -1,5 +1,5 @@
 import * as ecs from '@aws-cdk/aws-ecs';
-import { Construct } from 'constructs';
+import * as cdk from '@aws-cdk/core';
 import { Service } from '../service';
 import { ServiceExtension } from './extension-interfaces';
 
@@ -59,7 +59,7 @@ export class Container extends ServiceExtension {
   }
 
   // @ts-ignore - Ignore unused params that are required for abstract class extend
-  public prehook(service: Service, scope: Construct) {
+  public prehook(service: Service, scope: cdk.Construct) {
     this.parentService = service;
   }
 
