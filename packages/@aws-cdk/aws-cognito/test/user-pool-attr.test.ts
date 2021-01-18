@@ -183,7 +183,7 @@ describe('User Pool Attributes', () => {
   describe('ClientAttributes', () => {
     test('create empty ClientAttributes', () => {
       // WHEN
-      const clientAttributes = ClientAttributes.empty();
+      const clientAttributes = (new ClientAttributes());
 
       // THEN
       expect(clientAttributes.attributes()).toStrictEqual([]);
@@ -194,7 +194,7 @@ describe('User Pool Attributes', () => {
       const customAttributes = ['custom:my_attribute'];
 
       // WHEN
-      const clientAttributes = ClientAttributes.empty().withStandardAttributes({
+      const clientAttributes = (new ClientAttributes()).withStandardAttributes({
         address: true,
         birthdate: true,
         email: true,
@@ -227,7 +227,7 @@ describe('User Pool Attributes', () => {
 
     test('create ClientAttributes copying another one', () => {
       // GIVEN
-      const original = ClientAttributes.empty()
+      const original = (new ClientAttributes())
         .withStandardAttributes({ email: true })
         .withCustomAttributes('custom1');
       const copied = original
@@ -258,7 +258,7 @@ describe('User Pool Attributes', () => {
       const customAttributes = ['custom:my_first', 'my_second'];
 
       // WHEN
-      const clientAttributes = ClientAttributes.empty().withCustomAttributes(...customAttributes);
+      const clientAttributes = (new ClientAttributes()).withCustomAttributes(...customAttributes);
       const attributes = clientAttributes.attributes();
 
       // EXPECT
@@ -282,7 +282,7 @@ describe('User Pool Attributes', () => {
       }
 
       // WHEN
-      const attributes = ClientAttributes.empty().withStandardAttributes(allStandardAttributes).attributes();
+      const attributes = (new ClientAttributes()).withStandardAttributes(allStandardAttributes).attributes();
 
       // EXPECT
       expect(attributes.length).toEqual(standardAttributeNamesCount);

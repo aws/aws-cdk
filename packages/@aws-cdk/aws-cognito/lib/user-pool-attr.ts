@@ -483,19 +483,17 @@ export interface StandardAttributesMask {
 export class ClientAttributes {
 
   /**
-   * Creates an empty ClientAttributes
-   */
-  public static empty(): ClientAttributes {
-    return new ClientAttributes();
-  }
-
-  /**
    * The set of attributes
    */
-  private readonly attributesSet: Set<string>;
+  private attributesSet: Set<string>;
 
-  private constructor(attributesSet?: Set<string>) {
-    this.attributesSet = attributesSet ?? new Set<string>();
+  /**
+   * Creates a ClientAttributes with the specified attributes
+   *
+   * @default - a ClientAttributes object without any attributes
+   */
+  constructor() {
+    this.attributesSet = new Set<string>();
   }
 
   /**
@@ -512,7 +510,9 @@ export class ClientAttributes {
         attributesSet.add(attributeName);
       }
     }
-    return new ClientAttributes(attributesSet);
+    let aux = new ClientAttributes();
+    aux.attributesSet = attributesSet;
+    return aux;
   }
 
   /**
@@ -528,7 +528,9 @@ export class ClientAttributes {
       }
       attributesSet.add(attribute);
     }
-    return new ClientAttributes(attributesSet);
+    let aux = new ClientAttributes();
+    aux.attributesSet = attributesSet;
+    return aux;
   }
 
   /**

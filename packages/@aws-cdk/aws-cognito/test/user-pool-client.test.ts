@@ -848,8 +848,8 @@ describe('User Pool Client', () => {
       // GIVEN
       const stack = new Stack();
       const pool = new UserPool(stack, 'Pool');
-      const writeAttributes = ClientAttributes.empty().withCustomAttributes('my_first').withStandardAttributes({ givenName: true, familyName: true });
-      const readAttributes = ClientAttributes.empty().withStandardAttributes({
+      const writeAttributes = (new ClientAttributes()).withCustomAttributes('my_first').withStandardAttributes({ givenName: true, familyName: true });
+      const readAttributes = (new ClientAttributes()).withStandardAttributes({
         address: true,
         birthdate: true,
         email: true,

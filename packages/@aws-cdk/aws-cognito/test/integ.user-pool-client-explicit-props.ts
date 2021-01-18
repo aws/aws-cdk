@@ -30,7 +30,7 @@ userpool.addClient('myuserpoolclient', {
     callbackUrls: ['https://redirect-here.myapp.com'],
   },
   preventUserExistenceErrors: true,
-  writeAttributes: ClientAttributes.empty().withStandardAttributes(
+  writeAttributes: (new ClientAttributes()).withStandardAttributes(
     {
       address: true,
       birthdate: true,
