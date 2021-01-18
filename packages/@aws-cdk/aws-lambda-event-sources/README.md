@@ -211,7 +211,8 @@ myFunction.addEventSource(new KinesisEventSource(stream, {
 
 You can write Lambda functions to process data either from [Amazon MSK](https://docs.aws.amazon.com/lambda/latest/dg/with-msk.html) or a [self managed Kafka](https://docs.aws.amazon.com/lambda/latest/dg/kafka-smaa.html) cluster.
 
-To set up Amazon MSK as an event source use the following, you also have to set up a secret as described [here](https://docs.aws.amazon.com/msk/latest/developerguide/msk-password.html). 
+The following code sets up Amazon MSK as an event source for a lambda function. Credentials will need to be configured to access the
+MSK cluster, as described in [Username/Password authentication](https://docs.aws.amazon.com/msk/latest/developerguide/msk-password.html). 
 
 ```ts
 import * as lambda from '@aws-cdk/aws-lambda';
@@ -234,7 +235,8 @@ myFunction.addEventSource(new ManagedKafkaEventSource(clusterArn, topic, secret,
 }));
 ```
 
-To set up a self managed Kafka cluster as an event source use the following, you have to set up a secret as described [here](https://docs.aws.amazon.com/lambda/latest/dg/smaa-permissions.html#smaa-permissions-add-secret):
+The following code sets up a self managed Kafka cluster as an event source. Username and password based authentication
+will need to be set up as described in [Managing access and permissions](https://docs.aws.amazon.com/lambda/latest/dg/smaa-permissions.html#smaa-permissions-add-secret).
 
 ```ts
 import * as lambda from '@aws-cdk/aws-lambda';
