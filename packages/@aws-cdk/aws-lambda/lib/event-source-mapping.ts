@@ -9,7 +9,7 @@ export interface EventSourceMappingOptions {
    * The Amazon Resource Name (ARN) of the event source. Any record added to
    * this stream can invoke the Lambda function.
    *
-   * @default - not set
+   * @default - not set if using a self managed Kafka cluster
    */
   readonly eventSourceArn?: string;
 
