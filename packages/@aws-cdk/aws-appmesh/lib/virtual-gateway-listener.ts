@@ -4,6 +4,10 @@ import { validateHealthChecks } from './private/utils';
 import { HealthCheck, Protocol } from './shared-interfaces';
 import { TlsCertificate, TlsCertificateConfig } from './tls-certificate';
 
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct } from '@aws-cdk/core';
+
 /**
  * Represents the properties needed to define HTTP Listeners for a VirtualGateway
  */
@@ -95,7 +99,7 @@ export abstract class VirtualGatewayListener {
    * Called when the GatewayListener type is initialized. Can be used to enforce
    * mutual exclusivity
    */
-  public abstract bind(scope: cdk.Construct): VirtualGatewayListenerConfig;
+  public abstract bind(scope: Construct): VirtualGatewayListenerConfig;
 }
 
 /**
@@ -114,7 +118,7 @@ class VirtualGatewayListenerImpl extends VirtualGatewayListener {
    * Called when the GatewayListener type is initialized. Can be used to enforce
    * mutual exclusivity
    */
-  public bind(scope: cdk.Construct): VirtualGatewayListenerConfig {
+  public bind(scope: Construct): VirtualGatewayListenerConfig {
     const tlsConfig = this.tlsCertificate?.bind(scope);
     return {
       listener: {
