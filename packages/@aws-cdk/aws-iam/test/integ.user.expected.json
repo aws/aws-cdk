@@ -4,22 +4,11 @@
       "Type": "AWS::IAM::User",
       "Properties": {
         "LoginProfile": {
-          "Password": "Test1234567890!",
+          "Password": "1234",
           "PasswordResetRequired": true
         },
         "UserName": "benisrae"
       }
-    }
-  },
-  "Outputs": {
-    "NameForUserImportedByArn": {
-      "Value": "rossrhodes"
-    },
-    "NameForUserImportedByAttributes": {
-      "Value": "johndoe"
-    },
-    "NameForUserImportedByName": {
-      "Value": "janedoe"
     }
   }
 }

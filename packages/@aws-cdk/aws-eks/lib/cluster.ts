@@ -1177,7 +1177,6 @@ export class Cluster extends ClusterBase {
       bootstrapOptions: options.bootstrapOptions,
       bootstrapEnabled: options.bootstrapEnabled,
       machineImageType: options.machineImageType,
-      spotInterruptHandler: options.spotInterruptHandler,
     });
 
     if (nodeTypeForInstanceType(options.instanceType) === NodeType.INFERENTIA) {
@@ -1287,9 +1286,8 @@ export class Cluster extends ClusterBase {
       });
     }
 
-    const addSpotInterruptHandler = options.spotInterruptHandler ?? true;
     // if this is an ASG with spot instances, install the spot interrupt handler (only if kubectl is enabled).
-    if (autoScalingGroup.spotPrice && addSpotInterruptHandler) {
+    if (autoScalingGroup.spotPrice) {
       this.addSpotInterruptHandler();
     }
   }
@@ -1446,9 +1444,7 @@ export class Cluster extends ClusterBase {
         repository: 'https://aws.github.io/eks-charts',
         namespace: 'kube-system',
         values: {
-          nodeSelector: {
-            lifecycle: LifecycleLabel.SPOT,
-          },
+          'nodeSelector.lifecycle': LifecycleLabel.SPOT,
         },
       });
     }
@@ -1580,14 +1576,6 @@ export interface AutoScalingGroupCapacityOptions extends autoscaling.CommonAutoS
    * @default MachineImageType.AMAZON_LINUX_2
    */
   readonly machineImageType?: MachineImageType;
-
-  /**
-   * Installs the AWS spot instance interrupt handler on the cluster if it's not
-   * already added. Only relevant if `spotPrice` is used.
-   *
-   * @default true
-   */
-  readonly spotInterruptHandler?: boolean;
 }
 
 /**
@@ -1679,14 +1667,6 @@ export interface AutoScalingGroupOptions {
    * @default MachineImageType.AMAZON_LINUX_2
    */
   readonly machineImageType?: MachineImageType;
-
-  /**
-   * Installs the AWS spot instance interrupt handler on the cluster if it's not
-   * already added. Only relevant if `spotPrice` is configured on the auto-scaling group.
-   *
-   * @default true
-   */
-  readonly spotInterruptHandler?: boolean;
 }
 
 /**

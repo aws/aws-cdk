@@ -1,4 +1,4 @@
-import { Arn, Aws, Lazy, Resource, SecretValue, Stack } from '@aws-cdk/core';
+import { Aws, Lazy, Resource, SecretValue, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { IGroup } from './group';
 import { CfnUser } from './iam.generated';
@@ -120,18 +120,6 @@ export interface UserProps {
 }
 
 /**
- * Represents a user defined outside of this stack.
- */
-export interface UserAttributes {
-  /**
-   * The ARN of the user.
-   *
-   * Format: arn:<partition>:iam::<account-id>:user/<user-name-with-path>
-   */
-  readonly userArn: string;
-}
-
-/**
  * Define a new IAM user
  */
 export class User extends Resource implements IIdentity, IUser {
@@ -143,42 +131,20 @@ export class User extends Resource implements IIdentity, IUser {
    * @param userName the username of the existing user to import
    */
   public static fromUserName(scope: Construct, id: string, userName: string): IUser {
-    const userArn = Stack.of(scope).formatArn({
+    const arn = Stack.of(scope).formatArn({
       service: 'iam',
       region: '',
       resource: 'user',
       resourceName: userName,
     });
 
-    return User.fromUserAttributes(scope, id, { userArn });
-  }
-
-  /**
-   * Import an existing user given a user ARN.
-   *
-   * @param scope construct scope
-   * @param id construct id
-   * @param userArn the ARN of an existing user to import
-   */
-  public static fromUserArn(scope: Construct, id: string, userArn: string): IUser {
-    return User.fromUserAttributes(scope, id, { userArn });
-  }
-
-  /**
-   * Import an existing user given user attributes.
-   *
-   * @param scope construct scope
-   * @param id construct id
-   * @param attrs the attributes of the user to import
-   */
-  public static fromUserAttributes(scope: Construct, id: string, attrs: UserAttributes): IUser {
     class Import extends Resource implements IUser {
       public readonly grantPrincipal: IPrincipal = this;
       public readonly principalAccount = Aws.ACCOUNT_ID;
-      public readonly userName: string = Arn.extractResourceName(attrs.userArn, 'user');
-      public readonly userArn: string = attrs.userArn;
+      public readonly userName: string = userName;
+      public readonly userArn: string = arn;
       public readonly assumeRoleAction: string = 'sts:AssumeRole';
-      public readonly policyFragment: PrincipalPolicyFragment = new ArnPrincipal(attrs.userArn).policyFragment;
+      public readonly policyFragment: PrincipalPolicyFragment = new ArnPrincipal(arn).policyFragment;
       private readonly attachedPolicies = new AttachedPolicies();
       private defaultPolicy?: Policy;
 

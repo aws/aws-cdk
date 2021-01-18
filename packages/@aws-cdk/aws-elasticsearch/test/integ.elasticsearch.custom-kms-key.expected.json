@@ -211,6 +211,9 @@
           }
         },
         "LogPublishingOptions": {
+          "AUDIT_LOGS": {
+            "Enabled": false
+          },
           "ES_APPLICATION_LOGS": {
             "CloudWatchLogsLogGroupArn": {
               "Fn::GetAtt": [
@@ -228,6 +231,9 @@
               ]
             },
             "Enabled": true
+          },
+          "INDEX_SLOW_LOGS": {
+            "Enabled": false
           }
         },
         "NodeToNodeEncryptionOptions": {
@@ -436,13 +442,13 @@
             ]
           }
         },
+        "Handler": "index.handler",
         "Role": {
           "Fn::GetAtt": [
             "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2",
             "Arn"
           ]
         },
-        "Handler": "index.handler",
         "Runtime": "nodejs12.x",
         "Timeout": 120
       },

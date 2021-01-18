@@ -1,16 +1,16 @@
-import * as fs from 'fs';
-import * as path from 'path';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
+import * as fs from 'fs';
+import * as path from 'path';
 import { DockerImageAssetLocation, DockerImageAssetSource, FileAssetLocation, FileAssetPackaging, FileAssetSource } from '../assets';
 import { Fn } from '../cfn-fn';
 import { CfnParameter } from '../cfn-parameter';
 import { CfnRule } from '../cfn-rule';
 import { Stack } from '../stack';
 import { Token } from '../token';
-import { assertBound, contentHash } from './_shared';
 import { StackSynthesizer } from './stack-synthesizer';
 import { ISynthesisSession } from './types';
+import { assertBound, contentHash } from './_shared';
 
 export const BOOTSTRAP_QUALIFIER_CONTEXT = '@aws-cdk/core:bootstrapQualifier';
 
@@ -289,15 +289,12 @@ export class DefaultStackSynthesizer extends StackSynthesizer {
   public addFileAsset(asset: FileAssetSource): FileAssetLocation {
     assertBound(this.stack);
     assertBound(this.bucketName);
-    validateFileAssetSource(asset);
-
     const objectKey = this.bucketPrefix + asset.sourceHash + (asset.packaging === FileAssetPackaging.ZIP_DIRECTORY ? '.zip' : '');
 
     // Add to manifest
     this.files[asset.sourceHash] = {
       source: {
         path: asset.fileName,
-        executable: asset.executable,
         packaging: asset.packaging,
       },
       destinations: {
@@ -328,14 +325,12 @@ export class DefaultStackSynthesizer extends StackSynthesizer {
   public addDockerImageAsset(asset: DockerImageAssetSource): DockerImageAssetLocation {
     assertBound(this.stack);
     assertBound(this.repositoryName);
-    validateDockerImageAssetSource(asset);
 
     const imageTag = asset.sourceHash;
 
     // Add to manifest
     this.dockerImages[asset.sourceHash] = {
       source: {
-        executable: asset.executable,
         directory: asset.directoryName,
         dockerBuildArgs: asset.dockerBuildArgs,
         dockerBuildTarget: asset.dockerBuildTarget,
@@ -570,30 +565,4 @@ function range(startIncl: number, endExcl: number) {
     ret.push(i);
   }
   return ret;
-}
-
-function validateFileAssetSource(asset: FileAssetSource) {
-  if (!!asset.executable === !!asset.fileName) {
-    throw new Error(`Exactly one of 'fileName' or 'executable' is required, got: ${JSON.stringify(asset)}`);
-  }
-
-  if (!!asset.packaging !== !!asset.fileName) {
-    throw new Error(`'packaging' is expected in combination with 'fileName', got: ${JSON.stringify(asset)}`);
-  }
-}
-
-function validateDockerImageAssetSource(asset: DockerImageAssetSource) {
-  if (!!asset.executable === !!asset.directoryName) {
-    throw new Error(`Exactly one of 'directoryName' or 'executable' is required, got: ${JSON.stringify(asset)}`);
-  }
-
-  check('dockerBuildArgs');
-  check('dockerBuildTarget');
-  check('dockerFile');
-
-  function check<K extends keyof DockerImageAssetSource>(key: K) {
-    if (asset[key] && !asset.directoryName) {
-      throw new Error(`'${key}' is only allowed in combination with 'directoryName', got: ${JSON.stringify(asset)}`);
-    }
-  }
 }

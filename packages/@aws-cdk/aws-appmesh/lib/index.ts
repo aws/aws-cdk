@@ -5,7 +5,6 @@ export * from './route';
 export * from './service-discovery';
 export * from './route-spec';
 export * from './shared-interfaces';
-export * from './tls-certificate';
 export * from './virtual-node';
 export * from './virtual-router';
 export * from './virtual-router-listener';

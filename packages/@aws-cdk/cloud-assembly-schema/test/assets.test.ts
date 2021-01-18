@@ -21,18 +21,6 @@ describe('Docker image asset', () => {
               },
             },
           },
-          externalAsset: {
-            source: {
-              executable: ['sometool'],
-            },
-            destinations: {
-              dest: {
-                region: 'us-north-20',
-                repositoryName: 'REPO',
-                imageTag: 'TAG',
-              },
-            },
-          },
         },
       });
     }).not.toThrow();
@@ -44,18 +32,12 @@ describe('Docker image asset', () => {
         version: Manifest.version(),
         dockerImages: {
           asset: {
-            source: {
-              directory: true,
-            },
-            destinations: {},
-          },
-          externalAsset: {
             source: {},
             destinations: {},
           },
         },
       });
-    }).toThrow(/instance\.dockerImages\.asset\.source\.directory is not of a type\(s\) string/);
+    }).toThrow(/instance\.dockerImages\.asset\.source requires property \"directory\"/);
   });
 });
 
@@ -69,18 +51,6 @@ describe('File asset', () => {
             asset: {
               source: {
                 path: 'a/b/c',
-              },
-              destinations: {
-                dest: {
-                  region: 'us-north-20',
-                  bucketName: 'Bouquet',
-                  objectKey: 'key',
-                },
-              },
-            },
-            externalAsset: {
-              source: {
-                executable: ['sometool'],
               },
               destinations: {
                 dest: {
@@ -130,18 +100,6 @@ describe('File asset', () => {
             asset: {
               source: {
                 path: 3,
-              },
-              destinations: {
-                dest: {
-                  region: 'us-north-20',
-                  bucketName: 'Bouquet',
-                  objectKey: 'key',
-                },
-              },
-            },
-            externalAsset: {
-              source: {
-                executable: ['sometool'],
               },
               destinations: {
                 dest: {

@@ -81,7 +81,7 @@ export = {
       test.done();
     },
 
-    'specify displayName and topicName'(test: Test) {
+    'specify both'(test: Test) {
       const stack = new cdk.Stack();
 
       new sns.Topic(stack, 'MyTopic', {
@@ -104,70 +104,11 @@ export = {
       test.done();
     },
 
-    // NOTE: This test case should be invalid when CloudFormation problem reported in CDK issue 12386 is resolved
-    // see https://github.com/aws/aws-cdk/issues/12386
-    'throw with missing topicName on fifo topic'(test: Test) {
-      const stack = new cdk.Stack();
-
-      test.throws(() => new sns.Topic(stack, 'MyTopic', {
-        fifo: true,
-      }), /FIFO SNS topics must be given a topic name./);
-
-      test.done();
-    },
-
-    'specify fifo without .fifo suffix in topicName'(test: Test) {
-      const stack = new cdk.Stack();
-
-      new sns.Topic(stack, 'MyTopic', {
-        fifo: true,
-        topicName: 'topicName',
-      });
-
-      expect(stack).toMatch({
-        'Resources': {
-          'MyTopic86869434': {
-            'Type': 'AWS::SNS::Topic',
-            'Properties': {
-              'FifoTopic': true,
-              'TopicName': 'topicName.fifo',
-            },
-          },
-        },
-      });
-
-      test.done();
-    },
-
-    'specify fifo with .fifo suffix in topicName'(test: Test) {
-      const stack = new cdk.Stack();
-
-      new sns.Topic(stack, 'MyTopic', {
-        fifo: true,
-        topicName: 'topicName.fifo',
-      });
-
-      expect(stack).toMatch({
-        'Resources': {
-          'MyTopic86869434': {
-            'Type': 'AWS::SNS::Topic',
-            'Properties': {
-              'FifoTopic': true,
-              'TopicName': 'topicName.fifo',
-            },
-          },
-        },
-      });
-
-      test.done();
-    },
-
     'specify fifo without contentBasedDeduplication'(test: Test) {
       const stack = new cdk.Stack();
 
       new sns.Topic(stack, 'MyTopic', {
         fifo: true,
-        topicName: 'topicName',
       });
 
       expect(stack).toMatch({
@@ -176,7 +117,6 @@ export = {
             'Type': 'AWS::SNS::Topic',
             'Properties': {
               'FifoTopic': true,
-              'TopicName': 'topicName.fifo',
             },
           },
         },
@@ -191,7 +131,6 @@ export = {
       new sns.Topic(stack, 'MyTopic', {
         contentBasedDeduplication: true,
         fifo: true,
-        topicName: 'topicName',
       });
 
       expect(stack).toMatch({
@@ -201,7 +140,6 @@ export = {
             'Properties': {
               'ContentBasedDeduplication': true,
               'FifoTopic': true,
-              'TopicName': 'topicName.fifo',
             },
           },
         },

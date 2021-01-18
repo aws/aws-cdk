@@ -295,15 +295,12 @@ export class CdkToolkit {
    * OUTPUT: If more than one stack ends up being selected, an output directory
    * should be supplied, where the templates will be written.
    */
-  public async synth(stackNames: string[], exclusively: boolean, quiet: boolean): Promise<any> {
+  public async synth(stackNames: string[], exclusively: boolean): Promise<any> {
     const stacks = await this.selectStacksForDiff(stackNames, exclusively);
 
     // if we have a single stack, print it to STDOUT
     if (stacks.stackCount === 1) {
-      if (!quiet) {
-        return stacks.firstStack.template;
-      }
-      return undefined;
+      return stacks.firstStack.template;
     }
 
     // This is a slight hack; in integ mode we allow multiple stacks to be synthesized to stdout sequentially.

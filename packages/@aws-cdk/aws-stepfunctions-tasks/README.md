@@ -667,7 +667,7 @@ You can call the [`StartJobRun`](https://docs.aws.amazon.com/glue/latest/dg/aws-
 
 ```ts
 new GlueStartJobRun(stack, 'Task', {
-  glueJobName: 'my-glue-job',
+  jobName: 'my-glue-job',
   arguments: {
     key: 'value',
   },

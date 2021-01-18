@@ -1,13 +1,12 @@
 import { createReadStream, promises as fs } from 'fs';
 import * as path from 'path';
-import { FileAssetPackaging, FileSource } from '@aws-cdk/cloud-assembly-schema';
+import { FileAssetPackaging } from '@aws-cdk/cloud-assembly-schema';
 import { FileManifestEntry } from '../../asset-manifest';
 import { EventType } from '../../progress';
 import { zipDirectory } from '../archive';
 import { IAssetHandler, IHandlerHost } from '../asset-handler';
 import { pathExists } from '../fs-extra';
 import { replaceAwsPlaceholders } from '../placeholders';
-import { shell } from '../shell';
 
 export class FileAssetHandler implements IAssetHandler {
   private readonly fileCacheRoot: string;
@@ -44,51 +43,37 @@ export class FileAssetHandler implements IAssetHandler {
     }
 
     if (this.host.aborted) { return; }
-    const publishFile = this.asset.source.executable ?
-      await this.externalPackageFile(this.asset.source.executable) : await this.packageFile(this.asset.source);
+    const publishFile = await this.packageFile();
+    const contentType = this.asset.source.packaging === FileAssetPackaging.ZIP_DIRECTORY ? 'application/zip' : undefined;
 
     this.host.emitMessage(EventType.UPLOAD, `Upload ${s3Url}`);
     await s3.upload({
       Bucket: destination.bucketName,
       Key: destination.objectKey,
-      Body: createReadStream(publishFile.packagedPath),
-      ContentType: publishFile.contentType,
+      Body: createReadStream(publishFile),
+      ContentType: contentType,
     }).promise();
   }
 
-  private async packageFile(source: FileSource): Promise<PackagedFileAsset> {
-    if (!source.path) {
-      throw new Error(`'path' is expected in the File asset source, got: ${JSON.stringify(source)}`);
-    }
-
-    const fullPath = path.resolve(this.workDir, source.path);
+  private async packageFile(): Promise<string> {
+    const source = this.asset.source;
+    const fullPath = path.resolve(this.workDir, this.asset.source.path);
 
     if (source.packaging === FileAssetPackaging.ZIP_DIRECTORY) {
-      const contentType = 'application/zip';
-
       await fs.mkdir(this.fileCacheRoot, { recursive: true });
-      const packagedPath = path.join(this.fileCacheRoot, `${this.asset.id.assetId}.zip`);
+      const ret = path.join(this.fileCacheRoot, `${this.asset.id.assetId}.zip`);
 
-      if (await pathExists(packagedPath)) {
-        this.host.emitMessage(EventType.CACHED, `From cache ${path}`);
-        return { packagedPath, contentType };
+      if (await pathExists(ret)) {
+        this.host.emitMessage(EventType.CACHED, `From cache ${ret}`);
+        return ret;
       }
 
-      this.host.emitMessage(EventType.BUILD, `Zip ${fullPath} -> ${path}`);
-      await zipDirectory(fullPath, packagedPath);
-      return { packagedPath, contentType };
+      this.host.emitMessage(EventType.BUILD, `Zip ${fullPath} -> ${ret}`);
+      await zipDirectory(fullPath, ret);
+      return ret;
     } else {
-      return { packagedPath: fullPath };
+      return fullPath;
     }
-  }
-
-  private async externalPackageFile(executable: string[]): Promise<PackagedFileAsset> {
-    this.host.emitMessage(EventType.BUILD, `Building asset source using command: '${executable}'`);
-
-    return {
-      packagedPath: (await shell(executable, { quiet: true })).trim(),
-      contentType: 'application/zip',
-    };
   }
 }
 
@@ -123,22 +108,4 @@ async function objectExists(s3: AWS.S3, bucket: string, key: string) {
    */
   const response = await s3.listObjectsV2({ Bucket: bucket, Prefix: key, MaxKeys: 1 }).promise();
   return response.Contents != null && response.Contents.some(object => object.Key === key);
-}
-
-
-/**
- * A packaged asset which can be uploaded (either a single file or directory)
- */
-interface PackagedFileAsset {
-  /**
-   * Path of the file or directory
-   */
-  readonly packagedPath: string;
-
-  /**
-   * Content type to be added in the S3 upload action
-   *
-   * @default - No content type
-   */
-  readonly contentType?: string;
 }
