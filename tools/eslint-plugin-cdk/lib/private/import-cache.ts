@@ -29,6 +29,10 @@ export class ImportCache {
   public find(key: ImportCacheKey): ImportCacheRecord | undefined {
     return this.records[hashed(key)];
   }
+
+  public get imports(): ImportCacheRecord[] {
+    return Object.values(this.records);
+  }
 }
 
 function hashed(key: {}): string {

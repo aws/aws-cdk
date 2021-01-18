@@ -284,8 +284,32 @@ export class MaturitySetting extends ValidationRule {
       maturity = 'deprecated';
     }
 
+    const packageLevels = this.determinePackageLevels(pkg);
+
+    const hasL1s = packageLevels.some(level => level === 'l1');
+    const hasL2s = packageLevels.some(level => level === 'l2');
+    if (hasL2s) {
+      // validate that a package that contains L2s does not declare a 'cfn-only' maturity
+      if (maturity === 'cfn-only') {
+        pkg.report({
+          ruleName: this.name,
+          message: "Package that contains any L2s cannot declare a 'cfn-only' maturity",
+          fix: () => pkg.json.maturity = 'experimental',
+        });
+      }
+    } else if (hasL1s) {
+      // validate that a package that contains only L1s declares a 'cfn-only' maturity
+      if (maturity !== 'cfn-only') {
+        pkg.report({
+          ruleName: this.name,
+          message: "Package that contains only L1s cannot declare a maturity other than 'cfn-only'",
+          fix: () => pkg.json.maturity = 'cfn-only',
+        });
+      }
+    }
+
     if (maturity) {
-      this.validateReadmeHasBanner(pkg, maturity, this.determinePackageLevels(pkg));
+      this.validateReadmeHasBanner(pkg, maturity, packageLevels);
     }
   }
 
@@ -342,7 +366,9 @@ export class MaturitySetting extends ValidationRule {
     // to see if this package has L1s.
     const hasL1 = !!pkg.json['cdk-build']?.cloudformation;
 
-    const libFiles = glob.sync('lib/*.ts');
+    const libFiles = glob.sync('lib/**/*.ts', {
+      ignore: 'lib/**/*.d.ts', // ignore the generated TS declaration files
+    });
     const hasL2 = libFiles.some(f => !f.endsWith('.generated.ts') && !f.endsWith('index.ts'));
 
     return [
@@ -1079,7 +1105,11 @@ export class MustHaveNodeEnginesDeclaration extends ValidationRule {
   public readonly name = 'package-info/engines';
 
   public validate(pkg: PackageJson): void {
-    expectJSON(this.name, pkg, 'engines.node', '>= 10.13.0 <13 || >=13.7.0');
+    if (cdkMajorVersion() === 2) {
+      expectJSON(this.name, pkg, 'engines.node', '>= 14.15.0');
+    } else {
+      expectJSON(this.name, pkg, 'engines.node', '>= 10.13.0 <13 || >=13.7.0');
+    }
   }
 }
 
@@ -1310,11 +1340,11 @@ export class FastFailingBuildScripts extends ValidationRule {
     const hasTest = 'test' in scripts;
     const hasPack = 'package' in scripts;
 
-    const cmdBuild = 'npm run build';
-    expectJSON(this.name, pkg, 'scripts.build+test', hasTest ? [cmdBuild, 'npm test'].join(' && ') : cmdBuild);
+    const cmdBuild = 'yarn build';
+    expectJSON(this.name, pkg, 'scripts.build+test', hasTest ? [cmdBuild, 'yarn test'].join(' && ') : cmdBuild);
 
-    const cmdBuildTest = 'npm run build+test';
-    expectJSON(this.name, pkg, 'scripts.build+test+package', hasPack ? [cmdBuildTest, 'npm run package'].join(' && ') : cmdBuildTest);
+    const cmdBuildTest = 'yarn build+test';
+    expectJSON(this.name, pkg, 'scripts.build+test+package', hasPack ? [cmdBuildTest, 'yarn package'].join(' && ') : cmdBuildTest);
   }
 }
 
@@ -1508,9 +1538,7 @@ export class UbergenPackageVisibility extends ValidationRule {
   ];
 
   public validate(pkg: PackageJson): void {
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const releaseJson = require(`${__dirname}/../../../release.json`);
-    if (releaseJson.majorVersion === 2) {
+    if (cdkMajorVersion() === 2) {
       // Only packages in the publicPackages list should be "public". Everything else should be private.
       if (this.publicPackages.includes(pkg.json.name) && pkg.json.private === true) {
         pkg.report({
@@ -1612,4 +1640,10 @@ function toRegExp(str: string): RegExp {
 
 function readBannerFile(file: string): string {
   return fs.readFileSync(path.join(__dirname, 'banners', file), { encoding: 'utf-8' }).trim();
+}
+
+function cdkMajorVersion() {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const releaseJson = require(`${__dirname}/../../../release.json`);
+  return releaseJson.majorVersion as number;
 }

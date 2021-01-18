@@ -215,6 +215,19 @@ describe('HttpApi', () => {
     });
   });
 
+  test('disableExecuteApiEndpoint is enabled', () => {
+    const stack = new Stack();
+    new HttpApi(stack, 'api', {
+      disableExecuteApiEndpoint: true,
+    });
+
+    expect(stack).toHaveResource('AWS::ApiGatewayV2::Api', {
+      Name: 'api',
+      ProtocolType: 'HTTP',
+      DisableExecuteApiEndpoint: true,
+    });
+  });
+
   test('can add a vpc links', () => {
     // GIVEN
     const stack = new Stack();
@@ -259,6 +272,17 @@ describe('HttpApi', () => {
     const api = new HttpApi(stack, 'api');
 
     expect(api.apiEndpoint).toBeDefined();
+  });
+
+  test('throws when accessing apiEndpoint and disableExecuteApiEndpoint is true', () => {
+    const stack = new Stack();
+    const api = new HttpApi(stack, 'api', {
+      disableExecuteApiEndpoint: true,
+    });
+
+    expect(() => api.apiEndpoint).toThrow(
+      /apiEndpoint is not accessible when disableExecuteApiEndpoint is set to true./,
+    );
   });
 
   test('apiEndpoint for imported', () => {
