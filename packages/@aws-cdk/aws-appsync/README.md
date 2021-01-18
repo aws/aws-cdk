@@ -107,7 +107,7 @@ const secret = new rds.DatabaseSecret(stack, 'AuroraSecret', {
   username: 'clusteradmin',
 });
 
-// The VPC ro place the cluster in
+// The VPC to place the cluster in
 const vpc = new ec2.Vpc(stack, 'AuroraVpc');
 
 // Create the serverless cluster, provide all values needed to customise the database.
