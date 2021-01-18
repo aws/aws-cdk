@@ -2,7 +2,6 @@ import * as cloudmap from '@aws-cdk/aws-servicediscovery';
 import { Construct } from 'constructs';
 import { CfnVirtualNode } from './appmesh.generated';
 
-
 /**
  * Represents the properties needed to define CloudMap Service Discovery
  */
