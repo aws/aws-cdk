@@ -576,18 +576,19 @@ Clients can (and should) be allowed to read and write relevant user attributes o
 attribute but not every client should be allowed to set the `email_verified` attribute.
 The same criteria applies for both standard and custom attributes, more info is available at
 [Attribute Permissions and Scopes](https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-attributes.html#user-pool-settings-attribute-permissions-and-scopes).
-The default behaviour is to allow read and write permissions on all attributes.
+The default behaviour is to allow read and write permissions on all attributes. The following code shows how this can be configured for a client.
 
 ```ts
 const pool = new cognito.UserPool(this, 'Pool');
-// create a set of attributes that the client will be allowed to set
+
 const clientWriteAttributes = (new ClientAttributes())
   .withStandardAttributes({name: true, email: true})
   .withCustomAttributes(['favouritePizza']);
-// read attributes are usually more than the writable ones
+
 const clientReadAttributes = clientWriteAttributes
   .withStandardAttributes({emailVerified: true})
   .withCustomAttributes(['pointsEarned']);
+
 pool.addClient('app-client', {
   // ...
   readAttributes: clientReadAttributes,
