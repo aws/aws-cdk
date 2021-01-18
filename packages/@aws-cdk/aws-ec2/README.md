@@ -396,10 +396,10 @@ reason you do not want to use the context mechanism to look up a VPC at
 synthesis time, you can also use `Vpc.fromVpcAttributes`. This has the
 following limitations:
 
-- Every subnet group in the VPC must have a subnet in each availability zone
+* Every subnet group in the VPC must have a subnet in each availability zone
   (for example, each AZ must have both a public and private subnet). Asymmetric
   VPCs are not supported.
-- All VpcId, SubnetId, RouteTableId, ... parameters must either be known at
+* All VpcId, SubnetId, RouteTableId, ... parameters must either be known at
   synthesis time, or they must come from deploy-time list parameters whose
   deploy-time lengths are known at synthesis time.
 
