@@ -1,3 +1,4 @@
+import { ISecret } from '@aws-cdk/aws-secretsmanager';
 import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { IEventSourceDlq } from './dlq';
@@ -109,7 +110,7 @@ export interface EventSourceMappingOptions {
    *
    * @default - no configuration
    */
-  readonly kafkaSecretArn?: string
+  readonly kafkaSecret?: ISecret
 
   /**
    * A list of Kafka bootstrap servers to connect to your self managed Kafka cluster
@@ -212,7 +213,7 @@ export class EventSourceMapping extends cdk.Resource implements IEventSourceMapp
       maximumRetryAttempts: props.retryAttempts,
       parallelizationFactor: props.parallelizationFactor,
       topics: props.kafkaTopic !== undefined ? [props.kafkaTopic] : undefined,
-      sourceAccessConfigurations: props.kafkaSecretArn !== undefined ? [{ type: 'BASIC_AUTH', uri: props.kafkaSecretArn }] : undefined,
+      sourceAccessConfigurations: props.kafkaSecret !== undefined ? [{ type: 'BASIC_AUTH', uri: props.kafkaSecret.secretArn }] : undefined,
       // eslint-disable-next-line max-len
       selfManagedEventSource: props.kafkaBootstrapServers !== undefined ? { endpoints: { kafkaBootstrapServers: props.kafkaBootstrapServers } } : undefined,
     });

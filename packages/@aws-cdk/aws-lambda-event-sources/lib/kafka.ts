@@ -31,7 +31,7 @@ export class ManagedKafkaEventSource extends StreamEventSource {
       this.enrichMappingOptions({
         eventSourceArn: this.clusterArn,
         startingPosition: this.props.startingPosition,
-        kafkaSecretArn: this.secret.secretArn,
+        kafkaSecret: this.secret,
         kafkaTopic: this.topic,
       }),
     );
@@ -75,7 +75,7 @@ export class SelfManagedKafkaEventSource extends StreamEventSource {
         kafkaBootstrapServers: this.bootstrapServers,
         kafkaTopic: this.topic,
         startingPosition: this.props.startingPosition,
-        kafkaSecretArn: this.secret.secretArn,
+        kafkaSecret: this.secret,
       }),
     );
     this.secret.grantRead(target);
