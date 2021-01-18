@@ -955,29 +955,6 @@
                 }
             }
         },
-        "AWS::Serverless::LayerVersion.S3Location": {
-            "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#s3-location-object",
-            "Properties": {
-                "Bucket": {
-                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction",
-                    "PrimitiveType": "String",
-                    "Required": true,
-                    "UpdateType": "Immutable"
-                },
-                "Key": {
-                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction",
-                    "PrimitiveType": "String",
-                    "Required": true,
-                    "UpdateType": "Immutable"
-                },
-                "Version": {
-                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction",
-                    "PrimitiveType": "Integer",
-                    "Required": false,
-                    "UpdateType": "Immutable"
-                }
-            }
-        },
         "AWS::Serverless::SimpleTable.PrimaryKey": {
             "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#primary-key-object",
             "Properties": {
@@ -1591,13 +1568,8 @@
                 },
                 "ContentUri": {
                     "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlesslayerversion",
-                    "PrimitiveTypes": [
-                        "String"
-                    ],
+                    "PrimitiveType": "String",
                     "Required": false,
-                    "Types": [
-                        "S3Location"
-                    ],
                     "UpdateType": "Immutable"
                 },
                 "Description": {

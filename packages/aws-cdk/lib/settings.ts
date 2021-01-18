@@ -98,8 +98,7 @@ export class Configuration {
     this.context = new Context(
       this.commandLineContext,
       this.projectConfig.subSettings([CONTEXT_KEY]).makeReadOnly(),
-      this.projectContext,
-      userConfig.subSettings([CONTEXT_KEY]).makeReadOnly());
+      this.projectContext);
 
     // Build settings from what's left
     this.settings = this.defaultConfig
