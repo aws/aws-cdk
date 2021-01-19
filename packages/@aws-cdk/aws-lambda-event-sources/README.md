@@ -264,6 +264,8 @@ myFunction.addEventSource(new SelfManagedKafkaEventSource({
 }));
 ```
 
+If your self managed Kafka cluster is only reachable via VPC also configure `subnets` and `securityGroup`.
+
 ## Roadmap
 
 Eventually, this module will support all the event sources described under

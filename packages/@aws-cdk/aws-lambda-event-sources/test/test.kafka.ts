@@ -163,4 +163,26 @@ export = {
     test.done();
   },
 
+  'self managed Kafka in VPC: subnet and securityGroup must be set together'(test: Test) {
+    const stack = new cdk.Stack();
+    const fn = new TestFunction(stack, 'Fn');
+    const kafkaTopic = 'some-topic';
+    const secret = new Secret(stack, 'Secret', { secretName: 'AmazonMSK_KafkaSecret' });
+    const bootstrapServers = ['kafka-broker:9092'];
+    const subnet = Subnet.fromSubnetId(stack, 'Subnet', 'subnet-0011001100');
+
+    test.throws(() => {
+      fn.addEventSource(new sources.SelfManagedKafkaEventSource(
+        {
+          bootstrapServers: bootstrapServers,
+          topic: kafkaTopic,
+          secret: secret,
+          startingPosition: lambda.StartingPosition.TRIM_HORIZON,
+          subnets: [subnet],
+        }));
+    }, /both subnets and securityGroup must be set/);
+
+    test.done();
+  },
+
 }

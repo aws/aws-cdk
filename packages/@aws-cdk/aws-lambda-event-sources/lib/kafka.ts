@@ -93,6 +93,9 @@ export class SelfManagedKafkaEventSource extends StreamEventSource<SelfManagedKa
 
   constructor(props: SelfManagedKafkaEventSourceProps) {
     super(props);
+    if ((props.securityGroup !== undefined && props.subnets == undefined) || (props.securityGroup == undefined && props.subnets !== undefined )) {
+      throw new Error('both subnets and securityGroup must be set');
+    }
   }
 
   public bind(target: lambda.IFunction) {
