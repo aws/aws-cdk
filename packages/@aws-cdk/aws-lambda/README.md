@@ -143,6 +143,20 @@ of a new version resource. You can specify options for this version through the
 > of code providers (such as `lambda.Code.fromBucket`) require that you define a
 > `lambda.Version` resource directly since the CDK is unable to determine if
 > their contents had changed.
+>
+> A workaround is to create a new function version whenever the stack is updated.
+> This makes sure your lambda function always has the latest code. One strategy
+> is to set an environment variable with a value that is guaranteed to be different
+> from one synthesis to the next.
+>
+> ```ts
+> const randomString = [...Array(16)].map(i=>(~~(Math.random()*36)).toString(36)).join('');
+> const fn = new lambda.Function(this, 'MyFunction', {
+>  environment: {
+>    'GuaranteeAlwaysCreateNewVersionString': randomString
+>  }
+> });
+> ```
 
 The `version.addAlias()` method can be used to define an AWS Lambda alias that
 points to a specific version.
