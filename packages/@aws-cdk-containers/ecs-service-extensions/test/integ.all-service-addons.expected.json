@@ -630,7 +630,25 @@
               }
             ],
             "Essential": true,
-            "Image": "nathanpeck/name",
+            "Image": {
+              "Fn::Join": [
+                "",
+                [
+                  {
+                    "Ref": "AWS::AccountId"
+                  },
+                  ".dkr.ecr.",
+                  {
+                    "Ref": "AWS::Region"
+                  },
+                  ".",
+                  {
+                    "Ref": "AWS::URLSuffix"
+                  },
+                  "/aws-cdk/assets:5a8fe301598d68a8a01b3ec945f9c91a2d1075cbf5256389ccd7f22567132dca"
+                ]
+              ]
+            },
             "LogConfiguration": {
               "LogDriver": "awsfirelens",
               "Options": {
@@ -911,11 +929,6 @@
         }
       }
     },
-    "nametaskdefinitionenvoyLogGroup258B673B": {
-      "Type": "AWS::Logs::LogGroup",
-      "UpdateReplacePolicy": "Retain",
-      "DeletionPolicy": "Retain"
-    },
     "nametaskdefinitionExecutionRole45AC5C9A": {
       "Type": "AWS::IAM::Role",
       "Properties": {
@@ -949,6 +962,39 @@
                 "Fn::Join": [
                   "",
                   [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":ecr:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":repository/aws-cdk/assets"
+                  ]
+                ]
+              }
+            },
+            {
+              "Action": "ecr:GetAuthorizationToken",
+              "Effect": "Allow",
+              "Resource": "*"
+            },
+            {
+              "Action": [
+                "ecr:BatchCheckLayerAvailability",
+                "ecr:GetDownloadUrlForLayer",
+                "ecr:BatchGetImage"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
                     "arn:aws:ecr:",
                     {
                       "Ref": "AWS::Region"
@@ -967,11 +1013,6 @@
                   ]
                 ]
               }
-            },
-            {
-              "Action": "ecr:GetAuthorizationToken",
-              "Effect": "Allow",
-              "Resource": "*"
             },
             {
               "Action": [
@@ -1045,6 +1086,11 @@
           }
         ]
       }
+    },
+    "nametaskdefinitionenvoyLogGroup258B673B": {
+      "Type": "AWS::Logs::LogGroup",
+      "UpdateReplacePolicy": "Retain",
+      "DeletionPolicy": "Retain"
     },
     "nametaskdefinitionfirelensLogGroup80DDA60F": {
       "Type": "AWS::Logs::LogGroup",
@@ -1499,7 +1545,25 @@
               }
             ],
             "Essential": true,
-            "Image": "nathanpeck/greeting",
+            "Image": {
+              "Fn::Join": [
+                "",
+                [
+                  {
+                    "Ref": "AWS::AccountId"
+                  },
+                  ".dkr.ecr.",
+                  {
+                    "Ref": "AWS::Region"
+                  },
+                  ".",
+                  {
+                    "Ref": "AWS::URLSuffix"
+                  },
+                  "/aws-cdk/assets:c2950dbbd6657ff8646fbabff6497d3fe36c065273ba8662ff4b137fd0732320"
+                ]
+              ]
+            },
             "LogConfiguration": {
               "LogDriver": "awsfirelens",
               "Options": {
@@ -1780,11 +1844,6 @@
         }
       }
     },
-    "greetingtaskdefinitionenvoyLogGroup6556AC35": {
-      "Type": "AWS::Logs::LogGroup",
-      "UpdateReplacePolicy": "Retain",
-      "DeletionPolicy": "Retain"
-    },
     "greetingtaskdefinitionExecutionRole9E3A7CF3": {
       "Type": "AWS::IAM::Role",
       "Properties": {
@@ -1818,6 +1877,39 @@
                 "Fn::Join": [
                   "",
                   [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":ecr:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":repository/aws-cdk/assets"
+                  ]
+                ]
+              }
+            },
+            {
+              "Action": "ecr:GetAuthorizationToken",
+              "Effect": "Allow",
+              "Resource": "*"
+            },
+            {
+              "Action": [
+                "ecr:BatchCheckLayerAvailability",
+                "ecr:GetDownloadUrlForLayer",
+                "ecr:BatchGetImage"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
                     "arn:aws:ecr:",
                     {
                       "Ref": "AWS::Region"
@@ -1836,11 +1928,6 @@
                   ]
                 ]
               }
-            },
-            {
-              "Action": "ecr:GetAuthorizationToken",
-              "Effect": "Allow",
-              "Resource": "*"
             },
             {
               "Action": [
@@ -1914,6 +2001,11 @@
           }
         ]
       }
+    },
+    "greetingtaskdefinitionenvoyLogGroup6556AC35": {
+      "Type": "AWS::Logs::LogGroup",
+      "UpdateReplacePolicy": "Retain",
+      "DeletionPolicy": "Retain"
     },
     "greetingtaskdefinitionfirelensLogGroupD7A398A7": {
       "Type": "AWS::Logs::LogGroup",
@@ -2487,7 +2579,25 @@
               }
             ],
             "Essential": true,
-            "Image": "nathanpeck/greeter",
+            "Image": {
+              "Fn::Join": [
+                "",
+                [
+                  {
+                    "Ref": "AWS::AccountId"
+                  },
+                  ".dkr.ecr.",
+                  {
+                    "Ref": "AWS::Region"
+                  },
+                  ".",
+                  {
+                    "Ref": "AWS::URLSuffix"
+                  },
+                  "/aws-cdk/assets:a75db6df4dd1e517788eb7a8b96a1809123cd750159b1580f17457a9fc91f73c"
+                ]
+              ]
+            },
             "LogConfiguration": {
               "LogDriver": "awsfirelens",
               "Options": {
@@ -2768,11 +2878,6 @@
         }
       }
     },
-    "greetertaskdefinitionenvoyLogGroup6E10B93E": {
-      "Type": "AWS::Logs::LogGroup",
-      "UpdateReplacePolicy": "Retain",
-      "DeletionPolicy": "Retain"
-    },
     "greetertaskdefinitionExecutionRoleAED0EC79": {
       "Type": "AWS::IAM::Role",
       "Properties": {
@@ -2806,6 +2911,39 @@
                 "Fn::Join": [
                   "",
                   [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":ecr:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":repository/aws-cdk/assets"
+                  ]
+                ]
+              }
+            },
+            {
+              "Action": "ecr:GetAuthorizationToken",
+              "Effect": "Allow",
+              "Resource": "*"
+            },
+            {
+              "Action": [
+                "ecr:BatchCheckLayerAvailability",
+                "ecr:GetDownloadUrlForLayer",
+                "ecr:BatchGetImage"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
                     "arn:aws:ecr:",
                     {
                       "Ref": "AWS::Region"
@@ -2824,11 +2962,6 @@
                   ]
                 ]
               }
-            },
-            {
-              "Action": "ecr:GetAuthorizationToken",
-              "Effect": "Allow",
-              "Resource": "*"
             },
             {
               "Action": [
@@ -2902,6 +3035,11 @@
           }
         ]
       }
+    },
+    "greetertaskdefinitionenvoyLogGroup6E10B93E": {
+      "Type": "AWS::Logs::LogGroup",
+      "UpdateReplacePolicy": "Retain",
+      "DeletionPolicy": "Retain"
     },
     "greetertaskdefinitionfirelensLogGroupD5BAAC35": {
       "Type": "AWS::Logs::LogGroup",

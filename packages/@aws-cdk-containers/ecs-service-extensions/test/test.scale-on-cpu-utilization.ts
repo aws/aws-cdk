@@ -17,7 +17,7 @@ export = {
       cpu: 256,
       memoryMiB: 512,
       trafficPort: 80,
-      image: ecs.ContainerImage.fromRegistry('nathanpeck/name'),
+      image: ecs.ContainerImage.fromAsset('./test/test-apps/name'),
     }));
 
     serviceDescription.add(new ScaleOnCpuUtilization());
@@ -108,7 +108,7 @@ export = {
       cpu: 256,
       memoryMiB: 512,
       trafficPort: 80,
-      image: ecs.ContainerImage.fromRegistry('nathanpeck/name'),
+      image: ecs.ContainerImage.fromAsset('./test/test-apps/name'),
     }));
 
     serviceDescription.add(new ScaleOnCpuUtilization({

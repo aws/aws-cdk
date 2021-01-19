@@ -178,6 +178,21 @@ The following extensions come built-in, and ready to use.
 
   This extension creates a public DNS A record for your service. This record can contain multiple IP addresses which correspond to the public IP addresses of your tasks. It also opens the traffic port of your service to direct inbound traffic from the internet. This is intended for low cost development environments and other front facing services where you do not want to have a load balancer, you just want public traffic from the internet to go directly to your container.
 
+- ### DatadogAgent
+
+  Usage:
+
+  ```js
+  new DatadogAgent({
+    apmEnabled: true,
+    traceAnalyticsEnabled: true,
+    datadogApiKey: ecs.Secret.fromSecretsManager(datadogApiKey),
+  })
+  ```
+
+  This extension adds a Datadog agent. You can optionally enable both APM and trace analytics. The Datadog API Key
+  is required and must be put into Secrets Manager.
+
 ## Creating your own custom `ServiceExtension`
 
 In addition to using the default service extensions that come with this module, you

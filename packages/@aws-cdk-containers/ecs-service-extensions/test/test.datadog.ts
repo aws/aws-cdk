@@ -1,15 +1,23 @@
 import { expect, haveResource } from '@aws-cdk/assert';
 import * as ecs from '@aws-cdk/aws-ecs';
+import * as secretsManager from '@aws-cdk/aws-secretsmanager';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import { Container, Environment, FireLensExtension, Service, ServiceDescription } from '../lib';
+import { DatadogAgent, Container, Environment, Service, ServiceDescription } from '../lib';
 
 export = {
-  'should be able to add Firelens to a service'(test: Test) {
+  'should be able to add Datadog agent extension to a service'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
 
     // WHEN
+    const SECRET_ARN = 'arn:aws:secretsmanager:us-west-2:209640446841:secret:datadog-api-key-secret-JxST1g';
+
+    // Import a secret from the account.
+    const datadogApiKey = secretsManager.Secret.fromSecretAttributes(stack, 'datadog-api-key-secret', {
+      secretCompleteArn: SECRET_ARN,
+    });
+
     const environment = new Environment(stack, 'production');
     const serviceDescription = new ServiceDescription();
 
@@ -20,7 +28,11 @@ export = {
       image: ecs.ContainerImage.fromAsset('./test/test-apps/name'),
     }));
 
-    serviceDescription.add(new FireLensExtension());
+    serviceDescription.add(new DatadogAgent({
+      apmEnabled: true,
+      traceAnalyticsEnabled: true,
+      datadogApiKey: ecs.Secret.fromSecretsManager(datadogApiKey),
+    }));
 
     new Service(stack, 'my-service', {
       environment,
@@ -29,19 +41,18 @@ export = {
 
     // THEN
 
-    // Ensure that the log group was created
-    expect(stack).to(haveResource('AWS::Logs::LogGroup'));
-
-    // Ensure that task has a Firelens sidecar and a log configuration
-    // pointing at the sidecar
     expect(stack).to(haveResource('AWS::ECS::TaskDefinition', {
       ContainerDefinitions: [
         {
           Cpu: 256,
-          DependsOn: [
+          Environment: [
             {
-              Condition: 'START',
-              ContainerName: 'firelens',
+              Name: 'DD_TRACE_ANALYTICS_ENABLED',
+              Value: 'true',
+            },
+            {
+              Name: 'DD_SERVICE',
+              Value: 'my-service',
             },
           ],
           Essential: true,
@@ -64,19 +75,6 @@ export = {
               ],
             ],
           },
-          LogConfiguration: {
-            LogDriver: 'awsfirelens',
-            Options: {
-              Name: 'cloudwatch',
-              region: {
-                Ref: 'AWS::Region',
-              },
-              log_group_name: {
-                Ref: 'myservicelogs176EE19F',
-              },
-              log_stream_prefix: 'my-service/',
-            },
-          },
           Memory: 512,
           Name: 'app',
           PortMappings: [
@@ -94,31 +92,66 @@ export = {
           ],
         },
         {
+          Environment: [
+            {
+              Name: 'DD_ENV',
+              Value: 'production',
+            },
+            {
+              Name: 'ECS_FARGATE',
+              Value: 'true',
+            },
+            {
+              Name: 'DD_APM_ENABLED',
+              Value: 'true',
+            },
+            {
+              Name: 'DD_APM_NON_LOCAL_TRAFFIC',
+              Value: 'true',
+            },
+            {
+              Name: 'DD_ECS_COLLECT_RESOURCE_TAGS_EC2',
+              Value: 'true',
+            },
+          ],
           Essential: true,
-          FirelensConfiguration: {
-            Type: 'fluentbit',
-          },
-          Image: {
-            Ref: 'SsmParameterValueawsserviceawsforfluentbitlatestC96584B6F00A464EAD1953AFF4B05118Parameter',
-          },
+          Image: 'public.ecr.aws/datadog/agent:7',
           LogConfiguration: {
             LogDriver: 'awslogs',
             Options: {
               'awslogs-group': {
-                Ref: 'myservicetaskdefinitionfirelensLogGroup0D59B0EB',
+                Ref: 'myservicetaskdefinitiondatadogagentLogGroup7D034F5A',
               },
-              'awslogs-stream-prefix': 'firelens',
+              'awslogs-stream-prefix': 'datadog-agent',
               'awslogs-region': {
                 Ref: 'AWS::Region',
               },
             },
           },
           MemoryReservation: 50,
-          Name: 'firelens',
+          Name: 'datadog-agent',
+          PortMappings: [
+            {
+              ContainerPort: 8126,
+              Protocol: 'tcp',
+            },
+          ],
+          Secrets: [
+            {
+              Name: 'DD_API_KEY',
+              ValueFrom: 'arn:aws:secretsmanager:us-west-2:209640446841:secret:datadog-api-key-secret-JxST1g',
+            },
+          ],
           User: '0:1338',
         },
       ],
       Cpu: '256',
+      ExecutionRoleArn: {
+        'Fn::GetAtt': [
+          'myservicetaskdefinitionExecutionRole0CE74AD0',
+          'Arn',
+        ],
+      },
       Family: 'myservicetaskdefinition',
       Memory: '512',
       NetworkMode: 'awsvpc',
