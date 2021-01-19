@@ -382,6 +382,11 @@ otherwise. Subnet names will be determined from the `aws-cdk:subnet-name` tag
 on the subnet if it exists, or will mirror the subnet type otherwise (i.e.
 a public subnet will have the name `"Public"`).
 
+The result of the `Vpc.fromLookup()` operation will be written to a file
+called `cdk.context.json`. You must commit this file to source control so
+that the lookup values are available in non-privileged environments such
+as CI build steps, and to ensure your template builds are repeatable.
+
 Here's how `Vpc.fromLookup()` can be used:
 
 [importing existing VPCs](test/integ.import-default-vpc.lit.ts)
