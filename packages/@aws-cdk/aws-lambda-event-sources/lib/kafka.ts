@@ -1,3 +1,4 @@
+import { ISecurityGroup, ISubnet } from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
@@ -28,13 +29,28 @@ export interface ManagedKafkaEventSourceProps extends KafkaEventSourceProps {
 }
 
 /**
- * Properties for a self managed Kafka cluster event source
+ * Properties for a self managed Kafka cluster event source.
+ * If your Kafka cluster is only reachable via VPC make sure to configure it.
  */
 export interface SelfManagedKafkaEventSourceProps extends KafkaEventSourceProps {
   /**
    * list of Kafka brokers
    */
   readonly bootstrapServers: string[]
+
+  /**
+   * If your Kafka brokers are only reachable via VPC, provide the subnets here
+   *
+   * @default - none
+   */
+  readonly subnets?: ISubnet[],
+
+  /**
+   * If your Kafka brokers are only reachable via VPC, provide the security group here
+   *
+   * @default - none
+   */
+  readonly securityGroup?: ISecurityGroup
 }
 
 /**
@@ -80,14 +96,20 @@ export class SelfManagedKafkaEventSource extends StreamEventSource<SelfManagedKa
   }
 
   public bind(target: lambda.IFunction) {
+    let sourceAccessConfigurations = [{ type: 'SASL_SCRAM_512_AUTH', uri: this.props.secret.secretArn }];
+    if (this.props.subnets !== undefined && this.props.securityGroup !== undefined) {
+      sourceAccessConfigurations.push({ type: 'VPC_SECURITY_GROUP', uri: this.props.securityGroup.securityGroupId });
+      this.props.subnets.forEach((subnet) => {
+        sourceAccessConfigurations.push({ type: 'VPC_SUBNET', uri: subnet.subnetId });
+      });
+    }
     target.addEventSourceMapping(
       `KafkaEventSource:${this.props.topic}`,
       this.enrichMappingOptions({
         selfManagedEventSource: { endpoints: { kafkaBootstrapServers: this.props.bootstrapServers } },
         kafkaTopic: this.props.topic,
         startingPosition: this.props.startingPosition,
-        // TODO: make auth type configurable, add vpc config
-        sourceAccessConfigurations: [{ type: 'SASL_SCRAM_512_AUTH', uri: this.props.secret.secretArn }],
+        sourceAccessConfigurations,
       }),
     );
     this.props.secret.grantRead(target);

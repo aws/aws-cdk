@@ -72,6 +72,7 @@
   "dependencies": {
     "@aws-cdk/aws-apigateway": "0.0.0",
     "@aws-cdk/aws-dynamodb": "0.0.0",
+    "@aws-cdk/aws-ec2": "0.0.0",
     "@aws-cdk/aws-events": "0.0.0",
     "@aws-cdk/aws-iam": "0.0.0",
     "@aws-cdk/aws-kinesis": "0.0.0",
@@ -89,6 +90,7 @@
   "peerDependencies": {
     "@aws-cdk/aws-apigateway": "0.0.0",
     "@aws-cdk/aws-dynamodb": "0.0.0",
+    "@aws-cdk/aws-ec2": "0.0.0",
     "@aws-cdk/aws-events": "0.0.0",
     "@aws-cdk/aws-iam": "0.0.0",
     "@aws-cdk/aws-kinesis": "0.0.0",

@@ -1,4 +1,5 @@
 import { expect, haveResource } from '@aws-cdk/assert';
+import { SecurityGroup, Subnet } from '@aws-cdk/aws-ec2';
 import * as lambda from '@aws-cdk/aws-lambda';
 import { Secret } from '@aws-cdk/aws-secretsmanager';
 import * as cdk from '@aws-cdk/core';
@@ -88,6 +89,8 @@ export = {
     const kafkaTopic = 'some-topic';
     const secret = new Secret(stack, 'Secret', { secretName: 'AmazonMSK_KafkaSecret' });
     const bootstrapServers = ['kafka-broker:9092'];
+    const subnet = Subnet.fromSubnetId(stack, 'Subnet', 'subnet-0011001100');
+    const sg = SecurityGroup.fromSecurityGroupId(stack, 'SecurityGroup', 'sg-0123456789');
 
     // WHEN
     fn.addEventSource(new sources.SelfManagedKafkaEventSource(
@@ -96,6 +99,8 @@ export = {
         topic: kafkaTopic,
         secret: secret,
         startingPosition: lambda.StartingPosition.TRIM_HORIZON,
+        subnets: [subnet],
+        securityGroup: sg,
       }));
 
     // THEN
@@ -143,6 +148,14 @@ export = {
           URI: {
             Ref: 'SecretA720EF05',
           },
+        },
+        {
+          Type: 'VPC_SECURITY_GROUP',
+          URI: 'sg-0123456789',
+        },
+        {
+          Type: 'VPC_SUBNET',
+          URI: 'subnet-0011001100',
         },
       ],
     }));
