@@ -340,7 +340,7 @@ export interface SaslAuthProps {
    * You must use a customer master key (CMK) when creating users in secrets manager.
    * You cannot use a Secret with Amazon MSK that uses the default Secrets Manager encryption key.
    *
-   * @default - CMK will be created with alias msk/sasl/scram
+   * @default - CMK will be created with alias msk/{clusterName}/sasl/scram
    */
   readonly key?: kms.IKey;
 }
@@ -540,7 +540,7 @@ export class Cluster extends ClusterBase {
       this.saslScramAuthenticationKey = new kms.Key(this, 'SASLKey', {
         description:
           'Used for encrypting MSK secrets for SASL/SCRAM authentication.',
-        alias: 'msk/sasl/scram',
+        alias: `msk/${props.clusterName}/sasl/scram`,
       });
 
       // https://docs.aws.amazon.com/kms/latest/developerguide/services-secrets-manager.html#asm-policies
