@@ -4,6 +4,31 @@ import { IEventSourceDlq } from './dlq';
 import { IFunction } from './function-base';
 import { CfnEventSourceMapping } from './lambda.generated';
 
+/**
+ * Specific settings like the authentication protocol or the VPC components to secure access to your event source.
+ */
+export interface SourceAccessConfiguration {
+  /**
+   * The type of authentication protocol or the VPC components for your event source. For example: "SASL_SCRAM_512_AUTH".
+   * Valid values are: BASIC_AUTH | VPC_SUBNET | VPC_SECURITY_GROUP | SASL_SCRAM_512_AUTH | SASL_SCRAM_256_AUTH
+   */
+  readonly type: string,
+  /**
+   * The value for your chosen configuration in Type. For example: "URI": "arn:aws:secretsmanager:us-east-1:01234567890:secret:MyBrokerSecretName".
+   */
+  readonly uri: string
+}
+
+/**
+ * The configuration for your self managed event source, currently only Kafka is supported
+ */
+export interface SelfManagedEventSource {
+  /**
+   * A list of server endpoints for your self managed event source
+   */
+  readonly endpoints: {kafkaBootstrapServers: string[]}
+}
+
 export interface EventSourceMappingOptions {
   /**
    * The Amazon Resource Name (ARN) of the event source. Any record added to
@@ -105,18 +130,18 @@ export interface EventSourceMappingOptions {
   readonly kafkaTopic?: string;
 
   /**
-   * The Secrets Manager secret ARN that stores your broker credentials.
-   *
-   * @default - no configuration
-   */
-  readonly kafkaSecretArn?: string
-
-  /**
-   * A list of Kafka bootstrap servers to connect to your self managed Kafka cluster
+   * Specific settings like the authentication protocol or the VPC components to secure access to your event source.
    *
    * @default - none
    */
-  readonly kafkaBootstrapServers?: string[]
+  readonly sourceAccessConfigurations?: SourceAccessConfiguration[]
+
+  /**
+   * The configuration for your self managed event source
+   *
+   * @default - none
+   */
+  readonly selfManagedEventSource?: SelfManagedEventSource
 }
 
 /**
@@ -212,9 +237,8 @@ export class EventSourceMapping extends cdk.Resource implements IEventSourceMapp
       maximumRetryAttempts: props.retryAttempts,
       parallelizationFactor: props.parallelizationFactor,
       topics: props.kafkaTopic !== undefined ? [props.kafkaTopic] : undefined,
-      sourceAccessConfigurations: props.kafkaSecretArn !== undefined ? [{ type: 'SASL_SCRAM_512_AUTH', uri: props.kafkaSecretArn }] : undefined,
-      // eslint-disable-next-line max-len
-      selfManagedEventSource: props.kafkaBootstrapServers !== undefined ? { endpoints: { kafkaBootstrapServers: props.kafkaBootstrapServers } } : undefined,
+      sourceAccessConfigurations: props.sourceAccessConfigurations,
+      selfManagedEventSource: props.selfManagedEventSource,
     });
     this.eventSourceMappingId = cfnEventSourceMapping.ref;
   }

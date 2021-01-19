@@ -52,7 +52,7 @@ export class ManagedKafkaEventSource extends StreamEventSource<ManagedKafkaEvent
       this.enrichMappingOptions({
         eventSourceArn: this.props.clusterArn,
         startingPosition: this.props.startingPosition,
-        kafkaSecretArn: this.props.secret.secretArn,
+        sourceAccessConfigurations: [{ type: 'SASL_SCRAM_512_AUTH', uri: this.props.secret.secretArn }],
         kafkaTopic: this.props.topic,
       }),
     );
@@ -83,10 +83,11 @@ export class SelfManagedKafkaEventSource extends StreamEventSource<SelfManagedKa
     target.addEventSourceMapping(
       `KafkaEventSource:${this.props.topic}`,
       this.enrichMappingOptions({
-        kafkaBootstrapServers: this.props.bootstrapServers,
+        selfManagedEventSource: { endpoints: { kafkaBootstrapServers: this.props.bootstrapServers } },
         kafkaTopic: this.props.topic,
         startingPosition: this.props.startingPosition,
-        kafkaSecretArn: this.props.secret.secretArn,
+        // TODO: make auth type configurable, add vpc config
+        sourceAccessConfigurations: [{ type: 'SASL_SCRAM_512_AUTH', uri: this.props.secret.secretArn }],
       }),
     );
     this.props.secret.grantRead(target);

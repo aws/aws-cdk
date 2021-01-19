@@ -130,9 +130,7 @@ export = {
       BatchSize: 100,
       SelfManagedEventSource: {
         Endpoints: {
-          KafkaBootstrapServers: [
-            'kafka-broker:9092',
-          ],
+          KafkaBootstrapServers: bootstrapServers,
         },
       },
       StartingPosition: 'TRIM_HORIZON',
