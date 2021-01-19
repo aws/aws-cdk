@@ -117,8 +117,5 @@ const FUTURE_FLAGS_DEFAULTS: { [key: string]: boolean } = {
 };
 
 export function futureFlagDefault(flag: string): boolean {
-  if (!Object.keys(FUTURE_FLAGS_DEFAULTS).includes(flag)) {
-    throw new Error(`Unsupported feature flag '${flag}'. This flag may have existed on CDKv1 but is removed in CDKv2.`);
-  }
   return FUTURE_FLAGS_DEFAULTS[flag];
 }
