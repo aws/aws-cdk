@@ -20,13 +20,23 @@ export interface SourceAccessConfiguration {
 }
 
 /**
+ * The endpoints for your self managed event source
+ */
+export interface Endpoints {
+  /**
+   * A list of Kafka bootstrap servers in the format HOST:PORT, e.g. 'kafka-broker01:9096'
+   */
+  kafkaBootstrapServers: string[]
+}
+
+/**
  * The configuration for your self managed event source, currently only Kafka is supported
  */
 export interface SelfManagedEventSource {
   /**
-   * A list of server endpoints for your self managed event source
+   * The endpoints for your self managed event source
    */
-  readonly endpoints: {kafkaBootstrapServers: string[]}
+  readonly endpoints: Endpoints
 }
 
 export interface EventSourceMappingOptions {
