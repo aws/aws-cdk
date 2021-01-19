@@ -1,3 +1,4 @@
+import * as crypto from 'crypto';
 import { ISecurityGroup, ISubnet } from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
@@ -64,7 +65,7 @@ export class ManagedKafkaEventSource extends StreamEventSource<ManagedKafkaEvent
 
   public bind(target: lambda.IFunction) {
     target.addEventSourceMapping(
-      `KafkaEventSource:${this.props.topic}`,
+      `KafkaEventSource:${this.props.clusterArn.split('/').slice(-1)[0]}${this.props.topic}`,
       this.enrichMappingOptions({
         eventSourceArn: this.props.clusterArn,
         startingPosition: this.props.startingPosition,
@@ -106,8 +107,9 @@ export class SelfManagedKafkaEventSource extends StreamEventSource<SelfManagedKa
         sourceAccessConfigurations.push({ type: 'VPC_SUBNET', uri: subnet.subnetId });
       });
     }
+    const idHash = crypto.createHash('md5').update(JSON.stringify(this.props.bootstrapServers)).digest('hex');
     target.addEventSourceMapping(
-      `KafkaEventSource:${this.props.topic}`,
+      `KafkaEventSource:${idHash}:${this.props.topic}`,
       this.enrichMappingOptions({
         selfManagedEventSource: { endpoints: { kafkaBootstrapServers: this.props.bootstrapServers } },
         kafkaTopic: this.props.topic,
