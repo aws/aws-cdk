@@ -210,3 +210,18 @@ const domain = new es.Domain(this, 'Domain', {
     },
 });
 ```
+
+## UltraWarm
+
+UltraWarm nodes can be enabled to provide a cost-effective way to store large amounts of read-only data.
+
+```ts
+const domain = new es.Domain(this, 'Domain', {
+    version: es.ElasticsearchVersion.V7_9,
+    capacity: {
+        masterNodes: 2,
+        warmNodes: 2,
+        warmInstanceType: 'ultrawarm1.medium.elasticsearch',
+    },
+});
+```
