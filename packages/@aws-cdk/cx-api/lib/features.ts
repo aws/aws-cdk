@@ -103,14 +103,6 @@ export const S3_GRANT_WRITE_WITHOUT_ACL = '@aws-cdk/aws-s3:grantWriteWithoutAcl'
  * Tests must cover the default (disabled) case and the future (enabled) case.
  */
 export const FUTURE_FLAGS = {
-  [ENABLE_STACK_NAME_DUPLICATES_CONTEXT]: 'true',
-  [ENABLE_DIFF_NO_FAIL_CONTEXT]: 'true',
-  [STACK_RELATIVE_EXPORTS_CONTEXT]: 'true',
-  [DOCKER_IGNORE_SUPPORT]: true,
-  [SECRETS_MANAGER_PARSE_OWNED_SECRET_NAME]: true,
-  [KMS_DEFAULT_KEY_POLICIES]: true,
-  [S3_GRANT_WRITE_WITHOUT_ACL]: true,
-
   // We will advertise this flag when the feature is complete
   // [NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: 'true',
 };
@@ -120,16 +112,13 @@ export const FUTURE_FLAGS = {
  * explicitly configured.
  */
 const FUTURE_FLAGS_DEFAULTS: { [key: string]: boolean } = {
-  [ENABLE_STACK_NAME_DUPLICATES_CONTEXT]: false,
-  [ENABLE_DIFF_NO_FAIL_CONTEXT]: false,
-  [STACK_RELATIVE_EXPORTS_CONTEXT]: false,
-  [NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false,
-  [DOCKER_IGNORE_SUPPORT]: false,
-  [SECRETS_MANAGER_PARSE_OWNED_SECRET_NAME]: false,
-  [KMS_DEFAULT_KEY_POLICIES]: false,
-  [S3_GRANT_WRITE_WITHOUT_ACL]: false,
+  [STACK_RELATIVE_EXPORTS_CONTEXT]: true,
+  [NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: true,
 };
 
 export function futureFlagDefault(flag: string): boolean {
+  if (!Object.keys(FUTURE_FLAGS_DEFAULTS).includes(flag)) {
+    throw new Error(`Unsupported feature flag '${flag}'. This flag may have existed on CDKv1 but is removed in CDKv2.`);
+  }
   return FUTURE_FLAGS_DEFAULTS[flag];
 }
