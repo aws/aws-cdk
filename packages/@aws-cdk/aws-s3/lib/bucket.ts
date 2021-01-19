@@ -1039,7 +1039,7 @@ export interface BucketProps {
    *
    * Only relevant, when Encryption is set to {@link BucketEncryption.KMS}
    *
-   * @default - undefined
+   * @default - false
    */
   readonly bucketKeyEnabled?: boolean;
 
