@@ -310,4 +310,62 @@ export = {
 
     test.done();
   },
+
+  'can set custom netowrking options'(test: Test) {
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC', {
+      subnetConfiguration: [
+        {
+          cidrMask: 24,
+          name: 'Public',
+          subnetType: ec2.SubnetType.PUBLIC,
+        },
+        {
+          cidrMask: 24,
+          name: 'Isolated',
+          subnetType: ec2.SubnetType.ISOLATED,
+        },
+      ],
+    });
+    const securityGroup = new ec2.SecurityGroup(stack, 'MyCustomSG', {
+      vpc,
+    });
+
+    // WHEN
+    new ecsPatterns.QueueProcessingFargateService(stack, 'Service', {
+      vpc,
+      memoryLimitMiB: 512,
+      image: ecs.ContainerImage.fromRegistry('test'),
+      securityGroups: [securityGroup],
+      taskSubnets: { subnetType: ec2.SubnetType.ISOLATED },
+    });
+
+    // THEN - QueueWorker is of FARGATE launch type, an SQS queue is created and all default properties are set.
+    expect(stack).to(haveResource('AWS::ECS::Service', {
+      LaunchType: 'FARGATE',
+      NetworkConfiguration: {
+        AwsvpcConfiguration: {
+          AssignPublicIp: 'DISABLED',
+          SecurityGroups: [
+            {
+              'Fn::GetAtt': [
+                'MyCustomSGDE27C661',
+                'GroupId',
+              ],
+            },
+          ],
+          Subnets: [
+            {
+              Ref: 'VPCIsolatedSubnet1SubnetEBD00FC6',
+            },
+            {
+              Ref: 'VPCIsolatedSubnet2Subnet4B1C8CAA',
+            },
+          ],
+        },
+      },
+    }));
+
+    test.done();
+  },
 };
