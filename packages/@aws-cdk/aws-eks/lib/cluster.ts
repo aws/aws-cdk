@@ -961,13 +961,13 @@ export class Cluster extends ClusterBase {
 
     this.vpcSubnets = props.vpcSubnets ?? [{ subnetType: ec2.SubnetType.PUBLIC }, { subnetType: ec2.SubnetType.PRIVATE }];
 
-    const selectedSubnetIds = this.vpcSubnets.map(s => this.vpc.selectSubnets(s).subnetIds);
-    if (selectedSubnetIds.some(Token.isUnresolved) && selectedSubnetIds.length > 1) {
+    const selectedSubnetIdsPerGroup = this.vpcSubnets.map(s => this.vpc.selectSubnets(s).subnetIds);
+    if (selectedSubnetIdsPerGroup.some(Token.isUnresolved) && selectedSubnetIdsPerGroup.length > 1) {
       throw new Error('eks.Cluster: cannot select multiple subnet groups from a VPC imported from list tokens with unknown length. Select only one subnet group, pass a length to Fn.split, or switch to Vpc.fromLookup.');
     }
 
     // Get subnetIds for all selected subnets
-    const subnetIds = Array.from(new Set(flatten(selectedSubnetIds)));
+    const subnetIds = Array.from(new Set(flatten(selectedSubnetIdsPerGroup)));
 
 
     this.endpointAccess = props.endpointAccess ?? EndpointAccess.PUBLIC_AND_PRIVATE;
