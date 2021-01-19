@@ -213,6 +213,42 @@ nodeunitShim({
   },
 });
 
+test('Fn.split with an unknown length resolves to simple {Fn::Split}', () => {
+  const stack = new Stack();
+
+  const splittableToken = Token.asString({ ThisIsASplittable: 'list' });
+  const splitToken: string[] = Fn.split(',', splittableToken);
+
+  expect(stack.resolve(splitToken)).toEqual({ 'Fn::Split': [',', { ThisIsASplittable: 'list' }] });
+});
+
+test('Fn.split with an assumed length resolves to a list of {Fn::Select}s', () => {
+  const stack = new Stack();
+
+  const splittableToken = Token.asString({ ThisIsASplittable: 'list' });
+  const splitToken: string[] = Fn.split(',', splittableToken, 3);
+
+  const splitValue = { 'Fn::Split': [',', { ThisIsASplittable: 'list' }] };
+  expect(stack.resolve(splitToken)).toEqual([
+    { 'Fn::Select': [0, splitValue] },
+    { 'Fn::Select': [1, splitValue] },
+    { 'Fn::Select': [2, splitValue] },
+  ]);
+});
+
+test('Fn.importListValue produces lists of known length', () => {
+  const stack = new Stack();
+
+  const splitToken: string[] = Fn.importListValue('ExportName', 3);
+
+  const splitValue = { 'Fn::Split': [',', { 'Fn::ImportValue': 'ExportName' }] };
+  expect(stack.resolve(splitToken)).toEqual([
+    { 'Fn::Select': [0, splitValue] },
+    { 'Fn::Select': [1, splitValue] },
+    { 'Fn::Select': [2, splitValue] },
+  ]);
+});
+
 function stringListToken(o: any): string[] {
   return Token.asList(new Intrinsic(o));
 }
