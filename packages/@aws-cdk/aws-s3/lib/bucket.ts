@@ -1513,7 +1513,7 @@ export class Bucket extends BucketBase {
     }
 
     // if bucketKeyEnabled is set, encryption must be set to KMS.
-    if (props.bucketKeyEnabled !== undefined && encryptionType !== BucketEncryption.KMS) {
+    if (props.bucketKeyEnabled && encryptionType !== BucketEncryption.KMS) {
       throw new Error(`bucketKeyEnabled is specified, so 'encryption' must be set to KMS (value: ${encryptionType})`);
     }
 
