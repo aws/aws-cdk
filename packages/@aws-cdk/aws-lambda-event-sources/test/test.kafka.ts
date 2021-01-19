@@ -70,7 +70,7 @@ export = {
       ],
       SourceAccessConfigurations: [
         {
-          Type: 'BASIC_AUTH',
+          Type: 'SASL_SCRAM_512_AUTH',
           URI: {
             Ref: 'SecretA720EF05',
           },
@@ -141,7 +141,7 @@ export = {
       ],
       SourceAccessConfigurations: [
         {
-          Type: 'BASIC_AUTH',
+          Type: 'SASL_SCRAM_512_AUTH',
           URI: {
             Ref: 'SecretA720EF05',
           },

@@ -212,7 +212,7 @@ export class EventSourceMapping extends cdk.Resource implements IEventSourceMapp
       maximumRetryAttempts: props.retryAttempts,
       parallelizationFactor: props.parallelizationFactor,
       topics: props.kafkaTopic !== undefined ? [props.kafkaTopic] : undefined,
-      sourceAccessConfigurations: props.kafkaSecretArn !== undefined ? [{ type: 'BASIC_AUTH', uri: props.kafkaSecretArn }] : undefined,
+      sourceAccessConfigurations: props.kafkaSecretArn !== undefined ? [{ type: 'SASL_SCRAM_512_AUTH', uri: props.kafkaSecretArn }] : undefined,
       // eslint-disable-next-line max-len
       selfManagedEventSource: props.kafkaBootstrapServers !== undefined ? { endpoints: { kafkaBootstrapServers: props.kafkaBootstrapServers } } : undefined,
     });
