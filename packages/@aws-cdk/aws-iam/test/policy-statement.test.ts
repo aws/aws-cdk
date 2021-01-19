@@ -1,6 +1,6 @@
 import '@aws-cdk/assert/jest';
 import { Stack } from '@aws-cdk/core';
-import { AnyPrincipal, PolicyDocument, PolicyStatement } from '../lib';
+import { AnyPrincipal, Group, PolicyDocument, PolicyStatement } from '../lib';
 
 describe('IAM policy statement', () => {
 
@@ -180,4 +180,14 @@ describe('IAM policy statement', () => {
     });
   });
 
+  test('throws error when group is specified for \'Principal\' or \'NotPrincipal\'', () => {
+    const stack = new Stack();
+    const group = new Group(stack, 'groupId');
+    const policyStatement = new PolicyStatement();
+
+    expect(() => policyStatement.addPrincipals(group))
+      .toThrow(/Cannot use an IAM Group as the 'Principal' or 'NotPrincipal' in an IAM Policy/);
+    expect(() => policyStatement.addNotPrincipals(group))
+      .toThrow(/Cannot use an IAM Group as the 'Principal' or 'NotPrincipal' in an IAM Policy/);
+  });
 });

@@ -3,6 +3,10 @@ import * as cdk from '@aws-cdk/core';
 import { ContainerDefinition } from '../container-definition';
 import { ContainerImage, ContainerImageConfig } from '../container-image';
 
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct } from '@aws-cdk/core';
+
 /**
  * A special type of {@link ContainerImage} that uses an ECR repository for the image,
  * but a CloudFormation Parameter for the tag of the image in that repository.
@@ -21,7 +25,7 @@ export class TagParameterContainerImage extends ContainerImage {
     this.repository = repository;
   }
 
-  public bind(scope: cdk.Construct, containerDefinition: ContainerDefinition): ContainerImageConfig {
+  public bind(scope: Construct, containerDefinition: ContainerDefinition): ContainerImageConfig {
     this.repository.grantPull(containerDefinition.taskDefinition.obtainExecutionRole());
     const imageTagParameter = new cdk.CfnParameter(scope, 'ImageTagParam');
     this.imageTagParameter = imageTagParameter;
