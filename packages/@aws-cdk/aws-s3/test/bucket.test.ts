@@ -367,17 +367,8 @@ nodeunitShim({
     test.throws(() => {
       new s3.Bucket(stack, 'MyBucket', { bucketKeyEnabled: true, encryption: s3.BucketEncryption.S3_MANAGED });
     }, "bucketKeyEnabled is specified, so 'encryption' must be set to KMS (value: S3MANAGED)");
-    test.doesNotThrow(() => {
-      new s3.Bucket(stack, 'MyBucket1', { bucketKeyEnabled: undefined, encryption: s3.BucketEncryption.S3_MANAGED });
-    }, "bucketKeyEnabled is specified, so 'encryption' must be set to KMS (value: S3MANAGED)");
-    test.throws(() => {
-      new s3.Bucket(stack, 'MyBucket2', { bucketKeyEnabled: true, encryption: s3.BucketEncryption.KMS_MANAGED });
-    }, "bucketKeyEnabled is specified, so 'encryption' must be set to KMS (value: MANAGED)");
     test.throws(() => {
       new s3.Bucket(stack, 'MyBucket3', { bucketKeyEnabled: true });
-    }, "bucketKeyEnabled is specified, so 'encryption' must be set to KMS (value: NONE)");
-    test.throws(() => {
-      new s3.Bucket(stack, 'MyBucket4', { bucketKeyEnabled: false });
     }, "bucketKeyEnabled is specified, so 'encryption' must be set to KMS (value: NONE)");
     test.done();
   },
