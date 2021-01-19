@@ -1,10 +1,13 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import * as lambda from '@aws-cdk/aws-lambda';
-import * as cdk from '@aws-cdk/core';
 import { Bundling } from './bundling';
 import { BundlingOptions } from './types';
 import { findUp } from './util';
+
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct } from '@aws-cdk/core';
 
 /**
  * Properties for a GolangFunction
@@ -49,7 +52,7 @@ export interface GolangFunctionProps extends lambda.FunctionOptions {
  * A Golang Lambda function
  */
 export class GolangFunction extends lambda.Function {
-  constructor(scope: cdk.Construct, id: string, props: GolangFunctionProps) {
+  constructor(scope: Construct, id: string, props: GolangFunctionProps) {
     if (props.runtime && (props.runtime.family !== lambda.RuntimeFamily.GO && props.runtime.family != lambda.RuntimeFamily.OTHER)) {
       throw new Error('Only `go` and `provided` runtimes are supported.');
     }
