@@ -11,6 +11,7 @@ const REGIONS = process.env.AWS_REGIONS
   : [process.env.AWS_REGION ?? process.env.AWS_DEFAULT_REGION ?? 'us-east-1'];
 
 const FRAMEWORK_VERSION = process.env.FRAMEWORK_VERSION;
+const CONSTRUCTS_VERSION = process.env.CONSTRUCTS_VERSION;
 
 process.stdout.write(`Using regions: ${REGIONS}\n`);
 process.stdout.write(`Using framework version: ${FRAMEWORK_VERSION}\n`);
@@ -117,11 +118,9 @@ export function withMonolithicCfnIncludeCdkApp<A extends TestContext>(block: (co
 
     let success = true;
     try {
-      let module = uberPackage;
-      if (FRAMEWORK_VERSION) {
-        module = `${module}@${FRAMEWORK_VERSION}`;
-      }
-      await fixture.shell(['npm', 'install', 'constructs', module]);
+      const module = FRAMEWORK_VERSION ? `${uberPackage}@${FRAMEWORK_VERSION}` : uberPackage;
+      const constructs = CONSTRUCTS_VERSION ? `constructs@${CONSTRUCTS_VERSION}` : 'constructs';
+      await fixture.shell(['npm', 'install', constructs, module]);
 
       await block(fixture);
     } catch (e) {
