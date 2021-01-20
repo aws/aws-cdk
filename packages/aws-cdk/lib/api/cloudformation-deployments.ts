@@ -282,7 +282,7 @@ export class CloudFormationDeployments {
 
     if (requiresBootstrapStackVersion === undefined) { return; }
 
-    if (!bootstrapStack) {
+    if (!bootstrapStack.found) {
       throw new Error(`${stackName}: publishing assets requires bootstrap stack version '${requiresBootstrapStackVersion}', no bootstrap stack found. Please run 'cdk bootstrap'.`);
     }
 
