@@ -35,6 +35,37 @@ describe('Start Job Run', () => {
     });
   });
 
+  test('create job with input from task', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const task = new DataBrewStartJobRun(stack, 'JobRun', {
+      name: sfn.JsonPath.stringAt('$.Name'),
+    });
+
+    // THEN
+    expect(stack.resolve(task.toStateJson())).toEqual({
+      Type: 'Task',
+      Resource: {
+        'Fn::Join': [
+          '',
+          [
+            'arn:',
+            {
+              Ref: 'AWS::Partition',
+            },
+            ':states:::databrew:startJobRun',
+          ],
+        ],
+      },
+      End: true,
+      Parameters: {
+        'Name.$': '$.Name',
+      },
+    });
+  });
+
   test('sync integrationPattern', () => {
     // GIVEN
     const stack = new cdk.Stack();

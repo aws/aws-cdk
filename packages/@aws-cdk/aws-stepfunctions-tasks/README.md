@@ -684,7 +684,7 @@ Step Functions supports [AWS Glue DataBrew](https://docs.aws.amazon.com/step-fun
 You can call the [`StartJobRun`](https://docs.aws.amazon.com/databrew/latest/dg/API_StartJobRun.html) API from a `Task` state.
 
 ```ts
-new DataBrewStartJobRun(stack, 'Task', {
+new GlueDataBrewStartJobRun(stack, 'Task', {
   Name: 'databrew-job',
 });
 ```

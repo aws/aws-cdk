@@ -40,7 +40,26 @@
                 "databrew:listJobRuns"
               ],
               "Effect": "Allow",
-              "Resource": "*" 
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":databrew:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":job/TestJob"
+                  ]
+                ]
+              }
             }
           ],
           "Version": "2012-10-17"
@@ -70,7 +89,7 @@
               {
                 "Ref": "AWS::Partition"
               },
-              ":states:::databrew:startJobRun\",\"Parameters\":{\"Name.$\":\"$.Name\"}}},\"TimeoutSeconds\":30}"
+              ":states:::databrew:startJobRun\",\"Parameters\":{\"Name\":\"TestJob\"}}},\"TimeoutSeconds\":30}"
             ]
           ]
         }

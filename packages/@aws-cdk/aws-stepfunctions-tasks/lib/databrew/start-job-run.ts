@@ -1,10 +1,12 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
+import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
 
 /**
  * Properties for starting a job run with StartJobRun
+ * @experimental
  */
 export interface DataBrewStartJobRunProps extends sfn.TaskStateBaseProps {
 
@@ -18,6 +20,7 @@ export interface DataBrewStartJobRunProps extends sfn.TaskStateBaseProps {
  * Start a Job run as a Task
  *
  * @see https://docs.aws.amazon.com/step-functions/latest/dg/connect-databrew.html
+ * @experimental
  */
 export class DataBrewStartJobRun extends sfn.TaskStateBase {
 
@@ -31,6 +34,9 @@ export class DataBrewStartJobRun extends sfn.TaskStateBase {
 
   private readonly integrationPattern: sfn.IntegrationPattern;
 
+  /**
+   * @experimental
+   */
   constructor(scope: Construct, id: string, private readonly props: DataBrewStartJobRunProps) {
     super(scope, id, props);
     this.integrationPattern = props.integrationPattern ?? sfn.IntegrationPattern.REQUEST_RESPONSE;
@@ -39,8 +45,19 @@ export class DataBrewStartJobRun extends sfn.TaskStateBase {
 
     this.taskPolicies = [
       new iam.PolicyStatement({
-        resources: ['*'],
-        actions: ['databrew:startJobRun', 'databrew:stopJobRun', 'databrew:listJobRuns'],
+        resources: [
+          cdk.Stack.of(this).formatArn({
+            service: 'databrew',
+            resource: 'job',
+            // If the name comes from input, we cannot target the policy to a particular ARN prefix reliably.
+            resourceName: sfn.JsonPath.isEncodedJsonPath(this.props.name) ? '*' : this.props.name,
+          }),
+        ],
+        actions: [
+          'databrew:startJobRun',
+          'databrew:stopJobRun',
+          'databrew:listJobRuns',
+        ],
       }),
     ];
   }
