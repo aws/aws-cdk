@@ -80,6 +80,23 @@ happy({
   }
 });
 
+happy({
+  name: 'dist tag is correctly shown',
+  inputs: { 
+    'release.json': { majorVersion: 2, releaseType: 'alpha', distTag: 'v2-preview' },
+    'version.v2.json': { version: '2.0.0-alpha.5' }
+  },
+  expected: {
+    changelogFile: 'CHANGELOG.v2.md',
+    marker: '0.0.0',
+    prerelease: 'alpha',
+    version: '2.0.0-alpha.5',
+    versionFile: 'version.v2.json',
+    npmDistTag: 'v2-preview',
+  }
+});
+
+
 failure({
   name: 'invalid release type',
   inputs: { 'release.json': { majorVersion: 2, releaseType: 'build' } },
