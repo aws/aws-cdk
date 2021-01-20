@@ -55,14 +55,28 @@ if ! ${SKIP_DOWNLOAD:-false}; then
     existing_names=$(echo "$jsii_package_dirs" | xargs -n1 -P4 -I {} bash -c 'dirs_to_existing_names "$@"' _ {})
     echo " Done." >&2
 
-    current_version=$(node -p 'require("./lerna.json").version')
-    echo "Current version in lerna.json is $current_version"
-    if ! ${DOWNLOAD_LATEST:-false} && package_exists_on_npm aws-cdk $current_version; then
-        echo "Using package version ${current_version} as baseline"
-        existing_names=$(echo "$existing_names" | sed -e "s/$/@$current_version/")
-    else
-        echo "However, using the latest version from NPM as the baseline"
+    echo "Determining baseline version..." >&2
+    version=$(node -p 'require("./scripts/resolve-version.js").version')
+    echo "  Current version is $version." >&2
+
+    if ! package_exists_on_npm aws-cdk $version; then
+      echo "  Version $version does not exist in npm. Falling back to env vars." >&2
+      # occurs within a release PR where the version is bumped but is not yet published to npm.
+      major_version=$(echo $version | cut -d '.' -f 1)
+      if [ "$major_version" == "1" ]; then
+        echo "  Setting version to $NPM_DISTTAG_V1" >&2
+        version=$NPM_DISTTAG_V1
+      elif [ "$major_version" == "2" ]; then
+        echo "  Setting version to $NPM_DISTTAG_V2" >&2
+        version=$NPM_DISTTAG_V2
+      else
+        echo "Unknown major version $major_version. Failing..." >&2
+        exit 1
+      fi
     fi
+
+    echo "Using version '$version' as the baseline..."
+    existing_names=$(echo "$existing_names" | sed -e "s/$/@$version/")
 
     rm -rf $tmpdir
     mkdir -p $tmpdir
