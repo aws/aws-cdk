@@ -1,5 +1,150 @@
 {
   "Resources": {
+    "JobOutputBucketACE3BC7B": {
+      "Type": "AWS::S3::Bucket",
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
+    "DataBrewRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Action": "sts:AssumeRole",
+              "Principal": {
+                "Service": "databrew.amazonaws.com"
+              }
+            }
+          ]
+        },
+        "ManagedPolicyArns": [
+          "arn:aws:iam::aws:policy/service-role/AWSGlueDataBrewServiceRole"
+        ],
+        "Path": "/",
+        "Policies": [
+          {
+            "PolicyDocument": {
+              "Statement": {
+                "Effect": "Allow",
+                "Action": [
+                  "s3:GetObject",
+                  "s3:PutObject",
+                  "s3:DeleteObject",
+                  "s3:ListBucket"
+                ],
+                "Resource": [
+                  "arn:aws:s3:::databrew-public-datasets-test-region/*",
+                  "arn:aws:s3:::databrew-public-datasets-test-region",
+                  {
+                    "Fn::Join": [
+                      "",
+                      [
+                        {
+                          "Fn::GetAtt": [
+                            "JobOutputBucketACE3BC7B",
+                            "Arn"
+                          ]
+                        },
+                        "/*"
+                      ]
+                    ]
+                  },
+                  {
+                    "Fn::GetAtt": [
+                      "JobOutputBucketACE3BC7B",
+                      "Arn"
+                    ]
+                  }
+                ]
+              }
+            },
+            "PolicyName": "DataBrewPolicy"
+          }
+        ]
+      }
+    },
+    "DataBrewRecipe": {
+      "Type": "AWS::DataBrew::Recipe",
+      "Properties": {
+        "Name": "recipe-1",
+        "Steps": [
+          {
+            "Action": {
+              "Operation": "UPPER_CASE",
+              "Parameters": {
+                "sourceColumn": "description"
+              }
+            }
+          },
+          {
+            "Action": {
+              "Operation": "DELETE",
+              "Parameters": {
+                "sourceColumn": "doc_id"
+              }
+            }
+          }
+        ]
+      }
+    },
+    "DataBrewDataset": {
+      "Type": "AWS::DataBrew::Dataset",
+      "Properties": {
+        "Input": {
+          "S3InputDefinition": {
+            "Bucket": "databrew-public-datasets-test-region",
+            "Key": "votes.csv"
+          }
+        },
+        "Name": "dataset-1"
+      }
+    },
+    "DataBrewProject": {
+      "Type": "AWS::DataBrew::Project",
+      "Properties": {
+        "DatasetName": "dataset-1",
+        "Name": "project-1",
+        "RecipeName": "recipe-1",
+        "RoleArn": {
+          "Fn::GetAtt": [
+            "DataBrewRole",
+            "Arn"
+          ]
+        }
+      },
+      "DependsOn": [
+        "DataBrewDataset",
+        "DataBrewRecipe"
+      ]
+    },
+    "DataBrewJob": {
+      "Type": "AWS::DataBrew::Job",
+      "Properties": {
+        "Name": "job-1",
+        "RoleArn": {
+          "Fn::GetAtt": [
+            "DataBrewRole",
+            "Arn"
+          ]
+        },
+        "Type": "RECIPE",
+        "Outputs": [
+          {
+            "Location": {
+              "Bucket": {
+                "Ref": "JobOutputBucketACE3BC7B"
+              }
+            }
+          }
+        ],
+        "ProjectName": "project-1"
+      },
+      "DependsOn": [
+        "DataBrewProject"
+      ]
+    },
     "StateMachineRoleB840431D": {
       "Type": "AWS::IAM::Role",
       "Properties": {
@@ -56,7 +201,7 @@
                     {
                       "Ref": "AWS::AccountId"
                     },
-                    ":job/TestJob"
+                    ":job/job-1"
                   ]
                 ]
               }
@@ -89,7 +234,7 @@
               {
                 "Ref": "AWS::Partition"
               },
-              ":states:::databrew:startJobRun\",\"Parameters\":{\"Name\":\"TestJob\"}}},\"TimeoutSeconds\":30}"
+              ":states:::databrew:startJobRun\",\"Parameters\":{\"Name\":\"job-1\"}}},\"TimeoutSeconds\":30}"
             ]
           ]
         }
