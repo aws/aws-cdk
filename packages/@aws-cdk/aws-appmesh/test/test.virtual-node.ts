@@ -1,5 +1,6 @@
 import { expect, haveResourceLike } from '@aws-cdk/assert';
 import * as acmpca from '@aws-cdk/aws-acmpca';
+import * as acm from '@aws-cdk/aws-certificatemanager';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import * as appmesh from '../lib';
@@ -357,7 +358,149 @@ export = {
         test.done();
       },
     },
+
+    'when a grpc listener is added with a TLS certificate from ACM': {
+      'the listener should include the TLS configuration'(test: Test) {
+        // GIVEN
+        const stack = new cdk.Stack();
+
+        // WHEN
+        const mesh = new appmesh.Mesh(stack, 'mesh', {
+          meshName: 'test-mesh',
+        });
+
+        const cert = new acm.Certificate(stack, 'cert', {
+          domainName: '',
+        });
+
+        new appmesh.VirtualNode(stack, 'test-node', {
+          mesh,
+          listeners: [appmesh.VirtualNodeListener.grpc({
+            port: 80,
+            tlsCertificate: appmesh.TlsCertificate.acm({
+              certificate: cert,
+              tlsMode: appmesh.TlsMode.STRICT,
+            }),
+          },
+          )],
+        });
+
+        // THEN
+
+        expect(stack).to(haveResourceLike('AWS::AppMesh::VirtualNode', {
+          Spec: {
+            Listeners: [
+              {
+                TLS: {
+                  Mode: appmesh.TlsMode.STRICT,
+                  Certificate: {
+                    ACM: {
+                      CertificateArn: {
+                        Ref: 'cert56CA94EB',
+                      },
+                    },
+                  },
+                },
+              },
+            ],
+          },
+        }));
+
+        test.done();
+      },
+    },
+
+    'when an http listener is added with a TLS certificate from file': {
+      'the listener should include the TLS configuration'(test: Test) {
+        // GIVEN
+        const stack = new cdk.Stack();
+
+        // WHEN
+        const mesh = new appmesh.Mesh(stack, 'mesh', {
+          meshName: 'test-mesh',
+        });
+
+        new appmesh.VirtualNode(stack, 'test-node', {
+          mesh,
+          listeners: [appmesh.VirtualNodeListener.http({
+            port: 80,
+            tlsCertificate: appmesh.TlsCertificate.file({
+              certificateChainPath: 'path/to/certChain',
+              privateKeyPath: 'path/to/privateKey',
+              tlsMode: appmesh.TlsMode.STRICT,
+            }),
+          })],
+        });
+
+        // THEN
+        expect(stack).to(haveResourceLike('AWS::AppMesh::VirtualNode', {
+          Spec: {
+            Listeners: [
+              {
+                TLS: {
+                  Mode: appmesh.TlsMode.STRICT,
+                  Certificate: {
+                    File: {
+                      CertificateChain: 'path/to/certChain',
+                      PrivateKey: 'path/to/privateKey',
+                    },
+                  },
+                },
+              },
+            ],
+          },
+        }));
+
+        test.done();
+      },
+    },
+
+    'when an http listener is added with the TLS mode permissive': {
+      'the listener should include the TLS configuration'(test: Test) {
+        // GIVEN
+        const stack = new cdk.Stack();
+
+        // WHEN
+        const mesh = new appmesh.Mesh(stack, 'mesh', {
+          meshName: 'test-mesh',
+        });
+
+        new appmesh.VirtualNode(stack, 'test-node', {
+          mesh,
+          listeners: [appmesh.VirtualNodeListener.http({
+            port: 80,
+            tlsCertificate: appmesh.TlsCertificate.file({
+              certificateChainPath: 'path/to/certChain',
+              privateKeyPath: 'path/to/privateKey',
+              tlsMode: appmesh.TlsMode.PERMISSIVE,
+            }),
+          })],
+        });
+
+        // THEN
+        expect(stack).to(haveResourceLike('AWS::AppMesh::VirtualNode', {
+          Spec: {
+            Listeners: [
+              {
+                TLS: {
+                  Mode: appmesh.TlsMode.PERMISSIVE,
+                  Certificate: {
+                    File: {
+                      CertificateChain: 'path/to/certChain',
+                      PrivateKey: 'path/to/privateKey',
+                    },
+                  },
+                },
+              },
+            ],
+          },
+        }));
+
+        test.done();
+      },
+    },
   },
+
   'Can import Virtual Nodes using an ARN'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();

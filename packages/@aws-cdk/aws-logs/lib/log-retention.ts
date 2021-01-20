@@ -5,6 +5,10 @@ import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { RetentionDays } from './log-group';
 
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct as CoreConstruct } from '@aws-cdk/core';
+
 /**
  * Construction properties for a LogRetention.
  */
@@ -65,7 +69,7 @@ export interface LogRetentionRetryOptions {
  * Log group can be created in the region that is different from stack region by
  * specifying `logGroupRegion`
  */
-export class LogRetention extends cdk.Construct {
+export class LogRetention extends CoreConstruct {
 
   /**
    * The ARN of the LogGroup.
@@ -124,7 +128,7 @@ export class LogRetention extends cdk.Construct {
 /**
  * Private provider Lambda function to support the log retention custom resource.
  */
-class LogRetentionFunction extends cdk.Construct {
+class LogRetentionFunction extends CoreConstruct {
   public readonly functionArn: cdk.Reference;
 
   constructor(scope: Construct, id: string, props: LogRetentionProps) {
@@ -154,7 +158,7 @@ class LogRetentionFunction extends cdk.Construct {
       type: 'AWS::Lambda::Function',
       properties: {
         Handler: 'index.handler',
-        Runtime: 'nodejs10.x',
+        Runtime: 'nodejs12.x',
         Code: {
           S3Bucket: asset.s3BucketName,
           S3Key: asset.s3ObjectKey,
