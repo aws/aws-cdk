@@ -1,12 +1,12 @@
 import { expect, haveResource, haveResourceLike, ResourcePart } from '@aws-cdk/assert';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
-import { Test } from 'nodeunit';
+import { nodeunitShim, Test } from 'nodeunit-shim';
 import * as ecr from '../lib';
 
 /* eslint-disable quote-props */
 
-export = {
+nodeunitShim({
   'construct repository'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
@@ -547,4 +547,4 @@ export = {
       test.done();
     },
   },
-};
+});

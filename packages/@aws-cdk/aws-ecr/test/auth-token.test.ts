@@ -1,10 +1,10 @@
 import { expect, haveResourceLike } from '@aws-cdk/assert';
 import * as iam from '@aws-cdk/aws-iam';
 import { Stack } from '@aws-cdk/core';
-import { Test } from 'nodeunit';
+import { nodeunitShim, Test } from 'nodeunit-shim';
 import { AuthorizationToken } from '../lib';
 
-export = {
+nodeunitShim({
   'grant()'(test: Test) {
     // GIVEN
     const stack = new Stack();
@@ -28,4 +28,4 @@ export = {
 
     test.done();
   },
-};
+});
