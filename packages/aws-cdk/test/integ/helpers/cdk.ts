@@ -456,7 +456,7 @@ export function randomString() {
  *
  * Works by writing the packages to a `package.json` file, and
  * then running NPM7's "install" on it. The use of NPM7 will automatically
- * resolve required peerDependencies.
+ * install required peerDependencies.
  *
  * If we're running in REPO mode and we find the package in the set of local
  * packages in the repository, we'll write the directory name to `package.json`
