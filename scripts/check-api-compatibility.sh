@@ -55,17 +55,14 @@ if ! ${SKIP_DOWNLOAD:-false}; then
     existing_names=$(echo "$jsii_package_dirs" | xargs -n1 -P4 -I {} bash -c 'dirs_to_existing_names "$@"' _ {})
     echo " Done." >&2
 
+    echo "Determining baseline version..." >&2
     version=$(node -p 'require("./scripts/resolve-version.js").version')
-    echo "Current version is $version."
+    disttag=$(node -p 'require("./scripts/resolve-version.js").npmDistTag')
+    echo "  Current version is $version." >&2
 
     if ! package_exists_on_npm aws-cdk $version; then
-      # occurs within a release PR where the version is bumped but is not yet published to npm.
-      if [ -z ${NPM_DISTTAG:-} ]; then
-        echo "env variable NPM_DISTTAG is not set. Failing."
-        exit 1
-      fi
-      echo "Current version not published. Setting version to NPM_DISTTAG (${NPM_DISTTAG})."
-      version=$NPM_DISTTAG
+      echo "  Version $version does not exist in npm. Falling back to resolved dist tag '$disttag'" >&2
+      version=$disttag
     fi
 
     echo "Using version '$version' as the baseline..."
