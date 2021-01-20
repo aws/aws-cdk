@@ -334,7 +334,7 @@ export class Cluster extends Resource implements ICluster {
     autoScalingGroup.addUserData(`[Environment]::SetEnvironmentVariable("ECS_CLUSTER", "${this.clusterName}", "Machine")`);
     autoScalingGroup.addUserData('[Environment]::SetEnvironmentVariable("ECS_ENABLE_AWSLOGS_EXECUTIONROLE_OVERRIDE", "true", "Machine")');
     // tslint:disable-next-line: max-line-length
-    autoScalingGroup.addUserData('[Environment]::SetEnvironmentVariable("ECS_AVAILABLE_LOGGING_DRIVERS", "[\"json-file\",\"awslogs\"]", "Machine")');
+    autoScalingGroup.addUserData('[Environment]::SetEnvironmentVariable("ECS_AVAILABLE_LOGGING_DRIVERS", \'["json-file","awslogs"]\', "Machine")');
 
     // enable instance draining
     if (autoScalingGroup.spotPrice && options.spotInstanceDraining) {
@@ -344,7 +344,7 @@ export class Cluster extends Resource implements ICluster {
     // enable task iam role
     if (!options.canContainersAccessInstanceRole) {
       autoScalingGroup.addUserData('[Environment]::SetEnvironmentVariable("ECS_ENABLE_TASK_IAM_ROLE", "true", "Machine")');
-      autoScalingGroup.addUserData(`Initialize-ECSAgent -Cluster '${this.clusterName}' -EnableTaskIAMRole'`);
+      autoScalingGroup.addUserData(`Initialize-ECSAgent -Cluster '${this.clusterName}' -EnableTaskIAMRole`);
     } else {
       autoScalingGroup.addUserData(`Initialize-ECSAgent -Cluster '${this.clusterName}'`);
     }
