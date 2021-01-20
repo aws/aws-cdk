@@ -16,8 +16,8 @@
     "pkglint": "pkglint -f",
     "test": "cdk-test",
     "watch": "cdk-watch",
-    "build+test": "npm run build && npm test",
-    "build+test+package": "npm run build+test && npm run package",
+    "build+test": "yarn build && yarn test",
+    "build+test+package": "yarn build+test && yarn package",
     "compat": "cdk-compat"
   },
   "cdk-build": {
@@ -35,7 +35,7 @@
     "@types/jest": "^26.0.15",
     "@types/jszip": "^3.4.1",
     "@types/mock-fs": "^4.13.0",
-    "@types/node": "^10.17.48",
+    "@types/node": "^10.17.51",
     "@types/yargs": "^15.0.10",
     "cdk-build-tools": "0.0.0",
     "jest": "^26.6.3",
@@ -46,8 +46,8 @@
   "dependencies": {
     "@aws-cdk/cloud-assembly-schema": "0.0.0",
     "@aws-cdk/cx-api": "0.0.0",
-    "archiver": "^5.1.0",
-    "aws-sdk": "^2.804.0",
+    "archiver": "^5.2.0",
+    "aws-sdk": "^2.828.0",
     "glob": "^7.1.6",
     "yargs": "^16.2.0"
   },

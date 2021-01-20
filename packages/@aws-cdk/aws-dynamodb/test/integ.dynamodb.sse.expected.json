@@ -544,7 +544,8 @@
                 "dynamodb:GetShardIterator",
                 "dynamodb:Query",
                 "dynamodb:GetItem",
-                "dynamodb:Scan"
+                "dynamodb:Scan",
+                "dynamodb:ConditionCheckItem"
               ],
               "Effect": "Allow",
               "Resource": [
@@ -579,7 +580,8 @@
                 "dynamodb:GetShardIterator",
                 "dynamodb:Query",
                 "dynamodb:GetItem",
-                "dynamodb:Scan"
+                "dynamodb:Scan",
+                "dynamodb:ConditionCheckItem"
               ],
               "Effect": "Allow",
               "Resource": [

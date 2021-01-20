@@ -711,14 +711,12 @@
         "Code": {
           "ZipFile": "import boto3, json, os, time\n\necs = boto3.client('ecs')\nautoscaling = boto3.client('autoscaling')\n\n\ndef lambda_handler(event, context):\n  print(json.dumps(event))\n  cluster = os.environ['CLUSTER']\n  snsTopicArn = event['Records'][0]['Sns']['TopicArn']\n  lifecycle_event = json.loads(event['Records'][0]['Sns']['Message'])\n  instance_id = lifecycle_event.get('EC2InstanceId')\n  if not instance_id:\n    print('Got event without EC2InstanceId: %s', json.dumps(event))\n    return\n\n  instance_arn = container_instance_arn(cluster, instance_id)\n  print('Instance %s has container instance ARN %s' % (lifecycle_event['EC2InstanceId'], instance_arn))\n\n  if not instance_arn:\n    return\n\n  while has_tasks(cluster, instance_arn):\n    time.sleep(10)\n\n  try:\n    print('Terminating instance %s' % instance_id)\n    autoscaling.complete_lifecycle_action(\n        LifecycleActionResult='CONTINUE',\n        **pick(lifecycle_event, 'LifecycleHookName', 'LifecycleActionToken', 'AutoScalingGroupName'))\n  except Exception as e:\n    # Lifecycle action may have already completed.\n    print(str(e))\n\n\ndef container_instance_arn(cluster, instance_id):\n  \"\"\"Turn an instance ID into a container instance ARN.\"\"\"\n  arns = ecs.list_container_instances(cluster=cluster, filter='ec2InstanceId==' + instance_id)['containerInstanceArns']\n  if not arns:\n    return None\n  return arns[0]\n\n\ndef has_tasks(cluster, instance_arn):\n  \"\"\"Return True if the instance is running tasks for the given cluster.\"\"\"\n  instances = ecs.describe_container_instances(cluster=cluster, containerInstances=[instance_arn])['containerInstances']\n  if not instances:\n    return False\n  instance = instances[0]\n\n  if instance['status'] == 'ACTIVE':\n    # Start draining, then try again later\n    set_container_instance_to_draining(cluster, instance_arn)\n    return True\n\n  tasks = instance['runningTasksCount'] + instance['pendingTasksCount']\n  print('Instance %s has %s tasks' % (instance_arn, tasks))\n\n  return tasks > 0\n\n\ndef set_container_instance_to_draining(cluster, instance_arn):\n  ecs.update_container_instances_state(\n      cluster=cluster,\n      containerInstances=[instance_arn], status='DRAINING')\n\n\ndef pick(dct, *keys):\n  \"\"\"Pick a subset of a dict.\"\"\"\n  return {k: v for k, v in dct.items() if k in keys}\n"
         },
-        "Handler": "index.lambda_handler",
         "Role": {
           "Fn::GetAtt": [
             "EcsClusterDefaultAutoScalingGroupDrainECSHookFunctionServiceRole94543EDA",
             "Arn"
           ]
         },
-        "Runtime": "python3.6",
         "Environment": {
           "Variables": {
             "CLUSTER": {
@@ -726,6 +724,8 @@
             }
           }
         },
+        "Handler": "index.lambda_handler",
+        "Runtime": "python3.6",
         "Tags": [
           {
             "Key": "Name",
@@ -1219,7 +1219,7 @@
       "Properties": {
         "Code": {
           "S3Bucket": {
-            "Ref": "AssetParameters3c3ed777478fe845fb5950df5e26461242b39cf220f00e0683aab244d9d7c0f7S3Bucket28CE5152"
+            "Ref": "AssetParameters8bda025b845a88fbeb54ef75e52048aa9f3378463116cb413f12f6014673a59aS3BucketFD1BBE00"
           },
           "S3Key": {
             "Fn::Join": [
@@ -1232,7 +1232,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParameters3c3ed777478fe845fb5950df5e26461242b39cf220f00e0683aab244d9d7c0f7S3VersionKeyAF6E05ED"
+                          "Ref": "AssetParameters8bda025b845a88fbeb54ef75e52048aa9f3378463116cb413f12f6014673a59aS3VersionKey6E54DC76"
                         }
                       ]
                     }
@@ -1245,7 +1245,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParameters3c3ed777478fe845fb5950df5e26461242b39cf220f00e0683aab244d9d7c0f7S3VersionKeyAF6E05ED"
+                          "Ref": "AssetParameters8bda025b845a88fbeb54ef75e52048aa9f3378463116cb413f12f6014673a59aS3VersionKey6E54DC76"
                         }
                       ]
                     }
@@ -1255,19 +1255,19 @@
             ]
           }
         },
-        "Handler": "index.handler",
         "Role": {
           "Fn::GetAtt": [
             "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRole89A01265",
             "Arn"
           ]
         },
-        "Runtime": "python3.6",
+        "Handler": "index.handler",
         "Layers": [
           {
             "Ref": "EnvFileDeploymentAwsCliLayerA8FC897D"
           }
         ],
+        "Runtime": "python3.6",
         "Timeout": 900
       },
       "DependsOn": [
@@ -1285,7 +1285,6 @@
           "MaximumPercent": 200,
           "MinimumHealthyPercent": 50
         },
-        "DesiredCount": 1,
         "EnableECSManagedTags": false,
         "LaunchType": "EC2",
         "NetworkConfiguration": {
@@ -1349,17 +1348,17 @@
       "Type": "String",
       "Description": "Artifact hash for asset \"e9882ab123687399f934da0d45effe675ecc8ce13b40cb946f3e1d6141fe8d68\""
     },
-    "AssetParameters3c3ed777478fe845fb5950df5e26461242b39cf220f00e0683aab244d9d7c0f7S3Bucket28CE5152": {
+    "AssetParameters8bda025b845a88fbeb54ef75e52048aa9f3378463116cb413f12f6014673a59aS3BucketFD1BBE00": {
       "Type": "String",
-      "Description": "S3 bucket for asset \"3c3ed777478fe845fb5950df5e26461242b39cf220f00e0683aab244d9d7c0f7\""
+      "Description": "S3 bucket for asset \"8bda025b845a88fbeb54ef75e52048aa9f3378463116cb413f12f6014673a59a\""
     },
-    "AssetParameters3c3ed777478fe845fb5950df5e26461242b39cf220f00e0683aab244d9d7c0f7S3VersionKeyAF6E05ED": {
+    "AssetParameters8bda025b845a88fbeb54ef75e52048aa9f3378463116cb413f12f6014673a59aS3VersionKey6E54DC76": {
       "Type": "String",
-      "Description": "S3 key for asset version \"3c3ed777478fe845fb5950df5e26461242b39cf220f00e0683aab244d9d7c0f7\""
+      "Description": "S3 key for asset version \"8bda025b845a88fbeb54ef75e52048aa9f3378463116cb413f12f6014673a59a\""
     },
-    "AssetParameters3c3ed777478fe845fb5950df5e26461242b39cf220f00e0683aab244d9d7c0f7ArtifactHash8926088E": {
+    "AssetParameters8bda025b845a88fbeb54ef75e52048aa9f3378463116cb413f12f6014673a59aArtifactHash595EC1E7": {
       "Type": "String",
-      "Description": "Artifact hash for asset \"3c3ed777478fe845fb5950df5e26461242b39cf220f00e0683aab244d9d7c0f7\""
+      "Description": "Artifact hash for asset \"8bda025b845a88fbeb54ef75e52048aa9f3378463116cb413f12f6014673a59a\""
     },
     "AssetParameters972240f9dd6e036a93d5f081af9a24315b2053828ac049b3b19b2fa12d7ae64aS3Bucket1F1A8472": {
       "Type": "String",
