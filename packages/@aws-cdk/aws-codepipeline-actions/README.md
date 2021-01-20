@@ -57,6 +57,25 @@ const sourceAction = new codepipeline_actions.CodeCommitSourceAction({
 });
 ```
 
+If you want to clone the entire CodeCommit repository (only available for CodeBuild actions), you can set the `codeBuildCloneOutput` property to `true`.
+
+```ts
+const sourceOutput = new codepipeline.Artifact();
+const sourceAction = new codepipeline_actions.CodeCommitSourceAction({
+  actionName: 'CodeCommit',
+  repository: repo,
+  output: sourceOutput,
+  codeBuildCloneOutput: true,
+});
+
+const buildAction = new codepipeline_actions.CodeBuildAction({
+  actionName: 'CodeBuild',
+  project,
+  input: sourceOutput, // The build action must use the CodeCommitSourceAction output as input.
+  outputs: [new codepipeline.Artifact()], // optional
+});
+```
+
 The CodeCommit source action emits variables:
 
 ```ts

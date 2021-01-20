@@ -177,17 +177,9 @@ export class CodeCommitSourceAction extends Action {
         'codecommit:UploadArchive',
         'codecommit:GetUploadArchiveStatus',
         'codecommit:CancelUploadArchive',
+        ...(this.props.codeBuildCloneOutput === true ? ['codecommit:GetRepository'] : []),
       ],
     }));
-
-    if (this.props.codeBuildCloneOutput === true) {
-      options.role.addToPrincipalPolicy(new iam.PolicyStatement({
-        resources: [this.props.repository.repositoryArn],
-        actions: [
-          'codecommit:GetRepository',
-        ],
-      }));
-    }
 
     return {
       configuration: {

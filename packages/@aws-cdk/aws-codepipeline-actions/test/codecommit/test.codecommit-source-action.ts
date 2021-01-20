@@ -1,4 +1,4 @@
-import { countResources, expect, haveResourceLike, not } from '@aws-cdk/assert';
+import { arrayWith, countResources, expect, haveResourceLike, not, objectLike } from '@aws-cdk/assert';
 import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as codecommit from '@aws-cdk/aws-codecommit';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
@@ -325,19 +325,15 @@ export = {
 
       expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
         'PolicyDocument': {
-          'Statement': [
-            {
+          'Statement': arrayWith(
+            objectLike({
               'Action': [
                 'logs:CreateLogGroup',
                 'logs:CreateLogStream',
                 'logs:PutLogEvents',
               ],
-            },
-            {},
-            {},
-            {},
-            {},
-            {
+            }),
+            objectLike({
               'Action': 'codecommit:GitPull',
               'Effect': 'Allow',
               'Resource': {
@@ -346,19 +342,23 @@ export = {
                   'Arn',
                 ],
               },
-            },
-          ],
+            }),
+          ),
         },
       }));
 
       expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
         'PolicyDocument': {
-          'Statement': [
-            {},
-            {},
-            {},
-            {
-              'Action': 'codecommit:GetRepository',
+          'Statement': arrayWith(
+            objectLike({
+              'Action': [
+                'codecommit:GetBranch',
+                'codecommit:GetCommit',
+                'codecommit:UploadArchive',
+                'codecommit:GetUploadArchiveStatus',
+                'codecommit:CancelUploadArchive',
+                'codecommit:GetRepository',
+              ],
               'Effect': 'Allow',
               'Resource': {
                 'Fn::GetAtt': [
@@ -366,8 +366,8 @@ export = {
                   'Arn',
                 ],
               },
-            },
-          ],
+            }),
+          ),
         },
       }));
 

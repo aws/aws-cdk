@@ -4,11 +4,11 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import { BitBucketSourceAction } from '..';
 import { Action } from '../action';
+import { CodeCommitSourceAction } from '../codecommit/source-action';
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
 // eslint-disable-next-line no-duplicate-imports, import/order
 import { Construct } from '@aws-cdk/core';
-import { CodeCommitSourceAction } from '../codecommit/source-action';
 
 /**
  * The type of the CodeBuild action that determines its CodePipeline Category -
