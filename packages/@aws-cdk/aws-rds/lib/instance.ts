@@ -286,10 +286,9 @@ export interface DatabaseInstanceNewProps {
    * The storage type. Storage types supported are gp2, io1, standard.
    *
    * @see https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_Storage.html#Concepts.Storage.GeneralSSD
-   * 
+   *
    * @default GP2
    */
-  
   readonly storageType?: StorageType;
 
   /**
