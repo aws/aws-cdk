@@ -11,7 +11,9 @@ class TestStack extends cdk.Stack {
 
     const vpc = new ec2.Vpc(this, 'VPC');
 
-    const multipartUserData = new ec2.MultipartUserData();
+    const multipartUserData = new ec2.MultipartUserData({
+      partsSeparator: '---separator---',
+    });
 
     const userData1 = ec2.UserData.forLinux();
     userData1.addCommands('echo 大らと > /var/tmp/echo1');
@@ -20,12 +22,12 @@ class TestStack extends cdk.Stack {
     const userData2 = ec2.UserData.forLinux();
     userData2.addCommands(`echo 大らと ${vpc.vpcId}  > /var/tmp/echo2`);
 
-    const rawPart1 = new ec2.MutlipartUserDataPart({
+    const rawPart1 = ec2.MultipartUserDataPart.fromRawBody({
       contentType: 'text/x-shellscript',
       body: 'echo "RawPart" > /var/tmp/rawPart1',
     });
 
-    const rawPart2 = new ec2.MutlipartUserDataPart({
+    const rawPart2 = ec2.MultipartUserDataPart.fromRawBody({
       contentType: 'text/x-shellscript',
       body: `echo "RawPart ${vpc.vpcId}" > /var/tmp/rawPart2`,
     });
@@ -36,11 +38,11 @@ class TestStack extends cdk.Stack {
       'cloud-init-per once docker_options echo \'OPTIONS="${OPTIONS} --storage-opt dm.basesize=20G"\' >> /etc/sysconfig/docker',
     );
 
-    multipartUserData.addPart(userData1);
-    multipartUserData.addPart(userData2);
-    multipartUserData.addPart(bootHook.renderAsMimePart({
+    multipartUserData.addUserDataPart(userData1);
+    multipartUserData.addUserDataPart(userData2);
+    multipartUserData.addUserDataPart(bootHook, {
       contentType: 'text/cloud-boothook',
-    }));
+    });
     multipartUserData.addPart(rawPart1);
     multipartUserData.addPart(rawPart2);
 

@@ -1,5 +1,3 @@
-import * as crypto from 'crypto';
-
 import { IBucket } from '@aws-cdk/aws-s3';
 import { CfnElement, Fn, Resource, Stack } from '@aws-cdk/core';
 import { OperatingSystemType } from './machine-image';
@@ -63,7 +61,7 @@ export interface ExecuteFileOptions {
 /**
  * Instance User Data
  */
-export abstract class UserData implements IMultipartUserDataPartProducer {
+export abstract class UserData {
   /**
    * Create a userdata object for Linux hosts
    */
@@ -111,13 +109,6 @@ export abstract class UserData implements IMultipartUserDataPartProducer {
   public abstract render(): string;
 
   /**
-   * Render the user data as a part for `MultipartUserData`. Not all subclasses supports this.
-   */
-  public renderAsMimePart(_renderOpts?: MultipartRenderOptions): MutlipartUserDataPart {
-    throw new Error('This class does not support rendering as MIME part');
-  }
-
-  /**
    * Adds commands to download a file from S3
    *
    * @returns: The local path that the file will be downloaded to
@@ -158,15 +149,6 @@ class LinuxUserData extends UserData {
   public render(): string {
     const shebang = this.props.shebang ?? '#!/bin/bash';
     return [shebang, ...(this.renderOnExitLines()), ...this.lines].join('\n');
-  }
-
-  public renderAsMimePart(renderOpts?: MultipartRenderOptions): MutlipartUserDataPart {
-    const contentType = renderOpts?.contentType || 'text/x-shellscript';
-    return new MutlipartUserDataPart({
-      body: Fn.base64(this.render()), // Wrap into base64, to support UTF-8 encoding (actually decoding)
-      contentType: `${contentType}; charset="utf-8"`,
-      transferEncoding: 'base64',
-    });
   }
 
   public addS3DownloadCommand(params: S3DownloadOptions): string {
@@ -296,25 +278,24 @@ class CustomUserData extends UserData {
 }
 
 /**
- * Options when creating `MutlipartUserDataPart`.
+ * Suggested content types, however any value is allowed.
  */
-export interface MutlipartUserDataPartOptions {
-  /**
-   * The body of message.
-   *
-   * @default undefined - body will not be added to part
-   */
-  readonly body?: string,
+export type MultipartContentType = 'text/x-shellscript; charset="utf-8"' | 'text/cloud-boothook; charset="utf-8"' | string;
+
+/**
+ * Options when creating `MultipartUserDataPart`.
+ */
+export interface MultipartUserDataPartOptions {
 
   /**
    * `Content-Type` header of this part.
    *
    * For Linux shell scripts use `text/x-shellscript`
    */
-  readonly contentType: string;
+  readonly contentType: MultipartContentType;
 
   /**
-   * `Content-Transfer-Encoding` header specifing part encoding.
+   * `Content-Transfer-Encoding` header specifying part encoding.
    *
    * @default undefined - don't add this header
    */
@@ -322,55 +303,144 @@ export interface MutlipartUserDataPartOptions {
 }
 
 /**
- * The raw part of multip-part user data, which can be added to {@link MultipartUserData}.
+ * Options when creating `MultipartUserDataPart`.
  */
-export class MutlipartUserDataPart implements IMultipartUserDataPartProducer {
+export interface MultipartUserDataPartOptionsWithBody extends MultipartUserDataPartOptions {
+  /**
+   * The body of message.
+   *
+   * @default undefined - body will not be added to part
+   */
+  readonly body?: string,
+}
+
+/**
+ * Options when creating `MultipartUserDataPartWrapper`.
+ */
+export interface MultipartUserDataPartWrapperOptions {
+  /**
+   * `Content-Type` header of this part.
+   *
+   * For Linux shell scripts typically it's `text/x-shellscript`.
+   *
+   * @default 'text/x-shellscript; charset="utf-8"'
+   */
+  readonly contentType?: MultipartContentType;
+}
+
+/**
+ * Interface representing part of `MultipartUserData` user data.
+ */
+export interface IMultipart {
+  /**
+   * The body of this MIME part.
+   */
+  readonly body: string | undefined;
+
+  /**
+   * `Content-Type` header of this part.
+   */
+  readonly contentType: string;
+
+  /**
+   * `Content-Transfer-Encoding` header specifying part encoding.
+   *
+   * @default undefined - don't add this header
+   */
+  readonly transferEncoding?: string;
+}
+
+/**
+ * The base class for all classes which can be used as {@link MultipartUserData}.
+ */
+export abstract class MultipartUserDataPart implements IMultipart {
+
+  /**
+   * Constructs the new `MultipartUserDataPart` wrapping existing `UserData`. Modification to `UserData` are reflected
+   * in subsequent renders of the part.
+   *
+   * For more information about content types see `MultipartUserDataPartOptionsWithBody`
+   */
+  public static fromUserData(userData: UserData, opts?: MultipartUserDataPartWrapperOptions): MultipartUserDataPart {
+    opts = opts || {};
+    return new MultipartUserDataPartWrapper(userData, opts);
+  }
+
+  /**
+   * Constructs the raw `MultipartUserDataPart` using specified body, content type and transfer encoding.
+   *
+   * When transfer encoding is specified (typically as Base64), it's caller responsibility to convert body to
+   * Base64 either by wrapping with `Fn.base64` or by converting it by other converters.
+   */
+  public static fromRawBody(opts: MultipartUserDataPartOptionsWithBody): MultipartUserDataPart {
+    return new MultipartUserDataPartRaw(opts);
+  }
+
+  protected static readonly DEFAULT_CONTENT_TYPE = 'text/x-shellscript; charset="utf-8"';
+
   /** The body of this MIME part. */
-  public readonly body?: string;
+  public abstract get body(): string | undefined;
 
   /** `Content-Type` header of this part */
   public readonly contentType: string;
 
   /**
-   * `Content-Transfer-Encoding` header specifing part encoding.
+   * `Content-Transfer-Encoding` header specifying part encoding.
    *
    * @default undefined - don't add this header
    */
-  readonly transferEncoding?: string;
+  public readonly transferEncoding?: string;
 
-  public constructor(props: MutlipartUserDataPartOptions) {
-    this.body = props.body;
+  public constructor(props: MultipartUserDataPartOptions) {
     this.contentType = props.contentType;
     this.transferEncoding = props.transferEncoding;
   }
+}
 
-  renderAsMimePart(_renderOpts?: MultipartRenderOptions): MutlipartUserDataPart {
-    return this;
+/**
+ * The raw part of multi-part user data, which can be added to {@link MultipartUserData}.
+ */
+class MultipartUserDataPartRaw extends MultipartUserDataPart {
+  private _body : string | undefined;
+
+  public constructor(props: MultipartUserDataPartOptionsWithBody) {
+    super(props);
+    this._body = props.body;
+  }
+
+  public get body(): string | undefined {
+    return this._body;
   }
 }
 
 /**
- * Render options for parts of multipart user data.
+ * Wrapper for `UserData`.
  */
-export interface MultipartRenderOptions {
-  /**
-   * Can be used to override default content type (without charset part) used when producing
-   * part by `IMultipartUserDataPartProducer`.
-   *
-   * @default undefined - leave content type unchanged
-   */
-  readonly contentType?: string;
+class MultipartUserDataPartWrapper extends MultipartUserDataPart {
+  public constructor(public readonly userData: UserData, opts: MultipartUserDataPartWrapperOptions) {
+    super({
+      contentType: opts.contentType || MultipartUserDataPart.DEFAULT_CONTENT_TYPE,
+      // Force Base64 in case userData will contain UTF-8 characters
+      transferEncoding: 'base64',
+    });
+  }
+
+  public get body(): string {
+    // Wrap rendered user data with Base64 function, in case data contains tokens
+    return Fn.base64(this.userData.render());
+  }
 }
 
 /**
- * Class implementing this interface can produce `MutlipartUserDataPart` and can be added
- * to `MultipartUserData`.
+ * Options for creating {@link MultipartUserData}
  */
-export interface IMultipartUserDataPartProducer {
+export interface MultipartUserDataOptions {
   /**
-   * Creats the `MutlipartUserDataPart.
+   * The string used to separate parts in multipart user data archive (it's like MIME boundary).
+   *
+   * This string should contain [a-zA-Z0-9] characters only, and should not be present in any part, or in text content of archive.
    */
-  renderAsMimePart(renderOpts?: MultipartRenderOptions): MutlipartUserDataPart;
+  readonly partsSeparator: string;
 }
 
 /**
@@ -383,41 +453,47 @@ export interface IMultipartUserDataPartProducer {
 export class MultipartUserData extends UserData {
   private static readonly USE_PART_ERROR = 'MultipartUserData does not support this operation. Please add part using addPart.';
 
-  private parts: IMultipartUserDataPartProducer[] = [];
+  private parts: IMultipart[] = [];
+
+  private opts: MultipartUserDataOptions;
+
+  constructor(opts: MultipartUserDataOptions) {
+    super();
+
+    this.opts = {
+      ...opts,
+    };
+  }
+  /**
+   * Adds existing `UserData`. Modification to `UserData` are reflected in subsequent renders of the part.
+   *
+   * For more information about content types see `MultipartUserDataPartOptionsWithBody`
+   */
+  public addUserDataPart(userData: UserData, opts?: MultipartUserDataPartWrapperOptions): this {
+    this.parts.push(MultipartUserDataPart.fromUserData(userData, opts));
+
+    return this;
+  }
 
   /**
-   * Adds a class which can producer `MutlipartUserDataPart`. I. e. `UserData.forLinux()`.
+   * Adds the 'raw' part using provided options.
    */
-  public addPart(producer: IMultipartUserDataPartProducer): this {
-    this.parts.push(producer);
+  public addPart(opts: MultipartUserDataPartOptionsWithBody): this {
+    this.parts.push(MultipartUserDataPart.fromRawBody(opts));
 
     return this;
   }
 
   public render(): string {
-    const renderedParts: MutlipartUserDataPart[] = this.parts.map(producer => producer.renderAsMimePart());
-
-    // Hash the message content, it will be used as boundry. The boundry should be
-    // so much unique not to be in message text, and stable so the text of archive will
-    // not be changed only due to change of boundry (may cause redeploys of resources)
-    const hash = crypto.createHash('sha256');
-    renderedParts.forEach(part => {
-      hash
-        .update(part.contentType)
-        .update(part.body || 'empty-body')
-        .update(part.transferEncoding || '');
-    });
-    hash.update('salt-boundary-rado');
-
-    const boundary = '-' + hash.digest('base64') + '-';
+    const boundary = this.opts.partsSeparator;
 
     // Now build final MIME archive - there are few changes from MIME message which are accepted by cloud-init:
-    // - MIME RFC uses CRLF to separarte lines - cloud-init is fine with LF \n only
+    // - MIME RFC uses CRLF to separate lines - cloud-init is fine with LF \n only
     var resultArchive = `Content-Type: multipart/mixed; boundary="${boundary}"\n`;
     resultArchive = resultArchive + 'MIME-Version: 1.0\n';
 
-    // Add parts - each part starts with boundry
-    renderedParts.forEach(part => {
+    // Add parts - each part starts with boundary
+    this.parts.forEach(part => {
       resultArchive = resultArchive + '\n--' + boundary + '\n' + 'Content-Type: ' + part.contentType + '\n';
 
       if (part.transferEncoding != null) {
@@ -429,7 +505,7 @@ export class MultipartUserData extends UserData {
       }
     });
 
-    // Add closing boundry
+    // Add closing boundary
     resultArchive = resultArchive + `\n--${boundary}--\n`;
 
     return resultArchive;

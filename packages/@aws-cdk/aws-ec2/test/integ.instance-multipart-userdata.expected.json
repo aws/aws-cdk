@@ -646,11 +646,11 @@
             "Fn::Join": [
               "",
               [
-                "Content-Type: multipart/mixed; boundary=\"-uU56KH4CuLBnf9GVhBq+SFx/hFRXS5S9umauYjYeBxQ=-\"\nMIME-Version: 1.0\n\n---uU56KH4CuLBnf9GVhBq+SFx/hFRXS5S9umauYjYeBxQ=-\nContent-Type: text/x-shellscript; charset=\"utf-8\"\nContent-Transfer-Encoding: base64\n\n",
+                "Content-Type: multipart/mixed; boundary=\"---separator---\"\nMIME-Version: 1.0\n\n-----separator---\nContent-Type: text/x-shellscript; charset=\"utf-8\"\nContent-Transfer-Encoding: base64\n\n",
                 {
                   "Fn::Base64": "#!/bin/bash\necho 大らと > /var/tmp/echo1\ncp /var/tmp/echo1 /var/tmp/echo1-copy"
                 },
-                "\n---uU56KH4CuLBnf9GVhBq+SFx/hFRXS5S9umauYjYeBxQ=-\nContent-Type: text/x-shellscript; charset=\"utf-8\"\nContent-Transfer-Encoding: base64\n\n",
+                "\n-----separator---\nContent-Type: text/x-shellscript; charset=\"utf-8\"\nContent-Transfer-Encoding: base64\n\n",
                 {
                   "Fn::Base64": {
                     "Fn::Join": [
@@ -665,15 +665,15 @@
                     ]
                   }
                 },
-                "\n---uU56KH4CuLBnf9GVhBq+SFx/hFRXS5S9umauYjYeBxQ=-\nContent-Type: text/cloud-boothook; charset=\"utf-8\"\nContent-Transfer-Encoding: base64\n\n",
+                "\n-----separator---\nContent-Type: text/cloud-boothook\nContent-Transfer-Encoding: base64\n\n",
                 {
                   "Fn::Base64": "#!/bin/bash\necho \"Boothook2\" > /var/tmp/boothook\ncloud-init-per once docker_options echo 'OPTIONS=\"${OPTIONS} --storage-opt dm.basesize=20G\"' >> /etc/sysconfig/docker"
                 },
-                "\n---uU56KH4CuLBnf9GVhBq+SFx/hFRXS5S9umauYjYeBxQ=-\nContent-Type: text/x-shellscript\n\necho \"RawPart\" > /var/tmp/rawPart1\n---uU56KH4CuLBnf9GVhBq+SFx/hFRXS5S9umauYjYeBxQ=-\nContent-Type: text/x-shellscript\n\necho \"RawPart ",
+                "\n-----separator---\nContent-Type: text/x-shellscript\n\necho \"RawPart\" > /var/tmp/rawPart1\n-----separator---\nContent-Type: text/x-shellscript\n\necho \"RawPart ",
                 {
                   "Ref": "VPCB9E5F0B4"
                 },
-                "\" > /var/tmp/rawPart2\n---uU56KH4CuLBnf9GVhBq+SFx/hFRXS5S9umauYjYeBxQ=---\n"
+                "\" > /var/tmp/rawPart2\n-----separator-----\n"
               ]
             ]
           }

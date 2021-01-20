@@ -279,20 +279,19 @@ nodeunitShim({
     linuxUserData.addCommands('echo "Hello world"');
 
     // WHEN
-    const defaultRender1 = linuxUserData.renderAsMimePart();
-    const defaultRender2 = linuxUserData.renderAsMimePart({});
-    const overriden = linuxUserData.renderAsMimePart({
-      contentType: 'text/cloud-boothook',
+    const defaultRender1 = ec2.MultipartUserDataPart.fromUserData(linuxUserData);
+    const defaultRender2 = ec2.MultipartUserDataPart.fromUserData(linuxUserData, {
+      contentType: 'text/cloud-boothook; charset=\"utf-8\"',
     });
+    const defaultRender3 = ec2.MultipartUserDataPart.fromUserData(linuxUserData, {});
 
     // THEN
     test.equals(defaultRender1.contentType, 'text/x-shellscript; charset=\"utf-8\"');
-    test.equals(defaultRender2.contentType, 'text/x-shellscript; charset=\"utf-8\"');
-    test.equals(overriden.contentType, 'text/cloud-boothook; charset=\"utf-8\"');
+    test.equals(defaultRender2.contentType, 'text/cloud-boothook; charset=\"utf-8\"');
+    test.equals(defaultRender3.contentType, 'text/x-shellscript; charset=\"utf-8\"');
 
     test.equals(defaultRender1.transferEncoding, 'base64');
     test.equals(defaultRender2.transferEncoding, 'base64');
-    test.equals(overriden.transferEncoding, 'base64');
 
     test.done();
   },
