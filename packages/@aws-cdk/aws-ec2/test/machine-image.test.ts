@@ -20,6 +20,20 @@ test('can make and use a Linux image', () => {
 
   // THEN
   const details = image.getImage(stack);
+  expect(details.imageId).toEqual('ami-1234');
+  expect(details.osType).toEqual(ec2.OperatingSystemType.LINUX);
+});
+
+test('can make and use a Linux image in agnostic stack', () => {
+  // WHEN
+  app = new App();
+  stack = new Stack(app, 'Stack');
+  const image = new ec2.GenericLinuxImage({
+    testregion: 'ami-1234',
+  });
+
+  // THEN
+  const details = image.getImage(stack);
   const expected = {
     Mappings: {
       AmiMap: {
@@ -37,6 +51,20 @@ test('can make and use a Linux image', () => {
 
 test('can make and use a Windows image', () => {
   // WHEN
+  const image = new ec2.GenericWindowsImage({
+    testregion: 'ami-1234',
+  });
+
+  // THEN
+  const details = image.getImage(stack);
+  expect(details.imageId).toEqual('ami-1234');
+  expect(details.osType).toEqual(ec2.OperatingSystemType.WINDOWS);
+});
+
+test('can make and use a Windows image in agnostic stack', () => {
+  // WHEN
+  app = new App();
+  stack = new Stack(app, 'Stack');
   const image = new ec2.GenericWindowsImage({
     testregion: 'ami-1234',
   });
