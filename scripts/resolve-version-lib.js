@@ -70,7 +70,7 @@ function resolveVersion(rootdir) {
     changelogFile: changelogFile,
     prerelease: releaseType !== 'stable' ? releaseType : undefined,
     marker: '0.0.0',
-    npmDistTag: distTag,
+    ...(distTag ? { npmDistTag: distTag } : {}),
   };
 }
 
