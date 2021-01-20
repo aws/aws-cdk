@@ -66,11 +66,12 @@ if ! ${SKIP_DOWNLOAD:-false}; then
       if [ "$major_version" == "1" ]; then
         echo "  Setting version to $NPM_DISTTAG_V1" >&2
         version=$NPM_DISTTAG_V1
-      fi
-
-      if [ "$major_version" == "2" ]; then
+      elif [ "$major_version" == "2" ]; then
         echo "  Setting version to $NPM_DISTTAG_V2" >&2
         version=$NPM_DISTTAG_V2
+      else
+        echo "Unknown major version $major_version. Failing..." >&2
+        exit 1
       fi
     fi
 
