@@ -1,5 +1,5 @@
 import '@aws-cdk/assert/jest';
-import { objectLike } from '@aws-cdk/assert';
+import { objectLike, Capture } from '@aws-cdk/assert';
 import * as iam from '@aws-cdk/aws-iam';
 import * as s3 from '@aws-cdk/aws-s3';
 import { App, Duration, Lazy, Stack } from '@aws-cdk/core';
@@ -391,6 +391,45 @@ test('Schedule can be set to run once', () => {
   expect(stack).toHaveResourceLike('AWS::Synthetics::Canary', {
     Schedule: objectLike({ Expression: 'rate(0 minutes)' }),
   });
+});
+
+test('On tracing enabled, the generated role will have xray PutTraceSegments permission', () => {
+  // GIVEN
+  const stack = new Stack(new App(), 'canaries');
+
+
+  // WHEN
+  new synthetics.Canary(stack, 'Canary', {
+    test: synthetics.Test.custom({
+      handler: 'index.handler',
+      code: synthetics.Code.fromInline('/* Synthetics handler code */'),
+    }),
+    runtime: synthetics.Runtime.SYNTHETICS_NODEJS_2_0,
+    tracing: true,
+  });
+
+  // THEN
+  const policyStatements = Capture.anyType();
+  expect(stack).toHaveResourceLike('AWS::IAM::Role', {
+    Policies: [
+      {
+        PolicyDocument: {
+          Statement: policyStatements.capture(),
+        },
+      },
+    ],
+  });
+
+  expect(policyStatements.capturedValue).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({
+        Action: 'xray:PutTraceSegments',
+        Effect: 'Allow',
+        Resource: '*',
+      }),
+    ]),
+  );
+
 });
 
 test('Throws when rate above 60 minutes', () => {
