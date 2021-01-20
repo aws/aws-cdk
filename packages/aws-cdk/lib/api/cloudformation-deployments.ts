@@ -255,7 +255,7 @@ export class CloudFormationDeployments {
   /**
    * Publish all asset manifests that are referenced by the given stack
    */
-  private async publishStackAssets(stack: cxapi.CloudFormationStackArtifact, bootstrapStack: ToolkitInfo) {
+  private async publishStackAssets(stack: cxapi.CloudFormationStackArtifact, toolkitInfo: ToolkitInfo) {
     const stackEnv = await this.sdkProvider.resolveEnvironment(stack.environment);
     const assetArtifacts = stack.dependencies.filter(isAssetManifestArtifact);
 
@@ -264,7 +264,7 @@ export class CloudFormationDeployments {
         stack.stackName,
         assetArtifact.requiresBootstrapStackVersion,
         assetArtifact.bootstrapStackVersionSsmParameter,
-        bootstrapStack);
+        toolkitInfo);
 
       const manifest = AssetManifest.fromFile(assetArtifact.file);
       await publishAssets(manifest, this.sdkProvider, stackEnv);
@@ -278,16 +278,16 @@ export class CloudFormationDeployments {
     stackName: string,
     requiresBootstrapStackVersion: number | undefined,
     bootstrapStackVersionSsmParameter: string | undefined,
-    bootstrapStack: ToolkitInfo) {
+    toolkitInfo: ToolkitInfo) {
 
     if (requiresBootstrapStackVersion === undefined) { return; }
 
-    if (!bootstrapStack.found) {
+    if (!toolkitInfo.found) {
       throw new Error(`${stackName}: publishing assets requires bootstrap stack version '${requiresBootstrapStackVersion}', no bootstrap stack found. Please run 'cdk bootstrap'.`);
     }
 
     try {
-      await bootstrapStack.validateVersion(requiresBootstrapStackVersion, bootstrapStackVersionSsmParameter);
+      await toolkitInfo.validateVersion(requiresBootstrapStackVersion, bootstrapStackVersionSsmParameter);
     } catch (e) {
       throw new Error(`${stackName}: ${e.message}`);
     }

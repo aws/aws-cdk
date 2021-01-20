@@ -13,7 +13,7 @@ beforeEach(() => {
   jest.resetAllMocks();
   sdkProvider = new MockSdkProvider();
   deployments = new CloudFormationDeployments({ sdkProvider });
-  ToolkitInfo.lookup = mockToolkitInfoLookup = jest.fn();
+  ToolkitInfo.lookup = mockToolkitInfoLookup = jest.fn().mockResolvedValue(ToolkitInfo.bootstrapStackNotFoundInfo(sdkProvider.sdk));
 });
 
 function mockSuccessfulBootstrapStackLookup(props?: Record<string, any>) {
