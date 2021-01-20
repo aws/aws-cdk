@@ -227,7 +227,7 @@ test('If timeout not provided it default to schedule set with rate', () => {
   });
 });
 
-test('If timeout not provided it default to schedule  set with expressionString', () => {
+test('If timeout not provided it default to schedule set with expressionString', () => {
   // GIVEN
   const stack = new Stack(new App(), 'canaries');
   // WHEN
@@ -289,7 +289,7 @@ test('If timeout not provided it default to MAX timeout if schedule is higher th
   // THEN
   expect(stack).toHaveResourceLike('AWS::Synthetics::Canary', {
     RunConfig: {
-      TimeoutInSeconds: 900,
+      TimeoutInSeconds: 840,
     },
   });
 });

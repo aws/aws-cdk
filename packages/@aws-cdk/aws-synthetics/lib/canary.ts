@@ -236,29 +236,30 @@ export interface CanaryProps {
   readonly environment?: { [key: string]: string };
 
   /**
-   * The function execution time (in seconds) after which Lambda terminates
-   * the function. Because the execution time affects cost, set this value
-   * based on the function's expected execution time.
+   * How long the canary is allowed to run before it must stop.
+   * You can't set this time to be longer than the frequency of the runs of this canary.
+   * If you omit this field, the frequency of the canary is used as this value, up to a maximum of 900 seconds.
    *
-   * @default cdk.Duration.seconds(900)
+   * @default cdk.Duration.seconds(840)
    */
   readonly timeout?: cdk.Duration;
 
   /**
-   * The amount of memory, in MB, that is allocated to your Lambda function.
-   * Lambda uses this value to proportionally allocate the amount of CPU
-   * power. For more information, see Resource Model in the AWS Lambda
-   * Developer Guide.
+   * The maximum amount of memory that the canary can use while running. This value
+   *  must be a multiple of 64. The range is 960 to 3008.
    *
-   * @default 128
+   * @default 960
    */
   readonly memorySize?: number;
 
   /**
    * Specifies whether this canary is to use active AWS X-Ray tracing when it runs.
-   * Active tracing enables this canary run to be displayed in the ServiceLens and
-   * X-Ray service maps even if the canary does not hit an endpoint that has
-   * X-ray tracing enabled.
+   * Active tracing enables this canary run to be displayed in the ServiceLens and X-Ray service maps
+   * even if the canary does not hit an endpoint that has X-ray tracing enabled.
+   *
+   * You can enable active tracing only for canaries that use version syn-nodejs-2.0 or later for their canary runtime.
+   *
+   * Enabling tracing increases canary run time by 2.5% to 7%.
    *
    * @default false
    */
@@ -313,7 +314,7 @@ export class Canary extends cdk.Resource {
       encryption: s3.BucketEncryption.KMS_MANAGED,
     });
 
-    this.role = props.role ?? this.createDefaultRole(props.artifactsBucketLocation?.prefix);
+    this.role = props.role ?? this.createDefaultRole(props.artifactsBucketLocation?.prefix, props.tracing);
 
     const schedule = this.createSchedule(props);
 
@@ -371,7 +372,7 @@ export class Canary extends cdk.Resource {
   /**
    * Returns a default role for the canary
    */
-  private createDefaultRole(prefix?: string): iam.IRole {
+  private createDefaultRole(prefix?: string, tracingEnabled?: boolean): iam.IRole {
     // Created role will need these policies to run the Canary.
     // https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-synthetics-canary.html#cfn-synthetics-canary-executionrolearn
     const policy = new iam.PolicyDocument({
@@ -395,6 +396,15 @@ export class Canary extends cdk.Resource {
         }),
       ],
     });
+
+    if (tracingEnabled) {
+      policy.addStatements(
+        new iam.PolicyStatement({
+          resources: ['*'],
+          actions: ['xray:PutTraceSegments'],
+        }),
+      );
+    }
 
     return new iam.Role(this, 'ServiceRole', {
       assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
@@ -435,9 +445,12 @@ export class Canary extends cdk.Resource {
    * Retruns a runConfig object
    */
   private createRunConfig(props:CanaryProps, schedule: CfnCanary.ScheduleProperty): CfnCanary.RunConfigProperty {
-    // Default timeout will be adjusted to the rate if provided and under max (900s)
-    // @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-synthetics-canary-runconfig.html#cfn-synthetics-canary-runconfig-timeoutinseconds
-    const MAX_CANARY_TIMEOUT = 900;
+    // Cloudformation implementation made TimeoutInSeconds a required field where it should not (see links below).
+    // So here is a workaround to fix https://github.com/aws/aws-cdk/issues/9300 and still follow documented behavior.
+    // https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-synthetics-canary-runconfig.html#cfn-synthetics-canary-runconfig-timeoutinseconds
+    // https://github.com/aws-cloudformation/aws-cloudformation-resource-providers-synthetics/issues/31
+
+    const MAX_CANARY_TIMEOUT = 840;
     const RATE_IN_SECONDS = Schedule.expressionToRateInSeconds(schedule.expression);
     const DEFAULT_CANARY_TIMEOUT_IN_SECONDS = RATE_IN_SECONDS <= MAX_CANARY_TIMEOUT ? RATE_IN_SECONDS : MAX_CANARY_TIMEOUT;
 
