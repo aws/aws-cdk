@@ -1,0 +1,195 @@
+{
+  "Resources": {
+    "Repo02AC86CF": {
+      "Type": "AWS::ECR::Repository",
+      "Properties": {
+        "RepositoryName": "delete-even-if-containing-images",
+        "RepositoryPolicyText": {
+          "Statement": [
+            {
+              "Action": [
+                "ecr:BatchDeleteImage",
+                "ecr:ListImages"
+              ],
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {
+                  "Fn::GetAtt": [
+                    "CustomECRAutoDeleteImagesCustomResourceProviderRole665F2773",
+                    "Arn"
+                  ]
+                }
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
+    "RepoAutoDeleteImagesCustomResource65201E29": {
+      "Type": "Custom::ECRAutoDeleteImages",
+      "Properties": {
+        "ServiceToken": {
+          "Fn::GetAtt": [
+            "CustomECRAutoDeleteImagesCustomResourceProviderHandler8D89C030",
+            "Arn"
+          ]
+        },
+        "RepositoryName": {
+          "Ref": "Repo02AC86CF"
+        }
+      },
+      "DependsOn": [
+        "Repo02AC86CF"
+      ],
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
+    "CustomECRAutoDeleteImagesCustomResourceProviderRole665F2773": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              }
+            }
+          ]
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+          }
+        ]
+      }
+    },
+    "CustomECRAutoDeleteImagesCustomResourceProviderHandler8D89C030": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "AssetParameters47ae0d4fa818731652e6346a46cc94926230fc830387c287b0668ff8a52cdf1cS3Bucket3292363C"
+          },
+          "S3Key": {
+            "Fn::Join": [
+              "",
+              [
+                {
+                  "Fn::Select": [
+                    0,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        {
+                          "Ref": "AssetParameters47ae0d4fa818731652e6346a46cc94926230fc830387c287b0668ff8a52cdf1cS3VersionKey9ADF5496"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "Fn::Select": [
+                    1,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        {
+                          "Ref": "AssetParameters47ae0d4fa818731652e6346a46cc94926230fc830387c287b0668ff8a52cdf1cS3VersionKey9ADF5496"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            ]
+          }
+        },
+        "Timeout": 900,
+        "MemorySize": 128,
+        "Handler": "__entrypoint__.handler",
+        "Role": {
+          "Fn::GetAtt": [
+            "CustomECRAutoDeleteImagesCustomResourceProviderRole665F2773",
+            "Arn"
+          ]
+        },
+        "Runtime": "nodejs14.x"
+      },
+      "DependsOn": [
+        "CustomECRAutoDeleteImagesCustomResourceProviderRole665F2773"
+      ]
+    }
+  },
+  "Parameters": {
+    "AssetParameters47ae0d4fa818731652e6346a46cc94926230fc830387c287b0668ff8a52cdf1cS3Bucket3292363C": {
+      "Type": "String",
+      "Description": "S3 bucket for asset \"47ae0d4fa818731652e6346a46cc94926230fc830387c287b0668ff8a52cdf1c\""
+    },
+    "AssetParameters47ae0d4fa818731652e6346a46cc94926230fc830387c287b0668ff8a52cdf1cS3VersionKey9ADF5496": {
+      "Type": "String",
+      "Description": "S3 key for asset version \"47ae0d4fa818731652e6346a46cc94926230fc830387c287b0668ff8a52cdf1c\""
+    },
+    "AssetParameters47ae0d4fa818731652e6346a46cc94926230fc830387c287b0668ff8a52cdf1cArtifactHash59CA20D1": {
+      "Type": "String",
+      "Description": "Artifact hash for asset \"47ae0d4fa818731652e6346a46cc94926230fc830387c287b0668ff8a52cdf1c\""
+    }
+  },
+  "Outputs": {
+    "RepositoryURI": {
+      "Value": {
+        "Fn::Join": [
+          "",
+          [
+            {
+              "Fn::Select": [
+                4,
+                {
+                  "Fn::Split": [
+                    ":",
+                    {
+                      "Fn::GetAtt": [
+                        "Repo02AC86CF",
+                        "Arn"
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            ".dkr.ecr.",
+            {
+              "Fn::Select": [
+                3,
+                {
+                  "Fn::Split": [
+                    ":",
+                    {
+                      "Fn::GetAtt": [
+                        "Repo02AC86CF",
+                        "Arn"
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            ".",
+            {
+              "Ref": "AWS::URLSuffix"
+            },
+            "/",
+            {
+              "Ref": "Repo02AC86CF"
+            }
+          ]
+        ]
+      }
+    }
+  }
+}

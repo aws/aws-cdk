@@ -1,7 +1,11 @@
 import { EOL } from 'os';
+import * as path from 'path';
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
-import { IResource, Lazy, RemovalPolicy, Resource, Stack, Token } from '@aws-cdk/core';
+import {
+  IResource, Lazy, RemovalPolicy, Resource, Stack, Token,
+  CustomResource, CustomResourceProvider, CustomResourceProviderRuntime,
+} from '@aws-cdk/core';
 import { IConstruct, Construct } from 'constructs';
 import { CfnRepository } from './ecr.generated';
 import { LifecycleRule, TagStatus } from './lifecycle';
@@ -350,6 +354,17 @@ export interface RepositoryProps {
   readonly removalPolicy?: RemovalPolicy;
 
   /**
+   * Whether all images should be automatically deleted when the repository is
+   * removed from the stack or when the stack is deleted.
+   *
+   * Requires the `removalPolicy` to be set to `RemovalPolicy.DESTROY`.
+   *
+   * @default false
+   */
+  readonly autoDeleteImages?: boolean;
+
+
+  /**
    * Enable the scan on push when creating the repository
    *
    *  @default false
@@ -441,6 +456,7 @@ export class Repository extends RepositoryBase {
     });
   }
 
+  private static readonly AUTO_DELETE_IMAGES_RESOURCE_TYPE = 'Custom::ECRAutoDeleteImages';
 
   private static validateRepositoryName(physicalName: string) {
     const repositoryName = physicalName;
@@ -495,6 +511,12 @@ export class Repository extends RepositoryBase {
     this.registryId = props.lifecycleRegistryId;
     if (props.lifecycleRules) {
       props.lifecycleRules.forEach(this.addLifecycleRule.bind(this));
+    }
+    if (props.autoDeleteImages) {
+      if (props.removalPolicy !== RemovalPolicy.DESTROY) {
+        throw new Error('Cannot use \'autoDeleteImages\' property on a repository without setting removal policy to \'DESTROY\'.');
+      }
+      this.enableAutoDeleteImages();
     }
 
     this.repositoryName = this.getResourceNameAttribute(resource.ref);
@@ -599,6 +621,35 @@ export class Repository extends RepositoryBase {
     // Do validation on the final array--might still be wrong because the user supplied all prios, but incorrectly.
     validateAnyRuleLast(ret);
     return ret;
+  }
+
+  private enableAutoDeleteImages() {
+    const provider = CustomResourceProvider.getOrCreateProvider(this, Repository.AUTO_DELETE_IMAGES_RESOURCE_TYPE, {
+      codeDirectory: path.join(__dirname, 'auto-delete-images-handler'),
+      runtime: CustomResourceProviderRuntime.NODEJS_14_X,
+    });
+
+    // Use a iam policy to allow the custom resource to list & delete
+    // images in the repository
+    this.addToResourcePolicy(new iam.PolicyStatement({
+      actions: [
+        'ecr:BatchDeleteImage',
+        'ecr:ListImages',
+      ],
+      resources: [
+        this.repositoryArn,
+      ],
+      principals: [new iam.ArnPrincipal(provider.roleArn)],
+    }));
+
+    const customResource = new CustomResource(this, 'AutoDeleteImagesCustomResource', {
+      resourceType: Repository.AUTO_DELETE_IMAGES_RESOURCE_TYPE,
+      serviceToken: provider.serviceToken,
+      properties: {
+        RepositoryName: Lazy.any({ produce: () => this.repositoryName }),
+      },
+    });
+    customResource.node.addDependency(this);
   }
 }
 
