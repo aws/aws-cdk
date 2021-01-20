@@ -13,7 +13,7 @@ const YARN_MONOREPO_CACHE: Record<string, any> = {};
  */
 export async function findYarnPackages(root: string): Promise<Record<string, string>> {
   if (!(root in YARN_MONOREPO_CACHE)) {
-    const output: YarnWorkspacesOutput = JSON.parse(await shell(['yarn', 'workspaces', 'info'], {
+    const output: YarnWorkspacesOutput = JSON.parse(await shell(['yarn', 'workspaces', 'info', '--silent'], {
       captureStderr: false,
       cwd: root,
     }));
