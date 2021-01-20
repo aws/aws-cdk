@@ -1,5 +1,4 @@
 import * as cxapi from '@aws-cdk/cx-api';
-import { nodeunitShim, Test } from 'nodeunit-shim';
 import {
   App, CfnCondition, CfnInclude, CfnOutput, CfnParameter,
   CfnResource, Construct, Lazy, ScopedAws, Stack, validateString, ISynthesisSession, Tags, LegacyStackSynthesizer, DefaultStackSynthesizer,
@@ -9,43 +8,104 @@ import { resolveReferences } from '../lib/private/refs';
 import { PostResolveToken } from '../lib/util';
 import { toCloudFormation } from './util';
 
-nodeunitShim({
-  'a stack can be serialized into a CloudFormation template, initially it\'s empty'(test: Test) {
+describe('stack', () => {
+  test('a stack can be serialized into a CloudFormation template, initially it\'s empty', () => {
     const stack = new Stack();
-    test.deepEqual(toCloudFormation(stack), { });
-    test.done();
-  },
+    expect(toCloudFormation(stack)).toEqual({ });
+  });
 
-  'stack objects have some template-level propeties, such as Description, Version, Transform'(test: Test) {
+  test('stack objects have some template-level propeties, such as Description, Version, Transform', () => {
     const stack = new Stack();
     stack.templateOptions.templateFormatVersion = 'MyTemplateVersion';
     stack.templateOptions.description = 'This is my description';
     stack.templateOptions.transforms = ['SAMy'];
-    test.deepEqual(toCloudFormation(stack), {
+    expect(toCloudFormation(stack)).toEqual({
       Description: 'This is my description',
       AWSTemplateFormatVersion: 'MyTemplateVersion',
       Transform: 'SAMy',
     });
-    test.done();
-  },
 
-  'Stack.isStack indicates that a construct is a stack'(test: Test) {
+  });
+
+  test('Stack.isStack indicates that a construct is a stack', () => {
     const stack = new Stack();
     const c = new Construct(stack, 'Construct');
-    test.ok(Stack.isStack(stack));
-    test.ok(!Stack.isStack(c));
-    test.done();
-  },
+    expect(Stack.isStack(stack)).toBeDefined();
+    expect(!Stack.isStack(c)).toBeDefined();
 
-  'stack.id is not included in the logical identities of resources within it'(test: Test) {
+  });
+
+  test('stack.id is not included in the logical identities of resources within it', () => {
     const stack = new Stack(undefined, 'MyStack');
     new CfnResource(stack, 'MyResource', { type: 'MyResourceType' });
 
-    test.deepEqual(toCloudFormation(stack), { Resources: { MyResource: { Type: 'MyResourceType' } } });
-    test.done();
-  },
+    expect(toCloudFormation(stack)).toEqual({ Resources: { MyResource: { Type: 'MyResourceType' } } });
 
-  'stack.templateOptions can be used to set template-level options'(test: Test) {
+  });
+
+  test('when stackResourceLimit is default, should give error', () => {
+    // GIVEN
+    const app = new App({});
+
+    const stack = new Stack(app, 'MyStack');
+
+    // WHEN
+    for (let index = 0; index < 1000; index++) {
+      new CfnResource(stack, `MyResource-${index}`, { type: 'MyResourceType' });
+    }
+
+    expect(() => {
+      app.synth();
+    }).toThrow('Number of resources: 1000 is greater than allowed maximum of 500');
+
+
+  });
+
+  test('when stackResourceLimit is defined, should give the proper error', () => {
+    // GIVEN
+    const app = new App({
+      context: {
+        '@aws-cdk/core:stackResourceLimit': 100,
+      },
+    });
+
+    const stack = new Stack(app, 'MyStack');
+
+    // WHEN
+    for (let index = 0; index < 200; index++) {
+      new CfnResource(stack, `MyResource-${index}`, { type: 'MyResourceType' });
+    }
+
+    expect(() => {
+      app.synth();
+    }).toThrow('Number of resources: 200 is greater than allowed maximum of 100');
+
+
+  });
+
+  test('when stackResourceLimit is 0, should not give error', () => {
+    // GIVEN
+    const app = new App({
+      context: {
+        '@aws-cdk/core:stackResourceLimit': 0,
+      },
+    });
+
+    const stack = new Stack(app, 'MyStack');
+
+    // WHEN
+    for (let index = 0; index < 1000; index++) {
+      new CfnResource(stack, `MyResource-${index}`, { type: 'MyResourceType' });
+    }
+
+    expect(() => {
+      app.synth();
+    }).not.toThrow();
+
+
+  });
+
+  test('stack.templateOptions can be used to set template-level options', () => {
     const stack = new Stack();
 
     stack.templateOptions.description = 'StackDescription';
@@ -56,47 +116,47 @@ nodeunitShim({
       MetadataKey: 'MetadataValue',
     };
 
-    test.deepEqual(toCloudFormation(stack), {
+    expect(toCloudFormation(stack)).toEqual({
       Description: 'StackDescription',
       Transform: ['Transform', 'DeprecatedField'],
       AWSTemplateFormatVersion: 'TemplateVersion',
       Metadata: { MetadataKey: 'MetadataValue' },
     });
 
-    test.done();
-  },
 
-  'stack.templateOptions.transforms removes duplicate values'(test: Test) {
+  });
+
+  test('stack.templateOptions.transforms removes duplicate values', () => {
     const stack = new Stack();
 
     stack.templateOptions.transforms = ['A', 'B', 'C', 'A'];
 
-    test.deepEqual(toCloudFormation(stack), {
+    expect(toCloudFormation(stack)).toEqual({
       Transform: ['A', 'B', 'C'],
     });
 
-    test.done();
-  },
 
-  'stack.addTransform() adds a transform'(test: Test) {
+  });
+
+  test('stack.addTransform() adds a transform', () => {
     const stack = new Stack();
 
     stack.addTransform('A');
     stack.addTransform('B');
     stack.addTransform('C');
 
-    test.deepEqual(toCloudFormation(stack), {
+    expect(toCloudFormation(stack)).toEqual({
       Transform: ['A', 'B', 'C'],
     });
 
-    test.done();
-  },
+
+  });
 
   // This approach will only apply to TypeScript code, but at least it's a temporary
   // workaround for people running into issues caused by SDK-3003.
   // We should come up with a proper solution that involved jsii callbacks (when they exist)
   // so this can be implemented by jsii languages as well.
-  'Overriding `Stack._toCloudFormation` allows arbitrary post-processing of the generated template during synthesis'(test: Test) {
+  test('Overriding `Stack._toCloudFormation` allows arbitrary post-processing of the generated template during synthesis', () => {
 
     const stack = new StackWithPostProcessor();
 
@@ -111,7 +171,7 @@ nodeunitShim({
       },
     });
 
-    test.deepEqual(stack._toCloudFormation(), {
+    expect(stack._toCloudFormation()).toEqual({
       Resources:
       {
         myResource:
@@ -127,10 +187,10 @@ nodeunitShim({
       },
     });
 
-    test.done();
-  },
 
-  'Stack.getByPath can be used to find any CloudFormation element (Parameter, Output, etc)'(test: Test) {
+  });
+
+  test('Stack.getByPath can be used to find any CloudFormation element (Parameter, Output, etc)', () => {
 
     const stack = new Stack();
 
@@ -138,30 +198,30 @@ nodeunitShim({
     const o = new CfnOutput(stack, 'MyOutput', { value: 'boom' });
     const c = new CfnCondition(stack, 'MyCondition');
 
-    test.equal(stack.node.findChild(p.node.id), p);
-    test.equal(stack.node.findChild(o.node.id), o);
-    test.equal(stack.node.findChild(c.node.id), c);
+    expect(stack.node.findChild(p.node.id)).toEqual(p);
+    expect(stack.node.findChild(o.node.id)).toEqual(o);
+    expect(stack.node.findChild(c.node.id)).toEqual(c);
 
-    test.done();
-  },
 
-  'Stack names can have hyphens in them'(test: Test) {
+  });
+
+  test('Stack names can have hyphens in them', () => {
     const root = new App();
 
     new Stack(root, 'Hello-World');
     // Did not throw
 
-    test.done();
-  },
 
-  'Stacks can have a description given to them'(test: Test) {
+  });
+
+  test('Stacks can have a description given to them', () => {
     const stack = new Stack(new App(), 'MyStack', { description: 'My stack, hands off!' });
     const output = toCloudFormation(stack);
-    test.equal(output.Description, 'My stack, hands off!');
-    test.done();
-  },
+    expect(output.Description).toEqual('My stack, hands off!');
 
-  'Stack descriptions have a limited length'(test: Test) {
+  });
+
+  test('Stack descriptions have a limited length', () => {
     const desc = `Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
      incididunt ut labore et dolore magna aliqua. Consequat interdum varius sit amet mattis vulputate
      enim nulla aliquet. At imperdiet dui accumsan sit amet nulla facilisi morbi. Eget lorem dolor sed
@@ -174,11 +234,11 @@ nodeunitShim({
      morbi. Malesuada nunc vel risus commodo viverra maecenas accumsan lacus. Vulputate sapien nec sagittis
      aliquam malesuada bibendum arcu vitae. Augue neque gravida in fermentum et sollicitudin ac orci phasellus.
      Ultrices tincidunt arcu non sodales neque sodales.`;
-    test.throws(() => new Stack(new App(), 'MyStack', { description: desc }));
-    test.done();
-  },
+    expect(() => new Stack(new App(), 'MyStack', { description: desc }));
 
-  'Include should support non-hash top-level template elements like "Description"'(test: Test) {
+  });
+
+  test('Include should support non-hash top-level template elements like "Description"', () => {
     const stack = new Stack();
 
     const template = {
@@ -189,11 +249,11 @@ nodeunitShim({
 
     const output = toCloudFormation(stack);
 
-    test.equal(typeof output.Description, 'string');
-    test.done();
-  },
+    expect(typeof output.Description).toEqual('string');
 
-  'Pseudo values attached to one stack can be referenced in another stack'(test: Test) {
+  });
+
+  test('Pseudo values attached to one stack can be referenced in another stack', () => {
     // GIVEN
     const app = new App();
     const stack1 = new Stack(app, 'Stack1');
@@ -208,7 +268,7 @@ nodeunitShim({
     const template1 = assembly.getStackByName(stack1.stackName).template;
     const template2 = assembly.getStackByName(stack2.stackName).template;
 
-    test.deepEqual(template1, {
+    expect(template1).toEqual({
       Outputs: {
         ExportsOutputRefAWSAccountIdAD568057: {
           Value: { Ref: 'AWS::AccountId' },
@@ -217,7 +277,7 @@ nodeunitShim({
       },
     });
 
-    test.deepEqual(template2, {
+    expect(template2).toEqual({
       Parameters: {
         SomeParameter: {
           Type: 'String',
@@ -226,10 +286,10 @@ nodeunitShim({
       },
     });
 
-    test.done();
-  },
 
-  'Cross-stack references are detected in resource properties'(test: Test) {
+  });
+
+  test('Cross-stack references are detected in resource properties', () => {
     // GIVEN
     const app = new App();
     const stack1 = new Stack(app, 'Stack1');
@@ -248,7 +308,7 @@ nodeunitShim({
     const assembly = app.synth();
     const template2 = assembly.getStackByName(stack2.stackName).template;
 
-    test.deepEqual(template2, {
+    expect(template2).toEqual({
       Resources: {
         SomeResource: {
           Type: 'AWS::Some::Resource',
@@ -258,10 +318,10 @@ nodeunitShim({
         },
       },
     });
-    test.done();
-  },
 
-  'Cross-stack export names account for stack name lengths'(test: Test) {
+  });
+
+  test('Cross-stack export names account for stack name lengths', () => {
     // GIVEN
     const app = new App();
     const stack1 = new Stack(app, 'Stack1', {
@@ -291,10 +351,10 @@ nodeunitShim({
 
     const theOutput = template1.Outputs[Object.keys(template1.Outputs)[0]];
     expect(theOutput.Export.Name.length).toEqual(255);
-    test.done();
-  },
 
-  'Cross-stack reference export names are relative to the stack (when the flag is set)'(test: Test) {
+  });
+
+  test('Cross-stack reference export names are relative to the stack (when the flag is set)', () => {
     // GIVEN
     const app = new App({
       context: {
@@ -321,7 +381,7 @@ nodeunitShim({
     const assembly = app.synth();
     const template2 = assembly.getStackByName(stack2.stackName).template;
 
-    test.deepEqual(template2, {
+    expect(template2).toEqual({
       Resources: {
         SomeResource: {
           Type: 'AWS::Some::Resource',
@@ -331,10 +391,10 @@ nodeunitShim({
         },
       },
     });
-    test.done();
-  },
 
-  'cross-stack references in lazy tokens work'(test: Test) {
+  });
+
+  test('cross-stack references in lazy tokens work', () => {
     // GIVEN
     const app = new App();
     const stack1 = new Stack(app, 'Stack1');
@@ -349,7 +409,7 @@ nodeunitShim({
     const template2 = assembly.getStackByName(stack2.stackName).template;
 
     // THEN
-    test.deepEqual(template1, {
+    expect(template1).toEqual({
       Outputs: {
         ExportsOutputRefAWSAccountIdAD568057: {
           Value: { Ref: 'AWS::AccountId' },
@@ -358,7 +418,7 @@ nodeunitShim({
       },
     });
 
-    test.deepEqual(template2, {
+    expect(template2).toEqual({
       Parameters: {
         SomeParameter: {
           Type: 'String',
@@ -367,10 +427,10 @@ nodeunitShim({
       },
     });
 
-    test.done();
-  },
 
-  'Cross-stack use of Region and account returns nonscoped intrinsic because the two stacks must be in the same region anyway'(test: Test) {
+  });
+
+  test('Cross-stack use of Region and account returns nonscoped intrinsic because the two stacks must be in the same region anyway', () => {
     // GIVEN
     const app = new App();
     const stack1 = new Stack(app, 'Stack1');
@@ -384,7 +444,7 @@ nodeunitShim({
     const assembly = app.synth();
     const template2 = assembly.getStackByName(stack2.stackName).template;
 
-    test.deepEqual(template2, {
+    expect(template2).toEqual({
       Outputs: {
         DemOutput: {
           Value: { Ref: 'AWS::Region' },
@@ -395,10 +455,10 @@ nodeunitShim({
       },
     });
 
-    test.done();
-  },
 
-  'cross-stack references in strings work'(test: Test) {
+  });
+
+  test('cross-stack references in strings work', () => {
     // GIVEN
     const app = new App();
     const stack1 = new Stack(app, 'Stack1');
@@ -412,7 +472,7 @@ nodeunitShim({
     const template2 = assembly.getStackByName(stack2.stackName).template;
 
     // THEN
-    test.deepEqual(template2, {
+    expect(template2).toEqual({
       Parameters: {
         SomeParameter: {
           Type: 'String',
@@ -421,10 +481,10 @@ nodeunitShim({
       },
     });
 
-    test.done();
-  },
 
-  'cross stack references and dependencies work within child stacks (non-nested)'(test: Test) {
+  });
+
+  test('cross stack references and dependencies work within child stacks (non-nested)', () => {
     // GIVEN
     const app = new App();
     const parent = new Stack(app, 'Parent');
@@ -448,8 +508,8 @@ nodeunitShim({
     const child1Template = assembly.getStackArtifact(child1.artifactId).template;
     const child2Template = assembly.getStackArtifact(child2.artifactId).template;
 
-    test.deepEqual(parentTemplate, {});
-    test.deepEqual(child1Template, {
+    expect(parentTemplate).toEqual({});
+    expect(child1Template).toEqual({
       Resources: {
         ResourceA: { Type: 'RA' },
         ResourceB: { Type: 'RB' },
@@ -461,7 +521,7 @@ nodeunitShim({
         },
       },
     });
-    test.deepEqual(child2Template, {
+    expect(child2Template).toEqual({
       Resources: {
         Resource1: {
           Type: 'R2',
@@ -472,12 +532,12 @@ nodeunitShim({
       },
     });
 
-    test.deepEqual(assembly.getStackArtifact(child1.artifactId).dependencies.map(x => x.id), []);
-    test.deepEqual(assembly.getStackArtifact(child2.artifactId).dependencies.map(x => x.id), ['ParentChild18FAEF419']);
-    test.done();
-  },
+    expect(assembly.getStackArtifact(child1.artifactId).dependencies.map((x: { id: any; }) => x.id)).toEqual([]);
+    expect(assembly.getStackArtifact(child2.artifactId).dependencies.map((x: { id: any; }) => x.id)).toEqual(['ParentChild18FAEF419']);
 
-  'CfnSynthesisError is ignored when preparing cross references'(test: Test) {
+  });
+
+  test('CfnSynthesisError is ignored when preparing cross references', () => {
     // GIVEN
     const app = new App();
     const stack = new Stack(app, 'my-stack');
@@ -498,10 +558,10 @@ nodeunitShim({
     // THEN
     resolveReferences(app);
 
-    test.done();
-  },
 
-  'Stacks can be children of other stacks (substack) and they will be synthesized separately'(test: Test) {
+  });
+
+  test('Stacks can be children of other stacks (substack) and they will be synthesized separately', () => {
     // GIVEN
     const app = new App();
 
@@ -513,12 +573,12 @@ nodeunitShim({
 
     // THEN
     const assembly = app.synth();
-    test.deepEqual(assembly.getStackByName(parentStack.stackName).template, { Resources: { MyParentResource: { Type: 'Resource::Parent' } } });
-    test.deepEqual(assembly.getStackByName(childStack.stackName).template, { Resources: { MyChildResource: { Type: 'Resource::Child' } } });
-    test.done();
-  },
+    expect(assembly.getStackByName(parentStack.stackName).template).toEqual({ Resources: { MyParentResource: { Type: 'Resource::Parent' } } });
+    expect(assembly.getStackByName(childStack.stackName).template).toEqual({ Resources: { MyChildResource: { Type: 'Resource::Child' } } });
 
-  'cross-stack reference (substack references parent stack)'(test: Test) {
+  });
+
+  test('cross-stack reference (substack references parent stack)', () => {
     // GIVEN
     const app = new App();
     const parentStack = new Stack(app, 'parent');
@@ -535,7 +595,7 @@ nodeunitShim({
 
     // THEN
     const assembly = app.synth();
-    test.deepEqual(assembly.getStackByName(parentStack.stackName).template, {
+    expect(assembly.getStackByName(parentStack.stackName).template).toEqual({
       Resources: { MyParentResource: { Type: 'Resource::Parent' } },
       Outputs: {
         ExportsOutputFnGetAttMyParentResourceAttOfParentResourceC2D0BB9E: {
@@ -544,7 +604,7 @@ nodeunitShim({
         },
       },
     });
-    test.deepEqual(assembly.getStackByName(childStack.stackName).template, {
+    expect(assembly.getStackByName(childStack.stackName).template).toEqual({
       Resources: {
         MyChildResource: {
           Type: 'Resource::Child',
@@ -556,10 +616,10 @@ nodeunitShim({
         },
       },
     });
-    test.done();
-  },
 
-  'cross-stack reference (parent stack references substack)'(test: Test) {
+  });
+
+  test('cross-stack reference (parent stack references substack)', () => {
     // GIVEN
     const app = new App();
     const parentStack = new Stack(app, 'parent');
@@ -576,7 +636,7 @@ nodeunitShim({
 
     // THEN
     const assembly = app.synth();
-    test.deepEqual(assembly.getStackByName(parentStack.stackName).template, {
+    expect(assembly.getStackByName(parentStack.stackName).template).toEqual({
       Resources: {
         MyParentResource: {
           Type: 'Resource::Parent',
@@ -587,7 +647,7 @@ nodeunitShim({
       },
     });
 
-    test.deepEqual(assembly.getStackByName(childStack.stackName).template, {
+    expect(assembly.getStackByName(childStack.stackName).template).toEqual({
       Resources: { MyChildResource: { Type: 'Resource::Child' } },
       Outputs: {
         ExportsOutputFnGetAttMyChildResourceAttributeOfChildResource52813264: {
@@ -596,10 +656,10 @@ nodeunitShim({
         },
       },
     });
-    test.done();
-  },
 
-  'cannot create cyclic reference between stacks'(test: Test) {
+  });
+
+  test('cannot create cyclic reference between stacks', () => {
     // GIVEN
     const app = new App();
     const stack1 = new Stack(app, 'Stack1');
@@ -611,15 +671,15 @@ nodeunitShim({
     new CfnParameter(stack2, 'SomeParameter', { type: 'String', default: account1 });
     new CfnParameter(stack1, 'SomeParameter', { type: 'String', default: account2 });
 
-    test.throws(() => {
+    expect(() => {
       app.synth();
       // eslint-disable-next-line max-len
-    }, "'Stack1' depends on 'Stack2' (Stack1 -> Stack2.AWS::AccountId). Adding this dependency (Stack2 -> Stack1.AWS::AccountId) would create a cyclic reference.");
+    }).toThrow("'Stack1' depends on 'Stack2' (Stack1 -> Stack2.AWS::AccountId). Adding this dependency (Stack2 -> Stack1.AWS::AccountId) would create a cyclic reference.");
 
-    test.done();
-  },
 
-  'stacks know about their dependencies'(test: Test) {
+  });
+
+  test('stacks know about their dependencies', () => {
     // GIVEN
     const app = new App();
     const stack1 = new Stack(app, 'Stack1');
@@ -632,12 +692,12 @@ nodeunitShim({
     app.synth();
 
     // THEN
-    test.deepEqual(stack2.dependencies.map(s => s.node.id), ['Stack1']);
+    expect(stack2.dependencies.map(s => s.node.id)).toEqual(['Stack1']);
 
-    test.done();
-  },
 
-  'cannot create references to stacks in other regions/accounts'(test: Test) {
+  });
+
+  test('cannot create references to stacks in other regions/accounts', () => {
     // GIVEN
     const app = new App();
     const stack1 = new Stack(app, 'Stack1', { env: { account: '123456789012', region: 'es-norst-1' } });
@@ -647,14 +707,14 @@ nodeunitShim({
     // WHEN
     new CfnParameter(stack2, 'SomeParameter', { type: 'String', default: account1 });
 
-    test.throws(() => {
+    expect(() => {
       app.synth();
-    }, /Stack "Stack2" cannot consume a cross reference from stack "Stack1"/);
+    }).toThrow(/Stack "Stack2" cannot consume a cross reference from stack "Stack1"/);
 
-    test.done();
-  },
 
-  'urlSuffix does not imply a stack dependency'(test: Test) {
+  });
+
+  test('urlSuffix does not imply a stack dependency', () => {
     // GIVEN
     const app = new App();
     const first = new Stack(app, 'First');
@@ -668,23 +728,23 @@ nodeunitShim({
     // THEN
     app.synth();
 
-    test.equal(second.dependencies.length, 0);
+    expect(second.dependencies.length).toEqual(0);
 
-    test.done();
-  },
 
-  'stack with region supplied via props returns literal value'(test: Test) {
+  });
+
+  test('stack with region supplied via props returns literal value', () => {
     // GIVEN
     const app = new App();
     const stack = new Stack(app, 'Stack1', { env: { account: '123456789012', region: 'es-norst-1' } });
 
     // THEN
-    test.equal(stack.resolve(stack.region), 'es-norst-1');
+    expect(stack.resolve(stack.region)).toEqual('es-norst-1');
 
-    test.done();
-  },
 
-  'overrideLogicalId(id) can be used to override the logical ID of a resource'(test: Test) {
+  });
+
+  test('overrideLogicalId(id) can be used to override the logical ID of a resource', () => {
     // GIVEN
     const stack = new Stack();
     const bonjour = new CfnResource(stack, 'BonjourResource', { type: 'Resource::Type' });
@@ -701,7 +761,7 @@ nodeunitShim({
     bonjour.overrideLogicalId('BOOM');
 
     // THEN
-    test.deepEqual(toCloudFormation(stack), {
+    expect(toCloudFormation(stack)).toEqual({
       Resources:
       {
         BOOM: { Type: 'Resource::Type' },
@@ -716,32 +776,32 @@ nodeunitShim({
          },
       },
     });
-    test.done();
-  },
 
-  'Stack name can be overridden via properties'(test: Test) {
+  });
+
+  test('Stack name can be overridden via properties', () => {
     // WHEN
     const stack = new Stack(undefined, 'Stack', { stackName: 'otherName' });
 
     // THEN
-    test.deepEqual(stack.stackName, 'otherName');
+    expect(stack.stackName).toEqual('otherName');
 
-    test.done();
-  },
 
-  'Stack name is inherited from App name if available'(test: Test) {
+  });
+
+  test('Stack name is inherited from App name if available', () => {
     // WHEN
     const root = new App();
     const app = new Construct(root, 'Prod');
     const stack = new Stack(app, 'Stack');
 
     // THEN
-    test.deepEqual(stack.stackName, 'ProdStackD5279B22');
+    expect(stack.stackName).toEqual('ProdStackD5279B22');
 
-    test.done();
-  },
 
-  'stack construct id does not go through stack name validation if there is an explicit stack name'(test: Test) {
+  });
+
+  test('stack construct id does not go through stack name validation if there is an explicit stack name', () => {
     // GIVEN
     const app = new App();
 
@@ -752,39 +812,39 @@ nodeunitShim({
 
     // THEN
     const session = app.synth();
-    test.deepEqual(stack.stackName, 'valid-stack-name');
-    test.ok(session.tryGetArtifact(stack.artifactId));
-    test.done();
-  },
+    expect(stack.stackName).toEqual('valid-stack-name');
+    expect(session.tryGetArtifact(stack.artifactId)).toBeDefined();
 
-  'stack validation is performed on explicit stack name'(test: Test) {
+  });
+
+  test('stack validation is performed on explicit stack name', () => {
     // GIVEN
     const app = new App();
 
     // THEN
-    test.throws(() => new Stack(app, 'boom', { stackName: 'invalid:stack:name' }),
-      /Stack name must match the regular expression/);
+    expect(() => new Stack(app, 'boom', { stackName: 'invalid:stack:name' }))
+      .toThrow(/Stack name must match the regular expression/);
 
-    test.done();
-  },
 
-  'Stack.of(stack) returns the correct stack'(test: Test) {
+  });
+
+  test('Stack.of(stack) returns the correct stack', () => {
     const stack = new Stack();
-    test.same(Stack.of(stack), stack);
+    expect(Stack.of(stack)).toBe(stack);
     const parent = new Construct(stack, 'Parent');
     const construct = new Construct(parent, 'Construct');
-    test.same(Stack.of(construct), stack);
-    test.done();
-  },
+    expect(Stack.of(construct)).toBe(stack);
 
-  'Stack.of() throws when there is no parent Stack'(test: Test) {
+  });
+
+  test('Stack.of() throws when there is no parent Stack', () => {
     const root = new Construct(undefined as any, 'Root');
     const construct = new Construct(root, 'Construct');
-    test.throws(() => Stack.of(construct), /should be created in the scope of a Stack, but no Stack found/);
-    test.done();
-  },
+    expect(() => Stack.of(construct)).toThrow(/should be created in the scope of a Stack, but no Stack found/);
 
-  'Stack.of() works for substacks'(test: Test) {
+  });
+
+  test('Stack.of() works for substacks', () => {
     // GIVEN
     const app = new App();
 
@@ -797,14 +857,14 @@ nodeunitShim({
     const childResource = new CfnResource(childStack, 'ChildResource', { type: 'child::resource' });
 
     // THEN
-    test.same(Stack.of(parentStack), parentStack);
-    test.same(Stack.of(parentResource), parentStack);
-    test.same(Stack.of(childStack), childStack);
-    test.same(Stack.of(childResource), childStack);
-    test.done();
-  },
+    expect(Stack.of(parentStack)).toBe(parentStack);
+    expect(Stack.of(parentResource)).toBe(parentStack);
+    expect(Stack.of(childStack)).toBe(childStack);
+    expect(Stack.of(childResource)).toBe(childStack);
 
-  'stack.availabilityZones falls back to Fn::GetAZ[0],[2] if region is not specified'(test: Test) {
+  });
+
+  test('stack.availabilityZones falls back to Fn::GetAZ[0],[2] if region is not specified', () => {
     // GIVEN
     const app = new App();
     const stack = new Stack(app, 'MyStack');
@@ -813,14 +873,14 @@ nodeunitShim({
     const azs = stack.availabilityZones;
 
     // THEN
-    test.deepEqual(stack.resolve(azs), [
+    expect(stack.resolve(azs)).toEqual([
       { 'Fn::Select': [0, { 'Fn::GetAZs': '' }] },
       { 'Fn::Select': [1, { 'Fn::GetAZs': '' }] },
     ]);
-    test.done();
-  },
 
-  'stack.templateFile is the name of the template file emitted to the cloud assembly (default is to use the stack name)'(test: Test) {
+  });
+
+  test('stack.templateFile is the name of the template file emitted to the cloud assembly (default is to use the stack name)', () => {
     // GIVEN
     const app = new App();
 
@@ -829,12 +889,12 @@ nodeunitShim({
     const stack2 = new Stack(app, 'MyStack2', { stackName: 'MyRealStack2' });
 
     // THEN
-    test.deepEqual(stack1.templateFile, 'MyStack1.template.json');
-    test.deepEqual(stack2.templateFile, 'MyRealStack2.template.json');
-    test.done();
-  },
+    expect(stack1.templateFile).toEqual('MyStack1.template.json');
+    expect(stack2.templateFile).toEqual('MyRealStack2.template.json');
 
-  'when feature flag is enabled we will use the artifact id as the template name'(test: Test) {
+  });
+
+  test('when feature flag is enabled we will use the artifact id as the template name', () => {
     // GIVEN
     const app = new App({
       context: {
@@ -847,16 +907,16 @@ nodeunitShim({
     const stack2 = new Stack(app, 'MyStack2', { stackName: 'MyRealStack2' });
 
     // THEN
-    test.deepEqual(stack1.templateFile, 'MyStack1.template.json');
-    test.deepEqual(stack2.templateFile, 'MyStack2.template.json');
-    test.done();
-  },
+    expect(stack1.templateFile).toEqual('MyStack1.template.json');
+    expect(stack2.templateFile).toEqual('MyStack2.template.json');
 
-  '@aws-cdk/core:enableStackNameDuplicates': {
+  });
 
-    'disabled (default)': {
+  describe('@aws-cdk/core:enableStackNameDuplicates', () => {
 
-      'artifactId and templateFile use the stack name'(test: Test) {
+    describe('disabled (default)', () => {
+
+      test('artifactId and templateFile use the stack name', () => {
         // GIVEN
         const app = new App();
 
@@ -865,15 +925,15 @@ nodeunitShim({
         const assembly = app.synth();
 
         // THEN
-        test.deepEqual(stack1.artifactId, 'thestack');
-        test.deepEqual(stack1.templateFile, 'thestack.template.json');
-        test.deepEqual(assembly.getStackArtifact(stack1.artifactId).templateFile, 'thestack.template.json');
-        test.done();
-      },
-    },
+        expect(stack1.artifactId).toEqual('thestack');
+        expect(stack1.templateFile).toEqual('thestack.template.json');
+        expect(assembly.getStackArtifact(stack1.artifactId).templateFile).toEqual('thestack.template.json');
 
-    'enabled': {
-      'allows using the same stack name for two stacks (i.e. in different regions)'(test: Test) {
+      });
+    });
+
+    describe('enabled', () => {
+      test('allows using the same stack name for two stacks (i.e. in different regions)', () => {
         // GIVEN
         const app = new App({ context: { [cxapi.ENABLE_STACK_NAME_DUPLICATES_CONTEXT]: 'true' } });
 
@@ -883,14 +943,14 @@ nodeunitShim({
         const assembly = app.synth();
 
         // THEN
-        test.deepEqual(assembly.getStackArtifact(stack1.artifactId).templateFile, 'MyStack1.template.json');
-        test.deepEqual(assembly.getStackArtifact(stack2.artifactId).templateFile, 'MyStack2.template.json');
-        test.deepEqual(stack1.templateFile, 'MyStack1.template.json');
-        test.deepEqual(stack2.templateFile, 'MyStack2.template.json');
-        test.done();
-      },
+        expect(assembly.getStackArtifact(stack1.artifactId).templateFile).toEqual('MyStack1.template.json');
+        expect(assembly.getStackArtifact(stack2.artifactId).templateFile).toEqual('MyStack2.template.json');
+        expect(stack1.templateFile).toEqual('MyStack1.template.json');
+        expect(stack2.templateFile).toEqual('MyStack2.template.json');
 
-      'artifactId and templateFile use the unique id and not the stack name'(test: Test) {
+      });
+
+      test('artifactId and templateFile use the unique id and not the stack name', () => {
         // GIVEN
         const app = new App({ context: { [cxapi.ENABLE_STACK_NAME_DUPLICATES_CONTEXT]: 'true' } });
 
@@ -899,16 +959,16 @@ nodeunitShim({
         const assembly = app.synth();
 
         // THEN
-        test.deepEqual(stack1.artifactId, 'MyStack1');
-        test.deepEqual(stack1.templateFile, 'MyStack1.template.json');
-        test.deepEqual(assembly.getStackArtifact(stack1.artifactId).templateFile, 'MyStack1.template.json');
-        test.done();
-      },
-    },
+        expect(stack1.artifactId).toEqual('MyStack1');
+        expect(stack1.templateFile).toEqual('MyStack1.template.json');
+        expect(assembly.getStackArtifact(stack1.artifactId).templateFile).toEqual('MyStack1.template.json');
 
-  },
+      });
+    });
 
-  'metadata is collected at the stack boundary'(test: Test) {
+  });
+
+  test('metadata is collected at the stack boundary', () => {
     // GIVEN
     const app = new App({
       context: {
@@ -923,14 +983,14 @@ nodeunitShim({
 
     // THEN
     const asm = app.synth();
-    test.deepEqual(asm.getStackByName(parent.stackName).findMetadataByType('foo'), []);
-    test.deepEqual(asm.getStackByName(child.stackName).findMetadataByType('foo'), [
+    expect(asm.getStackByName(parent.stackName).findMetadataByType('foo')).toEqual([]);
+    expect(asm.getStackByName(child.stackName).findMetadataByType('foo')).toEqual([
       { path: '/parent/child', type: 'foo', data: 'bar' },
     ]);
-    test.done();
-  },
 
-  'stack tags are reflected in the stack cloud assembly artifact metadata'(test: Test) {
+  });
+
+  test('stack tags are reflected in the stack cloud assembly artifact metadata', () => {
     // GIVEN
     const app = new App({ stackTraces: false });
     const stack1 = new Stack(app, 'stack1');
@@ -948,12 +1008,12 @@ nodeunitShim({
       },
     ];
 
-    test.deepEqual(asm.getStackArtifact(stack1.artifactId).manifest.metadata, { '/stack1': expected });
-    test.deepEqual(asm.getStackArtifact(stack2.artifactId).manifest.metadata, { '/stack1/stack2': expected });
-    test.done();
-  },
+    expect(asm.getStackArtifact(stack1.artifactId).manifest.metadata).toEqual({ '/stack1': expected });
+    expect(asm.getStackArtifact(stack2.artifactId).manifest.metadata).toEqual({ '/stack1/stack2': expected });
 
-  'stack tags are reflected in the stack artifact properties'(test: Test) {
+  });
+
+  test('stack tags are reflected in the stack artifact properties', () => {
     // GIVEN
     const app = new App({ stackTraces: false });
     const stack1 = new Stack(app, 'stack1');
@@ -966,12 +1026,12 @@ nodeunitShim({
     const asm = app.synth();
     const expected = { foo: 'bar' };
 
-    test.deepEqual(asm.getStackArtifact(stack1.artifactId).tags, expected);
-    test.deepEqual(asm.getStackArtifact(stack2.artifactId).tags, expected);
-    test.done();
-  },
+    expect(asm.getStackArtifact(stack1.artifactId).tags).toEqual(expected);
+    expect(asm.getStackArtifact(stack2.artifactId).tags).toEqual(expected);
 
-  'Termination Protection is reflected in Cloud Assembly artifact'(test: Test) {
+  });
+
+  test('Termination Protection is reflected in Cloud Assembly artifact', () => {
     // if the root is an app, invoke "synth" to avoid double synthesis
     const app = new App();
     const stack = new Stack(app, 'Stack', { terminationProtection: true });
@@ -979,19 +1039,19 @@ nodeunitShim({
     const assembly = app.synth();
     const artifact = assembly.getStackArtifact(stack.artifactId);
 
-    test.equals(artifact.terminationProtection, true);
+    expect(artifact.terminationProtection).toEqual(true);
 
-    test.done();
-  },
 
-  'users can (still) override "synthesize()" in stack'(test: Test) {
+  });
+
+  test('users can (still) override "synthesize()" in stack', () => {
     let called = false;
 
     class MyStack extends Stack {
       synthesize(session: ISynthesisSession) {
         called = true;
-        test.ok(session.outdir);
-        test.equal(session.assembly.outdir, session.outdir);
+        expect(session.outdir).toBeDefined();
+        expect(session.assembly.outdir).toEqual(session.outdir);
       }
     }
 
@@ -999,11 +1059,11 @@ nodeunitShim({
     new MyStack(app, 'my-stack');
 
     app.synth();
-    test.ok(called, 'synthesize() not called for Stack');
-    test.done();
-  },
+    expect(called).toEqual(true);
 
-  'context can be set on a stack using a LegacySynthesizer'(test: Test) {
+  });
+
+  test('context can be set on a stack using a LegacySynthesizer', () => {
     // WHEN
     const stack = new Stack(undefined, undefined, {
       synthesizer: new LegacyStackSynthesizer(),
@@ -1012,10 +1072,10 @@ nodeunitShim({
 
     // THEN: no exception
 
-    test.done();
-  },
 
-  'context can be set on a stack using a DefaultSynthesizer'(test: Test) {
+  });
+
+  test('context can be set on a stack using a DefaultSynthesizer', () => {
     // WHEN
     const stack = new Stack(undefined, undefined, {
       synthesizer: new DefaultStackSynthesizer(),
@@ -1024,26 +1084,26 @@ nodeunitShim({
 
     // THEN: no exception
 
-    test.done();
-  },
 
-  'version reporting can be configured on the app'(test: Test) {
+  });
+
+  test('version reporting can be configured on the app', () => {
     const app = new App({ analyticsReporting: true });
-    test.ok(new Stack(app, 'Stack')._versionReportingEnabled);
-    test.done();
-  },
+    expect(new Stack(app, 'Stack')._versionReportingEnabled).toBeDefined();
 
-  'version reporting can be configured with context'(test: Test) {
+  });
+
+  test('version reporting can be configured with context', () => {
     const app = new App({ context: { 'aws:cdk:version-reporting': true } });
-    test.ok(new Stack(app, 'Stack')._versionReportingEnabled);
-    test.done();
-  },
+    expect(new Stack(app, 'Stack')._versionReportingEnabled).toBeDefined();
 
-  'version reporting can be configured on the stack'(test: Test) {
+  });
+
+  test('version reporting can be configured on the stack', () => {
     const app = new App();
-    test.ok(new Stack(app, 'Stack', { analyticsReporting: true })._versionReportingEnabled);
-    test.done();
-  },
+    expect(new Stack(app, 'Stack', { analyticsReporting: true })._versionReportingEnabled).toBeDefined();
+
+  });
 });
 
 class StackWithPostProcessor extends Stack {

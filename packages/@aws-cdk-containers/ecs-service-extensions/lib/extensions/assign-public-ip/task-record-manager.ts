@@ -11,6 +11,10 @@ import * as sqs from '@aws-cdk/aws-sqs';
 import * as cdk from '@aws-cdk/core';
 import * as customresources from '@aws-cdk/custom-resources';
 
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct } from '@aws-cdk/core';
+
 export interface TaskRecordManagerProps {
   service: ecs.Ec2Service | ecs.FargateService;
   dnsZone: route53.IHostedZone;
@@ -21,8 +25,8 @@ export interface TaskRecordManagerProps {
  * An event-driven serverless app to maintain a list of public ips in a Route 53
  * hosted zone.
  */
-export class TaskRecordManager extends cdk.Construct {
-  constructor(scope: cdk.Construct, id: string, props: TaskRecordManagerProps) {
+export class TaskRecordManager extends Construct {
+  constructor(scope: Construct, id: string, props: TaskRecordManagerProps) {
     super(scope, id);
 
     // Poison pills go here.

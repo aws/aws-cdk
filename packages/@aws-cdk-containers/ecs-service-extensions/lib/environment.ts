@@ -3,6 +3,10 @@ import * as ecs from '@aws-cdk/aws-ecs';
 import * as cdk from '@aws-cdk/core';
 import { EnvironmentCapacityType } from './extensions/extension-interfaces';
 
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct } from '@aws-cdk/core';
+
 /**
  * Settings for the environment you want to deploy.
  * services within.
@@ -64,11 +68,11 @@ export interface IEnvironment {
  * or it can create it's own VPC and cluster. By default it will create
  * a cluster with Fargate capacity.
  */
-export class Environment extends cdk.Construct implements IEnvironment {
+export class Environment extends Construct implements IEnvironment {
   /**
    * Import an existing environment from its attributes.
    */
-  public static fromEnvironmentAttributes(scope: cdk.Construct, id: string, attrs: EnvironmentAttributes): IEnvironment {
+  public static fromEnvironmentAttributes(scope: Construct, id: string, attrs: EnvironmentAttributes): IEnvironment {
     return new ImportedEnvironment(scope, id, attrs);
   }
 
@@ -94,7 +98,7 @@ export class Environment extends cdk.Construct implements IEnvironment {
 
   private readonly scope: cdk.Construct;
 
-  constructor(scope: cdk.Construct, id: string, props?: EnvironmentProps) {
+  constructor(scope: Construct, id: string, props?: EnvironmentProps) {
     super(scope, id);
 
     this.scope = scope;
@@ -139,13 +143,13 @@ export interface EnvironmentAttributes {
   cluster: ecs.ICluster;
 }
 
-export class ImportedEnvironment extends cdk.Construct implements IEnvironment {
+export class ImportedEnvironment extends Construct implements IEnvironment {
   public readonly capacityType: EnvironmentCapacityType;
   public readonly cluster: ecs.ICluster;
   public readonly id: string;
   public readonly vpc: ec2.IVpc;
 
-  constructor(scope: cdk.Construct, id: string, props: EnvironmentAttributes) {
+  constructor(scope: Construct, id: string, props: EnvironmentAttributes) {
     super(scope, id);
 
     this.id = id;
