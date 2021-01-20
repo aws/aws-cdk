@@ -1,4 +1,5 @@
 {
   "majorVersion": 2,
-  "releaseType": "alpha"
+  "releaseType": "alpha",
+  "distTag": "next"
 }
