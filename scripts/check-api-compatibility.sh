@@ -57,22 +57,12 @@ if ! ${SKIP_DOWNLOAD:-false}; then
 
     echo "Determining baseline version..." >&2
     version=$(node -p 'require("./scripts/resolve-version.js").version')
+    disttag=$(node -p 'require("./scripts/resolve-version.js").npmDistTag')
     echo "  Current version is $version." >&2
 
     if ! package_exists_on_npm aws-cdk $version; then
-      echo "  Version $version does not exist in npm. Falling back to env vars." >&2
-      # occurs within a release PR where the version is bumped but is not yet published to npm.
-      major_version=$(echo $version | cut -d '.' -f 1)
-      if [ "$major_version" == "1" ]; then
-        echo "  Setting version to $NPM_DISTTAG_V1" >&2
-        version=$NPM_DISTTAG_V1
-      elif [ "$major_version" == "2" ]; then
-        echo "  Setting version to $NPM_DISTTAG_V2" >&2
-        version=$NPM_DISTTAG_V2
-      else
-        echo "Unknown major version $major_version. Failing..." >&2
-        exit 1
-      fi
+      echo "  Version $version does not exist in npm. Falling back to resolved dist tag '$disttag'" >&2
+      version=$disttag
     fi
 
     echo "Using version '$version' as the baseline..."

@@ -1,4 +1,5 @@
 {
   "majorVersion": 1,
-  "releaseType": "stable"
+  "releaseType": "stable",
+  "distTag": "latest"
 }
