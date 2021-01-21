@@ -57,7 +57,8 @@ const sourceAction = new codepipeline_actions.CodeCommitSourceAction({
 });
 ```
 
-If you want to clone the entire CodeCommit repository (only available for CodeBuild actions), you can set the `codeBuildCloneOutput` property to `true`.
+If you want to clone the entire CodeCommit repository (only available for CodeBuild actions),
+you can set the `codeBuildCloneOutput` property to `true`:
 
 ```ts
 const sourceOutput = new codepipeline.Artifact();
