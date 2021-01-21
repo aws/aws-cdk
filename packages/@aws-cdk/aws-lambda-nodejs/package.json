@@ -46,8 +46,8 @@
     "pkglint": "pkglint -f",
     "package": "cdk-package",
     "awslint": "cdk-awslint",
-    "build+test+package": "npm run build+test && npm run package",
-    "build+test": "npm run build && npm test",
+    "build+test+package": "yarn build+test && yarn package",
+    "build+test": "yarn build && yarn test",
     "compat": "cdk-compat",
     "rosetta:extract": "yarn --silent jsii-rosetta extract"
   },
@@ -69,7 +69,7 @@
     "cdk-build-tools": "0.0.0",
     "cdk-integ-tools": "0.0.0",
     "delay": "4.4.0",
-    "esbuild": "^0.8.20",
+    "esbuild": "^0.8.33",
     "pkglint": "0.0.0"
   },
   "dependencies": {

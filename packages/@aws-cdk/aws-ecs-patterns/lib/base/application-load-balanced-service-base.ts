@@ -1,6 +1,6 @@
 import { Certificate, CertificateValidation, ICertificate } from '@aws-cdk/aws-certificatemanager';
 import { IVpc } from '@aws-cdk/aws-ec2';
-import { AwsLogDriver, BaseService, CloudMapOptions, Cluster, ContainerImage, ICluster, LogDriver, PropagatedTagSource, Secret } from '@aws-cdk/aws-ecs';
+import { AwsLogDriver, BaseService, CloudMapOptions, Cluster, ContainerImage, DeploymentController, ICluster, LogDriver, PropagatedTagSource, Secret } from '@aws-cdk/aws-ecs';
 import {
   ApplicationListener, ApplicationLoadBalancer, ApplicationProtocol, ApplicationTargetGroup,
   IApplicationLoadBalancer, ListenerCertificate, ListenerAction, AddApplicationTargetsProps,
@@ -10,6 +10,10 @@ import { ARecord, IHostedZone, RecordTarget, CnameRecord } from '@aws-cdk/aws-ro
 import { LoadBalancerTarget } from '@aws-cdk/aws-route53-targets';
 import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
+
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 /**
  * Describes the type of DNS record the service should create
@@ -212,6 +216,14 @@ export interface ApplicationLoadBalancedServiceBaseProps {
    * @default ApplicationLoadBalancedServiceRecordType.ALIAS
    */
   readonly recordType?: ApplicationLoadBalancedServiceRecordType;
+
+  /**
+   * Specifies which deployment controller to use for the service. For more information, see
+   * [Amazon ECS Deployment Types](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/deployment-types.html)
+   *
+   * @default - Rolling update (ECS)
+   */
+  readonly deploymentController?: DeploymentController;
 }
 
 export interface ApplicationLoadBalancedTaskImageOptions {
@@ -298,7 +310,7 @@ export interface ApplicationLoadBalancedTaskImageOptions {
 /**
  * The base class for ApplicationLoadBalancedEc2Service and ApplicationLoadBalancedFargateService services.
  */
-export abstract class ApplicationLoadBalancedServiceBase extends cdk.Construct {
+export abstract class ApplicationLoadBalancedServiceBase extends CoreConstruct {
 
   /**
    * The desired number of instantiations of the task definition to keep running on the service.
@@ -459,7 +471,7 @@ export abstract class ApplicationLoadBalancedServiceBase extends cdk.Construct {
   /**
    * Returns the default cluster.
    */
-  protected getDefaultCluster(scope: cdk.Construct, vpc?: IVpc): Cluster {
+  protected getDefaultCluster(scope: CoreConstruct, vpc?: IVpc): Cluster {
     // magic string to avoid collision with user-defined constructs
     const DEFAULT_CLUSTER_ID = `EcsDefaultClusterMnL3mNNYN${vpc ? vpc.node.id : ''}`;
     const stack = cdk.Stack.of(scope);

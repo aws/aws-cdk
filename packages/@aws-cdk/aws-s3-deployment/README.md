@@ -90,7 +90,7 @@ based on file extensions:
 
 ```ts
 new BucketDeployment(this, 'BucketDeployment', {
-  sources: [Source.asset('./website', { exclude: ['index.html' })],
+  sources: [Source.asset('./website', { exclude: ['index.html'] })],
   destinationBucket: bucket,
   cacheControl: [CacheControl.fromString('max-age=31536000,public,immutable')],
   prune: false,
@@ -220,8 +220,8 @@ size of the AWS Lambda resource handler.
 ## Development
 
 The custom resource is implemented in Python 3.6 in order to be able to leverage
-the AWS CLI for "aws sync". The code is under [`lambda/src`](./lambda/src) and
-unit tests are under [`lambda/test`](./lambda/test).
+the AWS CLI for "aws sync". The code is under [`lib/lambda`](https://github.com/aws/aws-cdk/tree/master/packages/%40aws-cdk/aws-s3-deployment/lib/lambda) and
+unit tests are under [`test/lambda`](https://github.com/aws/aws-cdk/tree/master/packages/%40aws-cdk/aws-s3-deployment/test/lambda).
 
 This package requires Python 3.6 during build time in order to create the custom
 resource Lambda bundle and test it. It also relies on a few bash scripts, so

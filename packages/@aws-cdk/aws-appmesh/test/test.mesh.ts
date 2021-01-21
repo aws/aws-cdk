@@ -105,7 +105,9 @@ export = {
     // WHEN
     new appmesh.VirtualNode(stack, 'test-node', {
       mesh,
-      cloudMapService: service,
+      serviceDiscovery: appmesh.ServiceDiscovery.cloudMap({
+        service: service,
+      }),
     });
 
     // THEN
@@ -174,7 +176,7 @@ export = {
         });
 
         const node = mesh.addVirtualNode('test-node', {
-          dnsHostName: 'test.domain.local',
+          serviceDiscovery: appmesh.ServiceDiscovery.dns('test.domain.local'),
           listeners: [appmesh.VirtualNodeListener.http({
             port: 8080,
           })],
@@ -216,7 +218,7 @@ export = {
         });
 
         mesh.addVirtualNode('test-node', {
-          dnsHostName: 'test.domain.local',
+          serviceDiscovery: appmesh.ServiceDiscovery.dns('test.domain.local'),
         });
 
         // THEN
@@ -250,7 +252,7 @@ export = {
         });
 
         mesh.addVirtualNode('test-node', {
-          dnsHostName: 'test.domain.local',
+          serviceDiscovery: appmesh.ServiceDiscovery.dns('test.domain.local'),
           listeners: [appmesh.VirtualNodeListener.http({
             port: 8080,
           })],
@@ -289,7 +291,7 @@ export = {
         });
 
         mesh.addVirtualNode('test-node', {
-          dnsHostName: 'test.domain.local',
+          serviceDiscovery: appmesh.ServiceDiscovery.dns('test.domain.local'),
           listeners: [appmesh.VirtualNodeListener.http({
             port: 8080,
             healthCheck: {
@@ -345,7 +347,7 @@ export = {
         });
 
         mesh.addVirtualNode('test-node', {
-          dnsHostName: 'test.domain.local',
+          serviceDiscovery: appmesh.ServiceDiscovery.dns('test.domain.local'),
           listeners: [appmesh.VirtualNodeListener.http({
             port: 8080,
           })],

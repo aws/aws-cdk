@@ -10,6 +10,10 @@ import { EnvironmentFile, EnvironmentFileConfig } from './environment-file';
 import { LinuxParameters } from './linux-parameters';
 import { LogDriver, LogDriverConfig } from './log-drivers/log-driver';
 
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct as CoreConstruct } from '@aws-cdk/core';
+
 /**
  * A secret environment variable.
  */
@@ -301,7 +305,7 @@ export interface ContainerDefinitionProps extends ContainerDefinitionOptions {
 /**
  * A container definition is used in a task definition to describe the containers that are launched as part of a task.
  */
-export class ContainerDefinition extends cdk.Construct {
+export class ContainerDefinition extends CoreConstruct {
   /**
    * The Linux-specific modifications that are applied to the container, such as Linux kernel capabilities.
    */
@@ -418,10 +422,6 @@ export class ContainerDefinition extends cdk.Construct {
           valueFrom: secret.arn,
         });
       }
-    }
-
-    if (this.taskDefinition.isFargateCompatible && props.environmentFiles) {
-      throw new Error(`Cannot specify environment files for a task using the FARGATE launch type in container '${this.node.id}'.`);
     }
 
     if (props.environmentFiles) {

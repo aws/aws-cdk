@@ -1010,7 +1010,16 @@ export class Vpc extends VpcBase {
   ];
 
   /**
-   * Import an exported VPC
+   * Import a VPC by supplying all attributes directly
+   *
+   * NOTE: using `fromVpcAttributes()` with deploy-time parameters (like a `Fn.importValue()` or
+   * `CfnParameter` to represent a list of subnet IDs) sometimes accidentally works. It happens
+   * to work for constructs that need a list of subnets (like `AutoScalingGroup` and `eks.Cluster`)
+   * but it does not work for constructs that need individual subnets (like
+   * `Instance`). See https://github.com/aws/aws-cdk/issues/4118 for more
+   * information.
+   *
+   * Prefer to use `Vpc.fromLookup()` instead.
    */
   public static fromVpcAttributes(scope: Construct, id: string, attrs: VpcAttributes): IVpc {
     return new ImportedVpc(scope, id, attrs, false);
@@ -1800,6 +1809,13 @@ class ImportedVpc extends VpcBase {
     this._vpnGatewayId = props.vpnGatewayId;
     this.incompleteSubnetDefinition = isIncomplete;
 
+    // None of the values may be unresolved list tokens
+    for (const k of Object.keys(props) as Array<keyof VpcAttributes>) {
+      if (Array.isArray(props[k]) && Token.isUnresolved(props[k])) {
+        Annotations.of(this).addWarning(`fromVpcAttributes: '${k}' is a list token: the imported VPC will not work with constructs that require a list of subnets at synthesis time. Use 'Vpc.fromLookup()' or 'Fn.importListValue' instead.`);
+      }
+    }
+
     /* eslint-disable max-len */
     const pub = new ImportSubnetGroup(props.publicSubnetIds, props.publicSubnetNames, props.publicSubnetRouteTableIds, SubnetType.PUBLIC, this.availabilityZones, 'publicSubnetIds', 'publicSubnetNames', 'publicSubnetRouteTableIds');
     const priv = new ImportSubnetGroup(props.privateSubnetIds, props.privateSubnetNames, props.privateSubnetRouteTableIds, SubnetType.PRIVATE, this.availabilityZones, 'privateSubnetIds', 'privateSubnetNames', 'privateSubnetRouteTableIds');
@@ -1927,7 +1943,21 @@ class ImportedSubnet extends Resource implements ISubnet, IPublicSubnet, IPrivat
     super(scope, id);
 
     if (!attrs.routeTableId) {
-      const ref = Token.isUnresolved(attrs.subnetId)
+      // The following looks a little weird, but comes down to:
+      //
+      // * Is the subnetId itself unresolved ({ Ref: Subnet }); or
+      // * Was it the accidentally extracted first element of a list-encoded
+      //   token? ({ Fn::ImportValue: Subnets } => ['#{Token[1234]}'] =>
+      //   '#{Token[1234]}'
+      //
+      // There's no other API to test for the second case than to the string back into
+      // a list and see if the combination is Unresolved.
+      //
+      // In both cases we can't output the subnetId literally into the metadata (because it'll
+      // be useless). In the 2nd case even, if we output it to metadata, the `resolve()` call
+      // that gets done on the metadata will even `throw`, because the '#{Token}' value will
+      // occur in an illegal position (not in a list context).
+      const ref = Token.isUnresolved(attrs.subnetId) || Token.isUnresolved([attrs.subnetId])
         ? `at '${Node.of(scope).path}/${id}'`
         : `'${attrs.subnetId}'`;
       // eslint-disable-next-line max-len

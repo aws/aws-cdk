@@ -1,11 +1,15 @@
 import { IVpc } from '@aws-cdk/aws-ec2';
-import { AwsLogDriver, BaseService, CloudMapOptions, Cluster, ContainerImage, ICluster, LogDriver, PropagatedTagSource, Secret } from '@aws-cdk/aws-ecs';
+import { AwsLogDriver, BaseService, CloudMapOptions, Cluster, ContainerImage, DeploymentController, ICluster, LogDriver, PropagatedTagSource, Secret } from '@aws-cdk/aws-ecs';
 import { INetworkLoadBalancer, NetworkListener, NetworkLoadBalancer, NetworkTargetGroup } from '@aws-cdk/aws-elasticloadbalancingv2';
 import { IRole } from '@aws-cdk/aws-iam';
 import { ARecord, CnameRecord, IHostedZone, RecordTarget } from '@aws-cdk/aws-route53';
 import { LoadBalancerTarget } from '@aws-cdk/aws-route53-targets';
 import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
+
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 /**
  * Describes the type of DNS record the service should create
@@ -162,6 +166,14 @@ export interface NetworkLoadBalancedServiceBaseProps {
    * @default NetworkLoadBalancedServiceRecordType.ALIAS
    */
   readonly recordType?: NetworkLoadBalancedServiceRecordType;
+
+  /**
+ * Specifies which deployment controller to use for the service. For more information, see
+ * [Amazon ECS Deployment Types](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/deployment-types.html)
+ *
+ * @default - Rolling update (ECS)
+ */
+  readonly deploymentController?: DeploymentController;
 }
 
 export interface NetworkLoadBalancedTaskImageOptions {
@@ -248,7 +260,7 @@ export interface NetworkLoadBalancedTaskImageOptions {
 /**
  * The base class for NetworkLoadBalancedEc2Service and NetworkLoadBalancedFargateService services.
  */
-export abstract class NetworkLoadBalancedServiceBase extends cdk.Construct {
+export abstract class NetworkLoadBalancedServiceBase extends CoreConstruct {
   /**
    * The desired number of instantiations of the task definition to keep running on the service.
    */
@@ -353,7 +365,7 @@ export abstract class NetworkLoadBalancedServiceBase extends cdk.Construct {
   /**
    * Returns the default cluster.
    */
-  protected getDefaultCluster(scope: cdk.Construct, vpc?: IVpc): Cluster {
+  protected getDefaultCluster(scope: CoreConstruct, vpc?: IVpc): Cluster {
     // magic string to avoid collision with user-defined constructs
     const DEFAULT_CLUSTER_ID = `EcsDefaultClusterMnL3mNNYN${vpc ? vpc.node.id : ''}`;
     const stack = cdk.Stack.of(scope);
