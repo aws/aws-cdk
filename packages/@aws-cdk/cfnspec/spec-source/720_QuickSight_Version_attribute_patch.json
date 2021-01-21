@@ -1,0 +1,21 @@
+{
+  "ResourceTypes": {
+    "patch": {
+      "description": "Remove the Version attributes of AWS::QuickSight resources, as they have complex types",
+      "operations": [
+        {
+          "op": "remove",
+          "path": "/AWS::QuickSight::Dashboard/Attributes/Version"
+        },
+        {
+          "op": "remove",
+          "path": "/AWS::QuickSight::Template/Attributes/Version"
+        },
+        {
+          "op": "remove",
+          "path": "/AWS::QuickSight::Theme/Attributes/Version"
+        }
+      ]
+    }
+  }
+}

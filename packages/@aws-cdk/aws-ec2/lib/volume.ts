@@ -200,14 +200,24 @@ export enum EbsDeviceVolumeType {
   STANDARD = 'standard',
 
   /**
-   *  Provisioned IOPS SSD
+   *  Provisioned IOPS SSD - IO1
    */
   IO1 = 'io1',
 
   /**
-   * General Purpose SSD
+   *  Provisioned IOPS SSD - IO2
+   */
+  IO2 = 'io2',
+
+  /**
+   * General Purpose SSD - GP2
    */
   GP2 = 'gp2',
+
+  /**
+   * General Purpose SSD - GP3
+   */
+  GP3 = 'gp3',
 
   /**
    * Throughput Optimized HDD
@@ -220,14 +230,24 @@ export enum EbsDeviceVolumeType {
   SC1 = 'sc1',
 
   /**
-   * General purpose SSD volume that balances price and performance for a wide variety of workloads.
+   * General purpose SSD volume (GP2) that balances price and performance for a wide variety of workloads.
    */
   GENERAL_PURPOSE_SSD = GP2,
 
   /**
-   * Highest-performance SSD volume for mission-critical low-latency or high-throughput workloads.
+   * General purpose SSD volume (GP3) that balances price and performance for a wide variety of workloads.
+   */
+  GENERAL_PURPOSE_SSD_GP3 = GP3,
+
+  /**
+   * Highest-performance SSD volume (IO1) for mission-critical low-latency or high-throughput workloads.
    */
   PROVISIONED_IOPS_SSD = IO1,
+
+  /**
+   * Highest-performance SSD volume (IO2) for mission-critical low-latency or high-throughput workloads.
+   */
+  PROVISIONED_IOPS_SSD_IO2 = IO2,
 
   /**
    * Low-cost HDD volume designed for frequently accessed, throughput-intensive workloads.

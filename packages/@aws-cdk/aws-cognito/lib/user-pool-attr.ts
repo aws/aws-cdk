@@ -1,4 +1,5 @@
 import { Token } from '@aws-cdk/core';
+import { StandardAttributeNames } from './private/attr-names';
 
 /**
  * The set of standard attributes that can be marked as required or mutable.
@@ -107,6 +108,18 @@ export interface StandardAttributes {
    * @default - see the defaults under `StandardAttribute`
    */
   readonly website?: StandardAttribute;
+
+  /**
+   * Whether the email address has been verified.
+   * @default - see the defaults under `StandardAttribute`
+   */
+  readonly emailVerified?: StandardAttribute;
+
+  /**
+   * Whether the phone number has been verified.
+   * @default - see the defaults under `StandardAttribute`
+   */
+  readonly phoneNumberVerified?: StandardAttribute;
 }
 
 /**
@@ -339,5 +352,192 @@ export class DateTimeAttribute implements ICustomAttribute {
       dataType: 'DateTime',
       mutable: this.mutable,
     };
+  }
+}
+
+/**
+ * This interface contains all standard attributes recognized by Cognito
+ * from https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-attributes.html
+ * including `email_verified` and `phone_number_verified`
+ */
+export interface StandardAttributesMask {
+  /**
+   * The user's postal address.
+   * @default false
+   */
+  readonly address?: boolean;
+
+  /**
+   * The user's birthday, represented as an ISO 8601:2004 format.
+   * @default false
+   */
+  readonly birthdate?: boolean;
+
+  /**
+   * The user's e-mail address, represented as an RFC 5322 [RFC5322] addr-spec.
+   * @default false
+   */
+  readonly email?: boolean;
+
+  /**
+   * The surname or last name of the user.
+   * @default false
+   */
+  readonly familyName?: boolean;
+
+  /**
+   * The user's gender.
+   * @default false
+   */
+  readonly gender?: boolean;
+
+  /**
+   * The user's first name or give name.
+   * @default false
+   */
+  readonly givenName?: boolean;
+
+  /**
+   * The user's locale, represented as a BCP47 [RFC5646] language tag.
+   * @default false
+   */
+  readonly locale?: boolean;
+
+  /**
+   * The user's middle name.
+   * @default false
+   */
+  readonly middleName?: boolean;
+
+  /**
+   * The user's full name in displayable form, including all name parts, titles and suffixes.
+   * @default false
+   */
+  readonly fullname?: boolean;
+
+  /**
+   * The user's nickname or casual name.
+   * @default false
+   */
+  readonly nickname?: boolean;
+
+  /**
+   * The user's telephone number.
+   * @default false
+   */
+  readonly phoneNumber?: boolean;
+
+  /**
+   * The URL to the user's profile picture.
+   * @default false
+   */
+  readonly profilePicture?: boolean;
+
+  /**
+   * The user's preffered username, different from the immutable user name.
+   * @default false
+   */
+  readonly preferredUsername?: boolean;
+
+  /**
+   * The URL to the user's profile page.
+   * @default false
+   */
+  readonly profilePage?: boolean;
+
+  /**
+   * The user's time zone.
+   * @default false
+   */
+  readonly timezone?: boolean;
+
+  /**
+   * The time, the user's information was last updated.
+   * @default false
+   */
+  readonly lastUpdateTime?: boolean;
+
+  /**
+   * The URL to the user's web page or blog.
+   * @default false
+   */
+  readonly website?: boolean;
+
+  /**
+   * Whether the email address has been verified.
+   * @default false
+   */
+  readonly emailVerified?: boolean;
+
+  /**
+   * Whether the phone number has been verified.
+   * @default false
+   */
+  readonly phoneNumberVerified?: boolean;
+}
+
+
+/**
+ * A set of attributes, useful to set Read and Write attributes
+ */
+export class ClientAttributes {
+
+  /**
+   * The set of attributes
+   */
+  private attributesSet: Set<string>;
+
+  /**
+   * Creates a ClientAttributes with the specified attributes
+   *
+   * @default - a ClientAttributes object without any attributes
+   */
+  constructor() {
+    this.attributesSet = new Set<string>();
+  }
+
+  /**
+   * Creates a custom ClientAttributes with the specified attributes
+   * @param attributes a list of standard attributes to add to the set
+   */
+  public withStandardAttributes(attributes: StandardAttributesMask): ClientAttributes {
+    let attributesSet = new Set(this.attributesSet);
+    // iterate through key-values in the `StandardAttributeNames` constant
+    // to get the value for all attributes
+    for (const attributeKey in StandardAttributeNames) {
+      if ((attributes as any)[attributeKey] === true) {
+        const attributeName = (StandardAttributeNames as any)[attributeKey];
+        attributesSet.add(attributeName);
+      }
+    }
+    let aux = new ClientAttributes();
+    aux.attributesSet = attributesSet;
+    return aux;
+  }
+
+  /**
+   * Creates a custom ClientAttributes with the specified attributes
+   * @param attributes a list of custom attributes to add to the set
+   */
+  public withCustomAttributes(...attributes: string[]): ClientAttributes {
+    let attributesSet: Set<string> = new Set(this.attributesSet);
+    for (let attribute of attributes) {
+      // custom attributes MUST begin with `custom:`, so add the string if not present
+      if (!attribute.startsWith('custom:')) {
+        attribute = 'custom:' + attribute;
+      }
+      attributesSet.add(attribute);
+    }
+    let aux = new ClientAttributes();
+    aux.attributesSet = attributesSet;
+    return aux;
+  }
+
+  /**
+   * The list of attributes represented by this ClientAttributes
+   */
+  public attributes(): string[] {
+    // sorting is unnecessary but it simplify testing
+    return Array.from(this.attributesSet).sort();
   }
 }

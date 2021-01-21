@@ -1,6 +1,7 @@
 import '@aws-cdk/assert/jest';
 import { CfnParameter, Stack } from '@aws-cdk/core';
-import { BooleanAttribute, CustomAttributeConfig, DateTimeAttribute, ICustomAttribute, NumberAttribute, StringAttribute } from '../lib';
+import { BooleanAttribute, CustomAttributeConfig, DateTimeAttribute, ICustomAttribute, NumberAttribute, StringAttribute, ClientAttributes } from '../lib';
+import { StandardAttributeNames } from '../lib/private/attr-names';
 
 describe('User Pool Attributes', () => {
 
@@ -176,6 +177,115 @@ describe('User Pool Attributes', () => {
       expect(bound.dataType).toEqual('DateTime');
       expect(bound.stringConstraints).toBeUndefined();
       expect(bound.numberConstraints).toBeUndefined();
+    });
+  });
+
+  describe('ClientAttributes', () => {
+    test('create empty ClientAttributes', () => {
+      // WHEN
+      const clientAttributes = (new ClientAttributes());
+
+      // THEN
+      expect(clientAttributes.attributes()).toStrictEqual([]);
+    });
+
+    test('create ClientAttributes with all standard attributes', () => {
+      // GIVEN
+      const customAttributes = ['custom:my_attribute'];
+
+      // WHEN
+      const clientAttributes = (new ClientAttributes()).withStandardAttributes({
+        address: true,
+        birthdate: true,
+        email: true,
+        emailVerified: true,
+        familyName: true,
+        fullname: true,
+        gender: true,
+        givenName: true,
+        lastUpdateTime: true,
+        locale: true,
+        middleName: true,
+        nickname: true,
+        phoneNumber: true,
+        phoneNumberVerified: true,
+        preferredUsername: true,
+        profilePage: true,
+        profilePicture: true,
+        timezone: true,
+        website: true,
+      }).withCustomAttributes(...customAttributes);
+      const attributes = clientAttributes.attributes();
+
+      // THEN
+      expect(attributes.length).toEqual(20);
+      expect(attributes).toContain('preferred_username');
+      expect(attributes).toContain('email_verified');
+      expect(attributes).toContain('phone_number_verified');
+      expect(attributes).toContain('custom:my_attribute');
+    });
+
+    test('create ClientAttributes copying another one', () => {
+      // GIVEN
+      const original = (new ClientAttributes())
+        .withStandardAttributes({ email: true })
+        .withCustomAttributes('custom1');
+      const copied = original
+        .withStandardAttributes({ emailVerified: true })
+        .withCustomAttributes('custom2');
+
+      // WHEN
+      const originalAttributes = original.attributes();
+      const copiedAttributes = copied.attributes();
+
+      // THEN
+      expect(originalAttributes.length).toEqual(2);
+      expect(copiedAttributes.length).toEqual(4);
+      // originals MUST NOT contain the added ones
+      expect(originalAttributes).toContain('email');
+      expect(originalAttributes).toContain('custom:custom1');
+      expect(originalAttributes).not.toContain('email_verified');
+      expect(originalAttributes).not.toContain('custom:custom2');
+      // copied MUST contain all attributes
+      expect(copiedAttributes).toContain('email');
+      expect(copiedAttributes).toContain('custom:custom1');
+      expect(copiedAttributes).toContain('email_verified');
+      expect(copiedAttributes).toContain('custom:custom2');
+    });
+
+    test('create ClientAttributes with custom attributes only', () => {
+      // GIVEN
+      const customAttributes = ['custom:my_first', 'my_second'];
+
+      // WHEN
+      const clientAttributes = (new ClientAttributes()).withCustomAttributes(...customAttributes);
+      const attributes = clientAttributes.attributes();
+
+      // EXPECT
+      expect(attributes.length).toEqual(2);
+      expect(attributes).toContain('custom:my_first');
+      expect(attributes).toContain('custom:my_second');
+    });
+
+    test('create ClientAttributes with all StandardAttributeNames', () => {
+      // this test is intended to check if changes in the `StandardAttributeNames` constant
+      // does not reflect as changes in the `StandardAttributesMask`
+      // GIVEN
+      let allStandardAttributes = {} as any;
+      let standardAttributeNamesCount = 0; // the count of StandardAttributeNames
+      // iterate through the standard attribute names
+      for (const attributeKey in StandardAttributeNames) {
+        standardAttributeNamesCount += 1;
+        expect(StandardAttributeNames).toHaveProperty(attributeKey);
+        // add the standard attribute
+        allStandardAttributes[attributeKey] = true;
+      }
+
+      // WHEN
+      const attributes = (new ClientAttributes()).withStandardAttributes(allStandardAttributes).attributes();
+
+      // EXPECT
+      expect(attributes.length).toEqual(standardAttributeNamesCount);
     });
   });
 });
