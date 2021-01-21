@@ -62,6 +62,11 @@
         "PreventUserExistenceErrors": "ENABLED",
         "SupportedIdentityProviders": [
           "COGNITO"
+        ],
+        "WriteAttributes": [
+          "address", "birthdate", "custom:attribute_one", "custom:attribute_two", "email",
+          "family_name", "gender", "given_name", "locale", "middle_name", "name", "nickname", "phone_number",
+          "picture", "preferred_username", "profile", "updated_at", "website", "zoneinfo"
         ]
       }
     }
