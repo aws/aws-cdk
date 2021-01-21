@@ -547,7 +547,9 @@ export = {
 
       test.done();
     },
+  },
 
+  'repository name validations': {
     'valid repository names'(test: Test) {
       const stack = new cdk.Stack();
 
