@@ -1,5 +1,4 @@
 import * as path from 'path';
-import * as cfn from '@aws-cdk/aws-cloudformation';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as logs from '@aws-cdk/aws-logs';
@@ -94,7 +93,7 @@ export interface ProviderProps {
 /**
  * Defines an AWS CloudFormation custom resource provider.
  */
-export class Provider extends Construct implements cfn.ICustomResourceProvider {
+export class Provider extends Construct {
 
   /**
    * The user-defined AWS Lambda function which is invoked for all resource
@@ -156,16 +155,6 @@ export class Provider extends Construct implements cfn.ICustomResourceProvider {
 
     this.entrypoint = onEventFunction;
     this.serviceToken = this.entrypoint.functionArn;
-  }
-
-  /**
-   * Called by `CustomResource` which uses this provider.
-   * @deprecated use `provider.serviceToken` instead
-   */
-  public bind(_: Construct): cfn.CustomResourceProviderConfig {
-    return {
-      serviceToken: this.entrypoint.functionArn,
-    };
   }
 
   private createFunction(entrypoint: string) {
