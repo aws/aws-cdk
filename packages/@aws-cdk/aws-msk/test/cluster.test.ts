@@ -92,7 +92,7 @@ describe('MSK Cluster', () => {
           },
           clientAuthentication: msk.ClientAuthentication.tls({
             certificateAuthorityArns: [
-              'arn:aws:acm-pca:us-west-2:1234567890:certificate-authority/11111111-1111-1111-1111-111111111111'
+              'arn:aws:acm-pca:us-west-2:1234567890:certificate-authority/11111111-1111-1111-1111-111111111111',
             ],
           }),
         });
@@ -408,15 +408,12 @@ describe('MSK Cluster', () => {
       expect(cluster.clusterName).toEqual('a-cluster');
     });
 
-    test('cluster name is set', () => {
+    test('cluster arn is set', () => {
       expect(cluster.clusterArn).toEqual(clusterArn);
     });
   });
 
   test('Snapshot test with all values set', () => {
-    const stack = testStack();
-    const vpc = ec2.Vpc.fromLookup(stack, 'vpc', { isDefault: true });
-
     const cluster = new msk.Cluster(stack, 'kafka', {
       clusterName: 'test-cluster',
       kafkaVersion: msk.KafkaVersion.of('2.4.1'),
@@ -438,7 +435,7 @@ describe('MSK Cluster', () => {
       },
       clientAuthentication: msk.ClientAuthentication.tls({
         certificateAuthorityArns: [
-          "arn:aws:acm-pca:us-west-2:1234567890:certificate-authority/11111111-1111-1111-1111-111111111111",
+          'arn:aws:acm-pca:us-west-2:1234567890:certificate-authority/11111111-1111-1111-1111-111111111111',
         ],
       }),
       monitoring: {

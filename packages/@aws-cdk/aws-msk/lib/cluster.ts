@@ -359,7 +359,7 @@ export class ClientAuthentication {
    */
   private constructor(
     public readonly saslProps?: SaslAuthProps,
-    public readonly tlsProps?: TlsAuthProps
+    public readonly tlsProps?: TlsAuthProps,
   ) {}
 }
 
@@ -422,7 +422,7 @@ export class Cluster extends ClusterBase {
     ) {
       core.Annotations.of(this).addError(
         'The cluster name must only contain alphanumeric characters and have a maximum length of 64 characters.' +
-          `got: '${props.clusterName}. length: ${props.clusterName.length}'`
+          `got: '${props.clusterName}. length: ${props.clusterName.length}'`,
       );
     }
 
@@ -476,8 +476,8 @@ export class Cluster extends ClusterBase {
     const openMonitoring =
       props.monitoring?.enablePrometheusJmxExporter ||
       props.monitoring?.enablePrometheusNodeExporter
-      ? {
-        prometheus: {
+        ? {
+          prometheus: {
             jmxExporter: props.monitoring?.enablePrometheusJmxExporter
               ? { enabledInBroker: true }
               : undefined,
@@ -548,16 +548,16 @@ export class Cluster extends ClusterBase {
     }
     const clientAuthentication = props.clientAuthentication
       ? {
-          sasl: props.clientAuthentication?.saslProps?.scram
-            ? {
-                scram: {
-                  enabled: props.clientAuthentication?.saslProps.scram,
-                },
-              }
-            : undefined,
-          tls: props.clientAuthentication?.tlsProps?.certificateAuthorityArns
-            ? {
-                certificateAuthorityArnList:
+        sasl: props.clientAuthentication?.saslProps?.scram
+          ? {
+            scram: {
+              enabled: props.clientAuthentication?.saslProps.scram,
+            },
+          }
+          : undefined,
+        tls: props.clientAuthentication?.tlsProps?.certificateAuthorityArns
+          ? {
+            certificateAuthorityArnList:
                   props.clientAuthentication?.tlsProps
                     ?.certificateAuthorityArns,
           }
@@ -627,7 +627,7 @@ export class Cluster extends ClusterBase {
               ClusterArn: this.clusterArn,
             },
             physicalResourceId: cr.PhysicalResourceId.of(
-              'ZooKeeperConnectionString'
+              'ZooKeeperConnectionString',
             ),
           },
           policy: cr.AwsCustomResourcePolicy.fromSdkCalls({
