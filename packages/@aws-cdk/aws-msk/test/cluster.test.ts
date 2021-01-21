@@ -467,14 +467,3 @@ describe('MSK Cluster', () => {
   });
 });
 
-function testStack() {
-  const stack = new core.Stack(undefined, undefined, {
-    env: { account: '1234567890', region: 'us-west-2' },
-  });
-
-  stack.node.setContext('availability-zones:1234567890:us-west-2', [
-    'us-west-2a',
-    'us-west-2b',
-  ]);
-  return stack;
-}
