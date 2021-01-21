@@ -55,3 +55,15 @@ export function withFeatureFlag<T>(
   const app = new cdkApp({ context: flags });
   return test(name, () => fn(app));
 }
+
+/**
+ * Same as withFeatureFlag() but used for test cases that verify behaviour
+ * when the feature flag is disabled.
+ */
+export function withFeatureFlagDisabled<T>(
+  name: string,
+  cdkApp: new (flags: Flags) => T,
+  fn: (app: T) => void,
+  repoRoot: string = path.join(process.cwd(), '..', '..', '..')) {
+  return withFeatureFlag(name, undefined, cdkApp, fn, repoRoot);
+}
