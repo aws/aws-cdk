@@ -18,8 +18,6 @@
       "dotnet": {
         "namespace": "Amazon.CDK.AWS.ApplicationAutoScaling",
         "packageId": "Amazon.CDK.AWS.ApplicationAutoScaling",
-        "signAssembly": true,
-        "assemblyOriginatorKeyFile": "../../key.snk",
         "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
       },
       "python": {

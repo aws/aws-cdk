@@ -18,8 +18,6 @@
       "dotnet": {
         "namespace": "Amazon.CDK.AWS.S3.Deployment",
         "packageId": "Amazon.CDK.AWS.S3.Deployment",
-        "signAssembly": true,
-        "assemblyOriginatorKeyFile": "../../key.snk",
         "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
       },
       "python": {

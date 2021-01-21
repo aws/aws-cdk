@@ -11,8 +11,6 @@
       "dotnet": {
         "namespace": "Amazon.CDK.AWS.AppConfig",
         "packageId": "Amazon.CDK.AWS.AppConfig",
-        "signAssembly": true,
-        "assemblyOriginatorKeyFile": "../../key.snk",
         "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
       },
       "java": {
