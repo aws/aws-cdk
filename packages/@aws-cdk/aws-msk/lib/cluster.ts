@@ -52,10 +52,6 @@ abstract class ClusterBase extends core.Resource implements ICluster {
  */
 export interface ClusterProps {
   /**
-   * Properties to be used for brokers in the cluster.
-   */
-  readonly brokerNodeGroupProps: BrokerNodeGroupProps;
-  /**
    * The physical name of the cluster.
    */
   readonly clusterName: string;
@@ -71,6 +67,40 @@ export interface ClusterProps {
    * @default 1
    */
   readonly numberOfBrokerNodes?: number;
+  /**
+   * Defines the virtual networking environment for this cluster.
+   * Must have at least 2 subnets in two different AZs.
+   */
+  readonly vpc: ec2.IVpc;
+  /**
+   * Where to place the nodes within the VPC.
+   * Amazon MSK distributes the broker nodes evenly across the subnets that you specify.
+   * The subnets that you specify must be in distinct Availability Zones.
+   * Client subnets can't be in Availability Zone us-east-1e.
+   *
+   * @default - the Vpc default strategy if not specified.
+   */
+  readonly vpcSubnets?: ec2.SubnetSelection;
+  /**
+   * The EC2 instance type that you want Amazon MSK to use when it creates your brokers.
+   *
+   * @see https://docs.aws.amazon.com/msk/latest/developerguide/msk-create-cluster.html#broker-instance-types
+   * @default kafka.m5.large
+   */
+  readonly instanceType?: ec2.InstanceType;
+  /**
+   * The AWS security groups to associate with the elastic network interfaces in order to specify who can
+   * connect to and communicate with the Amazon MSK cluster.
+   *
+   * @default - create new security group
+   */
+  readonly securityGroups?: ec2.ISecurityGroup[];
+  /**
+   * Information about storage volumes attached to MSK broker nodes.
+   *
+   * @default - 1000 GiB EBS volume
+   */
+  readonly ebsStorageInfo?: EbsStorageInfo;
   /**
    * The Amazon MSK configuration to use for the cluster.
    *
@@ -108,46 +138,6 @@ export interface ClusterProps {
    * @default RemovalPolicy.RETAIN
    */
   readonly removalPolicy?: core.RemovalPolicy;
-}
-
-/**
- * Properties to be used for brokers in the cluster.
- */
-export interface BrokerNodeGroupProps {
-  /**
-   * Defines the virtual networking environment for this cluster.
-   * Must have at least 2 subnets in two different AZs.
-   */
-  readonly vpc: ec2.IVpc;
-  /**
-   * Where to place the nodes within the VPC.
-   * Amazon MSK distributes the broker nodes evenly across the subnets that you specify.
-   * The subnets that you specify must be in distinct Availability Zones.
-   * Client subnets can't be in Availability Zone us-east-1e.
-   *
-   * @default - the Vpc default strategy if not specified.
-   */
-  readonly vpcSubnets?: ec2.SubnetSelection;
-  /**
-   * The EC2 instance type that you want Amazon MSK to use when it creates your brokers.
-   *
-   * @see https://docs.aws.amazon.com/msk/latest/developerguide/msk-create-cluster.html#broker-instance-types
-   * @default kafka.m5.large
-   */
-  readonly instanceType?: ec2.InstanceType;
-  /**
-   * The AWS security groups to associate with the elastic network interfaces in order to specify who can
-   * connect to and communicate with the Amazon MSK cluster.
-   *
-   * @default - create new security group
-   */
-  readonly securityGroups?: ec2.ISecurityGroup[];
-  /**
-   * Information about storage volumes attached to MSK broker nodes.
-   *
-   * @default - 1000 GiB EBS volume
-   */
-  readonly ebsStorageInfo?: EbsStorageInfo;
 }
 
 /**
@@ -408,15 +398,13 @@ export class Cluster extends ClusterBase {
       physicalName: props.clusterName,
     });
 
-    const brokerNodeGroupProps = props.brokerNodeGroupProps;
-
-    const subnetSelection = brokerNodeGroupProps.vpc.selectSubnets(brokerNodeGroupProps.vpcSubnets);
+    const subnetSelection = props.vpc.selectSubnets(props.vpcSubnets);
 
     this._connections = new ec2.Connections({
-      securityGroups: brokerNodeGroupProps.securityGroups ?? [
+      securityGroups: props.securityGroups ?? [
         new ec2.SecurityGroup(this, 'SecurityGroup', {
           description: 'MSK security group',
-          vpc: brokerNodeGroupProps.vpc,
+          vpc: props.vpc,
         }),
       ],
     });
@@ -457,7 +445,7 @@ export class Cluster extends ClusterBase {
     }
 
     const volumeSize =
-      brokerNodeGroupProps.ebsStorageInfo?.volumeSize ?? 1000;
+      props.ebsStorageInfo?.volumeSize ?? 1000;
     // Minimum: 1 GiB, maximum: 16384 GiB
     if (volumeSize < 1 || volumeSize > 16384) {
       core.Annotations.of(this).addError(
@@ -465,16 +453,16 @@ export class Cluster extends ClusterBase {
       );
     }
 
-    const instanceType = brokerNodeGroupProps.instanceType
-      ? this.mskInstanceType(brokerNodeGroupProps.instanceType)
+    const instanceType = props.instanceType
+      ? this.mskInstanceType(props.instanceType)
       : this.mskInstanceType(
         ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.LARGE),
       );
 
-    const encryptionAtRest = brokerNodeGroupProps.ebsStorageInfo?.encryptionKey
+    const encryptionAtRest = props.ebsStorageInfo?.encryptionKey
       ? {
         dataVolumeKmsKeyId:
-            brokerNodeGroupProps.ebsStorageInfo.encryptionKey.keyId,
+            props.ebsStorageInfo.encryptionKey.keyId,
       }
       : undefined; // MSK will create the managed key
 

@@ -9,7 +9,7 @@ const vpc = new ec2.Vpc(stack, 'VPC', { maxAzs: 2 });
 
 const cluster = new msk.Cluster(stack, 'Cluster', {
   clusterName: 'integ-test',
-  brokerNodeGroupProps: { vpc },
+  vpc
 });
 
 cluster.connections.allowToAnyIpv4(

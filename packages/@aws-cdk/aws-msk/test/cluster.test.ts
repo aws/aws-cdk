@@ -22,9 +22,7 @@ describe('MSK Cluster', () => {
     beforeEach(() => {
       new msk.Cluster(stack, 'Cluster', {
         clusterName: 'cluster',
-        brokerNodeGroupProps: {
-          vpc,
-        },
+        vpc,
       });
     });
 
@@ -88,9 +86,7 @@ describe('MSK Cluster', () => {
       test('fails if client broker encryption is set to plaintext', () => {
         new msk.Cluster(stack, 'Cluster', {
           clusterName: 'cluster',
-          brokerNodeGroupProps: {
-            vpc,
-          },
+          vpc,
           encryptionInTransit: {
             clientBroker: msk.ClientBrokerEncryption.PLAINTEXT,
           },
@@ -113,9 +109,7 @@ describe('MSK Cluster', () => {
       test('fails if tls encryption is set to plaintext', () => {
         new msk.Cluster(stack, 'Cluster', {
           clusterName: 'cluster',
-          brokerNodeGroupProps: {
-            vpc,
-          },
+          vpc,
           encryptionInTransit: {
             clientBroker: msk.ClientBrokerEncryption.PLAINTEXT,
           },
@@ -133,9 +127,7 @@ describe('MSK Cluster', () => {
       test('fails if tls encryption is set to tls and plaintext', () => {
         new msk.Cluster(stack, 'Cluster', {
           clusterName: 'cluster',
-          brokerNodeGroupProps: {
-            vpc,
-          },
+          vpc,
           encryptionInTransit: {
             clientBroker: msk.ClientBrokerEncryption.TLS_PLAINTEXT,
           },
@@ -155,9 +147,7 @@ describe('MSK Cluster', () => {
       beforeEach(() => {
         new msk.Cluster(stack, 'Cluster', {
           clusterName: 'cluster',
-          brokerNodeGroupProps: {
-            vpc,
-          },
+          vpc,
           encryptionInTransit: {
             clientBroker: msk.ClientBrokerEncryption.TLS,
           },
@@ -259,13 +249,11 @@ describe('MSK Cluster', () => {
     test('prefixes instance type with "kafka"', () => {
       new msk.Cluster(stack, 'Cluster', {
         clusterName: 'cluster',
-        brokerNodeGroupProps: {
-          vpc,
-          instanceType: ec2.InstanceType.of(
-            ec2.InstanceClass.M5,
-            ec2.InstanceSize.XLARGE,
-          ),
-        },
+        vpc,
+        instanceType: ec2.InstanceType.of(
+          ec2.InstanceClass.M5,
+          ec2.InstanceSize.XLARGE,
+        ),
       });
 
       expect(stack).toHaveResourceLike('AWS::MSK::Cluster', {
@@ -277,13 +265,11 @@ describe('MSK Cluster', () => {
   test('prefixes instance type with "kafka"', () => {
     new msk.Cluster(stack, 'Cluster', {
       clusterName: 'cluster',
-      brokerNodeGroupProps: {
-        vpc,
-        instanceType: ec2.InstanceType.of(
-          ec2.InstanceClass.M5,
-          ec2.InstanceSize.XLARGE,
-        ),
-      },
+      vpc,
+      instanceType: ec2.InstanceType.of(
+        ec2.InstanceClass.M5,
+        ec2.InstanceSize.XLARGE,
+      ),
     });
 
     expect(stack).toHaveResourceLike('AWS::MSK::Cluster', {
@@ -295,9 +281,7 @@ describe('MSK Cluster', () => {
     test('log group is set', () => {
       new msk.Cluster(stack, 'Cluster', {
         clusterName: 'cluster',
-        brokerNodeGroupProps: {
-          vpc,
-        },
+        vpc,
         logging: {
           cloudwatchLogGroup: new logs.LogGroup(stack, 'LogGroup'),
         },
@@ -320,9 +304,7 @@ describe('MSK Cluster', () => {
     test('s3 bucket is set', () => {
       new msk.Cluster(stack, 'Cluster', {
         clusterName: 'cluster',
-        brokerNodeGroupProps: {
-          vpc,
-        },
+        vpc,
         logging: {
           s3: { bucket: new s3.Bucket(stack, 'Bucket') },
         },
@@ -345,9 +327,7 @@ describe('MSK Cluster', () => {
     test('firehose delivery stream is set', () => {
       new msk.Cluster(stack, 'Cluster', {
         clusterName: 'cluster',
-        brokerNodeGroupProps: {
-          vpc,
-        },
+        vpc,
         logging: {
           firehoseDeliveryStreamArn:
             'arn:aws:firehose:us-west-2:111111111111:deliverystream/a-stream',
@@ -372,10 +352,8 @@ describe('MSK Cluster', () => {
     test('exceeds max', () => {
       new msk.Cluster(stack, 'Cluster', {
         clusterName: 'cluster',
-        brokerNodeGroupProps: {
-          vpc,
-          ebsStorageInfo: { volumeSize: 16385 },
-        },
+        vpc,
+        ebsStorageInfo: { volumeSize: 16385 },
       });
 
       const synthedStack = SynthUtils.synthesize(stack);
@@ -388,10 +366,8 @@ describe('MSK Cluster', () => {
     test('below minimum', () => {
       new msk.Cluster(stack, 'Cluster', {
         clusterName: 'cluster',
-        brokerNodeGroupProps: {
-          vpc,
-          ebsStorageInfo: { volumeSize: 0 },
-        },
+        vpc,
+        ebsStorageInfo: { volumeSize: 0 },
       });
 
       const synthedStack = SynthUtils.synthesize(stack);
@@ -405,10 +381,8 @@ describe('MSK Cluster', () => {
   test('create an encrypted cluster with a custom KMS key', () => {
     new msk.Cluster(stack, 'Cluster', {
       clusterName: 'cluster',
-      brokerNodeGroupProps: {
-        vpc,
-        ebsStorageInfo: { encryptionKey: new kms.Key(stack, 'Key') },
-      },
+      vpc,
+      ebsStorageInfo: { encryptionKey: new kms.Key(stack, 'Key') },
     });
 
     expect(stack).toHaveResourceLike('AWS::MSK::Cluster', {
@@ -446,20 +420,18 @@ describe('MSK Cluster', () => {
     const cluster = new msk.Cluster(stack, 'kafka', {
       clusterName: 'test-cluster',
       kafkaVersion: msk.KafkaVersion.of('2.4.1'),
-      brokerNodeGroupProps: {
-        vpc,
-        securityGroups: [
-          ec2.SecurityGroup.fromSecurityGroupId(stack, 'sg1', 'sg-123'),
-          ec2.SecurityGroup.fromSecurityGroupId(stack, 'sg2', 'sg-456'),
-        ],
-        ebsStorageInfo: {
-          volumeSize: 100,
-          encryptionKey: kms.Key.fromKeyArn(
-            stack,
-            'kms',
-            'arn:aws:kms:us-east-1:111122223333:key/1234abc',
-          ),
-        },
+      vpc,
+      securityGroups: [
+        ec2.SecurityGroup.fromSecurityGroupId(stack, 'sg1', 'sg-123'),
+        ec2.SecurityGroup.fromSecurityGroupId(stack, 'sg2', 'sg-456'),
+      ],
+      ebsStorageInfo: {
+        volumeSize: 100,
+        encryptionKey: kms.Key.fromKeyArn(
+          stack,
+          'kms',
+          'arn:aws:kms:us-east-1:111122223333:key/1234abc',
+        ),
       },
       encryptionInTransit: {
         clientBroker: msk.ClientBrokerEncryption.TLS,
