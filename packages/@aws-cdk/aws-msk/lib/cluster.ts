@@ -147,18 +147,6 @@ export interface BrokerNodeGroupProps {
    *
    * @default - 1000 GiB EBS volume
    */
-  readonly storageInfo?: StorageInfo;
-}
-
-/**
- * Information about storage volumes attached to MSK broker nodes.
- */
-export interface StorageInfo {
-  /**
-   * EBS volume information.
-   *
-   * @default - 1000 GiB volume size
-   */
   readonly ebsStorageInfo?: EbsStorageInfo;
 }
 
@@ -469,7 +457,7 @@ export class Cluster extends ClusterBase {
     }
 
     const volumeSize =
-      brokerNodeGroupProps.storageInfo?.ebsStorageInfo?.volumeSize ?? 1000;
+      brokerNodeGroupProps.ebsStorageInfo?.volumeSize ?? 1000;
     // Minimum: 1 GiB, maximum: 16384 GiB
     if (volumeSize < 1 || volumeSize > 16384) {
       core.Annotations.of(this).addError(
@@ -483,11 +471,10 @@ export class Cluster extends ClusterBase {
         ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.LARGE),
       );
 
-    const encryptionAtRest = brokerNodeGroupProps.storageInfo?.ebsStorageInfo
-      ?.encryptionKey
+    const encryptionAtRest = brokerNodeGroupProps.ebsStorageInfo?.encryptionKey
       ? {
         dataVolumeKmsKeyId:
-            brokerNodeGroupProps.storageInfo.ebsStorageInfo.encryptionKey.keyId,
+            brokerNodeGroupProps.ebsStorageInfo.encryptionKey.keyId,
       }
       : undefined; // MSK will create the managed key
 

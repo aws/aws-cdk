@@ -374,7 +374,7 @@ describe('MSK Cluster', () => {
         clusterName: 'cluster',
         brokerNodeGroupProps: {
           vpc,
-          storageInfo: { ebsStorageInfo: { volumeSize: 16385 } },
+          ebsStorageInfo: { volumeSize: 16385 },
         },
       });
 
@@ -390,7 +390,7 @@ describe('MSK Cluster', () => {
         clusterName: 'cluster',
         brokerNodeGroupProps: {
           vpc,
-          storageInfo: { ebsStorageInfo: { volumeSize: 0 } },
+          ebsStorageInfo: { volumeSize: 0 },
         },
       });
 
@@ -407,7 +407,7 @@ describe('MSK Cluster', () => {
       clusterName: 'cluster',
       brokerNodeGroupProps: {
         vpc,
-        storageInfo: { ebsStorageInfo: { encryptionKey: new kms.Key(stack, 'Key') } },
+        ebsStorageInfo: { encryptionKey: new kms.Key(stack, 'Key') },
       },
     });
 
@@ -452,15 +452,13 @@ describe('MSK Cluster', () => {
           ec2.SecurityGroup.fromSecurityGroupId(stack, 'sg1', 'sg-123'),
           ec2.SecurityGroup.fromSecurityGroupId(stack, 'sg2', 'sg-456'),
         ],
-        storageInfo: {
-          ebsStorageInfo: {
-            volumeSize: 100,
-            encryptionKey: kms.Key.fromKeyArn(
-              stack,
-              'kms',
-              'arn:aws:kms:us-east-1:111122223333:key/1234abc',
-            ),
-          },
+        ebsStorageInfo: {
+          volumeSize: 100,
+          encryptionKey: kms.Key.fromKeyArn(
+            stack,
+            'kms',
+            'arn:aws:kms:us-east-1:111122223333:key/1234abc',
+          ),
         },
       },
       encryptionInTransit: {
