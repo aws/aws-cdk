@@ -79,10 +79,8 @@ export interface DeployStackOptions {
 
   /**
    * Information about the bootstrap stack found in the target environment
-   *
-   * @default - Assume there is no bootstrap stack
    */
-  toolkitInfo?: ToolkitInfo;
+  toolkitInfo: ToolkitInfo;
 
   /**
    * Role to pass to CloudFormation to execute the change set
@@ -313,7 +311,7 @@ async function makeBodyParameter(
   stack: cxapi.CloudFormationStackArtifact,
   resolvedEnvironment: cxapi.Environment,
   assetManifest: AssetManifestBuilder,
-  toolkitInfo?: ToolkitInfo): Promise<TemplateBodyParameter> {
+  toolkitInfo: ToolkitInfo): Promise<TemplateBodyParameter> {
 
   // If the template has already been uploaded to S3, just use it from there.
   if (stack.stackTemplateAssetObjectUrl) {
@@ -327,7 +325,7 @@ async function makeBodyParameter(
     return { TemplateBody: templateJson };
   }
 
-  if (!toolkitInfo) {
+  if (!toolkitInfo.found) {
     error(
       `The template for stack "${stack.displayName}" is ${Math.round(templateJson.length / 1024)}KiB. ` +
       `Templates larger than ${LARGE_TEMPLATE_SIZE_KB}KiB must be uploaded to S3.\n` +
