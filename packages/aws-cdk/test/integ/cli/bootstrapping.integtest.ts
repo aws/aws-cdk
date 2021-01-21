@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { randomString, withDefaultFixture } from './cdk-helpers';
-import { integTest } from './test-helpers';
+import { randomString, withDefaultFixture } from '../helpers/cdk';
+import { integTest } from '../helpers/test-helpers';
 
 jest.setTimeout(600_000);
 
@@ -54,6 +54,27 @@ integTest('upgrade legacy bootstrap stack to new bootstrap stack while in use', 
     options: [
       '--toolkit-stack-name', bootstrapStackName,
       '--force',
+    ],
+  });
+}));
+
+integTest('can and deploy if omitting execution policies', withDefaultFixture(async (fixture) => {
+  const bootstrapStackName = fixture.fullStackName('bootstrap-stack');
+
+  await fixture.cdk(['bootstrap',
+    '--toolkit-stack-name', bootstrapStackName,
+    '--qualifier', fixture.qualifier], {
+    modEnv: {
+      CDK_NEW_BOOTSTRAP: '1',
+    },
+  });
+
+  // Deploy stack that uses file assets
+  await fixture.cdkDeploy('lambda', {
+    options: [
+      '--toolkit-stack-name', bootstrapStackName,
+      '--context', `@aws-cdk/core:bootstrapQualifier=${fixture.qualifier}`,
+      '--context', '@aws-cdk/core:newStyleStackSynthesis=1',
     ],
   });
 }));

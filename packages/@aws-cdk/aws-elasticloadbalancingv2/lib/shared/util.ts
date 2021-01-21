@@ -1,3 +1,4 @@
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { ApplicationProtocol, Protocol } from './enums';
 
 export type Attributes = {[key: string]: string | undefined};
@@ -79,4 +80,13 @@ export function validateNetworkProtocol(protocol: Protocol) {
   if (NLB_PROTOCOLS.indexOf(protocol) === -1) {
     throw new Error(`The protocol must be one of ${NLB_PROTOCOLS.join(', ')}. Found ${protocol}`);
   }
+}
+
+/**
+ * Helper to map a map of tags to cxschema tag format.
+ * @internal
+ */
+export function mapTagMapToCxschema(tagMap: Record<string, string>): cxschema.Tag[] {
+  return Object.entries(tagMap)
+    .map(([key, value]) => ({ key, value }));
 }

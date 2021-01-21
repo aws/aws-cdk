@@ -106,7 +106,7 @@ export interface LayerVersionPermission {
   readonly accountId: string;
 
   /**
-   * The ID of the AWS Organization to hwich the grant is restricted.
+   * The ID of the AWS Organization to which the grant is restricted.
    *
    * Can only be specified if ``accountId`` is ``'*'``
    */

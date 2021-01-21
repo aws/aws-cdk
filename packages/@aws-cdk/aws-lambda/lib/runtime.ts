@@ -163,6 +163,11 @@ export class Runtime {
   public static readonly PROVIDED_AL2 = new Runtime('provided.al2', RuntimeFamily.OTHER);
 
   /**
+   * A special runtime entry to be used when function is using a docker image.
+   */
+  public static readonly FROM_IMAGE = new Runtime('FROM_IMAGE');
+
+  /**
    * The name of this runtime, as expected by the Lambda resource.
    */
   public readonly name: string;

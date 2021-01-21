@@ -137,6 +137,7 @@ export class ReportGroup extends ReportGroupBase {
           }
           : undefined,
       },
+      name: props.reportGroupName,
     });
     resource.applyRemovalPolicy(props.removalPolicy, {
       default: cdk.RemovalPolicy.RETAIN,

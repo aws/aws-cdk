@@ -183,6 +183,9 @@ export = {
       maxHealthyPercent: 150,
       serviceName: 'ecs-test-service',
       family: 'ecs-task-family',
+      deploymentController: {
+        type: ecs.DeploymentControllerType.CODE_DEPLOY,
+      },
     });
 
     // THEN - QueueWorker is of EC2 launch type, an SQS queue is created and all optional properties are set.
@@ -194,6 +197,9 @@ export = {
       },
       LaunchType: 'EC2',
       ServiceName: 'ecs-test-service',
+      DeploymentController: {
+        Type: 'CODE_DEPLOY',
+      },
     }));
 
     expect(stack).to(haveResource('AWS::SQS::Queue', {
@@ -278,6 +284,33 @@ export = {
         image: ecs.ContainerImage.fromRegistry('test'),
       })
     , /maxScalingCapacity must be set and greater than 0 if desiredCount is 0/);
+
+    test.done();
+  },
+
+  'can set custom containerName'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+    cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+
+    // WHEN
+    new ecsPatterns.QueueProcessingEc2Service(stack, 'Service', {
+      cluster,
+      memoryLimitMiB: 512,
+      image: ecs.ContainerImage.fromRegistry('test'),
+      containerName: 'my-container',
+    });
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
+      ContainerDefinitions: [
+        {
+          Name: 'my-container',
+        },
+      ],
+    }));
 
     test.done();
   },
