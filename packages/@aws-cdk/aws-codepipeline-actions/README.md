@@ -157,7 +157,7 @@ CodePipeline can use a BitBucket Git repository as a source:
 **Note**: you have to manually connect CodePipeline through the AWS Console with your BitBucket account.
 This is a one-time operation for a given AWS account in a given region.
 The simplest way to do that is to either start creating a new CodePipeline,
-or edit na existing one, while being logged in to BitBucket.
+or edit an existing one, while being logged in to BitBucket.
 Choose BitBucket as the source,
 and grant CodePipeline permissions to your BitBucket account.
 Copy & paste the Connection ARN that you get in the console,

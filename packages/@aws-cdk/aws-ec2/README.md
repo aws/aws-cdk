@@ -382,9 +382,44 @@ otherwise. Subnet names will be determined from the `aws-cdk:subnet-name` tag
 on the subnet if it exists, or will mirror the subnet type otherwise (i.e.
 a public subnet will have the name `"Public"`).
 
+The result of the `Vpc.fromLookup()` operation will be written to a file
+called `cdk.context.json`. You must commit this file to source control so
+that the lookup values are available in non-privileged environments such
+as CI build steps, and to ensure your template builds are repeatable.
+
 Here's how `Vpc.fromLookup()` can be used:
 
 [importing existing VPCs](test/integ.import-default-vpc.lit.ts)
+
+`Vpc.fromLookup` is the recommended way to import VPCs. If for whatever
+reason you do not want to use the context mechanism to look up a VPC at
+synthesis time, you can also use `Vpc.fromVpcAttributes`. This has the
+following limitations:
+
+* Every subnet group in the VPC must have a subnet in each availability zone
+  (for example, each AZ must have both a public and private subnet). Asymmetric
+  VPCs are not supported.
+* All VpcId, SubnetId, RouteTableId, ... parameters must either be known at
+  synthesis time, or they must come from deploy-time list parameters whose
+  deploy-time lengths are known at synthesis time.
+
+Using `Vpc.fromVpcAttributes()` looks like this:
+
+```ts
+const vpc = ec2.Vpc.fromVpcAttributes(stack, 'VPC', {
+  vpcId: 'vpc-1234',
+  availabilityZones: ['us-east-1a', 'us-east-1b'],
+
+  // Either pass literals for all IDs
+  publicSubnetIds: ['s-12345', 's-67890'],
+
+  // OR: import a list of known length
+  privateSubnetIds: Fn.importListValue('PrivateSubnetIds', 2),
+
+  // OR: split an imported string to a list of known length
+  isolatedSubnetIds: Fn.split(',', ssm.StringParameter.valueForStringParameter(stack, `MyParameter`), 2),
+});
+```
 
 ## Allowing Connections
 
