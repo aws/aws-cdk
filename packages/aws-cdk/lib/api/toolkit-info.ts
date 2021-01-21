@@ -1,6 +1,6 @@
 import * as cxapi from '@aws-cdk/cx-api';
 import * as colors from 'colors/safe';
-import { debug } from '../logging';
+import { debug, warning } from '../logging';
 import { ISDK } from './aws-auth';
 import { BOOTSTRAP_VERSION_OUTPUT, BUCKET_DOMAIN_NAME_OUTPUT, BUCKET_NAME_OUTPUT } from './bootstrap';
 import { stabilizeStack, CloudFormationStack } from './util/cloudformation';
@@ -8,37 +8,119 @@ import { stabilizeStack, CloudFormationStack } from './util/cloudformation';
 export const DEFAULT_TOOLKIT_STACK_NAME = 'CDKToolkit';
 
 /**
- * Information on the Bootstrap stack
+ * The bootstrap template version that introduced ssm:GetParameter
+ */
+const BOOTSTRAP_TEMPLATE_VERSION_INTRODUCING_GETPARAMETER = 5;
+
+/**
+ * Information on the Bootstrap stack of the environment we're deploying to.
+ *
+ * This class serves to:
+ *
+ * - Inspect the bootstrap stack, and return various properties of it for successful
+ *   asset deployment (in case of legacy-synthesized stacks).
+ * - Validate the version of the target environment, and nothing else (in case of
+ *   default-synthesized stacks).
+ *
+ * An object of this type might represent a bootstrap stack that could not be found.
+ * This is not an issue unless any members are used that require the bootstrap stack
+ * to have been found, in which case an error is thrown (default-synthesized stacks
+ * should never run into this as they don't need information from the bootstrap
+ * stack, all information is already encoded into the Cloud Assembly Manifest).
+ *
+ * Nevertheless, an instance of this class exists to serve as a cache for SSM
+ * parameter lookups (otherwise, the "bootstrap stack version" parameter would
+ * need to be read repeatedly).
  *
  * Called "ToolkitInfo" for historical reasons.
  *
  * @experimental
  */
-export class ToolkitInfo {
+export abstract class ToolkitInfo {
   public static determineName(overrideName?: string) {
     return overrideName ?? DEFAULT_TOOLKIT_STACK_NAME;
   }
 
   /** @experimental */
-  public static async lookup(environment: cxapi.Environment, sdk: ISDK, stackName: string | undefined): Promise<ToolkitInfo | undefined> {
+  public static async lookup(environment: cxapi.Environment, sdk: ISDK, stackName: string | undefined): Promise<ToolkitInfo> {
     const cfn = sdk.cloudFormation();
     const stack = await stabilizeStack(cfn, stackName ?? DEFAULT_TOOLKIT_STACK_NAME);
     if (!stack) {
       debug('The environment %s doesn\'t have the CDK toolkit stack (%s) installed. Use %s to setup your environment for use with the toolkit.',
         environment.name, stackName, colors.blue(`cdk bootstrap "${environment.name}"`));
-      return undefined;
+      return ToolkitInfo.bootstrapStackNotFoundInfo(sdk);
     }
     if (stack.stackStatus.isCreationFailure) {
       // Treat a "failed to create" bootstrap stack as an absent one.
       debug('The environment %s has a CDK toolkit stack (%s) that failed to create. Use %s to try provisioning it again.',
         environment.name, stackName, colors.blue(`cdk bootstrap "${environment.name}"`));
-      return undefined;
+      return ToolkitInfo.bootstrapStackNotFoundInfo(sdk);
     }
 
-    return new ToolkitInfo(stack, sdk);
+    return new ExistingToolkitInfo(stack, sdk);
   }
 
-  constructor(public readonly stack: CloudFormationStack, private readonly sdk?: ISDK) {
+  public static fromStack(stack: CloudFormationStack, sdk: ISDK): ToolkitInfo {
+    return new ExistingToolkitInfo(stack, sdk);
+  }
+
+  public static bootstraplessDeploymentsOnly(sdk: ISDK): ToolkitInfo {
+    return new BootstrapStackNotFoundInfo(sdk, 'Trying to perform an operation that requires a bootstrap stack; you should not see this error, this is a bug in the CDK CLI.');
+  }
+
+  public static bootstrapStackNotFoundInfo(sdk: ISDK): ToolkitInfo {
+    return new BootstrapStackNotFoundInfo(sdk, 'This deployment requires a bootstrap stack with a known name; pass \'--toolkit-stack-name\' or switch to using the \'DefaultStackSynthesizer\' (see https://docs.aws.amazon.com/cdk/latest/guide/bootstrapping.html)');
+  }
+
+  public abstract readonly found: boolean;
+  public abstract readonly bucketUrl: string;
+  public abstract readonly bucketName: string;
+  public abstract readonly version: number;
+  public abstract readonly bootstrapStack: CloudFormationStack;
+
+  private readonly ssmCache = new Map<string, number>();
+
+  constructor(protected readonly sdk: ISDK) {
+  }
+  public abstract validateVersion(expectedVersion: number, ssmParameterName: string | undefined): Promise<void>;
+  public abstract prepareEcrRepository(repositoryName: string): Promise<EcrRepositoryInfo>;
+
+  /**
+   * Read a version from an SSM parameter, cached
+   */
+  protected async versionFromSsmParameter(parameterName: string): Promise<number> {
+    const existing = this.ssmCache.get(parameterName);
+    if (existing !== undefined) { return existing; }
+
+    const ssm = this.sdk.ssm();
+
+    try {
+      const result = await ssm.getParameter({ Name: parameterName }).promise();
+
+      const asNumber = parseInt(`${result.Parameter?.Value}`, 10);
+      if (isNaN(asNumber)) {
+        throw new Error(`SSM parameter ${parameterName} not a number: ${result.Parameter?.Value}`);
+      }
+
+      this.ssmCache.set(parameterName, asNumber);
+      return asNumber;
+    } catch (e) {
+      if (e.code === 'ParameterNotFound') {
+        throw new Error(`SSM parameter ${parameterName} not found. Has the environment been bootstrapped? Please run \'cdk bootstrap\' (see https://docs.aws.amazon.com/cdk/latest/guide/bootstrapping.html)`);
+      }
+      throw e;
+    }
+  }
+}
+
+/**
+ * Returned when a bootstrap stack is found
+ */
+class ExistingToolkitInfo extends ToolkitInfo {
+  public readonly found = true;
+
+  constructor(public readonly bootstrapStack: CloudFormationStack, sdk: ISDK) {
+    super(sdk);
   }
 
   public get bucketUrl() {
@@ -50,11 +132,54 @@ export class ToolkitInfo {
   }
 
   public get version() {
-    return parseInt(this.stack.outputs[BOOTSTRAP_VERSION_OUTPUT] ?? '0', 10);
+    return parseInt(this.bootstrapStack.outputs[BOOTSTRAP_VERSION_OUTPUT] ?? '0', 10);
   }
 
   public get parameters(): Record<string, string> {
-    return this.stack.parameters ?? {};
+    return this.bootstrapStack.parameters ?? {};
+  }
+
+  public get terminationProtection(): boolean {
+    return this.bootstrapStack.terminationProtection ?? false;
+  }
+
+  /**
+   * Validate that the bootstrap stack version matches or exceeds the expected version
+   *
+   * Use the SSM parameter name to read the version number if given, otherwise use the version
+   * discovered on the bootstrap stack.
+   *
+   * Pass in the SSM parameter name so we can cache the lookups an don't need to do the same
+   * lookup again and again for every artifact.
+   */
+  public async validateVersion(expectedVersion: number, ssmParameterName: string | undefined) {
+    let version = this.version; // Default to the current version, but will be overwritten by a lookup if required.
+
+    if (ssmParameterName !== undefined) {
+      try {
+        version = await this.versionFromSsmParameter(ssmParameterName);
+      } catch (e) {
+        if (e.code !== 'AccessDeniedException') { throw e; }
+
+        // This is a fallback! The bootstrap template that goes along with this change introduces
+        // a new 'ssm:GetParameter' permission, but when run using the previous bootstrap template we
+        // won't have the permissions yet to read the version, so we won't be able to show the
+        // message telling the user they need to update! When we see an AccessDeniedException, fall
+        // back to the version we read from Stack Outputs; but ONLY if the version we discovered via
+        // outputs is legitimately an old version. If it's newer than that, something else must be broken,
+        // so let it fail as it would if we didn't have this fallback.
+        if (this.version >= BOOTSTRAP_TEMPLATE_VERSION_INTRODUCING_GETPARAMETER) {
+          throw e;
+        }
+
+        warning(`Could not read SSM parameter ${ssmParameterName}: ${e.message}`);
+        // Fall through on purpose
+      }
+    }
+
+    if (expectedVersion > version) {
+      throw new Error(`This CDK deployment requires bootstrap stack version '${expectedVersion}', found '${version}'. Please run 'cdk bootstrap'.`);
+    }
   }
 
   /**
@@ -97,10 +222,73 @@ export class ToolkitInfo {
   }
 
   private requireOutput(output: string): string {
-    if (!(output in this.stack.outputs)) {
-      throw new Error(`The CDK toolkit stack (${this.stack.stackName}) does not have an output named ${output}. Use 'cdk bootstrap' to correct this.`);
+    if (!(output in this.bootstrapStack.outputs)) {
+      throw new Error(`The CDK toolkit stack (${this.bootstrapStack.stackName}) does not have an output named ${output}. Use 'cdk bootstrap' to correct this.`);
     }
-    return this.stack.outputs[output];
+    return this.bootstrapStack.outputs[output];
+  }
+}
+
+/**
+ * Returned when a bootstrap stack could not be found
+ *
+ * This is not an error in principle, UNTIL one of the members is called that requires
+ * the bootstrap stack to have been found, in which case the lookup error is still thrown
+ * belatedly.
+ *
+ * The errors below serve as a last stop-gap message--normally calling code should have
+ * checked `toolkit.found` and produced an appropriate error message.
+ */
+class BootstrapStackNotFoundInfo extends ToolkitInfo {
+  public readonly found = false;
+
+  constructor(sdk: ISDK, private readonly errorMessage: string) {
+    super(sdk);
+  }
+
+  public get bootstrapStack(): CloudFormationStack {
+    throw new Error(this.errorMessage);
+  }
+
+  public get bucketUrl(): string {
+    throw new Error(this.errorMessage);
+  }
+
+  public get bucketName(): string {
+    throw new Error(this.errorMessage);
+  }
+
+  public get version(): number {
+    throw new Error(this.errorMessage);
+  }
+
+  public async validateVersion(expectedVersion: number, ssmParameterName: string | undefined): Promise<void> {
+    if (ssmParameterName === undefined) {
+      throw new Error(this.errorMessage);
+    }
+
+    let version: number;
+    try {
+      version = await this.versionFromSsmParameter(ssmParameterName);
+    } catch (e) {
+      if (e.code !== 'AccessDeniedException') { throw e; }
+
+      // This is a fallback! The bootstrap template that goes along with this change introduces
+      // a new 'ssm:GetParameter' permission, but when run using a previous bootstrap template we
+      // won't have the permissions yet to read the version, so we won't be able to show the
+      // message telling the user they need to update! When we see an AccessDeniedException, fall
+      // back to the version we read from Stack Outputs.
+      warning(`Could not read SSM parameter ${ssmParameterName}: ${e.message}`);
+      throw new Error(`This CDK deployment requires bootstrap stack version '${expectedVersion}', found an older version. Please run 'cdk bootstrap'.`);
+    }
+
+    if (expectedVersion > version) {
+      throw new Error(`This CDK deployment requires bootstrap stack version '${expectedVersion}', found '${version}'. Please run 'cdk bootstrap'.`);
+    }
+  }
+
+  public prepareEcrRepository(): Promise<EcrRepositoryInfo> {
+    throw new Error(this.errorMessage);
   }
 }
 

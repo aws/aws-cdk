@@ -149,10 +149,14 @@ nodeunitShim({
     const asm = app.synth();
 
     // THEN - we have an asset manifest with both assets and the stack template in there
-    const manifest = readAssetManifest(asm);
+    const manifestArtifact = getAssetManifest(asm);
+    const manifest = readAssetManifest(manifestArtifact);
 
     test.equals(Object.keys(manifest.files || {}).length, 2);
     test.equals(Object.keys(manifest.dockerImages || {}).length, 1);
+
+    // THEN - the asset manifest has an SSM parameter entry
+    expect(manifestArtifact.bootstrapStackVersionSsmParameter).toEqual('/cdk-bootstrap/hnb659fds/version');
 
     // THEN - every artifact has an assumeRoleArn
     for (const file of Object.values(manifest.files ?? {})) {
@@ -200,7 +204,7 @@ nodeunitShim({
 
     // THEN
     const asm = myapp.synth();
-    const manifest = readAssetManifest(asm);
+    const manifest = readAssetManifest(getAssetManifest(asm));
 
     test.deepEqual(manifest.files?.['file-asset-hash']?.destinations?.['current_account-current_region'], {
       bucketName: 'file-asset-bucket',
@@ -247,7 +251,7 @@ nodeunitShim({
     const stackArtifact = asm.getStackArtifact('mystack-bucketPrefix');
 
     // THEN - we have an asset manifest with both assets and the stack template in there
-    const manifest = readAssetManifest(asm);
+    const manifest = readAssetManifest(getAssetManifest(asm));
 
     // THEN
     test.deepEqual(manifest.files?.['file-asset-hash-with-prefix']?.destinations?.['current_account-current_region'], {
@@ -299,10 +303,13 @@ function isAssetManifest(x: cxapi.CloudArtifact): x is cxapi.AssetManifestArtifa
   return x instanceof cxapi.AssetManifestArtifact;
 }
 
-function readAssetManifest(asm: cxapi.CloudAssembly): cxschema.AssetManifest {
+function getAssetManifest(asm: cxapi.CloudAssembly): cxapi.AssetManifestArtifact {
   const manifestArtifact = asm.artifacts.filter(isAssetManifest)[0];
   if (!manifestArtifact) { throw new Error('no asset manifest in assembly'); }
+  return manifestArtifact;
+}
 
+function readAssetManifest(manifestArtifact: cxapi.AssetManifestArtifact): cxschema.AssetManifest {
   return JSON.parse(fs.readFileSync(manifestArtifact.file, { encoding: 'utf-8' }));
 }
 

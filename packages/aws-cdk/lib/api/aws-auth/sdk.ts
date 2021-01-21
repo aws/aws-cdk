@@ -218,9 +218,9 @@ export class SDK implements ISDK {
           // do additional things to errors.
           return Object.assign(Object.create(response), {
             promise() {
-              return response.promise().catch((e: Error) => {
+              return response.promise().catch((e: Error & { code?: string }) => {
                 e = self.makeDetailedException(e);
-                debug(`Call failed: ${prop}(${JSON.stringify(args[0])}) => ${e.message}`);
+                debug(`Call failed: ${prop}(${JSON.stringify(args[0])}) => ${e.message} (code=${e.code})`);
                 return Promise.reject(e); // Re-'throw' the new error
               });
             },
