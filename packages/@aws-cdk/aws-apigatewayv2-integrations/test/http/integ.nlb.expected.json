@@ -586,7 +586,7 @@
             [
               "integrations/",
               {
-                "Ref": "HttpProxyPrivateApiHttpIntegration18B0B2597"
+                "Ref": "HttpProxyPrivateApiHttpIntegration392420cf56fd6784275525566e09a727DDE15AB1"
               }
             ]
           ]
@@ -611,7 +611,7 @@
         "SecurityGroupIds": []
       }
     },
-    "HttpProxyPrivateApiHttpIntegration18B0B2597": {
+    "HttpProxyPrivateApiHttpIntegration392420cf56fd6784275525566e09a727DDE15AB1": {
       "Type": "AWS::ApiGatewayV2::Integration",
       "Properties": {
         "ApiId": {

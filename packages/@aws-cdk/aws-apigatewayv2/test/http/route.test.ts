@@ -25,7 +25,7 @@ describe('HttpRoute', () => {
           [
             'integrations/',
             {
-              Ref: 'HttpApiHttpIntegration1EDD71AB9',
+              Ref: 'HttpApiHttpIntegrationcff2618c192d3bd8581dd2a4093464f6CDB667B8',
             },
           ],
         ],
@@ -56,10 +56,12 @@ describe('HttpRoute', () => {
   });
 
   test('integration is only configured once if multiple routes are configured with it', () => {
+    // GIVEN
     const stack = new Stack();
     const httpApi = new HttpApi(stack, 'HttpApi');
     const integration = new DummyIntegration();
 
+    // WHEN
     new HttpRoute(stack, 'HttpRoute1', {
       httpApi,
       integration,
@@ -71,7 +73,46 @@ describe('HttpRoute', () => {
       routeKey: HttpRouteKey.with('/books', HttpMethod.POST),
     });
 
+    // THEN
     expect(stack).toCountResources('AWS::ApiGatewayV2::Integration', 1);
+  });
+
+  test('integration can be used across HttpApis', () => {
+    // GIVEN
+    const integration = new DummyIntegration();
+
+    // WHEN
+    const stack1 = new Stack();
+    const httpApi1 = new HttpApi(stack1, 'HttpApi1');
+
+    new HttpRoute(stack1, 'HttpRoute1', {
+      httpApi: httpApi1,
+      integration,
+      routeKey: HttpRouteKey.with('/books', HttpMethod.GET),
+    });
+    new HttpRoute(stack1, 'HttpRoute2', {
+      httpApi: httpApi1,
+      integration,
+      routeKey: HttpRouteKey.with('/books', HttpMethod.POST),
+    });
+
+    const stack2 = new Stack();
+    const httpApi2 = new HttpApi(stack2, 'HttpApi2');
+
+    new HttpRoute(stack2, 'HttpRoute1', {
+      httpApi: httpApi2,
+      integration,
+      routeKey: HttpRouteKey.with('/books', HttpMethod.GET),
+    });
+    new HttpRoute(stack2, 'HttpRoute2', {
+      httpApi: httpApi2,
+      integration,
+      routeKey: HttpRouteKey.with('/books', HttpMethod.POST),
+    });
+
+    // THEN
+    expect(stack1).toCountResources('AWS::ApiGatewayV2::Integration', 1);
+    expect(stack2).toCountResources('AWS::ApiGatewayV2::Integration', 1);
   });
 
   test('throws when path not start with /', () => {

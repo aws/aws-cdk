@@ -107,14 +107,14 @@
             [
               "integrations/",
               {
-                "Ref": "LambdaProxyApiHttpIntegration195700463"
+                "Ref": "LambdaProxyApiHttpIntegration5fc3e065dcc18f77be1ff86cabb5294a98B12A6C"
               }
             ]
           ]
         }
       }
     },
-    "LambdaProxyApiHttpIntegration195700463": {
+    "LambdaProxyApiHttpIntegration5fc3e065dcc18f77be1ff86cabb5294a98B12A6C": {
       "Type": "AWS::ApiGatewayV2::Integration",
       "Properties": {
         "ApiId": {

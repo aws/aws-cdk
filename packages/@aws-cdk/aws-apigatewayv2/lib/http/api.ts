@@ -1,3 +1,4 @@
+import * as crypto from 'crypto';
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import { Duration, IResource, Resource } from '@aws-cdk/core';
 import { Construct } from 'constructs';
@@ -259,13 +260,14 @@ abstract class HttpApiBase extends Resource implements IHttpApi { // note that t
    * @internal
    */
   public _addIntegration(config: HttpRouteIntegrationConfig): HttpIntegration {
-    const configKey = JSON.stringify(config);
-    if (configKey in this.httpIntegrations) {
-      return this.httpIntegrations[configKey];
+    const stringifiedConfig = JSON.stringify(config);
+    const configHash = crypto.createHash('md5').update(stringifiedConfig).digest('hex');
+
+    if (configHash in this.httpIntegrations) {
+      return this.httpIntegrations[configHash];
     }
 
-    const count = Object.keys(this.httpIntegrations).length + 1;
-    const integration = new HttpIntegration(this, `HttpIntegration-${count}`, {
+    const integration = new HttpIntegration(this, `HttpIntegration-${configHash}`, {
       httpApi: this,
       integrationType: config.type,
       integrationUri: config.uri,
@@ -274,7 +276,7 @@ abstract class HttpApiBase extends Resource implements IHttpApi { // note that t
       connectionType: config.connectionType,
       payloadFormatVersion: config.payloadFormatVersion,
     });
-    this.httpIntegrations[configKey] = integration;
+    this.httpIntegrations[configHash] = integration;
 
     return integration;
   }

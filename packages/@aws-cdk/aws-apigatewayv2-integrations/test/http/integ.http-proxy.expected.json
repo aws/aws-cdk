@@ -107,14 +107,14 @@
             [
               "integrations/",
               {
-                "Ref": "LambdaProxyApiHttpIntegration195700463"
+                "Ref": "LambdaProxyApiHttpIntegration5fc3e065dcc18f77be1ff86cabb5294a98B12A6C"
               }
             ]
           ]
         }
       }
     },
-    "LambdaProxyApiHttpIntegration195700463": {
+    "LambdaProxyApiHttpIntegration5fc3e065dcc18f77be1ff86cabb5294a98B12A6C": {
       "Type": "AWS::ApiGatewayV2::Integration",
       "Properties": {
         "ApiId": {
@@ -160,14 +160,14 @@
             [
               "integrations/",
               {
-                "Ref": "HttpProxyApiHttpIntegration185F2E99A"
+                "Ref": "HttpProxyApiHttpIntegration54d3201aa1691a2307067d718d9dea776A187065"
               }
             ]
           ]
         }
       }
     },
-    "HttpProxyApiHttpIntegration185F2E99A": {
+    "HttpProxyApiHttpIntegration54d3201aa1691a2307067d718d9dea776A187065": {
       "Type": "AWS::ApiGatewayV2::Integration",
       "Properties": {
         "ApiId": {
