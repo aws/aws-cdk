@@ -981,6 +981,16 @@ instance.userData.addExecuteFileCommand({
 asset.grantRead( instance.role );
 ```
 
+In addition to above the `MultipartUserData` can be used to change instance startup behavior. Multipart user data are composed
+from separate parts forming archive. The moment, and behavior of each part can be controlled with `Content-Type`, and it's wider
+than executing shell scripts.
+
+Some services (like AWS Batch) allows only `MultipartUserData`.
+
+For more information see 
+[Specifying Multiple User Data Blocks Using a MIME Multi Part Archive](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/bootstrap_container_instance.html#multi-part_user_data)
+
+
 ## Importing existing subnet
 
 To import an existing Subnet, call `Subnet.fromSubnetAttributes()` or
