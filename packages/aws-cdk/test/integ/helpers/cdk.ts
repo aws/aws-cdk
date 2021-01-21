@@ -3,6 +3,7 @@ import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
 import { outputFromStack, AwsClients } from './aws';
+import { memoize0 } from './memoize';
 import { findYarnPackages } from './monorepo';
 import { ResourcePool } from './resource-pool';
 import { TestContext } from './test-helpers';
@@ -489,7 +490,7 @@ async function installNpmPackages(fixture: TestFixture, packages: Record<string,
   }, undefined, 2), { encoding: 'utf-8' });
 
   // Now install that `package.json` using NPM7
-  const npm7 = await installNpm7(fixture.output);
+  const npm7 = await installNpm7();
   await fixture.shell([npm7, 'install']);
 }
 
@@ -500,20 +501,14 @@ async function installNpmPackages(fixture: TestFixture, packages: Record<string,
  * - The install is cached so we don't have to install it over and over again
  *   for every test.
  */
-async function installNpm7(output?: NodeJS.WritableStream): Promise<string> {
-  if (NPM7_INSTALL_LOCATION === undefined) {
-    const installDir = path.join(os.tmpdir(), 'cdk-integ-npm7');
-    await shell(['rm', '-rf', installDir], { output });
-    await shell(['mkdir', '-p', installDir], { output });
+const installNpm7 = memoize0(async (): Promise<string> => {
+  const installDir = path.join(os.tmpdir(), 'cdk-integ-npm7');
+  await shell(['rm', '-rf', installDir]);
+  await shell(['mkdir', '-p', installDir]);
 
-    await shell(['npm', 'install',
-      '--prefix', installDir,
-      'npm@7'], { output });
+  await shell(['npm', 'install',
+    '--prefix', installDir,
+    'npm@7']);
 
-    NPM7_INSTALL_LOCATION = path.join(installDir, 'node_modules', '.bin', 'npm');
-  }
-
-  return NPM7_INSTALL_LOCATION;
-}
-
-let NPM7_INSTALL_LOCATION: string | undefined;
+  return path.join(installDir, 'node_modules', '.bin', 'npm');
+});
