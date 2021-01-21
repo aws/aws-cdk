@@ -1,7 +1,8 @@
 import * as cxapi from '@aws-cdk/cx-api';
+import { Construct } from 'constructs';
 import {
   App, CfnCondition, CfnInclude, CfnOutput, CfnParameter,
-  CfnResource, Construct, Lazy, ScopedAws, Stack, validateString, ISynthesisSession, Tags, LegacyStackSynthesizer, DefaultStackSynthesizer,
+  CfnResource, Lazy, ScopedAws, Stack, validateString, Tags, LegacyStackSynthesizer, DefaultStackSynthesizer,
 } from '../lib';
 import { Intrinsic } from '../lib/private/intrinsic';
 import { resolveReferences } from '../lib/private/refs';
@@ -1041,25 +1042,6 @@ describe('stack', () => {
 
     expect(artifact.terminationProtection).toEqual(true);
 
-
-  });
-
-  test('users can (still) override "synthesize()" in stack', () => {
-    let called = false;
-
-    class MyStack extends Stack {
-      synthesize(session: ISynthesisSession) {
-        called = true;
-        expect(session.outdir).toBeDefined();
-        expect(session.assembly.outdir).toEqual(session.outdir);
-      }
-    }
-
-    const app = new App();
-    new MyStack(app, 'my-stack');
-
-    app.synth();
-    expect(called).toEqual(true);
 
   });
 
