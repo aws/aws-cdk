@@ -4,6 +4,10 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import { Action } from '../action';
 
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct } from '@aws-cdk/core';
+
 /**
  * Properties common to all CloudFormation actions
  */
@@ -82,7 +86,7 @@ abstract class CloudFormationAction extends Action {
     this.props = props;
   }
 
-  protected bound(_scope: cdk.Construct, _stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
+  protected bound(_scope: Construct, _stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
   codepipeline.ActionConfig {
     const singletonPolicy = SingletonPolicy.forRole(options.role);
 
@@ -123,7 +127,7 @@ export class CloudFormationExecuteChangeSetAction extends CloudFormationAction {
     this.props2 = props;
   }
 
-  protected bound(scope: cdk.Construct, stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
+  protected bound(scope: Construct, stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
   codepipeline.ActionConfig {
     SingletonPolicy.forRole(options.role).grantExecuteChangeSet(this.props2);
 
@@ -259,7 +263,7 @@ abstract class CloudFormationDeployAction extends CloudFormationAction {
     return this.getDeploymentRole('property role()');
   }
 
-  protected bound(scope: cdk.Construct, stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
+  protected bound(scope: Construct, stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
   codepipeline.ActionConfig {
     if (this.props2.deploymentRole) {
       this._deploymentRole = this.props2.deploymentRole;
@@ -270,7 +274,7 @@ abstract class CloudFormationDeployAction extends CloudFormationAction {
         // pass role is not allowed for cross-account access - so,
         // create the deployment Role in the other account!
         this._deploymentRole = new iam.Role(roleStack,
-          `${stage.pipeline.node.uniqueId}-${stage.stageName}-${this.actionProperties.actionName}-DeploymentRole`, {
+          `${cdk.Names.nodeUniqueId(stage.pipeline.node)}-${stage.stageName}-${this.actionProperties.actionName}-DeploymentRole`, {
             assumedBy: new iam.ServicePrincipal('cloudformation.amazonaws.com'),
             roleName: cdk.PhysicalName.GENERATE_IF_NEEDED,
           });
@@ -359,7 +363,7 @@ export class CloudFormationCreateReplaceChangeSetAction extends CloudFormationDe
     this.props3 = props;
   }
 
-  protected bound(scope: cdk.Construct, stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
+  protected bound(scope: Construct, stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
   codepipeline.ActionConfig {
     // the super call order is to preserve the existing order of statements in policies
     const actionConfig = super.bound(scope, stage, options);
@@ -428,7 +432,7 @@ export class CloudFormationCreateUpdateStackAction extends CloudFormationDeployA
     this.props3 = props;
   }
 
-  protected bound(scope: cdk.Construct, stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
+  protected bound(scope: Construct, stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
   codepipeline.ActionConfig {
     // the super call order is to preserve the existing order of statements in policies
     const actionConfig = super.bound(scope, stage, options);
@@ -467,7 +471,7 @@ export class CloudFormationDeleteStackAction extends CloudFormationDeployAction 
     this.props3 = props;
   }
 
-  protected bound(scope: cdk.Construct, stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
+  protected bound(scope: Construct, stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
   codepipeline.ActionConfig {
     // the super call order is to preserve the existing order of statements in policies
     const actionConfig = super.bound(scope, stage, options);
@@ -493,7 +497,7 @@ export class CloudFormationDeleteStackAction extends CloudFormationDeployAction 
  * Statements created outside of this class are not considered when adding new
  * permissions.
  */
-class SingletonPolicy extends cdk.Construct implements iam.IGrantable {
+class SingletonPolicy extends Construct implements iam.IGrantable {
   /**
    * Obtain a SingletonPolicy for a given role.
    * @param role the Role this policy is bound to.

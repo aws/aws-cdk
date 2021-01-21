@@ -152,8 +152,8 @@ export class CfnResource extends CfnRefElement {
    *
    * For example,
    * ```typescript
-   * addOverride('Properties.GlobalSecondaryIndexes.0.Projection.NonKeyAttributes', ['myattribute'])
-   * addOverride('Properties.GlobalSecondaryIndexes.1.ProjectionType', 'INCLUDE')
+   * cfnResource.addOverride('Properties.GlobalSecondaryIndexes.0.Projection.NonKeyAttributes', ['myattribute']);
+   * cfnResource.addOverride('Properties.GlobalSecondaryIndexes.1.ProjectionType', 'INCLUDE');
    * ```
    * would add the overrides
    * ```json
@@ -259,6 +259,18 @@ export class CfnResource extends CfnRefElement {
     }
 
     this.cfnOptions.metadata[key] = value;
+  }
+
+  /**
+   * Retrieve a value value from the CloudFormation Resource Metadata
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/metadata-section-structure.html
+   *
+   * Note that this is a different set of metadata from CDK node metadata; this
+   * metadata ends up in the stack template under the resource, whereas CDK
+   * node metadata ends up in the Cloud Assembly.
+   */
+  public getMetadata(key: string): any {
+    return this.cfnOptions.metadata?.[key];
   }
 
   /**

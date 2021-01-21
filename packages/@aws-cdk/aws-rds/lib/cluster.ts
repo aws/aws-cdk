@@ -8,10 +8,9 @@ import { Annotations, Duration, RemovalPolicy, Resource, Token } from '@aws-cdk/
 import { Construct } from 'constructs';
 import { IClusterEngine } from './cluster-engine';
 import { DatabaseClusterAttributes, IDatabaseCluster } from './cluster-ref';
-import { DatabaseSecret } from './database-secret';
 import { Endpoint } from './endpoint';
 import { IParameterGroup } from './parameter-group';
-import { applyRemovalPolicy, DEFAULT_PASSWORD_EXCLUDE_CHARS, defaultDeletionProtection, setupS3ImportExport } from './private/util';
+import { applyRemovalPolicy, DEFAULT_PASSWORD_EXCLUDE_CHARS, defaultDeletionProtection, renderCredentials, setupS3ImportExport } from './private/util';
 import { BackupProps, Credentials, InstanceProps, PerformanceInsightRetention, RotationSingleUserOptions, RotationMultiUserOptions } from './props';
 import { DatabaseProxy, DatabaseProxyOptions, ProxyTarget } from './proxy';
 import { CfnDBCluster, CfnDBClusterProps, CfnDBInstance } from './rds.generated';
@@ -489,14 +488,7 @@ export class DatabaseCluster extends DatabaseClusterNew {
     this.singleUserRotationApplication = props.engine.singleUserRotationApplication;
     this.multiUserRotationApplication = props.engine.multiUserRotationApplication;
 
-    let credentials = props.credentials ?? Credentials.fromUsername(props.engine.defaultUsername ?? 'admin');
-    if (!credentials.secret && !credentials.password) {
-      credentials = Credentials.fromSecret(new DatabaseSecret(this, 'Secret', {
-        username: credentials.username,
-        encryptionKey: credentials.encryptionKey,
-        excludeCharacters: credentials.excludeCharacters,
-      }));
-    }
+    const credentials = renderCredentials(this, props.engine, props.credentials);
     const secret = credentials.secret;
 
     const cluster = new CfnDBCluster(this, 'Resource', {
@@ -695,8 +687,6 @@ function createInstances(cluster: DatabaseClusterNew, props: DatabaseClusterBase
       props.clusterIdentifier != null ? `${props.clusterIdentifier}instance${instanceIndex}` :
         undefined;
 
-    const publiclyAccessible = instanceProps.vpcSubnets && instanceProps.vpcSubnets.subnetType === ec2.SubnetType.PUBLIC;
-
     const instance = new CfnDBInstance(cluster, `Instance${instanceIndex}`, {
       // Link to cluster
       engine: props.engine.engineType,
@@ -705,7 +695,8 @@ function createInstances(cluster: DatabaseClusterNew, props: DatabaseClusterBase
       dbInstanceIdentifier: instanceIdentifier,
       // Instance properties
       dbInstanceClass: databaseInstanceType(instanceType),
-      publiclyAccessible,
+      publiclyAccessible: instanceProps.publiclyAccessible ??
+        (instanceProps.vpcSubnets && instanceProps.vpcSubnets.subnetType === ec2.SubnetType.PUBLIC),
       enablePerformanceInsights: enablePerformanceInsights || instanceProps.enablePerformanceInsights, // fall back to undefined if not set
       performanceInsightsKmsKeyId: instanceProps.performanceInsightEncryptionKey?.keyArn,
       performanceInsightsRetentionPeriod: enablePerformanceInsights

@@ -38,6 +38,14 @@ export interface ScheduledTaskBaseProps {
   readonly schedule: Schedule;
 
   /**
+   * A name for the rule.
+   *
+   * @default - AWS CloudFormation generates a unique physical ID and uses that ID
+   * for the rule name. For more information, see [Name Type](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-name.html).
+   */
+  readonly ruleName?: string;
+
+  /**
    * The desired number of instantiations of the task definition to keep running on the service.
    *
    * @default 1
@@ -138,6 +146,7 @@ export abstract class ScheduledTaskBase extends CoreConstruct {
     // An EventRule that describes the event trigger (in this case a scheduled run)
     this.eventRule = new Rule(this, 'ScheduledEventRule', {
       schedule: props.schedule,
+      ruleName: props.ruleName,
     });
   }
 

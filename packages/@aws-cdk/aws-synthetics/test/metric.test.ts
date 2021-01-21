@@ -11,6 +11,7 @@ test('.metricXxx() methods can be used to obtain Metrics for the canary', () => 
       handler: 'index.handler',
       code: synthetics.Code.fromInline('foo'),
     }),
+    runtime: synthetics.Runtime.SYNTHETICS_NODEJS_2_0,
   });
 
   // WHEN
@@ -30,7 +31,7 @@ test('.metricXxx() methods can be used to obtain Metrics for the canary', () => 
     dimensions: { CanaryName: canary.canaryName },
     namespace: 'CloudWatchSynthetics',
     metricName: 'Failed',
-    statistic: 'Average',
+    statistic: 'Sum',
   }));
 
   expect(metricDuration).toEqual(expect.objectContaining({
@@ -50,6 +51,7 @@ test('Metric can specify statistic', () => {
       handler: 'index.handler',
       code: synthetics.Code.fromInline('foo'),
     }),
+    runtime: synthetics.Runtime.SYNTHETICS_NODEJS_2_0,
   });
 
   // WHEN

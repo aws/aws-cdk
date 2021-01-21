@@ -1,5 +1,6 @@
-## AWS Cloud Development Kit Core Library
+# AWS Cloud Development Kit Core Library
 <!--BEGIN STABILITY BANNER-->
+
 ---
 
 ![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)
@@ -7,6 +8,7 @@
 ![cdk-constructs: Stable](https://img.shields.io/badge/cdk--constructs-stable-success.svg?style=for-the-badge)
 
 ---
+
 <!--END STABILITY BANNER-->
 
 This library includes the basic building blocks of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) (AWS CDK). It defines the core classes that are used in the rest of the
@@ -31,7 +33,7 @@ When your application grows, you may decide that it makes more sense to split it
 out across multiple `Stack` classes. This can happen for a number of reasons:
 
 - You could be starting to reach the maximum number of resources allowed in a single
-  stack (this is currently 200).
+  stack (this is currently 500).
 - You could decide you want to separate out stateful resources and stateless resources
   into separate stacks, so that it becomes easy to tear down and recreate the stacks
   that don't have stateful resources.
@@ -64,10 +66,6 @@ For example, assume that you have a load balancer configuration that you use for
 The following example will define a single top-level stack that contains two nested stacks: each one with a single Amazon S3 bucket:
 
 ```ts
-import { Stack, Construct, StackProps } from '@aws-cdk/core';
-import cfn = require('@aws-cdk/aws-cloudformation');
-import s3 = require('@aws-cdk/aws-s3');
-
 class MyNestedStack extends cfn.NestedStack {
   constructor(scope: Construct, id: string, props?: cfn.NestedStackProps) {
     super(scope, id, props);
@@ -133,8 +131,8 @@ By default, conversion to a higher unit will fail if the conversion does not pro
 a whole number. This can be overridden by unsetting `integral` property.
 
 ```ts
-Size.mebibytes(2).toKibibytes()                      // yields 2048
-Size.kibibytes(2050).toMebibyte({ integral: false }) // yields 2
+Size.mebibytes(2).toKibibytes()                                             // yields 2048
+Size.kibibytes(2050).toMebibytes({ rounding: SizeRoundingBehavior.FLOOR })  // yields 2
 ```
 
 ## Secrets
@@ -147,19 +145,19 @@ The best practice is to store secrets in AWS Secrets Manager and reference them 
 
 ```ts
 const secret = SecretValue.secretsManager('secretId', {
-  jsonField: 'password' // optional: key of a JSON field to retrieve (defaults to all content),
-  versionId: 'id'       // optional: id of the version (default AWSCURRENT)
-  versionStage: 'stage' // optional: version stage name (default AWSCURRENT)
+  jsonField: 'password', // optional: key of a JSON field to retrieve (defaults to all content),
+  versionId: 'id',       // optional: id of the version (default AWSCURRENT)
+  versionStage: 'stage', // optional: version stage name (default AWSCURRENT)
 });
 ```
 
 Using AWS Secrets Manager is the recommended way to reference secrets in a CDK app.
 `SecretValue` also supports the following secret sources:
 
- * `SecretValue.plainText(secret)`: stores the secret as plain text in your app and the resulting template (not recommended).
- * `SecretValue.ssmSecure(param, version)`: refers to a secret stored as a SecureString in the SSM Parameter Store.
- * `SecretValue.cfnParameter(param)`: refers to a secret passed through a CloudFormation parameter (must have `NoEcho: true`).
- * `SecretValue.cfnDynamicReference(dynref)`: refers to a secret described by a CloudFormation dynamic reference (used by `ssmSecure` and `secretsManager`).
+ - `SecretValue.plainText(secret)`: stores the secret as plain text in your app and the resulting template (not recommended).
+ - `SecretValue.ssmSecure(param, version)`: refers to a secret stored as a SecureString in the SSM Parameter Store.
+ - `SecretValue.cfnParameter(param)`: refers to a secret passed through a CloudFormation parameter (must have `NoEcho: true`).
+ - `SecretValue.cfnDynamicReference(dynref)`: refers to a secret described by a CloudFormation dynamic reference (used by `ssmSecure` and `secretsManager`).
 
 ## ARN manipulation
 
@@ -244,13 +242,13 @@ between two stacks by using the `stackA.addDependency(stackB)` method.
 
 A stack dependency has the following implications:
 
-* Cyclic dependencies are not allowed, so if `stackA` is using resources from
+- Cyclic dependencies are not allowed, so if `stackA` is using resources from
   `stackB`, the reverse is not possible anymore.
-* Stacks with dependencies between them are treated specially by the CDK
+- Stacks with dependencies between them are treated specially by the CDK
   toolkit:
-  * If `stackA` depends on `stackB`, running `cdk deploy stackA` will also
+  - If `stackA` depends on `stackB`, running `cdk deploy stackA` will also
     automatically deploy `stackB`.
-  * `stackB`'s deployment will be performed *before* `stackA`'s deployment.
+  - `stackB`'s deployment will be performed *before* `stackA`'s deployment.
 
 ## Custom Resources
 
@@ -261,8 +259,6 @@ CloudFormation deployment.
 To define a custom resource, use the `CustomResource` construct:
 
 ```ts
-import { CustomResource } from '@aws-cdk/core';
-
 new CustomResource(this, 'MyMagicalResource', {
   resourceType: 'Custom::MyCustomResource', // must start with 'Custom::'
 
@@ -317,8 +313,8 @@ examples ensures that only a single SNS topic is defined:
 
 ```ts
 function getOrCreate(scope: Construct): sns.Topic {
-  const stack = Stack.of(this);
-  const uniqueid = 'GloballyUniqueIdForSingleton';
+  const stack = Stack.of(scope);
+  const uniqueid = 'GloballyUniqueIdForSingleton'; // For example, a UUID from `uuidgen`
   return stack.node.tryFindChild(uniqueid) as sns.Topic  ?? new sns.Topic(stack, uniqueid);
 }
 ```
@@ -333,9 +329,6 @@ CloudFormation service.
 Set `serviceToken` to `topic.topicArn`  in order to use this provider:
 
 ```ts
-import * as sns from '@aws-cdk/aws-sns';
-import { CustomResource } from '@aws-cdk/core';
-
 const topic = new sns.Topic(this, 'MyProvider');
 
 new CustomResource(this, 'MyResource', {
@@ -352,13 +345,10 @@ response to the CloudFormation service and handle various error cases.
 Set `serviceToken` to `lambda.functionArn` to use this provider:
 
 ```ts
-import * as lambda from '@aws-cdk/aws-lambda';
-import { CustomResource } from '@aws-cdk/core';
-
-const fn = new lambda.Function(this, 'MyProvider');
+const fn = new lambda.Function(this, 'MyProvider', functionProps);
 
 new CustomResource(this, 'MyResource', {
-  serviceToken: lambda.functionArn
+  serviceToken: fn.functionArn,
 });
 ```
 
@@ -438,18 +428,26 @@ Here is an complete example of a custom resource that summarizes two numbers:
 `sum-handler/index.js`:
 
 ```js
-exports.handler = async e => {
+exports.handler = async (e) => {
   return {
     Data: {
-      Result: e.ResourceProperties.lhs + e.ResourceProperties.rhs
-    }
+      Result: e.ResourceProperties.lhs + e.ResourceProperties.rhs,
+    },
   };
 };
 ```
 
 `sum.ts`:
 
-```ts
+```ts nofixture
+import {
+  Construct,
+  CustomResource,
+  CustomResourceProvider,
+  CustomResourceProviderRuntime,
+  Token,
+} from '@aws-cdk/core';
+
 export interface SumProps {
   readonly lhs: number;
   readonly rhs: number;
@@ -483,17 +481,31 @@ export class Sum extends Construct {
 
 Usage will look like this:
 
-```ts
+```ts fixture=README-custom-resource-provider
 const sum = new Sum(this, 'MySum', { lhs: 40, rhs: 2 });
-new CfnOutput(this, 'Result', { value: sum.result });
+new CfnOutput(this, 'Result', { value: Token.asString(sum.result) });
 ```
+
+To access the ARN of the provider's AWS Lambda function role, use the `getOrCreateProvider()`
+built-in singleton method:
+
+```ts
+const provider = CustomResourceProvider.getOrCreateProvider(this, 'Custom::MyCustomResourceType', {
+  codeDirectory: `${__dirname}/my-handler`,
+  runtime: CustomResourceProviderRuntime.NODEJS_12, // currently the only supported runtime
+});
+
+const roleArn = provider.roleArn;
+```
+
+This role ARN can then be used in resource-based IAM policies.
 
 #### The Custom Resource Provider Framework
 
-The [`@aws-cdk/custom-resource`] module includes an advanced framework for
+The [`@aws-cdk/custom-resources`] module includes an advanced framework for
 implementing custom resource providers.
 
-[`@aws-cdk/custom-resource`]: https://docs.aws.amazon.com/cdk/api/latest/docs/custom-resources-readme.html
+[`@aws-cdk/custom-resources`]: https://docs.aws.amazon.com/cdk/api/latest/docs/custom-resources-readme.html
 
 Handlers are implemented as AWS Lambda functions, which means that they can be
 implemented in any Lambda-supported runtime. Furthermore, this provider has an
@@ -504,11 +516,9 @@ allows implementing providers that can take up to two hours to stabilize.
 Set `serviceToken` to `provider.serviceToken` to use this type of provider:
 
 ```ts
-import { Provider } from 'custom-resources';
-
-const provider = new Provider(this, 'MyProvider', {
-  onEventHandler: onEventLambdaFunction,
-  isCompleteHandler: isCompleteLambdaFunction // optional async waiter
+const provider = new customresources.Provider(this, 'MyProvider', {
+  onEventHandler,
+  isCompleteHandler, // optional async waiter
 });
 
 new CustomResource(this, 'MyResource', {
@@ -517,73 +527,6 @@ new CustomResource(this, 'MyResource', {
 ```
 
 See the [documentation](https://docs.aws.amazon.com/cdk/api/latest/docs/custom-resources-readme.html) for more details.
-
-#### Amazon SNS Topic
-
-Every time a resource event occurs (CREATE/UPDATE/DELETE), an SNS notification
-is sent to the SNS topic. Users must process these notifications (e.g. through a
-fleet of worker hosts) and submit success/failure responses to the
-CloudFormation service.
-
-Set `serviceToken` to `topic.topicArn`  in order to use this provider:
-
-```ts
-import * as sns from '@aws-cdk/aws-sns';
-import { CustomResource } from '@aws-cdk/core';
-
-const topic = new sns.Topic(this, 'MyProvider');
-
-new CustomResource(this, 'MyResource', {
-  serviceToken: topic.topicArn
-});
-```
-
-#### AWS Lambda Function
-
-An AWS lambda function is called *directly* by CloudFormation for all resource
-events. The handler must take care of explicitly submitting a success/failure
-response to the CloudFormation service and handle various error cases.
-
-Set `serviceToken` to `lambda.functionArn` to use this provider:
-
-```ts
-import * as lambda from '@aws-cdk/aws-lambda';
-import { CustomResource } from '@aws-cdk/core';
-
-const fn = new lambda.Function(this, 'MyProvider');
-
-new CustomResource(this, 'MyResource', {
-  serviceToken: lambda.functionArn
-});
-```
-
-#### The Custom Resource Provider Framework
-
-The [`@aws-cdk/custom-resource`] module includes an advanced framework for
-implementing custom resource providers.
-
-[`@aws-cdk/custom-resource`]: https://docs.aws.amazon.com/cdk/api/latest/docs/custom-resources-readme.html
-
-Handlers are implemented as AWS Lambda functions, which means that they can be
-implemented in any Lambda-supported runtime. Furthermore, this provider has an
-asynchronous mode, which means that users can provide an `isComplete` lambda
-function which is called periodically until the operation is complete. This
-allows implementing providers that can take up to two hours to stabilize.
-
-Set `serviceToken` to `provider.serviceToken` to use this provider:
-
-```ts
-import { Provider } from 'custom-resources';
-
-const provider = new Provider(this, 'MyProvider', {
-  onEventHandler: onEventLambdaFunction,
-  isCompleteHandler: isCompleteLambdaFunction // optional async waiter
-});
-
-new CustomResource(this, 'MyResource', {
-  serviceToken: provider.serviceToken
-});
-```
 
 ## AWS CloudFormation features
 
@@ -598,7 +541,7 @@ the `CfnOutput` class:
 
 ```ts
 new CfnOutput(this, 'OutputName', {
-  value: bucket.bucketName,
+  value: myBucket.bucketName,
   description: 'The name of an S3 bucket', // Optional
   exportName: 'TheAwesomeBucket', // Registers a CloudFormation export named "TheAwesomeBucket"
 });
@@ -675,7 +618,7 @@ accessing those through the `cfnOptions` property:
 ```ts
 const rawBucket = new s3.CfnBucket(this, 'Bucket', { /* ... */ });
 // -or-
-const rawBucket = bucket.node.defaultChild as s3.CfnBucket;
+const rawBucketAlt = myBucket.node.defaultChild as s3.CfnBucket;
 
 // then
 rawBucket.cfnOptions.condition = new CfnCondition(this, 'EnableBucket', { /* ... */ });
@@ -688,8 +631,8 @@ Resource dependencies (the `DependsOn` attribute) is modified using the
 `cfnResource.addDependsOn` method:
 
 ```ts
-const resourceA = new CfnResource(this, 'ResourceA', { /* ... */ });
-const resourceB = new CfnResource(this, 'ResourceB', { /* ... */ });
+const resourceA = new CfnResource(this, 'ResourceA', resourceProps);
+const resourceB = new CfnResource(this, 'ResourceB', resourceProps);
 
 resourceB.addDependsOn(resourceA);
 ```
@@ -734,7 +677,7 @@ const stage = Fn.conditionIf(isProd.logicalId, 'Beta', 'Prod').toString();
 // Make Bucket creation condition to IsProduction by accessing
 // and overriding the CloudFormation resource
 const bucket = new s3.Bucket(this, 'Bucket');
-const cfnBucket = bucket.node.defaultChild as s3.CfnBucket;
+const cfnBucket = myBucket.node.defaultChild as s3.CfnBucket;
 cfnBucket.cfnOptions.condition = isProd;
 ```
 
@@ -779,10 +722,10 @@ for SSM parameters (including secure strings) and Secrets Manager. Encoding such
 references is done using the `CfnDynamicReference` class:
 
 ```ts
-new CfnDynamicReference(this, 'SecureStringValue', {
-  service: CfnDynamicReferenceService.SECRETS_MANAGER,
-  referenceKey: 'secret-id:secret-string:json-key:version-stage:version-id',
-});
+new CfnDynamicReference(
+  CfnDynamicReferenceService.SECRETS_MANAGER,
+  'secret-id:secret-string:json-key:version-stage:version-id',
+);
 ```
 
 [cfn-dynamic-references]: https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/dynamic-references.html
@@ -847,6 +790,7 @@ new CfnInclude(this, 'ID', {
 ```
 
 ### Termination Protection
+
 You can prevent a stack from being accidentally deleted by enabling termination
 protection on the stack. If a user attempts to delete a stack with termination
 protection enabled, the deletion fails and the stack--including its status--remains
@@ -880,15 +824,15 @@ const tagParam = new CfnParameter(this, 'TagName');
 
 const stringEquals = new CfnJson(this, 'ConditionJson', {
   value: {
-    [`aws:PrincipalTag/${tagParam.valueAsString}`]: true
+    [`aws:PrincipalTag/${tagParam.valueAsString}`]: true,
   },
 });
 
-const principal = new AccountRootPrincipal().withConditions({
+const principal = new iam.AccountRootPrincipal().withConditions({
   StringEquals: stringEquals,
 });
 
-new Role(this, 'MyRole', { assumedBy: principal });
+new iam.Role(this, 'MyRole', { assumedBy: principal });
 ```
 
 **Explanation**: since in this example we pass the tag name through a parameter, it
@@ -899,3 +843,11 @@ IAM operator, we need it in the *key* of a `StringEquals` condition. JSON keys
 *must be* strings, so to circumvent this limitation, we use `CfnJson`
 to "delay" the rendition of this template section to deploy-time. This means
 that the value of `StringEquals` in the template will be `{ "Fn::GetAtt": [ "ConditionJson", "Value" ] }`, and will only "expand" to the operator we synthesized during deployment.
+
+### Stack Resource Limit
+
+When deploying to AWS CloudFormation, it needs to keep in check the amount of resources being added inside a Stack. Currently it's possible to check the limits in the [AWS CloudFormation quotas](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/cloudformation-limits.html) page.
+
+It's possible to synthesize the project with more Resources than the allowed (or even reduce the number of Resources).
+
+Set the context key `@aws-cdk/core:stackResourceLimit` with the proper value, being 0 for disable the limit of resources.

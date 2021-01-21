@@ -1,12 +1,12 @@
 # CDK Construct library for building ECS services
 <!--BEGIN STABILITY BANNER-->
----
-
-![cdk-constructs: Experimental](https://img.shields.io/badge/cdk--constructs-experimental-important.svg?style=for-the-badge)
-
-> The APIs of higher level constructs in this module are experimental and under active development. They are subject to non-backward compatible changes or removal in any future version. These are not subject to the [Semantic Versioning](https://semver.org/) model and breaking changes will be announced in the release notes. This means that while you may use them, you may need to update your source code when upgrading to a newer version of this package.
 
 ---
+
+![cdk-constructs: Stable](https://img.shields.io/badge/cdk--constructs-stable-success.svg?style=for-the-badge)
+
+---
+
 <!--END STABILITY BANNER-->
 
 This library provides a high level, extensible pattern for constructing services
@@ -16,9 +16,10 @@ The `Service` construct provided by this module can be extended with optional `S
 
 - [AWS X-Ray](https://aws.amazon.com/xray/) for tracing your application
 - [Amazon CloudWatch Agent](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Install-CloudWatch-Agent.html) for capturing per task stats
-- [AWS AppMesh f](https://aws.amazon.com/app-mesh/)or adding your application to a service mesh
+- [AWS AppMesh](https://aws.amazon.com/app-mesh/) for adding your application to a service mesh
 - [Application Load Balancer](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/introduction.html), for exposing your service to the public
 - [AWS FireLens](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/using_firelens.html), for filtering and routing application logs
+- [Community Extensions](#community-extensions), providing support for advanced use cases
 
 The `ServiceExtension` class is an abstract class which you can also implement in
 order to build your own custom service extensions for modifying your service, or
@@ -183,34 +184,34 @@ requiring decentralized updates to many different services.
 Every `ServiceExtension` can implement the following hooks to modify the properties
 of constructs, or make use of the resulting constructs:
 
-* `addHooks()` - This hook is called after all the extensions are added to a
+- `addHooks()` - This hook is called after all the extensions are added to a
   ServiceDescription, but before any of the other extension hooks have been run.
   It gives each extension a chance to do some inspection of the overall ServiceDescription
   and see what other extensions have been added. Some extensions may want to register
   hooks on the other extensions to modify them. For example, the Firelens extension
   wants to be able to modify the settings of the application container to route logs
   through Firelens.
-* `modifyTaskDefinitionProps()` - This is hook is passed the proposed
+- `modifyTaskDefinitionProps()` - This is hook is passed the proposed
   ecs.TaskDefinitionProps for a TaskDefinition that is about to be created.
   This allows the extension to make modifications to the task definition props
   before the TaskDefinition is created. For example, the App Mesh extension modifies
   the proxy settings for the task.
-* `useTaskDefinition()` - After the TaskDefinition is created, this hook is
+- `useTaskDefinition()` - After the TaskDefinition is created, this hook is
   passed the actual TaskDefinition construct that was created. This allows the
   extension to add containers to the task, modify the task definition's IAM role,
   etc.
-* `resolveContainerDependencies()` - Once all extensions have added their containers,
+- `resolveContainerDependencies()` - Once all extensions have added their containers,
   each extension is given a chance to modify its container's `dependsOn` settings.
   Extensions need to check and see what other extensions were enabled and decide
   whether their container needs to wait on another container to start first.
-* `modifyServiceProps()` - Before an Ec2Service or FargateService is created, this
+- `modifyServiceProps()` - Before an Ec2Service or FargateService is created, this
   hook is passed a draft version of the service props to change. Each extension adds
   its own modifications to the service properties. For example, the App Mesh extension
   needs to modify the service settings to enable CloudMap service discovery.
-* `useService()` - After the service is created, this hook is given a chance to
+- `useService()` - After the service is created, this hook is given a chance to
   utilize that service. This is used by extensions like the load balancer or App Mesh
   extension, which create and link other AWS resources to the ECS extension.
-* `connectToService()` - This hook is called when a user wants to connect one service
+- `connectToService()` - This hook is called when a user wants to connect one service
   to another service. It allows an extension to implement logic about how to allow
   connections from one service to another. For example, the App Mesh extension implements
   this method in order to easily connect one service mesh service to another, which
@@ -283,3 +284,30 @@ The above code uses the well known service discovery name for each
 service, and passes it as an environment variable to the container so
 that the container knows what address to use when communicating to
 the other service.
+
+## Importing a pre-existing cluster
+
+To create an environment with a pre-existing cluster, you must import the cluster first, then use `Environment.fromEnvironmentAttributes()`. When a cluster is imported into an environment, the cluster is treated as immutable. As a result, no extension may modify the cluster to change a setting.
+
+```ts
+
+const cluster = ecs.Cluster.fromClusterAttributes(stack, 'Cluster', {
+  ...
+});
+
+const environment = Environment.fromEnvironmentAttributes(stack, 'Environment', {
+  capacityType: EnvironmentCapacityType.EC2, // or `FARGATE`
+  cluster,
+});
+
+```
+
+## Community Extensions
+
+We encourage the development of Community Service Extensions that support
+advanced features. Here are some useful extensions that we have reviewed:
+
+- [ListenerRulesExtension](https://www.npmjs.com/package/@wheatstalk/ecs-service-extension-listener-rules) for more precise control over Application Load Balancer rules
+
+> Please submit a pull request so that we can review your service extension and
+> list it here.

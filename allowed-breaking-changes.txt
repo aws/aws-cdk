@@ -3,6 +3,10 @@
 # and that won't typecheck if Manifest.load() adds a union arm and now returns A | B | C.
 change-return-type:@aws-cdk/cloud-assembly-schema.Manifest.load
 
+# Adding any new context queries will add to the ContextQueryProperties type,
+# which changes the signature of MissingContext.
+weakened:@aws-cdk/cloud-assembly-schema.MissingContext
+
 removed:@aws-cdk/core.BootstraplessSynthesizer.DEFAULT_ASSET_PUBLISHING_ROLE_ARN
 removed:@aws-cdk/core.DefaultStackSynthesizer.DEFAULT_ASSET_PUBLISHING_ROLE_ARN
 removed:@aws-cdk/core.DefaultStackSynthesizerProps.assetPublishingExternalId
@@ -22,6 +26,8 @@ removed:@aws-cdk/cdk-assets-schema.FileAssetPackaging
 
 changed-type:@aws-cdk/aws-codedeploy.IServerDeploymentGroup.autoScalingGroups
 changed-type:@aws-cdk/aws-codedeploy.ServerDeploymentGroup.autoScalingGroups
+
+changed-type:@aws-cdk/aws-rds.Credentials.secret
 
 # We were leaking L1 types in L2 APIs, which now have changed required -> optional
 # when ECS moved to the CloudFormation Registry spec.
@@ -46,3 +52,7 @@ incompatible-argument:@aws-cdk/aws-ecs.FargateTaskDefinition.<initializer>
 incompatible-argument:@aws-cdk/aws-ecs.FargateTaskDefinition.addVolume
 incompatible-argument:@aws-cdk/aws-ecs.TaskDefinition.<initializer>
 incompatible-argument:@aws-cdk/aws-ecs.TaskDefinition.addVolume
+
+# We made properties optional and it's really fine but our differ doesn't think so.
+weakened:@aws-cdk/cloud-assembly-schema.DockerImageSource
+weakened:@aws-cdk/cloud-assembly-schema.FileSource

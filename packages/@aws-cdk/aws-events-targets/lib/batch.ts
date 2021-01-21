@@ -1,6 +1,7 @@
 import * as batch from '@aws-cdk/aws-batch';
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
+import { Names } from '@aws-cdk/core';
 import { singletonEventRole } from './util';
 
 /**
@@ -59,7 +60,7 @@ export class BatchJob implements events.IRuleTarget {
   public bind(rule: events.IRule, _id?: string): events.RuleTargetConfig {
     const batchParameters: events.CfnRule.BatchParametersProperty = {
       jobDefinition: this.jobDefinition.jobDefinitionArn,
-      jobName: this.props.jobName ?? rule.node.uniqueId,
+      jobName: this.props.jobName ?? Names.nodeUniqueId(rule.node),
       arrayProperties: this.props.size ? { size: this.props.size } : undefined,
       retryStrategy: this.props.attempts ? { attempts: this.props.attempts } : undefined,
     };

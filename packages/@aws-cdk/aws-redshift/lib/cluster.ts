@@ -307,6 +307,13 @@ export interface ClusterProps {
    * @default RemovalPolicy.RETAIN
    */
   readonly removalPolicy?: RemovalPolicy
+
+  /**
+   * Whether to make cluster publicly accessible.
+   *
+   * @default false
+   */
+  readonly publiclyAccessible?: boolean
 }
 
 /**
@@ -469,7 +476,7 @@ export class Cluster extends ClusterBase {
       loggingProperties,
       iamRoles: props.roles ? props.roles.map(role => role.roleArn) : undefined,
       dbName: props.defaultDatabaseName || 'default_db',
-      publiclyAccessible: false,
+      publiclyAccessible: props.publiclyAccessible || false,
       // Encryption
       kmsKeyId: props.encryptionKey && props.encryptionKey.keyArn,
       encrypted: props.encrypted !== undefined ? props.encrypted : true,
@@ -546,6 +553,9 @@ export class Cluster extends ClusterBase {
       }
       return undefined;
     } else {
+      if (Token.isUnresolved(numberOfNodes)) {
+        return numberOfNodes;
+      }
       const nodeCount = numberOfNodes ?? 2;
       if (nodeCount < 2 || nodeCount > 100) {
         throw new Error('Number of nodes for cluster type multi-node must be at least 2 and no more than 100');
