@@ -1065,6 +1065,16 @@ export interface BucketProps {
   readonly encryptionKey?: kms.IKey;
 
   /**
+   * Specifies whether Amazon S3 should use an S3 Bucket Key with server-side
+   * encryption using KMS (SSE-KMS) for new objects in the bucket.
+   *
+   * Only relevant, when Encryption is set to {@link BucketEncryption.KMS}
+   *
+   * @default - false
+   */
+  readonly bucketKeyEnabled?: boolean;
+
+  /**
    * Physical name of this bucket.
    *
    * @default - Assigned by CloudFormation (recommended).
@@ -1533,6 +1543,11 @@ export class Bucket extends BucketBase {
       throw new Error(`encryptionKey is specified, so 'encryption' must be set to KMS (value: ${encryptionType})`);
     }
 
+    // if bucketKeyEnabled is set, encryption must be set to KMS.
+    if (props.bucketKeyEnabled && encryptionType !== BucketEncryption.KMS) {
+      throw new Error(`bucketKeyEnabled is specified, so 'encryption' must be set to KMS (value: ${encryptionType})`);
+    }
+
     if (encryptionType === BucketEncryption.UNENCRYPTED) {
       return { bucketEncryption: undefined, encryptionKey: undefined };
     }
@@ -1545,6 +1560,7 @@ export class Bucket extends BucketBase {
       const bucketEncryption = {
         serverSideEncryptionConfiguration: [
           {
+            bucketKeyEnabled: props.bucketKeyEnabled,
             serverSideEncryptionByDefault: {
               sseAlgorithm: 'aws:kms',
               kmsMasterKeyId: encryptionKey.keyArn,

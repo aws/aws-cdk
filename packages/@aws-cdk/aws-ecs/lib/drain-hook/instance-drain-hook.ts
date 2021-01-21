@@ -9,6 +9,10 @@ import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { ICluster } from '../cluster';
 
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct as CoreConstruct } from '@aws-cdk/core';
+
 // Reference for the source in this package:
 //
 // https://github.com/aws-samples/ecs-refarch-cloudformation/blob/master/infrastructure/lifecyclehook.yaml
@@ -49,7 +53,7 @@ export interface InstanceDrainHookProps {
 /**
  * A hook to drain instances from ECS traffic before they're terminated
  */
-export class InstanceDrainHook extends cdk.Construct {
+export class InstanceDrainHook extends CoreConstruct {
 
   /**
    * Constructs a new instance of the InstanceDrainHook class.

@@ -5,6 +5,10 @@ import { CfnTargetGroup } from '../elasticloadbalancingv2.generated';
 import { Protocol, TargetType } from './enums';
 import { Attributes, renderAttributes } from './util';
 
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct as CoreConstruct } from '@aws-cdk/core';
+
 /**
  * Basic properties of both Application and Network Target Groups
  */
@@ -145,7 +149,7 @@ export interface HealthCheck {
 /**
  * Define the target of a load balancer
  */
-export abstract class TargetGroupBase extends cdk.Construct implements ITargetGroup {
+export abstract class TargetGroupBase extends CoreConstruct implements ITargetGroup {
   /**
    * The ARN of the target group
    */

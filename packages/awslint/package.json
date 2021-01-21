@@ -8,8 +8,8 @@
     "test": "echo ok",
     "watch": "tsc -b -w",
     "package": "mkdir -p dist/js && mv $( npm pack ) dist/js/",
-    "build+test+package": "npm run build+test && npm run package",
-    "build+test": "npm run build && npm test",
+    "build+test+package": "yarn build+test && yarn package",
+    "build+test": "yarn build && yarn test",
     "pkglint": "pkglint -f"
   },
   "bin": {

@@ -4,6 +4,10 @@ import { validateHealthChecks } from './private/utils';
 import { HealthCheck, Protocol, HttpTimeout, GrpcTimeout, TcpTimeout } from './shared-interfaces';
 import { TlsCertificate, TlsCertificateConfig } from './tls-certificate';
 
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct } from '@aws-cdk/core';
+
 /**
  * Properties for a VirtualNode listener
  */
@@ -111,7 +115,7 @@ export abstract class VirtualNodeListener {
   /**
    * Binds the current object when adding Listener to a VirtualNode
    */
-  public abstract bind(scope: cdk.Construct): VirtualNodeListenerConfig;
+  public abstract bind(scope: Construct): VirtualNodeListenerConfig;
 
 }
 
@@ -122,7 +126,7 @@ class VirtualNodeListenerImpl extends VirtualNodeListener {
     private readonly port: number = 8080,
     private readonly tlsCertificate: TlsCertificate | undefined) { super(); }
 
-  public bind(scope: cdk.Construct): VirtualNodeListenerConfig {
+  public bind(scope: Construct): VirtualNodeListenerConfig {
     const tlsConfig = this.tlsCertificate?.bind(scope);
     return {
       listener: {

@@ -330,6 +330,7 @@ export class Canary extends cdk.Resource {
    * Returns a default role for the canary
    */
   private createDefaultRole(prefix?: string): iam.IRole {
+    const { partition } = cdk.Stack.of(this);
     // Created role will need these policies to run the Canary.
     // https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-synthetics-canary.html#cfn-synthetics-canary-executionrolearn
     const policy = new iam.PolicyDocument({
@@ -348,7 +349,7 @@ export class Canary extends cdk.Resource {
           conditions: { StringEquals: { 'cloudwatch:namespace': 'CloudWatchSynthetics' } },
         }),
         new iam.PolicyStatement({
-          resources: ['arn:aws:logs:::*'],
+          resources: [`arn:${partition}:logs:::*`],
           actions: ['logs:CreateLogStream', 'logs:CreateLogGroup', 'logs:PutLogEvents'],
         }),
       ],

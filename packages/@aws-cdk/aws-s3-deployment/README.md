@@ -90,7 +90,7 @@ based on file extensions:
 
 ```ts
 new BucketDeployment(this, 'BucketDeployment', {
-  sources: [Source.asset('./website', { exclude: ['index.html' })],
+  sources: [Source.asset('./website', { exclude: ['index.html'] })],
   destinationBucket: bucket,
   cacheControl: [CacheControl.fromString('max-age=31536000,public,immutable')],
   prune: false,

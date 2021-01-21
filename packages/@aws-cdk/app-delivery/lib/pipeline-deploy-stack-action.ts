@@ -6,6 +6,10 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cdk from '@aws-cdk/core';
 
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct } from '@aws-cdk/core';
+
 export interface PipelineDeployStackActionProps {
   /**
    * The CDK stack to be deployed.
@@ -147,7 +151,7 @@ export class PipelineDeployStackAction implements codepipeline.IAction {
     });
   }
 
-  public bind(scope: cdk.Construct, stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
+  public bind(scope: Construct, stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
   codepipeline.ActionConfig {
     if (this.stack.environment !== cdk.Stack.of(scope).environment) {
       // FIXME: Add the necessary to extend to stacks in a different account

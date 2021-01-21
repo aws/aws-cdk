@@ -1,5 +1,8 @@
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
-import * as cdk from '@aws-cdk/core';
+
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct } from '@aws-cdk/core';
 
 /**
  * The creation attributes used for defining a configuration property
@@ -109,8 +112,8 @@ export interface CustomActionRegistrationProps {
  * representing your custom Action, extending the Action class,
  * and taking the `actionProperties` as properly typed, construction properties.
  */
-export class CustomActionRegistration extends cdk.Construct {
-  constructor(parent: cdk.Construct, id: string, props: CustomActionRegistrationProps) {
+export class CustomActionRegistration extends Construct {
+  constructor(parent: Construct, id: string, props: CustomActionRegistrationProps) {
     super(parent, id);
 
     new codepipeline.CfnCustomActionType(this, 'Resource', {

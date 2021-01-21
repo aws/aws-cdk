@@ -1,6 +1,10 @@
 import * as cdk from '@aws-cdk/core';
 import { CfnVirtualGateway, CfnVirtualNode } from './appmesh.generated';
 
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct } from '@aws-cdk/core';
+
 /**
  * Represents timeouts for HTTP protocols.
  */
@@ -155,7 +159,7 @@ export abstract class AccessLog {
    * Called when the AccessLog type is initialized. Can be used to enforce
    * mutual exclusivity with future properties
    */
-  public abstract bind(scope: cdk.Construct): AccessLogConfig;
+  public abstract bind(scope: Construct): AccessLogConfig;
 }
 
 /**
@@ -174,7 +178,7 @@ class FileAccessLog extends AccessLog {
     this.filePath = filePath;
   }
 
-  public bind(_scope: cdk.Construct): AccessLogConfig {
+  public bind(_scope: Construct): AccessLogConfig {
     return {
       virtualNodeAccessLog: {
         file: {
