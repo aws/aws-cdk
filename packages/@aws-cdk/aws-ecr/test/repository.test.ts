@@ -1,13 +1,13 @@
-import { expect, haveResource, haveResourceLike, ResourcePart } from '@aws-cdk/assert';
+import '@aws-cdk/assert/jest';
+import { expect as expectCDK, haveResource, haveResourceLike, ResourcePart } from '@aws-cdk/assert';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
-import { nodeunitShim, Test } from 'nodeunit-shim';
 import * as ecr from '../lib';
 
 /* eslint-disable quote-props */
 
-nodeunitShim({
-  'construct repository'(test: Test) {
+describe('repository', () => {
+  test('construct repository', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -15,7 +15,7 @@ nodeunitShim({
     new ecr.Repository(stack, 'Repo');
 
     // THEN
-    expect(stack).toMatch({
+    expectCDK(stack).toMatch({
       Resources: {
         Repo02AC86CF: {
           Type: 'AWS::ECR::Repository',
@@ -24,11 +24,9 @@ nodeunitShim({
         },
       },
     });
+  });
 
-    test.done();
-  },
-
-  'repository creation with imageScanOnPush'(test: Test) {
+  test('repository creation with imageScanOnPush', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -36,15 +34,14 @@ nodeunitShim({
     new ecr.Repository(stack, 'Repo', { imageScanOnPush: true });
 
     // THEN
-    expect(stack).to(haveResource('AWS::ECR::Repository', {
+    expectCDK(stack).to(haveResource('AWS::ECR::Repository', {
       ImageScanningConfiguration: {
         scanOnPush: true,
       },
     }));
-    test.done();
-  },
+  });
 
-  'tag-based lifecycle policy'(test: Test) {
+  test('tag-based lifecycle policy', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const repo = new ecr.Repository(stack, 'Repo');
@@ -53,17 +50,15 @@ nodeunitShim({
     repo.addLifecycleRule({ tagPrefixList: ['abc'], maxImageCount: 1 });
 
     // THEN
-    expect(stack).to(haveResource('AWS::ECR::Repository', {
+    expectCDK(stack).to(haveResource('AWS::ECR::Repository', {
       LifecyclePolicy: {
         // eslint-disable-next-line max-len
         LifecyclePolicyText: '{"rules":[{"rulePriority":1,"selection":{"tagStatus":"tagged","tagPrefixList":["abc"],"countType":"imageCountMoreThan","countNumber":1},"action":{"type":"expire"}}]}',
       },
     }));
+  });
 
-    test.done();
-  },
-
-  'add day-based lifecycle policy'(test: Test) {
+  test('add day-based lifecycle policy', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -74,17 +69,15 @@ nodeunitShim({
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::ECR::Repository', {
+    expectCDK(stack).to(haveResource('AWS::ECR::Repository', {
       LifecyclePolicy: {
         // eslint-disable-next-line max-len
         LifecyclePolicyText: '{"rules":[{"rulePriority":1,"selection":{"tagStatus":"any","countType":"sinceImagePushed","countNumber":5,"countUnit":"days"},"action":{"type":"expire"}}]}',
       },
     }));
+  });
 
-    test.done();
-  },
-
-  'add count-based lifecycle policy'(test: Test) {
+  test('add count-based lifecycle policy', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const repo = new ecr.Repository(stack, 'Repo');
@@ -95,17 +88,15 @@ nodeunitShim({
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::ECR::Repository', {
+    expectCDK(stack).to(haveResource('AWS::ECR::Repository', {
       LifecyclePolicy: {
         // eslint-disable-next-line max-len
         LifecyclePolicyText: '{"rules":[{"rulePriority":1,"selection":{"tagStatus":"any","countType":"imageCountMoreThan","countNumber":5},"action":{"type":"expire"}}]}',
       },
     }));
+  });
 
-    test.done();
-  },
-
-  'mixing numbered and unnumbered rules'(test: Test) {
+  test('mixing numbered and unnumbered rules', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const repo = new ecr.Repository(stack, 'Repo');
@@ -115,17 +106,15 @@ nodeunitShim({
     repo.addLifecycleRule({ rulePriority: 10, tagStatus: ecr.TagStatus.TAGGED, tagPrefixList: ['b'], maxImageCount: 5 });
 
     // THEN
-    expect(stack).to(haveResource('AWS::ECR::Repository', {
+    expectCDK(stack).to(haveResource('AWS::ECR::Repository', {
       LifecyclePolicy: {
         // eslint-disable-next-line max-len
         LifecyclePolicyText: '{"rules":[{"rulePriority":10,"selection":{"tagStatus":"tagged","tagPrefixList":["b"],"countType":"imageCountMoreThan","countNumber":5},"action":{"type":"expire"}},{"rulePriority":11,"selection":{"tagStatus":"tagged","tagPrefixList":["a"],"countType":"imageCountMoreThan","countNumber":5},"action":{"type":"expire"}}]}',
       },
     }));
+  });
 
-    test.done();
-  },
-
-  'tagstatus Any is automatically sorted to the back'(test: Test) {
+  test('tagstatus Any is automatically sorted to the back', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const repo = new ecr.Repository(stack, 'Repo');
@@ -135,17 +124,15 @@ nodeunitShim({
     repo.addLifecycleRule({ tagStatus: ecr.TagStatus.TAGGED, tagPrefixList: ['important'], maxImageCount: 999 });
 
     // THEN
-    expect(stack).to(haveResource('AWS::ECR::Repository', {
+    expectCDK(stack).to(haveResource('AWS::ECR::Repository', {
       LifecyclePolicy: {
         // eslint-disable-next-line max-len
         LifecyclePolicyText: '{"rules":[{"rulePriority":1,"selection":{"tagStatus":"tagged","tagPrefixList":["important"],"countType":"imageCountMoreThan","countNumber":999},"action":{"type":"expire"}},{"rulePriority":2,"selection":{"tagStatus":"any","countType":"imageCountMoreThan","countNumber":5},"action":{"type":"expire"}}]}',
       },
     }));
+  });
 
-    test.done();
-  },
-
-  'lifecycle rules can be added upon initialization'(test: Test) {
+  test('lifecycle rules can be added upon initialization', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -157,16 +144,15 @@ nodeunitShim({
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::ECR::Repository', {
+    expectCDK(stack).to(haveResource('AWS::ECR::Repository', {
       'LifecyclePolicy': {
         // eslint-disable-next-line max-len
         'LifecyclePolicyText': '{"rules":[{"rulePriority":1,"selection":{"tagStatus":"any","countType":"imageCountMoreThan","countNumber":3},"action":{"type":"expire"}}]}',
       },
     }));
-    test.done();
-  },
+  });
 
-  'calculate repository URI'(test: Test) {
+  test('calculate repository URI', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const repo = new ecr.Repository(stack, 'Repo');
@@ -176,7 +162,7 @@ nodeunitShim({
 
     // THEN
     const arnSplit = { 'Fn::Split': [':', { 'Fn::GetAtt': ['Repo02AC86CF', 'Arn'] }] };
-    test.deepEqual(stack.resolve(uri), {
+    expectCDK(stack.resolve(uri)).toMatch({
       'Fn::Join': ['', [
         { 'Fn::Select': [4, arnSplit] },
         '.dkr.ecr.',
@@ -187,11 +173,9 @@ nodeunitShim({
         { Ref: 'Repo02AC86CF' },
       ]],
     });
+  });
 
-    test.done();
-  },
-
-  'import with concrete arn'(test: Test) {
+  test('import with concrete arn', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -199,24 +183,19 @@ nodeunitShim({
     const repo2 = ecr.Repository.fromRepositoryArn(stack, 'repo', 'arn:aws:ecr:us-east-1:585695036304:repository/foo/bar/foo/fooo');
 
     // THEN
-    test.deepEqual(stack.resolve(repo2.repositoryArn), 'arn:aws:ecr:us-east-1:585695036304:repository/foo/bar/foo/fooo');
-    test.deepEqual(stack.resolve(repo2.repositoryName), 'foo/bar/foo/fooo');
+    expect(stack.resolve(repo2.repositoryArn)).toBe('arn:aws:ecr:us-east-1:585695036304:repository/foo/bar/foo/fooo');
+    expect(stack.resolve(repo2.repositoryName)).toBe('foo/bar/foo/fooo');
+  });
 
-    test.done();
-  },
-
-  'fails if importing with token arn and no name'(test: Test) {
+  test('fails if importing with token arn and no name', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    expect(() => {
+      ecr.Repository.fromRepositoryArn(stack, 'arn', cdk.Fn.getAtt('Boom', 'Boom').toString());
+    }).toThrow(/\"repositoryArn\" is a late-bound value, and therefore \"repositoryName\" is required\. Use \`fromRepositoryAttributes\` instead/);
+  });
 
-    // WHEN/THEN
-    test.throws(() => ecr.Repository.fromRepositoryArn(stack, 'arn', cdk.Fn.getAtt('Boom', 'Boom').toString()),
-      /\"repositoryArn\" is a late-bound value, and therefore \"repositoryName\" is required\. Use \`fromRepositoryAttributes\` instead/);
-
-    test.done();
-  },
-
-  'import with token arn and repository name (see awslabs/aws-cdk#1232)'(test: Test) {
+  test('import with token arn and repository name (see awslabs/aws-cdk#1232)', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -227,12 +206,15 @@ nodeunitShim({
     });
 
     // THEN
-    test.deepEqual(stack.resolve(repo.repositoryArn), { 'Fn::GetAtt': ['Boom', 'Arn'] });
-    test.deepEqual(stack.resolve(repo.repositoryName), { 'Fn::GetAtt': ['Boom', 'Name'] });
-    test.done();
-  },
+    expectCDK(stack.resolve(repo.repositoryArn)).toMatch({
+      'Fn::GetAtt': ['Boom', 'Arn'],
+    });
+    expectCDK(stack.resolve(repo.repositoryName)).toMatch({
+      'Fn::GetAtt': ['Boom', 'Name'],
+    });
+  });
 
-  'import only with a repository name (arn is deduced)'(test: Test) {
+  test('import only with a repository name (arn is deduced)', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -240,7 +222,7 @@ nodeunitShim({
     const repo = ecr.Repository.fromRepositoryName(stack, 'just-name', 'my-repo');
 
     // THEN
-    test.deepEqual(stack.resolve(repo.repositoryArn), {
+    expectCDK(stack.resolve(repo.repositoryArn)).toMatch({
       'Fn::Join': ['', [
         'arn:',
         { Ref: 'AWS::Partition' },
@@ -251,11 +233,10 @@ nodeunitShim({
         ':repository/my-repo',
       ]],
     });
-    test.deepEqual(stack.resolve(repo.repositoryName), 'my-repo');
-    test.done();
-  },
+    expect(stack.resolve(repo.repositoryName)).toBe('my-repo');
+  });
 
-  'arnForLocalRepository can be used to render an ARN for a local repository'(test: Test) {
+  test('arnForLocalRepository can be used to render an ARN for a local repository', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const repoName = cdk.Fn.getAtt('Boom', 'Name').toString();
@@ -267,8 +248,10 @@ nodeunitShim({
     });
 
     // THEN
-    test.deepEqual(stack.resolve(repo.repositoryName), { 'Fn::GetAtt': ['Boom', 'Name'] });
-    test.deepEqual(stack.resolve(repo.repositoryArn), {
+    expectCDK(stack.resolve(repo.repositoryName)).toMatch({
+      'Fn::GetAtt': ['Boom', 'Name'],
+    });
+    expectCDK(stack.resolve(repo.repositoryArn)).toMatch({
       'Fn::Join': ['', [
         'arn:',
         { Ref: 'AWS::Partition' },
@@ -280,10 +263,9 @@ nodeunitShim({
         { 'Fn::GetAtt': ['Boom', 'Name'] },
       ]],
     });
-    test.done();
-  },
+  });
 
-  'resource policy'(test: Test) {
+  test('resource policy', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const repo = new ecr.Repository(stack, 'Repo');
@@ -295,7 +277,7 @@ nodeunitShim({
     }));
 
     // THEN
-    expect(stack).to(haveResource('AWS::ECR::Repository', {
+    expectCDK(stack).to(haveResource('AWS::ECR::Repository', {
       RepositoryPolicyText: {
         Statement: [
           {
@@ -307,11 +289,9 @@ nodeunitShim({
         Version: '2012-10-17',
       },
     }));
+  });
 
-    test.done();
-  },
-
-  'fails if repository policy has no actions'(test: Test) {
+  test('fails if repository policy has no actions', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'my-stack');
@@ -324,11 +304,12 @@ nodeunitShim({
     }));
 
     // THEN
-    test.throws(() => app.synth(), /A PolicyStatement must specify at least one \'action\' or \'notAction\'/);
-    test.done();
-  },
+    expect(() => {
+      app.synth();
+    }).toThrow(/A PolicyStatement must specify at least one \'action\' or \'notAction\'/);
+  });
 
-  'fails if repository policy has no IAM principals'(test: Test) {
+  test('fails if repository policy has no IAM principals', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'my-stack');
@@ -341,12 +322,13 @@ nodeunitShim({
     }));
 
     // THEN
-    test.throws(() => app.synth(), /A PolicyStatement used in a resource-based policy must specify at least one IAM principal/);
-    test.done();
-  },
+    expect(() => {
+      app.synth();
+    }).toThrow(/A PolicyStatement used in a resource-based policy must specify at least one IAM principal/);
+  });
 
-  'events': {
-    'onImagePushed without imageTag creates the correct event'(test: Test) {
+  describe('events', () => {
+    test('onImagePushed without imageTag creates the correct event', () => {
       const stack = new cdk.Stack();
       const repo = new ecr.Repository(stack, 'Repo');
 
@@ -356,7 +338,7 @@ nodeunitShim({
         },
       });
 
-      expect(stack).to(haveResourceLike('AWS::Events::Rule', {
+      expectCDK(stack).to(haveResourceLike('AWS::Events::Rule', {
         'EventPattern': {
           'source': [
             'aws.ecr',
@@ -376,10 +358,9 @@ nodeunitShim({
         },
         'State': 'ENABLED',
       }));
+    });
 
-      test.done();
-    },
-    'onImageScanCompleted without imageTags creates the correct event'(test: Test) {
+    test('onImageScanCompleted without imageTags creates the correct event', () => {
       const stack = new cdk.Stack();
       const repo = new ecr.Repository(stack, 'Repo');
 
@@ -389,7 +370,7 @@ nodeunitShim({
         },
       });
 
-      expect(stack).to(haveResourceLike('AWS::Events::Rule', {
+      expectCDK(stack).to(haveResourceLike('AWS::Events::Rule', {
         'EventPattern': {
           'source': [
             'aws.ecr',
@@ -407,11 +388,9 @@ nodeunitShim({
         },
         'State': 'ENABLED',
       }));
+    });
 
-      test.done();
-
-    },
-    'onImageScanCompleted with one imageTag creates the correct event'(test: Test) {
+    test('onImageScanCompleted with one imageTag creates the correct event', () => {
       const stack = new cdk.Stack();
       const repo = new ecr.Repository(stack, 'Repo');
 
@@ -422,7 +401,7 @@ nodeunitShim({
         },
       });
 
-      expect(stack).to(haveResourceLike('AWS::Events::Rule', {
+      expectCDK(stack).to(haveResourceLike('AWS::Events::Rule', {
         'EventPattern': {
           'source': [
             'aws.ecr',
@@ -443,11 +422,9 @@ nodeunitShim({
         },
         'State': 'ENABLED',
       }));
+    });
 
-      test.done();
-
-    },
-    'onImageScanCompleted with multiple imageTags creates the correct event'(test: Test) {
+    test('onImageScanCompleted with multiple imageTags creates the correct event', () => {
       const stack = new cdk.Stack();
       const repo = new ecr.Repository(stack, 'Repo');
 
@@ -458,7 +435,7 @@ nodeunitShim({
         },
       });
 
-      expect(stack).to(haveResourceLike('AWS::Events::Rule', {
+      expectCDK(stack).to(haveResourceLike('AWS::Events::Rule', {
         'EventPattern': {
           'source': [
             'aws.ecr',
@@ -481,70 +458,63 @@ nodeunitShim({
         },
         'State': 'ENABLED',
       }));
+    });
+  });
 
-      test.done();
+  test('removal policy is "Retain" by default', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
 
-    },
+    // WHEN
+    new ecr.Repository(stack, 'Repo');
 
-    'removal policy is "Retain" by default'(test: Test) {
-      // GIVEN
-      const stack = new cdk.Stack();
+    // THEN
+    expectCDK(stack).to(haveResource('AWS::ECR::Repository', {
+      'Type': 'AWS::ECR::Repository',
+      'DeletionPolicy': 'Retain',
+    }, ResourcePart.CompleteDefinition));
+  });
 
-      // WHEN
-      new ecr.Repository(stack, 'Repo');
+  test('"Delete" removal policy can be set explicitly', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
 
-      // THEN
-      expect(stack).to(haveResource('AWS::ECR::Repository', {
-        'Type': 'AWS::ECR::Repository',
-        'DeletionPolicy': 'Retain',
-      }, ResourcePart.CompleteDefinition));
-      test.done();
-    },
+    // WHEN
+    new ecr.Repository(stack, 'Repo', {
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+    });
 
-    '"Delete" removal policy can be set explicitly'(test: Test) {
-      // GIVEN
-      const stack = new cdk.Stack();
+    // THEN
+    expectCDK(stack).to(haveResource('AWS::ECR::Repository', {
+      'Type': 'AWS::ECR::Repository',
+      'DeletionPolicy': 'Delete',
+    }, ResourcePart.CompleteDefinition));
+  });
 
-      // WHEN
-      new ecr.Repository(stack, 'Repo', {
-        removalPolicy: cdk.RemovalPolicy.DESTROY,
-      });
+  test('grant adds appropriate resource-*', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const repo = new ecr.Repository(stack, 'TestHarnessRepo');
 
-      // THEN
-      expect(stack).to(haveResource('AWS::ECR::Repository', {
-        'Type': 'AWS::ECR::Repository',
-        'DeletionPolicy': 'Delete',
-      }, ResourcePart.CompleteDefinition));
-      test.done();
-    },
+    // WHEN
+    repo.grantPull(new iam.AnyPrincipal());
 
-    'grant adds appropriate resource-*'(test: Test) {
-      // GIVEN
-      const stack = new cdk.Stack();
-      const repo = new ecr.Repository(stack, 'TestHarnessRepo');
-
-      // WHEN
-      repo.grantPull(new iam.AnyPrincipal());
-
-      // THEN
-      expect(stack).to(haveResource('AWS::ECR::Repository', {
-        'RepositoryPolicyText': {
-          'Statement': [
-            {
-              'Action': [
-                'ecr:BatchCheckLayerAvailability',
-                'ecr:GetDownloadUrlForLayer',
-                'ecr:BatchGetImage',
-              ],
-              'Effect': 'Allow',
-              'Principal': '*',
-            },
-          ],
-          'Version': '2012-10-17',
-        },
-      }));
-
-      test.done();
-    },
-  },
+    // THEN
+    expectCDK(stack).to(haveResource('AWS::ECR::Repository', {
+      'RepositoryPolicyText': {
+        'Statement': [
+          {
+            'Action': [
+              'ecr:BatchCheckLayerAvailability',
+              'ecr:GetDownloadUrlForLayer',
+              'ecr:BatchGetImage',
+            ],
+            'Effect': 'Allow',
+            'Principal': '*',
+          },
+        ],
+        'Version': '2012-10-17',
+      },
+    }));
+  });
 });

@@ -1,11 +1,11 @@
-import { expect, haveResourceLike } from '@aws-cdk/assert';
+import '@aws-cdk/assert/jest';
+import { expect as expectCDK, haveResourceLike } from '@aws-cdk/assert';
 import * as iam from '@aws-cdk/aws-iam';
 import { Stack } from '@aws-cdk/core';
-import { nodeunitShim, Test } from 'nodeunit-shim';
 import { AuthorizationToken } from '../lib';
 
-nodeunitShim({
-  'grant()'(test: Test) {
+describe('auth-token', () => {
+  test('grant()', () => {
     // GIVEN
     const stack = new Stack();
     const user = new iam.User(stack, 'User');
@@ -14,7 +14,7 @@ nodeunitShim({
     AuthorizationToken.grantRead(user);
 
     // THEN
-    expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
+    expectCDK(stack).to(haveResourceLike('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
@@ -25,7 +25,5 @@ nodeunitShim({
         ],
       },
     }));
-
-    test.done();
-  },
+  });
 });
