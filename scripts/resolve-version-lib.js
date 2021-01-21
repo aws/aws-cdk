@@ -17,6 +17,7 @@ function resolveVersion(rootdir) {
   const releaseConfig = require(releaseFile);
   const majorVersion = releaseConfig.majorVersion;
   const releaseType = releaseConfig.releaseType;
+  const distTag = releaseConfig.distTag;
   if (!majorVersion) { throw new Error(`"majorVersion"" must be defined in ${releaseFile}`); }
   if (!releaseType) { throw new Error(`"releaseType" must be defined in ${releaseFile}`); }
   if (typeof(majorVersion) !== 'number') { throw new Error(`majorVersion=${majorVersion} must be a number`); }
@@ -69,6 +70,7 @@ function resolveVersion(rootdir) {
     changelogFile: changelogFile,
     prerelease: releaseType !== 'stable' ? releaseType : undefined,
     marker: '0.0.0',
+    ...(distTag ? { npmDistTag: distTag } : {}),
   };
 }
 
