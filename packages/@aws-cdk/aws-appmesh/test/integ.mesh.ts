@@ -102,6 +102,9 @@ const node3 = mesh.addVirtualNode('node3', {
       unhealthyThreshold: 2,
     },
   })],
+  backendsDefaultClientPolicy: appmesh.ClientPolicy.fileTrust({
+    certificateChain: 'path-to-certificate',
+  }),
   accessLog: appmesh.AccessLog.fromFilePath('/dev/stdout'),
 });
 
