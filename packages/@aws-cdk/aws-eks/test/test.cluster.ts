@@ -40,7 +40,6 @@ export = {
   },
 
   'throws when trying to place cluster handlers in a vpc with no private subnets'(test: Test) {
-
     const { stack } = testFixture();
 
     const vpc = new ec2.Vpc(stack, 'Vpc');
@@ -56,6 +55,69 @@ export = {
 
     test.done();
   },
+
+  'imported Vpc from unparseable list tokens': (() => {
+    let stack: cdk.Stack;
+    let vpc: ec2.IVpc;
+
+    return {
+      'setUp'(cb: () => void) {
+        stack = new cdk.Stack();
+        const vpcId = cdk.Fn.importValue('myVpcId');
+        const availabilityZones = cdk.Fn.split(',', cdk.Fn.importValue('myAvailabilityZones'));
+        const publicSubnetIds = cdk.Fn.split(',', cdk.Fn.importValue('myPublicSubnetIds'));
+        const privateSubnetIds = cdk.Fn.split(',', cdk.Fn.importValue('myPrivateSubnetIds'));
+        const isolatedSubnetIds = cdk.Fn.split(',', cdk.Fn.importValue('myIsolatedSubnetIds'));
+
+        vpc = ec2.Vpc.fromVpcAttributes(stack, 'importedVpc', {
+          vpcId,
+          availabilityZones,
+          publicSubnetIds,
+          privateSubnetIds,
+          isolatedSubnetIds,
+        });
+
+        cb();
+      },
+
+      'throws if selecting more than one subnet group'(test: Test) {
+        test.throws(() => new eks.Cluster(stack, 'Cluster', {
+          vpc: vpc,
+          vpcSubnets: [{ subnetType: ec2.SubnetType.PUBLIC }, { subnetType: ec2.SubnetType.PRIVATE }],
+          defaultCapacity: 0,
+          version: eks.KubernetesVersion.V1_18,
+        }), /cannot select multiple subnet groups/);
+
+        test.done();
+      },
+
+      'synthesis works if only one subnet group is selected'(test: Test) {
+        // WHEN
+        new eks.Cluster(stack, 'Cluster', {
+          vpc: vpc,
+          vpcSubnets: [{ subnetType: ec2.SubnetType.PUBLIC }],
+          defaultCapacity: 0,
+          version: eks.KubernetesVersion.V1_18,
+        });
+
+        // THEN
+        expect(stack).to(haveResourceLike('Custom::AWSCDK-EKS-Cluster', {
+          Config: {
+            resourcesVpcConfig: {
+              subnetIds: {
+                'Fn::Split': [
+                  ',',
+                  { 'Fn::ImportValue': 'myPublicSubnetIds' },
+                ],
+              },
+            },
+          },
+        }));
+
+        test.done();
+      },
+    };
+  })(),
 
   'throws when accessing cluster security group for imported cluster without cluster security group id'(test: Test) {
 
