@@ -892,7 +892,11 @@ export class Project extends ProjectBase {
         resources: [Lazy.string({
           produce: () => this.projectArn,
         })],
-        actions: ['codebuild:StartBuild', 'codebuild:StopBuild', 'codebuild:RetryBuild'],
+        actions: [
+          'codebuild:StartBuild',
+          'codebuild:StopBuild',
+          'codebuild:RetryBuild',
+        ],
       }));
     }
     return {
