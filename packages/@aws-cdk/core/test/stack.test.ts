@@ -1,5 +1,5 @@
 import * as cxapi from '@aws-cdk/cx-api';
-import { withFeatureFlag, withFeatureFlagDisabled } from 'cdk-build-tools/lib/feature-flag';
+import { testFeatureFlag, testFeatureFlagDisabled } from 'cdk-build-tools/lib/feature-flag';
 import {
   App, CfnCondition, CfnInclude, CfnOutput, CfnParameter,
   CfnResource, Construct, Lazy, ScopedAws, Stack, validateString, ISynthesisSession, Tags, LegacyStackSynthesizer, DefaultStackSynthesizer,
@@ -885,7 +885,7 @@ describe('stack', () => {
 
     describe('disabled (default)', () => {
 
-      withFeatureFlagDisabled('stack.templateFile is the name of the template file emitted to the cloud assembly (default is to use the stack name)', App, (app) => {
+      testFeatureFlagDisabled('stack.templateFile is the name of the template file emitted to the cloud assembly (default is to use the stack name)', App, (app) => {
         // WHEN
         const stack1 = new Stack(app, 'MyStack1');
         const stack2 = new Stack(app, 'MyStack2', { stackName: 'MyRealStack2' });
@@ -896,7 +896,7 @@ describe('stack', () => {
 
       });
 
-      withFeatureFlagDisabled('artifactId and templateFile use the stack name', App, (app) => {
+      testFeatureFlagDisabled('artifactId and templateFile use the stack name', App, (app) => {
         // WHEN
         const stack1 = new Stack(app, 'MyStack1', { stackName: 'thestack' });
         const assembly = app.synth();
@@ -910,7 +910,7 @@ describe('stack', () => {
 
     describe('enabled', () => {
       const flags = { [cxapi.ENABLE_STACK_NAME_DUPLICATES_CONTEXT]: 'true' };
-      withFeatureFlag('allows using the same stack name for two stacks (i.e. in different regions)', flags, App, (app) => {
+      testFeatureFlag('allows using the same stack name for two stacks (i.e. in different regions)', flags, App, (app) => {
         // WHEN
         const stack1 = new Stack(app, 'MyStack1', { stackName: 'thestack' });
         const stack2 = new Stack(app, 'MyStack2', { stackName: 'thestack' });
@@ -923,7 +923,7 @@ describe('stack', () => {
         expect(stack2.templateFile).toEqual('MyStack2.template.json');
       });
 
-      withFeatureFlag('artifactId and templateFile use the unique id and not the stack name', flags, App, (app) => {
+      testFeatureFlag('artifactId and templateFile use the unique id and not the stack name', flags, App, (app) => {
         // WHEN
         const stack1 = new Stack(app, 'MyStack1', { stackName: 'thestack' });
         const assembly = app.synth();
@@ -934,7 +934,7 @@ describe('stack', () => {
         expect(assembly.getStackArtifact(stack1.artifactId).templateFile).toEqual('MyStack1.template.json');
       });
 
-      withFeatureFlag('when feature flag is enabled we will use the artifact id as the template name', flags, App, (app) => {
+      testFeatureFlag('when feature flag is enabled we will use the artifact id as the template name', flags, App, (app) => {
         // WHEN
         const stack1 = new Stack(app, 'MyStack1');
         const stack2 = new Stack(app, 'MyStack2', { stackName: 'MyRealStack2' });

@@ -23,7 +23,7 @@ type Flags = {[key: string]: any} | undefined
  * When run in CDKv2, tests that are intended to verify the behaviour when the feature flag is not
  * set are skipped.
  */
-export function withFeatureFlag<T>(
+export function testFeatureFlag<T>(
   name: string,
   flags: Flags,
   cdkApp: new (flags: Flags) => T,
@@ -57,13 +57,13 @@ export function withFeatureFlag<T>(
 }
 
 /**
- * Same as withFeatureFlag() but used for test cases that verify behaviour
+ * Same as testFeatureFlag() but used for test cases that verify behaviour
  * when the feature flag is disabled.
  */
-export function withFeatureFlagDisabled<T>(
+export function testFeatureFlagDisabled<T>(
   name: string,
   cdkApp: new (flags: Flags) => T,
   fn: (app: T) => void,
   repoRoot: string = path.join(process.cwd(), '..', '..', '..')) {
-  return withFeatureFlag(name, undefined, cdkApp, fn, repoRoot);
+  return testFeatureFlag(name, undefined, cdkApp, fn, repoRoot);
 }
