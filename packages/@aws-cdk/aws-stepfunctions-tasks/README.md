@@ -153,7 +153,7 @@ merge a subset of the task output to the input.
 Most tasks take parameters. Parameter values can either be static, supplied directly
 in the workflow definition (by specifying their values), or a value available at runtime
 in the state machine's execution (either as its input or an output of a prior state).
-Parameter values available at runtime can be specified via the `Data` class,
+Parameter values available at runtime can be specified via the `JsonPath` class,
 using methods such as `JsonPath.stringAt()`.
 
 The following example provides the field named `input` as the input to the Lambda function
