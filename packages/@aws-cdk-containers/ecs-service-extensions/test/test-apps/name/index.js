@@ -1,8 +1,17 @@
 // Setup the APM instrumentation
+
+var AWSXRay;
+
 if (process.env.TEST_DATADOG == 'true') {
   require('dd-trace').init();
-} else if (process.env.TEST_NEWRELIC == 'true') {
+}
+
+if (process.env.TEST_NEWRELIC == 'true') {
   require('newrelic');
+}
+
+if (process.env.TEST_XRAY == 'true') {
+  AWSXRay = require('aws-xray-sdk');
 }
 
 const express = require('express');
@@ -25,9 +34,17 @@ var names = [
   'Charles', 'Karen'
 ];
 
+if (process.env.TEST_XRAY == 'true') {
+  app.use(AWSXRay.express.openSegment('name'));
+}
+
 app.get('*', function (req, res) {
   res.send(names[Math.floor(Math.random() * names.length)] + ` (${hostname})`);
 });
+
+if (process.env.TEST_XRAY == 'true') {
+  app.use(AWSXRay.express.closeSegment());
+}
 
 app.listen(port, () => console.log(`Listening on port ${port}!`));
 

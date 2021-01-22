@@ -8,3 +8,4 @@ export * from './xray';
 export * from './assign-public-ip';
 export * from './cloudwatch-logs';
 export * from './datadog-agent';
+export * from './open-telemetry';

@@ -1,5 +1,5 @@
 import * as ecs from '@aws-cdk/aws-ecs';
-import * as cdk from '@aws-cdk/core';
+import { Construct } from '@aws-cdk/core';
 import { Service } from '../service';
 import { Container } from './container';
 import { ContainerMutatingHook, ServiceExtension } from './extension-interfaces';
@@ -110,7 +110,7 @@ export class DatadogAgent extends ServiceExtension {
     this.datadogApiKey = props.datadogApiKey;
   }
 
-  public prehook(service: Service, scope: cdk.Construct) {
+  public prehook(service: Service, scope: Construct) {
     this.parentService = service;
     this.scope = scope;
   }

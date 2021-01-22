@@ -1,6 +1,6 @@
 import * as ecs from '@aws-cdk/aws-ecs';
 import * as awslogs from '@aws-cdk/aws-logs';
-import * as cdk from '@aws-cdk/core';
+import { Construct } from '@aws-cdk/core';
 import { Service } from '../service';
 import { Container } from './container';
 import { ContainerMutatingHook, ServiceExtension } from './extension-interfaces';
@@ -74,7 +74,7 @@ export class CloudWatchLogsExtension extends ServiceExtension {
     }
   }
 
-  public prehook(service: Service, scope: cdk.Construct) {
+  public prehook(service: Service, scope: Construct) {
     this.parentService = service;
 
     if (!this.logGroup) {
