@@ -520,7 +520,7 @@ abstract class ThirdPartyGitSource extends GitSource {
     this.webhookTriggersBatchBuild = props.webhookTriggersBatchBuild;
   }
 
-  public bind(_scope: CoreConstruct, _project: IProject): SourceConfig {
+  public bind(_scope: CoreConstruct, project: IProject): SourceConfig {
     const anyFilterGroupsProvided = this.webhookFilters.length > 0;
     const webhook = this.webhook === undefined ? (anyFilterGroupsProvided ? true : undefined) : this.webhook;
 
@@ -532,10 +532,10 @@ abstract class ThirdPartyGitSource extends GitSource {
       throw new Error('`webhookTriggersBatchBuild` cannot be used when `webhook` is `false`');
     }
 
-    const superConfig = super.bind(_scope, _project);
+    const superConfig = super.bind(_scope, project);
 
     if (this.webhookTriggersBatchBuild) {
-      _project.enableBatchBuilds();
+      project.enableBatchBuilds();
     }
 
     return {

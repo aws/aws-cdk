@@ -118,7 +118,13 @@
                 "codebuild:StopBuild",
                 "codebuild:RetryBuild"
               ],
-              "Effect": "Allow"
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "MyProject39F7B0AE",
+                  "Arn"
+                ]
+              }
             }
           ],
           "Version": "2012-10-17"

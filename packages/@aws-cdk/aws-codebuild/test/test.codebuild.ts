@@ -712,23 +712,6 @@ export = {
           Webhook: true,
           BuildType: 'BUILD_BATCH',
         },
-      }));
-
-      test.done();
-    },
-
-    'with supportBatchBuildType option'(test: Test) {
-      const stack = new cdk.Stack();
-
-      new codebuild.Project(stack, 'Project', {
-        source: codebuild.Source.gitHub({
-          owner: 'testowner',
-          repo: 'testrepo',
-        }),
-        supportBatchBuildType: true,
-      });
-
-      expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
         BuildBatchConfig: {
           ServiceRole: {
             'Fn::GetAtt': [
@@ -1337,8 +1320,7 @@ export = {
         });
 
         expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
-          'Artifacts':
-          {
+          'Artifacts': {
             'Name': ABSENT,
             'ArtifactIdentifier': 'artifact1',
             'OverrideArtifactName': true,
@@ -1364,8 +1346,7 @@ export = {
         });
 
         expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
-          'Artifacts':
-          {
+          'Artifacts': {
             'ArtifactIdentifier': 'artifact1',
             'Name': 'specificname',
             'OverrideArtifactName': ABSENT,
@@ -1923,5 +1904,67 @@ export = {
         test.done();
       },
     },
+  },
+
+  'enableBatchBuilds()'(test: Test) {
+    const stack = new cdk.Stack();
+
+    const project = new codebuild.Project(stack, 'Project', {
+      source: codebuild.Source.gitHub({
+        owner: 'testowner',
+        repo: 'testrepo',
+      }),
+    });
+    project.enableBatchBuilds(); // TODO test return
+
+    expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
+      BuildBatchConfig: {
+        ServiceRole: {
+          'Fn::GetAtt': [
+            'ProjectBatchServiceRoleF97A1CFB',
+            'Arn',
+          ],
+        },
+      },
+    }));
+
+    expect(stack).to(haveResourceLike('AWS::IAM::Role', {
+      AssumeRolePolicyDocument: {
+        Statement: [
+          {
+            Action: 'sts:AssumeRole',
+            Effect: 'Allow',
+            Principal: {
+              Service: 'codebuild.amazonaws.com',
+            },
+          },
+        ],
+        Version: '2012-10-17',
+      },
+    }));
+
+    expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: [
+              'codebuild:StartBuild',
+              'codebuild:StopBuild',
+              'codebuild:RetryBuild',
+            ],
+            Effect: 'Allow',
+            Resource: {
+              'Fn::GetAtt': [
+                'ProjectC78D97AD',
+                'Arn',
+              ],
+            },
+          },
+        ],
+        Version: '2012-10-17',
+      },
+    }));
+
+    test.done();
   },
 };

@@ -44,13 +44,13 @@ export interface IProject extends IResource, iam.IGrantable, ec2.IConnectable {
   /** The IAM service Role of this Project. Undefined for imported Projects. */
   readonly role?: iam.IRole;
 
-  /** The batch IAM service Role of this Project. Undefined for imported Projects or Projects that have not configured batch builds. */
-  readonly batchRole?: iam.IRole;
-
   /**
    * Enable batch builds.
+   *
+   * Returns an object contining the batch service role if batch builds
+   * could be enabled.
    */
-  enableBatchBuilds(): void;
+  enableBatchBuilds(): IEnableBatchBuildsReturn | undefined;
 
   addToRolePolicy(policyStatement: iam.PolicyStatement): void;
 
@@ -165,6 +165,14 @@ export interface IProject extends IResource, iam.IGrantable, ec2.IConnectable {
 }
 
 /**
+ * The return value for the {@link Project} `enableBatchBuilds()` method.
+ */
+export interface IEnableBatchBuildsReturn {
+  /** The IAM batch service Role of this Project. */
+  readonly role: iam.IRole;
+}
+
+/**
  * Represents a reference to a CodeBuild Project.
  *
  * If you're managing the Project alongside the rest of your CDK resources,
@@ -186,9 +194,6 @@ abstract class ProjectBase extends Resource implements IProject {
   /** The IAM service Role of this Project. */
   public abstract readonly role?: iam.IRole;
 
-  /** The IAM batch service Role of this Project. */
-  public abstract readonly batchRole?: iam.IRole;
-
   /**
    * Actual connections object for this Project.
    * May be unset, in which case this Project is not configured to use a VPC.
@@ -207,10 +212,9 @@ abstract class ProjectBase extends Resource implements IProject {
     return this._connections;
   }
 
-  /**
-   * Enable batch builds.
-   */
-  public abstract enableBatchBuilds(): void
+  public enableBatchBuilds(): IEnableBatchBuildsReturn | undefined {
+    return undefined;
+  }
 
   /**
    * Add a permission only if there's a policy attached.
@@ -608,15 +612,6 @@ export interface ProjectProps extends CommonProjectProps {
    * @see https://docs.aws.amazon.com/codebuild/latest/userguide/sample-multi-in-out.html
    */
   readonly secondaryArtifacts?: IArtifacts[];
-
-  /**
-   * Support the batch build type.
-   *
-   * Set to `true` if you want to be able to run this project as a batch build.
-   *
-   * @default false
-   */
-  readonly supportBatchBuildType?: boolean;
 }
 
 /**
@@ -640,14 +635,11 @@ export class Project extends ProjectBase {
       public readonly projectArn = projectArn;
       public readonly projectName = Stack.of(scope).parseArn(projectArn).resourceName!;
       public readonly role?: iam.Role = undefined;
-      public readonly batchRole?: iam.Role = undefined;
 
       constructor(s: Construct, i: string) {
         super(s, i);
         this.grantPrincipal = new iam.UnknownPrincipal({ resource: this });
       }
-
-      public enableBatchBuilds(): void {}
     }
 
     return new Import(scope, id);
@@ -674,7 +666,6 @@ export class Project extends ProjectBase {
       public readonly projectArn: string;
       public readonly projectName: string;
       public readonly role?: iam.Role = undefined;
-      public readonly batchRole?: iam.Role = undefined;
 
       constructor(s: Construct, i: string) {
         super(s, i);
@@ -688,8 +679,6 @@ export class Project extends ProjectBase {
         this.grantPrincipal = new iam.UnknownPrincipal({ resource: this });
         this.projectName = projectName;
       }
-
-      public enableBatchBuilds(): void {}
     }
 
     return new Import(scope, id);
@@ -742,13 +731,6 @@ export class Project extends ProjectBase {
    * The IAM role for this project.
    */
   public readonly role?: iam.IRole;
-
-  /**
-   * The batch IAM role for this project. May be undefined if batch builds have not been enabled.
-   */
-  public get batchRole(): iam.IRole | undefined {
-    return this._batchServiceRole;
-  }
 
   /**
    * The ARN of the project.
@@ -894,10 +876,6 @@ export class Project extends ProjectBase {
       this.encryptionKey = props.encryptionKey;
     }
 
-    if (props.supportBatchBuildType) {
-      this.enableBatchBuilds();
-    }
-
     // bind
     const bindFunction = (this.buildImage as any).bind;
     if (bindFunction) {
@@ -905,20 +883,23 @@ export class Project extends ProjectBase {
     }
   }
 
-  /**
-   * Enable batch builds.
-   */
-  public enableBatchBuilds(): void {
-    if (this._batchServiceRole) return;
+  public enableBatchBuilds(): IEnableBatchBuildsReturn | undefined {
+    if (!this._batchServiceRole) {
+      this._batchServiceRole = new iam.Role(this, 'BatchServiceRole', {
+        roleName: PhysicalName.GENERATE_IF_NEEDED,
+        assumedBy: new iam.ServicePrincipal('codebuild.amazonaws.com'),
+      });
+      this._batchServiceRole.addToPrincipalPolicy(new iam.PolicyStatement({
+        resources: [Lazy.string({
+          produce: () => this.projectArn,
+        })],
+        actions: ['codebuild:StartBuild', 'codebuild:StopBuild', 'codebuild:RetryBuild'],
+      }));
+    }
 
-    this._batchServiceRole = new iam.Role(this, 'BatchServiceRole', {
-      roleName: PhysicalName.GENERATE_IF_NEEDED,
-      assumedBy: new iam.ServicePrincipal('codebuild.amazonaws.com'),
-    });
-    this._batchServiceRole.addToPrincipalPolicy(new iam.PolicyStatement({
-      resources: [this.projectArn],
-      actions: ['codebuild:StartBuild', 'codebuild:StopBuild', 'codebuild:RetryBuild'],
-    }));
+    return {
+      role: this._batchServiceRole,
+    };
   }
 
   /**
@@ -980,7 +961,7 @@ export class Project extends ProjectBase {
       const keyStack = Stack.of(options.artifactBucket.encryptionKey);
       const projectStack = Stack.of(this);
       if (!(options.artifactBucket.encryptionKey instanceof kms.Key &&
-        (keyStack.account !== projectStack.account || keyStack.region !== projectStack.region))) {
+          (keyStack.account !== projectStack.account || keyStack.region !== projectStack.region))) {
         this.encryptionKey = options.artifactBucket.encryptionKey;
       }
     }
@@ -1289,7 +1270,7 @@ export class Project extends ProjectBase {
     const artifactsType = artifacts.type;
 
     if ((sourceType === CODEPIPELINE_SOURCE_ARTIFACTS_TYPE ||
-      artifactsType === CODEPIPELINE_SOURCE_ARTIFACTS_TYPE) &&
+        artifactsType === CODEPIPELINE_SOURCE_ARTIFACTS_TYPE) &&
       (sourceType !== artifactsType)) {
       throw new Error('Both source and artifacts must be set to CodePipeline');
     }
@@ -1445,7 +1426,7 @@ class ArmBuildImage implements IBuildImage {
   public validate(buildEnvironment: BuildEnvironment): string[] {
     const ret = [];
     if (buildEnvironment.computeType &&
-      buildEnvironment.computeType !== ComputeType.LARGE) {
+        buildEnvironment.computeType !== ComputeType.LARGE) {
       ret.push(`ARM images only support ComputeType '${ComputeType.LARGE}' - ` +
         `'${buildEnvironment.computeType}' was given`);
     }
