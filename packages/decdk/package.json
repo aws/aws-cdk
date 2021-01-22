@@ -59,7 +59,6 @@
     "@aws-cdk/aws-certificatemanager": "0.0.0",
     "@aws-cdk/aws-chatbot": "0.0.0",
     "@aws-cdk/aws-cloud9": "0.0.0",
-    "@aws-cdk/aws-cloudformation": "0.0.0",
     "@aws-cdk/aws-cloudfront": "0.0.0",
     "@aws-cdk/aws-cloudfront-origins": "0.0.0",
     "@aws-cdk/aws-cloudtrail": "0.0.0",
