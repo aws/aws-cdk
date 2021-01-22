@@ -1,6 +1,6 @@
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import * as cdk from '@aws-cdk/core';
-import { DataBrewStartJobRun } from '../../lib/databrew/start-job-run';
+import { GlueDataBrewStartJobRun } from '../../lib/databrew/start-job-run';
 
 describe('Start Job Run', () => {
 
@@ -9,7 +9,7 @@ describe('Start Job Run', () => {
     const stack = new cdk.Stack();
 
     // WHEN
-    const task = new DataBrewStartJobRun(stack, 'JobRun', {
+    const task = new GlueDataBrewStartJobRun(stack, 'JobRun', {
       name: 'jobName',
     });
 
@@ -40,7 +40,7 @@ describe('Start Job Run', () => {
     const stack = new cdk.Stack();
 
     // WHEN
-    const task = new DataBrewStartJobRun(stack, 'JobRun', {
+    const task = new GlueDataBrewStartJobRun(stack, 'JobRun', {
       name: sfn.JsonPath.stringAt('$.Name'),
     });
 
@@ -71,7 +71,7 @@ describe('Start Job Run', () => {
     const stack = new cdk.Stack();
 
     // WHEN
-    const task = new DataBrewStartJobRun(stack, 'JobRun', {
+    const task = new GlueDataBrewStartJobRun(stack, 'JobRun', {
       integrationPattern: sfn.IntegrationPattern.RUN_JOB,
       name: 'jobName',
     });
@@ -96,6 +96,19 @@ describe('Start Job Run', () => {
         Name: 'jobName',
       },
     });
+  });
+
+
+  test('wait_for_task_token integrationPattern throws an error', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    expect(() => {
+      new GlueDataBrewStartJobRun(stack, 'JobRun', {
+        integrationPattern: sfn.IntegrationPattern.WAIT_FOR_TASK_TOKEN,
+        name: 'jobName',
+      });
+    }).toThrow(/Unsupported service integration pattern. Supported Patterns: REQUEST_RESPONSE,RUN_JOB. Received: WAIT_FOR_TASK_TOKEN/i);
   });
 });
 

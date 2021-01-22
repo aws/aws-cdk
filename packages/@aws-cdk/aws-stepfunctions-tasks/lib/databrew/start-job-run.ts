@@ -8,10 +8,10 @@ import { integrationResourceArn, validatePatternSupported } from '../private/tas
  * Properties for starting a job run with StartJobRun
  * @experimental
  */
-export interface DataBrewStartJobRunProps extends sfn.TaskStateBaseProps {
+export interface GlueDataBrewStartJobRunProps extends sfn.TaskStateBaseProps {
 
   /**
-   * DataBrew Job to run
+   * Glue DataBrew Job to run
    */
   readonly name: string;
 }
@@ -22,7 +22,7 @@ export interface DataBrewStartJobRunProps extends sfn.TaskStateBaseProps {
  * @see https://docs.aws.amazon.com/step-functions/latest/dg/connect-databrew.html
  * @experimental
  */
-export class DataBrewStartJobRun extends sfn.TaskStateBase {
+export class GlueDataBrewStartJobRun extends sfn.TaskStateBase {
 
   private static readonly SUPPORTED_INTEGRATION_PATTERNS: sfn.IntegrationPattern[] = [
     sfn.IntegrationPattern.REQUEST_RESPONSE,
@@ -37,11 +37,11 @@ export class DataBrewStartJobRun extends sfn.TaskStateBase {
   /**
    * @experimental
    */
-  constructor(scope: Construct, id: string, private readonly props: DataBrewStartJobRunProps) {
+  constructor(scope: Construct, id: string, private readonly props: GlueDataBrewStartJobRunProps) {
     super(scope, id, props);
     this.integrationPattern = props.integrationPattern ?? sfn.IntegrationPattern.REQUEST_RESPONSE;
 
-    validatePatternSupported(this.integrationPattern, DataBrewStartJobRun.SUPPORTED_INTEGRATION_PATTERNS);
+    validatePatternSupported(this.integrationPattern, GlueDataBrewStartJobRun.SUPPORTED_INTEGRATION_PATTERNS);
 
     this.taskPolicies = [
       new iam.PolicyStatement({
@@ -63,9 +63,7 @@ export class DataBrewStartJobRun extends sfn.TaskStateBase {
   }
 
   /**
-   * Provides the DataBrew Start Job Run task configuration
-   */
-  /**
+   * Provides the Glue DataBrew Start Job Run task configuration
    * @internal
    */
   protected _renderTask(): any {

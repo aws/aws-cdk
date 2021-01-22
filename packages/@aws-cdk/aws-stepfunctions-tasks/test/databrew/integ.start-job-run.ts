@@ -3,7 +3,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import * as cdk from '@aws-cdk/core';
-import { DataBrewStartJobRun } from '../../lib';
+import { GlueDataBrewStartJobRun } from '../../lib';
 
 /*
  * Stack verification steps:
@@ -21,22 +21,15 @@ class GlueDataBrewJobStack extends cdk.Stack {
       removalPolicy: cdk.RemovalPolicy.DESTROY,
     });
 
-    const role = new iam.CfnRole(this, 'DataBrew Role', {
-      assumeRolePolicyDocument: {
-        Statement: [{
-          Effect: 'Allow',
-          Action: 'sts:AssumeRole',
-          Principal: {
-            Service: 'databrew.amazonaws.com',
-          },
-        }],
-      },
+    const role = new iam.Role(this, 'DataBrew Role', {
+      managedPolicies: [{
+        managedPolicyArn: 'arn:aws:iam::aws:policy/service-role/AWSGlueDataBrewServiceRole',
+      }],
       path: '/',
-      managedPolicyArns: ['arn:aws:iam::aws:policy/service-role/AWSGlueDataBrewServiceRole'],
-      policies: [{
-        policyName: 'DataBrewPolicy',
-        policyDocument: {
-          Statement: {
+      assumedBy: new iam.ServicePrincipal('databrew.amazonaws.com'),
+      inlinePolicies: {
+        DataBrewPolicy: iam.PolicyDocument.fromJson({
+          Statement: [{
             Effect: 'Allow',
             Action: [
               's3:GetObject',
@@ -50,9 +43,9 @@ class GlueDataBrewJobStack extends cdk.Stack {
               `${outputBucket.bucketArn}/*`,
               `${outputBucket.bucketArn}`,
             ],
-          },
-        },
-      }],
+          }],
+        }),
+      },
     });
 
     const recipe = new databrew.CfnRecipe(this, 'DataBrew Recipe', {
@@ -89,7 +82,7 @@ class GlueDataBrewJobStack extends cdk.Stack {
 
     const project = new databrew.CfnProject(this, 'DataBrew Project', {
       name: 'project-1',
-      roleArn: role.attrArn,
+      roleArn: role.roleArn,
       datasetName: dataset.name,
       recipeName: recipe.name,
     });
@@ -100,7 +93,7 @@ class GlueDataBrewJobStack extends cdk.Stack {
       name: 'job-1',
       type: 'RECIPE',
       projectName: project.name,
-      roleArn: role.attrArn,
+      roleArn: role.roleArn,
       outputs: [{
         location: {
           bucket: outputBucket.bucketName,
@@ -109,7 +102,7 @@ class GlueDataBrewJobStack extends cdk.Stack {
     });
     job.addDependsOn(project);
 
-    const startGlueDataBrewJob = new DataBrewStartJobRun(this, 'Start DataBrew Job run', {
+    const startGlueDataBrewJob = new GlueDataBrewStartJobRun(this, 'Start DataBrew Job run', {
       name: job.name,
     });
 

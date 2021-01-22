@@ -5,19 +5,20 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete"
     },
-    "DataBrewRole": {
+    "DataBrewRole7E60F80D": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
           "Statement": [
             {
-              "Effect": "Allow",
               "Action": "sts:AssumeRole",
+              "Effect": "Allow",
               "Principal": {
                 "Service": "databrew.amazonaws.com"
               }
             }
-          ]
+          ],
+          "Version": "2012-10-17"
         },
         "ManagedPolicyArns": [
           "arn:aws:iam::aws:policy/service-role/AWSGlueDataBrewServiceRole"
@@ -26,39 +27,42 @@
         "Policies": [
           {
             "PolicyDocument": {
-              "Statement": {
-                "Effect": "Allow",
-                "Action": [
-                  "s3:GetObject",
-                  "s3:PutObject",
-                  "s3:DeleteObject",
-                  "s3:ListBucket"
-                ],
-                "Resource": [
-                  "arn:aws:s3:::databrew-public-datasets-test-region/*",
-                  "arn:aws:s3:::databrew-public-datasets-test-region",
-                  {
-                    "Fn::Join": [
-                      "",
-                      [
-                        {
-                          "Fn::GetAtt": [
-                            "JobOutputBucketACE3BC7B",
-                            "Arn"
-                          ]
-                        },
-                        "/*"
+              "Statement": [
+                {
+                  "Action": [
+                    "s3:GetObject",
+                    "s3:PutObject",
+                    "s3:DeleteObject",
+                    "s3:ListBucket"
+                  ],
+                  "Effect": "Allow",
+                  "Resource": [
+                    "arn:aws:s3:::databrew-public-datasets-test-region/*",
+                    "arn:aws:s3:::databrew-public-datasets-test-region",
+                    {
+                      "Fn::Join": [
+                        "",
+                        [
+                          {
+                            "Fn::GetAtt": [
+                              "JobOutputBucketACE3BC7B",
+                              "Arn"
+                            ]
+                          },
+                          "/*"
+                        ]
                       ]
-                    ]
-                  },
-                  {
-                    "Fn::GetAtt": [
-                      "JobOutputBucketACE3BC7B",
-                      "Arn"
-                    ]
-                  }
-                ]
-              }
+                    },
+                    {
+                      "Fn::GetAtt": [
+                        "JobOutputBucketACE3BC7B",
+                        "Arn"
+                      ]
+                    }
+                  ]
+                }
+              ],
+              "Version": "2012-10-17"
             },
             "PolicyName": "DataBrewPolicy"
           }
@@ -109,7 +113,7 @@
         "RecipeName": "recipe-1",
         "RoleArn": {
           "Fn::GetAtt": [
-            "DataBrewRole",
+            "DataBrewRole7E60F80D",
             "Arn"
           ]
         }
@@ -125,7 +129,7 @@
         "Name": "job-1",
         "RoleArn": {
           "Fn::GetAtt": [
-            "DataBrewRole",
+            "DataBrewRole7E60F80D",
             "Arn"
           ]
         },
