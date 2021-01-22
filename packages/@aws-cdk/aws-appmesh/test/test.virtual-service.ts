@@ -51,7 +51,7 @@ export = {
         mesh.addVirtualService('testVS', {
           virtualServiceName: 'testVS',
           virtualServiceProvider: appmesh.VirtualServiceProvider.virtualNode(differentMeshVn),
-        }), /VirtualService testVS and the provider must be in the same Mesh/);
+        }), /Virtual Service provider must belong to mesh/);
       test.done();
     },
   },

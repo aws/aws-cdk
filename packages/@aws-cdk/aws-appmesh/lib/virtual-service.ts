@@ -38,7 +38,7 @@ export interface IVirtualService extends cdk.IResource {
 /**
  * The base properties which all classes in VirtualService will inherit from
  */
-export interface VirtualServiceBaseProps {
+export interface VirtualServiceProps {
   /**
    * The name of the VirtualService.
    *
@@ -116,7 +116,7 @@ export class VirtualService extends cdk.Resource implements IVirtualService {
 
   public readonly clientPolicy?: ClientPolicy;
 
-  constructor(scope: Construct, id: string, props: VirtualServiceBaseProps) {
+  constructor(scope: Construct, id: string, props: VirtualServiceProps) {
     super(scope, id, {
       physicalName: props.virtualServiceName || cdk.Lazy.string({ produce: () => cdk.Names.uniqueId(this) }),
     });
@@ -226,6 +226,11 @@ export abstract class VirtualServiceProvider {
   }
 
   /**
+   * Mesh the provider belongs to
+   */
+  public abstract readonly mesh: IMesh;
+
+  /**
    * Enforces mutual exclusivity for VirtualService provider types.
    */
   public abstract bind(_construct: Construct): VirtualServiceProviderConfig;
@@ -234,7 +239,7 @@ export abstract class VirtualServiceProvider {
 class VirtualServiceProviderImpl extends VirtualServiceProvider {
   private readonly virtualNode?: IVirtualNode;
   private readonly virtualRouter?: IVirtualRouter;
-  private readonly mesh: IMesh;
+  public readonly mesh: IMesh;
 
   constructor(virtualNode?: IVirtualNode, virtualRouter?: IVirtualRouter, mesh?: IMesh) {
     super();
