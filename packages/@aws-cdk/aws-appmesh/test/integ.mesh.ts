@@ -1,5 +1,3 @@
-import * as acmpca from '@aws-cdk/aws-acmpca';
-import * as acm from '@aws-cdk/aws-certificatemanager';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as cloudmap from '@aws-cdk/aws-servicediscovery';
 import * as cdk from '@aws-cdk/core';
@@ -30,9 +28,6 @@ const virtualService = mesh.addVirtualService('service', {
   virtualServiceName: 'service1.domain.local',
 });
 
-const certArn = 'arn:aws:acm:us-west-2:123456789012:certificate/d1f0daf1-1235-567-abcd-8azz74q5h1s1';
-const cert = acm.Certificate.fromCertificateArn(stack, 'ImportedCert', certArn);
-
 const node = mesh.addVirtualNode('node', {
   serviceDiscovery: appmesh.ServiceDiscovery.dns(`node1.${namespace.namespaceName}`),
   listeners: [appmesh.VirtualNodeListener.http({
@@ -40,10 +35,6 @@ const node = mesh.addVirtualNode('node', {
       healthyThreshold: 3,
       path: '/check-path',
     },
-    tlsCertificate: appmesh.TlsCertificate.acm({
-      certificate: cert,
-      tlsMode: appmesh.TlsMode.STRICT,
-    }),
   })],
   backends: [
     virtualService,
@@ -74,8 +65,6 @@ router.addRoute('route-1', {
   }),
 });
 
-const certificateAuthorityArn = 'arn:aws:acm-pca:us-east-1:123456789012:certificate-authority/12345678-1234-1234-1234-123456789012';
-
 const node2 = mesh.addVirtualNode('node2', {
   serviceDiscovery: appmesh.ServiceDiscovery.dns(`node2.${namespace.namespaceName}`),
   listeners: [appmesh.VirtualNodeListener.http({
@@ -89,8 +78,8 @@ const node2 = mesh.addVirtualNode('node2', {
       unhealthyThreshold: 2,
     },
   })],
-  backendsDefaultClientPolicy: appmesh.ClientPolicy.acmTrust({
-    certificateAuthorities: [acmpca.CertificateAuthority.fromCertificateAuthorityArn(stack, 'certificate', certificateAuthorityArn)],
+  backendsDefaultClientPolicy: appmesh.ClientPolicy.fileTrust({
+    certificateChain: 'path/to/cert',
   }),
   backends: [
     new appmesh.VirtualService(stack, 'service-3', {
@@ -113,9 +102,6 @@ const node3 = mesh.addVirtualNode('node3', {
       unhealthyThreshold: 2,
     },
   })],
-  backendsDefaultClientPolicy: appmesh.ClientPolicy.fileTrust({
-    certificateChain: 'path-to-certificate',
-  }),
   accessLog: appmesh.AccessLog.fromFilePath('/dev/stdout'),
 });
 

@@ -125,7 +125,7 @@ export class VirtualService extends cdk.Resource implements IVirtualService {
     const provider = props.virtualServiceProvider?.bind(this);
     this.mesh = provider.mesh;
 
-    if (provider && provider.mesh != this.mesh) {
+    if (provider.mesh != this.mesh) {
       throw new Error(`VirtualService ${this.physicalName} and the provider must be in the same Mesh`);
     }
 
@@ -133,7 +133,7 @@ export class VirtualService extends cdk.Resource implements IVirtualService {
       meshName: this.mesh.meshName,
       virtualServiceName: this.physicalName,
       spec: {
-        provider: provider
+        provider: provider.virtualNodeProvider || provider.virtualRouterProvider
           ? {
             virtualNode: provider?.virtualNodeProvider,
             virtualRouter: provider?.virtualRouterProvider,
