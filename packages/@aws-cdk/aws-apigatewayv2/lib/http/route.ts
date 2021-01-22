@@ -3,7 +3,7 @@ import { Construct } from 'constructs';
 import { CfnRoute, CfnRouteProps } from '../apigatewayv2.generated';
 import { IRoute } from '../common';
 import { IHttpApi } from './api';
-import { HttpIntegration, IHttpRouteIntegration } from './integration';
+import { IHttpRouteIntegration } from './integration';
 
 /**
  * Represents a Route for an HTTP API.
@@ -125,15 +125,7 @@ export class HttpRoute extends Resource implements IHttpRoute {
       scope: this,
     });
 
-    const integration = new HttpIntegration(this, `${this.node.id}-Integration`, {
-      httpApi: props.httpApi,
-      integrationType: config.type,
-      integrationUri: config.uri,
-      method: config.method,
-      connectionId: config.connectionId,
-      connectionType: config.connectionType,
-      payloadFormatVersion: config.payloadFormatVersion,
-    });
+    const integration = props.httpApi._addIntegration(config);
 
     const routeProps: CfnRouteProps = {
       apiId: props.httpApi.httpApiId,
