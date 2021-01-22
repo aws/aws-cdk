@@ -2,7 +2,7 @@ import { arrayWith, ResourcePart } from '@aws-cdk/assert';
 import '@aws-cdk/assert/jest';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
-import { testFutureBehavior, testFeatureFlagDisable } from 'cdk-build-tools/lib/feature-flag';
+import { testFutureBehavior, testLegacyBehavior } from 'cdk-build-tools/lib/feature-flag';
 import * as kms from '../lib';
 
 const ADMIN_ACTIONS: string[] = [
@@ -508,7 +508,7 @@ describe('addToResourcePolicy allowNoOp and there is no policy', () => {
 });
 
 describe('when the defaultKeyPolicies feature flag is disabled', () => {
-  testFeatureFlagDisable('default key policy', cdk.App, (app) => {
+  testLegacyBehavior('default key policy', cdk.App, (app) => {
     const stack = new cdk.Stack(app);
     new kms.Key(stack, 'MyKey');
 
@@ -533,7 +533,7 @@ describe('when the defaultKeyPolicies feature flag is disabled', () => {
     }, ResourcePart.CompleteDefinition);
   });
 
-  testFeatureFlagDisable('policy if specified appends to the default key policy', cdk.App, (app) => {
+  testLegacyBehavior('policy if specified appends to the default key policy', cdk.App, (app) => {
     const stack = new cdk.Stack(app);
     const key = new kms.Key(stack, 'MyKey');
     const p = new iam.PolicyStatement({ resources: ['*'], actions: ['kms:Encrypt'] });
@@ -574,7 +574,7 @@ describe('when the defaultKeyPolicies feature flag is disabled', () => {
     });
   });
 
-  testFeatureFlagDisable('trustAccountIdentities changes key policy to allow IAM control', cdk.App, (app) => {
+  testLegacyBehavior('trustAccountIdentities changes key policy to allow IAM control', cdk.App, (app) => {
     const stack = new cdk.Stack(app);
     new kms.Key(stack, 'MyKey', { trustAccountIdentities: true });
     expect(stack).toHaveResourceLike('AWS::KMS::Key', {
@@ -593,7 +593,7 @@ describe('when the defaultKeyPolicies feature flag is disabled', () => {
     });
   });
 
-  testFeatureFlagDisable('additional key admins can be specified (with imported/immutable principal)', cdk.App, (app) => {
+  testLegacyBehavior('additional key admins can be specified (with imported/immutable principal)', cdk.App, (app) => {
     const stack = new cdk.Stack(app);
     const adminRole = iam.Role.fromRoleArn(stack, 'Admin', 'arn:aws:iam::123456789012:role/TrustedAdmin');
     new kms.Key(stack, 'MyKey', { admins: [adminRole] });
@@ -623,7 +623,7 @@ describe('when the defaultKeyPolicies feature flag is disabled', () => {
     });
   });
 
-  testFeatureFlagDisable('additional key admins can be specified (with owned/mutable principal)', cdk.App, (app) => {
+  testLegacyBehavior('additional key admins can be specified (with owned/mutable principal)', cdk.App, (app) => {
     const stack = new cdk.Stack(app);
     const adminRole = new iam.Role(stack, 'AdminRole', {
       assumedBy: new iam.AccountRootPrincipal(),
@@ -668,7 +668,7 @@ describe('when the defaultKeyPolicies feature flag is disabled', () => {
   });
 
   describe('grants', () => {
-    testFeatureFlagDisable('grant decrypt on a key', cdk.App, (app) => {
+    testLegacyBehavior('grant decrypt on a key', cdk.App, (app) => {
       // GIVEN
       const stack = new cdk.Stack(app);
       const key = new kms.Key(stack, 'Key');
@@ -714,7 +714,7 @@ describe('when the defaultKeyPolicies feature flag is disabled', () => {
       });
     });
 
-    testFeatureFlagDisable('grant for a principal in a dependent stack works correctly', cdk.App, (app) => {
+    testLegacyBehavior('grant for a principal in a dependent stack works correctly', cdk.App, (app) => {
       const principalStack = new cdk.Stack(app, 'PrincipalStack');
       const principal = new iam.Role(principalStack, 'Role', {
         assumedBy: new iam.AnyPrincipal(),
