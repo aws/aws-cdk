@@ -306,7 +306,7 @@ export = {
         mesh: mesh,
       });
 
-      const virtualService = mesh.addVirtualService('virtualService', {});
+      const virtualService = mesh.addVirtualService('virtualService');
 
       virtualGateway.addGatewayRoute('testGatewayRoute', {
         gatewayRouteName: 'test-gateway-route',
@@ -349,7 +349,7 @@ export = {
         meshName: 'test-mesh',
       });
 
-      const virtualService = mesh.addVirtualService('virtualService', {});
+      const virtualService = mesh.addVirtualService('virtualService');
 
       const virtualGateway = mesh.addVirtualGateway('gateway');
       virtualGateway.addGatewayRoute('testGatewayRoute', {

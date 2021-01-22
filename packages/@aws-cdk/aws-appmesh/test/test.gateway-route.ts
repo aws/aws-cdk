@@ -21,7 +21,7 @@ export = {
       });
 
       const virtualService = new appmesh.VirtualService(stack, 'vs-1', {
-        mesh: mesh,
+        virtualServiceProvider: appmesh.VirtualServiceProvider.none(mesh),
         virtualServiceName: 'target.local',
       });
 

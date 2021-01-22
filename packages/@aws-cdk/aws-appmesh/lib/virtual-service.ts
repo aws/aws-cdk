@@ -52,10 +52,8 @@ export interface VirtualServiceBaseProps {
 
   /**
    * The VirtualNode or VirtualRouter which the VirtualService uses as its provider
-   *
-   * @default - No provider
    */
-  readonly virtualServiceProvider?: VirtualServiceProvider;
+  readonly virtualServiceProvider: VirtualServiceProvider;
 
   /**
    * Client policy for this Virtual Service
@@ -63,16 +61,6 @@ export interface VirtualServiceBaseProps {
    * @default - none
    */
   readonly clientPolicy?: ClientPolicy;
-}
-
-/**
- * The properties applied to the VirtualService being define
- */
-export interface VirtualServiceProps extends VirtualServiceBaseProps {
-  /**
-   * The Mesh which the VirtualService belongs to
-   */
-  readonly mesh: IMesh;
 }
 
 /**
@@ -128,14 +116,14 @@ export class VirtualService extends cdk.Resource implements IVirtualService {
 
   public readonly clientPolicy?: ClientPolicy;
 
-  constructor(scope: Construct, id: string, props: VirtualServiceProps) {
+  constructor(scope: Construct, id: string, props: VirtualServiceBaseProps) {
     super(scope, id, {
       physicalName: props.virtualServiceName || cdk.Lazy.string({ produce: () => cdk.Names.uniqueId(this) }),
     });
 
-    this.mesh = props.mesh;
     this.clientPolicy = props.clientPolicy;
     const provider = props.virtualServiceProvider?.bind(this);
+    this.mesh = provider.mesh;
 
     if (provider && provider.mesh != this.mesh) {
       throw new Error(`VirtualService ${this.physicalName} and the provider must be in the same Mesh`);
@@ -157,7 +145,7 @@ export class VirtualService extends cdk.Resource implements IVirtualService {
     this.virtualServiceName = this.getResourceNameAttribute(svc.attrVirtualServiceName);
     this.virtualServiceArn = this.getResourceArnAttribute(svc.ref, {
       service: 'appmesh',
-      resource: `mesh/${props.mesh.meshName}/virtualService`,
+      resource: `mesh/${this.mesh.meshName}/virtualService`,
       resourceName: this.physicalName,
     });
   }
@@ -230,6 +218,14 @@ export abstract class VirtualServiceProvider {
   }
 
   /**
+   * Returns an Empty Provider for a VirtualService. This provides no routing capabilities
+   * and should only be used as a placeholder
+   */
+  public static none(mesh: IMesh): VirtualServiceProvider {
+    return new VirtualServiceProviderImpl(undefined, undefined, mesh);
+  }
+
+  /**
    * Enforces mutual exclusivity for VirtualService provider types.
    */
   public abstract bind(_construct: cdk.Construct): VirtualServiceProviderConfig;
@@ -240,16 +236,16 @@ class VirtualServiceProviderImpl extends VirtualServiceProvider {
   private readonly virtualRouter?: IVirtualRouter;
   private readonly mesh: IMesh;
 
-  constructor(virtualNode?: IVirtualNode, virtualRouter?: IVirtualRouter) {
+  constructor(virtualNode?: IVirtualNode, virtualRouter?: IVirtualRouter, mesh?: IMesh) {
     super();
     this.virtualNode = virtualNode;
     this.virtualRouter = virtualRouter;
-    const mesh = this.virtualNode?.mesh || this.virtualRouter?.mesh;
+    const providedMesh = this.virtualNode?.mesh || this.virtualRouter?.mesh || mesh;
     // Only occurs if VirtualNode or VirtualRouter is not provided during construction
-    if (!mesh) {
+    if (!providedMesh) {
       throw new Error('Mesh property not defined for VirtualServiceProviderImpl');
     }
-    this.mesh = mesh;
+    this.mesh = providedMesh;
   }
 
   public bind(_construct: cdk.Construct): VirtualServiceProviderConfig {
