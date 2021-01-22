@@ -183,11 +183,7 @@
         "PolicyDocument": {
           "Statement": [
             {
-              "Action": [
-                "databrew:startJobRun",
-                "databrew:stopJobRun",
-                "databrew:listJobRuns"
-              ],
+              "Action": "databrew:startJobRun",
               "Effect": "Allow",
               "Resource": {
                 "Fn::Join": [

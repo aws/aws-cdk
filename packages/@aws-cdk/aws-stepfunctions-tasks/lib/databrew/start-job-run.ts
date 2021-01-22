@@ -43,6 +43,12 @@ export class GlueDataBrewStartJobRun extends sfn.TaskStateBase {
 
     validatePatternSupported(this.integrationPattern, GlueDataBrewStartJobRun.SUPPORTED_INTEGRATION_PATTERNS);
 
+    const actions = ['databrew:startJobRun'];
+
+    if (this.integrationPattern === sfn.IntegrationPattern.RUN_JOB) {
+      actions.push('databrew:stopJobRun', 'databrew:listJobRuns');
+    }
+
     this.taskPolicies = [
       new iam.PolicyStatement({
         resources: [
@@ -53,11 +59,7 @@ export class GlueDataBrewStartJobRun extends sfn.TaskStateBase {
             resourceName: sfn.JsonPath.isEncodedJsonPath(this.props.name) ? '*' : this.props.name,
           }),
         ],
-        actions: [
-          'databrew:startJobRun',
-          'databrew:stopJobRun',
-          'databrew:listJobRuns',
-        ],
+        actions: actions,
       }),
     ];
   }
