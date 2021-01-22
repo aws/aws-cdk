@@ -19,6 +19,7 @@ import { CfnFunction } from './lambda.generated';
 import { ILayerVersion } from './layers';
 import { LogRetentionRetryOptions } from './log-retention';
 import { Runtime } from './runtime';
+import { CodeSigningConfig } from 'aws-lambda/lib/code-signing-config';
 
 /**
  * X-Ray Tracing Modes (https://docs.aws.amazon.com/lambda/latest/dg/API_TracingConfig.html)
@@ -290,6 +291,8 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
    * @default - AWS Lambda creates and uses an AWS managed customer master key (CMK).
    */
   readonly environmentEncryption?: kms.IKey;
+
+  readonly codeSigningConfig?: CodeSigningConfig;
 }
 
 export interface FunctionProps extends FunctionOptions {
@@ -526,6 +529,8 @@ export class Function extends FunctionBase {
 
   private _logGroup?: logs.ILogGroup;
 
+  private readonly codeSigningConfig?: CodeSigningConfig;
+
   /**
    * Environment variables for this function
    */
@@ -641,6 +646,7 @@ export class Function extends FunctionBase {
       }),
       kmsKeyArn: props.environmentEncryption?.keyArn,
       fileSystemConfigs,
+      codeSigningConfigArn: props.codeSigningConfig.codeSigningConfigArn
     });
 
     resource.node.addDependency(this.role);
