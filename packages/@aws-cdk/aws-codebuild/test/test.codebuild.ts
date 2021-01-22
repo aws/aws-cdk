@@ -1915,7 +1915,11 @@ export = {
         repo: 'testrepo',
       }),
     });
-    project.enableBatchBuilds(); // TODO test return
+
+    const returnVal = project.enableBatchBuilds();
+    if (!returnVal?.role) {
+      throw new Error('Expecting return value with role');
+    }
 
     expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
       BuildBatchConfig: {
