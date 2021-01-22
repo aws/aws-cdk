@@ -645,7 +645,17 @@
                   [
                     "arn:",
                     {
-                      "Ref": "AWS::Partition"
+                      "Fn::Select": [
+                        1,
+                        {
+                          "Fn::Split": [
+                            ":",
+                            {
+                              "Ref": "TaskDef54694570"
+                            }
+                          ]
+                        }
+                      ]
                     },
                     ":",
                     {
@@ -661,7 +671,35 @@
                         }
                       ]
                     },
-                    ":test-region:12345678:",
+                    ":",
+                    {
+                      "Fn::Select": [
+                        3,
+                        {
+                          "Fn::Split": [
+                            ":",
+                            {
+                              "Ref": "TaskDef54694570"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    ":",
+                    {
+                      "Fn::Select": [
+                        4,
+                        {
+                          "Fn::Split": [
+                            ":",
+                            {
+                              "Ref": "TaskDef54694570"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    ":",
                     {
                       "Fn::Select": [
                         0,
