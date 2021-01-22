@@ -306,6 +306,10 @@
                 "requiresBootstrapStackVersion": {
                     "description": "Version of bootstrap stack required to deploy this stack (Default - No bootstrap stack required)",
                     "type": "number"
+                },
+                "bootstrapStackVersionSsmParameter": {
+                    "description": "SSM parameter where the bootstrap stack version number can be found\n\nOnly used if `requiresBootstrapStackVersion` is set.\n\n- If this value is not set, the bootstrap stack name must be known at\n  deployment time so the stack version can be looked up from the stack\n  outputs.\n- If this value is set, the bootstrap stack can have any name because\n  we won't need to look it up. (Default - Bootstrap stack version number looked up)",
+                    "type": "string"
                 }
             },
             "required": [
@@ -323,6 +327,10 @@
                 "requiresBootstrapStackVersion": {
                     "description": "Version of bootstrap stack required to deploy this stack (Default - Version 1 (basic modern bootstrap stack))",
                     "type": "number"
+                },
+                "bootstrapStackVersionSsmParameter": {
+                    "description": "SSM parameter where the bootstrap stack version number can be found\n\n- If this value is not set, the bootstrap stack name must be known at\n  deployment time so the stack version can be looked up from the stack\n  outputs.\n- If this value is set, the bootstrap stack can have any name because\n  we won't need to look it up. (Default - Bootstrap stack version number looked up)",
+                    "type": "string"
                 }
             },
             "required": [

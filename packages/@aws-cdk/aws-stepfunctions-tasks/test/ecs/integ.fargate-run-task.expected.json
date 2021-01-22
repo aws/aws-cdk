@@ -189,7 +189,115 @@
               "Action": "ecs:RunTask",
               "Effect": "Allow",
               "Resource": {
-                "Ref": "TaskDef54694570"
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Fn::Select": [
+                        1,
+                        {
+                          "Fn::Split": [
+                            ":",
+                            {
+                              "Ref": "TaskDef54694570"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    ":",
+                    {
+                      "Fn::Select": [
+                        2,
+                        {
+                          "Fn::Split": [
+                            ":",
+                            {
+                              "Ref": "TaskDef54694570"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    ":",
+                    {
+                      "Fn::Select": [
+                        3,
+                        {
+                          "Fn::Split": [
+                            ":",
+                            {
+                              "Ref": "TaskDef54694570"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    ":",
+                    {
+                      "Fn::Select": [
+                        4,
+                        {
+                          "Fn::Split": [
+                            ":",
+                            {
+                              "Ref": "TaskDef54694570"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    ":",
+                    {
+                      "Fn::Select": [
+                        0,
+                        {
+                          "Fn::Split": [
+                            "/",
+                            {
+                              "Fn::Select": [
+                                5,
+                                {
+                                  "Fn::Split": [
+                                    ":",
+                                    {
+                                      "Ref": "TaskDef54694570"
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    "/",
+                    {
+                      "Fn::Select": [
+                        1,
+                        {
+                          "Fn::Split": [
+                            "/",
+                            {
+                              "Fn::Select": [
+                                5,
+                                {
+                                  "Fn::Split": [
+                                    ":",
+                                    {
+                                      "Ref": "TaskDef54694570"
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                ]
               }
             },
             {
@@ -273,11 +381,7 @@
                   "Arn"
                 ]
               },
-              "\",\"TaskDefinition\":\"",
-              {
-                "Ref": "TaskDef54694570"
-              },
-              "\",\"NetworkConfiguration\":{\"AwsvpcConfiguration\":{\"AssignPublicIp\":\"ENABLED\",\"Subnets\":[\"subnet-e19455ca\",\"subnet-e0c24797\",\"subnet-ccd77395\"],\"SecurityGroups\":[\"",
+              "\",\"TaskDefinition\":\"awssfntasksecsfargateintegTaskDefD0F4AD10\",\"NetworkConfiguration\":{\"AwsvpcConfiguration\":{\"AssignPublicIp\":\"ENABLED\",\"Subnets\":[\"subnet-e19455ca\",\"subnet-e0c24797\",\"subnet-ccd77395\"],\"SecurityGroups\":[\"",
               {
                 "Fn::GetAtt": [
                   "FargateTaskSecurityGroup0BBB27CB",
