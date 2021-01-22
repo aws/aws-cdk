@@ -1,4 +1,3 @@
-import * as cloudformation from '@aws-cdk/aws-cloudformation';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
@@ -166,7 +165,7 @@ interface CloudFormationDeployActionProps extends CloudFormationActionProps {
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-iam-template.html#using-iam-capabilities
    * @default None, unless `adminPermissions` is true
    */
-  readonly capabilities?: cloudformation.CloudFormationCapabilities[];
+  readonly capabilities?: cdk.CfnCapabilities[];
 
   /**
    * Whether to grant full permissions to CloudFormation while deploying this template.
@@ -299,7 +298,7 @@ abstract class CloudFormationDeployAction extends CloudFormationAction {
     SingletonPolicy.forRole(options.role).grantPassRole(this._deploymentRole);
 
     const capabilities = this.props2.adminPermissions && this.props2.capabilities === undefined
-      ? [cloudformation.CloudFormationCapabilities.NAMED_IAM]
+      ? [cdk.CfnCapabilities.NAMED_IAM]
       : this.props2.capabilities;
 
     const actionConfig = super.bound(scope, stage, options);
@@ -617,7 +616,7 @@ interface StatementTemplate {
 
 type StatementCondition = { [op: string]: { [attribute: string]: string } };
 
-function parseCapabilities(capabilities: cloudformation.CloudFormationCapabilities[] | undefined): string | undefined {
+function parseCapabilities(capabilities: cdk.CfnCapabilities[] | undefined): string | undefined {
   if (capabilities === undefined) {
     return undefined;
   } else if (capabilities.length === 1) {

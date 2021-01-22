@@ -778,8 +778,6 @@ new codepipeline_actions.AlexaSkillDeployAction({
 If you need manifest overrides you can specify them as `parameterOverridesArtifact` in the action:
 
 ```ts
-import * as cloudformation from '@aws-cdk/aws-cloudformation';
-
 // Deploy some CFN change set and store output
 const executeOutput = new codepipeline.Artifact('CloudFormation');
 const executeChangeSetAction = new codepipeline_actions.CloudFormationExecuteChangeSetAction({
