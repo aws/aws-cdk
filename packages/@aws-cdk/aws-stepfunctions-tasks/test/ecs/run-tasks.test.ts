@@ -92,7 +92,7 @@ test('Running a Fargate Task', () => {
         },
       },
       PlatformVersion: '1.4.0',
-      TaskDefinition: { Ref: 'TD49C78F36' },
+      TaskDefinition: 'TD',
       Overrides: {
         ContainerOverrides: [
           {
@@ -128,7 +128,25 @@ test('Running a Fargate Task', () => {
         {
           Action: 'ecs:RunTask',
           Effect: 'Allow',
-          Resource: { Ref: 'TD49C78F36' },
+          Resource: {
+            'Fn::Join': [
+              '',
+              [
+                'arn:',
+                { 'Fn::Select': [1, { 'Fn::Split': [':', { 'Ref': 'TD49C78F36' }] }] },
+                ':',
+                { 'Fn::Select': [2, { 'Fn::Split': [':', { 'Ref': 'TD49C78F36' }] }] },
+                ':',
+                { 'Fn::Select': [3, { 'Fn::Split': [':', { 'Ref': 'TD49C78F36' }] }] },
+                ':',
+                { 'Fn::Select': [4, { 'Fn::Split': [':', { 'Ref': 'TD49C78F36' }] }] },
+                ':',
+                { 'Fn::Select': [0, { 'Fn::Split': ['/', { 'Fn::Select': [5, { 'Fn::Split': [':', { 'Ref': 'TD49C78F36' }] }] }] }] },
+                '/',
+                { 'Fn::Select': [1, { 'Fn::Split': ['/', { 'Fn::Select': [5, { 'Fn::Split': [':', { 'Ref': 'TD49C78F36' }] }] }] }] },
+              ],
+            ],
+          },
         },
         {
           Action: ['ecs:StopTask', 'ecs:DescribeTasks'],
@@ -196,7 +214,7 @@ test('Running an EC2 Task with bridge network', () => {
     Parameters: {
       Cluster: { 'Fn::GetAtt': ['ClusterEB0386A7', 'Arn'] },
       LaunchType: 'EC2',
-      TaskDefinition: { Ref: 'TD49C78F36' },
+      TaskDefinition: 'TD',
       Overrides: {
         ContainerOverrides: [
           {
@@ -232,7 +250,25 @@ test('Running an EC2 Task with bridge network', () => {
         {
           Action: 'ecs:RunTask',
           Effect: 'Allow',
-          Resource: { Ref: 'TD49C78F36' },
+          Resource: {
+            'Fn::Join': [
+              '',
+              [
+                'arn:',
+                { 'Fn::Select': [1, { 'Fn::Split': [':', { 'Ref': 'TD49C78F36' }] }] },
+                ':',
+                { 'Fn::Select': [2, { 'Fn::Split': [':', { 'Ref': 'TD49C78F36' }] }] },
+                ':',
+                { 'Fn::Select': [3, { 'Fn::Split': [':', { 'Ref': 'TD49C78F36' }] }] },
+                ':',
+                { 'Fn::Select': [4, { 'Fn::Split': [':', { 'Ref': 'TD49C78F36' }] }] },
+                ':',
+                { 'Fn::Select': [0, { 'Fn::Split': ['/', { 'Fn::Select': [5, { 'Fn::Split': [':', { 'Ref': 'TD49C78F36' }] }] }] }] },
+                '/',
+                { 'Fn::Select': [1, { 'Fn::Split': ['/', { 'Fn::Select': [5, { 'Fn::Split': [':', { 'Ref': 'TD49C78F36' }] }] }] }] },
+              ],
+            ],
+          },
         },
         {
           Action: ['ecs:StopTask', 'ecs:DescribeTasks'],
@@ -297,7 +333,7 @@ test('Running an EC2 Task with placement strategies', () => {
     Parameters: {
       Cluster: { 'Fn::GetAtt': ['ClusterEB0386A7', 'Arn'] },
       LaunchType: 'EC2',
-      TaskDefinition: { Ref: 'TD49C78F36' },
+      TaskDefinition: 'TD',
       PlacementConstraints: [{ Type: 'memberOf', Expression: 'blieptuut' }],
       PlacementStrategy: [{ Field: 'instanceId', Type: 'spread' }, { Field: 'cpu', Type: 'binpack' }, { Type: 'random' }],
     },
@@ -348,7 +384,7 @@ test('Running an EC2 Task with overridden number values', () => {
     Parameters: {
       Cluster: { 'Fn::GetAtt': ['ClusterEB0386A7', 'Arn'] },
       LaunchType: 'EC2',
-      TaskDefinition: { Ref: 'TD49C78F36' },
+      TaskDefinition: 'TD',
       Overrides: {
         ContainerOverrides: [
           {
