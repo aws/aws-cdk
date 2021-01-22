@@ -257,10 +257,7 @@ export class BucketDeployment extends CoreConstruct {
  */
 
 function mapUserMetadata(metadata: UserDefinedObjectMetadata) {
-  const mapKey = (key: string) =>
-    key.toLowerCase().startsWith('x-amzn-meta-')
-      ? key.toLowerCase()
-      : `x-amzn-meta-${key.toLowerCase()}`;
+  const mapKey = (key: string) => key.toLowerCase();
 
   return Object.keys(metadata).reduce((o, key) => ({ ...o, [mapKey(key)]: metadata[key] }), {});
 }
@@ -358,7 +355,7 @@ export class Expires {
 export interface UserDefinedObjectMetadata {
   /**
    * Arbitrary metadata key-values
-   * Keys must begin with `x-amzn-meta-` (will be added automatically if not provided)
+   * The `x-amz-meta-` prefix will automatically be added to keys.
    * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingMetadata.html#UserMetadata
    */
   readonly [key: string]: string;
