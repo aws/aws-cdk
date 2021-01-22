@@ -53,9 +53,7 @@
         "namespace": "Amazon.CDK",
         "packageId": "Amazon.CDK.MonoCDK",
         "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png",
-        "versionSuffix": "-devpreview",
-        "signAssembly": true,
-        "assemblyOriginatorKeyFile": "../../key.snk"
+        "versionSuffix": "-devpreview"
       },
       "java": {
         "package": "software.amazon.awscdk.core",
@@ -178,6 +176,7 @@
     "@aws-cdk/aws-elasticloadbalancingv2-targets": "0.0.0",
     "@aws-cdk/aws-elasticsearch": "0.0.0",
     "@aws-cdk/aws-emr": "0.0.0",
+    "@aws-cdk/aws-emrcontainers": "0.0.0",
     "@aws-cdk/aws-events": "0.0.0",
     "@aws-cdk/aws-events-targets": "0.0.0",
     "@aws-cdk/aws-eventschemas": "0.0.0",
@@ -231,6 +230,7 @@
     "@aws-cdk/aws-pinpoint": "0.0.0",
     "@aws-cdk/aws-pinpointemail": "0.0.0",
     "@aws-cdk/aws-qldb": "0.0.0",
+    "@aws-cdk/aws-quicksight": "0.0.0",
     "@aws-cdk/aws-ram": "0.0.0",
     "@aws-cdk/aws-rds": "0.0.0",
     "@aws-cdk/aws-redshift": "0.0.0",
@@ -250,6 +250,7 @@
     "@aws-cdk/aws-secretsmanager": "0.0.0",
     "@aws-cdk/aws-securityhub": "0.0.0",
     "@aws-cdk/aws-servicecatalog": "0.0.0",
+    "@aws-cdk/aws-servicecatalogappregistry": "0.0.0",
     "@aws-cdk/aws-servicediscovery": "0.0.0",
     "@aws-cdk/aws-ses": "0.0.0",
     "@aws-cdk/aws-ses-actions": "0.0.0",
