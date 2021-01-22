@@ -1,4 +1,4 @@
-import { expect, haveResource } from '@aws-cdk/assert';
+import { expect, haveResourceLike } from '@aws-cdk/assert';
 import * as ecs from '@aws-cdk/aws-ecs';
 import * as secretsManager from '@aws-cdk/aws-secretsmanager';
 import * as cdk from '@aws-cdk/core';
@@ -41,7 +41,7 @@ export = {
 
     // THEN
 
-    expect(stack).to(haveResource('AWS::ECS::TaskDefinition', {
+    expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
       ContainerDefinitions: [
         {
           Cpu: 256,
@@ -56,25 +56,6 @@ export = {
             },
           ],
           Essential: true,
-          Image: {
-            'Fn::Join': [
-              '',
-              [
-                {
-                  Ref: 'AWS::AccountId',
-                },
-                '.dkr.ecr.',
-                {
-                  Ref: 'AWS::Region',
-                },
-                '.',
-                {
-                  Ref: 'AWS::URLSuffix',
-                },
-                '/aws-cdk/assets:60341149fe82758ccf014503a67584e45b1d826cf7394debf42572ac8669ca60',
-              ],
-            ],
-          },
           Memory: 512,
           Name: 'app',
           PortMappings: [

@@ -1,4 +1,4 @@
-import { expect, haveResource } from '@aws-cdk/assert';
+import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
 import * as ecs from '@aws-cdk/aws-ecs';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
@@ -53,30 +53,11 @@ export = {
       RetentionInDays: 731,
     }));
 
-    expect(stack).to(haveResource('AWS::ECS::TaskDefinition', {
+    expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
       ContainerDefinitions: [
         {
           Cpu: 256,
           Essential: true,
-          Image: {
-            'Fn::Join': [
-              '',
-              [
-                {
-                  Ref: 'AWS::AccountId',
-                },
-                '.dkr.ecr.',
-                {
-                  Ref: 'AWS::Region',
-                },
-                '.',
-                {
-                  Ref: 'AWS::URLSuffix',
-                },
-                '/aws-cdk/assets:60341149fe82758ccf014503a67584e45b1d826cf7394debf42572ac8669ca60',
-              ],
-            ],
-          },
           LogConfiguration: {
             LogDriver: 'awslogs',
             Options: {

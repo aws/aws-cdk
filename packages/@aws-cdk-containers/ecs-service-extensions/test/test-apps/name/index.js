@@ -1,5 +1,4 @@
 // Setup the APM instrumentation
-
 var AWSXRay;
 
 if (process.env.TEST_DATADOG == 'true') {
