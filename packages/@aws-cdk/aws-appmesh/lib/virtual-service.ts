@@ -228,7 +228,7 @@ export abstract class VirtualServiceProvider {
   /**
    * Enforces mutual exclusivity for VirtualService provider types.
    */
-  public abstract bind(_construct: cdk.Construct): VirtualServiceProviderConfig;
+  public abstract bind(_construct: Construct): VirtualServiceProviderConfig;
 }
 
 class VirtualServiceProviderImpl extends VirtualServiceProvider {
@@ -248,7 +248,7 @@ class VirtualServiceProviderImpl extends VirtualServiceProvider {
     this.mesh = providedMesh;
   }
 
-  public bind(_construct: cdk.Construct): VirtualServiceProviderConfig {
+  public bind(_construct: Construct): VirtualServiceProviderConfig {
     return {
       mesh: this.mesh,
       virtualNodeProvider: this.virtualNode
