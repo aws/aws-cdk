@@ -39,7 +39,7 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@aws-cdk/core": "0.0.0",
-    "@octokit/rest": "^18.0.9",
+    "@octokit/rest": "^18.0.12",
     "@types/archiver": "^5.1.0",
     "@types/fs-extra": "^8.1.1",
     "@types/glob": "^7.1.3",
