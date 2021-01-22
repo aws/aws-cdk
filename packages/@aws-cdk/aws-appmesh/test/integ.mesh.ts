@@ -30,9 +30,8 @@ const virtualService = mesh.addVirtualService('service', {
   virtualServiceName: 'service1.domain.local',
 });
 
-const cert = new acm.Certificate(stack, 'cert', {
-  domainName: `node1.${namespace.namespaceName}`,
-});
+const certArn = 'arn:aws:acm:us-west-2:123456789012:certificate/d1f0daf1-1235-567-abcd-8azz74q5h1s1';
+const cert = acm.Certificate.fromCertificateArn(stack, 'ImportedCert', certArn);
 
 const node = mesh.addVirtualNode('node', {
   serviceDiscovery: appmesh.ServiceDiscovery.dns(`node1.${namespace.namespaceName}`),
