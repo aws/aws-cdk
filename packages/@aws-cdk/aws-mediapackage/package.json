@@ -12,8 +12,6 @@
       "dotnet": {
         "namespace": "Amazon.CDK.AWS.MediaPackage",
         "packageId": "Amazon.CDK.AWS.MediaPackage",
-        "signAssembly": true,
-        "assemblyOriginatorKeyFile": "../../key.snk",
         "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
       },
       "java": {
