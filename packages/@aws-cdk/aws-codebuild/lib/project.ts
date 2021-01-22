@@ -760,7 +760,6 @@ export class Project extends ProjectBase {
       roleName: PhysicalName.GENERATE_IF_NEEDED,
       assumedBy: new iam.ServicePrincipal('codebuild.amazonaws.com'),
     });
-
     this.grantPrincipal = this.role;
 
     this.buildImage = (props.environment && props.environment.buildImage) || LinuxBuildImage.STANDARD_1_0;
@@ -896,7 +895,6 @@ export class Project extends ProjectBase {
         actions: ['codebuild:StartBuild', 'codebuild:StopBuild', 'codebuild:RetryBuild'],
       }));
     }
-
     return {
       role: this._batchServiceRole,
     };
@@ -1271,7 +1269,7 @@ export class Project extends ProjectBase {
 
     if ((sourceType === CODEPIPELINE_SOURCE_ARTIFACTS_TYPE ||
         artifactsType === CODEPIPELINE_SOURCE_ARTIFACTS_TYPE) &&
-      (sourceType !== artifactsType)) {
+        (sourceType !== artifactsType)) {
       throw new Error('Both source and artifacts must be set to CodePipeline');
     }
   }
