@@ -191,15 +191,22 @@ export class PipelineDeployStackAction implements codepipeline.IAction {
   }
 }
 
-function cfnCapabilities(adminPermissions: boolean, capabilities?: cfn.CloudFormationCapabilities[]): cfn.CloudFormationCapabilities[] {
+function cfnCapabilities(adminPermissions: boolean, capabilities?: cfn.CloudFormationCapabilities[]): cdk.CfnCapabilities[] {
   if (adminPermissions && capabilities === undefined) {
     // admin true default capability to NamedIAM and AutoExpand
-    return [cfn.CloudFormationCapabilities.NAMED_IAM, cfn.CloudFormationCapabilities.AUTO_EXPAND];
+    return [cdk.CfnCapabilities.NAMED_IAM, cdk.CfnCapabilities.AUTO_EXPAND];
   } else if (capabilities === undefined) {
     // else capabilities are undefined set AnonymousIAM and AutoExpand
-    return [cfn.CloudFormationCapabilities.ANONYMOUS_IAM, cfn.CloudFormationCapabilities.AUTO_EXPAND];
+    return [cdk.CfnCapabilities.ANONYMOUS_IAM, cdk.CfnCapabilities.AUTO_EXPAND];
   } else {
     // else capabilities are defined use them
-    return capabilities;
+    return capabilities.map(cb => {
+      switch (cb) {
+        case cfn.CloudFormationCapabilities.NONE: return cdk.CfnCapabilities.NONE;
+        case cfn.CloudFormationCapabilities.ANONYMOUS_IAM: return cdk.CfnCapabilities.ANONYMOUS_IAM;
+        case cfn.CloudFormationCapabilities.NAMED_IAM: return cdk.CfnCapabilities.NAMED_IAM;
+        case cfn.CloudFormationCapabilities.AUTO_EXPAND: return cdk.CfnCapabilities.AUTO_EXPAND;
+      }
+    });
   }
 }
