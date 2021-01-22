@@ -86,12 +86,33 @@ export interface CodeCommitSourceActionProps extends codepipeline.CommonAwsActio
    * @default a new role will be created.
    */
   readonly eventRole?: iam.IRole;
+
+  /**
+   * Whether the output should be the contents of the repository
+   * (which is the default),
+   * or a link that allows CodeBuild to clone the repository before building.
+   *
+   * **Note**: if this option is true,
+   * then only CodeBuild actions can use the resulting {@link output}.
+   *
+   * @default false
+   * @see https://docs.aws.amazon.com/codepipeline/latest/userguide/action-reference-CodeCommit.html
+   */
+  readonly codeBuildCloneOutput?: boolean;
 }
 
 /**
  * CodePipeline Source that is provided by an AWS CodeCommit repository.
  */
 export class CodeCommitSourceAction extends Action {
+  /**
+   * The name of the property that holds the ARN of the CodeCommit Repository
+   * inside of the CodePipeline Artifact's metadata.
+   *
+   * @internal
+   */
+  public static readonly _FULL_CLONE_ARN_PROPERTY = 'CodeCommitCloneRepositoryArn';
+
   private readonly branch: string;
   private readonly props: CodeCommitSourceActionProps;
 
@@ -99,6 +120,10 @@ export class CodeCommitSourceAction extends Action {
     const branch = props.branch ?? 'master';
     if (!branch) {
       throw new Error("'branch' parameter cannot be an empty string");
+    }
+
+    if (props.codeBuildCloneOutput === true) {
+      props.output.setMetadata(CodeCommitSourceAction._FULL_CLONE_ARN_PROPERTY, props.repository.repositoryArn);
     }
 
     super({
@@ -145,7 +170,7 @@ export class CodeCommitSourceAction extends Action {
     options.bucket.grantReadWrite(options.role);
 
     // https://docs.aws.amazon.com/codecommit/latest/userguide/auth-and-access-control-permissions-reference.html#aa-acp
-    options.role.addToPolicy(new iam.PolicyStatement({
+    options.role.addToPrincipalPolicy(new iam.PolicyStatement({
       resources: [this.props.repository.repositoryArn],
       actions: [
         'codecommit:GetBranch',
@@ -153,6 +178,7 @@ export class CodeCommitSourceAction extends Action {
         'codecommit:UploadArchive',
         'codecommit:GetUploadArchiveStatus',
         'codecommit:CancelUploadArchive',
+        ...(this.props.codeBuildCloneOutput === true ? ['codecommit:GetRepository'] : []),
       ],
     }));
 
@@ -161,6 +187,9 @@ export class CodeCommitSourceAction extends Action {
         RepositoryName: this.props.repository.repositoryName,
         BranchName: this.branch,
         PollForSourceChanges: this.props.trigger === CodeCommitTrigger.POLL,
+        OutputArtifactFormat: this.props.codeBuildCloneOutput === true
+          ? 'CODEBUILD_CLONE_REF'
+          : undefined,
       },
     };
   }
