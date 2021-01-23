@@ -1,6 +1,7 @@
 import { Ec2TaskDefinition } from '@aws-cdk/aws-ecs';
 import { Construct } from 'constructs';
 import { ScheduledTaskBase, ScheduledTaskBaseProps, ScheduledTaskImageProps } from '../base/scheduled-task-base';
+import { EcsTask } from '@aws-cdk/aws-events-targets';
 
 /**
  * The properties for the ScheduledEc2Task task.
@@ -113,6 +114,14 @@ export class ScheduledEc2Task extends ScheduledTaskBase {
       throw new Error('You must specify a taskDefinition or image');
     }
 
-    this.addTaskDefinitionToEventTarget(this.taskDefinition);
+    // Use the EcsTask as the target of the EventRule
+    const eventRuleTarget = new EcsTask( {
+      cluster: this.cluster,
+      taskDefinition: this.taskDefinition,
+      taskCount: this.desiredTaskCount,
+      subnetSelection: this.subnetSelection,
+    });
+
+    this.addTaskAsTarget(eventRuleTarget);
   }
 }
