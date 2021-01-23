@@ -337,7 +337,7 @@ export = {
                 ],
               },
             },
-            PlatformVersion: "1.4.0",
+            PlatformVersion: '1.4.0',
             TaskCount: 1,
             TaskDefinitionArn: { Ref: 'ScheduledFargateTaskScheduledTaskDef521FA675' },
           },
