@@ -1,8 +1,7 @@
-import { FargateTaskDefinition } from '@aws-cdk/aws-ecs';
+import { FargateTaskDefinition, FargatePlatformVersion } from '@aws-cdk/aws-ecs';
+import { EcsTask } from '@aws-cdk/aws-events-targets';
 import { Construct } from 'constructs';
 import { ScheduledTaskBase, ScheduledTaskBaseProps, ScheduledTaskImageProps } from '../base/scheduled-task-base';
-import { EcsTask } from '@aws-cdk/aws-events-targets';
-import { FargatePlatformVersion } from '@aws-cdk/aws-ecs';
 
 /**
  * The properties for the ScheduledFargateTask task.
@@ -128,7 +127,7 @@ export class ScheduledFargateTask extends ScheduledTaskBase {
       taskDefinition: this.taskDefinition,
       taskCount: this.desiredTaskCount,
       subnetSelection: this.subnetSelection,
-      platformVersion: props.platformVersion
+      platformVersion: props.platformVersion,
     });
 
     this.addTaskAsTarget(eventRuleTarget);
