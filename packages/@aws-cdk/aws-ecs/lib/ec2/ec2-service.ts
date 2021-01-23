@@ -250,7 +250,7 @@ export class Ec2Service extends BaseService implements IEc2Service {
   }
 
   /**
-   * Adds one or more placement contstraints to use for tasks in the service. For more information, see
+   * Adds one or more placement constraints to use for tasks in the service. For more information, see
    * [Amazon ECS Task Placement Constraints](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task-placement-constraints.html).
    */
   public addPlacementConstraints(...constraints: PlacementConstraint[]) {
