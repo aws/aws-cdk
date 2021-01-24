@@ -3,8 +3,9 @@ import { Grant, IGrantable, IPrincipal, IRole, Role, ServicePrincipal } from '@a
 import { IFunction } from '@aws-cdk/aws-lambda';
 import { IDatabaseCluster } from '@aws-cdk/aws-rds';
 import { ISecret } from '@aws-cdk/aws-secretsmanager';
-import { IResolvable, Stack } from '@aws-cdk/core';
+import { IResolvable, Lazy, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
+import { BaseAppsyncFunctionProps, AppsyncFunction } from './appsync-function';
 import { CfnDataSource } from './appsync.generated';
 import { IGraphqlApi } from './graphqlapi-base';
 import { BaseResolverProps, Resolver } from './resolver';
@@ -125,7 +126,14 @@ export abstract class BaseDataSource extends CoreConstruct {
    * creates a new resolver for this datasource and API using the given properties
    */
   public createResolver(props: BaseResolverProps): Resolver {
-    return new Resolver(this, `${props.typeName}${props.fieldName}Resolver`, {
+    return this.api.createResolver({ dataSource: this, ...props });
+  }
+
+  /**
+   * creates a new appsync function for this datasource and API using the given properties
+   */
+  public createFunction(props: BaseAppsyncFunctionProps): AppsyncFunction {
+    return new AppsyncFunction(this, `${props.name}Function`, {
       api: this.api,
       dataSource: this,
       ...props,
@@ -172,7 +180,6 @@ export class NoneDataSource extends BaseDataSource {
 export interface DynamoDbDataSourceProps extends BackedDataSourceProps {
   /**
    * The DynamoDB table backing this data source
-   * [disable-awslint:ref-via-interface]
    */
   readonly table: ITable;
   /**
@@ -311,17 +318,25 @@ export class RdsDataSource extends BackedDataSource {
       relationalDatabaseConfig: {
         rdsHttpEndpointConfig: {
           awsRegion: props.databaseCluster.stack.region,
-          dbClusterIdentifier: props.databaseCluster.clusterIdentifier,
+          dbClusterIdentifier: Lazy.string({
+            produce: () => {
+              return Stack.of(this).formatArn({
+                service: 'rds',
+                resource: `cluster:${props.databaseCluster.clusterIdentifier}`,
+              });
+            },
+          }),
           awsSecretStoreArn: props.secretStore.secretArn,
         },
         relationalDatabaseSourceType: 'RDS_HTTP_ENDPOINT',
       },
     });
-    props.secretStore.grantRead(this);
     const clusterArn = Stack.of(this).formatArn({
       service: 'rds',
       resource: `cluster:${props.databaseCluster.clusterIdentifier}`,
     });
+    props.secretStore.grantRead(this);
+
     // Change to grant with RDS grant becomes implemented
     Grant.addToPrincipal({
       grantee: this,

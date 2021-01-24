@@ -63,6 +63,7 @@
                 "dynamodb:Query",
                 "dynamodb:GetItem",
                 "dynamodb:Scan",
+                "dynamodb:ConditionCheckItem",
                 "dynamodb:BatchWriteItem",
                 "dynamodb:PutItem",
                 "dynamodb:UpdateItem",
@@ -119,7 +120,7 @@
         }
       }
     },
-    "codefirstapiplanetsQuerygetPlanetsResolver633EA597": {
+    "codefirstapiQuerygetPlanetsResolver54E13D9A": {
       "Type": "AWS::AppSync::Resolver",
       "Properties": {
         "ApiId": {
@@ -140,7 +141,7 @@
         "codefirstapiSchema148B6CDE"
       ]
     },
-    "codefirstapiplanetsMutationaddPlanetResolver155AF87E": {
+    "codefirstapiMutationaddPlanetResolver49A375A3": {
       "Type": "AWS::AppSync::Resolver",
       "Properties": {
         "ApiId": {

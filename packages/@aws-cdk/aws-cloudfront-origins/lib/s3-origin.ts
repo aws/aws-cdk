@@ -3,10 +3,12 @@ import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
 import { HttpOrigin } from './http-origin';
 
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct } from '@aws-cdk/core';
+
 /**
  * Properties to use to customize an S3 Origin.
- *
- * @experimental
  */
 export interface S3OriginProps {
   /**
@@ -30,8 +32,6 @@ export interface S3OriginProps {
  * If the bucket is configured for website hosting, this origin will be configured to use the bucket as an
  * HTTP server origin and will use the bucket's configured website redirects and error handling. Otherwise,
  * the origin is created as a bucket origin and will use CloudFront's redirect and error handling.
- *
- * @experimental
  */
 export class S3Origin implements cloudfront.IOrigin {
   private readonly origin: cloudfront.IOrigin;
@@ -45,7 +45,7 @@ export class S3Origin implements cloudfront.IOrigin {
       new S3BucketOrigin(bucket, props);
   }
 
-  public bind(scope: cdk.Construct, options: cloudfront.OriginBindOptions): cloudfront.OriginBindConfig {
+  public bind(scope: Construct, options: cloudfront.OriginBindOptions): cloudfront.OriginBindConfig {
     return this.origin.bind(scope, options);
   }
 }
@@ -65,7 +65,7 @@ class S3BucketOrigin extends cloudfront.OriginBase {
     }
   }
 
-  public bind(scope: cdk.Construct, options: cloudfront.OriginBindOptions): cloudfront.OriginBindConfig {
+  public bind(scope: Construct, options: cloudfront.OriginBindOptions): cloudfront.OriginBindConfig {
     if (!this.originAccessIdentity) {
       // Using a bucket from another stack creates a cyclic reference with
       // the bucket taking a dependency on the generated S3CanonicalUserId when `grantRead` is called,

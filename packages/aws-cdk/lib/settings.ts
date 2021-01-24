@@ -43,8 +43,25 @@ export type Arguments = {
   readonly _: [Command, ...string[]];
   readonly exclusively?: boolean;
   readonly STACKS?: string[];
+  readonly lookups?: boolean;
   readonly [name: string]: unknown;
 };
+
+export interface ConfigurationProps {
+  /**
+   * Configuration passed via command line arguments
+   *
+   * @default - Nothing passed
+   */
+  readonly commandLineArguments?: Arguments;
+
+  /**
+   * Whether or not to use context from `.cdk.json` in user home directory
+   *
+   * @default true
+   */
+  readonly readUserContext?: boolean;
+}
 
 /**
  * All sources of settings combined
@@ -65,9 +82,9 @@ export class Configuration {
   private _projectContext?: Settings;
   private loaded = false;
 
-  constructor(commandLineArguments?: Arguments) {
-    this.commandLineArguments = commandLineArguments
-      ? Settings.fromCommandLineArguments(commandLineArguments)
+  constructor(private readonly props: ConfigurationProps = {}) {
+    this.commandLineArguments = props.commandLineArguments
+      ? Settings.fromCommandLineArguments(props.commandLineArguments)
       : new Settings();
     this.commandLineContext = this.commandLineArguments.subSettings([CONTEXT_KEY]).makeReadOnly();
   }
@@ -94,10 +111,18 @@ export class Configuration {
     this._projectConfig = await loadAndLog(PROJECT_CONFIG);
     this._projectContext = await loadAndLog(PROJECT_CONTEXT);
 
-    this.context = new Context(
+    const readUserContext = this.props.readUserContext ?? true;
+
+    const contextSources = [
       this.commandLineContext,
       this.projectConfig.subSettings([CONTEXT_KEY]).makeReadOnly(),
-      this.projectContext);
+      this.projectContext,
+    ];
+    if (readUserContext) {
+      contextSources.push(userConfig.subSettings([CONTEXT_KEY]).makeReadOnly());
+    }
+
+    this.context = new Context(...contextSources);
 
     // Build settings from what's left
     this.settings = this.defaultConfig
@@ -245,6 +270,7 @@ export class Settings {
       output: argv.output,
       progress: argv.progress,
       bundlingStacks,
+      lookups: argv.lookups,
     });
   }
 

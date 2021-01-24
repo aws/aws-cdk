@@ -32,11 +32,10 @@ describe('HttpApi', () => {
 
   test('import', () => {
     const stack = new Stack();
-    const api = new HttpApi(stack, 'api', { apiName: 'customName' });
-    const imported = HttpApi.fromApiId(stack, 'imported', api.httpApiId );
+    const imported = HttpApi.fromHttpApiAttributes(stack, 'imported', { httpApiId: 'http-1234', apiEndpoint: 'api-endpoint' });
 
-    expect(imported.httpApiId).toEqual(api.httpApiId);
-
+    expect(imported.httpApiId).toEqual('http-1234');
+    expect(imported.apiEndpoint).toEqual('api-endpoint');
   });
 
   test('unsetting createDefaultStage', () => {
@@ -191,7 +190,7 @@ describe('HttpApi', () => {
       // GIVEN
       const stack = new Stack();
       const apiId = 'importedId';
-      const api = HttpApi.fromApiId(stack, 'test-api', apiId);
+      const api = HttpApi.fromHttpApiAttributes(stack, 'test-api', { httpApiId: apiId });
       const metricName = '4xxError';
       const statistic = 'Sum';
 
@@ -216,6 +215,19 @@ describe('HttpApi', () => {
       Name: 'api',
       ProtocolType: 'HTTP',
       Description: 'My Api',
+    });
+  });
+
+  test('disableExecuteApiEndpoint is enabled', () => {
+    const stack = new Stack();
+    new HttpApi(stack, 'api', {
+      disableExecuteApiEndpoint: true,
+    });
+
+    expect(stack).toHaveResource('AWS::ApiGatewayV2::Api', {
+      Name: 'api',
+      ProtocolType: 'HTTP',
+      DisableExecuteApiEndpoint: true,
     });
   });
 
@@ -286,6 +298,24 @@ describe('HttpApi', () => {
       AuthorizerId: 'auth-1234',
       AuthorizationType: 'JWT',
     });
+  });
+  
+  test('throws when accessing apiEndpoint and disableExecuteApiEndpoint is true', () => {
+    const stack = new Stack();
+    const api = new HttpApi(stack, 'api', {
+      disableExecuteApiEndpoint: true,
+    });
+
+    expect(() => api.apiEndpoint).toThrow(
+      /apiEndpoint is not accessible when disableExecuteApiEndpoint is set to true./,
+    );
+  });
+
+  test('apiEndpoint for imported', () => {
+    const stack = new Stack();
+    const api = HttpApi.fromHttpApiAttributes(stack, 'imported', { httpApiId: 'api-1234' });
+
+    expect(() => api.apiEndpoint).toThrow(/apiEndpoint is not configured/);
   });
 });
 

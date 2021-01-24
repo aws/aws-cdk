@@ -8,6 +8,7 @@ import * as ssm from '@aws-cdk/aws-ssm';
 import { Duration, IResource, Resource, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { InstanceDrainHook } from './drain-hook/instance-drain-hook';
+import { ECSMetrics } from './ecs-canned-metrics.generated';
 import { CfnCluster } from './ecs.generated';
 
 // v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
@@ -123,8 +124,15 @@ export class Cluster extends Resource implements ICluster {
       physicalName: props.clusterName,
     });
 
-    const containerInsights = props.containerInsights !== undefined ? props.containerInsights : false;
-    const clusterSettings = containerInsights ? [{ name: 'containerInsights', value: 'enabled' }] : undefined;
+    /**
+     * clusterSettings needs to be undefined if containerInsights is not explicitly set in order to allow any
+     * containerInsights settings on the account to apply.  See:
+     * https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ecs-cluster-clustersettings.html#cfn-ecs-cluster-clustersettings-value
+    */
+    let clusterSettings = undefined;
+    if (props.containerInsights !== undefined) {
+      clusterSettings = [{ name: 'containerInsights', value: props.containerInsights ? ContainerInsights.ENABLED : ContainerInsights.DISABLED }];
+    }
 
     const cluster = new CfnCluster(this, 'Resource', {
       clusterName: this.physicalName,
@@ -223,38 +231,42 @@ export class Cluster extends Resource implements ICluster {
     this._hasEc2Capacity = true;
     this.connections.connections.addSecurityGroup(...autoScalingGroup.connections.securityGroups);
 
-    // Tie instances to cluster
-    switch (options.machineImageType) {
-      // Bottlerocket AMI
-      case MachineImageType.BOTTLEROCKET: {
-        autoScalingGroup.addUserData(
-          // Connect to the cluster
-          // Source: https://github.com/bottlerocket-os/bottlerocket/blob/develop/QUICKSTART-ECS.md#connecting-to-your-cluster
-          '[settings.ecs]',
-          `cluster = "${this.clusterName}"`,
-        );
-        // Enabling SSM
-        // Source: https://github.com/bottlerocket-os/bottlerocket/blob/develop/QUICKSTART-ECS.md#enabling-ssm
-        autoScalingGroup.role.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonSSMManagedInstanceCore'));
-        // required managed policy
-        autoScalingGroup.role.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonEC2ContainerServiceforEC2Role'));
-        break;
-      }
-      default:
-        // Amazon ECS-optimized AMI for Amazon Linux 2
-        autoScalingGroup.addUserData(`echo ECS_CLUSTER=${this.clusterName} >> /etc/ecs/ecs.config`);
-        if (!options.canContainersAccessInstanceRole) {
-          // Deny containers access to instance metadata service
-          // Source: https://docs.aws.amazon.com/AmazonECS/latest/developerguide/instance_IAM_role.html
-          autoScalingGroup.addUserData('sudo iptables --insert FORWARD 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP');
-          autoScalingGroup.addUserData('sudo service iptables save');
-          // The following is only for AwsVpc networking mode, but doesn't hurt for the other modes.
-          autoScalingGroup.addUserData('echo ECS_AWSVPC_BLOCK_IMDS=true >> /etc/ecs/ecs.config');
+    if ( autoScalingGroup.osType === ec2.OperatingSystemType.WINDOWS ) {
+      this.configureWindowsAutoScalingGroup(autoScalingGroup, options);
+    } else {
+      // Tie instances to cluster
+      switch (options.machineImageType) {
+        // Bottlerocket AMI
+        case MachineImageType.BOTTLEROCKET: {
+          autoScalingGroup.addUserData(
+            // Connect to the cluster
+            // Source: https://github.com/bottlerocket-os/bottlerocket/blob/develop/QUICKSTART-ECS.md#connecting-to-your-cluster
+            '[settings.ecs]',
+            `cluster = "${this.clusterName}"`,
+          );
+          // Enabling SSM
+          // Source: https://github.com/bottlerocket-os/bottlerocket/blob/develop/QUICKSTART-ECS.md#enabling-ssm
+          autoScalingGroup.role.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonSSMManagedInstanceCore'));
+          // required managed policy
+          autoScalingGroup.role.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonEC2ContainerServiceforEC2Role'));
+          break;
         }
+        default:
+          // Amazon ECS-optimized AMI for Amazon Linux 2
+          autoScalingGroup.addUserData(`echo ECS_CLUSTER=${this.clusterName} >> /etc/ecs/ecs.config`);
+          if (!options.canContainersAccessInstanceRole) {
+            // Deny containers access to instance metadata service
+            // Source: https://docs.aws.amazon.com/AmazonECS/latest/developerguide/instance_IAM_role.html
+            autoScalingGroup.addUserData('sudo iptables --insert FORWARD 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP');
+            autoScalingGroup.addUserData('sudo service iptables save');
+            // The following is only for AwsVpc networking mode, but doesn't hurt for the other modes.
+            autoScalingGroup.addUserData('echo ECS_AWSVPC_BLOCK_IMDS=true >> /etc/ecs/ecs.config');
+          }
 
-        if (autoScalingGroup.spotPrice && options.spotInstanceDraining) {
-          autoScalingGroup.addUserData('echo ECS_ENABLE_SPOT_INSTANCE_DRAINING=true >> /etc/ecs/ecs.config');
-        }
+          if (autoScalingGroup.spotPrice && options.spotInstanceDraining) {
+            autoScalingGroup.addUserData('echo ECS_ENABLE_SPOT_INSTANCE_DRAINING=true >> /etc/ecs/ecs.config');
+          }
+      }
     }
 
     // ECS instances must be able to do these things
@@ -311,6 +323,33 @@ export class Cluster extends Resource implements ICluster {
     }
   }
 
+  private configureWindowsAutoScalingGroup(autoScalingGroup: autoscaling.AutoScalingGroup, options: AddAutoScalingGroupCapacityOptions = {}) {
+    // clear the cache of the agent
+    autoScalingGroup.addUserData('Remove-Item -Recurse C:\\ProgramData\\Amazon\\ECS\\Cache');
+
+    // pull the latest ECS Tools
+    autoScalingGroup.addUserData('Import-Module ECSTools');
+
+    // set the cluster name environment variable
+    autoScalingGroup.addUserData(`[Environment]::SetEnvironmentVariable("ECS_CLUSTER", "${this.clusterName}", "Machine")`);
+    autoScalingGroup.addUserData('[Environment]::SetEnvironmentVariable("ECS_ENABLE_AWSLOGS_EXECUTIONROLE_OVERRIDE", "true", "Machine")');
+    // tslint:disable-next-line: max-line-length
+    autoScalingGroup.addUserData('[Environment]::SetEnvironmentVariable("ECS_AVAILABLE_LOGGING_DRIVERS", \'["json-file","awslogs"]\', "Machine")');
+
+    // enable instance draining
+    if (autoScalingGroup.spotPrice && options.spotInstanceDraining) {
+      autoScalingGroup.addUserData('[Environment]::SetEnvironmentVariable("ECS_ENABLE_SPOT_INSTANCE_DRAINING", "true", "Machine")');
+    }
+
+    // enable task iam role
+    if (!options.canContainersAccessInstanceRole) {
+      autoScalingGroup.addUserData('[Environment]::SetEnvironmentVariable("ECS_ENABLE_TASK_IAM_ROLE", "true", "Machine")');
+      autoScalingGroup.addUserData(`Initialize-ECSAgent -Cluster '${this.clusterName}' -EnableTaskIAMRole`);
+    } else {
+      autoScalingGroup.addUserData(`Initialize-ECSAgent -Cluster '${this.clusterName}'`);
+    }
+  }
+
   /**
    * Getter for autoscaling group added to cluster
    */
@@ -331,7 +370,16 @@ export class Cluster extends Resource implements ICluster {
    * @default average over 5 minutes
    */
   public metricCpuReservation(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.metric('CPUReservation', props);
+    return this.cannedMetric(ECSMetrics.cpuReservationAverage, props);
+  }
+
+  /**
+   * This method returns the CloudWatch metric for this clusters CPU utilization.
+   *
+   * @default average over 5 minutes
+   */
+  public metricCpuUtilization(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return this.cannedMetric(ECSMetrics.cpuUtilizationAverage, props);
   }
 
   /**
@@ -340,7 +388,16 @@ export class Cluster extends Resource implements ICluster {
    * @default average over 5 minutes
    */
   public metricMemoryReservation(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.metric('MemoryReservation', props);
+    return this.cannedMetric(ECSMetrics.memoryReservationAverage, props);
+  }
+
+  /**
+   * This method returns the CloudWatch metric for this clusters memory utilization.
+   *
+   * @default average over 5 minutes
+   */
+  public metricMemoryUtilization(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return this.cannedMetric(ECSMetrics.memoryUtilizationAverage, props);
   }
 
   /**
@@ -351,6 +408,15 @@ export class Cluster extends Resource implements ICluster {
       namespace: 'AWS/ECS',
       metricName,
       dimensions: { ClusterName: this.clusterName },
+      ...props,
+    }).attachTo(this);
+  }
+
+  private cannedMetric(
+    fn: (dims: { ClusterName: string }) => cloudwatch.MetricProps,
+    props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return new cloudwatch.Metric({
+      ...fn({ ClusterName: this.clusterName }),
       ...props,
     }).attachTo(this);
   }
@@ -854,4 +920,17 @@ export enum AmiHardwareType {
    * Use the Amazon ECS-optimized Amazon Linux 2 (arm64) AMI.
    */
   ARM = 'ARM64',
+}
+
+enum ContainerInsights {
+  /**
+   * Enable CloudWatch Container Insights for the cluster
+   */
+
+  ENABLED = 'enabled',
+
+  /**
+   * Disable CloudWatch Container Insights for the cluster
+   */
+  DISABLED = 'disabled',
 }

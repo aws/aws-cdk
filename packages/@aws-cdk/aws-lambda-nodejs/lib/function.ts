@@ -1,15 +1,18 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import * as lambda from '@aws-cdk/aws-lambda';
-import * as cdk from '@aws-cdk/core';
 import { Bundling } from './bundling';
 import { BundlingOptions } from './types';
-import { findUp, LockFile, nodeMajorVersion, parseStackTrace } from './util';
+import { callsites, findUp, LockFile, nodeMajorVersion } from './util';
+
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct } from '@aws-cdk/core';
 
 /**
  * Properties for a NodejsFunction
  */
-export interface NodejsFunctionProps extends lambda.FunctionOptions, BundlingOptions {
+export interface NodejsFunctionProps extends lambda.FunctionOptions {
   /**
    * Path to the entry file (JavaScript or TypeScript).
    *
@@ -62,13 +65,21 @@ export interface NodejsFunctionProps extends lambda.FunctionOptions, BundlingOpt
    *   a `yarn.lock` or `package-lock.json` file
    */
   readonly depsLockFilePath?: string;
+
+  /**
+   * Bundling options
+   *
+   * @default - use default bundling options: no minify, no sourcemap, all
+   *   modules are bundled.
+   */
+  readonly bundling?: BundlingOptions;
 }
 
 /**
  * A Node.js Lambda function bundled using esbuild
  */
 export class NodejsFunction extends lambda.Function {
-  constructor(scope: cdk.Construct, id: string, props: NodejsFunctionProps = {}) {
+  constructor(scope: Construct, id: string, props: NodejsFunctionProps = {}) {
     if (props.runtime && props.runtime.family !== lambda.RuntimeFamily.NODEJS) {
       throw new Error('Only `NODEJS` runtimes are supported.');
     }
@@ -79,7 +90,10 @@ export class NodejsFunction extends lambda.Function {
       if (!fs.existsSync(props.depsLockFilePath)) {
         throw new Error(`Lock file at ${props.depsLockFilePath} doesn't exist`);
       }
-      depsLockFilePath = props.depsLockFilePath;
+      if (!fs.statSync(props.depsLockFilePath).isFile()) {
+        throw new Error('`depsLockFilePath` should point to a file');
+      }
+      depsLockFilePath = path.resolve(props.depsLockFilePath);
     } else {
       const lockFile = findUp(LockFile.YARN) ?? findUp(LockFile.NPM);
       if (!lockFile) {
@@ -100,7 +114,7 @@ export class NodejsFunction extends lambda.Function {
       ...props,
       runtime,
       code: Bundling.bundle({
-        ...props,
+        ...props.bundling ?? {},
         entry,
         runtime,
         depsLockFilePath,
@@ -152,12 +166,19 @@ function findEntry(id: string, entry?: string): string {
  * Finds the name of the file where the `NodejsFunction` is defined
  */
 function findDefiningFile(): string {
-  const stackTrace = parseStackTrace();
-  const functionIndex = stackTrace.findIndex(s => /NodejsFunction/.test(s.methodName || ''));
+  let definingIndex;
+  const sites = callsites();
+  for (const [index, site] of sites.entries()) {
+    if (site.getFunctionName() === 'NodejsFunction') {
+      // The next site is the site where the NodejsFunction was created
+      definingIndex = index + 1;
+      break;
+    }
+  }
 
-  if (functionIndex === -1 || !stackTrace[functionIndex + 1]) {
+  if (!definingIndex || !sites[definingIndex]) {
     throw new Error('Cannot find defining file.');
   }
 
-  return stackTrace[functionIndex + 1].file;
+  return sites[definingIndex].getFileName();
 }

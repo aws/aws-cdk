@@ -9,6 +9,10 @@ import { Service } from '../service';
 import { Container } from './container';
 import { ServiceExtension, ServiceBuild } from './extension-interfaces';
 
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct } from '@aws-cdk/core';
+
 // The version of the App Mesh envoy sidecar to add to the task.
 const APP_MESH_ENVOY_SIDECAR_VERSION = 'v1.15.1.0-prod';
 
@@ -63,7 +67,7 @@ export class AppMeshExtension extends ServiceExtension {
     }
   }
 
-  public prehook(service: Service, scope: cdk.Construct) {
+  public prehook(service: Service, scope: Construct) {
     this.parentService = service;
     this.scope = scope;
 
@@ -78,7 +82,7 @@ export class AppMeshExtension extends ServiceExtension {
     }
   }
 
-  public modifyTaskDefinitionProps(props: ecs.TaskDefinitionProps) {
+  public modifyTaskDefinitionProps(props: ecs.TaskDefinitionProps): ecs.TaskDefinitionProps {
     // Find the app extension, to get its port
     const containerextension = this.parentService.serviceDescription.get('service-container') as Container;
 
@@ -223,7 +227,7 @@ export class AppMeshExtension extends ServiceExtension {
   }
 
   // Enable CloudMap for the service.
-  public modifyServiceProps(props: ServiceBuild) {
+  public modifyServiceProps(props: ServiceBuild): ServiceBuild {
     return {
       ...props,
 
@@ -279,7 +283,11 @@ export class AppMeshExtension extends ServiceExtension {
     this.virtualNode = new appmesh.VirtualNode(this.scope, `${this.parentService.id}-virtual-node`, {
       mesh: this.mesh,
       virtualNodeName: this.parentService.id,
-      cloudMapService: service.cloudMapService,
+      serviceDiscovery: service.cloudMapService
+        ? appmesh.ServiceDiscovery.cloudMap({
+          service: service.cloudMapService,
+        })
+        : undefined,
       listeners: [addListener(this.protocol, containerextension.trafficPort)],
     });
 

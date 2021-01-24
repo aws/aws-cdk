@@ -1,8 +1,9 @@
-import * as cloudmap from '@aws-cdk/aws-servicediscovery';
 import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnVirtualNode } from './appmesh.generated';
+import { ClientPolicy } from './client-policy';
 import { IMesh, Mesh } from './mesh';
+import { ServiceDiscovery } from './service-discovery';
 import { AccessLog } from './shared-interfaces';
 import { VirtualNodeListener, VirtualNodeListenerConfig } from './virtual-node-listener';
 import { IVirtualService } from './virtual-service';
@@ -47,32 +48,13 @@ export interface VirtualNodeBaseProps {
    */
   readonly virtualNodeName?: string;
 
-  /**
-   * Host name of DNS record used to discover Virtual Node members
-   *
-   * The IP addresses returned by querying this DNS record will be considered
-   * part of the Virtual Node.
-   *
-   * @default - Don't use DNS-based service discovery
-   */
-  readonly dnsHostName?: string;
 
   /**
-   * CloudMap service where Virtual Node members register themselves
+   * Defines how upstream clients will discover this VirtualNode
    *
-   * Instances registering themselves into this CloudMap will
-   * be considered part of the Virtual Node.
-   *
-   * @default - Don't use CloudMap-based service discovery
+   * @default - No Service Discovery
    */
-  readonly cloudMapService?: cloudmap.IService;
-
-  /**
-   * Filter down the list of CloudMap service instance
-   *
-   * @default - No CloudMap instance filter
-   */
-  readonly cloudMapServiceInstanceAttributes?: {[key: string]: string};
+  readonly serviceDiscovery?: ServiceDiscovery;
 
   /**
    * Virtual Services that this is node expected to send outbound traffic to
@@ -94,6 +76,13 @@ export interface VirtualNodeBaseProps {
    * @default - No access logging
    */
   readonly accessLog?: AccessLog;
+
+  /**
+   * Default Configuration Virtual Node uses to communicate with Virtual Service
+   *
+   * @default - No Config
+   */
+  readonly backendsDefaultClientPolicy?: ClientPolicy;
 }
 
 /**
@@ -180,7 +169,7 @@ export class VirtualNode extends VirtualNodeBase {
 
   constructor(scope: Construct, id: string, props: VirtualNodeProps) {
     super(scope, id, {
-      physicalName: props.virtualNodeName || cdk.Lazy.stringValue({ produce: () => cdk.Names.uniqueId(this) }),
+      physicalName: props.virtualNodeName || cdk.Lazy.string({ produce: () => cdk.Names.uniqueId(this) }),
     });
 
     this.mesh = props.mesh;
@@ -188,6 +177,7 @@ export class VirtualNode extends VirtualNodeBase {
     props.backends?.forEach(backend => this.addBackend(backend));
     props.listeners?.forEach(listener => this.addListener(listener));
     const accessLogging = props.accessLog?.bind(this);
+    const serviceDiscovery = props.serviceDiscovery?.bind(this);
 
     const node = new CfnVirtualNode(this, 'Resource', {
       virtualNodeName: this.physicalName,
@@ -195,13 +185,10 @@ export class VirtualNode extends VirtualNodeBase {
       spec: {
         backends: cdk.Lazy.anyValue({ produce: () => this.backends }, { omitEmptyArray: true }),
         listeners: cdk.Lazy.anyValue({ produce: () => this.listeners.map(listener => listener.listener) }, { omitEmptyArray: true }),
+        backendDefaults: props.backendsDefaultClientPolicy?.bind(this),
         serviceDiscovery: {
-          dns: props.dnsHostName !== undefined ? { hostname: props.dnsHostName } : undefined,
-          awsCloudMap: props.cloudMapService !== undefined ? {
-            serviceName: props.cloudMapService.serviceName,
-            namespaceName: props.cloudMapService.namespace.namespaceName,
-            attributes: renderAttributes(props.cloudMapServiceInstanceAttributes),
-          } : undefined,
+          dns: serviceDiscovery?.dns,
+          awsCloudMap: serviceDiscovery?.cloudmap,
         },
         logging: accessLogging !== undefined ? {
           accessLog: accessLogging.virtualNodeAccessLog,
@@ -231,14 +218,10 @@ export class VirtualNode extends VirtualNodeBase {
     this.backends.push({
       virtualService: {
         virtualServiceName: virtualService.virtualServiceName,
+        clientPolicy: virtualService.clientPolicy?.bind(this).clientPolicy,
       },
     });
   }
-}
-
-function renderAttributes(attrs?: {[key: string]: string}) {
-  if (attrs === undefined) { return undefined; }
-  return Object.entries(attrs).map(([key, value]) => ({ key, value }));
 }
 
 /**

@@ -78,7 +78,7 @@ export interface PolicyProps {
    * creating invalid--and hence undeployable--CloudFormation templates.
    *
    * In cases where you know the policy must be created and it is actually
-   * an error if no statements have been added to it, you can se this to `true`.
+   * an error if no statements have been added to it, you can set this to `true`.
    *
    * @default false
    */
@@ -131,7 +131,7 @@ export class Policy extends Resource implements IPolicy {
         // generatePolicyName will take the last 128 characters of the logical id since
         // policy names are limited to 128. the last 8 chars are a stack-unique hash, so
         // that shouod be sufficient to ensure uniqueness within a principal.
-        Lazy.stringValue({ produce: () => generatePolicyName(scope, resource.logicalId) }),
+        Lazy.string({ produce: () => generatePolicyName(scope, resource.logicalId) }),
     });
 
     const self = this;

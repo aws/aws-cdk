@@ -3,6 +3,10 @@ import { Construct } from 'constructs';
 import * as ga from './globalaccelerator.generated';
 import { IListener } from './listener';
 
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct as CoreConstruct } from '@aws-cdk/core';
+
 /**
  * The interface of the EndpointGroup
  */
@@ -113,7 +117,7 @@ export interface EndpointGroupProps {
 /**
  * The class for endpoint configuration
  */
-export class EndpointConfiguration extends cdk.Construct {
+export class EndpointConfiguration extends CoreConstruct {
   /**
    * The property containing all the configuration to be rendered
    */
@@ -169,7 +173,7 @@ export class EndpointGroup extends cdk.Resource implements IEndpointGroup {
     const resource = new ga.CfnEndpointGroup(this, 'Resource', {
       listenerArn: props.listener.listenerArn,
       endpointGroupRegion: props.region ?? cdk.Stack.of(this).region,
-      endpointConfigurations: cdk.Lazy.anyValue({ produce: () => this.renderEndpoints() }, { omitEmptyArray: true }),
+      endpointConfigurations: cdk.Lazy.any({ produce: () => this.renderEndpoints() }, { omitEmptyArray: true }),
     });
 
     this.endpointGroupArn = resource.attrEndpointGroupArn;
