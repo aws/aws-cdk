@@ -207,7 +207,7 @@ export class BucketDeployment extends cdk.Construct {
         createAcl: {
           ownerUid: '1001',
           ownerGid: '1001',
-          permissions: '755',
+          permissions: '600',
         },
         posixUser: {
           uid: '1001',
