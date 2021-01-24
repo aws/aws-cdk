@@ -88,6 +88,30 @@ Constructs are available for A, AAAA, CAA, CNAME, MX, NS, SRV and TXT records.
 Use the `CaaAmazonRecord` construct to easily restrict certificate authorities
 allowed to issue certificates for a domain to Amazon only.
 
+To add a NS record to a HostedZone in different account
+
+```ts
+import * as route53 from '@aws-cdk/aws-route53';
+
+// In the HostedZone containing a account
+const parentZone = new route53.PublicHostedZone(this, 'HostedZone', {
+  zoneName: 'someexample.com',
+  crossAccountZoneDelegationPrinciple: new iam.AccountPrincipal('12345678901')
+});
+
+// In this account
+const subZone = new route53.PublicHostedZone(this, 'SubZone', {
+  zoneName: 'sub.someexample.com'
+});
+
+new route53.CrossAccountZoneDelegationRecord(this, 'delegate', {
+  recordName: 'sub.someexample.com',
+  nameServers: subZone.hostedZoneNameServers!,
+  zoneName: 'someexample.com',
+  delegationRole: parentZone.crossAccountDelegationRole
+});
+```
+
 ## Imports
 
 If you don't know the ID of the Hosted Zone to import, you can use the 

@@ -48,7 +48,6 @@ async function cfnEventHandler(props: ResourceProperties, isDeleteEvent: boolean
   }).promise();
 }
 
-
 async function getCrossAccountCredentials(roleArn: string): Promise<Credentials> {
   const sts = new STS();
   const timestamp = (new Date()).getTime();
