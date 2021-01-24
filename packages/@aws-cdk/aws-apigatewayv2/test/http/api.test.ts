@@ -299,7 +299,7 @@ describe('HttpApi', () => {
       AuthorizationType: 'JWT',
     });
   });
-  
+
   test('throws when accessing apiEndpoint and disableExecuteApiEndpoint is true', () => {
     const stack = new Stack();
     const api = new HttpApi(stack, 'api', {

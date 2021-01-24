@@ -4,7 +4,7 @@ import { CfnRoute, CfnRouteProps } from '../apigatewayv2.generated';
 import { IRoute } from '../common';
 import { IHttpApi } from './api';
 import { IHttpRouteAuthorizer } from './authorizer';
-import { IHttpRouteIntegration, HttpIntegration } from './integration';
+import { IHttpRouteIntegration } from './integration';
 
 /**
  * Represents a Route for an HTTP API.

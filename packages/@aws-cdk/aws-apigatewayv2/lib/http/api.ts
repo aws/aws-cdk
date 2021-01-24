@@ -5,7 +5,7 @@ import { Construct } from 'constructs';
 import { CfnApi, CfnApiProps } from '../apigatewayv2.generated';
 import { DefaultDomainMappingOptions } from '../http/stage';
 import { IHttpRouteAuthorizer } from './authorizer';
-import { IHttpRouteIntegration, HttpIntegration, HttpRouteIntegrationConfig, } from './integration';
+import { IHttpRouteIntegration, HttpIntegration, HttpRouteIntegrationConfig } from './integration';
 import { BatchHttpRouteOptions, HttpMethod, HttpRoute, HttpRouteKey } from './route';
 import { HttpStage, HttpStageOptions } from './stage';
 import { VpcLink, VpcLinkProps } from './vpc-link';
