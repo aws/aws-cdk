@@ -1,7 +1,8 @@
 import { expect } from '@aws-cdk/assert';
+import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import { HostedZone } from '../lib';
+import { HostedZone, PublicHostedZone } from '../lib';
 
 export = {
   'Hosted Zone': {
@@ -52,6 +53,93 @@ export = {
               {
                 Key: 'zoneTag',
                 Value: 'inMyZone',
+              },
+            ],
+          },
+        },
+      },
+    });
+
+    test.done();
+  },
+
+  'with crossAccountZoneDelegationPrinciple'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack(undefined, 'TestStack', {
+      env: { account: '123456789012', region: 'us-east-1' },
+    });
+
+    // WHEN
+    new PublicHostedZone(stack, 'HostedZone', {
+      zoneName: 'testZone',
+      crossAccountZoneDelegationPrinciple: new iam.AccountPrincipal('223456789012'),
+    });
+
+    // THEN
+    expect(stack).toMatch({
+      Resources: {
+        HostedZoneDB99F866: {
+          Type: 'AWS::Route53::HostedZone',
+          Properties: {
+            Name: 'testZone.',
+          },
+        },
+        HostedZoneCrossAccountZoneDelegationRole685DF755: {
+          Type: 'AWS::IAM::Role',
+          Properties: {
+            AssumeRolePolicyDocument: {
+              Statement: [
+                {
+                  Action: 'sts:AssumeRole',
+                  Effect: 'Allow',
+                  Principal: {
+                    AWS: {
+                      'Fn::Join': [
+                        '',
+                        [
+                          'arn:',
+                          {
+                            Ref: 'AWS::Partition',
+                          },
+                          ':iam::223456789012:root',
+                        ],
+                      ],
+                    },
+                  },
+                },
+              ],
+              Version: '2012-10-17',
+            },
+            Policies: [
+              {
+                PolicyDocument: {
+                  Statement: [
+                    {
+                      Action: [
+                        'route53:ListHostedZonesByName',
+                        'route53:ChangeResourceRecordSets',
+                      ],
+                      Effect: 'Allow',
+                      Resource: {
+                        'Fn::Join': [
+                          '',
+                          [
+                            'arn:',
+                            {
+                              Ref: 'AWS::Partition',
+                            },
+                            ':route53:::hostedzone/',
+                            {
+                              Ref: 'HostedZoneDB99F866',
+                            },
+                          ],
+                        ],
+                      },
+                    },
+                  ],
+                  Version: '2012-10-17',
+                },
+                PolicyName: 'delegation',
               },
             ],
           },
