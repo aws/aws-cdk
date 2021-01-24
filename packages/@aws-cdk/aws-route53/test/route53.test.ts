@@ -1,10 +1,10 @@
 import { beASupersetOfTemplate, exactlyMatchTemplate, expect, haveResource } from '@aws-cdk/assert';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as cdk from '@aws-cdk/core';
-import { Test } from 'nodeunit';
+import { nodeunitShim, Test } from 'nodeunit-shim';
 import { HostedZone, PrivateHostedZone, PublicHostedZone, TxtRecord } from '../lib';
 
-export = {
+nodeunitShim({
   'default properties': {
     'public hosted zone'(test: Test) {
       const app = new TestApp();
@@ -215,7 +215,7 @@ export = {
     }));
     test.done();
   },
-};
+});
 
 class TestApp {
   public readonly stack: cdk.Stack;

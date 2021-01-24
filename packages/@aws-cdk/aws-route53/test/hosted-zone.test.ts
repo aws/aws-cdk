@@ -1,10 +1,10 @@
 import { expect } from '@aws-cdk/assert';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
-import { Test } from 'nodeunit';
+import { nodeunitShim, Test } from 'nodeunit-shim';
 import { HostedZone, PublicHostedZone } from '../lib';
 
-export = {
+nodeunitShim({
   'Hosted Zone': {
     'Hosted Zone constructs the ARN'(test: Test) {
       // GIVEN
@@ -149,4 +149,4 @@ export = {
 
     test.done();
   },
-};
+});

@@ -27,11 +27,14 @@ async function cfnEventHandler(props: ResourceProperties, isDeleteEvent: boolean
   const route53 = new Route53({ credentials });
 
   const { HostedZones } = await route53.listHostedZonesByName({ DNSName: ParentZoneName }).promise();
-  if (HostedZones.length > 1) {
-    throw Error('More than one hosted zones found with the provided name.');
+  if (HostedZones.length < 1) {
+    throw Error('No hosted zones found with the provided name.');
   }
 
-  const { Id: hostedZoneId } = HostedZones[0];
+  const { Id: hostedZoneId, Name: hostedZoneName } = HostedZones[0];
+  if (hostedZoneName !== ParentZoneName) {
+    throw Error('No hosted zones found with the provided name.');
+  }
 
   await route53.changeResourceRecordSets({
     HostedZoneId: hostedZoneId,
