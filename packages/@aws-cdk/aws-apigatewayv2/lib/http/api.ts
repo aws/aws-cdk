@@ -3,7 +3,7 @@ import { Duration, IResource, Resource } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnApi, CfnApiProps } from '../apigatewayv2.generated';
 import { DefaultDomainMappingOptions } from '../http/stage';
-import { IHttpAuthorizer } from './authorizer';
+import { IHttpRouteAuthorizer } from './authorizer';
 import { IHttpRouteIntegration } from './integration';
 import { BatchHttpRouteOptions, HttpMethod, HttpRoute, HttpRouteKey } from './route';
 import { HttpStage, HttpStageOptions } from './stage';
@@ -185,15 +185,7 @@ export interface AddRoutesOptions extends BatchHttpRouteOptions {
    * Authorizer to be associated to these routes.
    * @default - No authorizer
    */
-  readonly authorizer?: IHttpAuthorizer;
-
-  /**
-   * Scopes required to access this route
-   *
-   * Useless if no authorizer is passed in
-   * @default - No scopes
-   */
-  readonly authorizationScopes?: string[];
+  readonly authorizer?: IHttpRouteAuthorizer;
 }
 
 abstract class HttpApiBase extends Resource implements IHttpApi { // note that this is not exported
@@ -378,7 +370,6 @@ export class HttpApi extends HttpApiBase {
       routeKey: HttpRouteKey.with(options.path, method),
       integration: options.integration,
       authorizer: options.authorizer,
-      authorizationScopes: options.authorizationScopes,
     }));
   }
 }

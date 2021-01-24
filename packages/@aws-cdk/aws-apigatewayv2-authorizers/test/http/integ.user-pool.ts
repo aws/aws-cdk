@@ -1,9 +1,11 @@
 /// !cdk-integ pragma:ignore-assets
 import * as path from 'path';
+import { HttpApi, HttpMethod } from '@aws-cdk/aws-apigatewayv2';
+import { LambdaProxyIntegration } from '@aws-cdk/aws-apigatewayv2-integrations';
 import * as cognito from '@aws-cdk/aws-cognito';
 import * as lambda from '@aws-cdk/aws-lambda';
 import { App, Stack } from '@aws-cdk/core';
-import { HttpApi, HttpJwtAuthorizer, HttpMethod, LambdaProxyIntegration } from '../../lib';
+import { HttpUserPoolAuthorizer } from '../../lib';
 
 /*
  * Stack verification steps:
@@ -19,20 +21,17 @@ const httpApi = new HttpApi(stack, 'MyHttpApi');
 
 const userPool = new cognito.UserPool(stack, 'userpool');
 
-const client = userPool.addClient('my-client');
+const userPoolClient = userPool.addClient('my-client');
 
-const authorizer = new HttpJwtAuthorizer(stack, 'MyAuthorizer', {
-  httpApi,
-  jwtConfiguration: {
-    audience: [client.userPoolClientId],
-    issuer: `https://cognito-idp.${stack.region}.amazonaws.com/${userPool.userPoolId}`,
-  },
+const authorizer = new HttpUserPoolAuthorizer({
+  userPool,
+  userPoolClient,
 });
 
 const handler = new lambda.Function(stack, 'lambda', {
   runtime: lambda.Runtime.NODEJS_12_X,
   handler: 'index.handler',
-  code: lambda.AssetCode.fromAsset(path.join(__dirname, 'integ.authorizer.handler')),
+  code: lambda.AssetCode.fromAsset(path.join(__dirname, 'integ.user-pool.handler')),
 });
 
 httpApi.addRoutes({
