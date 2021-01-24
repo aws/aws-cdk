@@ -70,6 +70,17 @@ export interface DeployStackOptions {
   execute?: boolean;
 
   /**
+   * Optional name to use for the CloudFormation change set.
+   * If not provided, a name will be generated automatically.
+   */
+  changeSetName?: string;
+
+  /**
+   * Optionally retain empty CloudFormation change sets instead of deleting them.
+   */
+  retainEmptyChangeSet?: boolean;
+
+  /**
    * Force deployment, even if the deployed template is identical to the one we are about to deploy.
    * @default false deployment will be skipped if the template is identical
    */
@@ -173,6 +184,8 @@ export class CloudFormationDeployments {
       toolkitInfo,
       tags: options.tags,
       execute: options.execute,
+      changeSetName: options.changeSetName,
+      retainEmptyChangeSet: options.retainEmptyChangeSet,
       force: options.force,
       parameters: options.parameters,
       usePreviousParameters: options.usePreviousParameters,

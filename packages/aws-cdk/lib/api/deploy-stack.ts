@@ -132,6 +132,17 @@ export interface DeployStackOptions {
   execute?: boolean;
 
   /**
+   * Optional name to use for the CloudFormation change set.
+   * If not provided, a name will be generated automatically.
+   */
+  changeSetName?: string;
+
+  /**
+   * Optionally retain empty CloudFormation change sets instead of deleting them.
+   */
+  retainEmptyChangeSet?: boolean;
+
+  /**
    * The collection of extra parameters
    * (in addition to those used for assets)
    * to pass to the deployed template.
@@ -228,7 +239,7 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
 
   await publishAssets(legacyAssets.toManifest(stackArtifact.assembly.directory), options.sdkProvider, stackEnv);
 
-  const changeSetName = `CDK-${executionId}`;
+  const changeSetName = options.changeSetName || `CDK-${executionId}`;
   const update = cloudFormationStack.exists && cloudFormationStack.stackStatus.name !== 'REVIEW_IN_PROGRESS';
 
   debug(`Attempting to create ChangeSet ${changeSetName} to ${update ? 'update' : 'create'} stack ${deployName}`);
@@ -262,7 +273,9 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
 
   if (changeSetHasNoChanges(changeSetDescription)) {
     debug('No changes are to be performed on %s.', deployName);
-    await cfn.deleteChangeSet({ StackName: deployName, ChangeSetName: changeSetName }).promise();
+    if (!options.retainEmptyChangeSet) {
+      await cfn.deleteChangeSet({ StackName: deployName, ChangeSetName: changeSetName }).promise();
+    }
     return { noOp: true, outputs: cloudFormationStack.outputs, stackArn: changeSet.StackId!, stackArtifact };
   }
 

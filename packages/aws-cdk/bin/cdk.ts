@@ -95,6 +95,8 @@ async function parseCommandLineArguments() {
       // @deprecated(v2) -- tags are part of the Cloud Assembly and tags specified here will be overwritten on the next deployment
       .option('tags', { type: 'array', alias: 't', desc: 'Tags to add to the stack (KEY=VALUE), overrides tags from Cloud Assembly (deprecated)', nargs: 1, requiresArg: true })
       .option('execute', { type: 'boolean', desc: 'Whether to execute ChangeSet (--no-execute will NOT execute the ChangeSet)', default: true })
+      .option('change-set-name', { type: 'string', desc: 'Name of the CloudFormation change set to create' } )
+      .option('retain-empty-change-set', { type: 'boolean', desc: 'Retain empty CloudFormation change sets instead of deleting them', default: false })
       .option('force', { alias: 'f', type: 'boolean', desc: 'Always deploy stack even if templates are identical', default: false })
       .option('parameters', { type: 'array', desc: 'Additional parameters passed to CloudFormation at deploy time (STACK:KEY=VALUE)', nargs: 1, requiresArg: true, default: {} })
       .option('outputs-file', { type: 'string', alias: 'O', desc: 'Path to file where stack outputs will be written as JSON', requiresArg: true })
@@ -313,6 +315,8 @@ async function initCommandLine() {
           reuseAssets: args['build-exclude'],
           tags: configuration.settings.get(['tags']),
           execute: args.execute,
+          changeSetName: args.changeSetName,
+          retainEmptyChangeSet: args.retainEmptyChangeSet,
           force: args.force,
           parameters: parameterMap,
           usePreviousParameters: args['previous-parameters'],
