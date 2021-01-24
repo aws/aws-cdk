@@ -198,7 +198,7 @@ export class BucketDeployment extends cdk.Construct {
 
     let accessPoint;
     if (props.enableTempEfsStorage && props.vpc) {
-      const fileSystem = new efs.FileSystem(this, 'deploymentFileSystem', {
+      const fileSystem = new efs.FileSystem(this, 'FileSystem', {
         vpc: props.vpc,
         removalPolicy: cdk.RemovalPolicy.DESTROY,
       });
