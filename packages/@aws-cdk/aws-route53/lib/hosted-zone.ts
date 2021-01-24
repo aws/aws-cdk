@@ -1,4 +1,5 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
+import * as iam from '@aws-cdk/aws-iam';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { ContextProvider, Duration, Lazy, Resource, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
@@ -190,6 +191,14 @@ export interface PublicHostedZoneProps extends CommonHostedZoneProps {
    * @default false
    */
   readonly caaAmazon?: boolean;
+
+  /**
+   * The principle for which a assumed by role is created
+   * for record set updation
+   *
+   * @default - No delegation configuration
+   */
+  readonly crossAccountZoneDelegationPrinciple?: iam.IPrincipal;
 }
 
 /**
@@ -222,12 +231,31 @@ export class PublicHostedZone extends HostedZone implements IPublicHostedZone {
     return new Import(scope, id);
   }
 
+  /**
+   * Role for cross account delegation
+   */
+  public readonly crossAccountDelegationRole?: iam.Role;
+
   constructor(scope: Construct, id: string, props: PublicHostedZoneProps) {
     super(scope, id, props);
 
     if (props.caaAmazon) {
       new CaaAmazonRecord(this, 'CaaAmazon', {
         zone: this,
+      });
+    }
+
+    if (props.crossAccountZoneDelegationPrinciple) {
+      this.crossAccountDelegationRole = new iam.Role(this, 'CrossAccountZoneDelegationRole', {
+        assumedBy: props.crossAccountZoneDelegationPrinciple,
+        inlinePolicies: {
+          delegation: new iam.PolicyDocument({
+            statements: [new iam.PolicyStatement({
+              actions: ['route53:ListHostedZonesByName', 'route53:ChangeResourceRecordSets'],
+              resources: [this.hostedZoneArn],
+            })],
+          }),
+        },
       });
     }
   }
