@@ -311,7 +311,7 @@ test('user metadata is correctly transformed', () => {
 
   // THEN
   expect(stack).toHaveResource('Custom::CDKBucketDeployment', {
-    UserMetadata: { 'x-amzn-meta-a': '1', 'x-amzn-meta-b': '2' },
+    UserMetadata: { a: '1', b: '2' },
   });
 });
 
