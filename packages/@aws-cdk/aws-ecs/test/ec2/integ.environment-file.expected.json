@@ -1219,7 +1219,7 @@
       "Properties": {
         "Code": {
           "S3Bucket": {
-            "Ref": "AssetParametersc24b999656e4fe6c609c31bae56a1cf4717a405619c3aa6ba1bc686b8c2c86cfS3Bucket55EFA30C"
+            "Ref": "AssetParameters8d6188da09b55173c7f04b3f3bc14f28dd68babdd3c0d298b97dc0e1e85bafffS3Bucket61EB803E"
           },
           "S3Key": {
             "Fn::Join": [
@@ -1232,7 +1232,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParametersc24b999656e4fe6c609c31bae56a1cf4717a405619c3aa6ba1bc686b8c2c86cfS3VersionKey60329B70"
+                          "Ref": "AssetParameters8d6188da09b55173c7f04b3f3bc14f28dd68babdd3c0d298b97dc0e1e85bafffS3VersionKey00CCE044"
                         }
                       ]
                     }
@@ -1245,7 +1245,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParametersc24b999656e4fe6c609c31bae56a1cf4717a405619c3aa6ba1bc686b8c2c86cfS3VersionKey60329B70"
+                          "Ref": "AssetParameters8d6188da09b55173c7f04b3f3bc14f28dd68babdd3c0d298b97dc0e1e85bafffS3VersionKey00CCE044"
                         }
                       ]
                     }
@@ -1348,11 +1348,11 @@
       "Type": "String",
       "Description": "Artifact hash for asset \"e9882ab123687399f934da0d45effe675ecc8ce13b40cb946f3e1d6141fe8d68\""
     },
-    "AssetParametersc24b999656e4fe6c609c31bae56a1cf4717a405619c3aa6ba1bc686b8c2c86cfS3Bucket55EFA30C": {
+    "AssetParameters8d6188da09b55173c7f04b3f3bc14f28dd68babdd3c0d298b97dc0e1e85bafffS3Bucket61EB803E": {
       "Type": "String",
       "Description": "S3 bucket for asset \"c24b999656e4fe6c609c31bae56a1cf4717a405619c3aa6ba1bc686b8c2c86cf\""
     },
-    "AssetParametersc24b999656e4fe6c609c31bae56a1cf4717a405619c3aa6ba1bc686b8c2c86cfS3VersionKey60329B70": {
+    "AssetParameters8d6188da09b55173c7f04b3f3bc14f28dd68babdd3c0d298b97dc0e1e85bafffS3VersionKey00CCE044": {
       "Type": "String",
       "Description": "S3 key for asset version \"c24b999656e4fe6c609c31bae56a1cf4717a405619c3aa6ba1bc686b8c2c86cf\""
     },
