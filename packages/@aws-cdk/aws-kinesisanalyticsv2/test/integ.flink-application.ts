@@ -11,15 +11,12 @@
 import * as core from '@aws-cdk/core';
 // as in unit tests, we use a qualified import,
 // not bring in individual classes
-import * as er from '../lib';
+import * as ka from '../lib';
 
 const app = new core.App();
 
 const stack = new core.Stack(app, 'ExampleResourceIntegTestStack');
 
-new er.ExampleResource(stack, 'ExampleResource', {
-  // we don't want to leave trash in the account after running the deployment of this
-  removalPolicy: core.RemovalPolicy.DESTROY,
-});
+new ka.FlinkApplication(stack, 'ExampleResource', {});
 
 app.synth();

@@ -1,6 +1,8 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as core from '@aws-cdk/core';
 import { Construct } from 'constructs';
+import { ApplicationCode } from './application-code';
+import { CfnApplication } from './kinesisanalyticsv2.generated';
 import { flinkApplicationArnComponents } from './private/example-resource-common';
 
 export interface IFlinkApplication extends core.IResource, iam.IGrantable {
@@ -9,14 +11,14 @@ export interface IFlinkApplication extends core.IResource, iam.IGrantable {
    *
    * @attribute
    */
-  readonly flinkApplicationArn: string;
+  readonly applicationArn: string;
 
   /**
    * The name of the Flink application.
    *
    * @attribute
    */
-  readonly flinkApplicationName: string;
+  readonly applicationName: string;
 
   /**
    * The application IAM role.
@@ -26,25 +28,32 @@ export interface IFlinkApplication extends core.IResource, iam.IGrantable {
   /**
    * Convenience method for adding a policy statement to the application role.
    */
-  addToRolePolicy(policyStatement: iam.PolicyStatement): boolean;
+  addToPrincipalPolicy(policyStatement: iam.PolicyStatement): boolean;
+}
+
+export class FlinkRuntime {
+  public static FLINK_1_6 = new FlinkRuntime('FLINK-1_6');
+  public static FLINK_1_8 = new FlinkRuntime('FLINK-1_8');
+  public static FLINK_1_11 = new FlinkRuntime('FLINK-1_11');
+  public constructor(public readonly value: string) {}
 }
 
 /**
- * Implements the functionality of the Flink applications that is shared
- * between CDK created and imported IFlinkApplications.
+ * Implements the functionality shared between CDK created and imported
+ * IFlinkApplications.
  */
 abstract class FlinkApplicationBase extends core.Resource implements IFlinkApplication {
-  public abstract readonly flinkApplicationArn: string;
-  public abstract readonly flinkApplicationName: string;
+  public abstract readonly applicationArn: string;
+  public abstract readonly applicationName: string;
   public abstract readonly role?: iam.IRole;
 
   // Implement iam.IGrantable interface
   public abstract readonly grantPrincipal: iam.IPrincipal;
 
-  /** Implement the convenience {@link IFlinkApplication.addToRolePolicy} method. */
-  public addToRolePolicy(policyStatement: iam.PolicyStatement): boolean {
+  /** Implement the convenience {@link IFlinkApplication.addToPrincipalPolicy} method. */
+  public addToPrincipalPolicy(policyStatement: iam.PolicyStatement): boolean {
     if (this.role) {
-      this.role.addToPolicy(policyStatement);
+      this.role.addToPrincipalPolicy(policyStatement);
       return true;
     }
 
@@ -54,16 +63,29 @@ abstract class FlinkApplicationBase extends core.Resource implements IFlinkAppli
 
 /**
  * Props for creating a FlinkApplication construct.
+ * @resource AWS::KinesisAnalyticsV2::Application
  */
 export interface FlinkApplicationProps {
   /**
+   * A name for your FlinkApplication that is unique to an AWS account.
+   *
    * @default - CloudFormation-generated name
    */
   readonly applicationName?: string;
 
   /**
-   * A role to use to grant permissions to your application. Omitting this
-   * property and using the default role is recommended.
+   * The Flink version to use for this application.
+   */
+  readonly runtime: FlinkRuntime;
+
+  /**
+   * The Flink code asset to run.
+   */
+  readonly code: ApplicationCode;
+
+  /**
+   * A role to use to grant permissions to your application. Prefer omitting
+   * this property and using the default role.
    *
    * @default - a new Role will be created
    */
@@ -77,31 +99,35 @@ export interface FlinkApplicationProps {
   readonly removalPolicy?: core.RemovalPolicy;
 }
 
+interface Attributes {
+  applicationName: string;
+  applicationArn: string;
+}
+
 /**
  * The L2 construct for Flink Kinesis Data Applications.
- *
  * @resource AWS::KinesisAnalyticsV2::Application
+ * @experimental
  */
-export class FlinkApplication extends core.Resource {
+export class FlinkApplication extends FlinkApplicationBase {
   /**
-   * Import an existing Flink application, defined outside of the CDK code by name.
+   * Import an existing Flink application, defined outside of the CDK code.
    */
-  public static fromFlinkApplicationName(scope: Construct, id: string, flinkApplicationName: string): IFlinkApplication {
+  public static fromAttributes(scope: Construct, id: string, attributes: Attributes): IFlinkApplication {
     class Import extends FlinkApplicationBase {
       // Imported flink applications have no associated role or grantPrincipal
       public readonly role = undefined;
       public readonly grantPrincipal = new iam.UnknownPrincipal({ resource: this });
 
-      public readonly flinkApplicationName = flinkApplicationName;
-      public readonly flinkApplicationArn = core.Stack.of(scope)
-        .formatArn(flinkApplicationArnComponents(flinkApplicationName));
+      public readonly applicationName = attributes.applicationName;
+      public readonly applicationArn = attributes.applicationArn;
     }
 
     return new Import(scope, id);
   }
 
-  public readonly flinkApplicationArn: string;
-  public readonly flinkApplicationName: string;
+  public readonly applicationArn: string;
+  public readonly applicationName: string;
 
   // Role must be optional for JSII compatibility
   public readonly role?: iam.IRole;
@@ -132,27 +158,24 @@ export class FlinkApplication extends core.Resource {
     // but since this is just an example,
     // we'll use CloudFormation wait conditions.
 
-    // Remember to always, always, pass 'this' as the first argument
-    // when creating any constructs inside your L2s!
-    // This guarantees that they get scoped correctly,
-    // and the CDK will make sure their locally-unique identifiers
-    // are globally unique, which makes your L2 compose.
-    const waitConditionHandle = new core.CfnWaitConditionHandle(this, 'WaitConditionHandle');
+    this.role = props.role ?? new iam.Role(this, 'Role', {
+      assumedBy: new iam.ServicePrincipal('kinesisanalytics.amazonaws.com'),
+    });
+    this.grantPrincipal = this.role;
 
-    // The 'main' L1 you create should always have the logical ID 'Resource'.
-    // This is important, so that the ConstructNode.defaultChild method works correctly.
-    // The local variable representing the L1 is often called 'resource' as well.
-    const resource = new core.CfnWaitCondition(this, 'Resource', {
-      count: 0,
-      handle: waitConditionHandle.ref,
-      timeout: '10',
+    const resource = new CfnApplication(this, 'Resource', {
+      runtimeEnvironment: props.runtime.value,
+      serviceExecutionRole: this.role.roleArn,
+      applicationConfiguration: {
+        applicationCodeConfiguration: props.code.bind(this),
+      },
     });
 
     // The resource's physical name and ARN are set using
     // some protected methods from the Resource superclass
     // that correctly resolve when your L2 is used in another resource
     // that is in a different AWS region or account than this one.
-    this.flinkApplicationName = this.getResourceNameAttribute(
+    this.applicationName = this.getResourceNameAttribute(
       // A lot of the CloudFormation resources return their physical name
       // when the Ref function is used on them.
       // If your resource is like that, simply pass 'resource.ref' here.
@@ -164,7 +187,7 @@ export class FlinkApplication extends core.Resource {
       // you can use Fn::Select and Fn::Split to take out the part after the '/' from the ARN:
       core.Fn.select(1, core.Fn.split('/', resource.ref)),
     );
-    this.flinkApplicationArn = this.getResourceArnAttribute(
+    this.applicationArn = this.getResourceArnAttribute(
       // A lot of the L1 classes have an 'attrArn' property -
       // if yours does, use it here.
       // However, if it doesn't,
@@ -175,18 +198,7 @@ export class FlinkApplication extends core.Resource {
       // always use the protected physicalName property for this second argument
       flinkApplicationArnComponents(this.physicalName));
 
-    // if a role wasn't passed, create one
-    const role = props.role || new iam.Role(this, 'Role', {
-      // of course, fill your correct service principal here
-      assumedBy: new iam.ServicePrincipal('cloudformation.amazonaws.com'),
-    });
-    this.role = role;
-    // we need this to correctly implement the iam.IGrantable interface
-    this.grantPrincipal = role;
-
-    // this is how you apply the removal policy
     resource.applyRemovalPolicy(props.removalPolicy, {
-      // this is the default to apply if props.removalPolicy is undefined
       default: core.RemovalPolicy.DESTROY,
     });
   }
