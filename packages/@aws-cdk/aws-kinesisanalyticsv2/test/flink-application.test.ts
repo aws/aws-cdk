@@ -173,6 +173,34 @@ describe('FlinkApplication', () => {
     });
   });
 
+  test('adding property groups', () => {
+    const { stack, requiredProps } = buildStack();
+    new ka.FlinkApplication(stack, 'FlinkApplication', {
+      ...requiredProps,
+      propertyGroups: [
+        new ka.PropertyGroup('FlinkApplicationProperties', {
+          SomeProperty: 'SomeValue',
+        }),
+      ],
+    });
+
+    expect(stack).toHaveResourceLike('AWS::KinesisAnalyticsV2::Application', {
+      RuntimeEnvironment: 'FLINK-1_11',
+      ApplicationConfiguration: {
+        EnvironmentProperties: {
+          PropertyGroups: [
+            {
+              PropertyGroupId: 'FlinkApplicationProperties',
+              PropertyMap: {
+                SomeProperty: 'SomeValue',
+              },
+            },
+          ],
+        },
+      },
+    });
+  });
+
   // TODO: Not quite sure what to do with fromAttributes yet.
   test('fromAttributes', () => {
     const { stack } = buildStack();

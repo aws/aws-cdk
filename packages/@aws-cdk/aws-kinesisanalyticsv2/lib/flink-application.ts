@@ -4,6 +4,7 @@ import { Construct } from 'constructs';
 import { ApplicationCode } from './application-code';
 import { CfnApplication } from './kinesisanalyticsv2.generated';
 import { flinkApplicationArnComponents } from './private/example-resource-common';
+import { PropertyGroup } from './property-group';
 
 export interface IFlinkApplication extends core.IResource, iam.IGrantable {
   /**
@@ -82,6 +83,12 @@ export interface FlinkApplicationProps {
    * The Flink code asset to run.
    */
   readonly code: ApplicationCode;
+
+  /**
+   * Configuration PropertyGroups. You can use these property groups to pass
+   * arbitrary runtime configuration values to your Flink App.
+   */
+  readonly propertyGroups?: PropertyGroup[];
 
   /**
    * A role to use to grant permissions to your application. Prefer omitting
@@ -168,6 +175,9 @@ export class FlinkApplication extends FlinkApplicationBase {
       serviceExecutionRole: this.role.roleArn,
       applicationConfiguration: {
         applicationCodeConfiguration: props.code.bind(this),
+        environmentProperties: {
+          propertyGroups: props.propertyGroups?.map(pg => pg.toCfn()),
+        },
       },
     });
 
