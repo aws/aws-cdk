@@ -16,4 +16,6 @@ export const StandardAttributeNames = {
   timezone: 'zoneinfo',
   lastUpdateTime: 'updated_at',
   website: 'website',
+  emailVerified: 'email_verified',
+  phoneNumberVerified: 'phone_number_verified',
 };

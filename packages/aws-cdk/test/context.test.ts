@@ -32,7 +32,7 @@ test('load context from both files if available', async () => {
   await fs.writeJSON('cdk.json', { context: { boo: 'far' } });
 
   // WHEN
-  const config = await new Configuration().load();
+  const config = await new Configuration({ readUserContext: false }).load();
 
   // THEN
   expect(config.context.get('foo')).toBe('bar');
@@ -43,7 +43,7 @@ test('deleted context disappears from new file', async () => {
   // GIVEN
   await fs.writeJSON('cdk.context.json', { foo: 'bar' });
   await fs.writeJSON('cdk.json', { context: { foo: 'bar' } });
-  const config = await new Configuration().load();
+  const config = await new Configuration({ readUserContext: false }).load();
 
   // WHEN
   config.context.unset('foo');
@@ -58,7 +58,7 @@ test('clear deletes from new file', async () => {
   // GIVEN
   await fs.writeJSON('cdk.context.json', { foo: 'bar' });
   await fs.writeJSON('cdk.json', { context: { boo: 'far' } });
-  const config = await new Configuration().load();
+  const config = await new Configuration({ readUserContext: false }).load();
 
   // WHEN
   config.context.clear();
@@ -72,7 +72,7 @@ test('clear deletes from new file', async () => {
 test('context is preserved in the location from which it is read', async () => {
   // GIVEN
   await fs.writeJSON('cdk.json', { context: { 'boo:boo': 'far' } });
-  const config = await new Configuration().load();
+  const config = await new Configuration({ readUserContext: false }).load();
 
   // WHEN
   expect(config.context.all).toEqual({ 'boo:boo': 'far' });
@@ -87,7 +87,7 @@ test('surive no context in old file', async () => {
   // GIVEN
   await fs.writeJSON('cdk.json', { });
   await fs.writeJSON('cdk.context.json', { boo: 'far' });
-  const config = await new Configuration().load();
+  const config = await new Configuration({ readUserContext: false }).load();
 
   // WHEN
   expect(config.context.all).toEqual({ boo: 'far' });
@@ -100,7 +100,13 @@ test('surive no context in old file', async () => {
 test('command line context is merged with stored context', async () => {
   // GIVEN
   await fs.writeJSON('cdk.context.json', { boo: 'far' });
-  const config = await new Configuration({ context: ['foo=bar'], _: ['command'] } as any).load();
+  const config = await new Configuration({
+    readUserContext: false,
+    commandLineArguments: {
+      context: ['foo=bar'],
+      _: ['command'],
+    } as any,
+  }).load();
 
   // WHEN
   expect(config.context.all).toEqual({ foo: 'bar', boo: 'far' });
@@ -108,13 +114,13 @@ test('command line context is merged with stored context', async () => {
 
 test('can save and load', async () => {
   // GIVEN
-  const config1 = await new Configuration().load();
+  const config1 = await new Configuration({ readUserContext: false }).load();
   config1.context.set('some_key', 'some_value');
   await config1.saveContext();
   expect(config1.context.get('some_key')).toEqual('some_value');
 
   // WHEN
-  const config2 = await new Configuration().load();
+  const config2 = await new Configuration({ readUserContext: false }).load();
 
   // THEN
   expect(config2.context.get('some_key')).toEqual('some_value');
@@ -122,13 +128,13 @@ test('can save and load', async () => {
 
 test('transient values arent saved to disk', async () => {
   // GIVEN
-  const config1 = await new Configuration().load();
+  const config1 = await new Configuration({ readUserContext: false }).load();
   config1.context.set('some_key', { [TRANSIENT_CONTEXT_KEY]: true, value: 'some_value' });
   await config1.saveContext();
   expect(config1.context.get('some_key').value).toEqual('some_value');
 
   // WHEN
-  const config2 = await new Configuration().load();
+  const config2 = await new Configuration({ readUserContext: false }).load();
 
   // THEN
   expect(config2.context.get('some_key')).toEqual(undefined);
