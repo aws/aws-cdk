@@ -16,7 +16,7 @@ export type Properties = {[key: string]: any};
 /**
  * Configuration options for custom resource providers.
  *
- * @deprecated this type is only used in the deprecated {@link ICustomResourceProvider} interface
+ * @deprecated used in {@link ICustomResourceProvider} which is now deprecated
  */
 export interface CustomResourceProviderConfig {
   /**
