@@ -12,9 +12,6 @@ phases:
 
       # Install yarn if it wasn't already present in the image
       - yarn --version || npm -g install yarn
-  pre_build:
-    commands:
-      - /bin/bash ./fetch-dotnet-snk.sh
   build:
     commands:
       - 'if ${BUMP_CANDIDATE:-false}; then /bin/bash ./scripts/bump-candidate.sh; fi'
