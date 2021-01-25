@@ -19,6 +19,7 @@ export = {
 
     test.done();
   },
+
   'Can import Virtual Services using attributes'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
@@ -34,8 +35,10 @@ export = {
     // THEN
     test.equal(virtualService.mesh.meshName, meshName);
     test.equal(virtualService.virtualServiceName, virtualServiceName);
+
     test.done();
   },
+
   'When defining a VirtualServiceProvider': {
     'Should throw when the VirtualService and Provider are in different meshes'(test: Test) {
       // GIVEN
@@ -52,6 +55,7 @@ export = {
           virtualServiceName: 'testVS',
           virtualServiceProvider: appmesh.VirtualServiceProvider.virtualNode(differentMeshVn),
         }), /Virtual Service provider must belong to mesh/);
+
       test.done();
     },
   },

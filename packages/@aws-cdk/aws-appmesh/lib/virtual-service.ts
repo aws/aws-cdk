@@ -38,7 +38,7 @@ export interface IVirtualService extends cdk.IResource {
 /**
  * The base properties which all classes in VirtualService will inherit from
  */
-export interface VirtualServiceProps {
+export interface VirtualServiceBaseProps {
   /**
    * The name of the VirtualService.
    *
@@ -51,16 +51,21 @@ export interface VirtualServiceProps {
   readonly virtualServiceName?: string;
 
   /**
-   * The VirtualNode or VirtualRouter which the VirtualService uses as its provider
-   */
-  readonly virtualServiceProvider: VirtualServiceProvider;
-
-  /**
    * Client policy for this Virtual Service
    *
    * @default - none
    */
   readonly clientPolicy?: ClientPolicy;
+}
+
+/**
+ * The properties applied to the VirtualService being define
+ */
+export interface VirtualServiceProps extends VirtualServiceBaseProps {
+  /**
+   * The VirtualNode or VirtualRouter which the VirtualService uses as its provider
+   */
+  readonly virtualServiceProvider: VirtualServiceProvider;
 }
 
 /**
@@ -124,10 +129,6 @@ export class VirtualService extends cdk.Resource implements IVirtualService {
     this.clientPolicy = props.clientPolicy;
     const provider = props.virtualServiceProvider?.bind(this);
     this.mesh = provider.mesh;
-
-    if (provider.mesh != this.mesh) {
-      throw new Error(`VirtualService ${this.physicalName} and the provider must be in the same Mesh`);
-    }
 
     const svc = new CfnVirtualService(this, 'Resource', {
       meshName: this.mesh.meshName,
@@ -245,11 +246,7 @@ class VirtualServiceProviderImpl extends VirtualServiceProvider {
     super();
     this.virtualNode = virtualNode;
     this.virtualRouter = virtualRouter;
-    const providedMesh = this.virtualNode?.mesh || this.virtualRouter?.mesh || mesh;
-    // Only occurs if VirtualNode or VirtualRouter is not provided during construction
-    if (!providedMesh) {
-      throw new Error('Mesh property not defined for VirtualServiceProviderImpl');
-    }
+    const providedMesh = this.virtualNode?.mesh ?? this.virtualRouter?.mesh ?? mesh!;
     this.mesh = providedMesh;
   }
 
