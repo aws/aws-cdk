@@ -1,4 +1,5 @@
 import { expect, haveResource } from '@aws-cdk/assert';
+import * as iam from '@aws-cdk/aws-iam';
 import { Duration, Stack } from '@aws-cdk/core';
 import { nodeunitShim, Test } from 'nodeunit-shim';
 import * as route53 from '../lib';
@@ -510,6 +511,51 @@ nodeunitShim({
         'ns-1777.awsdns-30.co.uk.',
       ],
       TTL: '172800',
+    }));
+    test.done();
+  },
+
+  'Cross account zone delegation record'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    const parentZone = new route53.PublicHostedZone(stack, 'ParentHostedZone', {
+      zoneName: 'myzone.com',
+      crossAccountZoneDelegationPrinciple: new iam.AccountPrincipal('123456789012'),
+    });
+
+    // WHEN
+    const childZone = new route53.PublicHostedZone(stack, 'ChildHostedZone', {
+      zoneName: 'sub.myzone.com',
+    });
+    new route53.CrossAccountZoneDelegationRecord(stack, 'Delegation', {
+      recordName: childZone.zoneName,
+      nameServers: childZone.hostedZoneNameServers!,
+      zoneName: parentZone.zoneName,
+      delegationRole: parentZone.crossAccountDelegationRole!,
+    });
+
+    // THEN
+    expect(stack).to(haveResource('Custom::CrossAccountZoneDelegation', {
+      ServiceToken: {
+        'Fn::GetAtt': [
+          'CustomCrossAccountZoneDelegationCustomResourceProviderHandler44A84265',
+          'Arn',
+        ],
+      },
+      AssumeRoleArn: {
+        'Fn::GetAtt': [
+          'ParentHostedZoneCrossAccountZoneDelegationRole95B1C36E',
+          'Arn',
+        ],
+      },
+      ParentZoneName: 'myzone.com',
+      RecordName: 'sub.myzone.com',
+      NameServers: {
+        'Fn::GetAtt': [
+          'ChildHostedZone4B14AC71',
+          'NameServers',
+        ],
+      },
     }));
     test.done();
   },
