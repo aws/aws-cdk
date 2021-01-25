@@ -144,16 +144,15 @@ of a new version resource. You can specify options for this version through the
 > `lambda.Version` resource directly since the CDK is unable to determine if
 > their contents had changed.
 >
-> A workaround is to create a new function version whenever the stack is updated.
-> This makes sure your lambda function always has the latest code. One strategy
-> is to set an environment variable with a value that is guaranteed to be different
-> from one synthesis to the next.
+> An alternative to defining a `lambda.Version` is to set an environment variable
+> which changes at least as often as your code does. This makes sure the function
+> always has the latest code.
 >
 > ```ts
-> const randomString = [...Array(16)].map(i=>(~~(Math.random()*36)).toString(36)).join('');
+> const codeVersion = "stringOrMethodToGetCodeVersion";
 > const fn = new lambda.Function(this, 'MyFunction', {
 >  environment: {
->    'GuaranteeAlwaysCreateNewVersionString': randomString
+>    'CodeVersionString': codeVersion
 >  }
 > });
 > ```
