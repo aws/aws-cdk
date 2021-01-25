@@ -653,6 +653,40 @@ test('fromSecretCompleteArn', () => {
   expect(stack.resolve(secret.secretValueFromJson('password'))).toEqual(`{{resolve:secretsmanager:${secretArn}:SecretString:password::}}`);
 });
 
+test('fromSecretCompleteArn - grants', () => {
+  // GIVEN
+  const secretArn = 'arn:aws:secretsmanager:eu-west-1:111111111111:secret:MySecret-f3gDy9';
+  const secret = secretsmanager.Secret.fromSecretCompleteArn(stack, 'Secret', secretArn);
+  const role = new iam.Role(stack, 'Role', { assumedBy: new iam.AccountRootPrincipal() });
+
+  // WHEN
+  secret.grantRead(role);
+  secret.grantWrite(role);
+
+  // THEN
+  expect(stack).toHaveResource('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Version: '2012-10-17',
+      Statement: [{
+        Action: [
+          'secretsmanager:GetSecretValue',
+          'secretsmanager:DescribeSecret',
+        ],
+        Effect: 'Allow',
+        Resource: secretArn,
+      },
+      {
+        Action: [
+          'secretsmanager:PutSecretValue',
+          'secretsmanager:UpdateSecret',
+        ],
+        Effect: 'Allow',
+        Resource: secretArn,
+      }],
+    },
+  });
+});
+
 test('fromSecretPartialArn', () => {
   // GIVEN
   const secretArn = 'arn:aws:secretsmanager:eu-west-1:111111111111:secret:MySecret';
@@ -667,6 +701,40 @@ test('fromSecretPartialArn', () => {
   expect(secret.encryptionKey).toBeUndefined();
   expect(stack.resolve(secret.secretValue)).toEqual(`{{resolve:secretsmanager:${secretArn}:SecretString:::}}`);
   expect(stack.resolve(secret.secretValueFromJson('password'))).toEqual(`{{resolve:secretsmanager:${secretArn}:SecretString:password::}}`);
+});
+
+test('fromSecretPartialArn - grants', () => {
+  // GIVEN
+  const secretArn = 'arn:aws:secretsmanager:eu-west-1:111111111111:secret:MySecret';
+  const secret = secretsmanager.Secret.fromSecretPartialArn(stack, 'Secret', secretArn);
+  const role = new iam.Role(stack, 'Role', { assumedBy: new iam.AccountRootPrincipal() });
+
+  // WHEN
+  secret.grantRead(role);
+  secret.grantWrite(role);
+
+  // THEN
+  expect(stack).toHaveResource('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Version: '2012-10-17',
+      Statement: [{
+        Action: [
+          'secretsmanager:GetSecretValue',
+          'secretsmanager:DescribeSecret',
+        ],
+        Effect: 'Allow',
+        Resource: `${secretArn}-??????`,
+      },
+      {
+        Action: [
+          'secretsmanager:PutSecretValue',
+          'secretsmanager:UpdateSecret',
+        ],
+        Effect: 'Allow',
+        Resource: `${secretArn}-??????`,
+      }],
+    },
+  });
 });
 
 describe('fromSecretAttributes', () => {
