@@ -6,7 +6,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
 import * as s3deploy from '../lib';
-import { Vpc } from '@aws-cdk/aws-ec2';
+
 
 /* eslint-disable max-len */
 
@@ -210,7 +210,7 @@ test('deploy from a local .zip file when efs is enabled', () => {
     sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website.zip'))],
     destinationBucket: bucket,
     enableTempEfsStorage: true,
-    vpc: new Vpc(stack, 'Vpc'),
+    vpc: new ec2.Vpc(stack, 'Vpc'),
   });
 
 });
