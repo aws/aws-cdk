@@ -17,8 +17,6 @@
       "dotnet": {
         "namespace": "Amazon.CDK.AWS.StepFunctions.Tasks",
         "packageId": "Amazon.CDK.AWS.StepFunctions.Tasks",
-        "signAssembly": true,
-        "assemblyOriginatorKeyFile": "../../key.snk",
         "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
       },
       "python": {
@@ -74,7 +72,6 @@
     "pkglint": "0.0.0"
   },
   "dependencies": {
-    "@aws-cdk/assets": "0.0.0",
     "@aws-cdk/aws-batch": "0.0.0",
     "@aws-cdk/aws-cloudwatch": "0.0.0",
     "@aws-cdk/aws-codebuild": "0.0.0",
@@ -96,7 +93,6 @@
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/assets": "0.0.0",
     "@aws-cdk/aws-batch": "0.0.0",
     "@aws-cdk/aws-cloudwatch": "0.0.0",
     "@aws-cdk/aws-codebuild": "0.0.0",
