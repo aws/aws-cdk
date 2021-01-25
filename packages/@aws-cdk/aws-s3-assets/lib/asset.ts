@@ -15,7 +15,7 @@ import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 const ARCHIVE_EXTENSIONS = ['.zip', '.jar'];
 
-export interface AssetOptions extends assets.CopyOptions, cdk.AssetOptions {
+export interface AssetOptions extends assets.CopyOptions, cdk.FileCopyOptions, cdk.AssetOptions {
   /**
    * A list of principals that should be able to read this asset from S3.
    * You can use `asset.grantRead(principal)` to grant read permissions later.

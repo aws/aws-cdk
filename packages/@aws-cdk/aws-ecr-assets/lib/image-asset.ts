@@ -2,14 +2,14 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as assets from '@aws-cdk/assets';
 import * as ecr from '@aws-cdk/aws-ecr';
-import { Annotations, Construct as CoreConstruct, FeatureFlags, IgnoreMode, Stack, Token } from '@aws-cdk/core';
+import { Annotations, Construct as CoreConstruct, FeatureFlags, FileFingerprintOptions, IgnoreMode, Stack, Token } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
 
 /**
  * Options for DockerImageAsset
  */
-export interface DockerImageAssetOptions extends assets.FingerprintOptions {
+export interface DockerImageAssetOptions extends assets.FingerprintOptions, FileFingerprintOptions {
   /**
    * ECR repository name
    *
