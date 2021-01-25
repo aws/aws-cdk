@@ -208,6 +208,14 @@ export interface AddRoutesOptions extends BatchHttpRouteOptions {
    * @default - No authorizer
    */
   readonly authorizer?: IHttpRouteAuthorizer;
+
+  /**
+   * The list of OIDC scopes to include in the authorization.
+   *
+   * These scopes will be merged with the scopes from the attached authorizer
+   * @default - no additional authorization scopes
+   */
+  readonly authorizationScopes?: string[];
 }
 
 abstract class HttpApiBase extends Resource implements IHttpApi { // note that this is not exported
@@ -454,6 +462,7 @@ export class HttpApi extends HttpApiBase {
       routeKey: HttpRouteKey.with(options.path, method),
       integration: options.integration,
       authorizer: options.authorizer,
+      authorizationScopes: options.authorizationScopes,
     }));
   }
 }

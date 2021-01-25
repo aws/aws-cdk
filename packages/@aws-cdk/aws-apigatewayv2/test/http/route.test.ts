@@ -1,7 +1,7 @@
 import '@aws-cdk/assert/jest';
 import { Stack } from '@aws-cdk/core';
 import {
-  HttpApi, HttpAuthorizerType, HttpConnectionType, HttpIntegrationType, HttpMethod, HttpRoute, HttpRouteAuthorizerBindOptions,
+  HttpApi, HttpAuthorizer, HttpAuthorizerType, HttpConnectionType, HttpIntegrationType, HttpMethod, HttpRoute, HttpRouteAuthorizerBindOptions,
   HttpRouteAuthorizerConfig, HttpRouteIntegrationConfig, HttpRouteKey, IHttpRouteAuthorizer, IHttpRouteIntegration, PayloadFormatVersion,
 } from '../../lib';
 
@@ -180,7 +180,7 @@ describe('HttpRoute', () => {
 
     const authorizer = new DummyAuthorizer();
 
-    new HttpRoute(stack, 'HttpRoute', {
+    const route = new HttpRoute(stack, 'HttpRoute', {
       httpApi,
       integration: new DummyIntegration(),
       routeKey: HttpRouteKey.with('/books', HttpMethod.GET),
@@ -197,8 +197,27 @@ describe('HttpRoute', () => {
     expect(stack).toHaveResource('AWS::ApiGatewayV2::Authorizer');
 
     expect(stack).toHaveResource('AWS::ApiGatewayV2::Route', {
-      AuthorizerId: 'auth-1234',
+      AuthorizerId: stack.resolve(authorizer.bind({ scope: stack, route: route }).authorizerId),
       AuthorizationType: 'JWT',
+    });
+  });
+
+  test('can attach additional scopes to a route with an authorizer attached', () => {
+    const stack = new Stack();
+    const httpApi = new HttpApi(stack, 'HttpApi');
+
+    const authorizer = new DummyAuthorizer();
+
+    new HttpRoute(stack, 'HttpRoute', {
+      httpApi,
+      integration: new DummyIntegration(),
+      routeKey: HttpRouteKey.with('/books', HttpMethod.GET),
+      authorizer,
+      authorizationScopes: ['read:books'],
+    });
+
+    expect(stack).toHaveResource('AWS::ApiGatewayV2::Route', {
+      AuthorizationScopes: ['read:books'],
     });
   });
 });
@@ -215,9 +234,22 @@ class DummyIntegration implements IHttpRouteIntegration {
 }
 
 class DummyAuthorizer implements IHttpRouteAuthorizer {
-  public bind(_: HttpRouteAuthorizerBindOptions): HttpRouteAuthorizerConfig {
+  private authorizer?: HttpAuthorizer;
+
+  public bind(options: HttpRouteAuthorizerBindOptions): HttpRouteAuthorizerConfig {
+    if (!this.authorizer) {
+
+      this.authorizer = new HttpAuthorizer(options.scope, 'auth-1234', {
+        httpApi: options.route.httpApi,
+        identitySource: ['identitysource.1', 'identitysource.2'],
+        type: HttpAuthorizerType.JWT,
+        jwtAudience: ['audience.1', 'audience.2'],
+        jwtIssuer: 'issuer',
+      });
+    }
+
     return {
-      authorizerId: 'auth-1234',
+      authorizerId: this.authorizer.authorizerId,
       authorizationType: HttpAuthorizerType.JWT,
     };
   }

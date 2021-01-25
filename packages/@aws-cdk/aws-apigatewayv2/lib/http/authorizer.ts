@@ -96,8 +96,6 @@ export class HttpAuthorizer extends Resource implements IHttpAuthorizer {
 
   public readonly authorizerId: string;
 
-  public readonly authorizerType: HttpAuthorizerType;
-
   constructor(scope: Construct, id: string, props: HttpAuthorizerProps) {
     super(scope, id);
 
@@ -117,7 +115,6 @@ export class HttpAuthorizer extends Resource implements IHttpAuthorizer {
     });
 
     this.authorizerId = resource.ref;
-    this.authorizerType = props.type;
   }
 }
 

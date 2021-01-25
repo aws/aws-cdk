@@ -300,6 +300,31 @@ describe('HttpApi', () => {
     });
   });
 
+  test('can attach custom scopes to authorizer route', () => {
+    const stack = new Stack();
+    const httpApi = new HttpApi(stack, 'api');
+
+    const authorizer = new DummyAuthorizer();
+
+    httpApi.addRoutes({
+      path: '/pets',
+      integration: new DummyRouteIntegration(),
+      authorizer,
+      authorizationScopes: ['read:scopes'],
+    });
+
+    expect(stack).toHaveResource('AWS::ApiGatewayV2::Api', {
+      Name: 'api',
+      ProtocolType: 'HTTP',
+    });
+
+    expect(stack).toHaveResource('AWS::ApiGatewayV2::Route', {
+      AuthorizerId: 'auth-1234',
+      AuthorizationType: 'JWT',
+      AuthorizationScopes: ['read:scopes'],
+    });
+  });
+
   test('throws when accessing apiEndpoint and disableExecuteApiEndpoint is true', () => {
     const stack = new Stack();
     const api = new HttpApi(stack, 'api', {

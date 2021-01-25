@@ -110,6 +110,14 @@ export interface HttpRouteProps extends BatchHttpRouteOptions {
    * @default - No authorizer
    */
   readonly authorizer?: IHttpRouteAuthorizer;
+
+  /**
+   * The list of OIDC scopes to include in the authorization.
+   *
+   * These scopes will be merged with the scopes from the attached authorizer
+   * @default - no additional authorization scopes
+   */
+  readonly authorizationScopes?: string[];
 }
 
 /**
@@ -139,13 +147,22 @@ export class HttpRoute extends Resource implements IHttpRoute {
       scope: this.httpApi instanceof Construct ? this.httpApi : this, // scope under the API if it's not imported
     }) : undefined;
 
+    let authorizationScopes = authBindResult?.authorizationScopes ?? [];
+
+    if (authBindResult && props.authorizationScopes) {
+      authorizationScopes = Array.from(new Set([
+        ...authorizationScopes,
+        ...props.authorizationScopes,
+      ]));
+    }
+
     const routeProps: CfnRouteProps = {
       apiId: props.httpApi.httpApiId,
       routeKey: props.routeKey.key,
       target: `integrations/${integration.integrationId}`,
       authorizerId: authBindResult?.authorizerId,
       authorizationType: authBindResult?.authorizationType,
-      authorizationScopes: authBindResult?.authorizationScopes,
+      authorizationScopes,
     };
 
     const route = new CfnRoute(this, 'Resource', routeProps);
