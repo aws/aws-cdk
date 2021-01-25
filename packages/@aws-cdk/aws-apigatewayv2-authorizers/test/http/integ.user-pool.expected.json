@@ -54,7 +54,32 @@
         }
       }
     },
-    "MyHttpApiGETGETIntegration0052AA15": {
+    "MyHttpApiGETE0EFC6F8": {
+      "Type": "AWS::ApiGatewayV2::Route",
+      "Properties": {
+        "ApiId": {
+          "Ref": "MyHttpApi8AEAAC21"
+        },
+        "RouteKey": "GET /",
+        "AuthorizationScopes": [],
+        "AuthorizationType": "JWT",
+        "AuthorizerId": {
+          "Ref": "MyHttpApiUserPoolAuthorizer8754262B"
+        },
+        "Target": {
+          "Fn::Join": [
+            "",
+            [
+              "integrations/",
+              {
+                "Ref": "MyHttpApiHttpIntegration6b0135d91888d914a9a0945a69f42c05C76E7A88"
+              }
+            ]
+          ]
+        }
+      }
+    },
+    "MyHttpApiHttpIntegration6b0135d91888d914a9a0945a69f42c05C76E7A88": {
       "Type": "AWS::ApiGatewayV2::Integration",
       "Properties": {
         "ApiId": {
@@ -70,27 +95,38 @@
         "PayloadFormatVersion": "2.0"
       }
     },
-    "MyHttpApiGETE0EFC6F8": {
-      "Type": "AWS::ApiGatewayV2::Route",
+    "MyHttpApiUserPoolAuthorizer8754262B": {
+      "Type": "AWS::ApiGatewayV2::Authorizer",
       "Properties": {
         "ApiId": {
           "Ref": "MyHttpApi8AEAAC21"
         },
-        "RouteKey": "GET /",
-        "AuthorizationType": "JWT",
-        "AuthorizerId": {
-          "Ref": "MyAuthorizer6575980E"
-        },
-        "Target": {
-          "Fn::Join": [
-            "",
-            [
-              "integrations/",
-              {
-                "Ref": "MyHttpApiGETGETIntegration0052AA15"
-              }
+        "AuthorizerType": "JWT",
+        "IdentitySource": [
+          "$request.header.Authorization"
+        ],
+        "Name": "UserPoolAuthorizer",
+        "JwtConfiguration": {
+          "Audience": [
+            {
+              "Ref": "userpoolmyclientFAD947AB"
+            }
+          ],
+          "Issuer": {
+            "Fn::Join": [
+              "",
+              [
+                "https://cognito-idp.",
+                {
+                  "Ref": "AWS::Region"
+                },
+                ".amazonaws.com/",
+                {
+                  "Ref": "userpool0AC4AA96"
+                }
+              ]
             ]
-          ]
+          }
         }
       }
     },
@@ -147,41 +183,6 @@
         "SupportedIdentityProviders": [
           "COGNITO"
         ]
-      }
-    },
-    "MyAuthorizer6575980E": {
-      "Type": "AWS::ApiGatewayV2::Authorizer",
-      "Properties": {
-        "ApiId": {
-          "Ref": "MyHttpApi8AEAAC21"
-        },
-        "AuthorizerType": "JWT",
-        "IdentitySource": [
-          "$request.header.Authorization"
-        ],
-        "Name": "MyAuthorizer",
-        "JwtConfiguration": {
-          "Audience": [
-            {
-              "Ref": "userpoolmyclientFAD947AB"
-            }
-          ],
-          "Issuer": {
-            "Fn::Join": [
-              "",
-              [
-                "https://cognito-idp.",
-                {
-                  "Ref": "AWS::Region"
-                },
-                ".amazonaws.com/",
-                {
-                  "Ref": "userpool0AC4AA96"
-                }
-              ]
-            ]
-          }
-        }
       }
     },
     "lambdaServiceRole494E4CA6": {
@@ -256,14 +257,14 @@
             ]
           }
         },
-        "Handler": "index.handler",
         "Role": {
           "Fn::GetAtt": [
             "lambdaServiceRole494E4CA6",
             "Arn"
           ]
         },
-        "Runtime": "nodejs10.x"
+        "Handler": "index.handler",
+        "Runtime": "nodejs12.x"
       },
       "DependsOn": [
         "lambdaServiceRole494E4CA6"
