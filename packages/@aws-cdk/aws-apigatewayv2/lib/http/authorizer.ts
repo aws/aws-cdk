@@ -64,6 +64,21 @@ export interface IHttpAuthorizer extends IAuthorizer {
 }
 
 /**
+ * Reference to an http authorizer
+ */
+export interface HttpAuthorizerAttributes {
+  /**
+   * Id of the Authorizer
+   */
+  readonly authorizerId: string
+
+  /**
+   * Type of authorizer
+   */
+  readonly authorizerType: HttpAuthorizerType
+}
+
+/**
  * An authorizer for Http Apis
  * @resource AWS::ApiGatewayV2::Authorizer
  */
@@ -71,14 +86,17 @@ export class HttpAuthorizer extends Resource implements IHttpAuthorizer {
   /**
    * Import an existing HTTP Authorizer into this CDK app.
    */
-  public static fromAuthorizerId(scope: Construct, id: string, authorizerId: string): IHttpAuthorizer {
+  public static fromHttpAuthorizerAttributes(scope: Construct, id: string, attrs: HttpAuthorizerAttributes): IHttpAuthorizer {
     class Import extends Resource implements IHttpAuthorizer {
-      public readonly authorizerId = authorizerId;
+      public readonly authorizerId = attrs.authorizerId;
+      public readonly authorizerType = attrs.authorizerType;
     }
     return new Import(scope, id);
   }
 
   public readonly authorizerId: string;
+
+  public readonly authorizerType: HttpAuthorizerType;
 
   constructor(scope: Construct, id: string, props: HttpAuthorizerProps) {
     super(scope, id);
@@ -99,6 +117,7 @@ export class HttpAuthorizer extends Resource implements IHttpAuthorizer {
     });
 
     this.authorizerId = resource.ref;
+    this.authorizerType = props.type;
   }
 }
 
