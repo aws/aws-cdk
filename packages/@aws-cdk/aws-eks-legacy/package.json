@@ -1,6 +1,7 @@
 {
   "name": "@aws-cdk/aws-eks-legacy",
   "version": "0.0.0",
+  "deprecated": "Use the @aws-cdk/aws-eks module instead",
   "description": "The CDK Construct Library for AWS::EKS (Legacy)",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -17,8 +18,6 @@
       "dotnet": {
         "namespace": "Amazon.CDK.AWS.EKS.Legacy",
         "packageId": "Amazon.CDK.AWS.EKS.Legacy",
-        "signAssembly": true,
-        "assemblyOriginatorKeyFile": "../../key.snk",
         "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
       },
       "python": {
