@@ -128,7 +128,7 @@ export class Asset extends CoreConstruct implements cdk.IAsset {
     const staging = new cdk.AssetStaging(this, 'Stage', {
       ...props,
       sourcePath: path.resolve(props.path),
-      follow: toSymlinkFollow(props.follow),
+      follow: props.followSymlinks ?? toSymlinkFollow(props.follow),
       assetHash: props.assetHash ?? props.sourceHash,
     });
 
