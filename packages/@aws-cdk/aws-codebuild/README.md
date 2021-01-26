@@ -605,7 +605,8 @@ Here's a CodeBuild project with a simple example that creates a project mounted 
 
 To enable batch builds you should call `enableBatchBuilds()` on the project instance.
 
-It returns an object containing the batch service role that was created, or `undefined` if batch builds could not be enabled, for example if the project was imported.
+It returns an object containing the batch service role that was created,
+or `undefined` if batch builds could not be enabled, for example if the project was imported.
 
 ```ts
 import * as codebuild from '@aws-cdk/aws-codebuild';
