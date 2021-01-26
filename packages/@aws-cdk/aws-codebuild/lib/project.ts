@@ -50,7 +50,7 @@ export interface IProject extends IResource, iam.IGrantable, ec2.IConnectable {
    * Returns an object contining the batch service role if batch builds
    * could be enabled.
    */
-  enableBatchBuilds(): IEnableBatchBuildsReturn | undefined;
+  enableBatchBuilds(): BatchBuildConfig | undefined;
 
   addToRolePolicy(policyStatement: iam.PolicyStatement): void;
 
@@ -165,9 +165,9 @@ export interface IProject extends IResource, iam.IGrantable, ec2.IConnectable {
 }
 
 /**
- * The return value for the {@link Project} `enableBatchBuilds()` method.
+ * The type returned from {@link IProject#enableBatchBuilds}.
  */
-export interface IEnableBatchBuildsReturn {
+export interface BatchBuildConfig {
   /** The IAM batch service Role of this Project. */
   readonly role: iam.IRole;
 }
@@ -212,7 +212,7 @@ abstract class ProjectBase extends Resource implements IProject {
     return this._connections;
   }
 
-  public enableBatchBuilds(): IEnableBatchBuildsReturn | undefined {
+  public enableBatchBuilds(): BatchBuildConfig | undefined {
     return undefined;
   }
 
@@ -882,7 +882,7 @@ export class Project extends ProjectBase {
     }
   }
 
-  public enableBatchBuilds(): IEnableBatchBuildsReturn | undefined {
+  public enableBatchBuilds(): BatchBuildConfig | undefined {
     if (!this._batchServiceRole) {
       this._batchServiceRole = new iam.Role(this, 'BatchServiceRole', {
         roleName: PhysicalName.GENERATE_IF_NEEDED,
