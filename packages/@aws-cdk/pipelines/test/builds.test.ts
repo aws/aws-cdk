@@ -331,27 +331,27 @@ test('Standard (NPM) synth can run in a VPC', () => {
   expect(pipelineStack).toHaveResourceLike('AWS::CodeBuild::Project', {
     VpcConfig: {
       SecurityGroupIds: [
-        {
-          'Fn::GetAtt': [
-            'CdkPipelineBuildSynthCdkBuildProjectSecurityGroupEA44D7C2',
-            'GroupId',
-          ],
-        },
+        { 'Fn::GetAtt': ['CdkPipelineBuildSynthCdkBuildProjectSecurityGroupEA44D7C2', 'GroupId'] },
       ],
       Subnets: [
-        {
-          Ref: 'NpmSynthTestVpcPrivateSubnet1Subnet81E3AA56',
-        },
-        {
-          Ref: 'NpmSynthTestVpcPrivateSubnet2SubnetC1CA3EF0',
-        },
-        {
-          Ref: 'NpmSynthTestVpcPrivateSubnet3SubnetA04163EE',
-        },
+        { Ref: 'NpmSynthTestVpcPrivateSubnet1Subnet81E3AA56' },
+        { Ref: 'NpmSynthTestVpcPrivateSubnet2SubnetC1CA3EF0' },
+        { Ref: 'NpmSynthTestVpcPrivateSubnet3SubnetA04163EE' },
       ],
-      VpcId: {
-        Ref: 'NpmSynthTestVpc5E703F25',
-      },
+      VpcId: { Ref: 'NpmSynthTestVpc5E703F25' },
+    },
+  });
+
+  expect(pipelineStack).toHaveResourceLike('AWS::IAM::Policy', {
+    Roles: [
+      { Ref: 'CdkPipelineBuildSynthCdkBuildProjectRole5E173C62' },
+    ],
+    PolicyDocument: {
+      Statement: arrayWith({
+        Action: arrayWith('ec2:DescribeSecurityGroups'),
+        Effect: 'Allow',
+        Resource: '*',
+      }),
     },
   });
 });
@@ -520,6 +520,9 @@ test('SimpleSynthAction can reference an imported ECR repo', () => {
       },
     }),
   });
+
+  // THEN -- no exception (necessary for linter)
+  expect(true).toBeTruthy();
 });
 
 function npmYarnBuild(npmYarn: string) {
