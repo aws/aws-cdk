@@ -92,6 +92,14 @@ export interface FlinkApplicationProps {
   readonly checkpointingEnabled?: boolean;
 
   /**
+   * The minumum amount of time in to wait after a checkpoint
+   * finishes to start a new checkpoint.
+   *
+   * @default 5 seconds
+   */
+  readonly minPauseBetweenCheckpoints?: core.Duration;
+
+  /**
    * Configuration PropertyGroups. You can use these property groups to pass
    * arbitrary runtime configuration values to your Flink App.
    */
@@ -185,6 +193,7 @@ export class FlinkApplication extends FlinkApplicationBase {
         environmentProperties: this.environmentProperties(props.propertyGroups),
         flinkApplicationConfiguration: this.flinkApplicationConfiguration({
           checkpointingEnabled: props.checkpointingEnabled,
+          minPauseBetweenCheckpoints: props.minPauseBetweenCheckpoints,
         }),
       },
     });
@@ -221,14 +230,15 @@ export class FlinkApplication extends FlinkApplicationBase {
     });
   }
 
-  private flinkApplicationConfiguration({ checkpointingEnabled: checkpointingEnabled }: { checkpointingEnabled?: boolean }) {
-    if (checkpointingEnabled === undefined) {
+  private flinkApplicationConfiguration(config: FlinkApplicationConfiguration) {
+    if (config.checkpointingEnabled === undefined && config.minPauseBetweenCheckpoints === undefined) {
       return;
     }
 
     return {
       checkpointConfiguration: this.checkpointConfiguration({
-        checkpointingEnabled: checkpointingEnabled,
+        checkpointingEnabled: config.checkpointingEnabled,
+        minPauseBetweenCheckpoints: config.minPauseBetweenCheckpoints,
       }),
     };
   }
@@ -243,14 +253,22 @@ export class FlinkApplication extends FlinkApplicationBase {
     };
   }
 
-  private checkpointConfiguration({ checkpointingEnabled: checkpointingEnabled }: { checkpointingEnabled?: boolean }) {
-    if (checkpointingEnabled === undefined) {
+  private checkpointConfiguration(config: CheckpointConfiguration) {
+    if (config.checkpointingEnabled === undefined && config.minPauseBetweenCheckpoints === undefined) {
       return;
     }
 
     return {
-      checkpointingEnabled,
+      checkpointingEnabled: config.checkpointingEnabled,
+      minPauseBetweenCheckpoints: config.minPauseBetweenCheckpoints?.toMilliseconds(),
       configurationType: 'CUSTOM',
     };
   }
+}
+
+interface FlinkApplicationConfiguration extends CheckpointConfiguration {}
+
+interface CheckpointConfiguration {
+  checkpointingEnabled?: boolean;
+  minPauseBetweenCheckpoints?: core.Duration;
 }

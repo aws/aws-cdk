@@ -227,6 +227,26 @@ describe('FlinkApplication', () => {
     });
   });
 
+  test('minPauseBetweenCheckpoints setting', () => {
+    const { stack, requiredProps } = buildStack();
+    new ka.FlinkApplication(stack, 'FlinkApplication', {
+      ...requiredProps,
+      minPauseBetweenCheckpoints: core.Duration.seconds(10),
+    });
+
+    expect(stack).toHaveResourceLike('AWS::KinesisAnalyticsV2::Application', {
+      RuntimeEnvironment: 'FLINK-1_11',
+      ApplicationConfiguration: {
+        FlinkApplicationConfiguration: {
+          CheckpointConfiguration: {
+            ConfigurationType: 'CUSTOM',
+            MinPauseBetweenCheckpoints: 10_000,
+          },
+        },
+      },
+    });
+  });
+
   // TODO: Not quite sure what to do with fromAttributes yet.
   test('fromAttributes', () => {
     const { stack } = buildStack();
