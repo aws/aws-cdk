@@ -51,8 +51,7 @@
     "@aws-cdk/aws-ec2": "0.0.0",
     "@aws-cdk/cloud-assembly-schema": "0.0.0",
     "@aws-cdk/aws-s3-assets": "0.0.0",
-    "@aws-cdk/cx-api": "0.0.0",
-    "@aws-cdk/aws-cloudformation": "0.0.0"
+    "@aws-cdk/cx-api": "0.0.0"
   },
   "dependencies": {
     "constructs": "10.0.0-pre.5",
@@ -65,8 +64,7 @@
     "@aws-cdk/aws-iam": "0.0.0",
     "@aws-cdk/aws-ec2": "0.0.0",
     "@aws-cdk/aws-s3-assets": "0.0.0",
-    "@aws-cdk/cx-api": "0.0.0",
-    "@aws-cdk/aws-cloudformation": "0.0.0"
+    "@aws-cdk/cx-api": "0.0.0"
   },
   "bundledDependencies": [],
   "keywords": [
