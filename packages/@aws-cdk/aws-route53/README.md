@@ -60,7 +60,7 @@ new route53.TxtRecord(this, 'TXTRecord', {
 });
 ```
 
-To add a A record to your zone:
+To add an A record to your zone:
 
 ```ts
 import * as route53 from '@aws-cdk/aws-route53';
@@ -71,7 +71,28 @@ new route53.ARecord(this, 'ARecord', {
 });
 ```
 
-To add a AAAA record pointing to a CloudFront distribution:
+To add an A record for an EC2 instance with an Elastic IP (EIP) to your zone:
+
+```ts
+import * as ec2 from '@aws-cdk/aws-ec2';
+import * as route53 from '@aws-cdk/aws-route53';
+
+const instance = new ec2.Instance(this, 'Instance', {
+  // ...
+});
+
+const elasticIp = new ec2.CfnEIP(this, 'EIP', {
+  domain: 'vpc',
+  instanceId: instance.instanceId
+});
+
+new route53.ARecord(this, 'ARecord', {
+  zone: myZone,
+  target: route53.RecordTarget.fromIpAddresses(elasticIp.ref)
+});
+```
+
+To add an AAAA record pointing to a CloudFront distribution:
 
 ```ts
 import * as route53 from '@aws-cdk/aws-route53';

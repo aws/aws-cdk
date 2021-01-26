@@ -1,5 +1,6 @@
 import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
+import { testFutureBehavior, testLegacyBehavior } from 'cdk-build-tools/lib/feature-flag';
 import {
   App, CfnCondition, CfnInclude, CfnOutput, CfnParameter,
   CfnResource, Lazy, ScopedAws, Stack, validateString, Tags, LegacyStackSynthesizer, DefaultStackSynthesizer,
@@ -881,46 +882,22 @@ describe('stack', () => {
 
   });
 
-  test('stack.templateFile is the name of the template file emitted to the cloud assembly (default is to use the stack name)', () => {
-    // GIVEN
-    const app = new App();
-
-    // WHEN
-    const stack1 = new Stack(app, 'MyStack1');
-    const stack2 = new Stack(app, 'MyStack2', { stackName: 'MyRealStack2' });
-
-    // THEN
-    expect(stack1.templateFile).toEqual('MyStack1.template.json');
-    expect(stack2.templateFile).toEqual('MyRealStack2.template.json');
-
-  });
-
-  test('when feature flag is enabled we will use the artifact id as the template name', () => {
-    // GIVEN
-    const app = new App({
-      context: {
-        [cxapi.ENABLE_STACK_NAME_DUPLICATES_CONTEXT]: 'true',
-      },
-    });
-
-    // WHEN
-    const stack1 = new Stack(app, 'MyStack1');
-    const stack2 = new Stack(app, 'MyStack2', { stackName: 'MyRealStack2' });
-
-    // THEN
-    expect(stack1.templateFile).toEqual('MyStack1.template.json');
-    expect(stack2.templateFile).toEqual('MyStack2.template.json');
-
-  });
-
   describe('@aws-cdk/core:enableStackNameDuplicates', () => {
 
     describe('disabled (default)', () => {
 
-      test('artifactId and templateFile use the stack name', () => {
-        // GIVEN
-        const app = new App();
+      testLegacyBehavior('stack.templateFile is the name of the template file emitted to the cloud assembly (default is to use the stack name)', App, (app) => {
+        // WHEN
+        const stack1 = new Stack(app, 'MyStack1');
+        const stack2 = new Stack(app, 'MyStack2', { stackName: 'MyRealStack2' });
 
+        // THEN
+        expect(stack1.templateFile).toEqual('MyStack1.template.json');
+        expect(stack2.templateFile).toEqual('MyRealStack2.template.json');
+
+      });
+
+      testLegacyBehavior('artifactId and templateFile use the stack name', App, (app) => {
         // WHEN
         const stack1 = new Stack(app, 'MyStack1', { stackName: 'thestack' });
         const assembly = app.synth();
@@ -929,15 +906,12 @@ describe('stack', () => {
         expect(stack1.artifactId).toEqual('thestack');
         expect(stack1.templateFile).toEqual('thestack.template.json');
         expect(assembly.getStackArtifact(stack1.artifactId).templateFile).toEqual('thestack.template.json');
-
       });
     });
 
     describe('enabled', () => {
-      test('allows using the same stack name for two stacks (i.e. in different regions)', () => {
-        // GIVEN
-        const app = new App({ context: { [cxapi.ENABLE_STACK_NAME_DUPLICATES_CONTEXT]: 'true' } });
-
+      const flags = { [cxapi.ENABLE_STACK_NAME_DUPLICATES_CONTEXT]: 'true' };
+      testFutureBehavior('allows using the same stack name for two stacks (i.e. in different regions)', flags, App, (app) => {
         // WHEN
         const stack1 = new Stack(app, 'MyStack1', { stackName: 'thestack' });
         const stack2 = new Stack(app, 'MyStack2', { stackName: 'thestack' });
@@ -948,13 +922,9 @@ describe('stack', () => {
         expect(assembly.getStackArtifact(stack2.artifactId).templateFile).toEqual('MyStack2.template.json');
         expect(stack1.templateFile).toEqual('MyStack1.template.json');
         expect(stack2.templateFile).toEqual('MyStack2.template.json');
-
       });
 
-      test('artifactId and templateFile use the unique id and not the stack name', () => {
-        // GIVEN
-        const app = new App({ context: { [cxapi.ENABLE_STACK_NAME_DUPLICATES_CONTEXT]: 'true' } });
-
+      testFutureBehavior('artifactId and templateFile use the unique id and not the stack name', flags, App, (app) => {
         // WHEN
         const stack1 = new Stack(app, 'MyStack1', { stackName: 'thestack' });
         const assembly = app.synth();
@@ -963,7 +933,16 @@ describe('stack', () => {
         expect(stack1.artifactId).toEqual('MyStack1');
         expect(stack1.templateFile).toEqual('MyStack1.template.json');
         expect(assembly.getStackArtifact(stack1.artifactId).templateFile).toEqual('MyStack1.template.json');
+      });
 
+      testFutureBehavior('when feature flag is enabled we will use the artifact id as the template name', flags, App, (app) => {
+        // WHEN
+        const stack1 = new Stack(app, 'MyStack1');
+        const stack2 = new Stack(app, 'MyStack2', { stackName: 'MyRealStack2' });
+
+        // THEN
+        expect(stack1.templateFile).toEqual('MyStack1.template.json');
+        expect(stack2.templateFile).toEqual('MyStack2.template.json');
       });
     });
 
