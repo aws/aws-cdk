@@ -1,0 +1,255 @@
+{
+  "Resources": {
+    "JobOutputBucketACE3BC7B": {
+      "Type": "AWS::S3::Bucket",
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
+    "DataBrewRole7E60F80D": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "databrew.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          "arn:aws:iam::aws:policy/service-role/AWSGlueDataBrewServiceRole"
+        ],
+        "Path": "/",
+        "Policies": [
+          {
+            "PolicyDocument": {
+              "Statement": [
+                {
+                  "Action": [
+                    "s3:GetObject",
+                    "s3:PutObject",
+                    "s3:DeleteObject",
+                    "s3:ListBucket"
+                  ],
+                  "Effect": "Allow",
+                  "Resource": [
+                    "arn:aws:s3:::databrew-public-datasets-test-region/*",
+                    "arn:aws:s3:::databrew-public-datasets-test-region",
+                    {
+                      "Fn::Join": [
+                        "",
+                        [
+                          {
+                            "Fn::GetAtt": [
+                              "JobOutputBucketACE3BC7B",
+                              "Arn"
+                            ]
+                          },
+                          "/*"
+                        ]
+                      ]
+                    },
+                    {
+                      "Fn::GetAtt": [
+                        "JobOutputBucketACE3BC7B",
+                        "Arn"
+                      ]
+                    }
+                  ]
+                }
+              ],
+              "Version": "2012-10-17"
+            },
+            "PolicyName": "DataBrewPolicy"
+          }
+        ]
+      }
+    },
+    "DataBrewRecipe": {
+      "Type": "AWS::DataBrew::Recipe",
+      "Properties": {
+        "Name": "recipe-1",
+        "Steps": [
+          {
+            "Action": {
+              "Operation": "UPPER_CASE",
+              "Parameters": {
+                "sourceColumn": "description"
+              }
+            }
+          },
+          {
+            "Action": {
+              "Operation": "DELETE",
+              "Parameters": {
+                "sourceColumn": "doc_id"
+              }
+            }
+          }
+        ]
+      }
+    },
+    "DataBrewDataset": {
+      "Type": "AWS::DataBrew::Dataset",
+      "Properties": {
+        "Input": {
+          "S3InputDefinition": {
+            "Bucket": "databrew-public-datasets-test-region",
+            "Key": "votes.csv"
+          }
+        },
+        "Name": "dataset-1"
+      }
+    },
+    "DataBrewProject": {
+      "Type": "AWS::DataBrew::Project",
+      "Properties": {
+        "DatasetName": "dataset-1",
+        "Name": "project-1",
+        "RecipeName": "recipe-1",
+        "RoleArn": {
+          "Fn::GetAtt": [
+            "DataBrewRole7E60F80D",
+            "Arn"
+          ]
+        }
+      },
+      "DependsOn": [
+        "DataBrewDataset",
+        "DataBrewRecipe"
+      ]
+    },
+    "DataBrewJob": {
+      "Type": "AWS::DataBrew::Job",
+      "Properties": {
+        "Name": "job-1",
+        "RoleArn": {
+          "Fn::GetAtt": [
+            "DataBrewRole7E60F80D",
+            "Arn"
+          ]
+        },
+        "Type": "RECIPE",
+        "Outputs": [
+          {
+            "Location": {
+              "Bucket": {
+                "Ref": "JobOutputBucketACE3BC7B"
+              }
+            }
+          }
+        ],
+        "ProjectName": "project-1"
+      },
+      "DependsOn": [
+        "DataBrewProject"
+      ]
+    },
+    "StateMachineRoleB840431D": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "states.",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      ".amazonaws.com"
+                    ]
+                  ]
+                }
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      }
+    },
+    "StateMachineRoleDefaultPolicyDF1E6607": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "databrew:startJobRun",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":databrew:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":job/job-1"
+                  ]
+                ]
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "StateMachineRoleDefaultPolicyDF1E6607",
+        "Roles": [
+          {
+            "Ref": "StateMachineRoleB840431D"
+          }
+        ]
+      }
+    },
+    "StateMachine2E01A3A5": {
+      "Type": "AWS::StepFunctions::StateMachine",
+      "Properties": {
+        "RoleArn": {
+          "Fn::GetAtt": [
+            "StateMachineRoleB840431D",
+            "Arn"
+          ]
+        },
+        "DefinitionString": {
+          "Fn::Join": [
+            "",
+            [
+              "{\"StartAt\":\"Start DataBrew Job run\",\"States\":{\"Start DataBrew Job run\":{\"End\":true,\"Type\":\"Task\",\"Resource\":\"arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":states:::databrew:startJobRun\",\"Parameters\":{\"Name\":\"job-1\"}}},\"TimeoutSeconds\":30}"
+            ]
+          ]
+        }
+      },
+      "DependsOn": [
+        "StateMachineRoleDefaultPolicyDF1E6607",
+        "StateMachineRoleB840431D"
+      ]
+    }
+  },
+  "Outputs": {
+    "stateMachineArn": {
+      "Value": {
+        "Ref": "StateMachine2E01A3A5"
+      }
+    }
+  }
+}
