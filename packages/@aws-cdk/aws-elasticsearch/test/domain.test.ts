@@ -89,18 +89,10 @@ test('minimal example renders correctly', () => {
       Enabled: false,
     },
     LogPublishingOptions: {
-      AUDIT_LOGS: {
-        Enabled: false,
-      },
-      ES_APPLICATION_LOGS: {
-        Enabled: false,
-      },
-      SEARCH_SLOW_LOGS: {
-        Enabled: false,
-      },
-      INDEX_SLOW_LOGS: {
-        Enabled: false,
-      },
+      AUDIT_LOGS: assert.ABSENT,
+      ES_APPLICATION_LOGS: assert.ABSENT,
+      SEARCH_SLOW_LOGS: assert.ABSENT,
+      INDEX_SLOW_LOGS: assert.ABSENT,
     },
     NodeToNodeEncryptionOptions: {
       Enabled: false,
@@ -121,6 +113,49 @@ test('can enable version upgrade update policy', () => {
   }, assert.ResourcePart.CompleteDefinition);
 });
 
+describe('UltraWarm instances', () => {
+
+  test('can enable UltraWarm instances', () => {
+    new Domain(stack, 'Domain', {
+      version: ElasticsearchVersion.V7_1,
+      capacity: {
+        masterNodes: 2,
+        warmNodes: 2,
+      },
+    });
+
+    expect(stack).toHaveResourceLike('AWS::Elasticsearch::Domain', {
+      ElasticsearchClusterConfig: {
+        DedicatedMasterEnabled: true,
+        WarmEnabled: true,
+        WarmCount: 2,
+        WarmType: 'ultrawarm1.medium.elasticsearch',
+      },
+    });
+  });
+
+  test('can enable UltraWarm instances with specific instance type', () => {
+    new Domain(stack, 'Domain', {
+      version: ElasticsearchVersion.V7_1,
+      capacity: {
+        masterNodes: 2,
+        warmNodes: 2,
+        warmInstanceType: 'ultrawarm1.large.elasticsearch',
+      },
+    });
+
+    expect(stack).toHaveResourceLike('AWS::Elasticsearch::Domain', {
+      ElasticsearchClusterConfig: {
+        DedicatedMasterEnabled: true,
+        WarmEnabled: true,
+        WarmCount: 2,
+        WarmType: 'ultrawarm1.large.elasticsearch',
+      },
+    });
+  });
+
+});
+
 describe('log groups', () => {
 
   test('slowSearchLogEnabled should create a custom log group', () => {
@@ -133,9 +168,6 @@ describe('log groups', () => {
 
     expect(stack).toHaveResourceLike('AWS::Elasticsearch::Domain', {
       LogPublishingOptions: {
-        ES_APPLICATION_LOGS: {
-          Enabled: false,
-        },
         SEARCH_SLOW_LOGS: {
           CloudWatchLogsLogGroupArn: {
             'Fn::GetAtt': [
@@ -145,9 +177,9 @@ describe('log groups', () => {
           },
           Enabled: true,
         },
-        INDEX_SLOW_LOGS: {
-          Enabled: false,
-        },
+        AUDIT_LOGS: assert.ABSENT,
+        ES_APPLICATION_LOGS: assert.ABSENT,
+        INDEX_SLOW_LOGS: assert.ABSENT,
       },
     });
   });
@@ -162,12 +194,6 @@ describe('log groups', () => {
 
     expect(stack).toHaveResourceLike('AWS::Elasticsearch::Domain', {
       LogPublishingOptions: {
-        ES_APPLICATION_LOGS: {
-          Enabled: false,
-        },
-        SEARCH_SLOW_LOGS: {
-          Enabled: false,
-        },
         INDEX_SLOW_LOGS: {
           CloudWatchLogsLogGroupArn: {
             'Fn::GetAtt': [
@@ -177,6 +203,9 @@ describe('log groups', () => {
           },
           Enabled: true,
         },
+        AUDIT_LOGS: assert.ABSENT,
+        ES_APPLICATION_LOGS: assert.ABSENT,
+        SEARCH_SLOW_LOGS: assert.ABSENT,
       },
     });
   });
@@ -200,12 +229,9 @@ describe('log groups', () => {
           },
           Enabled: true,
         },
-        SEARCH_SLOW_LOGS: {
-          Enabled: false,
-        },
-        INDEX_SLOW_LOGS: {
-          Enabled: false,
-        },
+        AUDIT_LOGS: assert.ABSENT,
+        SEARCH_SLOW_LOGS: assert.ABSENT,
+        INDEX_SLOW_LOGS: assert.ABSENT,
       },
     });
   });
@@ -237,15 +263,9 @@ describe('log groups', () => {
           },
           Enabled: true,
         },
-        ES_APPLICATION_LOGS: {
-          Enabled: false,
-        },
-        SEARCH_SLOW_LOGS: {
-          Enabled: false,
-        },
-        INDEX_SLOW_LOGS: {
-          Enabled: false,
-        },
+        ES_APPLICATION_LOGS: assert.ABSENT,
+        SEARCH_SLOW_LOGS: assert.ABSENT,
+        INDEX_SLOW_LOGS: assert.ABSENT,
       },
     });
   });
@@ -296,6 +316,7 @@ describe('log groups', () => {
           },
           Enabled: true,
         },
+        AUDIT_LOGS: assert.ABSENT,
       },
     });
     expect(stack).toHaveResourceLike('AWS::Elasticsearch::Domain', {
@@ -327,6 +348,7 @@ describe('log groups', () => {
           },
           Enabled: true,
         },
+        AUDIT_LOGS: assert.ABSENT,
       },
     });
   });
@@ -385,12 +407,6 @@ describe('log groups', () => {
 
     expect(stack).toHaveResourceLike('AWS::Elasticsearch::Domain', {
       LogPublishingOptions: {
-        AUDIT_LOGS: {
-          Enabled: false,
-        },
-        ES_APPLICATION_LOGS: {
-          Enabled: false,
-        },
         SEARCH_SLOW_LOGS: {
           CloudWatchLogsLogGroupArn: {
             'Fn::GetAtt': [
@@ -400,9 +416,9 @@ describe('log groups', () => {
           },
           Enabled: true,
         },
-        INDEX_SLOW_LOGS: {
-          Enabled: false,
-        },
+        AUDIT_LOGS: assert.ABSENT,
+        ES_APPLICATION_LOGS: assert.ABSENT,
+        INDEX_SLOW_LOGS: assert.ABSENT,
       },
     });
   });
@@ -420,15 +436,6 @@ describe('log groups', () => {
 
     expect(stack).toHaveResourceLike('AWS::Elasticsearch::Domain', {
       LogPublishingOptions: {
-        AUDIT_LOGS: {
-          Enabled: false,
-        },
-        ES_APPLICATION_LOGS: {
-          Enabled: false,
-        },
-        SEARCH_SLOW_LOGS: {
-          Enabled: false,
-        },
         INDEX_SLOW_LOGS: {
           CloudWatchLogsLogGroupArn: {
             'Fn::GetAtt': [
@@ -438,6 +445,9 @@ describe('log groups', () => {
           },
           Enabled: true,
         },
+        AUDIT_LOGS: assert.ABSENT,
+        ES_APPLICATION_LOGS: assert.ABSENT,
+        SEARCH_SLOW_LOGS: assert.ABSENT,
       },
     });
   });
@@ -455,9 +465,6 @@ describe('log groups', () => {
 
     expect(stack).toHaveResourceLike('AWS::Elasticsearch::Domain', {
       LogPublishingOptions: {
-        AUDIT_LOGS: {
-          Enabled: false,
-        },
         ES_APPLICATION_LOGS: {
           CloudWatchLogsLogGroupArn: {
             'Fn::GetAtt': [
@@ -467,12 +474,9 @@ describe('log groups', () => {
           },
           Enabled: true,
         },
-        SEARCH_SLOW_LOGS: {
-          Enabled: false,
-        },
-        INDEX_SLOW_LOGS: {
-          Enabled: false,
-        },
+        AUDIT_LOGS: assert.ABSENT,
+        SEARCH_SLOW_LOGS: assert.ABSENT,
+        INDEX_SLOW_LOGS: assert.ABSENT,
       },
     });
   });
@@ -507,15 +511,9 @@ describe('log groups', () => {
           },
           Enabled: true,
         },
-        ES_APPLICATION_LOGS: {
-          Enabled: false,
-        },
-        SEARCH_SLOW_LOGS: {
-          Enabled: false,
-        },
-        INDEX_SLOW_LOGS: {
-          Enabled: false,
-        },
+        ES_APPLICATION_LOGS: assert.ABSENT,
+        SEARCH_SLOW_LOGS: assert.ABSENT,
+        INDEX_SLOW_LOGS: assert.ABSENT,
       },
     });
   });
@@ -1013,7 +1011,7 @@ describe('custom error responses', () => {
     })).toThrow(/you need to provide a subnet for each AZ you are using/);
   });
 
-  test('error when master or data node instance types do not end with .elasticsearch', () => {
+  test('error when master, data or Ultra Warm instance types do not end with .elasticsearch', () => {
     const error = /instance types must end with ".elasticsearch"/;
     expect(() => new Domain(stack, 'Domain1', {
       version: ElasticsearchVersion.V7_4,
@@ -1025,6 +1023,22 @@ describe('custom error responses', () => {
       version: ElasticsearchVersion.V7_4,
       capacity: {
         dataNodeInstanceType: 'c5.2xlarge',
+      },
+    })).toThrow(error);
+    expect(() => new Domain(stack, 'Domain3', {
+      version: ElasticsearchVersion.V7_4,
+      capacity: {
+        warmInstanceType: 'ultrawarm1.medium',
+      },
+    })).toThrow(error);
+  });
+
+  test('error when Ultra Warm instance types do not start with ultrawarm', () => {
+    const error = /UltraWarm node instance type must start with "ultrawarm"./;
+    expect(() => new Domain(stack, 'Domain1', {
+      version: ElasticsearchVersion.V7_4,
+      capacity: {
+        warmInstanceType: 't3.small.elasticsearch',
       },
     })).toThrow(error);
   });
@@ -1212,6 +1226,44 @@ describe('custom error responses', () => {
         availabilityZoneCount: 4,
       },
     })).toThrow(/Invalid zone awareness configuration; availabilityZoneCount must be 2 or 3/);
+  });
+
+  test('error when UltraWarm instance is used and not supported by elasticsearchVersion', () => {
+    expect(() => new Domain(stack, 'Domain1', {
+      version: ElasticsearchVersion.V6_7,
+      capacity: {
+        masterNodes: 1,
+        warmNodes: 1,
+      },
+    })).toThrow(/UltraWarm requires Elasticsearch 6\.8 or later/);
+  });
+
+  test('error when t2 or t3 instance types are specified with UltramWarm enabled', () => {
+    const error = /T2 and T3 instance types do not support UltraWarm storage/;
+    expect(() => new Domain(stack, 'Domain1', {
+      version: ElasticsearchVersion.V7_4,
+      capacity: {
+        masterNodeInstanceType: 't2.2xlarge.elasticsearch',
+        warmNodes: 1,
+      },
+    })).toThrow(error);
+    expect(() => new Domain(stack, 'Domain2', {
+      version: ElasticsearchVersion.V7_4,
+      capacity: {
+        masterNodeInstanceType: 't3.2xlarge.elasticsearch',
+        warmNodes: 1,
+      },
+    })).toThrow(error);
+  });
+
+  test('error when UltraWarm instance is used and no dedicated master instance specified', () => {
+    expect(() => new Domain(stack, 'Domain1', {
+      version: ElasticsearchVersion.V7_4,
+      capacity: {
+        warmNodes: 1,
+        masterNodes: 0,
+      },
+    })).toThrow(/Dedicated master node is required when UltraWarm storage is enabled/);
   });
 
 });

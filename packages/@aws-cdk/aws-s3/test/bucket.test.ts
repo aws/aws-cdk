@@ -3,6 +3,7 @@ import { countResources, expect, haveResource, haveResourceLike, ResourcePart, S
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as cdk from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
 import { nodeunitShim, Test } from 'nodeunit-shim';
 import * as s3 from '../lib';
 
@@ -331,6 +332,45 @@ nodeunitShim({
         },
       },
     });
+    test.done();
+  },
+
+  'bucketKeyEnabled can be enabled'(test: Test) {
+    const stack = new cdk.Stack();
+
+    new s3.Bucket(stack, 'MyBucket', { bucketKeyEnabled: true, encryption: s3.BucketEncryption.KMS });
+
+    expect(stack).to(haveResource('AWS::S3::Bucket', {
+      'BucketEncryption': {
+        'ServerSideEncryptionConfiguration': [
+          {
+            'BucketKeyEnabled': true,
+            'ServerSideEncryptionByDefault': {
+              'KMSMasterKeyID': {
+                'Fn::GetAtt': [
+                  'MyBucketKeyC17130CF',
+                  'Arn',
+                ],
+              },
+              'SSEAlgorithm': 'aws:kms',
+            },
+          },
+        ],
+      },
+    }),
+    );
+    test.done();
+  },
+
+  'throws error if bucketKeyEnabled is set, but encryption is not KMS'(test: Test) {
+    const stack = new cdk.Stack();
+
+    test.throws(() => {
+      new s3.Bucket(stack, 'MyBucket', { bucketKeyEnabled: true, encryption: s3.BucketEncryption.S3_MANAGED });
+    }, "bucketKeyEnabled is specified, so 'encryption' must be set to KMS (value: S3MANAGED)");
+    test.throws(() => {
+      new s3.Bucket(stack, 'MyBucket3', { bucketKeyEnabled: true });
+    }, "bucketKeyEnabled is specified, so 'encryption' must be set to KMS (value: NONE)");
     test.done();
   },
 
@@ -1085,176 +1125,293 @@ nodeunitShim({
 
       test.done();
     },
-  },
 
-  'grantWrite with KMS key has appropriate permissions for multipart uploads'(test: Test) {
-    const stack = new cdk.Stack();
-    const bucket = new s3.Bucket(stack, 'MyBucket', { encryption: s3.BucketEncryption.KMS });
-    const user = new iam.User(stack, 'MyUser');
-    bucket.grantWrite(user);
+    'does not grant PutObjectAcl when the S3_GRANT_WRITE_WITHOUT_ACL feature is enabled'(test: Test) {
+      const app = new cdk.App({
+        context: {
+          [cxapi.S3_GRANT_WRITE_WITHOUT_ACL]: true,
+        },
+      });
+      const stack = new cdk.Stack(app, 'Stack');
+      const bucket = new s3.Bucket(stack, 'MyBucket');
+      const user = new iam.User(stack, 'MyUser');
 
-    expect(stack).toMatch({
-      'Resources': {
-        'MyBucketKeyC17130CF': {
-          'Type': 'AWS::KMS::Key',
-          'Properties': {
-            'KeyPolicy': {
-              'Statement': [
+      bucket.grantReadWrite(user);
+
+      expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
+        'PolicyDocument': {
+          'Statement': [
+            {
+              'Action': [
+                's3:GetObject*',
+                's3:GetBucket*',
+                's3:List*',
+                's3:DeleteObject*',
+                's3:PutObject',
+                's3:Abort*',
+              ],
+              'Resource': [
+                { 'Fn::GetAtt': ['MyBucketF68F3FF0', 'Arn'] },
                 {
-                  'Action': [
-                    'kms:Create*',
-                    'kms:Describe*',
-                    'kms:Enable*',
-                    'kms:List*',
-                    'kms:Put*',
-                    'kms:Update*',
-                    'kms:Revoke*',
-                    'kms:Disable*',
-                    'kms:Get*',
-                    'kms:Delete*',
-                    'kms:ScheduleKeyDeletion',
-                    'kms:CancelKeyDeletion',
-                    'kms:GenerateDataKey',
-                    'kms:TagResource',
-                    'kms:UntagResource',
-                  ],
-                  'Effect': 'Allow',
-                  'Principal': {
-                    'AWS': {
-                      'Fn::Join': [
-                        '',
-                        [
-                          'arn:',
-                          {
-                            'Ref': 'AWS::Partition',
-                          },
-                          ':iam::',
-                          {
-                            'Ref': 'AWS::AccountId',
-                          },
-                          ':root',
-                        ],
-                      ],
-                    },
-                  },
-                  'Resource': '*',
-                },
-                {
-                  'Action': [
-                    'kms:Encrypt',
-                    'kms:ReEncrypt*',
-                    'kms:GenerateDataKey*',
-                    'kms:Decrypt',
-                  ],
-                  'Effect': 'Allow',
-                  'Principal': {
-                    'AWS': {
-                      'Fn::GetAtt': [
-                        'MyUserDC45028B',
-                        'Arn',
-                      ],
-                    },
-                  },
-                  'Resource': '*',
+                  'Fn::Join': ['', [
+                    { 'Fn::GetAtt': ['MyBucketF68F3FF0', 'Arn'] },
+                    '/*',
+                  ]],
                 },
               ],
-              'Version': '2012-10-17',
             },
-            'Description': 'Created by Default/MyBucket',
-          },
-          'UpdateReplacePolicy': 'Retain',
-          'DeletionPolicy': 'Retain',
+          ],
         },
-        'MyBucketF68F3FF0': {
-          'Type': 'AWS::S3::Bucket',
-          'Properties': {
-            'BucketEncryption': {
-              'ServerSideEncryptionConfiguration': [
-                {
-                  'ServerSideEncryptionByDefault': {
-                    'KMSMasterKeyID': {
+      }));
+
+      test.done();
+    },
+  },
+
+  'grantWrite': {
+    'with KMS key has appropriate permissions for multipart uploads'(test: Test) {
+      const stack = new cdk.Stack();
+      const bucket = new s3.Bucket(stack, 'MyBucket', { encryption: s3.BucketEncryption.KMS });
+      const user = new iam.User(stack, 'MyUser');
+      bucket.grantWrite(user);
+
+      expect(stack).toMatch({
+        'Resources': {
+          'MyBucketKeyC17130CF': {
+            'Type': 'AWS::KMS::Key',
+            'Properties': {
+              'KeyPolicy': {
+                'Statement': [
+                  {
+                    'Action': [
+                      'kms:Create*',
+                      'kms:Describe*',
+                      'kms:Enable*',
+                      'kms:List*',
+                      'kms:Put*',
+                      'kms:Update*',
+                      'kms:Revoke*',
+                      'kms:Disable*',
+                      'kms:Get*',
+                      'kms:Delete*',
+                      'kms:ScheduleKeyDeletion',
+                      'kms:CancelKeyDeletion',
+                      'kms:GenerateDataKey',
+                      'kms:TagResource',
+                      'kms:UntagResource',
+                    ],
+                    'Effect': 'Allow',
+                    'Principal': {
+                      'AWS': {
+                        'Fn::Join': [
+                          '',
+                          [
+                            'arn:',
+                            {
+                              'Ref': 'AWS::Partition',
+                            },
+                            ':iam::',
+                            {
+                              'Ref': 'AWS::AccountId',
+                            },
+                            ':root',
+                          ],
+                        ],
+                      },
+                    },
+                    'Resource': '*',
+                  },
+                  {
+                    'Action': [
+                      'kms:Encrypt',
+                      'kms:ReEncrypt*',
+                      'kms:GenerateDataKey*',
+                      'kms:Decrypt',
+                    ],
+                    'Effect': 'Allow',
+                    'Principal': {
+                      'AWS': {
+                        'Fn::GetAtt': [
+                          'MyUserDC45028B',
+                          'Arn',
+                        ],
+                      },
+                    },
+                    'Resource': '*',
+                  },
+                ],
+                'Version': '2012-10-17',
+              },
+              'Description': 'Created by Default/MyBucket',
+            },
+            'UpdateReplacePolicy': 'Retain',
+            'DeletionPolicy': 'Retain',
+          },
+          'MyBucketF68F3FF0': {
+            'Type': 'AWS::S3::Bucket',
+            'Properties': {
+              'BucketEncryption': {
+                'ServerSideEncryptionConfiguration': [
+                  {
+                    'ServerSideEncryptionByDefault': {
+                      'KMSMasterKeyID': {
+                        'Fn::GetAtt': [
+                          'MyBucketKeyC17130CF',
+                          'Arn',
+                        ],
+                      },
+                      'SSEAlgorithm': 'aws:kms',
+                    },
+                  },
+                ],
+              },
+            },
+            'UpdateReplacePolicy': 'Retain',
+            'DeletionPolicy': 'Retain',
+          },
+          'MyUserDC45028B': {
+            'Type': 'AWS::IAM::User',
+          },
+          'MyUserDefaultPolicy7B897426': {
+            'Type': 'AWS::IAM::Policy',
+            'Properties': {
+              'PolicyDocument': {
+                'Statement': [
+                  {
+                    'Action': [
+                      's3:DeleteObject*',
+                      's3:PutObject*',
+                      's3:Abort*',
+                    ],
+                    'Effect': 'Allow',
+                    'Resource': [
+                      {
+                        'Fn::GetAtt': [
+                          'MyBucketF68F3FF0',
+                          'Arn',
+                        ],
+                      },
+                      {
+                        'Fn::Join': [
+                          '',
+                          [
+                            {
+                              'Fn::GetAtt': [
+                                'MyBucketF68F3FF0',
+                                'Arn',
+                              ],
+                            },
+                            '/*',
+                          ],
+                        ],
+                      },
+                    ],
+                  },
+                  {
+                    'Action': [
+                      'kms:Encrypt',
+                      'kms:ReEncrypt*',
+                      'kms:GenerateDataKey*',
+                      'kms:Decrypt',
+                    ],
+                    'Effect': 'Allow',
+                    'Resource': {
                       'Fn::GetAtt': [
                         'MyBucketKeyC17130CF',
                         'Arn',
                       ],
                     },
-                    'SSEAlgorithm': 'aws:kms',
                   },
-                },
-              ],
-            },
-          },
-          'UpdateReplacePolicy': 'Retain',
-          'DeletionPolicy': 'Retain',
-        },
-        'MyUserDC45028B': {
-          'Type': 'AWS::IAM::User',
-        },
-        'MyUserDefaultPolicy7B897426': {
-          'Type': 'AWS::IAM::Policy',
-          'Properties': {
-            'PolicyDocument': {
-              'Statement': [
-                {
-                  'Action': [
-                    's3:DeleteObject*',
-                    's3:PutObject*',
-                    's3:Abort*',
-                  ],
-                  'Effect': 'Allow',
-                  'Resource': [
-                    {
-                      'Fn::GetAtt': [
-                        'MyBucketF68F3FF0',
-                        'Arn',
-                      ],
-                    },
-                    {
-                      'Fn::Join': [
-                        '',
-                        [
-                          {
-                            'Fn::GetAtt': [
-                              'MyBucketF68F3FF0',
-                              'Arn',
-                            ],
-                          },
-                          '/*',
-                        ],
-                      ],
-                    },
-                  ],
-                },
-                {
-                  'Action': [
-                    'kms:Encrypt',
-                    'kms:ReEncrypt*',
-                    'kms:GenerateDataKey*',
-                    'kms:Decrypt',
-                  ],
-                  'Effect': 'Allow',
-                  'Resource': {
-                    'Fn::GetAtt': [
-                      'MyBucketKeyC17130CF',
-                      'Arn',
-                    ],
-                  },
-                },
-              ],
-              'Version': '2012-10-17',
-            },
-            'PolicyName': 'MyUserDefaultPolicy7B897426',
-            'Users': [
-              {
-                'Ref': 'MyUserDC45028B',
+                ],
+                'Version': '2012-10-17',
               },
-            ],
+              'PolicyName': 'MyUserDefaultPolicy7B897426',
+              'Users': [
+                {
+                  'Ref': 'MyUserDC45028B',
+                },
+              ],
+            },
           },
         },
-      },
-    });
+      });
 
-    test.done();
+      test.done();
+    },
+
+    'does not grant PutObjectAcl when the S3_GRANT_WRITE_WITHOUT_ACL feature is enabled'(test: Test) {
+      const app = new cdk.App({
+        context: {
+          [cxapi.S3_GRANT_WRITE_WITHOUT_ACL]: true,
+        },
+      });
+      const stack = new cdk.Stack(app, 'Stack');
+      const bucket = new s3.Bucket(stack, 'MyBucket');
+      const user = new iam.User(stack, 'MyUser');
+
+      bucket.grantWrite(user);
+
+      expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
+        'PolicyDocument': {
+          'Statement': [
+            {
+              'Action': [
+                's3:DeleteObject*',
+                's3:PutObject',
+                's3:Abort*',
+              ],
+              'Resource': [
+                { 'Fn::GetAtt': ['MyBucketF68F3FF0', 'Arn'] },
+                {
+                  'Fn::Join': ['', [
+                    { 'Fn::GetAtt': ['MyBucketF68F3FF0', 'Arn'] },
+                    '/*',
+                  ]],
+                },
+              ],
+            },
+          ],
+        },
+      }));
+
+      test.done();
+    },
+  },
+
+  'grantPut': {
+    'does not grant PutObjectAcl when the S3_GRANT_WRITE_WITHOUT_ACL feature is enabled'(test: Test) {
+      const app = new cdk.App({
+        context: {
+          [cxapi.S3_GRANT_WRITE_WITHOUT_ACL]: true,
+        },
+      });
+      const stack = new cdk.Stack(app, 'Stack');
+      const bucket = new s3.Bucket(stack, 'MyBucket');
+      const user = new iam.User(stack, 'MyUser');
+
+      bucket.grantPut(user);
+
+      expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
+        'PolicyDocument': {
+          'Statement': [
+            {
+              'Action': [
+                's3:PutObject',
+                's3:Abort*',
+              ],
+              'Resource': {
+                'Fn::Join': ['', [
+                  { 'Fn::GetAtt': ['MyBucketF68F3FF0', 'Arn'] },
+                  '/*',
+                ]],
+              },
+            },
+          ],
+        },
+      }));
+
+      test.done();
+    },
   },
 
   'more grants'(test: Test) {
