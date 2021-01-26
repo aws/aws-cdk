@@ -532,6 +532,7 @@ nodeunitShim({
       nameServers: childZone.hostedZoneNameServers!,
       zoneName: parentZone.zoneName,
       delegationRole: parentZone.crossAccountDelegationRole!,
+      ttl: Duration.seconds(60),
     });
 
     // THEN
@@ -556,6 +557,7 @@ nodeunitShim({
           'NameServers',
         ],
       },
+      TTL: 60,
     }));
     test.done();
   },

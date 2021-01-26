@@ -250,10 +250,16 @@ export class PublicHostedZone extends HostedZone implements IPublicHostedZone {
         assumedBy: props.crossAccountZoneDelegationPrinciple,
         inlinePolicies: {
           delegation: new iam.PolicyDocument({
-            statements: [new iam.PolicyStatement({
-              actions: ['route53:ListHostedZonesByName', 'route53:ChangeResourceRecordSets'],
-              resources: [this.hostedZoneArn],
-            })],
+            statements: [
+              new iam.PolicyStatement({
+                actions: ['route53:ListHostedZonesByName'],
+                resources: ['*'],
+              }),
+              new iam.PolicyStatement({
+                actions: ['route53:ChangeResourceRecordSets'],
+                resources: [this.hostedZoneArn],
+              }),
+            ],
           }),
         },
       });

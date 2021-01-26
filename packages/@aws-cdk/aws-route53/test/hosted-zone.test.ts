@@ -115,10 +115,12 @@ nodeunitShim({
                 PolicyDocument: {
                   Statement: [
                     {
-                      Action: [
-                        'route53:ListHostedZonesByName',
-                        'route53:ChangeResourceRecordSets',
-                      ],
+                      Action: 'route53:ListHostedZonesByName',
+                      Effect: 'Allow',
+                      Resource: '*',
+                    },
+                    {
+                      Action: 'route53:ChangeResourceRecordSets',
                       Effect: 'Allow',
                       Resource: {
                         'Fn::Join': [

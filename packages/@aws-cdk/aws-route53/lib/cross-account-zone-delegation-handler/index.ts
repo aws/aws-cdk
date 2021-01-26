@@ -6,6 +6,7 @@ interface ResourceProperties {
   ParentZoneName: string,
   RecordName: string,
   NameServers: string[],
+  TTL: number,
 }
 
 export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent) {
@@ -21,7 +22,7 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
 }
 
 async function cfnEventHandler(props: ResourceProperties, isDeleteEvent: boolean) {
-  const { AssumeRoleArn, ParentZoneName, RecordName, NameServers } = props;
+  const { AssumeRoleArn, ParentZoneName, RecordName, NameServers, TTL } = props;
 
   const credentials = await getCrossAccountCredentials(AssumeRoleArn);
   const route53 = new Route53({ credentials });
@@ -32,7 +33,7 @@ async function cfnEventHandler(props: ResourceProperties, isDeleteEvent: boolean
   }
 
   const { Id: hostedZoneId, Name: hostedZoneName } = HostedZones[0];
-  if (hostedZoneName !== ParentZoneName) {
+  if (!hostedZoneName.startsWith(ParentZoneName)) {
     throw Error('No hosted zones found with the provided name.');
   }
 
@@ -44,6 +45,7 @@ async function cfnEventHandler(props: ResourceProperties, isDeleteEvent: boolean
         ResourceRecordSet: {
           Name: RecordName,
           Type: 'NS',
+          TTL,
           ResourceRecords: NameServers.map(ns => ({ Value: ns })),
         },
       }],

@@ -33,16 +33,7 @@ test('throws error if getting credentials fails', async () => {
   mockStsClient.promise.mockResolvedValueOnce({ Credentials: undefined });
 
   // WHEN
-  const event: Partial<AWSLambda.CloudFormationCustomResourceEvent> = {
-    RequestType: 'Create',
-    ResourceProperties: {
-      ServiceToken: 'Foo',
-      AssumeRoleArn: 'roleArn',
-      ParentZoneName: 'zoneName',
-      RecordName: 'recordName',
-      NameServers: ['one', 'two'],
-    },
-  };
+  const event= getCfnEvent();
 
   // THEN
   await expect(invokeHandler(event)).rejects.toThrow(/Error getting assume role credentials/);
@@ -60,16 +51,7 @@ test('throws error if no hosted zone returned by list hosted zone', async () => 
   mockRoute53Client.promise.mockResolvedValueOnce({ HostedZones: [] });
 
   // WHEN
-  const event: Partial<AWSLambda.CloudFormationCustomResourceEvent> = {
-    RequestType: 'Update',
-    ResourceProperties: {
-      ServiceToken: 'Foo',
-      AssumeRoleArn: 'roleArn',
-      ParentZoneName: 'zoneName',
-      RecordName: 'recordName',
-      NameServers: ['one', 'two'],
-    },
-  };
+  const event= getCfnEvent({ RequestType: 'Update' });
 
   // THEN
   await expect(invokeHandler(event)).rejects.toThrow(/No hosted zones found with the provided name./);
@@ -84,16 +66,7 @@ test('throws error if zone name does not match', async () => {
   mockRoute53Client.promise.mockResolvedValueOnce({ HostedZones: [{ Id: '1', Name: '1' }, { Id: '2', Name: '2' }] });
 
   // WHEN
-  const event: Partial<AWSLambda.CloudFormationCustomResourceEvent> = {
-    RequestType: 'Update',
-    ResourceProperties: {
-      ServiceToken: 'Foo',
-      AssumeRoleArn: 'roleArn',
-      ParentZoneName: 'zoneName',
-      RecordName: 'recordName',
-      NameServers: ['one', 'two'],
-    },
-  };
+  const event= getCfnEvent({ RequestType: 'Update' });
 
   // THEN
   await expect(invokeHandler(event)).rejects.toThrow(/No hosted zones found with the provided name./);
@@ -109,17 +82,7 @@ test('calls create resouce record set with Upsert for Create event', async () =>
   mockRoute53Client.promise.mockResolvedValueOnce({});
 
   // WHEN
-  const event: Partial<AWSLambda.CloudFormationCustomResourceEvent> = {
-    RequestType: 'Create',
-    ResourceProperties: {
-      ServiceToken: 'Foo',
-      AssumeRoleArn: 'roleArn',
-      ParentZoneName: 'zoneName',
-      RecordName: 'recordName',
-      NameServers: ['one', 'two'],
-    },
-  };
-
+  const event= getCfnEvent();
   await invokeHandler(event);
 
   // THEN
@@ -135,6 +98,7 @@ test('calls create resouce record set with Upsert for Create event', async () =>
         ResourceRecordSet: {
           Name: 'recordName',
           Type: 'NS',
+          TTL: 172800,
           ResourceRecords: [{ Value: 'one' }, { Value: 'two' }],
         },
       }],
@@ -149,17 +113,7 @@ test('calls create resouce record set with DELETE for Delete event', async () =>
   mockRoute53Client.promise.mockResolvedValueOnce({});
 
   // WHEN
-  const event: Partial<AWSLambda.CloudFormationCustomResourceEvent> = {
-    RequestType: 'Delete',
-    ResourceProperties: {
-      ServiceToken: 'Foo',
-      AssumeRoleArn: 'roleArn',
-      ParentZoneName: 'zoneName',
-      RecordName: 'recordName',
-      NameServers: ['one', 'two'],
-    },
-  };
-
+  const event= getCfnEvent({ RequestType: 'Delete' });
   await invokeHandler(event);
 
   // THEN
@@ -175,12 +129,28 @@ test('calls create resouce record set with DELETE for Delete event', async () =>
         ResourceRecordSet: {
           Name: 'recordName',
           Type: 'NS',
+          TTL: 172800,
           ResourceRecords: [{ Value: 'one' }, { Value: 'two' }],
         },
       }],
     },
   });
 });
+
+function getCfnEvent(event?: Partial<AWSLambda.CloudFormationCustomResourceEvent>): Partial<AWSLambda.CloudFormationCustomResourceEvent> {
+  return {
+    RequestType: 'Create',
+    ResourceProperties: {
+      ServiceToken: 'Foo',
+      AssumeRoleArn: 'roleArn',
+      ParentZoneName: 'zoneName',
+      RecordName: 'recordName',
+      NameServers: ['one', 'two'],
+      TTL: 172800,
+    },
+    ...event,
+  };
+}
 
 // helper function to get around TypeScript expecting a complete event object,
 // even though our tests only need some of the fields

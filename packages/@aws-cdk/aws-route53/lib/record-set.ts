@@ -591,6 +591,13 @@ export interface CrossAccountZoneDelegationRecordProps {
    * The delegation role in the parent account
    */
   readonly delegationRole: iam.IRole;
+
+  /**
+   * The resource record cache time to live (TTL).
+   *
+   * @default Duration.days(2)
+   */
+  readonly ttl?: Duration;
 }
 
 /**
@@ -614,6 +621,7 @@ export class CrossAccountZoneDelegationRecord extends CoreConstruct {
         ParentZoneName: props.zoneName,
         RecordName: props.recordName,
         NameServers: props.nameServers,
+        TTL: (props.ttl || Duration.days(2)).toSeconds(),
       },
     });
   }
