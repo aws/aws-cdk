@@ -28,6 +28,14 @@ import { CODEPIPELINE_SOURCE_ARTIFACTS_TYPE, NO_SOURCE_TYPE } from './source-typ
 // eslint-disable-next-line
 import { Construct as CoreConstruct } from '@aws-cdk/core';
 
+/**
+ * The type returned from {@link IProject#enableBatchBuilds}.
+ */
+export interface BatchBuildConfig {
+  /** The IAM batch service Role of this Project. */
+  readonly role: iam.IRole;
+}
+
 export interface IProject extends IResource, iam.IGrantable, ec2.IConnectable {
   /**
    * The ARN of this Project.
@@ -162,14 +170,6 @@ export interface IProject extends IResource, iam.IGrantable, ec2.IConnectable {
    * @default sum over 5 minutes
    */
   metricFailedBuilds(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
-}
-
-/**
- * The type returned from {@link IProject#enableBatchBuilds}.
- */
-export interface BatchBuildConfig {
-  /** The IAM batch service Role of this Project. */
-  readonly role: iam.IRole;
 }
 
 /**
