@@ -76,6 +76,7 @@
     "@aws-cdk/aws-batch": "0.0.0",
     "@aws-cdk/aws-cloudwatch": "0.0.0",
     "@aws-cdk/aws-codebuild": "0.0.0",
+    "@aws-cdk/aws-databrew": "0.0.0",
     "@aws-cdk/aws-dynamodb": "0.0.0",
     "@aws-cdk/aws-ec2": "0.0.0",
     "@aws-cdk/aws-ecr": "0.0.0",
@@ -97,6 +98,7 @@
     "@aws-cdk/aws-batch": "0.0.0",
     "@aws-cdk/aws-cloudwatch": "0.0.0",
     "@aws-cdk/aws-codebuild": "0.0.0",
+    "@aws-cdk/aws-databrew": "0.0.0",
     "@aws-cdk/aws-dynamodb": "0.0.0",
     "@aws-cdk/aws-ec2": "0.0.0",
     "@aws-cdk/aws-ecr": "0.0.0",
@@ -114,7 +116,7 @@
     "constructs": "10.0.0-pre.5"
   },
   "engines": {
-    "node": ">= 14.15.0"
+    "node": ">= 10.13.0 <13 || >=13.7.0"
   },
   "stability": "stable",
   "maturity": "stable",

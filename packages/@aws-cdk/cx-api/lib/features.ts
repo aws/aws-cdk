@@ -116,6 +116,13 @@ export const FUTURE_FLAGS = {
 };
 
 /**
+ * The list of future flags that are now expired. This is going to be used to identify
+ * and block usages of old feature flags in the new major version of CDK.
+ */
+export const FUTURE_FLAGS_EXPIRED: string[] = [
+];
+
+/**
  * The set of defaults that should be applied if the feature flag is not
  * explicitly configured.
  */

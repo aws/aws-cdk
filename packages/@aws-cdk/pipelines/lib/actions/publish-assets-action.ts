@@ -6,6 +6,7 @@ import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
 import { Lazy } from '@aws-cdk/core';
 import { Construct } from 'constructs';
+import { toPosixPath } from '../private/fs';
 
 /**
  * Type of the asset that is being published
@@ -146,7 +147,7 @@ export class PublishAssetsAction extends Construct implements codepipeline.IActi
    * Manifest path should be relative to the root Cloud Assembly.
    */
   public addPublishCommand(relativeManifestPath: string, assetSelector: string) {
-    const command = `cdk-assets --path "${relativeManifestPath}" --verbose publish "${assetSelector}"`;
+    const command = `cdk-assets --path "${toPosixPath(relativeManifestPath)}" --verbose publish "${assetSelector}"`;
     if (!this.commands.includes(command)) {
       this.commands.push(command);
     }
