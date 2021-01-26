@@ -3,9 +3,9 @@ import { Credentials, Route53, STS } from 'aws-sdk';
 
 interface ResourceProperties {
   AssumeRoleArn: string,
-  ParentZoneName: string,
-  RecordName: string,
-  NameServers: string[],
+  ParentZoneId: string,
+  DelegatedZoneName: string,
+  DelegatedZoneNameServers: string[],
   TTL: number,
 }
 
@@ -22,31 +22,21 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
 }
 
 async function cfnEventHandler(props: ResourceProperties, isDeleteEvent: boolean) {
-  const { AssumeRoleArn, ParentZoneName, RecordName, NameServers, TTL } = props;
+  const { AssumeRoleArn, ParentZoneId, DelegatedZoneName, DelegatedZoneNameServers, TTL } = props;
 
   const credentials = await getCrossAccountCredentials(AssumeRoleArn);
   const route53 = new Route53({ credentials });
 
-  const { HostedZones } = await route53.listHostedZonesByName({ DNSName: ParentZoneName }).promise();
-  if (HostedZones.length < 1) {
-    throw Error('No hosted zones found with the provided name.');
-  }
-
-  const { Id: hostedZoneId, Name: hostedZoneName } = HostedZones[0];
-  if (!hostedZoneName.startsWith(ParentZoneName)) {
-    throw Error('No hosted zones found with the provided name.');
-  }
-
   await route53.changeResourceRecordSets({
-    HostedZoneId: hostedZoneId,
+    HostedZoneId: ParentZoneId,
     ChangeBatch: {
       Changes: [{
         Action: isDeleteEvent ? 'DELETE' : 'UPSERT',
         ResourceRecordSet: {
-          Name: RecordName,
+          Name: DelegatedZoneName,
           Type: 'NS',
           TTL,
-          ResourceRecords: NameServers.map(ns => ({ Value: ns })),
+          ResourceRecords: DelegatedZoneNameServers.map(ns => ({ Value: ns })),
         },
       }],
     },

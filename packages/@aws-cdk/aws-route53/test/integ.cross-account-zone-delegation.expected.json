@@ -41,11 +41,6 @@
             "PolicyDocument": {
               "Statement": [
                 {
-                  "Action": "route53:ListHostedZonesByName",
-                  "Effect": "Allow",
-                  "Resource": "*"
-                },
-                {
                   "Action": "route53:ChangeResourceRecordSets",
                   "Effect": "Allow",
                   "Resource": {
@@ -93,9 +88,11 @@
             "Arn"
           ]
         },
-        "ParentZoneName": "myzone.com",
-        "RecordName": "sub.myzone.com",
-        "NameServers": {
+        "ParentZoneId": {
+          "Ref": "ParentHostedZoneC2BD86E1"
+        },
+        "DelegatedZoneName": "sub.myzone.com",
+        "DelegatedZoneNameServers": {
           "Fn::GetAtt": [
             "ChildHostedZone4B14AC71",
             "NameServers"
@@ -153,7 +150,7 @@
       "Properties": {
         "Code": {
           "S3Bucket": {
-            "Ref": "AssetParameters26877cd9b779acb6c1aa40ff70ffb8d67772217eea75e432714c77ed3fd518d3S3Bucket60D359DB"
+            "Ref": "AssetParameters3c971020239d152fff59dc3bdbabbbc6d3d9140574e45fd4eb7313ced117113aS3Bucket8B462894"
           },
           "S3Key": {
             "Fn::Join": [
@@ -166,7 +163,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParameters26877cd9b779acb6c1aa40ff70ffb8d67772217eea75e432714c77ed3fd518d3S3VersionKeyA2623F3B"
+                          "Ref": "AssetParameters3c971020239d152fff59dc3bdbabbbc6d3d9140574e45fd4eb7313ced117113aS3VersionKeyFDEC5E1D"
                         }
                       ]
                     }
@@ -179,7 +176,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParameters26877cd9b779acb6c1aa40ff70ffb8d67772217eea75e432714c77ed3fd518d3S3VersionKeyA2623F3B"
+                          "Ref": "AssetParameters3c971020239d152fff59dc3bdbabbbc6d3d9140574e45fd4eb7313ced117113aS3VersionKeyFDEC5E1D"
                         }
                       ]
                     }
@@ -206,17 +203,17 @@
     }
   },
   "Parameters": {
-    "AssetParameters26877cd9b779acb6c1aa40ff70ffb8d67772217eea75e432714c77ed3fd518d3S3Bucket60D359DB": {
+    "AssetParameters3c971020239d152fff59dc3bdbabbbc6d3d9140574e45fd4eb7313ced117113aS3Bucket8B462894": {
       "Type": "String",
-      "Description": "S3 bucket for asset \"26877cd9b779acb6c1aa40ff70ffb8d67772217eea75e432714c77ed3fd518d3\""
+      "Description": "S3 bucket for asset \"3c971020239d152fff59dc3bdbabbbc6d3d9140574e45fd4eb7313ced117113a\""
     },
-    "AssetParameters26877cd9b779acb6c1aa40ff70ffb8d67772217eea75e432714c77ed3fd518d3S3VersionKeyA2623F3B": {
+    "AssetParameters3c971020239d152fff59dc3bdbabbbc6d3d9140574e45fd4eb7313ced117113aS3VersionKeyFDEC5E1D": {
       "Type": "String",
-      "Description": "S3 key for asset version \"26877cd9b779acb6c1aa40ff70ffb8d67772217eea75e432714c77ed3fd518d3\""
+      "Description": "S3 key for asset version \"3c971020239d152fff59dc3bdbabbbc6d3d9140574e45fd4eb7313ced117113a\""
     },
-    "AssetParameters26877cd9b779acb6c1aa40ff70ffb8d67772217eea75e432714c77ed3fd518d3ArtifactHashFD33B0B4": {
+    "AssetParameters3c971020239d152fff59dc3bdbabbbc6d3d9140574e45fd4eb7313ced117113aArtifactHash4F367D8C": {
       "Type": "String",
-      "Description": "Artifact hash for asset \"26877cd9b779acb6c1aa40ff70ffb8d67772217eea75e432714c77ed3fd518d3\""
+      "Description": "Artifact hash for asset \"3c971020239d152fff59dc3bdbabbbc6d3d9140574e45fd4eb7313ced117113a\""
     }
   }
 }

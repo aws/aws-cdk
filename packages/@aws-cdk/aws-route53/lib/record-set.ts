@@ -573,19 +573,14 @@ export class ZoneDelegationRecord extends RecordSet {
  */
 export interface CrossAccountZoneDelegationRecordProps {
   /**
-   * The name of the record to be made
+   * The zone to be delegated
    */
-  readonly recordName: string;
+  readonly delegatedZone: IHostedZone;
 
   /**
-   * The name servers to report in the delegation records.
+   * The hosted zone id in the parent account
    */
-  readonly nameServers: string[];
-
-  /**
-   * The hosted zone name in the parent account
-   */
-  readonly zoneName: string;
+  readonly parentHostedZoneId: string;
 
   /**
    * The delegation role in the parent account
@@ -618,9 +613,9 @@ export class CrossAccountZoneDelegationRecord extends CoreConstruct {
       serviceToken,
       properties: {
         AssumeRoleArn: props.delegationRole.roleArn,
-        ParentZoneName: props.zoneName,
-        RecordName: props.recordName,
-        NameServers: props.nameServers,
+        ParentZoneId: props.parentHostedZoneId,
+        DelegatedZoneName: props.delegatedZone.zoneName,
+        DelegatedZoneNameServers: props.delegatedZone.hostedZoneNameServers!,
         TTL: (props.ttl || Duration.days(2)).toSeconds(),
       },
     });

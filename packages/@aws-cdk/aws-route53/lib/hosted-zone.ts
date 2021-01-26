@@ -193,12 +193,11 @@ export interface PublicHostedZoneProps extends CommonHostedZoneProps {
   readonly caaAmazon?: boolean;
 
   /**
-   * The principle for which a assumed by role is created
-   * for record set updation
+   * A principal which is trusted to assume a role for zone delegation
    *
    * @default - No delegation configuration
    */
-  readonly crossAccountZoneDelegationPrinciple?: iam.IPrincipal;
+  readonly crossAccountZoneDelegationPrincipal?: iam.IPrincipal;
 }
 
 /**
@@ -232,9 +231,9 @@ export class PublicHostedZone extends HostedZone implements IPublicHostedZone {
   }
 
   /**
-   * Role for cross account delegation
+   * Role for cross account zone delegation
    */
-  public readonly crossAccountDelegationRole?: iam.Role;
+  public readonly crossAccountZoneDelegationRole?: iam.Role;
 
   constructor(scope: Construct, id: string, props: PublicHostedZoneProps) {
     super(scope, id, props);
@@ -245,16 +244,12 @@ export class PublicHostedZone extends HostedZone implements IPublicHostedZone {
       });
     }
 
-    if (props.crossAccountZoneDelegationPrinciple) {
-      this.crossAccountDelegationRole = new iam.Role(this, 'CrossAccountZoneDelegationRole', {
-        assumedBy: props.crossAccountZoneDelegationPrinciple,
+    if (props.crossAccountZoneDelegationPrincipal) {
+      this.crossAccountZoneDelegationRole = new iam.Role(this, 'CrossAccountZoneDelegationRole', {
+        assumedBy: props.crossAccountZoneDelegationPrincipal,
         inlinePolicies: {
           delegation: new iam.PolicyDocument({
             statements: [
-              new iam.PolicyStatement({
-                actions: ['route53:ListHostedZonesByName'],
-                resources: ['*'],
-              }),
               new iam.PolicyStatement({
                 actions: ['route53:ChangeResourceRecordSets'],
                 resources: [this.hostedZoneArn],

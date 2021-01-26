@@ -34,7 +34,7 @@ beforeEach(() => {
   });
 });
 
-test.skip('create domain name resource', () => {
+test('create domain name resource', () => {
   // GIVEN
 
   // WHEN
@@ -57,7 +57,7 @@ test.skip('create domain name resource', () => {
           },
         },
         physicalResourceId: {
-          id: 'EndpointDomain',
+          id: 'VPCES',
         },
       },
       Update: {
@@ -70,7 +70,7 @@ test.skip('create domain name resource', () => {
           },
         },
         physicalResourceId: {
-          id: 'EndpointDomain',
+          id: 'VPCES',
         },
       },
       Delete: {
@@ -237,12 +237,6 @@ test.skip('create domain name resource', () => {
 
 test('throws if creating multiple domains for a single service', () => {
   // GIVEN
-
-  new VpcEndpointServiceDomainName(stack, 'EndpointDomain', {
-    endpointService: vpces,
-    domainName: 'my-stuff-1.aws-cdk.dev',
-    publicHostedZone: zone,
-  });
 
   // WHEN / THEN
   expect(() => {

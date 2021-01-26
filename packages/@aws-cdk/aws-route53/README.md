@@ -93,7 +93,7 @@ To add a NS record to a HostedZone in different account
 ```ts
 import * as route53 from '@aws-cdk/aws-route53';
 
-// In the HostedZone containing a account
+// In the account containing the HostedZone
 const parentZone = new route53.PublicHostedZone(this, 'HostedZone', {
   zoneName: 'someexample.com',
   crossAccountZoneDelegationPrinciple: new iam.AccountPrincipal('12345678901')
@@ -105,9 +105,8 @@ const subZone = new route53.PublicHostedZone(this, 'SubZone', {
 });
 
 new route53.CrossAccountZoneDelegationRecord(this, 'delegate', {
-  recordName: 'sub.someexample.com',
-  nameServers: subZone.hostedZoneNameServers!,
-  zoneName: 'someexample.com',
+  delegatedZone: subeZone,
+  parentHostedZoneId: parentZone.hostedZoneId,
   delegationRole: parentZone.crossAccountDelegationRole
 });
 ```

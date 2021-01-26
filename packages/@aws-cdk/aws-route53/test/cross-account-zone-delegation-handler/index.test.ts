@@ -5,7 +5,6 @@ const mockStsClient = {
   promise: jest.fn(),
 };
 const mockRoute53Client = {
-  listHostedZonesByName: jest.fn().mockReturnThis(),
   changeResourceRecordSets: jest.fn().mockReturnThis(),
   promise: jest.fn(),
 };
@@ -20,7 +19,6 @@ jest.mock('aws-sdk', () => {
 
 beforeEach(() => {
   mockStsClient.assumeRole.mockReturnThis();
-  mockRoute53Client.listHostedZonesByName.mockReturnThis();
   mockRoute53Client.changeResourceRecordSets.mockReturnThis();
 });
 
@@ -45,40 +43,9 @@ test('throws error if getting credentials fails', async () => {
   });
 });
 
-test('throws error if no hosted zone returned by list hosted zone', async () => {
-  // GIVEN
-  mockStsClient.promise.mockResolvedValueOnce({ Credentials: { AccessKeyId: 'K', SecretAccessKey: 'S', SessionToken: 'T' } });
-  mockRoute53Client.promise.mockResolvedValueOnce({ HostedZones: [] });
-
-  // WHEN
-  const event= getCfnEvent({ RequestType: 'Update' });
-
-  // THEN
-  await expect(invokeHandler(event)).rejects.toThrow(/No hosted zones found with the provided name./);
-
-  expect(mockRoute53Client.listHostedZonesByName).toHaveBeenCalledTimes(1);
-  expect(mockRoute53Client.listHostedZonesByName).toHaveBeenCalledWith({ DNSName: 'zoneName' });
-});
-
-test('throws error if zone name does not match', async () => {
-  // GIVEN
-  mockStsClient.promise.mockResolvedValueOnce({ Credentials: { AccessKeyId: 'K', SecretAccessKey: 'S', SessionToken: 'T' } });
-  mockRoute53Client.promise.mockResolvedValueOnce({ HostedZones: [{ Id: '1', Name: '1' }, { Id: '2', Name: '2' }] });
-
-  // WHEN
-  const event= getCfnEvent({ RequestType: 'Update' });
-
-  // THEN
-  await expect(invokeHandler(event)).rejects.toThrow(/No hosted zones found with the provided name./);
-
-  expect(mockRoute53Client.listHostedZonesByName).toHaveBeenCalledTimes(1);
-  expect(mockRoute53Client.listHostedZonesByName).toHaveBeenCalledWith({ DNSName: 'zoneName' });
-});
-
 test('calls create resouce record set with Upsert for Create event', async () => {
   // GIVEN
   mockStsClient.promise.mockResolvedValueOnce({ Credentials: { AccessKeyId: 'K', SecretAccessKey: 'S', SessionToken: 'T' } });
-  mockRoute53Client.promise.mockResolvedValueOnce({ HostedZones: [{ Id: '1', Name: 'zoneName' }] });
   mockRoute53Client.promise.mockResolvedValueOnce({});
 
   // WHEN
@@ -86,9 +53,6 @@ test('calls create resouce record set with Upsert for Create event', async () =>
   await invokeHandler(event);
 
   // THEN
-  expect(mockRoute53Client.listHostedZonesByName).toHaveBeenCalledTimes(1);
-  expect(mockRoute53Client.listHostedZonesByName).toHaveBeenCalledWith({ DNSName: 'zoneName' });
-
   expect(mockRoute53Client.changeResourceRecordSets).toHaveBeenCalledTimes(1);
   expect(mockRoute53Client.changeResourceRecordSets).toHaveBeenCalledWith({
     HostedZoneId: '1',
@@ -109,7 +73,6 @@ test('calls create resouce record set with Upsert for Create event', async () =>
 test('calls create resouce record set with DELETE for Delete event', async () => {
   // GIVEN
   mockStsClient.promise.mockResolvedValueOnce({ Credentials: { AccessKeyId: 'K', SecretAccessKey: 'S', SessionToken: 'T' } });
-  mockRoute53Client.promise.mockResolvedValueOnce({ HostedZones: [{ Id: '1', Name: 'zoneName' }] });
   mockRoute53Client.promise.mockResolvedValueOnce({});
 
   // WHEN
@@ -117,9 +80,6 @@ test('calls create resouce record set with DELETE for Delete event', async () =>
   await invokeHandler(event);
 
   // THEN
-  expect(mockRoute53Client.listHostedZonesByName).toHaveBeenCalledTimes(1);
-  expect(mockRoute53Client.listHostedZonesByName).toHaveBeenCalledWith({ DNSName: 'zoneName' });
-
   expect(mockRoute53Client.changeResourceRecordSets).toHaveBeenCalledTimes(1);
   expect(mockRoute53Client.changeResourceRecordSets).toHaveBeenCalledWith({
     HostedZoneId: '1',
@@ -143,9 +103,9 @@ function getCfnEvent(event?: Partial<AWSLambda.CloudFormationCustomResourceEvent
     ResourceProperties: {
       ServiceToken: 'Foo',
       AssumeRoleArn: 'roleArn',
-      ParentZoneName: 'zoneName',
-      RecordName: 'recordName',
-      NameServers: ['one', 'two'],
+      ParentZoneId: '1',
+      DelegatedZoneName: 'recordName',
+      DelegatedZoneNameServers: ['one', 'two'],
       TTL: 172800,
     },
     ...event,

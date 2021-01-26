@@ -520,7 +520,7 @@ nodeunitShim({
     const stack = new Stack();
     const parentZone = new route53.PublicHostedZone(stack, 'ParentHostedZone', {
       zoneName: 'myzone.com',
-      crossAccountZoneDelegationPrinciple: new iam.AccountPrincipal('123456789012'),
+      crossAccountZoneDelegationPrincipal: new iam.AccountPrincipal('123456789012'),
     });
 
     // WHEN
@@ -528,10 +528,9 @@ nodeunitShim({
       zoneName: 'sub.myzone.com',
     });
     new route53.CrossAccountZoneDelegationRecord(stack, 'Delegation', {
-      recordName: childZone.zoneName,
-      nameServers: childZone.hostedZoneNameServers!,
-      zoneName: parentZone.zoneName,
-      delegationRole: parentZone.crossAccountDelegationRole!,
+      delegatedZone: childZone,
+      parentHostedZoneId: parentZone.hostedZoneId,
+      delegationRole: parentZone.crossAccountZoneDelegationRole!,
       ttl: Duration.seconds(60),
     });
 
@@ -549,9 +548,11 @@ nodeunitShim({
           'Arn',
         ],
       },
-      ParentZoneName: 'myzone.com',
-      RecordName: 'sub.myzone.com',
-      NameServers: {
+      ParentZoneId: {
+        Ref: 'ParentHostedZoneC2BD86E1',
+      },
+      DelegatedZoneName: 'sub.myzone.com',
+      DelegatedZoneNameServers: {
         'Fn::GetAtt': [
           'ChildHostedZone4B14AC71',
           'NameServers',

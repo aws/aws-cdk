@@ -72,7 +72,7 @@ nodeunitShim({
     // WHEN
     new PublicHostedZone(stack, 'HostedZone', {
       zoneName: 'testZone',
-      crossAccountZoneDelegationPrinciple: new iam.AccountPrincipal('223456789012'),
+      crossAccountZoneDelegationPrincipal: new iam.AccountPrincipal('223456789012'),
     });
 
     // THEN
@@ -114,11 +114,6 @@ nodeunitShim({
               {
                 PolicyDocument: {
                   Statement: [
-                    {
-                      Action: 'route53:ListHostedZonesByName',
-                      Effect: 'Allow',
-                      Resource: '*',
-                    },
                     {
                       Action: 'route53:ChangeResourceRecordSets',
                       Effect: 'Allow',
