@@ -56,6 +56,7 @@
     "markdownlint-cli": "^0.26.0",
     "nodeunit": "^0.11.3",
     "nyc": "^15.1.0",
+    "semver": "^7.3.2",
     "ts-jest": "^26.4.4",
     "typescript": "~3.9.7",
     "yargs": "^16.2.0",
@@ -67,7 +68,7 @@
   ],
   "homepage": "https://github.com/aws/aws-cdk",
   "engines": {
-    "node": ">= 14.15.0"
+    "node": ">= 10.13.0 <13 || >=13.7.0"
   },
   "ubergen": {
     "exclude": true
