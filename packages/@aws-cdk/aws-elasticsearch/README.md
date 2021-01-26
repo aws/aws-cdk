@@ -37,6 +37,17 @@ const devDomain = new es.Domain(this, 'Domain', {
 });
 ```
 
+To perform version upgrades without replacing the entire domain, specify the `enableVersionUpgrade` property.
+
+```ts
+import * as es from '@aws-cdk/aws-elasticsearch';
+
+const devDomain = new es.Domain(this, 'Domain', {
+    version: es.ElasticsearchVersion.V7_9,
+    enableVersionUpgrade: true // defaults to false
+});
+```
+
 Create a production grade cluster by also specifying things like capacity and az distribution
 
 ```ts
@@ -196,6 +207,21 @@ const domain = new es.Domain(this, 'Domain', {
         slowSearchLogEnabled: true,
         appLogEnabled: true,
         slowIndexLogEnabled: true,
+    },
+});
+```
+
+## UltraWarm
+
+UltraWarm nodes can be enabled to provide a cost-effective way to store large amounts of read-only data.
+
+```ts
+const domain = new es.Domain(this, 'Domain', {
+    version: es.ElasticsearchVersion.V7_9,
+    capacity: {
+        masterNodes: 2,
+        warmNodes: 2,
+        warmInstanceType: 'ultrawarm1.medium.elasticsearch',
     },
 });
 ```

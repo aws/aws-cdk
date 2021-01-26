@@ -64,6 +64,19 @@ const bucket = new Bucket(this, 'MyEncryptedBucket', {
 assert(bucket.encryptionKey === myKmsKey);
 ```
 
+Enable KMS-SSE encryption via [S3 Bucket Keys](https://docs.aws.amazon.com/AmazonS3/latest/dev/bucket-key.html):
+
+```ts
+const myKmsKey = new kms.Key(this, 'MyKey');
+
+const bucket = new Bucket(this, 'MyEncryptedBucket', {
+    encryption: BucketEncryption.KMS,
+    bucketKeyEnabled: true
+});
+
+assert(bucket.bucketKeyEnabled === true);
+```
+
 Use `BucketEncryption.ManagedKms` to use the S3 master KMS key:
 
 ```ts
@@ -349,7 +362,7 @@ bucket.virtualHostedUrlForObject('objectname', { regional: false }); // Virtual 
 
 ### Object Ownership
 
-You can use the two following properties to specify the bucket [object Ownership]. 
+You can use the two following properties to specify the bucket [object Ownership].
 
 [object Ownership]: https://docs.aws.amazon.com/AmazonS3/latest/dev/about-object-ownership.html
 
@@ -365,10 +378,28 @@ new s3.Bucket(this, 'MyBucket', {
 
 #### Bucket owner preferred
 
-The bucket owner will own the object if the object is uploaded with the bucket-owner-full-control canned ACL. Without this setting and canned ACL, the object is uploaded and remains owned by the uploading account. 
+The bucket owner will own the object if the object is uploaded with the bucket-owner-full-control canned ACL. Without this setting and canned ACL, the object is uploaded and remains owned by the uploading account.
 
 ```ts
 new s3.Bucket(this, 'MyBucket', {
   objectOwnership: s3.ObjectOwnership.BUCKET_OWNER_PREFERRED,
+});
+```
+
+### Bucket deletion
+
+When a bucket is removed from a stack (or the stack is deleted), the S3
+bucket will be removed according to its removal policy (which by default will
+simply orphan the bucket and leave it in your AWS account). If the removal
+policy is set to `RemovalPolicy.DESTROY`, the bucket will be deleted as long
+as it does not contain any objects.
+
+To override this and force all objects to get deleted during bucket deletion,
+enable the`autoDeleteObjects` option.
+
+```ts
+const bucket = new Bucket(this, 'MyTempFileBucket', {
+  removalPolicy: RemovalPolicy.DESTROY,
+  autoDeleteObjects: true,
 });
 ```

@@ -1,9 +1,12 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
-import * as core from '@aws-cdk/core';
 import { IEngine } from './engine';
 import { EngineVersion } from './engine-version';
 import { IParameterGroup, ParameterGroup } from './parameter-group';
+
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct } from '@aws-cdk/core';
 
 /**
  * The extra options passed to the {@link IClusterEngine.bindToCluster} method.
@@ -97,7 +100,7 @@ export interface IClusterEngine extends IEngine {
   /**
    * Method called when the engine is used to create a new cluster.
    */
-  bindToCluster(scope: core.Construct, options: ClusterEngineBindOptions): ClusterEngineConfig;
+  bindToCluster(scope: Construct, options: ClusterEngineBindOptions): ClusterEngineConfig;
 }
 
 interface ClusterEngineBaseProps {
@@ -130,7 +133,7 @@ abstract class ClusterEngineBase implements IClusterEngine {
     this.parameterGroupFamily = this.engineVersion ? `${this.engineType}${this.engineVersion.majorVersion}` : undefined;
   }
 
-  public bindToCluster(scope: core.Construct, options: ClusterEngineBindOptions): ClusterEngineConfig {
+  public bindToCluster(scope: Construct, options: ClusterEngineBindOptions): ClusterEngineConfig {
     const parameterGroup = options.parameterGroup ?? this.defaultParameterGroup(scope);
     return {
       parameterGroup,
@@ -144,7 +147,7 @@ abstract class ClusterEngineBase implements IClusterEngine {
    * possibly an imported one,
    * if one wasn't provided by the customer explicitly.
    */
-  protected abstract defaultParameterGroup(scope: core.Construct): IParameterGroup | undefined;
+  protected abstract defaultParameterGroup(scope: Construct): IParameterGroup | undefined;
 }
 
 interface MysqlClusterEngineBaseProps {
@@ -166,7 +169,7 @@ abstract class MySqlClusterEngineBase extends ClusterEngineBase {
     });
   }
 
-  public bindToCluster(scope: core.Construct, options: ClusterEngineBindOptions): ClusterEngineConfig {
+  public bindToCluster(scope: Construct, options: ClusterEngineBindOptions): ClusterEngineConfig {
     const config = super.bindToCluster(scope, options);
     const parameterGroup = options.parameterGroup ?? (options.s3ImportRole || options.s3ExportRole
       ? new ParameterGroup(scope, 'ClusterParameterGroup', {
@@ -271,7 +274,7 @@ class AuroraClusterEngine extends MySqlClusterEngineBase {
     });
   }
 
-  protected defaultParameterGroup(_scope: core.Construct): IParameterGroup | undefined {
+  protected defaultParameterGroup(_scope: Construct): IParameterGroup | undefined {
     // the default.aurora5.6 ParameterGroup is actually the default,
     // so just return undefined in this case
     return undefined;
@@ -380,7 +383,7 @@ class AuroraMysqlClusterEngine extends MySqlClusterEngineBase {
     });
   }
 
-  protected defaultParameterGroup(scope: core.Construct): IParameterGroup | undefined {
+  protected defaultParameterGroup(scope: Construct): IParameterGroup | undefined {
     return ParameterGroup.fromParameterGroupName(scope, 'AuroraMySqlDatabaseClusterEngineDefaultParameterGroup',
       `default.${this.parameterGroupFamily}`);
   }
@@ -422,6 +425,10 @@ export class AuroraPostgresEngineVersion {
   public static readonly VER_9_6_16 = AuroraPostgresEngineVersion.of('9.6.16', '9.6');
   /** Version "9.6.17". */
   public static readonly VER_9_6_17 = AuroraPostgresEngineVersion.of('9.6.17', '9.6');
+  /** Version "9.6.18". */
+  public static readonly VER_9_6_18 = AuroraPostgresEngineVersion.of('9.6.18', '9.6');
+  /** Version "9.6.19". */
+  public static readonly VER_9_6_19 = AuroraPostgresEngineVersion.of('9.6.19', '9.6');
   /** Version "10.4". */
   public static readonly VER_10_4 = AuroraPostgresEngineVersion.of('10.4', '10');
   /** Version "10.5". */
@@ -434,6 +441,10 @@ export class AuroraPostgresEngineVersion {
   public static readonly VER_10_11 = AuroraPostgresEngineVersion.of('10.11', '10', { s3Import: true, s3Export: true });
   /** Version "10.12". */
   public static readonly VER_10_12 = AuroraPostgresEngineVersion.of('10.12', '10', { s3Import: true, s3Export: true });
+  /** Version "10.13". */
+  public static readonly VER_10_13 = AuroraPostgresEngineVersion.of('10.13', '10', { s3Import: true, s3Export: true });
+  /** Version "10.14". */
+  public static readonly VER_10_14 = AuroraPostgresEngineVersion.of('10.14', '10', { s3Import: true, s3Export: true });
   /** Version "11.4". */
   public static readonly VER_11_4 = AuroraPostgresEngineVersion.of('11.4', '11', { s3Import: true });
   /** Version "11.6". */
@@ -442,6 +453,8 @@ export class AuroraPostgresEngineVersion {
   public static readonly VER_11_7 = AuroraPostgresEngineVersion.of('11.7', '11', { s3Import: true, s3Export: true });
   /** Version "11.8". */
   public static readonly VER_11_8 = AuroraPostgresEngineVersion.of('11.8', '11', { s3Import: true, s3Export: true });
+  /** Version "11.9". */
+  public static readonly VER_11_9 = AuroraPostgresEngineVersion.of('11.9', '11', { s3Import: true, s3Export: true });
 
   /**
    * Create a new AuroraPostgresEngineVersion with an arbitrary version.
@@ -526,7 +539,7 @@ class AuroraPostgresClusterEngine extends ClusterEngineBase {
     });
   }
 
-  public bindToCluster(scope: core.Construct, options: ClusterEngineBindOptions): ClusterEngineConfig {
+  public bindToCluster(scope: Construct, options: ClusterEngineBindOptions): ClusterEngineConfig {
     const config = super.bindToCluster(scope, options);
     // skip validation for unversioned as it might be supported/unsupported. we cannot reliably tell at compile-time
     if (this.engineVersion?.fullVersion) {
@@ -540,7 +553,7 @@ class AuroraPostgresClusterEngine extends ClusterEngineBase {
     return config;
   }
 
-  protected defaultParameterGroup(scope: core.Construct): IParameterGroup | undefined {
+  protected defaultParameterGroup(scope: Construct): IParameterGroup | undefined {
     if (!this.parameterGroupFamily) {
       throw new Error('Could not create a new ParameterGroup for an unversioned aurora-postgresql cluster engine. ' +
         'Please either use a versioned engine, or pass an explicit ParameterGroup when creating the cluster');

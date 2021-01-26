@@ -149,6 +149,49 @@ test.each([['npm'], ['yarn']])('%s assumes no build step by default', (npmYarn) 
   });
 });
 
+test('environmentVariables must be rendered in the action', () => {
+  // WHEN
+  new TestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+    sourceArtifact,
+    cloudAssemblyArtifact,
+    synthAction: new cdkp.SimpleSynthAction({
+      sourceArtifact,
+      cloudAssemblyArtifact,
+      environmentVariables: {
+        VERSION: { value: codepipeline.GlobalVariables.executionId },
+      },
+      synthCommand: 'synth',
+    }),
+  });
+
+  // THEN
+  const theHash = Capture.aString();
+  expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
+    Stages: arrayWith({
+      Name: 'Build',
+      Actions: [
+        objectLike({
+          Name: 'Synth',
+          Configuration: objectLike({
+            EnvironmentVariables: encodedJson([
+              {
+                name: 'VERSION',
+                type: 'PLAINTEXT',
+                value: '#{codepipeline.PipelineExecutionId}',
+              },
+              {
+                name: '_PROJECT_CONFIG_HASH',
+                type: 'PLAINTEXT',
+                value: theHash.capture(),
+              },
+            ]),
+          }),
+        }),
+      ],
+    }),
+  });
+});
+
 test('complex setup with environemnt variables still renders correct project', () => {
   // WHEN
   new TestGitHubNpmPipeline(pipelineStack, 'Cdk', {
@@ -183,11 +226,6 @@ test('complex setup with environemnt variables still renders correct project', (
           Name: 'INNER_VAR',
           Type: 'PLAINTEXT',
           Value: 'InnerValue',
-        },
-        {
-          Name: 'SOME_ENV_VAR',
-          Type: 'PLAINTEXT',
-          Value: 'SomeValue',
         },
       ],
     }),
@@ -386,8 +424,10 @@ test('Pipeline action contains a hash that changes as the buildspec changes', ()
   const hash4 = synthWithAction((sa, cxa) => cdkp.SimpleSynthAction.standardNpmSynth({
     sourceArtifact: sa,
     cloudAssemblyArtifact: cxa,
-    environmentVariables: {
-      xyz: { value: 'SOME-VALUE' },
+    environment: {
+      environmentVariables: {
+        xyz: { value: 'SOME-VALUE' },
+      },
     },
   }));
 

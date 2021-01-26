@@ -7,7 +7,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
-import { Aws, Duration, IResource, Lazy, Names, PhysicalName, Resource, Stack } from '@aws-cdk/core';
+import { Aws, Duration, IResource, Lazy, Names, PhysicalName, Resource, SecretValue, Stack, Tokenization } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { IArtifacts } from './artifacts';
 import { BuildSpec } from './build-spec';
@@ -466,6 +466,17 @@ export interface CommonProjectProps {
   readonly environmentVariables?: { [name: string]: BuildEnvironmentVariable };
 
   /**
+   * Whether to check for the presence of any secrets in the environment variables of the default type, BuildEnvironmentVariableType.PLAINTEXT.
+   * Since using a secret for the value of that kind of variable would result in it being displayed in plain text in the AWS Console,
+   * the construct will throw an exception if it detects a secret was passed there.
+   * Pass this property as false if you want to skip this validation,
+   * and keep using a secret in a plain text environment variable.
+   *
+   * @default true
+   */
+  readonly checkSecretsInPlainTextEnvVariables?: boolean;
+
+  /**
    * The physical, human-readable name of the CodeBuild Project.
    *
    * @default - Name is automatically generated.
@@ -659,15 +670,39 @@ export class Project extends ProjectBase {
    * which is the representation of environment variables in CloudFormation.
    *
    * @param environmentVariables the map of string to environment variables
+   * @param validateNoPlainTextSecrets whether to throw an exception
+   *   if any of the plain text environment variables contain secrets, defaults to 'false'
    * @returns an array of {@link CfnProject.EnvironmentVariableProperty} instances
    */
-  public static serializeEnvVariables(environmentVariables: { [name: string]: BuildEnvironmentVariable }):
-  CfnProject.EnvironmentVariableProperty[] {
-    return Object.keys(environmentVariables).map(name => ({
-      name,
-      type: environmentVariables[name].type || BuildEnvironmentVariableType.PLAINTEXT,
-      value: environmentVariables[name].value,
-    }));
+  public static serializeEnvVariables(environmentVariables: { [name: string]: BuildEnvironmentVariable },
+    validateNoPlainTextSecrets: boolean = false): CfnProject.EnvironmentVariableProperty[] {
+
+    const ret = new Array<CfnProject.EnvironmentVariableProperty>();
+
+    for (const [name, envVariable] of Object.entries(environmentVariables)) {
+      const cfnEnvVariable: CfnProject.EnvironmentVariableProperty = {
+        name,
+        type: envVariable.type || BuildEnvironmentVariableType.PLAINTEXT,
+        value: envVariable.value?.toString(),
+      };
+      ret.push(cfnEnvVariable);
+
+      // validate that the plain-text environment variables don't contain any secrets in them
+      if (validateNoPlainTextSecrets && cfnEnvVariable.type === BuildEnvironmentVariableType.PLAINTEXT) {
+        const fragments = Tokenization.reverseString(cfnEnvVariable.value);
+        for (const token of fragments.tokens) {
+          if (token instanceof SecretValue) {
+            throw new Error(`Plaintext environment variable '${name}' contains a secret value! ` +
+              'This means the value of this variable will be visible in plain text in the AWS Console. ' +
+              "Please consider using CodeBuild's SecretsManager environment variables feature instead. " +
+              "If you'd like to continue with having this secret in the plaintext environment variables, " +
+              'please set the checkSecretsInPlainTextEnvVariables property to false');
+          }
+        }
+      }
+    }
+
+    return ret;
   }
 
   public readonly grantPrincipal: iam.IPrincipal;
@@ -761,7 +796,7 @@ export class Project extends ProjectBase {
       },
       artifacts: artifactsConfig.artifactsProperty,
       serviceRole: this.role.roleArn,
-      environment: this.renderEnvironment(props.environment, environmentVariables),
+      environment: this.renderEnvironment(props, environmentVariables),
       fileSystemLocations: Lazy.any({ produce: () => this.renderFileSystemLocations() }),
       // lazy, because we have a setter for it in setEncryptionKey
       // The 'alias/aws/s3' default is necessary because leaving the `encryptionKey` field
@@ -790,7 +825,7 @@ export class Project extends ProjectBase {
     this.projectName = this.getResourceNameAttribute(resource.ref);
 
     this.addToRolePolicy(this.createLoggingPermission());
-    this.addParameterStorePermission(props);
+    this.addEnvVariablesPermissions(props.environmentVariables);
     // add permissions to create and use test report groups
     // with names starting with the project's name,
     // unless the customer explicitly opts out of it
@@ -922,12 +957,13 @@ export class Project extends ProjectBase {
     });
   }
 
-  private addParameterStorePermission(props: ProjectProps) {
-    if (!props.environmentVariables) {
-      return;
-    }
+  private addEnvVariablesPermissions(environmentVariables: { [name: string]: BuildEnvironmentVariable } | undefined): void {
+    this.addParameterStorePermissions(environmentVariables);
+    this.addSecretsManagerPermissions(environmentVariables);
+  }
 
-    const resources = Object.values(props.environmentVariables)
+  private addParameterStorePermissions(environmentVariables: { [name: string]: BuildEnvironmentVariable } | undefined): void {
+    const resources = Object.values(environmentVariables || {})
       .filter(envVariable => envVariable.type === BuildEnvironmentVariableType.PARAMETER_STORE)
       .map(envVariable =>
         // If the parameter name starts with / the resource name is not separated with a double '/'
@@ -951,9 +987,32 @@ export class Project extends ProjectBase {
     }));
   }
 
+  private addSecretsManagerPermissions(environmentVariables: { [name: string]: BuildEnvironmentVariable } | undefined): void {
+    const resources = Object.values(environmentVariables || {})
+      .filter(envVariable => envVariable.type === BuildEnvironmentVariableType.SECRETS_MANAGER)
+      .map(envVariable => Stack.of(this).formatArn({
+        service: 'secretsmanager',
+        resource: 'secret',
+        // we don't know the exact ARN of the Secret just from its name, but we can get close
+        resourceName: `${envVariable.value}-??????`,
+        sep: ':',
+      }));
+
+    if (resources.length === 0) {
+      return;
+    }
+
+    this.addToRolePolicy(new iam.PolicyStatement({
+      actions: ['secretsmanager:GetSecretValue'],
+      resources,
+    }));
+  }
+
   private renderEnvironment(
-    env: BuildEnvironment = {},
+    props: ProjectProps,
     projectVars: { [name: string]: BuildEnvironmentVariable } = {}): CfnProject.EnvironmentProperty {
+
+    const env = props.environment ?? {};
     const vars: { [name: string]: BuildEnvironmentVariable } = {};
     const containerVars = env.environmentVariables || {};
 
@@ -1008,7 +1067,9 @@ export class Project extends ProjectBase {
         : undefined,
       privilegedMode: env.privileged || false,
       computeType: env.computeType || this.buildImage.defaultComputeType,
-      environmentVariables: hasEnvironmentVars ? Project.serializeEnvVariables(vars) : undefined,
+      environmentVariables: hasEnvironmentVars
+        ? Project.serializeEnvVariables(vars, props.checkSecretsInPlainTextEnvVariables ?? true)
+        : undefined,
     };
   }
 
@@ -1076,7 +1137,7 @@ export class Project extends ProjectBase {
   private renderLoggingConfiguration(props: LoggingOptions | undefined): CfnProject.LogsConfigProperty | undefined {
     if (props === undefined) {
       return undefined;
-    };
+    }
 
     let s3Config: CfnProject.S3LogsConfigProperty|undefined = undefined;
     let cloudwatchConfig: CfnProject.CloudWatchLogsConfigProperty|undefined = undefined;
@@ -1085,9 +1146,10 @@ export class Project extends ProjectBase {
       const s3Logs = props.s3;
       s3Config = {
         status: (s3Logs.enabled ?? true) ? 'ENABLED' : 'DISABLED',
-        location: `${s3Logs.bucket.bucketName}/${s3Logs.prefix}`,
+        location: `${s3Logs.bucket.bucketName}` + (s3Logs.prefix ? `/${s3Logs.prefix}` : ''),
         encryptionDisabled: s3Logs.encrypted,
       };
+      s3Logs.bucket?.grantWrite(this);
     }
 
     if (props.cloudWatch) {
@@ -1097,6 +1159,7 @@ export class Project extends ProjectBase {
       if (status === 'ENABLED' && !(cloudWatchLogs.logGroup)) {
         throw new Error('Specifying a LogGroup is required if CloudWatch logging for CodeBuild is enabled');
       }
+      cloudWatchLogs.logGroup?.grantWrite(this);
 
       cloudwatchConfig = {
         status,
@@ -1373,6 +1436,8 @@ export class LinuxBuildImage implements IBuildImage {
   public static readonly STANDARD_3_0 = LinuxBuildImage.codeBuildImage('aws/codebuild/standard:3.0');
   /** The `aws/codebuild/standard:4.0` build image. */
   public static readonly STANDARD_4_0 = LinuxBuildImage.codeBuildImage('aws/codebuild/standard:4.0');
+  /** The `aws/codebuild/standard:5.0` build image. */
+  public static readonly STANDARD_5_0 = LinuxBuildImage.codeBuildImage('aws/codebuild/standard:5.0');
 
   public static readonly AMAZON_LINUX_2 = LinuxBuildImage.codeBuildImage('aws/codebuild/amazonlinux2-x86_64-standard:1.0');
   public static readonly AMAZON_LINUX_2_2 = LinuxBuildImage.codeBuildImage('aws/codebuild/amazonlinux2-x86_64-standard:2.0');
@@ -1713,8 +1778,10 @@ export interface BuildEnvironmentVariable {
   readonly type?: BuildEnvironmentVariableType;
 
   /**
-   * The value of the environment variable (or the name of the parameter in
-   * the SSM parameter store.)
+   * The value of the environment variable.
+   * For plain-text variables (the default), this is the literal value of variable.
+   * For SSM parameter variables, pass the name of the parameter here (`parameterName` property of `IParameter`).
+   * For SecretsManager variables secrets, pass the secret name here (`secretName` property of `ISecret`).
    */
   readonly value: any;
 }

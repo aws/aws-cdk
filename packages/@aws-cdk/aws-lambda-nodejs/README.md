@@ -143,8 +143,15 @@ new lambda.NodejsFunction(this, 'my-handler', {
     loader: { // Use the 'dataurl' loader for '.png' files
       '.png': 'dataurl',
     },
+    define: { // Replace strings during build time
+      'process.env.API_KEY': JSON.stringify('xxx-xxxx-xxx'),
+    },
     logLevel: LogLevel.SILENT, // defaults to LogLevel.WARNING
     keepNames: true, // defaults to false
+    tsconfig: 'custom-tsconfig.json' // use custom-tsconfig.json instead of default, 
+    metafile: true, // include meta file, defaults to false
+    banner : '/* comments */', // by default no comments are passed
+    footer : '/* comments */', // by default no comments are passed
   },
 });
 ```

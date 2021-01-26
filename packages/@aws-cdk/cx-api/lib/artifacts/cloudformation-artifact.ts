@@ -83,6 +83,13 @@ export class CloudFormationStackArtifact extends CloudArtifact {
   public readonly requiresBootstrapStackVersion?: number;
 
   /**
+   * Name of SSM parameter with bootstrap stack version
+   *
+   * @default - Discover SSM parameter by reading stack
+   */
+  public readonly bootstrapStackVersionSsmParameter?: string;
+
+  /**
    * Whether termination protection is enabled for this stack.
    */
   public readonly terminationProtection?: boolean;
@@ -110,6 +117,7 @@ export class CloudFormationStackArtifact extends CloudArtifact {
     this.cloudFormationExecutionRoleArn = properties.cloudFormationExecutionRoleArn;
     this.stackTemplateAssetObjectUrl = properties.stackTemplateAssetObjectUrl;
     this.requiresBootstrapStackVersion = properties.requiresBootstrapStackVersion;
+    this.bootstrapStackVersionSsmParameter = properties.bootstrapStackVersionSsmParameter;
     this.terminationProtection = properties.terminationProtection;
 
     this.stackName = properties.stackName || artifactId;

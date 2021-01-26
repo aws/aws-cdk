@@ -649,6 +649,17 @@
         "VirtualServiceName": "service1.domain.local"
       }
     },
+    "cert56CA94EB": {
+      "Type": "AWS::CertificateManager::Certificate",
+      "Properties": {
+        "DomainName":"node1.domain.local",
+        "DomainValidationOptions": [{
+          "DomainName":"node1.domain.local",
+          "ValidationDomain":"local"
+        }],
+        "ValidationMethod": "EMAIL"
+      }
+    },
     "meshnode726C787D": {
       "Type": "AWS::AppMesh::VirtualNode",
       "Properties": {
@@ -695,6 +706,16 @@
               "PortMapping": {
                 "Port": 8080,
                 "Protocol": "http"
+              },
+              "TLS": {
+                "Certificate": {
+                  "ACM": {
+                    "CertificateArn": {
+                      "Ref": "cert56CA94EB"
+                    }
+                  }
+                },
+                "Mode": "STRICT"
               }
             }
           ],
@@ -1019,6 +1040,15 @@
               "PortMapping": {
                 "Port": 443,
                 "Protocol": "http"
+              },
+              "TLS": {
+                "Certificate": {
+                  "File": {
+                    "CertificateChain": "path/to/certChain",
+                    "PrivateKey": "path/to/privateKey"
+                  }
+                },
+                "Mode": "STRICT"
               }
             }
           ]

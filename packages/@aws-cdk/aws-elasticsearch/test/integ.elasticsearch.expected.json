@@ -157,9 +157,6 @@
           "Enabled": true
         },
         "LogPublishingOptions": {
-          "AUDIT_LOGS": {
-            "Enabled": false
-          },
           "ES_APPLICATION_LOGS": {
             "CloudWatchLogsLogGroupArn": {
               "Fn::GetAtt": [
@@ -177,9 +174,6 @@
               ]
             },
             "Enabled": true
-          },
-          "INDEX_SLOW_LOGS": {
-            "Enabled": false
           }
         },
         "NodeToNodeEncryptionOptions": {
@@ -190,6 +184,101 @@
         "Domain1ESLogGroupPolicyc8858d5dba055f677469d76cb6ad538fd732ba69a6CustomResourcePolicy24436E05",
         "Domain1ESLogGroupPolicyc8858d5dba055f677469d76cb6ad538fd732ba69a6D8BDCF36"
       ]
+    },
+    "Domain1ESAccessPolicyCustomResourcePolicyC04432B6": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "es:UpdateElasticsearchDomainConfig",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "Domain19FCBCB91",
+                  "Arn"
+                ]
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "Domain1ESAccessPolicyCustomResourcePolicyC04432B6",
+        "Roles": [
+          {
+            "Ref": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
+          }
+        ]
+      },
+      "DependsOn": [
+        "Domain19FCBCB91"
+      ]
+    },
+    "Domain1ESAccessPolicy5D846A31": {
+      "Type": "Custom::ElasticsearchAccessPolicy",
+      "Properties": {
+        "ServiceToken": {
+          "Fn::GetAtt": [
+            "AWS679f53fac002430cb0da5b7982bd22872D164C4C",
+            "Arn"
+          ]
+        },
+        "Create": {
+          "action": "updateElasticsearchDomainConfig",
+          "service": "ES",
+          "parameters": {
+            "DomainName": {
+              "Ref": "Domain19FCBCB91"
+            },
+            "AccessPolicies": "{\"Statement\":[{\"Action\":\"es:ESHttp*\",\"Effect\":\"Allow\",\"Principal\":\"*\",\"Resource\":\"*\"}],\"Version\":\"2012-10-17\"}"
+          },
+          "outputPath": "DomainConfig.ElasticsearchClusterConfig.AccessPolicies",
+          "physicalResourceId": {
+            "id": {
+              "Fn::Join": [
+                "",
+                [
+                  {
+                    "Ref": "Domain19FCBCB91"
+                  },
+                  "AccessPolicy"
+                ]
+              ]
+            }
+          }
+        },
+        "Update": {
+          "action": "updateElasticsearchDomainConfig",
+          "service": "ES",
+          "parameters": {
+            "DomainName": {
+              "Ref": "Domain19FCBCB91"
+            },
+            "AccessPolicies": "{\"Statement\":[{\"Action\":\"es:ESHttp*\",\"Effect\":\"Allow\",\"Principal\":\"*\",\"Resource\":\"*\"}],\"Version\":\"2012-10-17\"}"
+          },
+          "outputPath": "DomainConfig.ElasticsearchClusterConfig.AccessPolicies",
+          "physicalResourceId": {
+            "id": {
+              "Fn::Join": [
+                "",
+                [
+                  {
+                    "Ref": "Domain19FCBCB91"
+                  },
+                  "AccessPolicy"
+                ]
+              ]
+            }
+          }
+        },
+        "InstallLatestAwsSdk": true
+      },
+      "DependsOn": [
+        "Domain1ESAccessPolicyCustomResourcePolicyC04432B6",
+        "Domain19FCBCB91"
+      ],
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
     },
     "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2": {
       "Type": "AWS::IAM::Role",
@@ -434,9 +523,6 @@
           "Enabled": true
         },
         "LogPublishingOptions": {
-          "AUDIT_LOGS": {
-            "Enabled": false
-          },
           "ES_APPLICATION_LOGS": {
             "CloudWatchLogsLogGroupArn": {
               "Fn::GetAtt": [
@@ -454,9 +540,6 @@
               ]
             },
             "Enabled": true
-          },
-          "INDEX_SLOW_LOGS": {
-            "Enabled": false
           }
         },
         "NodeToNodeEncryptionOptions": {
@@ -467,6 +550,101 @@
         "Domain2ESLogGroupPolicyc8405238e455eeabd840cf6933e1814efc51d2de71CustomResourcePolicy77691A33",
         "Domain2ESLogGroupPolicyc8405238e455eeabd840cf6933e1814efc51d2de71F1DE93A1"
       ]
+    },
+    "Domain2ESAccessPolicyCustomResourcePolicy8EED1F24": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "es:UpdateElasticsearchDomainConfig",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "Domain2644FE48C",
+                  "Arn"
+                ]
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "Domain2ESAccessPolicyCustomResourcePolicy8EED1F24",
+        "Roles": [
+          {
+            "Ref": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
+          }
+        ]
+      },
+      "DependsOn": [
+        "Domain2644FE48C"
+      ]
+    },
+    "Domain2ESAccessPolicy3DF4C2BA": {
+      "Type": "Custom::ElasticsearchAccessPolicy",
+      "Properties": {
+        "ServiceToken": {
+          "Fn::GetAtt": [
+            "AWS679f53fac002430cb0da5b7982bd22872D164C4C",
+            "Arn"
+          ]
+        },
+        "Create": {
+          "action": "updateElasticsearchDomainConfig",
+          "service": "ES",
+          "parameters": {
+            "DomainName": {
+              "Ref": "Domain2644FE48C"
+            },
+            "AccessPolicies": "{\"Statement\":[{\"Action\":\"es:ESHttp*\",\"Effect\":\"Allow\",\"Principal\":\"*\",\"Resource\":\"*\"}],\"Version\":\"2012-10-17\"}"
+          },
+          "outputPath": "DomainConfig.ElasticsearchClusterConfig.AccessPolicies",
+          "physicalResourceId": {
+            "id": {
+              "Fn::Join": [
+                "",
+                [
+                  {
+                    "Ref": "Domain2644FE48C"
+                  },
+                  "AccessPolicy"
+                ]
+              ]
+            }
+          }
+        },
+        "Update": {
+          "action": "updateElasticsearchDomainConfig",
+          "service": "ES",
+          "parameters": {
+            "DomainName": {
+              "Ref": "Domain2644FE48C"
+            },
+            "AccessPolicies": "{\"Statement\":[{\"Action\":\"es:ESHttp*\",\"Effect\":\"Allow\",\"Principal\":\"*\",\"Resource\":\"*\"}],\"Version\":\"2012-10-17\"}"
+          },
+          "outputPath": "DomainConfig.ElasticsearchClusterConfig.AccessPolicies",
+          "physicalResourceId": {
+            "id": {
+              "Fn::Join": [
+                "",
+                [
+                  {
+                    "Ref": "Domain2644FE48C"
+                  },
+                  "AccessPolicy"
+                ]
+              ]
+            }
+          }
+        },
+        "InstallLatestAwsSdk": true
+      },
+      "DependsOn": [
+        "Domain2ESAccessPolicyCustomResourcePolicy8EED1F24",
+        "Domain2644FE48C"
+      ],
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
     }
   },
   "Parameters": {
