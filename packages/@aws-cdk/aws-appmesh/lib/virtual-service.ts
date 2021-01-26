@@ -227,11 +227,6 @@ export abstract class VirtualServiceProvider {
   }
 
   /**
-   * Mesh the provider belongs to
-   */
-  public abstract readonly mesh: IMesh;
-
-  /**
    * Enforces mutual exclusivity for VirtualService provider types.
    */
   public abstract bind(_construct: Construct): VirtualServiceProviderConfig;
@@ -240,7 +235,7 @@ export abstract class VirtualServiceProvider {
 class VirtualServiceProviderImpl extends VirtualServiceProvider {
   private readonly virtualNode?: IVirtualNode;
   private readonly virtualRouter?: IVirtualRouter;
-  public readonly mesh: IMesh;
+  private readonly mesh: IMesh;
 
   constructor(virtualNode?: IVirtualNode, virtualRouter?: IVirtualRouter, mesh?: IMesh) {
     super();

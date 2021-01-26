@@ -23,7 +23,7 @@ const router = mesh.addVirtualRouter('router', {
   ],
 });
 
-const virtualService = mesh.addVirtualService('service', {
+const virtualService = new appmesh.VirtualService(stack, 'service', {
   virtualServiceProvider: appmesh.VirtualServiceProvider.virtualRouter(router),
   virtualServiceName: 'service1.domain.local',
 });

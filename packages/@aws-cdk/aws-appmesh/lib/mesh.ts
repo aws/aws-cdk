@@ -4,7 +4,6 @@ import { CfnMesh } from './appmesh.generated';
 import { VirtualGateway, VirtualGatewayBaseProps } from './virtual-gateway';
 import { VirtualNode, VirtualNodeBaseProps } from './virtual-node';
 import { VirtualRouter, VirtualRouterBaseProps } from './virtual-router';
-import { VirtualService, VirtualServiceProps, VirtualServiceProvider } from './virtual-service';
 
 /**
  * A utility enum defined for the egressFilter type property, the default of DROP_ALL,
@@ -47,11 +46,6 @@ export interface IMesh extends cdk.IResource {
   addVirtualRouter(id: string, props?: VirtualRouterBaseProps): VirtualRouter;
 
   /**
-   * Adds a VirtualService with the given id
-   */
-  addVirtualService(id: string, props?: VirtualServiceProps): VirtualService;
-
-  /**
    * Adds a VirtualNode to the Mesh
    */
   addVirtualNode(id: string, props?: VirtualNodeBaseProps): VirtualNode;
@@ -83,21 +77,6 @@ abstract class MeshBase extends cdk.Resource implements IMesh {
     return new VirtualRouter(this, id, {
       ...props,
       mesh: this,
-    });
-  }
-
-  /**
-   * Adds a VirtualService with the given id
-   */
-  public addVirtualService(
-    id: string, props: VirtualServiceProps = { virtualServiceProvider: VirtualServiceProvider.none(this) }): VirtualService {
-    if (props) {
-      if (props.virtualServiceProvider.mesh != this) {
-        throw new Error('Virtual Service provider must belong to mesh');
-      }
-    }
-    return new VirtualService(this, id, {
-      ...props,
     });
   }
 

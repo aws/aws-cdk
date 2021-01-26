@@ -121,7 +121,9 @@ export = {
         meshName: 'test-mesh',
       });
 
-      const virtualService = mesh.addVirtualService('testVirtualService');
+      const virtualService = new appmesh.VirtualService(stack, 'testVirtualService', {
+        virtualServiceProvider: appmesh.VirtualServiceProvider.none(mesh),
+      });
       test.throws(() => appmesh.GatewayRouteSpec.http({
         routeTarget: virtualService,
         match: {
