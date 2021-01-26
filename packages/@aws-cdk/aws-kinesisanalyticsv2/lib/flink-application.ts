@@ -85,6 +85,13 @@ export interface FlinkApplicationProps {
   readonly code: ApplicationCode;
 
   /**
+   * Whether checkpointing is enabled.
+   *
+   * @default true
+   */
+  readonly checkpointingEnabled?: boolean;
+
+  /**
    * Configuration PropertyGroups. You can use these property groups to pass
    * arbitrary runtime configuration values to your Flink App.
    */
@@ -175,9 +182,10 @@ export class FlinkApplication extends FlinkApplicationBase {
       serviceExecutionRole: this.role.roleArn,
       applicationConfiguration: {
         applicationCodeConfiguration: props.code.bind(this),
-        environmentProperties: {
-          propertyGroups: props.propertyGroups?.map(pg => pg.toCfn()),
-        },
+        environmentProperties: this.environmentProperties(props.propertyGroups),
+        flinkApplicationConfiguration: this.flinkApplicationConfiguration({
+          checkpointingEnabled: props.checkpointingEnabled,
+        }),
       },
     });
 
@@ -211,5 +219,38 @@ export class FlinkApplication extends FlinkApplicationBase {
     resource.applyRemovalPolicy(props.removalPolicy, {
       default: core.RemovalPolicy.DESTROY,
     });
+  }
+
+  private flinkApplicationConfiguration({ checkpointingEnabled: checkpointingEnabled }: { checkpointingEnabled?: boolean }) {
+    if (checkpointingEnabled === undefined) {
+      return;
+    }
+
+    return {
+      checkpointConfiguration: this.checkpointConfiguration({
+        checkpointingEnabled: checkpointingEnabled,
+      }),
+    };
+  }
+
+  private environmentProperties(propertyGroups?: PropertyGroup[]) {
+    if (!propertyGroups || propertyGroups.length === 0) {
+      return;
+    }
+
+    return {
+      propertyGroups: propertyGroups.map(pg => pg.toCfn()),
+    };
+  }
+
+  private checkpointConfiguration({ checkpointingEnabled: checkpointingEnabled }: { checkpointingEnabled?: boolean }) {
+    if (checkpointingEnabled === undefined) {
+      return;
+    }
+
+    return {
+      checkpointingEnabled,
+      configurationType: 'CUSTOM',
+    };
   }
 }

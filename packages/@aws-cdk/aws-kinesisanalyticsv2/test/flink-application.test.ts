@@ -25,8 +25,14 @@ describe('FlinkApplication', () => {
       code: ka.ApplicationCode.fromBucket(bucket, 'my-app.jar'),
     });
 
-    expect(stack).toHaveResourceLike('AWS::KinesisAnalyticsV2::Application', {
+    expect(stack).toHaveResource('AWS::KinesisAnalyticsV2::Application', {
       RuntimeEnvironment: 'FLINK-1_11',
+      ServiceExecutionRole: {
+        'Fn::GetAtt': [
+          'FlinkApplicationRole2F7BCBF6',
+          'Arn',
+        ],
+      },
       ApplicationConfiguration: {
         ApplicationCodeConfiguration: {
           CodeContent: {
@@ -196,6 +202,26 @@ describe('FlinkApplication', () => {
               },
             },
           ],
+        },
+      },
+    });
+  });
+
+  test('checkpointEnabled setting', () => {
+    const { stack, requiredProps } = buildStack();
+    new ka.FlinkApplication(stack, 'FlinkApplication', {
+      ...requiredProps,
+      checkpointingEnabled: false,
+    });
+
+    expect(stack).toHaveResourceLike('AWS::KinesisAnalyticsV2::Application', {
+      RuntimeEnvironment: 'FLINK-1_11',
+      ApplicationConfiguration: {
+        FlinkApplicationConfiguration: {
+          CheckpointConfiguration: {
+            ConfigurationType: 'CUSTOM',
+            CheckpointingEnabled: false,
+          },
         },
       },
     });
