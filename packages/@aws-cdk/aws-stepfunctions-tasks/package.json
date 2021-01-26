@@ -116,7 +116,7 @@
     "constructs": "10.0.0-pre.5"
   },
   "engines": {
-    "node": ">= 14.15.0"
+    "node": ">= 10.13.0 <13 || >=13.7.0"
   },
   "stability": "stable",
   "maturity": "stable",
