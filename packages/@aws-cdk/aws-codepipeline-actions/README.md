@@ -57,6 +57,26 @@ const sourceAction = new codepipeline_actions.CodeCommitSourceAction({
 });
 ```
 
+If you want to clone the entire CodeCommit repository (only available for CodeBuild actions),
+you can set the `codeBuildCloneOutput` property to `true`:
+
+```ts
+const sourceOutput = new codepipeline.Artifact();
+const sourceAction = new codepipeline_actions.CodeCommitSourceAction({
+  actionName: 'CodeCommit',
+  repository: repo,
+  output: sourceOutput,
+  codeBuildCloneOutput: true,
+});
+
+const buildAction = new codepipeline_actions.CodeBuildAction({
+  actionName: 'CodeBuild',
+  project,
+  input: sourceOutput, // The build action must use the CodeCommitSourceAction output as input.
+  outputs: [new codepipeline.Artifact()], // optional
+});
+```
+
 The CodeCommit source action emits variables:
 
 ```ts
@@ -137,7 +157,7 @@ CodePipeline can use a BitBucket Git repository as a source:
 **Note**: you have to manually connect CodePipeline through the AWS Console with your BitBucket account.
 This is a one-time operation for a given AWS account in a given region.
 The simplest way to do that is to either start creating a new CodePipeline,
-or edit na existing one, while being logged in to BitBucket.
+or edit an existing one, while being logged in to BitBucket.
 Choose BitBucket as the source,
 and grant CodePipeline permissions to your BitBucket account.
 Copy & paste the Connection ARN that you get in the console,

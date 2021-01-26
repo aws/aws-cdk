@@ -10,8 +10,6 @@
       "dotnet": {
         "namespace": "Amazon.CDK.AWS.GlobalAccelerator",
         "packageId": "Amazon.CDK.AWS.GlobalAccelerator",
-        "signAssembly": true,
-        "assemblyOriginatorKeyFile": "../../key.snk",
         "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
       },
       "java": {
