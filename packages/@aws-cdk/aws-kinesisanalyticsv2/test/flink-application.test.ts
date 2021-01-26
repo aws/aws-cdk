@@ -247,6 +247,26 @@ describe('FlinkApplication', () => {
     });
   });
 
+  test('logLevel setting', () => {
+    const { stack, requiredProps } = buildStack();
+    new ka.FlinkApplication(stack, 'FlinkApplication', {
+      ...requiredProps,
+      logLevel: ka.FlinkLogLevel.DEBUG,
+    });
+
+    expect(stack).toHaveResourceLike('AWS::KinesisAnalyticsV2::Application', {
+      RuntimeEnvironment: 'FLINK-1_11',
+      ApplicationConfiguration: {
+        FlinkApplicationConfiguration: {
+          MonitoringConfiguration: {
+            ConfigurationType: 'CUSTOM',
+            LogLevel: 'DEBUG',
+          },
+        },
+      },
+    });
+  });
+
   // TODO: Not quite sure what to do with fromAttributes yet.
   test('fromAttributes', () => {
     const { stack } = buildStack();

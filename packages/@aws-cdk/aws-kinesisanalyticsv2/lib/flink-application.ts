@@ -39,6 +39,20 @@ export class FlinkRuntime {
   public constructor(public readonly value: string) {}
 }
 
+export enum FlinkLogLevel {
+  DEBUG = 'DEBUG',
+  INFO = 'INFO',
+  WARN = 'WARN',
+  ERROR = 'ERROR',
+}
+
+export enum FlinkMetricsLevel {
+  APPLICATION = 'APPLICATION',
+  TASK = 'TASK',
+  OPERATOR = 'OPERATOR',
+  PARALLELISM = 'PARALLELISM',
+}
+
 /**
  * Implements the functionality shared between CDK created and imported
  * IFlinkApplications.
@@ -98,6 +112,19 @@ export interface FlinkApplicationProps {
    * @default 5 seconds
    */
   readonly minPauseBetweenCheckpoints?: core.Duration;
+
+  /**
+   * The level of verbosity logged from the Flink application to CloudWatch.
+   */
+  readonly logLevel?: FlinkLogLevel;
+
+  /**
+   * Describes the granularity of the CloudWatch metrics for an application.
+   * Use caution with the Parallelism level metrics which logs metrics for each
+   * parallel thread and can quickly become expensive when parallelism is high
+   * (e.g. > 64).
+   */
+  readonly metricsLevel?: FlinkMetricsLevel;
 
   /**
    * Configuration PropertyGroups. You can use these property groups to pass
@@ -194,6 +221,8 @@ export class FlinkApplication extends FlinkApplicationBase {
         flinkApplicationConfiguration: this.flinkApplicationConfiguration({
           checkpointingEnabled: props.checkpointingEnabled,
           minPauseBetweenCheckpoints: props.minPauseBetweenCheckpoints,
+          logLevel: props.logLevel,
+          metricsLevel: props.metricsLevel,
         }),
       },
     });
@@ -231,15 +260,22 @@ export class FlinkApplication extends FlinkApplicationBase {
   }
 
   private flinkApplicationConfiguration(config: FlinkApplicationConfiguration) {
-    if (config.checkpointingEnabled === undefined && config.minPauseBetweenCheckpoints === undefined) {
+    if (config.checkpointingEnabled === undefined && config.minPauseBetweenCheckpoints === undefined && config.logLevel === undefined) {
       return;
     }
 
+    const checkpointConfiguration = this.checkpointConfiguration({
+      checkpointingEnabled: config.checkpointingEnabled,
+      minPauseBetweenCheckpoints: config.minPauseBetweenCheckpoints,
+    });
+
+    const monitoringConfiguration = this.monitoringConfiguration({
+      logLevel: config.logLevel,
+    });
+
     return {
-      checkpointConfiguration: this.checkpointConfiguration({
-        checkpointingEnabled: config.checkpointingEnabled,
-        minPauseBetweenCheckpoints: config.minPauseBetweenCheckpoints,
-      }),
+      checkpointConfiguration,
+      monitoringConfiguration,
     };
   }
 
@@ -264,11 +300,27 @@ export class FlinkApplication extends FlinkApplicationBase {
       configurationType: 'CUSTOM',
     };
   }
+
+  private monitoringConfiguration(config: MonitoringConfiguration) {
+    if (config.logLevel === undefined && config.metricsLevel === undefined) {
+      return;
+    }
+
+    return {
+      logLevel: config.logLevel,
+      configurationType: 'CUSTOM',
+    };
+  }
 }
 
-interface FlinkApplicationConfiguration extends CheckpointConfiguration {}
+interface FlinkApplicationConfiguration extends CheckpointConfiguration, MonitoringConfiguration {}
 
 interface CheckpointConfiguration {
   checkpointingEnabled?: boolean;
   minPauseBetweenCheckpoints?: core.Duration;
+}
+
+interface MonitoringConfiguration {
+  logLevel?: FlinkLogLevel;
+  metricsLevel?: FlinkMetricsLevel;
 }
