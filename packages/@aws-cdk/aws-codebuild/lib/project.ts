@@ -885,7 +885,6 @@ export class Project extends ProjectBase {
   public enableBatchBuilds(): BatchBuildConfig | undefined {
     if (!this._batchServiceRole) {
       this._batchServiceRole = new iam.Role(this, 'BatchServiceRole', {
-        roleName: PhysicalName.GENERATE_IF_NEEDED,
         assumedBy: new iam.ServicePrincipal('codebuild.amazonaws.com'),
       });
       this._batchServiceRole.addToPrincipalPolicy(new iam.PolicyStatement({
