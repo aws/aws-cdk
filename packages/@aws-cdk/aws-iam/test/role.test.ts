@@ -535,3 +535,31 @@ describe('IAM role', () => {
     expect(() => app.synth()).toThrow(/A PolicyStatement used in a resource-based policy must specify at least one IAM principal/);
   });
 });
+
+test('managed policy ARNs are deduplicated', () => {
+  const app = new App();
+  const stack = new Stack(app, 'my-stack');
+  const role = new Role(stack, 'MyRole', {
+    assumedBy: new ServicePrincipal('sns.amazonaws.com'),
+    managedPolicies: [
+      ManagedPolicy.fromAwsManagedPolicyName('SuperDeveloper'),
+      ManagedPolicy.fromAwsManagedPolicyName('SuperDeveloper'),
+    ],
+  });
+  role.addManagedPolicy(ManagedPolicy.fromAwsManagedPolicyName('SuperDeveloper'));
+
+  expect(stack).toHaveResource('AWS::IAM::Role', {
+    ManagedPolicyArns: [
+      {
+        'Fn::Join': [
+          '',
+          [
+            'arn:',
+            { Ref: 'AWS::Partition' },
+            ':iam::aws:policy/SuperDeveloper',
+          ],
+        ],
+      },
+    ],
+  });
+});
