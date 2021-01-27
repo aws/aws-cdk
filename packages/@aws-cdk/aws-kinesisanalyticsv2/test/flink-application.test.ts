@@ -43,6 +43,9 @@ describe('FlinkApplication', () => {
           },
           CodeContentType: 'ZIPFILE',
         },
+        ApplicationSnapshotConfiguration: {
+          SnapshotsEnabled: true,
+        },
       },
     });
 
@@ -164,7 +167,6 @@ describe('FlinkApplication', () => {
     });
 
     expect(stack).toHaveResourceLike('AWS::KinesisAnalyticsV2::Application', {
-      RuntimeEnvironment: 'FLINK-1_11',
       ApplicationConfiguration: {
         ApplicationCodeConfiguration: {
           CodeContent: {
@@ -191,7 +193,6 @@ describe('FlinkApplication', () => {
     });
 
     expect(stack).toHaveResourceLike('AWS::KinesisAnalyticsV2::Application', {
-      RuntimeEnvironment: 'FLINK-1_11',
       ApplicationConfiguration: {
         EnvironmentProperties: {
           PropertyGroups: [
@@ -215,7 +216,6 @@ describe('FlinkApplication', () => {
     });
 
     expect(stack).toHaveResourceLike('AWS::KinesisAnalyticsV2::Application', {
-      RuntimeEnvironment: 'FLINK-1_11',
       ApplicationConfiguration: {
         FlinkApplicationConfiguration: {
           CheckpointConfiguration: {
@@ -235,7 +235,6 @@ describe('FlinkApplication', () => {
     });
 
     expect(stack).toHaveResourceLike('AWS::KinesisAnalyticsV2::Application', {
-      RuntimeEnvironment: 'FLINK-1_11',
       ApplicationConfiguration: {
         FlinkApplicationConfiguration: {
           CheckpointConfiguration: {
@@ -255,13 +254,104 @@ describe('FlinkApplication', () => {
     });
 
     expect(stack).toHaveResourceLike('AWS::KinesisAnalyticsV2::Application', {
-      RuntimeEnvironment: 'FLINK-1_11',
       ApplicationConfiguration: {
         FlinkApplicationConfiguration: {
           MonitoringConfiguration: {
             ConfigurationType: 'CUSTOM',
             LogLevel: 'DEBUG',
           },
+        },
+      },
+    });
+  });
+
+  test('metricsLevel setting', () => {
+    const { stack, requiredProps } = buildStack();
+    new ka.FlinkApplication(stack, 'FlinkApplication', {
+      ...requiredProps,
+      metricsLevel: ka.FlinkMetricsLevel.PARALLELISM,
+    });
+
+    expect(stack).toHaveResourceLike('AWS::KinesisAnalyticsV2::Application', {
+      ApplicationConfiguration: {
+        FlinkApplicationConfiguration: {
+          MonitoringConfiguration: {
+            ConfigurationType: 'CUSTOM',
+            MetricsLevel: 'PARALLELISM',
+          },
+        },
+      },
+    });
+  });
+
+  test('autoscalingEnabled setting', () => {
+    const { stack, requiredProps } = buildStack();
+    new ka.FlinkApplication(stack, 'FlinkApplication', {
+      ...requiredProps,
+      autoScalingEnabled: false,
+    });
+
+    expect(stack).toHaveResourceLike('AWS::KinesisAnalyticsV2::Application', {
+      ApplicationConfiguration: {
+        FlinkApplicationConfiguration: {
+          ParallelismConfiguration: {
+            ConfigurationType: 'CUSTOM',
+            AutoScalingEnabled: false,
+          },
+        },
+      },
+    });
+  });
+
+  test('parallelism setting', () => {
+    const { stack, requiredProps } = buildStack();
+    new ka.FlinkApplication(stack, 'FlinkApplication', {
+      ...requiredProps,
+      parallelism: 2,
+    });
+
+    expect(stack).toHaveResourceLike('AWS::KinesisAnalyticsV2::Application', {
+      ApplicationConfiguration: {
+        FlinkApplicationConfiguration: {
+          ParallelismConfiguration: {
+            ConfigurationType: 'CUSTOM',
+            Parallelism: 2,
+          },
+        },
+      },
+    });
+  });
+
+  test('parallelismPerKpu setting', () => {
+    const { stack, requiredProps } = buildStack();
+    new ka.FlinkApplication(stack, 'FlinkApplication', {
+      ...requiredProps,
+      parallelismPerKpu: 2,
+    });
+
+    expect(stack).toHaveResourceLike('AWS::KinesisAnalyticsV2::Application', {
+      ApplicationConfiguration: {
+        FlinkApplicationConfiguration: {
+          ParallelismConfiguration: {
+            ConfigurationType: 'CUSTOM',
+            ParallelismPerKPU: 2,
+          },
+        },
+      },
+    });
+  });
+
+  test('snapshotsEnabled setting', () => {
+    const { stack, requiredProps } = buildStack();
+    new ka.FlinkApplication(stack, 'FlinkApplication', {
+      ...requiredProps,
+      snapshotsEnabled: false,
+    });
+
+    expect(stack).toHaveResourceLike('AWS::KinesisAnalyticsV2::Application', {
+      ApplicationConfiguration: {
+        ApplicationSnapshotConfiguration: {
+          SnapshotsEnabled: false,
         },
       },
     });

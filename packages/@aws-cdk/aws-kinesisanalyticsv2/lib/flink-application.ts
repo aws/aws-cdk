@@ -127,6 +127,38 @@ export interface FlinkApplicationProps {
   readonly metricsLevel?: FlinkMetricsLevel;
 
   /**
+   * Whether the Kinesis Data Analytics service can increase the parallelism of
+   * the application in response to increased throughput.
+   *
+   * @default true
+   */
+  readonly autoScalingEnabled?: boolean;
+
+  /**
+   * The initial parallelism for the Flink application. Kinesis Data Analytics
+   * can stop the app, increase the parallelism, and start the app again if
+   * autoScalingEnabled is true (the default value).
+   *
+   * @default 1
+   * @minimum 1
+   */
+  readonly parallelism?: number;
+
+  /**
+   * The Flink parallelism allowed per Kinesis Processing Unit (KPU).
+   *
+   * @default 1
+   */
+  readonly parallelismPerKpu?: number
+
+  /**
+   * Determines if Flink snapshots are enabled.
+   *
+   * @default true
+   */
+  readonly snapshotsEnabled?: boolean;
+
+  /**
    * Configuration PropertyGroups. You can use these property groups to pass
    * arbitrary runtime configuration values to your Flink App.
    */
@@ -223,7 +255,13 @@ export class FlinkApplication extends FlinkApplicationBase {
           minPauseBetweenCheckpoints: props.minPauseBetweenCheckpoints,
           logLevel: props.logLevel,
           metricsLevel: props.metricsLevel,
+          autoScalingEnabled: props.autoScalingEnabled,
+          parallelism: props.parallelism,
+          parallelismPerKpu: props.parallelismPerKpu,
         }),
+        applicationSnapshotConfiguration: {
+          snapshotsEnabled: props.snapshotsEnabled ?? true,
+        },
       },
     });
 
@@ -260,10 +298,6 @@ export class FlinkApplication extends FlinkApplicationBase {
   }
 
   private flinkApplicationConfiguration(config: FlinkApplicationConfiguration) {
-    if (config.checkpointingEnabled === undefined && config.minPauseBetweenCheckpoints === undefined && config.logLevel === undefined) {
-      return;
-    }
-
     const checkpointConfiguration = this.checkpointConfiguration({
       checkpointingEnabled: config.checkpointingEnabled,
       minPauseBetweenCheckpoints: config.minPauseBetweenCheckpoints,
@@ -271,12 +305,26 @@ export class FlinkApplication extends FlinkApplicationBase {
 
     const monitoringConfiguration = this.monitoringConfiguration({
       logLevel: config.logLevel,
+      metricsLevel: config.metricsLevel,
     });
 
-    return {
+    const parallelismConfiguration = this.parallelismConfiguration({
+      autoScalingEnabled: config.autoScalingEnabled,
+      parallelism: config.parallelism,
+      parallelismPerKpu: config.parallelismPerKpu,
+    });
+
+    const applicationConfiguration = {
       checkpointConfiguration,
       monitoringConfiguration,
+      parallelismConfiguration,
     };
+
+    if (Object.values(applicationConfiguration).every(v => v === undefined)) {
+      return;
+    }
+
+    return applicationConfiguration;
   }
 
   private environmentProperties(propertyGroups?: PropertyGroup[]) {
@@ -308,12 +356,29 @@ export class FlinkApplication extends FlinkApplicationBase {
 
     return {
       logLevel: config.logLevel,
+      metricsLevel: config.metricsLevel,
+      configurationType: 'CUSTOM',
+    };
+  }
+
+  private parallelismConfiguration(config: ParallelismConfiguration) {
+    if (config.autoScalingEnabled === undefined && config.parallelism === undefined && config.parallelismPerKpu === undefined) {
+      return;
+    }
+
+    return {
+      autoScalingEnabled: config.autoScalingEnabled,
+      parallelism: config.parallelism,
+      parallelismPerKpu: config.parallelismPerKpu,
       configurationType: 'CUSTOM',
     };
   }
 }
 
-interface FlinkApplicationConfiguration extends CheckpointConfiguration, MonitoringConfiguration {}
+interface FlinkApplicationConfiguration extends
+  CheckpointConfiguration,
+  MonitoringConfiguration,
+  ParallelismConfiguration {}
 
 interface CheckpointConfiguration {
   checkpointingEnabled?: boolean;
@@ -323,4 +388,10 @@ interface CheckpointConfiguration {
 interface MonitoringConfiguration {
   logLevel?: FlinkLogLevel;
   metricsLevel?: FlinkMetricsLevel;
+}
+
+interface ParallelismConfiguration {
+  autoScalingEnabled?: boolean;
+  parallelism?: number;
+  parallelismPerKpu?: number;
 }
