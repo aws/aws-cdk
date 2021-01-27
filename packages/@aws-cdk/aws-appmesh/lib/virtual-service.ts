@@ -36,7 +36,7 @@ export interface IVirtualService extends cdk.IResource {
 }
 
 /**
- * The base properties which all classes in VirtualService will inherit from
+ * The properties applied to the VirtualService being defined
  */
 export interface VirtualServiceProps {
   /**
