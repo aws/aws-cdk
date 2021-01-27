@@ -1,9 +1,12 @@
 import * as iam from '@aws-cdk/aws-iam';
+import * as logs from '@aws-cdk/aws-logs';
 import * as core from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { ApplicationCode } from './application-code';
-import { CfnApplication } from './kinesisanalyticsv2.generated';
+import { CfnApplication, CfnApplicationCloudWatchLoggingOption } from './kinesisanalyticsv2.generated';
 import { flinkApplicationArnComponents } from './private/example-resource-common';
+import { flinkApplicationConfiguration, FlinkLogLevel, FlinkMetricsLevel } from './private/flink-application-configuration';
+import { validateFlinkApplicationProps } from './private/validation';
 import { PropertyGroup } from './property-group';
 
 export interface IFlinkApplication extends core.IResource, iam.IGrantable {
@@ -32,25 +35,18 @@ export interface IFlinkApplication extends core.IResource, iam.IGrantable {
   addToPrincipalPolicy(policyStatement: iam.PolicyStatement): boolean;
 }
 
+/**
+ * Available Flink runtimes for Kinesis Analytics.
+ *
+ * @example
+ * // Creating a new runtime that isn't in CDK yet.
+ * const runtime = new FlinkRuntime(FLINK-9_99);
+ */
 export class FlinkRuntime {
   public static FLINK_1_6 = new FlinkRuntime('FLINK-1_6');
   public static FLINK_1_8 = new FlinkRuntime('FLINK-1_8');
   public static FLINK_1_11 = new FlinkRuntime('FLINK-1_11');
   public constructor(public readonly value: string) {}
-}
-
-export enum FlinkLogLevel {
-  DEBUG = 'DEBUG',
-  INFO = 'INFO',
-  WARN = 'WARN',
-  ERROR = 'ERROR',
-}
-
-export enum FlinkMetricsLevel {
-  APPLICATION = 'APPLICATION',
-  TASK = 'TASK',
-  OPERATOR = 'OPERATOR',
-  PARALLELISM = 'PARALLELISM',
 }
 
 /**
@@ -78,7 +74,6 @@ abstract class FlinkApplicationBase extends core.Resource implements IFlinkAppli
 
 /**
  * Props for creating a FlinkApplication construct.
- * @resource AWS::KinesisAnalyticsV2::Application
  */
 export interface FlinkApplicationProps {
   /**
@@ -99,36 +94,36 @@ export interface FlinkApplicationProps {
   readonly code: ApplicationCode;
 
   /**
-   * Whether checkpointing is enabled.
+   * Whether checkpointing is enabled while your application runs.
    *
    * @default true
    */
   readonly checkpointingEnabled?: boolean;
 
   /**
-   * The minumum amount of time in to wait after a checkpoint
-   * finishes to start a new checkpoint.
+   * The minimum amount of time in to wait after a checkpoint finishes to start
+   * a new checkpoint.
    *
    * @default 5 seconds
    */
   readonly minPauseBetweenCheckpoints?: core.Duration;
 
   /**
-   * The level of verbosity logged from the Flink application to CloudWatch.
+   * The level of log verbosity from the Flink application.
    */
   readonly logLevel?: FlinkLogLevel;
 
   /**
    * Describes the granularity of the CloudWatch metrics for an application.
-   * Use caution with the Parallelism level metrics which logs metrics for each
-   * parallel thread and can quickly become expensive when parallelism is high
-   * (e.g. > 64).
+   * Use caution with Parallelism level metrics. Parallelism granularity logs
+   * metrics for each parallel thread and can quickly become expensive when
+   * parallelism is high (e.g. > 64).
    */
   readonly metricsLevel?: FlinkMetricsLevel;
 
   /**
    * Whether the Kinesis Data Analytics service can increase the parallelism of
-   * the application in response to increased throughput.
+   * the application in response to resource usage.
    *
    * @default true
    */
@@ -140,7 +135,6 @@ export interface FlinkApplicationProps {
    * autoScalingEnabled is true (the default value).
    *
    * @default 1
-   * @minimum 1
    */
   readonly parallelism?: number;
 
@@ -180,6 +174,9 @@ export interface FlinkApplicationProps {
   readonly removalPolicy?: core.RemovalPolicy;
 }
 
+/**
+ * Attributes passed to the fromAttributes factory method.
+ */
 interface Attributes {
   applicationName: string;
   applicationArn: string;
@@ -187,12 +184,13 @@ interface Attributes {
 
 /**
  * The L2 construct for Flink Kinesis Data Applications.
- * @resource AWS::KinesisAnalyticsV2::Application
+ *
  * @experimental
+ * @resource AWS::KinesisAnalyticsV2::Application
  */
 export class FlinkApplication extends FlinkApplicationBase {
   /**
-   * Import an existing Flink application, defined outside of the CDK code.
+   * Import an existing Flink application, defined outside of CDK code.
    */
   public static fromAttributes(scope: Construct, id: string, attributes: Attributes): IFlinkApplication {
     class Import extends FlinkApplicationBase {
@@ -217,32 +215,18 @@ export class FlinkApplication extends FlinkApplicationBase {
 
   constructor(scope: Construct, id: string, props: FlinkApplicationProps) {
     super(scope, id, { physicalName: props.applicationName });
-
-    // We often add validations for properties,
-    // so that customers receive feedback about incorrect properties
-    // sooner than a CloudFormation deployment.
-    // However, when validating string (and number!) properties,
-    // it's important to remember that the value can be a CFN function
-    // (think a { Ref: ParameterName } expression in CloudFormation),
-    // and that sort of value would be also encoded as a string;
-    // so, we need to use the Token.isUnresolved() method from the core library
-    // to skip validation in that case.
-    // if (props.waitConditionHandleName !== undefined &&
-    //     !core.Token.isUnresolved(props.waitConditionHandleName) &&
-    //     !/^[_a-zA-Z]+$/.test(props.waitConditionHandleName)) {
-    //   throw new Error('waitConditionHandleName must be non-empty and contain only letters and underscores, ' +
-    //     `got: '${props.waitConditionHandleName}'`);
-    // }
-
-    // If this was a real resource, we would use a specific L1 for that resource
-    // (like a CfnBucket inside the Bucket class),
-    // but since this is just an example,
-    // we'll use CloudFormation wait conditions.
+    validateFlinkApplicationProps(props);
 
     this.role = props.role ?? new iam.Role(this, 'Role', {
       assumedBy: new iam.ServicePrincipal('kinesisanalytics.amazonaws.com'),
     });
     this.grantPrincipal = this.role;
+
+    // Permit metric publishing to CloudWatch
+    this.role.addToPrincipalPolicy(new iam.PolicyStatement({
+      actions: ['cloudwatch:PutMetricData'],
+      resources: ['*'],
+    }));
 
     const resource = new CfnApplication(this, 'Resource', {
       runtimeEnvironment: props.runtime.value,
@@ -250,7 +234,7 @@ export class FlinkApplication extends FlinkApplicationBase {
       applicationConfiguration: {
         applicationCodeConfiguration: props.code.bind(this),
         environmentProperties: this.environmentProperties(props.propertyGroups),
-        flinkApplicationConfiguration: this.flinkApplicationConfiguration({
+        flinkApplicationConfiguration: flinkApplicationConfiguration({
           checkpointingEnabled: props.checkpointingEnabled,
           minPauseBetweenCheckpoints: props.minPauseBetweenCheckpoints,
           logLevel: props.logLevel,
@@ -264,67 +248,53 @@ export class FlinkApplication extends FlinkApplicationBase {
         },
       },
     });
+    resource.node.addDependency(this.role);
 
-    // The resource's physical name and ARN are set using
-    // some protected methods from the Resource superclass
-    // that correctly resolve when your L2 is used in another resource
-    // that is in a different AWS region or account than this one.
-    this.applicationName = this.getResourceNameAttribute(
-      // A lot of the CloudFormation resources return their physical name
-      // when the Ref function is used on them.
-      // If your resource is like that, simply pass 'resource.ref' here.
-      // However, if Ref for your resource returns something else,
-      // it's often still possible to use CloudFormation functions to get out the physical name;
-      // for example, if Ref for your resource returns the ARN,
-      // and the ARN for your resource is of the form 'arn:aws:<service>:<region>:<account>:resource/physical-name',
-      // which is quite common,
-      // you can use Fn::Select and Fn::Split to take out the part after the '/' from the ARN:
-      core.Fn.select(1, core.Fn.split('/', resource.ref)),
-    );
+    const logGroup = new logs.LogGroup(this, 'LogGroup', {
+      retention: logs.RetentionDays.ONE_WEEK,
+      removalPolicy: core.RemovalPolicy.DESTROY,
+    });
+
+    const logStream = new logs.LogStream(this, 'LogStream', {
+      logGroup,
+      removalPolicy: core.RemovalPolicy.DESTROY,
+    });
+
+    const logStreamArn = `${logGroup.logGroupArn}:log-stream:${logStream.logStreamName}`;
+
+    // Permit logging
+    this.role.addToPrincipalPolicy(new iam.PolicyStatement({
+      actions: ['logs:DescribeLogStreams', 'logs:DescribeLogGroups'],
+      resources: [
+        logGroup.logGroupArn,
+        core.Stack.of(this).formatArn({
+          service: 'logs',
+          resource: 'log-group',
+          resourceName: '*',
+        }),
+      ],
+    }));
+    this.role.addToPrincipalPolicy(new iam.PolicyStatement({
+      actions: ['logs:PutLogEvents'],
+      resources: [logStreamArn],
+    }));
+
+    new CfnApplicationCloudWatchLoggingOption(this, 'LoggingOption', {
+      applicationName: resource.ref,
+      cloudWatchLoggingOption: {
+        logStreamArn,
+      },
+    }).node.addDependency(resource);
+
+    this.applicationName = this.getResourceNameAttribute(resource.ref);
     this.applicationArn = this.getResourceArnAttribute(
-      // A lot of the L1 classes have an 'attrArn' property -
-      // if yours does, use it here.
-      // However, if it doesn't,
-      // you can often formulate the ARN yourself,
-      // using the Stack.formatArn helper function.
-      // Here, we assume resource.ref returns the physical name of the resource.
       core.Stack.of(this).formatArn(flinkApplicationArnComponents(resource.ref)),
-      // always use the protected physicalName property for this second argument
-      flinkApplicationArnComponents(this.physicalName));
+      flinkApplicationArnComponents(this.physicalName),
+    );
 
     resource.applyRemovalPolicy(props.removalPolicy, {
       default: core.RemovalPolicy.DESTROY,
     });
-  }
-
-  private flinkApplicationConfiguration(config: FlinkApplicationConfiguration) {
-    const checkpointConfiguration = this.checkpointConfiguration({
-      checkpointingEnabled: config.checkpointingEnabled,
-      minPauseBetweenCheckpoints: config.minPauseBetweenCheckpoints,
-    });
-
-    const monitoringConfiguration = this.monitoringConfiguration({
-      logLevel: config.logLevel,
-      metricsLevel: config.metricsLevel,
-    });
-
-    const parallelismConfiguration = this.parallelismConfiguration({
-      autoScalingEnabled: config.autoScalingEnabled,
-      parallelism: config.parallelism,
-      parallelismPerKpu: config.parallelismPerKpu,
-    });
-
-    const applicationConfiguration = {
-      checkpointConfiguration,
-      monitoringConfiguration,
-      parallelismConfiguration,
-    };
-
-    if (Object.values(applicationConfiguration).every(v => v === undefined)) {
-      return;
-    }
-
-    return applicationConfiguration;
   }
 
   private environmentProperties(propertyGroups?: PropertyGroup[]) {
@@ -336,62 +306,4 @@ export class FlinkApplication extends FlinkApplicationBase {
       propertyGroups: propertyGroups.map(pg => pg.toCfn()),
     };
   }
-
-  private checkpointConfiguration(config: CheckpointConfiguration) {
-    if (config.checkpointingEnabled === undefined && config.minPauseBetweenCheckpoints === undefined) {
-      return;
-    }
-
-    return {
-      checkpointingEnabled: config.checkpointingEnabled,
-      minPauseBetweenCheckpoints: config.minPauseBetweenCheckpoints?.toMilliseconds(),
-      configurationType: 'CUSTOM',
-    };
-  }
-
-  private monitoringConfiguration(config: MonitoringConfiguration) {
-    if (config.logLevel === undefined && config.metricsLevel === undefined) {
-      return;
-    }
-
-    return {
-      logLevel: config.logLevel,
-      metricsLevel: config.metricsLevel,
-      configurationType: 'CUSTOM',
-    };
-  }
-
-  private parallelismConfiguration(config: ParallelismConfiguration) {
-    if (config.autoScalingEnabled === undefined && config.parallelism === undefined && config.parallelismPerKpu === undefined) {
-      return;
-    }
-
-    return {
-      autoScalingEnabled: config.autoScalingEnabled,
-      parallelism: config.parallelism,
-      parallelismPerKpu: config.parallelismPerKpu,
-      configurationType: 'CUSTOM',
-    };
-  }
-}
-
-interface FlinkApplicationConfiguration extends
-  CheckpointConfiguration,
-  MonitoringConfiguration,
-  ParallelismConfiguration {}
-
-interface CheckpointConfiguration {
-  checkpointingEnabled?: boolean;
-  minPauseBetweenCheckpoints?: core.Duration;
-}
-
-interface MonitoringConfiguration {
-  logLevel?: FlinkLogLevel;
-  metricsLevel?: FlinkMetricsLevel;
-}
-
-interface ParallelismConfiguration {
-  autoScalingEnabled?: boolean;
-  parallelism?: number;
-  parallelismPerKpu?: number;
 }

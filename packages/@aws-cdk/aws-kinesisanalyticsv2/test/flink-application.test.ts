@@ -1,4 +1,4 @@
-import { ResourcePart } from '@aws-cdk/assert';
+import { arrayWith, objectLike, ResourcePart } from '@aws-cdk/assert';
 import '@aws-cdk/assert/jest';
 import * as iam from '@aws-cdk/aws-iam';
 import * as s3 from '@aws-cdk/aws-s3';
@@ -103,12 +103,11 @@ describe('FlinkApplication', () => {
       resources: ['*'],
     }));
 
-    expect(stack).toHaveResource('AWS::IAM::Policy', {
+    expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
       PolicyDocument: {
-        Version: '2012-10-17',
-        Statement: [
-          { Action: 'custom:action', Effect: 'Allow', Resource: '*' },
-        ],
+        Statement: arrayWith(
+          objectLike({ Action: 'custom:action', Effect: 'Allow', Resource: '*' }),
+        ),
       },
     });
   });
@@ -149,11 +148,9 @@ describe('FlinkApplication', () => {
     expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
       PolicyDocument: {
         Version: '2012-10-17',
-        Statement: [
-          {
-            Action: ['s3:GetObject*', 's3:GetBucket*', 's3:List*'],
-          },
-        ],
+        Statement: arrayWith(
+          objectLike({ Action: ['s3:GetObject*', 's3:GetBucket*', 's3:List*'] }),
+        ),
       },
     });
   });
@@ -357,6 +354,135 @@ describe('FlinkApplication', () => {
     });
   });
 
+  // TODO: Put all logging options on FlinkApplication, new ka.Logging or something else?
+  test('default logging option', () => {
+    const { stack, requiredProps } = buildStack();
+    new ka.FlinkApplication(stack, 'FlinkApplication', {
+      ...requiredProps,
+      snapshotsEnabled: false,
+    });
+
+    expect(stack).toHaveResource('AWS::KinesisAnalyticsV2::ApplicationCloudWatchLoggingOption', {
+      ApplicationName: {
+        Ref: 'FlinkApplicationC5836815',
+      },
+      CloudWatchLoggingOption: {
+        LogStreamARN: {
+          'Fn::Join': [
+            '',
+            [
+              {
+                'Fn::GetAtt': [
+                  'FlinkApplicationLogGroup7739479C',
+                  'Arn',
+                ],
+              },
+              ':log-stream:',
+              {
+                Ref: 'FlinkApplicationLogStreamB633AF32',
+              },
+            ],
+          ],
+        },
+      },
+    });
+
+    expect(stack).toHaveResource('AWS::Logs::LogGroup', {
+      Properties: {
+        RetentionInDays: 7,
+      },
+      UpdateReplacePolicy: 'Delete',
+      DeletionPolicy: 'Delete',
+    }, ResourcePart.CompleteDefinition);
+  });
+
+  test('validating applicationName', () => {
+    const { stack, requiredProps } = buildStack();
+
+    // Expect no error with valid name
+    new ka.FlinkApplication(stack, 'ValidString', {
+      ...requiredProps,
+      applicationName: 'my-VALID.app_name',
+    });
+
+    // Expect no error with ref
+    new ka.FlinkApplication(stack, 'ValidRef', {
+      ...requiredProps,
+      applicationName: new core.CfnParameter(stack, 'Parameter').valueAsString,
+    });
+
+    expect(() => {
+      new ka.FlinkApplication(stack, 'Empty', {
+        ...requiredProps,
+        applicationName: '',
+      });
+    }).toThrow(/cannot be empty/);
+
+    expect(() => {
+      new ka.FlinkApplication(stack, 'InvalidCharacters', {
+        ...requiredProps,
+        applicationName: '!!!',
+      });
+    }).toThrow(/may only contain letters, numbers, underscores, hyphens, and periods/);
+
+    expect(() => {
+      new ka.FlinkApplication(stack, 'TooLong', {
+        ...requiredProps,
+        applicationName: 'a'.repeat(129),
+      });
+    }).toThrow(/max length is 128/);
+  });
+
+  test('validating parallelism', () => {
+    const { stack, requiredProps } = buildStack();
+
+    // Expect no error with valid value
+    new ka.FlinkApplication(stack, 'ValidNumber', {
+      ...requiredProps,
+      parallelism: 32,
+    });
+
+    // Expect no error with ref
+    new ka.FlinkApplication(stack, 'ValidRef', {
+      ...requiredProps,
+      parallelism: new core.CfnParameter(stack, 'Parameter', {
+        type: 'Number',
+      }).valueAsNumber,
+    });
+
+    expect(() => {
+      new ka.FlinkApplication(stack, 'TooSmall', {
+        ...requiredProps,
+        parallelism: 0,
+      });
+    }).toThrow(/must be at least 1/);
+  });
+
+  test('validating parallelismPerKpu', () => {
+    const { stack, requiredProps } = buildStack();
+
+    // Expect no error with valid value
+    new ka.FlinkApplication(stack, 'ValidNumber', {
+      ...requiredProps,
+      parallelismPerKpu: 10,
+    });
+
+    // Expect no error with ref
+    new ka.FlinkApplication(stack, 'ValidRef', {
+      ...requiredProps,
+      parallelismPerKpu: new core.CfnParameter(stack, 'Parameter', {
+        type: 'Number',
+      }).valueAsNumber,
+    });
+
+    expect(() => {
+      new ka.FlinkApplication(stack, 'TooSmall', {
+        ...requiredProps,
+        parallelismPerKpu: 0,
+      });
+    }).toThrow(/must be at least 1/);
+  });
+
   // TODO: Not quite sure what to do with fromAttributes yet.
   test('fromAttributes', () => {
     const { stack } = buildStack();
@@ -369,4 +495,5 @@ describe('FlinkApplication', () => {
     expect(flinkApp.applicationArn).toEqual('my-arn');
     expect(flinkApp.addToPrincipalPolicy(new iam.PolicyStatement())).toBe(false);
   });
+
 });
