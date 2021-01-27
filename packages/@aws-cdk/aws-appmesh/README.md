@@ -109,8 +109,8 @@ When creating a virtual service:
 Adding a virtual router as the provider:
 
 ```ts
-mesh.addVirtualService('virtual-service', {
-  virtualServiceName: 'my-service.default.svc.cluster.local',
+new appmesh.VirtualService('virtual-service', {
+  virtualServiceName: 'my-service.default.svc.cluster.local', // optional
   virtualServiceProvider: appmesh.VirtualServiceProvider.virtualRouter(router),
 });
 ```
@@ -118,8 +118,8 @@ mesh.addVirtualService('virtual-service', {
 Adding a virtual node as the provider:
 
 ```ts
-mesh.addVirtualService('virtual-service', {
-  virtualServiceName: `my-service.default.svc.cluster.local`,
+new appmesh.VirtualService('virtual-service', {
+  virtualServiceName: `my-service.default.svc.cluster.local`, // optional
   virtualServiceProvider: appmesh.VirtualServiceProvider.virtualNode(node),
 });
 ```
