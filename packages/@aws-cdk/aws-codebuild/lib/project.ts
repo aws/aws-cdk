@@ -24,6 +24,14 @@ import { renderReportGroupArn } from './report-group-utils';
 import { ISource } from './source';
 import { CODEPIPELINE_SOURCE_ARTIFACTS_TYPE, NO_SOURCE_TYPE } from './source-types';
 
+/**
+ * The type returned from {@link IProject#enableBatchBuilds}.
+ */
+export interface BatchBuildConfig {
+  /** The IAM batch service Role of this Project. */
+  readonly role: iam.IRole;
+}
+
 export interface IProject extends IResource, iam.IGrantable, ec2.IConnectable {
   /**
    * The ARN of this Project.
@@ -39,6 +47,14 @@ export interface IProject extends IResource, iam.IGrantable, ec2.IConnectable {
 
   /** The IAM service Role of this Project. Undefined for imported Projects. */
   readonly role?: iam.IRole;
+
+  /**
+   * Enable batch builds.
+   *
+   * Returns an object contining the batch service role if batch builds
+   * could be enabled.
+   */
+  enableBatchBuilds(): BatchBuildConfig | undefined;
 
   addToRolePolicy(policyStatement: iam.PolicyStatement): void;
 
@@ -190,6 +206,10 @@ abstract class ProjectBase extends Resource implements IProject {
       throw new Error('Only VPC-associated Projects have security groups to manage. Supply the "vpc" parameter when creating the Project');
     }
     return this._connections;
+  }
+
+  public enableBatchBuilds(): BatchBuildConfig | undefined {
+    return undefined;
   }
 
   /**
@@ -725,6 +745,7 @@ export class Project extends ProjectBase {
   private readonly _secondaryArtifacts: CfnProject.ArtifactsProperty[];
   private _encryptionKey?: kms.IKey;
   private readonly _fileSystemLocations: CfnProject.ProjectFileSystemLocationProperty[];
+  private _batchServiceRole?: iam.Role;
 
   constructor(scope: Construct, id: string, props: ProjectProps) {
     super(scope, id, {
@@ -809,6 +830,14 @@ export class Project extends ProjectBase {
       sourceVersion: sourceConfig.sourceVersion,
       vpcConfig: this.configureVpc(props),
       logsConfig: this.renderLoggingConfiguration(props.logging),
+      buildBatchConfig: Lazy.any({
+        produce: () => {
+          const config: CfnProject.ProjectBuildBatchConfigProperty | undefined = this._batchServiceRole ? {
+            serviceRole: this._batchServiceRole.roleArn,
+          } : undefined;
+          return config;
+        },
+      }),
     });
 
     this.addVpcRequiredPermissions(props, resource);
@@ -849,6 +878,27 @@ export class Project extends ProjectBase {
     }
 
     this.node.addValidation({ validate: () => this.validateProject() });
+  }
+
+  public enableBatchBuilds(): BatchBuildConfig | undefined {
+    if (!this._batchServiceRole) {
+      this._batchServiceRole = new iam.Role(this, 'BatchServiceRole', {
+        assumedBy: new iam.ServicePrincipal('codebuild.amazonaws.com'),
+      });
+      this._batchServiceRole.addToPrincipalPolicy(new iam.PolicyStatement({
+        resources: [Lazy.string({
+          produce: () => this.projectArn,
+        })],
+        actions: [
+          'codebuild:StartBuild',
+          'codebuild:StopBuild',
+          'codebuild:RetryBuild',
+        ],
+      }));
+    }
+    return {
+      role: this._batchServiceRole,
+    };
   }
 
   /**
@@ -1134,8 +1184,8 @@ export class Project extends ProjectBase {
       return undefined;
     }
 
-    let s3Config: CfnProject.S3LogsConfigProperty|undefined = undefined;
-    let cloudwatchConfig: CfnProject.CloudWatchLogsConfigProperty|undefined = undefined;
+    let s3Config: CfnProject.S3LogsConfigProperty | undefined = undefined;
+    let cloudwatchConfig: CfnProject.CloudWatchLogsConfigProperty | undefined = undefined;
 
     if (props.s3) {
       const s3Logs = props.s3;
@@ -1345,10 +1395,10 @@ export interface IBuildImage {
 }
 
 /** Optional arguments to {@link IBuildImage.binder} - currently empty. */
-export interface BuildImageBindOptions {}
+export interface BuildImageBindOptions { }
 
 /** The return type from {@link IBuildImage.binder} - currently empty. */
-export interface BuildImageConfig {}
+export interface BuildImageConfig { }
 
 // @deprecated(not in tsdoc on purpose): add bind() to IBuildImage
 // and get rid of IBindableBuildImage
