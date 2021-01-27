@@ -98,6 +98,12 @@ used by CDK Pipelines) must upgrade their bootstrap stacks. Run `cdk bootstrap`.
 ## [1.85.0](https://github.com/aws/aws-cdk/compare/v1.84.0...v1.85.0) (2021-01-14)
 
 * **s3-deployment**: This version includes an important update, please upgrade to prevent deployment failure. This is in prepartion of Lambda deprecation of the request module in boto, more details are available in [AWS blog](https://aws.amazon.com/blogs/compute/upcoming-changes-to-the-python-sdk-in-aws-lambda/). Note, users of versions < `1.81.0` will not be impacted by this deprecation, but are still encouraged to upgrade to the latest version.
+* **s3**: The `grantWrite()` and `grantReadWrite()` methods no longer add the `s3:PutObject*` permissions that included `s3:PutObjectAcl`,
+  which could be used to make objects more accessible than the Bucket itself.
+  This change is gated behind the `@aws-cdk/aws-s3:grantWriteWithoutAcl` feature flag,
+  so make sure to set it to `true` in the `context` key of your `cdk.json` file when upgrading.
+  If you still need the principal to have `s3:PutObjectAcl` permissions after upgrading,
+  use the new `grantPutAcl()` method.
 
 ### Features
 
