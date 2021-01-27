@@ -55,6 +55,7 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
   - [Modify Instance Fleet](#modify-instance-fleet)
   - [Modify Instance Group](#modify-instance-group)
 - [Glue](#glue)
+- [Glue DataBrew](#glue-databrew)
 - [Lambda](#lambda)
 - [SageMaker](#sagemaker)
   - [Create Training Job](#create-training-job)
@@ -153,7 +154,7 @@ merge a subset of the task output to the input.
 Most tasks take parameters. Parameter values can either be static, supplied directly
 in the workflow definition (by specifying their values), or a value available at runtime
 in the state machine's execution (either as its input or an output of a prior state).
-Parameter values available at runtime can be specified via the `Data` class,
+Parameter values available at runtime can be specified via the `JsonPath` class,
 using methods such as `JsonPath.stringAt()`.
 
 The following example provides the field named `input` as the input to the Lambda function
@@ -435,6 +436,8 @@ CPU and memory. Similarly, when you scale down the task count, Amazon ECS must d
 which tasks to terminate. You can apply task placement strategies and constraints to
 customize how Amazon ECS places and terminates tasks. Learn more about [task placement](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task-placement.html)
 
+The latest ACTIVE revision of the passed task definition is used for running the task.
+
 The following example runs a job from a task definition on EC2
 
 ```ts
@@ -488,7 +491,9 @@ isolation by design. Learn more about [Fargate](https://aws.amazon.com/fargate/)
 
 The Fargate launch type allows you to run your containerized applications without the need
 to provision and manage the backend infrastructure. Just register your task definition and
-Fargate launches the container for you.
+Fargate launches the container for you. The latest ACTIVE revision of the passed 
+task definition is used for running the task. Learn more about 
+[Fargate Versioning](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_DescribeTaskDefinition.html)
 
 The following example runs a job from a task definition on Fargate
 
@@ -673,6 +678,18 @@ new GlueStartJobRun(stack, 'Task', {
   },
   timeout: cdk.Duration.minutes(30),
   notifyDelayAfter: cdk.Duration.minutes(5),
+});
+```
+
+## Glue DataBrew
+
+Step Functions supports [AWS Glue DataBrew](https://docs.aws.amazon.com/step-functions/latest/dg/connect-databrew.html) through the service integration pattern.
+
+You can call the [`StartJobRun`](https://docs.aws.amazon.com/databrew/latest/dg/API_StartJobRun.html) API from a `Task` state.
+
+```ts
+new GlueDataBrewStartJobRun(stack, 'Task', {
+  Name: 'databrew-job',
 });
 ```
 

@@ -4,6 +4,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
+import { testFutureBehavior, testLegacyBehavior } from 'cdk-build-tools/lib/feature-flag';
 import * as secretsmanager from '../lib';
 
 let app: cdk.App;
@@ -429,10 +430,7 @@ test('secretValue', () => {
 
 describe('secretName', () => {
   describe('without @aws-cdk/aws-secretsmanager:parseOwnedSecretName set', () => {
-    test.each([undefined, 'mySecret'])('when secretName is %s', (secretName) => {
-      const secret = new secretsmanager.Secret(stack, 'Secret', {
-        secretName,
-      });
+    function assertSecretParsing(secret: secretsmanager.Secret) {
       new cdk.CfnOutput(stack, 'MySecretName', {
         value: secret.secretName,
       });
@@ -442,20 +440,30 @@ describe('secretName', () => {
         outputName: 'MySecretName',
         outputValue: { 'Fn::Select': [6, { 'Fn::Split': [':', { Ref: 'SecretA720EF05' }] }] },
       });
+    }
+
+    testLegacyBehavior('when secretName is undefined', cdk.App, (cdkApp) => {
+      stack = new cdk.Stack(cdkApp);
+      const secret = new secretsmanager.Secret(stack, 'Secret', {
+        secretName: undefined,
+      });
+      assertSecretParsing(secret);
+    });
+
+    testLegacyBehavior('when secretName is defined', cdk.App, (cdkApp) => {
+      stack = new cdk.Stack(cdkApp);
+      const secret = new secretsmanager.Secret(stack, 'Secret', {
+        secretName: 'mySecret',
+      });
+      assertSecretParsing(secret);
     });
   });
 
   describe('with @aws-cdk/aws-secretsmanager:parseOwnedSecretName set', () => {
-    beforeEach(() => {
-      app = new cdk.App({
-        context: {
-          '@aws-cdk/aws-secretsmanager:parseOwnedSecretName': 'true',
-        },
-      });
-      stack = new cdk.Stack(app);
-    });
+    const flags = { '@aws-cdk/aws-secretsmanager:parseOwnedSecretName': 'true' };
+    testFutureBehavior('selects the first two parts of the resource name when the name is auto-generated', flags, cdk.App, (cdkApp) => {
+      stack = new cdk.Stack(cdkApp);
 
-    test('selects the first two parts of the resource name when the name is auto-generated', () => {
       const secret = new secretsmanager.Secret(stack, 'Secret');
       new cdk.CfnOutput(stack, 'MySecretName', {
         value: secret.secretName,
@@ -474,7 +482,9 @@ describe('secretName', () => {
       });
     });
 
-    test('is simply the first segment when the provided secret name has no hyphens', () => {
+    testFutureBehavior('is simply the first segment when the provided secret name has no hyphens', flags, cdk.App, (cdkApp) => {
+      stack = new cdk.Stack(cdkApp);
+
       const secret = new secretsmanager.Secret(stack, 'Secret', { secretName: 'mySecret' });
       new cdk.CfnOutput(stack, 'MySecretName', {
         value: secret.secretName,
@@ -490,12 +500,7 @@ describe('secretName', () => {
       });
     });
 
-    test.each([
-      [2, 'my-secret'],
-      [3, 'my-secret-hyphenated'],
-      [4, 'my-secret-with-hyphens'],
-    ])('selects the %n parts of the resource name when the secret name is provided', (segments, secretName) => {
-      const secret = new secretsmanager.Secret(stack, 'Secret', { secretName });
+    function assertSegments(secret: secretsmanager.Secret, segments: number) {
       new cdk.CfnOutput(stack, 'MySecretName', {
         value: secret.secretName,
       });
@@ -512,9 +517,29 @@ describe('secretName', () => {
           'Fn::Join': ['-', secretNameSegments],
         },
       });
+    }
+
+    testFutureBehavior('selects the 2 parts of the resource name when the secret name is provided', flags, cdk.App, (cdkApp) => {
+      stack = new cdk.Stack(cdkApp);
+      const secret = new secretsmanager.Secret(stack, 'Secret', { secretName: 'my-secret' });
+      assertSegments(secret, 2);
     });
 
-    test('uses existing Tokens as secret names as-is', () => {
+    testFutureBehavior('selects the 3 parts of the resource name when the secret name is provided', flags, cdk.App, (cdkApp) => {
+      stack = new cdk.Stack(cdkApp);
+      const secret = new secretsmanager.Secret(stack, 'Secret', { secretName: 'my-secret-hyphenated' });
+      assertSegments(secret, 3);
+    });
+
+    testFutureBehavior('selects the 4 parts of the resource name when the secret name is provided', flags, cdk.App, (cdkApp) => {
+      stack = new cdk.Stack(cdkApp);
+      const secret = new secretsmanager.Secret(stack, 'Secret', { secretName: 'my-secret-with-hyphens' });
+      assertSegments(secret, 4);
+    });
+
+    testFutureBehavior('uses existing Tokens as secret names as-is', flags, cdk.App, (cdkApp) => {
+      stack = new cdk.Stack(cdkApp);
+
       const secret1 = new secretsmanager.Secret(stack, 'Secret1');
       const secret2 = new secretsmanager.Secret(stack, 'Secret2', {
         secretName: secret1.secretName,
@@ -628,6 +653,40 @@ test('fromSecretCompleteArn', () => {
   expect(stack.resolve(secret.secretValueFromJson('password'))).toEqual(`{{resolve:secretsmanager:${secretArn}:SecretString:password::}}`);
 });
 
+test('fromSecretCompleteArn - grants', () => {
+  // GIVEN
+  const secretArn = 'arn:aws:secretsmanager:eu-west-1:111111111111:secret:MySecret-f3gDy9';
+  const secret = secretsmanager.Secret.fromSecretCompleteArn(stack, 'Secret', secretArn);
+  const role = new iam.Role(stack, 'Role', { assumedBy: new iam.AccountRootPrincipal() });
+
+  // WHEN
+  secret.grantRead(role);
+  secret.grantWrite(role);
+
+  // THEN
+  expect(stack).toHaveResource('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Version: '2012-10-17',
+      Statement: [{
+        Action: [
+          'secretsmanager:GetSecretValue',
+          'secretsmanager:DescribeSecret',
+        ],
+        Effect: 'Allow',
+        Resource: secretArn,
+      },
+      {
+        Action: [
+          'secretsmanager:PutSecretValue',
+          'secretsmanager:UpdateSecret',
+        ],
+        Effect: 'Allow',
+        Resource: secretArn,
+      }],
+    },
+  });
+});
+
 test('fromSecretPartialArn', () => {
   // GIVEN
   const secretArn = 'arn:aws:secretsmanager:eu-west-1:111111111111:secret:MySecret';
@@ -642,6 +701,40 @@ test('fromSecretPartialArn', () => {
   expect(secret.encryptionKey).toBeUndefined();
   expect(stack.resolve(secret.secretValue)).toEqual(`{{resolve:secretsmanager:${secretArn}:SecretString:::}}`);
   expect(stack.resolve(secret.secretValueFromJson('password'))).toEqual(`{{resolve:secretsmanager:${secretArn}:SecretString:password::}}`);
+});
+
+test('fromSecretPartialArn - grants', () => {
+  // GIVEN
+  const secretArn = 'arn:aws:secretsmanager:eu-west-1:111111111111:secret:MySecret';
+  const secret = secretsmanager.Secret.fromSecretPartialArn(stack, 'Secret', secretArn);
+  const role = new iam.Role(stack, 'Role', { assumedBy: new iam.AccountRootPrincipal() });
+
+  // WHEN
+  secret.grantRead(role);
+  secret.grantWrite(role);
+
+  // THEN
+  expect(stack).toHaveResource('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Version: '2012-10-17',
+      Statement: [{
+        Action: [
+          'secretsmanager:GetSecretValue',
+          'secretsmanager:DescribeSecret',
+        ],
+        Effect: 'Allow',
+        Resource: `${secretArn}-??????`,
+      },
+      {
+        Action: [
+          'secretsmanager:PutSecretValue',
+          'secretsmanager:UpdateSecret',
+        ],
+        Effect: 'Allow',
+        Resource: `${secretArn}-??????`,
+      }],
+    },
+  });
 });
 
 describe('fromSecretAttributes', () => {

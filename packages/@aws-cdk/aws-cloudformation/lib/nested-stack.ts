@@ -8,7 +8,7 @@ import { Construct } from '@aws-cdk/core';
 /**
  * Initialization props for the `NestedStack` construct.
  *
- * @experimental
+ * @deprecated use core.NestedStackProps instead
  */
 export interface NestedStackProps {
   /**
@@ -64,7 +64,7 @@ export interface NestedStackProps {
  * nested stack will automatically be translated to stack parameters and
  * outputs.
  *
- * @experimental
+ * @deprecated use core.NestedStack instead
  */
 export class NestedStack extends core.NestedStack {
   constructor(scope: Construct, id: string, props: NestedStackProps = { }) {

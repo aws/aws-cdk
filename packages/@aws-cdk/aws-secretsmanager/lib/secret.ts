@@ -267,10 +267,14 @@ abstract class SecretBase extends Resource implements ISecret {
   }
 
   /**
-   * Provides an identifier for this secret for use in IAM policies. Typically, this is just the secret ARN.
-   * However, secrets imported by name require a different format.
+   * Provides an identifier for this secret for use in IAM policies.
+   * If there is a full ARN, this is just the ARN;
+   * if we have a partial ARN -- due to either importing by secret name or partial ARN --
+   * then we need to add a suffix to capture the full ARN's format.
    */
-  protected get arnForPolicies() { return this.secretArn; }
+  protected get arnForPolicies() {
+    return this.secretFullArn ? this.secretFullArn : `${this.secretArn}-??????`;
+  }
 
   /**
    * Attach a target to this secret
@@ -351,11 +355,6 @@ export class Secret extends SecretBase {
       public readonly secretArn = this.partialArn;
       protected readonly autoCreatePolicy = false;
       public get secretFullArn() { return undefined; }
-      // Overrides the secretArn for grant* methods, where the secretArn must be in ARN format.
-      // Also adds a wildcard to the resource name to support the SecretsManager-provided suffix.
-      protected get arnForPolicies(): string {
-        return this.partialArn + '-??????';
-      }
       // Creates a "partial" ARN from the secret name. The "full" ARN would include the SecretsManager-provided suffix.
       private get partialArn(): string {
         return Stack.of(this).formatArn({
