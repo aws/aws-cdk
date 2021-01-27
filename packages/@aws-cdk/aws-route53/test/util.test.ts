@@ -1,9 +1,9 @@
 import * as cdk from '@aws-cdk/core';
-import { Test } from 'nodeunit';
+import { nodeunitShim, Test } from 'nodeunit-shim';
 import { HostedZone } from '../lib';
 import * as util from '../lib/util';
 
-export = {
+nodeunitShim({
   'throws when zone name ending with a \'.\''(test: Test) {
     test.throws(() => util.validateZoneName('zone.name.'), /trailing dot/);
     test.done();
@@ -78,4 +78,4 @@ export = {
     test.equal(qualified, 'test.domain.com.');
     test.done();
   },
-};
+});
