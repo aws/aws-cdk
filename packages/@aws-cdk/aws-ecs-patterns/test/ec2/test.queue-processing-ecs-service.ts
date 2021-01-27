@@ -212,6 +212,7 @@ export = {
       deploymentController: {
         type: ecs.DeploymentControllerType.CODE_DEPLOY,
       },
+      circuitBreaker: { rollback: true },
     });
 
     // THEN - QueueWorker is of EC2 launch type, an SQS queue is created and all optional properties are set.
@@ -220,6 +221,10 @@ export = {
       DeploymentConfiguration: {
         MinimumHealthyPercent: 60,
         MaximumPercent: 150,
+        DeploymentCircuitBreaker: {
+          Enable: true,
+          Rollback: true,
+        },
       },
       LaunchType: 'EC2',
       ServiceName: 'ecs-test-service',
