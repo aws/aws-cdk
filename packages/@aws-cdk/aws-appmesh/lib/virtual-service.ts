@@ -38,7 +38,7 @@ export interface IVirtualService extends cdk.IResource {
 /**
  * The base properties which all classes in VirtualService will inherit from
  */
-export interface VirtualServiceBaseProps {
+export interface VirtualServiceProps {
   /**
    * The name of the VirtualService.
    *
@@ -56,12 +56,7 @@ export interface VirtualServiceBaseProps {
    * @default - none
    */
   readonly clientPolicy?: ClientPolicy;
-}
 
-/**
- * The properties applied to the VirtualService being define
- */
-export interface VirtualServiceProps extends VirtualServiceBaseProps {
   /**
    * The VirtualNode or VirtualRouter which the VirtualService uses as its provider
    */
@@ -127,17 +122,17 @@ export class VirtualService extends cdk.Resource implements IVirtualService {
     });
 
     this.clientPolicy = props.clientPolicy;
-    const provider = props.virtualServiceProvider?.bind(this);
-    this.mesh = provider.mesh;
+    const providerConfig = props.virtualServiceProvider.bind(this);
+    this.mesh = providerConfig.mesh;
 
     const svc = new CfnVirtualService(this, 'Resource', {
       meshName: this.mesh.meshName,
       virtualServiceName: this.physicalName,
       spec: {
-        provider: provider.virtualNodeProvider || provider.virtualRouterProvider
+        provider: providerConfig.virtualNodeProvider || providerConfig.virtualRouterProvider
           ? {
-            virtualNode: provider?.virtualNodeProvider,
-            virtualRouter: provider?.virtualRouterProvider,
+            virtualNode: providerConfig.virtualNodeProvider,
+            virtualRouter: providerConfig.virtualRouterProvider,
           }
           : undefined,
       },
