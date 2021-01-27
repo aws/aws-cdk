@@ -4,7 +4,6 @@ import * as core from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { ApplicationCode } from './application-code';
 import { CfnApplication, CfnApplicationCloudWatchLoggingOption } from './kinesisanalyticsv2.generated';
-import { flinkApplicationArnComponents } from './private/example-resource-common';
 import { flinkApplicationConfiguration, FlinkLogLevel, FlinkMetricsLevel } from './private/flink-application-configuration';
 import { validateFlinkApplicationProps } from './private/validation';
 import { PropertyGroup } from './property-group';
@@ -233,7 +232,9 @@ export class FlinkApplication extends FlinkApplicationBase {
       serviceExecutionRole: this.role.roleArn,
       applicationConfiguration: {
         applicationCodeConfiguration: props.code.bind(this),
-        environmentProperties: this.environmentProperties(props.propertyGroups),
+        environmentProperties: props.propertyGroups?.length
+          ? { propertyGroups: props.propertyGroups.map(pg => pg.toCfn()) }
+          : undefined,
         flinkApplicationConfiguration: flinkApplicationConfiguration({
           checkpointingEnabled: props.checkpointingEnabled,
           minPauseBetweenCheckpoints: props.minPauseBetweenCheckpoints,
@@ -296,14 +297,12 @@ export class FlinkApplication extends FlinkApplicationBase {
       default: core.RemovalPolicy.DESTROY,
     });
   }
+}
 
-  private environmentProperties(propertyGroups?: PropertyGroup[]) {
-    if (!propertyGroups || propertyGroups.length === 0) {
-      return;
-    }
-
-    return {
-      propertyGroups: propertyGroups.map(pg => pg.toCfn()),
-    };
-  }
+function flinkApplicationArnComponents(resourceName: string): core.ArnComponents {
+  return {
+    service: 'kinesisanalytics',
+    resource: 'application',
+    resourceName,
+  };
 }

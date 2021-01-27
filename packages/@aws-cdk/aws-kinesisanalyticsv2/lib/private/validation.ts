@@ -6,6 +6,9 @@ interface ValidatedProps {
   parallelismPerKpu?: number;
 }
 
+/**
+ * Early validation for the props used to create FlinkApplications.
+ */
 export function validateFlinkApplicationProps(props: ValidatedProps) {
   validateApplicationName(props.applicationName);
   validateParallelism(props.parallelism);
