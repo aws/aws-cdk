@@ -30,9 +30,9 @@ export function testFutureBehavior<T>(
 
   const major = cdkMajorVersion(repoRoot);
   if (major === 2) {
-    // In CDKv2, the default behaviour is as if the feature flags are enabled. So, ignore the feature flags passed.
-    const app = new cdkApp();
-    return test(name, async () => fn(app));
+    // Temporaily disable CDKv2 behaviour
+    // const app = new cdkApp();
+    // return test(name, async () => fn(app));
   }
   const app = new cdkApp({ context: flags });
   return test(name, () => fn(app));
@@ -59,8 +59,8 @@ export function testLegacyBehavior<T>(
 
   const major = cdkMajorVersion(repoRoot);
   if (major === 2) {
-    // In CDKv2, legacy behaviour is not supported. Skip the test.
-    return;
+    // Temporarily disable CDKv2 behaviour
+    // return;
   }
   const app = new cdkApp();
   return test(name, () => fn(app));
