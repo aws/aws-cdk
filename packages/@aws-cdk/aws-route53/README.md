@@ -105,7 +105,7 @@ const subZone = new route53.PublicHostedZone(this, 'SubZone', {
 });
 
 new route53.CrossAccountZoneDelegationRecord(this, 'delegate', {
-  delegatedZone: subeZone,
+  delegatedZone: subZone,
   parentHostedZoneId: parentZone.hostedZoneId,
   delegationRole: parentZone.crossAccountDelegationRole
 });

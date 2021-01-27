@@ -237,6 +237,15 @@ test('create domain name resource', () => {
 
 test('throws if creating multiple domains for a single service', () => {
   // GIVEN
+  vpces = new VpcEndpointService(stack, 'VPCES-2', {
+    vpcEndpointServiceLoadBalancers: [nlb],
+  });
+
+  new VpcEndpointServiceDomainName(stack, 'EndpointDomain', {
+    endpointService: vpces,
+    domainName: 'my-stuff-1.aws-cdk.dev',
+    publicHostedZone: zone,
+  });
 
   // WHEN / THEN
   expect(() => {
@@ -245,5 +254,5 @@ test('throws if creating multiple domains for a single service', () => {
       domainName: 'my-stuff-2.aws-cdk.dev',
       publicHostedZone: zone,
     });
-  }).toThrow();
+  }).toThrow(/Cannot create a VpcEndpointServiceDomainName for service/);
 });
