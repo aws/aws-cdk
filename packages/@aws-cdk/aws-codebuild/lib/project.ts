@@ -28,6 +28,14 @@ import { CODEPIPELINE_SOURCE_ARTIFACTS_TYPE, NO_SOURCE_TYPE } from './source-typ
 // eslint-disable-next-line
 import { Construct as CoreConstruct } from '@aws-cdk/core';
 
+/**
+ * The type returned from {@link IProject#enableBatchBuilds}.
+ */
+export interface BatchBuildConfig {
+  /** The IAM batch service Role of this Project. */
+  readonly role: iam.IRole;
+}
+
 export interface IProject extends IResource, iam.IGrantable, ec2.IConnectable {
   /**
    * The ARN of this Project.
@@ -43,6 +51,14 @@ export interface IProject extends IResource, iam.IGrantable, ec2.IConnectable {
 
   /** The IAM service Role of this Project. Undefined for imported Projects. */
   readonly role?: iam.IRole;
+
+  /**
+   * Enable batch builds.
+   *
+   * Returns an object contining the batch service role if batch builds
+   * could be enabled.
+   */
+  enableBatchBuilds(): BatchBuildConfig | undefined;
 
   addToRolePolicy(policyStatement: iam.PolicyStatement): void;
 
@@ -194,6 +210,10 @@ abstract class ProjectBase extends Resource implements IProject {
       throw new Error('Only VPC-associated Projects have security groups to manage. Supply the "vpc" parameter when creating the Project');
     }
     return this._connections;
+  }
+
+  public enableBatchBuilds(): BatchBuildConfig | undefined {
+    return undefined;
   }
 
   /**
@@ -729,6 +749,7 @@ export class Project extends ProjectBase {
   private readonly _secondaryArtifacts: CfnProject.ArtifactsProperty[];
   private _encryptionKey?: kms.IKey;
   private readonly _fileSystemLocations: CfnProject.ProjectFileSystemLocationProperty[];
+  private _batchServiceRole?: iam.Role;
 
   constructor(scope: Construct, id: string, props: ProjectProps) {
     super(scope, id, {
@@ -813,6 +834,14 @@ export class Project extends ProjectBase {
       sourceVersion: sourceConfig.sourceVersion,
       vpcConfig: this.configureVpc(props),
       logsConfig: this.renderLoggingConfiguration(props.logging),
+      buildBatchConfig: Lazy.any({
+        produce: () => {
+          const config: CfnProject.ProjectBuildBatchConfigProperty | undefined = this._batchServiceRole ? {
+            serviceRole: this._batchServiceRole.roleArn,
+          } : undefined;
+          return config;
+        },
+      }),
     });
 
     this.addVpcRequiredPermissions(props, resource);
@@ -851,6 +880,27 @@ export class Project extends ProjectBase {
     if (bindFunction) {
       bindFunction.call(this.buildImage, this, this, {});
     }
+  }
+
+  public enableBatchBuilds(): BatchBuildConfig | undefined {
+    if (!this._batchServiceRole) {
+      this._batchServiceRole = new iam.Role(this, 'BatchServiceRole', {
+        assumedBy: new iam.ServicePrincipal('codebuild.amazonaws.com'),
+      });
+      this._batchServiceRole.addToPrincipalPolicy(new iam.PolicyStatement({
+        resources: [Lazy.string({
+          produce: () => this.projectArn,
+        })],
+        actions: [
+          'codebuild:StartBuild',
+          'codebuild:StopBuild',
+          'codebuild:RetryBuild',
+        ],
+      }));
+    }
+    return {
+      role: this._batchServiceRole,
+    };
   }
 
   /**
@@ -1139,8 +1189,8 @@ export class Project extends ProjectBase {
       return undefined;
     }
 
-    let s3Config: CfnProject.S3LogsConfigProperty|undefined = undefined;
-    let cloudwatchConfig: CfnProject.CloudWatchLogsConfigProperty|undefined = undefined;
+    let s3Config: CfnProject.S3LogsConfigProperty | undefined = undefined;
+    let cloudwatchConfig: CfnProject.CloudWatchLogsConfigProperty | undefined = undefined;
 
     if (props.s3) {
       const s3Logs = props.s3;
@@ -1350,10 +1400,10 @@ export interface IBuildImage {
 }
 
 /** Optional arguments to {@link IBuildImage.binder} - currently empty. */
-export interface BuildImageBindOptions {}
+export interface BuildImageBindOptions { }
 
 /** The return type from {@link IBuildImage.binder} - currently empty. */
-export interface BuildImageConfig {}
+export interface BuildImageConfig { }
 
 // @deprecated(not in tsdoc on purpose): add bind() to IBuildImage
 // and get rid of IBindableBuildImage
@@ -1436,6 +1486,8 @@ export class LinuxBuildImage implements IBuildImage {
   public static readonly STANDARD_3_0 = LinuxBuildImage.codeBuildImage('aws/codebuild/standard:3.0');
   /** The `aws/codebuild/standard:4.0` build image. */
   public static readonly STANDARD_4_0 = LinuxBuildImage.codeBuildImage('aws/codebuild/standard:4.0');
+  /** The `aws/codebuild/standard:5.0` build image. */
+  public static readonly STANDARD_5_0 = LinuxBuildImage.codeBuildImage('aws/codebuild/standard:5.0');
 
   public static readonly AMAZON_LINUX_2 = LinuxBuildImage.codeBuildImage('aws/codebuild/amazonlinux2-x86_64-standard:1.0');
   public static readonly AMAZON_LINUX_2_2 = LinuxBuildImage.codeBuildImage('aws/codebuild/amazonlinux2-x86_64-standard:2.0');
@@ -1776,8 +1828,10 @@ export interface BuildEnvironmentVariable {
   readonly type?: BuildEnvironmentVariableType;
 
   /**
-   * The value of the environment variable (or the name of the parameter in
-   * the SSM parameter store.)
+   * The value of the environment variable.
+   * For plain-text variables (the default), this is the literal value of variable.
+   * For SSM parameter variables, pass the name of the parameter here (`parameterName` property of `IParameter`).
+   * For SecretsManager variables secrets, pass the secret name here (`secretName` property of `ISecret`).
    */
   readonly value: any;
 }

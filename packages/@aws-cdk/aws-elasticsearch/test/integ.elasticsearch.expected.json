@@ -157,9 +157,6 @@
           "Enabled": true
         },
         "LogPublishingOptions": {
-          "AUDIT_LOGS": {
-            "Enabled": false
-          },
           "ES_APPLICATION_LOGS": {
             "CloudWatchLogsLogGroupArn": {
               "Fn::GetAtt": [
@@ -177,9 +174,6 @@
               ]
             },
             "Enabled": true
-          },
-          "INDEX_SLOW_LOGS": {
-            "Enabled": false
           }
         },
         "NodeToNodeEncryptionOptions": {
@@ -529,9 +523,6 @@
           "Enabled": true
         },
         "LogPublishingOptions": {
-          "AUDIT_LOGS": {
-            "Enabled": false
-          },
           "ES_APPLICATION_LOGS": {
             "CloudWatchLogsLogGroupArn": {
               "Fn::GetAtt": [
@@ -549,9 +540,6 @@
               ]
             },
             "Enabled": true
-          },
-          "INDEX_SLOW_LOGS": {
-            "Enabled": false
           }
         },
         "NodeToNodeEncryptionOptions": {

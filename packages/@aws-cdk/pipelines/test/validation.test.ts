@@ -1,4 +1,4 @@
-import { anything, arrayWith, deepObjectLike, encodedJson } from '@aws-cdk/assert';
+import { anything, arrayWith, deepObjectLike, encodedJson, objectLike } from '@aws-cdk/assert';
 import '@aws-cdk/assert/jest';
 import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
@@ -387,6 +387,40 @@ test('run ShellScriptAction with specified BuildEnvironment', () => {
       ],
     },
   });
+});
+
+test('run ShellScriptAction with specified environment variables', () => {
+  // WHEN
+  pipeline.addStage('Test').addActions(new cdkp.ShellScriptAction({
+    actionName: 'imageAction',
+    additionalArtifacts: [integTestArtifact],
+    commands: ['true'],
+    environmentVariables: {
+      VERSION: { value: codepipeline.GlobalVariables.executionId },
+    },
+  }));
+
+  // THEN
+  expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
+    Stages: arrayWith({
+      Name: 'Test',
+      Actions: [
+        objectLike({
+          Name: 'imageAction',
+          Configuration: objectLike({
+            EnvironmentVariables: encodedJson([
+              {
+                name: 'VERSION',
+                type: 'PLAINTEXT',
+                value: '#{codepipeline.PipelineExecutionId}',
+              },
+            ]),
+          }),
+        }),
+      ],
+    }),
+  });
+
 });
 
 class AppWithStackOutput extends Stage {
