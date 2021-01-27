@@ -633,7 +633,7 @@
           }
         ],
         "UserData": {
-          "Fn::Base64": "#!/bin/bash\nyum install -y https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_amd64/amazon-ssm-agent.rpm"
+          "Fn::Base64": "#!/bin/bash"
         }
       },
       "DependsOn": [
