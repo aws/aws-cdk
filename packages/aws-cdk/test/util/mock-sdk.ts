@@ -28,7 +28,7 @@ export interface MockSdkProviderOptions {
  * actually will be called.
  */
 export class MockSdkProvider extends SdkProvider {
-  private readonly sdk: ISDK;
+  public readonly sdk: ISDK;
 
   constructor(options: MockSdkProviderOptions = {}) {
     super(FAKE_CREDENTIAL_CHAIN, 'bermuda-triangle-1337', { customUserAgent: 'aws-cdk/jest' });
@@ -84,6 +84,13 @@ export class MockSdkProvider extends SdkProvider {
   public stubELBv2(stubs: SyncHandlerSubsetOf<AWS.ELBv2>) {
     (this.sdk as any).elbv2 = jest.fn().mockReturnValue(partialAwsService<AWS.ELBv2>(stubs));
   }
+
+  /**
+   * Replace the SSM client with the given object
+   */
+  public stubSSM(stubs: SyncHandlerSubsetOf<AWS.SSM>) {
+    (this.sdk as any).ssm = jest.fn().mockReturnValue(partialAwsService<AWS.SSM>(stubs));
+  }
 }
 
 export class MockSdk implements ISDK {
@@ -112,6 +119,13 @@ export class MockSdk implements ISDK {
    */
   public stubEcr(stubs: SyncHandlerSubsetOf<AWS.ECR>) {
     this.ecr.mockReturnValue(partialAwsService<AWS.ECR>(stubs));
+  }
+
+  /**
+   * Replace the SSM client with the given object
+   */
+  public stubSsm(stubs: SyncHandlerSubsetOf<AWS.SSM>) {
+    this.ssm.mockReturnValue(partialAwsService<AWS.SSM>(stubs));
   }
 }
 
@@ -197,18 +211,19 @@ export function mockBootstrapStack(sdk: ISDK | undefined, stack?: Partial<AWS.Cl
     CreationTime: new Date(),
     StackName: 'CDKToolkit',
     StackStatus: 'CREATE_COMPLETE',
+    ...stack,
     Outputs: [
       { OutputKey: 'BucketName', OutputValue: 'BUCKET_NAME' },
       { OutputKey: 'BucketDomainName', OutputValue: 'BUCKET_ENDPOINT' },
       { OutputKey: 'BootstrapVersion', OutputValue: '1' },
+      ...stack?.Outputs ?? [],
     ],
-    ...stack,
   });
 }
 
 export function mockToolkitInfo(stack?: Partial<AWS.CloudFormation.Stack>) {
   const sdk = new MockSdk();
-  return new ToolkitInfo(mockBootstrapStack(sdk, stack), sdk);
+  return ToolkitInfo.fromStack(mockBootstrapStack(sdk, stack), sdk);
 }
 
 export function mockResolvedEnvironment(): cxapi.Environment {
