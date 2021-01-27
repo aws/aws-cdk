@@ -179,6 +179,13 @@ export interface ComputeResources {
   readonly minvCpus?: number;
 
   /**
+   * The Amazon EC2 placement group to associate with your compute resources.
+   *
+   * @default - No placement group will be used.
+   */
+  readonly placementGroup?: string;
+
+  /**
    * The EC2 key pair that is used for instances launched in the compute environment.
    * If no key is defined, then SSH access is not allowed to provisioned compute resources.
    *
@@ -365,6 +372,7 @@ export class ComputeEnvironment extends Resource implements IComputeEnvironment 
         launchTemplate: props.computeResources.launchTemplate,
         maxvCpus: props.computeResources.maxvCpus || 256,
         minvCpus: props.computeResources.minvCpus || 0,
+        placementGroup: props.computeResources.placementGroup,
         securityGroupIds: this.buildSecurityGroupIds(props.computeResources.vpc, props.computeResources.securityGroups),
         spotIamFleetRole: spotFleetRole ? spotFleetRole.roleArn : undefined,
         subnets: props.computeResources.vpc.selectSubnets(props.computeResources.vpcSubnets).subnetIds,
