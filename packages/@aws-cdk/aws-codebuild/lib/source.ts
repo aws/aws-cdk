@@ -482,6 +482,8 @@ interface ThirdPartyGitSourceProps extends GitSourceProps {
   /**
    * Trigger a batch build from a webhook instead of a standard one.
    *
+   * Enabling this will enable batch builds on the CodeBuild project.
+   *
    * @default false
    */
   readonly webhookTriggersBatchBuild?: boolean;
@@ -515,7 +517,7 @@ abstract class ThirdPartyGitSource extends GitSource {
     this.webhookTriggersBatchBuild = props.webhookTriggersBatchBuild;
   }
 
-  public bind(_scope: Construct, _project: IProject): SourceConfig {
+  public bind(_scope: Construct, project: IProject): SourceConfig {
     const anyFilterGroupsProvided = this.webhookFilters.length > 0;
     const webhook = this.webhook === undefined ? (anyFilterGroupsProvided ? true : undefined) : this.webhook;
 
@@ -527,7 +529,12 @@ abstract class ThirdPartyGitSource extends GitSource {
       throw new Error('`webhookTriggersBatchBuild` cannot be used when `webhook` is `false`');
     }
 
-    const superConfig = super.bind(_scope, _project);
+    const superConfig = super.bind(_scope, project);
+
+    if (this.webhookTriggersBatchBuild) {
+      project.enableBatchBuilds();
+    }
+
     return {
       sourceProperty: {
         ...superConfig.sourceProperty,
