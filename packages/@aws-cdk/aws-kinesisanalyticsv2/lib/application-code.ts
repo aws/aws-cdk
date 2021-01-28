@@ -19,14 +19,14 @@ export abstract class ApplicationCode {
   public abstract bind(scope: Construct): CodeConfiguration;
 }
 
-interface BucketApplicationCodeProps {
-  bucket: s3.IBucket;
-  fileKey: string;
-  objectVersion?: string;
+export interface BucketApplicationCodeProps {
+  readonly bucket: s3.IBucket;
+  readonly fileKey: string;
+  readonly objectVersion?: string;
 }
 
-class BucketApplicationCode extends ApplicationCode {
-  public readonly bucket: s3.IBucket;
+export class BucketApplicationCode extends ApplicationCode {
+  public readonly bucket?: s3.IBucket;
   public readonly fileKey: string;
   public readonly objectVersion?: string;
 
@@ -41,7 +41,7 @@ class BucketApplicationCode extends ApplicationCode {
     return {
       codeContent: {
         s3ContentLocation: {
-          bucketArn: this.bucket.bucketArn,
+          bucketArn: this.bucket!.bucketArn,
           fileKey: this.fileKey,
           objectVersion: this.objectVersion,
         },
@@ -51,7 +51,7 @@ class BucketApplicationCode extends ApplicationCode {
   }
 }
 
-class AssetApplicationCode extends ApplicationCode {
+export class AssetApplicationCode extends ApplicationCode {
   private readonly path: string;
   private readonly options?: s3_assets.AssetOptions;
   private _asset?: s3_assets.Asset;
@@ -92,13 +92,17 @@ class AssetApplicationCode extends ApplicationCode {
   }
 }
 
-interface CodeConfiguration {
-  codeContent: {
-    s3ContentLocation: {
-      bucketArn: string;
-      fileKey: string;
-      objectVersion?: string;
-    },
-  },
-  codeContentType: 'ZIPFILE',
+export interface CodeConfiguration {
+  readonly codeContent: CodeContent;
+  readonly codeContentType: 'ZIPFILE',
+}
+
+export interface CodeContent {
+  readonly s3ContentLocation: S3ContentLocation;
+}
+
+export interface S3ContentLocation {
+  readonly bucketArn: string;
+  readonly fileKey: string;
+  readonly objectVersion?: string;
 }

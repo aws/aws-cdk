@@ -42,9 +42,9 @@ export interface IFlinkApplication extends core.IResource, iam.IGrantable {
  * const runtime = new FlinkRuntime(FLINK-9_99);
  */
 export class FlinkRuntime {
-  public static FLINK_1_6 = new FlinkRuntime('FLINK-1_6');
-  public static FLINK_1_8 = new FlinkRuntime('FLINK-1_8');
-  public static FLINK_1_11 = new FlinkRuntime('FLINK-1_11');
+  public static readonly FLINK_1_6 = new FlinkRuntime('FLINK-1_6');
+  public static readonly FLINK_1_8 = new FlinkRuntime('FLINK-1_8');
+  public static readonly FLINK_1_11 = new FlinkRuntime('FLINK-1_11');
   public constructor(public readonly value: string) {}
 }
 
@@ -176,16 +176,17 @@ export interface FlinkApplicationProps {
 /**
  * Attributes passed to the fromAttributes factory method.
  */
-interface Attributes {
-  applicationName: string;
-  applicationArn: string;
+export interface Attributes {
+  readonly applicationName: string;
+  readonly applicationArn: string;
 }
 
 /**
  * The L2 construct for Flink Kinesis Data Applications.
  *
- * @experimental
  * @resource AWS::KinesisAnalyticsV2::Application
+ *
+ * @experimental
  */
 export class FlinkApplication extends FlinkApplicationBase {
   /**
