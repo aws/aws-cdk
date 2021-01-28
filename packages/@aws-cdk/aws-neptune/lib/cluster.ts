@@ -1,0 +1,397 @@
+import * as ec2 from '@aws-cdk/aws-ec2';
+import * as iam from '@aws-cdk/aws-iam';
+import * as kms from '@aws-cdk/aws-kms';
+import { RemovalPolicy, Resource, Token } from '@aws-cdk/core';
+import { Construct } from 'constructs';
+import { DatabaseClusterAttributes, IDatabaseCluster } from './cluster-ref';
+import { Endpoint } from './endpoint';
+import { CfnDBCluster, CfnDBInstance } from './neptune.generated';
+import { IClusterParameterGroup } from './parameter-group';
+import { BackupProps, InstanceProps } from './props';
+import { ISubnetGroup, SubnetGroup } from './subnet-group';
+
+/**
+ * Properties for a new database cluster
+ */
+export interface DatabaseClusterProps {
+  /**
+   * What version of the database to start
+   *
+   * @default - The default engine version.
+   */
+  readonly engineVersion?: string;
+
+  /**
+   * The port the Neptune cluster will listen on
+   *
+   * @default - The default engine port
+   */
+  readonly port?: number;
+
+  /**
+   * Backup settings
+   *
+   * @default - Backup retention period for automated backups is 1 day.
+   * Backup preferred window is set to a 30-minute window selected at random from an
+   * 8-hour block of time for each AWS Region, occurring on a random day of the week.
+   */
+  readonly backup?: BackupProps;
+
+  /**
+   * The KMS key for storage encryption.
+   *
+   * @default - default master key.
+   */
+  readonly kmsKey?: kms.IKey;
+
+  /**
+   * Whether to enable storage encryption
+   *
+   * @default true
+   */
+  readonly storageEncrypted?: boolean;
+
+  /**
+   * Number of Neptune compute instances
+   *
+   * @default 1
+   */
+  readonly instances?: number;
+
+  /**
+   * An optional identifier for the cluster
+   *
+   * @default - A name is automatically generated.
+   */
+  readonly dbClusterName?: string;
+
+  /**
+   * Base identifier for instances
+   *
+   * Every replica is named by appending the replica number to this string, 1-based.
+   *
+   * @default - `dbClusterName` is used with the word "Instance" appended. If `dbClusterName` is not provided, the
+   * identifier is automatically generated.
+   */
+  readonly instanceIdentifierBase?: string;
+
+  /**
+   * Settings for the individual instances that are launched
+   */
+  readonly instanceProps: InstanceProps;
+
+  /**
+   * A list of AWS Identity and Access Management (IAM) role that can be used by the cluster to access other AWS services.
+   *
+   * @default - No role is attached to the cluster.
+   */
+  readonly associatedRoles?: iam.IRole[];
+
+  /**
+   * Indicates whether the DB cluster is IAM auth enabled.
+   *
+   * @default - false, connections to database don't require IAM auth
+   */
+  readonly iamAuthEnabled?: boolean;
+
+  /**
+   * Indicates whether the DB cluster should have deletion protection enabled.
+   *
+   * @default - true if ``removalPolicy`` is RETAIN, false otherwise
+   */
+  readonly deletionProtection?: boolean;
+
+  /**
+   * A weekly time range in which maintenance should preferably execute.
+   *
+   * Must be at least 30 minutes long.
+   *
+   * Example: 'tue:04:17-tue:04:47'
+   *
+   * @default - 30-minute window selected at random from an 8-hour block of time for
+   * each AWS Region, occurring on a random day of the week.
+   */
+  readonly preferredMaintenanceWindow?: string;
+
+  /**
+   * Additional parameters to pass to the database engine
+   *
+   * @default - No parameter group.
+   */
+  readonly parameterGroup?: IClusterParameterGroup;
+
+  /**
+   * Existing subnet group for the cluster.
+   *
+   * @default - a new subnet group will be created.
+   */
+  readonly subnetGroup?: ISubnetGroup;
+
+  /**
+   * What subnets to run the Neptune instances in.
+   *
+   * Must be at least 2 subnets in two different AZs.
+   */
+  readonly vpc: ec2.IVpc;
+
+  /**
+   * Where to place the instances within the VPC
+   *
+   * @default private subnets
+   */
+  readonly vpcSubnets?: ec2.SubnetSelection;
+
+  /**
+   * Security group.
+   *
+   * @default a new security group is created.
+   */
+  readonly securityGroups?: ec2.ISecurityGroup[];
+
+  /**
+   * The removal policy to apply when the cluster and its instances are removed
+   * or replaced during a stack update, or when the stack is deleted. This
+   * removal policy also applies to the implicit security group created for the
+   * cluster if one is not supplied as a parameter.
+   *
+   * @default - Retain cluster.
+   */
+  readonly removalPolicy?: RemovalPolicy
+}
+
+/**
+ * A new or imported clustered database.
+ */
+abstract class DatabaseClusterBase extends Resource implements IDatabaseCluster {
+  /**
+   * Identifier of the cluster
+   */
+  public abstract readonly clusterIdentifier: string;
+
+  /**
+   * The endpoint to use for read/write operations
+   */
+  public abstract readonly clusterEndpoint: Endpoint;
+
+  /**
+   * Endpoint to use for load-balanced read-only operations.
+   */
+  public abstract readonly clusterReadEndpoint: Endpoint;
+
+  /**
+   * Access to the network connections
+   */
+  public abstract readonly connections: ec2.Connections;
+
+  /**
+   * Identifiers of the replicas
+   */
+  public abstract readonly instanceIdentifiers: string[];
+
+  /**
+   * Endpoints which address each individual replica.
+   */
+  public abstract readonly instanceEndpoints: Endpoint[];
+}
+
+/**
+ * Create a clustered database with a given number of instances.
+ *
+ * @resource AWS::Neptune::DBCluster
+ */
+export class DatabaseCluster extends DatabaseClusterBase {
+
+  /**
+   * The default number of instances in the Neptune cluster if none are
+   * specified
+   */
+  public static readonly DEFAULT_NUM_INSTANCES = 1;
+
+  /**
+   * Import an existing DatabaseCluster from properties
+   */
+  public static fromDatabaseClusterAttributes(scope: Construct, id: string, attrs: DatabaseClusterAttributes): IDatabaseCluster {
+    class Import extends DatabaseClusterBase implements IDatabaseCluster {
+      public readonly defaultPort = ec2.Port.tcp(attrs.port);
+      public readonly connections = new ec2.Connections({
+        securityGroups: [attrs.securityGroup],
+        defaultPort: this.defaultPort,
+      });
+      public readonly clusterIdentifier = attrs.clusterIdentifier;
+      public readonly instanceIdentifiers = attrs.instanceIdentifiers;
+      public readonly clusterEndpoint = new Endpoint(attrs.clusterEndpointAddress, attrs.port);
+      public readonly clusterReadEndpoint = new Endpoint(attrs.readerEndpointAddress, attrs.port);
+      public readonly instanceEndpoints = attrs.instanceEndpointAddresses.map(a => new Endpoint(a, attrs.port));
+    }
+
+    return new Import(scope, id);
+  }
+
+  /**
+   * Identifier of the cluster
+   */
+  public readonly clusterIdentifier: string;
+
+  /**
+   * The endpoint to use for read/write operations
+   */
+  public readonly clusterEndpoint: Endpoint;
+
+  /**
+   * Endpoint to use for load-balanced read-only operations.
+   */
+  public readonly clusterReadEndpoint: Endpoint;
+
+  /**
+   * The resource id for the cluster; for example: cluster-ABCD1234EFGH5678IJKL90MNOP. The cluster ID uniquely
+   * identifies the cluster and is used in things like IAM authentication policies.
+   * @attribute ClusterResourceId
+   */
+  public readonly clusterResourceIdentifier: string;
+
+  /**
+   * The connections object to implement IConectable
+   */
+  public readonly connections: ec2.Connections;
+
+  /**
+   * Identifiers of the replicas
+   */
+  public readonly instanceIdentifiers: string[] = [];
+
+  /**
+   * Endpoints which address each individual replica.
+   */
+  public readonly instanceEndpoints: Endpoint[] = [];
+
+  /**
+   * The VPC where the DB subnet group is created.
+   */
+  public readonly vpc: ec2.IVpc;
+
+  /**
+   * The subnets used by the DB subnet group.
+   */
+  public readonly vpcSubnets?: ec2.SubnetSelection;
+
+  /**
+   * The security groups used by DB cluster.
+   */
+  protected readonly securityGroups: ec2.ISecurityGroup[];
+
+  /**
+   * Subnet group used by the DB
+   */
+  public readonly subnetGroup: ISubnetGroup;
+
+  constructor(scope: Construct, id: string, props: DatabaseClusterProps) {
+    super(scope, id);
+
+    this.vpc = props.vpc;
+    this.vpcSubnets = props.vpcSubnets ? props.vpcSubnets : {
+      subnetType: ec2.SubnetType.PRIVATE,
+    };
+
+    // Determine the subnet(s) to deploy the Neptune cluster to
+    const { subnetIds, internetConnectivityEstablished } = this.vpc.selectSubnets(this.vpcSubnets);
+
+    // Cannot test whether the subnets are in different AZs, but at least we can test the amount.
+    if (subnetIds.length < 2) {
+      throw new Error(`Cluster requires at least 2 subnets, got ${subnetIds.length}`);
+    }
+
+    this.subnetGroup = props.subnetGroup ?? new SubnetGroup(this, 'Subnets', {
+      description: `Subnets for ${id} database`,
+      vpc: this.vpc,
+      vpcSubnets: this.vpcSubnets,
+      removalPolicy: props.removalPolicy === RemovalPolicy.RETAIN ? props.removalPolicy : undefined,
+    });
+
+    this.securityGroups = props.securityGroups ?? [
+      new ec2.SecurityGroup(this, 'SecurityGroup', {
+        description: 'Neptune security group',
+        vpc: this.vpc,
+      }),
+    ];
+
+    // Default to encrypted storage
+    const storageEncrypted = props.storageEncrypted ?? true;
+
+    if (props.kmsKey && !storageEncrypted) {
+      throw new Error('KMS key supplied but storageEncrypted is false');
+    }
+
+    // Deletion protection
+    const deletionProtection = props.deletionProtection ?? (props.removalPolicy === RemovalPolicy.RETAIN ? true : undefined);
+
+    // Create the Neptune cluster
+    const cluster = new CfnDBCluster(this, 'Resource', {
+      // Basic
+      engineVersion: props.engineVersion,
+      dbClusterIdentifier: props.dbClusterName,
+      dbSubnetGroupName: this.subnetGroup.subnetGroupName,
+      port: props.port,
+      vpcSecurityGroupIds: this.securityGroups.map(sg => sg.securityGroupId),
+      dbClusterParameterGroupName: props.parameterGroup?.clusterParameterGroupName,
+      deletionProtection: deletionProtection,
+      associatedRoles: props.associatedRoles ? props.associatedRoles.map(role => ({ roleArn: role.roleArn })) : undefined,
+      iamAuthEnabled: props.iamAuthEnabled,
+      // Backup
+      backupRetentionPeriod: props.backup?.retention?.toDays(),
+      preferredBackupWindow: props.backup?.preferredWindow,
+      preferredMaintenanceWindow: props.preferredMaintenanceWindow,
+      // Encryption
+      kmsKeyId: props.kmsKey?.keyArn,
+      storageEncrypted,
+    });
+
+    cluster.applyRemovalPolicy(props.removalPolicy, {
+      applyToUpdateReplacePolicy: true,
+    });
+
+    this.clusterIdentifier = cluster.ref;
+    this.clusterResourceIdentifier = cluster.attrClusterResourceId;
+
+    const port = Token.asNumber(cluster.attrPort);
+    this.clusterEndpoint = new Endpoint(cluster.attrEndpoint, port);
+    this.clusterReadEndpoint = new Endpoint(cluster.attrReadEndpoint, port);
+
+    // Create the instances
+    const instanceCount = props.instances ?? DatabaseCluster.DEFAULT_NUM_INSTANCES;
+    if (instanceCount < 1) {
+      throw new Error('At least one instance is required');
+    }
+
+    for (let i = 0; i < instanceCount; i++) {
+      const instanceIndex = i + 1;
+
+      const instanceIdentifier = props.instanceIdentifierBase != null ? `${props.instanceIdentifierBase}${instanceIndex}`
+        : props.dbClusterName != null ? `${props.dbClusterName}instance${instanceIndex}` : undefined;
+
+      const instance = new CfnDBInstance(this, `Instance${instanceIndex}`, {
+        // Link to cluster
+        dbClusterIdentifier: cluster.ref,
+        dbInstanceIdentifier: instanceIdentifier,
+        // Instance properties
+        dbInstanceClass: props.instanceProps.instanceType,
+        dbParameterGroupName: props.instanceProps.parameterGroup?.parameterGroupName,
+      });
+
+      instance.applyRemovalPolicy(props.removalPolicy, {
+        applyToUpdateReplacePolicy: true,
+      });
+
+      // We must have a dependency on the NAT gateway provider here to create
+      // things in the right order.
+      instance.node.addDependency(internetConnectivityEstablished);
+
+      this.instanceIdentifiers.push(instance.ref);
+      this.instanceEndpoints.push(new Endpoint(instance.attrEndpoint, port));
+    }
+
+    this.connections = new ec2.Connections({
+      defaultPort: ec2.Port.tcp(port),
+      securityGroups: this.securityGroups,
+    });
+  }
+}
