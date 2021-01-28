@@ -240,3 +240,27 @@ test('can specify backup policy', () => {
     },
   }));
 });
+
+test('can create when using a VPC with multiple subnets per availability zone', () => {
+  // WHEN
+  new ec2.Subnet(stack, 'subnet1', {
+    vpcId: vpc.vpcId,
+    availabilityZone: vpc.availabilityZones[0],
+    cidrBlock: vpc.vpcCidrBlock,
+  });
+  new ec2.Subnet(stack, 'subnet2', {
+    vpcId: vpc.vpcId,
+    availabilityZone: vpc.availabilityZones[0],
+    cidrBlock: vpc.vpcCidrBlock,
+  });
+  new FileSystem(stack, 'EfsFileSystem', {
+    vpc,
+  });
+  // THEN
+  expectCDK(stack).to(haveResource('AWS::EFS::FileSystem', {
+    DeletionPolicy: 'Retain',
+    UpdateReplacePolicy: 'Retain',
+  }, ResourcePart.CompleteDefinition));
+  expectCDK(stack).to(haveResource('AWS::EFS::MountTarget'));
+  expectCDK(stack).to(haveResource('AWS::EC2::SecurityGroup'));
+});
