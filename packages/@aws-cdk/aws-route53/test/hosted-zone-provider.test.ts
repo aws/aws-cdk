@@ -1,9 +1,9 @@
 import { SynthUtils } from '@aws-cdk/assert';
 import * as cdk from '@aws-cdk/core';
-import { Test } from 'nodeunit';
+import { nodeunitShim, Test } from 'nodeunit-shim';
 import { HostedZone } from '../lib';
 
-export = {
+nodeunitShim({
   'Hosted Zone Provider': {
     'HostedZoneProvider will return context values if available'(test: Test) {
       // GIVEN
@@ -82,4 +82,4 @@ export = {
       test.done();
     },
   },
-};
+});
