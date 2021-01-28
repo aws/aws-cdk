@@ -9,6 +9,10 @@ import { AwsCliLayer } from '@aws-cdk/lambda-layer-awscli';
 import { Construct } from 'constructs';
 import { ISource, SourceConfig } from './source';
 
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct as CoreConstruct } from '@aws-cdk/core';
+
 export interface BucketDeploymentProps {
   /**
    * The sources from which to deploy the contents of this bucket.
@@ -175,7 +179,7 @@ export interface BucketDeploymentProps {
   readonly vpcSubnets?: ec2.SubnetSelection;
 }
 
-export class BucketDeployment extends cdk.Construct {
+export class BucketDeployment extends CoreConstruct {
   constructor(scope: Construct, id: string, props: BucketDeploymentProps) {
     super(scope, id);
 
@@ -253,10 +257,7 @@ export class BucketDeployment extends cdk.Construct {
  */
 
 function mapUserMetadata(metadata: UserDefinedObjectMetadata) {
-  const mapKey = (key: string) =>
-    key.toLowerCase().startsWith('x-amzn-meta-')
-      ? key.toLowerCase()
-      : `x-amzn-meta-${key.toLowerCase()}`;
+  const mapKey = (key: string) => key.toLowerCase();
 
   return Object.keys(metadata).reduce((o, key) => ({ ...o, [mapKey(key)]: metadata[key] }), {});
 }
@@ -354,7 +355,7 @@ export class Expires {
 export interface UserDefinedObjectMetadata {
   /**
    * Arbitrary metadata key-values
-   * Keys must begin with `x-amzn-meta-` (will be added automatically if not provided)
+   * The `x-amz-meta-` prefix will automatically be added to keys.
    * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingMetadata.html#UserMetadata
    */
   readonly [key: string]: string;
