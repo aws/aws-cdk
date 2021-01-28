@@ -116,6 +116,8 @@ export interface FlinkApplicationProps {
 
   /**
    * The level of log verbosity from the Flink application.
+   *
+   * @default FlinkLogLevel.INFO
    */
   readonly logLevel?: FlinkLogLevel;
 
@@ -124,6 +126,8 @@ export interface FlinkApplicationProps {
    * Use caution with Parallelism level metrics. Parallelism granularity logs
    * metrics for each parallel thread and can quickly become expensive when
    * parallelism is high (e.g. > 64).
+   *
+   * @default FlinkMetricsLevel.APPLICATION
    */
   readonly metricsLevel?: FlinkMetricsLevel;
 
