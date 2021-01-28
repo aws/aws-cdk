@@ -27,6 +27,7 @@ interface FlinkApplicationConfiguration extends
 
 interface CheckpointConfiguration {
   checkpointingEnabled?: boolean;
+  checkpointInterval?: core.Duration;
   minPauseBetweenCheckpoints?: core.Duration;
 }
 
@@ -52,6 +53,7 @@ interface ParallelismConfiguration {
 export function flinkApplicationConfiguration(config: FlinkApplicationConfiguration) {
   const checkpointConfiguration = configFor({
     checkpointingEnabled: config.checkpointingEnabled,
+    checkpointInterval: config.checkpointInterval?.toMilliseconds(),
     minPauseBetweenCheckpoints: config.minPauseBetweenCheckpoints?.toMilliseconds(),
   });
 

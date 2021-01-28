@@ -224,6 +224,25 @@ describe('FlinkApplication', () => {
     });
   });
 
+  test('checkpointInterval setting', () => {
+    const { stack, requiredProps } = buildStack();
+    new ka.FlinkApplication(stack, 'FlinkApplication', {
+      ...requiredProps,
+      checkpointInterval: core.Duration.minutes(5),
+    });
+
+    expect(stack).toHaveResourceLike('AWS::KinesisAnalyticsV2::Application', {
+      ApplicationConfiguration: {
+        FlinkApplicationConfiguration: {
+          CheckpointConfiguration: {
+            ConfigurationType: 'CUSTOM',
+            CheckpointInterval: 300_000,
+          },
+        },
+      },
+    });
+  });
+
   test('minPauseBetweenCheckpoints setting', () => {
     const { stack, requiredProps } = buildStack();
     new ka.FlinkApplication(stack, 'FlinkApplication', {
@@ -371,11 +390,21 @@ describe('FlinkApplication', () => {
           'Fn::Join': [
             '',
             [
+              'arn:',
               {
-                'Fn::GetAtt': [
-                  'FlinkApplicationLogGroup7739479C',
-                  'Arn',
-                ],
+                Ref: 'AWS::Partition',
+              },
+              ':logs:',
+              {
+                Ref: 'AWS::Region',
+              },
+              ':',
+              {
+                Ref: 'AWS::AccountId',
+              },
+              ':log-group:',
+              {
+                Ref: 'FlinkApplicationLogGroup7739479C',
               },
               ':log-stream:',
               {

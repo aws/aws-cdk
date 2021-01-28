@@ -100,6 +100,13 @@ export interface FlinkApplicationProps {
   readonly checkpointingEnabled?: boolean;
 
   /**
+   * The interval between checkpoints.
+   *
+   * @default 1 minute
+   */
+  readonly checkpointInterval?: core.Duration;
+
+  /**
    * The minimum amount of time in to wait after a checkpoint finishes to start
    * a new checkpoint.
    *
@@ -245,6 +252,7 @@ export class FlinkApplication extends FlinkApplicationBase {
           : undefined,
         flinkApplicationConfiguration: flinkApplicationConfiguration({
           checkpointingEnabled: props.checkpointingEnabled,
+          checkpointInterval: props.checkpointInterval,
           minPauseBetweenCheckpoints: props.minPauseBetweenCheckpoints,
           logLevel: props.logLevel,
           metricsLevel: props.metricsLevel,
