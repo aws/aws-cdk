@@ -2,7 +2,6 @@ import { expect, haveResource, SynthUtils } from '@aws-cdk/assert';
 import * as autoscaling from '@aws-cdk/aws-autoscaling';
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as ec2 from '@aws-cdk/aws-ec2';
-import { WindowsVersion } from '@aws-cdk/aws-ec2';
 import * as lbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
@@ -53,7 +52,7 @@ export = {
       });
 
       new codedeploy.ServerDeploymentGroup(stack, 'DeploymentGroup', {
-        autoScalingGroups: [ asg ],
+        autoScalingGroups: [asg],
         installAgent: true,
       });
 
@@ -86,13 +85,13 @@ export = {
 
       const asg = new autoscaling.AutoScalingGroup(stack, 'ASG', {
         instanceType: ec2.InstanceType.of(ec2.InstanceClass.STANDARD3, ec2.InstanceSize.SMALL),
-        machineImage: new ec2.WindowsImage(WindowsVersion.WINDOWS_SERVER_2019_ENGLISH_FULL_BASE, {}),
+        machineImage: new ec2.WindowsImage(ec2.WindowsVersion.WINDOWS_SERVER_2019_ENGLISH_FULL_BASE, {}),
         vpc: new ec2.Vpc(stack, 'VPC'),
 
       });
 
       new codedeploy.ServerDeploymentGroup(stack, 'DeploymentGroup', {
-        autoScalingGroups: [ asg ],
+        autoScalingGroups: [asg],
         installAgent: true,
       });
 
@@ -126,7 +125,7 @@ export = {
       });
 
       new codedeploy.ServerDeploymentGroup(stack, 'DeploymentGroup', {
-        autoScalingGroups: [ asg ],
+        autoScalingGroups: [asg],
       });
 
       expect(stack).to(haveResource('AWS::CodeDeploy::DeploymentGroup', {
@@ -237,7 +236,7 @@ export = {
       new codedeploy.ServerDeploymentGroup(stack, 'DeploymentGroup', {
         ec2InstanceTags: new codedeploy.InstanceTagSet(
           {
-            'some-key': [ 'some-value' ],
+            'some-key': ['some-value'],
             'other-key': [],
           },
         ),
@@ -272,10 +271,10 @@ export = {
       new codedeploy.ServerDeploymentGroup(stack, 'DeploymentGroup', {
         onPremiseInstanceTags: new codedeploy.InstanceTagSet(
           {
-            'some-key': [ 'some-value', 'another-value' ],
+            'some-key': ['some-value', 'another-value'],
           },
           {
-            '': [ 'keyless-value' ],
+            '': ['keyless-value'],
           },
         ),
       });
