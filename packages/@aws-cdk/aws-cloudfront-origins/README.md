@@ -29,7 +29,7 @@ new cloudfront.Distribution(this, 'myDist', {
 
 The above will treat the bucket differently based on if `IBucket.isWebsite` is set or not. If the bucket is configured as a website, the bucket is
 treated as an HTTP origin, and the built-in S3 redirects and error pages can be used. Otherwise, the bucket is handled as a bucket origin and
-CloudFront's redirect and error handling will be used. In the latter case, the Origin wil create an origin access identity and grant it access to the
+CloudFront's redirect and error handling will be used. In the latter case, the Origin will create an origin access identity and grant it access to the
 underlying bucket. This can be used in conjunction with a bucket that is not public to require that your users access your content using CloudFront
 URLs and not S3 URLs directly. Alternatively, a custom origin access identity can be passed to the S3 origin in the properties.
 

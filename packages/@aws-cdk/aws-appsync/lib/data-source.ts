@@ -3,7 +3,7 @@ import { Grant, IGrantable, IPrincipal, IRole, Role, ServicePrincipal } from '@a
 import { IFunction } from '@aws-cdk/aws-lambda';
 import { IDatabaseCluster } from '@aws-cdk/aws-rds';
 import { ISecret } from '@aws-cdk/aws-secretsmanager';
-import { IResolvable, Stack } from '@aws-cdk/core';
+import { IResolvable, Lazy, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { BaseAppsyncFunctionProps, AppsyncFunction } from './appsync-function';
 import { CfnDataSource } from './appsync.generated';
@@ -318,17 +318,25 @@ export class RdsDataSource extends BackedDataSource {
       relationalDatabaseConfig: {
         rdsHttpEndpointConfig: {
           awsRegion: props.databaseCluster.stack.region,
-          dbClusterIdentifier: props.databaseCluster.clusterIdentifier,
+          dbClusterIdentifier: Lazy.string({
+            produce: () => {
+              return Stack.of(this).formatArn({
+                service: 'rds',
+                resource: `cluster:${props.databaseCluster.clusterIdentifier}`,
+              });
+            },
+          }),
           awsSecretStoreArn: props.secretStore.secretArn,
         },
         relationalDatabaseSourceType: 'RDS_HTTP_ENDPOINT',
       },
     });
-    props.secretStore.grantRead(this);
     const clusterArn = Stack.of(this).formatArn({
       service: 'rds',
       resource: `cluster:${props.databaseCluster.clusterIdentifier}`,
     });
+    props.secretStore.grantRead(this);
+
     // Change to grant with RDS grant becomes implemented
     Grant.addToPrincipal({
       grantee: this,

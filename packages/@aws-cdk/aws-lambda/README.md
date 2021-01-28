@@ -270,16 +270,23 @@ to learn more about AWS Lambda's X-Ray support.
 
 ## Lambda with Profiling
 
+The following code configures the lambda function with CodeGuru profiling. By default, this creates a new CodeGuru
+profiling group -
+
 ```ts
 import * as lambda from '@aws-cdk/aws-lambda';
 
 const fn = new lambda.Function(this, 'MyFunction', {
-    runtime: lambda.Runtime.NODEJS_10_X,
+    runtime: lambda.Runtime.PYTHON_3_6,
     handler: 'index.handler',
-    code: lambda.Code.fromInline('exports.handler = function(event, ctx, cb) { return cb(null, "hi"); }'),
+    code: lambda.Code.fromAsset('lambda-handler'),
     profiling: true
 });
 ```
+
+The `profilingGroup` property can be used to configure an existing CodeGuru profiler group.
+
+CodeGuru profiling is supported for all Java runtimes and Python3.6+ runtimes.
 
 See [the AWS documentation](https://docs.aws.amazon.com/codeguru/latest/profiler-ug/setting-up-lambda.html)
 to learn more about AWS Lambda's Profiling support.
@@ -458,5 +465,5 @@ new lambda.Function(this, 'Function', {
 
 Language-specific higher level constructs are provided in separate modules:
 
-* Node.js: [`@aws-cdk/aws-lambda-nodejs`](https://github.com/aws/aws-cdk/tree/master/packages/%40aws-cdk/aws-lambda-nodejs)
-* Python: [`@aws-cdk/aws-lambda-python`](https://github.com/aws/aws-cdk/tree/master/packages/%40aws-cdk/aws-lambda-python)
+* `@aws-cdk/aws-lambda-nodejs`: [Github](https://github.com/aws/aws-cdk/tree/master/packages/%40aws-cdk/aws-lambda-nodejs) & [CDK Docs](https://docs.aws.amazon.com/cdk/api/latest/docs/aws-lambda-nodejs-readme.html)
+* `@aws-cdk/aws-lambda-python`: [Github](https://github.com/aws/aws-cdk/tree/master/packages/%40aws-cdk/aws-lambda-python) & [CDK Docs](https://docs.aws.amazon.com/cdk/api/latest/docs/aws-lambda-python-readme.html)
