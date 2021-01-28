@@ -75,7 +75,7 @@ interface FileOptions {
 }
 
 /**
- * Obtains applied when copying directories into the staging location.
+ * Options applied when copying directories
  */
 export interface CopyOptions extends FileOptions {
   /**
