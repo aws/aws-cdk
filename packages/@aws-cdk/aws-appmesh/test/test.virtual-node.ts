@@ -19,11 +19,11 @@ export = {
 
         const service1 = new appmesh.VirtualService(stack, 'service-1', {
           virtualServiceName: 'service1.domain.local',
-          mesh,
+          virtualServiceProvider: appmesh.VirtualServiceProvider.none(mesh),
         });
         const service2 = new appmesh.VirtualService(stack, 'service-2', {
           virtualServiceName: 'service2.domain.local',
-          mesh,
+          virtualServiceProvider: appmesh.VirtualServiceProvider.none(mesh),
         });
 
         const node = new appmesh.VirtualNode(stack, 'test-node', {
@@ -319,7 +319,7 @@ export = {
 
         const service1 = new appmesh.VirtualService(stack, 'service-1', {
           virtualServiceName: 'service1.domain.local',
-          mesh,
+          virtualServiceProvider: appmesh.VirtualServiceProvider.none(mesh),
           clientPolicy: appmesh.ClientPolicy.fileTrust({
             certificateChain: 'path-to-certificate',
             ports: [8080, 8081],
