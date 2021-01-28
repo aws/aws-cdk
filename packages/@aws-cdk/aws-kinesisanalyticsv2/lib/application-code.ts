@@ -15,6 +15,7 @@ export abstract class ApplicationCode {
     return new AssetApplicationCode(path, options);
   }
 
+  abstract readonly bucket?: s3.IBucket;
   public abstract bind(scope: Construct): CodeConfiguration;
 }
 
@@ -84,6 +85,10 @@ class AssetApplicationCode extends ApplicationCode {
 
   get asset(): s3_assets.Asset | undefined {
     return this._asset;
+  }
+
+  get bucket(): s3.IBucket | undefined {
+    return this._asset?.bucket;
   }
 }
 

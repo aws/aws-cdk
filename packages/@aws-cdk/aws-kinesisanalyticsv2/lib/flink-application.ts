@@ -227,11 +227,18 @@ export class FlinkApplication extends FlinkApplicationBase {
       resources: ['*'],
     }));
 
+    // TODO: Refactor to make this bug impossible
+    const code = props.code.bind(this);
+    if (!props.code.bucket) {
+      throw new Error('BUG: Bound code is missing its bucket.');
+    }
+    props.code.bucket.grantRead(this);
+
     const resource = new CfnApplication(this, 'Resource', {
       runtimeEnvironment: props.runtime.value,
       serviceExecutionRole: this.role.roleArn,
       applicationConfiguration: {
-        applicationCodeConfiguration: props.code.bind(this),
+        applicationCodeConfiguration: code,
         environmentProperties: props.propertyGroups?.length
           ? { propertyGroups: props.propertyGroups.map(pg => pg.toCfn()) }
           : undefined,
@@ -261,7 +268,7 @@ export class FlinkApplication extends FlinkApplicationBase {
       removalPolicy: core.RemovalPolicy.DESTROY,
     });
 
-    const logStreamArn = `${logGroup.logGroupArn}:log-stream:${logStream.logStreamName}`;
+    const logStreamArn = `arn:${core.Aws.PARTITION}:logs:${core.Aws.REGION}:${core.Aws.ACCOUNT_ID}:log-group:${logGroup.logGroupName}:log-stream:${logStream.logStreamName}`;
 
     // Permit logging
     this.role.addToPrincipalPolicy(new iam.PolicyStatement({

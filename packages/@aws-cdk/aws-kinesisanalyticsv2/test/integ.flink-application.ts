@@ -1,22 +1,13 @@
-/*
- * Our integration tests act as snapshot tests to make sure the rendered template is stable.
- * If any changes to the result are required,
- * you need to perform an actual CloudFormation deployment of this application,
- * and, if it is successful, a new snapshot will be written out.
- *
- * For more information on CDK integ tests,
- * see the main CONTRIBUTING.md file.
- */
-
 import * as core from '@aws-cdk/core';
-// as in unit tests, we use a qualified import,
-// not bring in individual classes
+import * as path from 'path';
 import * as ka from '../lib';
 
 const app = new core.App();
+const stack = new core.Stack(app, 'FlinkAppTest');
 
-const stack = new core.Stack(app, 'ExampleResourceIntegTestStack');
-
-new ka.FlinkApplication(stack, 'ExampleResource', {});
+new ka.FlinkApplication(stack, 'App', {
+  code: ka.ApplicationCode.fromAsset(path.join(__dirname, 'code-asset')),
+  runtime: ka.FlinkRuntime.FLINK_1_11,
+});
 
 app.synth();
