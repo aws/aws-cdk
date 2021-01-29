@@ -92,6 +92,36 @@ nested stack and referenced using `Fn::GetAtt "Outputs.Xxx"` from the parent.
 
 Nested stacks also support the use of Docker image and file assets.
 
+### Breaking automatic references
+
+The automatic references created by CDK when you use resources across stacks
+are convenient, but may block your deployments if you want to remove the
+resources that are referenced in this way. You will see an error like:
+
+```
+Export Producer:ExportsOutputFnGetAtt-****** cannot be deleted as it is in use by Consumer
+```
+
+Let's say there is a Bucket in the `producer`, and the `consumer` references its
+`bucket.bucketName`. You now want to remove the bucket and run into the error above.
+
+Unblocking yourself from this is a two-step process. This is how it works:
+
+DEPLOYMENT 1: break the relationship
+
+- Make sure `consumer` no longer references `bucket.bucketName` (maybe the consumer
+  stack now uses its own bucket, or it writes to a Dynamo table, or maybe you just
+  remove the Lambda Function altogether).
+- In the `producer` class, call `this.exportAttribute(this.bucket.bucketName)`. This
+  will make sure the CloudFormation Export continues to exist while the relationship
+  between the two stacks is being broken.
+- Deploy (this will effectively only change the `consumer`, but it's safe to deploy both).
+
+DEPLOYMENT 2: remove the resource
+
+- You are now free to remove the `bucket` resource from `producer`.
+- Don't forget to remove the `exportAttribute()` call as well.
+- Deploy again (this time only the `producer` will be changed -- the bucket will be deleted).
 
 ## Durations
 
