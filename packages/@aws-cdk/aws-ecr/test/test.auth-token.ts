@@ -42,7 +42,10 @@ export = {
       PolicyDocument: {
         Statement: [
           {
-            Action: 'ecr-public:GetAuthorizationToken',
+            Action: [
+              'ecr-public:GetAuthorizationToken',
+              'sts:GetServiceBearerToken',
+            ],
             Effect: 'Allow',
             Resource: '*',
           },
