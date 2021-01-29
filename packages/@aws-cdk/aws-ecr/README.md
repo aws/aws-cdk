@@ -57,7 +57,7 @@ const user = new iam.User(this, 'User', { ... });
 ecr.AuthorizationToken.grantRead(user);
 ```
 
-If you use `docker` to also pull images from the [Public ECR Gallery](https://gallery.ecr.aws/), its recommended you authenticate to the regsitry and benefit from
+If you access images in the [Public ECR Gallery](https://gallery.ecr.aws/) as well, it is recommended you authenticate to the regsitry to benefit from
 higher rate and bandwidth limits.
 
 > See `Pricing` in https://aws.amazon.com/blogs/aws/amazon-ecr-public-a-new-public-container-registry/.
