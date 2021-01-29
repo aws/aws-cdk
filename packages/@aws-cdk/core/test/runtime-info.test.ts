@@ -1,73 +1,138 @@
-import * as fs from 'fs';
-import * as os from 'os';
 import * as path from 'path';
-import { nodeunitShim, Test } from 'nodeunit-shim';
-import { collectRuntimeInformation } from '../lib/private/runtime-info';
+import { App, Stack } from '../lib';
+import { constructInfoFromConstruct, constructInfoFromStack } from '../lib/private/runtime-info';
 
-nodeunitShim({
-  'version reporting includes @aws-solutions-konstruk libraries'(test: Test) {
-    const pkgdir = fs.mkdtempSync(path.join(os.tmpdir(), 'runtime-info-konstruk-fixture'));
-    const mockVersion = '1.2.3';
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct } from '../lib';
 
-    fs.writeFileSync(path.join(pkgdir, 'index.js'), 'module.exports = \'this is foo\';');
-    fs.writeFileSync(path.join(pkgdir, 'package.json'), JSON.stringify({
-      name: '@aws-solutions-konstruk/foo',
-      version: mockVersion,
-    }));
+const JSII_RUNTIME_SYMBOL = Symbol.for('jsii.rtti');
 
-    // eslint-disable-next-line @typescript-eslint/no-require-imports, import/no-extraneous-dependencies
-    require(pkgdir);
+let app: App;
+let stack: Stack;
+let _cdkVersion: string | undefined = undefined;
+const modulePrefix = cdkMajorVersion() === 1 ? '@aws-cdk/core' : 'aws-cdk-lib';
 
-    const runtimeInfo = collectRuntimeInformation();
+// The runtime metadata this test relies on is only available if the most
+// recent compile has happened using 'jsii', as the jsii compiler injects
+// this metadata.
+//
+// If the most recent compile was using 'tsc', the metadata will not have
+// been injected, and the test suite will fail.
+//
+// Tolerate `tsc` builds locally, but not on CodeBuild.
+const codeBuild = !!process.env.CODEBUILD_BUILD_ID;
+const moduleCompiledWithTsc = constructInfoFromConstruct(new Stack())?.fqn === 'constructs.Construct';
+let describeTscSafe = describe;
+if (moduleCompiledWithTsc && !codeBuild) {
+  // eslint-disable-next-line
+  console.error('It appears this module was compiled with `tsc` instead of `jsii` in a local build. Skipping this test suite.');
+  describeTscSafe = describe.skip;
+}
 
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    test.deepEqual(runtimeInfo.libraries['@aws-solutions-konstruk/foo'], mockVersion);
-    test.done();
-  },
-
-  'version reporting finds aws-rfdk package'(test: Test) {
-    const pkgdir = fs.mkdtempSync(path.join(os.tmpdir(), 'runtime-info-rfdk'));
-    const mockVersion = '1.2.3';
-
-    fs.writeFileSync(path.join(pkgdir, 'index.js'), 'module.exports = \'this is foo\';');
-    fs.writeFileSync(path.join(pkgdir, 'package.json'), JSON.stringify({
-      name: 'aws-rfdk',
-      version: mockVersion,
-    }));
-
-    // eslint-disable-next-line @typescript-eslint/no-require-imports, import/no-extraneous-dependencies
-    require(pkgdir);
-
-    const runtimeInfo = collectRuntimeInformation();
-
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    test.deepEqual(runtimeInfo.libraries['aws-rfdk'], mockVersion);
-    test.done();
-  },
-
-  'version reporting finds no version with no associated package.json'(test: Test) {
-    const pkgdir = fs.mkdtempSync(path.join(os.tmpdir(), 'runtime-info-find-npm-package-fixture'));
-    const mockVersion = '1.2.3';
-
-    fs.writeFileSync(path.join(pkgdir, 'index.js'), 'module.exports = \'this is bar\';');
-    fs.mkdirSync(path.join(pkgdir, 'bar'));
-    fs.writeFileSync(path.join(pkgdir, 'bar', 'package.json'), JSON.stringify({
-      name: '@aws-solutions-konstruk/bar',
-      version: mockVersion,
-    }));
-
-    // eslint-disable-next-line @typescript-eslint/no-require-imports, import/no-extraneous-dependencies
-    require(pkgdir);
-
-    const cwd = process.cwd();
-
-    // Switch to `bar` where the package.json is, then resolve version.  Fails when module.resolve
-    // is passed an empty string in the paths array.
-    process.chdir(path.join(pkgdir, 'bar'));
-    const runtimeInfo = collectRuntimeInformation();
-    process.chdir(cwd);
-
-    test.equal(runtimeInfo.libraries['@aws-solutions-konstruk/bar'], undefined);
-    test.done();
-  },
+beforeEach(() => {
+  app = new App();
+  stack = new Stack(app, 'Stack', {
+    analyticsReporting: true,
+  });
 });
+
+describeTscSafe('constructInfoFromConstruct', () => {
+  test('returns fqn and version for core constructs', () => {
+    const constructInfo = constructInfoFromConstruct(stack);
+    expect(constructInfo).toBeDefined();
+    expect(constructInfo?.fqn).toEqual(`${modulePrefix}.Stack`);
+    expect(constructInfo?.version).toEqual(localCdkVersion());
+  });
+
+  test('returns base construct info if no more specific info is present', () => {
+    const simpleConstruct = new class extends Construct { }(stack, 'Simple');
+    const constructInfo = constructInfoFromConstruct(simpleConstruct);
+    expect(constructInfo?.fqn).toEqual(`${modulePrefix}.Construct`);
+  });
+
+  test('returns more specific subclass info if present', () => {
+    const construct = new class extends Construct {
+      // @ts-ignore
+      private static readonly [JSII_RUNTIME_SYMBOL] = { fqn: 'aws-cdk-lib.TestConstruct', version: localCdkVersion() }
+    }(stack, 'TestConstruct');
+
+    const constructInfo = constructInfoFromConstruct(construct);
+    expect(constructInfo?.fqn).toEqual('aws-cdk-lib.TestConstruct');
+  });
+});
+
+describeTscSafe('constructInfoForStack', () => {
+  test('returns stack itself and jsii runtime if stack is empty', () => {
+    const constructInfos = constructInfoFromStack(stack);
+
+    expect(constructInfos.length).toEqual(2);
+
+    const stackInfo = constructInfos.find(i => /Stack/.test(i.fqn));
+    const jsiiInfo = constructInfos.find(i => i.fqn === 'jsii-runtime.Runtime');
+    expect(stackInfo?.fqn).toEqual(`${modulePrefix}.Stack`);
+    expect(stackInfo?.version).toEqual(localCdkVersion());
+    expect(jsiiInfo?.version).toMatch(/node.js/);
+  });
+
+  test('returns info for constructs added to the stack', () => {
+    new class extends Construct { }(stack, 'Simple');
+
+    const constructInfos = constructInfoFromStack(stack);
+
+    expect(constructInfos.length).toEqual(3);
+    expect(constructInfos.map(info => info.fqn)).toContain(`${modulePrefix}.Construct`);
+  });
+
+  test('returns unique info (no duplicates)', () => {
+    new class extends Construct { }(stack, 'Simple1');
+    new class extends Construct { }(stack, 'Simple2');
+
+    const constructInfos = constructInfoFromStack(stack);
+
+    expect(constructInfos.length).toEqual(3);
+    expect(constructInfos.map(info => info.fqn)).toContain(`${modulePrefix}.Construct`);
+  });
+
+  test('returns info from nested constructs', () => {
+    new class extends Construct {
+      constructor(scope: Construct, id: string) {
+        super(scope, id);
+        return new class extends Construct {
+          // @ts-ignore
+          private static readonly [JSII_RUNTIME_SYMBOL] = { fqn: '@aws-cdk/test.TestV1Construct', version: localCdkVersion() }
+        }(this, 'TestConstruct');
+      }
+    }(stack, 'Nested');
+
+    const constructInfos = constructInfoFromStack(stack);
+
+    expect(constructInfos.length).toEqual(4);
+    expect(constructInfos.map(info => info.fqn)).toContain('@aws-cdk/test.TestV1Construct');
+  });
+});
+
+function cdkMajorVersion(): number {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  return require('../../../../release.json').majorVersion;
+}
+
+/**
+ * The exact values we expect from testing against version numbers in this suite depend on whether we're running
+ * locally or on CodeBuild. If local, the version reported for all constructs will be 0.0.0; for CodeBuild, this
+ * will instead be the real CDK version number.
+ * Returns an accurate version number if running on CodeBuild; otherwise returns 0.0.0 for local development
+ */
+function localCdkVersion(): string {
+  if (!_cdkVersion) {
+    if (codeBuild) {
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      _cdkVersion = require(path.join('..', '..', '..', '..', 'scripts', 'resolve-version.js')).version;
+      if (!_cdkVersion) {
+        throw new Error('Unable to determine CDK version');
+      }
+    } else {
+      _cdkVersion = '0.0.0';
+    }
+  }
+  return _cdkVersion;
+}

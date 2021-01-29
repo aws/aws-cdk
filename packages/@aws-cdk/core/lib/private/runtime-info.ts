@@ -1,95 +1,62 @@
-import { basename, dirname } from 'path';
-import * as cxschema from '@aws-cdk/cloud-assembly-schema';
-import { major as nodeMajorVersion } from './node-version';
+import { IConstruct } from '../construct-compat';
+import { Stack } from '../stack';
 
-// list of NPM scopes included in version reporting e.g. @aws-cdk and @aws-solutions-konstruk
-const ALLOWED_SCOPES = ['@aws-cdk', '@aws-cdk-containers', '@aws-solutions-konstruk', '@aws-solutions-constructs', '@amzn'];
-// list of NPM packages included in version reporting
-const ALLOWED_PACKAGES = ['aws-rfdk', 'aws-cdk-lib', 'monocdk'];
+const ALLOWED_FQN_PREFIXES = [
+  // SCOPES
+  '@aws-cdk/', '@aws-cdk-containers/', '@aws-solutions-konstruk/', '@aws-solutions-constructs/', '@amzn/',
+  // PACKAGES
+  'aws-rfdk.', 'aws-cdk-lib.', 'monocdk.',
+];
 
 /**
- * Returns a list of loaded modules and their versions.
+ * Symbol for accessing jsii runtime information
+ *
+ * Introduced in jsii 1.19.0, cdk 1.90.0.
  */
-export function collectRuntimeInformation(): cxschema.RuntimeInfo {
-  const libraries: { [name: string]: string } = {};
+const JSII_RUNTIME_SYMBOL = Symbol.for('jsii.rtti');
 
-  for (const fileName of Object.keys(require.cache)) {
-    const pkg = findNpmPackage(fileName);
-    if (pkg && !pkg.private) {
-      libraries[pkg.name] = pkg.version;
-    }
+/**
+ * Source information on a construct (class fqn and version)
+ */
+export interface ConstructInfo {
+  readonly fqn: string;
+  readonly version: string;
+}
+
+export function constructInfoFromConstruct(construct: IConstruct): ConstructInfo | undefined {
+  const jsiiRuntimeInfo = Object.getPrototypeOf(construct).constructor[JSII_RUNTIME_SYMBOL];
+  if (typeof jsiiRuntimeInfo === 'object'
+    && jsiiRuntimeInfo !== null
+    && typeof jsiiRuntimeInfo.fqn === 'string'
+    && typeof jsiiRuntimeInfo.version === 'string') {
+    return { fqn: jsiiRuntimeInfo.fqn, version: jsiiRuntimeInfo.version };
   }
-
-  // include only libraries that are in the allowlistLibraries list
-  for (const name of Object.keys(libraries)) {
-    let foundMatch = false;
-    for (const scope of ALLOWED_SCOPES) {
-      if (name.startsWith(`${scope}/`)) {
-        foundMatch = true;
-      }
-    }
-    foundMatch = foundMatch || ALLOWED_PACKAGES.includes(name);
-
-    if (!foundMatch) {
-      delete libraries[name];
-    }
-  }
-
-  // add jsii runtime version
-  libraries['jsii-runtime'] = getJsiiAgentVersion();
-
-  return { libraries };
+  return undefined;
 }
 
 /**
- * Determines which NPM module a given loaded javascript file is from.
- *
- * The only infromation that is available locally is a list of Javascript files,
- * and every source file is associated with a search path to resolve the further
- * ``require`` calls made from there, which includes its own directory on disk,
- * and parent directories - for example:
- *
- * [ '...repo/packages/aws-cdk-resources/lib/cfn/node_modules',
- *   '...repo/packages/aws-cdk-resources/lib/node_modules',
- *   '...repo/packages/aws-cdk-resources/node_modules',
- *   '...repo/packages/node_modules',
- *   // etc...
- * ]
- *
- * We are looking for ``package.json`` that is anywhere in the tree, except it's
- * in the parent directory, not in the ``node_modules`` directory. For this
- * reason, we strip the ``/node_modules`` suffix off each path and use regular
- * module resolution to obtain a reference to ``package.json``.
- *
- * @param fileName a javascript file name.
- * @returns the NPM module infos (aka ``package.json`` contents), or
- *      ``undefined`` if the lookup was unsuccessful.
+ * For a given stack, walks the tree and finds the runtime info for all constructs within the tree.
+ * Returns the unique list of construct info present in the stack,
+ * as long as the construct fully-qualified names match the defined allow list.
  */
-function findNpmPackage(fileName: string): { name: string, version: string, private?: boolean } | undefined {
-  const mod = require.cache[fileName];
-
-  if (!mod?.paths) {
-    // sometimes this can be undefined. for example when querying for .json modules
-    // inside a jest runtime environment.
-    // see https://github.com/aws/aws-cdk/issues/7657
-    // potentially we can remove this if it turns out to be a bug in how jest implemented the 'require' module.
-    return undefined;
+export function constructInfoFromStack(stack: Stack): ConstructInfo[] {
+  function isConstructInfo(value: ConstructInfo | undefined): value is ConstructInfo {
+    return value !== undefined;
   }
 
-  // For any path in ``mod.paths`` that is a node_modules folder, use its parent directory instead.
-  const paths = mod?.paths.map((path: string) => basename(path) === 'node_modules' ? dirname(path) : path);
+  const allConstructInfos = stack.node.findAll()
+    .map(construct => constructInfoFromConstruct(construct))
+    .filter(isConstructInfo) // Type simplification
+    .filter(info => ALLOWED_FQN_PREFIXES.find(prefix => info.fqn.startsWith(prefix)));
 
-  try {
-    const packagePath = require.resolve(
-      // Resolution behavior changed in node 12.0.0 - https://github.com/nodejs/node/issues/27583
-      nodeMajorVersion >= 12 ? './package.json' : 'package.json',
-      { paths },
-    );
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    return require(packagePath);
-  } catch (e) {
-    return undefined;
-  }
+  // Adds the jsii runtime as a psuedo construct for reporting purposes.
+  allConstructInfos.push({
+    fqn: 'jsii-runtime.Runtime',
+    version: getJsiiAgentVersion(),
+  });
+
+  // Filter out duplicate values
+  return allConstructInfos.filter((info, index) => index === allConstructInfos.findIndex(i => i.fqn === info.fqn && i.version === info.version));
 }
 
 function getJsiiAgentVersion() {
