@@ -3,32 +3,44 @@ import * as sfn from '@aws-cdk/aws-stepfunctions';
 import { Construct } from 'constructs';
 import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
 
-/** Properties for calling a EKS endpoint with EksCall */
+/**
+ * Properties for calling a EKS endpoint with EksCall
+ */
 export interface EksCallProps extends sfn.TaskStateBaseProps {
 
-  /** Name of the cluster */
+  /**
+   * Name of the cluster
+   */
   readonly clusterName: string;
 
-  /** Base 64 encoded certificate data required to communicate with your cluster */
+  /**
+   * Base 64 encoded certificate data required to communicate with your cluster
+   */
   readonly certificateAuthority: string;
 
-  /** API endpoint to communicate with your cluster */
+  /**
+   * API endpoint to communicate with your cluster
+   */
   readonly endpoint: string;
 
-  /** The HTTP method ("GET", "POST", "PUT", ...) that clients use to call this method */
+  /**
+   * HTTP method ("GET", "POST", "PUT", ...) part of HTTP request
+   */
   readonly httpMethod: MethodType;
-
-  /** Path of cluster */
-  readonly path: string;
 
   /**
    * Path of cluster
+   */
+  readonly path: string;
+
+  /**
+   * Query Parameters part of HTTP request
    * @default - no query parameters
    */
   readonly queryParameters?: { [key: string]: string[] };
 
   /**
-   * request body of the http method
+   * Request body part of HTTP request
    * @default - No request body
    */
   readonly requestBody?: { [key: string]: any };
@@ -59,8 +71,6 @@ export class EksCall extends sfn.TaskStateBase {
 
   /**
    * Provides the EKS Call service integration task configuration
-   */
-  /**
    * @internal
    */
   protected _renderTask(): any {
@@ -79,26 +89,37 @@ export class EksCall extends sfn.TaskStateBase {
   }
 }
 
-/** Method type of a EKS call */
+/**
+ * Method type of a EKS call
+ */
 export enum MethodType {
-  /** Retreive data from a server at the specified resource */
+  /**
+   * Retrieve data from a server at the specified resource
+   */
   GET = 'GET',
 
-  /** Send data to the API endpoint to create or udpate a resource */
+  /**
+   * Send data to the API endpoint to create or update a resource
+   */
   POST = 'POST',
 
-  /** Send data to the API endpoint to update or create a resource */
+  /**
+   * Send data to the API endpoint to update or create a resource
+   */
   PUT = 'PUT',
 
-  /** Delete the resource at the specified endpoint */
+  /**
+   * Delete the resource at the specified endpoint
+   */
   DELETE = 'DELETE',
 
-  /** Apply partial modifications to the resource */
+  /**
+   * Apply partial modifications to the resource
+   */
   PATCH = 'PATCH',
 
-  /** Retreive data from a server at the specified resource without the response body */
-  HEAD = 'HEAD',
-
-  /** Return data describing what other methods and operations the server supports */
-  OPTIONS = 'OPTIONS'
+  /**
+   * Retrieve data from a server at the specified resource without the response body
+   */
+  HEAD = 'HEAD'
 }
