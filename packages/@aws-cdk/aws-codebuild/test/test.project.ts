@@ -482,8 +482,6 @@ export = {
     test.done();
   },
 
-
-
   'metric method generates a valid CloudWatch metric'(test: Test) {
     const stack = new cdk.Stack();
 
