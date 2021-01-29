@@ -1,4 +1,4 @@
-import { expect as expectCDK, haveResource, ResourcePart } from '@aws-cdk/assert';
+import { expect as expectCDK, haveResource, ResourcePart, countResources, countResourcesLike } from '@aws-cdk/assert';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as kms from '@aws-cdk/aws-kms';
 import { RemovalPolicy, Size, Stack, Tags } from '@aws-cdk/core';
@@ -243,16 +243,6 @@ test('can specify backup policy', () => {
 
 test('can create when using a VPC with multiple subnets per availability zone', () => {
   // WHEN
-  new ec2.Subnet(stack, 'subnet1', {
-    vpcId: vpc.vpcId,
-    availabilityZone: vpc.availabilityZones[0],
-    cidrBlock: vpc.vpcCidrBlock,
-  });
-  new ec2.Subnet(stack, 'subnet2', {
-    vpcId: vpc.vpcId,
-    availabilityZone: vpc.availabilityZones[0],
-    cidrBlock: vpc.vpcCidrBlock,
-  });
   new FileSystem(stack, 'EfsFileSystem', {
     vpc,
   });
@@ -261,6 +251,35 @@ test('can create when using a VPC with multiple subnets per availability zone', 
     DeletionPolicy: 'Retain',
     UpdateReplacePolicy: 'Retain',
   }, ResourcePart.CompleteDefinition));
-  expectCDK(stack).to(haveResource('AWS::EFS::MountTarget'));
-  expectCDK(stack).to(haveResource('AWS::EC2::SecurityGroup'));
+  expectCDK(stack).to(countResourcesLike('AWS::EC2::Subnet', 2, {
+    AvailabilityZone: {
+      'Fn::Select': [
+        0,
+        {
+          'Fn::GetAZs': '',
+        },
+      ],
+    },
+  }));
+  expectCDK(stack).to(countResourcesLike('AWS::EC2::Subnet', 2, {
+    AvailabilityZone: {
+      'Fn::Select': [
+        1,
+        {
+          'Fn::GetAZs': '',
+        },
+      ],
+    },
+  }));
+  expectCDK(stack).to(countResources('AWS::EFS::MountTarget', 2));
+  expectCDK(stack).to(haveResource('AWS::EFS::MountTarget', {
+    SubnetId: {
+      Ref: 'VPCPrivateSubnet1Subnet8BCA10E0',
+    },
+  }));
+  expectCDK(stack).to(haveResource('AWS::EFS::MountTarget', {
+    SubnetId: {
+      Ref: 'VPCPrivateSubnet2SubnetCFCDAA7A',
+    },
+  }));
 });
