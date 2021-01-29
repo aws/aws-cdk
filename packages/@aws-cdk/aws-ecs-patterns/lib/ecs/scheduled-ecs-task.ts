@@ -1,5 +1,4 @@
 import { Ec2TaskDefinition } from '@aws-cdk/aws-ecs';
-import { EcsTask } from '@aws-cdk/aws-events-targets';
 import { Construct } from 'constructs';
 import { ScheduledTaskBase, ScheduledTaskBaseProps, ScheduledTaskImageProps } from '../base/scheduled-task-base';
 

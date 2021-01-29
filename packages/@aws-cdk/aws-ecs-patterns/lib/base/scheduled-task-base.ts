@@ -151,6 +151,11 @@ export abstract class ScheduledTaskBase extends CoreConstruct {
     });
   }
 
+  /**
+   * Create an ECS task using the task definition provided and add it to the scheduled event rule.
+   *
+   * @param taskDefinition the TaskDefinition to add to the event rule
+   */
   protected addTaskDefinitionToEventTarget(taskDefinition: TaskDefinition): EcsTask {
     // Use the EcsTask as the target of the EventRule
     const eventRuleTarget = new EcsTask( {
