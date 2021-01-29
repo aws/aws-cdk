@@ -1,6 +1,6 @@
 import { Schedule } from '@aws-cdk/aws-applicationautoscaling';
 import { IVpc, SubnetSelection, SubnetType } from '@aws-cdk/aws-ec2';
-import { AwsLogDriver, Cluster, ContainerImage, ICluster, LogDriver, Secret } from '@aws-cdk/aws-ecs';
+import { AwsLogDriver, Cluster, ContainerImage, ICluster, LogDriver, Secret, TaskDefinition } from '@aws-cdk/aws-ecs';
 import { Rule } from '@aws-cdk/aws-events';
 import { EcsTask } from '@aws-cdk/aws-events-targets';
 import { Stack } from '@aws-cdk/core';
@@ -149,6 +149,20 @@ export abstract class ScheduledTaskBase extends CoreConstruct {
       schedule: props.schedule,
       ruleName: props.ruleName,
     });
+  }
+
+  protected addTaskDefinitionToEventTarget(taskDefinition: TaskDefinition): EcsTask {
+    // Use the EcsTask as the target of the EventRule
+    const eventRuleTarget = new EcsTask( {
+      cluster: this.cluster,
+      taskDefinition,
+      taskCount: this.desiredTaskCount,
+      subnetSelection: this.subnetSelection,
+    });
+
+    this.addTaskAsTarget(eventRuleTarget);
+
+    return eventRuleTarget;
   }
 
   /**

@@ -114,14 +114,6 @@ export class ScheduledEc2Task extends ScheduledTaskBase {
       throw new Error('You must specify a taskDefinition or image');
     }
 
-    // Use the EcsTask as the target of the EventRule
-    const eventRuleTarget = new EcsTask( {
-      cluster: this.cluster,
-      taskDefinition: this.taskDefinition,
-      taskCount: this.desiredTaskCount,
-      subnetSelection: this.subnetSelection,
-    });
-
-    this.addTaskAsTarget(eventRuleTarget);
+    this.addTaskDefinitionToEventTarget(this.taskDefinition);
   }
 }
