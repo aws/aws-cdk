@@ -2,6 +2,8 @@ import * as iam from '@aws-cdk/aws-iam';
 
 /**
  * Authorization token to access private ECR repositories in the current environment via Docker CLI.
+ *
+ * @see https://docs.aws.amazon.com/AmazonECR/latest/userguide/registry_auth.html
  */
 export class AuthorizationToken {
   /**
@@ -21,6 +23,8 @@ export class AuthorizationToken {
 
 /**
  * Authorization token to access the global public ECR Gallery via Docker CLI.
+ *
+ * @see https://docs.aws.amazon.com/AmazonECR/latest/public/public-registries.html#public-registry-auth
  */
 export class PublicGalleryAuthorizationToken {
 
