@@ -35,6 +35,7 @@ export class PublicGalleryAuthorizationToken {
     grantee.grantPrincipal.addToPrincipalPolicy(new iam.PolicyStatement({
       actions: ['ecr-public:GetAuthorizationToken', 'sts:GetServiceBearerToken'],
       // GetAuthorizationToken only allows '*'. See https://docs.aws.amazon.com/service-authorization/latest/reference/list_amazonelasticcontainerregistry.html#amazonelasticcontainerregistry-actions-as-permissions
+      // GetServiceBearerToken only allows '*'. See https://docs.aws.amazon.com/service-authorization/latest/reference/list_awssecuritytokenservice.html#awssecuritytokenservice-actions-as-permissions
       resources: ['*'],
     }));
   }
