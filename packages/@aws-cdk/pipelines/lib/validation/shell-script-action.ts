@@ -62,6 +62,13 @@ export interface ShellScriptActionProps {
   readonly environment?: codebuild.BuildEnvironment
 
   /**
+   * Environment variables to send into build
+   *
+   * @default - No additional environment variables
+   */
+  readonly environmentVariables?: Record<string, codebuild.BuildEnvironmentVariable>;
+
+  /**
    * RunOrder for this action
    *
    * Use this to sequence the shell script after the deployments.
@@ -210,6 +217,7 @@ export class ShellScriptAction implements codepipeline.IAction, iam.IGrantable {
       extraInputs: inputs.slice(1),
       runOrder: this.props.runOrder ?? 100,
       project: this._project,
+      environmentVariables: this.props.environmentVariables,
     });
     // Replace the placeholder actionProperties at the last minute
     this._actionProperties = this._action.actionProperties;
