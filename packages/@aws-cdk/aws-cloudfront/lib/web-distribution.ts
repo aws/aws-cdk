@@ -7,6 +7,7 @@ import { Construct } from 'constructs';
 import { CfnDistribution } from './cloudfront.generated';
 import { HttpVersion, IDistribution, LambdaEdgeEventType, OriginProtocolPolicy, PriceClass, ViewerProtocolPolicy, SSLMethod, SecurityPolicyProtocol } from './distribution';
 import { GeoRestriction } from './geo-restriction';
+import { IKeyGroup } from './key-group';
 import { IOriginAccessIdentity } from './origin-access-identity';
 
 /**
@@ -347,8 +348,17 @@ export interface Behavior {
    * The signers are the account IDs that are allowed to sign cookies/presigned URLs for this distribution.
    *
    * If you pass a non empty value, all requests for this behavior must be signed (no public access will be allowed)
+   * @deprecated - We recommend using TrustedKeyGroups instead of TrustedSigners.
    */
   readonly trustedSigners?: string[];
+
+  /**
+   * A list of Key Groups that CloudFront can use to validate signed URLs or signed cookies.
+   *
+   * @default - no KeyGroups are associated with cache behavior
+   * @see https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/PrivateContent.html
+   */
+  readonly trustedKeyGroups?: IKeyGroup[];
 
   /**
    *
@@ -932,6 +942,7 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
       forwardedValues: input.forwardedValues || { queryString: false, cookies: { forward: 'none' } },
       maxTtl: input.maxTtl && input.maxTtl.toSeconds(),
       minTtl: input.minTtl && input.minTtl.toSeconds(),
+      trustedKeyGroups: input.trustedKeyGroups?.map(key => key.keyGroupId),
       trustedSigners: input.trustedSigners,
       targetOriginId: input.targetOriginId,
       viewerProtocolPolicy: protoPolicy || ViewerProtocolPolicy.REDIRECT_TO_HTTPS,

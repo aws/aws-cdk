@@ -57,6 +57,9 @@ export class CacheBehavior {
           includeBody: edgeLambda.includeBody,
         }))
         : undefined,
+      trustedKeyGroups: this.props.trustedKeyGroups
+        ? this.props.trustedKeyGroups.map(keyGroup => keyGroup.keyGroupId)
+        : undefined,
     };
   }
 
