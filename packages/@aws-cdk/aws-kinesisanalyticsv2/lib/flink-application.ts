@@ -4,9 +4,10 @@ import * as core from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { ApplicationCode } from './application-code';
 import { CfnApplication, CfnApplicationCloudWatchLoggingOption } from './kinesisanalyticsv2.generated';
-import { flinkApplicationConfiguration, FlinkLogLevel, FlinkMetricsLevel } from './private/flink-application-configuration';
+import { flinkApplicationConfiguration } from './private/flink-application-configuration';
 import { validateFlinkApplicationProps } from './private/validation';
 import { PropertyGroup } from './property-group';
+import { FlinkLogLevel, FlinkMetricsLevel } from './types';
 
 export interface IFlinkApplication extends core.IResource, iam.IGrantable {
   /**
