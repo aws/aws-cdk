@@ -294,10 +294,10 @@ A name can also be given to the change set to make it easier to later execute.
 $ cdk deploy --no-execute --change-set-name MyChangeSetName
 ```
 
-Additionally, a change set can always be generated, even when it would be empty (no changes to deploy). Empty change sets cannot be executed, but some tools always require a change set, such as AWS CodePipeline's CloudFormation action.
+Tools like AWS CodePipeline's CloudFormation action always require a change set, even when there are no changes to deploy and the change set is empty. By default, the CDK does not generate empty change sets. To generate both empty and non-empty change sets without executing them, use: 
 
 ```console
-$ cdk deploy --no-execute --force --retain-empty-change-set --change-set-name MyChangeSetName
+$ cdk deploy --force --no-execute --change-set-name MyChangeSetName
 ```
 
 ### `cdk destroy`

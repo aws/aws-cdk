@@ -165,34 +165,6 @@ integTest('deploy without execute a named change set', withDefaultFixture(async 
   expect(changeSets[0].Status).toEqual('CREATE_COMPLETE');
 }));
 
-integTest('deploy without execute a named empty change set ', withDefaultFixture(async (fixture) => {
-  const changeSetName = 'custom-change-set-name';
-
-  //deploy a stack
-  let stackArn = await fixture.cdkDeploy('test-2', {
-    captureStderr: false,
-  });
-
-  // verify that we only deployed a single stack (there's a single ARN in the output)
-  expect(stackArn.split('\n').length).toEqual(1);
-
-  //deploy again without executing the change set
-  stackArn = await fixture.cdkDeploy('test-2', {
-    options: ['--no-execute', '--force', '--retain-empty-change-set', '--change-set-name', changeSetName],
-    captureStderr: false,
-  });
-
-  //fetch the change set and verify it is empty (and not deleted) and has the given name
-  const changeSetResponse = await fixture.aws.cloudFormation('listChangeSets', {
-    StackName: stackArn,
-  });
-
-  const changeSets = changeSetResponse.Summaries || [];
-  expect(changeSets.length).toEqual(1);
-  expect(changeSets[0].ChangeSetName).toEqual(changeSetName);
-  expect(changeSets[0].StatusReason).toMatch(/^The submitted information didn't contain changes/);
-}));
-
 integTest('security related changes without a CLI are expected to fail', withDefaultFixture(async (fixture) => {
   // redirect /dev/null to stdin, which means there will not be tty attached
   // since this stack includes security-related changes, the deployment should

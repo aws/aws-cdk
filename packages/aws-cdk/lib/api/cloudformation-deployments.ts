@@ -76,11 +76,6 @@ export interface DeployStackOptions {
   changeSetName?: string;
 
   /**
-   * Optionally retain empty CloudFormation change sets instead of deleting them.
-   */
-  retainEmptyChangeSet?: boolean;
-
-  /**
    * Force deployment, even if the deployed template is identical to the one we are about to deploy.
    * @default false deployment will be skipped if the template is identical
    */
@@ -185,7 +180,6 @@ export class CloudFormationDeployments {
       tags: options.tags,
       execute: options.execute,
       changeSetName: options.changeSetName,
-      retainEmptyChangeSet: options.retainEmptyChangeSet,
       force: options.force,
       parameters: options.parameters,
       usePreviousParameters: options.usePreviousParameters,

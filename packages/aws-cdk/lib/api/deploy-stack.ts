@@ -138,11 +138,6 @@ export interface DeployStackOptions {
   changeSetName?: string;
 
   /**
-   * Optionally retain empty CloudFormation change sets instead of deleting them.
-   */
-  retainEmptyChangeSet?: boolean;
-
-  /**
    * The collection of extra parameters
    * (in addition to those used for assets)
    * to pass to the deployed template.
@@ -273,7 +268,7 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
 
   if (changeSetHasNoChanges(changeSetDescription)) {
     debug('No changes are to be performed on %s.', deployName);
-    if (!options.retainEmptyChangeSet) {
+    if (options.execute) {
       await cfn.deleteChangeSet({ StackName: deployName, ChangeSetName: changeSetName }).promise();
     }
     return { noOp: true, outputs: cloudFormationStack.outputs, stackArn: changeSet.StackId!, stackArtifact };

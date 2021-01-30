@@ -459,6 +459,50 @@ test('not executed and no error if --no-execute is given', async () => {
   expect(cfnMocks.executeChangeSet).not.toHaveBeenCalled();
 });
 
+test('empty change set is deleted when --force and --execute are given', async () => {
+  cfnMocks.describeChangeSet?.mockImplementation(() => ({
+    Status: 'FAILED',
+    StatusReason: 'No updates are to be performed.',
+  }));
+
+  // GIVEN
+  givenStackExists();
+
+  // WHEN
+  await deployStack({
+    ...standardDeployStackArguments(),
+    force: true,
+    execute: true,
+  });
+
+  // THEN
+  expect(cfnMocks.createChangeSet).toHaveBeenCalled();
+  expect(cfnMocks.executeChangeSet).not.toHaveBeenCalled();
+  expect(cfnMocks.deleteChangeSet).toHaveBeenCalled();
+});
+
+test('empty change set is not deleted if --force and --no-execute is given', async () => {
+  cfnMocks.describeChangeSet?.mockImplementation(() => ({
+    Status: 'FAILED',
+    StatusReason: 'No updates are to be performed.',
+  }));
+
+  // GIVEN
+  givenStackExists();
+
+  // WHEN
+  await deployStack({
+    ...standardDeployStackArguments(),
+    execute: false,
+    force: true,
+  });
+
+  // THEN
+  expect(cfnMocks.createChangeSet).toHaveBeenCalled();
+  expect(cfnMocks.executeChangeSet).not.toHaveBeenCalled();
+  expect(cfnMocks.deleteChangeSet).not.toHaveBeenCalled();
+});
+
 test('use S3 url for stack deployment if present in Stack Artifact', async () => {
   // WHEN
   await deployStack({
