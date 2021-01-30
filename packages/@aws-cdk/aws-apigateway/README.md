@@ -585,7 +585,7 @@ depending on where the defaults were specified.
 
 API Gateway also allows [Amazon Cognito user pools as authorizer](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-integrate-with-cognito.html)
 
-The follow snippet configures a Cognito user pool as an authorizer:
+The following snippet configures a Cognito user pool as an authorizer:
 
 ```ts
 const userPool = new cognito.UserPool(stack, 'UserPool');
@@ -595,7 +595,8 @@ const auth = new apigateway.CognitoAuthorizer(this, 'booksAuthorizer', {
 });
 
 books.addMethod('GET', new apigateway.HttpIntegration('http://amazon.com'), {
-  authorizer: auth
+  authorizer: auth,
+  authorizationType: apigateway.AuthorizationType.COGNITO,
 });
 ```
 
