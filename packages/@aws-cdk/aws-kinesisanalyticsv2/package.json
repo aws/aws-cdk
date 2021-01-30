@@ -1,6 +1,5 @@
 {
   "name": "@aws-cdk/aws-kinesisanalyticsv2",
-  "private": true,
   "version": "0.0.0",
   "description": "A CDK Construct Library for Kinesis Analytics V2 constructs",
   "main": "lib/index.js",
@@ -18,8 +17,6 @@
       "dotnet": {
         "namespace": "Amazon.CDK.AWS.KinesisAnalyticsV2",
         "packageId": "Amazon.CDK.AWS.KinesisAnalyticsV2",
-        "signAssembly": true,
-        "assemblyOriginatorKeyFile": "../../key.snk",
         "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
       },
       "python": {
@@ -51,7 +48,8 @@
     "build+test+package": "yarn build+test && yarn package",
     "compat": "cdk-compat",
     "rosetta:extract": "yarn --silent jsii-rosetta extract",
-    "cfn2ts": "cfn2ts"
+    "cfn2ts": "cfn2ts",
+    "gen": "cfn2ts"
   },
   "keywords": [
     "aws",
@@ -74,6 +72,7 @@
     "pkglint": "0.0.0"
   },
   "dependencies": {
+    "@aws-cdk/assets": "0.0.0",
     "@aws-cdk/core": "0.0.0",
     "@aws-cdk/aws-iam": "0.0.0",
     "@aws-cdk/aws-logs": "0.0.0",
@@ -83,6 +82,7 @@
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
+    "@aws-cdk/assets": "0.0.0",
     "@aws-cdk/core": "0.0.0",
     "@aws-cdk/aws-iam": "0.0.0",
     "@aws-cdk/aws-logs": "0.0.0",
@@ -106,8 +106,5 @@
     "env": {
       "AWSLINT_BASE_CONSTRUCT": true
     }
-  },
-  "ubergen": {
-    "exclude": true
   }
 }

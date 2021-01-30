@@ -1,5 +1,5 @@
-import * as core from '@aws-cdk/core';
 import * as path from 'path';
+import * as core from '@aws-cdk/core';
 import * as ka from '../lib';
 
 const app = new core.App();
