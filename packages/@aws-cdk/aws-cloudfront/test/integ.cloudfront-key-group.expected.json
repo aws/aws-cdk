@@ -1,0 +1,27 @@
+{
+  "Resources": {
+    "AwesomePublicKeyED3E7F55": {
+      "Type": "AWS::CloudFront::PublicKey",
+      "Properties": {
+        "PublicKeyConfig": {
+          "CallerReference": "c88e460888c5762c9c47ac0cdc669370d787fb2d9f",
+          "EncodedKey": "awesome-public-key",
+          "Name": "awscdkcloudfrontcustomAwesomePublicKey0E83393B"
+        }
+      }
+    },
+    "AwesomeKeyGroup3EF8348B": {
+      "Type": "AWS::CloudFront::KeyGroup",
+      "Properties": {
+        "KeyGroupConfig": {
+          "Items": [
+            {
+              "Ref": "AwesomePublicKeyED3E7F55"
+            }
+          ],
+          "Name": "awscdkcloudfrontcustomAwesomeKeyGroup73FD4DCA"
+        }
+      }
+    }
+  }
+}
