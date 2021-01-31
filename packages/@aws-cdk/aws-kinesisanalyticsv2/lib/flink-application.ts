@@ -186,14 +186,6 @@ export interface FlinkApplicationProps {
 }
 
 /**
- * Attributes passed to the fromAttributes factory method.
- */
-export interface Attributes {
-  readonly applicationName: string;
-  readonly applicationArn: string;
-}
-
-/**
  * The L2 construct for Flink Kinesis Data Applications.
  *
  * @resource AWS::KinesisAnalyticsV2::Application
@@ -202,16 +194,34 @@ export interface Attributes {
  */
 export class FlinkApplication extends FlinkApplicationBase {
   /**
-   * Import an existing Flink application, defined outside of CDK code.
+   * Import an existing Flink application defined outside of CDK code by
+   * applicationName.
    */
-  public static fromAttributes(scope: Construct, id: string, attributes: Attributes): IFlinkApplication {
+  public static fromFlinkApplicationName(scope: Construct, id: string, flinkApplicationName: string): IFlinkApplication {
     class Import extends FlinkApplicationBase {
       // Imported flink applications have no associated role or grantPrincipal
       public readonly role = undefined;
       public readonly grantPrincipal = new iam.UnknownPrincipal({ resource: this });
 
-      public readonly applicationName = attributes.applicationName;
-      public readonly applicationArn = attributes.applicationArn;
+      public readonly applicationName = flinkApplicationName;
+      public readonly applicationArn = core.Stack.of(this).formatArn(flinkApplicationArnComponents(flinkApplicationName));
+    }
+
+    return new Import(scope, id);
+  }
+
+  /**
+   * Import an existing Flink application defined outside of CDK code by
+   * applicationArn.
+   */
+  public static fromFlinkApplicationArn(scope: Construct, id: string, flinkApplicationArn: string): IFlinkApplication {
+    class Import extends FlinkApplicationBase {
+      // Imported flink applications have no associated role or grantPrincipal
+      public readonly role = undefined;
+      public readonly grantPrincipal = new iam.UnknownPrincipal({ resource: this });
+
+      public readonly applicationName = flinkApplicationArn.split('/')[1];
+      public readonly applicationArn = flinkApplicationArn;
     }
 
     return new Import(scope, id);

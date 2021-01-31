@@ -512,17 +512,32 @@ describe('FlinkApplication', () => {
     }).toThrow(/must be at least 1/);
   });
 
-  // TODO: Not quite sure what to do with fromAttributes yet.
-  test('fromAttributes', () => {
+  test('fromFlinkApplicationName', () => {
     const { stack } = buildStack();
-    const flinkApp = ka.FlinkApplication.fromAttributes(stack, 'Imported', {
-      applicationName: 'my-app',
-      applicationArn: 'my-arn',
-    });
+    const flinkApp = ka.FlinkApplication.fromFlinkApplicationName(stack, 'Imported', 'my-app');
 
     expect(flinkApp.applicationName).toEqual('my-app');
-    expect(flinkApp.applicationArn).toEqual('my-arn');
+    expect(stack.resolve(flinkApp.applicationArn)).toEqual({
+      'Fn::Join': ['', [
+        'arn:',
+        { Ref: 'AWS::Partition' },
+        ':kinesisanalytics:',
+        { Ref: 'AWS::Region' },
+        ':',
+        { Ref: 'AWS::AccountId' },
+        ':application/my-app',
+      ]],
+    });
     expect(flinkApp.addToRolePolicy(new iam.PolicyStatement())).toBe(false);
   });
 
+  test('fromFlinkApplicationArn', () => {
+    const { stack } = buildStack();
+    const arn = 'arn:aws:kinesisanalytics:us-west-2:012345678901:application/my-app';
+    const flinkApp = ka.FlinkApplication.fromFlinkApplicationArn(stack, 'Imported', arn);
+
+    expect(flinkApp.applicationName).toEqual('my-app');
+    expect(flinkApp.applicationArn).toEqual(arn);
+    expect(flinkApp.addToRolePolicy(new iam.PolicyStatement())).toBe(false);
+  });
 });
