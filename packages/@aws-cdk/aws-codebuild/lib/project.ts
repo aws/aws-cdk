@@ -691,9 +691,11 @@ export class Project extends ProjectBase {
    * @returns an array of {@link CfnProject.EnvironmentVariableProperty} instances
    */
   public static serializeEnvVariables(environmentVariables: { [name: string]: BuildEnvironmentVariable },
-    validateNoPlainTextSecrets: boolean = false): CfnProject.EnvironmentVariableProperty[] {
+    validateNoPlainTextSecrets: boolean = false, principal?: iam.IGrantable): CfnProject.EnvironmentVariableProperty[] {
 
     const ret = new Array<CfnProject.EnvironmentVariableProperty>();
+    const ssmVariables = new Array<string>();
+    const secretsManagerSecrets = new Array<string>();
 
     for (const [name, envVariable] of Object.entries(environmentVariables)) {
       const cfnEnvVariable: CfnProject.EnvironmentVariableProperty = {
@@ -716,6 +718,46 @@ export class Project extends ProjectBase {
           }
         }
       }
+
+      if (principal) {
+        // save the SSM env variables
+        if (envVariable.type === BuildEnvironmentVariableType.PARAMETER_STORE) {
+          const envVariableValue = envVariable.value.toString();
+          ssmVariables.push(Stack.of(principal).formatArn({
+            service: 'ssm',
+            resource: 'parameter',
+            // If the parameter name starts with / the resource name is not separated with a double '/'
+            // arn:aws:ssm:region:1111111111:parameter/PARAM_NAME
+            resourceName: envVariableValue.startsWith('/')
+              ? envVariableValue.substr(1)
+              : envVariableValue,
+          }));
+        }
+
+        // save SecretsManager env variables
+        if (envVariable.type === BuildEnvironmentVariableType.SECRETS_MANAGER) {
+          secretsManagerSecrets.push(Stack.of(principal).formatArn({
+            service: 'secretsmanager',
+            resource: 'secret',
+            // we don't know the exact ARN of the Secret just from its name, but we can get close
+            resourceName: `${envVariable.value}-??????`,
+            sep: ':',
+          }));
+        }
+      }
+    }
+
+    if (ssmVariables.length !== 0) {
+      principal?.grantPrincipal.addToPrincipalPolicy(new iam.PolicyStatement({
+        actions: ['ssm:GetParameters'],
+        resources: ssmVariables,
+      }));
+    }
+    if (secretsManagerSecrets.length !== 0) {
+      principal?.grantPrincipal.addToPrincipalPolicy(new iam.PolicyStatement({
+        actions: ['secretsmanager:GetSecretValue'],
+        resources: secretsManagerSecrets,
+      }));
     }
 
     return ret;
@@ -850,7 +892,6 @@ export class Project extends ProjectBase {
     this.projectName = this.getResourceNameAttribute(resource.ref);
 
     this.addToRolePolicy(this.createLoggingPermission());
-    this.addEnvVariablesPermissions(props.environmentVariables);
     // add permissions to create and use test report groups
     // with names starting with the project's name,
     // unless the customer explicitly opts out of it
@@ -1002,57 +1043,6 @@ export class Project extends ProjectBase {
     });
   }
 
-  private addEnvVariablesPermissions(environmentVariables: { [name: string]: BuildEnvironmentVariable } | undefined): void {
-    this.addParameterStorePermissions(environmentVariables);
-    this.addSecretsManagerPermissions(environmentVariables);
-  }
-
-  private addParameterStorePermissions(environmentVariables: { [name: string]: BuildEnvironmentVariable } | undefined): void {
-    const resources = Object.values(environmentVariables || {})
-      .filter(envVariable => envVariable.type === BuildEnvironmentVariableType.PARAMETER_STORE)
-      .map(envVariable =>
-        // If the parameter name starts with / the resource name is not separated with a double '/'
-        // arn:aws:ssm:region:1111111111:parameter/PARAM_NAME
-        (envVariable.value as string).startsWith('/')
-          ? (envVariable.value as string).substr(1)
-          : envVariable.value)
-      .map(envVariable => Stack.of(this).formatArn({
-        service: 'ssm',
-        resource: 'parameter',
-        resourceName: envVariable,
-      }));
-
-    if (resources.length === 0) {
-      return;
-    }
-
-    this.addToRolePolicy(new iam.PolicyStatement({
-      actions: ['ssm:GetParameters'],
-      resources,
-    }));
-  }
-
-  private addSecretsManagerPermissions(environmentVariables: { [name: string]: BuildEnvironmentVariable } | undefined): void {
-    const resources = Object.values(environmentVariables || {})
-      .filter(envVariable => envVariable.type === BuildEnvironmentVariableType.SECRETS_MANAGER)
-      .map(envVariable => Stack.of(this).formatArn({
-        service: 'secretsmanager',
-        resource: 'secret',
-        // we don't know the exact ARN of the Secret just from its name, but we can get close
-        resourceName: `${envVariable.value}-??????`,
-        sep: ':',
-      }));
-
-    if (resources.length === 0) {
-      return;
-    }
-
-    this.addToRolePolicy(new iam.PolicyStatement({
-      actions: ['secretsmanager:GetSecretValue'],
-      resources,
-    }));
-  }
-
   private renderEnvironment(
     props: ProjectProps,
     projectVars: { [name: string]: BuildEnvironmentVariable } = {}): CfnProject.EnvironmentProperty {
@@ -1113,7 +1103,7 @@ export class Project extends ProjectBase {
       privilegedMode: env.privileged || false,
       computeType: env.computeType || this.buildImage.defaultComputeType,
       environmentVariables: hasEnvironmentVars
-        ? Project.serializeEnvVariables(vars, props.checkSecretsInPlainTextEnvVariables ?? true)
+        ? Project.serializeEnvVariables(vars, props.checkSecretsInPlainTextEnvVariables ?? true, this)
         : undefined,
     };
   }
