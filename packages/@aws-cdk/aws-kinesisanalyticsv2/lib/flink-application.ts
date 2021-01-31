@@ -317,6 +317,7 @@ export class FlinkApplication extends FlinkApplicationBase {
         core.Stack.of(this).formatArn({
           service: 'logs',
           resource: 'log-group',
+          sep: ':',
           resourceName: '*',
         }),
       ],
