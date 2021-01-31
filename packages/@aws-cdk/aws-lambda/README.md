@@ -171,7 +171,7 @@ fn.currentVersion.addAlias('live');
 
 ## Layers
 
-The `lambda.LayerVersion` class can be used to define Lambda layers and manage
+The `lambda.LayerVersion` class can be used to define Lambda layer versions and manage
 granting permissions to other AWS accounts or organizations.
 
 [Example of Lambda Layer usage](test/integ.layer-version.lit.ts)
