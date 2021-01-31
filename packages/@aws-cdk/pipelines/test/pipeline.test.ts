@@ -13,6 +13,7 @@ import {
 import '@aws-cdk/assert/jest';
 import * as cp from '@aws-cdk/aws-codepipeline';
 import * as cpa from '@aws-cdk/aws-codepipeline-actions';
+import * as s3 from '@aws-cdk/aws-s3';
 import { Stack, Stage, StageProps, SecretValue, Tags } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import * as cdkp from '../lib';
@@ -492,6 +493,22 @@ test('tags get reflected in pipeline', () => {
       CostCenter: 'F00B4R',
     },
   }));
+});
+
+test('artifacts bucket is reflected in pipeline', () => {
+  // GIVEN
+  const stack2 = new Stack(app, 'Stack2', { env: PIPELINE_ENV });
+  const artifactBucket = new s3.Bucket(stack2, 'my-artifact-bucket');
+
+  // WHEN
+  new TestGitHubNpmPipeline(stack2, 'Cdk2', {
+    artifactBucket,
+  });
+
+  // THEN
+  expect(stack2).toHaveResourceLike('AWS::S3::Bucket', {
+    Name: 'my-artifact-bucket',
+  });
 });
 
 class OneStackApp extends Stage {
