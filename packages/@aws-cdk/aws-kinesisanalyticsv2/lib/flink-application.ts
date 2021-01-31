@@ -32,7 +32,7 @@ export interface IFlinkApplication extends core.IResource, iam.IGrantable {
   /**
    * Convenience method for adding a policy statement to the application role.
    */
-  addToPrincipalPolicy(policyStatement: iam.PolicyStatement): boolean;
+  addToRolePolicy(policyStatement: iam.PolicyStatement): boolean;
 }
 
 /**
@@ -62,7 +62,7 @@ abstract class FlinkApplicationBase extends core.Resource implements IFlinkAppli
   public abstract readonly grantPrincipal: iam.IPrincipal;
 
   /** Implement the convenience {@link IFlinkApplication.addToPrincipalPolicy} method. */
-  public addToPrincipalPolicy(policyStatement: iam.PolicyStatement): boolean {
+  public addToRolePolicy(policyStatement: iam.PolicyStatement): boolean {
     if (this.role) {
       this.role.addToPrincipalPolicy(policyStatement);
       return true;

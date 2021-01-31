@@ -98,7 +98,7 @@ describe('FlinkApplication', () => {
       ...requiredProps,
     });
 
-    app.addToPrincipalPolicy(new iam.PolicyStatement({
+    app.addToRolePolicy(new iam.PolicyStatement({
       actions: ['custom:action'],
       resources: ['*'],
     }));
@@ -522,7 +522,7 @@ describe('FlinkApplication', () => {
 
     expect(flinkApp.applicationName).toEqual('my-app');
     expect(flinkApp.applicationArn).toEqual('my-arn');
-    expect(flinkApp.addToPrincipalPolicy(new iam.PolicyStatement())).toBe(false);
+    expect(flinkApp.addToRolePolicy(new iam.PolicyStatement())).toBe(false);
   });
 
 });
