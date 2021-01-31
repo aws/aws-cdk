@@ -312,7 +312,7 @@ export class FlinkApplication extends FlinkApplicationBase {
       cloudWatchLoggingOption: {
         logStreamArn,
       },
-    }).node.addDependency(resource);
+    });
 
     this.applicationName = this.getResourceNameAttribute(resource.ref);
     this.applicationArn = this.getResourceArnAttribute(
