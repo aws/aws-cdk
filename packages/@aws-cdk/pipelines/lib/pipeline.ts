@@ -2,6 +2,7 @@ import * as path from 'path';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
+import * as s3 from '@aws-cdk/aws-s3';
 import { Annotations, App, Aws, CfnOutput, PhysicalName, Stack, Stage } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { AssetType, DeployCdkStackAction, PublishAssetsAction, UpdatePipelineAction } from './actions';
@@ -50,6 +51,17 @@ export interface CdkPipelineProps {
    * @default - A new CodePipeline is automatically generated
    */
   readonly codePipeline?: codepipeline.Pipeline;
+
+  /**
+   * Existing S3 bucket for build artifacts
+   *
+   * Use this if you want to reuse a bucket for build artifacts.
+   * You can choose to not pass this value, in which case a new bucket is
+   * created with default settings.
+   *
+   * @default - A new S3 bucket is automatically generated
+   */
+  readonly artifactBucket?: s3.IBucket;
 
   /**
    * Name of the pipeline
@@ -164,6 +176,7 @@ export class CdkPipeline extends CoreConstruct {
         pipelineName: props.pipelineName,
         crossAccountKeys: props.crossAccountKeys,
         restartExecutionOnUpdate: true,
+        artifactBucket: props.artifactBucket,
       });
     }
 
