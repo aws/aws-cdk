@@ -1,4 +1,5 @@
 import * as iam from '@aws-cdk/aws-iam';
+import * as kms from '@aws-cdk/aws-kms';
 import * as logs from '@aws-cdk/aws-logs';
 import * as core from '@aws-cdk/core';
 import { Construct } from 'constructs';
@@ -7,7 +8,7 @@ import { CfnApplication, CfnApplicationCloudWatchLoggingOption } from './kinesis
 import { environmentProperties } from './private/environment-properties';
 import { flinkApplicationConfiguration } from './private/flink-application-configuration';
 import { validateFlinkApplicationProps } from './private/validation';
-import { FlinkLogLevel, FlinkMetricsLevel, PropertyGroups } from './types';
+import { FlinkLogLevel, FlinkMetricsLevel, FlinkRuntime, PropertyGroups } from './types';
 
 export interface IFlinkApplication extends core.IResource, iam.IGrantable {
   /**
@@ -33,20 +34,6 @@ export interface IFlinkApplication extends core.IResource, iam.IGrantable {
    * Convenience method for adding a policy statement to the application role.
    */
   addToRolePolicy(policyStatement: iam.PolicyStatement): boolean;
-}
-
-/**
- * Available Flink runtimes for Kinesis Analytics.
- *
- * @example
- * // Creating a new runtime that isn't in CDK yet.
- * const runtime = new FlinkRuntime(FLINK-9_99);
- */
-export class FlinkRuntime {
-  public static readonly FLINK_1_6 = new FlinkRuntime('FLINK-1_6');
-  public static readonly FLINK_1_8 = new FlinkRuntime('FLINK-1_8');
-  public static readonly FLINK_1_11 = new FlinkRuntime('FLINK-1_11');
-  public constructor(public readonly value: string) {}
 }
 
 /**
@@ -183,6 +170,39 @@ export interface FlinkApplicationProps {
    * @default RemovalPolicy.DESTROY
    */
   readonly removalPolicy?: core.RemovalPolicy;
+
+  /**
+   * How long to retain logs.
+   *
+   * @default two years
+   */
+  readonly logRetention?: core.Duration;
+
+  /**
+   * Whether to keep or delete logs when removing a FlinkApplication.
+   *
+   * @default RETAIN
+   */
+  readonly logRemovalPolicy?: core.RemovalPolicy;
+
+  /**
+   * The name of the log group for CloudWatch logs.
+   *
+   * @default Cloudformation generated
+   */
+  readonly logGroupName?: string;
+
+  /**
+   * The name of the log stream for CloudWatch logs.
+   *
+   * @default Cloudformation generated
+   */
+  readonly logStreamName?: string;
+
+  /**
+   * The KMS encryption key to use for CloudWatch logs.
+   */
+  readonly logEncryptionKey?: kms.IKey;
 }
 
 /**
@@ -277,13 +297,16 @@ export class FlinkApplication extends FlinkApplicationBase {
     resource.node.addDependency(this.role);
 
     const logGroup = new logs.LogGroup(this, 'LogGroup', {
-      retention: logs.RetentionDays.ONE_WEEK,
-      removalPolicy: core.RemovalPolicy.DESTROY,
+      logGroupName: props.logGroupName,
+      retention: props.logRetention?.toDays(),
+      removalPolicy: props.logRemovalPolicy,
+      encryptionKey: props.logEncryptionKey,
     });
 
     const logStream = new logs.LogStream(this, 'LogStream', {
       logGroup,
-      removalPolicy: core.RemovalPolicy.DESTROY,
+      logStreamName: props.logStreamName,
+      removalPolicy: props.logRemovalPolicy,
     });
 
     // Permit logging

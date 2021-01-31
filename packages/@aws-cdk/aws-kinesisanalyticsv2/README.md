@@ -88,11 +88,16 @@ const flinkApp = new ka.FlinkApplication(this, 'Application', {
   checkpointInterval: cdk.Duration.seconds(30), // default is 1 minute
   minPausesBetweenCheckpoints: cdk.Duration.seconds(10), // default is 5 seconds
   logLevel: ka.LogLevel.ERROR, // default is INFO
-  metricsLevel: ka.MetricsLevel.PARALLELISM // default is APPLICATION
-  autoScalingEnabled: false // default is true
-  parallelism: 32 // default is 1
-  parallelismPerKpu: 2 // default is 1
-  snapshotsEnabled: false // default is true
+  metricsLevel: ka.MetricsLevel.PARALLELISM, // default is APPLICATION
+  autoScalingEnabled: false, // default is true
+  parallelism: 32, // default is 1
+  parallelismPerKpu: 2, // default is 1
+  snapshotsEnabled: false, // default is true
+  logRetention: logs.RetentionDays.ONE_WEEK, // default is TWO_YEARS
+  logRemovalPolicy: core.RemovalPolicy.DESTROY, // default is RETAIN
+  logGroupName: 'my-group', // default is automatically generated
+  logStreamName: 'my-stream', // default is automatically generated
+  logEncryptionKey: someKmsKey, // default is no encryption
 });
 ```
 
