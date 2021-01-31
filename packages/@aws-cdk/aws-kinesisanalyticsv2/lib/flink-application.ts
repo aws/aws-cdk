@@ -250,18 +250,14 @@ export class FlinkApplication extends FlinkApplicationBase {
       resources: ['*'],
     }));
 
-    // TODO: Refactor to make this bug impossible
     const code = props.code.bind(this);
-    if (!props.code.bucket) {
-      throw new Error('BUG: Bound code is missing its bucket.');
-    }
-    props.code.bucket.grantRead(this);
+    code.bucket.grantRead(this);
 
     const resource = new CfnApplication(this, 'Resource', {
       runtimeEnvironment: props.runtime.value,
       serviceExecutionRole: this.role.roleArn,
       applicationConfiguration: {
-        applicationCodeConfiguration: code,
+        ...code.applicationCodeConfigurationProperty,
         environmentProperties: props.propertyGroups?.length
           ? { propertyGroups: props.propertyGroups.map(pg => pg.toCfn()) }
           : undefined,

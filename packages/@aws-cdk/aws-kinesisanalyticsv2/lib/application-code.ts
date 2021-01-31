@@ -1,9 +1,10 @@
 import * as s3 from '@aws-cdk/aws-s3';
 import * as s3_assets from '@aws-cdk/aws-s3-assets';
 import { Construct } from '@aws-cdk/core';
+import { CfnApplication } from './kinesisanalyticsv2.generated';
 
 export abstract class ApplicationCode {
-  public static fromBucket(bucket: s3.IBucket, fileKey: string, objectVersion?: string): BucketApplicationCode {
+  public static fromBucket(bucket: s3.IBucket, fileKey: string, objectVersion?: string): ApplicationCode {
     return new BucketApplicationCode({
       bucket,
       fileKey,
@@ -11,21 +12,20 @@ export abstract class ApplicationCode {
     });
   }
 
-  public static fromAsset(path: string, options?: s3_assets.AssetOptions): AssetApplicationCode {
+  public static fromAsset(path: string, options?: s3_assets.AssetOptions): ApplicationCode {
     return new AssetApplicationCode(path, options);
   }
 
-  abstract readonly bucket?: s3.IBucket;
-  public abstract bind(scope: Construct): CodeConfiguration;
+  public abstract bind(scope: Construct): ApplicationCodeConfig;
 }
 
-export interface BucketApplicationCodeProps {
+interface BucketApplicationCodeProps {
   readonly bucket: s3.IBucket;
   readonly fileKey: string;
   readonly objectVersion?: string;
 }
 
-export class BucketApplicationCode extends ApplicationCode {
+class BucketApplicationCode extends ApplicationCode {
   public readonly bucket?: s3.IBucket;
   public readonly fileKey: string;
   public readonly objectVersion?: string;
@@ -37,21 +37,26 @@ export class BucketApplicationCode extends ApplicationCode {
     this.objectVersion = props.objectVersion;
   }
 
-  public bind(_scope: Construct): CodeConfiguration {
+  public bind(_scope: Construct): ApplicationCodeConfig {
     return {
-      codeContent: {
-        s3ContentLocation: {
-          bucketArn: this.bucket!.bucketArn,
-          fileKey: this.fileKey,
-          objectVersion: this.objectVersion,
+      applicationCodeConfigurationProperty: {
+        applicationCodeConfiguration: {
+          codeContent: {
+            s3ContentLocation: {
+              bucketArn: this.bucket!.bucketArn,
+              fileKey: this.fileKey,
+              objectVersion: this.objectVersion,
+            },
+          },
+          codeContentType: 'ZIPFILE',
         },
       },
-      codeContentType: 'ZIPFILE',
+      bucket: this.bucket!,
     };
   }
 }
 
-export class AssetApplicationCode extends ApplicationCode {
+class AssetApplicationCode extends ApplicationCode {
   private readonly path: string;
   private readonly options?: s3_assets.AssetOptions;
   private _asset?: s3_assets.Asset;
@@ -62,7 +67,7 @@ export class AssetApplicationCode extends ApplicationCode {
     this.options = options;
   }
 
-  public bind(scope: Construct): CodeConfiguration {
+  public bind(scope: Construct): ApplicationCodeConfig {
     this._asset = new s3_assets.Asset(scope, 'Code', {
       path: this.path,
       ...this.options,
@@ -73,13 +78,18 @@ export class AssetApplicationCode extends ApplicationCode {
     }
 
     return {
-      codeContent: {
-        s3ContentLocation: {
-          bucketArn: this._asset.bucket.bucketArn,
-          fileKey: this._asset.s3ObjectKey,
+      applicationCodeConfigurationProperty: {
+        applicationCodeConfiguration: {
+          codeContent: {
+            s3ContentLocation: {
+              bucketArn: this._asset.bucket.bucketArn,
+              fileKey: this._asset.s3ObjectKey,
+            },
+          },
+          codeContentType: 'ZIPFILE',
         },
       },
-      codeContentType: 'ZIPFILE',
+      bucket: this._asset.bucket,
     };
   }
 
@@ -92,17 +102,14 @@ export class AssetApplicationCode extends ApplicationCode {
   }
 }
 
-export interface CodeConfiguration {
-  readonly codeContent: CodeContent;
-  readonly codeContentType: 'ZIPFILE',
-}
+export interface ApplicationCodeConfig {
+  /**
+   * Low-level Cloudformation ApplicationConfigurationProperty
+   */
+  readonly applicationCodeConfigurationProperty: CfnApplication.ApplicationConfigurationProperty;
 
-export interface CodeContent {
-  readonly s3ContentLocation: S3ContentLocation;
-}
-
-export interface S3ContentLocation {
-  readonly bucketArn: string;
-  readonly fileKey: string;
-  readonly objectVersion?: string;
+  /**
+   * S3 Bucket that stores the Flink application code
+   */
+  readonly bucket: s3.IBucket;
 }

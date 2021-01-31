@@ -162,14 +162,28 @@ describe('FlinkApplication', () => {
       ...requiredProps,
       code,
     });
+    const assetRef = 'AssetParameters8be9e0b5f53d41e9a3b1d51c9572c65f24f8170a7188d0ed57fb7d571de4d577S3BucketEBA17A67';
+    const versionKeyRef = 'AssetParameters8be9e0b5f53d41e9a3b1d51c9572c65f24f8170a7188d0ed57fb7d571de4d577S3VersionKey5922697E';
 
     expect(stack).toHaveResourceLike('AWS::KinesisAnalyticsV2::Application', {
       ApplicationConfiguration: {
         ApplicationCodeConfiguration: {
           CodeContent: {
             S3ContentLocation: {
-              BucketARN: stack.resolve(code.asset!.bucket.bucketArn),
-              FileKey: stack.resolve(code.asset!.s3ObjectKey),
+              BucketARN: {
+                'Fn::Join': ['', [
+                  'arn:',
+                  { Ref: 'AWS::Partition' },
+                  ':s3:::',
+                  { Ref: assetRef },
+                ]],
+              },
+              FileKey: {
+                'Fn::Join': ['', [
+                  { 'Fn::Select': [0, { 'Fn::Split': ['||', { Ref: versionKeyRef }] }] },
+                  { 'Fn::Select': [1, { 'Fn::Split': ['||', { Ref: versionKeyRef }] }] },
+                ]],
+              },
             },
           },
           CodeContentType: 'ZIPFILE',
