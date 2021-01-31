@@ -17,3 +17,11 @@ export enum FlinkMetricsLevel {
   OPERATOR = 'OPERATOR',
   PARALLELISM = 'PARALLELISM',
 }
+
+/**
+ * Interface for building AWS::KinesisAnalyticsV2::Application PropertyGroup
+ * configuration.
+ */
+export interface PropertyGroups {
+  readonly [propertyId: string]: {[mapKey: string]: string};
+}

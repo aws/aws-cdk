@@ -4,10 +4,10 @@ import * as core from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { ApplicationCode } from './application-code';
 import { CfnApplication, CfnApplicationCloudWatchLoggingOption } from './kinesisanalyticsv2.generated';
+import { environmentProperties } from './private/environment-properties';
 import { flinkApplicationConfiguration } from './private/flink-application-configuration';
 import { validateFlinkApplicationProps } from './private/validation';
-import { PropertyGroup } from './property-group';
-import { FlinkLogLevel, FlinkMetricsLevel } from './types';
+import { FlinkLogLevel, FlinkMetricsLevel, PropertyGroups } from './types';
 
 export interface IFlinkApplication extends core.IResource, iam.IGrantable {
   /**
@@ -167,7 +167,7 @@ export interface FlinkApplicationProps {
    * Configuration PropertyGroups. You can use these property groups to pass
    * arbitrary runtime configuration values to your Flink App.
    */
-  readonly propertyGroups?: PropertyGroup[];
+  readonly propertyGroups?: PropertyGroups;
 
   /**
    * A role to use to grant permissions to your application. Prefer omitting
@@ -258,9 +258,7 @@ export class FlinkApplication extends FlinkApplicationBase {
       serviceExecutionRole: this.role.roleArn,
       applicationConfiguration: {
         ...code.applicationCodeConfigurationProperty,
-        environmentProperties: props.propertyGroups?.length
-          ? { propertyGroups: props.propertyGroups.map(pg => pg.toCfn()) }
-          : undefined,
+        environmentProperties: environmentProperties(props.propertyGroups),
         flinkApplicationConfiguration: flinkApplicationConfiguration({
           checkpointingEnabled: props.checkpointingEnabled,
           checkpointInterval: props.checkpointInterval,

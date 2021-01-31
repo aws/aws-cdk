@@ -196,11 +196,11 @@ describe('FlinkApplication', () => {
     const { stack, requiredProps } = buildStack();
     new ka.FlinkApplication(stack, 'FlinkApplication', {
       ...requiredProps,
-      propertyGroups: [
-        new ka.PropertyGroup('FlinkApplicationProperties', {
+      propertyGroups: {
+        FlinkApplicationProperties: {
           SomeProperty: 'SomeValue',
-        }),
-      ],
+        },
+      },
     });
 
     expect(stack).toHaveResourceLike('AWS::KinesisAnalyticsV2::Application', {
