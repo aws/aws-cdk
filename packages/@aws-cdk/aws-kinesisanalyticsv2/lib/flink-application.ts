@@ -288,8 +288,6 @@ export class FlinkApplication extends FlinkApplicationBase {
       removalPolicy: core.RemovalPolicy.DESTROY,
     });
 
-    const logStreamArn = `arn:${core.Aws.PARTITION}:logs:${core.Aws.REGION}:${core.Aws.ACCOUNT_ID}:log-group:${logGroup.logGroupName}:log-stream:${logStream.logStreamName}`;
-
     // Permit logging
     this.role.addToPrincipalPolicy(new iam.PolicyStatement({
       actions: ['logs:DescribeLogStreams', 'logs:DescribeLogGroups'],
@@ -302,6 +300,8 @@ export class FlinkApplication extends FlinkApplicationBase {
         }),
       ],
     }));
+
+    const logStreamArn = `arn:${core.Aws.PARTITION}:logs:${core.Aws.REGION}:${core.Aws.ACCOUNT_ID}:log-group:${logGroup.logGroupName}:log-stream:${logStream.logStreamName}`;
     this.role.addToPrincipalPolicy(new iam.PolicyStatement({
       actions: ['logs:PutLogEvents'],
       resources: [logStreamArn],
