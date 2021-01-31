@@ -10,6 +10,10 @@ import { flinkApplicationConfiguration } from './private/flink-application-confi
 import { validateFlinkApplicationProps } from './private/validation';
 import { FlinkLogLevel, FlinkMetricsLevel, FlinkRuntime, PropertyGroups } from './types';
 
+/**
+ * An interface expressing the public properties on both an imported and
+ * CDK-created Flink application.
+ */
 export interface IFlinkApplication extends core.IResource, iam.IGrantable {
   /**
    * The application ARN.
@@ -152,7 +156,9 @@ export interface FlinkApplicationProps {
 
   /**
    * Configuration PropertyGroups. You can use these property groups to pass
-   * arbitrary runtime configuration values to your Flink App.
+   * arbitrary runtime configuration values to your Flink app.
+   *
+   * @default No property group configuration provided to the Flink app
    */
   readonly propertyGroups?: PropertyGroups;
 
@@ -201,6 +207,8 @@ export interface FlinkApplicationProps {
 
   /**
    * The KMS encryption key to use for CloudWatch logs.
+   *
+   * @default No encryption used
    */
   readonly logEncryptionKey?: kms.IKey;
 }
