@@ -242,34 +242,15 @@ test('can specify backup policy', () => {
 });
 
 test('can create when using a VPC with multiple subnets per availability zone', () => {
-  // WHEN
-  const subnet1= vpc.privateSubnets[0];
-  const subnet2= vpc.privateSubnets[1];
-  expect(subnet1.availabilityZone).toEqual(vpc.availabilityZones[0]);
-  expect(subnet2.availabilityZone).toEqual(vpc.availabilityZones[1]);
-  const subnet3 = new ec2.Subnet(stack, 'subnet3', {
-    vpcId: vpc.vpcId,
-    availabilityZone: vpc.availabilityZones[0],
-    cidrBlock: vpc.vpcCidrBlock,
+  // create a vpc with two subnets in the same availability zone.
+  const oneAzVpc = new ec2.Vpc(stack, 'Vpc', {
+    maxAzs: 1,
+    subnetConfiguration: [{ name: 'One', subnetType: ec2.SubnetType.ISOLATED }, { name: 'Two', subnetType: ec2.SubnetType.ISOLATED }],
+    natGateways: 0,
   });
-  vpc.privateSubnets.push(subnet3);
   new FileSystem(stack, 'EfsFileSystem', {
-    vpc,
+    vpc: oneAzVpc,
   });
-  // THEN
-  expectCDK(stack).to(haveResource('AWS::EFS::FileSystem', {
-    DeletionPolicy: 'Retain',
-    UpdateReplacePolicy: 'Retain',
-  }, ResourcePart.CompleteDefinition));
-  expectCDK(stack).to(countResourcesLike('AWS::EC2::Subnet', 3, {
-    AvailabilityZone: {
-      'Fn::Select': [
-        0,
-        {
-          'Fn::GetAZs': '',
-        },
-      ],
-    },
-  }));
-  expectCDK(stack).to(countResources('AWS::EFS::MountTarget', 2));
+  // make sure only one mount target is created.
+  expectCDK(stack).to(countResources('AWS::EFS::MountTarget', 1));
 });
