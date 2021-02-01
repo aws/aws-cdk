@@ -107,7 +107,7 @@ export class NodejsFunction extends lambda.Function {
     const handler = props.handler ?? 'handler';
     const defaultRunTime = nodeMajorVersion() >= 12
       ? lambda.Runtime.NODEJS_12_X
-      : lambda.Runtime.NODEJS_10_X;
+      : lambda.Runtime.NODEJS_12_X;
     const runtime = props.runtime ?? defaultRunTime;
 
     super(scope, id, {

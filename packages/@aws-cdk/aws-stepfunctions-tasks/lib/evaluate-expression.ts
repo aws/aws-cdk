@@ -20,7 +20,7 @@ export interface EvaluateExpressionProps extends sfn.TaskStateBaseProps {
   /**
    * The runtime language to use to evaluate the expression.
    *
-   * @default lambda.Runtime.NODEJS_10_X
+   * @default lambda.Runtime.NODEJS_12_X
    */
   readonly runtime?: lambda.Runtime;
 }
@@ -58,7 +58,7 @@ export class EvaluateExpression extends sfn.TaskStateBase {
   constructor(scope: Construct, id: string, private readonly props: EvaluateExpressionProps) {
     super(scope, id, props);
 
-    this.evalFn = createEvalFn(this.props.runtime || lambda.Runtime.NODEJS_10_X, this);
+    this.evalFn = createEvalFn(this.props.runtime || lambda.Runtime.NODEJS_12_X, this);
 
     this.taskPolicies = [
       new iam.PolicyStatement({
@@ -101,7 +101,7 @@ function createEvalFn(runtime: lambda.Runtime, scope: Construct) {
   const lambdaPurpose = 'Eval';
 
   switch (runtime) {
-    case lambda.Runtime.NODEJS_10_X:
+    case lambda.Runtime.NODEJS_12_X:
       return new lambda.SingletonFunction(scope, 'EvalFunction', {
         runtime,
         handler: 'index.handler',
