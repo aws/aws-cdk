@@ -1,4 +1,4 @@
-import { IResource, Lazy, Names, Resource } from '@aws-cdk/core';
+import { IResource, Names, Resource } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnPublicKey } from './cloudfront.generated';
 
@@ -54,14 +54,11 @@ export class PublicKey extends Resource implements IPublicKey {
   public readonly publicKeyId: string;
 
   constructor(scope: Construct, id: string, props: PublicKeyProps) {
-    super(scope, id, {
-      physicalName: props.publicKeyName ??
-        Lazy.string({ produce: () => this.generateName() }),
-    });
+    super(scope, id);
 
     const resource = new CfnPublicKey(this, 'Resource', {
       publicKeyConfig: {
-        name: this.physicalName,
+        name: props.publicKeyName ?? this.generateName(),
         callerReference: this.node.addr,
         encodedKey: props.encodedKey,
         comment: props.comment,

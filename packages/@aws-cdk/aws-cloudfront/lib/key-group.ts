@@ -1,4 +1,4 @@
-import { IResource, Lazy, Names, Resource } from '@aws-cdk/core';
+import { IResource, Names, Resource } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnKeyGroup } from './cloudfront.generated';
 import { IPublicKey } from './public-key';
@@ -49,18 +49,14 @@ export class KeyGroup extends Resource implements IKeyGroup {
       public readonly keyGroupId = keyGroupId;
     }(scope, id);
   }
-
   public readonly keyGroupId: string;
 
   constructor(scope: Construct, id: string, props: KeyGroupProps) {
-    super(scope, id, {
-      physicalName: props.keyGroupName ??
-        Lazy.string({ produce: () => this.generateName() }),
-    });
+    super(scope, id);
 
     const resource = new CfnKeyGroup(this, 'Resource', {
       keyGroupConfig: {
-        name: this.physicalName,
+        name: props.keyGroupName ?? this.generateName(),
         comment: props.comment,
         items: props.items.map(key => key.publicKeyId),
       },
