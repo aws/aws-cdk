@@ -169,9 +169,7 @@ Alternatively, use the `HostedZone.fromHostedZoneId` to import hosted zones if
 you know the ID and the retrieval for the `zoneName` is undesirable.
 
 ```ts
-const zone = HostedZone.fromHostedZoneId(this, 'MyZone', {
-  hostedZoneId: 'ZOJJZC49E0EPZ',
-});
+const zone = HostedZone.fromHostedZoneId(this, 'MyZone', 'ZOJJZC49E0EPZ');
 ```
 
 ## VPC Endpoint Service Private DNS
