@@ -1070,7 +1070,7 @@ export interface BucketProps {
   *
   * @default false
   */
- readonly enforceSSL?: boolean;
+  readonly enforceSSL?: boolean;
 
   /**
    * Specifies whether Amazon S3 should use an S3 Bucket Key with server-side
