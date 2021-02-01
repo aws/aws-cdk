@@ -776,16 +776,22 @@ export class Stack extends CoreConstruct implements ITaggable {
   }
 
   /**
-   * Manually create a CloudFormation Export for a Resource attribute
+   * Create a CloudFormation Export for a value
    *
-   * If you use Resource attributes in another Stack, those CloudFormation
-   * Exports will be created automatically, so usually you won't need to use
-   * this method.
+   * Returns a string representing the corresponding `Fn.importValue()`
+   * expression for this Export. You can control the name for the export by
+   * passing the `name` option.
    *
-   * The only time you need to call this method if you want to *remove* the
-   * relationship between two Stacks. It will temporarily ensure that the CloudFormation
-   * Export still exists while you remove the reference from the consuming stack.
-   * After that, you can remove the resource and the manual export.
+   * If you don't supply a value for `name`, the value you're exporting must be
+   * a Resource attribute (for example: `bucket.bucketName`) and it will be
+   * given the same name as the automatic cross-stack reference that would be created
+   * if you used the attribute in another Stack.
+   *
+   * One of the uses for this method is to *remove* the relationship between
+   * two Stacks established by automatic cross-stack references. It will
+   * temporarily ensure that the CloudFormation Export still exists while you
+   * remove the reference from the consuming stack. After that, you can remove
+   * the resource and the manual export.
    *
    * ## Example
    *
@@ -804,7 +810,7 @@ export class Stack extends CoreConstruct implements ITaggable {
    * - Make sure `consumerStack` no longer references `bucket.bucketName` (maybe the consumer
    *   stack now uses its own bucket, or it writes to an AWS DynamoDB table, or maybe you just
    *   remove the Lambda Function altogether).
-   * - In the `ProducerStack` class, call `this.exportAttribute(this.bucket.bucketName)`. This
+   * - In the `ProducerStack` class, call `this.exportValue(this.bucket.bucketName)`. This
    *   will make sure the CloudFormation Export continues to exist while the relationship
    *   between the two stacks is being broken.
    * - Deploy (this will effectively only change the `consumerStack`, but it's safe to deploy both).
@@ -812,13 +818,21 @@ export class Stack extends CoreConstruct implements ITaggable {
    * ### Deployment 2: remove the bucket resource
    *
    * - You are now free to remove the `bucket` resource from `producerStack`.
-   * - Don't forget to remove the `exportAttribute()` call as well.
+   * - Don't forget to remove the `exportValue()` call as well.
    * - Deploy again (this time only the `producerStack` will be changed -- the bucket will be deleted).
    */
-  public exportAttribute(exportedAttribute: any) {
-    const resolvable = Tokenization.reverse(exportedAttribute);
+  public exportValue(exportedValue: any, options: ExportValueOptions = {}) {
+    if (options.name) {
+      new CfnOutput(this, `Export${options.name}`, {
+        value: exportedValue,
+        exportName: options.name,
+      });
+      return Fn.importValue(options.name);
+    }
+
+    const resolvable = Tokenization.reverse(exportedValue);
     if (!resolvable || !Reference.isReference(resolvable)) {
-      throw new Error('exportAttribute: you should pass a resource attribute to this method (like \'bucket.bucketName\')');
+      throw new Error('exportValue: either supply \'name\' or make sure to export a resource attribute (like \'bucket.bucketName\')');
     }
 
     // "teleport" the value here, in case it comes from a nested stack. This will also
@@ -1242,6 +1256,23 @@ function generateExportName(stackExports: CoreConstruct, id: string) {
   return prefix + localPart.slice(Math.max(0, localPart.length - maxLength + prefix.length));
 }
 
+interface StackDependency {
+  stack: Stack;
+  reasons: string[];
+}
+
+/**
+ * Options for the `stack.exportValue()` method
+ */
+export interface ExportValueOptions {
+  /**
+   * The name of the export to create
+   *
+   * @default - A name is automatically chosen
+   */
+  readonly name?: string;
+}
+
 // These imports have to be at the end to prevent circular imports
 import { CfnOutput } from './cfn-output';
 import { addDependency } from './deps';
@@ -1254,8 +1285,3 @@ import { Stage } from './stage';
 import { ITaggable, TagManager } from './tag-manager';
 import { Token, Tokenization } from './token';
 import { referenceNestedStackValueInParent } from './private/refs';
-
-interface StackDependency {
-  stack: Stack;
-  reasons: string[];
-}

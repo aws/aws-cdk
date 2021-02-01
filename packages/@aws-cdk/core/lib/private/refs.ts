@@ -164,7 +164,7 @@ function findAllReferences(root: IConstruct) {
 function createImportValue(reference: Reference): Intrinsic {
   const exportingStack = Stack.of(reference.target);
 
-  const importExpr = exportingStack.exportAttribute(reference);
+  const importExpr = exportingStack.exportValue(reference);
 
   // I happen to know this returns a Fn.importValue() which implements Intrinsic.
   return Tokenization.reverseCompleteString(importExpr) as Intrinsic;

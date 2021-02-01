@@ -539,7 +539,7 @@ describe('stack', () => {
     expect(assembly.getStackArtifact(child2.artifactId).dependencies.map((x: { id: any; }) => x.id)).toEqual(['ParentChild18FAEF419']);
   });
 
-  test('automatic cross-stack references and manual cross-stack references look the same', () => {
+  test('automatic cross-stack references and manual exports look the same', () => {
     // GIVEN: automatic
     const appA = new App();
     const producerA = new Stack(appA, 'Producer');
@@ -551,7 +551,7 @@ describe('stack', () => {
     const appM = new App();
     const producerM = new Stack(appM, 'Producer');
     const resourceM = new CfnResource(producerM, 'Resource', { type: 'AWS::Resource' });
-    producerM.exportAttribute(resourceM.getAtt('Att'));
+    producerM.exportValue(resourceM.getAtt('Att'));
 
     // THEN - producers are the same
     const templateA = appA.synth().getStackByName(producerA.stackName).template;
@@ -560,7 +560,7 @@ describe('stack', () => {
     expect(templateA).toEqual(templateM);
   });
 
-  test('automatic cross-stack references and manual cross-stack references look the same: nested stack edition', () => {
+  test('automatic cross-stack references and manual exports look the same: nested stack edition', () => {
     // GIVEN: automatic
     const appA = new App();
     const producerA = new Stack(appA, 'Producer');
@@ -575,13 +575,31 @@ describe('stack', () => {
     const producerM = new Stack(appM, 'Producer');
     const nestedM = new NestedStack(producerM, 'Nestor');
     const resourceM = new CfnResource(nestedM, 'Resource', { type: 'AWS::Resource' });
-    producerM.exportAttribute(resourceM.getAtt('Att'));
+    producerM.exportValue(resourceM.getAtt('Att'));
 
     // THEN - producers are the same
     const templateA = appA.synth().getStackByName(producerA.stackName).template;
     const templateM = appM.synth().getStackByName(producerM.stackName).template;
 
     expect(templateA).toEqual(templateM);
+  });
+
+  test('manual exports require a name if not supplying a resource attribute', () => {
+    const app = new App();
+    const stack = new Stack(app, 'Stack');
+
+    expect(() => {
+      stack.exportValue('someValue');
+    }).toThrow(/or make sure to export a resource attribute/);
+  });
+
+  test('manual exports can also just be used to create an export of anything', () => {
+    const app = new App();
+    const stack = new Stack(app, 'Stack');
+
+    const importV = stack.exportValue('someValue', { name: 'MyExport' });
+
+    expect(stack.resolve(importV)).toEqual({ 'Fn::ImportValue': 'MyExport' });
   });
 
   test('CfnSynthesisError is ignored when preparing cross references', () => {
