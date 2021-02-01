@@ -107,7 +107,7 @@ describe('lambda version', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const fn = new lambda.Function(stack, 'Fn', {
-      runtime: lambda.Runtime.NODEJS_12_X,
+      runtime: lambda.Runtime.NODEJS_10_X,
       handler: 'index.handler',
       code: lambda.Code.fromInline('foo'),
     });
@@ -135,7 +135,7 @@ describe('lambda version', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const fn = new lambda.Function(stack, 'Fn', {
-      runtime: lambda.Runtime.NODEJS_12_X,
+      runtime: lambda.Runtime.NODEJS_10_X,
       handler: 'index.handler',
       code: lambda.Code.fromInline('foo'),
     });
