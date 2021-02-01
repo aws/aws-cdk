@@ -558,8 +558,9 @@ export abstract class BaseService extends Resource
     let containerName: string|undefined;
     let containerPort: number|undefined;
 
-    // If the task definition that your service task specifies uses the AWSVPC network mode and a type SRV DNS record is
-    // used, you must specify a containerName and containerPort combination
+    // If the record type is SRV, then provide the containerName and containerPort to target.
+    // We use the name of the default container and the default port of the default container
+    // unless the user specifies otherwise.
     if (dnsRecordType === cloudmap.DnsRecordType.SRV) {
       // Ensure the user-provided container is from the right task definition.
       if (options.container && options.container.taskDefinition != this.taskDefinition) {
@@ -804,13 +805,13 @@ export interface CloudMapOptions {
   readonly failureThreshold?: number;
 
   /**
-   * The container to reference.
+   * The container to point to for a SRV record.
    * @default - the task definition's default container
    */
   readonly container?: ContainerDefinition;
 
   /**
-   * The port of the container to reference.
+   * The port to point to for a SRV record.
    * @default - the default port of the task definition's default container
    */
   readonly containerPort?: number;
