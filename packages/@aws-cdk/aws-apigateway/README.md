@@ -162,7 +162,7 @@ The following example shows how to use an API Key with a usage plan:
 
 ```ts
 const hello = new lambda.Function(this, 'hello', {
-  runtime: lambda.Runtime.NODEJS_10_X,
+  runtime: lambda.Runtime.NODEJS_12_X,
   handler: 'hello.handler',
   code: lambda.Code.fromAsset('lambda')
 });
@@ -229,7 +229,7 @@ The following example shows how to use a rate limited api key :
 
 ```ts
 const hello = new lambda.Function(this, 'hello', {
-  runtime: lambda.Runtime.NODEJS_10_X,
+  runtime: lambda.Runtime.NODEJS_12_X,
   handler: 'hello.handler',
   code: lambda.Code.fromAsset('lambda')
 });
@@ -259,7 +259,7 @@ have to define your models and mappings for the request, response, and integrati
 
 ```ts
 const hello = new lambda.Function(this, 'hello', {
-  runtime: lambda.Runtime.NODEJS_10_X,
+  runtime: lambda.Runtime.NODEJS_12_X,
   handler: 'hello.handler',
   code: lambda.Code.fromAsset('lambda')
 });
