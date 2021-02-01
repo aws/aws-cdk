@@ -498,7 +498,7 @@ test('tags get reflected in pipeline', () => {
 test('artifacts bucket is reflected in pipeline', () => {
   // GIVEN
   const stack2 = new Stack(app, 'Stack2', { env: PIPELINE_ENV });
-  const artifactBucket = new s3.Bucket(stack2, 'my-artifact-bucket');
+  const artifactBucket = new s3.Bucket(stack2, 'MyReusableArtifactBucket');
 
   // WHEN
   new TestGitHubNpmPipeline(stack2, 'Cdk2', {
@@ -506,8 +506,13 @@ test('artifacts bucket is reflected in pipeline', () => {
   });
 
   // THEN
-  expect(stack2).toHaveResourceLike('AWS::S3::Bucket', {
-    Name: 'my-artifact-bucket',
+  expect(stack2).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
+    ArtifactStore: {
+      Location: {
+        Ref: stringLike('MyReusableArtifactBucket*'),
+      },
+      Type: 'S3',
+    },
   });
 });
 
