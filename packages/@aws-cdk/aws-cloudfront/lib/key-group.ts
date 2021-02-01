@@ -31,7 +31,7 @@ export interface KeyGroupProps {
   readonly comment?: string;
 
   /**
-   * A list of the identifiers of the public keys in the key group.
+   * A list of public keys to add to the key group.
    */
   readonly items: IPublicKey[];
 }
