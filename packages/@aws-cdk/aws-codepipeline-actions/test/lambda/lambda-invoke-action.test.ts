@@ -330,7 +330,7 @@ function stackIncludingLambdaInvokeCodePipeline(props: HelperProps, app?: App) {
             lambda: new lambda.Function(stack, 'Lambda', {
               code: lambda.Code.fromCfnParameters(),
               handler: 'index.handler',
-              runtime: lambda.Runtime.NODEJS_10_X,
+              runtime: lambda.Runtime.NODEJS_12_X,
             }),
             userParameters: props.userParams,
             inputs: props.lambdaInput ? [props.lambdaInput] : undefined,
