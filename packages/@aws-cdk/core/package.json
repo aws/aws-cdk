@@ -17,8 +17,6 @@
       "dotnet": {
         "namespace": "Amazon.CDK",
         "packageId": "Amazon.CDK",
-        "signAssembly": true,
-        "assemblyOriginatorKeyFile": "../../key.snk",
         "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
       },
       "python": {
@@ -139,8 +137,8 @@
     "cfn2ts": "cfn2ts",
     "package": "cdk-package",
     "awslint": "cdk-awslint",
-    "build+test+package": "npm run build+test && npm run package",
-    "build+test": "npm run build && npm test",
+    "build+test+package": "yarn build+test && yarn package",
+    "build+test": "yarn build && yarn test",
     "compat": "cdk-compat",
     "gen": "cfn2ts",
     "rosetta:extract": "yarn --silent jsii-rosetta extract"
@@ -176,9 +174,9 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@types/lodash": "^4.14.167",
+    "@types/lodash": "^4.14.168",
     "@types/minimatch": "^3.0.3",
-    "@types/node": "^10.17.48",
+    "@types/node": "^10.17.51",
     "@types/sinon": "^9.0.9",
     "cdk-build-tools": "0.0.0",
     "cfn2ts": "0.0.0",
@@ -195,7 +193,7 @@
     "@aws-cdk/region-info": "0.0.0",
     "@balena/dockerignore": "^1.0.2",
     "constructs": "^3.2.0",
-    "fs-extra": "^9.0.1",
+    "fs-extra": "^9.1.0",
     "ignore": "^5.1.8",
     "minimatch": "^3.0.4"
   },
