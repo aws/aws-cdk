@@ -40,6 +40,10 @@ nodeunitShim({
       VolumeType: 'gp2',
     }, ResourcePart.Properties));
 
+    cdkExpect(stack).to(haveResource('AWS::EC2::Volume', {
+      DeletionPolicy: 'Retain',
+    }, ResourcePart.CompleteDefinition));
+
     test.done();
   },
 
