@@ -110,7 +110,7 @@ Unblocking yourself from this is a two-step process. This is how it works:
 DEPLOYMENT 1: break the relationship
 
 - Make sure `consumer` no longer references `bucket.bucketName` (maybe the consumer
-  stack now uses its own bucket, or it writes to a Dynamo table, or maybe you just
+  stack now uses its own bucket, or it writes to an AWS DynamoDB table, or maybe you just
   remove the Lambda Function altogether).
 - In the `producer` class, call `this.exportAttribute(this.bucket.bucketName)`. This
   will make sure the CloudFormation Export continues to exist while the relationship
