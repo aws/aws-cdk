@@ -1065,6 +1065,14 @@ export interface BucketProps {
   readonly encryptionKey?: kms.IKey;
 
   /**
+  * Enforces SSL for requests. S3.5 of the AWS Foundational Security Best Practices Regarding S3.
+  * @see https://docs.aws.amazon.com/config/latest/developerguide/s3-bucket-ssl-requests-only.html
+  *
+  * @default false
+  */
+ readonly enforceSSL?: boolean;
+
+  /**
    * Specifies whether Amazon S3 should use an S3 Bucket Key with server-side
    * encryption using KMS (SSE-KMS) for new objects in the bucket.
    *
@@ -1310,6 +1318,8 @@ export class Bucket extends BucketBase {
   private readonly metrics: BucketMetrics[] = [];
   private readonly cors: CorsRule[] = [];
   private readonly inventories: Inventory[] = [];
+  private readonly enforceSSL?: boolean;
+  private readonly blockPublicAccess: BlockPublicAccess | undefined;
 
   constructor(scope: Construct, id: string, props: BucketProps = {}) {
     super(scope, id, {
@@ -1319,6 +1329,8 @@ export class Bucket extends BucketBase {
     const { bucketEncryption, encryptionKey } = this.parseEncryption(props);
 
     this.validateBucketName(this.physicalName);
+    this.blockPublicAccess = props.blockPublicAccess;
+    this.enforceSSL = props.enforceSSL;
 
     const websiteConfiguration = this.renderWebsiteConfiguration(props);
     this.isWebsite = (websiteConfiguration !== undefined);
@@ -1357,8 +1369,13 @@ export class Bucket extends BucketBase {
     this.bucketDualStackDomainName = resource.attrDualStackDomainName;
     this.bucketRegionalDomainName = resource.attrRegionalDomainName;
 
-    this.disallowPublicAccess = props.blockPublicAccess && props.blockPublicAccess.blockPublicPolicy;
+    this.disallowPublicAccess = this.blockPublicAccess && this.blockPublicAccess.blockPublicPolicy;
     this.accessControl = props.accessControl;
+
+    // Enforce AWS Foundational Security Best Practice
+    if (this.enforceSSL) {
+      this.enforceSSLStatement();
+    }
 
     if (props.serverAccessLogsBucket instanceof Bucket) {
       props.serverAccessLogsBucket.allowLogDelivery();
@@ -1480,6 +1497,22 @@ export class Bucket extends BucketBase {
    */
   public addInventory(inventory: Inventory): void {
     this.inventories.push(inventory);
+  }
+
+  /**
+   * Adds an iam statement to enforce SSL requests only.
+   */
+  private enforceSSLStatement() {
+    const statement = new iam.PolicyStatement({
+      actions: ['s3:*'],
+      conditions: {
+        Bool: { 'aws:SecureTransport': 'false' },
+      },
+      effect: iam.Effect.DENY,
+      resources: [this.arnForObjects('*')],
+      principals: [new iam.AnyPrincipal()],
+    });
+    this.addToResourcePolicy(statement);
   }
 
   private validateBucketName(physicalName: string): void {
