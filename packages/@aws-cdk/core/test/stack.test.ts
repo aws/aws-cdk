@@ -2,7 +2,9 @@ import * as cxapi from '@aws-cdk/cx-api';
 import { testFutureBehavior, testLegacyBehavior } from 'cdk-build-tools/lib/feature-flag';
 import {
   App, CfnCondition, CfnInclude, CfnOutput, CfnParameter,
-  CfnResource, Construct, Lazy, ScopedAws, Stack, validateString, ISynthesisSession, Tags, LegacyStackSynthesizer, DefaultStackSynthesizer, NestedStack,
+  CfnResource, Construct, Lazy, ScopedAws, Stack, validateString,
+  ISynthesisSession, Tags, LegacyStackSynthesizer, DefaultStackSynthesizer,
+  NestedStack,
 } from '../lib';
 import { Intrinsic } from '../lib/private/intrinsic';
 import { resolveReferences } from '../lib/private/refs';

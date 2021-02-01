@@ -789,23 +789,20 @@ export class Stack extends CoreConstruct implements ITaggable {
    *
    * ## Example
    *
-   * Here is how the process works:
+   * Here is how the process works. Let's say there are two stacks,
+   * `producerStack` and `consumerStack`, and `producerStack` has a bucket
+   * called `bucket`, which is referenced by `consumerStack` (perhaps because
+   * an AWS Lambda Function writes into it, or something like that).
    *
-   * - Given two stacks: `producerStack` and `consumerStack`
-   * - Let's say `producerStack` has a bucket called `bucket`, and
-   *   `consumerStack` references `producerStack.bucket.bucketName` (because
-   *   a Lambda Function writes into it, or something like that).
-   *
-   * If you want to remove `producerStack.bucket`, CloudFormation won't let you
-   * do that right away: when you first update `producerStack`, `consumerStack` is still
-   * using that `bucket` and removing it would interrupt your service.
+   * It is not safe to remove `producerStack.bucket` because as the bucket is being
+   * deleted, `consumerStack` might still be using it.
    *
    * Instead, the process takes two deployments:
    *
    * ### Deployment 1: break the relationship
    *
    * - Make sure `consumerStack` no longer references `bucket.bucketName` (maybe the consumer
-   *   stack now uses its own bucket, or it writes to a Dynamo table, or maybe you just
+   *   stack now uses its own bucket, or it writes to an AWS DynamoDB table, or maybe you just
    *   remove the Lambda Function altogether).
    * - In the `ProducerStack` class, call `this.exportAttribute(this.bucket.bucketName)`. This
    *   will make sure the CloudFormation Export continues to exist while the relationship
