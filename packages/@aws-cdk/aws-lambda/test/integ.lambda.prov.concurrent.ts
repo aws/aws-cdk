@@ -15,7 +15,7 @@ const pce = 5;
 const fn = new lambda.Function(stack, 'MyLambdaAliasPCE', {
   code: new lambda.InlineCode(lambdaCode.replace('#type#', 'Alias')),
   handler: 'index.handler',
-  runtime: lambda.Runtime.NODEJS_10_X,
+  runtime: lambda.Runtime.NODEJS_12_X,
 });
 
 fn.addToRolePolicy(new iam.PolicyStatement({
@@ -39,7 +39,7 @@ alias.addPermission('AliasPermission', {
 const fnVersionPCE = new lambda.Function(stack, 'MyLambdaVersionPCE', {
   code: new lambda.InlineCode(lambdaCode.replace('#type#', 'Version')),
   handler: 'index.handler',
-  runtime: lambda.Runtime.NODEJS_10_X,
+  runtime: lambda.Runtime.NODEJS_12_X,
 });
 
 fnVersionPCE.addToRolePolicy(new iam.PolicyStatement({

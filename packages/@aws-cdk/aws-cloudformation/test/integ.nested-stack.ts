@@ -42,7 +42,7 @@ class MyNestedStack extends cfn.NestedStack {
 
     if (props.subscriber) {
       new lambda.Function(this, 'fn', {
-        runtime: lambda.Runtime.NODEJS_10_X,
+        runtime: lambda.Runtime.NODEJS_12_X,
         code: lambda.Code.inline('console.error("hi")'),
         handler: 'index.handler',
         environment: {
