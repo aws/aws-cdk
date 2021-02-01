@@ -555,10 +555,27 @@ export abstract class BaseService extends Resource
       }
     }
 
+    let containerName: string|undefined;
+    let containerPort: number|undefined;
+
     // If the task definition that your service task specifies uses the AWSVPC network mode and a type SRV DNS record is
     // used, you must specify a containerName and containerPort combination
-    const containerName = dnsRecordType === cloudmap.DnsRecordType.SRV ? this.taskDefinition.defaultContainer!.containerName : undefined;
-    const containerPort = dnsRecordType === cloudmap.DnsRecordType.SRV ? this.taskDefinition.defaultContainer!.containerPort : undefined;
+    if (dnsRecordType === cloudmap.DnsRecordType.SRV) {
+      // Ensure the user-provided container is from the right task definition.
+      if (options.container && options.container.taskDefinition != this.taskDefinition) {
+        throw new Error('Cannot add discovery for a container from another task definition');
+      }
+
+      const container = options.container ?? this.taskDefinition.defaultContainer!;
+
+      // Ensure that any port given by the user is mapped.
+      if (options.containerPort && !container.findPortMapping(options.containerPort, Protocol.TCP)) {
+        throw new Error('Cannot add discovery for a container port that has not been mapped');
+      }
+
+      containerName = container.containerName;
+      containerPort = options.containerPort ?? this.taskDefinition.defaultContainer!.containerPort;
+    }
 
     const cloudmapService = new cloudmap.Service(this, 'CloudmapService', {
       namespace: sdNamespace,
@@ -580,25 +597,6 @@ export abstract class BaseService extends Resource
     this.cloudmapService = cloudmapService;
 
     return cloudmapService;
-  }
-
-  /**
-   * Associates a container and port with with a CloudMap service.
-   */
-  public addCloudMapService(options: AddCloudMapServiceOptions): void {
-    if (options.container.taskDefinition != this.taskDefinition) {
-      throw new Error('Cannot add discovery for a container from another task definition');
-    }
-
-    if (!options.container.findPortMapping(options.containerPort, Protocol.TCP)) {
-      throw new Error('Cannot add discovery for a container port that has not been mapped');
-    }
-
-    this.addServiceRegistry({
-      arn: options.cloudMapService.serviceArn,
-      containerName: options.container.containerName,
-      containerPort: options.containerPort,
-    });
   }
 
   /**
@@ -803,27 +801,19 @@ export interface CloudMapOptions {
    *
    * NOTE: This is used for HealthCheckCustomConfig
    */
-  readonly failureThreshold?: number,
-}
-
-/**
- * Options for adding a CloudMap service.
- */
-export interface AddCloudMapServiceOptions {
-  /**
-   * The CloudMap service to associate with the container and port.
-   */
-  readonly cloudMapService: cloudmap.IService;
+  readonly failureThreshold?: number;
 
   /**
    * The container to reference.
+   * @default - the task definition's default container
    */
-  readonly container: ContainerDefinition;
+  readonly container?: ContainerDefinition;
 
   /**
    * The port of the container to reference.
+   * @default - the default port of the task definition's default container
    */
-  readonly containerPort: number;
+  readonly containerPort?: number;
 }
 
 /**

@@ -1718,7 +1718,7 @@ export = {
       test.done();
     },
 
-    'accepts a pre-created cloud map service'(test: Test) {
+    'if srv, then selects a container and port'(test: Test) {
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'MyVpc', {});
       const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
@@ -1736,25 +1736,20 @@ export = {
 
       container.addPortMappings({ containerPort: 8000 });
 
-      const fargateService = new ecs.FargateService(stack, 'Service', {
+      new ecs.FargateService(stack, 'Service', {
         cluster,
         taskDefinition,
-      });
-
-      const cloudMapService = new cloudmap.Service(stack, 'cloudmap', {
-        namespace: cluster.defaultCloudMapNamespace!,
-      });
-
-      fargateService.addCloudMapService({
-        cloudMapService,
-        container,
-        containerPort: 8000,
+        cloudMapOptions: {
+          dnsRecordType: cloudmap.DnsRecordType.SRV,
+          container,
+          containerPort: 8000,
+        },
       });
 
       expect(stack).to(haveResourceLike('AWS::ECS::Service', {
         ServiceRegistries: [
           {
-            RegistryArn: { 'Fn::GetAtt': ['cloudmap4FA4170E', 'Arn'] },
+            RegistryArn: { 'Fn::GetAtt': ['ServiceCloudmapService046058A4', 'Arn'] },
             ContainerName: 'MainContainer',
             ContainerPort: 8000,
           },
@@ -1764,7 +1759,7 @@ export = {
       test.done();
     },
 
-    'throws if container is not part of task definition'(test: Test) {
+    'throws if SRV and container is not part of task definition'(test: Test) {
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'MyVpc', {});
       const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
@@ -1783,34 +1778,29 @@ export = {
 
       const wrongTaskDefinition = new ecs.FargateTaskDefinition(stack, 'WrongFargateTaskDef');
       // The wrong container
-      const container = wrongTaskDefinition.addContainer('MainContainer', {
+      const wrongContainer = wrongTaskDefinition.addContainer('MainContainer', {
         image: ecs.ContainerImage.fromRegistry('hello'),
         memoryLimitMiB: 512,
       });
 
-      container.addPortMappings({ containerPort: 8000 });
-
-      const fargateService = new ecs.FargateService(stack, 'Service', {
-        cluster,
-        taskDefinition,
-      });
-
-      const cloudMapService = new cloudmap.Service(stack, 'cloudmap', {
-        namespace: cluster.defaultCloudMapNamespace!,
-      });
+      wrongContainer.addPortMappings({ containerPort: 8000 });
 
       test.throws(() => {
-        fargateService.addCloudMapService({
-          cloudMapService,
-          container,
-          containerPort: 1234,
+        new ecs.FargateService(stack, 'Service', {
+          cluster,
+          taskDefinition,
+          cloudMapOptions: {
+            dnsRecordType: cloudmap.DnsRecordType.SRV,
+            container: wrongContainer,
+            containerPort: 1234,
+          },
         });
       }, /another task definition/i);
 
       test.done();
     },
 
-    'throws if the container port is not mapped'(test: Test) {
+    'throws if SRV and the container port is not mapped'(test: Test) {
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'MyVpc', {});
       const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
@@ -1828,20 +1818,15 @@ export = {
 
       container.addPortMappings({ containerPort: 8000 });
 
-      const fargateService = new ecs.FargateService(stack, 'Service', {
-        cluster,
-        taskDefinition,
-      });
-
-      const cloudMapService = new cloudmap.Service(stack, 'cloudmap', {
-        namespace: cluster.defaultCloudMapNamespace!,
-      });
-
       test.throws(() => {
-        fargateService.addCloudMapService({
-          cloudMapService,
-          container,
-          containerPort: 1234,
+        new ecs.FargateService(stack, 'Service', {
+          cluster,
+          taskDefinition,
+          cloudMapOptions: {
+            dnsRecordType: cloudmap.DnsRecordType.SRV,
+            container,
+            containerPort: 1234,
+          },
         });
       }, /container port.*not.*mapped/i);
 

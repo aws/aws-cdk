@@ -1,0 +1,687 @@
+{
+  "version": "9.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "aws-ecs-integ": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-ecs-integ.template.json"
+      },
+      "metadata": {
+        "/aws-ecs-integ/Vpc/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Vpc8378EB38",
+            "trace": [
+              "new Vpc (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-ec2/lib/vpc.js:340:25)",
+              "Object.<anonymous> (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-ecs/test/ec2/integ.cloudmap-container-port.js:9:13)",
+              "Module._compile (internal/modules/cjs/loader.js:1063:30)",
+              "Object.Module._extensions..js (internal/modules/cjs/loader.js:1092:10)",
+              "Module.load (internal/modules/cjs/loader.js:928:32)",
+              "Function.Module._load (internal/modules/cjs/loader.js:769:14)",
+              "Function.executeUserEntryPoint [as runMain] (internal/modules/run_main.js:72:12)",
+              "internal/main/run_main_module.js:17:47"
+            ]
+          }
+        ],
+        "/aws-ecs-integ/Vpc/pubSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcpubSubnet1Subnet410C08CF",
+            "trace": [
+              "new Subnet (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-ec2/lib/vpc.js:662:24)",
+              "new PublicSubnet (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-ec2/lib/vpc.js:831:9)",
+              "/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-ec2/lib/vpc.js:562:42",
+              "Array.forEach (<anonymous>)",
+              "Vpc.createSubnetResources (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-ec2/lib/vpc.js:546:32)",
+              "Vpc.createSubnets (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-ec2/lib/vpc.js:537:18)",
+              "new Vpc (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-ec2/lib/vpc.js:361:14)",
+              "Object.<anonymous> (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-ecs/test/ec2/integ.cloudmap-container-port.js:9:13)",
+              "Module._compile (internal/modules/cjs/loader.js:1063:30)",
+              "Object.Module._extensions..js (internal/modules/cjs/loader.js:1092:10)",
+              "Module.load (internal/modules/cjs/loader.js:928:32)",
+              "Function.Module._load (internal/modules/cjs/loader.js:769:14)",
+              "Function.executeUserEntryPoint [as runMain] (internal/modules/run_main.js:72:12)",
+              "internal/main/run_main_module.js:17:47"
+            ]
+          }
+        ],
+        "/aws-ecs-integ/Vpc/pubSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcpubSubnet1RouteTableE0483FDA",
+            "trace": [
+              "new Subnet (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-ec2/lib/vpc.js:678:23)",
+              "new PublicSubnet (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-ec2/lib/vpc.js:831:9)",
+              "/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-ec2/lib/vpc.js:562:42",
+              "Array.forEach (<anonymous>)",
+              "Vpc.createSubnetResources (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-ec2/lib/vpc.js:546:32)",
+              "Vpc.createSubnets (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-ec2/lib/vpc.js:537:18)",
+              "new Vpc (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-ec2/lib/vpc.js:361:14)",
+              "Object.<anonymous> (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-ecs/test/ec2/integ.cloudmap-container-port.js:9:13)",
+              "Module._compile (internal/modules/cjs/loader.js:1063:30)",
+              "Object.Module._extensions..js (internal/modules/cjs/loader.js:1092:10)",
+              "Module.load (internal/modules/cjs/loader.js:928:32)",
+              "Function.Module._load (internal/modules/cjs/loader.js:769:14)",
+              "Function.executeUserEntryPoint [as runMain] (internal/modules/run_main.js:72:12)",
+              "internal/main/run_main_module.js:17:47"
+            ]
+          }
+        ],
+        "/aws-ecs-integ/Vpc/pubSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcpubSubnet1RouteTableAssociation68036D8C",
+            "trace": [
+              "new Subnet (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-ec2/lib/vpc.js:683:9)",
+              "new PublicSubnet (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-ec2/lib/vpc.js:831:9)",
+              "/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-ec2/lib/vpc.js:562:42",
+              "Array.forEach (<anonymous>)",
+              "Vpc.createSubnetResources (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-ec2/lib/vpc.js:546:32)",
+              "Vpc.createSubnets (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-ec2/lib/vpc.js:537:18)",
+              "new Vpc (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-ec2/lib/vpc.js:361:14)",
+              "Object.<anonymous> (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-ecs/test/ec2/integ.cloudmap-container-port.js:9:13)",
+              "Module._compile (internal/modules/cjs/loader.js:1063:30)",
+              "Object.Module._extensions..js (internal/modules/cjs/loader.js:1092:10)",
+              "Module.load (internal/modules/cjs/loader.js:928:32)",
+              "Function.Module._load (internal/modules/cjs/loader.js:769:14)",
+              "Function.executeUserEntryPoint [as runMain] (internal/modules/run_main.js:72:12)",
+              "internal/main/run_main_module.js:17:47"
+            ]
+          }
+        ],
+        "/aws-ecs-integ/Vpc/pubSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcpubSubnet1DefaultRouteF020A9EF",
+            "trace": [
+              "PublicSubnet.addDefaultInternetRoute (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-ec2/lib/vpc.js:718:23)",
+              "/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-ec2/lib/vpc.js:373:30",
+              "Array.forEach (<anonymous>)",
+              "new Vpc (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-ec2/lib/vpc.js:372:32)",
+              "Object.<anonymous> (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-ecs/test/ec2/integ.cloudmap-container-port.js:9:13)",
+              "Module._compile (internal/modules/cjs/loader.js:1063:30)",
+              "Object.Module._extensions..js (internal/modules/cjs/loader.js:1092:10)",
+              "Module.load (internal/modules/cjs/loader.js:928:32)",
+              "Function.Module._load (internal/modules/cjs/loader.js:769:14)",
+              "Function.executeUserEntryPoint [as runMain] (internal/modules/run_main.js:72:12)",
+              "internal/main/run_main_module.js:17:47"
+            ]
+          }
+        ],
+        "/aws-ecs-integ/Vpc/pubSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcpubSubnet2Subnet44A37A0D",
+            "trace": [
+              "new Subnet (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-ec2/lib/vpc.js:662:24)",
+              "new PublicSubnet (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-ec2/lib/vpc.js:831:9)",
+              "/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-ec2/lib/vpc.js:562:42",
+              "Array.forEach (<anonymous>)",
+              "Vpc.createSubnetResources (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-ec2/lib/vpc.js:546:32)",
+              "Vpc.createSubnets (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-ec2/lib/vpc.js:537:18)",
+              "new Vpc (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-ec2/lib/vpc.js:361:14)",
+              "Object.<anonymous> (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-ecs/test/ec2/integ.cloudmap-container-port.js:9:13)",
+              "Module._compile (internal/modules/cjs/loader.js:1063:30)",
+              "Object.Module._extensions..js (internal/modules/cjs/loader.js:1092:10)",
+              "Module.load (internal/modules/cjs/loader.js:928:32)",
+              "Function.Module._load (internal/modules/cjs/loader.js:769:14)",
+              "Function.executeUserEntryPoint [as runMain] (internal/modules/run_main.js:72:12)",
+              "internal/main/run_main_module.js:17:47"
+            ]
+          }
+        ],
+        "/aws-ecs-integ/Vpc/pubSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcpubSubnet2RouteTable5A29DF40",
+            "trace": [
+              "new Subnet (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-ec2/lib/vpc.js:678:23)",
+              "new PublicSubnet (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-ec2/lib/vpc.js:831:9)",
+              "/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-ec2/lib/vpc.js:562:42",
+              "Array.forEach (<anonymous>)",
+              "Vpc.createSubnetResources (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-ec2/lib/vpc.js:546:32)",
+              "Vpc.createSubnets (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-ec2/lib/vpc.js:537:18)",
+              "new Vpc (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-ec2/lib/vpc.js:361:14)",
+              "Object.<anonymous> (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-ecs/test/ec2/integ.cloudmap-container-port.js:9:13)",
+              "Module._compile (internal/modules/cjs/loader.js:1063:30)",
+              "Object.Module._extensions..js (internal/modules/cjs/loader.js:1092:10)",
+              "Module.load (internal/modules/cjs/loader.js:928:32)",
+              "Function.Module._load (internal/modules/cjs/loader.js:769:14)",
+              "Function.executeUserEntryPoint [as runMain] (internal/modules/run_main.js:72:12)",
+              "internal/main/run_main_module.js:17:47"
+            ]
+          }
+        ],
+        "/aws-ecs-integ/Vpc/pubSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcpubSubnet2RouteTableAssociationFB826925",
+            "trace": [
+              "new Subnet (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-ec2/lib/vpc.js:683:9)",
+              "new PublicSubnet (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-ec2/lib/vpc.js:831:9)",
+              "/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-ec2/lib/vpc.js:562:42",
+              "Array.forEach (<anonymous>)",
+              "Vpc.createSubnetResources (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-ec2/lib/vpc.js:546:32)",
+              "Vpc.createSubnets (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-ec2/lib/vpc.js:537:18)",
+              "new Vpc (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-ec2/lib/vpc.js:361:14)",
+              "Object.<anonymous> (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-ecs/test/ec2/integ.cloudmap-container-port.js:9:13)",
+              "Module._compile (internal/modules/cjs/loader.js:1063:30)",
+              "Object.Module._extensions..js (internal/modules/cjs/loader.js:1092:10)",
+              "Module.load (internal/modules/cjs/loader.js:928:32)",
+              "Function.Module._load (internal/modules/cjs/loader.js:769:14)",
+              "Function.executeUserEntryPoint [as runMain] (internal/modules/run_main.js:72:12)",
+              "internal/main/run_main_module.js:17:47"
+            ]
+          }
+        ],
+        "/aws-ecs-integ/Vpc/pubSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcpubSubnet2DefaultRouteE6D48BA4",
+            "trace": [
+              "PublicSubnet.addDefaultInternetRoute (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-ec2/lib/vpc.js:718:23)",
+              "/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-ec2/lib/vpc.js:373:30",
+              "Array.forEach (<anonymous>)",
+              "new Vpc (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-ec2/lib/vpc.js:372:32)",
+              "Object.<anonymous> (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-ecs/test/ec2/integ.cloudmap-container-port.js:9:13)",
+              "Module._compile (internal/modules/cjs/loader.js:1063:30)",
+              "Object.Module._extensions..js (internal/modules/cjs/loader.js:1092:10)",
+              "Module.load (internal/modules/cjs/loader.js:928:32)",
+              "Function.Module._load (internal/modules/cjs/loader.js:769:14)",
+              "Function.executeUserEntryPoint [as runMain] (internal/modules/run_main.js:72:12)",
+              "internal/main/run_main_module.js:17:47"
+            ]
+          }
+        ],
+        "/aws-ecs-integ/Vpc/IGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcIGWD7BA715C",
+            "trace": [
+              "new Vpc (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-ec2/lib/vpc.js:365:25)",
+              "Object.<anonymous> (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-ecs/test/ec2/integ.cloudmap-container-port.js:9:13)",
+              "Module._compile (internal/modules/cjs/loader.js:1063:30)",
+              "Object.Module._extensions..js (internal/modules/cjs/loader.js:1092:10)",
+              "Module.load (internal/modules/cjs/loader.js:928:32)",
+              "Function.Module._load (internal/modules/cjs/loader.js:769:14)",
+              "Function.executeUserEntryPoint [as runMain] (internal/modules/run_main.js:72:12)",
+              "internal/main/run_main_module.js:17:47"
+            ]
+          }
+        ],
+        "/aws-ecs-integ/Vpc/VPCGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcVPCGWBF912B6E",
+            "trace": [
+              "new Vpc (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-ec2/lib/vpc.js:368:25)",
+              "Object.<anonymous> (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-ecs/test/ec2/integ.cloudmap-container-port.js:9:13)",
+              "Module._compile (internal/modules/cjs/loader.js:1063:30)",
+              "Object.Module._extensions..js (internal/modules/cjs/loader.js:1092:10)",
+              "Module.load (internal/modules/cjs/loader.js:928:32)",
+              "Function.Module._load (internal/modules/cjs/loader.js:769:14)",
+              "Function.executeUserEntryPoint [as runMain] (internal/modules/run_main.js:72:12)",
+              "internal/main/run_main_module.js:17:47"
+            ]
+          }
+        ],
+        "/aws-ecs-integ/FargateCluster/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateCluster7CCD5F93",
+            "trace": [
+              "new Cluster (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-ecs/lib/cluster.js:58:25)",
+              "Object.<anonymous> (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-ecs/test/ec2/integ.cloudmap-container-port.js:19:17)",
+              "Module._compile (internal/modules/cjs/loader.js:1063:30)",
+              "Object.Module._extensions..js (internal/modules/cjs/loader.js:1092:10)",
+              "Module.load (internal/modules/cjs/loader.js:928:32)",
+              "Function.Module._load (internal/modules/cjs/loader.js:769:14)",
+              "Function.executeUserEntryPoint [as runMain] (internal/modules/run_main.js:72:12)",
+              "internal/main/run_main_module.js:17:47"
+            ]
+          }
+        ],
+        "/aws-ecs-integ/FargateCluster/capacity": [
+          {
+            "type": "aws:cdk:warning",
+            "data": "desiredCapacity has been configured. Be aware this will reset the size of your AutoScalingGroup on every deployment. See https://github.com/aws/aws-cdk/issues/5215",
+            "trace": [
+              "Annotations.addMessage (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/core/lib/annotations.js:92:42)",
+              "Annotations.addWarning (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/core/lib/annotations.js:35:14)",
+              "new AutoScalingGroup (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-autoscaling/lib/auto-scaling-group.js:466:41)",
+              "Cluster.addCapacity (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-ecs/lib/cluster.js:132:34)",
+              "Object.<anonymous> (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-ecs/test/ec2/integ.cloudmap-container-port.js:20:26)",
+              "Module._compile (internal/modules/cjs/loader.js:1063:30)",
+              "Object.Module._extensions..js (internal/modules/cjs/loader.js:1092:10)",
+              "Module.load (internal/modules/cjs/loader.js:928:32)",
+              "Function.Module._load (internal/modules/cjs/loader.js:769:14)",
+              "Function.executeUserEntryPoint [as runMain] (internal/modules/run_main.js:72:12)",
+              "internal/main/run_main_module.js:17:47"
+            ]
+          }
+        ],
+        "/aws-ecs-integ/FargateCluster/capacity/InstanceSecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateClustercapacityInstanceSecurityGroupCB3AEDA1",
+            "trace": [
+              "new SecurityGroup (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-ec2/lib/security-group.js:205:30)",
+              "new AutoScalingGroup (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-autoscaling/lib/auto-scaling-group.js:402:53)",
+              "Cluster.addCapacity (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-ecs/lib/cluster.js:132:34)",
+              "Object.<anonymous> (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-ecs/test/ec2/integ.cloudmap-container-port.js:20:26)",
+              "Module._compile (internal/modules/cjs/loader.js:1063:30)",
+              "Object.Module._extensions..js (internal/modules/cjs/loader.js:1092:10)",
+              "Module.load (internal/modules/cjs/loader.js:928:32)",
+              "Function.Module._load (internal/modules/cjs/loader.js:769:14)",
+              "Function.executeUserEntryPoint [as runMain] (internal/modules/run_main.js:72:12)",
+              "internal/main/run_main_module.js:17:47"
+            ]
+          }
+        ],
+        "/aws-ecs-integ/FargateCluster/capacity/InstanceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateClustercapacityInstanceRoleBE253D2D",
+            "trace": [
+              "new Role (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-iam/lib/role.js:70:22)",
+              "new AutoScalingGroup (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-autoscaling/lib/auto-scaling-group.js:409:35)",
+              "Cluster.addCapacity (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-ecs/lib/cluster.js:132:34)",
+              "Object.<anonymous> (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-ecs/test/ec2/integ.cloudmap-container-port.js:20:26)",
+              "Module._compile (internal/modules/cjs/loader.js:1063:30)",
+              "Object.Module._extensions..js (internal/modules/cjs/loader.js:1092:10)",
+              "Module.load (internal/modules/cjs/loader.js:928:32)",
+              "Function.Module._load (internal/modules/cjs/loader.js:769:14)",
+              "Function.executeUserEntryPoint [as runMain] (internal/modules/run_main.js:72:12)",
+              "internal/main/run_main_module.js:17:47"
+            ]
+          }
+        ],
+        "/aws-ecs-integ/FargateCluster/capacity/InstanceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateClustercapacityInstanceRoleDefaultPolicy90B38927",
+            "trace": [
+              "new Policy (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-iam/lib/policy.js:53:26)",
+              "Role.addToPrincipalPolicy (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-iam/lib/role.js:203:34)",
+              "Role.addToPolicy (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-iam/lib/role.js:215:21)",
+              "AutoScalingGroup.addToRolePolicy (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-autoscaling/lib/auto-scaling-group.js:604:19)",
+              "Cluster.addAutoScalingGroup (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-ecs/lib/cluster.js:193:26)",
+              "Cluster.addCapacity (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-ecs/lib/cluster.js:138:14)",
+              "Object.<anonymous> (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-ecs/test/ec2/integ.cloudmap-container-port.js:20:26)",
+              "Module._compile (internal/modules/cjs/loader.js:1063:30)",
+              "Object.Module._extensions..js (internal/modules/cjs/loader.js:1092:10)",
+              "Module.load (internal/modules/cjs/loader.js:928:32)",
+              "Function.Module._load (internal/modules/cjs/loader.js:769:14)",
+              "Function.executeUserEntryPoint [as runMain] (internal/modules/run_main.js:72:12)",
+              "internal/main/run_main_module.js:17:47"
+            ]
+          }
+        ],
+        "/aws-ecs-integ/FargateCluster/capacity/InstanceProfile": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateClustercapacityInstanceProfile8294296C",
+            "trace": [
+              "new AutoScalingGroup (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-autoscaling/lib/auto-scaling-group.js:417:28)",
+              "Cluster.addCapacity (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-ecs/lib/cluster.js:132:34)",
+              "Object.<anonymous> (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-ecs/test/ec2/integ.cloudmap-container-port.js:20:26)",
+              "Module._compile (internal/modules/cjs/loader.js:1063:30)",
+              "Object.Module._extensions..js (internal/modules/cjs/loader.js:1092:10)",
+              "Module.load (internal/modules/cjs/loader.js:928:32)",
+              "Function.Module._load (internal/modules/cjs/loader.js:769:14)",
+              "Function.executeUserEntryPoint [as runMain] (internal/modules/run_main.js:72:12)",
+              "internal/main/run_main_module.js:17:47"
+            ]
+          }
+        ],
+        "/aws-ecs-integ/FargateCluster/capacity/LaunchConfig": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateClustercapacityLaunchConfig9B95CCB7",
+            "trace": [
+              "new AutoScalingGroup (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-autoscaling/lib/auto-scaling-group.js:425:30)",
+              "Cluster.addCapacity (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-ecs/lib/cluster.js:132:34)",
+              "Object.<anonymous> (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-ecs/test/ec2/integ.cloudmap-container-port.js:20:26)",
+              "Module._compile (internal/modules/cjs/loader.js:1063:30)",
+              "Object.Module._extensions..js (internal/modules/cjs/loader.js:1092:10)",
+              "Module.load (internal/modules/cjs/loader.js:928:32)",
+              "Function.Module._load (internal/modules/cjs/loader.js:769:14)",
+              "Function.executeUserEntryPoint [as runMain] (internal/modules/run_main.js:72:12)",
+              "internal/main/run_main_module.js:17:47"
+            ]
+          }
+        ],
+        "/aws-ecs-integ/FargateCluster/capacity/ASG": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateClustercapacityASGE4034F96",
+            "trace": [
+              "new AutoScalingGroup (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-autoscaling/lib/auto-scaling-group.js:510:33)",
+              "Cluster.addCapacity (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-ecs/lib/cluster.js:132:34)",
+              "Object.<anonymous> (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-ecs/test/ec2/integ.cloudmap-container-port.js:20:26)",
+              "Module._compile (internal/modules/cjs/loader.js:1063:30)",
+              "Object.Module._extensions..js (internal/modules/cjs/loader.js:1092:10)",
+              "Module.load (internal/modules/cjs/loader.js:928:32)",
+              "Function.Module._load (internal/modules/cjs/loader.js:769:14)",
+              "Function.executeUserEntryPoint [as runMain] (internal/modules/run_main.js:72:12)",
+              "internal/main/run_main_module.js:17:47"
+            ]
+          }
+        ],
+        "/aws-ecs-integ/FargateCluster/capacity/DrainECSHook/Function/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateClustercapacityDrainECSHookFunctionServiceRoleA28505D9",
+            "trace": [
+              "new Role (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-iam/lib/role.js:70:22)",
+              "new Function (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-lambda/lib/function.js:77:35)",
+              "new InstanceDrainHook (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-ecs/lib/drain-hook/instance-drain-hook.js:25:20)",
+              "Cluster.addAutoScalingGroup (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-ecs/lib/cluster.js:232:13)",
+              "Cluster.addCapacity (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-ecs/lib/cluster.js:138:14)",
+              "Object.<anonymous> (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-ecs/test/ec2/integ.cloudmap-container-port.js:20:26)",
+              "Module._compile (internal/modules/cjs/loader.js:1063:30)",
+              "Object.Module._extensions..js (internal/modules/cjs/loader.js:1092:10)",
+              "Module.load (internal/modules/cjs/loader.js:928:32)",
+              "Function.Module._load (internal/modules/cjs/loader.js:769:14)",
+              "Function.executeUserEntryPoint [as runMain] (internal/modules/run_main.js:72:12)",
+              "internal/main/run_main_module.js:17:47"
+            ]
+          }
+        ],
+        "/aws-ecs-integ/FargateCluster/capacity/DrainECSHook/Function/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateClustercapacityDrainECSHookFunctionServiceRoleDefaultPolicy53CD1145",
+            "trace": [
+              "new Policy (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-iam/lib/policy.js:53:26)",
+              "Role.addToPrincipalPolicy (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-iam/lib/role.js:203:34)",
+              "Role.addToPolicy (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-iam/lib/role.js:215:21)",
+              "Function.addToRolePolicy (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-lambda/lib/function-base.js:56:19)",
+              "new InstanceDrainHook (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-ecs/lib/drain-hook/instance-drain-hook.js:45:12)",
+              "Cluster.addAutoScalingGroup (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-ecs/lib/cluster.js:232:13)",
+              "Cluster.addCapacity (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-ecs/lib/cluster.js:138:14)",
+              "Object.<anonymous> (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-ecs/test/ec2/integ.cloudmap-container-port.js:20:26)",
+              "Module._compile (internal/modules/cjs/loader.js:1063:30)",
+              "Object.Module._extensions..js (internal/modules/cjs/loader.js:1092:10)",
+              "Module.load (internal/modules/cjs/loader.js:928:32)",
+              "Function.Module._load (internal/modules/cjs/loader.js:769:14)",
+              "Function.executeUserEntryPoint [as runMain] (internal/modules/run_main.js:72:12)",
+              "internal/main/run_main_module.js:17:47"
+            ]
+          }
+        ],
+        "/aws-ecs-integ/FargateCluster/capacity/DrainECSHook/Function/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateClustercapacityDrainECSHookFunction3E60E6D0",
+            "trace": [
+              "new Function (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-lambda/lib/function.js:133:26)",
+              "new InstanceDrainHook (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-ecs/lib/drain-hook/instance-drain-hook.js:25:20)",
+              "Cluster.addAutoScalingGroup (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-ecs/lib/cluster.js:232:13)",
+              "Cluster.addCapacity (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-ecs/lib/cluster.js:138:14)",
+              "Object.<anonymous> (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-ecs/test/ec2/integ.cloudmap-container-port.js:20:26)",
+              "Module._compile (internal/modules/cjs/loader.js:1063:30)",
+              "Object.Module._extensions..js (internal/modules/cjs/loader.js:1092:10)",
+              "Module.load (internal/modules/cjs/loader.js:928:32)",
+              "Function.Module._load (internal/modules/cjs/loader.js:769:14)",
+              "Function.executeUserEntryPoint [as runMain] (internal/modules/run_main.js:72:12)",
+              "internal/main/run_main_module.js:17:47"
+            ]
+          }
+        ],
+        "/aws-ecs-integ/FargateCluster/capacity/DrainECSHook/Function/AllowInvoke:awsecsintegFargateClustercapacityLifecycleHookDrainHookTopic07C1229F": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateClustercapacityDrainECSHookFunctionAllowInvokeawsecsintegFargateClustercapacityLifecycleHookDrainHookTopic07C1229F3B6FF246",
+            "trace": [
+              "Function.addPermission (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-lambda/lib/function-base.js:38:9)",
+              "LambdaSubscription.bind (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-sns-subscriptions/lib/lambda.js:31:17)",
+              "Topic.addSubscription (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-sns/lib/topic-base.js:20:49)",
+              "FunctionHook.bind (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-autoscaling-hooktargets/lib/lambda-hook.js:39:15)",
+              "new LifecycleHook (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-autoscaling/lib/lifecycle-hook.js:23:54)",
+              "AutoScalingGroup.addLifecycleHook (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-autoscaling/lib/auto-scaling-group.js:256:16)",
+              "new InstanceDrainHook (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-ecs/lib/drain-hook/instance-drain-hook.js:37:32)",
+              "Cluster.addAutoScalingGroup (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-ecs/lib/cluster.js:232:13)",
+              "Cluster.addCapacity (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-ecs/lib/cluster.js:138:14)",
+              "Object.<anonymous> (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-ecs/test/ec2/integ.cloudmap-container-port.js:20:26)",
+              "Module._compile (internal/modules/cjs/loader.js:1063:30)",
+              "Object.Module._extensions..js (internal/modules/cjs/loader.js:1092:10)",
+              "Module.load (internal/modules/cjs/loader.js:928:32)",
+              "Function.Module._load (internal/modules/cjs/loader.js:769:14)",
+              "Function.executeUserEntryPoint [as runMain] (internal/modules/run_main.js:72:12)",
+              "internal/main/run_main_module.js:17:47"
+            ]
+          }
+        ],
+        "/aws-ecs-integ/FargateCluster/capacity/DrainECSHook/Function/Topic/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateClustercapacityDrainECSHookFunctionTopic7D6C4884",
+            "trace": [
+              "new Subscription (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-sns/lib/subscription.js:37:9)",
+              "Topic.addSubscription (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-sns/lib/topic-base.js:31:9)",
+              "FunctionHook.bind (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-autoscaling-hooktargets/lib/lambda-hook.js:39:15)",
+              "new LifecycleHook (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-autoscaling/lib/lifecycle-hook.js:23:54)",
+              "AutoScalingGroup.addLifecycleHook (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-autoscaling/lib/auto-scaling-group.js:256:16)",
+              "new InstanceDrainHook (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-ecs/lib/drain-hook/instance-drain-hook.js:37:32)",
+              "Cluster.addAutoScalingGroup (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-ecs/lib/cluster.js:232:13)",
+              "Cluster.addCapacity (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-ecs/lib/cluster.js:138:14)",
+              "Object.<anonymous> (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-ecs/test/ec2/integ.cloudmap-container-port.js:20:26)",
+              "Module._compile (internal/modules/cjs/loader.js:1063:30)",
+              "Object.Module._extensions..js (internal/modules/cjs/loader.js:1092:10)",
+              "Module.load (internal/modules/cjs/loader.js:928:32)",
+              "Function.Module._load (internal/modules/cjs/loader.js:769:14)",
+              "Function.executeUserEntryPoint [as runMain] (internal/modules/run_main.js:72:12)",
+              "internal/main/run_main_module.js:17:47"
+            ]
+          }
+        ],
+        "/aws-ecs-integ/FargateCluster/capacity/LifecycleHookDrainHook/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateClustercapacityLifecycleHookDrainHookRoleDD26E39B",
+            "trace": [
+              "new Role (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-iam/lib/role.js:70:22)",
+              "new LifecycleHook (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-autoscaling/lib/lifecycle-hook.js:20:35)",
+              "AutoScalingGroup.addLifecycleHook (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-autoscaling/lib/auto-scaling-group.js:256:16)",
+              "new InstanceDrainHook (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-ecs/lib/drain-hook/instance-drain-hook.js:37:32)",
+              "Cluster.addAutoScalingGroup (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-ecs/lib/cluster.js:232:13)",
+              "Cluster.addCapacity (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-ecs/lib/cluster.js:138:14)",
+              "Object.<anonymous> (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-ecs/test/ec2/integ.cloudmap-container-port.js:20:26)",
+              "Module._compile (internal/modules/cjs/loader.js:1063:30)",
+              "Object.Module._extensions..js (internal/modules/cjs/loader.js:1092:10)",
+              "Module.load (internal/modules/cjs/loader.js:928:32)",
+              "Function.Module._load (internal/modules/cjs/loader.js:769:14)",
+              "Function.executeUserEntryPoint [as runMain] (internal/modules/run_main.js:72:12)",
+              "internal/main/run_main_module.js:17:47"
+            ]
+          }
+        ],
+        "/aws-ecs-integ/FargateCluster/capacity/LifecycleHookDrainHook/Role/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateClustercapacityLifecycleHookDrainHookRoleDefaultPolicyACCDDB70",
+            "trace": [
+              "new Policy (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-iam/lib/policy.js:53:26)",
+              "Role.addToPrincipalPolicy (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-iam/lib/role.js:203:34)",
+              "Function.addToPrincipal (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-iam/lib/grant.js:88:65)",
+              "Function.addToPrincipalOrResource (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-iam/lib/grant.js:43:30)",
+              "Topic.grantPublish (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-sns/lib/topic-base.js:75:26)",
+              "TopicHook.bind (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-autoscaling-hooktargets/lib/topic-hook.js:22:20)",
+              "FunctionHook.bind (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-autoscaling-hooktargets/lib/lambda-hook.js:40:50)",
+              "new LifecycleHook (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-autoscaling/lib/lifecycle-hook.js:23:54)",
+              "AutoScalingGroup.addLifecycleHook (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-autoscaling/lib/auto-scaling-group.js:256:16)",
+              "new InstanceDrainHook (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-ecs/lib/drain-hook/instance-drain-hook.js:37:32)",
+              "Cluster.addAutoScalingGroup (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-ecs/lib/cluster.js:232:13)",
+              "Cluster.addCapacity (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-ecs/lib/cluster.js:138:14)",
+              "Object.<anonymous> (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-ecs/test/ec2/integ.cloudmap-container-port.js:20:26)",
+              "Module._compile (internal/modules/cjs/loader.js:1063:30)",
+              "Object.Module._extensions..js (internal/modules/cjs/loader.js:1092:10)",
+              "Module.load (internal/modules/cjs/loader.js:928:32)",
+              "Function.Module._load (internal/modules/cjs/loader.js:769:14)",
+              "Function.executeUserEntryPoint [as runMain] (internal/modules/run_main.js:72:12)",
+              "internal/main/run_main_module.js:17:47"
+            ]
+          }
+        ],
+        "/aws-ecs-integ/FargateCluster/capacity/LifecycleHookDrainHook/Topic/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateClustercapacityLifecycleHookDrainHookTopic390A0E34",
+            "trace": [
+              "new Topic (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-sns/lib/topic.js:43:26)",
+              "FunctionHook.bind (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-autoscaling-hooktargets/lib/lambda-hook.js:31:23)",
+              "new LifecycleHook (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-autoscaling/lib/lifecycle-hook.js:23:54)",
+              "AutoScalingGroup.addLifecycleHook (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-autoscaling/lib/auto-scaling-group.js:256:16)",
+              "new InstanceDrainHook (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-ecs/lib/drain-hook/instance-drain-hook.js:37:32)",
+              "Cluster.addAutoScalingGroup (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-ecs/lib/cluster.js:232:13)",
+              "Cluster.addCapacity (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-ecs/lib/cluster.js:138:14)",
+              "Object.<anonymous> (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-ecs/test/ec2/integ.cloudmap-container-port.js:20:26)",
+              "Module._compile (internal/modules/cjs/loader.js:1063:30)",
+              "Object.Module._extensions..js (internal/modules/cjs/loader.js:1092:10)",
+              "Module.load (internal/modules/cjs/loader.js:928:32)",
+              "Function.Module._load (internal/modules/cjs/loader.js:769:14)",
+              "Function.executeUserEntryPoint [as runMain] (internal/modules/run_main.js:72:12)",
+              "internal/main/run_main_module.js:17:47"
+            ]
+          }
+        ],
+        "/aws-ecs-integ/FargateCluster/capacity/LifecycleHookDrainHook/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateClustercapacityLifecycleHookDrainHook8AEDE53B",
+            "trace": [
+              "new LifecycleHook (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-autoscaling/lib/lifecycle-hook.js:24:26)",
+              "AutoScalingGroup.addLifecycleHook (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-autoscaling/lib/auto-scaling-group.js:256:16)",
+              "new InstanceDrainHook (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-ecs/lib/drain-hook/instance-drain-hook.js:37:32)",
+              "Cluster.addAutoScalingGroup (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-ecs/lib/cluster.js:232:13)",
+              "Cluster.addCapacity (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-ecs/lib/cluster.js:138:14)",
+              "Object.<anonymous> (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-ecs/test/ec2/integ.cloudmap-container-port.js:20:26)",
+              "Module._compile (internal/modules/cjs/loader.js:1063:30)",
+              "Object.Module._extensions..js (internal/modules/cjs/loader.js:1092:10)",
+              "Module.load (internal/modules/cjs/loader.js:928:32)",
+              "Function.Module._load (internal/modules/cjs/loader.js:769:14)",
+              "Function.executeUserEntryPoint [as runMain] (internal/modules/run_main.js:72:12)",
+              "internal/main/run_main_module.js:17:47"
+            ]
+          }
+        ],
+        "/aws-ecs-integ/FargateCluster/DefaultServiceDiscoveryNamespace/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateClusterDefaultServiceDiscoveryNamespace04381E1E",
+            "trace": [
+              "new PrivateDnsNamespace (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-servicediscovery/lib/private-dns-namespace.js:22:20)",
+              "Cluster.addDefaultCloudMapNamespace (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-ecs/lib/cluster.js:100:13)",
+              "Object.<anonymous> (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-ecs/test/ec2/integ.cloudmap-container-port.js:27:9)",
+              "Module._compile (internal/modules/cjs/loader.js:1063:30)",
+              "Object.Module._extensions..js (internal/modules/cjs/loader.js:1092:10)",
+              "Module.load (internal/modules/cjs/loader.js:928:32)",
+              "Function.Module._load (internal/modules/cjs/loader.js:769:14)",
+              "Function.executeUserEntryPoint [as runMain] (internal/modules/run_main.js:72:12)",
+              "internal/main/run_main_module.js:17:47"
+            ]
+          }
+        ],
+        "/aws-ecs-integ/SsmParameterValue:--aws--service--ecs--optimized-ami--amazon-linux-2--recommended--image_id:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SsmParameterValueawsserviceecsoptimizedamiamazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter",
+            "trace": [
+              "Function.fromStringParameterAttributes (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-ssm/lib/parameter.js:132:15)",
+              "Function.valueForTypedStringParameter (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-ssm/lib/parameter.js:206:21)",
+              "EcsOptimizedAmi.getImage (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-ecs/lib/cluster.js:397:41)",
+              "new AutoScalingGroup (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-autoscaling/lib/auto-scaling-group.js:421:48)",
+              "Cluster.addCapacity (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-ecs/lib/cluster.js:132:34)",
+              "Object.<anonymous> (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-ecs/test/ec2/integ.cloudmap-container-port.js:20:26)",
+              "Module._compile (internal/modules/cjs/loader.js:1063:30)",
+              "Object.Module._extensions..js (internal/modules/cjs/loader.js:1092:10)",
+              "Module.load (internal/modules/cjs/loader.js:928:32)",
+              "Function.Module._load (internal/modules/cjs/loader.js:769:14)",
+              "Function.executeUserEntryPoint [as runMain] (internal/modules/run_main.js:72:12)",
+              "internal/main/run_main_module.js:17:47"
+            ]
+          }
+        ],
+        "/aws-ecs-integ/TaskDef/TaskRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TaskDefTaskRole1EDB4A67",
+            "trace": [
+              "new Role (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-iam/lib/role.js:70:22)",
+              "new TaskDefinition (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-ecs/lib/base/task-definition.js:76:43)",
+              "new Ec2TaskDefinition (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-ecs/lib/ec2/ec2-task-definition.js:36:9)",
+              "Object.<anonymous> (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-ecs/test/ec2/integ.cloudmap-container-port.js:28:24)",
+              "Module._compile (internal/modules/cjs/loader.js:1063:30)",
+              "Object.Module._extensions..js (internal/modules/cjs/loader.js:1092:10)",
+              "Module.load (internal/modules/cjs/loader.js:928:32)",
+              "Function.Module._load (internal/modules/cjs/loader.js:769:14)",
+              "Function.executeUserEntryPoint [as runMain] (internal/modules/run_main.js:72:12)",
+              "internal/main/run_main_module.js:17:47"
+            ]
+          }
+        ],
+        "/aws-ecs-integ/TaskDef/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TaskDef54694570",
+            "trace": [
+              "new TaskDefinition (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-ecs/lib/base/task-definition.js:79:25)",
+              "new Ec2TaskDefinition (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-ecs/lib/ec2/ec2-task-definition.js:36:9)",
+              "Object.<anonymous> (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-ecs/test/ec2/integ.cloudmap-container-port.js:28:24)",
+              "Module._compile (internal/modules/cjs/loader.js:1063:30)",
+              "Object.Module._extensions..js (internal/modules/cjs/loader.js:1092:10)",
+              "Module.load (internal/modules/cjs/loader.js:928:32)",
+              "Function.Module._load (internal/modules/cjs/loader.js:769:14)",
+              "Function.executeUserEntryPoint [as runMain] (internal/modules/run_main.js:72:12)",
+              "internal/main/run_main_module.js:17:47"
+            ]
+          }
+        ],
+        "/aws-ecs-integ/Service/Service": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ServiceD69D759B",
+            "trace": [
+              "new BaseService (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-ecs/lib/base/base-service.js:129:25)",
+              "new Ec2Service (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-ecs/lib/ec2/ec2-service.js:43:9)",
+              "Object.<anonymous> (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-ecs/test/ec2/integ.cloudmap-container-port.js:52:1)",
+              "Module._compile (internal/modules/cjs/loader.js:1063:30)",
+              "Object.Module._extensions..js (internal/modules/cjs/loader.js:1092:10)",
+              "Module.load (internal/modules/cjs/loader.js:928:32)",
+              "Function.Module._load (internal/modules/cjs/loader.js:769:14)",
+              "Function.executeUserEntryPoint [as runMain] (internal/modules/run_main.js:72:12)",
+              "internal/main/run_main_module.js:17:47"
+            ]
+          }
+        ],
+        "/aws-ecs-integ/Service/CloudmapService/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ServiceCloudmapService046058A4",
+            "trace": [
+              "new Service (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-servicediscovery/lib/service.js:80:25)",
+              "Ec2Service.enableCloudMap (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-ecs/lib/base/base-service.js:339:33)",
+              "new BaseService (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-ecs/lib/base/base-service.js:162:18)",
+              "new Ec2Service (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-ecs/lib/ec2/ec2-service.js:43:9)",
+              "Object.<anonymous> (/home/josh/oss/aws-cdk-ecs-discovery/packages/@aws-cdk/aws-ecs/test/ec2/integ.cloudmap-container-port.js:52:1)",
+              "Module._compile (internal/modules/cjs/loader.js:1063:30)",
+              "Object.Module._extensions..js (internal/modules/cjs/loader.js:1092:10)",
+              "Module.load (internal/modules/cjs/loader.js:928:32)",
+              "Function.Module._load (internal/modules/cjs/loader.js:769:14)",
+              "Function.executeUserEntryPoint [as runMain] (internal/modules/run_main.js:72:12)",
+              "internal/main/run_main_module.js:17:47"
+            ]
+          }
+        ]
+      }
+    }
+  }
+}
