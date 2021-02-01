@@ -146,6 +146,8 @@ class MyPipelineStack extends Stack {
     const pipeline = new CdkPipeline(this, 'Pipeline', {
       pipelineName: 'MyAppPipeline',
       cloudAssemblyArtifact,
+      // Use this to reuse a single bucket for the CodePipeline
+      artifactBucket: new s3.Bucket(this, 'BuildArtifacts')
 
       sourceAction: new codepipeline_actions.GitHubSourceAction({
         actionName: 'GitHub',
