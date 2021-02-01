@@ -1717,6 +1717,136 @@ export = {
 
       test.done();
     },
+
+    'accepts a pre-created cloud map service'(test: Test) {
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+
+      cluster.addDefaultCloudMapNamespace({
+        name: 'foo.com',
+        type: cloudmap.NamespaceType.DNS_PRIVATE,
+      });
+
+      const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
+      const container = taskDefinition.addContainer('MainContainer', {
+        image: ecs.ContainerImage.fromRegistry('hello'),
+        memoryLimitMiB: 512,
+      });
+
+      container.addPortMappings({ containerPort: 8000 });
+
+      const fargateService = new ecs.FargateService(stack, 'Service', {
+        cluster,
+        taskDefinition,
+      });
+
+      const cloudMapService = new cloudmap.Service(stack, 'cloudmap', {
+        namespace: cluster.defaultCloudMapNamespace!,
+      });
+
+      fargateService.addCloudMapService({
+        cloudMapService,
+        container,
+        containerPort: 8000,
+      });
+
+      expect(stack).to(haveResourceLike('AWS::ECS::Service', {
+        ServiceRegistries: [
+          {
+            RegistryArn: { 'Fn::GetAtt': ['cloudmap4FA4170E', 'Arn'] },
+            ContainerName: 'MainContainer',
+            ContainerPort: 8000,
+          },
+        ],
+      }));
+
+      test.done();
+    },
+
+    'throws if container is not part of task definition'(test: Test) {
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+
+      cluster.addDefaultCloudMapNamespace({
+        name: 'foo.com',
+        type: cloudmap.NamespaceType.DNS_PRIVATE,
+      });
+
+      const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
+      // The right container
+      taskDefinition.addContainer('MainContainer', {
+        image: ecs.ContainerImage.fromRegistry('hello'),
+        memoryLimitMiB: 512,
+      });
+
+      const wrongTaskDefinition = new ecs.FargateTaskDefinition(stack, 'WrongFargateTaskDef');
+      // The wrong container
+      const container = wrongTaskDefinition.addContainer('MainContainer', {
+        image: ecs.ContainerImage.fromRegistry('hello'),
+        memoryLimitMiB: 512,
+      });
+
+      container.addPortMappings({ containerPort: 8000 });
+
+      const fargateService = new ecs.FargateService(stack, 'Service', {
+        cluster,
+        taskDefinition,
+      });
+
+      const cloudMapService = new cloudmap.Service(stack, 'cloudmap', {
+        namespace: cluster.defaultCloudMapNamespace!,
+      });
+
+      test.throws(() => {
+        fargateService.addCloudMapService({
+          cloudMapService,
+          container,
+          containerPort: 1234,
+        });
+      }, /another task definition/i);
+
+      test.done();
+    },
+
+    'throws if the container port is not mapped'(test: Test) {
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+
+      cluster.addDefaultCloudMapNamespace({
+        name: 'foo.com',
+        type: cloudmap.NamespaceType.DNS_PRIVATE,
+      });
+
+      const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
+      const container = taskDefinition.addContainer('MainContainer', {
+        image: ecs.ContainerImage.fromRegistry('hello'),
+        memoryLimitMiB: 512,
+      });
+
+      container.addPortMappings({ containerPort: 8000 });
+
+      const fargateService = new ecs.FargateService(stack, 'Service', {
+        cluster,
+        taskDefinition,
+      });
+
+      const cloudMapService = new cloudmap.Service(stack, 'cloudmap', {
+        namespace: cluster.defaultCloudMapNamespace!,
+      });
+
+      test.throws(() => {
+        fargateService.addCloudMapService({
+          cloudMapService,
+          container,
+          containerPort: 1234,
+        });
+      }, /container port.*not.*mapped/i);
+
+      test.done();
+    },
   },
 
   'Metric'(test: Test) {

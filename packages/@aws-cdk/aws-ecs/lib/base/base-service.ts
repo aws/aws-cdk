@@ -9,7 +9,7 @@ import { Annotations, Duration, IResolvable, IResource, Lazy, Resource, Stack } 
 import { Construct } from 'constructs';
 import { LoadBalancerTargetOptions, NetworkMode, TaskDefinition } from '../base/task-definition';
 import { ICluster } from '../cluster';
-import { Protocol } from '../container-definition';
+import { ContainerDefinition, Protocol } from '../container-definition';
 import { CfnService } from '../ecs.generated';
 import { ScalableTaskCount } from './scalable-task-count';
 
@@ -319,7 +319,7 @@ export abstract class BaseService extends Resource
   /**
    * The details of the AWS Cloud Map service.
    */
-  protected cloudmapService?: cloudmap.Service;
+  protected cloudmapService?: cloudmap.IService;
 
   /**
    * A list of Elastic Load Balancing load balancer objects, containing the load balancer name, the container
@@ -583,6 +583,27 @@ export abstract class BaseService extends Resource
   }
 
   /**
+   * Associates a container and port with with a CloudMap service.
+   */
+  public addCloudMapService(options: AddCloudMapServiceOptions): void {
+    if (options.container.taskDefinition != this.taskDefinition) {
+      throw new Error('Cannot add discovery for a container from another task definition');
+    }
+
+    if (!options.container.findPortMapping(options.containerPort, Protocol.TCP)) {
+      throw new Error('Cannot add discovery for a container port that has not been mapped');
+    }
+
+    this.addServiceRegistry({
+      arn: options.cloudMapService.serviceArn,
+      containerName: options.container.containerName,
+      containerPort: options.containerPort,
+    });
+
+    this.cloudmapService = options.cloudMapService;
+  }
+
+  /**
    * This method returns the specified CloudWatch metric name for this service.
    */
   public metric(metricName: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
@@ -785,6 +806,26 @@ export interface CloudMapOptions {
    * NOTE: This is used for HealthCheckCustomConfig
    */
   readonly failureThreshold?: number,
+}
+
+/**
+ * Options for adding a CloudMap service.
+ */
+export interface AddCloudMapServiceOptions {
+  /**
+   * The CloudMap service to associate with the container and port.
+   */
+  readonly cloudMapService: cloudmap.IService;
+
+  /**
+   * The container to reference.
+   */
+  readonly container: ContainerDefinition;
+
+  /**
+   * The port of the container to reference.
+   */
+  readonly containerPort: number;
 }
 
 /**
