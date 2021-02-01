@@ -92,7 +92,7 @@
     "@aws-cdk/aws-elasticloadbalancingv2": "0.0.0"
   },
   "engines": {
-    "node": ">= 10.13.0 <13 || >=13.7.0"
+    "node": ">= 10.13.0 <13 || >=13.7.0 <15.6.0 || >=15.7.0"
   },
   "stability": "stable",
   "maturity": "stable",
