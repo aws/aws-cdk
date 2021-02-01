@@ -1,3 +1,4 @@
+/* eslint-disable jest/no-disabled-tests */
 import { expect as cdkExpect, haveResource, haveResourceLike, ResourcePart } from '@aws-cdk/assert';
 import '@aws-cdk/assert/jest';
 import { IVpcEndpointServiceLoadBalancer, VpcEndpointService } from '@aws-cdk/aws-ec2';
@@ -56,7 +57,7 @@ test('create domain name resource', () => {
           },
         },
         physicalResourceId: {
-          id: 'EndpointDomain',
+          id: 'VPCES',
         },
       },
       Update: {
@@ -69,7 +70,7 @@ test('create domain name resource', () => {
           },
         },
         physicalResourceId: {
-          id: 'EndpointDomain',
+          id: 'VPCES',
         },
       },
       Delete: {
@@ -236,6 +237,9 @@ test('create domain name resource', () => {
 
 test('throws if creating multiple domains for a single service', () => {
   // GIVEN
+  vpces = new VpcEndpointService(stack, 'VPCES-2', {
+    vpcEndpointServiceLoadBalancers: [nlb],
+  });
 
   new VpcEndpointServiceDomainName(stack, 'EndpointDomain', {
     endpointService: vpces,
@@ -250,5 +254,5 @@ test('throws if creating multiple domains for a single service', () => {
       domainName: 'my-stuff-2.aws-cdk.dev',
       publicHostedZone: zone,
     });
-  }).toThrow();
+  }).toThrow(/Cannot create a VpcEndpointServiceDomainName for service/);
 });
