@@ -65,7 +65,7 @@
             "Arn"
           ]
         },
-        "Runtime": "nodejs10.x"
+        "Runtime": "nodejs12.x"
       },
       "DependsOn": [
         "FirstServiceRoleDefaultPolicyB5EF41C4",
@@ -315,7 +315,7 @@
             "Arn"
           ]
         },
-        "Runtime": "nodejs10.x"
+        "Runtime": "nodejs12.x"
       },
       "DependsOn": [
         "SecondServiceRoleDefaultPolicyB593E14A",
@@ -460,7 +460,7 @@
             "Arn"
           ]
         },
-        "Runtime": "nodejs10.x"
+        "Runtime": "nodejs12.x"
       },
       "DependsOn": [
         "ThirdServiceRole42701801"
@@ -510,7 +510,7 @@
             "Arn"
           ]
         },
-        "Runtime": "nodejs10.x"
+        "Runtime": "nodejs12.x"
       },
       "DependsOn": [
         "ErrorServiceRoleCE484966"

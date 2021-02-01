@@ -79,7 +79,7 @@
             "Arn"
           ]
         },
-        "Runtime": "nodejs10.x"
+        "Runtime": "nodejs12.x"
       },
       "DependsOn": [
         "MyAuthorizerFunctionServiceRole8A34C19E"

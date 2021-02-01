@@ -65,7 +65,7 @@
             "Arn"
           ]
         },
-        "Runtime": "nodejs10.x"
+        "Runtime": "nodejs12.x"
       },
       "DependsOn": [
         "MyLambdaAliasPCEServiceRoleDefaultPolicyE7418D56",
@@ -173,7 +173,7 @@
             "Arn"
           ]
         },
-        "Runtime": "nodejs10.x"
+        "Runtime": "nodejs12.x"
       },
       "DependsOn": [
         "MyLambdaVersionPCEServiceRoleDefaultPolicy229A1552",

@@ -131,7 +131,7 @@
             "Arn"
           ]
         },
-        "Runtime": "nodejs10.x"
+        "Runtime": "nodejs12.x"
       },
       "DependsOn": [
         "comamazonawscdkcustomresourcess3fileproviders3fileoneventServiceRoleDefaultPolicy10D24725",
@@ -243,7 +243,7 @@
             "Arn"
           ]
         },
-        "Runtime": "nodejs10.x",
+        "Runtime": "nodejs12.x",
         "Description": "AWS CDK resource provider framework - onEvent (integ-provider-framework/com.amazonaws.cdk.custom-resources.s3file-provider/s3file-provider)",
         "Environment": {
           "Variables": {
@@ -623,7 +623,7 @@
             "Arn"
           ]
         },
-        "Runtime": "nodejs10.x",
+        "Runtime": "nodejs12.x",
         "Description": "AWS CDK resource provider framework - onEvent (integ-provider-framework/com.amazonaws.cdk.custom-resources.s3assert-provider/s3assert-provider)",
         "Environment": {
           "Variables": {
@@ -766,7 +766,7 @@
             "Arn"
           ]
         },
-        "Runtime": "nodejs10.x",
+        "Runtime": "nodejs12.x",
         "Description": "AWS CDK resource provider framework - isComplete (integ-provider-framework/com.amazonaws.cdk.custom-resources.s3assert-provider/s3assert-provider)",
         "Environment": {
           "Variables": {
@@ -906,7 +906,7 @@
             "Arn"
           ]
         },
-        "Runtime": "nodejs10.x",
+        "Runtime": "nodejs12.x",
         "Description": "AWS CDK resource provider framework - onTimeout (integ-provider-framework/com.amazonaws.cdk.custom-resources.s3assert-provider/s3assert-provider)",
         "Environment": {
           "Variables": {

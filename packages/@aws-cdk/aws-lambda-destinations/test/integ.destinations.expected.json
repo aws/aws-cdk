@@ -89,7 +89,7 @@
           ]
         },
         "Handler": "index.handler",
-        "Runtime": "nodejs10.x"
+        "Runtime": "nodejs12.x"
       },
       "DependsOn": [
         "SnsSqsServiceRoleDefaultPolicy82E7B09F",
@@ -174,7 +174,7 @@
           ]
         },
         "Handler": "index.handler",
-        "Runtime": "nodejs10.x"
+        "Runtime": "nodejs12.x"
       },
       "DependsOn": [
         "OnSuccesServiceRole75E399CF"
@@ -255,7 +255,7 @@
           ]
         },
         "Handler": "index.handler",
-        "Runtime": "nodejs10.x"
+        "Runtime": "nodejs12.x"
       },
       "DependsOn": [
         "EventBusLambdaServiceRoleDefaultPolicy5BB7FEB6",

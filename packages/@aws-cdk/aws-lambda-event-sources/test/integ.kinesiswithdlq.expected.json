@@ -100,7 +100,7 @@
           ]
         },
         "Handler": "index.handler",
-        "Runtime": "nodejs10.x"
+        "Runtime": "nodejs12.x"
       },
       "DependsOn": [
         "FServiceRoleDefaultPolicy17A19BFA",
