@@ -319,7 +319,7 @@ export abstract class BaseService extends Resource
   /**
    * The details of the AWS Cloud Map service.
    */
-  protected cloudmapService?: cloudmap.IService;
+  protected cloudmapService?: cloudmap.Service;
 
   /**
    * A list of Elastic Load Balancing load balancer objects, containing the load balancer name, the container
@@ -599,8 +599,6 @@ export abstract class BaseService extends Resource
       containerName: options.container.containerName,
       containerPort: options.containerPort,
     });
-
-    this.cloudmapService = options.cloudMapService;
   }
 
   /**
