@@ -25,7 +25,7 @@ describe('layers', () => {
         S3Bucket: stack.resolve(bucket.bucketName),
         S3Key: 'ObjectKey',
       },
-      CompatibleRuntimes: ['nodejs10.x'],
+      CompatibleRuntimes: ['nodejs12.x'],
     });
   });
 

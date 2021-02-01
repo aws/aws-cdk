@@ -45,7 +45,7 @@ describe('function', () => {
         Code: { ZipFile: 'foo' },
         Handler: 'index.handler',
         Role: { 'Fn::GetAtt': ['MyLambdaServiceRole4539ECB6', 'Arn'] },
-        Runtime: 'nodejs10.x',
+        Runtime: 'nodejs12.x',
       },
       DependsOn: ['MyLambdaServiceRole4539ECB6'],
     }, ResourcePart.CompleteDefinition);
@@ -98,7 +98,7 @@ describe('function', () => {
         Code: { ZipFile: 'foo' },
         Handler: 'index.handler',
         Role: { 'Fn::GetAtt': ['MyLambdaServiceRole4539ECB6', 'Arn'] },
-        Runtime: 'nodejs10.x',
+        Runtime: 'nodejs12.x',
       },
       DependsOn: ['MyLambdaServiceRoleDefaultPolicy5BBC6F68', 'MyLambdaServiceRole4539ECB6'],
     }, ResourcePart.CompleteDefinition);
@@ -419,7 +419,7 @@ describe('function', () => {
             'Arn',
           ],
         },
-        Runtime: 'nodejs10.x',
+        Runtime: 'nodejs12.x',
         DeadLetterConfig: {
           TargetArn: {
             'Fn::GetAtt': [
@@ -484,7 +484,7 @@ describe('function', () => {
           'Arn',
         ],
       },
-      Runtime: 'nodejs10.x',
+      Runtime: 'nodejs12.x',
     });
   });
 
@@ -640,7 +640,7 @@ describe('function', () => {
             'Arn',
           ],
         },
-        Runtime: 'nodejs10.x',
+        Runtime: 'nodejs12.x',
         TracingConfig: {
           Mode: 'Active',
         },
@@ -696,7 +696,7 @@ describe('function', () => {
             'Arn',
           ],
         },
-        Runtime: 'nodejs10.x',
+        Runtime: 'nodejs12.x',
         TracingConfig: {
           Mode: 'PassThrough',
         },
@@ -752,7 +752,7 @@ describe('function', () => {
             'Arn',
           ],
         },
-        Runtime: 'nodejs10.x',
+        Runtime: 'nodejs12.x',
       },
       DependsOn: [
         'MyLambdaServiceRole4539ECB6',
@@ -1082,7 +1082,7 @@ describe('function', () => {
     // THEN
     expect(() => new lambda.Function(stack, 'Function', {
       layers: [layer],
-      runtime: lambda.Runtime.NODEJS_12_X,
+      runtime: lambda.Runtime.NODEJS_10_X,
       code: lambda.Code.fromInline('exports.main = function() { console.log("DONE"); }'),
       handler: 'index.main',
     })).toThrow(/nodejs10.x is not in \[nodejs12.x\]/);
