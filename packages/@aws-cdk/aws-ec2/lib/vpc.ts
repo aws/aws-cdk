@@ -1809,6 +1809,13 @@ class ImportedVpc extends VpcBase {
     this._vpnGatewayId = props.vpnGatewayId;
     this.incompleteSubnetDefinition = isIncomplete;
 
+    // None of the values may be unresolved list tokens
+    for (const k of Object.keys(props) as Array<keyof VpcAttributes>) {
+      if (Array.isArray(props[k]) && Token.isUnresolved(props[k])) {
+        Annotations.of(this).addWarning(`fromVpcAttributes: '${k}' is a list token: the imported VPC will not work with constructs that require a list of subnets at synthesis time. Use 'Vpc.fromLookup()' or 'Fn.importListValue' instead.`);
+      }
+    }
+
     /* eslint-disable max-len */
     const pub = new ImportSubnetGroup(props.publicSubnetIds, props.publicSubnetNames, props.publicSubnetRouteTableIds, SubnetType.PUBLIC, this.availabilityZones, 'publicSubnetIds', 'publicSubnetNames', 'publicSubnetRouteTableIds');
     const priv = new ImportSubnetGroup(props.privateSubnetIds, props.privateSubnetNames, props.privateSubnetRouteTableIds, SubnetType.PRIVATE, this.availabilityZones, 'privateSubnetIds', 'privateSubnetNames', 'privateSubnetRouteTableIds');

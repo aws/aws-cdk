@@ -320,7 +320,6 @@ export class SimpleSynthAction implements codepipeline.IAction, iam.IGrantable {
 
     const environmentVariables = {
       ...copyEnvironmentVariables(...this.props.copyEnvironmentVariables || []),
-      ...this.props.environmentVariables,
     };
 
     // A hash over the values that make the CodeBuild Project unique (and necessary
@@ -360,6 +359,7 @@ export class SimpleSynthAction implements codepipeline.IAction, iam.IGrantable {
       // Hence, the pipeline will be restarted. This is necessary if the users
       // adds (for example) build or test commands to the buildspec.
       environmentVariables: {
+        ...this.props.environmentVariables,
         _PROJECT_CONFIG_HASH: { value: projectConfigHash },
       },
       project,

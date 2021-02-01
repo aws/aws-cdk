@@ -3,6 +3,8 @@ import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
 import { outputFromStack, AwsClients } from './aws';
+import { memoize0 } from './memoize';
+import { findYarnPackages } from './monorepo';
 import { ResourcePool } from './resource-pool';
 import { TestContext } from './test-helpers';
 
@@ -61,20 +63,17 @@ export function withCdkApp<A extends TestContext & AwsContext>(block: (context: 
 
     let success = true;
     try {
-      let modules = [
-        '@aws-cdk/core',
-        '@aws-cdk/aws-sns',
-        '@aws-cdk/aws-iam',
-        '@aws-cdk/aws-lambda',
-        '@aws-cdk/aws-ssm',
-        '@aws-cdk/aws-ecr-assets',
-        '@aws-cdk/aws-cloudformation',
-        '@aws-cdk/aws-ec2',
-      ];
-      if (FRAMEWORK_VERSION) {
-        modules = modules.map(module => `${module}@${FRAMEWORK_VERSION}`);
-      }
-      await fixture.shell(['npm', 'install', ...modules]);
+      const version = FRAMEWORK_VERSION ?? '*';
+      await installNpmPackages(fixture, {
+        '@aws-cdk/core': version,
+        '@aws-cdk/aws-sns': version,
+        '@aws-cdk/aws-iam': version,
+        '@aws-cdk/aws-lambda': version,
+        '@aws-cdk/aws-ssm': version,
+        '@aws-cdk/aws-ecr-assets': version,
+        '@aws-cdk/aws-cloudformation': version,
+        '@aws-cdk/aws-ec2': version,
+      });
 
       await ensureBootstrapped(fixture);
 
@@ -117,11 +116,9 @@ export function withMonolithicCfnIncludeCdkApp<A extends TestContext>(block: (co
 
     let success = true;
     try {
-      let module = uberPackage;
-      if (FRAMEWORK_VERSION) {
-        module = `${module}@${FRAMEWORK_VERSION}`;
-      }
-      await fixture.shell(['npm', 'install', 'constructs', module]);
+      await installNpmPackages(fixture, {
+        [uberPackage]: FRAMEWORK_VERSION ?? '*',
+      });
 
       await block(fixture);
     } catch (e) {
@@ -454,3 +451,64 @@ export function randomString() {
   // Crazy
   return Math.random().toString(36).replace(/[^a-z0-9]+/g, '');
 }
+
+/**
+ * Install the given NPM packages, identified by their names and versions
+ *
+ * Works by writing the packages to a `package.json` file, and
+ * then running NPM7's "install" on it. The use of NPM7 will automatically
+ * install required peerDependencies.
+ *
+ * If we're running in REPO mode and we find the package in the set of local
+ * packages in the repository, we'll write the directory name to `package.json`
+ * so that NPM will create a symlink (this allows running tests against
+ * built-but-unpackaged modules, and saves dev cycle time).
+ *
+ * Be aware you MUST install all the packages you directly depend upon! In the case
+ * of a repo/symlinking install, transitive dependencies WILL NOT be installed in the
+ * current directory's `node_modules` directory, because they will already have been
+ * symlinked from the TARGET directory's `node_modules` directory (which is sufficient
+ * for Node's dependency lookup mechanism).
+ */
+async function installNpmPackages(fixture: TestFixture, packages: Record<string, string>) {
+  if (process.env.REPO_ROOT) {
+    const monoRepo = await findYarnPackages(process.env.REPO_ROOT);
+
+    // Replace the install target with the physical location of this package
+    for (const key of Object.keys(packages)) {
+      if (key in monoRepo) {
+        packages[key] = monoRepo[key];
+      }
+    }
+  }
+
+  fs.writeFileSync(path.join(fixture.integTestDir, 'package.json'), JSON.stringify({
+    name: 'cdk-integ-tests',
+    private: true,
+    version: '0.0.1',
+    devDependencies: packages,
+  }, undefined, 2), { encoding: 'utf-8' });
+
+  // Now install that `package.json` using NPM7
+  const npm7 = await installNpm7();
+  await fixture.shell([npm7, 'install']);
+}
+
+/**
+ * Install NPM7 somewhere on the machine and return the path to its binary.
+ *
+ * - We install NPM7 explicitly so we don't have to depend on the environment.
+ * - The install is cached so we don't have to install it over and over again
+ *   for every test.
+ */
+const installNpm7 = memoize0(async (): Promise<string> => {
+  const installDir = path.join(os.tmpdir(), 'cdk-integ-npm7');
+  await shell(['rm', '-rf', installDir]);
+  await shell(['mkdir', '-p', installDir]);
+
+  await shell(['npm', 'install',
+    '--prefix', installDir,
+    'npm@7']);
+
+  return path.join(installDir, 'node_modules', '.bin', 'npm');
+});

@@ -101,7 +101,7 @@ export = {
 
       const service1 = new appmesh.VirtualService(stack, 'service-1', {
         virtualServiceName: 'service1.domain.local',
-        mesh,
+        virtualServiceProvider: appmesh.VirtualServiceProvider.none(mesh),
       });
 
       const node = mesh.addVirtualNode('test-node', {
@@ -170,11 +170,11 @@ export = {
 
       const service1 = new appmesh.VirtualService(stack, 'service-1', {
         virtualServiceName: 'service1.domain.local',
-        mesh,
+        virtualServiceProvider: appmesh.VirtualServiceProvider.none(mesh),
       });
       const service2 = new appmesh.VirtualService(stack, 'service-2', {
         virtualServiceName: 'service2.domain.local',
-        mesh,
+        virtualServiceProvider: appmesh.VirtualServiceProvider.none(mesh),
       });
 
       const node = mesh.addVirtualNode('test-node', {
@@ -332,7 +332,7 @@ export = {
 
       const service1 = new appmesh.VirtualService(stack, 'service-1', {
         virtualServiceName: 'service1.domain.local',
-        mesh,
+        virtualServiceProvider: appmesh.VirtualServiceProvider.none(mesh),
       });
 
       const node = mesh.addVirtualNode('test-node', {

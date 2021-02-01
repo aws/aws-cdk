@@ -1,9 +1,12 @@
-import * as cdk from '@aws-cdk/core';
 import { IConstruct, Construct, Node } from 'constructs';
 import { Condition } from '../condition';
 import { JsonPath } from '../fields';
 import { StateGraph } from '../state-graph';
 import { CatchProps, Errors, IChainable, INextable, RetryProps } from '../types';
+
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 /**
  * Properties shared by all states
@@ -60,7 +63,7 @@ export interface StateProps {
 /**
  * Base class for all other state classes
  */
-export abstract class State extends cdk.Construct implements IChainable {
+export abstract class State extends CoreConstruct implements IChainable {
   /**
    * Add a prefix to the stateId of all States found in a construct tree
    */

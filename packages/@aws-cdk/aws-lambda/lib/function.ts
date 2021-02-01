@@ -574,7 +574,7 @@ export class Function extends FunctionBase {
 
     let profilingGroupEnvironmentVariables: { [key: string]: string } = {};
     if (props.profilingGroup && props.profiling !== false) {
-      this.validateProfilingEnvironmentVariables(props);
+      this.validateProfiling(props);
       props.profilingGroup.grantPublish(this.role);
       profilingGroupEnvironmentVariables = {
         AWS_CODEGURU_PROFILER_GROUP_ARN: Stack.of(scope).formatArn({
@@ -585,7 +585,7 @@ export class Function extends FunctionBase {
         AWS_CODEGURU_PROFILER_ENABLED: 'TRUE',
       };
     } else if (props.profiling) {
-      this.validateProfilingEnvironmentVariables(props);
+      this.validateProfiling(props);
       const profilingGroup = new ProfilingGroup(this, 'ProfilingGroup', {
         computePlatform: ComputePlatform.AWS_LAMBDA,
       });
@@ -941,7 +941,10 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
     };
   }
 
-  private validateProfilingEnvironmentVariables(props: FunctionProps) {
+  private validateProfiling(props: FunctionProps) {
+    if (!props.runtime.supportsCodeGuruProfiling) {
+      throw new Error(`CodeGuru profiling is not supported by runtime ${props.runtime.name}`);
+    }
     if (props.environment && (props.environment.AWS_CODEGURU_PROFILER_GROUP_ARN || props.environment.AWS_CODEGURU_PROFILER_ENABLED)) {
       throw new Error('AWS_CODEGURU_PROFILER_GROUP_ARN and AWS_CODEGURU_PROFILER_ENABLED must not be set when profiling options enabled');
     }

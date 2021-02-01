@@ -2,13 +2,21 @@ import * as lambda from '@aws-cdk/aws-lambda';
 import * as sns from '@aws-cdk/aws-sns';
 import * as core from '@aws-cdk/core';
 
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct } from '@aws-cdk/core';
+
 /**
  * Collection of arbitrary properties
+ *
+ * @deprecated this type has been deprecated in favor of using a key-value type directly
  */
 export type Properties = {[key: string]: any};
 
 /**
  * Configuration options for custom resource providers.
+ *
+ * @deprecated used in {@link ICustomResourceProvider} which is now deprecated
  */
 export interface CustomResourceProviderConfig {
   /**
@@ -28,11 +36,13 @@ export interface ICustomResourceProvider {
    * @param scope The resource that uses this provider.
    * @returns provider configuration
    */
-  bind(scope: core.Construct): CustomResourceProviderConfig;
+  bind(scope: Construct): CustomResourceProviderConfig;
 }
 
 /**
  * Represents a provider for an AWS CloudFormation custom resources.
+ *
+ * @deprecated use core.CustomResource instead
  */
 export class CustomResourceProvider implements ICustomResourceProvider {
   /**
@@ -68,7 +78,7 @@ export class CustomResourceProvider implements ICustomResourceProvider {
    */
   private constructor(public readonly serviceToken: string) { }
 
-  public bind(_: core.Construct): CustomResourceProviderConfig {
+  public bind(_: Construct): CustomResourceProviderConfig {
     return { serviceToken: this.serviceToken };
   }
 }
@@ -151,7 +161,7 @@ export interface CustomResourceProps {
  * @deprecated use `core.CustomResource`
  */
 export class CustomResource extends core.CustomResource {
-  constructor(scope: core.Construct, id: string, props: CustomResourceProps) {
+  constructor(scope: Construct, id: string, props: CustomResourceProps) {
     super(scope, id, {
       pascalCaseProperties: true,
       properties: props.properties,

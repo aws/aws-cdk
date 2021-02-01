@@ -2,7 +2,7 @@ import * as path from 'path';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
-import { Annotations, App, CfnOutput, PhysicalName, Stack, Stage } from '@aws-cdk/core';
+import { Annotations, App, Aws, CfnOutput, PhysicalName, Stack, Stage } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { AssetType, DeployCdkStackAction, PublishAssetsAction, UpdatePipelineAction } from './actions';
 import { appOf, assemblyBuilderOf } from './private/construct-internals';
@@ -515,6 +515,40 @@ class AssetPublishing extends CoreConstruct {
 
     // Artifact access
     this.pipeline.artifactBucket.grantRead(assetRole);
+
+    // VPC permissions required for CodeBuild
+    // Normally CodeBuild itself takes care of this but we're creating a singleton role so now
+    // we need to do this.
+    if (this.props.vpc) {
+      assetRole.attachInlinePolicy(new iam.Policy(assetRole, 'VpcPolicy', {
+        statements: [
+          new iam.PolicyStatement({
+            resources: [`arn:${Aws.PARTITION}:ec2:${Aws.REGION}:${Aws.ACCOUNT_ID}:network-interface/*`],
+            actions: ['ec2:CreateNetworkInterfacePermission'],
+            conditions: {
+              StringEquals: {
+                'ec2:Subnet': this.props.vpc
+                  .selectSubnets(this.props.subnetSelection).subnetIds
+                  .map(si => `arn:${Aws.PARTITION}:ec2:${Aws.REGION}:${Aws.ACCOUNT_ID}:subnet/${si}`),
+                'ec2:AuthorizedService': 'codebuild.amazonaws.com',
+              },
+            },
+          }),
+          new iam.PolicyStatement({
+            resources: ['*'],
+            actions: [
+              'ec2:CreateNetworkInterface',
+              'ec2:DescribeNetworkInterfaces',
+              'ec2:DeleteNetworkInterface',
+              'ec2:DescribeSubnets',
+              'ec2:DescribeSecurityGroups',
+              'ec2:DescribeDhcpOptions',
+              'ec2:DescribeVpcs',
+            ],
+          }),
+        ],
+      }));
+    }
 
     this.assetRoles[assetType] = assetRole.withoutPolicyUpdates();
     return this.assetRoles[assetType];

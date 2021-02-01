@@ -90,7 +90,7 @@ based on file extensions:
 
 ```ts
 new BucketDeployment(this, 'BucketDeployment', {
-  sources: [Source.asset('./website', { exclude: ['index.html' })],
+  sources: [Source.asset('./website', { exclude: ['index.html'] })],
   destinationBucket: bucket,
   cacheControl: [CacheControl.fromString('max-age=31536000,public,immutable')],
   prune: false,
@@ -109,7 +109,7 @@ new BucketDeployment(this, 'HTMLBucketDeployment', {
 You can specify metadata to be set on all the objects in your deployment.
 There are 2 types of metadata in S3: system-defined metadata and user-defined metadata.
 System-defined metadata have a special purpose, for example cache-control defines how long to keep an object cached.
-User-defined metadata are not used by S3 and keys always begin with `x-amzn-meta-` (if this is not provided, it is added automatically).
+User-defined metadata are not used by S3 and keys always begin with `x-amz-meta-` (this prefix is added automatically).
 
 System defined metadata keys include the following:
 

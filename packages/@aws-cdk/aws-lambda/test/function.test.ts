@@ -1611,7 +1611,7 @@ describe('function', () => {
       new lambda.Function(stack, 'MyLambda', {
         code: new lambda.InlineCode('foo'),
         handler: 'index.handler',
-        runtime: lambda.Runtime.NODEJS_10_X,
+        runtime: lambda.Runtime.PYTHON_3_6,
         profiling: true,
       });
 
@@ -1660,7 +1660,7 @@ describe('function', () => {
       new lambda.Function(stack, 'MyLambda', {
         code: new lambda.InlineCode('foo'),
         handler: 'index.handler',
-        runtime: lambda.Runtime.NODEJS_10_X,
+        runtime: lambda.Runtime.PYTHON_3_6,
         profilingGroup: new ProfilingGroup(stack, 'ProfilingGroup'),
       });
 
@@ -1712,7 +1712,7 @@ describe('function', () => {
       new lambda.Function(stack, 'MyLambda', {
         code: new lambda.InlineCode('foo'),
         handler: 'index.handler',
-        runtime: lambda.Runtime.NODEJS_10_X,
+        runtime: lambda.Runtime.PYTHON_3_6,
         profiling: false,
         profilingGroup: new ProfilingGroup(stack, 'ProfilingGroup'),
       });
@@ -1743,7 +1743,7 @@ describe('function', () => {
       expect(() => new lambda.Function(stack, 'MyLambda', {
         code: new lambda.InlineCode('foo'),
         handler: 'index.handler',
-        runtime: lambda.Runtime.NODEJS_10_X,
+        runtime: lambda.Runtime.PYTHON_3_6,
         profiling: true,
         environment: {
           AWS_CODEGURU_PROFILER_GROUP_ARN: 'profiler_group_arn',
@@ -1758,13 +1758,27 @@ describe('function', () => {
       expect(() => new lambda.Function(stack, 'MyLambda', {
         code: new lambda.InlineCode('foo'),
         handler: 'index.handler',
-        runtime: lambda.Runtime.NODEJS_10_X,
+        runtime: lambda.Runtime.PYTHON_3_6,
         profilingGroup: new ProfilingGroup(stack, 'ProfilingGroup'),
         environment: {
           AWS_CODEGURU_PROFILER_GROUP_ARN: 'profiler_group_arn',
           AWS_CODEGURU_PROFILER_ENABLED: 'yes',
         },
       })).toThrow(/AWS_CODEGURU_PROFILER_GROUP_ARN and AWS_CODEGURU_PROFILER_ENABLED must not be set when profiling options enabled/);
+    });
+
+    test('throws an error when used with an unsupported runtime', () => {
+      const stack = new cdk.Stack();
+      expect(() => new lambda.Function(stack, 'MyLambda', {
+        code: new lambda.InlineCode('foo'),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.NODEJS_10_X,
+        profilingGroup: new ProfilingGroup(stack, 'ProfilingGroup'),
+        environment: {
+          AWS_CODEGURU_PROFILER_GROUP_ARN: 'profiler_group_arn',
+          AWS_CODEGURU_PROFILER_ENABLED: 'yes',
+        },
+      })).toThrow(/not supported by runtime/);
     });
   });
 

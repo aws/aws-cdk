@@ -8,6 +8,10 @@ import {
   ImagePullPrincipalType, IProject,
 } from './project';
 
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct } from '@aws-cdk/core';
+
 const mappingName = 'AwsDeepLearningContainersRepositoriesAccounts';
 
 /**
@@ -99,7 +103,7 @@ export class LinuxGpuBuildImage implements IBindableBuildImage {
     this.imageId = `${this.accountExpression}.dkr.ecr.${core.Aws.REGION}.${core.Aws.URL_SUFFIX}/${repositoryName}:${tag}`;
   }
 
-  public bind(scope: core.Construct, project: IProject, _options: BuildImageBindOptions): BuildImageConfig {
+  public bind(scope: Construct, project: IProject, _options: BuildImageBindOptions): BuildImageConfig {
     if (!this.account) {
       const scopeStack = core.Stack.of(scope);
       // Unfortunately, the account IDs of the DLC repositories are not the same in all regions.
