@@ -59,7 +59,7 @@ describe('given an AutoScalingGroup', () => {
     // GIVEN
     const fn = new lambda.Function(stack, 'Fn', {
       code: lambda.Code.fromInline('foo'),
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_12_X,
       handler: 'index.index',
     });
 
@@ -85,7 +85,7 @@ describe('given an AutoScalingGroup', () => {
     const key = new kms.Key(stack, 'key');
     const fn = new lambda.Function(stack, 'Fn', {
       code: lambda.Code.fromInline('foo'),
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_12_X,
       handler: 'index.index',
     });
 

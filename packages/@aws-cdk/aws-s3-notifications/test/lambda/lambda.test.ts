@@ -11,13 +11,13 @@ test('add notifications to multiple functions', () => {
   const stack = new Stack();
   const bucket = new s3.Bucket(stack, 'MyBucket');
   const fn1 = new lambda.Function(stack, 'MyFunction1', {
-    runtime: lambda.Runtime.NODEJS_10_X,
+    runtime: lambda.Runtime.NODEJS_12_X,
     handler: 'index.handler',
     code: lambda.Code.fromInline('foo'),
   });
 
   const fn2 = new lambda.Function(stack, 'MyFunction2', {
-    runtime: lambda.Runtime.NODEJS_10_X,
+    runtime: lambda.Runtime.NODEJS_12_X,
     handler: 'index.handler',
     code: lambda.Code.fromInline('foo'),
   });
@@ -82,7 +82,7 @@ test('lambda in a different stack as notification target', () => {
   const lambdaFunction = new lambda.Function(lambdaStack, 'lambdaFunction', {
     code: lambda.Code.fromInline('whatever'),
     handler: 'index.handler',
-    runtime: lambda.Runtime.NODEJS_10_X,
+    runtime: lambda.Runtime.NODEJS_12_X,
   });
 
   const bucket = new s3.Bucket(bucketStack, 'bucket');
@@ -123,7 +123,7 @@ test('lambda as notification target', () => {
   const stack = new Stack();
   const bucketA = new s3.Bucket(stack, 'MyBucket');
   const fn = new lambda.Function(stack, 'MyFunction', {
-    runtime: lambda.Runtime.NODEJS_10_X,
+    runtime: lambda.Runtime.NODEJS_12_X,
     handler: 'index.handler',
     code: lambda.Code.fromInline('foo'),
   });
@@ -190,7 +190,7 @@ test('permissions are added as a dependency to the notifications resource when u
   const bucket = new s3.Bucket(stack, 'MyBucket');
   const fn = new lambda.SingletonFunction(stack, 'MyFunction', {
     uuid: 'uuid',
-    runtime: lambda.Runtime.NODEJS_10_X,
+    runtime: lambda.Runtime.NODEJS_12_X,
     handler: 'index.handler',
     code: lambda.Code.fromInline('foo'),
   });
@@ -210,7 +210,7 @@ test('add multiple event notifications using a singleton function', () => {
   const bucket = new s3.Bucket(stack, 'MyBucket');
   const fn = new lambda.SingletonFunction(stack, 'MyFunction', {
     uuid: 'uuid',
-    runtime: lambda.Runtime.NODEJS_10_X,
+    runtime: lambda.Runtime.NODEJS_12_X,
     handler: 'index.handler',
     code: lambda.Code.fromInline('foo'),
   });

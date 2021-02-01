@@ -460,7 +460,7 @@ test('queue subscription (with raw delivery)', () => {
 
 test('lambda subscription', () => {
   const fction = new lambda.Function(stack, 'MyFunc', {
-    runtime: lambda.Runtime.NODEJS_10_X,
+    runtime: lambda.Runtime.NODEJS_12_X,
     handler: 'index.handler',
     code: lambda.Code.fromInline('exports.handler = function(e, c, cb) { return cb() }'),
   });
@@ -734,7 +734,7 @@ test('email and url subscriptions with unresolved - four subscriptions', () => {
 test('multiple subscriptions', () => {
   const queue = new sqs.Queue(stack, 'MyQueue');
   const func = new lambda.Function(stack, 'MyFunc', {
-    runtime: lambda.Runtime.NODEJS_10_X,
+    runtime: lambda.Runtime.NODEJS_12_X,
     handler: 'index.handler',
     code: lambda.Code.fromInline('exports.handler = function(e, c, cb) { return cb() }'),
   });
@@ -902,7 +902,7 @@ test('throws with mutliple subscriptions of the same subscriber', () => {
 
 test('with filter policy', () => {
   const fction = new lambda.Function(stack, 'MyFunc', {
-    runtime: lambda.Runtime.NODEJS_10_X,
+    runtime: lambda.Runtime.NODEJS_12_X,
     handler: 'index.handler',
     code: lambda.Code.fromInline('exports.handler = function(e, c, cb) { return cb() }'),
   });
@@ -981,7 +981,7 @@ test('region property on an imported topic as a parameter - sqs', () => {
 test('region property is present on an imported topic - lambda', () => {
   const imported = sns.Topic.fromTopicArn(stack, 'mytopic', 'arn:aws:sns:us-east-1:1234567890:mytopic');
   const func = new lambda.Function(stack, 'MyFunc', {
-    runtime: lambda.Runtime.NODEJS_10_X,
+    runtime: lambda.Runtime.NODEJS_12_X,
     handler: 'index.handler',
     code: lambda.Code.fromInline('exports.handler = function(e, c, cb) { return cb() }'),
   });
@@ -996,7 +996,7 @@ test('region property on an imported topic as a parameter - lambda', () => {
   const topicArn = new CfnParameter(stack, 'topicArn');
   const imported = sns.Topic.fromTopicArn(stack, 'mytopic', topicArn.valueAsString);
   const func = new lambda.Function(stack, 'MyFunc', {
-    runtime: lambda.Runtime.NODEJS_10_X,
+    runtime: lambda.Runtime.NODEJS_12_X,
     handler: 'index.handler',
     code: lambda.Code.fromInline('exports.handler = function(e, c, cb) { return cb() }'),
   });

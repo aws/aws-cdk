@@ -13,7 +13,7 @@ test('create a rotation schedule with a rotation Lambda', () => {
   // GIVEN
   const secret = new secretsmanager.Secret(stack, 'Secret');
   const rotationLambda = new lambda.Function(stack, 'Lambda', {
-    runtime: lambda.Runtime.NODEJS_10_X,
+    runtime: lambda.Runtime.NODEJS_12_X,
     code: lambda.Code.fromInline('export.handler = event => event;'),
     handler: 'index.handler',
   });

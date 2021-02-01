@@ -964,7 +964,7 @@ test('add a rotation schedule to an attached secret', () => {
     }),
   });
   const rotationLambda = new lambda.Function(stack, 'Lambda', {
-    runtime: lambda.Runtime.NODEJS_10_X,
+    runtime: lambda.Runtime.NODEJS_12_X,
     code: lambda.Code.fromInline('export.handler = event => event;'),
     handler: 'index.handler',
   });

@@ -532,7 +532,7 @@ nodeunitShim({
     const lambdaFunction = new lambda.Function(stack, 'Lambda', {
       code: lambda.Code.inline('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_12_X,
     });
 
     new CloudFrontWebDistribution(stack, 'AnAmazingWebsiteProbably', {
@@ -582,7 +582,7 @@ nodeunitShim({
     const lambdaFunction = new lambda.Function(stack, 'Lambda', {
       code: lambda.Code.inline('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_12_X,
     });
     lambdaFunction.addEnvironment('KEY', 'value', { removeInEdge: true });
 
@@ -620,7 +620,7 @@ nodeunitShim({
     const lambdaFunction = new lambda.Function(stack, 'Lambda', {
       code: lambda.Code.inline('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_12_X,
       environment: {
         KEY: 'value',
       },
@@ -1016,7 +1016,7 @@ nodeunitShim({
     const fn = new lambda.Function(stack, 'Lambda', {
       code: lambda.Code.fromInline('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_12_X,
     });
     const lambdaVersion = new lambda.Version(stack, 'LambdaVersion', { lambda: fn });
 
