@@ -281,8 +281,19 @@ It is possible to attach Permissions Boundaries to all Roles created in a constr
 tree all at once:
 
 ```ts
-// This imports an existing policy. You can also create a new one.
+// This imports an existing policy.
 const boundary = iam.ManagedPolicy.fromManagedPolicyArn(this, 'Boundary', 'arn:aws:iam::123456789012:policy/boundary');
+
+// This creates a new boundary
+const boundary2 = new iam.ManagedPolicy(this, 'Boundary2', {
+  statements: [
+    new iam.PolicyStatement({
+      effect: iam.Effect.DENY,
+      actions: ['iam:*'],
+      resources: ['*'],
+    }),
+  ],
+});
 
 // Directly apply the boundary to a Role you create
 iam.PermissionsBoundary.of(role).apply(boundary);

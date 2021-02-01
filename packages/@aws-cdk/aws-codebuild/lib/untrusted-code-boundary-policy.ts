@@ -6,6 +6,13 @@ import { Construct } from 'constructs';
  */
 export interface UntrustedCodeBoundaryPolicyProps {
   /**
+   * The name of the managed policy.
+   *
+   * @default - A name is automatically generated.
+   */
+  readonly managedPolicyName?: string;
+
+  /**
    * Additional statements to add to the default set of statements
    *
    * @default - No additional statements
@@ -37,6 +44,7 @@ export interface UntrustedCodeBoundaryPolicyProps {
 export class UntrustedCodeBoundaryPolicy extends iam.ManagedPolicy {
   constructor(scope: Construct, id: string, props: UntrustedCodeBoundaryPolicyProps = {}) {
     super(scope, id, {
+      managedPolicyName: props.managedPolicyName,
       description: 'Permissions Boundary Policy for CodeBuild Projects running untrusted code',
       statements: [
         new iam.PolicyStatement({
