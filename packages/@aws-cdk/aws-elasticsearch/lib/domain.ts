@@ -545,6 +545,12 @@ export interface DomainProps {
    */
   readonly enableVersionUpgrade?: boolean;
 
+  /**
+   * Policy to apply when the domain is removed from the stack
+   *
+   * @default RemovalPolicy.RETAIN
+   */
+  readonly removalPolicy?: cdk.RemovalPolicy;
 }
 
 /**
@@ -1615,6 +1621,7 @@ export class Domain extends DomainBase implements IDomain {
         }
         : undefined,
     });
+    this.domain.applyRemovalPolicy(props.removalPolicy);
 
     if (props.enableVersionUpgrade) {
       this.domain.cfnOptions.updatePolicy = {
