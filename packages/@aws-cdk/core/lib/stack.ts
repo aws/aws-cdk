@@ -782,7 +782,7 @@ export class Stack extends CoreConstruct implements ITaggable {
    * Exports will be created automatically, so usually you won't need to use
    * this method.
    *
-   * You only time you need to call this method if you want to *remove* the
+   * The only time you need to call this method if you want to *remove* the
    * relationship between two Stacks. It will temporarily ensure that the CloudFormation
    * Export still exists while you remove the reference from the consuming stack.
    * After that, you can remove the resource and the manual export.
