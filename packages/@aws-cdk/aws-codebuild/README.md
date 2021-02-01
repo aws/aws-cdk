@@ -600,3 +600,20 @@ new codebuild.Project(stack, 'MyProject', {
 Here's a CodeBuild project with a simple example that creates a project mounted on AWS EFS:
 
 [Minimal Example](./test/integ.project-file-system-location.ts)
+
+## Batch builds
+
+To enable batch builds you should call `enableBatchBuilds()` on the project instance.
+
+It returns an object containing the batch service role that was created,
+or `undefined` if batch builds could not be enabled, for example if the project was imported.
+
+```ts
+import * as codebuild from '@aws-cdk/aws-codebuild';
+
+const project = new codebuild.Project(this, 'MyProject', { ... });
+
+if (project.enableBatchBuilds()) {
+  console.log('Batch builds were enabled');
+}
+```

@@ -60,7 +60,7 @@ new route53.TxtRecord(this, 'TXTRecord', {
 });
 ```
 
-To add a A record to your zone:
+To add an A record to your zone:
 
 ```ts
 import * as route53 from '@aws-cdk/aws-route53';
@@ -71,7 +71,28 @@ new route53.ARecord(this, 'ARecord', {
 });
 ```
 
-To add a AAAA record pointing to a CloudFront distribution:
+To add an A record for an EC2 instance with an Elastic IP (EIP) to your zone:
+
+```ts
+import * as ec2 from '@aws-cdk/aws-ec2';
+import * as route53 from '@aws-cdk/aws-route53';
+
+const instance = new ec2.Instance(this, 'Instance', {
+  // ...
+});
+
+const elasticIp = new ec2.CfnEIP(this, 'EIP', {
+  domain: 'vpc',
+  instanceId: instance.instanceId
+});
+
+new route53.ARecord(this, 'ARecord', {
+  zone: myZone,
+  target: route53.RecordTarget.fromIpAddresses(elasticIp.ref)
+});
+```
+
+To add an AAAA record pointing to a CloudFront distribution:
 
 ```ts
 import * as route53 from '@aws-cdk/aws-route53';
@@ -87,6 +108,29 @@ Constructs are available for A, AAAA, CAA, CNAME, MX, NS, SRV and TXT records.
 
 Use the `CaaAmazonRecord` construct to easily restrict certificate authorities
 allowed to issue certificates for a domain to Amazon only.
+
+To add a NS record to a HostedZone in different account
+
+```ts
+import * as route53 from '@aws-cdk/aws-route53';
+
+// In the account containing the HostedZone
+const parentZone = new route53.PublicHostedZone(this, 'HostedZone', {
+  zoneName: 'someexample.com',
+  crossAccountZoneDelegationPrinciple: new iam.AccountPrincipal('12345678901')
+});
+
+// In this account
+const subZone = new route53.PublicHostedZone(this, 'SubZone', {
+  zoneName: 'sub.someexample.com'
+});
+
+new route53.CrossAccountZoneDelegationRecord(this, 'delegate', {
+  delegatedZone: subZone,
+  parentHostedZoneId: parentZone.hostedZoneId,
+  delegationRole: parentZone.crossAccountDelegationRole
+});
+```
 
 ## Imports
 

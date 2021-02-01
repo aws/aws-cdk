@@ -1,5 +1,3 @@
-import * as acmpca from '@aws-cdk/aws-acmpca';
-import * as acm from '@aws-cdk/aws-certificatemanager';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as cloudmap from '@aws-cdk/aws-servicediscovery';
 import * as cdk from '@aws-cdk/core';
@@ -25,13 +23,9 @@ const router = mesh.addVirtualRouter('router', {
   ],
 });
 
-const virtualService = mesh.addVirtualService('service', {
-  virtualRouter: router,
+const virtualService = new appmesh.VirtualService(stack, 'service', {
+  virtualServiceProvider: appmesh.VirtualServiceProvider.virtualRouter(router),
   virtualServiceName: 'service1.domain.local',
-});
-
-const cert = new acm.Certificate(stack, 'cert', {
-  domainName: `node1.${namespace.namespaceName}`,
 });
 
 const node = mesh.addVirtualNode('node', {
@@ -41,10 +35,6 @@ const node = mesh.addVirtualNode('node', {
       healthyThreshold: 3,
       path: '/check-path',
     },
-    tlsCertificate: appmesh.TlsCertificate.acm({
-      certificate: cert,
-      tlsMode: appmesh.TlsMode.STRICT,
-    }),
   })],
   backends: [
     virtualService,
@@ -53,7 +43,7 @@ const node = mesh.addVirtualNode('node', {
 
 node.addBackend(new appmesh.VirtualService(stack, 'service-2', {
   virtualServiceName: 'service2.domain.local',
-  mesh,
+  virtualServiceProvider: appmesh.VirtualServiceProvider.none(mesh),
 }),
 );
 
@@ -75,8 +65,6 @@ router.addRoute('route-1', {
   }),
 });
 
-const certificateAuthorityArn = 'arn:aws:acm-pca:us-east-1:123456789012:certificate-authority/12345678-1234-1234-1234-123456789012';
-
 const node2 = mesh.addVirtualNode('node2', {
   serviceDiscovery: appmesh.ServiceDiscovery.dns(`node2.${namespace.namespaceName}`),
   listeners: [appmesh.VirtualNodeListener.http({
@@ -90,13 +78,13 @@ const node2 = mesh.addVirtualNode('node2', {
       unhealthyThreshold: 2,
     },
   })],
-  backendsDefaultClientPolicy: appmesh.ClientPolicy.acmTrust({
-    certificateAuthorities: [acmpca.CertificateAuthority.fromCertificateAuthorityArn(stack, 'certificate', certificateAuthorityArn)],
+  backendsDefaultClientPolicy: appmesh.ClientPolicy.fileTrust({
+    certificateChain: 'path/to/cert',
   }),
   backends: [
     new appmesh.VirtualService(stack, 'service-3', {
       virtualServiceName: 'service3.domain.local',
-      mesh,
+      virtualServiceProvider: appmesh.VirtualServiceProvider.none(mesh),
     }),
   ],
 });
