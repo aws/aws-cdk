@@ -62,14 +62,11 @@ export class KeyGroup extends Resource implements IKeyGroup {
       keyGroupConfig: {
         name: this.physicalName,
         comment: props.comment,
-        items: this.getKeyIdentifiers(props.items),
+        items: props.items.map(key => key.publicKeyId),
       },
     });
-    this.keyGroupId = resource.ref;
-  }
 
-  private getKeyIdentifiers(items: IPublicKey[]): string[] {
-    return items.map(key => key.publicKeyId);
+    this.keyGroupId = resource.ref;
   }
 
   private generateName(): string {
