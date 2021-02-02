@@ -131,6 +131,33 @@ cluster.addAutoScalingGroup(autoScalingGroup);
 
 If you omit the property `vpc`, the construct will create a new VPC with two AZs.
 
+### capacity provider
+
+`FARGATE` and `FARGATE_SPOT` capacity providers are supported for the cluster. To enable fargate capacity providers for the cluster:
+
+```ts
+new ecs.Cluster(stack, 'FargateCluster', {
+  vpc,
+  capacityProvider: [
+    ecs.FargateCapacityProviderType.FARGATE,
+    ecs.FargateCapacityProviderType.FARGATE_SPOT,
+  ],
+  defaultCapacityProviderStrategy: [
+    {
+      capacityProvider: ecs.FargateCapacityProviderType.FARGATE,
+      weight: 1,
+      base: 1,
+    },
+    {
+      capacityProvider: ecs.FargateCapacityProviderType.FARGATE_SPOT,
+      weight: 2,
+    },
+  ],
+});
+
+```
+
+
 
 ### Bottlerocket
 
