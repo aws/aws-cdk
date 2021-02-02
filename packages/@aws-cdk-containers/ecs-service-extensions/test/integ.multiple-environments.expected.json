@@ -2173,6 +2173,9 @@
       },
       "ap-east-1": {
         "ecrRepo": "856666278305"
+      },
+      "af-south-1": {
+        "ecrRepo": "924023996002"
       }
     },
     "namedevelopmentenvoyimageaccountmapping": {
@@ -2232,6 +2235,9 @@
       },
       "ap-east-1": {
         "ecrRepo": "856666278305"
+      },
+      "af-south-1": {
+        "ecrRepo": "924023996002"
       }
     }
   }
