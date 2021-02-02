@@ -590,7 +590,7 @@ The following snippet configures a Cognito user pool as an authorizer:
 ```ts
 const userPool = new cognito.UserPool(stack, 'UserPool');
 
-const auth = new apigateway.CognitoAuthorizer(this, 'booksAuthorizer', {
+const auth = new apigateway.CognitoUserPoolsAuthorizer(this, 'booksAuthorizer', {
   cognitoUserPools: [userPool]
 });
 
