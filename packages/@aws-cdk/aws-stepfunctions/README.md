@@ -436,7 +436,6 @@ const definition = stepfunctions.Chain
     // ...
 ```
 
-
 ## State Machine Fragments
 
 It is possible to define reusable (or abstracted) mini-state machines by
