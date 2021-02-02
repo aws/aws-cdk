@@ -58,7 +58,7 @@ export class PublicKey extends Resource implements IPublicKey {
     super(scope, id);
 
     if (!Token.isUnresolved(props.encodedKey) && !/^-----BEGIN PUBLIC KEY-----/.test(props.encodedKey)) {
-      throw new Error('Invalid public key.');
+      throw new Error(`Public key must be in PEM format (with the BEGIN/END PUBLIC KEY lines); got ${props.encodedKey}`);
     }
 
     const resource = new CfnPublicKey(this, 'Resource', {

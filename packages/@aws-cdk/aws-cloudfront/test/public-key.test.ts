@@ -80,6 +80,6 @@ describe('PublicKey', () => {
       publicKeyName: 'pub-key',
       encodedKey: 'bad-key',
       comment: 'Key expiring on 1/1/1984',
-    })).toThrow('Invalid public key.');
+    })).toThrow(/Public key must be in PEM format [(]with the BEGIN\/END PUBLIC KEY lines[)]; got (.*?)/);
   });
 });
