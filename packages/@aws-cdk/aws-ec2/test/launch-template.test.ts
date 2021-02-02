@@ -26,6 +26,7 @@ import {
   InstanceType,
   LaunchTemplate,
   LaunchTemplateTagResourceType,
+  OperatingSystemType,
   SecurityGroup,
   SpotInstanceInterruption,
   SpotRequestType,
@@ -51,25 +52,18 @@ describe('LaunchTemplate', () => {
     const template = new LaunchTemplate(stack, 'Template');
 
     // THEN
-    expectCDK(stack).to(haveResource('AWS::IAM::Role'));
-    expectCDK(stack).to(haveResourceLike('AWS::IAM::InstanceProfile', {
-      Roles: [
-        {
-          Ref: 'TemplateRole17D80861',
-        },
-      ],
-    }));
     // Note: The following is intentionally a haveResource instead of haveResourceLike
     // to ensure that only the bare minimum of properties have values when no properties
     // are given to a LaunchTemplate.
     expectCDK(stack).to(haveResource('AWS::EC2::LaunchTemplate', {
-      LaunchTemplateData: {
-        IamInstanceProfile: {
-          Arn: stack.resolve((template.node.findChild('Profile') as CfnInstanceProfile).getAtt('Arn')),
-        },
-      },
+      LaunchTemplateData: {},
     }));
-    expect(template.connections.securityGroups).toHaveLength(0);
+    expectCDK(stack).notTo(haveResource('AWS::IAM::InstanceProfile'));
+    expect(() => { template.grantPrincipal; }).toThrow();
+    expect(() => { template.connections; }).toThrow();
+    expect(() => { template.osType; }).toThrow();
+    expect(() => { template.role; }).toThrow();
+    expect(() => { template.userData; }).toThrow();
   });
 
   test('Import from attributes with name', () => {
@@ -136,7 +130,7 @@ describe('LaunchTemplate', () => {
 
   test('Given machineImage (Linux)', () => {
     // WHEN
-    new LaunchTemplate(stack, 'Template', {
+    const template = new LaunchTemplate(stack, 'Template', {
       machineImage: new AmazonLinuxImage(),
     });
 
@@ -146,16 +140,15 @@ describe('LaunchTemplate', () => {
         ImageId: {
           Ref: stringLike('SsmParameterValueawsserviceamiamazonlinuxlatestamznami*Parameter'),
         },
-        UserData: {
-          'Fn::Base64': '#!/bin/bash',
-        },
       },
     }));
+    expect(template.osType).toBe(OperatingSystemType.LINUX);
+    expect(() => { template.userData; }).toThrow();
   });
 
   test('Given machineImage (Windows)', () => {
     // WHEN
-    new LaunchTemplate(stack, 'Template', {
+    const template = new LaunchTemplate(stack, 'Template', {
       machineImage: new WindowsImage(WindowsVersion.WINDOWS_SERVER_2019_ENGLISH_FULL_BASE),
     });
 
@@ -165,11 +158,10 @@ describe('LaunchTemplate', () => {
         ImageId: {
           Ref: stringLike('SsmParameterValueawsserviceamiwindowslatestWindowsServer2019EnglishFullBase*Parameter'),
         },
-        UserData: {
-          'Fn::Base64': '<powershell></powershell>',
-        },
       },
     }));
+    expect(template.osType).toBe(OperatingSystemType.WINDOWS);
+    expect(() => { template.userData; }).toThrow();
   });
 
   test('Given userData', () => {
@@ -178,7 +170,7 @@ describe('LaunchTemplate', () => {
     userData.addCommands('echo Test');
 
     // WHEN
-    new LaunchTemplate(stack, 'Template', {
+    const template = new LaunchTemplate(stack, 'Template', {
       userData,
     });
 
@@ -190,6 +182,7 @@ describe('LaunchTemplate', () => {
         },
       },
     }));
+    expect(template.userData).toBeDefined();
   });
 
   test('Given role', () => {
@@ -199,7 +192,7 @@ describe('LaunchTemplate', () => {
     });
 
     // WHEN
-    new LaunchTemplate(stack, 'Template', {
+    const template = new LaunchTemplate(stack, 'Template', {
       role,
     });
 
@@ -212,6 +205,15 @@ describe('LaunchTemplate', () => {
         },
       ],
     }));
+    expectCDK(stack).to(haveResource('AWS::EC2::LaunchTemplate', {
+      LaunchTemplateData: {
+        IamInstanceProfile: {
+          Arn: stack.resolve((template.node.findChild('Profile') as CfnInstanceProfile).getAtt('Arn')),
+        },
+      },
+    }));
+    expect(template.role).toBeDefined();
+    expect(template.grantPrincipal).toBeDefined();
   });
 
   test('Given blockDeviceMapping', () => {
@@ -423,13 +425,14 @@ describe('LaunchTemplate', () => {
         ],
       },
     }));
+    expect(template.connections).toBeDefined();
     expect(template.connections.securityGroups).toHaveLength(1);
     expect(template.connections.securityGroups[0]).toBe(sg);
   });
 
   test('Given empty tagSpecification resourceTypes', () => {
     // WHEN
-    const template = new LaunchTemplate(stack, 'Template', {
+    new LaunchTemplate(stack, 'Template', {
       tagSpecifications: [
         {
           resourceTypes: [],
@@ -445,17 +448,13 @@ describe('LaunchTemplate', () => {
 
     // THEN
     expectCDK(stack).to(haveResource('AWS::EC2::LaunchTemplate', {
-      LaunchTemplateData: {
-        IamInstanceProfile: {
-          Arn: stack.resolve((template.node.findChild('Profile') as CfnInstanceProfile).getAtt('Arn')),
-        },
-      },
+      LaunchTemplateData: {},
     }));
   });
 
   test('Given empty tagSpecification tags', () => {
     // WHEN
-    const template = new LaunchTemplate(stack, 'Template', {
+    new LaunchTemplate(stack, 'Template', {
       tagSpecifications: [
         {
           resourceTypes: [
@@ -468,11 +467,7 @@ describe('LaunchTemplate', () => {
 
     // THEN
     expectCDK(stack).to(haveResource('AWS::EC2::LaunchTemplate', {
-      LaunchTemplateData: {
-        IamInstanceProfile: {
-          Arn: stack.resolve((template.node.findChild('Profile') as CfnInstanceProfile).getAtt('Arn')),
-        },
-      },
+      LaunchTemplateData: {},
     }));
   });
 

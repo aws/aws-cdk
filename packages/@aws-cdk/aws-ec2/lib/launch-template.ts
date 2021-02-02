@@ -16,7 +16,7 @@ import { Construct } from 'constructs';
 import { Connections, IConnectable } from './connections';
 import { CfnLaunchTemplate } from './ec2.generated';
 import { InstanceType } from './instance-types';
-import { IMachineImage } from './machine-image';
+import { IMachineImage, MachineImageConfig, OperatingSystemType } from './machine-image';
 import { launchTemplateBlockDeviceMappings } from './private/ebs-util';
 import { ISecurityGroup } from './security-group';
 import { UserData } from './user-data';
@@ -255,7 +255,8 @@ export interface LaunchTemplateProps {
   /**
    * The AMI that will be used by instances.
    *
-   * @default - This Launch Template creates a UserData based on the type of provided machineImage.
+   * @default - This Launch Template creates a UserData based on the type of provided
+   * machineImage; no UserData is created if a machineImage is not provided
    */
   readonly userData?: UserData;
 
@@ -269,7 +270,7 @@ export interface LaunchTemplateProps {
    *   assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com')
    * });
    *
-   * @default - A new Role is created.
+   * @default - No new role is created.
    */
   readonly role?: iam.IRole;
 
@@ -453,19 +454,9 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
 
   // ============================================
   //   Members for ILaunchTemplate interface
-  /**
-   * @inheritdoc
-   */
+
   public readonly versionNumber: string;
-
-  /**
-   * @inheritdoc
-   */
   public readonly launchTemplateId?: string;
-
-  /**
-   * @inheritdoc
-   */
   public readonly launchTemplateName?: string;
 
   // =============================================
@@ -485,35 +476,44 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
    */
   public readonly latestVersionNumber: string;
 
+  // =============================================
+  //   Private/protected data members
+
+  /**
+   * The type of OS the instance is running.
+   * @internal
+   */
+  protected readonly _osType?: OperatingSystemType;
+
   /**
    * IAM Role assumed by instances that are launched from this template.
+   * @internal
    */
-  public readonly role: iam.IRole;
+  protected readonly _role?: iam.IRole;
 
   /**
    * Principal to grant permissions to.
+   * @internal
    */
-  public readonly grantPrincipal: iam.IPrincipal;
+  protected readonly _grantPrincipal?: iam.IPrincipal;
 
   /**
    * Allows specifying security group connections for the instance.
-   *
-   * Note: If the LaunchTemplate was not created with a SecurityGroup, then this connections
-   * object will be empty and operations on it will do nothing.
+   * @internal
    */
-  public readonly connections: Connections;
+  protected readonly _connections?: Connections;
 
   /**
    * UserData executed by instances that are launched from this template.
+   * @internal
    */
-  public readonly userData?: UserData;
-
+  protected readonly _userData?: UserData;
 
   protected tagSpecifications: LaunchTemplateTagSpecification[];
 
   // =============================================
 
-  constructor(scope: Construct, id: string, props?: LaunchTemplateProps) {
+  constructor(scope: Construct, id: string, props: LaunchTemplateProps = {}) {
     super(scope, id);
 
     // Basic validation of the provided spot block duration
@@ -523,38 +523,48 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
       Annotations.of(this).addError('Spot block duration must be exactly 1, 2, 3, 4, 5, or 6 hours.');
     }
 
-    this.role = props?.role ?? new iam.Role(this, 'Role', {
-      assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
-    });
-    this.grantPrincipal = this.role;
-    const iamProfile = new iam.CfnInstanceProfile(this, 'Profile', {
-      roles: [this.role.roleName],
-    });
-
-    if (props?.securityGroup) {
-      this.connections = new Connections({ securityGroups: [props.securityGroup] });
-    } else {
-      // Note: LaunchTemplates are not associated with a VPC, so we cannot create a
-      // SecurityGroup by default. So, we preserve the IConnectable interface by
-      // creating a Connections object but using it when empty will just result in no-ops.
-      this.connections = new Connections({ securityGroups: [] });
-    }
-    const securityGroupsToken = Lazy.list({
+    this._role = props.role;
+    this._grantPrincipal = this._role;
+    const iamProfile: iam.CfnInstanceProfile | undefined = this._role ? new iam.CfnInstanceProfile(this, 'Profile', {
+      roles: [this._role!.roleName],
+    }) : undefined;
+    const iamProfileToken = Lazy.string({
       produce: () => {
-        if (this.connections.securityGroups.length > 0) {
-          return this.connections.securityGroups.map(sg => sg.securityGroupId);
+        if (iamProfile) {
+          return iamProfile.getAtt('Arn').toString();
         }
         return undefined;
       },
     });
 
-    this.userData = props?.userData;
-    if (!this.userData !== undefined && props?.machineImage !== undefined) {
-      this.userData = props?.machineImage.getImage(this).userData;
+    if (props.securityGroup) {
+      this._connections = new Connections({ securityGroups: [props.securityGroup] });
     }
-    const userDataToken = this.userData ?
-      Lazy.string({ produce: () => Fn.base64(this.userData!.render()) }) :
-      undefined;
+    const securityGroupsToken = Lazy.list({
+      produce: () => {
+        if (this._connections && this._connections.securityGroups.length > 0) {
+          return this._connections.securityGroups.map(sg => sg.securityGroupId);
+        }
+        return undefined;
+      },
+    });
+
+    if (props.userData) {
+      this._userData = props.userData;
+    }
+    const userDataToken = Lazy.string({
+      produce: () => {
+        if (this._userData) {
+          return Fn.base64(this._userData.render());
+        }
+        return undefined;
+      },
+    });
+
+    const imageConfig: MachineImageConfig | undefined = props.machineImage?.getImage(this);
+    if (imageConfig) {
+      this._osType = imageConfig.osType;
+    }
 
     let marketOptions: any = undefined;
     if (props?.spotOptions) {
@@ -592,10 +602,10 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
         hibernationOptions: props?.hibernationConfigured !== undefined ? {
           configured: props.hibernationConfigured,
         } : undefined,
-        iamInstanceProfile: {
-          arn: iamProfile.getAtt('Arn').toString(),
-        },
-        imageId: props?.machineImage?.getImage(this).imageId,
+        iamInstanceProfile: iamProfile !== undefined ? {
+          arn: iamProfileToken,
+        } : undefined,
+        imageId: imageConfig?.imageId,
         instanceType: props?.instanceType?.toString(),
         instanceInitiatedShutdownBehavior: props?.instanceInitiatedShutdownBehavior,
         instanceMarketOptions: marketOptions,
@@ -655,6 +665,67 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
    */
   public addTagSpecification(specification: LaunchTemplateTagSpecification) {
     this.tagSpecifications.push(specification);
+  }
+
+  /**
+   * Allows specifying security group connections for the instance.
+   *
+   * @note Only available if you provide a securityGroup when constructing the LaunchTemplate.
+   */
+  public get connections(): Connections {
+    if (!this._connections) {
+      throw new Error('connections not available on LaunchTemplate. You must provide a securityGroup when constructing the LaunchTemplate to make it available.');
+    }
+    return this._connections;
+  }
+
+  /**
+   * Principal to grant permissions to.
+   *
+   * @note Only available if you provide a role when constructing the LaunchTemplate.
+   */
+  public get grantPrincipal(): iam.IPrincipal {
+    if (!this._role) {
+      throw new Error('grantPrincipal not available on LaunchTemplate. You must provide a role when constructing the LaunchTemplate to make it available.');
+    }
+    return this._role;
+  }
+
+  /**
+   * The type of OS on which the instance is running.
+   *
+   * @note Only available if you provide a machineImage when constructing the LaunchTemplate
+   */
+  public get osType(): OperatingSystemType {
+    // Explicitly check for undef. osType is an enum, and can have the value 0 which messes with attempts at "if (!osType)"
+    if (this._osType === undefined) {
+      throw new Error('osType not available on LaunchTemplate. You must provide a machineImage when constructing the LaunchTemplate to make it available.');
+    }
+    return this._osType;
+  }
+
+  /**
+   * IAM Role assumed by instances that are launched from this template.
+   *
+   * @note Only available if you provide a role when constructing the LaunchTemplate.
+   */
+  public get role(): iam.IRole {
+    if (!this._role) {
+      throw new Error('role not available on LaunchTemplate. You must provide a role when constructing the LaunchTemplate to make it available.');
+    }
+    return this._role;
+  }
+
+  /**
+   * UserData executed by instances that are launched from this template.
+   *
+   * @note Only available if you provide a machineImage or UserData when constructing the LaunchTemplate.
+   */
+  public get userData(): UserData {
+    if (!this._userData) {
+      throw new Error('userData not available on LaunchTemplate. You must provide a userData or machineImage when constructing the LaunchTemplate to make it available.');
+    }
+    return this._userData;
   }
 
   /**
