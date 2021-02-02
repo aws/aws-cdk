@@ -31,6 +31,7 @@ export interface PublicKeyProps {
 
   /**
    * The public key that you can use with signed URLs and signed cookies, or with field-level encryption.
+   * The `encodedKey` parameter must include `-----BEGIN PUBLIC KEY-----` and `-----END PUBLIC KEY-----` lines.
    * @see https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/PrivateContent.html
    * @see https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/field-level-encryption.html
    */
