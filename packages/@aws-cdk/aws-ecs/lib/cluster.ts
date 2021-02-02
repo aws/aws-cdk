@@ -5,7 +5,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as cloudmap from '@aws-cdk/aws-servicediscovery';
 import * as ssm from '@aws-cdk/aws-ssm';
-import { Duration, IResource, Resource, Stack } from '@aws-cdk/core';
+import { Duration, IResource, Resource, Stack, Lazy } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { InstanceDrainHook } from './drain-hook/instance-drain-hook';
 import { ECSMetrics } from './ecs-canned-metrics.generated';
@@ -90,7 +90,8 @@ export interface ClusterProps {
   readonly containerInsights?: boolean;
 
   /**
-   * The capacity providers associated with the cluster.
+   * The capacity providers associated with the cluster. If the `defaultCapacityProviderStrategy` is
+   * defined, all the capacity providers in `defaultCapacityProviderStrategy` will be added into this list.
    *
    * @default - no capacity provider for this cluster
    */
@@ -163,6 +164,11 @@ export class Cluster extends Resource implements ICluster {
   private _autoscalingGroup?: autoscaling.IAutoScalingGroup;
 
   /**
+   * capacity providers associated with this cluster;
+   */
+  private _capacityProvider: string[];
+
+  /**
    * Constructs a new instance of the Cluster class.
    */
   constructor(scope: Construct, id: string, props: ClusterProps = {}) {
@@ -180,10 +186,15 @@ export class Cluster extends Resource implements ICluster {
       clusterSettings = [{ name: 'containerInsights', value: props.containerInsights ? ContainerInsights.ENABLED : ContainerInsights.DISABLED }];
     }
 
+    this._capacityProvider = props.capacityProvider ?? [];
+    this.renderCapacityProviders(props.defaultCapacityProviderStrategy);
+
     const cluster = new CfnCluster(this, 'Resource', {
       clusterName: this.physicalName,
       clusterSettings,
-      capacityProviders: props.capacityProvider,
+      capacityProviders: Lazy.list({ produce: () => this._capacityProvider }, {
+        omitEmpty: true,
+      }),
       defaultCapacityProviderStrategy: props.defaultCapacityProviderStrategy,
     });
 
@@ -369,6 +380,14 @@ export class Cluster extends Resource implements ICluster {
         topicEncryptionKey: options.topicEncryptionKey,
       });
     }
+  }
+
+  private renderCapacityProviders(items?: CapacityProviderStrategyItem[]) {
+    items?.forEach(i => {
+      if (!this._capacityProvider.includes(i.capacityProvider)) {
+        this._capacityProvider.push(i.capacityProvider);
+      }
+    });
   }
 
   private configureWindowsAutoScalingGroup(autoScalingGroup: autoscaling.AutoScalingGroup, options: AddAutoScalingGroupCapacityOptions = {}) {

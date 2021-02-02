@@ -3,15 +3,13 @@ import * as cdk from '@aws-cdk/core';
 import * as ecs from '../../lib';
 
 const app = new cdk.App();
+
 const stack = new cdk.Stack(app, 'aws-ecs-integ');
+
 const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 2 });
 
 new ecs.Cluster(stack, 'FargateCluster', {
   vpc,
-  capacityProvider: [
-    ecs.FargateCapacityProviderType.FARGATE,
-    ecs.FargateCapacityProviderType.FARGATE_SPOT,
-  ],
   defaultCapacityProviderStrategy: [
     {
       capacityProvider: ecs.FargateCapacityProviderType.FARGATE,
