@@ -1,3 +1,5 @@
+import * as fs from 'fs';
+import * as path from 'path';
 import { IResource, Names, Resource, Token } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnPublicKey } from './cloudfront.generated';
@@ -35,7 +37,9 @@ export interface PublicKeyProps {
    * @see https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/PrivateContent.html
    * @see https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/field-level-encryption.html
    */
-  readonly encodedKey: string;
+  readonly encodedKey?: string;
+
+  readonly encodedKeyPath?: string;
 }
 
 /**
@@ -57,15 +61,26 @@ export class PublicKey extends Resource implements IPublicKey {
   constructor(scope: Construct, id: string, props: PublicKeyProps) {
     super(scope, id);
 
-    if (!Token.isUnresolved(props.encodedKey) && !/^-----BEGIN PUBLIC KEY-----/.test(props.encodedKey)) {
-      throw new Error(`Public key must be in PEM format (with the BEGIN/END PUBLIC KEY lines); got ${props.encodedKey}`);
+    if (props.encodedKey && props.encodedKeyPath) {
+      throw new Error('Params encodedKey and encodedKeyPath cannot be passed at the same time.');
+    }
+
+    const encodedKey = props.encodedKeyPath ? fs.readFileSync(path.join(__dirname, props.encodedKeyPath)).toString()
+      : props.encodedKey;
+
+    if (!encodedKey) {
+      throw new Error('Something went wrong with loading the public key.');
+    }
+
+    if (!Token.isUnresolved(encodedKey) && !/^-----BEGIN PUBLIC KEY-----/.test(encodedKey)) {
+      throw new Error(`Public key must be in PEM format (with the BEGIN/END PUBLIC KEY lines); got ${encodedKey}`);
     }
 
     const resource = new CfnPublicKey(this, 'Resource', {
       publicKeyConfig: {
         name: props.publicKeyName ?? this.generateName(),
         callerReference: this.node.addr,
-        encodedKey: props.encodedKey,
+        encodedKey,
         comment: props.comment,
       },
     });

@@ -82,4 +82,38 @@ describe('PublicKey', () => {
       comment: 'Key expiring on 1/1/1984',
     })).toThrow(/Public key must be in PEM format [(]with the BEGIN\/END PUBLIC KEY lines[)]; got (.*?)/);
   });
+
+  test('good public key example', () => {
+    new PublicKey(stack, 'MyPublicKey', {
+      encodedKeyPath: '../test/pem/pubkey-good.test.pem',
+    });
+
+    expectStack(stack).toMatch({
+      Resources: {
+        MyPublicKey78071F3D: {
+          Type: 'AWS::CloudFront::PublicKey',
+          Properties: {
+            PublicKeyConfig: {
+              CallerReference: 'c872d91ae0d2943aad25d4b31f1304d0a62c658ace',
+              EncodedKey: publicKey,
+              Name: 'StackMyPublicKey36EDA6AB',
+            },
+          },
+        },
+      },
+    });
+  });
+
+  test('bad public key example', () => {
+    expect(() => new PublicKey(stack, 'MyPublicKey', {
+      encodedKeyPath: '../test/pem/pubkey-bad.test.pem',
+    })).toThrow(/Public key must be in PEM format [(]with the BEGIN\/END PUBLIC KEY lines[)]; got (.*?)/);
+  });
+
+  test('multiple encoded key params example', () => {
+    expect(() => new PublicKey(stack, 'MyPublicKey', {
+      encodedKey: publicKey,
+      encodedKeyPath: '../test/pem/pubkey-bad.test.pem',
+    })).toThrow(/Params encodedKey and encodedKeyPath cannot be passed at the same time./);
+  });
 });
