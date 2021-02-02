@@ -17,8 +17,6 @@
       "dotnet": {
         "namespace": "Amazon.CDK.CustomResources",
         "packageId": "Amazon.CDK.AWS.CustomResources",
-        "signAssembly": true,
-        "assemblyOriginatorKeyFile": "../../key.snk",
         "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
       },
       "python": {
@@ -46,8 +44,8 @@
     "pkglint": "pkglint -f",
     "package": "cdk-package",
     "awslint": "cdk-awslint",
-    "build+test+package": "npm run build+test && npm run package",
-    "build+test": "npm run build && npm test",
+    "build+test+package": "yarn build+test && yarn package",
+    "build+test": "yarn build && yarn test",
     "compat": "cdk-compat",
     "gen": "cp -f $(node -p 'require.resolve(\"aws-sdk/apis/metadata.json\")') lib/aws-custom-resource/sdk-api-metadata.json && rm -rf test/aws-custom-resource/cdk.out",
     "rosetta:extract": "yarn --silent jsii-rosetta extract"
@@ -80,12 +78,12 @@
     "@types/aws-lambda": "^8.10.64",
     "@types/fs-extra": "^8.1.1",
     "@types/sinon": "^9.0.9",
-    "aws-sdk": "^2.822.0",
+    "aws-sdk": "^2.830.0",
     "aws-sdk-mock": "^5.1.0",
     "cdk-build-tools": "0.0.0",
     "cdk-integ-tools": "0.0.0",
     "cfn2ts": "0.0.0",
-    "fs-extra": "^9.0.1",
+    "fs-extra": "^9.1.0",
     "nock": "^13.0.5",
     "pkglint": "0.0.0",
     "sinon": "^9.2.1"
