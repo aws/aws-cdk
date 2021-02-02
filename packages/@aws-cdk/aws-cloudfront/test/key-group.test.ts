@@ -1,6 +1,27 @@
 import '@aws-cdk/assert/jest';
+import { expect as expectStack } from '@aws-cdk/assert';
 import { App, Stack } from '@aws-cdk/core';
 import { KeyGroup, PublicKey } from '../lib';
+
+const publicKey1 = `-----BEGIN PUBLIC KEY-----
+FIRST_KEYgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAudf8/iNkQgdvjEdm6xYS
+JAyxd/kGTbJfQNg9YhInb7TSm0dGu0yx8yZ3fnpmxuRPqJIlaVr+fT4YRl71gEYa
+dlhHmnVegyPNjP9dNqZ7zwNqMEPOPnS/NOHbJj1KYKpn1f8pPNycQ5MQCntKGnSj
+6fc+nbcC0joDvGz80xuy1W4hLV9oC9c3GT26xfZb2jy9MVtA3cppNuTwqrFi3t6e
+0iGpraxZlT5wewjZLpQkngqYr6s3aucPAZVsGTEYPo4nD5mswmtZOm+tgcOrivtD
+/3sD/qZLQ6c5siqyS8aTraD6y+VXugujfarTU65IeZ6QAUbLMsWuZOIi5Jn8zAwx
+NQIDAQAB
+-----END PUBLIC KEY-----`;
+
+const publicKey2 = `-----BEGIN PUBLIC KEY-----
+SECOND_KEYkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAudf8/iNkQgdvjEdm6xYS
+JAyxd/kGTbJfQNg9YhInb7TSm0dGu0yx8yZ3fnpmxuRPqJIlaVr+fT4YRl71gEYa
+dlhHmnVegyPNjP9dNqZ7zwNqMEPOPnS/NOHbJj1KYKpn1f8pPNycQ5MQCntKGnSj
+6fc+nbcC0joDvGz80xuy1W4hLV9oC9c3GT26xfZb2jy9MVtA3cppNuTwqrFi3t6e
+0iGpraxZlT5wewjZLpQkngqYr6s3aucPAZVsGTEYPo4nD5mswmtZOm+tgcOrivtD
+/3sD/qZLQ6c5siqyS8aTraD6y+VXugujfarTU65IeZ6QAUbLMsWuZOIi5Jn8zAwx
+NQIDAQAB
+-----END PUBLIC KEY-----`;
 
 describe('KeyGroup', () => {
   let app: App;
@@ -23,27 +44,36 @@ describe('KeyGroup', () => {
     new KeyGroup(stack, 'MyKeyGroup', {
       items: [
         new PublicKey(stack, 'MyPublicKey', {
-          encodedKey: 'encoded-key',
+          encodedKey: publicKey1,
         }),
       ],
     });
 
-    expect(stack).toHaveResource('AWS::CloudFront::KeyGroup', {
-      KeyGroupConfig: {
-        Name: 'StackMyKeyGroupC9D82374',
-        Items: [
-          {
-            Ref: 'MyPublicKey78071F3D',
+    expectStack(stack).toMatch({
+      Resources: {
+        MyPublicKey78071F3D: {
+          Type: 'AWS::CloudFront::PublicKey',
+          Properties: {
+            PublicKeyConfig: {
+              CallerReference: 'c872d91ae0d2943aad25d4b31f1304d0a62c658ace',
+              EncodedKey: publicKey1,
+              Name: 'StackMyPublicKey36EDA6AB',
+            },
           },
-        ],
-      },
-    });
-
-    expect(stack).toHaveResource('AWS::CloudFront::PublicKey', {
-      PublicKeyConfig: {
-        Name: 'StackMyPublicKey36EDA6AB',
-        CallerReference: 'c872d91ae0d2943aad25d4b31f1304d0a62c658ace',
-        EncodedKey: 'encoded-key',
+        },
+        MyKeyGroupAF22FD35: {
+          Type: 'AWS::CloudFront::KeyGroup',
+          Properties: {
+            KeyGroupConfig: {
+              Items: [
+                {
+                  Ref: 'MyPublicKey78071F3D',
+                },
+              ],
+              Name: 'StackMyKeyGroupC9D82374',
+            },
+          },
+        },
       },
     });
   });
@@ -55,30 +85,39 @@ describe('KeyGroup', () => {
       items: [
         new PublicKey(stack, 'MyPublicKey', {
           publicKeyName: 'pub-key',
-          encodedKey: 'encoded-key',
+          encodedKey: publicKey1,
           comment: 'Key expiring on 1/1/1984',
         }),
       ],
     });
 
-    expect(stack).toHaveResource('AWS::CloudFront::KeyGroup', {
-      KeyGroupConfig: {
-        Name: 'AcmeKeyGroup',
-        Comment: 'Key group created on 1/1/1984',
-        Items: [
-          {
-            Ref: 'MyPublicKey78071F3D',
+    expectStack(stack).toMatch({
+      Resources: {
+        MyPublicKey78071F3D: {
+          Type: 'AWS::CloudFront::PublicKey',
+          Properties: {
+            PublicKeyConfig: {
+              CallerReference: 'c872d91ae0d2943aad25d4b31f1304d0a62c658ace',
+              EncodedKey: publicKey1,
+              Name: 'pub-key',
+              Comment: 'Key expiring on 1/1/1984',
+            },
           },
-        ],
-      },
-    });
-
-    expect(stack).toHaveResource('AWS::CloudFront::PublicKey', {
-      PublicKeyConfig: {
-        Name: 'pub-key',
-        CallerReference: 'c872d91ae0d2943aad25d4b31f1304d0a62c658ace',
-        EncodedKey: 'encoded-key',
-        Comment: 'Key expiring on 1/1/1984',
+        },
+        MyKeyGroupAF22FD35: {
+          Type: 'AWS::CloudFront::KeyGroup',
+          Properties: {
+            KeyGroupConfig: {
+              Items: [
+                {
+                  Ref: 'MyPublicKey78071F3D',
+                },
+              ],
+              Name: 'AcmeKeyGroup',
+              Comment: 'Key group created on 1/1/1984',
+            },
+          },
+        },
       },
     });
   });
@@ -88,49 +127,60 @@ describe('KeyGroup', () => {
       keyGroupName: 'AcmeKeyGroup',
       comment: 'Key group created on 1/1/1984',
       items: [
-        new PublicKey(stack, 'MyPublicKey1', {
+        new PublicKey(stack, 'BingoKey', {
           publicKeyName: 'Bingo-Key',
-          encodedKey: 'encoded-key',
+          encodedKey: publicKey1,
           comment: 'Key expiring on 1/1/1984',
         }),
-        new PublicKey(stack, 'MyPublicKey2', {
+        new PublicKey(stack, 'RollyKey', {
           publicKeyName: 'Rolly-Key',
-          encodedKey: 'encoded-key',
+          encodedKey: publicKey2,
           comment: 'Key expiring on 1/1/1984',
         }),
       ],
     });
 
-    expect(stack).toHaveResource('AWS::CloudFront::KeyGroup', {
-      KeyGroupConfig: {
-        Name: 'AcmeKeyGroup',
-        Comment: 'Key group created on 1/1/1984',
-        Items: [
-          {
-            Ref: 'MyPublicKey153715628',
+    expectStack(stack).toMatch({
+      Resources: {
+        BingoKeyCBEC786C: {
+          Type: 'AWS::CloudFront::PublicKey',
+          Properties: {
+            PublicKeyConfig: {
+              CallerReference: 'c847cb3dc23f619c0a1e400a44afaf1060d27a1d1a',
+              EncodedKey: publicKey1,
+              Name: 'Bingo-Key',
+              Comment: 'Key expiring on 1/1/1984',
+            },
           },
-          {
-            Ref: 'MyPublicKey23469100D',
+        },
+        RollyKey83F8BC5B: {
+          Type: 'AWS::CloudFront::PublicKey',
+          Properties: {
+            PublicKeyConfig: {
+              CallerReference: 'c83a16945c386bf6cd88a3aaa1aa603eeb4b6c6c57',
+              EncodedKey: publicKey2,
+              Name: 'Rolly-Key',
+              Comment: 'Key expiring on 1/1/1984',
+            },
           },
-        ],
-      },
-    });
-
-    expect(stack).toHaveResource('AWS::CloudFront::PublicKey', {
-      PublicKeyConfig: {
-        Name: 'Bingo-Key',
-        CallerReference: 'c81ef73d09656cdf6d0893f1bfb461fa3c13d1b3bb',
-        EncodedKey: 'encoded-key',
-        Comment: 'Key expiring on 1/1/1984',
-      },
-    });
-
-    expect(stack).toHaveResource('AWS::CloudFront::PublicKey', {
-      PublicKeyConfig: {
-        Name: 'Rolly-Key',
-        CallerReference: 'c8730c508b0cf6227f78d85a808a7e2eb2561375ea',
-        EncodedKey: 'encoded-key',
-        Comment: 'Key expiring on 1/1/1984',
+        },
+        MyKeyGroupAF22FD35: {
+          Type: 'AWS::CloudFront::KeyGroup',
+          Properties: {
+            KeyGroupConfig: {
+              Items: [
+                {
+                  Ref: 'BingoKeyCBEC786C',
+                },
+                {
+                  Ref: 'RollyKey83F8BC5B',
+                },
+              ],
+              Name: 'AcmeKeyGroup',
+              Comment: 'Key group created on 1/1/1984',
+            },
+          },
+        },
       },
     });
   });

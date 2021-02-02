@@ -1,4 +1,4 @@
-import { IResource, Names, Resource } from '@aws-cdk/core';
+import { IResource, Names, Resource, Token } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnPublicKey } from './cloudfront.generated';
 
@@ -55,6 +55,10 @@ export class PublicKey extends Resource implements IPublicKey {
 
   constructor(scope: Construct, id: string, props: PublicKeyProps) {
     super(scope, id);
+
+    if (!Token.isUnresolved(props.encodedKey) && !/^-----BEGIN PUBLIC KEY-----/.test(props.encodedKey)) {
+      throw new Error('Invalid public key.');
+    }
 
     const resource = new CfnPublicKey(this, 'Resource', {
       publicKeyConfig: {
