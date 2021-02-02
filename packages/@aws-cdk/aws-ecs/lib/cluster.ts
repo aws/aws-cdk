@@ -99,6 +99,8 @@ export interface ClusterProps {
 
   /**
    * The default capacity provider strategy for the cluster.
+   *
+   * @default - no default strategy
    */
   readonly defaultCapacityProviderStrategy?: CapacityProviderStrategyItem[];
 }
