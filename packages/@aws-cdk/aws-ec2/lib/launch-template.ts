@@ -2,7 +2,6 @@ import * as iam from '@aws-cdk/aws-iam';
 
 import {
   Annotations,
-  CfnTag,
   Duration,
   Expiration,
   Fn,
@@ -191,43 +190,6 @@ export interface LaunchTemplateSpotOptions {
 };
 
 /**
- * The types of resource tags that can be set on a launch template.
- */
-export enum LaunchTemplateTagResourceType {
-  // dev-note: Full list at https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-tagspecification.html#cfn-ec2-launchtemplate-tagspecification-resourcetype
-  // These are the only ones from the list that presently support tag on create.
-
-  /**
-   * EC2 Instances.
-   */
-  INSTANCE = 'instance',
-
-  /**
-   * EBS Volumes.
-   */
-  VOLUME = 'volume',
-}
-
-/**
- * Interface for defining the tag specification of a LaunchTemplate.
- */
-export interface LaunchTemplateTagSpecification {
-  /**
-   * The types of resources that are tagged with the given tags. Note that there are
-   * restrictions regarding which resources can be tagged when created. See the following
-   * for additional information.
-   *
-   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-tagspecification.html#cfn-ec2-launchtemplate-tagspecification-resourcetype
-   */
-  readonly resourceTypes: LaunchTemplateTagResourceType[];
-
-  /**
-   * The tags to apply to the resources.
-   */
-  readonly tags: CfnTag[];
-}
-
-/**
  * Properties of a LaunchTemplate.
  */
 export interface LaunchTemplateProps {
@@ -368,16 +330,6 @@ export interface LaunchTemplateProps {
    * @default No security group is assigned.
    */
   readonly securityGroup?: ISecurityGroup;
-
-  /**
-   * The tags to apply to the resources during launch. The specified tags are applied to all resources of the given
-   * types launch.
-   * Note that not every resource supports tagging during creation. See https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-tagspecification.html#cfn-ec2-launchtemplate-tagspecification-resourcetype
-   * for additional information on the restrictions.
-   *
-   * @default No tags are specified.
-   */
-  readonly tagSpecifications?: LaunchTemplateTagSpecification[];
 }
 
 /**
@@ -509,8 +461,6 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
    */
   protected readonly _userData?: UserData;
 
-  protected tagSpecifications: LaunchTemplateTagSpecification[];
-
   // =============================================
 
   constructor(scope: Construct, id: string, props: LaunchTemplateProps = {}) {
@@ -584,9 +534,6 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
       }
     }
 
-    this.tagSpecifications = props?.tagSpecifications ?? [];
-    const tagSpecificationsToken = Lazy.any({ produce: () => this.convertTagSpecList(this.tagSpecifications) });
-
     const resource = new CfnLaunchTemplate(this, 'Resource', {
       launchTemplateName: props?.launchTemplateName,
       launchTemplateData: {
@@ -614,7 +561,6 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
           enabled: props.detailedMonitoring,
         } : undefined,
         securityGroupIds: securityGroupsToken,
-        tagSpecifications: tagSpecificationsToken,
         userData: userDataToken,
 
         // Fields not yet implemented:
@@ -643,6 +589,10 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
         // https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata.html#cfn-ec2-launchtemplate-launchtemplatedata-metadataoptions
         // metadataOptions: undefined,
 
+        // https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata.html#cfn-ec2-launchtemplate-launchtemplatedata-tagspecifications
+        // Should be implemented via the Tagging aspect in CDK core. Complication will be that this tagging interface is very unique to LaunchTemplates.
+        // tagSpecification: undefined
+
         // CDK has no abstraction for Network Interfaces yet.
         // networkInterfaces: undefined,
 
@@ -658,13 +608,6 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
     this.latestVersionNumber = resource.attrLatestVersionNumber;
     this.launchTemplateId = resource.ref;
     this.versionNumber = Token.asString(resource.getAtt('LatestVersionNumber'));
-  }
-
-  /**
-   * Adds a given tag specification to this launch template.
-   */
-  public addTagSpecification(specification: LaunchTemplateTagSpecification) {
-    this.tagSpecifications.push(specification);
   }
 
   /**
@@ -726,34 +669,5 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
       throw new Error('userData not available on LaunchTemplate. You must provide a userData or machineImage when constructing the LaunchTemplate to make it available.');
     }
     return this._userData;
-  }
-
-  /**
-   * Convert the tag specification from the input form into the form required of the
-   * Launch Template L1 construct.
-   */
-  protected convertTagSpecList(tagSpecifications?: LaunchTemplateTagSpecification[]): CfnLaunchTemplate.TagSpecificationProperty[] | undefined {
-    if (tagSpecifications === undefined) {
-      return undefined;
-    }
-
-    let tagMapping: { [key: string]: any } = {};
-    tagSpecifications.forEach(spec => {
-      spec.resourceTypes.forEach(res => {
-        tagMapping[res] = tagMapping[res] ?? [];
-        tagMapping[res] = tagMapping[res].concat(spec.tags);
-      });
-    });
-
-    let result = Object.keys(tagMapping)
-      .filter(res => tagMapping[res].length > 0)
-      .map(resourceType => {
-        return {
-          resourceType: resourceType,
-          tags: tagMapping[resourceType],
-        };
-      });
-
-    return result.length > 0 ? result : undefined;
   }
 }
