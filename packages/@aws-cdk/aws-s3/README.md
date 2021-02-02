@@ -67,8 +67,6 @@ assert(bucket.encryptionKey === myKmsKey);
 Enable KMS-SSE encryption via [S3 Bucket Keys](https://docs.aws.amazon.com/AmazonS3/latest/dev/bucket-key.html):
 
 ```ts
-const myKmsKey = new kms.Key(this, 'MyKey');
-
 const bucket = new Bucket(this, 'MyEncryptedBucket', {
     encryption: BucketEncryption.KMS,
     bucketKeyEnabled: true
