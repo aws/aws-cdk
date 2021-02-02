@@ -56,9 +56,19 @@ export enum IgnoreMode {
    * context flag is set.
    */
   DOCKER = 'docker'
-}
+};
 
-interface FileOptions {
+/**
+ * Obtains applied when copying directories into the staging location.
+ */
+export interface CopyOptions {
+  /**
+   * A strategy for how to handle symlinks.
+   *
+   * @default SymlinkFollowMode.NEVER
+   */
+  readonly follow?: SymlinkFollowMode;
+
   /**
    * Glob patterns to exclude from the copy.
    *
@@ -75,30 +85,9 @@ interface FileOptions {
 }
 
 /**
- * Options applied when copying directories
+ * Options related to calculating source hash.
  */
-export interface CopyOptions extends FileOptions {
-  /**
-   * A strategy for how to handle symlinks.
-   *
-   * @default SymlinkFollowMode.NEVER
-   */
-  readonly follow?: SymlinkFollowMode;
-}
-
-/**
- * Options applied when copying directories into the staging location.
- */
-export interface FileCopyOptions extends FileOptions {
-  /**
-   * A strategy for how to handle symlinks.
-   *
-   * @default SymlinkFollowMode.NEVER
-   */
-  readonly followSymlinks?: SymlinkFollowMode;
-}
-
-interface ExtraHashOptions {
+export interface FingerprintOptions extends CopyOptions {
   /**
    * Extra information to encode into the fingerprint (e.g. build instructions
    * and other inputs)
@@ -106,16 +95,4 @@ interface ExtraHashOptions {
    * @default - hash is only based on source content
    */
   readonly extraHash?: string;
-}
-
-/**
- * Options related to calculating source hash.
- */
-export interface FingerprintOptions extends CopyOptions, ExtraHashOptions {
-}
-
-/**
- * Options related to calculating source hash.
- */
-export interface FileFingerprintOptions extends FileCopyOptions, ExtraHashOptions {
 }
