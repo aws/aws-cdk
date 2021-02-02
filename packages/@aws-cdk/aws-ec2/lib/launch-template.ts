@@ -8,6 +8,8 @@ import {
   IResource,
   Lazy,
   Resource,
+  TagManager,
+  TagType,
   Tags,
   Token,
 } from '@aws-cdk/core';
@@ -428,6 +430,11 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
    */
   public readonly latestVersionNumber: string;
 
+  /**
+   * TagManager for tagging support.
+   */
+  protected readonly tags: TagManager;
+
   // =============================================
   //   Private/protected data members
 
@@ -534,6 +541,32 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
       }
     }
 
+    this.tags = new TagManager(TagType.KEY_VALUE, 'AWS::EC2::LaunchTemplate');
+    const tagsToken = Lazy.any({
+      produce: () => {
+        if (this.tags.hasTags()) {
+          const renderedTags = this.tags.renderTags();
+          const lowerCaseRenderedTags = renderedTags.map( (tag: { [key: string]: string}) => {
+            return {
+              key: tag.Key,
+              value: tag.Value,
+            };
+          });
+          return [
+            {
+              resourceType: 'instance',
+              tags: lowerCaseRenderedTags,
+            },
+            {
+              resourceType: 'volume',
+              tags: lowerCaseRenderedTags,
+            },
+          ];
+        }
+        return undefined;
+      },
+    });
+
     const resource = new CfnLaunchTemplate(this, 'Resource', {
       launchTemplateName: props?.launchTemplateName,
       launchTemplateData: {
@@ -561,6 +594,7 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
           enabled: props.detailedMonitoring,
         } : undefined,
         securityGroupIds: securityGroupsToken,
+        tagSpecifications: tagsToken,
         userData: userDataToken,
 
         // Fields not yet implemented:

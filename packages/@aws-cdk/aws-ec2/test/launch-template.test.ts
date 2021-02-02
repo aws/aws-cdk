@@ -15,6 +15,7 @@ import {
   Duration,
   Expiration,
   Stack,
+  Tags,
 } from '@aws-cdk/core';
 import {
   AmazonLinuxImage,
@@ -55,7 +56,28 @@ describe('LaunchTemplate', () => {
     // to ensure that only the bare minimum of properties have values when no properties
     // are given to a LaunchTemplate.
     expectCDK(stack).to(haveResource('AWS::EC2::LaunchTemplate', {
-      LaunchTemplateData: {},
+      LaunchTemplateData: {
+        TagSpecifications: [
+          {
+            ResourceType: 'instance',
+            Tags: [
+              {
+                Key: 'Name',
+                Value: 'Default/Template',
+              },
+            ],
+          },
+          {
+            ResourceType: 'volume',
+            Tags: [
+              {
+                Key: 'Name',
+                Value: 'Default/Template',
+              },
+            ],
+          },
+        ],
+      },
     }));
     expectCDK(stack).notTo(haveResource('AWS::IAM::InstanceProfile'));
     expect(() => { template.grantPrincipal; }).toThrow();
@@ -209,6 +231,26 @@ describe('LaunchTemplate', () => {
         IamInstanceProfile: {
           Arn: stack.resolve((template.node.findChild('Profile') as CfnInstanceProfile).getAtt('Arn')),
         },
+        TagSpecifications: [
+          {
+            ResourceType: 'instance',
+            Tags: [
+              {
+                Key: 'Name',
+                Value: 'Default/Template',
+              },
+            ],
+          },
+          {
+            ResourceType: 'volume',
+            Tags: [
+              {
+                Key: 'Name',
+                Value: 'Default/Template',
+              },
+            ],
+          },
+        ],
       },
     }));
     expect(template.role).toBeDefined();
@@ -427,6 +469,48 @@ describe('LaunchTemplate', () => {
     expect(template.connections).toBeDefined();
     expect(template.connections.securityGroups).toHaveLength(1);
     expect(template.connections.securityGroups[0]).toBe(sg);
+  });
+
+  test('Adding tags', () => {
+    // GIVEN
+    const template = new LaunchTemplate(stack, 'Template');
+
+    // WHEN
+    Tags.of(template).add('TestKey', 'TestValue');
+
+    // THEN
+    expectCDK(stack).to(haveResourceLike('AWS::EC2::LaunchTemplate', {
+      LaunchTemplateData: {
+        TagSpecifications: [
+          {
+            ResourceType: 'instance',
+            Tags: [
+              {
+                Key: 'Name',
+                Value: 'Default/Template',
+              },
+              {
+                Key: 'TestKey',
+                Value: 'TestValue',
+              },
+            ],
+          },
+          {
+            ResourceType: 'volume',
+            Tags: [
+              {
+                Key: 'Name',
+                Value: 'Default/Template',
+              },
+              {
+                Key: 'TestKey',
+                Value: 'TestValue',
+              },
+            ],
+          },
+        ],
+      },
+    }));
   });
 });
 
