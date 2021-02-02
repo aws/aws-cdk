@@ -37,7 +37,7 @@
         },
         "Type": "COGNITO_USER_POOLS",
         "IdentitySource": "method.request.header.Authorization",
-        "Name": "CognitoAuthorizerIntegmyauthorizer504EF846",
+        "Name": "CognitoUserPoolsAuthorizerIntegmyauthorizer10C804C1",
         "ProviderARNs": [
           {
             "Fn::GetAtt": [
@@ -99,7 +99,7 @@
         "myrestapi551C8392"
       ]
     },
-    "myrestapiDeployment419B1464d5e74623e766c66025e2c2348a0fdcc8": {
+    "myrestapiDeployment419B1464b903292b53d7532ca4296973bcb95b1a": {
       "Type": "AWS::ApiGateway::Deployment",
       "Properties": {
         "RestApiId": {
@@ -118,7 +118,7 @@
           "Ref": "myrestapi551C8392"
         },
         "DeploymentId": {
-          "Ref": "myrestapiDeployment419B1464d5e74623e766c66025e2c2348a0fdcc8"
+          "Ref": "myrestapiDeployment419B1464b903292b53d7532ca4296973bcb95b1a"
         },
         "StageName": "prod"
       }
@@ -141,8 +141,22 @@
           "Ref": "myauthorizer23CB99DD"
         },
         "Integration": {
+          "IntegrationResponses": [
+            {
+              "StatusCode": "200"
+            }
+          ],
+          "PassthroughBehavior": "NEVER",
+          "RequestTemplates": {
+            "application/json": "{ \"statusCode\": 200 }"
+          },
           "Type": "MOCK"
-        }
+        },
+        "MethodResponses": [
+          {
+            "StatusCode": "200"
+          }
+        ]
       }
     }
   },

@@ -7,9 +7,9 @@ import { AuthorizationType } from '../method';
 import { IRestApi } from '../restapi';
 
 /**
- * Properties for CognitoAuthorizer
+ * Properties for CognitoUserPoolsAuthorizer
  */
-export interface CognitoAuthorizerProps {
+export interface CognitoUserPoolsAuthorizerProps {
   /**
    * An optional human friendly name for the authorizer. Note that, this is not the primary identifier of the authorizer.
    *
@@ -44,7 +44,7 @@ export interface CognitoAuthorizerProps {
  *
  * @resource AWS::ApiGateway::Authorizer
  */
-export class CognitoAuthorizer extends Authorizer implements IAuthorizer {
+export class CognitoUserPoolsAuthorizer extends Authorizer implements IAuthorizer {
   /**
    * The id of the authorizer.
    * @attribute
@@ -64,7 +64,7 @@ export class CognitoAuthorizer extends Authorizer implements IAuthorizer {
 
   private restApiId?: string;
 
-  constructor(scope: Construct, id: string, props: CognitoAuthorizerProps) {
+  constructor(scope: Construct, id: string, props: CognitoUserPoolsAuthorizerProps) {
     super(scope, id);
 
     const restApiId = this.lazyRestApiId();

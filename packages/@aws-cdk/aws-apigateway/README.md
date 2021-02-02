@@ -32,7 +32,7 @@ running on AWS Lambda, or any web application.
   - [IAM-based authorizer](#iam-based-authorizer)
   - [Lambda-based token authorizer](#lambda-based-token-authorizer)
   - [Lambda-based request authorizer](#lambda-based-request-authorizer)
-  - [Cognito User Pools based authorizer](#cognito-user-pools-based-authorizer)
+  - [Cognito User Pools authorizer](#cognito-user-pools-authorizer)
 - [Mutual TLS](#mutal-tls-mtls)
 - [Deployments](#deployments)
   - [Deep dive: Invalidation of deployments](#deep-dive-invalidation-of-deployments)
@@ -581,7 +581,7 @@ Authorizers can also be passed via the `defaultMethodOptions` property within th
 explicitly overridden, the specified defaults will be applied across all `Method`s across the `RestApi` or across all `Resource`s,
 depending on where the defaults were specified.
 
-### Cognito User Pools based authorizer
+### Cognito User Pools authorizer
 
 API Gateway also allows [Amazon Cognito user pools as authorizer](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-integrate-with-cognito.html)
 

@@ -1,7 +1,7 @@
 import '@aws-cdk/assert/jest';
 import * as cognito from '@aws-cdk/aws-cognito';
 import { Duration, Stack } from '@aws-cdk/core';
-import { AuthorizationType, CognitoAuthorizer, RestApi } from '../../lib';
+import { AuthorizationType, CognitoUserPoolsAuthorizer, RestApi } from '../../lib';
 
 describe('Cognito Authorizer', () => {
   test('default cognito authorizer', () => {
@@ -10,7 +10,7 @@ describe('Cognito Authorizer', () => {
     const userPool = new cognito.UserPool(stack, 'UserPool');
 
     // WHEN
-    const authorizer = new CognitoAuthorizer(stack, 'myauthorizer', {
+    const authorizer = new CognitoUserPoolsAuthorizer(stack, 'myauthorizer', {
       cognitoUserPools: [userPool],
     });
 
@@ -38,7 +38,7 @@ describe('Cognito Authorizer', () => {
     const userPool2 = new cognito.UserPool(stack, 'UserPool2');
 
     // WHEN
-    const authorizer = new CognitoAuthorizer(stack, 'myauthorizer', {
+    const authorizer = new CognitoUserPoolsAuthorizer(stack, 'myauthorizer', {
       cognitoUserPools: [userPool1, userPool2],
       identitySource: 'method.request.header.whoami',
       authorizerName: 'myauthorizer',
