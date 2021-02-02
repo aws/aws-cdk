@@ -31,10 +31,8 @@ class TestStack extends cdk.Stack {
     const cluster = new DatabaseCluster(this, 'Database', {
       vpc,
       vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE },
-      instanceProps: {
-        instanceType: InstanceType.R5_LARGE,
-      },
-      parameterGroup: params,
+      instanceType: InstanceType.R5_LARGE,
+      clusterParameterGroup: params,
       kmsKey,
       removalPolicy: cdk.RemovalPolicy.DESTROY,
     });

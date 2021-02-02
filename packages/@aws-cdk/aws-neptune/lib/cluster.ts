@@ -1,14 +1,40 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
-import { RemovalPolicy, Resource, Token } from '@aws-cdk/core';
+import { Duration, IResource, RemovalPolicy, Resource, Token } from '@aws-cdk/core';
 import { Construct } from 'constructs';
-import { DatabaseClusterAttributes, IDatabaseCluster } from './cluster-ref';
 import { Endpoint } from './endpoint';
+import { InstanceType } from './instance';
 import { CfnDBCluster, CfnDBInstance } from './neptune.generated';
-import { IClusterParameterGroup } from './parameter-group';
-import { BackupProps, InstanceProps } from './props';
+import { IClusterParameterGroup, IParameterGroup } from './parameter-group';
 import { ISubnetGroup, SubnetGroup } from './subnet-group';
+
+/**
+ * Backup configuration for Neptune databases
+ *
+ * @default - The retention period for automated backups is 1 day.
+ * The preferred backup window will be a 30-minute window selected at random
+ * from an 8-hour block of time for each AWS Region.
+ */
+export interface BackupProps {
+
+  /**
+   * How many days to retain the backup
+   */
+  readonly retention: Duration;
+
+  /**
+   * A daily time range in 24-hours UTC format in which backups preferably execute.
+   *
+   * Must be at least 30 minutes long.
+   *
+   * Example: '01:00-02:00'
+   *
+   * @default - a 30-minute window selected at random from an 8-hour block of
+   * time for each AWS Region. To see the time blocks available, see
+   */
+  readonly preferredWindow?: string;
+}
 
 /**
  * Properties for a new database cluster
@@ -76,9 +102,9 @@ export interface DatabaseClusterProps {
   readonly instanceIdentifierBase?: string;
 
   /**
-   * Settings for the individual instances that are launched
+   * What type of instance to start for the replicas
    */
-  readonly instanceProps: InstanceProps;
+  readonly instanceType: InstanceType;
 
   /**
    * A list of AWS Identity and Access Management (IAM) role that can be used by the cluster to access other AWS services.
@@ -118,7 +144,14 @@ export interface DatabaseClusterProps {
    *
    * @default - No parameter group.
    */
-  readonly parameterGroup?: IClusterParameterGroup;
+  readonly clusterParameterGroup?: IClusterParameterGroup;
+
+  /**
+   * The DB parameter group to associate with the instance.
+   *
+   * @default no parameter group
+   */
+  readonly parameterGroup?: IParameterGroup;
 
   /**
    * Existing subnet group for the cluster.
@@ -160,6 +193,59 @@ export interface DatabaseClusterProps {
 }
 
 /**
+ * Create a clustered database with a given number of instances.
+ */
+export interface IDatabaseCluster extends IResource, ec2.IConnectable {
+  /**
+   * Identifier of the cluster
+   */
+  readonly clusterIdentifier: string;
+
+  /**
+   * The endpoint to use for read/write operations
+   * @attribute Endpoint,Port
+   */
+  readonly clusterEndpoint: Endpoint;
+
+  /**
+   * Endpoint to use for load-balanced read-only operations.
+   * @attribute ReadEndpoint
+   */
+  readonly clusterReadEndpoint: Endpoint;
+}
+
+/**
+ * Properties that describe an existing cluster instance
+ */
+export interface DatabaseClusterAttributes {
+  /**
+   * The database port
+   */
+  readonly port: number;
+
+  /**
+   * The security group of the database cluster
+   */
+  readonly securityGroup: ec2.ISecurityGroup;
+
+  /**
+   * Identifier for the cluster
+   */
+  readonly clusterIdentifier: string;
+
+  /**
+   * Cluster endpoint address
+   */
+  readonly clusterEndpointAddress: string;
+
+  /**
+   * Reader endpoint address
+   */
+  readonly readerEndpointAddress: string;
+}
+
+
+/**
  * A new or imported clustered database.
  */
 abstract class DatabaseClusterBase extends Resource implements IDatabaseCluster {
@@ -182,16 +268,6 @@ abstract class DatabaseClusterBase extends Resource implements IDatabaseCluster 
    * Access to the network connections
    */
   public abstract readonly connections: ec2.Connections;
-
-  /**
-   * Identifiers of the replicas
-   */
-  public abstract readonly instanceIdentifiers: string[];
-
-  /**
-   * Endpoints which address each individual replica.
-   */
-  public abstract readonly instanceEndpoints: Endpoint[];
 }
 
 /**
@@ -218,10 +294,8 @@ export class DatabaseCluster extends DatabaseClusterBase {
         defaultPort: this.defaultPort,
       });
       public readonly clusterIdentifier = attrs.clusterIdentifier;
-      public readonly instanceIdentifiers = attrs.instanceIdentifiers;
       public readonly clusterEndpoint = new Endpoint(attrs.clusterEndpointAddress, attrs.port);
       public readonly clusterReadEndpoint = new Endpoint(attrs.readerEndpointAddress, attrs.port);
-      public readonly instanceEndpoints = attrs.instanceEndpointAddresses.map(a => new Endpoint(a, attrs.port));
     }
 
     return new Import(scope, id);
@@ -255,16 +329,6 @@ export class DatabaseCluster extends DatabaseClusterBase {
   public readonly connections: ec2.Connections;
 
   /**
-   * Identifiers of the replicas
-   */
-  public readonly instanceIdentifiers: string[] = [];
-
-  /**
-   * Endpoints which address each individual replica.
-   */
-  public readonly instanceEndpoints: Endpoint[] = [];
-
-  /**
    * The VPC where the DB subnet group is created.
    */
   public readonly vpc: ec2.IVpc;
@@ -283,6 +347,16 @@ export class DatabaseCluster extends DatabaseClusterBase {
    * Subnet group used by the DB
    */
   public readonly subnetGroup: ISubnetGroup;
+
+  /**
+   * Identifiers of the instance
+   */
+  public readonly instanceIdentifiers: string[] = [];
+
+  /**
+   * Endpoints which address each individual instance.
+   */
+  public readonly instanceEndpoints: Endpoint[] = [];
 
   constructor(scope: Construct, id: string, props: DatabaseClusterProps) {
     super(scope, id);
@@ -332,7 +406,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
       dbSubnetGroupName: this.subnetGroup.subnetGroupName,
       port: props.port,
       vpcSecurityGroupIds: this.securityGroups.map(sg => sg.securityGroupId),
-      dbClusterParameterGroupName: props.parameterGroup?.clusterParameterGroupName,
+      dbClusterParameterGroupName: props.clusterParameterGroup?.clusterParameterGroupName,
       deletionProtection: deletionProtection,
       associatedRoles: props.associatedRoles ? props.associatedRoles.map(role => ({ roleArn: role.roleArn })) : undefined,
       iamAuthEnabled: props.iamAuthEnabled,
@@ -373,17 +447,17 @@ export class DatabaseCluster extends DatabaseClusterBase {
         dbClusterIdentifier: cluster.ref,
         dbInstanceIdentifier: instanceIdentifier,
         // Instance properties
-        dbInstanceClass: props.instanceProps.instanceType,
-        dbParameterGroupName: props.instanceProps.parameterGroup?.parameterGroupName,
-      });
-
-      instance.applyRemovalPolicy(props.removalPolicy, {
-        applyToUpdateReplacePolicy: true,
+        dbInstanceClass: props.instanceType,
+        dbParameterGroupName: props.parameterGroup?.parameterGroupName,
       });
 
       // We must have a dependency on the NAT gateway provider here to create
       // things in the right order.
       instance.node.addDependency(internetConnectivityEstablished);
+
+      instance.applyRemovalPolicy(props.removalPolicy, {
+        applyToUpdateReplacePolicy: true,
+      });
 
       this.instanceIdentifiers.push(instance.ref);
       this.instanceEndpoints.push(new Endpoint(instance.attrEndpoint, port));

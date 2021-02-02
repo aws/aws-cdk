@@ -16,9 +16,7 @@ describe('DatabaseCluster', () => {
     // WHEN
     new DatabaseCluster(stack, 'Database', {
       vpc,
-      instanceProps: {
-        instanceType: InstanceType.R5_LARGE,
-      },
+      instanceType: InstanceType.R5_LARGE,
     });
 
     // THEN
@@ -55,9 +53,7 @@ describe('DatabaseCluster', () => {
     new DatabaseCluster(stack, 'Database', {
       instances: 1,
       vpc,
-      instanceProps: {
-        instanceType: InstanceType.R5_LARGE,
-      },
+      instanceType: InstanceType.R5_LARGE,
     });
 
     // THEN
@@ -77,9 +73,7 @@ describe('DatabaseCluster', () => {
       new DatabaseCluster(stack, 'Database', {
         instances: 0,
         vpc,
-        instanceProps: {
-          instanceType: InstanceType.R5_LARGE,
-        },
+        instanceType: InstanceType.R5_LARGE,
       });
     }).toThrowError('At least one instance is required');
   });
@@ -99,9 +93,7 @@ describe('DatabaseCluster', () => {
         vpcSubnets: {
           subnetType: ec2.SubnetType.PRIVATE,
         },
-        instanceProps: {
-          instanceType: InstanceType.R5_LARGE,
-        },
+        instanceType: InstanceType.R5_LARGE,
       });
     }).toThrowError('Cluster requires at least 2 subnets, got 1');
   });
@@ -119,9 +111,7 @@ describe('DatabaseCluster', () => {
       instances: 1,
       vpc,
       securityGroups: [sg],
-      instanceProps: {
-        instanceType: InstanceType.R5_LARGE,
-      },
+      instanceType: InstanceType.R5_LARGE,
     });
 
     // THEN
@@ -145,10 +135,8 @@ describe('DatabaseCluster', () => {
     });
     new DatabaseCluster(stack, 'Database', {
       vpc,
-      instanceProps: {
-        instanceType: InstanceType.R5_LARGE,
-      },
-      parameterGroup: group,
+      instanceType: InstanceType.R5_LARGE,
+      clusterParameterGroup: group,
     });
 
     // THEN
@@ -171,9 +159,7 @@ describe('DatabaseCluster', () => {
     new DatabaseCluster(stack, 'Database', {
       vpc,
       associatedRoles: [role],
-      instanceProps: {
-        instanceType: InstanceType.R5_LARGE,
-      },
+      instanceType: InstanceType.R5_LARGE,
     });
 
     // THEN
@@ -200,9 +186,7 @@ describe('DatabaseCluster', () => {
     new DatabaseCluster(stack, 'Database', {
       vpc,
       iamAuthEnabled: true,
-      instanceProps: {
-        instanceType: InstanceType.R5_LARGE,
-      },
+      instanceType: InstanceType.R5_LARGE,
     });
 
     // THEN
@@ -221,10 +205,8 @@ describe('DatabaseCluster', () => {
 
     new DatabaseCluster(stack, 'Database', {
       vpc,
-      instanceProps: {
-        instanceType: InstanceType.R5_LARGE,
-      },
-      parameterGroup: group,
+      instanceType: InstanceType.R5_LARGE,
+      clusterParameterGroup: group,
     });
 
     // THEN
@@ -241,9 +223,7 @@ describe('DatabaseCluster', () => {
     // WHEN
     new DatabaseCluster(stack, 'Database', {
       vpc,
-      instanceProps: {
-        instanceType: InstanceType.R5_LARGE,
-      },
+      instanceType: InstanceType.R5_LARGE,
       kmsKey: new kms.Key(stack, 'Key'),
     });
 
@@ -267,9 +247,7 @@ describe('DatabaseCluster', () => {
     // WHEN
     new DatabaseCluster(stack, 'Database', {
       vpc,
-      instanceProps: {
-        instanceType: InstanceType.R5_LARGE,
-      },
+      instanceType: InstanceType.R5_LARGE,
     });
 
     // THEN
@@ -287,9 +265,7 @@ describe('DatabaseCluster', () => {
     function action() {
       new DatabaseCluster(stack, 'Database', {
         vpc,
-        instanceProps: {
-          instanceType: InstanceType.R5_LARGE,
-        },
+        instanceType: InstanceType.R5_LARGE,
         kmsKey: new kms.Key(stack, 'Key'),
         storageEncrypted: false,
       });
@@ -307,9 +283,7 @@ describe('DatabaseCluster', () => {
     // WHEN
     const cluster = new DatabaseCluster(stack, 'Database', {
       vpc,
-      instanceProps: {
-        instanceType: InstanceType.R5_LARGE,
-      },
+      instanceType: InstanceType.R5_LARGE,
     });
 
     // THEN
@@ -325,9 +299,7 @@ describe('DatabaseCluster', () => {
     const instanceIdentifierBase = 'instanceidentifierbase-';
     new DatabaseCluster(stack, 'Database', {
       vpc,
-      instanceProps: {
-        instanceType: InstanceType.R5_LARGE,
-      },
+      instanceType: InstanceType.R5_LARGE,
       instanceIdentifierBase,
     });
 
@@ -346,9 +318,7 @@ describe('DatabaseCluster', () => {
     const clusterIdentifier = 'clusteridentifier-';
     new DatabaseCluster(stack, 'Database', {
       vpc,
-      instanceProps: {
-        instanceType: InstanceType.R5_LARGE,
-      },
+      instanceType: InstanceType.R5_LARGE,
       dbClusterName: clusterIdentifier,
     });
 
@@ -366,8 +336,6 @@ describe('DatabaseCluster', () => {
     const cluster = DatabaseCluster.fromDatabaseClusterAttributes(stack, 'Database', {
       clusterEndpointAddress: 'addr',
       clusterIdentifier: 'identifier',
-      instanceEndpointAddresses: ['addr'],
-      instanceIdentifiers: ['identifier'],
       port: 3306,
       readerEndpointAddress: 'reader-address',
       securityGroup: ec2.SecurityGroup.fromSecurityGroupId(stack, 'SG', 'sg-123456789', {
@@ -379,7 +347,6 @@ describe('DatabaseCluster', () => {
     expect(cluster.clusterEndpoint.hostname).toEqual('addr');
     expect(cluster.clusterEndpoint.port).toEqual(3306);
     expect(cluster.clusterIdentifier).toEqual('identifier');
-    expect(cluster.instanceIdentifiers).toEqual(['identifier']);
     expect(cluster.clusterReadEndpoint.hostname).toEqual('reader-address');
   });
 
@@ -390,8 +357,6 @@ describe('DatabaseCluster', () => {
     const cluster = DatabaseCluster.fromDatabaseClusterAttributes(stack, 'Database', {
       clusterEndpointAddress: 'addr',
       clusterIdentifier: 'identifier',
-      instanceEndpointAddresses: ['addr'],
-      instanceIdentifiers: ['identifier'],
       port: 3306,
       readerEndpointAddress: 'reader-address',
       securityGroup: ec2.SecurityGroup.fromSecurityGroupId(stack, 'SG', 'sg-123456789', {
@@ -416,9 +381,7 @@ describe('DatabaseCluster', () => {
     // WHEN
     new DatabaseCluster(stack, 'Database', {
       vpc,
-      instanceProps: {
-        instanceType: InstanceType.R5_LARGE,
-      },
+      instanceType: InstanceType.R5_LARGE,
       backup: {
         retention: cdk.Duration.days(20),
       },
@@ -438,9 +401,7 @@ describe('DatabaseCluster', () => {
     // WHEN
     new DatabaseCluster(stack, 'Database', {
       vpc,
-      instanceProps: {
-        instanceType: InstanceType.R5_LARGE,
-      },
+      instanceType: InstanceType.R5_LARGE,
       backup: {
         retention: cdk.Duration.days(20),
         preferredWindow: '07:34-08:04',
@@ -462,9 +423,7 @@ describe('DatabaseCluster', () => {
     // WHEN
     new DatabaseCluster(stack, 'Database', {
       vpc,
-      instanceProps: {
-        instanceType: InstanceType.R5_LARGE,
-      },
+      instanceType: InstanceType.R5_LARGE,
       preferredMaintenanceWindow: '07:34-08:04',
     });
 
