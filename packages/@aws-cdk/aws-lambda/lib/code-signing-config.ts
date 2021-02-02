@@ -11,13 +11,13 @@ export enum UntrustedArtifactOnDeployment {
 export interface ICodeSigningConfig extends IResource {
   /**
    * The ARN of Code Signing Config
-   * @Attribute CodeSigningConfigArn
+   * @attribute CodeSigningConfigArn
    */
   readonly codeSigningConfigArn: string;
 
   /**
    * The id of Code Signing Config
-   * @Attribute CodeSigningConfigId
+   * @attribute CodeSigningConfigId
    */
   readonly codeSigningConfigId: string;
 }

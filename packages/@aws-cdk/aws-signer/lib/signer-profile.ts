@@ -4,25 +4,25 @@ import { CfnSigningProfile } from './signer.generated';
 export interface ISigningProfile extends IResource {
   /**
    * The ARN of the signing profile.
-   * @Attribute
+   * @attribute
    */
   readonly signingProfileArn: string;
 
   /**
    * The name of signing profile.
-   * @Attribute
+   * @attribute
    */
   readonly signingProfileName: string;
 
   /**
    * The version of signing profile.
-   * @Attribute
+   * @attribute
    */
   readonly signingProfileVersion: string;
 
   /**
    * The ARN of signing profile version.
-   * @Attribute
+   * @attribute
    */
   readonly signingProfileVersionArn: string;
 }
@@ -37,17 +37,10 @@ class SignatureValidityPeriodProperty {
   readonly type: SignatureValidityPeriodTypes;
   readonly value: number;
 
-  constructor( type: SignatureValidityPeriodTypes, value: number ) {
+  constructor(type: SignatureValidityPeriodTypes, value: number) {
     this.type = type;
     this.value = value;
   }
-}
-
-abstract class SigningProfileBase extends Resource implements ISigningProfile {
-  public abstract readonly signingProfileArn: string;
-  public abstract readonly signingProfileName: string;
-  public abstract readonly signingProfileVersion: string;
-  public abstract readonly signingProfileVersionArn: string;
 }
 
 export interface SigningProfileProps {
@@ -63,7 +56,7 @@ export interface SigningProfileProps {
   readonly signatureValidityPeriod?: SignatureValidityPeriodProperty;
 }
 
-export class SigningProfile extends SigningProfileBase {
+export class SigningProfile extends Resource implements ISigningProfile {
   public readonly signingProfileArn: string;
   public readonly signingProfileName: string;
   public readonly signingProfileVersion: string;
