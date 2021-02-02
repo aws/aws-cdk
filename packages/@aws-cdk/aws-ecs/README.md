@@ -133,15 +133,11 @@ If you omit the property `vpc`, the construct will create a new VPC with two AZs
 
 ### capacity provider
 
-`FARGATE` and `FARGATE_SPOT` capacity providers are supported for the cluster. To enable fargate capacity providers for the cluster:
+`FARGATE` and `FARGATE_SPOT` capacity providers are supported for the cluster. To enable fargate capacity providers for the cluster, just define the default capacity provider strategy with the fargate providers:
 
 ```ts
 new ecs.Cluster(stack, 'FargateCluster', {
   vpc,
-  capacityProvider: [
-    ecs.FargateCapacityProviderType.FARGATE,
-    ecs.FargateCapacityProviderType.FARGATE_SPOT,
-  ],
   defaultCapacityProviderStrategy: [
     {
       capacityProvider: ecs.FargateCapacityProviderType.FARGATE,
@@ -154,10 +150,7 @@ new ecs.Cluster(stack, 'FargateCluster', {
     },
   ],
 });
-
 ```
-
-
 
 ### Bottlerocket
 
