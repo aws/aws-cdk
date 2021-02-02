@@ -670,3 +670,45 @@ taskDefinition.addContainer('TheContainer', {
   })
 });
 ```
+
+## CloudMap Service Discovery
+
+To register your ECS service with a CloudMap Service Registry, you may add the
+`cloudMapOptions` property to your service:
+
+```ts
+const service = new ecs.Ec2Service(stack, 'Service', {
+  cluster,
+  taskDefinition,
+  cloudMapOptions: {
+    // Create A records - useful for VPC networking.
+    dnsRecordType: cloudmap.DnsRecordType.A,
+  },
+});
+```
+
+By default `SRV` DNS record types will target the default container and default
+port. However, you may target a different container and port on the same ECS task:
+
+```ts
+// Add a container to the task definition
+const specificContainer = taskDefinition.addContainer(...);
+
+// Add a port mapping
+specificContainer.addPortMappings({
+  containerPort: 7600,
+  protocol: ecs.Protocol.TCP,
+});
+
+new ecs.Ec2Service(stack, 'Service', {
+  cluster,
+  taskDefinition,
+  cloudMapOptions: {
+    // Create SRV records - useful for bridge networking
+    dnsRecordType: cloudmap.DnsRecordType.SRV,
+    // Targets port TCP port 7600 `specificContainer`
+    container: specificContainer,
+    containerPort: 7600,
+  },
+});
+```
