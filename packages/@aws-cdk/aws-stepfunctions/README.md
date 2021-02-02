@@ -194,7 +194,7 @@ values in the execution's JSON state:
 const choice = new stepfunctions.Choice(this, 'Did it work?');
 
 // Add conditions with .when()
-choice.when(stepfunctions.Condition.stringEqual('$.status', 'SUCCESS'), successState);
+choice.when(stepfunctions.Condition.stringEquals('$.status', 'SUCCESS'), successState);
 choice.when(stepfunctions.Condition.numberGreaterThan('$.attempts', 5), failureState);
 
 // Use .otherwise() to indicate what should be done if none of the conditions match
@@ -207,8 +207,8 @@ then ... else` works in a programming language), use the `.afterwards()` method:
 
 ```ts
 const choice = new stepfunctions.Choice(this, 'What color is it?');
-choice.when(stepfunctions.Condition.stringEqual('$.color', 'BLUE'), handleBlueItem);
-choice.when(stepfunctions.Condition.stringEqual('$.color', 'RED'), handleRedItem);
+choice.when(stepfunctions.Condition.stringEquals('$.color', 'BLUE'), handleBlueItem);
+choice.when(stepfunctions.Condition.stringEquals('$.color', 'RED'), handleRedItem);
 choice.otherwise(handleOtherItemColor);
 
 // Use .afterwards() to join all possible paths back together and continue
