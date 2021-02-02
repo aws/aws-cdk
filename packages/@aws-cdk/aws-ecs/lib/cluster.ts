@@ -15,6 +15,40 @@ import { CfnCluster } from './ecs.generated';
 // eslint-disable-next-line
 import { Construct as CoreConstruct } from '@aws-cdk/core';
 
+
+/**
+ * Amazon ECS Capacity Providers for AWS Fargate
+ */
+export enum FargateCapacityProviderType {
+  /**
+   * FARGATE
+   */
+  FARGATE = 'FARGATE',
+  /**
+   * FARGATE_SPOT
+   */
+  FARGATE_SPOT = 'FARGATE_SPOT'
+}
+
+/**
+ * The Capacity Provider strategy
+ */
+export interface CapacityProviderStrategyItem {
+  /**
+   * base capacity
+   * @default - no base capacity
+   */
+  readonly base?: number;
+  /**
+   * weight
+   */
+  readonly weight: number;
+  /**
+   * The capacity provider.
+   */
+  readonly capacityProvider: FargateCapacityProviderType;
+}
+
 /**
  * The properties used to define an ECS cluster.
  */
@@ -54,6 +88,18 @@ export interface ClusterProps {
    * @default - Container Insights will be disabled for this cluser.
    */
   readonly containerInsights?: boolean;
+
+  /**
+   * The capacity providers associated with the cluster.
+   *
+   * @default - no capacity provider for this cluster
+   */
+  readonly capacityProvider?: string[];
+
+  /**
+   * The default capacity provider strategy for the cluster.
+   */
+  readonly defaultCapacityProviderStrategy?: CapacityProviderStrategyItem[];
 }
 
 /**
@@ -137,6 +183,8 @@ export class Cluster extends Resource implements ICluster {
     const cluster = new CfnCluster(this, 'Resource', {
       clusterName: this.physicalName,
       clusterSettings,
+      capacityProviders: props.capacityProvider,
+      defaultCapacityProviderStrategy: props.defaultCapacityProviderStrategy,
     });
 
     this.clusterArn = this.getResourceArnAttribute(cluster.attrArn, {
