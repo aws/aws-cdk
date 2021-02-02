@@ -114,13 +114,6 @@ export interface DatabaseClusterProps {
   readonly associatedRoles?: iam.IRole[];
 
   /**
-   * Indicates whether the DB cluster is IAM auth enabled.
-   *
-   * @default - false, connections to database don't require IAM auth
-   */
-  readonly iamAuthEnabled?: boolean;
-
-  /**
    * Indicates whether the DB cluster should have deletion protection enabled.
    *
    * @default - true if ``removalPolicy`` is RETAIN, false otherwise
@@ -336,7 +329,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
   /**
    * The subnets used by the DB subnet group.
    */
-  public readonly vpcSubnets?: ec2.SubnetSelection;
+  public readonly vpcSubnets: ec2.SubnetSelection;
 
   /**
    * The security groups used by DB cluster.
@@ -409,7 +402,6 @@ export class DatabaseCluster extends DatabaseClusterBase {
       dbClusterParameterGroupName: props.clusterParameterGroup?.clusterParameterGroupName,
       deletionProtection: deletionProtection,
       associatedRoles: props.associatedRoles ? props.associatedRoles.map(role => ({ roleArn: role.roleArn })) : undefined,
-      iamAuthEnabled: props.iamAuthEnabled,
       // Backup
       backupRetentionPeriod: props.backup?.retention?.toDays(),
       preferredBackupWindow: props.backup?.preferredWindow,

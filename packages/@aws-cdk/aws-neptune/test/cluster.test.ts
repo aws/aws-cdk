@@ -177,24 +177,6 @@ describe('DatabaseCluster', () => {
     }));
   });
 
-  test('cluster with iam auth', () => {
-    // GIVEN
-    const stack = testStack();
-    const vpc = new ec2.Vpc(stack, 'VPC');
-
-    // WHEN
-    new DatabaseCluster(stack, 'Database', {
-      vpc,
-      iamAuthEnabled: true,
-      instanceType: InstanceType.R5_LARGE,
-    });
-
-    // THEN
-    expectCDK(stack).to(haveResource('AWS::Neptune::DBCluster', {
-      IamAuthEnabled: true,
-    }));
-  });
-
   test('cluster with imported parameter group', () => {
     // GIVEN
     const stack = testStack();

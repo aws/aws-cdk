@@ -27,14 +27,12 @@ To set up a Neptune database, define a `DatabaseCluster`. You must always launch
 
 ```ts
 const cluster = new DatabaseCluster(this, 'Database', {
-    vpc,
-    instanceProps: {
-        instanceType: InstanceType.R5_LARGE,
-    }
+  vpc,
+  instanceType: InstanceType.R5_LARGE
 });
 ```
 
-Your cluster will be empty by default.
+By default only writer instance is provisioned with this construct.
 
 ## Connecting
 
@@ -50,4 +48,54 @@ attributes:
 
 ```ts
 const writeAddress = cluster.clusterEndpoint.socketAddress;   // "HOSTNAME:PORT"
+```
+
+## Customizing parameters
+
+Neptune allows configuring database behavior by supplying custom parameter groups.  For more details, refer to the
+following link: <https://docs.aws.amazon.com/neptune/latest/userguide/parameters.html>
+
+```ts
+const clusterParams = new ClusterParameterGroup(this, 'ClusterParams', {
+  description: 'Cluster parameter group',
+  parameters: {
+    neptune_enable_audit_log: '1'
+  },
+});
+
+const dbParams = new ParameterGroup(this, 'DbParams', {
+  description: 'Db parameter group',
+  parameters: {
+    neptune_query_timeout: '120000'
+  },
+});
+
+const cluster = new DatabaseCluster(this, 'Database', {
+  vpc,
+  instanceType: InstanceType.R5_LARGE,
+  clusterParameterGroup: clusterParams,
+  parameterGroup: dbParams,
+});
+```
+
+## Adding replicas
+
+`DatabaseCluster` allows launching replicas along with the writer instance. This can be specified using the `instanceCount`
+attribute.
+
+```ts
+const cluster = new DatabaseCluster(this, 'Database', {
+  vpc,
+  instanceType: InstanceType.R5_LARGE,
+  instances: 2
+});
+```
+
+Additionally it is also possible to add replicas using `DatabaseInstance` for an existing cluster.
+
+```ts
+const replica1 = new DatabaseInstance(this, 'Instance', {
+  cluster,
+  instanceType: InstanceType.R5_LARGE
+});
 ```
