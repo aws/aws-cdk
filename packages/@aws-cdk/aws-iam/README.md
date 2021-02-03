@@ -264,6 +264,50 @@ const newPolicy = new Policy(stack, 'MyNewPolicy', {
 });
 ```
 
+## Permissions Boundaries
+
+[Permissions
+Boundaries](https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_boundaries.html)
+can be used as a mechanism to prevent privilege esclation by creating new
+`Role`s. Permissions Boundaries are a Managed Policy, attached to Roles or
+Users, that represent the *maximum* set of permissions they can have. The
+effective set of permissions of a Role (or User) will be the intersection of
+the Identity Policy and the Permissions Boundary attached to the Role (or
+User). Permissions Boundaries are typically created by account
+Administrators, and their use on newly created `Role`s will be enforced by
+IAM policies.
+
+It is possible to attach Permissions Boundaries to all Roles created in a construct
+tree all at once:
+
+```ts
+// This imports an existing policy.
+const boundary = iam.ManagedPolicy.fromManagedPolicyArn(this, 'Boundary', 'arn:aws:iam::123456789012:policy/boundary');
+
+// This creates a new boundary
+const boundary2 = new iam.ManagedPolicy(this, 'Boundary2', {
+  statements: [
+    new iam.PolicyStatement({
+      effect: iam.Effect.DENY,
+      actions: ['iam:*'],
+      resources: ['*'],
+    }),
+  ],
+});
+
+// Directly apply the boundary to a Role you create
+iam.PermissionsBoundary.of(role).apply(boundary);
+
+// Apply the boundary to an Role that was implicitly created for you
+iam.PermissionsBoundary.of(lambdaFunction).apply(boundary);
+
+// Apply the boundary to all Roles in a stack
+iam.PermissionsBoundary.of(stack).apply(boundary);
+
+// Remove a Permissions Boundary that is inherited, for example from the Stack level
+iam.PermissionsBoundary.of(customResource).clear();
+```
+
 ## OpenID Connect Providers
 
 OIDC identity providers are entities in IAM that describe an external identity
