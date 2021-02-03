@@ -239,6 +239,34 @@ new cloudfront.Distribution(this, 'myDistCustomPolicy', {
 });
 ```
 
+### Validating signed URLs or signed cookies with Trusted Signers
+
+CloudFront Distribution now supports validating signed URLs or signed cookies using key groups. When a cache behavior contains trusted key groups, CloudFront requires signed URLs or signed cookies for all requests that match the cache behavior.
+
+Example:
+
+```ts
+// public key in PEM format
+const pubKey = new PublicKey(stack, 'MyPubKey', {
+  encodedKey: publicKey,
+});
+
+const keyGroup = new KeyGroup(stack, 'MyKeyGroup', {
+  items: [
+    pubKey,
+  ],
+});
+
+new cloudfront.Distribution(stack, 'Dist', {
+  defaultBehavior: {
+    origin: new TestOrigin('www.example.com'),
+    trustedKeyGroups: [
+      keyGroup,
+    ],
+  },
+});
+```
+
 ### Lambda@Edge
 
 Lambda@Edge is an extension of AWS Lambda, a compute service that lets you execute functions that customize the content that CloudFront delivers.
@@ -449,6 +477,42 @@ See [Importing an SSL/TLS Certificate](https://docs.aws.amazon.com/AmazonCloudFr
 Example:
 
 [create a distribution with an iam certificate example](test/example.iam-cert-alias.lit.ts)
+
+### Trusted Signers
+
+CloudFront Web Distributions supports validating signed URLs or signed cookies using key groups. When a cache behavior contains trusted key groups, CloudFront requires signed URLs or signed cookies for all requests that match the cache behavior.
+
+Example:
+
+```ts
+const pubKey = new PublicKey(stack, 'MyPubKey', {
+  encodedKey: publicKey,
+});
+
+const keyGroup = new KeyGroup(stack, 'MyKeyGroup', {
+  items: [
+    pubKey,
+  ],
+});
+
+new CloudFrontWebDistribution(stack, 'AnAmazingWebsiteProbably', {
+  originConfigs: [
+    {
+      s3OriginSource: {
+        s3BucketSource: sourceBucket,
+      },
+      behaviors: [
+        {
+          isDefaultBehavior: true,
+          trustedKeyGroups: [
+            keyGroup,
+          ],
+        },
+      ],
+    },
+  ],
+});
+```
 
 ### Restrictions
 
