@@ -520,3 +520,40 @@ new CloudFrontWebDistribution(stack, 'ADistribution', {
   ],
 });
 ```
+
+## KeyGroup & PublicKey API
+
+Now you can create a key group to use with CloudFront signed URLs and signed cookies. You can add public keys to use with CloudFront features such as signed URLs, signed cookies, and field-level encryption.
+
+The following example command uses OpenSSL to generate an RSA key pair with a length of 2048 bits and save to the file named `private_key.pem`.
+
+```bash
+openssl genrsa -out private_key.pem 2048
+```
+
+The resulting file contains both the public and the private key. The following example command extracts the public key from the file named `private_key.pem` and stores it in `public_key.pem`. 
+
+```bash
+openssl rsa -pubout -in private_key.pem -out public_key.pem
+```
+
+Note: Don't forget to copy/paste the contents of `public_key.pem` file including `-----BEGIN PUBLIC KEY-----` and `-----END PUBLIC KEY-----` lines into `encodedKey` parameter when creating a `PublicKey`.
+
+Example:
+
+```ts
+  new cloudfront.KeyGroup(stack, 'MyKeyGroup', {
+    items: [
+      new cloudfront.PublicKey(stack, 'MyPublicKey', {
+        encodedKey: '...', // contents of public_key.pem file
+        // comment: 'Key is expiring on ...',
+      }),
+    ],
+    // comment: 'Key group containing public keys ...',
+  });
+```
+
+See:
+
+* https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/PrivateContent.html
+* https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-trusted-signers.html 
