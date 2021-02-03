@@ -4,10 +4,16 @@ import { AuthorizationType, CognitoUserPoolsAuthorizer, MockIntegration, Passthr
 
 /*
  * Stack verification steps:
- * * get the IdToken for the created pool by adding user/app-client and using aws cognito-idp
- * * `curl -s -o /dev/null -w "%{http_code}" <url>` should return 401
- * * `curl -s -o /dev/null -w "%{http_code}" -H 'Authorization: <Invalid-IdToken>' <url>` should return 403
- * * `curl -s -o /dev/null -w "%{http_code}" -H 'Authorization: <Valid-IdToken>' <url>` should return 200
+ * * 1. Get the IdToken for the created pool by adding user/app-client and using aws cognito-idp:
+ * *  a. aws cognito-idp create-user-pool-client --user-pool-id <value> --client-name <value> --no-generate-secret
+ * *  b. aws cognito-idp admin-create-user --user-pool-id <value> --username <value> --temporary-password <value>
+ * *  c. aws cognito-idp initiate-auth --client-id <value> --auth-flow USER_PASSWORD_AUTH --auth-parameters USERNAME=<value>,PASSWORD=<value>
+ * *  d. aws cognito-idp respond-to-auth-challenge --client-id <value> --challenge-name <value> --session <value>
+ * *
+ * * 2. Verify the stack using above obtained token:
+ * *  a. `curl -s -o /dev/null -w "%{http_code}" <url>` should return 401
+ * *  b. `curl -s -o /dev/null -w "%{http_code}" -H 'Authorization: <Invalid-IdToken>' <url>` should return 403
+ * *  c. `curl -s -o /dev/null -w "%{http_code}" -H 'Authorization: <Valid-IdToken>' <url>` should return 200
  */
 
 const app = new App();
