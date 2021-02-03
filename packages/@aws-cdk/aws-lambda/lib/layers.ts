@@ -30,10 +30,10 @@ export interface LayerVersionOptions {
   readonly layerVersionName?: string;
 
   /**
-   * Whether to retain the previous version of the layer when a new version is added
+   * Whether to retain this version of the layer when a new version is added
    * or when the stack is deleted.
    *
-   * @default - The previous version is deleted.
+   * @default RemovalPolicy.DESTROY
    */
   readonly removalPolicy?: RemovalPolicy;
 }
