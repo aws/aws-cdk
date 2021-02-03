@@ -34,11 +34,16 @@ export interface PublicKeyProps {
   /**
    * The public key that you can use with signed URLs and signed cookies, or with field-level encryption.
    * The `encodedKey` parameter must include `-----BEGIN PUBLIC KEY-----` and `-----END PUBLIC KEY-----` lines.
+   * @default - No key
    * @see https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/PrivateContent.html
    * @see https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/field-level-encryption.html
    */
   readonly encodedKey?: string;
 
+  /**
+   * Path to a public key.
+   * @default - No path
+   */
   readonly encodedKeyPath?: string;
 }
 
@@ -63,6 +68,10 @@ export class PublicKey extends Resource implements IPublicKey {
 
     if (props.encodedKey && props.encodedKeyPath) {
       throw new Error('Params encodedKey and encodedKeyPath cannot be passed at the same time.');
+    }
+
+    if (!props.encodedKey && !props.encodedKeyPath) {
+      throw new Error('At least one of params need to be passed in encodedKey and encodedKeyPath.');
     }
 
     const encodedKey = props.encodedKeyPath ? fs.readFileSync(path.join(__dirname, props.encodedKeyPath)).toString()
