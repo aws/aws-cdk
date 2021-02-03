@@ -103,6 +103,7 @@ export class Runtime {
    * The Python 3.8 runtime (python3.8)
    */
   public static readonly PYTHON_3_8 = new Runtime('python3.8', RuntimeFamily.PYTHON, {
+    supportsInlineCode: true,
     supportsCodeGuruProfiling: true,
   });
 
