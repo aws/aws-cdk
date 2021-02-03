@@ -570,7 +570,7 @@ export abstract class BaseService extends Resource
       const container = options.container ?? this.taskDefinition.defaultContainer!;
 
       // Ensure that any port given by the user is mapped.
-      if (options.containerPort && !container.findPortMapping(options.containerPort, Protocol.TCP)) {
+      if (options.containerPort && !container.portMappings.some(mapping => mapping.containerPort === options.containerPort)) {
         throw new Error('Cannot add discovery for a container port that has not been mapped');
       }
 
