@@ -1,6 +1,11 @@
 import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import * as ga from './globalaccelerator.generated';
 import { IListener } from './listener';
+
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 /**
  * The interface of the EndpointGroup
@@ -112,12 +117,12 @@ export interface EndpointGroupProps {
 /**
  * The class for endpoint configuration
  */
-export class EndpointConfiguration extends cdk.Construct {
+export class EndpointConfiguration extends CoreConstruct {
   /**
    * The property containing all the configuration to be rendered
    */
   public readonly props: EndpointConfigurationProps;
-  constructor(scope: cdk.Construct, id: string, props: EndpointConfigurationProps) {
+  constructor(scope: Construct, id: string, props: EndpointConfigurationProps) {
     super(scope, id);
     this.props = props;
     props.endpointGroup._linkEndpoint(this);
@@ -142,7 +147,7 @@ export class EndpointGroup extends cdk.Resource implements IEndpointGroup {
   /**
    * import from ARN
    */
-  public static fromEndpointGroupArn(scope: cdk.Construct, id: string, endpointGroupArn: string): IEndpointGroup {
+  public static fromEndpointGroupArn(scope: Construct, id: string, endpointGroupArn: string): IEndpointGroup {
     class Import extends cdk.Resource implements IEndpointGroup {
       public readonly endpointGroupArn = endpointGroupArn;
     }
@@ -162,13 +167,13 @@ export class EndpointGroup extends cdk.Resource implements IEndpointGroup {
    */
   protected readonly endpoints = new Array<EndpointConfiguration>();
 
-  constructor(scope: cdk.Construct, id: string, props: EndpointGroupProps) {
+  constructor(scope: Construct, id: string, props: EndpointGroupProps) {
     super(scope, id);
 
     const resource = new ga.CfnEndpointGroup(this, 'Resource', {
       listenerArn: props.listener.listenerArn,
       endpointGroupRegion: props.region ?? cdk.Stack.of(this).region,
-      endpointConfigurations: cdk.Lazy.anyValue({ produce: () => this.renderEndpoints() }, { omitEmptyArray: true }),
+      endpointConfigurations: cdk.Lazy.any({ produce: () => this.renderEndpoints() }, { omitEmptyArray: true }),
     });
 
     this.endpointGroupArn = resource.attrEndpointGroupArn;

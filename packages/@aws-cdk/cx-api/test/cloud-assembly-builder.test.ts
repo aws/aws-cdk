@@ -72,7 +72,7 @@ test('cloud assembly builder', () => {
     missing: [
       {
         key: 'foo',
-        provider: 'vpc-provider',
+        provider: cxschema.ContextProvider.VPC_PROVIDER,
         props: {
           account: '1234',
           region: 'us-east-1',
@@ -84,13 +84,13 @@ test('cloud assembly builder', () => {
     ],
     artifacts: {
       'tree-artifact': {
-        type: 'cdk:tree',
+        type: cxschema.ArtifactType.CDK_TREE,
         properties: {
           file: 'foo.tree.json',
         },
       },
       'my-first-artifact': {
-        type: 'aws:cloudformation:stack',
+        type: cxschema.ArtifactType.AWS_CLOUDFORMATION_STACK,
         environment: 'aws://1222344/us-east-1',
         dependencies: ['minimal-artifact'],
         metadata: { foo: [{ data: '123', type: 'foo', trace: [] }] },
@@ -103,7 +103,7 @@ test('cloud assembly builder', () => {
         },
       },
       'minimal-artifact': {
-        type: 'aws:cloudformation:stack',
+        type: cxschema.ArtifactType.AWS_CLOUDFORMATION_STACK,
         environment: 'aws://111/helo-world',
         properties: { templateFile: 'foo.template.json' },
       },
@@ -122,6 +122,12 @@ test('cloud assembly builder', () => {
 
 test('outdir must be a directory', () => {
   expect(() => new cxapi.CloudAssemblyBuilder(__filename)).toThrow('must be a directory');
+});
+
+test('outdir defaults to a temporary directory', () => {
+  const assembly = new cxapi.CloudAssemblyBuilder();
+  const realTmpDir = fs.realpathSync(os.tmpdir());
+  expect(assembly.outdir).toMatch(new RegExp(`^${path.join(realTmpDir, 'cdk.out')}`));
 });
 
 test('duplicate missing values with the same key are only reported once', () => {
@@ -166,6 +172,28 @@ test('write and read nested cloud assembly artifact', () => {
 
   const nested = art?.nestedAssembly;
   expect(nested?.artifacts.length).toEqual(0);
+});
+
+test('missing values are reported to top-level asm', () => {
+  // GIVEN
+  const outdir = fs.mkdtempSync(path.join(os.tmpdir(), 'cloud-assembly-builder-tests'));
+  const session = new cxapi.CloudAssemblyBuilder(outdir);
+
+  const innerAsm = session.createNestedAssembly('hello', 'hello');
+
+  // WHEN
+  const props: cxschema.ContextQueryProperties = {
+    account: '1234',
+    region: 'asdf',
+    filter: { a: 'a' },
+  };
+
+  innerAsm.addMissing({ key: 'foo', provider: cxschema.ContextProvider.VPC_PROVIDER, props });
+
+  // THEN
+  const assembly = session.buildAssembly();
+
+  expect(assembly.manifest.missing?.length).toEqual(1);
 });
 
 test('artifcats are written in topological order', () => {

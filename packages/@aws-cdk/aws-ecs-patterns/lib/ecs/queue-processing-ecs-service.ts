@@ -1,5 +1,5 @@
 import { Ec2Service, Ec2TaskDefinition } from '@aws-cdk/aws-ecs';
-import { Construct } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { QueueProcessingServiceBase, QueueProcessingServiceBaseProps } from '../base/queue-processing-service-base';
 
 /**
@@ -52,6 +52,13 @@ export interface QueueProcessingEc2ServiceProps extends QueueProcessingServiceBa
    * @default - No memory reserved.
    */
   readonly memoryReservationMiB?: number;
+
+  /**
+   * Optional name for the container added
+   *
+   * @default - QueueProcessingContainer
+   */
+  readonly containerName?: string;
 }
 
 /**
@@ -74,11 +81,13 @@ export class QueueProcessingEc2Service extends QueueProcessingServiceBase {
   constructor(scope: Construct, id: string, props: QueueProcessingEc2ServiceProps) {
     super(scope, id, props);
 
+    const containerName = props.containerName ?? 'QueueProcessingContainer';
+
     // Create a Task Definition for the container to start
     this.taskDefinition = new Ec2TaskDefinition(this, 'QueueProcessingTaskDef', {
       family: props.family,
     });
-    this.taskDefinition.addContainer('QueueProcessingContainer', {
+    this.taskDefinition.addContainer(containerName, {
       image: props.image,
       memoryLimitMiB: props.memoryLimitMiB,
       memoryReservationMiB: props.memoryReservationMiB,
@@ -100,6 +109,7 @@ export class QueueProcessingEc2Service extends QueueProcessingServiceBase {
       maxHealthyPercent: props.maxHealthyPercent,
       propagateTags: props.propagateTags,
       enableECSManagedTags: props.enableECSManagedTags,
+      deploymentController: props.deploymentController,
     });
     this.configureAutoscalingForService(this.service);
     this.grantPermissionsToService(this.service);

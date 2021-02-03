@@ -1,4 +1,5 @@
 import { spawnSync, SpawnSyncOptions } from 'child_process';
+import * as crypto from 'crypto';
 import { FileSystem } from './fs';
 
 /**
@@ -108,19 +109,21 @@ export class BundlingDockerImage {
   public static fromAsset(path: string, options: DockerBuildOptions = {}) {
     const buildArgs = options.buildArgs || {};
 
+    // Image tag derived from path and build options
+    const tagHash = crypto.createHash('sha256').update(JSON.stringify({
+      path,
+      ...options,
+    })).digest('hex');
+    const tag = `cdk-${tagHash}`;
+
     const dockerArgs: string[] = [
-      'build', '-q',
+      'build', '-t', tag,
+      ...(options.file ? ['-f', options.file] : []),
       ...flatten(Object.entries(buildArgs).map(([k, v]) => ['--build-arg', `${k}=${v}`])),
       path,
     ];
 
-    const docker = dockerExec(dockerArgs);
-
-    const match = docker.stdout.toString().match(/sha256:([a-z0-9]+)/);
-
-    if (!match) {
-      throw new Error('Failed to extract image ID from Docker build output');
-    }
+    dockerExec(dockerArgs);
 
     // Fingerprints the directory containing the Dockerfile we're building and
     // differentiates the fingerprint based on build arguments. We do this so
@@ -128,7 +131,7 @@ export class BundlingDockerImage {
     // different every time the Docker layer cache is cleared, due primarily to
     // timestamps.
     const hash = FileSystem.fingerprint(path, { extraHash: JSON.stringify(options) });
-    return new BundlingDockerImage(match[1], hash);
+    return new BundlingDockerImage(tag, hash);
   }
 
   /** @param image The Docker image */
@@ -145,10 +148,8 @@ export class BundlingDockerImage {
 
   /**
    * Runs a Docker image
-   *
-   * @internal
    */
-  public _run(options: DockerRunOptions = {}) {
+  public run(options: DockerRunOptions = {}) {
     const volumes = options.volumes || [];
     const environment = options.environment || {};
     const command = options.command || [];
@@ -167,13 +168,28 @@ export class BundlingDockerImage {
       ...command,
     ];
 
-    dockerExec(dockerArgs, {
-      stdio: [ // show Docker output
-        'ignore', // ignore stdio
-        process.stderr, // redirect stdout to stderr
-        'inherit', // inherit stderr
-      ],
-    });
+    dockerExec(dockerArgs);
+  }
+
+  /**
+   * Copies a file or directory out of the Docker image to the local filesystem
+   */
+  public cp(imagePath: string, outputPath: string) {
+    const { stdout } = dockerExec(['create', this.image]);
+    const match = stdout.toString().match(/([0-9a-f]{16,})/);
+    if (!match) {
+      throw new Error('Failed to extract container ID from Docker create output');
+    }
+
+    const containerId = match[1];
+    const containerPath = `${containerId}:${imagePath}`;
+    try {
+      dockerExec(['cp', containerPath, outputPath]);
+    } catch (err) {
+      throw new Error(`Failed to copy files from ${containerPath} to ${outputPath}: ${err}`);
+    } finally {
+      dockerExec(['rm', '-v', containerId]);
+    }
   }
 }
 
@@ -221,7 +237,7 @@ export enum DockerVolumeConsistency {
 /**
  * Docker run options
  */
-interface DockerRunOptions {
+export interface DockerRunOptions {
   /**
    * The command to run in the container.
    *
@@ -268,6 +284,13 @@ export interface DockerBuildOptions {
    * @default - no build args
    */
   readonly buildArgs?: { [key: string]: string };
+
+  /**
+   * Name of the Dockerfile
+   *
+   * @default - The Dockerfile immediately within the build context path
+   */
+  readonly file?: string;
 }
 
 function flatten(x: string[][]) {
@@ -276,7 +299,13 @@ function flatten(x: string[][]) {
 
 function dockerExec(args: string[], options?: SpawnSyncOptions) {
   const prog = process.env.CDK_DOCKER ?? 'docker';
-  const proc = spawnSync(prog, args, options);
+  const proc = spawnSync(prog, args, options ?? {
+    stdio: [ // show Docker output
+      'ignore', // ignore stdio
+      process.stderr, // redirect stdout to stderr
+      'inherit', // inherit stderr
+    ],
+  });
 
   if (proc.error) {
     throw proc.error;

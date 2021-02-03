@@ -166,7 +166,7 @@ class LinuxUserData extends UserData {
     this.addCommands(
       'set -e',
       `chmod +x '${params.filePath}'`,
-      `'${params.filePath}' ${params.arguments}`,
+      `'${params.filePath}' ${params.arguments ?? ''}`.trim(),
     );
   }
 
@@ -222,7 +222,7 @@ class WindowsUserData extends UserData {
 
   public addExecuteFileCommand( params: ExecuteFileOptions): void {
     this.addCommands(
-      `&'${params.filePath}' ${params.arguments}`,
+      `&'${params.filePath}' ${params.arguments ?? ''}`.trim(),
       `if (!$?) { Write-Error 'Failed to execute the file "${params.filePath}"' -ErrorAction Stop }`,
     );
   }

@@ -1,6 +1,6 @@
 import { CreateChangeSetInput } from 'aws-sdk/clients/cloudformation';
 import { Bootstrapper } from '../../lib/api/bootstrap';
-import { fromYAML } from '../../lib/serialize';
+import { deserializeStructure } from '../../lib/serialize';
 import { MockSdkProvider, SyncHandlerSubsetOf } from '../util/mock-sdk';
 
 const env = {
@@ -38,7 +38,7 @@ beforeEach(() => {
         ],
       })),
     createChangeSet: jest.fn((info: CreateChangeSetInput) => {
-      changeSetTemplate = fromYAML(info.TemplateBody as string);
+      changeSetTemplate = deserializeStructure(info.TemplateBody as string);
       return {};
     }),
     describeChangeSet: jest.fn(() => ({
@@ -158,7 +158,7 @@ test('passing trusted accounts to the old bootstrapping results in an error', as
     },
   }))
     .rejects
-    .toThrow('--trust can only be passed for the new bootstrap experience.');
+    .toThrow('--trust can only be passed for the modern bootstrap experience.');
 });
 
 test('passing CFN execution policies to the old bootstrapping results in an error', async () => {
@@ -169,7 +169,7 @@ test('passing CFN execution policies to the old bootstrapping results in an erro
     },
   }))
     .rejects
-    .toThrow('--cloudformation-execution-policies can only be passed for the new bootstrap experience.');
+    .toThrow('--cloudformation-execution-policies can only be passed for the modern bootstrap experience.');
 });
 
 test('even if the bootstrap stack is in a rollback state, can still retry bootstrapping it', async () => {

@@ -1,5 +1,9 @@
+// v2 - leave this as a separate section so it reduces merge conflicts when compat is removed
+// eslint-disable-next-line import/order
+import { IConstruct, Construct as CoreConstruct } from './construct-compat';
+
+import { Construct } from 'constructs';
 import { ArnComponents } from './arn';
-import { Construct, IConstruct } from './construct-compat';
 import { Lazy } from './lazy';
 import { generatePhysicalName, isGeneratedWhenNeededMarker } from './private/physical-name-generator';
 import { IResolveContext } from './resolvable';
@@ -86,7 +90,7 @@ export interface ResourceProps {
 /**
  * A construct which represents an AWS resource.
  */
-export abstract class Resource extends Construct implements IResource {
+export abstract class Resource extends CoreConstruct implements IResource {
   public readonly stack: Stack;
   public readonly env: ResourceEnvironment;
 
@@ -122,7 +126,7 @@ export abstract class Resource extends Construct implements IResource {
       // auto-generate only if cross-env is required
       this._physicalName = undefined;
       this._allowCrossEnvironment = true;
-      physicalName = Lazy.stringValue({ produce: () => this._physicalName });
+      physicalName = Lazy.string({ produce: () => this._physicalName });
     } else if (props.physicalName && !Token.isUnresolved(props.physicalName)) {
       // concrete value specified by the user
       this._physicalName = props.physicalName;
@@ -177,7 +181,7 @@ export abstract class Resource extends Construct implements IResource {
    * @experimental
    */
   protected getResourceNameAttribute(nameAttr: string) {
-    return Lazy.stringValue({
+    return Lazy.uncachedString({
       produce: (context: IResolveContext) => {
         const consumingStack = Stack.of(context.scope);
 

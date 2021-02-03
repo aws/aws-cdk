@@ -256,7 +256,6 @@
           "MaximumPercent": 200,
           "MinimumHealthyPercent": 50
         },
-        "DesiredCount": 1,
         "EnableECSManagedTags": false,
         "LaunchType": "FARGATE",
         "NetworkConfiguration": {
@@ -528,6 +527,7 @@
             }
           ],
           "Image": "aws/codebuild/docker:17.09.0",
+          "ImagePullCredentialsType": "CODEBUILD",
           "PrivilegedMode": true,
           "Type": "LINUX_CONTAINER"
         },
@@ -540,7 +540,8 @@
         "Source": {
           "BuildSpec": "{\n  \"version\": \"0.2\",\n  \"phases\": {\n    \"pre_build\": {\n      \"commands\": \"$(aws ecr get-login --region $AWS_DEFAULT_REGION --no-include-email)\"\n    },\n    \"build\": {\n      \"commands\": \"docker build -t $REPOSITORY_URI:latest .\"\n    },\n    \"post_build\": {\n      \"commands\": [\n        \"docker push $REPOSITORY_URI:latest\",\n        \"printf '[{ \\\"name\\\": \\\"Container\\\", \\\"imageUri\\\": \\\"%s\\\" }]' $REPOSITORY_URI:latest > imagedefinitions.json\"\n      ]\n    }\n  },\n  \"artifacts\": {\n    \"files\": \"imagedefinitions.json\"\n  }\n}",
           "Type": "CODEPIPELINE"
-        }
+        },
+        "EncryptionKey": "alias/aws/s3"
       }
     },
     "MyPipelineRoleC0D47CA4": {
@@ -735,7 +736,8 @@
                       "FargateServiceAC2B3B85",
                       "Name"
                     ]
-                  }
+                  },
+                  "DeploymentTimeout": 60
                 },
                 "InputArtifacts": [
                   {

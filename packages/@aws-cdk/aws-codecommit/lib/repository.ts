@@ -1,6 +1,7 @@
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
-import { Construct, IConstruct, IResource, Lazy, Resource, Stack } from '@aws-cdk/core';
+import { IResource, Lazy, Resource, Stack } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CfnRepository } from './codecommit.generated';
 
 export interface IRepository extends IResource {
@@ -27,6 +28,18 @@ export interface IRepository extends IResource {
    * @attribute
    */
   readonly repositoryCloneUrlSsh: string;
+
+  /**
+   * The HTTPS (GRC) clone URL
+   *
+   * HTTPS (GRC) is the protocol to use with git-remote-codecommit (GRC).
+   *
+   * It is the recommended method for supporting connections made with federated
+   * access, identity providers, and temporary credentials.
+   *
+   * @see https://docs.aws.amazon.com/codecommit/latest/userguide/setting-up-git-remote-codecommit.html
+   */
+  readonly repositoryCloneUrlGrc: string;
 
   /**
    * Defines a CloudWatch event rule which triggers for repository events. Use
@@ -133,6 +146,8 @@ abstract class RepositoryBase extends Resource implements IRepository {
 
   /** The SSH clone URL */
   public abstract readonly repositoryCloneUrlSsh: string;
+
+  public abstract readonly repositoryCloneUrlGrc: string;
 
   /**
    * Defines a CloudWatch event rule which triggers for repository events. Use
@@ -283,13 +298,16 @@ export class Repository extends RepositoryBase {
    */
   public static fromRepositoryArn(scope: Construct, id: string, repositoryArn: string): IRepository {
     const stack = Stack.of(scope);
-    const repositoryName = stack.parseArn(repositoryArn).resource;
+    const arn = stack.parseArn(repositoryArn);
+    const repositoryName = arn.resource;
+    const region = arn.region;
 
     class Import extends RepositoryBase {
       public readonly repositoryArn = repositoryArn;
       public readonly repositoryName = repositoryName;
-      public readonly repositoryCloneUrlHttp = Repository.makeCloneUrl(stack, repositoryName, 'https');
-      public readonly repositoryCloneUrlSsh = Repository.makeCloneUrl(stack, repositoryName, 'ssh');
+      public readonly repositoryCloneUrlHttp = makeCloneUrl(stack, repositoryName, 'https', region);
+      public readonly repositoryCloneUrlSsh = makeCloneUrl(stack, repositoryName, 'ssh', region);
+      public readonly repositoryCloneUrlGrc = makeCloneUrl(stack, repositoryName, 'grc', region);
     }
 
     return new Import(scope, id);
@@ -300,28 +318,23 @@ export class Repository extends RepositoryBase {
 
     class Import extends RepositoryBase {
       public repositoryName = repositoryName;
-      public repositoryArn = Repository.arnForLocalRepository(repositoryName, scope);
-      public readonly repositoryCloneUrlHttp = Repository.makeCloneUrl(stack, repositoryName, 'https');
-      public readonly repositoryCloneUrlSsh = Repository.makeCloneUrl(stack, repositoryName, 'ssh');
+      public repositoryArn = Stack.of(scope).formatArn({
+        service: 'codecommit',
+        resource: repositoryName,
+      });
+      public readonly repositoryCloneUrlHttp = makeCloneUrl(stack, repositoryName, 'https');
+      public readonly repositoryCloneUrlSsh = makeCloneUrl(stack, repositoryName, 'ssh');
+      public readonly repositoryCloneUrlGrc = makeCloneUrl(stack, repositoryName, 'grc');
     }
 
     return new Import(scope, id);
   }
 
-  private static makeCloneUrl(stack: Stack, repositoryName: string, protocol: 'https' | 'ssh') {
-    return `${protocol}://git-codecommit.${stack.region}.${stack.urlSuffix}/v1/repos/${repositoryName}`;
-  }
-
-  private static arnForLocalRepository(repositoryName: string, scope: IConstruct): string {
-    return Stack.of(scope).formatArn({
-      service: 'codecommit',
-      resource: repositoryName,
-    });
-  }
-
   public readonly repositoryArn: string;
   public readonly repositoryName: string;
-  private readonly repository: CfnRepository;
+  public readonly repositoryCloneUrlHttp: string;
+  public readonly repositoryCloneUrlSsh: string;
+  public readonly repositoryCloneUrlGrc: string;
   private readonly triggers = new Array<CfnRepository.RepositoryTriggerProperty>();
 
   constructor(scope: Construct, id: string, props: RepositoryProps) {
@@ -329,25 +342,20 @@ export class Repository extends RepositoryBase {
       physicalName: props.repositoryName,
     });
 
-    this.repository = new CfnRepository(this, 'Resource', {
+    const repository = new CfnRepository(this, 'Resource', {
       repositoryName: props.repositoryName,
       repositoryDescription: props.description,
-      triggers: Lazy.anyValue({ produce: () => this.triggers }, { omitEmptyArray: true }),
+      triggers: Lazy.any({ produce: () => this.triggers }, { omitEmptyArray: true }),
     });
 
-    this.repositoryName = this.getResourceNameAttribute(this.repository.attrName);
-    this.repositoryArn = this.getResourceArnAttribute(this.repository.attrArn, {
+    this.repositoryName = this.getResourceNameAttribute(repository.attrName);
+    this.repositoryArn = this.getResourceArnAttribute(repository.attrArn, {
       service: 'codecommit',
       resource: this.physicalName,
     });
-  }
-
-  public get repositoryCloneUrlHttp() {
-    return this.repository.attrCloneUrlHttp;
-  }
-
-  public get repositoryCloneUrlSsh() {
-    return this.repository.attrCloneUrlSsh;
+    this.repositoryCloneUrlHttp = repository.attrCloneUrlHttp;
+    this.repositoryCloneUrlSsh = repository.attrCloneUrlSsh;
+    this.repositoryCloneUrlGrc = makeCloneUrl(Stack.of(this), this.repositoryName, 'grc');
   }
 
   /**
@@ -423,4 +431,17 @@ export enum RepositoryEventTrigger {
   UPDATE_REF = 'updateReference',
   CREATE_REF = 'createReference',
   DELETE_REF = 'deleteReference'
+}
+
+/**
+ * Returns the clone URL for a protocol
+ */
+function makeCloneUrl(stack: Stack, repositoryName: string, protocol: 'https' | 'ssh' | 'grc', region?: string) {
+  switch (protocol) {
+    case 'https':
+    case 'ssh':
+      return `${protocol}://git-codecommit.${region ?? stack.region}.${stack.urlSuffix}/v1/repos/${repositoryName}`;
+    case 'grc':
+      return `codecommit::${region ?? stack.region}://${repositoryName}`;
+  }
 }

@@ -1,8 +1,13 @@
 import * as iam from '@aws-cdk/aws-iam';
-import { Construct, Lazy, Stack, IConstruct } from '@aws-cdk/core';
+import { Lazy, Stack, IConstruct } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { AwsAuthMapping } from './aws-auth-mapping';
 import { Cluster } from './cluster';
 import { KubernetesManifest } from './k8s-manifest';
+
+// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
+// eslint-disable-next-line
+import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 /**
  * Configuration props for the AwsAuth construct.
@@ -21,7 +26,7 @@ export interface AwsAuthProps {
  *
  * @see https://docs.aws.amazon.com/en_us/eks/latest/userguide/add-user-role.html
  */
-export class AwsAuth extends Construct {
+export class AwsAuth extends CoreConstruct {
   private readonly stack: Stack;
   private readonly roleMappings = new Array<{ role: iam.IRole, mapping: AwsAuthMapping }>();
   private readonly userMappings = new Array<{ user: iam.IUser, mapping: AwsAuthMapping }>();
@@ -34,6 +39,7 @@ export class AwsAuth extends Construct {
 
     new KubernetesManifest(this, 'manifest', {
       cluster: props.cluster,
+      overwrite: true, // this config map is auto-created by the cluster
       manifest: [
         {
           apiVersion: 'v1',
@@ -105,12 +111,12 @@ export class AwsAuth extends Construct {
       // a dependency on the cluster, allowing those resources to be in a different stack,
       // will create a circular dependency. granted, it won't always be the case,
       // but we opted for the more causious and restrictive approach for now.
-      throw new Error(`${construct.node.uniqueId} should be defined in the scope of the ${thisStack.stackName} stack to prevent circular dependencies`);
+      throw new Error(`${construct.node.path} should be defined in the scope of the ${thisStack.stackName} stack to prevent circular dependencies`);
     }
   }
 
   private synthesizeMapRoles() {
-    return Lazy.anyValue({
+    return Lazy.any({
       produce: () => this.stack.toJsonString(this.roleMappings.map(m => ({
         rolearn: m.role.roleArn,
         username: m.mapping.username ?? m.role.roleArn,
@@ -120,7 +126,7 @@ export class AwsAuth extends Construct {
   }
 
   private synthesizeMapUsers() {
-    return Lazy.anyValue({
+    return Lazy.any({
       produce: () => this.stack.toJsonString(this.userMappings.map(m => ({
         userarn: m.user.userArn,
         username: m.mapping.username ?? m.user.userArn,
@@ -130,7 +136,7 @@ export class AwsAuth extends Construct {
   }
 
   private synthesizeMapAccounts() {
-    return Lazy.anyValue({
+    return Lazy.any({
       produce: () => this.stack.toJsonString(this.accounts),
     });
   }

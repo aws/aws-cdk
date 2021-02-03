@@ -67,6 +67,46 @@ export = {
       test.done();
     },
 
+    /**
+     * Fix for https://github.com/aws/aws-cdk/issues/10630
+     */
+    'can be imported using a Repository ARN and respect the region in clone urls'(test: Test) {
+      // GIVEN
+      const stack = new Stack();
+      const repositoryArn = 'arn:aws:codecommit:us-west-2:585695036304:my-repo';
+
+      // WHEN
+      const repo = Repository.fromRepositoryArn(stack, 'ImportedRepo', repositoryArn);
+
+      // THEN
+      // a fully qualified arn should use the region from the arn
+      test.deepEqual(stack.resolve(repo.repositoryCloneUrlHttp), {
+        'Fn::Join': [
+          '',
+          [
+            'https://git-codecommit.us-west-2.',
+            { Ref: 'AWS::URLSuffix' },
+            '/v1/repos/my-repo',
+          ],
+        ],
+      });
+
+      test.deepEqual(stack.resolve(repo.repositoryCloneUrlSsh), {
+        'Fn::Join': [
+          '',
+          [
+            'ssh://git-codecommit.us-west-2.',
+            { Ref: 'AWS::URLSuffix' },
+            '/v1/repos/my-repo',
+          ],
+        ],
+      });
+
+      test.deepEqual(stack.resolve(repo.repositoryCloneUrlGrc), 'codecommit::us-west-2://my-repo');
+
+      test.done();
+    },
+
     'can be imported using just a Repository name (the ARN is deduced)'(test: Test) {
       // GIVEN
       const stack = new Stack();
@@ -87,6 +127,31 @@ export = {
         ]],
       });
       test.deepEqual(stack.resolve(repo.repositoryName), 'my-repo');
+
+      //local name resolution should use stack region
+      test.deepEqual(stack.resolve(repo.repositoryCloneUrlHttp), {
+        'Fn::Join': [
+          '',
+          [
+            'https://git-codecommit.',
+            { Ref: 'AWS::Region' },
+            '.',
+            { Ref: 'AWS::URLSuffix' },
+            '/v1/repos/my-repo',
+          ],
+        ],
+      });
+
+      test.deepEqual(stack.resolve(repo.repositoryCloneUrlGrc), {
+        'Fn::Join': [
+          '',
+          [
+            'codecommit::',
+            { Ref: 'AWS::Region' },
+            '://my-repo',
+          ],
+        ],
+      });
 
       test.done();
     },
@@ -132,6 +197,28 @@ export = {
           Version: '2012-10-17',
         },
       }));
+
+      test.done();
+    },
+
+    'HTTPS (GRC) clone URL'(test: Test) {
+      const stack = new Stack();
+
+      const repository = new Repository(stack, 'Repository', {
+        repositoryName: 'my-repo',
+      });
+
+      test.deepEqual(stack.resolve(repository.repositoryCloneUrlGrc), {
+        'Fn::Join': [
+          '',
+          [
+            'codecommit::',
+            { Ref: 'AWS::Region' },
+            '://',
+            { 'Fn::GetAtt': ['Repository22E53BBD', 'Name'] },
+          ],
+        ],
+      });
 
       test.done();
     },

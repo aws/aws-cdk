@@ -3,6 +3,9 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import { App, CfnOutput, Duration, Token, Fn } from '@aws-cdk/core';
+import * as cdk8s from 'cdk8s';
+import * as kplus from 'cdk8s-plus';
+import * as constructs from 'constructs';
 import * as eks from '../lib';
 import * as hello from './hello-k8s';
 import { Pinger } from './pinger/pinger';
@@ -32,7 +35,7 @@ class EksClusterStack extends TestStack {
       vpc: this.vpc,
       mastersRole,
       defaultCapacity: 2,
-      version: eks.KubernetesVersion.V1_17,
+      version: eks.KubernetesVersion.V1_18,
       secretsEncryptionKey,
     });
 
@@ -50,13 +53,19 @@ class EksClusterStack extends TestStack {
 
     this.assertNodeGroupX86();
 
+    this.assertNodeGroupSpot();
+
     this.assertNodeGroupArm();
 
     this.assertNodeGroupCustomAmi();
 
     this.assertSimpleManifest();
 
+    this.assertManifestWithoutValidation();
+
     this.assertSimpleHelmChart();
+
+    this.assertSimpleCdk8sChart();
 
     this.assertCreateNamespace();
 
@@ -87,7 +96,7 @@ class EksClusterStack extends TestStack {
       },
     });
 
-    const nginxIngress = this.cluster.addChart('nginx-ingress', {
+    const nginxIngress = this.cluster.addHelmChart('nginx-ingress', {
       chart: 'nginx-ingress',
       repository: 'https://helm.nginx.com/stable',
       namespace: 'nginx',
@@ -101,9 +110,29 @@ class EksClusterStack extends TestStack {
 
 
   }
+
+  private assertSimpleCdk8sChart() {
+
+    class Chart extends cdk8s.Chart {
+      constructor(scope: constructs.Construct, ns: string, cluster: eks.ICluster) {
+        super(scope, ns);
+
+        new kplus.ConfigMap(this, 'config-map', {
+          data: {
+            clusterName: cluster.clusterName,
+          },
+        });
+
+      }
+    }
+    const app = new cdk8s.App();
+    const chart = new Chart(app, 'Chart', this.cluster);
+
+    this.cluster.addCdk8sChart('cdk8s-chart', chart);
+  }
   private assertSimpleHelmChart() {
     // deploy the Kubernetes dashboard through a helm chart
-    this.cluster.addChart('dashboard', {
+    this.cluster.addHelmChart('dashboard', {
       chart: 'kubernetes-dashboard',
       repository: 'https://kubernetes.github.io/dashboard/',
     });
@@ -112,13 +141,41 @@ class EksClusterStack extends TestStack {
     // apply a kubernetes manifest
     this.cluster.addManifest('HelloApp', ...hello.resources);
   }
+  private assertManifestWithoutValidation() {
+    // apply a kubernetes manifest
+    new eks.KubernetesManifest(this, 'HelloAppWithoutValidation', {
+      cluster: this.cluster,
+      manifest: [{
+        apiVersion: 'v1',
+        kind: 'ConfigMap',
+        data: { hello: 'world' },
+        metadata: { name: 'config-map' },
+        unknown: { key: 'value' },
+      }],
+      skipValidation: true,
+    });
+  }
   private assertNodeGroupX86() {
     // add a extra nodegroup
-    this.cluster.addNodegroup('extra-ng', {
+    this.cluster.addNodegroupCapacity('extra-ng', {
       instanceType: new ec2.InstanceType('t3.small'),
       minSize: 1,
       // reusing the default capacity nodegroup instance role when available
       nodeRole: this.cluster.defaultCapacity ? this.cluster.defaultCapacity.role : undefined,
+    });
+  }
+  private assertNodeGroupSpot() {
+    // add a extra nodegroup
+    this.cluster.addNodegroupCapacity('extra-ng-spot', {
+      instanceTypes: [
+        new ec2.InstanceType('c5.large'),
+        new ec2.InstanceType('c5a.large'),
+        new ec2.InstanceType('c5d.large'),
+      ],
+      minSize: 3,
+      // reusing the default capacity nodegroup instance role when available
+      nodeRole: this.cluster.defaultCapacity ? this.cluster.defaultCapacity.role : undefined,
+      capacityType: eks.CapacityType.SPOT,
     });
   }
   private assertNodeGroupCustomAmi() {
@@ -135,11 +192,11 @@ class EksClusterStack extends TestStack {
         userData: Fn.base64(userData.render()),
       },
     });
-    this.cluster.addNodegroup('extra-ng2', {
+    this.cluster.addNodegroupCapacity('extra-ng2', {
       minSize: 1,
       // reusing the default capacity nodegroup instance role when available
       nodeRole: this.cluster.defaultNodegroup?.role || this.cluster.defaultCapacity?.role,
-      launchTemplate: {
+      launchTemplateSpec: {
         id: lt.ref,
         version: lt.attrDefaultVersionNumber,
       },
@@ -147,7 +204,7 @@ class EksClusterStack extends TestStack {
   }
   private assertNodeGroupArm() {
     // add a extra nodegroup
-    this.cluster.addNodegroup('extra-ng-arm', {
+    this.cluster.addNodegroupCapacity('extra-ng-arm', {
       instanceType: new ec2.InstanceType('m6g.medium'),
       minSize: 1,
       // reusing the default capacity nodegroup instance role when available
@@ -156,14 +213,14 @@ class EksClusterStack extends TestStack {
   }
   private assertInferenceInstances() {
     // inference instances
-    this.cluster.addCapacity('InferenceInstances', {
+    this.cluster.addAutoScalingGroupCapacity('InferenceInstances', {
       instanceType: new ec2.InstanceType('inf1.2xlarge'),
       minCapacity: 1,
     });
   }
   private assertSpotCapacity() {
     // spot instances (up to 10)
-    this.cluster.addCapacity('spot', {
+    this.cluster.addAutoScalingGroupCapacity('spot', {
       spotPrice: '0.1094',
       instanceType: new ec2.InstanceType('t3.large'),
       maxCapacity: 10,
@@ -175,7 +232,7 @@ class EksClusterStack extends TestStack {
   }
   private assertBottlerocket() {
     // add bottlerocket nodes
-    this.cluster.addCapacity('BottlerocketNodes', {
+    this.cluster.addAutoScalingGroupCapacity('BottlerocketNodes', {
       instanceType: new ec2.InstanceType('t3.small'),
       minCapacity: 2,
       machineImageType: eks.MachineImageType.BOTTLEROCKET,
@@ -185,7 +242,7 @@ class EksClusterStack extends TestStack {
   private assertCapacityX86() {
     // add some x86_64 capacity to the cluster. The IAM instance role will
     // automatically be mapped via aws-auth to allow nodes to join the cluster.
-    this.cluster.addCapacity('Nodes', {
+    this.cluster.addAutoScalingGroupCapacity('Nodes', {
       instanceType: new ec2.InstanceType('t2.medium'),
       minCapacity: 3,
     });
@@ -194,7 +251,7 @@ class EksClusterStack extends TestStack {
   private assertCapacityArm() {
     // add some arm64 capacity to the cluster. The IAM instance role will
     // automatically be mapped via aws-auth to allow nodes to join the cluster.
-    this.cluster.addCapacity('NodesArm', {
+    this.cluster.addAutoScalingGroupCapacity('NodesArm', {
       instanceType: new ec2.InstanceType('m6g.medium'),
       minCapacity: 1,
     });

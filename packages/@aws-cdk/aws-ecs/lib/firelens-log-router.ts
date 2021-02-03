@@ -1,6 +1,7 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as ssm from '@aws-cdk/aws-ssm';
 import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { TaskDefinition } from './base/task-definition';
 import { ContainerDefinition, ContainerDefinitionOptions, ContainerDefinitionProps } from './container-definition';
 import { ContainerImage } from './container-image';
@@ -196,7 +197,7 @@ export class FirelensLogRouter extends ContainerDefinition {
   /**
    * Constructs a new instance of the FirelensLogRouter class.
    */
-  constructor(scope: cdk.Construct, id: string, props: FirelensLogRouterProps) {
+  constructor(scope: Construct, id: string, props: FirelensLogRouterProps) {
     super(scope, id, props);
     const options = props.firelensConfig.options;
     if (options) {

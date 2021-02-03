@@ -507,6 +507,9 @@
         "ProvisionedThroughput": {
           "ReadCapacityUnits": 5,
           "WriteCapacityUnits": 5
+        },
+        "SSESpecification": {
+          "SSEEnabled": false
         }
       },
       "UpdateReplacePolicy": "Delete",
@@ -541,7 +544,8 @@
                 "dynamodb:GetShardIterator",
                 "dynamodb:Query",
                 "dynamodb:GetItem",
-                "dynamodb:Scan"
+                "dynamodb:Scan",
+                "dynamodb:ConditionCheckItem"
               ],
               "Effect": "Allow",
               "Resource": [
@@ -576,7 +580,8 @@
                 "dynamodb:GetShardIterator",
                 "dynamodb:Query",
                 "dynamodb:GetItem",
-                "dynamodb:Scan"
+                "dynamodb:Scan",
+                "dynamodb:ConditionCheckItem"
               ],
               "Effect": "Allow",
               "Resource": [

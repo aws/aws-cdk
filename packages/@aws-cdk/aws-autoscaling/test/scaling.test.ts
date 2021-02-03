@@ -3,8 +3,13 @@ import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
 import * as cdk from '@aws-cdk/core';
+import * as constructs from 'constructs';
 import { nodeunitShim, Test } from 'nodeunit-shim';
 import * as autoscaling from '../lib';
+
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct } from '@aws-cdk/core';
 
 nodeunitShim({
   'target tracking policies': {
@@ -74,7 +79,7 @@ nodeunitShim({
       test.done();
     },
 
-    'request count'(test: Test) {
+    'request count per second'(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();
       const fixture = new ASGFixture(stack, 'Fixture');
@@ -88,6 +93,54 @@ nodeunitShim({
       // WHEN
       fixture.asg.scaleOnRequestCount('ScaleRequest', {
         targetRequestsPerSecond: 10,
+      });
+
+      // THEN
+      const arnParts = {
+        'Fn::Split': [
+          '/',
+          { Ref: 'ALBListener3B99FF85' },
+        ],
+      };
+
+      expect(stack).to(haveResource('AWS::AutoScaling::ScalingPolicy', {
+        PolicyType: 'TargetTrackingScaling',
+        TargetTrackingConfiguration: {
+          TargetValue: 600,
+          PredefinedMetricSpecification: {
+            PredefinedMetricType: 'ALBRequestCountPerTarget',
+            ResourceLabel: {
+              'Fn::Join': ['', [
+                { 'Fn::Select': [1, arnParts] },
+                '/',
+                { 'Fn::Select': [2, arnParts] },
+                '/',
+                { 'Fn::Select': [3, arnParts] },
+                '/',
+                { 'Fn::GetAtt': ['ALBListenerTargetsGroup01D7716A', 'TargetGroupFullName'] },
+              ]],
+            },
+          },
+        },
+      }));
+
+      test.done();
+    },
+
+    'request count per minute'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const fixture = new ASGFixture(stack, 'Fixture');
+      const alb = new elbv2.ApplicationLoadBalancer(stack, 'ALB', { vpc: fixture.vpc });
+      const listener = alb.addListener('Listener', { port: 80 });
+      listener.addTargets('Targets', {
+        port: 80,
+        targets: [fixture.asg],
+      });
+
+      // WHEN
+      fixture.asg.scaleOnRequestCount('ScaleRequest', {
+        targetRequestsPerMinute: 10,
       });
 
       // THEN
@@ -224,11 +277,11 @@ nodeunitShim({
   },
 });
 
-class ASGFixture extends cdk.Construct {
+class ASGFixture extends Construct {
   public readonly vpc: ec2.Vpc;
   public readonly asg: autoscaling.AutoScalingGroup;
 
-  constructor(scope: cdk.Construct, id: string) {
+  constructor(scope: constructs.Construct, id: string) {
     super(scope, id);
 
     this.vpc = new ec2.Vpc(this, 'VPC');

@@ -1,4 +1,5 @@
 import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { IEventSourceDlq } from './dlq';
 import { IFunction } from './function-base';
 import { CfnEventSourceMapping } from './lambda.generated';
@@ -17,7 +18,7 @@ export interface EventSourceMappingOptions {
    *
    * Valid Range: Minimum value of 1. Maximum value of 10000.
    *
-   * @default - Amazon Kinesis and Amazon DynamoDB is 100 records.
+   * @default - Amazon Kinesis, Amazon DynamoDB, and Amazon MSK is 100 records.
    * Both the default and maximum for Amazon SQS are 10 messages.
    */
   readonly batchSize?: number;
@@ -44,12 +45,12 @@ export interface EventSourceMappingOptions {
   readonly enabled?: boolean;
 
   /**
-   * The position in the DynamoDB or Kinesis stream where AWS Lambda should
+   * The position in the DynamoDB, Kinesis or MSK stream where AWS Lambda should
    * start reading.
    *
    * @see https://docs.aws.amazon.com/kinesis/latest/APIReference/API_GetShardIterator.html#Kinesis-GetShardIterator-request-ShardIteratorType
    *
-   * @default - Required for Amazon Kinesis and Amazon DynamoDB Streams sources.
+   * @default - Required for Amazon Kinesis, Amazon DynamoDB, and Amazon MSK Streams sources.
    */
   readonly startingPosition?: StartingPosition;
 
@@ -67,18 +68,20 @@ export interface EventSourceMappingOptions {
    * * Minimum value of 60 seconds
    * * Maximum value of 7 days
    *
-   * @default Duration.days(7)
+   * @default - infinite or until the record expires.
    */
   readonly maxRecordAge?: cdk.Duration;
 
   /**
    * The maximum number of times to retry when the function returns an error.
+   * Set to `undefined` if you want lambda to keep retrying infinitely or until
+   * the record expires.
    *
    * Valid Range:
    * * Minimum value of 0
    * * Maximum value of 10000
    *
-   * @default 10000
+   * @default - infinite or until the record expires.
    */
   readonly retryAttempts?: number;
 
@@ -91,6 +94,13 @@ export interface EventSourceMappingOptions {
    * @default 1
    */
   readonly parallelizationFactor?: number;
+
+  /**
+   * The name of the Kafka topic.
+   *
+   * @default - no topic
+   */
+  readonly kafkaTopic?: string;
 }
 
 /**
@@ -132,7 +142,7 @@ export class EventSourceMapping extends cdk.Resource implements IEventSourceMapp
   /**
    * Import an event source into this stack from its event source id.
    */
-  public static fromEventSourceMappingId(scope: cdk.Construct, id: string, eventSourceMappingId: string): IEventSourceMapping {
+  public static fromEventSourceMappingId(scope: Construct, id: string, eventSourceMappingId: string): IEventSourceMapping {
     class Import extends cdk.Resource implements IEventSourceMapping {
       public readonly eventSourceMappingId = eventSourceMappingId;
     }
@@ -141,7 +151,7 @@ export class EventSourceMapping extends cdk.Resource implements IEventSourceMapp
 
   public readonly eventSourceMappingId: string;
 
-  constructor(scope: cdk.Construct, id: string, props: EventSourceMappingProps) {
+  constructor(scope: Construct, id: string, props: EventSourceMappingProps) {
     super(scope, id);
 
     if (props.maxBatchingWindow && props.maxBatchingWindow.toSeconds() > 300) {
@@ -185,13 +195,14 @@ export class EventSourceMapping extends cdk.Resource implements IEventSourceMapp
       maximumRecordAgeInSeconds: props.maxRecordAge?.toSeconds(),
       maximumRetryAttempts: props.retryAttempts,
       parallelizationFactor: props.parallelizationFactor,
+      topics: props.kafkaTopic !== undefined ? [props.kafkaTopic] : undefined,
     });
     this.eventSourceMappingId = cfnEventSourceMapping.ref;
   }
 }
 
 /**
- * The position in the DynamoDB or Kinesis stream where AWS Lambda should start
+ * The position in the DynamoDB, Kinesis or MSK stream where AWS Lambda should start
  * reading.
  */
 export enum StartingPosition {

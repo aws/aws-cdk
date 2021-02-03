@@ -1,7 +1,6 @@
 export * from './aws-auth';
 export * from './aws-auth-mapping';
 export * from './cluster';
-export * from './legacy-cluster';
 export * from './eks.generated';
 export * from './fargate-profile';
 export * from './helm-chart';
@@ -11,4 +10,4 @@ export * from './k8s-object-value';
 export * from './fargate-cluster';
 export * from './service-account';
 export * from './managed-nodegroup';
-export * from './kubectl-layer';
+export * from './oidc-provider';

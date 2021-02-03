@@ -1,5 +1,10 @@
 import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CfnTaskDefinition } from './ecs.generated';
+
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 /**
  * The properties for defining Linux-specific options that are applied to the container.
@@ -23,7 +28,7 @@ export interface LinuxParametersProps {
 /**
  * Linux-specific options that are applied to the container.
  */
-export class LinuxParameters extends cdk.Construct {
+export class LinuxParameters extends CoreConstruct {
   /**
    * Whether the init process is enabled
    */
@@ -57,7 +62,7 @@ export class LinuxParameters extends cdk.Construct {
   /**
    * Constructs a new instance of the LinuxParameters class.
    */
-  constructor(scope: cdk.Construct, id: string, props: LinuxParametersProps = {}) {
+  constructor(scope: Construct, id: string, props: LinuxParametersProps = {}) {
     super(scope, id);
 
     this.sharedMemorySize = props.sharedMemorySize;
@@ -106,11 +111,11 @@ export class LinuxParameters extends cdk.Construct {
       initProcessEnabled: this.initProcessEnabled,
       sharedMemorySize: this.sharedMemorySize,
       capabilities: {
-        add: cdk.Lazy.listValue({ produce: () => this.capAdd }, { omitEmpty: true }),
-        drop: cdk.Lazy.listValue({ produce: () => this.capDrop }, { omitEmpty: true }),
+        add: cdk.Lazy.list({ produce: () => this.capAdd }, { omitEmpty: true }),
+        drop: cdk.Lazy.list({ produce: () => this.capDrop }, { omitEmpty: true }),
       },
-      devices: cdk.Lazy.anyValue({ produce: () => this.devices.map(renderDevice) }, { omitEmptyArray: true }),
-      tmpfs: cdk.Lazy.anyValue({ produce: () => this.tmpfs.map(renderTmpfs) }, { omitEmptyArray: true }),
+      devices: cdk.Lazy.any({ produce: () => this.devices.map(renderDevice) }, { omitEmptyArray: true }),
+      tmpfs: cdk.Lazy.any({ produce: () => this.tmpfs.map(renderTmpfs) }, { omitEmptyArray: true }),
     };
   }
 }

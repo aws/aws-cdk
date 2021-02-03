@@ -3,6 +3,7 @@ import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
+import * as constructs from 'constructs';
 import * as _ from 'lodash';
 import * as nodeunit from 'nodeunit';
 import * as cpactions from '../../lib';
@@ -314,7 +315,7 @@ function _isOrContains(stack: cdk.Stack, entity: string | string[], value: strin
   return false;
 }
 
-function _stackArn(stackName: string, scope: cdk.IConstruct): string {
+function _stackArn(stackName: string, scope: constructs.IConstruct): string {
   return cdk.Stack.of(scope).formatArn({
     service: 'cloudformation',
     resource: 'stack',
@@ -328,7 +329,7 @@ class PipelineDouble extends cdk.Resource implements codepipeline.IPipeline {
   public readonly role: iam.Role;
   public readonly artifactBucket: s3.IBucket;
 
-  constructor(scope: cdk.Construct, id: string, { pipelineName, role }: { pipelineName?: string, role: iam.Role }) {
+  constructor(scope: constructs.Construct, id: string, { pipelineName, role }: { pipelineName?: string, role: iam.Role }) {
     super(scope, id);
     this.pipelineName = pipelineName || 'TestPipeline';
     this.pipelineArn = cdk.Stack.of(this).formatArn({ service: 'codepipeline', resource: 'pipeline', resourceName: this.pipelineName });
@@ -391,7 +392,7 @@ class StageDouble implements codepipeline.IStage {
 class RoleDouble extends iam.Role {
   public readonly statements = new Array<iam.PolicyStatement>();
 
-  constructor(scope: cdk.Construct, id: string, props: iam.RoleProps = { assumedBy: new iam.ServicePrincipal('test') }) {
+  constructor(scope: constructs.Construct, id: string, props: iam.RoleProps = { assumedBy: new iam.ServicePrincipal('test') }) {
     super(scope, id, props);
   }
 

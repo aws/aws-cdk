@@ -1,5 +1,5 @@
+import { Construct } from 'constructs';
 import { CfnElement } from './cfn-element';
-import { Construct } from './construct-compat';
 import { CfnReference } from './private/cfn-reference';
 import { IResolvable, IResolveContext } from './resolvable';
 import { Token } from './token';
@@ -289,8 +289,8 @@ export class CfnParameter extends CfnElement {
    * The parameter value, if it represents a string.
    */
   public get valueAsString(): string {
-    if (!isStringType(this.type)) {
-      throw new Error(`Parameter type (${this.type}) is not a string type`);
+    if (!isStringType(this.type) && !isNumberType(this.type)) {
+      throw new Error(`Parameter type (${this.type}) is not a string or number type`);
     }
     return Token.asString(this.value);
   }

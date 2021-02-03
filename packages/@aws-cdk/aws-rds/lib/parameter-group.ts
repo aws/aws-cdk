@@ -1,4 +1,5 @@
-import { Construct, IResource, Lazy, Resource } from '@aws-cdk/core';
+import { IResource, Lazy, Resource } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { IEngine } from './engine';
 import { CfnDBClusterParameterGroup, CfnDBParameterGroup } from './rds.generated';
 
@@ -138,7 +139,7 @@ export class ParameterGroup extends Resource implements IParameterGroup {
       this.clusterCfnGroup = new CfnDBClusterParameterGroup(this, id, {
         description: this.description || `Cluster parameter group for ${this.family}`,
         family: this.family,
-        parameters: Lazy.anyValue({ produce: () => this.parameters }),
+        parameters: Lazy.any({ produce: () => this.parameters }),
       });
     }
     return {
@@ -152,7 +153,7 @@ export class ParameterGroup extends Resource implements IParameterGroup {
       this.instanceCfnGroup = new CfnDBParameterGroup(this, id, {
         description: this.description || `Parameter group for ${this.family}`,
         family: this.family,
-        parameters: Lazy.anyValue({ produce: () => this.parameters }),
+        parameters: Lazy.any({ produce: () => this.parameters }),
       });
     }
     return {

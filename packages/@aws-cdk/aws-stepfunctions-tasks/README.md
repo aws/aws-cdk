@@ -1,10 +1,12 @@
 # Tasks for AWS Step Functions
 <!--BEGIN STABILITY BANNER-->
+
 ---
 
 ![cdk-constructs: Stable](https://img.shields.io/badge/cdk--constructs-stable-success.svg?style=for-the-badge)
 
 ---
+
 <!--END STABILITY BANNER-->
 
 [AWS Step Functions](https://docs.aws.amazon.com/step-functions/latest/dg/welcome.html) is a web service that enables you to coordinate the
@@ -26,6 +28,11 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
   - [ResultPath](#resultpath)
 - [Parameters](#task-parameters-from-the-state-json)
 - [Evaluate Expression](#evaluate-expression)
+- [Athena](#athena)
+  - [StartQueryExecution](#startQueryExecution)
+  - [GetQueryExecution](#getQueryExecution)
+  - [GetQueryResults](#getQueryResults)
+  - [StopQueryExecution](#stopQueryExecution)
 - [Batch](#batch)
   - [SubmitJob](#submitjob)
 - [CodeBuild](#codebuild)
@@ -48,10 +55,15 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
   - [Modify Instance Fleet](#modify-instance-fleet)
   - [Modify Instance Group](#modify-instance-group)
 - [Glue](#glue)
+- [Glue DataBrew](#glue-databrew)
 - [Lambda](#lambda)
 - [SageMaker](#sagemaker)
   - [Create Training Job](#create-training-job)
   - [Create Transform Job](#create-transform-job)
+  - [Create Endpoint](#create-endpoint)
+  - [Create Endpoint Config](#create-endpoint-config)
+  - [Create Model](#create-model)
+  - [Update Endpoint](#update-endpoint)
 - [SNS](#sns)
 - [Step Functions](#step-functions)
   - [Start Execution](#start-execution)
@@ -142,7 +154,7 @@ merge a subset of the task output to the input.
 Most tasks take parameters. Parameter values can either be static, supplied directly
 in the workflow definition (by specifying their values), or a value available at runtime
 in the state machine's execution (either as its input or an output of a prior state).
-Parameter values available at runtime can be specified via the `Data` class,
+Parameter values available at runtime can be specified via the `JsonPath` class,
 using methods such as `JsonPath.stringAt()`.
 
 The following example provides the field named `input` as the input to the Lambda function
@@ -200,6 +212,72 @@ new sfn.StateMachine(this, 'StateMachine', {
 The `EvaluateExpression` supports a `runtime` prop to specify the Lambda
 runtime to use to evaluate the expression. Currently, the only runtime
 supported is `lambda.Runtime.NODEJS_10_X`.
+
+
+## Athena
+
+Step Functions supports [Athena](https://docs.aws.amazon.com/step-functions/latest/dg/connect-athena.html) through the service integration pattern.
+
+### StartQueryExecution
+
+The [StartQueryExecution](https://docs.aws.amazon.com/athena/latest/APIReference/API_StartQueryExecution.html) API runs the SQL query statement.
+
+```ts
+import * as sfn from '@aws-cdk/aws-stepfunctions';
+import * as tasks from `@aws-cdk/aws-stepfunctions-tasks`;
+
+const startQueryExecutionJob = new tasks.AthenaStartQueryExecution(stack, 'Start Athena Query', {
+  queryString: sfn.JsonPath.stringAt('$.queryString'),
+  queryExecutionContext: {
+    database: 'mydatabase',
+  },
+  resultConfiguration: {
+    encryptionConfiguration: {
+      encryptionOption: tasks.EncryptionOption.S3_MANAGED,
+    },
+    outputLocation: sfn.JsonPath.stringAt('$.outputLocation'),
+  },
+});
+```
+
+### GetQueryExecution
+
+The [GetQueryExecution](https://docs.aws.amazon.com/athena/latest/APIReference/API_GetQueryExecution.html) API gets information about a single execution of a query.
+
+```ts
+import * as sfn from '@aws-cdk/aws-stepfunctions';
+import * as tasks from `@aws-cdk/aws-stepfunctions-tasks`;
+
+const getQueryExecutionJob = new tasks.AthenaGetQueryExecution(stack, 'Get Query Execution', {
+  queryExecutionId: sfn.JsonPath.stringAt('$.QueryExecutionId'),
+});
+```
+
+### GetQueryResults
+
+The [GetQueryResults](https://docs.aws.amazon.com/athena/latest/APIReference/API_GetQueryResults.html) API that streams the results of a single query execution specified by QueryExecutionId from S3.
+
+```ts
+import * as sfn from '@aws-cdk/aws-stepfunctions';
+import * as tasks from `@aws-cdk/aws-stepfunctions-tasks`;
+
+const getQueryResultsJob = new tasks.AthenaGetQueryResults(stack, 'Get Query Results', {
+  queryExecutionId: sfn.JsonPath.stringAt('$.QueryExecutionId'),
+});
+```
+
+### StopQueryExecution
+
+The [StopQueryExecution](https://docs.aws.amazon.com/athena/latest/APIReference/API_StopQueryExecution.html) API that stops a query execution.
+
+```ts
+import * as sfn from '@aws-cdk/aws-stepfunctions';
+import * as tasks from `@aws-cdk/aws-stepfunctions-tasks`;
+
+const stopQueryExecutionJob = new tasks.AthenaStopQueryExecution(stack, 'Stop Query Execution', {
+  queryExecutionId: sfn.JsonPath.stringAt('$.QueryExecutionId'),
+});
+```
 
 ## Batch
 
@@ -358,6 +436,8 @@ CPU and memory. Similarly, when you scale down the task count, Amazon ECS must d
 which tasks to terminate. You can apply task placement strategies and constraints to
 customize how Amazon ECS places and terminates tasks. Learn more about [task placement](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task-placement.html)
 
+The latest ACTIVE revision of the passed task definition is used for running the task.
+
 The following example runs a job from a task definition on EC2
 
 ```ts
@@ -411,7 +491,9 @@ isolation by design. Learn more about [Fargate](https://aws.amazon.com/fargate/)
 
 The Fargate launch type allows you to run your containerized applications without the need
 to provision and manage the backend infrastructure. Just register your task definition and
-Fargate launches the container for you.
+Fargate launches the container for you. The latest ACTIVE revision of the passed 
+task definition is used for running the task. Learn more about 
+[Fargate Versioning](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_DescribeTaskDefinition.html)
 
 The following example runs a job from a task definition on Fargate
 
@@ -441,6 +523,7 @@ const runTask = new tasks.EcsRunTask(stack, 'RunFargate', {
   integrationPattern: sfn.IntegrationPattern.RUN_JOB,
   cluster,
   taskDefinition,
+  assignPublicIp: true,
   containerOverrides: [{
     containerDefinition,
     environment: [{ name: 'SOME_KEY', value: sfn.JsonPath.stringAt('$.SomeKey') }],
@@ -589,12 +672,24 @@ You can call the [`StartJobRun`](https://docs.aws.amazon.com/glue/latest/dg/aws-
 
 ```ts
 new GlueStartJobRun(stack, 'Task', {
-  jobName: 'my-glue-job',
+  glueJobName: 'my-glue-job',
   arguments: {
     key: 'value',
   },
   timeout: cdk.Duration.minutes(30),
   notifyDelayAfter: cdk.Duration.minutes(5),
+});
+```
+
+## Glue DataBrew
+
+Step Functions supports [AWS Glue DataBrew](https://docs.aws.amazon.com/step-functions/latest/dg/connect-databrew.html) through the service integration pattern.
+
+You can call the [`StartJobRun`](https://docs.aws.amazon.com/databrew/latest/dg/API_StartJobRun.html) API from a `Task` state.
+
+```ts
+new GlueDataBrewStartJobRun(stack, 'Task', {
+  Name: 'databrew-job',
 });
 ```
 
@@ -701,6 +796,12 @@ new tasks.LambdaInvoke(stack, 'Invoke with callback', {
 call. Learn more about [Callback with the Task
 Token](https://docs.aws.amazon.com/step-functions/latest/dg/connect-to-resource.html#connect-wait-token).
 
+AWS Lambda can occasionally experience transient service errors. In this case, invoking Lambda
+results in a 500 error, such as `ServiceException`, `AWSLambdaException`, or `SdkClientException`.
+As a best practive, the `LambdaInvoke` task will retry on those errors with an interval of 2 seconds,
+a back-off rate of 2 and 6 maximum attempts. Set the `retryOnServiceExceptions` prop to `false` to
+disable this behavior.
+
 ## SageMaker
 
 Step Functions supports [AWS SageMaker](https://docs.aws.amazon.com/step-functions/latest/dg/connect-sagemaker.html) through the service integration pattern.
@@ -748,6 +849,10 @@ You can call the [`CreateTransformJob`](https://docs.aws.amazon.com/sagemaker/la
 new sfn.SagemakerTransformTask(this, 'Batch Inference', {
   transformJobName: 'MyTransformJob',
   modelName: 'MyModelName',
+  modelClientOptions: {
+    invocationMaxRetries: 3,  // default is 0
+    invocationTimeout: cdk.Duration.minutes(5),  // default is 60 seconds
+  }
   role,
   transformInput: {
     transformDataSource: {
@@ -766,6 +871,59 @@ new sfn.SagemakerTransformTask(this, 'Batch Inference', {
   }
 });
 
+```
+
+### Create Endpoint
+
+You can call the [`CreateEndpoint`](https://docs.aws.amazon.com/sagemaker/latest/APIReference/API_CreateEndpoint.html) API from a `Task` state.
+
+```ts
+new sfn.SageMakerCreateEndpoint(this, 'SagemakerEndpoint', {
+  endpointName: sfn.JsonPath.stringAt('$.EndpointName'),
+  endpointConfigName: sfn.JsonPath.stringAt('$.EndpointConfigName'),
+});
+```
+
+### Create Endpoint Config
+
+You can call the [`CreateEndpointConfig`](https://docs.aws.amazon.com/sagemaker/latest/APIReference/API_CreateEndpointConfig.html) API from a `Task` state.
+
+```ts
+new sfn.SageMakerCreateEndpointConfig(this, 'SagemakerEndpointConfig', {
+  endpointConfigName: 'MyEndpointConfig',
+  productionVariants: [{
+  initialInstanceCount: 2,
+  instanceType: ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.XLARGE),
+     modelName: 'MyModel',
+     variantName: 'awesome-variant',
+   }],
+});
+```
+
+### Create Model
+
+You can call the [`CreateModel`](https://docs.aws.amazon.com/sagemaker/latest/APIReference/API_CreateModel.html) API from a `Task` state.
+
+```ts
+new sfn.SageMakerCreateModel(this, 'Sagemaker', {
+  modelName: 'MyModel',
+  primaryContainer: new tasks.ContainerDefinition({
+   image: tasks.DockerImage.fromJsonExpression(sfn.JsonPath.stringAt('$.Model.imageName')),
+   mode: tasks.Mode.SINGLE_MODEL,
+   modelS3Location: tasks.S3Location.fromJsonExpression('$.TrainingJob.ModelArtifacts.S3ModelArtifacts'),
+  }),
+});
+```
+
+### Update Endpoint
+
+You can call the [`UpdateEndpoint`](https://docs.aws.amazon.com/sagemaker/latest/APIReference/API_UpdateEndpoint.html) API from a `Task` state.
+
+```ts
+new sfn.SageMakerUpdateEndpoint(this, 'SagemakerEndpoint', {
+    endpointName: sfn.JsonPath.stringAt('$.Endpoint.Name'),
+    endpointConfigName: sfn.JsonPath.stringAt('$.Endpoint.EndpointConfig'),
+  });
 ```
 
 ## SNS

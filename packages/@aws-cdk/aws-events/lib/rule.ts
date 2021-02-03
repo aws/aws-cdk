@@ -1,4 +1,5 @@
-import { App, Construct, Lazy, Resource, Stack, Token } from '@aws-cdk/core';
+import { App, Lazy, Names, Resource, Stack, Token } from '@aws-cdk/core';
+import { Construct, Node } from 'constructs';
 import { IEventBus } from './event-bus';
 import { EventPattern } from './event-pattern';
 import { CfnEventBusPolicy, CfnRule } from './events.generated';
@@ -131,8 +132,8 @@ export class Rule extends Resource implements IRule {
       description: this.description,
       state: props.enabled == null ? 'ENABLED' : (props.enabled ? 'ENABLED' : 'DISABLED'),
       scheduleExpression: this.scheduleExpression,
-      eventPattern: Lazy.anyValue({ produce: () => this._renderEventPattern() }),
-      targets: Lazy.anyValue({ produce: () => this.renderTargets() }),
+      eventPattern: Lazy.any({ produce: () => this._renderEventPattern() }),
+      targets: Lazy.any({ produce: () => this.renderTargets() }),
       eventBusName: props.eventBus && props.eventBus.eventBusName,
     });
 
@@ -225,7 +226,7 @@ export class Rule extends Resource implements IRule {
         if (!sourceApp || !App.isApp(sourceApp)) {
           throw new Error('Event stack which uses cross-account targets must be part of a CDK app');
         }
-        const targetApp = targetProps.targetResource.node.root;
+        const targetApp = Node.of(targetProps.targetResource).root;
         if (!targetApp || !App.isApp(targetApp)) {
           throw new Error('Target stack which uses cross-account event targets must be part of a CDK app');
         }
@@ -275,7 +276,7 @@ export class Rule extends Resource implements IRule {
           }
         }
 
-        new CopyRule(targetStack, `${this.node.uniqueId}-${id}`, {
+        new CopyRule(targetStack, `${Names.uniqueId(this)}-${id}`, {
           targets: [target],
           eventPattern: this.eventPattern,
           schedule: this.scheduleExpression ? Schedule.expression(this.scheduleExpression) : undefined,

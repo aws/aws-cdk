@@ -37,6 +37,34 @@
         ]
       }
     },
+    "VirtualHostedObjectURL": {
+      "Value": {
+        "Fn::Join": [
+          "",
+          [
+            "https://",
+            {
+              "Fn::GetAtt": ["MyBucketF68F3FF0", "RegionalDomainName"]
+            },
+            "/myfolder/myfile.txt"
+          ]
+        ]
+      }
+    },
+    "VirtualHostedObjectURLNonRegional": {
+      "Value": {
+        "Fn::Join": [
+          "",
+          [
+            "https://",
+            {
+              "Fn::GetAtt": ["MyBucketF68F3FF0", "DomainName"]
+            },
+            "/myfolder/myfile.txt"
+          ]
+        ]
+      }
+    },
     "S3ObjectURL": {
       "Value": {
         "Fn::Join": [

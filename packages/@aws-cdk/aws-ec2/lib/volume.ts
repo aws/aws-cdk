@@ -2,9 +2,15 @@ import * as crypto from 'crypto';
 
 import { AccountRootPrincipal, Grant, IGrantable } from '@aws-cdk/aws-iam';
 import { IKey, ViaServicePrincipal } from '@aws-cdk/aws-kms';
-import { Annotations, Construct, IResource, Resource, Size, SizeRoundingBehavior, Stack, Token, Tags } from '@aws-cdk/core';
+import { Annotations, IResource, Resource, Size, SizeRoundingBehavior, Stack, Token, Tags, Names } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CfnInstance, CfnVolume } from './ec2.generated';
 import { IInstance } from './instance';
+
+// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
+// eslint-disable-next-line
+import { Construct as CoreConstruct } from '@aws-cdk/core';
+
 
 /**
  * Block device
@@ -199,14 +205,24 @@ export enum EbsDeviceVolumeType {
   STANDARD = 'standard',
 
   /**
-   *  Provisioned IOPS SSD
+   *  Provisioned IOPS SSD - IO1
    */
   IO1 = 'io1',
 
   /**
-   * General Purpose SSD
+   *  Provisioned IOPS SSD - IO2
+   */
+  IO2 = 'io2',
+
+  /**
+   * General Purpose SSD - GP2
    */
   GP2 = 'gp2',
+
+  /**
+   * General Purpose SSD - GP3
+   */
+  GP3 = 'gp3',
 
   /**
    * Throughput Optimized HDD
@@ -219,14 +235,24 @@ export enum EbsDeviceVolumeType {
   SC1 = 'sc1',
 
   /**
-   * General purpose SSD volume that balances price and performance for a wide variety of workloads.
+   * General purpose SSD volume (GP2) that balances price and performance for a wide variety of workloads.
    */
   GENERAL_PURPOSE_SSD = GP2,
 
   /**
-   * Highest-performance SSD volume for mission-critical low-latency or high-throughput workloads.
+   * General purpose SSD volume (GP3) that balances price and performance for a wide variety of workloads.
+   */
+  GENERAL_PURPOSE_SSD_GP3 = GP3,
+
+  /**
+   * Highest-performance SSD volume (IO1) for mission-critical low-latency or high-throughput workloads.
    */
   PROVISIONED_IOPS_SSD = IO1,
+
+  /**
+   * Highest-performance SSD volume (IO2) for mission-critical low-latency or high-throughput workloads.
+   */
+  PROVISIONED_IOPS_SSD_IO2 = IO2,
 
   /**
    * Low-cost HDD volume designed for frequently accessed, throughput-intensive workloads.
@@ -508,7 +534,7 @@ abstract class VolumeBase extends Resource implements IVolume {
     // The ResourceTag condition requires that all resources involved in the operation have
     // the given tag, so we tag this and all constructs given.
     Tags.of(this).add(tagKey, tagValue);
-    constructs.forEach(construct => Tags.of(construct).add(tagKey, tagValue));
+    constructs.forEach(construct => Tags.of(construct as CoreConstruct).add(tagKey, tagValue));
 
     return result;
   }
@@ -537,7 +563,7 @@ abstract class VolumeBase extends Resource implements IVolume {
     // The ResourceTag condition requires that all resources involved in the operation have
     // the given tag, so we tag this and all constructs given.
     Tags.of(this).add(tagKey, tagValue);
-    constructs.forEach(construct => Tags.of(construct).add(tagKey, tagValue));
+    constructs.forEach(construct => Tags.of(construct as CoreConstruct).add(tagKey, tagValue));
 
     return result;
   }
@@ -558,7 +584,7 @@ abstract class VolumeBase extends Resource implements IVolume {
 
   private calculateResourceTagValue(constructs: Construct[]): string {
     const md5 = crypto.createHash('md5');
-    constructs.forEach(construct => md5.update(construct.node.uniqueId));
+    constructs.forEach(construct => md5.update(Names.uniqueId(construct)));
     return md5.digest('hex');
   }
 }

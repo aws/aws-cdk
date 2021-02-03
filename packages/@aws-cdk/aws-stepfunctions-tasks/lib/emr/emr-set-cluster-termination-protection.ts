@@ -1,6 +1,7 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
-import { Aws, Construct } from '@aws-cdk/core';
+import { Stack } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { integrationResourceArn } from '../private/task-utils';
 
 /**
@@ -36,7 +37,13 @@ export class EmrSetClusterTerminationProtection extends sfn.TaskStateBase {
     this.taskPolicies = [
       new iam.PolicyStatement({
         actions: ['elasticmapreduce:SetTerminationProtection'],
-        resources: [`arn:aws:elasticmapreduce:${Aws.REGION}:${Aws.ACCOUNT_ID}:cluster/*`],
+        resources: [
+          Stack.of(this).formatArn({
+            service: 'elasticmapreduce',
+            resource: 'cluster',
+            resourceName: '*',
+          }),
+        ],
       }),
     ];
   }

@@ -5,6 +5,11 @@ import * as cdk from '@aws-cdk/core';
 import { Test, testCase } from 'nodeunit';
 import { CustomResource, CustomResourceProvider } from '../lib';
 
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct } from '@aws-cdk/core';
+
+/* eslint-disable cdk/no-core-construct */
 /* eslint-disable quote-props */
 
 export = testCase({
@@ -211,10 +216,10 @@ export = testCase({
   },
 });
 
-class TestCustomResource extends cdk.Construct {
+class TestCustomResource extends Construct {
   public readonly resource: CustomResource;
 
-  constructor(scope: cdk.Construct, id: string, opts: { removalPolicy?: cdk.RemovalPolicy } = {}) {
+  constructor(scope: Construct, id: string, opts: { removalPolicy?: cdk.RemovalPolicy } = {}) {
     super(scope, id);
 
     const singletonLambda = new lambda.SingletonFunction(this, 'Lambda', {

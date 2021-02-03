@@ -18,7 +18,50 @@ export const TRANSIENT_CONTEXT_KEY = '$dontSaveContext';
 
 const CONTEXT_KEY = 'context';
 
-export type Arguments = { readonly [name: string]: unknown };
+export enum Command {
+  LS = 'ls',
+  LIST = 'list',
+  DIFF = 'diff',
+  BOOTSTRAP = 'bootstrap',
+  DEPLOY = 'deploy',
+  DESTROY = 'destroy',
+  SYNTHESIZE = 'synthesize',
+  SYNTH = 'synth',
+  METADATA = 'metadata',
+  INIT = 'init',
+  VERSION = 'version',
+}
+
+const BUNDLING_COMMANDS = [
+  Command.DEPLOY,
+  Command.DIFF,
+  Command.SYNTH,
+  Command.SYNTHESIZE,
+];
+
+export type Arguments = {
+  readonly _: [Command, ...string[]];
+  readonly exclusively?: boolean;
+  readonly STACKS?: string[];
+  readonly lookups?: boolean;
+  readonly [name: string]: unknown;
+};
+
+export interface ConfigurationProps {
+  /**
+   * Configuration passed via command line arguments
+   *
+   * @default - Nothing passed
+   */
+  readonly commandLineArguments?: Arguments;
+
+  /**
+   * Whether or not to use context from `.cdk.json` in user home directory
+   *
+   * @default true
+   */
+  readonly readUserContext?: boolean;
+}
 
 /**
  * All sources of settings combined
@@ -39,9 +82,9 @@ export class Configuration {
   private _projectContext?: Settings;
   private loaded = false;
 
-  constructor(commandLineArguments?: Arguments) {
-    this.commandLineArguments = commandLineArguments
-      ? Settings.fromCommandLineArguments(commandLineArguments)
+  constructor(private readonly props: ConfigurationProps = {}) {
+    this.commandLineArguments = props.commandLineArguments
+      ? Settings.fromCommandLineArguments(props.commandLineArguments)
       : new Settings();
     this.commandLineContext = this.commandLineArguments.subSettings([CONTEXT_KEY]).makeReadOnly();
   }
@@ -68,10 +111,18 @@ export class Configuration {
     this._projectConfig = await loadAndLog(PROJECT_CONFIG);
     this._projectContext = await loadAndLog(PROJECT_CONTEXT);
 
-    this.context = new Context(
+    const readUserContext = this.props.readUserContext ?? true;
+
+    const contextSources = [
       this.commandLineContext,
       this.projectConfig.subSettings([CONTEXT_KEY]).makeReadOnly(),
-      this.projectContext);
+      this.projectContext,
+    ];
+    if (readUserContext) {
+      contextSources.push(userConfig.subSettings([CONTEXT_KEY]).makeReadOnly());
+    }
+
+    this.context = new Context(...contextSources);
 
     // Build settings from what's left
     this.settings = this.defaultConfig
@@ -185,10 +236,23 @@ export class Settings {
     const context = this.parseStringContextListToObject(argv);
     const tags = this.parseStringTagsListToObject(expectStringList(argv.tags));
 
+    // Determine bundling stacks
+    let bundlingStacks: string[];
+    if (BUNDLING_COMMANDS.includes(argv._[0])) {
+    // If we deploy, diff or synth a list of stacks exclusively we skip
+    // bundling for all other stacks.
+      bundlingStacks = argv.exclusively
+        ? argv.STACKS ?? ['*']
+        : ['*'];
+    } else { // Skip bundling for all stacks
+      bundlingStacks = [];
+    }
+
     return new Settings({
       app: argv.app,
       browser: argv.browser,
       context,
+      debug: argv.debug,
       tags,
       language: argv.language,
       pathMetadata: argv.pathMetadata,
@@ -205,6 +269,8 @@ export class Settings {
       staging: argv.staging,
       output: argv.output,
       progress: argv.progress,
+      bundlingStacks,
+      lookups: argv.lookups,
     });
   }
 

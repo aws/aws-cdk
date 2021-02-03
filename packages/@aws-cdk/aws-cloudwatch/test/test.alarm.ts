@@ -1,7 +1,8 @@
 import { ABSENT, expect, haveResource } from '@aws-cdk/assert';
-import { Construct, Duration, Stack } from '@aws-cdk/core';
+import { Duration, Stack } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { Test } from 'nodeunit';
-import { Alarm, IAlarm, IAlarmAction, Metric } from '../lib';
+import { Alarm, IAlarm, IAlarmAction, Metric, MathExpression, IMetric } from '../lib';
 
 const testMetric = new Metric({
   namespace: 'CDK/Test',
@@ -9,6 +10,38 @@ const testMetric = new Metric({
 });
 
 export = {
+
+  'alarm does not accept a math expression with more than 10 metrics'(test: Test) {
+
+    const stack = new Stack();
+
+    const usingMetrics: Record<string, IMetric> = {};
+
+    for (const i of [...Array(15).keys()]) {
+      const metricName = `metric${i}`;
+      usingMetrics[metricName] = new Metric({
+        namespace: 'CDK/Test',
+        metricName: metricName,
+      });
+    }
+
+    const math = new MathExpression({
+      expression: 'a',
+      usingMetrics,
+    });
+
+    test.throws(() => {
+
+      new Alarm(stack, 'Alarm', {
+        metric: math,
+        threshold: 1000,
+        evaluationPeriods: 3,
+      });
+
+    }, /Alarms on math expressions cannot contain more than 10 individual metrics/);
+
+    test.done();
+  },
   'can make simple alarm'(test: Test) {
     // GIVEN
     const stack = new Stack();

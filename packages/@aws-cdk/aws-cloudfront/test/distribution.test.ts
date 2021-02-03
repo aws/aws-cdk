@@ -1,11 +1,11 @@
-import { ABSENT } from '@aws-cdk/assert';
+import { ABSENT, objectLike } from '@aws-cdk/assert';
 import '@aws-cdk/assert/jest';
 import * as acm from '@aws-cdk/aws-certificatemanager';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as s3 from '@aws-cdk/aws-s3';
 import { App, Duration, Stack } from '@aws-cdk/core';
-import { CfnDistribution, Distribution, GeoRestriction, HttpVersion, IOrigin, LambdaEdgeEventType, PriceClass } from '../lib';
-import { defaultOrigin } from './test-origin';
+import { CfnDistribution, Distribution, GeoRestriction, HttpVersion, IOrigin, LambdaEdgeEventType, PriceClass, SecurityPolicyProtocol } from '../lib';
+import { defaultOrigin, defaultOriginGroup } from './test-origin';
 
 let app: App;
 let stack: Stack;
@@ -24,7 +24,8 @@ test('minimal example renders correctly', () => {
   expect(stack).toHaveResource('AWS::CloudFront::Distribution', {
     DistributionConfig: {
       DefaultCacheBehavior: {
-        ForwardedValues: { QueryString: false },
+        CachePolicyId: '658327ea-f89d-4fab-a63d-7e88639e58f6',
+        Compress: true,
         TargetOriginId: 'StackMyDistOrigin1D6D5E535',
         ViewerProtocolPolicy: 'allow-all',
       },
@@ -67,7 +68,8 @@ test('exhaustive example of props renders correctly', () => {
     DistributionConfig: {
       Aliases: ['example.com'],
       DefaultCacheBehavior: {
-        ForwardedValues: { QueryString: false },
+        CachePolicyId: '658327ea-f89d-4fab-a63d-7e88639e58f6',
+        Compress: true,
         TargetOriginId: 'StackMyDistOrigin1D6D5E535',
         ViewerProtocolPolicy: 'allow-all',
       },
@@ -132,13 +134,15 @@ describe('multiple behaviors', () => {
     expect(stack).toHaveResource('AWS::CloudFront::Distribution', {
       DistributionConfig: {
         DefaultCacheBehavior: {
-          ForwardedValues: { QueryString: false },
+          CachePolicyId: '658327ea-f89d-4fab-a63d-7e88639e58f6',
+          Compress: true,
           TargetOriginId: 'StackMyDistOrigin1D6D5E535',
           ViewerProtocolPolicy: 'allow-all',
         },
         CacheBehaviors: [{
+          CachePolicyId: '658327ea-f89d-4fab-a63d-7e88639e58f6',
+          Compress: true,
           PathPattern: 'api/*',
-          ForwardedValues: { QueryString: false },
           TargetOriginId: 'StackMyDistOrigin1D6D5E535',
           ViewerProtocolPolicy: 'allow-all',
         }],
@@ -169,13 +173,15 @@ describe('multiple behaviors', () => {
     expect(stack).toHaveResource('AWS::CloudFront::Distribution', {
       DistributionConfig: {
         DefaultCacheBehavior: {
-          ForwardedValues: { QueryString: false },
+          CachePolicyId: '658327ea-f89d-4fab-a63d-7e88639e58f6',
+          Compress: true,
           TargetOriginId: 'StackMyDistOrigin1D6D5E535',
           ViewerProtocolPolicy: 'allow-all',
         },
         CacheBehaviors: [{
+          CachePolicyId: '658327ea-f89d-4fab-a63d-7e88639e58f6',
+          Compress: true,
           PathPattern: 'api/*',
-          ForwardedValues: { QueryString: false },
           TargetOriginId: 'StackMyDistOrigin20B96F3AD',
           ViewerProtocolPolicy: 'allow-all',
         }],
@@ -214,19 +220,22 @@ describe('multiple behaviors', () => {
     expect(stack).toHaveResource('AWS::CloudFront::Distribution', {
       DistributionConfig: {
         DefaultCacheBehavior: {
-          ForwardedValues: { QueryString: false },
+          CachePolicyId: '658327ea-f89d-4fab-a63d-7e88639e58f6',
+          Compress: true,
           TargetOriginId: 'StackMyDistOrigin1D6D5E535',
           ViewerProtocolPolicy: 'allow-all',
         },
         CacheBehaviors: [{
+          CachePolicyId: '658327ea-f89d-4fab-a63d-7e88639e58f6',
+          Compress: true,
           PathPattern: 'api/1*',
-          ForwardedValues: { QueryString: false },
           TargetOriginId: 'StackMyDistOrigin20B96F3AD',
           ViewerProtocolPolicy: 'allow-all',
         },
         {
+          CachePolicyId: '658327ea-f89d-4fab-a63d-7e88639e58f6',
+          Compress: true,
           PathPattern: 'api/2*',
-          ForwardedValues: { QueryString: false },
           TargetOriginId: 'StackMyDistOrigin1D6D5E535',
           ViewerProtocolPolicy: 'allow-all',
         }],
@@ -305,23 +314,30 @@ describe('certificates', () => {
       },
     });
   });
+
+  test('adding a certificate with non default security policy protocol', () => {
+    const certificate = acm.Certificate.fromCertificateArn(stack, 'Cert', 'arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012');
+    new Distribution(stack, 'Dist', {
+      defaultBehavior: { origin: defaultOrigin() },
+      domainNames: ['www.example.com'],
+      minimumProtocolVersion: SecurityPolicyProtocol.TLS_V1_2016,
+      certificate: certificate,
+    });
+
+    expect(stack).toHaveResourceLike('AWS::CloudFront::Distribution', {
+      DistributionConfig: {
+        ViewerCertificate: {
+          AcmCertificateArn: 'arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012',
+          SslSupportMethod: 'sni-only',
+          MinimumProtocolVersion: 'TLSv1_2016',
+        },
+      },
+    });
+  });
+
 });
 
 describe('custom error responses', () => {
-
-  test('should fail if responsePagePath is defined but responseCode is not', () => {
-    const origin = defaultOrigin();
-
-    expect(() => {
-      new Distribution(stack, 'Dist', {
-        defaultBehavior: { origin },
-        errorResponses: [{
-          httpStatus: 404,
-          responsePagePath: '/errors/404.html',
-        }],
-      });
-    }).toThrow(/\'responseCode\' must be provided if \'responsePagePath\' is defined/);
-  });
 
   test('should fail if only the error code is provided', () => {
     const origin = defaultOrigin();
@@ -331,7 +347,7 @@ describe('custom error responses', () => {
         defaultBehavior: { origin },
         errorResponses: [{ httpStatus: 404 }],
       });
-    }).toThrow(/A custom error response without either a \'responseCode\' or \'errorCachingMinTtl\' is not valid./);
+    }).toThrow(/A custom error response without either a \'responseHttpStatus\', \'ttl\' or \'responsePagePath\' is not valid./);
   });
 
   test('should render the array of error configs if provided', () => {
@@ -339,13 +355,20 @@ describe('custom error responses', () => {
     new Distribution(stack, 'Dist', {
       defaultBehavior: { origin },
       errorResponses: [{
+        // responseHttpStatus defaults to httpsStatus
         httpStatus: 404,
-        responseHttpStatus: 404,
         responsePagePath: '/errors/404.html',
       },
       {
+        // without responsePagePath
         httpStatus: 500,
         ttl: Duration.seconds(2),
+      },
+      {
+        // with responseHttpStatus different from httpStatus
+        httpStatus: 403,
+        responseHttpStatus: 200,
+        responsePagePath: '/index.html',
       }],
     });
 
@@ -360,6 +383,11 @@ describe('custom error responses', () => {
           {
             ErrorCachingMinTTL: 2,
             ErrorCode: 500,
+          },
+          {
+            ErrorCode: 403,
+            ResponseCode: 200,
+            ResponsePagePath: '/index.html',
           },
         ],
       },
@@ -608,7 +636,7 @@ describe('with Lambda@Edge functions', () => {
 
   test('with incompatible env vars', () => {
     const envLambdaFunction = new lambda.Function(stack, 'EnvFunction', {
-      runtime: lambda.Runtime.NODEJS,
+      runtime: lambda.Runtime.NODEJS_12_X,
       code: lambda.Code.fromInline('whateverwithenv'),
       handler: 'index.handler',
       environment: {
@@ -697,5 +725,41 @@ test('escape hatches are supported', () => {
         },
       },
     },
+  });
+});
+
+describe('origin IDs', () => {
+  test('origin ID is limited to 128 characters', () => {
+    const nestedStack = new Stack(stack, 'LongNameThatWillEndUpGeneratingAUniqueNodeIdThatIsLongerThanTheOneHundredAndTwentyEightCharacterLimit');
+
+    new Distribution(nestedStack, 'AReallyAwesomeDistributionWithAMemorableNameThatIWillNeverForget', {
+      defaultBehavior: { origin: defaultOrigin() },
+    });
+
+    expect(nestedStack).toHaveResourceLike('AWS::CloudFront::Distribution', {
+      DistributionConfig: {
+        Origins: [objectLike({
+          Id: 'ngerThanTheOneHundredAndTwentyEightCharacterLimitAReallyAwesomeDistributionWithAMemorableNameThatIWillNeverForgetOrigin1D38031F9',
+        })],
+      },
+    });
+  });
+
+  test('origin group ID is limited to 128 characters', () => {
+    const nestedStack = new Stack(stack, 'LongNameThatWillEndUpGeneratingAUniqueNodeIdThatIsLongerThanTheOneHundredAndTwentyEightCharacterLimit');
+
+    new Distribution(nestedStack, 'AReallyAwesomeDistributionWithAMemorableNameThatIWillNeverForget', {
+      defaultBehavior: { origin: defaultOriginGroup() },
+    });
+
+    expect(nestedStack).toHaveResourceLike('AWS::CloudFront::Distribution', {
+      DistributionConfig: {
+        OriginGroups: {
+          Items: [objectLike({
+            Id: 'hanTheOneHundredAndTwentyEightCharacterLimitAReallyAwesomeDistributionWithAMemorableNameThatIWillNeverForgetOriginGroup1B5CE3FE6',
+          })],
+        },
+      },
+    });
   });
 });

@@ -32,7 +32,7 @@ export function haveResource(
 }
 
 /**
- * Sugar for calling ``haveResources`` with ``allowValueExtension`` set to ``true``.
+ * Sugar for calling ``haveResource`` with ``allowValueExtension`` set to ``true``.
  */
 export function haveResourceLike(
   resourceType: string,
@@ -66,7 +66,7 @@ export class HaveResourceAssertion extends JestFriendlyAssertion<StackInspector>
     for (const logicalId of Object.keys(inspector.value.Resources || {})) {
       const resource = inspector.value.Resources[logicalId];
       if (resource.Type === this.resourceType) {
-        const propsToCheck = this.part === ResourcePart.Properties ? resource.Properties : resource;
+        const propsToCheck = this.part === ResourcePart.Properties ? (resource.Properties ?? {}) : resource;
 
         // Pass inspection object as 2nd argument, initialize failure with default string,
         // to maintain backwards compatibility with old predicate API.

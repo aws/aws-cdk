@@ -6,7 +6,12 @@ import * as kms from '@aws-cdk/aws-kms';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
+import { Construct } from 'constructs';
 import { toSymlinkFollow } from './compat';
+
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 const ARCHIVE_EXTENSIONS = ['.zip', '.jar'];
 
@@ -53,7 +58,7 @@ export interface AssetProps extends AssetOptions {
  * An asset represents a local file or directory, which is automatically uploaded to S3
  * and then can be referenced within a CDK application.
  */
-export class Asset extends cdk.Construct implements cdk.IAsset {
+export class Asset extends CoreConstruct implements cdk.IAsset {
   /**
    * Attribute that represents the name of the bucket this asset exists in.
    */
@@ -83,7 +88,7 @@ export class Asset extends cdk.Construct implements cdk.IAsset {
   public readonly s3ObjectUrl: string;
 
   /**
-   * The path to the asset (stringinfied token).
+   * The path to the asset, relative to the current Cloud Assembly
    *
    * If asset staging is disabled, this will just be the original path.
    * If asset staging is enabled it will be the staged path.
@@ -94,6 +99,12 @@ export class Asset extends cdk.Construct implements cdk.IAsset {
    * The S3 bucket in which this asset resides.
    */
   public readonly bucket: s3.IBucket;
+
+  /**
+   * Indicates if this asset is a single file. Allows constructs to ensure that the
+   * correct file type was used.
+   */
+  public readonly isFile: boolean;
 
   /**
    * Indicates if this asset is a zip archive. Allows constructs to ensure that the
@@ -110,7 +121,7 @@ export class Asset extends cdk.Construct implements cdk.IAsset {
 
   public readonly assetHash: string;
 
-  constructor(scope: cdk.Construct, id: string, props: AssetProps) {
+  constructor(scope: Construct, id: string, props: AssetProps) {
     super(scope, id);
 
     // stage the asset source (conditionally).
@@ -124,21 +135,23 @@ export class Asset extends cdk.Construct implements cdk.IAsset {
     this.assetHash = staging.assetHash;
     this.sourceHash = this.assetHash;
 
-    this.assetPath = staging.stagedPath;
+    const stack = cdk.Stack.of(this);
+
+    this.assetPath = staging.relativeStagedPath(stack);
 
     const packaging = determinePackaging(staging.sourcePath);
+
+    this.isFile = packaging === cdk.FileAssetPackaging.FILE;
 
     // sets isZipArchive based on the type of packaging and file extension
     this.isZipArchive = packaging === cdk.FileAssetPackaging.ZIP_DIRECTORY
       ? true
       : ARCHIVE_EXTENSIONS.some(ext => staging.sourcePath.toLowerCase().endsWith(ext));
 
-    const stack = cdk.Stack.of(this);
-
     const location = stack.synthesizer.addFileAsset({
       packaging,
       sourceHash: this.sourceHash,
-      fileName: staging.stagedPath,
+      fileName: this.assetPath,
     });
 
     this.s3BucketName = location.bucketName;

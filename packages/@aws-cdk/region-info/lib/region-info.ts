@@ -109,4 +109,12 @@ export class RegionInfo {
   public get dlcRepositoryAccount(): string | undefined {
     return Fact.find(this.name, FactName.DLC_REPOSITORY_ACCOUNT);
   }
+
+  /**
+   * The ID of the AWS account that owns the public ECR repository that contains the
+   * AWS App Mesh Envoy Proxy images in a given region.
+   */
+  public get appMeshRepositoryAccount(): string | undefined {
+    return Fact.find(this.name, FactName.APPMESH_ECR_ACCOUNT);
+  }
 }

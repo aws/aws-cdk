@@ -1,11 +1,101 @@
-import { Annotations, Construct, Lazy, Resource } from '@aws-cdk/core';
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
+import { Annotations, ContextProvider, Lazy, Resource, Token } from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
+import { Construct } from 'constructs';
 import { CfnListener } from '../elasticloadbalancingv2.generated';
 import { IListenerAction } from './listener-action';
+import { mapTagMapToCxschema } from './util';
+
+/**
+ * Options for listener lookup
+ */
+export interface BaseListenerLookupOptions {
+  /**
+   * Filter listeners by associated load balancer arn
+   * @default - does not filter by load balancer arn
+   */
+  readonly loadBalancerArn?: string;
+
+  /**
+   * Filter listeners by associated load balancer tags
+   * @default - does not filter by load balancer tags
+   */
+  readonly loadBalancerTags?: Record<string, string>;
+
+  /**
+   * Filter listeners by listener port
+   * @default - does not filter by listener port
+   */
+  readonly listenerPort?: number;
+}
+
+/**
+ * Options for querying the load balancer listener context provider
+ * @internal
+ */
+export interface ListenerQueryContextProviderOptions {
+  /**
+   * User's provided options
+   */
+  readonly userOptions: BaseListenerLookupOptions;
+
+  /**
+   * Type of load balancer expected
+   */
+  readonly loadBalancerType: cxschema.LoadBalancerType;
+
+  /**
+   * ARN of the listener to look up
+   * @default - does not filter by listener arn
+   */
+  readonly listenerArn?: string;
+
+  /**
+   * Optional protocol of the listener to look up
+   */
+  readonly listenerProtocol?: cxschema.LoadBalancerListenerProtocol;
+}
 
 /**
  * Base class for listeners
  */
 export abstract class BaseListener extends Resource {
+  /**
+   * Queries the load balancer listener context provider for load balancer
+   * listener info.
+   * @internal
+   */
+  protected static _queryContextProvider(scope: Construct, options: ListenerQueryContextProviderOptions) {
+    if (Token.isUnresolved(options.userOptions.loadBalancerArn)
+      || Object.values(options.userOptions.loadBalancerTags ?? {}).some(Token.isUnresolved)
+      || Token.isUnresolved(options.userOptions.listenerPort)) {
+      throw new Error('All arguments to look up a load balancer listener must be concrete (no Tokens)');
+    }
+
+    let cxschemaTags: cxschema.Tag[] | undefined;
+    if (options.userOptions.loadBalancerTags) {
+      cxschemaTags = mapTagMapToCxschema(options.userOptions.loadBalancerTags);
+    }
+
+    const props: cxapi.LoadBalancerListenerContextResponse = ContextProvider.getValue(scope, {
+      provider: cxschema.ContextProvider.LOAD_BALANCER_LISTENER_PROVIDER,
+      props: {
+        listenerArn: options.listenerArn,
+        listenerPort: options.userOptions.listenerPort,
+        listenerProtocol: options.listenerProtocol,
+        loadBalancerArn: options.userOptions.loadBalancerArn,
+        loadBalancerTags: cxschemaTags,
+        loadBalancerType: options.loadBalancerType,
+      } as cxschema.LoadBalancerListenerContextQuery,
+      dummyValue: {
+        listenerArn: `arn:aws:elasticloadbalancing:us-west-2:123456789012:listener/${options.loadBalancerType}/my-load-balancer/50dc6c495c0c9188/f2f7dc8efc522ab2`,
+        listenerPort: 80,
+        securityGroupIds: ['sg-123456789012'],
+      } as cxapi.LoadBalancerListenerContextResponse,
+    }).value;
+
+    return props;
+  }
   /**
    * @attribute
    */
@@ -18,7 +108,7 @@ export abstract class BaseListener extends Resource {
 
     const resource = new CfnListener(this, 'Resource', {
       ...additionalProps,
-      defaultActions: Lazy.anyValue({ produce: () => this.defaultAction ? this.defaultAction.renderActions() : [] }),
+      defaultActions: Lazy.any({ produce: () => this.defaultAction ? this.defaultAction.renderActions() : [] }),
     });
 
     this.listenerArn = resource.ref;

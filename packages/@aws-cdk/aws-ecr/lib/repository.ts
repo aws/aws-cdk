@@ -1,7 +1,7 @@
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
-import { Construct, IConstruct, IResource, Lazy, RemovalPolicy, Resource, Stack, Token } from '@aws-cdk/core';
-import * as cr from '@aws-cdk/custom-resources';
+import { IResource, Lazy, RemovalPolicy, Resource, Stack, Token } from '@aws-cdk/core';
+import { IConstruct, Construct } from 'constructs';
 import { CfnRepository } from './ecr.generated';
 import { LifecycleRule, TagStatus } from './lifecycle';
 
@@ -417,8 +417,11 @@ export class Repository extends RepositoryBase {
     const resource = new CfnRepository(this, 'Resource', {
       repositoryName: this.physicalName,
       // It says "Text", but they actually mean "Object".
-      repositoryPolicyText: Lazy.anyValue({ produce: () => this.policyDocument }),
-      lifecyclePolicy: Lazy.anyValue({ produce: () => this.renderLifecyclePolicy() }),
+      repositoryPolicyText: Lazy.any({ produce: () => this.policyDocument }),
+      lifecyclePolicy: Lazy.any({ produce: () => this.renderLifecyclePolicy() }),
+      imageScanningConfiguration: !props.imageScanOnPush ? undefined : {
+        scanOnPush: true,
+      },
     });
 
     resource.applyRemovalPolicy(props.removalPolicy);
@@ -434,36 +437,6 @@ export class Repository extends RepositoryBase {
       resource: 'repository',
       resourceName: this.physicalName,
     });
-
-    // image scanOnPush
-    if (props.imageScanOnPush) {
-      new cr.AwsCustomResource(this, 'ImageScanOnPush', {
-        resourceType: 'Custom::ECRImageScanOnPush',
-        onUpdate: {
-          service: 'ECR',
-          action: 'putImageScanningConfiguration',
-          parameters: {
-            repositoryName: this.repositoryName,
-            imageScanningConfiguration: {
-              scanOnPush: props.imageScanOnPush,
-            },
-          },
-          physicalResourceId: cr.PhysicalResourceId.of(this.repositoryArn),
-        },
-        onDelete: {
-          service: 'ECR',
-          action: 'putImageScanningConfiguration',
-          parameters: {
-            repositoryName: this.repositoryName,
-            imageScanningConfiguration: {
-              scanOnPush: false,
-            },
-          },
-          physicalResourceId: cr.PhysicalResourceId.of(this.repositoryArn),
-        },
-        policy: cr.AwsCustomResourcePolicy.fromSdkCalls({ resources: [this.repositoryArn] }),
-      });
-    }
   }
 
   public addToResourcePolicy(statement: iam.PolicyStatement): iam.AddToResourcePolicyResult {

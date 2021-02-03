@@ -645,7 +645,6 @@ Object {
           "MaximumPercent": 200,
           "MinimumHealthyPercent": 50,
         },
-        "DesiredCount": 1,
         "EnableECSManagedTags": false,
         "LaunchType": "FARGATE",
         "NetworkConfiguration": Object {
@@ -1092,20 +1091,7 @@ Object {
             Object {
               "Action": "dynamodb:ListStreams",
               "Effect": "Allow",
-              "Resource": Object {
-                "Fn::Join": Array [
-                  "",
-                  Array [
-                    Object {
-                      "Fn::GetAtt": Array [
-                        "TableCD117FA1",
-                        "Arn",
-                      ],
-                    },
-                    "/stream/*",
-                  ],
-                ],
-              },
+              "Resource": "*",
             },
             Object {
               "Action": Array [
@@ -1651,6 +1637,7 @@ Object {
         "Environment": Object {
           "ComputeType": "BUILD_GENERAL1_SMALL",
           "Image": "aws/codebuild/standard:1.0",
+          "ImagePullCredentialsType": "CODEBUILD",
           "PrivilegedMode": false,
           "Type": "LINUX_CONTAINER",
         },
@@ -1750,6 +1737,7 @@ Object {
                 "codebuild:CreateReport",
                 "codebuild:UpdateReport",
                 "codebuild:BatchPutTestCases",
+                "codebuild:BatchPutCodeCoverages",
               ],
               "Effect": "Allow",
               "Resource": Object {

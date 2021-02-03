@@ -1,5 +1,6 @@
 import * as codebuild from '@aws-cdk/aws-codebuild';
-import { Construct, IResource, Lazy, Resource } from '@aws-cdk/core';
+import { IResource, Lazy, Resource } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CfnBranch } from './amplify.generated';
 import { IApp } from './app';
 import { BasicAuth } from './basic-auth';
@@ -140,7 +141,7 @@ export class Branch extends Resource implements IBranch {
       description: props.description,
       enableAutoBuild: props.autoBuild === undefined ? true : props.autoBuild,
       enablePullRequestPreview: props.pullRequestPreview === undefined ? true : props.pullRequestPreview,
-      environmentVariables: Lazy.anyValue({ produce: () => renderEnvironmentVariables(this.environmentVariables) }, { omitEmptyArray: true }),
+      environmentVariables: Lazy.any({ produce: () => renderEnvironmentVariables(this.environmentVariables) }, { omitEmptyArray: true }),
       pullRequestEnvironmentName: props.pullRequestEnvironmentName,
       stage: props.stage,
     });

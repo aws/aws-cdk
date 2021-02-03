@@ -1,16 +1,21 @@
 import * as crypto from 'crypto';
+import { Construct, Node } from 'constructs';
 import { FileAssetPackaging } from './assets';
 import { Fn } from './cfn-fn';
 import { Aws } from './cfn-pseudo';
 import { CfnResource } from './cfn-resource';
 import { CfnStack } from './cloudformation.generated';
-import { Construct } from './construct-compat';
 import { Duration } from './duration';
 import { Lazy } from './lazy';
+import { Names } from './names';
 import { IResolveContext } from './resolvable';
 import { Stack } from './stack';
 import { NestedStackSynthesizer } from './stack-synthesizers';
 import { Token } from './token';
+
+// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
+// eslint-disable-next-line
+import { Construct as CoreConstruct } from './construct-compat';
 
 const NESTED_STACK_SYMBOL = Symbol.for('@aws-cdk/core.NestedStack');
 
@@ -105,18 +110,19 @@ export class NestedStack extends Stack {
     this._parentStack = parentStack;
 
     // @deprecate: remove this in v2.0 (redundent)
-    const parentScope = new Construct(scope, id + '.NestedStack');
+    const parentScope = new CoreConstruct(scope, id + '.NestedStack');
 
     Object.defineProperty(this, NESTED_STACK_SYMBOL, { value: true });
 
     // this is the file name of the synthesized template file within the cloud assembly
-    this.templateFile = `${this.node.uniqueId}.nested.template.json`;
+    this.templateFile = `${Names.uniqueId(this)}.nested.template.json`;
 
     this.parameters = props.parameters || {};
 
     this.resource = new CfnStack(parentScope, `${id}.NestedStackResource`, {
-      templateUrl: Lazy.stringValue({ produce: () => this._templateUrl || '<unresolved>' }),
-      parameters: Lazy.anyValue({ produce: () => Object.keys(this.parameters).length > 0 ? this.parameters : undefined }),
+      // This value cannot be cached since it changes during the synthesis phase
+      templateUrl: Lazy.uncachedString({ produce: () => this._templateUrl || '<unresolved>' }),
+      parameters: Lazy.any({ produce: () => Object.keys(this.parameters).length > 0 ? this.parameters : undefined }),
       notificationArns: props.notificationArns,
       timeoutInMinutes: props.timeout ? props.timeout.toMinutes() : undefined,
     });
@@ -223,7 +229,7 @@ function findParentStack(scope: Construct): Stack {
     throw new Error('Nested stacks cannot be defined as a root construct');
   }
 
-  const parentStack = scope.node.scopes.reverse().find(p => Stack.isStack(p));
+  const parentStack = Node.of(scope).scopes.reverse().find(p => Stack.isStack(p));
   if (!parentStack) {
     throw new Error('Nested stacks must be defined within scope of another non-nested stack');
   }

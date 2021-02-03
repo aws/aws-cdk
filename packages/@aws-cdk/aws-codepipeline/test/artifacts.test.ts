@@ -285,7 +285,9 @@ nodeunitShim({
   },
 });
 
+/* eslint-disable cdk/no-core-construct */
 function validate(construct: cdk.IConstruct): cdk.ValidationError[] {
   cdk.ConstructNode.prepare(construct.node);
   return cdk.ConstructNode.validate(construct.node);
 }
+/* eslint-enable cdk/no-core-construct */

@@ -2,7 +2,7 @@ import * as path from 'path';
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
-import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 
 /**
  * Properties for EvaluateExpression
@@ -55,7 +55,7 @@ export class EvaluateExpression extends sfn.TaskStateBase {
 
   private readonly evalFn: lambda.SingletonFunction;
 
-  constructor(scope: cdk.Construct, id: string, private readonly props: EvaluateExpressionProps) {
+  constructor(scope: Construct, id: string, private readonly props: EvaluateExpressionProps) {
     super(scope, id, props);
 
     this.evalFn = createEvalFn(this.props.runtime || lambda.Runtime.NODEJS_10_X, this);
@@ -72,7 +72,7 @@ export class EvaluateExpression extends sfn.TaskStateBase {
    * @internal
    */
   protected _renderTask(): any {
-    const matches = this.props.expression.match(/\$[.\[][.a-zA-Z[\]0-9]+/g);
+    const matches = this.props.expression.match(/\$[.\[][.a-zA-Z[\]0-9-_]+/g);
 
     let expressionAttributeValues = {};
     if (matches) {
@@ -96,7 +96,7 @@ export class EvaluateExpression extends sfn.TaskStateBase {
   }
 }
 
-function createEvalFn(runtime: lambda.Runtime, scope: cdk.Construct) {
+function createEvalFn(runtime: lambda.Runtime, scope: Construct) {
   const code = lambda.Code.asset(path.join(__dirname, `eval-${runtime.name}-handler`));
   const lambdaPurpose = 'Eval';
 

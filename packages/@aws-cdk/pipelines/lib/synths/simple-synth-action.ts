@@ -3,10 +3,12 @@ import * as path from 'path';
 import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as codepipeline_actions from '@aws-cdk/aws-codepipeline-actions';
+import * as ec2 from '@aws-cdk/aws-ec2';
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
 import { Construct, Stack } from '@aws-cdk/core';
 import { cloudAssemblyBuildSpecDir } from '../private/construct-internals';
+import { toPosixPath } from '../private/fs';
 import { copyEnvironmentVariables, filterEmpty } from './_util';
 
 /**
@@ -88,6 +90,22 @@ export interface SimpleSynthOptions {
    * @default - No policy statements added to CodeBuild Project Role
    */
   readonly rolePolicyStatements?: iam.PolicyStatement[];
+
+  /**
+   * The VPC where to execute the SimpleSynth.
+   *
+   * @default - No VPC
+   */
+  readonly vpc?: ec2.IVpc;
+
+  /**
+   * Which subnets to use.
+   *
+   * Only used if 'vpc' is supplied.
+   *
+   * @default - All private subnets.
+   */
+  readonly subnetSelection?: ec2.SubnetSelection;
 }
 
 /**
@@ -186,6 +204,8 @@ export class SimpleSynthAction implements codepipeline.IAction, iam.IGrantable {
       ...options,
       installCommand: options.installCommand ?? 'npm ci',
       synthCommand: options.synthCommand ?? 'npx cdk synth',
+      vpc: options.vpc,
+      subnetSelection: options.subnetSelection,
     });
   }
 
@@ -201,6 +221,8 @@ export class SimpleSynthAction implements codepipeline.IAction, iam.IGrantable {
       ...options,
       installCommand: options.installCommand ?? 'yarn install --frozen-lockfile',
       synthCommand: options.synthCommand ?? 'npx cdk synth',
+      vpc: options.vpc,
+      subnetSelection: options.subnetSelection,
     });
   }
 
@@ -298,7 +320,6 @@ export class SimpleSynthAction implements codepipeline.IAction, iam.IGrantable {
 
     const environmentVariables = {
       ...copyEnvironmentVariables(...this.props.copyEnvironmentVariables || []),
-      ...this.props.environmentVariables,
     };
 
     // A hash over the values that make the CodeBuild Project unique (and necessary
@@ -306,7 +327,7 @@ export class SimpleSynthAction implements codepipeline.IAction, iam.IGrantable {
     // here because the pipeline will definitely restart if projectName changes.
     // (Resolve tokens)
     const projectConfigHash = hash(Stack.of(scope).resolve({
-      environment,
+      environment: serializeBuildEnvironment(environment),
       buildSpecString: buildSpec.toBuildSpec(),
       environmentVariables,
     }));
@@ -314,6 +335,8 @@ export class SimpleSynthAction implements codepipeline.IAction, iam.IGrantable {
     const project = new codebuild.PipelineProject(scope, 'CdkBuildProject', {
       projectName: this.props.projectName,
       environment,
+      vpc: this.props.vpc,
+      subnetSelection: this.props.subnetSelection,
       buildSpec,
       environmentVariables,
     });
@@ -336,6 +359,7 @@ export class SimpleSynthAction implements codepipeline.IAction, iam.IGrantable {
       // Hence, the pipeline will be restarted. This is necessary if the users
       // adds (for example) build or test commands to the buildspec.
       environmentVariables: {
+        ...this.props.environmentVariables,
         _PROJECT_CONFIG_HASH: { value: projectConfigHash },
       },
       project,
@@ -350,7 +374,7 @@ export class SimpleSynthAction implements codepipeline.IAction, iam.IGrantable {
       // using secondary artifacts or not.
 
       const cloudAsmArtifactSpec = {
-        'base-directory': path.join(self.props.subdirectory ?? '.', cloudAssemblyBuildSpecDir(scope)),
+        'base-directory': toPosixPath(path.join(self.props.subdirectory ?? '.', cloudAssemblyBuildSpecDir(scope))),
         'files': '**/*',
       };
 
@@ -365,7 +389,7 @@ export class SimpleSynthAction implements codepipeline.IAction, iam.IGrantable {
             throw new Error('You must give the output artifact a name');
           }
           secondary[art.artifact.artifactName] = {
-            'base-directory': path.join(self.props.subdirectory ?? '.', art.directory),
+            'base-directory': toPosixPath(path.join(self.props.subdirectory ?? '.', art.directory)),
             'files': '**/*',
           };
         });
@@ -462,4 +486,19 @@ function hash<A>(obj: A) {
   const d = crypto.createHash('sha256');
   d.update(JSON.stringify(obj));
   return d.digest('hex');
+}
+
+/**
+ * Serialize a build environment to data (get rid of constructs & objects), so we can JSON.stringify it
+ */
+function serializeBuildEnvironment(env: codebuild.BuildEnvironment) {
+  return {
+    privileged: env.privileged,
+    environmentVariables: env.environmentVariables,
+    type: env.buildImage?.type,
+    imageId: env.buildImage?.imageId,
+    computeType: env.computeType,
+    imagePullPrincipalType: env.buildImage?.imagePullPrincipalType,
+    secretsManagerArn: env.buildImage?.secretsManagerCredentials?.secretArn,
+  };
 }

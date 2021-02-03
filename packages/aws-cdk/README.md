@@ -1,10 +1,12 @@
-## AWS CDK Toolkit
+# AWS CDK Toolkit
 <!--BEGIN STABILITY BANNER-->
+
 ---
 
 ![cdk-constructs: Stable](https://img.shields.io/badge/cdk--constructs-stable-success.svg?style=for-the-badge)
 
 ---
+
 <!--END STABILITY BANNER-->
 
 The AWS CDK Toolkit provides the `cdk` command-line interface that can be used to work with AWS CDK applications.
@@ -23,8 +25,10 @@ Command                           | Description
 
 This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.
 
-### Commands
-#### `cdk docs`
+## Commands
+
+### `cdk docs`
+
 Outputs the URL to the documentation for the current toolkit version, and attempts to open a browser to that URL.
 
 ```console
@@ -37,7 +41,8 @@ $ cdk docs --browser='chrome %u'
 https://docs.aws.amazon.com/cdk/api/latest/
 ```
 
-#### `cdk init`
+### `cdk init`
+
 Creates a new CDK project.
 
 ```console
@@ -45,15 +50,18 @@ $ # List the available template types & languages
 $ cdk init --list
 Available templates:
 * app: Template for a CDK Application
-   └─ cdk init app --language=[java|typescript]
+   └─ cdk init app --language=[csharp|fsharp|java|javascript|python|typescript]
 * lib: Template for a CDK Construct Library
    └─ cdk init lib --language=typescript
+* sample-app: Example CDK Application with some constructs
+   └─ cdk init sample-app --language=[csharp|fsharp|java|javascript|python|typescript]
 
 $ # Create a new library application in typescript
 $ cdk init lib --language=typescript
 ```
 
-#### `cdk list`
+### `cdk list`
+
 Lists the stacks modeled in the CDK app.
 
 ```console
@@ -85,7 +93,8 @@ $ cdk list --app='node bin/main.js' --long
         region: bermuda-triangle-3
 ```
 
-#### `cdk synthesize`
+### `cdk synthesize`
+
 Synthesizes the CDK app and produces a cloud assembly to a designated output (defaults to `cdk.out`)
 
 Typically you don't interact directly with cloud assemblies. They are files that include everything
@@ -106,13 +115,17 @@ $ cdk synth
 
 $ # Synthesize cloud assembly for StackName, but don't include dependencies
 $ cdk synth MyStackName --exclusively
+
+$ # Synthesize cloud assembly for StackName, but don't cloudFormation template output to STDOUT
+$ cdk synth MyStackName --quiet
 ```
 
 See the [AWS Documentation](https://docs.aws.amazon.com/cdk/latest/guide/apps.html#apps_cloud_assembly) to learn more about cloud assemblies.
 See the [CDK reference documentation](https://docs.aws.amazon.com/cdk/api/latest/docs/cloud-assembly-schema-readme.html) for details on the cloud assembly specification
 
 
-#### `cdk diff`
+### `cdk diff`
+
 Computes differences between the infrastructure specified in the current state of the CDK app and the currently
 deployed application (or a user-specified CloudFormation template). This command returns non-zero if any differences are
 found.
@@ -125,7 +138,8 @@ $ # Diff against a specific template document
 $ cdk diff --app='node bin/main.js' MyStackName --template=path/to/template.yml
 ```
 
-#### `cdk deploy`
+### `cdk deploy`
+
 Deploys a stack of your CDK app to it's environment. During the deployment, the toolkit will output progress
 indications, similar to what can be observed in the AWS CloudFormation Console. If the environment was never
 bootstrapped (using `cdk bootstrap`), only stacks that are not using assets and synthesize to a template that is under
@@ -140,7 +154,15 @@ currently deployed stack to the template and tags that are about to be deployed 
 will skip deployment if they are identical. Use `--force` to override this behavior
 and always deploy the stack.
 
-##### Parameters
+#### Deploying multiple stacks
+
+You can have multiple stacks in a cdk app. An example can be found in [how to create multiple stacks](https://docs.aws.amazon.com/cdk/latest/guide/stack_how_to_create_multiple_stacks.html).
+
+In order to deploy them, you can list the stacks you want to deploy.
+
+If you want to deploy all of them, you can use the flag `--all` or the wildcard `*` to deploy all stacks in an app.
+
+#### Parameters
 
 Pass parameters to your template during deployment by using `--parameters
 (STACK:KEY=VALUE)`. This will apply the value `VALUE` to the key `KEY` for stack `STACK`.
@@ -148,6 +170,7 @@ Pass parameters to your template during deployment by using `--parameters
 Example of providing an attribute value for an SNS Topic through a parameter in TypeScript:
 
 Usage of parameter in CDK Stack:
+
 ```ts
 new sns.Topic(this, 'TopicParameter', {
     topicName: new cdk.CfnParameter(this, 'TopicNameParam').value.toString()
@@ -155,12 +178,14 @@ new sns.Topic(this, 'TopicParameter', {
 ```
 
 Parameter values as a part of `cdk deploy`
+
 ```console
 $ cdk deploy --parameters "MyStackName:TopicNameParam=parameterized"
 ```
 
 Parameter values can be overwritten by supplying the `--force` flag.
 Example of overwriting the topic name from a previous deployment.
+
 ```console
 $ cdk deploy --parameters "ParametersStack:TopicNameParam=blahagain" --force
 ```
@@ -171,13 +196,14 @@ Parameters provided to Stacks that do not make use of the parameter will not suc
 ⚠️ Parameters do not propagate to NestedStacks. These must be sent with the constructor.
 See Nested Stack [documentation](https://docs.aws.amazon.com/cdk/api/latest/docs/@aws-cdk_aws-cloudformation.NestedStack.html)
 
-##### Outputs
+#### Outputs
 
 Write stack outputs from deployments into a file. When your stack finishes deploying, all stack outputs
 will be written to the output file as JSON.
 
 Usage of output in a CDK stack
-```typescript
+
+```ts
 const fn = new lambda.Function(this, "fn", {
   handler: "index.handler",
   code: lambda.Code.fromInline(`exports.handler = \${handler.toString()}`),
@@ -196,6 +222,7 @@ $ cdk deploy --outputs-file outputs.json
 ```
 
 When the stack finishes deployment, `outputs.json` would look like this:
+
 ```json
 {
   "MyStack": {
@@ -216,6 +243,7 @@ $ cdk deploy '*' --outputs-file "/Users/code/myproject/outputs.json"
 ```
 
 Example `outputs.json` after deployment of multiple stacks
+
 ```json
 {
   "MyStack": {
@@ -227,12 +255,13 @@ Example `outputs.json` after deployment of multiple stacks
 }
 ```
 
-##### Deployment Progress
+#### Deployment Progress
 
 By default, stack deployment events are displayed as a progress bar with the events for the resource
 currently being deployed.
 
 Set the `--progress` flag to request the complete history which includes all CloudFormation events
+
 ```console
 $ cdk deploy --progress events
 ```
@@ -241,7 +270,8 @@ Alternatively, the `progress` key can be specified in the project config (`cdk.j
 
 The following shows a sample `cdk.json` where the `progress` key is set to *events*.
 When `cdk deploy` is executed, deployment events will include the complete history.
-```
+
+```json
 {
   "app": "npx ts-node bin/myproject.ts",
   "context": {
@@ -252,9 +282,11 @@ When `cdk deploy` is executed, deployment events will include the complete histo
   "progress": "events"
 }
 ```
+
 The `progress` key can also be specified as a user setting (`~/.cdk.json`)
 
-#### `cdk destroy`
+### `cdk destroy`
+
 Deletes a stack from it's environment. This will cause the resources in the stack to be destroyed (unless they were
 configured with a `DeletionPolicy` of `Retain`). During the stack destruction, the command will output progress
 information similar to what `cdk deploy` provides.
@@ -263,7 +295,8 @@ information similar to what `cdk deploy` provides.
 $ cdk destroy --app='node bin/main.js' MyStackName
 ```
 
-#### `cdk bootstrap`
+### `cdk bootstrap`
+
 Deploys a `CDKToolkit` CloudFormation stack into the specified environment(s), that provides an S3 bucket that
 `cdk deploy` will use to store synthesized templates and the related assets, before triggering a CloudFormation stack
 update. The name of the deployed stack can be configured using the `--toolkit-stack-name` argument. The S3 Bucket
@@ -294,7 +327,8 @@ $ cdk bootstrap --show-template > bootstrap-template.yaml
 $ cdk bootstrap --template bootstrap-template.yaml
 ```
 
-#### `cdk doctor`
+### `cdk doctor`
+
 Inspect the current command-line environment and configurations, and collect information that can be useful for
 troubleshooting problems. It is usually a good idea to include the information provided by this command when submitting
 a bug report.
@@ -307,12 +341,19 @@ $ cdk doctor
   - AWS_SDK_LOAD_CONFIG = 1
 ```
 
-### MFA support
+### Bundling
+
+By default asset bundling is skipped for `cdk list` and `cdk destroy`. For `cdk deploy`, `cdk diff`
+and `cdk synthesize` the default is to bundle assets for all stacks unless `exclusively` is specified.
+In this case, only the listed stacks will have their assets bundled.
+
+## MFA support
 
 If `mfa_serial` is found in the active profile of the shared ini file AWS CDK
 will ask for token defined in the `mfa_serial`. This token will be provided to STS assume role call.
 
 Example profile in `~/.aws/config` where `mfa_serial` is used to assume role:
+
 ```ini
 [profile my_assume_role_profile]
 source_profile=my_source_role
@@ -320,15 +361,19 @@ role_arn=arn:aws:iam::123456789123:role/role_to_be_assumed
 mfa_serial=arn:aws:iam::123456789123:mfa/my_user
 ```
 
-### Configuration
+## Configuration
+
 On top of passing configuration through command-line arguments, it is possible to use JSON configuration files. The
 configuration's order of precedence is:
+
 1. Command-line arguments
 2. Project configuration (`./cdk.json`)
 3. User configuration (`~/.cdk.json`)
 
-#### JSON Configuration files
+### JSON Configuration files
+
 Some of the interesting keys that can be used in the JSON configuration files:
+
 ```json5
 {
     "app": "node bin/main.js",        // Command to start the CDK app      (--app='node bin/main.js')
@@ -340,3 +385,10 @@ Some of the interesting keys that can be used in the JSON configuration files:
     "versionReporting": false,         // Opt-out of version reporting      (--no-version-reporting)
 }
 ```
+
+### Environment
+
+The following environment variables affect aws-cdk:
+
+- `CDK_DISABLE_VERSION_CHECK`: If set, disable automatic check for newer versions.
+- `CDK_NEW_BOOTSTRAP`: use the modern bootstrapping stack.

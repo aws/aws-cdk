@@ -1,9 +1,12 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
-import * as core from '@aws-cdk/core';
 import { IEngine } from './engine';
 import { EngineVersion } from './engine-version';
 import { IParameterGroup, ParameterGroup } from './parameter-group';
+
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct } from '@aws-cdk/core';
 
 /**
  * The extra options passed to the {@link IClusterEngine.bindToCluster} method.
@@ -49,6 +52,36 @@ export interface ClusterEngineConfig {
    * @default - use the default port for clusters (3306)
    */
   readonly port?: number;
+
+  /**
+   * Features supported by the database engine.
+   *
+   * @see https://docs.aws.amazon.com/AmazonRDS/latest/APIReference/API_DBEngineVersion.html
+   *
+   * @default - no features
+   */
+  readonly features?: ClusterEngineFeatures;
+}
+
+/**
+ * Represents Database Engine features
+ */
+export interface ClusterEngineFeatures {
+  /**
+   * Feature name for the DB instance that the IAM role to access the S3 bucket for import
+   * is to be associated with.
+   *
+   * @default - no s3Import feature name
+   */
+  readonly s3Import?: string;
+
+  /**
+   * Feature name for the DB instance that the IAM role to export to S3 bucket is to be
+   * associated with.
+   *
+   * @default - no s3Export feature name
+   */
+  readonly s3Export?: string;
 }
 
 /**
@@ -67,7 +100,7 @@ export interface IClusterEngine extends IEngine {
   /**
    * Method called when the engine is used to create a new cluster.
    */
-  bindToCluster(scope: core.Construct, options: ClusterEngineBindOptions): ClusterEngineConfig;
+  bindToCluster(scope: Construct, options: ClusterEngineBindOptions): ClusterEngineConfig;
 }
 
 interface ClusterEngineBaseProps {
@@ -76,6 +109,7 @@ interface ClusterEngineBaseProps {
   readonly multiUserRotationApplication: secretsmanager.SecretRotationApplication;
   readonly defaultPort?: number;
   readonly engineVersion?: EngineVersion;
+  readonly features?: ClusterEngineFeatures;
 }
 
 abstract class ClusterEngineBase implements IClusterEngine {
@@ -87,9 +121,11 @@ abstract class ClusterEngineBase implements IClusterEngine {
   public abstract readonly supportedLogTypes: string[];
 
   private readonly defaultPort?: number;
+  private readonly features?: ClusterEngineFeatures;
 
   constructor(props: ClusterEngineBaseProps) {
     this.engineType = props.engineType;
+    this.features = props.features;
     this.singleUserRotationApplication = props.singleUserRotationApplication;
     this.multiUserRotationApplication = props.multiUserRotationApplication;
     this.defaultPort = props.defaultPort;
@@ -97,11 +133,12 @@ abstract class ClusterEngineBase implements IClusterEngine {
     this.parameterGroupFamily = this.engineVersion ? `${this.engineType}${this.engineVersion.majorVersion}` : undefined;
   }
 
-  public bindToCluster(scope: core.Construct, options: ClusterEngineBindOptions): ClusterEngineConfig {
+  public bindToCluster(scope: Construct, options: ClusterEngineBindOptions): ClusterEngineConfig {
     const parameterGroup = options.parameterGroup ?? this.defaultParameterGroup(scope);
     return {
       parameterGroup,
       port: this.defaultPort,
+      features: this.features,
     };
   }
 
@@ -110,7 +147,7 @@ abstract class ClusterEngineBase implements IClusterEngine {
    * possibly an imported one,
    * if one wasn't provided by the customer explicitly.
    */
-  protected abstract defaultParameterGroup(scope: core.Construct): IParameterGroup | undefined;
+  protected abstract defaultParameterGroup(scope: Construct): IParameterGroup | undefined;
 }
 
 interface MysqlClusterEngineBaseProps {
@@ -120,6 +157,7 @@ interface MysqlClusterEngineBaseProps {
 }
 
 abstract class MySqlClusterEngineBase extends ClusterEngineBase {
+  public readonly engineFamily = 'MYSQL';
   public readonly supportedLogTypes: string[] = ['error', 'general', 'slowquery', 'audit'];
 
   constructor(props: MysqlClusterEngineBaseProps) {
@@ -131,7 +169,7 @@ abstract class MySqlClusterEngineBase extends ClusterEngineBase {
     });
   }
 
-  public bindToCluster(scope: core.Construct, options: ClusterEngineBindOptions): ClusterEngineConfig {
+  public bindToCluster(scope: Construct, options: ClusterEngineBindOptions): ClusterEngineConfig {
     const config = super.bindToCluster(scope, options);
     const parameterGroup = options.parameterGroup ?? (options.s3ImportRole || options.s3ExportRole
       ? new ParameterGroup(scope, 'ClusterParameterGroup', {
@@ -236,7 +274,7 @@ class AuroraClusterEngine extends MySqlClusterEngineBase {
     });
   }
 
-  protected defaultParameterGroup(_scope: core.Construct): IParameterGroup | undefined {
+  protected defaultParameterGroup(_scope: Construct): IParameterGroup | undefined {
     // the default.aurora5.6 ParameterGroup is actually the default,
     // so just return undefined in this case
     return undefined;
@@ -288,6 +326,12 @@ export class AuroraMysqlEngineVersion {
   public static readonly VER_2_08_0 = AuroraMysqlEngineVersion.builtIn_5_7('2.08.0');
   /** Version "5.7.mysql_aurora.2.08.1". */
   public static readonly VER_2_08_1 = AuroraMysqlEngineVersion.builtIn_5_7('2.08.1');
+  /** Version "5.7.mysql_aurora.2.08.2". */
+  public static readonly VER_2_08_2 = AuroraMysqlEngineVersion.builtIn_5_7('2.08.2');
+  /** Version "5.7.mysql_aurora.2.09.0". */
+  public static readonly VER_2_09_0 = AuroraMysqlEngineVersion.builtIn_5_7('2.09.0');
+  /** Version "5.7.mysql_aurora.2.09.1". */
+  public static readonly VER_2_09_1 = AuroraMysqlEngineVersion.builtIn_5_7('2.09.1');
 
   /**
    * Create a new AuroraMysqlEngineVersion with an arbitrary version.
@@ -339,10 +383,29 @@ class AuroraMysqlClusterEngine extends MySqlClusterEngineBase {
     });
   }
 
-  protected defaultParameterGroup(scope: core.Construct): IParameterGroup | undefined {
+  protected defaultParameterGroup(scope: Construct): IParameterGroup | undefined {
     return ParameterGroup.fromParameterGroupName(scope, 'AuroraMySqlDatabaseClusterEngineDefaultParameterGroup',
       `default.${this.parameterGroupFamily}`);
   }
+}
+
+/**
+ * Features supported by this version of the Aurora Postgres cluster engine.
+ */
+export interface AuroraPostgresEngineFeatures {
+  /**
+   * Whether this version of the Aurora Postgres cluster engine supports the S3 data import feature.
+   *
+   * @default false
+   */
+  readonly s3Import?: boolean;
+
+  /**
+   * Whether this version of the Aurora Postgres cluster engine supports the S3 data import feature.
+   *
+   * @default false
+   */
+  readonly s3Export?: boolean;
 }
 
 /**
@@ -362,6 +425,10 @@ export class AuroraPostgresEngineVersion {
   public static readonly VER_9_6_16 = AuroraPostgresEngineVersion.of('9.6.16', '9.6');
   /** Version "9.6.17". */
   public static readonly VER_9_6_17 = AuroraPostgresEngineVersion.of('9.6.17', '9.6');
+  /** Version "9.6.18". */
+  public static readonly VER_9_6_18 = AuroraPostgresEngineVersion.of('9.6.18', '9.6');
+  /** Version "9.6.19". */
+  public static readonly VER_9_6_19 = AuroraPostgresEngineVersion.of('9.6.19', '9.6');
   /** Version "10.4". */
   public static readonly VER_10_4 = AuroraPostgresEngineVersion.of('10.4', '10');
   /** Version "10.5". */
@@ -369,17 +436,25 @@ export class AuroraPostgresEngineVersion {
   /** Version "10.6". */
   public static readonly VER_10_6 = AuroraPostgresEngineVersion.of('10.6', '10');
   /** Version "10.7". */
-  public static readonly VER_10_7 = AuroraPostgresEngineVersion.of('10.7', '10');
+  public static readonly VER_10_7 = AuroraPostgresEngineVersion.of('10.7', '10', { s3Import: true });
   /** Version "10.11". */
-  public static readonly VER_10_11 = AuroraPostgresEngineVersion.of('10.11', '10');
+  public static readonly VER_10_11 = AuroraPostgresEngineVersion.of('10.11', '10', { s3Import: true, s3Export: true });
   /** Version "10.12". */
-  public static readonly VER_10_12 = AuroraPostgresEngineVersion.of('10.12', '10');
+  public static readonly VER_10_12 = AuroraPostgresEngineVersion.of('10.12', '10', { s3Import: true, s3Export: true });
+  /** Version "10.13". */
+  public static readonly VER_10_13 = AuroraPostgresEngineVersion.of('10.13', '10', { s3Import: true, s3Export: true });
+  /** Version "10.14". */
+  public static readonly VER_10_14 = AuroraPostgresEngineVersion.of('10.14', '10', { s3Import: true, s3Export: true });
   /** Version "11.4". */
-  public static readonly VER_11_4 = AuroraPostgresEngineVersion.of('11.4', '11');
+  public static readonly VER_11_4 = AuroraPostgresEngineVersion.of('11.4', '11', { s3Import: true });
   /** Version "11.6". */
-  public static readonly VER_11_6 = AuroraPostgresEngineVersion.of('11.6', '11');
+  public static readonly VER_11_6 = AuroraPostgresEngineVersion.of('11.6', '11', { s3Import: true, s3Export: true });
   /** Version "11.7". */
-  public static readonly VER_11_7 = AuroraPostgresEngineVersion.of('11.7', '11');
+  public static readonly VER_11_7 = AuroraPostgresEngineVersion.of('11.7', '11', { s3Import: true, s3Export: true });
+  /** Version "11.8". */
+  public static readonly VER_11_8 = AuroraPostgresEngineVersion.of('11.8', '11', { s3Import: true, s3Export: true });
+  /** Version "11.9". */
+  public static readonly VER_11_9 = AuroraPostgresEngineVersion.of('11.9', '11', { s3Import: true, s3Export: true });
 
   /**
    * Create a new AuroraPostgresEngineVersion with an arbitrary version.
@@ -389,18 +464,30 @@ export class AuroraPostgresEngineVersion {
    * @param auroraPostgresMajorVersion the major version of the engine,
    *   for example "9.6"
    */
-  public static of(auroraPostgresFullVersion: string, auroraPostgresMajorVersion: string): AuroraPostgresEngineVersion {
-    return new AuroraPostgresEngineVersion(auroraPostgresFullVersion, auroraPostgresMajorVersion);
+  public static of(auroraPostgresFullVersion: string, auroraPostgresMajorVersion: string,
+    auroraPostgresFeatures?: AuroraPostgresEngineFeatures): AuroraPostgresEngineVersion {
+
+    return new AuroraPostgresEngineVersion(auroraPostgresFullVersion, auroraPostgresMajorVersion, auroraPostgresFeatures);
   }
 
   /** The full version string, for example, "9.6.25.1". */
   public readonly auroraPostgresFullVersion: string;
   /** The major version of the engine, for example, "9.6". */
   public readonly auroraPostgresMajorVersion: string;
+  /**
+   * The supported features for the DB engine
+   *
+   * @internal
+   */
+  public readonly _features: ClusterEngineFeatures;
 
-  private constructor(auroraPostgresFullVersion: string, auroraPostgresMajorVersion: string) {
+  private constructor(auroraPostgresFullVersion: string, auroraPostgresMajorVersion: string, auroraPostgresFeatures?: AuroraPostgresEngineFeatures) {
     this.auroraPostgresFullVersion = auroraPostgresFullVersion;
     this.auroraPostgresMajorVersion = auroraPostgresMajorVersion;
+    this._features = {
+      s3Import: auroraPostgresFeatures?.s3Import ? 's3Import' : undefined,
+      s3Export: auroraPostgresFeatures?.s3Export ? 's3Export' : undefined,
+    };
   }
 }
 
@@ -414,6 +501,18 @@ export interface AuroraPostgresClusterEngineProps {
 }
 
 class AuroraPostgresClusterEngine extends ClusterEngineBase {
+  /**
+   * feature name for the S3 data import feature
+   */
+  private static readonly S3_IMPORT_FEATURE_NAME = 's3Import';
+
+  /**
+   * feature name for the S3 data export feature
+   */
+  private static readonly S3_EXPORT_FEATURE_NAME = 's3Export';
+
+  public readonly engineFamily = 'POSTGRESQL';
+  public readonly defaultUsername = 'postgres';
   public readonly supportedLogTypes: string[] = ['postgresql'];
 
   constructor(version?: AuroraPostgresEngineVersion) {
@@ -428,10 +527,33 @@ class AuroraPostgresClusterEngine extends ClusterEngineBase {
           majorVersion: version.auroraPostgresMajorVersion,
         }
         : undefined,
+      features: version
+        ? {
+          s3Import: version._features.s3Import ? AuroraPostgresClusterEngine.S3_IMPORT_FEATURE_NAME : undefined,
+          s3Export: version._features.s3Export ? AuroraPostgresClusterEngine.S3_EXPORT_FEATURE_NAME : undefined,
+        }
+        : {
+          s3Import: AuroraPostgresClusterEngine.S3_IMPORT_FEATURE_NAME,
+          s3Export: AuroraPostgresClusterEngine.S3_EXPORT_FEATURE_NAME,
+        },
     });
   }
 
-  protected defaultParameterGroup(scope: core.Construct): IParameterGroup | undefined {
+  public bindToCluster(scope: Construct, options: ClusterEngineBindOptions): ClusterEngineConfig {
+    const config = super.bindToCluster(scope, options);
+    // skip validation for unversioned as it might be supported/unsupported. we cannot reliably tell at compile-time
+    if (this.engineVersion?.fullVersion) {
+      if (options.s3ImportRole && !(config.features?.s3Import)) {
+        throw new Error(`s3Import is not supported for Postgres version: ${this.engineVersion.fullVersion}. Use a version that supports the s3Import feature.`);
+      }
+      if (options.s3ExportRole && !(config.features?.s3Export)) {
+        throw new Error(`s3Export is not supported for Postgres version: ${this.engineVersion.fullVersion}. Use a version that supports the s3Export feature.`);
+      }
+    }
+    return config;
+  }
+
+  protected defaultParameterGroup(scope: Construct): IParameterGroup | undefined {
     if (!this.parameterGroupFamily) {
       throw new Error('Could not create a new ParameterGroup for an unversioned aurora-postgresql cluster engine. ' +
         'Please either use a versioned engine, or pass an explicit ParameterGroup when creating the cluster');
@@ -449,7 +571,8 @@ export class DatabaseClusterEngine {
   /**
    * The unversioned 'aurora' cluster engine.
    *
-   * @deprecated using unversioned engines is an availability risk.
+   * **Note**: we do not recommend using unversioned engines for non-serverless Clusters,
+   *   as that can pose an availability risk.
    *   We recommend using versioned engines created using the {@link aurora()} method
    */
   public static readonly AURORA: IClusterEngine = new AuroraClusterEngine();
@@ -457,7 +580,8 @@ export class DatabaseClusterEngine {
   /**
    * The unversioned 'aurora-msql' cluster engine.
    *
-   * @deprecated using unversioned engines is an availability risk.
+   * **Note**: we do not recommend using unversioned engines for non-serverless Clusters,
+   *   as that can pose an availability risk.
    *   We recommend using versioned engines created using the {@link auroraMysql()} method
    */
   public static readonly AURORA_MYSQL: IClusterEngine = new AuroraMysqlClusterEngine();
@@ -465,7 +589,8 @@ export class DatabaseClusterEngine {
   /**
    * The unversioned 'aurora-postgresql' cluster engine.
    *
-   * @deprecated using unversioned engines is an availability risk.
+   * **Note**: we do not recommend using unversioned engines for non-serverless Clusters,
+   *   as that can pose an availability risk.
    *   We recommend using versioned engines created using the {@link auroraPostgres()} method
    */
   public static readonly AURORA_POSTGRESQL: IClusterEngine = new AuroraPostgresClusterEngine();

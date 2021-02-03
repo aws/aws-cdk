@@ -15,6 +15,8 @@ module.exports = {
   plugins: [
     '@typescript-eslint',
     'import',
+    'cdk',
+    'jest',
   ],
   parser: '@typescript-eslint/parser',
   parserOptions: {
@@ -24,6 +26,7 @@ module.exports = {
   },
   extends: [
     'plugin:import/typescript',
+    'plugin:jest/recommended',
   ],
   settings: {
     'import/parsers': {
@@ -38,6 +41,8 @@ module.exports = {
   },
   ignorePatterns: ['*.js', '*.d.ts', 'node_modules/', '*.generated.ts'],
   rules: {
+    'cdk/no-core-construct': [ 'error' ],
+    'cdk/no-qualified-construct': [ 'error' ],
     // Require use of the `import { foo } from 'bar';` form instead of `import foo = require('bar');`
     '@typescript-eslint/no-require-imports': ['error'],
     '@typescript-eslint/indent': ['error', 2],
@@ -55,6 +60,7 @@ module.exports = {
     'keyword-spacing': ['error'], // require a space before & after keywords
     'brace-style': ['error', '1tbs', { allowSingleLine: true }], // enforce one true brace style
     'space-before-blocks': 'error', // require space before blocks
+    'curly': ['error', 'multi-line', 'consistent'], // require curly braces for multiline control statements
 
     // Require all imported dependencies are actually declared in package.json
     'import/no-extraneous-dependencies': [
@@ -81,11 +87,25 @@ module.exports = {
       alphabetize: { order: 'asc', caseInsensitive: true },
     }],
 
+    // disallow import of deprecated punycode package
+    'no-restricted-imports': [
+      'error', {
+        paths: [
+          {
+            name: 'punycode',
+            message: `Package 'punycode' has to be imported with trailing slash, see warning in https://github.com/bestiejs/punycode.js#installation`,
+          },
+        ],
+        patterns: ['!punycode/'],
+      },
+    ],
+
     // Cannot import from the same module twice
     'no-duplicate-imports': ['error'],
 
     // Cannot shadow names
-    'no-shadow': ['error'],
+    'no-shadow': ['off'],
+    '@typescript-eslint/no-shadow': ['error'],
 
     // Required spacing in property declarations (copied from TSLint, defaults are good)
     'key-spacing': ['error'],
@@ -176,5 +196,13 @@ module.exports = {
         'method',
       ],
     }],
+
+    // Overrides for plugin:jest/recommended
+    "jest/expect-expect": "off",
+    "jest/no-conditional-expect": "off",
+    "jest/no-done-callback": "off", // Far too many of these in the codebase.
+    "jest/no-standalone-expect": "off", // nodeunitShim confuses this check.
+    "jest/valid-expect": "off", // expect from '@aws-cdk/assert' can take a second argument
+    "jest/valid-title": "off", // A little over-zealous with test('test foo') being an error.
   },
 };

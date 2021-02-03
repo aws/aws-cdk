@@ -1,10 +1,15 @@
 import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CfnListenerRule } from '../elasticloadbalancingv2.generated';
 import { IListenerAction } from '../shared/listener-action';
 import { IApplicationListener } from './application-listener';
 import { ListenerAction } from './application-listener-action';
 import { IApplicationTargetGroup } from './application-target-group';
 import { ListenerCondition } from './conditions';
+
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 /**
  * Basic properties for defining a rule on a listener
@@ -193,7 +198,7 @@ export interface RedirectResponse {
 /**
  * Define a new listener rule
  */
-export class ApplicationListenerRule extends cdk.Construct {
+export class ApplicationListenerRule extends CoreConstruct {
   /**
    * The ARN of this rule
    */
@@ -205,7 +210,7 @@ export class ApplicationListenerRule extends cdk.Construct {
   private readonly listener: IApplicationListener;
   private action?: IListenerAction;
 
-  constructor(scope: cdk.Construct, id: string, props: ApplicationListenerRuleProps) {
+  constructor(scope: Construct, id: string, props: ApplicationListenerRuleProps) {
     super(scope, id);
 
     this.conditions = props.conditions || [];
@@ -230,8 +235,8 @@ export class ApplicationListenerRule extends cdk.Construct {
     const resource = new CfnListenerRule(this, 'Resource', {
       listenerArn: props.listener.listenerArn,
       priority: props.priority,
-      conditions: cdk.Lazy.anyValue({ produce: () => this.renderConditions() }),
-      actions: cdk.Lazy.anyValue({ produce: () => this.action ? this.action.renderActions() : [] }),
+      conditions: cdk.Lazy.any({ produce: () => this.renderConditions() }),
+      actions: cdk.Lazy.any({ produce: () => this.action ? this.action.renderActions() : [] }),
     });
 
     if (props.hostHeader) {

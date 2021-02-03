@@ -12,12 +12,13 @@
     "ubergen": "bin/ubergen"
   },
   "scripts": {
-    "build": "tsc -b && chmod +x bin/ubergen && eslint . --ext=.ts",
-    "watch": "tsc -b -w",
+    "build": "cdk-build",
+    "watch": "cdk-watch",
+    "lint": "cdk-lint",
     "pkglint": "pkglint -f",
     "test": "echo success",
-    "build+test+package": "npm run build+test",
-    "build+test": "npm run build && npm test"
+    "build+test+package": "yarn build+test",
+    "build+test": "yarn build && yarn test"
   },
   "author": {
     "name": "Amazon Web Services",
@@ -31,7 +32,7 @@
     "pkglint": "0.0.0"
   },
   "dependencies": {
-    "fs-extra": "^9.0.1",
+    "fs-extra": "^9.1.0",
     "typescript": "~3.9.7"
   },
   "keywords": [
@@ -41,5 +42,8 @@
   "homepage": "https://github.com/aws/aws-cdk",
   "engines": {
     "node": ">= 10.13.0 <13 || >=13.7.0"
+  },
+  "ubergen": {
+    "exclude": true
   }
 }

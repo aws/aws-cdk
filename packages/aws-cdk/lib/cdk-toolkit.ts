@@ -1,6 +1,5 @@
 import * as path from 'path';
 import { format } from 'util';
-import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as colors from 'colors/safe';
 import * as fs from 'fs-extra';
@@ -206,7 +205,7 @@ export class CdkToolkit {
           stackOutputs[stack.stackName] = result.outputs;
         }
 
-        for (const name of Object.keys(result.outputs)) {
+        for (const name of Object.keys(result.outputs).sort()) {
           const value = result.outputs[name];
           print('%s.%s = %s', colors.cyan(stack.id), colors.cyan(name), colors.underline(colors.cyan(value)));
         }
@@ -296,12 +295,15 @@ export class CdkToolkit {
    * OUTPUT: If more than one stack ends up being selected, an output directory
    * should be supplied, where the templates will be written.
    */
-  public async synth(stackNames: string[], exclusively: boolean): Promise<any> {
+  public async synth(stackNames: string[], exclusively: boolean, quiet: boolean): Promise<any> {
     const stacks = await this.selectStacksForDiff(stackNames, exclusively);
 
     // if we have a single stack, print it to STDOUT
     if (stacks.stackCount === 1) {
-      return stacks.firstStack.template;
+      if (!quiet) {
+        return stacks.firstStack.template;
+      }
+      return undefined;
     }
 
     // This is a slight hack; in integ mode we allow multiple stacks to be synthesized to stdout sequentially.
@@ -626,21 +628,7 @@ export interface DestroyOptions {
  * @returns an array with the tags available in the stack metadata.
  */
 function tagsForStack(stack: cxapi.CloudFormationStackArtifact): Tag[] {
-  const tagLists = stack.findMetadataByType(cxschema.ArtifactMetadataEntryType.STACK_TAGS).map(
-    // the tags in the cloud assembly are stored differently
-    // unfortunately.
-    x => toCloudFormationTags(x.data as cxschema.Tag[]));
-  return Array.prototype.concat([], ...tagLists);
-}
-
-/**
- * Transform tags as they are retrieved from the cloud assembly,
- * to the way that CloudFormation expects them. (Different casing).
- */
-function toCloudFormationTags(tags: cxschema.Tag[]): Tag[] {
-  return tags.map(t => {
-    return { Key: t.key, Value: t.value };
-  });
+  return Object.entries(stack.tags).map(([Key, Value]) => ({ Key, Value }));
 }
 
 export interface Tag {

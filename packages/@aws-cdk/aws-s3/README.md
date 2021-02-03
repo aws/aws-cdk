@@ -1,5 +1,6 @@
-## Amazon S3 Construct Library
+# Amazon S3 Construct Library
 <!--BEGIN STABILITY BANNER-->
+
 ---
 
 ![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)
@@ -7,6 +8,7 @@
 ![cdk-constructs: Stable](https://img.shields.io/badge/cdk--constructs-stable-success.svg?style=for-the-badge)
 
 ---
+
 <!--END STABILITY BANNER-->
 
 Define an unencrypted S3 bucket.
@@ -31,10 +33,12 @@ new Bucket(this, 'MyFirstBucket');
    `arn:aws:s3:::bucket_name/Development/*`)
  * `urlForObject(key)` - the HTTP URL of an object within the bucket (i.e.
    `https://s3.cn-north-1.amazonaws.com.cn/china-bucket/mykey`)
+ * `virtualHostedUrlForObject(key)` - the virtual-hosted style HTTP URL of an object
+   within the bucket (i.e. `https://china-bucket-s3.cn-north-1.amazonaws.com.cn/mykey`)
  * `s3UrlForObject(key)` - the S3 URL of an object within the bucket (i.e.
    `s3://bucket/mykey`)
 
-### Encryption
+## Encryption
 
 Define a KMS-encrypted bucket:
 
@@ -60,6 +64,17 @@ const bucket = new Bucket(this, 'MyEncryptedBucket', {
 assert(bucket.encryptionKey === myKmsKey);
 ```
 
+Enable KMS-SSE encryption via [S3 Bucket Keys](https://docs.aws.amazon.com/AmazonS3/latest/dev/bucket-key.html):
+
+```ts
+const bucket = new Bucket(this, 'MyEncryptedBucket', {
+    encryption: BucketEncryption.KMS,
+    bucketKeyEnabled: true
+});
+
+assert(bucket.bucketKeyEnabled === true);
+```
+
 Use `BucketEncryption.ManagedKms` to use the S3 master KMS key:
 
 ```ts
@@ -70,7 +85,7 @@ const bucket = new Bucket(this, 'Buck', {
 assert(bucket.encryptionKey == null);
 ```
 
-### Permissions
+## Permissions
 
 A bucket policy will be automatically created for the bucket upon the first call to
 `addToResourcePolicy(statement)`:
@@ -105,13 +120,13 @@ bucket.grantReadWrite(lambda);
 Will give the Lambda's execution role permissions to read and write
 from the bucket.
 
-### Sharing buckets between stacks
+## Sharing buckets between stacks
 
 To use a bucket in a different stack in the same CDK application, pass the object to the other stack:
 
 [sharing bucket between stacks](test/integ.bucket-sharing.lit.ts)
 
-### Importing existing buckets
+## Importing existing buckets
 
 To import an existing bucket into your CDK application, use the `Bucket.fromBucketAttributes`
 factory method. This method accepts `BucketAttributes` which describes the properties of an already
@@ -146,7 +161,7 @@ const myCrossRegionBucket = Bucket.fromBucketAttributes(this, 'CrossRegionImport
 // myCrossRegionBucket.bucketRegionalDomainName === 'my-bucket.s3.us-east-1.amazonaws.com'
 ```
 
-### Bucket Notifications
+## Bucket Notifications
 
 The Amazon S3 notification feature enables you to receive notifications when
 certain events happen in your bucket as described under [S3 Bucket
@@ -183,11 +198,12 @@ bucket.addEventNotification(s3.EventType.OBJECT_REMOVED,
 [S3 Bucket Notifications]: https://docs.aws.amazon.com/AmazonS3/latest/dev/NotificationHowTo.html
 
 
-### Block Public Access
+## Block Public Access
 
 Use `blockPublicAccess` to specify [block public access settings] on the bucket.
 
 Enable all block public access settings:
+
 ```ts
 const bucket = new Bucket(this, 'MyBlockedBucket', {
     blockPublicAccess: BlockPublicAccess.BLOCK_ALL
@@ -195,6 +211,7 @@ const bucket = new Bucket(this, 'MyBlockedBucket', {
 ```
 
 Block and ignore public ACLs:
+
 ```ts
 const bucket = new Bucket(this, 'MyBlockedBucket', {
     blockPublicAccess: BlockPublicAccess.BLOCK_ACLS
@@ -202,6 +219,7 @@ const bucket = new Bucket(this, 'MyBlockedBucket', {
 ```
 
 Alternatively, specify the settings manually:
+
 ```ts
 const bucket = new Bucket(this, 'MyBlockedBucket', {
     blockPublicAccess: new BlockPublicAccess({ blockPublicPolicy: true })
@@ -212,7 +230,7 @@ When `blockPublicPolicy` is set to `true`, `grantPublicRead()` throws an error.
 
 [block public access settings]: https://docs.aws.amazon.com/AmazonS3/latest/dev/access-control-block-public-access.html
 
-### Logging configuration
+## Logging configuration
 
 Use `serverAccessLogsBucket` to describe where server access logs are to be stored.
 
@@ -235,7 +253,7 @@ const bucket = new Bucket(this, 'MyBucket', {
 
 [S3 Server access logging]: https://docs.aws.amazon.com/AmazonS3/latest/dev/ServerLogs.html
 
-### S3 Inventory
+## S3 Inventory
 
 An [inventory](https://docs.aws.amazon.com/AmazonS3/latest/dev/storage-inventory.html) contains a list of the objects in the source bucket and metadata for each object. The inventory lists are stored in the destination bucket as a CSV file compressed with GZIP, as an Apache optimized row columnar (ORC) file compressed with ZLIB, or as an Apache Parquet (Parquet) file compressed with Snappy.
 
@@ -268,7 +286,7 @@ const dataBucket = new s3.Bucket(this, 'DataBucket', {
 If the destination bucket is created as part of the same CDK application, the necessary permissions will be automatically added to the bucket policy.
 However, if you use an imported bucket (i.e `Bucket.fromXXX()`), you'll have to make sure it contains the following policy document:
 
-```
+```json
 {
   "Version": "2012-10-17",
   "Statement": [
@@ -283,13 +301,13 @@ However, if you use an imported bucket (i.e `Bucket.fromXXX()`), you'll have to 
 }
 ```
 
-### Website redirection
+## Website redirection
 
 You can use the two following properties to specify the bucket [redirection policy]. Please note that these methods cannot both be applied to the same bucket.
 
 [redirection policy]: https://docs.aws.amazon.com/AmazonS3/latest/dev/how-to-page-redirect.html#advanced-conditional-redirects
 
-#### Static redirection
+### Static redirection
 
 You can statically redirect a to a given Bucket URL or any other host name with `websiteRedirect`:
 
@@ -299,7 +317,7 @@ const bucket = new Bucket(this, 'MyRedirectedBucket', {
 });
 ```
 
-#### Routing rules
+### Routing rules
 
 Alternatively, you can also define multiple `websiteRoutingRules`, to define complex, conditional redirections:
 
@@ -318,8 +336,68 @@ const bucket = new Bucket(this, 'MyRedirectedBucket', {
 });
 ```
 
-### Filling the bucket as part of deployment
+## Filling the bucket as part of deployment
 
 To put files into a bucket as part of a deployment (for example, to host a
 website), see the `@aws-cdk/aws-s3-deployment` package, which provides a
 resource that can do just that.
+
+## The URL for objects
+
+S3 provides two types of URLs for accessing objects via HTTP(S). Path-Style and
+[Virtual Hosted-Style](https://docs.aws.amazon.com/AmazonS3/latest/dev/VirtualHosting.html)
+URL. Path-Style is a classic way and will be
+[deprecated](https://aws.amazon.com/jp/blogs/aws/amazon-s3-path-deprecation-plan-the-rest-of-the-story).
+We recommend to use Virtual Hosted-Style URL for newly made bucket.
+
+You can generate both of them.
+
+```ts
+bucket.urlForObject('objectname'); // Path-Style URL
+bucket.virtualHostedUrlForObject('objectname'); // Virtual Hosted-Style URL
+bucket.virtualHostedUrlForObject('objectname', { regional: false }); // Virtual Hosted-Style URL but non-regional
+```
+
+### Object Ownership
+
+You can use the two following properties to specify the bucket [object Ownership].
+
+[object Ownership]: https://docs.aws.amazon.com/AmazonS3/latest/dev/about-object-ownership.html
+
+#### Object writer
+
+The Uploading account will own the object.
+
+```ts
+new s3.Bucket(this, 'MyBucket', {
+  objectOwnership: s3.ObjectOwnership.OBJECT_WRITER,
+});
+```
+
+#### Bucket owner preferred
+
+The bucket owner will own the object if the object is uploaded with the bucket-owner-full-control canned ACL. Without this setting and canned ACL, the object is uploaded and remains owned by the uploading account.
+
+```ts
+new s3.Bucket(this, 'MyBucket', {
+  objectOwnership: s3.ObjectOwnership.BUCKET_OWNER_PREFERRED,
+});
+```
+
+### Bucket deletion
+
+When a bucket is removed from a stack (or the stack is deleted), the S3
+bucket will be removed according to its removal policy (which by default will
+simply orphan the bucket and leave it in your AWS account). If the removal
+policy is set to `RemovalPolicy.DESTROY`, the bucket will be deleted as long
+as it does not contain any objects.
+
+To override this and force all objects to get deleted during bucket deletion,
+enable the`autoDeleteObjects` option.
+
+```ts
+const bucket = new Bucket(this, 'MyTempFileBucket', {
+  removalPolicy: RemovalPolicy.DESTROY,
+  autoDeleteObjects: true,
+});
+```

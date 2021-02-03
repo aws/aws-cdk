@@ -1,8 +1,11 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import * as lambda from '@aws-cdk/aws-lambda';
-import * as cdk from '@aws-cdk/core';
 import { bundle } from './bundling';
+
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct } from '@aws-cdk/core';
 
 /**
  * Properties for a PythonFunction
@@ -40,7 +43,7 @@ export interface PythonFunctionProps extends lambda.FunctionOptions {
  * A Python Lambda function
  */
 export class PythonFunction extends lambda.Function {
-  constructor(scope: cdk.Construct, id: string, props: PythonFunctionProps) {
+  constructor(scope: Construct, id: string, props: PythonFunctionProps) {
     if (props.runtime && props.runtime.family !== lambda.RuntimeFamily.PYTHON) {
       throw new Error('Only `PYTHON` runtimes are supported.');
     }
@@ -64,9 +67,9 @@ export class PythonFunction extends lambda.Function {
       ...props,
       runtime,
       code: bundle({
-        ...props,
-        entry,
         runtime,
+        entry,
+        outputPathSuffix: '.',
       }),
       handler: `${index.slice(0, -3)}.${handler}`,
     });

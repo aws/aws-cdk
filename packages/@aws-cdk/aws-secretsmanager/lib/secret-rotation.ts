@@ -1,8 +1,13 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as serverless from '@aws-cdk/aws-sam';
-import { Construct, Duration, Stack, Token } from '@aws-cdk/core';
+import { Duration, Names, Stack, Token } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { ISecret } from './secret';
+
+// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
+// eslint-disable-next-line
+import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 /**
  * Options for a SecretRotationApplication
@@ -131,6 +136,7 @@ export class SecretRotationApplication {
 export interface SecretRotationProps {
   /**
    * The secret to rotate. It must be a JSON string with the following format:
+   *
    * ```
    * {
    *   "engine": <required: database engine>,
@@ -143,8 +149,8 @@ export interface SecretRotationProps {
    * }
    * ```
    *
-   * This is typically the case for a secret referenced from an
-   * AWS::SecretsManager::SecretTargetAttachment or an `ISecret` returned by the `attach()` method of `Secret`.
+   * This is typically the case for a secret referenced from an `AWS::SecretsManager::SecretTargetAttachment`
+   * or an `ISecret` returned by the `attach()` method of `Secret`.
    *
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-secretsmanager-secrettargetattachment.html
    */
@@ -205,7 +211,7 @@ export interface SecretRotationProps {
 /**
  * Secret rotation for a service or database
  */
-export class SecretRotation extends Construct {
+export class SecretRotation extends CoreConstruct {
   constructor(scope: Construct, id: string, props: SecretRotationProps) {
     super(scope, id);
 
@@ -218,7 +224,7 @@ export class SecretRotation extends Construct {
     }
 
     // Max length of 64 chars, get the last 64 chars
-    const uniqueId = this.node.uniqueId;
+    const uniqueId = Names.uniqueId(this);
     const rotationFunctionName = uniqueId.substring(Math.max(uniqueId.length - 64, 0), uniqueId.length);
 
     const securityGroup = props.securityGroup || new ec2.SecurityGroup(this, 'SecurityGroup', {
@@ -233,7 +239,7 @@ export class SecretRotation extends Construct {
       vpcSecurityGroupIds: securityGroup.securityGroupId,
     };
 
-    if (props.excludeCharacters) {
+    if (props.excludeCharacters !== undefined) {
       parameters.excludeCharacters = props.excludeCharacters;
     }
 
@@ -265,8 +271,7 @@ export class SecretRotation extends Construct {
       automaticallyAfter: props.automaticallyAfter,
     });
 
-    // Prevent secrets deletions when rotation is in place
-    props.secret.denyAccountRootDelete();
+    // Prevent master secret deletion when rotation is in place
     if (props.masterSecret) {
       props.masterSecret.denyAccountRootDelete();
     }

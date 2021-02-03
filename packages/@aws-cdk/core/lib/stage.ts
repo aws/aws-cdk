@@ -1,8 +1,13 @@
 import * as cxapi from '@aws-cdk/cx-api';
-import { Construct, IConstruct } from './construct-compat';
+import { IConstruct, Construct, Node } from 'constructs';
 import { Environment } from './environment';
-import { collectRuntimeInformation } from './private/runtime-info';
 import { synthesize } from './private/synthesis';
+
+// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
+// eslint-disable-next-line
+import { Construct as CoreConstruct } from './construct-compat';
+
+const STAGE_SYMBOL = Symbol.for('@aws-cdk/core.Stage');
 
 /**
  * Initialization props for a stage.
@@ -27,12 +32,12 @@ export interface StageProps {
    * @example
    *
    * // Use a concrete account and region to deploy this Stage to
-   * new MyStage(app, 'Stage1', {
+   * new Stage(app, 'Stage1', {
    *   env: { account: '123456789012', region: 'us-east-1' },
    * });
    *
    * // Use the CLI's current credentials to determine the target environment
-   * new MyStage(app, 'Stage2', {
+   * new Stage(app, 'Stage2', {
    *   env: { account: process.env.CDK_DEFAULT_ACCOUNT, region: process.env.CDK_DEFAULT_REGION },
    * });
    *
@@ -65,7 +70,7 @@ export interface StageProps {
  * copies of your application which should be be deployed to different
  * environments.
  */
-export class Stage extends Construct {
+export class Stage extends CoreConstruct {
   /**
    * Return the stage this construct is contained with, if available. If called
    * on a nested stage, returns its parent.
@@ -73,7 +78,7 @@ export class Stage extends Construct {
    * @experimental
    */
   public static of(construct: IConstruct): Stage | undefined {
-    return construct.node.scopes.reverse().slice(1).find(Stage.isStage);
+    return Node.of(construct).scopes.reverse().slice(1).find(Stage.isStage);
   }
 
   /**
@@ -82,7 +87,7 @@ export class Stage extends Construct {
    * @experimental
    */
   public static isStage(x: any ): x is Stage {
-    return x !== null && x instanceof Stage;
+    return x !== null && typeof(x) === 'object' && STAGE_SYMBOL in x;
   }
 
   /**
@@ -134,6 +139,8 @@ export class Stage extends Construct {
       throw new Error(`invalid stage name "${id}". Stage name must start with a letter and contain only alphanumeric characters, hypens ('-'), underscores ('_') and periods ('.')`);
     }
 
+    Object.defineProperty(this, STAGE_SYMBOL, { value: true });
+
     this.parentStage = Stage.of(this);
 
     this.region = props.env?.region ?? this.parentStage?.region;
@@ -148,6 +155,13 @@ export class Stage extends Construct {
    */
   public get outdir() {
     return this._assemblyBuilder.outdir;
+  }
+
+  /**
+   * The cloud assembly asset output directory.
+   */
+  public get assetOutdir() {
+    return this._assemblyBuilder.assetOutdir;
   }
 
   /**
@@ -171,10 +185,8 @@ export class Stage extends Construct {
    */
   public synth(options: StageSynthesisOptions = { }): cxapi.CloudAssembly {
     if (!this.assembly || options.force) {
-      const runtimeInfo = this.node.tryGetContext(cxapi.DISABLE_VERSION_REPORTING) ? undefined : collectRuntimeInformation();
       this.assembly = synthesize(this, {
         skipValidation: options.skipValidation,
-        runtimeInfo,
       });
     }
 

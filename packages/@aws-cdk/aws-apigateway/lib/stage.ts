@@ -1,4 +1,5 @@
-import { Construct, Duration, IResource, Resource, Stack, Token } from '@aws-cdk/core';
+import { Duration, IResource, Resource, Stack, Token } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { AccessLogFormat, IAccessLogDestination } from './access-log';
 import { CfnStage } from './apigateway.generated';
 import { Deployment } from './deployment';

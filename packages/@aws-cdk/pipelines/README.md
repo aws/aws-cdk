@@ -1,14 +1,19 @@
 # CDK Pipelines
 <!--BEGIN STABILITY BANNER-->
+
 ---
 
 ![cdk-constructs: Developer Preview](https://img.shields.io/badge/cdk--constructs-developer--preview-informational.svg?style=for-the-badge)
 
-> The APIs of higher level constructs in this module are in **developer preview** before they become stable. We will only make breaking changes to address unforeseen API issues. Therefore, these APIs are not subject to [Semantic Versioning](https://semver.org/), and breaking changes will be announced in release notes. This means that while you may use them, you may need to update your source code when upgrading to a newer version of this package.
+> The APIs of higher level constructs in this module are in **developer preview** before they
+> become stable. We will only make breaking changes to address unforeseen API issues. Therefore,
+> these APIs are not subject to [Semantic Versioning](https://semver.org/), and breaking changes
+> will be announced in release notes. This means that while you may use them, you may need to
+> update your source code when upgrading to a newer version of this package.
 
 ---
-<!--END STABILITY BANNER-->
 
+<!--END STABILITY BANNER-->
 
 A construct library for painless Continuous Delivery of CDK applications.
 
@@ -93,13 +98,33 @@ stacks.
 This library uses prerelease features of the CDK framework, which can be enabled by adding the
 following to `cdk.json`:
 
-```
+```js
 {
-  ...
+  // ...
   "context": {
     "@aws-cdk/core:newStyleStackSynthesis": true
   }
 }
+```
+
+## A note on cost
+
+By default, the `CdkPipeline` construct creates an AWS Key Management Service
+(AWS KMS) Customer Master Key (CMK) for you to encrypt the artifacts in the
+artifact bucket, which incurs a cost of
+**$1/month**. This default configuration is necessary to allow cross-account
+deployments.
+
+If you do not intend to perform cross-account deployments, you can disable
+the creation of the Customer Master Keys by passing `crossAccountKeys: false`
+when defining the Pipeline:
+
+```ts
+const pipeline = new pipelines.CdkPipeline(this, 'Pipeline', {
+  crossAccountKeys: false,
+
+  // ...
+});
 ```
 
 ## Defining the Pipeline (Source and Synth)
@@ -129,11 +154,15 @@ class MyPipelineStack extends Stack {
         // Replace these with your actual GitHub project name
         owner: 'OWNER',
         repo: 'REPO',
+        branch: 'main', // default: 'master'
       }),
 
       synthAction: SimpleSynthAction.standardNpmSynth({
         sourceArtifact,
         cloudAssemblyArtifact,
+
+        // Optionally specify a VPC in which the action runs
+        vpc: new ec2.Vpc(this, 'NpmSynthVpc'),
 
         // Use this if you need a build step (if you're not using ts-node
         // or if you have TypeScript Lambdas that need to be compiled).
@@ -190,7 +219,7 @@ bootstrapped (see below), and then executing deploying the `PipelineStack`
 
 Run the following commands to get the pipeline going:
 
-```
+```console
 $ git commit -a
 $ git push
 $ cdk deploy PipelineStack
@@ -276,6 +305,12 @@ pipeline.addApplicationStage(new MyApplication(this, 'Production', {
 }));
 ```
 
+> Be aware that adding new stages via `addApplicationStage()` will
+> automatically add them to the pipeline and deploy the new stacks, but
+> *removing* them from the pipeline or deleting the pipeline stack will not
+> automatically delete deployed application stacks. You must delete those
+> stacks by hand using the AWS CloudFormation console or the AWS CLI.
+
 ### More Control
 
 Every *Application Stage* added by `addApplicationStage()` will lead to the addition of
@@ -311,6 +346,16 @@ testingStage.addApplication(new MyApplication2(this, 'MyApp2', {
 }));
 ```
 
+Even more, adding a manual approval action or reserving space for some extra sequential actions
+between 'Prepare' and 'Execute' ChangeSet actions is possible.
+
+```ts
+  pipeline.addApplicationStage(new MyApplication(this, 'Production'), {
+    manualApprovals: true,
+    extraRunOrderSpace: 1,
+  });
+```
+
 ## Adding validations to the pipeline
 
 You can add any type of CodePipeline Action to the pipeline in order to validate
@@ -328,7 +373,12 @@ const stage = pipeline.addApplicationStage(new MyApplication(/* ... */));
 stage.addActions(new ShellScriptAction({
   actionName: 'MyValidation',
   commands: ['curl -Ssf https://my.webservice.com/'],
-  // ... more configuration ...
+  // Optionally specify a VPC if, for example, the service is deployed with a private load balancer
+  vpc,
+  // Optionally specify SecurityGroups
+  securityGroups,
+  // Optionally specify a BuildEnvironment
+  environment,
 }));
 ```
 
@@ -510,6 +560,24 @@ class MyPipelineStack extends Stack {
 }
 ```
 
+### Developing the pipeline
+
+The self-mutation feature of the `CdkPipeline` might at times get in the way
+of the pipeline development workflow. Each change to the pipeline must be pushed
+to git, otherwise, after the pipeline was updated using `cdk deploy`, it will
+automatically revert to the state found in git.
+
+To make the development more convenient, the self-mutation feature can be turned
+off temporarily, by passing `selfMutating: false` property, example:
+
+```ts
+const pipeline = new CdkPipeline(this, 'Pipeline', {
+  selfMutating: false,
+  ...
+});
+```
+
+
 ## CDK Environment Bootstrapping
 
 An *environment* is an *(account, region)* pair where you want to deploy a
@@ -541,7 +609,7 @@ also have to bootstrap those and be sure to add a *trust* relationship.
 
 To bootstrap an environment for provisioning the pipeline:
 
-```
+```console
 $ env CDK_NEW_BOOTSTRAP=1 npx cdk bootstrap \
     [--profile admin-profile-1] \
     --cloudformation-execution-policies arn:aws:iam::aws:policy/AdministratorAccess \
@@ -551,7 +619,7 @@ $ env CDK_NEW_BOOTSTRAP=1 npx cdk bootstrap \
 To bootstrap a different environment for deploying CDK applications into using
 a pipeline in account `111111111111`:
 
-```
+```console
 $ env CDK_NEW_BOOTSTRAP=1 npx cdk bootstrap \
     [--profile admin-profile-2] \
     --cloudformation-execution-policies arn:aws:iam::aws:policy/AdministratorAccess \
@@ -579,6 +647,14 @@ These command lines explained:
 > **Security tip**: we recommend that you use administrative credentials to an
 > account only to bootstrap it and provision the initial pipeline. Otherwise,
 > access to administrative credentials should be dropped as soon as possible.
+
+<br>
+
+> **On the use of AdministratorAccess**: The use of the `AdministratorAccess` policy
+> ensures that your pipeline can deploy every type of AWS resource to your account.
+> Make sure you trust all the code and dependencies that make up your CDK app.
+> Check with the appropriate department within your organization to decide on the
+> proper policy to use.
 
 ### Migrating from old bootstrap stack
 
@@ -632,7 +708,7 @@ Here are some common errors you may encounter while using this library.
 
 If you see the following error during deployment of your pipeline:
 
-```
+```plaintext
 CREATE_FAILED  | AWS::CodePipeline::Pipeline | Pipeline/Pipeline
 Internal Failure
 ```
@@ -644,7 +720,7 @@ right permissions to access the repository you're trying to access.
 
 If you see the following error during deployment of your pipeline:
 
-```
+```plaintext
 CREATE_FAILED | AWS::KMS::Key | Pipeline/Pipeline/ArtifactsBucketEncryptionKey
 Policy contains a statement with one or more invalid principals.
 ```
@@ -653,11 +729,11 @@ One of the target (account, region) environments has not been bootstrapped
 with the new bootstrap stack. Check your target environments and make sure
 they are all bootstrapped.
 
-### <Stack> is in ROLLBACK_COMPLETE state and can not be updated.
+### <Stack> is in ROLLBACK_COMPLETE state and can not be updated
 
 If  you see the following error during execution of your pipeline:
 
-```
+```plaintext
 Stack ... is in ROLLBACK_COMPLETE state and can not be updated. (Service:
 AmazonCloudFormation; Status Code: 400; Error Code: ValidationError; Request
 ID: ...)
@@ -678,14 +754,14 @@ Limitations that we are aware of and will address:
 There are some usability issues that are caused by underlying technology, and
 cannot be remedied by CDK at this point. They are reproduced here for completeness.
 
-- **Console links to other accounts will not work**: the AWS CodePipeline
+* **Console links to other accounts will not work**: the AWS CodePipeline
   console will assume all links are relative to the current account. You will
   not be able to use the pipeline console to click through to a CloudFormation
   stack in a different account.
-- **If a change set failed to apply the pipeline must restarted**: if a change
+* **If a change set failed to apply the pipeline must restarted**: if a change
   set failed to apply, it cannot be retried. The pipeline must be restarted from
   the top by clicking **Release Change**.
-- **A stack that failed to create must be deleted manually**: if a stack
+* **A stack that failed to create must be deleted manually**: if a stack
   failed to create on the first attempt, you must delete it using the
   CloudFormation console before starting the pipeline again by clicking
   **Release Change**.

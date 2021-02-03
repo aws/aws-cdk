@@ -26,7 +26,7 @@ export = {
       awsAuth.addRoleMapping(role, { groups: ['group'] });
       test.ok(false, 'expected error');
     } catch (err) {
-      test.equal(err.message, 'RoleStackRole6729D0A7 should be defined in the scope of the ClusterStack stack to prevent circular dependencies');
+      test.equal(err.message, 'RoleStack/Role should be defined in the scope of the ClusterStack stack to prevent circular dependencies');
     }
 
     test.done();
@@ -47,7 +47,7 @@ export = {
       awsAuth.addUserMapping(user, { groups: ['group'] });
       test.ok(false, 'expected error');
     } catch (err) {
-      test.equal(err.message, 'UserStackUser0406F94E should be defined in the scope of the ClusterStack stack to prevent circular dependencies');
+      test.equal(err.message, 'UserStack/User should be defined in the scope of the ClusterStack stack to prevent circular dependencies');
     }
 
     test.done();
@@ -57,7 +57,7 @@ export = {
   'empty aws-auth'(test: Test) {
     // GIVEN
     const { stack } = testFixtureNoVpc();
-    const cluster = new Cluster(stack, 'cluster', { version: CLUSTER_VERSION });
+    const cluster = new Cluster(stack, 'cluster', { version: CLUSTER_VERSION, prune: false });
 
     // WHEN
     new AwsAuth(stack, 'AwsAuth', { cluster });
@@ -77,7 +77,7 @@ export = {
   'addRoleMapping and addUserMapping can be used to define the aws-auth ConfigMap'(test: Test) {
     // GIVEN
     const { stack } = testFixtureNoVpc();
-    const cluster = new Cluster(stack, 'Cluster', { version: CLUSTER_VERSION });
+    const cluster = new Cluster(stack, 'Cluster', { version: CLUSTER_VERSION, prune: false });
     const role = new iam.Role(stack, 'role', { assumedBy: new iam.AnyPrincipal() });
     const user = new iam.User(stack, 'user');
 
@@ -185,7 +185,7 @@ export = {
         'Fn::Join': [
           '',
           [
-            '[{"apiVersion":"v1","kind":"ConfigMap","metadata":{"name":"aws-auth","namespace":"kube-system"},"data":{"mapRoles":"[{\\"rolearn\\":\\"',
+            '[{"apiVersion":"v1","kind":"ConfigMap","metadata":{"name":"aws-auth","namespace":"kube-system","labels":{"aws.cdk.eks/prune-c82ececabf77e03e3590f2ebe02adba8641d1b3e76":""}},"data":{"mapRoles":"[{\\"rolearn\\":\\"',
             {
               'Fn::GetAtt': [
                 'ClusterMastersRole9AA35625',
@@ -233,8 +233,8 @@ export = {
   'addMastersRole after addNodegroup correctly'(test: Test) {
     // GIVEN
     const { stack } = testFixtureNoVpc();
-    const cluster = new Cluster(stack, 'Cluster', { version: CLUSTER_VERSION });
-    cluster.addNodegroup('NG');
+    const cluster = new Cluster(stack, 'Cluster', { version: CLUSTER_VERSION, prune: false });
+    cluster.addNodegroupCapacity('NG');
     const role = iam.Role.fromRoleArn(stack, 'imported-role', 'arn:aws:iam::123456789012:role/S3Access');
 
     // WHEN

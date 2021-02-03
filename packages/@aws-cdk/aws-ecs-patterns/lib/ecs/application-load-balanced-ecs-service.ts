@@ -1,5 +1,5 @@
 import { Ec2Service, Ec2TaskDefinition } from '@aws-cdk/aws-ecs';
-import { Construct } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { ApplicationLoadBalancedServiceBase, ApplicationLoadBalancedServiceBaseProps } from '../base/application-load-balanced-service-base';
 
 /**
@@ -131,6 +131,7 @@ export class ApplicationLoadBalancedEc2Service extends ApplicationLoadBalancedSe
       propagateTags: props.propagateTags,
       enableECSManagedTags: props.enableECSManagedTags,
       cloudMapOptions: props.cloudMapOptions,
+      deploymentController: props.deploymentController,
     });
     this.addServiceAsTarget(this.service);
   }

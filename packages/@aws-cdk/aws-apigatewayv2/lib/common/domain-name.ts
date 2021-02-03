@@ -1,5 +1,6 @@
 import { ICertificate } from '@aws-cdk/aws-certificatemanager';
-import { Construct, IResource, Resource, Token } from '@aws-cdk/core';
+import { IResource, Resource, Token } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CfnDomainName, CfnDomainNameProps } from '../apigatewayv2.generated';
 
 /**
@@ -9,22 +10,18 @@ import { CfnDomainName, CfnDomainNameProps } from '../apigatewayv2.generated';
 export interface IDomainName extends IResource {
   /**
    * The custom domain name
-   *
    * @attribute
-   *
    */
-  readonly domainName: string;
+  readonly name: string;
 
   /**
    * The domain name associated with the regional endpoint for this custom domain name.
-   *
    * @attribute
    */
   readonly regionalDomainName: string;
 
   /**
    * The region-specific Amazon Route 53 Hosted Zone ID of the regional endpoint.
-   *
    * @attribute
    */
   readonly regionalHostedZoneId: string;
@@ -37,7 +34,7 @@ export interface DomainNameAttributes {
   /**
    * domain name string
    */
-  readonly domainName: string;
+  readonly name: string;
 
   /**
    * The domain name associated with the regional endpoint for this custom domain name.
@@ -69,32 +66,19 @@ export interface DomainNameProps {
  */
 export class DomainName extends Resource implements IDomainName {
   /**
-   * import from attributes
+   * Import from attributes
    */
   public static fromDomainNameAttributes(scope: Construct, id: string, attrs: DomainNameAttributes): IDomainName {
     class Import extends Resource implements IDomainName {
       public readonly regionalDomainName = attrs.regionalDomainName;
       public readonly regionalHostedZoneId = attrs.regionalHostedZoneId;
-      public readonly domainName = attrs.domainName;
+      public readonly name = attrs.name;
     }
     return new Import(scope, id);
   }
 
-  /**
-   * The custom domain name for your API in Amazon API Gateway.
-   *
-   * @attribute
-   */
-  public readonly domainName: string;
-
-  /**
-   * The domain name associated with the regional endpoint for this custom domain name.
-   */
+  public readonly name: string;
   public readonly regionalDomainName: string;
-
-  /**
-   * The region-specific Amazon Route 53 Hosted Zone ID of the regional endpoint.
-   */
   public readonly regionalHostedZoneId: string;
 
   constructor(scope: Construct, id: string, props: DomainNameProps) {
@@ -110,7 +94,7 @@ export class DomainName extends Resource implements IDomainName {
       ],
     };
     const resource = new CfnDomainName(this, 'Resource', domainNameProps);
-    this.domainName = props.domainName ?? resource.ref;
+    this.name = props.domainName ?? resource.ref;
     this.regionalDomainName = Token.asString(resource.getAtt('RegionalDomainName'));
     this.regionalHostedZoneId = Token.asString(resource.getAtt('RegionalHostedZoneId'));
   }

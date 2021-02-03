@@ -229,6 +229,89 @@ export = {
     test.done();
   },
 
+  'selecting correct vpcSubnets'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Vpc', {
+      maxAzs: 2,
+      subnetConfiguration: [
+        {
+          subnetType: ec2.SubnetType.PUBLIC,
+          cidrMask: 20,
+          name: 'Public',
+        },
+        {
+          subnetType: ec2.SubnetType.ISOLATED,
+          cidrMask: 20,
+          name: 'ISOLATED',
+        },
+      ],
+    });
+    // WHEN
+    new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'Service', {
+      vpc,
+      taskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
+      },
+      taskSubnets: {
+        subnetType: ec2.SubnetType.ISOLATED,
+      },
+    });
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::ECS::Service', {
+      NetworkConfiguration: {
+        AwsvpcConfiguration: {
+          Subnets: [
+            {
+              Ref: 'VpcISOLATEDSubnet1Subnet80F07FA0',
+            },
+            {
+              Ref: 'VpcISOLATEDSubnet2SubnetB0B548C3',
+            },
+          ],
+        },
+      },
+    }));
+    test.done();
+  },
+
+  'target group uses HTTP/80 as default'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'Service', {
+      taskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
+      },
+    });
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::ElasticLoadBalancingV2::TargetGroup', {
+      Port: 80,
+      Protocol: 'HTTP',
+    }));
+    test.done();
+  },
+
+  'target group uses HTTPS/443 when configured'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'Service', {
+      taskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
+      },
+      targetProtocol: ApplicationProtocol.HTTPS,
+    });
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::ElasticLoadBalancingV2::TargetGroup', {
+      Port: 443,
+      Protocol: 'HTTPS',
+    }));
+    test.done();
+  },
+
   'setting platform version'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
@@ -297,6 +380,50 @@ export = {
       Family: 'fargate-task-family',
     }));
 
+    test.done();
+  },
+
+  'setting ALB deployment controller'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'Service', {
+      taskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
+      },
+      deploymentController: {
+        type: ecs.DeploymentControllerType.CODE_DEPLOY,
+      },
+    });
+    // THEN
+    expect(stack).to(haveResource('AWS::ECS::Service', {
+      DeploymentController: {
+        Type: 'CODE_DEPLOY',
+      },
+    }));
+    test.done();
+  },
+
+  'setting NLB deployment controller'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new ecsPatterns.NetworkLoadBalancedFargateService(stack, 'Service', {
+      taskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
+      },
+      deploymentController: {
+        type: ecs.DeploymentControllerType.CODE_DEPLOY,
+      },
+    });
+    // THEN
+    expect(stack).to(haveResource('AWS::ECS::Service', {
+      DeploymentController: {
+        Type: 'CODE_DEPLOY',
+      },
+    }));
     test.done();
   },
 
@@ -420,6 +547,123 @@ export = {
     expect(stack).to(haveResourceLike('AWS::Route53::RecordSet', {
       Name: 'test.domain.com.',
     }));
+
+    test.done();
+  },
+
+  'setting ALB cname option correctly sets the recordset type'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+
+    // WHEN
+    new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'FargateAlbService', {
+      cluster,
+      protocol: ApplicationProtocol.HTTPS,
+      domainName: 'test.domain.com',
+      domainZone: route53.HostedZone.fromHostedZoneAttributes(stack, 'HostedZone', {
+        hostedZoneId: 'fakeId',
+        zoneName: 'domain.com.',
+      }),
+      recordType: ecsPatterns.ApplicationLoadBalancedServiceRecordType.CNAME,
+      taskImageOptions: {
+        containerPort: 2015,
+        image: ecs.ContainerImage.fromRegistry('abiosoft/caddy'),
+      },
+    });
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::Route53::RecordSet', {
+      Name: 'test.domain.com.',
+      Type: 'CNAME',
+    }));
+
+    test.done();
+  },
+
+  'setting ALB record type to NONE correctly omits the recordset'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+
+    // WHEN
+    new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'FargateAlbService', {
+      cluster,
+      protocol: ApplicationProtocol.HTTPS,
+      domainName: 'test.domain.com',
+      domainZone: route53.HostedZone.fromHostedZoneAttributes(stack, 'HostedZone', {
+        hostedZoneId: 'fakeId',
+        zoneName: 'domain.com.',
+      }),
+      recordType: ecsPatterns.ApplicationLoadBalancedServiceRecordType.NONE,
+      taskImageOptions: {
+        containerPort: 2015,
+        image: ecs.ContainerImage.fromRegistry('abiosoft/caddy'),
+      },
+    });
+
+    // THEN
+    expect(stack).notTo(haveResource('AWS::Route53::RecordSet'));
+
+    test.done();
+  },
+
+
+  'setting NLB cname option correctly sets the recordset type'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+
+    // WHEN
+    new ecsPatterns.NetworkLoadBalancedFargateService(stack, 'FargateNlbService', {
+      cluster,
+      domainName: 'test.domain.com',
+      domainZone: route53.HostedZone.fromHostedZoneAttributes(stack, 'HostedZone', {
+        hostedZoneId: 'fakeId',
+        zoneName: 'domain.com.',
+      }),
+      recordType: ecsPatterns.NetworkLoadBalancedServiceRecordType.CNAME,
+      taskImageOptions: {
+        containerPort: 2015,
+        image: ecs.ContainerImage.fromRegistry('abiosoft/caddy'),
+      },
+    });
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::Route53::RecordSet', {
+      Name: 'test.domain.com.',
+      Type: 'CNAME',
+    }));
+
+    test.done();
+  },
+
+  'setting NLB record type to NONE correctly omits the recordset'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+
+    // WHEN
+    new ecsPatterns.NetworkLoadBalancedFargateService(stack, 'FargateNlbService', {
+      cluster,
+      domainName: 'test.domain.com',
+      domainZone: route53.HostedZone.fromHostedZoneAttributes(stack, 'HostedZone', {
+        hostedZoneId: 'fakeId',
+        zoneName: 'domain.com.',
+      }),
+      recordType: ecsPatterns.NetworkLoadBalancedServiceRecordType.NONE,
+      taskImageOptions: {
+        containerPort: 2015,
+        image: ecs.ContainerImage.fromRegistry('abiosoft/caddy'),
+      },
+    });
+
+    // THEN
+    expect(stack).notTo(haveResource('AWS::Route53::RecordSet'));
 
     test.done();
   },
@@ -634,6 +878,50 @@ export = {
       Port: 80,
     }));
 
+    test.done();
+  },
+
+  'passing in previously created security groups to ALB Fargate Service'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc, clusterName: 'MyCluster' });
+    const securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup', {
+      allowAllOutbound: false,
+      description: 'Example',
+      securityGroupName: 'Rolly',
+      vpc,
+    });
+
+    // WHEN
+    new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'Service', {
+      cluster,
+      taskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+      },
+      securityGroups: [securityGroup],
+    });
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::ECS::Service', {
+      LaunchType: 'FARGATE',
+    }));
+    expect(stack).to(haveResource('AWS::EC2::SecurityGroup', {
+      GroupDescription: 'Example',
+      GroupName: 'Rolly',
+      SecurityGroupEgress: [
+        {
+          CidrIp: '255.255.255.255/32',
+          Description: 'Disallow all traffic',
+          FromPort: 252,
+          IpProtocol: 'icmp',
+          ToPort: 86,
+        },
+      ],
+      VpcId: {
+        Ref: 'Vpc8378EB38',
+      },
+    }));
     test.done();
   },
 

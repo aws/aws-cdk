@@ -1,10 +1,16 @@
 import * as path from 'path';
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
-import { Construct, Duration, Stack, NestedStack } from '@aws-cdk/core';
+import { Duration, Stack, NestedStack, Names } from '@aws-cdk/core';
 import * as cr from '@aws-cdk/custom-resources';
+import { AwsCliLayer } from '@aws-cdk/lambda-layer-awscli';
+import { KubectlLayer } from '@aws-cdk/lambda-layer-kubectl';
+import { Construct } from 'constructs';
 import { ICluster, Cluster } from './cluster';
-import { KubectlLayer, KubectlLayerProps } from './kubectl-layer';
+
+// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
+// eslint-disable-next-line
+import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 export interface KubectlProviderProps {
   /**
@@ -23,7 +29,7 @@ export class KubectlProvider extends NestedStack {
 
     // if this is an imported cluster, we need to provision a custom resource provider in this stack
     // we will define one per stack for each cluster based on the cluster uniqueid
-    const uid = `${cluster.node.uniqueId}-KubectlProvider`;
+    const uid = `${Names.nodeUniqueId(cluster.node)}-KubectlProvider`;
     const stack = Stack.of(scope);
     let provider = stack.node.tryFindChild(uid) as KubectlProvider;
     if (!provider) {
@@ -49,7 +55,7 @@ export class KubectlProvider extends NestedStack {
   public readonly handlerRole: iam.IRole;
 
   public constructor(scope: Construct, id: string, props: KubectlProviderProps) {
-    super(scope, id);
+    super(scope as CoreConstruct, id);
 
     const cluster = props.cluster;
 
@@ -61,7 +67,7 @@ export class KubectlProvider extends NestedStack {
       throw new Error('"kubectlSecurityGroup" is required if "kubectlSubnets" is specified');
     }
 
-    const layer = cluster.kubectlLayer ?? getOrCreateKubectlLayer(this);
+    const memorySize = cluster.kubectlMemory ? cluster.kubectlMemory.toMebibytes() : 1024;
 
     const handler = new lambda.Function(this, 'Handler', {
       code: lambda.Code.fromAsset(path.join(__dirname, 'kubectl-handler')),
@@ -69,8 +75,7 @@ export class KubectlProvider extends NestedStack {
       handler: 'index.handler',
       timeout: Duration.minutes(15),
       description: 'onEvent handler for EKS kubectl resource provider',
-      layers: [layer],
-      memorySize: 256,
+      memorySize,
       environment: cluster.kubectlEnvironment,
 
       // defined only when using private access
@@ -79,9 +84,17 @@ export class KubectlProvider extends NestedStack {
       vpcSubnets: cluster.kubectlPrivateSubnets ? { subnets: cluster.kubectlPrivateSubnets } : undefined,
     });
 
+    // allow user to customize the layer
+    if (!props.cluster.kubectlLayer) {
+      handler.addLayers(new AwsCliLayer(this, 'AwsCliLayer'));
+      handler.addLayers(new KubectlLayer(this, 'KubectlLayer'));
+    } else {
+      handler.addLayers(props.cluster.kubectlLayer);
+    }
+
     this.handlerRole = handler.role!;
 
-    this.handlerRole.addToPolicy(new iam.PolicyStatement({
+    this.handlerRole.addToPrincipalPolicy(new iam.PolicyStatement({
       actions: ['eks:DescribeCluster'],
       resources: [cluster.clusterArn],
     }));
@@ -91,26 +104,12 @@ export class KubectlProvider extends NestedStack {
 
     const provider = new cr.Provider(this, 'Provider', {
       onEventHandler: handler,
+      vpc: cluster.kubectlPrivateSubnets ? cluster.vpc : undefined,
+      vpcSubnets: cluster.kubectlPrivateSubnets ? { subnets: cluster.kubectlPrivateSubnets } : undefined,
     });
 
     this.serviceToken = provider.serviceToken;
     this.roleArn = cluster.kubectlRole.roleArn;
   }
 
-}
-
-/**
- * Gets or create a singleton instance of KubectlLayer.
- *
- * (exported for unit tests).
- */
-export function getOrCreateKubectlLayer(scope: Construct, props: KubectlLayerProps = {}): KubectlLayer {
-  const stack = Stack.of(scope);
-  const id = 'kubectl-layer-' + (props.version ? props.version : '8C2542BC-BF2B-4DFE-B765-E181FD30A9A0');
-  const exists = stack.node.tryFindChild(id) as KubectlLayer;
-  if (exists) {
-    return exists;
-  }
-
-  return new KubectlLayer(stack, id, props);
 }

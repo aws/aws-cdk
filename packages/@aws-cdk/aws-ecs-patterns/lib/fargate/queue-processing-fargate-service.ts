@@ -1,5 +1,5 @@
 import { FargatePlatformVersion, FargateService, FargateTaskDefinition } from '@aws-cdk/aws-ecs';
-import { Construct } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { QueueProcessingServiceBase, QueueProcessingServiceBaseProps } from '../base/queue-processing-service-base';
 
 /**
@@ -59,6 +59,13 @@ export interface QueueProcessingFargateServiceProps extends QueueProcessingServi
    * @default Latest
    */
   readonly platformVersion?: FargatePlatformVersion;
+
+  /**
+   * Optional name for the container added
+   *
+   * @default - QueueProcessingContainer
+   */
+  readonly containerName?: string;
 }
 
 /**
@@ -86,7 +93,10 @@ export class QueueProcessingFargateService extends QueueProcessingServiceBase {
       cpu: props.cpu || 256,
       family: props.family,
     });
-    this.taskDefinition.addContainer('QueueProcessingContainer', {
+
+    const containerName = props.containerName ?? 'QueueProcessingContainer';
+
+    this.taskDefinition.addContainer(containerName, {
       image: props.image,
       command: props.command,
       environment: this.environment,
@@ -106,6 +116,7 @@ export class QueueProcessingFargateService extends QueueProcessingServiceBase {
       propagateTags: props.propagateTags,
       enableECSManagedTags: props.enableECSManagedTags,
       platformVersion: props.platformVersion,
+      deploymentController: props.deploymentController,
     });
     this.configureAutoscalingForService(this.service);
     this.grantPermissionsToService(this.service);

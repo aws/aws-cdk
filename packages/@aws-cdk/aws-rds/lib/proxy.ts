@@ -2,9 +2,12 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { IDatabaseCluster } from './cluster-ref';
+import { IEngine } from './engine';
 import { IDatabaseInstance } from './instance';
-import { CfnDBCluster, CfnDBInstance, CfnDBProxy, CfnDBProxyTargetGroup } from './rds.generated';
+import { engineDescription } from './private/util';
+import { CfnDBProxy, CfnDBProxyTargetGroup } from './rds.generated';
 
 /**
  * SessionPinningFilter
@@ -47,7 +50,7 @@ export class ProxyTarget {
    * @param instance RDS database instance
    */
   public static fromInstance(instance: IDatabaseInstance): ProxyTarget {
-    return new ProxyTarget(instance);
+    return new ProxyTarget(instance, undefined);
   }
 
   /**
@@ -59,34 +62,26 @@ export class ProxyTarget {
     return new ProxyTarget(undefined, cluster);
   }
 
-  private constructor(private readonly dbInstance?: IDatabaseInstance, private readonly dbCluster?: IDatabaseCluster) {}
+  private constructor(
+    private readonly dbInstance: IDatabaseInstance | undefined,
+    private readonly dbCluster: IDatabaseCluster | undefined) {
+  }
 
   /**
    * Bind this target to the specified database proxy.
    */
   public bind(_: DatabaseProxy): ProxyTargetConfig {
-    let engine: string | undefined;
-    if (this.dbCluster && this.dbInstance) {
-      throw new Error('Proxy cannot target both database cluster and database instance.');
-    } else if (this.dbCluster) {
-      engine = (this.dbCluster.node.defaultChild as CfnDBCluster).engine;
-    } else if (this.dbInstance) {
-      engine = (this.dbInstance.node.defaultChild as CfnDBInstance).engine;
+    const engine: IEngine | undefined = this.dbInstance?.engine ?? this.dbCluster?.engine;
+
+    if (!engine) {
+      const errorResource = this.dbCluster ?? this.dbInstance;
+      throw new Error(`Could not determine engine for proxy target '${errorResource?.node.path}'. ` +
+        'Please provide it explicitly when importing the resource');
     }
 
-    let engineFamily;
-    switch (engine) {
-      case 'aurora':
-      case 'aurora-mysql':
-      case 'mysql':
-        engineFamily = 'MYSQL';
-        break;
-      case 'aurora-postgresql':
-      case 'postgres':
-        engineFamily = 'POSTGRESQL';
-        break;
-      default:
-        throw new Error(`Unsupported engine type - ${engine}`);
+    const engineFamily = engine.engineFamily;
+    if (!engineFamily) {
+      throw new Error(`Engine '${engineDescription(engine)}' does not support proxies`);
     }
 
     return {
@@ -105,12 +100,14 @@ export interface ProxyTargetConfig {
    * The engine family of the database instance or cluster this proxy connects with.
    */
   readonly engineFamily: string;
+
   /**
    * The database instances to which this proxy connects.
    * Either this or `dbClusters` will be set and the other `undefined`.
    * @default - `undefined` if `dbClusters` is set.
    */
   readonly dbInstances?: IDatabaseInstance[];
+
   /**
    * The database clusters to which this proxy connects.
    * Either this or `dbInstances` will be set and the other `undefined`.
@@ -318,6 +315,29 @@ export interface IDatabaseProxy extends cdk.IResource {
    * @attribute
    */
   readonly endpoint: string;
+
+  /**
+   * Grant the given identity connection access to the proxy.
+   */
+  grantConnect(grantee: iam.IGrantable): iam.Grant;
+}
+
+/**
+ * Represents an RDS Database Proxy.
+ *
+ */
+abstract class DatabaseProxyBase extends cdk.Resource implements IDatabaseProxy {
+  public abstract readonly dbProxyName: string;
+  public abstract readonly dbProxyArn: string;
+  public abstract readonly endpoint: string;
+
+  public grantConnect(grantee: iam.IGrantable): iam.Grant {
+    return iam.Grant.addToPrincipal({
+      grantee,
+      actions: ['rds-db:connect'],
+      resourceArns: [this.dbProxyArn],
+    });
+  }
 }
 
 /**
@@ -325,17 +345,17 @@ export interface IDatabaseProxy extends cdk.IResource {
  *
  * @resource AWS::RDS::DBProxy
  */
-export class DatabaseProxy extends cdk.Resource
-  implements IDatabaseProxy, ec2.IConnectable, secretsmanager.ISecretAttachmentTarget {
+export class DatabaseProxy extends DatabaseProxyBase
+  implements ec2.IConnectable, secretsmanager.ISecretAttachmentTarget {
   /**
    * Import an existing database proxy.
    */
   public static fromDatabaseProxyAttributes(
-    scope: cdk.Construct,
+    scope: Construct,
     id: string,
     attrs: DatabaseProxyAttributes,
   ): IDatabaseProxy {
-    class Import extends cdk.Resource implements IDatabaseProxy {
+    class Import extends DatabaseProxyBase {
       public readonly dbProxyName = attrs.dbProxyName;
       public readonly dbProxyArn = attrs.dbProxyArn;
       public readonly endpoint = attrs.endpoint;
@@ -371,7 +391,7 @@ export class DatabaseProxy extends cdk.Resource
 
   private readonly resource: CfnDBProxy;
 
-  constructor(scope: cdk.Construct, id: string, props: DatabaseProxyProps) {
+  constructor(scope: Construct, id: string, props: DatabaseProxyProps) {
     super(scope, id, { physicalName: props.dbProxyName || id });
 
     const role = props.role || new iam.Role(this, 'IAMRole', {
@@ -427,13 +447,15 @@ export class DatabaseProxy extends cdk.Resource
       throw new Error('Cannot specify both dbInstanceIdentifiers and dbClusterIdentifiers');
     }
 
-    new CfnDBProxyTargetGroup(this, 'ProxyTargetGroup', {
+    const proxyTargetGroup = new CfnDBProxyTargetGroup(this, 'ProxyTargetGroup', {
       targetGroupName: 'default',
       dbProxyName: this.dbProxyName,
       dbInstanceIdentifiers,
       dbClusterIdentifiers,
       connectionPoolConfigurationInfo: toConnectionPoolConfigurationInfo(props),
     });
+
+    bindResult.dbClusters?.forEach((c) => proxyTargetGroup.node.addDependency(c));
   }
 
   /**

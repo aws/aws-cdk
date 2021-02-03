@@ -1,8 +1,12 @@
-import { IConstruct } from '../construct-compat';
+import { IConstruct } from 'constructs';
 import { DefaultTokenResolver, IPostProcessor, IResolvable, IResolveContext, ITokenResolver, StringConcat } from '../resolvable';
 import { TokenizedStringFragments } from '../string-fragments';
 import { containsListTokenElement, TokenString, unresolved } from './encoding';
 import { TokenMap } from './token-map';
+
+// v2 - leave this as a separate section so it reduces merge conflicts when compat is removed
+// eslint-disable-next-line import/order
+import { IConstruct as ICoreConstruct } from '../construct-compat';
 
 // This file should not be exported to consumers, resolving should happen through Construct.resolve()
 
@@ -44,7 +48,7 @@ export function resolve(obj: any, options: IResolveOptions): any {
 
     const context: IResolveContext = {
       preparing: options.preparing,
-      scope: options.scope,
+      scope: options.scope as ICoreConstruct,
       registerPostProcessor(pp) { postProcessor = pp; },
       resolve(x: any) { return resolve(x, { ...options, prefix: newPrefix }); },
     };
@@ -85,6 +89,12 @@ export function resolve(obj: any, options: IResolveOptions): any {
   // string - potentially replace all stringified Tokens
   //
   if (typeof(obj) === 'string') {
+    // If this is a "list element" Token, it should never occur by itself in string context
+    if (TokenString.forListToken(obj).test()) {
+      throw new Error('Found an encoded list token string in a scalar string context. Use \'Fn.select(0, list)\' (not \'list[0]\') to extract elements from token lists.');
+    }
+
+    // Otherwise look for a stringified Token in this object
     const str = TokenString.forString(obj);
     if (str.test()) {
       const fragments = str.split(tokenMap.lookupToken.bind(tokenMap));

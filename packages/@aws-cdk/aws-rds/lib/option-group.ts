@@ -1,5 +1,6 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
-import { Construct, IResource, Resource } from '@aws-cdk/core';
+import { IResource, Lazy, Resource } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { IInstanceEngine } from './instance-engine';
 import { CfnOptionGroup } from './rds.generated';
 
@@ -13,6 +14,14 @@ export interface IOptionGroup extends IResource {
    * @attribute
    */
   readonly optionGroupName: string;
+
+  /**
+   * Adds a configuration to this OptionGroup.
+   * This method is a no-op for an imported OptionGroup.
+   *
+   * @returns true if the OptionConfiguration was successfully added.
+   */
+  addConfiguration(configuration: OptionConfiguration): boolean;
 }
 
 /**
@@ -95,6 +104,7 @@ export class OptionGroup extends Resource implements IOptionGroup {
   public static fromOptionGroupName(scope: Construct, id: string, optionGroupName: string): IOptionGroup {
     class Import extends Resource {
       public readonly optionGroupName = optionGroupName;
+      public addConfiguration(_: OptionConfiguration) { return false; }
     }
     return new Import(scope, id);
   }
@@ -109,6 +119,8 @@ export class OptionGroup extends Resource implements IOptionGroup {
    */
   public readonly optionConnections: { [key: string]: ec2.Connections } = {};
 
+  private readonly configurations: OptionConfiguration[] = [];
+
   constructor(scope: Construct, id: string, props: OptionGroupProps) {
     super(scope, id);
 
@@ -116,14 +128,41 @@ export class OptionGroup extends Resource implements IOptionGroup {
     if (!majorEngineVersion) {
       throw new Error("OptionGroup cannot be used with an engine that doesn't specify a version");
     }
+
+    props.configurations.forEach(config => this.addConfiguration(config));
+
     const optionGroup = new CfnOptionGroup(this, 'Resource', {
       engineName: props.engine.engineType,
       majorEngineVersion,
       optionGroupDescription: props.description || `Option group for ${props.engine.engineType} ${majorEngineVersion}`,
-      optionConfigurations: this.renderConfigurations(props.configurations),
+      optionConfigurations: Lazy.any({ produce: () => this.renderConfigurations(this.configurations) }),
     });
 
     this.optionGroupName = optionGroup.ref;
+  }
+
+  public addConfiguration(configuration: OptionConfiguration) {
+    this.configurations.push(configuration);
+
+    if (configuration.port) {
+      if (!configuration.vpc) {
+        throw new Error('`port` and `vpc` must be specified together.');
+      }
+
+      const securityGroups = configuration.securityGroups && configuration.securityGroups.length > 0
+        ? configuration.securityGroups
+        : [new ec2.SecurityGroup(this, `SecurityGroup${configuration.name}`, {
+          description: `Security group for ${configuration.name} option`,
+          vpc: configuration.vpc,
+        })];
+
+      this.optionConnections[configuration.name] = new ec2.Connections({
+        securityGroups: securityGroups,
+        defaultPort: ec2.Port.tcp(configuration.port),
+      });
+    }
+
+    return true;
   }
 
   /**
@@ -132,37 +171,17 @@ export class OptionGroup extends Resource implements IOptionGroup {
   private renderConfigurations(configurations: OptionConfiguration[]): CfnOptionGroup.OptionConfigurationProperty[] {
     const configs: CfnOptionGroup.OptionConfigurationProperty[] = [];
     for (const config of configurations) {
-      let configuration: CfnOptionGroup.OptionConfigurationProperty = {
+      const securityGroups = config.vpc
+        ? this.optionConnections[config.name].securityGroups.map(sg => sg.securityGroupId)
+        : undefined;
+
+      configs.push({
         optionName: config.name,
         optionSettings: config.settings && Object.entries(config.settings).map(([name, value]) => ({ name, value })),
         optionVersion: config.version,
-      };
-
-      if (config.port) {
-        if (!config.vpc) {
-          throw new Error('`port` and `vpc` must be specified together.');
-        }
-
-        const securityGroups = config.securityGroups && config.securityGroups.length > 0
-          ? config.securityGroups
-          : [new ec2.SecurityGroup(this, `SecurityGroup${config.name}`, {
-            description: `Security group for ${config.name} option`,
-            vpc: config.vpc,
-          })];
-
-        this.optionConnections[config.name] = new ec2.Connections({
-          securityGroups: securityGroups,
-          defaultPort: ec2.Port.tcp(config.port),
-        });
-
-        configuration = {
-          ...configuration,
-          port: config.port,
-          vpcSecurityGroupMemberships: securityGroups.map(sg => sg.securityGroupId),
-        };
-      }
-
-      configs.push(configuration);
+        port: config.port,
+        vpcSecurityGroupMemberships: securityGroups,
+      });
     }
 
     return configs;

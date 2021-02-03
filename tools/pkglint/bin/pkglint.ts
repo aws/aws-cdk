@@ -3,7 +3,7 @@ import * as path from 'path';
 import * as yargs from 'yargs';
 import { findPackageJsons, ValidationRule } from '../lib';
 
-/* eslint-disable no-shadow */
+/* eslint-disable @typescript-eslint/no-shadow */
 const argv = yargs
   .usage('$0 [directory]')
   .option('fix', { type: 'boolean', alias: 'f', desc: 'Fix package.json in addition to reporting mistakes' })

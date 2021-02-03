@@ -1,4 +1,4 @@
-import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { Chain } from '../chain';
 import { FieldUtils } from '../fields';
 import { IChainable, INextable } from '../types';
@@ -123,7 +123,7 @@ export class Pass extends State implements INextable {
 
   private readonly result?: Result;
 
-  constructor(scope: cdk.Construct, id: string, props: PassProps = {}) {
+  constructor(scope: Construct, id: string, props: PassProps = {}) {
     super(scope, id, props);
 
     this.result = props.result;

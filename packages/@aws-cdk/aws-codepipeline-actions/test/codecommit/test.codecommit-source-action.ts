@@ -1,8 +1,9 @@
-import { countResources, expect, haveResourceLike, not } from '@aws-cdk/assert';
+import { arrayWith, countResources, expect, haveResourceLike, not, objectLike } from '@aws-cdk/assert';
 import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as codecommit from '@aws-cdk/aws-codecommit';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
-import { Stack } from '@aws-cdk/core';
+import * as iam from '@aws-cdk/aws-iam';
+import { Stack, Lazy } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import * as cpactions from '../../lib';
 
@@ -218,6 +219,210 @@ export = {
                 },
               },
             ],
+          },
+        ],
+      }));
+
+      test.done();
+    },
+
+    'allows using a Token for the branch name'(test: Test) {
+      const stack = new Stack();
+
+      const sourceOutput = new codepipeline.Artifact();
+      new codepipeline.Pipeline(stack, 'P', {
+        stages: [
+          {
+            stageName: 'Source',
+            actions: [
+              new cpactions.CodeCommitSourceAction({
+                actionName: 'CodeCommit',
+                repository: new codecommit.Repository(stack, 'R', {
+                  repositoryName: 'repository',
+                }),
+                branch: Lazy.string({ produce: () => 'my-branch' }),
+                output: sourceOutput,
+              }),
+            ],
+          },
+          {
+            stageName: 'Build',
+            actions: [
+              new cpactions.CodeBuildAction({
+                actionName: 'Build',
+                project: new codebuild.PipelineProject(stack, 'CodeBuild'),
+                input: sourceOutput,
+              }),
+            ],
+          },
+        ],
+      });
+
+      expect(stack).to(haveResourceLike('AWS::Events::Rule', {
+        EventPattern: {
+          detail: {
+            referenceName: ['my-branch'],
+          },
+        },
+      }));
+
+      test.done();
+    },
+
+    'allows to enable full clone'(test: Test) {
+      const stack = new Stack();
+
+      const sourceOutput = new codepipeline.Artifact();
+      new codepipeline.Pipeline(stack, 'P', {
+        stages: [
+          {
+            stageName: 'Source',
+            actions: [
+              new cpactions.CodeCommitSourceAction({
+                actionName: 'CodeCommit',
+                repository: new codecommit.Repository(stack, 'R', {
+                  repositoryName: 'repository',
+                }),
+                branch: Lazy.string({ produce: () => 'my-branch' }),
+                output: sourceOutput,
+                codeBuildCloneOutput: true,
+              }),
+            ],
+          },
+          {
+            stageName: 'Build',
+            actions: [
+              new cpactions.CodeBuildAction({
+                actionName: 'Build',
+                project: new codebuild.PipelineProject(stack, 'CodeBuild'),
+                input: sourceOutput,
+              }),
+            ],
+          },
+        ],
+      });
+
+      expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
+        'Stages': [
+          {
+            'Name': 'Source',
+            'Actions': [{
+              'Configuration': {
+                'OutputArtifactFormat': 'CODEBUILD_CLONE_REF',
+              },
+            }],
+          },
+          {
+            'Name': 'Build',
+            'Actions': [
+              {
+                'Name': 'Build',
+              },
+            ],
+          },
+        ],
+      }));
+
+      expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
+        'PolicyDocument': {
+          'Statement': arrayWith(
+            objectLike({
+              'Action': [
+                'logs:CreateLogGroup',
+                'logs:CreateLogStream',
+                'logs:PutLogEvents',
+              ],
+            }),
+            objectLike({
+              'Action': 'codecommit:GitPull',
+              'Effect': 'Allow',
+              'Resource': {
+                'Fn::GetAtt': [
+                  'RC21A1702',
+                  'Arn',
+                ],
+              },
+            }),
+          ),
+        },
+      }));
+
+      expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
+        'PolicyDocument': {
+          'Statement': arrayWith(
+            objectLike({
+              'Action': [
+                'codecommit:GetBranch',
+                'codecommit:GetCommit',
+                'codecommit:UploadArchive',
+                'codecommit:GetUploadArchiveStatus',
+                'codecommit:CancelUploadArchive',
+                'codecommit:GetRepository',
+              ],
+              'Effect': 'Allow',
+              'Resource': {
+                'Fn::GetAtt': [
+                  'RC21A1702',
+                  'Arn',
+                ],
+              },
+            }),
+          ),
+        },
+      }));
+
+      test.done();
+    },
+
+    'uses the role when passed'(test: Test) {
+      const stack = new Stack();
+
+      const pipeline = new codepipeline.Pipeline(stack, 'P', {
+        pipelineName: 'MyPipeline',
+      });
+
+      const triggerEventTestRole = new iam.Role(stack, 'Trigger-test-role', {
+        assumedBy: new iam.ServicePrincipal('events.amazonaws.com'),
+      });
+      triggerEventTestRole.addToPolicy(new iam.PolicyStatement({
+        actions: ['codepipeline:StartPipelineExecution'],
+        resources: [pipeline.pipelineArn],
+      }));
+
+      const sourceOutput = new codepipeline.Artifact();
+
+      const sourceAction = new cpactions.CodeCommitSourceAction({
+        actionName: 'CodeCommit',
+        repository: new codecommit.Repository(stack, 'R', {
+          repositoryName: 'repository',
+        }),
+        branch: Lazy.string({ produce: () => 'my-branch' }),
+        output: sourceOutput,
+        eventRole: triggerEventTestRole,
+      });
+
+      pipeline.addStage({
+        stageName: 'Source',
+        actions: [sourceAction],
+      });
+
+      const buildAction = new cpactions.CodeBuildAction({
+        actionName: 'Build',
+        project: new codebuild.PipelineProject(stack, 'CodeBuild'),
+        input: sourceOutput,
+      });
+
+      pipeline.addStage({
+        stageName: 'build',
+        actions: [buildAction],
+      });
+
+      expect(stack).to(haveResourceLike('AWS::Events::Rule', {
+        Targets: [
+          {
+            Arn: stack.resolve(pipeline.pipelineArn),
+            Id: 'Target0',
+            RoleArn: stack.resolve(triggerEventTestRole.roleArn),
           },
         ],
       }));

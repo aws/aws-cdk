@@ -99,6 +99,7 @@
         "Environment": {
           "ComputeType": "BUILD_GENERAL1_SMALL",
           "Image": "aws/codebuild/standard:1.0",
+          "ImagePullCredentialsType": "CODEBUILD",
           "PrivilegedMode": false,
           "Type": "LINUX_CONTAINER"
         },
@@ -112,7 +113,8 @@
           "Location": "https://github.com/aws/aws-cdk.git",
           "ReportBuildStatus": false,
           "Type": "GITHUB"
-        }
+        },
+        "EncryptionKey": "alias/aws/s3"
       }
     }
   }

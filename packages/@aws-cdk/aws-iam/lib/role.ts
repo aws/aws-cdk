@@ -1,4 +1,5 @@
-import { Construct, Duration, Lazy, Resource, Stack, Token, TokenComparison } from '@aws-cdk/core';
+import { Duration, Resource, Stack, Token, TokenComparison } from '@aws-cdk/core';
+import { Construct, Node } from 'constructs';
 import { Grant } from './grant';
 import { CfnRole } from './iam.generated';
 import { IIdentity } from './identity-base';
@@ -8,7 +9,7 @@ import { PolicyDocument } from './policy-document';
 import { PolicyStatement } from './policy-statement';
 import { AddToPrincipalPolicyResult, ArnPrincipal, IPrincipal, PrincipalPolicyFragment } from './principals';
 import { ImmutableRole } from './private/immutable-role';
-import { AttachedPolicies } from './util';
+import { AttachedPolicies, UniqueStringSet } from './util';
 
 /**
  * Properties for defining an IAM Role
@@ -101,7 +102,7 @@ export interface RoleProps {
    * Acknowledging IAM Resources in AWS CloudFormation Templates.
    *
    * @default - AWS CloudFormation generates a unique physical ID and uses that ID
-   * for the group name.
+   * for the role name.
    */
   readonly roleName?: string;
 
@@ -325,7 +326,7 @@ export class Role extends Resource implements IRole {
 
     const role = new CfnRole(this, 'Resource', {
       assumeRolePolicyDocument: this.assumeRolePolicy as any,
-      managedPolicyArns: Lazy.listValue({ produce: () => this.managedPolicies.map(p => p.managedPolicyArn) }, { omitEmpty: true }),
+      managedPolicyArns: UniqueStringSet.from(() => this.managedPolicies.map(p => p.managedPolicyArn)),
       policies: _flatten(this.inlinePolicies),
       path: props.path,
       permissionsBoundary: this.permissionsBoundary ? this.permissionsBoundary.managedPolicyArn : undefined,
@@ -423,7 +424,7 @@ export class Role extends Resource implements IRole {
    */
   public withoutPolicyUpdates(): IRole {
     if (!this.immutableRole) {
-      this.immutableRole = new ImmutableRole(this.node.scope as Construct, `ImmutableRole${this.node.id}`, this);
+      this.immutableRole = new ImmutableRole(Node.of(this).scope as Construct, `ImmutableRole${this.node.id}`, this);
     }
 
     return this.immutableRole;

@@ -60,17 +60,34 @@ export interface AssetOptions {
 
 /**
  * The type of asset hash
+ *
+ * NOTE: the hash is used in order to identify a specific revision of the asset, and
+ * used for optimizing and caching deployment activities related to this asset such as
+ * packaging, uploading to Amazon S3, etc.
  */
 export enum AssetHashType {
   /**
    * Based on the content of the source path
+   *
+   * When bundling, use `SOURCE` when the content of the bundling output is not
+   * stable across repeated bundling operations.
    */
   SOURCE = 'source',
 
   /**
    * Based on the content of the bundled path
+   *
+   * @deprecated use `OUTPUT` instead
    */
   BUNDLE = 'bundle',
+
+  /**
+   * Based on the content of the bundling output
+   *
+   * Use `OUTPUT` when the source of the asset is a top level folder containing
+   * code and/or dependencies that are not directly linked to the asset.
+   */
+  OUTPUT = 'output',
 
   /**
    * Use a custom hash
@@ -90,16 +107,29 @@ export interface FileAssetSource {
   readonly sourceHash: string;
 
   /**
+   * An external command that will produce the packaged asset.
+   *
+   * The command should produce the location of a ZIP file on `stdout`.
+   *
+   * @default - Exactly one of `directory` and `executable` is required
+   */
+  readonly executable?: string[];
+
+  /**
    * The path, relative to the root of the cloud assembly, in which this asset
    * source resides. This can be a path to a file or a directory, dependning on the
    * packaging type.
+   *
+   * @default - Exactly one of `directory` and `executable` is required
    */
-  readonly fileName: string;
+  readonly fileName?: string;
 
   /**
    * Which type of packaging to perform.
+   *
+   * @default - Required if `fileName` is specified.
    */
-  readonly packaging: FileAssetPackaging;
+  readonly packaging?: FileAssetPackaging;
 }
 
 export interface DockerImageAssetSource {
@@ -114,10 +144,21 @@ export interface DockerImageAssetSource {
   readonly sourceHash: string;
 
   /**
+   * An external command that will produce the packaged asset.
+   *
+   * The command should produce the name of a local Docker image on `stdout`.
+   *
+   * @default - Exactly one of `directoryName` and `executable` is required
+   */
+  readonly executable?: string[];
+
+  /**
    * The directory where the Dockerfile is stored, must be relative
    * to the cloud assembly root.
+   *
+   * @default - Exactly one of `directoryName` and `executable` is required
    */
-  readonly directoryName: string;
+  readonly directoryName?: string;
 
   /**
    * Build args to pass to the `docker build` command.
@@ -126,6 +167,8 @@ export interface DockerImageAssetSource {
    * values cannot refer to unresolved tokens (such as `lambda.functionArn` or
    * `queue.queueUrl`).
    *
+   * Only allowed when `directoryName` is specified.
+   *
    * @default - no build args are passed
    */
   readonly dockerBuildArgs?: { [key: string]: string };
@@ -133,12 +176,16 @@ export interface DockerImageAssetSource {
   /**
    * Docker target to build to
    *
+   * Only allowed when `directoryName` is specified.
+   *
    * @default - no target
    */
   readonly dockerBuildTarget?: string;
 
   /**
    * Path to the Dockerfile (relative to the directory).
+   *
+   * Only allowed when `directoryName` is specified.
    *
    * @default - no file
    */

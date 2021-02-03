@@ -1,6 +1,7 @@
 {
   "name": "@aws-cdk/aws-eks-legacy",
   "version": "0.0.0",
+  "deprecated": "Use the @aws-cdk/aws-eks module instead",
   "description": "The CDK Construct Library for AWS::EKS (Legacy)",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -17,13 +18,15 @@
       "dotnet": {
         "namespace": "Amazon.CDK.AWS.EKS.Legacy",
         "packageId": "Amazon.CDK.AWS.EKS.Legacy",
-        "signAssembly": true,
-        "assemblyOriginatorKeyFile": "../../key.snk",
         "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
       },
       "python": {
         "distName": "aws-cdk.aws-eks-legacy",
-        "module": "aws_cdk.aws_eks_legacy"
+        "module": "aws_cdk.aws_eks_legacy",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
       }
     },
     "projectReferences": true
@@ -43,9 +46,11 @@
     "package": "cdk-package",
     "awslint": "cdk-awslint",
     "cfn2ts": "cfn2ts",
-    "build+test+package": "npm run build+test && npm run package",
-    "build+test": "npm run build && npm test",
-    "compat": "cdk-compat"
+    "build+test+package": "yarn build+test && yarn package",
+    "build+test": "yarn build && yarn test",
+    "compat": "cdk-compat",
+    "gen": "cfn2ts",
+    "rosetta:extract": "yarn --silent jsii-rosetta extract"
   },
   "cdk-build": {
     "cloudformation": "AWS::EKS"
@@ -79,7 +84,7 @@
     "@aws-cdk/aws-lambda": "0.0.0",
     "@aws-cdk/aws-ssm": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "constructs": "^3.0.4"
+    "constructs": "^3.2.0"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
@@ -90,7 +95,7 @@
     "@aws-cdk/aws-lambda": "0.0.0",
     "@aws-cdk/aws-ssm": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "constructs": "^3.0.4"
+    "constructs": "^3.2.0"
   },
   "engines": {
     "node": ">= 10.13.0 <13 || >=13.7.0"

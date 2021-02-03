@@ -43,7 +43,7 @@ export class CodeName {
     return new CodeName('', '', primitiveName);
   }
 
-  /* eslint-disable no-shadow */
+  /* eslint-disable @typescript-eslint/no-shadow */
   constructor(
     readonly packageName: string,
     readonly namespace: string,
@@ -51,7 +51,7 @@ export class CodeName {
     readonly specName?: SpecName,
     readonly methodName?: string) {
   }
-  /* eslint-enable no-shadow */
+  /* eslint-enable @typescript-eslint/no-shadow */
 
   /**
    * Alias for className

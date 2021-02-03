@@ -1,8 +1,13 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CfnTargetGroup } from '../elasticloadbalancingv2.generated';
 import { Protocol, TargetType } from './enums';
 import { Attributes, renderAttributes } from './util';
+
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 /**
  * Basic properties of both Application and Network Target Groups
@@ -144,7 +149,7 @@ export interface HealthCheck {
 /**
  * Define the target of a load balancer
  */
-export abstract class TargetGroupBase extends cdk.Construct implements ITargetGroup {
+export abstract class TargetGroupBase extends CoreConstruct implements ITargetGroup {
   /**
    * The ARN of the target group
    */
@@ -222,7 +227,7 @@ export abstract class TargetGroupBase extends cdk.Construct implements ITargetGr
    */
   private readonly resource: CfnTargetGroup;
 
-  constructor(scope: cdk.Construct, id: string, baseProps: BaseTargetGroupProps, additionalProps: any) {
+  constructor(scope: Construct, id: string, baseProps: BaseTargetGroupProps, additionalProps: any) {
     super(scope, id);
 
     if (baseProps.deregistrationDelay !== undefined) {
@@ -235,25 +240,25 @@ export abstract class TargetGroupBase extends cdk.Construct implements ITargetGr
 
     this.resource = new CfnTargetGroup(this, 'Resource', {
       name: baseProps.targetGroupName,
-      targetGroupAttributes: cdk.Lazy.anyValue({ produce: () => renderAttributes(this.attributes) }, { omitEmptyArray: true }),
-      targetType: cdk.Lazy.stringValue({ produce: () => this.targetType }),
-      targets: cdk.Lazy.anyValue({ produce: () => this.targetsJson }, { omitEmptyArray: true }),
-      vpcId: cdk.Lazy.stringValue({ produce: () => this.vpc && this.targetType !== TargetType.LAMBDA ? this.vpc.vpcId : undefined }),
+      targetGroupAttributes: cdk.Lazy.any({ produce: () => renderAttributes(this.attributes) }, { omitEmptyArray: true }),
+      targetType: cdk.Lazy.string({ produce: () => this.targetType }),
+      targets: cdk.Lazy.any({ produce: () => this.targetsJson }, { omitEmptyArray: true }),
+      vpcId: cdk.Lazy.string({ produce: () => this.vpc && this.targetType !== TargetType.LAMBDA ? this.vpc.vpcId : undefined }),
 
       // HEALTH CHECK
-      healthCheckEnabled: cdk.Lazy.anyValue({ produce: () => this.healthCheck && this.healthCheck.enabled }),
-      healthCheckIntervalSeconds: cdk.Lazy.numberValue({
+      healthCheckEnabled: cdk.Lazy.any({ produce: () => this.healthCheck && this.healthCheck.enabled }),
+      healthCheckIntervalSeconds: cdk.Lazy.number({
         produce: () => this.healthCheck && this.healthCheck.interval && this.healthCheck.interval.toSeconds(),
       }),
-      healthCheckPath: cdk.Lazy.stringValue({ produce: () => this.healthCheck && this.healthCheck.path }),
-      healthCheckPort: cdk.Lazy.stringValue({ produce: () => this.healthCheck && this.healthCheck.port }),
-      healthCheckProtocol: cdk.Lazy.stringValue({ produce: () => this.healthCheck && this.healthCheck.protocol }),
-      healthCheckTimeoutSeconds: cdk.Lazy.numberValue({
+      healthCheckPath: cdk.Lazy.string({ produce: () => this.healthCheck && this.healthCheck.path }),
+      healthCheckPort: cdk.Lazy.string({ produce: () => this.healthCheck && this.healthCheck.port }),
+      healthCheckProtocol: cdk.Lazy.string({ produce: () => this.healthCheck && this.healthCheck.protocol }),
+      healthCheckTimeoutSeconds: cdk.Lazy.number({
         produce: () => this.healthCheck && this.healthCheck.timeout && this.healthCheck.timeout.toSeconds(),
       }),
-      healthyThresholdCount: cdk.Lazy.numberValue({ produce: () => this.healthCheck && this.healthCheck.healthyThresholdCount }),
-      unhealthyThresholdCount: cdk.Lazy.numberValue({ produce: () => this.healthCheck && this.healthCheck.unhealthyThresholdCount }),
-      matcher: cdk.Lazy.anyValue({
+      healthyThresholdCount: cdk.Lazy.number({ produce: () => this.healthCheck && this.healthCheck.healthyThresholdCount }),
+      unhealthyThresholdCount: cdk.Lazy.number({ produce: () => this.healthCheck && this.healthCheck.unhealthyThresholdCount }),
+      matcher: cdk.Lazy.any({
         produce: () => this.healthCheck && this.healthCheck.healthyHttpCodes !== undefined ? {
           httpCode: this.healthCheck.healthyHttpCodes,
         } : undefined,

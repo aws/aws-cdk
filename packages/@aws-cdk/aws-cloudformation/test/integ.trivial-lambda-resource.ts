@@ -3,6 +3,12 @@ import * as lambda from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
 import { CustomResource, CustomResourceProvider } from '../lib';
 
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct } from '@aws-cdk/core';
+
+/* eslint-disable cdk/no-core-construct */
+
 interface DemoResourceProps {
   /**
    * Message to echo
@@ -15,10 +21,10 @@ interface DemoResourceProps {
   failCreate?: boolean;
 }
 
-class DemoResource extends cdk.Construct {
+class DemoResource extends Construct {
   public readonly response: string;
 
-  constructor(scope: cdk.Construct, id: string, props: DemoResourceProps) {
+  constructor(scope: Construct, id: string, props: DemoResourceProps) {
     super(scope, id);
 
     const resource = new CustomResource(this, 'Resource', {

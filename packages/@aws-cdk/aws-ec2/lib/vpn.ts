@@ -1,6 +1,7 @@
 import * as net from 'net';
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
-import * as cdk from '@aws-cdk/core';
+import { IResource, Resource, Token } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import {
   CfnCustomerGateway,
   CfnVPNConnection,
@@ -9,7 +10,7 @@ import {
 } from './ec2.generated';
 import { IVpc, SubnetSelection } from './vpc';
 
-export interface IVpnConnection extends cdk.IResource {
+export interface IVpnConnection extends IResource {
   /**
    * The id of the VPN connection.
    */
@@ -34,7 +35,7 @@ export interface IVpnConnection extends cdk.IResource {
 /**
  * The virtual private gateway interface
  */
-export interface IVpnGateway extends cdk.IResource {
+export interface IVpnGateway extends IResource {
 
   /**
    * The virtual private gateway Id
@@ -102,7 +103,7 @@ export interface VpnGatewayProps {
   readonly type: string;
 
   /**
-   * Explicitely specify an Asn or let aws pick an Asn for you.
+   * Explicitly specify an Asn or let aws pick an Asn for you.
    * @default 65000
    */
   readonly amazonSideAsn?: number;
@@ -113,7 +114,7 @@ export interface VpnGatewayProps {
  */
 export interface EnableVpnGatewayOptions extends VpnGatewayProps {
   /**
-   * Provide an array of subnets where the route propagation shoud be added.
+   * Provide an array of subnets where the route propagation should be added.
    * @default noPropagation
    */
   readonly vpnRoutePropagation?: SubnetSelection[]
@@ -147,14 +148,14 @@ export enum VpnConnectionType {
  *
  * @resource AWS::EC2::VPNGateway
  */
-export class VpnGateway extends cdk.Resource implements IVpnGateway {
+export class VpnGateway extends Resource implements IVpnGateway {
 
   /**
    * The virtual private gateway Id
    */
   public readonly gatewayId: string;
 
-  constructor(scope: cdk.Construct, id: string, props: VpnGatewayProps) {
+  constructor(scope: Construct, id: string, props: VpnGatewayProps) {
     super(scope, id);
 
     // This is 'Default' instead of 'Resource', because using 'Default' will generate
@@ -169,7 +170,7 @@ export class VpnGateway extends cdk.Resource implements IVpnGateway {
  *
  * @resource AWS::EC2::VPNConnection
  */
-export class VpnConnection extends cdk.Resource implements IVpnConnection {
+export class VpnConnection extends Resource implements IVpnConnection {
   /**
    * Return the given named metric for all VPN connections in the account/region.
    */
@@ -213,7 +214,7 @@ export class VpnConnection extends cdk.Resource implements IVpnConnection {
   public readonly customerGatewayIp: string;
   public readonly customerGatewayAsn: number;
 
-  constructor(scope: cdk.Construct, id: string, props: VpnConnectionProps) {
+  constructor(scope: Construct, id: string, props: VpnConnectionProps) {
     super(scope, id);
 
     if (!props.vpc.vpnGatewayId) {
@@ -251,7 +252,7 @@ export class VpnConnection extends cdk.Resource implements IVpnConnection {
       }
 
       props.tunnelOptions.forEach((options, index) => {
-        if (options.preSharedKey && !/^[a-zA-Z1-9._][a-zA-Z\d._]{7,63}$/.test(options.preSharedKey)) {
+        if (options.preSharedKey && !Token.isUnresolved(options.preSharedKey) && !/^[a-zA-Z1-9._][a-zA-Z\d._]{7,63}$/.test(options.preSharedKey)) {
           /* eslint-disable max-len */
           throw new Error(`The \`preSharedKey\` ${options.preSharedKey} for tunnel ${index + 1} is invalid. Allowed characters are alphanumeric characters and ._. Must be between 8 and 64 characters in length and cannot start with zero (0).`);
           /* eslint-enable max-len */

@@ -1,6 +1,9 @@
-import { Construct, IResource, Resource } from '@aws-cdk/core';
+import { IResource, Resource, Duration } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CfnUserPoolClient } from './cognito.generated';
 import { IUserPool } from './user-pool';
+import { ClientAttributes } from './user-pool-attr';
+import { IUserPoolResourceServer, ResourceServerScope } from './user-pool-resource-server';
 
 /**
  * Types of authentication flow
@@ -30,12 +33,6 @@ export interface AuthFlow {
    * @default false
    */
   readonly userSrp?: boolean;
-
-  /**
-   * Enable authflow to refresh tokens
-   * @default false
-   */
-  readonly refreshToken?: boolean;
 }
 
 /**
@@ -139,6 +136,13 @@ export class OAuthScope {
   }
 
   /**
+   * Adds a custom scope that's tied to a resource server in your stack
+   */
+  public static resourceServer(server: IUserPoolResourceServer, scope: ResourceServerScope) {
+    return new OAuthScope(`${server.userPoolResourceServerId}/${scope.scopeName}`);
+  }
+
+  /**
    * The name of this scope as recognized by CloudFormation.
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cognito-userpoolclient.html#cfn-cognito-userpoolclient-allowedoauthscopes
    */
@@ -158,6 +162,12 @@ export class UserPoolClientIdentityProvider {
    * A `UserPoolIdentityProviderFacebook` must be attached to the user pool.
    */
   public static readonly FACEBOOK = new UserPoolClientIdentityProvider('Facebook');
+
+  /**
+   * Allow users to sign in using 'Google Login'.
+   * A `UserPoolIdentityProviderGoogle` must be attached to the user pool.
+   */
+  public static readonly GOOGLE = new UserPoolClientIdentityProvider('Google');
 
   /**
    * Allow users to sign in using 'Login With Amazon'.
@@ -239,6 +249,44 @@ export interface UserPoolClientOptions {
    * registered with the user pool using the `UserPool.registerIdentityProvider()` API.
    */
   readonly supportedIdentityProviders?: UserPoolClientIdentityProvider[];
+
+  /**
+   * Validity of the ID token.
+   * Values between 5 minutes and 1 day are valid. The duration can not be longer than the refresh token validity.
+   * @see https://docs.aws.amazon.com/en_us/cognito/latest/developerguide/amazon-cognito-user-pools-using-tokens-with-identity-providers.html#amazon-cognito-user-pools-using-the-id-token
+   * @default Duration.minutes(60)
+   */
+  readonly idTokenValidity?: Duration;
+
+  /**
+   * Validity of the refresh token.
+   * Values between 60 minutes and 10 years are valid.
+   * @see https://docs.aws.amazon.com/en_us/cognito/latest/developerguide/amazon-cognito-user-pools-using-tokens-with-identity-providers.html#amazon-cognito-user-pools-using-the-refresh-token
+   * @default Duration.days(30)
+   */
+  readonly refreshTokenValidity?: Duration;
+
+  /**
+   * Validity of the access token.
+   * Values between 5 minutes and 1 day are valid. The duration can not be longer than the refresh token validity.
+   * @see https://docs.aws.amazon.com/en_us/cognito/latest/developerguide/amazon-cognito-user-pools-using-tokens-with-identity-providers.html#amazon-cognito-user-pools-using-the-access-token
+   * @default Duration.minutes(60)
+   */
+  readonly accessTokenValidity?: Duration;
+
+  /**
+   * The set of attributes this client will be able to read.
+   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-attributes.html#user-pool-settings-attribute-permissions-and-scopes
+   * @default - all standard and custom attributes
+   */
+  readonly readAttributes?: ClientAttributes;
+
+  /**
+   * The set of attributes this client will be able to write.
+   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-attributes.html#user-pool-settings-attribute-permissions-and-scopes
+   * @default - all standard and custom attributes
+   */
+  readonly writeAttributes?: ClientAttributes;
 }
 
 /**
@@ -320,12 +368,15 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
       explicitAuthFlows: this.configureAuthFlows(props),
       allowedOAuthFlows: props.disableOAuth ? undefined : this.configureOAuthFlows(),
       allowedOAuthScopes: props.disableOAuth ? undefined : this.configureOAuthScopes(props.oAuth),
-      callbackUrLs: callbackUrls && callbackUrls.length > 0 ? callbackUrls : undefined,
+      callbackUrLs: callbackUrls && callbackUrls.length > 0 && !props.disableOAuth ? callbackUrls : undefined,
       logoutUrLs: props.oAuth?.logoutUrls,
       allowedOAuthFlowsUserPoolClient: !props.disableOAuth,
       preventUserExistenceErrors: this.configurePreventUserExistenceErrors(props.preventUserExistenceErrors),
       supportedIdentityProviders: this.configureIdentityProviders(props),
+      readAttributes: props.readAttributes?.attributes(),
+      writeAttributes: props.writeAttributes?.attributes(),
     });
+    this.configureTokenValidity(resource, props);
 
     this.userPoolClientId = resource.ref;
     this._userPoolClientName = props.userPoolClientName;
@@ -343,12 +394,18 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
   }
 
   private configureAuthFlows(props: UserPoolClientProps): string[] | undefined {
+    if (!props.authFlows) return undefined;
+
     const authFlows: string[] = [];
-    if (props.authFlows?.userPassword) { authFlows.push('ALLOW_USER_PASSWORD_AUTH'); }
-    if (props.authFlows?.adminUserPassword) { authFlows.push('ALLOW_ADMIN_USER_PASSWORD_AUTH'); }
-    if (props.authFlows?.custom) { authFlows.push('ALLOW_CUSTOM_AUTH'); }
-    if (props.authFlows?.userSrp) { authFlows.push('ALLOW_USER_SRP_AUTH'); }
-    if (props.authFlows?.refreshToken) { authFlows.push('ALLOW_REFRESH_TOKEN_AUTH'); }
+    if (props.authFlows.userPassword) { authFlows.push('ALLOW_USER_PASSWORD_AUTH'); }
+    if (props.authFlows.adminUserPassword) { authFlows.push('ALLOW_ADMIN_USER_PASSWORD_AUTH'); }
+    if (props.authFlows.custom) { authFlows.push('ALLOW_CUSTOM_AUTH'); }
+    if (props.authFlows.userSrp) { authFlows.push('ALLOW_USER_SRP_AUTH'); }
+
+    // refreshToken should always be allowed if authFlows are present
+    if (authFlows.length > 0) {
+      authFlows.push('ALLOW_REFRESH_TOKEN_AUTH');
+    }
 
     if (authFlows.length === 0) {
       return undefined;
@@ -400,5 +457,34 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
     }
     if (providers.length === 0) { return undefined; }
     return Array.from(providers);
+  }
+
+  private configureTokenValidity(resource: CfnUserPoolClient, props: UserPoolClientProps) {
+    this.validateDuration('idTokenValidity', Duration.minutes(5), Duration.days(1), props.idTokenValidity);
+    this.validateDuration('accessTokenValidity', Duration.minutes(5), Duration.days(1), props.accessTokenValidity);
+    this.validateDuration('refreshTokenValidity', Duration.minutes(60), Duration.days(10 * 365), props.refreshTokenValidity);
+    if (props.refreshTokenValidity) {
+      this.validateDuration('idTokenValidity', Duration.minutes(5), props.refreshTokenValidity, props.idTokenValidity);
+      this.validateDuration('accessTokenValidity', Duration.minutes(5), props.refreshTokenValidity, props.accessTokenValidity);
+    }
+
+    if (props.accessTokenValidity || props.idTokenValidity || props.refreshTokenValidity) {
+      resource.tokenValidityUnits = {
+        idToken: props.idTokenValidity ? 'minutes' : undefined,
+        accessToken: props.accessTokenValidity ? 'minutes' : undefined,
+        refreshToken: props.refreshTokenValidity ? 'minutes' : undefined,
+      };
+    };
+
+    resource.idTokenValidity = props.idTokenValidity ? props.idTokenValidity.toMinutes() : undefined;
+    resource.refreshTokenValidity = props.refreshTokenValidity ? props.refreshTokenValidity.toMinutes() : undefined;
+    resource.accessTokenValidity = props.accessTokenValidity ? props.accessTokenValidity.toMinutes() : undefined;
+  }
+
+  private validateDuration(name: string, min: Duration, max: Duration, value?: Duration) {
+    if (value === undefined) { return; }
+    if (value.toMilliseconds() < min.toMilliseconds() || value.toMilliseconds() > max.toMilliseconds()) {
+      throw new Error(`${name}: Must be a duration between ${min.toHumanString()} and ${max.toHumanString()} (inclusive); received ${value.toHumanString()}.`);
+    }
   }
 }

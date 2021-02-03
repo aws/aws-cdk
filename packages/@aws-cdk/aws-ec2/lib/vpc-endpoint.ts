@@ -1,6 +1,7 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
-import { Aws, Construct, ContextProvider, IResource, Lazy, Resource, Stack, Token } from '@aws-cdk/core';
+import { Aws, ContextProvider, IResource, Lazy, Resource, Stack, Token } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { Connections, IConnectable } from './connections';
 import { CfnVPCEndpoint } from './ec2.generated';
 import { Peer } from './peer';
@@ -191,7 +192,7 @@ export class GatewayVpcEndpoint extends VpcEndpoint implements IGatewayVpcEndpoi
     }
 
     const endpoint = new CfnVPCEndpoint(this, 'Resource', {
-      policyDocument: Lazy.anyValue({ produce: () => this.policyDocument }),
+      policyDocument: Lazy.any({ produce: () => this.policyDocument }),
       routeTableIds,
       serviceName: props.service.name,
       vpcEndpointType: VpcEndpointType.GATEWAY,
@@ -256,6 +257,7 @@ export class InterfaceVpcEndpointService implements IInterfaceVpcEndpointService
  */
 export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointService {
   public static readonly SAGEMAKER_NOTEBOOK = new InterfaceVpcEndpointAwsService('notebook', 'aws.sagemaker');
+  public static readonly ATHENA = new InterfaceVpcEndpointAwsService('athena');
   public static readonly CLOUDFORMATION = new InterfaceVpcEndpointAwsService('cloudformation');
   public static readonly CLOUDTRAIL = new InterfaceVpcEndpointAwsService('cloudtrail');
   public static readonly CODEBUILD = new InterfaceVpcEndpointAwsService('codebuild');
@@ -279,7 +281,9 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public static readonly APIGATEWAY = new InterfaceVpcEndpointAwsService('execute-api');
   public static readonly CODECOMMIT_GIT = new InterfaceVpcEndpointAwsService('git-codecommit');
   public static readonly CODECOMMIT_GIT_FIPS = new InterfaceVpcEndpointAwsService('git-codecommit-fips');
+  public static readonly GLUE = new InterfaceVpcEndpointAwsService('glue');
   public static readonly KINESIS_STREAMS = new InterfaceVpcEndpointAwsService('kinesis-streams');
+  public static readonly KINESIS_FIREHOSE = new InterfaceVpcEndpointAwsService('kinesis-firehose');
   public static readonly KMS = new InterfaceVpcEndpointAwsService('kms');
   public static readonly CLOUDWATCH_LOGS = new InterfaceVpcEndpointAwsService('logs');
   public static readonly CLOUDWATCH = new InterfaceVpcEndpointAwsService('monitoring');
@@ -298,6 +302,7 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public static readonly REKOGNITION = new InterfaceVpcEndpointAwsService('rekognition');
   public static readonly REKOGNITION_FIPS = new InterfaceVpcEndpointAwsService('rekognition-fips');
   public static readonly STEP_FUNCTIONS = new InterfaceVpcEndpointAwsService('states');
+  public static readonly LAMBDA = new InterfaceVpcEndpointAwsService('lambda');
 
   /**
    * The name of the service.
@@ -315,7 +320,7 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public readonly privateDnsDefault?: boolean = true;
 
   constructor(name: string, prefix?: string, port?: number) {
-    const region = Lazy.stringValue({
+    const region = Lazy.uncachedString({
       produce: (context) => Stack.of(context.scope).region,
     });
     this.name = `${prefix || 'com.amazonaws'}.${region}.${name}`;
@@ -402,10 +407,6 @@ export class InterfaceVpcEndpoint extends VpcEndpoint implements IInterfaceVpcEn
    * Imports an existing interface VPC endpoint.
    */
   public static fromInterfaceVpcEndpointAttributes(scope: Construct, id: string, attrs: InterfaceVpcEndpointAttributes): IInterfaceVpcEndpoint {
-    if (!attrs.securityGroups && !attrs.securityGroupId) {
-      throw new Error('Either `securityGroups` or `securityGroupId` must be specified.');
-    }
-
     const securityGroups = attrs.securityGroupId
       ? [SecurityGroup.fromSecurityGroupId(scope, 'SecurityGroup', attrs.securityGroupId)]
       : attrs.securityGroups;
@@ -479,7 +480,7 @@ export class InterfaceVpcEndpoint extends VpcEndpoint implements IInterfaceVpcEn
 
     const endpoint = new CfnVPCEndpoint(this, 'Resource', {
       privateDnsEnabled: props.privateDnsEnabled ?? props.service.privateDnsDefault ?? true,
-      policyDocument: Lazy.anyValue({ produce: () => this.policyDocument }),
+      policyDocument: Lazy.any({ produce: () => this.policyDocument }),
       securityGroupIds: securityGroups.map(s => s.securityGroupId),
       serviceName: props.service.name,
       vpcEndpointType: VpcEndpointType.INTERFACE,
@@ -500,52 +501,72 @@ export class InterfaceVpcEndpoint extends VpcEndpoint implements IInterfaceVpcEn
   private endpointSubnets(props: InterfaceVpcEndpointProps) {
     const lookupSupportedAzs = props.lookupSupportedAzs ?? false;
     const subnetSelection = props.vpc.selectSubnets({ ...props.subnets, onePerAz: true });
+    const subnets = subnetSelection.subnets;
 
-    // If we don't have an account/region, we will not be able to do filtering on AZs since
-    // they will be undefined
-    const agnosticAcct = Token.isUnresolved(this.stack.account);
-    const agnosticRegion = Token.isUnresolved(this.stack.region);
+    // Sanity check the subnet count
+    if (subnetSelection.subnets.length == 0) {
+      throw new Error('Cannot create a VPC Endpoint with no subnets');
+    }
 
-    // Some service names, such as AWS service name references, use Tokens to automatically
-    // fill in the region
-    // If it is an InterfaceVpcEndpointAwsService, then the reference will be resolvable since
-    // only references the region
+    // If we aren't going to lookup supported AZs we'll exit early, returning the subnetIds from the provided subnet selection
+    if (!lookupSupportedAzs) {
+      return subnetSelection.subnetIds;
+    }
+
+    // Some service names, such as AWS service name references, use Tokens to automatically fill in the region
+    // If it is an InterfaceVpcEndpointAwsService, then the reference will be resolvable since it only references the region
     const isAwsService = Token.isUnresolved(props.service.name) && props.service instanceof InterfaceVpcEndpointAwsService;
 
-    // Determine what name we pass to the context provider, either the verbatim name
-    // or a resolved version if it is an AWS service reference
-    let lookupServiceName = props.service.name;
-    if (isAwsService && !agnosticRegion) {
-      lookupServiceName = Stack.of(this).resolve(props.service.name);
-    } else {
-      // It's an agnostic service and we don't know how to resolve it.
-      // This is ok if the stack is region agnostic and we're not looking up
-      // AZs
-      lookupServiceName = props.service.name;
-    }
+    // Determine what service name gets pass to the context provider
+    // If it is an AWS service it will have a REGION token
+    const lookupServiceName = isAwsService ? Stack.of(this).resolve(props.service.name) : props.service.name;
 
-    // Check if lookup is impossible and throw an appropriate error
+    // Check that the lookup will work
+    this.validateCanLookupSupportedAzs(subnets, lookupServiceName);
+
+    // Do the actual lookup for AZs
+    const availableAZs = this.availableAvailabilityZones(lookupServiceName);
+    const filteredSubnets = subnets.filter(s => availableAZs.includes(s.availabilityZone));
+
+    // Throw an error if the lookup filtered out all subnets
+    // VpcEndpoints must be created with at least one AZ
+    if (filteredSubnets.length == 0) {
+      throw new Error(`lookupSupportedAzs returned ${availableAZs} but subnets have AZs ${subnets.map(s => s.availabilityZone)}`);
+    }
+    return filteredSubnets.map(s => s.subnetId);
+  }
+
+  /**
+   * Sanity checking when looking up AZs for an endpoint service, to make sure it won't fail
+   */
+  private validateCanLookupSupportedAzs(subnets: ISubnet[], serviceName: string) {
+
+    // Having any of these be true will cause the AZ lookup to fail at synthesis time
+    const agnosticAcct = Token.isUnresolved(this.stack.account);
+    const agnosticRegion = Token.isUnresolved(this.stack.region);
+    const agnosticService = Token.isUnresolved(serviceName);
+
+    // Having subnets with Token AZs can cause the endpoint to be created with no subnets, failing at deployment time
+    const agnosticSubnets = subnets.some(s => Token.isUnresolved(s.availabilityZone));
+    const agnosticSubnetList = Token.isUnresolved(subnets.map(s => s.availabilityZone));
+
     // Context provider cannot make an AWS call without an account/region
-    if ((agnosticAcct || agnosticRegion) && lookupSupportedAzs) {
+    if (agnosticAcct || agnosticRegion) {
       throw new Error('Cannot look up VPC endpoint availability zones if account/region are not specified');
     }
-    // Context provider doesn't know the name of the service if there is a Token
-    // in the name
-    const agnosticService = Token.isUnresolved(lookupServiceName);
-    if (agnosticService && lookupSupportedAzs) {
-      throw new Error(`Cannot lookup AZs for a service name with a Token: ${props.service.name}`);
+
+    // The AWS call will fail if there is a Token in the service name
+    if (agnosticService) {
+      throw new Error(`Cannot lookup AZs for a service name with a Token: ${serviceName}`);
     }
 
-    // Here we do the actual lookup for AZs, if told to do so
-    let subnets;
-    if (lookupSupportedAzs) {
-      const availableAZs = this.availableAvailabilityZones(lookupServiceName);
-      subnets = subnetSelection.subnets.filter(s => availableAZs.includes(s.availabilityZone));
-    } else {
-      subnets = subnetSelection.subnets;
+    // The AWS call return strings for AZs, like us-east-1a, us-east-1b, etc
+    // If the subnet AZs are Tokens, a string comparison between the subnet AZs and the AZs from the AWS call
+    // will not match
+    if (agnosticSubnets || agnosticSubnetList) {
+      const agnostic = subnets.filter(s => Token.isUnresolved(s.availabilityZone));
+      throw new Error(`lookupSupportedAzs cannot filter on subnets with Token AZs: ${agnostic}`);
     }
-    const subnetIds = subnets.map(s => s.subnetId);
-    return subnetIds;
   }
 
   private availableAvailabilityZones(serviceName: string): string[] {

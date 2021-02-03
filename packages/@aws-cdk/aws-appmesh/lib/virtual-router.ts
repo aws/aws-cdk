@@ -1,9 +1,9 @@
 import * as cdk from '@aws-cdk/core';
-
+import { Construct } from 'constructs';
 import { CfnVirtualRouter } from './appmesh.generated';
 import { IMesh, Mesh } from './mesh';
 import { Route, RouteBaseProps } from './route';
-import { PortMapping, Protocol } from './shared-interfaces';
+import { VirtualRouterListener } from './virtual-router-listener';
 
 /**
  * Interface which all VirtualRouter based classes MUST implement
@@ -24,7 +24,7 @@ export interface IVirtualRouter extends cdk.IResource {
   readonly virtualRouterArn: string;
 
   /**
-   * The  service mesh that the virtual router resides in
+   * The Mesh which the VirtualRouter belongs to
    */
   readonly mesh: IMesh;
 
@@ -39,11 +39,11 @@ export interface IVirtualRouter extends cdk.IResource {
  */
 export interface VirtualRouterBaseProps {
   /**
-   * Listener specification for the virtual router
+   * Listener specification for the VirtualRouter
    *
    * @default - A listener on HTTP port 8080
    */
-  readonly listener?: Listener;
+  readonly listeners?: VirtualRouterListener[];
 
   /**
    * The name of the VirtualRouter
@@ -51,16 +51,6 @@ export interface VirtualRouterBaseProps {
    * @default - A name is automatically determined
    */
   readonly virtualRouterName?: string;
-}
-
-/**
- * A single listener for
- */
-export interface Listener {
-  /**
-   * Listener port for the virtual router
-   */
-  readonly portMapping: PortMapping;
 }
 
 abstract class VirtualRouterBase extends cdk.Resource implements IVirtualRouter {
@@ -75,7 +65,7 @@ abstract class VirtualRouterBase extends cdk.Resource implements IVirtualRouter 
   public abstract readonly virtualRouterArn: string;
 
   /**
-   * The AppMesh mesh the VirtualRouter belongs to
+   * The Mesh which the VirtualRouter belongs to
    */
   public abstract readonly mesh: IMesh;
 
@@ -95,11 +85,11 @@ abstract class VirtualRouterBase extends cdk.Resource implements IVirtualRouter 
 }
 
 /**
- * The properties used when creating a new VritualRouter
+ * The properties used when creating a new VirtualRouter
  */
 export interface VirtualRouterProps extends VirtualRouterBaseProps {
   /**
-   * The AppMesh mesh the VirtualRouter belongs to
+   * The Mesh which the VirtualRouter belongs to
    */
   readonly mesh: IMesh;
 }
@@ -108,22 +98,28 @@ export class VirtualRouter extends VirtualRouterBase {
   /**
    * Import an existing VirtualRouter given an ARN
    */
-  public static fromVirtualRouterArn(scope: cdk.Construct, id: string, virtualRouterArn: string): IVirtualRouter {
-    return new ImportedVirtualRouter(scope, id, { virtualRouterArn });
+  public static fromVirtualRouterArn(scope: Construct, id: string, virtualRouterArn: string): IVirtualRouter {
+    return new class extends VirtualRouterBase {
+      readonly virtualRouterArn = virtualRouterArn;
+      private readonly parsedArn = cdk.Fn.split('/', cdk.Stack.of(scope).parseArn(virtualRouterArn).resourceName!);
+      readonly virtualRouterName = cdk.Fn.select(2, this.parsedArn);
+      readonly mesh = Mesh.fromMeshName(this, 'Mesh', cdk.Fn.select(0, this.parsedArn));
+    }(scope, id);
   }
 
   /**
-   * Import an existing VirtualRouter given names
+   * Import an existing VirtualRouter given attributes
    */
-  public static fromVirtualRouterName(scope: cdk.Construct, id: string, meshName: string, virtualRouterName: string): IVirtualRouter {
-    return new ImportedVirtualRouter(scope, id, { meshName, virtualRouterName });
-  }
-
-  /**
-   * Import an existing virtual router given attributes
-   */
-  public static fromVirtualRouterAttributes(scope: cdk.Construct, id: string, attrs: VirtualRouterAttributes): IVirtualRouter {
-    return new ImportedVirtualRouter(scope, id, attrs);
+  public static fromVirtualRouterAttributes(scope: Construct, id: string, attrs: VirtualRouterAttributes): IVirtualRouter {
+    return new class extends VirtualRouterBase {
+      readonly virtualRouterName = attrs.virtualRouterName;
+      readonly mesh = attrs.mesh;
+      readonly virtualRouterArn = cdk.Stack.of(this).formatArn({
+        service: 'appmesh',
+        resource: `mesh/${attrs.mesh.meshName}/virtualRouter`,
+        resourceName: this.virtualRouterName,
+      });
+    }(scope, id);
   }
 
   /**
@@ -137,20 +133,23 @@ export class VirtualRouter extends VirtualRouterBase {
   public readonly virtualRouterArn: string;
 
   /**
-   * The AppMesh mesh the VirtualRouter belongs to
+   * The Mesh which the VirtualRouter belongs to
    */
   public readonly mesh: IMesh;
 
   private readonly listeners = new Array<CfnVirtualRouter.VirtualRouterListenerProperty>();
 
-  constructor(scope: cdk.Construct, id: string, props: VirtualRouterProps) {
+  constructor(scope: Construct, id: string, props: VirtualRouterProps) {
     super(scope, id, {
-      physicalName: props.virtualRouterName || cdk.Lazy.stringValue({ produce: () => this.node.uniqueId }),
+      physicalName: props.virtualRouterName || cdk.Lazy.string({ produce: () => cdk.Names.uniqueId(this) }),
     });
 
     this.mesh = props.mesh;
-
-    this.addListener(props.listener || { portMapping: { port: 8080, protocol: Protocol.HTTP } });
+    if (props.listeners && props.listeners.length) {
+      props.listeners.forEach(listener => this.addListener(listener));
+    } else {
+      this.addListener(VirtualRouterListener.http());
+    }
 
     const router = new CfnVirtualRouter(this, 'Resource', {
       virtualRouterName: this.physicalName,
@@ -171,10 +170,8 @@ export class VirtualRouter extends VirtualRouterBase {
   /**
    * Add port mappings to the router
    */
-  private addListener(listener: Listener) {
-    this.listeners.push({
-      portMapping: listener.portMapping,
-    });
+  private addListener(listener: VirtualRouterListener) {
+    this.listeners.push(listener.bind(this).listener);
   }
 }
 
@@ -185,75 +182,10 @@ export interface VirtualRouterAttributes {
   /**
    * The name of the VirtualRouter
    */
-  readonly virtualRouterName?: string;
+  readonly virtualRouterName: string;
 
   /**
-   * The Amazon Resource Name (ARN) for the VirtualRouter
+   * The Mesh which the VirtualRouter belongs to
    */
-  readonly virtualRouterArn?: string;
-
-  /**
-   * The AppMesh mesh the VirtualRouter belongs to
-   */
-  readonly mesh?: IMesh;
-
-  /**
-   * The name of the AppMesh mesh the VirtualRouter belongs to
-   */
-  readonly meshName?: string;
-}
-
-/**
- * Used to import a VirtualRouter and perform actions or read properties from
- */
-class ImportedVirtualRouter extends VirtualRouterBase {
-  /**
-   * The name of the VirtualRouter
-   */
-  public readonly virtualRouterName: string;
-
-  /**
-   * The Amazon Resource Name (ARN) for the VirtualRouter
-   */
-  public readonly virtualRouterArn: string;
-
-  private _mesh?: IMesh;
-
-  constructor(scope: cdk.Construct, id: string, props: VirtualRouterAttributes) {
-    super(scope, id);
-
-    if (props.mesh) {
-      this._mesh = props.mesh;
-    }
-    if (props.meshName) {
-      if (props.mesh) {
-        throw new Error('Supply either \'mesh\' or \'meshName\', but not both');
-      }
-      this._mesh = Mesh.fromMeshName(this, 'Mesh', props.meshName);
-    }
-
-    if (props.virtualRouterArn) {
-      this.virtualRouterArn = props.virtualRouterArn;
-      this.virtualRouterName = cdk.Fn.select(2, cdk.Fn.split('/', cdk.Stack.of(scope).parseArn(props.virtualRouterArn).resourceName!));
-    } else if (props.virtualRouterName && props.meshName) {
-      this.virtualRouterName = props.virtualRouterName;
-      this.virtualRouterArn = cdk.Stack.of(this).formatArn({
-        service: 'appmesh',
-        resource: `mesh/${props.meshName}/virtualRouter`,
-        resourceName: this.virtualRouterName,
-      });
-    } else {
-      throw new Error('Need either arn or both names');
-    }
-  }
-
-  /**
-   * The AppMesh mesh the VirtualRouter belongs to
-   */
-  public get mesh(): IMesh {
-    if (!this._mesh) {
-      throw new Error('Please supply either \'mesh\' or \'meshName\' when calling \'fromVirtualRouterAttributes\'');
-    }
-    return this._mesh;
-  }
+  readonly mesh: IMesh;
 }

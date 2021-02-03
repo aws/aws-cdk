@@ -1,12 +1,18 @@
+import * as fs from 'fs';
 import * as path from 'path';
-import * as cfn from '@aws-cdk/aws-cloudformation';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as cpactions from '@aws-cdk/aws-codepipeline-actions';
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
-import { Aws, Construct, Stack } from '@aws-cdk/core';
+import { Aws, CfnCapabilities, Stack } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
+import { Construct, Node } from 'constructs';
 import { appOf, assemblyBuilderOf } from '../private/construct-internals';
+import { toPosixPath } from '../private/fs';
+
+// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
+// eslint-disable-next-line
+import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 /**
  * Customization options for a DeployCdkStackAction
@@ -112,6 +118,13 @@ export interface DeployCdkStackActionProps extends DeployCdkStackActionOptions {
    * @default - No dependencies
    */
   readonly dependencyStackArtifactIds?: string[];
+
+  /**
+   * Template configuration path relative to the input artifact
+   *
+   * @default - No template configuration
+   */
+  readonly templateConfigurationPath?: string;
 }
 
 /**
@@ -154,14 +167,27 @@ export class DeployCdkStackAction implements codepipeline.IAction {
 
     // We need the path of the template relative to the root Cloud Assembly
     // It should be easier to get this, but for now it is what it is.
-    const appAsmRoot = assemblyBuilderOf(appOf(scope)).outdir;
+    const appAsmRoot = assemblyBuilderOf(appOf(scope as CoreConstruct)).outdir;
     const fullTemplatePath = path.join(artifact.assembly.directory, artifact.templateFile);
-    const templatePath = path.relative(appAsmRoot, fullTemplatePath);
+
+    let fullConfigPath;
+    if (Object.keys(artifact.tags).length > 0) {
+      fullConfigPath = `${fullTemplatePath}.config.json`;
+
+      // Write the template configuration file (for parameters into CreateChangeSet call that
+      // cannot be configured any other way). They must come from a file, and there's unfortunately
+      // no better hook to write this file (`construct.onSynthesize()` would have been the prime candidate
+      // but that is being deprecated--and DeployCdkStackAction isn't even a construct).
+      writeTemplateConfiguration(fullConfigPath, {
+        Tags: artifact.tags,
+      });
+    }
 
     return new DeployCdkStackAction({
       actionRole,
       cloudFormationExecutionRole,
-      templatePath,
+      templatePath: toPosixPath(path.relative(appAsmRoot, fullTemplatePath)),
+      templateConfigurationPath: fullConfigPath ? toPosixPath(path.relative(appAsmRoot, fullConfigPath)) : undefined,
       region,
       stackArtifactId: artifact.id,
       dependencyStackArtifactIds: artifact.dependencies.filter(isStackArtifact).map(s => s.id),
@@ -222,7 +248,8 @@ export class DeployCdkStackAction implements codepipeline.IAction {
       role: props.actionRole,
       deploymentRole: props.cloudFormationExecutionRole,
       region: props.region,
-      capabilities: [cfn.CloudFormationCapabilities.NAMED_IAM, cfn.CloudFormationCapabilities.AUTO_EXPAND],
+      cfnCapabilities: [CfnCapabilities.NAMED_IAM, CfnCapabilities.AUTO_EXPAND],
+      templateConfiguration: props.templateConfigurationPath ? props.cloudAssemblyInput.atPath(props.templateConfigurationPath) : undefined,
     });
     this.executeChangeSetAction = new cpactions.CloudFormationExecuteChangeSetAction({
       actionName: `${baseActionName}.Deploy`,
@@ -239,7 +266,7 @@ export class DeployCdkStackAction implements codepipeline.IAction {
   /**
    * Exists to implement IAction
    */
-  public bind(scope: Construct, stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
+  public bind(scope: CoreConstruct, stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
   codepipeline.ActionConfig {
     stage.addAction(this.prepareChangeSetAction);
 
@@ -274,10 +301,10 @@ function roleFromPlaceholderArn(scope: Construct, region: string | undefined,
   const id = arn;
 
   // https://github.com/aws/aws-cdk/issues/7255
-  let existingRole = scope.node.tryFindChild(`ImmutableRole${id}`) as iam.IRole;
+  let existingRole = Node.of(scope).tryFindChild(`ImmutableRole${id}`) as iam.IRole;
   if (existingRole) { return existingRole; }
   // For when #7255 is fixed.
-  existingRole = scope.node.tryFindChild(id) as iam.IRole;
+  existingRole = Node.of(scope).tryFindChild(id) as iam.IRole;
   if (existingRole) { return existingRole; }
 
   const arnToImport = cxapi.EnvironmentPlaceholders.replace(arn, {
@@ -330,4 +357,24 @@ function isStackArtifact(a: cxapi.CloudArtifact): a is cxapi.CloudFormationStack
   // instanceof is too risky, and we're at a too late stage to properly fix.
   // return a instanceof cxapi.CloudFormationStackArtifact;
   return a.constructor.name === 'CloudFormationStackArtifact';
+}
+
+/**
+ * Template configuration in a CodePipeline
+ *
+ * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/continuous-delivery-codepipeline-cfn-artifacts.html#w2ab1c13c17c15
+ */
+interface TemplateConfiguration {
+  readonly Parameters?: Record<string, string>;
+  readonly Tags?: Record<string, string>;
+  readonly StackPolicy?: {
+    readonly Statements: Array<Record<string, string>>;
+  };
+}
+
+/**
+ * Write template configuration to the given file
+ */
+function writeTemplateConfiguration(filename: string, config: TemplateConfiguration) {
+  fs.writeFileSync(filename, JSON.stringify(config, undefined, 2), { encoding: 'utf-8' });
 }

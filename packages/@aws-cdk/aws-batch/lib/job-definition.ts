@@ -1,9 +1,81 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecs from '@aws-cdk/aws-ecs';
 import * as iam from '@aws-cdk/aws-iam';
-import { Construct, Duration, IResource, Resource, Stack } from '@aws-cdk/core';
+import { Duration, IResource, Resource, Stack } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CfnJobDefinition } from './batch.generated';
+import { ExposedSecret } from './exposed-secret';
 import { JobDefinitionImageConfig } from './job-definition-image-config';
+
+/**
+ * The log driver to use for the container.
+ */
+export enum LogDriver {
+  /**
+   * Specifies the Amazon CloudWatch Logs logging driver.
+   */
+  AWSLOGS = 'awslogs',
+
+  /**
+   * Specifies the Fluentd logging driver.
+   */
+  FLUENTD = 'fluentd',
+
+  /**
+   * Specifies the Graylog Extended Format (GELF) logging driver.
+   */
+  GELF = 'gelf',
+
+  /**
+   * Specifies the journald logging driver.
+   */
+  JOURNALD = 'journald',
+
+  /**
+   * Specifies the logentries logging driver.
+   */
+  LOGENTRIES = 'logentries',
+
+  /**
+   * Specifies the JSON file logging driver.
+   */
+  JSON_FILE = 'json-file',
+
+  /**
+   * Specifies the Splunk logging driver.
+   */
+  SPLUNK = 'splunk',
+
+  /**
+   * Specifies the syslog logging driver.
+   */
+  SYSLOG = 'syslog'
+}
+
+/**
+ * Log configuration options to send to a custom log driver for the container.
+ */
+export interface LogConfiguration {
+  /**
+   * The log driver to use for the container.
+   */
+  readonly logDriver: LogDriver;
+
+  /**
+   * The configuration options to send to the log driver.
+   *
+   * @default - No configuration options are sent
+   */
+  readonly options?: any;
+
+  /**
+   * The secrets to pass to the log configuration as options.
+   * For more information, see https://docs.aws.amazon.com/batch/latest/userguide/specifying-sensitive-data-secrets.html#secrets-logconfig
+   *
+   * @default - No secrets are passed
+   */
+  readonly secretOptions?: ExposedSecret[];
+}
 
 /**
  * Properties of a job definition container.
@@ -53,6 +125,13 @@ export interface JobDefinitionContainer {
    * @default - None will be used.
    */
   readonly linuxParams?: ecs.LinuxParameters;
+
+  /**
+   * The log configuration specification for the container.
+   *
+   * @default - containers use the same logging driver that the Docker daemon uses
+   */
+  readonly logConfiguration?: LogConfiguration;
 
   /**
    * The hard limit (in MiB) of memory to present to the container. If your container attempts to exceed
@@ -269,6 +348,31 @@ export class JobDefinition extends Resource implements IJobDefinition {
     return new Import(scope, id);
   }
 
+  /**
+   * Imports an existing batch job definition by its name.
+   * If name is specified without a revision then the latest active revision is used.
+   *
+   * @param scope
+   * @param id
+   * @param jobDefinitionName
+   */
+  public static fromJobDefinitionName(scope: Construct, id: string, jobDefinitionName: string): IJobDefinition {
+    const stack = Stack.of(scope);
+    const jobDefArn = stack.formatArn({
+      service: 'batch',
+      resource: 'job-definition',
+      sep: '/',
+      resourceName: jobDefinitionName,
+    });
+
+    class Import extends Resource implements IJobDefinition {
+      public readonly jobDefinitionArn = jobDefArn;
+      public readonly jobDefinitionName = jobDefinitionName;
+    }
+
+    return new Import(scope, id);
+  }
+
   public readonly jobDefinitionArn: string;
   public readonly jobDefinitionName: string;
   private readonly imageConfig: JobDefinitionImageConfig;
@@ -336,6 +440,13 @@ export class JobDefinition extends Resource implements IJobDefinition {
       linuxParameters: container.linuxParams
         ? { devices: container.linuxParams.renderLinuxParameters().devices }
         : undefined,
+      logConfiguration: container.logConfiguration ? {
+        logDriver: container.logConfiguration.logDriver,
+        options: container.logConfiguration.options,
+        secretOptions: container.logConfiguration.secretOptions
+          ? this.buildLogConfigurationSecretOptions(container.logConfiguration.secretOptions)
+          : undefined,
+      } : undefined,
       memory: container.memoryLimitMiB || 4,
       mountPoints: container.mountPoints,
       privileged: container.privileged || false,
@@ -361,5 +472,14 @@ export class JobDefinition extends Resource implements IJobDefinition {
     }
 
     return rangeProps;
+  }
+
+  private buildLogConfigurationSecretOptions(secretOptions: ExposedSecret[]): CfnJobDefinition.SecretProperty[] {
+    return secretOptions.map(secretOption => {
+      return {
+        name: secretOption.optionName,
+        valueFrom: secretOption.secretArn,
+      };
+    });
   }
 }

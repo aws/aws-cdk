@@ -1,4 +1,59 @@
-import { Duration } from '@aws-cdk/core';
+import * as cdk from '@aws-cdk/core';
+import { CfnVirtualGateway, CfnVirtualNode } from './appmesh.generated';
+
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct } from '@aws-cdk/core';
+
+/**
+ * Represents timeouts for HTTP protocols.
+ */
+export interface HttpTimeout {
+  /**
+   * Represents an idle timeout. The amount of time that a connection may be idle.
+   *
+   * @default - none
+   */
+  readonly idle?: cdk.Duration;
+
+  /**
+   * Represents per request timeout.
+   *
+   * @default - 15 s
+   */
+  readonly perRequest?: cdk.Duration;
+}
+
+/**
+ * Represents timeouts for GRPC protocols.
+ */
+export interface GrpcTimeout {
+  /**
+   * Represents an idle timeout. The amount of time that a connection may be idle.
+   *
+   * @default - none
+   */
+  readonly idle?: cdk.Duration;
+
+  /**
+   * Represents per request timeout.
+   *
+   * @default - 15 s
+   */
+  readonly perRequest?: cdk.Duration;
+}
+
+/**
+ * Represents timeouts for TCP protocols.
+ */
+export interface TcpTimeout {
+  /**
+   * Represents an idle timeout. The amount of time that a connection may be idle.
+   *
+   * @default - none
+   */
+  readonly idle?: cdk.Duration;
+}
 
 /**
  * Enum of supported AppMesh protocols
@@ -22,24 +77,28 @@ export interface HealthCheck {
    * @default 2
    */
   readonly healthyThreshold?: number;
+
   /**
    * Interval in milliseconds to re-check
    *
    * @default 5 seconds
    */
-  readonly interval?: Duration;
+  readonly interval?: cdk.Duration;
+
   /**
    * The path where the application expects any health-checks, this can also be the application path.
    *
    * @default /
    */
   readonly path?: string;
+
   /**
    * The TCP port number for the healthcheck
    *
    * @default - same as corresponding port mapping
    */
   readonly port?: number;
+
   /**
    * The protocol to use for the healthcheck, for convinience a const enum has been defined.
    * Protocol.HTTP or Protocol.TCP
@@ -47,12 +106,14 @@ export interface HealthCheck {
    * @default - same as corresponding port mapping
    */
   readonly protocol?: Protocol;
+
   /**
    * Timeout in milli-seconds for the healthcheck to be considered a fail.
    *
    * @default 2 seconds
    */
-  readonly timeout?: Duration;
+  readonly timeout?: cdk.Duration;
+
   /**
    * Number of failed attempts before considering the node DOWN.
    *
@@ -62,39 +123,74 @@ export interface HealthCheck {
 }
 
 /**
- * Port mappings for resources that require these attributes, such as VirtualNodes and Routes
+ * All Properties for Envoy Access logs for mesh endpoints
  */
-export interface PortMapping {
-  /**
-   * Port mapped to the VirtualNode / Route
-   *
-   * @default 8080
-   */
-  readonly port: number;
+export interface AccessLogConfig {
 
   /**
-   * Protocol for the VirtualNode / Route, only GRPC, HTTP, HTTP2, or TCP is supported
+   * VirtualNode CFN configuration for Access Logging
    *
-   * @default HTTP
+   * @default - no access logging
    */
-  readonly protocol: Protocol;
+  readonly virtualNodeAccessLog?: CfnVirtualNode.AccessLogProperty;
+
+  /**
+   * VirtualGateway CFN configuration for Access Logging
+   *
+   * @default - no access logging
+   */
+  readonly virtualGatewayAccessLog?: CfnVirtualGateway.VirtualGatewayAccessLogProperty;
 }
 
 /**
- * Represents the properties needed to define healthy and active listeners for nodes.
+ * Configuration for Envoy Access logs for mesh endpoints
  */
-export interface VirtualNodeListener {
+export abstract class AccessLog {
   /**
-   * Array of PortMappingProps for the listener
+   * Path to a file to write access logs to
    *
-   * @default - HTTP port 8080
+   * @default - no file based access logging
    */
-  readonly portMapping?: PortMapping;
+  public static fromFilePath(filePath: string): AccessLog {
+    return new FileAccessLog(filePath);
+  }
 
   /**
-   * Array fo HealthCheckProps for the node(s)
-   *
-   * @default - no healthcheck
+   * Called when the AccessLog type is initialized. Can be used to enforce
+   * mutual exclusivity with future properties
    */
-  readonly healthCheck?: HealthCheck;
+  public abstract bind(scope: Construct): AccessLogConfig;
 }
+
+/**
+ * Configuration for Envoy Access logs for mesh endpoints
+ */
+class FileAccessLog extends AccessLog {
+  /**
+   * Path to a file to write access logs to
+   *
+   * @default - no file based access logging
+   */
+  public readonly filePath: string;
+
+  constructor(filePath: string) {
+    super();
+    this.filePath = filePath;
+  }
+
+  public bind(_scope: Construct): AccessLogConfig {
+    return {
+      virtualNodeAccessLog: {
+        file: {
+          path: this.filePath,
+        },
+      },
+      virtualGatewayAccessLog: {
+        file: {
+          path: this.filePath,
+        },
+      },
+    };
+  }
+}
+

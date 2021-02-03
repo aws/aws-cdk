@@ -66,8 +66,15 @@ export class CloudExecutable {
     while (true) {
       const assembly = await this.props.synthesizer(this.props.sdkProvider, this.props.configuration);
 
-      if (assembly.manifest.missing) {
+      if (assembly.manifest.missing && assembly.manifest.missing.length > 0) {
         const missingKeys = missingContextKeys(assembly.manifest.missing);
+
+        if (!this.canLookup) {
+          throw new Error(
+            'Context lookups have been disabled. '
+            + 'Make sure all necessary context is already in \'cdk.context.json\' by running \'cdk synth\' on a machine with sufficient AWS credentials and committing the result. '
+            + `Missing context keys: '${Array.from(missingKeys).join(', ')}'`);
+        }
 
         let tryLookup = true;
         if (previouslyMissingKeys && setsEqual(missingKeys, previouslyMissingKeys)) {
@@ -131,7 +138,7 @@ export class CloudExecutable {
         stack.template.Resources = {};
       }
       if (stack.template.Resources.CDKMetadata) {
-        warning(`The stack ${stack.id} already includes a CDKMetadata resource`);
+        // Already added by framework, this is expected.
         return;
       }
 
@@ -161,6 +168,10 @@ export class CloudExecutable {
       // JSON.
       await fs.writeFile(stack.templateFullPath, JSON.stringify(stack.template, undefined, 2), { encoding: 'utf-8' });
     }
+  }
+
+  private get canLookup() {
+    return !!(this.props.configuration.settings.get(['lookups']) ?? true);
   }
 }
 

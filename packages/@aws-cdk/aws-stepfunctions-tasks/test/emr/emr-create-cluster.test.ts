@@ -30,7 +30,7 @@ beforeEach(() => {
       actions: [
         'sts:AssumeRole',
       ],
-    })
+    }),
   );
 });
 

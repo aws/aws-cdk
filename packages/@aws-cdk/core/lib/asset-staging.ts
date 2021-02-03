@@ -2,12 +2,35 @@ import * as crypto from 'crypto';
 import * as os from 'os';
 import * as path from 'path';
 import * as cxapi from '@aws-cdk/cx-api';
+import { Construct } from 'constructs';
 import * as fs from 'fs-extra';
+import * as minimatch from 'minimatch';
 import { AssetHashType, AssetOptions } from './assets';
 import { BundlingOptions } from './bundling';
-import { Construct } from './construct-compat';
 import { FileSystem, FingerprintOptions } from './fs';
+import { Names } from './names';
+import { Cache } from './private/cache';
+import { Stack } from './stack';
 import { Stage } from './stage';
+
+// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
+// eslint-disable-next-line
+import { Construct as CoreConstruct } from './construct-compat';
+
+/**
+ * A previously staged asset
+ */
+interface StagedAsset {
+  /**
+   * The path where we wrote this asset previously
+   */
+  readonly stagedPath: string;
+
+  /**
+   * The hash we used previously
+   */
+  readonly assetHash: string;
+}
 
 /**
  * Initialization properties for `AssetStaging`.
@@ -37,7 +60,7 @@ export interface AssetStagingProps extends FingerprintOptions, AssetOptions {
  * The file/directory are staged based on their content hash (fingerprint). This
  * means that only if content was changed, copy will happen.
  */
-export class AssetStaging extends Construct {
+export class AssetStaging extends CoreConstruct {
   /**
    * The directory inside the bundling container into which the asset sources will be mounted.
    * @experimental
@@ -51,24 +74,50 @@ export class AssetStaging extends Construct {
   public static readonly BUNDLING_OUTPUT_DIR = '/asset-output';
 
   /**
-   * The path to the asset (stringinfied token).
+   * Clears the asset hash cache
+   */
+  public static clearAssetHashCache() {
+    this.assetCache.clear();
+  }
+
+  /**
+   * Cache of asset hashes based on asset configuration to avoid repeated file
+   * system and bundling operations.
+   */
+  private static assetCache = new Cache<StagedAsset>();
+
+  /**
+   * Absolute path to the asset data.
    *
-   * If asset staging is disabled, this will just be the original path.
+   * If asset staging is disabled, this will just be the source path or
+   * a temporary directory used for bundling.
+   *
    * If asset staging is enabled it will be the staged path.
+   *
+   * IMPORTANT: If you are going to call `addFileAsset()`, use
+   * `relativeStagedPath()` instead.
+   *
+   * @deprecated - Use `absoluteStagedPath` instead.
    */
   public readonly stagedPath: string;
 
   /**
-   * The path of the asset as it was referenced by the user.
+   * Absolute path to the asset data.
+   *
+   * If asset staging is disabled, this will just be the source path or
+   * a temporary directory used for bundling.
+   *
+   * If asset staging is enabled it will be the staged path.
+   *
+   * IMPORTANT: If you are going to call `addFileAsset()`, use
+   * `relativeStagedPath()` instead.
    */
-  public readonly sourcePath: string;
+  public readonly absoluteStagedPath: string;
 
   /**
-   * A cryptographic hash of the asset.
-   *
-   * @deprecated see `assetHash`.
+   * The absolute path of the asset as it was referenced by the user.
    */
-  public readonly sourceHash: string;
+  public readonly sourcePath: string;
 
   /**
    * A cryptographic hash of the asset.
@@ -77,127 +126,244 @@ export class AssetStaging extends Construct {
 
   private readonly fingerprintOptions: FingerprintOptions;
 
-  private readonly relativePath?: string;
+  private readonly hashType: AssetHashType;
+  private readonly assetOutdir: string;
 
-  private readonly bundleDir?: string;
+  /**
+   * A custom source fingerprint given by the user
+   *
+   * Will not be used literally, always hashed later on.
+   */
+  private customSourceFingerprint?: string;
+
+  private readonly cacheKey: string;
 
   constructor(scope: Construct, id: string, props: AssetStagingProps) {
     super(scope, id);
 
-    this.sourcePath = props.sourcePath;
+    this.sourcePath = path.resolve(props.sourcePath);
     this.fingerprintOptions = props;
 
-    const outdir = Stage.of(this)?.outdir;
+    const outdir = Stage.of(this)?.assetOutdir;
     if (!outdir) {
-      throw new Error('unable to determine cloud assembly output directory. Assets must be defined indirectly within a "Stage" or an "App" scope');
+      throw new Error('unable to determine cloud assembly asset output directory. Assets must be defined indirectly within a "Stage" or an "App" scope');
     }
+    this.assetOutdir = outdir;
 
     // Determine the hash type based on the props as props.assetHashType is
     // optional from a caller perspective.
-    const hashType = determineHashType(props.assetHashType, props.assetHash);
+    this.customSourceFingerprint = props.assetHash;
+    this.hashType = determineHashType(props.assetHashType, this.customSourceFingerprint);
 
+    // Decide what we're going to do, without actually doing it yet
+    let stageThisAsset: () => StagedAsset;
+    let skip = false;
     if (props.bundling) {
-      // Determine the source hash in advance of bundling if the asset hash type
-      // is SOURCE so that the bundler can opt to re-use its previous output.
-      const sourceHash = hashType === AssetHashType.SOURCE
-        ? this.calculateHash(hashType, props.assetHash, props.bundling)
-        : undefined;
-
-      this.bundleDir = this.bundle(props.bundling, outdir, sourceHash);
-      this.assetHash = sourceHash ?? this.calculateHash(hashType, props.assetHash, props.bundling);
-      this.relativePath = renderAssetFilename(this.assetHash);
-      this.stagedPath = this.relativePath;
+      // Check if we actually have to bundle for this stack
+      const bundlingStacks: string[] = this.node.tryGetContext(cxapi.BUNDLING_STACKS) ?? ['*'];
+      skip = !bundlingStacks.find(pattern => minimatch(Stack.of(this).stackName, pattern));
+      const bundling = props.bundling;
+      stageThisAsset = () => this.stageByBundling(bundling, skip);
     } else {
-      this.assetHash = this.calculateHash(hashType, props.assetHash);
-
-      const stagingDisabled = this.node.tryGetContext(cxapi.DISABLE_ASSET_STAGING_CONTEXT);
-      if (stagingDisabled) {
-        this.stagedPath = this.sourcePath;
-      } else {
-        this.relativePath = renderAssetFilename(this.assetHash, path.extname(this.sourcePath));
-        this.stagedPath = this.relativePath;
-      }
+      stageThisAsset = () => this.stageByCopying();
     }
 
-    this.sourceHash = this.assetHash;
+    // Calculate a cache key from the props. This way we can check if we already
+    // staged this asset and reuse the result (e.g. the same asset with the same
+    // configuration is used in multiple stacks). In this case we can completely
+    // skip file system and bundling operations.
+    //
+    // The output directory and whether this asset is skipped or not should also be
+    // part of the cache key to make sure we don't accidentally return the wrong
+    // staged asset from the cache.
+    this.cacheKey = calculateCacheKey({
+      outdir: this.assetOutdir,
+      sourcePath: path.resolve(props.sourcePath),
+      bundling: props.bundling,
+      assetHashType: this.hashType,
+      customFingerprint: this.customSourceFingerprint,
+      extraHash: props.extraHash,
+      exclude: props.exclude,
+      ignoreMode: props.ignoreMode,
+      skip,
+    });
 
-    this.stageAsset(outdir);
+    const staged = AssetStaging.assetCache.obtain(this.cacheKey, stageThisAsset);
+    this.stagedPath = staged.stagedPath;
+    this.absoluteStagedPath = staged.stagedPath;
+    this.assetHash = staged.assetHash;
   }
 
-  private stageAsset(outdir: string) {
-    // Staging is disabled
-    if (!this.relativePath) {
-      return;
+  /**
+   * A cryptographic hash of the asset.
+   *
+   * @deprecated see `assetHash`.
+   */
+  public get sourceHash(): string {
+    return this.assetHash;
+  }
+
+  /**
+   * Return the path to the staged asset, relative to the Cloud Assembly (manifest) directory of the given stack
+   *
+   * Only returns a relative path if the asset was staged, returns an absolute path if
+   * it was not staged.
+   *
+   * A bundled asset might end up in the outDir and still not count as
+   * "staged"; if asset staging is disabled we're technically expected to
+   * reference source directories, but we don't have a source directory for the
+   * bundled outputs (as the bundle output is written to a temporary
+   * directory). Nevertheless, we will still return an absolute path.
+   *
+   * A non-obvious directory layout may look like this:
+   *
+   * ```
+   *   CLOUD ASSEMBLY ROOT
+   *     +-- asset.12345abcdef/
+   *     +-- assembly-Stage
+   *           +-- MyStack.template.json
+   *           +-- MyStack.assets.json <- will contain { "path": "../asset.12345abcdef" }
+   * ```
+   */
+  public relativeStagedPath(stack: Stack) {
+    const asmManifestDir = Stage.of(stack)?.outdir;
+    if (!asmManifestDir) { return this.stagedPath; }
+
+    const isOutsideAssetDir = path.relative(this.assetOutdir, this.stagedPath).startsWith('..');
+    if (isOutsideAssetDir || this.stagingDisabled) {
+      return this.stagedPath;
     }
 
-    const targetPath = path.join(outdir, this.relativePath);
+    return path.relative(asmManifestDir, this.stagedPath);
+  }
 
-    // Staging the bundling asset.
-    if (this.bundleDir) {
-      const isAlreadyStaged = fs.existsSync(targetPath);
+  /**
+   * Stage the source to the target by copying
+   *
+   * Optionally skip if staging is disabled, in which case we pretend we did something but we don't really.
+   */
+  private stageByCopying(): StagedAsset {
+    const assetHash = this.calculateHash(this.hashType);
+    const stagedPath = this.stagingDisabled
+      ? this.sourcePath
+      : path.resolve(this.assetOutdir, renderAssetFilename(assetHash, path.extname(this.sourcePath)));
 
-      if (isAlreadyStaged && path.resolve(this.bundleDir) !== path.resolve(targetPath)) {
-        // When an identical asset is already staged and the bundler used an
-        // intermediate bundling directory, we remove the extra directory.
-        fs.removeSync(this.bundleDir);
-      } else if (!isAlreadyStaged) {
-        fs.renameSync(this.bundleDir, targetPath);
+    this.stageAsset(this.sourcePath, stagedPath, 'copy');
+    return { assetHash, stagedPath };
+  }
+
+  /**
+   * Stage the source to the target by bundling
+   *
+   * Optionally skip, in which case we pretend we did something but we don't really.
+   */
+  private stageByBundling(bundling: BundlingOptions, skip: boolean): StagedAsset {
+    if (skip) {
+      // We should have bundled, but didn't to save time. Still pretend to have a hash.
+      // If the asset uses OUTPUT or BUNDLE, we use a CUSTOM hash to avoid fingerprinting
+      // a potentially very large source directory. Other hash types are kept the same.
+      let hashType = this.hashType;
+      if (hashType === AssetHashType.OUTPUT || hashType === AssetHashType.BUNDLE) {
+        this.customSourceFingerprint = Names.uniqueId(this);
+        hashType = AssetHashType.CUSTOM;
       }
+      return {
+        assetHash: this.calculateHash(hashType, bundling),
+        stagedPath: this.sourcePath,
+      };
+    }
 
+    // Try to calculate assetHash beforehand (if we can)
+    let assetHash = this.hashType === AssetHashType.SOURCE || this.hashType === AssetHashType.CUSTOM
+      ? this.calculateHash(this.hashType, bundling)
+      : undefined;
+
+    const bundleDir = this.determineBundleDir(this.assetOutdir, assetHash);
+    this.bundle(bundling, bundleDir);
+
+    // Calculate assetHash afterwards if we still must
+    assetHash = assetHash ?? this.calculateHash(this.hashType, bundling, bundleDir);
+    const stagedPath = path.resolve(this.assetOutdir, renderAssetFilename(assetHash));
+
+    this.stageAsset(bundleDir, stagedPath, 'move');
+    return { assetHash, stagedPath };
+  }
+
+  /**
+   * Whether staging has been disabled
+   */
+  private get stagingDisabled() {
+    return !!this.node.tryGetContext(cxapi.DISABLE_ASSET_STAGING_CONTEXT);
+  }
+
+  /**
+   * Copies or moves the files from sourcePath to targetPath.
+   *
+   * Moving implies the source directory is temporary and can be trashed.
+   *
+   * Will not do anything if source and target are the same.
+   */
+  private stageAsset(sourcePath: string, targetPath: string, style: 'move' | 'copy') {
+    // Is the work already done?
+    const isAlreadyStaged = fs.existsSync(targetPath);
+    if (isAlreadyStaged) {
+      if (style === 'move' && sourcePath !== targetPath) {
+        fs.removeSync(sourcePath);
+      }
       return;
     }
 
-    // Already staged
-    if (fs.existsSync(targetPath)) {
+    // Moving can be done quickly
+    if (style == 'move') {
+      fs.renameSync(sourcePath, targetPath);
       return;
     }
 
     // Copy file/directory to staging directory
-    const stat = fs.statSync(this.sourcePath);
+    const stat = fs.statSync(sourcePath);
     if (stat.isFile()) {
-      fs.copyFileSync(this.sourcePath, targetPath);
+      fs.copyFileSync(sourcePath, targetPath);
     } else if (stat.isDirectory()) {
       fs.mkdirSync(targetPath);
-      FileSystem.copyDirectory(this.sourcePath, targetPath, this.fingerprintOptions);
+      FileSystem.copyDirectory(sourcePath, targetPath, this.fingerprintOptions);
     } else {
-      throw new Error(`Unknown file type: ${this.sourcePath}`);
+      throw new Error(`Unknown file type: ${sourcePath}`);
     }
   }
 
   /**
-   * Bundles an asset and provides the emitted asset's directory in return.
+   * Determine the directory where we're going to write the bundling output
+   *
+   * This is the target directory where we're going to write the staged output
+   * files if we can (if the hash is fully known), or a temporary directory
+   * otherwise.
+   */
+  private determineBundleDir(outdir: string, sourceHash?: string) {
+    if (sourceHash) {
+      return path.resolve(outdir, renderAssetFilename(sourceHash));
+    }
+
+    // When the asset hash isn't known in advance, bundler outputs to an
+    // intermediate directory named after the asset's cache key
+    return path.resolve(outdir, `bundling-temp-${this.cacheKey}`);
+  }
+
+  /**
+   * Bundles an asset to the given directory
+   *
+   * If the given directory already exists, assume that everything's already
+   * in order and don't do anything.
    *
    * @param options Bundling options
-   * @param outdir Parent directory to create the bundle output directory in
-   * @param sourceHash The asset source hash if known in advance. If this field
-   * is provided, the bundler may opt to skip bundling, providing any already-
-   * emitted bundle. If this field is not provided, the bundler uses an
-   * intermediate directory in outdir.
+   * @param bundleDir Where to create the bundle directory
    * @returns The fully resolved bundle output directory.
    */
-  private bundle(options: BundlingOptions, outdir: string, sourceHash?: string): string {
-    let bundleDir: string;
-    if (sourceHash) {
-      // When an asset hash is known in advance of bundling, the bundler outputs
-      // directly to the assembly output directory.
-      bundleDir = path.resolve(path.join(outdir, renderAssetFilename(sourceHash)));
+  private bundle(options: BundlingOptions, bundleDir: string) {
+    if (fs.existsSync(bundleDir)) { return; }
 
-      if (fs.existsSync(bundleDir)) {
-        // Pre-existing bundle directory. The bundle has already been generated
-        // once before, so we'll give the caller nothing.
-        return bundleDir;
-      }
-
-      fs.ensureDirSync(bundleDir);
-    } else {
-      // When the asset hash isn't known in advance, bundler outputs to an
-      // intermediate directory.
-
-      // Create temp directory for bundling inside the temp staging directory
-      bundleDir = path.resolve(fs.mkdtempSync(path.join(outdir, 'bundling-temp-')));
-      // Chmod the bundleDir to full access.
-      fs.chmodSync(bundleDir, 0o777);
-    }
+    fs.ensureDirSync(bundleDir);
+    // Chmod the bundleDir to full access.
+    fs.chmodSync(bundleDir, 0o777);
 
     let user: string;
     if (options.user) {
@@ -228,7 +394,7 @@ export class AssetStaging extends Construct {
 
       localBundling = options.local?.tryBundle(bundleDir, options);
       if (!localBundling) {
-        options.image._run({
+        options.image.run({
           command: options.command,
           user,
           volumes,
@@ -254,15 +420,9 @@ export class AssetStaging extends Construct {
       const outputDir = localBundling ? bundleDir : AssetStaging.BUNDLING_OUTPUT_DIR;
       throw new Error(`Bundling did not produce any output. Check that content is written to ${outputDir}.`);
     }
-
-    return bundleDir;
   }
 
-  private calculateHash(hashType: AssetHashType, assetHash?: string, bundling?: BundlingOptions): string {
-    if (hashType === AssetHashType.CUSTOM && !assetHash) {
-      throw new Error('`assetHash` must be specified when `assetHashType` is set to `AssetHashType.CUSTOM`.');
-    }
-
+  private calculateHash(hashType: AssetHashType, bundling?: BundlingOptions, outputDir?: string): string {
     // When bundling a CUSTOM or SOURCE asset hash type, we want the hash to include
     // the bundling configuration. We handle CUSTOM and bundled SOURCE hash types
     // as a special case to preserve existing user asset hashes in all other cases.
@@ -270,7 +430,7 @@ export class AssetStaging extends Construct {
       const hash = crypto.createHash('sha256');
 
       // if asset hash is provided by user, use it, otherwise fingerprint the source.
-      hash.update(assetHash ?? FileSystem.fingerprint(this.sourcePath, this.fingerprintOptions));
+      hash.update(this.customSourceFingerprint ?? FileSystem.fingerprint(this.sourcePath, this.fingerprintOptions));
 
       // If we're bundling an asset, include the bundling configuration in the hash
       if (bundling) {
@@ -284,10 +444,11 @@ export class AssetStaging extends Construct {
       case AssetHashType.SOURCE:
         return FileSystem.fingerprint(this.sourcePath, this.fingerprintOptions);
       case AssetHashType.BUNDLE:
-        if (!this.bundleDir) {
-          throw new Error('Cannot use `AssetHashType.BUNDLE` when `bundling` is not specified.');
+      case AssetHashType.OUTPUT:
+        if (!outputDir) {
+          throw new Error(`Cannot use \`${hashType}\` hash type when \`bundling\` is not specified.`);
         }
-        return FileSystem.fingerprint(this.bundleDir, this.fingerprintOptions);
+        return FileSystem.fingerprint(outputDir, this.fingerprintOptions);
       default:
         throw new Error('Unknown asset hash type.');
     }
@@ -302,17 +463,42 @@ function renderAssetFilename(assetHash: string, extension = '') {
  * Determines the hash type from user-given prop values.
  *
  * @param assetHashType Asset hash type construct prop
- * @param assetHash Asset hash given in the construct props
+ * @param customSourceFingerprint Asset hash seed given in the construct props
  */
-function determineHashType(assetHashType?: AssetHashType, assetHash?: string) {
-  if (assetHash) {
-    if (assetHashType && assetHashType !== AssetHashType.CUSTOM) {
-      throw new Error(`Cannot specify \`${assetHashType}\` for \`assetHashType\` when \`assetHash\` is specified. Use \`CUSTOM\` or leave \`undefined\`.`);
-    }
-    return AssetHashType.CUSTOM;
-  } else if (assetHashType) {
-    return assetHashType;
-  } else {
-    return AssetHashType.SOURCE;
+function determineHashType(assetHashType?: AssetHashType, customSourceFingerprint?: string) {
+  const hashType = customSourceFingerprint
+    ? (assetHashType ?? AssetHashType.CUSTOM)
+    : (assetHashType ?? AssetHashType.SOURCE);
+
+  if (customSourceFingerprint && hashType !== AssetHashType.CUSTOM) {
+    throw new Error(`Cannot specify \`${assetHashType}\` for \`assetHashType\` when \`assetHash\` is specified. Use \`CUSTOM\` or leave \`undefined\`.`);
   }
+  if (hashType === AssetHashType.CUSTOM && !customSourceFingerprint) {
+    throw new Error('`assetHash` must be specified when `assetHashType` is set to `AssetHashType.CUSTOM`.');
+  }
+
+  return hashType;
+}
+
+/**
+ * Calculates a cache key from the props. Normalize by sorting keys.
+ */
+function calculateCacheKey<A extends object>(props: A): string {
+  return crypto.createHash('sha256')
+    .update(JSON.stringify(sortObject(props)))
+    .digest('hex');
+}
+
+/**
+ * Recursively sort object keys
+ */
+function sortObject(object: { [key: string]: any }): { [key: string]: any } {
+  if (typeof object !== 'object' || object instanceof Array) {
+    return object;
+  }
+  const ret: { [key: string]: any } = {};
+  for (const key of Object.keys(object).sort()) {
+    ret[key] = sortObject(object[key]);
+  }
+  return ret;
 }

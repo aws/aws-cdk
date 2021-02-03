@@ -84,6 +84,17 @@ const orderTable = new Table(stack, 'OrderTable', {
   },
   removalPolicy: RemovalPolicy.DESTROY,
 });
+orderTable.addGlobalSecondaryIndex({
+  indexName: 'orderIndex',
+  partitionKey: {
+    name: 'order',
+    type: AttributeType.STRING,
+  },
+  sortKey: {
+    name: 'customer',
+    type: AttributeType.STRING,
+  },
+});
 
 new Table(stack, 'PaymentTable', {
   billingMode: BillingMode.PAY_PER_REQUEST,
@@ -157,6 +168,12 @@ for (const { suffix, op } of ops) {
     requestMappingTemplate: MappingTemplate.dynamoDbQuery(op('customer', 'customer')),
     responseMappingTemplate: MappingTemplate.dynamoDbResultList(),
   });
+  orderDS.createResolver({
+    typeName: 'Query',
+    fieldName: 'getOrderCustomers' + suffix,
+    requestMappingTemplate: MappingTemplate.dynamoDbQuery(op('order', 'order'), 'orderIndex'),
+    responseMappingTemplate: MappingTemplate.dynamoDbResultList(),
+  });
 }
 orderDS.createResolver({
   typeName: 'Query',
@@ -170,6 +187,20 @@ orderDS.createResolver({
   fieldName: 'getCustomerOrdersBetween',
   requestMappingTemplate: MappingTemplate.dynamoDbQuery(
     KeyCondition.eq('customer', 'customer').and(KeyCondition.between('order', 'order1', 'order2'))),
+  responseMappingTemplate: MappingTemplate.dynamoDbResultList(),
+});
+orderDS.createResolver({
+  typeName: 'Query',
+  fieldName: 'getOrderCustomersFilter',
+  requestMappingTemplate: MappingTemplate.dynamoDbQuery(
+    KeyCondition.eq('order', 'order').and(KeyCondition.beginsWith('customer', 'customer'))),
+  responseMappingTemplate: MappingTemplate.dynamoDbResultList(),
+});
+orderDS.createResolver({
+  typeName: 'Query',
+  fieldName: 'getOrderCustomersBetween',
+  requestMappingTemplate: MappingTemplate.dynamoDbQuery(
+    KeyCondition.eq('order', 'order').and(KeyCondition.between('customer', 'customer1', 'customer2')), 'orderIndex'),
   responseMappingTemplate: MappingTemplate.dynamoDbResultList(),
 });
 

@@ -1,6 +1,7 @@
-import { Construct } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CfnUserPoolIdentityProvider } from '../cognito.generated';
-import { UserPoolIdentityProviderBase, UserPoolIdentityProviderProps } from './base';
+import { UserPoolIdentityProviderProps } from './base';
+import { UserPoolIdentityProviderBase } from './private/user-pool-idp-base';
 
 /**
  * Properties to initialize UserPoolFacebookIdentityProvider

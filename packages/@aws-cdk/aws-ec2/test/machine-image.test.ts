@@ -23,6 +23,16 @@ test('can make and use a Windows image', () => {
   expect(details.osType).toEqual(ec2.OperatingSystemType.WINDOWS);
 });
 
+test('can make and use a Generic SSM image', () => {
+  // WHEN
+  const image = new ec2.GenericSSMParameterImage('testParam', ec2.OperatingSystemType.LINUX);
+
+  // THEN
+  const details = image.getImage(stack);
+  expect(details.imageId).toContain('TOKEN');
+  expect(details.osType).toEqual(ec2.OperatingSystemType.LINUX);
+});
+
 test('WindowsImage retains userdata if given', () => {
   // WHEN
   const ud = ec2.UserData.forWindows();
