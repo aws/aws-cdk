@@ -133,6 +133,19 @@ export class Tokenization {
   }
 
   /**
+   * Un-encode a string which is either a complete encoded token, or doesn't contain tokens at all
+   *
+   * It's illegal for the string to be a concatenation of an encoded token and something else.
+   */
+  public static reverseCompleteString(s: string): IResolvable | undefined {
+    const fragments = Tokenization.reverseString(s);
+    if (fragments.length !== 1) {
+      throw new Error(`Tokenzation.reverseCompleteString: argument must not be a concatentation, got '${s}'`);
+    }
+    return fragments.firstToken;
+  }
+
+  /**
    * Un-encode a Tokenized value from a number
    */
   public static reverseNumber(n: number): IResolvable | undefined {
@@ -144,6 +157,19 @@ export class Tokenization {
    */
   public static reverseList(l: string[]): IResolvable | undefined {
     return TokenMap.instance().lookupList(l);
+  }
+
+  /**
+   * Reverse any value into a Resolvable, if possible
+   *
+   * In case of a string, the string must not be a concatenation.
+   */
+  public static reverse(x: any): IResolvable | undefined {
+    if (Tokenization.isResolvable(x)) { return x; }
+    if (typeof x === 'string') { return Tokenization.reverseCompleteString(x); }
+    if (Array.isArray(x)) { return Tokenization.reverseList(x); }
+    if (typeof x === 'number') { return Tokenization.reverseNumber(x); }
+    return undefined;
   }
 
   /**
