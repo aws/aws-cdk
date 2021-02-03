@@ -274,7 +274,7 @@ new cloudfront.Distribution(this, 'myDist', {
 > **Note:** Lambda@Edge functions must be created in the `us-east-1` region, regardless of the region of the CloudFront distribution and stack.
 > To make it easier to request functions for Lambda@Edge, the `EdgeFunction` construct can be used.
 > The `EdgeFunction` construct will automatically request a function in `us-east-1`, regardless of the region of the current stack.
-> `EdgeFunction` has the same interface as `Function` and can be created and used interchangably.
+> `EdgeFunction` has the same interface as `Function` and can be created and used interchangeably.
 > Please note that using `EdgeFunction` requires that the `us-east-1` region has been bootstrapped.
 > See https://docs.aws.amazon.com/cdk/latest/guide/bootstrapping.html for more about bootstrapping regions.
 
@@ -289,7 +289,7 @@ const myFunc = new lambda.Function(this, 'MyFunction', {
 ```
 
 If the stack is not in `us-east-1`, and you need references from different applications on the same account,
-you can also set a specific stack ID for each Lamba@Edge.
+you can also set a specific stack ID for each Lambda@Edge.
 
 ```ts
 const myFunc1 = new cloudfront.experimental.EdgeFunction(this, 'MyFunction1', {
@@ -427,7 +427,7 @@ You can customize the default certificate aliases. This is intended to be used i
 
 Example:
 
-[create a distrubution with an default certificiate example](test/example.default-cert-alias.lit.ts)
+[create a distribution with an default certificiate example](test/example.default-cert-alias.lit.ts)
 
 #### ACM certificate
 
@@ -438,7 +438,7 @@ For more information, see [the aws-certificatemanager module documentation](http
 
 Example:
 
-[create a distrubution with an acm certificate example](test/example.acm-cert-alias.lit.ts)
+[create a distribution with an acm certificate example](test/example.acm-cert-alias.lit.ts)
 
 #### IAM certificate
 
@@ -448,7 +448,7 @@ See [Importing an SSL/TLS Certificate](https://docs.aws.amazon.com/AmazonCloudFr
 
 Example:
 
-[create a distrubution with an iam certificate example](test/example.iam-cert-alias.lit.ts)
+[create a distribution with an iam certificate example](test/example.iam-cert-alias.lit.ts)
 
 ### Restrictions
 
@@ -505,7 +505,7 @@ new CloudFrontWebDistribution(stack, 'ADistribution', {
       },
       failoverS3OriginSource: {
         s3BucketSource: s3.Bucket.fromBucketName(stack, 'aBucketFallback', 'myoriginbucketfallback'),
-        originPath: '/somwhere',
+        originPath: '/somewhere',
         originHeaders: {
           'myHeader2': '21',
         },
