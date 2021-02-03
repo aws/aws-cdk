@@ -239,7 +239,7 @@ new cloudfront.Distribution(this, 'myDistCustomPolicy', {
 });
 ```
 
-### Validating signed URLs or signed cookies with Trusted Signers
+### Validating signed URLs or signed cookies with Trusted Key Groups
 
 CloudFront Distribution now supports validating signed URLs or signed cookies using key groups. When a cache behavior contains trusted key groups, CloudFront requires signed URLs or signed cookies for all requests that match the cache behavior.
 
@@ -478,7 +478,7 @@ Example:
 
 [create a distribution with an iam certificate example](test/example.iam-cert-alias.lit.ts)
 
-### Trusted Signers
+### Trusted Key Groups
 
 CloudFront Web Distributions supports validating signed URLs or signed cookies using key groups. When a cache behavior contains trusted key groups, CloudFront requires signed URLs or signed cookies for all requests that match the cache behavior.
 
