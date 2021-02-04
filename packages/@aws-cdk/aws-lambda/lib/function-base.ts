@@ -326,7 +326,7 @@ export abstract class FunctionBase extends Resource implements IFunction {
             const permissionNode = this._functionNode().tryFindChild(identifier);
             if (!permissionNode) {
               throw new Error('Cannot modify permission to lambda function. Function is either imported or $LATEST version. '
-                + 'If the function is imported from the same account use `fromFunctionAttributes()` API with the `allowPermissions` flag.');
+                + 'If the function is imported from the same account use `fromFunctionAttributes()` API with the `sameEnvironment` flag.');
             }
             return { statementAdded: true, policyDependable: permissionNode };
           },
