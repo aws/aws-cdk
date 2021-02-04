@@ -1,10 +1,10 @@
 import * as iam from '@aws-cdk/aws-iam';
+import * as ka from '@aws-cdk/aws-kinesisanalytics';
 import * as kms from '@aws-cdk/aws-kms';
 import * as logs from '@aws-cdk/aws-logs';
 import * as core from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { ApplicationCode } from './application-code';
-import { CfnApplication, CfnApplicationCloudWatchLoggingOption } from './kinesisanalyticsv2.generated';
 import { environmentProperties } from './private/environment-properties';
 import { flinkApplicationConfiguration } from './private/flink-application-configuration';
 import { validateFlinkApplicationProps } from './private/validation';
@@ -18,7 +18,7 @@ export interface IFlinkApplication extends core.IResource, iam.IGrantable {
   /**
    * The application ARN.
    *
-   * @attribute
+   * @attribute ApplicationV2Name
    */
   readonly applicationArn: string;
 
@@ -281,7 +281,7 @@ export class FlinkApplication extends FlinkApplicationBase {
     const code = props.code.bind(this);
     code.bucket.grantRead(this);
 
-    const resource = new CfnApplication(this, 'Resource', {
+    const resource = new ka.CfnApplicationV2(this, 'Resource', {
       runtimeEnvironment: props.runtime.value,
       serviceExecutionRole: this.role.roleArn,
       applicationConfiguration: {
@@ -337,7 +337,7 @@ export class FlinkApplication extends FlinkApplicationBase {
       resources: [logStreamArn],
     }));
 
-    new CfnApplicationCloudWatchLoggingOption(this, 'LoggingOption', {
+    new ka.CfnApplicationCloudWatchLoggingOptionV2(this, 'LoggingOption', {
       applicationName: resource.ref,
       cloudWatchLoggingOption: {
         logStreamArn,

@@ -1,4 +1,4 @@
-# Kinesis Analytics V2
+# Kinesis Analytics Flink 
 <!--BEGIN STABILITY BANNER-->
 
 ---

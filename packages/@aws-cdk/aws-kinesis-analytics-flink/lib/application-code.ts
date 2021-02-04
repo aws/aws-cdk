@@ -1,7 +1,7 @@
+import * as ka from '@aws-cdk/aws-kinesisanalytics';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as s3_assets from '@aws-cdk/aws-s3-assets';
 import { Construct } from '@aws-cdk/core';
-import { CfnApplication } from './kinesisanalyticsv2.generated';
 
 /**
  * Code configuration providing the location to a Flink application JAR file.
@@ -130,7 +130,7 @@ export interface ApplicationCodeConfig {
   /**
    * Low-level Cloudformation ApplicationConfigurationProperty
    */
-  readonly applicationCodeConfigurationProperty: CfnApplication.ApplicationConfigurationProperty;
+  readonly applicationCodeConfigurationProperty: ka.CfnApplicationV2.ApplicationConfigurationProperty;
 
   /**
    * S3 Bucket that stores the Flink application code
