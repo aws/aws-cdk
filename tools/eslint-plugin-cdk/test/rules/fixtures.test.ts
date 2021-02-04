@@ -5,21 +5,7 @@ import * as path from 'path';
 const rulesDirPlugin = require('eslint-plugin-rulesdir');
 rulesDirPlugin.RULES_DIR = path.join(__dirname, '../../lib/rules');
 
-const linter = new ESLint({
-  baseConfig: {
-    parser: '@typescript-eslint/parser',
-    plugins: ['rulesdir'],
-    rules: {
-      quotes: [ 'error', 'single', { avoidEscape: true }],
-      'rulesdir/no-core-construct': [ 'error' ],
-      'rulesdir/no-qualified-construct': [ 'error' ],
-    }
-  },
-  rulePaths: [
-    path.join(__dirname, '../../lib/rules'),
-  ],
-  fix: true,
-});
+let linter: ESLint;
 
 const outputRoot = path.join(process.cwd(), '.test-output');
 fs.mkdirpSync(outputRoot);
@@ -28,10 +14,24 @@ const fixturesRoot = path.join(__dirname, 'fixtures');
 
 fs.readdirSync(fixturesRoot).filter(f => fs.lstatSync(path.join(fixturesRoot, f)).isDirectory()).forEach(d => {
   describe(d, () => {
+    const fixturesDir = path.join(fixturesRoot, d);
+
+    beforeAll(() => {
+      linter = new ESLint({
+        baseConfig: {
+          parser: '@typescript-eslint/parser',
+        },
+        overrideConfigFile: path.join(fixturesDir, 'eslintrc.js'),
+        rulePaths: [
+          path.join(__dirname, '../../lib/rules'),
+        ],
+        fix: true,
+      });
+    });
+
     const outputDir = path.join(outputRoot, d);
     fs.mkdirpSync(outputDir);
 
-    const fixturesDir = path.join(fixturesRoot, d);
     const fixtureFiles = fs.readdirSync(fixturesDir).filter(f => f.endsWith('.ts') && !f.endsWith('.expected.ts'));
 
     fixtureFiles.forEach(f => {
