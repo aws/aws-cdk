@@ -1,3 +1,307 @@
+# CloudFormation Resource Specification v26.0.0
+
+## New Resource Types
+
+* AWS::LookoutVision::Project
+* AWS::SageMaker::FeatureGroup
+
+## Attribute Changes
+
+* AWS::MediaConnect::FlowVpcInterface FlowArn (__deleted__)
+* AWS::MediaConnect::FlowVpcInterface Name (__deleted__)
+* AWS::S3::AccessPoint NetworkOrigin (__added__)
+* AWS::S3::AccessPoint PolicyStatus (__added__)
+
+## Property Changes
+
+* AWS::ACMPCA::Certificate ApiPassthrough (__added__)
+* AWS::ACMPCA::Certificate ValidityNotBefore (__added__)
+* AWS::AmazonMQ::Configuration AuthenticationStrategy (__added__)
+* AWS::ApiGatewayV2::Stage AccessPolicyId (__added__)
+* AWS::ECS::Cluster Configuration (__added__)
+* AWS::Kinesis::Stream Tags.DuplicatesAllowed (__changed__)
+  * Old: false
+  * New: true
+* AWS::MediaConnect::FlowVpcInterface FlowArn (__added__)
+* AWS::MediaConnect::FlowVpcInterface Name (__added__)
+* AWS::S3::AccessPoint NetworkOrigin (__deleted__)
+* AWS::S3::AccessPoint PolicyStatus (__deleted__)
+* AWS::SSM::MaintenanceWindowTask MaxConcurrency.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::SSM::MaintenanceWindowTask MaxErrors.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::SSM::MaintenanceWindowTask Targets.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::SSO::InstanceAccessControlAttributeConfiguration InstanceAccessControlAttributeConfiguration (__deleted__)
+* AWS::SageMaker::Device Tags.ItemType (__changed__)
+  * Old: Json
+  * New: Tag
+* AWS::SageMaker::Device Tags.Type (__changed__)
+  * Old: Tag
+  * New: List
+* AWS::SageMaker::DeviceFleet Tags.ItemType (__changed__)
+  * Old: Json
+  * New: Tag
+* AWS::SageMaker::DeviceFleet Tags.Type (__changed__)
+  * Old: Tag
+  * New: List
+* AWS::SageMaker::Model InferenceExecutionConfig (__added__)
+
+## Property Type Changes
+
+* AWS::ACMPCA::Certificate.ApiPassthrough (__added__)
+* AWS::ACMPCA::Certificate.CertificatePolicyList (__added__)
+* AWS::ACMPCA::Certificate.EdiPartyName (__added__)
+* AWS::ACMPCA::Certificate.ExtendedKeyUsage (__added__)
+* AWS::ACMPCA::Certificate.ExtendedKeyUsageList (__added__)
+* AWS::ACMPCA::Certificate.Extensions (__added__)
+* AWS::ACMPCA::Certificate.GeneralName (__added__)
+* AWS::ACMPCA::Certificate.GeneralNameList (__added__)
+* AWS::ACMPCA::Certificate.KeyUsage (__added__)
+* AWS::ACMPCA::Certificate.OtherName (__added__)
+* AWS::ACMPCA::Certificate.PolicyInformation (__added__)
+* AWS::ACMPCA::Certificate.PolicyQualifierInfo (__added__)
+* AWS::ACMPCA::Certificate.PolicyQualifierInfoList (__added__)
+* AWS::ACMPCA::Certificate.Qualifier (__added__)
+* AWS::ACMPCA::Certificate.Subject (__added__)
+* AWS::AppFlow::Flow.IdFieldNamesList (__added__)
+* AWS::ECS::Cluster.ClusterConfiguration (__added__)
+* AWS::ECS::Cluster.ExecuteCommandConfiguration (__added__)
+* AWS::ECS::Cluster.ExecuteCommandLogConfiguration (__added__)
+* AWS::SageMaker::Model.InferenceExecutionConfig (__added__)
+* AWS::AppFlow::Flow.SalesforceDestinationProperties IdFieldNames (__added__)
+* AWS::AppFlow::Flow.SalesforceDestinationProperties WriteOperationType (__added__)
+* AWS::DLM::LifecyclePolicy.CreateRule Location (__added__)
+* AWS::DLM::LifecyclePolicy.CrossRegionCopyRule Target (__added__)
+* AWS::DLM::LifecyclePolicy.CrossRegionCopyRule TargetRegion.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::DLM::LifecyclePolicy.PolicyDetails ResourceLocations (__added__)
+
+
+# CloudFormation Resource Specification v24.0.0
+
+## New Resource Types
+
+* AWS::EMRContainers::VirtualCluster
+* AWS::QuickSight::Analysis
+* AWS::QuickSight::Dashboard
+* AWS::QuickSight::Template
+* AWS::QuickSight::Theme
+* AWS::ServiceCatalogAppRegistry::Application
+* AWS::ServiceCatalogAppRegistry::AttributeGroup
+* AWS::ServiceCatalogAppRegistry::AttributeGroupAssociation
+* AWS::ServiceCatalogAppRegistry::ResourceAssociation
+
+## Attribute Changes
+
+* AWS::LicenseManager::Grant Version (__added__)
+* AWS::LicenseManager::License Version (__added__)
+
+## Property Changes
+
+* AWS::ElastiCache::User Authentication (__deleted__)
+* AWS::ElastiCache::User UserGroupIds (__deleted__)
+* AWS::ElastiCache::UserGroup PendingChanges (__deleted__)
+* AWS::ElastiCache::UserGroup ReplicationGroupIds (__deleted__)
+* AWS::IoTAnalytics::Datastore FileFormatConfiguration (__added__)
+* AWS::Kinesis::Stream Tags.DuplicatesAllowed (__changed__)
+  * Old: true
+  * New: false
+* AWS::LicenseManager::Grant ClientToken (__deleted__)
+* AWS::LicenseManager::Grant Filters (__deleted__)
+* AWS::LicenseManager::Grant GrantArns (__deleted__)
+* AWS::LicenseManager::Grant GrantStatus (__deleted__)
+* AWS::LicenseManager::Grant GrantedOperations (__deleted__)
+* AWS::LicenseManager::Grant GranteePrincipalArn (__deleted__)
+* AWS::LicenseManager::Grant MaxResults (__deleted__)
+* AWS::LicenseManager::Grant NextToken (__deleted__)
+* AWS::LicenseManager::Grant ParentArn (__deleted__)
+* AWS::LicenseManager::Grant SourceVersion (__deleted__)
+* AWS::LicenseManager::Grant StatusReason (__deleted__)
+* AWS::LicenseManager::Grant Tags (__deleted__)
+* AWS::LicenseManager::Grant Version (__deleted__)
+* AWS::LicenseManager::License ClientToken (__deleted__)
+* AWS::LicenseManager::License Filters (__deleted__)
+* AWS::LicenseManager::License LicenseArns (__deleted__)
+* AWS::LicenseManager::License MaxResults (__deleted__)
+* AWS::LicenseManager::License NextToken (__deleted__)
+* AWS::LicenseManager::License SourceVersion (__deleted__)
+* AWS::LicenseManager::License Tags (__deleted__)
+* AWS::LicenseManager::License Version (__deleted__)
+* AWS::LicenseManager::License LicenseName.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::LicenseManager::License ProductName.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::MSK::Cluster BrokerNodeGroupInfo.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::S3::AccessPoint CreationDate (__deleted__)
+* AWS::ServiceCatalog::PortfolioShare ShareTagOptions (__added__)
+
+## Property Type Changes
+
+* AWS::ElastiCache::User.Authentication (__removed__)
+* AWS::ElastiCache::UserGroup.UserGroupPendingChanges (__removed__)
+* AWS::LicenseManager::Grant.Filter (__removed__)
+* AWS::LicenseManager::Grant.StringList (__removed__)
+* AWS::LicenseManager::License.Filter (__removed__)
+* AWS::LicenseManager::License.Rule (__removed__)
+* AWS::LicenseManager::License.RuleList (__removed__)
+* AWS::LicenseManager::License.StringList (__removed__)
+* AWS::NetworkFirewall::FirewallPolicy.CustomActions (__removed__)
+* AWS::NetworkFirewall::FirewallPolicy.Dimensions (__removed__)
+* AWS::NetworkFirewall::FirewallPolicy.StatefulRuleGroupReferences (__removed__)
+* AWS::NetworkFirewall::FirewallPolicy.StatelessActions (__removed__)
+* AWS::NetworkFirewall::FirewallPolicy.StatelessRuleGroupReferences (__removed__)
+* AWS::NetworkFirewall::LoggingConfiguration.LogDestinationConfigs (__removed__)
+* AWS::NetworkFirewall::RuleGroup.Addresses (__removed__)
+* AWS::NetworkFirewall::RuleGroup.CustomActions (__removed__)
+* AWS::NetworkFirewall::RuleGroup.Dimensions (__removed__)
+* AWS::NetworkFirewall::RuleGroup.Flags (__removed__)
+* AWS::NetworkFirewall::RuleGroup.PortRanges (__removed__)
+* AWS::NetworkFirewall::RuleGroup.ProtocolNumbers (__removed__)
+* AWS::NetworkFirewall::RuleGroup.RuleOptions (__removed__)
+* AWS::NetworkFirewall::RuleGroup.StatefulRules (__removed__)
+* AWS::NetworkFirewall::RuleGroup.StatelessRules (__removed__)
+* AWS::NetworkFirewall::RuleGroup.TCPFlags (__removed__)
+* AWS::NetworkFirewall::RuleGroup.TargetTypes (__removed__)
+* AWS::NetworkFirewall::RuleGroup.VariableDefinitionList (__removed__)
+* AWS::IoTAnalytics::Datastore.Column (__added__)
+* AWS::IoTAnalytics::Datastore.FileFormatConfiguration (__added__)
+* AWS::IoTAnalytics::Datastore.JsonConfiguration (__added__)
+* AWS::IoTAnalytics::Datastore.ParquetConfiguration (__added__)
+* AWS::IoTAnalytics::Datastore.SchemaDefinition (__added__)
+* AWS::Kendra::DataSource.ExcludeMimeTypesList (__added__)
+* AWS::Kendra::DataSource.ExcludeSharedDrivesList (__added__)
+* AWS::Kendra::DataSource.ExcludeUserAccountsList (__added__)
+* AWS::Kendra::DataSource.GoogleDriveConfiguration (__added__)
+* AWS::Kendra::DataSource.DataSourceConfiguration GoogleDriveConfiguration (__added__)
+* AWS::LicenseManager::License.Entitlement CheckoutRules (__deleted__)
+* AWS::MSK::Cluster.BrokerNodeGroupInfo InstanceType.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::NetworkFirewall::FirewallPolicy.FirewallPolicy StatefulRuleGroupReferences.DuplicatesAllowed (__added__)
+* AWS::NetworkFirewall::FirewallPolicy.FirewallPolicy StatefulRuleGroupReferences.ItemType (__added__)
+* AWS::NetworkFirewall::FirewallPolicy.FirewallPolicy StatefulRuleGroupReferences.Type (__changed__)
+  * Old: StatefulRuleGroupReferences
+  * New: List
+* AWS::NetworkFirewall::FirewallPolicy.FirewallPolicy StatelessCustomActions.DuplicatesAllowed (__added__)
+* AWS::NetworkFirewall::FirewallPolicy.FirewallPolicy StatelessCustomActions.ItemType (__added__)
+* AWS::NetworkFirewall::FirewallPolicy.FirewallPolicy StatelessCustomActions.Type (__changed__)
+  * Old: CustomActions
+  * New: List
+* AWS::NetworkFirewall::FirewallPolicy.FirewallPolicy StatelessDefaultActions.DuplicatesAllowed (__added__)
+* AWS::NetworkFirewall::FirewallPolicy.FirewallPolicy StatelessDefaultActions.PrimitiveItemType (__added__)
+* AWS::NetworkFirewall::FirewallPolicy.FirewallPolicy StatelessDefaultActions.Type (__changed__)
+  * Old: StatelessActions
+  * New: List
+* AWS::NetworkFirewall::FirewallPolicy.FirewallPolicy StatelessFragmentDefaultActions.DuplicatesAllowed (__added__)
+* AWS::NetworkFirewall::FirewallPolicy.FirewallPolicy StatelessFragmentDefaultActions.PrimitiveItemType (__added__)
+* AWS::NetworkFirewall::FirewallPolicy.FirewallPolicy StatelessFragmentDefaultActions.Type (__changed__)
+  * Old: StatelessActions
+  * New: List
+* AWS::NetworkFirewall::FirewallPolicy.FirewallPolicy StatelessRuleGroupReferences.DuplicatesAllowed (__added__)
+* AWS::NetworkFirewall::FirewallPolicy.FirewallPolicy StatelessRuleGroupReferences.ItemType (__added__)
+* AWS::NetworkFirewall::FirewallPolicy.FirewallPolicy StatelessRuleGroupReferences.Type (__changed__)
+  * Old: StatelessRuleGroupReferences
+  * New: List
+* AWS::NetworkFirewall::FirewallPolicy.PublishMetricAction Dimensions.DuplicatesAllowed (__added__)
+* AWS::NetworkFirewall::FirewallPolicy.PublishMetricAction Dimensions.ItemType (__added__)
+* AWS::NetworkFirewall::FirewallPolicy.PublishMetricAction Dimensions.Type (__changed__)
+  * Old: Dimensions
+  * New: List
+* AWS::NetworkFirewall::LoggingConfiguration.LoggingConfiguration LogDestinationConfigs.ItemType (__added__)
+* AWS::NetworkFirewall::LoggingConfiguration.LoggingConfiguration LogDestinationConfigs.Type (__changed__)
+  * Old: LogDestinationConfigs
+  * New: List
+* AWS::NetworkFirewall::RuleGroup.IPSet Definition.DuplicatesAllowed (__added__)
+* AWS::NetworkFirewall::RuleGroup.IPSet Definition.PrimitiveItemType (__added__)
+* AWS::NetworkFirewall::RuleGroup.IPSet Definition.Type (__changed__)
+  * Old: VariableDefinitionList
+  * New: List
+* AWS::NetworkFirewall::RuleGroup.MatchAttributes DestinationPorts.DuplicatesAllowed (__added__)
+* AWS::NetworkFirewall::RuleGroup.MatchAttributes DestinationPorts.ItemType (__added__)
+* AWS::NetworkFirewall::RuleGroup.MatchAttributes DestinationPorts.Type (__changed__)
+  * Old: PortRanges
+  * New: List
+* AWS::NetworkFirewall::RuleGroup.MatchAttributes Destinations.DuplicatesAllowed (__added__)
+* AWS::NetworkFirewall::RuleGroup.MatchAttributes Destinations.ItemType (__added__)
+* AWS::NetworkFirewall::RuleGroup.MatchAttributes Destinations.Type (__changed__)
+  * Old: Addresses
+  * New: List
+* AWS::NetworkFirewall::RuleGroup.MatchAttributes Protocols.DuplicatesAllowed (__added__)
+* AWS::NetworkFirewall::RuleGroup.MatchAttributes Protocols.PrimitiveItemType (__added__)
+* AWS::NetworkFirewall::RuleGroup.MatchAttributes Protocols.Type (__changed__)
+  * Old: ProtocolNumbers
+  * New: List
+* AWS::NetworkFirewall::RuleGroup.MatchAttributes SourcePorts.DuplicatesAllowed (__added__)
+* AWS::NetworkFirewall::RuleGroup.MatchAttributes SourcePorts.ItemType (__added__)
+* AWS::NetworkFirewall::RuleGroup.MatchAttributes SourcePorts.Type (__changed__)
+  * Old: PortRanges
+  * New: List
+* AWS::NetworkFirewall::RuleGroup.MatchAttributes Sources.DuplicatesAllowed (__added__)
+* AWS::NetworkFirewall::RuleGroup.MatchAttributes Sources.ItemType (__added__)
+* AWS::NetworkFirewall::RuleGroup.MatchAttributes Sources.Type (__changed__)
+  * Old: Addresses
+  * New: List
+* AWS::NetworkFirewall::RuleGroup.MatchAttributes TCPFlags.DuplicatesAllowed (__added__)
+* AWS::NetworkFirewall::RuleGroup.MatchAttributes TCPFlags.ItemType (__added__)
+* AWS::NetworkFirewall::RuleGroup.MatchAttributes TCPFlags.Type (__changed__)
+  * Old: TCPFlags
+  * New: List
+* AWS::NetworkFirewall::RuleGroup.PortSet Definition.DuplicatesAllowed (__added__)
+* AWS::NetworkFirewall::RuleGroup.PortSet Definition.PrimitiveItemType (__added__)
+* AWS::NetworkFirewall::RuleGroup.PortSet Definition.Type (__changed__)
+  * Old: VariableDefinitionList
+  * New: List
+* AWS::NetworkFirewall::RuleGroup.PublishMetricAction Dimensions.DuplicatesAllowed (__added__)
+* AWS::NetworkFirewall::RuleGroup.PublishMetricAction Dimensions.ItemType (__added__)
+* AWS::NetworkFirewall::RuleGroup.PublishMetricAction Dimensions.Type (__changed__)
+  * Old: Dimensions
+  * New: List
+* AWS::NetworkFirewall::RuleGroup.RulesSource StatefulRules.DuplicatesAllowed (__added__)
+* AWS::NetworkFirewall::RuleGroup.RulesSource StatefulRules.ItemType (__added__)
+* AWS::NetworkFirewall::RuleGroup.RulesSource StatefulRules.Type (__changed__)
+  * Old: StatefulRules
+  * New: List
+* AWS::NetworkFirewall::RuleGroup.RulesSourceList TargetTypes.DuplicatesAllowed (__added__)
+* AWS::NetworkFirewall::RuleGroup.RulesSourceList TargetTypes.PrimitiveItemType (__added__)
+* AWS::NetworkFirewall::RuleGroup.RulesSourceList TargetTypes.Type (__changed__)
+  * Old: TargetTypes
+  * New: List
+* AWS::NetworkFirewall::RuleGroup.StatefulRule RuleOptions.DuplicatesAllowed (__added__)
+* AWS::NetworkFirewall::RuleGroup.StatefulRule RuleOptions.ItemType (__added__)
+* AWS::NetworkFirewall::RuleGroup.StatefulRule RuleOptions.Type (__changed__)
+  * Old: RuleOptions
+  * New: List
+* AWS::NetworkFirewall::RuleGroup.StatelessRulesAndCustomActions CustomActions.DuplicatesAllowed (__added__)
+* AWS::NetworkFirewall::RuleGroup.StatelessRulesAndCustomActions CustomActions.ItemType (__added__)
+* AWS::NetworkFirewall::RuleGroup.StatelessRulesAndCustomActions CustomActions.Type (__changed__)
+  * Old: CustomActions
+  * New: List
+* AWS::NetworkFirewall::RuleGroup.StatelessRulesAndCustomActions StatelessRules.DuplicatesAllowed (__added__)
+* AWS::NetworkFirewall::RuleGroup.StatelessRulesAndCustomActions StatelessRules.ItemType (__added__)
+* AWS::NetworkFirewall::RuleGroup.StatelessRulesAndCustomActions StatelessRules.Type (__changed__)
+  * Old: StatelessRules
+  * New: List
+* AWS::NetworkFirewall::RuleGroup.TCPFlagField Flags.DuplicatesAllowed (__added__)
+* AWS::NetworkFirewall::RuleGroup.TCPFlagField Flags.PrimitiveItemType (__added__)
+* AWS::NetworkFirewall::RuleGroup.TCPFlagField Flags.Type (__changed__)
+  * Old: Flags
+  * New: List
+* AWS::NetworkFirewall::RuleGroup.TCPFlagField Masks.DuplicatesAllowed (__added__)
+* AWS::NetworkFirewall::RuleGroup.TCPFlagField Masks.PrimitiveItemType (__added__)
+* AWS::NetworkFirewall::RuleGroup.TCPFlagField Masks.Type (__changed__)
+  * Old: Flags
+  * New: List
+
+
 # CloudFormation Resource Specification v23.0.0
 
 ## New Resource Types
