@@ -1,5 +1,5 @@
 {
-  "name": "@aws-cdk/aws-kinesis-analytics-flink",
+  "name": "@aws-cdk/aws-kinesisanalytics-flink",
   "version": "0.0.0",
   "description": "A CDK Construct Library for Kinesis Analytics Flink applications",
   "main": "lib/index.js",
@@ -11,7 +11,7 @@
         "package": "software.amazon.awscdk.services.kinesis.analytics.flink",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "kinesis-analytics-flink"
+          "artifactId": "kinesisanalytics-flink"
         }
       },
       "dotnet": {
@@ -20,7 +20,7 @@
         "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
       },
       "python": {
-        "distName": "aws-cdk.aws-kinesis-analytics-flink",
+        "distName": "aws-cdk.aws-kinesisanalytics-flink",
         "module": "aws_cdk.aws_kinesis_analytics_flink",
         "classifiers": [
           "Framework :: AWS CDK",
@@ -33,7 +33,7 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/aws/aws-cdk.git",
-    "directory": "packages/@aws-cdk/aws-kinesis-analytics-flink"
+    "directory": "packages/@aws-cdk/aws-kinesisanalytics-flink"
   },
   "scripts": {
     "build": "cdk-build",
@@ -100,7 +100,7 @@
   },
   "awslint": {
     "exclude": [
-      "props-physical-name:@aws-cdk/aws-kinesis-analytics-flink.FlinkApplicationProps"
+      "props-physical-name:@aws-cdk/aws-kinesisanalytics-flink.FlinkApplicationProps"
     ]
   },
   "stability": "experimental",
