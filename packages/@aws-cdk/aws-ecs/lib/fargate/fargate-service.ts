@@ -151,7 +151,7 @@ export class FargateService extends BaseService implements IFargateService {
 
     super(scope, id, {
       ...props,
-      desiredCount: props.desiredCount ?? 1,
+      desiredCount: props.desiredCount,
       launchType: LaunchType.FARGATE,
       propagateTags: propagateTagsFromSource,
       enableECSManagedTags: props.enableECSManagedTags,

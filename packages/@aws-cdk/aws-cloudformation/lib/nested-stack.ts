@@ -1,6 +1,10 @@
 import * as sns from '@aws-cdk/aws-sns';
 import * as core from '@aws-cdk/core';
 
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct } from '@aws-cdk/core';
+
 /**
  * Initialization props for the `NestedStack` construct.
  *
@@ -63,7 +67,7 @@ export interface NestedStackProps {
  * @experimental
  */
 export class NestedStack extends core.NestedStack {
-  constructor(scope: core.Construct, id: string, props: NestedStackProps = { }) {
+  constructor(scope: Construct, id: string, props: NestedStackProps = { }) {
     super(scope, id, {
       parameters: props.parameters,
       timeout: props.timeout,
