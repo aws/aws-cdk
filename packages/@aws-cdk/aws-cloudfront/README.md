@@ -542,15 +542,25 @@ Note: Don't forget to copy/paste the contents of `public_key.pem` file including
 Example:
 
 ```ts
-  new cloudfront.KeyGroup(stack, 'MyKeyGroup', {
-    items: [
-      new cloudfront.PublicKey(stack, 'MyPublicKey', {
-        encodedKey: '...', // contents of public_key.pem file
-        // comment: 'Key is expiring on ...',
-      }),
-    ],
-    // comment: 'Key group containing public keys ...',
-  });
+new cloudfront.KeyGroup(stack, 'MyKeyGroup', {
+  items: [
+    new cloudfront.PublicKey(stack, 'InlinePublicKey', {
+      encodedKey: Key.fromInline('...'), // contents of public_key.pem file
+      // comment: 'Key is expiring on ...',
+    }),
+  ],
+  // comment: 'Key group containing public keys ...',
+});
+
+new cloudfront.KeyGroup(stack, 'MyKeyGroup', {
+  items: [
+    new cloudfront.PublicKey(stack, 'FilePublicKey', {
+      encodedKey: Key.fromFile(path.join(__dirname, 'public_key.pem')), // path to public_key.pem file
+      // comment: 'Key is expiring on ...',
+    }),
+  ],
+  // comment: 'Key group containing public keys ...',
+});
 ```
 
 See:
