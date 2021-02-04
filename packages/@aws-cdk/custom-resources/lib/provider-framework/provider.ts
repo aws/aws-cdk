@@ -3,11 +3,15 @@ import * as cfn from '@aws-cdk/aws-cloudformation';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as logs from '@aws-cdk/aws-logs';
-import { Construct as CoreConstruct, Duration } from '@aws-cdk/core';
+import { Duration } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import * as consts from './runtime/consts';
 import { calculateRetryPolicy } from './util';
 import { WaiterStateMachine } from './waiter-state-machine';
+
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 const RUNTIME_HANDLER_PATH = path.join(__dirname, 'runtime');
 const FRAMEWORK_HANDLER_TIMEOUT = Duration.minutes(15); // keep it simple for now
