@@ -1508,7 +1508,7 @@ enum HealthCheckType {
  * Render the rolling update configuration into the appropriate object
  */
 function renderRollingUpdateConfig(config: RollingUpdateConfiguration = {}): CfnAutoScalingRollingUpdate {
-  const waitOnResourceSignals = config.minSuccessfulInstancesPercent !== undefined ? true : false;
+  const waitOnResourceSignals = config.minSuccessfulInstancesPercent !== undefined;
   const pauseTime = config.pauseTime || (waitOnResourceSignals ? Duration.minutes(5) : Duration.seconds(0));
 
   return {
