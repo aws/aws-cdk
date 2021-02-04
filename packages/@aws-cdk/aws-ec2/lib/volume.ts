@@ -94,7 +94,7 @@ export interface EbsDeviceOptions extends EbsDeviceOptionsBase {
   /**
    * The identifier (key ID, key alias, ID ARN, or alias ARN) of the AWS Key Management Service (AWS KMS)
    * customer master key (CMK) to use for Amazon EBS encryption.
-   * If this parameter is not specified, your AWS managed CMK for EBS is used.
+   * If this parameter is not specified and `encrypted` is set to `true`, your AWS managed CMK for EBS is used.
    *
    * @default None
    */
