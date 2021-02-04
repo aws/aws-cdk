@@ -213,7 +213,7 @@ export class EdgeFunction extends Resource implements lambda.IVersion {
       throw new Error('stacks which use EdgeFunctions must have an explicitly set region');
     }
 
-    const edgeStackId = stackId ?? `edge-lambda-stack-${region}`;
+    const edgeStackId = stackId ?? `edge-lambda-stack-${this.stack.node.addr}`;
     let edgeStack = stage.node.tryFindChild(edgeStackId) as Stack;
     if (!edgeStack) {
       edgeStack = new Stack(stage, edgeStackId, {

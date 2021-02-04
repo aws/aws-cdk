@@ -259,8 +259,9 @@ integTest('can deploy modern-synthesized stack even if bootstrap stack name is u
   // Deploy stack that uses file assets
   await fixture.cdkDeploy('lambda', {
     options: [
-      // Next line explicitly commented to show that we don't pass it!
-      // '--toolkit-stack-name', bootstrapStackName,
+      // Explicity pass a name that's sure to not exist, otherwise the CLI might accidentally find a
+      // default bootstracp stack if that happens to be in the account already.
+      '--toolkit-stack-name', 'DefinitelyDoesNotExist',
       '--context', `@aws-cdk/core:bootstrapQualifier=${fixture.qualifier}`,
       '--context', '@aws-cdk/core:newStyleStackSynthesis=1',
     ],

@@ -250,10 +250,10 @@ function defaultEdgeFunctionProps(stackId?: string) {
     code: lambda.Code.fromInline('foo'),
     handler: 'index.handler',
     runtime: lambda.Runtime.NODEJS_12_X,
-    stackId: stackId ?? 'edge-lambda-stack-testregion',
+    stackId: stackId,
   };
 }
 
-function getFnStack(region: string = 'testregion'): cdk.Stack {
-  return app.node.findChild(`edge-lambda-stack-${region}`) as cdk.Stack;
+function getFnStack(): cdk.Stack {
+  return app.node.findChild(`edge-lambda-stack-${stack.node.addr}`) as cdk.Stack;
 }

@@ -7,7 +7,7 @@ import { Construct } from 'constructs';
 import { CfnDistribution } from './cloudfront.generated';
 import { HttpVersion, IDistribution, LambdaEdgeEventType, OriginProtocolPolicy, PriceClass, ViewerProtocolPolicy, SSLMethod, SecurityPolicyProtocol } from './distribution';
 import { GeoRestriction } from './geo-restriction';
-import { IOriginAccessIdentity } from './origin_access_identity';
+import { IOriginAccessIdentity } from './origin-access-identity';
 
 /**
  * HTTP status code to failover to second origin

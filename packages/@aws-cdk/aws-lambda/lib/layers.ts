@@ -1,4 +1,4 @@
-import { IResource, Resource } from '@aws-cdk/core';
+import { IResource, RemovalPolicy, Resource } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { Code } from './code';
 import { CfnLayerVersion, CfnLayerVersionPermission } from './lambda.generated';
@@ -28,6 +28,14 @@ export interface LayerVersionOptions {
    * @default - A name will be generated.
    */
   readonly layerVersionName?: string;
+
+  /**
+   * Whether to retain this version of the layer when a new version is added
+   * or when the stack is deleted.
+   *
+   * @default RemovalPolicy.DESTROY
+   */
+  readonly removalPolicy?: RemovalPolicy;
 }
 
 export interface LayerVersionProps extends LayerVersionOptions {
@@ -197,6 +205,10 @@ export class LayerVersion extends LayerVersionBase {
       layerName: this.physicalName,
       licenseInfo: props.license,
     });
+
+    if (props.removalPolicy) {
+      resource.applyRemovalPolicy(props.removalPolicy);
+    }
 
     props.code.bindToResource(resource, {
       resourceProperty: 'Content',

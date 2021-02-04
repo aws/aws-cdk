@@ -143,6 +143,19 @@ of a new version resource. You can specify options for this version through the
 > of code providers (such as `lambda.Code.fromBucket`) require that you define a
 > `lambda.Version` resource directly since the CDK is unable to determine if
 > their contents had changed.
+>
+> An alternative to defining a `lambda.Version` is to set an environment variable
+> which changes at least as often as your code does. This makes sure the function
+> always has the latest code.
+>
+> ```ts
+> const codeVersion = "stringOrMethodToGetCodeVersion";
+> const fn = new lambda.Function(this, 'MyFunction', {
+>  environment: {
+>    'CodeVersionString': codeVersion
+>  }
+> });
+> ```
 
 The `version.addAlias()` method can be used to define an AWS Lambda alias that
 points to a specific version.
@@ -175,6 +188,17 @@ The `lambda.LayerVersion` class can be used to define Lambda layers and manage
 granting permissions to other AWS accounts or organizations.
 
 [Example of Lambda Layer usage](test/integ.layer-version.lit.ts)
+
+By default, updating a layer creates a new layer version, and CloudFormation will delete the old version as part of the stack update.
+
+Alternatively, a removal policy can be used to retain the old version:
+
+```ts
+import { LayerVersion } from '@aws-cdk/aws-lambda';
+new LayerVersion(this, 'MyLayer', {
+  removalPolicy: RemovalPolicy.RETAIN
+});
+```
 
 ## Event Rule Target
 
@@ -270,16 +294,23 @@ to learn more about AWS Lambda's X-Ray support.
 
 ## Lambda with Profiling
 
+The following code configures the lambda function with CodeGuru profiling. By default, this creates a new CodeGuru
+profiling group -
+
 ```ts
 import * as lambda from '@aws-cdk/aws-lambda';
 
 const fn = new lambda.Function(this, 'MyFunction', {
-    runtime: lambda.Runtime.NODEJS_10_X,
+    runtime: lambda.Runtime.PYTHON_3_6,
     handler: 'index.handler',
-    code: lambda.Code.fromInline('exports.handler = function(event, ctx, cb) { return cb(null, "hi"); }'),
+    code: lambda.Code.fromAsset('lambda-handler'),
     profiling: true
 });
 ```
+
+The `profilingGroup` property can be used to configure an existing CodeGuru profiler group.
+
+CodeGuru profiling is supported for all Java runtimes and Python3.6+ runtimes.
 
 See [the AWS documentation](https://docs.aws.amazon.com/codeguru/latest/profiler-ug/setting-up-lambda.html)
 to learn more about AWS Lambda's Profiling support.

@@ -76,7 +76,7 @@ test('deployment fails if bootstrap stack is missing', async () => {
         requiresBootstrapStackVersion: 99,
       },
     }),
-  })).rejects.toThrow(/no bootstrap stack found/);
+  })).rejects.toThrow(/requires a bootstrap stack/);
 });
 
 test('deployment fails if bootstrap stack is too old', async () => {
