@@ -279,7 +279,7 @@ export class EcsRunTask extends sfn.TaskStateBase implements ec2.IConnectable {
       Resource: integrationResourceArn('ecs', 'runTask', this.integrationPattern),
       Parameters: sfn.FieldUtils.renderObject({
         Cluster: this.props.cluster.clusterArn,
-        TaskDefinition: this.props.taskDefinition.taskDefinitionArn,
+        TaskDefinition: this.props.taskDefinition.family,
         NetworkConfiguration: this.networkConfiguration,
         Overrides: renderOverrides(this.props.containerOverrides),
         ...this.props.launchTarget.bind(this, { taskDefinition: this.props.taskDefinition, cluster: this.props.cluster }).parameters,
@@ -318,7 +318,7 @@ export class EcsRunTask extends sfn.TaskStateBase implements ec2.IConnectable {
     const policyStatements = [
       new iam.PolicyStatement({
         actions: ['ecs:RunTask'],
-        resources: [this.props.taskDefinition.taskDefinitionArn],
+        resources: [this.getTaskDefinitionFamilyArn()],
       }),
       new iam.PolicyStatement({
         actions: ['ecs:StopTask', 'ecs:DescribeTasks'],
@@ -346,6 +346,23 @@ export class EcsRunTask extends sfn.TaskStateBase implements ec2.IConnectable {
     }
 
     return policyStatements;
+  }
+
+  /**
+   * Returns the ARN of the task definition family by removing the
+   * revision from the task definition ARN
+   * Before - arn:aws:ecs:us-west-2:123456789012:task-definition/hello_world:8
+   * After - arn:aws:ecs:us-west-2:123456789012:task-definition/hello_world
+   */
+  private getTaskDefinitionFamilyArn(): string {
+    const arnComponents = cdk.Stack.of(this).parseArn(this.props.taskDefinition.taskDefinitionArn);
+    let { resourceName } = arnComponents;
+
+    if (resourceName) {
+      resourceName = resourceName.split(':')[0];
+    }
+
+    return cdk.Stack.of(this).formatArn({ ...arnComponents, resourceName });
   }
 
   private taskExecutionRoles(): iam.IRole[] {
