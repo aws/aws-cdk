@@ -2,9 +2,13 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as assets from '@aws-cdk/assets';
 import * as ecr from '@aws-cdk/aws-ecr';
-import { Annotations, Construct as CoreConstruct, FeatureFlags, IgnoreMode, Stack, Token } from '@aws-cdk/core';
+import { Annotations, FeatureFlags, IgnoreMode, Stack, Token } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
+
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 /**
  * Options for DockerImageAsset

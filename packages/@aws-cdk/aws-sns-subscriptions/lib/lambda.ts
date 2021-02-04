@@ -1,8 +1,12 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as sns from '@aws-cdk/aws-sns';
-import { Construct, Names, Stack } from '@aws-cdk/core';
+import { Names, Stack } from '@aws-cdk/core';
 import { SubscriptionProps } from './subscription';
+
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct } from '@aws-cdk/core';
 
 /**
  * Properties for a Lambda subscription

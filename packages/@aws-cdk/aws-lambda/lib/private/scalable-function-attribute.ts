@@ -1,6 +1,10 @@
 import * as appscaling from '@aws-cdk/aws-applicationautoscaling';
-import { Construct, Token } from '@aws-cdk/core';
+import { Token } from '@aws-cdk/core';
 import { IScalableFunctionAttribute, UtilizationScalingOptions } from '../scalable-attribute-api';
+
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct } from '@aws-cdk/core';
 
 /**
  * A scalable lambda alias attribute
