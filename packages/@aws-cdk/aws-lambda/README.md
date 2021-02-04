@@ -176,9 +176,9 @@ granting permissions to other AWS accounts or organizations.
 
 [Example of Lambda Layer usage](test/integ.layer-version.lit.ts)
 
-### Layer Versioning and Removal Policies
+By default, updating a layer creates a new layer version, and CloudFormation will delete the old version as part of the stack update.
 
-By default, updating a layer creates a new version and deletes the current version managed by the stack. Alternatively, a removal policy can be used to retain the current version:
+Alternatively, a removal policy can be used to retain the old version:
 
 ```ts
 import { LayerVersion } from '@aws-cdk/aws-lambda';
