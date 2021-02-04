@@ -259,7 +259,7 @@ const keyGroup = new KeyGroup(stack, 'MyKeyGroup', {
 
 new cloudfront.Distribution(stack, 'Dist', {
   defaultBehavior: {
-    origin: new TestOrigin('www.example.com'),
+    origin: new origins.HttpOrigin('www.example.com'),
     trustedKeyGroups: [
       keyGroup,
     ],
