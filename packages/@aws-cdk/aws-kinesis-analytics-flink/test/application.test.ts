@@ -5,29 +5,29 @@ import * as kms from '@aws-cdk/aws-kms';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as core from '@aws-cdk/core';
 import * as path from 'path';
-import * as ka from '../lib';
+import * as flink from '../lib';
 
-describe('FlinkApplication', () => {
+describe('Application', () => {
   let stack: core.Stack;
   let bucket: s3.Bucket;
   let requiredProps: {
-    runtime: ka.FlinkRuntime;
-    code: ka.ApplicationCode;
+    runtime: flink.Runtime;
+    code: flink.ApplicationCode;
   };
 
   beforeEach(() => {
     stack = new core.Stack();
     bucket = new s3.Bucket(stack, 'CodeBucket');
     requiredProps = {
-      runtime: ka.FlinkRuntime.FLINK_1_11,
-      code: ka.ApplicationCode.fromBucket(bucket, 'my-app.jar'),
+      runtime: flink.Runtime.FLINK_1_11,
+      code: flink.ApplicationCode.fromBucket(bucket, 'my-app.jar'),
     };
   });
 
   test('default Flink Application', () => {
-    new ka.FlinkApplication(stack, 'FlinkApplication', {
-      runtime: ka.FlinkRuntime.FLINK_1_11,
-      code: ka.ApplicationCode.fromBucket(bucket, 'my-app.jar'),
+    new flink.Application(stack, 'FlinkApplication', {
+      runtime: flink.Runtime.FLINK_1_11,
+      code: flink.ApplicationCode.fromBucket(bucket, 'my-app.jar'),
     });
 
     expect(stack).toHaveResource('AWS::KinesisAnalyticsV2::Application', {
@@ -100,7 +100,7 @@ describe('FlinkApplication', () => {
   });
 
   test('providing a custom role', () => {
-    new ka.FlinkApplication(stack, 'FlinkApplication', {
+    new flink.Application(stack, 'FlinkApplication', {
       ...requiredProps,
       role: new iam.Role(stack, 'CustomRole', {
         assumedBy: new iam.ServicePrincipal('custom-principal'),
@@ -124,7 +124,7 @@ describe('FlinkApplication', () => {
   });
 
   test('addToPrincipalPolicy', () => {
-    const app = new ka.FlinkApplication(stack, 'FlinkApplication', {
+    const app = new flink.Application(stack, 'FlinkApplication', {
       ...requiredProps,
     });
 
@@ -143,9 +143,9 @@ describe('FlinkApplication', () => {
   });
 
   test('providing a custom runtime', () => {
-    new ka.FlinkApplication(stack, 'FlinkApplication', {
+    new flink.Application(stack, 'FlinkApplication', {
       ...requiredProps,
-      runtime: new ka.FlinkRuntime('custom'),
+      runtime: new flink.Runtime('custom'),
     });
 
     expect(stack).toHaveResourceLike('AWS::KinesisAnalyticsV2::Application', {
@@ -154,7 +154,7 @@ describe('FlinkApplication', () => {
   });
 
   test('providing a custom removal policy', () => {
-    new ka.FlinkApplication(stack, 'FlinkApplication', {
+    new flink.Application(stack, 'FlinkApplication', {
       ...requiredProps,
       removalPolicy: core.RemovalPolicy.RETAIN,
     });
@@ -165,7 +165,7 @@ describe('FlinkApplication', () => {
   });
 
   test('granting permissions to resources', () => {
-    const app = new ka.FlinkApplication(stack, 'FlinkApplication', {
+    const app = new flink.Application(stack, 'FlinkApplication', {
       ...requiredProps,
     });
 
@@ -183,8 +183,8 @@ describe('FlinkApplication', () => {
   });
 
   test('using an asset for code', () => {
-    const code = ka.ApplicationCode.fromAsset(path.join(__dirname, 'code-asset'));
-    new ka.FlinkApplication(stack, 'FlinkApplication', {
+    const code = flink.ApplicationCode.fromAsset(path.join(__dirname, 'code-asset'));
+    new flink.Application(stack, 'FlinkApplication', {
       ...requiredProps,
       code,
     });
@@ -219,7 +219,7 @@ describe('FlinkApplication', () => {
   });
 
   test('adding property groups', () => {
-    new ka.FlinkApplication(stack, 'FlinkApplication', {
+    new flink.Application(stack, 'FlinkApplication', {
       ...requiredProps,
       propertyGroups: {
         FlinkApplicationProperties: {
@@ -245,7 +245,7 @@ describe('FlinkApplication', () => {
   });
 
   test('checkpointEnabled setting', () => {
-    new ka.FlinkApplication(stack, 'FlinkApplication', {
+    new flink.Application(stack, 'FlinkApplication', {
       ...requiredProps,
       checkpointingEnabled: false,
     });
@@ -263,7 +263,7 @@ describe('FlinkApplication', () => {
   });
 
   test('checkpointInterval setting', () => {
-    new ka.FlinkApplication(stack, 'FlinkApplication', {
+    new flink.Application(stack, 'FlinkApplication', {
       ...requiredProps,
       checkpointInterval: core.Duration.minutes(5),
     });
@@ -281,7 +281,7 @@ describe('FlinkApplication', () => {
   });
 
   test('minPauseBetweenCheckpoints setting', () => {
-    new ka.FlinkApplication(stack, 'FlinkApplication', {
+    new flink.Application(stack, 'FlinkApplication', {
       ...requiredProps,
       minPauseBetweenCheckpoints: core.Duration.seconds(10),
     });
@@ -299,9 +299,9 @@ describe('FlinkApplication', () => {
   });
 
   test('logLevel setting', () => {
-    new ka.FlinkApplication(stack, 'FlinkApplication', {
+    new flink.Application(stack, 'FlinkApplication', {
       ...requiredProps,
-      logLevel: ka.FlinkLogLevel.DEBUG,
+      logLevel: flink.LogLevel.DEBUG,
     });
 
     expect(stack).toHaveResourceLike('AWS::KinesisAnalyticsV2::Application', {
@@ -317,9 +317,9 @@ describe('FlinkApplication', () => {
   });
 
   test('metricsLevel setting', () => {
-    new ka.FlinkApplication(stack, 'FlinkApplication', {
+    new flink.Application(stack, 'FlinkApplication', {
       ...requiredProps,
-      metricsLevel: ka.FlinkMetricsLevel.PARALLELISM,
+      metricsLevel: flink.MetricsLevel.PARALLELISM,
     });
 
     expect(stack).toHaveResourceLike('AWS::KinesisAnalyticsV2::Application', {
@@ -335,7 +335,7 @@ describe('FlinkApplication', () => {
   });
 
   test('autoscalingEnabled setting', () => {
-    new ka.FlinkApplication(stack, 'FlinkApplication', {
+    new flink.Application(stack, 'FlinkApplication', {
       ...requiredProps,
       autoScalingEnabled: false,
     });
@@ -353,7 +353,7 @@ describe('FlinkApplication', () => {
   });
 
   test('parallelism setting', () => {
-    new ka.FlinkApplication(stack, 'FlinkApplication', {
+    new flink.Application(stack, 'FlinkApplication', {
       ...requiredProps,
       parallelism: 2,
     });
@@ -371,7 +371,7 @@ describe('FlinkApplication', () => {
   });
 
   test('parallelismPerKpu setting', () => {
-    new ka.FlinkApplication(stack, 'FlinkApplication', {
+    new flink.Application(stack, 'FlinkApplication', {
       ...requiredProps,
       parallelismPerKpu: 2,
     });
@@ -389,7 +389,7 @@ describe('FlinkApplication', () => {
   });
 
   test('snapshotsEnabled setting', () => {
-    new ka.FlinkApplication(stack, 'FlinkApplication', {
+    new flink.Application(stack, 'FlinkApplication', {
       ...requiredProps,
       snapshotsEnabled: false,
     });
@@ -404,7 +404,7 @@ describe('FlinkApplication', () => {
   });
 
   test('default logging option', () => {
-    new ka.FlinkApplication(stack, 'FlinkApplication', {
+    new flink.Application(stack, 'FlinkApplication', {
       ...requiredProps,
       snapshotsEnabled: false,
     });
@@ -459,7 +459,7 @@ describe('FlinkApplication', () => {
   });
 
   test('logRetentionDays setting', () => {
-    new ka.FlinkApplication(stack, 'FlinkApplication', {
+    new flink.Application(stack, 'FlinkApplication', {
       ...requiredProps,
       logRetention: core.Duration.days(5),
     });
@@ -470,7 +470,7 @@ describe('FlinkApplication', () => {
   });
 
   test('logRemovalPolicy setting', () => {
-    new ka.FlinkApplication(stack, 'FlinkApplication', {
+    new flink.Application(stack, 'FlinkApplication', {
       ...requiredProps,
       logRemovalPolicy: core.RemovalPolicy.DESTROY,
     });
@@ -482,7 +482,7 @@ describe('FlinkApplication', () => {
   });
 
   test('logGroupName setting', () => {
-    new ka.FlinkApplication(stack, 'FlinkApplication', {
+    new flink.Application(stack, 'FlinkApplication', {
       ...requiredProps,
       logGroupName: 'my-group',
     });
@@ -493,7 +493,7 @@ describe('FlinkApplication', () => {
   });
 
   test('logStreamName setting', () => {
-    new ka.FlinkApplication(stack, 'FlinkApplication', {
+    new flink.Application(stack, 'FlinkApplication', {
       ...requiredProps,
       logStreamName: 'my-stream',
     });
@@ -505,7 +505,7 @@ describe('FlinkApplication', () => {
 
   test('logEncryptionKey setting', () => {
     const key = new kms.Key(stack, 'Key');
-    new ka.FlinkApplication(stack, 'FlinkApplication', {
+    new flink.Application(stack, 'FlinkApplication', {
       ...requiredProps,
       logEncryptionKey: key,
     });
@@ -517,33 +517,33 @@ describe('FlinkApplication', () => {
 
   test('validating applicationName', () => {
     // Expect no error with valid name
-    new ka.FlinkApplication(stack, 'ValidString', {
+    new flink.Application(stack, 'ValidString', {
       ...requiredProps,
       applicationName: 'my-VALID.app_name',
     });
 
     // Expect no error with ref
-    new ka.FlinkApplication(stack, 'ValidRef', {
+    new flink.Application(stack, 'ValidRef', {
       ...requiredProps,
       applicationName: new core.CfnParameter(stack, 'Parameter').valueAsString,
     });
 
     expect(() => {
-      new ka.FlinkApplication(stack, 'Empty', {
+      new flink.Application(stack, 'Empty', {
         ...requiredProps,
         applicationName: '',
       });
     }).toThrow(/cannot be empty/);
 
     expect(() => {
-      new ka.FlinkApplication(stack, 'InvalidCharacters', {
+      new flink.Application(stack, 'InvalidCharacters', {
         ...requiredProps,
         applicationName: '!!!',
       });
     }).toThrow(/may only contain letters, numbers, underscores, hyphens, and periods/);
 
     expect(() => {
-      new ka.FlinkApplication(stack, 'TooLong', {
+      new flink.Application(stack, 'TooLong', {
         ...requiredProps,
         applicationName: 'a'.repeat(129),
       });
@@ -552,13 +552,13 @@ describe('FlinkApplication', () => {
 
   test('validating parallelism', () => {
     // Expect no error with valid value
-    new ka.FlinkApplication(stack, 'ValidNumber', {
+    new flink.Application(stack, 'ValidNumber', {
       ...requiredProps,
       parallelism: 32,
     });
 
     // Expect no error with ref
-    new ka.FlinkApplication(stack, 'ValidRef', {
+    new flink.Application(stack, 'ValidRef', {
       ...requiredProps,
       parallelism: new core.CfnParameter(stack, 'Parameter', {
         type: 'Number',
@@ -566,7 +566,7 @@ describe('FlinkApplication', () => {
     });
 
     expect(() => {
-      new ka.FlinkApplication(stack, 'TooSmall', {
+      new flink.Application(stack, 'TooSmall', {
         ...requiredProps,
         parallelism: 0,
       });
@@ -575,13 +575,13 @@ describe('FlinkApplication', () => {
 
   test('validating parallelismPerKpu', () => {
     // Expect no error with valid value
-    new ka.FlinkApplication(stack, 'ValidNumber', {
+    new flink.Application(stack, 'ValidNumber', {
       ...requiredProps,
       parallelismPerKpu: 10,
     });
 
     // Expect no error with ref
-    new ka.FlinkApplication(stack, 'ValidRef', {
+    new flink.Application(stack, 'ValidRef', {
       ...requiredProps,
       parallelismPerKpu: new core.CfnParameter(stack, 'Parameter', {
         type: 'Number',
@@ -589,7 +589,7 @@ describe('FlinkApplication', () => {
     });
 
     expect(() => {
-      new ka.FlinkApplication(stack, 'TooSmall', {
+      new flink.Application(stack, 'TooSmall', {
         ...requiredProps,
         parallelismPerKpu: 0,
       });
@@ -597,7 +597,7 @@ describe('FlinkApplication', () => {
   });
 
   test('fromFlinkApplicationName', () => {
-    const flinkApp = ka.FlinkApplication.fromFlinkApplicationName(stack, 'Imported', 'my-app');
+    const flinkApp = flink.Application.fromApplicationName(stack, 'Imported', 'my-app');
 
     expect(flinkApp.applicationName).toEqual('my-app');
     expect(stack.resolve(flinkApp.applicationArn)).toEqual({
@@ -616,7 +616,7 @@ describe('FlinkApplication', () => {
 
   test('fromFlinkApplicationArn', () => {
     const arn = 'arn:aws:kinesisanalytics:us-west-2:012345678901:application/my-app';
-    const flinkApp = ka.FlinkApplication.fromFlinkApplicationArn(stack, 'Imported', arn);
+    const flinkApp = flink.Application.fromApplicationArn(stack, 'Imported', arn);
 
     expect(flinkApp.applicationName).toEqual('my-app');
     expect(flinkApp.applicationArn).toEqual(arn);

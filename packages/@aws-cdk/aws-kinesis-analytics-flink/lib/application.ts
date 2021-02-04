@@ -7,25 +7,25 @@ import { Construct } from 'constructs';
 import { ApplicationCode } from './application-code';
 import { environmentProperties } from './private/environment-properties';
 import { flinkApplicationConfiguration } from './private/flink-application-configuration';
-import { validateFlinkApplicationProps } from './private/validation';
-import { FlinkLogLevel, FlinkMetricsLevel, FlinkRuntime, PropertyGroups } from './types';
+import { validateFlinkApplicationProps as validateApplicationProps } from './private/validation';
+import { LogLevel as LogLevel, MetricsLevel as MetricsLevel, PropertyGroups, Runtime as Runtime } from './types';
 
 /**
  * An interface expressing the public properties on both an imported and
  * CDK-created Flink application.
  */
-export interface IFlinkApplication extends core.IResource, iam.IGrantable {
+export interface IApplication extends core.IResource, iam.IGrantable {
   /**
    * The application ARN.
    *
-   * @attribute ApplicationV2Name
+   * @attribute
    */
   readonly applicationArn: string;
 
   /**
    * The name of the Flink application.
    *
-   * @attribute
+   * @attribute ApplicationV2Name
    */
   readonly applicationName: string;
 
@@ -42,9 +42,9 @@ export interface IFlinkApplication extends core.IResource, iam.IGrantable {
 
 /**
  * Implements the functionality shared between CDK created and imported
- * IFlinkApplications.
+ * IApplications.
  */
-abstract class FlinkApplicationBase extends core.Resource implements IFlinkApplication {
+abstract class ApplicationBase extends core.Resource implements IApplication {
   public abstract readonly applicationArn: string;
   public abstract readonly applicationName: string;
   public abstract readonly role?: iam.IRole;
@@ -52,7 +52,7 @@ abstract class FlinkApplicationBase extends core.Resource implements IFlinkAppli
   // Implement iam.IGrantable interface
   public abstract readonly grantPrincipal: iam.IPrincipal;
 
-  /** Implement the convenience {@link IFlinkApplication.addToPrincipalPolicy} method. */
+  /** Implement the convenience {@link IApplication.addToPrincipalPolicy} method. */
   public addToRolePolicy(policyStatement: iam.PolicyStatement): boolean {
     if (this.role) {
       this.role.addToPrincipalPolicy(policyStatement);
@@ -64,11 +64,11 @@ abstract class FlinkApplicationBase extends core.Resource implements IFlinkAppli
 }
 
 /**
- * Props for creating a FlinkApplication construct.
+ * Props for creating an Application construct.
  */
-export interface FlinkApplicationProps {
+export interface ApplicationProps {
   /**
-   * A name for your FlinkApplication that is unique to an AWS account.
+   * A name for your Application that is unique to an AWS account.
    *
    * @default - CloudFormation-generated name
    */
@@ -77,7 +77,7 @@ export interface FlinkApplicationProps {
   /**
    * The Flink version to use for this application.
    */
-  readonly runtime: FlinkRuntime;
+  readonly runtime: Runtime;
 
   /**
    * The Flink code asset to run.
@@ -111,7 +111,7 @@ export interface FlinkApplicationProps {
    *
    * @default FlinkLogLevel.INFO
    */
-  readonly logLevel?: FlinkLogLevel;
+  readonly logLevel?: LogLevel;
 
   /**
    * Describes the granularity of the CloudWatch metrics for an application.
@@ -119,9 +119,9 @@ export interface FlinkApplicationProps {
    * metrics for each parallel thread and can quickly become expensive when
    * parallelism is high (e.g. > 64).
    *
-   * @default FlinkMetricsLevel.APPLICATION
+   * @default MetricsLevel.APPLICATION
    */
-  readonly metricsLevel?: FlinkMetricsLevel;
+  readonly metricsLevel?: MetricsLevel;
 
   /**
    * Whether the Kinesis Data Analytics service can increase the parallelism of
@@ -132,8 +132,8 @@ export interface FlinkApplicationProps {
   readonly autoScalingEnabled?: boolean;
 
   /**
-   * The initial parallelism for the Flink application. Kinesis Data Analytics
-   * can stop the app, increase the parallelism, and start the app again if
+   * The initial parallelism for the application. Kinesis Data Analytics can
+   * stop the app, increase the parallelism, and start the app again if
    * autoScalingEnabled is true (the default value).
    *
    * @default 1
@@ -220,36 +220,36 @@ export interface FlinkApplicationProps {
  *
  * @experimental
  */
-export class FlinkApplication extends FlinkApplicationBase {
+export class Application extends ApplicationBase {
   /**
    * Import an existing Flink application defined outside of CDK code by
    * applicationName.
    */
-  public static fromFlinkApplicationName(scope: Construct, id: string, flinkApplicationName: string): IFlinkApplication {
-    class Import extends FlinkApplicationBase {
-      // Imported flink applications have no associated role or grantPrincipal
+  public static fromApplicationName(scope: Construct, id: string, applicationName: string): IApplication {
+    class Import extends ApplicationBase {
+      // Imported applications have no associated role or grantPrincipal
       public readonly role = undefined;
       public readonly grantPrincipal = new iam.UnknownPrincipal({ resource: this });
 
-      public readonly applicationName = flinkApplicationName;
-      public readonly applicationArn = core.Stack.of(this).formatArn(flinkApplicationArnComponents(flinkApplicationName));
+      public readonly applicationName = applicationName;
+      public readonly applicationArn = core.Stack.of(this).formatArn(applicationArnComponents(applicationName));
     }
 
     return new Import(scope, id);
   }
 
   /**
-   * Import an existing Flink application defined outside of CDK code by
+   * Import an existing application defined outside of CDK code by
    * applicationArn.
    */
-  public static fromFlinkApplicationArn(scope: Construct, id: string, flinkApplicationArn: string): IFlinkApplication {
-    class Import extends FlinkApplicationBase {
-      // Imported flink applications have no associated role or grantPrincipal
+  public static fromApplicationArn(scope: Construct, id: string, applicationArn: string): IApplication {
+    class Import extends ApplicationBase {
+      // Imported applications have no associated role or grantPrincipal
       public readonly role = undefined;
       public readonly grantPrincipal = new iam.UnknownPrincipal({ resource: this });
 
-      public readonly applicationName = flinkApplicationArn.split('/')[1];
-      public readonly applicationArn = flinkApplicationArn;
+      public readonly applicationName = applicationArn.split('/')[1];
+      public readonly applicationArn = applicationArn;
     }
 
     return new Import(scope, id);
@@ -263,9 +263,9 @@ export class FlinkApplication extends FlinkApplicationBase {
 
   public readonly grantPrincipal: iam.IPrincipal;
 
-  constructor(scope: Construct, id: string, props: FlinkApplicationProps) {
+  constructor(scope: Construct, id: string, props: ApplicationProps) {
     super(scope, id, { physicalName: props.applicationName });
-    validateFlinkApplicationProps(props);
+    validateApplicationProps(props);
 
     this.role = props.role ?? new iam.Role(this, 'Role', {
       assumedBy: new iam.ServicePrincipal('kinesisanalytics.amazonaws.com'),
@@ -346,8 +346,8 @@ export class FlinkApplication extends FlinkApplicationBase {
 
     this.applicationName = this.getResourceNameAttribute(resource.ref);
     this.applicationArn = this.getResourceArnAttribute(
-      core.Stack.of(this).formatArn(flinkApplicationArnComponents(resource.ref)),
-      flinkApplicationArnComponents(this.physicalName),
+      core.Stack.of(this).formatArn(applicationArnComponents(resource.ref)),
+      applicationArnComponents(this.physicalName),
     );
 
     resource.applyRemovalPolicy(props.removalPolicy, {
@@ -356,7 +356,7 @@ export class FlinkApplication extends FlinkApplicationBase {
   }
 }
 
-function flinkApplicationArnComponents(resourceName: string): core.ArnComponents {
+function applicationArnComponents(resourceName: string): core.ArnComponents {
   return {
     service: 'kinesisanalytics',
     resource: 'application',

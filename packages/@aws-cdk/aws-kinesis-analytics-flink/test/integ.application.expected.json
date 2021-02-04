@@ -69,39 +69,38 @@
               ]
             },
             {
-              "Action": [
-                "logs:DescribeLogStreams",
-                "logs:DescribeLogGroups"
-              ],
+              "Action": "logs:DescribeLogGroups",
               "Effect": "Allow",
-              "Resource": [
-                {
-                  "Fn::GetAtt": [
-                    "AppLogGroupC72EEC8C",
-                    "Arn"
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":logs:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":log-group:*"
                   ]
-                },
-                {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "arn:",
-                      {
-                        "Ref": "AWS::Partition"
-                      },
-                      ":logs:",
-                      {
-                        "Ref": "AWS::Region"
-                      },
-                      ":",
-                      {
-                        "Ref": "AWS::AccountId"
-                      },
-                      ":log-group/*"
-                    ]
-                  ]
-                }
-              ]
+                ]
+              }
+            },
+            {
+              "Action": "logs:DescribeLogStreams",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "AppLogGroupC72EEC8C",
+                  "Arn"
+                ]
+              }
             },
             {
               "Action": "logs:PutLogEvents",
@@ -226,10 +225,10 @@
     "AppLogGroupC72EEC8C": {
       "Type": "AWS::Logs::LogGroup",
       "Properties": {
-        "RetentionInDays": 7
+        "RetentionInDays": 731
       },
-      "UpdateReplacePolicy": "Delete",
-      "DeletionPolicy": "Delete"
+      "UpdateReplacePolicy": "Retain",
+      "DeletionPolicy": "Retain"
     },
     "AppLogStream3CAF66A7": {
       "Type": "AWS::Logs::LogStream",
@@ -238,8 +237,8 @@
           "Ref": "AppLogGroupC72EEC8C"
         }
       },
-      "UpdateReplacePolicy": "Delete",
-      "DeletionPolicy": "Delete"
+      "UpdateReplacePolicy": "Retain",
+      "DeletionPolicy": "Retain"
     },
     "AppLoggingOption75BE995E": {
       "Type": "AWS::KinesisAnalyticsV2::ApplicationCloudWatchLoggingOption",
@@ -276,10 +275,7 @@
             ]
           }
         }
-      },
-      "DependsOn": [
-        "AppF1B96344"
-      ]
+      }
     }
   },
   "Parameters": {

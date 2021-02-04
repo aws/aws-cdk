@@ -1,7 +1,7 @@
 /**
  * Available log levels for Flink applications.
  */
-export enum FlinkLogLevel {
+export enum LogLevel {
   /** Debug level logging */
   DEBUG = 'DEBUG',
 
@@ -18,7 +18,7 @@ export enum FlinkLogLevel {
 /**
  * Granularity of metrics sent to CloudWatch.
  */
-export enum FlinkMetricsLevel {
+export enum MetricsLevel {
   /** Application sends the least metrics to CloudWatch */
   APPLICATION = 'APPLICATION',
 
@@ -47,15 +47,15 @@ export interface PropertyGroups {
  * // Creating a new runtime that isn't in CDK yet.
  * const runtime = new FlinkRuntime(FLINK-9_99);
  */
-export class FlinkRuntime {
+export class Runtime {
   /** Flink Version 1.6 */
-  public static readonly FLINK_1_6 = new FlinkRuntime('FLINK-1_6');
+  public static readonly FLINK_1_6 = new Runtime('FLINK-1_6');
 
   /** Flink Version 1.8 */
-  public static readonly FLINK_1_8 = new FlinkRuntime('FLINK-1_8');
+  public static readonly FLINK_1_8 = new Runtime('FLINK-1_8');
 
   /** Flink Version 1.11 */
-  public static readonly FLINK_1_11 = new FlinkRuntime('FLINK-1_11');
+  public static readonly FLINK_1_11 = new Runtime('FLINK-1_11');
 
   /** The Cfn string that represents a version of Flink */
   public readonly value: string;
