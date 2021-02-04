@@ -223,8 +223,8 @@ nodeunitShim({
 
     'can set customer managed CMK'(test: Test) {
       // GIVEN
-      const stack = new Stack();
-      const vpc = new Vpc(stack, 'VPC');
+      //const stack = new Stack();
+      //const vpc = new Vpc(stack, 'VPC');
       const key = new kms.Key(stack, 'CustomKey');
 
       // WHEN
@@ -238,7 +238,7 @@ nodeunitShim({
           volume: BlockDeviceVolume.ebs(15, {
             deleteOnTermination: true,
             encrypted: true,
-            kmsKeyId:  key.keyArn,
+            kmsKeyId: key.keyArn,
             volumeType: EbsDeviceVolumeType.IO1,
             iops: 5000,
           }),
@@ -257,7 +257,7 @@ nodeunitShim({
       });
 
       // THEN
-      expect(stack).to(haveResource('AWS::EC2::Instance', {
+      cdkExpect(stack).to(haveResource('AWS::EC2::Instance', {
         BlockDeviceMappings: [
           {
             DeviceName: 'ebs',
@@ -297,8 +297,8 @@ nodeunitShim({
 
     'when specifying only kmsKeyId'(test: Test) {
       // GIVEN
-      const stack = new Stack();
-      const vpc = new Vpc(stack, 'VPC');
+      //const stack = new Stack();
+      //const vpc = new Vpc(stack, 'VPC');
       const key = new kms.Key(stack, 'CustomKey');
 
       // WHEN
@@ -311,7 +311,7 @@ nodeunitShim({
           mappingEnabled: true,
           volume: BlockDeviceVolume.ebs(15, {
             deleteOnTermination: true,
-            kmsKeyId:  key.keyArn,
+            kmsKeyId: key.keyArn,
             volumeType: EbsDeviceVolumeType.IO1,
             iops: 5000,
           }),
@@ -330,7 +330,7 @@ nodeunitShim({
       });
 
       // THEN
-      expect(stack).to(haveResource('AWS::EC2::Instance', {
+      cdkExpect(stack).to(haveResource('AWS::EC2::Instance', {
         BlockDeviceMappings: [
           {
             DeviceName: 'ebs',
