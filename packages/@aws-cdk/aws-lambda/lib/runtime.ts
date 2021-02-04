@@ -81,7 +81,7 @@ export class Runtime {
   /**
    * The NodeJS 14.x runtime (nodejs14.x)
    */
-  public static readonly NODEJS_14_X = new Runtime('nodejs14.x', RuntimeFamily.NODEJS, { supportsInlineCode: true });
+  public static readonly NODEJS_14_X = new Runtime('nodejs14.x', RuntimeFamily.NODEJS, { supportsInlineCode: false });
 
   /**
    * The Python 2.7 runtime (python2.7)
