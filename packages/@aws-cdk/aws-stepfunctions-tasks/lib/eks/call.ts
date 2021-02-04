@@ -1,3 +1,4 @@
+import * as eks from '@aws-cdk/aws-eks';
 import * as iam from '@aws-cdk/aws-iam';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import { Construct } from 'constructs';
@@ -5,33 +6,24 @@ import { integrationResourceArn, validatePatternSupported } from '../private/tas
 
 /**
  * Properties for calling a EKS endpoint with EksCall
+ * @experimental
  */
 export interface EksCallProps extends sfn.TaskStateBaseProps {
 
   /**
-   * Name of the cluster
+   * The EKS cluster
    */
-  readonly clusterName: string;
-
-  /**
-   * Base 64 encoded certificate data required to communicate with your cluster
-   */
-  readonly certificateAuthority: string;
-
-  /**
-   * API endpoint to communicate with your cluster
-   */
-  readonly endpoint: string;
+  readonly cluster: eks.ICluster;
 
   /**
    * HTTP method ("GET", "POST", "PUT", ...) part of HTTP request
    */
-  readonly httpMethod: MethodType;
+  readonly httpMethod: HttpMethods;
 
   /**
-   * Path of cluster
+   * HTTP path of the Kubernetes REST API operation
    */
-  readonly path: string;
+  readonly httpPath: string;
 
   /**
    * Query Parameters part of HTTP request
@@ -50,6 +42,7 @@ export interface EksCallProps extends sfn.TaskStateBaseProps {
  * Call a EKS endpoint as a Task
  *
  * @see https://docs.aws.amazon.com/step-functions/latest/dg/connect-eks.html
+ * @experimental
  */
 export class EksCall extends sfn.TaskStateBase {
 
@@ -77,11 +70,11 @@ export class EksCall extends sfn.TaskStateBase {
     return {
       Resource: integrationResourceArn('eks', 'call', this.integrationPattern),
       Parameters: sfn.FieldUtils.renderObject({
-        ClusterName: this.props.clusterName,
-        CertificateAuthority: this.props.certificateAuthority,
-        Endpoint: this.props.endpoint,
+        ClusterName: this.props.cluster.clusterName,
+        CertificateAuthority: this.props.cluster.clusterCertificateAuthorityData,
+        Endpoint: this.props.cluster.clusterEndpoint,
         Method: this.props.httpMethod,
-        Path: this.props.path,
+        Path: this.props.httpPath,
         QueryParameters: this.props.queryParameters,
         RequestBody: this.props.requestBody,
       }),
@@ -92,7 +85,7 @@ export class EksCall extends sfn.TaskStateBase {
 /**
  * Method type of a EKS call
  */
-export enum MethodType {
+export enum HttpMethods {
   /**
    * Retrieve data from a server at the specified resource
    */

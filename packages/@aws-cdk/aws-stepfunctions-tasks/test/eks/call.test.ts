@@ -1,54 +1,103 @@
+import * as eks from '@aws-cdk/aws-eks';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
-import * as cdk from '@aws-cdk/core';
-import { EksCall, MethodType } from '../../lib/eks/call';
+import { Stack } from '@aws-cdk/core';
+import { EksCall, HttpMethods } from '../../lib/eks/call';
 
-describe('Call an EKS endpoint', () => {
+let stack: Stack;
+let cluster: eks.Cluster;
 
-  test('default settings', () => {
-    // GIVEN
-    const stack = new cdk.Stack();
+beforeEach(() => {
+  //GIVEN
+  stack = new Stack();
+  cluster = new eks.Cluster(stack, 'Cluster', {
+    version: eks.KubernetesVersion.V1_18,
+    clusterName: 'eksCluster',
+  });
+});
 
-    // WHEN
-    const task = new EksCall(stack, 'Call', {
-      clusterName: 'clusterName',
-      certificateAuthority: 'certificateAuthority',
-      endpoint: 'endpoint',
-      httpMethod: MethodType.GET,
-      path: 'path',
+test('Call an EKS endpoint', () => {
+  // WHEN
+  const task = new EksCall(stack, 'Call', {
+    cluster: cluster,
+    httpMethod: HttpMethods.GET,
+    httpPath: 'path',
+    requestBody: sfn.TaskInput.fromObject({
+      RequestBody: 'requestBody',
+    }),
+  });
+
+  // THEN
+  expect(stack.resolve(task.toStateJson())).toEqual({
+    Type: 'Task',
+    Resource: {
+      'Fn::Join': [
+        '',
+        [
+          'arn:',
+          {
+            Ref: 'AWS::Partition',
+          },
+          ':states:::eks:call',
+        ],
+      ],
+    },
+    End: true,
+    Parameters: {
+      ClusterName: {
+        Ref: 'Cluster9EE0221C',
+      },
+      CertificateAuthority: {
+        'Fn::GetAtt': [
+          'Cluster9EE0221C',
+          'CertificateAuthorityData',
+        ],
+      },
+      Endpoint: {
+        'Fn::GetAtt': [
+          'Cluster9EE0221C',
+          'Endpoint',
+        ],
+      },
+      Method: 'GET',
+      Path: 'path',
+      RequestBody: {
+        type: 1,
+        value: {
+          RequestBody: 'requestBody',
+        },
+      },
+    },
+  });
+});
+
+test('Task throws if RUN_JOB is supplied as service integration pattern', () => {
+  expect(() => {
+    new EksCall(stack, 'Call', {
+      cluster: cluster,
+      httpMethod: HttpMethods.GET,
+      httpPath: 'path',
       requestBody: sfn.TaskInput.fromObject({
         RequestBody: 'requestBody',
       }),
+      integrationPattern: sfn.IntegrationPattern.RUN_JOB,
     });
+  }).toThrow(
+    /Unsupported service integration pattern. Supported Patterns: REQUEST_RESPONSE. Received: RUN_JOB/,
+  );
+});
 
-    // THEN
-    expect(stack.resolve(task.toStateJson())).toEqual({
-      Type: 'Task',
-      Resource: {
-        'Fn::Join': [
-          '',
-          [
-            'arn:',
-            {
-              Ref: 'AWS::Partition',
-            },
-            ':states:::eks:call',
-          ],
-        ],
-      },
-      End: true,
-      Parameters: {
-        ClusterName: 'clusterName',
-        CertificateAuthority: 'certificateAuthority',
-        Endpoint: 'endpoint',
-        Method: 'GET',
-        Path: 'path',
-        RequestBody: {
-          type: 1,
-          value: {
-            RequestBody: 'requestBody',
-          },
-        },
-      },
+test('Task throws if WAIT_FOR_TASK_TOKEN is supplied as service integration pattern', () => {
+  expect(() => {
+    new EksCall(stack, 'Call', {
+      cluster: cluster,
+      httpMethod: HttpMethods.GET,
+      httpPath: 'path',
+      requestBody: sfn.TaskInput.fromObject({
+        RequestBody: 'requestBody',
+      }),
+      integrationPattern: sfn.IntegrationPattern.WAIT_FOR_TASK_TOKEN,
     });
-  });
+  }).toThrow(
+    /Unsupported service integration pattern. Supported Patterns: REQUEST_RESPONSE. Received: WAIT_FOR_TASK_TOKEN/,
+  );
 });

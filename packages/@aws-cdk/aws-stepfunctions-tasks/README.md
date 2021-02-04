@@ -678,11 +678,20 @@ The service integration APIs correspond to Amazon EKS APIs.
 Read and write Kubernetes resource objects via a Kubernetes API endpoint.
 Corresponds to the [`call`](https://docs.aws.amazon.com/step-functions/latest/dg/connect-eks.html) API in Step Functions Connector.
 
+The following code snippet includes a Task state that uses eks:call to list the pods.
+
 ```ts
+import * as eks from '@aws-cdk/aws-eks';
+import * as sfn from '@aws-cdk/aws-stepfunctions';
+import * as tasks from '@aws-cdk/aws-stepfunctions-tasks';
+
+const myEksCluster = new eks.Cluster(this, 'my sample cluster', {
+   version: eks.KubernetesVersion.V1_18,
+   clusterName: 'myEksCluster',
+ });
+
 new tasks.EksCall(stack, 'Call a EKS Endpoint', {
-  clusterName: 'clusterName',
-  certificateAuthority: 'certificateAuthority',
-  endpoint: 'https://apiid.gr7.us-east-1.eks.amazonaws.com',
+  cluster: myEksCluster,
   httpMethod: MethodType.GET,
   path: '/api/v1/namespaces/default/pods',
 });
