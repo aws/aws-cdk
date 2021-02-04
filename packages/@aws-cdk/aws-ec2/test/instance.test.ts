@@ -386,7 +386,7 @@ nodeunitShim({
             }),
           }],
         });
-      }, /`encrypted` must be true when providing `kmsKeyId`/);
+      }, /`encrypted` must be not false when providing `kmsKeyId`/);
 
       test.done();
     },

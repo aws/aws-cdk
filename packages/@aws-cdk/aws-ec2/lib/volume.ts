@@ -159,21 +159,12 @@ export class BlockDeviceVolume {
   public static ebs(volumeSize: number, options: EbsDeviceOptions = {}): BlockDeviceVolume {
     // If KmsKeyId is specified, the encrypted state must be true.
     if (options.kmsKeyId && !options.encrypted) {
-      throw new Error('`encrypted` must be true when providing `kmsKeyId`.');
-    }
-    if (options.kmsKeyId) {
-      // Per: https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/EBSEncryption.html#ebs-encryption-requirements
-      const principal =
-        new ViaServicePrincipal(`ec2.${Stack.of(this).region}.amazonaws.com`, new AccountRootPrincipal()).withConditions({
-          StringEquals: {
-            'kms:CallerAccount': Stack.of(this).account,
-          },
-        });
-      options.kmsKeyId.grant(principal,
-        // Describe & Generate are required to be able to create the CMK-encrypted Volume.
-        'kms:DescribeKey',
-        'kms:GenerateDataKeyWithoutPlainText',
-      );
+      if (options.encrypted == false) {
+        throw new Error('`encrypted` must be not false when providing `kmsKeyId`.');
+      } else {
+        // Encryption is implied if KMS key is specified.
+        (options.encrypted as unknown as boolean) = true;
+      }
     }
     return new this({ ...options, volumeSize });
   }
