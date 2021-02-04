@@ -1,3 +1,87 @@
+# CloudFormation Resource Specification v26.0.0
+
+## New Resource Types
+
+* AWS::LookoutVision::Project
+* AWS::SageMaker::FeatureGroup
+
+## Attribute Changes
+
+* AWS::MediaConnect::FlowVpcInterface FlowArn (__deleted__)
+* AWS::MediaConnect::FlowVpcInterface Name (__deleted__)
+* AWS::S3::AccessPoint NetworkOrigin (__added__)
+* AWS::S3::AccessPoint PolicyStatus (__added__)
+
+## Property Changes
+
+* AWS::ACMPCA::Certificate ApiPassthrough (__added__)
+* AWS::ACMPCA::Certificate ValidityNotBefore (__added__)
+* AWS::AmazonMQ::Configuration AuthenticationStrategy (__added__)
+* AWS::ApiGatewayV2::Stage AccessPolicyId (__added__)
+* AWS::ECS::Cluster Configuration (__added__)
+* AWS::Kinesis::Stream Tags.DuplicatesAllowed (__changed__)
+  * Old: false
+  * New: true
+* AWS::MediaConnect::FlowVpcInterface FlowArn (__added__)
+* AWS::MediaConnect::FlowVpcInterface Name (__added__)
+* AWS::S3::AccessPoint NetworkOrigin (__deleted__)
+* AWS::S3::AccessPoint PolicyStatus (__deleted__)
+* AWS::SSM::MaintenanceWindowTask MaxConcurrency.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::SSM::MaintenanceWindowTask MaxErrors.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::SSM::MaintenanceWindowTask Targets.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::SSO::InstanceAccessControlAttributeConfiguration InstanceAccessControlAttributeConfiguration (__deleted__)
+* AWS::SageMaker::Device Tags.ItemType (__changed__)
+  * Old: Json
+  * New: Tag
+* AWS::SageMaker::Device Tags.Type (__changed__)
+  * Old: Tag
+  * New: List
+* AWS::SageMaker::DeviceFleet Tags.ItemType (__changed__)
+  * Old: Json
+  * New: Tag
+* AWS::SageMaker::DeviceFleet Tags.Type (__changed__)
+  * Old: Tag
+  * New: List
+* AWS::SageMaker::Model InferenceExecutionConfig (__added__)
+
+## Property Type Changes
+
+* AWS::ACMPCA::Certificate.ApiPassthrough (__added__)
+* AWS::ACMPCA::Certificate.CertificatePolicyList (__added__)
+* AWS::ACMPCA::Certificate.EdiPartyName (__added__)
+* AWS::ACMPCA::Certificate.ExtendedKeyUsage (__added__)
+* AWS::ACMPCA::Certificate.ExtendedKeyUsageList (__added__)
+* AWS::ACMPCA::Certificate.Extensions (__added__)
+* AWS::ACMPCA::Certificate.GeneralName (__added__)
+* AWS::ACMPCA::Certificate.GeneralNameList (__added__)
+* AWS::ACMPCA::Certificate.KeyUsage (__added__)
+* AWS::ACMPCA::Certificate.OtherName (__added__)
+* AWS::ACMPCA::Certificate.PolicyInformation (__added__)
+* AWS::ACMPCA::Certificate.PolicyQualifierInfo (__added__)
+* AWS::ACMPCA::Certificate.PolicyQualifierInfoList (__added__)
+* AWS::ACMPCA::Certificate.Qualifier (__added__)
+* AWS::ACMPCA::Certificate.Subject (__added__)
+* AWS::AppFlow::Flow.IdFieldNamesList (__added__)
+* AWS::ECS::Cluster.ClusterConfiguration (__added__)
+* AWS::ECS::Cluster.ExecuteCommandConfiguration (__added__)
+* AWS::ECS::Cluster.ExecuteCommandLogConfiguration (__added__)
+* AWS::SageMaker::Model.InferenceExecutionConfig (__added__)
+* AWS::AppFlow::Flow.SalesforceDestinationProperties IdFieldNames (__added__)
+* AWS::AppFlow::Flow.SalesforceDestinationProperties WriteOperationType (__added__)
+* AWS::DLM::LifecyclePolicy.CreateRule Location (__added__)
+* AWS::DLM::LifecyclePolicy.CrossRegionCopyRule Target (__added__)
+* AWS::DLM::LifecyclePolicy.CrossRegionCopyRule TargetRegion.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::DLM::LifecyclePolicy.PolicyDetails ResourceLocations (__added__)
+
+
 # CloudFormation Resource Specification v24.0.0
 
 ## New Resource Types
