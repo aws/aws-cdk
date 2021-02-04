@@ -68,9 +68,8 @@ export class Archive extends Resource {
       description: props.description,
       eventPattern: props.eventPattern,
       retentionDays: props.retention?.toDays() || 0,
+      archiveName: this.physicalName,
     });
-
-    archive.addPropertyOverride('archiveName', this.physicalName);
 
     this.archiveArn = archive.attrArn;
     this.archiveName = archive.attrArchiveName;

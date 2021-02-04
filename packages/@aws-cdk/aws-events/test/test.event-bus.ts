@@ -293,7 +293,7 @@ export = {
         ],
       },
       RetentionDays: 0,
-      archiveName: 'MyArchive',
+      ArchiveName: 'MyArchive',
     }));
 
     test.done();
@@ -369,7 +369,7 @@ export = {
         ],
       },
       RetentionDays: 0,
-      archiveName: 'MyArchive',
+      ArchiveName: 'MyArchive',
     }));
 
     test.done();
