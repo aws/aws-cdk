@@ -317,11 +317,11 @@ export class Application extends ApplicationBase {
       removalPolicy: props.logRemovalPolicy,
     });
 
-    // Permit logging
+    /* Permit logging */
+
     this.role.addToPrincipalPolicy(new iam.PolicyStatement({
-      actions: ['logs:DescribeLogStreams', 'logs:DescribeLogGroups'],
+      actions: ['logs:DescribeLogGroups'],
       resources: [
-        logGroup.logGroupArn,
         core.Stack.of(this).formatArn({
           service: 'logs',
           resource: 'log-group',
@@ -329,6 +329,11 @@ export class Application extends ApplicationBase {
           resourceName: '*',
         }),
       ],
+    }));
+
+    this.role.addToPrincipalPolicy(new iam.PolicyStatement({
+      actions: ['logs:DescribeLogStreams'],
+      resources: [logGroup.logGroupArn],
     }));
 
     const logStreamArn = `arn:${core.Aws.PARTITION}:logs:${core.Aws.REGION}:${core.Aws.ACCOUNT_ID}:log-group:${logGroup.logGroupName}:log-stream:${logStream.logStreamName}`;

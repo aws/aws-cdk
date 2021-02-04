@@ -76,13 +76,10 @@ describe('Application', () => {
         Statement: arrayWith(
           { Action: 'cloudwatch:PutMetricData', Effect: 'Allow', Resource: '*' },
           {
-            Action: ['logs:DescribeLogStreams', 'logs:DescribeLogGroups'],
+            Action: 'logs:DescribeLogGroups',
             Effect: 'Allow',
-            Resource: [{
-              // looks like: arn:aws:logs:us-east-1:123456789012:log-group:my-log-group:*,
-              'Fn::GetAtt': ['FlinkApplicationLogGroup7739479C', 'Arn'],
-            }, {
-              // looks like: arn:aws:logs:us-east-1:123456789012:log-group:*,
+            Resource: {
+              // looks like arn:aws:logs:us-east-1:123456789012:log-group:*,
               'Fn::Join': ['', [
                 'arn:',
                 { Ref: 'AWS::Partition' },
@@ -92,7 +89,33 @@ describe('Application', () => {
                 { Ref: 'AWS::AccountId' },
                 ':log-group:*',
               ]],
-            }],
+            },
+          },
+          {
+            Action: 'logs:DescribeLogStreams',
+            Effect: 'Allow',
+            Resource: {
+              // looks like: arn:aws:logs:us-east-1:123456789012:log-group:my-log-group:*,
+              'Fn::GetAtt': ['FlinkApplicationLogGroup7739479C', 'Arn'],
+            },
+          },
+          {
+            Action: 'logs:PutLogEvents',
+            Effect: 'Allow',
+            Resource: {
+              'Fn::Join': ['', [
+                'arn:',
+                { Ref: 'AWS::Partition' },
+                ':logs:',
+                { Ref: 'AWS::Region' },
+                ':',
+                { Ref: 'AWS::AccountId' },
+                ':log-group:',
+                { Ref: 'FlinkApplicationLogGroup7739479C' },
+                ':log-stream:',
+                { Ref: 'FlinkApplicationLogStreamB633AF32' },
+              ]],
+            },
           },
         ),
       },
