@@ -1,8 +1,12 @@
 import * as path from 'path';
 import * as logs from '@aws-cdk/aws-logs';
-import { App, Construct as CoreConstruct, CustomResource, CustomResourceProvider, CustomResourceProviderRuntime, RemovalPolicy, Stack, StackProps } from '@aws-cdk/core';
+import { App, CustomResource, CustomResourceProvider, CustomResourceProviderRuntime, RemovalPolicy, Stack, StackProps } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import * as ec2 from '../lib';
+
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 class TestStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
