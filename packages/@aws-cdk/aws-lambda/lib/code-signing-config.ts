@@ -23,7 +23,7 @@ export interface ICodeSigningConfig extends IResource {
 }
 
 export interface CodeSigningConfigProps {
-  signingProfile: SigningProfile,
+  signingProfiles: ISigningProfile[],
   untrustedArtifactOnDeployment?: UntrustedArtifactOnDeployment,
   description?: string
 }
