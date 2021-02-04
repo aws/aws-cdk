@@ -223,8 +223,6 @@ nodeunitShim({
 
     'can set customer managed CMK'(test: Test) {
       // GIVEN
-      //const stack = new Stack();
-      //const vpc = new Vpc(stack, 'VPC');
       const key = new kms.Key(stack, 'CustomKey');
 
       // WHEN
@@ -238,7 +236,7 @@ nodeunitShim({
           volume: BlockDeviceVolume.ebs(15, {
             deleteOnTermination: true,
             encrypted: true,
-            kmsKeyId: key.keyArn,
+            kmsKeyId: key,
             volumeType: EbsDeviceVolumeType.IO1,
             iops: 5000,
           }),
@@ -297,8 +295,6 @@ nodeunitShim({
 
     'when specifying only kmsKeyId'(test: Test) {
       // GIVEN
-      //const stack = new Stack();
-      //const vpc = new Vpc(stack, 'VPC');
       const key = new kms.Key(stack, 'CustomKey');
 
       // WHEN
@@ -311,7 +307,7 @@ nodeunitShim({
           mappingEnabled: true,
           volume: BlockDeviceVolume.ebs(15, {
             deleteOnTermination: true,
-            kmsKeyId: key.keyArn,
+            kmsKeyId: key,
             volumeType: EbsDeviceVolumeType.IO1,
             iops: 5000,
           }),
@@ -364,6 +360,33 @@ nodeunitShim({
           },
         ],
       }));
+
+      test.done();
+    },
+
+    'throws when specifying kmsKeyId and set encrypted to false'(test: Test) {
+      // GIVEN
+      const key = new kms.Key(stack, 'CustomKey');
+
+      // THEN
+      test.throws(() => {
+        new Instance(stack, 'Instance', {
+          vpc,
+          machineImage: new AmazonLinuxImage(),
+          instanceType: InstanceType.of(InstanceClass.T3, InstanceSize.LARGE),
+          blockDevices: [{
+            deviceName: 'ebs',
+            mappingEnabled: true,
+            volume: BlockDeviceVolume.ebs(15, {
+              deleteOnTermination: true,
+              encrypted: false,
+              kmsKeyId: key,
+              volumeType: EbsDeviceVolumeType.IO1,
+              iops: 5000,
+            }),
+          }],
+        });
+      }, /`encrypted` must be true when providing `kmsKeyId`/);
 
       test.done();
     },

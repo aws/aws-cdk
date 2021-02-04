@@ -92,13 +92,32 @@ export interface EbsDeviceOptions extends EbsDeviceOptionsBase {
   readonly encrypted?: boolean;
 
   /**
-   * The identifier (key ID, key alias, ID ARN, or alias ARN) of the AWS Key Management Service (AWS KMS)
-   * customer master key (CMK) to use for Amazon EBS encryption.
+   * The customer-managed encryption key that is used to encrypt the Volume.
    * If this parameter is not specified and `encrypted` is set to `true`, your AWS managed CMK for EBS is used.
+   *
+   * Note: If using an {@link aws-kms.IKey} created from a {@link aws-kms.Key.fromKeyArn()} here,
+   * then the KMS key **must** have the following in its Key policy; otherwise, the Volume
+   * will fail to create.
+   *
+   *     {
+   *       "Effect": "Allow",
+   *       "Principal": { "AWS": "<arn for your account-user> ex: arn:aws:iam::00000000000:root" },
+   *       "Resource": "*",
+   *       "Action": [
+   *         "kms:DescribeKey",
+   *         "kms:GenerateDataKeyWithoutPlainText",
+   *       ],
+   *       "Condition": {
+   *         "StringEquals": {
+   *           "kms:ViaService": "ec2.<Region>.amazonaws.com", (eg: ec2.us-east-1.amazonaws.com)
+   *           "kms:CallerAccount": "0000000000" (your account ID)
+   *         }
+   *       }
+   *     }
    *
    * @default None
    */
-  readonly kmsKeyId?: string;
+  readonly kmsKeyId?: IKey;
 }
 
 /**
@@ -140,7 +159,21 @@ export class BlockDeviceVolume {
   public static ebs(volumeSize: number, options: EbsDeviceOptions = {}): BlockDeviceVolume {
     // If KmsKeyId is specified, the encrypted state must be true.
     if (options.kmsKeyId && !options.encrypted) {
-      (options.encrypted as boolean) = true; // Encryption is implied if KMS key is specified.
+      throw new Error('`encrypted` must be true when providing `kmsKeyId`.');
+    }
+    if (options.kmsKeyId) {
+      // Per: https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/EBSEncryption.html#ebs-encryption-requirements
+      const principal =
+        new ViaServicePrincipal(`ec2.${Stack.of(this).region}.amazonaws.com`, new AccountRootPrincipal()).withConditions({
+          StringEquals: {
+            'kms:CallerAccount': Stack.of(this).account,
+          },
+        });
+      options.kmsKeyId.grant(principal,
+        // Describe & Generate are required to be able to create the CMK-encrypted Volume.
+        'kms:DescribeKey',
+        'kms:GenerateDataKeyWithoutPlainText',
+      );
     }
     return new this({ ...options, volumeSize });
   }

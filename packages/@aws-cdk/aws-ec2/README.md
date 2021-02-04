@@ -790,7 +790,7 @@ const host = new ec2.BastionHostLinux(stack, 'BastionHost', {
     deviceName: 'xvdh',
     volume: BlockDeviceVolume.ebs(10, {
       encrypted: true,
-      kmsKeyId: key.keyArn, // optional - will use default EBS CMK if not specified
+      kmsKeyId: key, // optional - will use default EBS CMK if not specified
     }),
   }],
 });
