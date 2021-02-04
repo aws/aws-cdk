@@ -1409,7 +1409,7 @@
           ],
           "Version": "2012-10-17"
         },
-        "RoleName": "testRoleEksCall"
+        "RoleName": "stateMachineExecutionRole"
       }
     },
     "StateMachine2E01A3A5": {

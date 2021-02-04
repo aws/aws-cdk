@@ -693,7 +693,7 @@ const myEksCluster = new eks.Cluster(this, 'my sample cluster', {
 new tasks.EksCall(stack, 'Call a EKS Endpoint', {
   cluster: myEksCluster,
   httpMethod: MethodType.GET,
-  path: '/api/v1/namespaces/default/pods',
+  httpPath: '/api/v1/namespaces/default/pods',
 });
 ```
 

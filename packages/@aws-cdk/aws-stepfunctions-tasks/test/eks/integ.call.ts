@@ -25,7 +25,7 @@ const cluster = new eks.Cluster(stack, 'EksCluster', {
 });
 
 const executionRole = new iam.Role(stack, 'Role', {
-  roleName: 'executionRole',
+  roleName: 'stateMachineExecutionRole',
   assumedBy: new iam.ServicePrincipal('states.amazonaws.com'),
 });
 
