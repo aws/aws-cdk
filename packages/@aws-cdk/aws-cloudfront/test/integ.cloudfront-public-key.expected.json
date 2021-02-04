@@ -10,19 +10,6 @@
         }
       }
     },
-    "AwesomeKeyGroupInline15125FEB": {
-      "Type": "AWS::CloudFront::KeyGroup",
-      "Properties": {
-        "KeyGroupConfig": {
-          "Items": [
-            {
-              "Ref": "AwesomePublicKeyInline1A6EDCE6"
-            }
-          ],
-          "Name": "awscdkcloudfrontcustomAwesomeKeyGroupInline80E48054"
-        }
-      }
-    },
     "AwesomePublicKeyFromFile047B5107": {
       "Type": "AWS::CloudFront::PublicKey",
       "Properties": {
@@ -30,19 +17,6 @@
           "CallerReference": "c827b081d326a5957b0a49ee91095b8f41987fe2d6",
           "EncodedKey": "-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAudf8/iNkQgdvjEdm6xYS\nJAyxd/kGTbJfQNg9YhInb7TSm0dGu0yx8yZ3fnpmxuRPqJIlaVr+fT4YRl71gEYa\ndlhHmnVegyPNjP9dNqZ7zwNqMEPOPnS/NOHbJj1KYKpn1f8pPNycQ5MQCntKGnSj\n6fc+nbcC0joDvGz80xuy1W4hLV9oC9c3GT26xfZb2jy9MVtA3cppNuTwqrFi3t6e\n0iGpraxZlT5wewjZLpQkngqYr6s3aucPAZVsGTEYPo4nD5mswmtZOm+tgcOrivtD\n/3sD/qZLQ6c5siqyS8aTraD6y+VXugujfarTU65IeZ6QAUbLMsWuZOIi5Jn8zAwx\nNQIDAQAB\n-----END PUBLIC KEY-----",
           "Name": "awscdkcloudfrontcustomAwesomePublicKeyFromFile95419BD0"
-        }
-      }
-    },
-    "AwesomeKeyGroupFromFileCF6B49D4": {
-      "Type": "AWS::CloudFront::KeyGroup",
-      "Properties": {
-        "KeyGroupConfig": {
-          "Items": [
-            {
-              "Ref": "AwesomePublicKeyFromFile047B5107"
-            }
-          ],
-          "Name": "awscdkcloudfrontcustomAwesomeKeyGroupFromFileC5F179C4"
         }
       }
     }

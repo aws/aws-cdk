@@ -16,20 +16,12 @@ dlhHmnVegyPNjP9dNqZ7zwNqMEPOPnS/NOHbJj1KYKpn1f8pPNycQ5MQCntKGnSj
 NQIDAQAB
 -----END PUBLIC KEY-----`;
 
-new cloudfront.KeyGroup(stack, 'AwesomeKeyGroupInline', {
-  items: [
-    new cloudfront.PublicKey(stack, 'AwesomePublicKeyInline', {
-      encodedKey: cloudfront.Key.fromInline(publicKey),
-    }),
-  ],
+new cloudfront.PublicKey(stack, 'AwesomePublicKeyInline', {
+  encodedKey: cloudfront.Key.fromInline(publicKey),
 });
 
-new cloudfront.KeyGroup(stack, 'AwesomeKeyGroupFromFile', {
-  items: [
-    new cloudfront.PublicKey(stack, 'AwesomePublicKeyFromFile', {
-      encodedKey: cloudfront.Key.fromFile(path.join(__dirname, './pem/pubkey-good.test.pem')),
-    }),
-  ],
+new cloudfront.PublicKey(stack, 'AwesomePublicKeyFromFile', {
+  encodedKey: cloudfront.Key.fromFile(path.join(__dirname, './pem/pubkey-good.test.pem')),
 });
 
 app.synth();

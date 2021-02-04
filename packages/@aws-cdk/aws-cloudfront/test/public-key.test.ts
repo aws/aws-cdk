@@ -1,7 +1,8 @@
+import * as path from 'path';
 import '@aws-cdk/assert/jest';
 import { expect as expectStack } from '@aws-cdk/assert';
 import { App, Stack } from '@aws-cdk/core';
-import { PublicKey } from '../lib';
+import { Key, PublicKey } from '../lib';
 
 const publicKey = `-----BEGIN PUBLIC KEY-----
 MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAudf8/iNkQgdvjEdm6xYS
@@ -30,9 +31,21 @@ describe('PublicKey', () => {
     expect(pubKey.publicKeyId).toEqual(publicKeyId);
   });
 
+  test('inline key', () => {
+    new PublicKey(stack, 'MyPublicKey', {
+      encodedKey: Key.fromInline(publicKey),
+    });
+  });
+
+  test('key from filesystem', () => {
+    new PublicKey(stack, 'MyPublicKey', {
+      encodedKey: Key.fromFile(path.join(__dirname, 'pem/pubkey-good.test.pem')),
+    });
+  });
+
   test('minimal example', () => {
     new PublicKey(stack, 'MyPublicKey', {
-      encodedKey: publicKey,
+      encodedKey: Key.fromInline(publicKey),
     });
 
     expectStack(stack).toMatch({
@@ -54,7 +67,7 @@ describe('PublicKey', () => {
   test('maximum example', () => {
     new PublicKey(stack, 'MyPublicKey', {
       publicKeyName: 'pub-key',
-      encodedKey: publicKey,
+      encodedKey: Key.fromInline(publicKey),
       comment: 'Key expiring on 1/1/1984',
     });
 
@@ -78,14 +91,14 @@ describe('PublicKey', () => {
   test('bad key example', () => {
     expect(() => new PublicKey(stack, 'MyPublicKey', {
       publicKeyName: 'pub-key',
-      encodedKey: 'bad-key',
+      encodedKey: Key.fromInline('bad-key'),
       comment: 'Key expiring on 1/1/1984',
     })).toThrow(/Public key must be in PEM format [(]with the BEGIN\/END PUBLIC KEY lines[)]; got (.*?)/);
   });
 
   test('good public key example', () => {
     new PublicKey(stack, 'MyPublicKey', {
-      encodedKeyPath: '../test/pem/pubkey-good.test.pem',
+      encodedKey: Key.fromFile(path.join(__dirname, 'pem/pubkey-good.test.pem')),
     });
 
     expectStack(stack).toMatch({
@@ -106,14 +119,19 @@ describe('PublicKey', () => {
 
   test('bad public key example', () => {
     expect(() => new PublicKey(stack, 'MyPublicKey', {
-      encodedKeyPath: '../test/pem/pubkey-bad.test.pem',
+      encodedKey: Key.fromFile(path.join(__dirname, 'pem/pubkey-bad.test.pem')),
     })).toThrow(/Public key must be in PEM format [(]with the BEGIN\/END PUBLIC KEY lines[)]; got (.*?)/);
   });
 
-  test('multiple encoded key params example', () => {
+  test('empty key example', () => {
     expect(() => new PublicKey(stack, 'MyPublicKey', {
-      encodedKey: publicKey,
-      encodedKeyPath: '../test/pem/pubkey-bad.test.pem',
-    })).toThrow(/Params encodedKey and encodedKeyPath cannot be passed at the same time./);
+      encodedKey: Key.fromInline(''),
+    })).toThrow(/Encoded key inline value cannot be empty/);
+  });
+
+  test('large key example', () => {
+    expect(() => new PublicKey(stack, 'MyPublicKey', {
+      encodedKey: Key.fromFile(path.join(__dirname, 'pem/pubkey-large.test.pem')),
+    })).toThrow(/Encoded key inline value is too large, must be <= 4096 but is (.*?)/);
   });
 });

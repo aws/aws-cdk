@@ -1,7 +1,7 @@
 import '@aws-cdk/assert/jest';
 import { expect as expectStack } from '@aws-cdk/assert';
 import { App, Stack } from '@aws-cdk/core';
-import { KeyGroup, PublicKey } from '../lib';
+import { Key, KeyGroup, PublicKey } from '../lib';
 
 const publicKey1 = `-----BEGIN PUBLIC KEY-----
 FIRST_KEYgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAudf8/iNkQgdvjEdm6xYS
@@ -44,7 +44,7 @@ describe('KeyGroup', () => {
     new KeyGroup(stack, 'MyKeyGroup', {
       items: [
         new PublicKey(stack, 'MyPublicKey', {
-          encodedKey: publicKey1,
+          encodedKey: Key.fromInline(publicKey1),
         }),
       ],
     });
@@ -85,7 +85,7 @@ describe('KeyGroup', () => {
       items: [
         new PublicKey(stack, 'MyPublicKey', {
           publicKeyName: 'pub-key',
-          encodedKey: publicKey1,
+          encodedKey: Key.fromInline(publicKey1),
           comment: 'Key expiring on 1/1/1984',
         }),
       ],
@@ -129,12 +129,12 @@ describe('KeyGroup', () => {
       items: [
         new PublicKey(stack, 'BingoKey', {
           publicKeyName: 'Bingo-Key',
-          encodedKey: publicKey1,
+          encodedKey: Key.fromInline(publicKey1),
           comment: 'Key expiring on 1/1/1984',
         }),
         new PublicKey(stack, 'RollyKey', {
           publicKeyName: 'Rolly-Key',
-          encodedKey: publicKey2,
+          encodedKey: Key.fromInline(publicKey2),
           comment: 'Key expiring on 1/1/1984',
         }),
       ],

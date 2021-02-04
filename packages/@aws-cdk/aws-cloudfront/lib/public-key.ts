@@ -1,5 +1,4 @@
 import * as fs from 'fs';
-import * as path from 'path';
 import { IResource, Names, Resource, Token } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnPublicKey } from './cloudfront.generated';
@@ -33,18 +32,12 @@ export interface PublicKeyProps {
 
   /**
    * The public key that you can use with signed URLs and signed cookies, or with field-level encryption.
-   * The `encodedKey` parameter must include `-----BEGIN PUBLIC KEY-----` and `-----END PUBLIC KEY-----` lines.
-   * @default - No key
+   * The `encodedKey` parameter can be either an inline key or from filesystem. If it's inline it must include
+   * `-----BEGIN PUBLIC KEY-----` and `-----END PUBLIC KEY-----` lines.
    * @see https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/PrivateContent.html
    * @see https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/field-level-encryption.html
    */
-  readonly encodedKey?: string;
-
-  /**
-   * Path to a public key.
-   * @default - No path
-   */
-  readonly encodedKeyPath?: string;
+  readonly encodedKey: Key;
 }
 
 /**
@@ -66,30 +59,13 @@ export class PublicKey extends Resource implements IPublicKey {
   constructor(scope: Construct, id: string, props: PublicKeyProps) {
     super(scope, id);
 
-    if (props.encodedKey && props.encodedKeyPath) {
-      throw new Error('Params encodedKey and encodedKeyPath cannot be passed at the same time.');
-    }
-
-    if (!props.encodedKey && !props.encodedKeyPath) {
-      throw new Error('At least one of params need to be passed in encodedKey and encodedKeyPath.');
-    }
-
-    const encodedKey = props.encodedKeyPath ? fs.readFileSync(path.join(__dirname, props.encodedKeyPath)).toString()
-      : props.encodedKey;
-
-    if (!encodedKey) {
-      throw new Error('Something went wrong with loading the public key.');
-    }
-
-    if (!Token.isUnresolved(encodedKey) && !/^-----BEGIN PUBLIC KEY-----/.test(encodedKey)) {
-      throw new Error(`Public key must be in PEM format (with the BEGIN/END PUBLIC KEY lines); got ${encodedKey}`);
-    }
+    const encodedKey = props.encodedKey.bind(this);
 
     const resource = new CfnPublicKey(this, 'Resource', {
       publicKeyConfig: {
         name: props.publicKeyName ?? this.generateName(),
         callerReference: this.node.addr,
-        encodedKey,
+        encodedKey: encodedKey.value,
         comment: props.comment,
       },
     });
@@ -103,5 +79,107 @@ export class PublicKey extends Resource implements IPublicKey {
       return name.substring(0, 40) + name.substring(name.length - 40);
     }
     return name;
+  }
+}
+
+/**
+ * Represents the Public Key handler.
+ */
+export abstract class Key {
+  /**
+   * Inline value for Public Key
+   * @returns contents of an inline public key.
+   * @param key Inline public key
+   */
+  public static fromInline(key: string): InlineKey {
+    return new InlineKey(key);
+  }
+
+  /**
+   * Loads the public key from a local disk path.
+   * @returns contents of a .pem key.
+   * @param path Path to a .pem file
+   */
+  public static fromFile(path: string/*, options: {}*/): FileKey {
+    return new FileKey(path/*,options*/);
+  }
+
+  /**
+   * Called when the public key is initialized to allow this object to bind
+   * to the stack, add resources and have fun.
+   *
+   * @param scope The binding scope. Don't be smart about trying to down-cast or
+   * assume it's initialized. You may just use it as a construct scope.
+   */
+  public abstract bind(scope: Construct): KeyConfig;
+}
+
+/**
+ * Result of binding `Key` into a `PublicKey`.
+ */
+export interface KeyConfig {
+  /**
+   * Public Key value.
+   * @default - contents of a public key
+   */
+  readonly value: string;
+}
+
+/**
+ * Public Key from an inline string.
+ */
+export class InlineKey extends Key {
+  constructor(private key: string) {
+    super();
+
+    if (key.length === 0) {
+      throw new Error('Encoded key inline value cannot be empty');
+    }
+
+    if (key.length > 4096) {
+      throw new Error('Encoded key inline value is too large, must be <= 4096 but is ' + key.length);
+    }
+
+    if (!Token.isUnresolved(key) && !/^-----BEGIN PUBLIC KEY-----/.test(key)) {
+      throw new Error(`Public key must be in PEM format (with the BEGIN/END PUBLIC KEY lines); got ${key}`);
+    }
+  }
+
+  public bind(_scope: Construct): KeyConfig {
+    return {
+      value: this.key,
+    };
+  }
+
+  /**
+   * Content of a public key.
+   */
+  public content(): string {
+    return this.key;
+  }
+}
+
+/**
+ * Public key from a local directory.
+ */
+export class FileKey extends Key {
+  private readonly key: string;
+  /**
+   * @param path The path to the asset file or directory.
+   */
+  constructor(public readonly path: string) {
+    super();
+
+    const encodedKey = fs.readFileSync(path).toString();
+    if (!encodedKey) {
+      throw new Error('Something went wrong with loading the public key.');
+    }
+    this.key = new InlineKey(encodedKey).content();
+  }
+
+  public bind(_scope: Construct): KeyConfig {
+    return {
+      value: this.key,
+    };
   }
 }
