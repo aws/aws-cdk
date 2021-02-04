@@ -348,7 +348,7 @@ export interface Behavior {
    * The signers are the account IDs that are allowed to sign cookies/presigned URLs for this distribution.
    *
    * If you pass a non empty value, all requests for this behavior must be signed (no public access will be allowed)
-   * @deprecated - We recommend using TrustedKeyGroups instead of TrustedSigners.
+   * @deprecated - We recommend using trustedKeyGroups instead of trustedSigners.
    */
   readonly trustedSigners?: string[];
 
