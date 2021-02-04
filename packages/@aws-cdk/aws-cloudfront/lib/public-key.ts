@@ -65,7 +65,7 @@ export class PublicKey extends Resource implements IPublicKey {
       publicKeyConfig: {
         name: props.publicKeyName ?? this.generateName(),
         callerReference: this.node.addr,
-        encodedKey: encodedKey.value,
+        encodedKey: this.publicKeyValue(encodedKey),
         comment: props.comment,
       },
     });
@@ -79,6 +79,10 @@ export class PublicKey extends Resource implements IPublicKey {
       return name.substring(0, 40) + name.substring(name.length - 40);
     }
     return name;
+  }
+
+  private publicKeyValue(key: KeyConfig): string {
+    return key.value;
   }
 }
 
@@ -115,7 +119,7 @@ export abstract class Key {
 }
 
 /**
- * Result of binding `Key` into a `PublicKey`.
+ * Result of binding `Key` into `PublicKey`.
  */
 export interface KeyConfig {
   /**
