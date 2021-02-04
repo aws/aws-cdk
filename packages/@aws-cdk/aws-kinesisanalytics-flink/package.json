@@ -21,7 +21,7 @@
       },
       "python": {
         "distName": "aws-cdk.aws-kinesisanalytics-flink",
-        "module": "aws_cdk.aws_kinesis_analytics_flink",
+        "module": "aws_cdk.aws_kinesisanalytics_flink",
         "classifiers": [
           "Framework :: AWS CDK",
           "Framework :: AWS CDK :: 1"
@@ -100,7 +100,7 @@
   },
   "awslint": {
     "exclude": [
-      "props-physical-name:@aws-cdk/aws-kinesisanalytics-flink.FlinkApplicationProps"
+      "props-physical-name:@aws-cdk/aws-kinesisanalytics-flink.ApplicationProps"
     ]
   },
   "stability": "experimental",

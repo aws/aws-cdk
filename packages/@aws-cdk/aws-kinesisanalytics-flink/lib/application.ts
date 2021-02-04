@@ -25,7 +25,7 @@ export interface IApplication extends core.IResource, iam.IGrantable {
   /**
    * The name of the Flink application.
    *
-   * @attribute ApplicationV2Name
+   * @attribute
    */
   readonly applicationName: string;
 

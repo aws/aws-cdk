@@ -32,27 +32,12 @@ Analytics](https://aws.amazon.com/kinesis/data-analytics/).
 
 To create a new Flink application, use the FlinkApplication construct.
 
-```ts
-import * as ka from '@aws-cdk/aws-kinesisanalyticsv2';
+[simple flink application](test/integ.application.lit.ts)
 
-const flinkApp = new ka.FlinkApplication(this, 'Application', {
-  code: ka.ApplicationCode.fromBucket(bucket, 'my-app.jar'),
-  runtime: ka.FlinkRuntime.FLINK_1_11,
-});
-```
+The `code` property can use `fromAsset` as shown above to reference a local jar
+file in s3 or `fromBucket` to reference a file in s3.
 
-The `code` property can use `fromBucket` as shown above to reference a jar
-file in s3 or `fromAsset` to reference a local file.
-
-```ts
-import * as ka from '@aws-cdk/aws-kinesisanalyticsv2';
-import * as path from 'path';
-
-const flinkApp = new ka.FlinkApplication(this, 'Application', {
-  code: ka.ApplicationCode.fromAsset(path.join(__dirname, 'my-app.jar')),
-  // ...
-});
-```
+[flink application using code from bucket](test/integ.application-code-from-bucket.lit.ts)
 
 The `propertyGroups` property provides a way of passing arbitrary runtime
 properties to your Flink application. You can use the
@@ -60,16 +45,15 @@ aws-kinesisanalytics-runtime library to [retrieve these
 properties](https://docs.aws.amazon.com/kinesisanalytics/latest/java/how-properties.html#how-properties-access).
 
 ```ts
-import * as ka from '@aws-cdk/aws-kinesisanalyticsv2';
-import * as path from 'path';
-
-const flinkApp = new ka.FlinkApplication(this, 'Application', {
+const flinkApp = new flink.Application(this, 'Application', {
   // ...
   propertyGroups: [
-    new ka.PropertyGroup('FlinkApplicationProperties', {
-      inputStreamName: 'my-input-kinesis-stream',
-      outputStreamName: 'my-output-kinesis-stream',
-    }),
+    {
+      FlinkApplicationProperties: {
+        inputStreamName: 'my-input-kinesis-stream',
+        outputStreamName: 'my-output-kinesis-stream',
+      },
+    },
   ],
 });
 ```
@@ -79,16 +63,14 @@ when the Flink job starts. These include parameters for checkpointing,
 snapshotting, monitoring, and parallelism.
 
 ```ts
-import * as ka from '@aws-cdk/aws-kinesisanalyticsv2';
-
-const flinkApp = new ka.FlinkApplication(this, 'Application', {
-  code: ka.ApplicationCode.fromBucket(bucket, 'my-app.jar'),
-  runtime: ka.FlinkRuntime.FLINK_1_11,
+const flinkApp = new flink.Application(this, 'Application', {
+  code: flink.ApplicationCode.fromBucket(bucket, 'my-app.jar'),
+  runtime: file.Runtime.FLINK_1_11,
   checkpointingEnabled: true, // default is true
   checkpointInterval: cdk.Duration.seconds(30), // default is 1 minute
   minPausesBetweenCheckpoints: cdk.Duration.seconds(10), // default is 5 seconds
-  logLevel: ka.LogLevel.ERROR, // default is INFO
-  metricsLevel: ka.MetricsLevel.PARALLELISM, // default is APPLICATION
+  logLevel: flink.LogLevel.ERROR, // default is INFO
+  metricsLevel: flink.MetricsLevel.PARALLELISM, // default is APPLICATION
   autoScalingEnabled: false, // default is true
   parallelism: 32, // default is 1
   parallelismPerKpu: 2, // default is 1
