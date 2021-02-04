@@ -218,6 +218,7 @@ nodeunitShim({
           behaviors: [
             {
               isDefaultBehavior: true,
+              trustedSigners: ['1234'],
               trustedKeyGroups: [
                 keyGroup,
               ],
@@ -300,6 +301,7 @@ nodeunitShim({
                     'Ref': 'MyKeyGroupAF22FD35',
                   },
                 ],
+                'TrustedSigners': ['1234'],
                 'Compress': true,
               },
               'Enabled': true,
