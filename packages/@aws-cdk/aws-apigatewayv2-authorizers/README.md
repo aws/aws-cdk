@@ -36,4 +36,24 @@ allow  and restrict clients from accessing HTTP APIs.
 
 ### User Pool Authorizer
 
-<TODO with code snippet>
+User Pool Authorizer is a type of JWT Authorizer that uses a Cognito user pool and app client to control who can access your Api. After a successful authorization from the app client, the generated access token will be used as the JWT.
+
+```ts
+const userPool = new UserPool(stack, 'UserPool');
+const userPoolClient = userPool.addClient('UserPoolClient');
+
+const authorizer = new HttpUserPoolAuthorizer({
+  userPool,
+  userPoolClient,
+});
+
+const api = new HttpApi(stack, 'HttpApi');
+
+api.addRoutes({
+  integration: new HttpProxyIntegration({
+    url: 'https://get-books-proxy.myproxy.internal',
+  }),
+  path: '/books',
+  authorizer,
+});
+```
