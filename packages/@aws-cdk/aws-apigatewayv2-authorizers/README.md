@@ -30,9 +30,26 @@ API](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-acces
 
 ## JWT Authorizers
 
-JWT authorizers allow the use of JSON Web Tokens (JWTs) as part of [OpenID
-Connect](https://openid.net/specs/openid-connect-core-1_0.html) and [OAuth 2.0](https://oauth.net/2/) frameworks to
-allow  and restrict clients from accessing HTTP APIs.
+JWT authorizers allow the use of JSON Web Tokens (JWTs) as part of [OpenID Connect](https://openid.net/specs/openid-connect-core-1_0.html) and [OAuth 2.0](https://oauth.net/2/) frameworks to allow and restrict clients from accessing HTTP APIs.
+
+When configured on a route, the API Gateway service validates the JWTs submitted by the client, and allows or denies access based on its content.
+
+```ts
+const authorizer = new HttpJwtAuthorizer({
+  jwtAudience: ['3131231'],
+  jwtIssuer: 'https://test.us.auth0.com',
+});
+
+const api = new HttpApi(stack, 'HttpApi');
+
+api.addRoutes({
+  integration: new HttpProxyIntegration({
+    url: 'https://get-books-proxy.myproxy.internal',
+  }),
+  path: '/books',
+  authorizer,
+});
+```
 
 ### User Pool Authorizer
 
