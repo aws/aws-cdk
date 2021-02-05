@@ -431,24 +431,28 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
   public readonly latestVersionNumber: string;
 
   /**
-   * TagManager for tagging support.
-   */
-  protected readonly tags: TagManager;
-
-  // =============================================
-  //   Private/protected data members
-
-  /**
    * The type of OS the instance is running.
-   * @internal
+   *
+   * @attribute
    */
-  protected readonly _osType?: OperatingSystemType;
+  public readonly osType?: OperatingSystemType;
 
   /**
    * IAM Role assumed by instances that are launched from this template.
-   * @internal
+   *
+   * @attribute
    */
-  protected readonly _role?: iam.IRole;
+  public readonly role?: iam.IRole;
+
+  /**
+   * UserData executed by instances that are launched from this template.
+   *
+   * @attribute
+   */
+  public readonly userData?: UserData;
+
+  // =============================================
+  //   Private/protected data members
 
   /**
    * Principal to grant permissions to.
@@ -463,10 +467,9 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
   protected readonly _connections?: Connections;
 
   /**
-   * UserData executed by instances that are launched from this template.
-   * @internal
+   * TagManager for tagging support.
    */
-  protected readonly _userData?: UserData;
+  protected readonly tags: TagManager;
 
   // =============================================
 
@@ -480,19 +483,11 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
       Annotations.of(this).addError('Spot block duration must be exactly 1, 2, 3, 4, 5, or 6 hours.');
     }
 
-    this._role = props.role;
-    this._grantPrincipal = this._role;
-    const iamProfile: iam.CfnInstanceProfile | undefined = this._role ? new iam.CfnInstanceProfile(this, 'Profile', {
-      roles: [this._role!.roleName],
+    this.role = props.role;
+    this._grantPrincipal = this.role;
+    const iamProfile: iam.CfnInstanceProfile | undefined = this.role ? new iam.CfnInstanceProfile(this, 'Profile', {
+      roles: [this.role!.roleName],
     }) : undefined;
-    const iamProfileToken = Lazy.string({
-      produce: () => {
-        if (iamProfile) {
-          return iamProfile.getAtt('Arn').toString();
-        }
-        return undefined;
-      },
-    });
 
     if (props.securityGroup) {
       this._connections = new Connections({ securityGroups: [props.securityGroup] });
@@ -507,12 +502,12 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
     });
 
     if (props.userData) {
-      this._userData = props.userData;
+      this.userData = props.userData;
     }
     const userDataToken = Lazy.string({
       produce: () => {
-        if (this._userData) {
-          return Fn.base64(this._userData.render());
+        if (this.userData) {
+          return Fn.base64(this.userData.render());
         }
         return undefined;
       },
@@ -520,7 +515,7 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
 
     const imageConfig: MachineImageConfig | undefined = props.machineImage?.getImage(this);
     if (imageConfig) {
-      this._osType = imageConfig.osType;
+      this.osType = imageConfig.osType;
     }
 
     let marketOptions: any = undefined;
@@ -583,7 +578,7 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
           configured: props.hibernationConfigured,
         } : undefined,
         iamInstanceProfile: iamProfile !== undefined ? {
-          arn: iamProfileToken,
+          arn: iamProfile.getAtt('Arn').toString(),
         } : undefined,
         imageId: imageConfig?.imageId,
         instanceType: props?.instanceType?.toString(),
@@ -651,7 +646,7 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
    */
   public get connections(): Connections {
     if (!this._connections) {
-      throw new Error('connections not available on LaunchTemplate. You must provide a securityGroup when constructing the LaunchTemplate to make it available.');
+      throw new Error('LaunchTemplate can only be used as IConnectable if a securityGroup is provided when contructing it.');
     }
     return this._connections;
   }
@@ -662,46 +657,9 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
    * @note Only available if you provide a role when constructing the LaunchTemplate.
    */
   public get grantPrincipal(): iam.IPrincipal {
-    if (!this._role) {
-      throw new Error('grantPrincipal not available on LaunchTemplate. You must provide a role when constructing the LaunchTemplate to make it available.');
+    if (!this._grantPrincipal) {
+      throw new Error('LaunchTemplate can only be used as IGrantable if a role is provided when constructing it.');
     }
-    return this._role;
-  }
-
-  /**
-   * The type of OS on which the instance is running.
-   *
-   * @note Only available if you provide a machineImage when constructing the LaunchTemplate
-   */
-  public get osType(): OperatingSystemType {
-    // Explicitly check for undef. osType is an enum, and can have the value 0 which messes with attempts at "if (!osType)"
-    if (this._osType === undefined) {
-      throw new Error('osType not available on LaunchTemplate. You must provide a machineImage when constructing the LaunchTemplate to make it available.');
-    }
-    return this._osType;
-  }
-
-  /**
-   * IAM Role assumed by instances that are launched from this template.
-   *
-   * @note Only available if you provide a role when constructing the LaunchTemplate.
-   */
-  public get role(): iam.IRole {
-    if (!this._role) {
-      throw new Error('role not available on LaunchTemplate. You must provide a role when constructing the LaunchTemplate to make it available.');
-    }
-    return this._role;
-  }
-
-  /**
-   * UserData executed by instances that are launched from this template.
-   *
-   * @note Only available if you provide a machineImage or UserData when constructing the LaunchTemplate.
-   */
-  public get userData(): UserData {
-    if (!this._userData) {
-      throw new Error('userData not available on LaunchTemplate. You must provide a userData or machineImage when constructing the LaunchTemplate to make it available.');
-    }
-    return this._userData;
+    return this._grantPrincipal;
   }
 }

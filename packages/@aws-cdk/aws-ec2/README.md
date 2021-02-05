@@ -1008,7 +1008,7 @@ Launch templates enable you to store launch parameters so that you do not have t
 an instance. For information on Launch Templates please see the
 [official documentation](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-launch-templates.html).
 
-The following demonstrates how to create a launch template with an Amazon Machine Image, IAM Role, and security group.
+The following demonstrates how to create a launch template with an Amazon Machine Image, and security group.
 
 ```ts
 const vpc = new ec2.Vpc(...);

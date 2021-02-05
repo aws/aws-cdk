@@ -82,9 +82,9 @@ describe('LaunchTemplate', () => {
     expectCDK(stack).notTo(haveResource('AWS::IAM::InstanceProfile'));
     expect(() => { template.grantPrincipal; }).toThrow();
     expect(() => { template.connections; }).toThrow();
-    expect(() => { template.osType; }).toThrow();
-    expect(() => { template.role; }).toThrow();
-    expect(() => { template.userData; }).toThrow();
+    expect(template.osType).toBeUndefined();
+    expect(template.role).toBeUndefined();
+    expect(template.userData).toBeUndefined();
   });
 
   test('Import from attributes with name', () => {
@@ -164,7 +164,7 @@ describe('LaunchTemplate', () => {
       },
     }));
     expect(template.osType).toBe(OperatingSystemType.LINUX);
-    expect(() => { template.userData; }).toThrow();
+    expect(template.userData).toBeUndefined();
   });
 
   test('Given machineImage (Windows)', () => {
@@ -182,7 +182,7 @@ describe('LaunchTemplate', () => {
       },
     }));
     expect(template.osType).toBe(OperatingSystemType.WINDOWS);
-    expect(() => { template.userData; }).toThrow();
+    expect(template.userData).toBeUndefined();
   });
 
   test('Given userData', () => {
