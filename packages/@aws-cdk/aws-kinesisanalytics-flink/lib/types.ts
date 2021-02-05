@@ -45,7 +45,7 @@ export interface PropertyGroups {
  *
  * @example
  * // Creating a new runtime that isn't in CDK yet.
- * const runtime = new FlinkRuntime(FLINK-9_99);
+ * const runtime = new Runtime(FLINK-9_99);
  */
 export class Runtime {
   /** Flink Version 1.6 */
