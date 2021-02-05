@@ -282,10 +282,6 @@ export class CloudFormationDeployments {
 
     if (requiresBootstrapStackVersion === undefined) { return; }
 
-    if (!toolkitInfo.found) {
-      throw new Error(`${stackName}: publishing assets requires bootstrap stack version '${requiresBootstrapStackVersion}', no bootstrap stack found. Please run 'cdk bootstrap'.`);
-    }
-
     try {
       await toolkitInfo.validateVersion(requiresBootstrapStackVersion, bootstrapStackVersionSsmParameter);
     } catch (e) {

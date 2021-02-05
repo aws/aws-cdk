@@ -1,10 +1,13 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as s3 from '@aws-cdk/aws-s3';
 import { CfnDeletionPolicy, CfnResource, RemovalPolicy } from '@aws-cdk/core';
-import { Construct } from 'constructs';
 import { DatabaseSecret } from '../database-secret';
 import { IEngine } from '../engine';
 import { Credentials } from '../props';
+
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct } from 'constructs';
 
 /**
  * The default set of characters we exclude from generated passwords for database users.
