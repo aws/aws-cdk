@@ -291,7 +291,8 @@ export class DefaultStackSynthesizer extends StackSynthesizer {
     assertBound(this.bucketName);
     validateFileAssetSource(asset);
 
-    const objectKey = this.bucketPrefix + asset.sourceHash + (asset.packaging === FileAssetPackaging.ZIP_DIRECTORY ? '.zip' : '');
+    const extension = asset.fileName != undefined ? path.extname(asset.fileName) : '';
+    const objectKey = this.bucketPrefix + asset.sourceHash + (asset.packaging === FileAssetPackaging.ZIP_DIRECTORY ? '.zip' : extension);
 
     // Add to manifest
     this.files[asset.sourceHash] = {
