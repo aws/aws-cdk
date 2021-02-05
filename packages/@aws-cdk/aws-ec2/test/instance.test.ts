@@ -236,7 +236,7 @@ nodeunitShim({
           volume: BlockDeviceVolume.ebs(15, {
             deleteOnTermination: true,
             encrypted: true,
-            kmsKeyId: key,
+            kmsKeyId: key.keyArn,
             volumeType: EbsDeviceVolumeType.IO1,
             iops: 5000,
           }),
@@ -307,7 +307,7 @@ nodeunitShim({
           mappingEnabled: true,
           volume: BlockDeviceVolume.ebs(15, {
             deleteOnTermination: true,
-            kmsKeyId: key,
+            kmsKeyId: key.keyArn,
             volumeType: EbsDeviceVolumeType.IO1,
             iops: 5000,
           }),
@@ -380,7 +380,7 @@ nodeunitShim({
             volume: BlockDeviceVolume.ebs(15, {
               deleteOnTermination: true,
               encrypted: false,
-              kmsKeyId: key,
+              kmsKeyId: key.keyArn,
               volumeType: EbsDeviceVolumeType.IO1,
               iops: 5000,
             }),

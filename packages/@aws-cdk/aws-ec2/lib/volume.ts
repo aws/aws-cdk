@@ -117,7 +117,7 @@ export interface EbsDeviceOptions extends EbsDeviceOptionsBase {
    *
    * @default None
    */
-  readonly kmsKeyId?: IKey;
+  readonly kmsKeyId?: string;
 }
 
 /**
@@ -159,7 +159,7 @@ export class BlockDeviceVolume {
   public static ebs(volumeSize: number, options: EbsDeviceOptions = {}): BlockDeviceVolume {
     // If KmsKeyId is specified, the encrypted state must be true.
     if (options.kmsKeyId && !options.encrypted) {
-      if (options.encrypted == false) {
+      if (options.encrypted === false) {
         throw new Error('`encrypted` must be not false when providing `kmsKeyId`.');
       } else {
         // Encryption is implied if KMS key is specified.
