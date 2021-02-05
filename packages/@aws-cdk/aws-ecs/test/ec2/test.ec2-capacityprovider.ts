@@ -6,12 +6,12 @@ import * as ecs from '../../lib';
 
 const defaultCapacityProviderStrategy = [
   {
-    capacityProvider: ecs.FargateCapacityProviderType.FARGATE,
+    capacityProvider: 'FARGATE',
     weight: 1,
     base: 1,
   },
   {
-    capacityProvider: ecs.FargateCapacityProviderType.FARGATE_SPOT,
+    capacityProvider: 'FARGATE_SPOT',
     weight: 2,
   },
 ];

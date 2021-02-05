@@ -198,7 +198,15 @@ export interface BaseServiceProps extends BaseServiceOptions {
   /**
    * The launch type on which to run your service.
    *
+   * If a capacityProviderStrategy is specified, the launchType must be omitted.
+   * If no capacityProviderStrategy or launchType is specified, the defaultCapacityProviderStrategy
+   * for the cluster is used.
+   *
+   * @see - https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ecs-service.html#cfn-ecs-service-capacityproviderstrategy
+   *
    * Valid values are: LaunchType.ECS or LaunchType.FARGATE
+   *
+   * @default - no launch type
    */
   readonly launchType?: LaunchType;
 }

@@ -6,12 +6,12 @@ import * as ecs from '../../lib';
 
 const defaultCapacityProviderStrategy = [
   {
-    capacityProvider: ecs.FargateCapacityProviderType.FARGATE,
+    capacityProvider: 'FARGATE',
     weight: 1,
     base: 1,
   },
   {
-    capacityProvider: ecs.FargateCapacityProviderType.FARGATE_SPOT,
+    capacityProvider: 'FARGATE_SPOT',
     weight: 2,
   },
 ];
@@ -54,10 +54,7 @@ export = {
       const vpc = new ec2.Vpc(stack, 'MyVpc', {});
       new ecs.Cluster(stack, 'EcsCluster', {
         vpc,
-        capacityProvider: [
-          ecs.FargateCapacityProviderType.FARGATE,
-          ecs.FargateCapacityProviderType.FARGATE_SPOT,
-        ],
+        capacityProvider: ['FARGATE', 'FARGATE_SPOT'],
       });
 
       // THEN
@@ -76,10 +73,7 @@ export = {
       const vpc = new ec2.Vpc(stack, 'MyVpc', {});
       new ecs.Cluster(stack, 'EcsCluster', {
         vpc,
-        capacityProvider: [
-          ecs.FargateCapacityProviderType.FARGATE,
-          ecs.FargateCapacityProviderType.FARGATE_SPOT,
-        ],
+        capacityProvider: ['FARGATE', 'FARGATE_SPOT'],
         defaultCapacityProviderStrategy,
       });
 

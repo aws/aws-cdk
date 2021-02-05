@@ -15,21 +15,6 @@ import { CfnCluster } from './ecs.generated';
 // eslint-disable-next-line
 import { Construct as CoreConstruct } from '@aws-cdk/core';
 
-
-/**
- * Amazon ECS Capacity Providers for AWS Fargate
- */
-export enum FargateCapacityProviderType {
-  /**
-   * FARGATE
-   */
-  FARGATE = 'FARGATE',
-  /**
-   * FARGATE_SPOT
-   */
-  FARGATE_SPOT = 'FARGATE_SPOT'
-}
-
 /**
  * The Capacity Provider strategy
  */
