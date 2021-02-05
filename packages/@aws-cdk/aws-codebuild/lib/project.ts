@@ -8,7 +8,7 @@ import * as kms from '@aws-cdk/aws-kms';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import { Aws, Duration, IResource, Lazy, Names, PhysicalName, Resource, SecretValue, Stack, Tokenization } from '@aws-cdk/core';
-import { Construct } from 'constructs';
+import { Construct, IConstruct } from 'constructs';
 import { IArtifacts } from './artifacts';
 import { BuildSpec } from './build-spec';
 import { Cache } from './cache';
@@ -727,7 +727,7 @@ export class Project extends ProjectBase {
         // save the SSM env variables
         if (envVariable.type === BuildEnvironmentVariableType.PARAMETER_STORE) {
           const envVariableValue = envVariable.value.toString();
-          ssmVariables.push(Stack.of(principal).formatArn({
+          ssmVariables.push(Stack.of(principal as unknown as IConstruct).formatArn({
             service: 'ssm',
             resource: 'parameter',
             // If the parameter name starts with / the resource name is not separated with a double '/'
@@ -740,7 +740,7 @@ export class Project extends ProjectBase {
 
         // save SecretsManager env variables
         if (envVariable.type === BuildEnvironmentVariableType.SECRETS_MANAGER) {
-          secretsManagerSecrets.push(Stack.of(principal).formatArn({
+          secretsManagerSecrets.push(Stack.of(principal as unknown as IConstruct).formatArn({
             service: 'secretsmanager',
             resource: 'secret',
             // we don't know the exact ARN of the Secret just from its name, but we can get close
