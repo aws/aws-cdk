@@ -1,6 +1,10 @@
-import { Construct, IResource, Resource } from '@aws-cdk/core';
+import { Construct } from 'constructs';
+import { Duration, IResource, Resource } from '@aws-cdk/core';
 import { CfnSigningProfile } from './signer.generated';
 
+/**
+ * A Signer Profile
+ */
 export interface ISigningProfile extends IResource {
   /**
    * The ARN of the signing profile.
@@ -12,67 +16,122 @@ export interface ISigningProfile extends IResource {
    * The name of signing profile.
    * @attribute
    */
-  readonly signingProfileName: string;
+  readonly signingProfileProfileName: string;
 
   /**
    * The version of signing profile.
    * @attribute
    */
-  readonly signingProfileVersion: string;
+  readonly signingProfileProfileVersion: string;
 
   /**
    * The ARN of signing profile version.
    * @attribute
    */
-  readonly signingProfileVersionArn: string;
+  readonly signingProfileProfileVersionArn: string;
 }
 
-export enum SignatureValidityPeriodTypes {
-  DAYS = 'DAYS',
-  MONTHS = 'MONTHS',
-  YEARS = 'YEARS',
-}
-
-class SignatureValidityPeriodProperty {
-  readonly type: SignatureValidityPeriodTypes;
-  readonly value: number;
-
-  constructor(type: SignatureValidityPeriodTypes, value: number) {
-    this.type = type;
-    this.value = value;
-  }
-}
-
+/**
+ * Construction properties for a Signer Profile object
+ */
 export interface SigningProfileProps {
-  /*
+  /**
    * The ID of a platform that is available for use by a signing profile.
    */
   readonly platformId: string;
 
-  /*
+  /**
    * The validity period override for any signature generated using
    * this signing profile. If unspecified, the default is 135 months.
+   *
+   * @default - 135 MONTHS
    */
-  readonly signatureValidityPeriod?: SignatureValidityPeriodProperty;
+  readonly signatureValidityPeriod?: Duration;
+
+  /**
+   * Physical name of this Signing Profile.
+   *
+   * @default - Assigned by CloudFormation (recommended).
+   */
+  readonly signingProfileName?: string;
 }
 
+/**
+ * A reference to a Signing Profile
+ */
+export interface SigningProfileAttributes {
+  /**
+   * The ARN of the signing profile.
+   */
+  readonly signingProfileArn: string;
+
+  /**
+   * The name of signing profile.
+   */
+  readonly signingProfileProfileName: string;
+
+  /**
+   * The version of signing profile.
+   */
+  readonly signingProfileProfileVersion: string;
+
+  /**
+   * The ARN of signing profile version.
+   */
+  readonly signingProfileProfileVersionArn: string;
+}
+
+/**
+ * Defines a Signer Profile.
+ *
+ * @resource AWS::Signer::SigningProfile
+ */
 export class SigningProfile extends Resource implements ISigningProfile {
+  /**
+   * Creates a Signing Profile construct that represents an external Signing Profile.
+   *
+   * @param scope The parent creating construct (usually `this`).
+   * @param id The construct's name.
+   * @param attrs A `SigningProfileAttributes` object.
+   */
+  public static fromSigningProfileAttributes( scope: Construct, id: string, attrs: SigningProfileAttributes): ISigningProfile {
+    class Import extends Resource implements ISigningProfile {
+      public readonly signingProfileArn = attrs.signingProfileArn;
+      public readonly signingProfileProfileName = attrs.signingProfileProfileName;
+      public readonly signingProfileProfileVersion = attrs.signingProfileProfileVersion;
+      public readonly signingProfileProfileVersionArn = attrs.signingProfileProfileVersionArn;
+
+      constructor() {
+        super(scope, id);
+      }
+    }
+    return new Import();
+  }
+
   public readonly signingProfileArn: string;
-  public readonly signingProfileName: string;
-  public readonly signingProfileVersion: string;
-  public readonly signingProfileVersionArn: string;
+  public readonly signingProfileProfileName: string;
+  public readonly signingProfileProfileVersion: string;
+  public readonly signingProfileProfileVersionArn: string;
 
   constructor(scope: Construct, id: string, props: SigningProfileProps) {
-    super(scope, id);
+    super(scope, id, {
+      physicalName: props.signingProfileName,
+    });
 
     const resource = new CfnSigningProfile( this, 'Resource', {
       platformId: props.platformId,
-      signatureValidityPeriod: props.signatureValidityPeriod,
+      signatureValidityPeriod: props.signatureValidityPeriod ? {
+        type: 'DAYS',
+        value: props.signatureValidityPeriod?.toDays(),
+      } : {
+        type: 'MONTH',
+        value: 135,
+      },
     } );
 
     this.signingProfileArn = resource.attrArn;
-    this.signingProfileName = resource.attrProfileName;
-    this.signingProfileVersion = resource.attrProfileVersion;
-    this.signingProfileVersionArn = resource.attrProfileVersionArn;
+    this.signingProfileProfileName = resource.attrProfileName;
+    this.signingProfileProfileVersion = resource.attrProfileVersion;
+    this.signingProfileProfileVersionArn = resource.attrProfileVersionArn;
   }
 }
