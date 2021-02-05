@@ -1,6 +1,10 @@
-import { Annotations, Construct } from '@aws-cdk/core';
+import { Annotations } from '@aws-cdk/core';
 import { CfnInstance, CfnLaunchTemplate } from '../ec2.generated';
 import { BlockDevice, EbsDeviceVolumeType } from '../volume';
+
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct } from '@aws-cdk/core';
 
 export function instanceBlockDeviceMappings(construct: Construct, blockDevices: BlockDevice[]): CfnInstance.BlockDeviceMappingProperty[] {
   return synthesizeBlockDeviceMappings<CfnInstance.BlockDeviceMappingProperty, object>(construct, blockDevices, {});
