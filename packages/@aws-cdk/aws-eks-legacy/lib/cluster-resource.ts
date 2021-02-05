@@ -3,9 +3,12 @@ import * as cfn from '@aws-cdk/aws-cloudformation';
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import { Duration, Token } from '@aws-cdk/core';
-import { Construct } from 'constructs';
 import { CfnClusterProps } from './eks.generated';
 import { KubectlLayer } from './kubectl-layer';
+
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct } from 'constructs';
 
 /**
  * A low-level CFN resource Amazon EKS cluster implemented through a custom

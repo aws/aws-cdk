@@ -313,8 +313,7 @@ export class AppMeshExtension extends ServiceExtension {
     // Now create a virtual service. Relationship goes like this:
     // virtual service -> virtual router -> virtual node
     this.virtualService = new appmesh.VirtualService(this.scope, `${this.parentService.id}-virtual-service`, {
-      mesh: this.mesh,
-      virtualRouter: this.virtualRouter,
+      virtualServiceProvider: appmesh.VirtualServiceProvider.virtualRouter(this.virtualRouter),
       virtualServiceName: serviceName,
     });
   }

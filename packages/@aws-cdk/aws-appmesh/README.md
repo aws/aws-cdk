@@ -109,22 +109,20 @@ When creating a virtual service:
 Adding a virtual router as the provider:
 
 ```ts
-mesh.addVirtualService('virtual-service', {
-  virtualRouter: router,
-  virtualServiceName: 'my-service.default.svc.cluster.local',
+new appmesh.VirtualService('virtual-service', {
+  virtualServiceName: 'my-service.default.svc.cluster.local', // optional
+  virtualServiceProvider: appmesh.VirtualServiceProvider.virtualRouter(router),
 });
 ```
 
 Adding a virtual node as the provider:
 
 ```ts
-mesh.addVirtualService('virtual-service', {
-  virtualNode: node,
-  virtualServiceName: `my-service.default.svc.cluster.local`,
+new appmesh.VirtualService('virtual-service', {
+  virtualServiceName: `my-service.default.svc.cluster.local`, // optional
+  virtualServiceProvider: appmesh.VirtualServiceProvider.virtualNode(node),
 });
 ```
-
-**Note** that only one must of `virtualNode` or `virtualRouter` must be chosen.
 
 ## Adding a VirtualNode
 

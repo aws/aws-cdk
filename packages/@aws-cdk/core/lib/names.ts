@@ -8,7 +8,7 @@ import { makeUniqueId } from './private/uniqueid';
 export class Names {
   /**
    * Returns a CloudFormation-compatible unique identifier for a construct based
-   * on its path. The identifier includes a human readable porition rendered
+   * on its path. The identifier includes a human readable portion rendered
    * from the path components and a hash suffix.
    *
    * @param construct The construct
@@ -22,7 +22,7 @@ export class Names {
 
   /**
    * Returns a CloudFormation-compatible unique identifier for a construct based
-   * on its path. The identifier includes a human readable porition rendered
+   * on its path. The identifier includes a human readable portion rendered
    * from the path components and a hash suffix.
    *
    * TODO (v2): replace with API to use `constructs.Node`.
