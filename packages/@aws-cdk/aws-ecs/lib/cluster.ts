@@ -49,6 +49,20 @@ export interface ClusterProps {
   readonly capacity?: AddCapacityOptions;
 
   /**
+   * The capacity providers to add to the cluster
+   *
+   * @default - None. Currently only FARGATE and FARGATE_SPOT are supported.
+   */
+  readonly capacityProviders?: string[];
+
+  /**
+   * The default capacity provider strategy for the cluster.
+   *
+   * @default - no default strategy
+   */
+  readonly defaultCapacityProviderStrategy?: CapacityProviderStrategy[];
+
+  /**
    * If true CloudWatch Container Insights will be enabled for the cluster
    *
    * @default - Container Insights will be disabled for this cluser.
@@ -102,6 +116,18 @@ export class Cluster extends Resource implements ICluster {
   public readonly clusterName: string;
 
   /**
+   * The capacity providers associated with the cluster.
+   */
+  public readonly capacityProviders?: string[];
+
+  /**
+   * The default capacity provider strategy for the cluster.
+   *
+   * @default - no default strategy
+   */
+  public readonly defaultCapacityProviderStrategy?: CapacityProviderStrategy[];
+
+  /**
    * The AWS Cloud Map namespace to associate with the cluster.
    */
   private _defaultCloudMapNamespace?: cloudmap.INamespace;
@@ -137,6 +163,8 @@ export class Cluster extends Resource implements ICluster {
     const cluster = new CfnCluster(this, 'Resource', {
       clusterName: this.physicalName,
       clusterSettings,
+      defaultCapacityProviderStrategy: props.defaultCapacityProviderStrategy,
+      capacityProviders: props.capacityProviders,
     });
 
     this.clusterArn = this.getResourceArnAttribute(cluster.attrArn, {
@@ -147,6 +175,8 @@ export class Cluster extends Resource implements ICluster {
     this.clusterName = this.getResourceNameAttribute(cluster.ref);
 
     this.vpc = props.vpc || new ec2.Vpc(this, 'Vpc', { maxAzs: 2 });
+
+    this.capacityProviders = props.capacityProviders;
 
     this._defaultCloudMapNamespace = props.defaultCloudMapNamespace !== undefined
       ? this.addDefaultCloudMapNamespace(props.defaultCloudMapNamespace)
@@ -693,6 +723,11 @@ export interface ICluster extends IResource {
   readonly defaultCloudMapNamespace?: cloudmap.INamespace;
 
   /**
+   * The default capacity provider strategy for the cluster.
+   */
+  readonly defaultCapacityProviderStrategy?: CapacityProviderStrategy[];
+
+  /**
    * The autoscaling group added to the cluster if capacity is associated to the cluster
    */
   readonly autoscalingGroup?: autoscaling.IAutoScalingGroup;
@@ -933,4 +968,32 @@ enum ContainerInsights {
    * Disable CloudWatch Container Insights for the cluster
    */
   DISABLED = 'disabled',
+}
+
+/**
+ * A Capacity Provider strategy to use for the service.
+ */
+export interface CapacityProviderStrategy {
+  /**
+   * The name of the Capacity Provider. Currently only FARGATE and FARGATE_SPOT are supported.
+   */
+  readonly capacityProvider: string;
+
+  /**
+   * The base value designates how many tasks, at a minimum, to run on the specified capacity provider. Only one
+   * capacity provider in a capacity provider strategy can have a base defined. If no value is specified, the default
+   * value of 0 is used.
+   *
+   * @default - none
+   */
+  readonly base?: number;
+
+  /**
+   * The weight value designates the relative percentage of the total number of tasks launched that should use the
+   * specified
+capacity provider. The weight value is taken into consideration after the base value, if defined, is satisfied.
+   *
+   * @default - 0
+   */
+  readonly weight?: number;
 }

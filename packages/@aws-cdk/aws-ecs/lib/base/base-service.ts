@@ -8,7 +8,7 @@ import * as cloudmap from '@aws-cdk/aws-servicediscovery';
 import { Annotations, Duration, IResolvable, IResource, Lazy, Resource, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { LoadBalancerTargetOptions, NetworkMode, TaskDefinition } from '../base/task-definition';
-import { ICluster } from '../cluster';
+import { ICluster, CapacityProviderStrategy } from '../cluster';
 import { Protocol } from '../container-definition';
 import { CfnService } from '../ecs.generated';
 import { ScalableTaskCount } from './scalable-task-count';
@@ -181,6 +181,15 @@ export interface BaseServiceOptions {
    * @default - disabled
    */
   readonly circuitBreaker?: DeploymentCircuitBreaker;
+
+  /**
+   * A list of Capacity Provider strategies used to place a service.
+   *
+   * @default - the defaultCapacityProviderStrategy of the cluster the service is launched in if specified, otherwise
+   * undefined
+   *
+   */
+  readonly capacityProviderStrategies?: CapacityProviderStrategy[];
 }
 
 /**
@@ -190,6 +199,10 @@ export interface BaseServiceOptions {
 export interface BaseServiceProps extends BaseServiceOptions {
   /**
    * The launch type on which to run your service.
+   *
+   * LaunchType will be omitted if capacity provider strategies are specified on the service.
+   *
+   * @see - https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ecs-service.html#cfn-ecs-service-capacityproviderstrategy
    *
    * Valid values are: LaunchType.ECS or LaunchType.FARGATE
    */
@@ -356,6 +369,13 @@ export abstract class BaseService extends Resource
 
     this.taskDefinition = taskDefinition;
 
+    // launchType will set to undefined if using external DeploymentController or capacityProviderStrategies (whether
+    // specified on service itself or as default strategy on cluster)
+    const launchType = props.deploymentController?.type === DeploymentControllerType.EXTERNAL ||
+      props.capacityProviderStrategies !== undefined ||
+      props.cluster.defaultCapacityProviderStrategy !== undefined ?
+      undefined : props.launchType;
+
     this.resource = new CfnService(this, 'Service', {
       desiredCount: props.desiredCount,
       serviceName: this.physicalName,
@@ -371,7 +391,8 @@ export abstract class BaseService extends Resource
       propagateTags: props.propagateTags === PropagatedTagSource.NONE ? undefined : props.propagateTags,
       enableEcsManagedTags: props.enableECSManagedTags ?? false,
       deploymentController: props.deploymentController,
-      launchType: props.deploymentController?.type === DeploymentControllerType.EXTERNAL ? undefined : props.launchType,
+      launchType: launchType,
+      capacityProviderStrategy: props.capacityProviderStrategies,
       healthCheckGracePeriodSeconds: this.evaluateHealthGracePeriod(props.healthCheckGracePeriod),
       /* role: never specified, supplanted by Service Linked Role */
       networkConfiguration: Lazy.any({ produce: () => this.networkConfiguration }, { omitEmptyArray: true }),

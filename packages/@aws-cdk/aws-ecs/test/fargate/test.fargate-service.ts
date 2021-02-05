@@ -110,6 +110,268 @@ export = {
       test.done();
     },
 
+    'with capacity provider strategies specified'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', {
+        vpc,
+        capacityProviders: ['FARGATE', 'FARGATE_SPOT'],
+      });
+      const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
+
+      const container = taskDefinition.addContainer('web', {
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+        memoryLimitMiB: 512,
+      });
+      container.addPortMappings({ containerPort: 8000 });
+
+      new ecs.FargateService(stack, 'FargateService', {
+        cluster,
+        taskDefinition,
+        capacityProviderStrategies: [
+          {
+            capacityProvider: 'FARGATE_SPOT',
+            weight: 2,
+          },
+          {
+            capacityProvider: 'FARGATE',
+            weight: 1,
+          },
+        ],
+      });
+
+      // THEN
+      expect(stack).to(haveResource('AWS::ECS::Cluster', {
+        CapacityProviders: ['FARGATE', 'FARGATE_SPOT'],
+      }));
+
+      expect(stack).to(haveResource('AWS::ECS::Service', {
+        TaskDefinition: {
+          Ref: 'FargateTaskDefC6FB60B4',
+        },
+        Cluster: {
+          Ref: 'EcsCluster97242B84',
+        },
+        DeploymentConfiguration: {
+          MaximumPercent: 200,
+          MinimumHealthyPercent: 50,
+        },
+        // no launch type
+        CapacityProviderStrategy: [
+          {
+            CapacityProvider: 'FARGATE_SPOT',
+            Weight: 2,
+          },
+          {
+            CapacityProvider: 'FARGATE',
+            Weight: 1,
+          },
+        ],
+        EnableECSManagedTags: false,
+        NetworkConfiguration: {
+          AwsvpcConfiguration: {
+            AssignPublicIp: 'DISABLED',
+            SecurityGroups: [
+              {
+                'Fn::GetAtt': [
+                  'FargateServiceSecurityGroup0A0E79CB',
+                  'GroupId',
+                ],
+              },
+            ],
+            Subnets: [
+              {
+                Ref: 'MyVpcPrivateSubnet1Subnet5057CF7E',
+              },
+              {
+                Ref: 'MyVpcPrivateSubnet2Subnet0040C983',
+              },
+            ],
+          },
+        },
+      }));
+
+      test.done();
+    },
+
+    'service capacity provider strategies override cluster default strategies'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+
+      const defaultCapacityProviderStrategy = [{
+        capacityProvider: 'FARGATE_SPOT',
+        weight: 2,
+      }];
+
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', {
+        vpc,
+        defaultCapacityProviderStrategy,
+        capacityProviders: ['FARGATE', 'FARGATE_SPOT'],
+      });
+
+      const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
+
+      const container = taskDefinition.addContainer('web', {
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+        memoryLimitMiB: 512,
+      });
+      container.addPortMappings({ containerPort: 8000 });
+
+      new ecs.FargateService(stack, 'FargateService', {
+        cluster,
+        taskDefinition,
+        capacityProviderStrategies: [
+          {
+            capacityProvider: 'FARGATE_SPOT',
+            weight: 4,
+          },
+          {
+            capacityProvider: 'FARGATE',
+            weight: 2,
+          },
+        ],
+      });
+
+      // THEN
+      expect(stack).to(haveResource('AWS::ECS::Cluster', {
+        CapacityProviders: ['FARGATE', 'FARGATE_SPOT'],
+        DefaultCapacityProviderStrategy: [
+          {
+            CapacityProvider: 'FARGATE_SPOT',
+            Weight: 2,
+          },
+        ],
+      }));
+
+      expect(stack).to(haveResource('AWS::ECS::Service', {
+        TaskDefinition: {
+          Ref: 'FargateTaskDefC6FB60B4',
+        },
+        Cluster: {
+          Ref: 'EcsCluster97242B84',
+        },
+        DeploymentConfiguration: {
+          MaximumPercent: 200,
+          MinimumHealthyPercent: 50,
+        },
+        CapacityProviderStrategy: [
+          {
+            CapacityProvider: 'FARGATE_SPOT',
+            Weight: 4,
+          },
+          {
+            CapacityProvider: 'FARGATE',
+            Weight: 2,
+          },
+        ],
+        EnableECSManagedTags: false,
+        NetworkConfiguration: {
+          AwsvpcConfiguration: {
+            AssignPublicIp: 'DISABLED',
+            SecurityGroups: [
+              {
+                'Fn::GetAtt': [
+                  'FargateServiceSecurityGroup0A0E79CB',
+                  'GroupId',
+                ],
+              },
+            ],
+            Subnets: [
+              {
+                Ref: 'MyVpcPrivateSubnet1Subnet5057CF7E',
+              },
+              {
+                Ref: 'MyVpcPrivateSubnet2Subnet0040C983',
+              },
+            ],
+          },
+        },
+      }));
+
+      test.done();
+    },
+
+    'does not set launch type if default capacity provider strategy specified on cluster'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+
+      const defaultCapacityProviderStrategy = [{
+        capacityProvider: 'FARGATE_SPOT',
+        weight: 2,
+      }];
+
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', {
+        vpc,
+        defaultCapacityProviderStrategy,
+        capacityProviders: ['FARGATE', 'FARGATE_SPOT'],
+      });
+      const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
+
+      const container = taskDefinition.addContainer('web', {
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+        memoryLimitMiB: 512,
+      });
+      container.addPortMappings({ containerPort: 8000 });
+
+      new ecs.FargateService(stack, 'FargateService', {
+        cluster,
+        taskDefinition,
+        // no strategies specified
+      });
+
+      // THEN
+      expect(stack).to(haveResource('AWS::ECS::Cluster', {
+        CapacityProviders: ['FARGATE', 'FARGATE_SPOT'],
+        DefaultCapacityProviderStrategy: [
+          {
+            CapacityProvider: 'FARGATE_SPOT',
+            Weight: 2,
+          },
+        ],
+      }));
+
+      expect(stack).to(haveResource('AWS::ECS::Service', {
+        TaskDefinition: {
+          Ref: 'FargateTaskDefC6FB60B4',
+        },
+        Cluster: {
+          Ref: 'EcsCluster97242B84',
+        },
+        DeploymentConfiguration: {
+          MaximumPercent: 200,
+          MinimumHealthyPercent: 50,
+        },
+        // no launch type
+        EnableECSManagedTags: false,
+        NetworkConfiguration: {
+          AwsvpcConfiguration: {
+            AssignPublicIp: 'DISABLED',
+            SecurityGroups: [
+              {
+                'Fn::GetAtt': [
+                  'FargateServiceSecurityGroup0A0E79CB',
+                  'GroupId',
+                ],
+              },
+            ],
+            Subnets: [
+              {
+                Ref: 'MyVpcPrivateSubnet1Subnet5057CF7E',
+              },
+              {
+                Ref: 'MyVpcPrivateSubnet2Subnet0040C983',
+              },
+            ],
+          },
+        },
+      }));
+
+      test.done();
+    },
+
     'with custom cloudmap namespace'(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();
