@@ -36,9 +36,9 @@ nodeunitShim({
     // THEN -- the S3 url is advertised on the stack artifact
     const stackArtifact = asm.getStackArtifact('Stack');
 
-    const templateHash = last(stackArtifact.stackTemplateAssetObjectUrl?.split('/'));
+    const templateObjectKey = last(stackArtifact.stackTemplateAssetObjectUrl?.split('/'));
 
-    test.equals(stackArtifact.stackTemplateAssetObjectUrl, `s3://cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}/${templateHash}`);
+    test.equals(stackArtifact.stackTemplateAssetObjectUrl, `s3://cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}/${templateObjectKey}`);
 
     // THEN - the template is in the asset manifest
     const manifestArtifact = asm.artifacts.filter(isAssetManifest)[0];
@@ -52,7 +52,7 @@ nodeunitShim({
       destinations: {
         'current_account-current_region': {
           bucketName: 'cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}',
-          objectKey: templateHash + '.json',
+          objectKey: templateObjectKey,
           assumeRoleArn: 'arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}',
         },
       },
