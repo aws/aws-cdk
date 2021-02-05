@@ -12,6 +12,12 @@ export interface LambdaRuntimeProps {
    * @default - the latest docker image "amazon/aws-sam-cli-build-image-<runtime>" from https://hub.docker.com/u/amazon
    */
   readonly bundlingDockerImage?: string;
+
+  /**
+   * Whether this runtime is integrated with and supported for profiling using Amazon CodeGuru Profiler.
+   * @default false
+   */
+  readonly supportsCodeGuruProfiling?: boolean;
 }
 
 export enum RuntimeFamily {
@@ -37,28 +43,28 @@ export class Runtime {
   /**
    * The NodeJS runtime (nodejs)
    *
-   * @deprecated Use {@link NODEJS_10_X}
+   * @deprecated Use {@link NODEJS_12_X}
    */
   public static readonly NODEJS = new Runtime('nodejs', RuntimeFamily.NODEJS, { supportsInlineCode: true });
 
   /**
    * The NodeJS 4.3 runtime (nodejs4.3)
    *
-   * @deprecated Use {@link NODEJS_10_X}
+   * @deprecated Use {@link NODEJS_12_X}
    */
   public static readonly NODEJS_4_3 = new Runtime('nodejs4.3', RuntimeFamily.NODEJS, { supportsInlineCode: true });
 
   /**
    * The NodeJS 6.10 runtime (nodejs6.10)
    *
-   * @deprecated Use {@link NODEJS_10_X}
+   * @deprecated Use {@link NODEJS_12_X}
    */
   public static readonly NODEJS_6_10 = new Runtime('nodejs6.10', RuntimeFamily.NODEJS, { supportsInlineCode: true });
 
   /**
    * The NodeJS 8.10 runtime (nodejs8.10)
    *
-   * @deprecated Use {@link NODEJS_10_X}
+   * @deprecated Use {@link NODEJS_12_X}
    */
   public static readonly NODEJS_8_10 = new Runtime('nodejs8.10', RuntimeFamily.NODEJS, { supportsInlineCode: true });
 
@@ -73,6 +79,11 @@ export class Runtime {
   public static readonly NODEJS_12_X = new Runtime('nodejs12.x', RuntimeFamily.NODEJS, { supportsInlineCode: true });
 
   /**
+   * The NodeJS 14.x runtime (nodejs14.x)
+   */
+  public static readonly NODEJS_14_X = new Runtime('nodejs14.x', RuntimeFamily.NODEJS, { supportsInlineCode: false });
+
+  /**
    * The Python 2.7 runtime (python2.7)
    */
   public static readonly PYTHON_2_7 = new Runtime('python2.7', RuntimeFamily.PYTHON, { supportsInlineCode: true });
@@ -80,32 +91,47 @@ export class Runtime {
   /**
    * The Python 3.6 runtime (python3.6)
    */
-  public static readonly PYTHON_3_6 = new Runtime('python3.6', RuntimeFamily.PYTHON, { supportsInlineCode: true });
+  public static readonly PYTHON_3_6 = new Runtime('python3.6', RuntimeFamily.PYTHON, {
+    supportsInlineCode: true,
+    supportsCodeGuruProfiling: true,
+  });
 
   /**
    * The Python 3.7 runtime (python3.7)
    */
-  public static readonly PYTHON_3_7 = new Runtime('python3.7', RuntimeFamily.PYTHON, { supportsInlineCode: true });
+  public static readonly PYTHON_3_7 = new Runtime('python3.7', RuntimeFamily.PYTHON, {
+    supportsInlineCode: true,
+    supportsCodeGuruProfiling: true,
+  });
 
   /**
    * The Python 3.8 runtime (python3.8)
    */
-  public static readonly PYTHON_3_8 = new Runtime('python3.8', RuntimeFamily.PYTHON);
+  public static readonly PYTHON_3_8 = new Runtime('python3.8', RuntimeFamily.PYTHON, {
+    supportsInlineCode: true,
+    supportsCodeGuruProfiling: true,
+  });
 
   /**
    * The Java 8 runtime (java8)
    */
-  public static readonly JAVA_8 = new Runtime('java8', RuntimeFamily.JAVA);
+  public static readonly JAVA_8 = new Runtime('java8', RuntimeFamily.JAVA, {
+    supportsCodeGuruProfiling: true,
+  });
 
   /**
    * The Java 8 Corretto runtime (java8.al2)
    */
-  public static readonly JAVA_8_CORRETTO = new Runtime('java8.al2', RuntimeFamily.JAVA);
+  public static readonly JAVA_8_CORRETTO = new Runtime('java8.al2', RuntimeFamily.JAVA, {
+    supportsCodeGuruProfiling: true,
+  });
 
   /**
    * The Java 11 runtime (java11)
    */
-  public static readonly JAVA_11 = new Runtime('java11', RuntimeFamily.JAVA);
+  public static readonly JAVA_11 = new Runtime('java11', RuntimeFamily.JAVA, {
+    supportsCodeGuruProfiling: true,
+  });
 
   /**
    * The .NET Core 1.0 runtime (dotnetcore1.0)
@@ -179,6 +205,11 @@ export class Runtime {
   public readonly supportsInlineCode: boolean;
 
   /**
+   * Whether this runtime is integrated with and supported for profiling using Amazon CodeGuru Profiler.
+   */
+  public readonly supportsCodeGuruProfiling: boolean;
+
+  /**
    * The runtime family.
    */
   public readonly family?: RuntimeFamily;
@@ -194,6 +225,7 @@ export class Runtime {
     this.family = family;
     const imageName = props.bundlingDockerImage ?? `amazon/aws-sam-cli-build-image-${name}`;
     this.bundlingDockerImage = BundlingDockerImage.fromRegistry(imageName);
+    this.supportsCodeGuruProfiling = props.supportsCodeGuruProfiling ?? false;
 
     Runtime.ALL.push(this);
   }

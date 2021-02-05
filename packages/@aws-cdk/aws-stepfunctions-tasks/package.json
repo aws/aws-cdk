@@ -72,10 +72,10 @@
     "pkglint": "0.0.0"
   },
   "dependencies": {
-    "@aws-cdk/assets": "0.0.0",
     "@aws-cdk/aws-batch": "0.0.0",
     "@aws-cdk/aws-cloudwatch": "0.0.0",
     "@aws-cdk/aws-codebuild": "0.0.0",
+    "@aws-cdk/aws-databrew": "0.0.0",
     "@aws-cdk/aws-dynamodb": "0.0.0",
     "@aws-cdk/aws-ec2": "0.0.0",
     "@aws-cdk/aws-ecr": "0.0.0",
@@ -94,10 +94,10 @@
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/assets": "0.0.0",
     "@aws-cdk/aws-batch": "0.0.0",
     "@aws-cdk/aws-cloudwatch": "0.0.0",
     "@aws-cdk/aws-codebuild": "0.0.0",
+    "@aws-cdk/aws-databrew": "0.0.0",
     "@aws-cdk/aws-dynamodb": "0.0.0",
     "@aws-cdk/aws-ec2": "0.0.0",
     "@aws-cdk/aws-ecr": "0.0.0",
