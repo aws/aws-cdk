@@ -20,24 +20,29 @@ const defaultCapacityProviderStrategy = [
   },
 ];
 
-const cluster = new ecs.Cluster(stack, 'FargateCluster', {
+const cluster = new ecs.Cluster(stack, 'Cluster', {
   vpc,
   defaultCapacityProviderStrategy,
 });
 
-const taskDefinition = new ecs.FargateTaskDefinition(stack, 'Task', {
-  cpu: 256,
-  memoryLimitMiB: 512,
+cluster.addCapacity('DefaultAutoScalingGroup', {
+  instanceType: new ec2.InstanceType('t2.micro'),
+});
+
+const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Task', {
+  networkMode: ecs.NetworkMode.AWS_VPC,
 });
 
 taskDefinition.addContainer('web', {
   image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+  memoryLimitMiB: 256,
 });
 
-new ecs.FargateService(stack, 'FargateService', {
+// we are allowed to create Ec2Service even the cluster defaultCapacityProviderStrategy is fargate
+// as we leave the capacityProviderStrategy undefined, the launch type will be explicitly defined as EC2.
+new ecs.Ec2Service(stack, 'Ec2Service', {
   cluster,
   taskDefinition,
-  capacityProviderStrategy: defaultCapacityProviderStrategy,
 });
 
 app.synth();

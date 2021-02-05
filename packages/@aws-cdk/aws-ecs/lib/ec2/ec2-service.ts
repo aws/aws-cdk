@@ -189,9 +189,10 @@ export class Ec2Service extends BaseService implements IEc2Service {
       desiredCount: props.desiredCount,
       maxHealthyPercent: props.daemon && props.maxHealthyPercent === undefined ? 100 : props.maxHealthyPercent,
       minHealthyPercent: props.daemon && props.minHealthyPercent === undefined ? 0 : props.minHealthyPercent,
-      launchType: LaunchType.EC2,
+      launchType: props.capacityProviderStrategy ? undefined : LaunchType.EC2,
       propagateTags: propagateTagsFromSource,
       enableECSManagedTags: props.enableECSManagedTags,
+      capacityProviderStrategy: props.capacityProviderStrategy,
     },
     {
       cluster: props.cluster.clusterName,

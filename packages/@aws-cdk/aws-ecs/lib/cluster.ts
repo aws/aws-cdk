@@ -46,7 +46,7 @@ export interface CapacityProviderStrategyItem {
   /**
    * The capacity provider.
    */
-  readonly capacityProvider: FargateCapacityProviderType;
+  readonly capacityProvider: string;
 }
 
 /**
@@ -151,6 +151,13 @@ export class Cluster extends Resource implements ICluster {
   public readonly clusterName: string;
 
   /**
+   * The default capacity provider strategy for the cluster.
+   *
+   * @default - no default strategy
+   */
+  public readonly defaultCapacityProviderStrategy?: CapacityProviderStrategyItem[];
+
+  /**
    * The AWS Cloud Map namespace to associate with the cluster.
    */
   private _defaultCloudMapNamespace?: cloudmap.INamespace;
@@ -190,6 +197,7 @@ export class Cluster extends Resource implements ICluster {
 
     this._capacityProvider = props.capacityProvider ?? [];
     this.renderCapacityProviders(props.defaultCapacityProviderStrategy);
+    this.defaultCapacityProviderStrategy = props.defaultCapacityProviderStrategy;
 
     const cluster = new CfnCluster(this, 'Resource', {
       clusterName: this.physicalName,

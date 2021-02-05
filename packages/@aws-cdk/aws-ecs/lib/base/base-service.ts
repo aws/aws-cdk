@@ -8,7 +8,7 @@ import * as cloudmap from '@aws-cdk/aws-servicediscovery';
 import { Annotations, Duration, IResolvable, IResource, Lazy, Resource, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { LoadBalancerTargetOptions, NetworkMode, TaskDefinition } from '../base/task-definition';
-import { ICluster } from '../cluster';
+import { ICluster, CapacityProviderStrategyItem } from '../cluster';
 import { Protocol } from '../container-definition';
 import { CfnService } from '../ecs.generated';
 import { ScalableTaskCount } from './scalable-task-count';
@@ -181,6 +181,13 @@ export interface BaseServiceOptions {
    * @default - disabled
    */
   readonly circuitBreaker?: DeploymentCircuitBreaker;
+
+  /**
+   * Capacity provider strategy for this service
+   *
+   * @default - the defaultCapacityProviderStrategy of this cluster if available or undefined
+   */
+  readonly capacityProviderStrategy?: CapacityProviderStrategyItem[];
 }
 
 /**
@@ -193,7 +200,7 @@ export interface BaseServiceProps extends BaseServiceOptions {
    *
    * Valid values are: LaunchType.ECS or LaunchType.FARGATE
    */
-  readonly launchType: LaunchType;
+  readonly launchType?: LaunchType;
 }
 
 /**
@@ -357,6 +364,11 @@ export abstract class BaseService extends Resource
 
     this.taskDefinition = taskDefinition;
 
+
+    if (props.launchType && props.capacityProviderStrategy) {
+      throw new Error('Either launchType or capacityProviderStrategy is allowed, not both');
+    }
+
     this.resource = new CfnService(this, 'Service', {
       desiredCount: props.desiredCount,
       serviceName: this.physicalName,
@@ -373,6 +385,7 @@ export abstract class BaseService extends Resource
       enableEcsManagedTags: props.enableECSManagedTags === undefined ? false : props.enableECSManagedTags,
       deploymentController: props.deploymentController,
       launchType: props.deploymentController?.type === DeploymentControllerType.EXTERNAL ? undefined : props.launchType,
+      capacityProviderStrategy: props.capacityProviderStrategy,
       healthCheckGracePeriodSeconds: this.evaluateHealthGracePeriod(props.healthCheckGracePeriod),
       /* role: never specified, supplanted by Service Linked Role */
       networkConfiguration: Lazy.any({ produce: () => this.networkConfiguration }, { omitEmptyArray: true }),
