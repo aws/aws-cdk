@@ -154,7 +154,9 @@
       "resource-attribute:@aws-cdk/aws-cloudfront.CachePolicy.cachePolicyLastModifiedTime",
       "construct-interface-extends-iconstruct:@aws-cdk/aws-cloudfront.IOriginRequestPolicy",
       "resource-interface-extends-resource:@aws-cdk/aws-cloudfront.IOriginRequestPolicy",
-      "resource-attribute:@aws-cdk/aws-cloudfront.OriginRequestPolicy.originRequestPolicyLastModifiedTime"
+      "resource-attribute:@aws-cdk/aws-cloudfront.OriginRequestPolicy.originRequestPolicyLastModifiedTime",
+      "resource-attribute:@aws-cdk/aws-cloudfront.KeyGroup.keyGroupLastModifiedTime",
+      "resource-attribute:@aws-cdk/aws-cloudfront.PublicKey.publicKeyCreatedTime"
     ]
   },
   "awscdkio": {

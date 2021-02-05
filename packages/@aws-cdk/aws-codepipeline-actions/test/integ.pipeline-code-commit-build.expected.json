@@ -150,6 +150,30 @@
               }
             },
             {
+              "Action": "ssm:GetParameters",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":ssm:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":parameter/param_store"
+                  ]
+                ]
+              }
+            },
+            {
               "Action": [
                 "s3:GetObject*",
                 "s3:GetBucket*",

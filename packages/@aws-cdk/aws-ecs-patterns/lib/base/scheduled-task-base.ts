@@ -161,9 +161,18 @@ export abstract class ScheduledTaskBase extends Construct {
       subnetSelection: this.subnetSelection,
     });
 
-    this.eventRule.addTarget(eventRuleTarget);
+    this.addTaskAsTarget(eventRuleTarget);
 
     return eventRuleTarget;
+  }
+
+  /**
+   * Adds task as a target of the scheduled event rule.
+   *
+   * @param ecsTaskTarget the EcsTask to add to the event rule
+   */
+  protected addTaskAsTarget(ecsTaskTarget: EcsTask) {
+    this.eventRule.addTarget(ecsTaskTarget);
   }
 
   /**

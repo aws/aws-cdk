@@ -86,4 +86,21 @@ describe('layers', () => {
       },
     }, ResourcePart.CompleteDefinition);
   });
+
+  test('creating a layer with a removal policy', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new lambda.LayerVersion(stack, 'layer', {
+      code: lambda.Code.fromAsset(path.join(__dirname, 'layer-code')),
+      removalPolicy: cdk.RemovalPolicy.RETAIN,
+    });
+
+    // THEN
+    expect(canonicalizeTemplate(SynthUtils.toCloudFormation(stack))).toHaveResource('AWS::Lambda::LayerVersion', {
+      UpdateReplacePolicy: 'Retain',
+      DeletionPolicy: 'Retain',
+    }, ResourcePart.CompleteDefinition);
+  });
 });

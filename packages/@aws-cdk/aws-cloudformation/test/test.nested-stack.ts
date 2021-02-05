@@ -4,10 +4,14 @@ import { expect, haveResource, matchTemplate, SynthUtils } from '@aws-cdk/assert
 import * as s3_assets from '@aws-cdk/aws-s3-assets';
 import * as sns from '@aws-cdk/aws-sns';
 import { App, CfnParameter, CfnResource, ContextProvider, LegacyStackSynthesizer, Names, Stack } from '@aws-cdk/core';
-import { Construct } from 'constructs';
 import { Test } from 'nodeunit';
 import { NestedStack } from '../lib/nested-stack';
 
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct } from 'constructs';
+
+/* eslint-disable cdk/no-core-construct */
 /* eslint-disable max-len */
 
 export = {

@@ -4,6 +4,9 @@ import * as assets from '@aws-cdk/assets';
 import * as ecr from '@aws-cdk/aws-ecr';
 import { Annotations, FeatureFlags, IgnoreMode, Stack, Token } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
+
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
 import { Construct } from 'constructs';
 
 /**

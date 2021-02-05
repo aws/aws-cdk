@@ -32,6 +32,7 @@ running on AWS Lambda, or any web application.
   - [IAM-based authorizer](#iam-based-authorizer)
   - [Lambda-based token authorizer](#lambda-based-token-authorizer)
   - [Lambda-based request authorizer](#lambda-based-request-authorizer)
+  - [Cognito User Pools authorizer](#cognito-user-pools-authorizer)
 - [Mutual TLS](#mutal-tls-mtls)
 - [Deployments](#deployments)
   - [Deep dive: Invalidation of deployments](#deep-dive-invalidation-of-deployments)
@@ -579,6 +580,25 @@ however, be modified by changing the `identitySource` property, and is required 
 Authorizers can also be passed via the `defaultMethodOptions` property within the `RestApi` construct or the `Method` construct. Unless
 explicitly overridden, the specified defaults will be applied across all `Method`s across the `RestApi` or across all `Resource`s,
 depending on where the defaults were specified.
+
+### Cognito User Pools authorizer
+
+API Gateway also allows [Amazon Cognito user pools as authorizer](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-integrate-with-cognito.html)
+
+The following snippet configures a Cognito user pool as an authorizer:
+
+```ts
+const userPool = new cognito.UserPool(stack, 'UserPool');
+
+const auth = new apigateway.CognitoUserPoolsAuthorizer(this, 'booksAuthorizer', {
+  cognitoUserPools: [userPool]
+});
+
+books.addMethod('GET', new apigateway.HttpIntegration('http://amazon.com'), {
+  authorizer: auth,
+  authorizationType: apigateway.AuthorizationType.COGNITO,
+});
+```
 
 ## Mutual TLS (mTLS)
 

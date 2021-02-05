@@ -358,7 +358,7 @@ Resources:
                 Action:
                   - ssm:GetParameter
                 Resource:
-                  - Fn::Sub: "arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter${CdkBootstrapVersion}"
+                  - Fn::Sub: "arn:${AWS::Partition}:ssm:${AWS::Region}:${AWS::AccountId}:parameter${CdkBootstrapVersion}"
             Version: '2012-10-17'
           PolicyName: default
       RoleName:

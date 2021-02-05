@@ -10,6 +10,7 @@ export * from './cache';
 export * from './build-spec';
 export * from './file-location';
 export * from './linux-gpu-build-image';
+export * from './untrusted-code-boundary-policy';
 
 // AWS::CodeBuild CloudFormation Resources:
 export * from './codebuild.generated';

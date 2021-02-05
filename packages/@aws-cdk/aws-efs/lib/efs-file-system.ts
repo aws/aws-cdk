@@ -272,7 +272,7 @@ export class FileSystem extends Resource implements IFileSystem {
       defaultPort: ec2.Port.tcp(FileSystem.DEFAULT_PORT),
     });
 
-    const subnets = props.vpc.selectSubnets(props.vpcSubnets);
+    const subnets = props.vpc.selectSubnets(props.vpcSubnets ?? { onePerAz: true });
 
     // We now have to create the mount target for each of the mentioned subnet
     let mountTargetCount = 0;

@@ -333,8 +333,11 @@ async function copyOrTransformFiles(from: string, to: string, libraries: readonl
       const cfnTypes2Classes: { [key: string]: string } = await fs.readJson(source);
       for (const cfnType of Object.keys(cfnTypes2Classes)) {
         const fqn = cfnTypes2Classes[cfnType];
-        // replace @aws-cdk/aws-<service> with <uber-package-name>/aws-<service>
-        cfnTypes2Classes[cfnType] = fqn.replace('@aws-cdk', uberPackageJson.name);
+        // replace @aws-cdk/aws-<service> with <uber-package-name>/aws-<service>,
+        // except for @aws-cdk/core, which maps just to the name of the uberpackage
+        cfnTypes2Classes[cfnType] = fqn.startsWith('@aws-cdk/core.')
+          ? fqn.replace('@aws-cdk/core', uberPackageJson.name)
+          : fqn.replace('@aws-cdk', uberPackageJson.name);
       }
       await fs.writeJson(destination, cfnTypes2Classes, { spaces: 2 });
     } else {
