@@ -223,7 +223,7 @@ nodeunitShim({
 
     'can set customer managed CMK'(test: Test) {
       // GIVEN
-      const key = new kms.Key(stack, 'CustomKey');
+      const kmsKey = new kms.Key(stack, 'CustomKey');
 
       // WHEN
       new Instance(stack, 'Instance', {
@@ -236,7 +236,7 @@ nodeunitShim({
           volume: BlockDeviceVolume.ebs(15, {
             deleteOnTermination: true,
             encrypted: true,
-            kmsKeyId: key.keyArn,
+            kmsKeyId: kmsKey,
             volumeType: EbsDeviceVolumeType.IO1,
             iops: 5000,
           }),
@@ -307,7 +307,7 @@ nodeunitShim({
           mappingEnabled: true,
           volume: BlockDeviceVolume.ebs(15, {
             deleteOnTermination: true,
-            kmsKeyId: key.keyArn,
+            kmsKeyId: key,
             volumeType: EbsDeviceVolumeType.IO1,
             iops: 5000,
           }),
@@ -380,7 +380,7 @@ nodeunitShim({
             volume: BlockDeviceVolume.ebs(15, {
               deleteOnTermination: true,
               encrypted: false,
-              kmsKeyId: key.keyArn,
+              kmsKeyId: key,
               volumeType: EbsDeviceVolumeType.IO1,
               iops: 5000,
             }),
