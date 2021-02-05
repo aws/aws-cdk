@@ -55,6 +55,7 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
   - [Modify Instance Fleet](#modify-instance-fleet)
   - [Modify Instance Group](#modify-instance-group)
 - [Glue](#glue)
+- [Glue DataBrew](#glue-databrew)
 - [Lambda](#lambda)
 - [SageMaker](#sagemaker)
   - [Create Training Job](#create-training-job)
@@ -677,6 +678,18 @@ new GlueStartJobRun(stack, 'Task', {
   },
   timeout: cdk.Duration.minutes(30),
   notifyDelayAfter: cdk.Duration.minutes(5),
+});
+```
+
+## Glue DataBrew
+
+Step Functions supports [AWS Glue DataBrew](https://docs.aws.amazon.com/step-functions/latest/dg/connect-databrew.html) through the service integration pattern.
+
+You can call the [`StartJobRun`](https://docs.aws.amazon.com/databrew/latest/dg/API_StartJobRun.html) API from a `Task` state.
+
+```ts
+new GlueDataBrewStartJobRun(stack, 'Task', {
+  Name: 'databrew-job',
 });
 ```
 

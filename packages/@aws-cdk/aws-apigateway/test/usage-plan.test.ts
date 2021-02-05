@@ -205,32 +205,4 @@ describe('usage plan', () => {
       },
     }, ResourcePart.Properties);
   });
-
-  test('UsagePlanKeys have unique logical ids', () => {
-    // GIVEN
-    const app = new cdk.App();
-    const stack = new cdk.Stack(app, 'my-stack');
-    const usagePlan = new apigateway.UsagePlan(stack, 'my-usage-plan');
-    const apiKey1 = new apigateway.ApiKey(stack, 'my-api-key-1', {
-      apiKeyName: 'my-api-key-1',
-    });
-    const apiKey2 = new apigateway.ApiKey(stack, 'my-api-key-2', {
-      apiKeyName: 'my-api-key-2',
-    });
-
-    // WHEN
-    usagePlan.addApiKey(apiKey1);
-    usagePlan.addApiKey(apiKey2);
-
-    // THEN
-    const template = app.synth().getStackByName(stack.stackName).template;
-    const logicalIds = Object.entries(template.Resources)
-      .filter(([_, v]) => (v as any).Type === 'AWS::ApiGateway::UsagePlanKey')
-      .map(([k, _]) => k);
-
-    expect(logicalIds).toEqual([
-      'myusageplanUsagePlanKeyResourcemystackmyapikey1EE9AA1B359121274',
-      'myusageplanUsagePlanKeyResourcemystackmyapikey2B4E8EB1456DC88E9',
-    ]);
-  });
 });
