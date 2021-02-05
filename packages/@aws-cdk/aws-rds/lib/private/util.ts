@@ -92,9 +92,7 @@ export function applyRemovalPolicy(cfnDatabase: CfnResource, removalPolicy?: Rem
  * Enable if explicitly provided or if the RemovalPolicy has been set to RETAIN
  */
 export function defaultDeletionProtection(deletionProtection?: boolean, removalPolicy?: RemovalPolicy): boolean | undefined {
-  return deletionProtection !== undefined
-    ? deletionProtection
-    : (removalPolicy === RemovalPolicy.RETAIN ? true : undefined);
+  return deletionProtection ?? (removalPolicy === RemovalPolicy.RETAIN ? true : undefined);
 }
 
 /**

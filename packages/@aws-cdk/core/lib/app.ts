@@ -116,7 +116,7 @@ export class App extends Stage {
       this.node.setContext(cxapi.ANALYTICS_REPORTING_ENABLED_CONTEXT, analyticsReporting);
     }
 
-    const autoSynth = props.autoSynth !== undefined ? props.autoSynth : cxapi.OUTDIR_ENV in process.env;
+    const autoSynth = props.autoSynth ?? cxapi.OUTDIR_ENV in process.env;
     if (autoSynth) {
       // synth() guarantuees it will only execute once, so a default of 'true'
       // doesn't bite manual calling of the function.
