@@ -3,11 +3,9 @@ import {
   HttpAuthorizerType,
   HttpRouteAuthorizerBindOptions,
   HttpRouteAuthorizerConfig,
-  IHttpAuthorizer,
   IHttpRouteAuthorizer,
 } from '@aws-cdk/aws-apigatewayv2';
-import { Resource, Token } from '@aws-cdk/core';
-import { Construct } from 'constructs';
+import { Token } from '@aws-cdk/core';
 
 /**
  * Properties to initialize HttpJwtAuthorizer.
@@ -44,29 +42,6 @@ export interface HttpJwtAuthorizerProps {
  * an AWS Cognito user pool.
  */
 export class HttpJwtAuthorizer implements IHttpRouteAuthorizer {
-  /**
-   * Import an existing HTTP Jwt Authorizer into this CDK app.
-   */
-  public static fromHttpJwtAuthorizerId(scope: Construct, id: string, authorizerId: string): IHttpRouteAuthorizer {
-    class Import extends Resource implements IHttpRouteAuthorizer {
-      private authorizer?: IHttpAuthorizer;
-
-      public bind(): HttpRouteAuthorizerConfig {
-
-        if (!this.authorizer) {
-          this.authorizer = HttpAuthorizer.fromHttpAuthorizerAttributes(scope, 'authorizer', { authorizerId, authorizerType: HttpAuthorizerType.JWT });
-        }
-
-        return {
-          authorizerId: this.authorizer.authorizerId,
-          authorizationType: HttpAuthorizerType.JWT,
-        };
-      }
-    }
-
-    return new Import(scope, id);
-  }
-
   private authorizer?: HttpAuthorizer;
 
   constructor(private readonly props: HttpJwtAuthorizerProps) {

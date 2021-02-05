@@ -4,7 +4,7 @@ import { Metric } from '@aws-cdk/aws-cloudwatch';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import { Duration, Stack } from '@aws-cdk/core';
 import {
-  HttpApi, HttpAuthorizerType, HttpIntegrationType, HttpMethod, HttpRouteAuthorizerBindOptions, HttpRouteAuthorizerConfig,
+  HttpApi, HttpAuthorizer, HttpAuthorizerType, HttpIntegrationType, HttpMethod, HttpRouteAuthorizerBindOptions, HttpRouteAuthorizerConfig,
   HttpRouteIntegrationBindOptions, HttpRouteIntegrationConfig, IHttpRouteAuthorizer, IHttpRouteIntegration, PayloadFormatVersion,
 } from '../../lib';
 
@@ -297,6 +297,35 @@ describe('HttpApi', () => {
     expect(stack).toHaveResource('AWS::ApiGatewayV2::Route', {
       AuthorizerId: 'auth-1234',
       AuthorizationType: 'JWT',
+    });
+  });
+
+  test('can import existing authorizer and attach to route', () => {
+    // GIVEN
+    const stack = new Stack();
+    const api = new HttpApi(stack, 'HttpApi');
+
+    const authorizer = HttpAuthorizer.fromHttpAuthorizerAttributes(stack, 'auth', {
+      authorizerId: '12345',
+      authorizerType: HttpAuthorizerType.JWT,
+    });
+
+    // WHEN
+    api.addRoutes({
+      integration: new DummyRouteIntegration(),
+      path: '/books',
+      authorizer,
+    });
+
+    api.addRoutes({
+      integration: new DummyRouteIntegration(),
+      path: '/pets',
+      authorizer,
+    });
+
+    // THEN
+    expect(stack).toHaveResource('AWS::ApiGatewayV2::Route', {
+      AuthorizerId: '12345',
     });
   });
 

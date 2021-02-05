@@ -57,32 +57,6 @@ describe('HttpJwtAuthorizer', () => {
     // THEN
     expect(stack).toCountResources('AWS::ApiGatewayV2::Authorizer', 1);
   });
-
-  test('can import authorizer using authorizerId', () => {
-    // GIVEN
-    const stack = new Stack();
-    const api = new HttpApi(stack, 'HttpApi');
-
-    const authorizer = HttpJwtAuthorizer.fromHttpJwtAuthorizerId(stack, 'auth', '12345');
-
-    // WHEN
-    api.addRoutes({
-      integration: new DummyRouteIntegration(),
-      path: '/books',
-      authorizer,
-    });
-
-    api.addRoutes({
-      integration: new DummyRouteIntegration(),
-      path: '/pets',
-      authorizer,
-    });
-
-    // THEN
-    expect(stack).toHaveResource('AWS::ApiGatewayV2::Route', {
-      AuthorizerId: '12345',
-    });
-  });
 });
 
 class DummyRouteIntegration implements IHttpRouteIntegration {

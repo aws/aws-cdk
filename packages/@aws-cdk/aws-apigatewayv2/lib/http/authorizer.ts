@@ -86,10 +86,17 @@ export class HttpAuthorizer extends Resource implements IHttpAuthorizer {
   /**
    * Import an existing HTTP Authorizer into this CDK app.
    */
-  public static fromHttpAuthorizerAttributes(scope: Construct, id: string, attrs: HttpAuthorizerAttributes): IHttpAuthorizer {
-    class Import extends Resource implements IHttpAuthorizer {
+  public static fromHttpAuthorizerAttributes(scope: Construct, id: string, attrs: HttpAuthorizerAttributes): IHttpRouteAuthorizer {
+    class Import extends Resource implements IHttpRouteAuthorizer {
       public readonly authorizerId = attrs.authorizerId;
       public readonly authorizerType = attrs.authorizerType;
+
+      public bind(): HttpRouteAuthorizerConfig {
+        return {
+          authorizerId: attrs.authorizerId,
+          authorizationType: attrs.authorizerType,
+        };
+      }
     }
     return new Import(scope, id);
   }
