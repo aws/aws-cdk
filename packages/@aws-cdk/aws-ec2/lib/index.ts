@@ -4,6 +4,7 @@ export * from './cfn-init';
 export * from './cfn-init-elements';
 export * from './instance-types';
 export * from './instance';
+export * from './launch-template';
 export * from './machine-image';
 export * from './nat';
 export * from './network-acl';
