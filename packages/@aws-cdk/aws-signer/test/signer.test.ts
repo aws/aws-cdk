@@ -72,14 +72,22 @@ describe('signing profile', () => {
     });
   });
 
-  test( 'import does not create any resources', () => {
-    signer.SigningProfile.fromSigningProfileAttributes(stack, 'Imported', {
-      signingProfileArn: '*',
-      signingProfileProfileName: '*',
-      signingProfileProfileVersion: '*',
-      signingProfileProfileVersionArn: '*',
-    } );
+  describe('import', () => {
+    test('from signingProfileProfileName and signingProfileProfileVersion', () => {
+      const signingProfileProfileName = 'test';
+      const signingProfileProfileVersion = 'xxxxxxxx';
+      const signingProfile = signer.SigningProfile.fromSigningProfileAttributes(stack, 'Imported', {
+        signingProfileProfileName,
+        signingProfileProfileVersion,
+      });
 
-    expect(stack).toMatchTemplate({});
-  });
+      expect(signingProfile.signingProfileArn).toBe(
+        `arn:\${Token[AWS.Partition.3]}:signer:\${Token[AWS.Region.4]}:\${Token[AWS.AccountId.0]}://signing-profiles/${signingProfileProfileName}`,
+      );
+      expect(signingProfile.signingProfileProfileVersionArn).toBe(
+        `arn:\${Token[AWS.Partition.3]}:signer:\${Token[AWS.Region.4]}:\${Token[AWS.AccountId.0]}://signing-profiles/${signingProfileProfileName}/${signingProfileProfileVersion}`,
+      );
+      expect(stack).toMatchTemplate({});
+    });
+  } );
 });

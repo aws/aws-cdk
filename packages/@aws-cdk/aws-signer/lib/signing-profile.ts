@@ -1,4 +1,4 @@
-import { Duration, IResource, Resource } from '@aws-cdk/core';
+import { Duration, IResource, Resource, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnSigningProfile } from './signer.generated';
 
@@ -61,11 +61,6 @@ export interface SigningProfileProps {
  */
 export interface SigningProfileAttributes {
   /**
-   * The ARN of the signing profile.
-   */
-  readonly signingProfileArn: string;
-
-  /**
    * The name of signing profile.
    */
   readonly signingProfileProfileName: string;
@@ -74,11 +69,6 @@ export interface SigningProfileAttributes {
    * The version of signing profile.
    */
   readonly signingProfileProfileVersion: string;
-
-  /**
-   * The ARN of signing profile version.
-   */
-  readonly signingProfileProfileVersionArn: string;
 }
 
 /**
@@ -96,16 +86,28 @@ export class SigningProfile extends Resource implements ISigningProfile {
    */
   public static fromSigningProfileAttributes( scope: Construct, id: string, attrs: SigningProfileAttributes): ISigningProfile {
     class Import extends Resource implements ISigningProfile {
-      public readonly signingProfileArn = attrs.signingProfileArn;
+      public readonly signingProfileArn: string;
       public readonly signingProfileProfileName = attrs.signingProfileProfileName;
       public readonly signingProfileProfileVersion = attrs.signingProfileProfileVersion;
-      public readonly signingProfileProfileVersionArn = attrs.signingProfileProfileVersionArn;
+      public readonly signingProfileProfileVersionArn: string;
 
-      constructor() {
+      constructor(signingProfileArn: string, signingProfileProfileVersionArn: string) {
         super(scope, id);
+        this.signingProfileArn = signingProfileArn;
+        this.signingProfileProfileVersionArn = signingProfileProfileVersionArn;
       }
     }
-    return new Import();
+    const signingProfileArn = Stack.of(scope).formatArn({
+      service: 'signer',
+      resource: '',
+      resourceName: `/signing-profiles/${attrs.signingProfileProfileName}`,
+    });
+    const signingProfileProfileVersionArn = Stack.of(scope).formatArn({
+      service: 'signer',
+      resource: '',
+      resourceName: `/signing-profiles/${attrs.signingProfileProfileName}/${attrs.signingProfileProfileVersion}`,
+    });
+    return new Import(signingProfileArn, signingProfileProfileVersionArn);
   }
 
   public readonly signingProfileArn: string;
