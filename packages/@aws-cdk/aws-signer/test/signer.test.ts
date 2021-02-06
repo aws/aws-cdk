@@ -2,13 +2,8 @@ import '@aws-cdk/assert/jest';
 import * as cdk from '@aws-cdk/core';
 import * as signer from '../lib';
 
-test( 'No tests are specified for this package', () => {
-  expect( true ).toBe( true );
-} );
-
 const EXAMPLE_PLATFORM_ID = 'AWSLambda-SHA384-ECDSA';
 
-// TODO: Implement tests
 let app: cdk.App;
 let stack: cdk.Stack;
 beforeEach( () => {

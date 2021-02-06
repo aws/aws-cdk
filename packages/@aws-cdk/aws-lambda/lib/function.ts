@@ -8,6 +8,7 @@ import * as sqs from '@aws-cdk/aws-sqs';
 import { Annotations, CfnResource, Duration, Fn, Lazy, Names, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { Code, CodeConfig } from './code';
+import { ICodeSigningConfig } from './code-signing-config';
 import { EventInvokeConfigOptions } from './event-invoke-config';
 import { IEventSource } from './event-source';
 import { FileSystem } from './filesystem';
@@ -19,7 +20,6 @@ import { CfnFunction } from './lambda.generated';
 import { ILayerVersion } from './layers';
 import { LogRetentionRetryOptions } from './log-retention';
 import { Runtime } from './runtime';
-import { CodeSigningConfig } from 'aws-lambda/lib/code-signing-config';
 
 /**
  * X-Ray Tracing Modes (https://docs.aws.amazon.com/lambda/latest/dg/API_TracingConfig.html)
@@ -292,7 +292,12 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
    */
   readonly environmentEncryption?: kms.IKey;
 
-  readonly codeSigningConfig?: CodeSigningConfig;
+  /**
+   * Code signing config associated with this function
+   *
+   * @default - Not Sign the Code
+   */
+  readonly codeSigningConfig?: ICodeSigningConfig;
 }
 
 export interface FunctionProps extends FunctionOptions {
@@ -529,7 +534,12 @@ export class Function extends FunctionBase {
 
   private _logGroup?: logs.ILogGroup;
 
-  private readonly codeSigningConfig?: CodeSigningConfig;
+  /**
+   * Code signing config associated with this function
+   *
+   * @default - Not Sign the Code
+   */
+  public readonly codeSigningConfig?: ICodeSigningConfig;
 
   /**
    * Environment variables for this function
@@ -616,6 +626,8 @@ export class Function extends FunctionBase {
       }];
     }
 
+    this.codeSigningConfig = props.codeSigningConfig;
+
     const resource: CfnFunction = new CfnFunction(this, 'Resource', {
       functionName: this.physicalName,
       description: props.description,
@@ -646,7 +658,7 @@ export class Function extends FunctionBase {
       }),
       kmsKeyArn: props.environmentEncryption?.keyArn,
       fileSystemConfigs,
-      codeSigningConfigArn: props.codeSigningConfig.codeSigningConfigArn
+      codeSigningConfigArn: this.codeSigningConfig?.codeSigningConfigArn,
     });
 
     resource.node.addDependency(this.role);

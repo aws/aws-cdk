@@ -32,7 +32,7 @@ export interface ISigningProfile extends IResource {
 }
 
 /**
- * Construction properties for a Signer Profile object
+ * Construction properties for a Signing Profile object
  */
 export interface SigningProfileProps {
   /**
@@ -82,7 +82,7 @@ export interface SigningProfileAttributes {
 }
 
 /**
- * Defines a Signer Profile.
+ * Defines a Signing Profile.
  *
  * @resource AWS::Signer::SigningProfile
  */
