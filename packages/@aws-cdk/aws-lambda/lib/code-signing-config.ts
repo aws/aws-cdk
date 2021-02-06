@@ -109,9 +109,9 @@ export class CodeSigningConfig extends Resource implements ICodeSigningConfig {
       physicalName: props.codeSigningConfigName,
     });
 
-    const signingProfileVersionArns = props.signingProfiles.map( signingProfile => {
+    const signingProfileVersionArns = props.signingProfiles.map(signingProfile => {
       return signingProfile.signingProfileProfileVersionArn;
-    } );
+    });
 
     const resource: CfnCodeSigningConfig = new CfnCodeSigningConfig(this, 'Resource', {
       allowedPublishers: {
