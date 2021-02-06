@@ -1,5 +1,5 @@
-import { Construct } from 'constructs';
 import { Duration, IResource, Resource } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CfnSigningProfile } from './signer.generated';
 
 /**
@@ -124,7 +124,7 @@ export class SigningProfile extends Resource implements ISigningProfile {
         type: 'DAYS',
         value: props.signatureValidityPeriod?.toDays(),
       } : {
-        type: 'MONTH',
+        type: 'MONTHS',
         value: 135,
       },
     } );
