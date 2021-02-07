@@ -278,7 +278,7 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
 
   const execute = options.execute === undefined ? true : options.execute;
   if (execute) {
-    debug('Initiating execution of changeset %s on stack %s', changeSet.Id, deployName);
+    debug('Initiating execution of changeset %s on stack %s', CDK_CHANGE_SET_NAME, deployName);
     await cfn.executeChangeSet({ StackName: deployName, ChangeSetName: CDK_CHANGE_SET_NAME }).promise();
     // eslint-disable-next-line max-len
     const monitor = options.quiet ? undefined : StackActivityMonitor.withDefaultPrinter(cfn, deployName, stackArtifact, {
