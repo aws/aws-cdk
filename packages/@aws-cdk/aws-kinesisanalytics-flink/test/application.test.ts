@@ -168,7 +168,7 @@ describe('Application', () => {
   test('providing a custom runtime', () => {
     new flink.Application(stack, 'FlinkApplication', {
       ...requiredProps,
-      runtime: new flink.Runtime('custom'),
+      runtime: flink.Runtime.of('custom'),
     });
 
     expect(stack).toHaveResourceLike('AWS::KinesisAnalyticsV2::Application', {

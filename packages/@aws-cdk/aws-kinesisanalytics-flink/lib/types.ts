@@ -42,25 +42,26 @@ export interface PropertyGroups {
 
 /**
  * Available Flink runtimes for Kinesis Analytics.
- *
- * @example
- * // Creating a new runtime that isn't in CDK yet.
- * const runtime = new Runtime(FLINK-9_99);
  */
 export class Runtime {
   /** Flink Version 1.6 */
-  public static readonly FLINK_1_6 = new Runtime('FLINK-1_6');
+  public static readonly FLINK_1_6 = Runtime.of('FLINK-1_6');
 
   /** Flink Version 1.8 */
-  public static readonly FLINK_1_8 = new Runtime('FLINK-1_8');
+  public static readonly FLINK_1_8 = Runtime.of('FLINK-1_8');
 
   /** Flink Version 1.11 */
-  public static readonly FLINK_1_11 = new Runtime('FLINK-1_11');
+  public static readonly FLINK_1_11 = Runtime.of('FLINK-1_11');
+
+  /** Create a new Runtime with with an arbitrary Flink version string */
+  public static of(value: string) {
+    return new Runtime(value);
+  }
 
   /** The Cfn string that represents a version of Flink */
   public readonly value: string;
 
-  public constructor(value: string) {
+  private constructor(value: string) {
     this.value = value;
   }
 }
