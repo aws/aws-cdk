@@ -140,29 +140,18 @@ integTest('nested stack with parameters', withDefaultFixture(async (fixture) => 
 }));
 
 integTest('deploy without execute a named change set', withDefaultFixture(async (fixture) => {
-  const changeSetName = 'custom-change-set-name';
   const stackArn = await fixture.cdkDeploy('test-2', {
-    options: ['--no-execute', '--change-set-name', changeSetName],
+    options: ['--no-execute'],
     captureStderr: false,
   });
   // verify that we only deployed a single stack (there's a single ARN in the output)
   expect(stackArn.split('\n').length).toEqual(1);
 
   //verify the stack was created but resource deployment is pending review
-  const stackResponse = await fixture.aws.cloudFormation('describeStacks', {
+  const response = await fixture.aws.cloudFormation('describeStacks', {
     StackName: stackArn,
   });
-  expect(stackResponse.Stacks?.[0].StackStatus).toEqual('REVIEW_IN_PROGRESS');
-
-  //verify a change set was created with the provided name
-  const changeSetResponse = await fixture.aws.cloudFormation('listChangeSets', {
-    StackName: stackArn,
-  });
-
-  const changeSets = changeSetResponse.Summaries || [];
-  expect(changeSets.length).toEqual(1);
-  expect(changeSets[0].ChangeSetName).toEqual(changeSetName);
-  expect(changeSets[0].Status).toEqual('CREATE_COMPLETE');
+  expect(response.Stacks?.[0].StackStatus).toEqual('REVIEW_IN_PROGRESS');
 }));
 
 integTest('security related changes without a CLI are expected to fail', withDefaultFixture(async (fixture) => {

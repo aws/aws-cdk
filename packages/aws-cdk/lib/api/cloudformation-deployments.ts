@@ -179,7 +179,6 @@ export class CloudFormationDeployments {
       toolkitInfo,
       tags: options.tags,
       execute: options.execute,
-      changeSetName: options.changeSetName,
       force: options.force,
       parameters: options.parameters,
       usePreviousParameters: options.usePreviousParameters,

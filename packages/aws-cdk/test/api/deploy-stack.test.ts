@@ -478,7 +478,9 @@ test('empty change set is deleted when --force and --execute are given', async (
   // THEN
   expect(cfnMocks.createChangeSet).toHaveBeenCalled();
   expect(cfnMocks.executeChangeSet).not.toHaveBeenCalled();
-  expect(cfnMocks.deleteChangeSet).toHaveBeenCalled();
+
+  //the first deletion is for any existing cdk change sets, the second is for the deleting the new empty change set
+  expect(cfnMocks.deleteChangeSet).toHaveBeenCalledTimes(2);
 });
 
 test('empty change set is not deleted if --force and --no-execute is given', async () => {
@@ -500,7 +502,9 @@ test('empty change set is not deleted if --force and --no-execute is given', asy
   // THEN
   expect(cfnMocks.createChangeSet).toHaveBeenCalled();
   expect(cfnMocks.executeChangeSet).not.toHaveBeenCalled();
-  expect(cfnMocks.deleteChangeSet).not.toHaveBeenCalled();
+
+  //the first deletion is for any existing cdk change sets
+  expect(cfnMocks.deleteChangeSet).toHaveBeenCalledTimes(1);
 });
 
 test('use S3 url for stack deployment if present in Stack Artifact', async () => {
