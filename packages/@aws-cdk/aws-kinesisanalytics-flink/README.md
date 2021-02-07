@@ -15,15 +15,14 @@
 
 <!--END STABILITY BANNER-->
 
-The `@aws-cdk/aws-kinesisanalyticsv2` package provides constructs for
-creating Kinesis Data Analytics applications.
+This package provides constructs for creating Kinesis Analytics Flink
+applications. To learn more about using using managed Flink applications, see
+the [AWS developer
+guide](https://docs.aws.amazon.com/kinesisanalytics/latest/java/what-is.html).
 
-For more information, see the AWS documentation for [Kinesis Data
-Analytics](https://aws.amazon.com/kinesis/data-analytics/).
+## Creating Flink Applications
 
-## Creating a Flink Kinesis Analytics Application
-
-To create a new Flink application, use the FlinkApplication construct.
+To create a new Flink application, use the `Application` construct:
 
 [simple flink application](test/integ.application.lit.ts)
 
@@ -40,14 +39,12 @@ properties](https://docs.aws.amazon.com/kinesisanalytics/latest/java/how-propert
 ```ts
 const flinkApp = new flink.Application(this, 'Application', {
   // ...
-  propertyGroups: [
-    {
-      FlinkApplicationProperties: {
-        inputStreamName: 'my-input-kinesis-stream',
-        outputStreamName: 'my-output-kinesis-stream',
-      },
+  propertyGroups: {
+    FlinkApplicationProperties: {
+      inputStreamName: 'my-input-kinesis-stream',
+      outputStreamName: 'my-output-kinesis-stream',
     },
-  ],
+  },
 });
 ```
 
@@ -75,7 +72,3 @@ const flinkApp = new flink.Application(this, 'Application', {
   logEncryptionKey: someKmsKey, // default is no encryption
 });
 ```
-
-## Creating an SQL Kinesis Analytics Application
-
-Constructs for SQL applications are not implemented yet.
