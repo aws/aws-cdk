@@ -238,7 +238,7 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
 
   const update = cloudFormationStack.exists && cloudFormationStack.stackStatus.name !== 'REVIEW_IN_PROGRESS';
 
-  debug(`Attempting to create ChangeSet to ${update ? 'update' : 'create'} stack ${deployName}`);
+  debug(`Attempting to create ChangeSet ${CDK_CHANGE_SET_NAME} to ${update ? 'update' : 'create'} stack ${deployName}`);
   print('%s: creating CloudFormation changeset...', colors.bold(deployName));
   const changeSet = await cfn.createChangeSet({
     StackName: deployName,
@@ -270,7 +270,7 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
   if (changeSetHasNoChanges(changeSetDescription)) {
     debug('No changes are to be performed on %s.', deployName);
     if (options.execute) {
-      debug('Deleting empty change set');
+      debug('Deleting empty change set %s', changeSet.Id);
       await cfn.deleteChangeSet({ StackName: deployName, ChangeSetName: CDK_CHANGE_SET_NAME }).promise();
     }
     return { noOp: true, outputs: cloudFormationStack.outputs, stackArn: changeSet.StackId!, stackArtifact };
@@ -286,7 +286,7 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
       progress: options.progress,
       changeSetCreationTime: changeSetDescription.CreationTime,
     }).start();
-    debug('Execution of changeset %s on stack %s has started; waiting for the update to complete...', changeSet.Id, deployName);
+    debug('Execution of changeset %s on stack %s has started; waiting for the update to complete...', CDK_CHANGE_SET_NAME, deployName);
     try {
       const finalStack = await waitForStackDeploy(cfn, deployName);
 

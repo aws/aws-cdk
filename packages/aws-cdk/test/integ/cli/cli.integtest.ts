@@ -139,7 +139,7 @@ integTest('nested stack with parameters', withDefaultFixture(async (fixture) => 
   expect(response.StackResources?.length).toEqual(1);
 }));
 
-integTest('deploy without execute a named change set', withDefaultFixture(async (fixture) => {
+integTest('deploy without execute', withDefaultFixture(async (fixture) => {
   const stackArn = await fixture.cdkDeploy('test-2', {
     options: ['--no-execute'],
     captureStderr: false,
@@ -147,10 +147,10 @@ integTest('deploy without execute a named change set', withDefaultFixture(async 
   // verify that we only deployed a single stack (there's a single ARN in the output)
   expect(stackArn.split('\n').length).toEqual(1);
 
-  //verify the stack was created but resource deployment is pending review
   const response = await fixture.aws.cloudFormation('describeStacks', {
     StackName: stackArn,
   });
+
   expect(response.Stacks?.[0].StackStatus).toEqual('REVIEW_IN_PROGRESS');
 }));
 
