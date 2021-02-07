@@ -1,7 +1,7 @@
 import { arrayWith, objectLike, ResourcePart } from '@aws-cdk/assert';
 import '@aws-cdk/assert/jest';
 import * as iam from '@aws-cdk/aws-iam';
-import * as kms from '@aws-cdk/aws-kms';
+import * as logs from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as core from '@aws-cdk/core';
 import * as path from 'path';
@@ -481,60 +481,16 @@ describe('Application', () => {
     }, ResourcePart.CompleteDefinition);
   });
 
-  test('logRetentionDays setting', () => {
+  test('logGroup setting', () => {
     new flink.Application(stack, 'FlinkApplication', {
       ...requiredProps,
-      logRetention: core.Duration.days(5),
+      logGroup: new logs.LogGroup(stack, 'LogGroup', {
+        logGroupName: 'custom',
+      }),
     });
 
     expect(stack).toHaveResource('AWS::Logs::LogGroup', {
-      RetentionInDays: 5,
-    });
-  });
-
-  test('logRemovalPolicy setting', () => {
-    new flink.Application(stack, 'FlinkApplication', {
-      ...requiredProps,
-      logRemovalPolicy: core.RemovalPolicy.DESTROY,
-    });
-
-    expect(stack).toHaveResourceLike('AWS::Logs::LogGroup', {
-      UpdateReplacePolicy: 'Delete',
-      DeletionPolicy: 'Delete',
-    }, ResourcePart.CompleteDefinition);
-  });
-
-  test('logGroupName setting', () => {
-    new flink.Application(stack, 'FlinkApplication', {
-      ...requiredProps,
-      logGroupName: 'my-group',
-    });
-
-    expect(stack).toHaveResourceLike('AWS::Logs::LogGroup', {
-      LogGroupName: 'my-group',
-    });
-  });
-
-  test('logStreamName setting', () => {
-    new flink.Application(stack, 'FlinkApplication', {
-      ...requiredProps,
-      logStreamName: 'my-stream',
-    });
-
-    expect(stack).toHaveResourceLike('AWS::Logs::LogStream', {
-      LogStreamName: 'my-stream',
-    });
-  });
-
-  test('logEncryptionKey setting', () => {
-    const key = new kms.Key(stack, 'Key');
-    new flink.Application(stack, 'FlinkApplication', {
-      ...requiredProps,
-      logEncryptionKey: key,
-    });
-
-    expect(stack).toHaveResourceLike('AWS::Logs::LogGroup', {
-      KmsKeyId: stack.resolve(key.keyArn),
+      LogGroupName: 'custom',
     });
   });
 

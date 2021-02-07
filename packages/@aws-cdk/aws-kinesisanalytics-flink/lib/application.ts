@@ -1,6 +1,5 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as ka from '@aws-cdk/aws-kinesisanalytics';
-import * as kms from '@aws-cdk/aws-kms';
 import * as logs from '@aws-cdk/aws-logs';
 import * as core from '@aws-cdk/core';
 import { Construct } from 'constructs';
@@ -8,7 +7,7 @@ import { ApplicationCode } from './application-code';
 import { environmentProperties } from './private/environment-properties';
 import { flinkApplicationConfiguration } from './private/flink-application-configuration';
 import { validateFlinkApplicationProps as validateApplicationProps } from './private/validation';
-import { LogLevel as LogLevel, MetricsLevel as MetricsLevel, PropertyGroups, Runtime as Runtime } from './types';
+import { LogLevel, MetricsLevel, PropertyGroups, Runtime } from './types';
 
 /**
  * An interface expressing the public properties on both an imported and
@@ -178,39 +177,11 @@ export interface ApplicationProps {
   readonly removalPolicy?: core.RemovalPolicy;
 
   /**
-   * How long to retain logs.
+   * The log group to send log entries to.
    *
-   * @default two years
+   * @default CDK's default LogGroup
    */
-  readonly logRetention?: core.Duration;
-
-  /**
-   * Whether to keep or delete logs when removing a FlinkApplication.
-   *
-   * @default RETAIN
-   */
-  readonly logRemovalPolicy?: core.RemovalPolicy;
-
-  /**
-   * The name of the log group for CloudWatch logs.
-   *
-   * @default Cloudformation generated
-   */
-  readonly logGroupName?: string;
-
-  /**
-   * The name of the log stream for CloudWatch logs.
-   *
-   * @default Cloudformation generated
-   */
-  readonly logStreamName?: string;
-
-  /**
-   * The KMS encryption key to use for CloudWatch logs.
-   *
-   * @default No encryption used
-   */
-  readonly logEncryptionKey?: kms.IKey;
+  readonly logGroup?: logs.ILogGroup;
 }
 
 /**
@@ -314,18 +285,8 @@ export class Application extends ApplicationBase {
     });
     resource.node.addDependency(this.role);
 
-    const logGroup = new logs.LogGroup(this, 'LogGroup', {
-      logGroupName: props.logGroupName,
-      retention: props.logRetention?.toDays(),
-      removalPolicy: props.logRemovalPolicy,
-      encryptionKey: props.logEncryptionKey,
-    });
-
-    const logStream = new logs.LogStream(this, 'LogStream', {
-      logGroup,
-      logStreamName: props.logStreamName,
-      removalPolicy: props.logRemovalPolicy,
-    });
+    const logGroup = props.logGroup ?? new logs.LogGroup(this, 'LogGroup');
+    const logStream = new logs.LogStream(this, 'LogStream', { logGroup });
 
     /* Permit logging */
 
