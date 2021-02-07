@@ -47,9 +47,7 @@
     "build+test": "yarn build && yarn test",
     "build+test+package": "yarn build+test && yarn package",
     "compat": "cdk-compat",
-    "rosetta:extract": "yarn --silent jsii-rosetta extract",
-    "cfn2ts": "cfn2ts",
-    "gen": "cfn2ts"
+    "rosetta:extract": "yarn --silent jsii-rosetta extract"
   },
   "keywords": [
     "aws",
@@ -110,7 +108,6 @@
   },
   "cdk-build": {
     "jest": true,
-    "cloudformation": [],
     "env": {
       "AWSLINT_BASE_CONSTRUCT": true
     }
