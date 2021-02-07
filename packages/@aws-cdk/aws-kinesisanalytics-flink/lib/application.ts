@@ -214,6 +214,27 @@ export interface ApplicationProps {
 }
 
 /**
+ * An imported Flink application.
+ */
+class Import extends ApplicationBase {
+  public readonly grantPrincipal: iam.IPrincipal;
+  public readonly role?: iam.IRole;
+  public readonly applicationName: string;
+  public readonly applicationArn: string;
+
+  constructor(scope: Construct, id: string, attrs: { applicationArn: string, applicationName: string }) {
+    super(scope, id);
+
+    // Imported applications have no associated role or grantPrincipal
+    this.grantPrincipal = new iam.UnknownPrincipal({ resource: this });
+    this.role = undefined;
+
+    this.applicationArn = attrs.applicationArn;
+    this.applicationName = attrs.applicationName;
+  }
+}
+
+/**
  * The L2 construct for Flink Kinesis Data Applications.
  *
  * @resource AWS::KinesisAnalyticsV2::Application
@@ -226,16 +247,9 @@ export class Application extends ApplicationBase {
    * applicationName.
    */
   public static fromApplicationName(scope: Construct, id: string, applicationName: string): IApplication {
-    class Import extends ApplicationBase {
-      // Imported applications have no associated role or grantPrincipal
-      public readonly role = undefined;
-      public readonly grantPrincipal = new iam.UnknownPrincipal({ resource: this });
+    const applicationArn = core.Stack.of(scope).formatArn(applicationArnComponents(applicationName));
 
-      public readonly applicationName = applicationName;
-      public readonly applicationArn = core.Stack.of(this).formatArn(applicationArnComponents(applicationName));
-    }
-
-    return new Import(scope, id);
+    return new Import(scope, id, { applicationArn, applicationName });
   }
 
   /**
@@ -243,16 +257,12 @@ export class Application extends ApplicationBase {
    * applicationArn.
    */
   public static fromApplicationArn(scope: Construct, id: string, applicationArn: string): IApplication {
-    class Import extends ApplicationBase {
-      // Imported applications have no associated role or grantPrincipal
-      public readonly role = undefined;
-      public readonly grantPrincipal = new iam.UnknownPrincipal({ resource: this });
-
-      public readonly applicationName = applicationArn.split('/')[1];
-      public readonly applicationArn = applicationArn;
+    const applicationName = core.Stack.of(scope).parseArn(applicationArn).resourceName;
+    if (!applicationName) {
+      throw new Error(`applicationArn for fromApplicationArn (${applicationArn}) must include resource name`);
     }
 
-    return new Import(scope, id);
+    return new Import(scope, id, { applicationArn, applicationName });
   }
 
   public readonly applicationArn: string;
