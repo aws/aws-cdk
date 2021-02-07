@@ -72,7 +72,7 @@ trap "rm -rf $MERKLE_BUILD_CACHE" EXIT
 
 echo "============================================================================================="
 echo "building..."
-time lerna run $bail --stream $runtarget || fail
+time lerna run $bail --concurrency=1 --stream $runtarget || fail
 
 if [ "$check_compat" == "true" ]; then
   /bin/bash scripts/check-api-compatibility.sh
