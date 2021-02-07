@@ -4,6 +4,23 @@ import * as s3_assets from '@aws-cdk/aws-s3-assets';
 import { Construct } from '@aws-cdk/core';
 
 /**
+ * The return type of {@link ApplicationCode.bind}. This represents
+ * CloudFormation configuration and an s3 bucket holding the Flink application
+ * JAR file.
+ */
+export interface ApplicationCodeConfig {
+  /**
+   * Low-level Cloudformation ApplicationConfigurationProperty
+   */
+  readonly applicationCodeConfigurationProperty: ka.CfnApplicationV2.ApplicationConfigurationProperty;
+
+  /**
+   * S3 Bucket that stores the Flink application code
+   */
+  readonly bucket: s3.IBucket;
+}
+
+/**
  * Code configuration providing the location to a Flink application JAR file.
  */
 export abstract class ApplicationCode {
@@ -119,21 +136,4 @@ class AssetApplicationCode extends ApplicationCode {
   get bucket(): s3.IBucket | undefined {
     return this._asset?.bucket;
   }
-}
-
-/**
- * The return type of {@link ApplicationCode.bind}. This represents
- * CloudFormation configuration and an s3 bucket holding the Flink application
- * JAR file.
- */
-export interface ApplicationCodeConfig {
-  /**
-   * Low-level Cloudformation ApplicationConfigurationProperty
-   */
-  readonly applicationCodeConfigurationProperty: ka.CfnApplicationV2.ApplicationConfigurationProperty;
-
-  /**
-   * S3 Bucket that stores the Flink application code
-   */
-  readonly bucket: s3.IBucket;
 }
