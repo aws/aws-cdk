@@ -55,9 +55,12 @@ jobs:
           lerna exec --parallel ncu -- --upgrade --filter=@types/node,@types/fs-extra --target=minor
           lerna exec --parallel ncu -- --upgrade --filter=typescript --target=patch
           lerna exec --parallel ncu -- --upgrade --reject='@types/node,@types/fs-extra,constructs,typescript,aws-sdk,${{ steps.list-packages.outputs.list }}'  --target=minor
-      # This will create a brand new `yarn.lock` file (this is more efficient than `yarn install && yarn upgrade`)
-      - name: Run "yarn install --force"
-        run: yarn install --force
+      # This will ensure the current lockfile is up-to-date with the dependency specifications (necessary for "yarn update" to run)
+      - name: Run "yarn install"
+        run: yarn install
+
+      - name: Run "yarn upgrade"
+        run: yarn upgrade
 
       - name: Make Pull Request
         uses: peter-evans/create-pull-request@v3
