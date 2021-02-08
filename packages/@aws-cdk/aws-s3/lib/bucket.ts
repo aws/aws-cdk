@@ -148,7 +148,7 @@ export interface IBucket extends IResource {
    * of written files will also be granted to the same principal.
    *
    * Before CDK version 1.85.0, this method granted the `s3:PutObject*` permission that included `s3:PutObjectAcl`,
-   * which could be used to make objects more accessible than the Bucket itself.
+   * which could be used to grant read/write object access to IAM principals in other accounts.
    * If you want to get rid of that behavior, update your CDK version to 1.85.0 or later,
    * and make sure the `@aws-cdk/aws-s3:grantWriteWithoutAcl` feature flag is set to `true`
    * in the `context` key of your cdk.json file.
@@ -199,7 +199,7 @@ export interface IBucket extends IResource {
    * encrypt/decrypt will also be granted.
    *
    * Before CDK version 1.85.0, this method granted the `s3:PutObject*` permission that included `s3:PutObjectAcl`,
-   * which could be used to make objects more accessible than the Bucket itself.
+   * which could be used to grant read/write object access to IAM principals in other accounts.
    * If you want to get rid of that behavior, update your CDK version to 1.85.0 or later,
    * and make sure the `@aws-cdk/aws-s3:grantWriteWithoutAcl` feature flag is set to `true`
    * in the `context` key of your cdk.json file.
