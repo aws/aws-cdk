@@ -118,7 +118,7 @@ export class CodeSigningConfig extends Resource implements ICodeSigningConfig {
         signingProfileVersionArns,
       },
       codeSigningPolicies: {
-        untrustedArtifactOnDeployment: props.untrustedArtifactOnDeployment || UntrustedArtifactOnDeployment.WARN,
+        untrustedArtifactOnDeployment: props.untrustedArtifactOnDeployment ?? UntrustedArtifactOnDeployment.WARN,
       },
       description: props.description,
     });
