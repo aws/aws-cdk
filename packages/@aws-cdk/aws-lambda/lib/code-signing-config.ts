@@ -24,7 +24,7 @@ export enum UntrustedArtifactOnDeployment {
 export interface ICodeSigningConfig extends IResource {
   /**
    * The ARN of Code Signing Config
-   * @attribute CodeSigningConfigArn
+   * @attribute
    */
   readonly codeSigningConfigArn: string;
 
