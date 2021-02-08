@@ -22,7 +22,6 @@ class TestStack extends Stack {
       encryptionAtRest: {
         enabled: true,
       },
-      // test the access policies custom resource works
       accessPolicies: [
         new iam.PolicyStatement({
           effect: iam.Effect.ALLOW,

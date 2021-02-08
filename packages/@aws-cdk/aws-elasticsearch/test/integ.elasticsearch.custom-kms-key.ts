@@ -26,7 +26,6 @@ class TestStack extends Stack {
         enabled: true,
         kmsKey: key,
       },
-      // test the access policies custom resource works
       accessPolicies: [
         new iam.PolicyStatement({
           effect: iam.Effect.ALLOW,
