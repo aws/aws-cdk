@@ -41,10 +41,10 @@ export interface SigningProfileProps {
   readonly platformId: string;
 
   /**
-   * The validity period override for any signature generated using
-   * this signing profile. If unspecified, the default is 135 months.
+   * The validity period for signatures generated using
+   * this signing profile.
    *
-   * @default - 135 MONTHS
+   * @default - 135 months
    */
   readonly signatureValidityPeriod?: Duration;
 

@@ -24,13 +24,13 @@ export enum UntrustedArtifactOnDeployment {
 export interface ICodeSigningConfig extends IResource {
   /**
    * The ARN of Code Signing Config
-   * @attribute CodeSigningConfigArn
+   * @attribute
    */
   readonly codeSigningConfigArn: string;
 
   /**
    * The id of Code Signing Config
-   * @attribute CodeSigningConfigId
+   * @attribute
    */
   readonly codeSigningConfigId: string;
 }
@@ -94,8 +94,8 @@ export class CodeSigningConfig extends Resource implements ICodeSigningConfig {
     return new Import(codeSigningProfileId);
   }
 
-  readonly codeSigningConfigArn: string;
-  readonly codeSigningConfigId: string;
+  public readonly codeSigningConfigArn: string;
+  public readonly codeSigningConfigId: string;
 
   constructor(scope: Construct, id: string, props: CodeSigningConfigProps) {
     super(scope, id);
@@ -109,7 +109,7 @@ export class CodeSigningConfig extends Resource implements ICodeSigningConfig {
         signingProfileVersionArns,
       },
       codeSigningPolicies: {
-        untrustedArtifactOnDeployment: props.untrustedArtifactOnDeployment || UntrustedArtifactOnDeployment.WARN,
+        untrustedArtifactOnDeployment: props.untrustedArtifactOnDeployment ?? UntrustedArtifactOnDeployment.WARN,
       },
       description: props.description,
     });
