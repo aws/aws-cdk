@@ -61,14 +61,7 @@ export interface CodeSigningConfigProps {
    *
    * @default - No description.
    */
-  readonly description?: string
-
-  /**
-   * Physical name of this Code Signing Config.
-   *
-   * @default - Assigned by CloudFormation (recommended).
-   */
-  readonly codeSigningConfigName?: string;
+  readonly description?: string,
 }
 
 /**
@@ -105,9 +98,7 @@ export class CodeSigningConfig extends Resource implements ICodeSigningConfig {
   readonly codeSigningConfigId: string;
 
   constructor(scope: Construct, id: string, props: CodeSigningConfigProps) {
-    super(scope, id, {
-      physicalName: props.codeSigningConfigName,
-    });
+    super(scope, id);
 
     const signingProfileVersionArns = props.signingProfiles.map(signingProfile => {
       return signingProfile.signingProfileProfileVersionArn;
