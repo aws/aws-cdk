@@ -255,6 +255,8 @@ describe('bucket', () => {
 
     new s3.Bucket(stack, 'MyBucket', { encryptionKey, encryption: s3.BucketEncryption.KMS });
 
+    expect(stack).toHaveResource('AWS::KMS::Key');
+
     expect(stack).toHaveResource('AWS::S3::Bucket', {
       'BucketEncryption': {
         'ServerSideEncryptionConfiguration': [
