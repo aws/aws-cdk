@@ -730,7 +730,7 @@ export class UserPool extends UserPoolBase {
       emailSubject: props.userInvitation?.emailSubject,
       smsMessage: props.userInvitation?.smsMessage,
     };
-    const selfSignUpEnabled = props.selfSignUpEnabled !== undefined ? props.selfSignUpEnabled : false;
+    const selfSignUpEnabled = props.selfSignUpEnabled ?? false;
     const adminCreateUserConfig: CfnUserPool.AdminCreateUserConfigProperty = {
       allowAdminCreateUserOnly: !selfSignUpEnabled,
       inviteMessageTemplate: props.userInvitation !== undefined ? inviteMessageTemplate : undefined,
