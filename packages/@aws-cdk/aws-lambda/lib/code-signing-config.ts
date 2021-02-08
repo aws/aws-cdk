@@ -101,8 +101,8 @@ export class CodeSigningConfig extends Resource implements ICodeSigningConfig {
     return new Import(codeSigningProfileId);
   }
 
-  readonly codeSigningConfigArn: string;
-  readonly codeSigningConfigId: string;
+  public readonly codeSigningConfigArn: string;
+  public readonly codeSigningConfigId: string;
 
   constructor(scope: Construct, id: string, props: CodeSigningConfigProps) {
     super(scope, id, {
