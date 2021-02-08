@@ -15,8 +15,7 @@ on:
 
 jobs:
   # Run yarn pkglint on merge forward PRs and commit the results
-  checkout:
-    name: pkglint
+  pkglint:
     if: contains(github.event.pull_request.labels.*.name, 'pr/forward-merge')
     runs-on: ubuntu-latest
     steps:
@@ -36,9 +35,7 @@ jobs:
 
   # Approve automated PRs
   # Only approve! mergify takes care of the actual merge.
-  approve:
-    name: auto-approve
-    needs: pkglint
+  auto-approve:
     if: >
       github.event.pull_request.user.login == 'aws-cdk-automation'
       && contains(github.event.pull_request.labels.*.name, 'pr/auto-approve')
