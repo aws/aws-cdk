@@ -259,10 +259,7 @@ describe('key policies', () => {
 
     expect(keyStack).toHaveResourceLike('AWS::KMS::Key', {
       KeyPolicy: {
-        Statement: [
-          {
-            // Default policy, unmodified
-          },
+        Statement: arrayWith(
           {
             Action: [
               'kms:Encrypt',
@@ -273,7 +270,7 @@ describe('key policies', () => {
             Principal: { AWS: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::', { Ref: 'AWS::AccountId' }, ':role/MyRolePhysicalName']] } },
             Resource: '*',
           },
-        ],
+        ),
         Version: '2012-10-17',
       },
     });
