@@ -1547,10 +1547,17 @@ export class Domain extends DomainBase implements IDomain {
       };
     }
 
+    const accessPolicyStatements: iam.PolicyStatement[] | undefined = unsignedBasicAuthEnabled
+      ? (props.accessPolicies ?? []).concat(unsignedAccessPolicy)
+      : props.accessPolicies;
+
     // Create the domain
     this.domain = new CfnDomain(this, 'Resource', {
       domainName: this.physicalName,
       elasticsearchVersion,
+      accessPolicies: new iam.PolicyDocument({
+        statements: accessPolicyStatements,
+      }).toJSON(),
       elasticsearchClusterConfig: {
         dedicatedMasterEnabled,
         dedicatedMasterCount: dedicatedMasterEnabled
@@ -1636,35 +1643,6 @@ export class Domain extends DomainBase implements IDomain {
       resource: 'domain',
       resourceName: this.physicalName,
     });
-
-    const accessPolicyStatements: iam.PolicyStatement[] | undefined = unsignedBasicAuthEnabled
-      ? (props.accessPolicies ?? []).concat(unsignedAccessPolicy)
-      : props.accessPolicies;
-
-    if (accessPolicyStatements != null) {
-      const accessPolicy = new ElasticsearchAccessPolicy(this, 'ESAccessPolicy', {
-        domainName: this.domainName,
-        domainArn: this.domainArn,
-        accessPolicies: accessPolicyStatements,
-      });
-
-      if (props.encryptionAtRest?.kmsKey) {
-
-        // https://docs.aws.amazon.com/elasticsearch-service/latest/developerguide/encryption-at-rest.html
-
-        // these permissions are documented as required during domain creation.
-        // while not strictly documented for updates as well, it stands to reason that an update
-        // operation might require these in case the cluster uses a kms key.
-        // empircal evidence shows this is indeed required: https://github.com/aws/aws-cdk/issues/11412
-        accessPolicy.grantPrincipal.addToPrincipalPolicy(new iam.PolicyStatement({
-          actions: ['kms:List*', 'kms:Describe*', 'kms:CreateGrant'],
-          resources: [props.encryptionAtRest.kmsKey.keyArn],
-          effect: iam.Effect.ALLOW,
-        }));
-      }
-
-      accessPolicy.node.addDependency(this.domain);
-    }
   }
 }
 
