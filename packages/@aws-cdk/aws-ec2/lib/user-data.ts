@@ -147,7 +147,7 @@ class LinuxUserData extends UserData {
   }
 
   public render(): string {
-    const shebang = this.props.shebang !== undefined ? this.props.shebang : '#!/bin/bash';
+    const shebang = this.props.shebang ?? '#!/bin/bash';
     return [shebang, ...(this.renderOnExitLines()), ...this.lines].join('\n');
   }
 
