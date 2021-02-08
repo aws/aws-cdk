@@ -202,7 +202,7 @@ export abstract class RepositoryBase extends Resource implements IRepository {
       detail: {
         'repository-name': [this.repositoryName],
         'scan-status': ['COMPLETE'],
-        'image-tags': options.imageTags ? options.imageTags : undefined,
+        'image-tags': options.imageTags ?? undefined,
       },
     });
     return rule;
@@ -526,7 +526,7 @@ export class Repository extends RepositoryBase {
     for (const rule of prioritizedRules.concat(autoPrioritizedRules).concat(anyRules)) {
       ret.push({
         ...rule,
-        rulePriority: rule.rulePriority !== undefined ? rule.rulePriority : autoPrio++,
+        rulePriority: rule.rulePriority ?? autoPrio++,
       });
     }
 
@@ -557,7 +557,7 @@ function renderLifecycleRule(rule: LifecycleRule) {
       tagStatus: rule.tagStatus || TagStatus.ANY,
       tagPrefixList: rule.tagPrefixList,
       countType: rule.maxImageAge !== undefined ? CountType.SINCE_IMAGE_PUSHED : CountType.IMAGE_COUNT_MORE_THAN,
-      countNumber: rule.maxImageAge !== undefined ? rule.maxImageAge.toDays() : rule.maxImageCount,
+      countNumber: rule.maxImageAge?.toDays() ?? rule.maxImageCount,
       countUnit: rule.maxImageAge !== undefined ? 'days' : undefined,
     },
     action: {
