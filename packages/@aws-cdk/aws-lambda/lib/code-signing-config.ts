@@ -30,7 +30,7 @@ export interface ICodeSigningConfig extends IResource {
 
   /**
    * The id of Code Signing Config
-   * @attribute CodeSigningConfigId
+   * @attribute
    */
   readonly codeSigningConfigId: string;
 }
