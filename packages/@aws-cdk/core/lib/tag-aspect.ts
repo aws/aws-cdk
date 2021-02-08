@@ -125,7 +125,7 @@ export class Tag extends TagBase {
       resource.tags.setTag(
         this.key,
         this.value,
-        this.props.priority !== undefined ? this.props.priority : this.defaultPriority,
+        this.props.priority ?? this.defaultPriority,
         this.props.applyToLaunchedInstances !== false,
       );
     }
@@ -174,7 +174,7 @@ export class RemoveTag extends TagBase {
 
   protected applyTag(resource: ITaggable): void {
     if (resource.tags.applyTagAspectHere(this.props.includeResourceTypes, this.props.excludeResourceTypes)) {
-      resource.tags.removeTag(this.key, this.props.priority !== undefined ? this.props.priority : this.defaultPriority);
+      resource.tags.removeTag(this.key, this.props.priority ?? this.defaultPriority);
     }
   }
 }

@@ -380,11 +380,11 @@ export class StateMachine extends StateMachineBase {
     const graph = new StateGraph(props.definition.startState, `State Machine ${id} definition`);
     graph.timeout = props.timeout;
 
-    this.stateMachineType = props.stateMachineType ? props.stateMachineType : StateMachineType.STANDARD;
+    this.stateMachineType = props.stateMachineType ?? StateMachineType.STANDARD;
 
     const resource = new CfnStateMachine(this, 'Resource', {
       stateMachineName: this.physicalName,
-      stateMachineType: props.stateMachineType ? props.stateMachineType : undefined,
+      stateMachineType: props.stateMachineType ?? undefined,
       roleArn: this.role.roleArn,
       definitionString: Stack.of(this).toJsonString(graph.toGraphJson()),
       loggingConfiguration: props.logs ? this.buildLoggingConfiguration(props.logs) : undefined,

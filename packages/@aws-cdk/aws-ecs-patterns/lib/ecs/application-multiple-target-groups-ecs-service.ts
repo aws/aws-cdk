@@ -94,7 +94,7 @@ export class ApplicationMultipleTargetGroupsEc2Service extends ApplicationMultip
         taskRole: taskImageOptions.taskRole,
       });
 
-      const containerName = taskImageOptions.containerName !== undefined ? taskImageOptions.containerName : 'web';
+      const containerName = taskImageOptions.containerName ?? 'web';
       const container = this.taskDefinition.addContainer(containerName, {
         image: taskImageOptions.image,
         cpu: props.cpu,
