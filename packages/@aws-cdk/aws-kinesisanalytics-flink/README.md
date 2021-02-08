@@ -37,6 +37,8 @@ aws-kinesisanalytics-runtime library to [retrieve these
 properties](https://docs.aws.amazon.com/kinesisanalytics/latest/java/how-properties.html#how-properties-access).
 
 ```ts
+import * as flink from '@aws-cdk/aws-kinesisanalytics-flink';
+
 const flinkApp = new flink.Application(this, 'Application', {
   // ...
   propertyGroups: {
@@ -53,6 +55,8 @@ when the Flink job starts. These include parameters for checkpointing,
 snapshotting, monitoring, and parallelism.
 
 ```ts
+import * as logs from '@aws-cdk/aws-logs';
+
 const flinkApp = new flink.Application(this, 'Application', {
   code: flink.ApplicationCode.fromBucket(bucket, 'my-app.jar'),
   runtime: file.Runtime.FLINK_1_11,
@@ -65,10 +69,6 @@ const flinkApp = new flink.Application(this, 'Application', {
   parallelism: 32, // default is 1
   parallelismPerKpu: 2, // default is 1
   snapshotsEnabled: false, // default is true
-  logRetention: logs.RetentionDays.ONE_WEEK, // default is TWO_YEARS
-  logRemovalPolicy: core.RemovalPolicy.DESTROY, // default is RETAIN
-  logGroupName: 'my-group', // default is automatically generated
-  logStreamName: 'my-stream', // default is automatically generated
-  logEncryptionKey: someKmsKey, // default is no encryption
+  logGroup: new logs.LogGroup(this, 'LogGroup'), // by default, a new LogGroup will be created
 });
 ```
