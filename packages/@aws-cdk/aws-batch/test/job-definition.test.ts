@@ -7,7 +7,6 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import * as ssm from '@aws-cdk/aws-ssm';
 import * as cdk from '@aws-cdk/core';
-import { Aws } from '@aws-cdk/core';
 import * as batch from '../lib';
 
 describe('Batch Job Definition', () => {
@@ -223,7 +222,7 @@ describe('Batch Job Definition', () => {
     // THEN
     expect(importedJob.jobDefinitionName).toEqual('job-def-name');
     expect(importedJob.jobDefinitionArn)
-      .toEqual(`arn:${Aws.PARTITION}:batch:${Aws.REGION}:${Aws.ACCOUNT_ID}:job-definition/job-def-name`);
+      .toEqual(`arn:${cdk.Aws.PARTITION}:batch:${cdk.Aws.REGION}:${cdk.Aws.ACCOUNT_ID}:job-definition/job-def-name`);
   });
 
   test('can configure log configuration secrets properly', () => {
