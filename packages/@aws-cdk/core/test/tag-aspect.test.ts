@@ -7,7 +7,7 @@ class TaggableResource extends CfnResource {
   public readonly tags: TagManager;
   constructor(scope: Construct, id: string, props: CfnResourceProps) {
     super(scope, id, props);
-    const tags = props.properties === undefined ? undefined : props.properties.tags;
+    const tags = props.properties?.tags;
     this.tags = new TagManager(TagType.STANDARD, 'AWS::Fake::Resource', tags);
   }
   public testProperties() {
@@ -19,7 +19,7 @@ class AsgTaggableResource extends CfnResource {
   public readonly tags: TagManager;
   constructor(scope: Construct, id: string, props: CfnResourceProps) {
     super(scope, id, props);
-    const tags = props.properties === undefined ? undefined : props.properties.tags;
+    const tags = props.properties?.tags;
     this.tags = new TagManager(TagType.AUTOSCALING_GROUP, 'AWS::Fake::Resource', tags);
   }
   public testProperties() {
@@ -31,7 +31,7 @@ class MapTaggableResource extends CfnResource {
   public readonly tags: TagManager;
   constructor(scope: Construct, id: string, props: CfnResourceProps) {
     super(scope, id, props);
-    const tags = props.properties === undefined ? undefined : props.properties.tags;
+    const tags = props.properties?.tags;
     this.tags = new TagManager(TagType.MAP, 'AWS::Fake::Resource', tags);
   }
   public testProperties() {

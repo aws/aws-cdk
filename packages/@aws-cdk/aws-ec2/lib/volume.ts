@@ -2,9 +2,9 @@ import * as crypto from 'crypto';
 
 import { AccountRootPrincipal, Grant, IGrantable } from '@aws-cdk/aws-iam';
 import { IKey, ViaServicePrincipal } from '@aws-cdk/aws-kms';
-import { Annotations, IResource, Resource, Size, SizeRoundingBehavior, Stack, Token, Tags, Names } from '@aws-cdk/core';
+import { IResource, Resource, Size, SizeRoundingBehavior, Stack, Token, Tags, Names } from '@aws-cdk/core';
 import { Construct } from 'constructs';
-import { CfnInstance, CfnVolume } from './ec2.generated';
+import { CfnVolume } from './ec2.generated';
 import { IInstance } from './instance';
 
 /**
@@ -157,37 +157,6 @@ export class BlockDeviceVolume {
    */
   protected constructor(public readonly ebsDevice?: EbsDeviceProps, public readonly virtualName?: string) {
   }
-}
-
-/**
- * Synthesize an array of block device mappings from a list of block device
- *
- * @param construct the instance/asg construct, used to host any warning
- * @param blockDevices list of block devices
- */
-export function synthesizeBlockDeviceMappings(construct: Construct, blockDevices: BlockDevice[]): CfnInstance.BlockDeviceMappingProperty[] {
-  return blockDevices.map<CfnInstance.BlockDeviceMappingProperty>(({ deviceName, volume, mappingEnabled }) => {
-    const { virtualName, ebsDevice: ebs } = volume;
-
-    if (ebs) {
-      const { iops, volumeType } = ebs;
-
-      if (!iops) {
-        if (volumeType === EbsDeviceVolumeType.IO1) {
-          throw new Error('iops property is required with volumeType: EbsDeviceVolumeType.IO1');
-        }
-      } else if (volumeType !== EbsDeviceVolumeType.IO1) {
-        Annotations.of(construct).addWarning('iops will be ignored without volumeType: EbsDeviceVolumeType.IO1');
-      }
-    }
-
-    return {
-      deviceName,
-      ebs,
-      virtualName,
-      noDevice: mappingEnabled === false ? {} : undefined,
-    };
-  });
 }
 
 /**

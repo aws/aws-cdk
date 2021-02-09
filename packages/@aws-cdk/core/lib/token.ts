@@ -183,7 +183,7 @@ export class Tokenization {
     return resolve(obj, {
       scope: options.scope,
       resolver: options.resolver,
-      preparing: (options.preparing !== undefined ? options.preparing : false),
+      preparing: (options.preparing ?? false),
     });
   }
 
