@@ -418,6 +418,12 @@ async function canSkipDeploy(
     return false;
   }
 
+  // Creating changeset only (default true), never skip
+  if (deployStackOptions.execute === false) {
+    debug(`${deployName}: --no-execute, always creating change set`);
+    return false;
+  }
+
   // No existing stack
   if (!cloudFormationStack.exists) {
     debug(`${deployName}: no existing stack`);

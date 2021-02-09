@@ -285,18 +285,16 @@ When `cdk deploy` is executed, deployment events will include the complete histo
 
 The `progress` key can also be specified as a user setting (`~/.cdk.json`)
 
-#### Externally Executable CloudFormation Change Sets 
+#### Externally Executable CloudFormation Change Sets
 
-For more control over when stack changes are deployed, the CDK can generate a CloudFormation change set but not execute it. The name of the generated change set is *cdk-deploy-change-set*.
+For more control over when stack changes are deployed, the CDK can generate a
+CloudFormation change set but not execute it. The name of the generated
+change set is *cdk-deploy-change-set*, and a previous change set with that
+name will be overwritten. The change set will always be created, even if it
+is empty.
 
 ```console
 $ cdk deploy --no-execute
-```
-
-Tools like AWS CodePipeline's CloudFormation action always require a change set, even when there are no changes to deploy and the change set is empty. By default, the CDK does not generate empty change sets. To generate both empty and non-empty change sets without executing them, use: 
-
-```console
-$ cdk deploy --force --no-execute
 ```
 
 ### `cdk destroy`

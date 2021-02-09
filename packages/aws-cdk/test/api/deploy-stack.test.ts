@@ -459,7 +459,7 @@ test('not executed and no error if --no-execute is given', async () => {
   expect(cfnMocks.executeChangeSet).not.toHaveBeenCalled();
 });
 
-test('empty change set is deleted when --force and --execute are given', async () => {
+test('empty change set is deleted if --execute is given', async () => {
   cfnMocks.describeChangeSet?.mockImplementation(() => ({
     Status: 'FAILED',
     StatusReason: 'No updates are to be performed.',
@@ -471,8 +471,8 @@ test('empty change set is deleted when --force and --execute are given', async (
   // WHEN
   await deployStack({
     ...standardDeployStackArguments(),
-    force: true,
     execute: true,
+    force: true, // Necessary to bypass "skip deploy"
   });
 
   // THEN
@@ -483,7 +483,7 @@ test('empty change set is deleted when --force and --execute are given', async (
   expect(cfnMocks.deleteChangeSet).toHaveBeenCalledTimes(2);
 });
 
-test('empty change set is not deleted if --force and --no-execute is given', async () => {
+test('empty change set is not deleted if --no-execute is given', async () => {
   cfnMocks.describeChangeSet?.mockImplementation(() => ({
     Status: 'FAILED',
     StatusReason: 'No updates are to be performed.',
@@ -496,7 +496,6 @@ test('empty change set is not deleted if --force and --no-execute is given', asy
   await deployStack({
     ...standardDeployStackArguments(),
     execute: false,
-    force: true,
   });
 
   // THEN
