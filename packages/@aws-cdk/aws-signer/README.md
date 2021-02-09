@@ -21,8 +21,28 @@
 
 <!--END STABILITY BANNER-->
 
-This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.
+Define a Signer SigningProfile:
 
 ```ts
-import signer = require('@aws-cdk/aws-signer');
+import * as signer from '@aws-cdk/aws-signer';
+
+const signingProfile = new signer.SigningProfile(this, 'SigningProfile', { 
+  platformId: 'AWSLambda-SHA384-ECDSA' 
+} );
 ```
+
+> **Note**: To get the list of available platforms, you can run aws-cli command of `aws signer list-signing-platforms`
+
+Define a Signer SigningProfile with validity period:
+
+Specifies the duration in the period that the signing profile is valid.
+
+```ts
+import * as cdk from '@aws-cdk/aws-core';
+
+const signingProfile = new signer.SigningProfile(this, 'SignginProfile', {
+  platformId: 'AWSLambda-SHA384-ECDSA',
+  signatureValidityPeriod: cdk.Duration.days(365), // Default to 135 months
+}) 
+```
+
