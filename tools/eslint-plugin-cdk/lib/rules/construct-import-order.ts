@@ -20,11 +20,6 @@ let coreConstructImportLine: ImportDeclaration | undefined;
 let lastImport: Rule.Node | undefined;
 
 export function create(context: Rule.RuleContext): Rule.NodeListener {
-  // skip core
-  if (context.getFilename().includes('@aws-cdk/core')) {
-    return {};
-  }
-
   return {
     Program: _ => {
       // reset for every file

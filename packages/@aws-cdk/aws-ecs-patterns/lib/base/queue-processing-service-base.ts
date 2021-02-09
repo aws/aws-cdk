@@ -258,22 +258,18 @@ export abstract class QueueProcessingServiceBase extends Construct {
 
     // Setup autoscaling scaling intervals
     const defaultScalingSteps = [{ upper: 0, change: -1 }, { lower: 100, change: +1 }, { lower: 500, change: +5 }];
-    this.scalingSteps = props.scalingSteps !== undefined ? props.scalingSteps : defaultScalingSteps;
+    this.scalingSteps = props.scalingSteps ?? defaultScalingSteps;
 
     // Create log driver if logging is enabled
-    const enableLogging = props.enableLogging !== undefined ? props.enableLogging : true;
-    this.logDriver = props.logDriver !== undefined
-      ? props.logDriver
-      : enableLogging
-        ? this.createAWSLogDriver(this.node.id)
-        : undefined;
+    const enableLogging = props.enableLogging ?? true;
+    this.logDriver = props.logDriver ?? (enableLogging ? this.createAWSLogDriver(this.node.id) : undefined);
 
     // Add the queue name to environment variables
     this.environment = { ...(props.environment || {}), QUEUE_NAME: this.sqsQueue.queueName };
     this.secrets = props.secrets;
 
     // Determine the desired task count (minimum) and maximum scaling capacity
-    this.desiredCount = props.desiredTaskCount !== undefined ? props.desiredTaskCount : 1;
+    this.desiredCount = props.desiredTaskCount ?? 1;
     this.maxCapacity = props.maxScalingCapacity || (2 * this.desiredCount);
 
     if (!this.desiredCount && !this.maxCapacity) {

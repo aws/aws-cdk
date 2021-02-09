@@ -113,7 +113,7 @@ export class NetworkMultipleTargetGroupsFargateService extends NetworkMultipleTa
   constructor(scope: Construct, id: string, props: NetworkMultipleTargetGroupsFargateServiceProps = {}) {
     super(scope, id, props);
 
-    this.assignPublicIp = props.assignPublicIp !== undefined ? props.assignPublicIp : false;
+    this.assignPublicIp = props.assignPublicIp ?? false;
 
     if (props.taskDefinition && props.taskImageOptions) {
       throw new Error('You must specify only one of TaskDefinition or TaskImageOptions.');
@@ -129,7 +129,7 @@ export class NetworkMultipleTargetGroupsFargateService extends NetworkMultipleTa
         family: taskImageOptions.family,
       });
 
-      const containerName = taskImageOptions.containerName !== undefined ? taskImageOptions.containerName : 'web';
+      const containerName = taskImageOptions.containerName ?? 'web';
       const container = this.taskDefinition.addContainer(containerName, {
         image: taskImageOptions.image,
         logging: this.logDriver,

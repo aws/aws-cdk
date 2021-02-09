@@ -380,10 +380,8 @@ export abstract class NetworkMultipleTargetGroupsServiceBase extends Construct {
    * Create log driver if logging is enabled.
    */
   private createLogDriver(enableLoggingProp?: boolean, logDriverProp?: LogDriver): LogDriver | undefined {
-    const enableLogging = enableLoggingProp !== undefined ? enableLoggingProp : true;
-    const logDriver = logDriverProp !== undefined
-      ? logDriverProp : enableLogging
-        ? this.createAWSLogDriver(this.node.id) : undefined;
+    const enableLogging = enableLoggingProp ?? true;
+    const logDriver = logDriverProp ?? (enableLogging ? this.createAWSLogDriver(this.node.id) : undefined);
     return logDriver;
   }
 
@@ -409,7 +407,7 @@ export abstract class NetworkMultipleTargetGroupsServiceBase extends Construct {
   }
 
   private createLoadBalancer(name: string, publicLoadBalancer?: boolean): NetworkLoadBalancer {
-    const internetFacing = publicLoadBalancer !== undefined ? publicLoadBalancer : true;
+    const internetFacing = publicLoadBalancer ?? true;
     const lbProps = {
       vpc: this.cluster.vpc,
       internetFacing,

@@ -79,6 +79,11 @@ export class Runtime {
   public static readonly NODEJS_12_X = new Runtime('nodejs12.x', RuntimeFamily.NODEJS, { supportsInlineCode: true });
 
   /**
+   * The NodeJS 14.x runtime (nodejs14.x)
+   */
+  public static readonly NODEJS_14_X = new Runtime('nodejs14.x', RuntimeFamily.NODEJS, { supportsInlineCode: false });
+
+  /**
    * The Python 2.7 runtime (python2.7)
    */
   public static readonly PYTHON_2_7 = new Runtime('python2.7', RuntimeFamily.PYTHON, { supportsInlineCode: true });

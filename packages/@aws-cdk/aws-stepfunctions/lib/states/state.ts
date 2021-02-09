@@ -259,7 +259,7 @@ export abstract class State extends Construct implements IChainable {
 
     this.retries.push({
       ...props,
-      errors: props.errors ? props.errors : [Errors.ALL],
+      errors: props.errors ?? [Errors.ALL],
     });
   }
 
@@ -273,7 +273,7 @@ export abstract class State extends Construct implements IChainable {
     this.catches.push({
       next: handler,
       props: {
-        errors: props.errors ? props.errors : [Errors.ALL],
+        errors: props.errors ?? [Errors.ALL],
         resultPath: props.resultPath,
       },
     });
@@ -357,7 +357,7 @@ export abstract class State extends Construct implements IChainable {
   protected renderChoices(): any {
     return {
       Choices: renderList(this.choices, renderChoice),
-      Default: this.defaultChoice ? this.defaultChoice.stateId : undefined,
+      Default: this.defaultChoice?.stateId,
     };
   }
 
