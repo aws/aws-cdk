@@ -328,11 +328,32 @@ nodeunitShim({
       availabilityZone: 'us-east-1a',
       size: cdk.Size.gibibytes(500),
       volumeType: EbsDeviceVolumeType.PROVISIONED_IOPS_SSD,
+      iops: 300,
     });
 
     // THEN
     cdkExpect(stack).to(haveResourceLike('AWS::EC2::Volume', {
       VolumeType: 'io1',
+    }, ResourcePart.Properties));
+
+    test.done();
+  },
+
+  'volume: io2'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new Volume(stack, 'Volume', {
+      availabilityZone: 'us-east-1a',
+      size: cdk.Size.gibibytes(500),
+      volumeType: EbsDeviceVolumeType.PROVISIONED_IOPS_SSD_IO2,
+      iops: 300,
+    });
+
+    // THEN
+    cdkExpect(stack).to(haveResourceLike('AWS::EC2::Volume', {
+      VolumeType: 'io2',
     }, ResourcePart.Properties));
 
     test.done();
@@ -352,6 +373,25 @@ nodeunitShim({
     // THEN
     cdkExpect(stack).to(haveResourceLike('AWS::EC2::Volume', {
       VolumeType: 'gp2',
+    }, ResourcePart.Properties));
+
+    test.done();
+  },
+
+  'volume: gp3'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new Volume(stack, 'Volume', {
+      availabilityZone: 'us-east-1a',
+      size: cdk.Size.gibibytes(500),
+      volumeType: EbsDeviceVolumeType.GENERAL_PURPOSE_SSD_GP3,
+    });
+
+    // THEN
+    cdkExpect(stack).to(haveResourceLike('AWS::EC2::Volume', {
+      VolumeType: 'gp3',
     }, ResourcePart.Properties));
 
     test.done();
@@ -1296,6 +1336,34 @@ nodeunitShim({
     // THEN
     // Test: Type of volume
     for (const volumeType of [
+      EbsDeviceVolumeType.PROVISIONED_IOPS_SSD,
+      EbsDeviceVolumeType.PROVISIONED_IOPS_SSD_IO2,
+      EbsDeviceVolumeType.GENERAL_PURPOSE_SSD_GP3,
+    ]) {
+      test.doesNotThrow(() => {
+        new Volume(stack, `Volume${idx++}`, {
+          availabilityZone: 'us-east-1a',
+          size: cdk.Size.gibibytes(500),
+          iops: 3000,
+          volumeType,
+        });
+      });
+    }
+
+    for (const volumeType of [
+      EbsDeviceVolumeType.PROVISIONED_IOPS_SSD,
+      EbsDeviceVolumeType.PROVISIONED_IOPS_SSD_IO2,
+    ]) {
+      test.throws(() => {
+        new Volume(stack, `Volume${idx++}`, {
+          availabilityZone: 'us-east-1a',
+          size: cdk.Size.gibibytes(500),
+          volumeType,
+        });
+      }, /`iops` must be specified if the `volumeType` is/);
+    }
+
+    for (const volumeType of [
       EbsDeviceVolumeType.GENERAL_PURPOSE_SSD,
       EbsDeviceVolumeType.THROUGHPUT_OPTIMIZED_HDD,
       EbsDeviceVolumeType.COLD_HDD,
@@ -1308,60 +1376,78 @@ nodeunitShim({
           iops: 100,
           volumeType,
         });
-      }, '`iops` may only be specified if the `volumeType` is `PROVISIONED_IOPS_SSD`/`IO1`');
+      }, /`iops` may only be specified if the `volumeType` is/);
     }
 
     // Test: iops in range
-    test.throws(() => {
-      new Volume(stack, `Volume${idx++}`, {
-        availabilityZone: 'us-east-1a',
-        size: cdk.Size.gibibytes(10),
-        iops: 99,
-        volumeType: EbsDeviceVolumeType.PROVISIONED_IOPS_SSD,
+    for (const testData of [
+      [EbsDeviceVolumeType.GENERAL_PURPOSE_SSD_GP3, 3000, 16000],
+      [EbsDeviceVolumeType.PROVISIONED_IOPS_SSD, 100, 64000],
+      [EbsDeviceVolumeType.PROVISIONED_IOPS_SSD_IO2, 100, 64000],
+    ]) {
+      const volumeType = testData[0] as EbsDeviceVolumeType;
+      const min = testData[1] as number;
+      const max = testData[2] as number;
+      test.throws(() => {
+        new Volume(stack, `Volume${idx++}`, {
+          availabilityZone: 'us-east-1a',
+          size: cdk.Size.tebibytes(10),
+          volumeType,
+          iops: min - 1,
+        });
+      }, /iops must be between/);
+      test.doesNotThrow(() => {
+        new Volume(stack, `Volume${idx++}`, {
+          availabilityZone: 'us-east-1a',
+          size: cdk.Size.tebibytes(10),
+          volumeType,
+          iops: min,
+        });
       });
-    }, '`iops` must be in the range 100 to 64,000, inclusive.');
-    test.doesNotThrow(() => {
-      new Volume(stack, `Volume${idx++}`, {
-        availabilityZone: 'us-east-1a',
-        size: cdk.Size.gibibytes(10),
-        iops: 100,
-        volumeType: EbsDeviceVolumeType.PROVISIONED_IOPS_SSD,
+      test.doesNotThrow(() => {
+        new Volume(stack, `Volume${idx++}`, {
+          availabilityZone: 'us-east-1a',
+          size: cdk.Size.tebibytes(10),
+          volumeType,
+          iops: max,
+        });
       });
-    });
-    test.doesNotThrow(() => {
-      new Volume(stack, `Volume${idx++}`, {
-        availabilityZone: 'us-east-1a',
-        size: cdk.Size.gibibytes(1300),
-        iops: 64000,
-        volumeType: EbsDeviceVolumeType.PROVISIONED_IOPS_SSD,
-      });
-    });
-    test.throws(() => {
-      new Volume(stack, `Volume${idx++}`, {
-        availabilityZone: 'us-east-1a',
-        size: cdk.Size.gibibytes(1300),
-        iops: 64001,
-        volumeType: EbsDeviceVolumeType.PROVISIONED_IOPS_SSD,
-      });
-    }, '`iops` must be in the range 100 to 64,000, inclusive.');
+      test.throws(() => {
+        new Volume(stack, `Volume${idx++}`, {
+          availabilityZone: 'us-east-1a',
+          size: cdk.Size.tebibytes(10),
+          volumeType,
+          iops: max + 1,
+        });
+      }, /iops must be between/);
+    }
 
     // Test: iops ratio
-    test.doesNotThrow(() => {
-      new Volume(stack, `Volume${idx++}`, {
-        availabilityZone: 'us-east-1a',
-        size: cdk.Size.gibibytes(10),
-        iops: 500,
-        volumeType: EbsDeviceVolumeType.PROVISIONED_IOPS_SSD,
+    for (const testData of [
+      [EbsDeviceVolumeType.GENERAL_PURPOSE_SSD_GP3, 500],
+      [EbsDeviceVolumeType.PROVISIONED_IOPS_SSD, 50],
+      [EbsDeviceVolumeType.PROVISIONED_IOPS_SSD_IO2, 500],
+    ]) {
+      const volumeType = testData[0] as EbsDeviceVolumeType;
+      const max = testData[1] as number;
+      const size = 10;
+      test.doesNotThrow(() => {
+        new Volume(stack, `Volume${idx++}`, {
+          availabilityZone: 'us-east-1a',
+          size: cdk.Size.gibibytes(size),
+          volumeType,
+          iops: max * size,
+        });
       });
-    });
-    test.throws(() => {
-      new Volume(stack, `Volume${idx++}`, {
-        availabilityZone: 'us-east-1a',
-        size: cdk.Size.gibibytes(10),
-        iops: 501,
-        volumeType: EbsDeviceVolumeType.PROVISIONED_IOPS_SSD,
-      });
-    }, '`iops` has a maximum ratio of 50 IOPS/GiB.');
+      test.throws(() => {
+        new Volume(stack, `Volume${idx++}`, {
+          availabilityZone: 'us-east-1a',
+          size: cdk.Size.gibibytes(size),
+          volumeType,
+          iops: max * size + 1,
+        });
+      }, /iops has a maximum ratio of/);
+    }
 
     test.done();
   },
@@ -1374,18 +1460,38 @@ nodeunitShim({
     // THEN
     for (const volumeType of [
       EbsDeviceVolumeType.GENERAL_PURPOSE_SSD,
+      EbsDeviceVolumeType.GENERAL_PURPOSE_SSD_GP3,
+      EbsDeviceVolumeType.PROVISIONED_IOPS_SSD,
+      EbsDeviceVolumeType.PROVISIONED_IOPS_SSD_IO2,
       EbsDeviceVolumeType.THROUGHPUT_OPTIMIZED_HDD,
       EbsDeviceVolumeType.COLD_HDD,
       EbsDeviceVolumeType.MAGNETIC,
     ]) {
-      test.throws(() => {
-        new Volume(stack, `Volume${idx++}`, {
-          availabilityZone: 'us-east-1a',
-          size: cdk.Size.gibibytes(500),
-          enableMultiAttach: true,
-          volumeType,
+      if (
+        [
+          EbsDeviceVolumeType.PROVISIONED_IOPS_SSD,
+          EbsDeviceVolumeType.PROVISIONED_IOPS_SSD_IO2,
+        ].includes(volumeType)
+      ) {
+        test.doesNotThrow(() => {
+          new Volume(stack, `Volume${idx++}`, {
+            availabilityZone: 'us-east-1a',
+            size: cdk.Size.gibibytes(500),
+            enableMultiAttach: true,
+            volumeType,
+            iops: 100,
+          });
         });
-      }, 'multi-attach is supported exclusively on `PROVISIONED_IOPS_SSD` volumes.');
+      } else {
+        test.throws(() => {
+          new Volume(stack, `Volume${idx++}`, {
+            availabilityZone: 'us-east-1a',
+            size: cdk.Size.gibibytes(500),
+            enableMultiAttach: true,
+            volumeType,
+          });
+        }, /multi-attach is supported exclusively/);
+      }
     }
 
     test.done();
@@ -1398,27 +1504,40 @@ nodeunitShim({
 
     // THEN
     for (const testData of [
-      [EbsDeviceVolumeType.GENERAL_PURPOSE_SSD, 1, 16000],
-      [EbsDeviceVolumeType.PROVISIONED_IOPS_SSD, 4, 16000],
-      [EbsDeviceVolumeType.THROUGHPUT_OPTIMIZED_HDD, 500, 16000],
-      [EbsDeviceVolumeType.COLD_HDD, 500, 16000],
-      [EbsDeviceVolumeType.MAGNETIC, 1, 1000],
+      [EbsDeviceVolumeType.GENERAL_PURPOSE_SSD, 1, 16384],
+      [EbsDeviceVolumeType.GENERAL_PURPOSE_SSD_GP3, 1, 16384],
+      [EbsDeviceVolumeType.PROVISIONED_IOPS_SSD, 4, 16384],
+      [EbsDeviceVolumeType.PROVISIONED_IOPS_SSD_IO2, 4, 16384],
+      [EbsDeviceVolumeType.THROUGHPUT_OPTIMIZED_HDD, 125, 16384],
+      [EbsDeviceVolumeType.COLD_HDD, 125, 16384],
+      [EbsDeviceVolumeType.MAGNETIC, 1, 1024],
     ]) {
       const volumeType = testData[0] as EbsDeviceVolumeType;
       const min = testData[1] as number;
       const max = testData[2] as number;
+      const iops = [
+        EbsDeviceVolumeType.PROVISIONED_IOPS_SSD,
+        EbsDeviceVolumeType.PROVISIONED_IOPS_SSD_IO2,
+      ].includes(volumeType) ? 100 : null;
+
       test.throws(() => {
         new Volume(stack, `Volume${idx++}`, {
           availabilityZone: 'us-east-1a',
           size: cdk.Size.gibibytes(min - 1),
           volumeType,
+          ...iops
+            ? { iops }
+            : {},
         });
-      }, `\`${volumeType}\` volumes must be between ${min} GiB and ${max} GiB in size.`);
+      }, /volumes must be between/);
       test.doesNotThrow(() => {
         new Volume(stack, `Volume${idx++}`, {
           availabilityZone: 'us-east-1a',
           size: cdk.Size.gibibytes(min),
           volumeType,
+          ...iops
+            ? { iops }
+            : {},
         });
       });
       test.doesNotThrow(() => {
@@ -1426,6 +1545,9 @@ nodeunitShim({
           availabilityZone: 'us-east-1a',
           size: cdk.Size.gibibytes(max),
           volumeType,
+          ...iops
+            ? { iops }
+            : {},
         });
       });
       test.throws(() => {
@@ -1433,8 +1555,11 @@ nodeunitShim({
           availabilityZone: 'us-east-1a',
           size: cdk.Size.gibibytes(max + 1),
           volumeType,
+          ...iops
+            ? { iops }
+            : {},
         });
-      }, `\`${volumeType}\` volumes must be between ${min} GiB and ${max} GiB in size.`);
+      }, /volumes must be between/);
     }
 
     test.done();
