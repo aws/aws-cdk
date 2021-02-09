@@ -66,8 +66,6 @@ export = {
     // THEN
     test.doesNotThrow(() => toThrow(min));
     test.doesNotThrow(() => toThrow(max));
-    // falsy, falls back to portMapping.port
-    // test.throws(() => toThrow(min - 1), /below the minimum threshold/);
     test.throws(() => toThrow(max + 1), /above the maximum threshold/);
 
     test.done();

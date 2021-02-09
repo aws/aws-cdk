@@ -640,7 +640,7 @@
               "VirtualService": {
                 "VirtualServiceName": {
                   "Fn::GetAtt": [
-                    "service6D174F83",
+                    "service16B72496E",
                     "VirtualServiceName"
                   ]
                 }
@@ -650,7 +650,7 @@
               "VirtualService": {
                 "VirtualServiceName": {
                   "Fn::GetAtt": [
-                    "service27C65CF7D",
+                    "service2B2862B6B",
                     "VirtualServiceName"
                   ]
                 }
@@ -711,7 +711,7 @@
               "VirtualService": {
                 "VirtualServiceName": {
                   "Fn::GetAtt": [
-                    "service3859EB104",
+                    "service3529E2EB1",
                     "VirtualServiceName"
                   ]
                 }
@@ -846,7 +846,7 @@
                 "VirtualService": {
                   "VirtualServiceName": {
                     "Fn::GetAtt": [
-                      "service6D174F83",
+                      "service16B72496E",
                       "VirtualServiceName"
                     ]
                   }
@@ -883,7 +883,7 @@
                 "VirtualService": {
                   "VirtualServiceName": {
                     "Fn::GetAtt": [
-                      "service6D174F83",
+                      "service16B72496E",
                       "VirtualServiceName"
                     ]
                   }
@@ -920,7 +920,7 @@
                 "VirtualService": {
                   "VirtualServiceName": {
                     "Fn::GetAtt": [
-                      "service6D174F83",
+                      "service16B72496E",
                       "VirtualServiceName"
                     ]
                   }
@@ -930,7 +930,7 @@
             "Match": {
               "ServiceName": {
                 "Fn::GetAtt": [
-                  "service6D174F83",
+                  "service16B72496E",
                   "VirtualServiceName"
                 ]
               }

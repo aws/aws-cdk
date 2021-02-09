@@ -1,12 +1,11 @@
 import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnVirtualNode } from './appmesh.generated';
-import { ClientPolicy } from './client-policy';
+import { Backend, BackendDefaults } from './backend';
 import { IMesh, Mesh } from './mesh';
 import { ServiceDiscovery } from './service-discovery';
 import { AccessLog } from './shared-interfaces';
 import { VirtualNodeListener, VirtualNodeListenerConfig } from './virtual-node-listener';
-import { IVirtualService } from './virtual-service';
 
 /**
  * Interface which all VirtualNode based classes must implement
@@ -61,7 +60,7 @@ export interface VirtualNodeBaseProps {
    *
    * @default - No backends
    */
-  readonly backends?: IVirtualService[];
+  readonly backends?: Backend[];
 
   /**
    * Initial listener for the virtual node
@@ -82,7 +81,7 @@ export interface VirtualNodeBaseProps {
    *
    * @default - No Config
    */
-  readonly backendsDefaultClientPolicy?: ClientPolicy;
+  readonly backendDefaults?: BackendDefaults;
 }
 
 /**
@@ -185,7 +184,7 @@ export class VirtualNode extends VirtualNodeBase {
       spec: {
         backends: cdk.Lazy.anyValue({ produce: () => this.backends }, { omitEmptyArray: true }),
         listeners: cdk.Lazy.anyValue({ produce: () => this.listeners.map(listener => listener.listener) }, { omitEmptyArray: true }),
-        backendDefaults: props.backendsDefaultClientPolicy?.bind(this),
+        backendDefaults: props.backendDefaults?.bind(this),
         serviceDiscovery: {
           dns: serviceDiscovery?.dns,
           awsCloudMap: serviceDiscovery?.cloudmap,
@@ -214,13 +213,8 @@ export class VirtualNode extends VirtualNodeBase {
   /**
    * Add a Virtual Services that this node is expected to send outbound traffic to
    */
-  public addBackend(virtualService: IVirtualService) {
-    this.backends.push({
-      virtualService: {
-        virtualServiceName: virtualService.virtualServiceName,
-        clientPolicy: virtualService.clientPolicy?.bind(this).clientPolicy,
-      },
-    });
+  public addBackend(backend: Backend) {
+    this.backends.push(backend.bind(this));
   }
 }
 

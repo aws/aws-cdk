@@ -271,7 +271,9 @@ export = {
             port: 8080,
           })],
           backends: [
-            service1,
+            appmesh.Backends.backend({
+              virtualService: service1,
+            }),
           ],
         });
 

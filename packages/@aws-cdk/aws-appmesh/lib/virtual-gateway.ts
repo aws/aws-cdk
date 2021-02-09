@@ -1,7 +1,7 @@
 import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnVirtualGateway } from './appmesh.generated';
-import { ClientPolicy } from './client-policy';
+import { BackendDefaults } from './backend';
 import { GatewayRoute, GatewayRouteBaseProps } from './gateway-route';
 import { IMesh, Mesh } from './mesh';
 import { AccessLog } from './shared-interfaces';
@@ -66,7 +66,7 @@ export interface VirtualGatewayBaseProps {
    *
    * @default - No Config
    */
-  readonly backendsDefaultClientPolicy?: ClientPolicy;
+  readonly backendDefaults?: BackendDefaults;
 }
 
 /**
@@ -180,7 +180,7 @@ export class VirtualGateway extends VirtualGatewayBase {
       meshName: this.mesh.meshName,
       spec: {
         listeners: this.listeners.map(listener => listener.listener),
-        backendDefaults: props.backendsDefaultClientPolicy?.bind(this),
+        backendDefaults: props.backendDefaults?.bind(this),
         logging: accessLogging !== undefined ? {
           accessLog: accessLogging.virtualGatewayAccessLog,
         } : undefined,
