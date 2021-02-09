@@ -81,12 +81,36 @@ describe('signing profile', () => {
         signingProfileProfileVersion,
       });
 
-      expect(signingProfile.signingProfileArn).toBe(
-        `arn:\${Token[AWS.Partition.3]}:signer:\${Token[AWS.Region.4]}:\${Token[AWS.AccountId.0]}://signing-profiles/${signingProfileProfileName}`,
+      expect(stack.resolve(signingProfile.signingProfileArn)).toStrictEqual(
+        {
+          'Fn::Join': [
+            '',
+            [
+              'arn:',
+              { Ref: 'AWS::Partition' },
+              ':signer:',
+              { Ref: 'AWS::Region' },
+              ':',
+              { Ref: 'AWS::AccountId' },
+              `://signing-profiles/${signingProfileProfileName}`,
+            ],
+          ],
+        },
       );
-      expect(signingProfile.signingProfileProfileVersionArn).toBe(
-        `arn:\${Token[AWS.Partition.3]}:signer:\${Token[AWS.Region.4]}:\${Token[AWS.AccountId.0]}://signing-profiles/${signingProfileProfileName}/${signingProfileProfileVersion}`,
-      );
+      expect(stack.resolve(signingProfile.signingProfileProfileVersionArn)).toStrictEqual({
+        'Fn::Join': [
+          '',
+          [
+            'arn:',
+            { Ref: 'AWS::Partition' },
+            ':signer:',
+            { Ref: 'AWS::Region' },
+            ':',
+            { Ref: 'AWS::AccountId' },
+            `://signing-profiles/${signingProfileProfileName}/${signingProfileProfileVersion}`,
+          ],
+        ],
+      });
       expect(stack).toMatchTemplate({});
     });
   } );
