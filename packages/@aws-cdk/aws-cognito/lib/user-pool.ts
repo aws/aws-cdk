@@ -571,7 +571,7 @@ export interface UserPoolProps {
   /**
    * Policy to apply when the user pool is removed from the stack
    *
-   * @default - The user pool will be orphaned.
+   * @default RemovalPolicy.RETAIN
    */
   readonly removalPolicy?: RemovalPolicy;
 }
