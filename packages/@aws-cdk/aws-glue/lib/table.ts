@@ -243,7 +243,7 @@ export class Table extends Resource implements ITable {
     this.columns = props.columns;
     this.partitionKeys = props.partitionKeys;
 
-    this.compressed = props.compressed === undefined ? false : props.compressed;
+    this.compressed = props.compressed ?? false;
     const { bucket, encryption, encryptionKey } = createBucket(this, props);
     this.bucket = bucket;
     this.encryption = encryption;
@@ -267,7 +267,7 @@ export class Table extends Resource implements ITable {
         storageDescriptor: {
           location: `s3://${this.bucket.bucketName}/${this.s3Prefix}`,
           compressed: this.compressed,
-          storedAsSubDirectories: props.storedAsSubDirectories === undefined ? false : props.storedAsSubDirectories,
+          storedAsSubDirectories: props.storedAsSubDirectories ?? false,
           columns: renderColumns(props.columns),
           inputFormat: props.dataFormat.inputFormat.className,
           outputFormat: props.dataFormat.outputFormat.className,

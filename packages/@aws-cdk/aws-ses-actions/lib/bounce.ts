@@ -100,7 +100,7 @@ export class Bounce implements ses.IReceiptRuleAction {
         sender: this.props.sender,
         smtpReplyCode: this.props.template.props.smtpReplyCode,
         message: this.props.template.props.message,
-        topicArn: this.props.topic ? this.props.topic.topicArn : undefined,
+        topicArn: this.props.topic?.topicArn,
         statusCode: this.props.template.props.statusCode,
       },
     };

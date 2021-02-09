@@ -4,7 +4,7 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as ssm from '@aws-cdk/aws-ssm';
-import { Annotations, CfnOutput, Construct, Duration, IResource, Resource, Stack, Token, Tags } from '@aws-cdk/core';
+import { Annotations, CfnOutput, Duration, IResource, Resource, Stack, Token, Tags } from '@aws-cdk/core';
 import { AwsAuth } from './aws-auth';
 import { ClusterResource } from './cluster-resource';
 import { CfnCluster, CfnClusterProps } from './eks.generated';
@@ -13,6 +13,10 @@ import { KubernetesResource } from './k8s-resource';
 import { KubectlLayer } from './kubectl-layer';
 import { spotInterruptHandler } from './spot-interrupt-handler';
 import { renderUserData } from './user-data';
+
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct } from '@aws-cdk/core';
 
 // defaults are based on https://eksctl.io
 const DEFAULT_CAPACITY_COUNT = 2;
@@ -378,7 +382,7 @@ export class Cluster extends Resource implements ICluster {
     };
 
     let resource;
-    this.kubectlEnabled = props.kubectlEnabled === undefined ? true : props.kubectlEnabled;
+    this.kubectlEnabled = props.kubectlEnabled ?? true;
     if (this.kubectlEnabled) {
       resource = new ClusterResource(this, 'Resource', clusterProps);
       this._defaultMastersRole = resource.creationRole;
@@ -425,13 +429,13 @@ export class Cluster extends Resource implements ICluster {
     }
 
     // allocate default capacity if non-zero (or default).
-    const desiredCapacity = props.defaultCapacity === undefined ? DEFAULT_CAPACITY_COUNT : props.defaultCapacity;
+    const desiredCapacity = props.defaultCapacity ?? DEFAULT_CAPACITY_COUNT;
     if (desiredCapacity > 0) {
       const instanceType = props.defaultCapacityInstance || DEFAULT_CAPACITY_TYPE;
       this.defaultCapacity = this.addCapacity('DefaultCapacity', { instanceType, desiredCapacity });
     }
 
-    const outputConfigCommand = props.outputConfigCommand === undefined ? true : props.outputConfigCommand;
+    const outputConfigCommand = props.outputConfigCommand ?? true;
     if (outputConfigCommand) {
       const postfix = commonCommandOptions.join(' ');
       new CfnOutput(this, 'ConfigCommand', { value: `${updateConfigCommandPrefix} ${postfix}` });
@@ -508,7 +512,7 @@ export class Cluster extends Resource implements ICluster {
     autoScalingGroup.connections.allowToAnyIpv4(ec2.Port.allUdp());
     autoScalingGroup.connections.allowToAnyIpv4(ec2.Port.allIcmp());
 
-    const bootstrapEnabled = options.bootstrapEnabled !== undefined ? options.bootstrapEnabled : true;
+    const bootstrapEnabled = options.bootstrapEnabled ?? true;
     if (options.bootstrapOptions && !bootstrapEnabled) {
       throw new Error('Cannot specify "bootstrapOptions" if "bootstrapEnabled" is false');
     }
@@ -533,7 +537,7 @@ export class Cluster extends Resource implements ICluster {
 
     // do not attempt to map the role if `kubectl` is not enabled for this
     // cluster or if `mapRole` is set to false. By default this should happen.
-    const mapRole = options.mapRole === undefined ? true : options.mapRole;
+    const mapRole = options.mapRole ?? true;
     if (mapRole && this.kubectlEnabled) {
       // see https://docs.aws.amazon.com/en_us/eks/latest/userguide/add-user-role.html
       this.awsAuth.addRoleMapping(autoScalingGroup.role, {

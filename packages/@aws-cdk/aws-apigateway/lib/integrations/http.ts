@@ -38,7 +38,7 @@ export interface HttpIntegrationProps {
  */
 export class HttpIntegration extends Integration {
   constructor(url: string, props: HttpIntegrationProps = { }) {
-    const proxy = props.proxy !== undefined ? props.proxy : true;
+    const proxy = props.proxy ?? true;
     const method = props.httpMethod || 'GET';
     super({
       type: proxy ? IntegrationType.HTTP_PROXY : IntegrationType.HTTP,

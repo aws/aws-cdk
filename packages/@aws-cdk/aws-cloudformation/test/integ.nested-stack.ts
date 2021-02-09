@@ -2,8 +2,12 @@ import * as lambda from '@aws-cdk/aws-lambda';
 import * as sns from '@aws-cdk/aws-sns';
 import * as sns_subscriptions from '@aws-cdk/aws-sns-subscriptions';
 import * as sqs from '@aws-cdk/aws-sqs';
-import { App, CfnParameter, Construct, Stack } from '@aws-cdk/core';
+import { App, CfnParameter, Stack } from '@aws-cdk/core';
 import * as cfn from '../lib';
+
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct } from '@aws-cdk/core';
 
 /* eslint-disable cdk/no-core-construct */
 
@@ -42,7 +46,7 @@ class MyNestedStack extends cfn.NestedStack {
         code: lambda.Code.inline('console.error("hi")'),
         handler: 'index.handler',
         environment: {
-          TOPIC_ARN: props.siblingTopic ? props.siblingTopic.topicArn : '',
+          TOPIC_ARN: props.siblingTopic?.topicArn ?? '',
           QUEUE_URL: props.subscriber.queueUrl, // nested stack references a resource in the parent
         },
       });
