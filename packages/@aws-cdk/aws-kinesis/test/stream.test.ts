@@ -681,7 +681,7 @@ describe('Kinesis data streams', () => {
     });
   }),
 
-  test('grantREADWrite creates and attaches a policy to the principal', () => {
+  test('grantReadWrite creates and attaches a policy to the principal', () => {
     const stack = new Stack();
     const stream = new Stream(stack, 'MyStream', {
       encryption: StreamEncryption.KMS,
