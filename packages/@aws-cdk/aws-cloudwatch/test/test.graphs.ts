@@ -557,6 +557,35 @@ export = {
     test.done();
   },
 
+  'add singleValueFullPrecision to singleValueWidget'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    const metric = new Metric({ namespace: 'CDK', metricName: 'Test' });
+
+    // WHEN
+    const widget = new SingleValueWidget({
+      metrics: [metric],
+      fullPrecision: true,
+    });
+
+    // THEN
+    test.deepEqual(stack.resolve(widget.toJson()), [{
+      type: 'metric',
+      width: 6,
+      height: 3,
+      properties: {
+        view: 'singleValue',
+        region: { Ref: 'AWS::Region' },
+        metrics: [
+          ['CDK', 'Test'],
+        ],
+        singleValueFullPrecision: true,
+      },
+    }]);
+
+    test.done();
+  },
+
   'allows overriding custom values of dashboard widgets'(test: Test) {
     class HiddenMetric extends Metric {
       public toMetricConfig() {

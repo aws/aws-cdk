@@ -2,6 +2,7 @@ import { IResource, Resource, Duration } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnUserPoolClient } from './cognito.generated';
 import { IUserPool } from './user-pool';
+import { ClientAttributes } from './user-pool-attr';
 import { IUserPoolResourceServer, ResourceServerScope } from './user-pool-resource-server';
 
 /**
@@ -272,6 +273,20 @@ export interface UserPoolClientOptions {
    * @default Duration.minutes(60)
    */
   readonly accessTokenValidity?: Duration;
+
+  /**
+   * The set of attributes this client will be able to read.
+   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-attributes.html#user-pool-settings-attribute-permissions-and-scopes
+   * @default - all standard and custom attributes
+   */
+  readonly readAttributes?: ClientAttributes;
+
+  /**
+   * The set of attributes this client will be able to write.
+   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-attributes.html#user-pool-settings-attribute-permissions-and-scopes
+   * @default - all standard and custom attributes
+   */
+  readonly writeAttributes?: ClientAttributes;
 }
 
 /**
@@ -358,6 +373,8 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
       allowedOAuthFlowsUserPoolClient: !props.disableOAuth,
       preventUserExistenceErrors: this.configurePreventUserExistenceErrors(props.preventUserExistenceErrors),
       supportedIdentityProviders: this.configureIdentityProviders(props),
+      readAttributes: props.readAttributes?.attributes(),
+      writeAttributes: props.writeAttributes?.attributes(),
     });
     this.configureTokenValidity(resource, props);
 

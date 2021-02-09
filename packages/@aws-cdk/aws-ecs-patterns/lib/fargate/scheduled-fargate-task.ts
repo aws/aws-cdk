@@ -1,4 +1,5 @@
-import { FargateTaskDefinition } from '@aws-cdk/aws-ecs';
+import { FargateTaskDefinition, FargatePlatformVersion } from '@aws-cdk/aws-ecs';
+import { EcsTask } from '@aws-cdk/aws-events-targets';
 import { Construct } from 'constructs';
 import { ScheduledTaskBase, ScheduledTaskBaseProps, ScheduledTaskImageProps } from '../base/scheduled-task-base';
 
@@ -21,6 +22,17 @@ export interface ScheduledFargateTaskProps extends ScheduledTaskBaseProps {
    * @default none
    */
   readonly scheduledFargateTaskImageOptions?: ScheduledFargateTaskImageOptions;
+
+  /**
+   * The platform version on which to run your service.
+   *
+   * If one is not specified, the LATEST platform version is used by default. For more information, see
+   * [AWS Fargate Platform Versions](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/platform_versions.html)
+   * in the Amazon Elastic Container Service Developer Guide.
+   *
+   * @default Latest
+   */
+  readonly platformVersion?: FargatePlatformVersion;
 }
 
 /**
@@ -103,12 +115,21 @@ export class ScheduledFargateTask extends ScheduledTaskBase {
         command: taskImageOptions.command,
         environment: taskImageOptions.environment,
         secrets: taskImageOptions.secrets,
-        logging: taskImageOptions.logDriver !== undefined ? taskImageOptions.logDriver : this.createAWSLogDriver(this.node.id),
+        logging: taskImageOptions.logDriver ?? this.createAWSLogDriver(this.node.id),
       });
     } else {
       throw new Error('You must specify one of: taskDefinition or image');
     }
 
-    this.addTaskDefinitionToEventTarget(this.taskDefinition);
+    // Use the EcsTask as the target of the EventRule
+    const eventRuleTarget = new EcsTask( {
+      cluster: this.cluster,
+      taskDefinition: this.taskDefinition,
+      taskCount: this.desiredTaskCount,
+      subnetSelection: this.subnetSelection,
+      platformVersion: props.platformVersion,
+    });
+
+    this.addTaskAsTarget(eventRuleTarget);
   }
 }

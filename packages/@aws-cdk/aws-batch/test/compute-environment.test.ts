@@ -184,6 +184,7 @@ describe('Batch Compute Evironment', () => {
           ],
           maxvCpus: 4,
           minvCpus: 1,
+          placementGroup: 'example-cluster-group',
           securityGroups: [
             new ec2.SecurityGroup(stack, 'test-sg', {
               vpc,
@@ -230,6 +231,7 @@ describe('Batch Compute Evironment', () => {
           ],
           MaxvCpus: props.computeResources.maxvCpus,
           MinvCpus: props.computeResources.minvCpus,
+          PlacementGroup: props.computeResources.placementGroup,
           SecurityGroupIds: [
             {
               'Fn::GetAtt': [
