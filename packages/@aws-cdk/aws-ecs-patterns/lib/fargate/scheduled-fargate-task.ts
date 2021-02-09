@@ -115,7 +115,7 @@ export class ScheduledFargateTask extends ScheduledTaskBase {
         command: taskImageOptions.command,
         environment: taskImageOptions.environment,
         secrets: taskImageOptions.secrets,
-        logging: taskImageOptions.logDriver !== undefined ? taskImageOptions.logDriver : this.createAWSLogDriver(this.node.id),
+        logging: taskImageOptions.logDriver ?? this.createAWSLogDriver(this.node.id),
       });
     } else {
       throw new Error('You must specify one of: taskDefinition or image');
