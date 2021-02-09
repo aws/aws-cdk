@@ -656,9 +656,11 @@ These command lines explained:
 > Check with the appropriate department within your organization to decide on the
 > proper policy to use.
 >
-> On this note, if you have an account dedicated to CI/CD pipelines you can tailored
-> the permission granted to only allow pipelines' resources to be deployed by bootstraping 
-> it with the `--template` option with a template such as [this one](https://raw.githubusercontent.com/aws-samples/aws-bootstrap-kit-examples/main/source/1-SDLC-organization/lib/cdk-bootstrap-template.yml).
+> If your policy includes permissions to create on attach permission to a role, 
+> developers can escalate their privilege with more permissive permission. 
+> Thus, we recommend implementing [permissions boundary](https://aws.amazon.com/premiumsupport/knowledge-center/iam-permission-boundaries/) 
+> in the CDK Execution role. To do this, you can bootstrap with the `--template` option with 
+> [a customized template](https://github.com/aws-samples/aws-bootstrap-kit-examples/blob/ba28a97d289128281bc9483bcba12c1793f2c27a/source/1-SDLC-organization/lib/cdk-bootstrap-template.yml#L395) that contains a permission boundary.
 
 ### Migrating from old bootstrap stack
 
