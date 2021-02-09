@@ -16,7 +16,7 @@ class EventSourceStack extends cdk.Stack {
       eventBus: events.EventBus.fromEventBusArn(
         this,
         'External',
-        `arn:aws:events:${this.region}:999999999999:event-bus/test-bus`
+        `arn:aws:events:${this.region}:999999999999:event-bus/test-bus`,
       ),
     }));
   }

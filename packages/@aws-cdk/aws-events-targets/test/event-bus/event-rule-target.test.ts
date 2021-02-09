@@ -13,8 +13,8 @@ test('Use EventBus as an event rule target', () => {
   rule.addTarget(new targets.EventBus({
     eventBus: events.EventBus.fromEventBusArn(
       stack,
-      'External', 
-      'arn:aws:events:us-east-1:111111111111:default'
+      'External',
+      'arn:aws:events:us-east-1:111111111111:default',
     ),
   }));
 
@@ -59,9 +59,9 @@ test('with supplied role', () => {
 
   rule.addTarget(new targets.EventBus({
     eventBus: events.EventBus.fromEventBusArn(
-      stack, 
-      'External', 
-      'arn:aws:events:us-east-1:123456789012:default'
+      stack,
+      'External',
+      'arn:aws:events:us-east-1:123456789012:default',
     ),
     role,
   }));
