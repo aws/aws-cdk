@@ -27,7 +27,7 @@ Define a Signer SigningProfile:
 import * as signer from '@aws-cdk/aws-signer';
 
 const signingProfile = new signer.SigningProfile(this, 'SigningProfile', { 
-  platformId: 'AWSLambda-SHA384-ECDSA' 
+  platformId: 'xxxxxx' 
 } );
 ```
 
@@ -41,7 +41,7 @@ Specifies the duration in the period that the signing profile is valid.
 import * as cdk from '@aws-cdk/aws-core';
 
 const signingProfile = new signer.SigningProfile(this, 'SignginProfile', {
-  platformId: 'AWSLambda-SHA384-ECDSA',
+  platformId: 'xxxxxx',
   signatureValidityPeriod: cdk.Duration.days(365), // Default to 135 months
 }) 
 ```
