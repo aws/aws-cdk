@@ -1476,10 +1476,9 @@ describe('bucket', () => {
 
     });
 
-    // testing this only in legacy mode. see https://github.com/aws/aws-cdk/issues/12921
-    testLegacyBehavior('in different accounts, with a KMS Key', cdk.App, (app) => {
+    test('in different accounts, with a KMS Key', () => {
       // given
-      const stackA = new cdk.Stack(app, 'StackA', { env: { account: '123456789012' } });
+      const stackA = new cdk.Stack(undefined, 'StackA', { env: { account: '123456789012' } });
       const key = new kms.Key(stackA, 'MyKey');
       const bucketFromStackA = new s3.Bucket(stackA, 'MyBucket', {
         bucketName: 'my-bucket-physical-name',
@@ -1487,7 +1486,7 @@ describe('bucket', () => {
         encryption: s3.BucketEncryption.KMS,
       });
 
-      const stackB = new cdk.Stack(app, 'StackB', { env: { account: '234567890123' } });
+      const stackB = new cdk.Stack(undefined, 'StackB', { env: { account: '234567890123' } });
       const roleFromStackB = new iam.Role(stackB, 'MyRole', {
         assumedBy: new iam.AccountPrincipal('234567890123'),
         roleName: 'MyRolePhysicalName',
