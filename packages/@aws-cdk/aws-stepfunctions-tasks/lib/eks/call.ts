@@ -22,6 +22,7 @@ export interface EksCallProps extends sfn.TaskStateBaseProps {
 
   /**
    * HTTP path of the Kubernetes REST API operation
+   * For example: /api/v1/namespaces/default/pods
    */
   readonly httpPath: string;
 
@@ -35,7 +36,7 @@ export interface EksCallProps extends sfn.TaskStateBaseProps {
    * Request body part of HTTP request
    * @default - No request body
    */
-  readonly requestBody?: { [key: string]: any };
+  readonly requestBody?: sfn.TaskInput;
 }
 
 /**
@@ -50,6 +51,9 @@ export class EksCall extends sfn.TaskStateBase {
     sfn.IntegrationPattern.REQUEST_RESPONSE,
   ];
 
+  /** No policies are required due to eks:call is an Http service integration and does not call and EKS API directly
+   * @see https://docs.aws.amazon.com/step-functions/latest/dg/connect-eks.html#connect-eks-permissions
+   */
   protected readonly taskMetrics?: sfn.TaskMetricsConfig;
   protected readonly taskPolicies?: iam.PolicyStatement[];
 
@@ -76,7 +80,7 @@ export class EksCall extends sfn.TaskStateBase {
         Method: this.props.httpMethod,
         Path: this.props.httpPath,
         QueryParameters: this.props.queryParameters,
-        RequestBody: this.props.requestBody,
+        RequestBody: this.props.requestBody?.value,
       }),
     };
   }

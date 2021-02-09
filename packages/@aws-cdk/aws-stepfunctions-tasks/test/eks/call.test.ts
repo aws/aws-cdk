@@ -22,7 +22,7 @@ test('Call an EKS endpoint', () => {
     httpMethod: HttpMethods.GET,
     httpPath: 'path',
     requestBody: sfn.TaskInput.fromObject({
-      RequestBody: 'requestBody',
+      Body: 'requestBody',
     }),
   });
 
@@ -61,11 +61,104 @@ test('Call an EKS endpoint', () => {
       Method: 'GET',
       Path: 'path',
       RequestBody: {
-        type: 1,
-        value: {
-          RequestBody: 'requestBody',
-        },
+        Body: 'requestBody',
       },
+    },
+  });
+});
+
+test('Call an EKS endpoint with requestBody as a string', () => {
+  // WHEN
+  const task = new EksCall(stack, 'Call', {
+    cluster: cluster,
+    httpMethod: HttpMethods.GET,
+    httpPath: 'path',
+    requestBody: sfn.TaskInput.fromText('requestBody'),
+  });
+
+  // THEN
+  expect(stack.resolve(task.toStateJson())).toEqual({
+    Type: 'Task',
+    Resource: {
+      'Fn::Join': [
+        '',
+        [
+          'arn:',
+          {
+            Ref: 'AWS::Partition',
+          },
+          ':states:::eks:call',
+        ],
+      ],
+    },
+    End: true,
+    Parameters: {
+      ClusterName: {
+        Ref: 'Cluster9EE0221C',
+      },
+      CertificateAuthority: {
+        'Fn::GetAtt': [
+          'Cluster9EE0221C',
+          'CertificateAuthorityData',
+        ],
+      },
+      Endpoint: {
+        'Fn::GetAtt': [
+          'Cluster9EE0221C',
+          'Endpoint',
+        ],
+      },
+      Method: 'GET',
+      Path: 'path',
+      RequestBody: 'requestBody',
+    },
+  });
+});
+
+test('Call an EKS endpoint with requestBody supply through path', () => {
+  // WHEN
+  const task = new EksCall(stack, 'Call', {
+    cluster: cluster,
+    httpMethod: HttpMethods.GET,
+    httpPath: 'path',
+    requestBody: sfn.TaskInput.fromJsonPathAt('$.Request.Body'),
+  });
+
+  // THEN
+  expect(stack.resolve(task.toStateJson())).toEqual({
+    Type: 'Task',
+    Resource: {
+      'Fn::Join': [
+        '',
+        [
+          'arn:',
+          {
+            Ref: 'AWS::Partition',
+          },
+          ':states:::eks:call',
+        ],
+      ],
+    },
+    End: true,
+    Parameters: {
+      'ClusterName': {
+        Ref: 'Cluster9EE0221C',
+      },
+      'CertificateAuthority': {
+        'Fn::GetAtt': [
+          'Cluster9EE0221C',
+          'CertificateAuthorityData',
+        ],
+      },
+      'Endpoint': {
+        'Fn::GetAtt': [
+          'Cluster9EE0221C',
+          'Endpoint',
+        ],
+      },
+      'Method': 'GET',
+      'Path': 'path',
+      'RequestBody.$': '$.Request.Body',
     },
   });
 });
