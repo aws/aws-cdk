@@ -10,7 +10,7 @@ const argv = yargs
   .argv;
 
 // Our version of yargs doesn't support positional arguments yet
-const directory = argv._[0] || '.';
+const directory = argv._[0] as string || '.';
 
 argv.directory = path.resolve(directory, process.cwd());
 
