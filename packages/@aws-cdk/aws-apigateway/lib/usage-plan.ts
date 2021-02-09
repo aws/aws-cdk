@@ -179,8 +179,10 @@ export class UsagePlan extends Resource {
    * @param apiKey
    */
   public addApiKey(apiKey: IApiKey): void {
+    const prefix = 'UsagePlanKeyResource';
+
     // Postfixing apikey id only from the 2nd child, to keep physicalIds of UsagePlanKey for existing CDK apps unmodifed.
-    const id = `UsagePlanKeyResource:${Names.nodeUniqueId(apiKey.node)}`;
+    const id = this.node.tryFindChild(prefix) ? `${prefix}:${Names.nodeUniqueId(apiKey.node)}` : prefix;
 
     new CfnUsagePlanKey(this, id, {
       keyId: apiKey.keyId,
