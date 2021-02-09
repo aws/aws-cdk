@@ -2,9 +2,9 @@ import * as crypto from 'crypto';
 
 import { AccountRootPrincipal, Grant, IGrantable } from '@aws-cdk/aws-iam';
 import { IKey, ViaServicePrincipal } from '@aws-cdk/aws-kms';
-import { Annotations, IResource, Resource, Size, SizeRoundingBehavior, Stack, Token, Tags, Names } from '@aws-cdk/core';
+import { IResource, Resource, Size, SizeRoundingBehavior, Stack, Token, Tags, Names } from '@aws-cdk/core';
 import { Construct } from 'constructs';
-import { CfnInstance, CfnVolume } from './ec2.generated';
+import { CfnVolume } from './ec2.generated';
 import { IInstance } from './instance';
 
 // v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
@@ -165,37 +165,6 @@ export class BlockDeviceVolume {
 }
 
 /**
- * Synthesize an array of block device mappings from a list of block device
- *
- * @param construct the instance/asg construct, used to host any warning
- * @param blockDevices list of block devices
- */
-export function synthesizeBlockDeviceMappings(construct: Construct, blockDevices: BlockDevice[]): CfnInstance.BlockDeviceMappingProperty[] {
-  return blockDevices.map<CfnInstance.BlockDeviceMappingProperty>(({ deviceName, volume, mappingEnabled }) => {
-    const { virtualName, ebsDevice: ebs } = volume;
-
-    if (ebs) {
-      const { iops, volumeType } = ebs;
-
-      if (!iops) {
-        if (volumeType === EbsDeviceVolumeType.IO1) {
-          throw new Error('iops property is required with volumeType: EbsDeviceVolumeType.IO1');
-        }
-      } else if (volumeType !== EbsDeviceVolumeType.IO1) {
-        Annotations.of(construct).addWarning('iops will be ignored without volumeType: EbsDeviceVolumeType.IO1');
-      }
-    }
-
-    return {
-      deviceName,
-      ebs,
-      virtualName,
-      noDevice: mappingEnabled === false ? {} : undefined,
-    };
-  });
-}
-
-/**
  * Supported EBS volume types for blockDevices
  */
 export enum EbsDeviceVolumeType {
@@ -205,14 +174,24 @@ export enum EbsDeviceVolumeType {
   STANDARD = 'standard',
 
   /**
-   *  Provisioned IOPS SSD
+   *  Provisioned IOPS SSD - IO1
    */
   IO1 = 'io1',
 
   /**
-   * General Purpose SSD
+   *  Provisioned IOPS SSD - IO2
+   */
+  IO2 = 'io2',
+
+  /**
+   * General Purpose SSD - GP2
    */
   GP2 = 'gp2',
+
+  /**
+   * General Purpose SSD - GP3
+   */
+  GP3 = 'gp3',
 
   /**
    * Throughput Optimized HDD
@@ -225,14 +204,24 @@ export enum EbsDeviceVolumeType {
   SC1 = 'sc1',
 
   /**
-   * General purpose SSD volume that balances price and performance for a wide variety of workloads.
+   * General purpose SSD volume (GP2) that balances price and performance for a wide variety of workloads.
    */
   GENERAL_PURPOSE_SSD = GP2,
 
   /**
-   * Highest-performance SSD volume for mission-critical low-latency or high-throughput workloads.
+   * General purpose SSD volume (GP3) that balances price and performance for a wide variety of workloads.
+   */
+  GENERAL_PURPOSE_SSD_GP3 = GP3,
+
+  /**
+   * Highest-performance SSD volume (IO1) for mission-critical low-latency or high-throughput workloads.
    */
   PROVISIONED_IOPS_SSD = IO1,
+
+  /**
+   * Highest-performance SSD volume (IO2) for mission-critical low-latency or high-throughput workloads.
+   */
+  PROVISIONED_IOPS_SSD_IO2 = IO2,
 
   /**
    * Low-cost HDD volume designed for frequently accessed, throughput-intensive workloads.

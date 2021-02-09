@@ -147,12 +147,11 @@ export class FargateService extends BaseService implements IFargateService {
       throw new Error(`The task definition of this service uses at least one container that references a secret JSON field. This feature requires platform version ${FargatePlatformVersion.VERSION1_4} or later.`);
     }
 
-    const propagateTagsFromSource = props.propagateTaskTagsFrom !== undefined ? props.propagateTaskTagsFrom
-      : (props.propagateTags !== undefined ? props.propagateTags : PropagatedTagSource.NONE);
+    const propagateTagsFromSource = props.propagateTaskTagsFrom ?? props.propagateTags ?? PropagatedTagSource.NONE;
 
     super(scope, id, {
       ...props,
-      desiredCount: props.desiredCount !== undefined ? props.desiredCount : 1,
+      desiredCount: props.desiredCount,
       launchType: LaunchType.FARGATE,
       propagateTags: propagateTagsFromSource,
       enableECSManagedTags: props.enableECSManagedTags,

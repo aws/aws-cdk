@@ -272,7 +272,7 @@ class TestFixture {
     });
     this.lb = new elbv2.ApplicationLoadBalancer(this.stack, 'LB', { vpc: this.vpc });
 
-    createListener = createListener === undefined ? true : createListener;
+    createListener = createListener ?? true;
     if (createListener) {
       this._listener = this.lb.addListener('Listener', { port: 80, open: false });
     }

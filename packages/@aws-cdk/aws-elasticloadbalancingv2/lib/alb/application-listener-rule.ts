@@ -7,6 +7,10 @@ import { ListenerAction } from './application-listener-action';
 import { IApplicationTargetGroup } from './application-target-group';
 import { ListenerCondition } from './conditions';
 
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct as CoreConstruct } from '@aws-cdk/core';
+
 /**
  * Basic properties for defining a rule on a listener
  */
@@ -194,7 +198,7 @@ export interface RedirectResponse {
 /**
  * Define a new listener rule
  */
-export class ApplicationListenerRule extends cdk.Construct {
+export class ApplicationListenerRule extends CoreConstruct {
   /**
    * The ARN of this rule
    */

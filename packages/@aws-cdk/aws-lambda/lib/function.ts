@@ -574,7 +574,7 @@ export class Function extends FunctionBase {
 
     let profilingGroupEnvironmentVariables: { [key: string]: string } = {};
     if (props.profilingGroup && props.profiling !== false) {
-      this.validateProfilingEnvironmentVariables(props);
+      this.validateProfiling(props);
       props.profilingGroup.grantPublish(this.role);
       profilingGroupEnvironmentVariables = {
         AWS_CODEGURU_PROFILER_GROUP_ARN: Stack.of(scope).formatArn({
@@ -585,7 +585,7 @@ export class Function extends FunctionBase {
         AWS_CODEGURU_PROFILER_ENABLED: 'TRUE',
       };
     } else if (props.profiling) {
-      this.validateProfilingEnvironmentVariables(props);
+      this.validateProfiling(props);
       const profilingGroup = new ProfilingGroup(this, 'ProfilingGroup', {
         computePlatform: ComputePlatform.AWS_LAMBDA,
       });
@@ -603,7 +603,13 @@ export class Function extends FunctionBase {
 
     this.deadLetterQueue = this.buildDeadLetterQueue(props);
 
-    const UNDEFINED_MARKER = '$$$undefined';
+    let fileSystemConfigs: CfnFunction.FileSystemConfigProperty[] | undefined = undefined;
+    if (props.filesystem) {
+      fileSystemConfigs = [{
+        arn: props.filesystem.config.arn,
+        localMountPath: props.filesystem.config.localMountPath,
+      }];
+    }
 
     const resource: CfnFunction = new CfnFunction(this, 'Resource', {
       functionName: this.physicalName,
@@ -616,10 +622,10 @@ export class Function extends FunctionBase {
         imageUri: code.image?.imageUri,
       },
       layers: Lazy.list({ produce: () => this.layers.map(layer => layer.layerVersionArn) }, { omitEmpty: true }),
-      handler: props.handler === Handler.FROM_IMAGE ? UNDEFINED_MARKER : props.handler,
+      handler: props.handler === Handler.FROM_IMAGE ? undefined : props.handler,
       timeout: props.timeout && props.timeout.toSeconds(),
       packageType: props.runtime === Runtime.FROM_IMAGE ? 'Image' : undefined,
-      runtime: props.runtime === Runtime.FROM_IMAGE ? UNDEFINED_MARKER : props.runtime?.name,
+      runtime: props.runtime === Runtime.FROM_IMAGE ? undefined : props.runtime.name,
       role: this.role.roleArn,
       // Uncached because calling '_checkEdgeCompatibility', which gets called in the resolve of another
       // Token, actually *modifies* the 'environment' map.
@@ -634,16 +640,8 @@ export class Function extends FunctionBase {
         entryPoint: code.image?.entrypoint,
       }),
       kmsKeyArn: props.environmentEncryption?.keyArn,
+      fileSystemConfigs,
     });
-
-    // since patching the CFN spec to make Runtime and Handler optional causes a
-    // change in the order of the JSON keys, which results in a change of
-    // function hash (and invalidation of all lambda functions everywhere), we
-    // are using a marker to indicate this fields needs to be erased using an
-    // escape hatch. this should be fixed once the new spec is published and a
-    // patch is no longer needed.
-    if (resource.runtime === UNDEFINED_MARKER) { resource.addPropertyOverride('Runtime', undefined); }
-    if (resource.handler === UNDEFINED_MARKER) { resource.addPropertyOverride('Handler', undefined); }
 
     resource.node.addDependency(this.role);
 
@@ -695,15 +693,6 @@ export class Function extends FunctionBase {
       if (config.dependency) {
         this.node.addDependency(...config.dependency);
       }
-
-      resource.addPropertyOverride('FileSystemConfigs',
-        [
-          {
-            LocalMountPath: config.localMountPath,
-            Arn: config.arn,
-          },
-        ],
-      );
     }
   }
 
@@ -952,7 +941,10 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
     };
   }
 
-  private validateProfilingEnvironmentVariables(props: FunctionProps) {
+  private validateProfiling(props: FunctionProps) {
+    if (!props.runtime.supportsCodeGuruProfiling) {
+      throw new Error(`CodeGuru profiling is not supported by runtime ${props.runtime.name}`);
+    }
     if (props.environment && (props.environment.AWS_CODEGURU_PROFILER_GROUP_ARN || props.environment.AWS_CODEGURU_PROFILER_ENABLED)) {
       throw new Error('AWS_CODEGURU_PROFILER_GROUP_ARN and AWS_CODEGURU_PROFILER_ENABLED must not be set when profiling options enabled');
     }
