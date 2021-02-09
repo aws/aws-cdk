@@ -9,6 +9,7 @@ import * as kms from '@aws-cdk/aws-kms';
 import * as logs from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as sqs from '@aws-cdk/aws-sqs';
+import * as signer from '@aws-cdk/aws-signer';
 import * as cdk from '@aws-cdk/core';
 import * as constructs from 'constructs';
 import * as _ from 'lodash';
@@ -1987,6 +1988,43 @@ describe('function', () => {
           EntryPoint: ['entrypoint', 'param2'],
         },
       });
+    });
+  });
+
+  describe('code signing config', () => {
+    test('default', () => {
+      const stack = new cdk.Stack();
+
+      const signingProfile = new signer.SigningProfile(stack, 'SigningProfile', {
+        platformId: 'xxx',
+      });
+
+      const codeSigningConfig = new lambda.CodeSigningConfig(stack, 'CodeSigningConfig', {
+        signingProfiles: [signingProfile],
+      });
+
+      new lambda.Function(stack, 'MyLambda', {
+        code: new lambda.InlineCode('foo'),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.NODEJS_10_X,
+        codeSigningConfig,
+      });
+
+      expect(stack).toHaveResource('AWS::Lambda::Function', {
+        Properties: {
+          Code: { ZipFile: 'foo' },
+          Handler: 'index.handler',
+          Role: { 'Fn::GetAtt': ['MyLambdaServiceRole4539ECB6', 'Arn'] },
+          Runtime: 'nodejs10.x',
+          CodeSigningConfigArn: {
+            'Fn::GetAtt': [
+              'CodeSigningConfigD8D41C10',
+              'CodeSigningConfigArn',
+            ],
+          },
+        },
+        DependsOn: ['MyLambdaServiceRole4539ECB6'],
+      }, ResourcePart.CompleteDefinition);
     });
   });
 });
