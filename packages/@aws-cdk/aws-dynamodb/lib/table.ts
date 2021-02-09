@@ -1389,8 +1389,8 @@ export class Table extends TableBase {
     }
 
     return {
-      projectionType: props.projectionType ? props.projectionType : ProjectionType.ALL,
-      nonKeyAttributes: props.nonKeyAttributes ? props.nonKeyAttributes : undefined,
+      projectionType: props.projectionType ?? ProjectionType.ALL,
+      nonKeyAttributes: props.nonKeyAttributes ?? undefined,
     };
   }
 
