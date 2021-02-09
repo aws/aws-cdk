@@ -543,7 +543,7 @@ export = {
       });
 
       // THEN
-      expect(stack).notTo(haveResource('AWS::ECR::Repository', {}));
+      expect(stack).to(haveResource('AWS::ECR::Repository', {}));
 
       test.done();
     },
