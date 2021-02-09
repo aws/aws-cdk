@@ -138,6 +138,16 @@ describe('deploy', () => {
   });
 });
 
+describe('synth', () => {
+  test('with no stdout option', async () => {
+    // GIVE
+    const toolkit = defaultToolkitSetup();
+
+    // THEN
+    await expect(toolkit.synth(['Test-Stack-A'], false, true)).resolves.toBeUndefined();
+  });
+});
+
 class MockStack {
   public static readonly MOCK_STACK_A: TestStackArtifact = {
     stackName: 'Test-Stack-A',

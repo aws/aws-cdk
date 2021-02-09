@@ -58,3 +58,19 @@ test('with duplicated entries', async () => {
   const evaluated = await handler(event);
   expect(evaluated).toBe(2);
 });
+
+test('with dash and underscore in path', async () => {
+  // GIVEN
+  const event: Event = {
+    expression: '$.a_b + $.c-d + $[_e]',
+    expressionAttributeValues: {
+      '$.a_b': 1,
+      '$.c-d': 2,
+      '$[_e]': 3,
+    },
+  };
+
+  // THEN
+  const evaluated = await handler(event);
+  expect(evaluated).toBe(6);
+});
