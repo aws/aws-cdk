@@ -171,6 +171,44 @@ nodeunitShim({
     test.done();
   },
 
+  'custom entrypoint is passed through to docker exec'(test: Test) {
+    const spawnSyncStub = sinon.stub(child_process, 'spawnSync').returns({
+      status: 0,
+      stderr: Buffer.from('stderr'),
+      stdout: Buffer.from('stdout'),
+      pid: 123,
+      output: ['stdout', 'stderr'],
+      signal: null,
+    });
+
+    const image = BundlingDockerImage.fromRegistry('alpine');
+    image.run({
+      entrypoint: ['/cool/entrypoint', '--cool-entrypoint-arg'],
+      command: ['cool', 'command'],
+      environment: {
+        VAR1: 'value1',
+        VAR2: 'value2',
+      },
+      volumes: [{ hostPath: '/host-path', containerPath: '/container-path' }],
+      workingDirectory: '/working-directory',
+      user: 'user:group',
+    });
+
+    test.ok(spawnSyncStub.calledWith('docker', [
+      'run', '--rm',
+      '-u', 'user:group',
+      '-v', '/host-path:/container-path:delegated',
+      '--env', 'VAR1=value1',
+      '--env', 'VAR2=value2',
+      '-w', '/working-directory',
+      '--entrypoint', '/cool/entrypoint',
+      'alpine',
+      '--cool-entrypoint-arg',
+      'cool', 'command',
+    ], { stdio: ['ignore', process.stderr, 'inherit'] }));
+    test.done();
+  },
+
   'cp utility copies from an image'(test: Test) {
     // GIVEN
     const containerId = '1234567890abcdef1234567890abcdef';

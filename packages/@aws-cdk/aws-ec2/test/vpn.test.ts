@@ -1,5 +1,5 @@
 import { expect, haveResource } from '@aws-cdk/assert';
-import { Duration, Stack } from '@aws-cdk/core';
+import { Duration, Stack, Token } from '@aws-cdk/core';
 import { nodeunitShim, Test } from 'nodeunit-shim';
 import { PublicSubnet, Vpc, VpnConnection } from '../lib';
 
@@ -319,6 +319,26 @@ nodeunitShim({
     // THEN
     expect(stack).to(haveResource('AWS::EC2::CustomerGateway', {
       Type: 'ipsec.1',
+    }));
+    test.done();
+  },
+  'can add a vpn connection with a Token as customer gateway ip'(test:Test) {
+    // GIVEN
+    const stack = new Stack();
+    const token = Token.asAny('192.0.2.1');
+
+    // WHEN
+    new Vpc(stack, 'VpcNetwork', {
+      vpnConnections: {
+        VpnConnection: {
+          ip: token as any,
+        },
+      },
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::EC2::CustomerGateway', {
+      IpAddress: '192.0.2.1',
     }));
     test.done();
   },
