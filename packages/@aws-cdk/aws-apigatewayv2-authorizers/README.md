@@ -58,6 +58,7 @@ User Pool Authorizer is a type of JWT Authorizer that uses a Cognito user pool a
 Clients accessing an API that uses a user pool authorizer must first sign in to a user pool and obtain an identity or access token.
 They must then use this token in the `Authorization` header of the API call. More information is available at [using Amazon Cognito user
 pools as authorizer](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-integrate-with-cognito.html).
+
 ```ts
 const userPool = new UserPool(stack, 'UserPool');
 const userPoolClient = userPool.addClient('UserPoolClient');
