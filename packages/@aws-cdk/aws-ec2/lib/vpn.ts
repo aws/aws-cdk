@@ -224,7 +224,7 @@ export class VpnConnection extends Resource implements IVpnConnection {
       });
     }
 
-    if (!net.isIPv4(props.ip)) {
+    if (!Token.isUnresolved(props.ip) && !net.isIPv4(props.ip)) {
       throw new Error(`The \`ip\` ${props.ip} is not a valid IPv4 address.`);
     }
 

@@ -59,7 +59,7 @@ export class HaveResourceAssertion extends JestFriendlyAssertion<StackInspector>
       properties === undefined ? anything() :
         allowValueExtension ? deepObjectLike(properties) :
           objectLike(properties);
-    this.part = part !== undefined ? part : ResourcePart.Properties;
+    this.part = part ?? ResourcePart.Properties;
   }
 
   public assertUsing(inspector: StackInspector): boolean {
