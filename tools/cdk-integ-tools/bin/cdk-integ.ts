@@ -14,7 +14,7 @@ async function main() {
     .option('dry-run', { type: 'boolean', default: false, desc: 'do not actually deploy the stack. just update the snapshot (not recommended!)' })
     .argv;
 
-  const tests = await new IntegrationTests('test').fromCliArgs(argv._);
+  const tests = await new IntegrationTests('test').fromCliArgs(argv._.map(x => x.toString()));
 
   if (argv.list) {
     process.stdout.write(tests.map(t => t.name).join(' ') + '\n');
