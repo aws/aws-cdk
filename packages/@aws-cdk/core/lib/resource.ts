@@ -9,6 +9,8 @@ import { generatePhysicalName, isGeneratedWhenNeededMarker } from './private/phy
 import { IResolveContext } from './resolvable';
 import { Stack } from './stack';
 import { Token } from './token';
+import { RemovalPolicy } from './removal-policy';
+import { CfnResource } from './cfn-resource';
 
 /**
  * Represents the environment a given resource lives in.
@@ -162,6 +164,25 @@ export abstract class Resource extends CoreConstruct implements IResource {
     if (!this._physicalName) {
       this._physicalName = this.generatePhysicalName();
     }
+  }
+
+  /**
+   * Apply the given removal policy to this resource
+   *
+   * The Removal Policy controls what happens to this resource when it stops
+   * being managed by CloudFormation, either because you've removed it from the
+   * CDK application or because you've made a change that requires the resource
+   * to be replaced.
+   *
+   * The resource can be deleted (`RemovalPolicy.DELETE`), or left in your AWS
+   * account for data recovery and cleanup later (`RemovalPolicy.RETAIN`).
+   */
+  public applyRemovalPolicy(policy: RemovalPolicy) {
+    const child = this.node.defaultChild;
+    if (!child || !CfnResource.isCfnResource(child)) {
+      throw new Error('Cannot apply RemovalPolicy: no child or not a CfnResource. Apply the removal policy on the CfnResource directly.');
+    }
+    child.applyRemovalPolicy(policy);
   }
 
   protected generatePhysicalName(): string {

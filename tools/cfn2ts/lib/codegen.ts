@@ -1,4 +1,4 @@
-import { schema } from '@aws-cdk/cfnspec';
+import { schema, cfnLintAnnotations } from '@aws-cdk/cfnspec';
 import { CodeMaker } from 'codemaker';
 import * as genspec from './genspec';
 import { itemTypeNames, PropertyAttributeName, scalarTypeNames, SpecName } from './spec-utils';
@@ -125,7 +125,7 @@ export default class CodeGenerator {
     this.code.closeBlock();
 
     this.code.line();
-    this.emitValidator(resourceContext, name, spec.Properties, conversionTable);
+    this.emitPropertiesValidator(resourceContext, name, spec.Properties, conversionTable);
     this.code.line();
     this.emitCloudFormationMapper(resourceContext, name, spec.Properties, conversionTable);
     this.emitFromCfnFactoryFunction(resourceContext, name, spec.Properties, conversionTable, false);
@@ -354,6 +354,11 @@ export default class CodeGenerator {
       this.emitCloudFormationProperties(propsType, propMap, schema.isTaggableResource(spec));
     }
 
+    //
+    //  Validator
+    //
+    this.emitConstructValidator(resourceName);
+
     this.closeClass(resourceName);
 
     this.endNamespace(resourceName);
@@ -382,6 +387,35 @@ export default class CodeGenerator {
 
     this.code.openBlock('protected renderProperties(props: {[key: string]: any}): { [key: string]: any } ');
     this.code.line(`return ${genspec.cfnMapperName(propsType).fqn}(props);`);
+    this.code.closeBlock();
+  }
+
+  /**
+   * Emit a validator for the given construct
+   *
+   * The generated code looks like this:
+   *
+   * ```
+   * protected validate(): string[] {
+   *   const errors = new Array<string>();
+   *   // Validation here...
+   *   return errors;
+   * }
+   * ```
+   */
+  private emitConstructValidator(resourceType: genspec.CodeName) {
+    this.code.openBlock('public validate(): string[]');
+    this.code.line('const errors = new Array<string>();');
+
+    const cfnLint = cfnLintAnnotations(resourceType.specName?.fqn ?? '');
+
+    if (cfnLint.stateful) {
+      this.code.line('if (this.cfnOptions.deletionPolicy === undefined) {');
+      this.code.line(`  errors.push(\'\\\'${resourceType.specName?.fqn}\\\' is a stateful resource type, and you must specify a Removal Policy for it. Call \\\'resource.applyRemovalPolicy()\\\'.\');`);
+      this.code.line('}');
+    }
+
+    this.code.line('return errors;');
     this.code.closeBlock();
   }
 
@@ -665,7 +699,7 @@ export default class CodeGenerator {
    *
    * Generated as a top-level function outside any namespace so we can hide it from library consumers.
    */
-  private emitValidator(
+  private emitPropertiesValidator(
     resource: genspec.CodeName,
     typeName: genspec.CodeName,
     propSpecs: { [name: string]: schema.Property },
@@ -819,7 +853,7 @@ export default class CodeGenerator {
     this.endNamespace(typeName);
 
     this.code.line();
-    this.emitValidator(resourceContext, typeName, propTypeSpec.Properties, conversionTable);
+    this.emitPropertiesValidator(resourceContext, typeName, propTypeSpec.Properties, conversionTable);
     this.code.line();
     this.emitCloudFormationMapper(resourceContext, typeName, propTypeSpec.Properties, conversionTable);
     this.emitFromCfnFactoryFunction(resourceContext, typeName, propTypeSpec.Properties, conversionTable, true);
