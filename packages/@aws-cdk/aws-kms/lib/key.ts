@@ -156,7 +156,7 @@ abstract class KeyBase extends Resource implements IKey {
       resourceArns: [this.keyArn],
       resourceSelfArns: crossEnvironment ? undefined : ['*'],
     };
-    if (this.trustAccountIdentities) {
+    if (this.trustAccountIdentities && !crossEnvironment) {
       return iam.Grant.addToPrincipalOrResource(grantOptions);
     } else {
       return iam.Grant.addToPrincipalAndResource({

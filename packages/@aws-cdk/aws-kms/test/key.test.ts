@@ -245,6 +245,103 @@ describe('key policies', () => {
     });
   });
 
+  testFutureBehavior('grant for a principal in a different region', flags, cdk.App, (app) => {
+    const principalStack = new cdk.Stack(app, 'PrincipalStack', { env: { region: 'testregion1' } });
+    const principal = new iam.Role(principalStack, 'Role', {
+      assumedBy: new iam.AnyPrincipal(),
+      roleName: 'MyRolePhysicalName',
+    });
+
+    const keyStack = new cdk.Stack(app, 'KeyStack', { env: { region: 'testregion2' } });
+    const key = new kms.Key(keyStack, 'Key');
+
+    key.grantEncrypt(principal);
+
+    expect(keyStack).toHaveResourceLike('AWS::KMS::Key', {
+      KeyPolicy: {
+        Statement: arrayWith(
+          {
+            Action: [
+              'kms:Encrypt',
+              'kms:ReEncrypt*',
+              'kms:GenerateDataKey*',
+            ],
+            Effect: 'Allow',
+            Principal: { AWS: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::', { Ref: 'AWS::AccountId' }, ':role/MyRolePhysicalName']] } },
+            Resource: '*',
+          },
+        ),
+        Version: '2012-10-17',
+      },
+    });
+    expect(principalStack).toHaveResourceLike('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: [
+              'kms:Encrypt',
+              'kms:ReEncrypt*',
+              'kms:GenerateDataKey*',
+            ],
+            Effect: 'Allow',
+            Resource: '*',
+          },
+        ],
+        Version: '2012-10-17',
+      },
+    });
+  });
+
+  testFutureBehavior('grant for a principal in a different account', flags, cdk.App, (app) => {
+    const principalStack = new cdk.Stack(app, 'PrincipalStack', { env: { account: '0123456789012' } });
+    const principal = new iam.Role(principalStack, 'Role', {
+      assumedBy: new iam.AnyPrincipal(),
+      roleName: 'MyRolePhysicalName',
+    });
+
+    const keyStack = new cdk.Stack(app, 'KeyStack', { env: { account: '111111111111' } });
+    const key = new kms.Key(keyStack, 'Key');
+
+    key.grantEncrypt(principal);
+
+    expect(keyStack).toHaveResourceLike('AWS::KMS::Key', {
+      KeyPolicy: {
+        Statement: [
+          {
+            // Default policy, unmodified
+          },
+          {
+            Action: [
+              'kms:Encrypt',
+              'kms:ReEncrypt*',
+              'kms:GenerateDataKey*',
+            ],
+            Effect: 'Allow',
+            Principal: { AWS: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::0123456789012:role/MyRolePhysicalName']] } },
+            Resource: '*',
+          },
+        ],
+        Version: '2012-10-17',
+      },
+    });
+    expect(principalStack).toHaveResourceLike('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: [
+              'kms:Encrypt',
+              'kms:ReEncrypt*',
+              'kms:GenerateDataKey*',
+            ],
+            Effect: 'Allow',
+            Resource: '*',
+          },
+        ],
+        Version: '2012-10-17',
+      },
+    });
+  });
+
   testFutureBehavior('additional key admins can be specified (with imported/immutable principal)', flags, cdk.App, (app) => {
     const stack = new cdk.Stack(app);
     const adminRole = iam.Role.fromRoleArn(stack, 'Admin', 'arn:aws:iam::123456789012:role/TrustedAdmin');

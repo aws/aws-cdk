@@ -83,7 +83,7 @@ export const KMS_DEFAULT_KEY_POLICIES = '@aws-cdk/aws-kms:defaultKeyPolicies';
 /**
  * Change the old 's3:PutObject*' permission to 's3:PutObject' on Bucket,
  * as the former includes 's3:PutObjectAcl',
- * which allows changing the visibility of an object written to the Bucket.
+ * which could be used to grant read/write object access to IAM principals in other accounts.
  * Use a feature flag to make sure existing customers who might be relying
  * on the overly-broad permissions are not broken.
  */
