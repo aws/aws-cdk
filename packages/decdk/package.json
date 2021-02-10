@@ -36,6 +36,7 @@
     "@aws-cdk/aws-apigateway": "0.0.0",
     "@aws-cdk/aws-apigatewayv2": "0.0.0",
     "@aws-cdk/aws-apigatewayv2-integrations": "0.0.0",
+    "@aws-cdk/aws-apigatewayv2-authorizers": "0.0.0",
     "@aws-cdk/aws-appconfig": "0.0.0",
     "@aws-cdk/aws-appflow": "0.0.0",
     "@aws-cdk/aws-applicationautoscaling": "0.0.0",
