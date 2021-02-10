@@ -177,12 +177,12 @@ const bus = new EventBus(stack, 'bus', {
   eventBusName: 'MyCustomEventBus'
 });
 
-bus.archive(
+bus.archive('MyArchive', {
+  archiveName: 'MyCustomEventBusArchive',
+  description: 'MyCustomerEventBus Archive',
   eventPattern: {
     account: [stack.account],
   },
-  archiveName: 'MyCustomEventBusArchive',
-  description: 'MyCustomerEventBus Archive',
   retention: cdk.Duration.days(365),
-)
+});
 ```

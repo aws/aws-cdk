@@ -67,7 +67,7 @@ export class Archive extends Resource {
       sourceArn: props.sourceEventBus.eventBusArn,
       description: props.description,
       eventPattern: props.eventPattern,
-      retentionDays: props.retention?.toDays() || 0,
+      retentionDays: props.retention?.toDays({ integral: true }) || 0,
       archiveName: this.physicalName,
     });
 

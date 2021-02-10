@@ -46,7 +46,7 @@ export interface IEventBus extends IResource {
    *
    * @param props Properties of the archive
    */
-  archive(props: BaseArchiveProps): Archive;
+  archive(id: string, props: BaseArchiveProps): Archive;
 }
 
 /**
@@ -128,10 +128,10 @@ abstract class EventBusBase extends Resource implements IEventBus {
    */
   public abstract readonly eventSourceName?: string;
 
-  public archive(props: BaseArchiveProps): Archive {
-    return new Archive(this, 'Archive', {
+  public archive(id: string, props: BaseArchiveProps): Archive {
+    return new Archive(this, id, {
       sourceEventBus: this,
-      description: props.description || Lazy.string({ produce: () => `Event Archive for ${this.eventBusName} Event Bus` }),
+      description: props.description || `Event Archive for ${this.eventBusName} Event Bus`,
       eventPattern: props.eventPattern,
       retention: props.retention,
       archiveName: props.archiveName,

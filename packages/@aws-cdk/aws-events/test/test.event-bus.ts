@@ -254,7 +254,7 @@ export = {
     // WHEN
     const event = new EventBus(stack, 'Bus');
 
-    event.archive({
+    event.archive('MyArchive', {
       eventPattern: {
         account: [stack.account],
       },
@@ -307,7 +307,7 @@ export = {
 
     const importedBus = EventBus.fromEventBusArn(stack, 'ImportedBus', bus.eventBusArn);
 
-    importedBus.archive({
+    importedBus.archive('MyArchive', {
       eventPattern: {
         account: [stack.account],
       },
