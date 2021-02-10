@@ -126,7 +126,11 @@ export abstract class BaseDataSource extends CoreConstruct {
    * creates a new resolver for this datasource and API using the given properties
    */
   public createResolver(props: BaseResolverProps): Resolver {
-    return this.api.createResolver({ dataSource: this, ...props });
+    return new Resolver(this, `${props.typeName}${props.fieldName}Resolver`, {
+      api: this.api,
+      dataSource: this,
+      ...props,
+    });
   }
 
   /**
