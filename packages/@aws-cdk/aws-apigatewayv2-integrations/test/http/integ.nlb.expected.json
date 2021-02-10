@@ -580,6 +580,7 @@
           "Ref": "HttpProxyPrivateApiA55E154D"
         },
         "RouteKey": "$default",
+        "AuthorizationScopes": [],
         "Target": {
           "Fn::Join": [
             "",
