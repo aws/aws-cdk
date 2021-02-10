@@ -510,6 +510,8 @@ describe('volume', () => {
 
   describe('grantAttachVolume to any instance with encryption', () => {
 
+    // This exact assertions here are only applicable when 'aws-kms:defaultKeyPolicies' feature flag is disabled.
+    // See subsequent test case for the updated behaviour
     testLegacyBehavior('legacy', cdk.App, (app) => {
       // GIVEN
       const stack = new cdk.Stack(app);
