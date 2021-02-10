@@ -572,7 +572,7 @@ export interface DomainProps {
   /**
    * To configure a custom domain configure these options
    *
-   * If you specify a Route53 hosted zone it will create a CANME record and use DNS validation for the certificate
+   * If you specify a Route53 hosted zone it will create a CNAME record and use DNS validation for the certificate
    * @default - no custom domain endpoint will be configured
    */
   readonly customEndpoint?: CustomEndpointOptions;
