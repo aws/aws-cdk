@@ -14,6 +14,17 @@ export interface BundlingOptions {
   readonly image: BundlingDockerImage;
 
   /**
+   * The entrypoint to run in the Docker container.
+   *
+   * @example ['/bin/sh', '-c']
+   *
+   * @see https://docs.docker.com/engine/reference/builder/#entrypoint
+   *
+   * @default - run the entrypoint defined in the image
+   */
+  readonly entrypoint?: string[];
+
+  /**
    * The command to run in the Docker container.
    *
    * @example ['npm', 'install']
@@ -152,7 +163,15 @@ export class BundlingDockerImage {
   public run(options: DockerRunOptions = {}) {
     const volumes = options.volumes || [];
     const environment = options.environment || {};
-    const command = options.command || [];
+    const entrypoint = options.entrypoint?.[0] || null;
+    const command = [
+      ...options.entrypoint?.[1]
+        ? [...options.entrypoint.slice(1)]
+        : [],
+      ...options.command
+        ? [...options.command]
+        : [],
+    ];
 
     const dockerArgs: string[] = [
       'run', '--rm',
@@ -163,6 +182,9 @@ export class BundlingDockerImage {
       ...flatten(Object.entries(environment).map(([k, v]) => ['--env', `${k}=${v}`])),
       ...options.workingDirectory
         ? ['-w', options.workingDirectory]
+        : [],
+      ...entrypoint
+        ? ['--entrypoint', entrypoint]
         : [],
       this.image,
       ...command,
@@ -238,6 +260,13 @@ export enum DockerVolumeConsistency {
  * Docker run options
  */
 export interface DockerRunOptions {
+  /**
+   * The entrypoint to run in the container.
+   *
+   * @default - run the entrypoint defined in the image
+   */
+  readonly entrypoint?: string[];
+
   /**
    * The command to run in the container.
    *
