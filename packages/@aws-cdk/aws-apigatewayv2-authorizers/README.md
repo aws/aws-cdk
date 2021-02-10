@@ -34,6 +34,8 @@ JWT authorizers allow the use of JSON Web Tokens (JWTs) as part of [OpenID Conne
 
 When configured on a route, the API Gateway service validates the JWTs submitted by the client, and allows or denies access based on its content.
 
+API gateway uses the `identitySource` to determine where to look for the token. By default it checks the http `Authorization` header. However it also [supports a number of other options](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-lambda-authorizer.html#http-api-lambda-authorizer.identity-sources). It then decodes the JWT and validates the signature and claims, against the options defined in the authorizer and route (scopes). For more information check the [JWT Authorizer documentation](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-jwt-authorizer.html).
+
 ```ts
 const authorizer = new HttpJwtAuthorizer({
   jwtAudience: ['3131231'],
