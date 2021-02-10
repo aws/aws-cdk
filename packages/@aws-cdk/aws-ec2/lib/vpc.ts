@@ -1882,6 +1882,7 @@ class LookedUpVpc extends VpcBase {
         availabilityZone: vpcSubnet.availabilityZone,
         subnetId: vpcSubnet.subnetId,
         routeTableId: vpcSubnet.routeTableId,
+        ipv4CidrBlock: vpcSubnet.cidr,
       }));
     }
     return ret;
