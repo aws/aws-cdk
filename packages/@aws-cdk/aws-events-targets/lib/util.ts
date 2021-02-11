@@ -1,11 +1,12 @@
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
-import { ConstructNode, IConstruct, Names } from '@aws-cdk/core';
+import { Names } from '@aws-cdk/core';
+import { IConstruct } from 'constructs';
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
 // eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 
 /**
  * Obtain the Role for the EventBridge event
@@ -18,7 +19,7 @@ export function singletonEventRole(scope: IConstruct, policyStatements: iam.Poli
   const existing = scope.node.tryFindChild(id) as iam.IRole;
   if (existing) { return existing; }
 
-  const role = new iam.Role(scope as Construct, id, {
+  const role = new iam.Role(scope, id, {
     assumedBy: new iam.ServicePrincipal('events.amazonaws.com'),
   });
 
@@ -32,7 +33,7 @@ export function singletonEventRole(scope: IConstruct, policyStatements: iam.Poli
  */
 export function addLambdaPermission(rule: events.IRule, handler: lambda.IFunction): void {
   let scope: Construct | undefined;
-  let node: ConstructNode = handler.permissionsNode;
+  let node = handler.permissionsNode;
   if (rule instanceof Construct) {
     // Place the Permission resource in the same stack as Rule rather than the Function
     // This is to reduce circular dependency when the lambda handler and the rule are across stacks.

@@ -12,10 +12,6 @@ import { Token } from '../token';
 const ENTRYPOINT_FILENAME = '__entrypoint__';
 const ENTRYPOINT_NODEJS_SOURCE = path.join(__dirname, 'nodejs-entrypoint.js');
 
-// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
-// eslint-disable-next-line
-import { Construct as CoreConstruct } from '../construct-compat';
-
 /**
  * Initialization properties for `CustomResourceProvider`.
  *
@@ -86,7 +82,7 @@ export enum CustomResourceProviderRuntime {
  *
  * @experimental
  */
-export class CustomResourceProvider extends CoreConstruct {
+export class CustomResourceProvider extends Construct {
   /**
    * Returns a stack-level singleton ARN (service token) for the custom resource
    * provider.
