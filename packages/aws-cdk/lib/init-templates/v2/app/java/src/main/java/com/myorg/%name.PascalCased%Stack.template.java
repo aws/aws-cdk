@@ -1,6 +1,6 @@
 package com.myorg;
 
-import software.amazon.awscdk.lib.Construct;
+import software.constructs.Construct;
 import software.amazon.awscdk.lib.Stack;
 import software.amazon.awscdk.lib.StackProps;
 
