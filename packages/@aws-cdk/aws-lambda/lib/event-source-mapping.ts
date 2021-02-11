@@ -5,14 +5,52 @@ import { IFunction } from './function-base';
 import { CfnEventSourceMapping } from './lambda.generated';
 
 /**
+ * The type of authentication protocol or the VPC components for your event source's SourceAccessConfiguration
+ * @see https://docs.aws.amazon.com/lambda/latest/dg/API_SourceAccessConfiguration.html#SSS-Type-SourceAccessConfiguration-Type
+ */
+export class SourceAccessConfigurationType {
+
+  /**
+   * (MQ) The Secrets Manager secret that stores your broker credentials.
+   */
+  public static readonly BASIC_AUTH = new SourceAccessConfigurationType('BASIC_AUTH');
+
+  /**
+   * The subnets associated with your VPC. Lambda connects to these subnets to fetch data from your Self-Managed Apache Kafka cluster.
+   */
+  public static readonly VPC_SUBNET = new SourceAccessConfigurationType('VPC_SUBNET');
+
+  /**
+   * The VPC security group used to manage access to your Self-Managed Apache Kafka brokers.
+   */
+  public static readonly VPC_SECURITY_GROUP = new SourceAccessConfigurationType('VPC_SECURITY_GROUP');
+
+  /**
+   * The Secrets Manager ARN of your secret key used for SASL SCRAM-256 authentication of your Self-Managed Apache Kafka brokers.
+   */
+  public static readonly SASL_SCRAM_256_AUTH = new SourceAccessConfigurationType('SASL_SCRAM_256_AUTH');
+
+  /**
+   * The Secrets Manager ARN of your secret key used for SASL SCRAM-512 authentication of your Self-Managed Apache Kafka brokers.
+   */
+  public static readonly SASL_SCRAM_512_AUTH = new SourceAccessConfigurationType('SASL_SCRAM_512_AUTH');
+
+  /** The key to use in `CfnEventSourceMapping.SourceAccessConfigurationProperty.Type` */
+  public readonly type: string;
+
+  private constructor(type: string) {
+    this.type = type;
+  }
+}
+
+/**
  * Specific settings like the authentication protocol or the VPC components to secure access to your event source.
  */
 export interface SourceAccessConfiguration {
   /**
    * The type of authentication protocol or the VPC components for your event source. For example: "SASL_SCRAM_512_AUTH".
-   * Valid values are: BASIC_AUTH | VPC_SUBNET | VPC_SECURITY_GROUP | SASL_SCRAM_512_AUTH | SASL_SCRAM_256_AUTH
    */
-  readonly type: string,
+  readonly type: SourceAccessConfigurationType,
   /**
    * The value for your chosen configuration in Type. For example: "URI": "arn:aws:secretsmanager:us-east-1:01234567890:secret:MyBrokerSecretName".
    */
@@ -250,7 +288,7 @@ export class EventSourceMapping extends cdk.Resource implements IEventSourceMapp
       maximumRetryAttempts: props.retryAttempts,
       parallelizationFactor: props.parallelizationFactor,
       topics: props.kafkaTopic !== undefined ? [props.kafkaTopic] : undefined,
-      sourceAccessConfigurations: props.sourceAccessConfigurations,
+      sourceAccessConfigurations: props.sourceAccessConfigurations?.map((o) => {return { type: o.type.type, uri: o.uri };}),
       selfManagedEventSource,
     });
     this.eventSourceMappingId = cfnEventSourceMapping.ref;

@@ -69,7 +69,7 @@ export class ManagedKafkaEventSource extends StreamEventSource<ManagedKafkaEvent
       this.enrichMappingOptions({
         eventSourceArn: this.props.clusterArn,
         startingPosition: this.props.startingPosition,
-        sourceAccessConfigurations: [{ type: 'SASL_SCRAM_512_AUTH', uri: this.props.secret.secretArn }],
+        sourceAccessConfigurations: [{ type: lambda.SourceAccessConfigurationType.SASL_SCRAM_512_AUTH, uri: this.props.secret.secretArn }],
         kafkaTopic: this.props.topic,
       }),
     );
@@ -100,11 +100,15 @@ export class SelfManagedKafkaEventSource extends StreamEventSource<SelfManagedKa
   }
 
   public bind(target: lambda.IFunction) {
-    let sourceAccessConfigurations = [{ type: 'SASL_SCRAM_512_AUTH', uri: this.props.secret.secretArn }];
+    let sourceAccessConfigurations = [{ type: lambda.SourceAccessConfigurationType.SASL_SCRAM_512_AUTH, uri: this.props.secret.secretArn }];
     if (this.props.subnets !== undefined && this.props.securityGroup !== undefined) {
-      sourceAccessConfigurations.push({ type: 'VPC_SECURITY_GROUP', uri: this.props.securityGroup.securityGroupId });
+      sourceAccessConfigurations.push({
+        type: lambda.SourceAccessConfigurationType.VPC_SECURITY_GROUP,
+        uri: this.props.securityGroup.securityGroupId,
+      },
+      );
       this.props.subnets.forEach((subnet) => {
-        sourceAccessConfigurations.push({ type: 'VPC_SUBNET', uri: subnet.subnetId });
+        sourceAccessConfigurations.push({ type: lambda.SourceAccessConfigurationType.VPC_SUBNET, uri: subnet.subnetId });
       });
     }
     const idHash = crypto.createHash('md5').update(JSON.stringify(this.props.bootstrapServers)).digest('hex');
