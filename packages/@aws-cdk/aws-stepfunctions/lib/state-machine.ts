@@ -140,11 +140,17 @@ abstract class StateMachineBase extends Resource implements IStateMachine {
   public static fromStateMachineArn(scope: Construct, id: string, stateMachineArn: string): IStateMachine {
     class Import extends StateMachineBase {
       public readonly stateMachineArn = stateMachineArn;
+      public readonly grantPrincipal = new iam.UnknownPrincipal({ resource: this });
     }
     return new Import(scope, id);
   }
 
   public abstract readonly stateMachineArn: string;
+
+  /**
+   * The principal this state machine is running as
+   */
+  public abstract readonly grantPrincipal: iam.IPrincipal;
 
   /**
    * Grant the given identity permissions to start an execution of this state
@@ -407,6 +413,13 @@ export class StateMachine extends StateMachineBase {
   }
 
   /**
+   * The principal this state machine is running as
+   */
+  public get grantPrincipal() {
+    return this.role.grantPrincipal;
+  }
+
+  /**
    * Add the given statement to the role's policy
    */
   public addToRolePolicy(statement: iam.PolicyStatement) {
@@ -461,7 +474,7 @@ export class StateMachine extends StateMachineBase {
 /**
  * A State Machine
  */
-export interface IStateMachine extends IResource {
+export interface IStateMachine extends IResource, iam.IGrantable {
   /**
    * The ARN of the state machine
    * @attribute
