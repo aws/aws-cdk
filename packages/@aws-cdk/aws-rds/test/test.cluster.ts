@@ -1,4 +1,4 @@
-import { ABSENT, countResources, expect, haveResource, haveResourceLike, ResourcePart, SynthUtils } from '@aws-cdk/assert';
+import { countResources, expect, haveResource, haveResourceLike, ResourcePart, SynthUtils } from '@aws-cdk/assert';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import { ManagedPolicy, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
@@ -39,14 +39,14 @@ export = {
         MasterUserPassword: 'tooshort',
         VpcSecurityGroupIds: [{ 'Fn::GetAtt': ['DatabaseSecurityGroup5C91FDCB', 'GroupId'] }],
       },
-      DeletionPolicy: ABSENT,
+      DeletionPolicy: 'Snapshot',
       UpdateReplacePolicy: 'Snapshot',
     }, ResourcePart.CompleteDefinition));
 
     expect(stack).to(countResources('AWS::RDS::DBInstance', 2));
     expect(stack).to(haveResource('AWS::RDS::DBInstance', {
-      DeletionPolicy: ABSENT,
-      UpdateReplacePolicy: ABSENT,
+      DeletionPolicy: 'Delete',
+      UpdateReplacePolicy: 'Delete',
     }, ResourcePart.CompleteDefinition));
 
     test.done();
@@ -1674,7 +1674,7 @@ export = {
         VpcSecurityGroupIds: [{ 'Fn::GetAtt': ['DatabaseSecurityGroup5C91FDCB', 'GroupId'] }],
         SnapshotIdentifier: 'mySnapshot',
       },
-      DeletionPolicy: ABSENT,
+      DeletionPolicy: 'Snapshot',
       UpdateReplacePolicy: 'Snapshot',
     }, ResourcePart.CompleteDefinition));
 

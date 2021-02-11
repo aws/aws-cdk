@@ -310,7 +310,7 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
       description: `Subnets for ${id} database`,
       vpc: props.instanceProps.vpc,
       vpcSubnets: props.instanceProps.vpcSubnets,
-      removalPolicy: props.removalPolicy === RemovalPolicy.RETAIN ? props.removalPolicy : undefined,
+      removalPolicy: props.removalPolicy,
     });
 
     this.securityGroups = props.instanceProps.securityGroups ?? [
@@ -712,13 +712,12 @@ function createInstances(cluster: DatabaseClusterNew, props: DatabaseClusterBase
       deleteAutomatedBackups: props.instanceProps.deleteAutomatedBackups,
     });
 
-    // If removalPolicy isn't explicitly set,
-    // it's Snapshot for Cluster.
-    // Because of that, in this case,
-    // we can safely use the CFN default of Delete for DbInstances with dbClusterIdentifier set.
-    if (props.removalPolicy) {
-      applyRemovalPolicy(instance, props.removalPolicy);
-    }
+    // The RemovalPolicy on the cluster is SNAPSHOT by default, or explicitly configured.
+    // We can safely default to DESTROY for instances that are part of a cluster.
+    //
+    // TODO: This should probably be `DESTROY` always, no, instead of inheriting the
+    // cluster removal policy? It would lead to useless additional snapshots or retentions...
+    applyRemovalPolicy(instance, props.removalPolicy ?? RemovalPolicy.DESTROY);
 
     // We must have a dependency on the NAT gateway provider here to create
     // things in the right order.

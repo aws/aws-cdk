@@ -377,7 +377,9 @@
             "Ref": "VPCPrivateSubnet2SubnetCFCDAA7A"
           }
         ]
-      }
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
     },
     "DatabaseSecurityGroup5C91FDCB": {
       "Type": "AWS::EC2::SecurityGroup",

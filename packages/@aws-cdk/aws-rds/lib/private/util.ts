@@ -78,8 +78,8 @@ export function engineDescription(engine: IEngine) {
 
 export function applyRemovalPolicy(cfnDatabase: CfnResource, removalPolicy?: RemovalPolicy): void {
   if (!removalPolicy) {
-    // the default DeletionPolicy is 'Snapshot', which is fine,
-    // but we should also make it 'Snapshot' for UpdateReplace policy
+    // Even though 'SNAPSHOT' is the default for RDS, make it explicit so cfnlint won't complain
+    cfnDatabase.cfnOptions.deletionPolicy = CfnDeletionPolicy.SNAPSHOT;
     cfnDatabase.cfnOptions.updateReplacePolicy = CfnDeletionPolicy.SNAPSHOT;
   } else {
     // just apply whatever removal policy the customer explicitly provided

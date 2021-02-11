@@ -114,7 +114,7 @@ export = {
           },
         ],
       },
-      DeletionPolicy: ABSENT,
+      DeletionPolicy: 'Snapshot',
       UpdateReplacePolicy: 'Snapshot',
     }, ResourcePart.CompleteDefinition));
 

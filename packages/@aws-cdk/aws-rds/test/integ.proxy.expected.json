@@ -463,7 +463,8 @@
           }
         ]
       },
-      "UpdateReplacePolicy": "Snapshot"
+      "UpdateReplacePolicy": "Snapshot",
+      "DeletionPolicy": "Snapshot"
     },
     "dbProxyIAMRole662F3AB8": {
       "Type": "AWS::IAM::Role",
@@ -522,7 +523,6 @@
         ],
         "DBProxyName": "dbProxy",
         "EngineFamily": "POSTGRESQL",
-        "RequireTLS": true,
         "RoleArn": {
           "Fn::GetAtt": [
             "dbProxyIAMRole662F3AB8",
@@ -536,7 +536,8 @@
           {
             "Ref": "vpcPrivateSubnet2Subnet7031C2BA"
           }
-        ]
+        ],
+        "RequireTLS": true
       }
     },
     "dbProxyProxyTargetGroup8DA26A77": {
@@ -545,6 +546,7 @@
         "DBProxyName": {
           "Ref": "dbProxy3B89EAF2"
         },
+        "TargetGroupName": "default",
         "ConnectionPoolConfigurationInfo": {
           "ConnectionBorrowTimeout": 30,
           "MaxConnectionsPercent": 50
@@ -553,8 +555,7 @@
           {
             "Ref": "dbInstance4076B1EC"
           }
-        ],
-        "TargetGroupName": "default"
+        ]
       }
     }
   }
