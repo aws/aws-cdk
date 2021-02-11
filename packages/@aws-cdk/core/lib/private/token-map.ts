@@ -34,7 +34,34 @@ export class TokenMap {
 
   private readonly stringTokenMap = new Map<string, IResolvable>();
   private readonly numberTokenMap = new Map<number, IResolvable>();
-  private tokenCounter = 0;
+
+  /**
+   * Counter to assign unique IDs to tokens
+   *
+   * Start at a random number to prevent people from accidentally taking
+   * dependencies on token values between runs.
+   *
+   * This is most prominent in tests, where people will write:
+   *
+   * ```ts
+   * sha256(JSON.stringify({ ...some structure that can contain tokens ... }))
+   * ```
+   *
+   * This should have been:
+   *
+   * ```ts
+   * sha256(JSON.stringify(stack.resolve({ ...some structure that can contain tokens ... })))
+   * ```
+   *
+   * The hash value is hard to inspect for correctness. It will LOOK consistent
+   * during testing, but will break as soon as someone stringifies another
+   * token before the run.
+   *
+   * By changing the starting number for tokens, we ensure that the hash is almost
+   * guaranteed to be different during a few test runs, so the hashing of unresolved
+   * tokens can be detected.
+   */
+  private tokenCounter = Math.floor(Math.random() * 10);
 
   /**
    * Generate a unique string for this Token, returning a key
