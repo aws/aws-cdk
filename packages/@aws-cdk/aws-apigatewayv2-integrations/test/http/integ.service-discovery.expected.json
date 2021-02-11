@@ -588,14 +588,14 @@
             [
               "integrations/",
               {
-                "Ref": "HttpProxyPrivateApiHttpIntegration763b273f031b9eb3c58b2fa36954470072FBC87C"
+                "Ref": "HttpProxyPrivateApiHttpIntegrationa5ec5390ca688d567e9449daf58afc6fB75CE02B"
               }
             ]
           ]
         }
       }
     },
-    "HttpProxyPrivateApiHttpIntegration763b273f031b9eb3c58b2fa36954470072FBC87C": {
+    "HttpProxyPrivateApiHttpIntegrationa5ec5390ca688d567e9449daf58afc6fB75CE02B": {
       "Type": "AWS::ApiGatewayV2::Integration",
       "Properties": {
         "ApiId": {
