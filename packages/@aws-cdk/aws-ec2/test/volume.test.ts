@@ -1,4 +1,5 @@
 import {
+  arrayWith,
   expect as cdkExpect,
   haveResource,
   haveResourceLike,
@@ -10,6 +11,7 @@ import {
 } from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as cdk from '@aws-cdk/core';
+import { testFutureBehavior, testLegacyBehavior } from 'cdk-build-tools/lib/feature-flag';
 import {
   AmazonLinuxGeneration,
   EbsDeviceVolumeType,
@@ -206,9 +208,11 @@ describe('volume', () => {
 
   });
 
-  test('encryption with kms from snapshot', () => {
+  // only enable for legacy behaviour
+  // see https://github.com/aws/aws-cdk/issues/12962
+  testLegacyBehavior('encryption with kms from snapshot', cdk.App, (app) => {
     // GIVEN
-    const stack = new cdk.Stack();
+    const stack = new cdk.Stack(app);
     const encryptionKey = new kms.Key(stack, 'Key');
 
     // WHEN
@@ -504,37 +508,91 @@ describe('volume', () => {
 
   });
 
-  test('grantAttachVolume to any instance with encryption', () => {
-    // GIVEN
-    const stack = new cdk.Stack();
-    const role = new Role(stack, 'Role', { assumedBy: new AccountRootPrincipal() });
-    const encryptionKey = new kms.Key(stack, 'Key');
-    const volume = new Volume(stack, 'Volume', {
-      availabilityZone: 'us-east-1a',
-      size: cdk.Size.gibibytes(8),
-      encrypted: true,
-      encryptionKey,
+  describe('grantAttachVolume to any instance with encryption', () => {
+
+    // This exact assertions here are only applicable when 'aws-kms:defaultKeyPolicies' feature flag is disabled.
+    // See subsequent test case for the updated behaviour
+    testLegacyBehavior('legacy', cdk.App, (app) => {
+      // GIVEN
+      const stack = new cdk.Stack(app);
+      const role = new Role(stack, 'Role', { assumedBy: new AccountRootPrincipal() });
+      const encryptionKey = new kms.Key(stack, 'Key');
+      const volume = new Volume(stack, 'Volume', {
+        availabilityZone: 'us-east-1a',
+        size: cdk.Size.gibibytes(8),
+        encrypted: true,
+        encryptionKey,
+      });
+
+      // WHEN
+      volume.grantAttachVolume(role);
+
+      // THEN
+      cdkExpect(stack).to(haveResourceLike('AWS::KMS::Key', {
+        KeyPolicy: {
+          Statement: [
+            {},
+            {},
+            {
+              Effect: 'Allow',
+              Principal: {
+                AWS: {
+                  'Fn::GetAtt': [
+                    'Role1ABCC5F0',
+                    'Arn',
+                  ],
+                },
+              },
+              Action: 'kms:CreateGrant',
+              Condition: {
+                Bool: {
+                  'kms:GrantIsForAWSResource': true,
+                },
+                StringEquals: {
+                  'kms:ViaService': {
+                    'Fn::Join': [
+                      '',
+                      [
+                        'ec2.',
+                        {
+                          Ref: 'AWS::Region',
+                        },
+                        '.amazonaws.com',
+                      ],
+                    ],
+                  },
+                  'kms:GrantConstraintType': 'EncryptionContextSubset',
+                },
+              },
+              Resource: '*',
+            },
+          ],
+        },
+      }));
+
+
     });
 
-    // WHEN
-    volume.grantAttachVolume(role);
+    testFutureBehavior('with future flag aws-kms:defaultKeyPolicies', { '@aws-cdk/aws-kms:defaultKeyPolicies': true }, cdk.App, (app) => {
+      // GIVEN
+      const stack = new cdk.Stack(app);
+      const role = new Role(stack, 'Role', { assumedBy: new AccountRootPrincipal() });
+      const encryptionKey = new kms.Key(stack, 'Key');
+      const volume = new Volume(stack, 'Volume', {
+        availabilityZone: 'us-east-1a',
+        size: cdk.Size.gibibytes(8),
+        encrypted: true,
+        encryptionKey,
+      });
 
-    // THEN
-    cdkExpect(stack).to(haveResourceLike('AWS::KMS::Key', {
-      KeyPolicy: {
-        Statement: [
-          {},
-          {},
-          {
+      // WHEN
+      volume.grantAttachVolume(role);
+
+      // THEN
+      cdkExpect(stack).to(haveResourceLike('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Statement: arrayWith({
             Effect: 'Allow',
-            Principal: {
-              AWS: {
-                'Fn::GetAtt': [
-                  'Role1ABCC5F0',
-                  'Arn',
-                ],
-              },
-            },
             Action: 'kms:CreateGrant',
             Condition: {
               Bool: {
@@ -556,12 +614,18 @@ describe('volume', () => {
                 'kms:GrantConstraintType': 'EncryptionContextSubset',
               },
             },
-            Resource: '*',
-          },
-        ],
-      },
-    }));
+            Resource: {
+              'Fn::GetAtt': [
+                'Key961B73FD',
+                'Arn',
+              ],
+            },
+          }),
+        },
+      }));
 
+
+    });
 
   });
 
