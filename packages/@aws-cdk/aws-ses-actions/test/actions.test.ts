@@ -1,4 +1,4 @@
-import { ResourcePart } from '@aws-cdk/assert';
+import { arrayWith, ResourcePart } from '@aws-cdk/assert';
 import '@aws-cdk/assert/jest';
 import * as kms from '@aws-cdk/aws-kms';
 import * as lambda from '@aws-cdk/aws-lambda';
@@ -220,6 +220,33 @@ test('add s3 action', () => {
         },
       ],
       Version: '2012-10-17',
+    },
+  });
+
+  expect(stack).toHaveResourceLike('AWS::KMS::Key', {
+    KeyPolicy: {
+      Statement: arrayWith({
+        Action: [
+          'kms:Encrypt',
+          'kms:GenerateDataKey',
+        ],
+        Condition: {
+          Null: {
+            'kms:EncryptionContext:aws:ses:rule-name': 'false',
+            'kms:EncryptionContext:aws:ses:message-id': 'false',
+          },
+          StringEquals: {
+            'kms:EncryptionContext:aws:ses:source-account': {
+              Ref: 'AWS::AccountId',
+            },
+          },
+        },
+        Effect: 'Allow',
+        Principal: {
+          Service: 'ses.amazonaws.com',
+        },
+        Resource: '*',
+      }),
     },
   });
 });
