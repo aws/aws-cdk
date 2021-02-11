@@ -52,7 +52,10 @@ export interface SourceAccessConfiguration {
    */
   readonly type: SourceAccessConfigurationType,
   /**
-   * The value for your chosen configuration in Type. For example: "URI": "arn:aws:secretsmanager:us-east-1:01234567890:secret:MyBrokerSecretName".
+   * The value for your chosen configuration in type.
+   * For example: "URI": "arn:aws:secretsmanager:us-east-1:01234567890:secret:MyBrokerSecretName".
+   * The exact string depends on the type.
+   * @see SourceAccessConfigurationType
    */
   readonly uri: string
 }
