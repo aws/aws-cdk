@@ -185,4 +185,61 @@ export = {
     test.done();
   },
 
+  'self managed Kafka: using SCRAM-SHA-256'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new TestFunction(stack, 'Fn');
+    const kafkaTopic = 'some-topic';
+    const secret = new Secret(stack, 'Secret', { secretName: 'AmazonMSK_KafkaSecret' });
+    const bootstrapServers = ['kafka-broker:9092'];
+    const subnet = Subnet.fromSubnetId(stack, 'Subnet', 'subnet-0011001100');
+    const sg = SecurityGroup.fromSecurityGroupId(stack, 'SecurityGroup', 'sg-0123456789');
+
+    // WHEN
+    fn.addEventSource(new sources.SelfManagedKafkaEventSource(
+      {
+        bootstrapServers: bootstrapServers,
+        topic: kafkaTopic,
+        secret: secret,
+        startingPosition: lambda.StartingPosition.TRIM_HORIZON,
+        subnets: [subnet],
+        securityGroup: sg,
+        authenticationMethod: 'SASL_SCRAM_256_AUTH',
+      }));
+
+    expect(stack).to(haveResource('AWS::Lambda::EventSourceMapping', {
+      FunctionName: {
+        Ref: 'Fn9270CBC0',
+      },
+      BatchSize: 100,
+      SelfManagedEventSource: {
+        Endpoints: {
+          KafkaBootstrapServers: bootstrapServers,
+        },
+      },
+      StartingPosition: 'TRIM_HORIZON',
+      Topics: [
+        kafkaTopic,
+      ],
+      SourceAccessConfigurations: [
+        {
+          Type: 'SASL_SCRAM_256_AUTH',
+          URI: {
+            Ref: 'SecretA720EF05',
+          },
+        },
+        {
+          Type: 'VPC_SECURITY_GROUP',
+          URI: 'sg-0123456789',
+        },
+        {
+          Type: 'VPC_SUBNET',
+          URI: 'subnet-0011001100',
+        },
+      ],
+    }));
+
+    test.done();
+  },
+
 }
