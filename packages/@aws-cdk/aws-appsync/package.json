@@ -1,6 +1,7 @@
 {
   "name": "@aws-cdk/aws-appsync",
   "version": "0.0.0",
+  "private": true,
   "description": "The CDK Construct Library for AWS::AppSync",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -89,7 +90,7 @@
     "@aws-cdk/aws-lambda": "0.0.0",
     "@aws-cdk/aws-s3-assets": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "constructs": "^3.2.0"
+    "constructs": "10.0.0-pre.5"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
@@ -102,7 +103,7 @@
     "@aws-cdk/core": "0.0.0",
     "@aws-cdk/aws-rds": "0.0.0",
     "@aws-cdk/aws-secretsmanager": "0.0.0",
-    "constructs": "^3.2.0"
+    "constructs": "10.0.0-pre.5"
   },
   "engines": {
     "node": ">= 10.13.0 <13 || >=13.7.0"
