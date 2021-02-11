@@ -9886,10 +9886,10 @@ typedarray@^0.0.6:
   resolved "https://registry.yarnpkg.com/typedarray/-/typedarray-0.0.6.tgz#867ac74e3864187b1d3d47d996a78ec5c8830777"
   integrity sha1-hnrHTjhkGHsdPUfZlqeOxciDB3c=
 
-typescript-json-schema@^0.48.0:
-  version "0.48.0"
-  resolved "https://registry.yarnpkg.com/typescript-json-schema/-/typescript-json-schema-0.48.0.tgz#d30e287319a09617e87d10c17f484077412a55e7"
-  integrity sha512-RDs66ANmjiqcSQ7dAeFIarF0ON6b+dxb5Fl1x53PK0p/QcqEoSN3kHsJTB0lgw+zWz6wdObCzk3jIwik3maK1Q==
+typescript-json-schema@^0.49.0:
+  version "0.49.0"
+  resolved "https://registry.yarnpkg.com/typescript-json-schema/-/typescript-json-schema-0.49.0.tgz#442f6347ca85fb0d9811f217fb0d6537b68734b3"
+  integrity sha512-PumZkTmEE3T8TVyoJU6ZCp3K6VCmCb3Ei6fUaRIuDsIzYtmdJc6jV1D0RyBe5sd5mJ1iB6Zckm4KAKbqXs9oDw==
   dependencies:
     "@types/json-schema" "^7.0.6"
     glob "^7.1.6"
