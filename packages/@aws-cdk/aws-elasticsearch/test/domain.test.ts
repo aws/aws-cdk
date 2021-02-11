@@ -1,11 +1,13 @@
 /* eslint-disable jest/expect-expect */
 import '@aws-cdk/assert/jest';
 import * as assert from '@aws-cdk/assert';
+import * as acm from '@aws-cdk/aws-certificatemanager';
 import { Metric, Statistic } from '@aws-cdk/aws-cloudwatch';
 import { Subnet, Vpc, EbsDeviceVolumeType } from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as logs from '@aws-cdk/aws-logs';
+import * as route53 from '@aws-cdk/aws-route53';
 import { App, Stack, Duration, SecretValue } from '@aws-cdk/core';
 import { Domain, ElasticsearchVersion } from '../lib';
 
@@ -995,6 +997,134 @@ describe('advanced security options', () => {
       enforceHttps: false,
     })).toThrow(/Enforce HTTPS is required when fine-grained access control is enabled/);
   });
+});
+
+describe('custom endpoints', () => {
+  const customDomainName = 'search.example.com';
+
+  test('custom domain without hosted zone and default cert', () => {
+    new Domain(stack, 'Domain', {
+      version: ElasticsearchVersion.V7_1,
+      nodeToNodeEncryption: true,
+      enforceHttps: true,
+      customEndpoint: {
+        domainName: customDomainName,
+      },
+    });
+
+    expect(stack).toHaveResourceLike('AWS::Elasticsearch::Domain', {
+      DomainEndpointOptions: {
+        EnforceHTTPS: true,
+        CustomEndpointEnabled: true,
+        CustomEndpoint: customDomainName,
+        CustomEndpointCertificateArn: {
+          Ref: 'DomainCustomEndpointCertificateD080A69E', // Auto-generated certificate
+        },
+      },
+    });
+    expect(stack).toHaveResourceLike('AWS::CertificateManager::Certificate', {
+      DomainName: customDomainName,
+      ValidationMethod: 'EMAIL',
+    });
+  });
+
+  test('custom domain with hosted zone and default cert', () => {
+    const zone = new route53.HostedZone(stack, 'DummyZone', { zoneName: 'example.com' });
+    new Domain(stack, 'Domain', {
+      version: ElasticsearchVersion.V7_1,
+      nodeToNodeEncryption: true,
+      enforceHttps: true,
+      customEndpoint: {
+        domainName: customDomainName,
+        hostedZone: zone,
+      },
+    });
+
+    expect(stack).toHaveResourceLike('AWS::Elasticsearch::Domain', {
+      DomainEndpointOptions: {
+        EnforceHTTPS: true,
+        CustomEndpointEnabled: true,
+        CustomEndpoint: customDomainName,
+        CustomEndpointCertificateArn: {
+          Ref: 'DomainCustomEndpointCertificateD080A69E', // Auto-generated certificate
+        },
+      },
+    });
+    expect(stack).toHaveResourceLike('AWS::CertificateManager::Certificate', {
+      DomainName: customDomainName,
+      DomainValidationOptions: [
+        {
+          DomainName: customDomainName,
+          HostedZoneId: {
+            Ref: 'DummyZone03E0FE81',
+          },
+        },
+      ],
+      ValidationMethod: 'DNS',
+    });
+    expect(stack).toHaveResourceLike('AWS::Route53::RecordSet', {
+      Name: 'search.example.com.',
+      Type: 'CNAME',
+      HostedZoneId: {
+        Ref: 'DummyZone03E0FE81',
+      },
+      ResourceRecords: [
+        {
+          'Fn::GetAtt': [
+            'Domain66AC69E0',
+            'DomainEndpoint',
+          ],
+        },
+      ],
+    });
+  });
+
+  test('custom domain with hosted zone and given cert', () => {
+    const zone = new route53.HostedZone(stack, 'DummyZone', {
+      zoneName: 'example.com',
+    });
+    const certificate = new acm.Certificate(stack, 'DummyCert', {
+      domainName: customDomainName,
+    });
+
+    new Domain(stack, 'Domain', {
+      version: ElasticsearchVersion.V7_1,
+      nodeToNodeEncryption: true,
+      enforceHttps: true,
+      customEndpoint: {
+        domainName: customDomainName,
+        hostedZone: zone,
+        certificate,
+      },
+    });
+
+    expect(stack).toHaveResourceLike('AWS::Elasticsearch::Domain', {
+      DomainEndpointOptions: {
+        EnforceHTTPS: true,
+        CustomEndpointEnabled: true,
+        CustomEndpoint: customDomainName,
+        CustomEndpointCertificateArn: {
+          Ref: 'DummyCertFA37670B',
+        },
+      },
+    });
+    expect(stack).toHaveResourceLike('AWS::Route53::RecordSet', {
+      Name: 'search.example.com.',
+      Type: 'CNAME',
+      HostedZoneId: {
+        Ref: 'DummyZone03E0FE81',
+      },
+      ResourceRecords: [
+        {
+          'Fn::GetAtt': [
+            'Domain66AC69E0',
+            'DomainEndpoint',
+          ],
+        },
+      ],
+    });
+  });
+
 });
 
 describe('custom error responses', () => {

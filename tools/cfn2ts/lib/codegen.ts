@@ -932,7 +932,7 @@ export default class CodeGenerator {
     this.code.line('/**');
     before.forEach(line => this.code.line(` * ${line}`.trimRight()));
     if (link) {
-      this.code.line(` * @see ${link}`);
+      this.code.line(` * @link ${link}`);
     }
     this.code.line(' */');
     return;
