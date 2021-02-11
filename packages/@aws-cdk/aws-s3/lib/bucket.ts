@@ -1160,9 +1160,11 @@ export interface BucketProps {
    * The block public access configuration of this bucket.
    *
    * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/access-control-block-public-access.html
+   * 
+   * If left undefined, CloudFormation defaults will apply - New buckets and objects don't allow public access, but users can modify bucket
+   * policies or object permissions to allow public access
    *
-   * @default false New buckets and objects don't allow public access, but users can modify bucket
-   * policies or object permissions to allow public access.
+   * @default undefined.
    */
   readonly blockPublicAccess?: BlockPublicAccess;
 
