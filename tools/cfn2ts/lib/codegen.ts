@@ -404,7 +404,7 @@ export default class CodeGenerator {
    * ```
    */
   private emitConstructValidator(resourceType: genspec.CodeName) {
-    this.code.openBlock('public validate(): string[]');
+    this.code.openBlock('protected validate(): string[]');
     this.code.line('const errors = new Array<string>();');
 
     const cfnLint = cfnLintAnnotations(resourceType.specName?.fqn ?? '');
