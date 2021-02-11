@@ -170,4 +170,46 @@ describe('event source mapping', () => {
       }],
     });
   });
+
+  test('throws if neither eventSourceArn nor kafkaBootstrapServers are set', () => {
+    const stack = new cdk.Stack();
+    const fn = new Function(stack, 'fn', {
+      handler: 'index.handler',
+      code: Code.fromInline('exports.handler = ${handler.toString()}'),
+      runtime: Runtime.NODEJS_10_X,
+    });
+
+    expect(() => new EventSourceMapping(stack, 'test', {
+      target: fn,
+    })).toThrow(/Either eventSourceArn or kafkaBootstrapServers must be set/);
+  });
+
+  test('throws if both eventSourceArn and kafkaBootstrapServers are set', () => {
+    const stack = new cdk.Stack();
+    const fn = new Function(stack, 'fn', {
+      handler: 'index.handler',
+      code: Code.fromInline('exports.handler = ${handler.toString()}'),
+      runtime: Runtime.NODEJS_10_X,
+    });
+
+    expect(() => new EventSourceMapping(stack, 'test', {
+      eventSourceArn: '',
+      kafkaBootstrapServers: [],
+      target: fn,
+    })).toThrow(/eventSourceArn and kafkaBootstrapServers are mutually exclusive/);
+  });
+
+  test('throws if both kafkaBootstrapServers is set but empty', () => {
+    const stack = new cdk.Stack();
+    const fn = new Function(stack, 'fn', {
+      handler: 'index.handler',
+      code: Code.fromInline('exports.handler = ${handler.toString()}'),
+      runtime: Runtime.NODEJS_10_X,
+    });
+
+    expect(() => new EventSourceMapping(stack, 'test', {
+      kafkaBootstrapServers: [],
+      target: fn,
+    })).toThrow(/kafkaBootStrapServers must not be empty if set/);
+  });
 });

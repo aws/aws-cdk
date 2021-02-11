@@ -19,26 +19,6 @@ export interface SourceAccessConfiguration {
   readonly uri: string
 }
 
-/**
- * The endpoints for your self managed event source
- */
-export interface SelfManagedEventSourceEndpoints {
-  /**
-   * A list of Kafka bootstrap servers in the format HOST:PORT, e.g. 'kafka-broker01:9096'
-   */
-  readonly kafkaBootstrapServers: string[]
-}
-
-/**
- * The configuration for your self managed event source, currently only Kafka is supported
- */
-export interface SelfManagedEventSource {
-  /**
-   * The endpoints for your self managed event source
-   */
-  readonly endpoints: SelfManagedEventSourceEndpoints
-}
-
 export interface EventSourceMappingOptions {
   /**
    * The Amazon Resource Name (ARN) of the event source. Any record added to
@@ -140,18 +120,20 @@ export interface EventSourceMappingOptions {
   readonly kafkaTopic?: string;
 
   /**
+   * A list of host and port pairs that are the addresses of the Kafka brokers in a self managed "bootstrap" Kafka cluster
+   * that a Kafka client connects to initially to bootstrap itself.
+   * They are in the format `abc.example.com:9096`.
+   *
+   * @default - none
+   */
+  readonly kafkaBootstrapServers?: string[]
+
+  /**
    * Specific settings like the authentication protocol or the VPC components to secure access to your event source.
    *
    * @default - none
    */
   readonly sourceAccessConfigurations?: SourceAccessConfiguration[]
-
-  /**
-   * The configuration for your self managed event source
-   *
-   * @default - none
-   */
-  readonly selfManagedEventSource?: SelfManagedEventSource
 }
 
 /**
@@ -205,6 +187,18 @@ export class EventSourceMapping extends cdk.Resource implements IEventSourceMapp
   constructor(scope: Construct, id: string, props: EventSourceMappingProps) {
     super(scope, id);
 
+    if (props.eventSourceArn == undefined && props.kafkaBootstrapServers == undefined) {
+      throw new Error('Either eventSourceArn or kafkaBootstrapServers must be set');
+    }
+
+    if (props.eventSourceArn !== undefined && props.kafkaBootstrapServers !== undefined) {
+      throw new Error('eventSourceArn and kafkaBootstrapServers are mutually exclusive');
+    }
+
+    if (props.kafkaBootstrapServers && (props.kafkaBootstrapServers?.length < 1)) {
+      throw new Error('kafkaBootStrapServers must not be empty if set');
+    }
+
     if (props.maxBatchingWindow && props.maxBatchingWindow.toSeconds() > 300) {
       throw new Error(`maxBatchingWindow cannot be over 300 seconds, got ${props.maxBatchingWindow.toSeconds()}`);
     }
@@ -234,6 +228,15 @@ export class EventSourceMapping extends cdk.Resource implements IEventSourceMapp
       };
     }
 
+    let selfManagedEventSource;
+    if (props.kafkaBootstrapServers) {
+      selfManagedEventSource = {
+	      endpoints: {
+		      kafkaBootstrapServers: props.kafkaBootstrapServers,
+	      },
+	    };
+    }
+
     const cfnEventSourceMapping = new CfnEventSourceMapping(this, 'Resource', {
       batchSize: props.batchSize,
       bisectBatchOnFunctionError: props.bisectBatchOnError,
@@ -248,7 +251,7 @@ export class EventSourceMapping extends cdk.Resource implements IEventSourceMapp
       parallelizationFactor: props.parallelizationFactor,
       topics: props.kafkaTopic !== undefined ? [props.kafkaTopic] : undefined,
       sourceAccessConfigurations: props.sourceAccessConfigurations,
-      selfManagedEventSource: props.selfManagedEventSource,
+      selfManagedEventSource,
     });
     this.eventSourceMappingId = cfnEventSourceMapping.ref;
   }

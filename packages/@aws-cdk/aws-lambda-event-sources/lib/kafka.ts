@@ -111,7 +111,7 @@ export class SelfManagedKafkaEventSource extends StreamEventSource<SelfManagedKa
     target.addEventSourceMapping(
       `KafkaEventSource:${idHash}:${this.props.topic}`,
       this.enrichMappingOptions({
-        selfManagedEventSource: { endpoints: { kafkaBootstrapServers: this.props.bootstrapServers } },
+        kafkaBootstrapServers: this.props.bootstrapServers,
         kafkaTopic: this.props.topic,
         startingPosition: this.props.startingPosition,
         sourceAccessConfigurations,
