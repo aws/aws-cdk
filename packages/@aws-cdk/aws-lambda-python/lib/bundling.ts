@@ -62,7 +62,10 @@ export function bundle(options: BundlingOptions): lambda.AssetCode {
   });
 
   return lambda.Code.fromAsset(entry, {
-    assetHashType: cdk.AssetHashType.BUNDLE,
+    // pip adds timestamps and other non-determinstic values in the bundle, so
+    // we want to calculate hash against the pure source and not against the
+    // output.
+    assetHashType: cdk.AssetHashType.SOURCE,
     exclude: DEPENDENCY_EXCLUDES,
     bundling: {
       image,
