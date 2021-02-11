@@ -1164,7 +1164,7 @@ export interface BucketProps {
    * If left undefined, CloudFormation defaults will apply - New buckets and objects don't allow public access, but users can modify bucket
    * policies or object permissions to allow public access
    *
-   * @default undefined.
+   * @default undefined
    */
   readonly blockPublicAccess?: BlockPublicAccess;
 
