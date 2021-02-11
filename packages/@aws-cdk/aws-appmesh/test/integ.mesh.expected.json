@@ -640,7 +640,7 @@
               "VirtualService": {
                 "VirtualServiceName": {
                   "Fn::GetAtt": [
-                    "service16B72496E",
+                    "service6D174F83",
                     "VirtualServiceName"
                   ]
                 }
@@ -846,7 +846,7 @@
                 "VirtualService": {
                   "VirtualServiceName": {
                     "Fn::GetAtt": [
-                      "service16B72496E",
+                      "service6D174F83",
                       "VirtualServiceName"
                     ]
                   }
@@ -883,7 +883,7 @@
                 "VirtualService": {
                   "VirtualServiceName": {
                     "Fn::GetAtt": [
-                      "service16B72496E",
+                      "service6D174F83",
                       "VirtualServiceName"
                     ]
                   }
@@ -920,7 +920,7 @@
                 "VirtualService": {
                   "VirtualServiceName": {
                     "Fn::GetAtt": [
-                      "service16B72496E",
+                      "service6D174F83",
                       "VirtualServiceName"
                     ]
                   }
@@ -930,7 +930,7 @@
             "Match": {
               "ServiceName": {
                 "Fn::GetAtt": [
-                  "service16B72496E",
+                  "service6D174F83",
                   "VirtualServiceName"
                 ]
               }

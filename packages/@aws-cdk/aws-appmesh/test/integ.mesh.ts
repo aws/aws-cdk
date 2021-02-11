@@ -23,7 +23,7 @@ const router = mesh.addVirtualRouter('router', {
   ],
 });
 
-const virtualService1 = new appmesh.VirtualService(stack, 'service1', {
+const virtualService = new appmesh.VirtualService(stack, 'service', {
   virtualServiceProvider: appmesh.VirtualServiceProvider.virtualRouter(router),
   virtualServiceName: 'service1.domain.local',
 });
@@ -47,15 +47,15 @@ const node = mesh.addVirtualNode('node', {
     },
   })],
   backends: [
-    appmesh.Backends.backend({
-      virtualService: virtualService1,
-    }),
+    {
+      virtualService: virtualService,
+    },
   ],
 });
 
-node.addBackend(appmesh.Backends.backend({
+node.addBackend({
   virtualService: virtualService2,
-}));
+});
 
 router.addRoute('route-1', {
   routeSpec: appmesh.RouteSpec.http({
@@ -88,15 +88,15 @@ const node2 = mesh.addVirtualNode('node2', {
       unhealthyThreshold: 2,
     },
   })],
-  backendDefaults: appmesh.Backends.backendDefaults({
+  backendDefaults: {
     clientPolicy: appmesh.ClientPolicy.fileTrust({
       certificateChain: 'path/to/cert',
     }),
-  }),
+  },
   backends: [
-    appmesh.Backends.backend({
+    {
       virtualService: virtualService3,
-    }),
+    },
   ],
 });
 
@@ -113,11 +113,11 @@ const node3 = mesh.addVirtualNode('node3', {
       unhealthyThreshold: 2,
     },
   })],
-  backendDefaults: appmesh.Backends.backendDefaults({
+  backendDefaults: {
     clientPolicy: appmesh.ClientPolicy.fileTrust({
       certificateChain: 'path-to-certificate',
     }),
-  }),
+  },
   accessLog: appmesh.AccessLog.fromFilePath('/dev/stdout'),
 });
 
@@ -175,21 +175,21 @@ new appmesh.VirtualGateway(stack, 'gateway2', {
 
 gateway.addGatewayRoute('gateway1-route-http', {
   routeSpec: appmesh.GatewayRouteSpec.http({
-    routeTarget: virtualService1,
+    routeTarget: virtualService,
   }),
 });
 
 gateway.addGatewayRoute('gateway1-route-http2', {
   routeSpec: appmesh.GatewayRouteSpec.http2({
-    routeTarget: virtualService1,
+    routeTarget: virtualService,
   }),
 });
 
 gateway.addGatewayRoute('gateway1-route-grpc', {
   routeSpec: appmesh.GatewayRouteSpec.grpc({
-    routeTarget: virtualService1,
+    routeTarget: virtualService,
     match: {
-      serviceName: virtualService1.virtualServiceName,
+      serviceName: virtualService.virtualServiceName,
     },
   }),
 });

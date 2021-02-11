@@ -1,5 +1,7 @@
 import * as cdk from '@aws-cdk/core';
 import { CfnVirtualGateway, CfnVirtualNode } from './appmesh.generated';
+import { ClientPolicy } from './client-policy';
+import { IVirtualService } from './virtual-service';
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
 // eslint-disable-next-line no-duplicate-imports, import/order
@@ -192,5 +194,34 @@ class FileAccessLog extends AccessLog {
       },
     };
   }
+}
+
+/**
+ * Represents the properties needed to define a backend
+ */
+export interface Backend {
+  /**
+   * The Virtual Service this backend points to
+   */
+  readonly virtualService: IVirtualService;
+
+  /**
+   * Client policy for a backend
+   *
+   * @default none
+   */
+  readonly clientPolicy?: ClientPolicy;
+}
+
+/**
+ * Represents the properties needed to define backend defaults
+ */
+export interface BackendDefaults {
+  /**
+   * Client policy for backend defaults
+   *
+   * @default none
+   */
+  readonly clientPolicy?: ClientPolicy;
 }
 
