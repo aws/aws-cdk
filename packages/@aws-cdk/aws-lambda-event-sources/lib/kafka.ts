@@ -72,7 +72,7 @@ export class ManagedKafkaEventSource extends StreamEventSource<ManagedKafkaEvent
 
   public bind(target: lambda.IFunction) {
     target.addEventSourceMapping(
-      `KafkaEventSource:${this.props.clusterArn.split('/').slice(-1)[0]}${this.props.topic}`,
+      `KafkaEventSource:${this.props.clusterArn}${this.props.topic}`,
       this.enrichMappingOptions({
         eventSourceArn: this.props.clusterArn,
         startingPosition: this.props.startingPosition,
