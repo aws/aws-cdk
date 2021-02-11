@@ -1,6 +1,6 @@
 import * as crypto from 'crypto';
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
-import { Duration, IResource, Resource } from '@aws-cdk/core';
+import { Duration, IResource, Resource, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnApi, CfnApiProps } from '../apigatewayv2.generated';
 import { DefaultDomainMappingOptions } from '../http/stage';
@@ -275,7 +275,7 @@ abstract class HttpApiBase extends Resource implements IHttpApi { // note that t
    * @internal
    */
   public _addIntegration(config: HttpRouteIntegrationConfig): HttpIntegration {
-    const stringifiedConfig = JSON.stringify(config);
+    const stringifiedConfig = JSON.stringify(Stack.of(this).resolve(config));
     const configHash = crypto.createHash('md5').update(stringifiedConfig).digest('hex');
 
     if (configHash in this.httpIntegrations) {
