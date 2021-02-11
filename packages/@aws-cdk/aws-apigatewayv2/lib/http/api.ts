@@ -1,10 +1,11 @@
 import * as crypto from 'crypto';
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
-import { Duration, IResource, Resource } from '@aws-cdk/core';
+import { Duration, IResource, Resource, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnApi, CfnApiProps } from '../apigatewayv2.generated';
 import { DefaultDomainMappingOptions } from '../http/stage';
-import { HttpIntegration, HttpRouteIntegrationConfig, IHttpRouteIntegration } from './integration';
+import { IHttpRouteAuthorizer } from './authorizer';
+import { IHttpRouteIntegration, HttpIntegration, HttpRouteIntegrationConfig } from './integration';
 import { BatchHttpRouteOptions, HttpMethod, HttpRoute, HttpRouteKey } from './route';
 import { HttpStage, HttpStageOptions } from './stage';
 import { VpcLink, VpcLinkProps } from './vpc-link';
@@ -201,6 +202,20 @@ export interface AddRoutesOptions extends BatchHttpRouteOptions {
    * @default HttpMethod.ANY
    */
   readonly methods?: HttpMethod[];
+
+  /**
+   * Authorizer to be associated to these routes.
+   * @default - No authorizer
+   */
+  readonly authorizer?: IHttpRouteAuthorizer;
+
+  /**
+   * The list of OIDC scopes to include in the authorization.
+   *
+   * These scopes will be merged with the scopes from the attached authorizer
+   * @default - no additional authorization scopes
+   */
+  readonly authorizationScopes?: string[];
 }
 
 abstract class HttpApiBase extends Resource implements IHttpApi { // note that this is not exported
@@ -260,7 +275,7 @@ abstract class HttpApiBase extends Resource implements IHttpApi { // note that t
    * @internal
    */
   public _addIntegration(config: HttpRouteIntegrationConfig): HttpIntegration {
-    const stringifiedConfig = JSON.stringify(config);
+    const stringifiedConfig = JSON.stringify(Stack.of(this).resolve(config));
     const configHash = crypto.createHash('md5').update(stringifiedConfig).digest('hex');
 
     if (configHash in this.httpIntegrations) {
@@ -446,6 +461,8 @@ export class HttpApi extends HttpApiBase {
       httpApi: this,
       routeKey: HttpRouteKey.with(options.path, method),
       integration: options.integration,
+      authorizer: options.authorizer,
+      authorizationScopes: options.authorizationScopes,
     }));
   }
 }
