@@ -1,5 +1,5 @@
 import * as crypto from 'crypto';
-import { ISecurityGroup, ISubnet } from '@aws-cdk/aws-ec2';
+import { ISecurityGroup, IVpc, SubnetSelection } from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
@@ -40,11 +40,18 @@ export interface SelfManagedKafkaEventSourceProps extends KafkaEventSourceProps 
   readonly bootstrapServers: string[]
 
   /**
-   * If your Kafka brokers are only reachable via VPC, provide the subnets here
+   * If your Kafka brokers are only reachable via VPC provide the VPC here
+   *
+   * @default none
+   */
+  readonly vpc?: IVpc;
+
+  /**
+   * If your Kafka brokers are only reachable via VPC, provide the subnets selection here
    *
    * @default - none
    */
-  readonly subnets?: ISubnet[],
+  readonly vpcSubnets?: SubnetSelection,
 
   /**
    * If your Kafka brokers are only reachable via VPC, provide the security group here
@@ -101,7 +108,8 @@ export class SelfManagedKafkaEventSource extends StreamEventSource<SelfManagedKa
 
   constructor(props: SelfManagedKafkaEventSourceProps) {
     super(props);
-    if ((props.securityGroup !== undefined && props.subnets == undefined) || (props.securityGroup == undefined && props.subnets !== undefined )) {
+    if ((props.securityGroup !== undefined && props.vpcSubnets == undefined) ||
+        (props.securityGroup == undefined && props.vpcSubnets !== undefined )) {
       throw new Error('both subnets and securityGroup must be set');
     }
   }
@@ -114,14 +122,14 @@ export class SelfManagedKafkaEventSource extends StreamEventSource<SelfManagedKa
       authenticationMethod = lambda.SourceAccessConfigurationType.SASL_SCRAM_256_AUTH;
     }
     let sourceAccessConfigurations = [{ type: authenticationMethod, uri: this.props.secret.secretArn }];
-    if (this.props.subnets !== undefined && this.props.securityGroup !== undefined) {
+    if (this.props.vpcSubnets !== undefined && this.props.securityGroup !== undefined) {
       sourceAccessConfigurations.push({
         type: lambda.SourceAccessConfigurationType.VPC_SECURITY_GROUP,
         uri: this.props.securityGroup.securityGroupId,
       },
       );
-      this.props.subnets.forEach((subnet) => {
-        sourceAccessConfigurations.push({ type: lambda.SourceAccessConfigurationType.VPC_SUBNET, uri: subnet.subnetId });
+      this.props.vpc?.selectSubnets(this.props.vpcSubnets).subnetIds.forEach((id) => {
+        sourceAccessConfigurations.push({ type: lambda.SourceAccessConfigurationType.VPC_SUBNET, uri: id });
       });
     }
     const idHash = crypto.createHash('md5').update(JSON.stringify(this.props.bootstrapServers)).digest('hex');

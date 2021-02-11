@@ -1,5 +1,5 @@
 import { expect, haveResource } from '@aws-cdk/assert';
-import { SecurityGroup, Subnet } from '@aws-cdk/aws-ec2';
+import { SecurityGroup, SubnetType, Vpc } from '@aws-cdk/aws-ec2';
 import * as lambda from '@aws-cdk/aws-lambda';
 import { Secret } from '@aws-cdk/aws-secretsmanager';
 import * as cdk from '@aws-cdk/core';
@@ -89,8 +89,8 @@ export = {
     const kafkaTopic = 'some-topic';
     const secret = new Secret(stack, 'Secret', { secretName: 'AmazonMSK_KafkaSecret' });
     const bootstrapServers = ['kafka-broker:9092'];
-    const subnet = Subnet.fromSubnetId(stack, 'Subnet', 'subnet-0011001100');
     const sg = SecurityGroup.fromSecurityGroupId(stack, 'SecurityGroup', 'sg-0123456789');
+    const vpc = new Vpc(stack, 'Vpc');
 
     // WHEN
     fn.addEventSource(new sources.SelfManagedKafkaEventSource(
@@ -99,7 +99,8 @@ export = {
         topic: kafkaTopic,
         secret: secret,
         startingPosition: lambda.StartingPosition.TRIM_HORIZON,
-        subnets: [subnet],
+        vpc: vpc,
+        vpcSubnets: { subnetType: SubnetType.PRIVATE },
         securityGroup: sg,
       }));
 
@@ -155,7 +156,15 @@ export = {
         },
         {
           Type: 'VPC_SUBNET',
-          URI: 'subnet-0011001100',
+          URI: {
+            Ref: 'VpcPrivateSubnet1Subnet536B997A',
+          },
+        },
+        {
+          Type: 'VPC_SUBNET',
+          URI: {
+            Ref: 'VpcPrivateSubnet2Subnet3788AAA1',
+          },
         },
       ],
     }));
@@ -169,7 +178,7 @@ export = {
     const kafkaTopic = 'some-topic';
     const secret = new Secret(stack, 'Secret', { secretName: 'AmazonMSK_KafkaSecret' });
     const bootstrapServers = ['kafka-broker:9092'];
-    const subnet = Subnet.fromSubnetId(stack, 'Subnet', 'subnet-0011001100');
+    const vpc = new Vpc(stack, 'Vpc');
 
     test.throws(() => {
       fn.addEventSource(new sources.SelfManagedKafkaEventSource(
@@ -178,7 +187,8 @@ export = {
           topic: kafkaTopic,
           secret: secret,
           startingPosition: lambda.StartingPosition.TRIM_HORIZON,
-          subnets: [subnet],
+          vpc: vpc,
+          vpcSubnets: { subnetType: SubnetType.PRIVATE },
         }));
     }, /both subnets and securityGroup must be set/);
 
@@ -192,8 +202,8 @@ export = {
     const kafkaTopic = 'some-topic';
     const secret = new Secret(stack, 'Secret', { secretName: 'AmazonMSK_KafkaSecret' });
     const bootstrapServers = ['kafka-broker:9092'];
-    const subnet = Subnet.fromSubnetId(stack, 'Subnet', 'subnet-0011001100');
     const sg = SecurityGroup.fromSecurityGroupId(stack, 'SecurityGroup', 'sg-0123456789');
+    const vpc = new Vpc(stack, 'Vpc');
 
     // WHEN
     fn.addEventSource(new sources.SelfManagedKafkaEventSource(
@@ -202,7 +212,8 @@ export = {
         topic: kafkaTopic,
         secret: secret,
         startingPosition: lambda.StartingPosition.TRIM_HORIZON,
-        subnets: [subnet],
+        vpc: vpc,
+        vpcSubnets: { subnetType: SubnetType.PRIVATE },
         securityGroup: sg,
         authenticationMethod: 'SASL_SCRAM_256_AUTH',
       }));
@@ -234,7 +245,15 @@ export = {
         },
         {
           Type: 'VPC_SUBNET',
-          URI: 'subnet-0011001100',
+          URI: {
+            Ref: 'VpcPrivateSubnet1Subnet536B997A',
+          },
+        },
+        {
+          Type: 'VPC_SUBNET',
+          URI: {
+            Ref: 'VpcPrivateSubnet2Subnet3788AAA1',
+          },
         },
       ],
     }));

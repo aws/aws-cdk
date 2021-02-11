@@ -264,7 +264,46 @@ myFunction.addEventSource(new SelfManagedKafkaEventSource({
 }));
 ```
 
-If your self managed Kafka cluster is only reachable via VPC also configure `subnets` and `securityGroup`.
+If your self managed Kafka cluster is only reachable via VPC also configure `vpc` `vpcSubnets` and `securityGroup`.
+
+```ts
+import * as ec2 from '@aws-cdk/aws-ec2';
+import * as lambda from '@aws-cdk/aws-lambda';
+import { Secret } from '@aws-cdk/aws-secretmanager';
+import { SelfManagedKafkaEventSource } from '@aws-cdk/aws-lambda-event-sources';
+
+// The list of Kafka brokers
+const bootstrapServers = ['kafka-broker:9092']
+
+// The Kafka topic you want to subscribe to
+const topic = 'some-cool-topic'
+
+// The secret that allows access to your self hosted Kafka cluster
+const secret = Secret.fromSecretAttributes(this, 'Secret', { secretName: 'AmazonMSK_KafkaSecret' });
+
+// Your VPC:
+const vpc = ec2.Vpc.fromLookup(stack, 'VPC', {
+  isDefault: true,
+});
+
+// Your VPC subnet selection
+const vpcSubnets = { subnetType: ec2.SubnetType.PRIVATE };
+
+// Your security group
+const sg = ec2.SecurityGroup.fromSecurityGroupId(this, 'SG', 'sg-12345');
+
+myFunction.addEventSource(new SelfManagedKafkaEventSource({
+  bootstrapServers: bootstrapServers,
+  topic: topic,
+  secret: secret,
+  batchSize: 100, // default
+  startingPosition: lambda.StartingPosition.TRIM_HORIZON,
+  vpc: vpc,
+  vpcSubnets: vpcSubnets,
+  securityGroup: sg,
+}));
+```
+
 
 ## Roadmap
 
