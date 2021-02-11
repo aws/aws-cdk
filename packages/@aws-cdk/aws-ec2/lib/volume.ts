@@ -7,11 +7,6 @@ import { Construct } from 'constructs';
 import { CfnVolume } from './ec2.generated';
 import { IInstance } from './instance';
 
-// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
-// eslint-disable-next-line
-import { Construct as CoreConstruct } from '@aws-cdk/core';
-
-
 /**
  * Block device
  */
@@ -504,7 +499,7 @@ abstract class VolumeBase extends Resource implements IVolume {
     // The ResourceTag condition requires that all resources involved in the operation have
     // the given tag, so we tag this and all constructs given.
     Tags.of(this).add(tagKey, tagValue);
-    constructs.forEach(construct => Tags.of(construct as CoreConstruct).add(tagKey, tagValue));
+    constructs.forEach(construct => Tags.of(construct).add(tagKey, tagValue));
 
     return result;
   }
@@ -533,7 +528,7 @@ abstract class VolumeBase extends Resource implements IVolume {
     // The ResourceTag condition requires that all resources involved in the operation have
     // the given tag, so we tag this and all constructs given.
     Tags.of(this).add(tagKey, tagValue);
-    constructs.forEach(construct => Tags.of(construct as CoreConstruct).add(tagKey, tagValue));
+    constructs.forEach(construct => Tags.of(construct).add(tagKey, tagValue));
 
     return result;
   }

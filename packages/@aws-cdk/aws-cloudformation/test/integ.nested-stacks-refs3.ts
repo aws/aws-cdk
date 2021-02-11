@@ -5,11 +5,9 @@ import * as cfn from '../lib';
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
 // eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 
 // references between siblings
-
-/* eslint-disable cdk/no-core-construct */
 
 class ProducerNestedStack extends cfn.NestedStack {
   public readonly topic: sns.Topic;
