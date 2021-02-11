@@ -575,7 +575,7 @@ export interface DomainProps {
    * @default RemovalPolicy.RETAIN
    */
   readonly removalPolicy?: cdk.RemovalPolicy;
-  
+
   /**
    * To configure a custom domain configure these options
    *
