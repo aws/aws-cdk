@@ -969,7 +969,7 @@
         "VirtualServiceName": "service1.domain.local"
       }
     },
-    "service27C65CF7D": {
+    "service2B2862B6B": {
       "Type": "AWS::AppMesh::VirtualService",
       "Properties": {
         "MeshName": {
@@ -982,7 +982,7 @@
         "VirtualServiceName": "service2.domain.local"
       }
     },
-    "service3859EB104": {
+    "service3529E2EB1": {
       "Type": "AWS::AppMesh::VirtualService",
       "Properties": {
         "MeshName": {
