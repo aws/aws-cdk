@@ -82,13 +82,13 @@
     "@aws-cdk/aws-apigatewayv2": "0.0.0",
     "@aws-cdk/aws-cognito": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "constructs": "^3.2.0"
+    "constructs": "10.0.0-pre.5"
   },
   "peerDependencies": {
     "@aws-cdk/aws-apigatewayv2": "0.0.0",
     "@aws-cdk/aws-cognito": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "constructs": "^3.2.0"
+    "constructs": "10.0.0-pre.5"
   },
   "engines": {
     "node": ">= 10.13.0 <13 || >=13.7.0"
@@ -97,5 +97,6 @@
   "maturity": "experimental",
   "awscdkio": {
     "announce": false
-  }
+  },
+  "private": true
 }

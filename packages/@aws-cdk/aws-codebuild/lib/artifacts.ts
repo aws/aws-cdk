@@ -1,10 +1,7 @@
 import * as s3 from '@aws-cdk/aws-s3';
+import { Construct } from 'constructs';
 import { CfnProject } from './codebuild.generated';
 import { IProject } from './project';
-
-// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
-// eslint-disable-next-line
-import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 /**
  * The type returned from {@link IArtifacts#bind}.
@@ -38,7 +35,7 @@ export interface IArtifacts {
    * @param scope a root Construct that allows creating new Constructs
    * @param project the Project this Artifacts is used in
    */
-  bind(scope: CoreConstruct, project: IProject): ArtifactsConfig;
+  bind(scope: Construct, project: IProject): ArtifactsConfig;
 }
 
 /**
@@ -67,7 +64,7 @@ export abstract class Artifacts implements IArtifacts {
     this.identifier = props.identifier;
   }
 
-  public bind(_scope: CoreConstruct, _project: IProject): ArtifactsConfig {
+  public bind(_scope: Construct, _project: IProject): ArtifactsConfig {
     return {
       artifactsProperty: {
         artifactIdentifier: this.identifier,
@@ -143,7 +140,7 @@ class S3Artifacts extends Artifacts {
     super(props);
   }
 
-  public bind(_scope: CoreConstruct, project: IProject): ArtifactsConfig {
+  public bind(_scope: Construct, project: IProject): ArtifactsConfig {
     this.props.bucket.grantReadWrite(project);
     const superConfig = super.bind(_scope, project);
     return {
