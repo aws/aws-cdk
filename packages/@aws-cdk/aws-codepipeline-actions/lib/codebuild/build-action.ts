@@ -156,7 +156,7 @@ export class CodeBuildAction extends Action {
     options.role.addToPolicy(new iam.PolicyStatement({
       resources: [this.props.project.projectArn],
       actions: [
-        'codebuild:BatchGetBuilds',
+        `codebuild:${this.props.executeBatchBuild ? 'BatchGetBuildBatches' : 'BatchGetBuilds'}`,
         `codebuild:${this.props.executeBatchBuild ? 'StartBuildBatch' : 'StartBuild'}`,
         `codebuild:${this.props.executeBatchBuild ? 'StopBuildBatch' : 'StopBuild'}`,
       ],
