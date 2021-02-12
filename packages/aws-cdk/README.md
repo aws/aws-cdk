@@ -288,13 +288,14 @@ The `progress` key can also be specified as a user setting (`~/.cdk.json`)
 #### Externally Executable CloudFormation Change Sets
 
 For more control over when stack changes are deployed, the CDK can generate a
-CloudFormation change set but not execute it. The name of the generated
+CloudFormation change set but not execute it. The default name of the generated
 change set is *cdk-deploy-change-set*, and a previous change set with that
 name will be overwritten. The change set will always be created, even if it
-is empty.
+is empty. A name can also be given to the change set to make it easier to later 
+execute.
 
 ```console
-$ cdk deploy --no-execute
+$ cdk deploy --no-execute --change-set-name MyChangeSetName
 ```
 
 ### `cdk destroy`
