@@ -1023,7 +1023,7 @@ export = {
     new rds.DatabaseInstance(stack, 'Instance', {
       vpc,
       engine: rds.DatabaseInstanceEngine.postgres({
-        version: rds.PostgresEngineVersion.VER_9_5_7,
+        version: rds.PostgresEngineVersion.VER_12_4,
       }),
     });
 
