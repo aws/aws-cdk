@@ -62,7 +62,7 @@ abstract class ReceiptRuleSetBase extends Resource implements IReceiptRuleSet {
    */
   public addRule(id: string, options?: ReceiptRuleOptions): ReceiptRule {
     this.lastAddedRule = new ReceiptRule(this, id, {
-      after: this.lastAddedRule ? this.lastAddedRule : undefined,
+      after: this.lastAddedRule ?? undefined,
       ruleSet: this,
       ...options,
     });
