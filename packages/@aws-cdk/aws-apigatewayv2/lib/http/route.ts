@@ -140,7 +140,7 @@ export class HttpRoute extends Resource implements IHttpRoute {
       scope: this,
     });
 
-    const integration = props.httpApi._addIntegration(config);
+    const integration = props.httpApi._addIntegration(config, this);
 
     const authBindResult = props.authorizer ? props.authorizer.bind({
       route: this,
