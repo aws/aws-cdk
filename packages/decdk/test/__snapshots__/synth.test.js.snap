@@ -2874,7 +2874,9 @@ exports[`pure-cfn.json: pure-cfn 1`] = `
 Object {
   "Resources": Object {
     "Hello4A628BD4": Object {
+      "DeletionPolicy": "Delete",
       "Type": "AWS::SQS::Queue",
+      "UpdateReplacePolicy": "Delete",
     },
     "MyLogGroup": Object {
       "Properties": Object {
@@ -2892,6 +2894,7 @@ exports[`queue-kms.json: queue-kms 1`] = `
 Object {
   "Resources": Object {
     "MyQueueE6CA6235": Object {
+      "DeletionPolicy": "Delete",
       "Properties": Object {
         "KmsMasterKeyId": Object {
           "Fn::GetAtt": Array [
@@ -2901,6 +2904,7 @@ Object {
         },
       },
       "Type": "AWS::SQS::Queue",
+      "UpdateReplacePolicy": "Delete",
     },
     "MyQueueKey6C31ABF3": Object {
       "DeletionPolicy": "Retain",
