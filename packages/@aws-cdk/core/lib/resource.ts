@@ -12,6 +12,8 @@ import { Token } from './token';
 import { RemovalPolicy } from './removal-policy';
 import { CfnResource } from './cfn-resource';
 
+const RESOURCE_SYMBOL = Symbol.for('@aws-cdk/core.Resource');
+
 /**
  * Represents the environment a given resource lives in.
  * Used as the return value for the {@link IResource.env} property.
@@ -93,6 +95,13 @@ export interface ResourceProps {
  * A construct which represents an AWS resource.
  */
 export abstract class Resource extends CoreConstruct implements IResource {
+  /**
+   * Check whether the given construct is a Resource
+   */
+  public static isResource(construct: IConstruct): construct is CfnResource {
+    return construct !== null && typeof(construct) === 'object' && RESOURCE_SYMBOL in construct;
+  }
+
   public readonly stack: Stack;
   public readonly env: ResourceEnvironment;
 
@@ -115,6 +124,8 @@ export abstract class Resource extends CoreConstruct implements IResource {
 
   constructor(scope: Construct, id: string, props: ResourceProps = {}) {
     super(scope, id);
+
+    Object.defineProperty(this, RESOURCE_SYMBOL, { value: true });
 
     this.stack = Stack.of(this);
     this.env = {

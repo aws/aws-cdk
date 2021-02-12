@@ -410,7 +410,16 @@ export default class CodeGenerator {
     const cfnLint = cfnLintAnnotations(resourceType.specName?.fqn ?? '');
 
     if (cfnLint.stateful) {
-      this.code.line('if (this.cfnOptions.deletionPolicy === undefined) {');
+      // Do a statefulness check. A deletionPolicy is required (and in normal operation an UpdateReplacePolicy
+      // would also be set if a user doesn't do complicated shenanigans, in which case they probably know what
+      // they're doing.
+      //
+      // Only do this for L1s embedded in L2s (to force L2 authors to add a way to set this policy). If we did it for all L1s:
+      //
+      // - users working at the L1 level would start getting synthesis failures when we add this feature
+      // - the `cloudformation-include` library that loads CFN templates to L1s would start failing when it loads
+      //   templates that don't have DeletionPolicy set.
+      this.code.line(`if (this.node.scope && ${CORE}.Resource.isResource(this.node.scope) && this.cfnOptions.deletionPolicy === undefined) {`);
       this.code.line(`  errors.push(\'\\\'${resourceType.specName?.fqn}\\\' is a stateful resource type, and you must specify a Removal Policy for it. Call \\\'resource.applyRemovalPolicy()\\\'.\');`);
       this.code.line('}');
     }
