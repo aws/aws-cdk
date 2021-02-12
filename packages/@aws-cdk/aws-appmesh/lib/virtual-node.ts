@@ -215,12 +215,7 @@ export class VirtualNode extends VirtualNodeBase {
    * Add a Virtual Services that this node is expected to send outbound traffic to
    */
   public addBackend(backend: Backend) {
-    this.backends.push({
-      virtualService: {
-        virtualServiceName: backend.virtualService.virtualServiceName,
-        clientPolicy: backend.clientPolicy?.bind(this).clientPolicy,
-      },
-    });
+    this.backends.push(backend.bind(this).virtualServiceBackend);
   }
 }
 

@@ -197,23 +197,6 @@ class FileAccessLog extends AccessLog {
 }
 
 /**
- * Represents the properties needed to define a backend
- */
-export interface Backend {
-  /**
-   * The Virtual Service this backend points to
-   */
-  readonly virtualService: IVirtualService;
-
-  /**
-   * Client policy for a backend
-   *
-   * @default none
-   */
-  readonly clientPolicy?: ClientPolicy;
-}
-
-/**
  * Represents the properties needed to define backend defaults
  */
 export interface BackendDefaults {
@@ -225,3 +208,72 @@ export interface BackendDefaults {
   readonly clientPolicy?: ClientPolicy;
 }
 
+/**
+ * Represents the properties needed to define a Virtual Service backend
+ */
+export interface VirtualServiceBackendOptions {
+  /**
+   * The Virtual Service this backend points to
+   */
+  readonly virtualService: IVirtualService;
+
+  /**
+   * Client policy for the backend
+   *
+   * @default none
+   */
+  readonly clientPolicy?: ClientPolicy;
+}
+
+/**
+ * Properties for a backend
+ */
+export interface BackendConfig {
+  /**
+   * Config for a Virtual Service backend
+   */
+  readonly virtualServiceBackend: CfnVirtualNode.BackendProperty;
+}
+
+
+/**
+ * Contains static factory methods to create backends
+ */
+export abstract class Backend {
+  /**
+   * Construct a Virtual Service backend
+   */
+  public static virtualServiceBackend(props: VirtualServiceBackendOptions): Backend {
+    return new VirtualServiceBackend(props.virtualService, props.clientPolicy);
+  }
+
+  /**
+   * Return backend config
+   */
+  public abstract bind(_scope: Construct): BackendConfig;
+}
+
+/**
+ * Represents the properties needed to define a Virtual Service backend
+ */
+class VirtualServiceBackend extends Backend {
+
+  constructor (private readonly virtualService: IVirtualService,
+    private readonly clientPolicy: ClientPolicy | undefined) {
+    super();
+  }
+
+  /**
+   * Return config for a Virtual Service backend
+   */
+  public bind(_scope: Construct): BackendConfig {
+    return {
+      virtualServiceBackend: {
+        virtualService: {
+          virtualServiceName: this.virtualService.virtualServiceName,
+          clientPolicy: this.clientPolicy?.bind(_scope).clientPolicy,
+        },
+      },
+    };
+  }
+}
