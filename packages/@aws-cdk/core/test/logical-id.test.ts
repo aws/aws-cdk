@@ -1,5 +1,6 @@
+import { Construct } from 'constructs';
 import { nodeunitShim, Test } from 'nodeunit-shim';
-import { CfnElement, CfnResource, Construct, Stack } from '../lib';
+import { CfnElement, CfnResource, Stack } from '../lib';
 import { toCloudFormation } from './util';
 
 /**

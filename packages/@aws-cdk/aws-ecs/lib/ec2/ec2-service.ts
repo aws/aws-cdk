@@ -232,6 +232,8 @@ export class Ec2Service extends BaseService implements IEc2Service {
     if (!this.taskDefinition.defaultContainer) {
       throw new Error('A TaskDefinition must have at least one essential container');
     }
+
+    this.node.addValidation({ validate: () => this.validateEc2Service() });
   }
 
   /**
@@ -261,8 +263,8 @@ export class Ec2Service extends BaseService implements IEc2Service {
   /**
    * Validates this Ec2Service.
    */
-  protected validate(): string[] {
-    const ret = super.validate();
+  private validateEc2Service(): string[] {
+    const ret = new Array<string>();
     if (!this.cluster.hasEc2Capacity) {
       ret.push('Cluster for this service needs Ec2 capacity. Call addXxxCapacity() on the cluster.');
     }

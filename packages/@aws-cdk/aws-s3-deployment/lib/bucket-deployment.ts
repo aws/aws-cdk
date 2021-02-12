@@ -9,10 +9,6 @@ import { AwsCliLayer } from '@aws-cdk/lambda-layer-awscli';
 import { Construct } from 'constructs';
 import { ISource, SourceConfig } from './source';
 
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct as CoreConstruct } from '@aws-cdk/core';
-
 export interface BucketDeploymentProps {
   /**
    * The sources from which to deploy the contents of this bucket.
@@ -179,7 +175,7 @@ export interface BucketDeploymentProps {
   readonly vpcSubnets?: ec2.SubnetSelection;
 }
 
-export class BucketDeployment extends CoreConstruct {
+export class BucketDeployment extends Construct {
   constructor(scope: Construct, id: string, props: BucketDeploymentProps) {
     super(scope, id);
 
