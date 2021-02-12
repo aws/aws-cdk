@@ -130,8 +130,7 @@ nodeunitShim({
     //
     // If the compile of this library has been done using `tsc`, the runtime
     // information will always find `constructs.Construct` as the construct
-    // identifier, since the copy of that library that is loaded here will
-    // always have had a release build done using 'jsii'.
+    // identifier, since `constructs` will have had a release build done using `jsii`.
     //
     // If this test is running on CodeBuild, we will require that the more specific
     // class names are found. If this test is NOT running on CodeBuild, we will
