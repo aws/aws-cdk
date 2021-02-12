@@ -3,7 +3,7 @@ import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
-import * as constructs from 'constructs';
+import { Construct, IConstruct, Node } from 'constructs';
 import * as _ from 'lodash';
 import * as nodeunit from 'nodeunit';
 import * as cpactions from '../../lib';
@@ -315,7 +315,7 @@ function _isOrContains(stack: cdk.Stack, entity: string | string[], value: strin
   return false;
 }
 
-function _stackArn(stackName: string, scope: constructs.IConstruct): string {
+function _stackArn(stackName: string, scope: IConstruct): string {
   return cdk.Stack.of(scope).formatArn({
     service: 'cloudformation',
     resource: 'stack',
@@ -329,7 +329,7 @@ class PipelineDouble extends cdk.Resource implements codepipeline.IPipeline {
   public readonly role: iam.Role;
   public readonly artifactBucket: s3.IBucket;
 
-  constructor(scope: constructs.Construct, id: string, { pipelineName, role }: { pipelineName?: string, role: iam.Role }) {
+  constructor(scope: Construct, id: string, { pipelineName, role }: { pipelineName?: string, role: iam.Role }) {
     super(scope, id);
     this.pipelineName = pipelineName || 'TestPipeline';
     this.pipelineArn = cdk.Stack.of(this).formatArn({ service: 'codepipeline', resource: 'pipeline', resourceName: this.pipelineName });
@@ -359,7 +359,7 @@ class StageDouble implements codepipeline.IStage {
   public readonly actions: codepipeline.IAction[] = [];
   public readonly fullActions: FullAction[];
 
-  public get node(): cdk.ConstructNode {
+  public get node(): Node {
     throw new Error('StageDouble is not a real construct');
   }
 
@@ -367,10 +367,10 @@ class StageDouble implements codepipeline.IStage {
     this.stageName = name || 'TestStage';
     this.pipeline = pipeline;
 
-    const stageParent = new cdk.Construct(pipeline, this.stageName);
+    const stageParent = new Construct(pipeline, this.stageName);
     const fullActions = new Array<FullAction>();
     for (const action of actions) {
-      const actionParent = new cdk.Construct(stageParent, action.actionProperties.actionName);
+      const actionParent = new Construct(stageParent, action.actionProperties.actionName);
       fullActions.push(new FullAction(action.actionProperties, action.bind(actionParent, this, {
         role: pipeline.role,
         bucket: pipeline.artifactBucket,
@@ -392,7 +392,7 @@ class StageDouble implements codepipeline.IStage {
 class RoleDouble extends iam.Role {
   public readonly statements = new Array<iam.PolicyStatement>();
 
-  constructor(scope: constructs.Construct, id: string, props: iam.RoleProps = { assumedBy: new iam.ServicePrincipal('test') }) {
+  constructor(scope: Construct, id: string, props: iam.RoleProps = { assumedBy: new iam.ServicePrincipal('test') }) {
     super(scope, id, props);
   }
 

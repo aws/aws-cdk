@@ -1,8 +1,9 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
+import { Construct } from 'constructs';
 import { nodeunitShim, Test } from 'nodeunit-shim';
-import { App, CfnParameter, CfnResource, Construct, Lazy, Stack, TreeInspector } from '../../lib/index';
+import { App, CfnParameter, CfnResource, Lazy, Stack, TreeInspector } from '../../lib/index';
 
 abstract class AbstractCfnResource extends CfnResource {
   constructor(scope: Construct, id: string) {
