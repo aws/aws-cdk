@@ -9,7 +9,7 @@ export interface KinesisEventSourceProps extends StreamEventSourceProps {
 /**
  * Use an Amazon Kinesis stream as an event source for AWS Lambda.
  */
-export class KinesisEventSource extends StreamEventSource<KinesisEventSourceProps> {
+export class KinesisEventSource extends StreamEventSource {
   private _eventSourceMappingId?: string = undefined;
 
   constructor(readonly stream: kinesis.IStream, props: KinesisEventSourceProps) {
