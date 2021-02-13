@@ -109,7 +109,13 @@
       "props-physical-name-type:@aws-cdk/aws-apigatewayv2.HttpStageProps.stageName",
       "props-physical-name:@aws-cdk/aws-apigatewayv2.HttpApiMappingProps",
       "props-physical-name:@aws-cdk/aws-apigatewayv2.HttpIntegrationProps",
-      "props-physical-name:@aws-cdk/aws-apigatewayv2.HttpRouteProps"
+      "props-physical-name:@aws-cdk/aws-apigatewayv2.HttpRouteProps",
+      "from-method:@aws-cdk/aws-apigatewayv2.WebSocketApi",
+      "from-method:@aws-cdk/aws-apigatewayv2.WebSocketIntegration",
+      "from-method:@aws-cdk/aws-apigatewayv2.WebSocketRoute",
+      "from-method:@aws-cdk/aws-apigatewayv2.WebSocketStage",
+      "props-physical-name:@aws-cdk/aws-apigatewayv2.WebSocketIntegrationProps",
+      "props-physical-name:@aws-cdk/aws-apigatewayv2.WebSocketRouteProps"
     ]
   },
   "stability": "experimental",
@@ -121,7 +127,7 @@
     },
     {
       "name": "Higher level constructs for Websocket APIs",
-      "stability": "Not Implemented"
+      "stability": "Experimental"
     }
   ],
   "awscdkio": {

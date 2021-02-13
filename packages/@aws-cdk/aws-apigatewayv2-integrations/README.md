@@ -21,6 +21,8 @@
   - [Lambda Integration](#lambda)
   - [HTTP Proxy Integration](#http-proxy)
   - [Private Integration](#private-integration)
+- [WebSocket APIs](#websocket-apis)
+  - [Lambda WebSocket Integration](#lambda-websocket-integration)
 
 ## HTTP APIs
 
@@ -143,6 +145,31 @@ const httpEndpoint = new HttpApi(stack, 'HttpProxyPrivateApi', {
   defaultIntegration: new HttpServiceDiscoveryIntegration({
     vpcLink,
     service,
+  }),
+});
+```
+
+## WebSocket APIs
+
+WebSocket integrations connect a route to backend resources. Currently supported integrations include: LambdaWebSocketIntegration
+
+### Lambda WebSocket Integration
+
+Lambda integrations enable integrating a WebSocket API route with a Lambda function. When a client connects/disconnects or sends message specific to a route, the API Gateway service forwards the request to the Lambda function
+
+The API Gateway service will invoke the lambda function with an event payload of a specific format.
+
+The following code configures a `$connect` route with a Lambda integration
+
+```ts
+const webSocketApi = new WebSocketApi(stack, 'mywsapi', {
+  defaultStageName: 'dev',
+});
+
+const connectHandler = new lambda.Function(stack, 'ConnectHandler', {...});
+webSocketApi.addConnectRoute({
+  integration: new LambdaWebSocketIntegration({
+    handler: connectHandler,
   }),
 });
 ```

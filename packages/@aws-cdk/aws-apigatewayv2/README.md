@@ -7,7 +7,7 @@ Features                                   | Stability
 -------------------------------------------|--------------------------------------------------------
 CFN Resources                              | ![Stable](https://img.shields.io/badge/stable-success.svg?style=for-the-badge)
 Higher level constructs for HTTP APIs      | ![Experimental](https://img.shields.io/badge/experimental-important.svg?style=for-the-badge)
-Higher level constructs for Websocket APIs | ![Not Implemented](https://img.shields.io/badge/not--implemented-black.svg?style=for-the-badge)
+Higher level constructs for Websocket APIs | ![Experimental](https://img.shields.io/badge/experimental-important.svg?style=for-the-badge)
 
 > **CFN Resources:** All classes with the `Cfn` prefix in this module ([CFN Resources]) are always
 > stable and safe to use.
@@ -38,6 +38,8 @@ Higher level constructs for Websocket APIs | ![Not Implemented](https://img.shie
   - [Metrics](#metrics)
   - [VPC Link](#vpc-link)
   - [Private Integration](#private-integration)
+- [Metrics](#metrics)
+- [WebSocket API](#websocket-api)
 
 ## Introduction
 
@@ -277,3 +279,61 @@ Amazon ECS container-based applications.  Using private integrations, resources 
 clients outside of the VPC.
 
 These integrations can be found in the [APIGatewayV2-Integrations](https://docs.aws.amazon.com/cdk/api/latest/docs/aws-apigatewayv2-integrations-readme.html) constructs library.
+
+## WebSocket API
+
+A WebSocket API in API Gateway is a collection of WebSocket routes that are integrated with backend HTTP endpoints, Lambda functions, or other AWS services. You can use API Gateway features to help you with all aspects of the API lifecycle, from creation through monitoring your production APIs. [Read more](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-websocket-api-overview.html)
+
+WebSocket APIs have two fundamental concepts - Routes and Integrations.
+
+In your WebSocket API, incoming JSON messages are directed to backend integrations based on routes that you configure. (Non-JSON messages are directed to a $default route that you configure.)
+
+A route includes a route key, which is the value that is expected once a route selection expression is evaluated. The routeSelectionExpression is an attribute defined at the API level. It specifies a JSON property that is expected to be present in the message payload.
+
+There are three predefined routes that can be used: $connect, $disconnect, and $default. In addition, you can create custom routes.
+
+- API Gateway calls the $connect route when a persistent connection between the client and a WebSocket API is being initiated.
+- API Gateway calls the $disconnect route when the client or the server disconnects from the API.
+- API Gateway calls a custom route after the route selection expression is evaluated against the message if a matching route is found; the match determines which integration is invoked.
+- API Gateway calls the $default route if the route selection expression cannot be evaluated against the message or if no matching route is found.
+
+Integrations define how the WebSocket API behaves when a client reaches a specific Route.Learn more at
+[Configuring integrations](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-websocket-api-integration-requests.html).
+
+Integrations are available at the `aws-apigatewayv2-integrations` module and more information is available in that module.
+
+The below snippet shows how a basic WebSocket API can be configured
+
+```ts
+const webSocketApi = new WebSocketApi(stack, 'mywsapi', {
+  defaultStageName: 'dev',
+});
+
+const connectHandler = new lambda.Function(stack, 'ConnectHandler', {...});
+webSocketApi.addConnectRoute({
+  integration: new LambdaWebSocketIntegration({
+    handler: connectHandler,
+  }),
+});
+
+const disconnetHandler = new lambda.Function(stack, 'DisconnectHandler', {...});
+webSocketApi.addDisconnectRoute({
+  integration: new LambdaWebSocketIntegration({
+    handler: disconnetHandler,
+  }),
+});
+
+const defaultHandler = new lambda.Function(stack, 'DefaultHandler', {...});
+webSocketApi.addDefaultRoute({
+  integration: new LambdaWebSocketIntegration({
+    handler: defaultHandler,
+  }),
+});
+
+const messageHandler = new lambda.Function(stack, 'MessageHandler', {...});
+webSocketApi.addRoute('sendmessage', {
+  integration: new LambdaWebSocketIntegration({
+    handler: messageHandler,
+  }),
+});
+```
