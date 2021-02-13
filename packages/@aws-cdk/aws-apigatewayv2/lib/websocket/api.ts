@@ -1,5 +1,5 @@
 import * as crypto from 'crypto';
-import { IResource, Resource } from '@aws-cdk/core';
+import { IResource, Resource, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnApi } from '../apigatewayv2.generated';
 import { WebSocketRouteIntegrationConfig, WebSocketIntegration } from './integration';
@@ -105,7 +105,7 @@ export class WebSocketApi extends Resource implements IWebSocketApi {
    * @internal
    */
   public _addIntegration(config: WebSocketRouteIntegrationConfig): WebSocketIntegration {
-    const stringifiedConfig = JSON.stringify(config);
+    const stringifiedConfig = JSON.stringify(Stack.of(this).resolve(config));
     const configHash = crypto.createHash('md5').update(stringifiedConfig).digest('hex');
 
     if (configHash in this.integrations) {

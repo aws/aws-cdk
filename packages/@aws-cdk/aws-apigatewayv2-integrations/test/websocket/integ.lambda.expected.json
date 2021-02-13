@@ -68,14 +68,14 @@
             [
               "integrations/",
               {
-                "Ref": "mywsapiWebSocketIntegrationce265f68100ffd2606f1dd2405c99c41FB7E6A43"
+                "Ref": "mywsapiWebSocketIntegration50b017444a02be00a0b575d1233145812C29D4A1"
               }
             ]
           ]
         }
       }
     },
-    "mywsapiWebSocketIntegrationce265f68100ffd2606f1dd2405c99c41FB7E6A43": {
+    "mywsapiWebSocketIntegration50b017444a02be00a0b575d1233145812C29D4A1": {
       "Type": "AWS::ApiGatewayV2::Integration",
       "Properties": {
         "ApiId": {
@@ -140,14 +140,14 @@
             [
               "integrations/",
               {
-                "Ref": "mywsapiWebSocketIntegration95ae226072221a4970d36b36f8be00bf1ED15F29"
+                "Ref": "mywsapiWebSocketIntegrationcd3bacb451e82549501e141cc094d7ba06EB555F"
               }
             ]
           ]
         }
       }
     },
-    "mywsapiWebSocketIntegration95ae226072221a4970d36b36f8be00bf1ED15F29": {
+    "mywsapiWebSocketIntegrationcd3bacb451e82549501e141cc094d7ba06EB555F": {
       "Type": "AWS::ApiGatewayV2::Integration",
       "Properties": {
         "ApiId": {
@@ -212,14 +212,14 @@
             [
               "integrations/",
               {
-                "Ref": "mywsapiWebSocketIntegration577eac694fb2c36f751ca93aa2b0a9c2B01A5F80"
+                "Ref": "mywsapiWebSocketIntegration640ac0772c157aa8b9a56aa99adbd9d79AE25D4B"
               }
             ]
           ]
         }
       }
     },
-    "mywsapiWebSocketIntegration577eac694fb2c36f751ca93aa2b0a9c2B01A5F80": {
+    "mywsapiWebSocketIntegration640ac0772c157aa8b9a56aa99adbd9d79AE25D4B": {
       "Type": "AWS::ApiGatewayV2::Integration",
       "Properties": {
         "ApiId": {
@@ -284,14 +284,14 @@
             [
               "integrations/",
               {
-                "Ref": "mywsapiWebSocketIntegrationd4b89276bcd1262f823f059f39c4e3d0050617A5"
+                "Ref": "mywsapiWebSocketIntegrationcf58a195e318f43f52c4d9ac6d6d2430B81BE641"
               }
             ]
           ]
         }
       }
     },
-    "mywsapiWebSocketIntegrationd4b89276bcd1262f823f059f39c4e3d0050617A5": {
+    "mywsapiWebSocketIntegrationcf58a195e318f43f52c4d9ac6d6d2430B81BE641": {
       "Type": "AWS::ApiGatewayV2::Integration",
       "Properties": {
         "ApiId": {
