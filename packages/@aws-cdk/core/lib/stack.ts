@@ -11,7 +11,6 @@ import { CfnElement } from './cfn-element';
 import { Fn } from './cfn-fn';
 import { Aws, ScopedAws } from './cfn-pseudo';
 import { CfnResource, TagType } from './cfn-resource';
-import { ISynthesisSession } from './construct-compat';
 import { ContextProvider } from './context-provider';
 import { Environment } from './environment';
 import { FeatureFlags } from './feature-flags';
@@ -19,10 +18,6 @@ import { CLOUDFORMATION_TOKEN_RESOLVER, CloudFormationLang } from './private/clo
 import { LogicalIDs } from './private/logical-id';
 import { resolve } from './private/resolve';
 import { makeUniqueId } from './private/uniqueid';
-
-// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
-// eslint-disable-next-line
-import { Construct as CoreConstruct } from './construct-compat';
 
 const STACK_SYMBOL = Symbol.for('@aws-cdk/core.Stack');
 const MY_STACK_CACHE = Symbol.for('@aws-cdk/core.Stack.myStack');
@@ -148,7 +143,7 @@ export interface StackProps {
 /**
  * A root construct which represents a single CloudFormation stack.
  */
-export class Stack extends CoreConstruct implements ITaggable {
+export class Stack extends Construct implements ITaggable {
   /**
    * Return whether the given object is a Stack.
    *
@@ -1232,15 +1227,15 @@ function makeStackName(components: string[]) {
 
 function getCreateExportsScope(stack: Stack) {
   const exportsName = 'Exports';
-  let stackExports = stack.node.tryFindChild(exportsName) as CoreConstruct;
+  let stackExports = stack.node.tryFindChild(exportsName) as Construct;
   if (stackExports === undefined) {
-    stackExports = new CoreConstruct(stack, exportsName);
+    stackExports = new Construct(stack, exportsName);
   }
 
   return stackExports;
 }
 
-function generateExportName(stackExports: CoreConstruct, id: string) {
+function generateExportName(stackExports: Construct, id: string) {
   const stackRelativeExports = FeatureFlags.of(stackExports).isEnabled(cxapi.STACK_RELATIVE_EXPORTS_CONTEXT);
   const stack = Stack.of(stackExports);
 
@@ -1261,6 +1256,7 @@ interface StackDependency {
   reasons: string[];
 }
 
+
 /**
  * Options for the `stack.exportValue()` method
  */
@@ -1280,7 +1276,7 @@ import { FileSystem } from './fs';
 import { Names } from './names';
 import { Reference } from './reference';
 import { IResolvable } from './resolvable';
-import { DefaultStackSynthesizer, IStackSynthesizer, LegacyStackSynthesizer } from './stack-synthesizers';
+import { DefaultStackSynthesizer, IStackSynthesizer, ISynthesisSession, LegacyStackSynthesizer } from './stack-synthesizers';
 import { Stage } from './stage';
 import { ITaggable, TagManager } from './tag-manager';
 import { Token, Tokenization } from './token';
