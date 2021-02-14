@@ -22,7 +22,7 @@
     "strict": true,
     "strictNullChecks": true,
     "strictPropertyInitialization": true,
-    "stripInternal": true,
+    "stripInternal": false,
     "target": "ES2018"
   },
   "include": [

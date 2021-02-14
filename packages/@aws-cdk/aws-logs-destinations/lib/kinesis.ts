@@ -1,7 +1,7 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as kinesis from '@aws-cdk/aws-kinesis';
 import * as logs from '@aws-cdk/aws-logs';
-import { Construct } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 
 /**
  * Use a Kinesis stream as the destination for a log subscription
