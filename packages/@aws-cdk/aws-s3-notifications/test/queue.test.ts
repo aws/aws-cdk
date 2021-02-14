@@ -1,4 +1,4 @@
-import { SynthUtils } from '@aws-cdk/assert';
+import { arrayWith, SynthUtils } from '@aws-cdk/assert';
 import '@aws-cdk/assert/jest';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as sqs from '@aws-cdk/aws-sqs';
@@ -77,65 +77,19 @@ test('if the queue is encrypted with a custom kms key, the key resource policy i
 
   bucket.addObjectCreatedNotification(new notif.SqsDestination(queue));
 
-  expect(stack).toHaveResource('AWS::KMS::Key', {
+  expect(stack).toHaveResourceLike('AWS::KMS::Key', {
     KeyPolicy: {
-      Statement: [
-        {
-          Action: [
-            'kms:Create*',
-            'kms:Describe*',
-            'kms:Enable*',
-            'kms:List*',
-            'kms:Put*',
-            'kms:Update*',
-            'kms:Revoke*',
-            'kms:Disable*',
-            'kms:Get*',
-            'kms:Delete*',
-            'kms:ScheduleKeyDeletion',
-            'kms:CancelKeyDeletion',
-            'kms:GenerateDataKey',
-            'kms:TagResource',
-            'kms:UntagResource',
-          ],
-          Effect: 'Allow',
-          Principal: {
-            AWS: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::', { Ref: 'AWS::AccountId' }, ':root']] },
-          },
-          Resource: '*',
+      Statement: arrayWith({
+        Action: [
+          'kms:GenerateDataKey*',
+          'kms:Decrypt',
+        ],
+        Effect: 'Allow',
+        Principal: {
+          Service: 's3.amazonaws.com',
         },
-        {
-          Action: [
-            'kms:Decrypt',
-            'kms:Encrypt',
-            'kms:ReEncrypt*',
-            'kms:GenerateDataKey*',
-          ],
-          Condition: {
-            ArnLike: {
-              'aws:SourceArn': { 'Fn::GetAtt': ['Bucket83908E77', 'Arn'] },
-            },
-          },
-          Effect: 'Allow',
-          Principal: {
-            Service: 's3.amazonaws.com',
-          },
-          Resource: '*',
-        },
-        {
-          Action: [
-            'kms:GenerateDataKey*',
-            'kms:Decrypt',
-          ],
-          Effect: 'Allow',
-          Principal: {
-            Service: 's3.amazonaws.com',
-          },
-          Resource: '*',
-        },
-      ],
-      Version: '2012-10-17',
+        Resource: '*',
+      }),
     },
-    Description: 'Created by Default/Queue',
   });
 });
