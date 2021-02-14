@@ -20,6 +20,7 @@ setuptools.setup(
 
     install_requires=[
         "aws-cdk-lib==%cdk-version%",
+        "constructs==%constructs-version%",
     ],
 
     python_requires=">=3.6",

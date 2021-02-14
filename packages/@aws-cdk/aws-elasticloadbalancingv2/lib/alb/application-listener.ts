@@ -460,8 +460,8 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
   /**
    * Validate this listener.
    */
-  protected validate(): string[] {
-    const errors = super.validate();
+  protected validateListener(): string[] {
+    const errors = super.validateListener();
     if (this.protocol === ApplicationProtocol.HTTPS && this.certificateArns.length === 0) {
       errors.push('HTTPS Listener needs at least one certificate (call addCertificates)');
     }
