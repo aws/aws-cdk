@@ -28,6 +28,9 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
   - [ResultPath](#resultpath)
 - [Parameters](#task-parameters-from-the-state-json)
 - [Evaluate Expression](#evaluate-expression)
+- [API Gateway](#api-gateway)
+  - [InvokeRestApi](#invoke-rest-api)
+  - [InvokeHttpApi](#invoke-http-api)
 - [Athena](#athena)
   - [StartQueryExecution](#startQueryExecution)
   - [GetQueryExecution](#getQueryExecution)
@@ -214,6 +217,43 @@ new sfn.StateMachine(this, 'StateMachine', {
 The `EvaluateExpression` supports a `runtime` prop to specify the Lambda
 runtime to use to evaluate the expression. Currently, only runtimes
 of the Node.js family are supported.
+
+## API Gateway
+
+Step Functions support [API Gateway](https://docs.aws.amazon.com/step-functions/latest/dg/connect-api-gateway.html) through the service integration pattern.
+
+### Invoke REST API
+
+The `InvokeApiGatewayRestApi` calls the REST API endpoint.
+
+```ts
+import * as sfn from '@aws-cdk/aws-stepfunctions';
+import * as tasks from `@aws-cdk/aws-stepfunctions-tasks`;
+
+const restApi = new apigateway.RestApi(stack, 'MyRestApi');
+
+const invokeTask = new tasks.InvokeApiGatewayRestApi(stack, 'Invoke REST API', {
+  api: restApi,
+  stageName: 'prod',
+  method: HttpMethod.GET,
+});
+```
+
+### Invoke HTTP API
+
+The `InvokeApiGatewayHttpApi` calls the HTTP API endpoint.
+
+```ts
+import * as sfn from '@aws-cdk/aws-stepfunctions';
+import * as tasks from `@aws-cdk/aws-stepfunctions-tasks`;
+
+const httpApi = new apigatewayv2.HttpApi(stack, 'MyHttpApi');
+
+const invokeTask = new tasks.InvokeApiGatewayHttpApi(stack, 'Invoke HTTP API', {
+  api: httpApi,
+  method: HttpMethod.GET,
+});
+```
 
 ## Athena
 
