@@ -1,7 +1,10 @@
 import * as cxapi from '@aws-cdk/cx-api';
+import { testFutureBehavior, testLegacyBehavior } from 'cdk-build-tools/lib/feature-flag';
 import {
   App, CfnCondition, CfnInclude, CfnOutput, CfnParameter,
-  CfnResource, Construct, Lazy, ScopedAws, Stack, validateString, ISynthesisSession, Tags, LegacyStackSynthesizer, DefaultStackSynthesizer,
+  CfnResource, Construct, Lazy, ScopedAws, Stack, validateString,
+  ISynthesisSession, Tags, LegacyStackSynthesizer, DefaultStackSynthesizer,
+  NestedStack,
 } from '../lib';
 import { Intrinsic } from '../lib/private/intrinsic';
 import { resolveReferences } from '../lib/private/refs';
@@ -534,7 +537,69 @@ describe('stack', () => {
 
     expect(assembly.getStackArtifact(child1.artifactId).dependencies.map((x: { id: any; }) => x.id)).toEqual([]);
     expect(assembly.getStackArtifact(child2.artifactId).dependencies.map((x: { id: any; }) => x.id)).toEqual(['ParentChild18FAEF419']);
+  });
 
+  test('automatic cross-stack references and manual exports look the same', () => {
+    // GIVEN: automatic
+    const appA = new App();
+    const producerA = new Stack(appA, 'Producer');
+    const consumerA = new Stack(appA, 'Consumer');
+    const resourceA = new CfnResource(producerA, 'Resource', { type: 'AWS::Resource' });
+    new CfnOutput(consumerA, 'SomeOutput', { value: `${resourceA.getAtt('Att')}` });
+
+    // GIVEN: manual
+    const appM = new App();
+    const producerM = new Stack(appM, 'Producer');
+    const resourceM = new CfnResource(producerM, 'Resource', { type: 'AWS::Resource' });
+    producerM.exportValue(resourceM.getAtt('Att'));
+
+    // THEN - producers are the same
+    const templateA = appA.synth().getStackByName(producerA.stackName).template;
+    const templateM = appM.synth().getStackByName(producerM.stackName).template;
+
+    expect(templateA).toEqual(templateM);
+  });
+
+  test('automatic cross-stack references and manual exports look the same: nested stack edition', () => {
+    // GIVEN: automatic
+    const appA = new App();
+    const producerA = new Stack(appA, 'Producer');
+    const nestedA = new NestedStack(producerA, 'Nestor');
+    const resourceA = new CfnResource(nestedA, 'Resource', { type: 'AWS::Resource' });
+
+    const consumerA = new Stack(appA, 'Consumer');
+    new CfnOutput(consumerA, 'SomeOutput', { value: `${resourceA.getAtt('Att')}` });
+
+    // GIVEN: manual
+    const appM = new App();
+    const producerM = new Stack(appM, 'Producer');
+    const nestedM = new NestedStack(producerM, 'Nestor');
+    const resourceM = new CfnResource(nestedM, 'Resource', { type: 'AWS::Resource' });
+    producerM.exportValue(resourceM.getAtt('Att'));
+
+    // THEN - producers are the same
+    const templateA = appA.synth().getStackByName(producerA.stackName).template;
+    const templateM = appM.synth().getStackByName(producerM.stackName).template;
+
+    expect(templateA).toEqual(templateM);
+  });
+
+  test('manual exports require a name if not supplying a resource attribute', () => {
+    const app = new App();
+    const stack = new Stack(app, 'Stack');
+
+    expect(() => {
+      stack.exportValue('someValue');
+    }).toThrow(/or make sure to export a resource attribute/);
+  });
+
+  test('manual exports can also just be used to create an export of anything', () => {
+    const app = new App();
+    const stack = new Stack(app, 'Stack');
+
+    const importV = stack.exportValue('someValue', { name: 'MyExport' });
+
+    expect(stack.resolve(importV)).toEqual({ 'Fn::ImportValue': 'MyExport' });
   });
 
   test('CfnSynthesisError is ignored when preparing cross references', () => {
@@ -880,46 +945,22 @@ describe('stack', () => {
 
   });
 
-  test('stack.templateFile is the name of the template file emitted to the cloud assembly (default is to use the stack name)', () => {
-    // GIVEN
-    const app = new App();
-
-    // WHEN
-    const stack1 = new Stack(app, 'MyStack1');
-    const stack2 = new Stack(app, 'MyStack2', { stackName: 'MyRealStack2' });
-
-    // THEN
-    expect(stack1.templateFile).toEqual('MyStack1.template.json');
-    expect(stack2.templateFile).toEqual('MyRealStack2.template.json');
-
-  });
-
-  test('when feature flag is enabled we will use the artifact id as the template name', () => {
-    // GIVEN
-    const app = new App({
-      context: {
-        [cxapi.ENABLE_STACK_NAME_DUPLICATES_CONTEXT]: 'true',
-      },
-    });
-
-    // WHEN
-    const stack1 = new Stack(app, 'MyStack1');
-    const stack2 = new Stack(app, 'MyStack2', { stackName: 'MyRealStack2' });
-
-    // THEN
-    expect(stack1.templateFile).toEqual('MyStack1.template.json');
-    expect(stack2.templateFile).toEqual('MyStack2.template.json');
-
-  });
-
   describe('@aws-cdk/core:enableStackNameDuplicates', () => {
 
     describe('disabled (default)', () => {
 
-      test('artifactId and templateFile use the stack name', () => {
-        // GIVEN
-        const app = new App();
+      testLegacyBehavior('stack.templateFile is the name of the template file emitted to the cloud assembly (default is to use the stack name)', App, (app) => {
+        // WHEN
+        const stack1 = new Stack(app, 'MyStack1');
+        const stack2 = new Stack(app, 'MyStack2', { stackName: 'MyRealStack2' });
 
+        // THEN
+        expect(stack1.templateFile).toEqual('MyStack1.template.json');
+        expect(stack2.templateFile).toEqual('MyRealStack2.template.json');
+
+      });
+
+      testLegacyBehavior('artifactId and templateFile use the stack name', App, (app) => {
         // WHEN
         const stack1 = new Stack(app, 'MyStack1', { stackName: 'thestack' });
         const assembly = app.synth();
@@ -928,15 +969,12 @@ describe('stack', () => {
         expect(stack1.artifactId).toEqual('thestack');
         expect(stack1.templateFile).toEqual('thestack.template.json');
         expect(assembly.getStackArtifact(stack1.artifactId).templateFile).toEqual('thestack.template.json');
-
       });
     });
 
     describe('enabled', () => {
-      test('allows using the same stack name for two stacks (i.e. in different regions)', () => {
-        // GIVEN
-        const app = new App({ context: { [cxapi.ENABLE_STACK_NAME_DUPLICATES_CONTEXT]: 'true' } });
-
+      const flags = { [cxapi.ENABLE_STACK_NAME_DUPLICATES_CONTEXT]: 'true' };
+      testFutureBehavior('allows using the same stack name for two stacks (i.e. in different regions)', flags, App, (app) => {
         // WHEN
         const stack1 = new Stack(app, 'MyStack1', { stackName: 'thestack' });
         const stack2 = new Stack(app, 'MyStack2', { stackName: 'thestack' });
@@ -947,13 +985,9 @@ describe('stack', () => {
         expect(assembly.getStackArtifact(stack2.artifactId).templateFile).toEqual('MyStack2.template.json');
         expect(stack1.templateFile).toEqual('MyStack1.template.json');
         expect(stack2.templateFile).toEqual('MyStack2.template.json');
-
       });
 
-      test('artifactId and templateFile use the unique id and not the stack name', () => {
-        // GIVEN
-        const app = new App({ context: { [cxapi.ENABLE_STACK_NAME_DUPLICATES_CONTEXT]: 'true' } });
-
+      testFutureBehavior('artifactId and templateFile use the unique id and not the stack name', flags, App, (app) => {
         // WHEN
         const stack1 = new Stack(app, 'MyStack1', { stackName: 'thestack' });
         const assembly = app.synth();
@@ -962,7 +996,16 @@ describe('stack', () => {
         expect(stack1.artifactId).toEqual('MyStack1');
         expect(stack1.templateFile).toEqual('MyStack1.template.json');
         expect(assembly.getStackArtifact(stack1.artifactId).templateFile).toEqual('MyStack1.template.json');
+      });
 
+      testFutureBehavior('when feature flag is enabled we will use the artifact id as the template name', flags, App, (app) => {
+        // WHEN
+        const stack1 = new Stack(app, 'MyStack1');
+        const stack2 = new Stack(app, 'MyStack2', { stackName: 'MyRealStack2' });
+
+        // THEN
+        expect(stack1.templateFile).toEqual('MyStack1.template.json');
+        expect(stack2.templateFile).toEqual('MyStack2.template.json');
       });
     });
 

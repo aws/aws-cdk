@@ -97,6 +97,8 @@ export interface CodeBuildActionProps extends codepipeline.CommonAwsActionProps 
   /**
    * Trigger a batch build.
    *
+   * Enabling this will enable batch builds on the CodeBuild project.
+   *
    * @default false
    */
   readonly executeBatchBuild?: boolean;
@@ -154,7 +156,7 @@ export class CodeBuildAction extends Action {
     options.role.addToPolicy(new iam.PolicyStatement({
       resources: [this.props.project.projectArn],
       actions: [
-        'codebuild:BatchGetBuilds',
+        `codebuild:${this.props.executeBatchBuild ? 'BatchGetBuildBatches' : 'BatchGetBuilds'}`,
         `codebuild:${this.props.executeBatchBuild ? 'StartBuildBatch' : 'StartBuild'}`,
         `codebuild:${this.props.executeBatchBuild ? 'StopBuildBatch' : 'StopBuild'}`,
       ],
@@ -205,7 +207,7 @@ export class CodeBuildAction extends Action {
       ProjectName: this.props.project.projectName,
       EnvironmentVariables: this.props.environmentVariables &&
         cdk.Stack.of(scope).toJsonString(codebuild.Project.serializeEnvVariables(this.props.environmentVariables,
-          this.props.checkSecretsInPlainTextEnvVariables ?? true)),
+          this.props.checkSecretsInPlainTextEnvVariables ?? true, this.props.project)),
     };
     if ((this.actionProperties.inputs || []).length > 1) {
       // lazy, because the Artifact name might be generated lazily
@@ -213,6 +215,7 @@ export class CodeBuildAction extends Action {
     }
     if (this.props.executeBatchBuild) {
       configuration.BatchEnabled = 'true';
+      this.props.project.enableBatchBuilds();
     }
     return {
       configuration,

@@ -67,7 +67,7 @@ export function determineProtocolAndPort(protocol: ApplicationProtocol | undefin
  * Helper function to default undefined input props
  */
 export function ifUndefined<T>(x: T | undefined, def: T) {
-  return x !== undefined ? x : def;
+  return x ?? def;
 }
 
 /**
