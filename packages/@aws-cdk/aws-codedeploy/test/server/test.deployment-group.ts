@@ -42,6 +42,78 @@ export = {
       test.done();
     },
 
+    'uses good linux install agent script'(test: Test) {
+      const stack = new cdk.Stack();
+
+      const asg = new autoscaling.AutoScalingGroup(stack, 'ASG', {
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.STANDARD3, ec2.InstanceSize.SMALL),
+        machineImage: new ec2.AmazonLinuxImage(),
+        vpc: new ec2.Vpc(stack, 'VPC'),
+      });
+
+      new codedeploy.ServerDeploymentGroup(stack, 'DeploymentGroup', {
+        autoScalingGroups: [asg],
+        installAgent: true,
+      });
+
+      expect(stack).to(haveResource('AWS::AutoScaling::LaunchConfiguration', {
+        'UserData': {
+          'Fn::Base64': {
+            'Fn::Join': [
+              '',
+              [
+                '#!/bin/bash\nset +e\nPKG_CMD=`which yum 2>/dev/null`\nset -e\nif [ -z "$PKG_CMD" ]; then\nPKG_CMD=apt-get\nelse\nPKG=CMD=yum\nfi\n$PKG_CMD update -y\nset +e\n$PKG_CMD install -y ruby2.0\nRUBY2_INSTALL=$?\nset -e\nif [ $RUBY2_INSTALL -ne 0 ]; then\n$PKG_CMD install -y ruby\nfi\n$PKG_CMD install -y awscli\nTMP_DIR=`mktemp -d`\ncd $TMP_DIR\naws s3 cp s3://aws-codedeploy-',
+                {
+                  'Ref': 'AWS::Region',
+                },
+                '/latest/install . --region ',
+                {
+                  'Ref': 'AWS::Region',
+                },
+                '\nchmod +x ./install\n./install auto\nrm -fr $TMP_DIR',
+              ],
+            ],
+          },
+        },
+      }));
+
+      test.done();
+    },
+
+    'uses good windows install agent script'(test: Test) {
+      const stack = new cdk.Stack();
+
+      const asg = new autoscaling.AutoScalingGroup(stack, 'ASG', {
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.STANDARD3, ec2.InstanceSize.SMALL),
+        machineImage: new ec2.WindowsImage(ec2.WindowsVersion.WINDOWS_SERVER_2019_ENGLISH_FULL_BASE, {}),
+        vpc: new ec2.Vpc(stack, 'VPC'),
+      });
+
+      new codedeploy.ServerDeploymentGroup(stack, 'DeploymentGroup', {
+        autoScalingGroups: [asg],
+        installAgent: true,
+      });
+
+      expect(stack).to(haveResource('AWS::AutoScaling::LaunchConfiguration', {
+        'UserData': {
+          'Fn::Base64': {
+            'Fn::Join': [
+              '',
+              [
+                '<powershell>Set-Variable -Name TEMPDIR -Value (New-TemporaryFile).DirectoryName\naws s3 cp s3://aws-codedeploy-',
+                {
+                  'Ref': 'AWS::Region',
+                },
+                '/latest/codedeploy-agent.msi $TEMPDIR\\codedeploy-agent.msi\ncd $TEMPDIR\n.\\codedeploy-agent.msi /quiet /l c:\\temp\\host-agent-install-log.txt</powershell>',
+              ],
+            ],
+          },
+        },
+      }));
+
+      test.done();
+    },
+
     'created with ASGs contains the ASG names'(test: Test) {
       const stack = new cdk.Stack();
 
