@@ -1715,10 +1715,10 @@
   dependencies:
     string-width "*"
 
-"@types/table@^5.0.0":
-  version "5.0.0"
-  resolved "https://registry.yarnpkg.com/@types/table/-/table-5.0.0.tgz#67c3821138eb41d538c3d9286771c6cdeeac7172"
-  integrity sha512-fQLtGLZXor264zUPWI95WNDsZ3QV43/c0lJpR/h1hhLJumXRmHNsrvBfEzW2YMhb0EWCsn4U6h82IgwsajAuTA==
+"@types/table@^6.0.0":
+  version "6.0.0"
+  resolved "https://registry.yarnpkg.com/@types/table/-/table-6.0.0.tgz#c3e8f1e0d80525036a7655fd650409e0230f1ead"
+  integrity sha512-RSmRiYetRzpcZcgNo4x6C1VSsPGBHCGGDO7Rbnz5esVLbGONxBP1CUcn8JhAkVzUVLO+AY8yOSkb27jvfauLyg==
 
 "@types/uuid@^8.3.0":
   version "8.3.0"
