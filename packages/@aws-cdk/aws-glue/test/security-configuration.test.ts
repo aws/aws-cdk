@@ -112,3 +112,12 @@ test('a security configuration with all encryption configs and mixed kms key inp
     },
   }));
 });
+
+test('fromSecurityConfigurationName', () => {
+  const stack = new cdk.Stack();
+  const name = 'name';
+
+  const securityConfiguration = glue.SecurityConfiguration.fromSecurityConfigurationName(stack, 'ImportedSecurityConfiguration', name);
+
+  assert.deepStrictEqual(securityConfiguration.securityConfigurationName, name);
+});
