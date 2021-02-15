@@ -67,9 +67,55 @@ The type for the *capacityProviderStrategies* field on a *Service* would be a li
 
 {"[Base](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ecs-service-capacityproviderstrategyitem.html#cfn-ecs-service-capacityproviderstrategyitem-base)" : Integer, "[CapacityProvider](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ecs-service-capacityproviderstrategyitem.html#cfn-ecs-service-capacityproviderstrategyitem-capacityprovider)" : String, "[Weight](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ecs-service-capacityproviderstrategyitem.html#cfn-ecs-service-capacityproviderstrategyitem-weight)" : Integer }
 
+*Base* and *Weight* fields will be *optional*; *CapacityProvider* is *required*. I.e.:
+
+```ts
+/**
+ * A Capacity Provider strategy to use for the service.
+ */
+export interface CapacityProviderStrategy {
+  /**
+   * The name of the Capacity Provider. Currently only FARGATE and FARGATE_SPOT are supported.
+   */
+  readonly capacityProvider: string;
+
+  /**
+   * The base value designates how many tasks, at a minimum, to run on the specified capacity provider. Only one
+   * capacity provider in a capacity provider strategy can have a base defined. If no value is specified, the default
+   * value of 0 is used.
+   *
+   * @default - none
+   */
+  readonly base?: number;
+
+  /**
+   * The weight value designates the relative percentage of the total number of tasks launched that should use the
+   * specified
+capacity provider. The weight value is taken into consideration after the base value, if defined, is satisfied.
+   *
+   * @default - 0
+   */
+  readonly weight?: number;
+}
+
+```
 This new field would be added to the BaseService, not only for better extensibility when we add support for ASG capacity providers, but also to facilitate construction, since the FargateService extends the BaseService and would necessarily call super into the BaseService constructor.
 
-### Alternatives
-One alternative could be to provide a more magical experience by populating the capacityProviders field under the hood (for example, by modifying the cluster if capacityProviderStrategies is set on a FargateService). However, it’s unclear if this may lead to undesired behavior, especially if the customer is using an imported cluster. There is also the slight disadvantage of this being a less consistent behavior with how ASG capacity providers will be set in the future, and would break from the general pattern of setting resource fields at construction time.
+Implications Setting Launch Type
 
-Another option would be to create a new FargateCluster resource, that would have the two Fargate capacity providers set by default. The main advantage with this alternative would be that it would be consistent with the current Console experience, which sets the Fargate capacity providers for you if you choose the “Networking Only” cluster template via the cluster wizard. The downside is that it would be a more restrictive resource model that would go back on the decision to have a single generic ECS Cluster resource that could potentially contain both Fargate and EC2 services or tasks.
+Since it can be reasonably assumed that any CapacityProvideStrategies defined on the Service are what the customer intends to use on the Service, the LaunchType will *not* be set on the Service if CapacityProvideStrategies are specified. This is similar to how the LaunchType field is unset if the service uses an external DeploymentController (https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/aws-ecs/lib/base/base-service.ts#L374).
+
+On the other hand, this intent would not be as obvious with Default Capacity Provider Strategies defined a cluster. A *defaultCapacityProviderStrategy* specified on a cluster is used for any service that does not specify either a launchType or its own CapacityProviderStrategies. From the point of view of the ECS APIs, similar to how custom CapacityProvideStrategies defined on the Service are expected to supersede the defaultCapacityProviderStrategy on a cluster, the expected behavior for an ECS Service that specifies a launchType is for it to also ignore the Cluster’s defaultCapacityProviderStrategy.
+
+However, since the two Service constructs in the CDK (Ec2Service and FargateService) do not support having the launchType field passed in explicitly, it would not possible to infer whether the intent of the customer using one of these Service constructs is to use the implied launchType (currently set under the hood in the service’s constructor (https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/aws-ecs/lib/fargate/fargate-service.ts#L155)) or the defaultCapacityProviderStrategy.  For this reason, we will not be adding the  defaultCapacityProviderStrategy field on the Cluster construct for this iteration.
+
+_*Note*_: Future for support will be dependent on a re-design of the existing Service strategies. This will be treated in v2 of the ECS modules, likely with a single Service L2 construct and deprecation of the Ec2Service and FargateService constructs.
+
+
+### Alternatives:
+One alternative considered was to provide a more magical experience by populating the capacityProviders field under the hood (for example, by modifying the cluster if capacityProviderStrategies is set on a FargateService). However, there is the slight disadvantage of this being a less consistent behavior with how ASG capacity providers will be set in the future, and would break from the general pattern of setting resource fields at construction time. Furthermore, given that the cluster field on a service is of type ICluster, this may make it prohibitively difficult/impossible to provide the magical experience of modifying fields on the Cluster from the service. In the case where an ICluster is defined in a different stack, its properties cannot be modified from the stack where the Service is defined at all. For this reason, we will have to enforce the capacityProviders field being set explicitly on the Cluster construct.
+
+For future extensibility, we can however add an `addCapacityProvider` method on the Cluster resource, to allow modifying the cluster CapacityProviders field post-construction.
+
+Another option would be to create a new FargateCluster resource, that would have the two Fargate capacity providers set by default. The main advantage with this alternative would be that it would be consistent with the current Console experience, which sets the Fargate capacity providers for you if you choose the “Networking Only” cluster template via the cluster wizard. The downside is that it would be a more restrictive resource model that would go back on the decision to have a single generic ECS Cluster resource that could potentially contain both Fargate and EC2 services or tasks. Given that we are moving towards more generic versions of ECS resources, this is not a preferable solution. That being said, in the current iteration we can set the Fargate Capacity Providers on the cluster by default, but put them behind a feature flag, which we would be able to remove in the v2 version of the ECS module. Using the feature flag would ensure that there would not be a diff in the generated CFN template for existing customers defining ECS clusters in their stack who redeploy using an updated version of the CDK.
+
