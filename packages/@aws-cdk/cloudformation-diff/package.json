@@ -33,7 +33,7 @@
     "@types/string-width": "^4.0.1",
     "@types/table": "^5.0.0",
     "cdk-build-tools": "0.0.0",
-    "fast-check": "^2.12.1",
+    "fast-check": "^2.13.0",
     "jest": "^26.6.3",
     "pkglint": "0.0.0",
     "ts-jest": "^26.5.1"
