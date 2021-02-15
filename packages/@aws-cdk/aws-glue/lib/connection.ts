@@ -66,9 +66,9 @@ export interface IConnection extends cdk.IResource {
 }
 
 /**
- * Construction properties for {@link Connection}
+ * Base Connection Options
  */
-export interface ConnectionProps {
+export interface ConnectionOptions {
   /**
    * The name of the connection
    * @default cloudformation generated name
@@ -80,17 +80,6 @@ export interface ConnectionProps {
    * @default no description
    */
   readonly description?: string;
-
-  /**
-   * The type of the connection
-   */
-  readonly type: ConnectionType;
-
-  /**
-   *  Key-Value pairs that define parameters for the connection.
-   *  @default empty properties
-   */
-  readonly properties?: { [key: string]: string };
 
   /**
    * A list of criteria that can be used in selecting this connection.
@@ -110,6 +99,22 @@ export interface ConnectionProps {
    * @default no subnet
    */
   readonly subnet?: ec2.ISubnet;
+}
+
+/**
+ * Construction properties for {@link Connection}
+ */
+export interface ConnectionProps extends ConnectionOptions {
+  /**
+   * The type of the connection
+   */
+  readonly type: ConnectionType;
+
+  /**
+   *  Key-Value pairs that define parameters for the connection.
+   *  @default empty properties
+   */
+  readonly properties?: { [key: string]: string };
 }
 
 /**
@@ -181,10 +186,14 @@ export class Connection extends cdk.Resource implements IConnection {
    */
   public readonly connectionName: string;
 
+  private readonly properties: {[key: string]: string};
+
   constructor(scope: constructs.Construct, id: string, props: ConnectionProps) {
     super(scope, id, {
       physicalName: props.connectionName,
     });
+
+    this.properties = props.properties || {};
 
     const physicalConnectionRequirements = props.subnet || props.securityGroups ? {
       availabilityZone: props.subnet ? props.subnet.availabilityZone : undefined,
@@ -195,7 +204,7 @@ export class Connection extends cdk.Resource implements IConnection {
     const connectionResource = new CfnConnection(this, 'Resource', {
       catalogId: cdk.Aws.ACCOUNT_ID,
       connectionInput: {
-        connectionProperties: props.properties,
+        connectionProperties: cdk.Lazy.any({ produce: () => Object.keys(this.properties).length > 0 ? this.properties : undefined }),
         connectionType: props.type.name,
         description: props.description,
         matchCriteria: props.matchCriteria,
@@ -207,5 +216,14 @@ export class Connection extends cdk.Resource implements IConnection {
     const resourceName = this.getResourceNameAttribute(connectionResource.ref);
     this.connectionArn = Connection.buildConnectionArn(this, resourceName);
     this.connectionName = resourceName;
+  }
+
+  /**
+   * Add additional connection parameters
+   * @param key parameter key
+   * @param value parameter value
+   */
+  public addProperty(key: string, value: string): void {
+    this.properties[key] = value;
   }
 }

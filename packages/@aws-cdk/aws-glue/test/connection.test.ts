@@ -117,6 +117,26 @@ test('a connection with match criteria', () => {
   }));
 });
 
+test('addProperty', () => {
+  const stack = new cdk.Stack();
+  const connection = new glue.Connection(stack, 'Connection', {
+    type: glue.ConnectionType.NETWORK,
+  });
+  connection.addProperty('SomeKey', 'SomeValue');
+
+  expect(stack).to(haveResource('AWS::Glue::Connection', {
+    CatalogId: {
+      Ref: 'AWS::AccountId',
+    },
+    ConnectionInput: {
+      ConnectionType: 'NETWORK',
+      ConnectionProperties: {
+        SomeKey: 'SomeValue',
+      },
+    },
+  }));
+});
+
 test('fromConnectionName', () => {
   const connectionName = 'name';
   const stack = new cdk.Stack();
