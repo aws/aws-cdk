@@ -115,7 +115,7 @@ describe('HttpRoute', () => {
     expect(stack2).toCountResources('AWS::ApiGatewayV2::Integration', 1);
   });
 
-  test('route can be defined in sub stack', () => {
+  test('route defined in a separate stack does not create cycles', () => {
     // GIVEN
     const integration = new DummyIntegration();
 
