@@ -67,7 +67,8 @@ export interface NetworkLoadBalancedServiceBaseProps {
    * The desired number of instantiations of the task definition to keep running on the service.
    * The minimum value is 1
    *
-   * @default 1
+   * @default - When creating the service, default is 1; when updating the service, default uses
+   * the current task number.
    */
   readonly desiredCount?: number;
 

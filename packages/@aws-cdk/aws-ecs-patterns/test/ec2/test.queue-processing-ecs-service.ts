@@ -23,7 +23,6 @@ export = {
 
     // THEN - QueueWorker is of EC2 launch type, an SQS queue is created and all default properties are set.
     expect(stack).to(haveResource('AWS::ECS::Service', {
-      DesiredCount: 1,
       LaunchType: 'EC2',
     }));
 
@@ -98,7 +97,6 @@ export = {
 
     // THEN - QueueWorker is of EC2 launch type, an SQS queue is created and all default properties are set.
     expect(stack).to(haveResource('AWS::ECS::Service', {
-      DesiredCount: 1,
       LaunchType: 'EC2',
     }));
 
@@ -190,7 +188,6 @@ export = {
 
     // THEN - QueueWorker is of EC2 launch type, an SQS queue is created and all optional properties are set.
     expect(stack).to(haveResource('AWS::ECS::Service', {
-      DesiredCount: 2,
       DeploymentConfiguration: {
         MinimumHealthyPercent: 60,
         MaximumPercent: 150,
@@ -261,7 +258,6 @@ export = {
 
     // THEN - QueueWorker is of EC2 launch type, an SQS queue is created and all default properties are set.
     expect(stack).to(haveResource('AWS::ECS::Service', {
-      DesiredCount: 0,
       LaunchType: 'EC2',
     }));
 

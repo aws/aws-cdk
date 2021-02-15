@@ -119,7 +119,7 @@ export class ApplicationLoadBalancedEc2Service extends ApplicationLoadBalancedSe
 
     this.service = new Ec2Service(this, 'Service', {
       cluster: this.cluster,
-      desiredCount: this.desiredCount,
+      desiredCount: props.desiredCount,
       taskDefinition: this.taskDefinition,
       assignPublicIp: false,
       serviceName: props.serviceName,

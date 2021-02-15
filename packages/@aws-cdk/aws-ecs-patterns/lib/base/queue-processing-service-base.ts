@@ -54,6 +54,7 @@ export interface QueueProcessingServiceBaseProps {
    * The desired number of instantiations of the task definition to keep running on the service.
    *
    * @default 1
+   * @deprecated - Use `minScalingCapacity` or a literal object instead.
    */
   readonly desiredTaskCount?: number;
 

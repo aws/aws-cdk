@@ -138,7 +138,7 @@ export class ApplicationMultipleTargetGroupsEc2Service extends ApplicationMultip
   private createEc2Service(props: ApplicationMultipleTargetGroupsEc2ServiceProps): Ec2Service {
     return new Ec2Service(this, 'Service', {
       cluster: this.cluster,
-      desiredCount: this.desiredCount,
+      desiredCount: props.desiredCount,
       taskDefinition: this.taskDefinition,
       assignPublicIp: false,
       serviceName: props.serviceName,

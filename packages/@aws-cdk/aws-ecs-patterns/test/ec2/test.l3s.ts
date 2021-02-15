@@ -424,7 +424,6 @@ export = {
     }));
 
     expect(stack).to(haveResource('AWS::ECS::Service', {
-      DesiredCount: 1,
       LaunchType: 'FARGATE',
     }));
 
@@ -488,7 +487,6 @@ export = {
     }));
 
     expect(stack).to(haveResource('AWS::ECS::Service', {
-      DesiredCount: 1,
       LaunchType: 'FARGATE',
     }));
 

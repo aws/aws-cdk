@@ -32,7 +32,6 @@ export = {
       expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::LoadBalancer'));
 
       expect(stack).to(haveResource('AWS::ECS::Service', {
-        DesiredCount: 1,
         LaunchType: 'EC2',
       }));
 
@@ -878,7 +877,6 @@ export = {
       expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::LoadBalancer'));
 
       expect(stack).to(haveResource('AWS::ECS::Service', {
-        DesiredCount: 1,
         LaunchType: 'EC2',
       }));
 

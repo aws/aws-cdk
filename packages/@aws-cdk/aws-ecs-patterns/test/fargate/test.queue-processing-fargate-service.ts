@@ -23,7 +23,6 @@ export = {
 
     // THEN - QueueWorker is of FARGATE launch type, an SQS queue is created and all default properties are set.
     expect(stack).to(haveResource('AWS::ECS::Service', {
-      DesiredCount: 1,
       LaunchType: 'FARGATE',
     }));
 
@@ -120,7 +119,6 @@ export = {
 
     // THEN - QueueWorker is of FARGATE launch type, an SQS queue is created and all default properties are set.
     expect(stack).to(haveResource('AWS::ECS::Service', {
-      DesiredCount: 1,
       LaunchType: 'FARGATE',
     }));
 
@@ -235,7 +233,6 @@ export = {
 
     // THEN - QueueWorker is of FARGATE launch type, an SQS queue is created and all optional properties are set.
     expect(stack).to(haveResource('AWS::ECS::Service', {
-      DesiredCount: 2,
       DeploymentConfiguration: {
         MinimumHealthyPercent: 60,
         MaximumPercent: 150,

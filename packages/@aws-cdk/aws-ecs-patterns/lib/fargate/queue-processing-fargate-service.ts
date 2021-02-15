@@ -123,7 +123,6 @@ export class QueueProcessingFargateService extends QueueProcessingServiceBase {
     // autoscaling based on cpu utilization and number of messages visible in the SQS queue.
     this.service = new FargateService(this, 'QueueProcessingFargateService', {
       cluster: this.cluster,
-      desiredCount: this.desiredCount,
       taskDefinition: this.taskDefinition,
       serviceName: props.serviceName,
       minHealthyPercent: props.minHealthyPercent,

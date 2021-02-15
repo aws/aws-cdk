@@ -170,7 +170,7 @@ export class ApplicationMultipleTargetGroupsFargateService extends ApplicationMu
   private createFargateService(props: ApplicationMultipleTargetGroupsFargateServiceProps): FargateService {
     return new FargateService(this, 'Service', {
       cluster: this.cluster,
-      desiredCount: this.desiredCount,
+      desiredCount: props.desiredCount,
       taskDefinition: this.taskDefinition,
       assignPublicIp: this.assignPublicIp,
       serviceName: props.serviceName,
