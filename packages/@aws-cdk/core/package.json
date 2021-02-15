@@ -180,7 +180,7 @@
     "@types/sinon": "^9.0.10",
     "cdk-build-tools": "0.0.0",
     "cfn2ts": "0.0.0",
-    "fast-check": "^2.12.1",
+    "fast-check": "^2.13.0",
     "lodash": "^4.17.20",
     "nodeunit-shim": "0.0.0",
     "pkglint": "0.0.0",
