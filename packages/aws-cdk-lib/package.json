@@ -282,7 +282,7 @@
     "@aws-cdk/pipelines": "0.0.0",
     "@aws-cdk/region-info": "0.0.0",
     "@aws-cdk/yaml-cfn": "0.0.0",
-    "@types/fs-extra": "^8.1.1",
+    "@types/fs-extra": "^9.0.7",
     "@types/node": "^10.17.52",
     "cdk-build-tools": "0.0.0",
     "constructs": "^3.2.0",

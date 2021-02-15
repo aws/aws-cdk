@@ -35,7 +35,7 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@types/fs-extra": "^8.1.1",
+    "@types/fs-extra": "^9.0.7",
     "@types/semver": "^7.3.4",
     "@types/yargs": "^15.0.13",
     "eslint-plugin-cdk": "0.0.0",

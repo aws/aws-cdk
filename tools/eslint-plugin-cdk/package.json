@@ -13,7 +13,7 @@
   },
   "devDependencies": {
     "@types/eslint": "^7.2.6",
-    "@types/fs-extra": "^8.1.1",
+    "@types/fs-extra": "^9.0.7",
     "@types/jest": "^26.0.20",
     "@types/node": "^10.17.52",
     "eslint-plugin-rulesdir": "^0.1.0",
