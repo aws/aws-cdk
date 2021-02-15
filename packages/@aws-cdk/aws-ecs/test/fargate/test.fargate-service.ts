@@ -110,7 +110,7 @@ export = {
       test.done();
     },
 
-    'with capacity provider strategies specified'(test: Test) {
+    'does not set launchType when capacity provider strategies specified'(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'MyVpc', {});

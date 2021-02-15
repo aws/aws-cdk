@@ -5,7 +5,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as cloudmap from '@aws-cdk/aws-servicediscovery';
 import * as ssm from '@aws-cdk/aws-ssm';
-import { Duration, IResource, Resource, Stack } from '@aws-cdk/core';
+import { Duration, Lazy, IResource, Resource, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { InstanceDrainHook } from './drain-hook/instance-drain-hook';
 import { ECSMetrics } from './ecs-canned-metrics.generated';
@@ -110,8 +110,10 @@ export class Cluster extends Resource implements ICluster {
 
   /**
    * The capacity providers associated with the cluster.
+   *
+   * Currently only FARGATE and FARGATE_SPOT are supported.
    */
-  public readonly capacityProviders?: string[];
+  private _capacityProviders: string[] = [];
 
   /**
    * The AWS Cloud Map namespace to associate with the cluster.
@@ -146,10 +148,12 @@ export class Cluster extends Resource implements ICluster {
       clusterSettings = [{ name: 'containerInsights', value: props.containerInsights ? ContainerInsights.ENABLED : ContainerInsights.DISABLED }];
     }
 
+    this._capacityProviders = props.capacityProviders ?? [];
+
     const cluster = new CfnCluster(this, 'Resource', {
       clusterName: this.physicalName,
       clusterSettings,
-      capacityProviders: props.capacityProviders,
+      capacityProviders: Lazy.list({ produce: () => this._capacityProviders }, { omitEmpty: true }),
     });
 
     this.clusterArn = this.getResourceArnAttribute(cluster.attrArn, {
@@ -161,7 +165,6 @@ export class Cluster extends Resource implements ICluster {
 
     this.vpc = props.vpc || new ec2.Vpc(this, 'Vpc', { maxAzs: 2 });
 
-    this.capacityProviders = props.capacityProviders;
 
     this._defaultCloudMapNamespace = props.defaultCloudMapNamespace !== undefined
       ? this.addDefaultCloudMapNamespace(props.defaultCloudMapNamespace)
@@ -335,6 +338,21 @@ export class Cluster extends Resource implements ICluster {
         drainTime: options.taskDrainTime,
         topicEncryptionKey: options.topicEncryptionKey,
       });
+    }
+  }
+
+  /**
+   * addCapacityProvider adds the name of a capacityProvider to the list of supproted capacityProviders for a cluster.
+   *
+   * @param provider the capacity provider to add to this cluster.
+   */
+  public addCapacityProvider(provider: string) {
+    if (!(provider === 'FARGATE' || provider === 'FARGATE_SPOT')) {
+      throw new Error('CapacityProvider not supported');
+    }
+
+    if (!this._capacityProviders.includes(provider)) {
+      this._capacityProviders.push(provider);
     }
   }
 
