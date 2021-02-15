@@ -14,7 +14,7 @@ const sg = new ec2.SecurityGroup(stack, 'SecurityGroup', {
 
 // Network connection
 new glue.Connection(stack, 'NetworkConnection', {
-  connectionType: glue.ConnectionType.NETWORK,
+  type: glue.ConnectionType.NETWORK,
   subnet: vpc.privateSubnets[0],
   securityGroups: [sg],
 });

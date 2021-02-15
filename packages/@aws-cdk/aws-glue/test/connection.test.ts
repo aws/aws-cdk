@@ -8,8 +8,8 @@ import * as glue from '../lib';
 test('a connection with connection properties', () => {
   const stack = new cdk.Stack();
   new glue.Connection(stack, 'Connection', {
-    connectionType: glue.ConnectionType.JDBC,
-    connectionProperties: {
+    type: glue.ConnectionType.JDBC,
+    properties: {
       JDBC_CONNECTION_URL: 'jdbc:server://server:443/connection',
       USERNAME: 'username',
       PASSWORD: 'password',
@@ -39,7 +39,7 @@ test('a connection with a subnet and security group', () => {
   });
   const securityGroup = ec2.SecurityGroup.fromSecurityGroupId(stack, 'securityGroup', 'sgId');
   new glue.Connection(stack, 'Connection', {
-    connectionType: glue.ConnectionType.NETWORK,
+    type: glue.ConnectionType.NETWORK,
     securityGroups: [securityGroup],
     subnet,
   });
@@ -64,7 +64,7 @@ test('a connection with a name and description', () => {
   new glue.Connection(stack, 'Connection', {
     connectionName: 'name',
     description: 'description',
-    connectionType: glue.ConnectionType.NETWORK,
+    type: glue.ConnectionType.NETWORK,
   });
 
   expect(stack).to(haveResource('AWS::Glue::Connection', {
@@ -84,7 +84,7 @@ test('a connection with a custom type', () => {
   new glue.Connection(stack, 'Connection', {
     connectionName: 'name',
     description: 'description',
-    connectionType: new glue.ConnectionType('CUSTOM_TYPE'),
+    type: new glue.ConnectionType('CUSTOM_TYPE'),
   });
 
   expect(stack).to(haveResource('AWS::Glue::Connection', {
@@ -102,7 +102,7 @@ test('a connection with a custom type', () => {
 test('a connection with match criteria', () => {
   const stack = new cdk.Stack();
   new glue.Connection(stack, 'Connection', {
-    connectionType: glue.ConnectionType.NETWORK,
+    type: glue.ConnectionType.NETWORK,
     matchCriteria: ['c1', 'c2'],
   });
 
@@ -117,16 +117,24 @@ test('a connection with match criteria', () => {
   }));
 });
 
-test('fromConnectionAttributes', () => {
+test('fromConnectionName', () => {
+  const connectionName = 'name';
   const stack = new cdk.Stack();
-  const connection = glue.Connection.fromConnectionAttributes(stack, 'ImportedConnection', {
-    connectionName: 'name',
-  });
+  const connection = glue.Connection.fromConnectionName(stack, 'ImportedConnection', connectionName);
 
-  strictEqual(connection.connectionName, 'name');
+  strictEqual(connection.connectionName, connectionName);
   strictEqual(connection.connectionArn, stack.formatArn({
     service: 'glue',
     resource: 'connection',
-    resourceName: 'name',
+    resourceName: connectionName,
   }));
+});
+
+test('fromConnectionArn', () => {
+  const connectionArn = 'arn:aws:glue:region:account-id:connection/name';
+  const stack = new cdk.Stack();
+  const connection = glue.Connection.fromConnectionArn(stack, 'ImportedConnection', connectionArn);
+
+  strictEqual(connection.connectionName, 'name');
+  strictEqual(connection.connectionArn, connectionArn);
 });

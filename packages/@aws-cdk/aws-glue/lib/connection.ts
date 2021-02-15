@@ -10,8 +10,6 @@ import { CfnConnection } from './glue.generated';
  * can instantiate a `ConnectionType` object, e.g: `new ConnectionType('NEW_TYPE')`.
  */
 export class ConnectionType {
-  /** A list of all known `ConnectionType`s. */
-  public static readonly ALL = new Array<ConnectionType>();
 
   /**
    * Designates a connection to a database through Java Database Connectivity (JDBC).
@@ -40,7 +38,6 @@ export class ConnectionType {
 
   constructor(name: string) {
     this.name = name;
-    ConnectionType.ALL.push(this);
   }
 
   /**
@@ -69,16 +66,6 @@ export interface IConnection extends cdk.IResource {
 }
 
 /**
- * Attributes for importing {@link Connection}
- */
-export interface ConnectionAttributes {
-  /**
-   * The name of the connection
-   */
-  readonly connectionName: string;
-}
-
-/**
  * Construction properties for {@link Connection}
  */
 export interface ConnectionProps {
@@ -97,16 +84,17 @@ export interface ConnectionProps {
   /**
    * The type of the connection
    */
-  readonly connectionType: ConnectionType;
+  readonly type: ConnectionType;
 
   /**
    *  Key-Value pairs that define parameters for the connection.
    *  @default empty properties
    */
-  readonly connectionProperties?: { [key: string]: string };
+  readonly properties?: { [key: string]: string };
 
   /**
    * A list of criteria that can be used in selecting this connection.
+   * This is useful for filtering the results of https://awscli.amazonaws.com/v2/documentation/api/latest/reference/glue/get-connections.html
    * @default no match criteria
    */
   readonly matchCriteria?: string[];
@@ -134,15 +122,45 @@ export class Connection extends cdk.Resource implements IConnection {
    *
    * @param scope The scope creating construct (usually `this`).
    * @param id The construct's id.
-   * @param attrs Import attributes
+   * @param connectionArn arn of external connection.
    */
-  public static fromConnectionAttributes(scope: constructs.Construct, id: string, attrs: ConnectionAttributes): IConnection {
+  public static fromConnectionArn(scope: constructs.Construct, id: string, connectionArn: string): IConnection {
     class Import extends cdk.Resource implements IConnection {
-      public readonly connectionName = attrs.connectionName;
-      public readonly connectionArn = Connection.buildConnectionArn(scope, attrs.connectionName);
+      public readonly connectionName = Connection.extractConnectionNameFromArn(connectionArn);
+      public readonly connectionArn = connectionArn;
     }
 
     return new Import(scope, id);
+  }
+
+  /**
+   * Creates a Connection construct that represents an external connection.
+   *
+   * @param scope The scope creating construct (usually `this`).
+   * @param id The construct's id.
+   * @param connectionName name of external connection.
+   */
+  public static fromConnectionName(scope: constructs.Construct, id: string, connectionName: string): IConnection {
+    class Import extends cdk.Resource implements IConnection {
+      public readonly connectionName = connectionName;
+      public readonly connectionArn = Connection.buildConnectionArn(scope, connectionName);
+    }
+
+    return new Import(scope, id);
+  }
+
+  /**
+   * Given an opaque (token) ARN, returns a CloudFormation expression that extracts the connection
+   * name from the ARN.
+   *
+   * Connection ARNs look like this:
+   *
+   *   arn:aws:glue:region:account-id:connection/connection name
+   *
+   * @returns `FnSelect(1, FnSplit('/', arn))`
+   */
+  private static extractConnectionNameFromArn(connectionArn: string) {
+    return cdk.Fn.select(1, cdk.Fn.split('/', connectionArn));
   }
 
   private static buildConnectionArn(scope: constructs.Construct, connectionName: string) : string {
@@ -177,8 +195,8 @@ export class Connection extends cdk.Resource implements IConnection {
     const connectionResource = new CfnConnection(this, 'Resource', {
       catalogId: cdk.Aws.ACCOUNT_ID,
       connectionInput: {
-        connectionProperties: props.connectionProperties,
-        connectionType: props.connectionType.name,
+        connectionProperties: props.properties,
+        connectionType: props.type.name,
         description: props.description,
         matchCriteria: props.matchCriteria,
         name: props.connectionName,
