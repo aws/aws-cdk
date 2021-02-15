@@ -1,5 +1,7 @@
-import aws_cdk_lib as core
+from constructs import Construct
 from aws_cdk_lib import (
+    Duration,
+    Stack,
     aws_iam as iam,
     aws_sqs as sqs,
     aws_sns as sns,
@@ -7,14 +9,14 @@ from aws_cdk_lib import (
 )
 
 
-class %name.PascalCased%Stack(core.Stack):
+class %name.PascalCased%Stack(Stack):
 
-    def __init__(self, scope: core.Construct, construct_id: str, **kwargs) -> None:
+    def __init__(self, scope: Construct, construct_id: str, **kwargs) -> None:
         super().__init__(scope, construct_id, **kwargs)
 
         queue = sqs.Queue(
             self, "%name.PascalCased%Queue",
-            visibility_timeout=core.Duration.seconds(300),
+            visibility_timeout=Duration.seconds(300),
         )
 
         topic = sns.Topic(

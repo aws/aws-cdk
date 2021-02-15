@@ -1,5 +1,6 @@
 import * as events from '@aws-cdk/aws-events';
 import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { IAction, IPipeline, IStage } from '../action';
 import { Artifact } from '../artifact';
 import { CfnPipeline } from '../codepipeline.generated';
@@ -20,7 +21,7 @@ export class Stage implements IStage {
    * The Pipeline this Stage is a part of.
    */
   public readonly stageName: string;
-  private readonly scope: cdk.Construct;
+  private readonly scope: Construct;
   private readonly _pipeline: Pipeline;
   private readonly _actions = new Array<FullActionDescriptor>();
 
@@ -32,7 +33,7 @@ export class Stage implements IStage {
 
     this.stageName = props.stageName;
     this._pipeline = pipeline;
-    this.scope = new cdk.Construct(pipeline, this.stageName);
+    this.scope = new Construct(pipeline, this.stageName);
 
     for (const action of props.actions || []) {
       this.addAction(action);
@@ -137,7 +138,7 @@ export class Stage implements IStage {
 
   private attachActionToPipeline(action: IAction): FullActionDescriptor {
     // notify the Pipeline of the new Action
-    const actionScope = new cdk.Construct(this.scope, action.actionProperties.actionName);
+    const actionScope = new Construct(this.scope, action.actionProperties.actionName);
     return this._pipeline._attachActionToPipeline(this, action, actionScope);
   }
 
