@@ -244,6 +244,31 @@ nodeunitShim({
   },
 });
 
+test.each([undefined, 'SomeName'])('stack.exportValue() on name attributes with PhysicalName=%s', physicalName => {
+  // Check that automatic exports and manual exports look the same
+  // GIVEN - auto
+  const appA = new App();
+  const producerA = new Stack(appA, 'Producer');
+  const resourceA = new MyResource(producerA, 'Resource', physicalName);
+
+  const consumerA = new Stack(appA, 'Consumer');
+  new CfnOutput(consumerA, 'ConsumeName', { value: resourceA.name });
+  new CfnOutput(consumerA, 'ConsumeArn', { value: resourceA.arn });
+
+  // WHEN - manual
+  const appM = new App();
+  const producerM = new Stack(appM, 'Producer');
+  const resourceM = new MyResource(producerM, 'Resource', physicalName);
+  producerM.exportValue(resourceM.name);
+  producerM.exportValue(resourceM.arn);
+
+  // THEN - producers are the same
+  const templateA = appA.synth().getStackByName(producerA.stackName).template;
+  const templateM = appM.synth().getStackByName(producerM.stackName).template;
+
+  expect(templateA).toEqual(templateM);
+});
+
 class MyResource extends Resource {
   public readonly arn: string;
   public readonly name: string;
@@ -251,20 +276,20 @@ class MyResource extends Resource {
   constructor(scope: Construct, id: string, physicalName?: string) {
     super(scope, id, { physicalName });
 
-    this.arn = this.getResourceArnAttribute('simple-arn', {
+    const res = new CfnResource(this, 'Resource', {
+      type: 'My::Resource',
+      properties: {
+        resourceName: this.physicalName,
+      },
+    });
+
+    this.name = this.getResourceNameAttribute(res.ref.toString());
+    this.arn = this.getResourceArnAttribute(res.getAtt('Arn').toString(), {
       region: '',
       account: '',
       resource: 'my-resource',
       resourceName: this.physicalName,
       service: 'myservice',
-    });
-    this.name = this.getResourceNameAttribute('simple-name');
-
-    new CfnResource(this, 'Resource', {
-      type: 'My::Resource',
-      properties: {
-        resourceName: this.physicalName,
-      },
     });
   }
 }
