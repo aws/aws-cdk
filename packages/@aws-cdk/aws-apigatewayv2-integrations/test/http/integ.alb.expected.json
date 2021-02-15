@@ -622,7 +622,7 @@
             [
               "integrations/",
               {
-                "Ref": "HttpProxyPrivateApiHttpIntegration1a580b19954e4317026ffbce1f7d5ade82925DF0"
+                "Ref": "HttpProxyPrivateApiDefaultRouteHttpIntegration1a580b19954e4317026ffbce1f7d5ade7A32685B"
               }
             ]
           ]
@@ -647,7 +647,7 @@
         "SecurityGroupIds": []
       }
     },
-    "HttpProxyPrivateApiHttpIntegration1a580b19954e4317026ffbce1f7d5ade82925DF0": {
+    "HttpProxyPrivateApiDefaultRouteHttpIntegration1a580b19954e4317026ffbce1f7d5ade7A32685B": {
       "Type": "AWS::ApiGatewayV2::Integration",
       "Properties": {
         "ApiId": {
