@@ -55,9 +55,15 @@ fs.readdirSync(fixturesRoot).filter(f => fs.lstatSync(path.join(fixturesRoot, f)
 async function lintAndFix(file: string, outputDir: string) {
   const newPath = path.join(outputDir, path.basename(file))
   let result = await linter.lintFiles(file);
-  await ESLint.outputFixes(result.map(r => {
-    r.filePath = newPath;
-    return r;
-  }));
+  const hasFixes = result.find(r => typeof(r.output) === 'string') !== undefined;
+  if (hasFixes) {
+    await ESLint.outputFixes(result.map(r => {
+      r.filePath = newPath;
+      return r;
+    }));
+  } else {
+    // If there are no fixes, copy the input file as output
+    await fs.copyFile(file, newPath);
+  }
   return newPath;
 }

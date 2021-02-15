@@ -8,7 +8,9 @@ import {
   CfnDistribution,
   CloudFrontWebDistribution,
   GeoRestriction,
+  KeyGroup,
   LambdaEdgeEventType,
+  PublicKey,
   SecurityPolicyProtocol,
   SSLMethod,
   ViewerCertificate,
@@ -16,6 +18,16 @@ import {
 } from '../lib';
 
 /* eslint-disable quote-props */
+
+const publicKey = `-----BEGIN PUBLIC KEY-----
+MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAudf8/iNkQgdvjEdm6xYS
+JAyxd/kGTbJfQNg9YhInb7TSm0dGu0yx8yZ3fnpmxuRPqJIlaVr+fT4YRl71gEYa
+dlhHmnVegyPNjP9dNqZ7zwNqMEPOPnS/NOHbJj1KYKpn1f8pPNycQ5MQCntKGnSj
+6fc+nbcC0joDvGz80xuy1W4hLV9oC9c3GT26xfZb2jy9MVtA3cppNuTwqrFi3t6e
+0iGpraxZlT5wewjZLpQkngqYr6s3aucPAZVsGTEYPo4nD5mswmtZOm+tgcOrivtD
+/3sD/qZLQ6c5siqyS8aTraD6y+VXugujfarTU65IeZ6QAUbLMsWuZOIi5Jn8zAwx
+NQIDAQAB
+-----END PUBLIC KEY-----`;
 
 nodeunitShim({
 
@@ -188,6 +200,14 @@ nodeunitShim({
   'distribution with trusted signers on default distribution'(test: Test) {
     const stack = new cdk.Stack();
     const sourceBucket = new s3.Bucket(stack, 'Bucket');
+    const pubKey = new PublicKey(stack, 'MyPubKey', {
+      encodedKey: publicKey,
+    });
+    const keyGroup = new KeyGroup(stack, 'MyKeyGroup', {
+      items: [
+        pubKey,
+      ],
+    });
 
     new CloudFrontWebDistribution(stack, 'AnAmazingWebsiteProbably', {
       originConfigs: [
@@ -199,6 +219,9 @@ nodeunitShim({
             {
               isDefaultBehavior: true,
               trustedSigners: ['1234'],
+              trustedKeyGroups: [
+                keyGroup,
+              ],
             },
           ],
         },
@@ -211,6 +234,29 @@ nodeunitShim({
           'Type': 'AWS::S3::Bucket',
           'DeletionPolicy': 'Retain',
           'UpdateReplacePolicy': 'Retain',
+        },
+        'MyPubKey6ADA4CF5': {
+          'Type': 'AWS::CloudFront::PublicKey',
+          'Properties': {
+            'PublicKeyConfig': {
+              'CallerReference': 'c8141e732ea37b19375d4cbef2b2d2c6f613f0649a',
+              'EncodedKey': publicKey,
+              'Name': 'MyPubKey',
+            },
+          },
+        },
+        'MyKeyGroupAF22FD35': {
+          'Type': 'AWS::CloudFront::KeyGroup',
+          'Properties': {
+            'KeyGroupConfig': {
+              'Items': [
+                {
+                  'Ref': 'MyPubKey6ADA4CF5',
+                },
+              ],
+              'Name': 'MyKeyGroup',
+            },
+          },
         },
         'AnAmazingWebsiteProbablyCFDistribution47E3983B': {
           'Type': 'AWS::CloudFront::Distribution',
@@ -250,9 +296,12 @@ nodeunitShim({
                   'QueryString': false,
                   'Cookies': { 'Forward': 'none' },
                 },
-                'TrustedSigners': [
-                  '1234',
+                'TrustedKeyGroups': [
+                  {
+                    'Ref': 'MyKeyGroupAF22FD35',
+                  },
                 ],
+                'TrustedSigners': ['1234'],
                 'Compress': true,
               },
               'Enabled': true,
