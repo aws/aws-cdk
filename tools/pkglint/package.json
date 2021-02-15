@@ -40,7 +40,7 @@
     "@types/yargs": "^15.0.13",
     "eslint-plugin-cdk": "0.0.0",
     "jest": "^26.6.3",
-    "typescript": "~3.9.7"
+    "typescript": "~4.1.5"
   },
   "dependencies": {
     "case": "^1.6.3",
