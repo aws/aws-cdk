@@ -50,7 +50,7 @@
     "@types/promptly": "^3.0.1",
     "@types/semver": "^7.3.4",
     "@types/sinon": "^9.0.10",
-    "@types/table": "^5.0.0",
+    "@types/table": "^6.0.0",
     "@types/uuid": "^8.3.0",
     "@types/wrap-ansi": "^3.0.0",
     "@types/yargs": "^15.0.13",
