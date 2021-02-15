@@ -170,10 +170,19 @@ export class SecurityConfiguration extends cdk.Resource implements ISecurityConf
   public readonly securityConfigurationName: string;
 
   /**
-   * The auto-created KMS key  for encryption configs (s3Encryption, cloudWatchEncryption, jobBookmarksEncryption)
-   * if an encryption config requires a KMS key but none is explicitly provided.
+   * The KMS key used in CloudWatch encryption if it requires a kms key.
    */
-  public readonly kmsKey?: kms.Key;
+  public readonly cloudWatchEncryptionKey?: kms.IKey;
+
+  /**
+   * The KMS key used in job bookmarks encryption if it requires a kms key.
+   */
+  public readonly jobBookmarksEncryptionKey?: kms.IKey;
+
+  /**
+   * The KMS key used in S3 encryption if it requires a kms key.
+   */
+  public readonly s3EncryptionKey?: kms.IKey;
 
   constructor(scope: constructs.Construct, id: string, props: SecurityConfigurationProps) {
     super(scope, id, {
@@ -188,27 +197,37 @@ export class SecurityConfiguration extends cdk.Resource implements ISecurityConf
       (props.s3Encryption && props.s3Encryption.mode === S3EncryptionMode.KMS && !props.s3Encryption.kmsKey) ||
       (props.cloudWatchEncryption && !props.cloudWatchEncryption.kmsKey) ||
       (props.jobBookmarksEncryption && !props.jobBookmarksEncryption.kmsKey);
+    const autoCreatedKmsKey = kmsKeyCreationRequired ? new kms.Key(this, 'Key') : undefined;
 
-    if (kmsKeyCreationRequired) {
-      this.kmsKey = new kms.Key(this, 'Key');
+    let cloudWatchEncryption;
+    if (props.cloudWatchEncryption) {
+      this.cloudWatchEncryptionKey = props.cloudWatchEncryption.kmsKey || autoCreatedKmsKey;
+      cloudWatchEncryption = {
+        cloudWatchEncryptionMode: props.cloudWatchEncryption.mode,
+        kmsKeyArn: this.cloudWatchEncryptionKey?.keyArn,
+      };
     }
 
-    const cloudWatchEncryption = props.cloudWatchEncryption ? {
-      cloudWatchEncryptionMode: props.cloudWatchEncryption.mode,
-      kmsKeyArn: (props.cloudWatchEncryption.kmsKey ? props.cloudWatchEncryption.kmsKey : this.kmsKey)?.keyArn,
-    } : undefined;
+    let jobBookmarksEncryption;
+    if (props.jobBookmarksEncryption) {
+      this.jobBookmarksEncryptionKey = props.jobBookmarksEncryption.kmsKey || autoCreatedKmsKey;
+      jobBookmarksEncryption = {
+        jobBookmarksEncryptionMode: props.jobBookmarksEncryption.mode,
+        kmsKeyArn: this.jobBookmarksEncryptionKey?.keyArn,
+      };
+    }
 
-    const jobBookmarksEncryption = props.jobBookmarksEncryption ? {
-      jobBookmarksEncryptionMode: props.jobBookmarksEncryption.mode,
-      kmsKeyArn: (props.jobBookmarksEncryption.kmsKey ? props.jobBookmarksEncryption.kmsKey : this.kmsKey)?.keyArn,
-    } : undefined;
-
-    // NOTE: CloudFormations errors out if array is of length > 1. That's why the props don't expose an array
-    const s3Encryptions = props.s3Encryption ? [{
-      s3EncryptionMode: props.s3Encryption.mode,
-      kmsKeyArn: props.s3Encryption.mode === S3EncryptionMode.KMS ? (props.s3Encryption.kmsKey ? props.s3Encryption.kmsKey : this.kmsKey)?.keyArn
-        : undefined,
-    }] : undefined;
+    let s3Encryptions;
+    if (props.s3Encryption) {
+      if (props.s3Encryption.mode === S3EncryptionMode.KMS) {
+        this.s3EncryptionKey = props.s3Encryption.kmsKey || autoCreatedKmsKey;
+      }
+      // NOTE: CloudFormations errors out if array is of length > 1. That's why the props don't expose an array
+      s3Encryptions = [{
+        s3EncryptionMode: props.s3Encryption.mode,
+        kmsKeyArn: this.s3EncryptionKey?.keyArn,
+      }];
+    }
 
     const resource = new CfnSecurityConfiguration(this, 'Resource', {
       name: props.securityConfigurationName,

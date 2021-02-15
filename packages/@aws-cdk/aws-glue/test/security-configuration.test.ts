@@ -26,8 +26,9 @@ test('a security configuration with encryption configuration requiring kms key a
     },
   });
 
-  // kms key not created
-  assert.deepStrictEqual(securityConfiguration.kmsKey, undefined);
+  assert.deepStrictEqual(securityConfiguration.cloudWatchEncryptionKey?.keyArn, keyArn);
+  assert.deepStrictEqual(securityConfiguration.jobBookmarksEncryptionKey, undefined);
+  assert.deepStrictEqual(securityConfiguration.s3EncryptionKey, undefined);
 
   cdkassert.expect(stack).to(cdkassert.haveResource('AWS::Glue::SecurityConfiguration', {
     Name: 'name',
@@ -50,8 +51,10 @@ test('a security configuration with an encryption configuration requiring kms ke
     },
   });
 
-  // auto created kms key
-  assert.notDeepStrictEqual(securityConfiguration.kmsKey, undefined);
+  assert.notDeepStrictEqual(securityConfiguration.cloudWatchEncryptionKey?.keyArn, undefined);
+  assert.deepStrictEqual(securityConfiguration.jobBookmarksEncryptionKey, undefined);
+  assert.deepStrictEqual(securityConfiguration.s3EncryptionKey, undefined);
+
   cdkassert.expect(stack).to(cdkassert.haveResource('AWS::KMS::Key'));
 
   cdkassert.expect(stack).to(cdkassert.haveResource('AWS::Glue::SecurityConfiguration', {
@@ -59,7 +62,7 @@ test('a security configuration with an encryption configuration requiring kms ke
     EncryptionConfiguration: {
       CloudWatchEncryption: {
         CloudWatchEncryptionMode: 'SSE-KMS',
-        KmsKeyArn: stack.resolve(securityConfiguration.kmsKey?.keyArn),
+        KmsKeyArn: stack.resolve(securityConfiguration.cloudWatchEncryptionKey?.keyArn),
       },
     },
   }));
@@ -84,8 +87,10 @@ test('a security configuration with all encryption configs and mixed kms key inp
     },
   });
 
-  // auto created kms key
-  assert.notDeepStrictEqual(securityConfiguration.kmsKey, undefined);
+  assert.notDeepStrictEqual(securityConfiguration.cloudWatchEncryptionKey?.keyArn, undefined);
+  assert.deepStrictEqual(securityConfiguration.jobBookmarksEncryptionKey?.keyArn, keyArn);
+  assert.deepStrictEqual(securityConfiguration.s3EncryptionKey, undefined);
+
   cdkassert.expect(stack).to(cdkassert.haveResource('AWS::KMS::Key'));
 
   cdkassert.expect(stack).to(cdkassert.haveResource('AWS::Glue::SecurityConfiguration', {
@@ -94,7 +99,7 @@ test('a security configuration with all encryption configs and mixed kms key inp
       CloudWatchEncryption: {
         CloudWatchEncryptionMode: 'SSE-KMS',
         // auto-created kms key
-        KmsKeyArn: stack.resolve(securityConfiguration.kmsKey?.keyArn),
+        KmsKeyArn: stack.resolve(securityConfiguration.cloudWatchEncryptionKey?.keyArn),
       },
       JobBookmarksEncryption: {
         JobBookmarksEncryptionMode: 'CSE-KMS',
