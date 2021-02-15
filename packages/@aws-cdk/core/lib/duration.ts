@@ -1,4 +1,4 @@
-import { Token } from './token';
+import { Token, Tokenization } from './token';
 
 /**
  * Represents a length of time.
@@ -251,6 +251,28 @@ export class Duration {
       ret.push([millis, TimeUnit.Milliseconds]);
     }
     return ret;
+  }
+
+  /**
+   * Checks if duration is a token or a resolvable object
+   */
+  public isUnresolved() {
+    return Token.isUnresolved(this.amount);
+  }
+
+  /**
+   * Returns unit of the duration
+   */
+  public unitLabel() {
+    return this.unit.label;
+  }
+
+  /**
+   * Returns stringified number of duration
+   */
+  public formatTokenToNumber(): string {
+    const number = Tokenization.stringifyNumber(this.amount);
+    return `${number} ${this.unit.label}`;
   }
 }
 

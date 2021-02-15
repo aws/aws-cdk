@@ -83,6 +83,7 @@ onCommitRule.addTarget(new targets.SnsTopic(topic, {
 ## Scheduling
 
 You can configure a Rule to run on a schedule (cron or rate).
+Rate must be specified in minutes, hours or days.
 
 The following example runs a task every day at 4am:
 
