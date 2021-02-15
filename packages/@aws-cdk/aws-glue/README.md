@@ -52,7 +52,7 @@ new glue.SecurityConfiguration(stack, 'MySecurityConfiguration', {
 });
 ```
 
-By default, a shared KMS key is created for use with the encryption configurations that require one but you can supply your own `kmsKey`
+By default, a shared KMS key is created for use with the encryption configurations that require one. You can also supply your own key for each encryption config, for example, for CloudWatch encryption:
 
 ```ts
 new glue.SecurityConfiguration(stack, 'MySecurityConfiguration', {
