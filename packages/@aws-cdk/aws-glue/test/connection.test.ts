@@ -1,5 +1,4 @@
-import { strictEqual } from 'assert';
-import { expect, haveResource } from '@aws-cdk/assert';
+import * as cdkassert from '@aws-cdk/assert';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as cdk from '@aws-cdk/core';
 import '@aws-cdk/assert/jest';
@@ -16,7 +15,7 @@ test('a connection with connection properties', () => {
     },
   });
 
-  expect(stack).to(haveResource('AWS::Glue::Connection', {
+  cdkassert.expect(stack).to(cdkassert.haveResource('AWS::Glue::Connection', {
     CatalogId: {
       Ref: 'AWS::AccountId',
     },
@@ -44,7 +43,7 @@ test('a connection with a subnet and security group', () => {
     subnet,
   });
 
-  expect(stack).to(haveResource('AWS::Glue::Connection', {
+  cdkassert.expect(stack).to(cdkassert.haveResource('AWS::Glue::Connection', {
     CatalogId: {
       Ref: 'AWS::AccountId',
     },
@@ -67,7 +66,7 @@ test('a connection with a name and description', () => {
     type: glue.ConnectionType.NETWORK,
   });
 
-  expect(stack).to(haveResource('AWS::Glue::Connection', {
+  cdkassert.expect(stack).to(cdkassert.haveResource('AWS::Glue::Connection', {
     CatalogId: {
       Ref: 'AWS::AccountId',
     },
@@ -87,7 +86,7 @@ test('a connection with a custom type', () => {
     type: new glue.ConnectionType('CUSTOM_TYPE'),
   });
 
-  expect(stack).to(haveResource('AWS::Glue::Connection', {
+  cdkassert.expect(stack).to(cdkassert.haveResource('AWS::Glue::Connection', {
     CatalogId: {
       Ref: 'AWS::AccountId',
     },
@@ -106,7 +105,7 @@ test('a connection with match criteria', () => {
     matchCriteria: ['c1', 'c2'],
   });
 
-  expect(stack).to(haveResource('AWS::Glue::Connection', {
+  cdkassert.expect(stack).to(cdkassert.haveResource('AWS::Glue::Connection', {
     CatalogId: {
       Ref: 'AWS::AccountId',
     },
@@ -124,7 +123,7 @@ test('addProperty', () => {
   });
   connection.addProperty('SomeKey', 'SomeValue');
 
-  expect(stack).to(haveResource('AWS::Glue::Connection', {
+  cdkassert.expect(stack).to(cdkassert.haveResource('AWS::Glue::Connection', {
     CatalogId: {
       Ref: 'AWS::AccountId',
     },
@@ -142,8 +141,8 @@ test('fromConnectionName', () => {
   const stack = new cdk.Stack();
   const connection = glue.Connection.fromConnectionName(stack, 'ImportedConnection', connectionName);
 
-  strictEqual(connection.connectionName, connectionName);
-  strictEqual(connection.connectionArn, stack.formatArn({
+  expect(connection.connectionName).toEqual(connectionName);
+  expect(connection.connectionArn).toEqual(stack.formatArn({
     service: 'glue',
     resource: 'connection',
     resourceName: connectionName,
@@ -155,6 +154,6 @@ test('fromConnectionArn', () => {
   const stack = new cdk.Stack();
   const connection = glue.Connection.fromConnectionArn(stack, 'ImportedConnection', connectionArn);
 
-  strictEqual(connection.connectionName, 'name');
-  strictEqual(connection.connectionArn, connectionArn);
+  expect(connection.connectionName).toEqual('name');
+  expect(connection.connectionArn).toEqual(connectionArn);
 });

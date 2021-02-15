@@ -82,6 +82,12 @@ export interface ConnectionOptions {
   readonly description?: string;
 
   /**
+   *  Key-Value pairs that define parameters for the connection.
+   *  @default empty properties
+   */
+  readonly properties?: { [key: string]: string };
+
+  /**
    * A list of criteria that can be used in selecting this connection.
    * This is useful for filtering the results of https://awscli.amazonaws.com/v2/documentation/api/latest/reference/glue/get-connections.html
    * @default no match criteria
@@ -109,12 +115,6 @@ export interface ConnectionProps extends ConnectionOptions {
    * The type of the connection
    */
   readonly type: ConnectionType;
-
-  /**
-   *  Key-Value pairs that define parameters for the connection.
-   *  @default empty properties
-   */
-  readonly properties?: { [key: string]: string };
 }
 
 /**
@@ -131,7 +131,7 @@ export class Connection extends cdk.Resource implements IConnection {
    */
   public static fromConnectionArn(scope: constructs.Construct, id: string, connectionArn: string): IConnection {
     class Import extends cdk.Resource implements IConnection {
-      public readonly connectionName = Connection.extractConnectionNameFromArn(connectionArn);
+      public readonly connectionName = cdk.Arn.extractResourceName(connectionArn, 'connection');
       public readonly connectionArn = connectionArn;
     }
 
@@ -152,20 +152,6 @@ export class Connection extends cdk.Resource implements IConnection {
     }
 
     return new Import(scope, id);
-  }
-
-  /**
-   * Given an opaque (token) ARN, returns a CloudFormation expression that extracts the connection
-   * name from the ARN.
-   *
-   * Connection ARNs look like this:
-   *
-   *   arn:aws:glue:region:account-id:connection/connection name
-   *
-   * @returns `FnSelect(1, FnSplit('/', arn))`
-   */
-  private static extractConnectionNameFromArn(connectionArn: string) {
-    return cdk.Fn.select(1, cdk.Fn.split('/', connectionArn));
   }
 
   private static buildConnectionArn(scope: constructs.Construct, connectionName: string) : string {
@@ -202,7 +188,7 @@ export class Connection extends cdk.Resource implements IConnection {
     } : undefined;
 
     const connectionResource = new CfnConnection(this, 'Resource', {
-      catalogId: cdk.Aws.ACCOUNT_ID,
+      catalogId: cdk.Stack.of(this).account,
       connectionInput: {
         connectionProperties: cdk.Lazy.any({ produce: () => Object.keys(this.properties).length > 0 ? this.properties : undefined }),
         connectionType: props.type.name,

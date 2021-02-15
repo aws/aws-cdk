@@ -2,11 +2,12 @@ import * as constructs from 'constructs';
 import { Connection, ConnectionOptions, ConnectionType } from './connection';
 
 /**
- * Construction properties for {@link MongoDBConnection}
+ * Construction properties for {@link MongoDBSourceConnection}
  *
  * @see https://docs.aws.amazon.com/glue/latest/dg/connection-mongodb.html
+ * @see https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-connect.html#aws-glue-programming-etl-connect-mongodb
  */
-export interface MongoDBConnectionProps extends ConnectionOptions {
+export interface MongoDBSourceConnectionProps extends ConnectionOptions {
   /**
    * The MongoDB database to read from.
    */
@@ -55,14 +56,18 @@ export interface MongoDBConnectionProps extends ConnectionOptions {
 
 /**
  * An AWS Glue connection to a MongoDB source.
+ *
+ * @see https://docs.aws.amazon.com/glue/latest/dg/connection-mongodb.html
+ * @see https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-connect.html#aws-glue-programming-etl-connect-mongodb
  */
-export class MongoDBConnection extends Connection {
+export class MongoDBSourceConnection extends Connection {
 
-  constructor(scope: constructs.Construct, id: string, props: MongoDBConnectionProps) {
+  constructor(scope: constructs.Construct, id: string, props: MongoDBSourceConnectionProps) {
     super(scope, id, {
       ...props,
       type: ConnectionType.MONGODB,
       properties: {
+        ...props.properties,
         database: props.database,
         collection: props.collection,
       },

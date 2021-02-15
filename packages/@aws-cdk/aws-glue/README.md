@@ -35,6 +35,41 @@ new glue.Connection(stack, 'MyConnection', {
 });
 ```
 
+If you need to use a connection type that doesn't exist as a static member on `ConnectionType`, you can instantiate a `ConnectionType` object, e.g: `new glue.ConnectionType('NEW_TYPE')`.
+
+Different connection types require different connection properties which can be set via `ConnectionProps.properties`. 
+
+Subclasses of `Connection` are implemented to provide a connection type tailored props e.g. `MongoDBSourceConnection` which can be used as follows
+
+```ts
+new glue.MongoDBSourceConnection(stack, 'Connection', {
+    database: 'database',
+    collection: 'collection',
+});
+```
+
+if a specific connection type construct props does not expose all properties, additional properties can still be set as follows
+
+```ts
+new glue.MongoDBSourceConnection(stack, 'Connection', {
+    database: 'database',
+    collection: 'collection',
+    properties: {
+      key: 'value',
+    },
+});
+```
+
+or
+
+```ts
+const connection = new glue.MongoDBSourceConnection(stack, 'Connection', {
+    database: 'database',
+    collection: 'collection',
+});
+connection.addProperty('key', 'value');
+```
+
 See [Adding a Connection to Your Data Store](https://docs.aws.amazon.com/glue/latest/dg/populate-add-connection.html) and [Connection Structure](https://docs.aws.amazon.com/glue/latest/dg/aws-glue-api-catalog-connections.html#aws-glue-api-catalog-connections-Connection) documentation for more information on the supported data stores and their configurations.
 
 ## Database

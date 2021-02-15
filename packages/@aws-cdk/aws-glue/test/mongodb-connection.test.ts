@@ -4,7 +4,7 @@ import * as glue from '../lib/index';
 
 test('a mongodb connection with required properties only', () => {
   const stack = new cdk.Stack();
-  new glue.MongoDBConnection(stack, 'Connection', {
+  new glue.MongoDBSourceConnection(stack, 'Connection', {
     database: 'database',
     collection: 'collection',
     batchSize: 100,
