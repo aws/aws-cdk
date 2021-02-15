@@ -101,20 +101,21 @@
           "Ref": "LambdaProxyApi67594471"
         },
         "RouteKey": "$default",
+        "AuthorizationScopes": [],
         "Target": {
           "Fn::Join": [
             "",
             [
               "integrations/",
               {
-                "Ref": "LambdaProxyApiHttpIntegration5fc3e065dcc18f77be1ff86cabb5294a98B12A6C"
+                "Ref": "LambdaProxyApiDefaultRouteHttpIntegration70df0ec52c3e3b6bbc96e64ce3a05f24EE575CBA"
               }
             ]
           ]
         }
       }
     },
-    "LambdaProxyApiHttpIntegration5fc3e065dcc18f77be1ff86cabb5294a98B12A6C": {
+    "LambdaProxyApiDefaultRouteHttpIntegration70df0ec52c3e3b6bbc96e64ce3a05f24EE575CBA": {
       "Type": "AWS::ApiGatewayV2::Integration",
       "Properties": {
         "ApiId": {
@@ -154,20 +155,21 @@
           "Ref": "HttpProxyApiD0217C67"
         },
         "RouteKey": "$default",
+        "AuthorizationScopes": [],
         "Target": {
           "Fn::Join": [
             "",
             [
               "integrations/",
               {
-                "Ref": "HttpProxyApiHttpIntegration54d3201aa1691a2307067d718d9dea776A187065"
+                "Ref": "HttpProxyApiDefaultRouteHttpIntegration8eeecf9ecdb91f31bebf6bd54fb711a41921AB82"
               }
             ]
           ]
         }
       }
     },
-    "HttpProxyApiHttpIntegration54d3201aa1691a2307067d718d9dea776A187065": {
+    "HttpProxyApiDefaultRouteHttpIntegration8eeecf9ecdb91f31bebf6bd54fb711a41921AB82": {
       "Type": "AWS::ApiGatewayV2::Integration",
       "Properties": {
         "ApiId": {
