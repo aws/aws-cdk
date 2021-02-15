@@ -185,8 +185,7 @@ export interface BaseServiceOptions {
   /**
    * A list of Capacity Provider strategies used to place a service.
    *
-   * @default - the defaultCapacityProviderStrategy of the cluster the service is launched in if specified, otherwise
-   * undefined
+   * @default - undefined
    *
    */
   readonly capacityProviderStrategies?: CapacityProviderStrategy[];
@@ -369,11 +368,9 @@ export abstract class BaseService extends Resource
 
     this.taskDefinition = taskDefinition;
 
-    // launchType will set to undefined if using external DeploymentController or capacityProviderStrategies (whether
-    // specified on service itself or as default strategy on cluster)
+    // launchType will set to undefined if using external DeploymentController or capacityProviderStrategies
     const launchType = props.deploymentController?.type === DeploymentControllerType.EXTERNAL ||
-      props.capacityProviderStrategies !== undefined ||
-      props.cluster.defaultCapacityProviderStrategy !== undefined ?
+      props.capacityProviderStrategies !== undefined ?
       undefined : props.launchType;
 
     this.resource = new CfnService(this, 'Service', {

@@ -56,13 +56,6 @@ export interface ClusterProps {
   readonly capacityProviders?: string[];
 
   /**
-   * The default capacity provider strategy for the cluster.
-   *
-   * @default - no default strategy
-   */
-  readonly defaultCapacityProviderStrategy?: CapacityProviderStrategy[];
-
-  /**
    * If true CloudWatch Container Insights will be enabled for the cluster
    *
    * @default - Container Insights will be disabled for this cluser.
@@ -121,13 +114,6 @@ export class Cluster extends Resource implements ICluster {
   public readonly capacityProviders?: string[];
 
   /**
-   * The default capacity provider strategy for the cluster.
-   *
-   * @default - no default strategy
-   */
-  public readonly defaultCapacityProviderStrategy?: CapacityProviderStrategy[];
-
-  /**
    * The AWS Cloud Map namespace to associate with the cluster.
    */
   private _defaultCloudMapNamespace?: cloudmap.INamespace;
@@ -163,7 +149,6 @@ export class Cluster extends Resource implements ICluster {
     const cluster = new CfnCluster(this, 'Resource', {
       clusterName: this.physicalName,
       clusterSettings,
-      defaultCapacityProviderStrategy: props.defaultCapacityProviderStrategy,
       capacityProviders: props.capacityProviders,
     });
 
@@ -723,11 +708,6 @@ export interface ICluster extends IResource {
   readonly defaultCloudMapNamespace?: cloudmap.INamespace;
 
   /**
-   * The default capacity provider strategy for the cluster.
-   */
-  readonly defaultCapacityProviderStrategy?: CapacityProviderStrategy[];
-
-  /**
    * The autoscaling group added to the cluster if capacity is associated to the cluster
    */
   readonly autoscalingGroup?: autoscaling.IAutoScalingGroup;
@@ -972,6 +952,8 @@ enum ContainerInsights {
 
 /**
  * A Capacity Provider strategy to use for the service.
+ *
+ * NOTE: defaultCapacityProviderStrategy on cluster not currently supported.
  */
 export interface CapacityProviderStrategy {
   /**
