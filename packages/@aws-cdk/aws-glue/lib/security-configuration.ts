@@ -87,7 +87,7 @@ export interface CloudWatchEncryption {
 
   /**
    * The KMS key to be used to encrypt the data.
-   @default A key will be created if one is not provided.
+   * @default A key will be created if one is not provided.
    */
   readonly kmsKey?: kms.IKey,
 }

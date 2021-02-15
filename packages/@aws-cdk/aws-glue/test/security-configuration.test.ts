@@ -1,11 +1,10 @@
-import * as assert from 'assert';
 import * as cdkassert from '@aws-cdk/assert';
 import * as kms from '@aws-cdk/aws-kms';
 import * as cdk from '@aws-cdk/core';
 import '@aws-cdk/assert/jest';
 import * as glue from '../lib';
 
-test('a security configuration with no encryption config', () => {
+test('throws when a security configuration has no encryption config', () => {
   const stack = new cdk.Stack();
 
   expect(() => new glue.SecurityConfiguration(stack, 'SecurityConfiguration', {
@@ -26,9 +25,9 @@ test('a security configuration with encryption configuration requiring kms key a
     },
   });
 
-  assert.deepStrictEqual(securityConfiguration.cloudWatchEncryptionKey?.keyArn, keyArn);
-  assert.deepStrictEqual(securityConfiguration.jobBookmarksEncryptionKey, undefined);
-  assert.deepStrictEqual(securityConfiguration.s3EncryptionKey, undefined);
+  expect(securityConfiguration.cloudWatchEncryptionKey?.keyArn).toEqual(keyArn);
+  expect(securityConfiguration.jobBookmarksEncryptionKey).toBeUndefined();
+  expect(securityConfiguration.s3EncryptionKey).toBeUndefined();
 
   cdkassert.expect(stack).to(cdkassert.haveResource('AWS::Glue::SecurityConfiguration', {
     Name: 'name',
@@ -51,9 +50,9 @@ test('a security configuration with an encryption configuration requiring kms ke
     },
   });
 
-  assert.notDeepStrictEqual(securityConfiguration.cloudWatchEncryptionKey?.keyArn, undefined);
-  assert.deepStrictEqual(securityConfiguration.jobBookmarksEncryptionKey, undefined);
-  assert.deepStrictEqual(securityConfiguration.s3EncryptionKey, undefined);
+  expect(securityConfiguration.cloudWatchEncryptionKey).toBeDefined();
+  expect(securityConfiguration.jobBookmarksEncryptionKey).toBeUndefined();
+  expect(securityConfiguration.s3EncryptionKey).toBeUndefined();
 
   cdkassert.expect(stack).to(cdkassert.haveResource('AWS::KMS::Key'));
 
@@ -87,9 +86,9 @@ test('a security configuration with all encryption configs and mixed kms key inp
     },
   });
 
-  assert.notDeepStrictEqual(securityConfiguration.cloudWatchEncryptionKey?.keyArn, undefined);
-  assert.deepStrictEqual(securityConfiguration.jobBookmarksEncryptionKey?.keyArn, keyArn);
-  assert.deepStrictEqual(securityConfiguration.s3EncryptionKey, undefined);
+  expect(securityConfiguration.cloudWatchEncryptionKey).toBeDefined();
+  expect(securityConfiguration.jobBookmarksEncryptionKey?.keyArn).toEqual(keyArn);
+  expect(securityConfiguration.s3EncryptionKey).toBeUndefined();
 
   cdkassert.expect(stack).to(cdkassert.haveResource('AWS::KMS::Key'));
 
@@ -119,5 +118,5 @@ test('fromSecurityConfigurationName', () => {
 
   const securityConfiguration = glue.SecurityConfiguration.fromSecurityConfigurationName(stack, 'ImportedSecurityConfiguration', name);
 
-  assert.deepStrictEqual(securityConfiguration.securityConfigurationName, name);
+  expect(securityConfiguration.securityConfigurationName).toEqual(name);
 });

@@ -42,14 +42,23 @@ new glue.SecurityConfiguration(stack, 'MySecurityConfiguration', {
   securityConfigurationName: 'name',
   cloudWatchEncryption: {
     mode: glue.CloudWatchEncryptionMode.KMS,
-    kmsKey: key,
   },
   jobBookmarksEncryption: {
     mode: glue.JobBookmarksEncryptionMode.CLIENT_SIDE_KMS,
-    kmsKey: key,
   },
   s3Encryption: {
     mode: glue.S3EncryptionMode.KMS,
+  },
+});
+```
+
+By default, a shared KMS key is created for use with the encryption configurations that require one but you can supply your own `kmsKey`
+
+```ts
+new glue.SecurityConfiguration(stack, 'MySecurityConfiguration', {
+  securityConfigurationName: 'name',
+  cloudWatchEncryption: {
+    mode: glue.CloudWatchEncryptionMode.KMS,
     kmsKey: key,
   },
 });
