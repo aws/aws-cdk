@@ -41,15 +41,15 @@ A `SecurityConfiguration` is a set of security properties that can be used by AW
 new glue.SecurityConfiguration(stack, 'MySecurityConfiguration', {
   securityConfigurationName: 'name',
   cloudWatchEncryption: {
-    mode: 'SSE-KMS',
+    mode: glue.CloudWatchEncryptionMode.KMS,
     kmsKey: key,
   },
   jobBookmarksEncryption: {
-    mode: 'CSE-KMS',
+    mode: glue.JobBookmarksEncryptionMode.CLIENT_SIDE_KMS,
     kmsKey: key,
   },
   s3Encryption: {
-    mode: 'SSE-KMS',
+    mode: glue.S3EncryptionMode.KMS,
     kmsKey: key,
   },
 });

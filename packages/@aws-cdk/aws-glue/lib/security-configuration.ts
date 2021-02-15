@@ -15,24 +15,10 @@ export interface ISecurityConfiguration extends cdk.IResource {
 }
 
 /**
- * Attributes for importing {@link SecurityConfiguration}.
- */
-export interface SecurityConfigurationAttributes {
-  /**
-   * The name of the security configuration.
-   */
-  readonly securityConfigurationName: string;
-}
-
-/**
  * Encryption mode for S3.
+ * @see https://docs.aws.amazon.com/glue/latest/webapi/API_S3Encryption.html#Glue-Type-S3Encryption-S3EncryptionMode
  */
 export enum S3EncryptionMode {
-  /**
-   * No encryption.
-   */
-  DISABLED = 'DISABLED',
-
   /**
    * Server side encryption (SSE) with an Amazon S3-managed key.
    *
@@ -50,13 +36,9 @@ export enum S3EncryptionMode {
 
 /**
  * Encryption mode for CloudWatch Logs.
+ * @see https://docs.aws.amazon.com/glue/latest/webapi/API_CloudWatchEncryption.html#Glue-Type-CloudWatchEncryption-CloudWatchEncryptionMode
  */
 export enum CloudWatchEncryptionMode {
-  /**
-   * No encryption.
-   */
-  DISABLED = 'DISABLED',
-
   /**
    * Server-side encryption (SSE) with an AWS KMS key managed by the account owner.
    *
@@ -67,13 +49,9 @@ export enum CloudWatchEncryptionMode {
 
 /**
  * Encryption mode for Job Bookmarks.
+ * @see https://docs.aws.amazon.com/glue/latest/webapi/API_JobBookmarksEncryption.html#Glue-Type-JobBookmarksEncryption-JobBookmarksEncryptionMode
  */
 export enum JobBookmarksEncryptionMode {
-  /**
-   * No encryption.
-   */
-  DISABLED = 'DISABLED',
-
   /**
    * Client-side encryption (CSE) with an AWS KMS key managed by the account owner.
    *
@@ -93,7 +71,7 @@ export interface S3Encryption {
 
   /**
    * The KMS key to be used to encrypt the data.
-   * @default no kms key if mode = DISABLED or S3_MANAGED. A key must be provided for KMS mode.
+   * @default no kms key if mode = S3_MANAGED. A key will be created if one is not provided and mode = KMS.
    */
   readonly kmsKey?: kms.IKey,
 }
@@ -109,7 +87,7 @@ export interface CloudWatchEncryption {
 
   /**
    * The KMS key to be used to encrypt the data.
-   * @default no kms key if mode = DISABLED. A key must be provided otherwise.
+   @default A key will be created if one is not provided.
    */
   readonly kmsKey?: kms.IKey,
 }
@@ -125,7 +103,7 @@ export interface JobBookmarksEncryption {
 
   /**
    * The KMS key to be used to encrypt the data.
-   * @default no kms key if mode = DISABLED. A key must be provided otherwise.
+   * @default A key will be created if one is not provided.
    */
   readonly kmsKey?: kms.IKey,
 }
@@ -170,25 +148,19 @@ export interface SecurityConfigurationProps {
 export class SecurityConfiguration extends cdk.Resource implements ISecurityConfiguration {
 
   /**
-   * Creates a Connection construct that represents an external connection.
+   * Creates a Connection construct that represents an external security configuration.
    *
    * @param scope The scope creating construct (usually `this`).
    * @param id The construct's id.
-   * @param attrs Import attributes.
+   * @param securityConfigurationName name of external security configuration.
    */
-  public static fromSecurityConfigurationAttributes(scope: constructs.Construct, id: string,
-    attrs: SecurityConfigurationAttributes): ISecurityConfiguration {
+  public static fromSecurityConfigurationName(scope: constructs.Construct, id: string,
+    securityConfigurationName: string): ISecurityConfiguration {
 
     class Import extends cdk.Resource implements ISecurityConfiguration {
-      public readonly securityConfigurationName = attrs.securityConfigurationName;
+      public readonly securityConfigurationName = securityConfigurationName;
     }
     return new Import(scope, id);
-  }
-
-  private static checkKmsKeyCompatibleWithMode(encryption?: {mode: string, kmsKey?: kms.IKey}): void {
-    if (encryption && /KMS/.test(encryption.mode) && encryption.kmsKey == undefined) {
-      throw new Error(`${encryption.mode} requires providing a kms key`);
-    }
   }
 
   /**
@@ -197,32 +169,45 @@ export class SecurityConfiguration extends cdk.Resource implements ISecurityConf
    */
   public readonly securityConfigurationName: string;
 
+  /**
+   * The auto-created KMS key  for encryption configs (s3Encryption, cloudWatchEncryption, jobBookmarksEncryption)
+   * if an encryption config requires a KMS key but none is explicitly provided.
+   */
+  public readonly kmsKey?: kms.Key;
+
   constructor(scope: constructs.Construct, id: string, props: SecurityConfigurationProps) {
     super(scope, id, {
       physicalName: props.securityConfigurationName,
     });
 
-    if (props.s3Encryption == undefined && props.cloudWatchEncryption == undefined && props.jobBookmarksEncryption == undefined) {
+    if (!props.s3Encryption && !props.cloudWatchEncryption && !props.jobBookmarksEncryption) {
       throw new Error('One of cloudWatchEncryption, jobBookmarksEncryption or s3Encryption must be defined');
     }
-    SecurityConfiguration.checkKmsKeyCompatibleWithMode(props.cloudWatchEncryption);
-    SecurityConfiguration.checkKmsKeyCompatibleWithMode(props.jobBookmarksEncryption);
-    SecurityConfiguration.checkKmsKeyCompatibleWithMode(props.s3Encryption);
+
+    const kmsKeyCreationRequired =
+      (props.s3Encryption && props.s3Encryption.mode === S3EncryptionMode.KMS && !props.s3Encryption.kmsKey) ||
+      (props.cloudWatchEncryption && !props.cloudWatchEncryption.kmsKey) ||
+      (props.jobBookmarksEncryption && !props.jobBookmarksEncryption.kmsKey);
+
+    if (kmsKeyCreationRequired) {
+      this.kmsKey = new kms.Key(this, 'Key');
+    }
 
     const cloudWatchEncryption = props.cloudWatchEncryption ? {
       cloudWatchEncryptionMode: props.cloudWatchEncryption.mode,
-      kmsKeyArn: props.cloudWatchEncryption.kmsKey ? props.cloudWatchEncryption.kmsKey.keyArn : undefined,
+      kmsKeyArn: (props.cloudWatchEncryption.kmsKey ? props.cloudWatchEncryption.kmsKey : this.kmsKey)?.keyArn,
     } : undefined;
 
     const jobBookmarksEncryption = props.jobBookmarksEncryption ? {
       jobBookmarksEncryptionMode: props.jobBookmarksEncryption.mode,
-      kmsKeyArn: props.jobBookmarksEncryption.kmsKey ? props.jobBookmarksEncryption.kmsKey.keyArn : undefined,
+      kmsKeyArn: (props.jobBookmarksEncryption.kmsKey ? props.jobBookmarksEncryption.kmsKey : this.kmsKey)?.keyArn,
     } : undefined;
 
     // NOTE: CloudFormations errors out if array is of length > 1. That's why the props don't expose an array
     const s3Encryptions = props.s3Encryption ? [{
       s3EncryptionMode: props.s3Encryption.mode,
-      kmsKeyArn: props.s3Encryption.kmsKey ? props.s3Encryption.kmsKey.keyArn : undefined,
+      kmsKeyArn: props.s3Encryption.mode === S3EncryptionMode.KMS ? (props.s3Encryption.kmsKey ? props.s3Encryption.kmsKey : this.kmsKey)?.keyArn
+        : undefined,
     }] : undefined;
 
     const resource = new CfnSecurityConfiguration(this, 'Resource', {

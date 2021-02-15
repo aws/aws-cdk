@@ -8,23 +8,9 @@ const stack = new cdk.Stack(app, 'aws-glue-security-configuration');
 
 const key = new kms.Key(stack, 'Key');
 
-// SecurityConfiguration for all 3 (s3, cloudwatch and job bookmarks) in disabled mode without kms key provided
-new glue.SecurityConfiguration(stack, 'DisabledKeylessSC', {
-  securityConfigurationName: 'DisabledKeylessSC',
-  jobBookmarksEncryption: {
-    mode: glue.JobBookmarksEncryptionMode.DISABLED,
-  },
-  cloudWatchEncryption: {
-    mode: glue.CloudWatchEncryptionMode.DISABLED,
-  },
-  s3Encryption: {
-    mode: glue.S3EncryptionMode.DISABLED,
-  },
-});
-
 // SecurityConfiguration for all 3 (s3, cloudwatch and job bookmarks) in modes requiring kms keys
-new glue.SecurityConfiguration(stack, 'EnabledSC', {
-  securityConfigurationName: 'EnabledSC',
+new glue.SecurityConfiguration(stack, 'KeyedSC', {
+  securityConfigurationName: 'KeyedSC',
   jobBookmarksEncryption: {
     mode: glue.JobBookmarksEncryptionMode.CLIENT_SIDE_KMS,
     kmsKey: key,
@@ -36,6 +22,20 @@ new glue.SecurityConfiguration(stack, 'EnabledSC', {
   s3Encryption: {
     mode: glue.S3EncryptionMode.KMS,
     kmsKey: key,
+  },
+});
+
+// SecurityConfiguration for all 3 (s3, cloudwatch and job bookmarks) in modes requiring kms keys without one provided
+new glue.SecurityConfiguration(stack, 'KeylessSC', {
+  securityConfigurationName: 'KeylessSC',
+  jobBookmarksEncryption: {
+    mode: glue.JobBookmarksEncryptionMode.CLIENT_SIDE_KMS,
+  },
+  cloudWatchEncryption: {
+    mode: glue.CloudWatchEncryptionMode.KMS,
+  },
+  s3Encryption: {
+    mode: glue.S3EncryptionMode.KMS,
   },
 });
 

@@ -1,3 +1,4 @@
+import * as assert from 'assert';
 import * as cdkassert from '@aws-cdk/assert';
 import * as kms from '@aws-cdk/aws-kms';
 import * as cdk from '@aws-cdk/core';
@@ -12,18 +13,21 @@ test('a security configuration with no encryption config', () => {
   })).toThrowError(/One of cloudWatchEncryption, jobBookmarksEncryption or s3Encryption must be defined/);
 });
 
-test('a security configuration with cloudwatch encryption configuration', () => {
+test('a security configuration with encryption configuration requiring kms key and providing an explicit one', () => {
   const stack = new cdk.Stack();
   const keyArn = 'arn:aws:kms:us-west-2:111122223333:key/test-key';
   const key = kms.Key.fromKeyArn(stack, 'ImportedKey', keyArn);
 
-  new glue.SecurityConfiguration(stack, 'SecurityConfiguration', {
+  const securityConfiguration = new glue.SecurityConfiguration(stack, 'SecurityConfiguration', {
     securityConfigurationName: 'name',
     cloudWatchEncryption: {
       mode: glue.CloudWatchEncryptionMode.KMS,
       kmsKey: key,
     },
   });
+
+  // kms key not created
+  assert.deepStrictEqual(securityConfiguration.kmsKey, undefined);
 
   cdkassert.expect(stack).to(cdkassert.haveResource('AWS::Glue::SecurityConfiguration', {
     Name: 'name',
@@ -36,46 +40,40 @@ test('a security configuration with cloudwatch encryption configuration', () => 
   }));
 });
 
-test('a security configuration with cloudwatch encryption configuration requiring but missing a kms key', () => {
+test('a security configuration with an encryption configuration requiring kms key but not providing an explicit one', () => {
   const stack = new cdk.Stack();
 
-  expect(() => new glue.SecurityConfiguration(stack, 'SecurityConfiguration', {
+  const securityConfiguration = new glue.SecurityConfiguration(stack, 'SecurityConfiguration', {
     securityConfigurationName: 'name',
     cloudWatchEncryption: {
       mode: glue.CloudWatchEncryptionMode.KMS,
     },
-  })).toThrowError(/SSE-KMS requires providing a kms key/);
-});
-
-test('a security configuration with cloudwatch encryption configuration not requiring a kms key', () => {
-  const stack = new cdk.Stack();
-
-  new glue.SecurityConfiguration(stack, 'SecurityConfiguration', {
-    securityConfigurationName: 'name',
-    cloudWatchEncryption: {
-      mode: glue.CloudWatchEncryptionMode.DISABLED,
-    },
   });
+
+  // auto created kms key
+  assert.notDeepStrictEqual(securityConfiguration.kmsKey, undefined);
+  cdkassert.expect(stack).to(cdkassert.haveResource('AWS::KMS::Key'));
 
   cdkassert.expect(stack).to(cdkassert.haveResource('AWS::Glue::SecurityConfiguration', {
     Name: 'name',
     EncryptionConfiguration: {
       CloudWatchEncryption: {
-        CloudWatchEncryptionMode: 'DISABLED',
+        CloudWatchEncryptionMode: 'SSE-KMS',
+        KmsKeyArn: stack.resolve(securityConfiguration.kmsKey?.keyArn),
       },
     },
   }));
 });
 
-test('a security configuration with all encryption configs', () => {
+test('a security configuration with all encryption configs and mixed kms key inputs', () => {
   const stack = new cdk.Stack();
   const keyArn = 'arn:aws:kms:us-west-2:111122223333:key/test-key';
   const key = kms.Key.fromKeyArn(stack, 'ImportedKey', keyArn);
 
-  new glue.SecurityConfiguration(stack, 'SecurityConfiguration', {
+  const securityConfiguration = new glue.SecurityConfiguration(stack, 'SecurityConfiguration', {
     securityConfigurationName: 'name',
     cloudWatchEncryption: {
-      mode: glue.CloudWatchEncryptionMode.DISABLED,
+      mode: glue.CloudWatchEncryptionMode.KMS,
     },
     jobBookmarksEncryption: {
       mode: glue.JobBookmarksEncryptionMode.CLIENT_SIDE_KMS,
@@ -86,14 +84,21 @@ test('a security configuration with all encryption configs', () => {
     },
   });
 
+  // auto created kms key
+  assert.notDeepStrictEqual(securityConfiguration.kmsKey, undefined);
+  cdkassert.expect(stack).to(cdkassert.haveResource('AWS::KMS::Key'));
+
   cdkassert.expect(stack).to(cdkassert.haveResource('AWS::Glue::SecurityConfiguration', {
     Name: 'name',
     EncryptionConfiguration: {
       CloudWatchEncryption: {
-        CloudWatchEncryptionMode: 'DISABLED',
+        CloudWatchEncryptionMode: 'SSE-KMS',
+        // auto-created kms key
+        KmsKeyArn: stack.resolve(securityConfiguration.kmsKey?.keyArn),
       },
       JobBookmarksEncryption: {
         JobBookmarksEncryptionMode: 'CSE-KMS',
+        // explicitly provided kms key
         KmsKeyArn: keyArn,
       },
       S3Encryptions: [{
