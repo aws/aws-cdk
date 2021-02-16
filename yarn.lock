@@ -2259,10 +2259,10 @@ aws-sdk-mock@^5.1.0:
     sinon "^9.0.1"
     traverse "^0.6.6"
 
-aws-sdk@^2.637.0, aws-sdk@^2.842.0:
-  version "2.843.0"
-  resolved "https://registry.yarnpkg.com/aws-sdk/-/aws-sdk-2.843.0.tgz#3e274214565597de6ccfbfaf6727a47f42b3774d"
-  integrity sha512-wTHKHDzblaNjWsdCuKTnfAr2zSLgN+Nc2yGpqPxnr7emEQG4V3B0gYEfV9rvv9dVq5Jw8Y1q6VNWS6k8oclnSw==
+aws-sdk@^2.637.0, aws-sdk@^2.845.0:
+  version "2.845.0"
+  resolved "https://registry.yarnpkg.com/aws-sdk/-/aws-sdk-2.845.0.tgz#d1f932577dc1a1dcb34a35f81af97b221b741a42"
+  integrity sha512-lIOsMK6X6tyIXUB8rzYimklpFHMu96+cbWlDQkbRc5hymzSjPVY7L2LGP+PyCRjQHEnJUOk2EWswUIozhZy59A==
   dependencies:
     buffer "4.9.2"
     events "1.1.1"
@@ -3898,10 +3898,10 @@ eslint-import-resolver-node@^0.3.4:
     debug "^2.6.9"
     resolve "^1.13.1"
 
-eslint-import-resolver-typescript@^2.3.0:
-  version "2.3.0"
-  resolved "https://registry.yarnpkg.com/eslint-import-resolver-typescript/-/eslint-import-resolver-typescript-2.3.0.tgz#0870988098bc6c6419c87705e6b42bee89425445"
-  integrity sha512-MHSXvmj5e0SGOOBhBbt7C+fWj1bJbtSYFAD85Xeg8nvUtuooTod2HQb8bfhE9f5QyyNxEfgzqOYFCvmdDIcCuw==
+eslint-import-resolver-typescript@^2.4.0:
+  version "2.4.0"
+  resolved "https://registry.yarnpkg.com/eslint-import-resolver-typescript/-/eslint-import-resolver-typescript-2.4.0.tgz#ec1e7063ebe807f0362a7320543aaed6fe1100e1"
+  integrity sha512-useJKURidCcldRLCNKWemr1fFQL1SzB3G4a0li6lFGvlc5xGe1hY343bvG07cbpCzPuM/lK19FIJB3XGFSkplA==
   dependencies:
     debug "^4.1.1"
     glob "^7.1.6"

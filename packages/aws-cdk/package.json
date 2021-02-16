@@ -73,7 +73,7 @@
     "@aws-cdk/region-info": "0.0.0",
     "@aws-cdk/yaml-cfn": "0.0.0",
     "archiver": "^5.2.0",
-    "aws-sdk": "^2.842.0",
+    "aws-sdk": "^2.845.0",
     "camelcase": "^6.2.0",
     "cdk-assets": "0.0.0",
     "colors": "^1.4.0",
