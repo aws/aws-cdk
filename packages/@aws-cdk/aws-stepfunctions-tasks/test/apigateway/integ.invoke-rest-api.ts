@@ -9,7 +9,7 @@ import { AuthType, HttpMethod, InvokeApiGatewayRestApi } from '../../lib';
  * * aws stepfunctions start-execution --state-machine-arn <deployed state machine arn> : should return execution arn
  *
  * * aws stepfunctions describe-execution --execution-arn <execution-arn generated before> --query 'status': should return status as SUCCEEDED
- * * aws stepfunctions describe-execution --execution-arn <execution-arn generated before> --query 'output': should return the number \"hello, world!\"
+ * * aws stepfunctions describe-execution --execution-arn <execution-arn generated before> --query 'output': should return the string \"hello, world!\"
  */
 
 const app = new cdk.App();
