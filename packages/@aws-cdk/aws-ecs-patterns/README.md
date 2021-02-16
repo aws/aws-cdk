@@ -305,6 +305,7 @@ const ecsScheduledTask = new ScheduledEc2Task(stack, 'ScheduledTask', {
     environment: { name: 'TRIGGER', value: 'CloudWatch Events' },
   },
   schedule: events.Schedule.expression('rate(1 minute)'),
+  enabled: true,
   ruleName: 'sample-scheduled-task-rule'
 });
 ```
