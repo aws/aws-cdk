@@ -98,7 +98,7 @@ describe('code signing config', () => {
     });
   });
 
-  test('import dose not create any resources', () => {
+  test('import does not create any resources', () => {
     const codeSigningConfigId = 'aaa-xxxxxxxxxx';
     const codeSigningConfigArn = `arn:aws:lambda:::code-signing-config:${codeSigningConfigId}`;
     const codeSigningConfig = lambda.CodeSigningConfig.fromCodeSigningConfigArn(stack, 'Imported', codeSigningConfigArn );
