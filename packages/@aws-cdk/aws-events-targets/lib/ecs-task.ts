@@ -115,7 +115,7 @@ export class EcsTask implements events.IRuleTarget {
 
     this.cluster = props.cluster;
     this.taskDefinition = props.taskDefinition;
-    this.taskCount = props.taskCount !== undefined ? props.taskCount : 1;
+    this.taskCount = props.taskCount ?? 1;
     this.platformVersion = props.platformVersion;
 
     if (props.role) {
