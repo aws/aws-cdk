@@ -279,7 +279,7 @@ const bootstrapServers = ['kafka-broker:9092']
 const topic = 'some-cool-topic'
 
 // The secret that allows access to your self hosted Kafka cluster
-const secret = Secret.fromSecretAttributes(this, 'Secret', { secretName: 'AmazonMSK_KafkaSecret' });
+const secret = new Secret(this, 'Secret', { ... });
 
 // Your VPC:
 const vpc = new ec2.Vpc(stack, 'VPC', { ... });
