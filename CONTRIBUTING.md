@@ -857,8 +857,8 @@ on a separate branch `v2-main` whereas `master` continues to track versions `1.x
 Feature flags introduced in the CDK 1.x and removed in 2.x, must be added to the `FUTURE_FLAGS_EXPIRED` list in
 [cx-api/lib/features.ts](https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/cx-api/lib/features.ts)
 on the `v2-main` branch.
-This will make the default behaviour that the feature flag is enabled and would prevent customers to explicitly
-disable the feature flag.
+This will make the default behaviour in CDKv2 as if the flag is enabled and also prevents users from disabling
+the feature flag.
 
 A couple of [jest helper methods] are available for use with unit tests. These help run unit tests that test
 behaviour when flags are enabled or disabled in the two major versions.
