@@ -1,10 +1,10 @@
 import { expect, haveResource } from '@aws-cdk/assert';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as cdk from '@aws-cdk/core';
-import { Test } from 'nodeunit';
+import { nodeunitShim, Test } from 'nodeunit-shim';
 import { DatabaseInstanceEngine, OptionGroup, OracleEngineVersion, OracleLegacyEngineVersion } from '../lib';
 
-export = {
+nodeunitShim({
   'create an option group'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
@@ -160,4 +160,4 @@ export = {
 
     test.done();
   },
-};
+});

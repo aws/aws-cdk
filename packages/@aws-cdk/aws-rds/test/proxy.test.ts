@@ -3,13 +3,13 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import { AccountPrincipal, Role } from '@aws-cdk/aws-iam';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import * as cdk from '@aws-cdk/core';
-import { Test } from 'nodeunit';
+import { nodeunitShim, Test } from 'nodeunit-shim';
 import * as rds from '../lib';
 
 let stack: cdk.Stack;
 let vpc: ec2.IVpc;
 
-export = {
+nodeunitShim({
   'setUp'(cb: () => void) {
     stack = new cdk.Stack();
     vpc = new ec2.Vpc(stack, 'VPC');
@@ -321,4 +321,4 @@ export = {
 
     test.done();
   },
-};
+});

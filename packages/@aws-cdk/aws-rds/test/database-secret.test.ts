@@ -1,10 +1,10 @@
 import { expect, haveResource } from '@aws-cdk/assert';
 import { CfnResource, Stack } from '@aws-cdk/core';
-import { Test } from 'nodeunit';
+import { nodeunitShim, Test } from 'nodeunit-shim';
 import { DatabaseSecret } from '../lib';
 import { DEFAULT_PASSWORD_EXCLUDE_CHARS } from '../lib/private/util';
 
-export = {
+nodeunitShim({
   'create a database secret'(test: Test) {
     // GIVEN
     const stack = new Stack();
@@ -110,7 +110,7 @@ export = {
 
     test.done();
   },
-};
+});
 
 function getSecretLogicalId(dbSecret: DatabaseSecret, stack: Stack): string {
   const cfnSecret = dbSecret.node.defaultChild as CfnResource;
