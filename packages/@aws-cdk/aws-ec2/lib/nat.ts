@@ -217,7 +217,7 @@ export class NatInstanceProvider extends NatProvider implements IConnectable {
     });
     this._connections = new Connections({ securityGroups: [this._securityGroup] });
 
-    if (this.props.allowAllTraffic ?? true;) {
+    if (this.props.allowAllTraffic ?? true) {
       this.connections.allowFromAnyIpv4(Port.allTraffic());
     }
 
