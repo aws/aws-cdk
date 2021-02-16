@@ -39,7 +39,9 @@ If you need to use a connection type that doesn't exist as a static member on `C
 
 Different connection types require different connection properties which can be set via `ConnectionProps.properties`. 
 
-Subclasses of `Connection` are implemented to provide a connection type tailored props e.g. `MongoDBSourceConnection` which can be used as follows
+Concrete connection types are also available and provide a tailored, type-safe API for the specific connection options. 
+
+### MongoDB
 
 ```ts
 new glue.MongoDBSourceConnection(stack, 'Connection', {
