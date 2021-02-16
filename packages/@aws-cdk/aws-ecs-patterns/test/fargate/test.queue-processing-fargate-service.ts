@@ -311,7 +311,7 @@ export = {
     test.done();
   },
 
-  'can set custom netowrking options'(test: Test) {
+  'can set custom networking options'(test: Test) {
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'VPC', {
       subnetConfiguration: [
