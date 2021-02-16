@@ -300,31 +300,34 @@ export class AssetStaging extends CoreConstruct {
     const bundleDir = this.determineBundleDir(this.assetOutdir, assetHash);
     this.bundle(bundling, bundleDir);
 
-    let sourcePath = bundleDir;
+    let assetPath = bundleDir;
     let extension: string | undefined;
 
     const packaging = bundling.packaging ?? BundlePackaging.AUTO;
     if (packaging !== BundlePackaging.ALWAYS_ZIP) {
-      // Check whether bundling resulted in a single archive file (zip, jar)
+      // Check whether bundling resulted in a single file
       const bundledFile = singleFile(bundleDir);
+      if (packaging === BundlePackaging.NEVER_ZIP && !bundledFile) {
+        throw new Error('Packaging was set to `NEVER_ZIP` but the bundling output did not produce a single file.');
+      }
+
       if (bundledFile) {
         const bundledExtension = path.extname(bundledFile).toLowerCase();
-        const isArchive = ARCHIVE_EXTENSIONS.includes(bundledExtension);
-        if (packaging === BundlePackaging.NEVER_ZIP && !isArchive) {
-          throw new Error('Packaging was set to `NEVER_ZIP` but the bundling output did not produce an archive file.');
-        }
-        if (packaging === BundlePackaging.AUTO && isArchive) {
-          sourcePath = bundledFile;
+        const isSingleArchive = ARCHIVE_EXTENSIONS.includes(bundledExtension);
+        if (packaging === BundlePackaging.NEVER_ZIP ||(packaging === BundlePackaging.AUTO && isSingleArchive)) {
+          this._packaging = FileAssetPackaging.FILE;
+          this._isArchive = isSingleArchive;
+          assetPath = bundledFile;
           extension = bundledExtension;
         }
       }
     }
 
     // Calculate assetHash afterwards if we still must
-    assetHash = assetHash ?? this.calculateHash(this.hashType, bundling, bundleDir);
+    assetHash = assetHash ?? this.calculateHash(this.hashType, bundling, assetPath);
     const stagedPath = path.resolve(this.assetOutdir, renderAssetFilename(assetHash, extension));
 
-    this.stageAsset(sourcePath, stagedPath, 'move');
+    this.stageAsset(assetPath, stagedPath, 'move');
     return { assetHash, stagedPath };
   }
 

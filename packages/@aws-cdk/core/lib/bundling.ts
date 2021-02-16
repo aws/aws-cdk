@@ -81,7 +81,7 @@ export interface BundlingOptions {
   readonly local?: ILocalBundling;
 
   /**
-   * The type of packaging to apply on the bundled asset.
+   * The type of packaging to apply on the bundling output.
    *
    * @default BundlePackaging.AUTO
    *
@@ -92,6 +92,8 @@ export interface BundlingOptions {
 
 /**
  * The type of packaging to apply on the bundled asset.
+ *
+ * @experimental
  */
 export enum BundlePackaging {
   /**
@@ -107,7 +109,7 @@ export enum BundlePackaging {
 
   /**
    * If the bundling output contains a single archive file (zip or jar) it will
-   * no be zipped. Otherwise it will be zipped.
+   * not be zipped. Otherwise it will be zipped.
    */
   AUTO = 'auto'
 }
