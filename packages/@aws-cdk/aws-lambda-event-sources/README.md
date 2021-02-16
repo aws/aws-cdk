@@ -282,15 +282,13 @@ const topic = 'some-cool-topic'
 const secret = Secret.fromSecretAttributes(this, 'Secret', { secretName: 'AmazonMSK_KafkaSecret' });
 
 // Your VPC:
-const vpc = ec2.Vpc.fromLookup(stack, 'VPC', {
-  isDefault: true,
-});
+const vpc = new ec2.Vpc(stack, 'VPC', { ... });
 
 // Your VPC subnet selection
-const vpcSubnets = { subnetType: ec2.SubnetType.PRIVATE };
+const vpcSubnets: ec2.SubnetSelection = { subnetType: ec2.SubnetType.PRIVATE };
 
 // Your security group
-const sg = ec2.SecurityGroup.fromSecurityGroupId(this, 'SG', 'sg-12345');
+const sg = new ec2.SecurityGroup(this, 'SG', { ... });
 
 myFunction.addEventSource(new SelfManagedKafkaEventSource({
   bootstrapServers: bootstrapServers,
