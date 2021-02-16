@@ -218,44 +218,15 @@ export = {
         authenticationMethod: 'SASL_SCRAM_256_AUTH',
       }));
 
-    expect(stack).to(haveResource('AWS::Lambda::EventSourceMapping', {
-      FunctionName: {
-        Ref: 'Fn9270CBC0',
-      },
-      BatchSize: 100,
-      SelfManagedEventSource: {
-        Endpoints: {
-          KafkaBootstrapServers: bootstrapServers,
-        },
-      },
-      StartingPosition: 'TRIM_HORIZON',
-      Topics: [
-        kafkaTopic,
-      ],
-      SourceAccessConfigurations: [
+    expect(stack).to(haveResourceLike('AWS::Lambda::EventSourceMapping', {
+      SourceAccessConfigurations: arrayWith(
         {
           Type: 'SASL_SCRAM_256_AUTH',
           URI: {
             Ref: 'SecretA720EF05',
           },
         },
-        {
-          Type: 'VPC_SECURITY_GROUP',
-          URI: 'sg-0123456789',
-        },
-        {
-          Type: 'VPC_SUBNET',
-          URI: {
-            Ref: 'VpcPrivateSubnet1Subnet536B997A',
-          },
-        },
-        {
-          Type: 'VPC_SUBNET',
-          URI: {
-            Ref: 'VpcPrivateSubnet2Subnet3788AAA1',
-          },
-        },
-      ],
+      ),
     }));
 
     test.done();
