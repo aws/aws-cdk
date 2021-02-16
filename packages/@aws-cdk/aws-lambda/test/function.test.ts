@@ -2010,7 +2010,7 @@ describe('function', () => {
       const stack = new cdk.Stack();
 
       const signingProfile = new signer.SigningProfile(stack, 'SigningProfile', {
-        platformId: 'xxx',
+        platform: signer.Platform.AWS_LAMBDA_SHA384_ECDSA,
       });
 
       const codeSigningConfig = new lambda.CodeSigningConfig(stack, 'CodeSigningConfig', {

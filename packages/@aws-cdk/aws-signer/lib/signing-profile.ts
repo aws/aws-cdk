@@ -3,6 +3,44 @@ import { Construct } from 'constructs';
 import { CfnSigningProfile } from './signer.generated';
 
 /**
+ * Platforms that are allowed with signing config.
+ * @see https://docs.aws.amazon.com/signer/latest/developerguide/gs-platform.html
+ */
+export class Platform {
+  /**
+   * Specification of signature format and signing algorithms for AWS IoT Device.
+   */
+  public static readonly AWS_IOT_DEVICE_MANAGEMENT_SHA256_ECDSA = new Platform('AWSIoTDeviceManagement-SHA256-ECDSA');
+
+  /**
+   * Specification of signature format and signing algorithms for AWS Lambda.
+   */
+  public static readonly AWS_LAMBDA_SHA384_ECDSA = new Platform('AWSLambda-SHA384-ECDSA');
+
+  /**
+   * Specification of signature format and signing algorithms with
+   * SHA1 hash and RSA encryption for Amazon FreeRTOS.
+   */
+  public static readonly AMAZON_FREE_RTOS_TI_CC3220SF = new Platform('AmazonFreeRTOS-TI-CC3220SF');
+
+  /**
+   * Specification of signature format and signing algorithms with
+   * SHA256 hash and ECDSA encryption for Amazon FreeRTOS.
+   */
+  public static readonly AMAZON_FREE_RTOS_DEFAULT = new Platform('AmazonFreeRTOS-Default');
+
+  /**
+   * The id of signing platform.
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-signer-signingprofile.html#cfn-signer-signingprofile-platformid
+   */
+  public readonly platformId: string;
+
+  private constructor(platformId: string) {
+    this.platformId = platformId;
+  }
+}
+
+/**
  * A Signer Profile
  */
 export interface ISigningProfile extends IResource {
@@ -36,9 +74,10 @@ export interface ISigningProfile extends IResource {
  */
 export interface SigningProfileProps {
   /**
-   * The ID of a platform that is available for use by a signing profile.
+   * The Signing Platform available for signing profile.
+   * @see https://docs.aws.amazon.com/signer/latest/developerguide/gs-platform.html
    */
-  readonly platformId: string;
+  readonly platform: Platform;
 
   /**
    * The validity period for signatures generated using
@@ -121,7 +160,7 @@ export class SigningProfile extends Resource implements ISigningProfile {
     });
 
     const resource = new CfnSigningProfile( this, 'Resource', {
-      platformId: props.platformId,
+      platformId: props.platform.platformId,
       signatureValidityPeriod: props.signatureValidityPeriod ? {
         type: 'DAYS',
         value: props.signatureValidityPeriod?.toDays(),

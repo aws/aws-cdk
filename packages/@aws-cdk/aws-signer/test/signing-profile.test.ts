@@ -2,8 +2,6 @@ import '@aws-cdk/assert/jest';
 import * as cdk from '@aws-cdk/core';
 import * as signer from '../lib';
 
-const EXAMPLE_PLATFORM_ID = 'AWSLambda-SHA384-ECDSA';
-
 let app: cdk.App;
 let stack: cdk.Stack;
 beforeEach( () => {
@@ -13,11 +11,11 @@ beforeEach( () => {
 
 describe('signing profile', () => {
   test( 'default', () => {
-    const platformId = EXAMPLE_PLATFORM_ID;
-    new signer.SigningProfile( stack, 'SigningProfile', { platformId } );
+    const platform = signer.Platform.AWS_LAMBDA_SHA384_ECDSA;
+    new signer.SigningProfile( stack, 'SigningProfile', { platform } );
 
     expect(stack).toHaveResource('AWS::Signer::SigningProfile', {
-      PlatformId: platformId,
+      PlatformId: platform.platformId,
       SignatureValidityPeriod: {
         Type: 'MONTHS',
         Value: 135,
@@ -26,14 +24,14 @@ describe('signing profile', () => {
   });
 
   test( 'default with signature validity period', () => {
-    const platformId = EXAMPLE_PLATFORM_ID;
+    const platform = signer.Platform.AWS_LAMBDA_SHA384_ECDSA;
     new signer.SigningProfile( stack, 'SigningProfile', {
-      platformId,
+      platform,
       signatureValidityPeriod: cdk.Duration.days( 7 ),
     } );
 
     expect(stack).toHaveResource('AWS::Signer::SigningProfile', {
-      PlatformId: platformId,
+      PlatformId: platform.platformId,
       SignatureValidityPeriod: {
         Type: 'DAYS',
         Value: 7,
@@ -42,15 +40,15 @@ describe('signing profile', () => {
   });
 
   test( 'default with some tags', () => {
-    const platformId = EXAMPLE_PLATFORM_ID;
-    const signing = new signer.SigningProfile( stack, 'SigningProfile', { platformId } );
+    const platform = signer.Platform.AWS_LAMBDA_SHA384_ECDSA;
+    const signing = new signer.SigningProfile( stack, 'SigningProfile', { platform } );
 
     cdk.Tags.of(signing).add('tag1', 'value1');
     cdk.Tags.of(signing).add('tag2', 'value2');
     cdk.Tags.of(signing).add('tag3', '');
 
     expect(stack).toHaveResource('AWS::Signer::SigningProfile', {
-      PlatformId: platformId,
+      PlatformId: platform.platformId,
       SignatureValidityPeriod: {
         Type: 'MONTHS',
         Value: 135,

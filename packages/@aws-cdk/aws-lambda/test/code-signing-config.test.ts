@@ -3,8 +3,6 @@ import * as signer from '@aws-cdk/aws-signer';
 import * as cdk from '@aws-cdk/core';
 import * as lambda from '../lib';
 
-const EXAMPLE_PLATFORM_ID = 'AWSLambda-SHA384-ECDSA';
-
 let app: cdk.App;
 let stack: cdk.Stack;
 beforeEach( () => {
@@ -14,8 +12,8 @@ beforeEach( () => {
 
 describe('code signing config', () => {
   test('default', () => {
-    const platformId = EXAMPLE_PLATFORM_ID;
-    const signingProfile = new signer.SigningProfile(stack, 'SigningProfile', { platformId });
+    const platform = signer.Platform.AWS_LAMBDA_SHA384_ECDSA;
+    const signingProfile = new signer.SigningProfile(stack, 'SigningProfile', { platform });
     new lambda.CodeSigningConfig(stack, 'CodeSigningConfig', {
       signingProfiles: [signingProfile],
     });
@@ -36,10 +34,9 @@ describe('code signing config', () => {
   });
 
   test('with multiple signing profiles', () => {
-    const platformId = EXAMPLE_PLATFORM_ID;
-    const signingProfile1 = new signer.SigningProfile(stack, 'SigningProfile1', { platformId });
-    const signingProfile2 = new signer.SigningProfile(stack, 'SigningProfile2', { platformId });
-    const signingProfile3 = new signer.SigningProfile(stack, 'SigningProfile3', { platformId });
+    const signingProfile1 = new signer.SigningProfile(stack, 'SigningProfile1', { platform: signer.Platform.AWS_LAMBDA_SHA384_ECDSA });
+    const signingProfile2 = new signer.SigningProfile(stack, 'SigningProfile2', { platform: signer.Platform.AMAZON_FREE_RTOS_DEFAULT });
+    const signingProfile3 = new signer.SigningProfile(stack, 'SigningProfile3', { platform: signer.Platform.AWS_IOT_DEVICE_MANAGEMENT_SHA256_ECDSA });
     new lambda.CodeSigningConfig(stack, 'CodeSigningConfig', {
       signingProfiles: [signingProfile1, signingProfile2, signingProfile3],
     });
@@ -74,8 +71,8 @@ describe('code signing config', () => {
   });
 
   test('with description and with untrustedArtifactOnDeployment of "ENFORCE"', () => {
-    const platformId = EXAMPLE_PLATFORM_ID;
-    const signingProfile = new signer.SigningProfile(stack, 'SigningProfile', { platformId });
+    const platform = signer.Platform.AWS_LAMBDA_SHA384_ECDSA;
+    const signingProfile = new signer.SigningProfile(stack, 'SigningProfile', { platform });
     new lambda.CodeSigningConfig(stack, 'CodeSigningConfig', {
       signingProfiles: [signingProfile],
       untrustedArtifactOnDeployment: lambda.UntrustedArtifactOnDeployment.ENFORCE,
