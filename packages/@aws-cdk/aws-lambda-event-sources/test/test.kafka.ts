@@ -1,4 +1,4 @@
-import { expect, haveResource } from '@aws-cdk/assert';
+import { arrayWith, expect, haveResource } from '@aws-cdk/assert';
 import { SecurityGroup, SubnetType, Vpc } from '@aws-cdk/aws-ec2';
 import * as lambda from '@aws-cdk/aws-lambda';
 import { Secret } from '@aws-cdk/aws-secretsmanager';
@@ -215,10 +215,10 @@ export = {
         vpc: vpc,
         vpcSubnets: { subnetType: SubnetType.PRIVATE },
         securityGroup: sg,
-        authenticationMethod: 'SASL_SCRAM_256_AUTH',
+        authenticationMethod: sources.AuthenticationMethod.SASL_SCRAM_256_AUTH,
       }));
 
-    expect(stack).to(haveResourceLike('AWS::Lambda::EventSourceMapping', {
+    expect(stack).to(haveResource('AWS::Lambda::EventSourceMapping', {
       SourceAccessConfigurations: arrayWith(
         {
           Type: 'SASL_SCRAM_256_AUTH',

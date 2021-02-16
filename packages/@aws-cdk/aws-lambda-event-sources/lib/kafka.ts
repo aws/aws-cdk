@@ -30,6 +30,20 @@ export interface ManagedKafkaEventSourceProps extends KafkaEventSourceProps {
 }
 
 /**
+ * The authentication method to use with SelfManagedKafkaEventSource
+ */
+export enum AuthenticationMethod {
+  /**
+   * SASL_SCRAM_512_AUTH authentication method for your Kafka cluster
+   */
+  SASL_SCRAM_512_AUTH = 'SASL_SCRAM_512_AUTH',
+  /**
+   * SASL_SCRAM_256_AUTH authentication method for your Kafka cluster
+   */
+  SASL_SCRAM_256_AUTH = 'SASL_SCRAM_512_AUTH',
+}
+
+/**
  * Properties for a self managed Kafka cluster event source.
  * If your Kafka cluster is only reachable via VPC make sure to configure it.
  */
@@ -66,7 +80,7 @@ export interface SelfManagedKafkaEventSourceProps extends KafkaEventSourceProps 
    *
    * @default - SASL_SCRAM_512_AUTH
    */
-  readonly authenticationMethod?: 'SASL_SCRAM_512_AUTH' | 'SASL_SCRAM_256_AUTH'
+  readonly authenticationMethod?: AuthenticationMethod
 }
 
 /**
@@ -123,10 +137,14 @@ export class SelfManagedKafkaEventSource extends StreamEventSource {
 
   public bind(target: lambda.IFunction) {
     let authenticationMethod;
-    if (this.innerProps.authenticationMethod == undefined || this.innerProps.authenticationMethod == 'SASL_SCRAM_512_AUTH') {
-      authenticationMethod = lambda.SourceAccessConfigurationType.SASL_SCRAM_512_AUTH;
-    } else {
-      authenticationMethod = lambda.SourceAccessConfigurationType.SASL_SCRAM_256_AUTH;
+    switch (this.innerProps.authenticationMethod) {
+      case AuthenticationMethod.SASL_SCRAM_256_AUTH:
+        authenticationMethod = lambda.SourceAccessConfigurationType.SASL_SCRAM_256_AUTH;
+        break;
+      case AuthenticationMethod.SASL_SCRAM_512_AUTH:
+      default:
+        authenticationMethod = lambda.SourceAccessConfigurationType.SASL_SCRAM_512_AUTH;
+        break;
     }
     let sourceAccessConfigurations = [{ type: authenticationMethod, uri: this.innerProps.secret.secretArn }];
     if (this.innerProps.vpcSubnets !== undefined && this.innerProps.securityGroup !== undefined) {
