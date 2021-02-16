@@ -126,7 +126,7 @@ export = {
     test.done();
   },
 
-  'without a defined log group'(test: Test) {
+  'without a defined log group: creates one anyway'(test: Test) {
     // GIVEN
     td.addContainer('Container', {
       image,
@@ -136,7 +136,7 @@ export = {
     });
 
     // THEN
-    expect(stack).notTo(haveResource('AWS::Logs::LogGroup', {}));
+    expect(stack).to(haveResource('AWS::Logs::LogGroup', {}));
 
     test.done();
   },

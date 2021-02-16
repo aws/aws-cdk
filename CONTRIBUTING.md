@@ -849,6 +849,22 @@ CDK](https://github.com/aws/aws-cdk/issues/3398) we will either remove the
 legacy behavior or flip the logic for all these features and then
 reset the `FEATURE_FLAGS` map for the next cycle.
 
+#### CDKv2
+
+We have started working on the next version of the CDK, specifically CDKv2. This is currently being maintained
+on a separate branch `v2-main` whereas `master` continues to track versions `1.x`.
+
+Feature flags introduced in the CDK 1.x and removed in 2.x, must be added to the `FUTURE_FLAGS_EXPIRED` list in
+[cx-api/lib/features.ts](https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/cx-api/lib/features.ts)
+on the `v2-main` branch.
+This will make the default behaviour in CDKv2 as if the flag is enabled and also prevents users from disabling
+the feature flag.
+
+A couple of [jest helper methods] are available for use with unit tests. These help run unit tests that test
+behaviour when flags are enabled or disabled in the two major versions.
+
+[jest helper methods]: https://github.com/aws/aws-cdk/blob/master/tools/cdk-build-tools/lib/feature-flag.ts
+
 ### Versioning and Release
 
 The `release.json` file at the root of the repo determines which release line
