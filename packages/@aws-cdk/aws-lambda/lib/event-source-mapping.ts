@@ -65,7 +65,7 @@ export interface EventSourceMappingOptions {
    * The Amazon Resource Name (ARN) of the event source. Any record added to
    * this stream can invoke the Lambda function.
    *
-   * @default - not set if using a self managed Kafka cluster
+   * @default - not set if using a self managed Kafka cluster, throws an error otherwise
    */
   readonly eventSourceArn?: string;
 
@@ -315,4 +315,3 @@ export enum StartingPosition {
    */
   LATEST = 'LATEST',
 }
-
