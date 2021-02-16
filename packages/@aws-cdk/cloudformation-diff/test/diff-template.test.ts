@@ -375,6 +375,34 @@ test('adding and removing quotes from a numeric property causes no changes', () 
   expect(differences.resources.differenceCount).toBe(0);
 });
 
+test('versions are correctly detected as not numbers', () => {
+  const currentTemplate = {
+    Resources: {
+      ImageBuilderComponent: {
+        Type: 'AWS::ImageBuilder::Component',
+        Properties: {
+          Platform: 'Linux',
+          Version: '0.0.1',
+        },
+      },
+    },
+  };
+  const newTemplate = {
+    Resources: {
+      ImageBuilderComponent: {
+        Type: 'AWS::ImageBuilder::Component',
+        Properties: {
+          Platform: 'Linux',
+          Version: '0.0.2',
+        },
+      },
+    },
+  };
+
+  const differences = diffTemplate(currentTemplate, newTemplate);
+  expect(differences.resources.differenceCount).toBe(1);
+});
+
 test('single element arrays are equivalent to the single element in DependsOn expressions', () => {
   // GIVEN
   const currentTemplate = {
