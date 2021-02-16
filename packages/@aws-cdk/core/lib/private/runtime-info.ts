@@ -3,9 +3,9 @@ import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { major as nodeMajorVersion } from './node-version';
 
 // list of NPM scopes included in version reporting e.g. @aws-cdk and @aws-solutions-konstruk
-const WHITELIST_SCOPES = ['@aws-cdk', '@aws-cdk-containers', '@aws-solutions-konstruk', '@aws-solutions-constructs', '@amzn'];
+const ALLOWED_SCOPES = ['@aws-cdk', '@aws-cdk-containers', '@aws-solutions-konstruk', '@aws-solutions-constructs', '@amzn'];
 // list of NPM packages included in version reporting
-const WHITELIST_PACKAGES = ['aws-rfdk', 'aws-cdk-lib'];
+const ALLOWED_PACKAGES = ['aws-rfdk', 'aws-cdk-lib', 'monocdk'];
 
 /**
  * Returns a list of loaded modules and their versions.
@@ -20,15 +20,15 @@ export function collectRuntimeInformation(): cxschema.RuntimeInfo {
     }
   }
 
-  // include only libraries that are in the whitelistLibraries list
+  // include only libraries that are in the allowlistLibraries list
   for (const name of Object.keys(libraries)) {
     let foundMatch = false;
-    for (const scope of WHITELIST_SCOPES) {
+    for (const scope of ALLOWED_SCOPES) {
       if (name.startsWith(`${scope}/`)) {
         foundMatch = true;
       }
     }
-    foundMatch = foundMatch || WHITELIST_PACKAGES.includes(name);
+    foundMatch = foundMatch || ALLOWED_PACKAGES.includes(name);
 
     if (!foundMatch) {
       delete libraries[name];
