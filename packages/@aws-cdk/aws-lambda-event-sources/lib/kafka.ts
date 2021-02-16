@@ -35,7 +35,8 @@ export interface ManagedKafkaEventSourceProps extends KafkaEventSourceProps {
  */
 export interface SelfManagedKafkaEventSourceProps extends KafkaEventSourceProps {
   /**
-   * list of Kafka brokers
+   * The list of host and port pairs that are the addresses of the Kafka brokers in a "bootstrap" Kafka cluster that
+   * a Kafka client connects to initially to bootstrap itself. They are in the format `abc.xyz.com:xxxx`.
    */
   readonly bootstrapServers: string[]
 
