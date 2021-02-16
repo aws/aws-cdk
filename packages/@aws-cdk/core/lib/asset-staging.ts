@@ -311,10 +311,10 @@ export class AssetStaging extends CoreConstruct {
         throw new Error('Packaging was set to `NEVER_ZIP` but the bundling output did not produce a single file.');
       }
 
-      if (bundledFile) {
+      if (bundledFile) { // It's a single file
         const bundledExtension = path.extname(bundledFile).toLowerCase();
         const isSingleArchive = ARCHIVE_EXTENSIONS.includes(bundledExtension);
-        if (packaging === BundlePackaging.NEVER_ZIP ||(packaging === BundlePackaging.AUTO && isSingleArchive)) {
+        if (packaging === BundlePackaging.NEVER_ZIP || (packaging === BundlePackaging.AUTO && isSingleArchive)) {
           this._packaging = FileAssetPackaging.FILE;
           this._isArchive = isSingleArchive;
           assetPath = bundledFile;
