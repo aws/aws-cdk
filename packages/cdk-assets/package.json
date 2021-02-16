@@ -47,7 +47,7 @@
     "@aws-cdk/cloud-assembly-schema": "0.0.0",
     "@aws-cdk/cx-api": "0.0.0",
     "archiver": "^5.2.0",
-    "aws-sdk": "^2.842.0",
+    "aws-sdk": "^2.844.0",
     "glob": "^7.1.6",
     "yargs": "^16.2.0"
   },
