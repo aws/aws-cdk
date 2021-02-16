@@ -1,9 +1,9 @@
 import { expect, haveResourceLike } from '@aws-cdk/assert';
 import * as core from '@aws-cdk/core';
-import { Test } from 'nodeunit';
+import { nodeunitShim, Test } from 'nodeunit-shim';
 import * as rds from '../../lib';
 
-export = {
+nodeunitShim({
   'SQL Server instance engine': {
     "has ParameterGroup family ending in '11.0' for major version 11"(test: Test) {
       const stack = new core.Stack();
@@ -43,4 +43,4 @@ export = {
       test.done();
     },
   },
-};
+});
