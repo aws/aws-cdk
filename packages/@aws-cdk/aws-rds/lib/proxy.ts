@@ -345,10 +345,12 @@ abstract class DatabaseProxyBase extends cdk.Resource implements IDatabaseProxy 
     if (!dbUser) {
       throw new Error('For imported Database Proxies, the dbUser is required in grantConnect()');
     }
-    const userArn = cdk.Stack.of(this).formatArn({
+    const scopeStack = cdk.Stack.of(this);
+    const proxyGeneratedId = scopeStack.parseArn(this.dbProxyArn, ':').resourceName;
+    const userArn = scopeStack.formatArn({
       service: 'rds-db',
       resource: 'dbuser',
-      resourceName: `${this.dbProxyName}/${dbUser}`,
+      resourceName: `${proxyGeneratedId}/${dbUser}`,
       sep: ':',
     });
     return iam.Grant.addToPrincipal({

@@ -250,7 +250,7 @@ export = {
     'setUp'(cb: () => void) {
       importedDbProxy = rds.DatabaseProxy.fromDatabaseProxyAttributes(stack, 'Proxy', {
         dbProxyName: 'my-proxy',
-        dbProxyArn: 'arn:aws:rds:us-east-1:123456789012:my-proxy',
+        dbProxyArn: 'arn:aws:rds:us-east-1:123456789012:db-proxy:prx-1234abcd',
         endpoint: 'my-endpoint',
         securityGroups: [],
       });
@@ -280,7 +280,7 @@ export = {
                 { Ref: 'AWS::Region' },
                 ':',
                 { Ref: 'AWS::AccountId' },
-                ':dbuser:my-proxy/test',
+                ':dbuser:prx-1234abcd/test',
               ]],
             },
           }],
@@ -340,7 +340,17 @@ export = {
               ':',
               { Ref: 'AWS::AccountId' },
               ':dbuser:',
-              { Ref: 'ProxyCB0DFB71' },
+              {
+                'Fn::Select': [
+                  6,
+                  {
+                    'Fn::Split': [
+                      ':',
+                      { 'Fn::GetAtt': ['ProxyCB0DFB71', 'DBProxyArn'] },
+                    ],
+                  },
+                ],
+              },
               '/{{resolve:secretsmanager:',
               { Ref: 'DatabaseSecretAttachmentE5D1B020' },
               ':SecretString:username::}}',
