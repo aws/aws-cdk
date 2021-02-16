@@ -239,7 +239,10 @@ export abstract class Resource extends CoreConstruct implements IResource {
  * If the given value is NOT a Reference, just return a simple Lazy.
  */
 function mimicReference(refSource: any, producer: IStringProducer): string {
-  const reference = Tokenization.reverse(refSource);
+  const reference = Tokenization.reverse(refSource, {
+    // If this is an ARN concatenation, just fail to extract a reference.
+    failConcat: false,
+  });
   if (!Reference.isReference(reference)) {
     return Lazy.uncachedString(producer);
   }
