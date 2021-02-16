@@ -124,6 +124,26 @@ new assets.Asset(this, 'BundledAsset', {
 Although optional, it's recommended to provide a local bundling method which can
 greatly improve performance.
 
+If the bundling output contains a single archive file (zip or jar) it will be uploaded
+to S3 as-is and will not be zipped. Otherwise it will be zipped.
+
+This behavior can be changed by setting the `bundling.packaging` option:
+
+```ts
+const asset = new assets.Asset(this, 'BundledAsset', {
+  path: '/path/to/asset',
+  bundling: {
+    image: BundlingDockerImage.fromRegistry('alpine'),
+    command: ['command-that-produces-an-archive.sh'],
+    ],
+    packaging: BundlePackaging.ALWAYS_ZIP, // Bundling output will be zipped even though it produces a single archive file.
+  },
+});
+```
+
+Use `BundlePackaging.NEVER_ZIP` if the bundling output contains a single file and you don't
+want it to be zippped.
+
 ## CloudFormation Resource Metadata
 
 > NOTE: This section is relevant for authors of AWS Resource Constructs.
