@@ -271,11 +271,7 @@ export class EventSourceMapping extends cdk.Resource implements IEventSourceMapp
 
     let selfManagedEventSource;
     if (props.kafkaBootstrapServers) {
-      selfManagedEventSource = {
-	      endpoints: {
-		      kafkaBootstrapServers: props.kafkaBootstrapServers,
-	      },
-	    };
+      selfManagedEventSource = { endpoints: { kafkaBootstrapServers: props.kafkaBootstrapServers } };
     }
 
     const cfnEventSourceMapping = new CfnEventSourceMapping(this, 'Resource', {
