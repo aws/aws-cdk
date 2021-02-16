@@ -210,3 +210,35 @@ const domain = new es.Domain(this, 'Domain', {
     },
 });
 ```
+
+## UltraWarm
+
+UltraWarm nodes can be enabled to provide a cost-effective way to store large amounts of read-only data.
+
+```ts
+const domain = new es.Domain(this, 'Domain', {
+    version: es.ElasticsearchVersion.V7_9,
+    capacity: {
+        masterNodes: 2,
+        warmNodes: 2,
+        warmInstanceType: 'ultrawarm1.medium.elasticsearch',
+    },
+});
+```
+
+## Custom endpoint
+
+Custom endpoints can be configured to reach the ES domain under a custom domain name.
+
+```ts
+new Domain(stack, 'Domain', {
+    version: ElasticsearchVersion.V7_7,
+    customEndpoint: {
+        domainName: 'search.example.com',
+    },
+});
+```
+
+It is also possible to specify a custom certificate instead of the auto-generated one.
+
+Additionally, an automatic CNAME-Record is created if a hosted zone is provided for the custom endpoint

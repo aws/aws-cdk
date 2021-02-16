@@ -70,7 +70,7 @@ export class ProxyTarget {
   /**
    * Bind this target to the specified database proxy.
    */
-  public bind(_: DatabaseProxy): ProxyTargetConfig {
+  public bind(proxy: DatabaseProxy): ProxyTargetConfig {
     const engine: IEngine | undefined = this.dbInstance?.engine ?? this.dbCluster?.engine;
 
     if (!engine) {
@@ -83,6 +83,10 @@ export class ProxyTarget {
     if (!engineFamily) {
       throw new Error(`Engine '${engineDescription(engine)}' does not support proxies`);
     }
+
+    // allow connecting to the Cluster/Instance from the Proxy
+    this.dbCluster?.connections.allowDefaultPortFrom(proxy, 'Allow connections to the database Cluster from the Proxy');
+    this.dbInstance?.connections.allowDefaultPortFrom(proxy, 'Allow connections to the database Instance from the Proxy');
 
     return {
       engineFamily,
@@ -418,7 +422,13 @@ export class DatabaseProxy extends DatabaseProxyBase
       secret.grantRead(role);
     }
 
-    this.connections = new ec2.Connections({ securityGroups: props.securityGroups });
+    const securityGroups = props.securityGroups ?? [
+      new ec2.SecurityGroup(this, 'ProxySecurityGroup', {
+        description: 'SecurityGroup for Database Proxy',
+        vpc: props.vpc,
+      }),
+    ];
+    this.connections = new ec2.Connections({ securityGroups });
 
     const bindResult = props.proxyTarget.bind(this);
 
@@ -441,7 +451,7 @@ export class DatabaseProxy extends DatabaseProxyBase
       idleClientTimeout: props.idleClientTimeout?.toSeconds(),
       requireTls: props.requireTLS ?? true,
       roleArn: role.roleArn,
-      vpcSecurityGroupIds: props.securityGroups?.map(_ => _.securityGroupId),
+      vpcSecurityGroupIds: cdk.Lazy.list({ produce: () => this.connections.securityGroups.map(_ => _.securityGroupId) }),
       vpcSubnetIds: props.vpc.selectSubnets(props.vpcSubnets).subnetIds,
     });
 

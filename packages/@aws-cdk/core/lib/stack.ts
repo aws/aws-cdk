@@ -371,7 +371,7 @@ export class Stack extends CoreConstruct implements ITaggable {
       this.templateOptions.description = props.description;
     }
 
-    this._stackName = props.stackName !== undefined ? props.stackName : this.generateStackName();
+    this._stackName = props.stackName ?? this.generateStackName();
     this.tags = new TagManager(TagType.KEY_VALUE, 'aws:cdk:stack', props.tags);
 
     if (!VALID_STACK_NAME_REGEX.test(this.stackName)) {
@@ -776,6 +776,93 @@ export class Stack extends CoreConstruct implements ITaggable {
   }
 
   /**
+   * Create a CloudFormation Export for a value
+   *
+   * Returns a string representing the corresponding `Fn.importValue()`
+   * expression for this Export. You can control the name for the export by
+   * passing the `name` option.
+   *
+   * If you don't supply a value for `name`, the value you're exporting must be
+   * a Resource attribute (for example: `bucket.bucketName`) and it will be
+   * given the same name as the automatic cross-stack reference that would be created
+   * if you used the attribute in another Stack.
+   *
+   * One of the uses for this method is to *remove* the relationship between
+   * two Stacks established by automatic cross-stack references. It will
+   * temporarily ensure that the CloudFormation Export still exists while you
+   * remove the reference from the consuming stack. After that, you can remove
+   * the resource and the manual export.
+   *
+   * ## Example
+   *
+   * Here is how the process works. Let's say there are two stacks,
+   * `producerStack` and `consumerStack`, and `producerStack` has a bucket
+   * called `bucket`, which is referenced by `consumerStack` (perhaps because
+   * an AWS Lambda Function writes into it, or something like that).
+   *
+   * It is not safe to remove `producerStack.bucket` because as the bucket is being
+   * deleted, `consumerStack` might still be using it.
+   *
+   * Instead, the process takes two deployments:
+   *
+   * ### Deployment 1: break the relationship
+   *
+   * - Make sure `consumerStack` no longer references `bucket.bucketName` (maybe the consumer
+   *   stack now uses its own bucket, or it writes to an AWS DynamoDB table, or maybe you just
+   *   remove the Lambda Function altogether).
+   * - In the `ProducerStack` class, call `this.exportValue(this.bucket.bucketName)`. This
+   *   will make sure the CloudFormation Export continues to exist while the relationship
+   *   between the two stacks is being broken.
+   * - Deploy (this will effectively only change the `consumerStack`, but it's safe to deploy both).
+   *
+   * ### Deployment 2: remove the bucket resource
+   *
+   * - You are now free to remove the `bucket` resource from `producerStack`.
+   * - Don't forget to remove the `exportValue()` call as well.
+   * - Deploy again (this time only the `producerStack` will be changed -- the bucket will be deleted).
+   */
+  public exportValue(exportedValue: any, options: ExportValueOptions = {}) {
+    if (options.name) {
+      new CfnOutput(this, `Export${options.name}`, {
+        value: exportedValue,
+        exportName: options.name,
+      });
+      return Fn.importValue(options.name);
+    }
+
+    const resolvable = Tokenization.reverse(exportedValue);
+    if (!resolvable || !Reference.isReference(resolvable)) {
+      throw new Error('exportValue: either supply \'name\' or make sure to export a resource attribute (like \'bucket.bucketName\')');
+    }
+
+    // "teleport" the value here, in case it comes from a nested stack. This will also
+    // ensure the value is from our own scope.
+    const exportable = referenceNestedStackValueInParent(resolvable, this);
+
+    // Ensure a singleton "Exports" scoping Construct
+    // This mostly exists to trigger LogicalID munging, which would be
+    // disabled if we parented constructs directly under Stack.
+    // Also it nicely prevents likely construct name clashes
+    const exportsScope = getCreateExportsScope(this);
+
+    // Ensure a singleton CfnOutput for this value
+    const resolved = this.resolve(exportable);
+    const id = 'Output' + JSON.stringify(resolved);
+    const exportName = generateExportName(exportsScope, id);
+
+    if (Token.isUnresolved(exportName)) {
+      throw new Error(`unresolved token in generated export name: ${JSON.stringify(this.resolve(exportName))}`);
+    }
+
+    const output = exportsScope.node.tryFindChild(id) as CfnOutput;
+    if (!output) {
+      new CfnOutput(exportsScope, id, { value: Token.asString(exportable), exportName });
+    }
+
+    return Fn.importValue(exportName);
+  }
+
+  /**
    * Returns the naming scheme used to allocate logical IDs. By default, uses
    * the `HashedAddressingScheme` but this method can be overridden to customize
    * this behavior.
@@ -1143,18 +1230,58 @@ function makeStackName(components: string[]) {
   return makeUniqueId(components);
 }
 
-// These imports have to be at the end to prevent circular imports
-import { addDependency } from './deps';
-import { Reference } from './reference';
-import { IResolvable } from './resolvable';
-import { DefaultStackSynthesizer, IStackSynthesizer, LegacyStackSynthesizer } from './stack-synthesizers';
-import { Stage } from './stage';
-import { ITaggable, TagManager } from './tag-manager';
-import { Token } from './token';
-import { FileSystem } from './fs';
-import { Names } from './names';
+function getCreateExportsScope(stack: Stack) {
+  const exportsName = 'Exports';
+  let stackExports = stack.node.tryFindChild(exportsName) as CoreConstruct;
+  if (stackExports === undefined) {
+    stackExports = new CoreConstruct(stack, exportsName);
+  }
+
+  return stackExports;
+}
+
+function generateExportName(stackExports: CoreConstruct, id: string) {
+  const stackRelativeExports = FeatureFlags.of(stackExports).isEnabled(cxapi.STACK_RELATIVE_EXPORTS_CONTEXT);
+  const stack = Stack.of(stackExports);
+
+  const components = [
+    ...stackExports.node.scopes
+      .slice(stackRelativeExports ? stack.node.scopes.length : 2)
+      .map(c => c.node.id),
+    id,
+  ];
+  const prefix = stack.stackName ? stack.stackName + ':' : '';
+  const localPart = makeUniqueId(components);
+  const maxLength = 255;
+  return prefix + localPart.slice(Math.max(0, localPart.length - maxLength + prefix.length));
+}
 
 interface StackDependency {
   stack: Stack;
   reasons: string[];
 }
+
+/**
+ * Options for the `stack.exportValue()` method
+ */
+export interface ExportValueOptions {
+  /**
+   * The name of the export to create
+   *
+   * @default - A name is automatically chosen
+   */
+  readonly name?: string;
+}
+
+// These imports have to be at the end to prevent circular imports
+import { CfnOutput } from './cfn-output';
+import { addDependency } from './deps';
+import { FileSystem } from './fs';
+import { Names } from './names';
+import { Reference } from './reference';
+import { IResolvable } from './resolvable';
+import { DefaultStackSynthesizer, IStackSynthesizer, LegacyStackSynthesizer } from './stack-synthesizers';
+import { Stage } from './stage';
+import { ITaggable, TagManager } from './tag-manager';
+import { Token, Tokenization } from './token';
+import { referenceNestedStackValueInParent } from './private/refs';

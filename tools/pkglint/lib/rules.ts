@@ -857,41 +857,6 @@ export class JSIIDotNetIconUrlIsRequired extends ValidationRule {
 }
 
 /**
- * Strong-naming all .NET assemblies is required.
- */
-export class JSIIDotNetStrongNameIsRequired extends ValidationRule {
-  public readonly name = 'jsii/dotnet/strong-name';
-
-  public validate(pkg: PackageJson): void {
-    if (!isJSII(pkg)) { return; }
-
-    // skip the legacy @aws-cdk/cdk because we actually did not rename
-    // the .NET module, so we are not publishing the deprecated one
-    if (pkg.packageName === '@aws-cdk/cdk') { return; }
-
-    const signAssembly = deepGet(pkg.json, ['jsii', 'targets', 'dotnet', 'signAssembly']) as boolean | undefined;
-    const signAssemblyExpected = true;
-    if (signAssembly !== signAssemblyExpected) {
-      pkg.report({
-        ruleName: this.name,
-        message: '.NET packages must have strong-name signing enabled.',
-        fix: () => deepSet(pkg.json, ['jsii', 'targets', 'dotnet', 'signAssembly'], signAssemblyExpected),
-      });
-    }
-
-    const assemblyOriginatorKeyFile = deepGet(pkg.json, ['jsii', 'targets', 'dotnet', 'assemblyOriginatorKeyFile']) as string | undefined;
-    const assemblyOriginatorKeyFileExpected = '../../key.snk';
-    if (assemblyOriginatorKeyFile !== assemblyOriginatorKeyFileExpected) {
-      pkg.report({
-        ruleName: this.name,
-        message: '.NET packages must use the strong name key fetched by fetch-dotnet-snk.sh',
-        fix: () => deepSet(pkg.json, ['jsii', 'targets', 'dotnet', 'assemblyOriginatorKeyFile'], assemblyOriginatorKeyFileExpected),
-      });
-    }
-  }
-}
-
-/**
  * The package must depend on cdk-build-tools
  */
 export class MustDependOnBuildTools extends ValidationRule {
@@ -1105,11 +1070,7 @@ export class MustHaveNodeEnginesDeclaration extends ValidationRule {
   public readonly name = 'package-info/engines';
 
   public validate(pkg: PackageJson): void {
-    if (cdkMajorVersion() === 2) {
-      expectJSON(this.name, pkg, 'engines.node', '>= 14.15.0');
-    } else {
-      expectJSON(this.name, pkg, 'engines.node', '>= 10.13.0 <13 || >=13.7.0');
-    }
+    expectJSON(this.name, pkg, 'engines.node', '>= 10.13.0 <13 || >=13.7.0');
   }
 }
 
@@ -1340,11 +1301,11 @@ export class FastFailingBuildScripts extends ValidationRule {
     const hasTest = 'test' in scripts;
     const hasPack = 'package' in scripts;
 
-    const cmdBuild = 'npm run build';
-    expectJSON(this.name, pkg, 'scripts.build+test', hasTest ? [cmdBuild, 'npm test'].join(' && ') : cmdBuild);
+    const cmdBuild = 'yarn build';
+    expectJSON(this.name, pkg, 'scripts.build+test', hasTest ? [cmdBuild, 'yarn test'].join(' && ') : cmdBuild);
 
-    const cmdBuildTest = 'npm run build+test';
-    expectJSON(this.name, pkg, 'scripts.build+test+package', hasPack ? [cmdBuildTest, 'npm run package'].join(' && ') : cmdBuildTest);
+    const cmdBuildTest = 'yarn build+test';
+    expectJSON(this.name, pkg, 'scripts.build+test+package', hasPack ? [cmdBuildTest, 'yarn package'].join(' && ') : cmdBuildTest);
   }
 }
 

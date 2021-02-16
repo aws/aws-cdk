@@ -1,6 +1,5 @@
 #!/usr/bin/env node
 import 'source-map-support/register';
-
 import * as cxapi from '@aws-cdk/cx-api';
 import * as colors from 'colors/safe';
 import * as yargs from 'yargs';
@@ -143,8 +142,10 @@ async function initCommandLine() {
   debug('Command line arguments:', argv);
 
   const configuration = new Configuration({
-    ...argv,
-    _: argv._ as [Command, ...string[]], // TypeScript at its best
+    commandLineArguments: {
+      ...argv,
+      _: argv._ as [Command, ...string[]], // TypeScript at its best
+    },
   });
   await configuration.load();
 
@@ -192,6 +193,10 @@ async function initCommandLine() {
   loadPlugins(configuration.settings);
 
   const cmd = argv._[0];
+
+  if (typeof(cmd) !== 'string') {
+    throw new Error(`First argument should be a string. Got: ${cmd} (${typeof(cmd)})`);
+  }
 
   // Bundle up global objects so the commands have access to them
   const commandOptions = { args: argv, configuration, aws: sdkProvider };

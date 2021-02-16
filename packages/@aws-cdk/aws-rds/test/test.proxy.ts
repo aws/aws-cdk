@@ -125,8 +125,6 @@ export = {
         },
       ],
     }));
-
-    // THEN
     expect(stack).to(haveResourceLike('AWS::RDS::DBProxyTargetGroup', {
       DBProxyName: {
         Ref: 'ProxyCB0DFB71',
@@ -139,6 +137,22 @@ export = {
       ],
       DBInstanceIdentifiers: ABSENT,
       TargetGroupName: 'default',
+    }));
+    expect(stack).to(haveResourceLike('AWS::EC2::SecurityGroupIngress', {
+      IpProtocol: 'tcp',
+      Description: 'Allow connections to the database Cluster from the Proxy',
+      FromPort: {
+        'Fn::GetAtt': ['DatabaseB269D8BB', 'Endpoint.Port'],
+      },
+      GroupId: {
+        'Fn::GetAtt': ['DatabaseSecurityGroup5C91FDCB', 'GroupId'],
+      },
+      SourceSecurityGroupId: {
+        'Fn::GetAtt': ['ProxyProxySecurityGroupC42FC3CE', 'GroupId'],
+      },
+      ToPort: {
+        'Fn::GetAtt': ['DatabaseB269D8BB', 'Endpoint.Port'],
+      },
     }));
 
     test.done();
@@ -207,6 +221,7 @@ export = {
       engine: rds.DatabaseClusterEngine.auroraPostgres({
         version: rds.AuroraPostgresEngineVersion.VER_9_6_11,
       }),
+      port: 5432,
     });
 
     new rds.DatabaseProxy(stack, 'Proxy', {
@@ -222,6 +237,10 @@ export = {
       DBClusterIdentifiers: [
         'my-cluster',
       ],
+    }));
+    expect(stack).to(haveResourceLike('AWS::EC2::SecurityGroup', {
+      GroupDescription: 'SecurityGroup for Database Proxy',
+      VpcId: { Ref: 'VPCB9E5F0B4' },
     }));
 
     test.done();
@@ -394,6 +413,7 @@ export = {
         'cluster611F8AFF',
         'clusterSecretAttachment69BFCEC4',
         'clusterSecretE349B730',
+        'clusterSecurityGroupfromproxyProxySecurityGroupA80F0525IndirectPortA13E5F3D',
         'clusterSecurityGroupF441DCEA',
         'clusterSubnets81E3593F',
       ],

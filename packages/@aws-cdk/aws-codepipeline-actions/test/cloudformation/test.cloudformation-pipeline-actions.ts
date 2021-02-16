@@ -558,6 +558,48 @@ export = {
     test.done();
   },
 
+  'can use CfnCapabilities from the core module'(test: Test) {
+    // GIVEN
+    const stack = new TestFixture();
+
+    // WHEN
+    stack.deployStage.addAction(new cpactions.CloudFormationCreateUpdateStackAction({
+      actionName: 'CreateUpdate',
+      stackName: 'MyStack',
+      templatePath: stack.sourceOutput.atPath('template.yaml'),
+      adminPermissions: false,
+      cfnCapabilities: [
+        cdk.CfnCapabilities.NAMED_IAM,
+        cdk.CfnCapabilities.AUTO_EXPAND,
+      ],
+    }));
+
+    // THEN: Action in Pipeline has named IAM and AUTOEXPAND capabilities
+    expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
+      'Stages': [
+        { 'Name': 'Source' /* don't care about the rest */ },
+        {
+          'Name': 'Deploy',
+          'Actions': [
+            {
+              'Configuration': {
+                'Capabilities': 'CAPABILITY_NAMED_IAM,CAPABILITY_AUTO_EXPAND',
+                'RoleArn': { 'Fn::GetAtt': ['PipelineDeployCreateUpdateRole515CB7D4', 'Arn'] },
+                'ActionMode': 'CREATE_UPDATE',
+                'StackName': 'MyStack',
+                'TemplatePath': 'SourceArtifact::template.yaml',
+              },
+              'InputArtifacts': [{ 'Name': 'SourceArtifact' }],
+              'Name': 'CreateUpdate',
+            },
+          ],
+        },
+      ],
+    }));
+
+    test.done();
+  },
+
   'cross-account CFN Pipeline': {
     'correctly creates the deployment Role in the other account'(test: Test) {
       const app = new cdk.App();
