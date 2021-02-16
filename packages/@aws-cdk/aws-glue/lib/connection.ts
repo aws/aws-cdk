@@ -84,6 +84,7 @@ export interface ConnectionOptions {
   /**
    *  Key-Value pairs that define parameters for the connection.
    *  @default empty properties
+   *  @see https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-connect.html
    */
   readonly properties?: { [key: string]: string };
 
