@@ -73,7 +73,7 @@
     "@aws-cdk/assert": "0.0.0",
     "@types/nodeunit": "^0.0.31",
     "@types/yaml": "1.9.6",
-    "aws-sdk": "^2.842.0",
+    "aws-sdk": "^2.844.0",
     "cdk-build-tools": "0.0.0",
     "cdk-integ-tools": "0.0.0",
     "cfn2ts": "0.0.0",
