@@ -1,7 +1,7 @@
-import { Test } from 'nodeunit';
+import { nodeunitShim, Test } from 'nodeunit-shim';
 import { AuroraEngineVersion, AuroraMysqlEngineVersion, AuroraPostgresEngineVersion, DatabaseClusterEngine } from '../lib';
 
-export = {
+nodeunitShim({
   "default parameterGroupFamily for versionless Aurora cluster engine is 'aurora5.6'"(test: Test) {
     // GIVEN
     const engine = DatabaseClusterEngine.AURORA;
@@ -115,4 +115,4 @@ export = {
     test.deepEqual(DatabaseClusterEngine.auroraPostgres({ version: AuroraPostgresEngineVersion.VER_9_6_9 }).supportedLogTypes, ['postgresql']);
     test.done();
   },
-}
+});
