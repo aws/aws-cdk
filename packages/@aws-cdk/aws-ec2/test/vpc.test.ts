@@ -904,6 +904,22 @@ nodeunitShim({
         DestinationCidrBlock: '0.0.0.0/0',
         InstanceId: { Ref: 'TheVPCPublicSubnet1NatInstanceCC514192' },
       }));
+      cdkExpect(stack).to(haveResource('AWS::EC2::SecurityGroup', {
+        SecurityGroupEgress: [
+          {
+            CidrIp: '0.0.0.0/0',
+            Description: 'Allow all outbound traffic by default',
+            IpProtocol: '-1',
+          },
+        ],
+        SecurityGroupIngress: [
+          {
+            CidrIp: '0.0.0.0/0',
+            Description: 'from 0.0.0.0/0:ALL TRAFFIC',
+            IpProtocol: '-1',
+          },
+        ],
+      }));
 
       test.done();
     },
@@ -948,6 +964,15 @@ nodeunitShim({
 
       // THEN
       cdkExpect(stack).to(haveResource('AWS::EC2::SecurityGroup', {
+        SecurityGroupEgress: [
+          {
+            CidrIp: '255.255.255.255/32',
+            Description: 'Disallow all traffic',
+            FromPort: 252,
+            IpProtocol: 'icmp',
+            ToPort: 86,
+          },
+        ],
         SecurityGroupIngress: [
           {
             CidrIp: '1.2.3.4/32',
