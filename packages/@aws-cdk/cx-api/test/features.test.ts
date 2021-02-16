@@ -7,6 +7,6 @@ test('all future flags have defaults configured', () => {
   });
 });
 
-testLegacyBehavior('FUTURE_FLAGS_DEFAULTS must be empty in CDKv1', Object, () => {
+testLegacyBehavior('FUTURE_FLAGS_EXPIRED must be empty in CDKv1', Object, () => {
   expect(feats.FUTURE_FLAGS_EXPIRED.length).toEqual(0);
 });
