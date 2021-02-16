@@ -1,6 +1,6 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as s3 from '@aws-cdk/aws-s3';
-import { CfnDeletionPolicy, CfnResource, RemovalPolicy } from '@aws-cdk/core';
+import { RemovalPolicy } from '@aws-cdk/core';
 import { DatabaseSecret } from '../database-secret';
 import { IEngine } from '../engine';
 import { Credentials } from '../props';
@@ -74,17 +74,6 @@ export function setupS3ImportExport(
 
 export function engineDescription(engine: IEngine) {
   return engine.engineType + (engine.engineVersion?.fullVersion ? `-${engine.engineVersion.fullVersion}` : '');
-}
-
-export function applyRemovalPolicy(cfnDatabase: CfnResource, removalPolicy?: RemovalPolicy): void {
-  if (!removalPolicy) {
-    // Even though 'SNAPSHOT' is the default for RDS, make it explicit so cfnlint won't complain
-    cfnDatabase.cfnOptions.deletionPolicy = CfnDeletionPolicy.SNAPSHOT;
-    cfnDatabase.cfnOptions.updateReplacePolicy = CfnDeletionPolicy.SNAPSHOT;
-  } else {
-    // just apply whatever removal policy the customer explicitly provided
-    cfnDatabase.applyRemovalPolicy(removalPolicy);
-  }
 }
 
 /**

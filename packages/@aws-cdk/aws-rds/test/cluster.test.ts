@@ -1840,6 +1840,37 @@ nodeunitShim({
   },
 });
 
+test.each([
+  [cdk.RemovalPolicy.RETAIN, 'Retain', 'Retain'],
+  [cdk.RemovalPolicy.SNAPSHOT, 'Snapshot', 'Delete'],
+  [cdk.RemovalPolicy.DESTROY, 'Delete', 'Delete'],
+])('if Cluster RemovalPolicy is \'%s\', the DBCluster has DeletionPolicy \'%s\' and the DBInstance has \'%s\'', (removalPolicy, cluster, instance) => {
+  const stack = new cdk.Stack();
+
+  // WHEN
+  new DatabaseCluster(stack, 'Cluster', {
+    credentials: { username: 'admin' },
+    engine: DatabaseClusterEngine.AURORA,
+    instanceProps: {
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.LARGE),
+      vpc: new ec2.Vpc(stack, 'Vpc'),
+    },
+    removalPolicy,
+  });
+
+  // THEN
+  expect(stack).to(haveResourceLike('AWS::RDS::DBCluster', {
+    DeletionPolicy: cluster,
+    UpdateReplacePolicy: cluster,
+  }, ResourcePart.CompleteDefinition));
+
+  expect(stack).to(haveResourceLike('AWS::RDS::DBInstance', {
+    DeletionPolicy: instance,
+    UpdateReplacePolicy: instance,
+  }, ResourcePart.CompleteDefinition));
+});
+
+
 function testStack() {
   const stack = new cdk.Stack(undefined, undefined, { env: { account: '12345', region: 'us-test-1' } });
   stack.node.setContext('availability-zones:12345:us-test-1', ['us-test-1a', 'us-test-1b']);

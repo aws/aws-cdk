@@ -10,7 +10,7 @@ import { IClusterEngine } from './cluster-engine';
 import { DatabaseClusterAttributes, IDatabaseCluster } from './cluster-ref';
 import { Endpoint } from './endpoint';
 import { IParameterGroup } from './parameter-group';
-import { applyRemovalPolicy, DEFAULT_PASSWORD_EXCLUDE_CHARS, defaultDeletionProtection, renderCredentials, setupS3ImportExport } from './private/util';
+import { DEFAULT_PASSWORD_EXCLUDE_CHARS, defaultDeletionProtection, renderCredentials, setupS3ImportExport } from './private/util';
 import { BackupProps, Credentials, InstanceProps, PerformanceInsightRetention, RotationSingleUserOptions, RotationMultiUserOptions } from './props';
 import { DatabaseProxy, DatabaseProxyOptions, ProxyTarget } from './proxy';
 import { CfnDBCluster, CfnDBClusterProps, CfnDBInstance } from './rds.generated';
@@ -512,7 +512,7 @@ export class DatabaseCluster extends DatabaseClusterNew {
       defaultPort: ec2.Port.tcp(this.clusterEndpoint.port),
     });
 
-    applyRemovalPolicy(cluster, props.removalPolicy);
+    cluster.applyRemovalPolicy(props.removalPolicy ?? RemovalPolicy.SNAPSHOT);
 
     if (secret) {
       this.secret = secret.attach(this);
@@ -608,7 +608,7 @@ export class DatabaseClusterFromSnapshot extends DatabaseClusterNew {
       defaultPort: ec2.Port.tcp(this.clusterEndpoint.port),
     });
 
-    applyRemovalPolicy(cluster, props.removalPolicy);
+    cluster.applyRemovalPolicy(props.removalPolicy ?? RemovalPolicy.SNAPSHOT);
 
     setLogRetention(this, props);
     createInstances(this, props, this.subnetGroup);
@@ -712,12 +712,13 @@ function createInstances(cluster: DatabaseClusterNew, props: DatabaseClusterBase
       deleteAutomatedBackups: props.instanceProps.deleteAutomatedBackups,
     });
 
-    // The RemovalPolicy on the cluster is SNAPSHOT by default, or explicitly configured.
-    // We can safely default to DESTROY for instances that are part of a cluster.
+    // For instances that are part of a cluster:
     //
-    // TODO: This should probably be `DESTROY` always, no, instead of inheriting the
-    // cluster removal policy? It would lead to useless additional snapshots or retentions...
-    applyRemovalPolicy(instance, props.removalPolicy ?? RemovalPolicy.DESTROY);
+    //  Cluster DESTROY or SNAPSHOT -> DESTROY (snapshot is good enough to recreate)
+    //  Cluster RETAIN              -> RETAIN (otherwise cluster state will disappear)
+    instance.applyRemovalPolicy(props.removalPolicy === RemovalPolicy.RETAIN
+      ? RemovalPolicy.RETAIN
+      : RemovalPolicy.DESTROY);
 
     // We must have a dependency on the NAT gateway provider here to create
     // things in the right order.
