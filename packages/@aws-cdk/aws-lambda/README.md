@@ -495,7 +495,9 @@ Language-specific higher level constructs are provided in separate modules:
 ## Code Signing
 
 Code signing for AWS Lambda helps to ensure that only trusted code runs in your Lambda functions. 
-You can enable code signing for a function to config `CodeSigningConfig` with `SigningProfile`.
+When enabled, AWS Lambda checks every code deployment and verifies that the code package is signed by a trusted source.
+For more information, see [Configuring code signing for AWS Lambda](https://docs.aws.amazon.com/lambda/latest/dg/configuration-codesigning.html).
+The following code configures a function with code signing.
 
 ```typescript
 import * as signer from '@aws-cdk/aws-signer';
@@ -513,4 +515,3 @@ new lambda.Function(this, 'Function', {
    // ...
 });
 ```
-
