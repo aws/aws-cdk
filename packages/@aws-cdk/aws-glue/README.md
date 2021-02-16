@@ -50,7 +50,7 @@ new glue.MongoDBSourceConnection(stack, 'Connection', {
 });
 ```
 
-if a specific connection type construct props does not expose all properties, additional properties can still be set as follows
+In case a specific connection type construct does not expose all properties, additional properties can still be set using the `properties` property.
 
 ```ts
 new glue.MongoDBSourceConnection(stack, 'Connection', {
