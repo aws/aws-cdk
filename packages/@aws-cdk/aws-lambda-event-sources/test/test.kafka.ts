@@ -172,7 +172,31 @@ export = {
     test.done();
   },
 
-  'self managed Kafka in VPC: subnet and securityGroup must be set together'(test: Test) {
+  'self managed Kafka in VPC: setting vpc requires vpcSubnets to be set'(test: Test) {
+    const stack = new cdk.Stack();
+    const fn = new TestFunction(stack, 'Fn');
+    const kafkaTopic = 'some-topic';
+    const secret = new Secret(stack, 'Secret', { secretName: 'AmazonMSK_KafkaSecret' });
+    const bootstrapServers = ['kafka-broker:9092'];
+    const vpc = new Vpc(stack, 'Vpc');
+
+    test.throws(() => {
+      fn.addEventSource(new sources.SelfManagedKafkaEventSource(
+        {
+          bootstrapServers: bootstrapServers,
+          topic: kafkaTopic,
+          secret: secret,
+          startingPosition: lambda.StartingPosition.TRIM_HORIZON,
+          vpc: vpc,
+          securityGroup: SecurityGroup.fromSecurityGroupId(stack, 'SecurityGroup', 'sg-0123456789'),
+
+        }));
+    }, /vpcSubnets must be set/);
+
+    test.done();
+  },
+
+  'self managed Kafka in VPC: setting vpc requires securityGroup to be set'(test: Test) {
     const stack = new cdk.Stack();
     const fn = new TestFunction(stack, 'Fn');
     const kafkaTopic = 'some-topic';
@@ -190,7 +214,7 @@ export = {
           vpc: vpc,
           vpcSubnets: { subnetType: SubnetType.PRIVATE },
         }));
-    }, /both subnets and securityGroup must be set/);
+    }, /securityGroup must be set/);
 
     test.done();
   },

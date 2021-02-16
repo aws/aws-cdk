@@ -64,14 +64,14 @@ export interface SelfManagedKafkaEventSourceProps extends KafkaEventSourceProps 
   /**
    * If your Kafka brokers are only reachable via VPC, provide the subnets selection here
    *
-   * @default - none
+   * @default - none, required if setting vpc
    */
   readonly vpcSubnets?: SubnetSelection,
 
   /**
    * If your Kafka brokers are only reachable via VPC, provide the security group here
    *
-   * @default - none
+   * @default - none, required if setting vpc
    */
   readonly securityGroup?: ISecurityGroup
 
@@ -128,9 +128,13 @@ export class SelfManagedKafkaEventSource extends StreamEventSource {
 
   constructor(props: SelfManagedKafkaEventSourceProps) {
     super(props);
-    if ((props.securityGroup !== undefined && props.vpcSubnets == undefined) ||
-        (props.securityGroup == undefined && props.vpcSubnets !== undefined )) {
-      throw new Error('both subnets and securityGroup must be set');
+    if (props.vpc) {
+      if (!props.securityGroup) {
+        throw new Error('securityGroup must be set when providing vpc');
+      }
+      if (!props.vpcSubnets) {
+        throw new Error('vpcSubnets must be set when providing vpc');
+      }
     }
     this.innerProps = props;
   }
