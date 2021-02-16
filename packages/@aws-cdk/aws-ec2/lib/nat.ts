@@ -213,10 +213,11 @@ export class NatInstanceProvider extends NatProvider implements IConnectable {
     this._securityGroup = this.props.securityGroup ?? new SecurityGroup(options.vpc, 'NatSecurityGroup', {
       vpc: options.vpc,
       description: 'Security Group for NAT instances',
+      allowAllOutbound: this.props.allowAllTraffic
     });
     this._connections = new Connections({ securityGroups: [this._securityGroup] });
 
-    if (this.props.allowAllTraffic ?? true) {
+    if (this.props.allowAllTraffic ?? true;) {
       this.connections.allowFromAnyIpv4(Port.allTraffic());
     }
 
