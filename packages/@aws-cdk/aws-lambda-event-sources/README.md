@@ -216,11 +216,13 @@ MSK cluster, as described in [Username/Password authentication](https://docs.aws
 
 ```ts
 import * as lambda from '@aws-cdk/aws-lambda';
+import * as msk from '@aws-cdk/aws-lambda';
 import { Secret } from '@aws-cdk/aws-secretmanager';
 import { ManagedKafkaEventSource } from '@aws-cdk/aws-lambda-event-sources';
 
-// The ARN of your cluster
-const clusterArn = 'arn:aws:kafka:us-east-1:0123456789019:cluster/SalesCluster/abcd1234-abcd-cafe-abab-9876543210ab-4'
+// Your MSK cluster
+const cluster = msk.Cluster.fromClusterArn(this, 'Cluster',
+        'arn:aws:kafka:us-east-1:0123456789019:cluster/SalesCluster/abcd1234-abcd-cafe-abab-9876543210ab-4');
 
 // The Kafka topic you want to subscribe to
 const topic = 'some-cool-topic'
@@ -230,7 +232,7 @@ const topic = 'some-cool-topic'
 const secret = new Secret(this, 'Secret', { secretName: 'AmazonMSK_KafkaSecret' });
 
 myFunction.addEventSource(new ManagedKafkaEventSource({
-  clusterArn: clusterArn,
+  cluster: cluster,
   topic: topic,
   secret: secret,
   batchSize: 100, // default
@@ -253,7 +255,7 @@ const bootstrapServers = ['kafka-broker:9092']
 const topic = 'some-cool-topic'
 
 // The secret that allows access to your self hosted Kafka cluster
-const secret = Secret.fromSecretAttributes(this, 'Secret', { secretName: 'AmazonMSK_KafkaSecret' });
+const secret = new Secret(this, 'Secret', { ... });
 
 myFunction.addEventSource(new SelfManagedKafkaEventSource({
   bootstrapServers: bootstrapServers,

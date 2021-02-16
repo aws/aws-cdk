@@ -2,6 +2,7 @@ import * as crypto from 'crypto';
 import { ISecurityGroup, IVpc, SubnetSelection } from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
+import * as msk from '@aws-cdk/aws-msk';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import { StreamEventSource, StreamEventSourceProps } from './stream';
 
@@ -24,9 +25,9 @@ export interface KafkaEventSourceProps extends StreamEventSourceProps {
  */
 export interface ManagedKafkaEventSourceProps extends KafkaEventSourceProps {
   /**
-   * the ARN of the MSK cluster
+   * an MSK cluster construct
    */
-  readonly clusterArn: string
+  readonly cluster: msk.ICluster
 }
 
 /**
@@ -97,9 +98,9 @@ export class ManagedKafkaEventSource extends StreamEventSource {
 
   public bind(target: lambda.IFunction) {
     target.addEventSourceMapping(
-      `KafkaEventSource:${this.innerProps.clusterArn}${this.innerProps.topic}`,
+      `KafkaEventSource:${this.innerProps.cluster.clusterArn}${this.innerProps.topic}`,
       this.enrichMappingOptions({
-        eventSourceArn: this.innerProps.clusterArn,
+        eventSourceArn: this.innerProps.cluster.clusterArn,
         startingPosition: this.innerProps.startingPosition,
         sourceAccessConfigurations: [{ type: lambda.SourceAccessConfigurationType.SASL_SCRAM_512_AUTH, uri: this.innerProps.secret.secretArn }],
         kafkaTopic: this.innerProps.topic,
@@ -111,7 +112,7 @@ export class ManagedKafkaEventSource extends StreamEventSource {
     target.addToRolePolicy(new iam.PolicyStatement(
       {
         actions: ['kafka:DescribeCluster', 'kafka:GetBootstrapBrokers', 'kafka:ListScramSecrets'],
-        resources: [this.innerProps.clusterArn],
+        resources: [this.innerProps.cluster.clusterArn],
       },
     ));
 
