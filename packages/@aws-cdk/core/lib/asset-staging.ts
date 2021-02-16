@@ -6,7 +6,7 @@ import { Construct } from 'constructs';
 import * as fs from 'fs-extra';
 import * as minimatch from 'minimatch';
 import { AssetHashType, AssetOptions, FileAssetPackaging } from './assets';
-import { BundlingOptions } from './bundling';
+import { BundlingOptions, BundlePackaging } from './bundling';
 import { FileSystem, FingerprintOptions } from './fs';
 import { Names } from './names';
 import { Cache } from './private/cache';
@@ -216,7 +216,7 @@ export class AssetStaging extends CoreConstruct {
   }
 
   /**
-   * Whether this asset is an archvie (zip or jar).
+   * Whether this asset is an archive (zip or jar).
    */
   public get isArchive(): boolean {
     return this._isArchive;
@@ -303,14 +303,20 @@ export class AssetStaging extends CoreConstruct {
     let sourcePath = bundleDir;
     let extension: string | undefined;
 
-    // Check whether bundling resulted in a single archive file (zip, jar)
-    const bundledFile = singleFile(bundleDir);
-    if (bundledFile) {
-      const bundledExtension = path.extname(bundledFile).toLowerCase();
-      if (ARCHIVE_EXTENSIONS.includes(bundledExtension)) {
-        sourcePath = bundledFile;
-        extension = bundledExtension;
-        this._packaging = FileAssetPackaging.FILE;
+    const packaging = bundling.packaging ?? BundlePackaging.AUTO;
+    if (packaging !== BundlePackaging.ALWAYS_ZIP) {
+      // Check whether bundling resulted in a single archive file (zip, jar)
+      const bundledFile = singleFile(bundleDir);
+      if (bundledFile) {
+        const bundledExtension = path.extname(bundledFile).toLowerCase();
+        const isArchive = ARCHIVE_EXTENSIONS.includes(bundledExtension);
+        if (packaging === BundlePackaging.NEVER_ZIP && !isArchive) {
+          throw new Error('Packaging was set to `NEVER_ZIP` but the bundling output did not produce an archive file.');
+        }
+        if (packaging === BundlePackaging.AUTO && isArchive) {
+          sourcePath = bundledFile;
+          extension = bundledExtension;
+        }
       }
     }
 
