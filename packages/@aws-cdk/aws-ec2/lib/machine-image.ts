@@ -1,9 +1,13 @@
 import * as ssm from '@aws-cdk/aws-ssm';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
-import { Construct, ContextProvider, Stack, Token } from '@aws-cdk/core';
+import { ContextProvider, CfnMapping, Aws, Stack, Token } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import { UserData } from './user-data';
 import { WindowsVersion } from './windows-versions';
+
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct } from '@aws-cdk/core';
 
 /**
  * Interface for classes that can select an appropriate machine image to use
@@ -363,24 +367,33 @@ export interface GenericWindowsImageProps {
  * manually specify an AMI map.
  */
 export class GenericLinuxImage implements IMachineImage {
-  constructor(private readonly amiMap: {[region: string]: string}, private readonly props: GenericLinuxImageProps = {}) {
+  constructor(private readonly amiMap: { [region: string]: string }, private readonly props: GenericLinuxImageProps = {}) {
   }
 
   public getImage(scope: Construct): MachineImageConfig {
+    const userData = this.props.userData ?? UserData.forLinux();
+    const osType = OperatingSystemType.LINUX;
     const region = Stack.of(scope).region;
     if (Token.isUnresolved(region)) {
-      throw new Error('Unable to determine AMI from AMI map since stack is region-agnostic');
+      const mapping: { [k1: string]: { [k2: string]: any } } = {};
+      for (const [rgn, ami] of Object.entries(this.amiMap)) {
+        mapping[rgn] = { ami };
+      }
+      const amiMap = new CfnMapping(scope, 'AmiMap', { mapping });
+      return {
+        imageId: amiMap.findInMap(Aws.REGION, 'ami'),
+        userData,
+        osType,
+      };
     }
-
-    const ami = region !== 'test-region' ? this.amiMap[region] : 'ami-12345';
-    if (!ami) {
+    const imageId = region !== 'test-region' ? this.amiMap[region] : 'ami-12345';
+    if (!imageId) {
       throw new Error(`Unable to find AMI in AMI map: no AMI specified for region '${region}'`);
     }
-
     return {
-      imageId: ami,
-      userData: this.props.userData ?? UserData.forLinux(),
-      osType: OperatingSystemType.LINUX,
+      imageId,
+      userData,
+      osType,
     };
   }
 }
@@ -395,20 +408,29 @@ export class GenericWindowsImage implements IMachineImage {
   }
 
   public getImage(scope: Construct): MachineImageConfig {
+    const userData = this.props.userData ?? UserData.forWindows();
+    const osType = OperatingSystemType.WINDOWS;
     const region = Stack.of(scope).region;
     if (Token.isUnresolved(region)) {
-      throw new Error('Unable to determine AMI from AMI map since stack is region-agnostic');
+      const mapping: { [k1: string]: { [k2: string]: any } } = {};
+      for (const [rgn, ami] of Object.entries(this.amiMap)) {
+        mapping[rgn] = { ami };
+      }
+      const amiMap = new CfnMapping(scope, 'AmiMap', { mapping });
+      return {
+        imageId: amiMap.findInMap(Aws.REGION, 'ami'),
+        userData,
+        osType,
+      };
     }
-
-    const ami = region !== 'test-region' ? this.amiMap[region] : 'ami-12345';
-    if (!ami) {
+    const imageId = region !== 'test-region' ? this.amiMap[region] : 'ami-12345';
+    if (!imageId) {
       throw new Error(`Unable to find AMI in AMI map: no AMI specified for region '${region}'`);
     }
-
     return {
-      imageId: ami,
-      userData: this.props.userData ?? UserData.forWindows(),
-      osType: OperatingSystemType.WINDOWS,
+      imageId,
+      userData,
+      osType,
     };
   }
 }

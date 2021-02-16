@@ -305,6 +305,7 @@ const ecsScheduledTask = new ScheduledEc2Task(stack, 'ScheduledTask', {
     environment: { name: 'TRIGGER', value: 'CloudWatch Events' },
   },
   schedule: events.Schedule.expression('rate(1 minute)'),
+  enabled: true,
   ruleName: 'sample-scheduled-task-rule'
 });
 ```
@@ -425,5 +426,19 @@ const loadBalancedFargateService = new ApplicationLoadBalancedFargateService(sta
   vpcSubnets: {
     subnets: [ec2.Subnet.fromSubnetId(stack, 'subnet', 'VpcISOLATEDSubnet1Subnet80F07FA0')],
   },
+});
+```
+
+### Set PlatformVersion for ScheduledFargateTask
+
+```ts
+const scheduledFargateTask = new ScheduledFargateTask(stack, 'ScheduledFargateTask', {
+  cluster,
+  scheduledFargateTaskImageOptions: {
+    image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+    memoryLimitMiB: 512,
+  },
+  schedule: events.Schedule.expression('rate(1 minute)'),
+  platformVersion: ecs.FargatePlatformVersion.VERSION1_4,
 });
 ```

@@ -115,6 +115,7 @@ new assets.Asset(this, 'BundledAsset', {
     },
     // Docker bundling fallback
     image: DockerImage.fromRegistry('alpine'),
+    entrypoint: ['/bin/sh', '-c'],
     command: ['bundle'],
   },
 });
