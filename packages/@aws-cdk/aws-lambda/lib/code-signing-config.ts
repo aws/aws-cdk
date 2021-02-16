@@ -13,7 +13,8 @@ export enum UntrustedArtifactOnDeployment {
   ENFORCE = 'enforce',
 
   /**
-   * Lambda allows the deployment and creates a CloudWatch log.
+   * Lambda allows the deployment of the code package, but issues a warning.
+   * Lambda issues a new Amazon CloudWatch metric, called a signature validation error and also stores the warning in CloudTrail. 
    */
   WARN = 'warn',
 }
