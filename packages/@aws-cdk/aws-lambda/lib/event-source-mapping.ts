@@ -35,6 +35,11 @@ export class SourceAccessConfigurationType {
    */
   public static readonly SASL_SCRAM_512_AUTH = new SourceAccessConfigurationType('SASL_SCRAM_512_AUTH');
 
+  /** A custom source access configuration property */
+  public static of(name: string): SourceAccessConfigurationType {
+    return new SourceAccessConfigurationType(name);
+  }
+
   /** The key to use in `CfnEventSourceMapping.SourceAccessConfigurationProperty.Type` */
   public readonly type: string;
 
