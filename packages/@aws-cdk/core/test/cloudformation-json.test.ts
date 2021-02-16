@@ -1,5 +1,5 @@
 import { nodeunitShim, Test } from 'nodeunit-shim';
-import { App, CfnOutput, Fn, Lazy, Stack, Token } from '../lib';
+import { App, CfnOutput, Fn, IResolvable, IResolveContext, Lazy, Stack, Token } from '../lib';
 import { Intrinsic } from '../lib/private/intrinsic';
 import { evaluateCFN } from './evaluate-cfn';
 
@@ -273,6 +273,25 @@ nodeunitShim({
 
     // THEN
     expect(stack.resolve(actual)).toStrictEqual(JSON.stringify(1234));
+    test.done();
+  },
+
+  'prioritize IResolvable over toJSON()'(test: Test) {
+    // GIVEN
+    const app = new App();
+    const stack = new Stack(app, 'Stack1');
+    class Foo implements IResolvable {
+      public readonly creationStack = [];
+      public resolve(_: IResolveContext) { return 'yohoox'; }
+      toString() { return 'boom'; }
+      toJSON() { return 1234; }
+    }
+
+    // WHEN
+    const actual = stack.toJsonString(new Foo());
+
+    // THEN
+    expect(stack.resolve(actual)).toStrictEqual(JSON.stringify('yohoox'));
     test.done();
   },
 });
