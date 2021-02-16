@@ -52,7 +52,7 @@ export interface CodeSigningConfigProps {
    * If you set the policy to Warn, Lambda allows the deployment and
    * creates a CloudWatch log.
    *
-   * @default - UntrustedArtifactOnDeployment.WARN
+   * @default UntrustedArtifactOnDeployment.WARN
    */
   readonly untrustedArtifactOnDeployment?: UntrustedArtifactOnDeployment,
 
