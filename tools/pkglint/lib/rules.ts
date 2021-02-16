@@ -47,8 +47,31 @@ export class DescriptionIsRequired extends ValidationRule {
 }
 
 /**
+ * Verify that all packages have a publishConfig with a publish tag set.
+ */
+export class PublishConfigTagIsRequired extends ValidationRule {
+  public readonly name = 'package-info/publish-config-tag';
+
+  public validate(pkg: PackageJson): void {
+    const defaultPublishTag = (cdkMajorVersion() === 2) ? 'next' : 'latest';
+
+    if (!pkg.json.publishConfig?.tag) {
+      pkg.report({
+        ruleName: this.name,
+        message: 'publishConfig.tag is required',
+        fix: (() => {
+          const publishConfig = pkg.json.publishConfig ?? {};
+          publishConfig.tag = defaultPublishTag;
+          pkg.json.publishConfig = publishConfig;
+        }),
+      });
+    }
+  }
+}
+
+/**
  * Verify cdk.out directory is included in npmignore since we should not be
- * publihsing it.
+ * publishing it.
  */
 export class CdkOutMustBeNpmIgnored extends ValidationRule {
 

@@ -72,5 +72,8 @@
   },
   "ubergen": {
     "exclude": true
+  },
+  "publishConfig": {
+    "tag": "latest"
   }
 }
