@@ -259,6 +259,22 @@ nodeunitShim({
 
     test.done();
   },
+
+  'Respects toJSON() methods on objects'(test: Test) {
+    // GIVEN
+    const app = new App();
+    const stack = new Stack(app, 'Stack1');
+    class Foo {
+      toJSON() { return 1234; }
+    }
+
+    // WHEN
+    const actual = stack.toJsonString(new Foo());
+
+    // THEN
+    expect(stack.resolve(actual)).toStrictEqual(JSON.stringify(1234));
+    test.done();
+  },
 });
 
 /**

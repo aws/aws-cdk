@@ -154,6 +154,13 @@ export function resolve(obj: any, options: IResolveOptions): any {
     throw new Error('Trying to resolve() a Construct at ' + pathName);
   }
 
+  // respect JavaScript's toJSON(): if the object has a toJSON() method, call it
+  // and continue with the returned value.
+  if ('toJSON' in obj && typeof(obj.toJSON) === 'function') {
+    const value = obj.toJSON();
+    return resolve(value, options);
+  }
+
   const result: any = { };
   for (const key of Object.keys(obj)) {
     const resolvedKey = makeContext()[0].resolve(key);

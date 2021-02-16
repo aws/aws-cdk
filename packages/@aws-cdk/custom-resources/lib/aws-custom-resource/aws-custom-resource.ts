@@ -371,9 +371,9 @@ export class AwsCustomResource extends CoreConstruct implements iam.IGrantable {
       serviceToken: provider.functionArn,
       pascalCaseProperties: true,
       properties: {
-        create: create && encodeBooleans(create),
-        update: props.onUpdate && encodeBooleans(props.onUpdate),
-        delete: props.onDelete && encodeBooleans(props.onDelete),
+        create: create && this.encodeJson(create),
+        update: props.onUpdate && this.encodeJson(props.onUpdate),
+        delete: props.onDelete && this.encodeJson(props.onDelete),
         installLatestAwsSdk: props.installLatestAwsSdk ?? true,
       },
     });
@@ -418,6 +418,9 @@ export class AwsCustomResource extends CoreConstruct implements iam.IGrantable {
     return this.customResource.getAttString(dataPath);
   }
 
+  private encodeJson(obj: any) {
+    return cdk.Stack.of(this).toJsonString(obj);
+  }
 }
 
 /**
@@ -451,20 +454,4 @@ function awsSdkToIamAction(service: string, action: string): string {
   const iamService = (awsSdkMetadata[srv] && awsSdkMetadata[srv].prefix) || srv;
   const iamAction = action.charAt(0).toUpperCase() + action.slice(1);
   return `${iamService}:${iamAction}`;
-}
-
-/**
- * Encodes booleans as special strings
- */
-function encodeBooleans(object: object) {
-  return JSON.parse(JSON.stringify(object), (_k, v) => {
-    switch (v) {
-      case true:
-        return 'TRUE:BOOLEAN';
-      case false:
-        return 'FALSE:BOOLEAN';
-      default:
-        return v;
-    }
-  });
 }
