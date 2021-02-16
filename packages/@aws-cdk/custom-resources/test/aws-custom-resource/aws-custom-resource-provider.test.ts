@@ -257,68 +257,6 @@ test('catch errors', async () => {
   expect(request.isDone()).toBeTruthy();
 });
 
-test('decodes booleans', async () => {
-  const putItemFake = sinon.fake.resolves({});
-
-  AWS.mock('DynamoDB', 'putItem', putItemFake);
-
-  const event: AWSLambda.CloudFormationCustomResourceCreateEvent = {
-    ...eventCommon,
-    RequestType: 'Create',
-    ResourceProperties: {
-      ServiceToken: 'token',
-      Create: JSON.stringify({
-        service: 'DynamoDB',
-        action: 'putItem',
-        parameters: {
-          TableName: 'table',
-          Item: {
-            True: {
-              BOOL: 'TRUE:BOOLEAN',
-            },
-            TrueString: {
-              S: 'true',
-            },
-            False: {
-              BOOL: 'FALSE:BOOLEAN',
-            },
-            FalseString: {
-              S: 'false',
-            },
-          },
-        },
-        physicalResourceId: PhysicalResourceId.of('put-item'),
-      } as AwsSdkCall),
-    },
-  };
-
-  const request = createRequest(body =>
-    body.Status === 'SUCCESS',
-  );
-
-  await handler(event, {} as AWSLambda.Context);
-
-  sinon.assert.calledWith(putItemFake, {
-    TableName: 'table',
-    Item: {
-      True: {
-        BOOL: true,
-      },
-      TrueString: {
-        S: 'true',
-      },
-      False: {
-        BOOL: false,
-      },
-      FalseString: {
-        S: 'false',
-      },
-    },
-  });
-
-  expect(request.isDone()).toBeTruthy();
-});
-
 test('restrict output path', async () => {
   const listObjectsFake = sinon.fake.resolves({
     Contents: [
