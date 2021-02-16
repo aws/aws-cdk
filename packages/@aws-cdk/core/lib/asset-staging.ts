@@ -5,7 +5,7 @@ import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
 import * as fs from 'fs-extra';
 import * as minimatch from 'minimatch';
-import { AssetHashType, AssetOptions } from './assets';
+import { AssetHashType, AssetOptions, FileAssetPackaging } from './assets';
 import { BundlingOptions } from './bundling';
 import { FileSystem, FingerprintOptions } from './fs';
 import { Names } from './names';
@@ -16,6 +16,8 @@ import { Stage } from './stage';
 // v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
 // eslint-disable-next-line
 import { Construct as CoreConstruct } from './construct-compat';
+
+const ARCHIVE_EXTENSIONS = ['.zip', '.jar'];
 
 /**
  * A previously staged asset
@@ -138,6 +140,9 @@ export class AssetStaging extends CoreConstruct {
 
   private readonly cacheKey: string;
 
+  private _packaging = FileAssetPackaging.ZIP_DIRECTORY;
+  private _isArchive = true;
+
   constructor(scope: Construct, id: string, props: AssetStagingProps) {
     super(scope, id);
 
@@ -201,6 +206,20 @@ export class AssetStaging extends CoreConstruct {
    */
   public get sourceHash(): string {
     return this.assetHash;
+  }
+
+  /**
+   * How this asset should be packaged.
+   */
+  public get packaging(): FileAssetPackaging {
+    return this._packaging;
+  }
+
+  /**
+   * Whether this asset is an archvie (zip or jar).
+   */
+  public get isArchive(): boolean {
+    return this._isArchive;
   }
 
   /**
@@ -281,11 +300,25 @@ export class AssetStaging extends CoreConstruct {
     const bundleDir = this.determineBundleDir(this.assetOutdir, assetHash);
     this.bundle(bundling, bundleDir);
 
+    let sourcePath = bundleDir;
+    let extension: string | undefined;
+
+    // Check whether bundling resulted in a single archive file (zip, jar)
+    const bundledFile = singleFile(bundleDir);
+    if (bundledFile) {
+      const bundledExtension = path.extname(bundledFile).toLowerCase();
+      if (ARCHIVE_EXTENSIONS.includes(bundledExtension)) {
+        sourcePath = bundledFile;
+        extension = bundledExtension;
+        this._packaging = FileAssetPackaging.FILE;
+      }
+    }
+
     // Calculate assetHash afterwards if we still must
     assetHash = assetHash ?? this.calculateHash(this.hashType, bundling, bundleDir);
-    const stagedPath = path.resolve(this.assetOutdir, renderAssetFilename(assetHash));
+    const stagedPath = path.resolve(this.assetOutdir, renderAssetFilename(assetHash, extension));
 
-    this.stageAsset(bundleDir, stagedPath, 'move');
+    this.stageAsset(sourcePath, stagedPath, 'move');
     return { assetHash, stagedPath };
   }
 
@@ -323,6 +356,8 @@ export class AssetStaging extends CoreConstruct {
     const stat = fs.statSync(sourcePath);
     if (stat.isFile()) {
       fs.copyFileSync(sourcePath, targetPath);
+      this._packaging = FileAssetPackaging.FILE;
+      this._isArchive = ARCHIVE_EXTENSIONS.includes(path.extname(sourcePath).toLowerCase());
     } else if (stat.isDirectory()) {
       fs.mkdirSync(targetPath);
       FileSystem.copyDirectory(sourcePath, targetPath, this.fingerprintOptions);
@@ -501,4 +536,23 @@ function sortObject(object: { [key: string]: any }): { [key: string]: any } {
     ret[key] = sortObject(object[key]);
   }
   return ret;
+}
+
+/**
+ * Returns the single file of a directory or undefined
+ */
+function singleFile(directory: string): string | undefined {
+  if (!fs.statSync(directory).isDirectory()) {
+    return undefined;
+  }
+
+  const content = fs.readdirSync(directory);
+  if (content.length === 1) {
+    const file = path.join(directory, content[0]);
+    if (fs.statSync(file).isFile()) {
+      return file;
+    }
+  }
+
+  return undefined;
 }
