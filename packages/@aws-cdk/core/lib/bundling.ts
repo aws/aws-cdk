@@ -97,13 +97,14 @@ export interface BundlingOptions {
  */
 export enum BundlePackaging {
   /**
-   * The bundling output will be zipped and uploaded to S3.
+   * The bundling output will always be zipped and uploaded to S3, regardless
+   * of its content.
    */
   ALWAYS_ZIP = 'zip',
 
   /**
    * The bundling output will not be zipped. Bundling will fail if the bundling
-   * output doesn't contain a single archive (zip or jar) file.
+   * output doesn't contain a single file.
    */
   NEVER_ZIP = 'no-zip',
 
