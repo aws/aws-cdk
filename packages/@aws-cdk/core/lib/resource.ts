@@ -1,16 +1,17 @@
-// v2 - leave this as a separate section so it reduces merge conflicts when compat is removed
-// eslint-disable-next-line import/order
-import { IConstruct, Construct as CoreConstruct } from './construct-compat';
-
-import { Construct } from 'constructs';
 import { ArnComponents } from './arn';
-import { Lazy } from './lazy';
+import { CfnResource } from './cfn-resource';
+import { IConstruct, Construct as CoreConstruct } from './construct-compat';
+import { IStringProducer, Lazy } from './lazy';
 import { generatePhysicalName, isGeneratedWhenNeededMarker } from './private/physical-name-generator';
+import { Reference } from './reference';
+import { RemovalPolicy } from './removal-policy';
 import { IResolveContext } from './resolvable';
 import { Stack } from './stack';
-import { Token } from './token';
-import { RemovalPolicy } from './removal-policy';
-import { CfnResource } from './cfn-resource';
+import { Token, Tokenization } from './token';
+
+// v2 - leave this as a separate section so it reduces merge conflicts when compat is removed
+// eslint-disable-next-line import/order
+import { Construct } from 'constructs';
 
 const RESOURCE_SYMBOL = Symbol.for('@aws-cdk/core.Resource');
 
@@ -213,7 +214,7 @@ export abstract class Resource extends CoreConstruct implements IResource {
    * @experimental
    */
   protected getResourceNameAttribute(nameAttr: string) {
-    return Lazy.uncachedString({
+    return mimicReference(nameAttr, {
       produce: (context: IResolveContext) => {
         const consumingStack = Stack.of(context.scope);
 
@@ -246,8 +247,8 @@ export abstract class Resource extends CoreConstruct implements IResource {
    * @experimental
    */
   protected getResourceArnAttribute(arnAttr: string, arnComponents: ArnComponents) {
-    return Token.asString({
-      resolve: (context: IResolveContext) => {
+    return mimicReference(arnAttr, {
+      produce: (context: IResolveContext) => {
         const consumingStack = Stack.of(context.scope);
         if (this.stack.environment !== consumingStack.environment) {
           this._enableCrossEnvironment();
@@ -258,4 +259,29 @@ export abstract class Resource extends CoreConstruct implements IResource {
       },
     });
   }
+}
+
+/**
+ * Produce a Lazy that is also a Reference (if the base value is a Reference).
+ *
+ * If the given value is a Reference (or resolves to a Reference), return a new
+ * Reference that mimics the same target and display name, but resolves using
+ * the logic of the passed lazy.
+ *
+ * If the given value is NOT a Reference, just return a simple Lazy.
+ */
+function mimicReference(refSource: any, producer: IStringProducer): string {
+  const reference = Tokenization.reverse(refSource, {
+    // If this is an ARN concatenation, just fail to extract a reference.
+    failConcat: false,
+  });
+  if (!Reference.isReference(reference)) {
+    return Lazy.uncachedString(producer);
+  }
+
+  return Token.asString(new class extends Reference {
+    resolve(context: IResolveContext) {
+      return producer.produce(context);
+    }
+  }(reference, reference.target, reference.displayName));
 }
