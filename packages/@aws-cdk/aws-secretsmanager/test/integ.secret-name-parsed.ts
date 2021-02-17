@@ -39,9 +39,6 @@ class SecretsManagerStack extends cdk.Stack {
 }
 
 const app = new cdk.App({
-  context: {
-    '@aws-cdk/aws-secretsmanager:parseOwnedSecretName': 'true',
-  },
 });
 new SecretsManagerStack(app, 'Integ-SecretsManager-ParsedSecretName');
 app.synth();
