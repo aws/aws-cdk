@@ -108,7 +108,7 @@ export enum BundlingOutput {
   NOT_ARCHIVED = 'not-archived',
 
   /**
-   * If the bundling output contains a single archive file (zip or jar) it will
+   * If the bundling output directory contains a single archive file (zip or jar) it will
    * not be zipped. Otherwise the bundling output will be zipped.
    */
   AUTO_DISCOVER = 'auto-discover',
