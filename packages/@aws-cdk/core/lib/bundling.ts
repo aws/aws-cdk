@@ -102,7 +102,7 @@ export enum BundlingOutput {
   ARCHIVED = 'archived',
 
   /**
-   * The bundling output is not archived. It will be archived and then uploaded
+   * The bundling output directory contains one or more files which will be archived and uploaded as a .zip file
    * to S3.
    */
   NOT_ARCHIVED = 'not-archived',
