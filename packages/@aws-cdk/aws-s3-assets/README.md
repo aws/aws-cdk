@@ -125,7 +125,7 @@ Although optional, it's recommended to provide a local bundling method which can
 greatly improve performance.
 
 If the bundling output contains a single archive file (zip or jar) it will be uploaded
-to S3 as-is and will not be zipped. Otherwise it will be zipped.
+to S3 as-is and will not be zipped. Otherwise the contents of the output directory will be zipped and the zip file will be uploaded to S3.
 
 This behavior can be changed by setting the `bundling.packaging` option:
 
