@@ -110,9 +110,16 @@ export interface QueueProcessingServiceBaseProps {
   /**
    * Maximum capacity to scale to.
    *
-   * @default (desiredTaskCount * 2)
+   * @default 2
    */
   readonly maxScalingCapacity?: number
+
+  /**
+   * Minimum capacity to scale to.
+   *
+   * @default 1
+   */
+  readonly minScalingCapacity?: number
 
   /**
    * The intervals for scaling based on the SQS queue's ApproximateNumberOfMessagesVisible metric.
@@ -224,6 +231,11 @@ export abstract class QueueProcessingServiceBase extends CoreConstruct {
   public readonly maxCapacity: number;
 
   /**
+   * The minimum number of instances for autoscaling to scale down to.
+   */
+  public readonly minCapacity: number;
+
+  /**
    * The scaling interval for autoscaling based off an SQS Queue size.
    */
   public readonly scalingSteps: ScalingInterval[];
@@ -275,11 +287,8 @@ export abstract class QueueProcessingServiceBase extends CoreConstruct {
 
     // Determine the desired task count (minimum) and maximum scaling capacity
     this.desiredCount = props.desiredTaskCount ?? 1;
+    this.minCapacity = props.minScalingCapacity || this.desiredCount;
     this.maxCapacity = props.maxScalingCapacity || (2 * this.desiredCount);
-
-    if (!this.desiredCount && !this.maxCapacity) {
-      throw new Error('maxScalingCapacity must be set and greater than 0 if desiredCount is 0');
-    }
 
     new CfnOutput(this, 'SQSQueue', { value: this.sqsQueue.queueName });
     new CfnOutput(this, 'SQSQueueArn', { value: this.sqsQueue.queueArn });
@@ -291,7 +300,7 @@ export abstract class QueueProcessingServiceBase extends CoreConstruct {
    * @param service the ECS/Fargate service for which to apply the autoscaling rules to
    */
   protected configureAutoscalingForService(service: BaseService) {
-    const scalingTarget = service.autoScaleTaskCount({ maxCapacity: this.maxCapacity, minCapacity: this.desiredCount });
+    const scalingTarget = service.autoScaleTaskCount({ maxCapacity: this.maxCapacity, minCapacity: this.minCapacity });
     scalingTarget.scaleOnCpuUtilization('CpuScaling', {
       targetUtilizationPercent: 50,
     });
