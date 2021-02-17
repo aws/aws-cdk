@@ -331,7 +331,7 @@ export = {
       vpc,
     });
 
-    // WHEN
+    // WHEN - SecurityGroups and taskSubnets selection is defined
     new ecsPatterns.QueueProcessingFargateService(stack, 'Service', {
       vpc,
       memoryLimitMiB: 512,
@@ -340,7 +340,7 @@ export = {
       taskSubnets: { subnetType: ec2.SubnetType.ISOLATED },
     });
 
-    // THEN - QueueWorker is of FARGATE launch type, an SQS queue is created and all default properties are set.
+    // THEN - NetworkConfiguration are created with the spefici security groups and selected subnets
     expect(stack).to(haveResource('AWS::ECS::Service', {
       LaunchType: 'FARGATE',
       NetworkConfiguration: {
@@ -360,6 +360,47 @@ export = {
             },
             {
               Ref: 'VPCIsolatedSubnet2Subnet4B1C8CAA',
+            },
+          ],
+        },
+      },
+    }));
+
+    test.done();
+  },
+
+  'can set use public IP'(test: Test) {
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN - Assign Public IP is set to True
+    new ecsPatterns.QueueProcessingFargateService(stack, 'Service', {
+      vpc,
+      memoryLimitMiB: 512,
+      image: ecs.ContainerImage.fromRegistry('test'),
+      assignPublicIp: true,
+    });
+
+    // THEN - The Subnets defaults to Public and AssignPublicIp settings change to ENABLED
+    expect(stack).to(haveResource('AWS::ECS::Service', {
+      LaunchType: 'FARGATE',
+      NetworkConfiguration: {
+        AwsvpcConfiguration: {
+          AssignPublicIp: 'ENABLED',
+          SecurityGroups: [
+            {
+              'Fn::GetAtt': [
+                'ServiceQueueProcessingFargateServiceSecurityGroup6E981512',
+                'GroupId',
+              ],
+            },
+          ],
+          Subnets: [
+            {
+              Ref: 'VPCPublicSubnet1SubnetB4246D30',
+            },
+            {
+              Ref: 'VPCPublicSubnet2Subnet74179F39',
             },
           ],
         },
