@@ -10,7 +10,7 @@ import { IClusterEngine } from './cluster-engine';
 import { DatabaseClusterAttributes, IDatabaseCluster } from './cluster-ref';
 import { Endpoint } from './endpoint';
 import { IParameterGroup } from './parameter-group';
-import { DEFAULT_PASSWORD_EXCLUDE_CHARS, defaultDeletionProtection, renderCredentials, setupS3ImportExport } from './private/util';
+import { DEFAULT_PASSWORD_EXCLUDE_CHARS, defaultDeletionProtection, renderCredentials, setupS3ImportExport, helperRemovalPolicy, renderUnless } from './private/util';
 import { BackupProps, Credentials, InstanceProps, PerformanceInsightRetention, RotationSingleUserOptions, RotationMultiUserOptions } from './props';
 import { DatabaseProxy, DatabaseProxyOptions, ProxyTarget } from './proxy';
 import { CfnDBCluster, CfnDBClusterProps, CfnDBInstance } from './rds.generated';
@@ -310,7 +310,7 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
       description: `Subnets for ${id} database`,
       vpc: props.instanceProps.vpc,
       vpcSubnets: props.instanceProps.vpcSubnets,
-      removalPolicy: props.removalPolicy,
+      removalPolicy: renderUnless(helperRemovalPolicy(props.removalPolicy), RemovalPolicy.DESTROY),
     });
 
     this.securityGroups = props.instanceProps.securityGroups ?? [
@@ -716,9 +716,7 @@ function createInstances(cluster: DatabaseClusterNew, props: DatabaseClusterBase
     //
     //  Cluster DESTROY or SNAPSHOT -> DESTROY (snapshot is good enough to recreate)
     //  Cluster RETAIN              -> RETAIN (otherwise cluster state will disappear)
-    instance.applyRemovalPolicy(props.removalPolicy === RemovalPolicy.RETAIN
-      ? RemovalPolicy.RETAIN
-      : RemovalPolicy.DESTROY);
+    instance.applyRemovalPolicy(helperRemovalPolicy(props.removalPolicy));
 
     // We must have a dependency on the NAT gateway provider here to create
     // things in the right order.

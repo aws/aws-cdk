@@ -1,4 +1,4 @@
-import { countResources, expect, haveResource, haveResourceLike, ResourcePart, SynthUtils } from '@aws-cdk/assert';
+import { ABSENT, countResources, expect, haveResource, haveResourceLike, ResourcePart, SynthUtils } from '@aws-cdk/assert';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import { ManagedPolicy, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
@@ -1841,10 +1841,10 @@ nodeunitShim({
 });
 
 test.each([
-  [cdk.RemovalPolicy.RETAIN, 'Retain', 'Retain'],
-  [cdk.RemovalPolicy.SNAPSHOT, 'Snapshot', 'Delete'],
-  [cdk.RemovalPolicy.DESTROY, 'Delete', 'Delete'],
-])('if Cluster RemovalPolicy is \'%s\', the DBCluster has DeletionPolicy \'%s\' and the DBInstance has \'%s\'', (removalPolicy, cluster, instance) => {
+  [cdk.RemovalPolicy.RETAIN, 'Retain', 'Retain', 'Retain'],
+  [cdk.RemovalPolicy.SNAPSHOT, 'Snapshot', 'Delete', ABSENT],
+  [cdk.RemovalPolicy.DESTROY, 'Delete', 'Delete', ABSENT],
+])('if Cluster RemovalPolicy is \'%s\', the DBCluster has DeletionPolicy \'%s\', the DBInstance has \'%s\' and the DBSubnetGroup has \'%s\'', (clusterRemovalPolicy, clusterValue, instanceValue, subnetValue) => {
   const stack = new cdk.Stack();
 
   // WHEN
@@ -1855,18 +1855,23 @@ test.each([
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.LARGE),
       vpc: new ec2.Vpc(stack, 'Vpc'),
     },
-    removalPolicy,
+    removalPolicy: clusterRemovalPolicy,
   });
 
   // THEN
   expect(stack).to(haveResourceLike('AWS::RDS::DBCluster', {
-    DeletionPolicy: cluster,
-    UpdateReplacePolicy: cluster,
+    DeletionPolicy: clusterValue,
+    UpdateReplacePolicy: clusterValue,
   }, ResourcePart.CompleteDefinition));
 
   expect(stack).to(haveResourceLike('AWS::RDS::DBInstance', {
-    DeletionPolicy: instance,
-    UpdateReplacePolicy: instance,
+    DeletionPolicy: instanceValue,
+    UpdateReplacePolicy: instanceValue,
+  }, ResourcePart.CompleteDefinition));
+
+  expect(stack).to(haveResourceLike('AWS::RDS::DBSubnetGroup', {
+    DeletionPolicy: subnetValue,
+    UpdateReplacePolicy: subnetValue,
   }, ResourcePart.CompleteDefinition));
 });
 

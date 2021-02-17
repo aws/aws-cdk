@@ -12,7 +12,7 @@ import { Endpoint } from './endpoint';
 import { IInstanceEngine } from './instance-engine';
 import { IOptionGroup } from './option-group';
 import { IParameterGroup } from './parameter-group';
-import { DEFAULT_PASSWORD_EXCLUDE_CHARS, defaultDeletionProtection, engineDescription, renderCredentials, setupS3ImportExport } from './private/util';
+import { DEFAULT_PASSWORD_EXCLUDE_CHARS, defaultDeletionProtection, engineDescription, renderCredentials, setupS3ImportExport, helperRemovalPolicy, renderUnless } from './private/util';
 import { Credentials, PerformanceInsightRetention, RotationMultiUserOptions, RotationSingleUserOptions, SnapshotCredentials } from './props';
 import { DatabaseProxy, DatabaseProxyOptions, ProxyTarget } from './proxy';
 import { CfnDBInstance, CfnDBInstanceProps } from './rds.generated';
@@ -642,7 +642,7 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
       description: `Subnet group for ${this.node.id} database`,
       vpc: this.vpc,
       vpcSubnets: this.vpcPlacement,
-      removalPolicy: props.removalPolicy,
+      removalPolicy: renderUnless(helperRemovalPolicy(props.removalPolicy), RemovalPolicy.DESTROY),
     });
 
     const securityGroups = props.securityGroups || [new ec2.SecurityGroup(this, 'SecurityGroup', {
