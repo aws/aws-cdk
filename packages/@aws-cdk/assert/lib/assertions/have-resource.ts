@@ -59,14 +59,14 @@ export class HaveResourceAssertion extends JestFriendlyAssertion<StackInspector>
       properties === undefined ? anything() :
         allowValueExtension ? deepObjectLike(properties) :
           objectLike(properties);
-    this.part = part !== undefined ? part : ResourcePart.Properties;
+    this.part = part ?? ResourcePart.Properties;
   }
 
   public assertUsing(inspector: StackInspector): boolean {
     for (const logicalId of Object.keys(inspector.value.Resources || {})) {
       const resource = inspector.value.Resources[logicalId];
       if (resource.Type === this.resourceType) {
-        const propsToCheck = this.part === ResourcePart.Properties ? resource.Properties : resource;
+        const propsToCheck = this.part === ResourcePart.Properties ? (resource.Properties ?? {}) : resource;
 
         // Pass inspection object as 2nd argument, initialize failure with default string,
         // to maintain backwards compatibility with old predicate API.

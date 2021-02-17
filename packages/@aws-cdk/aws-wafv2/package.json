@@ -10,8 +10,6 @@
       "dotnet": {
         "namespace": "Amazon.CDK.AWS.WAFv2",
         "packageId": "Amazon.CDK.AWS.WAFv2",
-        "signAssembly": true,
-        "assemblyOriginatorKeyFile": "../../key.snk",
         "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
       },
       "java": {
@@ -49,8 +47,8 @@
     "watch": "cdk-watch",
     "cfn2ts": "cfn2ts",
     "compat": "cdk-compat",
-    "build+test": "npm run build && npm test",
-    "build+test+package": "npm run build+test && npm run package",
+    "build+test": "yarn build && yarn test",
+    "build+test+package": "yarn build+test && yarn package",
     "gen": "cfn2ts",
     "rosetta:extract": "yarn --silent jsii-rosetta extract"
   },
@@ -95,5 +93,8 @@
   "maturity": "cfn-only",
   "awscdkio": {
     "announce": false
+  },
+  "publishConfig": {
+    "tag": "latest"
   }
 }

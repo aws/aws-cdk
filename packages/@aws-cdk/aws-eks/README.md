@@ -5,17 +5,7 @@
 
 ![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)
 
-> All classes with the `Cfn` prefix in this module ([CFN Resources]) are always stable and safe to use.
->
-> [CFN Resources]: https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib
-
-![cdk-constructs: Developer Preview](https://img.shields.io/badge/cdk--constructs-developer--preview-informational.svg?style=for-the-badge)
-
-> The APIs of higher level constructs in this module are in **developer preview** before they
-> become stable. We will only make breaking changes to address unforeseen API issues. Therefore,
-> these APIs are not subject to [Semantic Versioning](https://semver.org/), and breaking changes
-> will be announced in release notes. This means that while you may use them, you may need to
-> update your source code when upgrading to a newer version of this package.
+![cdk-constructs: Stable](https://img.shields.io/badge/cdk--constructs-stable-success.svg?style=for-the-badge)
 
 ---
 
@@ -59,7 +49,7 @@ This example defines an Amazon EKS cluster with the following configuration:
 ```ts
 // provisiong a cluster
 const cluster = new eks.Cluster(this, 'hello-eks', {
-  version: eks.KubernetesVersion.V1_18,
+  version: eks.KubernetesVersion.V1_19,
 });
 
 // apply a kubernetes manifest to the cluster
@@ -152,7 +142,7 @@ Creating a new cluster is done using the `Cluster` or `FargateCluster` construct
 
 ```ts
 new eks.Cluster(this, 'HelloEKS', {
-  version: eks.KubernetesVersion.V1_18,
+  version: eks.KubernetesVersion.V1_19,
 });
 ```
 
@@ -160,7 +150,7 @@ You can also use `FargateCluster` to provision a cluster that uses only fargate 
 
 ```ts
 new eks.FargateCluster(this, 'HelloEKS', {
-  version: eks.KubernetesVersion.V1_18,
+  version: eks.KubernetesVersion.V1_19,
 });
 ```
 
@@ -184,7 +174,7 @@ At cluster instantiation time, you can customize the number of instances and the
 
 ```ts
 new eks.Cluster(this, 'HelloEKS', {
-  version: eks.KubernetesVersion.V1_18,
+  version: eks.KubernetesVersion.V1_19,
   defaultCapacity: 5,
   defaultCapacityInstance: ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.SMALL),
 });
@@ -196,7 +186,7 @@ Additional customizations are available post instantiation. To apply them, set t
 
 ```ts
 const cluster = new eks.Cluster(this, 'HelloEKS', {
-  version: eks.KubernetesVersion.V1_18,
+  version: eks.KubernetesVersion.V1_19,
   defaultCapacity: 0,
 });
 
@@ -232,8 +222,40 @@ cluster.addNodegroupCapacity('extra-ng-spot', {
 
 #### Launch Template Support
 
-You can specify a launch template that the node group will use. Note that when using a custom AMI, Amazon EKS doesn't merge any user data.
-Rather, You are responsible for supplying the required bootstrap commands for nodes to join the cluster.
+You can specify a launch template that the node group will use. For example, this can be useful if you want to use
+a custom AMI or add custom user data.
+
+When supplying a custom user data script, it must be encoded in the MIME multi-part archive format, since Amazon EKS merges with its own user data. Visit the [Launch Template Docs](https://docs.aws.amazon.com/eks/latest/userguide/launch-templates.html#launch-template-user-data)
+for mode details.
+
+```ts
+const userData = `MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="==MYBOUNDARY=="
+
+--==MYBOUNDARY==
+Content-Type: text/x-shellscript; charset="us-ascii"
+
+#!/bin/bash
+echo "Running custom user data script"
+
+--==MYBOUNDARY==--\\
+`;
+const lt = new ec2.CfnLaunchTemplate(this, 'LaunchTemplate', {
+  launchTemplateData: {
+    instanceType: 't3.small',
+    userData: Fn.base64(userData),
+  },
+});
+cluster.addNodegroupCapacity('extra-ng', {
+  launchTemplateSpec: {
+    id: lt.ref,
+    version: lt.attrLatestVersionNumber,
+  },
+});
+
+```
+
+Note that when using a custom AMI, Amazon EKS doesn't merge any user data. Which means you do not need the multi-part encoding. and are responsible for supplying the required bootstrap commands for nodes to join the cluster.
 In the following example, `/ect/eks/bootstrap.sh` from the AMI will be used to bootstrap the node.
 
 ```ts
@@ -245,19 +267,19 @@ userData.addCommands(
 const lt = new ec2.CfnLaunchTemplate(this, 'LaunchTemplate', {
   launchTemplateData: {
     imageId: 'some-ami-id', // custom AMI
-    instanceType: new ec2.InstanceType('t3.small').toString(),
+    instanceType: 't3.small',
     userData: Fn.base64(userData.render()),
   },
 });
 cluster.addNodegroupCapacity('extra-ng', {
   launchTemplateSpec: {
     id: lt.ref,
-    version: lt.attrDefaultVersionNumber,
+    version: lt.attrLatestVersionNumber,
   },
 });
 ```
 
-You may specify one or instance types in either the `instanceTypes` property of `NodeGroup` or in the launch template, **but not both**.
+You may specify one `instanceType` in the launch template or multiple `instanceTypes` in the node group, **but not both**.
 
 > For more details visit [Launch Template Support](https://docs.aws.amazon.com/eks/latest/userguide/launch-templates.html).
 
@@ -300,7 +322,7 @@ The following code defines an Amazon EKS cluster with a default Fargate Profile 
 
 ```ts
 const cluster = new eks.FargateCluster(this, 'MyCluster', {
-  version: eks.KubernetesVersion.V1_18,
+  version: eks.KubernetesVersion.V1_19,
 });
 ```
 
@@ -359,7 +381,7 @@ You can also configure the cluster to use an auto-scaling group as the default c
 
 ```ts
 cluster = new eks.Cluster(this, 'HelloEKS', {
-  version: eks.KubernetesVersion.V1_18,
+  version: eks.KubernetesVersion.V1_19,
   defaultCapacityType: eks.DefaultCapacityType.EC2,
 });
 ```
@@ -401,6 +423,8 @@ terminated.
 >
 > Chart Version: [0.9.5](https://github.com/aws/eks-charts/blob/v0.0.28/stable/aws-node-termination-handler/Chart.yaml)
 
+To disable the installation of the termination handler, set the `spotInterruptHandler` property to `false`. This applies both to `addAutoScalingGroupCapacity` and `connectAutoScalingGroupCapacity`.
+
 #### Bottlerocket
 
 [Bottlerocket](https://aws.amazon.com/bottlerocket/) is a Linux-based open-source operating system that is purpose-built by Amazon Web Services for running containers on virtual machines or bare metal hosts.
@@ -437,7 +461,7 @@ You can configure the [cluster endpoint access](https://docs.aws.amazon.com/eks/
 
 ```ts
 const cluster = new eks.Cluster(this, 'hello-eks', {
-  version: eks.KubernetesVersion.V1_18,
+  version: eks.KubernetesVersion.V1_19,
   endpointAccess: eks.EndpointAccess.PRIVATE // No access outside of your VPC.
 });
 ```
@@ -450,7 +474,7 @@ You can specify the VPC of the cluster using the `vpc` and `vpcSubnets` properti
 const vpc = new ec2.Vpc(this, 'Vpc');
 
 new eks.Cluster(this, 'HelloEKS', {
-  version: eks.KubernetesVersion.V1_18,
+  version: eks.KubernetesVersion.V1_19,
   vpc,
   vpcSubnets: [{ subnetType: ec2.SubnetType.PRIVATE }]
 });
@@ -489,7 +513,7 @@ You can configure the environment of this function by specifying it at cluster i
 
 ```ts
 const cluster = new eks.Cluster(this, 'hello-eks', {
-  version: eks.KubernetesVersion.V1_18,
+  version: eks.KubernetesVersion.V1_19,
   clusterHandlerEnvironment: {
     'http_proxy': 'http://proxy.myproxy.com'
   }
@@ -506,7 +530,7 @@ You can configure the environment of this function by specifying it at cluster i
 
 ```ts
 const cluster = new eks.Cluster(this, 'hello-eks', {
-  version: eks.KubernetesVersion.V1_18,
+  version: eks.KubernetesVersion.V1_19,
   kubectlEnvironment: {
     'http_proxy': 'http://proxy.myproxy.com'
   }
@@ -596,7 +620,7 @@ When you create a cluster, you can specify a `mastersRole`. The `Cluster` constr
 ```ts
 const role = new iam.Role(...);
 new eks.Cluster(this, 'HelloEKS', {
-  version: eks.KubernetesVersion.V1_18,
+  version: eks.KubernetesVersion.V1_19,
   mastersRole: role,
 });
 ```

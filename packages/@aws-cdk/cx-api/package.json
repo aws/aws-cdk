@@ -17,8 +17,6 @@
       "dotnet": {
         "namespace": "Amazon.CDK.CXAPI",
         "packageId": "Amazon.CDK.CXAPI",
-        "signAssembly": true,
-        "assemblyOriginatorKeyFile": "../../key.snk",
         "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
       },
       "python": {
@@ -47,8 +45,8 @@
     "pkglint": "pkglint -f",
     "package": "cdk-package",
     "awslint": "cdk-awslint",
-    "build+test+package": "npm run build+test && npm run package",
-    "build+test": "npm run build && npm test",
+    "build+test+package": "yarn build+test && yarn package",
+    "build+test": "yarn build && yarn test",
     "compat": "cdk-compat",
     "rosetta:extract": "yarn --silent jsii-rosetta extract"
   },
@@ -59,14 +57,14 @@
   },
   "dependencies": {
     "@aws-cdk/cloud-assembly-schema": "0.0.0",
-    "semver": "^7.3.2"
+    "semver": "^7.3.4"
   },
   "peerDependencies": {
     "@aws-cdk/cloud-assembly-schema": "0.0.0"
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@types/jest": "^26.0.15",
+    "@types/jest": "^26.0.20",
     "@types/mock-fs": "^4.13.0",
     "@types/semver": "^7.3.4",
     "cdk-build-tools": "0.0.0",
@@ -158,5 +156,8 @@
   },
   "cdk-build": {
     "jest": true
+  },
+  "publishConfig": {
+    "tag": "latest"
   }
 }

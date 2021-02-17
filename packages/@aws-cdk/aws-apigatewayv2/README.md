@@ -34,6 +34,7 @@ Higher level constructs for Websocket APIs | ![Not Implemented](https://img.shie
   - [Cross Origin Resource Sharing (CORS)](#cross-origin-resource-sharing-cors)
   - [Publishing HTTP APIs](#publishing-http-apis)
   - [Custom Domain](#custom-domain)
+  - [Managing access](#managing-access)
   - [Metrics](#metrics)
   - [VPC Link](#vpc-link)
   - [Private Integration](#private-integration)
@@ -95,7 +96,13 @@ httpApi.addRoutes({
 });
 ```
 
-The URL to the endpoint can be retrieved via the `apiEndpoint` attribute.
+The URL to the endpoint can be retrieved via the `apiEndpoint` attribute. By default this URL is enabled for clients. Use `disableExecuteApiEndpoint` to disable it.
+
+```ts
+const httpApi = new HttpApi(stack, 'HttpApi', {
+  disableExecuteApiEndpoint: true,
+});
+```
 
 The `defaultIntegration` option while defining HTTP APIs lets you create a default catch-all integration that is
 matched when a client reaches a route that is not explicitly defined.
@@ -215,6 +222,13 @@ with 3 API mapping resources across different APIs and Stages.
 | api | $default  |   `https://${domainName}/foo`  |
 | api | beta  |   `https://${domainName}/bar`  |
 | apiDemo | $default  |   `https://${domainName}/demo`  |
+
+### Managing access
+
+API Gateway supports multiple mechanisms for [controlling and managing access to your HTTP
+API](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-access-control.html) through authorizers.
+
+These authorizers can be found in the [APIGatewayV2-Authorizers](https://docs.aws.amazon.com/cdk/api/latest/docs/aws-apigatewayv2-authorizers-readme.html) constructs library.
 
 ## Metrics
 

@@ -1,4 +1,3 @@
-import * as fs from 'fs';
 import * as path from 'path';
 import * as assets from '@aws-cdk/assets';
 import * as iam from '@aws-cdk/aws-iam';
@@ -9,7 +8,9 @@ import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
 import { toSymlinkFollow } from './compat';
 
-const ARCHIVE_EXTENSIONS = ['.zip', '.jar'];
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 export interface AssetOptions extends assets.CopyOptions, cdk.AssetOptions {
   /**
@@ -54,7 +55,7 @@ export interface AssetProps extends AssetOptions {
  * An asset represents a local file or directory, which is automatically uploaded to S3
  * and then can be referenced within a CDK application.
  */
-export class Asset extends cdk.Construct implements cdk.IAsset {
+export class Asset extends CoreConstruct implements cdk.IAsset {
   /**
    * Attribute that represents the name of the bucket this asset exists in.
    */
@@ -135,17 +136,12 @@ export class Asset extends cdk.Construct implements cdk.IAsset {
 
     this.assetPath = staging.relativeStagedPath(stack);
 
-    const packaging = determinePackaging(staging.sourcePath);
+    this.isFile = staging.packaging === cdk.FileAssetPackaging.FILE;
 
-    this.isFile = packaging === cdk.FileAssetPackaging.FILE;
-
-    // sets isZipArchive based on the type of packaging and file extension
-    this.isZipArchive = packaging === cdk.FileAssetPackaging.ZIP_DIRECTORY
-      ? true
-      : ARCHIVE_EXTENSIONS.some(ext => staging.sourcePath.toLowerCase().endsWith(ext));
+    this.isZipArchive = staging.isArchive;
 
     const location = stack.synthesizer.addFileAsset({
-      packaging,
+      packaging: staging.packaging,
       sourceHash: this.sourceHash,
       fileName: this.assetPath,
     });
@@ -205,20 +201,4 @@ export class Asset extends cdk.Construct implements cdk.IAsset {
     // version (for example, when using Lambda traffic shifting).
     this.bucket.grantRead(grantee);
   }
-}
-
-function determinePackaging(assetPath: string): cdk.FileAssetPackaging {
-  if (!fs.existsSync(assetPath)) {
-    throw new Error(`Cannot find asset at ${assetPath}`);
-  }
-
-  if (fs.statSync(assetPath).isDirectory()) {
-    return cdk.FileAssetPackaging.ZIP_DIRECTORY;
-  }
-
-  if (fs.statSync(assetPath).isFile()) {
-    return cdk.FileAssetPackaging.FILE;
-  }
-
-  throw new Error(`Asset ${assetPath} is expected to be either a directory or a regular file`);
 }

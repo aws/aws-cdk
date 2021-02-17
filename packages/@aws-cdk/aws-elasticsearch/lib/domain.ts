@@ -1,10 +1,12 @@
 import { URL } from 'url';
 
+import * as acm from '@aws-cdk/aws-certificatemanager';
 import { Metric, MetricOptions, Statistic } from '@aws-cdk/aws-cloudwatch';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as logs from '@aws-cdk/aws-logs';
+import * as route53 from '@aws-cdk/aws-route53';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
@@ -124,6 +126,24 @@ export interface CapacityConfig {
    * @default - r5.large.elasticsearch
    */
   readonly dataNodeInstanceType?: string;
+
+  /**
+   * The number of UltraWarm nodes (instances) to use in the Amazon ES domain.
+   *
+   * @default - no UltraWarm nodes
+   */
+  readonly warmNodes?: number;
+
+  /**
+   * The instance type for your UltraWarm node, such as `ultrawarm1.medium.elasticsearch`.
+   * For valid values, see [UltraWarm Storage Limits]
+   * (https://docs.aws.amazon.com/elasticsearch-service/latest/developerguide/aes-limits.html#limits-ultrawarm)
+   * in the Amazon Elasticsearch Service Developer Guide.
+   *
+   * @default - ultrawarm1.medium.elasticsearch
+   */
+  readonly warmInstanceType?: string;
+
 }
 
 /**
@@ -192,7 +212,7 @@ export interface EbsOptions {
   readonly volumeSize?: number;
 
   /**
-   * The EBS volume type to use with the Amazon ES domain, such as standard, gp2, io1, st1, or sc1.
+   * The EBS volume type to use with the Amazon ES domain, such as standard, gp2, io1.
    * For more information, see[Configuring EBS-based Storage]
    * (https://docs.aws.amazon.com/elasticsearch-service/latest/developerguide/es-createupdatedomains.html#es-createdomain-configure-ebs)
    * in the Amazon Elasticsearch Service Developer Guide.
@@ -378,6 +398,28 @@ export interface AdvancedSecurityOptions {
 }
 
 /**
+ * Configures a custom domain endpoint for the ES domain
+ */
+export interface CustomEndpointOptions {
+  /**
+   * The custom domain name to assign
+   */
+  readonly domainName: string;
+
+  /**
+   * The certificate to use
+   * @default - create a new one
+   */
+  readonly certificate?: acm.ICertificate;
+
+  /**
+   * The hosted zone in Route53 to create the CNAME record in
+   * @default - do not create a CNAME
+   */
+  readonly hostedZone?: route53.IHostedZone;
+}
+
+/**
  * Properties for an AWS Elasticsearch Domain.
  */
 export interface DomainProps {
@@ -527,6 +569,13 @@ export interface DomainProps {
    */
   readonly enableVersionUpgrade?: boolean;
 
+  /**
+   * To configure a custom domain configure these options
+   *
+   * If you specify a Route53 hosted zone it will create a CNAME record and use DNS validation for the certificate
+   * @default - no custom domain endpoint will be configured
+   */
+  readonly customEndpoint?: CustomEndpointOptions;
 }
 
 /**
@@ -1214,6 +1263,7 @@ export class Domain extends DomainBase implements IDomain {
     });
 
     const defaultInstanceType = 'r5.large.elasticsearch';
+    const warmDefaultInstanceType = 'ultrawarm1.medium.elasticsearch';
 
     const dedicatedMasterType =
       props.capacity?.masterNodeInstanceType?.toLowerCase() ??
@@ -1225,6 +1275,12 @@ export class Domain extends DomainBase implements IDomain {
       props.capacity?.dataNodeInstanceType?.toLowerCase() ??
       defaultInstanceType;
     const instanceCount = props.capacity?.dataNodes ?? 1;
+
+    const warmType =
+      props.capacity?.warmInstanceType?.toLowerCase() ??
+      warmDefaultInstanceType;
+    const warmCount = props.capacity?.warmNodes ?? 0;
+    const warmEnabled = warmCount > 0;
 
     const availabilityZoneCount =
       props.zoneAwareness?.availabilityZoneCount ?? 2;
@@ -1243,8 +1299,12 @@ export class Domain extends DomainBase implements IDomain {
       throw new Error('When providing vpc options you need to provide a subnet for each AZ you are using');
     };
 
-    if ([dedicatedMasterType, instanceType].some(t => !t.endsWith('.elasticsearch'))) {
-      throw new Error('Master and data node instance types must end with ".elasticsearch".');
+    if ([dedicatedMasterType, instanceType, warmType].some(t => !t.endsWith('.elasticsearch'))) {
+      throw new Error('Master, data and UltraWarm node instance types must end with ".elasticsearch".');
+    }
+
+    if (!warmType.startsWith('ultrawarm')) {
+      throw new Error('UltraWarm node instance type must start with "ultrawarm".');
     }
 
     const elasticsearchVersion = props.version.version;
@@ -1369,6 +1429,10 @@ export class Domain extends DomainBase implements IDomain {
       }
     }
 
+    if (elasticsearchVersionNum < 6.8 && warmEnabled) {
+      throw new Error('UltraWarm requires Elasticsearch 6.8 or later.');
+    }
+
     // Validate against instance type restrictions, per
     // https://docs.aws.amazon.com/elasticsearch-service/latest/developerguide/aes-supported-instance-types.html
     if (isInstanceType('i3') && ebsEnabled) {
@@ -1381,6 +1445,10 @@ export class Domain extends DomainBase implements IDomain {
 
     if (isInstanceType('t2.micro') && elasticsearchVersionNum > 2.3) {
       throw new Error('The t2.micro.elasticsearch instance type supports only Elasticsearch 1.5 and 2.3.');
+    }
+
+    if (isSomeInstanceType('t2', 't3') && warmEnabled) {
+      throw new Error('T2 and T3 instance types do not support UltraWarm storage.');
     }
 
     // Only R3 and I3 support instance storage, per
@@ -1407,6 +1475,12 @@ export class Domain extends DomainBase implements IDomain {
     // https://aws.amazon.com/about-aws/whats-new/2020/09/elasticsearch-audit-logs-now-available-on-amazon-elasticsearch-service/
     if (props.logging?.auditLogEnabled && !advancedSecurityEnabled) {
       throw new Error('Fine-grained access control is required when audit logs publishing is enabled.');
+    }
+
+    // Validate UltraWarm requirement for dedicated master nodes, per
+    // https://docs.aws.amazon.com/elasticsearch-service/latest/developerguide/ultrawarm.html
+    if (warmEnabled && !dedicatedMasterEnabled) {
+      throw new Error('Dedicated master node is required when UltraWarm storage is enabled.');
     }
 
     let cfnVpcOptions: CfnDomain.VPCOptionsProperty | undefined;
@@ -1474,6 +1548,48 @@ export class Domain extends DomainBase implements IDomain {
       });
     }
 
+    const logPublishing: Record<string, any> = {};
+
+    if (this.appLogGroup) {
+      logPublishing.ES_APPLICATION_LOGS = {
+        enabled: true,
+        cloudWatchLogsLogGroupArn: this.appLogGroup.logGroupArn,
+      };
+    }
+
+    if (this.slowSearchLogGroup) {
+      logPublishing.SEARCH_SLOW_LOGS = {
+        enabled: true,
+        cloudWatchLogsLogGroupArn: this.slowSearchLogGroup.logGroupArn,
+      };
+    }
+
+    if (this.slowIndexLogGroup) {
+      logPublishing.INDEX_SLOW_LOGS = {
+        enabled: true,
+        cloudWatchLogsLogGroupArn: this.slowIndexLogGroup.logGroupArn,
+      };
+    }
+
+    if (this.auditLogGroup) {
+      logPublishing.AUDIT_LOGS = {
+        enabled: this.auditLogGroup != null,
+        cloudWatchLogsLogGroupArn: this.auditLogGroup?.logGroupArn,
+      };
+    }
+
+    let customEndpointCertificate: acm.ICertificate | undefined;
+    if (props.customEndpoint) {
+      if (props.customEndpoint.certificate) {
+        customEndpointCertificate = props.customEndpoint.certificate;
+      } else {
+        customEndpointCertificate = new acm.Certificate(this, 'CustomEndpointCertificate', {
+          domainName: props.customEndpoint.domainName,
+          validation: props.customEndpoint.hostedZone ? acm.CertificateValidation.fromDns(props.customEndpoint.hostedZone) : undefined,
+        });
+      }
+    }
+
     // Create the domain
     this.domain = new CfnDomain(this, 'Resource', {
       domainName: this.physicalName,
@@ -1488,6 +1604,15 @@ export class Domain extends DomainBase implements IDomain {
           : undefined,
         instanceCount,
         instanceType,
+        warmEnabled: warmEnabled
+          ? warmEnabled
+          : undefined,
+        warmCount: warmEnabled
+          ? warmCount
+          : undefined,
+        warmType: warmEnabled
+          ? warmType
+          : undefined,
         zoneAwarenessEnabled,
         zoneAwarenessConfig: zoneAwarenessEnabled
           ? { availabilityZoneCount }
@@ -1506,24 +1631,7 @@ export class Domain extends DomainBase implements IDomain {
           : undefined,
       },
       nodeToNodeEncryptionOptions: { enabled: nodeToNodeEncryptionEnabled },
-      logPublishingOptions: {
-        AUDIT_LOGS: {
-          enabled: this.auditLogGroup != null,
-          cloudWatchLogsLogGroupArn: this.auditLogGroup?.logGroupArn,
-        },
-        ES_APPLICATION_LOGS: {
-          enabled: this.appLogGroup != null,
-          cloudWatchLogsLogGroupArn: this.appLogGroup?.logGroupArn,
-        },
-        SEARCH_SLOW_LOGS: {
-          enabled: this.slowSearchLogGroup != null,
-          cloudWatchLogsLogGroupArn: this.slowSearchLogGroup?.logGroupArn,
-        },
-        INDEX_SLOW_LOGS: {
-          enabled: this.slowIndexLogGroup != null,
-          cloudWatchLogsLogGroupArn: this.slowIndexLogGroup?.logGroupArn,
-        },
-      },
+      logPublishingOptions: logPublishing,
       cognitoOptions: {
         enabled: props.cognitoKibanaAuth != null,
         identityPoolId: props.cognitoKibanaAuth?.identityPoolId,
@@ -1537,6 +1645,11 @@ export class Domain extends DomainBase implements IDomain {
       domainEndpointOptions: {
         enforceHttps,
         tlsSecurityPolicy: props.tlsSecurityPolicy ?? TLSSecurityPolicy.TLS_1_0,
+        ...props.customEndpoint && {
+          customEndpointEnabled: true,
+          customEndpoint: props.customEndpoint.domainName,
+          customEndpointCertificateArn: customEndpointCertificate!.certificateArn,
+        },
       },
       advancedSecurityOptions: advancedSecurityEnabled
         ? {
@@ -1571,6 +1684,14 @@ export class Domain extends DomainBase implements IDomain {
       resource: 'domain',
       resourceName: this.physicalName,
     });
+
+    if (props.customEndpoint?.hostedZone) {
+      new route53.CnameRecord(this, 'CnameRecord', {
+        recordName: props.customEndpoint.domainName,
+        zone: props.customEndpoint.hostedZone,
+        domainName: this.domainEndpoint,
+      });
+    }
 
     const accessPolicyStatements: iam.PolicyStatement[] | undefined = unsignedBasicAuthEnabled
       ? (props.accessPolicies ?? []).concat(unsignedAccessPolicy)

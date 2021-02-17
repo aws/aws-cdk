@@ -18,8 +18,6 @@
       "dotnet": {
         "namespace": "Amazon.CDK.LambdaLayer.AwsCli",
         "packageId": "Amazon.CDK.LambdaLayer.AwsCli",
-        "signAssembly": true,
-        "assemblyOriginatorKeyFile": "../../key.snk",
         "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
       },
       "python": {
@@ -47,8 +45,8 @@
     "pkglint": "pkglint -f",
     "package": "cdk-package",
     "awslint": "cdk-awslint",
-    "build+test": "npm run build && npm test",
-    "build+test+package": "npm run build+test && npm run package",
+    "build+test": "yarn build && yarn test",
+    "build+test+package": "yarn build+test && yarn package",
     "compat": "cdk-compat",
     "rosetta:extract": "yarn --silent jsii-rosetta extract"
   },
@@ -102,5 +100,8 @@
   },
   "ubergen": {
     "exclude": false
+  },
+  "publishConfig": {
+    "tag": "latest"
   }
 }

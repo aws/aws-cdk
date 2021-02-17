@@ -755,6 +755,59 @@ export = {
     test.done();
   },
 
+  'configures userdata with powershell if windows machine image is specified'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+
+    const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+    cluster.addCapacity('WindowsAutoScalingGroup', {
+      instanceType: new ec2.InstanceType('t2.micro'),
+      machineImage: new ecs.EcsOptimizedAmi({
+        windowsVersion: ecs.WindowsOptimizedVersion.SERVER_2019,
+      }),
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::AutoScaling::LaunchConfiguration', {
+      ImageId: {
+        Ref: 'SsmParameterValueawsserviceecsoptimizedamiwindowsserver2019englishfullrecommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter',
+      },
+      InstanceType: 't2.micro',
+      IamInstanceProfile: {
+        Ref: 'EcsClusterWindowsAutoScalingGroupInstanceProfile65DFA6BB',
+      },
+      SecurityGroups: [
+        {
+          'Fn::GetAtt': [
+            'EcsClusterWindowsAutoScalingGroupInstanceSecurityGroupDA468DF1',
+            'GroupId',
+          ],
+        },
+      ],
+      UserData: {
+        'Fn::Base64': {
+          'Fn::Join': [
+            '',
+            [
+              '<powershell>Remove-Item -Recurse C:\\ProgramData\\Amazon\\ECS\\Cache\nImport-Module ECSTools\n[Environment]::SetEnvironmentVariable("ECS_CLUSTER", "',
+              {
+                Ref: 'EcsCluster97242B84',
+              },
+              "\", \"Machine\")\n[Environment]::SetEnvironmentVariable(\"ECS_ENABLE_AWSLOGS_EXECUTIONROLE_OVERRIDE\", \"true\", \"Machine\")\n[Environment]::SetEnvironmentVariable(\"ECS_AVAILABLE_LOGGING_DRIVERS\", '[\"json-file\",\"awslogs\"]', \"Machine\")\n[Environment]::SetEnvironmentVariable(\"ECS_ENABLE_TASK_IAM_ROLE\", \"true\", \"Machine\")\nInitialize-ECSAgent -Cluster '",
+              {
+                Ref: 'EcsCluster97242B84',
+              },
+              "' -EnableTaskIAMRole</powershell>",
+            ],
+          ],
+        },
+      },
+    }));
+
+    test.done();
+  },
+
   /*
    * TODO:v2.0.0 BEGINNING OF OBSOLETE BLOCK
    */
@@ -1613,6 +1666,7 @@ export = {
     );
     test.done();
   },
+
   'throws when machineImage and machineImageType both specified'(test: Test) {
     // GIVEN
     const app = new cdk.App();
@@ -1627,6 +1681,54 @@ export = {
         machineImage: new ecs.EcsOptimizedAmi(),
       });
     }, /You can only specify either machineImage or machineImageType, not both./);
+    test.done();
+  },
+
+  'allows specifying capacityProviders'(test: Test) {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'test');
+
+    // WHEN
+    new ecs.Cluster(stack, 'EcsCluster', { capacityProviders: ['FARGATE_SPOT'] });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ECS::Cluster', {
+      CapacityProviders: ['FARGATE_SPOT'],
+    }));
+
+    test.done();
+  },
+
+  'allows adding capacityProviders post-construction'(test: Test) {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'test');
+    const cluster = new ecs.Cluster(stack, 'EcsCluster');
+
+    // WHEN
+    cluster.addCapacityProvider('FARGATE');
+    cluster.addCapacityProvider('FARGATE'); // does not add twice
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ECS::Cluster', {
+      CapacityProviders: ['FARGATE'],
+    }));
+
+    test.done();
+  },
+
+  'throws for unsupported capacity providers'(test: Test) {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'test');
+    const cluster = new ecs.Cluster(stack, 'EcsCluster');
+
+    // THEN
+    test.throws(() => {
+      cluster.addCapacityProvider('HONK');
+    }, /CapacityProvider not supported/);
+
     test.done();
   },
 };

@@ -17,8 +17,6 @@
       "dotnet": {
         "namespace": "Amazon.CDK.AWS.ElasticLoadBalancingV2",
         "packageId": "Amazon.CDK.AWS.ElasticLoadBalancingV2",
-        "signAssembly": true,
-        "assemblyOriginatorKeyFile": "../../key.snk",
         "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
       },
       "python": {
@@ -47,8 +45,8 @@
     "package": "cdk-package",
     "awslint": "cdk-awslint",
     "cfn2ts": "cfn2ts",
-    "build+test+package": "npm run build+test && npm run package",
-    "build+test": "npm run build && npm test",
+    "build+test+package": "yarn build+test && yarn package",
+    "build+test": "yarn build && yarn test",
     "compat": "cdk-compat",
     "gen": "cfn2ts",
     "rosetta:extract": "yarn --silent jsii-rosetta extract"
@@ -144,5 +142,8 @@
   "awscdkio": {
     "announce": false
   },
-  "maturity": "stable"
+  "maturity": "stable",
+  "publishConfig": {
+    "tag": "latest"
+  }
 }
