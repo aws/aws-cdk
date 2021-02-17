@@ -810,7 +810,7 @@
           ]
         },
         "Config": {
-          "version": "1.18",
+          "version": "1.19",
           "roleArn": {
             "Fn::GetAtt": [
               "EksAllHandlersInVpcStackRoleC36F09F0",
