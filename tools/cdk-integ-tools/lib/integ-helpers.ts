@@ -337,7 +337,11 @@ export const DEFAULT_SYNTH_OPTIONS = {
         },
       ],
     },
+    // Enable feature flags for all integ tests
     '@aws-cdk/aws-ecr-assets:dockerIgnoreSupport': true,
+    '@aws-cdk/aws-kms:defaultKeyPolicies': true,
+    '@aws-cdk/core:enableStackNameDuplicates': true,
+    '@aws-cdk/aws-secretsmanager:parseOwnedSecretName': true,
   },
   env: {
     CDK_INTEG_ACCOUNT: '12345678',
