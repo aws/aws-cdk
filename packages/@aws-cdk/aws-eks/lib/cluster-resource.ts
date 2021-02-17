@@ -144,14 +144,6 @@ export class ClusterResource extends CoreConstruct {
 
     creationRole.addToPolicy(new iam.PolicyStatement({
       actions: [
-        'ec2:DescribeSubnets',
-        'ec2:DescribeRouteTables',
-      ],
-      resources: ['*'],
-    }));
-
-    creationRole.addToPolicy(new iam.PolicyStatement({
-      actions: [
         'eks:CreateCluster',
         'eks:DescribeCluster',
         'eks:DescribeUpdate',
@@ -182,12 +174,8 @@ export class ClusterResource extends CoreConstruct {
 
     // see https://github.com/aws/aws-cdk/issues/9027
     creationRole.addToPolicy(new iam.PolicyStatement({
-      actions: ['ec2:DescribeVpcs'],
-      resources: [stack.formatArn({
-        service: 'ec2',
-        resource: 'vpc',
-        resourceName: props.vpc.vpcId,
-      })],
+      actions: ['ec2:Describe*'],
+      resources: ['*'],
     }));
 
     // grant cluster creation role sufficient permission to access the specified key
