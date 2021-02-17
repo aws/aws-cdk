@@ -124,11 +124,12 @@ new assets.Asset(this, 'BundledAsset', {
 Although optional, it's recommended to provide a local bundling method which can
 greatly improve performance.
 
-If the bundling output contains a single archive file (zip or jar) it will be uploaded
-to S3 as-is and will not be zipped. Otherwise the contents of the output directory will
-be zipped and the zip file will be uploaded to S3.
+If the bundling output contains a single archive file (zip or jar) it will be
+uploaded to S3 as-is and will not be zipped. Otherwise the contents of the
+output directory will be zipped and the zip file will be uploaded to S3. This
+is the default behavior for `bundling.output` (`BundlingOutput.AUTO_DISCOVER`).
 
-This behavior can be changed by setting the `bundling.output` option:
+Use `BundlingOutput.NOT_ARCHIVED` if the bundling output must always be zipped:
 
 ```ts
 const asset = new assets.Asset(this, 'BundledAsset', {
@@ -141,8 +142,8 @@ const asset = new assets.Asset(this, 'BundledAsset', {
 });
 ```
 
-Use `BundlingOutput.ARCHIVED` if the bundling output contains a single file and you don't
-want it to be zippped.
+Use `BundlingOutput.ARCHIVED` if the bundling output contains a single archive file and
+you don't want it to be zippped.
 
 ## CloudFormation Resource Metadata
 

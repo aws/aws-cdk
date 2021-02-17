@@ -565,6 +565,7 @@ interface BundledAsset {
  */
 function determineBundledAsset(bundleDir: string, bundlingOutput: BundlingOutput): BundledAsset {
   const archiveFile = singleArchiveFile(bundleDir);
+
   // auto-discover means that if there is an archive file, we take it as the
   // bundle, otherwise, we will archive here.
   if (bundlingOutput === BundlingOutput.AUTO_DISCOVER) {
