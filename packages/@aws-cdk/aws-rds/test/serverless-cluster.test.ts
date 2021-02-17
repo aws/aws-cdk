@@ -3,10 +3,10 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as cdk from '@aws-cdk/core';
-import { Test } from 'nodeunit';
+import { nodeunitShim, Test } from 'nodeunit-shim';
 import { AuroraPostgresEngineVersion, ServerlessCluster, DatabaseClusterEngine, ParameterGroup, AuroraCapacityUnit, DatabaseSecret } from '../lib';
 
-export = {
+nodeunitShim({
   'can create a Serverless Cluster with Aurora Postgres database engine'(test: Test) {
     // GIVEN
     const stack = testStack();
@@ -818,7 +818,7 @@ export = {
 
     test.done();
   },
-};
+});
 
 
 function testStack() {
