@@ -30,9 +30,8 @@ export function testFutureBehavior<T>(
 
   const major = cdkMajorVersion(repoRoot);
   if (major === 2) {
-    // Temporaily disable CDKv2 behaviour
-    // const app = new cdkApp();
-    // return test(name, async () => fn(app));
+    const app = new cdkApp();
+    return test(name, async () => fn(app));
   }
   const app = new cdkApp({ context: flags });
   return test(name, () => fn(app));
@@ -59,8 +58,7 @@ export function testLegacyBehavior<T>(
 
   const major = cdkMajorVersion(repoRoot);
   if (major === 2) {
-    // Temporarily disable CDKv2 behaviour
-    // return;
+    return;
   }
   const app = new cdkApp();
   return test(name, () => fn(app));

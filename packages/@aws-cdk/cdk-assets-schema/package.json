@@ -76,5 +76,8 @@
   "maturity": "deprecated",
   "cdk-build": {
     "jest": true
+  },
+  "publishConfig": {
+    "tag": "latest"
   }
 }
