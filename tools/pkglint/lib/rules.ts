@@ -64,7 +64,7 @@ export class PublishConfigTagIsRequired extends ValidationRule {
     if (pkg.json.publishConfig?.tag !== defaultPublishTag) {
       pkg.report({
         ruleName: this.name,
-        message: 'publishConfig.tag is required',
+        message: `publishConfig.tag must be ${defaultPublishTag}`,
         fix: (() => {
           const publishConfig = pkg.json.publishConfig ?? {};
           publishConfig.tag = defaultPublishTag;
