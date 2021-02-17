@@ -35,7 +35,7 @@ class EksClusterStack extends TestStack {
       vpc: this.vpc,
       mastersRole,
       defaultCapacity: 2,
-      version: eks.KubernetesVersion.V1_18,
+      version: eks.KubernetesVersion.V1_19,
       secretsEncryptionKey,
     });
 
