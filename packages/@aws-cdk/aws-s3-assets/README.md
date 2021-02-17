@@ -125,9 +125,10 @@ Although optional, it's recommended to provide a local bundling method which can
 greatly improve performance.
 
 If the bundling output contains a single archive file (zip or jar) it will be uploaded
-to S3 as-is and will not be zipped. Otherwise the contents of the output directory will be zipped and the zip file will be uploaded to S3.
+to S3 as-is and will not be zipped. Otherwise the contents of the output directory will
+be zipped and the zip file will be uploaded to S3.
 
-This behavior can be changed by setting the `bundling.packaging` option:
+This behavior can be changed by setting the `bundling.output` option:
 
 ```ts
 const asset = new assets.Asset(this, 'BundledAsset', {
@@ -135,12 +136,12 @@ const asset = new assets.Asset(this, 'BundledAsset', {
   bundling: {
     image: BundlingDockerImage.fromRegistry('alpine'),
     command: ['command-that-produces-an-archive.sh'],
-    packaging: BundlePackaging.ALWAYS_ZIP, // Bundling output will be zipped even though it produces a single archive file.
+    packaging: BundlingOutput.NOT_ARCHIVED, // Bundling output will be zipped even though it produces a single archive file.
   },
 });
 ```
 
-Use `BundlePackaging.NEVER_ZIP` if the bundling output contains a single file and you don't
+Use `BundlingOutput.ARCHIVED` if the bundling output contains a single file and you don't
 want it to be zippped.
 
 ## CloudFormation Resource Metadata

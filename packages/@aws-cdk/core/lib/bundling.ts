@@ -81,38 +81,37 @@ export interface BundlingOptions {
   readonly local?: ILocalBundling;
 
   /**
-   * The type of packaging to apply on the bundling output.
+   * The type of output that this bundling operation is producing.
    *
-   * @default BundlePackaging.AUTO
+   * @default BundlingOutput.AUTO_DISCOVER
    *
    * @experimental
    */
-  readonly packaging?: BundlePackaging;
+  readonly output?: BundlingOutput;
 }
 
 /**
- * The type of packaging to apply on the bundled asset.
+ * The type of output that a bundling operation is producing.
  *
  * @experimental
  */
-export enum BundlePackaging {
+export enum BundlingOutput {
   /**
-   * The bundling output will always be zipped and uploaded to S3, regardless
-   * of its content.
+   * The bundling output is aready archived. It will be uploaded to S3 as-is.
    */
-  ALWAYS_ZIP = 'zip',
+  ARCHIVED = 'archived',
 
   /**
-   * The bundling output will not be zipped. Bundling will fail if the bundling
-   * output doesn't contain a single file.
+   * The bundling output is not archived. It will be archived and then uploaded
+   * to S3.
    */
-  NEVER_ZIP = 'no-zip',
+  NOT_ARCHIVED = 'not-archived',
 
   /**
    * If the bundling output contains a single archive file (zip or jar) it will
-   * not be zipped. Otherwise it will be zipped.
+   * not be zipped. Otherwise the bundling output will be zipped.
    */
-  AUTO = 'auto'
+  AUTO_DISCOVER = 'auto-discover',
 }
 
 /**

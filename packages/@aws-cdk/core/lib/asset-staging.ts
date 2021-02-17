@@ -6,7 +6,7 @@ import { Construct } from 'constructs';
 import * as fs from 'fs-extra';
 import * as minimatch from 'minimatch';
 import { AssetHashType, AssetOptions, FileAssetPackaging } from './assets';
-import { BundlingOptions, BundlePackaging } from './bundling';
+import { BundlingOptions, BundlingOutput } from './bundling';
 import { FileSystem, FingerprintOptions } from './fs';
 import { Names } from './names';
 import { Cache } from './private/cache';
@@ -300,34 +300,16 @@ export class AssetStaging extends CoreConstruct {
     const bundleDir = this.determineBundleDir(this.assetOutdir, assetHash);
     this.bundle(bundling, bundleDir);
 
-    let assetPath = bundleDir;
-    let extension: string | undefined;
-
-    const packaging = bundling.packaging ?? BundlePackaging.AUTO;
-    if (packaging !== BundlePackaging.ALWAYS_ZIP) {
-      // Check whether bundling resulted in a single file
-      const bundledFile = singleFile(bundleDir);
-      if (packaging === BundlePackaging.NEVER_ZIP && !bundledFile) {
-        throw new Error('Packaging was set to `NEVER_ZIP` but the bundling output did not produce a single file.');
-      }
-
-      if (bundledFile) { // It's a single file
-        const bundledExtension = path.extname(bundledFile).toLowerCase();
-        const isSingleArchive = ARCHIVE_EXTENSIONS.includes(bundledExtension);
-        if (packaging === BundlePackaging.NEVER_ZIP || (packaging === BundlePackaging.AUTO && isSingleArchive)) {
-          this._packaging = FileAssetPackaging.FILE;
-          this._isArchive = isSingleArchive;
-          assetPath = bundledFile;
-          extension = bundledExtension;
-        }
-      }
-    }
+    // Check bundling output content and determine if we will need to archive
+    const bundlingOutput = bundling.output ?? BundlingOutput.AUTO_DISCOVER;
+    const bundledAsset = this.determineBundledAsset(bundlingOutput, bundleDir);
+    this._packaging = bundledAsset.packaging;
 
     // Calculate assetHash afterwards if we still must
-    assetHash = assetHash ?? this.calculateHash(this.hashType, bundling, assetPath);
-    const stagedPath = path.resolve(this.assetOutdir, renderAssetFilename(assetHash, extension));
+    assetHash = assetHash ?? this.calculateHash(this.hashType, bundling, bundledAsset.path);
+    const stagedPath = path.resolve(this.assetOutdir, renderAssetFilename(assetHash, bundledAsset.extension));
 
-    this.stageAsset(assetPath, stagedPath, 'move');
+    this.stageAsset(bundledAsset.path, stagedPath, 'move');
     return { assetHash, stagedPath };
   }
 
@@ -497,6 +479,33 @@ export class AssetStaging extends CoreConstruct {
         throw new Error('Unknown asset hash type.');
     }
   }
+
+  private determineBundledAsset(bundlingOutput: BundlingOutput, bundleDir: string): BundledAsset {
+    let archiveFile: string | undefined;
+
+    switch (bundlingOutput) {
+      case BundlingOutput.NOT_ARCHIVED:
+        return { path: bundleDir, packaging: FileAssetPackaging.ZIP_DIRECTORY };
+      case BundlingOutput.ARCHIVED:
+        archiveFile = singleArchiveFile(bundleDir);
+        if (!archiveFile) {
+          throw new Error('Bundling output directory is expected to include only a single .zip or .jar file when `output` is set to `ARCHIVED`');
+        }
+        return { path: archiveFile, packaging: FileAssetPackaging.FILE, extension: path.extname(archiveFile) };
+      case BundlingOutput.AUTO_DISCOVER:
+        archiveFile = singleArchiveFile(bundleDir);
+        if (archiveFile) {
+          return { path: archiveFile, packaging: FileAssetPackaging.FILE, extension: path.extname(archiveFile) };
+        }
+        return { path: bundleDir, packaging: FileAssetPackaging.ZIP_DIRECTORY };
+    }
+  }
+}
+
+interface BundledAsset {
+  path: string,
+  packaging: FileAssetPackaging,
+  extension?: string
 }
 
 function renderAssetFilename(assetHash: string, extension = '') {
@@ -548,17 +557,22 @@ function sortObject(object: { [key: string]: any }): { [key: string]: any } {
 }
 
 /**
- * Returns the single file of a directory or undefined
+ * Returns the single archive file of a directory or undefined
  */
-function singleFile(directory: string): string | undefined {
+function singleArchiveFile(directory: string): string | undefined {
+  if (!fs.existsSync(directory)) {
+    throw new Error(`Directory ${directory} does not exist.`);
+  }
+
   if (!fs.statSync(directory).isDirectory()) {
-    return undefined;
+    throw new Error(`${directory} is not a directory.`);
   }
 
   const content = fs.readdirSync(directory);
   if (content.length === 1) {
     const file = path.join(directory, content[0]);
-    if (fs.statSync(file).isFile()) {
+    const extension = path.extname(content[0]).toLowerCase();
+    if (fs.statSync(file).isFile() && ARCHIVE_EXTENSIONS.includes(extension)) {
       return file;
     }
   }

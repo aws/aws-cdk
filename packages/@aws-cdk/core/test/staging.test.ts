@@ -5,7 +5,7 @@ import * as cxapi from '@aws-cdk/cx-api';
 import * as fs from 'fs-extra';
 import { nodeunitShim, Test } from 'nodeunit-shim';
 import * as sinon from 'sinon';
-import { App, AssetHashType, AssetStaging, BundlePackaging, BundlingDockerImage, BundlingOptions, FileSystem, Stack, Stage } from '../lib';
+import { App, AssetHashType, AssetStaging, BundlingDockerImage, BundlingOptions, BundlingOutput, FileSystem, Stack, Stage } from '../lib';
 
 const STUB_INPUT_FILE = '/tmp/docker-stub.input';
 const STUB_INPUT_CONCAT_FILE = '/tmp/docker-stub.input.concat';
@@ -819,7 +819,7 @@ nodeunitShim({
     test.done();
   },
 
-  'bundling that produces a single archive file'(test: Test) {
+  'bundling that produces a single archive file is autodiscovered'(test: Test) {
     // GIVEN
     const app = new App();
     const stack = new Stack(app, 'stack');
@@ -844,13 +844,14 @@ nodeunitShim({
       'stack.template.json',
       'tree.json',
     ]);
+    test.equal(fs.readdirSync(path.join(assembly.directory, 'asset.f43148c61174f444925231b5849b468f21e93b5d1469cd07c53625ffd039ef48')).length, 0); // empty bundle dir
     test.deepEqual(staging.packaging, FileAssetPackaging.FILE);
     test.deepEqual(staging.isArchive, true);
 
     test.done();
   },
 
-  'bundling that produces a single archive file with ALWAYS_ZIP'(test: Test) {
+  'bundling that produces a single archive file with NOT_ARCHIVED'(test: Test) {
     // GIVEN
     const app = new App();
     const stack = new Stack(app, 'stack');
@@ -862,14 +863,14 @@ nodeunitShim({
       bundling: {
         image: BundlingDockerImage.fromRegistry('alpine'),
         command: [DockerStubCommand.SINGLE_ARCHIVE],
-        packaging: BundlePackaging.ALWAYS_ZIP,
+        output: BundlingOutput.NOT_ARCHIVED,
       },
     });
 
     // THEN
     const assembly = app.synth();
     test.deepEqual(fs.readdirSync(assembly.directory), [
-      'asset.d6ed33ece892ac6be1b5f8151f83361aa8c044587d5431c4803cc9cadbc657cf',
+      'asset.d68f7bac29656de963ed259858f3063991e0632c2ebca437fe03e96e955a6b49',
       'cdk.out',
       'manifest.json',
       'stack.template.json',
@@ -881,39 +882,7 @@ nodeunitShim({
     test.done();
   },
 
-  'bundling that produces a single non-archive file with NEVER_ZIP'(test: Test) {
-    // GIVEN
-    const app = new App();
-    const stack = new Stack(app, 'stack');
-    const directory = path.join(__dirname, 'fs', 'fixtures', 'test1');
-
-    // WHEN
-    const staging = new AssetStaging(stack, 'Asset', {
-      sourcePath: directory,
-      bundling: {
-        image: BundlingDockerImage.fromRegistry('alpine'),
-        command: [DockerStubCommand.SUCCESS],
-        packaging: BundlePackaging.NEVER_ZIP,
-      },
-    });
-
-    // THEN
-    const assembly = app.synth();
-    test.deepEqual(fs.readdirSync(assembly.directory), [
-      'asset.08c328a7f9f7689be3c1c582577e74fb44deb70b200a5d3f2de168b2981f2a61',
-      'asset.08c328a7f9f7689be3c1c582577e74fb44deb70b200a5d3f2de168b2981f2a61.txt',
-      'cdk.out',
-      'manifest.json',
-      'stack.template.json',
-      'tree.json',
-    ]);
-    test.deepEqual(staging.packaging, FileAssetPackaging.FILE);
-    test.deepEqual(staging.isArchive, false);
-
-    test.done();
-  },
-
-  'throws with NEVER_ZIP and bundling that does not produce a single file'(test: Test) {
+  'throws with ARCHIVED and bundling that does not produce a single archive file'(test: Test) {
     // GIVEN
     const app = new App();
     const stack = new Stack(app, 'stack');
@@ -925,9 +894,9 @@ nodeunitShim({
       bundling: {
         image: BundlingDockerImage.fromRegistry('alpine'),
         command: [DockerStubCommand.MULTIPLE_FILES],
-        packaging: BundlePackaging.NEVER_ZIP,
+        output: BundlingOutput.ARCHIVED,
       },
-    }), /Packaging was set to `NEVER_ZIP` but the bundling output did not produce a single file./);
+    }), /Bundling output directory is expected to include only a single .zip or .jar file when `output` is set to `ARCHIVED`/);
 
 
     test.done();
