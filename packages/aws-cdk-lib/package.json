@@ -285,7 +285,7 @@
     "@types/fs-extra": "^8.1.1",
     "@types/node": "^10.17.52",
     "cdk-build-tools": "0.0.0",
-    "constructs": "^3.2.0",
+    "constructs": "^3.3.25",
     "fs-extra": "^9.1.0",
     "pkglint": "0.0.0",
     "ts-node": "^9.1.1",

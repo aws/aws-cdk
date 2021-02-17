@@ -192,7 +192,7 @@
     "@aws-cdk/cx-api": "0.0.0",
     "@aws-cdk/region-info": "0.0.0",
     "@balena/dockerignore": "^1.0.2",
-    "constructs": "^3.2.0",
+    "constructs": "^3.3.25",
     "fs-extra": "^9.1.0",
     "ignore": "^5.1.8",
     "minimatch": "^3.0.4"
@@ -208,7 +208,7 @@
     "@aws-cdk/cloud-assembly-schema": "0.0.0",
     "@aws-cdk/cx-api": "0.0.0",
     "@aws-cdk/region-info": "0.0.0",
-    "constructs": "^3.2.0"
+    "constructs": "^3.3.25"
   },
   "engines": {
     "node": ">= 10.13.0 <13 || >=13.7.0"
