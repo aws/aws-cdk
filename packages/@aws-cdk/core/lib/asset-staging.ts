@@ -564,22 +564,20 @@ interface BundledAsset {
  * and the type of output.
  */
 function determineBundledAsset(bundleDir: string, bundlingOutput: BundlingOutput): BundledAsset {
-  let archiveFile: string | undefined;
+  const archiveFile = singleArchiveFile(bundleDir);
+  // auto-discover means that if there is an archive file, we take it as the
+  // bundle, otherwise, we will archive here.
+  if (bundlingOutput === BundlingOutput.AUTO_DISCOVER) {
+    bundlingOutput = archiveFile ? BundlingOutput.ARCHIVED : BundlingOutput.NOT_ARCHIVED;
+  }
 
   switch (bundlingOutput) {
     case BundlingOutput.NOT_ARCHIVED:
       return { path: bundleDir, packaging: FileAssetPackaging.ZIP_DIRECTORY };
     case BundlingOutput.ARCHIVED:
-      archiveFile = singleArchiveFile(bundleDir);
       if (!archiveFile) {
         throw new Error('Bundling output directory is expected to include only a single .zip or .jar file when `output` is set to `ARCHIVED`');
       }
       return { path: archiveFile, packaging: FileAssetPackaging.FILE, extension: path.extname(archiveFile) };
-    case BundlingOutput.AUTO_DISCOVER:
-      archiveFile = singleArchiveFile(bundleDir);
-      if (archiveFile) {
-        return { path: archiveFile, packaging: FileAssetPackaging.FILE, extension: path.extname(archiveFile) };
-      }
-      return { path: bundleDir, packaging: FileAssetPackaging.ZIP_DIRECTORY };
   }
 }
