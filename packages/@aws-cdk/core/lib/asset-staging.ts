@@ -302,7 +302,7 @@ export class AssetStaging extends CoreConstruct {
 
     // Check bundling output content and determine if we will need to archive
     const bundlingOutput = bundling.output ?? BundlingOutput.AUTO_DISCOVER;
-    const bundledAsset = this.determineBundledAsset(bundlingOutput, bundleDir);
+    const bundledAsset = determineBundledAsset(bundleDir, bundlingOutput);
     this._packaging = bundledAsset.packaging;
 
     // Calculate assetHash afterwards if we still must
@@ -479,33 +479,6 @@ export class AssetStaging extends CoreConstruct {
         throw new Error('Unknown asset hash type.');
     }
   }
-
-  private determineBundledAsset(bundlingOutput: BundlingOutput, bundleDir: string): BundledAsset {
-    let archiveFile: string | undefined;
-
-    switch (bundlingOutput) {
-      case BundlingOutput.NOT_ARCHIVED:
-        return { path: bundleDir, packaging: FileAssetPackaging.ZIP_DIRECTORY };
-      case BundlingOutput.ARCHIVED:
-        archiveFile = singleArchiveFile(bundleDir);
-        if (!archiveFile) {
-          throw new Error('Bundling output directory is expected to include only a single .zip or .jar file when `output` is set to `ARCHIVED`');
-        }
-        return { path: archiveFile, packaging: FileAssetPackaging.FILE, extension: path.extname(archiveFile) };
-      case BundlingOutput.AUTO_DISCOVER:
-        archiveFile = singleArchiveFile(bundleDir);
-        if (archiveFile) {
-          return { path: archiveFile, packaging: FileAssetPackaging.FILE, extension: path.extname(archiveFile) };
-        }
-        return { path: bundleDir, packaging: FileAssetPackaging.ZIP_DIRECTORY };
-    }
-  }
-}
-
-interface BundledAsset {
-  path: string,
-  packaging: FileAssetPackaging,
-  extension?: string
 }
 
 function renderAssetFilename(assetHash: string, extension = '') {
@@ -578,4 +551,35 @@ function singleArchiveFile(directory: string): string | undefined {
   }
 
   return undefined;
+}
+
+interface BundledAsset {
+  path: string,
+  packaging: FileAssetPackaging,
+  extension?: string
+}
+
+/**
+ * Returns the bundled asset to use based on the content of the bundle directory
+ * and the type of output.
+ */
+function determineBundledAsset(bundleDir: string, bundlingOutput: BundlingOutput): BundledAsset {
+  let archiveFile: string | undefined;
+
+  switch (bundlingOutput) {
+    case BundlingOutput.NOT_ARCHIVED:
+      return { path: bundleDir, packaging: FileAssetPackaging.ZIP_DIRECTORY };
+    case BundlingOutput.ARCHIVED:
+      archiveFile = singleArchiveFile(bundleDir);
+      if (!archiveFile) {
+        throw new Error('Bundling output directory is expected to include only a single .zip or .jar file when `output` is set to `ARCHIVED`');
+      }
+      return { path: archiveFile, packaging: FileAssetPackaging.FILE, extension: path.extname(archiveFile) };
+    case BundlingOutput.AUTO_DISCOVER:
+      archiveFile = singleArchiveFile(bundleDir);
+      if (archiveFile) {
+        return { path: archiveFile, packaging: FileAssetPackaging.FILE, extension: path.extname(archiveFile) };
+      }
+      return { path: bundleDir, packaging: FileAssetPackaging.ZIP_DIRECTORY };
+  }
 }
