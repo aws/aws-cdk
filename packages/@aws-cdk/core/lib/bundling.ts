@@ -97,7 +97,7 @@ export interface BundlingOptions {
  */
 export enum BundlingOutput {
   /**
-   * The bundling output is aready archived. It will be uploaded to S3 as-is.
+   * The bundling output directory includes a single .zip or .jar file which will be used as the final bundle. If the output directory does not include exactly a single archive, bundling will fail.
    */
   ARCHIVED = 'archived',
 
