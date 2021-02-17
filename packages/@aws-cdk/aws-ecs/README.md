@@ -711,6 +711,8 @@ new ecs.Ec2Service(stack, 'Service', {
     containerPort: 7600,
   },
 });
+```
+
 ## Capacity Providers
 
 Currently, only `FARGATE` and `FARGATE_SPOT` capacity providers are supported.
