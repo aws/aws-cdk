@@ -400,7 +400,15 @@ export = {
             Resource: '*',
           },
           {
-            Action: 'ec2:Describe*',
+            Action: [
+              'ec2:DescribeInstances',
+              'ec2:DescribeNetworkInterfaces',
+              'ec2:DescribeSecurityGroups',
+              'ec2:DescribeSubnets',
+              'ec2:DescribeRouteTables',
+              'ec2:DescribeDhcpOptions',
+              'ec2:DescribeVpcs',
+            ],
             Effect: 'Allow',
             Resource: '*',
           },
