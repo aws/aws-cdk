@@ -31,7 +31,14 @@ for (const templateFile of fs.readdirSync(dir)) {
     const template = await readTemplate(path.resolve(dir, templateFile));
     const typeSystem = await obtainTypeSystem();
 
-    const app = new cdk.App();
+    const app = new cdk.App({
+      context: {
+        '@aws-cdk/aws-ecr-assets:dockerIgnoreSupport': true,
+        '@aws-cdk/aws-kms:defaultKeyPolicies': true,
+        '@aws-cdk/core:enableStackNameDuplicates': true,
+        '@aws-cdk/aws-secretsmanager:parseOwnedSecretName': true,
+      }
+    });
     const stackName = stackNameFromFileName(templateFile);
 
     new DeclarativeStack(app, stackName, {
