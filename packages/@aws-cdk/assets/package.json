@@ -96,5 +96,8 @@
   "maturity": "deprecated",
   "awscdkio": {
     "announce": false
+  },
+  "publishConfig": {
+    "tag": "latest"
   }
 }

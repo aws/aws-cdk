@@ -68,5 +68,8 @@
     "shrinkWrap": true
   },
   "stability": "experimental",
-  "maturity": "experimental"
+  "maturity": "experimental",
+  "publishConfig": {
+    "tag": "latest"
+  }
 }

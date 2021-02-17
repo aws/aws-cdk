@@ -195,6 +195,9 @@ async function main() {
       awscdkio: {
         announce: false,
       },
+      publishConfig: {
+        tag: 'latest',
+      },
     });
 
     await write('.gitignore', [

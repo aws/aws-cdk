@@ -114,5 +114,8 @@
   "maturity": "experimental",
   "awscdkio": {
     "announce": false
+  },
+  "publishConfig": {
+    "tag": "latest"
   }
 }
