@@ -581,20 +581,21 @@
           "Ref": "HttpProxyPrivateApiA55E154D"
         },
         "RouteKey": "$default",
+        "AuthorizationScopes": [],
         "Target": {
           "Fn::Join": [
             "",
             [
               "integrations/",
               {
-                "Ref": "HttpProxyPrivateApiHttpIntegration763b273f031b9eb3c58b2fa36954470072FBC87C"
+                "Ref": "HttpProxyPrivateApiDefaultRouteHttpIntegrationa5ec5390ca688d567e9449daf58afc6f6DEAA8A8"
               }
             ]
           ]
         }
       }
     },
-    "HttpProxyPrivateApiHttpIntegration763b273f031b9eb3c58b2fa36954470072FBC87C": {
+    "HttpProxyPrivateApiDefaultRouteHttpIntegrationa5ec5390ca688d567e9449daf58afc6f6DEAA8A8": {
       "Type": "AWS::ApiGatewayV2::Integration",
       "Properties": {
         "ApiId": {

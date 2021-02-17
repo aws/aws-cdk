@@ -401,10 +401,10 @@ new cloudfront.Distribution(this, 'myDist', {
 // You can optionally log to a specific bucket, configure whether cookies are logged, and give the log files a prefix.
 new cloudfront.Distribution(this, 'myDist', {
   defaultBehavior: { origin: new origins.HttpOrigin('www.example.com') },
-  enableLogging: true, // Optional, this is implied if loggingBucket is specified
-  loggingBucket: new s3.Bucket(this, 'LoggingBucket'),
-  loggingFilePrefix: 'distribution-access-logs/',
-  loggingIncludesCookies: true,
+  enableLogging: true, // Optional, this is implied if logBucket is specified
+  logBucket: new s3.Bucket(this, 'LogBucket'),
+  logFilePrefix: 'distribution-access-logs/',
+  logIncludesCookies: true,
 });
 ```
 
