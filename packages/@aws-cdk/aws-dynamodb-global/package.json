@@ -93,5 +93,8 @@
   "awscdkio": {
     "announce": false
   },
-  "maturity": "deprecated"
+  "maturity": "deprecated",
+  "publishConfig": {
+    "tag": "latest"
+  }
 }

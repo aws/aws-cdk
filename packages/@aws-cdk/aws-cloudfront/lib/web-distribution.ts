@@ -1027,9 +1027,15 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
       // first case for backwards compatibility
       if (originConfig.s3OriginSource.originAccessIdentity) {
         // grant CloudFront OriginAccessIdentity read access to S3 bucket
-        originConfig.s3OriginSource.s3BucketSource.grantRead(
-          originConfig.s3OriginSource.originAccessIdentity,
-        );
+        // Used rather than `grantRead` because `grantRead` will grant overly-permissive policies.
+        // Only GetObject is needed to retrieve objects for the distribution.
+        // This also excludes KMS permissions; currently, OAI only supports SSE-S3 for buckets.
+        // Source: https://aws.amazon.com/blogs/networking-and-content-delivery/serving-sse-kms-encrypted-content-from-s3-using-cloudfront/
+        originConfig.s3OriginSource.s3BucketSource.addToResourcePolicy(new iam.PolicyStatement({
+          resources: [originConfig.s3OriginSource.s3BucketSource.arnForObjects('*')],
+          actions: ['s3:GetObject'],
+          principals: [originConfig.s3OriginSource.originAccessIdentity.grantPrincipal],
+        }));
 
         s3OriginConfig = {
           originAccessIdentity: `origin-access-identity/cloudfront/${originConfig.s3OriginSource.originAccessIdentity.originAccessIdentityName}`,

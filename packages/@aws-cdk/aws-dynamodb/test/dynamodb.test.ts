@@ -1,9 +1,10 @@
-import { ABSENT, ResourcePart, SynthUtils } from '@aws-cdk/assert';
+import { arrayWith, ABSENT, ResourcePart, SynthUtils } from '@aws-cdk/assert';
 import '@aws-cdk/assert/jest';
 import * as appscaling from '@aws-cdk/aws-applicationautoscaling';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
-import { App, CfnDeletionPolicy, ConstructNode, Duration, PhysicalName, RemovalPolicy, Stack, Tags } from '@aws-cdk/core';
+import { App, Aws, CfnDeletionPolicy, ConstructNode, Duration, PhysicalName, RemovalPolicy, Stack, Tags } from '@aws-cdk/core';
+import { testLegacyBehavior } from 'cdk-build-tools/lib/feature-flag';
 import {
   Attribute,
   AttributeType,
@@ -486,154 +487,10 @@ test('fails if both replication regions used with customer managed CMK', () => {
   })).toThrow('TableEncryption.CUSTOMER_MANAGED is not supported by DynamoDB Global Tables (where replicationRegions was set)');
 });
 
-test('if an encryption key is included, decrypt permissions are also added for grantStream', () => {
-  const stack = new Stack();
-  const encryptionKey = new kms.Key(stack, 'Key', {
-    enableKeyRotation: true,
-  });
-  const table = new Table(stack, 'Table A', {
-    tableName: TABLE_NAME,
-    partitionKey: TABLE_PARTITION_KEY,
-    encryptionKey,
-    stream: StreamViewType.NEW_IMAGE,
-  });
-  const user = new iam.User(stack, 'MyUser');
-  table.grantStreamRead(user);
-  expect(stack).toMatchTemplate({
-    'Resources': {
-      'Key961B73FD': {
-        'Type': 'AWS::KMS::Key',
-        'Properties': {
-          'KeyPolicy': {
-            'Statement': [
-              {
-                'Action': [
-                  'kms:Create*',
-                  'kms:Describe*',
-                  'kms:Enable*',
-                  'kms:List*',
-                  'kms:Put*',
-                  'kms:Update*',
-                  'kms:Revoke*',
-                  'kms:Disable*',
-                  'kms:Get*',
-                  'kms:Delete*',
-                  'kms:ScheduleKeyDeletion',
-                  'kms:CancelKeyDeletion',
-                  'kms:GenerateDataKey',
-                  'kms:TagResource',
-                  'kms:UntagResource',
-                ],
-                'Effect': 'Allow',
-                'Principal': {
-                  'AWS': {
-                    'Fn::Join': [
-                      '',
-                      [
-                        'arn:',
-                        {
-                          'Ref': 'AWS::Partition',
-                        },
-                        ':iam::',
-                        {
-                          'Ref': 'AWS::AccountId',
-                        },
-                        ':root',
-                      ],
-                    ],
-                  },
-                },
-                'Resource': '*',
-              },
-            ],
-            'Version': '2012-10-17',
-          },
-          'EnableKeyRotation': true,
-        },
-        'UpdateReplacePolicy': 'Retain',
-        'DeletionPolicy': 'Retain',
-      },
-      'TableA3D7B5AFA': {
-        'Type': 'AWS::DynamoDB::Table',
-        'Properties': {
-          'KeySchema': [
-            {
-              'AttributeName': 'hashKey',
-              'KeyType': 'HASH',
-            },
-          ],
-          'AttributeDefinitions': [
-            {
-              'AttributeName': 'hashKey',
-              'AttributeType': 'S',
-            },
-          ],
-          'ProvisionedThroughput': {
-            'ReadCapacityUnits': 5,
-            'WriteCapacityUnits': 5,
-          },
-          'SSESpecification': {
-            'KMSMasterKeyId': {
-              'Fn::GetAtt': [
-                'Key961B73FD',
-                'Arn',
-              ],
-            },
-            'SSEEnabled': true,
-            'SSEType': 'KMS',
-          },
-          'StreamSpecification': {
-            'StreamViewType': 'NEW_IMAGE',
-          },
-          'TableName': 'MyTable',
-        },
-        'UpdateReplacePolicy': 'Retain',
-        'DeletionPolicy': 'Retain',
-      },
-      'MyUserDC45028B': {
-        'Type': 'AWS::IAM::User',
-      },
-      'MyUserDefaultPolicy7B897426': {
-        'Type': 'AWS::IAM::Policy',
-        'Properties': {
-          'PolicyDocument': {
-            'Statement': [
-              {
-                'Action': 'dynamodb:ListStreams',
-                'Effect': 'Allow',
-                'Resource': '*',
-              },
-              {
-                'Action': [
-                  'dynamodb:DescribeStream',
-                  'dynamodb:GetRecords',
-                  'dynamodb:GetShardIterator',
-                ],
-                'Effect': 'Allow',
-                'Resource': {
-                  'Fn::GetAtt': [
-                    'TableA3D7B5AFA',
-                    'StreamArn',
-                  ],
-                },
-              },
-            ],
-            'Version': '2012-10-17',
-          },
-          'PolicyName': 'MyUserDefaultPolicy7B897426',
-          'Users': [
-            {
-              'Ref': 'MyUserDC45028B',
-            },
-          ],
-        },
-      },
-    },
-  });
-});
-
-test('if an encryption key is included, encrypt/decrypt permissions are also added both ways', () => {
-  const stack = new Stack();
+// this behaviour is only applicable without the future flag 'aws-kms:defaultKeyPolicies'
+// see subsequent test for the updated behaviour
+testLegacyBehavior('if an encryption key is included, encrypt/decrypt permissions are also added both ways', App, (app) => {
+  const stack = new Stack(app);
   const table = new Table(stack, 'Table A', {
     tableName: TABLE_NAME,
     partitionKey: TABLE_PARTITION_KEY,
@@ -811,6 +668,38 @@ test('if an encryption key is included, encrypt/decrypt permissions are also add
           ],
         },
       },
+    },
+  });
+});
+
+test('if an encryption key is included, encrypt/decrypt permissions are added to the principal', () => {
+  const stack = new Stack();
+  const table = new Table(stack, 'Table A', {
+    tableName: TABLE_NAME,
+    partitionKey: TABLE_PARTITION_KEY,
+    encryption: TableEncryption.CUSTOMER_MANAGED,
+  });
+  const user = new iam.User(stack, 'MyUser');
+  table.grantReadWriteData(user);
+
+  expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+    'PolicyDocument': {
+      'Statement': arrayWith({
+        'Action': [
+          'kms:Decrypt',
+          'kms:DescribeKey',
+          'kms:Encrypt',
+          'kms:ReEncrypt*',
+          'kms:GenerateDataKey*',
+        ],
+        'Effect': 'Allow',
+        'Resource': {
+          'Fn::GetAtt': [
+            'TableAKey07CC09EC',
+            'Arn',
+          ],
+        },
+      }),
     },
   });
 });
@@ -2244,7 +2133,7 @@ describe('import', () => {
       'Roles': [{ 'Ref': 'NewRole99763075' }],
     });
 
-    expect(table.tableArn).toBe('arn:${Token[AWS.Partition.3]}:dynamodb:${Token[AWS.Region.4]}:${Token[AWS.AccountId.0]}:table/MyTable');
+    expect(table.tableArn).toBe(`arn:${Aws.PARTITION}:dynamodb:${Aws.REGION}:${Aws.ACCOUNT_ID}:table/MyTable`);
     expect(stack.resolve(table.tableName)).toBe(tableName);
   });
 

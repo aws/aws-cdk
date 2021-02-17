@@ -1,0 +1,17 @@
+{
+  "ResourceTypes": {
+    "patch": {
+      "description": "Invalid attribute type for LoRaWANResponse",
+      "operations": [
+        {
+          "op": "add",
+          "path": "/AWS::IoTWireless::ServiceProfile/Attributes/LoRaWANResponse",
+          "value": {
+            "Type": "Map",
+            "PrimitiveItemType": "String"
+          }
+        }
+      ]
+    }
+  }
+}

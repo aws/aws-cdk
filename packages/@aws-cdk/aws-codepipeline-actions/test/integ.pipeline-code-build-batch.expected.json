@@ -164,7 +164,7 @@
             },
             {
               "Action": [
-                "codebuild:BatchGetBuilds",
+                "codebuild:BatchGetBuildBatches",
                 "codebuild:StartBuildBatch",
                 "codebuild:StopBuildBatch"
               ],

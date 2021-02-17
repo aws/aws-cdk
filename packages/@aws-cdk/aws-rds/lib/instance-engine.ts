@@ -425,76 +425,181 @@ export interface PostgresEngineFeatures {
  * (those returned by {@link DatabaseInstanceEngine.postgres}).
  */
 export class PostgresEngineVersion {
-  /** Version "9.5" (only a major version, without a specific minor version). */
+  /**
+   * Version "9.5" (only a major version, without a specific minor version).
+   * @deprecated PostgreSQL 9.5 will reach end of life on February 16, 2021
+  */
   public static readonly VER_9_5 = PostgresEngineVersion.of('9.5', '9.5');
-  /** Version "9.5.2". */
+  /**
+   * Version "9.5.2".
+   * @deprecated PostgreSQL 9.5 will reach end of life on February 16, 2021
+  */
   public static readonly VER_9_5_2 = PostgresEngineVersion.of('9.5.2', '9.5');
-  /** Version "9.5.4". */
+  /**
+   * Version "9.5.4".
+   * @deprecated PostgreSQL 9.5 will reach end of life on February 16, 2021
+  */
   public static readonly VER_9_5_4 = PostgresEngineVersion.of('9.5.4', '9.5');
-  /** Version "9.5.6". */
+  /**
+   * Version "9.5.6".
+   * @deprecated PostgreSQL 9.5 will reach end of life on February 16, 2021
+  */
   public static readonly VER_9_5_6 = PostgresEngineVersion.of('9.5.6', '9.5');
-  /** Version "9.5.7". */
+  /**
+   * Version "9.5.7".
+   * @deprecated PostgreSQL 9.5 will reach end of life on February 16, 2021
+  */
   public static readonly VER_9_5_7 = PostgresEngineVersion.of('9.5.7', '9.5');
-  /** Version "9.5.9". */
+  /**
+   * Version "9.5.9".
+   * @deprecated PostgreSQL 9.5 will reach end of life on February 16, 2021
+  */
   public static readonly VER_9_5_9 = PostgresEngineVersion.of('9.5.9', '9.5');
-  /** Version "9.5.10". */
+  /**
+   * Version "9.5.10".
+   * @deprecated PostgreSQL 9.5 will reach end of life on February 16, 2021
+  */
   public static readonly VER_9_5_10 = PostgresEngineVersion.of('9.5.10', '9.5');
-  /** Version "9.5.12". */
+  /**
+   * Version "9.5.12".
+   * @deprecated PostgreSQL 9.5 will reach end of life on February 16, 2021
+  */
   public static readonly VER_9_5_12 = PostgresEngineVersion.of('9.5.12', '9.5');
-  /** Version "9.5.13". */
+  /**
+   * Version "9.5.13".
+   * @deprecated PostgreSQL 9.5 will reach end of life on February 16, 2021
+  */
   public static readonly VER_9_5_13 = PostgresEngineVersion.of('9.5.13', '9.5');
-  /** Version "9.5.14". */
+  /**
+   * Version "9.5.14".
+   * @deprecated PostgreSQL 9.5 will reach end of life on February 16, 2021
+  */
   public static readonly VER_9_5_14 = PostgresEngineVersion.of('9.5.14', '9.5');
-  /** Version "9.5.15". */
+  /**
+   * Version "9.5.15".
+   * @deprecated PostgreSQL 9.5 will reach end of life on February 16, 2021
+  */
   public static readonly VER_9_5_15 = PostgresEngineVersion.of('9.5.15', '9.5');
-  /** Version "9.5.16". */
+  /**
+   * Version "9.5.16".
+   * @deprecated PostgreSQL 9.5 will reach end of life on February 16, 2021
+  */
   public static readonly VER_9_5_16 = PostgresEngineVersion.of('9.5.16', '9.5');
-  /** Version "9.5.18". */
+  /**
+   * Version "9.5.18".
+   * @deprecated PostgreSQL 9.5 will reach end of life on February 16, 2021
+  */
   public static readonly VER_9_5_18 = PostgresEngineVersion.of('9.5.18', '9.5');
-  /** Version "9.5.19". */
+  /**
+   * Version "9.5.19".
+   * @deprecated PostgreSQL 9.5 will reach end of life on February 16, 2021
+  */
   public static readonly VER_9_5_19 = PostgresEngineVersion.of('9.5.19', '9.5');
-  /** Version "9.5.20". */
+  /**
+   * Version "9.5.20".
+   * @deprecated PostgreSQL 9.5 will reach end of life on February 16, 2021
+  */
   public static readonly VER_9_5_20 = PostgresEngineVersion.of('9.5.20', '9.5');
-  /** Version "9.5.21". */
+  /**
+   * Version "9.5.21".
+   * @deprecated PostgreSQL 9.5 will reach end of life on February 16, 2021
+  */
   public static readonly VER_9_5_21 = PostgresEngineVersion.of('9.5.21', '9.5');
-  /** Version "9.5.22". */
+  /**
+   * Version "9.5.22".
+   * @deprecated PostgreSQL 9.5 will reach end of life on February 16, 2021
+  */
   public static readonly VER_9_5_22 = PostgresEngineVersion.of('9.5.22', '9.5');
-  /** Version "9.5.23". */
+  /**
+   * Version "9.5.23".
+   * @deprecated PostgreSQL 9.5 will reach end of life on February 16, 2021
+  */
   public static readonly VER_9_5_23 = PostgresEngineVersion.of('9.5.23', '9.5');
 
-  /** Version "9.6" (only a major version, without a specific minor version). */
+  /**
+   * Version "9.6" (only a major version, without a specific minor version).
+   * @deprecated PostgreSQL 9.6 will reach end of life in November 2021
+  */
   public static readonly VER_9_6 = PostgresEngineVersion.of('9.6', '9.6');
-  /** Version "9.6.1". */
+  /**
+   * Version "9.6.1".
+   * @deprecated PostgreSQL 9.6 will reach end of life in November 2021
+  */
   public static readonly VER_9_6_1 = PostgresEngineVersion.of('9.6.1', '9.6');
-  /** Version "9.6.2". */
+  /**
+   * Version "9.6.2".
+   * @deprecated PostgreSQL 9.6 will reach end of life in November 2021
+  */
   public static readonly VER_9_6_2 = PostgresEngineVersion.of('9.6.2', '9.6');
-  /** Version "9.6.3". */
+  /**
+   * Version "9.6.3".
+   * @deprecated PostgreSQL 9.6 will reach end of life in November 2021
+  */
   public static readonly VER_9_6_3 = PostgresEngineVersion.of('9.6.3', '9.6');
-  /** Version "9.6.5". */
+  /**
+   * Version "9.6.5".
+   * @deprecated PostgreSQL 9.6 will reach end of life in November 2021
+  */
   public static readonly VER_9_6_5 = PostgresEngineVersion.of('9.6.5', '9.6');
-  /** Version "9.6.6". */
+  /**
+   * Version "9.6.6".
+   * @deprecated PostgreSQL 9.6 will reach end of life in November 2021
+  */
   public static readonly VER_9_6_6 = PostgresEngineVersion.of('9.6.6', '9.6');
-  /** Version "9.6.8". */
+  /**
+   * Version "9.6.8".
+   * @deprecated PostgreSQL 9.6 will reach end of life in November 2021
+  */
   public static readonly VER_9_6_8 = PostgresEngineVersion.of('9.6.8', '9.6');
-  /** Version "9.6.9". */
+  /**
+   * Version "9.6.9".
+   * @deprecated PostgreSQL 9.6 will reach end of life in November 2021
+  */
   public static readonly VER_9_6_9 = PostgresEngineVersion.of('9.6.9', '9.6');
-  /** Version "9.6.10". */
+  /**
+   * Version "9.6.10".
+   * @deprecated PostgreSQL 9.6 will reach end of life in November 2021
+  */
   public static readonly VER_9_6_10 = PostgresEngineVersion.of('9.6.10', '9.6');
-  /** Version "9.6.11". */
+  /**
+   * Version "9.6.11".
+   * @deprecated PostgreSQL 9.6 will reach end of life in November 2021
+  */
   public static readonly VER_9_6_11 = PostgresEngineVersion.of('9.6.11', '9.6');
-  /** Version "9.6.12". */
+  /**
+   * Version "9.6.12".
+   * @deprecated PostgreSQL 9.6 will reach end of life in November 2021
+  */
   public static readonly VER_9_6_12 = PostgresEngineVersion.of('9.6.12', '9.6');
-  /** Version "9.6.14". */
+  /**
+   * Version "9.6.14".
+   * @deprecated PostgreSQL 9.6 will reach end of life in November 2021
+  */
   public static readonly VER_9_6_14 = PostgresEngineVersion.of('9.6.14', '9.6');
-  /** Version "9.6.15". */
+  /**
+   * Version "9.6.15".
+   * @deprecated PostgreSQL 9.6 will reach end of life in November 2021
+  */
   public static readonly VER_9_6_15 = PostgresEngineVersion.of('9.6.15', '9.6');
-  /** Version "9.6.16". */
+  /**
+   * Version "9.6.16".
+   * @deprecated PostgreSQL 9.6 will reach end of life in November 2021
+  */
   public static readonly VER_9_6_16 = PostgresEngineVersion.of('9.6.16', '9.6');
-  /** Version "9.6.17". */
+  /**
+   * Version "9.6.17".
+   * @deprecated PostgreSQL 9.6 will reach end of life in November 2021
+  */
   public static readonly VER_9_6_17 = PostgresEngineVersion.of('9.6.17', '9.6');
-  /** Version "9.6.18". */
+  /**
+   * Version "9.6.18".
+   * @deprecated PostgreSQL 9.6 will reach end of life in November 2021
+  */
   public static readonly VER_9_6_18 = PostgresEngineVersion.of('9.6.18', '9.6');
-  /** Version "9.6.19". */
+  /**
+   * Version "9.6.19".
+   * @deprecated PostgreSQL 9.6 will reach end of life in November 2021
+  */
   public static readonly VER_9_6_19 = PostgresEngineVersion.of('9.6.19', '9.6');
 
   /** Version "10" (only a major version, without a specific minor version). */
@@ -551,6 +656,8 @@ export class PostgresEngineVersion {
   public static readonly VER_12_3 = PostgresEngineVersion.of('12.3', '12', { s3Import: true });
   /** Version "12.4". */
   public static readonly VER_12_4 = PostgresEngineVersion.of('12.4', '12', { s3Import: true });
+  /** Version "12.5". */
+  public static readonly VER_12_5 = PostgresEngineVersion.of('12.5', '12', { s3Import: true });
 
   /**
    * Create a new PostgresEngineVersion with an arbitrary version.

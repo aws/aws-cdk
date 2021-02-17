@@ -684,6 +684,15 @@ export default class CodeGenerator {
 
     this.code.line(`const errors = new ${CORE}.ValidationResults();`);
 
+    // check that the argument is an object
+    // normally, we would have to explicitly check for null here,
+    // as typeof null is 'object' in JavaScript,
+    // but validators are never called with null
+    // (as evidenced by the code below accessing properties of the argument without checking for null)
+    this.code.openBlock("if (typeof properties !== 'object')");
+    this.code.line(`errors.collect(new ${CORE}.ValidationResult('Expected an object, but received: ' + JSON.stringify(properties)));`);
+    this.code.closeBlock();
+
     Object.keys(propSpecs).forEach(cfnPropName => {
       const propSpec = propSpecs[cfnPropName];
       const propName = nameConversionTable[cfnPropName];
@@ -898,7 +907,7 @@ export default class CodeGenerator {
     this.code.line('/**');
     before.forEach(line => this.code.line(` * ${line}`.trimRight()));
     if (link) {
-      this.code.line(` * @see ${link}`);
+      this.code.line(` * @link ${link}`);
     }
     this.code.line(' */');
     return;

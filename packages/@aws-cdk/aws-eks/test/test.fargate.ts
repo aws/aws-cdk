@@ -5,7 +5,7 @@ import { Stack, Tags } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import * as eks from '../lib';
 
-const CLUSTER_VERSION = eks.KubernetesVersion.V1_16;
+const CLUSTER_VERSION = eks.KubernetesVersion.V1_19;
 
 export = {
   'can be added to a cluster'(test: Test) {

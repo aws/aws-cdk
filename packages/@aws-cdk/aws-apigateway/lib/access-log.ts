@@ -411,7 +411,7 @@ export class AccessLogField {
    * not from the backend Lambda function.
    */
   public static contextIntegrationStatus() {
-    return '$context.integrationStatus.';
+    return '$context.integrationStatus';
   }
 
   /**

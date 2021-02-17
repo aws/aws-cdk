@@ -87,8 +87,12 @@ describe('With bucket', () => {
     expect(stack).toHaveResourceLike('AWS::S3::BucketPolicy', {
       PolicyDocument: {
         Statement: [{
+          Action: 's3:GetObject',
           Principal: {
             CanonicalUser: { 'Fn::GetAtt': ['DistOrigin1S3Origin87D64058', 'S3CanonicalUserId'] },
+          },
+          Resource: {
+            'Fn::Join': ['', [{ 'Fn::GetAtt': ['Bucket83908E77', 'Arn'] }, '/*']],
           },
         }],
       },
