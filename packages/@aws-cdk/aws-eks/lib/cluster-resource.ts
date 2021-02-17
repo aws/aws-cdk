@@ -173,8 +173,18 @@ export class ClusterResource extends CoreConstruct {
     }));
 
     // see https://github.com/aws/aws-cdk/issues/9027
+    // these actions are the combined 'ec2:Describe*' actions taken from the EKS SLR policies.
+    // (AWSServiceRoleForAmazonEKS, AWSServiceRoleForAmazonEKSForFargate, AWSServiceRoleForAmazonEKSNodegroup)
     creationRole.addToPolicy(new iam.PolicyStatement({
-      actions: ['ec2:Describe*'],
+      actions: [
+        'ec2:DescribeInstances',
+        'ec2:DescribeNetworkInterfaces',
+        'ec2:DescribeSecurityGroups',
+        'ec2:DescribeSubnets',
+        'ec2:DescribeRouteTables',
+        'ec2:DescribeDhcpOptions',
+        'ec2:DescribeVpcs',
+      ],
       resources: ['*'],
     }));
 
