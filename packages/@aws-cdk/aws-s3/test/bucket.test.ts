@@ -2405,7 +2405,5 @@ describe('bucket', () => {
     expect(() => new s3.Bucket(stack, 'MyBucket', {
       autoDeleteObjects: true,
     })).toThrow(/Cannot use \'autoDeleteObjects\' property on a bucket without setting removal policy to \'DESTROY\'/);
-
-
   });
 });
