@@ -109,5 +109,8 @@
   "maturity": "stable",
   "awscdkio": {
     "announce": false
+  },
+  "publishConfig": {
+    "tag": "latest"
   }
 }
