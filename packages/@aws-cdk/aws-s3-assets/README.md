@@ -136,7 +136,7 @@ const asset = new assets.Asset(this, 'BundledAsset', {
   bundling: {
     image: BundlingDockerImage.fromRegistry('alpine'),
     command: ['command-that-produces-an-archive.sh'],
-    packaging: BundlingOutput.NOT_ARCHIVED, // Bundling output will be zipped even though it produces a single archive file.
+    output: BundlingOutput.NOT_ARCHIVED, // Bundling output will be zipped even though it produces a single archive file.
   },
 });
 ```
