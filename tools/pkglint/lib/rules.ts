@@ -55,7 +55,11 @@ export class PublishConfigTagIsRequired extends ValidationRule {
   public validate(pkg: PackageJson): void {
     if (pkg.json.private) { return; }
 
-    const defaultPublishTag = (cdkMajorVersion() === 2) ? 'next' : 'latest';
+    // While v2 is still under development, we publish all v2 packages with the 'next'
+    // distribution tag, while still tagging all v1 packages as 'latest'.
+    // The one exception is 'aws-cdk-lib', since it's a new package for v2.
+    const newV2Packages = ['aws-cdk-lib'];
+    const defaultPublishTag = (cdkMajorVersion() === 2 && !newV2Packages.includes(pkg.json.name)) ? 'next' : 'latest';
 
     if (!pkg.json.publishConfig?.tag) {
       pkg.report({
