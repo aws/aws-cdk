@@ -127,7 +127,7 @@ greatly improve performance.
 If the bundling output contains a single archive file (zip or jar) it will be
 uploaded to S3 as-is and will not be zipped. Otherwise the contents of the
 output directory will be zipped and the zip file will be uploaded to S3. This
-is the default behavior for `bundling.output` (`BundlingOutput.AUTO_DISCOVER`).
+is the default behavior for `bundling.outputType` (`BundlingOutput.AUTO_DISCOVER`).
 
 Use `BundlingOutput.NOT_ARCHIVED` if the bundling output must always be zipped:
 
@@ -137,7 +137,7 @@ const asset = new assets.Asset(this, 'BundledAsset', {
   bundling: {
     image: BundlingDockerImage.fromRegistry('alpine'),
     command: ['command-that-produces-an-archive.sh'],
-    output: BundlingOutput.NOT_ARCHIVED, // Bundling output will be zipped even though it produces a single archive file.
+    outputType: BundlingOutput.NOT_ARCHIVED, // Bundling output will be zipped even though it produces a single archive file.
   },
 });
 ```

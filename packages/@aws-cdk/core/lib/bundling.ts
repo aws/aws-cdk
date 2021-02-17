@@ -87,7 +87,7 @@ export interface BundlingOptions {
    *
    * @experimental
    */
-  readonly output?: BundlingOutput;
+  readonly outputType?: BundlingOutput;
 }
 
 /**

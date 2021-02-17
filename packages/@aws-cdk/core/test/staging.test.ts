@@ -863,14 +863,14 @@ nodeunitShim({
       bundling: {
         image: BundlingDockerImage.fromRegistry('alpine'),
         command: [DockerStubCommand.SINGLE_ARCHIVE],
-        output: BundlingOutput.NOT_ARCHIVED,
+        outputType: BundlingOutput.NOT_ARCHIVED,
       },
     });
 
     // THEN
     const assembly = app.synth();
     test.deepEqual(fs.readdirSync(assembly.directory), [
-      'asset.d68f7bac29656de963ed259858f3063991e0632c2ebca437fe03e96e955a6b49',
+      'asset.86ec07746e1d859290cfd8b9c648e581555649c75f51f741f11e22cab6775abc',
       'cdk.out',
       'manifest.json',
       'stack.template.json',
@@ -894,7 +894,7 @@ nodeunitShim({
       bundling: {
         image: BundlingDockerImage.fromRegistry('alpine'),
         command: [DockerStubCommand.MULTIPLE_FILES],
-        output: BundlingOutput.ARCHIVED,
+        outputType: BundlingOutput.ARCHIVED,
       },
     }), /Bundling output directory is expected to include only a single .zip or .jar file when `output` is set to `ARCHIVED`/);
 

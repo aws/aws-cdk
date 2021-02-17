@@ -301,8 +301,8 @@ export class AssetStaging extends CoreConstruct {
     this.bundle(bundling, bundleDir);
 
     // Check bundling output content and determine if we will need to archive
-    const bundlingOutput = bundling.output ?? BundlingOutput.AUTO_DISCOVER;
-    const bundledAsset = determineBundledAsset(bundleDir, bundlingOutput);
+    const bundlingOutputType = bundling.outputType ?? BundlingOutput.AUTO_DISCOVER;
+    const bundledAsset = determineBundledAsset(bundleDir, bundlingOutputType);
     this._packaging = bundledAsset.packaging;
 
     // Calculate assetHash afterwards if we still must
@@ -563,16 +563,16 @@ interface BundledAsset {
  * Returns the bundled asset to use based on the content of the bundle directory
  * and the type of output.
  */
-function determineBundledAsset(bundleDir: string, bundlingOutput: BundlingOutput): BundledAsset {
+function determineBundledAsset(bundleDir: string, outputType: BundlingOutput): BundledAsset {
   const archiveFile = singleArchiveFile(bundleDir);
 
   // auto-discover means that if there is an archive file, we take it as the
   // bundle, otherwise, we will archive here.
-  if (bundlingOutput === BundlingOutput.AUTO_DISCOVER) {
-    bundlingOutput = archiveFile ? BundlingOutput.ARCHIVED : BundlingOutput.NOT_ARCHIVED;
+  if (outputType === BundlingOutput.AUTO_DISCOVER) {
+    outputType = archiveFile ? BundlingOutput.ARCHIVED : BundlingOutput.NOT_ARCHIVED;
   }
 
-  switch (bundlingOutput) {
+  switch (outputType) {
     case BundlingOutput.NOT_ARCHIVED:
       return { path: bundleDir, packaging: FileAssetPackaging.ZIP_DIRECTORY };
     case BundlingOutput.ARCHIVED:
