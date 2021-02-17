@@ -25,12 +25,14 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
 
 ## Connection
 
-A `Connection` allows Glue jobs, crawlers and development endpoints to access certain types of data stores.
+A `Connection` allows Glue jobs, crawlers and development endpoints to access certain types of data stores. For example, to create a network connection to connect to a data source within a VPC:
 
 ```ts
 new glue.Connection(stack, 'MyConnection', {
   connectionType: glue.ConnectionTypes.NETWORK,
+  // The security groups granting AWS Glue inbound access to the data source within the VPC
   securityGroups: [securityGroup],
+  // The VPC subnet which contains the data source
   subnet,
 });
 ```
