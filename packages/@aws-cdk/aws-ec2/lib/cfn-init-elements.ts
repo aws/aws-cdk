@@ -327,6 +327,9 @@ export abstract class InitFile extends InitElement {
    * Use a literal string as the file content
    */
   public static fromString(fileName: string, content: string, options: InitFileOptions = {}): InitFile {
+    if (!content) {
+      throw new Error('Content was empty');
+    }
     return new class extends InitFile {
       protected _doBind(bindOptions: InitBindOptions) {
         return {
