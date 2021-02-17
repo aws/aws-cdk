@@ -53,6 +53,8 @@ export class PublishConfigTagIsRequired extends ValidationRule {
   public readonly name = 'package-info/publish-config-tag';
 
   public validate(pkg: PackageJson): void {
+    if (pkg.json.private) { return; }
+
     const defaultPublishTag = (cdkMajorVersion() === 2) ? 'next' : 'latest';
 
     if (!pkg.json.publishConfig?.tag) {
