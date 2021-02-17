@@ -147,6 +147,14 @@ export interface IBucket extends IResource {
    * If encryption is used, permission to use the key to encrypt the contents
    * of written files will also be granted to the same principal.
    *
+   * Before CDK version 1.85.0, this method granted the `s3:PutObject*` permission that included `s3:PutObjectAcl`,
+   * which could be used to grant read/write object access to IAM principals in other accounts.
+   * If you want to get rid of that behavior, update your CDK version to 1.85.0 or later,
+   * and make sure the `@aws-cdk/aws-s3:grantWriteWithoutAcl` feature flag is set to `true`
+   * in the `context` key of your cdk.json file.
+   * If you've already updated, but still need the principal to have permissions to modify the ACLs,
+   * use the {@link grantPutAcl} method.
+   *
    * @param identity The principal
    * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*')
    */
@@ -189,6 +197,14 @@ export interface IBucket extends IResource {
    *
    * If an encryption key is used, permission to use the key for
    * encrypt/decrypt will also be granted.
+   *
+   * Before CDK version 1.85.0, this method granted the `s3:PutObject*` permission that included `s3:PutObjectAcl`,
+   * which could be used to grant read/write object access to IAM principals in other accounts.
+   * If you want to get rid of that behavior, update your CDK version to 1.85.0 or later,
+   * and make sure the `@aws-cdk/aws-s3:grantWriteWithoutAcl` feature flag is set to `true`
+   * in the `context` key of your cdk.json file.
+   * If you've already updated, but still need the principal to have permissions to modify the ACLs,
+   * use the {@link grantPutAcl} method.
    *
    * @param identity The principal
    * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*')
@@ -413,7 +429,7 @@ abstract class BucketBase extends Resource implements IBucket {
       detailType: ['AWS API Call via CloudTrail'],
       detail: {
         resources: {
-          ARN: options.paths ? options.paths.map(p => this.arnForObjects(p)) : [this.bucketArn],
+          ARN: options.paths?.map(p => this.arnForObjects(p)) ?? [this.bucketArn],
         },
       },
     });
@@ -587,15 +603,6 @@ abstract class BucketBase extends Resource implements IBucket {
       this.arnForObjects(objectsKeyPattern));
   }
 
-  /**
-   * Grant write permissions to this bucket to an IAM principal.
-   *
-   * If encryption is used, permission to use the key to encrypt the contents
-   * of written files will also be granted to the same principal.
-   *
-   * @param identity The principal
-   * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*')
-   */
   public grantWrite(identity: iam.IGrantable, objectsKeyPattern: any = '*') {
     return this.grant(identity, this.writeActions, perms.KEY_WRITE_ACTIONS,
       this.bucketArn,
@@ -632,16 +639,6 @@ abstract class BucketBase extends Resource implements IBucket {
       this.arnForObjects(objectsKeyPattern));
   }
 
-  /**
-   * Grants read/write permissions for this bucket and it's contents to an IAM
-   * principal (Role/Group/User).
-   *
-   * If an encryption key is used, permission to use the key for
-   * encrypt/decrypt will also be granted.
-   *
-   * @param identity The principal
-   * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*')
-   */
   public grantReadWrite(identity: iam.IGrantable, objectsKeyPattern: any = '*') {
     const bucketActions = perms.BUCKET_READ_ACTIONS.concat(this.writeActions);
     // we need unique permissions because some permissions are common between read and write key actions
@@ -1063,6 +1060,16 @@ export interface BucketProps {
    * a new KMS key will be created and associated with this bucket.
    */
   readonly encryptionKey?: kms.IKey;
+
+  /**
+   * Specifies whether Amazon S3 should use an S3 Bucket Key with server-side
+   * encryption using KMS (SSE-KMS) for new objects in the bucket.
+   *
+   * Only relevant, when Encryption is set to {@link BucketEncryption.KMS}
+   *
+   * @default - false
+   */
+  readonly bucketKeyEnabled?: boolean;
 
   /**
    * Physical name of this bucket.
@@ -1533,6 +1540,11 @@ export class Bucket extends BucketBase {
       throw new Error(`encryptionKey is specified, so 'encryption' must be set to KMS (value: ${encryptionType})`);
     }
 
+    // if bucketKeyEnabled is set, encryption must be set to KMS.
+    if (props.bucketKeyEnabled && encryptionType !== BucketEncryption.KMS) {
+      throw new Error(`bucketKeyEnabled is specified, so 'encryption' must be set to KMS (value: ${encryptionType})`);
+    }
+
     if (encryptionType === BucketEncryption.UNENCRYPTED) {
       return { bucketEncryption: undefined, encryptionKey: undefined };
     }
@@ -1545,6 +1557,7 @@ export class Bucket extends BucketBase {
       const bucketEncryption = {
         serverSideEncryptionConfiguration: [
           {
+            bucketKeyEnabled: props.bucketKeyEnabled,
             serverSideEncryptionByDefault: {
               sseAlgorithm: 'aws:kms',
               kmsMasterKeyId: encryptionKey.keyArn,
@@ -1591,13 +1604,13 @@ export class Bucket extends BucketBase {
     return { rules: this.lifecycleRules.map(parseLifecycleRule) };
 
     function parseLifecycleRule(rule: LifecycleRule): CfnBucket.RuleProperty {
-      const enabled = rule.enabled !== undefined ? rule.enabled : true;
+      const enabled = rule.enabled ?? true;
 
       const x: CfnBucket.RuleProperty = {
         // eslint-disable-next-line max-len
         abortIncompleteMultipartUpload: rule.abortIncompleteMultipartUploadAfter !== undefined ? { daysAfterInitiation: rule.abortIncompleteMultipartUploadAfter.toDays() } : undefined,
         expirationDate: rule.expirationDate,
-        expirationInDays: rule.expiration && rule.expiration.toDays(),
+        expirationInDays: rule.expiration?.toDays(),
         id: rule.id,
         noncurrentVersionExpirationInDays: rule.noncurrentVersionExpiration && rule.noncurrentVersionExpiration.toDays(),
         noncurrentVersionTransitions: mapOrUndefined(rule.noncurrentVersionTransitions, t => ({

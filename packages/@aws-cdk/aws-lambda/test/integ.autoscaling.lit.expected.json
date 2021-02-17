@@ -35,7 +35,7 @@
       "Type": "AWS::Lambda::Function",
       "Properties": {
         "Code": {
-          "ZipFile": "exports.handler = async () => {\nconsole.log('hello world');\n};"
+          "ZipFile": "exports.handler = async () => { console.log('hello world'); };"
         },
         "Handler": "index.handler",
         "Role": {

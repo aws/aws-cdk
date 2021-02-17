@@ -1213,7 +1213,7 @@ export class Vpc extends VpcBase {
 
     this.availabilityZones = stack.availabilityZones;
 
-    const maxAZs = props.maxAzs !== undefined ? props.maxAzs : 3;
+    const maxAZs = props.maxAzs ?? 3;
     this.availabilityZones = this.availabilityZones.slice(0, maxAZs);
 
     this.vpcId = this.resource.ref;
@@ -1788,7 +1788,7 @@ export class PrivateSubnet extends Subnet implements IPrivateSubnet {
 }
 
 function ifUndefined<T>(value: T | undefined, defaultValue: T): T {
-  return value !== undefined ? value : defaultValue;
+  return value ?? defaultValue;
 }
 
 class ImportedVpc extends VpcBase {
@@ -1808,6 +1808,13 @@ class ImportedVpc extends VpcBase {
     this.availabilityZones = props.availabilityZones;
     this._vpnGatewayId = props.vpnGatewayId;
     this.incompleteSubnetDefinition = isIncomplete;
+
+    // None of the values may be unresolved list tokens
+    for (const k of Object.keys(props) as Array<keyof VpcAttributes>) {
+      if (Array.isArray(props[k]) && Token.isUnresolved(props[k])) {
+        Annotations.of(this).addWarning(`fromVpcAttributes: '${k}' is a list token: the imported VPC will not work with constructs that require a list of subnets at synthesis time. Use 'Vpc.fromLookup()' or 'Fn.importListValue' instead.`);
+      }
+    }
 
     /* eslint-disable max-len */
     const pub = new ImportSubnetGroup(props.publicSubnetIds, props.publicSubnetNames, props.publicSubnetRouteTableIds, SubnetType.PUBLIC, this.availabilityZones, 'publicSubnetIds', 'publicSubnetNames', 'publicSubnetRouteTableIds');
@@ -1879,6 +1886,7 @@ class LookedUpVpc extends VpcBase {
         availabilityZone: vpcSubnet.availabilityZone,
         subnetId: vpcSubnet.subnetId,
         routeTableId: vpcSubnet.routeTableId,
+        ipv4CidrBlock: vpcSubnet.cidr,
       }));
     }
     return ret;

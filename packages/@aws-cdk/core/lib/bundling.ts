@@ -14,6 +14,17 @@ export interface BundlingOptions {
   readonly image: BundlingDockerImage;
 
   /**
+   * The entrypoint to run in the Docker container.
+   *
+   * @example ['/bin/sh', '-c']
+   *
+   * @see https://docs.docker.com/engine/reference/builder/#entrypoint
+   *
+   * @default - run the entrypoint defined in the image
+   */
+  readonly entrypoint?: string[];
+
+  /**
    * The command to run in the Docker container.
    *
    * @example ['npm', 'install']
@@ -68,6 +79,41 @@ export interface BundlingOptions {
    * @experimental
    */
   readonly local?: ILocalBundling;
+
+  /**
+   * The type of output that this bundling operation is producing.
+   *
+   * @default BundlingOutput.AUTO_DISCOVER
+   *
+   * @experimental
+   */
+  readonly outputType?: BundlingOutput;
+}
+
+/**
+ * The type of output that a bundling operation is producing.
+ *
+ * @experimental
+ */
+export enum BundlingOutput {
+  /**
+   * The bundling output directory includes a single .zip or .jar file which
+   * will be used as the final bundle. If the output directory does not
+   * include exactly a single archive, bundling will fail.
+   */
+  ARCHIVED = 'archived',
+
+  /**
+   * The bundling output directory contains one or more files which will be
+   * archived and uploaded as a .zip file to S3.
+   */
+  NOT_ARCHIVED = 'not-archived',
+
+  /**
+   * If the bundling output directory contains a single archive file (zip or jar)
+   * it will not be zipped. Otherwise the bundling output will be zipped.
+   */
+  AUTO_DISCOVER = 'auto-discover',
 }
 
 /**
@@ -152,7 +198,15 @@ export class BundlingDockerImage {
   public run(options: DockerRunOptions = {}) {
     const volumes = options.volumes || [];
     const environment = options.environment || {};
-    const command = options.command || [];
+    const entrypoint = options.entrypoint?.[0] || null;
+    const command = [
+      ...options.entrypoint?.[1]
+        ? [...options.entrypoint.slice(1)]
+        : [],
+      ...options.command
+        ? [...options.command]
+        : [],
+    ];
 
     const dockerArgs: string[] = [
       'run', '--rm',
@@ -163,6 +217,9 @@ export class BundlingDockerImage {
       ...flatten(Object.entries(environment).map(([k, v]) => ['--env', `${k}=${v}`])),
       ...options.workingDirectory
         ? ['-w', options.workingDirectory]
+        : [],
+      ...entrypoint
+        ? ['--entrypoint', entrypoint]
         : [],
       this.image,
       ...command,
@@ -238,6 +295,13 @@ export enum DockerVolumeConsistency {
  * Docker run options
  */
 export interface DockerRunOptions {
+  /**
+   * The entrypoint to run in the container.
+   *
+   * @default - run the entrypoint defined in the image
+   */
+  readonly entrypoint?: string[];
+
   /**
    * The command to run in the container.
    *

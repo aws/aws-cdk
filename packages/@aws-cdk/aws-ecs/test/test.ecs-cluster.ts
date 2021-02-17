@@ -794,11 +794,11 @@ export = {
               {
                 Ref: 'EcsCluster97242B84',
               },
-              "\", \"Machine\")\n[Environment]::SetEnvironmentVariable(\"ECS_ENABLE_AWSLOGS_EXECUTIONROLE_OVERRIDE\", \"true\", \"Machine\")\n[Environment]::SetEnvironmentVariable(\"ECS_AVAILABLE_LOGGING_DRIVERS\", \"[\"json-file\",\"awslogs\"]\", \"Machine\")\n[Environment]::SetEnvironmentVariable(\"ECS_ENABLE_TASK_IAM_ROLE\", \"true\", \"Machine\")\nInitialize-ECSAgent -Cluster '",
+              "\", \"Machine\")\n[Environment]::SetEnvironmentVariable(\"ECS_ENABLE_AWSLOGS_EXECUTIONROLE_OVERRIDE\", \"true\", \"Machine\")\n[Environment]::SetEnvironmentVariable(\"ECS_AVAILABLE_LOGGING_DRIVERS\", '[\"json-file\",\"awslogs\"]', \"Machine\")\n[Environment]::SetEnvironmentVariable(\"ECS_ENABLE_TASK_IAM_ROLE\", \"true\", \"Machine\")\nInitialize-ECSAgent -Cluster '",
               {
                 Ref: 'EcsCluster97242B84',
               },
-              "' -EnableTaskIAMRole'</powershell>",
+              "' -EnableTaskIAMRole</powershell>",
             ],
           ],
         },
@@ -1666,6 +1666,7 @@ export = {
     );
     test.done();
   },
+
   'throws when machineImage and machineImageType both specified'(test: Test) {
     // GIVEN
     const app = new cdk.App();
@@ -1680,6 +1681,54 @@ export = {
         machineImage: new ecs.EcsOptimizedAmi(),
       });
     }, /You can only specify either machineImage or machineImageType, not both./);
+    test.done();
+  },
+
+  'allows specifying capacityProviders'(test: Test) {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'test');
+
+    // WHEN
+    new ecs.Cluster(stack, 'EcsCluster', { capacityProviders: ['FARGATE_SPOT'] });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ECS::Cluster', {
+      CapacityProviders: ['FARGATE_SPOT'],
+    }));
+
+    test.done();
+  },
+
+  'allows adding capacityProviders post-construction'(test: Test) {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'test');
+    const cluster = new ecs.Cluster(stack, 'EcsCluster');
+
+    // WHEN
+    cluster.addCapacityProvider('FARGATE');
+    cluster.addCapacityProvider('FARGATE'); // does not add twice
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ECS::Cluster', {
+      CapacityProviders: ['FARGATE'],
+    }));
+
+    test.done();
+  },
+
+  'throws for unsupported capacity providers'(test: Test) {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'test');
+    const cluster = new ecs.Cluster(stack, 'EcsCluster');
+
+    // THEN
+    test.throws(() => {
+      cluster.addCapacityProvider('HONK');
+    }, /CapacityProvider not supported/);
+
     test.done();
   },
 };

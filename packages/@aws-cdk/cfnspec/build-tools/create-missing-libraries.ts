@@ -149,8 +149,8 @@ async function main() {
         package: 'cdk-package',
         awslint: 'cdk-awslint',
         cfn2ts: 'cfn2ts',
-        'build+test+package': 'npm run build+test && npm run package',
-        'build+test': 'npm run build && npm test',
+        'build+test': 'yarn build && yarn test',
+        'build+test+package': 'yarn build+test && yarn package',
         compat: 'cdk-compat',
         gen: 'cfn2ts',
         'rosetta:extract': 'yarn --silent jsii-rosetta extract',
@@ -194,6 +194,9 @@ async function main() {
       maturity: 'cfn-only',
       awscdkio: {
         announce: false,
+      },
+      publishConfig: {
+        tag: 'latest',
       },
     });
 
