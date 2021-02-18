@@ -1,10 +1,10 @@
 import * as cxapi from '@aws-cdk/cx-api';
 import { RegionInfo } from '@aws-cdk/region-info';
+import { Construct } from 'constructs';
 import { CfnCondition } from '../cfn-condition';
 import { Fn } from '../cfn-fn';
 import { Aws } from '../cfn-pseudo';
 import { CfnResource } from '../cfn-resource';
-import { Construct } from '../construct-compat';
 import { Lazy } from '../lazy';
 import { Stack } from '../stack';
 import { Token } from '../token';
