@@ -108,6 +108,6 @@
   "stability": "stable",
   "maturity": "stable",
   "publishConfig": {
-    "tag": "latest"
+    "tag": "next"
   }
 }
