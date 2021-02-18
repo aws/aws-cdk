@@ -88,8 +88,8 @@ The following example uses custom asset bundling to convert a markdown file to h
 
 [Example of using asset bundling](./test/integ.assets.bundling.lit.ts).
 
-The bundling docker image (`image`) can either come from a registry (`BundlingDockerImage.fromRegistry`)
-or it can be built from a `Dockerfile` located inside your project (`BundlingDockerImage.fromAsset`).
+The bundling docker image (`image`) can either come from a registry (`DockerImage.fromRegistry`)
+or it can be built from a `Dockerfile` located inside your project (`DockerImage.fromBuild`).
 
 You can set the `CDK_DOCKER` environment variable in order to provide a custom
 docker program to execute. This may sometime be needed when building in
@@ -114,7 +114,7 @@ new assets.Asset(this, 'BundledAsset', {
       },
     },
     // Docker bundling fallback
-    image: BundlingDockerImage.fromRegistry('alpine'),
+    image: DockerImage.fromRegistry('alpine'),
     entrypoint: ['/bin/sh', '-c'],
     command: ['bundle'],
   },
@@ -135,7 +135,7 @@ Use `BundlingOutput.NOT_ARCHIVED` if the bundling output must always be zipped:
 const asset = new assets.Asset(this, 'BundledAsset', {
   path: '/path/to/asset',
   bundling: {
-    image: BundlingDockerImage.fromRegistry('alpine'),
+    image: DockerImage.fromRegistry('alpine'),
     command: ['command-that-produces-an-archive.sh'],
     outputType: BundlingOutput.NOT_ARCHIVED, // Bundling output will be zipped even though it produces a single archive file.
   },
