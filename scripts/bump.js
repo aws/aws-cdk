@@ -1,8 +1,9 @@
 #!/usr/bin/env node
-const standardVersion = require('standard-version');
 const fs = require('fs');
 const path = require('path');
+const semver = require('semver');
 const ver = require('./resolve-version');
+const { exec } = require('child_process');
 const repoRoot = path.join(__dirname, '..');
 
 const releaseAs = process.argv[2] || 'minor';
@@ -40,7 +41,19 @@ async function main() {
     console.error(`BUMP_CANDIDATE is set, so bumping version for testing (with the "${opts.prerelease}" prerelease tag)`);
   }
 
-  return standardVersion(opts);
+  // `standard-release` will -- among other things -- create the changelog.
+  // However, on the v2 branch, `conventional-changelog` (which `standard-release` uses) gets confused
+  // and creates really muddled changelogs with both v1 and v2 releases intermingled, and lots of missing data.
+  // A super HACK here is to locally remove all version tags that don't match this major version prior
+  // to doing the bump, and then later fetching to restore those tags.
+  const majorVersion = semver.major(ver.version);
+  await exec(`git tag -d $(git tag -l | grep -v '^v${majorVersion}.')`);
+
+  // Delay loading standard-version until the git tags have been pruned.
+  const standardVersion = require('standard-version');
+  await standardVersion(opts);
+
+  await exec('git fetch -t');
 }
 
 main().catch(err => {
