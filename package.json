@@ -18,12 +18,12 @@
     "fs-extra": "^9.1.0",
     "graceful-fs": "^4.2.6",
     "jest-junit": "^12.0.0",
-    "jsii-diff": "^1.20.1",
-    "jsii-pacmak": "^1.20.1",
-    "jsii-rosetta": "^1.20.1",
+    "jsii-diff": "^1.21.0",
+    "jsii-pacmak": "^1.21.0",
+    "jsii-rosetta": "^1.21.0",
     "lerna": "^3.22.1",
-    "standard-version": "^9.1.0",
-    "typescript": "~3.9.7"
+    "standard-version": "^9.1.1",
+    "typescript": "~3.9.9"
   },
   "resolutions-comment": "should be removed or reviewed when nodeunit dependency is dropped or adjusted",
   "resolutions": {

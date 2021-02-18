@@ -69,5 +69,8 @@
     "node": ">= 10.13.0 <13 || >=13.7.0"
   },
   "stability": "experimental",
-  "maturity": "developer-preview"
+  "maturity": "developer-preview",
+  "publishConfig": {
+    "tag": "latest"
+  }
 }

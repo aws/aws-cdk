@@ -94,5 +94,8 @@
   "awscdkio": {
     "announce": false
   },
+  "publishConfig": {
+    "tag": "latest"
+  },
   "private": true
 }

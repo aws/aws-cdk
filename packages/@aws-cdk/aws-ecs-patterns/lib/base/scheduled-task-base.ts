@@ -35,6 +35,13 @@ export interface ScheduledTaskBaseProps {
   readonly schedule: Schedule;
 
   /**
+   * Indicates whether the rule is enabled.
+   *
+   * @default true
+   */
+  readonly enabled?: boolean;
+
+  /**
    * A name for the rule.
    *
    * @default - AWS CloudFormation generates a unique physical ID and uses that ID
@@ -144,6 +151,7 @@ export abstract class ScheduledTaskBase extends Construct {
     this.eventRule = new Rule(this, 'ScheduledEventRule', {
       schedule: props.schedule,
       ruleName: props.ruleName,
+      enabled: props.enabled,
     });
   }
 

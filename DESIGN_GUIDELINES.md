@@ -199,7 +199,7 @@ the fact that the Bucket class needs the ARN or that it needs to request
 encryption permissions are not the user's concern, and the API of the Bucket
 class should not “leak” these implementation details. In the future, the Bucket
 class can decide to interact differently with the **key** and this won't require
-expanding it's surface area. It also allows the **Key** class to change it's
+expanding its surface area. It also allows the **Key** class to change its
 behavior (i.e. add an IAM action to enable encryption of certain types of keys)
 without affecting the API of the consumer.
 
@@ -207,7 +207,7 @@ without affecting the API of the consumer.
 
 Using object references instead of attribute references provides a richer API,
 but also introduces an inherent challenge: how do we reference constructs that
-are not defined inside the same app (“**owned**” by the app). These could be
+are not defined inside the same app (“**owned**” by the app)? These could be
 resources that were created by some other AWS CDK app, via the AWS console,
 etc. We call these **“unowned” constructs.**
 
@@ -272,7 +272,7 @@ as “props” (to distinguish them from JavaScript object properties).
 Props are the most important aspect of designing a construct. Props are the
 entry point of the construct. They should reflect the entire surface area of the
 service through semantics that are intuitive to how developers perceive the
-service and it's capabilities.
+service and its capabilities.
 
 When designing the props of an AWS resource, consult the AWS Console experience
 for creating this resource. Service teams spend a lot of energy thinking about
@@ -300,7 +300,7 @@ API. In almost all cases, a richer object-oriented API can be exposed to
 encapsulate the low-level surface [_awslint:props-no-cfn-types_].
 
 Do not use the **Token** type. It provides zero type safety, and is a functional
-interface that may not translate cleanly in other JSII runtimes: ergo it should
+interface that may not translate cleanly in other JSII runtimes. Therefore, it should
 be avoided wherever possible [_awslint:props-no-tokens_].
 
 **deCDK** allows users to synthesize CDK stacks through a CloudFormation-like
@@ -308,7 +308,7 @@ be avoided wherever possible [_awslint:props-no-tokens_].
   like CloudFormation resources. Technically, this means that when a construct
   is defined, users supply an ID, type and a set of properties. In order to
   allow users to instantiate all AWS Construct Library constructs through the
-  deCDK syntax, we pose restrictions on prop types _[awslint:props-decdk]_:
+  deCDK syntax, we impose restrictions on prop types _[awslint:props-decdk]_:
 
 * Primitives (string, number, boolean, date)
 * Collections (list, map)
@@ -390,7 +390,7 @@ item). It just means that you can remove redundant context from the property
 names. For example, there is no need to repeat the resource type, the property
 type or indicate that this is a "configuration".
 
-For example prefer “readCapacity” versus “readCapacityUnits”.
+For example, prefer “readCapacity” versus “readCapacityUnits”.
 
 #### Naming
 
@@ -546,7 +546,7 @@ be treated as an opaque token, the JSDoc “@returns” annotation should begin 
 
 When an app defines a construct or resource, it specifies its provisioning
 configuration upon initialization. For example, when an SQS queue is defined,
-it's visibility timeout can be configured.
+its visibility timeout can be configured.
 
 Naturally, when constructs are imported (unowned), the importing app does not
 have control over its configuration (e.g. you cannot change the visibility
@@ -609,17 +609,17 @@ consistency and interoperability, we allow mutating methods to be exposed on the
 interface. For example, **grant** methods are exposed on the construct interface
 and not on the concrete class. In most cases, when you grant a permission on an
 AWS resource, the *principal's* policy needs to be updated, which mutates the
-consumer . However, there are certain cases where a *resource policy* must be
+consumer. However, there are certain cases where a *resource policy* must be
 updated. However, if the resource is unowned, it doesn't make sense (or even
 impossible) to update its policy (there is usually a 1:1 relationship between a
-resource and a resource policy). In such a case, we decided that grant methods
-will simply skip any changes to resource policies, but will issue attach a
+resource and a resource policy). In such cases, we decided that grant methods
+will simply skip any changes to resource policies, but will attach a
 **permission notice** to the app, which will be printed when the stack is
 synthesized by the toolkit.
 
 ### Factories
 
-In most AWS services, there's a one or more resource which can be referred to as
+In most AWS services, there are one or more resources which can be referred to as
 “primary resources” (normally one), while other resources exposed by the service
 can be considered “secondary resources”.
 
@@ -687,7 +687,7 @@ their app.
 The signature of all “from” methods should adhere to the following rules
 _[awslint:from-signature]_:
 
-* First argument must be **scope** of type **Construct**
+* First argument must be **scope** of type **Construct**.
 * Second argument is a **string**. This string will be used to determine the
   ID of the new construct. If the import method uses some value that is
   promised to be unique within the stack scope (such as ARN, export name),
@@ -697,8 +697,8 @@ _[awslint:from-signature]_:
 #### “from” Methods
 
 Resource constructs should export static “from” methods for importing unowned
-resources given one more of it's physical attributes such as ARN, name, etc. All
-constructs should have at least one fromXxx method _[awslint:from-method]_:
+resources given one more of its physical attributes such as ARN, name, etc. All
+constructs should have at least one "fromXxx" method _[awslint:from-method]_:
 
 ```ts
 static fromFooArn(scope: Construct, id: string, bucketArn: string): IFoo;
@@ -713,7 +713,7 @@ static fromFooName(scope: Construct, id: string, bucketName: string): IFoo;
   doesn't have unresolved tokens (using **Token.unresolved**). Preferably, they
   can use **Stack.parseArn** to achieve this purpose.
 
-If a resource has an ARN attribute it should implement at least a **fromFooArn**
+If a resource has an ARN attribute, it should implement at least a **fromFooArn**
 import method [_awslint:from-arn_].
 
 To implement **fromAttribute** methods, use the abstract base class construct as
@@ -769,7 +769,7 @@ interface FooProps {
 }
 ```
 
-The construct interface should expose a **role**property, and extends
+The construct interface should expose a **role** property, and extends
 **iam.IGrantable** _[awslint:role-property]_:
 
 ```ts
@@ -793,7 +793,7 @@ interface IFoo {
 }
 ```
 
-If the construct is unowned this method should no-op and issue a **permissions
+If the construct is unowned, this method should no-op and issue a **permissions
 notice** (TODO) to the user indicating that they should ensure that the role of
 this resource should have the specified permission.
 
@@ -947,7 +947,7 @@ suffix and adhere to the following rules _[awslint:metrics-method-signature]:_
 
 * Name should be “metricXxx” where “Xxx” is the official metric name
 * Accepts a single “options” argument of type **MetricOptions**
-* Returns a **Metric** object.
+* Returns a **Metric** object
 
 ```ts
 interface IFunction {
@@ -1001,7 +1001,7 @@ extend **ec2.IConnectable** _[awslint:connectable-interface]_.
 
 ### Integrations
 
-Many AWS services offer “integrations” to other services. For example, AWS
+Many AWS services offer “integrations” with other services. For example, AWS
 CodePipeline has actions that can trigger AWS Lambda functions, ECS tasks,
 CodeBuild projects and more. AWS Lambda can be triggered by a variety of event
 sources, AWS CloudWatch event rules can trigger many types of targets, SNS can
@@ -1017,7 +1017,7 @@ the central service and can be triggered by multiple event sources.
 
 Integrations are an abstract concept, not necessarily a specific mechanism. For
 example, each AWS Lambda event source is implemented in a different way (SNS,
-Bucket notifications, CloudWatch events, etc), but conceptually, *some*users
+Bucket notifications, CloudWatch events, etc), but conceptually, *some* users
 like to think about AWS Lambda as the “center”. It is also completely legitimate
 to have multiple ways to connect two services on AWS. To trigger an AWS Lambda
 function from an SNS topic, you could either use the integration or the SNS APIs
@@ -1102,7 +1102,7 @@ export class Table { }
 ```
 
 Persistent resources must have a **removalPolicy** prop, defaults to
-**Orphan**_[awslint:state-removal-policy-prop]_:
+**Orphan** _[awslint:state-removal-policy-prop]_:
 
 ```ts
 import { RemovalPolicy } from '@aws-cdk/cdk';
@@ -1179,14 +1179,14 @@ implementation of AWS constructs.
   not one that you made up and you force them to learn.
 * Multiple ways of achieving the same thing is legitimate.
 * Constantly maintain the invariants.
-* Fewer “if statements” the better.
+* The fewer “if statements” the better.
 
 ### Construct IDs
 
 Construct IDs (the second argument passed to all constructs when they are
 defined) are used to formulate resource logical IDs which must be **stable**
 across updates. The logical ID of a resource is calculated based on the **full
-path** of it's construct in the construct scope hierarchy. This means that any
+path** of its construct in the construct scope hierarchy. This means that any
 change to a logical ID in this path will invalidate all the logical IDs within
 this scope. This will result in **replacements of all underlying resources**
 within the next update, which is extremely undesirable.
@@ -1196,7 +1196,7 @@ construct.
 
 Therefore, when implementing constructs, you should treat the construct
 hierarchy and all construct IDs as part of the **external contract** of the
-construct. Any chance to either should be considered and called out as a
+construct. Any change to either should be considered and called out as a
 breaking change.
 
 There is no need to concatenate logical IDs. If you find yourself needing to
@@ -1226,10 +1226,10 @@ Error since all errors in the CDK are unrecoverable):
 * Include a descriptive message
 * Include the value provided
 * Include the expected/allowed values
-* No need to include information that can be obtained from the stack trace.
-* No need to add a period at the end of error messages.
+* No need to include information that can be obtained from the stack trace
+* No need to add a period at the end of error messages
 
-#### Avoid Errors if Possible
+#### Avoid Errors If Possible
 
 Always prefer to do the right thing for the user instead of raising an
 error. Only fail if the user has explicitly specified bad configuration. For

@@ -5,7 +5,7 @@ import { Stack, Tags } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import * as eks from '../lib';
 
-const CLUSTER_VERSION = eks.KubernetesVersion.V1_16;
+const CLUSTER_VERSION = eks.KubernetesVersion.V1_19;
 
 export = {
   'can be added to a cluster'(test: Test) {
@@ -366,14 +366,6 @@ export = {
           },
           {
             Action: [
-              'ec2:DescribeSubnets',
-              'ec2:DescribeRouteTables',
-            ],
-            Effect: 'Allow',
-            Resource: '*',
-          },
-          {
-            Action: [
               'eks:CreateCluster',
               'eks:DescribeCluster',
               'eks:DescribeUpdate',
@@ -408,31 +400,17 @@ export = {
             Resource: '*',
           },
           {
-            Action: 'ec2:DescribeVpcs',
+            Action: [
+              'ec2:DescribeInstances',
+              'ec2:DescribeNetworkInterfaces',
+              'ec2:DescribeSecurityGroups',
+              'ec2:DescribeSubnets',
+              'ec2:DescribeRouteTables',
+              'ec2:DescribeDhcpOptions',
+              'ec2:DescribeVpcs',
+            ],
             Effect: 'Allow',
-            Resource: {
-              'Fn::Join': [
-                '',
-                [
-                  'arn:',
-                  {
-                    Ref: 'AWS::Partition',
-                  },
-                  ':ec2:',
-                  {
-                    Ref: 'AWS::Region',
-                  },
-                  ':',
-                  {
-                    Ref: 'AWS::AccountId',
-                  },
-                  ':vpc/',
-                  {
-                    Ref: 'FargateClusterDefaultVpcE69D3A13',
-                  },
-                ],
-              ],
-            },
+            Resource: '*',
           },
           {
             Action: 'iam:PassRole',

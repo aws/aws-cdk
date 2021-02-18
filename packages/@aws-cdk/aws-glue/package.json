@@ -81,6 +81,7 @@
     "pkglint": "0.0.0"
   },
   "dependencies": {
+    "@aws-cdk/aws-ec2": "0.0.0",
     "@aws-cdk/aws-iam": "0.0.0",
     "@aws-cdk/aws-kms": "0.0.0",
     "@aws-cdk/aws-s3": "0.0.0",
@@ -89,6 +90,7 @@
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
+    "@aws-cdk/aws-ec2": "0.0.0",
     "@aws-cdk/aws-iam": "0.0.0",
     "@aws-cdk/aws-kms": "0.0.0",
     "@aws-cdk/aws-s3": "0.0.0",
@@ -143,5 +145,8 @@
   },
   "awscdkio": {
     "announce": false
+  },
+  "publishConfig": {
+    "tag": "latest"
   }
 }

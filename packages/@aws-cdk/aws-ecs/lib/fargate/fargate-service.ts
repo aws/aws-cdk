@@ -67,6 +67,7 @@ export interface FargateServiceProps extends BaseServiceOptions {
    * @default PropagatedTagSource.NONE
    */
   readonly propagateTaskTagsFrom?: PropagatedTagSource;
+
 }
 
 /**
@@ -153,6 +154,7 @@ export class FargateService extends BaseService implements IFargateService {
       ...props,
       desiredCount: props.desiredCount,
       launchType: LaunchType.FARGATE,
+      capacityProviderStrategies: props.capacityProviderStrategies,
       propagateTags: propagateTagsFromSource,
       enableECSManagedTags: props.enableECSManagedTags,
     }, {

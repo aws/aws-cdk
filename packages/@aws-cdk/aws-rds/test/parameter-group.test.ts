@@ -1,9 +1,9 @@
 import { countResources, expect, haveResource } from '@aws-cdk/assert';
 import * as cdk from '@aws-cdk/core';
-import { Test } from 'nodeunit';
+import { nodeunitShim, Test } from 'nodeunit-shim';
 import { DatabaseClusterEngine, ParameterGroup } from '../lib';
 
-export = {
+nodeunitShim({
   "does not create a parameter group if it wasn't bound to a cluster or instance"(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
@@ -126,4 +126,4 @@ export = {
 
     test.done();
   },
-};
+});

@@ -191,5 +191,8 @@
   "maturity": "developer-preview",
   "awscdkio": {
     "announce": false
+  },
+  "publishConfig": {
+    "tag": "latest"
   }
 }
