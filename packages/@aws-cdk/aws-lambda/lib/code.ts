@@ -60,13 +60,16 @@ export abstract class Code {
   /**
    * Loads the function code from an asset created by a Docker build.
    *
-   * The asset is expected to be located at `/asset` in the image.
+   * By defaut, the asset is expected to be located at `/asset` in the
+   * image.
    *
    * @param path The path to the directory containing the Docker file
    * @param options Docker build options
    */
-  public static fromDockerBuildAsset(path: string, options: cdk.DockerBuildOptions = {}): AssetCode {
-    const assetPath = cdk.DockerImage.fromBuild(path, options).cp('/asset');
+  public static fromDockerBuildAsset(path: string, options: DockerBuildAssetOptions = {}): AssetCode {
+    const assetPath = cdk.DockerImage
+      .fromBuild(path, options)
+      .cp(options.imagePath ?? '/asset', options.outputPath);
     return new AssetCode(assetPath);
   }
 
@@ -500,4 +503,25 @@ export class AssetImageCode extends Code {
       },
     };
   }
+}
+
+/**
+ * Options when creating an asset from a Docker build.
+ */
+export interface DockerBuildAssetOptions extends cdk.DockerBuildOptions {
+  /**
+   * The path in the Docker image where the asset is located after the build
+   * operation.
+   *
+   * @default /asset
+   */
+  readonly imagePath?: string;
+
+  /**
+   * The path on the local filesystem where the asset will be copied
+   * using `docker cp`.
+   *
+   * @default - a unique temporary directory in the system temp directory
+   */
+  readonly outputPath?: string;
 }

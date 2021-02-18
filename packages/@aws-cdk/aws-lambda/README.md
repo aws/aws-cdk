@@ -38,7 +38,7 @@ runtime code.
    [bundling asset code](#bundling-asset-code).
  * `lambda.Code.fromDockerBuildAsset(path, options)` - use the result of a Docker
    build as code. The runtime code is expected to be located at `/asset` in the
-   image.
+   image and will be zipped and uploaded to S3 as an asset.
 
 The following example shows how to define a Python function and deploy the code
 from the local directory `my-lambda-handler` to it:
@@ -453,7 +453,7 @@ new lambda.Function(this, 'Function', {
     bundling: {
       image: lambda.Runtime.PYTHON_3_6.bundlingDockerImage,
       command: [
-        'bash', '-c', 
+        'bash', '-c',
         'pip install -r requirements.txt -t /asset-output && cp -au . /asset-output'
       ],
     },
