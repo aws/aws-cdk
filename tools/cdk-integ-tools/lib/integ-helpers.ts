@@ -342,6 +342,9 @@ export const DEFAULT_SYNTH_OPTIONS = {
     '@aws-cdk/aws-kms:defaultKeyPolicies': true,
     '@aws-cdk/core:enableStackNameDuplicates': true,
     '@aws-cdk/aws-secretsmanager:parseOwnedSecretName': true,
+    'aws-cdk:enableDiffNoFail': true,
+    '@aws-cdk/core:stackRelativeExports': true,
+    '@aws-cdk/aws-s3:grantWriteWithoutAcl': true,
   },
   env: {
     CDK_INTEG_ACCOUNT: '12345678',
