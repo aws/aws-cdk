@@ -1,10 +1,7 @@
 import * as ecs from '@aws-cdk/aws-ecs';
+import { Construct } from 'constructs';
 import { Service } from '../service';
 import { ServiceExtension } from './extension-interfaces';
-
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct } from '@aws-cdk/core';
 
 /**
  * Setting for the main application container of a service
