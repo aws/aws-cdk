@@ -39,7 +39,7 @@
   },
   "devDependencies": {
     "@types/jest": "^26.0.20",
-    "@types/node": "^10.17.52",
+    "@types/node": "^10.17.53",
     "@types/yarnpkg__lockfile": "^1.1.4",
     "jest": "^26.6.3",
     "pkglint": "0.0.0",
