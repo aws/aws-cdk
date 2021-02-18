@@ -26,7 +26,7 @@ export interface IWebSocketApi extends IResource {
    * Add a websocket integration
    * @internal
    */
-  _addIntegration(config: WebSocketRouteIntegrationConfig): WebSocketIntegration
+  _addIntegration(scope: Construct, config: WebSocketRouteIntegrationConfig): WebSocketIntegration
 }
 
 /**
@@ -53,7 +53,7 @@ export interface WebSocketApiProps {
 
   /**
    * The name of the default stage with deployment
-   * @default - none
+   * @default - No default stage is created
    */
   readonly defaultStageName?: string;
 }
@@ -104,15 +104,15 @@ export class WebSocketApi extends Resource implements IWebSocketApi {
   /**
    * @internal
    */
-  public _addIntegration(config: WebSocketRouteIntegrationConfig): WebSocketIntegration {
-    const stringifiedConfig = JSON.stringify(Stack.of(this).resolve(config));
+  public _addIntegration(scope: Construct, config: WebSocketRouteIntegrationConfig): WebSocketIntegration {
+    const stringifiedConfig = JSON.stringify(Stack.of(scope).resolve(config));
     const configHash = crypto.createHash('md5').update(stringifiedConfig).digest('hex');
 
     if (configHash in this.integrations) {
       return this.integrations[configHash];
     }
 
-    const integration = new WebSocketIntegration(this, `WebSocketIntegration-${configHash}`, {
+    const integration = new WebSocketIntegration(scope, `WebSocketIntegration-${configHash}`, {
       webSocketApi: this,
       integrationType: config.type,
       integrationUri: config.uri,

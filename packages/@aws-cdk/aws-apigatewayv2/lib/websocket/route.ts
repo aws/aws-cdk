@@ -72,7 +72,7 @@ export class WebSocketRoute extends Resource implements IWebSocketRoute {
       scope: this,
     });
 
-    const integration = props.webSocketApi._addIntegration(config);
+    const integration = props.webSocketApi._addIntegration(this, config);
 
     const route = new CfnRoute(this, 'Resource', {
       apiId: props.webSocketApi.webSocketApiId,
