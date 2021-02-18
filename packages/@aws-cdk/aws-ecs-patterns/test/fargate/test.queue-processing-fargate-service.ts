@@ -340,7 +340,7 @@ export = {
       taskSubnets: { subnetType: ec2.SubnetType.ISOLATED },
     });
 
-    // THEN - NetworkConfiguration are created with the spefici security groups and selected subnets
+    // THEN - NetworkConfiguration is created with the specific security groups and selected subnets
     expect(stack).to(haveResource('AWS::ECS::Service', {
       LaunchType: 'FARGATE',
       NetworkConfiguration: {
