@@ -1,5 +1,6 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
-import { FargatePlatformVersion, FargateService, FargateTaskDefinition } from '@aws-cdk/aws-ecs';
+import { CfnService, FargatePlatformVersion, FargateService, FargateTaskDefinition } from '@aws-cdk/aws-ecs';
+import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
 import { QueueProcessingServiceBase, QueueProcessingServiceBaseProps } from '../base/queue-processing-service-base';
 
@@ -132,7 +133,6 @@ export class QueueProcessingFargateService extends QueueProcessingServiceBase {
     // autoscaling based on cpu utilization and number of messages visible in the SQS queue.
     this.service = new FargateService(this, 'QueueProcessingFargateService', {
       cluster: this.cluster,
-      desiredCount: this.desiredCount,
       taskDefinition: this.taskDefinition,
       serviceName: props.serviceName,
       minHealthyPercent: props.minHealthyPercent,
@@ -145,6 +145,12 @@ export class QueueProcessingFargateService extends QueueProcessingServiceBase {
       vpcSubnets: props.taskSubnets,
       assignPublicIp: props.assignPublicIp,
     });
+
+    if (!this.node.tryGetContext(cxapi.ECS_REMOVE_DEFAULT_DESIRED_COUNT)) {
+      const cfnService = this.service.node.children.find(c => c instanceof CfnService) as CfnService;
+      cfnService.desiredCount = this.desiredCount;
+    }
+
     this.configureAutoscalingForService(this.service);
     this.grantPermissionsToService(this.service);
   }
