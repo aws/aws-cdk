@@ -1,10 +1,10 @@
 import { expect, haveResourceLike } from '@aws-cdk/assert';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
-import { Test } from 'nodeunit';
+import { nodeunitShim, Test } from 'nodeunit-shim';
 import * as rds from '../lib';
 
-export = {
+nodeunitShim({
   'default parameterGroupFamily for versionless MariaDB instance engine is not defined'(test: Test) {
     const engine = rds.DatabaseInstanceEngine.MARIADB;
 
@@ -284,4 +284,4 @@ export = {
       test.done();
     },
   },
-};
+});
