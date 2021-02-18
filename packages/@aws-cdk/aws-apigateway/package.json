@@ -324,7 +324,6 @@
     ]
   },
   "stability": "stable",
-
   "awscdkio": {
     "announce": false
   },
