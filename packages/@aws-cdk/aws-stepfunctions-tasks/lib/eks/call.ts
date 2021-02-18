@@ -59,11 +59,26 @@ export class EksCall extends sfn.TaskStateBase {
 
   private readonly integrationPattern: sfn.IntegrationPattern;
 
+  private readonly clusterEndpoint: string;
+  private readonly clusterCertificateAuthorityData: string;
+
   constructor(scope: Construct, id: string, private readonly props: EksCallProps) {
     super(scope, id, props);
     this.integrationPattern = props.integrationPattern ?? sfn.IntegrationPattern.REQUEST_RESPONSE;
 
     validatePatternSupported(this.integrationPattern, EksCall.SUPPORTED_INTEGRATION_PATTERNS);
+
+    try {
+      this.clusterEndpoint = this.props.cluster.clusterEndpoint;
+    } catch (e) {
+      throw new Error('The "clusterEndpoint" property must be specified when using an imported Cluster.');
+    }
+
+    try {
+      this.clusterCertificateAuthorityData = this.props.cluster.clusterCertificateAuthorityData;
+    } catch (e) {
+      throw new Error('The "clusterCertificateAuthorityData" property must be specified when using an imported Cluster.');
+    }
   }
 
   /**
@@ -75,8 +90,8 @@ export class EksCall extends sfn.TaskStateBase {
       Resource: integrationResourceArn('eks', 'call', this.integrationPattern),
       Parameters: sfn.FieldUtils.renderObject({
         ClusterName: this.props.cluster.clusterName,
-        CertificateAuthority: this.props.cluster.clusterCertificateAuthorityData,
-        Endpoint: this.props.cluster.clusterEndpoint,
+        CertificateAuthority: this.clusterCertificateAuthorityData,
+        Endpoint: this.clusterEndpoint,
         Method: this.props.httpMethod,
         Path: this.props.httpPath,
         QueryParameters: this.props.queryParameters,

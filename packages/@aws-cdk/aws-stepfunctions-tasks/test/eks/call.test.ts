@@ -194,3 +194,41 @@ test('Task throws if WAIT_FOR_TASK_TOKEN is supplied as service integration patt
     /Unsupported service integration pattern. Supported Patterns: REQUEST_RESPONSE. Received: WAIT_FOR_TASK_TOKEN/,
   );
 });
+
+test('Task throws if cluster supplied does not have clusterEndpoint configured', () => {
+  const importedCluster = eks.Cluster.fromClusterAttributes(stack, 'InvalidCluster', {
+    clusterName: 'importedCluster',
+    clusterCertificateAuthorityData: 'clusterCertificateAuthorityData',
+  });
+  expect(() => {
+    new EksCall(stack, 'Call', {
+      cluster: importedCluster,
+      httpMethod: HttpMethods.GET,
+      httpPath: 'path',
+      requestBody: sfn.TaskInput.fromObject({
+        RequestBody: 'requestBody',
+      }),
+    });
+  }).toThrow(
+    /The "clusterEndpoint" property must be specified when using an imported Cluster./,
+  );
+});
+
+test('Task throws if cluster supplied does not have clusterCertificateAuthorityData configured', () => {
+  const importedCluster = eks.Cluster.fromClusterAttributes(stack, 'InvalidCluster', {
+    clusterName: 'importedCluster',
+    clusterEndpoint: 'clusterEndpoint',
+  });
+  expect(() => {
+    new EksCall(stack, 'Call', {
+      cluster: importedCluster,
+      httpMethod: HttpMethods.GET,
+      httpPath: 'path',
+      requestBody: sfn.TaskInput.fromObject({
+        RequestBody: 'requestBody',
+      }),
+    });
+  }).toThrow(
+    /The "clusterCertificateAuthorityData" property must be specified when using an imported Cluster./,
+  );
+});
