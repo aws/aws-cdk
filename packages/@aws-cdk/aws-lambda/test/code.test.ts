@@ -328,7 +328,7 @@ describe('code', () => {
     });
   });
 
-  describe('lambda.Code.fromDockerBuildAsset', () => {
+  describe('lambda.Code.fromDockerBuild', () => {
     test('can use the result of a Docker build as an asset', () => {
       // given
       const stack = new cdk.Stack();
@@ -336,7 +336,7 @@ describe('code', () => {
 
       // when
       new lambda.Function(stack, 'Fn', {
-        code: lambda.Code.fromDockerBuildAsset(path.join(__dirname, 'docker-build-lambda')),
+        code: lambda.Code.fromDockerBuild(path.join(__dirname, 'docker-build-lambda')),
         handler: 'index.handler',
         runtime: lambda.Runtime.NODEJS_12_X,
       });

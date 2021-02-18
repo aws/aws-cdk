@@ -66,7 +66,7 @@ export abstract class Code {
    * @param path The path to the directory containing the Docker file
    * @param options Docker build options
    */
-  public static fromDockerBuildAsset(path: string, options: DockerBuildAssetOptions = {}): AssetCode {
+  public static fromDockerBuild(path: string, options: DockerBuildAssetOptions = {}): AssetCode {
     const assetPath = cdk.DockerImage
       .fromBuild(path, options)
       .cp(options.imagePath ?? '/asset', options.outputPath);
