@@ -36,9 +36,6 @@ runtime code.
  * `lambda.Code.fromAsset(path)` - specify a directory or a .zip file in the local
    filesystem which will be zipped and uploaded to S3 before deployment. See also
    [bundling asset code](#bundling-asset-code).
- * `lambda.Code.fromDockerBuild(path, options)` - use the result of a Docker
-   build as code. The runtime code is expected to be located at `/asset` in the
-   image and will be zipped and uploaded to S3 as an asset.
 
 The following example shows how to define a Python function and deploy the code
 from the local directory `my-lambda-handler` to it:
@@ -453,7 +450,7 @@ new lambda.Function(this, 'Function', {
     bundling: {
       image: lambda.Runtime.PYTHON_3_6.bundlingDockerImage,
       command: [
-        'bash', '-c',
+        'bash', '-c', 
         'pip install -r requirements.txt -t /asset-output && cp -au . /asset-output'
       ],
     },
@@ -465,8 +462,8 @@ new lambda.Function(this, 'Function', {
 
 Runtimes expose a `bundlingDockerImage` property that points to the [AWS SAM](https://github.com/awslabs/aws-sam-cli) build image.
 
-Use `cdk.DockerImage.fromRegistry(image)` to use an existing image or
-`cdk.DockerImage.fromBuild(path)` to build a specific image:
+Use `cdk.BundlingDockerImage.fromRegistry(image)` to use an existing image or
+`cdk.BundlingDockerImage.fromAsset(path)` to build a specific image:
 
 ```ts
 import * as cdk from '@aws-cdk/core';
@@ -474,7 +471,7 @@ import * as cdk from '@aws-cdk/core';
 new lambda.Function(this, 'Function', {
   code: lambda.Code.fromAsset('/path/to/handler', {
     bundling: {
-      image: cdk.DockerImage.fromBuild('/path/to/dir/with/DockerFile', {
+      image: cdk.BundlingDockerImage.fromAsset('/path/to/dir/with/DockerFile', {
         buildArgs: {
           ARG1: 'value1',
         },

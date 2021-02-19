@@ -20,7 +20,7 @@ beforeEach(() => {
   getEsBuildVersionMock.mockReturnValue('0.8.8');
   fromAssetMock.mockReturnValue({
     image: 'built-image',
-    cp: () => 'dest-path',
+    cp: () => {},
     run: () => {},
     toJSON: () => 'built-image',
   });
