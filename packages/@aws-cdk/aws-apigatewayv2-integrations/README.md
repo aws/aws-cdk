@@ -159,15 +159,15 @@ Lambda integrations enable integrating a WebSocket API route with a Lambda funct
 
 The API Gateway service will invoke the lambda function with an event payload of a specific format.
 
-The following code configures a `$connect` route with a Lambda integration
+The following code configures a `sendmessage` route with a Lambda integration
 
 ```ts
 const webSocketApi = new WebSocketApi(stack, 'mywsapi', {
   defaultStageName: 'dev',
 });
 
-const connectHandler = new lambda.Function(stack, 'ConnectHandler', {...});
-webSocketApi.addConnectRoute({
+const messageHandler = new lambda.Function(stack, 'MessageHandler', {...});
+webSocketApi.addRoute('sendmessage', {
   integration: new LambdaWebSocketIntegration({
     handler: connectHandler,
   }),
