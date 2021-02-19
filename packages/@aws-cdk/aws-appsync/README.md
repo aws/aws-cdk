@@ -89,7 +89,7 @@ demoDS.createResolver({
   fieldName: 'addDemo',
   requestMappingTemplate: appsync.MappingTemplate.dynamoDbPutItem(
     appsync.PrimaryKey.partition('id').auto(),
-    appsync.Values.projecting('demo')
+    appsync.Values.projecting('input')
   ),
   responseMappingTemplate: appsync.MappingTemplate.dynamoDbResultItem(),
 });
