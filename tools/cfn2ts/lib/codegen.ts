@@ -343,6 +343,13 @@ export default class CodeGenerator {
         }
       }
     }
+
+    //
+    //  Validator
+    //
+    this.emitConstructValidator(resourceName);
+
+    // End constructor
     this.code.closeBlock();
 
     this.code.line();
@@ -353,11 +360,6 @@ export default class CodeGenerator {
       this.code.line();
       this.emitCloudFormationProperties(propsType, propMap, schema.isTaggableResource(spec));
     }
-
-    //
-    //  Validator
-    //
-    this.emitConstructValidator(resourceName);
 
     this.closeClass(resourceName);
 
@@ -391,22 +393,16 @@ export default class CodeGenerator {
   }
 
   /**
-   * Emit a validator for the given construct
+   * Add validations for the given construct
    *
    * The generated code looks like this:
    *
    * ```
-   * protected validate(): string[] {
-   *   const errors = new Array<string>();
-   *   // Validation here...
-   *   return errors;
+   * this.node.addValidation({ validate: () => /* validation code * / });
    * }
    * ```
    */
   private emitConstructValidator(resourceType: genspec.CodeName) {
-    this.code.openBlock('protected validate(): string[]');
-    this.code.line('const errors = new Array<string>();');
-
     const cfnLint = cfnLintAnnotations(resourceType.specName?.fqn ?? '');
 
     if (cfnLint.stateful) {
@@ -419,13 +415,12 @@ export default class CodeGenerator {
       // - users working at the L1 level would start getting synthesis failures when we add this feature
       // - the `cloudformation-include` library that loads CFN templates to L1s would start failing when it loads
       //   templates that don't have DeletionPolicy set.
-      this.code.line(`if (this.node.scope && ${CORE}.Resource.isResource(this.node.scope) && this.cfnOptions.deletionPolicy === undefined) {`);
-      this.code.line(`  errors.push(\'\\\'${resourceType.specName?.fqn}\\\' is a stateful resource type, and you must specify a Removal Policy for it. Call \\\'resource.applyRemovalPolicy()\\\'.\');`);
-      this.code.line('}');
+      this.code.openBlock(`if (this.node.scope && ${CORE}.Resource.isResource(this.node.scope))`);
+      this.code.line('this.node.addValidation({ validate: () => this.cfnOptions.deletionPolicy === undefined');
+      this.code.line(`  ? [\\\'${resourceType.specName?.fqn}\\\' is a stateful resource type, and you must specify a Removal Policy for it. Call \\\'resource.applyRemovalPolicy()\\\'.\']`);
+      this.code.line('  : [] });');
+      this.code.closeBlock();
     }
-
-    this.code.line('return errors;');
-    this.code.closeBlock();
   }
 
   /**

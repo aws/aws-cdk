@@ -42,8 +42,6 @@ async function generateResourceSpecification(inputDir: string, outFile: string) 
 
   await fs.mkdirp(path.dirname(outFile));
   await fs.writeJson(outFile, spec, { spaces: 2 });
-  // eslint-disable-next-line no-console
-  console.log(outFile);
 }
 
 /**
@@ -62,8 +60,6 @@ async function mergeSpecificationFromDirs(inputDir: string, outFile: string) {
 
   await fs.mkdirp(path.dirname(outFile));
   await fs.writeJson(outFile, spec, { spaces: 2 });
-  // eslint-disable-next-line no-console
-  console.log(outFile);
 }
 
 /**
