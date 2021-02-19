@@ -1,8 +1,4 @@
-// v2 - leave this as a separate section so it reduces merge conflicts when compat is removed
-// eslint-disable-next-line import/order
-import { IConstruct, Construct as CoreConstruct } from './construct-compat';
-
-import { Construct } from 'constructs';
+import { Construct, IConstruct } from 'constructs';
 import { ArnComponents } from './arn';
 import { IStringProducer, Lazy } from './lazy';
 import { generatePhysicalName, isGeneratedWhenNeededMarker } from './private/physical-name-generator';
@@ -91,7 +87,7 @@ export interface ResourceProps {
 /**
  * A construct which represents an AWS resource.
  */
-export abstract class Resource extends CoreConstruct implements IResource {
+export abstract class Resource extends Construct implements IResource {
   public readonly stack: Stack;
   public readonly env: ResourceEnvironment;
 

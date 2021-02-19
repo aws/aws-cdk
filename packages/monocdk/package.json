@@ -1,6 +1,7 @@
 {
   "name": "monocdk",
   "version": "0.0.0",
+  "private": true,
   "description": "An experiment to bundle the entire CDK into a single module",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -290,7 +291,7 @@
     "@types/fs-extra": "^8.1.1",
     "@types/node": "^10.17.53",
     "cdk-build-tools": "0.0.0",
-    "constructs": "^3.2.0",
+    "constructs": "10.0.0-pre.5",
     "fs-extra": "^9.1.0",
     "pkglint": "0.0.0",
     "ts-node": "^9.1.1",
@@ -298,7 +299,7 @@
     "ubergen": "0.0.0"
   },
   "peerDependencies": {
-    "constructs": "^3.2.0"
+    "constructs": "10.0.0-pre.5"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "engines": {
