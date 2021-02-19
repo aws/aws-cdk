@@ -1,6 +1,5 @@
 import * as cxapi from '@aws-cdk/cx-api';
 import * as constructs from 'constructs';
-import { Node } from 'constructs';
 import { Annotations } from '../annotations';
 import { Aspects, IAspect } from '../aspect';
 import { Construct, IConstruct, SynthesisOptions, ValidationError } from '../construct-compat';
@@ -180,7 +179,7 @@ function validateTree(root: IConstruct) {
   });
 
   // Validations added through `node.addValidation()`
-  errors.push(...Node.of(root).validate().map(e => ({
+  errors.push(...constructs.Node.of(root).validate().map(e => ({
     message: e.message, source: e.source as unknown as Construct,
   })));
 
