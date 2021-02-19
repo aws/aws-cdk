@@ -328,7 +328,7 @@ export interface KeyProps {
    * @default - false, unless the `@aws-cdk/aws-kms:defaultKeyPolicies` feature flag is set.
    * @see https://docs.aws.amazon.com/kms/latest/developerguide/key-policies.html#key-policy-default-allow-root-enable-iam
    * @deprecated redundant with the `@aws-cdk/aws-kms:defaultKeyPolicies` feature flag
-   */ 
+   */
   readonly trustAccountIdentities?: boolean;
 
   /**
