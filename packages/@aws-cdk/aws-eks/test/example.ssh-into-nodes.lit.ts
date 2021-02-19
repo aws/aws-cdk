@@ -10,7 +10,7 @@ class EksClusterStack extends cdk.Stack {
 
     const cluster = new eks.Cluster(this, 'EKSCluster', {
       vpc,
-      version: eks.KubernetesVersion.V1_18,
+      version: eks.KubernetesVersion.V1_19,
     });
 
     /// !show
