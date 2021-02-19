@@ -16,7 +16,7 @@ describe('WebSocketStage', () => {
 
     // THEN
     expect(stack).toHaveResource('AWS::ApiGatewayV2::Stage', {
-      ApiId: stack.resolve(api.webSocketApiId),
+      ApiId: stack.resolve(api.apiId),
       StageName: 'dev',
     });
     expect(defaultStage.url.endsWith('/dev')).toBe(true);

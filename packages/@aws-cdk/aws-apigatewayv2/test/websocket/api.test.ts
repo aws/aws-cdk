@@ -2,7 +2,7 @@ import '@aws-cdk/assert/jest';
 import { Stack } from '@aws-cdk/core';
 import {
   IWebSocketRouteIntegration, WebSocketApi, WebSocketIntegrationType,
-  WebSocketRouteIntegrationBindOptions, WebSocketRouteIntegrationConfig,
+  WebSocketRouteIntegrationBindOptions, IWebSocketRouteIntegrationConfig,
 } from '../../lib';
 
 describe('WebSocketApi', () => {
@@ -35,7 +35,7 @@ describe('WebSocketApi', () => {
 
     // THEN
     expect(stack).toHaveResource('AWS::ApiGatewayV2::Stage', {
-      ApiId: stack.resolve(api.webSocketApiId),
+      ApiId: stack.resolve(api.apiId),
       StageName: 'dev',
       AutoDeploy: true,
     });
@@ -51,59 +51,56 @@ describe('WebSocketApi', () => {
 
     // THEN
     expect(stack).toHaveResource('AWS::ApiGatewayV2::Route', {
-      ApiId: stack.resolve(api.webSocketApiId),
+      ApiId: stack.resolve(api.apiId),
       RouteKey: 'myroute',
     });
   });
 
-  test('addConnectRoute: adds a $connect route', () => {
+  test('connectRouteOptions: adds a $connect route', () => {
     // GIVEN
     const stack = new Stack();
-    const api = new WebSocketApi(stack, 'api');
-
-    // WHEN
-    api.addConnectRoute({ integration: new DummyIntegration() });
+    const api = new WebSocketApi(stack, 'api', {
+      connectRouteOptions: { integration: new DummyIntegration() },
+    });
 
     // THEN
     expect(stack).toHaveResource('AWS::ApiGatewayV2::Route', {
-      ApiId: stack.resolve(api.webSocketApiId),
+      ApiId: stack.resolve(api.apiId),
       RouteKey: '$connect',
     });
   });
 
-  test('addDisconnectRoute: adds a $disconnect route', () => {
+  test('disconnectRouteOptions: adds a $disconnect route', () => {
     // GIVEN
     const stack = new Stack();
-    const api = new WebSocketApi(stack, 'api');
-
-    // WHEN
-    api.addDisconnectRoute({ integration: new DummyIntegration() });
+    const api = new WebSocketApi(stack, 'api', {
+      disconnectRouteOptions: { integration: new DummyIntegration() },
+    });
 
     // THEN
     expect(stack).toHaveResource('AWS::ApiGatewayV2::Route', {
-      ApiId: stack.resolve(api.webSocketApiId),
+      ApiId: stack.resolve(api.apiId),
       RouteKey: '$disconnect',
     });
   });
 
-  test('addDefaultRoute: adds a $default route', () => {
+  test('defaultRouteOptions: adds a $default route', () => {
     // GIVEN
     const stack = new Stack();
-    const api = new WebSocketApi(stack, 'api');
-
-    // WHEN
-    api.addDefaultRoute({ integration: new DummyIntegration() });
+    const api = new WebSocketApi(stack, 'api', {
+      defaultRouteOptions: { integration: new DummyIntegration() },
+    });
 
     // THEN
     expect(stack).toHaveResource('AWS::ApiGatewayV2::Route', {
-      ApiId: stack.resolve(api.webSocketApiId),
+      ApiId: stack.resolve(api.apiId),
       RouteKey: '$default',
     });
   });
 });
 
 class DummyIntegration implements IWebSocketRouteIntegration {
-  bind(_options: WebSocketRouteIntegrationBindOptions): WebSocketRouteIntegrationConfig {
+  bind(_options: WebSocketRouteIntegrationBindOptions): IWebSocketRouteIntegrationConfig {
     return {
       type: WebSocketIntegrationType.AWS_PROXY,
       uri: 'some-uri',

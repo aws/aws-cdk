@@ -1,7 +1,7 @@
 import { Resource } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnIntegration } from '../apigatewayv2.generated';
-import { IIntegration } from '../common';
+import { IIntegration, IRouteIntegrationConfig } from '../common';
 import { IWebSocketApi } from './api';
 import { IWebSocketRoute } from './route';
 
@@ -58,7 +58,7 @@ export class WebSocketIntegration extends Resource implements IWebSocketIntegrat
   constructor(scope: Construct, id: string, props: WebSocketIntegrationProps) {
     super(scope, id);
     const integ = new CfnIntegration(this, 'Resource', {
-      apiId: props.webSocketApi.webSocketApiId,
+      apiId: props.webSocketApi.apiId,
       integrationType: props.integrationType,
       integrationUri: props.integrationUri,
     });
@@ -91,13 +91,13 @@ export interface IWebSocketRouteIntegration {
   /**
    * Bind this integration to the route.
    */
-  bind(options: WebSocketRouteIntegrationBindOptions): WebSocketRouteIntegrationConfig;
+  bind(options: WebSocketRouteIntegrationBindOptions): IWebSocketRouteIntegrationConfig;
 }
 
 /**
  * Config returned back as a result of the bind.
  */
-export interface WebSocketRouteIntegrationConfig {
+export interface IWebSocketRouteIntegrationConfig extends IRouteIntegrationConfig {
   /**
    * Integration type.
    */

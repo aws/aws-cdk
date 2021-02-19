@@ -10,3 +10,9 @@ export interface IIntegration extends IResource {
    */
   readonly integrationId: string;
 }
+
+/**
+ * Config representing route integration
+ */
+export interface IRouteIntegrationConfig {
+}

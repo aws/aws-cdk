@@ -1,7 +1,7 @@
 import {
   HttpIntegrationType,
   HttpRouteIntegrationBindOptions,
-  HttpRouteIntegrationConfig,
+  IHttpRouteIntegrationConfig,
   IHttpRouteIntegration,
   PayloadFormatVersion,
 } from '@aws-cdk/aws-apigatewayv2';
@@ -34,7 +34,7 @@ export class LambdaProxyIntegration implements IHttpRouteIntegration {
   constructor(private readonly props: LambdaProxyIntegrationProps) {
   }
 
-  public bind(options: HttpRouteIntegrationBindOptions): HttpRouteIntegrationConfig {
+  public bind(options: HttpRouteIntegrationBindOptions): IHttpRouteIntegrationConfig {
     const route = options.route;
     this.props.handler.addPermission(`${Names.nodeUniqueId(route.node)}-Permission`, {
       scope: options.scope,

@@ -287,6 +287,10 @@ lifecycle, from creation through monitoring your production APIs. [Read more](ht
 
 WebSocket APIs have two fundamental concepts - Routes and Integrations.
 
+```ts
+addRoute
+```
+
 WebSocket APIs direct JSON messages to backend integrations based on configured routes. (Non-JSON messages are directed 
 to the configured `$default` route.)
 
@@ -295,38 +299,28 @@ Integrations define how the WebSocket API behaves when a client reaches a specif
 
 Integrations are available in the `aws-apigatewayv2-integrations` module and more information is available in that module.
 
-The below snippet shows how a basic WebSocket API can be configured
+To add the default WebSocket routes supported by API Gateway (`$connect`, `$disconnect` and `$default`), configure them as part of api props:
+
+```ts
+new WebSocketApi(stack, 'mywsapi', {
+  defaultStageName: 'dev',
+  connectRouteOptions: { integration: new LambdaWebSocketIntegration({ handler: connectHandler }) },
+  disconnectRouteOptions: { integration: new LambdaWebSocketIntegration({ handler: disconnetHandler }) },
+  defaultRouteOptions: { integration: new LambdaWebSocketIntegration({ handler: defaultHandler }) },
+});
+```
+
+To add any other route:
 
 ```ts
 const webSocketApi = new WebSocketApi(stack, 'mywsapi', {
   defaultStageName: 'dev',
 });
-
-const connectHandler = new lambda.Function(stack, 'ConnectHandler', {...});
-webSocketApi.addConnectRoute({
-  integration: new LambdaWebSocketIntegration({
-    handler: connectHandler,
-  }),
-});
-
-const disconnetHandler = new lambda.Function(stack, 'DisconnectHandler', {...});
-webSocketApi.addDisconnectRoute({
-  integration: new LambdaWebSocketIntegration({
-    handler: disconnetHandler,
-  }),
-});
-
-const defaultHandler = new lambda.Function(stack, 'DefaultHandler', {...});
-webSocketApi.addDefaultRoute({
-  integration: new LambdaWebSocketIntegration({
-    handler: defaultHandler,
-  }),
-});
-
-const messageHandler = new lambda.Function(stack, 'MessageHandler', {...});
 webSocketApi.addRoute('sendmessage', {
   integration: new LambdaWebSocketIntegration({
     handler: messageHandler,
   }),
 });
 ```
+
+

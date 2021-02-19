@@ -103,11 +103,15 @@
   },
   "awslint": {
     "exclude": [
+      "props-physical-name:@aws-cdk/aws-apigatewayv2.ApiMappingProps",
+      "construct-interface-extends-iconstruct:@aws-cdk/aws-apigatewayv2.IHttpApi",
+      "construct-interface-extends-iconstruct:@aws-cdk/aws-apigatewayv2.IWebSocketApi",
+      "resource-interface-extends-resource:@aws-cdk/aws-apigatewayv2.IHttpApi",
+      "resource-interface-extends-resource:@aws-cdk/aws-apigatewayv2.IWebSocketApi",
       "from-method:@aws-cdk/aws-apigatewayv2.HttpIntegration",
       "from-method:@aws-cdk/aws-apigatewayv2.HttpRoute",
       "from-method:@aws-cdk/aws-apigatewayv2.HttpStage",
       "props-physical-name-type:@aws-cdk/aws-apigatewayv2.HttpStageProps.stageName",
-      "props-physical-name:@aws-cdk/aws-apigatewayv2.HttpApiMappingProps",
       "props-physical-name:@aws-cdk/aws-apigatewayv2.HttpIntegrationProps",
       "props-physical-name:@aws-cdk/aws-apigatewayv2.HttpRouteProps",
       "from-method:@aws-cdk/aws-apigatewayv2.WebSocketApi",

@@ -14,19 +14,10 @@ import { LambdaWebSocketIntegration } from '../../lib';
 const app = new App();
 const stack = new Stack(app, 'WebSocketApiInteg');
 
-const webSocketApi = new WebSocketApi(stack, 'mywsapi', {
-  defaultStageName: 'dev',
-});
-
 const connectHandler = new lambda.Function(stack, 'ConnectHandler', {
   runtime: lambda.Runtime.NODEJS_12_X,
   handler: 'index.handler',
   code: new lambda.InlineCode('exports.handler = async function(event, context) { console.log(event); return { statusCode: 200, body: "conencted" }; };'),
-});
-webSocketApi.addConnectRoute({
-  integration: new LambdaWebSocketIntegration({
-    handler: connectHandler,
-  }),
 });
 
 const disconnetHandler = new lambda.Function(stack, 'DisconnectHandler', {
@@ -34,21 +25,11 @@ const disconnetHandler = new lambda.Function(stack, 'DisconnectHandler', {
   handler: 'index.handler',
   code: new lambda.InlineCode('exports.handler = async function(event, context) { console.log(event); return { statusCode: 200, body: "disconnected" }; };'),
 });
-webSocketApi.addDisconnectRoute({
-  integration: new LambdaWebSocketIntegration({
-    handler: disconnetHandler,
-  }),
-});
 
 const defaultHandler = new lambda.Function(stack, 'DefaultHandler', {
   runtime: lambda.Runtime.NODEJS_12_X,
   handler: 'index.handler',
   code: new lambda.InlineCode('exports.handler = async function(event, context) { console.log(event); return { statusCode: 200, body: "default" }; };'),
-});
-webSocketApi.addDefaultRoute({
-  integration: new LambdaWebSocketIntegration({
-    handler: defaultHandler,
-  }),
 });
 
 const messageHandler = new lambda.Function(stack, 'MessageHandler', {
@@ -56,10 +37,14 @@ const messageHandler = new lambda.Function(stack, 'MessageHandler', {
   handler: 'index.handler',
   code: new lambda.InlineCode('exports.handler = async function(event, context) { console.log(event); return { statusCode: 200, body: "received" }; };'),
 });
-webSocketApi.addRoute('sendmessage', {
-  integration: new LambdaWebSocketIntegration({
-    handler: messageHandler,
-  }),
+
+const webSocketApi = new WebSocketApi(stack, 'mywsapi', {
+  defaultStageName: 'dev',
+  connectRouteOptions: { integration: new LambdaWebSocketIntegration({ handler: connectHandler }) },
+  disconnectRouteOptions: { integration: new LambdaWebSocketIntegration({ handler: disconnetHandler }) },
+  defaultRouteOptions: { integration: new LambdaWebSocketIntegration({ handler: defaultHandler }) },
 });
+
+webSocketApi.addRoute('sendmessage', { integration: new LambdaWebSocketIntegration({ handler: messageHandler }) });
 
 new CfnOutput(stack, 'ApiEndpoint', { value: webSocketApi.defaultStage?.url! });

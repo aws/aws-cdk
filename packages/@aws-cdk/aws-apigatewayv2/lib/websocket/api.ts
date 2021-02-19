@@ -1,32 +1,20 @@
-import * as crypto from 'crypto';
-import { IResource, Resource, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnApi } from '../apigatewayv2.generated';
-import { WebSocketRouteIntegrationConfig, WebSocketIntegration } from './integration';
+import { ApiBase, IApi } from '../common/api';
+import { DomainMappingOptions, IStage } from '../common/stage';
+import { IWebSocketRouteIntegrationConfig, WebSocketIntegration } from './integration';
 import { WebSocketRoute, WebSocketRouteOptions } from './route';
 import { WebSocketStage } from './stage';
 
 /**
  * Represents a WebSocket API
  */
-export interface IWebSocketApi extends IResource {
-  /**
-   * The identifier of this API Gateway WebSocket API.
-   * @attribute
-   */
-  readonly webSocketApiId: string;
-
-  /**
-   * The default endpoint for an API
-   * @attribute
-   */
-  readonly apiEndpoint: string;
-
+export interface IWebSocketApi extends IApi {
   /**
    * Add a websocket integration
    * @internal
    */
-  _addIntegration(scope: Construct, config: WebSocketRouteIntegrationConfig): WebSocketIntegration
+  _addIntegration(scope: Construct, config: IWebSocketRouteIntegrationConfig): WebSocketIntegration
 }
 
 /**
@@ -56,14 +44,42 @@ export interface WebSocketApiProps {
    * @default - No default stage is created
    */
   readonly defaultStageName?: string;
+
+  /**
+   * Configure a custom domain with the API mapping resource to the WebSocket API
+   *
+   * @default - no default domain mapping configured. meaningless if `defaultStageName` is not provided.
+   */
+  readonly defaultDomainMapping?: DomainMappingOptions;
+
+  /**
+   * Options to configure a '$connect' route
+   *
+   * @default - no '$connect' route configured
+   */
+  readonly connectRouteOptions?: WebSocketRouteOptions;
+
+  /**
+   * Options to configure a '$disconnect' route
+   *
+   * @default - no '$disconnect' route configured
+   */
+  readonly disconnectRouteOptions?: WebSocketRouteOptions;
+
+  /**
+   * Options to configure a '$default' route
+   *
+   * @default - no '$default' route configured
+   */
+  readonly defaultRouteOptions?: WebSocketRouteOptions;
 }
 
 /**
  * Create a new API Gateway WebSocket API endpoint.
  * @resource AWS::ApiGatewayV2::Api
  */
-export class WebSocketApi extends Resource implements IWebSocketApi {
-  public readonly webSocketApiId: string;
+export class WebSocketApi extends ApiBase implements IWebSocketApi {
+  public readonly apiId: string;
   public readonly apiEndpoint: string;
 
   /**
@@ -74,9 +90,7 @@ export class WebSocketApi extends Resource implements IWebSocketApi {
   /**
    * default stage of the api resource
    */
-  public readonly defaultStage: WebSocketStage | undefined;
-
-  private integrations: Record<string, WebSocketIntegration> = {};
+  public readonly defaultStage: IStage | undefined;
 
   constructor(scope: Construct, id: string, props?: WebSocketApiProps) {
     super(scope, id);
@@ -89,7 +103,7 @@ export class WebSocketApi extends Resource implements IWebSocketApi {
       description: props?.description,
       routeSelectionExpression: props?.routeSelectionExpression ?? '$request.body.action',
     });
-    this.webSocketApiId = resource.ref;
+    this.apiId = resource.ref;
     this.apiEndpoint = resource.attrApiEndpoint;
 
     if (props?.defaultStageName) {
@@ -97,19 +111,35 @@ export class WebSocketApi extends Resource implements IWebSocketApi {
         webSocketApi: this,
         stageName: props.defaultStageName,
         autoDeploy: true,
+        domainMapping: props?.defaultDomainMapping,
       });
+    }
+
+    if (!props?.defaultStageName && props?.defaultDomainMapping) {
+      throw new Error('defaultDomainMapping not supported when defaultStageName is not provided',
+      );
+    }
+
+    if (props?.connectRouteOptions) {
+      this.addRoute('$connect', props.connectRouteOptions);
+    }
+    if (props?.disconnectRouteOptions) {
+      this.addRoute('$disconnect', props.disconnectRouteOptions);
+    }
+    if (props?.defaultRouteOptions) {
+      this.addRoute('$default', props.defaultRouteOptions);
     }
   }
 
   /**
    * @internal
    */
-  public _addIntegration(scope: Construct, config: WebSocketRouteIntegrationConfig): WebSocketIntegration {
-    const stringifiedConfig = JSON.stringify(Stack.of(scope).resolve(config));
-    const configHash = crypto.createHash('md5').update(stringifiedConfig).digest('hex');
+  public _addIntegration(scope: Construct, config: IWebSocketRouteIntegrationConfig): WebSocketIntegration {
+    const configHash = this._getIntegrationConfigHash(scope, config);
+    const existingIntegration = this._getSavedIntegration(configHash);
 
-    if (configHash in this.integrations) {
-      return this.integrations[configHash];
+    if (existingIntegration) {
+      return existingIntegration as WebSocketIntegration;
     }
 
     const integration = new WebSocketIntegration(scope, `WebSocketIntegration-${configHash}`, {
@@ -117,7 +147,7 @@ export class WebSocketApi extends Resource implements IWebSocketApi {
       integrationType: config.type,
       integrationUri: config.uri,
     });
-    this.integrations[configHash] = integration;
+    this._saveIntegration(configHash, integration);
 
     return integration;
   }
@@ -131,26 +161,5 @@ export class WebSocketApi extends Resource implements IWebSocketApi {
       routeKey,
       ...options,
     });
-  }
-
-  /**
-   * Add a connect route
-   */
-  public addConnectRoute(options: WebSocketRouteOptions) {
-    return this.addRoute('$connect', options);
-  }
-
-  /**
-   * Add a disconnect route
-   */
-  public addDisconnectRoute(options: WebSocketRouteOptions) {
-    return this.addRoute('$disconnect', options);
-  }
-
-  /**
-   * Add a default route
-   */
-  public addDefaultRoute(options: WebSocketRouteOptions) {
-    return this.addRoute('$default', options);
   }
 }

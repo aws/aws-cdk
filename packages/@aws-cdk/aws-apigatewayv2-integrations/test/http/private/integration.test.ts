@@ -1,5 +1,5 @@
 import '@aws-cdk/assert/jest';
-import { HttpApi, HttpRoute, HttpRouteIntegrationBindOptions, HttpRouteIntegrationConfig, HttpRouteKey } from '@aws-cdk/aws-apigatewayv2';
+import { HttpApi, HttpRoute, HttpRouteIntegrationBindOptions, IHttpRouteIntegrationConfig, HttpRouteKey } from '@aws-cdk/aws-apigatewayv2';
 import { Stack } from '@aws-cdk/core';
 import { HttpPrivateIntegration } from '../../../lib/http/private/integration';
 
@@ -12,7 +12,7 @@ describe('HttpPrivateIntegration', () => {
         super();
       }
 
-      public bind(options: HttpRouteIntegrationBindOptions): HttpRouteIntegrationConfig {
+      public bind(options: HttpRouteIntegrationBindOptions): IHttpRouteIntegrationConfig {
         const vpcLink = this._configureVpcLink(options, {});
 
         return {

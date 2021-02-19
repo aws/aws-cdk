@@ -2,7 +2,7 @@ import '@aws-cdk/assert/jest';
 import { Stack } from '@aws-cdk/core';
 import {
   IWebSocketRouteIntegration, WebSocketApi, WebSocketIntegrationType,
-  WebSocketRoute, WebSocketRouteIntegrationBindOptions, WebSocketRouteIntegrationConfig,
+  WebSocketRoute, WebSocketRouteIntegrationBindOptions, IWebSocketRouteIntegrationConfig,
 } from '../../lib';
 
 describe('WebSocketRoute', () => {
@@ -20,7 +20,7 @@ describe('WebSocketRoute', () => {
 
     // THEN
     expect(stack).toHaveResource('AWS::ApiGatewayV2::Route', {
-      ApiId: stack.resolve(webSocketApi.webSocketApiId),
+      ApiId: stack.resolve(webSocketApi.apiId),
       RouteKey: 'message',
       Target: {
         'Fn::Join': [
@@ -28,7 +28,7 @@ describe('WebSocketRoute', () => {
           [
             'integrations/',
             {
-              Ref: 'ApiWebSocketIntegrationb7742333c7ab20d7b2b178df59bb17f23D15DECE',
+              Ref: 'RouteWebSocketIntegrationb7742333c7ab20d7b2b178df59bb17f20338431E',
             },
           ],
         ],
@@ -36,7 +36,7 @@ describe('WebSocketRoute', () => {
     });
 
     expect(stack).toHaveResource('AWS::ApiGatewayV2::Integration', {
-      ApiId: stack.resolve(webSocketApi.webSocketApiId),
+      ApiId: stack.resolve(webSocketApi.apiId),
       IntegrationType: 'AWS_PROXY',
       IntegrationUri: 'some-uri',
     });
@@ -45,7 +45,7 @@ describe('WebSocketRoute', () => {
 
 
 class DummyIntegration implements IWebSocketRouteIntegration {
-  bind(_options: WebSocketRouteIntegrationBindOptions): WebSocketRouteIntegrationConfig {
+  bind(_options: WebSocketRouteIntegrationBindOptions): IWebSocketRouteIntegrationConfig {
     return {
       type: WebSocketIntegrationType.AWS_PROXY,
       uri: 'some-uri',

@@ -9,12 +9,13 @@ describe('LambdaWebSocketIntegration', () => {
   test('default', () => {
     // GIVEN
     const stack = new Stack();
-    const api = new WebSocketApi(stack, 'Api');
     const fooFn = fooFunction(stack, 'Fn');
 
     // WHEN
-    api.addConnectRoute({
-      integration: new LambdaWebSocketIntegration({ handler: fooFn }),
+    new WebSocketApi(stack, 'Api', {
+      connectRouteOptions: {
+        integration: new LambdaWebSocketIntegration({ handler: fooFn }),
+      },
     });
 
     // THEN

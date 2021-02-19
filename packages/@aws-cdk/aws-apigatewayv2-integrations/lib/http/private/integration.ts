@@ -2,7 +2,7 @@ import {
   HttpConnectionType,
   HttpIntegrationType,
   HttpRouteIntegrationBindOptions,
-  HttpRouteIntegrationConfig,
+  IHttpRouteIntegrationConfig,
   IHttpRouteIntegration,
   PayloadFormatVersion,
   HttpMethod,
@@ -61,5 +61,5 @@ export abstract class HttpPrivateIntegration implements IHttpRouteIntegration {
     return vpcLink;
   }
 
-  public abstract bind(options: HttpRouteIntegrationBindOptions): HttpRouteIntegrationConfig;
+  public abstract bind(options: HttpRouteIntegrationBindOptions): IHttpRouteIntegrationConfig;
 }

@@ -1,7 +1,7 @@
 import { Resource } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnIntegration } from '../apigatewayv2.generated';
-import { IIntegration } from '../common';
+import { IIntegration, IRouteIntegrationConfig } from '../common';
 import { IHttpApi } from './api';
 import { HttpMethod, IHttpRoute } from './route';
 
@@ -171,13 +171,13 @@ export interface IHttpRouteIntegration {
   /**
    * Bind this integration to the route.
    */
-  bind(options: HttpRouteIntegrationBindOptions): HttpRouteIntegrationConfig;
+  bind(options: HttpRouteIntegrationBindOptions): IHttpRouteIntegrationConfig;
 }
 
 /**
  * Config returned back as a result of the bind.
  */
-export interface HttpRouteIntegrationConfig {
+export interface IHttpRouteIntegrationConfig extends IRouteIntegrationConfig {
   /**
    * Integration type.
    */
