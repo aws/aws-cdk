@@ -322,13 +322,13 @@ export interface KeyProps {
    * to how it works for other AWS resources). This matches the default behavior
    * when creating KMS keys via the API or console.
    *
-   * If the '@aws-cdk/aws-kms:defaultKeyPolicies' feature flag is set (the default for new projects),
+   * If the `@aws-cdk/aws-kms:defaultKeyPolicies` feature flag is set (the default for new projects),
    * this flag will always be treated as 'true' and does not need to be explicitly set.
    *
-   * @default - false, unless the '@aws-cdk/aws-kms:defaultKeyPolicies' feature flag is set.
+   * @default - false, unless the `@aws-cdk/aws-kms:defaultKeyPolicies` feature flag is set.
    * @see https://docs.aws.amazon.com/kms/latest/developerguide/key-policies.html#key-policy-default-allow-root-enable-iam
-   * @deprecated redundant with the '@aws-cdk/aws-kms:defaultKeyPolicies' feature flag
-   */
+   * @deprecated redundant with the `@aws-cdk/aws-kms:defaultKeyPolicies` feature flag
+   */ 
   readonly trustAccountIdentities?: boolean;
 
   /**
