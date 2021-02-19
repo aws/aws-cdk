@@ -164,9 +164,16 @@ export class Tokenization {
    *
    * In case of a string, the string must not be a concatenation.
    */
-  public static reverse(x: any): IResolvable | undefined {
+  public static reverse(x: any, options: ReverseOptions = {}): IResolvable | undefined {
     if (Tokenization.isResolvable(x)) { return x; }
-    if (typeof x === 'string') { return Tokenization.reverseCompleteString(x); }
+    if (typeof x === 'string') {
+      if (options.failConcat === false) {
+        // Handle this specially because reverseCompleteString might fail
+        const fragments = Tokenization.reverseString(x);
+        return fragments.length === 1 ? fragments.firstToken : undefined;
+      }
+      return Tokenization.reverseCompleteString(x);
+    }
     if (Array.isArray(x)) { return Tokenization.reverseList(x); }
     if (typeof x === 'number') { return Tokenization.reverseNumber(x); }
     return undefined;
@@ -218,6 +225,20 @@ export class Tokenization {
 
   private constructor() {
   }
+}
+
+/**
+ * Options for the 'reverse()' operation
+ */
+export interface ReverseOptions {
+  /**
+   * Fail if the given string is a concatenation
+   *
+   * If `false`, just return `undefined`.
+   *
+   * @default true
+   */
+  readonly failConcat?: boolean;
 }
 
 /**

@@ -3,13 +3,15 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import { AccountPrincipal, Role } from '@aws-cdk/aws-iam';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import * as cdk from '@aws-cdk/core';
-import { Test } from 'nodeunit';
+import { nodeunitShim, Test } from 'nodeunit-shim';
 import * as rds from '../lib';
 
 let stack: cdk.Stack;
 let vpc: ec2.IVpc;
 
-export = {
+let importedDbProxy: rds.IDatabaseProxy;
+
+nodeunitShim({
   'setUp'(cb: () => void) {
     stack = new cdk.Stack();
     vpc = new ec2.Vpc(stack, 'VPC');
@@ -123,8 +125,6 @@ export = {
         },
       ],
     }));
-
-    // THEN
     expect(stack).to(haveResourceLike('AWS::RDS::DBProxyTargetGroup', {
       DBProxyName: {
         Ref: 'ProxyCB0DFB71',
@@ -137,6 +137,22 @@ export = {
       ],
       DBInstanceIdentifiers: ABSENT,
       TargetGroupName: 'default',
+    }));
+    expect(stack).to(haveResourceLike('AWS::EC2::SecurityGroupIngress', {
+      IpProtocol: 'tcp',
+      Description: 'Allow connections to the database Cluster from the Proxy',
+      FromPort: {
+        'Fn::GetAtt': ['DatabaseB269D8BB', 'Endpoint.Port'],
+      },
+      GroupId: {
+        'Fn::GetAtt': ['DatabaseSecurityGroup5C91FDCB', 'GroupId'],
+      },
+      SourceSecurityGroupId: {
+        'Fn::GetAtt': ['ProxyProxySecurityGroupC42FC3CE', 'GroupId'],
+      },
+      ToPort: {
+        'Fn::GetAtt': ['DatabaseB269D8BB', 'Endpoint.Port'],
+      },
     }));
 
     test.done();
@@ -205,6 +221,7 @@ export = {
       engine: rds.DatabaseClusterEngine.auroraPostgres({
         version: rds.AuroraPostgresEngineVersion.VER_9_6_11,
       }),
+      port: 5432,
     });
 
     new rds.DatabaseProxy(stack, 'Proxy', {
@@ -221,11 +238,75 @@ export = {
         'my-cluster',
       ],
     }));
+    expect(stack).to(haveResourceLike('AWS::EC2::SecurityGroup', {
+      GroupDescription: 'SecurityGroup for Database Proxy',
+      VpcId: { Ref: 'VPCB9E5F0B4' },
+    }));
 
     test.done();
   },
 
-  'grantConnect should add IAM Policy with action rds-db:connect'(test: Test) {
+  'imported Proxies': {
+    'setUp'(cb: () => void) {
+      importedDbProxy = rds.DatabaseProxy.fromDatabaseProxyAttributes(stack, 'Proxy', {
+        dbProxyName: 'my-proxy',
+        dbProxyArn: 'arn:aws:rds:us-east-1:123456789012:db-proxy:prx-1234abcd',
+        endpoint: 'my-endpoint',
+        securityGroups: [],
+      });
+
+      cb();
+    },
+
+    'grant rds-db:connect in grantConnect() with a dbUser explicitly passed'(test: Test) {
+      // WHEN
+      const role = new Role(stack, 'DBProxyRole', {
+        assumedBy: new AccountPrincipal(stack.account),
+      });
+      const databaseUser = 'test';
+      importedDbProxy.grantConnect(role, databaseUser);
+
+      // THEN
+      expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Statement: [{
+            Effect: 'Allow',
+            Action: 'rds-db:connect',
+            Resource: {
+              'Fn::Join': ['', [
+                'arn:',
+                { Ref: 'AWS::Partition' },
+                ':rds-db:',
+                { Ref: 'AWS::Region' },
+                ':',
+                { Ref: 'AWS::AccountId' },
+                ':dbuser:prx-1234abcd/test',
+              ]],
+            },
+          }],
+          Version: '2012-10-17',
+        },
+      }));
+
+      test.done();
+    },
+
+    'throws when grantConnect() is used without a dbUser'(test: Test) {
+      // WHEN
+      const role = new Role(stack, 'DBProxyRole', {
+        assumedBy: new AccountPrincipal(stack.account),
+      });
+
+      // THEN
+      test.throws(() => {
+        importedDbProxy.grantConnect(role);
+      }, /For imported Database Proxies, the dbUser is required in grantConnect/);
+
+      test.done();
+    },
+  },
+
+  'new Proxy with a single Secret can use grantConnect() without a dbUser passed'(test: Test) {
     // GIVEN
     const cluster = new rds.DatabaseCluster(stack, 'Database', {
       engine: rds.DatabaseClusterEngine.AURORA,
@@ -251,15 +332,63 @@ export = {
           Effect: 'Allow',
           Action: 'rds-db:connect',
           Resource: {
-            'Fn::GetAtt': [
-              'ProxyCB0DFB71',
-              'DBProxyArn',
-            ],
+            'Fn::Join': ['', [
+              'arn:',
+              { Ref: 'AWS::Partition' },
+              ':rds-db:',
+              { Ref: 'AWS::Region' },
+              ':',
+              { Ref: 'AWS::AccountId' },
+              ':dbuser:',
+              {
+                'Fn::Select': [
+                  6,
+                  {
+                    'Fn::Split': [
+                      ':',
+                      { 'Fn::GetAtt': ['ProxyCB0DFB71', 'DBProxyArn'] },
+                    ],
+                  },
+                ],
+              },
+              '/{{resolve:secretsmanager:',
+              { Ref: 'DatabaseSecretAttachmentE5D1B020' },
+              ':SecretString:username::}}',
+            ]],
           },
         }],
         Version: '2012-10-17',
       },
     }));
+
+    test.done();
+  },
+
+  'new Proxy with multiple Secrets cannot use grantConnect() without a dbUser passed'(test: Test) {
+    // GIVEN
+    const cluster = new rds.DatabaseCluster(stack, 'Database', {
+      engine: rds.DatabaseClusterEngine.AURORA,
+      instanceProps: { vpc },
+    });
+
+    const proxy = new rds.DatabaseProxy(stack, 'Proxy', {
+      proxyTarget: rds.ProxyTarget.fromCluster(cluster),
+      secrets: [
+        cluster.secret!,
+        new secretsmanager.Secret(stack, 'ProxySecret'),
+      ],
+      vpc,
+    });
+
+    // WHEN
+    const role = new Role(stack, 'DBProxyRole', {
+      assumedBy: new AccountPrincipal(stack.account),
+    });
+
+    // THEN
+    test.throws(() => {
+      proxy.grantConnect(role);
+    }, /When the Proxy contains multiple Secrets, you must pass a dbUser explicitly to grantConnect/);
 
     test.done();
   },
@@ -294,6 +423,7 @@ export = {
         'cluster611F8AFF',
         'clusterSecretAttachment69BFCEC4',
         'clusterSecretE349B730',
+        'clusterSecurityGroupfromproxyProxySecurityGroupA80F0525IndirectPortA13E5F3D',
         'clusterSecurityGroupF441DCEA',
         'clusterSubnets81E3593F',
       ],
@@ -301,4 +431,4 @@ export = {
 
     test.done();
   },
-};
+});

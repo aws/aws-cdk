@@ -92,7 +92,7 @@ export interface IHttpApi extends IResource {
    * Add a http integration
    * @internal
    */
-  _addIntegration(config: HttpRouteIntegrationConfig): HttpIntegration;
+  _addIntegration(scope: Construct, config: HttpRouteIntegrationConfig): HttpIntegration;
 }
 
 /**
@@ -274,15 +274,15 @@ abstract class HttpApiBase extends Resource implements IHttpApi { // note that t
   /**
    * @internal
    */
-  public _addIntegration(config: HttpRouteIntegrationConfig): HttpIntegration {
-    const stringifiedConfig = JSON.stringify(Stack.of(this).resolve(config));
+  public _addIntegration(scope: Construct, config: HttpRouteIntegrationConfig): HttpIntegration {
+    const stringifiedConfig = JSON.stringify(Stack.of(scope).resolve(config));
     const configHash = crypto.createHash('md5').update(stringifiedConfig).digest('hex');
 
     if (configHash in this.httpIntegrations) {
       return this.httpIntegrations[configHash];
     }
 
-    const integration = new HttpIntegration(this, `HttpIntegration-${configHash}`, {
+    const integration = new HttpIntegration(scope, `HttpIntegration-${configHash}`, {
       httpApi: this,
       integrationType: config.type,
       integrationUri: config.uri,
