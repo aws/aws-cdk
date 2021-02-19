@@ -6,7 +6,7 @@ import { SubscriptionProps } from './subscription';
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
 // eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 
 /**
  * Properties for an SQS subscription
@@ -35,7 +35,7 @@ export class SqsSubscription implements sns.ITopicSubscription {
   public bind(topic: sns.ITopic): sns.TopicSubscriptionConfig {
     // Create subscription under *consuming* construct to make sure it ends up
     // in the correct stack in cases of cross-stack subscriptions.
-    if (!Construct.isConstruct(this.queue)) {
+    if (!(this.queue instanceof Construct)) {
       throw new Error('The supplied Queue object must be an instance of Construct');
     }
 
