@@ -79,41 +79,6 @@ export interface BundlingOptions {
    * @experimental
    */
   readonly local?: ILocalBundling;
-
-  /**
-   * The type of output that this bundling operation is producing.
-   *
-   * @default BundlingOutput.AUTO_DISCOVER
-   *
-   * @experimental
-   */
-  readonly outputType?: BundlingOutput;
-}
-
-/**
- * The type of output that a bundling operation is producing.
- *
- * @experimental
- */
-export enum BundlingOutput {
-  /**
-   * The bundling output directory includes a single .zip or .jar file which
-   * will be used as the final bundle. If the output directory does not
-   * include exactly a single archive, bundling will fail.
-   */
-  ARCHIVED = 'archived',
-
-  /**
-   * The bundling output directory contains one or more files which will be
-   * archived and uploaded as a .zip file to S3.
-   */
-  NOT_ARCHIVED = 'not-archived',
-
-  /**
-   * If the bundling output directory contains a single archive file (zip or jar)
-   * it will not be zipped. Otherwise the bundling output will be zipped.
-   */
-  AUTO_DISCOVER = 'auto-discover',
 }
 
 /**

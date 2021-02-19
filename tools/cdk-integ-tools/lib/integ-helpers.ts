@@ -1,6 +1,7 @@
 // Helper functions for integration tests
 import { spawnSync } from 'child_process';
 import * as path from 'path';
+import { FUTURE_FLAGS, FUTURE_FLAGS_EXPIRED } from '@aws-cdk/cx-api';
 import * as fs from 'fs-extra';
 import { AVAILABILITY_ZONE_FALLBACK_CONTEXT_KEY } from '../../../packages/@aws-cdk/cx-api/lib';
 
@@ -300,6 +301,11 @@ export class IntegrationTest {
   }
 }
 
+const futureFlags: {[key: string]: any} = {};
+Object.entries(FUTURE_FLAGS)
+  .filter(([k, _]) => !FUTURE_FLAGS_EXPIRED.includes(k))
+  .forEach(([k, v]) => futureFlags[k] = v);
+
 // Default context we run all integ tests with, so they don't depend on the
 // account of the exercising user.
 export const DEFAULT_SYNTH_OPTIONS = {
@@ -337,7 +343,7 @@ export const DEFAULT_SYNTH_OPTIONS = {
         },
       ],
     },
-    '@aws-cdk/aws-ecr-assets:dockerIgnoreSupport': true,
+    ...futureFlags,
   },
   env: {
     CDK_INTEG_ACCOUNT: '12345678',
