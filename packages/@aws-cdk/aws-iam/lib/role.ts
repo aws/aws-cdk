@@ -339,8 +339,7 @@ export class Role extends Resource implements IRole {
     this.roleArn = this.getResourceArnAttribute(role.attrArn, {
       region: '', // IAM is global in each partition
       service: 'iam',
-      resource: 'role',
-      resourceName: this.physicalName,
+      resource: `role${props.path || '/'}${this.physicalName}`,
     });
     this.roleName = this.getResourceNameAttribute(role.ref);
     this.policyFragment = new ArnPrincipal(this.roleArn).policyFragment;

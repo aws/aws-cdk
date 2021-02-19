@@ -178,8 +178,7 @@ export class Group extends GroupBase {
     this.groupArn = this.getResourceArnAttribute(group.attrArn, {
       region: '', // IAM is global in each partition
       service: 'iam',
-      resource: 'group',
-      resourceName: this.physicalName,
+      resource: `group${props.path || '/'}${this.physicalName}`,
     });
   }
 
