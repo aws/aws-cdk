@@ -17,3 +17,10 @@ export interface HttpPrivateIntegrationOptions {
    */
   readonly method?: HttpMethod;
 }
+
+
+/**
+ * Base options for AWS service integration
+ */
+export interface AwsServiceIntegrationOptions {
+}
