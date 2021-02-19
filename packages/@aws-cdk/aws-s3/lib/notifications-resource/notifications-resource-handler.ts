@@ -1,5 +1,7 @@
+import * as path from 'path';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
+import * as lambda from '@aws-cdk/aws-lambda';
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
 // eslint-disable-next-line no-duplicate-imports, import/order
@@ -34,12 +36,12 @@ export class NotificationsResourceHandler extends Construct {
 
     // well-known logical id to ensure stack singletonity
     const logicalId = 'BucketNotificationsHandler050a0587b7544547bf325f094a3db834';
-    let lambda = root.node.tryFindChild(logicalId) as NotificationsResourceHandler;
-    if (!lambda) {
-      lambda = new NotificationsResourceHandler(root, logicalId);
+    let lambdaNotificationsResourceHandler = root.node.tryFindChild(logicalId) as NotificationsResourceHandler;
+    if (!lambdaNotificationsResourceHandler) {
+      lambdaNotificationsResourceHandler = new NotificationsResourceHandler(root, logicalId);
     }
 
-    return lambda.functionArn;
+    return lambdaNotificationsResourceHandler.functionArn;
   }
 
   /**
@@ -64,175 +66,26 @@ export class NotificationsResourceHandler extends Construct {
       resources: ['*'],
     }));
 
-    const resourceType = 'AWS::Lambda::Function';
-    class InLineLambda extends cdk.CfnResource {
-      public readonly tags: cdk.TagManager = new cdk.TagManager(cdk.TagType.STANDARD, resourceType);
+    // Shared codebase for the lambdas.
+    const code = lambda.Code.fromAsset(path.join(__dirname, 'lambda-source'), {
+      exclude: [
+        '.coverage',
+        '*.pyc',
+        '.idea',
+      ],
+    });
 
-      protected renderProperties(properties: any): { [key: string]: any } {
-        properties.Tags = cdk.listMapper(
-          cdk.cfnTagToCloudFormation)(this.tags.renderTags());
-        delete properties.tags;
-        return properties;
-      }
-    }
-    const resource = new InLineLambda(this, 'Resource', {
-      type: resourceType,
-      properties: {
-        Description: 'AWS CloudFormation handler for "Custom::S3BucketNotifications" resources (@aws-cdk/aws-s3)',
-        Code: { ZipFile: `exports.handler = ${handler.toString()};` },
-        Handler: 'index.handler',
-        Role: role.roleArn,
-        Runtime: 'nodejs10.x',
-        Timeout: 300,
-      },
+    const resource = new lambda.Function(this, 'Resource', {
+      code: code,
+      description: 'AWS CloudFormation handler for "Custom::S3BucketNotifications" resources (@aws-cdk/aws-s3)',
+      handler: 'index.handler',
+      runtime: lambda.Runtime.PYTHON_3_8,
+      timeout: cdk.Duration.minutes(5),
+      role: role
     });
 
     resource.node.addDependency(role);
 
-    this.functionArn = resource.getAtt('Arn').toString();
+    this.functionArn = resource.functionArn;
   }
 }
-
-/* eslint-disable no-console */
-
-/**
- * Lambda event handler for the custom resource. Bear in mind that we are going
- * to .toString() this function and inline it as Lambda code.
- *
- * The function will issue a putBucketNotificationConfiguration request for the
- * specified bucket. And getBucketNotificationConfiguration to load the existing
- * configuration and try to preserve it.
- */
-const handler = (event: any, context: any) => {
-  // eslint-disable-next-line @typescript-eslint/no-require-imports, import/no-extraneous-dependencies
-  const s3 = new (require('aws-sdk').S3)();
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
-  const https = require('https');
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
-  const url = require('url');
-
-  log(JSON.stringify(event, undefined, 2));
-
-  const [notificationConfiguration, notificationErr] = getNotificationConfiguration();
-  if (notificationErr) {
-    return submitResponse('FAILED', notificationErr.message + `\nMore information in CloudWatch Log Stream: ${context.logStreamName}`);
-  }
-  const req = {
-    Bucket: event.ResourceProperties.BucketName,
-    NotificationConfiguration: notificationConfiguration,
-  };
-
-  return s3.putBucketNotificationConfiguration(req, (err: any, data: any) => {
-    log({ err, data });
-    if (err) {
-      return submitResponse('FAILED', err.message + `\nMore information in CloudWatch Log Stream: ${context.logStreamName}`);
-    } else {
-      return submitResponse('SUCCESS');
-    }
-  });
-
-  function getNotificationConfiguration() {
-    const [bucketNotifcations, err] = filteredBucketNotification();
-    if (err) {
-      return err;
-    }
-
-    if (event.RequestType !== 'Delete') {
-      // Add back the updated configuration
-      const inConfig = event.ResourceProperties.NotificationConfiguration;
-      if (inConfig.TopicConfigurations) {
-        bucketNotifcations.TopicConfigurations = inConfig.TopicConfigurations;
-      }
-      if (inConfig.LambdaFunctionConfigurations) {
-        bucketNotifcations.LambdaFunctionConfigurations = inConfig.LambdaFunctionConfigurations;
-      }
-      if (inConfig.QueueConfigurations) {
-        bucketNotifcations.QueueConfigurations = inConfig.QueueConfigurations;
-      }
-    }
-
-    return [bucketNotifcations, null];
-  }
-
-  function filteredBucketNotification() {
-    let error = null;
-    let response: any = {};
-    const params = {
-      Bucket: event.ResourceProperties.BucketName,
-    };
-
-    // Get existing bucket notificaitons and remove the previous or new configuration elements
-    s3.getBucketNotificationConfiguration(params, function(err: any, data: any) {
-      log({ err, data });
-      if (err) {
-        error = err;
-      } else {
-        let inConfig = null;
-        if (event.OldResourceProperties && event.OldResourceProperties.NotificationConfiguration) {
-          inConfig = event.OldResourceProperties.NotificationConfiguration;
-        } else {
-          inConfig = event.ResourceProperties.NotificationConfiguration;
-        }
-
-        if (inConfig.TopicConfigurations) {
-          delete data.TopicConfigurations;
-        }
-        if (inConfig.LambdaFunctionConfigurations) {
-          delete data.LambdaFunctionConfigurations;
-        }
-        if (inConfig.QueueConfigurations) {
-          delete data.QueueConfigurations;
-        }
-        response = data;
-      }
-    });
-
-    return [response, error];
-  }
-
-  function log(obj: any) {
-    console.error(event.RequestId, event.StackId, event.LogicalResourceId, obj);
-  }
-
-  // eslint-disable-next-line max-len
-  // adapted from https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lambda-function-code.html#cfn-lambda-function-code-cfnresponsemodule
-  // to allow sending an error message as a reason.
-  function submitResponse(responseStatus: string, reason?: string) {
-    const responseBody = JSON.stringify({
-      Status: responseStatus,
-      Reason: reason || 'See the details in CloudWatch Log Stream: ' + context.logStreamName,
-      PhysicalResourceId: event.PhysicalResourceId || event.LogicalResourceId,
-      StackId: event.StackId,
-      RequestId: event.RequestId,
-      LogicalResourceId: event.LogicalResourceId,
-      NoEcho: false,
-    });
-
-    log({ responseBody });
-
-    const parsedUrl = url.parse(event.ResponseURL);
-    const options = {
-      hostname: parsedUrl.hostname,
-      port: 443,
-      path: parsedUrl.path,
-      method: 'PUT',
-      headers: {
-        'content-type': '',
-        'content-length': responseBody.length,
-      },
-    };
-
-    const request = https.request(options, (r: any) => {
-      log({ statusCode: r.statusCode, statusMessage: r.statusMessage });
-      context.done();
-    });
-
-    request.on('error', (error: any) => {
-      log({ sendError: error });
-      context.done();
-    });
-
-    request.write(responseBody);
-    request.end();
-  }
-};
