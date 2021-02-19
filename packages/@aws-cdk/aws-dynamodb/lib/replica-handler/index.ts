@@ -5,18 +5,16 @@ import { DynamoDB } from 'aws-sdk'; // eslint-disable-line import/no-extraneous-
 export async function onEventHandler(event: OnEventRequest): Promise<OnEventResponse> {
   console.log('Event: %j', event);
 
-  /**
-   * Process only Create and Delete requests. We shouldn't receive any
-   * update request and in case we do there is nothing to update.
-   */
-  if (event.RequestType === 'Create' || event.RequestType === 'Delete') {
+  const updateTableAction = getUpdateTableAction(event);
+
+  if (updateTableAction) {
     const dynamodb = new DynamoDB();
 
     const data = await dynamodb.updateTable({
       TableName: event.ResourceProperties.TableName,
       ReplicaUpdates: [
         {
-          [event.RequestType]: {
+          [updateTableAction]: {
             RegionName: event.ResourceProperties.Region,
           },
         },
@@ -25,7 +23,7 @@ export async function onEventHandler(event: OnEventRequest): Promise<OnEventResp
     console.log('Update table: %j', data);
   }
 
-  return { PhysicalResourceId: event.ResourceProperties.Region };
+  return { PhysicalResourceId: `${event.ResourceProperties.TableName}-${event.ResourceProperties.Region}` };
 }
 
 export async function isCompleteHandler(event: IsCompleteRequest): Promise<IsCompleteResponse> {
@@ -51,5 +49,26 @@ export async function isCompleteHandler(event: IsCompleteRequest): Promise<IsCom
     case 'Delete':
       // Complete when replica is gone
       return { IsComplete: tableActive && regionReplica === undefined };
+  }
+}
+
+function getUpdateTableAction(event: OnEventRequest): 'Create' | 'Update' | 'Delete' | undefined {
+  switch (event.RequestType) {
+    case 'Create':
+      return 'Create';
+    case 'Update':
+      // If it's a table replacement, create a replica in the "new" table
+      if (event.OldResourceProperties?.TableName !== event.ResourceProperties.TableName) {
+        return 'Create';
+      }
+      return;
+    case 'Delete':
+      // Process only deletes that have the new physical resource id format. This
+      // is to prevent replica deletion when switching from the old format (region)
+      // to the new format (table-region).
+      if (event.PhysicalResourceId === `${event.ResourceProperties.TableName}-${event.ResourceProperties.Region}`) {
+        return 'Delete';
+      }
+      return;
   }
 }

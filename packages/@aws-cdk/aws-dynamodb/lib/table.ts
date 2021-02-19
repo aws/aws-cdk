@@ -1670,12 +1670,19 @@ interface ScalableAttributePair {
  */
 class SourceTableAttachedPolicy extends CoreConstruct implements iam.IGrantable {
   public readonly grantPrincipal: iam.IPrincipal;
-  public readonly policy: iam.IPolicy;
+  public readonly policy: iam.IManagedPolicy;
 
   public constructor(sourceTable: Table, role: iam.IRole) {
     super(sourceTable, `SourceTableAttachedPolicy-${Names.nodeUniqueId(role.node)}`);
 
-    const policy = new iam.Policy(this, 'Resource', { roles: [role] });
+    const policy = new iam.ManagedPolicy(this, 'Resource', {
+      // A CF update of the description property of a managed policy requires
+      // a replacement. Use the table name in the description to force a managed
+      // policy replacement when the table name changes. This way we preserve permissions
+      // to delete old replicas in case of a table replacement.
+      description: `DynamoDB replication managed policy for table ${sourceTable.tableName}`,
+      roles: [role],
+    });
     this.policy = policy;
     this.grantPrincipal = new SourceTableAttachedPrincipal(role, policy);
   }
@@ -1686,7 +1693,7 @@ class SourceTableAttachedPolicy extends CoreConstruct implements iam.IGrantable 
  * `SourceTableAttachedPolicy` class so it can act as an `IGrantable`.
  */
 class SourceTableAttachedPrincipal extends iam.PrincipalBase {
-  public constructor(private readonly role: iam.IRole, private readonly policy: iam.Policy) {
+  public constructor(private readonly role: iam.IRole, private readonly policy: iam.ManagedPolicy) {
     super();
   }
 
