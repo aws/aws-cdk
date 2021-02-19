@@ -1,10 +1,7 @@
 import * as ecs from '@aws-cdk/aws-ecs';
 import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { Service } from '../service';
-
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct } from '@aws-cdk/core';
 
 /**
  * A list of the capacity types that are supported. These
@@ -109,7 +106,7 @@ export abstract class ServiceExtension {
    * the extension is told what Service it is now working on.
    */
   protected parentService!: Service;
-  protected scope!: cdk.Construct;
+  protected scope!: Construct;
 
   // A list of other extensions which want to mutate the
   // container definition for this extension.

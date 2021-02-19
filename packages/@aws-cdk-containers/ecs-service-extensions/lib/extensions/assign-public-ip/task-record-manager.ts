@@ -10,10 +10,7 @@ import * as route53 from '@aws-cdk/aws-route53';
 import * as sqs from '@aws-cdk/aws-sqs';
 import * as cdk from '@aws-cdk/core';
 import * as customresources from '@aws-cdk/custom-resources';
-
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 
 export interface TaskRecordManagerProps {
   service: ecs.Ec2Service | ecs.FargateService;

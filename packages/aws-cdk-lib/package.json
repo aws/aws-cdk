@@ -1,6 +1,5 @@
 {
   "name": "aws-cdk-lib",
-  "private": "true",
   "version": "0.0.0",
   "description": "The AWS Cloud Development Kit library",
   "main": "lib/index.js",
@@ -59,13 +58,12 @@
         "package": "software.amazon.awscdk.lib",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "lib",
-          "versionSuffix": ".DEVPREVIEW"
+          "artifactId": "lib"
         }
       },
       "python": {
-        "distName": "aws-cdk.lib",
-        "module": "aws_cdk.lib"
+        "distName": "aws-cdk-lib",
+        "module": "aws_cdk_lib"
       }
     },
     "projectReferences": false
@@ -285,7 +283,7 @@
     "@types/fs-extra": "^8.1.1",
     "@types/node": "^10.17.53",
     "cdk-build-tools": "0.0.0",
-    "constructs": "^3.2.0",
+    "constructs": "10.0.0-pre.5",
     "fs-extra": "^9.1.0",
     "pkglint": "0.0.0",
     "ts-node": "^9.1.1",
@@ -293,7 +291,7 @@
     "ubergen": "0.0.0"
   },
   "peerDependencies": {
-    "constructs": "^3.0.4"
+    "constructs": "10.0.0-pre.5"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "engines": {
@@ -308,5 +306,8 @@
   },
   "ubergen": {
     "exclude": true
+  },
+  "publishConfig": {
+    "tag": "latest"
   }
 }
