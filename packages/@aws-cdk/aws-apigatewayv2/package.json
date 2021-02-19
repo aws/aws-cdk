@@ -14,8 +14,6 @@
       "dotnet": {
         "namespace": "Amazon.CDK.AWS.APIGatewayv2",
         "packageId": "Amazon.CDK.AWS.APIGatewayv2",
-        "signAssembly": true,
-        "assemblyOriginatorKeyFile": "../../key.snk",
         "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
       },
       "java": {
@@ -128,5 +126,8 @@
   ],
   "awscdkio": {
     "announce": false
+  },
+  "publishConfig": {
+    "tag": "latest"
   }
 }

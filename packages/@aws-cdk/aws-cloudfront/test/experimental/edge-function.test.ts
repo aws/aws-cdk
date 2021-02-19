@@ -102,6 +102,25 @@ describe('stacks', () => {
     });
   });
 
+  test('us-east-1 stack inherits account of parent stack', () => {
+    new cloudfront.experimental.EdgeFunction(stack, 'MyFn', defaultEdgeFunctionProps());
+
+    const fnStack = getFnStack();
+
+    expect(fnStack.account).toEqual('111111111111');
+  });
+
+  test('us-east-1 stack inherits account of parent stack, when parent stack account is undefined', () => {
+    stack = new cdk.Stack(app, 'StackWithDefaultAccount', {
+      env: { region: 'testregion' },
+    });
+    new cloudfront.experimental.EdgeFunction(stack, 'MyFn', defaultEdgeFunctionProps());
+
+    const fnStack = getFnStack();
+
+    expect(fnStack.account).toEqual(cdk.Aws.ACCOUNT_ID);
+  });
+
   test('creates minimal constructs if scope region is us-east-1', () => {
     app = new cdk.App();
     stack = new cdk.Stack(app, 'Stack', {
@@ -250,10 +269,10 @@ function defaultEdgeFunctionProps(stackId?: string) {
     code: lambda.Code.fromInline('foo'),
     handler: 'index.handler',
     runtime: lambda.Runtime.NODEJS_12_X,
-    stackId: stackId ?? 'edge-lambda-stack-testregion',
+    stackId: stackId,
   };
 }
 
-function getFnStack(region: string = 'testregion'): cdk.Stack {
-  return app.node.findChild(`edge-lambda-stack-${region}`) as cdk.Stack;
+function getFnStack(): cdk.Stack {
+  return app.node.findChild(`edge-lambda-stack-${stack.node.addr}`) as cdk.Stack;
 }
