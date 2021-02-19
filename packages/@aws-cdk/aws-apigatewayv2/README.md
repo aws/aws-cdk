@@ -287,10 +287,6 @@ lifecycle, from creation through monitoring your production APIs. [Read more](ht
 
 WebSocket APIs have two fundamental concepts - Routes and Integrations.
 
-```ts
-addRoute
-```
-
 WebSocket APIs direct JSON messages to backend integrations based on configured routes. (Non-JSON messages are directed 
 to the configured `$default` route.)
 
@@ -322,5 +318,3 @@ webSocketApi.addRoute('sendmessage', {
   }),
 });
 ```
-
-
