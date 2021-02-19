@@ -88,4 +88,133 @@ describe('tests', () => {
       UnhealthyThresholdCount: 27,
     });
   });
+
+  test('Load balancer cookie stickiness - deprecated', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'Stack');
+    const vpc = new ec2.Vpc(stack, 'VPC', {});
+
+    // WHEN
+    new elbv2.ApplicationTargetGroup(stack, 'TargetGroup', {
+      stickinessCookieDuration: cdk.Duration.minutes(5),
+      vpc,
+    });
+
+    // THEN
+    expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::TargetGroup', {
+      TargetGroupAttributes: [
+        {
+          Key: 'stickiness.enabled',
+          Value: 'true',
+        },
+        {
+          Key: 'stickiness.type',
+          Value: 'lb_cookie',
+        },
+        {
+          Key: 'stickiness.lb_cookie.duration_seconds',
+          Value: '300',
+        },
+      ],
+    });
+  });
+
+  test('Load balancer cookie stickiness', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'Stack');
+    const vpc = new ec2.Vpc(stack, 'VPC', {});
+
+    // WHEN
+    new elbv2.ApplicationTargetGroup(stack, 'TargetGroup', {
+      loadBalancerStickinessCookieDuration: cdk.Duration.minutes(5),
+      vpc,
+    });
+
+    // THEN
+    expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::TargetGroup', {
+      TargetGroupAttributes: [
+        {
+          Key: 'stickiness.enabled',
+          Value: 'true',
+        },
+        {
+          Key: 'stickiness.type',
+          Value: 'lb_cookie',
+        },
+        {
+          Key: 'stickiness.lb_cookie.duration_seconds',
+          Value: '300',
+        },
+      ],
+    });
+  });
+
+  test('Bad app cookie example - missing cookie name', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'Stack');
+    const vpc = new ec2.Vpc(stack, 'VPC', {});
+
+    // THEN
+    expect(() => {
+      new elbv2.ApplicationTargetGroup(stack, 'TargetGroup', {
+        appStickinessCookieDuration: cdk.Duration.minutes(5),
+        vpc,
+      });
+    }).toThrow(/When setting appStickinessCookieDuration you must provide appCookieName property./);
+  });
+
+  test('App cookie stickiness', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'Stack');
+    const vpc = new ec2.Vpc(stack, 'VPC', {});
+
+    // WHEN
+    new elbv2.ApplicationTargetGroup(stack, 'TargetGroup', {
+      appStickinessCookieDuration: cdk.Duration.minutes(5),
+      appCookieName: 'MyDeliciousCookie',
+      vpc,
+    });
+
+    // THEN
+    expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::TargetGroup', {
+      TargetGroupAttributes: [
+        {
+          Key: 'stickiness.enabled',
+          Value: 'true',
+        },
+        {
+          Key: 'stickiness.type',
+          Value: 'app_cookie',
+        },
+        {
+          Key: 'stickiness.app_cookie.cookie_name',
+          Value: 'MyDeliciousCookie',
+        },
+        {
+          Key: 'stickiness.app_cookie.duration_seconds',
+          Value: '300',
+        },
+      ],
+    });
+  });
+
+  test('Fail when LB and APP cookie are set', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'Stack');
+    const vpc = new ec2.Vpc(stack, 'VPC', {});
+
+    // THEN
+    expect(() => {
+      new elbv2.ApplicationTargetGroup(stack, 'TargetGroup', {
+        appStickinessCookieDuration: cdk.Duration.minutes(5),
+        loadBalancerStickinessCookieDuration: cdk.Duration.minutes(5),
+        vpc,
+      });
+    }).toThrow(/You can only specify one stickiness type for Application Load Balancer./);
+  });
 });

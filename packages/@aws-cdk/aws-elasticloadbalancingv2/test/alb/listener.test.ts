@@ -71,7 +71,7 @@ describe('tests', () => {
     });
   });
 
-  test('Listener default to open - IPv4 and IPv6 (dualstack)', () => {
+  test('Listener default to open - IPv4 and IPv6 (dual stack)', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'Stack');
@@ -316,7 +316,7 @@ describe('tests', () => {
     });
   });
 
-  test('Enable stickiness for targets', () => {
+  test('Enable alb stickiness for targets', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'Stack');
@@ -328,7 +328,7 @@ describe('tests', () => {
       port: 80,
       targets: [new FakeSelfRegisteringTarget(stack, 'Target', vpc)],
     });
-    group.enableCookieStickiness(cdk.Duration.hours(1));
+    group.enableLoadBalancerCookieStickiness(cdk.Duration.hours(1));
 
     // THEN
     expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::TargetGroup', {
@@ -343,6 +343,43 @@ describe('tests', () => {
         },
         {
           Key: 'stickiness.lb_cookie.duration_seconds',
+          Value: '3600',
+        },
+      ],
+    });
+  });
+
+  test('Enable app stickiness for targets', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Stack');
+    const lb = new elbv2.ApplicationLoadBalancer(stack, 'LB', { vpc });
+    const listener = lb.addListener('Listener', { port: 80 });
+
+    // WHEN
+    const group = listener.addTargets('Group', {
+      port: 80,
+      targets: [new FakeSelfRegisteringTarget(stack, 'Target', vpc)],
+    });
+    group.enableAppCookieStickiness(cdk.Duration.hours(1), 'MyDeliciousCookie');
+
+    // THEN
+    expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::TargetGroup', {
+      TargetGroupAttributes: [
+        {
+          Key: 'stickiness.enabled',
+          Value: 'true',
+        },
+        {
+          Key: 'stickiness.type',
+          Value: 'app_cookie',
+        },
+        {
+          Key: 'stickiness.app_cookie.cookie_name',
+          Value: 'MyDeliciousCookie',
+        },
+        {
+          Key: 'stickiness.app_cookie.duration_seconds',
           Value: '3600',
         },
       ],
@@ -823,7 +860,7 @@ describe('tests', () => {
     });
   });
 
-  test('Throws when specifying both target groups and fixed reponse', () => {
+  test('Throws when specifying both target groups and fixed response', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'VPC');
@@ -868,7 +905,7 @@ describe('tests', () => {
     })).toThrowError('Priority must have value greater than or equal to 1');
   });
 
-  test('Throws when specifying both target groups and redirect reponse', () => {
+  test('Throws when specifying both target groups and redirect response', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'VPC');
@@ -970,7 +1007,7 @@ describe('tests', () => {
     });
   });
 
-  test('Can add additional certificates via addCertficateArns to application listener', () => {
+  test('Can add additional certificates via addCertificateArns to application listener', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'Stack');
@@ -1050,7 +1087,7 @@ describe('tests', () => {
     })).toThrowError('Both `pathPatterns` and `pathPattern` are specified, specify only one');
   });
 
-  test('Add additonal condition to listener rule', () => {
+  test('Add additional condition to listener rule', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'Stack');
@@ -1244,7 +1281,7 @@ describe('tests', () => {
     });
   });
 
-  test('Can exist together legacy style conditions and modan style conditions', () => {
+  test('Can exist together legacy style conditions and modern style conditions', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'Stack');

@@ -363,6 +363,9 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
       protocol: props.protocol,
       slowStart: props.slowStart,
       stickinessCookieDuration: props.stickinessCookieDuration,
+      loadBalancerStickinessCookieDuration: props.loadBalancerStickinessCookieDuration,
+      appCookieName: props.appCookieName,
+      appStickinessCookieDuration: props.appStickinessCookieDuration,
       targetGroupName: props.targetGroupName,
       targets: props.targets,
       vpc: this.loadBalancer.vpc,
@@ -810,8 +813,45 @@ export interface AddApplicationTargetsProps extends AddRuleProps {
    * 1 second and the maximum value is 7 days (604800 seconds).
    *
    * @default Stickiness disabled
+   * @deprecated Use loadBalancerStickinessCookieDuration or appStickinessCookieDuration
    */
   readonly stickinessCookieDuration?: Duration;
+
+  /**
+   * The load balancer stickiness cookie expiration period.
+   *
+   * Setting this value enables load balancer stickiness.
+   *
+   * After this period, the cookie is considered stale. The minimum value is
+   * 1 second and the maximum value is 7 days (604800 seconds).
+   *
+   * @default Stickiness disabled
+   */
+  readonly loadBalancerStickinessCookieDuration?: Duration;
+
+  /**
+   * The load balancer stickiness cookie expiration period.
+   *
+   * Setting this value enables load balancer stickiness.
+   *
+   * After this period, the cookie is considered stale. The minimum value is
+   * 1 second and the maximum value is 7 days (604800 seconds).
+   *
+   * @default Stickiness disabled
+   */
+  readonly appStickinessCookieDuration?: Duration;
+
+  /**
+   * The app cookie name.
+   *
+   * Indicates the name of the application-based cookie. Required if appStickinessCookieDuration is set.
+   *
+   * Names that start with the following prefixes are not allowed: AWSALB, AWSALBAPP,
+   * and AWSALBTG; they're reserved for use by the load balancer.
+   *
+   * @default No app cookie name
+   */
+  readonly appCookieName?: string;
 
   /**
    * The targets to add to this target group.

@@ -54,6 +54,7 @@ export interface ApplicationTargetGroupProps extends BaseTargetGroupProps {
    * 1 second and the maximum value is 7 days (604800 seconds).
    *
    * @default Duration.days(1)
+   * @deprecated Use loadBalancerStickinessCookieDuration or appStickinessCookieDuration
    */
   readonly stickinessCookieDuration?: Duration;
 
@@ -67,6 +68,42 @@ export interface ApplicationTargetGroupProps extends BaseTargetGroupProps {
    * @default - No targets.
    */
   readonly targets?: IApplicationLoadBalancerTarget[];
+
+  /**
+   * The load balancer cookie stickiness expiration period.
+   *
+   * Setting this value enables load balancer stickiness.
+   *
+   * After this period, the cookie is considered stale. The minimum value is
+   * 1 second and the maximum value is 7 days (604800 seconds).
+   *
+   * @default Duration.days(1)
+   */
+  readonly loadBalancerStickinessCookieDuration?: Duration;
+
+  /**
+   * The app cookie stickiness expiration period.
+   *
+   * Setting this value enables app stickiness.
+   *
+   * After this period, the cookie is considered stale. The minimum value is
+   * 1 second and the maximum value is 7 days (604800 seconds).
+   *
+   * @default Duration.days(1)
+   */
+  readonly appStickinessCookieDuration?: Duration;
+
+  /**
+   * The app cookie name.
+   *
+   * Indicates the name of the application-based cookie. Required if appStickinessCookieDuration is set.
+   *
+   * Names that start with the following prefixes are not allowed: AWSALB, AWSALBAPP,
+   * and AWSALBTG; they're reserved for use by the load balancer.
+   *
+   * @default No app cookie name
+   */
+  readonly appCookieName?: string;
 }
 
 /**
@@ -114,6 +151,18 @@ export class ApplicationTargetGroup extends TargetGroupBase implements IApplicat
       if (props.stickinessCookieDuration !== undefined) {
         this.enableCookieStickiness(props.stickinessCookieDuration);
       }
+      if (props.appStickinessCookieDuration && props.loadBalancerStickinessCookieDuration) {
+        throw new Error('You can only specify one stickiness type for Application Load Balancer.');
+      }
+      if (props.loadBalancerStickinessCookieDuration) {
+        this.enableLoadBalancerCookieStickiness(props.loadBalancerStickinessCookieDuration);
+      }
+      if (props.appStickinessCookieDuration) {
+        if (!props.appCookieName) {
+          throw new Error('When setting appStickinessCookieDuration you must provide appCookieName property.');
+        }
+        this.enableAppCookieStickiness(props.appStickinessCookieDuration, props.appCookieName);
+      }
       this.addTarget(...(props.targets || []));
     }
   }
@@ -130,11 +179,34 @@ export class ApplicationTargetGroup extends TargetGroupBase implements IApplicat
 
   /**
    * Enable sticky routing via a cookie to members of this target group
+   * @deprecated - use enableLoadBalancerCookieStickiness
    */
   public enableCookieStickiness(duration: Duration) {
     this.setAttribute('stickiness.enabled', 'true');
     this.setAttribute('stickiness.type', 'lb_cookie');
     this.setAttribute('stickiness.lb_cookie.duration_seconds', duration.toSeconds().toString());
+  }
+
+  /**
+   * Enable load balancer sticky routing via a cookie to members of this target group
+   */
+  public enableLoadBalancerCookieStickiness(duration: Duration) {
+    this.setAttribute('stickiness.enabled', 'true');
+    this.setAttribute('stickiness.type', 'lb_cookie');
+    this.setAttribute('stickiness.lb_cookie.duration_seconds', duration.toSeconds().toString());
+  }
+
+  /**
+   * Enable application sticky routing via a cookie to members of this target group
+   */
+  public enableAppCookieStickiness(duration: Duration, cookieName: string) {
+    if (cookieName.startsWith('AWSALB') || cookieName.startsWith('AWSALBAPP') || cookieName.startsWith('AWSALBTG')) {
+      throw new Error("App cookie names that start with the following prefixes are not allowed: AWSALB, AWSALBAPP, and AWSALBTG; they're reserved for use by the load balancer.");
+    }
+    this.setAttribute('stickiness.enabled', 'true');
+    this.setAttribute('stickiness.type', 'app_cookie');
+    this.setAttribute('stickiness.app_cookie.cookie_name', cookieName);
+    this.setAttribute('stickiness.app_cookie.duration_seconds', duration.toSeconds().toString());
   }
 
   /**
