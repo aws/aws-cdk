@@ -391,6 +391,36 @@ Here's how `Vpc.fromLookup()` can be used:
 
 [importing existing VPCs](test/integ.import-default-vpc.lit.ts)
 
+`Vpc.fromLookup` is the recommended way to import VPCs. If for whatever
+reason you do not want to use the context mechanism to look up a VPC at
+synthesis time, you can also use `Vpc.fromVpcAttributes`. This has the
+following limitations:
+
+* Every subnet group in the VPC must have a subnet in each availability zone
+  (for example, each AZ must have both a public and private subnet). Asymmetric
+  VPCs are not supported.
+* All VpcId, SubnetId, RouteTableId, ... parameters must either be known at
+  synthesis time, or they must come from deploy-time list parameters whose
+  deploy-time lengths are known at synthesis time.
+
+Using `Vpc.fromVpcAttributes()` looks like this:
+
+```ts
+const vpc = ec2.Vpc.fromVpcAttributes(stack, 'VPC', {
+  vpcId: 'vpc-1234',
+  availabilityZones: ['us-east-1a', 'us-east-1b'],
+
+  // Either pass literals for all IDs
+  publicSubnetIds: ['s-12345', 's-67890'],
+
+  // OR: import a list of known length
+  privateSubnetIds: Fn.importListValue('PrivateSubnetIds', 2),
+
+  // OR: split an imported string to a list of known length
+  isolatedSubnetIds: Fn.split(',', ssm.StringParameter.valueForStringParameter(stack, `MyParameter`), 2),
+});
+```
+
 ## Allowing Connections
 
 In AWS, all network traffic in and out of **Elastic Network Interfaces** (ENIs)
@@ -508,6 +538,9 @@ examples of things you might want to use:
 > `cdk.context.json`, or use the `cdk context` command. For more information, see
 > [Runtime Context](https://docs.aws.amazon.com/cdk/latest/guide/context.html) in the CDK
 > developer guide.
+>
+> `MachineImage.genericLinux()`, `MachineImage.genericWindows()` will use `CfnMapping` in
+> an agnostic stack.
 
 ## Special VPC configurations
 
@@ -968,4 +1001,25 @@ const subnet = Subnet.fromSubnetAttributes(this, 'SubnetFromAttributes', {
 
 // Supply only subnet id
 const subnet = Subnet.fromSubnetId(this, 'SubnetFromId', 's-1234');
+```
+
+## Launch Templates
+
+A Launch Template is a standardized template that contains the configuration information to launch an instance.
+They can be used when launching instances on their own, through Amazon EC2 Auto Scaling, EC2 Fleet, and Spot Fleet.
+Launch templates enable you to store launch parameters so that you do not have to specify them every time you launch
+an instance. For information on Launch Templates please see the
+[official documentation](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-launch-templates.html).
+
+The following demonstrates how to create a launch template with an Amazon Machine Image, and security group.
+
+```ts
+const vpc = new ec2.Vpc(...);
+// ...
+const template = new ec2.LaunchTemplate(this, 'LaunchTemplate', {
+  machineImage: new ec2.AmazonMachineImage(),
+  securityGroup: new ec2.SecurityGroup(this, 'LaunchTemplateSG', {
+    vpc: vpc,
+  }),
+});
 ```

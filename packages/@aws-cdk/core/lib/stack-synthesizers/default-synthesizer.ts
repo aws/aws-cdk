@@ -291,7 +291,8 @@ export class DefaultStackSynthesizer extends StackSynthesizer {
     assertBound(this.bucketName);
     validateFileAssetSource(asset);
 
-    const objectKey = this.bucketPrefix + asset.sourceHash + (asset.packaging === FileAssetPackaging.ZIP_DIRECTORY ? '.zip' : '');
+    const extension = asset.fileName != undefined ? path.extname(asset.fileName) : '';
+    const objectKey = this.bucketPrefix + asset.sourceHash + (asset.packaging === FileAssetPackaging.ZIP_DIRECTORY ? '.zip' : extension);
 
     // Add to manifest
     this.files[asset.sourceHash] = {
@@ -389,6 +390,7 @@ export class DefaultStackSynthesizer extends StackSynthesizer {
       cloudFormationExecutionRoleArn: this._cloudFormationExecutionRoleArn,
       stackTemplateAssetObjectUrl: templateManifestUrl,
       requiresBootstrapStackVersion: MIN_BOOTSTRAP_STACK_VERSION,
+      bootstrapStackVersionSsmParameter: `/cdk-bootstrap/${this.qualifier}/version`,
       additionalDependencies: [artifactId],
     });
   }
@@ -447,7 +449,12 @@ export class DefaultStackSynthesizer extends StackSynthesizer {
     //
     // Instead, we'll have a protocol with the CLI that we put an 's3://.../...' URL here, and the CLI
     // is going to resolve it to the correct 'https://.../' URL before it gives it to CloudFormation.
-    return `s3://${this.bucketName}/${this.bucketPrefix}${sourceHash}`;
+    //
+    // ALSO: it would be great to reuse the return value of `addFileAsset()` here, except those contain
+    // CloudFormation REFERENCES to locations, not actual locations (can contain `{ Ref: AWS::Region }` and
+    // `{ Ref: SomeParameter }` etc). We therefore have to duplicate some logic here :(.
+    const extension = path.extname(this.stack.templateFile);
+    return `s3://${this.bucketName}/${this.bucketPrefix}${sourceHash}${extension}`;
   }
 
   /**
@@ -472,6 +479,7 @@ export class DefaultStackSynthesizer extends StackSynthesizer {
       properties: {
         file: manifestFile,
         requiresBootstrapStackVersion: MIN_BOOTSTRAP_STACK_VERSION,
+        bootstrapStackVersionSsmParameter: `/cdk-bootstrap/${this.qualifier}/version`,
       },
     });
 

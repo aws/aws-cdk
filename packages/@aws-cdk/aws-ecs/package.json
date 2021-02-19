@@ -17,8 +17,6 @@
       "dotnet": {
         "namespace": "Amazon.CDK.AWS.ECS",
         "packageId": "Amazon.CDK.AWS.ECS",
-        "signAssembly": true,
-        "assemblyOriginatorKeyFile": "../../key.snk",
         "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
       },
       "python": {
@@ -113,7 +111,6 @@
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/assets": "0.0.0",
     "@aws-cdk/aws-applicationautoscaling": "0.0.0",
     "@aws-cdk/aws-autoscaling": "0.0.0",
     "@aws-cdk/aws-autoscaling-hooktargets": "0.0.0",
@@ -274,5 +271,8 @@
   "awscdkio": {
     "announce": false
   },
-  "maturity": "stable"
+  "maturity": "stable",
+  "publishConfig": {
+    "tag": "latest"
+  }
 }
