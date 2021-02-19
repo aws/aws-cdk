@@ -417,7 +417,7 @@ export default class CodeGenerator {
       //   templates that don't have DeletionPolicy set.
       this.code.openBlock(`if (this.node.scope && ${CORE}.Resource.isResource(this.node.scope))`);
       this.code.line('this.node.addValidation({ validate: () => this.cfnOptions.deletionPolicy === undefined');
-      this.code.line(`  ? [\\\'${resourceType.specName?.fqn}\\\' is a stateful resource type, and you must specify a Removal Policy for it. Call \\\'resource.applyRemovalPolicy()\\\'.\']`);
+      this.code.line(`  ? [\'\\\'${resourceType.specName?.fqn}\\\' is a stateful resource type, and you must specify a Removal Policy for it. Call \\\'resource.applyRemovalPolicy()\\\'.\']`);
       this.code.line('  : [] });');
       this.code.closeBlock();
     }

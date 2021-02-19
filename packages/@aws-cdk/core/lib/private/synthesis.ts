@@ -1,5 +1,6 @@
 import * as cxapi from '@aws-cdk/cx-api';
 import * as constructs from 'constructs';
+import { Node } from 'constructs';
 import { Annotations } from '../annotations';
 import { Aspects, IAspect } from '../aspect';
 import { Construct, IConstruct, SynthesisOptions, ValidationError } from '../construct-compat';
@@ -172,10 +173,16 @@ function validateTree(root: IConstruct) {
   const errors = new Array<ValidationError>();
 
   visit(root, 'pre', construct => {
+    // Validations added by subclassing (deprecated)
     for (const message of construct.onValidate()) {
       errors.push({ message, source: construct as unknown as Construct });
     }
   });
+
+  // Validations added through `node.addValidation()`
+  errors.push(...Node.of(root).validate().map(e => ({
+    message: e.message, source: e.source as unknown as Construct,
+  })));
 
   if (errors.length > 0) {
     const errorList = errors.map(e => `[${e.source.node.path}] ${e.message}`).join('\n  ');
