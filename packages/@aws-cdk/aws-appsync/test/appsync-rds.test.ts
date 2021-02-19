@@ -123,6 +123,34 @@ describe('Rds Data Source configuration', () => {
     });
   });
 
+  test('databaseName saved to RdsHttpEndpointConfig', () => {
+    // WHEN
+    const testDatabaseName = 'testDatabaseName';
+    api.addRdsDataSource('ds', cluster, secret, testDatabaseName);
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::AppSync::DataSource', {
+      Type: 'RELATIONAL_DATABASE',
+      RelationalDatabaseConfig: {
+        RdsHttpEndpointConfig: {
+          AwsRegion: { Ref: 'AWS::Region' },
+          AwsSecretStoreArn: { Ref: 'AuroraSecret41E6E877' },
+          DbClusterIdentifier: {
+            'Fn::Join': ['', ['arn:',
+              { Ref: 'AWS::Partition' },
+              ':rds:',
+              { Ref: 'AWS::Region' },
+              ':',
+              { Ref: 'AWS::AccountId' },
+              ':cluster:',
+              { Ref: 'AuroraCluster23D869C0' }]],
+          },
+          DatabaseName: testDatabaseName,
+        },
+      },
+    });
+  });
+
   test('default configuration produces name identical to the id', () => {
     // WHEN
     api.addRdsDataSource('ds', cluster, secret);
@@ -136,7 +164,7 @@ describe('Rds Data Source configuration', () => {
 
   test('appsync configures name correctly', () => {
     // WHEN
-    api.addRdsDataSource('ds', cluster, secret, {
+    api.addRdsDataSource('ds', cluster, secret, undefined, {
       name: 'custom',
     });
 
@@ -149,7 +177,7 @@ describe('Rds Data Source configuration', () => {
 
   test('appsync configures name and description correctly', () => {
     // WHEN
-    api.addRdsDataSource('ds', cluster, secret, {
+    api.addRdsDataSource('ds', cluster, secret, undefined, {
       name: 'custom',
       description: 'custom description',
     });
