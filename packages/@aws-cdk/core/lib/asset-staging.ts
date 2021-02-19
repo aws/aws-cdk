@@ -32,6 +32,16 @@ interface StagedAsset {
    * The hash we used previously
    */
   readonly assetHash: string;
+
+  /**
+   * The packaging of the asset
+   */
+  readonly packaging: FileAssetPackaging,
+
+  /**
+   * Whether this asset is an archive
+   */
+  readonly isArchive: boolean;
 }
 
 /**
@@ -126,6 +136,16 @@ export class AssetStaging extends CoreConstruct {
    */
   public readonly assetHash: string;
 
+  /**
+   * How this asset should be packaged.
+   */
+  public readonly packaging: FileAssetPackaging;
+
+  /**
+   * Whether this asset is an archive (zip or jar).
+   */
+  public readonly isArchive: boolean;
+
   private readonly fingerprintOptions: FingerprintOptions;
 
   private readonly hashType: AssetHashType;
@@ -140,14 +160,19 @@ export class AssetStaging extends CoreConstruct {
 
   private readonly cacheKey: string;
 
-  private _packaging = FileAssetPackaging.ZIP_DIRECTORY;
-  private _isArchive = true;
+  private readonly sourceStats: fs.Stats;
 
   constructor(scope: Construct, id: string, props: AssetStagingProps) {
     super(scope, id);
 
     this.sourcePath = path.resolve(props.sourcePath);
     this.fingerprintOptions = props;
+
+    if (!fs.existsSync(this.sourcePath)) {
+      throw new Error(`Cannot find asset at ${this.sourcePath}`);
+    }
+
+    this.sourceStats = fs.statSync(this.sourcePath);
 
     const outdir = Stage.of(this)?.assetOutdir;
     if (!outdir) {
@@ -197,6 +222,8 @@ export class AssetStaging extends CoreConstruct {
     this.stagedPath = staged.stagedPath;
     this.absoluteStagedPath = staged.stagedPath;
     this.assetHash = staged.assetHash;
+    this.packaging = staged.packaging;
+    this.isArchive = staged.isArchive;
   }
 
   /**
@@ -206,20 +233,6 @@ export class AssetStaging extends CoreConstruct {
    */
   public get sourceHash(): string {
     return this.assetHash;
-  }
-
-  /**
-   * How this asset should be packaged.
-   */
-  public get packaging(): FileAssetPackaging {
-    return this._packaging;
-  }
-
-  /**
-   * Whether this asset is an archive (zip or jar).
-   */
-  public get isArchive(): boolean {
-    return this._isArchive;
   }
 
   /**
@@ -267,8 +280,18 @@ export class AssetStaging extends CoreConstruct {
       ? this.sourcePath
       : path.resolve(this.assetOutdir, renderAssetFilename(assetHash, path.extname(this.sourcePath)));
 
+    if (!this.sourceStats.isDirectory() && !this.sourceStats.isFile()) {
+      throw new Error(`Asset ${this.sourcePath} is expected to be either a directory or a regular file`);
+    }
+
     this.stageAsset(this.sourcePath, stagedPath, 'copy');
-    return { assetHash, stagedPath };
+
+    return {
+      assetHash,
+      stagedPath,
+      packaging: this.sourceStats.isDirectory() ? FileAssetPackaging.ZIP_DIRECTORY : FileAssetPackaging.FILE,
+      isArchive: this.sourceStats.isDirectory() || ARCHIVE_EXTENSIONS.includes(path.extname(this.sourcePath).toLowerCase()),
+    };
   }
 
   /**
@@ -277,6 +300,10 @@ export class AssetStaging extends CoreConstruct {
    * Optionally skip, in which case we pretend we did something but we don't really.
    */
   private stageByBundling(bundling: BundlingOptions, skip: boolean): StagedAsset {
+    if (!this.sourceStats.isDirectory()) {
+      throw new Error(`Asset ${this.sourcePath} is expected to be a directory when bundling`);
+    }
+
     if (skip) {
       // We should have bundled, but didn't to save time. Still pretend to have a hash.
       // If the asset uses OUTPUT or BUNDLE, we use a CUSTOM hash to avoid fingerprinting
@@ -289,6 +316,8 @@ export class AssetStaging extends CoreConstruct {
       return {
         assetHash: this.calculateHash(hashType, bundling),
         stagedPath: this.sourcePath,
+        packaging: FileAssetPackaging.ZIP_DIRECTORY,
+        isArchive: true,
       };
     }
 
@@ -303,14 +332,18 @@ export class AssetStaging extends CoreConstruct {
     // Check bundling output content and determine if we will need to archive
     const bundlingOutputType = bundling.outputType ?? BundlingOutput.AUTO_DISCOVER;
     const bundledAsset = determineBundledAsset(bundleDir, bundlingOutputType);
-    this._packaging = bundledAsset.packaging;
 
     // Calculate assetHash afterwards if we still must
     assetHash = assetHash ?? this.calculateHash(this.hashType, bundling, bundledAsset.path);
     const stagedPath = path.resolve(this.assetOutdir, renderAssetFilename(assetHash, bundledAsset.extension));
 
     this.stageAsset(bundledAsset.path, stagedPath, 'move');
-    return { assetHash, stagedPath };
+    return {
+      assetHash,
+      stagedPath,
+      packaging: bundledAsset.packaging,
+      isArchive: true, // bundling always produces an archive
+    };
   }
 
   /**
@@ -344,12 +377,9 @@ export class AssetStaging extends CoreConstruct {
     }
 
     // Copy file/directory to staging directory
-    const stat = fs.statSync(sourcePath);
-    if (stat.isFile()) {
+    if (this.sourceStats.isFile()) {
       fs.copyFileSync(sourcePath, targetPath);
-      this._packaging = FileAssetPackaging.FILE;
-      this._isArchive = ARCHIVE_EXTENSIONS.includes(path.extname(sourcePath).toLowerCase());
-    } else if (stat.isDirectory()) {
+    } else if (this.sourceStats.isDirectory()) {
       fs.mkdirSync(targetPath);
       FileSystem.copyDirectory(sourcePath, targetPath, this.fingerprintOptions);
     } else {
