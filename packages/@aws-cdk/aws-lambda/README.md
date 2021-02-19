@@ -189,6 +189,17 @@ granting permissions to other AWS accounts or organizations.
 
 [Example of Lambda Layer usage](test/integ.layer-version.lit.ts)
 
+By default, updating a layer creates a new layer version, and CloudFormation will delete the old version as part of the stack update.
+
+Alternatively, a removal policy can be used to retain the old version:
+
+```ts
+import { LayerVersion } from '@aws-cdk/aws-lambda';
+new LayerVersion(this, 'MyLayer', {
+  removalPolicy: RemovalPolicy.RETAIN
+});
+```
+
 ## Event Rule Target
 
 You can use an AWS Lambda function as a target for an Amazon CloudWatch event
@@ -439,10 +450,8 @@ new lambda.Function(this, 'Function', {
     bundling: {
       image: lambda.Runtime.PYTHON_3_6.bundlingDockerImage,
       command: [
-        'bash', '-c', `
-        pip install -r requirements.txt -t /asset-output &&
-        cp -au . /asset-output
-        `,
+        'bash', '-c', 
+        'pip install -r requirements.txt -t /asset-output && cp -au . /asset-output'
       ],
     },
   }),
