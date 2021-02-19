@@ -5,10 +5,10 @@ import { LambdaWebSocketIntegration } from '../../lib';
 
 /*
  * Stack verification steps:
- * 1. Connect: 'wscat -c <endpoint-in-the-stack-output>'. Should connect successfully and print event data containing connectionId in cloudwatch console
- * 2. SendMessage: '> {"action": "sendmessage", "data": "some-data"}'. Should send the message successfully and print the data in cloudwatch console
- * 3. Default: '> {"data": "some-data"}'. Should send the message successfully and print the data in cloudwatch console
- * 4. Disconnect: disconnect from the wscat. Should print event data containing connectionId in cloudwatch console
+ * 1. Connect: 'wscat -c <endpoint-in-the-stack-output>'. Should connect successfully and print event data containing connectionId in cloudwatch
+ * 2. SendMessage: '> {"action": "sendmessage", "data": "some-data"}'. Should send the message successfully and print the data in cloudwatch
+ * 3. Default: '> {"data": "some-data"}'. Should send the message successfully and print the data in cloudwatch
+ * 4. Disconnect: disconnect from the wscat. Should print event data containing connectionId in cloudwatch
  */
 
 const app = new App();
