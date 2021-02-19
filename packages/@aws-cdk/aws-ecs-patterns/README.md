@@ -413,7 +413,7 @@ const queueProcessingFargateService = new QueueProcessingFargateService(stack, '
 });
 ```
 
-### Set taskSubnets and securityGroups on QueueProcessingFargateService
+### Set taskSubnets and securityGroups for QueueProcessingFargateService
 
 ```ts
 const queueProcessingFargateService = new QueueProcessingFargateService(stack, 'Service', {
@@ -422,6 +422,17 @@ const queueProcessingFargateService = new QueueProcessingFargateService(stack, '
   image: ecs.ContainerImage.fromRegistry('test'),
   securityGroups: [securityGroup],
   taskSubnets: { subnetType: ec2.SubnetType.ISOLATED },
+});
+```
+
+### Define tasks with public IPs for QueueProcessingFargateService
+
+```ts
+const queueProcessingFargateService = new QueueProcessingFargateService(stack, 'Service', {
+  vpc,
+  memoryLimitMiB: 512,
+  image: ecs.ContainerImage.fromRegistry('test'),
+  assignPublicIp: true,
 });
 ```
 
