@@ -3,9 +3,13 @@ import * as sfn from '@aws-cdk/aws-stepfunctions';
 import { Construct } from 'constructs';
 import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
 
-/** Properties for CodeBuildBatchDeleteBuilds */
+/**
+ * Properties for CodeBuildBatchDeleteBuilds
+ */
 export interface CodeBuildBatchDeleteBuildsProps extends sfn.TaskStateBaseProps {
-  /** An array of ids of builds to delete. */
+  /**
+   * The IDs of the builds to delete.
+   */
   readonly ids: string[];
 }
 

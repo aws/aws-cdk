@@ -1,8 +1,10 @@
+import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import * as cdk from '@aws-cdk/core';
-import * as tasks from '../../lib';
+import { CodeBuildStopBuild, CodeBuildStartBuild } from '../../lib';
 
 /*
+ * Create a state machine with a task state to create a code build project, stop the build
  * Stack verification steps:
  * * aws stepfunctions start-execution --state-machine-arn <deployed state machine arn> : should return execution arn
  * * aws codebuild list-builds-for-project --project-name <deployed project name>: should return a list of projects with size greater than 0
@@ -14,11 +16,30 @@ class StartBuildStack extends cdk.Stack {
   constructor(scope: cdk.App, id: string, props: cdk.StackProps = {}) {
     super(scope, id, props);
 
-    const stopBuildJob = new tasks.CodeBuildStopBuild(this, 'stop-build', {
-      projectId: sfn.JsonPath.stringAt('$.projectId'),
+    const project = new codebuild.Project(this, 'Project', {
+      projectName: 'MyTestProject',
+      buildSpec: codebuild.BuildSpec.fromObject({
+        version: '0.2',
+        phases: {
+          build: {
+            commands: [
+              'echo "Hello, CodeBuild!"',
+            ],
+          },
+        },
+      }),
     });
 
-    const definition = sfn.Chain.start(stopBuildJob);
+    const startBuild = new CodeBuildStartBuild(this, 'build-task', {
+      project: project,
+      integrationPattern: sfn.IntegrationPattern.RUN_JOB,
+    });
+
+    const stopBuildJob = new CodeBuildStopBuild(this, 'stop-build', {
+      buildId: sfn.JsonPath.stringAt('$.Build.Arn'),
+    });
+
+    const definition = sfn.Chain.start(startBuild).next(stopBuildJob);
 
     const stateMachine = new sfn.StateMachine(this, 'StateMachine', {
       definition,

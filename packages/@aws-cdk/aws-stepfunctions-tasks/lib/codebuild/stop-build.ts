@@ -3,10 +3,14 @@ import * as sfn from '@aws-cdk/aws-stepfunctions';
 import { Construct } from 'constructs';
 import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
 
-/** Properties for CodeBuildStopBuild*/
+/**
+ * Properties for CodeBuildStopBuild
+ */
 export interface CodeBuildStopBuildProps extends sfn.TaskStateBaseProps {
-  /**CodeBuild project Id to stop */
-  readonly projectId: string;
+  /**
+   * The ID of the build to stop.
+   */
+  readonly buildId: string;
 }
 
 /**
@@ -45,7 +49,7 @@ export class CodeBuildStopBuild extends sfn.TaskStateBase {
     return {
       Resource: integrationResourceArn('codebuild', 'stopBuild', this.integrationPattern),
       Parameters: sfn.FieldUtils.renderObject({
-        Id: this.props.projectId,
+        Id: this.props.buildId,
       }),
     };
   }

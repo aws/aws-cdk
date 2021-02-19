@@ -1,6 +1,7 @@
+import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import * as cdk from '@aws-cdk/core';
-import * as tasks from '../../lib';
+import { CodeBuildBatchGetReports, CodeBuildStartBuild } from '../../lib';
 
 /*
  * Stack verification steps:
@@ -14,11 +15,37 @@ class StartBuildStack extends cdk.Stack {
   constructor(scope: cdk.App, id: string, props: cdk.StackProps = {}) {
     super(scope, id, props);
 
-    const batchGetReportsJob = new tasks.CodeBuildBatchGetReports(this, 'batch-get-reports', {
-      reportArns: ['reportArns'],
+    const project = new codebuild.Project(this, 'Project', {
+      projectName: 'MyTestProject',
+      buildSpec: codebuild.BuildSpec.fromObject({
+        version: '0.2',
+        phases: {
+          build: {
+            commands: [
+              'touch emptyFile',
+            ],
+          },
+        },
+        reports: {
+          emptyReport: {
+            files: [
+              '**/*',
+            ],
+          },
+        },
+      }),
     });
 
-    const definition = sfn.Chain.start(batchGetReportsJob);
+    const startBuild = new CodeBuildStartBuild(this, 'build-task', {
+      project: project,
+      integrationPattern: sfn.IntegrationPattern.RUN_JOB,
+    });
+
+    const batchGetReportsJob = new CodeBuildBatchGetReports(this, 'batch-get-reports', {
+      reportArns: sfn.JsonPath.listAt('$.Build.ReportArns'),
+    });
+
+    const definition = sfn.Chain.start(startBuild).next(batchGetReportsJob);
 
     const stateMachine = new sfn.StateMachine(this, 'StateMachine', {
       definition,

@@ -3,9 +3,13 @@ import * as sfn from '@aws-cdk/aws-stepfunctions';
 import { Construct } from 'constructs';
 import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
 
-/**Properties for CodeBuildBatchGetReports */
+/**
+ * Properties for CodeBuildBatchGetReports
+ */
 export interface CodeBuildBatchGetReportsProps extends sfn.TaskStateBaseProps {
-  /** An array of ARNs that identify the Reports. */
+  /**
+   * An array of ARNs that identify the Report objects to return.
+   */
   readonly reportArns: string[];
 }
 
