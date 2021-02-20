@@ -81,6 +81,15 @@ export interface QueueProcessingFargateServiceProps extends QueueProcessingServi
    * @default - A new security group is created.
    */
   readonly securityGroups?: ec2.ISecurityGroup[];
+
+  /**
+   * Specifies whether the task's elastic network interface receives a public IP address.
+   *
+   * If true, each task will receive a public IP address.
+   *
+   * @default false
+   */
+  readonly assignPublicIp?: boolean;
 }
 
 /**
@@ -134,6 +143,7 @@ export class QueueProcessingFargateService extends QueueProcessingServiceBase {
       deploymentController: props.deploymentController,
       securityGroups: props.securityGroups,
       vpcSubnets: props.taskSubnets,
+      assignPublicIp: props.assignPublicIp,
     });
     this.configureAutoscalingForService(this.service);
     this.grantPermissionsToService(this.service);

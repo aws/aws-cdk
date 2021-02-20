@@ -67,7 +67,7 @@
     "cdk-build-tools": "0.0.0",
     "cdk-integ-tools": "0.0.0",
     "delay": "5.0.0",
-    "esbuild": "^0.8.46",
+    "esbuild": "^0.8.49",
     "pkglint": "0.0.0"
   },
   "dependencies": {
