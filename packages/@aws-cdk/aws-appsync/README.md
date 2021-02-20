@@ -89,7 +89,7 @@ demoDS.createResolver({
   fieldName: 'addDemo',
   requestMappingTemplate: appsync.MappingTemplate.dynamoDbPutItem(
     appsync.PrimaryKey.partition('id').auto(),
-    appsync.Values.projecting('demo')
+    appsync.Values.projecting('input')
   ),
   responseMappingTemplate: appsync.MappingTemplate.dynamoDbResultItem(),
 });
@@ -116,7 +116,7 @@ const cluster = new rds.DatabaseCluster(stack, 'AuroraCluster', {
 });
 
 // Build a data source for AppSync to access the database.
-const rdsDS = api.addRdsDataSource('rds', 'The rds data source', cluster, secret);
+const rdsDS = api.addRdsDataSource('rds', cluster, secret, 'demos');
 
 // Set up a resolver for an RDS query.
 rdsDS.createResolver({

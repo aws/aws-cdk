@@ -1,6 +1,7 @@
 // Helper functions for integration tests
 import { spawnSync } from 'child_process';
 import * as path from 'path';
+import { FUTURE_FLAGS } from '@aws-cdk/cx-api';
 import * as fs from 'fs-extra';
 import { AVAILABILITY_ZONE_FALLBACK_CONTEXT_KEY } from '../../../packages/@aws-cdk/cx-api/lib';
 
@@ -338,10 +339,7 @@ export const DEFAULT_SYNTH_OPTIONS = {
       ],
     },
     // Enable feature flags for all integ tests
-    '@aws-cdk/aws-ecr-assets:dockerIgnoreSupport': true,
-    '@aws-cdk/aws-kms:defaultKeyPolicies': true,
-    '@aws-cdk/core:enableStackNameDuplicates': true,
-    '@aws-cdk/aws-secretsmanager:parseOwnedSecretName': true,
+    ...FUTURE_FLAGS,
   },
   env: {
     CDK_INTEG_ACCOUNT: '12345678',
