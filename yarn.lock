@@ -1661,10 +1661,10 @@
   resolved "https://registry.yarnpkg.com/@types/node/-/node-14.14.28.tgz#cade4b64f8438f588951a6b35843ce536853f25b"
   integrity sha512-lg55ArB+ZiHHbBBttLpzD07akz0QPrZgUODNakeC09i62dnrywr9mFErHuaPlB6I7z+sEbK+IYmplahvplCj2g==
 
-"@types/node@^10.17.53":
-  version "10.17.53"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-10.17.53.tgz#95953f6eaf7e7002ee91762ade945484a4674aac"
-  integrity sha512-q1igVlMUU+10kzjxNlcLDH7gekuvFK1nevnp7MAyc6sqvK5siWSS37EuvKX9fM8d49SBcoP0iP9tqVHmdAjNhQ==
+"@types/node@^10.17.54":
+  version "10.17.54"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-10.17.54.tgz#a737488631aca3ec7bd9f6229d77f1079e444793"
+  integrity sha512-c8Lm7+hXdSPmWH4B9z/P/xIXhFK3mCQin4yCYMd2p1qpMG5AfgyJuYZ+3q2dT7qLiMMMGMd5dnkFpdqJARlvtQ==
 
 "@types/nodeunit@^0.0.31":
   version "0.0.31"
@@ -2271,10 +2271,10 @@ aws-sdk-mock@^5.1.0:
     sinon "^9.0.1"
     traverse "^0.6.6"
 
-aws-sdk@^2.637.0, aws-sdk@^2.847.0:
-  version "2.847.0"
-  resolved "https://registry.yarnpkg.com/aws-sdk/-/aws-sdk-2.847.0.tgz#099a1087ca6ad5f9a059bf6fbcf9d4dddbd996d1"
-  integrity sha512-1iWlJiMoiFJVIVPrnUZ+E3h9YqmzgLn/Etv2XsupQY4QvFHWnZHEGXsWS2bEkC9+Ovg8TTwAQIRvqYWlKQjkVg==
+aws-sdk@^2.637.0, aws-sdk@^2.848.0:
+  version "2.848.0"
+  resolved "https://registry.yarnpkg.com/aws-sdk/-/aws-sdk-2.848.0.tgz#5e7706ddd30a55a2d5a5b64c29682a757607ee64"
+  integrity sha512-c/e5kaEFl+9aYkrYDkmu5mSZlL+EfP6DnBOMD06fH12gIsaFSMBGtbsDTHABhvSu++LxeI1dJAD148O17MuZvg==
   dependencies:
     buffer "4.9.2"
     events "1.1.1"
@@ -3870,10 +3870,10 @@ es6-promisify@^5.0.0:
   dependencies:
     es6-promise "^4.0.3"
 
-esbuild@^0.8.48:
-  version "0.8.48"
-  resolved "https://registry.yarnpkg.com/esbuild/-/esbuild-0.8.48.tgz#a57e4dde84ec56da1c6ecaefee97e9da6c5b00b5"
-  integrity sha512-lrH8lA8wWQ6Lpe1z6C7ZZaFSmRsUlcQAqe16nf7ITySQ7MV4+vI7qAqQlT/u+c3+9AL3VXmT4MXTxV2e63pO4A==
+esbuild@^0.8.49:
+  version "0.8.49"
+  resolved "https://registry.yarnpkg.com/esbuild/-/esbuild-0.8.49.tgz#3d33f71b3966611f822cf4c838115f3fbd16def2"
+  integrity sha512-itiFVYv5UZz4NooO7/Y0bRGVDGz/M/cxKbl6zyNI5pnKaz1mZjvZXAFhhDVz6rGCmcdTKj5oag6rh8DaaSSmfQ==
 
 escalade@^3.1.1:
   version "3.1.1"

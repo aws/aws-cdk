@@ -302,6 +302,12 @@ export interface RdsDataSourceProps extends BackedDataSourceProps {
    * The secret containing the credentials for the database
    */
   readonly secretStore: ISecret;
+  /**
+   * The name of the database to use within the cluster
+   *
+   * @default - None
+   */
+  readonly databaseName?: string;
 }
 
 /**
@@ -323,6 +329,7 @@ export class RdsDataSource extends BackedDataSource {
             },
           }),
           awsSecretStoreArn: props.secretStore.secretArn,
+          databaseName: props.databaseName,
         },
         relationalDatabaseSourceType: 'RDS_HTTP_ENDPOINT',
       },
