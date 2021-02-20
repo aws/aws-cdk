@@ -1,3 +1,83 @@
+# CloudFormation Resource Specification v28.0.0
+
+## New Resource Types
+
+* AWS::CloudFormation::ResourceDefaultVersion
+* AWS::CloudFormation::ResourceVersion
+* AWS::EC2::TransitGatewayMulticastDomain
+* AWS::EC2::TransitGatewayMulticastDomainAssociation
+* AWS::EC2::TransitGatewayMulticastGroupMember
+* AWS::EC2::TransitGatewayMulticastGroupSource
+* AWS::SageMaker::App
+* AWS::SageMaker::AppImageConfig
+* AWS::SageMaker::Domain
+* AWS::SageMaker::UserProfile
+* AWS::ServiceCatalog::ServiceAction
+* AWS::ServiceCatalog::ServiceActionAssociation
+
+## Attribute Changes
+
+* AWS::ApiGateway::ApiKey APIKeyId (__added__)
+
+## Property Changes
+
+* AWS::DMS::Endpoint DocDbSettings (__added__)
+* AWS::DMS::Endpoint IbmDb2Settings (__added__)
+* AWS::DMS::Endpoint MicrosoftSqlServerSettings (__added__)
+* AWS::DMS::Endpoint MySqlSettings (__added__)
+* AWS::DMS::Endpoint OracleSettings (__added__)
+* AWS::DMS::Endpoint PostgreSqlSettings (__added__)
+* AWS::DMS::Endpoint RedshiftSettings (__added__)
+* AWS::DMS::Endpoint SybaseSettings (__added__)
+* AWS::ECS::Cluster Configuration (__deleted__)
+* AWS::ECS::Service EnableExecuteCommand (__deleted__)
+* AWS::ManagedBlockchain::Node MemberId.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::MediaLive::Channel Vpc (__added__)
+
+## Property Type Changes
+
+* AWS::ECS::Cluster.ClusterConfiguration (__removed__)
+* AWS::ECS::Cluster.ExecuteCommandConfiguration (__removed__)
+* AWS::ECS::Cluster.ExecuteCommandLogConfiguration (__removed__)
+* AWS::AppMesh::VirtualGateway.SubjectAlternativeNameMatchers (__added__)
+* AWS::AppMesh::VirtualGateway.SubjectAlternativeNames (__added__)
+* AWS::AppMesh::VirtualGateway.VirtualGatewayClientTlsCertificate (__added__)
+* AWS::AppMesh::VirtualGateway.VirtualGatewayListenerTlsSdsCertificate (__added__)
+* AWS::AppMesh::VirtualGateway.VirtualGatewayListenerTlsValidationContext (__added__)
+* AWS::AppMesh::VirtualGateway.VirtualGatewayListenerTlsValidationContextTrust (__added__)
+* AWS::AppMesh::VirtualGateway.VirtualGatewayTlsValidationContextSdsTrust (__added__)
+* AWS::AppMesh::VirtualNode.ClientTlsCertificate (__added__)
+* AWS::AppMesh::VirtualNode.ListenerTlsSdsCertificate (__added__)
+* AWS::AppMesh::VirtualNode.ListenerTlsValidationContext (__added__)
+* AWS::AppMesh::VirtualNode.ListenerTlsValidationContextTrust (__added__)
+* AWS::AppMesh::VirtualNode.SubjectAlternativeNameMatchers (__added__)
+* AWS::AppMesh::VirtualNode.SubjectAlternativeNames (__added__)
+* AWS::AppMesh::VirtualNode.TlsValidationContextSdsTrust (__added__)
+* AWS::DMS::Endpoint.DocDbSettings (__added__)
+* AWS::DMS::Endpoint.IbmDb2Settings (__added__)
+* AWS::DMS::Endpoint.MicrosoftSqlServerSettings (__added__)
+* AWS::DMS::Endpoint.MySqlSettings (__added__)
+* AWS::DMS::Endpoint.OracleSettings (__added__)
+* AWS::DMS::Endpoint.PostgreSqlSettings (__added__)
+* AWS::DMS::Endpoint.RedshiftSettings (__added__)
+* AWS::DMS::Endpoint.SybaseSettings (__added__)
+* AWS::MediaLive::Channel.VpcOutputSettings (__added__)
+* AWS::AppMesh::VirtualGateway.VirtualGatewayClientPolicyTls Certificate (__added__)
+* AWS::AppMesh::VirtualGateway.VirtualGatewayListenerTls Validation (__added__)
+* AWS::AppMesh::VirtualGateway.VirtualGatewayListenerTlsCertificate SDS (__added__)
+* AWS::AppMesh::VirtualGateway.VirtualGatewayTlsValidationContext SubjectAlternativeNames (__added__)
+* AWS::AppMesh::VirtualGateway.VirtualGatewayTlsValidationContextTrust SDS (__added__)
+* AWS::AppMesh::VirtualNode.ClientPolicyTls Certificate (__added__)
+* AWS::AppMesh::VirtualNode.ListenerTls Validation (__added__)
+* AWS::AppMesh::VirtualNode.ListenerTlsCertificate SDS (__added__)
+* AWS::AppMesh::VirtualNode.TlsValidationContext SubjectAlternativeNames (__added__)
+* AWS::AppMesh::VirtualNode.TlsValidationContextTrust SDS (__added__)
+* AWS::DMS::Endpoint.MongoDbSettings SecretsManagerAccessRoleArn (__added__)
+* AWS::DMS::Endpoint.MongoDbSettings SecretsManagerSecretId (__added__)
+
+
 # CloudFormation Resource Specification v27.0.0
 
 ## New Resource Types
