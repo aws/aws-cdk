@@ -78,7 +78,7 @@ export class NotificationsResourceHandler extends Construct {
     const resource = new lambda.Function(this, 'Resource', {
       code: code,
       description: 'AWS CloudFormation handler for "Custom::S3BucketNotifications" resources (@aws-cdk/aws-s3)',
-      handler: 'index.handler',
+      handler: 'notification.index.handler',
       runtime: lambda.Runtime.PYTHON_3_8,
       timeout: cdk.Duration.minutes(5),
       role: role
