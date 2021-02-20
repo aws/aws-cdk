@@ -102,7 +102,7 @@ export const S3_GRANT_WRITE_WITHOUT_ACL = '@aws-cdk/aws-s3:grantWriteWithoutAcl'
  *
  * Tests must cover the default (disabled) case and the future (enabled) case.
  */
-export const FUTURE_FLAGS = {
+export const FUTURE_FLAGS: { [key: string]: any } = {
   [ENABLE_STACK_NAME_DUPLICATES_CONTEXT]: 'true',
   [ENABLE_DIFF_NO_FAIL_CONTEXT]: 'true',
   [STACK_RELATIVE_EXPORTS_CONTEXT]: 'true',
