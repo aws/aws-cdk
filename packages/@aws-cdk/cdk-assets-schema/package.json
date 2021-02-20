@@ -1,6 +1,7 @@
 {
   "name": "@aws-cdk/cdk-assets-schema",
   "version": "0.0.0",
+  "private": true,
   "description": "Schema definition for the Asset Manifest",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",

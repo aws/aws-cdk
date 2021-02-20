@@ -1,6 +1,7 @@
 {
   "name": "@aws-cdk/aws-sso",
   "version": "0.0.0",
+  "private": true,
   "description": "The CDK Construct Library for AWS::SSO",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -79,10 +80,12 @@
     "pkglint": "0.0.0"
   },
   "dependencies": {
-    "@aws-cdk/core": "0.0.0"
+    "@aws-cdk/core": "0.0.0",
+    "constructs": "10.0.0-pre.5"
   },
   "peerDependencies": {
-    "@aws-cdk/core": "0.0.0"
+    "@aws-cdk/core": "0.0.0",
+    "constructs": "10.0.0-pre.5"
   },
   "engines": {
     "node": ">= 10.13.0 <13 || >=13.7.0"
