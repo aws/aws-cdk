@@ -195,7 +195,7 @@ bucket.addEventNotification(s3.EventType.OBJECT_REMOVED,
   { prefix: 'foo/', suffix: '.jpg' });
 ```
 
-There is also support for adding bucket notifications to existing buckets.
+Adding notifications on existing buckets:
 
 ```ts
 const bucket = Bucket.fromBucketAttributes(this, 'ImportedBucket', {

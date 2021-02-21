@@ -1,7 +1,7 @@
 import * as path from 'path';
+import * as fs from 'fs';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
-import * as lambda from '@aws-cdk/aws-lambda';
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
 // eslint-disable-next-line no-duplicate-imports, import/order
@@ -36,12 +36,12 @@ export class NotificationsResourceHandler extends Construct {
 
     // well-known logical id to ensure stack singletonity
     const logicalId = 'BucketNotificationsHandler050a0587b7544547bf325f094a3db834';
-    let lambdaNotificationsResourceHandler = root.node.tryFindChild(logicalId) as NotificationsResourceHandler;
-    if (!lambdaNotificationsResourceHandler) {
-      lambdaNotificationsResourceHandler = new NotificationsResourceHandler(root, logicalId);
+    let lambda = root.node.tryFindChild(logicalId) as NotificationsResourceHandler;
+    if (!lambda) {
+      lambda = new NotificationsResourceHandler(root, logicalId);
     }
 
-    return lambdaNotificationsResourceHandler.functionArn;
+    return lambda.functionArn;
   }
 
   /**
@@ -66,26 +66,31 @@ export class NotificationsResourceHandler extends Construct {
       resources: ['*'],
     }));
 
-    // Shared codebase for the lambdas.
-    const code = lambda.Code.fromAsset(path.join(__dirname, 'lambda-source'), {
-      exclude: [
-        '.coverage',
-        '*.pyc',
-        '.idea',
-      ],
-    });
+    const resourceType = 'AWS::Lambda::Function';
+    class InLineLambda extends cdk.CfnResource {
+      public readonly tags: cdk.TagManager = new cdk.TagManager(cdk.TagType.STANDARD, resourceType);
 
-    const resource = new lambda.Function(this, 'Resource', {
-      code: code,
-      description: 'AWS CloudFormation handler for "Custom::S3BucketNotifications" resources (@aws-cdk/aws-s3)',
-      handler: 'notification.index.handler',
-      runtime: lambda.Runtime.PYTHON_3_8,
-      timeout: cdk.Duration.minutes(5),
-      role: role
+      protected renderProperties(properties: any): { [key: string]: any } {
+        properties.Tags = cdk.listMapper(
+          cdk.cfnTagToCloudFormation)(this.tags.renderTags());
+        delete properties.tags;
+        return properties;
+      }
+    }
+    const resource = new InLineLambda(this, 'Resource', {
+      type: resourceType,
+      properties: {
+        Description: 'AWS CloudFormation handler for "Custom::S3BucketNotifications" resources (@aws-cdk/aws-s3)',
+        Code: { ZipFile: fs.readFileSync(path.join(__dirname, 'lambda-source/src/index.py'), 'utf8') },
+        Handler: 'index.handler',
+        Role: role.roleArn,
+        Runtime: 'nodejs10.x',
+        Timeout: 300,
+      },
     });
 
     resource.node.addDependency(role);
 
-    this.functionArn = resource.functionArn;
+    this.functionArn = resource.getAtt('Arn').toString();
   }
 }

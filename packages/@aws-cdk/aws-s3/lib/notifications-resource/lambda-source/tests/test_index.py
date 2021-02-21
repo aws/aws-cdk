@@ -2,9 +2,29 @@ import json
 import unittest
 import uuid
 from unittest.mock import patch
-
 import boto3
 from moto.s3 import mock_s3
+
+bucket_name = "fake_bucket"
+success_event = {
+    "StackId": "StackId",
+    "RequestId": "RequestId",
+    "LogicalResourceId": "LogicalResourceId",
+    "ResponseURL": "https://dummy.com/",
+    "RequestType": "Create",
+    "ResourceProperties": {
+        "BucketName": bucket_name,
+        "NotificationConfiguration": {
+            "QueueConfigurations": [
+                {
+                    "Id": "my-function-hash",
+                    "Events": ["s3:ObjectCreated:*"],
+                    "QueueArn": "arn:aws:sqs:us-east-1:444455556666:new-queue",
+                }
+            ]
+        },
+    },
+}
 
 
 class MockContext(object):
@@ -16,10 +36,19 @@ class MockContext(object):
 
 
 class LambdaTest(unittest.TestCase):
+    def test_empty_ids(self):
+        from src import index
+        ids = index.ids([{}])
+        self.assertEqual([], ids)
+
+    def test_empty_extract_ids(self):
+        from src import index
+        ids = index.ids([{"Id": "x"}, {}])
+        self.assertEqual(["x"], ids)
+
     @patch("urllib.request.urlopen")
     @mock_s3
     def test_append_to_existing(self, mock_call):
-        bucket_name = "fake_bucket"
         s3_client = boto3.client("s3", region_name="us-east-1")
         s3_client.create_bucket(Bucket=bucket_name)
         s3_client.put_bucket_notification_configuration(
@@ -77,35 +106,16 @@ class LambdaTest(unittest.TestCase):
         )
         s3_client.get_bucket_notification_configuration(Bucket=bucket_name)
 
-        event = {
-            "StackId": "StackId",
-            "RequestId": "RequestId",
-            "LogicalResourceId": "LogicalResourceId",
-            "ResponseURL": "https://dummy.com/",
-            "RequestType": "Create",
-            "ResourceProperties": {
-                "BucketName": bucket_name,
-                "NotificationConfiguration": {
-                    "QueueConfigurations": [
-                        {
-                            "Id": "my-function-hash",
-                            "Events": ["s3:ObjectCreated:*"],
-                            "QueueArn": "arn:aws:sqs:us-east-1:444455556666:new-queue",
-                        }
-                    ]
-                },
-            },
-        }
-        from notification import index
+        from src import index
+        index.handler(success_event, MockContext())
 
-        index.handler(event, MockContext())
+        print(mock_call)
+        print(type(mock_call))
 
-        queue_configuration_list: list = (
-            s3_client.get_bucket_notification_configuration(Bucket=bucket_name)[
-                "QueueConfigurations"
-            ]
-        )
-        # print(json.dumps(queue_configuration_list, indent=4))
+        config = s3_client.get_bucket_notification_configuration(Bucket=bucket_name)
+        queue_configuration_list = config["QueueConfigurations"]
+
+        print(json.dumps(queue_configuration_list, indent=4))
 
         self.assertEqual(2, len(queue_configuration_list))
         self.assertEqual("my-function-hash", queue_configuration_list[1]["Id"])
