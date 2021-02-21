@@ -98,7 +98,8 @@ export interface ProviderProps {
    *
    * Only used if 'vpc' is supplied
    *
-   * @default - Function are not attached with any security group.
+   * @default - If `vpc` is not supplied, no security groups are attached. Otherwise, a dedicated security
+   * group is created for each function.
    */
   readonly securityGroups?: ec2.ISecurityGroup[];
 
