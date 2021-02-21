@@ -28,6 +28,29 @@ classified into Lambda Authorizers, JWT authorizers and standard AWS IAM roles a
 available at [Controlling and managing access to an HTTP
 API](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-access-control.html).
 
+Authorizers, and scopes can either be applied to the Gateway (applied to all routes) or specifically for each route.
+
+The example below applies the authorizer to all routes.
+
+```ts
+const authorizer = new HttpJwtAuthorizer({
+  jwtAudience: ['3131231'],
+  jwtIssuer: 'https://test.us.auth0.com',
+});
+
+const api = new HttpApi(stack, 'HttpApi', {
+  defaultAuthorizer: authorizer,
+  defaultAuthorizationScopes: ['read:books']
+});
+
+api.addRoutes({
+  integration: new HttpProxyIntegration({
+    url: 'https://get-books-proxy.myproxy.internal',
+  }),
+  path: '/books', // This route will inherit the authorizer and scopes from the gateway
+});
+```
+
 ## JWT Authorizers
 
 JWT authorizers allow the use of JSON Web Tokens (JWTs) as part of [OpenID Connect](https://openid.net/specs/openid-connect-core-1_0.html) and [OAuth 2.0](https://oauth.net/2/) frameworks to allow and restrict clients from accessing HTTP APIs.
