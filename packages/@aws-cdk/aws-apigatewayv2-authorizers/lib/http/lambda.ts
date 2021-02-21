@@ -66,6 +66,9 @@ export class HttpLambdaAuthorizer implements IHttpRouteAuthorizer {
   private authorizer?: HttpAuthorizer;
 
   constructor(private readonly props: HttpLambdaAuthorizerProps) {
+    if (props.type === HttpRouteAuthorizerType.SIMPLE && props.payloadFormatVersion === AuthorizerPayloadFormatVersion.VERSION_1_0) {
+      throw new Error('The simple authorizer type can only be used with payloadFormatVersion 2.0');
+    }
   }
 
   public bind(options: HttpRouteAuthorizerBindOptions): HttpRouteAuthorizerConfig {

@@ -121,7 +121,7 @@ describe('HttpLambdaAuthorizer', () => {
     });
 
     const authorizer = new HttpLambdaAuthorizer({
-      type: HttpRouteAuthorizerType.SIMPLE,
+      type: HttpRouteAuthorizerType.AWS_IAM,
       handler,
       payloadFormatVersion: AuthorizerPayloadFormatVersion.VERSION_1_0,
     });
@@ -137,6 +137,23 @@ describe('HttpLambdaAuthorizer', () => {
     expect(stack).toHaveResource('AWS::ApiGatewayV2::Authorizer', {
       AuthorizerPayloadFormatVersion: '1.0',
     });
+  });
+
+  test('should throw error when using 1.0 with simple responses', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    const handler = new Function(stack, 'auth-functon', {
+      runtime: Runtime.NODEJS_12_X,
+      code: Code.fromInline('exports.handler = () => {return true}'),
+      handler: 'index.handler',
+    });
+
+    expect(() => new HttpLambdaAuthorizer({
+      type: HttpRouteAuthorizerType.SIMPLE,
+      handler,
+      payloadFormatVersion: AuthorizerPayloadFormatVersion.VERSION_1_0,
+    })).toThrow('The simple authorizer type can only be used with payloadFormatVersion 2.0');
   });
 });
 
