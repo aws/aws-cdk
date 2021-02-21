@@ -13,7 +13,7 @@ import { Token, Stack, Duration } from '@aws-cdk/core';
 /**
  * Specifies the type of lambda authorizer
  */
-type HttpLambdaAuthorizerType = HttpRouteAuthorizerType.AWS_IAM | HttpRouteAuthorizerType.SIMPLE
+type HttpLambdaAuthorizerType = HttpRouteAuthorizerType.SIMPLE | HttpRouteAuthorizerType.AWS_IAM
 
 /**
  * Properties to initialize HttpTokenAuthorizer.
@@ -78,10 +78,10 @@ export class HttpLambdaAuthorizer implements IHttpRouteAuthorizer {
         identitySource: this.props.identitySource ?? [],
         type: HttpAuthorizerType.LAMBDA,
         authorizerName: this.props.authorizerName,
-        enableSimpleResponses: true,
-        payloadFormatVersion: this.props.payloadFormatVersion || AuthorizerPayloadFormatVersion.VERSION_2_0,
+        enableSimpleResponses: this.props.type === HttpRouteAuthorizerType.SIMPLE,
+        payloadFormatVersion: this.props.payloadFormatVersion ?? AuthorizerPayloadFormatVersion.VERSION_2_0,
         authorizerUri: lambdaAuthorizerArn(this.props.handler),
-        resultsCacheTtl: this.props.resultsCacheTtl || Duration.minutes(5),
+        resultsCacheTtl: this.props.resultsCacheTtl ?? Duration.minutes(5),
       });
     }
 
