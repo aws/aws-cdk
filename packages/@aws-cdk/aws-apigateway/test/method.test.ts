@@ -67,7 +67,7 @@ describe('method', () => {
     new apigw.Method(stack, 'my-method', {
       httpMethod: 'POST',
       resource: api.root,
-      integration: new apigw.AwsIntegration({ service: 's3', path: 'bucket/key' }),
+      integration: new apigw.AwsIntegration({ service: 's3', path: 'bucket/key', region: 'eu-west-1' }),
     });
 
     // THEN
@@ -79,8 +79,7 @@ describe('method', () => {
           'Fn::Join': [
             '',
             [
-              'arn:', { Ref: 'AWS::Partition' }, ':apigateway:',
-              { Ref: 'AWS::Region' }, ':s3:path/bucket/key',
+              'arn:', { Ref: 'AWS::Partition' }, ':apigateway:eu-west-1:s3:path/bucket/key',
             ],
           ],
         },
