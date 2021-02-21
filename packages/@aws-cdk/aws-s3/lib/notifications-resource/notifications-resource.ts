@@ -2,6 +2,7 @@ import * as cdk from '@aws-cdk/core';
 import { BucketBase, EventType, NotificationKeyFilter } from '../bucket';
 import { BucketNotificationDestinationType, IBucketNotificationDestination } from '../destination';
 import { NotificationsResourceHandler } from './notifications-resource-handler';
+import * as crypto from "crypto";
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
 // eslint-disable-next-line no-duplicate-imports, import/order
@@ -58,9 +59,9 @@ export class BucketNotifications extends Construct {
     // resolve target. this also provides an opportunity for the target to e.g. update
     // policies to allow this notification to happen.
     const targetProps = target.bind(this, this.bucket);
+    const hashOfTarget = crypto.createHash('md5').update(targetProps.arn).digest('hex');
     const commonConfig: CommonConfiguration = {
-      // NOTE - We could create a hash of the (arn + target + filters)
-      // Id: targetProps.arn,
+      Id: hashOfTarget,
       Events: [event],
       Filter: renderFilters(filters),
     };

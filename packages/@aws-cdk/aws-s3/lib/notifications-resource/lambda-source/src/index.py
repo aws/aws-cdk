@@ -9,7 +9,8 @@ def handler(event: dict, context):
         props = event["ResourceProperties"]
         bucket = props["BucketName"]
         in_config = props["NotificationConfiguration"]
-        config = prepare_config(s3.get_bucket_notification_configuration(Bucket=bucket), in_config)
+        old_config = event.get("OldResourceProperties", {}).get("NotificationConfiguration")
+        config = prepare_config(s3.get_bucket_notification_configuration(Bucket=bucket), in_config, old_config)
         if event["RequestType"] != "Delete":
             config = merge_in_config(config, in_config)
         s3.put_bucket_notification_configuration(Bucket=bucket, NotificationConfiguration=config)
@@ -20,21 +21,30 @@ def handler(event: dict, context):
     submit_response(event, context, response_status)
 
 
-def prepare_config(config: dict, in_config: dict) -> dict:
+def prepare_config(config: dict, in_config: dict, old_config: dict) -> dict:
     if "ResponseMetadata" in config:
         del config["ResponseMetadata"]
-    filter_config(config, "TopicConfigurations", in_config)
-    filter_config(config, "QueueConfigurations", in_config)
-    filter_config(config, "LambdaFunctionConfigurations", in_config)
+    filter_config(config, "TopicConfigurations", in_config, old_config)
+    filter_config(config, "QueueConfigurations", in_config, old_config)
+    filter_config(config, "LambdaFunctionConfigurations", in_config, old_config)
     return config
 
 
-def filter_config(config: dict, config_type: str, in_config: dict):
+def filter_config(config: dict, config_type: str, in_config: dict, old_config: dict):
     in_config.setdefault(config_type, [])
     if config_type not in config:
         return
+    # Filter out new incoming
     configs, in_ids = config[config_type], ids(in_config[config_type])
     config[config_type] = [item for item in configs if item["Id"] not in in_ids]
+    if old_config is None:
+        return
+    old_configs = old_config.get(config_type)
+    if old_configs is None:
+        return
+    # Filter out old configs
+    old_ids = ids(old_configs)
+    config[config_type] = [item for item in configs if item["Id"] not in old_ids]
 
 
 def ids(in_configs: list) -> List[str]:
