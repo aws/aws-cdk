@@ -145,6 +145,20 @@ export interface HttpApiProps {
    * @default false execute-api endpoint enabled.
    */
   readonly disableExecuteApiEndpoint?: boolean;
+
+  /**
+   * Default Authorizer to applied to all routes in the gateway
+   *
+   * @default - No authorizer
+   */
+  readonly defaultAuthorizer?: IHttpRouteAuthorizer;
+
+  /**
+   * Default OIDC scopes attached to all routes in the gateway
+   *
+   * @default - no additional authorization scopes
+   */
+  readonly defaultAuthorizationScopes?: string[];
 }
 
 /**
@@ -205,15 +219,20 @@ export interface AddRoutesOptions extends BatchHttpRouteOptions {
 
   /**
    * Authorizer to be associated to these routes.
-   * @default - No authorizer
+   *
+   * Set to 'NONE' to remove the default authorizer for the api
+   *
+   * @default - No authorizer once no default one set on the gateway
    */
-  readonly authorizer?: IHttpRouteAuthorizer;
+  readonly authorizer?: IHttpRouteAuthorizer | 'NONE';
 
   /**
    * The list of OIDC scopes to include in the authorization.
    *
-   * These scopes will be merged with the scopes from the attached authorizer
-   * @default - no additional authorization scopes
+   * These scopes will be merged with the default authorization scopes on the gateway.
+   * Set to [] to remove default scopes
+   *
+   * @default - no additional authorization scopes once no default ones set on the gateway.
    */
   readonly authorizationScopes?: string[];
 }
@@ -353,6 +372,9 @@ export class HttpApi extends HttpApiBase {
 
   private readonly _apiEndpoint: string;
 
+  private readonly authorizer?: IHttpRouteAuthorizer;
+  private readonly authorizationScopes?: string[];
+
   constructor(scope: Construct, id: string, props?: HttpApiProps) {
     super(scope, id);
 
@@ -394,6 +416,8 @@ export class HttpApi extends HttpApiBase {
     const resource = new CfnApi(this, 'Resource', apiProps);
     this.httpApiId = resource.ref;
     this._apiEndpoint = resource.attrApiEndpoint;
+    this.authorizer = props?.defaultAuthorizer;
+    this.authorizationScopes = props?.defaultAuthorizationScopes;
 
     if (props?.defaultIntegration) {
       new HttpRoute(this, 'DefaultRoute', {
@@ -457,12 +481,52 @@ export class HttpApi extends HttpApiBase {
    */
   public addRoutes(options: AddRoutesOptions): HttpRoute[] {
     const methods = options.methods ?? [HttpMethod.ANY];
-    return methods.map((method) => new HttpRoute(this, `${method}${options.path}`, {
-      httpApi: this,
-      routeKey: HttpRouteKey.with(options.path, method),
-      integration: options.integration,
-      authorizer: options.authorizer,
-      authorizationScopes: options.authorizationScopes,
-    }));
+    return methods.map((method) => {
+      let authorizer = this.authorizer;
+      let authorizationScopes = this.authorizationScopes;
+
+      const hasDefaultScopes = isNonEmptyArray(this.authorizationScopes);
+      const hasScopes = isNonEmptyArray(options.authorizationScopes);
+
+      /**
+       * 1. Remove default authorizer if route has opted to remove
+       * 2. Add route specified authorizer
+       */
+      if (options.authorizer === 'NONE') {
+        authorizer = undefined;
+      } else if (typeof options.authorizer !== 'undefined') {
+        authorizer = options.authorizer;
+      }
+
+      if (hasScopes) {
+        authorizationScopes = options.authorizationScopes;
+      }
+
+      // Merge scopes if route has some set
+      if (hasDefaultScopes) {
+        authorizationScopes = Array.from(new Set([
+          ...this.authorizationScopes ?? [],
+          ...options.authorizationScopes ?? [],
+        ]));
+      }
+
+      // Remove default scopes if route has it set to []
+      if (options.authorizationScopes?.length === 0) {
+        authorizationScopes = undefined;
+      }
+
+
+      return new HttpRoute(this, `${method}${options.path}`, {
+        httpApi: this,
+        routeKey: HttpRouteKey.with(options.path, method),
+        integration: options.integration,
+        authorizer,
+        authorizationScopes,
+      });
+    });
   }
 }
+
+const isNonEmptyArray = (args: any) => {
+  return Array.isArray(args) && args.length > 0;
+};
