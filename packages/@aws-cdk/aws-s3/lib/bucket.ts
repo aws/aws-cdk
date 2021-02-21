@@ -1318,8 +1318,6 @@ export class Bucket extends BucketBase {
   private readonly metrics: BucketMetrics[] = [];
   private readonly cors: CorsRule[] = [];
   private readonly inventories: Inventory[] = [];
-  private readonly enforceSSL?: boolean;
-  private readonly blockPublicAccess: BlockPublicAccess | undefined;
 
   constructor(scope: Construct, id: string, props: BucketProps = {}) {
     super(scope, id, {
@@ -1329,8 +1327,6 @@ export class Bucket extends BucketBase {
     const { bucketEncryption, encryptionKey } = this.parseEncryption(props);
 
     this.validateBucketName(this.physicalName);
-    this.blockPublicAccess = props.blockPublicAccess;
-    this.enforceSSL = props.enforceSSL;
 
     const websiteConfiguration = this.renderWebsiteConfiguration(props);
     this.isWebsite = (websiteConfiguration !== undefined);
@@ -1369,11 +1365,11 @@ export class Bucket extends BucketBase {
     this.bucketDualStackDomainName = resource.attrDualStackDomainName;
     this.bucketRegionalDomainName = resource.attrRegionalDomainName;
 
-    this.disallowPublicAccess = this.blockPublicAccess && this.blockPublicAccess.blockPublicPolicy;
+    this.disallowPublicAccess = props.blockPublicAccess && props.blockPublicAccess.blockPublicPolicy;
     this.accessControl = props.accessControl;
 
     // Enforce AWS Foundational Security Best Practice
-    if (this.enforceSSL) {
+    if (props.enforceSSL) {
       this.enforceSSLStatement();
     }
 
