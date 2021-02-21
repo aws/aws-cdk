@@ -94,7 +94,7 @@ export interface ProviderProps {
   readonly vpcSubnets?: ec2.SubnetSelection;
 
   /**
-   * Security groups to attach to the handler functions.
+   * Security groups to attach to the provider functions.
    *
    * Only used if 'vpc' is supplied
    *
