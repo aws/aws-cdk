@@ -1,3 +1,4 @@
+import * as ec2 from '@aws-cdk/aws-ec2';
 import { FargatePlatformVersion, FargateService, FargateTaskDefinition } from '@aws-cdk/aws-ecs';
 import { Construct } from 'constructs';
 import { QueueProcessingServiceBase, QueueProcessingServiceBaseProps } from '../base/queue-processing-service-base';
@@ -66,6 +67,29 @@ export interface QueueProcessingFargateServiceProps extends QueueProcessingServi
    * @default - QueueProcessingContainer
    */
   readonly containerName?: string;
+
+  /**
+   * The subnets to associate with the service.
+   *
+   * @default - Public subnets if `assignPublicIp` is set, otherwise the first available one of Private, Isolated, Public, in that order.
+   */
+  readonly taskSubnets?: ec2.SubnetSelection;
+
+  /**
+   * The security groups to associate with the service. If you do not specify a security group, the default security group for the VPC is used.
+   *
+   * @default - A new security group is created.
+   */
+  readonly securityGroups?: ec2.ISecurityGroup[];
+
+  /**
+   * Specifies whether the task's elastic network interface receives a public IP address.
+   *
+   * If true, each task will receive a public IP address.
+   *
+   * @default false
+   */
+  readonly assignPublicIp?: boolean;
 }
 
 /**
@@ -117,6 +141,9 @@ export class QueueProcessingFargateService extends QueueProcessingServiceBase {
       enableECSManagedTags: props.enableECSManagedTags,
       platformVersion: props.platformVersion,
       deploymentController: props.deploymentController,
+      securityGroups: props.securityGroups,
+      vpcSubnets: props.taskSubnets,
+      assignPublicIp: props.assignPublicIp,
     });
     this.configureAutoscalingForService(this.service);
     this.grantPermissionsToService(this.service);
