@@ -450,10 +450,8 @@ new lambda.Function(this, 'Function', {
     bundling: {
       image: lambda.Runtime.PYTHON_3_6.bundlingDockerImage,
       command: [
-        'bash', '-c', `
-        pip install -r requirements.txt -t /asset-output &&
-        cp -au . /asset-output
-        `,
+        'bash', '-c', 
+        'pip install -r requirements.txt -t /asset-output && cp -au . /asset-output'
       ],
     },
   }),

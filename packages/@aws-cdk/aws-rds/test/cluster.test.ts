@@ -5,13 +5,13 @@ import * as kms from '@aws-cdk/aws-kms';
 import * as logs from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
-import { Test } from 'nodeunit';
+import { nodeunitShim, Test } from 'nodeunit-shim';
 import {
   AuroraEngineVersion, AuroraMysqlEngineVersion, AuroraPostgresEngineVersion, CfnDBCluster, Credentials, DatabaseCluster,
   DatabaseClusterEngine, DatabaseClusterFromSnapshot, ParameterGroup, PerformanceInsightRetention, SubnetGroup,
 } from '../lib';
 
-export = {
+nodeunitShim({
   'creating a Cluster also creates 2 DB Instances'(test: Test) {
     // GIVEN
     const stack = testStack();
@@ -1838,7 +1838,7 @@ export = {
 
     test.done();
   },
-};
+});
 
 function testStack() {
   const stack = new cdk.Stack(undefined, undefined, { env: { account: '12345', region: 'us-test-1' } });
