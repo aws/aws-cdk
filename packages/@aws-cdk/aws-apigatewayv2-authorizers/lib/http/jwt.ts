@@ -3,6 +3,7 @@ import {
   HttpAuthorizerType,
   HttpRouteAuthorizerBindOptions,
   HttpRouteAuthorizerConfig,
+  HttpRouteAuthorizerType,
   IHttpRouteAuthorizer,
 } from '@aws-cdk/aws-apigatewayv2';
 import { Token } from '@aws-cdk/core';
@@ -64,7 +65,7 @@ export class HttpJwtAuthorizer implements IHttpRouteAuthorizer {
 
     return {
       authorizerId: this.authorizer.authorizerId,
-      authorizationType: HttpAuthorizerType.JWT,
+      authorizationType: HttpRouteAuthorizerType.JWT,
     };
   }
 }

@@ -4,7 +4,8 @@ import { Metric } from '@aws-cdk/aws-cloudwatch';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import { Duration, Stack } from '@aws-cdk/core';
 import {
-  HttpApi, HttpAuthorizer, HttpAuthorizerType, HttpIntegrationType, HttpMethod, HttpRouteAuthorizerBindOptions, HttpRouteAuthorizerConfig,
+  HttpApi, HttpAuthorizer, HttpIntegrationType, HttpMethod, HttpRouteAuthorizerBindOptions, HttpRouteAuthorizerConfig,
+  HttpRouteAuthorizerType,
   HttpRouteIntegrationBindOptions, HttpRouteIntegrationConfig, IHttpRouteAuthorizer, IHttpRouteIntegration, PayloadFormatVersion,
 } from '../../lib';
 
@@ -307,7 +308,7 @@ describe('HttpApi', () => {
 
     const authorizer = HttpAuthorizer.fromHttpAuthorizerAttributes(stack, 'auth', {
       authorizerId: '12345',
-      authorizerType: HttpAuthorizerType.JWT,
+      authorizerType: HttpRouteAuthorizerType.JWT,
     });
 
     // WHEN
@@ -387,7 +388,7 @@ class DummyAuthorizer implements IHttpRouteAuthorizer {
   public bind(_: HttpRouteAuthorizerBindOptions): HttpRouteAuthorizerConfig {
     return {
       authorizerId: 'auth-1234',
-      authorizationType: HttpAuthorizerType.JWT,
+      authorizationType: HttpRouteAuthorizerType.JWT,
     };
   }
 }
