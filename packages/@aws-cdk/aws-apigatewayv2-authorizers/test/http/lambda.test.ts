@@ -35,6 +35,9 @@ describe('HttpLambdaAuthorizer', () => {
       AuthorizerResultTtlInSeconds: 300,
       AuthorizerPayloadFormatVersion: '2.0',
       EnableSimpleResponses: true,
+      IdentitySource: [
+        '$request.header.Authorization',
+      ],
     });
 
     expect(stack).toHaveResource('AWS::ApiGatewayV2::Route', {
@@ -72,6 +75,9 @@ describe('HttpLambdaAuthorizer', () => {
       AuthorizerResultTtlInSeconds: 300,
       AuthorizerPayloadFormatVersion: '2.0',
       EnableSimpleResponses: false,
+      IdentitySource: [
+        '$request.header.Authorization',
+      ],
     });
 
     expect(stack).toHaveResource('AWS::ApiGatewayV2::Route', {

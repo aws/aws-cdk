@@ -29,7 +29,7 @@ export interface HttpLambdaAuthorizerProps {
   /**
    * The identity source for which authorization is requested.
    *
-   * @default - No source
+   * @default ['$request.header.Authorization']
    */
   readonly identitySource?: string[];
 
@@ -78,7 +78,7 @@ export class HttpLambdaAuthorizer implements IHttpRouteAuthorizer {
 
       this.authorizer = new HttpAuthorizer(options.scope, id, {
         httpApi: options.route.httpApi,
-        identitySource: this.props.identitySource ?? [],
+        identitySource: this.props.identitySource ?? ['$request.header.Authorization'],
         type: HttpAuthorizerType.LAMBDA,
         authorizerName: this.props.authorizerName,
         enableSimpleResponses: this.props.type === HttpRouteAuthorizerType.SIMPLE,
