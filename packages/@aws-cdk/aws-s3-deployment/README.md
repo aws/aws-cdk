@@ -156,7 +156,7 @@ import * as origins from '@aws-cdk/aws-cloudfront-origins';
 
 const bucket = new s3.Bucket(this, 'Destination');
 
-// Option 1 (Experimental): Handles buckets whether or not they are configured for website hosting.
+// Option 1 (Stable): Handles buckets whether or not they are configured for website hosting.
 const distribution = new cloudfront.Distribution(this, 'Distribution', {
   defaultBehavior: { origin: new origins.S3Origin(bucket) },
 });
@@ -229,5 +229,4 @@ might be tricky to build on Windows.
 
 ## Roadmap
 
- - [ ] Support "progressive" mode (no `--delete`) ([#953](https://github.com/aws/aws-cdk/issues/953))
  - [ ] Support "blue/green" deployments ([#954](https://github.com/aws/aws-cdk/issues/954))

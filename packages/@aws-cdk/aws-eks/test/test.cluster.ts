@@ -1697,14 +1697,6 @@ export = {
             },
             {
               Action: [
-                'ec2:DescribeSubnets',
-                'ec2:DescribeRouteTables',
-              ],
-              Effect: 'Allow',
-              Resource: '*',
-            },
-            {
-              Action: [
                 'eks:CreateCluster',
                 'eks:DescribeCluster',
                 'eks:DescribeUpdate',
@@ -1782,27 +1774,17 @@ export = {
               Resource: '*',
             },
             {
-              Action: 'ec2:DescribeVpcs',
+              Action: [
+                'ec2:DescribeInstances',
+                'ec2:DescribeNetworkInterfaces',
+                'ec2:DescribeSecurityGroups',
+                'ec2:DescribeSubnets',
+                'ec2:DescribeRouteTables',
+                'ec2:DescribeDhcpOptions',
+                'ec2:DescribeVpcs',
+              ],
               Effect: 'Allow',
-              Resource: {
-                'Fn::Join': [
-                  '',
-                  [
-                    'arn:',
-                    {
-                      Ref: 'AWS::Partition',
-                    },
-                    ':ec2:us-east-1:',
-                    {
-                      Ref: 'AWS::AccountId',
-                    },
-                    ':vpc/',
-                    {
-                      Ref: 'MyClusterDefaultVpc76C24A38',
-                    },
-                  ],
-                ],
-              },
+              Resource: '*',
             },
           ],
           Version: '2012-10-17',
@@ -1831,14 +1813,6 @@ export = {
                   'Arn',
                 ],
               },
-            },
-            {
-              Action: [
-                'ec2:DescribeSubnets',
-                'ec2:DescribeRouteTables',
-              ],
-              Effect: 'Allow',
-              Resource: '*',
             },
             {
               Action: [
@@ -1874,27 +1848,17 @@ export = {
               Resource: '*',
             },
             {
-              Action: 'ec2:DescribeVpcs',
+              Action: [
+                'ec2:DescribeInstances',
+                'ec2:DescribeNetworkInterfaces',
+                'ec2:DescribeSecurityGroups',
+                'ec2:DescribeSubnets',
+                'ec2:DescribeRouteTables',
+                'ec2:DescribeDhcpOptions',
+                'ec2:DescribeVpcs',
+              ],
               Effect: 'Allow',
-              Resource: {
-                'Fn::Join': [
-                  '',
-                  [
-                    'arn:',
-                    {
-                      Ref: 'AWS::Partition',
-                    },
-                    ':ec2:us-east-1:',
-                    {
-                      Ref: 'AWS::AccountId',
-                    },
-                    ':vpc/',
-                    {
-                      Ref: 'MyClusterDefaultVpc76C24A38',
-                    },
-                  ],
-                ],
-              },
+              Resource: '*',
             },
           ],
           Version: '2012-10-17',
