@@ -99,12 +99,14 @@ export interface IGraphqlApi extends IResource {
    * @param id The data source's id
    * @param databaseCluster The database cluster to interact with this data source
    * @param secretStore The secret store that contains the username and password for the database cluster
+   * @param databaseName The optional name of the database to use within the cluster
    * @param options The optional configuration for this data source
    */
   addRdsDataSource(
     id: string,
     databaseCluster: IDatabaseCluster,
     secretStore: ISecret,
+    databaseName?: string,
     options?: DataSourceOptions
   ): RdsDataSource;
 
@@ -206,12 +208,14 @@ export abstract class GraphqlApiBase extends Resource implements IGraphqlApi {
    * @param id The data source's id
    * @param databaseCluster The database cluster to interact with this data source
    * @param secretStore The secret store that contains the username and password for the database cluster
+   * @param databaseName The optional name of the database to use within the cluster
    * @param options The optional configuration for this data source
    */
   public addRdsDataSource(
     id: string,
     databaseCluster: IDatabaseCluster,
     secretStore: ISecret,
+    databaseName?: string,
     options?: DataSourceOptions,
   ): RdsDataSource {
     return new RdsDataSource(this, id, {
@@ -220,6 +224,7 @@ export abstract class GraphqlApiBase extends Resource implements IGraphqlApi {
       description: options?.description,
       databaseCluster,
       secretStore,
+      databaseName,
     });
   }
 
