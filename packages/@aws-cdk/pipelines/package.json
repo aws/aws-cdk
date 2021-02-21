@@ -1,6 +1,7 @@
 {
   "name": "@aws-cdk/pipelines",
   "version": "0.0.0",
+  "private": true,
   "description": "Continuous Delivery of CDK applications",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -40,7 +41,7 @@
     "@aws-cdk/aws-ecr-assets": "0.0.0"
   },
   "peerDependencies": {
-    "constructs": "^3.2.0",
+    "constructs": "10.0.0-pre.5",
     "@aws-cdk/core": "0.0.0",
     "@aws-cdk/aws-codebuild": "0.0.0",
     "@aws-cdk/aws-codepipeline": "0.0.0",
@@ -53,7 +54,7 @@
     "@aws-cdk/cx-api": "0.0.0"
   },
   "dependencies": {
-    "constructs": "^3.2.0",
+    "constructs": "10.0.0-pre.5",
     "@aws-cdk/core": "0.0.0",
     "@aws-cdk/aws-codebuild": "0.0.0",
     "@aws-cdk/aws-codepipeline": "0.0.0",
