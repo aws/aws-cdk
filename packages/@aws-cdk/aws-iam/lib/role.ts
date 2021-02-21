@@ -356,6 +356,8 @@ export class Role extends Resource implements IRole {
       }
       return result;
     }
+
+    this.node.addValidation({ validate: () => this.validateRole() });
   }
 
   /**
@@ -430,9 +432,9 @@ export class Role extends Resource implements IRole {
     return this.immutableRole;
   }
 
-  protected validate(): string[] {
-    const errors = super.validate();
-    errors.push(...this.assumeRolePolicy?.validateForResourcePolicy() || []);
+  private validateRole(): string[] {
+    const errors = new Array<string>();
+    errors.push(...this.assumeRolePolicy?.validateForResourcePolicy() ?? []);
     for (const policy of Object.values(this.inlinePolicies)) {
       errors.push(...policy.validateForIdentityPolicy());
     }

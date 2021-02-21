@@ -1,6 +1,6 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
-import { Construct } from 'constructs';
+import { Construct, IConstruct, Node } from 'constructs';
 import { Function as LambdaFunction, FunctionProps } from './function';
 import { FunctionBase } from './function-base';
 import { Version } from './lambda-version';
@@ -45,7 +45,7 @@ export class SingletonFunction extends FunctionBase {
   public readonly functionName: string;
   public readonly functionArn: string;
   public readonly role?: iam.IRole;
-  public readonly permissionsNode: cdk.ConstructNode;
+  public readonly permissionsNode: Node;
   protected readonly canCreatePermissions: boolean;
   private lambdaFunction: LambdaFunction;
 
@@ -91,7 +91,7 @@ export class SingletonFunction extends FunctionBase {
    * The SingletonFunction construct cannot be added as a dependency of another construct using
    * node.addDependency(). Use this method instead to declare this as a dependency of another construct.
    */
-  public dependOn(down: cdk.IConstruct) {
+  public dependOn(down: IConstruct) {
     down.node.addDependency(this.lambdaFunction);
   }
 
@@ -104,7 +104,7 @@ export class SingletonFunction extends FunctionBase {
    * Returns the construct tree node that corresponds to the lambda function.
    * @internal
    */
-  protected _functionNode(): cdk.ConstructNode {
+  protected _functionNode(): Node {
     return this.lambdaFunction.node;
   }
 
