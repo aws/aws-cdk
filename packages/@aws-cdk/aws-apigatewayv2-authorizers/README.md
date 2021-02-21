@@ -20,6 +20,7 @@
 - [HTTP APIs](#http-apis)
 - [JWT Authorizers](#jwt-authorizers)
   - [User Pool Authorizer](#user-pool-authorizer)
+- [Lambda Authorizers](#lambda-authorizers)
 
 ## HTTP APIs
 
@@ -68,6 +69,35 @@ const userPoolClient = userPool.addClient('UserPoolClient');
 const authorizer = new HttpUserPoolAuthorizer({
   userPool,
   userPoolClient,
+});
+
+const api = new HttpApi(stack, 'HttpApi');
+
+api.addRoutes({
+  integration: new HttpProxyIntegration({
+    url: 'https://get-books-proxy.myproxy.internal',
+  }),
+  path: '/books',
+  authorizer,
+});
+```
+
+## Lambda Authorizers
+
+You use a Lambda authorizer to use a Lambda function to control access to your HTTP API. Then, when a client calls your API, API Gateway invokes your Lambda function. API Gateway uses the response from your Lambda function to determine whether the client can access your API.
+
+Lambda authorizers depending on their response, fall into either two types - Simple or IAM. You can learn about differences [here](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-lambda-authorizer.html#http-api-lambda-authorizer.payload-format-response).
+
+
+```ts
+// This function handles your auth logic
+const authHandler = new Function(this, 'auth-function', {
+  //...
+});
+
+const authorizer = new HttpLambdaAuthorizer({
+  type: HttpRouteAuthorizerType.SIMPLE // Define if it's a simple or iam authorizer,
+  authHandler,
 });
 
 const api = new HttpApi(stack, 'HttpApi');
