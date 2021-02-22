@@ -7,13 +7,13 @@ import * as lambda from '@aws-cdk/aws-lambda';
 import * as logs from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
-import { Test } from 'nodeunit';
+import { nodeunitShim, Test } from 'nodeunit-shim';
 import * as rds from '../lib';
 
 let stack: cdk.Stack;
 let vpc: ec2.Vpc;
 
-export = {
+nodeunitShim({
   'setUp'(cb: () => void) {
     stack = new cdk.Stack();
     vpc = new ec2.Vpc(stack, 'VPC');
@@ -1023,7 +1023,7 @@ export = {
     new rds.DatabaseInstance(stack, 'Instance', {
       vpc,
       engine: rds.DatabaseInstanceEngine.postgres({
-        version: rds.PostgresEngineVersion.VER_9_5_7,
+        version: rds.PostgresEngineVersion.VER_12_4,
       }),
     });
 
@@ -1242,4 +1242,4 @@ export = {
 
     test.done();
   },
-};
+});

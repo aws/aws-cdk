@@ -1,3 +1,197 @@
+# CloudFormation Resource Specification v28.0.0
+
+## New Resource Types
+
+* AWS::CloudFormation::ResourceDefaultVersion
+* AWS::CloudFormation::ResourceVersion
+* AWS::EC2::TransitGatewayMulticastDomain
+* AWS::EC2::TransitGatewayMulticastDomainAssociation
+* AWS::EC2::TransitGatewayMulticastGroupMember
+* AWS::EC2::TransitGatewayMulticastGroupSource
+* AWS::SageMaker::App
+* AWS::SageMaker::AppImageConfig
+* AWS::SageMaker::Domain
+* AWS::SageMaker::UserProfile
+* AWS::ServiceCatalog::ServiceAction
+* AWS::ServiceCatalog::ServiceActionAssociation
+
+## Attribute Changes
+
+* AWS::ApiGateway::ApiKey APIKeyId (__added__)
+
+## Property Changes
+
+* AWS::DMS::Endpoint DocDbSettings (__added__)
+* AWS::DMS::Endpoint IbmDb2Settings (__added__)
+* AWS::DMS::Endpoint MicrosoftSqlServerSettings (__added__)
+* AWS::DMS::Endpoint MySqlSettings (__added__)
+* AWS::DMS::Endpoint OracleSettings (__added__)
+* AWS::DMS::Endpoint PostgreSqlSettings (__added__)
+* AWS::DMS::Endpoint RedshiftSettings (__added__)
+* AWS::DMS::Endpoint SybaseSettings (__added__)
+* AWS::ECS::Cluster Configuration (__deleted__)
+* AWS::ECS::Service EnableExecuteCommand (__deleted__)
+* AWS::ManagedBlockchain::Node MemberId.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::MediaLive::Channel Vpc (__added__)
+
+## Property Type Changes
+
+* AWS::ECS::Cluster.ClusterConfiguration (__removed__)
+* AWS::ECS::Cluster.ExecuteCommandConfiguration (__removed__)
+* AWS::ECS::Cluster.ExecuteCommandLogConfiguration (__removed__)
+* AWS::AppMesh::VirtualGateway.SubjectAlternativeNameMatchers (__added__)
+* AWS::AppMesh::VirtualGateway.SubjectAlternativeNames (__added__)
+* AWS::AppMesh::VirtualGateway.VirtualGatewayClientTlsCertificate (__added__)
+* AWS::AppMesh::VirtualGateway.VirtualGatewayListenerTlsSdsCertificate (__added__)
+* AWS::AppMesh::VirtualGateway.VirtualGatewayListenerTlsValidationContext (__added__)
+* AWS::AppMesh::VirtualGateway.VirtualGatewayListenerTlsValidationContextTrust (__added__)
+* AWS::AppMesh::VirtualGateway.VirtualGatewayTlsValidationContextSdsTrust (__added__)
+* AWS::AppMesh::VirtualNode.ClientTlsCertificate (__added__)
+* AWS::AppMesh::VirtualNode.ListenerTlsSdsCertificate (__added__)
+* AWS::AppMesh::VirtualNode.ListenerTlsValidationContext (__added__)
+* AWS::AppMesh::VirtualNode.ListenerTlsValidationContextTrust (__added__)
+* AWS::AppMesh::VirtualNode.SubjectAlternativeNameMatchers (__added__)
+* AWS::AppMesh::VirtualNode.SubjectAlternativeNames (__added__)
+* AWS::AppMesh::VirtualNode.TlsValidationContextSdsTrust (__added__)
+* AWS::DMS::Endpoint.DocDbSettings (__added__)
+* AWS::DMS::Endpoint.IbmDb2Settings (__added__)
+* AWS::DMS::Endpoint.MicrosoftSqlServerSettings (__added__)
+* AWS::DMS::Endpoint.MySqlSettings (__added__)
+* AWS::DMS::Endpoint.OracleSettings (__added__)
+* AWS::DMS::Endpoint.PostgreSqlSettings (__added__)
+* AWS::DMS::Endpoint.RedshiftSettings (__added__)
+* AWS::DMS::Endpoint.SybaseSettings (__added__)
+* AWS::MediaLive::Channel.VpcOutputSettings (__added__)
+* AWS::AppMesh::VirtualGateway.VirtualGatewayClientPolicyTls Certificate (__added__)
+* AWS::AppMesh::VirtualGateway.VirtualGatewayListenerTls Validation (__added__)
+* AWS::AppMesh::VirtualGateway.VirtualGatewayListenerTlsCertificate SDS (__added__)
+* AWS::AppMesh::VirtualGateway.VirtualGatewayTlsValidationContext SubjectAlternativeNames (__added__)
+* AWS::AppMesh::VirtualGateway.VirtualGatewayTlsValidationContextTrust SDS (__added__)
+* AWS::AppMesh::VirtualNode.ClientPolicyTls Certificate (__added__)
+* AWS::AppMesh::VirtualNode.ListenerTls Validation (__added__)
+* AWS::AppMesh::VirtualNode.ListenerTlsCertificate SDS (__added__)
+* AWS::AppMesh::VirtualNode.TlsValidationContext SubjectAlternativeNames (__added__)
+* AWS::AppMesh::VirtualNode.TlsValidationContextTrust SDS (__added__)
+* AWS::DMS::Endpoint.MongoDbSettings SecretsManagerAccessRoleArn (__added__)
+* AWS::DMS::Endpoint.MongoDbSettings SecretsManagerSecretId (__added__)
+
+
+# CloudFormation Resource Specification v27.0.0
+
+## New Resource Types
+
+* AWS::ECR::RegistryPolicy
+* AWS::ECR::ReplicationConfiguration
+* AWS::ElastiCache::GlobalReplicationGroup
+* AWS::ImageBuilder::ContainerRecipe
+
+## Attribute Changes
+
+* AWS::IoTWireless::ServiceProfile LoRaWANResponse (__added__)
+* AWS::MWAA::Environment CreatedAt (__deleted__)
+* AWS::MWAA::Environment LastUpdate (__deleted__)
+* AWS::MWAA::Environment Name (__deleted__)
+* AWS::MWAA::Environment ServiceRoleArn (__deleted__)
+* AWS::MWAA::Environment Status (__deleted__)
+* AWS::MWAA::Environment WebserverUrl (__added__)
+
+## Property Changes
+
+* AWS::AppMesh::GatewayRoute GatewayRouteName.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::AppMesh::Mesh MeshName.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::AppMesh::Route RouteName.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::AppMesh::VirtualGateway VirtualGatewayName.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::AppMesh::VirtualNode VirtualNodeName.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::AppMesh::VirtualRouter VirtualRouterName.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::Cassandra::Keyspace Tags (__added__)
+* AWS::Cassandra::Table PointInTimeRecoveryEnabled (__added__)
+* AWS::Cassandra::Table Tags (__added__)
+* AWS::CloudWatch::MetricStream OutputFormat (__added__)
+* AWS::ECS::Service EnableExecuteCommand (__added__)
+* AWS::ECS::Service PlatformVersion.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::IoTWireless::Destination NextToken (__deleted__)
+* AWS::IoTWireless::Destination Name.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::IoTWireless::DeviceProfile LoRaWANDeviceProfile (__deleted__)
+* AWS::IoTWireless::DeviceProfile NextToken (__deleted__)
+* AWS::IoTWireless::DeviceProfile LoRaWAN (__added__)
+* AWS::IoTWireless::ServiceProfile LoRaWANGetServiceProfileInfo (__deleted__)
+* AWS::IoTWireless::ServiceProfile LoRaWANServiceProfile (__deleted__)
+* AWS::IoTWireless::ServiceProfile NextToken (__deleted__)
+* AWS::IoTWireless::ServiceProfile LoRaWAN (__added__)
+* AWS::IoTWireless::WirelessDevice LoRaWANDevice (__deleted__)
+* AWS::IoTWireless::WirelessDevice NextToken (__deleted__)
+* AWS::IoTWireless::WirelessDevice LastUplinkReceivedAt (__added__)
+* AWS::IoTWireless::WirelessDevice LoRaWAN (__added__)
+* AWS::IoTWireless::WirelessGateway LoRaWANGateway (__deleted__)
+* AWS::IoTWireless::WirelessGateway NextToken (__deleted__)
+* AWS::IoTWireless::WirelessGateway LastUplinkReceivedAt (__added__)
+* AWS::IoTWireless::WirelessGateway LoRaWAN (__added__)
+* AWS::MWAA::Environment WebserverUrl (__deleted__)
+* AWS::MWAA::Environment Name (__added__)
+* AWS::MWAA::Environment KmsKey.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::MWAA::Environment NetworkConfiguration.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::SageMaker::Model InferenceExecutionConfig (__deleted__)
+
+## Property Type Changes
+
+* AWS::IoTWireless::WirelessDevice.AbpV10X (__removed__)
+* AWS::IoTWireless::WirelessDevice.OtaaV10X (__removed__)
+* AWS::IoTWireless::WirelessDevice.SessionKeysAbpV10X (__removed__)
+* AWS::MWAA::Environment.LastUpdate (__removed__)
+* AWS::MWAA::Environment.SecurityGroupList (__removed__)
+* AWS::MWAA::Environment.SubnetList (__removed__)
+* AWS::MWAA::Environment.UpdateError (__removed__)
+* AWS::SageMaker::Model.InferenceExecutionConfig (__removed__)
+* AWS::DataBrew::Job.CsvOutputOptions (__added__)
+* AWS::DataBrew::Job.OutputFormatOptions (__added__)
+* AWS::IoTWireless::WirelessDevice.AbpV10x (__added__)
+* AWS::IoTWireless::WirelessDevice.OtaaV10x (__added__)
+* AWS::IoTWireless::WirelessDevice.SessionKeysAbpV10x (__added__)
+* AWS::Cognito::UserPoolClient.AnalyticsConfiguration ApplicationArn (__added__)
+* AWS::DataBrew::Job.Output FormatOptions (__added__)
+* AWS::IoTWireless::WirelessDevice.LoRaWANDevice AbpV10X (__deleted__)
+* AWS::IoTWireless::WirelessDevice.LoRaWANDevice OtaaV10X (__deleted__)
+* AWS::IoTWireless::WirelessDevice.LoRaWANDevice AbpV10x (__added__)
+* AWS::IoTWireless::WirelessDevice.LoRaWANDevice OtaaV10x (__added__)
+* AWS::MWAA::Environment.NetworkConfiguration SecurityGroupIds.PrimitiveItemType (__added__)
+* AWS::MWAA::Environment.NetworkConfiguration SecurityGroupIds.Type (__changed__)
+  * Old: SecurityGroupList
+  * New: List
+* AWS::MWAA::Environment.NetworkConfiguration SecurityGroupIds.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::MWAA::Environment.NetworkConfiguration SubnetIds.PrimitiveItemType (__added__)
+* AWS::MWAA::Environment.NetworkConfiguration SubnetIds.Type (__changed__)
+  * Old: SubnetList
+  * New: List
+* AWS::MediaPackage::PackagingConfiguration.CmafEncryption SpekeKeyProvider.Type (__added__)
+* AWS::MediaPackage::PackagingConfiguration.DashEncryption SpekeKeyProvider.Type (__added__)
+* AWS::MediaPackage::PackagingConfiguration.HlsEncryption SpekeKeyProvider.Type (__added__)
+* AWS::MediaPackage::PackagingConfiguration.MssEncryption SpekeKeyProvider.Type (__added__)
+
+
 # CloudFormation Resource Specification v26.0.0
 
 ## New Resource Types
