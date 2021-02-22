@@ -1803,7 +1803,7 @@ nodeunitShim({
       test.done();
     },
 
-    'if srv, then selects a container and port'(test: Test) {
+    'user can select any container and port'(test: Test) {
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'MyVpc', {});
       const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
@@ -1845,80 +1845,6 @@ nodeunitShim({
           },
         ],
       }));
-
-      test.done();
-    },
-
-    'throws if SRV and container is not part of task definition'(test: Test) {
-      const stack = new cdk.Stack();
-      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
-      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
-
-      cluster.addDefaultCloudMapNamespace({
-        name: 'foo.com',
-        type: cloudmap.NamespaceType.DNS_PRIVATE,
-      });
-
-      const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
-      // The right container
-      taskDefinition.addContainer('MainContainer', {
-        image: ecs.ContainerImage.fromRegistry('hello'),
-        memoryLimitMiB: 512,
-      });
-
-      const wrongTaskDefinition = new ecs.FargateTaskDefinition(stack, 'WrongFargateTaskDef');
-      // The wrong container
-      const wrongContainer = wrongTaskDefinition.addContainer('MainContainer', {
-        image: ecs.ContainerImage.fromRegistry('hello'),
-        memoryLimitMiB: 512,
-      });
-
-      wrongContainer.addPortMappings({ containerPort: 8000 });
-
-      test.throws(() => {
-        new ecs.FargateService(stack, 'Service', {
-          cluster,
-          taskDefinition,
-          cloudMapOptions: {
-            dnsRecordType: cloudmap.DnsRecordType.SRV,
-            container: wrongContainer,
-            containerPort: 1234,
-          },
-        });
-      }, /another task definition/i);
-
-      test.done();
-    },
-
-    'throws if SRV and the container port is not mapped'(test: Test) {
-      const stack = new cdk.Stack();
-      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
-      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
-
-      cluster.addDefaultCloudMapNamespace({
-        name: 'foo.com',
-        type: cloudmap.NamespaceType.DNS_PRIVATE,
-      });
-
-      const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
-      const container = taskDefinition.addContainer('MainContainer', {
-        image: ecs.ContainerImage.fromRegistry('hello'),
-        memoryLimitMiB: 512,
-      });
-
-      container.addPortMappings({ containerPort: 8000 });
-
-      test.throws(() => {
-        new ecs.FargateService(stack, 'Service', {
-          cluster,
-          taskDefinition,
-          cloudMapOptions: {
-            dnsRecordType: cloudmap.DnsRecordType.SRV,
-            container,
-            containerPort: 1234,
-          },
-        });
-      }, /container port.*not.*mapped/i);
 
       test.done();
     },

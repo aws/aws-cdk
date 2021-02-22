@@ -1,4 +1,4 @@
-import { expect, haveResource } from '@aws-cdk/assert';
+import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as elb from '@aws-cdk/aws-elasticloadbalancing';
 import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
@@ -2152,6 +2152,55 @@ nodeunitShim({
             'Id',
           ],
         },
+      }));
+
+      test.done();
+    },
+
+    'user can select any container and port'(test: Test) {
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+
+      cluster.addDefaultCloudMapNamespace({
+        name: 'foo.com',
+        type: cloudmap.NamespaceType.DNS_PRIVATE,
+      });
+
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'FargateTaskDef', {
+        networkMode: ecs.NetworkMode.BRIDGE,
+      });
+      const mainContainer = taskDefinition.addContainer('MainContainer', {
+        image: ecs.ContainerImage.fromRegistry('hello'),
+        memoryLimitMiB: 512,
+      });
+      mainContainer.addPortMappings({ containerPort: 8000 });
+
+      const otherContainer = taskDefinition.addContainer('OtherContainer', {
+        image: ecs.ContainerImage.fromRegistry('hello'),
+        memoryLimitMiB: 512,
+      });
+      otherContainer.addPortMappings({ containerPort: 8001 });
+
+      new ecs.Ec2Service(stack, 'Service', {
+        cluster,
+        taskDefinition,
+        cloudMapOptions: {
+          dnsRecordType: cloudmap.DnsRecordType.SRV,
+          container: otherContainer,
+          containerPort: 8001,
+        },
+      });
+
+      expect(stack).to(haveResourceLike('AWS::ECS::Service', {
+        ServiceRegistries: [
+          {
+            RegistryArn: { 'Fn::GetAtt': ['ServiceCloudmapService046058A4', 'Arn'] },
+            ContainerName: 'OtherContainer',
+            ContainerPort: 8001,
+          },
+        ],
       }));
 
       test.done();

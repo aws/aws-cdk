@@ -572,28 +572,12 @@ export abstract class BaseService extends Resource
       }
     }
 
-    let containerName: string|undefined;
-    let containerPort: number|undefined;
-
-    // If the record type is SRV, then provide the containerName and containerPort to target.
-    // We use the name of the default container and the default port of the default container
-    // unless the user specifies otherwise.
-    if (dnsRecordType === cloudmap.DnsRecordType.SRV) {
-      // Ensure the user-provided container is from the right task definition.
-      if (options.container && options.container.taskDefinition != this.taskDefinition) {
-        throw new Error('Cannot add discovery for a container from another task definition');
-      }
-
-      const container = options.container ?? this.taskDefinition.defaultContainer!;
-
-      // Ensure that any port given by the user is mapped.
-      if (options.containerPort && !container.portMappings.some(mapping => mapping.containerPort === options.containerPort)) {
-        throw new Error('Cannot add discovery for a container port that has not been mapped');
-      }
-
-      containerName = container.containerName;
-      containerPort = options.containerPort ?? this.taskDefinition.defaultContainer!.containerPort;
-    }
+    const { containerName, containerPort } = determineContainerNameAndPort({
+      taskDefinition: this.taskDefinition,
+      dnsRecordType: dnsRecordType!,
+      container: options.container,
+      containerPort: options.containerPort,
+    });
 
     const cloudmapService = new cloudmap.Service(this, 'CloudmapService', {
       namespace: sdNamespace,
@@ -914,4 +898,45 @@ export enum PropagatedTagSource {
    * Do not propagate
    */
   NONE = 'NONE'
+}
+
+/**
+ * Options for `determineContainerNameAndPort`
+ * @internal
+ */
+export interface DetermineContainerNameAndPortOptions {
+  dnsRecordType: cloudmap.DnsRecordType;
+  taskDefinition: TaskDefinition;
+  container?: ContainerDefinition;
+  containerPort?: number;
+}
+
+/**
+ * Determine the name of the container and port to target for the service registry.
+ * @internal
+ */
+export function determineContainerNameAndPort(options: DetermineContainerNameAndPortOptions) {
+  // If the record type is SRV, then provide the containerName and containerPort to target.
+  // We use the name of the default container and the default port of the default container
+  // unless the user specifies otherwise.
+  if (options.dnsRecordType === cloudmap.DnsRecordType.SRV) {
+    // Ensure the user-provided container is from the right task definition.
+    if (options.container && options.container.taskDefinition != options.taskDefinition) {
+      throw new Error('Cannot add discovery for a container from another task definition');
+    }
+
+    const container = options.container ?? options.taskDefinition.defaultContainer!;
+
+    // Ensure that any port given by the user is mapped.
+    if (options.containerPort && !container.portMappings.some(mapping => mapping.containerPort === options.containerPort)) {
+      throw new Error('Cannot add discovery for a container port that has not been mapped');
+    }
+
+    return {
+      containerName: container.containerName,
+      containerPort: options.containerPort ?? options.taskDefinition.defaultContainer!.containerPort,
+    };
+  }
+
+  return {};
 }
