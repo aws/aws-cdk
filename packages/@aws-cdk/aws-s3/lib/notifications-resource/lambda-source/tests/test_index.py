@@ -1,4 +1,6 @@
+import json
 import unittest
+from urllib.request import Request
 import uuid
 from unittest.mock import patch, MagicMock
 import boto3
@@ -157,6 +159,75 @@ class LambdaTest(unittest.TestCase):
         ids = index.ids([{"Id": "x"}, {}])
         self.assertEqual(["x"], ids)
 
+    def test_merge_in_config(self):
+        # GIVEN an empty in_config and an empty config
+        from src import index
+        config = {
+            "TopicConfigurations": [],
+            "QueueConfigurations": [],
+            "LambdaFunctionConfigurations": [],
+        }
+        in_config = {
+            "TopicConfigurations": [],
+            "QueueConfigurations": [],
+            "LambdaFunctionConfigurations": [],
+        }
+
+        # WHEN merging
+        final_config = index.merge_in_config(config, in_config)
+
+        # THEN config and in_config should be equal
+        self.assertIs(config, final_config)
+        self.assertIsNot(config, in_config)
+        self.assertEqual(config, in_config)
+        self.assertTrue(len(config["TopicConfigurations"]) == 0)
+        self.assertTrue(len(config["QueueConfigurations"]) == 0)
+        self.assertTrue(len(config["LambdaFunctionConfigurations"]) == 0)
+
+    def test_merge_in_extend(self):
+        # GIVEN an "QueueConfigurations" entry in_config and an empty config
+        from src import index
+        config = {
+            "TopicConfigurations": [],
+            "QueueConfigurations": [],
+            "LambdaFunctionConfigurations": [],
+        }
+        in_config = {
+            "TopicConfigurations": [],
+            "QueueConfigurations": ["new_entry"],
+            "LambdaFunctionConfigurations": [],
+        }
+
+        # WHEN merging
+        final_config = index.merge_in_config(config, in_config)
+
+        # THEN config and in_config should be equal
+        # AND QueueConfigurations should be extended
+        self.assertIs(config, final_config)
+        self.assertIsNot(config, in_config)
+        self.assertEqual(config, in_config)
+        self.assertTrue(len(config["TopicConfigurations"]) == 0)
+        self.assertTrue(len(config["QueueConfigurations"]) == 1)
+        self.assertEqual("new_entry", config["QueueConfigurations"][0])
+        self.assertTrue(len(config["LambdaFunctionConfigurations"]) == 0)
+
+    @mock_s3
+    @patch("urllib.request.urlopen")
+    def test_submit_no_bucket_found(self, mock_call: MagicMock):
+        # GIVEN a create event bucket notification configuration event
+        # for a bucket that does not exist
+        from src import index
+
+        # WHEN calling handler
+        index.handler(create_event, MockContext())
+
+        # THEN submit a failed to the callback url
+        mock_call.assert_called()
+        request: Request = mock_call.call_args[0][0]
+        self.assertIsInstance(request, Request)
+        data = json.loads(request.data.decode())
+        self.assertEqual("FAILED", data["Status"])
+
     @mock_s3
     @patch("urllib.request.urlopen")
     def test_append_to_existing(self, mock_call: MagicMock):
@@ -166,6 +237,12 @@ class LambdaTest(unittest.TestCase):
         index.handler(create_event, MockContext())
 
         mock_call.assert_called()
+        request: Request = mock_call.call_args[0][0]
+        self.assertIsInstance(request, Request)
+        data = json.loads(request.data.decode())
+        self.assertEqual("SUCCESS", data["Status"])
+        self.assertEqual(create_event["ResponseURL"], request.full_url)
+
         s3_client = boto3.client("s3", region_name="us-east-1")
         config = s3_client.get_bucket_notification_configuration(Bucket=bucket_name)
         self.assertIsNotNone(config["LambdaFunctionConfigurations"])
