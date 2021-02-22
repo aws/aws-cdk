@@ -673,8 +673,8 @@ taskDefinition.addContainer('TheContainer', {
 
 ## Associate With Pre-Existing CloudMap Services
 
-You may associate an ECS with a pre-existing cloudmap service. To do this, use
-the service's `associateCloudMapService` method:
+You may associate an ECS service with a pre-existing CloudMap service. To do
+this, use the service's `associateCloudMapService` method:
 
 ```ts
 const cloudMapService = new cloudmap.Service(...);
