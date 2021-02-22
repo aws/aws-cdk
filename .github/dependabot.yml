@@ -10,4 +10,4 @@ updates:
       interval: "weekly"
     labels:
       - "pr/auto-approve"
-    open-pull-request-limit: 5
+    open-pull-requests-limit: 5
