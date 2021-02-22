@@ -8,7 +8,7 @@ import { IClusterEngine } from './cluster-engine';
 import { Endpoint } from './endpoint';
 import { IParameterGroup } from './parameter-group';
 import { DATA_API_ACTIONS } from './perms';
-import { applyRemovalPolicy, defaultDeletionProtection, DEFAULT_PASSWORD_EXCLUDE_CHARS, renderCredentials } from './private/util';
+import { defaultDeletionProtection, DEFAULT_PASSWORD_EXCLUDE_CHARS, renderCredentials } from './private/util';
 import { Credentials, RotationMultiUserOptions, RotationSingleUserOptions } from './props';
 import { CfnDBCluster } from './rds.generated';
 import { ISubnetGroup, SubnetGroup } from './subnet-group';
@@ -468,7 +468,7 @@ export class ServerlessCluster extends ServerlessClusterBase {
       defaultPort: ec2.Port.tcp(this.clusterEndpoint.port),
     });
 
-    applyRemovalPolicy(cluster, props.removalPolicy);
+    cluster.applyRemovalPolicy(props.removalPolicy ?? RemovalPolicy.SNAPSHOT);
 
     if (secret) {
       this.secret = secret.attach(this);
