@@ -535,13 +535,6 @@ export class Function extends FunctionBase {
   private _logGroup?: logs.ILogGroup;
 
   /**
-   * Code signing config associated with this function
-   *
-   * @default - Not Sign the Code
-   */
-  public readonly codeSigningConfig?: ICodeSigningConfig;
-
-  /**
    * Environment variables for this function
    */
   private environment: { [key: string]: EnvironmentConfig } = {};
@@ -626,8 +619,6 @@ export class Function extends FunctionBase {
       }];
     }
 
-    this.codeSigningConfig = props.codeSigningConfig;
-
     const resource: CfnFunction = new CfnFunction(this, 'Resource', {
       functionName: this.physicalName,
       description: props.description,
@@ -658,7 +649,7 @@ export class Function extends FunctionBase {
       }),
       kmsKeyArn: props.environmentEncryption?.keyArn,
       fileSystemConfigs,
-      codeSigningConfigArn: this.codeSigningConfig?.codeSigningConfigArn,
+      codeSigningConfigArn: props.codeSigningConfig?.codeSigningConfigArn,
     });
 
     resource.node.addDependency(this.role);
