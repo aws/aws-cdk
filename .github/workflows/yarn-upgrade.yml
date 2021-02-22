@@ -25,7 +25,7 @@ jobs:
         run: echo "::set-output name=dir::$(yarn cache dir)"
 
       - name: Restore Yarn cache
-        uses: actions/cache@v2
+        uses: actions/cache@v2.1.4
         with:
           path: ${{ steps.yarn-cache.outputs.dir }}
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
@@ -74,7 +74,7 @@ jobs:
           title: 'chore: npm-check-updates && yarn upgrade'
           body: |-
             Ran npm-check-updates and yarn upgrade to keep the `yarn.lock` file up-to-date.
-          labels: contribution/core,dependencies
+          labels: contribution/core,dependencies,pr/auto-approve
           team-reviewers: aws-cdk-team
           # Privileged token so automated PR validation happens
           token: ${{ secrets.AUTOMATION_GITHUB_TOKEN }}
