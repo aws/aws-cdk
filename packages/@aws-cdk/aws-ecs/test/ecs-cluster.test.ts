@@ -9,10 +9,10 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import * as kms from '@aws-cdk/aws-kms';
 import * as cloudmap from '@aws-cdk/aws-servicediscovery';
 import * as cdk from '@aws-cdk/core';
-import { Test } from 'nodeunit';
+import { nodeunitShim, Test } from 'nodeunit-shim';
 import * as ecs from '../lib';
 
-export = {
+nodeunitShim({
   'When creating an ECS Cluster': {
     'with no properties set, it correctly sets default properties'(test: Test) {
       // GIVEN
@@ -1731,4 +1731,4 @@ export = {
 
     test.done();
   },
-};
+});
