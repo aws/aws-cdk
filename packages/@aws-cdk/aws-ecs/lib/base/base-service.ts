@@ -933,7 +933,7 @@ export enum PropagatedTagSource {
  * Options for `determineContainerNameAndPort`
  * @internal
  */
-export interface SelectContainerNamePortOptions {
+export interface DetermineContainerNameAndPortOptions {
   dnsRecordType: cloudmap.DnsRecordType;
   taskDefinition: TaskDefinition;
   container?: ContainerDefinition;
@@ -944,7 +944,7 @@ export interface SelectContainerNamePortOptions {
  * Determine the name of the container and port to target for the service registry.
  * @internal
  */
-export function determineContainerNameAndPort(options: SelectContainerNamePortOptions) {
+export function determineContainerNameAndPort(options: DetermineContainerNameAndPortOptions) {
   // If the record type is SRV, then provide the containerName and containerPort to target.
   // We use the name of the default container and the default port of the default container
   // unless the user specifies otherwise.
