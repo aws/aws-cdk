@@ -93,6 +93,16 @@ export interface ProviderProps {
    */
   readonly vpcSubnets?: ec2.SubnetSelection;
 
+  /**
+   * Security groups to attach to the provider functions.
+   *
+   * Only used if 'vpc' is supplied
+   *
+   * @default - If `vpc` is not supplied, no security groups are attached. Otherwise, a dedicated security
+   * group is created for each function.
+   */
+  readonly securityGroups?: ec2.ISecurityGroup[];
+
 }
 
 /**
@@ -122,6 +132,7 @@ export class Provider extends CoreConstruct implements cfn.ICustomResourceProvid
   private readonly logRetention?: logs.RetentionDays;
   private readonly vpc?: ec2.IVpc;
   private readonly vpcSubnets?: ec2.SubnetSelection;
+  private readonly securityGroups?: ec2.ISecurityGroup[];
 
   constructor(scope: Construct, id: string, props: ProviderProps) {
     super(scope, id);
@@ -137,6 +148,7 @@ export class Provider extends CoreConstruct implements cfn.ICustomResourceProvid
     this.logRetention = props.logRetention;
     this.vpc = props.vpc;
     this.vpcSubnets = props.vpcSubnets;
+    this.securityGroups = props.securityGroups;
 
     const onEventFunction = this.createFunction(consts.FRAMEWORK_ON_EVENT_HANDLER_NAME);
 
@@ -182,6 +194,7 @@ export class Provider extends CoreConstruct implements cfn.ICustomResourceProvid
       logRetention: this.logRetention,
       vpc: this.vpc,
       vpcSubnets: this.vpcSubnets,
+      securityGroups: this.securityGroups,
     });
 
     fn.addEnvironment(consts.USER_ON_EVENT_FUNCTION_ARN_ENV, this.onEventHandler.functionArn);
