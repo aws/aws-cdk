@@ -15,8 +15,8 @@ module.exports.fetchPreviousVersion = async function(base: string) {
 
   // this returns a list in decsending order, newest releases first
   for (const release of releases.data) {
-    const version = release.name.replace('v', '');
-    if (semver.lt(version, base)) {
+    const version = release.name?.replace('v', '');
+    if (version && semver.lt(version, base)) {
       return version;
     }
   }

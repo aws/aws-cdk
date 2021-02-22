@@ -41,6 +41,14 @@ export enum NodeType {
    */
   DC2_8XLARGE = 'dc2.8xlarge',
   /**
+   * ra3.xlplus
+   */
+  RA3_XLPLUS = 'ra3.xlplus',
+  /**
+   * ra3.4xlarge
+   */
+  RA3_4XLARGE = 'ra3.4xlarge',
+  /**
    * ra3.16xlarge
    */
   RA3_16XLARGE = 'ra3.16xlarge',
@@ -406,11 +414,11 @@ export class Cluster extends ClusterBase {
     super(scope, id);
 
     this.vpc = props.vpc;
-    this.vpcSubnets = props.vpcSubnets ? props.vpcSubnets : {
+    this.vpcSubnets = props.vpcSubnets ?? {
       subnetType: ec2.SubnetType.PRIVATE,
     };
 
-    const removalPolicy = props.removalPolicy ? props.removalPolicy : RemovalPolicy.RETAIN;
+    const removalPolicy = props.removalPolicy ?? RemovalPolicy.RETAIN;
 
     const subnetGroup = props.subnetGroup ?? new ClusterSubnetGroup(this, 'Subnets', {
       description: `Subnets for ${id} Redshift cluster`,
@@ -419,11 +427,10 @@ export class Cluster extends ClusterBase {
       removalPolicy: removalPolicy,
     });
 
-    const securityGroups = props.securityGroups !== undefined ?
-      props.securityGroups : [new ec2.SecurityGroup(this, 'SecurityGroup', {
-        description: 'Redshift security group',
-        vpc: this.vpc,
-      })];
+    const securityGroups = props.securityGroups ?? [new ec2.SecurityGroup(this, 'SecurityGroup', {
+      description: 'Redshift security group',
+      vpc: this.vpc,
+    })];
 
     const securityGroupIds = securityGroups.map(sg => sg.securityGroupId);
 
@@ -464,22 +471,20 @@ export class Cluster extends ClusterBase {
       port: props.port,
       clusterParameterGroupName: props.parameterGroup && props.parameterGroup.clusterParameterGroupName,
       // Admin
-      masterUsername: secret ? secret.secretValueFromJson('username').toString() : props.masterUser.masterUsername,
-      masterUserPassword: secret
-        ? secret.secretValueFromJson('password').toString()
-        : (props.masterUser.masterPassword
-          ? props.masterUser.masterPassword.toString()
-          : 'default'),
+      masterUsername: secret?.secretValueFromJson('username').toString() ?? props.masterUser.masterUsername,
+      masterUserPassword: secret?.secretValueFromJson('password').toString()
+        ?? props.masterUser.masterPassword?.toString()
+        ?? 'default',
       preferredMaintenanceWindow: props.preferredMaintenanceWindow,
       nodeType: props.nodeType || NodeType.DC2_LARGE,
       numberOfNodes: nodeCount,
       loggingProperties,
-      iamRoles: props.roles ? props.roles.map(role => role.roleArn) : undefined,
+      iamRoles: props?.roles?.map(role => role.roleArn),
       dbName: props.defaultDatabaseName || 'default_db',
       publiclyAccessible: props.publiclyAccessible || false,
       // Encryption
       kmsKeyId: props.encryptionKey && props.encryptionKey.keyArn,
-      encrypted: props.encrypted !== undefined ? props.encrypted : true,
+      encrypted: props.encrypted ?? true,
     });
 
     cluster.applyRemovalPolicy(removalPolicy, {
