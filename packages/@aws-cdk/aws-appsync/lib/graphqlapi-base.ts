@@ -99,7 +99,6 @@ export interface IGraphqlApi extends IResource {
    * @param id The data source's id
    * @param serverlessCluster The serverless cluster to interact with this data source
    * @param secretStore The secret store that contains the username and password for the serverless cluster
-   * @param secretStore The secret store that contains the username and password for the database cluster
    * @param databaseName The optional name of the database to use within the cluster
    * @param options The optional configuration for this data source
    */
