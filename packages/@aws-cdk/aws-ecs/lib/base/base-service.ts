@@ -602,7 +602,7 @@ export abstract class BaseService extends Resource
   /**
    * Associates this service with a CloudMap service
    */
-  public associateCloudMapService(options: UseCloudMapServiceOptions): void {
+  public associateCloudMapService(options: AssociateCloudMapServiceOptions): void {
     const service = options.service;
 
     const { containerName, containerPort } = determineContainerNameAndPort({
@@ -826,7 +826,7 @@ export interface CloudMapOptions {
 /**
  * The options for using a cloudmap service.
  */
-export interface UseCloudMapServiceOptions {
+export interface AssociateCloudMapServiceOptions {
   /**
    * The cloudmap service to register with.
    */
