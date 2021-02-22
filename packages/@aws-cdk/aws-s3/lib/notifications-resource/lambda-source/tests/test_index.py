@@ -37,7 +37,7 @@ update_event = {
                 {
                     "Id": "old-function-hash",
                     "Events": ["s3:ObjectCreated:*"],
-                    "QueueArn": "arn:aws:sqs:us-east-1:444455556666:old-queue",
+                    "LambdaFunctionArn": "arn:aws:lambda:us-east-1:35667example:function:CreateThumbnail",
                 }
             ]
         },
@@ -49,7 +49,7 @@ update_event = {
                 {
                     "Id": "new-function-hash",
                     "Events": ["s3:ObjectCreated:*"],
-                    "QueueArn": "arn:aws:sqs:us-east-1:444455556666:new-queue",
+                    "LambdaFunctionArn": "arn:aws:lambda:us-east-1:35667example:function:NewCreateThumbnail",
                 }
             ]
         },
@@ -84,9 +84,13 @@ class MockContext(object):
     log_stream_name = "log_stream_name"
 
 
-def setup_s3_bucket():
+def setup_s3_bucket(no_bucket_config: bool = False):
     s3_client = boto3.client("s3", region_name="us-east-1")
     s3_client.create_bucket(Bucket=bucket_name)
+
+    if no_bucket_config:
+        return
+
     s3_client.put_bucket_notification_configuration(
         Bucket=bucket_name,
         NotificationConfiguration={
@@ -189,14 +193,44 @@ class LambdaTest(unittest.TestCase):
     @mock_s3
     @patch("urllib.request.urlopen")
     def test_update_config(self, _):
+        # GIVEN A bucket with an existing configuration with Id "old-function-hash"
+        # AND an Update event with the new incoming configuration with Id "new-function-hash"
         setup_s3_bucket()
         from src import index
 
+        # WHEN calling the handler
         index.handler(update_event, MockContext())
 
+        # THEN replace Id "old-function-hash" config with new config of "new-function-hash"
+        # AND keep the other configurations untouched
         s3_client = boto3.client("s3", region_name="us-east-1")
         config = s3_client.get_bucket_notification_configuration(Bucket=bucket_name)
-        print(config)
+        self.assertIsNotNone(config.get("TopicConfigurations"))
+        self.assertIsNotNone(config.get("QueueConfigurations"))
+        lambda_configs = config.get("LambdaFunctionConfigurations")
+        self.assertIsNotNone(lambda_configs)
+        self.assertEqual(1, len(lambda_configs))
+        lambda_config = lambda_configs[0]
+        self.assertEqual("new-function-hash", lambda_config.get("Id"))
+
+    @mock_s3
+    @patch("urllib.request.urlopen")
+    def test_add_to_new_bucket(self, mock_call: MagicMock):
+        setup_s3_bucket(no_bucket_config=True)
+        from src import index
+
+        index.handler(create_event, MockContext())
+
+        mock_call.assert_called()
+        s3_client = boto3.client("s3", region_name="us-east-1")
+        config = s3_client.get_bucket_notification_configuration(Bucket=bucket_name)
+        self.assertIsNone(config.get("LambdaFunctionConfigurations"))
+        self.assertIsNone(config.get("TopicConfigurations"))
+
+        queue_configuration_list = config.get("QueueConfigurations")
+        self.assertIsNotNone(queue_configuration_list)
+        self.assertEqual(1, len(queue_configuration_list))
+        self.assertEqual("my-function-hash", queue_configuration_list[0]["Id"])
 
 
 if __name__ == "__main__":

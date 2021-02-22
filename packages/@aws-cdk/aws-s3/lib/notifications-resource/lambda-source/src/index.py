@@ -33,16 +33,17 @@ def prepare_config(config: dict, in_config: dict, old_config: dict) -> dict:
 def filter_config(config: dict, config_type: str, in_config: dict, old_config: dict):
     in_config.setdefault(config_type, [])
     if config_type not in config:
+        config.setdefault(config_type, [])
         return
     # Filter out new incoming
     configs, in_ids = config[config_type], ids(in_config[config_type])
     config[config_type] = [item for item in configs if item["Id"] not in in_ids]
+    # Filter out old configs
     if old_config is None:
         return
     old_configs = old_config.get(config_type)
     if old_configs is None:
         return
-    # Filter out old configs
     old_ids = ids(old_configs)
     config[config_type] = [item for item in configs if item["Id"] not in old_ids]
 
@@ -59,7 +60,7 @@ def merge_in_config(config: dict, in_config: dict) -> dict:
 
 
 def extend_config(config: dict, in_config: dict, config_type: str):
-    config.get(config_type, []).extend(in_config[config_type])
+    config[config_type].extend(in_config[config_type])
 
 
 def submit_response(event: dict, context, response_status: str):
