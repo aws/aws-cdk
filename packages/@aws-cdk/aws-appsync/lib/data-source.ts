@@ -126,7 +126,11 @@ export abstract class BaseDataSource extends CoreConstruct {
    * creates a new resolver for this datasource and API using the given properties
    */
   public createResolver(props: BaseResolverProps): Resolver {
-    return this.api.createResolver({ dataSource: this, ...props });
+    return new Resolver(this, `${props.typeName}${props.fieldName}Resolver`, {
+      api: this.api,
+      dataSource: this,
+      ...props,
+    });
   }
 
   /**
@@ -306,6 +310,12 @@ export interface RdsDataSourceProps extends BackedDataSourceProps {
    * The secret containing the credentials for the database
    */
   readonly secretStore: ISecret;
+  /**
+   * The name of the database to use within the cluster
+   *
+   * @default - None
+   */
+  readonly databaseName?: string;
 }
 
 /**
@@ -327,6 +337,7 @@ export class RdsDataSource extends BackedDataSource {
             },
           }),
           awsSecretStoreArn: props.secretStore.secretArn,
+          databaseName: props.databaseName,
         },
         relationalDatabaseSourceType: 'RDS_HTTP_ENDPOINT',
       },
