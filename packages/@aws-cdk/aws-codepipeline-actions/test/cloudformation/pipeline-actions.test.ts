@@ -5,12 +5,12 @@ import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
 import * as constructs from 'constructs';
 import * as _ from 'lodash';
-import * as nodeunit from 'nodeunit';
+import { nodeunitShim, Test } from 'nodeunit-shim';
 import * as cpactions from '../../lib';
 
-export = nodeunit.testCase({
+nodeunitShim({
   CreateReplaceChangeSet: {
-    'works'(test: nodeunit.Test) {
+    'works'(test: Test) {
       const app = new cdk.App();
       const stack = new cdk.Stack(app, 'Stack');
       const pipelineRole = new RoleDouble(stack, 'PipelineRole');
@@ -51,7 +51,7 @@ export = nodeunit.testCase({
       test.done();
     },
 
-    'uses a single permission statement if the same ChangeSet name is used'(test: nodeunit.Test) {
+    'uses a single permission statement if the same ChangeSet name is used'(test: Test) {
       const stack = new cdk.Stack();
       const pipelineRole = new RoleDouble(stack, 'PipelineRole');
       const artifact = new codepipeline.Artifact('TestArtifact');
@@ -110,7 +110,7 @@ export = nodeunit.testCase({
   },
 
   ExecuteChangeSet: {
-    'works'(test: nodeunit.Test) {
+    'works'(test: Test) {
       const stack = new cdk.Stack();
       const pipelineRole = new RoleDouble(stack, 'PipelineRole');
       const stage = new StageDouble({
@@ -137,7 +137,7 @@ export = nodeunit.testCase({
       test.done();
     },
 
-    'uses a single permission statement if the same ChangeSet name is used'(test: nodeunit.Test) {
+    'uses a single permission statement if the same ChangeSet name is used'(test: Test) {
       const stack = new cdk.Stack();
       const pipelineRole = new RoleDouble(stack, 'PipelineRole');
       new StageDouble({
@@ -181,7 +181,7 @@ export = nodeunit.testCase({
     },
   },
 
-  'the CreateUpdateStack Action sets the DescribeStack*, Create/Update/DeleteStack & PassRole permissions'(test: nodeunit.Test) {
+  'the CreateUpdateStack Action sets the DescribeStack*, Create/Update/DeleteStack & PassRole permissions'(test: Test) {
     const stack = new cdk.Stack();
     const pipelineRole = new RoleDouble(stack, 'PipelineRole');
     const action = new cpactions.CloudFormationCreateUpdateStackAction({
@@ -207,7 +207,7 @@ export = nodeunit.testCase({
     test.done();
   },
 
-  'the DeleteStack Action sets the DescribeStack*, DeleteStack & PassRole permissions'(test: nodeunit.Test) {
+  'the DeleteStack Action sets the DescribeStack*, DeleteStack & PassRole permissions'(test: Test) {
     const stack = new cdk.Stack();
     const pipelineRole = new RoleDouble(stack, 'PipelineRole');
     const action = new cpactions.CloudFormationDeleteStackAction({
@@ -238,7 +238,7 @@ interface PolicyStatementJson {
 }
 
 function _assertActionMatches(
-  test: nodeunit.Test,
+  test: Test,
   stack: cdk.Stack,
   actions: FullAction[],
   provider: string,
@@ -279,7 +279,7 @@ function _hasAction(
 }
 
 function _assertPermissionGranted(
-  test: nodeunit.Test,
+  test: Test,
   stack: cdk.Stack,
   statements: iam.PolicyStatement[],
   action: string,
