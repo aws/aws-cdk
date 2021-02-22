@@ -1,5 +1,5 @@
 /* eslint-disable no-console */
-import type { IsCompleteRequest, IsCompleteResponse, OnEventRequest, OnEventResponse } from '@aws-cdk/custom-resources/lib/provider-framework/types';
+import type { OnEventRequest } from '@aws-cdk/custom-resources/lib/provider-framework/types';
 import { DynamoDB } from 'aws-sdk'; // eslint-disable-line import/no-extraneous-dependencies
 const dynamodb = new DynamoDB({ apiVersion: '2012-08-10' });
 
@@ -9,7 +9,7 @@ export async function disableTimeToLive(event: OnEventRequest) {
   await dynamodb.updateTimeToLive({
     TableName: event.ResourceProperties.TableName,
     TimeToLiveSpecification: {
-      AttributeName: ttl.TimeToLiveDescription.AttributeName,
+      AttributeName: ttl.TimeToLiveDescription?.AttributeName ?? '',
       Enabled: false,
     },
   }).promise();

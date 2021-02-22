@@ -65,7 +65,7 @@ export async function isCompleteHandler(event: IsCompleteRequest): Promise<IsCom
 
 async function isTimeToLiveStable(event: OnEventRequest): Promise<boolean> {
   const currentTtl = await dynamodb.describeTimeToLive({
-    TableName: event.ResourceProperties.TableName
+    TableName: event.ResourceProperties.TableName,
   }).promise();
 
   return !!(
