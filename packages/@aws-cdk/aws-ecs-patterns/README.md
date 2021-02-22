@@ -305,6 +305,7 @@ const ecsScheduledTask = new ScheduledEc2Task(stack, 'ScheduledTask', {
     environment: { name: 'TRIGGER', value: 'CloudWatch Events' },
   },
   schedule: events.Schedule.expression('rate(1 minute)'),
+  enabled: true,
   ruleName: 'sample-scheduled-task-rule'
 });
 ```
@@ -393,6 +394,7 @@ const loadBalancedFargateService = new ApplicationLoadBalancedFargateService(sta
 });
 ```
 
+
 ### Set deployment configuration on QueueProcessingService
 
 ```ts
@@ -408,6 +410,29 @@ const queueProcessingFargateService = new QueueProcessingFargateService(stack, '
   maxScalingCapacity: 5,
   maxHealthyPercent: 200,
   minHealthPercent: 66,
+});
+```
+
+### Set taskSubnets and securityGroups for QueueProcessingFargateService
+
+```ts
+const queueProcessingFargateService = new QueueProcessingFargateService(stack, 'Service', {
+  vpc,
+  memoryLimitMiB: 512,
+  image: ecs.ContainerImage.fromRegistry('test'),
+  securityGroups: [securityGroup],
+  taskSubnets: { subnetType: ec2.SubnetType.ISOLATED },
+});
+```
+
+### Define tasks with public IPs for QueueProcessingFargateService
+
+```ts
+const queueProcessingFargateService = new QueueProcessingFargateService(stack, 'Service', {
+  vpc,
+  memoryLimitMiB: 512,
+  image: ecs.ContainerImage.fromRegistry('test'),
+  assignPublicIp: true,
 });
 ```
 

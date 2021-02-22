@@ -310,4 +310,103 @@ export = {
 
     test.done();
   },
+
+  'can set custom networking options'(test: Test) {
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC', {
+      subnetConfiguration: [
+        {
+          cidrMask: 24,
+          name: 'Public',
+          subnetType: ec2.SubnetType.PUBLIC,
+        },
+        {
+          cidrMask: 24,
+          name: 'Isolated',
+          subnetType: ec2.SubnetType.ISOLATED,
+        },
+      ],
+    });
+    const securityGroup = new ec2.SecurityGroup(stack, 'MyCustomSG', {
+      vpc,
+    });
+
+    // WHEN - SecurityGroups and taskSubnets selection is defined
+    new ecsPatterns.QueueProcessingFargateService(stack, 'Service', {
+      vpc,
+      memoryLimitMiB: 512,
+      image: ecs.ContainerImage.fromRegistry('test'),
+      securityGroups: [securityGroup],
+      taskSubnets: { subnetType: ec2.SubnetType.ISOLATED },
+    });
+
+    // THEN - NetworkConfiguration is created with the specific security groups and selected subnets
+    expect(stack).to(haveResource('AWS::ECS::Service', {
+      LaunchType: 'FARGATE',
+      NetworkConfiguration: {
+        AwsvpcConfiguration: {
+          AssignPublicIp: 'DISABLED',
+          SecurityGroups: [
+            {
+              'Fn::GetAtt': [
+                'MyCustomSGDE27C661',
+                'GroupId',
+              ],
+            },
+          ],
+          Subnets: [
+            {
+              Ref: 'VPCIsolatedSubnet1SubnetEBD00FC6',
+            },
+            {
+              Ref: 'VPCIsolatedSubnet2Subnet4B1C8CAA',
+            },
+          ],
+        },
+      },
+    }));
+
+    test.done();
+  },
+
+  'can set use public IP'(test: Test) {
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN - Assign Public IP is set to True
+    new ecsPatterns.QueueProcessingFargateService(stack, 'Service', {
+      vpc,
+      memoryLimitMiB: 512,
+      image: ecs.ContainerImage.fromRegistry('test'),
+      assignPublicIp: true,
+    });
+
+    // THEN - The Subnets defaults to Public and AssignPublicIp settings change to ENABLED
+    expect(stack).to(haveResource('AWS::ECS::Service', {
+      LaunchType: 'FARGATE',
+      NetworkConfiguration: {
+        AwsvpcConfiguration: {
+          AssignPublicIp: 'ENABLED',
+          SecurityGroups: [
+            {
+              'Fn::GetAtt': [
+                'ServiceQueueProcessingFargateServiceSecurityGroup6E981512',
+                'GroupId',
+              ],
+            },
+          ],
+          Subnets: [
+            {
+              Ref: 'VPCPublicSubnet1SubnetB4246D30',
+            },
+            {
+              Ref: 'VPCPublicSubnet2Subnet74179F39',
+            },
+          ],
+        },
+      },
+    }));
+
+    test.done();
+  },
 };

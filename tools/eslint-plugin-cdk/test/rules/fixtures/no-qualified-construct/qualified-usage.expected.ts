@@ -1,4 +1,7 @@
 import * as cdk from '@aws-cdk/core';
-import * as constructs from 'constructs';
 
-let x: constructs.Construct;
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct } from '@aws-cdk/core';
+
+let x: Construct;
