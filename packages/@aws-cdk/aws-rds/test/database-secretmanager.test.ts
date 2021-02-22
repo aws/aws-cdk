@@ -2,10 +2,10 @@ import { ABSENT, expect, haveResource, ResourcePart } from '@aws-cdk/assert';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import * as cdk from '@aws-cdk/core';
-import { Test } from 'nodeunit';
+import { nodeunitShim, Test } from 'nodeunit-shim';
 import { ServerlessCluster, DatabaseClusterEngine, ParameterGroup, Credentials } from '../lib';
 
-export = {
+nodeunitShim({
   'can create a Serverless Cluster using an existing secret from secretmanager'(test: Test) {
     // GIVEN
     const stack = testStack();
@@ -47,7 +47,7 @@ export = {
 
     test.done();
   },
-};
+});
 
 function testStack() {
   const stack = new cdk.Stack(undefined, undefined, { env: { account: '12345', region: 'us-test-1' } });
