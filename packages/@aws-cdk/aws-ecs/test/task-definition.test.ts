@@ -1,9 +1,9 @@
 import { expect, haveResource } from '@aws-cdk/assert';
 import * as cdk from '@aws-cdk/core';
-import { Test } from 'nodeunit';
+import { nodeunitShim, Test } from 'nodeunit-shim';
 import * as ecs from '../lib';
 
-export = {
+nodeunitShim({
   'A task definition with both compatibilities defaults to networkmode AwsVpc'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
@@ -22,4 +22,4 @@ export = {
 
     test.done();
   },
-};
+});
