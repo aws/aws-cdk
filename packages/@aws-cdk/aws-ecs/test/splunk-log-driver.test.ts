@@ -1,13 +1,13 @@
 import { expect, haveResourceLike } from '@aws-cdk/assert';
 import * as cdk from '@aws-cdk/core';
-import { Test } from 'nodeunit';
+import { nodeunitShim, Test } from 'nodeunit-shim';
 import * as ecs from '../lib';
 
 let stack: cdk.Stack;
 let td: ecs.TaskDefinition;
 const image = ecs.ContainerImage.fromRegistry('test-image');
 
-export = {
+nodeunitShim({
   'setUp'(cb: () => void) {
     stack = new cdk.Stack();
     td = new ecs.Ec2TaskDefinition(stack, 'TaskDefinition');
@@ -103,4 +103,4 @@ export = {
 
     test.done();
   },
-};
+});
