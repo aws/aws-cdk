@@ -811,7 +811,7 @@ Step Functions supports [AWS SageMaker](https://docs.aws.amazon.com/step-functio
 You can call the [`CreateTrainingJob`](https://docs.aws.amazon.com/sagemaker/latest/dg/API_CreateTrainingJob.html) API from a `Task` state.
 
 ```ts
-new sfn.SagemakerTrainTask(this, 'TrainSagemaker', {
+new sfn.SageMakerCreateTrainingJob(this, 'TrainSagemaker', {
   trainingJobName: sfn.JsonPath.stringAt('$.JobName'),
   role,
   algorithmSpecification: {
@@ -846,7 +846,7 @@ new sfn.SagemakerTrainTask(this, 'TrainSagemaker', {
 You can call the [`CreateTransformJob`](https://docs.aws.amazon.com/sagemaker/latest/dg/API_CreateTransformJob.html) API from a `Task` state.
 
 ```ts
-new sfn.SagemakerTransformTask(this, 'Batch Inference', {
+new sfn.SageMakerCreateTransformJob(this, 'Batch Inference', {
   transformJobName: 'MyTransformJob',
   modelName: 'MyModelName',
   modelClientOptions: {

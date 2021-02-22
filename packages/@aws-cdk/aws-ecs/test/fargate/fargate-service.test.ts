@@ -6,11 +6,11 @@ import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import * as cloudmap from '@aws-cdk/aws-servicediscovery';
 import * as cdk from '@aws-cdk/core';
-import { Test } from 'nodeunit';
+import { nodeunitShim, Test } from 'nodeunit-shim';
 import * as ecs from '../../lib';
 import { DeploymentControllerType, LaunchType } from '../../lib/base/base-service';
 
-export = {
+nodeunitShim({
   'When creating a Fargate Service': {
     'with only required properties set, it correctly sets default properties'(test: Test) {
       // GIVEN
@@ -1935,4 +1935,4 @@ export = {
       test.done();
     },
   },
-};
+});
