@@ -1,11 +1,11 @@
 import * as path from 'path';
 import * as cdk from '@aws-cdk/core';
-import { Test } from 'nodeunit';
+import { nodeunitShim, Test } from 'nodeunit-shim';
 import * as ecs from '../lib';
 
 /* eslint-disable dot-notation */
 
-export = {
+nodeunitShim({
   'ecs.EnvironmentFile.fromAsset': {
     'fails if asset is not a single file'(test: Test) {
       // GIVEN
@@ -45,7 +45,7 @@ export = {
       test.done();
     },
   },
-};
+});
 
 function defineContainerDefinition(stack: cdk.Stack, environmentFile: ecs.EnvironmentFile) {
   const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');

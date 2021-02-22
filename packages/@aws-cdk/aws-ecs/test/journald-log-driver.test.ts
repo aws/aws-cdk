@@ -1,13 +1,13 @@
 import { expect, haveResourceLike } from '@aws-cdk/assert';
 import * as cdk from '@aws-cdk/core';
-import { Test } from 'nodeunit';
+import { nodeunitShim, Test } from 'nodeunit-shim';
 import * as ecs from '../lib';
 
 let stack: cdk.Stack;
 let td: ecs.TaskDefinition;
 const image = ecs.ContainerImage.fromRegistry('test-image');
 
-export = {
+nodeunitShim({
   'setUp'(cb: () => void) {
     stack = new cdk.Stack();
     td = new ecs.Ec2TaskDefinition(stack, 'TaskDefinition');
@@ -15,12 +15,12 @@ export = {
     cb();
   },
 
-  'create a json-file log driver with options'(test: Test) {
+  'create a journald log driver with options'(test: Test) {
     // WHEN
     td.addContainer('Container', {
       image,
-      logging: new ecs.JsonFileLogDriver({
-        env: ['hello'],
+      logging: new ecs.JournaldLogDriver({
+        tag: 'hello',
       }),
       memoryLimitMiB: 128,
     });
@@ -30,9 +30,9 @@ export = {
       ContainerDefinitions: [
         {
           LogConfiguration: {
-            LogDriver: 'json-file',
+            LogDriver: 'journald',
             Options: {
-              env: 'hello',
+              tag: 'hello',
             },
           },
         },
@@ -42,11 +42,11 @@ export = {
     test.done();
   },
 
-  'create a json-file log driver without options'(test: Test) {
+  'create a journald log driver without options'(test: Test) {
     // WHEN
     td.addContainer('Container', {
       image,
-      logging: new ecs.JsonFileLogDriver(),
+      logging: new ecs.JournaldLogDriver(),
       memoryLimitMiB: 128,
     });
 
@@ -55,7 +55,7 @@ export = {
       ContainerDefinitions: [
         {
           LogConfiguration: {
-            LogDriver: 'json-file',
+            LogDriver: 'journald',
           },
         },
       ],
@@ -64,11 +64,11 @@ export = {
     test.done();
   },
 
-  'create a json-file log driver using json-file'(test: Test) {
+  'create a journald log driver using journald'(test: Test) {
     // WHEN
     td.addContainer('Container', {
       image,
-      logging: ecs.LogDrivers.jsonFile(),
+      logging: ecs.LogDrivers.journald(),
       memoryLimitMiB: 128,
     });
 
@@ -77,7 +77,7 @@ export = {
       ContainerDefinitions: [
         {
           LogConfiguration: {
-            LogDriver: 'json-file',
+            LogDriver: 'journald',
             Options: {},
           },
         },
@@ -86,4 +86,4 @@ export = {
 
     test.done();
   },
-};
+});
