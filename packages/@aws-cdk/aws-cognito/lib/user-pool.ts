@@ -1,6 +1,6 @@
 import { IRole, PolicyDocument, PolicyStatement, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
-import { Duration, IResource, Lazy, Names, Resource, Stack, Token } from '@aws-cdk/core';
+import { Duration, IResource, Lazy, Names, RemovalPolicy, Resource, Stack, Token } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { toASCII as punycodeEncode } from 'punycode/';
 import { CfnUserPool } from './cognito.generated';
@@ -567,6 +567,13 @@ export interface UserPoolProps {
    * @default AccountRecovery.PHONE_WITHOUT_MFA_AND_EMAIL
    */
   readonly accountRecovery?: AccountRecovery;
+
+  /**
+   * Policy to apply when the user pool is removed from the stack
+   *
+   * @default RemovalPolicy.RETAIN
+   */
+  readonly removalPolicy?: RemovalPolicy;
 }
 
 /**
@@ -756,6 +763,7 @@ export class UserPool extends UserPoolBase {
       }),
       accountRecoverySetting: this.accountRecovery(props),
     });
+    userPool.applyRemovalPolicy(props.removalPolicy);
 
     this.userPoolId = userPool.ref;
     this.userPoolArn = userPool.attrArn;
