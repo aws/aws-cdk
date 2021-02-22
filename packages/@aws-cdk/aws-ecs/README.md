@@ -671,6 +671,20 @@ taskDefinition.addContainer('TheContainer', {
 });
 ```
 
+## Associate With Pre-Existing CloudMap Services
+
+You may associate an ECS with a pre-existing cloudmap service. To do this, use
+the service's `associateCloudMapService` method:
+
+```ts
+const cloudMapService = new cloudmap.Service(...);
+const ecsService = new ecs.FargateService(...);
+
+ecsService.associateCloudMapService({
+  service: cloudMapService,
+});
+```
+
 ## Capacity Providers
 
 Currently, only `FARGATE` and `FARGATE_SPOT` capacity providers are supported.
