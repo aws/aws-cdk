@@ -101,20 +101,21 @@
           "Ref": "LambdaProxyApi67594471"
         },
         "RouteKey": "$default",
+        "AuthorizationScopes": [],
         "Target": {
           "Fn::Join": [
             "",
             [
               "integrations/",
               {
-                "Ref": "LambdaProxyApiHttpIntegration5fc3e065dcc18f77be1ff86cabb5294a98B12A6C"
+                "Ref": "LambdaProxyApiDefaultRouteHttpIntegration70df0ec52c3e3b6bbc96e64ce3a05f24EE575CBA"
               }
             ]
           ]
         }
       }
     },
-    "LambdaProxyApiHttpIntegration5fc3e065dcc18f77be1ff86cabb5294a98B12A6C": {
+    "LambdaProxyApiDefaultRouteHttpIntegration70df0ec52c3e3b6bbc96e64ce3a05f24EE575CBA": {
       "Type": "AWS::ApiGatewayV2::Integration",
       "Properties": {
         "ApiId": {

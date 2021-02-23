@@ -1,11 +1,20 @@
 import '@aws-cdk/assert/jest';
 import * as lambda from '@aws-cdk/aws-lambda';
 import { App, Stack } from '@aws-cdk/core';
-import { AllowedMethods, CachedMethods, CachePolicy, LambdaEdgeEventType, OriginRequestPolicy, ViewerProtocolPolicy } from '../../lib';
+import { AllowedMethods, CachedMethods, CachePolicy, KeyGroup, LambdaEdgeEventType, OriginRequestPolicy, PublicKey, ViewerProtocolPolicy } from '../../lib';
 import { CacheBehavior } from '../../lib/private/cache-behavior';
 
 let app: App;
 let stack: Stack;
+const publicKey = `-----BEGIN PUBLIC KEY-----
+MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAudf8/iNkQgdvjEdm6xYS
+JAyxd/kGTbJfQNg9YhInb7TSm0dGu0yx8yZ3fnpmxuRPqJIlaVr+fT4YRl71gEYa
+dlhHmnVegyPNjP9dNqZ7zwNqMEPOPnS/NOHbJj1KYKpn1f8pPNycQ5MQCntKGnSj
+6fc+nbcC0joDvGz80xuy1W4hLV9oC9c3GT26xfZb2jy9MVtA3cppNuTwqrFi3t6e
+0iGpraxZlT5wewjZLpQkngqYr6s3aucPAZVsGTEYPo4nD5mswmtZOm+tgcOrivtD
+/3sD/qZLQ6c5siqyS8aTraD6y+VXugujfarTU65IeZ6QAUbLMsWuZOIi5Jn8zAwx
+NQIDAQAB
+-----END PUBLIC KEY-----`;
 
 beforeEach(() => {
   app = new App();
@@ -30,6 +39,15 @@ test('renders the minimum template with an origin and path specified', () => {
 
 test('renders with all properties specified', () => {
   const fnVersion = lambda.Version.fromVersionArn(stack, 'Version', 'arn:aws:lambda:testregion:111111111111:function:myTestFun:v1');
+  const pubKey = new PublicKey(stack, 'MyPublicKey', {
+    encodedKey: publicKey,
+  });
+  const keyGroup = new KeyGroup(stack, 'MyKeyGroup', {
+    items: [
+      pubKey,
+    ],
+  });
+
   const behavior = new CacheBehavior('origin_id', {
     pathPattern: '*',
     allowedMethods: AllowedMethods.ALLOW_ALL,
@@ -44,6 +62,7 @@ test('renders with all properties specified', () => {
       includeBody: true,
       functionVersion: fnVersion,
     }],
+    trustedKeyGroups: [keyGroup],
   });
 
   expect(behavior._renderBehavior()).toEqual({
@@ -61,6 +80,9 @@ test('renders with all properties specified', () => {
       eventType: 'origin-request',
       includeBody: true,
     }],
+    trustedKeyGroups: [
+      keyGroup.keyGroupId,
+    ],
   });
 });
 

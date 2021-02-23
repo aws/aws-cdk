@@ -63,7 +63,7 @@ nodeunitShim({
     test.done();
   },
 
-  'with crossAccountZoneDelegationPrinciple'(test: Test) {
+  'with crossAccountZoneDelegationPrincipal'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack(undefined, 'TestStack', {
       env: { account: '123456789012', region: 'us-east-1' },

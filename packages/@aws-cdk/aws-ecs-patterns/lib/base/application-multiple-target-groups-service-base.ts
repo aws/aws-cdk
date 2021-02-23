@@ -478,10 +478,8 @@ export abstract class ApplicationMultipleTargetGroupsServiceBase extends CoreCon
    * Create log driver if logging is enabled.
    */
   private createLogDriver(enableLoggingProp?: boolean, logDriverProp?: LogDriver): LogDriver | undefined {
-    const enableLogging = enableLoggingProp !== undefined ? enableLoggingProp : true;
-    const logDriver = logDriverProp !== undefined
-      ? logDriverProp : enableLogging
-        ? this.createAWSLogDriver(this.node.id) : undefined;
+    const enableLogging = enableLoggingProp ?? true;
+    const logDriver = logDriverProp ?? (enableLogging ? this.createAWSLogDriver(this.node.id) : undefined);
     return logDriver;
   }
 
@@ -522,7 +520,7 @@ export abstract class ApplicationMultipleTargetGroupsServiceBase extends CoreCon
   }
 
   private createLoadBalancer(name: string, publicLoadBalancer?: boolean): ApplicationLoadBalancer {
-    const internetFacing = publicLoadBalancer !== undefined ? publicLoadBalancer : true;
+    const internetFacing = publicLoadBalancer ?? true;
     const lbProps = {
       vpc: this.cluster.vpc,
       internetFacing,
@@ -532,7 +530,7 @@ export abstract class ApplicationMultipleTargetGroupsServiceBase extends CoreCon
   }
 
   private createListenerProtocol(listenerProtocol?: ApplicationProtocol, certificate?: ICertificate): ApplicationProtocol {
-    return listenerProtocol !== undefined ? listenerProtocol : (certificate ? ApplicationProtocol.HTTPS : ApplicationProtocol.HTTP);
+    return listenerProtocol ?? (certificate ? ApplicationProtocol.HTTPS : ApplicationProtocol.HTTP);
   }
 
   private createListenerCertificate(listenerName: string, certificate?: ICertificate, domainName?: string, domainZone?: IHostedZone): ICertificate {

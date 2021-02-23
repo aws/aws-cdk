@@ -117,7 +117,7 @@ import * as route53 from '@aws-cdk/aws-route53';
 // In the account containing the HostedZone
 const parentZone = new route53.PublicHostedZone(this, 'HostedZone', {
   zoneName: 'someexample.com',
-  crossAccountZoneDelegationPrinciple: new iam.AccountPrincipal('12345678901')
+  crossAccountZoneDelegationPrincipal: new iam.AccountPrincipal('12345678901')
 });
 
 // In this account
@@ -169,9 +169,7 @@ Alternatively, use the `HostedZone.fromHostedZoneId` to import hosted zones if
 you know the ID and the retrieval for the `zoneName` is undesirable.
 
 ```ts
-const zone = HostedZone.fromHostedZoneId(this, 'MyZone', {
-  hostedZoneId: 'ZOJJZC49E0EPZ',
-});
+const zone = HostedZone.fromHostedZoneId(this, 'MyZone', 'ZOJJZC49E0EPZ');
 ```
 
 ## VPC Endpoint Service Private DNS

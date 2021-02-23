@@ -305,6 +305,7 @@ const ecsScheduledTask = new ScheduledEc2Task(stack, 'ScheduledTask', {
     environment: { name: 'TRIGGER', value: 'CloudWatch Events' },
   },
   schedule: events.Schedule.expression('rate(1 minute)'),
+  enabled: true,
   ruleName: 'sample-scheduled-task-rule'
 });
 ```
@@ -393,6 +394,7 @@ const loadBalancedFargateService = new ApplicationLoadBalancedFargateService(sta
 });
 ```
 
+
 ### Set deployment configuration on QueueProcessingService
 
 ```ts
@@ -411,6 +413,29 @@ const queueProcessingFargateService = new QueueProcessingFargateService(stack, '
 });
 ```
 
+### Set taskSubnets and securityGroups for QueueProcessingFargateService
+
+```ts
+const queueProcessingFargateService = new QueueProcessingFargateService(stack, 'Service', {
+  vpc,
+  memoryLimitMiB: 512,
+  image: ecs.ContainerImage.fromRegistry('test'),
+  securityGroups: [securityGroup],
+  taskSubnets: { subnetType: ec2.SubnetType.ISOLATED },
+});
+```
+
+### Define tasks with public IPs for QueueProcessingFargateService
+
+```ts
+const queueProcessingFargateService = new QueueProcessingFargateService(stack, 'Service', {
+  vpc,
+  memoryLimitMiB: 512,
+  image: ecs.ContainerImage.fromRegistry('test'),
+  assignPublicIp: true,
+});
+```
+
 ### Select specific vpc subnets for ApplicationLoadBalancedFargateService
 
 ```ts
@@ -425,5 +450,19 @@ const loadBalancedFargateService = new ApplicationLoadBalancedFargateService(sta
   vpcSubnets: {
     subnets: [ec2.Subnet.fromSubnetId(stack, 'subnet', 'VpcISOLATEDSubnet1Subnet80F07FA0')],
   },
+});
+```
+
+### Set PlatformVersion for ScheduledFargateTask
+
+```ts
+const scheduledFargateTask = new ScheduledFargateTask(stack, 'ScheduledFargateTask', {
+  cluster,
+  scheduledFargateTaskImageOptions: {
+    image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+    memoryLimitMiB: 512,
+  },
+  schedule: events.Schedule.expression('rate(1 minute)'),
+  platformVersion: ecs.FargatePlatformVersion.VERSION1_4,
 });
 ```

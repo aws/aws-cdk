@@ -43,28 +43,28 @@ export class Runtime {
   /**
    * The NodeJS runtime (nodejs)
    *
-   * @deprecated Use {@link NODEJS_10_X}
+   * @deprecated Use {@link NODEJS_12_X}
    */
   public static readonly NODEJS = new Runtime('nodejs', RuntimeFamily.NODEJS, { supportsInlineCode: true });
 
   /**
    * The NodeJS 4.3 runtime (nodejs4.3)
    *
-   * @deprecated Use {@link NODEJS_10_X}
+   * @deprecated Use {@link NODEJS_12_X}
    */
   public static readonly NODEJS_4_3 = new Runtime('nodejs4.3', RuntimeFamily.NODEJS, { supportsInlineCode: true });
 
   /**
    * The NodeJS 6.10 runtime (nodejs6.10)
    *
-   * @deprecated Use {@link NODEJS_10_X}
+   * @deprecated Use {@link NODEJS_12_X}
    */
   public static readonly NODEJS_6_10 = new Runtime('nodejs6.10', RuntimeFamily.NODEJS, { supportsInlineCode: true });
 
   /**
    * The NodeJS 8.10 runtime (nodejs8.10)
    *
-   * @deprecated Use {@link NODEJS_10_X}
+   * @deprecated Use {@link NODEJS_12_X}
    */
   public static readonly NODEJS_8_10 = new Runtime('nodejs8.10', RuntimeFamily.NODEJS, { supportsInlineCode: true });
 
@@ -77,6 +77,11 @@ export class Runtime {
    * The NodeJS 12.x runtime (nodejs12.x)
    */
   public static readonly NODEJS_12_X = new Runtime('nodejs12.x', RuntimeFamily.NODEJS, { supportsInlineCode: true });
+
+  /**
+   * The NodeJS 14.x runtime (nodejs14.x)
+   */
+  public static readonly NODEJS_14_X = new Runtime('nodejs14.x', RuntimeFamily.NODEJS, { supportsInlineCode: false });
 
   /**
    * The Python 2.7 runtime (python2.7)
@@ -103,6 +108,7 @@ export class Runtime {
    * The Python 3.8 runtime (python3.8)
    */
   public static readonly PYTHON_3_8 = new Runtime('python3.8', RuntimeFamily.PYTHON, {
+    supportsInlineCode: true,
     supportsCodeGuruProfiling: true,
   });
 
