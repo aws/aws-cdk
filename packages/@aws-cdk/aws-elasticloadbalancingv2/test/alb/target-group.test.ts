@@ -89,7 +89,7 @@ describe('tests', () => {
     });
   });
 
-  test('Load balancer cookie stickiness - deprecated', () => {
+  test('Load balancer duration cookie stickiness', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'Stack');
@@ -120,7 +120,7 @@ describe('tests', () => {
     });
   });
 
-  test('Load balancer cookie stickiness', () => {
+  test('Load balancer app cookie stickiness', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'Stack');
@@ -128,54 +128,8 @@ describe('tests', () => {
 
     // WHEN
     new elbv2.ApplicationTargetGroup(stack, 'TargetGroup', {
-      loadBalancerStickinessCookieDuration: cdk.Duration.minutes(5),
-      vpc,
-    });
-
-    // THEN
-    expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::TargetGroup', {
-      TargetGroupAttributes: [
-        {
-          Key: 'stickiness.enabled',
-          Value: 'true',
-        },
-        {
-          Key: 'stickiness.type',
-          Value: 'lb_cookie',
-        },
-        {
-          Key: 'stickiness.lb_cookie.duration_seconds',
-          Value: '300',
-        },
-      ],
-    });
-  });
-
-  test('Bad app cookie example - missing cookie name', () => {
-    // GIVEN
-    const app = new cdk.App();
-    const stack = new cdk.Stack(app, 'Stack');
-    const vpc = new ec2.Vpc(stack, 'VPC', {});
-
-    // THEN
-    expect(() => {
-      new elbv2.ApplicationTargetGroup(stack, 'TargetGroup', {
-        appStickinessCookieDuration: cdk.Duration.minutes(5),
-        vpc,
-      });
-    }).toThrow(/When setting appStickinessCookieDuration you must provide appCookieName property./);
-  });
-
-  test('App cookie stickiness', () => {
-    // GIVEN
-    const app = new cdk.App();
-    const stack = new cdk.Stack(app, 'Stack');
-    const vpc = new ec2.Vpc(stack, 'VPC', {});
-
-    // WHEN
-    new elbv2.ApplicationTargetGroup(stack, 'TargetGroup', {
-      appStickinessCookieDuration: cdk.Duration.minutes(5),
-      appCookieName: 'MyDeliciousCookie',
+      stickinessCookieDuration: cdk.Duration.minutes(5),
+      stickinessCookieName: 'MyDeliciousCookie',
       vpc,
     });
 
@@ -202,7 +156,39 @@ describe('tests', () => {
     });
   });
 
-  test('Fail when LB and APP cookie are set', () => {
+  test('Bad stickiness cookie names example', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'Stack');
+    const vpc = new ec2.Vpc(stack, 'VPC', {});
+
+    // THEN
+    expect(() => {
+      new elbv2.ApplicationTargetGroup(stack, 'TargetGroup1', {
+        stickinessCookieDuration: cdk.Duration.minutes(5),
+        stickinessCookieName: 'AWSALBCookieName',
+        vpc,
+      });
+    }).toThrow(/App cookie names that start with the following prefixes are not allowed: AWSALB, AWSALBAPP, and AWSALBTG; they're reserved for use by the load balancer./);
+
+    expect(() => {
+      new elbv2.ApplicationTargetGroup(stack, 'TargetGroup2', {
+        stickinessCookieDuration: cdk.Duration.minutes(5),
+        stickinessCookieName: 'AWSALBstickinessCookieName',
+        vpc,
+      });
+    }).toThrow(/App cookie names that start with the following prefixes are not allowed: AWSALB, AWSALBAPP, and AWSALBTG; they're reserved for use by the load balancer./);
+
+    expect(() => {
+      new elbv2.ApplicationTargetGroup(stack, 'TargetGroup3', {
+        stickinessCookieDuration: cdk.Duration.minutes(5),
+        stickinessCookieName: 'AWSALBTGCookieName',
+        vpc,
+      });
+    }).toThrow(/App cookie names that start with the following prefixes are not allowed: AWSALB, AWSALBAPP, and AWSALBTG; they're reserved for use by the load balancer./);
+  });
+
+  test('Empty stickiness cookie name', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'Stack');
@@ -211,10 +197,10 @@ describe('tests', () => {
     // THEN
     expect(() => {
       new elbv2.ApplicationTargetGroup(stack, 'TargetGroup', {
-        appStickinessCookieDuration: cdk.Duration.minutes(5),
-        loadBalancerStickinessCookieDuration: cdk.Duration.minutes(5),
+        stickinessCookieDuration: cdk.Duration.minutes(5),
+        stickinessCookieName: '',
         vpc,
       });
-    }).toThrow(/You can only specify one stickiness type for Application Load Balancer./);
+    }).toThrow(/App cookie name cannot be an empty string./);
   });
 });

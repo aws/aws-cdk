@@ -328,7 +328,7 @@ describe('tests', () => {
       port: 80,
       targets: [new FakeSelfRegisteringTarget(stack, 'Target', vpc)],
     });
-    group.enableLoadBalancerCookieStickiness(cdk.Duration.hours(1));
+    group.enableCookieStickiness(cdk.Duration.hours(1));
 
     // THEN
     expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::TargetGroup', {
@@ -361,7 +361,7 @@ describe('tests', () => {
       port: 80,
       targets: [new FakeSelfRegisteringTarget(stack, 'Target', vpc)],
     });
-    group.enableAppCookieStickiness(cdk.Duration.hours(1), 'MyDeliciousCookie');
+    group.enableCookieStickiness(cdk.Duration.hours(1), 'MyDeliciousCookie');
 
     // THEN
     expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::TargetGroup', {

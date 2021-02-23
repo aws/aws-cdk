@@ -363,9 +363,7 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
       protocol: props.protocol,
       slowStart: props.slowStart,
       stickinessCookieDuration: props.stickinessCookieDuration,
-      loadBalancerStickinessCookieDuration: props.loadBalancerStickinessCookieDuration,
-      appCookieName: props.appCookieName,
-      appStickinessCookieDuration: props.appStickinessCookieDuration,
+      stickinessCookieName: props.stickinessCookieName,
       targetGroupName: props.targetGroupName,
       targets: props.targets,
       vpc: this.loadBalancer.vpc,
@@ -813,45 +811,24 @@ export interface AddApplicationTargetsProps extends AddRuleProps {
    * 1 second and the maximum value is 7 days (604800 seconds).
    *
    * @default Stickiness disabled
-   * @deprecated Use loadBalancerStickinessCookieDuration or appStickinessCookieDuration
    */
   readonly stickinessCookieDuration?: Duration;
 
   /**
-   * The load balancer stickiness cookie expiration period.
-   *
-   * Setting this value enables load balancer stickiness.
-   *
-   * After this period, the cookie is considered stale. The minimum value is
-   * 1 second and the maximum value is 7 days (604800 seconds).
-   *
-   * @default Stickiness disabled
-   */
-  readonly loadBalancerStickinessCookieDuration?: Duration;
-
-  /**
-   * The load balancer stickiness cookie expiration period.
-   *
-   * Setting this value enables load balancer stickiness.
-   *
-   * After this period, the cookie is considered stale. The minimum value is
-   * 1 second and the maximum value is 7 days (604800 seconds).
-   *
-   * @default Stickiness disabled
-   */
-  readonly appStickinessCookieDuration?: Duration;
-
-  /**
    * The app cookie name.
    *
-   * Indicates the name of the application-based cookie. Required if appStickinessCookieDuration is set.
+   * Indicates the name of the application-based stickiness cookie.
    *
    * Names that start with the following prefixes are not allowed: AWSALB, AWSALBAPP,
    * and AWSALBTG; they're reserved for use by the load balancer.
    *
+   * Note: If you provide cookieName parameter application-based stickiness attributes (`app_cookie`) will be applied,
+   * otherwise it defaults to duration-based stickiness attributes (`lb_cookie`).
+   *
    * @default No app cookie name
+   * @see https://docs.aws.amazon.com/elasticloadbalancing/latest/application/sticky-sessions.html
    */
-  readonly appCookieName?: string;
+  readonly stickinessCookieName?: string;
 
   /**
    * The targets to add to this target group.
