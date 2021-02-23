@@ -211,6 +211,43 @@ class LambdaTest(unittest.TestCase):
         self.assertEqual("new_entry", config["QueueConfigurations"][0])
         self.assertTrue(len(config["LambdaFunctionConfigurations"]) == 0)
 
+    def test_prepare_config_removes_response_metadata(self):
+        # Test to ensure we remove the "ResponseMetadata" returned by the
+        # get_bucket_notification_configuration call
+        from src import index
+        config = {"ResponseMetadata": "foo"}
+        index.prepare_config(config, {}, None)
+        self.assertIsNone(config.get("ResponseMetadata"))
+
+    def test_prepare_config_set_defaults(self):
+        # GIVEN both loaded configuration and new configuration have no default set
+        from src import index
+        config = {}
+        in_config = {}
+
+        # WHEN calling prepare_config
+        index.prepare_config(config, in_config, None)
+
+        # THEN set defaults as [] for all the config types
+        expected_config = {"TopicConfigurations": [], "QueueConfigurations": [], "LambdaFunctionConfigurations": []}
+        self.assertEqual(expected_config, config)
+        self.assertEqual(config, in_config)
+
+    @patch("urllib.request.urlopen")
+    @patch("builtins.print")
+    def test_submit_response_io_failure(self, mock_print: MagicMock, mock_call: MagicMock):
+        # GIVEN an http error when notifying CFN
+        exception_message = "Failed to put"
+        mock_call.side_effect = Exception(exception_message)
+        from src import index
+
+        # WHEN calling submit_response
+        index.submit_response(create_event, MockContext(), "status")
+
+        # THEN handle the error
+        # print error mesage to the console for debugging
+        mock_print.assert_called_with(f"send(..) failed executing request.urlopen(..): {exception_message}")
+
     @mock_s3
     @patch("urllib.request.urlopen")
     def test_submit_no_bucket_found(self, mock_call: MagicMock):
