@@ -72,11 +72,11 @@ describe('signing profile', () => {
 
   describe('import', () => {
     test('from signingProfileProfileName and signingProfileProfileVersion', () => {
-      const signingProfileProfileName = 'test';
-      const signingProfileProfileVersion = 'xxxxxxxx';
+      const signingProfileName = 'test';
+      const signingProfileVersion = 'xxxxxxxx';
       const signingProfile = signer.SigningProfile.fromSigningProfileAttributes(stack, 'Imported', {
-        signingProfileProfileName,
-        signingProfileProfileVersion,
+        signingProfileName,
+        signingProfileVersion,
       });
 
       expect(stack.resolve(signingProfile.signingProfileArn)).toStrictEqual(
@@ -90,12 +90,12 @@ describe('signing profile', () => {
               { Ref: 'AWS::Region' },
               ':',
               { Ref: 'AWS::AccountId' },
-              `://signing-profiles/${signingProfileProfileName}`,
+              `://signing-profiles/${signingProfileName}`,
             ],
           ],
         },
       );
-      expect(stack.resolve(signingProfile.signingProfileProfileVersionArn)).toStrictEqual({
+      expect(stack.resolve(signingProfile.signingProfileVersionArn)).toStrictEqual({
         'Fn::Join': [
           '',
           [
@@ -105,7 +105,7 @@ describe('signing profile', () => {
             { Ref: 'AWS::Region' },
             ':',
             { Ref: 'AWS::AccountId' },
-            `://signing-profiles/${signingProfileProfileName}/${signingProfileProfileVersion}`,
+            `://signing-profiles/${signingProfileName}/${signingProfileVersion}`,
           ],
         ],
       });

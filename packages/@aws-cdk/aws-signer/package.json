@@ -96,5 +96,12 @@
   },
   "publishConfig": {
     "tag": "latest"
+  },
+  "awslint": {
+    "exclude": [
+      "resource-attribute:@aws-cdk/aws-signer.SigningProfile.signingProfileProfileName",
+      "resource-attribute:@aws-cdk/aws-signer.SigningProfile.signingProfileProfileVersion",
+      "resource-attribute:@aws-cdk/aws-signer.SigningProfile.signingProfileProfileVersionArn"
+    ]
   }
 }

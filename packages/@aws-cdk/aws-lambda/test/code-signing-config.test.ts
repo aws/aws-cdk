@@ -93,4 +93,10 @@ describe('code signing config', () => {
     expect(codeSigningConfig.codeSigningConfigId).toBe(codeSigningConfigId);
     expect(stack).toCountResources('AWS::Lambda::CodeSigningConfig', 0);
   });
+
+  test('fail import with malformed code signing config arn', () => {
+    const codeSigningConfigArn = 'arn:aws:lambda:::code-signing-config';
+
+    expect(() => lambda.CodeSigningConfig.fromCodeSigningConfigArn(stack, 'Imported', codeSigningConfigArn ) ).toThrow();
+  });
 });
