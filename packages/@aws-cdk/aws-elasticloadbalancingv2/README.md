@@ -250,20 +250,20 @@ By default, an Application Load Balancer routes each request independently to a 
 Application Load Balancers support both duration-based cookies (`lb_cookie`) and application-based cookies (`app_cookie`). The key to managing sticky sessions is determining how long your load balancer should consistently route the user's request to the same target. Sticky sessions are enabled at the target group level. You can use a combination of duration-based stickiness, application-based stickiness, and no stickiness across all of your target groups.
 
 ```ts
-// Target group with load balancer cookie duration
+// Target group with duration-based cookie stickiness duration
 const tg1 = new elbv2.ApplicationTargetGroup(stack, 'TG1', {
   targetType: elbv2.TargetType.INSTANCE,
   port: 80,
-  loadBalancerStickinessCookieDuration: cdk.Duration.hours(1),
+  stickinessCookieDuration: cdk.Duration.minutes(5),
   vpc,
 });
 
-// Target group with application cookie duration
+// Target group with application-based cookie stickiness duration
 const tg2 = new elbv2.ApplicationTargetGroup(stack, 'TG2', {
   targetType: elbv2.TargetType.INSTANCE,
   port: 80,
-  appStickinessCookieDuration: cdk.Duration.hours(1),
-  appCookieName: 'MyDeliciousCookie',
+  stickinessCookieDuration: cdk.Duration.minutes(5),
+  stickinessCookieName: 'MyDeliciousCookie',
   vpc,
 });
 ```
