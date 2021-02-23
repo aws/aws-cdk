@@ -404,6 +404,13 @@ nodeunitShim({
       }));
       test.done();
     },
+    'with enableDnsHostnames disabled but enableDnsSupport enabled, should throw no error'(test: Test) {
+      const stack = getTestStack();
+      new Vpc(stack, 'Vpc', {
+        enableDnsSupport: false,
+      });
+      test.done();
+    },
     'with public subnets MapPublicIpOnLaunch is true'(test: Test) {
       const stack = getTestStack();
       new Vpc(stack, 'VPC', {
