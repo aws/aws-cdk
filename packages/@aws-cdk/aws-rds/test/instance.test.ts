@@ -1251,6 +1251,10 @@ test.each([
   [cdk.RemovalPolicy.SNAPSHOT, 'Snapshot', ABSENT],
   [cdk.RemovalPolicy.DESTROY, 'Delete', ABSENT],
 ])('if Instance RemovalPolicy is \'%s\', the instance has DeletionPolicy \'%s\' and the DBSubnetGroup has \'%s\'', (instanceRemovalPolicy, instanceValue, subnetValue) => {
+  // GIVEN
+  stack = new cdk.Stack();
+  vpc = new ec2.Vpc(stack, 'VPC');
+
   // WHEN
   new rds.DatabaseInstance(stack, 'Instance', {
     engine: rds.DatabaseInstanceEngine.mysql({
