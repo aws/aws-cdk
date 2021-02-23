@@ -22,8 +22,8 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### Bug Fixes
 
-* **appsync:** revert to allow resolver creation from data source ([#12973](https://github.com/aws/aws-cdk/issues/12973)) ([d35f032](https://github.com/aws/aws-cdk/commit/d35f03226d6d7fb5be246b4d3584ee9205b0ef2d)), closes [#12635](https://github.com/aws/aws-cdk/issues/12635) [#11522](https://github.com/aws/aws-cdk/issues/11522)
 * UserPool, Volume, ElasticSearch, FSx are now RETAIN by default ([#12920](https://github.com/aws/aws-cdk/issues/12920)) ([5a54741](https://github.com/aws/aws-cdk/commit/5a54741a414d3f8b7913163f4785759b984b41d8)), closes [#12563](https://github.com/aws/aws-cdk/issues/12563)
+* **appsync:** revert to allow resolver creation from data source ([#12973](https://github.com/aws/aws-cdk/issues/12973)) ([d35f032](https://github.com/aws/aws-cdk/commit/d35f03226d6d7fb5be246b4d3584ee9205b0ef2d)), closes [#12635](https://github.com/aws/aws-cdk/issues/12635) [#11522](https://github.com/aws/aws-cdk/issues/11522)
 * **aws-appsync:** use serverlessCluster on rdsDataSource ([#13206](https://github.com/aws/aws-cdk/issues/13206)) ([45cf387](https://github.com/aws/aws-cdk/commit/45cf3873fb48d4043e7a22284d36695ea6bde6ef)), closes [#12567](https://github.com/aws/aws-cdk/issues/12567)
 * **cfn-diff:** handle Fn::If inside policies and statements ([#12975](https://github.com/aws/aws-cdk/issues/12975)) ([daf4e47](https://github.com/aws/aws-cdk/commit/daf4e47a790ab99639e471f6792f22e3e4f8ee73)), closes [#12887](https://github.com/aws/aws-cdk/issues/12887)
 * **core:** ENOTDIR invalid cwd on "cdk deploy" ([#13145](https://github.com/aws/aws-cdk/issues/13145)) ([cd7a3ed](https://github.com/aws/aws-cdk/commit/cd7a3ed333570a3b26446e1e3a054ca886cd3906)), closes [#12258](https://github.com/aws/aws-cdk/issues/12258) [#13076](https://github.com/aws/aws-cdk/issues/13076) [#13131](https://github.com/aws/aws-cdk/issues/13131)
