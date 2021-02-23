@@ -123,7 +123,7 @@ export class Parallel extends State implements INextable {
   /**
    * Validate this state
    */
-  protected validate(): string[] {
+  protected validateState(): string[] {
     if (this.branches.length === 0) {
       return ['Parallel must have at least one branch'];
     }

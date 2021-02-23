@@ -1,6 +1,5 @@
 import { ArnComponents } from './arn';
 import { CfnResource } from './cfn-resource';
-import { IConstruct, Construct as CoreConstruct } from './construct-compat';
 import { IStringProducer, Lazy } from './lazy';
 import { generatePhysicalName, isGeneratedWhenNeededMarker } from './private/physical-name-generator';
 import { Reference } from './reference';
@@ -11,7 +10,7 @@ import { Token, Tokenization } from './token';
 
 // v2 - leave this as a separate section so it reduces merge conflicts when compat is removed
 // eslint-disable-next-line import/order
-import { Construct } from 'constructs';
+import { Construct, IConstruct } from 'constructs';
 
 const RESOURCE_SYMBOL = Symbol.for('@aws-cdk/core.Resource');
 
@@ -95,7 +94,7 @@ export interface ResourceProps {
 /**
  * A construct which represents an AWS resource.
  */
-export abstract class Resource extends CoreConstruct implements IResource {
+export abstract class Resource extends Construct implements IResource {
   /**
    * Check whether the given construct is a Resource
    */
