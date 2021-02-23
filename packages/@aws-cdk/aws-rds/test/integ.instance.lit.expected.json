@@ -694,7 +694,8 @@
           }
         ]
       },
-      "UpdateReplacePolicy": "Snapshot"
+      "UpdateReplacePolicy": "Snapshot",
+      "DeletionPolicy": "Snapshot"
     },
     "InstanceLogRetentiontrace487771C8": {
       "Type": "Custom::LogRetention",
@@ -832,7 +833,6 @@
             ]
           },
           "functionName": "awscdkrdsinstanceInstanceRotationSingleUserAFE3C214",
-          "excludeCharacters": " %+~`#$&*()|[]{}:;<>?!'/@\"\\",
           "vpcSubnetIds": {
             "Fn::Join": [
               "",
@@ -852,7 +852,8 @@
               "InstanceRotationSingleUserSecurityGroupF3FB5C25",
               "GroupId"
             ]
-          }
+          },
+          "excludeCharacters": " %+~`#$&*()|[]{}:;<>?!'/@\"\\"
         }
       }
     },
@@ -1094,13 +1095,13 @@
         "Code": {
           "ZipFile": "exports.handler = (event) => console.log(event);"
         },
-        "Handler": "index.handler",
         "Role": {
           "Fn::GetAtt": [
             "FunctionServiceRole675BB04A",
             "Arn"
           ]
         },
+        "Handler": "index.handler",
         "Runtime": "nodejs10.x"
       },
       "DependsOn": [

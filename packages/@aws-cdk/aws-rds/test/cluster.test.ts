@@ -39,14 +39,14 @@ nodeunitShim({
         MasterUserPassword: 'tooshort',
         VpcSecurityGroupIds: [{ 'Fn::GetAtt': ['DatabaseSecurityGroup5C91FDCB', 'GroupId'] }],
       },
-      DeletionPolicy: ABSENT,
+      DeletionPolicy: 'Snapshot',
       UpdateReplacePolicy: 'Snapshot',
     }, ResourcePart.CompleteDefinition));
 
     expect(stack).to(countResources('AWS::RDS::DBInstance', 2));
     expect(stack).to(haveResource('AWS::RDS::DBInstance', {
-      DeletionPolicy: ABSENT,
-      UpdateReplacePolicy: ABSENT,
+      DeletionPolicy: 'Delete',
+      UpdateReplacePolicy: 'Delete',
     }, ResourcePart.CompleteDefinition));
 
     test.done();
@@ -1674,7 +1674,7 @@ nodeunitShim({
         VpcSecurityGroupIds: [{ 'Fn::GetAtt': ['DatabaseSecurityGroup5C91FDCB', 'GroupId'] }],
         SnapshotIdentifier: 'mySnapshot',
       },
-      DeletionPolicy: ABSENT,
+      DeletionPolicy: 'Snapshot',
       UpdateReplacePolicy: 'Snapshot',
     }, ResourcePart.CompleteDefinition));
 
@@ -1839,6 +1839,42 @@ nodeunitShim({
     test.done();
   },
 });
+
+test.each([
+  [cdk.RemovalPolicy.RETAIN, 'Retain', 'Retain', 'Retain'],
+  [cdk.RemovalPolicy.SNAPSHOT, 'Snapshot', 'Delete', ABSENT],
+  [cdk.RemovalPolicy.DESTROY, 'Delete', 'Delete', ABSENT],
+])('if Cluster RemovalPolicy is \'%s\', the DBCluster has DeletionPolicy \'%s\', the DBInstance has \'%s\' and the DBSubnetGroup has \'%s\'', (clusterRemovalPolicy, clusterValue, instanceValue, subnetValue) => {
+  const stack = new cdk.Stack();
+
+  // WHEN
+  new DatabaseCluster(stack, 'Cluster', {
+    credentials: { username: 'admin' },
+    engine: DatabaseClusterEngine.AURORA,
+    instanceProps: {
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.LARGE),
+      vpc: new ec2.Vpc(stack, 'Vpc'),
+    },
+    removalPolicy: clusterRemovalPolicy,
+  });
+
+  // THEN
+  expect(stack).to(haveResourceLike('AWS::RDS::DBCluster', {
+    DeletionPolicy: clusterValue,
+    UpdateReplacePolicy: clusterValue,
+  }, ResourcePart.CompleteDefinition));
+
+  expect(stack).to(haveResourceLike('AWS::RDS::DBInstance', {
+    DeletionPolicy: instanceValue,
+    UpdateReplacePolicy: instanceValue,
+  }, ResourcePart.CompleteDefinition));
+
+  expect(stack).to(haveResourceLike('AWS::RDS::DBSubnetGroup', {
+    DeletionPolicy: subnetValue,
+    UpdateReplacePolicy: subnetValue,
+  }, ResourcePart.CompleteDefinition));
+});
+
 
 function testStack() {
   const stack = new cdk.Stack(undefined, undefined, { env: { account: '12345', region: 'us-test-1' } });

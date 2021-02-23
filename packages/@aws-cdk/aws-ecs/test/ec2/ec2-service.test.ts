@@ -4,12 +4,12 @@ import * as elb from '@aws-cdk/aws-elasticloadbalancing';
 import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
 import * as cloudmap from '@aws-cdk/aws-servicediscovery';
 import * as cdk from '@aws-cdk/core';
-import { Test } from 'nodeunit';
+import { nodeunitShim, Test } from 'nodeunit-shim';
 import * as ecs from '../../lib';
 import { DeploymentControllerType, LaunchType, PropagatedTagSource } from '../../lib/base/base-service';
 import { PlacementConstraint, PlacementStrategy } from '../../lib/placement';
 
-export = {
+nodeunitShim({
   'When creating an EC2 Service': {
     'with only required properties set, it correctly sets default properties'(test: Test) {
       // GIVEN
@@ -2269,4 +2269,4 @@ export = {
       test.done();
     },
   },
-};
+});

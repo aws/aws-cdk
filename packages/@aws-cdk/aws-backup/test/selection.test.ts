@@ -2,7 +2,7 @@ import '@aws-cdk/assert/jest';
 import * as dynamodb from '@aws-cdk/aws-dynamodb';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as efs from '@aws-cdk/aws-efs';
-import { Stack } from '@aws-cdk/core';
+import { RemovalPolicy, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { BackupPlan, BackupResource, BackupSelection } from '../lib';
 
@@ -124,7 +124,8 @@ test('fromConstruct', () => {
   class EfsConstruct extends Construct {
     constructor(scope: Construct, id: string) {
       super(scope, id);
-      new efs.CfnFileSystem(this, 'FileSystem');
+      const fs = new efs.CfnFileSystem(this, 'FileSystem');
+      fs.applyRemovalPolicy(RemovalPolicy.DESTROY);
     }
   }
   class MyConstruct extends Construct {

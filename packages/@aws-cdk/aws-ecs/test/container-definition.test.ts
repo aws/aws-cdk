@@ -1,16 +1,17 @@
+import '@aws-cdk/assert/jest';
 import * as path from 'path';
-import { expect, haveResource, haveResourceLike, InspectionFailure } from '@aws-cdk/assert';
+import { InspectionFailure } from '@aws-cdk/assert';
 import * as ecr_assets from '@aws-cdk/aws-ecr-assets';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import * as ssm from '@aws-cdk/aws-ssm';
 import * as cdk from '@aws-cdk/core';
-import { Test } from 'nodeunit';
+import { testFutureBehavior } from 'cdk-build-tools/lib/feature-flag';
 import * as ecs from '../lib';
 
-export = {
-  'When creating a Task Definition': {
-    'add a container using default props'(test: Test) {
+describe('container definition', () => {
+  describe('When creating a Task Definition', () => {
+    test('add a container using default props', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
@@ -22,7 +23,7 @@ export = {
       });
 
       // THEN
-      expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
+      expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
         ContainerDefinitions: [
           {
             Essential: true,
@@ -31,12 +32,12 @@ export = {
             Name: 'Container',
           },
         ],
-      }));
+      });
 
-      test.done();
-    },
 
-    'add a container using all props'(test: Test) {
+    });
+
+    test('add a container using all props', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
@@ -85,7 +86,7 @@ export = {
       });
 
       // THEN
-      expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
+      expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
         ContainerDefinitions: [
           {
             Command: [
@@ -219,31 +220,31 @@ export = {
             WorkingDirectory: 'a/b/c',
           },
         ],
-      }));
+      });
 
-      test.done();
-    },
 
-    'throws when MemoryLimit is less than MemoryReservationLimit'(test: Test) {
+    });
+
+    test('throws when MemoryLimit is less than MemoryReservationLimit', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
 
       // THEN
-      test.throws(() => {
+      expect(() => {
         new ecs.ContainerDefinition(stack, 'Container', {
           image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
           taskDefinition,
           memoryLimitMiB: 512,
           memoryReservationMiB: 1024,
         });
-      }, /MemoryLimitMiB should not be less than MemoryReservationMiB./);
+      }).toThrow(/MemoryLimitMiB should not be less than MemoryReservationMiB./);
 
-      test.done();
-    },
 
-    'With network mode AwsVpc': {
-      'throws when Host port is different from container port'(test: Test) {
+    });
+
+    describe('With network mode AwsVpc', () => {
+      test('throws when Host port is different from container port', () => {
         // GIVEN
         const stack = new cdk.Stack();
         const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef', {
@@ -256,17 +257,17 @@ export = {
         });
 
         // THEN
-        test.throws(() => {
+        expect(() => {
           container.addPortMappings({
             containerPort: 8080,
             hostPort: 8081,
           });
-        });
+        }).toThrow();
 
-        test.done();
-      },
 
-      'Host port is the same as container port'(test: Test) {
+      });
+
+      test('Host port is the same as container port', () => {
         // GIVEN
         const stack = new cdk.Stack();
         const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef', {
@@ -284,10 +285,10 @@ export = {
         });
 
         // THEN no exception raised
-        test.done();
-      },
 
-      'Host port can be empty '(test: Test) {
+      });
+
+      test('Host port can be empty ', () => {
         // GIVEN
         const stack = new cdk.Stack();
         const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef', {
@@ -305,12 +306,12 @@ export = {
         });
 
         // THEN no exception raised
-        test.done();
-      },
-    },
 
-    'With network mode Host ': {
-      'throws when Host port is different from container port'(test: Test) {
+      });
+    });
+
+    describe('With network mode Host ', () => {
+      test('throws when Host port is different from container port', () => {
         // GIVEN
         const stack = new cdk.Stack();
         const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef', {
@@ -323,17 +324,17 @@ export = {
         });
 
         // THEN
-        test.throws(() => {
+        expect(() => {
           container.addPortMappings({
             containerPort: 8080,
             hostPort: 8081,
           });
-        });
+        }).toThrow();
 
-        test.done();
-      },
 
-      'when host port is the same as container port'(test: Test) {
+      });
+
+      test('when host port is the same as container port', () => {
         // GIVEN
         const stack = new cdk.Stack();
         const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef', {
@@ -351,10 +352,10 @@ export = {
         });
 
         // THEN no exception raised
-        test.done();
-      },
 
-      'Host port can be empty '(test: Test) {
+      });
+
+      test('Host port can be empty ', () => {
         // GIVEN
         const stack = new cdk.Stack();
         const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef', {
@@ -372,10 +373,10 @@ export = {
         });
 
         // THEN no exception raised
-        test.done();
-      },
 
-      'errors when adding links'(test: Test) {
+      });
+
+      test('errors when adding links', () => {
         // GIVEN
         const stack = new cdk.Stack();
         const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef', {
@@ -393,16 +394,16 @@ export = {
         });
 
         // THEN
-        test.throws(() => {
+        expect(() => {
           container.addLink(logger);
-        });
+        }).toThrow();
 
-        test.done();
-      },
-    },
 
-    'With network mode Bridge': {
-      'when Host port is empty '(test: Test) {
+      });
+    });
+
+    describe('With network mode Bridge', () => {
+      test('when Host port is empty ', () => {
         // GIVEN
         const stack = new cdk.Stack();
         const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef', {
@@ -419,10 +420,10 @@ export = {
         });
 
         // THEN no exception raises
-        test.done();
-      },
 
-      'when Host port is not empty '(test: Test) {
+      });
+
+      test('when Host port is not empty ', () => {
         // GIVEN
         const stack = new cdk.Stack();
         const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef', {
@@ -440,10 +441,10 @@ export = {
         });
 
         // THEN no exception raises
-        test.done();
-      },
 
-      'allows adding links'(test: Test) {
+      });
+
+      test('allows adding links', () => {
         // GIVEN
         const stack = new cdk.Stack();
         const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef', {
@@ -463,12 +464,12 @@ export = {
         // THEN
         container.addLink(logger);
 
-        test.done();
-      },
-    },
 
-    'With network mode NAT': {
-      'produces undefined CF networkMode property'(test: Test) {
+      });
+    });
+
+    describe('With network mode NAT', () => {
+      test('produces undefined CF networkMode property', () => {
         // GIVEN
         const stack = new cdk.Stack();
 
@@ -479,22 +480,22 @@ export = {
         });
 
         // THEN
-        expect(stack).to(haveResource('AWS::ECS::TaskDefinition', (props: any, inspection: InspectionFailure) => {
+        expect(stack).toHaveResource('AWS::ECS::TaskDefinition', (props: any, inspection: InspectionFailure) => {
           if (props.NetworkMode === undefined) {
             return true;
           }
 
           inspection.failureReason = 'CF template should not have NetworkMode defined for a task definition that relies on NAT network mode.';
           return false;
-        }));
+        });
 
-        test.done();
-      },
-    },
-  },
 
-  'Container Port': {
-    'should return the first container port in PortMappings'(test: Test) {
+      });
+    });
+  });
+
+  describe('Container Port', () => {
+    test('should return the first container port in PortMappings', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef', {
@@ -518,11 +519,11 @@ export = {
 
       // THEN
       const expected = 8080;
-      test.equal(actual, expected, 'containerPort should return the first container port in PortMappings');
-      test.done();
-    },
+      expect(actual).toEqual(expected);
 
-    'throws when calling containerPort with no PortMappings'(test: Test) {
+    });
+
+    test('throws when calling containerPort with no PortMappings', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef', {
@@ -535,19 +536,19 @@ export = {
       });
 
       // THEN
-      test.throws(() => {
+      expect(() => {
         const actual = container.containerPort;
         const expected = 8080;
-        test.equal(actual, expected);
-      }, /Container MyContainer hasn't defined any ports. Call addPortMappings()./);
+        expect(actual).toEqual(expected);
+      }).toThrow(/Container MyContainer hasn't defined any ports. Call addPortMappings()./);
 
-      test.done();
-    },
-  },
 
-  'Ingress Port': {
-    'With network mode AwsVpc': {
-      'Ingress port should be the same as container port'(test: Test) {
+    });
+  });
+
+  describe('Ingress Port', () => {
+    describe('With network mode AwsVpc', () => {
+      test('Ingress port should be the same as container port', () => {
         // GIVEN
         const stack = new cdk.Stack();
         const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef', {
@@ -567,11 +568,11 @@ export = {
 
         // THEN
         const expected = 8080;
-        test.equal(actual, expected, 'Ingress port should be the same as container port');
-        test.done();
-      },
+        expect(actual).toEqual(expected);
 
-      'throws when calling ingressPort with no PortMappings'(test: Test) {
+      });
+
+      test('throws when calling ingressPort with no PortMappings', () => {
         // GIVEN
         const stack = new cdk.Stack();
         const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef', {
@@ -584,18 +585,18 @@ export = {
         });
 
         // THEN
-        test.throws(() => {
+        expect(() => {
           const actual = container.ingressPort;
           const expected = 8080;
-          test.equal(actual, expected);
-        }, /Container MyContainer hasn't defined any ports. Call addPortMappings()./);
+          expect(actual).toEqual(expected);
+        }).toThrow(/Container MyContainer hasn't defined any ports. Call addPortMappings()./);
 
-        test.done();
-      },
-    },
 
-    'With network mode Host ': {
-      'Ingress port should be the same as container port'(test: Test) {
+      });
+    });
+
+    describe('With network mode Host ', () => {
+      test('Ingress port should be the same as container port', () => {
         // GIVEN
         const stack = new cdk.Stack();
         const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef', {
@@ -615,13 +616,13 @@ export = {
 
         // THEN
         const expected = 8080;
-        test.equal(actual, expected);
-        test.done();
-      },
-    },
+        expect(actual).toEqual( expected);
 
-    'With network mode Bridge': {
-      'Ingress port should be the same as host port if supplied'(test: Test) {
+      });
+    });
+
+    describe('With network mode Bridge', () => {
+      test('Ingress port should be the same as host port if supplied', () => {
         // GIVEN
         const stack = new cdk.Stack();
         const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef', {
@@ -642,11 +643,11 @@ export = {
 
         // THEN
         const expected = 8081;
-        test.equal(actual, expected);
-        test.done();
-      },
+        expect(actual).toEqual( expected);
 
-      'Ingress port should be 0 if not supplied'(test: Test) {
+      });
+
+      test('Ingress port should be 0 if not supplied', () => {
         // GIVEN
         const stack = new cdk.Stack();
         const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef', {
@@ -666,13 +667,13 @@ export = {
 
         // THEN
         const expected = 0;
-        test.equal(actual, expected);
-        test.done();
-      },
-    },
-  },
+        expect(actual).toEqual(expected);
 
-  'can add environment variables to the container definition'(test: Test) {
+      });
+    });
+  });
+
+  test('can add environment variables to the container definition', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
@@ -687,7 +688,7 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
+    expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
       ContainerDefinitions: [
         {
           Environment: [{
@@ -696,15 +697,14 @@ export = {
           }],
         },
       ],
-    }));
+    });
 
-    test.done();
 
-  },
+  });
 
-  'Environment Files': {
-    'with EC2 task definitions': {
-      'can add asset environment file to the container definition'(test: Test) {
+  describe('Environment Files', () => {
+    describe('with EC2 task definitions', () => {
+      test('can add asset environment file to the container definition', () => {
         // GIVEN
         const stack = new cdk.Stack();
         const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
@@ -717,7 +717,7 @@ export = {
         });
 
         // THEN
-        expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
+        expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
           ContainerDefinitions: [
             {
               EnvironmentFiles: [{
@@ -763,11 +763,11 @@ export = {
               }],
             },
           ],
-        }));
+        });
 
-        test.done();
-      },
-      'can add s3 bucket environment file to the container definition'(test: Test) {
+
+      });
+      test('can add s3 bucket environment file to the container definition', () => {
         // GIVEN
         const stack = new cdk.Stack();
         const bucket = new s3.Bucket(stack, 'Bucket', {
@@ -783,7 +783,7 @@ export = {
         });
 
         // THEN
-        expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
+        expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
           ContainerDefinitions: [
             {
               EnvironmentFiles: [{
@@ -803,13 +803,13 @@ export = {
               }],
             },
           ],
-        }));
+        });
 
-        test.done();
-      },
-    },
-    'with Fargate task definitions': {
-      'can add asset environment file to the container definition'(test: Test) {
+
+      });
+    });
+    describe('with Fargate task definitions', () => {
+      test('can add asset environment file to the container definition', () => {
         // GIVEN
         const stack = new cdk.Stack();
         const taskDefinition = new ecs.FargateTaskDefinition(stack, 'TaskDef');
@@ -822,7 +822,7 @@ export = {
         });
 
         // THEN
-        expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
+        expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
           ContainerDefinitions: [
             {
               EnvironmentFiles: [{
@@ -868,11 +868,11 @@ export = {
               }],
             },
           ],
-        }));
+        });
 
-        test.done();
-      },
-      'can add s3 bucket environment file to the container definition'(test: Test) {
+
+      });
+      test('can add s3 bucket environment file to the container definition', () => {
         // GIVEN
         const stack = new cdk.Stack();
         const bucket = new s3.Bucket(stack, 'Bucket', {
@@ -888,7 +888,7 @@ export = {
         });
 
         // THEN
-        expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
+        expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
           ContainerDefinitions: [
             {
               EnvironmentFiles: [{
@@ -908,15 +908,15 @@ export = {
               }],
             },
           ],
-        }));
+        });
 
-        test.done();
-      },
-    },
-  },
 
-  'Given GPU count parameter': {
-    'will add resource requirements to container definition'(test: Test) {
+      });
+    });
+  });
+
+  describe('Given GPU count parameter', () => {
+    test('will add resource requirements to container definition', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
@@ -929,7 +929,7 @@ export = {
       });
 
       // THEN
-      expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
+      expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
         ContainerDefinitions: [
           {
             Image: 'test',
@@ -941,13 +941,13 @@ export = {
             ],
           },
         ],
-      }));
+      });
 
-      test.done();
-    },
-  },
 
-  'can add secret environment variables to the container definition'(test: Test) {
+    });
+  });
+
+  test('can add secret environment variables to the container definition', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
@@ -969,7 +969,7 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
+    expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
       ContainerDefinitions: [
         {
           Secrets: [
@@ -1005,9 +1005,9 @@ export = {
           ],
         },
       ],
-    }));
+    });
 
-    expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
+    expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
@@ -1052,13 +1052,12 @@ export = {
         ],
         Version: '2012-10-17',
       },
-    }));
+    });
 
-    test.done();
 
-  },
+  });
 
-  'use a specific secret JSON key as environment variable'(test: Test) {
+  test('use a specific secret JSON key as environment variable', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
@@ -1075,7 +1074,7 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
+    expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
       ContainerDefinitions: [
         {
           Secrets: [
@@ -1096,13 +1095,12 @@ export = {
           ],
         },
       ],
-    }));
+    });
 
-    test.done();
 
-  },
+  });
 
-  'use a specific secret JSON field as environment variable for a Fargate task'(test: Test) {
+  test('use a specific secret JSON field as environment variable for a Fargate task', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const taskDefinition = new ecs.FargateTaskDefinition(stack, 'TaskDef');
@@ -1119,7 +1117,7 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
+    expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
       ContainerDefinitions: [
         {
           Secrets: [
@@ -1140,12 +1138,12 @@ export = {
           ],
         },
       ],
-    }));
+    });
 
-    test.done();
-  },
 
-  'can add AWS logging to container definition'(test: Test) {
+  });
+
+  test('can add AWS logging to container definition', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
@@ -1158,7 +1156,7 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
+    expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
       ContainerDefinitions: [
         {
           LogConfiguration: {
@@ -1171,9 +1169,9 @@ export = {
           },
         },
       ],
-    }));
+    });
 
-    expect(stack).to(haveResource('AWS::IAM::Policy', {
+    expect(stack).toHaveResource('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
@@ -1184,12 +1182,12 @@ export = {
         ],
         Version: '2012-10-17',
       },
-    }));
+    });
 
-    test.done();
-  },
 
-  'can set Health Check with defaults'(test: Test) {
+  });
+
+  test('can set Health Check with defaults', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
@@ -1205,7 +1203,7 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
+    expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
       ContainerDefinitions: [
         {
           HealthCheck: {
@@ -1216,12 +1214,12 @@ export = {
           },
         },
       ],
-    }));
+    });
 
-    test.done();
-  },
 
-  'throws when setting Health Check with no commands'(test: Test) {
+  });
+
+  test('throws when setting Health Check with no commands', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
@@ -1236,8 +1234,8 @@ export = {
     });
 
     // THEN
-    test.throws(() => {
-      expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
+    expect(() => {
+      expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
         ContainerDefinitions: [
           {
             HealthCheck: {
@@ -1248,13 +1246,13 @@ export = {
             },
           },
         ],
-      }));
-    }, /At least one argument must be supplied for health check command./);
+      });
+    }).toThrow(/At least one argument must be supplied for health check command./);
 
-    test.done();
-  },
 
-  'can specify Health Check values in shell form'(test: Test) {
+  });
+
+  test('can specify Health Check values in shell form', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
@@ -1273,7 +1271,7 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
+    expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
       ContainerDefinitions: [
         {
           HealthCheck: {
@@ -1285,12 +1283,12 @@ export = {
           },
         },
       ],
-    }));
+    });
 
-    test.done();
-  },
 
-  'can specify Health Check values in array form starting with CMD-SHELL'(test: Test) {
+  });
+
+  test('can specify Health Check values in array form starting with CMD-SHELL', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
@@ -1309,7 +1307,7 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
+    expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
       ContainerDefinitions: [
         {
           HealthCheck: {
@@ -1321,12 +1319,12 @@ export = {
           },
         },
       ],
-    }));
+    });
 
-    test.done();
-  },
 
-  'can specify Health Check values in array form starting with CMD'(test: Test) {
+  });
+
+  test('can specify Health Check values in array form starting with CMD', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
@@ -1345,7 +1343,7 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
+    expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
       ContainerDefinitions: [
         {
           HealthCheck: {
@@ -1357,12 +1355,12 @@ export = {
           },
         },
       ],
-    }));
+    });
 
-    test.done();
-  },
 
-  'can specify private registry credentials'(test: Test) {
+  });
+
+  test('can specify private registry credentials', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
@@ -1379,7 +1377,7 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
+    expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
       ContainerDefinitions: [
         {
           Image: 'user-x/my-app',
@@ -1388,9 +1386,9 @@ export = {
           },
         },
       ],
-    }));
+    });
 
-    expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
+    expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
@@ -1403,13 +1401,13 @@ export = {
           },
         ],
       },
-    }));
+    });
 
-    test.done();
-  },
 
-  '_linkContainer works properly': {
-    'when the props passed in is an essential container'(test: Test) {
+  });
+
+  describe('_linkContainer works properly', () => {
+    test('when the props passed in is an essential container', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
@@ -1422,12 +1420,12 @@ export = {
       });
 
       // THEN
-      test.equal(taskDefinition.defaultContainer, container);
+      expect(taskDefinition.defaultContainer).toEqual( container);
 
-      test.done();
-    },
 
-    'when the props passed in is not an essential container'(test: Test) {
+    });
+
+    test('when the props passed in is not an essential container', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
@@ -1440,14 +1438,14 @@ export = {
       });
 
       // THEN
-      test.equal(taskDefinition.defaultContainer, undefined);
+      expect(taskDefinition.defaultContainer).toEqual( undefined);
 
-      test.done();
-    },
-  },
 
-  'Can specify linux parameters': {
-    'with only required properties set, it correctly sets default properties'(test: Test) {
+    });
+  });
+
+  describe('Can specify linux parameters', () => {
+    test('with only required properties set, it correctly sets default properties', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
@@ -1462,7 +1460,7 @@ export = {
       });
 
       // THEN
-      expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
+      expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
         ContainerDefinitions: [
           {
             Image: 'test',
@@ -1471,12 +1469,12 @@ export = {
             },
           },
         ],
-      }));
+      });
 
-      test.done();
-    },
 
-    'before calling addContainer'(test: Test) {
+    });
+
+    test('before calling addContainer', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
@@ -1497,7 +1495,7 @@ export = {
       });
 
       // THEN
-      expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
+      expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
         ContainerDefinitions: [
           {
             Image: 'test',
@@ -1511,12 +1509,12 @@ export = {
             },
           },
         ],
-      }));
+      });
 
-      test.done();
-    },
 
-    'after calling addContainer'(test: Test) {
+    });
+
+    test('after calling addContainer', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
@@ -1539,7 +1537,7 @@ export = {
       linuxParameters.dropCapabilities(ecs.Capability.SETUID);
 
       // THEN
-      expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
+      expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
         ContainerDefinitions: [
           {
             Image: 'test',
@@ -1553,12 +1551,12 @@ export = {
             },
           },
         ],
-      }));
+      });
 
-      test.done();
-    },
 
-    'with one or more host devices'(test: Test) {
+    });
+
+    test('with one or more host devices', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
@@ -1580,7 +1578,7 @@ export = {
       });
 
       // THEN
-      expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
+      expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
         ContainerDefinitions: [
           {
             Image: 'test',
@@ -1595,12 +1593,12 @@ export = {
             },
           },
         ],
-      }));
+      });
 
-      test.done();
-    },
 
-    'with the tmpfs mount for a container'(test: Test) {
+    });
+
+    test('with the tmpfs mount for a container', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
@@ -1623,7 +1621,7 @@ export = {
       });
 
       // THEN
-      expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
+      expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
         ContainerDefinitions: [
           {
             Image: 'test',
@@ -1639,19 +1637,14 @@ export = {
             },
           },
         ],
-      }));
+      });
 
-      test.done();
-    },
-  },
 
-  'can use a DockerImageAsset directly for a container image'(test: Test) {
-    // GIVEN
-    const app = new cdk.App({
-      context: {
-        '@aws-cdk/aws-ecr-assets:dockerIgnoreSupport': true,
-      },
     });
+  });
+
+  testFutureBehavior('can use a DockerImageAsset directly for a container image', { '@aws-cdk/aws-ecr-assets:dockerIgnoreSupport': true }, cdk.App, (app) => {
+    // GIVEN
     const stack = new cdk.Stack(app, 'Stack');
     const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
     const asset = new ecr_assets.DockerImageAsset(stack, 'MyDockerImage', {
@@ -1665,7 +1658,7 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::ECS::TaskDefinition', {
+    expect(stack).toHaveResource('AWS::ECS::TaskDefinition', {
       ContainerDefinitions: [
         {
           Essential: true,
@@ -1678,7 +1671,7 @@ export = {
                 { Ref: 'AWS::Region' },
                 '.',
                 { Ref: 'AWS::URLSuffix' },
-                '/aws-cdk/assets:b2c69bfbfe983b634456574587443159b3b7258849856a118ad3d2772238f1a5',
+                '/aws-cdk/assets:d3fe8de91df2c894af1e8579a7836fb42895f9d2e30c7547ebdff4010f09c6d4',
               ],
             ],
           },
@@ -1686,8 +1679,8 @@ export = {
           Name: 'default',
         },
       ],
-    }));
-    expect(stack).to(haveResource('AWS::IAM::Policy', {
+    });
+    expect(stack).toHaveResource('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
@@ -1712,17 +1705,12 @@ export = {
         ],
         Version: '2012-10-17',
       },
-    }));
-    test.done();
-  },
-
-  'docker image asset options can be used when using container image'(test: Test) {
-    // GIVEN
-    const app = new cdk.App({
-      context: {
-        '@aws-cdk/aws-ecr-assets:dockerIgnoreSupport': true,
-      },
     });
+
+  });
+
+  testFutureBehavior('docker image asset options can be used when using container image', { '@aws-cdk/aws-ecr-assets:dockerIgnoreSupport': true }, cdk.App, (app) => {
+    // GIVEN
     const stack = new cdk.Stack(app, 'MyStack');
     const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
 
@@ -1737,16 +1725,16 @@ export = {
 
     // THEN
     const asm = app.synth();
-    test.deepEqual(asm.getStackArtifact(stack.artifactId).assets[0], {
+    expect(asm.getStackArtifact(stack.artifactId).assets[0]).toEqual({
       repositoryName: 'aws-cdk/assets',
-      imageTag: 'ce3419d7c5d2d44e2789b13ccbd2d54ddf682557669f68bcee753231f5f1c0a5',
-      id: 'ce3419d7c5d2d44e2789b13ccbd2d54ddf682557669f68bcee753231f5f1c0a5',
+      imageTag: '9cbc7bfe2ac4cacb5787605711847819aacb1d9227b1113090a022d8cd74752c',
+      id: '9cbc7bfe2ac4cacb5787605711847819aacb1d9227b1113090a022d8cd74752c',
       packaging: 'container-image',
-      path: 'asset.ce3419d7c5d2d44e2789b13ccbd2d54ddf682557669f68bcee753231f5f1c0a5',
-      sourceHash: 'ce3419d7c5d2d44e2789b13ccbd2d54ddf682557669f68bcee753231f5f1c0a5',
+      path: 'asset.9cbc7bfe2ac4cacb5787605711847819aacb1d9227b1113090a022d8cd74752c',
+      sourceHash: '9cbc7bfe2ac4cacb5787605711847819aacb1d9227b1113090a022d8cd74752c',
       target: 'build-target',
       file: 'index.py',
     });
-    test.done();
-  },
-};
+
+  });
+});

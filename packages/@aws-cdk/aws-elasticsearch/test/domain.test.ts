@@ -30,6 +30,16 @@ const readWriteActions = [
   ...writeActions,
 ];
 
+test('default removalpolicy is retain', () => {
+  new Domain(stack, 'Domain', {
+    version: ElasticsearchVersion.V7_1,
+  });
+
+  expect(stack).toHaveResource('AWS::Elasticsearch::Domain', {
+    DeletionPolicy: 'Retain',
+  }, assert.ResourcePart.CompleteDefinition);
+});
+
 test('grants kms permissions if needed', () => {
 
   const key = new kms.Key(stack, 'Key');

@@ -668,7 +668,9 @@
       "Type": "AWS::SQS::Queue",
       "Properties": {
         "MessageRetentionPeriod": 1209600
-      }
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
     },
     "IsolatedQueueServiceEcsProcessingQueueCCE172F1": {
       "Type": "AWS::SQS::Queue",
@@ -682,7 +684,9 @@
           },
           "maxReceiveCount": 3
         }
-      }
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
     },
     "IsolatedQueueServiceQueueProcessingTaskDefTaskRoleCFCB7511": {
       "Type": "AWS::IAM::Role",
