@@ -541,12 +541,15 @@ nodeunitShim({
       const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
 
+      // Errors on validation, not on construction.
+      new ecs.Ec2Service(stack, 'Ec2Service', {
+        cluster,
+        taskDefinition,
+      });
+
       // THEN
       test.throws(() => {
-        new ecs.Ec2Service(stack, 'Ec2Service', {
-          cluster,
-          taskDefinition,
-        });
+        expect(stack);
       });
 
       test.done();

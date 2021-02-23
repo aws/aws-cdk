@@ -482,12 +482,15 @@ nodeunitShim({
       const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
       const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
 
+      // Errors on validation, not on construction.
+      new ecs.FargateService(stack, 'FargateService', {
+        cluster,
+        taskDefinition,
+      });
+
       // THEN
       test.throws(() => {
-        new ecs.FargateService(stack, 'FargateService', {
-          cluster,
-          taskDefinition,
-        });
+        expect(stack);
       });
 
       test.done();
