@@ -2,6 +2,7 @@ import * as cdk from '@aws-cdk/core';
 import * as fs from 'fs';
 import * as reflect from 'jsii-reflect';
 import * as path from 'path';
+import { FUTURE_FLAGS } from '@aws-cdk/cx-api';
 import { DeclarativeStack, loadTypeSystem, readTemplate, stackNameFromFileName } from '../lib';
 
 const VALIDATE_ASSEMBLIES = true;
@@ -33,10 +34,7 @@ for (const templateFile of fs.readdirSync(dir)) {
 
     const app = new cdk.App({
       context: {
-        '@aws-cdk/aws-ecr-assets:dockerIgnoreSupport': true,
-        '@aws-cdk/aws-kms:defaultKeyPolicies': true,
-        '@aws-cdk/core:enableStackNameDuplicates': true,
-        '@aws-cdk/aws-secretsmanager:parseOwnedSecretName': true,
+        ...FUTURE_FLAGS,
       }
     });
     const stackName = stackNameFromFileName(templateFile);

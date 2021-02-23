@@ -106,6 +106,7 @@ export class KubectlProvider extends NestedStack {
       onEventHandler: handler,
       vpc: cluster.kubectlPrivateSubnets ? cluster.vpc : undefined,
       vpcSubnets: cluster.kubectlPrivateSubnets ? { subnets: cluster.kubectlPrivateSubnets } : undefined,
+      securityGroups: cluster.kubectlSecurityGroup ? [cluster.kubectlSecurityGroup] : undefined,
     });
 
     this.serviceToken = provider.serviceToken;

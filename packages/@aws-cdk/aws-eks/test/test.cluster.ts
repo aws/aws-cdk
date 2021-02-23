@@ -1697,14 +1697,6 @@ export = {
             },
             {
               Action: [
-                'ec2:DescribeSubnets',
-                'ec2:DescribeRouteTables',
-              ],
-              Effect: 'Allow',
-              Resource: '*',
-            },
-            {
-              Action: [
                 'eks:CreateCluster',
                 'eks:DescribeCluster',
                 'eks:DescribeUpdate',
@@ -1782,27 +1774,17 @@ export = {
               Resource: '*',
             },
             {
-              Action: 'ec2:DescribeVpcs',
+              Action: [
+                'ec2:DescribeInstances',
+                'ec2:DescribeNetworkInterfaces',
+                'ec2:DescribeSecurityGroups',
+                'ec2:DescribeSubnets',
+                'ec2:DescribeRouteTables',
+                'ec2:DescribeDhcpOptions',
+                'ec2:DescribeVpcs',
+              ],
               Effect: 'Allow',
-              Resource: {
-                'Fn::Join': [
-                  '',
-                  [
-                    'arn:',
-                    {
-                      Ref: 'AWS::Partition',
-                    },
-                    ':ec2:us-east-1:',
-                    {
-                      Ref: 'AWS::AccountId',
-                    },
-                    ':vpc/',
-                    {
-                      Ref: 'MyClusterDefaultVpc76C24A38',
-                    },
-                  ],
-                ],
-              },
+              Resource: '*',
             },
           ],
           Version: '2012-10-17',
@@ -1831,14 +1813,6 @@ export = {
                   'Arn',
                 ],
               },
-            },
-            {
-              Action: [
-                'ec2:DescribeSubnets',
-                'ec2:DescribeRouteTables',
-              ],
-              Effect: 'Allow',
-              Resource: '*',
             },
             {
               Action: [
@@ -1874,27 +1848,17 @@ export = {
               Resource: '*',
             },
             {
-              Action: 'ec2:DescribeVpcs',
+              Action: [
+                'ec2:DescribeInstances',
+                'ec2:DescribeNetworkInterfaces',
+                'ec2:DescribeSecurityGroups',
+                'ec2:DescribeSubnets',
+                'ec2:DescribeRouteTables',
+                'ec2:DescribeDhcpOptions',
+                'ec2:DescribeVpcs',
+              ],
               Effect: 'Allow',
-              Resource: {
-                'Fn::Join': [
-                  '',
-                  [
-                    'arn:',
-                    {
-                      Ref: 'AWS::Partition',
-                    },
-                    ':ec2:us-east-1:',
-                    {
-                      Ref: 'AWS::AccountId',
-                    },
-                    ':vpc/',
-                    {
-                      Ref: 'MyClusterDefaultVpc76C24A38',
-                    },
-                  ],
-                ],
-              },
+              Resource: '*',
             },
           ],
           Version: '2012-10-17',
@@ -2117,6 +2081,27 @@ export = {
       test.done();
     },
 
+  },
+
+  'kubectl provider passes security group to provider'(test: Test) {
+
+    const { stack } = testFixture();
+
+    new eks.Cluster(stack, 'Cluster1', {
+      version: CLUSTER_VERSION,
+      prune: false,
+      endpointAccess: eks.EndpointAccess.PRIVATE,
+      kubectlEnvironment: {
+        Foo: 'Bar',
+      },
+    });
+
+    // the kubectl provider is inside a nested stack.
+    const nested = stack.node.tryFindChild('@aws-cdk/aws-eks.KubectlProvider') as cdk.NestedStack;
+    test.deepEqual(expect(nested).value.Resources.ProviderframeworkonEvent83C1D0A7.Properties.VpcConfig.SecurityGroupIds,
+      [{ Ref: 'referencetoStackCluster18DFEAC17ClusterSecurityGroupId' }]);
+
+    test.done();
   },
 
   'kubectl provider passes environment to lambda'(test: Test) {

@@ -2,7 +2,7 @@ import { expect, haveResource } from '@aws-cdk/assert';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
 import { App, Stack } from '@aws-cdk/core';
-import { Test } from 'nodeunit';
+import { nodeunitShim, Test } from 'nodeunit-shim';
 import * as ecs from '../../lib';
 
 // Test various cross-stack Cluster/Service/ALB scenario's
@@ -13,7 +13,7 @@ let stack2: Stack;
 let cluster: ecs.Cluster;
 let service: ecs.Ec2Service;
 
-export = {
+nodeunitShim({
   'setUp'(cb: () => void) {
     app = new App();
 
@@ -89,7 +89,7 @@ export = {
 
     test.done();
   },
-};
+});
 
 function expectIngress(stack: Stack) {
   expect(stack).to(haveResource('AWS::EC2::SecurityGroupIngress', {

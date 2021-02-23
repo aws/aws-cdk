@@ -3,7 +3,7 @@
   "description": "The CloudFormation resource specification used by @aws-cdk packages",
   "version": "0.0.0",
   "scripts": {
-    "update": "cdk-build && /bin/bash build-tools/update.sh",
+    "update": "cdk-build && /bin/bash build-tools/update.sh && /bin/bash build-tools/update-cfnlint.sh",
     "update-metrics": "/bin/bash build-tools/update-metrics.sh",
     "build": "cdk-build && node build-tools/build",
     "watch": "cdk-watch",

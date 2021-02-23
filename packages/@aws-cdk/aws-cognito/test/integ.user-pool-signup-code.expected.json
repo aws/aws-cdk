@@ -87,7 +87,9 @@
           "EmailSubject": "integ-test: Verify your account",
           "SmsMessage": "integ-test: Account verification code is {####}"
         }
-      }
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
     },
     "myuserpoolclient8A58A3E4": {
       "Type": "AWS::Cognito::UserPoolClient",

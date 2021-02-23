@@ -162,13 +162,17 @@ It is possible to run additional commands by specifying the `commandHooks` prop:
 
 ```ts
 new lambda.NodejsFunction(this, 'my-handler-with-commands', {
-  commandHooks: {
-    // Copy a file so that it will be included in the bundled asset
-    afterBundling(inputDir: string, outputDir: string): string[] {
-      return [`cp ${inputDir}/my-binary.node ${outputDir}`];
+  bundling: {
+    commandHooks: {
+      // Copy a file so that it will be included in the bundled asset
+      afterBundling(inputDir: string, outputDir: string): string[] {
+        return [`cp ${inputDir}/my-binary.node ${outputDir}`];
+      }
+      // ...
     }
     // ...
   }
+  
 });
 ```
 

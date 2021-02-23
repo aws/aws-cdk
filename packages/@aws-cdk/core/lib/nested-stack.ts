@@ -8,6 +8,7 @@ import { CfnStack } from './cloudformation.generated';
 import { Duration } from './duration';
 import { Lazy } from './lazy';
 import { Names } from './names';
+import { RemovalPolicy } from './removal-policy';
 import { IResolveContext } from './resolvable';
 import { Stack } from './stack';
 import { NestedStackSynthesizer } from './stack-synthesizers';
@@ -60,6 +61,17 @@ export interface NestedStackProps {
    * @default - notifications are not sent for this stack.
    */
   readonly notificationArns?: string[];
+
+  /**
+   * Policy to apply when the nested stack is removed
+   *
+   * The default is `Destroy`, because all Removal Policies of resources inside the
+   * Nested Stack should already have been set correctly. You normally should
+   * not need to set this value.
+   *
+   * @default RemovalPolicy.DESTROY
+   */
+  readonly removalPolicy?: RemovalPolicy;
 }
 
 /**
@@ -126,6 +138,7 @@ export class NestedStack extends Stack {
       notificationArns: props.notificationArns,
       timeoutInMinutes: props.timeout ? props.timeout.toMinutes() : undefined,
     });
+    this.resource.applyRemovalPolicy(props.removalPolicy ?? RemovalPolicy.DESTROY);
 
     this.nestedStackResource = this.resource;
 

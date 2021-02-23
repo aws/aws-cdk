@@ -466,6 +466,8 @@ const cluster = new eks.Cluster(this, 'hello-eks', {
 });
 ```
 
+The default value is `eks.EndpointAccess.PUBLIC_AND_PRIVATE`. Which means the cluster endpoint is accessible from outside of your VPC, but worker node traffic and `kubectl` commands issued by this library stay within your VPC.
+
 ### VPC Support
 
 You can specify the VPC of the cluster using the `vpc` and `vpcSubnets` properties:
@@ -633,8 +635,6 @@ This is the role you see as part of the stack outputs mentioned in the [Quick St
 $ aws eks update-kubeconfig --name cluster-xxxxx --role-arn arn:aws:iam::112233445566:role/yyyyy
 Added new context arn:aws:eks:rrrrr:112233445566:cluster/cluster-xxxxx to /home/boom/.kube/config
 ```
-
-The default value is `eks.EndpointAccess.PUBLIC_AND_PRIVATE`. Which means the cluster endpoint is accessible from outside of your VPC, but worker node traffic and `kubectl` commands issued by this library stay within your VPC.
 
 ### Encryption
 

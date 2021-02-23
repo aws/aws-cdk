@@ -1,10 +1,10 @@
 import { expect, haveResourceLike } from '@aws-cdk/assert';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
-import { Test } from 'nodeunit';
+import { nodeunitShim, Test } from 'nodeunit-shim';
 import * as ecs from '../../lib';
 
-export = {
+nodeunitShim({
   'When creating an Fargate TaskDefinition': {
     'with only required properties set, it correctly sets default properties'(test: Test) {
       // GIVEN
@@ -114,4 +114,4 @@ export = {
       test.done();
     },
   },
-};
+});

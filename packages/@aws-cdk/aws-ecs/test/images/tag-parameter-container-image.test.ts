@@ -1,10 +1,10 @@
 import { SynthUtils } from '@aws-cdk/assert';
 import * as ecr from '@aws-cdk/aws-ecr';
 import * as cdk from '@aws-cdk/core';
-import { Test } from 'nodeunit';
+import { nodeunitShim, Test } from 'nodeunit-shim';
 import * as ecs from '../../lib';
 
-export = {
+nodeunitShim({
   'TagParameter container image': {
     'throws an error when tagParameterName() is used without binding the image'(test: Test) {
       // GIVEN
@@ -22,4 +22,4 @@ export = {
       test.done();
     },
   },
-};
+});
