@@ -35,7 +35,9 @@ At this time only the EventBridge PutEvents integration is supported. Each AWS s
 The following code configures a default HTTP API integration with the EventBridge service's PutEvents API call.
 
 ```ts
-const eventBus = new EventBus(stack, 'EventBus');
+import * as events from '@aws-cdk/aws-events';
+
+const eventBus = new events.EventBus(stack, 'EventBus');
 const eventBridgeIntegration = new EventBridgeIntegration({
   eventBus,
   requestParameters: {
