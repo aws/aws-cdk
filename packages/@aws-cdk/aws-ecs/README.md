@@ -745,7 +745,7 @@ const taskDefinition = new ecs.TaskDefinition(stack, 'TaskDef', {
 ```ts
 const taskDefinition = new ecs.TaskDefinition(...),
 
-taskDefintiion.useProxyConfiguration(
+taskDefinition.useProxyConfiguration(
   new ecs.AppMeshProxyConfiguration({
     containerName: 'envoy',
     properties: {
