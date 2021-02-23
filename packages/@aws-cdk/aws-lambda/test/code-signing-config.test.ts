@@ -64,9 +64,6 @@ describe('code signing config', () => {
           },
         ],
       },
-      CodeSigningPolicies: {
-        UntrustedArtifactOnDeployment: lambda.UntrustedArtifactOnDeployment.WARN,
-      },
     });
   });
 
