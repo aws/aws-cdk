@@ -2083,6 +2083,27 @@ export = {
 
   },
 
+  'kubectl provider passes security group to provider'(test: Test) {
+
+    const { stack } = testFixture();
+
+    new eks.Cluster(stack, 'Cluster1', {
+      version: CLUSTER_VERSION,
+      prune: false,
+      endpointAccess: eks.EndpointAccess.PRIVATE,
+      kubectlEnvironment: {
+        Foo: 'Bar',
+      },
+    });
+
+    // the kubectl provider is inside a nested stack.
+    const nested = stack.node.tryFindChild('@aws-cdk/aws-eks.KubectlProvider') as cdk.NestedStack;
+    test.deepEqual(expect(nested).value.Resources.ProviderframeworkonEvent83C1D0A7.Properties.VpcConfig.SecurityGroupIds,
+      [{ Ref: 'referencetoStackCluster18DFEAC17ClusterSecurityGroupId' }]);
+
+    test.done();
+  },
+
   'kubectl provider passes environment to lambda'(test: Test) {
 
     const { stack } = testFixture();

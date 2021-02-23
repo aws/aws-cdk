@@ -1,11 +1,18 @@
-import { Construct, IConstruct } from 'constructs';
 import { ArnComponents } from './arn';
+import { CfnResource } from './cfn-resource';
 import { IStringProducer, Lazy } from './lazy';
 import { generatePhysicalName, isGeneratedWhenNeededMarker } from './private/physical-name-generator';
+import { Reference } from './reference';
+import { RemovalPolicy } from './removal-policy';
 import { IResolveContext } from './resolvable';
 import { Stack } from './stack';
 import { Token, Tokenization } from './token';
-import { Reference } from './reference';
+
+// v2 - leave this as a separate section so it reduces merge conflicts when compat is removed
+// eslint-disable-next-line import/order
+import { Construct, IConstruct } from 'constructs';
+
+const RESOURCE_SYMBOL = Symbol.for('@aws-cdk/core.Resource');
 
 /**
  * Represents the environment a given resource lives in.
@@ -88,6 +95,13 @@ export interface ResourceProps {
  * A construct which represents an AWS resource.
  */
 export abstract class Resource extends Construct implements IResource {
+  /**
+   * Check whether the given construct is a Resource
+   */
+  public static isResource(construct: IConstruct): construct is CfnResource {
+    return construct !== null && typeof(construct) === 'object' && RESOURCE_SYMBOL in construct;
+  }
+
   public readonly stack: Stack;
   public readonly env: ResourceEnvironment;
 
@@ -110,6 +124,8 @@ export abstract class Resource extends Construct implements IResource {
 
   constructor(scope: Construct, id: string, props: ResourceProps = {}) {
     super(scope, id);
+
+    Object.defineProperty(this, RESOURCE_SYMBOL, { value: true });
 
     this.stack = Stack.of(this);
     this.env = {
@@ -159,6 +175,25 @@ export abstract class Resource extends Construct implements IResource {
     if (!this._physicalName) {
       this._physicalName = this.generatePhysicalName();
     }
+  }
+
+  /**
+   * Apply the given removal policy to this resource
+   *
+   * The Removal Policy controls what happens to this resource when it stops
+   * being managed by CloudFormation, either because you've removed it from the
+   * CDK application or because you've made a change that requires the resource
+   * to be replaced.
+   *
+   * The resource can be deleted (`RemovalPolicy.DELETE`), or left in your AWS
+   * account for data recovery and cleanup later (`RemovalPolicy.RETAIN`).
+   */
+  public applyRemovalPolicy(policy: RemovalPolicy) {
+    const child = this.node.defaultChild;
+    if (!child || !CfnResource.isCfnResource(child)) {
+      throw new Error('Cannot apply RemovalPolicy: no child or not a CfnResource. Apply the removal policy on the CfnResource directly.');
+    }
+    child.applyRemovalPolicy(policy);
   }
 
   protected generatePhysicalName(): string {
