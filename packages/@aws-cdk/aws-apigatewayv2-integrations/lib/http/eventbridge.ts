@@ -6,7 +6,7 @@ import {
 } from '@aws-cdk/aws-apigatewayv2';
 import { IEventBus } from '@aws-cdk/aws-events';
 import { PolicyStatement, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
-import { AwsServiceIntegration } from './aws/integration';
+import { AwsServiceIntegration } from './private/integration';
 
 /**
  * Properties to initialize `EventBridgeIntegration`.
