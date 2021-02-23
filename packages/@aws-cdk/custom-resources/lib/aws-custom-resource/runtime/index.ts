@@ -13,7 +13,7 @@ export const PHYSICAL_RESOURCE_ID_REFERENCE = 'PHYSICAL:RESOURCEID:';
  * @param object the object to be flattened
  * @returns a flat object with path as keys
  */
-export function flatten(object: object): { [key: string]: string } {
+export function flatten(object: object): { [key: string]: any } {
   return Object.assign(
     {},
     ...function _flatten(child: any, path: string[] = []): any {

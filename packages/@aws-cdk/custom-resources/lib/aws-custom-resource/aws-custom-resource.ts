@@ -14,11 +14,14 @@ import { Construct as CoreConstruct } from '@aws-cdk/core';
 /**
  * Reference to the physical resource id that can be passed to the AWS operation as a parameter.
  */
-export class PhysicalResourceIdReference {
-  /**
-   * toJSON serialization to replace `PhysicalResourceIdReference` with a magic string.
-   */
-  public toJSON() {
+export class PhysicalResourceIdReference implements cdk.IResolvable {
+  public readonly creationStack: string[] = cdk.captureStackTrace();
+
+  public resolve(_: cdk.IResolveContext): any {
+    return PHYSICAL_RESOURCE_ID_REFERENCE;
+  }
+
+  public toString(): string {
     return PHYSICAL_RESOURCE_ID_REFERENCE;
   }
 }
@@ -316,13 +319,8 @@ export class AwsCustomResource extends CoreConstruct implements iam.IGrantable {
       }
     }
 
-    if (props.onCreate?.parameters) {
-      const flattenedOnCreateParams = flatten(JSON.parse(JSON.stringify(props.onCreate.parameters)));
-      for (const param in flattenedOnCreateParams) {
-        if (flattenedOnCreateParams[param] === PHYSICAL_RESOURCE_ID_REFERENCE) {
-          throw new Error('`PhysicalResourceIdReference` must not be specified in `onCreate` parameters.');
-        }
-      }
+    if (includesPhysicalResourceIdRef(props.onCreate?.parameters)) {
+      throw new Error('`PhysicalResourceIdReference` must not be specified in `onCreate` parameters.');
     }
 
     this.props = props;
@@ -419,7 +417,7 @@ export class AwsCustomResource extends CoreConstruct implements iam.IGrantable {
   }
 
   private encodeJson(obj: any) {
-    return cdk.Stack.of(this).toJsonString(obj);
+    return cdk.Lazy.uncachedString({ produce: () => cdk.Stack.of(this).toJsonString(obj) });
   }
 }
 
@@ -441,6 +439,30 @@ let getAwsSdkMetadata = (() => {
     }
   };
 })();
+
+/**
+ * Returns true if `obj` includes a `PhysicalResourceIdReference` in one of the
+ * values.
+ * @param obj Any object.
+ */
+function includesPhysicalResourceIdRef(obj: any | undefined) {
+  if (obj === undefined) {
+    return false;
+  }
+
+  let foundRef = false;
+
+  // we use JSON.stringify as a way to traverse all values in the object.
+  JSON.stringify(obj, (_, v) => {
+    if (v instanceof PhysicalResourceIdReference) {
+      foundRef = true;
+    }
+
+    return v;
+  });
+
+  return foundRef;
+}
 
 /**
  * Transform SDK service/action to IAM action using metadata from aws-sdk module.
