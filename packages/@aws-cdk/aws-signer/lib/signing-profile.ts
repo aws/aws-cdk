@@ -85,7 +85,7 @@ export interface SigningProfileProps {
    *
    * @default - 135 months
    */
-  readonly signatureValidityPeriod?: Duration;
+  readonly signatureValidity?: Duration;
 
   /**
    * Physical name of this Signing Profile.
@@ -161,9 +161,9 @@ export class SigningProfile extends Resource implements ISigningProfile {
 
     const resource = new CfnSigningProfile( this, 'Resource', {
       platformId: props.platform.platformId,
-      signatureValidityPeriod: props.signatureValidityPeriod ? {
+      signatureValidityPeriod: props.signatureValidity ? {
         type: 'DAYS',
-        value: props.signatureValidityPeriod?.toDays(),
+        value: props.signatureValidity?.toDays(),
       } : {
         type: 'MONTHS',
         value: 135,

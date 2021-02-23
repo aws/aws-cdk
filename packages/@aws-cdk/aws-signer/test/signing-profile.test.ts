@@ -27,7 +27,7 @@ describe('signing profile', () => {
     const platform = signer.Platform.AWS_LAMBDA_SHA384_ECDSA;
     new signer.SigningProfile( stack, 'SigningProfile', {
       platform,
-      signatureValidityPeriod: cdk.Duration.days( 7 ),
+      signatureValidity: cdk.Duration.days( 7 ),
     } );
 
     expect(stack).toHaveResource('AWS::Signer::SigningProfile', {

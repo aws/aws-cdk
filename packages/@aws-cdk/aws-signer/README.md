@@ -71,6 +71,6 @@ import * as cdk from '@aws-cdk/aws-core';
 
 const signingProfile = new signer.SigningProfile(this, 'SignginProfile', {
   platformId: 'xxxxxx',
-  signatureValidityPeriod: cdk.Duration.days(365), // Default to 135 months
+  signatureValidity: cdk.Duration.days(365), // Default to 135 months
 }) 
 ```
