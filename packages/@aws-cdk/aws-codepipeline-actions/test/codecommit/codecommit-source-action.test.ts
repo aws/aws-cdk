@@ -4,12 +4,12 @@ import * as codecommit from '@aws-cdk/aws-codecommit';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as iam from '@aws-cdk/aws-iam';
 import { Stack, Lazy } from '@aws-cdk/core';
-import { Test } from 'nodeunit';
+import { nodeunitShim, Test } from 'nodeunit-shim';
 import * as cpactions from '../../lib';
 
 /* eslint-disable quote-props */
 
-export = {
+nodeunitShim({
   'CodeCommit Source Action': {
     'by default does not poll for source changes and uses Events'(test: Test) {
       const stack = new Stack();
@@ -430,7 +430,7 @@ export = {
       test.done();
     },
   },
-};
+});
 
 function minimalPipeline(stack: Stack, trigger: cpactions.CodeCommitTrigger | undefined): codepipeline.Pipeline {
   const sourceOutput = new codepipeline.Artifact();
