@@ -120,6 +120,18 @@ bucket.grantReadWrite(lambda);
 Will give the Lambda's execution role permissions to read and write
 from the bucket.
 
+## AWS Foundational Security Best Practices
+
+### Enforcing SSL
+
+To require all requests use Secure Socket Layer (SSL):
+
+```ts
+const bucket = new Bucket(this, 'Bucket', {
+    enforceSSL: true
+});
+```
+
 ## Sharing buckets between stacks
 
 To use a bucket in a different stack in the same CDK application, pass the object to the other stack:
