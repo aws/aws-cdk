@@ -822,8 +822,8 @@ export interface AddApplicationTargetsProps extends AddRuleProps {
    * Names that start with the following prefixes are not allowed: AWSALB, AWSALBAPP,
    * and AWSALBTG; they're reserved for use by the load balancer.
    *
-   * Note: If you provide cookieName parameter application-based stickiness attributes (`app_cookie`) will be applied,
-   * otherwise it defaults to duration-based stickiness attributes (`lb_cookie`).
+   * Note: `stickinessCookieName` parameter depends on the presence of `stickinessCookieDuration` parameter.
+   * If `stickinessCookieDuration` is not set, `stickinessCookieName` will be omitted.
    *
    * @default No app cookie name
    * @see https://docs.aws.amazon.com/elasticloadbalancing/latest/application/sticky-sessions.html
