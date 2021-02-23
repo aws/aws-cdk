@@ -77,14 +77,6 @@ describe('code signing config', () => {
     });
 
     expect(stack).toHaveResource('AWS::Lambda::CodeSigningConfig', {
-      AllowedPublishers: {
-        SigningProfileVersionArns: [{
-          'Fn::GetAtt': [
-            'SigningProfile2139A0F9',
-            'ProfileVersionArn',
-          ],
-        }],
-      },
       CodeSigningPolicies: {
         UntrustedArtifactOnDeployment: lambda.UntrustedArtifactOnDeployment.ENFORCE,
       },
