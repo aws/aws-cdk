@@ -79,20 +79,19 @@ export class CodeSigningConfig extends Resource implements ICodeSigningConfig {
    * @param codeSigningConfigArn The ARN of code signing config.
    */
   public static fromCodeSigningConfigArn( scope: Construct, id: string, codeSigningConfigArn: string): ICodeSigningConfig {
-    class Import extends Resource implements ICodeSigningConfig {
-      public readonly codeSigningConfigArn = codeSigningConfigArn;
-      public readonly codeSigningConfigId: string;
-
-      constructor( codeSigningProfileId: string ) {
-        super(scope, id);
-        this.codeSigningConfigId = codeSigningProfileId;
-      }
-    }
     const codeSigningProfileId = Stack.of(scope).parseArn(codeSigningConfigArn).resourceName;
     if (!codeSigningProfileId) {
       throw new Error(`Code signing config ARN must be in the format 'arn:aws:lambda:<region>:<account>:code-signing-config:<codeSigningConfigArn>', got: '${codeSigningConfigArn}'`);
     }
-    return new Import(codeSigningProfileId);
+    class Import extends Resource implements ICodeSigningConfig {
+      public readonly codeSigningConfigArn = codeSigningConfigArn;
+      public readonly codeSigningConfigId = codeSigningProfileId;
+
+      constructor() {
+        super(scope, id);
+      }
+    }
+    return new Import();
   }
 
   public readonly codeSigningConfigArn: string;
