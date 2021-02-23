@@ -40,5 +40,3 @@ export interface EventBridgeIntegrationRequestParameters {
   readonly source?: string;
   readonly time?: string;
 }
-
-export type AwsServiceIntegrationRequestParameters = EventBridgeIntegrationRequestParameters;

@@ -1,7 +1,7 @@
 import { Resource } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnIntegration } from '../apigatewayv2.generated';
-import { IIntegration, AwsServiceIntegrationRequestParameters, AwsServiceIntegrationSubtype } from '../common';
+import { IIntegration, EventBridgeIntegrationRequestParameters, AwsServiceIntegrationSubtype } from '../common';
 import { IHttpApi } from './api';
 import { HttpMethod, IHttpRoute } from './route';
 
@@ -100,7 +100,7 @@ export interface HttpIntegrationProps {
   /**
    * Request parameters for integration
    */
-  readonly requestParameters?: AwsServiceIntegrationRequestParameters;
+  readonly requestParameters?: EventBridgeIntegrationRequestParameters;
 
   /**
    * Integration URI.
@@ -180,7 +180,7 @@ export class HttpIntegration extends Resource implements IHttpIntegration {
 
   private renderRequestParameters(
     integrationSubtype?: AwsServiceIntegrationSubtype,
-    requestParameters?: AwsServiceIntegrationRequestParameters,
+    requestParameters?: EventBridgeIntegrationRequestParameters,
   ): { [key: string]: any } | undefined {
     if (!integrationSubtype && !requestParameters) {
       return undefined;
@@ -292,5 +292,5 @@ export interface HttpRouteIntegrationConfig {
   /**
    * Request parameters for integration
    */
-  readonly requestParameters?: AwsServiceIntegrationRequestParameters;
+  readonly requestParameters?: EventBridgeIntegrationRequestParameters;
 }
