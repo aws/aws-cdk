@@ -2025,20 +2025,13 @@ describe('function', () => {
       });
 
       expect(stack).toHaveResource('AWS::Lambda::Function', {
-        Properties: {
-          Code: { ZipFile: 'foo' },
-          Handler: 'index.handler',
-          Role: { 'Fn::GetAtt': ['MyLambdaServiceRole4539ECB6', 'Arn'] },
-          Runtime: 'nodejs10.x',
-          CodeSigningConfigArn: {
-            'Fn::GetAtt': [
-              'CodeSigningConfigD8D41C10',
-              'CodeSigningConfigArn',
-            ],
-          },
+        CodeSigningConfigArn: {
+          'Fn::GetAtt': [
+            'CodeSigningConfigD8D41C10',
+            'CodeSigningConfigArn',
+          ],
         },
-        DependsOn: ['MyLambdaServiceRole4539ECB6'],
-      }, ResourcePart.CompleteDefinition);
+      });
     });
   });
 });
