@@ -7,11 +7,9 @@ jobs:
   auto-approve:
     if: >
        contains(github.event.pull_request.labels.*.name, 'pr/auto-approve') && 
-       (
-           github.event.pull_request.user.login == 'aws-cdk-automation' 
+       (github.event.pull_request.user.login == 'aws-cdk-automation' 
         || github.event.pull_request.user.login == 'dependabot[bot]' 
-        || github.event.pull_request.user.login == 'dependabot-preview[bot]'
-       )
+        || github.event.pull_request.user.login == 'dependabot-preview[bot]')
     runs-on: ubuntu-latest
     steps:
     - uses: hmarr/auto-approve-action@v2.0.0
