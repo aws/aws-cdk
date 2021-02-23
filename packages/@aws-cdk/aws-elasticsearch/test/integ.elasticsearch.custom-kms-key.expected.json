@@ -194,7 +194,9 @@
       "DependsOn": [
         "DomainESLogGroupPolicyc82ca7bfe2f2589b859ebab89e88da2efd284adfadCustomResourcePolicy0B41F6DF",
         "DomainESLogGroupPolicyc82ca7bfe2f2589b859ebab89e88da2efd284adfadA70E756D"
-      ]
+      ],
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
     },
     "DomainESAccessPolicyCustomResourcePolicy9747FC42": {
       "Type": "AWS::IAM::Policy",

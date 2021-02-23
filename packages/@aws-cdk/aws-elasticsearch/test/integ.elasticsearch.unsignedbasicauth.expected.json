@@ -58,7 +58,9 @@
         "NodeToNodeEncryptionOptions": {
           "Enabled": true
         }
-      }
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
     },
     "DomainESAccessPolicyCustomResourcePolicy9747FC42": {
       "Type": "AWS::IAM::Policy",

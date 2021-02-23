@@ -156,7 +156,9 @@
       "DependsOn": [
         "Domain1ESLogGroupPolicyc8858d5dba055f677469d76cb6ad538fd732ba69a6CustomResourcePolicy24436E05",
         "Domain1ESLogGroupPolicyc8858d5dba055f677469d76cb6ad538fd732ba69a6D8BDCF36"
-      ]
+      ],
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
     },
     "Domain1ESAccessPolicyCustomResourcePolicyC04432B6": {
       "Type": "AWS::IAM::Policy",
@@ -479,7 +481,9 @@
       "DependsOn": [
         "Domain2ESLogGroupPolicyc8405238e455eeabd840cf6933e1814efc51d2de71CustomResourcePolicy77691A33",
         "Domain2ESLogGroupPolicyc8405238e455eeabd840cf6933e1814efc51d2de71F1DE93A1"
-      ]
+      ],
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
     },
     "Domain2ESAccessPolicyCustomResourcePolicy8EED1F24": {
       "Type": "AWS::IAM::Policy",
