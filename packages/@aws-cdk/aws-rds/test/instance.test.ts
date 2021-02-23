@@ -1262,13 +1262,13 @@ test.each([
   });
 
   // THEN
-  expect(stack).to(haveResourceLike('AWS::RDS::DBInstance', {
+  expect(stack).toHaveResourceLike('AWS::RDS::DBInstance', {
     DeletionPolicy: instanceValue,
     UpdateReplacePolicy: instanceValue,
-  }, ResourcePart.CompleteDefinition));
+  }, ResourcePart.CompleteDefinition);
 
-  expect(stack).to(haveResourceLike('AWS::RDS::DBSubnetGroup', {
+  expect(stack).toHaveResourceLike('AWS::RDS::DBSubnetGroup', {
     DeletionPolicy: subnetValue,
     UpdateReplacePolicy: subnetValue,
-  }, ResourcePart.CompleteDefinition));
+  }, ResourcePart.CompleteDefinition);
 });
