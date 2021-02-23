@@ -5,12 +5,12 @@ import * as codecommit from '@aws-cdk/aws-codecommit';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import { PolicyStatement, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
-import { Test } from 'nodeunit';
+import { nodeunitShim, Test } from 'nodeunit-shim';
 import * as cpactions from '../../lib';
 
 /* eslint-disable quote-props */
 
-export = {
+nodeunitShim({
   'CreateChangeSetAction can be used to make a change set from a CodePipeline'(test: Test) {
     const stack = new cdk.Stack();
 
@@ -712,7 +712,7 @@ export = {
       test.done();
     },
   },
-};
+});
 
 /**
  * A test stack with a half-prepared pipeline ready to add CloudFormation actions to

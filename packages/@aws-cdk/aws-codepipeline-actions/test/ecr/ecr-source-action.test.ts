@@ -3,12 +3,12 @@ import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as ecr from '@aws-cdk/aws-ecr';
 import { Stack } from '@aws-cdk/core';
-import { Test } from 'nodeunit';
+import { nodeunitShim, Test } from 'nodeunit-shim';
 import * as cpactions from '../../lib';
 
 /* eslint-disable quote-props */
 
-export = {
+nodeunitShim({
   'ECR source Action': {
     'exposes variables for other actions to consume'(test: Test) {
       const stack = new Stack();
@@ -63,4 +63,4 @@ export = {
       test.done();
     },
   },
-};
+});

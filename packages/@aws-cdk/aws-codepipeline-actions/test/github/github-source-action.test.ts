@@ -2,12 +2,12 @@ import { expect, haveResourceLike, SynthUtils } from '@aws-cdk/assert';
 import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import { SecretValue, Stack } from '@aws-cdk/core';
-import { Test } from 'nodeunit';
+import { nodeunitShim, Test } from 'nodeunit-shim';
 import * as cpactions from '../../lib';
 
 /* eslint-disable quote-props */
 
-export = {
+nodeunitShim({
   'GitHub source Action': {
     'exposes variables for other actions to consume'(test: Test) {
       const stack = new Stack();
@@ -208,4 +208,4 @@ export = {
       test.done();
     },
   },
-};
+});

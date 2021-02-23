@@ -3,12 +3,12 @@ import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as s3 from '@aws-cdk/aws-s3';
 import { Lazy, Stack } from '@aws-cdk/core';
-import { Test } from 'nodeunit';
+import { nodeunitShim, Test } from 'nodeunit-shim';
 import * as cpactions from '../../lib';
 
 /* eslint-disable quote-props */
 
-export = {
+nodeunitShim({
   'S3 Source Action': {
     'by default polls for source changes and does not use Events'(test: Test) {
       const stack = new Stack();
@@ -269,7 +269,7 @@ export = {
       test.done();
     },
   },
-};
+});
 
 interface MinimalPipelineOptions {
   readonly trigger?: cpactions.S3Trigger;

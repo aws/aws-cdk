@@ -2,12 +2,12 @@ import { expect, haveResourceLike } from '@aws-cdk/assert';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as sns from '@aws-cdk/aws-sns';
 import { SecretValue, Stack } from '@aws-cdk/core';
-import { Test } from 'nodeunit';
+import { nodeunitShim, Test } from 'nodeunit-shim';
 import * as cpactions from '../lib';
 
 /* eslint-disable quote-props */
 
-export = {
+nodeunitShim({
   'manual approval Action': {
     'allows passing an SNS Topic when constructing it'(test: Test) {
       const stack = new Stack();
@@ -75,4 +75,4 @@ export = {
       test.done();
     },
   },
-};
+});

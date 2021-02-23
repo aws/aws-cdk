@@ -2,10 +2,10 @@ import { expect, haveResourceLike } from '@aws-cdk/assert';
 import * as codedeploy from '@aws-cdk/aws-codedeploy';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as cdk from '@aws-cdk/core';
-import { Test } from 'nodeunit';
+import { nodeunitShim, Test } from 'nodeunit-shim';
 import * as cpactions from '../../lib';
 
-export = {
+nodeunitShim({
   'CodeDeploy ECS Deploy Action': {
     'throws an exception if more than 4 container image inputs are provided'(test: Test) {
       const stack = new cdk.Stack();
@@ -198,7 +198,7 @@ export = {
       test.done();
     },
   },
-};
+});
 
 function addEcsDeploymentGroup(stack: cdk.Stack): codedeploy.IEcsDeploymentGroup {
   return codedeploy.EcsDeploymentGroup.fromEcsDeploymentGroupAttributes(
