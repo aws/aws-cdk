@@ -5,7 +5,7 @@ import {
   AwsServiceIntegrationSubtype,
 } from '@aws-cdk/aws-apigatewayv2';
 import { PolicyStatement, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
-import { IEventBus } from '../../../aws-events';
+import { IEventBus } from '@aws-cdk/aws-events';
 import { AwsServiceIntegration } from './aws/integration';
 import { AwsServiceIntegrationOptions } from './base-types';
 
