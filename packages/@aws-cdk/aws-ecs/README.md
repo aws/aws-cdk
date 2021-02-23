@@ -717,3 +717,28 @@ new ecs.FargateService(stack, 'FargateService', {
 
 app.synth();
 ```
+
+## Add Service Extensions
+
+You may create and apply packaged sets of modifications to ECS
+services by implementing `IServiceExtension` in your code and
+adding the extension to your ECS service.
+
+```ts
+class MyStandardScaling implements ecs.IServiceExtension {
+  extend(service: ecs.BaseService): void {
+    service.autoScaleTaskCount({
+      maxCapacity: 100,
+      minCapacity: 2,
+    }).scaleOnCpuUtilization('Target40', {
+      targetUtilizationPercent: 40,
+    });
+  }
+}
+
+// Create the service
+const service = new ecs.FargateService(...);
+
+// Apply your neatly packaged modification to the service.
+service.addExtension(new MyStandardScaling());
+```
