@@ -58,7 +58,7 @@ export class EvaluateExpression extends sfn.TaskStateBase {
   constructor(scope: Construct, id: string, private readonly props: EvaluateExpressionProps) {
     super(scope, id, props);
 
-    this.evalFn = createEvalFn(this.props.runtime || lambda.Runtime.NODEJS_12_X, this);
+    this.evalFn = createEvalFn(this.props.runtime || lambda.Runtime.NODEJS_10_X, this);
 
     this.taskPolicies = [
       new iam.PolicyStatement({
