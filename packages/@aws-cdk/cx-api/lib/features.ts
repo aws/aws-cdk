@@ -83,7 +83,7 @@ export const KMS_DEFAULT_KEY_POLICIES = '@aws-cdk/aws-kms:defaultKeyPolicies';
 /**
  * Change the old 's3:PutObject*' permission to 's3:PutObject' on Bucket,
  * as the former includes 's3:PutObjectAcl',
- * which allows changing the visibility of an object written to the Bucket.
+ * which could be used to grant read/write object access to IAM principals in other accounts.
  * Use a feature flag to make sure existing customers who might be relying
  * on the overly-broad permissions are not broken.
  */
@@ -102,7 +102,7 @@ export const S3_GRANT_WRITE_WITHOUT_ACL = '@aws-cdk/aws-s3:grantWriteWithoutAcl'
  *
  * Tests must cover the default (disabled) case and the future (enabled) case.
  */
-export const FUTURE_FLAGS = {
+export const FUTURE_FLAGS: { [key: string]: any } = {
   [ENABLE_STACK_NAME_DUPLICATES_CONTEXT]: 'true',
   [ENABLE_DIFF_NO_FAIL_CONTEXT]: 'true',
   [STACK_RELATIVE_EXPORTS_CONTEXT]: 'true',
