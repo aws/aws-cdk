@@ -139,9 +139,10 @@ integTest('nested stack with parameters', withDefaultFixture(async (fixture) => 
   expect(response.StackResources?.length).toEqual(1);
 }));
 
-integTest('deploy without execute', withDefaultFixture(async (fixture) => {
+integTest('deploy without execute a named change set', withDefaultFixture(async (fixture) => {
+  const changeSetName = 'custom-change-set-name';
   const stackArn = await fixture.cdkDeploy('test-2', {
-    options: ['--no-execute'],
+    options: ['--no-execute', '--change-set-name', changeSetName],
     captureStderr: false,
   });
   // verify that we only deployed a single stack (there's a single ARN in the output)
@@ -150,8 +151,16 @@ integTest('deploy without execute', withDefaultFixture(async (fixture) => {
   const response = await fixture.aws.cloudFormation('describeStacks', {
     StackName: stackArn,
   });
-
   expect(response.Stacks?.[0].StackStatus).toEqual('REVIEW_IN_PROGRESS');
+
+  //verify a change set was created with the provided name
+  const changeSetResponse = await fixture.aws.cloudFormation('listChangeSets', {
+    StackName: stackArn,
+  });
+  const changeSets = changeSetResponse.Summaries || [];
+  expect(changeSets.length).toEqual(1);
+  expect(changeSets[0].ChangeSetName).toEqual(changeSetName);
+  expect(changeSets[0].Status).toEqual('CREATE_COMPLETE');
 }));
 
 integTest('security related changes without a CLI are expected to fail', withDefaultFixture(async (fixture) => {
