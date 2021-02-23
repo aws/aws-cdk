@@ -25,13 +25,19 @@
 
 ## HTTP APIs
 
-Integrations connect a route to backend resources. HTTP APIs support Lambda proxy, AWS service, and HTTP proxy integrations. HTTP proxy integrations are also known as private integrations.
+Integrations connect a route to backend resources. HTTP APIs support Lambda proxy, AWS service, and HTTP proxy
+integrations. HTTP proxy integrations are also known as private integrations.
 
 ### Amazon EventBridge
 
-You can integrate your HTTP API with AWS services by using first-class integrations. A first-class integration connects an HTTP API route to an AWS service API. When a client invokes a route that's backed by a first-class integration, API Gateway invokes an AWS service API for you.
+You can integrate your HTTP API with AWS services by using first-class integrations. A first-class integration connects
+an HTTP API route to an AWS service API. When a client invokes a route that's backed by a first-class integration, API
+Gateway invokes an AWS service API for you.
 
-At this time only the EventBridge PutEvents integration is supported. Each AWS service integration subtype expects a set of `requestParamters` as part of the configuration. Detailed information with respect to the AWS service integration subtypes and request parameter formats can be found at [Integration Subtype Reference](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-integrations-aws-services.html).
+At this time only the EventBridge PutEvents integration is supported. Each AWS service integration subtype expects a set
+of `requestParamters` as part of the configuration. Detailed information with respect to the AWS service integration
+subtypes and request parameter formats can be found at [Integration Subtype
+Reference](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-integrations-aws-services.html).
 
 The following code configures a default HTTP API integration with the EventBridge service's PutEvents API call.
 
