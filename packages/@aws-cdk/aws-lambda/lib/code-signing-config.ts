@@ -83,9 +83,10 @@ export class CodeSigningConfig extends Resource implements ICodeSigningConfig {
     if (!codeSigningProfileId) {
       throw new Error(`Code signing config ARN must be in the format 'arn:aws:lambda:<region>:<account>:code-signing-config:<codeSigningConfigArn>', got: '${codeSigningConfigArn}'`);
     }
+    const assertedCodeSigningProfileId = codeSigningProfileId;
     class Import extends Resource implements ICodeSigningConfig {
       public readonly codeSigningConfigArn = codeSigningConfigArn;
-      public readonly codeSigningConfigId = codeSigningProfileId;
+      public readonly codeSigningConfigId = assertedCodeSigningProfileId;
 
       constructor() {
         super(scope, id);
@@ -101,7 +102,7 @@ export class CodeSigningConfig extends Resource implements ICodeSigningConfig {
     super(scope, id);
 
     const signingProfileVersionArns = props.signingProfiles.map(signingProfile => {
-      return signingProfile.signingProfileProfileVersionArn;
+      return signingProfile.signingProfileVersionArn;
     });
 
     const resource: CfnCodeSigningConfig = new CfnCodeSigningConfig(this, 'Resource', {
