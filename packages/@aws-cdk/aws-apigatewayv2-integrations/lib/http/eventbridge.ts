@@ -30,7 +30,7 @@ export interface EventBridgeIntegrationProps {
 
   /**
    * The EventBridge PutEvents request parameters.
-   * https://docs.aws.amazon.com/eventbridge/latest/APIReference/API_PutEvents.html
+   * @see https://docs.aws.amazon.com/eventbridge/latest/APIReference/API_PutEvents.html
    */
   readonly requestParameters: EventBridgeIntegrationRequestParameters;
 }
