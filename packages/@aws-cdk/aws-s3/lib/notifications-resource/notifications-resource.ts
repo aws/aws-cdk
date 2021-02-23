@@ -1,8 +1,8 @@
+import * as crypto from 'crypto';
 import * as cdk from '@aws-cdk/core';
 import { BucketBase, EventType, NotificationKeyFilter } from '../bucket';
 import { BucketNotificationDestinationType, IBucketNotificationDestination } from '../destination';
 import { NotificationsResourceHandler } from './notifications-resource-handler';
-import * as crypto from "crypto";
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
 // eslint-disable-next-line no-duplicate-imports, import/order
