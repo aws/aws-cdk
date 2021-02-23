@@ -4,15 +4,14 @@ import {
   EventBridgeIntegrationRequestParameters,
   AwsServiceIntegrationSubtype,
 } from '@aws-cdk/aws-apigatewayv2';
-import { PolicyStatement, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
 import { IEventBus } from '@aws-cdk/aws-events';
+import { PolicyStatement, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
 import { AwsServiceIntegration } from './aws/integration';
-import { AwsServiceIntegrationOptions } from './base-types';
 
 /**
  * Properties to initialize `EventBridgeIntegration`.
  */
-export interface EventBridgeIntegrationProps extends AwsServiceIntegrationOptions {
+export interface EventBridgeIntegrationProps {
   /**
    * The EventBridge API call to proxy to.
    * @default AwsServiceIntegrationSubtype.EVENT_BRIDGE_PUT_EVENTS
