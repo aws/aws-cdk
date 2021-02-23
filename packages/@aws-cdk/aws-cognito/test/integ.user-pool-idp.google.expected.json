@@ -27,9 +27,7 @@
           "EmailSubject": "Verify your new account",
           "SmsMessage": "The verification code to your new account is {####}"
         }
-      },
-      "UpdateReplacePolicy": "Delete",
-      "DeletionPolicy": "Delete"
+      }
     },
     "poolclient2623294C": {
       "Type": "AWS::Cognito::UserPoolClient",

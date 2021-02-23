@@ -5,7 +5,7 @@ import * as lambda from '@aws-cdk/aws-lambda';
 import * as logs from '@aws-cdk/aws-logs';
 import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
-import { PHYSICAL_RESOURCE_ID_REFERENCE, flatten } from './runtime';
+import { PHYSICAL_RESOURCE_ID_REFERENCE } from './runtime';
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
 // eslint-disable-next-line no-duplicate-imports, import/order
