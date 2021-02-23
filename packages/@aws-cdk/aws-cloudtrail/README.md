@@ -175,7 +175,7 @@ configures logging of Lambda data events for a specific Function.
 ```ts
 const trail = new cloudtrail.Trail(this, 'MyAmazingCloudTrail');
 const amazingFunction = new lambda.Function(stack, 'AnAmazingFunction', {
-  runtime: lambda.Runtime.NODEJS_10_X,
+  runtime: lambda.Runtime.NODEJS_12_X,
   handler: "hello.handler",
   code: lambda.Code.fromAsset("lambda"),
 });
