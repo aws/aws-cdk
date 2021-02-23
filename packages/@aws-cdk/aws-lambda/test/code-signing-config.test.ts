@@ -91,6 +91,6 @@ describe('code signing config', () => {
 
     expect(codeSigningConfig.codeSigningConfigArn).toBe(codeSigningConfigArn);
     expect(codeSigningConfig.codeSigningConfigId).toBe(codeSigningConfigId);
-    expect(stack).toMatchTemplate({});
+    expect(stack).toCountResources('AWS::Lambda::CodeSigningConfig', 0);
   });
 });
