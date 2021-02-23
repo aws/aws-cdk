@@ -717,3 +717,42 @@ new ecs.FargateService(stack, 'FargateService', {
 
 app.synth();
 ```
+
+## Specify Proxy Configuration
+
+You may specify a proxy configuration so that ingress traffic to and egress
+traffic from the task definition is first put through a sidecar container.
+
+**Specify by construct props**
+
+```ts
+const taskDefinition = new ecs.TaskDefinition(stack, 'TaskDef', {
+  ...
+  proxyConfiguration: new ecs.AppMeshProxyConfiguration({
+    containerName: 'envoy',
+    properties: {
+      appPorts: [80],
+      proxyIngressPort: 10050,
+      proxyEgressPort: 10051,
+      ignoredUID: 1337,
+    },
+  }),
+});
+```
+
+**Specify imperatively**
+
+```ts
+const taskDefinition = new ecs.TaskDefinition(...),
+
+taskDefintiion.useProxyConfiguration(
+  new ecs.AppMeshProxyConfiguration({
+    containerName: 'envoy',
+    properties: {
+      appPorts: [80],
+      proxyIngressPort: 10050,
+      proxyEgressPort: 10051,
+      ignoredUID: 1337,
+    },
+  }));
+```

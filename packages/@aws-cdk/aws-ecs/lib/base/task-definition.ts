@@ -200,7 +200,6 @@ abstract class TaskDefinitionBase extends Resource implements ITaskDefinition {
  * The base class for all task definitions.
  */
 export class TaskDefinition extends TaskDefinitionBase {
-
   /**
    * Imports a task definition from the specified task definition ARN.
    *
@@ -271,6 +270,8 @@ export class TaskDefinition extends TaskDefinitionBase {
 
   private _referencesSecretJsonField?: boolean;
 
+  private _proxyConfiguration?: ProxyConfiguration;
+
   /**
    * Constructs a new instance of the TaskDefinition class.
    */
@@ -305,6 +306,10 @@ export class TaskDefinition extends TaskDefinitionBase {
       assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
     });
 
+    if (props.proxyConfiguration) {
+      this.useProxyConfiguration(props.proxyConfiguration);
+    }
+
     const taskDef = new CfnTaskDefinition(this, 'Resource', {
       containerDefinitions: Lazy.any({ produce: () => this.renderContainers() }, { omitEmptyArray: true }),
       volumes: Lazy.any({ produce: () => this.renderVolumes() }, { omitEmptyArray: true }),
@@ -320,7 +325,7 @@ export class TaskDefinition extends TaskDefinitionBase {
         produce: () =>
           !isFargateCompatible(this.compatibility) ? this.placementConstraints : undefined,
       }, { omitEmptyArray: true }),
-      proxyConfiguration: props.proxyConfiguration ? props.proxyConfiguration.bind(this.stack, this) : undefined,
+      proxyConfiguration: Lazy.any({ produce: () => this._proxyConfiguration ? this._proxyConfiguration.bind(this.stack, this) : undefined }),
       cpu: props.cpu,
       memory: props.memoryMiB,
       ipcMode: props.ipcMode,
@@ -332,6 +337,17 @@ export class TaskDefinition extends TaskDefinitionBase {
     }
 
     this.taskDefinitionArn = taskDef.ref;
+  }
+
+  /**
+   * Configure the task definition to use a proxy
+   */
+  public useProxyConfiguration(proxyConfiguration: ProxyConfiguration): void {
+    if (!this._proxyConfiguration) {
+      this._proxyConfiguration = proxyConfiguration;
+    } else {
+      throw new Error('Task proxy configuration is already present');
+    }
   }
 
   public get executionRole(): iam.IRole | undefined {
