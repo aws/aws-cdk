@@ -1,13 +1,13 @@
 import { expect, haveResourceLike } from '@aws-cdk/assert';
 import * as cdk from '@aws-cdk/core';
-import { Test } from 'nodeunit';
+import { nodeunitShim, Test } from 'nodeunit-shim';
 import * as ecs from '../lib';
 
 let stack: cdk.Stack;
 let td: ecs.TaskDefinition;
 const image = ecs.ContainerImage.fromRegistry('test-image');
 
-export = {
+nodeunitShim({
   'setUp'(cb: () => void) {
     stack = new cdk.Stack();
     td = new ecs.Ec2TaskDefinition(stack, 'TaskDefinition');
@@ -15,12 +15,12 @@ export = {
     cb();
   },
 
-  'create a syslog log driver with options'(test: Test) {
+  'create a gelf log driver with minimum options'(test: Test) {
     // WHEN
     td.addContainer('Container', {
       image,
-      logging: new ecs.SyslogLogDriver({
-        tag: 'hello',
+      logging: new ecs.GelfLogDriver({
+        address: 'my-gelf-address',
       }),
       memoryLimitMiB: 128,
     });
@@ -30,9 +30,9 @@ export = {
       ContainerDefinitions: [
         {
           LogConfiguration: {
-            LogDriver: 'syslog',
+            LogDriver: 'gelf',
             Options: {
-              tag: 'hello',
+              'gelf-address': 'my-gelf-address',
             },
           },
         },
@@ -42,11 +42,13 @@ export = {
     test.done();
   },
 
-  'create a syslog log driver without options'(test: Test) {
+  'create a gelf log driver using gelf with minimum options'(test: Test) {
     // WHEN
     td.addContainer('Container', {
       image,
-      logging: new ecs.SyslogLogDriver(),
+      logging: ecs.LogDrivers.gelf({
+        address: 'my-gelf-address',
+      }),
       memoryLimitMiB: 128,
     });
 
@@ -55,7 +57,10 @@ export = {
       ContainerDefinitions: [
         {
           LogConfiguration: {
-            LogDriver: 'syslog',
+            LogDriver: 'gelf',
+            Options: {
+              'gelf-address': 'my-gelf-address',
+            },
           },
         },
       ],
@@ -63,27 +68,4 @@ export = {
 
     test.done();
   },
-
-  'create a syslog log driver using syslog'(test: Test) {
-    // WHEN
-    td.addContainer('Container', {
-      image,
-      logging: ecs.LogDrivers.syslog(),
-      memoryLimitMiB: 128,
-    });
-
-    // THEN
-    expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
-      ContainerDefinitions: [
-        {
-          LogConfiguration: {
-            LogDriver: 'syslog',
-            Options: {},
-          },
-        },
-      ],
-    }));
-
-    test.done();
-  },
-};
+});
