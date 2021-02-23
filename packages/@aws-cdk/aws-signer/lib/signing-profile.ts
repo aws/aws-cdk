@@ -126,33 +126,33 @@ export class SigningProfile extends Resource implements ISigningProfile {
   public static fromSigningProfileAttributes( scope: Construct, id: string, attrs: SigningProfileAttributes): ISigningProfile {
     class Import extends Resource implements ISigningProfile {
       public readonly signingProfileArn: string;
-      public readonly signingProfileProfileName = attrs.signingProfileProfileName;
-      public readonly signingProfileProfileVersion = attrs.signingProfileProfileVersion;
-      public readonly signingProfileProfileVersionArn: string;
+      public readonly signingProfileName = attrs.signingProfileName;
+      public readonly signingProfileVersion = attrs.signingProfileVersion;
+      public readonly signingProfileVersionArn: string;
 
       constructor(signingProfileArn: string, signingProfileProfileVersionArn: string) {
         super(scope, id);
         this.signingProfileArn = signingProfileArn;
-        this.signingProfileProfileVersionArn = signingProfileProfileVersionArn;
+        this.signingProfileVersionArn = signingProfileProfileVersionArn;
       }
     }
     const signingProfileArn = Stack.of(scope).formatArn({
       service: 'signer',
       resource: '',
-      resourceName: `/signing-profiles/${attrs.signingProfileProfileName}`,
+      resourceName: `/signing-profiles/${attrs.signingProfileName}`,
     });
-    const signingProfileProfileVersionArn = Stack.of(scope).formatArn({
+    const SigningProfileVersionArn = Stack.of(scope).formatArn({
       service: 'signer',
       resource: '',
-      resourceName: `/signing-profiles/${attrs.signingProfileProfileName}/${attrs.signingProfileProfileVersion}`,
+      resourceName: `/signing-profiles/${attrs.signingProfileName}/${attrs.signingProfileVersion}`,
     });
-    return new Import(signingProfileArn, signingProfileProfileVersionArn);
+    return new Import(signingProfileArn, SigningProfileVersionArn);
   }
 
   public readonly signingProfileArn: string;
-  public readonly signingProfileProfileName: string;
-  public readonly signingProfileProfileVersion: string;
-  public readonly signingProfileProfileVersionArn: string;
+  public readonly signingProfileName: string;
+  public readonly signingProfileVersion: string;
+  public readonly signingProfileVersionArn: string;
 
   constructor(scope: Construct, id: string, props: SigningProfileProps) {
     super(scope, id, {
@@ -171,8 +171,8 @@ export class SigningProfile extends Resource implements ISigningProfile {
     } );
 
     this.signingProfileArn = resource.attrArn;
-    this.signingProfileProfileName = resource.attrProfileName;
-    this.signingProfileProfileVersion = resource.attrProfileVersion;
-    this.signingProfileProfileVersionArn = resource.attrProfileVersionArn;
+    this.signingProfileName = resource.attrProfileName;
+    this.signingProfileVersion = resource.attrProfileVersion;
+    this.signingProfileVersionArn = resource.attrProfileVersionArn;
   }
 }
