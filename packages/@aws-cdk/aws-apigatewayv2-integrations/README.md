@@ -35,7 +35,7 @@ an HTTP API route to an AWS service API. When a client invokes a route that's ba
 Gateway invokes an AWS service API for you.
 
 At this time only the EventBridge PutEvents integration is supported. Each AWS service integration subtype expects a set
-of `requestParamters` as part of the configuration. Detailed information with respect to the AWS service integration
+of `requestParameters` as part of the configuration. Detailed information with respect to the AWS service integration
 subtypes and request parameter formats can be found at [Integration Subtype
 Reference](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-integrations-aws-services.html).
 
