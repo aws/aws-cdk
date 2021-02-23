@@ -18,6 +18,7 @@
 ## Table of Contents
 
 - [HTTP APIs](#http-apis)
+  - [Amazon EventBridge](#amazon-eventbridge)
   - [Lambda Integration](#lambda)
   - [HTTP Proxy Integration](#http-proxy)
   - [Private Integration](#private-integration)
