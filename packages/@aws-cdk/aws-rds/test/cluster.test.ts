@@ -1837,7 +1837,6 @@ describe('cluster', () => {
   });
 });
 
-<<<<<<< HEAD
 test.each([
   [cdk.RemovalPolicy.RETAIN, 'Retain', 'Retain', 'Retain'],
   [cdk.RemovalPolicy.SNAPSHOT, 'Snapshot', 'Delete', ABSENT],
@@ -1857,29 +1856,24 @@ test.each([
   });
 
   // THEN
-  expect(stack).to(haveResourceLike('AWS::RDS::DBCluster', {
+  expect(stack).toHaveResourceLike('AWS::RDS::DBCluster', {
     DeletionPolicy: clusterValue,
     UpdateReplacePolicy: clusterValue,
-  }, ResourcePart.CompleteDefinition));
+  }, ResourcePart.CompleteDefinition);
 
-  expect(stack).to(haveResourceLike('AWS::RDS::DBInstance', {
+  expect(stack).toHaveResourceLike('AWS::RDS::DBInstance', {
     DeletionPolicy: instanceValue,
     UpdateReplacePolicy: instanceValue,
-  }, ResourcePart.CompleteDefinition));
+  }, ResourcePart.CompleteDefinition);
 
-  expect(stack).to(haveResourceLike('AWS::RDS::DBSubnetGroup', {
+  expect(stack).toHaveResourceLike('AWS::RDS::DBSubnetGroup', {
     DeletionPolicy: subnetValue,
     UpdateReplacePolicy: subnetValue,
-  }, ResourcePart.CompleteDefinition));
+  }, ResourcePart.CompleteDefinition);
 });
 
-
-function testStack() {
-  const stack = new cdk.Stack(undefined, undefined, { env: { account: '12345', region: 'us-test-1' } });
-=======
 function testStack(app?: cdk.App) {
   const stack = new cdk.Stack(app, undefined, { env: { account: '12345', region: 'us-test-1' } });
->>>>>>> 9e524a97c (rds to jest)
   stack.node.setContext('availability-zones:12345:us-test-1', ['us-test-1a', 'us-test-1b']);
   return stack;
 }
