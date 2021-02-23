@@ -102,12 +102,12 @@ export interface SigningProfileAttributes {
   /**
    * The name of signing profile.
    */
-  readonly signingProfileProfileName: string;
+  readonly signingProfileName: string;
 
   /**
    * The version of signing profile.
    */
-  readonly signingProfileProfileVersion: string;
+  readonly signingProfileVersion: string;
 }
 
 /**
