@@ -501,7 +501,7 @@ The following code configures a function with code signing.
 import * as signer from '@aws-cdk/aws-signer';
 
 const signerProfile = signer.SigningProfile(this, 'SigningProfile', {
-  platformId: 'xxxxxx'
+  platform: Platform.AWS_LAMBDA_SHA384_ECDSA
 });
 
 const codeSigningConfig = new lambda.CodeSigningConfig(stack, 'CodeSigningConfig', {
