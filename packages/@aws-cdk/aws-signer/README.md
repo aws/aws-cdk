@@ -60,17 +60,4 @@ const signingProfile = new signer.SigningProfile(this, 'SigningProfile', {
 } );
 ```
 
-> **Note**: To get the list of available platforms, you can run aws-cli command of `aws signer list-signing-platforms`
-
-Define a Signer SigningProfile with validity period:
-
-Specifies the duration in the period that the signing profile is valid.
-
-```ts
-import * as cdk from '@aws-cdk/aws-core';
-
-const signingProfile = new signer.SigningProfile(this, 'SignginProfile', {
-  platformId: 'xxxxxx',
-  signatureValidity: cdk.Duration.days(365), // Default to 135 months
-}) 
-```
+A signing profile is valid by default for 135 months. This can be modified by specifying the `signatureValidityPeriod` property.
