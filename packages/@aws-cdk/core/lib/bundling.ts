@@ -334,7 +334,7 @@ function dockerExec(args: string[], options?: SpawnSyncOptions) {
   const proc = spawnSync(prog, args, options ?? {
     stdio: [ // show Docker output
       'ignore', // ignore stdio
-      process.stderr, // redirect stdout to stderr
+      'pipe', // capture stdout
       'inherit', // inherit stderr
     ],
   });
