@@ -9,10 +9,17 @@ import { Construct as CoreConstruct } from '@aws-cdk/core';
  * Encapsulates the creation of a low-level VPC resource
  */
 export interface IVpcResourceCreator {
+
   /**
    * The primary CIDR block for the VPC
    */
   readonly primaryCidrBlock: string;
+
+  /**
+   * Any secondary CIDR blocks for the VPC
+   */
+  readonly secondaryCidrBlocks: string[],
+
   /**
    * Indicates if instances launched in this VPC will have public DNS hostnames.
    */
@@ -29,11 +36,11 @@ export interface IVpcResourceCreator {
   create(): CfnVPC;
 }
 
-
 /**
  * The input parameters for the default strategy for creating a low-level VPC resource
  */
 export interface DefaultVpcResourceCreatorProps {
+
   /**
    * The primary CIDR block for the VPC
    * @default - 10.0.0.0/16
@@ -71,7 +78,6 @@ export interface DefaultVpcResourceCreatorProps {
 export class DefaultVpcResourceCreator implements IVpcResourceCreator {
 
   private static readonly DEFAULT_CIDR_RANGE: string = '10.0.0.0/16';
-
   private readonly props: DefaultVpcResourceCreatorProps;
   private readonly scope: CoreConstruct;
 
@@ -79,6 +85,12 @@ export class DefaultVpcResourceCreator implements IVpcResourceCreator {
    * The primary CIDR block for the VPC
    */
   public readonly primaryCidrBlock: string;
+
+  /**
+   * Any secondary CIDR blocks for the VPC
+   */
+  public readonly secondaryCidrBlocks: string[];
+
   /**
    * Indicates if instances launched in this VPC will have public DNS hostnames.
    */
@@ -92,6 +104,7 @@ export class DefaultVpcResourceCreator implements IVpcResourceCreator {
   constructor(scope: CoreConstruct, props: DefaultVpcResourceCreatorProps) {
     this.props = this.reifyDefaults(props);
     this.primaryCidrBlock = this.props.primaryCidrBlock!;
+    this.secondaryCidrBlocks = this.props.secondaryCidrBlocks!;
     this.dnsHostnamesEnabled = this.props.enableDnsHostnames!;
     this.dnsSupportEnabled = this.props.enableDnsSupport!;
     this.scope = scope;
@@ -103,25 +116,19 @@ export class DefaultVpcResourceCreator implements IVpcResourceCreator {
   protected reifyDefaults(props: DefaultVpcResourceCreatorProps): DefaultVpcResourceCreatorProps {
     const newProps = { ...props };
 
+    // Can't have enableDnsHostnames without enableDnsSupport
+    if (props.enableDnsHostnames && !props.enableDnsSupport) {
+      throw new Error('To use DNS Hostnames, DNS Support must be enabled, however, it was explicitly disabled.');
+    }
     // Resources for the CfnVPC
     newProps.primaryCidrBlock = props.primaryCidrBlock ?? DefaultVpcResourceCreator.DEFAULT_CIDR_RANGE; // Default CIDR block is 10.0.0.0/16
-    newProps.enableDnsSupport = props.enableDnsSupport == null ? true : props.enableDnsSupport; // DNS support enabled by default
-    newProps.enableDnsHostnames = props.enableDnsHostnames == null ? true : props.enableDnsHostnames; // DNS hostnames supported by default
-    newProps.defaultInstanceTenancy = props.defaultInstanceTenancy || 'default'; // Default instance tenancy is shared
+    newProps.enableDnsSupport = props.enableDnsSupport ?? true; // DNS support enabled by default
+    newProps.enableDnsHostnames = props.enableDnsHostnames ?? true ; // DNS hostnames supported by default
+    newProps.defaultInstanceTenancy = props.defaultInstanceTenancy ?? 'default'; // Default instance tenancy is shared
 
     // To create secondary CIDR blocks
     newProps.secondaryCidrBlocks = props.secondaryCidrBlocks ?? []; // No secondary CIDR blocks by default
 
-    // Do error checking
-
-    // Can't have enableDnsHostnames without enableDnsSupport
-    if (newProps.enableDnsHostnames && !newProps.enableDnsSupport) {
-      // eslint-disable-next-line
-      console.log(newProps.enableDnsSupport);
-      // eslint-disable-next-line
-      console.log(newProps.enableDnsHostnames);
-      throw new Error('To use DNS Hostnames, DNS Support must be enabled, however, it was explicitly disabled.');
-    }
     // Can't use a token for a CIDR block.
     if (Token.isUnresolved(newProps.primaryCidrBlock)) {
       throw new Error('\'cidr\' property must be a concrete CIDR string, got a Token (we need to parse it for automatic subdivision)');
