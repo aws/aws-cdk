@@ -276,7 +276,7 @@ describe('code', () => {
   });
 
   describe('lambda.Code.fromImageAsset', () => {
-    const flags = { '@aws-cdk/aws-ecr-assets:dockerIgnoreSupport': true };
+    const flags = { [cxapi.DOCKER_IGNORE_SUPPORT]: true };
     testFutureBehavior('repository uri is correctly identified', flags, cdk.App, (app) => {
       // given
       const stack = new cdk.Stack(app);

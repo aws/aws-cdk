@@ -12,7 +12,7 @@ import { DockerImageAsset } from '../lib';
 
 const DEMO_IMAGE_ASSET_HASH = 'b2c69bfbfe983b634456574587443159b3b7258849856a118ad3d2772238f1a5';
 
-const flags = { '@aws-cdk/aws-ecr-assets:dockerIgnoreSupport': true };
+const flags = { [cxapi.DOCKER_IGNORE_SUPPORT]: true };
 
 describe('image asset', () => {
   testFutureBehavior('test instantiating Asset Image', flags, App, (app) => {
