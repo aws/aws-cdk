@@ -6,10 +6,6 @@ import { Duration, NestedStack, Stack } from '@aws-cdk/core';
 import * as cr from '@aws-cdk/custom-resources';
 import { Construct } from 'constructs';
 
-// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
-// eslint-disable-next-line
-import { Construct as CoreConstruct } from '@aws-cdk/core';
-
 const HANDLER_DIR = path.join(__dirname, 'cluster-resource-handler');
 const HANDLER_RUNTIME = lambda.Runtime.NODEJS_12_X;
 
@@ -56,7 +52,7 @@ export class ClusterResourceProvider extends NestedStack {
   public readonly provider: cr.Provider;
 
   private constructor(scope: Construct, id: string, props: ClusterResourceProviderProps) {
-    super(scope as CoreConstruct, id);
+    super(scope, id);
 
     const onEvent = new lambda.Function(this, 'OnEventHandler', {
       code: lambda.Code.fromAsset(HANDLER_DIR),
