@@ -2,7 +2,6 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
-import { FileSystem } from '@aws-cdk/core';
 
 /**
  * Dependency files to exclude from the asset hash.
@@ -80,7 +79,7 @@ export interface BundlingOptions {
 export function bundle(options: BundlingOptions): lambda.Code {
   const { entry, runtime, outputPathSuffix } = options;
 
-  const stagedir = FileSystem.mkdtemp('python-bundling-');
+  const stagedir = cdk.FileSystem.mkdtemp('python-bundling-');
   const hasDeps = stageDependencies(entry, stagedir);
 
   const depsCommand = chain([

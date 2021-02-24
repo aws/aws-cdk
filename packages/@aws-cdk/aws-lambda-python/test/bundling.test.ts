@@ -5,8 +5,6 @@ import { FileSystem } from '@aws-cdk/core';
 import { stageDependencies, bundle } from '../lib/bundling';
 
 jest.mock('@aws-cdk/aws-lambda');
-const existsSyncOriginal = fs.existsSync;
-const existsSyncMock = jest.spyOn(fs, 'existsSync');
 
 jest.mock('child_process', () => ({
   spawnSync: jest.fn(() => {
