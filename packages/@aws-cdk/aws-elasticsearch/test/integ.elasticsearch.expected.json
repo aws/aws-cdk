@@ -183,7 +183,9 @@
       "DependsOn": [
         "Domain1ESLogGroupPolicyc8858d5dba055f677469d76cb6ad538fd732ba69a6CustomResourcePolicy24436E05",
         "Domain1ESLogGroupPolicyc8858d5dba055f677469d76cb6ad538fd732ba69a6D8BDCF36"
-      ]
+      ],
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
     },
     "Domain1ESAccessPolicyCustomResourcePolicyC04432B6": {
       "Type": "AWS::IAM::Policy",
@@ -352,13 +354,13 @@
             ]
           }
         },
-        "Handler": "index.handler",
         "Role": {
           "Fn::GetAtt": [
             "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2",
             "Arn"
           ]
         },
+        "Handler": "index.handler",
         "Runtime": "nodejs12.x",
         "Timeout": 120
       },
@@ -549,7 +551,9 @@
       "DependsOn": [
         "Domain2ESLogGroupPolicyc8405238e455eeabd840cf6933e1814efc51d2de71CustomResourcePolicy77691A33",
         "Domain2ESLogGroupPolicyc8405238e455eeabd840cf6933e1814efc51d2de71F1DE93A1"
-      ]
+      ],
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
     },
     "Domain2ESAccessPolicyCustomResourcePolicy8EED1F24": {
       "Type": "AWS::IAM::Policy",

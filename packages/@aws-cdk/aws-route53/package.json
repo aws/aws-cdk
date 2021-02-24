@@ -73,11 +73,11 @@
   "devDependencies": {
     "@aws-cdk/assert": "0.0.0",
     "@types/nodeunit": "^0.0.31",
-    "aws-sdk": "^2.830.0",
+    "aws-sdk": "^2.848.0",
     "cdk-build-tools": "0.0.0",
     "cdk-integ-tools": "0.0.0",
     "cfn2ts": "0.0.0",
-    "jest": "^26.6.0",
+    "jest": "^26.6.3",
     "nodeunit-shim": "0.0.0",
     "pkglint": "0.0.0"
   },
@@ -129,5 +129,8 @@
   "awscdkio": {
     "announce": false
   },
-  "maturity": "stable"
+  "maturity": "stable",
+  "publishConfig": {
+    "tag": "latest"
+  }
 }

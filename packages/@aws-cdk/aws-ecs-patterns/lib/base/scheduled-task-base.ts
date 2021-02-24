@@ -39,6 +39,13 @@ export interface ScheduledTaskBaseProps {
   readonly schedule: Schedule;
 
   /**
+   * Indicates whether the rule is enabled.
+   *
+   * @default true
+   */
+  readonly enabled?: boolean;
+
+  /**
    * A name for the rule.
    *
    * @default - AWS CloudFormation generates a unique physical ID and uses that ID
@@ -148,6 +155,7 @@ export abstract class ScheduledTaskBase extends CoreConstruct {
     this.eventRule = new Rule(this, 'ScheduledEventRule', {
       schedule: props.schedule,
       ruleName: props.ruleName,
+      enabled: props.enabled,
     });
   }
 
@@ -165,9 +173,18 @@ export abstract class ScheduledTaskBase extends CoreConstruct {
       subnetSelection: this.subnetSelection,
     });
 
-    this.eventRule.addTarget(eventRuleTarget);
+    this.addTaskAsTarget(eventRuleTarget);
 
     return eventRuleTarget;
+  }
+
+  /**
+   * Adds task as a target of the scheduled event rule.
+   *
+   * @param ecsTaskTarget the EcsTask to add to the event rule
+   */
+  protected addTaskAsTarget(ecsTaskTarget: EcsTask) {
+    this.eventRule.addTarget(ecsTaskTarget);
   }
 
   /**
