@@ -17,6 +17,13 @@ import { Construct as CoreConstruct } from '@aws-cdk/core';
 export class PhysicalResourceIdReference implements cdk.IResolvable {
   public readonly creationStack: string[] = cdk.captureStackTrace();
 
+  /**
+   * toJSON serialization to replace `PhysicalResourceIdReference` with a magic string.
+   */
+  public toJSON() {
+    return PHYSICAL_RESOURCE_ID_REFERENCE;
+  }
+
   public resolve(_: cdk.IResolveContext): any {
     return PHYSICAL_RESOURCE_ID_REFERENCE;
   }
@@ -454,7 +461,7 @@ function includesPhysicalResourceIdRef(obj: any | undefined) {
 
   // we use JSON.stringify as a way to traverse all values in the object.
   JSON.stringify(obj, (_, v) => {
-    if (v instanceof PhysicalResourceIdReference) {
+    if (v === PHYSICAL_RESOURCE_ID_REFERENCE) {
       foundRef = true;
     }
 
