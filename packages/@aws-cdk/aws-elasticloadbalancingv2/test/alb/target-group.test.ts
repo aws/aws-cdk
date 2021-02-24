@@ -163,13 +163,15 @@ describe('tests', () => {
     const vpc = new ec2.Vpc(stack, 'VPC', {});
 
     // THEN
-    expect(() => {
-      new elbv2.ApplicationTargetGroup(stack, 'TargetGroup1', {
-        stickinessCookieDuration: cdk.Duration.minutes(5),
-        stickinessCookieName: 'AWSALBCookieName',
-        vpc,
-      });
-    }).toThrow(/App cookie names that start with the following prefixes are not allowed: AWSALB, AWSALBAPP, and AWSALBTG; they're reserved for use by the load balancer./);
+    ['AWSALBCookieName', 'AWSALBstickinessCookieName', 'AWSALBTGCookieName'].forEach(badCookieName => {
+      expect(() => {
+        new elbv2.ApplicationTargetGroup(stack, 'TargetGroup1', {
+          stickinessCookieDuration: cdk.Duration.minutes(5),
+          stickinessCookieName: badCookieName,
+          vpc,
+        });
+      }).toThrow(errMessage);
+    });
 
     expect(() => {
       new elbv2.ApplicationTargetGroup(stack, 'TargetGroup2', {
