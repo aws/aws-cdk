@@ -147,7 +147,7 @@ export class ApplicationTargetGroup extends TargetGroupBase implements IApplicat
   /**
    * Enable sticky routing via a cookie to members of this target group.
    *
-   * Note: If you provide cookieName parameter application-based stickiness attributes (`app_cookie`) will be applied,
+   * Note: If the `cookieName` parameter is set, application-based stickiness will be applied,
    * otherwise it defaults to duration-based stickiness attributes (`lb_cookie`).
    *
    * @see https://docs.aws.amazon.com/elasticloadbalancing/latest/application/sticky-sessions.html
