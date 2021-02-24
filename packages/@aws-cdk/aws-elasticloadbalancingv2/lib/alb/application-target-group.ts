@@ -58,9 +58,7 @@ export interface ApplicationTargetGroupProps extends BaseTargetGroupProps {
   readonly stickinessCookieDuration?: Duration;
 
   /**
-   * The app cookie name.
-   *
-   * Indicates the name of the application-based stickiness cookie.
+   * The name of an application-based stickiness cookie.
    *
    * Names that start with the following prefixes are not allowed: AWSALB, AWSALBAPP,
    * and AWSALBTG; they're reserved for use by the load balancer.
@@ -68,7 +66,7 @@ export interface ApplicationTargetGroupProps extends BaseTargetGroupProps {
    * Note: `stickinessCookieName` parameter depends on the presence of `stickinessCookieDuration` parameter.
    * If `stickinessCookieDuration` is not set, `stickinessCookieName` will be omitted.
    *
-   * @default No app cookie name
+   * @default - If `stickinessCookieDuration` is set, a load-balancer generated cookie is used. Otherwise, no stickiness is defined.
    * @see https://docs.aws.amazon.com/elasticloadbalancing/latest/application/sticky-sessions.html
    */
   readonly stickinessCookieName?: string;
