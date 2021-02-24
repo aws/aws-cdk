@@ -129,10 +129,14 @@ export class QueueProcessingFargateService extends QueueProcessingServiceBase {
       logging: this.logDriver,
     });
 
+    // The desiredCount should be removed from the fargate service when the feature flag is removed.
+    const desiredCount = this.node.tryGetContext(cxapi.ECS_REMOVE_DEFAULT_DESIRED_COUNT) ? undefined : this.desiredCount;
+    
     // Create a Fargate service with the previously defined Task Definition and configure
     // autoscaling based on cpu utilization and number of messages visible in the SQS queue.
     this.service = new FargateService(this, 'QueueProcessingFargateService', {
       cluster: this.cluster,
+      desiredCount: desiredCount,
       taskDefinition: this.taskDefinition,
       serviceName: props.serviceName,
       minHealthyPercent: props.minHealthyPercent,
@@ -145,11 +149,6 @@ export class QueueProcessingFargateService extends QueueProcessingServiceBase {
       vpcSubnets: props.taskSubnets,
       assignPublicIp: props.assignPublicIp,
     });
-
-    if (!this.node.tryGetContext(cxapi.ECS_REMOVE_DEFAULT_DESIRED_COUNT)) {
-      const cfnService = this.service.node.children.find(c => c instanceof CfnService) as CfnService;
-      cfnService.desiredCount = this.desiredCount;
-    }
 
     this.configureAutoscalingForService(this.service);
     this.grantPermissionsToService(this.service);
