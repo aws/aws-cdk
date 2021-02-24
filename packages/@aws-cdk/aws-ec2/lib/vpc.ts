@@ -1185,29 +1185,7 @@ export class Vpc extends VpcBase {
 
     const stack = Stack.of(this);
 
-    // // Can't have enabledDnsHostnames without enableDnsSupport
-    // if (props.enableDnsHostnames && !props.enableDnsSupport) {
-    //   throw new Error('To use DNS Hostnames, DNS Support must be enabled, however, it was explicitly disabled.');
-    // }
-
-    // const cidrBlock = ifUndefined(props.cidr, Vpc.DEFAULT_CIDR_RANGE);
-    // if (Token.isUnresolved(cidrBlock)) {
-    //   throw new Error('\'cidr\' property must be a concrete CIDR string, got a Token (we need to parse it for automatic subdivision)');
-    // }
-
-
-    // this.dnsHostnamesEnabled = props.enableDnsHostnames == null ? true : props.enableDnsHostnames;
-    // this.dnsSupportEnabled = props.enableDnsSupport == null ? true : props.enableDnsSupport;
-    // const instanceTenancy = props.defaultInstanceTenancy || 'default';
-
-    // // Define a VPC using the provided CIDR range
-    // this.resource = new CfnVPC(this, 'Resource', {
-    //   cidrBlock,
-    //   enableDnsHostnames: this.dnsHostnamesEnabled,
-    //   enableDnsSupport: this.dnsSupportEnabled,
-    //   instanceTenancy,
-    // });
-
+    // Define a VPC using the provided CIDR range
     const vpcCreator = props.vpcResourceCreator ?? new DefaultVpcResourceCreator(this, {
       primaryCidrBlock: props.cidr,
       enableDnsSupport: props.enableDnsSupport,
@@ -1215,6 +1193,7 @@ export class Vpc extends VpcBase {
       defaultInstanceTenancy: props.defaultInstanceTenancy,
     });
     this.resource = vpcCreator.create();
+
     this.dnsHostnamesEnabled = vpcCreator.dnsHostnamesEnabled;
     this.dnsSupportEnabled = vpcCreator.dnsSupportEnabled;
 
