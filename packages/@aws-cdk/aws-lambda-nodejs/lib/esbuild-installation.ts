@@ -1,18 +1,17 @@
 import { spawnSync } from 'child_process';
-import { PackageManager } from './package-manager';
 import { getModuleVersion } from './util';
 
 /**
  * An esbuild installation
  */
 export abstract class EsbuildInstallation {
-  public static detect(packageManager: PackageManager): EsbuildInstallation | undefined {
+  public static detect(): EsbuildInstallation | undefined {
     try {
       try {
         // Check local version first
         const version = getModuleVersion('esbuild');
         return {
-          runner: packageManager.runBinCommand('esbuild'),
+          isLocal: true,
           version,
         };
       } catch (err) {
@@ -20,7 +19,7 @@ export abstract class EsbuildInstallation {
         const esbuild = spawnSync('esbuild', ['--version']);
         if (esbuild.status === 0 && !esbuild.error) {
           return {
-            runner: 'esbuild', // the bin is globally available
+            isLocal: false,
             version: esbuild.stdout.toString().trim(),
           };
         }
@@ -31,6 +30,6 @@ export abstract class EsbuildInstallation {
     }
   }
 
-  public abstract readonly runner: string;
+  public abstract readonly isLocal: boolean;
   public abstract readonly version: string;
 }

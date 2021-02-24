@@ -20,7 +20,7 @@ beforeEach(() => {
   Bundling.clearEsbuildInstallationCache();
 
   detectEsbuildMock = jest.spyOn(EsbuildInstallation, 'detect').mockReturnValue({
-    runner: 'esbuild',
+    isLocal: true,
     version: '0.8.8',
   });
 

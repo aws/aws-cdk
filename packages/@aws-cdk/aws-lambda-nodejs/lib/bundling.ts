@@ -64,7 +64,7 @@ export class Bundling implements cdk.BundlingOptions {
   constructor(private readonly props: BundlingProps) {
     this.packageManager = PackageManager.fromLockFile(props.depsLockFilePath);
 
-    Bundling.esbuildInstallation = Bundling.esbuildInstallation ?? EsbuildInstallation.detect(this.packageManager);
+    Bundling.esbuildInstallation = Bundling.esbuildInstallation ?? EsbuildInstallation.detect();
     const runsLocally = !!Bundling.esbuildInstallation?.version.startsWith(ESBUILD_VERSION);
 
     const projectRoot = path.dirname(props.depsLockFilePath);
@@ -109,7 +109,7 @@ export class Bundling implements cdk.BundlingOptions {
       const createLocalCommand = (outputDir: string, esbuild: EsbuildInstallation) => this.createBundlingCommand({
         inputDir: projectRoot,
         outputDir,
-        esbuildRunner: esbuild.runner,
+        esbuildRunner: esbuild.isLocal ? this.packageManager.runBinCommand('esbuild') : 'esbuild',
         osPlatform,
       });
 
