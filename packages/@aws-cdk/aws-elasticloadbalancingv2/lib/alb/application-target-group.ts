@@ -1,6 +1,6 @@
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as ec2 from '@aws-cdk/aws-ec2';
-import { Annotations, Duration } from '@aws-cdk/core';
+import { Annotations, Duration, Token } from '@aws-cdk/core';
 import { IConstruct, Construct } from 'constructs';
 import { ApplicationELBMetrics } from '../elasticloadbalancingv2-canned-metrics.generated';
 import {
@@ -154,7 +154,7 @@ export class ApplicationTargetGroup extends TargetGroupBase implements IApplicat
    */
   public enableCookieStickiness(duration: Duration, cookieName?: string) {
     if (cookieName !== undefined) {
-      if (cookieName.startsWith('AWSALB') || cookieName.startsWith('AWSALBAPP') || cookieName.startsWith('AWSALBTG')) {
+      if (!Token.isUnresolved(cookieName) && (cookieName.startsWith('AWSALB') || cookieName.startsWith('AWSALBAPP') || cookieName.startsWith('AWSALBTG'))) {
         throw new Error('App cookie names that start with the following prefixes are not allowed: AWSALB, AWSALBAPP, and AWSALBTG; they\'re reserved for use by the load balancer.');
       }
       if (cookieName === '') {
