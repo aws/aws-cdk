@@ -156,38 +156,23 @@ describe('tests', () => {
     });
   });
 
-  test('Bad stickiness cookie names example', () => {
+  test('Bad stickiness cookie names', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'Stack');
     const vpc = new ec2.Vpc(stack, 'VPC', {});
+    const errMessage = 'App cookie names that start with the following prefixes are not allowed: AWSALB, AWSALBAPP, and AWSALBTG; they\'re reserved for use by the load balancer';
 
     // THEN
-    ['AWSALBCookieName', 'AWSALBstickinessCookieName', 'AWSALBTGCookieName'].forEach(badCookieName => {
+    ['AWSALBCookieName', 'AWSALBstickinessCookieName', 'AWSALBTGCookieName'].forEach((badCookieName, i) => {
       expect(() => {
-        new elbv2.ApplicationTargetGroup(stack, 'TargetGroup1', {
+        new elbv2.ApplicationTargetGroup(stack, `TargetGroup${i}`, {
           stickinessCookieDuration: cdk.Duration.minutes(5),
           stickinessCookieName: badCookieName,
           vpc,
         });
       }).toThrow(errMessage);
     });
-
-    expect(() => {
-      new elbv2.ApplicationTargetGroup(stack, 'TargetGroup2', {
-        stickinessCookieDuration: cdk.Duration.minutes(5),
-        stickinessCookieName: 'AWSALBstickinessCookieName',
-        vpc,
-      });
-    }).toThrow(/App cookie names that start with the following prefixes are not allowed: AWSALB, AWSALBAPP, and AWSALBTG; they're reserved for use by the load balancer./);
-
-    expect(() => {
-      new elbv2.ApplicationTargetGroup(stack, 'TargetGroup3', {
-        stickinessCookieDuration: cdk.Duration.minutes(5),
-        stickinessCookieName: 'AWSALBTGCookieName',
-        vpc,
-      });
-    }).toThrow(/App cookie names that start with the following prefixes are not allowed: AWSALB, AWSALBAPP, and AWSALBTG; they're reserved for use by the load balancer./);
   });
 
   test('Empty stickiness cookie name', () => {
