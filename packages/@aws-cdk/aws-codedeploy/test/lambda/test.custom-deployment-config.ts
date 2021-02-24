@@ -53,49 +53,9 @@ export = {
           'Arn',
         ],
       },
-      Create: {
-        action: 'createDeploymentConfig',
-        service: 'CodeDeploy',
-        parameters: {
-          computePlatform: 'Lambda',
-          deploymentConfigName: 'CustomConfig.LambdaCanary5Percent1Minutes',
-          trafficRoutingConfig: {
-            timeBasedCanary: {
-              canaryPercentage: '5',
-              canaryInterval: '1',
-            },
-            type: 'TimeBasedCanary',
-          },
-        },
-        physicalResourceId: {
-          id: 'CustomConfig.LambdaCanary5Percent1Minutes',
-        },
-      },
-      Update: {
-        action: 'createDeploymentConfig',
-        service: 'CodeDeploy',
-        parameters: {
-          computePlatform: 'Lambda',
-          deploymentConfigName: 'CustomConfig.LambdaCanary5Percent1Minutes',
-          trafficRoutingConfig: {
-            timeBasedCanary: {
-              canaryPercentage: '5',
-              canaryInterval: '1',
-            },
-            type: 'TimeBasedCanary',
-          },
-        },
-        physicalResourceId: {
-          id: 'CustomConfig.LambdaCanary5Percent1Minutes',
-        },
-      },
-      Delete: {
-        action: 'deleteDeploymentConfig',
-        service: 'CodeDeploy',
-        parameters: {
-          deploymentConfigName: 'CustomConfig.LambdaCanary5Percent1Minutes',
-        },
-      },
+      Create: '{"service":"CodeDeploy","action":"createDeploymentConfig","parameters":{"deploymentConfigName":"CustomConfig.LambdaCanary5Percent1Minutes","computePlatform":"Lambda","trafficRoutingConfig":{"type":"TimeBasedCanary","timeBasedCanary":{"canaryInterval":"1","canaryPercentage":"5"}}},"physicalResourceId":{"id":"CustomConfig.LambdaCanary5Percent1Minutes"}}',
+      Update: '{"service":"CodeDeploy","action":"createDeploymentConfig","parameters":{"deploymentConfigName":"CustomConfig.LambdaCanary5Percent1Minutes","computePlatform":"Lambda","trafficRoutingConfig":{"type":"TimeBasedCanary","timeBasedCanary":{"canaryInterval":"1","canaryPercentage":"5"}}},"physicalResourceId":{"id":"CustomConfig.LambdaCanary5Percent1Minutes"}}',
+      Delete: '{"service":"CodeDeploy","action":"deleteDeploymentConfig","parameters":{"deploymentConfigName":"CustomConfig.LambdaCanary5Percent1Minutes"}}',
     }));
 
     expect(stack).to(haveResource('AWS::IAM::Policy', {
@@ -134,27 +94,9 @@ export = {
 
     // THEN
     expect(stack).to(haveResourceLike('Custom::AWS', {
-      Create: {
-        parameters: {
-          deploymentConfigName: 'MyDeploymentConfig',
-        },
-        physicalResourceId: {
-          id: 'MyDeploymentConfig',
-        },
-      },
-      Update: {
-        parameters: {
-          deploymentConfigName: 'MyDeploymentConfig',
-        },
-        physicalResourceId: {
-          id: 'MyDeploymentConfig',
-        },
-      },
-      Delete: {
-        parameters: {
-          deploymentConfigName: 'MyDeploymentConfig',
-        },
-      },
+      Create: '{"service":"CodeDeploy","action":"createDeploymentConfig","parameters":{"deploymentConfigName":"MyDeploymentConfig","computePlatform":"Lambda","trafficRoutingConfig":{"type":"TimeBasedCanary","timeBasedCanary":{"canaryInterval":"1","canaryPercentage":"5"}}},"physicalResourceId":{"id":"MyDeploymentConfig"}}',
+      Update: '{"service":"CodeDeploy","action":"createDeploymentConfig","parameters":{"deploymentConfigName":"MyDeploymentConfig","computePlatform":"Lambda","trafficRoutingConfig":{"type":"TimeBasedCanary","timeBasedCanary":{"canaryInterval":"1","canaryPercentage":"5"}}},"physicalResourceId":{"id":"MyDeploymentConfig"}}',
+      Delete: '{"service":"CodeDeploy","action":"deleteDeploymentConfig","parameters":{"deploymentConfigName":"MyDeploymentConfig"}}',
     }));
     test.done();
   },

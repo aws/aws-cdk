@@ -98,63 +98,36 @@
           ]
         },
         "Create": {
-          "service": "CloudWatchLogs",
-          "action": "putResourcePolicy",
-          "parameters": {
-            "policyName": "loggroupeventsEventsLogGroupPolicyloggroupeventsTimerC63340B025F606BE",
-            "policyDocument": {
-              "Fn::Join": [
-                "",
-                [
-                  "{\"Statement\":[{\"Action\":[\"logs:PutLogEvents\",\"logs:CreateLogStream\"],\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"events.amazonaws.com\"},\"Resource\":\"",
-                  {
-                    "Fn::GetAtt": [
-                      "loggroupB02AAEB1",
-                      "Arn"
-                    ]
-                  },
-                  "\"}],\"Version\":\"2012-10-17\"}"
+          "Fn::Join": [
+            "",
+            [
+              "{\"service\":\"CloudWatchLogs\",\"action\":\"putResourcePolicy\",\"parameters\":{\"policyName\":\"loggroupeventsEventsLogGroupPolicyloggroupeventsTimerC63340B025F606BE\",\"policyDocument\":\"{\\\"Statement\\\":[{\\\"Action\\\":[\\\"logs:PutLogEvents\\\",\\\"logs:CreateLogStream\\\"],\\\"Effect\\\":\\\"Allow\\\",\\\"Principal\\\":{\\\"Service\\\":\\\"events.amazonaws.com\\\"},\\\"Resource\\\":\\\"",
+              {
+                "Fn::GetAtt": [
+                  "loggroupB02AAEB1",
+                  "Arn"
                 ]
-              ]
-            }
-          },
-          "physicalResourceId": {
-            "id": "EventsLogGroupPolicyloggroupeventsTimerC63340B0"
-          }
+              },
+              "\\\"}],\\\"Version\\\":\\\"2012-10-17\\\"}\"},\"physicalResourceId\":{\"id\":\"EventsLogGroupPolicyloggroupeventsTimerC63340B0\"}}"
+            ]
+          ]
         },
         "Update": {
-          "service": "CloudWatchLogs",
-          "action": "putResourcePolicy",
-          "parameters": {
-            "policyName": "loggroupeventsEventsLogGroupPolicyloggroupeventsTimerC63340B025F606BE",
-            "policyDocument": {
-              "Fn::Join": [
-                "",
-                [
-                  "{\"Statement\":[{\"Action\":[\"logs:PutLogEvents\",\"logs:CreateLogStream\"],\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"events.amazonaws.com\"},\"Resource\":\"",
-                  {
-                    "Fn::GetAtt": [
-                      "loggroupB02AAEB1",
-                      "Arn"
-                    ]
-                  },
-                  "\"}],\"Version\":\"2012-10-17\"}"
+          "Fn::Join": [
+            "",
+            [
+              "{\"service\":\"CloudWatchLogs\",\"action\":\"putResourcePolicy\",\"parameters\":{\"policyName\":\"loggroupeventsEventsLogGroupPolicyloggroupeventsTimerC63340B025F606BE\",\"policyDocument\":\"{\\\"Statement\\\":[{\\\"Action\\\":[\\\"logs:PutLogEvents\\\",\\\"logs:CreateLogStream\\\"],\\\"Effect\\\":\\\"Allow\\\",\\\"Principal\\\":{\\\"Service\\\":\\\"events.amazonaws.com\\\"},\\\"Resource\\\":\\\"",
+              {
+                "Fn::GetAtt": [
+                  "loggroupB02AAEB1",
+                  "Arn"
                 ]
-              ]
-            }
-          },
-          "physicalResourceId": {
-            "id": "EventsLogGroupPolicyloggroupeventsTimerC63340B0"
-          }
+              },
+              "\\\"}],\\\"Version\\\":\\\"2012-10-17\\\"}\"},\"physicalResourceId\":{\"id\":\"EventsLogGroupPolicyloggroupeventsTimerC63340B0\"}}"
+            ]
+          ]
         },
-        "Delete": {
-          "service": "CloudWatchLogs",
-          "action": "deleteResourcePolicy",
-          "parameters": {
-            "policyName": "loggroupeventsEventsLogGroupPolicyloggroupeventsTimerC63340B025F606BE"
-          },
-          "ignoreErrorCodesMatching": "400"
-        },
+        "Delete": "{\"service\":\"CloudWatchLogs\",\"action\":\"deleteResourcePolicy\",\"parameters\":{\"policyName\":\"loggroupeventsEventsLogGroupPolicyloggroupeventsTimerC63340B025F606BE\"},\"ignoreErrorCodesMatching\":\"400\"}",
         "InstallLatestAwsSdk": true
       },
       "DependsOn": [
@@ -199,7 +172,7 @@
       "Properties": {
         "Code": {
           "S3Bucket": {
-            "Ref": "AssetParametersb64b129569a5ac7a9abf88a18ac0b504d1fb1208872460476ed3fd435830eb94S3Bucket38F1BB8E"
+            "Ref": "AssetParameters0625b1566df06e0ffd948f0f65f97a3d22d48242e66196d3f72b480f5309b343S3Bucket65227904"
           },
           "S3Key": {
             "Fn::Join": [
@@ -212,7 +185,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParametersb64b129569a5ac7a9abf88a18ac0b504d1fb1208872460476ed3fd435830eb94S3VersionKeyCCDC67C0"
+                          "Ref": "AssetParameters0625b1566df06e0ffd948f0f65f97a3d22d48242e66196d3f72b480f5309b343S3VersionKey3AF0E7DF"
                         }
                       ]
                     }
@@ -225,7 +198,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParametersb64b129569a5ac7a9abf88a18ac0b504d1fb1208872460476ed3fd435830eb94S3VersionKeyCCDC67C0"
+                          "Ref": "AssetParameters0625b1566df06e0ffd948f0f65f97a3d22d48242e66196d3f72b480f5309b343S3VersionKey3AF0E7DF"
                         }
                       ]
                     }
@@ -235,13 +208,13 @@
             ]
           }
         },
-        "Handler": "index.handler",
         "Role": {
           "Fn::GetAtt": [
             "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2",
             "Arn"
           ]
         },
+        "Handler": "index.handler",
         "Runtime": "nodejs12.x",
         "Timeout": 120
       },
@@ -326,63 +299,36 @@
           ]
         },
         "Create": {
-          "service": "CloudWatchLogs",
-          "action": "putResourcePolicy",
-          "parameters": {
-            "policyName": "loggroupeventsEventsLogGroupPolicyloggroupeventsTimer289E3527EF8F6205F",
-            "policyDocument": {
-              "Fn::Join": [
-                "",
-                [
-                  "{\"Statement\":[{\"Action\":[\"logs:PutLogEvents\",\"logs:CreateLogStream\"],\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"events.amazonaws.com\"},\"Resource\":\"",
-                  {
-                    "Fn::GetAtt": [
-                      "loggroup2F19C5C9B",
-                      "Arn"
-                    ]
-                  },
-                  "\"}],\"Version\":\"2012-10-17\"}"
+          "Fn::Join": [
+            "",
+            [
+              "{\"service\":\"CloudWatchLogs\",\"action\":\"putResourcePolicy\",\"parameters\":{\"policyName\":\"loggroupeventsEventsLogGroupPolicyloggroupeventsTimer289E3527EF8F6205F\",\"policyDocument\":\"{\\\"Statement\\\":[{\\\"Action\\\":[\\\"logs:PutLogEvents\\\",\\\"logs:CreateLogStream\\\"],\\\"Effect\\\":\\\"Allow\\\",\\\"Principal\\\":{\\\"Service\\\":\\\"events.amazonaws.com\\\"},\\\"Resource\\\":\\\"",
+              {
+                "Fn::GetAtt": [
+                  "loggroup2F19C5C9B",
+                  "Arn"
                 ]
-              ]
-            }
-          },
-          "physicalResourceId": {
-            "id": "EventsLogGroupPolicyloggroupeventsTimer289E3527E"
-          }
+              },
+              "\\\"}],\\\"Version\\\":\\\"2012-10-17\\\"}\"},\"physicalResourceId\":{\"id\":\"EventsLogGroupPolicyloggroupeventsTimer289E3527E\"}}"
+            ]
+          ]
         },
         "Update": {
-          "service": "CloudWatchLogs",
-          "action": "putResourcePolicy",
-          "parameters": {
-            "policyName": "loggroupeventsEventsLogGroupPolicyloggroupeventsTimer289E3527EF8F6205F",
-            "policyDocument": {
-              "Fn::Join": [
-                "",
-                [
-                  "{\"Statement\":[{\"Action\":[\"logs:PutLogEvents\",\"logs:CreateLogStream\"],\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"events.amazonaws.com\"},\"Resource\":\"",
-                  {
-                    "Fn::GetAtt": [
-                      "loggroup2F19C5C9B",
-                      "Arn"
-                    ]
-                  },
-                  "\"}],\"Version\":\"2012-10-17\"}"
+          "Fn::Join": [
+            "",
+            [
+              "{\"service\":\"CloudWatchLogs\",\"action\":\"putResourcePolicy\",\"parameters\":{\"policyName\":\"loggroupeventsEventsLogGroupPolicyloggroupeventsTimer289E3527EF8F6205F\",\"policyDocument\":\"{\\\"Statement\\\":[{\\\"Action\\\":[\\\"logs:PutLogEvents\\\",\\\"logs:CreateLogStream\\\"],\\\"Effect\\\":\\\"Allow\\\",\\\"Principal\\\":{\\\"Service\\\":\\\"events.amazonaws.com\\\"},\\\"Resource\\\":\\\"",
+              {
+                "Fn::GetAtt": [
+                  "loggroup2F19C5C9B",
+                  "Arn"
                 ]
-              ]
-            }
-          },
-          "physicalResourceId": {
-            "id": "EventsLogGroupPolicyloggroupeventsTimer289E3527E"
-          }
+              },
+              "\\\"}],\\\"Version\\\":\\\"2012-10-17\\\"}\"},\"physicalResourceId\":{\"id\":\"EventsLogGroupPolicyloggroupeventsTimer289E3527E\"}}"
+            ]
+          ]
         },
-        "Delete": {
-          "service": "CloudWatchLogs",
-          "action": "deleteResourcePolicy",
-          "parameters": {
-            "policyName": "loggroupeventsEventsLogGroupPolicyloggroupeventsTimer289E3527EF8F6205F"
-          },
-          "ignoreErrorCodesMatching": "400"
-        },
+        "Delete": "{\"service\":\"CloudWatchLogs\",\"action\":\"deleteResourcePolicy\",\"parameters\":{\"policyName\":\"loggroupeventsEventsLogGroupPolicyloggroupeventsTimer289E3527EF8F6205F\"},\"ignoreErrorCodesMatching\":\"400\"}",
         "InstallLatestAwsSdk": true
       },
       "DependsOn": [
@@ -459,73 +405,46 @@
           ]
         },
         "Create": {
-          "service": "CloudWatchLogs",
-          "action": "putResourcePolicy",
-          "parameters": {
-            "policyName": "loggroupeventsEventsLogGroupPolicyloggroupeventsTimer37DF74C17EF314A8E",
-            "policyDocument": {
-              "Fn::Join": [
-                "",
-                [
-                  "{\"Statement\":[{\"Action\":[\"logs:PutLogEvents\",\"logs:CreateLogStream\"],\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"events.amazonaws.com\"},\"Resource\":\"arn:",
-                  {
-                    "Ref": "AWS::Partition"
-                  },
-                  ":logs:",
-                  {
-                    "Ref": "AWS::Region"
-                  },
-                  ":",
-                  {
-                    "Ref": "AWS::AccountId"
-                  },
-                  ":log-group:MyLogGroupNameToBeImported:*\"}],\"Version\":\"2012-10-17\"}"
-                ]
-              ]
-            }
-          },
-          "physicalResourceId": {
-            "id": "EventsLogGroupPolicyloggroupeventsTimer37DF74C17"
-          }
+          "Fn::Join": [
+            "",
+            [
+              "{\"service\":\"CloudWatchLogs\",\"action\":\"putResourcePolicy\",\"parameters\":{\"policyName\":\"loggroupeventsEventsLogGroupPolicyloggroupeventsTimer37DF74C17EF314A8E\",\"policyDocument\":\"{\\\"Statement\\\":[{\\\"Action\\\":[\\\"logs:PutLogEvents\\\",\\\"logs:CreateLogStream\\\"],\\\"Effect\\\":\\\"Allow\\\",\\\"Principal\\\":{\\\"Service\\\":\\\"events.amazonaws.com\\\"},\\\"Resource\\\":\\\"arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":logs:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":log-group:MyLogGroupNameToBeImported:*\\\"}],\\\"Version\\\":\\\"2012-10-17\\\"}\"},\"physicalResourceId\":{\"id\":\"EventsLogGroupPolicyloggroupeventsTimer37DF74C17\"}}"
+            ]
+          ]
         },
         "Update": {
-          "service": "CloudWatchLogs",
-          "action": "putResourcePolicy",
-          "parameters": {
-            "policyName": "loggroupeventsEventsLogGroupPolicyloggroupeventsTimer37DF74C17EF314A8E",
-            "policyDocument": {
-              "Fn::Join": [
-                "",
-                [
-                  "{\"Statement\":[{\"Action\":[\"logs:PutLogEvents\",\"logs:CreateLogStream\"],\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"events.amazonaws.com\"},\"Resource\":\"arn:",
-                  {
-                    "Ref": "AWS::Partition"
-                  },
-                  ":logs:",
-                  {
-                    "Ref": "AWS::Region"
-                  },
-                  ":",
-                  {
-                    "Ref": "AWS::AccountId"
-                  },
-                  ":log-group:MyLogGroupNameToBeImported:*\"}],\"Version\":\"2012-10-17\"}"
-                ]
-              ]
-            }
-          },
-          "physicalResourceId": {
-            "id": "EventsLogGroupPolicyloggroupeventsTimer37DF74C17"
-          }
+          "Fn::Join": [
+            "",
+            [
+              "{\"service\":\"CloudWatchLogs\",\"action\":\"putResourcePolicy\",\"parameters\":{\"policyName\":\"loggroupeventsEventsLogGroupPolicyloggroupeventsTimer37DF74C17EF314A8E\",\"policyDocument\":\"{\\\"Statement\\\":[{\\\"Action\\\":[\\\"logs:PutLogEvents\\\",\\\"logs:CreateLogStream\\\"],\\\"Effect\\\":\\\"Allow\\\",\\\"Principal\\\":{\\\"Service\\\":\\\"events.amazonaws.com\\\"},\\\"Resource\\\":\\\"arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":logs:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":log-group:MyLogGroupNameToBeImported:*\\\"}],\\\"Version\\\":\\\"2012-10-17\\\"}\"},\"physicalResourceId\":{\"id\":\"EventsLogGroupPolicyloggroupeventsTimer37DF74C17\"}}"
+            ]
+          ]
         },
-        "Delete": {
-          "service": "CloudWatchLogs",
-          "action": "deleteResourcePolicy",
-          "parameters": {
-            "policyName": "loggroupeventsEventsLogGroupPolicyloggroupeventsTimer37DF74C17EF314A8E"
-          },
-          "ignoreErrorCodesMatching": "400"
-        },
+        "Delete": "{\"service\":\"CloudWatchLogs\",\"action\":\"deleteResourcePolicy\",\"parameters\":{\"policyName\":\"loggroupeventsEventsLogGroupPolicyloggroupeventsTimer37DF74C17EF314A8E\"},\"ignoreErrorCodesMatching\":\"400\"}",
         "InstallLatestAwsSdk": true
       },
       "DependsOn": [
@@ -536,17 +455,17 @@
     }
   },
   "Parameters": {
-    "AssetParametersb64b129569a5ac7a9abf88a18ac0b504d1fb1208872460476ed3fd435830eb94S3Bucket38F1BB8E": {
+    "AssetParameters0625b1566df06e0ffd948f0f65f97a3d22d48242e66196d3f72b480f5309b343S3Bucket65227904": {
       "Type": "String",
-      "Description": "S3 bucket for asset \"b64b129569a5ac7a9abf88a18ac0b504d1fb1208872460476ed3fd435830eb94\""
+      "Description": "S3 bucket for asset \"0625b1566df06e0ffd948f0f65f97a3d22d48242e66196d3f72b480f5309b343\""
     },
-    "AssetParametersb64b129569a5ac7a9abf88a18ac0b504d1fb1208872460476ed3fd435830eb94S3VersionKeyCCDC67C0": {
+    "AssetParameters0625b1566df06e0ffd948f0f65f97a3d22d48242e66196d3f72b480f5309b343S3VersionKey3AF0E7DF": {
       "Type": "String",
-      "Description": "S3 key for asset version \"b64b129569a5ac7a9abf88a18ac0b504d1fb1208872460476ed3fd435830eb94\""
+      "Description": "S3 key for asset version \"0625b1566df06e0ffd948f0f65f97a3d22d48242e66196d3f72b480f5309b343\""
     },
-    "AssetParametersb64b129569a5ac7a9abf88a18ac0b504d1fb1208872460476ed3fd435830eb94ArtifactHash782948FC": {
+    "AssetParameters0625b1566df06e0ffd948f0f65f97a3d22d48242e66196d3f72b480f5309b343ArtifactHash0C561FF5": {
       "Type": "String",
-      "Description": "Artifact hash for asset \"b64b129569a5ac7a9abf88a18ac0b504d1fb1208872460476ed3fd435830eb94\""
+      "Description": "Artifact hash for asset \"0625b1566df06e0ffd948f0f65f97a3d22d48242e66196d3f72b480f5309b343\""
     }
   }
 }

@@ -5,7 +5,7 @@ import * as lambda from '@aws-cdk/aws-lambda';
 import * as logs from '@aws-cdk/aws-logs';
 import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
-import { PHYSICAL_RESOURCE_ID_REFERENCE, flatten } from './runtime';
+import { PHYSICAL_RESOURCE_ID_REFERENCE } from './runtime';
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
 // eslint-disable-next-line no-duplicate-imports, import/order
@@ -14,11 +14,21 @@ import { Construct as CoreConstruct } from '@aws-cdk/core';
 /**
  * Reference to the physical resource id that can be passed to the AWS operation as a parameter.
  */
-export class PhysicalResourceIdReference {
+export class PhysicalResourceIdReference implements cdk.IResolvable {
+  public readonly creationStack: string[] = cdk.captureStackTrace();
+
   /**
    * toJSON serialization to replace `PhysicalResourceIdReference` with a magic string.
    */
   public toJSON() {
+    return PHYSICAL_RESOURCE_ID_REFERENCE;
+  }
+
+  public resolve(_: cdk.IResolveContext): any {
+    return PHYSICAL_RESOURCE_ID_REFERENCE;
+  }
+
+  public toString(): string {
     return PHYSICAL_RESOURCE_ID_REFERENCE;
   }
 }
@@ -316,13 +326,8 @@ export class AwsCustomResource extends CoreConstruct implements iam.IGrantable {
       }
     }
 
-    if (props.onCreate?.parameters) {
-      const flattenedOnCreateParams = flatten(JSON.parse(JSON.stringify(props.onCreate.parameters)));
-      for (const param in flattenedOnCreateParams) {
-        if (flattenedOnCreateParams[param] === PHYSICAL_RESOURCE_ID_REFERENCE) {
-          throw new Error('`PhysicalResourceIdReference` must not be specified in `onCreate` parameters.');
-        }
-      }
+    if (includesPhysicalResourceIdRef(props.onCreate?.parameters)) {
+      throw new Error('`PhysicalResourceIdReference` must not be specified in `onCreate` parameters.');
     }
 
     this.props = props;
@@ -371,9 +376,9 @@ export class AwsCustomResource extends CoreConstruct implements iam.IGrantable {
       serviceToken: provider.functionArn,
       pascalCaseProperties: true,
       properties: {
-        create: create && encodeBooleans(create),
-        update: props.onUpdate && encodeBooleans(props.onUpdate),
-        delete: props.onDelete && encodeBooleans(props.onDelete),
+        create: create && this.encodeJson(create),
+        update: props.onUpdate && this.encodeJson(props.onUpdate),
+        delete: props.onDelete && this.encodeJson(props.onDelete),
         installLatestAwsSdk: props.installLatestAwsSdk ?? true,
       },
     });
@@ -418,6 +423,9 @@ export class AwsCustomResource extends CoreConstruct implements iam.IGrantable {
     return this.customResource.getAttString(dataPath);
   }
 
+  private encodeJson(obj: any) {
+    return cdk.Lazy.uncachedString({ produce: () => cdk.Stack.of(this).toJsonString(obj) });
+  }
 }
 
 /**
@@ -440,6 +448,30 @@ let getAwsSdkMetadata = (() => {
 })();
 
 /**
+ * Returns true if `obj` includes a `PhysicalResourceIdReference` in one of the
+ * values.
+ * @param obj Any object.
+ */
+function includesPhysicalResourceIdRef(obj: any | undefined) {
+  if (obj === undefined) {
+    return false;
+  }
+
+  let foundRef = false;
+
+  // we use JSON.stringify as a way to traverse all values in the object.
+  JSON.stringify(obj, (_, v) => {
+    if (v === PHYSICAL_RESOURCE_ID_REFERENCE) {
+      foundRef = true;
+    }
+
+    return v;
+  });
+
+  return foundRef;
+}
+
+/**
  * Transform SDK service/action to IAM action using metadata from aws-sdk module.
  * Example: CloudWatchLogs with putRetentionPolicy => logs:PutRetentionPolicy
  *
@@ -451,20 +483,4 @@ function awsSdkToIamAction(service: string, action: string): string {
   const iamService = (awsSdkMetadata[srv] && awsSdkMetadata[srv].prefix) || srv;
   const iamAction = action.charAt(0).toUpperCase() + action.slice(1);
   return `${iamService}:${iamAction}`;
-}
-
-/**
- * Encodes booleans as special strings
- */
-function encodeBooleans(object: object) {
-  return JSON.parse(JSON.stringify(object), (_k, v) => {
-    switch (v) {
-      case true:
-        return 'TRUE:BOOLEAN';
-      case false:
-        return 'FALSE:BOOLEAN';
-      default:
-        return v;
-    }
-  });
 }

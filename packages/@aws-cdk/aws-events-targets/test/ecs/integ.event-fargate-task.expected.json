@@ -361,22 +361,6 @@
         ]
       }
     },
-    "TaskDefSecurityGroupD50E7CF0": {
-      "Type": "AWS::EC2::SecurityGroup",
-      "Properties": {
-        "GroupDescription": "aws-ecs-integ-fargate/TaskDef/SecurityGroup",
-        "SecurityGroupEgress": [
-          {
-            "CidrIp": "0.0.0.0/0",
-            "Description": "Allow all outbound traffic by default",
-            "IpProtocol": "-1"
-          }
-        ],
-        "VpcId": {
-          "Ref": "Vpc8378EB38"
-        }
-      }
-    },
     "TaskDefEventsRoleFB3B67B8": {
       "Type": "AWS::IAM::Role",
       "Properties": {
@@ -445,6 +429,22 @@
             "Ref": "TaskDefEventsRoleFB3B67B8"
           }
         ]
+      }
+    },
+    "TaskDefSecurityGroupD50E7CF0": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "GroupDescription": "aws-ecs-integ-fargate/TaskDef/SecurityGroup",
+        "SecurityGroupEgress": [
+          {
+            "CidrIp": "0.0.0.0/0",
+            "Description": "Allow all outbound traffic by default",
+            "IpProtocol": "-1"
+          }
+        ],
+        "VpcId": {
+          "Ref": "Vpc8378EB38"
+        }
       }
     },
     "Rule4C995B7F": {
