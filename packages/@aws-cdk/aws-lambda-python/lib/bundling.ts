@@ -2,6 +2,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
+import { FileSystem } from '@aws-cdk/core';
 
 /**
  * Dependency files to exclude from the asset hash.
@@ -79,7 +80,8 @@ export interface BundlingOptions {
 export function bundle(options: BundlingOptions): lambda.Code {
   const { entry, runtime, outputPathSuffix } = options;
 
-  const hasDeps = hasDependencies(entry);
+  const stagedir = FileSystem.mkdtemp('python-bundling-');
+  const hasDeps = stageDependencies(entry, stagedir);
 
   const depsCommand = chain([
     hasDeps ? `rsync -r ${BUNDLER_DEPENDENCIES_CACHE}/. ${cdk.AssetStaging.BUNDLING_OUTPUT_DIR}/${outputPathSuffix}` : '',
@@ -94,11 +96,14 @@ export function bundle(options: BundlingOptions): lambda.Code {
     ? 'Dockerfile.dependencies'
     : 'Dockerfile';
 
-  const image = cdk.BundlingDockerImage.fromAsset(entry, {
+  // copy Dockerfile to workdir
+  fs.copyFileSync(path.join(__dirname, dockerfile), path.join(stagedir, dockerfile));
+
+  const image = cdk.BundlingDockerImage.fromAsset(stagedir, {
     buildArgs: {
       IMAGE: runtime.bundlingDockerImage.image,
     },
-    file: path.join(__dirname, dockerfile),
+    file: dockerfile,
   });
 
   return lambda.Code.fromAsset(entry, {
@@ -116,20 +121,25 @@ export function bundle(options: BundlingOptions): lambda.Code {
  * Checks to see if the `entry` directory contains a type of dependency that
  * we know how to install.
  */
-export function hasDependencies(entry: string): boolean {
-  if (fs.existsSync(path.join(entry, 'Pipfile'))) {
-    return true;
+export function stageDependencies(entry: string, stagedir: string): boolean {
+  const prefixes = [
+    'Pipfile',
+    'pyproject',
+    'poetry',
+    'requirements.txt',
+  ];
+
+  let found = false;
+  for (const file of fs.readdirSync(entry)) {
+    for (const prefix of prefixes) {
+      if (file.startsWith(prefix)) {
+        fs.copyFileSync(path.join(entry, file), path.join(stagedir, file));
+        found = true;
+      }
+    }
   }
 
-  if (fs.existsSync(path.join(entry, 'poetry.lock'))) {
-    return true;
-  }
-
-  if (fs.existsSync(path.join(entry, 'requirements.txt'))) {
-    return true;
-  }
-
-  return false;
+  return found;
 }
 
 function chain(commands: string[]): string {
