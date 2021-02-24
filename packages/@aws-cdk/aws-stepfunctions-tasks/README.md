@@ -188,8 +188,8 @@ const convertToSeconds = new tasks.EvaluateExpression(this, 'Convert to seconds'
 
 const createMessage = new tasks.EvaluateExpression(this, 'Create message', {
   // Note: this is a string inside a string.
-    expression: '`Now waiting ${$.waitSeconds} seconds...`',
-    runtime: lambda.Runtime.NODEJS_10_X,
+  expression: '`Now waiting ${$.waitSeconds} seconds...`',
+  runtime: lambda.Runtime.NODEJS_10_X,
   resultPath: '$.message',
 });
 
