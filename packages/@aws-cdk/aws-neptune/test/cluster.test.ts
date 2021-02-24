@@ -364,9 +364,7 @@ describe('DatabaseCluster', () => {
     new DatabaseCluster(stack, 'Database', {
       vpc,
       instanceType: InstanceType.R5_LARGE,
-      backup: {
-        retention: cdk.Duration.days(20),
-      },
+      backupRetention: cdk.Duration.days(20),
     });
 
     // THEN
@@ -384,10 +382,8 @@ describe('DatabaseCluster', () => {
     new DatabaseCluster(stack, 'Database', {
       vpc,
       instanceType: InstanceType.R5_LARGE,
-      backup: {
-        retention: cdk.Duration.days(20),
-        preferredWindow: '07:34-08:04',
-      },
+      backupRetention: cdk.Duration.days(20),
+      preferredBackupWindow: '07:34-08:04',
     });
 
     // THEN

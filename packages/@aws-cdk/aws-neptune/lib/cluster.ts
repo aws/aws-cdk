@@ -10,33 +10,6 @@ import { IClusterParameterGroup, IParameterGroup } from './parameter-group';
 import { ISubnetGroup, SubnetGroup } from './subnet-group';
 
 /**
- * Backup configuration for Neptune databases
- *
- * @default - The retention period for automated backups is 1 day.
- * The preferred backup window will be a 30-minute window selected at random
- * from an 8-hour block of time for each AWS Region.
- */
-export interface BackupProps {
-
-  /**
-   * How many days to retain the backup
-   */
-  readonly retention: Duration;
-
-  /**
-   * A daily time range in 24-hours UTC format in which backups preferably execute.
-   *
-   * Must be at least 30 minutes long.
-   *
-   * Example: '01:00-02:00'
-   *
-   * @default - a 30-minute window selected at random from an 8-hour block of
-   * time for each AWS Region. To see the time blocks available, see
-   */
-  readonly preferredWindow?: string;
-}
-
-/**
  * Properties for a new database cluster
  */
 export interface DatabaseClusterProps {
@@ -55,13 +28,23 @@ export interface DatabaseClusterProps {
   readonly port?: number;
 
   /**
-   * Backup settings
+   * How many days to retain the backup
    *
-   * @default - Backup retention period for automated backups is 1 day.
-   * Backup preferred window is set to a 30-minute window selected at random from an
-   * 8-hour block of time for each AWS Region, occurring on a random day of the week.
+   * @default - Backup retention period for automated backups is 1 day
    */
-  readonly backup?: BackupProps;
+  readonly backupRetention?: Duration;
+
+  /**
+   * A daily time range in 24-hours UTC format in which backups preferably execute.
+   *
+   * Must be at least 30 minutes long.
+   *
+   * Example: '01:00-02:00'
+   *
+   * @default - a 30-minute window selected at random from an 8-hour block of
+   * time for each AWS Region. To see the time blocks available, see
+   */
+  readonly preferredBackupWindow?: string;
 
   /**
    * The KMS key for storage encryption.
@@ -237,38 +220,12 @@ export interface DatabaseClusterAttributes {
   readonly readerEndpointAddress: string;
 }
 
-
-/**
- * A new or imported clustered database.
- */
-abstract class DatabaseClusterBase extends Resource implements IDatabaseCluster {
-  /**
-   * Identifier of the cluster
-   */
-  public abstract readonly clusterIdentifier: string;
-
-  /**
-   * The endpoint to use for read/write operations
-   */
-  public abstract readonly clusterEndpoint: Endpoint;
-
-  /**
-   * Endpoint to use for load-balanced read-only operations.
-   */
-  public abstract readonly clusterReadEndpoint: Endpoint;
-
-  /**
-   * Access to the network connections
-   */
-  public abstract readonly connections: ec2.Connections;
-}
-
 /**
  * Create a clustered database with a given number of instances.
  *
  * @resource AWS::Neptune::DBCluster
  */
-export class DatabaseCluster extends DatabaseClusterBase {
+export class DatabaseCluster extends Resource implements IDatabaseCluster {
 
   /**
    * The default number of instances in the Neptune cluster if none are
@@ -280,7 +237,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
    * Import an existing DatabaseCluster from properties
    */
   public static fromDatabaseClusterAttributes(scope: Construct, id: string, attrs: DatabaseClusterAttributes): IDatabaseCluster {
-    class Import extends DatabaseClusterBase implements IDatabaseCluster {
+    class Import extends Resource implements IDatabaseCluster {
       public readonly defaultPort = ec2.Port.tcp(attrs.port);
       public readonly connections = new ec2.Connections({
         securityGroups: [attrs.securityGroup],
@@ -332,11 +289,6 @@ export class DatabaseCluster extends DatabaseClusterBase {
   public readonly vpcSubnets: ec2.SubnetSelection;
 
   /**
-   * The security groups used by DB cluster.
-   */
-  protected readonly securityGroups: ec2.ISecurityGroup[];
-
-  /**
    * Subnet group used by the DB
    */
   public readonly subnetGroup: ISubnetGroup;
@@ -355,9 +307,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
     super(scope, id);
 
     this.vpc = props.vpc;
-    this.vpcSubnets = props.vpcSubnets ? props.vpcSubnets : {
-      subnetType: ec2.SubnetType.PRIVATE,
-    };
+    this.vpcSubnets = props.vpcSubnets ?? { subnetType: ec2.SubnetType.PRIVATE };
 
     // Determine the subnet(s) to deploy the Neptune cluster to
     const { subnetIds, internetConnectivityEstablished } = this.vpc.selectSubnets(this.vpcSubnets);
@@ -374,7 +324,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
       removalPolicy: props.removalPolicy === RemovalPolicy.RETAIN ? props.removalPolicy : undefined,
     });
 
-    this.securityGroups = props.securityGroups ?? [
+    const securityGroups = props.securityGroups ?? [
       new ec2.SecurityGroup(this, 'SecurityGroup', {
         description: 'Neptune security group',
         vpc: this.vpc,
@@ -388,7 +338,6 @@ export class DatabaseCluster extends DatabaseClusterBase {
       throw new Error('KMS key supplied but storageEncrypted is false');
     }
 
-    // Deletion protection
     const deletionProtection = props.deletionProtection ?? (props.removalPolicy === RemovalPolicy.RETAIN ? true : undefined);
 
     // Create the Neptune cluster
@@ -398,13 +347,13 @@ export class DatabaseCluster extends DatabaseClusterBase {
       dbClusterIdentifier: props.dbClusterName,
       dbSubnetGroupName: this.subnetGroup.subnetGroupName,
       port: props.port,
-      vpcSecurityGroupIds: this.securityGroups.map(sg => sg.securityGroupId),
+      vpcSecurityGroupIds: securityGroups.map(sg => sg.securityGroupId),
       dbClusterParameterGroupName: props.clusterParameterGroup?.clusterParameterGroupName,
       deletionProtection: deletionProtection,
       associatedRoles: props.associatedRoles ? props.associatedRoles.map(role => ({ roleArn: role.roleArn })) : undefined,
       // Backup
-      backupRetentionPeriod: props.backup?.retention?.toDays(),
-      preferredBackupWindow: props.backup?.preferredWindow,
+      backupRetentionPeriod: props.backupRetention?.toDays(),
+      preferredBackupWindow: props.preferredBackupWindow,
       preferredMaintenanceWindow: props.preferredMaintenanceWindow,
       // Encryption
       kmsKeyId: props.kmsKey?.keyArn,
@@ -457,7 +406,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
 
     this.connections = new ec2.Connections({
       defaultPort: ec2.Port.tcp(port),
-      securityGroups: this.securityGroups,
+      securityGroups: securityGroups,
     });
   }
 }

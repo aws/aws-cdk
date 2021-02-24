@@ -8,7 +8,7 @@ import { IParameterGroup } from './parameter-group';
 
 /**
  * Possible Instances Types to use in Neptune cluster
- * used for defining {@link InstanceProps.instanceType}.
+ * used for defining {@link DatabaseInstanceProps.instanceType}.
  */
 export enum InstanceType {
   /**
@@ -115,43 +115,6 @@ export interface DatabaseInstanceAttributes {
 }
 
 /**
- * A new or imported database instance.
- */
-abstract class DatabaseInstanceBase extends cdk.Resource implements IDatabaseInstance {
-  /**
-   * Import an existing database instance.
-   */
-  public static fromDatabaseInstanceAttributes(scope: Construct, id: string, attrs: DatabaseInstanceAttributes): IDatabaseInstance {
-    class Import extends DatabaseInstanceBase implements IDatabaseInstance {
-      public readonly defaultPort = ec2.Port.tcp(attrs.port);
-      public readonly instanceIdentifier = attrs.instanceIdentifier;
-      public readonly dbInstanceEndpointAddress = attrs.instanceEndpointAddress;
-      public readonly dbInstanceEndpointPort = attrs.port.toString();
-      public readonly instanceEndpoint = new Endpoint(attrs.instanceEndpointAddress, attrs.port);
-    }
-
-    return new Import(scope, id);
-  }
-
-  /**
-   * @inheritdoc
-   */
-  public abstract readonly instanceIdentifier: string;
-  /**
-   * @inheritdoc
-   */
-  public abstract readonly instanceEndpoint: Endpoint;
-  /**
-   * @inheritdoc
-   */
-  public abstract readonly dbInstanceEndpointAddress: string;
-  /**
-   * @inheritdoc
-   */
-  public abstract readonly dbInstanceEndpointPort: string;
-}
-
-/**
  * Construction properties for a DatabaseInstanceNew
  */
 export interface DatabaseInstanceProps {
@@ -201,7 +164,24 @@ export interface DatabaseInstanceProps {
  *
  * @resource AWS::Neptune::DBInstance
  */
-export class DatabaseInstance extends DatabaseInstanceBase implements IDatabaseInstance {
+export class DatabaseInstance extends cdk.Resource implements IDatabaseInstance {
+
+  /**
+   * Import an existing database instance.
+   */
+  public static fromDatabaseInstanceAttributes(scope: Construct, id: string, attrs: DatabaseInstanceAttributes): IDatabaseInstance {
+    class Import extends cdk.Resource implements IDatabaseInstance {
+      public readonly defaultPort = ec2.Port.tcp(attrs.port);
+      public readonly instanceIdentifier = attrs.instanceIdentifier;
+      public readonly dbInstanceEndpointAddress = attrs.instanceEndpointAddress;
+      public readonly dbInstanceEndpointPort = attrs.port.toString();
+      public readonly instanceEndpoint = new Endpoint(attrs.instanceEndpointAddress, attrs.port);
+    }
+
+    return new Import(scope, id);
+  }
+
+
   /**
    * The instance's database cluster
    */

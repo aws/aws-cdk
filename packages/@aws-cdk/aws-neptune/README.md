@@ -21,14 +21,21 @@
 
 <!--END STABILITY BANNER-->
 
+Amazon Neptune is a fast, reliable, fully managed graph database service that makes it easy to build and run applications that work with highly connected datasets. The core of Neptune is a purpose-built, high-performance graph database engine. This engine is optimized for storing billions of relationships and querying the graph with milliseconds latency. Neptune supports the popular graph query languages Apache TinkerPop Gremlin and W3C’s SPARQL, enabling you to build queries that efficiently navigate highly connected datasets.
+
+The `@aws-cdk/aws-neptune` package contains primitives for setting up Neptune database clusters and instances.
+
+```ts nofixture
+import * as neptune from '@aws-cdk/aws-neptune';
+
 ## Starting a Neptune Database
 
 To set up a Neptune database, define a `DatabaseCluster`. You must always launch a database in a VPC. 
 
 ```ts
-const cluster = new DatabaseCluster(this, 'Database', {
+const cluster = new neptune.DatabaseCluster(this, 'Database', {
   vpc,
-  instanceType: InstanceType.R5_LARGE
+  instanceType: neptune.InstanceType.R5_LARGE
 });
 ```
 
@@ -39,14 +46,14 @@ By default only writer instance is provisioned with this construct.
 To control who can access the cluster, use the `.connections` attribute. Neptune databases have a default port, so
 you don't need to specify the port:
 
-```ts
+```ts fixture=with-cluster
 cluster.connections.allowDefaultPortFromAnyIpv4('Open to the world');
 ```
 
 The endpoints to access your database cluster will be available as the `.clusterEndpoint` and `.clusterReadEndpoint`
 attributes:
 
-```ts
+```ts fixture=with-cluster
 const writeAddress = cluster.clusterEndpoint.socketAddress;   // "HOSTNAME:PORT"
 ```
 
@@ -56,23 +63,23 @@ Neptune allows configuring database behavior by supplying custom parameter group
 following link: <https://docs.aws.amazon.com/neptune/latest/userguide/parameters.html>
 
 ```ts
-const clusterParams = new ClusterParameterGroup(this, 'ClusterParams', {
+const clusterParams = new neptune.ClusterParameterGroup(this, 'ClusterParams', {
   description: 'Cluster parameter group',
   parameters: {
     neptune_enable_audit_log: '1'
   },
 });
 
-const dbParams = new ParameterGroup(this, 'DbParams', {
+const dbParams = new neptune.ParameterGroup(this, 'DbParams', {
   description: 'Db parameter group',
   parameters: {
     neptune_query_timeout: '120000'
   },
 });
 
-const cluster = new DatabaseCluster(this, 'Database', {
+const cluster = new neptune.DatabaseCluster(this, 'Database', {
   vpc,
-  instanceType: InstanceType.R5_LARGE,
+  instanceType: neptune.InstanceType.R5_LARGE,
   clusterParameterGroup: clusterParams,
   parameterGroup: dbParams,
 });
@@ -84,18 +91,18 @@ const cluster = new DatabaseCluster(this, 'Database', {
 attribute.
 
 ```ts
-const cluster = new DatabaseCluster(this, 'Database', {
+const cluster = new neptune.DatabaseCluster(this, 'Database', {
   vpc,
-  instanceType: InstanceType.R5_LARGE,
+  instanceType: neptune.InstanceType.R5_LARGE,
   instances: 2
 });
 ```
 
 Additionally it is also possible to add replicas using `DatabaseInstance` for an existing cluster.
 
-```ts
-const replica1 = new DatabaseInstance(this, 'Instance', {
+```ts fixture=with-cluster
+const replica1 = new neptune.DatabaseInstance(this, 'Instance', {
   cluster,
-  instanceType: InstanceType.R5_LARGE
+  instanceType: neptune.InstanceType.R5_LARGE
 });
 ```
