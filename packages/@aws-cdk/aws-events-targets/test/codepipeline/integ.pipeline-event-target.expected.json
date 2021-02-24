@@ -41,6 +41,20 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete"
     },
+    "pipelinePipeline22F2A91DArtifactsBucketEncryptionKeyAlias9530209A": {
+      "Type": "AWS::KMS::Alias",
+      "Properties": {
+        "AliasName": "alias/codepipeline-pipelineeventspipelinepipeline22f2a91dfbb66895",
+        "TargetKeyId": {
+          "Fn::GetAtt": [
+            "pipelinePipeline22F2A91DArtifactsBucketEncryptionKey87C796D2",
+            "Arn"
+          ]
+        }
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
     "pipelinePipeline22F2A91DArtifactsBucketC1799DCD": {
       "Type": "AWS::S3::Bucket",
       "Properties": {
@@ -68,20 +82,6 @@
       },
       "UpdateReplacePolicy": "Retain",
       "DeletionPolicy": "Retain"
-    },
-    "pipelinePipeline22F2A91DArtifactsBucketEncryptionKeyAlias9530209A": {
-      "Type": "AWS::KMS::Alias",
-      "Properties": {
-        "AliasName": "alias/codepipeline-pipelineeventspipelinepipeline22f2a91dfbb66895",
-        "TargetKeyId": {
-          "Fn::GetAtt": [
-            "pipelinePipeline22F2A91DArtifactsBucketEncryptionKey87C796D2",
-            "Arn"
-          ]
-        }
-      },
-      "UpdateReplacePolicy": "Delete",
-      "DeletionPolicy": "Delete"
     },
     "pipelinePipeline22F2A91DRole58B7B05E": {
       "Type": "AWS::IAM::Role",
