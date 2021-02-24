@@ -15,7 +15,6 @@ All notable changes to this project will be documented in this file. See [standa
 * **aws-appsync:** add databaseName to rdsDataSource ([#12575](https://github.com/aws/aws-cdk/issues/12575)) ([f92b65e](https://github.com/aws/aws-cdk/commit/f92b65e2a158f918d8f05132ed12a4bb85228997)), closes [#12572](https://github.com/aws/aws-cdk/issues/12572)
 * **cfnspec:** cloudformation spec v28.0.0 ([#13101](https://github.com/aws/aws-cdk/issues/13101)) ([13c9859](https://github.com/aws/aws-cdk/commit/13c9859cc62b3d472ba1be84b12d478f61f02ec9))
 * **ecs-patterns:** Add support for assignPublicIp for QueueProcessingFargateService ([#13122](https://github.com/aws/aws-cdk/issues/13122)) ([3fb4600](https://github.com/aws/aws-cdk/commit/3fb46001a7345cbefa6df70893999bcb304ed40d)), closes [#12815](https://github.com/aws/aws-cdk/issues/12815)
-* **lambda:** Code.fromDockerBuildAsset ([#12258](https://github.com/aws/aws-cdk/issues/12258)) ([09afed5](https://github.com/aws/aws-cdk/commit/09afed5ca2b39919c1c84d200370d490110cd0d1)), closes [#11914](https://github.com/aws/aws-cdk/issues/11914)
 * **stepfunctions-tasks:** add EKS call to SFN-tasks ([#12779](https://github.com/aws/aws-cdk/issues/12779)) ([296a10d](https://github.com/aws/aws-cdk/commit/296a10d76a9f6fc2a374d1a6461c460bcc3eeb79))
 * **synthetics:** Update CloudWatch Synthetics NodeJS runtimes ([#12907](https://github.com/aws/aws-cdk/issues/12907)) ([6aac3b6](https://github.com/aws/aws-cdk/commit/6aac3b6a9bb1586ee16e7a85ca657b544d0f8304)), closes [#12906](https://github.com/aws/aws-cdk/issues/12906)
 
