@@ -815,9 +815,7 @@ export interface AddApplicationTargetsProps extends AddRuleProps {
   readonly stickinessCookieDuration?: Duration;
 
   /**
-   * The app cookie name.
-   *
-   * Indicates the name of the application-based stickiness cookie.
+   * The name of an application-based stickiness cookie.
    *
    * Names that start with the following prefixes are not allowed: AWSALB, AWSALBAPP,
    * and AWSALBTG; they're reserved for use by the load balancer.
