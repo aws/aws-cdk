@@ -7,10 +7,6 @@ import { LoadBalancerTarget } from '@aws-cdk/aws-route53-targets';
 import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
 
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct as CoreConstruct } from '@aws-cdk/core';
-
 /**
  * Describes the type of DNS record the service should create
  */
@@ -260,7 +256,7 @@ export interface NetworkLoadBalancedTaskImageOptions {
 /**
  * The base class for NetworkLoadBalancedEc2Service and NetworkLoadBalancedFargateService services.
  */
-export abstract class NetworkLoadBalancedServiceBase extends CoreConstruct {
+export abstract class NetworkLoadBalancedServiceBase extends Construct {
   /**
    * The desired number of instantiations of the task definition to keep running on the service.
    */
@@ -362,7 +358,7 @@ export abstract class NetworkLoadBalancedServiceBase extends CoreConstruct {
   /**
    * Returns the default cluster.
    */
-  protected getDefaultCluster(scope: CoreConstruct, vpc?: IVpc): Cluster {
+  protected getDefaultCluster(scope: Construct, vpc?: IVpc): Cluster {
     // magic string to avoid collision with user-defined constructs
     const DEFAULT_CLUSTER_ID = `EcsDefaultClusterMnL3mNNYN${vpc ? vpc.node.id : ''}`;
     const stack = cdk.Stack.of(scope);
