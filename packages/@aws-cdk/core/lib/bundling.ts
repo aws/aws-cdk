@@ -111,7 +111,7 @@ export enum BundlingOutput {
 
   /**
    * If the bundling output directory contains a single archive file (zip or jar)
-   * it will not be zipped. Otherwise the bundling output will be zipped.
+   * it will be used as the bundle output as-is. Otherwise all the files in the bundling output directory will be zipped.
    */
   AUTO_DISCOVER = 'auto-discover',
 }
