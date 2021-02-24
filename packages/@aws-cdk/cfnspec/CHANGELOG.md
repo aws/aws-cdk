@@ -1,3 +1,127 @@
+# CloudFormation Resource Specification v29.0.0
+
+## New Resource Types
+
+
+## Attribute Changes
+
+* AWS::EC2::TransitGatewayMulticastDomainAssociation State (__added__)
+* AWS::EC2::TransitGatewayMulticastGroupMember TransitGatewayAttachmentId (__added__)
+* AWS::EC2::TransitGatewayMulticastGroupSource TransitGatewayAttachmentId (__added__)
+* AWS::IoTWireless::ServiceProfile LoRaWANResponse (__deleted__)
+* AWS::IoTWireless::ServiceProfile ChannelMask (__added__)
+* AWS::IoTWireless::ServiceProfile DevStatusReqFreq (__added__)
+* AWS::IoTWireless::ServiceProfile DlBucketSize (__added__)
+* AWS::IoTWireless::ServiceProfile DlRate (__added__)
+* AWS::IoTWireless::ServiceProfile DlRatePolicy (__added__)
+* AWS::IoTWireless::ServiceProfile DrMax (__added__)
+* AWS::IoTWireless::ServiceProfile DrMin (__added__)
+* AWS::IoTWireless::ServiceProfile HrAllowed (__added__)
+* AWS::IoTWireless::ServiceProfile MinGwDiversity (__added__)
+* AWS::IoTWireless::ServiceProfile NwkGeoLoc (__added__)
+* AWS::IoTWireless::ServiceProfile PrAllowed (__added__)
+* AWS::IoTWireless::ServiceProfile RaAllowed (__added__)
+* AWS::IoTWireless::ServiceProfile ReportDevStatusBattery (__added__)
+* AWS::IoTWireless::ServiceProfile ReportDevStatusMargin (__added__)
+* AWS::IoTWireless::ServiceProfile TargetPer (__added__)
+* AWS::IoTWireless::ServiceProfile UlBucketSize (__added__)
+* AWS::IoTWireless::ServiceProfile UlRate (__added__)
+* AWS::IoTWireless::ServiceProfile UlRatePolicy (__added__)
+* AWS::IoTWireless::WirelessDevice ThingArn (__deleted__)
+* AWS::IoTWireless::WirelessGateway ThingArn (__deleted__)
+* AWS::IoTWireless::WirelessGateway ThingName (__added__)
+
+## Property Changes
+
+* AWS::CodeBuild::Project ConcurrentBuildLimit (__added__)
+* AWS::DataBrew::Job JobSample (__added__)
+* AWS::DynamoDB::Table KinesisStreamSpecification (__added__)
+* AWS::EC2::TransitGatewayMulticastDomain TransitGatewayId.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::EC2::TransitGatewayMulticastDomainAssociation State (__deleted__)
+* AWS::EC2::TransitGatewayMulticastDomainAssociation SubnetId.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::EC2::TransitGatewayMulticastDomainAssociation TransitGatewayAttachmentId.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::EC2::TransitGatewayMulticastDomainAssociation TransitGatewayMulticastDomainId.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::EC2::TransitGatewayMulticastGroupMember TransitGatewayAttachmentId (__deleted__)
+* AWS::EC2::TransitGatewayMulticastGroupMember GroupIpAddress.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::EC2::TransitGatewayMulticastGroupMember NetworkInterfaceId.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::EC2::TransitGatewayMulticastGroupMember TransitGatewayMulticastDomainId.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::EC2::TransitGatewayMulticastGroupSource TransitGatewayAttachmentId (__deleted__)
+* AWS::EC2::TransitGatewayMulticastGroupSource GroupIpAddress.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::EC2::TransitGatewayMulticastGroupSource NetworkInterfaceId.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::EC2::TransitGatewayMulticastGroupSource TransitGatewayMulticastDomainId.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::ElastiCache::GlobalReplicationGroup CacheParameterGroupName (__added__)
+* AWS::ElasticLoadBalancingV2::TargetGroup ProtocolVersion (__added__)
+* AWS::ImageBuilder::Image ContainerRecipeArn (__added__)
+* AWS::ImageBuilder::Image ImageRecipeArn.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::ImageBuilder::ImagePipeline ContainerRecipeArn (__added__)
+* AWS::ImageBuilder::ImagePipeline ImageRecipeArn.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::IoTAnalytics::Dataset LateDataRules (__added__)
+* AWS::IoTWireless::WirelessDevice ThingArn (__added__)
+* AWS::IoTWireless::WirelessGateway ThingName (__deleted__)
+* AWS::IoTWireless::WirelessGateway ThingArn (__added__)
+* AWS::StepFunctions::StateMachine Definition (__added__)
+
+## Property Type Changes
+
+* AWS::IoTWireless::ServiceProfile.LoRaWANGetServiceProfileInfo (__removed__)
+* AWS::DynamoDB::Table.KinesisStreamSpecification (__added__)
+* AWS::IoTAnalytics::Dataset.DeltaTimeSessionWindowConfiguration (__added__)
+* AWS::IoTAnalytics::Dataset.LateDataRule (__added__)
+* AWS::IoTAnalytics::Dataset.LateDataRuleConfiguration (__added__)
+* AWS::StepFunctions::StateMachine.Definition (__added__)
+* AWS::CodeCommit::Repository.Code BranchName.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::ElasticLoadBalancingV2::TargetGroup.Matcher GrpcCode (__added__)
+* AWS::FSx::FileSystem.WindowsConfiguration Aliases (__added__)
+* AWS::FSx::FileSystem.WindowsConfiguration ThroughputCapacity.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::IoTWireless::ServiceProfile.LoRaWANServiceProfile ChannelMask (__added__)
+* AWS::IoTWireless::ServiceProfile.LoRaWANServiceProfile DevStatusReqFreq (__added__)
+* AWS::IoTWireless::ServiceProfile.LoRaWANServiceProfile DlBucketSize (__added__)
+* AWS::IoTWireless::ServiceProfile.LoRaWANServiceProfile DlRate (__added__)
+* AWS::IoTWireless::ServiceProfile.LoRaWANServiceProfile DlRatePolicy (__added__)
+* AWS::IoTWireless::ServiceProfile.LoRaWANServiceProfile DrMax (__added__)
+* AWS::IoTWireless::ServiceProfile.LoRaWANServiceProfile DrMin (__added__)
+* AWS::IoTWireless::ServiceProfile.LoRaWANServiceProfile HrAllowed (__added__)
+* AWS::IoTWireless::ServiceProfile.LoRaWANServiceProfile MinGwDiversity (__added__)
+* AWS::IoTWireless::ServiceProfile.LoRaWANServiceProfile NwkGeoLoc (__added__)
+* AWS::IoTWireless::ServiceProfile.LoRaWANServiceProfile PrAllowed (__added__)
+* AWS::IoTWireless::ServiceProfile.LoRaWANServiceProfile RaAllowed (__added__)
+* AWS::IoTWireless::ServiceProfile.LoRaWANServiceProfile ReportDevStatusBattery (__added__)
+* AWS::IoTWireless::ServiceProfile.LoRaWANServiceProfile ReportDevStatusMargin (__added__)
+* AWS::IoTWireless::ServiceProfile.LoRaWANServiceProfile TargetPer (__added__)
+* AWS::IoTWireless::ServiceProfile.LoRaWANServiceProfile UlBucketSize (__added__)
+* AWS::IoTWireless::ServiceProfile.LoRaWANServiceProfile UlRate (__added__)
+* AWS::IoTWireless::ServiceProfile.LoRaWANServiceProfile UlRatePolicy (__added__)
+* AWS::Pinpoint::Campaign.CampaignSmsMessage OriginationNumber (__added__)
+
+
 # CloudFormation Resource Specification v28.0.0
 
 ## New Resource Types
