@@ -4,12 +4,13 @@ import * as lambda from '@aws-cdk/aws-lambda';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as sns from '@aws-cdk/aws-sns';
 import { App, Aws, Lazy, SecretValue, Stack, Token } from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
 import { testFutureBehavior } from 'cdk-build-tools/lib/feature-flag';
 import * as cpactions from '../../lib';
 
 /* eslint-disable quote-props */
 
-const s3GrantWriteCtx = { '@aws-cdk/aws-s3:grantWriteWithoutAcl': true };
+const s3GrantWriteCtx = { [cxapi.S3_GRANT_WRITE_WITHOUT_ACL]: true };
 
 describe('', () => {
   describe('Lambda invoke Action', () => {

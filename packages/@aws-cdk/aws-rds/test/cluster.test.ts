@@ -6,6 +6,7 @@ import * as kms from '@aws-cdk/aws-kms';
 import * as logs from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
 import { testFutureBehavior } from 'cdk-build-tools/lib/feature-flag';
 import {
   AuroraEngineVersion, AuroraMysqlEngineVersion, AuroraPostgresEngineVersion, CfnDBCluster, Credentials, DatabaseCluster,
@@ -1073,7 +1074,7 @@ describe('cluster', () => {
 
   });
 
-  testFutureBehavior('create a cluster with s3 export buckets', { '@aws-cdk/aws-s3:grantWriteWithoutAcl': true }, cdk.App, (app) => {
+  testFutureBehavior('create a cluster with s3 export buckets', { [cxapi.S3_GRANT_WRITE_WITHOUT_ACL]: true }, cdk.App, (app) => {
     // GIVEN
     const stack = testStack(app);
     const vpc = new ec2.Vpc(stack, 'VPC');

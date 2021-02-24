@@ -5,11 +5,13 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as cdk from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
-import { testLegacyBehavior } from 'cdk-build-tools/lib/feature-flag';
+import { testFutureBehavior, testLegacyBehavior } from 'cdk-build-tools/lib/feature-flag';
 import * as s3 from '../lib';
 
 // to make it easy to copy & paste from output:
 /* eslint-disable quote-props */
+
+const s3GrantWriteCtx = { [cxapi.S3_GRANT_WRITE_WITHOUT_ACL]: true };
 
 describe('bucket', () => {
   test('default bucket', () => {
@@ -814,8 +816,8 @@ describe('bucket', () => {
   });
 
   describe('grantReadWrite', () => {
-    test('can be used to grant reciprocal permissions to an identity', () => {
-      const stack = new cdk.Stack();
+    testFutureBehavior('can be used to grant reciprocal permissions to an identity', s3GrantWriteCtx, cdk.App, (app) => {
+      const stack = new cdk.Stack(app);
       const bucket = new s3.Bucket(stack, 'MyBucket');
       const user = new iam.User(stack, 'MyUser');
       bucket.grantReadWrite(user);
@@ -841,7 +843,7 @@ describe('bucket', () => {
                       's3:GetBucket*',
                       's3:List*',
                       's3:DeleteObject*',
-                      's3:PutObject*',
+                      's3:PutObject',
                       's3:Abort*',
                     ],
                     'Effect': 'Allow',
@@ -1104,12 +1106,7 @@ describe('bucket', () => {
       });
     });
 
-    test('does not grant PutObjectAcl when the S3_GRANT_WRITE_WITHOUT_ACL feature is enabled', () => {
-      const app = new cdk.App({
-        context: {
-          [cxapi.S3_GRANT_WRITE_WITHOUT_ACL]: true,
-        },
-      });
+    testFutureBehavior('does not grant PutObjectAcl when the S3_GRANT_WRITE_WITHOUT_ACL feature is enabled', s3GrantWriteCtx, cdk.App, (app) => {
       const stack = new cdk.Stack(app, 'Stack');
       const bucket = new s3.Bucket(stack, 'MyBucket');
       const user = new iam.User(stack, 'MyUser');
@@ -1147,8 +1144,8 @@ describe('bucket', () => {
   });
 
   describe('grantWrite', () => {
-    test('with KMS key has appropriate permissions for multipart uploads', () => {
-      const stack = new cdk.Stack();
+    testFutureBehavior('with KMS key has appropriate permissions for multipart uploads', s3GrantWriteCtx, cdk.App, (app) => {
+      const stack = new cdk.Stack(app);
       const bucket = new s3.Bucket(stack, 'MyBucket', { encryption: s3.BucketEncryption.KMS });
       const user = new iam.User(stack, 'MyUser');
       bucket.grantWrite(user);
@@ -1159,7 +1156,7 @@ describe('bucket', () => {
             {
               'Action': [
                 's3:DeleteObject*',
-                's3:PutObject*',
+                's3:PutObject',
                 's3:Abort*',
               ],
               'Effect': 'Allow',
@@ -1215,12 +1212,7 @@ describe('bucket', () => {
 
     });
 
-    test('does not grant PutObjectAcl when the S3_GRANT_WRITE_WITHOUT_ACL feature is enabled', () => {
-      const app = new cdk.App({
-        context: {
-          [cxapi.S3_GRANT_WRITE_WITHOUT_ACL]: true,
-        },
-      });
+    testFutureBehavior('does not grant PutObjectAcl when the S3_GRANT_WRITE_WITHOUT_ACL feature is enabled', s3GrantWriteCtx, cdk.App, (app) => {
       const stack = new cdk.Stack(app, 'Stack');
       const bucket = new s3.Bucket(stack, 'MyBucket');
       const user = new iam.User(stack, 'MyUser');
@@ -1255,12 +1247,7 @@ describe('bucket', () => {
   });
 
   describe('grantPut', () => {
-    test('does not grant PutObjectAcl when the S3_GRANT_WRITE_WITHOUT_ACL feature is enabled', () => {
-      const app = new cdk.App({
-        context: {
-          [cxapi.S3_GRANT_WRITE_WITHOUT_ACL]: true,
-        },
-      });
+    testFutureBehavior('does not grant PutObjectAcl when the S3_GRANT_WRITE_WITHOUT_ACL feature is enabled', s3GrantWriteCtx, cdk.App, (app) => {
       const stack = new cdk.Stack(app, 'Stack');
       const bucket = new s3.Bucket(stack, 'MyBucket');
       const user = new iam.User(stack, 'MyUser');
@@ -1290,8 +1277,8 @@ describe('bucket', () => {
     });
   });
 
-  test('more grants', () => {
-    const stack = new cdk.Stack();
+  testFutureBehavior('more grants', s3GrantWriteCtx, cdk.App, (app) => {
+    const stack = new cdk.Stack(app);
     const bucket = new s3.Bucket(stack, 'MyBucket', { encryption: s3.BucketEncryption.KMS });
     const putter = new iam.User(stack, 'Putter');
     const writer = new iam.User(stack, 'Writer');
@@ -1304,8 +1291,8 @@ describe('bucket', () => {
     const resources = SynthUtils.synthesize(stack).template.Resources;
     const actions = (id: string) => resources[id].Properties.PolicyDocument.Statement[0].Action;
 
-    expect(actions('WriterDefaultPolicyDC585BCE')).toEqual(['s3:DeleteObject*', 's3:PutObject*', 's3:Abort*']);
-    expect(actions('PutterDefaultPolicyAB138DD3')).toEqual(['s3:PutObject*', 's3:Abort*']);
+    expect(actions('WriterDefaultPolicyDC585BCE')).toEqual(['s3:DeleteObject*', 's3:PutObject', 's3:Abort*']);
+    expect(actions('PutterDefaultPolicyAB138DD3')).toEqual(['s3:PutObject', 's3:Abort*']);
     expect(actions('DeleterDefaultPolicyCD33B8A0')).toEqual('s3:DeleteObject*');
 
   });
