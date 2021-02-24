@@ -1869,9 +1869,44 @@ test.each([
 
   expect(stack).toHaveResourceLike('AWS::RDS::DBSubnetGroup', {
     DeletionPolicy: subnetValue,
+  }, ResourcePart.CompleteDefinition);
+});
+
+test.each([
+  [cdk.RemovalPolicy.RETAIN, 'Retain', 'Retain', 'Retain'],
+  [cdk.RemovalPolicy.SNAPSHOT, 'Snapshot', 'Delete', ABSENT],
+  [cdk.RemovalPolicy.DESTROY, 'Delete', 'Delete', ABSENT],
+])('if Cluster RemovalPolicy is \'%s\', the DBCluster has DeletionPolicy \'%s\', the DBInstance has \'%s\' and the DBSubnetGroup has \'%s\'', (clusterRemovalPolicy, clusterValue, instanceValue, subnetValue) => {
+  const stack = new cdk.Stack();
+
+  // WHEN
+  new DatabaseCluster(stack, 'Cluster', {
+    credentials: { username: 'admin' },
+    engine: DatabaseClusterEngine.AURORA,
+    instanceProps: {
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.LARGE),
+      vpc: new ec2.Vpc(stack, 'Vpc'),
+    },
+    removalPolicy: clusterRemovalPolicy,
+  });
+
+  // THEN
+  expect(stack).toHaveResourceLike('AWS::RDS::DBCluster', {
+    DeletionPolicy: clusterValue,
+    UpdateReplacePolicy: clusterValue,
+  }, ResourcePart.CompleteDefinition);
+
+  expect(stack).toHaveResourceLike('AWS::RDS::DBInstance', {
+    DeletionPolicy: instanceValue,
+    UpdateReplacePolicy: instanceValue,
+  }, ResourcePart.CompleteDefinition);
+
+  expect(stack).toHaveResourceLike('AWS::RDS::DBSubnetGroup', {
+    DeletionPolicy: subnetValue,
     UpdateReplacePolicy: subnetValue,
   }, ResourcePart.CompleteDefinition);
 });
+
 
 function testStack(app?: cdk.App) {
   const stack = new cdk.Stack(app, undefined, { env: { account: '12345', region: 'us-test-1' } });

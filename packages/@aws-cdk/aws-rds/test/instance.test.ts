@@ -1242,8 +1242,6 @@ describe('instance', () => {
     expect(stack).toHaveResource('AWS::RDS::DBInstance', {
       PubliclyAccessible: true,
     });
-
-
   });
 });
 
