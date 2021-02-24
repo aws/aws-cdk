@@ -2,7 +2,6 @@
 
 ## New Resource Types
 
-
 ## Attribute Changes
 
 * AWS::EC2::TransitGatewayMulticastDomainAssociation State (__added__)
