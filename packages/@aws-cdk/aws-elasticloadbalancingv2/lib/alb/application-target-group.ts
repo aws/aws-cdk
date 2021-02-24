@@ -127,14 +127,6 @@ export class ApplicationTargetGroup extends TargetGroupBase implements IApplicat
       if (props.slowStart !== undefined) {
         this.setAttribute('slow_start.duration_seconds', props.slowStart.toSeconds().toString());
       }
-      if (props.stickinessCookieName !== undefined) {
-        if (props.stickinessCookieName.startsWith('AWSALB') || props.stickinessCookieName.startsWith('AWSALBAPP') || props.stickinessCookieName.startsWith('AWSALBTG')) {
-          throw new Error('App cookie names that start with the following prefixes are not allowed: AWSALB, AWSALBAPP, and AWSALBTG; they\'re reserved for use by the load balancer.');
-        }
-        if (props.stickinessCookieName === '') {
-          throw new Error('App cookie name cannot be an empty string.');
-        }
-      }
       if (props.stickinessCookieDuration) {
         this.enableCookieStickiness(props.stickinessCookieDuration, props.stickinessCookieName);
       }
@@ -161,6 +153,14 @@ export class ApplicationTargetGroup extends TargetGroupBase implements IApplicat
    * @see https://docs.aws.amazon.com/elasticloadbalancing/latest/application/sticky-sessions.html
    */
   public enableCookieStickiness(duration: Duration, cookieName?: string) {
+    if (cookieName !== undefined) {
+      if (cookieName.startsWith('AWSALB') || cookieName.startsWith('AWSALBAPP') || cookieName.startsWith('AWSALBTG')) {
+        throw new Error('App cookie names that start with the following prefixes are not allowed: AWSALB, AWSALBAPP, and AWSALBTG; they\'re reserved for use by the load balancer.');
+      }
+      if (cookieName === '') {
+        throw new Error('App cookie name cannot be an empty string.');
+      }
+    }
     this.setAttribute('stickiness.enabled', 'true');
     if (cookieName) {
       this.setAttribute('stickiness.type', 'app_cookie');
