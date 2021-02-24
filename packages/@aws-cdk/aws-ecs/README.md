@@ -238,6 +238,14 @@ const container = ec2TaskDefinition.addContainer("WebContainer", {
 You can specify container properties when you add them to the task definition, or with various methods, e.g.:
 
 ```ts
+taskDefinition.addContainer("WebContainer", {
+  image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+  memoryLimitMiB: 1024,
+  portMappings: [{ containerPort: 3000 }]
+})
+```
+
+```ts
 container.addPortMappings({
   containerPort: 3000
 })
