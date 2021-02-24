@@ -39,7 +39,6 @@
   - [Project Structure](#project-structure)
     - [Code Organization](#code-organization)
     - [Levels of Abstraction](#levels-of-abstraction)
-      - [What Belongs in the CDK?](#what-belongs-in-the-cdk-)
   - [Implementation](#implementation)
     - [General Principles](#general-principles)
     - [Construct IDs](#construct-ids)
@@ -1249,27 +1248,6 @@ the s3.Bucket class represents an Amazon S3 bucket with additional properties
 and methods, such as bucket.addLifeCycleRule(), which adds a lifecycle rule to
 the bucket.
 
-Finally, in rare cases, the AWS Construct Library includes some even
-higher-level constructs, which we call patterns. These constructs are
-designed to help you complete common tasks in AWS, often involving multiple
-kinds of resources. For example, the
-`aws-ecs-patterns.ApplicationLoadBalancedFargateService` construct represents an
-architecture that includes an AWS Fargate container cluster employing an
-Application Load Balancer (ALB). These examples are rare, as these patterns
-constructs are, by design, heavily opinionated and less customizable; this means
-while the patterns are useful for many customers as-is, many others will find
-the patterns not _quite_ right and inflexible to their needs.
-
-#### What Belongs in the CDK?
-
-What divides the L2s from the higher-level constructs, and where do we draw the
-line on what belongs as part of the CDK itself?
-
-Generally speaking, an L2 directly models a single CloudFormation resource. The
-L2 typically exposes all of the underlying surface area of the underlying L1, as
-well as provides convenience methods for interactions with other services, or
-creating related or dependent resources, permissions, and metrics.
-
 Examples of behaviors that an L2 commonly include:
 
 - Modeling of the underlying L1 properties
@@ -1284,28 +1262,20 @@ separate construct. The most common form of these L2s are integration constructs
 that model interactions between different services (e.g., SNS publishing to SQS,
 CodePipeline actions that trigger Lambda functions).
 
-A higher-level L2 may also be included in the CDK if another L2 requires or
-would greatly benefit from a dependency on it.
+The final level of abstraction present within the CDK are what we designate as
+"L2.5s": a step above the L2s in terms of abstraction, but not quite at the
+level of complete patterns or applications.  These constructs still largely
+focus on a single logical resource -- in constrast to "patterns" which combine
+multiple resources -- but are customized for a specific common usage scenario of
+an L2.
 
-As general guidelines, the following types of constructs likely don't belong in
-the CDK, and should be published as separate artifacts:
+L2.5 constructs will be considered for inclusion in the CDK if they...
 
-- Constructs that create complete application infrastructure spanning multiple
-  resources (e.g., networking + compute). These constructs are often very
-  helpful to a specific subset of customers, but require high levels of
-  customization to work for all customers.
-- Constructs that extend the base L2s to provide functionality for a specific
-  language (e.g., `PythonFunction`), operating system (e.g., `WindowsInstance`),
-  or framework (e.g., `FlaskRestApi`). Rationale: subclassing the L2s in the CDK
-  leads to awkward inheritence chains, especially for customers who themselves
-  subclass the constructs to enforce organizational standards (e.g., `Bucket` ->
-  `SecureBucket`). Prefer to integrate this support directly into the
-  base L2 -- either directly or via composition -- where possible.
-- Constructs which assume a particular organizational, team, or architectural
-  structure. An example here might be a construct for validating
-  CertificateManager certificates which presumes a specific account hierarchy
-  for delegating DNS. These are unlikely to be generally relevant to the general
-  community.
+- cover a common usage scenario that can be used by a significant portion of
+  the community;
+- provide significant ease of use over the base L2 (via usage-specific defaults
+  or convenience methods);
+- simplify or enable another L2 within the CDK;
 
 ## Implementation
 
