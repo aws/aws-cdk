@@ -11,8 +11,8 @@ import { LogLevel } from '../lib/types';
 jest.mock('@aws-cdk/aws-lambda');
 
 // Mock BundlingDockerImage.fromAsset() to avoid building the image
-let fromAssetMock: jest.SpyInstance;
-let detectEsbuildMock: jest.SpyInstance;
+let fromAssetMock: jest.SpyInstance<BundlingDockerImage>;
+let detectEsbuildMock: jest.SpyInstance<EsbuildInstallation | undefined>;
 beforeEach(() => {
   jest.clearAllMocks();
   jest.resetAllMocks();
@@ -283,7 +283,7 @@ test('Local bundling', () => {
 
 test('Incorrect esbuild version', () => {
   detectEsbuildMock.mockReturnValueOnce({
-    runner: 'esbuild',
+    isLocal: true,
     version: '3.4.5',
   });
 
