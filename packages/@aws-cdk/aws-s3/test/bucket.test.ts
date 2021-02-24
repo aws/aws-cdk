@@ -277,6 +277,58 @@ describe('bucket', () => {
 
   });
 
+  test('enforceSsl can be enabled', () => {
+    const stack = new cdk.Stack();
+    new s3.Bucket(stack, 'MyBucket', { enforceSSL: true });
+
+    expect(stack).toMatchTemplate({
+      'Resources': {
+        'MyBucketF68F3FF0': {
+          'Type': 'AWS::S3::Bucket',
+          'UpdateReplacePolicy': 'Retain',
+          'DeletionPolicy': 'Retain',
+        },
+        'MyBucketPolicyE7FBAC7B': {
+          'Type': 'AWS::S3::BucketPolicy',
+          'Properties': {
+            'Bucket': {
+              'Ref': 'MyBucketF68F3FF0',
+            },
+            'PolicyDocument': {
+              'Statement': [
+                {
+                  'Action': 's3:*',
+                  'Condition': {
+                    'Bool': {
+                      'aws:SecureTransport': 'false',
+                    },
+                  },
+                  'Effect': 'Deny',
+                  'Principal': '*',
+                  'Resource': {
+                    'Fn::Join': [
+                      '',
+                      [
+                        {
+                          'Fn::GetAtt': [
+                            'MyBucketF68F3FF0',
+                            'Arn',
+                          ],
+                        },
+                        '/*',
+                      ],
+                    ],
+                  },
+                },
+              ],
+              'Version': '2012-10-17',
+            },
+          },
+        },
+      },
+    });
+  });
+
   test('bucketKeyEnabled can be enabled', () => {
     const stack = new cdk.Stack();
 
@@ -2405,7 +2457,5 @@ describe('bucket', () => {
     expect(() => new s3.Bucket(stack, 'MyBucket', {
       autoDeleteObjects: true,
     })).toThrow(/Cannot use \'autoDeleteObjects\' property on a bucket without setting removal policy to \'DESTROY\'/);
-
-
   });
 });
