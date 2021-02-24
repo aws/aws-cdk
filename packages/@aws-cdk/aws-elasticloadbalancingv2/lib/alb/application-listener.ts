@@ -823,7 +823,7 @@ export interface AddApplicationTargetsProps extends AddRuleProps {
    * Note: `stickinessCookieName` parameter depends on the presence of `stickinessCookieDuration` parameter.
    * If `stickinessCookieDuration` is not set, `stickinessCookieName` will be omitted.
    *
-   * @default No app cookie name
+   * @default - If `stickinessCookieDuration` is set, a load-balancer generated cookie is used. Otherwise, no stickiness is defined.
    * @see https://docs.aws.amazon.com/elasticloadbalancing/latest/application/sticky-sessions.html
    */
   readonly stickinessCookieName?: string;
