@@ -8,6 +8,7 @@ import * as lambda from '@aws-cdk/aws-lambda';
 import * as logs from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
 import { testFutureBehavior } from 'cdk-build-tools/lib/feature-flag';
 import * as rds from '../lib';
 
@@ -1038,7 +1039,7 @@ describe('instance', () => {
   });
 
   describe('S3 Import/Export', () => {
-    testFutureBehavior('instance with s3 import and export buckets', { '@aws-cdk/aws-s3:grantWriteWithoutAcl': true }, cdk.App, (app) => {
+    testFutureBehavior('instance with s3 import and export buckets', { [cxapi.S3_GRANT_WRITE_WITHOUT_ACL]: true }, cdk.App, (app) => {
       stack = new cdk.Stack(app);
       vpc = new ec2.Vpc(stack, 'VPC');
       new rds.DatabaseInstance(stack, 'DB', {
