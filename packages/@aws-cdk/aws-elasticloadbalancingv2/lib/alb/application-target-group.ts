@@ -151,6 +151,9 @@ export class ApplicationTargetGroup extends TargetGroupBase implements IApplicat
    * @see https://docs.aws.amazon.com/elasticloadbalancing/latest/application/sticky-sessions.html
    */
   public enableCookieStickiness(duration: Duration, cookieName?: string) {
+    if (duration.toSeconds() < 1 || duration.toSeconds() > 604800) {
+      throw new Error('Stickiness cookie duration value must be between 1 second and 7 days (604800 seconds).');
+    }
     if (cookieName !== undefined) {
       if (!Token.isUnresolved(cookieName) && (cookieName.startsWith('AWSALB') || cookieName.startsWith('AWSALBAPP') || cookieName.startsWith('AWSALBTG'))) {
         throw new Error('App cookie names that start with the following prefixes are not allowed: AWSALB, AWSALBAPP, and AWSALBTG; they\'re reserved for use by the load balancer.');

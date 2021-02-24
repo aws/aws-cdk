@@ -190,4 +190,19 @@ describe('tests', () => {
       });
     }).toThrow(/App cookie name cannot be an empty string./);
   });
+
+  test('Bad stickiness duration value', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'Stack');
+    const vpc = new ec2.Vpc(stack, 'VPC', {});
+
+    // THEN
+    expect(() => {
+      new elbv2.ApplicationTargetGroup(stack, 'TargetGroup', {
+        stickinessCookieDuration: cdk.Duration.days(8),
+        vpc,
+      });
+    }).toThrow(/Stickiness cookie duration value must be between 1 second and 7 days \(604800 seconds\)./);
+  });
 });
