@@ -33,7 +33,7 @@ export interface IVpcResourceCreator {
   /**
    * Create the VPC resource using the provided properties
    */
-  create(): CfnVPC;
+  create(scope: CoreConstruct): CfnVPC;
 }
 
 /**
@@ -79,7 +79,6 @@ export class DefaultVpcResourceCreator implements IVpcResourceCreator {
 
   private static readonly DEFAULT_CIDR_RANGE: string = '10.0.0.0/16';
   private readonly props: DefaultVpcResourceCreatorProps;
-  private readonly scope: CoreConstruct;
 
   /**
    * The primary CIDR block for the VPC
@@ -101,13 +100,12 @@ export class DefaultVpcResourceCreator implements IVpcResourceCreator {
    */
   public readonly dnsSupportEnabled: boolean;
 
-  constructor(scope: CoreConstruct, props: DefaultVpcResourceCreatorProps) {
+  constructor(props: DefaultVpcResourceCreatorProps) {
     this.props = this.reifyDefaults(props);
     this.primaryCidrBlock = this.props.primaryCidrBlock!;
     this.secondaryCidrBlocks = this.props.secondaryCidrBlocks!;
     this.dnsHostnamesEnabled = this.props.enableDnsHostnames!;
     this.dnsSupportEnabled = this.props.enableDnsSupport!;
-    this.scope = scope;
   }
 
   /**
@@ -141,30 +139,30 @@ export class DefaultVpcResourceCreator implements IVpcResourceCreator {
    * Create any secondary CIDR blocks provided
    */
   protected createSecondaryCidrBlocks(scope: CoreConstruct, vpc: CfnVPC, cidrBlocks: string[]): CfnVPCCidrBlock[] {
-    let i = 0;
-    let blocks = [];
-    for (const cidr in cidrBlocks) {
-      const name = `SecondaryCidrBlock${i}`;
+    let blocks: CfnVPCCidrBlock[] = [];
+    cidrBlocks.forEach((cidr) => {
+      const suffix = cidr.replace('.', '_').replace('/', '__');
+      const name = `SecondaryCidrBlock_${suffix}`; // Name is e.g. SecondaryCidrBlock_10_1_0_0__16
       const block = new CfnVPCCidrBlock(scope, name, {
         vpcId: vpc.ref,
         cidrBlock: cidr,
       });
       blocks.push(block);
-    }
+    });
     return blocks;
   }
 
   /**
    * Create the VPC resource using the provided properties
    */
-  public create(): CfnVPC {
-    const vpc = new CfnVPC(this.scope, 'Resource', {
+  public create(scope: CoreConstruct): CfnVPC {
+    const vpc = new CfnVPC(scope, 'Resource', {
       cidrBlock: this.props.primaryCidrBlock!,
       enableDnsHostnames: this.props.enableDnsHostnames!,
       enableDnsSupport: this.props.enableDnsSupport!,
       instanceTenancy: this.props.defaultInstanceTenancy!,
     });
-    this.createSecondaryCidrBlocks(this.scope, vpc, this.props.secondaryCidrBlocks!);
+    this.createSecondaryCidrBlocks(scope, vpc, this.props.secondaryCidrBlocks!);
     return vpc;
   }
 }

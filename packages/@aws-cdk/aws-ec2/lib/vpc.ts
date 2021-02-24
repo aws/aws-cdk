@@ -1186,13 +1186,13 @@ export class Vpc extends VpcBase {
     const stack = Stack.of(this);
 
     // Define a VPC using the provided CIDR range
-    const vpcCreator = props.vpcResourceCreator ?? new DefaultVpcResourceCreator(this, {
+    const vpcCreator = props.vpcResourceCreator ?? new DefaultVpcResourceCreator({
       primaryCidrBlock: props.cidr,
       enableDnsSupport: props.enableDnsSupport,
       enableDnsHostnames: props.enableDnsHostnames,
       defaultInstanceTenancy: props.defaultInstanceTenancy,
     });
-    this.resource = vpcCreator.create();
+    this.resource = vpcCreator.create(this);
 
     this.dnsHostnamesEnabled = vpcCreator.dnsHostnamesEnabled;
     this.dnsSupportEnabled = vpcCreator.dnsSupportEnabled;
