@@ -28,7 +28,9 @@
           "EmailSubject": "Verify your new account",
           "SmsMessage": "The verification code to your new account is {####}"
         }
-      }
+      },
+      "UpdateReplacePolicy": "Retain",
+      "DeletionPolicy": "Retain"
     },
     "ApiF70053CD": {
       "Type": "AWS::AppSync::GraphQLApi",
@@ -150,7 +152,7 @@
         }
       }
     },
-    "ApiQuerygetTestResolver4C1F8B0C": {
+    "ApidsQuerygetTestResolverCCED7EC2": {
       "Type": "AWS::AppSync::Resolver",
       "Properties": {
         "ApiId": {
@@ -171,7 +173,7 @@
         "ApiSchema510EECD7"
       ]
     },
-    "ApiQuerygetTestsResolver025B8E0A": {
+    "ApidsQuerygetTestsResolver952F49EE": {
       "Type": "AWS::AppSync::Resolver",
       "Properties": {
         "ApiId": {
@@ -192,7 +194,7 @@
         "ApiSchema510EECD7"
       ]
     },
-    "ApiMutationaddTestResolver7A08AE91": {
+    "ApidsMutationaddTestResolverBCF0400B": {
       "Type": "AWS::AppSync::Resolver",
       "Properties": {
         "ApiId": {
@@ -400,14 +402,12 @@
             ]
           }
         },
-        "Handler": "iam-query.handler",
         "Role": {
           "Fn::GetAtt": [
             "LambdaIAM687B49AF",
             "Arn"
           ]
         },
-        "Runtime": "nodejs12.x",
         "Environment": {
           "Variables": {
             "APPSYNC_ENDPOINT": {
@@ -417,7 +417,9 @@
               ]
             }
           }
-        }
+        },
+        "Handler": "iam-query.handler",
+        "Runtime": "nodejs12.x"
       },
       "DependsOn": [
         "LambdaIAMDefaultPolicy96DEA124",
@@ -496,14 +498,12 @@
             ]
           }
         },
-        "Handler": "iam-query.handler",
         "Role": {
           "Fn::GetAtt": [
             "testFailServiceRole9FF22F85",
             "Arn"
           ]
         },
-        "Runtime": "nodejs12.x",
         "Environment": {
           "Variables": {
             "APPSYNC_ENDPOINT": {
@@ -513,7 +513,9 @@
               ]
             }
           }
-        }
+        },
+        "Handler": "iam-query.handler",
+        "Runtime": "nodejs12.x"
       },
       "DependsOn": [
         "testFailServiceRole9FF22F85"
