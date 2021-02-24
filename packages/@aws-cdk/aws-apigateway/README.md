@@ -157,8 +157,8 @@ book.addMethod('GET', getBookIntegration, {
 });
 ```
 
-Here is an example of how to integrate with another AWS service, such as SQS, specifying the
-region where the queue is:
+It is possible to also integrate with AWS services in a different region. The following code integrates with Amazon SQS in the
+`eu-west-1` region.
 
 ```ts
 const getMessageIntegration = new apigateway.AwsIntegration({
