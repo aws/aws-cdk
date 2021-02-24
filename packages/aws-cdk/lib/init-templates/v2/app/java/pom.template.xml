@@ -10,6 +10,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <cdk.version>%cdk-version%</cdk.version>
+        <constructs.version>%constructs-version%</constructs.version>
         <junit.version>5.7.0</junit.version>
     </properties>
 
@@ -42,6 +43,12 @@
             <groupId>software.amazon.awscdk</groupId>
             <artifactId>lib</artifactId>
             <version>${cdk.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>software.constructs</groupId>
+            <artifactId>constructs</artifactId>
+            <version>${constructs.version}</version>
         </dependency>
 
         <dependency>

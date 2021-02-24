@@ -5,10 +5,6 @@ import { IQueue, Queue } from '@aws-cdk/aws-sqs';
 import { CfnOutput, Duration, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 
-// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
-// eslint-disable-next-line
-import { Construct as CoreConstruct } from '@aws-cdk/core';
-
 /**
  * The properties for the base QueueProcessingEc2Service or QueueProcessingFargateService service.
  */
@@ -183,7 +179,7 @@ export interface QueueProcessingServiceBaseProps {
 /**
  * The base class for QueueProcessingEc2Service and QueueProcessingFargateService services.
  */
-export abstract class QueueProcessingServiceBase extends CoreConstruct {
+export abstract class QueueProcessingServiceBase extends Construct {
   /**
    * The SQS queue that the service will process from
    */

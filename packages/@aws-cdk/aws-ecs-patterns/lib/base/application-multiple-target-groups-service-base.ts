@@ -11,10 +11,6 @@ import { LoadBalancerTarget } from '@aws-cdk/aws-route53-targets';
 import { CfnOutput, Duration, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 
-// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
-// eslint-disable-next-line
-import { Construct as CoreConstruct } from '@aws-cdk/core';
-
 /**
  * The properties for the base ApplicationMultipleTargetGroupsEc2Service or ApplicationMultipleTargetGroupsFargateService service.
  */
@@ -328,7 +324,7 @@ export interface ApplicationListenerProps {
 /**
  * The base class for ApplicationMultipleTargetGroupsEc2Service and ApplicationMultipleTargetGroupsFargateService classes.
  */
-export abstract class ApplicationMultipleTargetGroupsServiceBase extends CoreConstruct {
+export abstract class ApplicationMultipleTargetGroupsServiceBase extends Construct {
 
   /**
    * The desired number of instantiations of the task definition to keep running on the service.

@@ -5,10 +5,6 @@ import { Duration, NestedStack, Stack } from '@aws-cdk/core';
 import * as cr from '@aws-cdk/custom-resources';
 import { Construct } from 'constructs';
 
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct as CoreConstruct } from '@aws-cdk/core';
-
 export class ReplicaProvider extends NestedStack {
   /**
    * Creates a stack-singleton resource provider nested stack.
@@ -35,7 +31,7 @@ export class ReplicaProvider extends NestedStack {
   public readonly isCompleteHandler: lambda.Function;
 
   private constructor(scope: Construct, id: string) {
-    super(scope as CoreConstruct, id);
+    super(scope, id);
 
     const code = lambda.Code.fromAsset(path.join(__dirname, 'replica-handler'));
 

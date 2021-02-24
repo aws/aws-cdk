@@ -149,6 +149,8 @@ export class Rule extends Resource implements IRule {
     for (const target of props.targets || []) {
       this.addTarget(target);
     }
+
+    this.node.addValidation({ validate: () => this.validateRule() });
   }
 
   /**
@@ -263,7 +265,7 @@ export class Rule extends Resource implements IRule {
             return self._renderEventPattern();
           }
 
-          // we need to override validate(), as it uses the
+          // we need to override validateRule(), as it uses the
           // value of the eventPattern field,
           // which might be empty in the case of the copied rule
           // (as the patterns in the original might be added through addEventPattern(),
@@ -271,7 +273,7 @@ export class Rule extends Resource implements IRule {
           // Anyway, even if the original rule is invalid,
           // we would get duplicate errors if we didn't override this,
           // which is probably a bad idea in and of itself
-          protected validate(): string[] {
+          protected validateRule(): string[] {
             return [];
           }
         }
@@ -370,7 +372,7 @@ export class Rule extends Resource implements IRule {
     return out;
   }
 
-  protected validate() {
+  protected validateRule() {
     if (Object.keys(this.eventPattern).length === 0 && !this.scheduleExpression) {
       return ['Either \'eventPattern\' or \'schedule\' must be defined'];
     }

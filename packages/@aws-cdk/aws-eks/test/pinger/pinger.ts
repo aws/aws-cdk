@@ -4,16 +4,12 @@ import { CustomResource, Token, Duration } from '@aws-cdk/core';
 import * as cr from '@aws-cdk/custom-resources';
 import { Construct } from 'constructs';
 
-// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
-// eslint-disable-next-line
-import { Construct as CoreConstruct } from '@aws-cdk/core';
-
 export interface PingerProps {
   readonly url: string;
   readonly securityGroup?: ec2.SecurityGroup;
   readonly vpc?: ec2.IVpc;
 }
-export class Pinger extends CoreConstruct {
+export class Pinger extends Construct {
 
   private _resource: CustomResource;
 

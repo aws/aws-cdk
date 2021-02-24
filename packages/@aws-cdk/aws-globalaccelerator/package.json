@@ -1,6 +1,7 @@
 {
   "name": "@aws-cdk/aws-globalaccelerator",
   "version": "0.0.0",
+  "private": true,
   "description": "The CDK Construct Library for AWS::GlobalAccelerator",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -84,12 +85,12 @@
     "@aws-cdk/aws-ec2": "0.0.0",
     "@aws-cdk/core": "0.0.0",
     "@aws-cdk/custom-resources": "0.0.0",
-    "constructs": "^3.2.0"
+    "constructs": "10.0.0-pre.5"
   },
   "peerDependencies": {
     "@aws-cdk/aws-ec2": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "constructs": "^3.2.0",
+    "constructs": "10.0.0-pre.5",
     "@aws-cdk/custom-resources": "0.0.0"
   },
   "engines": {
