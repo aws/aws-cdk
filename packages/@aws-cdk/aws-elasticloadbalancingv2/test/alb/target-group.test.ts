@@ -88,4 +88,106 @@ describe('tests', () => {
       UnhealthyThresholdCount: 27,
     });
   });
+
+  test('Load balancer duration cookie stickiness', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'Stack');
+    const vpc = new ec2.Vpc(stack, 'VPC', {});
+
+    // WHEN
+    new elbv2.ApplicationTargetGroup(stack, 'TargetGroup', {
+      stickinessCookieDuration: cdk.Duration.minutes(5),
+      vpc,
+    });
+
+    // THEN
+    expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::TargetGroup', {
+      TargetGroupAttributes: [
+        {
+          Key: 'stickiness.enabled',
+          Value: 'true',
+        },
+        {
+          Key: 'stickiness.type',
+          Value: 'lb_cookie',
+        },
+        {
+          Key: 'stickiness.lb_cookie.duration_seconds',
+          Value: '300',
+        },
+      ],
+    });
+  });
+
+  test('Load balancer app cookie stickiness', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'Stack');
+    const vpc = new ec2.Vpc(stack, 'VPC', {});
+
+    // WHEN
+    new elbv2.ApplicationTargetGroup(stack, 'TargetGroup', {
+      stickinessCookieDuration: cdk.Duration.minutes(5),
+      stickinessCookieName: 'MyDeliciousCookie',
+      vpc,
+    });
+
+    // THEN
+    expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::TargetGroup', {
+      TargetGroupAttributes: [
+        {
+          Key: 'stickiness.enabled',
+          Value: 'true',
+        },
+        {
+          Key: 'stickiness.type',
+          Value: 'app_cookie',
+        },
+        {
+          Key: 'stickiness.app_cookie.cookie_name',
+          Value: 'MyDeliciousCookie',
+        },
+        {
+          Key: 'stickiness.app_cookie.duration_seconds',
+          Value: '300',
+        },
+      ],
+    });
+  });
+
+  test('Bad stickiness cookie names', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'Stack');
+    const vpc = new ec2.Vpc(stack, 'VPC', {});
+    const errMessage = 'App cookie names that start with the following prefixes are not allowed: AWSALB, AWSALBAPP, and AWSALBTG; they\'re reserved for use by the load balancer';
+
+    // THEN
+    ['AWSALBCookieName', 'AWSALBstickinessCookieName', 'AWSALBTGCookieName'].forEach((badCookieName, i) => {
+      expect(() => {
+        new elbv2.ApplicationTargetGroup(stack, `TargetGroup${i}`, {
+          stickinessCookieDuration: cdk.Duration.minutes(5),
+          stickinessCookieName: badCookieName,
+          vpc,
+        });
+      }).toThrow(errMessage);
+    });
+  });
+
+  test('Empty stickiness cookie name', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'Stack');
+    const vpc = new ec2.Vpc(stack, 'VPC', {});
+
+    // THEN
+    expect(() => {
+      new elbv2.ApplicationTargetGroup(stack, 'TargetGroup', {
+        stickinessCookieDuration: cdk.Duration.minutes(5),
+        stickinessCookieName: '',
+        vpc,
+      });
+    }).toThrow(/App cookie name cannot be an empty string./);
+  });
 });
