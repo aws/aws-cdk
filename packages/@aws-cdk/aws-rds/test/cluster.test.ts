@@ -1893,17 +1893,17 @@ test.each([
   expect(stack).toHaveResourceLike('AWS::RDS::DBCluster', {
     DeletionPolicy: clusterValue,
     UpdateReplacePolicy: clusterValue,
-  }, ResourcePart.CompleteDefinition));
+  }, ResourcePart.CompleteDefinition);
 
   expect(stack).toHaveResourceLike('AWS::RDS::DBInstance', {
     DeletionPolicy: instanceValue,
     UpdateReplacePolicy: instanceValue,
-  }, ResourcePart.CompleteDefinition));
+  }, ResourcePart.CompleteDefinition);
 
   expect(stack).toHaveResourceLike('AWS::RDS::DBSubnetGroup', {
     DeletionPolicy: subnetValue,
     UpdateReplacePolicy: subnetValue,
-  }, ResourcePart.CompleteDefinition));
+  }, ResourcePart.CompleteDefinition);
 });
 
 
