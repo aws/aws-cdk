@@ -157,6 +157,17 @@ book.addMethod('GET', getBookIntegration, {
 });
 ```
 
+Here is an example of how to integrate with another AWS service, such as SQS, specifying the
+region where the queue is:
+
+```ts
+const getMessageIntegration = new apigateway.AwsIntegration({
+  service: 'sqs', 
+  path: 'queueName', 
+  region: 'eu-west-1' 
+});
+```
+
 ## API Keys
 
 The following example shows how to use an API Key with a usage plan:
