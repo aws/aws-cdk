@@ -491,7 +491,36 @@ nodeunitShim({
       // THEN
       test.throws(() => {
         expect(stack);
+      }, /one essential container/);
+
+      test.done();
+    },
+
+    'allows adding the default container after creating the service'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
+
+      new ecs.FargateService(stack, 'FargateService', {
+        cluster,
+        taskDefinition,
       });
+
+      // Add the container *after* creating the service
+      taskDefinition.addContainer('main', {
+        image: ecs.ContainerImage.fromRegistry('somecontainer'),
+      });
+
+      // THEN
+      expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
+        ContainerDefinitions: [
+          {
+            Name: 'main',
+          },
+        ],
+      }));
 
       test.done();
     },
