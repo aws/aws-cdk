@@ -52,19 +52,19 @@ export interface ISigningProfile extends IResource {
 
   /**
    * The name of signing profile.
-   * @attribute signingProfileProfileName
+   * @attribute ProfileName
    */
   readonly signingProfileName: string;
 
   /**
    * The version of signing profile.
-   * @attribute signingProfileProfileVersion
+   * @attribute ProfileVersion
    */
   readonly signingProfileVersion: string;
 
   /**
    * The ARN of signing profile version.
-   * @attribute signingProfileProfileVersionArn
+   * @attribute ProfileVersionArn
    */
   readonly signingProfileVersionArn: string;
 }
