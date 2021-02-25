@@ -909,7 +909,7 @@
         ]
       }
     },
-    "InstanceAvailabilityAllowEventRuleawscdkrdsinstanceInstanceAvailabilityCE39A6A7B066AA0D": {
+    "InstanceAvailabilityAllowEventRuleawscdkrdsinstanceFunctionD515EE1969208105": {
       "Type": "AWS::Lambda::Permission",
       "Properties": {
         "Action": "lambda:InvokeFunction",
