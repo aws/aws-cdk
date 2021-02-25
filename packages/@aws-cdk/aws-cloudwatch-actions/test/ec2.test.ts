@@ -6,9 +6,14 @@ import * as actions from '../lib';
 test('can use instance reboot as alarm action', () => {
   // GIVEN
   const stack = new Stack();
-  //const topic = new sns.Topic(stack, 'Topic');
   const alarm = new cloudwatch.Alarm(stack, 'Alarm', {
-    metric: new cloudwatch.Metric({ namespace: 'AWS', metricName: 'Henk' }),
+    metric: new cloudwatch.Metric({
+      namespace: 'AWS/EC2',
+      metricName: 'StatusCheckFailed',
+      dimensions: {
+        InstanceId: 'i-03cb889aaaafffeee',
+      },
+    }),
     evaluationPeriods: 3,
     threshold: 100,
   });
