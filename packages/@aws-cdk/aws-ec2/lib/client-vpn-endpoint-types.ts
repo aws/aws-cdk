@@ -17,9 +17,14 @@ export interface IClientVpnEndpoint extends IResource, IConnectable {
 }
 
 /**
- * A Lambda function
+ * A connection handler for client VPN endpoints
  */
-export interface IFunction {
+export interface IClientVpnConnectionHandler {
+  /**
+   * The name of the function
+   */
+  readonly functionName: string;
+
   /**
    * The ARN of the function.
    */

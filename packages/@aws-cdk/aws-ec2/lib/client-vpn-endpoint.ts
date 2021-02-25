@@ -2,7 +2,7 @@ import * as logs from '@aws-cdk/aws-logs';
 import { CfnOutput, ConcreteDependable, IDependable, Resource, Token } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { ClientVpnAuthorizationRule, ClientVpnAuthorizationRuleOptions } from './client-vpn-authorization-rule';
-import { ICertificate, IClientVpnEndpoint, IFunction, TransportProtocol, VpnPort } from './client-vpn-endpoint-types';
+import { ICertificate, IClientVpnConnectionHandler, IClientVpnEndpoint, TransportProtocol, VpnPort } from './client-vpn-endpoint-types';
 import { ClientVpnRoute, ClientVpnRouteOptions } from './client-vpn-route';
 import { Connections } from './connections';
 import { CfnClientVpnEndpoint, CfnClientVpnTargetNetworkAssociation } from './ec2.generated';
@@ -67,9 +67,11 @@ export interface ClientVpnEndpointOptions {
   /**
    * The AWS Lambda function used for connection authorization
    *
+   * The name of the Lambda function must begin with the `AWSClientVPN-` prefix
+   *
    * @default - no connection handler
    */
-  readonly clientConnectionHandler?: IFunction; // Redefined IFunction to avoid circular dependency
+  readonly clientConnectionHandler?: IClientVpnConnectionHandler;
 
   /**
    * A brief description of the Client VPN endpoint.
@@ -246,6 +248,12 @@ export class ClientVpnEndpoint extends Resource implements IClientVpnEndpoint {
 
     if (props.logging == false && (props.logGroup || props.logStream)) {
       throw new Error('Cannot specify `logGroup` or `logStream` when logging is disabled');
+    }
+
+    if (props.clientConnectionHandler
+      && !Token.isUnresolved(props.clientConnectionHandler.functionName)
+      && !props.clientConnectionHandler.functionName.startsWith('AWSClientVPN-')) {
+      throw new Error('The name of the Lambda function must begin with the `AWSClientVPN-` prefix');
     }
 
     const logging = props.logging ?? true;

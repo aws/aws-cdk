@@ -16,7 +16,7 @@ test('client vpn endpoint', () => {
     cidr: '10.100.0.0/16',
     serverCertificate: { certificateArn: 'server-certificate-arn' },
     clientCertificate: { certificateArn: 'client-certificate-arn' },
-    clientConnectionHandler: { functionArn: 'function-arn' },
+    clientConnectionHandler: { functionArn: 'function-arn', functionName: 'AWSClientVPN-function-name' },
     dnsServers: ['8.8.8.8', '8.8.4.4'],
     userBasedAuthentication: ec2.ClientVpnUserBasedAuthentication.federated('saml-provider-arn'),
   });
