@@ -171,15 +171,10 @@ export class FargateService extends BaseService implements IFargateService {
     }
 
     this.configureAwsVpcNetworkingWithSecurityGroups(props.cluster.vpc, props.assignPublicIp, props.vpcSubnets, securityGroups);
-  }
 
-  protected onValidate() {
-    const validationErrors = super.onValidate();
-    if (!this.taskDefinition.defaultContainer) {
-      validationErrors.push('A TaskDefinition must have at least one essential container');
-    }
-
-    return validationErrors;
+    this.node.addValidation({
+      validate: () => !this.taskDefinition.defaultContainer ? ['A TaskDefinition must have at least one essential container'] : [],
+    });
   }
 }
 
