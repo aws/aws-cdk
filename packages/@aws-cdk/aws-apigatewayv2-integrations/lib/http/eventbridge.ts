@@ -54,14 +54,6 @@ export interface EventBridgeIntegrationRequestParameters {
   readonly detailType?: string;
 
   /**
-  * The name or ARN of the event bus to receive the event. Only the rules that are associated with this event bus are
-  * used to match the event. If you omit this, the default event bus is used.
-  *
-  * @default none
-  */
-  readonly eventBusName?: string;
-
-  /**
   * The AWS region. NB: Particular to EventBridge-PutEvents API Gateway integration and not EventBridge's PutEvents API.
   *
   * @default none
@@ -126,7 +118,10 @@ export class EventBridgeIntegration extends AwsServiceIntegration {
       connectionType: this.connectionType,
       credentialsArn: role.roleArn,
       integrationSubtype: this.integrationSubtype,
-      requestParameters: this.props.requestParameters,
+      requestParameters: {
+        ...this.props.requestParameters,
+        eventBusName: this.props.eventBus.eventBusName,
+      },
     };
   }
 }

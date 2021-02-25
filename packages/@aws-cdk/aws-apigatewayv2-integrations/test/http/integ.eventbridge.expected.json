@@ -71,14 +71,14 @@
             [
               "integrations/",
               {
-                "Ref": "EventBridgeProxyApiHttpIntegrationbdce00b62e57d880c36340c0f0df5a1d0AD4F597"
+                "Ref": "EventBridgeProxyApiDefaultRouteHttpIntegrationb62e88a58be37f7ea08ce64ef6029d4a761DFA56"
               }
             ]
           ]
         }
       }
     },
-    "EventBridgeProxyApiHttpIntegrationbdce00b62e57d880c36340c0f0df5a1d0AD4F597": {
+    "EventBridgeProxyApiDefaultRouteHttpIntegrationb62e88a58be37f7ea08ce64ef6029d4a761DFA56": {
       "Type": "AWS::ApiGatewayV2::Integration",
       "Properties": {
         "ApiId": {

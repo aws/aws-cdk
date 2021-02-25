@@ -13,7 +13,6 @@ const endpoint = new HttpApi(stack, 'EventBridgeProxyApi', {
   defaultIntegration: new EventBridgeIntegration({
     eventBus,
     requestParameters: {
-      eventBusName: eventBus.eventBusName,
       source: 'test',
       detail: '$request.body.result',
       detailType: '$request.body.description',
