@@ -727,6 +727,31 @@ describe('tests', () => {
     });
   });
 
+  test('Can supress default ingress rules on a simple redirect response', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Stack');
+
+    const loadBalancer = new elbv2.ApplicationLoadBalancer(stack, 'LB', {
+      vpc,
+    });
+
+    // WHEN
+    loadBalancer.addRedirect({ open: false });
+
+    // THEN
+    expect(stack).not.toHaveResourceLike('AWS::EC2::SecurityGroup', {
+      SecurityGroupIngress: [
+        {
+          CidrIp: '0.0.0.0/0',
+          Description: 'Allow from anyone on port 80',
+          IpProtocol: 'tcp',
+        },
+      ],
+    });
+
+  });
+
   test('Can add simple redirect responses with custom values', () => {
     // GIVEN
     const stack = new cdk.Stack();
