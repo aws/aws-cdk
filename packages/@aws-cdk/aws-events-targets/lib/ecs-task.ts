@@ -5,6 +5,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import { ContainerOverride } from './ecs-task-properties';
 import { singletonEventRole } from './util';
+import { Construct } from 'constructs';
 
 /**
  * Properties to define an ECS Event Task
@@ -18,7 +19,7 @@ export interface EcsTaskProps {
   /**
    * Task Definition of the task that should be started
    */
-  readonly taskDefinition: ecs.TaskDefinition;
+  readonly taskDefinition: ecs.ITaskDefinition;
 
   /**
    * How many tasks should be started when this event is triggered
@@ -103,7 +104,7 @@ export class EcsTask implements events.IRuleTarget {
    */
   public readonly securityGroups?: ec2.ISecurityGroup[];
   private readonly cluster: ecs.ICluster;
-  private readonly taskDefinition: ecs.TaskDefinition;
+  private readonly taskDefinition: ecs.ITaskDefinition;
   private readonly taskCount: number;
   private readonly role: iam.IRole;
   private readonly platformVersion?: ecs.FargatePlatformVersion;
@@ -137,8 +138,9 @@ export class EcsTask implements events.IRuleTarget {
       this.securityGroups = props.securityGroups;
       return;
     }
+
     let securityGroup = props.securityGroup || this.taskDefinition.node.tryFindChild('SecurityGroup') as ec2.ISecurityGroup;
-    securityGroup = securityGroup || new ec2.SecurityGroup(this.taskDefinition, 'SecurityGroup', { vpc: this.props.cluster.vpc });
+    securityGroup = securityGroup || new ec2.SecurityGroup(this.taskDefinition as unknown as Construct, 'SecurityGroup', { vpc: this.props.cluster.vpc });
     this.securityGroup = securityGroup; // Maintain backwards-compatibility for customers that read the generated security group.
     this.securityGroups = [securityGroup];
   }

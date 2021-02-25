@@ -1,6 +1,16 @@
+import * as iam from '@aws-cdk/aws-iam';
 import { Resource } from '@aws-cdk/core';
 import { Construct } from 'constructs';
-import { CommonTaskDefinitionProps, Compatibility, IpcMode, ITaskDefinition, NetworkMode, PidMode, TaskDefinition } from '../base/task-definition';
+import {
+  CommonTaskDefinitionAttributes,
+  CommonTaskDefinitionProps,
+  Compatibility,
+  IpcMode,
+  ITaskDefinition,
+  NetworkMode,
+  PidMode,
+  TaskDefinition,
+} from '../base/task-definition';
 import { PlacementConstraint } from '../placement';
 
 /**
@@ -52,6 +62,13 @@ export interface IEc2TaskDefinition extends ITaskDefinition {
 }
 
 /**
+ * Attributes used to import an existing EC2 task definition
+ */
+export interface Ec2TaskDefinitionAttributes extends CommonTaskDefinitionAttributes {
+
+}
+
+/**
  * The details of a task definition run on an EC2 cluster.
  *
  * @resource AWS::ECS::TaskDefinition
@@ -62,12 +79,42 @@ export class Ec2TaskDefinition extends TaskDefinition implements IEc2TaskDefinit
    * Imports a task definition from the specified task definition ARN.
    */
   public static fromEc2TaskDefinitionArn(scope: Construct, id: string, ec2TaskDefinitionArn: string): IEc2TaskDefinition {
+    return Ec2TaskDefinition.fromEc2TaskDefinitionAttributes(
+      scope, id, { taskDefinitionArn: ec2TaskDefinitionArn },
+    );
+  }
+
+  /**
+   * Imports an existing Ec2 task definition from its attributes
+   */
+  public static fromEc2TaskDefinitionAttributes(
+    scope: Construct,
+    id: string,
+    attrs: Ec2TaskDefinitionAttributes,
+  ): IEc2TaskDefinition {
     class Import extends Resource implements IEc2TaskDefinition {
-      public readonly taskDefinitionArn = ec2TaskDefinitionArn;
+      public readonly taskDefinitionArn = attrs.taskDefinitionArn;
       public readonly compatibility = Compatibility.EC2;
       public readonly isEc2Compatible = true;
       public readonly isFargateCompatible = false;
+
+      public get networkMode(): NetworkMode {
+        if (attrs.networkMode == undefined) {
+          throw new Error('NetworkMode is available only if it is given when importing the Ec2 TaskDefinition.');
+        } else {
+          return attrs.networkMode;
+        }
+      }
+
+      public get taskRole(): iam.IRole {
+        if (attrs.taskRole == undefined) {
+          throw new Error('TaskRole is available only if it is given when importing the Ec2 TaskDefinition.');
+        } else {
+          return attrs.taskRole;
+        }
+      }
     }
+
     return new Import(scope, id);
   }
 

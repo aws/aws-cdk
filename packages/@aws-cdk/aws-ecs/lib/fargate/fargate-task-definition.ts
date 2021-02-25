@@ -1,6 +1,14 @@
+import * as iam from '@aws-cdk/aws-iam';
 import { Resource, Tokenization } from '@aws-cdk/core';
 import { Construct } from 'constructs';
-import { CommonTaskDefinitionProps, Compatibility, ITaskDefinition, NetworkMode, TaskDefinition } from '../base/task-definition';
+import {
+  CommonTaskDefinitionAttributes,
+  CommonTaskDefinitionProps,
+  Compatibility,
+  ITaskDefinition,
+  NetworkMode,
+  TaskDefinition,
+} from '../base/task-definition';
 
 /**
  * The properties for a task definition.
@@ -52,6 +60,13 @@ export interface IFargateTaskDefinition extends ITaskDefinition {
 }
 
 /**
+ * Attributes used to import an existing Fargate task definition
+ */
+export interface FargateTaskDefinitionAttributes extends CommonTaskDefinitionAttributes {
+
+}
+
+/**
  * The details of a task definition run on a Fargate cluster.
  *
  * @resource AWS::ECS::TaskDefinition
@@ -62,11 +77,40 @@ export class FargateTaskDefinition extends TaskDefinition implements IFargateTas
    * Imports a task definition from the specified task definition ARN.
    */
   public static fromFargateTaskDefinitionArn(scope: Construct, id: string, fargateTaskDefinitionArn: string): IFargateTaskDefinition {
+    return FargateTaskDefinition.fromFargateTaskDefinitionAttributes(
+      scope, id, { taskDefinitionArn: fargateTaskDefinitionArn },
+    );
+  }
+
+  /**
+   * Import an existing Fargate task definition from its attributes
+   */
+  public static fromFargateTaskDefinitionAttributes(
+    scope: Construct,
+    id: string,
+    attrs: FargateTaskDefinitionAttributes,
+  ): IFargateTaskDefinition {
     class Import extends Resource implements IFargateTaskDefinition {
-      public readonly taskDefinitionArn = fargateTaskDefinitionArn;
+      public readonly taskDefinitionArn = attrs.taskDefinitionArn;
       public readonly compatibility = Compatibility.FARGATE;
       public readonly isEc2Compatible = false;
       public readonly isFargateCompatible = true;
+
+      public get networkMode(): NetworkMode {
+        if (attrs.networkMode == undefined) {
+          throw new Error('NetworkMode is available only if it is given when importing the Fargate TaskDefinition.');
+        } else {
+          return attrs.networkMode;
+        }
+      }
+
+      public get taskRole(): iam.IRole {
+        if (attrs.taskRole == undefined) {
+          throw new Error('TaskRole is available only if it is given when importing the Fargate TaskDefinition.');
+        } else {
+          return attrs.taskRole;
+        }
+      }
     }
 
     return new Import(scope, id);

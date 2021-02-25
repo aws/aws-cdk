@@ -38,6 +38,16 @@ export interface ITaskDefinition extends IResource {
    * Return true if the task definition can be run on a Fargate cluster
    */
   readonly isFargateCompatible: boolean;
+
+  /**
+   * The networking mode to use for the containers in the task.
+   */
+  readonly networkMode: NetworkMode;
+
+  /**
+   * The name of the IAM role that grants containers in the task permission to call AWS APIs on your behalf.
+   */
+  readonly taskRole: iam.IRole;
 }
 
 /**
@@ -175,10 +185,55 @@ export interface TaskDefinitionProps extends CommonTaskDefinitionProps {
   readonly pidMode?: PidMode;
 }
 
+/**
+ * The common task definition attributes used across all types of task definitions.
+ */
+export interface CommonTaskDefinitionAttributes {
+  /**
+   * The arn of the task definition
+   */
+  readonly taskDefinitionArn: string;
+
+  /**
+   * The networking mode to use for the containers in the task.
+   *
+   * @default NetworkMode.BRIDGE
+   */
+  readonly networkMode?: NetworkMode;
+
+  /**
+   * The name of the IAM role that grants containers in the task permission to call AWS APIs on your behalf.
+   *
+   * @default undefined.
+   */
+  readonly taskRole?: iam.IRole;
+}
+
+/**
+ *  A reference to an existing task definition
+ */
+export interface TaskDefinitionAttributes extends CommonTaskDefinitionAttributes {
+  /**
+   * Execution role for this task definition
+   *
+   * @default: undefined
+   */
+  readonly executionRole?: iam.IRole;
+
+  /**
+   * What launch types this task definition should be compatible with.
+   *
+   * @default Compatibility.EC2_AND_FARGATE
+   */
+  readonly compatibility?: Compatibility;
+}
+
 abstract class TaskDefinitionBase extends Resource implements ITaskDefinition {
 
   public abstract readonly compatibility: Compatibility;
+  public abstract readonly networkMode: NetworkMode;
   public abstract readonly taskDefinitionArn: string;
+  public abstract readonly taskRole: iam.IRole;
   public abstract readonly executionRole?: iam.IRole;
 
   /**
@@ -207,10 +262,33 @@ export class TaskDefinition extends TaskDefinitionBase {
    * The task will have a compatibility of EC2+Fargate.
    */
   public static fromTaskDefinitionArn(scope: Construct, id: string, taskDefinitionArn: string): ITaskDefinition {
+    return TaskDefinition.fromTaskDefinitionAttributes(scope, id, { taskDefinitionArn: taskDefinitionArn });
+  }
+
+  /**
+   * Create a task definition from a task definition reference
+   */
+  public static fromTaskDefinitionAttributes(scope: Construct, id: string, attrs: TaskDefinitionAttributes): ITaskDefinition {
     class Import extends TaskDefinitionBase {
-      public readonly taskDefinitionArn = taskDefinitionArn;
-      public readonly compatibility = Compatibility.EC2_AND_FARGATE;
-      public readonly executionRole?: iam.IRole = undefined;
+      public readonly taskDefinitionArn = attrs.taskDefinitionArn;
+      public readonly compatibility = attrs.compatibility ?? Compatibility.EC2_AND_FARGATE;
+      public readonly executionRole = attrs.executionRole;
+
+      public get networkMode(): NetworkMode {
+        if (attrs.networkMode == undefined) {
+          throw new Error('NetworkMode is available only if it is given when importing the TaskDefinition.');
+        } else {
+          return attrs.networkMode;
+        }
+      }
+
+      public get taskRole(): iam.IRole {
+        if (attrs.taskRole == undefined) {
+          throw new Error('TaskRole is available only if it is given when importing the TaskDefinition.');
+        } else {
+          return attrs.taskRole;
+        }
+      }
     }
 
     return new Import(scope, id);
@@ -248,7 +326,7 @@ export class TaskDefinition extends TaskDefinitionBase {
   public defaultContainer?: ContainerDefinition;
 
   /**
-   * The task launch type compatiblity requirement.
+   * The task launch type compatibility requirement.
    */
   public readonly compatibility: Compatibility;
 
