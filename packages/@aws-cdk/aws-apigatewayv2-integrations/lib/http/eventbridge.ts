@@ -17,7 +17,7 @@ export enum EventBridgeTargetAction {
  */
 export interface EventBridgeIntegrationProps {
   /**
-  * The specific EventBridge API action to integrate.
+  * The EventBridge API action to integrate.
   */
   readonly targetAction: EventBridgeTargetAction;
 
