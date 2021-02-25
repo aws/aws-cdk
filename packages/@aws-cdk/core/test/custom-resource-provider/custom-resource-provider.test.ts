@@ -187,7 +187,7 @@ nodeunitShim({
     test.done();
   },
 
-  'memorySize and timeout'(test: Test) {
+  'memorySize, timeout and description'(test: Test) {
     // GIVEN
     const stack = new Stack();
 
@@ -197,6 +197,7 @@ nodeunitShim({
       runtime: CustomResourceProviderRuntime.NODEJS_12,
       memorySize: Size.gibibytes(2),
       timeout: Duration.minutes(5),
+      description: 'veni vidi vici',
     });
 
     // THEN
@@ -204,6 +205,7 @@ nodeunitShim({
     const lambda = template.Resources.CustomMyResourceTypeCustomResourceProviderHandler29FBDD2A;
     test.deepEqual(lambda.Properties.MemorySize, 2048);
     test.deepEqual(lambda.Properties.Timeout, 300);
+    test.deepEqual(lambda.Properties.Description, 'veni vidi vici');
     test.done();
   },
 

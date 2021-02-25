@@ -67,6 +67,13 @@ export interface CustomResourceProviderProps {
    * @default - No environment variables.
    */
   readonly environment?: { [key: string]: string };
+
+  /**
+   * A description of the function.
+   *
+   * @default - No description.
+   */
+  readonly description?: string;
 }
 
 /**
@@ -205,6 +212,7 @@ export class CustomResourceProvider extends CoreConstruct {
         Role: role.getAtt('Arn'),
         Runtime: 'nodejs12.x',
         Environment: this.renderEnvironmentVariables(props.environment),
+        Description: props.description ?? undefined,
       },
     });
 
