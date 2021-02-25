@@ -50,6 +50,16 @@ attributes:
 const writeAddress = cluster.clusterEndpoint.socketAddress;   // "HOSTNAME:PORT"
 ```
 
+If you have existing security groups you would like to add to the cluster, use the `addSecurityGroup` method. Security
+groups added in this way will not be managed by the `Connections` object of the cluster.
+
+```ts
+const securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup', {
+  vpc,
+});
+cluster.addSecurityGroup(securityGroup);
+```
+
 ## Rotating credentials
 
 When the master password is generated and stored in AWS Secrets Manager, it can be rotated automatically:
