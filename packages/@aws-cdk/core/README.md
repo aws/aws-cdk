@@ -428,6 +428,7 @@ stack-unique identifier and returns the service token:
 const serviceToken = CustomResourceProvider.getOrCreate(this, 'Custom::MyCustomResourceType', {
   codeDirectory: `${__dirname}/my-handler`,
   runtime: CustomResourceProviderRuntime.NODEJS_12, // currently the only supported runtime
+  description: "Lambda function created by the custom resource provider",
 });
 
 new CustomResource(this, 'MyResource', {
