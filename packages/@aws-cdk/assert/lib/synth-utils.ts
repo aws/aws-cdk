@@ -7,7 +7,7 @@ export class SynthUtils {
   /**
    * Returns the cloud assembly template artifact for a stack.
    */
-  public static synthesize(stack: core.Stack, options: core.SynthesisOptions = { }): cxapi.CloudFormationStackArtifact {
+  public static synthesize(stack: core.Stack, options: core.StageSynthesisOptions = { }): cxapi.CloudFormationStackArtifact {
     // always synthesize against the root (be it an App or whatever) so all artifacts will be included
     const assembly = synthesizeApp(stack, options);
     return assembly.getStackArtifact(stack.artifactId);
@@ -16,7 +16,7 @@ export class SynthUtils {
   /**
    * Synthesizes the stack and returns the resulting CloudFormation template.
    */
-  public static toCloudFormation(stack: core.Stack, options: core.SynthesisOptions = { }): any {
+  public static toCloudFormation(stack: core.Stack, options: core.StageSynthesisOptions = { }): any {
     const synth = this._synthesizeWithNested(stack, options);
     if (synth instanceof cxapi.CloudFormationStackArtifact) {
       return synth.template;
@@ -48,7 +48,7 @@ export class SynthUtils {
    * @return CloudFormationStackArtifact for normal stacks or the actual template for nested stacks
    * @internal
    */
-  public static _synthesizeWithNested(stack: core.Stack, options: core.SynthesisOptions = { }): cxapi.CloudFormationStackArtifact | object {
+  public static _synthesizeWithNested(stack: core.Stack, options: core.StageSynthesisOptions = { }): cxapi.CloudFormationStackArtifact | object {
     // always synthesize against the root (be it an App or whatever) so all artifacts will be included
     const assembly = synthesizeApp(stack, options);
 
@@ -64,7 +64,7 @@ export class SynthUtils {
 /**
  * Synthesizes the app in which a stack resides and returns the cloud assembly object.
  */
-function synthesizeApp(stack: core.Stack, options: core.SynthesisOptions) {
+function synthesizeApp(stack: core.Stack, options: core.StageSynthesisOptions) {
   const root = stack.node.root;
   if (!core.Stage.isStage(root)) {
     throw new Error('unexpected: all stacks must be part of a Stage or an App');
