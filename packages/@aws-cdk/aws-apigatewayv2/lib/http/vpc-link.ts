@@ -1,5 +1,5 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
-import { IResource, Lazy, Resource } from '@aws-cdk/core';
+import { IResource, Lazy, Names, Resource } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnVpcLink } from '../apigatewayv2.generated';
 
@@ -92,7 +92,7 @@ export class VpcLink extends Resource implements IVpcLink {
     this.vpc = props.vpc;
 
     const cfnResource = new CfnVpcLink(this, 'Resource', {
-      name: props.vpcLinkName || Lazy.stringValue({ produce: () => this.node.uniqueId }),
+      name: props.vpcLinkName || Lazy.stringValue({ produce: () => Names.uniqueId(this) }),
       subnetIds: Lazy.listValue({ produce: () => this.renderSubnets() }),
       securityGroupIds: Lazy.listValue({ produce: () => this.renderSecurityGroups() }),
     });

@@ -1,4 +1,4 @@
-import { Construct } from '../construct-compat';
+import { Construct } from 'constructs';
 import { CustomResourceProvider, CustomResourceProviderRuntime } from '../custom-resource-provider';
 
 /**

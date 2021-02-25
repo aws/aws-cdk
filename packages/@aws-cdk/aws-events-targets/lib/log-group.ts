@@ -29,7 +29,7 @@ export class CloudWatchLogGroup implements events.IRuleTarget {
    */
   public bind(_rule: events.IRule, _id?: string): events.RuleTargetConfig {
     // Use a custom resource to set the log group resource policy since it is not supported by CDK and cfn.
-    const resourcePolicyId = `EventsLogGroupPolicy${_rule.node.uniqueId}`;
+    const resourcePolicyId = `EventsLogGroupPolicy${cdk.Names.nodeUniqueId(_rule.node)}`;
 
     const logGroupStack = cdk.Stack.of(this.logGroup);
 
