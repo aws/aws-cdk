@@ -1,5 +1,6 @@
 import { spawnSync, SpawnSyncOptions } from 'child_process';
 import * as crypto from 'crypto';
+import { isAbsolute, join } from 'path';
 import { FileSystem } from './fs';
 
 /**
@@ -79,41 +80,6 @@ export interface BundlingOptions {
    * @experimental
    */
   readonly local?: ILocalBundling;
-
-  /**
-   * The type of output that this bundling operation is producing.
-   *
-   * @default BundlingOutput.AUTO_DISCOVER
-   *
-   * @experimental
-   */
-  readonly outputType?: BundlingOutput;
-}
-
-/**
- * The type of output that a bundling operation is producing.
- *
- * @experimental
- */
-export enum BundlingOutput {
-  /**
-   * The bundling output directory includes a single .zip or .jar file which
-   * will be used as the final bundle. If the output directory does not
-   * include exactly a single archive, bundling will fail.
-   */
-  ARCHIVED = 'archived',
-
-  /**
-   * The bundling output directory contains one or more files which will be
-   * archived and uploaded as a .zip file to S3.
-   */
-  NOT_ARCHIVED = 'not-archived',
-
-  /**
-   * If the bundling output directory contains a single archive file (zip or jar)
-   * it will not be zipped. Otherwise the bundling output will be zipped.
-   */
-  AUTO_DISCOVER = 'auto-discover',
 }
 
 /**
@@ -155,16 +121,18 @@ export class BundlingDockerImage {
   public static fromAsset(path: string, options: DockerBuildOptions = {}) {
     const buildArgs = options.buildArgs || {};
 
+    if (options.file && isAbsolute(options.file)) {
+      throw new Error(`"file" must be relative to the docker build directory. Got ${options.file}`);
+    }
+
     // Image tag derived from path and build options
-    const tagHash = crypto.createHash('sha256').update(JSON.stringify({
-      path,
-      ...options,
-    })).digest('hex');
+    const input = JSON.stringify({ path, ...options });
+    const tagHash = crypto.createHash('sha256').update(input).digest('hex');
     const tag = `cdk-${tagHash}`;
 
     const dockerArgs: string[] = [
       'build', '-t', tag,
-      ...(options.file ? ['-f', options.file] : []),
+      ...(options.file ? ['-f', join(path, options.file)] : []),
       ...flatten(Object.entries(buildArgs).map(([k, v]) => ['--build-arg', `${k}=${v}`])),
       path,
     ];
@@ -350,9 +318,9 @@ export interface DockerBuildOptions {
   readonly buildArgs?: { [key: string]: string };
 
   /**
-   * Name of the Dockerfile
+   * Name of the Dockerfile, must relative to the docker build path.
    *
-   * @default - The Dockerfile immediately within the build context path
+   * @default `Dockerfile`
    */
   readonly file?: string;
 }

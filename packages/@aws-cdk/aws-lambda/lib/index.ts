@@ -16,6 +16,7 @@ export * from './event-source-mapping';
 export * from './destination';
 export * from './event-invoke-config';
 export * from './scalable-attribute-api';
+export * from './code-signing-config';
 
 export * from './log-retention';
 
