@@ -518,7 +518,9 @@
       "Type": "AWS::SQS::Queue",
       "Properties": {
         "MessageRetentionPeriod": 1209600
-      }
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
     },
     "PublicQueueServiceEcsProcessingQueue84CD309D": {
       "Type": "AWS::SQS::Queue",
@@ -532,7 +534,9 @@
           },
           "maxReceiveCount": 3
         }
-      }
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
     },
     "PublicQueueServiceQueueProcessingTaskDefTaskRole172D980F": {
       "Type": "AWS::IAM::Role",
@@ -749,7 +753,6 @@
           "MaximumPercent": 200,
           "MinimumHealthyPercent": 50
         },
-        "DesiredCount": 1,
         "EnableECSManagedTags": false,
         "LaunchType": "FARGATE",
         "NetworkConfiguration": {
