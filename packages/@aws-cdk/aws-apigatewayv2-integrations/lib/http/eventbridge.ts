@@ -7,18 +7,22 @@ import { IEventBus } from '@aws-cdk/aws-events';
 import { PolicyStatement, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
 import { AwsServiceIntegration } from './private/integration';
 
+
+export enum EventBridgeTargetAction {
+  PUT_EVENTS = 'EventBridge-PutEvents'
+}
+
 /**
  * Properties to initialize `EventBridgeIntegration`.
  */
 export interface EventBridgeIntegrationProps {
   /**
-   * The EventBridge API call to proxy to.
-   * @default AwsServiceIntegrationSubtype.EVENT_BRIDGE_PUT_EVENTS
-   */
-  readonly integrationSubtype?: AwsServiceIntegrationSubtype;
+  * The specific EventBridge API action to integrate.
+  */
+  readonly targetAction: EventBridgeTargetAction;
 
   /**
-   * The event bus to bind proxy to.
+   * The target event bus.
    */
   readonly eventBus: IEventBus;
 
@@ -93,7 +97,13 @@ export class EventBridgeIntegration extends AwsServiceIntegration {
   }
 
   public bind(options: HttpRouteIntegrationBindOptions): HttpRouteIntegrationConfig {
-    this.integrationSubtype = this.props.integrationSubtype ?? AwsServiceIntegrationSubtype.EVENT_BRIDGE_PUT_EVENTS;
+    switch (this.props.targetAction) {
+      case EventBridgeTargetAction.PUT_EVENTS:
+        this.integrationSubtype = AwsServiceIntegrationSubtype.EVENT_BRIDGE_PUT_EVENTS;
+        break;
+      default:
+        this.integrationSubtype = AwsServiceIntegrationSubtype.EVENT_BRIDGE_PUT_EVENTS;
+    }
 
     const { scope } = options;
 
