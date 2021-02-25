@@ -14,7 +14,10 @@ import { Token, Stack, Duration } from '@aws-cdk/core';
  * Specifies the type of lambda authorizer
  */
 export enum HttpLambdaAuthorizerType {
+  /** Returns simple boolean response */
   SIMPLE,
+
+  /** Returns an IAM Policy */
   AWS_IAM,
 }
 
