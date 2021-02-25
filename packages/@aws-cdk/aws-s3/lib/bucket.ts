@@ -1830,6 +1830,7 @@ export class Bucket extends BucketBase {
     const provider = CustomResourceProvider.getOrCreateProvider(this, AUTO_DELETE_OBJECTS_RESOURCE_TYPE, {
       codeDirectory: path.join(__dirname, 'auto-delete-objects-handler'),
       runtime: CustomResourceProviderRuntime.NODEJS_12,
+      description: `Lambda function for auto-deleting objects in ${this.bucketName} S3 bucket.`,
     });
 
     // Use a bucket policy to allow the custom resource to delete
