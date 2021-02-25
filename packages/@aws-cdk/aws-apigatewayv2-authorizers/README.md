@@ -45,9 +45,17 @@ const api = new HttpApi(stack, 'HttpApi', {
 
 api.addRoutes({
   integration: new HttpProxyIntegration({
-    url: 'https://get-books-proxy.myproxy.internal',
+    url: 'https://add-books-proxy.myproxy.internal',
   }),
   path: '/books', // This route will inherit the authorizer and scopes from the gateway
+});
+
+api.addRoutes({
+  integration: new HttpProxyIntegration({
+    url: 'https://get-books-proxy.myproxy.internal',
+  }),
+  path: '/books', 
+  authorizer: new NoneAuthorizer(), // This route will remove the default authorizer from the gateway
 });
 ```
 
