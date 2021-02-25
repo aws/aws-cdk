@@ -88,7 +88,7 @@
               {
                 "Ref": "AWS::Region"
               },
-              "\",\"metrics\":[[{\"label\":\"Total Messages\",\"expression\":\"m1+m2\"}],[\"AWS/SQS\",\"ApproximateNumberOfMessagesVisible\",\"QueueName\",\"",
+              "\",\"metrics\":[[{\"label\":\"Total Messages\",\"expression\":\"m1+m2\",\"period\":60}],[\"AWS/SQS\",\"ApproximateNumberOfMessagesVisible\",\"QueueName\",\"",
               {
                 "Fn::GetAtt": [
                   "queue",
@@ -120,7 +120,7 @@
               {
                 "Ref": "AWS::Region"
               },
-              "\",\"metrics\":[[{\"label\":\"Total Messages\",\"expression\":\"m1+m2\"}],[\"AWS/SQS\",\"ApproximateNumberOfMessagesVisible\",\"QueueName\",\"",
+              "\",\"metrics\":[[{\"label\":\"Total Messages\",\"expression\":\"m1+m2\",\"period\":60}],[\"AWS/SQS\",\"ApproximateNumberOfMessagesVisible\",\"QueueName\",\"",
               {
                 "Fn::GetAtt": [
                   "queue",
