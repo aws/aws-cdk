@@ -11,4 +11,5 @@
 
 This library contains a set of classes which can be used as CloudWatch Alarm actions.
 
+The currently implemented actions are: EC2 Actions, SNS Actions, Autoscaling Actions and Aplication Autoscaling Actions
 See `@aws-cdk/aws-cloudwatch` for more information.
