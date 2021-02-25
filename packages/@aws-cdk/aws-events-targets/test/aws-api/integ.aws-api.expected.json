@@ -29,7 +29,26 @@
         ]
       }
     },
-    "ScheduleRuleAllowEventRuleawscdkawsapitargetintegScheduleRule51140722763E20C1": {
+    "ScheduleRuleAllowEventRuleawscdkawsapitargetintegScheduleRuleScheduleRuleTarget0HandlerF2C0C898874A4805": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "AWSb4cf1abd4e4f4bc699441af7ccd9ec371511E620",
+            "Arn"
+          ]
+        },
+        "Principal": "events.amazonaws.com",
+        "SourceArn": {
+          "Fn::GetAtt": [
+            "ScheduleRuleDA5BD877",
+            "Arn"
+          ]
+        }
+      }
+    },
+    "ScheduleRuleAllowEventRuleawscdkawsapitargetintegScheduleRuleScheduleRuleTarget1Handler4688817C0179F894": {
       "Type": "AWS::Lambda::Permission",
       "Properties": {
         "Action": "lambda:InvokeFunction",
@@ -198,7 +217,7 @@
         ]
       }
     },
-    "PatternRuleAllowEventRuleawscdkawsapitargetintegPatternRule3D388581AA4F776B": {
+    "PatternRuleAllowEventRuleawscdkawsapitargetintegPatternRulePatternRuleTarget0HandlerA0821464BB49C5D3": {
       "Type": "AWS::Lambda::Permission",
       "Properties": {
         "Action": "lambda:InvokeFunction",
