@@ -72,14 +72,14 @@
             [
               "integrations/",
               {
-                "Ref": "MyHttpApiHttpIntegration6f095b8469365f72e33fa33d9711b140C45F3B26"
+                "Ref": "MyHttpApiGETHttpIntegration6f095b8469365f72e33fa33d9711b140516EBE31"
               }
             ]
           ]
         }
       }
     },
-    "MyHttpApiHttpIntegration6f095b8469365f72e33fa33d9711b140C45F3B26": {
+    "MyHttpApiGETHttpIntegration6f095b8469365f72e33fa33d9711b140516EBE31": {
       "Type": "AWS::ApiGatewayV2::Integration",
       "Properties": {
         "ApiId": {
@@ -157,7 +157,9 @@
           "EmailSubject": "Verify your new account",
           "SmsMessage": "The verification code to your new account is {####}"
         }
-      }
+      },
+      "UpdateReplacePolicy": "Retain",
+      "DeletionPolicy": "Retain"
     },
     "userpoolmyclientFAD947AB": {
       "Type": "AWS::Cognito::UserPoolClient",

@@ -24,6 +24,7 @@ export = {
 
     // THEN
     expect(stack).to(haveResource('AWS::Events::Rule', {
+      State: 'ENABLED',
       Targets: [
         {
           Arn: { 'Fn::GetAtt': ['EcsCluster97242B84', 'Arn'] },
@@ -90,6 +91,7 @@ export = {
 
     new ScheduledFargateTask(stack, 'ScheduledFargateTask', {
       cluster,
+      enabled: false,
       scheduledFargateTaskImageOptions: {
         image: ecs.ContainerImage.fromRegistry('henk'),
         memoryLimitMiB: 512,
@@ -104,6 +106,7 @@ export = {
     // THEN
     expect(stack).to(haveResource('AWS::Events::Rule', {
       Name: 'sample-scheduled-task-rule',
+      State: 'DISABLED',
       Targets: [
         {
           Arn: { 'Fn::GetAtt': ['EcsCluster97242B84', 'Arn'] },
