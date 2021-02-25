@@ -6,6 +6,7 @@ import * as s3 from '@aws-cdk/aws-s3';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import * as ssm from '@aws-cdk/aws-ssm';
 import * as cdk from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
 import { testFutureBehavior } from 'cdk-build-tools/lib/feature-flag';
 import * as ecs from '../lib';
 
@@ -1643,7 +1644,7 @@ describe('container definition', () => {
     });
   });
 
-  testFutureBehavior('can use a DockerImageAsset directly for a container image', { '@aws-cdk/aws-ecr-assets:dockerIgnoreSupport': true }, cdk.App, (app) => {
+  testFutureBehavior('can use a DockerImageAsset directly for a container image', { [cxapi.DOCKER_IGNORE_SUPPORT]: true }, cdk.App, (app) => {
     // GIVEN
     const stack = new cdk.Stack(app, 'Stack');
     const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
@@ -1671,7 +1672,7 @@ describe('container definition', () => {
                 { Ref: 'AWS::Region' },
                 '.',
                 { Ref: 'AWS::URLSuffix' },
-                '/aws-cdk/assets:d3fe8de91df2c894af1e8579a7836fb42895f9d2e30c7547ebdff4010f09c6d4',
+                '/aws-cdk/assets:b2c69bfbfe983b634456574587443159b3b7258849856a118ad3d2772238f1a5',
               ],
             ],
           },
@@ -1727,11 +1728,11 @@ describe('container definition', () => {
     const asm = app.synth();
     expect(asm.getStackArtifact(stack.artifactId).assets[0]).toEqual({
       repositoryName: 'aws-cdk/assets',
-      imageTag: '9cbc7bfe2ac4cacb5787605711847819aacb1d9227b1113090a022d8cd74752c',
-      id: '9cbc7bfe2ac4cacb5787605711847819aacb1d9227b1113090a022d8cd74752c',
+      imageTag: 'ce3419d7c5d2d44e2789b13ccbd2d54ddf682557669f68bcee753231f5f1c0a5',
+      id: 'ce3419d7c5d2d44e2789b13ccbd2d54ddf682557669f68bcee753231f5f1c0a5',
       packaging: 'container-image',
-      path: 'asset.9cbc7bfe2ac4cacb5787605711847819aacb1d9227b1113090a022d8cd74752c',
-      sourceHash: '9cbc7bfe2ac4cacb5787605711847819aacb1d9227b1113090a022d8cd74752c',
+      path: 'asset.ce3419d7c5d2d44e2789b13ccbd2d54ddf682557669f68bcee753231f5f1c0a5',
+      sourceHash: 'ce3419d7c5d2d44e2789b13ccbd2d54ddf682557669f68bcee753231f5f1c0a5',
       target: 'build-target',
       file: 'index.py',
     });
