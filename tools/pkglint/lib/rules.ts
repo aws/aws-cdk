@@ -618,6 +618,38 @@ export class NoPeerDependenciesMonocdk extends ValidationRule {
 }
 
 /**
+ * Validates that the same version of `constructs` is used wherever a dependency
+ * is specified, so that they must all be udpated at the same time (through an
+ * update to this rule).
+ *
+ * Note: v1 and v2 use different versions respectively.
+ */
+export class ConstructsVersion extends ValidationRule {
+  public readonly name = 'deps/constructs';
+  private readonly expectedRange = cdkMajorVersion() === 2
+    ? '10.0.0-pre.5'
+    : '^3.2.0';
+
+  public validate(pkg: PackageJson) {
+    const toCheck = new Array<string>();
+
+    if ('constructs' in pkg.dependencies) {
+      toCheck.push('dependencies');
+    }
+    if ('constructs' in pkg.devDependencies) {
+      toCheck.push('devDependencies');
+    }
+    if ('constructs' in pkg.peerDependencies) {
+      toCheck.push('peerDependencies');
+    }
+
+    for (const cfg of toCheck) {
+      expectJSON(this.name, pkg, `${cfg}.constructs`, this.expectedRange);
+    }
+  }
+}
+
+/**
  * JSII Java package is required and must look sane
  */
 export class JSIIJavaPackageIsRequired extends ValidationRule {

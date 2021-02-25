@@ -3,6 +3,7 @@ import { IVpc } from '@aws-cdk/aws-ec2';
 import { AwsLogDriver, BaseService, Cluster, ContainerImage, DeploymentController, ICluster, LogDriver, PropagatedTagSource, Secret } from '@aws-cdk/aws-ecs';
 import { IQueue, Queue } from '@aws-cdk/aws-sqs';
 import { CfnOutput, Duration, Stack } from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
 
 /**
@@ -49,7 +50,10 @@ export interface QueueProcessingServiceBaseProps {
   /**
    * The desired number of instantiations of the task definition to keep running on the service.
    *
-   * @default 1
+   * @default - If the feature flag, ECS_REMOVE_DEFAULT_DESIRED_COUNT is false, the default is 1;
+   * if true, the minScalingCapacity is 1 for all new services and uses the existing services desired count
+   * when updating an existing service.
+   * @deprecated - Use `minScalingCapacity` or a literal object instead.
    */
   readonly desiredTaskCount?: number;
 
@@ -105,9 +109,16 @@ export interface QueueProcessingServiceBaseProps {
   /**
    * Maximum capacity to scale to.
    *
-   * @default (desiredTaskCount * 2)
+   * @default - If the feature flag, ECS_REMOVE_DEFAULT_DESIRED_COUNT is false, the default is (desiredTaskCount * 2); if true, the default is 2.
    */
   readonly maxScalingCapacity?: number
+
+  /**
+   * Minimum capacity to scale to.
+   *
+   * @default - If the feature flag, ECS_REMOVE_DEFAULT_DESIRED_COUNT is false, the default is the desiredTaskCount; if true, the default is 1.
+   */
+  readonly minScalingCapacity?: number
 
   /**
    * The intervals for scaling based on the SQS queue's ApproximateNumberOfMessagesVisible metric.
@@ -210,6 +221,7 @@ export abstract class QueueProcessingServiceBase extends Construct {
 
   /**
    * The minimum number of tasks to run.
+   * @deprecated - Use `minCapacity` instead.
    */
   public readonly desiredCount: number;
 
@@ -217,6 +229,11 @@ export abstract class QueueProcessingServiceBase extends Construct {
    * The maximum number of instances for autoscaling to scale up to.
    */
   public readonly maxCapacity: number;
+
+  /**
+   * The minimum number of instances for autoscaling to scale down to.
+   */
+  public readonly minCapacity: number;
 
   /**
    * The scaling interval for autoscaling based off an SQS Queue size.
@@ -268,9 +285,21 @@ export abstract class QueueProcessingServiceBase extends Construct {
     this.environment = { ...(props.environment || {}), QUEUE_NAME: this.sqsQueue.queueName };
     this.secrets = props.secrets;
 
-    // Determine the desired task count (minimum) and maximum scaling capacity
     this.desiredCount = props.desiredTaskCount ?? 1;
-    this.maxCapacity = props.maxScalingCapacity || (2 * this.desiredCount);
+
+    // Determine the desired task count (minimum) and maximum scaling capacity
+    if (!this.node.tryGetContext(cxapi.ECS_REMOVE_DEFAULT_DESIRED_COUNT)) {
+      this.minCapacity = props.minScalingCapacity || this.desiredCount;
+      this.maxCapacity = props.maxScalingCapacity || (2 * this.desiredCount);
+    } else {
+      if (props.desiredTaskCount != null) {
+        this.minCapacity = props.minScalingCapacity || this.desiredCount;
+        this.maxCapacity = props.maxScalingCapacity || (2 * this.desiredCount);
+      } else {
+        this.minCapacity = props.minScalingCapacity || 1;
+        this.maxCapacity = props.maxScalingCapacity || 2;
+      }
+    }
 
     if (!this.desiredCount && !this.maxCapacity) {
       throw new Error('maxScalingCapacity must be set and greater than 0 if desiredCount is 0');
@@ -286,7 +315,7 @@ export abstract class QueueProcessingServiceBase extends Construct {
    * @param service the ECS/Fargate service for which to apply the autoscaling rules to
    */
   protected configureAutoscalingForService(service: BaseService) {
-    const scalingTarget = service.autoScaleTaskCount({ maxCapacity: this.maxCapacity, minCapacity: this.desiredCount });
+    const scalingTarget = service.autoScaleTaskCount({ maxCapacity: this.maxCapacity, minCapacity: this.minCapacity });
     scalingTarget.scaleOnCpuUtilization('CpuScaling', {
       targetUtilizationPercent: 50,
     });
