@@ -237,7 +237,7 @@ const container = ec2TaskDefinition.addContainer("WebContainer", {
 
 You can specify container properties when you add them to the task definition, or with various methods, e.g.:
 
-To add add port mappings when adding to the task definition, specify the `portMappings` option:
+To add a port mapping when adding a container to the task definition, specify the `portMappings` option:
 
 ```ts
 taskDefinition.addContainer("WebContainer", {
