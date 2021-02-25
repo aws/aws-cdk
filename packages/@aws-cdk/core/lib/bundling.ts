@@ -1,5 +1,6 @@
 import { spawnSync, SpawnSyncOptions } from 'child_process';
 import * as crypto from 'crypto';
+import { isAbsolute, join } from 'path';
 import { FileSystem } from './fs';
 
 /**
@@ -79,41 +80,6 @@ export interface BundlingOptions {
    * @experimental
    */
   readonly local?: ILocalBundling;
-
-  /**
-   * The type of output that this bundling operation is producing.
-   *
-   * @default BundlingOutput.AUTO_DISCOVER
-   *
-   * @experimental
-   */
-  readonly outputType?: BundlingOutput;
-}
-
-/**
- * The type of output that a bundling operation is producing.
- *
- * @experimental
- */
-export enum BundlingOutput {
-  /**
-   * The bundling output directory includes a single .zip or .jar file which
-   * will be used as the final bundle. If the output directory does not
-   * include exactly a single archive, bundling will fail.
-   */
-  ARCHIVED = 'archived',
-
-  /**
-   * The bundling output directory contains one or more files which will be
-   * archived and uploaded as a .zip file to S3.
-   */
-  NOT_ARCHIVED = 'not-archived',
-
-  /**
-   * If the bundling output directory contains a single archive file (zip or jar)
-   * it will not be zipped. Otherwise the bundling output will be zipped.
-   */
-  AUTO_DISCOVER = 'auto-discover',
 }
 
 /**
@@ -135,8 +101,6 @@ export interface ILocalBundling {
 
 /**
  * A Docker image used for asset bundling
- *
- * @deprecated use DockerImage
  */
 export class BundlingDockerImage {
   /**
@@ -153,22 +117,22 @@ export class BundlingDockerImage {
    *
    * @param path The path to the directory containing the Docker file
    * @param options Docker build options
-   *
-   * @deprecated use DockerImage.fromBuild()
    */
   public static fromAsset(path: string, options: DockerBuildOptions = {}) {
     const buildArgs = options.buildArgs || {};
 
+    if (options.file && isAbsolute(options.file)) {
+      throw new Error(`"file" must be relative to the docker build directory. Got ${options.file}`);
+    }
+
     // Image tag derived from path and build options
-    const tagHash = crypto.createHash('sha256').update(JSON.stringify({
-      path,
-      ...options,
-    })).digest('hex');
+    const input = JSON.stringify({ path, ...options });
+    const tagHash = crypto.createHash('sha256').update(input).digest('hex');
     const tag = `cdk-${tagHash}`;
 
     const dockerArgs: string[] = [
       'build', '-t', tag,
-      ...(options.file ? ['-f', options.file] : []),
+      ...(options.file ? ['-f', join(path, options.file)] : []),
       ...flatten(Object.entries(buildArgs).map(([k, v]) => ['--build-arg', `${k}=${v}`])),
       path,
     ];
@@ -185,7 +149,7 @@ export class BundlingDockerImage {
   }
 
   /** @param image The Docker image */
-  protected constructor(public readonly image: string, private readonly _imageHash?: string) {}
+  private constructor(public readonly image: string, private readonly _imageHash?: string) {}
 
   /**
    * Provides a stable representation of this image for JSON serialization.
@@ -233,16 +197,10 @@ export class BundlingDockerImage {
   }
 
   /**
-   * Copies a file or directory out of the Docker image to the local filesystem.
-   *
-   * If `outputPath` is omitted the destination path is a temporary directory.
-   *
-   * @param imagePath the path in the Docker image
-   * @param outputPath the destination path for the copy operation
-   * @returns the destination path
+   * Copies a file or directory out of the Docker image to the local filesystem
    */
-  public cp(imagePath: string, outputPath?: string): string {
-    const { stdout } = dockerExec(['create', this.image], {}); // Empty options to avoid stdout redirect here
+  public cp(imagePath: string, outputPath: string) {
+    const { stdout } = dockerExec(['create', this.image]);
     const match = stdout.toString().match(/([0-9a-f]{16,})/);
     if (!match) {
       throw new Error('Failed to extract container ID from Docker create output');
@@ -250,30 +208,13 @@ export class BundlingDockerImage {
 
     const containerId = match[1];
     const containerPath = `${containerId}:${imagePath}`;
-    const destPath = outputPath ?? FileSystem.mkdtemp('cdk-docker-cp-');
     try {
-      dockerExec(['cp', containerPath, destPath]);
-      return destPath;
+      dockerExec(['cp', containerPath, outputPath]);
     } catch (err) {
-      throw new Error(`Failed to copy files from ${containerPath} to ${destPath}: ${err}`);
+      throw new Error(`Failed to copy files from ${containerPath} to ${outputPath}: ${err}`);
     } finally {
       dockerExec(['rm', '-v', containerId]);
     }
-  }
-}
-
-/**
- * A Docker image
- */
-export class DockerImage extends BundlingDockerImage {
-  /**
-   * Builds a Docker image
-   *
-   * @param path The path to the directory containing the Docker file
-   * @param options Docker build options
-   */
-  public static fromBuild(path: string, options: DockerBuildOptions = {}) {
-    return BundlingDockerImage.fromAsset(path, options);
   }
 }
 
@@ -377,9 +318,9 @@ export interface DockerBuildOptions {
   readonly buildArgs?: { [key: string]: string };
 
   /**
-   * Name of the Dockerfile
+   * Name of the Dockerfile, must relative to the docker build path.
    *
-   * @default - The Dockerfile immediately within the build context path
+   * @default `Dockerfile`
    */
   readonly file?: string;
 }

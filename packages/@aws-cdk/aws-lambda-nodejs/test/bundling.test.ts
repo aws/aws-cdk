@@ -20,7 +20,7 @@ beforeEach(() => {
   getEsBuildVersionMock.mockReturnValue('0.8.8');
   fromAssetMock.mockReturnValue({
     image: 'built-image',
-    cp: () => 'dest-path',
+    cp: () => {},
     run: () => {},
     toJSON: () => 'built-image',
   });
@@ -330,6 +330,26 @@ test('with command hooks', () => {
       command: [
         'bash', '-c',
         expect.stringMatching(/^echo hello > \/asset-input\/a.txt && cp \/asset-input\/a.txt \/asset-output && .+ && cp \/asset-input\/b.txt \/asset-output\/txt$/),
+      ],
+    }),
+  });
+});
+
+test('escapes spaces in path', () => {
+  Bundling.bundle({
+    entry: '/project/lib/my cool lambda/handler.ts',
+    depsLockFilePath,
+    runtime: Runtime.NODEJS_12_X,
+    forceDockerBundling: true,
+  });
+
+  // Correctly bundles with esbuild
+  expect(Code.fromAsset).toHaveBeenCalledWith(path.dirname(depsLockFilePath), {
+    assetHashType: AssetHashType.OUTPUT,
+    bundling: expect.objectContaining({
+      command: [
+        'bash', '-c',
+        expect.stringContaining('lib/my\\ cool\\ lambda/handler.ts'),
       ],
     }),
   });
