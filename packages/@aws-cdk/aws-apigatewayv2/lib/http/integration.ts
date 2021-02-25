@@ -100,7 +100,7 @@ export interface HttpIntegrationProps {
   /**
    * Request parameters for integration
    */
-  readonly requestParameters?: Record<string, any>;
+  readonly requestParameters?: { [key: string]: any };
 
   /**
    * Integration URI.
@@ -180,7 +180,7 @@ export class HttpIntegration extends Resource implements IHttpIntegration {
 
   private renderRequestParameters(
     integrationSubtype?: AwsServiceIntegrationSubtype,
-    requestParameters?: Record<string, any>,
+    requestParameters?: { [key: string]: any },
   ): { [key: string]: any } | undefined {
     if (!integrationSubtype && !requestParameters) {
       return undefined;
