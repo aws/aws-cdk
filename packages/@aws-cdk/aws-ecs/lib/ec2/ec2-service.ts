@@ -230,19 +230,7 @@ export class Ec2Service extends BaseService implements IEc2Service {
     this.addPlacementStrategies(...props.placementStrategies || []);
 
     this.node.addValidation({
-      validate: () => {
-        const validationErrors = [];
-
-        if (!this.cluster.hasEc2Capacity) {
-          validationErrors.push('Cluster for this service needs Ec2 capacity. Call addXxxCapacity() on the cluster.');
-        }
-
-        if (!this.taskDefinition.defaultContainer) {
-          validationErrors.push('A TaskDefinition must have at least one essential container');
-        }
-
-        return validationErrors;
-      },
+      validate: () => !this.taskDefinition.defaultContainer ? ['A TaskDefinition must have at least one essential container'] : [],
     });
   }
 
@@ -268,6 +256,17 @@ export class Ec2Service extends BaseService implements IEc2Service {
     for (const constraint of constraints) {
       this.constraints.push(...constraint.toJson());
     }
+  }
+
+  /**
+   * Validates this Ec2Service.
+   */
+  protected validate(): string[] {
+    const ret = super.validate();
+    if (!this.cluster.hasEc2Capacity) {
+      ret.push('Cluster for this service needs Ec2 capacity. Call addXxxCapacity() on the cluster.');
+    }
+    return ret;
   }
 }
 
