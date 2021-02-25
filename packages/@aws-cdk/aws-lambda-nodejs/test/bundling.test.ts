@@ -346,3 +346,23 @@ test('with command hooks', () => {
     }),
   });
 });
+
+test('escapes spaces in path', () => {
+  Bundling.bundle({
+    entry: '/project/lib/my cool lambda/handler.ts',
+    depsLockFilePath,
+    runtime: Runtime.NODEJS_12_X,
+    forceDockerBundling: true,
+  });
+
+  // Correctly bundles with esbuild
+  expect(Code.fromAsset).toHaveBeenCalledWith(path.dirname(depsLockFilePath), {
+    assetHashType: AssetHashType.OUTPUT,
+    bundling: expect.objectContaining({
+      command: [
+        'bash', '-c',
+        expect.stringContaining('lib/my\\ cool\\ lambda/handler.ts'),
+      ],
+    }),
+  });
+});

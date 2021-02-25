@@ -153,7 +153,7 @@ export class Bundling implements cdk.BundlingOptions {
 
     const esbuildCommand: string[] = [
       options.esbuildRunner,
-      '--bundle', pathJoin(options.inputDir, this.relativeEntryPath),
+      '--bundle', pathJoin(options.inputDir, this.relativeEntryPath).replace(/(\s+)/g, '\\$1'),
       `--target=${this.props.target ?? toTarget(this.props.runtime)}`,
       '--platform=node',
       `--outfile=${pathJoin(options.outputDir, 'index.js')}`,
