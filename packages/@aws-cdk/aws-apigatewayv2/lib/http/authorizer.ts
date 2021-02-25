@@ -148,6 +148,8 @@ export interface HttpRouteAuthorizerBindOptions {
 export interface HttpRouteAuthorizerConfig {
   /**
    * The authorizer id
+   *
+   * @default - No authorizer id (useful for AWS_IAM route authorizer)
    */
   readonly authorizerId?: string;
   /**
