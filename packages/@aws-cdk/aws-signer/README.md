@@ -50,13 +50,13 @@ A signing profile is a code-signing template that can be used to pre-define the 
 A signing profile includes a signing platform to designate the file type to be signed, the signature format, and the signature algorithms.
 For more information, visit [Signing Profiles in AWS Signer](https://docs.aws.amazon.com/signer/latest/developerguide/gs-profile.html).
 
-The following code sets up a signing profile -
+The following code sets up a signing profile for signing lambda code bundles -
 
 ```ts
 import * as signer from '@aws-cdk/aws-signer';
 
 const signingProfile = new signer.SigningProfile(this, 'SigningProfile', { 
-  platformId: 'xxxxxx' 
+  platform: signer.Platform.AWS_LAMBDA_SHA384_ECDSA,
 } );
 ```
 

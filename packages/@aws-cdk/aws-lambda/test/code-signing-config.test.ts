@@ -97,6 +97,6 @@ describe('code signing config', () => {
   test('fail import with malformed code signing config arn', () => {
     const codeSigningConfigArn = 'arn:aws:lambda:::code-signing-config';
 
-    expect(() => lambda.CodeSigningConfig.fromCodeSigningConfigArn(stack, 'Imported', codeSigningConfigArn ) ).toThrow();
+    expect(() => lambda.CodeSigningConfig.fromCodeSigningConfigArn(stack, 'Imported', codeSigningConfigArn ) ).toThrow(/ARN must be in the format/);
   });
 });
