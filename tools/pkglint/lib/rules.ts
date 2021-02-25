@@ -624,7 +624,7 @@ export class NoPeerDependenciesMonocdk extends ValidationRule {
  *
  * Note: v1 and v2 use different versions respectively.
  */
-export class ConstructsConsistentDependencyVersion extends ValidationRule {
+export class ConstructsVersion extends ValidationRule {
   public readonly name = 'deps/constructs';
   private readonly expectedRange = cdkMajorVersion() === 2
     ? '10.0.0-pre.5'
