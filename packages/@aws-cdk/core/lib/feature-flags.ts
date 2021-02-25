@@ -1,5 +1,5 @@
 import * as cxapi from '@aws-cdk/cx-api';
-import { Construct } from '../lib/construct-compat';
+import { Construct } from 'constructs';
 
 /**
  * Features that are implemented behind a flag in order to preserve backwards
