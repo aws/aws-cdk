@@ -8,6 +8,50 @@ import { ISecurityGroup, SecurityGroup } from './security-group';
 import { PrivateSubnet, PublicSubnet, RouterType, Vpc } from './vpc';
 
 /**
+ * Direction of traffic to allow all by default.
+ */
+export class Traffic {
+  /**
+   * Allow all outbound traffic and disallow all inbound traffic.
+   */
+  public static readonly OUTBOUND_ONLY = new Traffic('OUTBOUND_ONLY');
+
+  /**
+   * Allow all outbound and inbound traffic.
+   */
+  public static readonly INBOUND_AND_OUTBOUND = new Traffic('INBOUND_AND_OUTBOUND');
+
+  /**
+   * Disallow all outbound and inbound traffic.
+   */
+  public static readonly NONE = new Traffic('NONE');
+
+  /**
+   * Direction of traffic to allow all by default.
+   */
+  public readonly direction: string;
+
+  private constructor(direction: string) {
+    this.direction = direction;
+  }
+
+  /**
+   * Whether all outbound traffic is allowed or not
+   */
+  public isOutboundAllowed () {
+    return this.direction === Traffic.INBOUND_AND_OUTBOUND.direction ||
+      this.direction === Traffic.OUTBOUND_ONLY.direction;
+  }
+
+  /**
+   * Whether all inbound traffic is allowed or not
+   */
+  public isInboundAllowed () {
+    return this.direction === Traffic.INBOUND_AND_OUTBOUND.direction;
+  }
+}
+
+/**
  * Pair represents a gateway created by NAT Provider
  */
 export interface GatewayConfig {
@@ -157,8 +201,22 @@ export interface NatInstanceProps {
    * Provider to a Vpc.
    *
    * @default true
+   * @deprecated - Use `defaultAllowAll`.
    */
   readonly allowAllTraffic?: boolean;
+
+  /**
+   * Direction to allow all traffic through the NAT instance by default.
+   *
+   * If you set this to OUTBOUND_ONLY or NONE, you must configure the NAT instance's
+   * security groups in another way, either by passing in a fully configured Security
+   * Group using the `securityGroup` property, or by configuring it using the
+   * `.securityGroup` or `.connections` members after passing the NAT Instance
+   * Provider to a Vpc.
+   *
+   * @default Traffic.INBOUND_AND_OUTBOUND
+   */
+  readonly defaultAllowAll?: Traffic;
 }
 
 /**
@@ -213,12 +271,18 @@ export class NatInstanceProvider extends NatProvider implements IConnectable {
     this._securityGroup = this.props.securityGroup ?? new SecurityGroup(options.vpc, 'NatSecurityGroup', {
       vpc: options.vpc,
       description: 'Security Group for NAT instances',
-      allowAllOutbound: this.props.allowAllTraffic ?? true,
+      allowAllOutbound: this.props.defaultAllowAll && this.props.defaultAllowAll.isOutboundAllowed(),
     });
     this._connections = new Connections({ securityGroups: [this._securityGroup] });
 
-    if (this.props.allowAllTraffic ?? true) {
-      this.connections.allowFromAnyIpv4(Port.allTraffic());
+    if ( this.props.defaultAllowAll ) {
+      if (this.props.defaultAllowAll.isInboundAllowed()) {
+        this.connections.allowFromAnyIpv4(Port.allTraffic());
+      }
+    } else {
+      if (this.props.allowAllTraffic ?? true) {
+        this.connections.allowFromAnyIpv4(Port.allTraffic());
+      }
     }
 
     // FIXME: Ideally, NAT instances don't have a role at all, but
