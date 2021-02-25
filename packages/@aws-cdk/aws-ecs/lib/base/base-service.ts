@@ -600,16 +600,6 @@ export abstract class BaseService extends Resource
   }
 
   /**
-   * Adds the specified extention to the service.
-   *
-   * Extension can be used to apply a packaged modification to
-   * a service.
-   */
-  public addExtension(extension: IServiceExtension) {
-    extension.extend(this);
-  }
-
-  /**
    * This method returns the specified CloudWatch metric name for this service.
    */
   public metric(metricName: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
@@ -894,16 +884,4 @@ export enum PropagatedTagSource {
    * Do not propagate
    */
   NONE = 'NONE'
-}
-
-/**
- * An interface for creating reusable extensions for ECS services.
- */
-export interface IServiceExtension {
-  /**
-   * Apply the extension to the given BaseService
-   *
-   * @param service [disable-awslint:ref-via-interface]
-   */
-  extend(service: BaseService): void;
 }

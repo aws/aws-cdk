@@ -176,6 +176,16 @@ export class FargateService extends BaseService implements IFargateService {
       throw new Error('A TaskDefinition must have at least one essential container');
     }
   }
+
+  /**
+   * Adds the specified extention to the service.
+   *
+   * Extension can be used to apply a packaged modification to
+   * a service.
+   */
+  public addExtension(extension: IFargateServiceExtension) {
+    extension.extend(this);
+  }
 }
 
 /**
@@ -233,3 +243,21 @@ const SECRET_JSON_FIELD_UNSUPPORTED_PLATFORM_VERSIONS = [
   FargatePlatformVersion.VERSION1_2,
   FargatePlatformVersion.VERSION1_3,
 ];
+
+/**
+ * An extension for `FargateService`
+ *
+ * Classes that want to make changes to a FargateService (such as applying a
+ * standard autoscaling pattern) can implement this interface, and can then
+ * be "added" to a service like so:
+ *
+ *    service.addExtension(new MyExtension("some_parameter"));
+ */
+export interface IFargateServiceExtension {
+  /**
+   * Apply the extension to the given service
+   *
+   * @param service [disable-awslint:ref-via-interface]
+   */
+  extend(service: FargateService): void;
+}

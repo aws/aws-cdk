@@ -259,6 +259,16 @@ export class Ec2Service extends BaseService implements IEc2Service {
   }
 
   /**
+   * Adds the specified extention to the service.
+   *
+   * Extension can be used to apply a packaged modification to
+   * a service.
+   */
+  public addExtension(extension: IEc2ServiceExtension) {
+    extension.extend(this);
+  }
+
+  /**
    * Validates this Ec2Service.
    */
   protected validate(): string[] {
@@ -334,4 +344,22 @@ export class BuiltInAttributes {
    * Either 'linux' or 'windows'.
    */
   public static readonly OS_TYPE = 'attribute:ecs.os-type';
+}
+
+/**
+ * An extension for `FargateService`
+ *
+ * Classes that want to make changes to a FargateService (such as applying a
+ * standard autoscaling pattern) can implement this interface, and can then
+ * be "added" to a service like so:
+ *
+ *    service.addExtension(new MyExtension("some_parameter"));
+ */
+export interface IEc2ServiceExtension {
+  /**
+   * Apply the extension to the given service
+   *
+   * @param service [disable-awslint:ref-via-interface]
+   */
+  extend(service: Ec2Service): void;
 }
