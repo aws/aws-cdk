@@ -229,7 +229,7 @@ export interface AddRoutesOptions extends BatchHttpRouteOptions {
   /**
    * The list of OIDC scopes to include in the authorization.
    *
-   * These scopes will be merged with the default authorization scopes on the gateway.
+   * These scopes will override the default authorization scopes on the gateway.
    * Set to [] to remove default scopes
    *
    * @default - no additional authorization scopes once no default ones set on the gateway.
@@ -485,9 +485,6 @@ export class HttpApi extends HttpApiBase {
       let authorizer = this.authorizer;
       let authorizationScopes = this.authorizationScopes;
 
-      const hasDefaultScopes = isNonEmptyArray(this.authorizationScopes);
-      const hasScopes = isNonEmptyArray(options.authorizationScopes);
-
       /**
        * 1. Remove default authorizer if route has opted to remove
        * 2. Add route specified authorizer
@@ -498,23 +495,9 @@ export class HttpApi extends HttpApiBase {
         authorizer = options.authorizer;
       }
 
-      if (hasScopes) {
+      if (Array.isArray(options.authorizationScopes)) {
         authorizationScopes = options.authorizationScopes;
       }
-
-      // Merge scopes if route has some set
-      if (hasDefaultScopes) {
-        authorizationScopes = Array.from(new Set([
-          ...this.authorizationScopes ?? [],
-          ...options.authorizationScopes ?? [],
-        ]));
-      }
-
-      // Remove default scopes if route has it set to []
-      if (options.authorizationScopes?.length === 0) {
-        authorizationScopes = undefined;
-      }
-
 
       return new HttpRoute(this, `${method}${options.path}`, {
         httpApi: this,
@@ -526,7 +509,3 @@ export class HttpApi extends HttpApiBase {
     });
   }
 }
-
-const isNonEmptyArray = (args: any) => {
-  return Array.isArray(args) && args.length > 0;
-};

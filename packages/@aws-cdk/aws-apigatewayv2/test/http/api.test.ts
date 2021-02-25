@@ -452,7 +452,7 @@ describe('HttpApi', () => {
       });
     });
 
-    test('can merge scopes for a route', () => {
+    test('can override scopes for a route', () => {
       const stack = new Stack();
 
       const authorizer = new DummyAuthorizer();
@@ -483,7 +483,7 @@ describe('HttpApi', () => {
 
       expect(stack).toHaveResource('AWS::ApiGatewayV2::Route', {
         RouteKey: 'GET /chickens',
-        AuthorizationScopes: ['read:pets', 'read:chickens'],
+        AuthorizationScopes: ['read:chickens'],
       });
     });
   });
