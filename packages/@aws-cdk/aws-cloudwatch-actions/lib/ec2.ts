@@ -8,7 +8,7 @@ import { Construct } from '@aws-cdk/core';
 /**
  * Types of EC2 actions available
  */
-export enum Ec2InstanceActions {
+export enum Ec2InstanceAction {
   /**
    * Stop the instance
    */
@@ -31,9 +31,9 @@ export enum Ec2InstanceActions {
  * Use an EC2 action as an Alarm action
  */
 export class Ec2Action implements cloudwatch.IAlarmAction {
-  private ec2Action: string;
+  private ec2Action: Ec2InstanceAction;
 
-  constructor(instanceAction: Ec2InstanceActions) {
+  constructor(instanceAction: Ec2InstanceAction) {
     this.ec2Action = instanceAction;
   }
 

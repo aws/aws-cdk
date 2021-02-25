@@ -14,7 +14,7 @@ test('can use instance reboot as alarm action', () => {
   });
 
   // WHEN
-  alarm.addAlarmAction(new actions.Ec2Action(actions.Ec2InstanceActions.REBOOT));
+  alarm.addAlarmAction(new actions.Ec2Action(actions.Ec2InstanceAction.REBOOT));
 
   // THEN
   expect(stack).toHaveResource('AWS::CloudWatch::Alarm', {
