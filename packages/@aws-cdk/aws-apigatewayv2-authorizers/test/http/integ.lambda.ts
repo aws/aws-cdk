@@ -1,9 +1,9 @@
 import * as path from 'path';
-import { HttpApi, HttpMethod, HttpRouteAuthorizerType } from '@aws-cdk/aws-apigatewayv2';
+import { HttpApi, HttpMethod } from '@aws-cdk/aws-apigatewayv2';
 import { LambdaProxyIntegration } from '@aws-cdk/aws-apigatewayv2-integrations';
 import * as lambda from '@aws-cdk/aws-lambda';
 import { App, Stack } from '@aws-cdk/core';
-import { HttpLambdaAuthorizer } from '../../lib';
+import { HttpLambdaAuthorizer, HttpLambdaAuthorizerType } from '../../lib';
 
 /*
  * Stack verification steps:
@@ -25,7 +25,7 @@ const authHandler = new lambda.Function(stack, 'auth-function', {
 
 const authorizer = new HttpLambdaAuthorizer({
   handler: authHandler,
-  type: HttpRouteAuthorizerType.SIMPLE,
+  type: HttpLambdaAuthorizerType.SIMPLE,
 });
 
 const handler = new lambda.Function(stack, 'lambda', {

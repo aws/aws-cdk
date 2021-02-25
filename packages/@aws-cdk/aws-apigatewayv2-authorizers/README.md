@@ -96,7 +96,7 @@ const authHandler = new Function(this, 'auth-function', {
 });
 
 const authorizer = new HttpLambdaAuthorizer({
-  type: HttpRouteAuthorizerType.SIMPLE // Define if it's a simple or iam authorizer,
+  type: HttpLambdaAuthorizerType.SIMPLE // Define if it's a simple or iam authorizer,
   authHandler,
 });
 

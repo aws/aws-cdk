@@ -24,11 +24,8 @@ export enum HttpRouteAuthorizerType {
   /** JSON Web Tokens */
   JWT = 'JWT',
 
-  /** Token Lambda Authorizer */
-  SIMPLE = 'CUSTOM',
-
-  /** IAM Policy Authorizer */
-  AWS_IAM = 'AWS_IAM',
+  /** Lambda Authorizer */
+  LAMBDA = 'CUSTOM',
 }
 
 /**

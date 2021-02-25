@@ -13,7 +13,10 @@ import { Token, Stack, Duration } from '@aws-cdk/core';
 /**
  * Specifies the type of lambda authorizer
  */
-type HttpLambdaAuthorizerType = HttpRouteAuthorizerType.SIMPLE | HttpRouteAuthorizerType.AWS_IAM
+export enum HttpLambdaAuthorizerType {
+  SIMPLE,
+  AWS_IAM,
+}
 
 /**
  * Properties to initialize HttpTokenAuthorizer.
@@ -66,7 +69,7 @@ export class HttpLambdaAuthorizer implements IHttpRouteAuthorizer {
   private authorizer?: HttpAuthorizer;
 
   constructor(private readonly props: HttpLambdaAuthorizerProps) {
-    if (props.type === HttpRouteAuthorizerType.SIMPLE && props.payloadFormatVersion === AuthorizerPayloadFormatVersion.VERSION_1_0) {
+    if (props.type === HttpLambdaAuthorizerType.SIMPLE && props.payloadFormatVersion === AuthorizerPayloadFormatVersion.VERSION_1_0) {
       throw new Error('The simple authorizer type can only be used with payloadFormatVersion 2.0');
     }
   }
@@ -78,11 +81,16 @@ export class HttpLambdaAuthorizer implements IHttpRouteAuthorizer {
 
       this.authorizer = new HttpAuthorizer(options.scope, id, {
         httpApi: options.route.httpApi,
-        identitySource: this.props.identitySource ?? ['$request.header.Authorization'],
+        identitySource: this.props.identitySource ?? [
+          '$request.header.Authorization',
+        ],
         type: HttpAuthorizerType.LAMBDA,
         authorizerName: this.props.authorizerName,
-        enableSimpleResponses: this.props.type === HttpRouteAuthorizerType.SIMPLE,
-        payloadFormatVersion: this.props.payloadFormatVersion ?? AuthorizerPayloadFormatVersion.VERSION_2_0,
+        enableSimpleResponses:
+          this.props.type === HttpLambdaAuthorizerType.SIMPLE,
+        payloadFormatVersion:
+          this.props.payloadFormatVersion ??
+          AuthorizerPayloadFormatVersion.VERSION_2_0,
         authorizerUri: lambdaAuthorizerArn(this.props.handler),
         resultsCacheTtl: this.props.resultsCacheTtl ?? Duration.minutes(5),
       });
@@ -90,7 +98,7 @@ export class HttpLambdaAuthorizer implements IHttpRouteAuthorizer {
 
     return {
       authorizerId: this.authorizer.authorizerId,
-      authorizationType: this.props.type,
+      authorizationType: HttpRouteAuthorizerType.LAMBDA,
     };
   }
 }
