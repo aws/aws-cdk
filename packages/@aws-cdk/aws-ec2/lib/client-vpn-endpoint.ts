@@ -294,6 +294,11 @@ export class ClientVpnEndpoint extends Resource implements IClientVpnEndpoint {
 
     // Associate subnets
     const subnetIds = props.vpc.selectSubnets(props.vpcSubnets).subnetIds;
+
+    if (Token.isUnresolved(subnetIds)) {
+      throw new Error('Cannot associate subnets when VPC are imported from parameters or exports containing lists of subnet IDs.');
+    }
+
     for (const [idx, subnetId] of Object.entries(subnetIds)) {
       this._targetNetworksAssociated.add(new CfnClientVpnTargetNetworkAssociation(this, `Association${idx}`, {
         clientVpnEndpointId: this.endpointId,
