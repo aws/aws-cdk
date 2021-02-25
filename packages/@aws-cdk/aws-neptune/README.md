@@ -27,6 +27,7 @@ The `@aws-cdk/aws-neptune` package contains primitives for setting up Neptune da
 
 ```ts nofixture
 import * as neptune from '@aws-cdk/aws-neptune';
+```
 
 ## Starting a Neptune Database
 

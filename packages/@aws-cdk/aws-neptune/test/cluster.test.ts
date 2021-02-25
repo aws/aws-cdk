@@ -4,7 +4,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as cdk from '@aws-cdk/core';
 
-import { ClusterParameterGroup, DatabaseCluster, InstanceType } from '../lib';
+import { ClusterParameterGroup, DatabaseCluster, EngineVersion, InstanceType } from '../lib';
 
 describe('DatabaseCluster', () => {
 
@@ -96,6 +96,26 @@ describe('DatabaseCluster', () => {
         instanceType: InstanceType.R5_LARGE,
       });
     }).toThrowError('Cluster requires at least 2 subnets, got 1');
+  });
+
+  test('can create a cluster with custom engine version', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new DatabaseCluster(stack, 'Database', {
+      vpc,
+      instanceType: InstanceType.R5_LARGE,
+      engineVersion: EngineVersion.V1_0_4_1,
+    });
+
+    // THEN
+    expectCDK(stack).to(haveResource('AWS::Neptune::DBCluster', {
+      EngineVersion: '1.0.4.1',
+      DBSubnetGroupName: { Ref: 'DatabaseSubnets3C9252C9' },
+      VpcSecurityGroupIds: [{ 'Fn::GetAtt': ['DatabaseSecurityGroup5C91FDCB', 'GroupId'] }],
+    }));
   });
 
   test('can create a cluster with imported vpc and security group', () => {

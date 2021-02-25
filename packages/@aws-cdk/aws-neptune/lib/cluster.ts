@@ -10,6 +10,51 @@ import { IClusterParameterGroup, IParameterGroup } from './parameter-group';
 import { ISubnetGroup, SubnetGroup } from './subnet-group';
 
 /**
+ * Possible Instances Types to use in Neptune cluster
+ * used for defining {@link DatabaseClusterProps.engineVersion}.
+ */
+export class EngineVersion {
+  /**
+   * Neptune engine version 1.0.1.0
+   */
+  public static readonly V1_0_1_0 = new EngineVersion('1.0.1.0');
+  /**
+   * Neptune engine version 1.0.1.1
+   */
+  public static readonly V1_0_1_1 = new EngineVersion('1.0.1.1');
+  /**
+   * Neptune engine version 1.0.1.2
+   */
+  public static readonly V1_0_1_2 = new EngineVersion('1.0.1.2');
+  /**
+   * Neptune engine version 1.0.2.1
+   */
+  public static readonly V1_0_2_1 = new EngineVersion('1.0.2.1');
+  /**
+   * Neptune engine version 1.0.2.2
+   */
+  public static readonly V1_0_2_2 = new EngineVersion('1.0.2.2');
+  /**
+   * Neptune engine version 1.0.3.0
+   */
+  public static readonly V1_0_3_0 = new EngineVersion('1.0.3.0');
+  /**
+   * Neptune engine version 1.0.4.0
+   */
+  public static readonly V1_0_4_0 = new EngineVersion('1.0.4.0');
+  /**
+   * Neptune engine version 1.0.4.1
+   */
+  public static readonly V1_0_4_1 = new EngineVersion('1.0.4.1');
+
+  /**
+   * Constructor for specifying a custom engine version
+   * @param version the engine version of Neptune
+   */
+  public constructor(public readonly version: string) {}
+}
+
+/**
  * Properties for a new database cluster
  */
 export interface DatabaseClusterProps {
@@ -18,7 +63,7 @@ export interface DatabaseClusterProps {
    *
    * @default - The default engine version.
    */
-  readonly engineVersion?: string;
+  readonly engineVersion?: EngineVersion;
 
   /**
    * The port the Neptune cluster will listen on
@@ -30,7 +75,7 @@ export interface DatabaseClusterProps {
   /**
    * How many days to retain the backup
    *
-   * @default - Backup retention period for automated backups is 1 day
+   * @default - cdk.Duration.days(1)
    */
   readonly backupRetention?: Duration;
 
@@ -343,7 +388,7 @@ export class DatabaseCluster extends Resource implements IDatabaseCluster {
     // Create the Neptune cluster
     const cluster = new CfnDBCluster(this, 'Resource', {
       // Basic
-      engineVersion: props.engineVersion,
+      engineVersion: props.engineVersion?.version,
       dbClusterIdentifier: props.dbClusterName,
       dbSubnetGroupName: this.subnetGroup.subnetGroupName,
       port: props.port,
