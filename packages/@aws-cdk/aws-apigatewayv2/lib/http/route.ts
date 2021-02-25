@@ -3,7 +3,7 @@ import { Construct } from 'constructs';
 import { CfnRoute, CfnRouteProps } from '../apigatewayv2.generated';
 import { IRoute } from '../common';
 import { IHttpApi } from './api';
-import { IHttpRouteAuthorizer } from './authorizer';
+import { HttpAuthorizerType, IHttpRouteAuthorizer } from './authorizer';
 import { IHttpRouteIntegration } from './integration';
 
 /**
@@ -156,12 +156,14 @@ export class HttpRoute extends Resource implements IHttpRoute {
       ]));
     }
 
+    const authorizationType = authBindResult?.authorizationType === HttpAuthorizerType.NONE ? undefined : authBindResult?.authorizationType;
+
     const routeProps: CfnRouteProps = {
       apiId: props.httpApi.httpApiId,
       routeKey: props.routeKey.key,
       target: `integrations/${integration.integrationId}`,
       authorizerId: authBindResult?.authorizerId,
-      authorizationType: authBindResult?.authorizationType,
+      authorizationType,
       authorizationScopes,
     };
 

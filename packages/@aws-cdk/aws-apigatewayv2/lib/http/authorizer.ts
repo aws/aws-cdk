@@ -15,6 +15,9 @@ export enum HttpAuthorizerType {
 
   /** Lambda Authorizer */
   LAMBDA = 'REQUEST',
+
+  /** No authorizer */
+  NONE = 'NONE'
 }
 
 /**
@@ -146,7 +149,7 @@ export interface HttpRouteAuthorizerConfig {
   /**
    * The authorizer id
    */
-  readonly authorizerId: string;
+  readonly authorizerId?: string;
   /**
    * The type of authorization
    */

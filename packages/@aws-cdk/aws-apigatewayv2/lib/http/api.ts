@@ -4,7 +4,7 @@ import { Duration, IResource, Resource, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnApi, CfnApiProps } from '../apigatewayv2.generated';
 import { DefaultDomainMappingOptions } from '../http/stage';
-import { IHttpRouteAuthorizer } from './authorizer';
+import { HttpAuthorizerType, HttpRouteAuthorizerBindOptions, HttpRouteAuthorizerConfig, IHttpRouteAuthorizer } from './authorizer';
 import { IHttpRouteIntegration, HttpIntegration, HttpRouteIntegrationConfig } from './integration';
 import { BatchHttpRouteOptions, HttpMethod, HttpRoute, HttpRouteKey } from './route';
 import { HttpStage, HttpStageOptions } from './stage';
@@ -224,7 +224,7 @@ export interface AddRoutesOptions extends BatchHttpRouteOptions {
    *
    * @default - uses the default authorizer if one is specified on the HttpApi
    */
-  readonly authorizer?: IHttpRouteAuthorizer | 'NONE';
+  readonly authorizer?: IHttpRouteAuthorizer;
 
   /**
    * The list of OIDC scopes to include in the authorization.
@@ -482,18 +482,7 @@ export class HttpApi extends HttpApiBase {
   public addRoutes(options: AddRoutesOptions): HttpRoute[] {
     const methods = options.methods ?? [HttpMethod.ANY];
     return methods.map((method) => {
-      let authorizer = this.authorizer;
       let authorizationScopes = this.authorizationScopes;
-
-      /**
-       * 1. Remove default authorizer if route has opted to remove
-       * 2. Add route specified authorizer
-       */
-      if (options.authorizer === 'NONE') {
-        authorizer = undefined;
-      } else if (typeof options.authorizer !== 'undefined') {
-        authorizer = options.authorizer;
-      }
 
       if (Array.isArray(options.authorizationScopes)) {
         authorizationScopes = options.authorizationScopes;
@@ -503,9 +492,20 @@ export class HttpApi extends HttpApiBase {
         httpApi: this,
         routeKey: HttpRouteKey.with(options.path, method),
         integration: options.integration,
-        authorizer,
+        authorizer: options.authorizer ?? this.authorizer,
         authorizationScopes,
       });
     });
+  }
+}
+
+/**
+ * Used to remove the default authorizer for a route
+ */
+export class NoneAuthorizer implements IHttpRouteAuthorizer {
+  public bind(_: HttpRouteAuthorizerBindOptions): HttpRouteAuthorizerConfig {
+    return {
+      authorizationType: HttpAuthorizerType.NONE,
+    };
   }
 }

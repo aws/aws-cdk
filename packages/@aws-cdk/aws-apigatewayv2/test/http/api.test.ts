@@ -5,7 +5,7 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import { Duration, Stack } from '@aws-cdk/core';
 import {
   HttpApi, HttpAuthorizer, HttpAuthorizerType, HttpIntegrationType, HttpMethod, HttpRouteAuthorizerBindOptions, HttpRouteAuthorizerConfig,
-  HttpRouteIntegrationBindOptions, HttpRouteIntegrationConfig, IHttpRouteAuthorizer, IHttpRouteIntegration, PayloadFormatVersion,
+  HttpRouteIntegrationBindOptions, HttpRouteIntegrationConfig, IHttpRouteAuthorizer, IHttpRouteIntegration, NoneAuthorizer, PayloadFormatVersion,
 } from '../../lib';
 
 describe('HttpApi', () => {
@@ -416,7 +416,7 @@ describe('HttpApi', () => {
         path: '/chickens',
         methods: [HttpMethod.GET],
         integration: new DummyRouteIntegration(),
-        authorizer: 'NONE',
+        authorizer: new NoneAuthorizer(),
       });
 
       expect(stack).toHaveResource('AWS::ApiGatewayV2::Route', {
@@ -466,7 +466,6 @@ describe('HttpApi', () => {
         path: '/pets',
         methods: [HttpMethod.GET, HttpMethod.PATCH],
         integration: new DummyRouteIntegration(),
-        authorizationScopes: ['read:pets'],
       });
 
       httpApi.addRoutes({
