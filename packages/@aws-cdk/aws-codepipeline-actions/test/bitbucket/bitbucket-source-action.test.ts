@@ -2,12 +2,12 @@ import { expect, haveResourceLike } from '@aws-cdk/assert';
 import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import { Stack } from '@aws-cdk/core';
-import { Test } from 'nodeunit';
+import { nodeunitShim, Test } from 'nodeunit-shim';
 import * as cpactions from '../../lib';
 
 /* eslint-disable quote-props */
 
-export = {
+nodeunitShim({
   'BitBucket source Action': {
     'produces the correct configuration when added to a pipeline'(test: Test) {
       const stack = new Stack();
@@ -82,7 +82,7 @@ export = {
 
     test.done();
   },
-};
+});
 
 function createBitBucketAndCodeBuildPipeline(stack: Stack, props: { codeBuildCloneOutput: boolean }): void {
   const sourceOutput = new codepipeline.Artifact();

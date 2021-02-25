@@ -4,10 +4,10 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecs from '@aws-cdk/aws-ecs';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
-import { Test } from 'nodeunit';
+import { nodeunitShim, Test } from 'nodeunit-shim';
 import * as cpactions from '../../lib';
 
-export = {
+nodeunitShim({
   'ECS deploy Action': {
     'throws an exception if neither inputArtifact nor imageFile were provided'(test: Test) {
       const service = anyEcsService();
@@ -198,7 +198,7 @@ export = {
       test.done();
     },
   },
-};
+});
 
 function anyEcsService(): ecs.FargateService {
   const stack = new cdk.Stack();

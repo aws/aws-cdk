@@ -382,17 +382,37 @@ describe('log groups', () => {
     // Domain1
     expect(stack).toHaveResourceLike('Custom::CloudwatchLogResourcePolicy', {
       Create: {
-        parameters: {
-          policyName: 'ESLogPolicyc836fd92f07ec41eb70c2f6f08dc4b43cfb7c25391',
-        },
+        'Fn::Join': [
+          '',
+          [
+            '{"service":"CloudWatchLogs","action":"putResourcePolicy","parameters":{"policyName":"ESLogPolicyc836fd92f07ec41eb70c2f6f08dc4b43cfb7c25391","policyDocument":"{\\"Statement\\":[{\\"Action\\":[\\"logs:PutLogEvents\\",\\"logs:CreateLogStream\\"],\\"Effect\\":\\"Allow\\",\\"Principal\\":{\\"Service\\":\\"es.amazonaws.com\\"},\\"Resource\\":\\"',
+            {
+              'Fn::GetAtt': [
+                'Domain1AppLogs6E8D1D67',
+                'Arn',
+              ],
+            },
+            '\\"}],\\"Version\\":\\"2012-10-17\\"}"},"physicalResourceId":{"id":"ESLogGroupPolicyc836fd92f07ec41eb70c2f6f08dc4b43cfb7c25391"}}',
+          ],
+        ],
       },
     });
     // Domain2
     expect(stack).toHaveResourceLike('Custom::CloudwatchLogResourcePolicy', {
       Create: {
-        parameters: {
-          policyName: 'ESLogPolicyc8f05f015be3baf6ec1ee06cd1ee5cc8706ebbe5b2',
-        },
+        'Fn::Join': [
+          '',
+          [
+            '{"service":"CloudWatchLogs","action":"putResourcePolicy","parameters":{"policyName":"ESLogPolicyc8f05f015be3baf6ec1ee06cd1ee5cc8706ebbe5b2","policyDocument":"{\\"Statement\\":[{\\"Action\\":[\\"logs:PutLogEvents\\",\\"logs:CreateLogStream\\"],\\"Effect\\":\\"Allow\\",\\"Principal\\":{\\"Service\\":\\"es.amazonaws.com\\"},\\"Resource\\":\\"',
+            {
+              'Fn::GetAtt': [
+                'Domain2AppLogs810876E2',
+                'Arn',
+              ],
+            },
+            '\\"}],\\"Version\\":\\"2012-10-17\\"}"},"physicalResourceId":{"id":"ESLogGroupPolicyc8f05f015be3baf6ec1ee06cd1ee5cc8706ebbe5b2"}}',
+          ],
+        ],
       },
     });
   });

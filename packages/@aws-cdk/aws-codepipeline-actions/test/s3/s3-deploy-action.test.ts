@@ -1,19 +1,20 @@
-import { expect, haveResourceLike } from '@aws-cdk/assert';
+import '@aws-cdk/assert/jest';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as s3 from '@aws-cdk/aws-s3';
 import { App, Duration, SecretValue, Stack } from '@aws-cdk/core';
-import { Test } from 'nodeunit';
+import * as cxapi from '@aws-cdk/cx-api';
+import { testFutureBehavior } from 'cdk-build-tools/lib/feature-flag';
 import * as cpactions from '../../lib';
 
 /* eslint-disable quote-props */
 
-export = {
-  'S3 Deploy Action': {
-    'by default extract artifacts'(test: Test) {
+describe('', () => {
+  describe('S3 Deploy Action', () => {
+    test('by default extract artifacts', () => {
       const stack = new Stack();
       minimalPipeline(stack);
 
-      expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
+      expect(stack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
         'Stages': [
           {
             'Name': 'Source',
@@ -43,16 +44,16 @@ export = {
             ],
           },
         ],
-      }));
+      });
 
-      test.done();
-    },
 
-    'grant the pipeline correct access to the target bucket'(test: Test) {
-      const stack = new Stack();
+    });
+
+    testFutureBehavior('grant the pipeline correct access to the target bucket', { [cxapi.S3_GRANT_WRITE_WITHOUT_ACL]: true }, App, (app) => {
+      const stack = new Stack(app);
       minimalPipeline(stack);
 
-      expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
+      expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
         'PolicyDocument': {
           'Statement': [
             {
@@ -62,7 +63,7 @@ export = {
                 's3:GetBucket*',
                 's3:List*',
                 's3:DeleteObject*',
-                's3:PutObject*',
+                's3:PutObject',
                 's3:Abort*',
               ],
             },
@@ -73,18 +74,18 @@ export = {
             },
           ],
         },
-      }));
+      });
 
-      test.done();
-    },
 
-    'kebab-case CannedACL value'(test: Test) {
+    });
+
+    test('kebab-case CannedACL value', () => {
       const stack = new Stack();
       minimalPipeline(stack, {
         accessControl: s3.BucketAccessControl.PUBLIC_READ_WRITE,
       });
 
-      expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
+      expect(stack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
         'Stages': [
           {},
           {
@@ -97,12 +98,12 @@ export = {
             ],
           },
         ],
-      }));
+      });
 
-      test.done();
-    },
 
-    'allow customizing cache-control'(test: Test) {
+    });
+
+    test('allow customizing cache-control', () => {
       const stack = new Stack();
       minimalPipeline(stack, {
         cacheControl: [
@@ -112,7 +113,7 @@ export = {
         ],
       });
 
-      expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
+      expect(stack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
         'Stages': [
           {},
           {
@@ -125,18 +126,18 @@ export = {
             ],
           },
         ],
-      }));
+      });
 
-      test.done();
-    },
 
-    'allow customizing objectKey (deployment path on S3)'(test: Test) {
+    });
+
+    test('allow customizing objectKey (deployment path on S3)', () => {
       const stack = new Stack();
       minimalPipeline(stack, {
         objectKey: '/a/b/c',
       });
 
-      expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
+      expect(stack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
         'Stages': [
           {},
           {
@@ -149,12 +150,12 @@ export = {
             ],
           },
         ],
-      }));
+      });
 
-      test.done();
-    },
 
-    'correctly makes the action cross-region for a Bucket imported with a different region'(test: Test) {
+    });
+
+    test('correctly makes the action cross-region for a Bucket imported with a different region', () => {
       const app = new App();
       const stack = new Stack(app, 'PipelineStack', {
         env: { account: '123456789012', region: 'us-west-2' },
@@ -168,7 +169,7 @@ export = {
         bucket: deployBucket,
       });
 
-      expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
+      expect(stack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
         Stages: [
           {},
           {
@@ -181,12 +182,12 @@ export = {
             ],
           },
         ],
-      }));
+      });
 
-      test.done();
-    },
-  },
-};
+
+    });
+  });
+});
 
 interface MinimalPipelineOptions {
   readonly accessControl?: s3.BucketAccessControl;

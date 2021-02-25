@@ -5,27 +5,19 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { App, DefaultStackSynthesizer, IgnoreMode, Lazy, LegacyStackSynthesizer, Stack, Stage } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
+import { testFutureBehavior } from 'cdk-build-tools/lib/feature-flag';
 import { DockerImageAsset } from '../lib';
 
 /* eslint-disable quote-props */
 
 const DEMO_IMAGE_ASSET_HASH = 'b2c69bfbfe983b634456574587443159b3b7258849856a118ad3d2772238f1a5';
 
-
-let app: App;
-let stack: Stack;
-beforeEach(() => {
-  app = new App({
-    context: {
-      '@aws-cdk/aws-ecr-assets:dockerIgnoreSupport': true,
-    },
-  });
-  stack = new Stack(app, 'Stack');
-});
+const flags = { [cxapi.DOCKER_IGNORE_SUPPORT]: true };
 
 describe('image asset', () => {
-  test('test instantiating Asset Image', () => {
+  testFutureBehavior('test instantiating Asset Image', flags, App, (app) => {
     // WHEN
+    const stack = new Stack(app);
     new DockerImageAsset(stack, 'Image', {
       directory: path.join(__dirname, 'demo-image'),
     });
@@ -47,8 +39,9 @@ describe('image asset', () => {
 
   });
 
-  test('with build args', () => {
+  testFutureBehavior('with build args', flags, App, (app) => {
     // WHEN
+    const stack = new Stack(app);
     new DockerImageAsset(stack, 'Image', {
       directory: path.join(__dirname, 'demo-image'),
       buildArgs: {
@@ -62,8 +55,9 @@ describe('image asset', () => {
 
   });
 
-  test('with target', () => {
+  testFutureBehavior('with target', flags, App, (app) => {
     // WHEN
+    const stack = new Stack(app);
     new DockerImageAsset(stack, 'Image', {
       directory: path.join(__dirname, 'demo-image'),
       buildArgs: {
@@ -78,8 +72,9 @@ describe('image asset', () => {
 
   });
 
-  test('with file', () => {
+  testFutureBehavior('with file', flags, App, (app) => {
     // GIVEN
+    const stack = new Stack(app);
     const directoryPath = path.join(__dirname, 'demo-image-custom-docker-file');
     // WHEN
     new DockerImageAsset(stack, 'Image', {
@@ -93,8 +88,9 @@ describe('image asset', () => {
 
   });
 
-  test('asset.repository.grantPull can be used to grant a principal permissions to use the image', () => {
+  testFutureBehavior('asset.repository.grantPull can be used to grant a principal permissions to use the image', flags, App, (app) => {
     // GIVEN
+    const stack = new Stack(app);
     const user = new iam.User(stack, 'MyUser');
     const asset = new DockerImageAsset(stack, 'Image', {
       directory: path.join(__dirname, 'demo-image'),
@@ -155,6 +151,7 @@ describe('image asset', () => {
   });
 
   test('fails if the directory does not exist', () => {
+    const stack = new Stack();
     // THEN
     expect(() => {
       new DockerImageAsset(stack, 'MyAsset', {
@@ -165,6 +162,7 @@ describe('image asset', () => {
   });
 
   test('fails if the directory does not contain a Dockerfile', () => {
+    const stack = new Stack();
     // THEN
     expect(() => {
       new DockerImageAsset(stack, 'Asset', {
@@ -175,6 +173,7 @@ describe('image asset', () => {
   });
 
   test('fails if the file does not exist', () => {
+    const stack = new Stack();
     // THEN
     expect(() => {
       new DockerImageAsset(stack, 'Asset', {
@@ -185,7 +184,8 @@ describe('image asset', () => {
 
   });
 
-  test('docker directory is staged if asset staging is enabled', () => {
+  testFutureBehavior('docker directory is staged if asset staging is enabled', flags, App, (app) => {
+    const stack = new Stack(app);
     const image = new DockerImageAsset(stack, 'MyAsset', {
       directory: path.join(__dirname, 'demo-image'),
     });
@@ -197,15 +197,16 @@ describe('image asset', () => {
 
   });
 
-  test('docker directory is staged without files specified in .dockerignore', () => {
-    testDockerDirectoryIsStagedWithoutFilesSpecifiedInDockerignore();
+  testFutureBehavior('docker directory is staged without files specified in .dockerignore', flags, App, (app) => {
+    testDockerDirectoryIsStagedWithoutFilesSpecifiedInDockerignore(app);
   });
 
-  test('docker directory is staged without files specified in .dockerignore with IgnoreMode.GLOB', () => {
-    testDockerDirectoryIsStagedWithoutFilesSpecifiedInDockerignore(IgnoreMode.GLOB);
+  testFutureBehavior('docker directory is staged without files specified in .dockerignore with IgnoreMode.GLOB', flags, App, (app) => {
+    testDockerDirectoryIsStagedWithoutFilesSpecifiedInDockerignore(app, IgnoreMode.GLOB);
   });
 
-  test('docker directory is staged with whitelisted files specified in .dockerignore', () => {
+  testFutureBehavior('docker directory is staged with whitelisted files specified in .dockerignore', flags, App, (app) => {
+    const stack = new Stack(app);
     const image = new DockerImageAsset(stack, 'MyAsset', {
       directory: path.join(__dirname, 'whitelisted-image'),
     });
@@ -227,16 +228,17 @@ describe('image asset', () => {
 
   });
 
-  test('docker directory is staged without files specified in exclude option', () => {
-    testDockerDirectoryIsStagedWithoutFilesSpecifiedInExcludeOption();
+  testFutureBehavior('docker directory is staged without files specified in exclude option', flags, App, (app) => {
+    testDockerDirectoryIsStagedWithoutFilesSpecifiedInExcludeOption(app);
   });
 
-  test('docker directory is staged without files specified in exclude option with IgnoreMode.GLOB', () => {
-    testDockerDirectoryIsStagedWithoutFilesSpecifiedInExcludeOption(IgnoreMode.GLOB);
+  testFutureBehavior('docker directory is staged without files specified in exclude option with IgnoreMode.GLOB', flags, App, (app) => {
+    testDockerDirectoryIsStagedWithoutFilesSpecifiedInExcludeOption(app, IgnoreMode.GLOB);
   });
 
   test('fails if using tokens in build args keys or values', () => {
     // GIVEN
+    const stack = new Stack();
     const token = Lazy.string({ produce: () => 'foo' });
     const expected = /Cannot use tokens in keys or values of "buildArgs" since they are needed before deployment/;
 
@@ -256,6 +258,7 @@ describe('image asset', () => {
 
   test('fails if using token as repositoryName', () => {
     // GIVEN
+    const stack = new Stack();
     const token = Lazy.string({ produce: () => 'foo' });
 
     // THEN
@@ -267,8 +270,9 @@ describe('image asset', () => {
 
   });
 
-  test('docker build options are included in the asset id', () => {
+  testFutureBehavior('docker build options are included in the asset id', flags, App, (app) => {
     // GIVEN
+    const stack = new Stack(app);
     const directory = path.join(__dirname, 'demo-image-custom-docker-file');
 
     const asset1 = new DockerImageAsset(stack, 'Asset1', { directory });
@@ -290,7 +294,8 @@ describe('image asset', () => {
   });
 });
 
-function testDockerDirectoryIsStagedWithoutFilesSpecifiedInDockerignore(ignoreMode?: IgnoreMode) {
+function testDockerDirectoryIsStagedWithoutFilesSpecifiedInDockerignore(app: App, ignoreMode?: IgnoreMode) {
+  const stack = new Stack(app);
   const image = new DockerImageAsset(stack, 'MyAsset', {
     ignoreMode,
     directory: path.join(__dirname, 'dockerignore-image'),
@@ -309,7 +314,8 @@ function testDockerDirectoryIsStagedWithoutFilesSpecifiedInDockerignore(ignoreMo
 
 }
 
-function testDockerDirectoryIsStagedWithoutFilesSpecifiedInExcludeOption(ignoreMode?: IgnoreMode) {
+function testDockerDirectoryIsStagedWithoutFilesSpecifiedInExcludeOption(app: App, ignoreMode?: IgnoreMode) {
+  const stack = new Stack(app);
   const image = new DockerImageAsset(stack, 'MyAsset', {
     directory: path.join(__dirname, 'dockerignore-image'),
     exclude: ['subdirectory'],
@@ -328,7 +334,7 @@ function testDockerDirectoryIsStagedWithoutFilesSpecifiedInExcludeOption(ignoreM
 
 }
 
-test('nested assemblies share assets: legacy synth edition', () => {
+testFutureBehavior('nested assemblies share assets: legacy synth edition', flags, App, (app) => {
   // GIVEN
   const stack1 = new Stack(new Stage(app, 'Stage1'), 'Stack', { synthesizer: new LegacyStackSynthesizer() });
   const stack2 = new Stack(new Stage(app, 'Stage2'), 'Stack', { synthesizer: new LegacyStackSynthesizer() });
@@ -354,7 +360,7 @@ test('nested assemblies share assets: legacy synth edition', () => {
   }
 });
 
-test('nested assemblies share assets: default synth edition', () => {
+testFutureBehavior('nested assemblies share assets: default synth edition', flags, App, (app) => {
   // GIVEN
   const stack1 = new Stack(new Stage(app, 'Stage1'), 'Stack', { synthesizer: new DefaultStackSynthesizer() });
   const stack2 = new Stack(new Stage(app, 'Stage2'), 'Stack', { synthesizer: new DefaultStackSynthesizer() });

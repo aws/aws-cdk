@@ -161,12 +161,14 @@ nodeunitShim({
       signal: null,
     });
 
-    BundlingDockerImage.fromAsset(path.join(__dirname, 'fs/fixtures/test1'), {
+    const imagePath = path.join(__dirname, 'fs/fixtures/test1');
+    BundlingDockerImage.fromAsset(imagePath, {
       file: 'my-dockerfile',
     });
 
     test.ok(spawnSyncStub.calledOnce);
-    test.ok(/-f my-dockerfile/.test(spawnSyncStub.firstCall.args[1]?.join(' ') ?? ''));
+    const expected = path.join(imagePath, 'my-dockerfile');
+    test.ok(new RegExp(`-f ${expected}`).test(spawnSyncStub.firstCall.args[1]?.join(' ') ?? ''));
 
     test.done();
   },

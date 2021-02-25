@@ -1,24 +1,27 @@
-import { expect, haveResourceLike } from '@aws-cdk/assert';
+import '@aws-cdk/assert/jest';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as sns from '@aws-cdk/aws-sns';
-import { Aws, Lazy, SecretValue, Stack, Token } from '@aws-cdk/core';
-import { Test } from 'nodeunit';
+import { App, Aws, Lazy, SecretValue, Stack, Token } from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
+import { testFutureBehavior } from 'cdk-build-tools/lib/feature-flag';
 import * as cpactions from '../../lib';
 
 /* eslint-disable quote-props */
 
-export = {
-  'Lambda invoke Action': {
-    'properly serializes the object passed in userParameters'(test: Test) {
+const s3GrantWriteCtx = { [cxapi.S3_GRANT_WRITE_WITHOUT_ACL]: true };
+
+describe('', () => {
+  describe('Lambda invoke Action', () => {
+    test('properly serializes the object passed in userParameters', () => {
       const stack = stackIncludingLambdaInvokeCodePipeline({
         userParams: {
           key: 1234,
         },
       });
 
-      expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
+      expect(stack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
         'Stages': [
           {},
           {
@@ -31,19 +34,19 @@ export = {
             ],
           },
         ],
-      }));
+      });
 
-      test.done();
-    },
 
-    'properly resolves any Tokens passed in userParameters'(test: Test) {
+    });
+
+    test('properly resolves any Tokens passed in userParameters', () => {
       const stack = stackIncludingLambdaInvokeCodePipeline({
         userParams: {
           key: Lazy.string({ produce: () => Aws.REGION }),
         },
       });
 
-      expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
+      expect(stack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
         'Stages': [
           {},
           {
@@ -67,19 +70,19 @@ export = {
             ],
           },
         ],
-      }));
+      });
 
-      test.done();
-    },
 
-    'properly resolves any stringified Tokens passed in userParameters'(test: Test) {
+    });
+
+    test('properly resolves any stringified Tokens passed in userParameters', () => {
       const stack = stackIncludingLambdaInvokeCodePipeline({
         userParams: {
           key: Token.asString(null),
         },
       });
 
-      expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
+      expect(stack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
         'Stages': [
           {},
           {
@@ -92,17 +95,17 @@ export = {
             ],
           },
         ],
-      }));
+      });
 
-      test.done();
-    },
 
-    "assigns the Action's Role with read permissions to the Bucket if it has only inputs"(test: Test) {
+    });
+
+    test("assigns the Action's Role with read permissions to the Bucket if it has only inputs", () => {
       const stack = stackIncludingLambdaInvokeCodePipeline({
         lambdaInput: new codepipeline.Artifact(),
       });
 
-      expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
+      expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
         'PolicyDocument': {
           'Statement': [
             {
@@ -131,18 +134,18 @@ export = {
             },
           ],
         },
-      }));
+      });
 
-      test.done();
-    },
 
-    "assigns the Action's Role with write permissions to the Bucket if it has only outputs"(test: Test) {
+    });
+
+    testFutureBehavior("assigns the Action's Role with write permissions to the Bucket if it has only outputs", s3GrantWriteCtx, App, (app) => {
       const stack = stackIncludingLambdaInvokeCodePipeline({
         lambdaOutput: new codepipeline.Artifact(),
         // no input to the Lambda Action - we want write permissions only in this case
-      });
+      }, app);
 
-      expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
+      expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
         'PolicyDocument': {
           'Statement': [
             {
@@ -157,7 +160,7 @@ export = {
             {
               'Action': [
                 's3:DeleteObject*',
-                's3:PutObject*',
+                's3:PutObject',
                 's3:Abort*',
               ],
               'Effect': 'Allow',
@@ -172,18 +175,18 @@ export = {
             },
           ],
         },
-      }));
+      });
 
-      test.done();
-    },
 
-    "assigns the Action's Role with read-write permissions to the Bucket if it has both inputs and outputs"(test: Test) {
+    });
+
+    testFutureBehavior("assigns the Action's Role with read-write permissions to the Bucket if it has both inputs and outputs", s3GrantWriteCtx, App, (app) => {
       const stack = stackIncludingLambdaInvokeCodePipeline({
         lambdaInput: new codepipeline.Artifact(),
         lambdaOutput: new codepipeline.Artifact(),
-      });
+      }, app);
 
-      expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
+      expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
         'PolicyDocument': {
           'Statement': [
             {
@@ -213,7 +216,7 @@ export = {
             {
               'Action': [
                 's3:DeleteObject*',
-                's3:PutObject*',
+                's3:PutObject',
                 's3:Abort*',
               ],
               'Effect': 'Allow',
@@ -228,12 +231,12 @@ export = {
             },
           ],
         },
-      }));
+      });
 
-      test.done();
-    },
 
-    'exposes variables for other actions to consume'(test: Test) {
+    });
+
+    test('exposes variables for other actions to consume', () => {
       const stack = new Stack();
 
       const sourceOutput = new codepipeline.Artifact();
@@ -269,7 +272,7 @@ export = {
         ],
       });
 
-      expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
+      expect(stack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
         'Stages': [
           {
             'Name': 'Source',
@@ -290,12 +293,12 @@ export = {
             ],
           },
         ],
-      }));
+      });
 
-      test.done();
-    },
-  },
-};
+
+    });
+  });
+});
 
 interface HelperProps {
   readonly userParams?: { [key: string]: any };
@@ -303,8 +306,8 @@ interface HelperProps {
   readonly lambdaOutput?: codepipeline.Artifact;
 }
 
-function stackIncludingLambdaInvokeCodePipeline(props: HelperProps) {
-  const stack = new Stack();
+function stackIncludingLambdaInvokeCodePipeline(props: HelperProps, app?: App) {
+  const stack = new Stack(app);
 
   new codepipeline.Pipeline(stack, 'Pipeline', {
     stages: [
