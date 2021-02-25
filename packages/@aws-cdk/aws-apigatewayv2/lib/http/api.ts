@@ -222,7 +222,7 @@ export interface AddRoutesOptions extends BatchHttpRouteOptions {
    *
    * Set to 'NONE' to remove the default authorizer for the api
    *
-   * @default - No authorizer once no default one set on the gateway
+   * @default - uses the default authorizer if one is specified on the HttpApi
    */
   readonly authorizer?: IHttpRouteAuthorizer | 'NONE';
 
