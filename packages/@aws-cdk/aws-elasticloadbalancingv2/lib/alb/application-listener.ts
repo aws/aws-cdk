@@ -363,6 +363,7 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
       protocol: props.protocol,
       slowStart: props.slowStart,
       stickinessCookieDuration: props.stickinessCookieDuration,
+      stickinessCookieName: props.stickinessCookieName,
       targetGroupName: props.targetGroupName,
       targets: props.targets,
       vpc: this.loadBalancer.vpc,
@@ -812,6 +813,20 @@ export interface AddApplicationTargetsProps extends AddRuleProps {
    * @default Stickiness disabled
    */
   readonly stickinessCookieDuration?: Duration;
+
+  /**
+   * The name of an application-based stickiness cookie.
+   *
+   * Names that start with the following prefixes are not allowed: AWSALB, AWSALBAPP,
+   * and AWSALBTG; they're reserved for use by the load balancer.
+   *
+   * Note: `stickinessCookieName` parameter depends on the presence of `stickinessCookieDuration` parameter.
+   * If `stickinessCookieDuration` is not set, `stickinessCookieName` will be omitted.
+   *
+   * @default - If `stickinessCookieDuration` is set, a load-balancer generated cookie is used. Otherwise, no stickiness is defined.
+   * @see https://docs.aws.amazon.com/elasticloadbalancing/latest/application/sticky-sessions.html
+   */
+  readonly stickinessCookieName?: string;
 
   /**
    * The targets to add to this target group.
