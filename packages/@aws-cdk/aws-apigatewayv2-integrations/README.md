@@ -46,7 +46,6 @@ const eventBus = new events.EventBus(stack, 'EventBus');
 const eventBridgeIntegration = new EventBridgeIntegration({
   eventBus,
   requestParameters: {
-    eventBusName: eventBus.eventBusName,
     source: 'test',
     detail: '$request.body.result',
     detailType: '$request.body.description',
