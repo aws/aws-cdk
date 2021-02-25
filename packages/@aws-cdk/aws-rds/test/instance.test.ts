@@ -1281,6 +1281,10 @@ test.each([
   [cdk.RemovalPolicy.SNAPSHOT, 'Snapshot', ABSENT],
   [cdk.RemovalPolicy.DESTROY, 'Delete', ABSENT],
 ])('if Instance RemovalPolicy is \'%s\', the instance has DeletionPolicy \'%s\' and the DBSubnetGroup has \'%s\'', (instanceRemovalPolicy, instanceValue, subnetValue) => {
+  // GIVEN
+  stack = new cdk.Stack();
+  vpc = new ec2.Vpc(stack, 'VPC');
+
   // WHEN
   new rds.DatabaseInstance(stack, 'Instance', {
     engine: rds.DatabaseInstanceEngine.mysql({
@@ -1292,13 +1296,13 @@ test.each([
   });
 
   // THEN
-  expect(stack).to(haveResourceLike('AWS::RDS::DBInstance', {
+  expect(stack).toHaveResourceLike('AWS::RDS::DBInstance', {
     DeletionPolicy: instanceValue,
     UpdateReplacePolicy: instanceValue,
-  }, ResourcePart.CompleteDefinition));
+  }, ResourcePart.CompleteDefinition);
 
-  expect(stack).to(haveResourceLike('AWS::RDS::DBSubnetGroup', {
+  expect(stack).toHaveResourceLike('AWS::RDS::DBSubnetGroup', {
     DeletionPolicy: subnetValue,
     UpdateReplacePolicy: subnetValue,
-  }, ResourcePart.CompleteDefinition));
+  }, ResourcePart.CompleteDefinition);
 });
