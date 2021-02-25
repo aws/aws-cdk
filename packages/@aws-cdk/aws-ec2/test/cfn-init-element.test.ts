@@ -208,7 +208,7 @@ describe('InitFile', () => {
 
   test('empty content string throws error', () => {
     expect(() => {
-      ec2.InitFile.symlink('/tmp/foo', '');
+      ec2.InitFile.fromString('/tmp/foo', '');
     }).toThrow('Content was empty');
   });
 

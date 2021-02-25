@@ -328,7 +328,7 @@ export abstract class InitFile extends InitElement {
    */
   public static fromString(fileName: string, content: string, options: InitFileOptions = {}): InitFile {
     if (!content) {
-      throw new Error('Content was empty');
+      throw new Error(`InitFile ${fileName}: cannot create empty file. Please supply at least one character of content.`);
     }
     return new class extends InitFile {
       protected _doBind(bindOptions: InitBindOptions) {
