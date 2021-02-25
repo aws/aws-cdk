@@ -17,7 +17,7 @@ export interface UserPoolIdentityProviderAppleProps extends UserPoolIdentityProv
    */
   readonly teamId: string;
   /**
-   * The keyId (which has to be later supplied as `privateKey`) for Apple APIs to authenticate the client.
+   * The keyId (of the same key, which content has to be later supplied as `privateKey`) for Apple APIs to authenticate the client.
    */
   readonly keyId: string;
   /**
