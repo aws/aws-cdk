@@ -189,7 +189,7 @@ const convertToSeconds = new tasks.EvaluateExpression(this, 'Convert to seconds'
 const createMessage = new tasks.EvaluateExpression(this, 'Create message', {
   // Note: this is a string inside a string.
   expression: '`Now waiting ${$.waitSeconds} seconds...`',
-  runtime: lambda.Runtime.NODEJS_10_X,
+  runtime: lambda.Runtime.NODEJS_14_X,
   resultPath: '$.message',
 });
 
@@ -212,9 +212,8 @@ new sfn.StateMachine(this, 'StateMachine', {
 ```
 
 The `EvaluateExpression` supports a `runtime` prop to specify the Lambda
-runtime to use to evaluate the expression. Currently, the only runtime
-supported is `lambda.Runtime.NODEJS_10_X`.
-
+runtime to use to evaluate the expression. Currently, only runtimes
+of the Node.js family are supported.
 
 ## Athena
 
