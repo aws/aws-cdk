@@ -6,6 +6,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import * as ssm from '@aws-cdk/aws-ssm';
 import * as cdk from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
 import { testFutureBehavior } from 'cdk-build-tools/lib/feature-flag';
 import * as ecs from '../../lib';
 
@@ -585,7 +586,7 @@ describe('ec2 task definition', () => {
 
     });
 
-    testFutureBehavior('correctly sets containers from asset using default props', { '@aws-cdk/aws-ecr-assets:dockerIgnoreSupport': true }, cdk.App, (app) => {
+    testFutureBehavior('correctly sets containers from asset using default props', { [cxapi.DOCKER_IGNORE_SUPPORT]: true }, cdk.App, (app) => {
       // GIVEN
       const stack = new cdk.Stack(app, 'Stack');
 
