@@ -15,13 +15,12 @@ const taskDefinition = new ecs.FargateTaskDefinition(stack, 'TaskDef', {
   cpu: 512,
 });
 
-const container = taskDefinition.addContainer('web', {
+taskDefinition.addContainer('web', {
   image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
-});
-
-container.addPortMappings({
-  containerPort: 80,
-  protocol: ecs.Protocol.TCP,
+  portMappings: [{
+    containerPort: 80,
+    protocol: ecs.Protocol.TCP,
+  }],
 });
 
 const service = new ecs.FargateService(stack, 'Service', {
