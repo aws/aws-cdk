@@ -500,7 +500,7 @@ export class HttpApi extends HttpApiBase {
 }
 
 /**
- * Used to remove the default authorizer for a route
+ * Explicitly configure no authorizers on specific HTTP API routes.
  */
 export class NoneAuthorizer implements IHttpRouteAuthorizer {
   public bind(_: HttpRouteAuthorizerBindOptions): HttpRouteAuthorizerConfig {
