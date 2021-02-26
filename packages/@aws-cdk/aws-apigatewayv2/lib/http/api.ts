@@ -372,8 +372,8 @@ export class HttpApi extends HttpApiBase {
 
   private readonly _apiEndpoint: string;
 
-  private readonly authorizer?: IHttpRouteAuthorizer;
-  private readonly authorizationScopes?: string[];
+  private readonly defaultAuthorizer?: IHttpRouteAuthorizer;
+  private readonly defaultAuthorizationScopes?: string[];
 
   constructor(scope: Construct, id: string, props?: HttpApiProps) {
     super(scope, id);
@@ -416,8 +416,8 @@ export class HttpApi extends HttpApiBase {
     const resource = new CfnApi(this, 'Resource', apiProps);
     this.httpApiId = resource.ref;
     this._apiEndpoint = resource.attrApiEndpoint;
-    this.authorizer = props?.defaultAuthorizer;
-    this.authorizationScopes = props?.defaultAuthorizationScopes;
+    this.defaultAuthorizer = props?.defaultAuthorizer;
+    this.defaultAuthorizationScopes = props?.defaultAuthorizationScopes;
 
     if (props?.defaultIntegration) {
       new HttpRoute(this, 'DefaultRoute', {
@@ -482,7 +482,7 @@ export class HttpApi extends HttpApiBase {
   public addRoutes(options: AddRoutesOptions): HttpRoute[] {
     const methods = options.methods ?? [HttpMethod.ANY];
     return methods.map((method) => {
-      let authorizationScopes = this.authorizationScopes;
+      let authorizationScopes = this.defaultAuthorizationScopes;
 
       if (Array.isArray(options.authorizationScopes)) {
         authorizationScopes = options.authorizationScopes;
@@ -492,7 +492,7 @@ export class HttpApi extends HttpApiBase {
         httpApi: this,
         routeKey: HttpRouteKey.with(options.path, method),
         integration: options.integration,
-        authorizer: options.authorizer ?? this.authorizer,
+        authorizer: options.authorizer ?? this.defaultAuthorizer,
         authorizationScopes,
       });
     });
