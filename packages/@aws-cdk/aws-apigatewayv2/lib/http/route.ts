@@ -147,16 +147,20 @@ export class HttpRoute extends Resource implements IHttpRoute {
       scope: this.httpApi instanceof Construct ? this.httpApi : this, // scope under the API if it's not imported
     }) : undefined;
 
-    let authorizationScopes = authBindResult?.authorizationScopes ?? [];
+    let authorizationScopes = authBindResult?.authorizationScopes;
 
     if (authBindResult && props.authorizationScopes) {
       authorizationScopes = Array.from(new Set([
-        ...authorizationScopes,
+        ...authorizationScopes ?? [],
         ...props.authorizationScopes,
       ]));
     }
 
     const authorizationType = authBindResult?.authorizationType === HttpAuthorizerType.NONE ? undefined : authBindResult?.authorizationType;
+
+    if (authorizationScopes?.length === 0) {
+      authorizationScopes = undefined;
+    }
 
     const routeProps: CfnRouteProps = {
       apiId: props.httpApi.httpApiId,

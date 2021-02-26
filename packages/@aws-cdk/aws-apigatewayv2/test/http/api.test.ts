@@ -448,7 +448,7 @@ describe('HttpApi', () => {
       });
 
       expect(stack).toHaveResource('AWS::ApiGatewayV2::Route', {
-        AuthorizationScopes: [],
+        AuthorizationScopes: ABSENT,
       });
     });
 
