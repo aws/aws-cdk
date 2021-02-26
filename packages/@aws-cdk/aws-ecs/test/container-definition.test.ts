@@ -703,6 +703,55 @@ describe('container definition', () => {
 
   });
 
+  test('can add port mappings to the container definition by props', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
+
+    // WHEN
+    taskDefinition.addContainer('cont', {
+      image: ecs.ContainerImage.fromRegistry('test'),
+      memoryLimitMiB: 1024,
+      portMappings: [{ containerPort: 80 }],
+    });
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
+      ContainerDefinitions: [
+        {
+          PortMappings: [{ ContainerPort: 80 }],
+        },
+      ],
+    });
+  });
+
+  test('can add port mappings using props and addPortMappings and both are included', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
+
+    // WHEN
+    const containerDefinition = taskDefinition.addContainer('cont', {
+      image: ecs.ContainerImage.fromRegistry('test'),
+      memoryLimitMiB: 1024,
+      portMappings: [{ containerPort: 80 }],
+    });
+
+    containerDefinition.addPortMappings({ containerPort: 443 });
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
+      ContainerDefinitions: [
+        {
+          PortMappings: [
+            { ContainerPort: 80 },
+            { ContainerPort: 443 },
+          ],
+        },
+      ],
+    });
+  });
+
   describe('Environment Files', () => {
     describe('with EC2 task definitions', () => {
       test('can add asset environment file to the container definition', () => {
