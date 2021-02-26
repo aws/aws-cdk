@@ -68,7 +68,7 @@
         ]
       }
     },
-    "TimerAllowEventRulelambdaeventsTimer0E6AB6D890F582F4": {
+    "TimerAllowEventRulelambdaeventsMyFunc910E580F793D7BBB": {
       "Type": "AWS::Lambda::Permission",
       "Properties": {
         "Action": "lambda:InvokeFunction",
@@ -105,7 +105,7 @@
         ]
       }
     },
-    "Timer2AllowEventRulelambdaeventsTimer27F866A1E50659689": {
+    "Timer2AllowEventRulelambdaeventsMyFunc910E580FCCD9CDCE": {
       "Type": "AWS::Lambda::Permission",
       "Properties": {
         "Action": "lambda:InvokeFunction",
