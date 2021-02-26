@@ -11,6 +11,7 @@ import {
 } from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as cdk from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
 import { testFutureBehavior, testLegacyBehavior } from 'cdk-build-tools/lib/feature-flag';
 import {
   AmazonLinuxGeneration,
@@ -575,7 +576,7 @@ describe('volume', () => {
 
     });
 
-    testFutureBehavior('with future flag aws-kms:defaultKeyPolicies', { '@aws-cdk/aws-kms:defaultKeyPolicies': true }, cdk.App, (app) => {
+    testFutureBehavior('with future flag aws-kms:defaultKeyPolicies', { [cxapi.KMS_DEFAULT_KEY_POLICIES]: true }, cdk.App, (app) => {
       // GIVEN
       const stack = new cdk.Stack(app);
       const role = new Role(stack, 'Role', { assumedBy: new AccountRootPrincipal() });
