@@ -1,5 +1,5 @@
 import { Event } from '../lib';
-import { handler } from '../lib/eval-nodejs10.x-handler';
+import { handler } from '../lib/eval-nodejs-handler';
 
 test('with numbers', async () => {
   // GIVEN
