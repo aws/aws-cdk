@@ -232,7 +232,7 @@ export interface AddRoutesOptions extends BatchHttpRouteOptions {
    * These scopes will override the default authorization scopes on the gateway.
    * Set to [] to remove default scopes
    *
-   * @default - no additional authorization scopes once no default ones set on the gateway.
+   * @default - uses defaultAuthorizationScopes if configured on the API, otherwise none.
    */
   readonly authorizationScopes?: string[];
 }
