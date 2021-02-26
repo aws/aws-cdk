@@ -277,7 +277,7 @@ export class ServerDeploymentGroup extends ServerDeploymentGroupBase {
     });
 
     this._autoScalingGroups = props.autoScalingGroups || [];
-    this.installAgent = props.installAgent === undefined ? true : props.installAgent;
+    this.installAgent = props.installAgent ?? true;
     this.codeDeployBucket = s3.Bucket.fromBucketName(this, 'Bucket', `aws-codedeploy-${cdk.Stack.of(this).region}`);
     for (const asg of this._autoScalingGroups) {
       this.addCodeDeployAgentInstallUserData(asg);
@@ -348,15 +348,20 @@ export class ServerDeploymentGroup extends ServerDeploymentGroupBase {
     switch (asg.osType) {
       case ec2.OperatingSystemType.LINUX:
         asg.addUserData(
+          'set +e', // make sure we don't exit on the `which` failing
           'PKG_CMD=`which yum 2>/dev/null`',
+          'set -e', // continue with failing on error
           'if [ -z "$PKG_CMD" ]; then',
           'PKG_CMD=apt-get',
           'else',
           'PKG=CMD=yum',
           'fi',
           '$PKG_CMD update -y',
+          'set +e', // make sure we don't exit on the next command failing (we check its exit code below)
           '$PKG_CMD install -y ruby2.0',
-          'if [ $? -ne 0 ]; then',
+          'RUBY2_INSTALL=$?',
+          'set -e', // continue with failing on error
+          'if [ $RUBY2_INSTALL -ne 0 ]; then',
           '$PKG_CMD install -y ruby',
           'fi',
           '$PKG_CMD install -y awscli',

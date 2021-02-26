@@ -76,13 +76,13 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@aws-cdk/assert": "0.0.0",
-    "@types/aws-lambda": "^8.10.64",
+    "@types/aws-lambda": "^8.10.72",
     "@types/lodash": "^4.14.168",
     "cdk-build-tools": "0.0.0",
     "cdk-integ-tools": "0.0.0",
     "cfn2ts": "0.0.0",
     "jest": "^26.6.3",
-    "lodash": "^4.17.20",
+    "lodash": "^4.17.21",
     "pkglint": "0.0.0"
   },
   "dependencies": {
@@ -99,6 +99,7 @@
     "@aws-cdk/aws-logs": "0.0.0",
     "@aws-cdk/aws-s3": "0.0.0",
     "@aws-cdk/aws-s3-assets": "0.0.0",
+    "@aws-cdk/aws-signer": "0.0.0",
     "@aws-cdk/aws-sqs": "0.0.0",
     "@aws-cdk/core": "0.0.0",
     "@aws-cdk/cx-api": "0.0.0",
@@ -119,6 +120,7 @@
     "@aws-cdk/aws-logs": "0.0.0",
     "@aws-cdk/aws-s3": "0.0.0",
     "@aws-cdk/aws-s3-assets": "0.0.0",
+    "@aws-cdk/aws-signer": "0.0.0",
     "@aws-cdk/aws-sqs": "0.0.0",
     "@aws-cdk/core": "0.0.0",
     "@aws-cdk/cx-api": "0.0.0",
@@ -169,12 +171,16 @@
       "props-default-doc:@aws-cdk/aws-lambda.Permission.sourceArn",
       "docs-public-apis:@aws-cdk/aws-lambda.ResourceBindOptions",
       "docs-public-apis:@aws-cdk/aws-lambda.VersionAttributes",
-      "props-physical-name:@aws-cdk/aws-lambda.EventInvokeConfigProps"
+      "props-physical-name:@aws-cdk/aws-lambda.EventInvokeConfigProps",
+      "props-physical-name:@aws-cdk/aws-lambda.CodeSigningConfigProps"
     ]
   },
   "stability": "stable",
   "awscdkio": {
     "announce": false
   },
-  "maturity": "stable"
+  "maturity": "stable",
+  "publishConfig": {
+    "tag": "latest"
+  }
 }

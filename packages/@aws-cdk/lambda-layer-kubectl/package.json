@@ -106,5 +106,8 @@
   },
   "ubergen": {
     "exclude": false
+  },
+  "publishConfig": {
+    "tag": "latest"
   }
 }
