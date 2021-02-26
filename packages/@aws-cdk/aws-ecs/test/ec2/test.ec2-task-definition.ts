@@ -530,6 +530,150 @@ export = {
       test.done();
     },
 
+    'correctly sets containers from ECR repository using an image tag'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
+
+      taskDefinition.addContainer('web', {
+        image: ecs.ContainerImage.fromEcrRepository(new Repository(stack, 'myECRImage'), 'myTag'),
+        memoryLimitMiB: 512,
+      });
+
+      // THEN
+      expect(stack).to(haveResource('AWS::ECS::TaskDefinition', {
+        ContainerDefinitions: [{
+          Essential: true,
+          Memory: 512,
+          Image: {
+            'Fn::Join': [
+              '',
+              [
+                {
+                  'Fn::Select': [
+                    4,
+                    {
+                      'Fn::Split': [
+                        ':',
+                        {
+                          'Fn::GetAtt': [
+                            'myECRImage7DEAE474',
+                            'Arn',
+                          ],
+                        },
+                      ],
+                    },
+                  ],
+                },
+                '.dkr.ecr.',
+                {
+                  'Fn::Select': [
+                    3,
+                    {
+                      'Fn::Split': [
+                        ':',
+                        {
+                          'Fn::GetAtt': [
+                            'myECRImage7DEAE474',
+                            'Arn',
+                          ],
+                        },
+                      ],
+                    },
+                  ],
+                },
+                '.',
+                {
+                  Ref: 'AWS::URLSuffix',
+                },
+                '/',
+                {
+                  Ref: 'myECRImage7DEAE474',
+                },
+                ':myTag',
+              ],
+            ],
+          },
+          Name: 'web',
+        }],
+      }));
+
+      test.done();
+    },
+
+    'correctly sets containers from ECR repository using an image digest'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
+
+      taskDefinition.addContainer('web', {
+        image: ecs.ContainerImage.fromEcrRepository(new Repository(stack, 'myECRImage'), 'sha256:94afd1f2e64d908bc90dbca0035a5b567EXAMPLE'),
+        memoryLimitMiB: 512,
+      });
+
+      // THEN
+      expect(stack).to(haveResource('AWS::ECS::TaskDefinition', {
+        ContainerDefinitions: [{
+          Essential: true,
+          Memory: 512,
+          Image: {
+            'Fn::Join': [
+              '',
+              [
+                {
+                  'Fn::Select': [
+                    4,
+                    {
+                      'Fn::Split': [
+                        ':',
+                        {
+                          'Fn::GetAtt': [
+                            'myECRImage7DEAE474',
+                            'Arn',
+                          ],
+                        },
+                      ],
+                    },
+                  ],
+                },
+                '.dkr.ecr.',
+                {
+                  'Fn::Select': [
+                    3,
+                    {
+                      'Fn::Split': [
+                        ':',
+                        {
+                          'Fn::GetAtt': [
+                            'myECRImage7DEAE474',
+                            'Arn',
+                          ],
+                        },
+                      ],
+                    },
+                  ],
+                },
+                '.',
+                {
+                  Ref: 'AWS::URLSuffix',
+                },
+                '/',
+                {
+                  Ref: 'myECRImage7DEAE474',
+                },
+                '@sha256:94afd1f2e64d908bc90dbca0035a5b567EXAMPLE',
+              ],
+            ],
+          },
+          Name: 'web',
+        }],
+      }));
+
+      test.done();
+    },
+
     'correctly sets containers from ECR repository using default props'(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();
