@@ -229,9 +229,9 @@ export class Ec2Service extends BaseService implements IEc2Service {
     this.addPlacementConstraints(...props.placementConstraints || []);
     this.addPlacementStrategies(...props.placementStrategies || []);
 
-    if (!this.taskDefinition.defaultContainer) {
-      throw new Error('A TaskDefinition must have at least one essential container');
-    }
+    this.node.addValidation({
+      validate: () => !this.taskDefinition.defaultContainer ? ['A TaskDefinition must have at least one essential container'] : [],
+    });
   }
 
   /**
