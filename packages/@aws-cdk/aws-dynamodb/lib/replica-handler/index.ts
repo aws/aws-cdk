@@ -5,25 +5,37 @@ import { DynamoDB } from 'aws-sdk'; // eslint-disable-line import/no-extraneous-
 export async function onEventHandler(event: OnEventRequest): Promise<OnEventResponse> {
   console.log('Event: %j', event);
 
-  const updateTableAction = getUpdateTableAction(event);
+  const dynamodb = new DynamoDB();
 
-  if (updateTableAction) {
-    const dynamodb = new DynamoDB();
+  let updateTableAction: 'Create' | 'Update' | 'Delete';
 
-    const data = await dynamodb.updateTable({
-      TableName: event.ResourceProperties.TableName,
-      ReplicaUpdates: [
-        {
-          [updateTableAction]: {
-            RegionName: event.ResourceProperties.Region,
-          },
-        },
-      ],
-    }).promise();
-    console.log('Update table: %j', data);
+  if (event.RequestType === 'Create' || event.RequestType === 'Delete') {
+    updateTableAction = event.RequestType;
+  } else { // Update
+    // This can only be a table replacement so we create a replica
+    // in the new table. The replica for the "old" table will be
+    // deleted when CF issues a Delete event on the old physical
+    // resource id.
+    updateTableAction = 'Create';
   }
 
-  return { PhysicalResourceId: `${event.ResourceProperties.TableName}-${event.ResourceProperties.Region}` };
+  const data = await dynamodb.updateTable({
+    TableName: event.ResourceProperties.TableName,
+    ReplicaUpdates: [
+      {
+        [updateTableAction]: {
+          RegionName: event.ResourceProperties.Region,
+        },
+      },
+    ],
+  }).promise();
+  console.log('Update table: %j', data);
+
+  if (event.RequestType === 'Create' || event.RequestType === 'Update') {
+    return { PhysicalResourceId: `${event.ResourceProperties.TableName}-${event.ResourceProperties.Region}` };
+  }
+
+  return {};
 }
 
 export async function isCompleteHandler(event: IsCompleteRequest): Promise<IsCompleteResponse> {
@@ -49,19 +61,5 @@ export async function isCompleteHandler(event: IsCompleteRequest): Promise<IsCom
     case 'Delete':
       // Complete when replica is gone
       return { IsComplete: tableActive && regionReplica === undefined };
-  }
-}
-
-function getUpdateTableAction(event: OnEventRequest): 'Create' | 'Update' | 'Delete' | undefined {
-  switch (event.RequestType) {
-    case 'Create':
-    case 'Delete':
-      return event.RequestType;
-    case 'Update':
-      // This can only be a table replacement so we create a replica
-      // in the new table. The replica for the "old" table will be
-      // deleted when CF issues a Delete event on the old physical
-      // resource id.
-      return 'Create';
   }
 }
