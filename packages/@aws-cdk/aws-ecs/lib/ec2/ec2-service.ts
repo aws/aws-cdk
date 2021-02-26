@@ -259,7 +259,7 @@ export class Ec2Service extends BaseService implements IEc2Service {
   }
 
   /**
-   * Adds the specified extention to the service.
+   * Adds the specified extension to the service.
    *
    * Extension can be used to apply a packaged modification to
    * a service.
