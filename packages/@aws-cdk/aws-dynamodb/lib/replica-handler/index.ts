@@ -58,7 +58,7 @@ function getUpdateTableAction(event: OnEventRequest): 'Create' | 'Update' | 'Del
       return 'Create';
     case 'Update':
       // If it's a table replacement, create a replica in the "new" table
-      if (event.OldResourceProperties?.TableName !== event.ResourceProperties.TableName) {
+      if (event.OldResourceProperties && event.OldResourceProperties?.TableName !== event.ResourceProperties.TableName) {
         return 'Create';
       }
       return;
