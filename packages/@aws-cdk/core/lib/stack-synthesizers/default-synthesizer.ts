@@ -449,7 +449,12 @@ export class DefaultStackSynthesizer extends StackSynthesizer {
     //
     // Instead, we'll have a protocol with the CLI that we put an 's3://.../...' URL here, and the CLI
     // is going to resolve it to the correct 'https://.../' URL before it gives it to CloudFormation.
-    return `s3://${this.bucketName}/${this.bucketPrefix}${sourceHash}`;
+    //
+    // ALSO: it would be great to reuse the return value of `addFileAsset()` here, except those contain
+    // CloudFormation REFERENCES to locations, not actual locations (can contain `{ Ref: AWS::Region }` and
+    // `{ Ref: SomeParameter }` etc). We therefore have to duplicate some logic here :(.
+    const extension = path.extname(this.stack.templateFile);
+    return `s3://${this.bucketName}/${this.bucketPrefix}${sourceHash}${extension}`;
   }
 
   /**

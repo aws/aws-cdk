@@ -343,7 +343,7 @@ on the construct, as so -
 
 ```ts
 const authChallengeFn = new lambda.Function(this, 'authChallengeFn', {
-  runtime: lambda.Runtime.NODEJS_10_X,
+  runtime: lambda.Runtime.NODEJS_12_X,
   handler: 'index.handler',
   code: lambda.Code.fromInline('auth challenge'),
 });
@@ -357,7 +357,7 @@ const userpool = new cognito.UserPool(this, 'myuserpool', {
 });
 
 userpool.addTrigger(cognito.UserPoolOperation.USER_MIGRATION, new lambda.Function(this, 'userMigrationFn', {
-    runtime: lambda.Runtime.NODEJS_10_X,
+    runtime: lambda.Runtime.NODEJS_12_X,
   handler: 'index.handler',
   code: lambda.Code.fromInline('user migration'),
 }));
@@ -582,12 +582,12 @@ The default behaviour is to allow read and write permissions on all attributes. 
 const pool = new cognito.UserPool(this, 'Pool');
 
 const clientWriteAttributes = (new ClientAttributes())
-  .withStandardAttributes({name: true, email: true})
-  .withCustomAttributes(['favouritePizza']);
+  .withStandardAttributes({fullname: true, email: true})
+  .withCustomAttributes('favouritePizza', 'favouriteBeverage');
 
 const clientReadAttributes = clientWriteAttributes
   .withStandardAttributes({emailVerified: true})
-  .withCustomAttributes(['pointsEarned']);
+  .withCustomAttributes('pointsEarned');
 
 pool.addClient('app-client', {
   // ...

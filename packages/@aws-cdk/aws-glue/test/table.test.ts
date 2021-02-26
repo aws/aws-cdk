@@ -5,7 +5,11 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
+import { testFutureBehavior } from 'cdk-build-tools/lib/feature-flag';
 import * as glue from '../lib';
+
+const s3GrantWriteCtx = { [cxapi.S3_GRANT_WRITE_WITHOUT_ACL]: true };
 
 test('unpartitioned JSON table', () => {
   const app = new cdk.App();
@@ -345,50 +349,6 @@ test('encrypted table: SSE-KMS (implicitly created key)', () => {
   equal(table.encryptionKey, table.bucket.encryptionKey);
 
   cdkExpect(stack).to(haveResource('AWS::KMS::Key', {
-    KeyPolicy: {
-      Statement: [
-        {
-          Action: [
-            'kms:Create*',
-            'kms:Describe*',
-            'kms:Enable*',
-            'kms:List*',
-            'kms:Put*',
-            'kms:Update*',
-            'kms:Revoke*',
-            'kms:Disable*',
-            'kms:Get*',
-            'kms:Delete*',
-            'kms:ScheduleKeyDeletion',
-            'kms:CancelKeyDeletion',
-            'kms:GenerateDataKey',
-            'kms:TagResource',
-            'kms:UntagResource',
-          ],
-          Effect: 'Allow',
-          Principal: {
-            AWS: {
-              'Fn::Join': [
-                '',
-                [
-                  'arn:',
-                  {
-                    Ref: 'AWS::Partition',
-                  },
-                  ':iam::',
-                  {
-                    Ref: 'AWS::AccountId',
-                  },
-                  ':root',
-                ],
-              ],
-            },
-          },
-          Resource: '*',
-        },
-      ],
-      Version: '2012-10-17',
-    },
     Description: 'Created by Default/Table/Bucket',
   }));
 
@@ -462,7 +422,9 @@ test('encrypted table: SSE-KMS (explicitly created key)', () => {
   const database = new glue.Database(stack, 'Database', {
     databaseName: 'database',
   });
-  const encryptionKey = new kms.Key(stack, 'MyKey');
+  const encryptionKey = new kms.Key(stack, 'MyKey', {
+    description: 'OurKey',
+  });
 
   const table = new glue.Table(stack, 'Table', {
     database,
@@ -480,50 +442,7 @@ test('encrypted table: SSE-KMS (explicitly created key)', () => {
   notEqual(table.encryptionKey, undefined);
 
   cdkExpect(stack).to(haveResource('AWS::KMS::Key', {
-    KeyPolicy: {
-      Statement: [
-        {
-          Action: [
-            'kms:Create*',
-            'kms:Describe*',
-            'kms:Enable*',
-            'kms:List*',
-            'kms:Put*',
-            'kms:Update*',
-            'kms:Revoke*',
-            'kms:Disable*',
-            'kms:Get*',
-            'kms:Delete*',
-            'kms:ScheduleKeyDeletion',
-            'kms:CancelKeyDeletion',
-            'kms:GenerateDataKey',
-            'kms:TagResource',
-            'kms:UntagResource',
-          ],
-          Effect: 'Allow',
-          Principal: {
-            AWS: {
-              'Fn::Join': [
-                '',
-                [
-                  'arn:',
-                  {
-                    Ref: 'AWS::Partition',
-                  },
-                  ':iam::',
-                  {
-                    Ref: 'AWS::AccountId',
-                  },
-                  ':root',
-                ],
-              ],
-            },
-          },
-          Resource: '*',
-        },
-      ],
-      Version: '2012-10-17',
-    },
+    Description: 'OurKey',
   }));
 
   cdkExpect(stack).to(haveResource('AWS::S3::Bucket', {
@@ -690,52 +609,7 @@ test('encrypted table: CSE-KMS (implicitly created key)', () => {
   notEqual(table.encryptionKey, undefined);
   equal(table.bucket.encryptionKey, undefined);
 
-  cdkExpect(stack).to(haveResource('AWS::KMS::Key', {
-    KeyPolicy: {
-      Statement: [
-        {
-          Action: [
-            'kms:Create*',
-            'kms:Describe*',
-            'kms:Enable*',
-            'kms:List*',
-            'kms:Put*',
-            'kms:Update*',
-            'kms:Revoke*',
-            'kms:Disable*',
-            'kms:Get*',
-            'kms:Delete*',
-            'kms:ScheduleKeyDeletion',
-            'kms:CancelKeyDeletion',
-            'kms:GenerateDataKey',
-            'kms:TagResource',
-            'kms:UntagResource',
-          ],
-          Effect: 'Allow',
-          Principal: {
-            AWS: {
-              'Fn::Join': [
-                '',
-                [
-                  'arn:',
-                  {
-                    Ref: 'AWS::Partition',
-                  },
-                  ':iam::',
-                  {
-                    Ref: 'AWS::AccountId',
-                  },
-                  ':root',
-                ],
-              ],
-            },
-          },
-          Resource: '*',
-        },
-      ],
-      Version: '2012-10-17',
-    },
-  }));
+  cdkExpect(stack).to(haveResource('AWS::KMS::Key'));
 
   cdkExpect(stack).to(haveResource('AWS::Glue::Table', {
     CatalogId: {
@@ -789,7 +663,9 @@ test('encrypted table: CSE-KMS (explicitly created key)', () => {
   const database = new glue.Database(stack, 'Database', {
     databaseName: 'database',
   });
-  const encryptionKey = new kms.Key(stack, 'MyKey');
+  const encryptionKey = new kms.Key(stack, 'MyKey', {
+    description: 'MyKey',
+  });
 
   const table = new glue.Table(stack, 'Table', {
     database,
@@ -807,50 +683,7 @@ test('encrypted table: CSE-KMS (explicitly created key)', () => {
   equal(table.bucket.encryptionKey, undefined);
 
   cdkExpect(stack).to(haveResource('AWS::KMS::Key', {
-    KeyPolicy: {
-      Statement: [
-        {
-          Action: [
-            'kms:Create*',
-            'kms:Describe*',
-            'kms:Enable*',
-            'kms:List*',
-            'kms:Put*',
-            'kms:Update*',
-            'kms:Revoke*',
-            'kms:Disable*',
-            'kms:Get*',
-            'kms:Delete*',
-            'kms:ScheduleKeyDeletion',
-            'kms:CancelKeyDeletion',
-            'kms:GenerateDataKey',
-            'kms:TagResource',
-            'kms:UntagResource',
-          ],
-          Effect: 'Allow',
-          Principal: {
-            AWS: {
-              'Fn::Join': [
-                '',
-                [
-                  'arn:',
-                  {
-                    Ref: 'AWS::Partition',
-                  },
-                  ':iam::',
-                  {
-                    Ref: 'AWS::AccountId',
-                  },
-                  ':root',
-                ],
-              ],
-            },
-          },
-          Resource: '*',
-        },
-      ],
-      Version: '2012-10-17',
-    },
+    Description: 'MyKey',
   }));
 
   cdkExpect(stack).to(haveResource('AWS::Glue::Table', {
@@ -906,7 +739,9 @@ test('encrypted table: CSE-KMS (explicitly passed bucket and key)', () => {
     databaseName: 'database',
   });
   const bucket = new s3.Bucket(stack, 'Bucket');
-  const encryptionKey = new kms.Key(stack, 'MyKey');
+  const encryptionKey = new kms.Key(stack, 'MyKey', {
+    description: 'MyKey',
+  });
 
   const table = new glue.Table(stack, 'Table', {
     database,
@@ -925,50 +760,7 @@ test('encrypted table: CSE-KMS (explicitly passed bucket and key)', () => {
   equal(table.bucket.encryptionKey, undefined);
 
   cdkExpect(stack).to(haveResource('AWS::KMS::Key', {
-    KeyPolicy: {
-      Statement: [
-        {
-          Action: [
-            'kms:Create*',
-            'kms:Describe*',
-            'kms:Enable*',
-            'kms:List*',
-            'kms:Put*',
-            'kms:Update*',
-            'kms:Revoke*',
-            'kms:Disable*',
-            'kms:Get*',
-            'kms:Delete*',
-            'kms:ScheduleKeyDeletion',
-            'kms:CancelKeyDeletion',
-            'kms:GenerateDataKey',
-            'kms:TagResource',
-            'kms:UntagResource',
-          ],
-          Effect: 'Allow',
-          Principal: {
-            AWS: {
-              'Fn::Join': [
-                '',
-                [
-                  'arn:',
-                  {
-                    Ref: 'AWS::Partition',
-                  },
-                  ':iam::',
-                  {
-                    Ref: 'AWS::AccountId',
-                  },
-                  ':root',
-                ],
-              ],
-            },
-          },
-          Resource: '*',
-        },
-      ],
-      Version: '2012-10-17',
-    },
+    Description: 'MyKey',
   }));
 
   cdkExpect(stack).to(haveResource('AWS::Glue::Table', {
@@ -1260,8 +1052,8 @@ test('grants: read only', () => {
 
 });
 
-test('grants: write only', () => {
-  const stack = new cdk.Stack();
+testFutureBehavior('grants: write only', s3GrantWriteCtx, cdk.App, (app) => {
+  const stack = new cdk.Stack(app);
   const user = new iam.User(stack, 'User');
   const database = new glue.Database(stack, 'Database', {
     databaseName: 'database',
@@ -1323,7 +1115,7 @@ test('grants: write only', () => {
         {
           Action: [
             's3:DeleteObject*',
-            's3:PutObject*',
+            's3:PutObject',
             's3:Abort*',
           ],
           Effect: 'Allow',
@@ -1363,8 +1155,8 @@ test('grants: write only', () => {
 
 });
 
-test('grants: read and write', () => {
-  const stack = new cdk.Stack();
+testFutureBehavior('grants: read and write', s3GrantWriteCtx, cdk.App, (app) => {
+  const stack = new cdk.Stack(app);
   const user = new iam.User(stack, 'User');
   const database = new glue.Database(stack, 'Database', {
     databaseName: 'database',
@@ -1437,7 +1229,7 @@ test('grants: read and write', () => {
             's3:GetBucket*',
             's3:List*',
             's3:DeleteObject*',
-            's3:PutObject*',
+            's3:PutObject',
             's3:Abort*',
           ],
           Effect: 'Allow',

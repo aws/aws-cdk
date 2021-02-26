@@ -55,6 +55,7 @@ function metricGraphJson(metric: IMetric, yAxis?: string, id?: string) {
 
     withExpression(expr) {
       options.expression = expr.expression;
+      if (expr.period && expr.period !== 300) { options.period = expr.period; }
     },
   });
 
