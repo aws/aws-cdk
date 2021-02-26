@@ -109,7 +109,7 @@
                 "s3:GetBucket*",
                 "s3:List*",
                 "s3:DeleteObject*",
-                "s3:PutObject*",
+                "s3:PutObject",
                 "s3:Abort*"
               ],
               "Effect": "Allow",
@@ -164,7 +164,7 @@
             },
             {
               "Action": [
-                "codebuild:BatchGetBuilds",
+                "codebuild:BatchGetBuildBatches",
                 "codebuild:StartBuildBatch",
                 "codebuild:StopBuildBatch"
               ],
@@ -480,7 +480,62 @@
         "Source": {
           "Type": "CODEPIPELINE"
         },
+        "BuildBatchConfig": {
+          "ServiceRole": {
+            "Fn::GetAtt": [
+              "MyBuildProjectBatchServiceRole531F3056",
+              "Arn"
+            ]
+          }
+        },
         "EncryptionKey": "alias/aws/s3"
+      }
+    },
+    "MyBuildProjectBatchServiceRole531F3056": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "codebuild.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      }
+    },
+    "MyBuildProjectBatchServiceRoleDefaultPolicy816785FC": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "codebuild:StartBuild",
+                "codebuild:StopBuild",
+                "codebuild:RetryBuild"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "MyBuildProject30DB9D6E",
+                  "Arn"
+                ]
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "MyBuildProjectBatchServiceRoleDefaultPolicy816785FC",
+        "Roles": [
+          {
+            "Ref": "MyBuildProjectBatchServiceRole531F3056"
+          }
+        ]
       }
     }
   }
