@@ -10,13 +10,12 @@ test('Use EventBus as an event rule target', () => {
     schedule: events.Schedule.expression('rate(1 min)'),
   });
 
-  rule.addTarget(new targets.EventBus({
-    eventBus: events.EventBus.fromEventBusArn(
-      stack,
-      'External',
-      'arn:aws:events:us-east-1:111111111111:default',
-    ),
-  }));
+  rule.addTarget(new targets.EventBus(events.EventBus.fromEventBusArn(
+    stack,
+    'External',
+    'arn:aws:events:us-east-1:111111111111:default',
+  ),
+  ));
 
   expect(stack).toHaveResource('AWS::Events::Rule', {
     Targets: [
@@ -57,14 +56,14 @@ test('with supplied role', () => {
     roleName: 'GivenRole',
   });
 
-  rule.addTarget(new targets.EventBus({
-    eventBus: events.EventBus.fromEventBusArn(
+  rule.addTarget(new targets.EventBus(
+    events.EventBus.fromEventBusArn(
       stack,
       'External',
       'arn:aws:events:us-east-1:123456789012:default',
     ),
-    role,
-  }));
+    { role },
+  ));
 
   expect(stack).toHaveResource('AWS::Events::Rule', {
     Targets: [{

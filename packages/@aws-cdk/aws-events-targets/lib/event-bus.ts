@@ -7,11 +7,6 @@ import { singletonEventRole } from './util';
  */
 export interface EventBusProps {
   /**
-   * The target event bus
-   */
-  readonly eventBus: events.IEventBus;
-
-  /**
    * Role to be used to publish the event
    *
    * @default a new role is created.
@@ -23,11 +18,9 @@ export interface EventBusProps {
  * Notify an existing Event Bus of an event
  */
 export class EventBus implements events.IRuleTarget {
-  private readonly eventBus: events.IEventBus;
   private readonly role?: iam.IRole;
 
-  constructor(props: EventBusProps) {
-    this.eventBus = props.eventBus;
+  constructor(private readonly eventBus: events.IEventBus, props: EventBusProps = {}) {
     this.role = props.role;
   }
 

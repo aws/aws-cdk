@@ -12,13 +12,13 @@ class EventSourceStack extends cdk.Stack {
     const rule = new events.Rule(this, 'Rule', {
       schedule: events.Schedule.expression('rate(1 minute)'),
     });
-    rule.addTarget(new targets.EventBus({
-      eventBus: events.EventBus.fromEventBusArn(
+    rule.addTarget(new targets.EventBus(
+      events.EventBus.fromEventBusArn(
         this,
         'External',
         `arn:aws:events:${this.region}:999999999999:event-bus/test-bus`,
       ),
-    }));
+    ));
   }
 }
 
