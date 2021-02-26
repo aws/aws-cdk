@@ -154,9 +154,9 @@ export interface HttpApiProps {
   readonly defaultAuthorizer?: IHttpRouteAuthorizer;
 
   /**
-   * Default OIDC scopes attached to all routes in the gateway
+   * Default OIDC scopes attached to all routes in the gateway, unless explicitly configured on the route.
    *
-   * @default - no additional authorization scopes
+   * @default - no default authorization scopes
    */
   readonly defaultAuthorizationScopes?: string[];
 }
