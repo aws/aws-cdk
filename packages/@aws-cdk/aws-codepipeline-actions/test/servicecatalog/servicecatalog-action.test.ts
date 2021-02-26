@@ -2,12 +2,12 @@ import { expect, haveResourceLike } from '@aws-cdk/assert';
 import * as codecommit from '@aws-cdk/aws-codecommit';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import { Stack } from '@aws-cdk/core';
-import { Test } from 'nodeunit';
+import { nodeunitShim, Test } from 'nodeunit-shim';
 import * as cpactions from '../../lib';
 
 /* eslint-disable quote-props */
 
-export = {
+nodeunitShim({
   'addAction succesfully leads to creation of codepipeline service catalog action with properly formatted TemplateFilePath'(test: Test) {
     // GIVEN
     const stack = new TestFixture();
@@ -98,7 +98,7 @@ export = {
 
     test.done();
   },
-};
+});
 
 /**
  * A test stack with a half-prepared pipeline ready to add CloudFormation actions to
