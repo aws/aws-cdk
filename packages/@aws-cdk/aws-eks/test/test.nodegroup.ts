@@ -7,7 +7,7 @@ import { testFixture } from './util';
 
 /* eslint-disable max-len */
 
-const CLUSTER_VERSION = eks.KubernetesVersion.V1_18;
+const CLUSTER_VERSION = eks.KubernetesVersion.V1_19;
 
 export = {
 

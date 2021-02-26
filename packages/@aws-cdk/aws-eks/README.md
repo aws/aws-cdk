@@ -49,7 +49,7 @@ This example defines an Amazon EKS cluster with the following configuration:
 ```ts
 // provisiong a cluster
 const cluster = new eks.Cluster(this, 'hello-eks', {
-  version: eks.KubernetesVersion.V1_18,
+  version: eks.KubernetesVersion.V1_19,
 });
 
 // apply a kubernetes manifest to the cluster
@@ -142,7 +142,7 @@ Creating a new cluster is done using the `Cluster` or `FargateCluster` construct
 
 ```ts
 new eks.Cluster(this, 'HelloEKS', {
-  version: eks.KubernetesVersion.V1_18,
+  version: eks.KubernetesVersion.V1_19,
 });
 ```
 
@@ -150,7 +150,7 @@ You can also use `FargateCluster` to provision a cluster that uses only fargate 
 
 ```ts
 new eks.FargateCluster(this, 'HelloEKS', {
-  version: eks.KubernetesVersion.V1_18,
+  version: eks.KubernetesVersion.V1_19,
 });
 ```
 
@@ -174,7 +174,7 @@ At cluster instantiation time, you can customize the number of instances and the
 
 ```ts
 new eks.Cluster(this, 'HelloEKS', {
-  version: eks.KubernetesVersion.V1_18,
+  version: eks.KubernetesVersion.V1_19,
   defaultCapacity: 5,
   defaultCapacityInstance: ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.SMALL),
 });
@@ -186,7 +186,7 @@ Additional customizations are available post instantiation. To apply them, set t
 
 ```ts
 const cluster = new eks.Cluster(this, 'HelloEKS', {
-  version: eks.KubernetesVersion.V1_18,
+  version: eks.KubernetesVersion.V1_19,
   defaultCapacity: 0,
 });
 
@@ -322,7 +322,7 @@ The following code defines an Amazon EKS cluster with a default Fargate Profile 
 
 ```ts
 const cluster = new eks.FargateCluster(this, 'MyCluster', {
-  version: eks.KubernetesVersion.V1_18,
+  version: eks.KubernetesVersion.V1_19,
 });
 ```
 
@@ -381,7 +381,7 @@ You can also configure the cluster to use an auto-scaling group as the default c
 
 ```ts
 cluster = new eks.Cluster(this, 'HelloEKS', {
-  version: eks.KubernetesVersion.V1_18,
+  version: eks.KubernetesVersion.V1_19,
   defaultCapacityType: eks.DefaultCapacityType.EC2,
 });
 ```
@@ -461,10 +461,12 @@ You can configure the [cluster endpoint access](https://docs.aws.amazon.com/eks/
 
 ```ts
 const cluster = new eks.Cluster(this, 'hello-eks', {
-  version: eks.KubernetesVersion.V1_18,
+  version: eks.KubernetesVersion.V1_19,
   endpointAccess: eks.EndpointAccess.PRIVATE // No access outside of your VPC.
 });
 ```
+
+The default value is `eks.EndpointAccess.PUBLIC_AND_PRIVATE`. Which means the cluster endpoint is accessible from outside of your VPC, but worker node traffic and `kubectl` commands issued by this library stay within your VPC.
 
 ### VPC Support
 
@@ -474,7 +476,7 @@ You can specify the VPC of the cluster using the `vpc` and `vpcSubnets` properti
 const vpc = new ec2.Vpc(this, 'Vpc');
 
 new eks.Cluster(this, 'HelloEKS', {
-  version: eks.KubernetesVersion.V1_18,
+  version: eks.KubernetesVersion.V1_19,
   vpc,
   vpcSubnets: [{ subnetType: ec2.SubnetType.PRIVATE }]
 });
@@ -513,7 +515,7 @@ You can configure the environment of this function by specifying it at cluster i
 
 ```ts
 const cluster = new eks.Cluster(this, 'hello-eks', {
-  version: eks.KubernetesVersion.V1_18,
+  version: eks.KubernetesVersion.V1_19,
   clusterHandlerEnvironment: {
     'http_proxy': 'http://proxy.myproxy.com'
   }
@@ -530,7 +532,7 @@ You can configure the environment of this function by specifying it at cluster i
 
 ```ts
 const cluster = new eks.Cluster(this, 'hello-eks', {
-  version: eks.KubernetesVersion.V1_18,
+  version: eks.KubernetesVersion.V1_19,
   kubectlEnvironment: {
     'http_proxy': 'http://proxy.myproxy.com'
   }
@@ -620,7 +622,7 @@ When you create a cluster, you can specify a `mastersRole`. The `Cluster` constr
 ```ts
 const role = new iam.Role(...);
 new eks.Cluster(this, 'HelloEKS', {
-  version: eks.KubernetesVersion.V1_18,
+  version: eks.KubernetesVersion.V1_19,
   mastersRole: role,
 });
 ```
@@ -633,8 +635,6 @@ This is the role you see as part of the stack outputs mentioned in the [Quick St
 $ aws eks update-kubeconfig --name cluster-xxxxx --role-arn arn:aws:iam::112233445566:role/yyyyy
 Added new context arn:aws:eks:rrrrr:112233445566:cluster/cluster-xxxxx to /home/boom/.kube/config
 ```
-
-The default value is `eks.EndpointAccess.PUBLIC_AND_PRIVATE`. Which means the cluster endpoint is accessible from outside of your VPC, but worker node traffic and `kubectl` commands issued by this library stay within your VPC.
 
 ### Encryption
 

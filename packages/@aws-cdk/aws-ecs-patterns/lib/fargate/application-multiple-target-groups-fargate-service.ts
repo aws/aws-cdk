@@ -1,5 +1,6 @@
 import { FargatePlatformVersion, FargateService, FargateTaskDefinition } from '@aws-cdk/aws-ecs';
 import { ApplicationTargetGroup } from '@aws-cdk/aws-elasticloadbalancingv2';
+import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
 import {
   ApplicationMultipleTargetGroupsServiceBase,
@@ -113,7 +114,7 @@ export class ApplicationMultipleTargetGroupsFargateService extends ApplicationMu
   constructor(scope: Construct, id: string, props: ApplicationMultipleTargetGroupsFargateServiceProps = {}) {
     super(scope, id, props);
 
-    this.assignPublicIp = props.assignPublicIp !== undefined ? props.assignPublicIp : false;
+    this.assignPublicIp = props.assignPublicIp ?? false;
 
     if (props.taskDefinition && props.taskImageOptions) {
       throw new Error('You must specify only one of TaskDefinition or TaskImageOptions.');
@@ -129,7 +130,7 @@ export class ApplicationMultipleTargetGroupsFargateService extends ApplicationMu
         family: taskImageOptions.family,
       });
 
-      const containerName = taskImageOptions.containerName !== undefined ? taskImageOptions.containerName : 'web';
+      const containerName = taskImageOptions.containerName ?? 'web';
       const container = this.taskDefinition.addContainer(containerName, {
         image: taskImageOptions.image,
         logging: this.logDriver,
@@ -168,9 +169,11 @@ export class ApplicationMultipleTargetGroupsFargateService extends ApplicationMu
   }
 
   private createFargateService(props: ApplicationMultipleTargetGroupsFargateServiceProps): FargateService {
+    const desiredCount = this.node.tryGetContext(cxapi.ECS_REMOVE_DEFAULT_DESIRED_COUNT) ? this.internalDesiredCount : this.desiredCount;
+
     return new FargateService(this, 'Service', {
       cluster: this.cluster,
-      desiredCount: this.desiredCount,
+      desiredCount: desiredCount,
       taskDefinition: this.taskDefinition,
       assignPublicIp: this.assignPublicIp,
       serviceName: props.serviceName,

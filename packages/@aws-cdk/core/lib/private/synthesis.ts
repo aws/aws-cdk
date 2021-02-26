@@ -171,11 +171,12 @@ function synthesizeTree(root: IConstruct, builder: cxapi.CloudAssemblyBuilder) {
 function validateTree(root: IConstruct) {
   const errors = new Array<ValidationError>();
 
-  visit(root, 'pre', construct => {
-    for (const message of construct.onValidate()) {
-      errors.push({ message, source: construct as unknown as Construct });
-    }
-  });
+  // Validations added through `node.addValidation()`
+  // This automatically also includes Ye Olde Method of validating, using
+  // the `protected validate()` methods.
+  errors.push(...constructs.Node.of(root).validate().map(e => ({
+    message: e.message, source: e.source as unknown as Construct,
+  })));
 
   if (errors.length > 0) {
     const errorList = errors.map(e => `[${e.source.node.path}] ${e.message}`).join('\n  ');

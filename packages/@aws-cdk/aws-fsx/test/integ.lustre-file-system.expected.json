@@ -593,7 +593,9 @@
           }
         ],
         "StorageCapacity": 1200
-      }
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
     },
     "instInstanceSecurityGroup54790689": {
       "Type": "AWS::EC2::SecurityGroup",

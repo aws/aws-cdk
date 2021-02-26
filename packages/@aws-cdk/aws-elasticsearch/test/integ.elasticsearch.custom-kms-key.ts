@@ -1,7 +1,7 @@
 import { EbsDeviceVolumeType } from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
-import { App, Stack, StackProps } from '@aws-cdk/core';
+import { App, RemovalPolicy, Stack, StackProps } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import * as es from '../lib';
 
@@ -12,6 +12,7 @@ class TestStack extends Stack {
     const key = new kms.Key(this, 'Key');
 
     const domainProps: es.DomainProps = {
+      removalPolicy: RemovalPolicy.DESTROY,
       version: es.ElasticsearchVersion.V7_1,
       ebs: {
         volumeSize: 10,

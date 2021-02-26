@@ -284,8 +284,7 @@ export class TaskDefinition extends TaskDefinitionBase {
       props.volumes.forEach(v => this.addVolume(v));
     }
 
-    this.networkMode = props.networkMode !== undefined ? props.networkMode :
-      this.isFargateCompatible ? NetworkMode.AWS_VPC : NetworkMode.BRIDGE;
+    this.networkMode = props.networkMode ?? (this.isFargateCompatible ? NetworkMode.AWS_VPC : NetworkMode.BRIDGE);
     if (this.isFargateCompatible && this.networkMode !== NetworkMode.AWS_VPC) {
       throw new Error(`Fargate tasks can only have AwsVpc network mode, got: ${this.networkMode}`);
     }

@@ -382,7 +382,7 @@ export class Cluster extends Resource implements ICluster {
     };
 
     let resource;
-    this.kubectlEnabled = props.kubectlEnabled === undefined ? true : props.kubectlEnabled;
+    this.kubectlEnabled = props.kubectlEnabled ?? true;
     if (this.kubectlEnabled) {
       resource = new ClusterResource(this, 'Resource', clusterProps);
       this._defaultMastersRole = resource.creationRole;
@@ -429,13 +429,13 @@ export class Cluster extends Resource implements ICluster {
     }
 
     // allocate default capacity if non-zero (or default).
-    const desiredCapacity = props.defaultCapacity === undefined ? DEFAULT_CAPACITY_COUNT : props.defaultCapacity;
+    const desiredCapacity = props.defaultCapacity ?? DEFAULT_CAPACITY_COUNT;
     if (desiredCapacity > 0) {
       const instanceType = props.defaultCapacityInstance || DEFAULT_CAPACITY_TYPE;
       this.defaultCapacity = this.addCapacity('DefaultCapacity', { instanceType, desiredCapacity });
     }
 
-    const outputConfigCommand = props.outputConfigCommand === undefined ? true : props.outputConfigCommand;
+    const outputConfigCommand = props.outputConfigCommand ?? true;
     if (outputConfigCommand) {
       const postfix = commonCommandOptions.join(' ');
       new CfnOutput(this, 'ConfigCommand', { value: `${updateConfigCommandPrefix} ${postfix}` });
@@ -512,7 +512,7 @@ export class Cluster extends Resource implements ICluster {
     autoScalingGroup.connections.allowToAnyIpv4(ec2.Port.allUdp());
     autoScalingGroup.connections.allowToAnyIpv4(ec2.Port.allIcmp());
 
-    const bootstrapEnabled = options.bootstrapEnabled !== undefined ? options.bootstrapEnabled : true;
+    const bootstrapEnabled = options.bootstrapEnabled ?? true;
     if (options.bootstrapOptions && !bootstrapEnabled) {
       throw new Error('Cannot specify "bootstrapOptions" if "bootstrapEnabled" is false');
     }
@@ -537,7 +537,7 @@ export class Cluster extends Resource implements ICluster {
 
     // do not attempt to map the role if `kubectl` is not enabled for this
     // cluster or if `mapRole` is set to false. By default this should happen.
-    const mapRole = options.mapRole === undefined ? true : options.mapRole;
+    const mapRole = options.mapRole ?? true;
     if (mapRole && this.kubectlEnabled) {
       // see https://docs.aws.amazon.com/en_us/eks/latest/userguide/add-user-role.html
       this.awsAuth.addRoleMapping(autoScalingGroup.role, {

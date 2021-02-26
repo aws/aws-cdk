@@ -117,7 +117,7 @@ import * as route53 from '@aws-cdk/aws-route53';
 // In the account containing the HostedZone
 const parentZone = new route53.PublicHostedZone(this, 'HostedZone', {
   zoneName: 'someexample.com',
-  crossAccountZoneDelegationPrinciple: new iam.AccountPrincipal('12345678901')
+  crossAccountZoneDelegationPrincipal: new iam.AccountPrincipal('12345678901')
 });
 
 // In this account

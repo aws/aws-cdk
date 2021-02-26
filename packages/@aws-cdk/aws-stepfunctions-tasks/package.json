@@ -81,6 +81,7 @@
     "@aws-cdk/aws-ecr": "0.0.0",
     "@aws-cdk/aws-ecr-assets": "0.0.0",
     "@aws-cdk/aws-ecs": "0.0.0",
+    "@aws-cdk/aws-eks": "0.0.0",
     "@aws-cdk/aws-glue": "0.0.0",
     "@aws-cdk/aws-iam": "0.0.0",
     "@aws-cdk/aws-kms": "0.0.0",
@@ -103,6 +104,7 @@
     "@aws-cdk/aws-ecr": "0.0.0",
     "@aws-cdk/aws-ecr-assets": "0.0.0",
     "@aws-cdk/aws-ecs": "0.0.0",
+    "@aws-cdk/aws-eks": "0.0.0",
     "@aws-cdk/aws-glue": "0.0.0",
     "@aws-cdk/aws-iam": "0.0.0",
     "@aws-cdk/aws-kms": "0.0.0",
@@ -127,5 +129,8 @@
     "env": {
       "AWSLINT_BASE_CONSTRUCT": true
     }
+  },
+  "publishConfig": {
+    "tag": "latest"
   }
 }

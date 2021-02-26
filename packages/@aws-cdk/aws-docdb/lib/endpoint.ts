@@ -40,7 +40,7 @@ export class Endpoint {
   public readonly port: number;
 
   /**
-   * The combination of "HOSTNAME:PORT" for this endpoint
+   * The combination of ``HOSTNAME:PORT`` for this endpoint.
    */
   public readonly socketAddress: string;
 

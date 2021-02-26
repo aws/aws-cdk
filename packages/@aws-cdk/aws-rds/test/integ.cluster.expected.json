@@ -371,23 +371,7 @@
         "KeyPolicy": {
           "Statement": [
             {
-              "Action": [
-                "kms:Create*",
-                "kms:Describe*",
-                "kms:Enable*",
-                "kms:List*",
-                "kms:Put*",
-                "kms:Update*",
-                "kms:Revoke*",
-                "kms:Disable*",
-                "kms:Get*",
-                "kms:Delete*",
-                "kms:ScheduleKeyDeletion",
-                "kms:CancelKeyDeletion",
-                "kms:GenerateDataKey",
-                "kms:TagResource",
-                "kms:UntagResource"
-              ],
+              "Action": "kms:*",
               "Effect": "Allow",
               "Principal": {
                 "AWS": {
@@ -500,7 +484,8 @@
           }
         ]
       },
-      "UpdateReplacePolicy": "Snapshot"
+      "UpdateReplacePolicy": "Snapshot",
+      "DeletionPolicy": "Snapshot"
     },
     "DatabaseInstance1844F58FD": {
       "Type": "AWS::RDS::DBInstance",
@@ -518,7 +503,9 @@
       "DependsOn": [
         "VPCPublicSubnet1DefaultRoute91CEF279",
         "VPCPublicSubnet2DefaultRouteB7481BBA"
-      ]
+      ],
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
     },
     "DatabaseInstance2AA380DEE": {
       "Type": "AWS::RDS::DBInstance",
@@ -536,7 +523,9 @@
       "DependsOn": [
         "VPCPublicSubnet1DefaultRoute91CEF279",
         "VPCPublicSubnet2DefaultRouteB7481BBA"
-      ]
+      ],
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
     }
   }
 }

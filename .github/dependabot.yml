@@ -1,0 +1,13 @@
+# Reference: https://docs.github.com/en/github/administering-a-repository/configuration-options-for-dependency-updates
+# NOTE: dependabot only takes care of updating non-npm deps
+# npm dependencies are updated through the "yarn-upgrade" github workflow.
+
+version: 2
+updates:
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    labels:
+      - "pr/auto-approve"
+    open-pull-requests-limit: 5

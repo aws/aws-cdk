@@ -310,7 +310,10 @@ export class Repository extends RepositoryBase {
       public readonly repositoryCloneUrlGrc = makeCloneUrl(stack, repositoryName, 'grc', region);
     }
 
-    return new Import(scope, id);
+    return new Import(scope, id, {
+      account: arn.account,
+      region,
+    });
   }
 
   public static fromRepositoryName(scope: Construct, id: string, repositoryName: string): IRepository {

@@ -218,7 +218,10 @@ export class EdgeFunction extends Resource implements lambda.IVersion {
     let edgeStack = stage.node.tryFindChild(edgeStackId) as Stack;
     if (!edgeStack) {
       edgeStack = new Stack(stage, edgeStackId, {
-        env: { region: EdgeFunction.EDGE_REGION },
+        env: {
+          region: EdgeFunction.EDGE_REGION,
+          account: Stack.of(this).account,
+        },
       });
     }
     this.stack.addDependency(edgeStack);

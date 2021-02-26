@@ -27,6 +27,7 @@ Currently supported are:
 * Put a record to a Kinesis stream
 * Log an event into a LogGroup
 * Put a record to a Kinesis Data Firehose stream
+* Put an event on an EventBridge bus
 
 See the README of the `@aws-cdk/aws-events` library for more information on
 EventBridge.

@@ -160,7 +160,7 @@ export class Policy extends Resource implements IPolicy {
     });
 
     this._policyName = this.physicalName!;
-    this.force = props.force !== undefined ? props.force : false;
+    this.force = props.force ?? false;
 
     if (props.users) {
       props.users.forEach(u => this.attachToUser(u));

@@ -91,7 +91,7 @@
                 "s3:GetBucket*",
                 "s3:List*",
                 "s3:DeleteObject*",
-                "s3:PutObject*",
+                "s3:PutObject",
                 "s3:Abort*"
               ],
               "Effect": "Allow",
@@ -263,23 +263,7 @@
         "KeyPolicy": {
           "Statement": [
             {
-              "Action": [
-                "kms:Create*",
-                "kms:Describe*",
-                "kms:Enable*",
-                "kms:List*",
-                "kms:Put*",
-                "kms:Update*",
-                "kms:Revoke*",
-                "kms:Disable*",
-                "kms:Get*",
-                "kms:Delete*",
-                "kms:ScheduleKeyDeletion",
-                "kms:CancelKeyDeletion",
-                "kms:GenerateDataKey",
-                "kms:TagResource",
-                "kms:UntagResource"
-              ],
+              "Action": "kms:*",
               "Effect": "Allow",
               "Principal": {
                 "AWS": {
@@ -296,97 +280,6 @@
                       },
                       ":root"
                     ]
-                  ]
-                }
-              },
-              "Resource": "*"
-            },
-            {
-              "Action": [
-                "kms:Decrypt",
-                "kms:DescribeKey",
-                "kms:Encrypt",
-                "kms:ReEncrypt*",
-                "kms:GenerateDataKey*"
-              ],
-              "Effect": "Allow",
-              "Principal": {
-                "AWS": {
-                  "Fn::GetAtt": [
-                    "PipelineRoleD68726F7",
-                    "Arn"
-                  ]
-                }
-              },
-              "Resource": "*"
-            },
-            {
-              "Action": [
-                "kms:Decrypt",
-                "kms:DescribeKey",
-                "kms:Encrypt",
-                "kms:ReEncrypt*",
-                "kms:GenerateDataKey*"
-              ],
-              "Effect": "Allow",
-              "Principal": {
-                "AWS": {
-                  "Fn::GetAtt": [
-                    "PipelinesourceCodePipelineActionRoleB7E0306A",
-                    "Arn"
-                  ]
-                }
-              },
-              "Resource": "*"
-            },
-            {
-              "Action": [
-                "kms:Decrypt",
-                "kms:DescribeKey",
-                "kms:Encrypt",
-                "kms:ReEncrypt*",
-                "kms:GenerateDataKey*"
-              ],
-              "Effect": "Allow",
-              "Principal": {
-                "AWS": {
-                  "Fn::GetAtt": [
-                    "MyBuildProjectRole6B7E2258",
-                    "Arn"
-                  ]
-                }
-              },
-              "Resource": "*"
-            },
-            {
-              "Action": [
-                "kms:Decrypt",
-                "kms:Encrypt",
-                "kms:ReEncrypt*",
-                "kms:GenerateDataKey*"
-              ],
-              "Effect": "Allow",
-              "Principal": {
-                "AWS": {
-                  "Fn::GetAtt": [
-                    "MyBuildProjectRole6B7E2258",
-                    "Arn"
-                  ]
-                }
-              },
-              "Resource": "*"
-            },
-            {
-              "Action": [
-                "kms:Decrypt",
-                "kms:DescribeKey"
-              ],
-              "Effect": "Allow",
-              "Principal": {
-                "AWS": {
-                  "Fn::GetAtt": [
-                    "MyBuildProjectRole6B7E2258",
-                    "Arn"
                   ]
                 }
               },
@@ -469,7 +362,7 @@
                 "s3:GetBucket*",
                 "s3:List*",
                 "s3:DeleteObject*",
-                "s3:PutObject*",
+                "s3:PutObject",
                 "s3:Abort*"
               ],
               "Effect": "Allow",
@@ -727,7 +620,7 @@
                 "s3:GetBucket*",
                 "s3:List*",
                 "s3:DeleteObject*",
-                "s3:PutObject*",
+                "s3:PutObject",
                 "s3:Abort*"
               ],
               "Effect": "Allow",

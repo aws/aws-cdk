@@ -115,7 +115,7 @@ class LiteralSchedule extends Schedule {
 }
 
 function fallback<T>(x: T | undefined, def: T): T {
-  return x === undefined ? def : x;
+  return x ?? def;
 }
 
 /**

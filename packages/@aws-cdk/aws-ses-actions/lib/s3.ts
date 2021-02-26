@@ -92,9 +92,9 @@ export class S3 implements ses.IReceiptRuleAction {
     return {
       s3Action: {
         bucketName: this.props.bucket.bucketName,
-        kmsKeyArn: this.props.kmsKey ? this.props.kmsKey.keyArn : undefined,
+        kmsKeyArn: this.props.kmsKey?.keyArn,
         objectKeyPrefix: this.props.objectKeyPrefix,
-        topicArn: this.props.topic ? this.props.topic.topicArn : undefined,
+        topicArn: this.props.topic?.topicArn,
       },
     };
   }

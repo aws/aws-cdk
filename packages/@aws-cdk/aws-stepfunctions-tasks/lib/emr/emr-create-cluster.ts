@@ -173,7 +173,7 @@ export class EmrCreateCluster extends sfn.TaskStateBase {
 
   constructor(scope: Construct, id: string, private readonly props: EmrCreateClusterProps) {
     super(scope, id, props);
-    this.visibleToAllUsers = this.props.visibleToAllUsers !== undefined ? this.props.visibleToAllUsers : true;
+    this.visibleToAllUsers = this.props.visibleToAllUsers ?? true;
     this.integrationPattern = props.integrationPattern || sfn.IntegrationPattern.RUN_JOB;
     validatePatternSupported(this.integrationPattern, EmrCreateCluster.SUPPORTED_INTEGRATION_PATTERNS);
 

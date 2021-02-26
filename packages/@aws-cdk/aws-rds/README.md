@@ -283,7 +283,7 @@ instance.grantConnect(role); // Grant the role connection access to the DB.
 The following example shows granting connection access for RDS Proxy to an IAM role.
 
 ```ts
-const cluster = new rds.DatabaseCluster(stack, 'Database'{
+const cluster = new rds.DatabaseCluster(stack, 'Database', {
   engine: rds.DatabaseClusterEngine.AURORA,
   instanceProps: { vpc },
 });
@@ -295,7 +295,7 @@ const proxy = new rds.DatabaseProxy(stack, 'Proxy', {
 });
 
 const role = new Role(stack, 'DBProxyRole', { assumedBy: new AccountPrincipal(stack.account) });
-proxy.grantConnect(role); // Grant the role connection access to the DB Proxy.
+proxy.grantConnect(role, 'admin'); // Grant the role connection access to the DB Proxy for database user 'admin'.
 ```
 
 **Note**: In addition to the setup above, a database user will need to be created to support IAM auth.
@@ -525,7 +525,7 @@ const cluster = new rds.ServerlessCluster(this, 'AnotherCluster', {
 });
 
 const fn = new lambda.Function(this, 'MyFunction', {
-  runtime: lambda.Runtime.NODEJS_10_X,
+  runtime: lambda.Runtime.NODEJS_12_X,
   handler: 'index.handler',
   code: lambda.Code.fromAsset(path.join(__dirname, 'lambda-handler')),
   environment: {

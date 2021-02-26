@@ -14,3 +14,10 @@
 <!--END STABILITY BANNER-->
 
 This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.
+
+## Kinesis Analytics Flink
+
+The `aws-kinesisanalytics-flink` package provides constructs for building Flink applications.
+
+  * [Github](https://github.com/aws/aws-cdk/tree/master/packages/%40aws-cdk/aws-kinesisanalytics-flink)
+  * [CDK Docs](https://docs.aws.amazon.com/cdk/api/latest/docs/aws-kinesisanalytics-flink.html)

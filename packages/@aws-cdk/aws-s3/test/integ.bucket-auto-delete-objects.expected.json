@@ -148,7 +148,19 @@
             "Arn"
           ]
         },
-        "Runtime": "nodejs12.x"
+        "Runtime": "nodejs12.x",
+        "Description": {
+          "Fn::Join": [
+            "",
+            [
+              "Lambda function for auto-deleting objects in ",
+              {
+                "Ref": "Bucket83908E77"
+              },
+              " S3 bucket."
+            ]
+          ]
+        }
       },
       "DependsOn": [
         "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"

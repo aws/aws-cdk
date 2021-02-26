@@ -27,7 +27,9 @@
           "EmailSubject": "Verify your new account",
           "SmsMessage": "The verification code to your new account is {####}"
         }
-      }
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
     },
     "UserPoolDomainD0EA232A": {
       "Type": "AWS::Cognito::UserPoolDomain",
@@ -36,6 +38,27 @@
         "UserPoolId": {
           "Ref": "UserPool6BA7E5F2"
         }
+      }
+    },
+    "UserPoolDomainCloudFrontDomainNameCustomResourcePolicy7DE54188": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "cognito-idp:DescribeUserPoolDomain",
+              "Effect": "Allow",
+              "Resource": "*"
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "UserPoolDomainCloudFrontDomainNameCustomResourcePolicy7DE54188",
+        "Roles": [
+          {
+            "Ref": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
+          }
+        ]
       }
     },
     "UserPoolDomainCloudFrontDomainNameE213E594": {
@@ -48,40 +71,44 @@
           ]
         },
         "Create": {
-          "service": "CognitoIdentityServiceProvider",
-          "action": "describeUserPoolDomain",
-          "parameters": {
-            "Domain": {
-              "Ref": "UserPoolDomainD0EA232A"
-            }
-          },
-          "physicalResourceId": {
-            "id": {
-              "Ref": "UserPoolDomainD0EA232A"
-            }
-          }
+          "Fn::Join": [
+            "",
+            [
+              "{\"service\":\"CognitoIdentityServiceProvider\",\"action\":\"describeUserPoolDomain\",\"parameters\":{\"Domain\":\"",
+              {
+                "Ref": "UserPoolDomainD0EA232A"
+              },
+              "\"},\"physicalResourceId\":{\"id\":\"",
+              {
+                "Ref": "UserPoolDomainD0EA232A"
+              },
+              "\"}}"
+            ]
+          ]
         },
         "Update": {
-          "service": "CognitoIdentityServiceProvider",
-          "action": "describeUserPoolDomain",
-          "parameters": {
-            "Domain": {
-              "Ref": "UserPoolDomainD0EA232A"
-            }
-          },
-          "physicalResourceId": {
-            "id": {
-              "Ref": "UserPoolDomainD0EA232A"
-            }
-          }
+          "Fn::Join": [
+            "",
+            [
+              "{\"service\":\"CognitoIdentityServiceProvider\",\"action\":\"describeUserPoolDomain\",\"parameters\":{\"Domain\":\"",
+              {
+                "Ref": "UserPoolDomainD0EA232A"
+              },
+              "\"},\"physicalResourceId\":{\"id\":\"",
+              {
+                "Ref": "UserPoolDomainD0EA232A"
+              },
+              "\"}}"
+            ]
+          ]
         },
         "InstallLatestAwsSdk": true
       },
-      "UpdateReplacePolicy": "Delete",
-      "DeletionPolicy": "Delete",
       "DependsOn": [
         "UserPoolDomainCloudFrontDomainNameCustomResourcePolicy7DE54188"
-      ]
+      ],
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
     },
     "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2": {
       "Type": "AWS::IAM::Role",
@@ -114,29 +141,12 @@
         ]
       }
     },
-    "UserPoolDomainCloudFrontDomainNameCustomResourcePolicy7DE54188": {
-      "Type": "AWS::IAM::Policy",
-      "Properties": {
-        "PolicyDocument": {
-          "Statement": [
-            {
-              "Action":"cognito-idp:DescribeUserPoolDomain",
-              "Effect":"Allow",
-              "Resource": "*"
-            }
-          ],
-          "Version": "2012-10-17"
-        },
-        "PolicyName": "UserPoolDomainCloudFrontDomainNameCustomResourcePolicy7DE54188",
-        "Roles": [{"Ref":"AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"}]
-      }
-    },
     "AWS679f53fac002430cb0da5b7982bd22872D164C4C": {
       "Type": "AWS::Lambda::Function",
       "Properties": {
         "Code": {
           "S3Bucket": {
-            "Ref": "AssetParametersd731b1475f16a318a48a76c83d255f7422cfa5f025c5bff93537b8f0b8e94557S3BucketA250C084"
+            "Ref": "AssetParameters0625b1566df06e0ffd948f0f65f97a3d22d48242e66196d3f72b480f5309b343S3Bucket65227904"
           },
           "S3Key": {
             "Fn::Join": [
@@ -149,7 +159,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParametersd731b1475f16a318a48a76c83d255f7422cfa5f025c5bff93537b8f0b8e94557S3VersionKeyDC4F0CD7"
+                          "Ref": "AssetParameters0625b1566df06e0ffd948f0f65f97a3d22d48242e66196d3f72b480f5309b343S3VersionKey3AF0E7DF"
                         }
                       ]
                     }
@@ -162,7 +172,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParametersd731b1475f16a318a48a76c83d255f7422cfa5f025c5bff93537b8f0b8e94557S3VersionKeyDC4F0CD7"
+                          "Ref": "AssetParameters0625b1566df06e0ffd948f0f65f97a3d22d48242e66196d3f72b480f5309b343S3VersionKey3AF0E7DF"
                         }
                       ]
                     }
@@ -172,13 +182,13 @@
             ]
           }
         },
-        "Handler": "index.handler",
         "Role": {
           "Fn::GetAtt": [
             "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2",
             "Arn"
           ]
         },
+        "Handler": "index.handler",
         "Runtime": "nodejs12.x",
         "Timeout": 120
       },
@@ -203,17 +213,17 @@
     }
   },
   "Parameters": {
-    "AssetParametersd731b1475f16a318a48a76c83d255f7422cfa5f025c5bff93537b8f0b8e94557S3BucketA250C084": {
+    "AssetParameters0625b1566df06e0ffd948f0f65f97a3d22d48242e66196d3f72b480f5309b343S3Bucket65227904": {
       "Type": "String",
-      "Description": "S3 bucket for asset \"d731b1475f16a318a48a76c83d255f7422cfa5f025c5bff93537b8f0b8e94557\""
+      "Description": "S3 bucket for asset \"0625b1566df06e0ffd948f0f65f97a3d22d48242e66196d3f72b480f5309b343\""
     },
-    "AssetParametersd731b1475f16a318a48a76c83d255f7422cfa5f025c5bff93537b8f0b8e94557S3VersionKeyDC4F0CD7": {
+    "AssetParameters0625b1566df06e0ffd948f0f65f97a3d22d48242e66196d3f72b480f5309b343S3VersionKey3AF0E7DF": {
       "Type": "String",
-      "Description": "S3 key for asset version \"d731b1475f16a318a48a76c83d255f7422cfa5f025c5bff93537b8f0b8e94557\""
+      "Description": "S3 key for asset version \"0625b1566df06e0ffd948f0f65f97a3d22d48242e66196d3f72b480f5309b343\""
     },
-    "AssetParametersd731b1475f16a318a48a76c83d255f7422cfa5f025c5bff93537b8f0b8e94557ArtifactHash5701DE73": {
+    "AssetParameters0625b1566df06e0ffd948f0f65f97a3d22d48242e66196d3f72b480f5309b343ArtifactHash0C561FF5": {
       "Type": "String",
-      "Description": "Artifact hash for asset \"d731b1475f16a318a48a76c83d255f7422cfa5f025c5bff93537b8f0b8e94557\""
+      "Description": "Artifact hash for asset \"0625b1566df06e0ffd948f0f65f97a3d22d48242e66196d3f72b480f5309b343\""
     }
   }
 }

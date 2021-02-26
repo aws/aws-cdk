@@ -86,8 +86,8 @@ export class VpcEndpointService extends Resource implements IVpcEndpointService 
     }
 
     this.vpcEndpointServiceLoadBalancers = props.vpcEndpointServiceLoadBalancers;
-    this.acceptanceRequired = props.acceptanceRequired !== undefined ? props.acceptanceRequired : true;
-    this.whitelistedPrincipals = props.whitelistedPrincipals !== undefined ? props.whitelistedPrincipals : [];
+    this.acceptanceRequired = props.acceptanceRequired ?? true;
+    this.whitelistedPrincipals = props.whitelistedPrincipals ?? [];
 
     this.endpointService = new CfnVPCEndpointService(this, id, {
       networkLoadBalancerArns: this.vpcEndpointServiceLoadBalancers.map(lb => lb.loadBalancerArn),
@@ -98,8 +98,7 @@ export class VpcEndpointService extends Resource implements IVpcEndpointService 
 
     const { region } = Stack.of(this);
     const serviceNamePrefix = !Token.isUnresolved(region) ?
-      RegionInfo.get(region).vpcEndpointServiceNamePrefix ??
-      Default.VPC_ENDPOINT_SERVICE_NAME_PREFIX :
+      (RegionInfo.get(region).vpcEndpointServiceNamePrefix ?? Default.VPC_ENDPOINT_SERVICE_NAME_PREFIX) :
       Default.VPC_ENDPOINT_SERVICE_NAME_PREFIX;
 
     this.vpcEndpointServiceName = Fn.join('.', [serviceNamePrefix, Aws.REGION, this.vpcEndpointServiceId]);

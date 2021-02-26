@@ -6,6 +6,7 @@ import { Construct } from 'constructs';
 import { ICachePolicy } from './cache-policy';
 import { CfnDistribution } from './cloudfront.generated';
 import { GeoRestriction } from './geo-restriction';
+import { IKeyGroup } from './key-group';
 import { IOrigin, OriginBindConfig, OriginBindOptions } from './origin';
 import { IOriginRequestPolicy } from './origin-request-policy';
 import { CacheBehavior } from './private/cache-behavior';
@@ -706,6 +707,14 @@ export interface AddBehaviorOptions {
    * @see https://aws.amazon.com/lambda/edge
    */
   readonly edgeLambdas?: EdgeLambda[];
+
+  /**
+   * A list of Key Groups that CloudFront can use to validate signed URLs or signed cookies.
+   *
+   * @default - no KeyGroups are associated with cache behavior
+   * @see https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/PrivateContent.html
+   */
+  readonly trustedKeyGroups?: IKeyGroup[];
 }
 
 /**

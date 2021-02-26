@@ -90,5 +90,8 @@
   },
   "cdk-build": {
     "jest": true
+  },
+  "publishConfig": {
+    "tag": "latest"
   }
 }

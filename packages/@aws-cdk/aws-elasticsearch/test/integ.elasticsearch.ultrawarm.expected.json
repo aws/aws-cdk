@@ -34,7 +34,9 @@
         "NodeToNodeEncryptionOptions": {
           "Enabled": false
         }
-      }
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
     }
   }
 }

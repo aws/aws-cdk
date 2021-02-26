@@ -1,5 +1,5 @@
 import * as kms from '@aws-cdk/aws-kms';
-import { Duration, Stack, Token } from '@aws-cdk/core';
+import { Duration, RemovalPolicy, Stack, Token } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { IQueue, QueueAttributes, QueueBase } from './queue-base';
 import { CfnQueue } from './sqs.generated';
@@ -137,6 +137,18 @@ export interface QueueProps {
    * @default false
    */
   readonly contentBasedDeduplication?: boolean;
+
+  /**
+   * Policy to apply when the user pool is removed from the stack
+   *
+   * Even though queues are technically stateful, their contents are transient and it
+   * is common to add and remove Queues while rearchitecting your application. The
+   * default is therefore `DESTROY`. Change it to `RETAIN` if the messages are so
+   * valuable that accidentally losing them would be unacceptable.
+   *
+   * @default RemovalPolicy.DESTROY
+   */
+  readonly removalPolicy?: RemovalPolicy;
 }
 
 /**
@@ -273,6 +285,7 @@ export class Queue extends QueueBase {
       receiveMessageWaitTimeSeconds: props.receiveMessageWaitTime && props.receiveMessageWaitTime.toSeconds(),
       visibilityTimeout: props.visibilityTimeout && props.visibilityTimeout.toSeconds(),
     });
+    queue.applyRemovalPolicy(props.removalPolicy ?? RemovalPolicy.DESTROY);
 
     this.queueArn = this.getResourceArnAttribute(queue.attrArn, {
       service: 'sqs',

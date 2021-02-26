@@ -1786,7 +1786,7 @@ Object {
                 "s3:GetBucket*",
                 "s3:List*",
                 "s3:DeleteObject*",
-                "s3:PutObject*",
+                "s3:PutObject",
                 "s3:Abort*",
               ],
               "Effect": "Allow",
@@ -1847,23 +1847,7 @@ Object {
         "KeyPolicy": Object {
           "Statement": Array [
             Object {
-              "Action": Array [
-                "kms:Create*",
-                "kms:Describe*",
-                "kms:Enable*",
-                "kms:List*",
-                "kms:Put*",
-                "kms:Update*",
-                "kms:Revoke*",
-                "kms:Disable*",
-                "kms:Get*",
-                "kms:Delete*",
-                "kms:ScheduleKeyDeletion",
-                "kms:CancelKeyDeletion",
-                "kms:GenerateDataKey",
-                "kms:TagResource",
-                "kms:UntagResource",
-              ],
+              "Action": "kms:*",
               "Effect": "Allow",
               "Principal": Object {
                 "AWS": Object {
@@ -1880,24 +1864,6 @@ Object {
                       },
                       ":root",
                     ],
-                  ],
-                },
-              },
-              "Resource": "*",
-            },
-            Object {
-              "Action": Array [
-                "kms:Decrypt",
-                "kms:Encrypt",
-                "kms:ReEncrypt*",
-                "kms:GenerateDataKey*",
-              ],
-              "Effect": "Allow",
-              "Principal": Object {
-                "AWS": Object {
-                  "Fn::GetAtt": Array [
-                    "BuildProjectRoleAA92C755",
-                    "Arn",
                   ],
                 },
               },
@@ -1944,23 +1910,7 @@ Object {
         "KeyPolicy": Object {
           "Statement": Array [
             Object {
-              "Action": Array [
-                "kms:Create*",
-                "kms:Describe*",
-                "kms:Enable*",
-                "kms:List*",
-                "kms:Put*",
-                "kms:Update*",
-                "kms:Revoke*",
-                "kms:Disable*",
-                "kms:Get*",
-                "kms:Delete*",
-                "kms:ScheduleKeyDeletion",
-                "kms:CancelKeyDeletion",
-                "kms:GenerateDataKey",
-                "kms:TagResource",
-                "kms:UntagResource",
-              ],
+              "Action": "kms:*",
               "Effect": "Allow",
               "Principal": Object {
                 "AWS": Object {
@@ -1977,95 +1927,6 @@ Object {
                       },
                       ":root",
                     ],
-                  ],
-                },
-              },
-              "Resource": "*",
-            },
-            Object {
-              "Action": Array [
-                "kms:Decrypt",
-                "kms:DescribeKey",
-                "kms:Encrypt",
-                "kms:ReEncrypt*",
-                "kms:GenerateDataKey*",
-              ],
-              "Effect": "Allow",
-              "Principal": Object {
-                "AWS": Object {
-                  "Fn::GetAtt": Array [
-                    "PipelineRoleD68726F7",
-                    "Arn",
-                  ],
-                },
-              },
-              "Resource": "*",
-            },
-            Object {
-              "Action": Array [
-                "kms:Decrypt",
-                "kms:DescribeKey",
-                "kms:Encrypt",
-                "kms:ReEncrypt*",
-                "kms:GenerateDataKey*",
-              ],
-              "Effect": "Allow",
-              "Principal": Object {
-                "AWS": Object {
-                  "Fn::GetAtt": Array [
-                    "PipelineSourceCodePipelineActionRoleC6F9E7F5",
-                    "Arn",
-                  ],
-                },
-              },
-              "Resource": "*",
-            },
-            Object {
-              "Action": Array [
-                "kms:Decrypt",
-                "kms:DescribeKey",
-                "kms:Encrypt",
-                "kms:ReEncrypt*",
-                "kms:GenerateDataKey*",
-              ],
-              "Effect": "Allow",
-              "Principal": Object {
-                "AWS": Object {
-                  "Fn::GetAtt": Array [
-                    "BuildProjectRoleAA92C755",
-                    "Arn",
-                  ],
-                },
-              },
-              "Resource": "*",
-            },
-            Object {
-              "Action": Array [
-                "kms:Decrypt",
-                "kms:DescribeKey",
-              ],
-              "Effect": "Allow",
-              "Principal": Object {
-                "AWS": Object {
-                  "Fn::GetAtt": Array [
-                    "PipelineDeployRole97597E3E",
-                    "Arn",
-                  ],
-                },
-              },
-              "Resource": "*",
-            },
-            Object {
-              "Action": Array [
-                "kms:Decrypt",
-                "kms:DescribeKey",
-              ],
-              "Effect": "Allow",
-              "Principal": Object {
-                "AWS": Object {
-                  "Fn::GetAtt": Array [
-                    "PipelineDeployCodePipelineActionRole8B83082E",
-                    "Arn",
                   ],
                 },
               },
@@ -2597,7 +2458,7 @@ Object {
                 "s3:GetBucket*",
                 "s3:List*",
                 "s3:DeleteObject*",
-                "s3:PutObject*",
+                "s3:PutObject",
                 "s3:Abort*",
               ],
               "Effect": "Allow",
@@ -2724,7 +2585,7 @@ Object {
                 "s3:GetBucket*",
                 "s3:List*",
                 "s3:DeleteObject*",
-                "s3:PutObject*",
+                "s3:PutObject",
                 "s3:Abort*",
               ],
               "Effect": "Allow",
@@ -2874,7 +2735,9 @@ exports[`pure-cfn.json: pure-cfn 1`] = `
 Object {
   "Resources": Object {
     "Hello4A628BD4": Object {
+      "DeletionPolicy": "Delete",
       "Type": "AWS::SQS::Queue",
+      "UpdateReplacePolicy": "Delete",
     },
     "MyLogGroup": Object {
       "Properties": Object {
@@ -2892,6 +2755,7 @@ exports[`queue-kms.json: queue-kms 1`] = `
 Object {
   "Resources": Object {
     "MyQueueE6CA6235": Object {
+      "DeletionPolicy": "Delete",
       "Properties": Object {
         "KmsMasterKeyId": Object {
           "Fn::GetAtt": Array [
@@ -2901,6 +2765,7 @@ Object {
         },
       },
       "Type": "AWS::SQS::Queue",
+      "UpdateReplacePolicy": "Delete",
     },
     "MyQueueKey6C31ABF3": Object {
       "DeletionPolicy": "Retain",
@@ -2909,23 +2774,7 @@ Object {
         "KeyPolicy": Object {
           "Statement": Array [
             Object {
-              "Action": Array [
-                "kms:Create*",
-                "kms:Describe*",
-                "kms:Enable*",
-                "kms:List*",
-                "kms:Put*",
-                "kms:Update*",
-                "kms:Revoke*",
-                "kms:Disable*",
-                "kms:Get*",
-                "kms:Delete*",
-                "kms:ScheduleKeyDeletion",
-                "kms:CancelKeyDeletion",
-                "kms:GenerateDataKey",
-                "kms:TagResource",
-                "kms:UntagResource",
-              ],
+              "Action": "kms:*",
               "Effect": "Allow",
               "Principal": Object {
                 "AWS": Object {

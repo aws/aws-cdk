@@ -1,4 +1,4 @@
-import { expect, haveResource } from '@aws-cdk/assert';
+import { expect, haveResource, ResourcePart } from '@aws-cdk/assert';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import { CfnParameter, Duration, Stack, App } from '@aws-cdk/core';
@@ -18,9 +18,15 @@ export = {
       'Resources': {
         'Queue4A7E3555': {
           'Type': 'AWS::SQS::Queue',
+          'UpdateReplacePolicy': 'Delete',
+          'DeletionPolicy': 'Delete',
         },
       },
     });
+
+    expect(stack).to(haveResource('AWS::SQS::Queue', {
+      DeletionPolicy: 'Delete',
+    }, ResourcePart.CompleteDefinition));
 
     test.done();
   },
@@ -33,6 +39,8 @@ export = {
       'Resources': {
         'DLQ581697C4': {
           'Type': 'AWS::SQS::Queue',
+          'UpdateReplacePolicy': 'Delete',
+          'DeletionPolicy': 'Delete',
         },
         'Queue4A7E3555': {
           'Type': 'AWS::SQS::Queue',
@@ -47,6 +55,8 @@ export = {
               'maxReceiveCount': 3,
             },
           },
+          'UpdateReplacePolicy': 'Delete',
+          'DeletionPolicy': 'Delete',
         },
       },
     });
@@ -99,6 +109,8 @@ export = {
               'Ref': 'myretentionperiod',
             },
           },
+          'UpdateReplacePolicy': 'Delete',
+          'DeletionPolicy': 'Delete',
         },
       },
     });
@@ -119,6 +131,8 @@ export = {
       'Resources': {
         'MyQueueE6CA6235': {
           'Type': 'AWS::SQS::Queue',
+          'UpdateReplacePolicy': 'Delete',
+          'DeletionPolicy': 'Delete',
         },
         'MyQueuePolicy6BBEDDAC': {
           'Type': 'AWS::SQS::QueuePolicy',
@@ -311,6 +325,8 @@ export = {
             'Properties': {
               'KmsMasterKeyId': 'alias/aws/sqs',
             },
+            'UpdateReplacePolicy': 'Delete',
+            'DeletionPolicy': 'Delete',
           },
         },
       });
@@ -378,6 +394,8 @@ export = {
             'QueueName': 'MyQueue.fifo',
             'FifoQueue': true,
           },
+          'UpdateReplacePolicy': 'Delete',
+          'DeletionPolicy': 'Delete',
         },
       },
     });
@@ -400,6 +418,8 @@ export = {
           'Properties': {
             'FifoQueue': true,
           },
+          'UpdateReplacePolicy': 'Delete',
+          'DeletionPolicy': 'Delete',
         },
       },
     });

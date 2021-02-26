@@ -318,12 +318,17 @@
       "attribute-tag:@aws-cdk/aws-apigateway.RestApi.restApiName",
       "attribute-tag:@aws-cdk/aws-apigateway.SpecRestApi.restApiName",
       "attribute-tag:@aws-cdk/aws-apigateway.LambdaRestApi.restApiName",
-      "from-method:@aws-cdk/aws-apigateway.Stage"
+      "from-method:@aws-cdk/aws-apigateway.Stage",
+      "resource-attribute:@aws-cdk/aws-apigateway.ApiKey.apiKeyId",
+      "resource-attribute:@aws-cdk/aws-apigateway.RateLimitedApiKey.apiKeyId"
     ]
   },
   "stability": "stable",
   "awscdkio": {
     "announce": false
   },
-  "maturity": "stable"
+  "maturity": "stable",
+  "publishConfig": {
+    "tag": "latest"
+  }
 }

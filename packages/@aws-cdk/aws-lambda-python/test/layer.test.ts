@@ -2,7 +2,7 @@ import '@aws-cdk/assert/jest';
 import * as path from 'path';
 import { Runtime } from '@aws-cdk/aws-lambda';
 import { Stack } from '@aws-cdk/core';
-import { hasDependencies, bundle } from '../lib/bundling';
+import { stageDependencies, bundle } from '../lib/bundling';
 import { PythonLayerVersion } from '../lib/layer';
 
 jest.mock('../lib/bundling', () => {
@@ -18,11 +18,11 @@ jest.mock('../lib/bundling', () => {
       },
       bindToResource: () => { return; },
     }),
-    hasDependencies: jest.fn().mockReturnValue(true),
+    stageDependencies: jest.fn().mockReturnValue(true),
   };
 });
 
-const hasDependenciesMock = (hasDependencies as jest.Mock);
+const hasDependenciesMock = (stageDependencies as jest.Mock);
 
 let stack: Stack;
 beforeEach(() => {

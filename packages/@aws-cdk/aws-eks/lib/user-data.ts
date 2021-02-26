@@ -13,7 +13,7 @@ export function renderAmazonLinuxUserData(clusterName: string, autoScalingGroup:
 
   const extraArgs = new Array<string>();
 
-  extraArgs.push(`--use-max-pods ${options.useMaxPods === undefined ? true : options.useMaxPods}`);
+  extraArgs.push(`--use-max-pods ${options.useMaxPods ?? true}`);
 
   if (options.awsApiRetryAttempts) {
     extraArgs.push(`--aws-api-retry-attempts ${options.awsApiRetryAttempts}`);

@@ -222,7 +222,7 @@ describe('Batch Job Definition', () => {
     // THEN
     expect(importedJob.jobDefinitionName).toEqual('job-def-name');
     expect(importedJob.jobDefinitionArn)
-      .toEqual('arn:${Token[AWS.Partition.3]}:batch:${Token[AWS.Region.4]}:${Token[AWS.AccountId.0]}:job-definition/job-def-name');
+      .toEqual(`arn:${cdk.Aws.PARTITION}:batch:${cdk.Aws.REGION}:${cdk.Aws.ACCOUNT_ID}:job-definition/job-def-name`);
   });
 
   test('can configure log configuration secrets properly', () => {

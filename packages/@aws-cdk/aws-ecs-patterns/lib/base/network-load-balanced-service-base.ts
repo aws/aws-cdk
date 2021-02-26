@@ -67,7 +67,9 @@ export interface NetworkLoadBalancedServiceBaseProps {
    * The desired number of instantiations of the task definition to keep running on the service.
    * The minimum value is 1
    *
-   * @default 1
+   * @default - If the feature flag, ECS_REMOVE_DEFAULT_DESIRED_COUNT is false, the default is 1;
+   * if true, the default is 1 for all new services and uses the existing services desired count
+   * when updating an existing service.
    */
   readonly desiredCount?: number;
 
@@ -263,8 +265,16 @@ export interface NetworkLoadBalancedTaskImageOptions {
 export abstract class NetworkLoadBalancedServiceBase extends CoreConstruct {
   /**
    * The desired number of instantiations of the task definition to keep running on the service.
+   * @deprecated - Use `internalDesiredCount` instead.
    */
   public readonly desiredCount: number;
+
+  /**
+   * The desired number of instantiations of the task definition to keep running on the service.
+   * The default is 1 for all new services and uses the existing services desired count
+   * when updating an existing service, if one is not provided.
+   */
+  public readonly internalDesiredCount?: number;
 
   /**
    * The Network Load Balancer for the service.
@@ -306,20 +316,19 @@ export abstract class NetworkLoadBalancedServiceBase extends CoreConstruct {
     if (props.desiredCount !== undefined && props.desiredCount < 1) {
       throw new Error('You must specify a desiredCount greater than 0');
     }
-    this.desiredCount = props.desiredCount || 1;
 
-    const internetFacing = props.publicLoadBalancer !== undefined ? props.publicLoadBalancer : true;
+    this.desiredCount = props.desiredCount || 1;
+    this.internalDesiredCount = props.desiredCount;
+
+    const internetFacing = props.publicLoadBalancer ?? true;
 
     const lbProps = {
       vpc: this.cluster.vpc,
       internetFacing,
     };
 
-    const loadBalancer = props.loadBalancer !== undefined ? props.loadBalancer :
-      new NetworkLoadBalancer(this, 'LB', lbProps);
-
-    const listenerPort = props.listenerPort !== undefined ? props.listenerPort : 80;
-
+    const loadBalancer = props.loadBalancer ?? new NetworkLoadBalancer(this, 'LB', lbProps);
+    const listenerPort = props.listenerPort ?? 80;
     const targetProps = {
       port: 80,
     };

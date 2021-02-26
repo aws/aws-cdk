@@ -91,5 +91,8 @@
   "awscdkio": {
     "announce": false
   },
-  "maturity": "cfn-only"
+  "maturity": "cfn-only",
+  "publishConfig": {
+    "tag": "latest"
+  }
 }

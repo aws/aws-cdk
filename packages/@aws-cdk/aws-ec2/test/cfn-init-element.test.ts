@@ -206,6 +206,12 @@ describe('InitFile', () => {
     });
   });
 
+  test('empty content string throws error', () => {
+    expect(() => {
+      ec2.InitFile.fromString('/tmp/foo', '');
+    }).toThrow('InitFile /tmp/foo: cannot create empty file. Please supply at least one character of content.');
+  });
+
   test('symlink throws an error if mode is set incorrectly', () => {
     expect(() => {
       ec2.InitFile.symlink('/tmp/foo', '/tmp/bar', {

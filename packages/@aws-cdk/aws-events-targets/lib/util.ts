@@ -33,13 +33,14 @@ export function singletonEventRole(scope: IConstruct, policyStatements: iam.Poli
 export function addLambdaPermission(rule: events.IRule, handler: lambda.IFunction): void {
   let scope: Construct | undefined;
   let node: ConstructNode = handler.permissionsNode;
+  let permissionId = `AllowEventRule${Names.nodeUniqueId(rule.node)}`;
   if (rule instanceof Construct) {
     // Place the Permission resource in the same stack as Rule rather than the Function
     // This is to reduce circular dependency when the lambda handler and the rule are across stacks.
     scope = rule;
     node = rule.node;
+    permissionId = `AllowEventRule${Names.nodeUniqueId(handler.node)}`;
   }
-  const permissionId = `AllowEventRule${Names.nodeUniqueId(rule.node)}`;
   if (!node.tryFindChild(permissionId)) {
     handler.addPermission(permissionId, {
       scope,

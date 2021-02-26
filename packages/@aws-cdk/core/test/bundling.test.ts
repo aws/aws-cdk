@@ -161,13 +161,53 @@ nodeunitShim({
       signal: null,
     });
 
-    BundlingDockerImage.fromAsset(path.join(__dirname, 'fs/fixtures/test1'), {
+    const imagePath = path.join(__dirname, 'fs/fixtures/test1');
+    BundlingDockerImage.fromAsset(imagePath, {
       file: 'my-dockerfile',
     });
 
     test.ok(spawnSyncStub.calledOnce);
-    test.ok(/-f my-dockerfile/.test(spawnSyncStub.firstCall.args[1]?.join(' ') ?? ''));
+    const expected = path.join(imagePath, 'my-dockerfile');
+    test.ok(new RegExp(`-f ${expected}`).test(spawnSyncStub.firstCall.args[1]?.join(' ') ?? ''));
 
+    test.done();
+  },
+
+  'custom entrypoint is passed through to docker exec'(test: Test) {
+    const spawnSyncStub = sinon.stub(child_process, 'spawnSync').returns({
+      status: 0,
+      stderr: Buffer.from('stderr'),
+      stdout: Buffer.from('stdout'),
+      pid: 123,
+      output: ['stdout', 'stderr'],
+      signal: null,
+    });
+
+    const image = BundlingDockerImage.fromRegistry('alpine');
+    image.run({
+      entrypoint: ['/cool/entrypoint', '--cool-entrypoint-arg'],
+      command: ['cool', 'command'],
+      environment: {
+        VAR1: 'value1',
+        VAR2: 'value2',
+      },
+      volumes: [{ hostPath: '/host-path', containerPath: '/container-path' }],
+      workingDirectory: '/working-directory',
+      user: 'user:group',
+    });
+
+    test.ok(spawnSyncStub.calledWith('docker', [
+      'run', '--rm',
+      '-u', 'user:group',
+      '-v', '/host-path:/container-path:delegated',
+      '--env', 'VAR1=value1',
+      '--env', 'VAR2=value2',
+      '-w', '/working-directory',
+      '--entrypoint', '/cool/entrypoint',
+      'alpine',
+      '--cool-entrypoint-arg',
+      'cool', 'command',
+    ], { stdio: ['ignore', process.stderr, 'inherit'] }));
     test.done();
   },
 

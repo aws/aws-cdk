@@ -7,6 +7,7 @@ import { Construct } from 'constructs';
 import { CfnDistribution } from './cloudfront.generated';
 import { HttpVersion, IDistribution, LambdaEdgeEventType, OriginProtocolPolicy, PriceClass, ViewerProtocolPolicy, SSLMethod, SecurityPolicyProtocol } from './distribution';
 import { GeoRestriction } from './geo-restriction';
+import { IKeyGroup } from './key-group';
 import { IOriginAccessIdentity } from './origin-access-identity';
 
 /**
@@ -347,8 +348,17 @@ export interface Behavior {
    * The signers are the account IDs that are allowed to sign cookies/presigned URLs for this distribution.
    *
    * If you pass a non empty value, all requests for this behavior must be signed (no public access will be allowed)
+   * @deprecated - We recommend using trustedKeyGroups instead of trustedSigners.
    */
   readonly trustedSigners?: string[];
+
+  /**
+   * A list of Key Groups that CloudFront can use to validate signed URLs or signed cookies.
+   *
+   * @default - no KeyGroups are associated with cache behavior
+   * @see https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/PrivateContent.html
+   */
+  readonly trustedKeyGroups?: IKeyGroup[];
 
   /**
    *
@@ -761,10 +771,10 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
     let distributionConfig: CfnDistribution.DistributionConfigProperty = {
       comment: props.comment,
       enabled: true,
-      defaultRootObject: props.defaultRootObject !== undefined ? props.defaultRootObject : 'index.html',
+      defaultRootObject: props.defaultRootObject ?? 'index.html',
       httpVersion: props.httpVersion || HttpVersion.HTTP2,
       priceClass: props.priceClass || PriceClass.PRICE_CLASS_100,
-      ipv6Enabled: (props.enableIpV6 !== undefined) ? props.enableIpV6 : true,
+      ipv6Enabled: props.enableIpV6 ?? true,
       // eslint-disable-next-line max-len
       customErrorResponses: props.errorConfigurations, // TODO: validation : https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cloudfront-distribution-customerrorresponse.html#cfn-cloudfront-distribution-customerrorresponse-errorcachingminttl
       webAclId: props.webACLId,
@@ -932,6 +942,7 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
       forwardedValues: input.forwardedValues || { queryString: false, cookies: { forward: 'none' } },
       maxTtl: input.maxTtl && input.maxTtl.toSeconds(),
       minTtl: input.minTtl && input.minTtl.toSeconds(),
+      trustedKeyGroups: input.trustedKeyGroups?.map(key => key.keyGroupId),
       trustedSigners: input.trustedSigners,
       targetOriginId: input.targetOriginId,
       viewerProtocolPolicy: protoPolicy || ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
@@ -1016,9 +1027,15 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
       // first case for backwards compatibility
       if (originConfig.s3OriginSource.originAccessIdentity) {
         // grant CloudFront OriginAccessIdentity read access to S3 bucket
-        originConfig.s3OriginSource.s3BucketSource.grantRead(
-          originConfig.s3OriginSource.originAccessIdentity,
-        );
+        // Used rather than `grantRead` because `grantRead` will grant overly-permissive policies.
+        // Only GetObject is needed to retrieve objects for the distribution.
+        // This also excludes KMS permissions; currently, OAI only supports SSE-S3 for buckets.
+        // Source: https://aws.amazon.com/blogs/networking-and-content-delivery/serving-sse-kms-encrypted-content-from-s3-using-cloudfront/
+        originConfig.s3OriginSource.s3BucketSource.addToResourcePolicy(new iam.PolicyStatement({
+          resources: [originConfig.s3OriginSource.s3BucketSource.arnForObjects('*')],
+          actions: ['s3:GetObject'],
+          principals: [originConfig.s3OriginSource.originAccessIdentity.grantPrincipal],
+        }));
 
         s3OriginConfig = {
           originAccessIdentity: `origin-access-identity/cloudfront/${originConfig.s3OriginSource.originAccessIdentity.originAccessIdentityName}`,

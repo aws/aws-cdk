@@ -640,7 +640,25 @@ describe('stack', () => {
     const assembly = app.synth();
     expect(assembly.getStackByName(parentStack.stackName).template).toEqual({ Resources: { MyParentResource: { Type: 'Resource::Parent' } } });
     expect(assembly.getStackByName(childStack.stackName).template).toEqual({ Resources: { MyChildResource: { Type: 'Resource::Child' } } });
+  });
 
+  test('Nested Stacks are synthesized with DESTROY policy', () => {
+    const app = new App();
+
+    // WHEN
+    const parentStack = new Stack(app, 'parent');
+    const childStack = new NestedStack(parentStack, 'child');
+    new CfnResource(childStack, 'ChildResource', { type: 'Resource::Child' });
+
+    const assembly = app.synth();
+    expect(assembly.getStackByName(parentStack.stackName).template).toEqual(expect.objectContaining({
+      Resources: {
+        childNestedStackchildNestedStackResource7408D03F: expect.objectContaining({
+          Type: 'AWS::CloudFormation::Stack',
+          DeletionPolicy: 'Delete',
+        }),
+      },
+    }));
   });
 
   test('cross-stack reference (substack references parent stack)', () => {

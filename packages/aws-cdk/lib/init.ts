@@ -179,10 +179,15 @@ export class InitTemplate {
       return;
     }
 
+    const futureFlags: {[key: string]: any} = {};
+    Object.entries(cxapi.FUTURE_FLAGS)
+      .filter(([k, _]) => !cxapi.FUTURE_FLAGS_EXPIRED.includes(k))
+      .forEach(([k, v]) => futureFlags[k] = v);
+
     const config = await fs.readJson(cdkJson);
     config.context = {
       ...config.context,
-      ...cxapi.FUTURE_FLAGS,
+      ...futureFlags,
     };
 
     await fs.writeJson(cdkJson, config, { spaces: 2 });
