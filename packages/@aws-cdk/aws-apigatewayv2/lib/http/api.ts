@@ -220,7 +220,7 @@ export interface AddRoutesOptions extends BatchHttpRouteOptions {
   /**
    * Authorizer to be associated to these routes.
    *
-   * Use @see NoneAuthorizer to remove the default authorizer for the api
+   * Use NoneAuthorizer to remove the default authorizer for the api
    *
    * @default - uses the default authorizer if one is specified on the HttpApi
    */
