@@ -1,4 +1,4 @@
-import { expect, haveResource } from '@aws-cdk/assert';
+import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as elb from '@aws-cdk/aws-elasticloadbalancing';
 import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
@@ -541,13 +541,47 @@ nodeunitShim({
       const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
 
+      // Errors on validation, not on construction.
+      new ecs.Ec2Service(stack, 'Ec2Service', {
+        cluster,
+        taskDefinition,
+      });
+
       // THEN
       test.throws(() => {
-        new ecs.Ec2Service(stack, 'Ec2Service', {
-          cluster,
-          taskDefinition,
-        });
+        expect(stack);
+      }, /one essential container/);
+
+      test.done();
+    },
+
+    'allows adding the default container after creating the service'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
+
+      new ecs.Ec2Service(stack, 'FargateService', {
+        cluster,
+        taskDefinition,
       });
+
+      // Add the container *after* creating the service
+      taskDefinition.addContainer('main', {
+        image: ecs.ContainerImage.fromRegistry('somecontainer'),
+        memoryReservationMiB: 10,
+      });
+
+      // THEN
+      expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
+        ContainerDefinitions: [
+          {
+            Name: 'main',
+          },
+        ],
+      }));
 
       test.done();
     },
