@@ -1673,7 +1673,7 @@ class SourceTableAttachedPolicy extends CoreConstruct implements iam.IGrantable 
   public readonly policy: iam.IManagedPolicy;
 
   public constructor(sourceTable: Table, role: iam.IRole) {
-    super(sourceTable, `SourceTableAttachedPolicy-${Names.nodeUniqueId(role.node)}`);
+    super(sourceTable, `SourceTableAttachedManagedPolicy-${Names.nodeUniqueId(role.node)}`);
 
     const policy = new iam.ManagedPolicy(this, 'Resource', {
       // A CF update of the description property of a managed policy requires

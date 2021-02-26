@@ -55,20 +55,13 @@ export async function isCompleteHandler(event: IsCompleteRequest): Promise<IsCom
 function getUpdateTableAction(event: OnEventRequest): 'Create' | 'Update' | 'Delete' | undefined {
   switch (event.RequestType) {
     case 'Create':
-      return 'Create';
-    case 'Update':
-      // If it's a table replacement, create a replica in the "new" table
-      if (event.OldResourceProperties && event.OldResourceProperties?.TableName !== event.ResourceProperties.TableName) {
-        return 'Create';
-      }
-      return;
     case 'Delete':
-      // Process only deletes that have the new physical resource id format. This
-      // is to prevent replica deletion when switching from the old format (region)
-      // to the new format (table-region).
-      if (event.PhysicalResourceId === `${event.ResourceProperties.TableName}-${event.ResourceProperties.Region}`) {
-        return 'Delete';
-      }
-      return;
+      return event.RequestType;
+    case 'Update':
+      // This can only be a table replacement so we create a replica
+      // in the new table. The replica for the "old" table will be
+      // deleted when CF issues a Delete event on the old physical
+      // resource id.
+      return 'Create';
   }
 }
