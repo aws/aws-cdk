@@ -484,7 +484,7 @@ export class HttpApi extends HttpApiBase {
     return methods.map((method) => {
       let authorizationScopes = this.defaultAuthorizationScopes;
 
-      if (Array.isArray(options.authorizationScopes)) {
+      if (options.authorizationScopes) {
         authorizationScopes = options.authorizationScopes;
       }
 
