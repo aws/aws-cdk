@@ -177,3 +177,14 @@ function undefinedIfNoKeys<A>(obj: A): A | undefined {
   const allUndefined = Object.values(obj).every(val => val === undefined);
   return allUndefined ? undefined : obj;
 }
+
+/**
+ * Explicitly configure no authorizers on specific HTTP API routes.
+ */
+export class HttpNoneAuthorizer implements IHttpRouteAuthorizer {
+  public bind(_: HttpRouteAuthorizerBindOptions): HttpRouteAuthorizerConfig {
+    return {
+      authorizationType: HttpAuthorizerType.NONE,
+    };
+  }
+}

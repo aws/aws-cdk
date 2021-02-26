@@ -4,7 +4,7 @@ import { Duration, IResource, Resource, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnApi, CfnApiProps } from '../apigatewayv2.generated';
 import { DefaultDomainMappingOptions } from '../http/stage';
-import { HttpAuthorizerType, HttpRouteAuthorizerBindOptions, HttpRouteAuthorizerConfig, IHttpRouteAuthorizer } from './authorizer';
+import { IHttpRouteAuthorizer } from './authorizer';
 import { IHttpRouteIntegration, HttpIntegration, HttpRouteIntegrationConfig } from './integration';
 import { BatchHttpRouteOptions, HttpMethod, HttpRoute, HttpRouteKey } from './route';
 import { HttpStage, HttpStageOptions } from './stage';
@@ -496,16 +496,5 @@ export class HttpApi extends HttpApiBase {
         authorizationScopes,
       });
     });
-  }
-}
-
-/**
- * Explicitly configure no authorizers on specific HTTP API routes.
- */
-export class NoneAuthorizer implements IHttpRouteAuthorizer {
-  public bind(_: HttpRouteAuthorizerBindOptions): HttpRouteAuthorizerConfig {
-    return {
-      authorizationType: HttpAuthorizerType.NONE,
-    };
   }
 }

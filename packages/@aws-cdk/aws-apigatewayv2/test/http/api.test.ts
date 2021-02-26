@@ -5,7 +5,7 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import { Duration, Stack } from '@aws-cdk/core';
 import {
   HttpApi, HttpAuthorizer, HttpAuthorizerType, HttpIntegrationType, HttpMethod, HttpRouteAuthorizerBindOptions, HttpRouteAuthorizerConfig,
-  HttpRouteIntegrationBindOptions, HttpRouteIntegrationConfig, IHttpRouteAuthorizer, IHttpRouteIntegration, NoneAuthorizer, PayloadFormatVersion,
+  HttpRouteIntegrationBindOptions, HttpRouteIntegrationConfig, IHttpRouteAuthorizer, IHttpRouteIntegration, HttpNoneAuthorizer, PayloadFormatVersion,
 } from '../../lib';
 
 describe('HttpApi', () => {
@@ -416,7 +416,7 @@ describe('HttpApi', () => {
         path: '/chickens',
         methods: [HttpMethod.GET],
         integration: new DummyRouteIntegration(),
-        authorizer: new NoneAuthorizer(),
+        authorizer: new HttpNoneAuthorizer(),
       });
 
       expect(stack).toHaveResource('AWS::ApiGatewayV2::Route', {
