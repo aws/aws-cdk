@@ -489,3 +489,27 @@ Language-specific higher level constructs are provided in separate modules:
 
 * `@aws-cdk/aws-lambda-nodejs`: [Github](https://github.com/aws/aws-cdk/tree/master/packages/%40aws-cdk/aws-lambda-nodejs) & [CDK Docs](https://docs.aws.amazon.com/cdk/api/latest/docs/aws-lambda-nodejs-readme.html)
 * `@aws-cdk/aws-lambda-python`: [Github](https://github.com/aws/aws-cdk/tree/master/packages/%40aws-cdk/aws-lambda-python) & [CDK Docs](https://docs.aws.amazon.com/cdk/api/latest/docs/aws-lambda-python-readme.html)
+
+## Code Signing
+
+Code signing for AWS Lambda helps to ensure that only trusted code runs in your Lambda functions. 
+When enabled, AWS Lambda checks every code deployment and verifies that the code package is signed by a trusted source.
+For more information, see [Configuring code signing for AWS Lambda](https://docs.aws.amazon.com/lambda/latest/dg/configuration-codesigning.html).
+The following code configures a function with code signing.
+
+```typescript
+import * as signer from '@aws-cdk/aws-signer';
+
+const signerProfile = signer.SigningProfile(this, 'SigningProfile', {
+  platform: Platform.AWS_LAMBDA_SHA384_ECDSA
+});
+
+const codeSigningConfig = new lambda.CodeSigningConfig(stack, 'CodeSigningConfig', {
+   signingProfiles: [signingProfile],
+});
+
+new lambda.Function(this, 'Function', {
+   codeSigningConfig,
+   // ...
+});
+```

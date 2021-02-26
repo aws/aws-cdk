@@ -1,6 +1,6 @@
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as ec2 from '@aws-cdk/aws-ec2';
-import { Annotations, Duration } from '@aws-cdk/core';
+import { Annotations, Duration, Token } from '@aws-cdk/core';
 import { IConstruct, Construct } from 'constructs';
 import { ApplicationELBMetrics } from '../elasticloadbalancingv2-canned-metrics.generated';
 import {
@@ -58,6 +58,20 @@ export interface ApplicationTargetGroupProps extends BaseTargetGroupProps {
   readonly stickinessCookieDuration?: Duration;
 
   /**
+   * The name of an application-based stickiness cookie.
+   *
+   * Names that start with the following prefixes are not allowed: AWSALB, AWSALBAPP,
+   * and AWSALBTG; they're reserved for use by the load balancer.
+   *
+   * Note: `stickinessCookieName` parameter depends on the presence of `stickinessCookieDuration` parameter.
+   * If `stickinessCookieDuration` is not set, `stickinessCookieName` will be omitted.
+   *
+   * @default - If `stickinessCookieDuration` is set, a load-balancer generated cookie is used. Otherwise, no stickiness is defined.
+   * @see https://docs.aws.amazon.com/elasticloadbalancing/latest/application/sticky-sessions.html
+   */
+  readonly stickinessCookieName?: string;
+
+  /**
    * The targets to add to this target group.
    *
    * Can be `Instance`, `IPAddress`, or any self-registering load balancing
@@ -109,10 +123,13 @@ export class ApplicationTargetGroup extends TargetGroupBase implements IApplicat
 
     if (props) {
       if (props.slowStart !== undefined) {
+        if (props.slowStart.toSeconds() < 30 || props.slowStart.toSeconds() > 900) {
+          throw new Error('Slow start duration value must be between 30 and 900 seconds.');
+        }
         this.setAttribute('slow_start.duration_seconds', props.slowStart.toSeconds().toString());
       }
-      if (props.stickinessCookieDuration !== undefined) {
-        this.enableCookieStickiness(props.stickinessCookieDuration);
+      if (props.stickinessCookieDuration) {
+        this.enableCookieStickiness(props.stickinessCookieDuration, props.stickinessCookieName);
       }
       this.addTarget(...(props.targets || []));
     }
@@ -129,12 +146,34 @@ export class ApplicationTargetGroup extends TargetGroupBase implements IApplicat
   }
 
   /**
-   * Enable sticky routing via a cookie to members of this target group
+   * Enable sticky routing via a cookie to members of this target group.
+   *
+   * Note: If the `cookieName` parameter is set, application-based stickiness will be applied,
+   * otherwise it defaults to duration-based stickiness attributes (`lb_cookie`).
+   *
+   * @see https://docs.aws.amazon.com/elasticloadbalancing/latest/application/sticky-sessions.html
    */
-  public enableCookieStickiness(duration: Duration) {
+  public enableCookieStickiness(duration: Duration, cookieName?: string) {
+    if (duration.toSeconds() < 1 || duration.toSeconds() > 604800) {
+      throw new Error('Stickiness cookie duration value must be between 1 second and 7 days (604800 seconds).');
+    }
+    if (cookieName !== undefined) {
+      if (!Token.isUnresolved(cookieName) && (cookieName.startsWith('AWSALB') || cookieName.startsWith('AWSALBAPP') || cookieName.startsWith('AWSALBTG'))) {
+        throw new Error('App cookie names that start with the following prefixes are not allowed: AWSALB, AWSALBAPP, and AWSALBTG; they\'re reserved for use by the load balancer.');
+      }
+      if (cookieName === '') {
+        throw new Error('App cookie name cannot be an empty string.');
+      }
+    }
     this.setAttribute('stickiness.enabled', 'true');
-    this.setAttribute('stickiness.type', 'lb_cookie');
-    this.setAttribute('stickiness.lb_cookie.duration_seconds', duration.toSeconds().toString());
+    if (cookieName) {
+      this.setAttribute('stickiness.type', 'app_cookie');
+      this.setAttribute('stickiness.app_cookie.cookie_name', cookieName);
+      this.setAttribute('stickiness.app_cookie.duration_seconds', duration.toSeconds().toString());
+    } else {
+      this.setAttribute('stickiness.type', 'lb_cookie');
+      this.setAttribute('stickiness.lb_cookie.duration_seconds', duration.toSeconds().toString());
+    }
   }
 
   /**
