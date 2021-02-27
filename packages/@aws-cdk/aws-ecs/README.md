@@ -258,14 +258,14 @@ container.addPortMappings({
 To add data volumes to a task definition, call `addVolume()`:
 
 ```ts
-const volume = ecs.Volume("Volume", {
+const volume = {
   // Use an Elastic FileSystem
   name: "mydatavolume",
   efsVolumeConfiguration: ecs.EfsVolumeConfiguration({
     fileSystemId: "EFS"
     // ... other options here ...
   })
-});
+};
 
 const container = fargateTaskDefinition.addVolume("mydatavolume");
 ```
