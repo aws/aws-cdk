@@ -1,8 +1,9 @@
 import { Construct } from 'constructs';
 import { CfnApi } from '../apigatewayv2.generated';
-import { ApiBase, IApi } from '../common/api';
+import { IApi } from '../common/api';
+import { ApiBase } from '../common/base';
 import { DomainMappingOptions, IStage } from '../common/stage';
-import { IWebSocketRouteIntegrationConfig, WebSocketIntegration } from './integration';
+import { WebSocketRouteIntegrationConfig, WebSocketIntegration } from './integration';
 import { WebSocketRoute, WebSocketRouteOptions } from './route';
 import { WebSocketStage } from './stage';
 
@@ -14,7 +15,7 @@ export interface IWebSocketApi extends IApi {
    * Add a websocket integration
    * @internal
    */
-  _addIntegration(scope: Construct, config: IWebSocketRouteIntegrationConfig): WebSocketIntegration
+  _addIntegration(scope: Construct, config: WebSocketRouteIntegrationConfig): WebSocketIntegration
 }
 
 /**
@@ -134,10 +135,8 @@ export class WebSocketApi extends ApiBase implements IWebSocketApi {
   /**
    * @internal
    */
-  public _addIntegration(scope: Construct, config: IWebSocketRouteIntegrationConfig): WebSocketIntegration {
-    const configHash = this._getIntegrationConfigHash(scope, config);
-    const existingIntegration = this._getSavedIntegration(configHash);
-
+  public _addIntegration(scope: Construct, config: WebSocketRouteIntegrationConfig): WebSocketIntegration {
+    const { configHash, integration: existingIntegration } = this._integrationCache.getSavedIntegration(scope, config);
     if (existingIntegration) {
       return existingIntegration as WebSocketIntegration;
     }
@@ -147,7 +146,7 @@ export class WebSocketApi extends ApiBase implements IWebSocketApi {
       integrationType: config.type,
       integrationUri: config.uri,
     });
-    this._saveIntegration(configHash, integration);
+    this._integrationCache.saveIntegration(scope, config, integration);
 
     return integration;
   }

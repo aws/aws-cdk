@@ -5,7 +5,7 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import { Duration, Stack } from '@aws-cdk/core';
 import {
   HttpApi, HttpAuthorizer, HttpAuthorizerType, HttpIntegrationType, HttpMethod, HttpRouteAuthorizerBindOptions, HttpRouteAuthorizerConfig,
-  HttpRouteIntegrationBindOptions, IHttpRouteIntegrationConfig, IHttpRouteAuthorizer, IHttpRouteIntegration, PayloadFormatVersion,
+  HttpRouteIntegrationBindOptions, HttpRouteIntegrationConfig, IHttpRouteAuthorizer, IHttpRouteIntegration, PayloadFormatVersion,
 } from '../../lib';
 
 describe('HttpApi', () => {
@@ -374,7 +374,7 @@ describe('HttpApi', () => {
 });
 
 class DummyRouteIntegration implements IHttpRouteIntegration {
-  public bind(_: HttpRouteIntegrationBindOptions): IHttpRouteIntegrationConfig {
+  public bind(_: HttpRouteIntegrationBindOptions): HttpRouteIntegrationConfig {
     return {
       payloadFormatVersion: PayloadFormatVersion.VERSION_2_0,
       type: HttpIntegrationType.HTTP_PROXY,

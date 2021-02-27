@@ -2,7 +2,7 @@ import '@aws-cdk/assert/jest';
 import { Stack, App } from '@aws-cdk/core';
 import {
   HttpApi, HttpAuthorizer, HttpAuthorizerType, HttpConnectionType, HttpIntegrationType, HttpMethod, HttpRoute, HttpRouteAuthorizerBindOptions,
-  HttpRouteAuthorizerConfig, IHttpRouteIntegrationConfig, HttpRouteKey, IHttpRouteAuthorizer, IHttpRouteIntegration, PayloadFormatVersion,
+  HttpRouteAuthorizerConfig, HttpRouteIntegrationConfig, HttpRouteKey, IHttpRouteAuthorizer, IHttpRouteIntegration, PayloadFormatVersion,
 } from '../../lib';
 
 describe('HttpRoute', () => {
@@ -164,7 +164,7 @@ describe('HttpRoute', () => {
     const httpApi = new HttpApi(stack, 'HttpApi');
 
     class PrivateIntegration implements IHttpRouteIntegration {
-      public bind(): IHttpRouteIntegrationConfig {
+      public bind(): HttpRouteIntegrationConfig {
         return {
           method: HttpMethod.ANY,
           payloadFormatVersion: PayloadFormatVersion.VERSION_1_0,
@@ -244,7 +244,7 @@ describe('HttpRoute', () => {
 });
 
 class DummyIntegration implements IHttpRouteIntegration {
-  public bind(): IHttpRouteIntegrationConfig {
+  public bind(): HttpRouteIntegrationConfig {
     return {
       type: HttpIntegrationType.HTTP_PROXY,
       payloadFormatVersion: PayloadFormatVersion.VERSION_2_0,

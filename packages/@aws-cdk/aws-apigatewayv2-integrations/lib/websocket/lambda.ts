@@ -2,7 +2,7 @@ import {
   IWebSocketRouteIntegration,
   WebSocketIntegrationType,
   WebSocketRouteIntegrationBindOptions,
-  IWebSocketRouteIntegrationConfig,
+  WebSocketRouteIntegrationConfig,
 } from '@aws-cdk/aws-apigatewayv2';
 import { ServicePrincipal } from '@aws-cdk/aws-iam';
 import { IFunction } from '@aws-cdk/aws-lambda';
@@ -24,7 +24,7 @@ export interface LambdaWebSocketIntegrationProps {
 export class LambdaWebSocketIntegration implements IWebSocketRouteIntegration {
   constructor(private props: LambdaWebSocketIntegrationProps) {}
 
-  bind(options: WebSocketRouteIntegrationBindOptions): IWebSocketRouteIntegrationConfig {
+  bind(options: WebSocketRouteIntegrationBindOptions): WebSocketRouteIntegrationConfig {
     const route = options.route;
     this.props.handler.addPermission(`${Names.nodeUniqueId(route.node)}-Permission`, {
       scope: options.scope,

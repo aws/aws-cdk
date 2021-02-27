@@ -1,10 +1,11 @@
 import { Duration } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnApi, CfnApiProps } from '../apigatewayv2.generated';
-import { ApiBase, IApi } from '../common/api';
+import { IApi } from '../common/api';
+import { ApiBase } from '../common/base';
 import { DomainMappingOptions, IStage } from '../common/stage';
 import { IHttpRouteAuthorizer } from './authorizer';
-import { IHttpRouteIntegration, HttpIntegration, IHttpRouteIntegrationConfig } from './integration';
+import { IHttpRouteIntegration, HttpIntegration, HttpRouteIntegrationConfig } from './integration';
 import { BatchHttpRouteOptions, HttpMethod, HttpRoute, HttpRouteKey } from './route';
 import { HttpStage, HttpStageOptions } from './stage';
 import { VpcLink, VpcLinkProps } from './vpc-link';
@@ -29,7 +30,7 @@ export interface IHttpApi extends IApi {
    * Add a http integration
    * @internal
    */
-  _addIntegration(scope: Construct, config: IHttpRouteIntegrationConfig): HttpIntegration;
+  _addIntegration(scope: Construct, config: HttpRouteIntegrationConfig): HttpIntegration;
 }
 
 /**
@@ -178,12 +179,10 @@ abstract class HttpApiBase extends ApiBase implements IHttpApi { // note that th
   /**
    * @internal
    */
-  public _addIntegration(scope: Construct, config: IHttpRouteIntegrationConfig): HttpIntegration {
-    const configHash = this._getIntegrationConfigHash(scope, config);
-    const existingInteration = this._getSavedIntegration(configHash);
-
-    if (existingInteration) {
-      return existingInteration as HttpIntegration;
+  public _addIntegration(scope: Construct, config: HttpRouteIntegrationConfig): HttpIntegration {
+    const { configHash, integration: existingIntegration } = this._integrationCache.getSavedIntegration(scope, config);
+    if (existingIntegration) {
+      return existingIntegration as HttpIntegration;
     }
 
     const integration = new HttpIntegration(scope, `HttpIntegration-${configHash}`, {
@@ -195,7 +194,7 @@ abstract class HttpApiBase extends ApiBase implements IHttpApi { // note that th
       connectionType: config.connectionType,
       payloadFormatVersion: config.payloadFormatVersion,
     });
-    this._saveIntegration(configHash, integration);
+    this._integrationCache.saveIntegration(scope, config, integration);
 
     return integration;
   }

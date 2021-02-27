@@ -1,9 +1,6 @@
-import * as crypto from 'crypto';
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
-import { Resource, Stack } from '@aws-cdk/core';
-import { Construct } from 'constructs';
-import { IIntegration, IRouteIntegrationConfig } from './integration';
 import { IStage } from './stage';
+
 /**
  * Represents a API Gateway HTTP/WebSocket API
  */
@@ -76,80 +73,4 @@ export interface IApi {
    * @default - no statistic
    */
   metricLatency(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
-
-  /**
-   * Add an integration
-   * @internal
-   */
-  _addIntegration(scope: Construct, config: IRouteIntegrationConfig): IIntegration;
-}
-
-/**
- * Base class representing an API
- */
-export abstract class ApiBase extends Resource implements IApi {
-  abstract readonly apiId: string;
-  abstract readonly apiEndpoint: string;
-  protected integrations: Record<string, IIntegration> = {};
-
-  /**
-   * @internal
-   */
-  abstract _addIntegration(scope: Construct, config: IRouteIntegrationConfig): IIntegration;
-
-  /**
-   * @internal
-   */
-  protected _getIntegrationConfigHash(scope: Construct, config: IRouteIntegrationConfig): string {
-    const stringifiedConfig = JSON.stringify(Stack.of(scope).resolve(config));
-    const configHash = crypto.createHash('md5').update(stringifiedConfig).digest('hex');
-    return configHash;
-  }
-
-  /**
-   * @internal
-   */
-  protected _getSavedIntegration(configHash: string) {
-    return this.integrations[configHash];
-  }
-
-  /**
-   * @internal
-   */
-  protected _saveIntegration(configHash: string, integration: IIntegration) {
-    this.integrations[configHash] = integration;
-  }
-
-  public metric(metricName: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return new cloudwatch.Metric({
-      namespace: 'AWS/ApiGateway',
-      metricName,
-      dimensions: { ApiId: this.apiId },
-      ...props,
-    }).attachTo(this);
-  }
-
-  public metricClientError(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.metric('4XXError', { statistic: 'Sum', ...props });
-  }
-
-  public metricServerError(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.metric('5XXError', { statistic: 'Sum', ...props });
-  }
-
-  public metricDataProcessed(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.metric('DataProcessed', { statistic: 'Sum', ...props });
-  }
-
-  public metricCount(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.metric('Count', { statistic: 'SampleCount', ...props });
-  }
-
-  public metricIntegrationLatency(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.metric('IntegrationLatency', props);
-  }
-
-  public metricLatency(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.metric('Latency', props);
-  }
 }

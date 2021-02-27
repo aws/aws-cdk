@@ -1,9 +1,16 @@
 import { Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnStage } from '../apigatewayv2.generated';
-import { CommonStageOptions, StageBase } from '../common';
+import { CommonStageOptions, IStage, StageAttributes } from '../common';
 import { IApi } from '../common/api';
+import { StageBase } from '../common/base';
 import { IWebSocketApi } from './api';
+
+/**
+ * Represents the WebSocketStage
+ */
+export interface IWebSocketStage extends IStage {
+}
 
 /**
  * Properties to initialize an instance of `WebSocketStage`.
@@ -21,12 +28,33 @@ export interface WebSocketStageProps extends CommonStageOptions {
 }
 
 /**
+ * The attributes used to import existing WebSocketStage
+ */
+export interface WebSocketStageAttributes extends StageAttributes {
+}
+
+/**
  * Represents a stage where an instance of the API is deployed.
  * @resource AWS::ApiGatewayV2::Stage
  */
-export class WebSocketStage extends StageBase {
+export class WebSocketStage extends StageBase implements IWebSocketStage {
+  /**
+   * Import an existing stage into this CDK app.
+   */
+  public static fromWebSocketStageAttributes(scope: Construct, id: string, attrs: WebSocketStageAttributes): IWebSocketStage {
+    class Import extends StageBase implements IWebSocketStage {
+      public readonly stageName = attrs.stageName;
+      public readonly api = attrs.api;
+
+      get url(): string {
+        throw new Error('url is not available for imported stages.');
+      }
+    }
+    return new Import(scope, id);
+  }
+
   public readonly stageName: string;
-  protected readonly api: IApi;
+  public readonly api: IApi;
 
   constructor(scope: Construct, id: string, props: WebSocketStageProps) {
     super(scope, id, {

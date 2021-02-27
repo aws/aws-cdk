@@ -1,8 +1,6 @@
 import { Metric, MetricOptions } from '@aws-cdk/aws-cloudwatch';
-import { IResource, Resource } from '@aws-cdk/core';
-import { Construct } from 'constructs';
+import { IResource } from '@aws-cdk/core';
 import { IApi } from './api';
-import { ApiMapping } from './api-mapping';
 import { IDomainName } from './domain-name';
 
 /**
@@ -14,6 +12,12 @@ export interface IStage extends IResource {
    * @attribute
    */
   readonly stageName: string;
+
+  /**
+   * The API this stage is associated to.
+   * @attribute
+   */
+  readonly api: IApi;
 
   /**
    * The URL to this stage.
@@ -124,76 +128,4 @@ export interface StageAttributes {
    * The API to which this stage is associated
    */
   readonly api: IApi;
-}
-
-/**
- * Base class representing a Stage
- */
-export abstract class StageBase extends Resource implements IStage {
-  /**
-   * Import an existing stage into this CDK app.
-   */
-  public static fromStageAttributes(scope: Construct, id: string, attrs: StageAttributes): IStage {
-    class Import extends StageBase implements IStage {
-      public readonly stageName = attrs.stageName;
-      protected readonly api = attrs.api;
-
-      get url(): string {
-        throw new Error('url is not available for imported stages.');
-      }
-    }
-    return new Import(scope, id);
-  }
-
-  public abstract readonly stageName: string;
-  protected abstract readonly api: IApi;
-
-  /**
-   * The URL to this stage.
-   */
-  abstract get url(): string;
-
-  /**
-   * @internal
-   */
-  protected _addDomainMapping(domainMapping: DomainMappingOptions) {
-    new ApiMapping(this, `${domainMapping.domainName}${domainMapping.mappingKey}`, {
-      api: this.api,
-      domainName: domainMapping.domainName,
-      stage: this,
-      apiMappingKey: domainMapping.mappingKey,
-    });
-    // ensure the dependency
-    this.node.addDependency(domainMapping.domainName);
-  }
-
-  public metric(metricName: string, props?: MetricOptions): Metric {
-    return this.api.metric(metricName, props).with({
-      dimensions: { ApiId: this.api.apiId, Stage: this.stageName },
-    }).attachTo(this);
-  }
-
-  public metricClientError(props?: MetricOptions): Metric {
-    return this.metric('4XXError', { statistic: 'Sum', ...props });
-  }
-
-  public metricServerError(props?: MetricOptions): Metric {
-    return this.metric('5XXError', { statistic: 'Sum', ...props });
-  }
-
-  public metricDataProcessed(props?: MetricOptions): Metric {
-    return this.metric('DataProcessed', { statistic: 'Sum', ...props });
-  }
-
-  public metricCount(props?: MetricOptions): Metric {
-    return this.metric('Count', { statistic: 'SampleCount', ...props });
-  }
-
-  public metricIntegrationLatency(props?: MetricOptions): Metric {
-    return this.metric('IntegrationLatency', props);
-  }
-
-  public metricLatency(props?: MetricOptions): Metric {
-    return this.metric('Latency', props);
-  }
 }

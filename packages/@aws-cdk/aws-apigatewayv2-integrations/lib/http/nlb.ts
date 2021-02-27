@@ -1,4 +1,4 @@
-import { HttpRouteIntegrationBindOptions, IHttpRouteIntegrationConfig } from '@aws-cdk/aws-apigatewayv2';
+import { HttpRouteIntegrationBindOptions, HttpRouteIntegrationConfig } from '@aws-cdk/aws-apigatewayv2';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
 import { HttpPrivateIntegrationOptions } from './base-types';
@@ -22,7 +22,7 @@ export class HttpNlbIntegration extends HttpPrivateIntegration {
     super();
   }
 
-  public bind(options: HttpRouteIntegrationBindOptions): IHttpRouteIntegrationConfig {
+  public bind(options: HttpRouteIntegrationBindOptions): HttpRouteIntegrationConfig {
     let vpc: ec2.IVpc | undefined = this.props.vpcLink?.vpc;
     if (!vpc && (this.props.listener instanceof elbv2.NetworkListener)) {
       vpc = this.props.listener.loadBalancer.vpc;

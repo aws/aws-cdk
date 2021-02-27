@@ -31,7 +31,7 @@ describe('HttpStage', () => {
       httpApi: api,
     });
 
-    const imported = HttpStage.fromStageAttributes(stack, 'Import', {
+    const imported = HttpStage.fromHttpStageAttributes(stack, 'Import', {
       stageName: stage.stageName,
       api,
     });

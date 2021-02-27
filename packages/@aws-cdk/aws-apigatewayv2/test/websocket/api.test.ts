@@ -2,7 +2,7 @@ import '@aws-cdk/assert/jest';
 import { Stack } from '@aws-cdk/core';
 import {
   IWebSocketRouteIntegration, WebSocketApi, WebSocketIntegrationType,
-  WebSocketRouteIntegrationBindOptions, IWebSocketRouteIntegrationConfig,
+  WebSocketRouteIntegrationBindOptions, WebSocketRouteIntegrationConfig,
 } from '../../lib';
 
 describe('WebSocketApi', () => {
@@ -100,7 +100,7 @@ describe('WebSocketApi', () => {
 });
 
 class DummyIntegration implements IWebSocketRouteIntegration {
-  bind(_options: WebSocketRouteIntegrationBindOptions): IWebSocketRouteIntegrationConfig {
+  bind(_options: WebSocketRouteIntegrationBindOptions): WebSocketRouteIntegrationConfig {
     return {
       type: WebSocketIntegrationType.AWS_PROXY,
       uri: 'some-uri',

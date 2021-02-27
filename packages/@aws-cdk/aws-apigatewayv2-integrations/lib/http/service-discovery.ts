@@ -1,4 +1,4 @@
-import { HttpRouteIntegrationBindOptions, IHttpRouteIntegrationConfig } from '@aws-cdk/aws-apigatewayv2';
+import { HttpRouteIntegrationBindOptions, HttpRouteIntegrationConfig } from '@aws-cdk/aws-apigatewayv2';
 import * as servicediscovery from '@aws-cdk/aws-servicediscovery';
 import { HttpPrivateIntegrationOptions } from './base-types';
 import { HttpPrivateIntegration } from './private/integration';
@@ -21,7 +21,7 @@ export class HttpServiceDiscoveryIntegration extends HttpPrivateIntegration {
     super();
   }
 
-  public bind(_: HttpRouteIntegrationBindOptions): IHttpRouteIntegrationConfig {
+  public bind(_: HttpRouteIntegrationBindOptions): HttpRouteIntegrationConfig {
     if (!this.props.vpcLink) {
       throw new Error('The vpcLink property is mandatory');
     }

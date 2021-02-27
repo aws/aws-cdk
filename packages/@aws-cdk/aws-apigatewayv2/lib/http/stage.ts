@@ -1,12 +1,18 @@
 import { Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnStage } from '../apigatewayv2.generated';
-import { CommonStageOptions, StageBase } from '../common';
+import { CommonStageOptions, IStage, StageAttributes } from '../common';
 import { IApi } from '../common/api';
+import { StageBase } from '../common/base';
 import { IHttpApi } from './api';
 
-
 const DEFAULT_STAGE_NAME = '$default';
+
+/**
+ * Represents the HttpStage
+ */
+export interface IHttpStage extends IStage {
+}
 
 /**
  * The options to create a new Stage for an HTTP API
@@ -30,12 +36,33 @@ export interface HttpStageProps extends HttpStageOptions {
 }
 
 /**
+ * The attributes used to import existing HttpStage
+ */
+export interface HttpStageAttributes extends StageAttributes {
+}
+
+/**
  * Represents a stage where an instance of the API is deployed.
  * @resource AWS::ApiGatewayV2::Stage
  */
-export class HttpStage extends StageBase {
+export class HttpStage extends StageBase implements IHttpStage {
+  /**
+   * Import an existing stage into this CDK app.
+   */
+  public static fromHttpStageAttributes(scope: Construct, id: string, attrs: HttpStageAttributes): IHttpStage {
+    class Import extends StageBase implements IHttpStage {
+      public readonly stageName = attrs.stageName;
+      public readonly api = attrs.api;
+
+      get url(): string {
+        throw new Error('url is not available for imported stages.');
+      }
+    }
+    return new Import(scope, id);
+  }
+
   public readonly stageName: string;
-  protected readonly api: IApi;
+  public readonly api: IApi;
 
   constructor(scope: Construct, id: string, props: HttpStageProps) {
     super(scope, id, {
