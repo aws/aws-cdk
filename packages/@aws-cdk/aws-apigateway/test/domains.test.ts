@@ -1,5 +1,4 @@
 import '@aws-cdk/assert/jest';
-import { ABSENT } from '@aws-cdk/assert';
 import * as acm from '@aws-cdk/aws-certificatemanager';
 import { Bucket } from '@aws-cdk/aws-s3';
 import { Stack } from '@aws-cdk/core';
@@ -43,8 +42,6 @@ describe('domains', () => {
     expect(stack.resolve(regionalDomain.domainNameAliasHostedZoneId)).toEqual({ 'Fn::GetAtt': ['mydomain592C948B', 'RegionalHostedZoneId'] });
     expect(stack.resolve(edgeDomain.domainNameAliasDomainName)).toEqual({ 'Fn::GetAtt': ['yourdomain5FE30C81', 'DistributionDomainName'] });
     expect(stack.resolve(edgeDomain.domainNameAliasHostedZoneId)).toEqual({ 'Fn::GetAtt': ['yourdomain5FE30C81', 'DistributionHostedZoneId'] });
-
-
   });
 
   test('default endpoint type is REGIONAL', () => {
@@ -64,7 +61,6 @@ describe('domains', () => {
       'EndpointConfiguration': { 'Types': ['REGIONAL'] },
       'RegionalCertificateArn': { 'Ref': 'Cert5C9FAEC1' },
     });
-
   });
 
   test('accepts different security policies', () => {
@@ -109,9 +105,8 @@ describe('domains', () => {
       'DomainName': 'default.example.com',
       'EndpointConfiguration': { 'Types': ['REGIONAL'] },
       'RegionalCertificateArn': { 'Ref': 'Cert5C9FAEC1' },
-      'SecurityPolicy': ABSENT,
+      'SecurityPolicy': 'TLS_1_2',
     });
-
   });
 
   test('"mapping" can be used to automatically map this domain to the deployment stage of an API', () => {
@@ -140,7 +135,6 @@ describe('domains', () => {
         'Ref': 'apiDeploymentStageprod896C8101',
       },
     });
-
   });
 
   test('"addBasePathMapping" can be used to add base path mapping to the domain', () => {
@@ -186,7 +180,6 @@ describe('domains', () => {
         'Ref': 'api2DeploymentStageprod4120D74E',
       },
     });
-
   });
 
   test('a domain name can be defined with the API', () => {
@@ -225,8 +218,6 @@ describe('domains', () => {
         'Ref': 'apiDeploymentStageprod896C8101',
       },
     });
-
-
   });
 
   test('a domain name can be added later', () => {
@@ -265,8 +256,6 @@ describe('domains', () => {
         'Ref': 'apiDeploymentStageprod896C8101',
       },
     });
-
-
   });
 
   test('domain name cannot contain uppercase letters', () => {
@@ -274,13 +263,10 @@ describe('domains', () => {
     const stack = new Stack();
     const certificate = new acm.Certificate(stack, 'cert', { domainName: 'someDomainWithUpercase.domain.com' });
 
-    // WHEN
+    // WHEN & THEN
     expect(() => {
       new apigw.DomainName(stack, 'someDomain', { domainName: 'someDomainWithUpercase.domain.com', certificate });
-    }).toThrow(/uppercase/);
-
-    // THEN
-
+    }).toThrow(/Domain name does not support uppercase letters./);
   });
 
   test('multiple domain names can be added', () => {
@@ -440,7 +426,6 @@ describe('domains', () => {
       'RegionalCertificateArn': 'arn:aws:acm:us-east-1:1111111:certificate/11-3336f1-44483d-adc7-9cd375c5169d',
       'MutualTlsAuthentication': { 'TruststoreUri': 's3://exampleBucket/someca.pem', 'TruststoreVersion': 'version' },
     });
-
   });
 
   test('base path mapping configures stage for RestApi creation', () => {
@@ -466,8 +451,6 @@ describe('domains', () => {
         'Ref': 'restApiWithStageDeploymentStageprodC82A6648',
       },
     });
-
-
   });
 
   test('base path mapping configures stage for SpecRestApi creation', () => {
