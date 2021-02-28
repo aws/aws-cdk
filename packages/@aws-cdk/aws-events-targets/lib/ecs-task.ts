@@ -5,7 +5,6 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import { ContainerOverride } from './ecs-task-properties';
 import { singletonEventRole } from './util';
-import { Construct } from 'constructs';
 
 /**
  * Properties to define an ECS Event Task
@@ -139,8 +138,14 @@ export class EcsTask implements events.IRuleTarget {
       return;
     }
 
+    if (!cdk.Construct.isConstruct(this.taskDefinition)) {
+      throw new Error('Cannot create a security group for ECS task. ' +
+        'The task definition in ECS task is not a Construct. ' +
+        'Please pass a taskDefinition as a Construct in EcsTaskProps.');
+    }
+
     let securityGroup = props.securityGroup || this.taskDefinition.node.tryFindChild('SecurityGroup') as ec2.ISecurityGroup;
-    securityGroup = securityGroup || new ec2.SecurityGroup(this.taskDefinition as unknown as Construct, 'SecurityGroup', { vpc: this.props.cluster.vpc });
+    securityGroup = securityGroup || new ec2.SecurityGroup(this.taskDefinition, 'SecurityGroup', { vpc: this.props.cluster.vpc });
     this.securityGroup = securityGroup; // Maintain backwards-compatibility for customers that read the generated security group.
     this.securityGroups = [securityGroup];
   }

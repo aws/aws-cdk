@@ -1,5 +1,3 @@
-import * as iam from '@aws-cdk/aws-iam';
-import { Resource } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import {
   CommonTaskDefinitionAttributes,
@@ -12,6 +10,7 @@ import {
   TaskDefinition,
 } from '../base/task-definition';
 import { PlacementConstraint } from '../placement';
+import { ImportedTaskDefinition } from '../base/_imported-task-definition';
 
 /**
  * The properties for a task definition run on an EC2 cluster.
@@ -79,9 +78,9 @@ export class Ec2TaskDefinition extends TaskDefinition implements IEc2TaskDefinit
    * Imports a task definition from the specified task definition ARN.
    */
   public static fromEc2TaskDefinitionArn(scope: Construct, id: string, ec2TaskDefinitionArn: string): IEc2TaskDefinition {
-    return Ec2TaskDefinition.fromEc2TaskDefinitionAttributes(
-      scope, id, { taskDefinitionArn: ec2TaskDefinitionArn },
-    );
+    return new ImportedTaskDefinition(scope, id, {
+      taskDefinitionArn: ec2TaskDefinitionArn,
+    });
   }
 
   /**
@@ -92,30 +91,12 @@ export class Ec2TaskDefinition extends TaskDefinition implements IEc2TaskDefinit
     id: string,
     attrs: Ec2TaskDefinitionAttributes,
   ): IEc2TaskDefinition {
-    class Import extends Resource implements IEc2TaskDefinition {
-      public readonly taskDefinitionArn = attrs.taskDefinitionArn;
-      public readonly compatibility = Compatibility.EC2;
-      public readonly isEc2Compatible = true;
-      public readonly isFargateCompatible = false;
-
-      public get networkMode(): NetworkMode {
-        if (attrs.networkMode == undefined) {
-          throw new Error('NetworkMode is available only if it is given when importing the Ec2 TaskDefinition.');
-        } else {
-          return attrs.networkMode;
-        }
-      }
-
-      public get taskRole(): iam.IRole {
-        if (attrs.taskRole == undefined) {
-          throw new Error('TaskRole is available only if it is given when importing the Ec2 TaskDefinition.');
-        } else {
-          return attrs.taskRole;
-        }
-      }
-    }
-
-    return new Import(scope, id);
+    return new ImportedTaskDefinition(scope, id, {
+      taskDefinitionArn: attrs.taskDefinitionArn,
+      compatibility: Compatibility.EC2,
+      networkMode: attrs.networkMode,
+      taskRole: attrs.taskRole,
+    });
   }
 
   /**

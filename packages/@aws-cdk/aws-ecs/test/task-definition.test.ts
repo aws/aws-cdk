@@ -48,9 +48,6 @@ nodeunitShim({
       const stack = new cdk.Stack();
       const expectTaskDefinitionArn = 'TD_ARN';
       const expectCompatibility = ecs.Compatibility.EC2;
-      const expectExecutionRole = new iam.Role(stack, 'ExecutionRole', {
-        assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
-      });
       const expectNetworkMode = ecs.NetworkMode.AWS_VPC;
       const expectTaskRole = new iam.Role(stack, 'TaskRole', {
         assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
@@ -60,7 +57,6 @@ nodeunitShim({
       const taskDefinition = ecs.TaskDefinition.fromTaskDefinitionAttributes(stack, 'TD_ID', {
         taskDefinitionArn: expectTaskDefinitionArn,
         compatibility: expectCompatibility,
-        executionRole: expectExecutionRole,
         networkMode: expectNetworkMode,
         taskRole: expectTaskRole,
       });
@@ -68,7 +64,7 @@ nodeunitShim({
       // THEN
       test.equal(taskDefinition.taskDefinitionArn, expectTaskDefinitionArn);
       test.equal(taskDefinition.compatibility, expectCompatibility);
-      test.equal(taskDefinition.executionRole, expectExecutionRole);
+      test.equal(taskDefinition.executionRole, undefined);
       test.equal(taskDefinition.networkMode, expectNetworkMode);
       test.equal(taskDefinition.taskRole, expectTaskRole);
 
@@ -80,9 +76,6 @@ nodeunitShim({
       const stack = new cdk.Stack();
       const expectTaskDefinitionArn = 'TD_ARN';
       const expectCompatibility = ecs.Compatibility.EC2;
-      const expectExecutionRole = new iam.Role(stack, 'ExecutionRole', {
-        assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
-      });
       const expectTaskRole = new iam.Role(stack, 'TaskRole', {
         assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
       });
@@ -91,14 +84,14 @@ nodeunitShim({
       const taskDefinition = ecs.TaskDefinition.fromTaskDefinitionAttributes(stack, 'TD_ID', {
         taskDefinitionArn: expectTaskDefinitionArn,
         compatibility: expectCompatibility,
-        executionRole: expectExecutionRole,
         taskRole: expectTaskRole,
       });
 
       // THEN
       test.throws(() => {
         taskDefinition.networkMode;
-      }, /NetworkMode is available only if it is given when importing the TaskDefinition./);
+      }, 'This operation requires the networkMode in ImportedTaskDefinition to be defined. ' +
+        'Add the \'networkMode\' in ImportedTaskDefinitionProps to instantiate ImportedTaskDefinition');
 
       test.done();
     },
@@ -109,22 +102,19 @@ nodeunitShim({
       const expectTaskDefinitionArn = 'TD_ARN';
       const expectCompatibility = ecs.Compatibility.EC2;
       const expectNetworkMode = ecs.NetworkMode.AWS_VPC;
-      const expectExecutionRole = new iam.Role(stack, 'ExecutionRole', {
-        assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
-      });
 
       // WHEN
       const taskDefinition = ecs.TaskDefinition.fromTaskDefinitionAttributes(stack, 'TD_ID', {
         taskDefinitionArn: expectTaskDefinitionArn,
         compatibility: expectCompatibility,
-        executionRole: expectExecutionRole,
         networkMode: expectNetworkMode,
       });
 
       // THEN
       test.throws(() => {
         taskDefinition.taskRole;
-      }, /TaskRole is available only if it is given when importing the TaskDefinition./);
+      }, 'This operation requires the taskRole in ImportedTaskDefinition to be defined. ' +
+        'Add the \'taskRole\' in ImportedTaskDefinitionProps to instantiate ImportedTaskDefinition');
 
       test.done();
     },

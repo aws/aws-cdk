@@ -1114,7 +1114,9 @@ describe('ec2 task definition', () => {
       });
 
       // THEN
-      expect(() => taskDefinition.networkMode).toThrow(/NetworkMode is available only if it is given when importing the Ec2 TaskDefinition./);
+      expect(() => taskDefinition.networkMode).toThrow(
+        'This operation requires the networkMode in ImportedTaskDefinition to be defined. ' +
+        'Add the \'networkMode\' in ImportedTaskDefinitionProps to instantiate ImportedTaskDefinition');
     });
 
     test('returns an Ec2 TaskDefinition that will throw an error when trying to access its yet to defined taskRole', () => {
@@ -1130,7 +1132,9 @@ describe('ec2 task definition', () => {
       });
 
       // THEN
-      expect(() => taskDefinition.taskRole).toThrow(/TaskRole is available only if it is given when importing the Ec2 TaskDefinition./);
+      expect(() => { taskDefinition.taskRole; }).toThrow(
+        'This operation requires the taskRole in ImportedTaskDefinition to be defined. ' +
+        'Add the \'taskRole\' in ImportedTaskDefinitionProps to instantiate ImportedTaskDefinition');
     });
   });
 
@@ -1153,7 +1157,5 @@ describe('ec2 task definition', () => {
     expect(() => {
       new ecs.Ec2TaskDefinition(stack, 'TaskDef', { networkMode: ecs.NetworkMode.BRIDGE, proxyConfiguration });
     }).toThrow(/ProxyConfiguration can only be used with AwsVpc network mode, got: bridge/);
-
-
   });
 });

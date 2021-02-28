@@ -8,6 +8,7 @@ import { FirelensLogRouter, FirelensLogRouterDefinitionOptions, FirelensLogRoute
 import { AwsLogDriver } from '../log-drivers/aws-log-driver';
 import { PlacementConstraint } from '../placement';
 import { ProxyConfiguration } from '../proxy-configuration/proxy-configuration';
+import { ImportedTaskDefinition } from './_imported-task-definition';
 
 /**
  * The interface for all task definitions.
@@ -197,14 +198,14 @@ export interface CommonTaskDefinitionAttributes {
   /**
    * The networking mode to use for the containers in the task.
    *
-   * @default NetworkMode.BRIDGE
+   * @default Network mode cannot be provided to the imported task.
    */
   readonly networkMode?: NetworkMode;
 
   /**
    * The name of the IAM role that grants containers in the task permission to call AWS APIs on your behalf.
    *
-   * @default undefined.
+   * @default Permissions cannot be granted to the imported task.
    */
   readonly taskRole?: iam.IRole;
 }
@@ -213,13 +214,6 @@ export interface CommonTaskDefinitionAttributes {
  *  A reference to an existing task definition
  */
 export interface TaskDefinitionAttributes extends CommonTaskDefinitionAttributes {
-  /**
-   * Execution role for this task definition
-   *
-   * @default: undefined
-   */
-  readonly executionRole?: iam.IRole;
-
   /**
    * What launch types this task definition should be compatible with.
    *
@@ -262,36 +256,19 @@ export class TaskDefinition extends TaskDefinitionBase {
    * The task will have a compatibility of EC2+Fargate.
    */
   public static fromTaskDefinitionArn(scope: Construct, id: string, taskDefinitionArn: string): ITaskDefinition {
-    return TaskDefinition.fromTaskDefinitionAttributes(scope, id, { taskDefinitionArn: taskDefinitionArn });
+    return new ImportedTaskDefinition(scope, id, { taskDefinitionArn: taskDefinitionArn });
   }
 
   /**
    * Create a task definition from a task definition reference
    */
   public static fromTaskDefinitionAttributes(scope: Construct, id: string, attrs: TaskDefinitionAttributes): ITaskDefinition {
-    class Import extends TaskDefinitionBase {
-      public readonly taskDefinitionArn = attrs.taskDefinitionArn;
-      public readonly compatibility = attrs.compatibility ?? Compatibility.EC2_AND_FARGATE;
-      public readonly executionRole = attrs.executionRole;
-
-      public get networkMode(): NetworkMode {
-        if (attrs.networkMode == undefined) {
-          throw new Error('NetworkMode is available only if it is given when importing the TaskDefinition.');
-        } else {
-          return attrs.networkMode;
-        }
-      }
-
-      public get taskRole(): iam.IRole {
-        if (attrs.taskRole == undefined) {
-          throw new Error('TaskRole is available only if it is given when importing the TaskDefinition.');
-        } else {
-          return attrs.taskRole;
-        }
-      }
-    }
-
-    return new Import(scope, id);
+    return new ImportedTaskDefinition(scope, id, {
+      taskDefinitionArn: attrs.taskDefinitionArn,
+      compatibility: attrs.compatibility,
+      networkMode: attrs.networkMode,
+      taskRole: attrs.taskRole,
+    });
   }
 
   /**
@@ -968,13 +945,13 @@ export interface ITaskDefinitionExtension {
 /**
  * Return true if the given task definition can be run on an EC2 cluster
  */
-function isEc2Compatible(compatibility: Compatibility): boolean {
+export function isEc2Compatible(compatibility: Compatibility): boolean {
   return [Compatibility.EC2, Compatibility.EC2_AND_FARGATE].includes(compatibility);
 }
 
 /**
  * Return true if the given task definition can be run on a Fargate cluster
  */
-function isFargateCompatible(compatibility: Compatibility): boolean {
+export function isFargateCompatible(compatibility: Compatibility): boolean {
   return [Compatibility.FARGATE, Compatibility.EC2_AND_FARGATE].includes(compatibility);
 }

@@ -173,7 +173,8 @@ nodeunitShim({
       // THEN
       test.throws(() => {
         taskDefinition.networkMode;
-      }, /NetworkMode is available only if it is given when importing the Fargate TaskDefinition./);
+      }, 'This operation requires the networkMode in ImportedTaskDefinition to be defined. ' +
+        'Add the \'networkMode\' in ImportedTaskDefinitionProps to instantiate ImportedTaskDefinition');
 
       test.done();
     },
@@ -193,7 +194,8 @@ nodeunitShim({
       // THEN
       test.throws(() => {
         taskDefinition.taskRole;
-      }, /TaskRole is available only if it is given when importing the Fargate TaskDefinition./);
+      }, 'This operation requires the taskRole in ImportedTaskDefinition to be defined. ' +
+        'Add the \'taskRole\' in ImportedTaskDefinitionProps to instantiate ImportedTaskDefinition');
 
       test.done();
     },
