@@ -14,7 +14,7 @@ APIs and verifies that the APIs adhere to the guidelines. When a guideline is
 backed by a linter rule, the rule name will be referenced like this:
 _[awslint:resource-class-is-construct]_.
 
-For the purpose of this document we will use "Foo" to denote the official name
+For the purpose of this document, we will use "Foo" to denote the official name
 of the resource as defined in the AWS CloudFormation resource specification
 (i.e. "Bucket", "Queue", "Topic", etc). This notation allows deriving names from
 the official name. For example, `FooProps` would be `BucketProps`, `TopicProps`,
@@ -98,8 +98,8 @@ or abstractions. However, you will notice that some sections explicitly call out
 guidelines that apply only to AWS resources (and in many cases
 enforced/implemented by the **Resource** base class).
 
-AWS services are modeled around the concept of *resources*. Service normally
-expose through their APIs one or more resources, which can be provisioned
+AWS services are modeled around the concept of *resources*. Services normally
+expose one or more resources through their APIs, which can be provisioned
 through the APIs control plane or through AWS CloudFormation.
 
 Every resource available in the AWS platform will have a corresponding resource
@@ -397,12 +397,12 @@ For example, prefer “readCapacity” versus “readCapacityUnits”.
 We prefer the terminology used by the official AWS service documentation over
 new terminology, even if you think it's not ideal. It helps users diagnose
 issues and map the mental model of the construct to the service APIs,
-documentation and examples. For example don't be tempted to change SQS's
+documentation and examples. For example, don't be tempted to change SQS's
 **dataKeyReusePeriod** with **keyRotation** because it will be hard for people
 to diagnose problems. They won't be able to just search for “sqs dataKeyReuse”
 and find topics on it.
 
-> We can relax this guidelines when this is about generic terms (like
+> We can relax this guideline when this is about generic terms (like
   `httpStatus` instead of `statusCode`). The important semantics to preserve are
   for *service features*: I wouldn't want to rename "lambda layers" to "lambda
   dependencies" just because it makes more sense because then users won't be
@@ -697,8 +697,8 @@ _[awslint:from-signature]_:
 #### “from” Methods
 
 Resource constructs should export static “from” methods for importing unowned
-resources given one more of its physical attributes such as ARN, name, etc. All
-constructs should have at least one "fromXxx" method _[awslint:from-method]_:
+resources given one or more of its physical attributes such as ARN, name, etc. All
+constructs should have at least one `fromXxx` method _[awslint:from-method]_:
 
 ```ts
 static fromFooArn(scope: Construct, id: string, bucketArn: string): IFoo;
@@ -870,7 +870,7 @@ vpcSubnetSelection?: ec2.SubnetSelection;
 
 ### Grants
 
-Grants are one of the most powerful concept in the AWS Construct Library. They
+Grants are one of the most powerful concepts in the AWS Construct Library. They
 offer a higher level, intent-based, API for managing IAM permissions for AWS
 resources.
 
@@ -974,7 +974,7 @@ class Function extends Resource implements IFunction {
 
 ### Events
 
-Many AWS resource emit events to the CloudWatch event bus. Such resources should
+Many AWS resources emit events to the CloudWatch event bus. Such resources should
 have a set of “onXxx” methods available on their construct interface
 _[awslint:events-in-interface]_.
 
