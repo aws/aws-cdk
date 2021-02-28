@@ -71,6 +71,56 @@ nodeunitShim({
     test.done();
   },
 
+  'asset packaging type is correct when staging is skipped because of memory cache'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    const sourcePath = path.join(__dirname, 'archive', 'archive.zip');
+
+    // WHEN
+    const staging1 = new AssetStaging(stack, 's1', { sourcePath });
+    const staging2 = new AssetStaging(stack, 's2', { sourcePath });
+
+    test.deepEqual(staging1.packaging, FileAssetPackaging.FILE);
+    test.deepEqual(staging1.isArchive, true);
+    test.deepEqual(staging2.packaging, staging1.packaging);
+    test.deepEqual(staging2.isArchive, staging1.isArchive);
+    test.done();
+  },
+
+  'asset packaging type is correct when staging is skipped because of disk cache'(test: Test) {
+    // GIVEN
+    const TEST_OUTDIR = path.join(__dirname, 'cdk.out');
+    if (fs.existsSync(TEST_OUTDIR)) {
+      fs.removeSync(TEST_OUTDIR);
+    }
+
+    const sourcePath = path.join(__dirname, 'archive', 'archive.zip');
+
+    const app1 = new App({ outdir: TEST_OUTDIR });
+    const stack1 = new Stack(app1, 'Stack');
+
+    const app2 = new App({ outdir: TEST_OUTDIR }); // same OUTDIR
+    const stack2 = new Stack(app2, 'stack');
+
+    // WHEN
+    const staging1 = new AssetStaging(stack1, 'Asset', { sourcePath });
+
+    // Now clear asset hash cache to show that during the second staging
+    // even though the asset is already available on disk it will correctly
+    // be considered as a FileAssetPackaging.FILE.
+    AssetStaging.clearAssetHashCache();
+
+    const staging2 = new AssetStaging(stack2, 'Asset', { sourcePath });
+
+    // THEN
+    test.deepEqual(staging1.packaging, FileAssetPackaging.FILE);
+    test.deepEqual(staging1.isArchive, true);
+    test.deepEqual(staging2.packaging, staging1.packaging);
+    test.deepEqual(staging2.isArchive, staging1.isArchive);
+
+    test.done();
+  },
+
   'staging of a non-archive file correctly sets packaging and isArchive'(test: Test) {
     // GIVEN
     const stack = new Stack();
