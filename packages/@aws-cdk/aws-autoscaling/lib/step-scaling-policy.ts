@@ -59,10 +59,16 @@ export interface StepScalingPolicyProps extends BasicStepScalingPolicyProps {
    * The auto scaling group
    */
   readonly autoScalingGroup: IAutoScalingGroup;
+
+  /**
+  * The number of the most recent periods, or data points, to evaluate when determining alarm state.
+  * @default Default evaluation periods for cloudwatch alarms
+  */
+  readonly evaluationPeriods?: number;
 }
 
 /**
- * Define a acaling strategy which scales depending on absolute values of some metric.
+ * Define a scaling strategy which scales depending on absolute values of some metric.
  *
  * You can specify the scaling behavior for various values of the metric.
  *
@@ -111,7 +117,7 @@ export class StepScalingPolicy extends CoreConstruct {
         metric: props.metric,
         alarmDescription: 'Lower threshold scaling alarm',
         comparisonOperator: cloudwatch.ComparisonOperator.LESS_THAN_OR_EQUAL_TO_THRESHOLD,
-        evaluationPeriods: 1,
+        evaluationPeriods: props.evaluationPeriods ?? 1,
         threshold,
       });
       this.lowerAlarm.addAlarmAction(new StepScalingAlarmAction(this.lowerAction));
@@ -141,7 +147,7 @@ export class StepScalingPolicy extends CoreConstruct {
         metric: props.metric,
         alarmDescription: 'Upper threshold scaling alarm',
         comparisonOperator: cloudwatch.ComparisonOperator.GREATER_THAN_OR_EQUAL_TO_THRESHOLD,
-        evaluationPeriods: 1,
+        evaluationPeriods: props.evaluationPeriods ?? 1,
         threshold,
       });
       this.upperAlarm.addAlarmAction(new StepScalingAlarmAction(this.upperAction));
