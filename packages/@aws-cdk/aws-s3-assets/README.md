@@ -135,7 +135,7 @@ Use `BundlingOutput.NOT_ARCHIVED` if the bundling output must always be zipped:
 const asset = new assets.Asset(this, 'BundledAsset', {
   path: '/path/to/asset',
   bundling: {
-    image: BundlingDockerImage.fromRegistry('alpine'),
+    image: DockerImage.fromRegistry('alpine'),
     command: ['command-that-produces-an-archive.sh'],
     outputType: BundlingOutput.NOT_ARCHIVED, // Bundling output will be zipped even though it produces a single archive file.
   },
