@@ -14,11 +14,7 @@
         "PolicyDocument": {
           "Statement": [
             {
-              "Action": [
-                "s3:GetObject*",
-                "s3:GetBucket*",
-                "s3:List*"
-              ],
+              "Action": "s3:GetObject",
               "Effect": "Allow",
               "Principal": {
                 "AWS": {
@@ -37,28 +33,20 @@
                   ]
                 }
               },
-              "Resource": [
-                {
-                  "Fn::GetAtt": [
-                    "Bucket83908E77",
-                    "Arn"
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    {
+                      "Fn::GetAtt": [
+                        "Bucket83908E77",
+                        "Arn"
+                      ]
+                    },
+                    "/*"
                   ]
-                },
-                {
-                  "Fn::Join": [
-                    "",
-                    [
-                      {
-                        "Fn::GetAtt": [
-                          "Bucket83908E77",
-                          "Arn"
-                        ]
-                      },
-                      "/*"
-                    ]
-                  ]
-                }
-              ]
+                ]
+              }
             }
           ],
           "Version": "2012-10-17"

@@ -11,7 +11,7 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-      - uses: Naturalclar/issue-action@f229cda
+      - uses: Naturalclar/issue-action@v2.0.2
         with:
           github-token: "${{ secrets.GITHUB_TOKEN }}"
           title-or-body: 'title'
@@ -54,8 +54,8 @@ jobs:
            {"keywords":["(@aws-cdk/aws-cloudfront)","(aws-cloudfront)","(cloudfront)","(cloud front)"],"labels":["@aws-cdk/aws-cloudfront"],"assignees":["njlynch"]},
            {"keywords":["(@aws-cdk/aws-cloudfront-origins)","(aws-cloudfront-origins)","(cloudfront-origins)","(cloudfront origins)"],"labels":["@aws-cdk/aws-cloudfront-origins"],"assignees":["njlynch"]},
            {"keywords":["(@aws-cdk/aws-cloudtrail)","(aws-cloudtrail)","(cloudtrail)","(cloud trail)"],"labels":["@aws-cdk/aws-cloudtrail"],"assignees":["NetaNir"]},
-           {"keywords":["(@aws-cdk/aws-cloudwatch)","(aws-cloudwatch)","(cloudwatch)","(cloud watch)"],"labels":["@aws-cdk/aws-cloudwatch"],"assignees":["rix0rrr"]},
-           {"keywords":["(@aws-cdk/aws-cloudwatch-actions)","(aws-cloudwatch-actions)","(cloudwatch-actions)","(cloudwatch actions)"],"labels":["@aws-cdk/aws-cloudwatch-actions"],"assignees":["rix0rrr"]},
+           {"keywords":["(@aws-cdk/aws-cloudwatch)","(aws-cloudwatch)","(cloudwatch)","(cloud watch)"],"labels":["@aws-cdk/aws-cloudwatch"],"assignees":["NetaNir"]},
+           {"keywords":["(@aws-cdk/aws-cloudwatch-actions)","(aws-cloudwatch-actions)","(cloudwatch-actions)","(cloudwatch actions)"],"labels":["@aws-cdk/aws-cloudwatch-actions"],"assignees":["NetaNir"]},
            {"keywords":["(@aws-cdk/aws-codeartifact)","(aws-codeartifact)","(codeartifact)","(code artifact)","(code-artifact)"],"labels":["@aws-cdk/aws-codeartifact"],"assignees":["njlynch"]},
            {"keywords":["(@aws-cdk/aws-codebuild)","(aws-codebuild)","(codebuild)","(code build)","(code-build)"],"labels":["@aws-cdk/aws-codebuild"],"assignees":["skinny85"]},
            {"keywords":["(@aws-cdk/aws-codecommit)","(aws-codecommit)","(codecommit)","(code commit)", "(code-commit)"],"labels":["@aws-cdk/aws-codecommit"],"assignees":["skinny85"]},
@@ -76,8 +76,8 @@ jobs:
            {"keywords":["(@aws-cdk/aws-dlm)","(aws-dlm)","(dlm)"],"labels":["@aws-cdk/aws-dlm"],"assignees":["njlynch"]},
            {"keywords":["(@aws-cdk/aws-dms)","(aws-dms)","(dms)"],"labels":["@aws-cdk/aws-dms"],"assignees":["njlynch"]},
            {"keywords":["(@aws-cdk/aws-docdb)","(aws-docdb)","(docdb)","(doc db)","(doc-db)"],"labels":["@aws-cdk/aws-docdb"],"assignees":["iliapolo"]},
-           {"keywords":["(@aws-cdk/aws-dynamodb)","(aws-dynamodb)","(dynamodb)","(dynamo db)","(dynamo-db)"],"labels":["@aws-cdk/aws-dynamodb"],"assignees":["skinny85"]},
-           {"keywords":["(@aws-cdk/aws-dynamodb-global)","(aws-dynamodb-global)","(dynamodb-global)","(dynamodb global)"],"labels":["@aws-cdk/aws-dynamodb-global"],"assignees":["skinny85"]},
+           {"keywords":["(@aws-cdk/aws-dynamodb)","(aws-dynamodb)","(dynamodb)","(dynamo db)","(dynamo-db)"],"labels":["@aws-cdk/aws-dynamodb"],"assignees":["RomainMuller"]},
+           {"keywords":["(@aws-cdk/aws-dynamodb-global)","(aws-dynamodb-global)","(dynamodb-global)","(dynamodb global)"],"labels":["@aws-cdk/aws-dynamodb-global"],"assignees":["RomainMuller"]},
            {"keywords":["(@aws-cdk/aws-ec2)","(aws-ec2)","(ec2)","(vpc)"],"labels":["@aws-cdk/aws-ec2"],"assignees":["rix0rrr"]},
            {"keywords":["(@aws-cdk/aws-ecr)","(aws-ecr)","(ecr)"],"labels":["@aws-cdk/aws-ecr"],"assignees":["MrArnoldPalmer"]},
            {"keywords":["(@aws-cdk/aws-ecr-assets)","(aws-ecr-assets)","(ecr-assets)","(ecr assets)","(ecrassets)"],"labels":["@aws-cdk/aws-ecr-assets"],"assignees":["eladb"]},
@@ -90,7 +90,7 @@ jobs:
            {"keywords":["(@aws-cdk/aws-elasticloadbalancingv2-targets)","(aws-elasticloadbalancingv2-targets)","(elasticloadbalancingv2-targets)","(elasticloadbalancingv2 targets)","(elbv2 targets)"],"labels":["@aws-cdk/aws-elasticloadbalancingv2-targets"],"assignees":["njlynch"]},
            {"keywords":["(@aws-cdk/aws-elasticsearch)","(aws-elasticsearch)","(elasticsearch)","(elastic search)","(elastic-search)"],"labels":["@aws-cdk/aws-elasticsearch"],"assignees":["iliapolo"]},
            {"keywords":["(@aws-cdk/aws-emr)","(aws-emr)","(emr)"],"labels":["@aws-cdk/aws-emr"],"assignees":["iliapolo"]},
-           {"keywords":["(@aws-cdk/aws-events)","(aws-events)","(events)","(eventbridge)","event-bridge)"],"labels":["@aws-cdk/aws-events"],"assignees":["rix0rrr"]},
+           {"keywords":["(@aws-cdk/aws-events)","(aws-events)","(events)","(eventbridge)","(event-bridge)"],"labels":["@aws-cdk/aws-events"],"assignees":["rix0rrr"]},
            {"keywords":["(@aws-cdk/aws-events-targets)","(aws-events-targets)","(events-targets)","(events targets)"],"labels":["@aws-cdk/aws-events-targets"],"assignees":["rix0rrr"]},
            {"keywords":["(@aws-cdk/aws-eventschemas)","(aws-eventschemas)","(eventschemas)","(event schemas)"],"labels":["@aws-cdk/aws-eventschemas"],"assignees":["skinny85"]},
            {"keywords":["(@aws-cdk/aws-fms)","(aws-fms)","(fms)"],"labels":["@aws-cdk/aws-fms"],"assignees":["rix0rrr"]},

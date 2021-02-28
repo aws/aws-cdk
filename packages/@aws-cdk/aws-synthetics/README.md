@@ -44,7 +44,7 @@ const canary = new synthetics.Canary(this, 'MyCanary', {
     code: synthetics.Code.fromAsset(path.join(__dirname, 'canary')),
     handler: 'index.handler',
   }),
-  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_2_2,
+  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_0,
 });
 ```
 
@@ -107,7 +107,7 @@ const canary = new Canary(this, 'MyCanary', {
     code: synthetics.Code.fromInline('/* Synthetics handler code */'),
     handler: 'index.handler', // must be 'index.handler'
   }),
-  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_2_2,
+  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_0,
 });
 
 // To supply the code from your local filesystem:
@@ -116,7 +116,7 @@ const canary = new Canary(this, 'MyCanary', {
     code: synthetics.Code.fromAsset(path.join(__dirname, 'canary')),
     handler: 'index.handler', // must end with '.handler'
   }),
-  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_2_2,
+  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_0,
 });
 
 // To supply the code from a S3 bucket:
@@ -125,7 +125,7 @@ const canary = new Canary(this, 'MyCanary', {
     code: synthetics.Code.fromBucket(bucket, 'canary.zip'),
     handler: 'index.handler', // must end with '.handler'
   }),
-  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_2_2,
+  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_0,
 });
 ```
 
