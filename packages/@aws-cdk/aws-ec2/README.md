@@ -275,7 +275,7 @@ DatabaseSubnet3   |`ISOLATED`|`10.0.6.32/28`|#3|Only routes within the VPC
 
 ### Accessing the Internet Gateway
 
-If you need access to the internet gateway, you can get it's ID like so:
+If you need access to the internet gateway, you can get its ID like so:
 
 ```ts
 const igwId = vpc.internetGatewayId;
