@@ -4,7 +4,11 @@ import { Metric } from '@aws-cdk/aws-cloudwatch';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
+import { testFutureBehavior } from 'cdk-build-tools/lib/feature-flag';
 import * as elbv2 from '../../lib';
+
+const s3GrantWriteCtx = { [cxapi.S3_GRANT_WRITE_WITHOUT_ACL]: true };
 
 describe('tests', () => {
   test('Trivial construction: internet facing', () => {
@@ -122,9 +126,9 @@ describe('tests', () => {
     });
   });
 
-  test('Access logging', () => {
+  testFutureBehavior('Access logging', s3GrantWriteCtx, cdk.App, (app) => {
     // GIVEN
-    const stack = new cdk.Stack(undefined, undefined, { env: { region: 'us-east-1' } });
+    const stack = new cdk.Stack(app, undefined, { env: { region: 'us-east-1' } });
     const vpc = new ec2.Vpc(stack, 'Stack');
     const bucket = new s3.Bucket(stack, 'AccessLoggingBucket');
     const lb = new elbv2.ApplicationLoadBalancer(stack, 'LB', { vpc });
@@ -154,7 +158,7 @@ describe('tests', () => {
         Version: '2012-10-17',
         Statement: [
           {
-            Action: ['s3:PutObject*', 's3:Abort*'],
+            Action: ['s3:PutObject', 's3:Abort*'],
             Effect: 'Allow',
             Principal: { AWS: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::127311923021:root']] } },
             Resource: {
@@ -172,9 +176,9 @@ describe('tests', () => {
     }, ResourcePart.CompleteDefinition);
   });
 
-  test('access logging with prefix', () => {
+  testFutureBehavior('access logging with prefix', s3GrantWriteCtx, cdk.App, (app) => {
     // GIVEN
-    const stack = new cdk.Stack(undefined, undefined, { env: { region: 'us-east-1' } });
+    const stack = new cdk.Stack(app, undefined, { env: { region: 'us-east-1' } });
     const vpc = new ec2.Vpc(stack, 'Stack');
     const bucket = new s3.Bucket(stack, 'AccessLoggingBucket');
     const lb = new elbv2.ApplicationLoadBalancer(stack, 'LB', { vpc });
@@ -207,7 +211,7 @@ describe('tests', () => {
         Version: '2012-10-17',
         Statement: [
           {
-            Action: ['s3:PutObject*', 's3:Abort*'],
+            Action: ['s3:PutObject', 's3:Abort*'],
             Effect: 'Allow',
             Principal: { AWS: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::127311923021:root']] } },
             Resource: {
