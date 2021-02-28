@@ -329,6 +329,29 @@ describe('code', () => {
       });
     });
   });
+
+  describe('lambda.Code.fromDockerBuild', () => {
+    test('can use the result of a Docker build as an asset', () => {
+      // given
+      const stack = new cdk.Stack();
+      stack.node.setContext(cxapi.ASSET_RESOURCE_METADATA_ENABLED_CONTEXT, true);
+
+      // when
+      new lambda.Function(stack, 'Fn', {
+        code: lambda.Code.fromDockerBuild(path.join(__dirname, 'docker-build-lambda')),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.NODEJS_12_X,
+      });
+
+      // then
+      expect(stack).toHaveResource('AWS::Lambda::Function', {
+        Metadata: {
+          [cxapi.ASSET_RESOURCE_METADATA_PATH_KEY]: 'asset.38cd320fa97b348accac88e48d9cede4923f7cab270ce794c95a665be83681a8',
+          [cxapi.ASSET_RESOURCE_METADATA_PROPERTY_KEY]: 'Code',
+        },
+      }, ResourcePart.CompleteDefinition);
+    });
+  });
 });
 
 function defineFunction(code: lambda.Code, runtime: lambda.Runtime = lambda.Runtime.NODEJS_10_X) {
