@@ -3,7 +3,8 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
-import { BaseInvokeApiGatewayApi, BaseInvokeApiGatewayApiProps } from './common';
+import { BaseInvokeApiGatewayApi } from './base';
+import { BaseInvokeApiGatewayApiProps } from './base-types';
 
 /**
  * Properties for invoking an REST API Endpoint
