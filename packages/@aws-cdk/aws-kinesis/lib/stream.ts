@@ -3,7 +3,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import { Aws, CfnCondition, Duration, Fn, IResolvable, IResource, Resource, Stack, Token } from '@aws-cdk/core';
 import { Construct } from 'constructs';
-import { KinesisMetrics } from './kinesis-canned-metrics.generated';
+import { KinesisMetrics } from './kinesis-fixed-canned-metrics';
 import { CfnStream } from './kinesis.generated';
 
 const READ_OPERATIONS = [
@@ -409,10 +409,7 @@ abstract class StreamBase extends Resource implements IStream {
    * @param props properties of the metric
    */
   public metricGetRecordsBytes(props?: cloudwatch.MetricOptions) {
-    return this.metric('GetRecords.Bytes', {
-      statistic: 'Average',
-      ...props,
-    });
+    return this.metricFromCannedFunction(KinesisMetrics.getRecordsBytesAverage, props);
   }
 
   /**
@@ -437,10 +434,7 @@ abstract class StreamBase extends Resource implements IStream {
    * @param props properties of the metric
    */
   public metricGetRecordsSuccess(props?: cloudwatch.MetricOptions) {
-    return this.metric('GetRecords.Success', {
-      statistic: 'Average',
-      ...props,
-    });
+    return this.metricFromCannedFunction(KinesisMetrics.getRecordsSuccessAverage, props);
   }
 
   /**
@@ -454,10 +448,7 @@ abstract class StreamBase extends Resource implements IStream {
    * @param props properties of the metric
    */
   public metricGetRecords(props?: cloudwatch.MetricOptions) {
-    return this.metric('GetRecords.Records', {
-      statistic: 'Average',
-      ...props,
-    });
+    return this.metricFromCannedFunction(KinesisMetrics.getRecordsRecordsAverage, props);
   }
 
   /**
@@ -468,10 +459,7 @@ abstract class StreamBase extends Resource implements IStream {
    * @param props properties of the metric
    */
   public metricGetRecordsLatency(props?: cloudwatch.MetricOptions) {
-    return this.metric('GetRecords.Latency', {
-      statistic: 'Average',
-      ...props,
-    });
+    return this.metricFromCannedFunction(KinesisMetrics.getRecordsLatencyAverage, props);
   }
 
   /**
@@ -482,10 +470,7 @@ abstract class StreamBase extends Resource implements IStream {
    * @param props properties of the metric
    */
   public metricPutRecordBytes(props?: cloudwatch.MetricOptions) {
-    return this.metric('PutRecord.Bytes', {
-      statistic: 'Average',
-      ...props,
-    });
+    return this.metricFromCannedFunction(KinesisMetrics.putRecordBytesAverage, props);
   }
 
   /**
@@ -496,10 +481,7 @@ abstract class StreamBase extends Resource implements IStream {
    * @param props properties of the metric
    */
   metricPutRecordLatency(props?: cloudwatch.MetricOptions) {
-    return this.metric('PutRecord.Latency', {
-      statistic: 'Average',
-      ...props,
-    });
+    return this.metricFromCannedFunction(KinesisMetrics.putRecordLatencyAverage, props);
   }
 
   /**
@@ -533,10 +515,7 @@ abstract class StreamBase extends Resource implements IStream {
    * @param props properties of the metric
    */
   public metricPutRecordsLatency(props?: cloudwatch.MetricOptions) {
-    return this.metric('PutRecords.Latency', {
-      statistic: 'Average',
-      ...props,
-    });
+    return this.metricFromCannedFunction(KinesisMetrics.putRecordsLatencyAverage, props);
   }
 
   /**
@@ -548,10 +527,7 @@ abstract class StreamBase extends Resource implements IStream {
    * @param props properties of the metric
    */
   public metricPutRecordsSuccess(props?: cloudwatch.MetricOptions) {
-    return this.metric('PutRecords.Success', {
-      statistic: 'Average',
-      ...props,
-    });
+    return this.metricFromCannedFunction(KinesisMetrics.putRecordsSuccessAverage, props);
   }
 
   /**
@@ -563,10 +539,7 @@ abstract class StreamBase extends Resource implements IStream {
    * @param props properties of the metric
    */
   public metricPutRecordsTotalRecords(props?: cloudwatch.MetricOptions) {
-    return this.metric('PutRecords.TotalRecords', {
-      statistic: 'Average',
-      ...props,
-    });
+    return this.metricFromCannedFunction(KinesisMetrics.putRecordsTotalRecordsAverage, props);
   }
 
   /**
@@ -578,10 +551,7 @@ abstract class StreamBase extends Resource implements IStream {
    * @param props properties of the metric
    */
   public metricPutRecordsSuccessfulRecords(props?: cloudwatch.MetricOptions) {
-    return this.metric('PutRecords.SuccessfulRecords', {
-      statistic: 'Average',
-      ...props,
-    });
+    return this.metricFromCannedFunction(KinesisMetrics.putRecordsSuccessfulRecordsAverage, props);
   }
 
   /**
@@ -593,10 +563,7 @@ abstract class StreamBase extends Resource implements IStream {
    * @param props properties of the metric
    */
   public metricPutRecordsFailedRecords(props?: cloudwatch.MetricOptions) {
-    return this.metric('PutRecords.FailedRecords', {
-      statistic: 'Average',
-      ...props,
-    });
+    return this.metricFromCannedFunction(KinesisMetrics.putRecordsFailedRecordsAverage, props);
   }
 
   /**
@@ -608,10 +575,7 @@ abstract class StreamBase extends Resource implements IStream {
    * @param props properties of the metric
    */
   public metricPutRecordsThrottledRecords(props?: cloudwatch.MetricOptions) {
-    return this.metric('PutRecords.ThrottledRecords', {
-      statistic: 'Average',
-      ...props,
-    });
+    return this.metricFromCannedFunction(KinesisMetrics.putRecordsThrottledRecordsAverage, props);
   }
 
   /**
