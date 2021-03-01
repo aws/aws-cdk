@@ -27,7 +27,9 @@
           "EmailSubject": "Verify your new account",
           "SmsMessage": "The verification code to your new account is {####}"
         }
-      }
+      },
+      "UpdateReplacePolicy": "Retain",
+      "DeletionPolicy": "Retain"
     },
     "myauthorizer23CB99DD": {
       "Type": "AWS::ApiGateway::Authorizer",

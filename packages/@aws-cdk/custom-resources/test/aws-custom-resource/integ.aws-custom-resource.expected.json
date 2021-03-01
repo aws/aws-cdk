@@ -3,6 +3,27 @@
     "TopicBFC7AF6E": {
       "Type": "AWS::SNS::Topic"
     },
+    "PublishCustomResourcePolicyDF696FCA": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sns:Publish",
+              "Effect": "Allow",
+              "Resource": "*"
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "PublishCustomResourcePolicyDF696FCA",
+        "Roles": [
+          {
+            "Ref": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
+          }
+        ]
+      }
+    },
     "Publish2E9BDF73": {
       "Type": "Custom::SNSPublisher",
       "Properties": {
@@ -13,42 +34,44 @@
           ]
         },
         "Create": {
-          "service": "SNS",
-          "action": "publish",
-          "parameters": {
-            "Message": "hello",
-            "TopicArn": {
-              "Ref": "TopicBFC7AF6E"
-            }
-          },
-          "physicalResourceId": {
-            "id": {
-              "Ref": "TopicBFC7AF6E"
-            }
-          }
+          "Fn::Join": [
+            "",
+            [
+              "{\"service\":\"SNS\",\"action\":\"publish\",\"parameters\":{\"Message\":\"hello\",\"TopicArn\":\"",
+              {
+                "Ref": "TopicBFC7AF6E"
+              },
+              "\"},\"physicalResourceId\":{\"id\":\"",
+              {
+                "Ref": "TopicBFC7AF6E"
+              },
+              "\"}}"
+            ]
+          ]
         },
         "Update": {
-          "service": "SNS",
-          "action": "publish",
-          "parameters": {
-            "Message": "hello",
-            "TopicArn": {
-              "Ref": "TopicBFC7AF6E"
-            }
-          },
-          "physicalResourceId": {
-            "id": {
-              "Ref": "TopicBFC7AF6E"
-            }
-          }
+          "Fn::Join": [
+            "",
+            [
+              "{\"service\":\"SNS\",\"action\":\"publish\",\"parameters\":{\"Message\":\"hello\",\"TopicArn\":\"",
+              {
+                "Ref": "TopicBFC7AF6E"
+              },
+              "\"},\"physicalResourceId\":{\"id\":\"",
+              {
+                "Ref": "TopicBFC7AF6E"
+              },
+              "\"}}"
+            ]
+          ]
         },
         "InstallLatestAwsSdk": true
       },
-      "UpdateReplacePolicy": "Delete",
-      "DeletionPolicy": "Delete",
       "DependsOn": [
         "PublishCustomResourcePolicyDF696FCA"
-      ]
+      ],
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
     },
     "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2": {
       "Type": "AWS::IAM::Role",
@@ -86,7 +109,7 @@
       "Properties": {
         "Code": {
           "S3Bucket": {
-            "Ref": "AssetParameters0fb8d27cb9854a09fcc93f73882cc5df12ac4108ab02581ab449da4df345f68bS3BucketA4761502"
+            "Ref": "AssetParametersbd060cb930079c194320bc9a045d159066215c3a4858c45bdb12a79ef9a1edbaS3BucketACF45CC2"
           },
           "S3Key": {
             "Fn::Join": [
@@ -99,7 +122,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParameters0fb8d27cb9854a09fcc93f73882cc5df12ac4108ab02581ab449da4df345f68bS3VersionKeyB049B315"
+                          "Ref": "AssetParametersbd060cb930079c194320bc9a045d159066215c3a4858c45bdb12a79ef9a1edbaS3VersionKeyBCA0A3F3"
                         }
                       ]
                     }
@@ -112,7 +135,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParameters0fb8d27cb9854a09fcc93f73882cc5df12ac4108ab02581ab449da4df345f68bS3VersionKeyB049B315"
+                          "Ref": "AssetParametersbd060cb930079c194320bc9a045d159066215c3a4858c45bdb12a79ef9a1edbaS3VersionKeyBCA0A3F3"
                         }
                       ]
                     }
@@ -122,18 +145,42 @@
             ]
           }
         },
-        "Handler": "index.handler",
         "Role": {
           "Fn::GetAtt": [
             "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2",
             "Arn"
           ]
         },
+        "Handler": "index.handler",
         "Runtime": "nodejs12.x",
         "Timeout": 120
       },
       "DependsOn": [
         "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
+      ]
+    },
+    "ListTopicsCustomResourcePolicy31A8396A": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sns:ListTopics",
+              "Effect": "Allow",
+              "Resource": "*"
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "ListTopicsCustomResourcePolicy31A8396A",
+        "Roles": [
+          {
+            "Ref": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
+          }
+        ]
+      },
+      "DependsOn": [
+        "TopicBFC7AF6E"
       ]
     },
     "ListTopicsCE1E0341": {
@@ -145,20 +192,8 @@
             "Arn"
           ]
         },
-        "Create": {
-          "service": "SNS",
-          "action": "listTopics",
-          "physicalResourceId": {
-            "responsePath": "Topics.0.TopicArn"
-          }
-        },
-        "Update": {
-          "service": "SNS",
-          "action": "listTopics",
-          "physicalResourceId": {
-            "responsePath": "Topics.0.TopicArn"
-          }
-        },
+        "Create": "{\"service\":\"SNS\",\"action\":\"listTopics\",\"physicalResourceId\":{\"responsePath\":\"Topics.0.TopicArn\"}}",
+        "Update": "{\"service\":\"SNS\",\"action\":\"listTopics\",\"physicalResourceId\":{\"responsePath\":\"Topics.0.TopicArn\"}}",
         "InstallLatestAwsSdk": true
       },
       "DependsOn": [
@@ -175,6 +210,27 @@
         "Value": "1337"
       }
     },
+    "GetParameterCustomResourcePolicyD8E5D455": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "ssm:GetParameter",
+              "Effect": "Allow",
+              "Resource": "*"
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "GetParameterCustomResourcePolicyD8E5D455",
+        "Roles": [
+          {
+            "Ref": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
+          }
+        ]
+      }
+    },
     "GetParameter42B0A00E": {
       "Type": "Custom::SSMParameter",
       "Properties": {
@@ -185,86 +241,50 @@
           ]
         },
         "Create": {
-          "service": "SSM",
-          "action": "getParameter",
-          "parameters": {
-            "Name": {
-              "Ref": "DummyParameter53662B67"
-            },
-            "WithDecryption": "TRUE:BOOLEAN"
-          },
-          "physicalResourceId": {
-            "responsePath": "Parameter.ARN"
-          }
+          "Fn::Join": [
+            "",
+            [
+              "{\"service\":\"SSM\",\"action\":\"getParameter\",\"parameters\":{\"Name\":\"",
+              {
+                "Ref": "DummyParameter53662B67"
+              },
+              "\",\"WithDecryption\":true},\"physicalResourceId\":{\"responsePath\":\"Parameter.ARN\"}}"
+            ]
+          ]
         },
         "Update": {
-          "service": "SSM",
-          "action": "getParameter",
-          "parameters": {
-            "Name": {
-              "Ref": "DummyParameter53662B67"
-            },
-            "WithDecryption": "TRUE:BOOLEAN"
-          },
-          "physicalResourceId": {
-            "responsePath": "Parameter.ARN"
-          }
+          "Fn::Join": [
+            "",
+            [
+              "{\"service\":\"SSM\",\"action\":\"getParameter\",\"parameters\":{\"Name\":\"",
+              {
+                "Ref": "DummyParameter53662B67"
+              },
+              "\",\"WithDecryption\":true},\"physicalResourceId\":{\"responsePath\":\"Parameter.ARN\"}}"
+            ]
+          ]
         },
         "InstallLatestAwsSdk": true
       },
-      "UpdateReplacePolicy": "Delete",
-      "DeletionPolicy": "Delete",
       "DependsOn": [
         "GetParameterCustomResourcePolicyD8E5D455"
-      ]
-    },
-    "PublishCustomResourcePolicyDF696FCA": {
-      "Type": "AWS::IAM::Policy",
-      "Properties": {
-        "PolicyDocument": {
-          "Statement": [{"Action":"sns:Publish","Effect":"Allow","Resource":"*"}],
-          "Version": "2012-10-17"
-        },
-        "PolicyName": "PublishCustomResourcePolicyDF696FCA",
-        "Roles": [{"Ref":"AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"}]
-      }
-    },
-    "ListTopicsCustomResourcePolicy31A8396A": {
-      "Type": "AWS::IAM::Policy",
-      "Properties": {
-        "PolicyDocument": {
-          "Statement": [{"Action":"sns:ListTopics","Effect":"Allow","Resource":"*"}],
-          "Version": "2012-10-17"
-        },
-        "PolicyName": "ListTopicsCustomResourcePolicy31A8396A",
-        "Roles": [{"Ref":"AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"}]
-      },
-      "DependsOn": ["TopicBFC7AF6E"]
-    },
-    "GetParameterCustomResourcePolicyD8E5D455": {
-      "Type": "AWS::IAM::Policy",
-      "Properties": {
-        "PolicyDocument": {
-          "Statement": [{"Action":"ssm:GetParameter","Effect":"Allow","Resource":"*"}],
-          "Version": "2012-10-17"
-        },
-        "PolicyName": "GetParameterCustomResourcePolicyD8E5D455",
-        "Roles": [{"Ref":"AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"}]
-      }
+      ],
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
     }
   },
   "Parameters": {
-    "AssetParameters0fb8d27cb9854a09fcc93f73882cc5df12ac4108ab02581ab449da4df345f68bS3BucketA4761502": {
+    "AssetParametersbd060cb930079c194320bc9a045d159066215c3a4858c45bdb12a79ef9a1edbaS3BucketACF45CC2": {
       "Type": "String",
-      "Description": "S3 bucket for asset \"0fb8d27cb9854a09fcc93f73882cc5df12ac4108ab02581ab449da4df345f68b\""
+      "Description": "S3 bucket for asset \"bd060cb930079c194320bc9a045d159066215c3a4858c45bdb12a79ef9a1edba\""
     },
-    "AssetParameters0fb8d27cb9854a09fcc93f73882cc5df12ac4108ab02581ab449da4df345f68bS3VersionKeyB049B315": {
+    "AssetParametersbd060cb930079c194320bc9a045d159066215c3a4858c45bdb12a79ef9a1edbaS3VersionKeyBCA0A3F3": {
       "Type": "String",
-      "Description": "S3 key for asset version \"0fb8d27cb9854a09fcc93f73882cc5df12ac4108ab02581ab449da4df345f68b\""
+      "Description": "S3 key for asset version \"bd060cb930079c194320bc9a045d159066215c3a4858c45bdb12a79ef9a1edba\""
     },
-    "AssetParameters0fb8d27cb9854a09fcc93f73882cc5df12ac4108ab02581ab449da4df345f68bArtifactHash840E5880": {
+    "AssetParametersbd060cb930079c194320bc9a045d159066215c3a4858c45bdb12a79ef9a1edbaArtifactHashF3AE56EF": {
       "Type": "String",
-      "Description": "Artifact hash for asset \"0fb8d27cb9854a09fcc93f73882cc5df12ac4108ab02581ab449da4df345f68b\""
+      "Description": "Artifact hash for asset \"bd060cb930079c194320bc9a045d159066215c3a4858c45bdb12a79ef9a1edba\""
     }
   },
   "Outputs": {
