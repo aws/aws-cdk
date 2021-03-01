@@ -1,3 +1,4 @@
+import * as path from 'path';
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import { Aws, IResource, Lazy, Resource } from '@aws-cdk/core';
@@ -175,9 +176,9 @@ export class DropSpamReceiptRule extends CoreConstruct {
     super(scope, id);
 
     const fn = new lambda.SingletonFunction(this, 'Function', {
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
       handler: 'index.handler',
-      code: lambda.Code.fromInline(`exports.handler = ${dropSpamCode}`),
+      code: lambda.Code.fromAsset(path.join(__dirname, 'drop-spam-handler')),
       uuid: '224e77f9-a32e-4b4d-ac32-983477abba16',
     });
 
@@ -201,27 +202,5 @@ export class DropSpamReceiptRule extends CoreConstruct {
       scanEnabled: true,
       ruleSet: props.ruleSet,
     });
-  }
-}
-
-// Adapted from https://docs.aws.amazon.com/ses/latest/DeveloperGuide/receiving-email-action-lambda-example-functions.html
-/* eslint-disable no-console */
-function dropSpamCode(event: any, _: any, callback: any) {
-  console.log('Spam filter');
-
-  const sesNotification = event.Records[0].ses;
-  console.log('SES Notification:\n', JSON.stringify(sesNotification, null, 2));
-
-  // Check if any spam check failed
-  if (sesNotification.receipt.spfVerdict.status === 'FAIL'
-      || sesNotification.receipt.dkimVerdict.status === 'FAIL'
-      || sesNotification.receipt.spamVerdict.status === 'FAIL'
-      || sesNotification.receipt.virusVerdict.status === 'FAIL') {
-    console.log('Dropping spam');
-
-    // Stop processing rule set, dropping message
-    callback(null, { disposition: 'STOP_RULE_SET' });
-  } else {
-    callback(null, null);
   }
 }
