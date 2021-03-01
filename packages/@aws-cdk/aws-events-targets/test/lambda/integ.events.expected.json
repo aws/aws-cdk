@@ -150,7 +150,7 @@
         ]
       }
     },
-    "Timer3AllowEventRulelambdaeventsTimer3107B9373B17EFAE0": {
+    "Timer3AllowEventRulelambdaeventsMyFunc910E580F79317F73": {
       "Type": "AWS::Lambda::Permission",
       "Properties": {
         "Action": "lambda:InvokeFunction",
