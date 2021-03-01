@@ -80,12 +80,12 @@ export function exec(cmd: string, args: string[], options?: SpawnSyncOptions) {
 /**
  * Returns a module version by requiring its package.json file
  */
-export function getModuleVersion(mod: string): string {
+export function tryGetModuleVersion(mod: string): string | undefined {
   try {
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     return require(`${mod}/package.json`).version;
   } catch (err) {
-    throw new Error(`Cannot extract version for module '${mod}'`);
+    return undefined;
   }
 }
 
@@ -108,7 +108,10 @@ export function extractDependencies(pkgPath: string, modules: string[]): { [key:
   };
 
   for (const mod of modules) {
-    const version = pkgDependencies[mod] ?? getModuleVersion(mod);
+    const version = pkgDependencies[mod] ?? tryGetModuleVersion(mod);
+    if (!version) {
+      throw new Error(`Cannot extract version for module '${mod}'. Check that it's referenced in your package.json or installed.`);
+    }
     dependencies[mod] = version;
   }
 
