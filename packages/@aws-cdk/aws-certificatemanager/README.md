@@ -68,7 +68,7 @@ When working with multiple domains, use the `CertificateValidation.fromDnsMultiZ
 const exampleCom = new route53.HostedZone(this, 'ExampleCom', {
   zoneName: 'example.com',
 });
-const exampleNet = new route53.HostedZone(this, 'ExampelNet', {
+const exampleNet = new route53.HostedZone(this, 'ExampleNet', {
   zoneName: 'example.net',
 });
 
