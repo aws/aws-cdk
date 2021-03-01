@@ -635,6 +635,11 @@ export class KubernetesVersion {
   public static readonly V1_18 = KubernetesVersion.of('1.18');
 
   /**
+   * Kubernetes version 1.19
+   */
+  public static readonly V1_19 = KubernetesVersion.of('1.19');
+
+  /**
    * Custom cluster version
    * @param version custom version number
    */

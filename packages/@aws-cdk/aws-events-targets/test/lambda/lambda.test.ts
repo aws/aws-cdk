@@ -79,6 +79,27 @@ test('adding same lambda function as target mutiple times creates permission onl
   expect(stack).toCountResources('AWS::Lambda::Permission', 1);
 });
 
+test('adding different lambda functions as target mutiple times creates multiple permissions', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const fn1 = newTestLambda(stack);
+  const fn2 = newTestLambda(stack, '2');
+  const rule = new events.Rule(stack, 'Rule', {
+    schedule: events.Schedule.rate(cdk.Duration.minutes(1)),
+  });
+
+  // WHEN
+  rule.addTarget(new targets.LambdaFunction(fn1, {
+    event: events.RuleTargetInput.fromObject({ key: 'value1' }),
+  }));
+  rule.addTarget(new targets.LambdaFunction(fn2, {
+    event: events.RuleTargetInput.fromObject({ key: 'value2' }),
+  }));
+
+  // THEN
+  expect(stack).toCountResources('AWS::Lambda::Permission', 2);
+});
+
 test('adding same singleton lambda function as target mutiple times creates permission only once', () => {
   // GIVEN
   const stack = new cdk.Stack();
@@ -304,8 +325,8 @@ test('must display a warning when using a Dead Letter Queue from another account
   expect(rule?.node.metadata[0].data).toMatch(/Cannot add a resource policy to your dead letter queue associated with rule .* because the queue is in a different account\. You must add the resource policy manually to the dead letter queue in account 222222222222\./);
 });
 
-function newTestLambda(scope: constructs.Construct) {
-  return new lambda.Function(scope, 'MyLambda', {
+function newTestLambda(scope: constructs.Construct, suffix = '') {
+  return new lambda.Function(scope, `MyLambda${suffix}`, {
     code: new lambda.InlineCode('foo'),
     handler: 'bar',
     runtime: lambda.Runtime.PYTHON_2_7,
