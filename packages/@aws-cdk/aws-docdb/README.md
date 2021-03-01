@@ -30,7 +30,7 @@ your instances will be launched privately or publicly:
 ```ts
 const cluster = new DatabaseCluster(this, 'Database', {
     masterUser: {
-        username: 'admin'
+        username: 'myuser' // NOTE: 'admin' is reserved by DocumentDB
     },
     instanceProps: {
         instanceType: ec2.InstanceType.of(ec2.InstanceClass.R5, ec2.InstanceSize.LARGE),
