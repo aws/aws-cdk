@@ -36,6 +36,9 @@ runtime code.
  * `lambda.Code.fromAsset(path)` - specify a directory or a .zip file in the local
    filesystem which will be zipped and uploaded to S3 before deployment. See also
    [bundling asset code](#bundling-asset-code).
+ * `lambda.Code.fromDockerBuild(path, options)` - use the result of a Docker
+   build as code. The runtime code is expected to be located at `/asset` in the
+   image and will be zipped and uploaded to S3 as an asset.
 
 The following example shows how to define a Python function and deploy the code
 from the local directory `my-lambda-handler` to it:
@@ -450,7 +453,7 @@ new lambda.Function(this, 'Function', {
     bundling: {
       image: lambda.Runtime.PYTHON_3_6.bundlingDockerImage,
       command: [
-        'bash', '-c', 
+        'bash', '-c',
         'pip install -r requirements.txt -t /asset-output && cp -au . /asset-output'
       ],
     },
@@ -462,8 +465,8 @@ new lambda.Function(this, 'Function', {
 
 Runtimes expose a `bundlingDockerImage` property that points to the [AWS SAM](https://github.com/awslabs/aws-sam-cli) build image.
 
-Use `cdk.BundlingDockerImage.fromRegistry(image)` to use an existing image or
-`cdk.BundlingDockerImage.fromAsset(path)` to build a specific image:
+Use `cdk.DockerImage.fromRegistry(image)` to use an existing image or
+`cdk.DockerImage.fromBuild(path)` to build a specific image:
 
 ```ts
 import * as cdk from '@aws-cdk/core';
@@ -471,7 +474,7 @@ import * as cdk from '@aws-cdk/core';
 new lambda.Function(this, 'Function', {
   code: lambda.Code.fromAsset('/path/to/handler', {
     bundling: {
-      image: cdk.BundlingDockerImage.fromAsset('/path/to/dir/with/DockerFile', {
+      image: cdk.DockerImage.fromBuild('/path/to/dir/with/DockerFile', {
         buildArgs: {
           ARG1: 'value1',
         },
@@ -489,3 +492,27 @@ Language-specific higher level constructs are provided in separate modules:
 
 * `@aws-cdk/aws-lambda-nodejs`: [Github](https://github.com/aws/aws-cdk/tree/master/packages/%40aws-cdk/aws-lambda-nodejs) & [CDK Docs](https://docs.aws.amazon.com/cdk/api/latest/docs/aws-lambda-nodejs-readme.html)
 * `@aws-cdk/aws-lambda-python`: [Github](https://github.com/aws/aws-cdk/tree/master/packages/%40aws-cdk/aws-lambda-python) & [CDK Docs](https://docs.aws.amazon.com/cdk/api/latest/docs/aws-lambda-python-readme.html)
+
+## Code Signing
+
+Code signing for AWS Lambda helps to ensure that only trusted code runs in your Lambda functions. 
+When enabled, AWS Lambda checks every code deployment and verifies that the code package is signed by a trusted source.
+For more information, see [Configuring code signing for AWS Lambda](https://docs.aws.amazon.com/lambda/latest/dg/configuration-codesigning.html).
+The following code configures a function with code signing.
+
+```typescript
+import * as signer from '@aws-cdk/aws-signer';
+
+const signerProfile = signer.SigningProfile(this, 'SigningProfile', {
+  platform: Platform.AWS_LAMBDA_SHA384_ECDSA
+});
+
+const codeSigningConfig = new lambda.CodeSigningConfig(stack, 'CodeSigningConfig', {
+   signingProfiles: [signingProfile],
+});
+
+new lambda.Function(this, 'Function', {
+   codeSigningConfig,
+   // ...
+});
+```
