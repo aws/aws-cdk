@@ -80,6 +80,41 @@ export interface BundlingOptions {
    * @experimental
    */
   readonly local?: ILocalBundling;
+
+  /**
+   * The type of output that this bundling operation is producing.
+   *
+   * @default BundlingOutput.AUTO_DISCOVER
+   *
+   * @experimental
+   */
+  readonly outputType?: BundlingOutput;
+}
+
+/**
+ * The type of output that a bundling operation is producing.
+ *
+ * @experimental
+ */
+export enum BundlingOutput {
+  /**
+   * The bundling output directory includes a single .zip or .jar file which
+   * will be used as the final bundle. If the output directory does not
+   * include exactly a single archive, bundling will fail.
+   */
+  ARCHIVED = 'archived',
+
+  /**
+   * The bundling output directory contains one or more files which will be
+   * archived and uploaded as a .zip file to S3.
+   */
+  NOT_ARCHIVED = 'not-archived',
+
+  /**
+   * If the bundling output directory contains a single archive file (zip or jar)
+   * it will be used as the bundle output as-is. Otherwise all the files in the bundling output directory will be zipped.
+   */
+  AUTO_DISCOVER = 'auto-discover',
 }
 
 /**
@@ -101,6 +136,8 @@ export interface ILocalBundling {
 
 /**
  * A Docker image used for asset bundling
+ *
+ * @deprecated use DockerImage
  */
 export class BundlingDockerImage {
   /**
@@ -117,6 +154,8 @@ export class BundlingDockerImage {
    *
    * @param path The path to the directory containing the Docker file
    * @param options Docker build options
+   *
+   * @deprecated use DockerImage.fromBuild()
    */
   public static fromAsset(path: string, options: DockerBuildOptions = {}) {
     const buildArgs = options.buildArgs || {};
@@ -149,7 +188,7 @@ export class BundlingDockerImage {
   }
 
   /** @param image The Docker image */
-  private constructor(public readonly image: string, private readonly _imageHash?: string) {}
+  protected constructor(public readonly image: string, private readonly _imageHash?: string) {}
 
   /**
    * Provides a stable representation of this image for JSON serialization.
@@ -197,10 +236,16 @@ export class BundlingDockerImage {
   }
 
   /**
-   * Copies a file or directory out of the Docker image to the local filesystem
+   * Copies a file or directory out of the Docker image to the local filesystem.
+   *
+   * If `outputPath` is omitted the destination path is a temporary directory.
+   *
+   * @param imagePath the path in the Docker image
+   * @param outputPath the destination path for the copy operation
+   * @returns the destination path
    */
-  public cp(imagePath: string, outputPath: string) {
-    const { stdout } = dockerExec(['create', this.image]);
+  public cp(imagePath: string, outputPath?: string): string {
+    const { stdout } = dockerExec(['create', this.image], {}); // Empty options to avoid stdout redirect here
     const match = stdout.toString().match(/([0-9a-f]{16,})/);
     if (!match) {
       throw new Error('Failed to extract container ID from Docker create output');
@@ -208,13 +253,30 @@ export class BundlingDockerImage {
 
     const containerId = match[1];
     const containerPath = `${containerId}:${imagePath}`;
+    const destPath = outputPath ?? FileSystem.mkdtemp('cdk-docker-cp-');
     try {
-      dockerExec(['cp', containerPath, outputPath]);
+      dockerExec(['cp', containerPath, destPath]);
+      return destPath;
     } catch (err) {
-      throw new Error(`Failed to copy files from ${containerPath} to ${outputPath}: ${err}`);
+      throw new Error(`Failed to copy files from ${containerPath} to ${destPath}: ${err}`);
     } finally {
       dockerExec(['rm', '-v', containerId]);
     }
+  }
+}
+
+/**
+ * A Docker image
+ */
+export class DockerImage extends BundlingDockerImage {
+  /**
+   * Builds a Docker image
+   *
+   * @param path The path to the directory containing the Docker file
+   * @param options Docker build options
+   */
+  public static fromBuild(path: string, options: DockerBuildOptions = {}) {
+    return BundlingDockerImage.fromAsset(path, options);
   }
 }
 
