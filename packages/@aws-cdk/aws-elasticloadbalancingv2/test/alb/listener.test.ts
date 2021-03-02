@@ -150,7 +150,7 @@ describe('tests', () => {
     const lb = new elbv2.ApplicationLoadBalancer(stack, 'LB', { vpc });
 
     // WHEN
-    lb.addListener('Listener', {
+    const listener = lb.addListener('Listener', {
       port: 443,
       defaultTargetGroups: [
         new elbv2.ApplicationTargetGroup(stack, 'Group', { vpc, port: 80 }),
@@ -162,11 +162,13 @@ describe('tests', () => {
       ],
     });
 
+    expect(listener.node.tryFindChild('DefaultCertificates')).toBeDefined();
+    expect(listener.node.tryFindChild('DefaultCertificates2')).toBeDefined();
+    expect(listener.node.tryFindChild('DefaultCertificates3')).not.toBeDefined();
+
     // THEN
     expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::Listener', {
-      Certificates: [
-        { CertificateArn: 'cert1' },
-      ],
+      Certificates: [{ CertificateArn: 'cert1' }],
     });
 
     expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::ListenerCertificate', {
