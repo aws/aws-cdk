@@ -71,6 +71,9 @@
       "python": {
         "distName": "monocdk",
         "module": "monocdk"
+      },
+      "go": {
+        "moduleName": "github.com/aws/aws-cdk-go"
       }
     },
     "projectReferences": false
