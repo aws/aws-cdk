@@ -301,7 +301,7 @@ router.addRoute('route-http', {
 Add an HTTP2 route that matches based on method, scheme and header:
 
 ```ts
-router.addRoute('route-http', {
+router.addRoute('route-http2', {
   routeSpec: appmesh.RouteSpec.http2({
     weightedTargets: [
       {
@@ -310,12 +310,12 @@ router.addRoute('route-http', {
     ],
     match: {
       prefixPath: '/path-to-app',
-      method: appmesh.HttpRouteMatchMethod.GET,
+      method: appmesh.HttpRouteMatchMethod.POST,
       scheme: appmesh.HttpRouteMatchScheme.HTTPS,
       headers: [
         {
           name: 'Content-Type',
-          match: appmesh.HeaderMatchMethod.exact('text/html'),
+          match: appmesh.HeaderMatchMethod.exact('application/json'),
         },
       ]
     },

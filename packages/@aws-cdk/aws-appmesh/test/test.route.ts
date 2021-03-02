@@ -308,16 +308,16 @@ export = {
             headers: [
               {
                 name: 'Content-Type',
-                match: appmesh.HeaderMatchMethod.exact('text/html'),
+                match: appmesh.HeaderMatchMethod.exact('application/json'),
               },
               {
                 name: 'Content-Type',
-                match: appmesh.HeaderMatchMethod.prefix('text/'),
+                match: appmesh.HeaderMatchMethod.prefix('application/'),
               },
               {
                 name: 'Content-Type',
                 invert: true,
-                match: appmesh.HeaderMatchMethod.suffix('/plain'),
+                match: appmesh.HeaderMatchMethod.suffix('/json+foobar'),
               },
               {
                 name: 'Content-Type',
@@ -341,16 +341,16 @@ export = {
               Headers: [
                 {
                   Name: 'Content-Type',
-                  Match: { Exact: 'text/html' },
+                  Match: { Exact: 'application/json' },
                 },
                 {
                   Name: 'Content-Type',
-                  Match: { Prefix: 'text/' },
+                  Match: { Prefix: 'application/' },
                 },
                 {
                   Name: 'Content-Type',
                   Invert: true,
-                  Match: { Suffix: '/plain' },
+                  Match: { Suffix: '/json+foobar' },
                 },
                 {
                   Name: 'Content-Type',

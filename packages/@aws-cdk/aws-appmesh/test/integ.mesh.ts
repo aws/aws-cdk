@@ -145,21 +145,21 @@ router.addRoute('route-4', {
     weightedTargets: [{ virtualNode: node3 }],
     match: {
       prefixPath: '/',
-      method: appmesh.HttpRouteMatchMethod.GET,
+      method: appmesh.HttpRouteMatchMethod.POST,
       scheme: appmesh.HttpRouteMatchScheme.HTTPS,
       headers: [
         {
           name: 'Content-Type',
-          match: appmesh.HeaderMatchMethod.exact('text/html'),
+          match: appmesh.HeaderMatchMethod.exact('application/json'),
         },
         {
           name: 'Content-Type',
-          match: appmesh.HeaderMatchMethod.prefix('text/'),
+          match: appmesh.HeaderMatchMethod.prefix('application/'),
         },
         {
           name: 'Content-Type',
           invert: true,
-          match: appmesh.HeaderMatchMethod.suffix('/plain'),
+          match: appmesh.HeaderMatchMethod.suffix('/x-www-form-urlencoded'),
         },
         {
           name: 'Content-Type',

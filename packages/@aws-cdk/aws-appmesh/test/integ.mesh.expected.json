@@ -653,20 +653,20 @@
               "Headers": [
                 {
                   "Match": {
-                    "Exact": "text/html"
+                    "Exact": "application/json"
                   },
                   "Name": "Content-Type"
                 },
                 {
                   "Match": {
-                    "Prefix": "text/"
+                    "Prefix": "application/"
                   },
                   "Name": "Content-Type"
                 },
                 {
                   "Invert": true,
                   "Match": {
-                    "Suffix": "/plain"
+                    "Suffix": "/x-www-form-urlencoded"
                   },
                   "Name": "Content-Type"
                 },
@@ -686,7 +686,7 @@
                   "Name": "Max-Forwards"
                 }
               ],
-              "Method": "GET",
+              "Method": "POST",
               "Prefix": "/",
               "Scheme": "https"
             }
