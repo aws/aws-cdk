@@ -2,7 +2,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
-import { DockerImageAssetLocation, DockerImageAssetSource, FileAssetLocation, FileAssetPackaging, FileAssetSource } from '../assets';
+import { ImageAssetLocation, ImageAssetSource, FileAssetLocation, FileAssetSource } from '../assets';
 import { Fn } from '../cfn-fn';
 import { CfnParameter } from '../cfn-parameter';
 import { CfnRule } from '../cfn-rule';
@@ -292,7 +292,7 @@ export class DefaultStackSynthesizer extends StackSynthesizer {
     validateFileAssetSource(asset);
 
     const extension = asset.fileName != undefined ? path.extname(asset.fileName) : '';
-    const objectKey = this.bucketPrefix + asset.sourceHash + (asset.packaging === FileAssetPackaging.ZIP_DIRECTORY ? '.zip' : extension);
+    const objectKey = this.bucketPrefix + asset.sourceHash + (asset.packaging === cxschema.FileAssetPackaging.ZIP_DIRECTORY ? '.zip' : extension);
 
     // Add to manifest
     this.files[asset.sourceHash] = {
@@ -326,7 +326,7 @@ export class DefaultStackSynthesizer extends StackSynthesizer {
     };
   }
 
-  public addDockerImageAsset(asset: DockerImageAssetSource): DockerImageAssetLocation {
+  public addDockerImageAsset(asset: ImageAssetSource): ImageAssetLocation {
     assertBound(this.stack);
     assertBound(this.repositoryName);
     validateDockerImageAssetSource(asset);
@@ -438,7 +438,7 @@ export class DefaultStackSynthesizer extends StackSynthesizer {
 
     this.addFileAsset({
       fileName: this.stack.templateFile,
-      packaging: FileAssetPackaging.FILE,
+      packaging: cxschema.FileAssetPackaging.FILE,
       sourceHash,
     });
 
@@ -591,7 +591,7 @@ function validateFileAssetSource(asset: FileAssetSource) {
   }
 }
 
-function validateDockerImageAssetSource(asset: DockerImageAssetSource) {
+function validateDockerImageAssetSource(asset: ImageAssetSource) {
   if (!!asset.executable === !!asset.directoryName) {
     throw new Error(`Exactly one of 'directoryName' or 'executable' is required, got: ${JSON.stringify(asset)}`);
   }
@@ -600,7 +600,7 @@ function validateDockerImageAssetSource(asset: DockerImageAssetSource) {
   check('dockerBuildTarget');
   check('dockerFile');
 
-  function check<K extends keyof DockerImageAssetSource>(key: K) {
+  function check<K extends keyof ImageAssetSource>(key: K) {
     if (asset[key] && !asset.directoryName) {
       throw new Error(`'${key}' is only allowed in combination with 'directoryName', got: ${JSON.stringify(asset)}`);
     }

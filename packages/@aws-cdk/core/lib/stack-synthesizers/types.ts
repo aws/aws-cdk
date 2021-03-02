@@ -1,4 +1,4 @@
-import { DockerImageAssetLocation, DockerImageAssetSource, FileAssetLocation, FileAssetSource } from '../assets';
+import { ImageAssetLocation, ImageAssetSource, FileAssetLocation, FileAssetSource } from '../assets';
 import { ISynthesisSession } from '../construct-compat';
 import { Stack } from '../stack';
 
@@ -25,7 +25,7 @@ export interface IStackSynthesizer {
    *
    * Returns the parameters that can be used to refer to the asset inside the template.
    */
-  addDockerImageAsset(asset: DockerImageAssetSource): DockerImageAssetLocation;
+  addDockerImageAsset(asset: ImageAssetSource): ImageAssetLocation;
 
   /**
    * Synthesize the associated stack to the session

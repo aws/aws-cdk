@@ -1,6 +1,6 @@
 import * as crypto from 'crypto';
+import { FileAssetPackaging } from '@aws-cdk/cloud-assembly-schema';
 import { Construct, Node } from 'constructs';
-import { FileAssetPackaging } from './assets';
 import { Fn } from './cfn-fn';
 import { Aws } from './cfn-pseudo';
 import { CfnResource } from './cfn-resource';
@@ -209,7 +209,7 @@ export class NestedStack extends Stack {
     const cfn = JSON.stringify(this._toCloudFormation());
     const templateHash = crypto.createHash('sha256').update(cfn).digest('hex');
 
-    const templateLocation = this._parentStack.addFileAsset({
+    const templateLocation = this._parentStack.synthesizer.addFileAsset({
       packaging: FileAssetPackaging.FILE,
       sourceHash: templateHash,
       fileName: this.templateFile,

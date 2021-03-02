@@ -1,6 +1,6 @@
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { nodeunitShim, Test } from 'nodeunit-shim';
-import { FileAssetPackaging, Stack } from '../lib';
+import { Stack } from '../lib';
 import { toCloudFormation } from './util';
 
 nodeunitShim({
@@ -11,7 +11,7 @@ nodeunitShim({
     // WHEN
     stack.addFileAsset({
       fileName: 'file-name',
-      packaging: FileAssetPackaging.ZIP_DIRECTORY,
+      packaging: cxschema.FileAssetPackaging.ZIP_DIRECTORY,
       sourceHash: 'source-hash',
     });
 
@@ -24,7 +24,7 @@ nodeunitShim({
       const data = assetMetadata.data as cxschema.AssetMetadataEntry;
       test.equal(data.path, 'file-name');
       test.equal(data.id, 'source-hash');
-      test.equal(data.packaging, FileAssetPackaging.ZIP_DIRECTORY);
+      test.equal(data.packaging, cxschema.FileAssetPackaging.ZIP_DIRECTORY);
       test.equal(data.sourceHash, 'source-hash');
     }
 
@@ -55,7 +55,7 @@ nodeunitShim({
     // WHEN
     const assetLocation = stack.addFileAsset({
       fileName: 'file-name',
-      packaging: FileAssetPackaging.ZIP_DIRECTORY,
+      packaging: cxschema.FileAssetPackaging.ZIP_DIRECTORY,
       sourceHash: 'source-hash',
     });
 

@@ -6,7 +6,7 @@ import { IConstruct, Construct, Node } from 'constructs';
 import { Annotations } from './annotations';
 import { App } from './app';
 import { Arn, ArnComponents } from './arn';
-import { DockerImageAssetLocation, DockerImageAssetSource, FileAssetLocation, FileAssetSource } from './assets';
+import { ImageAssetLocation, ImageAssetSource, FileAssetLocation, FileAssetSource } from './assets';
 import { CfnElement } from './cfn-element';
 import { Fn } from './cfn-fn';
 import { Aws, ScopedAws } from './cfn-pseudo';
@@ -663,7 +663,7 @@ export class Stack extends CoreConstruct implements ITaggable {
    * @deprecated Use `stack.synthesizer.addDockerImageAsset()` if you are calling,
    * and a different `IStackSynthesizer` class if you are implementing.
    */
-  public addDockerImageAsset(asset: DockerImageAssetSource): DockerImageAssetLocation {
+  public addDockerImageAsset(asset: ImageAssetSource): ImageAssetLocation {
     return this.synthesizer.addDockerImageAsset(asset);
   }
 

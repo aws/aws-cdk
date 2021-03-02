@@ -2,7 +2,7 @@ import * as fs from 'fs';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
 import { nodeunitShim, Test } from 'nodeunit-shim';
-import { App, Aws, CfnResource, DefaultStackSynthesizer, FileAssetPackaging, Stack } from '../../lib';
+import { App, Aws, CfnResource, DefaultStackSynthesizer, Stack } from '../../lib';
 import { evaluateCFN } from '../evaluate-cfn';
 
 const CFN_CONTEXT = {
@@ -105,7 +105,7 @@ nodeunitShim({
     // WHEN
     const location = stack.synthesizer.addFileAsset({
       fileName: __filename,
-      packaging: FileAssetPackaging.FILE,
+      packaging: cxschema.FileAssetPackaging.FILE,
       sourceHash: 'abcdef',
     });
 
@@ -137,7 +137,7 @@ nodeunitShim({
     // GIVEN
     stack.synthesizer.addFileAsset({
       fileName: __filename,
-      packaging: FileAssetPackaging.FILE,
+      packaging: cxschema.FileAssetPackaging.FILE,
       sourceHash: 'abcdef',
     });
     stack.synthesizer.addDockerImageAsset({
@@ -193,7 +193,7 @@ nodeunitShim({
 
     mystack.synthesizer.addFileAsset({
       fileName: __filename,
-      packaging: FileAssetPackaging.FILE,
+      packaging: cxschema.FileAssetPackaging.FILE,
       sourceHash: 'file-asset-hash',
     });
 
@@ -240,7 +240,7 @@ nodeunitShim({
 
     mystack.synthesizer.addFileAsset({
       fileName: __filename,
-      packaging: FileAssetPackaging.FILE,
+      packaging: cxschema.FileAssetPackaging.FILE,
       sourceHash: 'file-asset-hash-with-prefix',
     });
 

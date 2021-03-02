@@ -1,6 +1,6 @@
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
-import { DockerImageAssetLocation, DockerImageAssetSource, FileAssetLocation, FileAssetSource } from '../assets';
+import { ImageAssetLocation, ImageAssetSource, FileAssetLocation, FileAssetSource } from '../assets';
 import { Fn } from '../cfn-fn';
 import { Construct, ISynthesisSession } from '../construct-compat';
 import { FileAssetParameters } from '../private/asset-parameters';
@@ -81,7 +81,7 @@ export class LegacyStackSynthesizer extends StackSynthesizer {
     }
   }
 
-  public addDockerImageAsset(asset: DockerImageAssetSource): DockerImageAssetLocation {
+  public addDockerImageAsset(asset: ImageAssetSource): ImageAssetLocation {
     assertBound(this.stack);
 
     // See `addFileAsset` for explanation.
@@ -109,7 +109,7 @@ export class LegacyStackSynthesizer extends StackSynthesizer {
     this.emitStackArtifact(this.stack, session);
   }
 
-  private doAddDockerImageAsset(asset: DockerImageAssetSource): DockerImageAssetLocation {
+  private doAddDockerImageAsset(asset: ImageAssetSource): ImageAssetLocation {
     assertBound(this.stack);
 
     // check if we have an override from context

@@ -12,7 +12,7 @@ import { toSymlinkFollow } from './compat';
 // eslint-disable-next-line no-duplicate-imports, import/order
 import { Construct as CoreConstruct } from '@aws-cdk/core';
 
-export interface AssetOptions extends assets.CopyOptions, cdk.AssetOptions {
+export interface AssetOptions extends assets.CopyOptions, cdk.FileAssetOptions {
   /**
    * A list of principals that should be able to read this asset from S3.
    * You can use `asset.grantRead(principal)` to grant read permissions later.

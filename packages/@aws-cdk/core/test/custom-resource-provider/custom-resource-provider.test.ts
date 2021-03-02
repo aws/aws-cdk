@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { nodeunitShim, Test } from 'nodeunit-shim';
-import { App, AssetStaging, CustomResourceProvider, CustomResourceProviderRuntime, DockerImageAssetLocation, DockerImageAssetSource, Duration, FileAssetLocation, FileAssetSource, ISynthesisSession, Size, Stack } from '../../lib';
+import { App, AssetStaging, CustomResourceProvider, CustomResourceProviderRuntime, ImageAssetLocation, ImageAssetSource, Duration, FileAssetLocation, FileAssetSource, ISynthesisSession, Size, Stack } from '../../lib';
 import { toCloudFormation } from '../util';
 
 const TEST_HANDLER = `${__dirname}/mock-provider`;
@@ -138,7 +138,7 @@ nodeunitShim({
           return { bucketName: '', httpUrl: '', objectKey: '', s3ObjectUrl: '', s3Url: '', kmsKeyArn: '' };
         },
 
-        addDockerImageAsset(_asset: DockerImageAssetSource): DockerImageAssetLocation {
+        addDockerImageAsset(_asset: ImageAssetSource): ImageAssetLocation {
           return { imageUri: '', repositoryName: '' };
         },
 
