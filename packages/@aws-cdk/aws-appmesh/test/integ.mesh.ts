@@ -140,6 +140,40 @@ router.addRoute('route-3', {
   }),
 });
 
+router.addRoute('route-4', {
+  routeSpec: appmesh.RouteSpec.http2({
+    weightedTargets: [{ virtualNode: node3 }],
+    match: {
+      prefixPath: '/',
+      method: appmesh.HttpRouteMatchMethod.GET,
+      scheme: appmesh.HttpRouteMatchScheme.HTTPS,
+      headers: [
+        {
+          name: 'Content-Type',
+          match: appmesh.HeaderMatchMethod.exact('text/html'),
+        },
+        {
+          name: 'Content-Type',
+          match: appmesh.HeaderMatchMethod.prefix('text/'),
+        },
+        {
+          name: 'Content-Type',
+          invert: true,
+          match: appmesh.HeaderMatchMethod.suffix('/plain'),
+        },
+        {
+          name: 'Content-Type',
+          match: appmesh.HeaderMatchMethod.regex('.*'),
+        },
+        {
+          name: 'Max-Forwards',
+          match: appmesh.HeaderMatchMethod.range(1, 5),
+        },
+      ],
+    },
+  }),
+});
+
 const gateway = mesh.addVirtualGateway('gateway1', {
   accessLog: appmesh.AccessLog.fromFilePath('/dev/stdout'),
   virtualGatewayName: 'gateway1',

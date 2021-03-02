@@ -34,6 +34,170 @@ export interface HttpRouteMatch {
    * and you want the route to match requests to my-service.local/metrics, your prefix should be /metrics.
    */
   readonly prefixPath: string;
+
+  /**
+   * Specifies the client request headers to match on
+   * @default - do not match on headers
+   */
+  readonly headers?: HttpRouteHeader[];
+
+  /**
+   * The client request method to match on. Specify only one.
+   * @default - do not match on request method
+   */
+  readonly method?: HttpRouteMatchMethod;
+
+  /**
+   * The client request scheme to match on. Specify only one. Applicable only for HTTP2 routes.
+   * @default - do not match on HTTP2 scheme
+   */
+  readonly scheme?: HttpRouteMatchScheme;
+}
+
+/**
+ * Supported request matching methods.
+ */
+export enum HttpRouteMatchMethod {
+  /**
+   * GET request
+   */
+  GET = 'GET',
+  /**
+   * HEAD request
+   */
+  HEAD = 'HEAD',
+  /**
+   * POST request
+   */
+  POST = 'POST',
+  /**
+   * PUT request
+   */
+  PUT = 'PUT',
+  /**
+   * DELETE request
+   */
+  DELETE = 'DELETE',
+  /**
+   * CONNECT request
+   */
+  CONNECT = 'CONNECT',
+  /**
+   * OPTIONS request
+   */
+  OPTIONS = 'OPTIONS',
+  /**
+   * TRACE request
+   */
+  TRACE = 'TRACE',
+  /**
+   * PATCH request
+   */
+  PATCH = 'PATCH',
+}
+
+/**
+ * Supported :scheme options for HTTP2
+ */
+export enum HttpRouteMatchScheme {
+  /**
+   * Match HTTP requests
+   */
+  HTTP = 'http',
+
+  /**
+   * Match HTTPS requests
+   */
+  HTTPS = 'https',
+}
+
+/**
+ * An object that represents the HTTP header in the request to match.
+ */
+export interface HttpRouteHeader {
+  /**
+   * Specify `true` to match anything except the match criteria.
+   * @default false
+   */
+  readonly invert?: boolean;
+
+  /**
+   * The method to use to match the header.
+   * @default - no match method
+   */
+  readonly match?: IHeaderMatchMethod;
+
+  /**
+   * A name for the HTTP header in the client request that will be matched on.
+   * @example 'content-type'
+   */
+  readonly name: string;
+}
+
+/**
+ * Match method.
+ */
+export interface IHeaderMatchMethod {
+  /**
+   * Produce the match method.
+   */
+  renderMatch(): CfnRoute.HeaderMatchMethodProperty;
+}
+/**
+ * Used to generate header matching methods.
+ */
+export abstract class HeaderMatchMethod {
+  /**
+   * The value sent by the client must match the specified value exactly.
+   */
+  static exact(exact: string): IHeaderMatchMethod {
+    return {
+      renderMatch: () => ({ exact }),
+    };
+  }
+
+  /**
+   * The value sent by the client must begin with the specified characters.
+   */
+  static prefix(prefix: string): IHeaderMatchMethod {
+    return {
+      renderMatch: () => ({ prefix }),
+    };
+  }
+
+  /**
+   * The value sent by the client must end with the specified characters.
+   */
+  static suffix(suffix: string): IHeaderMatchMethod {
+    return {
+      renderMatch: () => ({ suffix }),
+    };
+  }
+
+  /**
+   * The value sent by the client must include the specified characters.
+   */
+  static regex(regex: string): IHeaderMatchMethod {
+    return {
+      renderMatch: () => ({ regex }),
+    };
+  }
+
+  /**
+   * Match on a numeric range of values.
+   * @param start Match on values starting at and including this value
+   * @param end Match on values up to but not including this value
+   */
+  static range(start: number, end: number): IHeaderMatchMethod {
+    return {
+      renderMatch: () => ({
+        range: {
+          start,
+          end,
+        },
+      }),
+    };
+  }
 }
 
 /**
@@ -216,12 +380,25 @@ class HttpRouteSpec extends RouteSpec {
     if (prefixPath[0] != '/') {
       throw new Error(`Prefix Path must start with \'/\', got: ${prefixPath}`);
     }
+
+    let headers: CfnRoute.HttpRouteHeaderProperty[] | undefined;
+    if (this.match?.headers) {
+      headers = this.match.headers.map(header => ({
+        name: header.name,
+        invert: header.invert,
+        match: header.match?.renderMatch(),
+      }));
+    }
+
     const httpConfig: CfnRoute.HttpRouteProperty = {
       action: {
         weightedTargets: renderWeightedTargets(this.weightedTargets),
       },
       match: {
         prefix: prefixPath,
+        headers: headers,
+        method: this.match?.method,
+        scheme: this.match?.scheme,
       },
       timeout: renderTimeout(this.timeout),
     };

@@ -298,6 +298,31 @@ router.addRoute('route-http', {
 });
 ```
 
+Add an HTTP2 route that matches based on method, scheme and header:
+
+```ts
+router.addRoute('route-http', {
+  routeSpec: appmesh.RouteSpec.http2({
+    weightedTargets: [
+      {
+        virtualNode: node,
+      },
+    ],
+    match: {
+      prefixPath: '/path-to-app',
+      method: appmesh.HttpRouteMatchMethod.GET,
+      scheme: appmesh.HttpRouteMatchScheme.HTTPS,
+      headers: [
+        {
+          name: 'Content-Type',
+          match: appmesh.HeaderMatchMethod.exact('text/html'),
+        },
+      ]
+    },
+  }),
+});
+```
+
 Add a single route with multiple targets and split traffic 50/50
 
 ```ts
