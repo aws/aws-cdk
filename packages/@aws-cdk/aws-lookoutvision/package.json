@@ -29,6 +29,9 @@
         ],
         "distName": "aws-cdk.aws-lookoutvision",
         "module": "aws_cdk.aws_lookoutvision"
+      },
+      "go": {
+        "moduleName": "github.com/aws/aws-cdk-go"
       }
     }
   },
