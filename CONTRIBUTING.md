@@ -275,9 +275,13 @@ programs that customers could have been writing against the current version
 of the CDK, that will no longer "work correctly" with the proposed new
 version of the CDK.
 
-Breaking changes are not allowed in *stable* libraries. They are permissible
+Breaking changes are not allowed in *stable* libraries¹. They are permissible
 but still *highly discouraged* in experimental libraries, and require explicit
 callouts in the bodies of Pull Requests that introduce them.
+
+> ¹) Note that starting in version 2 of the CDK, the majority of library code will be
+> bundled into a single main CDK library which will be considered stable, and so
+> no code in there can undergo breaking changes.
 
 Breaking changes come in two flavors:
 
@@ -314,6 +318,17 @@ console.log(obj.count + 1);
 console.log(obj.count + 1);
 //          ~~~~~~~~~ Error: Object is possibly 'undefined'.
 ```
+
+CDK comes with build tooling to check whether changes you made introduce breaking
+changes to the API surface. In a package directory, run:
+
+```shell
+$ yarn build
+$ yarn compat
+```
+
+To figure out if the changes you made were breaking. See the section [API Compatibility
+Checks](#api-compatibility-checks) for more information.
 
 #### Dealing with API surface changes
 
@@ -354,7 +369,14 @@ version of the CDK library and is now deploying an update. A behavior change
 is breaking if:
 
 * The update cannot be applied at all
-* The update can be applied but causes service interruption or data loss
+* The update can be applied but causes service interruption or data loss.
+
+Data loss happens when the [Logical
+ID](https://docs.aws.amazon.com/cdk/latest/guide/identifiers.html#identifiers_logical_ids)
+of a stateful resource changes, or one of the [resource properties that requires
+replacement](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html)
+is modified. In both of these cases, CloudFormation will delete the
+resource, and if it was a stateful resource like a database the data in it is now gone.
 
 If a change applies cleanly and does not cause any service interruption, it
 is not breaking. Nevertheless, it might still be wise to avoid those kinds of
@@ -922,7 +944,7 @@ step. If you are working on getting rid of example compilation errors of a
 single package, you can run `yarn rosetta:extract --strict` in the package's
 directory (see the [**jsii-rosetta**](#jsii-rosetta) section).
 
-### feature flags
+### Feature Flags
 
 Sometimes we want to introduce new breaking behavior because we believe this is
 the correct default behavior for the CDK. The problem of course is that breaking
