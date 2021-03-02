@@ -58,7 +58,7 @@ export class TagParameterContainerImage extends ContainerImage {
     return cdk.Lazy.string({
       produce: () => {
         if (this.imageTagParameter) {
-          return this.imageTagParameter.writeAsString;
+          return this.imageTagParameter.valueAsString;
         } else {
           throw new Error('TagParameterContainerImage must be used in a container definition when using tagParameterValue');
         }
