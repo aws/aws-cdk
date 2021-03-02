@@ -148,7 +148,7 @@ new lambda.NodejsFunction(this, 'my-handler', {
     },
     logLevel: LogLevel.SILENT, // defaults to LogLevel.WARNING
     keepNames: true, // defaults to false
-    tsconfig: 'custom-tsconfig.json' // use custom-tsconfig.json instead of default, 
+    tsconfig: 'custom-tsconfig.json' // use custom-tsconfig.json instead of default,
     metafile: true, // include meta file, defaults to false
     banner : '/* comments */', // by default no comments are passed
     footer : '/* comments */', // by default no comments are passed
@@ -162,13 +162,17 @@ It is possible to run additional commands by specifying the `commandHooks` prop:
 
 ```ts
 new lambda.NodejsFunction(this, 'my-handler-with-commands', {
-  commandHooks: {
-    // Copy a file so that it will be included in the bundled asset
-    afterBundling(inputDir: string, outputDir: string): string[] {
-      return [`cp ${inputDir}/my-binary.node ${outputDir}`];
+  bundling: {
+    commandHooks: {
+      // Copy a file so that it will be included in the bundled asset
+      afterBundling(inputDir: string, outputDir: string): string[] {
+        return [`cp ${inputDir}/my-binary.node ${outputDir}`];
+      }
+      // ...
     }
     // ...
   }
+  
 });
 ```
 
@@ -216,7 +220,7 @@ Use `bundling.dockerImage` to use a custom Docker bundling image:
 ```ts
 new lambda.NodejsFunction(this, 'my-handler', {
   bundling: {
-    dockerImage: cdk.BundlingDockerImage.fromAsset('/path/to/Dockerfile'),
+    dockerImage: cdk.DockerImage.fromBuild('/path/to/Dockerfile'),
   },
 });
 ```

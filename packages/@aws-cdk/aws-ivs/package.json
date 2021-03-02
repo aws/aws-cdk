@@ -27,6 +27,9 @@
         ],
         "distName": "aws-cdk.aws-ivs",
         "module": "aws_cdk.aws_ivs"
+      },
+      "go": {
+        "moduleName": "github.com/aws/aws-cdk-go"
       }
     }
   },
@@ -104,5 +107,8 @@
   "maturity": "experimental",
   "awscdkio": {
     "announce": false
+  },
+  "publishConfig": {
+    "tag": "latest"
   }
 }

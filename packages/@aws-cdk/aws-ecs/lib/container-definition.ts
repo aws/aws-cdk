@@ -288,6 +288,12 @@ export interface ContainerDefinitionOptions {
    * @default - No GPUs assigned.
    */
   readonly gpuCount?: number;
+
+  /**
+   * The port mappings to add to the container definition.
+   * @default - No ports are mapped.
+   */
+  readonly portMappings?: PortMapping[];
 }
 
 /**
@@ -399,7 +405,7 @@ export class ContainerDefinition extends CoreConstruct {
         throw new Error('MemoryLimitMiB should not be less than MemoryReservationMiB.');
       }
     }
-    this.essential = props.essential !== undefined ? props.essential : true;
+    this.essential = props.essential ?? true;
     this.taskDefinition = props.taskDefinition;
     this.memoryLimitSpecified = props.memoryLimitMiB !== undefined || props.memoryReservationMiB !== undefined;
     this.linuxParameters = props.linuxParameters;
@@ -433,6 +439,10 @@ export class ContainerDefinition extends CoreConstruct {
     }
 
     props.taskDefinition._linkContainer(this);
+
+    if (props.portMappings) {
+      this.addPortMappings(...props.portMappings);
+    }
   }
 
   /**
@@ -705,10 +715,10 @@ function renderEnvironmentFiles(environmentFiles: EnvironmentFileConfig[]): any[
 function renderHealthCheck(hc: HealthCheck): CfnTaskDefinition.HealthCheckProperty {
   return {
     command: getHealthCheckCommand(hc),
-    interval: hc.interval != null ? hc.interval.toSeconds() : 30,
-    retries: hc.retries !== undefined ? hc.retries : 3,
-    startPeriod: hc.startPeriod && hc.startPeriod.toSeconds(),
-    timeout: hc.timeout !== undefined ? hc.timeout.toSeconds() : 5,
+    interval: hc.interval?.toSeconds() ?? 30,
+    retries: hc.retries ?? 3,
+    startPeriod: hc.startPeriod?.toSeconds(),
+    timeout: hc.timeout?.toSeconds() ?? 5,
   };
 }
 

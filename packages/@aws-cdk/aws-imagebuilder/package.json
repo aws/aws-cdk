@@ -26,6 +26,9 @@
           "Framework :: AWS CDK",
           "Framework :: AWS CDK :: 1"
         ]
+      },
+      "go": {
+        "moduleName": "github.com/aws/aws-cdk-go"
       }
     },
     "projectReferences": true
@@ -91,5 +94,8 @@
   "maturity": "cfn-only",
   "awscdkio": {
     "announce": false
+  },
+  "publishConfig": {
+    "tag": "latest"
   }
 }

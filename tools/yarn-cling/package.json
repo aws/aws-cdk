@@ -38,12 +38,12 @@
     ]
   },
   "devDependencies": {
-    "@types/jest": "^26.0.15",
-    "@types/node": "^10.17.51",
+    "@types/jest": "^26.0.20",
+    "@types/node": "^10.17.54",
     "@types/yarnpkg__lockfile": "^1.1.4",
     "jest": "^26.6.3",
     "pkglint": "0.0.0",
-    "typescript": "~3.9.7"
+    "typescript": "~3.9.9"
   },
   "dependencies": {
     "@yarnpkg/lockfile": "^1.1.0"

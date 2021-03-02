@@ -26,6 +26,9 @@
           "Framework :: AWS CDK",
           "Framework :: AWS CDK :: 1"
         ]
+      },
+      "go": {
+        "moduleName": "github.com/aws/aws-cdk-go"
       }
     },
     "projectReferences": true,
@@ -57,14 +60,14 @@
   },
   "dependencies": {
     "@aws-cdk/cloud-assembly-schema": "0.0.0",
-    "semver": "^7.3.2"
+    "semver": "^7.3.4"
   },
   "peerDependencies": {
     "@aws-cdk/cloud-assembly-schema": "0.0.0"
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@types/jest": "^26.0.15",
+    "@types/jest": "^26.0.20",
     "@types/mock-fs": "^4.13.0",
     "@types/semver": "^7.3.4",
     "cdk-build-tools": "0.0.0",
@@ -156,5 +159,8 @@
   },
   "cdk-build": {
     "jest": true
+  },
+  "publishConfig": {
+    "tag": "latest"
   }
 }

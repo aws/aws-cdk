@@ -109,6 +109,9 @@
           "Framework :: AWS CDK",
           "Framework :: AWS CDK :: 1"
         ]
+      },
+      "go": {
+        "moduleName": "github.com/aws/aws-cdk-go"
       }
     },
     "projectReferences": true
@@ -124,5 +127,8 @@
       "events-method-signature:@aws-cdk/pipelines.UpdatePipelineAction.onStateChange"
     ]
   },
-  "homepage": "https://github.com/aws/aws-cdk"
+  "homepage": "https://github.com/aws/aws-cdk",
+  "publishConfig": {
+    "tag": "latest"
+  }
 }

@@ -47,8 +47,37 @@ export class DescriptionIsRequired extends ValidationRule {
 }
 
 /**
+ * Verify that all packages have a publishConfig with a publish tag set.
+ */
+export class PublishConfigTagIsRequired extends ValidationRule {
+  public readonly name = 'package-info/publish-config-tag';
+
+  public validate(pkg: PackageJson): void {
+    if (pkg.json.private) { return; }
+
+    // While v2 is still under development, we publish all v2 packages with the 'next'
+    // distribution tag, while still tagging all v1 packages as 'latest'.
+    // The one exception is 'aws-cdk-lib', since it's a new package for v2.
+    const newV2Packages = ['aws-cdk-lib'];
+    const defaultPublishTag = (cdkMajorVersion() === 2 && !newV2Packages.includes(pkg.json.name)) ? 'next' : 'latest';
+
+    if (pkg.json.publishConfig?.tag !== defaultPublishTag) {
+      pkg.report({
+        ruleName: this.name,
+        message: `publishConfig.tag must be ${defaultPublishTag}`,
+        fix: (() => {
+          const publishConfig = pkg.json.publishConfig ?? {};
+          publishConfig.tag = defaultPublishTag;
+          pkg.json.publishConfig = publishConfig;
+        }),
+      });
+    }
+  }
+}
+
+/**
  * Verify cdk.out directory is included in npmignore since we should not be
- * publihsing it.
+ * publishing it.
  */
 export class CdkOutMustBeNpmIgnored extends ValidationRule {
 
@@ -589,6 +618,38 @@ export class NoPeerDependenciesMonocdk extends ValidationRule {
 }
 
 /**
+ * Validates that the same version of `constructs` is used wherever a dependency
+ * is specified, so that they must all be udpated at the same time (through an
+ * update to this rule).
+ *
+ * Note: v1 and v2 use different versions respectively.
+ */
+export class ConstructsVersion extends ValidationRule {
+  public readonly name = 'deps/constructs';
+  private readonly expectedRange = cdkMajorVersion() === 2
+    ? '10.0.0-pre.5'
+    : '^3.2.0';
+
+  public validate(pkg: PackageJson) {
+    const toCheck = new Array<string>();
+
+    if ('constructs' in pkg.dependencies) {
+      toCheck.push('dependencies');
+    }
+    if ('constructs' in pkg.devDependencies) {
+      toCheck.push('devDependencies');
+    }
+    if ('constructs' in pkg.peerDependencies) {
+      toCheck.push('peerDependencies');
+    }
+
+    for (const cfg of toCheck) {
+      expectJSON(this.name, pkg, `${cfg}.constructs`, this.expectedRange);
+    }
+  }
+}
+
+/**
  * JSII Java package is required and must look sane
  */
 export class JSIIJavaPackageIsRequired extends ValidationRule {
@@ -631,6 +692,20 @@ export class JSIIPythonTarget extends ValidationRule {
     expectJSON(this.name, pkg, 'jsii.targets.python.distName', moduleName.python.distName);
     expectJSON(this.name, pkg, 'jsii.targets.python.module', moduleName.python.module);
     expectJSON(this.name, pkg, 'jsii.targets.python.classifiers', ['Framework :: AWS CDK', 'Framework :: AWS CDK :: 1']);
+  }
+}
+
+
+export class JSIIGolangTarget extends ValidationRule {
+  public readonly name = 'jsii/go';
+
+  public validate(pkg: PackageJson): void {
+    if (!isJSII(pkg)) { return; }
+
+    const moduleName = cdkModuleName(pkg.json.name);
+
+    // See: https://aws.github.io/jsii/user-guides/lib-author/configuration/targets/go
+    expectJSON(this.name, pkg, 'jsii.targets.go.moduleName', moduleName.goRepositoryName);
   }
 }
 
@@ -808,6 +883,7 @@ function cdkModuleName(name: string) {
       distName: `aws-cdk.${pythonName}`,
       module: `aws_cdk.${pythonName.replace(/-/g, '_')}`,
     },
+    goRepositoryName: 'github.com/aws/aws-cdk-go',
   };
 }
 

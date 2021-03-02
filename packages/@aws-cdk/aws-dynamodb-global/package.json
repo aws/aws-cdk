@@ -37,6 +37,9 @@
         "namespace": "Amazon.CDK.AWS.DynamoDB.Global",
         "packageId": "Amazon.CDK.AWS.DynamoDB.Global",
         "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
+      },
+      "go": {
+        "moduleName": "github.com/aws/aws-cdk-go"
       }
     },
     "projectReferences": true
@@ -93,5 +96,8 @@
   "awscdkio": {
     "announce": false
   },
-  "maturity": "deprecated"
+  "maturity": "deprecated",
+  "publishConfig": {
+    "tag": "latest"
+  }
 }
