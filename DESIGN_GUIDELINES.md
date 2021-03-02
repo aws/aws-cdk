@@ -338,16 +338,17 @@ The **@default** documentation tag must be included on all optional properties
 of interfaces.
 
 In cases where the default behavior can be described by a value (typically the
-case for booleans, sometimes for strings and numbers), the value immediately
-follows the **@default** tag (as in: `@default false`).
+case for booleans and enums, sometimes for strings and numbers), the value immediately
+follows the **@default** tag and should be a valid JavaScript value (as in:
+`@default false`, or `@default "stringValue"`).
 
 In the majority of cases, the default behavior is not a specific value but
 rather depends on circumstances/context. The default documentation tag must
 begin with a “**-**" and then include a description of the default behavior
 _[awslint:props-default-doc]_. This is specially true if the property
-is a a complex value or a reference to an object: don't write `@default
+is a complex value or a reference to an object: don't write `@default
 undefined`, describe the behavior that happens if the property is not
-supplied instead.
+supplied.
 
 Describe the default value or default behavior, even if it's not CDK that
 controls the default. For example, if an absent value does not get rendered
