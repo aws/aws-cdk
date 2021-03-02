@@ -76,7 +76,24 @@ function hasLabel(issue, labelName) {
     })
 }
 
-async function mandatoryChanges(number) {
+/**
+ * Check that the 'BREAKING CHANGE:' note in the body is correct.
+ *
+ * Check this by looking for something that most likely was intended
+ * to be said note, but got misspelled as "BREAKING CHANGES:" or
+ * "BREAKING CHANGES(module):"
+ */
+function validateBreakingChangeFormat(body) {
+    const re = /^BREAKING.*$/m;
+    const m = re.exec(body);
+    if (m) {
+        if (!m[0].startsWith('BREAKING CHANGE: ')) {
+            throw new LinterError(`Breaking changes should be indicated by starting a line with 'BREAKING CHANGE: ', variations are not allowed. (found: '${m[0]}')`);
+        }
+    }
+}
+
+async function validatePr(number) {
 
     if (!number) {
         throw new Error('Must provide a PR number')
@@ -108,6 +125,8 @@ async function mandatoryChanges(number) {
         fixContainsTest(issue, files);
     }
 
+    validateBreakingChangeFormat(issue.body);
+
     console.log("✅  Success")
 
 }
@@ -115,8 +134,7 @@ async function mandatoryChanges(number) {
 // we don't use the 'export' prefix because github actions
 // node runtime doesn't seem to support ES6.
 // TODO need to verify this.
-module.exports.mandatoryChanges = mandatoryChanges
-module.exports.LinterError = LinterError
+module.exports.validatePr = validatePr
 
 require('make-runnable/custom')({
     printOutputFrame: false

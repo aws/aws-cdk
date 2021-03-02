@@ -411,7 +411,7 @@ export class AccessLogField {
    * not from the backend Lambda function.
    */
   public static contextIntegrationStatus() {
-    return '$context.integrationStatus.';
+    return '$context.integrationStatus';
   }
 
   /**
@@ -504,10 +504,10 @@ export class AccessLogFormat {
    * Generate Common Log Format.
    */
   public static clf(): AccessLogFormat {
-    const requester = [AccessLogField.contextIdentitySourceIp(), AccessLogField.contextIdentityCaller(), AccessLogField.contextIdentityUser() ].join(' ');
+    const requester = [AccessLogField.contextIdentitySourceIp(), AccessLogField.contextIdentityCaller(), AccessLogField.contextIdentityUser()].join(' ');
     const requestTime = AccessLogField.contextRequestTime();
-    const request = [ AccessLogField.contextHttpMethod(), AccessLogField.contextResourcePath(), AccessLogField.contextProtocol()].join(' ');
-    const status = [ AccessLogField.contextStatus(), AccessLogField.contextResponseLength(), AccessLogField.contextRequestId()].join(' ');
+    const request = [AccessLogField.contextHttpMethod(), AccessLogField.contextResourcePath(), AccessLogField.contextProtocol()].join(' ');
+    const status = [AccessLogField.contextStatus(), AccessLogField.contextResponseLength(), AccessLogField.contextRequestId()].join(' ');
 
     return new AccessLogFormat(`${requester} [${requestTime}] "${request}" ${status}`);
   }

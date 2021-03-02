@@ -1,7 +1,11 @@
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
-import { Construct, SecretValue } from '@aws-cdk/core';
+import { SecretValue } from '@aws-cdk/core';
 import { Action } from '../action';
 import { sourceArtifactBounds } from '../common';
+
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct } from '@aws-cdk/core';
 
 /**
  * If and how the GitHub source action should be triggered
@@ -65,6 +69,13 @@ export interface GitHubSourceActionProps extends codepipeline.CommonActionProps 
    *
    *   const oauth = cdk.SecretValue.secretsManager('my-github-token');
    *   new GitHubSource(this, 'GitHubAction', { oauthToken: oauth, ... });
+   *
+   * The GitHub Personal Access Token should have these scopes:
+   *
+   * * **repo** - to read the repository
+   * * **admin:repo_hook** - if you plan to use webhooks (true by default)
+   *
+   * @see https://docs.aws.amazon.com/codepipeline/latest/userguide/appendix-github-oauth.html#GitHub-create-personal-token-CLI
    */
   readonly oauthToken: SecretValue;
 
@@ -74,6 +85,9 @@ export interface GitHubSourceActionProps extends codepipeline.CommonActionProps 
    * With the default value "WEBHOOK", a webhook is created in GitHub that triggers the action
    * With "POLL", CodePipeline periodically checks the source for changes
    * With "None", the action is not triggered through changes in the source
+   *
+   * To use `WEBHOOK`, your GitHub Personal Access Token should have
+   * **admin:repo_hook** scope (in addition to the regular **repo** scope).
    *
    * @default GitHubTrigger.WEBHOOK
    */

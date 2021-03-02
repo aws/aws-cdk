@@ -82,6 +82,8 @@ test('url subscription with user provided dlq', () => {
       },
       'DeadLetterQueue9F481546': {
         'Type': 'AWS::SQS::Queue',
+        'DeletionPolicy': 'Delete',
+        'UpdateReplacePolicy': 'Delete',
         'Properties': {
           'MessageRetentionPeriod': 1209600,
           'QueueName': 'MySubscription_DLQ',
@@ -155,7 +157,7 @@ test('url subscription (with raw delivery)', () => {
 
 test('url subscription (unresolved url with protocol)', () => {
   const urlToken = Token.asString({ Ref: 'my-url-1' });
-  topic.addSubscription(new subs.UrlSubscription(urlToken, {protocol: sns.SubscriptionProtocol.HTTPS}));
+  topic.addSubscription(new subs.UrlSubscription(urlToken, { protocol: sns.SubscriptionProtocol.HTTPS }));
 
   expect(stack).toMatchTemplate({
     'Resources': {
@@ -184,8 +186,8 @@ test('url subscription (double unresolved url with protocol)', () => {
   const urlToken1 = Token.asString({ Ref: 'my-url-1' });
   const urlToken2 = Token.asString({ Ref: 'my-url-2' });
 
-  topic.addSubscription(new subs.UrlSubscription(urlToken1, {protocol: sns.SubscriptionProtocol.HTTPS}));
-  topic.addSubscription(new subs.UrlSubscription(urlToken2, {protocol: sns.SubscriptionProtocol.HTTPS}));
+  topic.addSubscription(new subs.UrlSubscription(urlToken1, { protocol: sns.SubscriptionProtocol.HTTPS }));
+  topic.addSubscription(new subs.UrlSubscription(urlToken2, { protocol: sns.SubscriptionProtocol.HTTPS }));
 
   expect(stack).toMatchTemplate({
     'Resources': {
@@ -248,6 +250,8 @@ test('queue subscription', () => {
       },
       'MyQueueE6CA6235': {
         'Type': 'AWS::SQS::Queue',
+        'DeletionPolicy': 'Delete',
+        'UpdateReplacePolicy': 'Delete',
       },
       'MyQueuePolicy6BBEDDAC': {
         'Type': 'AWS::SQS::QueuePolicy',
@@ -325,6 +329,8 @@ test('queue subscription with user provided dlq', () => {
       },
       'MyQueueE6CA6235': {
         'Type': 'AWS::SQS::Queue',
+        'DeletionPolicy': 'Delete',
+        'UpdateReplacePolicy': 'Delete',
       },
       'MyQueuePolicy6BBEDDAC': {
         'Type': 'AWS::SQS::QueuePolicy',
@@ -386,6 +392,8 @@ test('queue subscription with user provided dlq', () => {
       },
       'DeadLetterQueue9F481546': {
         'Type': 'AWS::SQS::Queue',
+        'DeletionPolicy': 'Delete',
+        'UpdateReplacePolicy': 'Delete',
         'Properties': {
           'MessageRetentionPeriod': 1209600,
           'QueueName': 'MySubscription_DLQ',
@@ -612,7 +620,7 @@ test('email and url subscriptions with unresolved', () => {
   const emailToken = Token.asString({ Ref: 'my-email-1' });
   const urlToken = Token.asString({ Ref: 'my-url-1' });
   topic.addSubscription(new subs.EmailSubscription(emailToken));
-  topic.addSubscription(new subs.UrlSubscription(urlToken, {protocol: sns.SubscriptionProtocol.HTTPS}));
+  topic.addSubscription(new subs.UrlSubscription(urlToken, { protocol: sns.SubscriptionProtocol.HTTPS }));
 
   expect(stack).toMatchTemplate({
     'Resources': {
@@ -745,6 +753,8 @@ test('multiple subscriptions', () => {
       },
       'MyQueueE6CA6235': {
         'Type': 'AWS::SQS::Queue',
+        'DeletionPolicy': 'Delete',
+        'UpdateReplacePolicy': 'Delete',
       },
       'MyQueuePolicy6BBEDDAC': {
         'Type': 'AWS::SQS::QueuePolicy',
@@ -963,7 +973,7 @@ test('region property on an imported topic as a parameter - sqs', () => {
 
   expect(stack).toHaveResource('AWS::SNS::Subscription', {
     Region: {
-      'Fn::Select': [ 3, { 'Fn::Split': [ ':', { 'Ref': 'topicArn' } ] } ],
+      'Fn::Select': [3, { 'Fn::Split': [':', { 'Ref': 'topicArn' }] }],
     },
   });
 });
@@ -994,7 +1004,7 @@ test('region property on an imported topic as a parameter - lambda', () => {
 
   expect(stack).toHaveResource('AWS::SNS::Subscription', {
     Region: {
-      'Fn::Select': [ 3, { 'Fn::Split': [ ':', { 'Ref': 'topicArn' } ] } ],
+      'Fn::Select': [3, { 'Fn::Split': [':', { 'Ref': 'topicArn' }] }],
     },
   });
 });

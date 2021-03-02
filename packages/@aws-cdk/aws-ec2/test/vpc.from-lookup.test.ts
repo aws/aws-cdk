@@ -1,6 +1,7 @@
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
-import { Construct, ContextProvider, GetContextValueOptions, GetContextValueResult, Lazy, Stack } from '@aws-cdk/core';
+import { ContextProvider, GetContextValueOptions, GetContextValueResult, Lazy, Stack } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
+import { Construct } from 'constructs';
 import { nodeunitShim, Test } from 'nodeunit-shim';
 import { GenericLinuxImage, Instance, InstanceType, SubnetType, Vpc } from '../lib';
 
@@ -12,7 +13,7 @@ nodeunitShim({
 
       test.throws(() => {
         Vpc.fromLookup(stack, 'Vpc', {
-          vpcId: Lazy.stringValue({ produce: () => 'some-id' }),
+          vpcId: Lazy.string({ produce: () => 'some-id' }),
         });
 
       }, 'All arguments to Vpc.fromLookup() must be concrete');
@@ -22,7 +23,7 @@ nodeunitShim({
 
     'selecting subnets by name from a looked-up VPC does not throw'(test: Test) {
       // GIVEN
-      const stack = new Stack(undefined, undefined, { env: { region: 'us-east-1', account: '123456789012' }});
+      const stack = new Stack(undefined, undefined, { env: { region: 'us-east-1', account: '123456789012' } });
       const vpc = Vpc.fromLookup(stack, 'VPC', {
         vpcId: 'vpc-1234',
       });
@@ -207,6 +208,47 @@ nodeunitShim({
 
       // THEN -- no exception occurred
 
+      test.done();
+    },
+    'subnets in imported VPC has all expected attributes'(test: Test) {
+      const previous = mockVpcContextProviderWith(test, {
+        vpcId: 'vpc-1234',
+        subnetGroups: [
+          {
+            name: 'Public',
+            type: cxapi.VpcSubnetGroupType.PUBLIC,
+            subnets: [
+              {
+                subnetId: 'pub-sub-in-us-east-1a',
+                availabilityZone: 'us-east-1a',
+                routeTableId: 'rt-123',
+                cidr: '10.100.0.0/24',
+              },
+            ],
+          },
+        ],
+      }, options => {
+        test.deepEqual(options.filter, {
+          isDefault: 'true',
+        });
+
+        test.equal(options.subnetGroupNameTag, undefined);
+      });
+
+      const stack = new Stack();
+      const vpc = Vpc.fromLookup(stack, 'Vpc', {
+        isDefault: true,
+      });
+
+      let subnet = vpc.publicSubnets[0];
+
+      test.equal(subnet.availabilityZone, 'us-east-1a');
+      test.equal(subnet.subnetId, 'pub-sub-in-us-east-1a');
+      test.equal(subnet.routeTable.routeTableId, 'rt-123');
+      test.equal(subnet.ipv4CidrBlock, '10.100.0.0/24');
+
+
+      restoreContextProvider(previous);
       test.done();
     },
   },

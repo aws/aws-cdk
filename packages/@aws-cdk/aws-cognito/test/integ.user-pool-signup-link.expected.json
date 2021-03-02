@@ -40,10 +40,16 @@
     "myuserpool01998219": {
       "Type": "AWS::Cognito::UserPool",
       "Properties": {
-        "AccountRecoverySetting": { 
+        "AccountRecoverySetting": {
           "RecoveryMechanisms": [
-            { "Name": "verified_phone_number", "Priority": 1 },
-            { "Name": "verified_email", "Priority": 2 }
+            {
+              "Name": "verified_phone_number",
+              "Priority": 1
+            },
+            {
+              "Name": "verified_email",
+              "Priority": 2
+            }
           ]
         },
         "AdminCreateUserConfig": {
@@ -79,7 +85,9 @@
           "EmailSubjectByLink": "integ-test: Verify your account",
           "SmsMessage": "integ-test: Account verification code is {####}"
         }
-      }
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
     },
     "myuserpoolmyuserpooldomainEE1E11AF": {
       "Type": "AWS::Cognito::UserPoolDomain",

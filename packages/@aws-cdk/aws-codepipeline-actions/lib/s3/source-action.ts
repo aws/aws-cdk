@@ -1,9 +1,13 @@
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as targets from '@aws-cdk/aws-events-targets';
 import * as s3 from '@aws-cdk/aws-s3';
-import { Construct } from '@aws-cdk/core';
+import { Names, Token } from '@aws-cdk/core';
 import { Action } from '../action';
 import { sourceArtifactBounds } from '../common';
+
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct } from '@aws-cdk/core';
 
 /**
  * How should the S3 Action detect changes.
@@ -101,7 +105,7 @@ export class S3SourceAction extends Action {
 
   /** The variables emitted by this action. */
   public get variables(): S3SourceVariables {
-    return  {
+    return {
       versionId: this.variableExpression('VersionId'),
       eTag: this.variableExpression('ETag'),
     };
@@ -110,11 +114,7 @@ export class S3SourceAction extends Action {
   protected bound(_scope: Construct, stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
   codepipeline.ActionConfig {
     if (this.props.trigger === S3Trigger.EVENTS) {
-      const id = stage.pipeline.node.uniqueId + 'SourceEventRule' + this.props.bucketKey;
-      if (this.props.bucket.node.tryFindChild(id)) {
-        // this means a duplicate path for the same bucket - error out
-        throw new Error(`S3 source action with path '${this.props.bucketKey}' is already present in the pipeline for this source bucket`);
-      }
+      const id = this.generateEventId(stage);
       this.props.bucket.onCloudTrailWriteObject(id, {
         target: new targets.CodePipeline(stage.pipeline),
         paths: [this.props.bucketKey],
@@ -134,5 +134,34 @@ export class S3SourceAction extends Action {
         PollForSourceChanges: this.props.trigger && this.props.trigger === S3Trigger.POLL,
       },
     };
+  }
+
+  private generateEventId(stage: codepipeline.IStage): string {
+    let ret: string;
+    const baseId = Names.nodeUniqueId(stage.pipeline.node) + 'SourceEventRule';
+
+    if (Token.isUnresolved(this.props.bucketKey)) {
+      // If bucketKey is a Token, don't include it in the ID.
+      // Instead, use numbers to differentiate if multiple actions observe the same bucket
+      let candidate = baseId;
+      let counter = 0;
+      while (this.props.bucket.node.tryFindChild(candidate) !== undefined) {
+        counter += 1;
+        candidate = baseId + counter;
+      }
+      ret = candidate;
+    } else {
+      // we can't use Tokens in construct IDs,
+      // however, if bucketKey is not a Token,
+      // we want it to differentiate between multiple actions
+      // observing the same Bucket with different keys
+      ret = baseId + this.props.bucketKey;
+      if (this.props.bucket.node.tryFindChild(ret)) {
+        // this means a duplicate path for the same bucket - error out
+        throw new Error(`S3 source action with path '${this.props.bucketKey}' is already present in the pipeline for this source bucket`);
+      }
+    }
+
+    return ret;
   }
 }

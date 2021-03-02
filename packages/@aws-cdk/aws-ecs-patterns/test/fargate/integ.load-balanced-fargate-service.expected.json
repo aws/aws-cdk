@@ -361,6 +361,12 @@
     "myServiceLB168895E1": {
       "Type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
       "Properties": {
+        "LoadBalancerAttributes": [
+          {
+            "Key": "deletion_protection.enabled",
+            "Value": "false"
+          }
+        ],
         "Scheme": "internet-facing",
         "SecurityGroups": [
           {
@@ -396,6 +402,13 @@
             "FromPort": 443,
             "IpProtocol": "tcp",
             "ToPort": 443
+          },
+          {
+            "CidrIp": "0.0.0.0/0",
+            "Description": "Allow from anyone on port 80",
+            "FromPort": 80,
+            "IpProtocol": "tcp",
+            "ToPort": 80
           }
         ],
         "VpcId": {
@@ -460,6 +473,26 @@
         }
       }
     },
+    "myServiceLBPublicRedirectListener0EEF9DCA": {
+      "Type": "AWS::ElasticLoadBalancingV2::Listener",
+      "Properties": {
+        "DefaultActions": [
+          {
+            "RedirectConfig": {
+              "Port": "443",
+              "Protocol": "HTTPS",
+              "StatusCode": "HTTP_301"
+            },
+            "Type": "redirect"
+          }
+        ],
+        "LoadBalancerArn": {
+          "Ref": "myServiceLB168895E1"
+        },
+        "Port": 80,
+        "Protocol": "HTTP"
+      }
+    },
     "myServiceCertificate152F9DDA": {
       "Type": "AWS::CertificateManager::Certificate",
       "Properties": {
@@ -480,7 +513,7 @@
         "Type": "A",
         "AliasTarget": {
           "DNSName": {
-            "Fn::Join":
+            "Fn::Join": 
             [
               "",
               [
@@ -631,7 +664,6 @@
           "MaximumPercent": 200,
           "MinimumHealthyPercent": 50
         },
-        "DesiredCount": 1,
         "EnableECSManagedTags": true,
         "HealthCheckGracePeriodSeconds": 60,
         "LaunchType": "FARGATE",

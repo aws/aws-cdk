@@ -6,9 +6,12 @@ import * as sinon from 'sinon';
 import { AwsSdkCall, PhysicalResourceId } from '../../lib';
 import { flatten, handler, forceSdkInstallation } from '../../lib/aws-custom-resource/runtime';
 
-/* eslint-disable no-console */
 
-AWS.setSDK(require.resolve('aws-sdk'));
+// This test performs an 'npm install' which may take longer than the default
+// 5s timeout
+jest.setTimeout(60_000);
+
+/* eslint-disable no-console */
 
 console.log = jest.fn();
 
@@ -28,13 +31,12 @@ function createRequest(bodyPredicate: (body: AWSLambda.CloudFormationCustomResou
 }
 
 beforeEach(() => {
-  process.env.USE_NORMAL_SDK = 'true';
+  AWS.setSDK(require.resolve('aws-sdk'));
 });
 
 afterEach(() => {
   AWS.restore();
   nock.cleanAll();
-  delete process.env.USE_NORMAL_SDK;
 });
 
 test('create event with physical resource id path', async () => {
@@ -58,14 +60,14 @@ test('create event with physical resource id path', async () => {
     RequestType: 'Create',
     ResourceProperties: {
       ServiceToken: 'token',
-      Create: {
+      Create: JSON.stringify({
         service: 'S3',
         action: 'listObjects',
         parameters: {
           Bucket: 'my-bucket',
         },
         physicalResourceId: PhysicalResourceId.fromResponse('Contents.1.ETag'),
-      } as AwsSdkCall,
+      } as AwsSdkCall),
     },
   };
 
@@ -96,7 +98,7 @@ test('update event with physical resource id', async () => {
     OldResourceProperties: {},
     ResourceProperties: {
       ServiceToken: 'token',
-      Update: {
+      Update: JSON.stringify({
         service: 'SNS',
         action: 'publish',
         parameters: {
@@ -104,7 +106,7 @@ test('update event with physical resource id', async () => {
           TopicArn: 'topicarn',
         },
         physicalResourceId: PhysicalResourceId.of('topicarn'),
-      } as AwsSdkCall,
+      } as AwsSdkCall),
     },
   };
 
@@ -129,14 +131,14 @@ test('delete event', async () => {
     PhysicalResourceId: 'physicalResourceId',
     ResourceProperties: {
       ServiceToken: 'token',
-      Create: {
+      Create: JSON.stringify({
         service: 'S3',
         action: 'listObjects',
         parameters: {
           Bucket: 'my-bucket',
         },
         physicalResourceId: PhysicalResourceId.fromResponse('Contents.1.ETag'),
-      } as AwsSdkCall,
+      } as AwsSdkCall),
     },
   };
 
@@ -164,13 +166,13 @@ test('delete event with Delete call and no physical resource id in call', async 
     PhysicalResourceId: 'physicalResourceId',
     ResourceProperties: {
       ServiceToken: 'token',
-      Delete: {
+      Delete: JSON.stringify({
         service: 'SSM',
         action: 'deleteParameter',
         parameters: {
           Name: 'my-param',
         },
-      } as AwsSdkCall,
+      } as AwsSdkCall),
     },
   };
 
@@ -198,13 +200,13 @@ test('create event with Delete call only', async () => {
     RequestType: 'Create',
     ResourceProperties: {
       ServiceToken: 'token',
-      Delete: {
+      Delete: JSON.stringify({
         service: 'SSM',
         action: 'deleteParameter',
         parameters: {
           Name: 'my-param',
         },
-      } as AwsSdkCall,
+      } as AwsSdkCall),
     },
   };
 
@@ -232,7 +234,7 @@ test('catch errors', async () => {
     RequestType: 'Create',
     ResourceProperties: {
       ServiceToken: 'token',
-      Create: {
+      Create: JSON.stringify({
         service: 'S3',
         action: 'listObjects',
         parameters: {
@@ -240,7 +242,7 @@ test('catch errors', async () => {
         },
         physicalResourceId: PhysicalResourceId.of('physicalResourceId'),
         ignoreErrorCodesMatching: 'NoSuchBucket',
-      } as AwsSdkCall,
+      } as AwsSdkCall),
     },
   };
 
@@ -251,68 +253,6 @@ test('catch errors', async () => {
   );
 
   await handler(event, {} as AWSLambda.Context);
-
-  expect(request.isDone()).toBeTruthy();
-});
-
-test('decodes booleans', async () => {
-  const putItemFake = sinon.fake.resolves({});
-
-  AWS.mock('DynamoDB', 'putItem', putItemFake);
-
-  const event: AWSLambda.CloudFormationCustomResourceCreateEvent = {
-    ...eventCommon,
-    RequestType: 'Create',
-    ResourceProperties: {
-      ServiceToken: 'token',
-      Create: {
-        service: 'DynamoDB',
-        action: 'putItem',
-        parameters: {
-          TableName: 'table',
-          Item: {
-            True: {
-              BOOL: 'TRUE:BOOLEAN',
-            },
-            TrueString: {
-              S: 'true',
-            },
-            False: {
-              BOOL: 'FALSE:BOOLEAN',
-            },
-            FalseString: {
-              S: 'false',
-            },
-          },
-        },
-        physicalResourceId: PhysicalResourceId.of('put-item'),
-      } as AwsSdkCall,
-    },
-  };
-
-  const request = createRequest(body =>
-    body.Status === 'SUCCESS',
-  );
-
-  await handler(event, {} as AWSLambda.Context);
-
-  sinon.assert.calledWith(putItemFake, {
-    TableName: 'table',
-    Item: {
-      True: {
-        BOOL: true,
-      },
-      TrueString: {
-        S: 'true',
-      },
-      False: {
-        BOOL: false,
-      },
-      FalseString: {
-        S: 'false',
-      },
-    },
-  });
 
   expect(request.isDone()).toBeTruthy();
 });
@@ -338,7 +278,7 @@ test('restrict output path', async () => {
     RequestType: 'Create',
     ResourceProperties: {
       ServiceToken: 'token',
-      Create: {
+      Create: JSON.stringify({
         service: 'S3',
         action: 'listObjects',
         parameters: {
@@ -346,7 +286,7 @@ test('restrict output path', async () => {
         },
         physicalResourceId: PhysicalResourceId.of('id'),
         outputPath: 'Contents.0',
-      } as AwsSdkCall,
+      } as AwsSdkCall),
     },
   };
 
@@ -372,7 +312,7 @@ test('can specify apiVersion and region', async () => {
     RequestType: 'Create',
     ResourceProperties: {
       ServiceToken: 'token',
-      Create: {
+      Create: JSON.stringify({
         service: 'SNS',
         action: 'publish',
         parameters: {
@@ -382,7 +322,7 @@ test('can specify apiVersion and region', async () => {
         apiVersion: '2010-03-31',
         region: 'eu-west-1',
         physicalResourceId: PhysicalResourceId.of('id'),
-      } as AwsSdkCall,
+      } as AwsSdkCall),
     },
   };
 
@@ -414,10 +354,34 @@ test('flatten correctly flattens a nested object', () => {
   });
 });
 
+test('flatten correctly flattens an object with buffers', () => {
+  expect(flatten({
+    body: Buffer.from('body'),
+    nested: {
+      buffer: Buffer.from('buffer'),
+      array: [
+        Buffer.from('array.0'),
+        Buffer.from('array.1'),
+      ],
+    },
+  })).toEqual({
+    'body': 'body',
+    'nested.buffer': 'buffer',
+    'nested.array.0': 'array.0',
+    'nested.array.1': 'array.1',
+  });
+});
+
 test('installs the latest SDK', async () => {
   const tmpPath = '/tmp/node_modules/aws-sdk';
 
-  await fs.remove(tmpPath);
+  // Symlink to normal SDK to be able to call AWS.setSDK()
+  await fs.ensureDir('/tmp/node_modules');
+  await fs.symlink(require.resolve('aws-sdk'), tmpPath);
+  AWS.setSDK(tmpPath);
+
+  // Now remove the symlink and let the handler install it
+  await fs.unlink(tmpPath);
 
   const publishFake = sinon.fake.resolves({});
 
@@ -428,7 +392,7 @@ test('installs the latest SDK', async () => {
     RequestType: 'Create',
     ResourceProperties: {
       ServiceToken: 'token',
-      Create: {
+      Create: JSON.stringify({
         service: 'SNS',
         action: 'publish',
         parameters: {
@@ -436,7 +400,8 @@ test('installs the latest SDK', async () => {
           TopicArn: 'topic',
         },
         physicalResourceId: PhysicalResourceId.of('id'),
-      } as AwsSdkCall,
+      } as AwsSdkCall),
+      InstallLatestAwsSdk: 'true',
     },
   };
 
@@ -451,4 +416,7 @@ test('installs the latest SDK', async () => {
   expect(request.isDone()).toBeTruthy();
 
   expect(() => require.resolve(tmpPath)).not.toThrow();
+
+  // clean up aws-sdk install
+  await fs.remove(tmpPath);
 });

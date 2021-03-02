@@ -139,7 +139,7 @@ async function main() {
       throw new Error('Unexpected update to a resource type. Expecting only "Properties" to change: ' + propertyType);
     }
 
-    for (const prop of Object.keys(update.Properties)) {
+    for (const prop of Object.keys(update.Properties ?? {})) {
       describeChanges(propertyType, prop, update.Properties[prop]).forEach(change => {
         propertyTypeChanges.push(change);
       });

@@ -40,7 +40,7 @@ test('use of cross-stack role reference does not lead to URLSuffix being exporte
     },
     Outputs: {
       ExportsOutputFnGetAttRole1ABCC5F0ArnB4C0B73E: {
-        Value: { 'Fn::GetAtt': [ 'Role1ABCC5F0', 'Arn' ] },
+        Value: { 'Fn::GetAtt': ['Role1ABCC5F0', 'Arn'] },
         Export: {
           Name: 'First:ExportsOutputFnGetAttRole1ABCC5F0ArnB4C0B73E',
         },

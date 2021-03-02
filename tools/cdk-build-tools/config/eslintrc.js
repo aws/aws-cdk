@@ -10,11 +10,13 @@
 module.exports = {
   env: {
     jest: true,
-    node: true
+    node: true,
   },
   plugins: [
     '@typescript-eslint',
-    'import'
+    'import',
+    'cdk',
+    'jest',
   ],
   parser: '@typescript-eslint/parser',
   parserOptions: {
@@ -23,44 +25,59 @@ module.exports = {
     project: './tsconfig.json',
   },
   extends: [
-    'plugin:import/typescript'
+    'plugin:import/typescript',
+    'plugin:jest/recommended',
   ],
   settings: {
     'import/parsers': {
-      '@typescript-eslint/parser': ['.ts', '.tsx']
+      '@typescript-eslint/parser': ['.ts', '.tsx'],
     },
     'import/resolver': {
       node: {},
       typescript: {
-        directory: './tsconfig.json'
-      }
-    }
+        directory: './tsconfig.json',
+      },
+    },
   },
-  ignorePatterns: [ '*.js', '*.d.ts', 'node_modules/', '*.generated.ts' ],
+  ignorePatterns: ['*.js', '*.d.ts', 'node_modules/', '*.generated.ts'],
   rules: {
+    'cdk/construct-import-order': [ 'error' ],
+    'cdk/no-core-construct': [ 'error' ],
+    'cdk/no-qualified-construct': [ 'error' ],
     // Require use of the `import { foo } from 'bar';` form instead of `import foo = require('bar');`
-    '@typescript-eslint/no-require-imports': [ 'error' ],
-    '@typescript-eslint/indent': [ 'error', 2 ],
+    '@typescript-eslint/no-require-imports': ['error'],
+    '@typescript-eslint/indent': ['error', 2],
 
     // Style
-    'quotes': [ 'error', 'single', { avoidEscape: true } ],
-    'comma-dangle': [ 'error', 'always-multiline' ], // ensures clean diffs, see https://medium.com/@nikgraf/why-you-should-enforce-dangling-commas-for-multiline-statements-d034c98e36f8
+    'quotes': ['error', 'single', { avoidEscape: true }],
+    'comma-dangle': ['error', 'always-multiline'], // ensures clean diffs, see https://medium.com/@nikgraf/why-you-should-enforce-dangling-commas-for-multiline-statements-d034c98e36f8
+    'comma-spacing': ['error', { before: false, after: true }], // space after, no space before
+    'no-multi-spaces': ['error', { ignoreEOLComments: false }], // no multi spaces
+    'array-bracket-spacing': ['error', 'never'], // [1, 2, 3]
+    'array-bracket-newline': ['error', 'consistent'], // enforce consistent line breaks between brackets
+    'object-curly-spacing': ['error', 'always'], // { key: 'value' }
+    'object-curly-newline': ['error', { multiline: true, consistent: true }], // enforce consistent line breaks between braces
+    'object-property-newline': ['error', { allowAllPropertiesOnSameLine: true }], // enforce "same line" or "multiple line" on object properties
+    'keyword-spacing': ['error'], // require a space before & after keywords
+    'brace-style': ['error', '1tbs', { allowSingleLine: true }], // enforce one true brace style
+    'space-before-blocks': 'error', // require space before blocks
+    'curly': ['error', 'multi-line', 'consistent'], // require curly braces for multiline control statements
 
     // Require all imported dependencies are actually declared in package.json
     'import/no-extraneous-dependencies': [
       'error',
       {
-        devDependencies: [               // Only allow importing devDependencies from:
-          '**/build-tools/**',           // --> Build tools
-          '**/test/**'                   // --> Unit tests
+        devDependencies: [ // Only allow importing devDependencies from:
+          '**/build-tools/**', // --> Build tools
+          '**/test/**', // --> Unit tests
         ],
-        optionalDependencies: false,    // Disallow importing optional dependencies (those shouldn't be in use in the project)
-        peerDependencies: false         // Disallow importing peer dependencies (that aren't also direct dependencies)
-      }
+        optionalDependencies: false, // Disallow importing optional dependencies (those shouldn't be in use in the project)
+        peerDependencies: false, // Disallow importing peer dependencies (that aren't also direct dependencies)
+      },
     ],
 
     // Require all imported libraries actually resolve (!!required for import/no-extraneous-dependencies to work!!)
-    'import/no-unresolved': [ 'error' ],
+    'import/no-unresolved': ['error'],
 
     // Require an ordering on all imports -- unfortunately a different ordering than TSLint used to
     // enforce, but there are no compatible ESLint rules as far as I can tell :(
@@ -71,11 +88,25 @@ module.exports = {
       alphabetize: { order: 'asc', caseInsensitive: true },
     }],
 
+    // disallow import of deprecated punycode package
+    'no-restricted-imports': [
+      'error', {
+        paths: [
+          {
+            name: 'punycode',
+            message: `Package 'punycode' has to be imported with trailing slash, see warning in https://github.com/bestiejs/punycode.js#installation`,
+          },
+        ],
+        patterns: ['!punycode/'],
+      },
+    ],
+
     // Cannot import from the same module twice
     'no-duplicate-imports': ['error'],
 
     // Cannot shadow names
-    'no-shadow': ['error'],
+    'no-shadow': ['off'],
+    '@typescript-eslint/no-shadow': ['error'],
 
     // Required spacing in property declarations (copied from TSLint, defaults are good)
     'key-spacing': ['error'],
@@ -101,6 +132,11 @@ module.exports = {
 
     // One of the easiest mistakes to make
     '@typescript-eslint/no-floating-promises': ['error'],
+
+    // Make sure that inside try/catch blocks, promises are 'return await'ed
+    // (must disable the base rule as it can report incorrect errors)
+    'no-return-await': 'off',
+    '@typescript-eslint/return-await': 'error',
 
     // Don't leave log statements littering the premises!
     'no-console': ['error'],
@@ -145,21 +181,29 @@ module.exports = {
     // Member ordering
     '@typescript-eslint/member-ordering': ['error', {
       default: [
-        "public-static-field",
-        "public-static-method",
-        "protected-static-field",
-        "protected-static-method",
-        "private-static-field",
-        "private-static-method",
+        'public-static-field',
+        'public-static-method',
+        'protected-static-field',
+        'protected-static-method',
+        'private-static-field',
+        'private-static-method',
 
-        "field",
+        'field',
 
         // Constructors
-        "constructor", // = ["public-constructor", "protected-constructor", "private-constructor"]
+        'constructor', // = ["public-constructor", "protected-constructor", "private-constructor"]
 
         // Methods
-        "method",
-      ]
+        'method',
+      ],
     }],
+
+    // Overrides for plugin:jest/recommended
+    "jest/expect-expect": "off",
+    "jest/no-conditional-expect": "off",
+    "jest/no-done-callback": "off", // Far too many of these in the codebase.
+    "jest/no-standalone-expect": "off", // nodeunitShim confuses this check.
+    "jest/valid-expect": "off", // expect from '@aws-cdk/assert' can take a second argument
+    "jest/valid-title": "off", // A little over-zealous with test('test foo') being an error.
   },
-}
+};

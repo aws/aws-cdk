@@ -1,7 +1,12 @@
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CfnScalingPolicy } from './applicationautoscaling.generated';
 import { IScalableTarget } from './scalable-target';
+
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 /**
  * Base interface for target tracking props
@@ -114,13 +119,13 @@ export interface TargetTrackingScalingPolicyProps extends BasicTargetTrackingSca
   readonly scalingTarget: IScalableTarget;
 }
 
-export class TargetTrackingScalingPolicy extends cdk.Construct {
+export class TargetTrackingScalingPolicy extends CoreConstruct {
   /**
    * ARN of the scaling policy
    */
   public readonly scalingPolicyArn: string;
 
-  constructor(scope: cdk.Construct, id: string, props: TargetTrackingScalingPolicyProps) {
+  constructor(scope: Construct, id: string, props: TargetTrackingScalingPolicyProps) {
     if ((props.customMetric === undefined) === (props.predefinedMetric === undefined)) {
       throw new Error('Exactly one of \'customMetric\' or \'predefinedMetric\' must be specified.');
     }
@@ -132,7 +137,7 @@ export class TargetTrackingScalingPolicy extends cdk.Construct {
     super(scope, id);
 
     const resource = new CfnScalingPolicy(this, 'Resource', {
-      policyName: props.policyName || this.node.uniqueId,
+      policyName: props.policyName || cdk.Names.uniqueId(this),
       policyType: 'TargetTrackingScaling',
       scalingTargetId: props.scalingTarget.scalableTargetId,
       targetTrackingScalingPolicyConfiguration: {
@@ -224,7 +229,7 @@ export enum PredefinedMetric {
    */
   ECS_SERVICE_AVERAGE_CPU_UTILIZATION = 'ECSServiceAverageCPUUtilization',
   /**
-   * ECS_SERVICE_AVERAGE_CPU_UTILIZATION
+   * ECS_SERVICE_AVERAGE_MEMORY_UTILIZATION
    * @see https://docs.aws.amazon.com/autoscaling/application/APIReference/API_PredefinedMetricSpecification.html
    */
   ECS_SERVICE_AVERAGE_MEMORY_UTILIZATION = 'ECSServiceAverageMemoryUtilization',
@@ -233,4 +238,9 @@ export enum PredefinedMetric {
    * @see https://docs.aws.amazon.com/lambda/latest/dg/monitoring-metrics.html#monitoring-metrics-concurrency
    */
   LAMBDA_PROVISIONED_CONCURRENCY_UTILIZATION = 'LambdaProvisionedConcurrencyUtilization',
+  /**
+   * KAFKA_BROKER_STORAGE_UTILIZATION
+   * @see https://docs.aws.amazon.com/autoscaling/application/APIReference/API_PredefinedMetricSpecification.html
+   */
+  KAFKA_BROKER_STORAGE_UTILIZATION = 'KafkaBrokerStorageUtilization',
 }

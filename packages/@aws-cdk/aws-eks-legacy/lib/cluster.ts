@@ -1,10 +1,10 @@
+import * as path from 'path';
 import * as autoscaling from '@aws-cdk/aws-autoscaling';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as ssm from '@aws-cdk/aws-ssm';
-import { CfnOutput, Construct, Duration, IResource, Resource, Stack, Tag, Token } from '@aws-cdk/core';
-import * as path from 'path';
+import { Annotations, CfnOutput, Duration, IResource, Resource, Stack, Token, Tags } from '@aws-cdk/core';
 import { AwsAuth } from './aws-auth';
 import { ClusterResource } from './cluster-resource';
 import { CfnCluster, CfnClusterProps } from './eks.generated';
@@ -13,6 +13,10 @@ import { KubernetesResource } from './k8s-resource';
 import { KubectlLayer } from './kubectl-layer';
 import { spotInterruptHandler } from './spot-interrupt-handler';
 import { renderUserData } from './user-data';
+
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct } from '@aws-cdk/core';
 
 // defaults are based on https://eksctl.io
 const DEFAULT_CAPACITY_COUNT = 2;
@@ -336,7 +340,7 @@ export class Cluster extends Resource implements ICluster {
       physicalName: props.clusterName,
     });
 
-    this.node.addWarning('The @aws-cdk/aws-eks-legacy module will no longer be released as part of the AWS CDK starting March 1st, 2020. Please refer to https://github.com/aws/aws-cdk/issues/5544 for upgrade instructions');
+    Annotations.of(this).addWarning('The @aws-cdk/aws-eks-legacy module will no longer be released as part of the AWS CDK starting March 1st, 2020. Please refer to https://github.com/aws/aws-cdk/issues/5544 for upgrade instructions');
 
     const stack = Stack.of(this);
 
@@ -378,7 +382,7 @@ export class Cluster extends Resource implements ICluster {
     };
 
     let resource;
-    this.kubectlEnabled = props.kubectlEnabled === undefined ? true : props.kubectlEnabled;
+    this.kubectlEnabled = props.kubectlEnabled ?? true;
     if (this.kubectlEnabled) {
       resource = new ClusterResource(this, 'Resource', clusterProps);
       this._defaultMastersRole = resource.creationRole;
@@ -398,7 +402,7 @@ export class Cluster extends Resource implements ICluster {
 
     const updateConfigCommandPrefix = `aws eks update-kubeconfig --name ${this.clusterName}`;
     const getTokenCommandPrefix = `aws eks get-token --cluster-name ${this.clusterName}`;
-    const commonCommandOptions = [ `--region ${stack.region}` ];
+    const commonCommandOptions = [`--region ${stack.region}`];
 
     if (props.outputClusterName) {
       new CfnOutput(this, 'ClusterName', { value: this.clusterName });
@@ -425,13 +429,13 @@ export class Cluster extends Resource implements ICluster {
     }
 
     // allocate default capacity if non-zero (or default).
-    const desiredCapacity = props.defaultCapacity === undefined ? DEFAULT_CAPACITY_COUNT : props.defaultCapacity;
+    const desiredCapacity = props.defaultCapacity ?? DEFAULT_CAPACITY_COUNT;
     if (desiredCapacity > 0) {
       const instanceType = props.defaultCapacityInstance || DEFAULT_CAPACITY_TYPE;
       this.defaultCapacity = this.addCapacity('DefaultCapacity', { instanceType, desiredCapacity });
     }
 
-    const outputConfigCommand = props.outputConfigCommand === undefined ? true : props.outputConfigCommand;
+    const outputConfigCommand = props.outputConfigCommand ?? true;
     if (outputConfigCommand) {
       const postfix = commonCommandOptions.join(' ');
       new CfnOutput(this, 'ConfigCommand', { value: `${updateConfigCommandPrefix} ${postfix}` });
@@ -508,7 +512,7 @@ export class Cluster extends Resource implements ICluster {
     autoScalingGroup.connections.allowToAnyIpv4(ec2.Port.allUdp());
     autoScalingGroup.connections.allowToAnyIpv4(ec2.Port.allIcmp());
 
-    const bootstrapEnabled = options.bootstrapEnabled !== undefined ? options.bootstrapEnabled : true;
+    const bootstrapEnabled = options.bootstrapEnabled ?? true;
     if (options.bootstrapOptions && !bootstrapEnabled) {
       throw new Error('Cannot specify "bootstrapOptions" if "bootstrapEnabled" is false');
     }
@@ -523,7 +527,7 @@ export class Cluster extends Resource implements ICluster {
     autoScalingGroup.role.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonEC2ContainerRegistryReadOnly'));
 
     // EKS Required Tags
-    Tag.add(autoScalingGroup, `kubernetes.io/cluster/${this.clusterName}`, 'owned', {
+    Tags.of(autoScalingGroup).add(`kubernetes.io/cluster/${this.clusterName}`, 'owned', {
       applyToLaunchedInstances: true,
     });
 
@@ -533,7 +537,7 @@ export class Cluster extends Resource implements ICluster {
 
     // do not attempt to map the role if `kubectl` is not enabled for this
     // cluster or if `mapRole` is set to false. By default this should happen.
-    const mapRole = options.mapRole === undefined ? true : options.mapRole;
+    const mapRole = options.mapRole ?? true;
     if (mapRole && this.kubectlEnabled) {
       // see https://docs.aws.amazon.com/en_us/eks/latest/userguide/add-user-role.html
       this.awsAuth.addRoleMapping(autoScalingGroup.role, {
@@ -608,7 +612,7 @@ export class Cluster extends Resource implements ICluster {
       runtime: lambda.Runtime.PYTHON_3_7,
       handler: 'index.handler',
       timeout: Duration.minutes(15),
-      layers: [ KubectlLayer.getOrCreate(this) ],
+      layers: [KubectlLayer.getOrCreate(this)],
       memorySize: 256,
       environment: {
         CLUSTER_NAME: this.clusterName,
@@ -636,11 +640,11 @@ export class Cluster extends Resource implements ICluster {
           // message (if token): "could not auto-tag public/private subnet with tag..."
           // message (if not token): "count not auto-tag public/private subnet xxxxx with tag..."
           const subnetID = Token.isUnresolved(subnet.subnetId) ? '' : ` ${subnet.subnetId}`;
-          this.node.addWarning(`Could not auto-tag ${type} subnet${subnetID} with "${tag}=1", please remember to do this manually`);
+          Annotations.of(this).addWarning(`Could not auto-tag ${type} subnet${subnetID} with "${tag}=1", please remember to do this manually`);
           continue;
         }
 
-        subnet.node.applyAspect(new Tag(tag, '1'));
+        Tags.of(subnet).add(tag, '1');
       }
     };
 

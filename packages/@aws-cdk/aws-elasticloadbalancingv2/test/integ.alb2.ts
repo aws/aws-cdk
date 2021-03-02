@@ -36,7 +36,7 @@ listener.addAction('action1', {
   conditions: [
     elbv2.ListenerCondition.hostHeaders(['example.com']),
   ],
-  action: elbv2.ListenerAction.fixedResponse(200, {messageBody: 'success'}),
+  action: elbv2.ListenerAction.fixedResponse(200, { messageBody: 'success' }),
 });
 
 group1.metricTargetResponseTime().createAlarm(stack, 'ResponseTimeHigh1', {

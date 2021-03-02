@@ -27,3 +27,5 @@ tsconfig.json
 **/cdk.out
 junit.xml
 jest.config.js
+
+test/

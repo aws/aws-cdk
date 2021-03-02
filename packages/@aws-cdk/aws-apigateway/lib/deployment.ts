@@ -1,10 +1,15 @@
 import * as crypto from 'crypto';
-import { Construct, Lazy, RemovalPolicy, Resource, CfnResource } from '@aws-cdk/core';
+import { Lazy, RemovalPolicy, Resource, CfnResource } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CfnDeployment } from './apigateway.generated';
-import { IRestApi, RestApi, SpecRestApi, RestApiBase } from './restapi';
 import { Method } from './method';
+import { IRestApi, RestApi, SpecRestApi, RestApiBase } from './restapi';
 
-export interface DeploymentProps  {
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct as CoreConstruct } from '@aws-cdk/core';
+
+export interface DeploymentProps {
   /**
    * The Rest API to deploy.
    */
@@ -77,7 +82,7 @@ export class Deployment extends Resource {
     }
 
     this.api = props.api;
-    this.deploymentId = Lazy.stringValue({ produce: () => this.resource.ref });
+    this.deploymentId = Lazy.string({ produce: () => this.resource.ref });
 
     if (props.api instanceof RestApiBase) {
       props.api._attachDeployment(this);
@@ -132,7 +137,7 @@ class LatestDeploymentResource extends CfnDeployment {
   private readonly originalLogicalId: string;
   private readonly api: IRestApi;
 
-  constructor(scope: Construct, id: string, props: LatestDeploymentResourceProps) {
+  constructor(scope: CoreConstruct, id: string, props: LatestDeploymentResourceProps) {
     super(scope, id, {
       description: props.description,
       restApiId: props.restApi.restApiId,
@@ -140,7 +145,7 @@ class LatestDeploymentResource extends CfnDeployment {
 
     this.api = props.restApi;
     this.originalLogicalId = this.stack.getLogicalId(this);
-    this.overrideLogicalId(Lazy.stringValue({ produce: () => this.calculateLogicalId() }));
+    this.overrideLogicalId(Lazy.uncachedString({ produce: () => this.calculateLogicalId() }));
   }
 
   /**
@@ -158,7 +163,7 @@ class LatestDeploymentResource extends CfnDeployment {
   }
 
   private calculateLogicalId() {
-    const hash = [ ...this.hashComponents ];
+    const hash = [...this.hashComponents];
 
     if (this.api instanceof RestApi || this.api instanceof SpecRestApi) { // Ignore IRestApi that are imported
 

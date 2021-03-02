@@ -53,7 +53,7 @@
           "BeforeAllowTrafficHook" : "Lambda2",
           "DeploymentGroupName" : { "Ref": "CodeDeployDg" }
         },
-        "EnableVersionUpgrade": true,
+        "EnableVersionUpgrade": "true",
         "UseOnlineResharding": false
       }
     }

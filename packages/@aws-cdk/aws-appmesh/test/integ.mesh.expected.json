@@ -515,6 +515,16 @@
             },
             "Match": {
               "Prefix": "/"
+            },
+            "Timeout": {
+              "Idle": {
+                "Unit": "ms",
+                "Value": 10000
+              },
+              "PerRequest": {
+                "Unit": "ms",
+                "Value": 10000
+              }
             }
           }
         },
@@ -553,6 +563,16 @@
             },
             "Match": {
               "Prefix": "/path2"
+            },
+            "Timeout": {
+              "Idle": {
+                "Unit": "ms",
+                "Value": 11000
+              },
+              "PerRequest": {
+                "Unit": "ms",
+                "Value": 11000
+              }
             }
           }
         },
@@ -588,6 +608,12 @@
                   "Weight": 20
                 }
               ]
+            },
+            "Timeout": {
+              "Idle": {
+                "Unit": "ms",
+                "Value": 12000
+              }
             }
           }
         },
@@ -597,30 +623,6 @@
             "VirtualRouterName"
           ]
         }
-      }
-    },
-    "meshserviceE06ECED5": {
-      "Type": "AWS::AppMesh::VirtualService",
-      "Properties": {
-        "MeshName": {
-          "Fn::GetAtt": [
-            "meshACDFE68E",
-            "MeshName"
-          ]
-        },
-        "Spec": {
-          "Provider": {
-            "VirtualRouter": {
-              "VirtualRouterName": {
-                "Fn::GetAtt": [
-                  "meshrouter81B8087E",
-                  "VirtualRouterName"
-                ]
-              }
-            }
-          }
-        },
-        "VirtualServiceName": "service1.domain.local"
       }
     },
     "meshnode726C787D": {
@@ -638,7 +640,7 @@
               "VirtualService": {
                 "VirtualServiceName": {
                   "Fn::GetAtt": [
-                    "meshserviceE06ECED5",
+                    "service6D174F83",
                     "VirtualServiceName"
                   ]
                 }
@@ -672,13 +674,6 @@
               }
             }
           ],
-          "Logging": {
-            "AccessLog": {
-              "File": {
-                "Path": "/dev/stdout"
-              }
-            }
-          },
           "ServiceDiscovery": {
             "DNS": {
               "Hostname": "node1.domain.local"
@@ -698,6 +693,19 @@
           ]
         },
         "Spec": {
+          "BackendDefaults": {
+            "ClientPolicy": {
+              "TLS": {
+                "Validation": {
+                  "Trust": {
+                    "File": {
+                      "CertificateChain": "path/to/cert"
+                    }
+                  }
+                }
+              }
+            }
+          },
           "Backends": [
             {
               "VirtualService": {
@@ -727,13 +735,6 @@
               }
             }
           ],
-          "Logging": {
-            "AccessLog": {
-              "File": {
-                "Path": "/dev/stdout"
-              }
-            }
-          },
           "ServiceDiscovery": {
             "DNS": {
               "Hostname": "node2.domain.local"
@@ -753,6 +754,19 @@
           ]
         },
         "Spec": {
+          "BackendDefaults": {
+            "ClientPolicy": {
+              "TLS": {
+                "Validation": {
+                  "Trust": {
+                    "File": {
+                      "CertificateChain": "path-to-certificate"
+                    }
+                  }
+                }
+              }
+            }
+          },
           "Listeners": [
             {
               "HealthCheck": {
@@ -786,6 +800,175 @@
         "VirtualNodeName": "meshstackmeshnode3C5835BCB"
       }
     },
+    "meshgateway1B02387E8": {
+      "Type": "AWS::AppMesh::VirtualGateway",
+      "Properties": {
+        "MeshName": {
+          "Fn::GetAtt": [
+            "meshACDFE68E",
+            "MeshName"
+          ]
+        },
+        "Spec": {
+          "Listeners": [
+            {
+              "PortMapping": {
+                "Port": 8080,
+                "Protocol": "http"
+              }
+            }
+          ],
+          "Logging": {
+            "AccessLog": {
+              "File": {
+                "Path": "/dev/stdout"
+              }
+            }
+          }
+        },
+        "VirtualGatewayName": "gateway1"
+      }
+    },
+    "meshgateway1gateway1routehttpE8D6F433": {
+      "Type": "AWS::AppMesh::GatewayRoute",
+      "Properties": {
+        "GatewayRouteName": "meshstackmeshgateway1gateway1routehttpBA921D42",
+        "MeshName": {
+          "Fn::GetAtt": [
+            "meshACDFE68E",
+            "MeshName"
+          ]
+        },
+        "Spec": {
+          "HttpRoute": {
+            "Action": {
+              "Target": {
+                "VirtualService": {
+                  "VirtualServiceName": {
+                    "Fn::GetAtt": [
+                      "service6D174F83",
+                      "VirtualServiceName"
+                    ]
+                  }
+                }
+              }
+            },
+            "Match": {
+              "Prefix": "/"
+            }
+          }
+        },
+        "VirtualGatewayName": {
+          "Fn::GetAtt": [
+            "meshgateway1B02387E8",
+            "VirtualGatewayName"
+          ]
+        }
+      }
+    },
+    "meshgateway1gateway1routehttp2FD69C306": {
+      "Type": "AWS::AppMesh::GatewayRoute",
+      "Properties": {
+        "GatewayRouteName": "meshstackmeshgateway1gateway1routehttp255781963",
+        "MeshName": {
+          "Fn::GetAtt": [
+            "meshACDFE68E",
+            "MeshName"
+          ]
+        },
+        "Spec": {
+          "Http2Route": {
+            "Action": {
+              "Target": {
+                "VirtualService": {
+                  "VirtualServiceName": {
+                    "Fn::GetAtt": [
+                      "service6D174F83",
+                      "VirtualServiceName"
+                    ]
+                  }
+                }
+              }
+            },
+            "Match": {
+              "Prefix": "/"
+            }
+          }
+        },
+        "VirtualGatewayName": {
+          "Fn::GetAtt": [
+            "meshgateway1B02387E8",
+            "VirtualGatewayName"
+          ]
+        }
+      }
+    },
+    "meshgateway1gateway1routegrpc76486062": {
+      "Type": "AWS::AppMesh::GatewayRoute",
+      "Properties": {
+        "GatewayRouteName": "meshstackmeshgateway1gateway1routegrpcCD4D891D",
+        "MeshName": {
+          "Fn::GetAtt": [
+            "meshACDFE68E",
+            "MeshName"
+          ]
+        },
+        "Spec": {
+          "GrpcRoute": {
+            "Action": {
+              "Target": {
+                "VirtualService": {
+                  "VirtualServiceName": {
+                    "Fn::GetAtt": [
+                      "service6D174F83",
+                      "VirtualServiceName"
+                    ]
+                  }
+                }
+              }
+            },
+            "Match": {
+              "ServiceName": {
+                "Fn::GetAtt": [
+                  "service6D174F83",
+                  "VirtualServiceName"
+                ]
+              }
+            }
+          }
+        },
+        "VirtualGatewayName": {
+          "Fn::GetAtt": [
+            "meshgateway1B02387E8",
+            "VirtualGatewayName"
+          ]
+        }
+      }
+    },
+    "service6D174F83": {
+      "Type": "AWS::AppMesh::VirtualService",
+      "Properties": {
+        "MeshName": {
+          "Fn::GetAtt": [
+            "meshACDFE68E",
+            "MeshName"
+          ]
+        },
+        "Spec": {
+          "Provider": {
+            "VirtualRouter": {
+              "VirtualRouterName": {
+                "Fn::GetAtt": [
+                  "meshrouter81B8087E",
+                  "VirtualRouterName"
+                ]
+              }
+            }
+          }
+        },
+        "VirtualServiceName": "service1.domain.local"
+      }
+    },
     "service27C65CF7D": {
       "Type": "AWS::AppMesh::VirtualService",
       "Properties": {
@@ -810,6 +993,46 @@
         },
         "Spec": {},
         "VirtualServiceName": "service3.domain.local"
+      }
+    },
+    "gateway2BCE5C5E0": {
+      "Type": "AWS::AppMesh::VirtualGateway",
+      "Properties": {
+        "MeshName": {
+          "Fn::GetAtt": [
+            "meshACDFE68E",
+            "MeshName"
+          ]
+        },
+        "Spec": {
+          "Listeners": [
+            {
+              "HealthCheck": {
+                "HealthyThreshold": 2,
+                "IntervalMillis": 10000,
+                "Path": "/",
+                "Port": 443,
+                "Protocol": "http",
+                "TimeoutMillis": 2000,
+                "UnhealthyThreshold": 2
+              },
+              "PortMapping": {
+                "Port": 443,
+                "Protocol": "http"
+              },
+              "TLS": {
+                "Certificate": {
+                  "File": {
+                    "CertificateChain": "path/to/certChain",
+                    "PrivateKey": "path/to/privateKey"
+                  }
+                },
+                "Mode": "STRICT"
+              }
+            }
+          ]
+        },
+        "VirtualGatewayName": "meshstackgateway2BEC62D7C"
       }
     }
   }

@@ -2,9 +2,15 @@
 
 // nested stack references a resource from a non-nested non-parent stack
 
+/* eslint-disable cdk/no-core-construct */
+
 import * as sns from '@aws-cdk/aws-sns';
-import { App, Construct, Stack } from '@aws-cdk/core';
+import { App, Stack } from '@aws-cdk/core';
 import * as cfn from '../lib';
+
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct } from '@aws-cdk/core';
 
 class ConsumerNestedStack extends cfn.NestedStack {
   constructor(scope: Construct, id: string, topic: sns.Topic) {

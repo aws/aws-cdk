@@ -119,7 +119,7 @@ export class CloudArtifact {
   private renderMessages() {
     const messages = new Array<SynthesisMessage>();
 
-    for (const [ id, metadata ] of Object.entries(this.manifest.metadata || { })) {
+    for (const [id, metadata] of Object.entries(this.manifest.metadata || { })) {
       for (const entry of metadata) {
         let level: SynthesisMessageLevel;
         switch (entry.type) {

@@ -1,7 +1,12 @@
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
-import * as cdk from '@aws-cdk/core';
+import { Duration } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { IAutoScalingGroup } from './auto-scaling-group';
 import { CfnScalingPolicy } from './autoscaling.generated';
+
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 /**
  * Base interface for target tracking props
@@ -29,14 +34,14 @@ export interface BaseTargetTrackingProps {
    *
    * @default - The default cooldown configured on the AutoScalingGroup.
    */
-  readonly cooldown?: cdk.Duration;
+  readonly cooldown?: Duration;
 
   /**
    * Estimated time until a newly launched instance can send metrics to CloudWatch.
    *
    * @default - Same as the cooldown.
    */
-  readonly estimatedInstanceWarmup?: cdk.Duration;
+  readonly estimatedInstanceWarmup?: Duration;
 }
 
 /**
@@ -97,7 +102,7 @@ export interface TargetTrackingScalingPolicyProps extends BasicTargetTrackingSca
   readonly autoScalingGroup: IAutoScalingGroup;
 }
 
-export class TargetTrackingScalingPolicy extends cdk.Construct {
+export class TargetTrackingScalingPolicy extends CoreConstruct {
   /**
    * ARN of the scaling policy
    */
@@ -108,7 +113,7 @@ export class TargetTrackingScalingPolicy extends cdk.Construct {
    */
   private resource: CfnScalingPolicy;
 
-  constructor(scope: cdk.Construct, id: string, props: TargetTrackingScalingPolicyProps) {
+  constructor(scope: Construct, id: string, props: TargetTrackingScalingPolicyProps) {
     if ((props.customMetric === undefined) === (props.predefinedMetric === undefined)) {
       throw new Error('Exactly one of \'customMetric\' or \'predefinedMetric\' must be specified.');
     }

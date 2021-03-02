@@ -30,7 +30,7 @@ test('Activity Task metrics and Activity metrics are the same', () => {
   // GIVEN
   const stack = new Stack();
   const activity = new sfn.Activity(stack, 'Activity');
-  const task = new StepFunctionsInvokeActivity(stack, 'Invoke', {activity });
+  const task = new StepFunctionsInvokeActivity(stack, 'Invoke', { activity });
 
   // WHEN
   const activityMetrics = [

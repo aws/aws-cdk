@@ -1,7 +1,6 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as cloudmap from '@aws-cdk/aws-servicediscovery';
 import * as cdk from '@aws-cdk/core';
-
 import * as appmesh from '../lib/';
 
 export const app = new cdk.App();
@@ -19,51 +18,56 @@ const namespace = new cloudmap.PrivateDnsNamespace(stack, 'test-namespace', {
 
 const mesh = new appmesh.Mesh(stack, 'mesh');
 const router = mesh.addVirtualRouter('router', {
-  listener: {
-    portMapping: {
-      port: 8080,
-      protocol: appmesh.Protocol.HTTP,
-    },
-  },
+  listeners: [
+    appmesh.VirtualRouterListener.http(),
+  ],
 });
 
-const virtualService = mesh.addVirtualService('service', {
-  virtualRouter: router,
+const virtualService = new appmesh.VirtualService(stack, 'service', {
+  virtualServiceProvider: appmesh.VirtualServiceProvider.virtualRouter(router),
   virtualServiceName: 'service1.domain.local',
 });
 
 const node = mesh.addVirtualNode('node', {
-  dnsHostName: `node1.${namespace.namespaceName}`,
-  listener: {
+  serviceDiscovery: appmesh.ServiceDiscovery.dns(`node1.${namespace.namespaceName}`),
+  listeners: [appmesh.VirtualNodeListener.http({
     healthCheck: {
       healthyThreshold: 3,
       path: '/check-path',
     },
-  },
+  })],
   backends: [
     virtualService,
   ],
 });
 
-node.addBackends(new appmesh.VirtualService(stack, 'service-2', {
+node.addBackend(new appmesh.VirtualService(stack, 'service-2', {
   virtualServiceName: 'service2.domain.local',
-  mesh,
+  virtualServiceProvider: appmesh.VirtualServiceProvider.none(mesh),
 }),
 );
 
 router.addRoute('route-1', {
-  routeTargets: [
-    {
-      virtualNode: node,
-      weight: 50,
+  routeSpec: appmesh.RouteSpec.http({
+    weightedTargets: [
+      {
+        virtualNode: node,
+        weight: 50,
+      },
+    ],
+    match: {
+      prefixPath: '/',
     },
-  ],
-  prefix: '/',
+    timeout: {
+      idle: cdk.Duration.seconds(10),
+      perRequest: cdk.Duration.seconds(10),
+    },
+  }),
 });
 
 const node2 = mesh.addVirtualNode('node2', {
-  dnsHostName: `node2.${namespace.namespaceName}`,
-  listener: {
+  serviceDiscovery: appmesh.ServiceDiscovery.dns(`node2.${namespace.namespaceName}`),
+  listeners: [appmesh.VirtualNodeListener.http({
     healthCheck: {
       healthyThreshold: 3,
       interval: cdk.Duration.seconds(5),
@@ -73,18 +77,21 @@ const node2 = mesh.addVirtualNode('node2', {
       timeout: cdk.Duration.seconds(2),
       unhealthyThreshold: 2,
     },
-  },
+  })],
+  backendsDefaultClientPolicy: appmesh.ClientPolicy.fileTrust({
+    certificateChain: 'path/to/cert',
+  }),
   backends: [
     new appmesh.VirtualService(stack, 'service-3', {
       virtualServiceName: 'service3.domain.local',
-      mesh,
+      virtualServiceProvider: appmesh.VirtualServiceProvider.none(mesh),
     }),
   ],
 });
 
 const node3 = mesh.addVirtualNode('node3', {
-  dnsHostName: `node3.${namespace.namespaceName}`,
-  listener: {
+  serviceDiscovery: appmesh.ServiceDiscovery.dns(`node3.${namespace.namespaceName}`),
+  listeners: [appmesh.VirtualNodeListener.http({
     healthCheck: {
       healthyThreshold: 3,
       interval: cdk.Duration.seconds(5),
@@ -94,24 +101,82 @@ const node3 = mesh.addVirtualNode('node3', {
       timeout: cdk.Duration.seconds(2),
       unhealthyThreshold: 2,
     },
-  },
+  })],
+  backendsDefaultClientPolicy: appmesh.ClientPolicy.fileTrust({
+    certificateChain: 'path-to-certificate',
+  }),
+  accessLog: appmesh.AccessLog.fromFilePath('/dev/stdout'),
 });
 
 router.addRoute('route-2', {
-  routeTargets: [
-    {
-      virtualNode: node2,
-      weight: 30,
+  routeSpec: appmesh.RouteSpec.http({
+    weightedTargets: [
+      {
+        virtualNode: node2,
+        weight: 30,
+      },
+    ],
+    match: {
+      prefixPath: '/path2',
     },
-  ],
-  prefix: '/path2',
+    timeout: {
+      idle: cdk.Duration.seconds(11),
+      perRequest: cdk.Duration.seconds(11),
+    },
+  }),
 });
 
 router.addRoute('route-3', {
-  routeTargets: [
-    {
-      virtualNode: node3,
-      weight: 20,
+  routeSpec: appmesh.RouteSpec.tcp({
+    weightedTargets: [
+      {
+        virtualNode: node3,
+        weight: 20,
+      },
+    ],
+    timeout: {
+      idle: cdk.Duration.seconds(12),
     },
-  ],
+  }),
+});
+
+const gateway = mesh.addVirtualGateway('gateway1', {
+  accessLog: appmesh.AccessLog.fromFilePath('/dev/stdout'),
+  virtualGatewayName: 'gateway1',
+});
+
+new appmesh.VirtualGateway(stack, 'gateway2', {
+  mesh: mesh,
+  listeners: [appmesh.VirtualGatewayListener.http({
+    port: 443,
+    healthCheck: {
+      interval: cdk.Duration.seconds(10),
+    },
+    tlsCertificate: appmesh.TlsCertificate.file({
+      certificateChainPath: 'path/to/certChain',
+      privateKeyPath: 'path/to/privateKey',
+      tlsMode: appmesh.TlsMode.STRICT,
+    }),
+  })],
+});
+
+gateway.addGatewayRoute('gateway1-route-http', {
+  routeSpec: appmesh.GatewayRouteSpec.http({
+    routeTarget: virtualService,
+  }),
+});
+
+gateway.addGatewayRoute('gateway1-route-http2', {
+  routeSpec: appmesh.GatewayRouteSpec.http2({
+    routeTarget: virtualService,
+  }),
+});
+
+gateway.addGatewayRoute('gateway1-route-grpc', {
+  routeSpec: appmesh.GatewayRouteSpec.grpc({
+    routeTarget: virtualService,
+    match: {
+      serviceName: virtualService.virtualServiceName,
+    },
+  }),
 });

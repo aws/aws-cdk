@@ -1,8 +1,11 @@
+import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import { IVpcEndpoint } from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
-import { CfnOutput, Construct, IResource as IResourceBase, Resource, Stack } from '@aws-cdk/core';
+import { CfnOutput, IResource as IResourceBase, Resource, Stack } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { ApiDefinition } from './api-definition';
 import { ApiKey, ApiKeyOptions, IApiKey } from './api-key';
+import { ApiGatewayMetrics } from './apigateway-canned-metrics.generated';
 import { CfnAccount, CfnRestApi } from './apigateway.generated';
 import { CorsOptions } from './cors';
 import { Deployment } from './deployment';
@@ -298,13 +301,17 @@ export abstract class RestApiBase extends Resource implements IRestApi {
    */
   public deploymentStage!: Stage;
 
+  /**
+   * A human friendly name for this Rest API. Note that this is different from `restApiId`.
+   */
+  public readonly restApiName: string;
+
   private _latestDeployment?: Deployment;
   private _domainName?: DomainName;
 
   constructor(scope: Construct, id: string, props: RestApiBaseProps = { }) {
-    super(scope, id, {
-      physicalName: props.restApiName || id,
-    });
+    super(scope, id);
+    this.restApiName = props.restApiName ?? id;
 
     Object.defineProperty(this, RESTAPI_SYMBOL, { value: true });
   }
@@ -373,6 +380,98 @@ export abstract class RestApiBase extends Resource implements IRestApi {
   }
 
   /**
+   * Add an ApiKey
+   */
+  public addApiKey(id: string, options?: ApiKeyOptions): IApiKey {
+    return new ApiKey(this, id, {
+      resources: [this],
+      ...options,
+    });
+  }
+
+  /**
+   * Returns the given named metric for this API
+   */
+  public metric(metricName: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return new cloudwatch.Metric({
+      namespace: 'AWS/ApiGateway',
+      metricName,
+      dimensions: { ApiName: this.restApiName },
+      ...props,
+    }).attachTo(this);
+  }
+
+  /**
+   * Metric for the number of client-side errors captured in a given period.
+   *
+   * Default: sum over 5 minutes
+   */
+  public metricClientError(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return this.cannedMetric(ApiGatewayMetrics._4XxErrorSum, props);
+  }
+
+  /**
+   * Metric for the number of server-side errors captured in a given period.
+   *
+   * Default: sum over 5 minutes
+   */
+  public metricServerError(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return this.cannedMetric(ApiGatewayMetrics._5XxErrorSum, props);
+  }
+
+  /**
+   * Metric for the number of requests served from the API cache in a given period.
+   *
+   * Default: sum over 5 minutes
+   */
+  public metricCacheHitCount(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return this.cannedMetric(ApiGatewayMetrics.cacheHitCountSum, props);
+  }
+
+  /**
+   * Metric for the number of requests served from the backend in a given period,
+   * when API caching is enabled.
+   *
+   * Default: sum over 5 minutes
+   */
+  public metricCacheMissCount(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return this.cannedMetric(ApiGatewayMetrics.cacheMissCountSum, props);
+  }
+
+  /**
+   * Metric for the total number API requests in a given period.
+   *
+   * Default: samplecount over 5 minutes
+   */
+  public metricCount(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return this.cannedMetric(ApiGatewayMetrics.countSum, {
+      statistic: 'SampleCount',
+      ...props,
+    });
+  }
+
+  /**
+   * Metric for the time between when API Gateway relays a request to the backend
+   * and when it receives a response from the backend.
+   *
+   * Default: average over 5 minutes.
+   */
+  public metricIntegrationLatency(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return this.cannedMetric(ApiGatewayMetrics.integrationLatencyAverage, props);
+  }
+
+  /**
+   * The time between when API Gateway receives a request from a client
+   * and when it returns a response to the client.
+   * The latency includes the integration latency and other API Gateway overhead.
+   *
+   * Default: average over 5 minutes.
+   */
+  public metricLatency(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return this.cannedMetric(ApiGatewayMetrics.latencyAverage, props);
+  }
+
+  /**
    * Internal API used by `Method` to keep an inventory of methods at the API
    * level for validation purposes.
    *
@@ -405,7 +504,7 @@ export abstract class RestApiBase extends Resource implements IRestApi {
   }
 
   protected configureDeployment(props: RestApiOptions) {
-    const deploy = props.deploy === undefined ? true : props.deploy;
+    const deploy = props.deploy ?? true;
     if (deploy) {
 
       this._latestDeployment = new Deployment(this, 'Deployment', {
@@ -449,6 +548,13 @@ export abstract class RestApiBase extends Resource implements IRestApi {
     }
     return undefined;
   }
+
+  private cannedMetric(fn: (dims: { ApiName: string }) => cloudwatch.MetricProps, props?: cloudwatch.MetricOptions) {
+    return new cloudwatch.Metric({
+      ...fn({ ApiName: this.restApiName }),
+      ...props,
+    }).attachTo(this);
+  }
 }
 
 /**
@@ -484,10 +590,10 @@ export class SpecRestApi extends RestApiBase {
     super(scope, id, props);
     const apiDefConfig = props.apiDefinition.bind(this);
     const resource = new CfnRestApi(this, 'Resource', {
-      name: this.physicalName,
+      name: this.restApiName,
       policy: props.policy,
       failOnWarnings: props.failOnWarnings,
-      body: apiDefConfig.inlineDefinition ? apiDefConfig.inlineDefinition : undefined,
+      body: apiDefConfig.inlineDefinition ?? undefined,
       bodyS3Location: apiDefConfig.inlineDefinition ? undefined : apiDefConfig.s3Location,
       endpointConfiguration: this._configureEndpoints(props),
       parameters: props.parameters,
@@ -502,7 +608,7 @@ export class SpecRestApi extends RestApiBase {
       this.addDomainName('CustomDomain', props.domainName);
     }
 
-    const cloudWatchRole = props.cloudWatchRole !== undefined ? props.cloudWatchRole : true;
+    const cloudWatchRole = props.cloudWatchRole ?? true;
     if (cloudWatchRole) {
       this.configureCloudWatchRole(resource);
     }
@@ -586,7 +692,7 @@ export class RestApi extends RestApiBase {
     super(scope, id, props);
 
     const resource = new CfnRestApi(this, 'Resource', {
-      name: this.physicalName,
+      name: this.restApiName,
       description: props.description,
       policy: props.policy,
       failOnWarnings: props.failOnWarnings,
@@ -594,13 +700,13 @@ export class RestApi extends RestApiBase {
       binaryMediaTypes: props.binaryMediaTypes,
       endpointConfiguration: this._configureEndpoints(props),
       apiKeySourceType: props.apiKeySourceType,
-      cloneFrom: props.cloneFrom ? props.cloneFrom.restApiId : undefined,
+      cloneFrom: props.cloneFrom?.restApiId,
       parameters: props.parameters,
     });
     this.node.defaultChild = resource;
     this.restApiId = resource.ref;
 
-    const cloudWatchRole = props.cloudWatchRole !== undefined ? props.cloudWatchRole : true;
+    const cloudWatchRole = props.cloudWatchRole ?? true;
     if (cloudWatchRole) {
       this.configureCloudWatchRole(resource);
     }
@@ -619,16 +725,6 @@ export class RestApi extends RestApiBase {
    */
   public get url() {
     return this.urlForPath();
-  }
-
-  /**
-   * Add an ApiKey
-   */
-  public addApiKey(id: string, options?: ApiKeyOptions): IApiKey {
-    return new ApiKey(this, id, {
-      resources: [this],
-      ...options,
-    });
   }
 
   /**
@@ -689,7 +785,7 @@ export class RestApi extends RestApiBase {
    */
   protected validate() {
     if (this.methods.length === 0) {
-      return [ "The REST API doesn't contain any methods" ];
+      return ["The REST API doesn't contain any methods"];
     }
 
     return [];

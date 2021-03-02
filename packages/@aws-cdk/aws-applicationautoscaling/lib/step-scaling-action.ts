@@ -1,6 +1,11 @@
 import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CfnScalingPolicy } from './applicationautoscaling.generated';
 import { IScalableTarget } from './scalable-target';
+
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 /**
  * Properties for a scaling policy
@@ -66,7 +71,7 @@ export interface StepScalingActionProps {
  *
  * This Action must be used as the target of a CloudWatch alarm to take effect.
  */
-export class StepScalingAction extends cdk.Construct {
+export class StepScalingAction extends CoreConstruct {
   /**
    * ARN of the scaling policy
    */
@@ -74,14 +79,14 @@ export class StepScalingAction extends cdk.Construct {
 
   private readonly adjustments = new Array<CfnScalingPolicy.StepAdjustmentProperty>();
 
-  constructor(scope: cdk.Construct, id: string, props: StepScalingActionProps) {
+  constructor(scope: Construct, id: string, props: StepScalingActionProps) {
     super(scope, id);
 
     // Cloudformation requires either the ResourceId, ScalableDimension, and ServiceNamespace
     // properties, or the ScalingTargetId property, but not both.
     // https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-applicationautoscaling-scalingpolicy.html
     const resource = new CfnScalingPolicy(this, 'Resource', {
-      policyName: props.policyName || this.node.uniqueId,
+      policyName: props.policyName || cdk.Names.uniqueId(this),
       policyType: 'StepScaling',
       scalingTargetId: props.scalingTarget.scalableTargetId,
       stepScalingPolicyConfiguration: {
@@ -89,7 +94,7 @@ export class StepScalingAction extends cdk.Construct {
         cooldown: props.cooldown && props.cooldown.toSeconds(),
         minAdjustmentMagnitude: props.minAdjustmentMagnitude,
         metricAggregationType: props.metricAggregationType,
-        stepAdjustments: cdk.Lazy.anyValue({ produce: () => this.adjustments }),
+        stepAdjustments: cdk.Lazy.any({ produce: () => this.adjustments }),
       } as CfnScalingPolicy.StepScalingPolicyConfigurationProperty,
     });
 

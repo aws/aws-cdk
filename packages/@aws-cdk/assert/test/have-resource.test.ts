@@ -2,7 +2,7 @@ import { writeFileSync } from 'fs';
 import { join } from 'path';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
-import { ABSENT, arrayWith, exactValue, expect as cdkExpect, haveResource, haveResourceLike } from '../lib/index';
+import { ABSENT, arrayWith, exactValue, expect as cdkExpect, haveResource, haveResourceLike, Capture, anything } from '../lib/index';
 
 test('support resource with no properties', () => {
   const synthStack = mkStack({
@@ -237,6 +237,19 @@ describe('property absence', () => {
         ],
       }));
     }).not.toThrowError();
+  });
+
+  test('test capturing', () => {
+    const synthStack = mkSomeResource({
+      Prop: 'somevalue',
+    });
+
+    const propValue = Capture.aString();
+    cdkExpect(synthStack).to(haveResourceLike('Some::Resource', {
+      Prop: propValue.capture(anything()),
+    }));
+
+    expect(propValue.capturedValue).toEqual('somevalue');
   });
 });
 

@@ -164,7 +164,7 @@ test('haveOutput should throw Error when none of outputName and exportName is pr
 
 test('haveOutput should be able to handle complex exportName values', () => {
   expect(synthStack).toHaveOutput({
-    exportName: {'Fn::Sub': '${AWS::StackName}-ComplexExportNameOutput'},
+    exportName: { 'Fn::Sub': '${AWS::StackName}-ComplexExportNameOutput' },
     outputValue: {
       'Fn::GetAtt': [
         'ComplexOutputResource',

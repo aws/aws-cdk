@@ -1,9 +1,9 @@
 import * as cdk from '@aws-cdk/core';
-
+import { Construct } from 'constructs';
 import { CfnRoute } from './appmesh.generated';
 import { IMesh } from './mesh';
-import { IVirtualNode } from './virtual-node';
-import { IVirtualRouter } from './virtual-router';
+import { RouteSpec } from './route-spec';
+import { IVirtualRouter, VirtualRouter } from './virtual-router';
 
 /**
  * Interface for which all Route based classes MUST implement
@@ -22,6 +22,11 @@ export interface IRoute extends cdk.IResource {
    * @attribute
    */
   readonly routeArn: string;
+
+  /**
+   * The VirtualRouter the Route belongs to
+   */
+  readonly virtualRouter: IVirtualRouter;
 }
 
 /**
@@ -36,57 +41,9 @@ export interface RouteBaseProps {
   readonly routeName?: string;
 
   /**
-   * The path prefix to match for the route
-   *
-   * @default "/" if http otherwise none
+   * Protocol specific spec
    */
-  readonly prefix?: string;
-
-  /**
-   * Array of weighted route targets
-   *
-   * @requires minimum of 1
-   */
-  readonly routeTargets: WeightedTargetProps[];
-
-  /**
-   * Weather the route is HTTP based
-   *
-   * @default - HTTP if `prefix` is given, TCP otherwise
-   */
-  readonly routeType?: RouteType;
-}
-
-/**
- * Type of route
- */
-export enum RouteType {
-  /**
-   * HTTP route
-   */
-  HTTP = 'http',
-
-  /**
-   * TCP route
-   */
-  TCP = 'tcp'
-}
-
-/**
- * Properties for the Weighted Targets in the route
- */
-export interface WeightedTargetProps {
-  /**
-   * The VirtualNode the route points to
-   */
-  readonly virtualNode: IVirtualNode;
-
-  /**
-   * The weight for the target
-   *
-   * @default 1
-   */
-  readonly weight?: number;
+  readonly routeSpec: RouteSpec;
 }
 
 /**
@@ -99,7 +56,7 @@ export interface RouteProps extends RouteBaseProps {
   readonly mesh: IMesh;
 
   /**
-   * The virtual router in which to define the route
+   * The VirtualRouter the Route belongs to
    */
   readonly virtualRouter: IVirtualRouter;
 }
@@ -111,21 +68,33 @@ export interface RouteProps extends RouteBaseProps {
  */
 export class Route extends cdk.Resource implements IRoute {
   /**
-   * Import an existing route given an ARN
+   * Import an existing Route given an ARN
    */
-  public static fromRouteArn(scope: cdk.Construct, id: string, routeArn: string): IRoute {
-    return new ImportedRoute(scope, id, { routeArn });
+  public static fromRouteArn(scope: Construct, id: string, routeArn: string): IRoute {
+    return new class extends cdk.Resource implements IRoute {
+      readonly routeArn = routeArn;
+      readonly virtualRouter = VirtualRouter.fromVirtualRouterArn(this, 'VirtualRouter', routeArn);
+      readonly routeName = cdk.Fn.select(4, cdk.Fn.split('/', cdk.Stack.of(scope).parseArn(routeArn).resourceName!));
+    }(scope, id);
   }
 
   /**
-   * Import an existing route given its name
+   * Import an existing Route given attributes
    */
-  public static fromRouteName(scope: cdk.Construct, id: string, meshName: string, virtualRouterName: string, routeName: string): IRoute {
-    return new ImportedRoute(scope, id, { meshName, virtualRouterName, routeName });
+  public static fromRouteAttributes(scope: Construct, id: string, attrs: RouteAttributes): IRoute {
+    return new class extends cdk.Resource implements IRoute {
+      readonly routeName = attrs.routeName;
+      readonly virtualRouter = attrs.virtualRouter;
+      readonly routeArn = cdk.Stack.of(this).formatArn({
+        service: 'appmesh',
+        resource: `mesh/${attrs.virtualRouter.mesh.meshName}/virtualRouter/${attrs.virtualRouter.virtualRouterName}/route`,
+        resourceName: this.routeName,
+      });
+    }(scope, id);
   }
 
   /**
-   * The name of the route
+   * The name of the Route
    */
   public readonly routeName: string;
 
@@ -135,38 +104,28 @@ export class Route extends cdk.Resource implements IRoute {
   public readonly routeArn: string;
 
   /**
-   * The virtual router this route is a part of
+   * The VirtualRouter the Route belongs to
    */
   public readonly virtualRouter: IVirtualRouter;
 
-  private readonly weightedTargets = new Array<CfnRoute.WeightedTargetProperty>();
-  private readonly httpRoute?: CfnRoute.HttpRouteProperty;
-  private readonly tcpRoute?: CfnRoute.TcpRouteProperty;
-
-  constructor(scope: cdk.Construct, id: string, props: RouteProps) {
+  constructor(scope: Construct, id: string, props: RouteProps) {
     super(scope, id, {
-      physicalName: props.routeName || cdk.Lazy.stringValue({ produce: () => this.node.uniqueId }),
+      physicalName: props.routeName || cdk.Lazy.string({ produce: () => cdk.Names.uniqueId(this) }),
     });
 
     this.virtualRouter = props.virtualRouter;
 
-    const routeType = props.routeType !== undefined ? props.routeType :
-      props.prefix !== undefined ? RouteType.HTTP :
-        RouteType.TCP;
-
-    if (routeType === RouteType.HTTP) {
-      this.httpRoute = this.renderHttpRoute(props);
-    } else {
-      this.tcpRoute = this.renderTcpRoute(props);
-    }
+    const spec = props.routeSpec.bind(this);
 
     const route = new CfnRoute(this, 'Resource', {
       routeName: this.physicalName,
       meshName: this.virtualRouter.mesh.meshName,
       virtualRouterName: this.virtualRouter.virtualRouterName,
       spec: {
-        tcpRoute: this.tcpRoute,
-        httpRoute: this.httpRoute,
+        tcpRoute: spec.tcpRouteSpec,
+        httpRoute: spec.httpRouteSpec,
+        http2Route: spec.http2RouteSpec,
+        grpcRoute: spec.grpcRouteSpec,
       },
     });
 
@@ -177,95 +136,19 @@ export class Route extends cdk.Resource implements IRoute {
       resourceName: this.physicalName,
     });
   }
-
-  /**
-   * Utility method to add weighted route targets to an existing route
-   */
-  private renderWeightedTargets(props: WeightedTargetProps[]) {
-    for (const t of props) {
-      this.weightedTargets.push({
-        virtualNode: t.virtualNode.virtualNodeName,
-        weight: t.weight || 1,
-      });
-    }
-
-    return this.weightedTargets;
-  }
-
-  private renderHttpRoute(props: RouteProps) {
-    return {
-      match: {
-        prefix: props.prefix || '/',
-      },
-      action: {
-        weightedTargets: this.renderWeightedTargets(props.routeTargets),
-      },
-    };
-  }
-
-  private renderTcpRoute(props: RouteProps) {
-    return {
-      action: {
-        weightedTargets: this.renderWeightedTargets(props.routeTargets),
-      },
-    };
-  }
 }
 
 /**
  * Interface with properties ncecessary to import a reusable Route
  */
-interface RouteAttributes {
+export interface RouteAttributes {
   /**
-   * The name of the route
+   * The name of the Route
    */
-  readonly routeName?: string;
-
-  /**
-   * The Amazon Resource Name (ARN) for the route
-   */
-  readonly routeArn?: string;
+  readonly routeName: string;
 
   /**
-   * The name of the mesh this route is associated with
+   * The VirtualRouter the Route belongs to
    */
-  readonly meshName?: string;
-
-  /**
-   * The name of the virtual router this route is associated with
-   */
-  readonly virtualRouterName?: string;
-}
-
-/**
- * Represents and imported IRoute
- */
-class ImportedRoute extends cdk.Resource implements IRoute {
-  /**
-   * The name of the route
-   */
-  public readonly routeName: string;
-
-  /**
-   * The Amazon Resource Name (ARN) for the route
-   */
-  public readonly routeArn: string;
-
-  constructor(scope: cdk.Construct, id: string, props: RouteAttributes) {
-    super(scope, id);
-
-    if (props.routeArn) {
-      this.routeArn = props.routeArn;
-      this.routeName = cdk.Fn.select(4, cdk.Fn.split('/', cdk.Stack.of(scope).parseArn(props.routeArn).resourceName!));
-    } else if (props.routeName && props.meshName && props.virtualRouterName) {
-      this.routeName = props.routeName;
-      this.routeArn = cdk.Stack.of(this).formatArn({
-        service: 'appmesh',
-        resource: `mesh/${props.meshName}/virtualRouter/${props.virtualRouterName}/route`,
-        resourceName: this.routeName,
-      });
-    } else {
-      throw new Error('Need either arn or three names');
-    }
-  }
+  readonly virtualRouter: IVirtualRouter;
 }

@@ -28,8 +28,12 @@ describe('Origin Groups', () => {
 
     const primaryOriginId = 'DistributionOrigin13547B94F';
     const failoverOriginId = 'DistributionOrigin2C85CC43B';
+    const originGroupId = 'DistributionOriginGroup1A1A31B49';
     expect(stack).toHaveResourceLike('AWS::CloudFront::Distribution', {
       DistributionConfig: {
+        DefaultCacheBehavior: {
+          TargetOriginId: originGroupId,
+        },
         Origins: [
           {
             Id: primaryOriginId,

@@ -1,16 +1,11 @@
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as iam from '@aws-cdk/aws-iam';
-import { Construct } from '@aws-cdk/core';
+
 import { Action } from '../action';
 
-/** TODO:
- *  1.) Support cross account deployments
- *  2.) Fix least privilege
- *  3.) Handle CREATION of a new product
- *  4.) Handle MAINTENANCE of a provisioned product
- *  5.) Test/support product types beyond CLOUD_FORMATION_TEMPLATE
- *  6.) Valid test cases!
- */
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct } from '@aws-cdk/core';
 
 /**
  * Construction properties of the {@link ServiceCatalogDeployAction ServiceCatalog deploy CodePipeline Action}.
@@ -69,7 +64,7 @@ export class ServiceCatalogDeployAction extends Action {
       },
       inputs: [props.templatePath.artifact],
     });
-    this.templatePath = props.templatePath.location;
+    this.templatePath = props.templatePath.fileName;
     this.productVersionName = props.productVersionName;
     this.productVersionDescription = props.productVersionDescription;
     this.productId = props.productId;

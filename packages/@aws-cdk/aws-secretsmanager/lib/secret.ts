@@ -1,6 +1,8 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
-import { Construct, IResource, RemovalPolicy, Resource, SecretValue, Stack } from '@aws-cdk/core';
+import { FeatureFlags, Fn, IResource, RemovalPolicy, Resource, SecretValue, Stack, Token } from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
+import { IConstruct, Construct } from 'constructs';
 import { ResourcePolicy } from './policy';
 import { RotationSchedule, RotationScheduleOptions } from './rotation-schedule';
 import * as secretsmanager from './secretsmanager.generated';
@@ -16,10 +18,25 @@ export interface ISecret extends IResource {
   readonly encryptionKey?: kms.IKey;
 
   /**
-   * The ARN of the secret in AWS Secrets Manager.
+   * The ARN of the secret in AWS Secrets Manager. Will return the full ARN if available, otherwise a partial arn.
+   * For secrets imported by the deprecated `fromSecretName`, it will return the `secretName`.
    * @attribute
    */
   readonly secretArn: string;
+
+  /**
+   * The full ARN of the secret in AWS Secrets Manager, which is the ARN including the Secrets Manager-supplied 6-character suffix.
+   * This is equal to `secretArn` in most cases, but is undefined when a full ARN is not available (e.g., secrets imported by name).
+   */
+  readonly secretFullArn?: string;
+
+  /**
+   * The name of the secret.
+   *
+   * For "owned" secrets, this will be the full resource name (secret name + suffix), unless the
+   * '@aws-cdk/aws-secretsmanager:parseOwnedSecretName' feature flag is set.
+   */
+  readonly secretName: string;
 
   /**
    * Retrieve the value of the stored secret as a `SecretValue`.
@@ -67,6 +84,14 @@ export interface ISecret extends IResource {
    * account.
    */
   denyAccountRootDelete(): void;
+
+  /**
+   * Attach a target to this secret.
+   *
+   * @param target The target to attach.
+   * @returns An attached secret
+   */
+  attach(target: ISecretAttachmentTarget): ISecret;
 }
 
 /**
@@ -113,6 +138,7 @@ export interface SecretProps {
 
 /**
  * Attributes required to import an existing secret into the Stack.
+ * One ARN format (`secretArn`, `secretCompleteArn`, `secretPartialArn`) must be provided.
  */
 export interface SecretAttributes {
   /**
@@ -122,8 +148,22 @@ export interface SecretAttributes {
 
   /**
    * The ARN of the secret in SecretsManager.
+   * Cannot be used with `secretCompleteArn` or `secretPartialArn`.
+   * @deprecated use `secretCompleteArn` or `secretPartialArn` instead.
    */
-  readonly secretArn: string;
+  readonly secretArn?: string;
+
+  /**
+   * The complete ARN of the secret in SecretsManager. This is the ARN including the Secrets Manager 6-character suffix.
+   * Cannot be used with `secretArn` or `secretPartialArn`.
+   */
+  readonly secretCompleteArn?: string;
+
+  /**
+   * The partial ARN of the secret in SecretsManager. This is the ARN without the Secrets Manager 6-character suffix.
+   * Cannot be used with `secretArn` or `secretCompleteArn`.
+   */
+  readonly secretPartialArn?: string;
 }
 
 /**
@@ -132,18 +172,21 @@ export interface SecretAttributes {
 abstract class SecretBase extends Resource implements ISecret {
   public abstract readonly encryptionKey?: kms.IKey;
   public abstract readonly secretArn: string;
+  public abstract readonly secretName: string;
 
   protected abstract readonly autoCreatePolicy: boolean;
 
   private policy?: ResourcePolicy;
 
+  public get secretFullArn(): string | undefined { return this.secretArn; }
+
   public grantRead(grantee: iam.IGrantable, versionStages?: string[]): iam.Grant {
-    // @see https://docs.aws.amazon.com/fr_fr/secretsmanager/latest/userguide/auth-and-access_identity-based-policies.html
+    // @see https://docs.aws.amazon.com/secretsmanager/latest/userguide/auth-and-access_identity-based-policies.html
 
     const result = iam.Grant.addToPrincipal({
       grantee,
       actions: ['secretsmanager:GetSecretValue', 'secretsmanager:DescribeSecret'],
-      resourceArns: [this.secretArn],
+      resourceArns: [this.arnForPolicies],
       scope: this,
     });
     if (versionStages != null && result.principalStatement) {
@@ -153,7 +196,7 @@ abstract class SecretBase extends Resource implements ISecret {
     }
 
     if (this.encryptionKey) {
-      // @see https://docs.aws.amazon.com/fr_fr/kms/latest/developerguide/services-secrets-manager.html
+      // @see https://docs.aws.amazon.com/kms/latest/developerguide/services-secrets-manager.html
       this.encryptionKey.grantDecrypt(
         new kms.ViaServicePrincipal(`secretsmanager.${Stack.of(this).region}.amazonaws.com`, grantee.grantPrincipal),
       );
@@ -167,7 +210,7 @@ abstract class SecretBase extends Resource implements ISecret {
     const result = iam.Grant.addToPrincipal({
       grantee,
       actions: ['secretsmanager:PutSecretValue', 'secretsmanager:UpdateSecret'],
-      resourceArns: [this.secretArn],
+      resourceArns: [this.arnForPolicies],
       scope: this,
     });
 
@@ -208,6 +251,12 @@ abstract class SecretBase extends Resource implements ISecret {
     return { statementAdded: false };
   }
 
+  protected validate(): string[] {
+    const errors = super.validate();
+    errors.push(...this.policy?.document.validateForResourcePolicy() || []);
+    return errors;
+  }
+
   public denyAccountRootDelete() {
     this.addToResourcePolicy(new iam.PolicyStatement({
       actions: ['secretsmanager:DeleteSecret'],
@@ -216,6 +265,36 @@ abstract class SecretBase extends Resource implements ISecret {
       principals: [new iam.AccountRootPrincipal()],
     }));
   }
+
+  /**
+   * Provides an identifier for this secret for use in IAM policies.
+   * If there is a full ARN, this is just the ARN;
+   * if we have a partial ARN -- due to either importing by secret name or partial ARN --
+   * then we need to add a suffix to capture the full ARN's format.
+   */
+  protected get arnForPolicies() {
+    return this.secretFullArn ? this.secretFullArn : `${this.secretArn}-??????`;
+  }
+
+  /**
+   * Attach a target to this secret
+   *
+   * @param target The target to attach
+   * @returns An attached secret
+   */
+  public attach(target: ISecretAttachmentTarget): ISecret {
+    const id = 'Attachment';
+    const existing = this.node.tryFindChild(id);
+
+    if (existing) {
+      throw new Error('Secret is already attached to a target.');
+    }
+
+    return new SecretTargetAttachment(this, id, {
+      secret: this,
+      target,
+    });
+  }
 }
 
 /**
@@ -223,8 +302,69 @@ abstract class SecretBase extends Resource implements ISecret {
  */
 export class Secret extends SecretBase {
 
+  /** @deprecated use `fromSecretCompleteArn` or `fromSecretPartialArn` */
   public static fromSecretArn(scope: Construct, id: string, secretArn: string): ISecret {
-    return Secret.fromSecretAttributes(scope, id, { secretArn });
+    const attrs = arnIsComplete(secretArn) ? { secretCompleteArn: secretArn } : { secretPartialArn: secretArn };
+    return Secret.fromSecretAttributes(scope, id, attrs);
+  }
+
+  /** Imports a secret by complete ARN. The complete ARN is the ARN with the Secrets Manager-supplied suffix. */
+  public static fromSecretCompleteArn(scope: Construct, id: string, secretCompleteArn: string): ISecret {
+    return Secret.fromSecretAttributes(scope, id, { secretCompleteArn });
+  }
+
+  /** Imports a secret by partial ARN. The partial ARN is the ARN without the Secrets Manager-supplied suffix. */
+  public static fromSecretPartialArn(scope: Construct, id: string, secretPartialArn: string): ISecret {
+    return Secret.fromSecretAttributes(scope, id, { secretPartialArn });
+  }
+
+  /**
+   * Imports a secret by secret name; the ARN of the Secret will be set to the secret name.
+   * A secret with this name must exist in the same account & region.
+   * @deprecated use `fromSecretNameV2`
+   */
+  public static fromSecretName(scope: Construct, id: string, secretName: string): ISecret {
+    return new class extends SecretBase {
+      public readonly encryptionKey = undefined;
+      public readonly secretArn = secretName;
+      public readonly secretName = secretName;
+      protected readonly autoCreatePolicy = false;
+      public get secretFullArn() { return undefined; }
+      // Overrides the secretArn for grant* methods, where the secretArn must be in ARN format.
+      // Also adds a wildcard to the resource name to support the SecretsManager-provided suffix.
+      protected get arnForPolicies() {
+        return Stack.of(this).formatArn({
+          service: 'secretsmanager',
+          resource: 'secret',
+          resourceName: this.secretName + '*',
+          sep: ':',
+        });
+      }
+    }(scope, id);
+  }
+
+  /**
+   * Imports a secret by secret name.
+   * A secret with this name must exist in the same account & region.
+   * Replaces the deprecated `fromSecretName`.
+   */
+  public static fromSecretNameV2(scope: Construct, id: string, secretName: string): ISecret {
+    return new class extends SecretBase {
+      public readonly encryptionKey = undefined;
+      public readonly secretName = secretName;
+      public readonly secretArn = this.partialArn;
+      protected readonly autoCreatePolicy = false;
+      public get secretFullArn() { return undefined; }
+      // Creates a "partial" ARN from the secret name. The "full" ARN would include the SecretsManager-provided suffix.
+      private get partialArn(): string {
+        return Stack.of(this).formatArn({
+          service: 'secretsmanager',
+          resource: 'secret',
+          resourceName: secretName,
+          sep: ':',
+        });
+      }
+    }(scope, id);
   }
 
   /**
@@ -235,17 +375,38 @@ export class Secret extends SecretBase {
    * @param attrs the attributes of the imported secret.
    */
   public static fromSecretAttributes(scope: Construct, id: string, attrs: SecretAttributes): ISecret {
-    class Import extends SecretBase {
-      public readonly encryptionKey = attrs.encryptionKey;
-      public readonly secretArn = attrs.secretArn;
-      protected readonly autoCreatePolicy = false;
+    let secretArn: string;
+    let secretArnIsPartial: boolean;
+
+    if (attrs.secretArn) {
+      if (attrs.secretCompleteArn || attrs.secretPartialArn) {
+        throw new Error('cannot use `secretArn` with `secretCompleteArn` or `secretPartialArn`');
+      }
+      secretArn = attrs.secretArn;
+      secretArnIsPartial = false;
+    } else {
+      if ((attrs.secretCompleteArn && attrs.secretPartialArn) ||
+          (!attrs.secretCompleteArn && !attrs.secretPartialArn)) {
+        throw new Error('must use only one of `secretCompleteArn` or `secretPartialArn`');
+      }
+      if (attrs.secretCompleteArn && !arnIsComplete(attrs.secretCompleteArn)) {
+        throw new Error('`secretCompleteArn` does not appear to be complete; missing 6-character suffix');
+      }
+      [secretArn, secretArnIsPartial] = attrs.secretCompleteArn ? [attrs.secretCompleteArn, false] : [attrs.secretPartialArn!, true];
     }
 
-    return new Import(scope, id);
+    return new class extends SecretBase {
+      public readonly encryptionKey = attrs.encryptionKey;
+      public readonly secretArn = secretArn;
+      public readonly secretName = parseSecretName(scope, secretArn);
+      protected readonly autoCreatePolicy = false;
+      public get secretFullArn() { return secretArnIsPartial ? undefined : secretArn; }
+    }(scope, id);
   }
 
   public readonly encryptionKey?: kms.IKey;
   public readonly secretArn: string;
+  public readonly secretName: string;
 
   protected readonly autoCreatePolicy = true;
 
@@ -279,12 +440,16 @@ export class Secret extends SecretBase {
     });
 
     this.encryptionKey = props.encryptionKey;
+    const parseOwnedSecretName = FeatureFlags.of(this).isEnabled(cxapi.SECRETS_MANAGER_PARSE_OWNED_SECRET_NAME);
+    this.secretName = parseOwnedSecretName
+      ? parseSecretNameForOwnedSecret(this, this.secretArn, props.secretName)
+      : parseSecretName(this, this.secretArn);
 
     // @see https://docs.aws.amazon.com/kms/latest/developerguide/services-secrets-manager.html#asm-authz
-    const principle =
-       new kms.ViaServicePrincipal(`secretsmanager.${Stack.of(this).region}.amazonaws.com`, new iam.AccountPrincipal(Stack.of(this).account));
-    this.encryptionKey?.grantEncryptDecrypt(principle);
-    this.encryptionKey?.grant(principle, 'kms:CreateGrant', 'kms:DescribeKey');
+    const principal =
+      new kms.ViaServicePrincipal(`secretsmanager.${Stack.of(this).region}.amazonaws.com`, new iam.AccountPrincipal(Stack.of(this).account));
+    this.encryptionKey?.grantEncryptDecrypt(principal);
+    this.encryptionKey?.grant(principal, 'kms:CreateGrant', 'kms:DescribeKey');
   }
 
   /**
@@ -298,26 +463,6 @@ export class Secret extends SecretBase {
     return new SecretTargetAttachment(this, id, {
       secret: this,
       ...options,
-    });
-  }
-
-  /**
-   * Attach a target to this secret
-   *
-   * @param target The target to attach
-   * @returns An attached secret
-   */
-  public attach(target: ISecretAttachmentTarget): ISecret {
-    const id = 'Attachment';
-    const existing = this.node.tryFindChild(id);
-
-    if (existing) {
-      throw new Error('Secret is already attached to a target.');
-    }
-
-    return new SecretTargetAttachment(this, id, {
-      secret: this,
-      target,
     });
   }
 }
@@ -437,6 +582,7 @@ export class SecretTargetAttachment extends SecretBase implements ISecretTargetA
       public encryptionKey?: kms.IKey | undefined;
       public secretArn = secretTargetAttachmentSecretArn;
       public secretTargetAttachmentSecretArn = secretTargetAttachmentSecretArn;
+      public secretName = parseSecretName(scope, secretTargetAttachmentSecretArn);
       protected readonly autoCreatePolicy = false;
     }
 
@@ -445,6 +591,7 @@ export class SecretTargetAttachment extends SecretBase implements ISecretTargetA
 
   public readonly encryptionKey?: kms.IKey;
   public readonly secretArn: string;
+  public readonly secretName: string;
 
   /**
    * @attribute
@@ -463,6 +610,7 @@ export class SecretTargetAttachment extends SecretBase implements ISecretTargetA
     });
 
     this.encryptionKey = props.secret.encryptionKey;
+    this.secretName = props.secret.secretName;
 
     // This allows to reference the secret after attachment (dependency).
     this.secretArn = attachment.ref;
@@ -545,4 +693,60 @@ export interface SecretStringGenerator {
    * must be also be specified.
    */
   readonly generateStringKey?: string;
+}
+
+/** Parses the secret name from the ARN. */
+function parseSecretName(construct: IConstruct, secretArn: string) {
+  const resourceName = Stack.of(construct).parseArn(secretArn, ':').resourceName;
+  if (resourceName) {
+    // Can't operate on the token to remove the SecretsManager suffix, so just return the full secret name
+    if (Token.isUnresolved(resourceName)) {
+      return resourceName;
+    }
+
+    // Secret resource names are in the format `${secretName}-${6-character SecretsManager suffix}`
+    // If there is no hyphen (or 6-character suffix) assume no suffix was provided, and return the whole name.
+    const lastHyphenIndex = resourceName.lastIndexOf('-');
+    const hasSecretsSuffix = lastHyphenIndex !== -1 && resourceName.substr(lastHyphenIndex + 1).length === 6;
+    return hasSecretsSuffix ? resourceName.substr(0, lastHyphenIndex) : resourceName;
+  }
+  throw new Error('invalid ARN format; no secret name provided');
+}
+
+/**
+ * Parses the secret name from the ARN of an owned secret. With owned secrets we know a few things we don't with imported secrets:
+ * - The ARN is guaranteed to be a full ARN, with suffix.
+ * - The name -- if provided -- will tell us how many hyphens to expect in the final secret name.
+ * - If the name is not provided, we know the format used by CloudFormation for auto-generated names.
+ *
+ * Note: This is done rather than just returning the secret name passed in by the user to keep the relationship
+ * explicit between the Secret and wherever the secretName might be used (i.e., using Tokens).
+ */
+function parseSecretNameForOwnedSecret(construct: Construct, secretArn: string, secretName?: string) {
+  const resourceName = Stack.of(construct).parseArn(secretArn, ':').resourceName;
+  if (!resourceName) {
+    throw new Error('invalid ARN format; no secret name provided');
+  }
+
+  // Secret name was explicitly provided, but is unresolved; best option is to use it directly.
+  // If it came from another Secret, it should (hopefully) already be properly formatted.
+  if (secretName && Token.isUnresolved(secretName)) {
+    return secretName;
+  }
+
+  // If no secretName was provided, the name will be automatically generated by CloudFormation.
+  // The autogenerated names have the form of `${logicalID}-${random}`.
+  // Otherwise, we can use the existing secretName to determine how to parse the resulting resourceName.
+  const secretNameHyphenatedSegments = secretName ? secretName.split('-').length : 2;
+  // 2 => [0, 1]
+  const segmentIndexes = [...new Array(secretNameHyphenatedSegments)].map((_, i) => i);
+
+  // Create the secret name from the resource name by joining all the known segments together.
+  // This should have the effect of stripping the final hyphen and SecretManager suffix.
+  return Fn.join('-', segmentIndexes.map(i => Fn.select(i, Fn.split('-', resourceName))));
+}
+
+/** Performs a best guess if an ARN is complete, based on if it ends with a 6-character suffix. */
+function arnIsComplete(secretArn: string): boolean {
+  return Token.isUnresolved(secretArn) || /-[a-z0-9]{6}$/i.test(secretArn);
 }

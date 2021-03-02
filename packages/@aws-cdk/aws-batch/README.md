@@ -1,17 +1,24 @@
-## AWS Batch Construct Library
-
+# AWS Batch Construct Library
 <!--BEGIN STABILITY BANNER-->
+
 ---
 
 ![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)
 
-> All classes with the `Cfn` prefix in this module ([CFN Resources](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) are always stable and safe to use.
+> All classes with the `Cfn` prefix in this module ([CFN Resources]) are always stable and safe to use.
+>
+> [CFN Resources]: https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib
 
 ![cdk-constructs: Experimental](https://img.shields.io/badge/cdk--constructs-experimental-important.svg?style=for-the-badge)
 
-> The APIs of higher level constructs in this module are experimental and under active development. They are subject to non-backward compatible changes or removal in any future version. These are not subject to the [Semantic Versioning](https://semver.org/) model and breaking changes will be announced in the release notes. This means that while you may use them, you may need to update your source code when upgrading to a newer version of this package.
+> The APIs of higher level constructs in this module are experimental and under active development.
+> They are subject to non-backward compatible changes or removal in any future version. These are
+> not subject to the [Semantic Versioning](https://semver.org/) model and breaking changes will be
+> announced in the release notes. This means that while you may use them, you may need to update
+> your source code when upgrading to a newer version of this package.
 
 ---
+
 <!--END STABILITY BANNER-->
 
 This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.
@@ -71,14 +78,14 @@ const spotEnvironment = new batch.ComputeEnvironment(stack, 'MySpotEnvironment',
 
 AWS Batch uses an [allocation strategy](https://docs.aws.amazon.com/batch/latest/userguide/allocation-strategies.html) to determine what compute resource will efficiently handle incoming job requests. By default, **BEST_FIT** will pick an available compute instance based on vCPU requirements. If none exist, the job will wait until resources become available. However, with this strategy, you may have jobs waiting in the queue unnecessarily despite having more powerful instances available. Below is an example of how that situation might look like:
 
-```
+```plaintext
 Compute Environment:
 
 1. m5.xlarge => 4 vCPU
 2. m5.2xlarge => 8 vCPU
 ```
 
-```
+```plaintext
 Job Queue:
 ---------
 | A | B |
@@ -96,7 +103,8 @@ The alternative would be to use the `BEST_FIT_PROGRESSIVE` strategy in order for
 ### Launch template support
 
 Simply define your Launch Template:
-```typescript
+
+```ts
 const myLaunchTemplate = new ec2.CfnLaunchTemplate(this, 'LaunchTemplate', {
   launchTemplateName: 'extra-storage-template',
   launchTemplateData: {
@@ -116,7 +124,7 @@ const myLaunchTemplate = new ec2.CfnLaunchTemplate(this, 'LaunchTemplate', {
 
 and use it:
 
-```typescript
+```ts
 const myComputeEnv = new batch.ComputeEnvironment(this, 'ComputeEnv', {
   computeResources: {
     launchTemplate: {
@@ -240,12 +248,48 @@ new batch.JobDefinition(stack, 'batch-job-def-from-local', {
 });
 ```
 
+### Providing custom log configuration
+
+You can provide custom log driver and its configuration for the container.
+
+```ts
+new batch.JobDefinition(stack, 'job-def', {
+  container: {
+    image: ecs.EcrImage.fromRegistry('docker/whalesay'),
+    logConfiguration: {
+      logDriver: batch.LogDriver.AWSLOGS,
+      options: { 'awslogs-region': 'us-east-1' },
+      secretOptions: [
+        batch.ExposedSecret.fromParametersStore('xyz', ssm.StringParameter.fromStringParameterName(stack, 'parameter', 'xyz')),
+      ],
+    },
+  },
+});
+```
+
 ### Importing an existing Job Definition
 
-To import an existing batch job definition, call `JobDefinition.fromJobDefinitionArn()`.
+#### From ARN
+
+To import an existing batch job definition from its ARN, call `JobDefinition.fromJobDefinitionArn()`.
 
 Below is an example:
 
 ```ts
 const job = batch.JobDefinition.fromJobDefinitionArn(this, 'imported-job-definition', 'arn:aws:batch:us-east-1:555555555555:job-definition/my-job-definition');
+```
+
+#### From Name
+
+To import an existing batch job definition from its name, call `JobDefinition.fromJobDefinitionName()`.
+If name is specified without a revision then the latest active revision is used.
+
+Below is an example:
+
+```ts
+// Without revision
+const job = batch.JobDefinition.fromJobDefinitionName(this, 'imported-job-definition', 'my-job-definition');
+
+// With revision
+const job = batch.JobDefinition.fromJobDefinitionName(this, 'imported-job-definition', 'my-job-definition:3');
 ```

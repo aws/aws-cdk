@@ -361,6 +361,12 @@
     "FargateNlbServiceLBC7004B25": {
       "Type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
       "Properties": {
+        "LoadBalancerAttributes": [
+          {
+            "Key": "deletion_protection.enabled",
+            "Value": "false"
+          }
+        ],
         "Scheme": "internet-facing",
         "Subnets": [
           {
@@ -533,7 +539,6 @@
           "MaximumPercent": 200,
           "MinimumHealthyPercent": 50
         },
-        "DesiredCount": 1,
         "EnableECSManagedTags": false,
         "HealthCheckGracePeriodSeconds": 60,
         "LaunchType": "FARGATE",
@@ -595,6 +600,12 @@
     "FargateAlbServiceLBA7128551": {
       "Type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
       "Properties": {
+        "LoadBalancerAttributes": [
+          {
+            "Key": "deletion_protection.enabled",
+            "Value": "false"
+          }
+        ],
         "Scheme": "internet-facing",
         "SecurityGroups": [
           {
@@ -814,7 +825,6 @@
           "MaximumPercent": 200,
           "MinimumHealthyPercent": 50
         },
-        "DesiredCount": 1,
         "EnableECSManagedTags": false,
         "HealthCheckGracePeriodSeconds": 60,
         "LaunchType": "FARGATE",

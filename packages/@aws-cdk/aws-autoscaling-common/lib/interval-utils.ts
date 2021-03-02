@@ -40,10 +40,10 @@ function orderAndCompleteIntervals(intervals: ScalingInterval[]): CompleteScalin
   }
 
   // Make a copy
-  intervals = intervals.map(x => ({...x}));
+  intervals = intervals.map(x => ({ ...x }));
 
   // Sort by whatever number we have for each interval
-  intervals.sort(comparatorFromKey((x: ScalingInterval) => x.lower !== undefined ? x.lower : x.upper));
+  intervals.sort(comparatorFromKey((x: ScalingInterval) => x.lower ?? x.upper));
 
   // Propagate boundaries until no more change
   while (propagateBounds(intervals)) { /* Repeat */ }

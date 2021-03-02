@@ -523,6 +523,12 @@
     "ALBAEE750D2": {
       "Type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
       "Properties": {
+        "LoadBalancerAttributes": [
+          {
+            "Key": "deletion_protection.enabled",
+            "Value": "false"
+          }
+        ],
         "Scheme": "internet-facing",
         "SecurityGroups": [
           {
@@ -572,6 +578,12 @@
     "NLB55158F82": {
       "Type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
       "Properties": {
+        "LoadBalancerAttributes": [
+          {
+            "Key": "deletion_protection.enabled",
+            "Value": "false"
+          }
+        ],
         "Scheme": "internet-facing",
         "Subnets": [
           {

@@ -1,5 +1,6 @@
 import * as kms from '@aws-cdk/aws-kms';
-import { Construct, Duration, Stack, Token } from '@aws-cdk/core';
+import { Duration, RemovalPolicy, Stack, Token } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { IQueue, QueueAttributes, QueueBase } from './queue-base';
 import { CfnQueue } from './sqs.generated';
 import { validateProps } from './validate-props';
@@ -136,6 +137,18 @@ export interface QueueProps {
    * @default false
    */
   readonly contentBasedDeduplication?: boolean;
+
+  /**
+   * Policy to apply when the user pool is removed from the stack
+   *
+   * Even though queues are technically stateful, their contents are transient and it
+   * is common to add and remove Queues while rearchitecting your application. The
+   * default is therefore `DESTROY`. Change it to `RETAIN` if the messages are so
+   * valuable that accidentally losing them would be unacceptable.
+   *
+   * @default RemovalPolicy.DESTROY
+   */
+  readonly removalPolicy?: RemovalPolicy;
 }
 
 /**
@@ -196,8 +209,9 @@ export class Queue extends QueueBase {
    */
   public static fromQueueAttributes(scope: Construct, id: string, attrs: QueueAttributes): IQueue {
     const stack = Stack.of(scope);
-    const queueName = attrs.queueName || stack.parseArn(attrs.queueArn).resource;
-    const queueUrl = attrs.queueUrl || `https://sqs.${stack.region}.${stack.urlSuffix}/${stack.account}/${queueName}`;
+    const parsedArn = stack.parseArn(attrs.queueArn);
+    const queueName = attrs.queueName || parsedArn.resource;
+    const queueUrl = attrs.queueUrl || `https://sqs.${parsedArn.region}.${stack.urlSuffix}/${parsedArn.account}/${queueName}`;
 
     class Import extends QueueBase {
       public readonly queueArn = attrs.queueArn; // arn:aws:sqs:us-east-1:123456789012:queue1
@@ -271,6 +285,7 @@ export class Queue extends QueueBase {
       receiveMessageWaitTimeSeconds: props.receiveMessageWaitTime && props.receiveMessageWaitTime.toSeconds(),
       visibilityTimeout: props.visibilityTimeout && props.visibilityTimeout.toSeconds(),
     });
+    queue.applyRemovalPolicy(props.removalPolicy ?? RemovalPolicy.DESTROY);
 
     this.queueArn = this.getResourceArnAttribute(queue.attrArn, {
       service: 'sqs',

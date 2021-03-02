@@ -12,11 +12,10 @@ const fn = new lambda.Function(stack, 'CustomFunction', {
   runtime: lambda.Runtime.NODEJS_10_X,
 });
 
-const customRule = new config.CustomRule(stack, 'Custom', {
+new config.CustomRule(stack, 'Custom', {
   lambdaFunction: fn,
   periodic: true,
+  ruleScope: config.RuleScope.fromResources([config.ResourceType.EC2_INSTANCE]),
 });
-
-customRule.scopeToResource('AWS::EC2::Instance');
 
 app.synth();

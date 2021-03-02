@@ -1,4 +1,4 @@
-import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { Chain } from '../chain';
 import { Condition } from '../condition';
 import { IChainable, INextable } from '../types';
@@ -46,7 +46,7 @@ export interface ChoiceProps {
 export class Choice extends State {
   public readonly endStates: INextable[] = [];
 
-  constructor(scope: cdk.Construct, id: string, props: ChoiceProps = {}) {
+  constructor(scope: Construct, id: string, props: ChoiceProps = {}) {
     super(scope, id, props);
   }
 

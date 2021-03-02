@@ -1,8 +1,8 @@
+import * as path from 'path';
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
-import * as cdk from '@aws-cdk/core';
-import * as path from 'path';
+import { Construct } from 'constructs';
 
 /**
  * Properties for EvaluateExpression
@@ -20,7 +20,7 @@ export interface EvaluateExpressionProps extends sfn.TaskStateBaseProps {
   /**
    * The runtime language to use to evaluate the expression.
    *
-   * @default lambda.Runtime.NODEJS_10_X
+   * @default lambda.Runtime.NODEJS_14_X
    */
   readonly runtime?: lambda.Runtime;
 }
@@ -55,10 +55,10 @@ export class EvaluateExpression extends sfn.TaskStateBase {
 
   private readonly evalFn: lambda.SingletonFunction;
 
-  constructor(scope: cdk.Construct, id: string, private readonly props: EvaluateExpressionProps) {
+  constructor(scope: Construct, id: string, private readonly props: EvaluateExpressionProps) {
     super(scope, id, props);
 
-    this.evalFn = createEvalFn(this.props.runtime || lambda.Runtime.NODEJS_10_X, this);
+    this.evalFn = createEvalFn(this.props.runtime ?? lambda.Runtime.NODEJS_14_X, this);
 
     this.taskPolicies = [
       new iam.PolicyStatement({
@@ -72,7 +72,7 @@ export class EvaluateExpression extends sfn.TaskStateBase {
    * @internal
    */
   protected _renderTask(): any {
-    const matches = this.props.expression.match(/\$[.\[][.a-zA-Z[\]0-9]+/g);
+    const matches = this.props.expression.match(/\$[.\[][.a-zA-Z[\]0-9-_]+/g);
 
     let expressionAttributeValues = {};
     if (matches) {
@@ -96,18 +96,19 @@ export class EvaluateExpression extends sfn.TaskStateBase {
   }
 }
 
-function createEvalFn(runtime: lambda.Runtime, scope: cdk.Construct) {
-  const code = lambda.Code.asset(path.join(__dirname, `eval-${runtime.name}-handler`));
+function createEvalFn(runtime: lambda.Runtime, scope: Construct) {
   const lambdaPurpose = 'Eval';
 
   switch (runtime) {
+    case lambda.Runtime.NODEJS_14_X:
+    case lambda.Runtime.NODEJS_12_X:
     case lambda.Runtime.NODEJS_10_X:
       return new lambda.SingletonFunction(scope, 'EvalFunction', {
         runtime,
         handler: 'index.handler',
         uuid: 'a0d2ce44-871b-4e74-87a1-f5e63d7c3bdc',
         lambdaPurpose,
-        code,
+        code: lambda.Code.fromAsset(path.join(__dirname, 'eval-nodejs-handler')),
       });
     // TODO: implement other runtimes
     default:

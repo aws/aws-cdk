@@ -1,5 +1,5 @@
-import * as cdk from '@aws-cdk/core';
 import * as path from 'path';
+import * as cdk from '@aws-cdk/core';
 import * as apigateway from '../lib';
 
 /*
@@ -24,7 +24,7 @@ api.root.addResource('books').addMethod('GET', new apigateway.MockIntegration({
     'application/json': '{ "statusCode": 200 }',
   },
 }), {
-  methodResponses: [ { statusCode: '200' } ],
+  methodResponses: [{ statusCode: '200' }],
 });
 
 new cdk.CfnOutput(stack, 'PetsURL', {

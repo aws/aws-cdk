@@ -1,5 +1,6 @@
 import '@aws-cdk/assert/jest';
 import * as logs from '@aws-cdk/aws-logs';
+import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
 import * as stepfunctions from '../lib';
 
@@ -120,4 +121,101 @@ describe('State Machine', () => {
     });
   });
 
+  test('tracing configuration', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new stepfunctions.StateMachine(stack, 'MyStateMachine', {
+      definition: stepfunctions.Chain.start(new stepfunctions.Pass(stack, 'Pass')),
+      tracingEnabled: true,
+    });
+
+    // THEN
+    expect(stack).toHaveResource('AWS::StepFunctions::StateMachine', {
+      DefinitionString: '{"StartAt":"Pass","States":{"Pass":{"Type":"Pass","End":true}}}',
+      TracingConfiguration: {
+        Enabled: true,
+      },
+    });
+
+    expect(stack).toHaveResource('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [{
+          Action: [
+            'xray:PutTraceSegments',
+            'xray:PutTelemetryRecords',
+            'xray:GetSamplingRules',
+            'xray:GetSamplingTargets',
+          ],
+          Effect: 'Allow',
+          Resource: '*',
+        }],
+        Version: '2012-10-17',
+      },
+      PolicyName: 'MyStateMachineRoleDefaultPolicyE468EB18',
+      Roles: [
+        {
+          Ref: 'MyStateMachineRoleD59FFEBC',
+        },
+      ],
+    });
+  });
+
+  test('grant access', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const sm = new stepfunctions.StateMachine(stack, 'MyStateMachine', {
+      definition: stepfunctions.Chain.start(new stepfunctions.Pass(stack, 'Pass')),
+    });
+    const bucket = new s3.Bucket(stack, 'MyBucket');
+    bucket.grantRead(sm);
+
+    // THEN
+    expect(stack).toHaveResource('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: [
+              's3:GetObject*',
+              's3:GetBucket*',
+              's3:List*',
+            ],
+            Effect: 'Allow',
+            Resource: [
+              {
+                'Fn::GetAtt': [
+                  'MyBucketF68F3FF0',
+                  'Arn',
+                ],
+              },
+              {
+                'Fn::Join': [
+                  '',
+                  [
+                    {
+                      'Fn::GetAtt': [
+                        'MyBucketF68F3FF0',
+                        'Arn',
+                      ],
+                    },
+                    '/*',
+                  ],
+                ],
+              },
+            ],
+          },
+        ],
+        Version: '2012-10-17',
+      },
+      PolicyName: 'MyStateMachineRoleDefaultPolicyE468EB18',
+      Roles: [
+        {
+          Ref: 'MyStateMachineRoleD59FFEBC',
+        },
+      ],
+    });
+  });
 });

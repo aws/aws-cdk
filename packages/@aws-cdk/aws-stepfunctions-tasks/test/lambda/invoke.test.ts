@@ -52,6 +52,18 @@ describe('LambdaInvoke', () => {
         },
         'Payload.$': '$',
       },
+      Retry: [
+        {
+          ErrorEquals: [
+            'Lambda.ServiceException',
+            'Lambda.AWSLambdaException',
+            'Lambda.SdkClientException',
+          ],
+          IntervalSeconds: 2,
+          MaxAttempts: 6,
+          BackoffRate: 2,
+        },
+      ],
     });
   });
 
@@ -68,7 +80,7 @@ describe('LambdaInvoke', () => {
     });
 
     // THEN
-    expect(stack.resolve(task.toStateJson())).toEqual({
+    expect(stack.resolve(task.toStateJson())).toEqual(expect.objectContaining({
       Type: 'Task',
       Resource: {
         'Fn::Join': [
@@ -97,7 +109,7 @@ describe('LambdaInvoke', () => {
         ClientContext: 'eyJoZWxsbyI6IndvcmxkIn0=',
         Qualifier: '1',
       },
-    });
+    }));
   });
 
   test('invoke Lambda function and wait for task token', () => {
@@ -112,7 +124,7 @@ describe('LambdaInvoke', () => {
     });
 
     // THEN
-    expect(stack.resolve(task.toStateJson())).toEqual({
+    expect(stack.resolve(task.toStateJson())).toEqual(expect.objectContaining({
       Type: 'Task',
       Resource: {
         'Fn::Join': [
@@ -139,7 +151,7 @@ describe('LambdaInvoke', () => {
         },
         Qualifier: 'my-alias',
       },
-    });
+    }));
   });
 
   test('pass part of state input as input to Lambda function ', () => {
@@ -150,7 +162,7 @@ describe('LambdaInvoke', () => {
     });
 
     // THEN
-    expect(stack.resolve(task.toStateJson())).toEqual({
+    expect(stack.resolve(task.toStateJson())).toEqual(expect.objectContaining({
       Type: 'Task',
       Resource: {
         'Fn::Join': [
@@ -174,7 +186,7 @@ describe('LambdaInvoke', () => {
         },
         'Payload.$': '$.foo',
       },
-    });
+    }));
   });
 
   test('Invoke lambda with payloadResponseOnly', () => {
@@ -185,7 +197,7 @@ describe('LambdaInvoke', () => {
     });
 
     // THEN
-    expect(stack.resolve(task.toStateJson())).toEqual({
+    expect(stack.resolve(task.toStateJson())).toEqual(expect.objectContaining({
       End: true,
       Type: 'Task',
       Resource: {
@@ -194,7 +206,7 @@ describe('LambdaInvoke', () => {
           'Arn',
         ],
       },
-    });
+    }));
   });
 
   test('Invoke lambda with payloadResponseOnly with payload', () => {
@@ -208,7 +220,7 @@ describe('LambdaInvoke', () => {
     });
 
     // THEN
-    expect(stack.resolve(task.toStateJson())).toEqual({
+    expect(stack.resolve(task.toStateJson())).toEqual(expect.objectContaining({
       End: true,
       Type: 'Task',
       Resource: {
@@ -219,6 +231,41 @@ describe('LambdaInvoke', () => {
       },
       Parameters: {
         foo: 'bar',
+      },
+    }));
+  });
+
+  test('with retryOnServiceExceptions set to false', () => {
+    // WHEN
+    const task = new LambdaInvoke(stack, 'Task', {
+      lambdaFunction,
+      retryOnServiceExceptions: false,
+    });
+
+    // THEN
+    expect(stack.resolve(task.toStateJson())).toEqual({
+      End: true,
+      Type: 'Task',
+      Resource: {
+        'Fn::Join': [
+          '',
+          [
+            'arn:',
+            {
+              Ref: 'AWS::Partition',
+            },
+            ':states:::lambda:invoke',
+          ],
+        ],
+      },
+      Parameters: {
+        FunctionName: {
+          'Fn::GetAtt': [
+            'Fn9270CBC0',
+            'Arn',
+          ],
+        },
+        'Payload.$': '$',
       },
     });
   });

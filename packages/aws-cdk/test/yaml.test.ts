@@ -1,4 +1,4 @@
-import { fromYAML, toYAML } from '../lib/serialize';
+import { deserializeStructure, toYAML } from '../lib/serialize';
 
 // Preferred quote of the YAML library
 const q = '"';
@@ -62,7 +62,7 @@ test('validate emission of very long lines', () => {
 
   const output = toYAML(template);
 
-  const parsed = fromYAML(output);
+  const parsed = deserializeStructure(output);
 
   expect(template).toEqual(parsed);
 });

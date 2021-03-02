@@ -32,7 +32,7 @@ function metricGraphJson(metric: IMetric, yAxis?: string, id?: string) {
   const config = metric.toMetricConfig();
 
   const ret: any[] = [];
-  const options: any = {...config.renderingProperties};
+  const options: any = { ...config.renderingProperties };
 
   dispatchMetric(metric, {
     withStat(stat) {
@@ -55,6 +55,7 @@ function metricGraphJson(metric: IMetric, yAxis?: string, id?: string) {
 
     withExpression(expr) {
       options.expression = expr.expression;
+      if (expr.period && expr.period !== 300) { options.period = expr.period; }
     },
   });
 

@@ -1,6 +1,7 @@
 // Helper functions for integration tests
 import { spawnSync } from 'child_process';
 import * as path from 'path';
+import { FUTURE_FLAGS } from '@aws-cdk/cx-api';
 import * as fs from 'fs-extra';
 import { AVAILABILITY_ZONE_FALLBACK_CONTEXT_KEY } from '../../../packages/@aws-cdk/cx-api/lib';
 
@@ -216,7 +217,7 @@ export class IntegrationTest {
       return pragma;
     }
 
-    const stacks = (await this.invokeCli([ 'ls' ], { ...DEFAULT_SYNTH_OPTIONS })).split('\n');
+    const stacks = (await this.invokeCli(['ls'], { ...DEFAULT_SYNTH_OPTIONS })).split('\n');
     if (stacks.length !== 1) {
       throw new Error('"cdk-integ" can only operate on apps with a single stack.\n\n' +
         '  If your app has multiple stacks, specify which stack to select by adding this to your test source:\n\n' +
@@ -304,8 +305,8 @@ export class IntegrationTest {
 // account of the exercising user.
 export const DEFAULT_SYNTH_OPTIONS = {
   context: {
-    [AVAILABILITY_ZONE_FALLBACK_CONTEXT_KEY]: [ 'test-region-1a', 'test-region-1b', 'test-region-1c' ],
-    'availability-zones:account=12345678:region=test-region': [ 'test-region-1a', 'test-region-1b', 'test-region-1c' ],
+    [AVAILABILITY_ZONE_FALLBACK_CONTEXT_KEY]: ['test-region-1a', 'test-region-1b', 'test-region-1c'],
+    'availability-zones:account=12345678:region=test-region': ['test-region-1a', 'test-region-1b', 'test-region-1c'],
     'ssm:account=12345678:parameterName=/aws/service/ami-amazon-linux-latest/amzn-ami-hvm-x86_64-gp2:region=test-region': 'ami-1234',
     'ssm:account=12345678:parameterName=/aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2:region=test-region': 'ami-1234',
     'ssm:account=12345678:parameterName=/aws/service/ecs/optimized-ami/amazon-linux/recommended:region=test-region': '{"image_id": "ami-1234"}',
@@ -337,6 +338,8 @@ export const DEFAULT_SYNTH_OPTIONS = {
         },
       ],
     },
+    // Enable feature flags for all integ tests
+    ...FUTURE_FLAGS,
   },
   env: {
     CDK_INTEG_ACCOUNT: '12345678',
@@ -349,7 +352,7 @@ export const DEFAULT_SYNTH_OPTIONS = {
  */
 function exec(commandLine: string[], options: { cwd?: string, json?: boolean, verbose?: boolean, env?: any } = { }): any {
   const proc = spawnSync(commandLine[0], commandLine.slice(1), {
-    stdio: [ 'ignore', 'pipe', options.verbose ? 'inherit' : 'pipe' ], // inherit STDERR in verbose mode
+    stdio: ['ignore', 'pipe', options.verbose ? 'inherit' : 'pipe'], // inherit STDERR in verbose mode
     env: {
       ...process.env,
       CDK_INTEG_MODE: '1',

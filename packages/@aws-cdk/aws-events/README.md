@@ -1,5 +1,6 @@
-## Amazon EventBridge Construct Library
+# Amazon EventBridge Construct Library
 <!--BEGIN STABILITY BANNER-->
+
 ---
 
 ![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)
@@ -7,6 +8,7 @@
 ![cdk-constructs: Stable](https://img.shields.io/badge/cdk--constructs-stable-success.svg?style=for-the-badge)
 
 ---
+
 <!--END STABILITY BANNER-->
 
 Amazon EventBridge delivers a near real-time stream of system events that
@@ -28,7 +30,7 @@ event when the pipeline changes it's state.
   Service](https://docs.aws.amazon.com/eventbridge/latest/userguide/event-types.html).
 * __Targets__: A target processes events. Targets can include Amazon EC2
   instances, AWS Lambda functions, Kinesis streams, Amazon ECS tasks, Step
-  Functions state machines, Amazon SNS topics, Amazon SQS queues, and built-in
+  Functions state machines, Amazon SNS topics, Amazon SQS queues, Amazon CloudWatch LogGroups, and built-in
   targets. A target receives events in JSON format.
 * __Rules__: A rule matches incoming events and routes them to targets for
   processing. A single rule can route to multiple targets, all of which are
@@ -80,7 +82,7 @@ onCommitRule.addTarget(new targets.SnsTopic(topic, {
 
 ## Scheduling
 
-You can configure a Rule to run on a schedule (cron or rate). 
+You can configure a Rule to run on a schedule (cron or rate).
 
 The following example runs a task every day at 4am:
 
@@ -89,7 +91,7 @@ import { Rule, Schedule } from '@aws-cdk/aws-events';
 import { EcsTask } from '@aws-cdk/aws-events-targets';
 ...
 
-const ecsTaskTarget = new EcsTask({ cluster, taskDefinition });
+const ecsTaskTarget = new EcsTask({ cluster, taskDefinition, role });
 
 new Rule(this, 'ScheduleRule', {
  schedule: Schedule.cron({ minute: '0', hour: '4' }),
@@ -97,7 +99,12 @@ new Rule(this, 'ScheduleRule', {
 });
 ```
 
-More details in [ScheduledEvents](https://docs.aws.amazon.com/eventbridge/latest/userguide/scheduled-events.html) documentation page.
+If you want to specify Fargate platform version, set `platformVersion` in EcsTask's props like the following example:
+
+```ts
+const platformVersion = ecs.FargatePlatformVersion.VERSION1_4;
+const ecsTaskTarget = new EcsTask({ cluster, taskDefinition, role, platformVersion });
+```
 
 ## Event Targets
 
@@ -120,7 +127,7 @@ The following targets are supported:
 
 It's possible to have the source of the event and a target in separate AWS accounts:
 
-```typescript
+```ts
 import { App, Stack } from '@aws-cdk/core';
 import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as codecommit from '@aws-cdk/aws-codecommit';
@@ -156,3 +163,26 @@ In this situation, the CDK will wire the 2 accounts together:
 
 For more information, see the
 [AWS documentation on cross-account events](https://docs.aws.amazon.com/eventbridge/latest/userguide/eventbridge-cross-account-event-delivery.html).
+
+## Archiving
+
+It is possible to archive all or some events sent to an event bus. It is then possible to [replay these events](https://aws.amazon.com/blogs/aws/new-archive-and-replay-events-with-amazon-eventbridge/).
+
+```ts
+import * as cdk from '@aws-cdk/core';
+
+const stack = new stack();
+
+const bus = new EventBus(stack, 'bus', {
+  eventBusName: 'MyCustomEventBus'
+});
+
+bus.archive('MyArchive', {
+  archiveName: 'MyCustomEventBusArchive',
+  description: 'MyCustomerEventBus Archive',
+  eventPattern: {
+    account: [stack.account],
+  },
+  retention: cdk.Duration.days(365),
+});
+```

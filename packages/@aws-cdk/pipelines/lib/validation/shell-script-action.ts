@@ -1,12 +1,18 @@
 import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as codepipeline_actions from '@aws-cdk/aws-codepipeline-actions';
+import * as ec2 from '@aws-cdk/aws-ec2';
 import * as events from '@aws-cdk/aws-events';
-import { Construct } from '@aws-cdk/core';
+import * as iam from '@aws-cdk/aws-iam';
+
 import { StackOutput } from '../stage';
 
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct } from '@aws-cdk/core';
+
 /**
- * Properties for ShellScriptValidation
+ * Properties for ShellScriptAction
  */
 export interface ShellScriptActionProps {
   /**
@@ -53,6 +59,20 @@ export interface ShellScriptActionProps {
   readonly additionalArtifacts?: codepipeline.Artifact[];
 
   /**
+   * The CodeBuild environment where scripts are executed.
+   *
+   * @default LinuxBuildImage.STANDARD_4_0
+   */
+  readonly environment?: codebuild.BuildEnvironment
+
+  /**
+   * Environment variables to send into build
+   *
+   * @default - No additional environment variables
+   */
+  readonly environmentVariables?: Record<string, codebuild.BuildEnvironmentVariable>;
+
+  /**
    * RunOrder for this action
    *
    * Use this to sequence the shell script after the deployments.
@@ -64,12 +84,46 @@ export interface ShellScriptActionProps {
    * @default 100
    */
   readonly runOrder?: number;
+
+  /**
+   * Additional policy statements to add to the execution role
+   *
+   * @default - No policy statements
+   */
+  readonly rolePolicyStatements?: iam.PolicyStatement[];
+
+  /**
+   * The VPC where to execute the specified script.
+   *
+   * @default - No VPC
+   */
+  readonly vpc?: ec2.IVpc;
+
+  /**
+   * Which subnets to use.
+   *
+   * Only used if 'vpc' is supplied.
+   *
+   * @default - All private subnets.
+   */
+  readonly subnetSelection?: ec2.SubnetSelection
+
+  /**
+   * Which security group to associate with the script's project network interfaces.
+   * If no security group is identified, one will be created automatically.
+   *
+   * Only used if 'vpc' is supplied.
+   *
+   * @default - Security group will be automatically created.
+   *
+   */
+  readonly securityGroups?: ec2.ISecurityGroup[];
 }
 
 /**
  * Validate a revision using shell commands
  */
-export class ShellScriptAction implements codepipeline.IAction {
+export class ShellScriptAction implements codepipeline.IAction, iam.IGrantable {
   private _project?: codebuild.IProject;
 
   private _action?: codepipeline_actions.CodeBuildAction;
@@ -97,6 +151,13 @@ export class ShellScriptAction implements codepipeline.IAction {
     if (Object.keys(props.useOutputs ?? {}).length + (props.additionalArtifacts ?? []).length === 0) {
       throw new Error('You must supply either \'useOutputs\' or \'additionalArtifacts\', since a CodeBuild Action must always have at least one input artifact.');
     }
+  }
+
+  /**
+   * The CodeBuild Project's principal
+   */
+  public get grantPrincipal(): iam.IPrincipal {
+    return this.project.grantPrincipal;
   }
 
   /**
@@ -134,6 +195,10 @@ export class ShellScriptAction implements codepipeline.IAction {
     }
 
     this._project = new codebuild.PipelineProject(scope, 'Project', {
+      environment: this.props.environment || { buildImage: codebuild.LinuxBuildImage.STANDARD_4_0 },
+      vpc: this.props.vpc,
+      securityGroups: this.props.securityGroups,
+      subnetSelection: this.props.subnetSelection,
       buildSpec: codebuild.BuildSpec.fromObject({
         version: '0.2',
         phases: {
@@ -146,6 +211,9 @@ export class ShellScriptAction implements codepipeline.IAction {
         },
       }),
     });
+    for (const statement of this.props.rolePolicyStatements ?? []) {
+      this._project.addToRolePolicy(statement);
+    }
 
     this._action = new codepipeline_actions.CodeBuildAction({
       actionName: this.props.actionName,
@@ -153,6 +221,7 @@ export class ShellScriptAction implements codepipeline.IAction {
       extraInputs: inputs.slice(1),
       runOrder: this.props.runOrder ?? 100,
       project: this._project,
+      environmentVariables: this.props.environmentVariables,
     });
     // Replace the placeholder actionProperties at the last minute
     this._actionProperties = this._action.actionProperties;

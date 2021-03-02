@@ -1,6 +1,10 @@
 import { Grant, IGrantable, PolicyStatement, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
 import { IFunction } from '@aws-cdk/aws-lambda';
-import { CfnResource, Construct, Duration, Stack } from '@aws-cdk/core';
+import { CfnResource, Duration, Stack } from '@aws-cdk/core';
+
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct } from '@aws-cdk/core';
 
 export interface WaiterStateMachineProps {
   /**
@@ -46,12 +50,12 @@ export class WaiterStateMachine extends Construct {
       assumedBy: new ServicePrincipal('states.amazonaws.com'),
     });
     role.addToPolicy(new PolicyStatement({
-      actions: [ 'lambda:InvokeFunction' ],
-      resources: [ props.isCompleteHandler.functionArn ],
+      actions: ['lambda:InvokeFunction'],
+      resources: [props.isCompleteHandler.functionArn],
     }));
     role.addToPolicy(new PolicyStatement({
-      actions: [ 'lambda:InvokeFunction' ],
-      resources: [ props.timeoutHandler.functionArn ],
+      actions: ['lambda:InvokeFunction'],
+      resources: [props.timeoutHandler.functionArn],
     }));
 
     const definition = Stack.of(this).toJsonString({
@@ -60,13 +64,13 @@ export class WaiterStateMachine extends Construct {
         'framework-isComplete-task': {
           End: true,
           Retry: [{
-            ErrorEquals: [ 'States.ALL' ],
+            ErrorEquals: ['States.ALL'],
             IntervalSeconds: props.interval.toSeconds(),
             MaxAttempts: props.maxAttempts,
             BackoffRate: props.backoffRate,
           }],
           Catch: [{
-            ErrorEquals: [ 'States.ALL' ],
+            ErrorEquals: ['States.ALL'],
             Next: 'framework-onTimeout-task',
           }],
           Type: 'Task',
@@ -95,8 +99,8 @@ export class WaiterStateMachine extends Construct {
   public grantStartExecution(identity: IGrantable) {
     return Grant.addToPrincipal({
       grantee: identity,
-      actions: [ 'states:StartExecution' ],
-      resourceArns: [ this.stateMachineArn ],
+      actions: ['states:StartExecution'],
+      resourceArns: [this.stateMachineArn],
     });
   }
 }

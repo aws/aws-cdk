@@ -1,5 +1,0 @@
-{
-  "skip": { "tag": true },
-  "packageFiles": [ {  "filename": "lerna.json",  "type": "json" } ],
-  "bumpFiles": [ { "filename": "lerna.json", "type": "json" }  ]
-}

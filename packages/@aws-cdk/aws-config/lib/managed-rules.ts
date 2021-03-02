@@ -1,7 +1,8 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as sns from '@aws-cdk/aws-sns';
-import { Construct, Duration, Lazy, Stack } from '@aws-cdk/core';
-import { ManagedRule, RuleProps } from './rule';
+import { Duration, Lazy, Stack } from '@aws-cdk/core';
+import { Construct } from 'constructs';
+import { ManagedRule, ManagedRuleIdentifiers, ResourceType, RuleProps, RuleScope } from './rule';
 
 /**
  * Construction properties for a AccessKeysRotated
@@ -27,7 +28,7 @@ export class AccessKeysRotated extends ManagedRule {
   constructor(scope: Construct, id: string, props: AccessKeysRotatedProps = {}) {
     super(scope, id, {
       ...props,
-      identifier: 'ACCESS_KEYS_ROTATED',
+      identifier: ManagedRuleIdentifiers.ACCESS_KEYS_ROTATED,
       inputParameters: {
         ...props.maxAge
           ? {
@@ -56,7 +57,7 @@ export interface CloudFormationStackDriftDetectionCheckProps extends RuleProps {
    * permissions and `ReadOnlyAccess` policy permissions. For specific policy permissions,
    * refer to https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-stack-drift.html.
    *
-   * @default a role will be created
+   * @default - A role will be created
    */
   readonly role?: iam.IRole;
 }
@@ -75,13 +76,13 @@ export class CloudFormationStackDriftDetectionCheck extends ManagedRule {
   constructor(scope: Construct, id: string, props: CloudFormationStackDriftDetectionCheckProps = {}) {
     super(scope, id, {
       ...props,
-      identifier: 'CLOUDFORMATION_STACK_DRIFT_DETECTION_CHECK',
+      identifier: ManagedRuleIdentifiers.CLOUDFORMATION_STACK_DRIFT_DETECTION_CHECK,
       inputParameters: {
-        cloudformationRoleArn: Lazy.stringValue({ produce: () => this.role.roleArn }),
+        cloudformationRoleArn: Lazy.string({ produce: () => this.role.roleArn }),
       },
     });
 
-    this.scopeToResource('AWS::CloudFormation::Stack', props.ownStackOnly ? Stack.of(this).stackId : undefined);
+    this.ruleScope = RuleScope.fromResource( ResourceType.CLOUDFORMATION_STACK, props.ownStackOnly ? Stack.of(this).stackId : undefined );
 
     this.role = props.role || new iam.Role(this, 'Role', {
       assumedBy: new iam.ServicePrincipal('config.amazonaws.com'),
@@ -120,13 +121,12 @@ export class CloudFormationStackNotificationCheck extends ManagedRule {
 
     super(scope, id, {
       ...props,
-      identifier: 'CLOUDFORMATION_STACK_NOTIFICATION_CHECK',
+      identifier: ManagedRuleIdentifiers.CLOUDFORMATION_STACK_NOTIFICATION_CHECK,
       inputParameters: props.topics && props.topics.reduce(
         (params, topic, idx) => ({ ...params, [`snsTopic${idx + 1}`]: topic.topicArn }),
         {},
       ),
+      ruleScope: RuleScope.fromResources([ResourceType.CLOUDFORMATION_STACK]),
     });
-
-    this.scopeToResource('AWS::CloudFormation::Stack');
   }
 }

@@ -9,11 +9,12 @@ the AWS Construct Library in order to ensure a consistent and integrated
 experience across the entire AWS surface area.
 
 As much as possible, the guidelines in this document are enforced using the
-**awslint** tool which reflects on the APIs and verifies that the APIs adhere to
-the guidelines. When a guideline is backed by a linter rule, the rule name will
-be referenced like this: _[awslint:resource-class-is-construct]_.
+[**awslint** tool](https://www.npmjs.com/package/awslint) which reflects on the
+APIs and verifies that the APIs adhere to the guidelines. When a guideline is
+backed by a linter rule, the rule name will be referenced like this:
+_[awslint:resource-class-is-construct]_.
 
-For the purpose of this document we will use "Foo" to denote the official name
+For the purpose of this document, we will use "Foo" to denote the official name
 of the resource as defined in the AWS CloudFormation resource specification
 (i.e. "Bucket", "Queue", "Topic", etc). This notation allows deriving names from
 the official name. For example, `FooProps` would be `BucketProps`, `TopicProps`,
@@ -97,8 +98,8 @@ or abstractions. However, you will notice that some sections explicitly call out
 guidelines that apply only to AWS resources (and in many cases
 enforced/implemented by the **Resource** base class).
 
-AWS services are modeled around the concept of *resources*. Service normally
-expose through their APIs one or more resources, which can be provisioned
+AWS services are modeled around the concept of *resources*. Services normally
+expose one or more resources through their APIs, which can be provisioned
 through the APIs control plane or through AWS CloudFormation.
 
 Every resource available in the AWS platform will have a corresponding resource
@@ -133,10 +134,10 @@ If all props are optional, the `props` argument must also be optional
 _[awslint:construct-ctor-props-optional]_.
 
 ```ts
-constructor(scope: cdk.Construct, id: string, props: FooProps = { })
+constructor(scope: cdk.Construct, id: string, props: FooProps = {})
 ```
 
-> Using `={}` as a default value is preferable to using an optional qualifier
+> Using `= {}` as a default value is preferable to using an optional qualifier
   (`?`) since it will ensure that props will never be `undefined` and therefore
   easier to parse in the method body.
 
@@ -147,9 +148,9 @@ behavior through interfaces and not through inheritance.
 Construct classes should extend only one of the following classes
 [_awslint:construct-inheritence_]:
 
-* The **Resource** class (if it represents an AWS resource) The **Construct**
-* class (if it represents an abstract component) The **XxxBase** class (which,
-* in turn extends **Resource**)
+* The **Resource** class (if it represents an AWS resource)
+* The **Construct** class (if it represents an abstract component)
+* The **XxxBase** class (which, in turn extends **Resource**)
 
 All constructs must define a static type check method called **isFoo** with the
 following implementation [_awslint:static-type-check_]:
@@ -198,17 +199,17 @@ the fact that the Bucket class needs the ARN or that it needs to request
 encryption permissions are not the user's concern, and the API of the Bucket
 class should not “leak” these implementation details. In the future, the Bucket
 class can decide to interact differently with the **key** and this won't require
-expanding it's surface area. It also allows the **Key** class to change it's
+expanding its surface area. It also allows the **Key** class to change its
 behavior (i.e. add an IAM action to enable encryption of certain types of keys)
 without affecting the API of the consumer.
 
-#### owned vs. unowned constructs
+#### Owned vs. Unowned Constructs
 
 Using object references instead of attribute references provides a richer API,
 but also introduces an inherent challenge: how do we reference constructs that
-are not defined inside the same app (“**owned**” by the app). These could be
+are not defined inside the same app (“**owned**” by the app)? These could be
 resources that were created by some other AWS CDK app, via the AWS console,
-etc. We call these “**unowned**”**constructs.**
+etc. We call these **“unowned” constructs.**
 
 In order to model this concept of owned and unowned constructs, all constructs
 in the AWS Construct Library should always have a corresponding **construct
@@ -232,7 +233,7 @@ AWS Construct Library) should extend **IResource** (which, transitively, extends
 #### Abstract Base
 
 It is recommended to implement an abstract base class **FooBase** for each
-resource **Foo****. **The base class would normally implement the entire
+resource **Foo**. The base class would normally implement the entire
 construct interface and leave attributes as abstract properties.
 
 ```ts
@@ -271,7 +272,7 @@ as “props” (to distinguish them from JavaScript object properties).
 Props are the most important aspect of designing a construct. Props are the
 entry point of the construct. They should reflect the entire surface area of the
 service through semantics that are intuitive to how developers perceive the
-service and it's capabilities.
+service and its capabilities.
 
 When designing the props of an AWS resource, consult the AWS Console experience
 for creating this resource. Service teams spend a lot of energy thinking about
@@ -288,7 +289,7 @@ through a declarative interface [_awslint:props-coverage_].
 
 This section describes guidelines for construct props.
 
-#### types
+#### Types
 
 Use **strong types** (and specifically, construct interfaces) instead of
 physical attributes when referencing other resources. For example, instead of
@@ -299,20 +300,24 @@ API. In almost all cases, a richer object-oriented API can be exposed to
 encapsulate the low-level surface [_awslint:props-no-cfn-types_].
 
 Do not use the **Token** type. It provides zero type safety, and is a functional
-interface that may not translate cleanly in other JSII runtimes: ergo it should
+interface that may not translate cleanly in other JSII runtimes. Therefore, it should
 be avoided wherever possible [_awslint:props-no-tokens_].
 
 **deCDK** allows users to synthesize CDK stacks through a CloudFormation-like
   template, similar to SAM. CDK constructs are represented in deCDK templates
   like CloudFormation resources. Technically, this means that when a construct
-  is defined, users supply an ID, type and a set of properties.****In order to
+  is defined, users supply an ID, type and a set of properties. In order to
   allow users to instantiate all AWS Construct Library constructs through the
-  deCDK syntax, we pose restrictions on prop types _[awslint:props-decdk]_:
+  deCDK syntax, we impose restrictions on prop types _[awslint:props-decdk]_:
 
-* Primitives (string, number, boolean, date) Collections (list, map) Structs
-* Enums Enum-like classes Union-like classes References to other constructs
-* (through their construct interface) Integration interfaces (interfaces that
-* have a “**bind**” method)
+* Primitives (string, number, boolean, date)
+* Collections (list, map)
+* Structs
+* Enums
+* Enum-like classes
+* Union-like classes
+* References to other constructs (through their construct interface)
+* Integration interfaces (interfaces that have a “**bind**” method)
 
 #### Defaults
 
@@ -330,7 +335,7 @@ from harnessing the full power of the resource, and customizing its behavior.
 The **@default** documentation tag must be included on all optional properties
 of interfaces. Since there are cases where the default behavior is not a
 specific value but rather depends on circumstances/context, the default
-documentation tag must always begin with a **“**-"**** and then include a
+documentation tag must always begin with a “**-**" and then include a
 description of the default behavior _[awslint:props-default-doc]_.
 
 For example:
@@ -385,19 +390,19 @@ item). It just means that you can remove redundant context from the property
 names. For example, there is no need to repeat the resource type, the property
 type or indicate that this is a "configuration".
 
-For example prefer “readCapacity” versus “readCapacityUnits”.
+For example, prefer “readCapacity” versus “readCapacityUnits”.
 
 #### Naming
 
 We prefer the terminology used by the official AWS service documentation over
 new terminology, even if you think it's not ideal. It helps users diagnose
 issues and map the mental model of the construct to the service APIs,
-documentation and examples. For example don't be tempted to change SQS's
+documentation and examples. For example, don't be tempted to change SQS's
 **dataKeyReusePeriod** with **keyRotation** because it will be hard for people
 to diagnose problems. They won't be able to just search for “sqs dataKeyReuse”
 and find topics on it.
 
-> We can relax this guidelines when this is about generic terms (like
+> We can relax this guideline when this is about generic terms (like
   `httpStatus` instead of `statusCode`). The important semantics to preserve are
   for *service features*: I wouldn't want to rename "lambda layers" to "lambda
   dependencies" just because it makes more sense because then users won't be
@@ -541,7 +546,7 @@ be treated as an opaque token, the JSDoc “@returns” annotation should begin 
 
 When an app defines a construct or resource, it specifies its provisioning
 configuration upon initialization. For example, when an SQS queue is defined,
-it's visibility timeout can be configured.
+its visibility timeout can be configured.
 
 Naturally, when constructs are imported (unowned), the importing app does not
 have control over its configuration (e.g. you cannot change the visibility
@@ -604,17 +609,17 @@ consistency and interoperability, we allow mutating methods to be exposed on the
 interface. For example, **grant** methods are exposed on the construct interface
 and not on the concrete class. In most cases, when you grant a permission on an
 AWS resource, the *principal's* policy needs to be updated, which mutates the
-consumer . However, there are certain cases where a *resource policy* must be
+consumer. However, there are certain cases where a *resource policy* must be
 updated. However, if the resource is unowned, it doesn't make sense (or even
 impossible) to update its policy (there is usually a 1:1 relationship between a
-resource and a resource policy). In such a case, we decided that grant methods
-will simply skip any changes to resource policies, but will issue attach a
+resource and a resource policy). In such cases, we decided that grant methods
+will simply skip any changes to resource policies, but will attach a
 **permission notice** to the app, which will be printed when the stack is
 synthesized by the toolkit.
 
 ### Factories
 
-In most AWS services, there's a one or more resource which can be referred to as
+In most AWS services, there are one or more resources which can be referred to as
 “primary resources” (normally one), while other resources exposed by the service
 can be considered “secondary resources”.
 
@@ -648,10 +653,11 @@ export interface IFoo {
 
 Notice that:
 
-* The method has an “add” prefix. It implies that users are adding something to
-* their stack.  The method is implemented on the construct interface (to allow
-* adding secondary resources to unowned constructs).  The method returns a “Bar”
-* instance (owned).
+* The method has an “add” prefix.
+  It implies that users are adding something to their stack.
+* The method is implemented on the construct interface
+  (to allow adding secondary resources to unowned constructs).
+* The method returns a “Bar” instance (owned).
 
 In order to reuse the set of props used to configure the secondary resource,
 define a base interface for **FooProps** called **FooOptions** to allow
@@ -681,18 +687,18 @@ their app.
 The signature of all “from” methods should adhere to the following rules
 _[awslint:from-signature]_:
 
-* First argument must be **scope** of type **Construct** Second argument is a
-* **string**. This string will be used to determine the ID of the new
-* construct. If the import method uses some value that is promised to be unique
-* within the stack scope (such as ARN, export name), this value can be reused as
-* the construct ID.  Returns an object that implements the construct interface
-* (**IFoo**).
+* First argument must be **scope** of type **Construct**.
+* Second argument is a **string**. This string will be used to determine the
+  ID of the new construct. If the import method uses some value that is
+  promised to be unique within the stack scope (such as ARN, export name),
+  this value can be reused as the construct ID.
+* Returns an object that implements the construct interface (**IFoo**).
 
 #### “from” Methods
 
 Resource constructs should export static “from” methods for importing unowned
-resources given one more of it's physical attributes such as ARN, name, etc. All
-constructs should have at least one fromXxx method _[awslint:from-method]_:
+resources given one or more of its physical attributes such as ARN, name, etc. All
+constructs should have at least one `fromXxx` method _[awslint:from-method]_:
 
 ```ts
 static fromFooArn(scope: Construct, id: string, bucketArn: string): IFoo;
@@ -707,7 +713,7 @@ static fromFooName(scope: Construct, id: string, bucketName: string): IFoo;
   doesn't have unresolved tokens (using **Token.unresolved**). Preferably, they
   can use **Stack.parseArn** to achieve this purpose.
 
-If a resource has an ARN attribute it should implement at least a **fromFooArn**
+If a resource has an ARN attribute, it should implement at least a **fromFooArn**
 import method [_awslint:from-arn_].
 
 To implement **fromAttribute** methods, use the abstract base class construct as
@@ -763,7 +769,7 @@ interface FooProps {
 }
 ```
 
-The construct interface should expose a **role**property, and extends
+The construct interface should expose a **role** property, and extends
 **iam.IGrantable** _[awslint:role-property]_:
 
 ```ts
@@ -787,11 +793,9 @@ interface IFoo {
 }
 ```
 
-If the construct is unowned this method should no-op and issue a **permissions
+If the construct is unowned, this method should no-op and issue a **permissions
 notice** (TODO) to the user indicating that they should ensure that the role of
 this resource should have the specified permission.
-
-TODO: add a few sentences on grantable
 
 Implementing **IGrantable** brings an implementation burden of **grantPrincipal:
 IPrincipal**. This property must be set to the **role** if available, or to a
@@ -866,7 +870,7 @@ vpcSubnetSelection?: ec2.SubnetSelection;
 
 ### Grants
 
-Grants are one of the most powerful concept in the AWS Construct Library. They
+Grants are one of the most powerful concepts in the AWS Construct Library. They
 offer a higher level, intent-based, API for managing IAM permissions for AWS
 resources.
 
@@ -896,8 +900,9 @@ cases. For example, **dynamodb.Table.grantPutItem**,
 **s3.Bucket.grantReadWrite**, etc. In such cases, the signature of the grant
 method should adhere to the following rules _[awslint:grant-signature]_:
 
-1. Name should have a “grant” prefix 2. Returns an **iam.Grant** object 3. First
-argument must be **grantee: iam.IGrantable**
+1. Name should have a “grant” prefix
+2. Returns an **iam.Grant** object
+3. First argument must be **grantee: iam.IGrantable**
 
 ```ts
 grantXxx(grantee: iam.IGrantable): iam.Grant;
@@ -940,9 +945,9 @@ metric(metricName: string, options?: cloudwatch.MetricOptions): cloudwatch.Metri
 Additional metric methods should be exposed with the official metric name as a
 suffix and adhere to the following rules _[awslint:metrics-method-signature]:_
 
-* Name should be “metricXxx” where “Xxx” is the official metric name Accepts a
-* single “options” argument of type **MetricOptions** Returns a **Metric**
-* object.
+* Name should be “metricXxx” where “Xxx” is the official metric name
+* Accepts a single “options” argument of type **MetricOptions**
+* Returns a **Metric** object
 
 ```ts
 interface IFunction {
@@ -969,7 +974,7 @@ class Function extends Resource implements IFunction {
 
 ### Events
 
-Many AWS resource emit events to the CloudWatch event bus. Such resources should
+Many AWS resources emit events to the CloudWatch event bus. Such resources should
 have a set of “onXxx” methods available on their construct interface
 _[awslint:events-in-interface]_.
 
@@ -996,7 +1001,7 @@ extend **ec2.IConnectable** _[awslint:connectable-interface]_.
 
 ### Integrations
 
-Many AWS services offer “integrations” to other services. For example, AWS
+Many AWS services offer “integrations” with other services. For example, AWS
 CodePipeline has actions that can trigger AWS Lambda functions, ECS tasks,
 CodeBuild projects and more. AWS Lambda can be triggered by a variety of event
 sources, AWS CloudWatch event rules can trigger many types of targets, SNS can
@@ -1012,7 +1017,7 @@ the central service and can be triggered by multiple event sources.
 
 Integrations are an abstract concept, not necessarily a specific mechanism. For
 example, each AWS Lambda event source is implemented in a different way (SNS,
-Bucket notifications, CloudWatch events, etc), but conceptually, *some*users
+Bucket notifications, CloudWatch events, etc), but conceptually, *some* users
 like to think about AWS Lambda as the “center”. It is also completely legitimate
 to have multiple ways to connect two services on AWS. To trigger an AWS Lambda
 function from an SNS topic, you could either use the integration or the SNS APIs
@@ -1033,9 +1038,9 @@ interface IEventSource {
 A method “addXxx” should be defined on the construct interface and adhere to the
 following rules _[awslint:integrations-add-method]:_
 
-* Should accept any object that implements the integrations interface Should not
-* return anything (void) Implementation should call “bind” on the integration
-* object
+* Should accept any object that implements the integrations interface
+* Should not return anything (void)
+* Implementation should call “bind” on the integration object
 
 ```ts
 interface IFunction extends IResource {
@@ -1097,7 +1102,7 @@ export class Table { }
 ```
 
 Persistent resources must have a **removalPolicy** prop, defaults to
-**Orphan**_[awslint:state-removal-policy-prop]_:
+**Orphan** _[awslint:state-removal-policy-prop]_:
 
 ```ts
 import { RemovalPolicy } from '@aws-cdk/cdk';
@@ -1122,11 +1127,11 @@ property **stateful** which returns **true** or **false** to allow runtime
 checks query whether a resource is persistent
 _[awslint:state-stateful-property]_.
 
-### Physical Names (NEW) - TODO
+### Physical Names - TODO
 
 See <https://github.com/awslabs/aws-cdk/issues/2283>
 
-### Tags (NEW)
+### Tags
 
 The AWS platform has a powerful tagging system that can be used to tag resources
 with key/values. The AWS CDK exposes this capability through the **Tag**
@@ -1140,7 +1145,7 @@ myConstruct.node.apply(new cdk.Tag("myKey", "myValue"));
 Constructs for AWS resources that can be tagged must have an optional **tags**
 hash in their props [_awslint:tags-prop_].
 
-### Secrets (NEW)
+### Secrets
 
 If you expect a secret in your API (such as passwords, tokens), use the
 **cdk.SecretValue** class to signal to users that they should not include
@@ -1154,10 +1159,11 @@ use the SecretValue type [_awslint:secret-token_].
 
 ### Code Organization
 
-* Code should be under `lib/` Entry point should be `lib/index.ts` and should
-* only contain “imports” for other files.  No need to put every class in a
-* separate file. Try to think of a reader-friendly organization of your source
-* files.
+* Code should be under `lib/`
+* Entry point should be `lib/index.ts` and should only contain “imports”
+  for other files.
+* No need to put every class in a separate file. Try to think of a
+  reader-friendly organization of your source files.
 
 ## Implementation
 
@@ -1166,18 +1172,21 @@ implementation of AWS constructs.
 
 ### General Principles
 
-* Do not future proof No fluent APIs Good APIs “speak” in the language of the
-* user. The terminology your API uses should be intuitive and represent the
-* mental model your user brings over, not one that you made up and you force
-* them to learn.  Multiple ways of achieving the same thing is legitimate
-* Constantly maintain the invariants Fewer “if statements” the better
+* Do not future proof.
+* No fluent APIs.
+* Good APIs “speak” in the language of the user. The terminology your API uses
+  should be intuitive and represent the mental model your user brings over,
+  not one that you made up and you force them to learn.
+* Multiple ways of achieving the same thing is legitimate.
+* Constantly maintain the invariants.
+* The fewer “if statements” the better.
 
 ### Construct IDs
 
 Construct IDs (the second argument passed to all constructs when they are
 defined) are used to formulate resource logical IDs which must be **stable**
 across updates. The logical ID of a resource is calculated based on the **full
-path** of it's construct in the construct scope hierarchy. This means that any
+path** of its construct in the construct scope hierarchy. This means that any
 change to a logical ID in this path will invalidate all the logical IDs within
 this scope. This will result in **replacements of all underlying resources**
 within the next update, which is extremely undesirable.
@@ -1187,7 +1196,7 @@ construct.
 
 Therefore, when implementing constructs, you should treat the construct
 hierarchy and all construct IDs as part of the **external contract** of the
-construct. Any chance to either should be considered and called out as a
+construct. Any change to either should be considered and called out as a
 breaking change.
 
 There is no need to concatenate logical IDs. If you find yourself needing to
@@ -1207,18 +1216,20 @@ for (const az of availabilityZones) {
 
 ### Errors
 
-#### input validation
+#### Input Validation
 
 Prefer to validate input as early as it is passed into your code (ctor, methods,
 etc) and bail out by throwing an **Error** (no need to create subclasses of
 Error since all errors in the CDK are unrecoverable):
 
 * All lowercase sentences (usually they are printed after “Error: \<message\>”)
-* Include a descriptive message Include the value provided Include the
-* expected/allowed values No need to include information that can be obtained
-* from the stack trace.  No need to add a period at the end of error messages.
+* Include a descriptive message
+* Include the value provided
+* Include the expected/allowed values
+* No need to include information that can be obtained from the stack trace
+* No need to add a period at the end of error messages
 
-#### avoid errors if possible
+#### Avoid Errors If Possible
 
 Always prefer to do the right thing for the user instead of raising an
 error. Only fail if the user has explicitly specified bad configuration. For
@@ -1226,7 +1237,7 @@ example, VPC has **enableDnsHostnames** and **enableDnsSupport**. DNS hostnames
 *require* DNS support, so only fail if the user enabled DNS hostnames but
 explicitly disabled DNS support. Otherwise, auto-enable DNS support for them.
 
-#### Never catch exceptions
+#### Never Catch Exceptions
 
 All CDK errors are unrecoverable.  If a method wishes to signal a recoverable
 error, this should be modeled in a return value and not through exceptions.
@@ -1237,12 +1248,12 @@ In the rare case where the integrity of your construct can only be checked right
 before synthesis, override the **Construct.validate()** method and return
 meaningful errors. Always prefer early input validation over post-validation.
 
-#### attached Errors/warnings
+#### Attached Errors/Warnings
 
 You can also “attach” an error or a warning to a construct via
-**node.addWarning(s)** or **node.addError(s)**. These methods will attach CDK
-metadata to your construct, which will be displayed to the user by the toolchain
-when the stack is deployed.
+the **Annotations** class. These methods (e.g., `Annotations.of(construct).addWarning`)
+will attach CDK metadata to your construct, which will be displayed to the user
+by the toolchain when the stack is deployed.
 
 Errors will not allow deployment and warnings will only be displayed in
 highlight (unless **--strict** mode is used).
@@ -1273,20 +1284,22 @@ Use the following JSDoc tags: **@param**, **@returns**, **@default**, **@see**,
 
 ### Readme
 
-* Header should include maturity level Example for the simple use case should be
-* almost the first thing If there are multiple common use cases, provide an
-* example for each one and describe what happens under the hood at a high level
-* (e.g. which resources are created).  Reference docs are not needed Use
-* literate (`.lit.ts`) integration tests into README file (see example in
+* Header should include maturity level.
+* Example for the simple use case should be almost the first thing.
+* If there are multiple common use cases, provide an example for each one and
+  describe what happens under the hood at a high level
+  (e.g. which resources are created).
+* Reference docs are not needed.
+* Use literate (`.lit.ts`) integration tests into README file.
 
 ## Testing
 
 ### Unit tests
 
 * Unit test utility functions and object models separately from constructs. If
-* you want them to be “package-private”, just put them in a separate file and
-* import `../lib/my-util` from your unit test code.  Failing tests should be
-* prefixed with “fails”
+  you want them to be “package-private”, just put them in a separate file and
+  import `../lib/my-util` from your unit test code.
+* Failing tests should be prefixed with “fails”
 
 ### Integration tests
 
@@ -1301,14 +1314,18 @@ Use the following JSDoc tags: **@param**, **@returns**, **@default**, **@see**,
 
 ### Naming Conventions
 
-* **Class names**: PascalCase Properties**: camelCase Methods (static and
-* **non-static)**: camelCase Interfaces** (“behavioral interface”) :
-* **IMyInterface Structs** (“data interfaces”): MyDataStruct Enums**:
-* **PascalCase,**Members**: SNAKE_UPPER
+* **Class names**: PascalCase
+* **Properties**: camelCase
+* **Methods (static and non-static)**: camelCase
+* **Interfaces** (“behavioral interface”): IMyInterface
+* **Structs** (“data interfaces”): MyDataStruct
+* **Enums**: PascalCase, **Members**: SNAKE_UPPER
 
 ### Coding Style
 
-* **Indentation**: 2 spaces Line length**: 150 String literals**: use
-* **single-quotes (`'`) or backticks (```) Semicolons**: at the end of each code
-* **statement and declaration (incl. properties and imports).  Comments**: start
-* **with lower-case, end with a period.
+* **Indentation**: 2 spaces
+* **Line length**: 150
+* **String literals**: use single-quotes (`'`) or backticks (```)
+* **Semicolons**: at the end of each code statement and declaration
+  (incl. properties and imports).
+* **Comments**: start with lower-case, end with a period.
