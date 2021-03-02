@@ -1,4 +1,4 @@
-import { countResources, expect, haveResource } from '@aws-cdk/assert';
+import { countResources, expect as stackExpect, haveResource } from '@aws-cdk/assert';
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
 import { Stack } from '@aws-cdk/core';
@@ -32,7 +32,7 @@ test('use AwsApi as an event rule target', () => {
   }));
 
   // THEN
-  expect(stack).to(haveResource('AWS::Events::Rule', {
+  stackExpect(stack).to(haveResource('AWS::Events::Rule', {
     Targets: [
       {
         Arn: {
@@ -73,9 +73,9 @@ test('use AwsApi as an event rule target', () => {
   }));
 
   // Uses a singleton function
-  expect(stack).to(countResources('AWS::Lambda::Function', 1));
+  stackExpect(stack).to(countResources('AWS::Lambda::Function', 1));
 
-  expect(stack).to(haveResource('AWS::IAM::Policy', {
+  stackExpect(stack).to(haveResource('AWS::IAM::Policy', {
     PolicyDocument: {
       Statement: [
         {
@@ -103,8 +103,8 @@ test('with policy statement', () => {
 
   // WHEN
   rule.addTarget(new targets.AwsApi({
-    service: 'service',
-    action: 'action',
+    service: 'S3',
+    action: 'getObject',
     policyStatement: new iam.PolicyStatement({
       actions: ['s3:GetObject'],
       resources: ['resource'],
@@ -112,7 +112,7 @@ test('with policy statement', () => {
   }));
 
   // THEN
-  expect(stack).to(haveResource('AWS::Events::Rule', {
+  stackExpect(stack).to(haveResource('AWS::Events::Rule', {
     Targets: [
       {
         Arn: {
@@ -123,14 +123,14 @@ test('with policy statement', () => {
         },
         Id: 'Target0',
         Input: JSON.stringify({ // No `policyStatement`
-          service: 'service',
-          action: 'action',
+          service: 'S3',
+          action: 'getObject',
         }),
       },
     ],
   }));
 
-  expect(stack).to(haveResource('AWS::IAM::Policy', {
+  stackExpect(stack).to(haveResource('AWS::IAM::Policy', {
     PolicyDocument: {
       Statement: [
         {
@@ -142,4 +142,33 @@ test('with policy statement', () => {
       Version: '2012-10-17',
     },
   }));
+});
+
+test('with nonexistent service', () => {
+  // GIVEN
+  const stack = new Stack();
+  const rule = new events.Rule(stack, 'Rule', {
+    schedule: events.Schedule.expression('rate(15 minutes)'),
+  });
+
+  // THEN
+  expect(() => rule.addTarget(new targets.AwsApi({
+    service: 'no-such-service',
+    action: 'no-such-action',
+  }))).toThrowError('The service no-such-service does not exist, check the list of available services from https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/index.html');
+
+});
+
+test('with nonexistent action', () => {
+  // GIVEN
+  const stack = new Stack();
+  const rule = new events.Rule(stack, 'Rule', {
+    schedule: events.Schedule.expression('rate(15 minutes)'),
+  });
+
+  // THEN
+  expect(() => rule.addTarget(new targets.AwsApi({
+    service: 'S3',
+    action: 'no-such-action',
+  }))).toThrowError('The action no-such-action for the service S3 does not exist, check the list of available services and actions from https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/index.html');
 });
