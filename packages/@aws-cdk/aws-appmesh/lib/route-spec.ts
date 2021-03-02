@@ -212,9 +212,22 @@ export interface GrpcRouteMatch {
 }
 
 /**
+ * Base options for all route specs.
+ */
+export interface RouteSpecOptionsBase {
+  /**
+   * The priority for the route. Routes are matched based on the specified
+   * value, where 0 is the highest priority.
+   *
+   * @default - no particular priority
+   */
+  readonly priority?: number;
+}
+
+/**
  * Properties specific for HTTP Based Routes
  */
-export interface HttpRouteSpecOptions {
+export interface HttpRouteSpecOptions extends RouteSpecOptionsBase {
   /**
    * The criterion for determining a request match for this Route
    *
@@ -238,7 +251,7 @@ export interface HttpRouteSpecOptions {
 /**
  * Properties specific for a TCP Based Routes
  */
-export interface TcpRouteSpecOptions {
+export interface TcpRouteSpecOptions extends RouteSpecOptionsBase {
   /**
    * List of targets that traffic is routed to when a request matches the route
    */
@@ -255,7 +268,7 @@ export interface TcpRouteSpecOptions {
 /**
  * Properties specific for a GRPC Based Routes
  */
-export interface GrpcRouteSpecOptions {
+export interface GrpcRouteSpecOptions extends RouteSpecOptionsBase {
   /**
    * The criterion for determining a request match for this Route
    */
@@ -305,6 +318,14 @@ export interface RouteSpecConfig {
    * @default - no tcp spec
    */
   readonly tcpRouteSpec?: CfnRoute.TcpRouteProperty;
+
+  /**
+   * The priority for the route. Routes are matched based on the specified
+   * value, where 0 is the highest priority.
+   *
+   * @default - no particular priority
+   */
+  readonly priority?: number;
 }
 
 /**
@@ -349,6 +370,11 @@ export abstract class RouteSpec {
 
 class HttpRouteSpec extends RouteSpec {
   /**
+   * The priority for the route.
+   */
+  public readonly priority?: number;
+
+  /**
    * Type of route you are creating
    */
   public readonly protocol: Protocol;
@@ -374,6 +400,7 @@ class HttpRouteSpec extends RouteSpec {
     this.match = props.match;
     this.weightedTargets = props.weightedTargets;
     this.timeout = props.timeout;
+    this.priority = props.priority;
   }
 
   public bind(_scope: Construct): RouteSpecConfig {
@@ -404,6 +431,7 @@ class HttpRouteSpec extends RouteSpec {
       timeout: renderTimeout(this.timeout),
     };
     return {
+      priority: this.priority,
       httpRouteSpec: this.protocol === Protocol.HTTP ? httpConfig : undefined,
       http2RouteSpec: this.protocol === Protocol.HTTP2 ? httpConfig : undefined,
     };
@@ -411,6 +439,11 @@ class HttpRouteSpec extends RouteSpec {
 }
 
 class TcpRouteSpec extends RouteSpec {
+  /**
+   * The priority for the route.
+   */
+  public readonly priority?: number;
+
   /*
    * List of targets that traffic is routed to when a request matches the route
    */
@@ -425,10 +458,12 @@ class TcpRouteSpec extends RouteSpec {
     super();
     this.weightedTargets = props.weightedTargets;
     this.timeout = props.timeout;
+    this.priority = props.priority;
   }
 
   public bind(_scope: Construct): RouteSpecConfig {
     return {
+      priority: this.priority,
       tcpRouteSpec: {
         action: {
           weightedTargets: renderWeightedTargets(this.weightedTargets),
@@ -440,6 +475,11 @@ class TcpRouteSpec extends RouteSpec {
 }
 
 class GrpcRouteSpec extends RouteSpec {
+  /**
+   * The priority for the route.
+   */
+  public readonly priority?: number;
+
   public readonly weightedTargets: WeightedTarget[];
   public readonly match: GrpcRouteMatch;
   public readonly timeout?: GrpcTimeout;
@@ -449,10 +489,12 @@ class GrpcRouteSpec extends RouteSpec {
     this.weightedTargets = props.weightedTargets;
     this.match = props.match;
     this.timeout = props.timeout;
+    this.priority = props.priority;
   }
 
   public bind(_scope: Construct): RouteSpecConfig {
     return {
+      priority: this.priority,
       grpcRouteSpec: {
         action: {
           weightedTargets: renderWeightedTargets(this.weightedTargets),

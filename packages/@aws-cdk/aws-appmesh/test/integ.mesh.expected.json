@@ -701,6 +701,45 @@
         "RouteName": "route-4"
       }
     },
+    "meshrouterroute53F46B0FE": {
+      "Type": "AWS::AppMesh::Route",
+      "Properties": {
+        "MeshName": {
+          "Fn::GetAtt": [
+            "meshACDFE68E",
+            "MeshName"
+          ]
+        },
+        "Spec": {
+          "Http2Route": {
+            "Action": {
+              "WeightedTargets": [
+                {
+                  "VirtualNode": {
+                    "Fn::GetAtt": [
+                      "meshnode2092BA426",
+                      "VirtualNodeName"
+                    ]
+                  },
+                  "Weight": 1
+                }
+              ]
+            },
+            "Match": {
+              "Prefix": "/"
+            }
+          },
+          "Priority": 10
+        },
+        "VirtualRouterName": {
+          "Fn::GetAtt": [
+            "meshrouter81B8087E",
+            "VirtualRouterName"
+          ]
+        },
+        "RouteName": "route-5"
+      }
+    },
     "meshnode726C787D": {
       "Type": "AWS::AppMesh::VirtualNode",
       "Properties": {

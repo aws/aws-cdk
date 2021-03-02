@@ -457,6 +457,80 @@ export = {
 
       test.done();
     },
+
+    'should allow route priority'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const mesh = new appmesh.Mesh(stack, 'mesh', {
+        meshName: 'test-mesh',
+      });
+
+      const router = new appmesh.VirtualRouter(stack, 'router', {
+        mesh,
+      });
+
+      const virtualNode = mesh.addVirtualNode('test-node', {
+        serviceDiscovery: appmesh.ServiceDiscovery.dns('test'),
+        listeners: [appmesh.VirtualNodeListener.http()],
+      });
+
+      // WHEN
+      router.addRoute('http2', {
+        routeSpec: appmesh.RouteSpec.http2({
+          priority: 0,
+          weightedTargets: [{ virtualNode }],
+        }),
+      });
+      router.addRoute('http', {
+        routeSpec: appmesh.RouteSpec.http({
+          priority: 10,
+          weightedTargets: [{ virtualNode }],
+        }),
+      });
+      router.addRoute('grpc', {
+        routeSpec: appmesh.RouteSpec.grpc({
+          priority: 20,
+          weightedTargets: [{ virtualNode }],
+          match: {
+            serviceName: 'test',
+          },
+        }),
+      });
+      router.addRoute('tcp', {
+        routeSpec: appmesh.RouteSpec.tcp({
+          priority: 30,
+          weightedTargets: [{ virtualNode }],
+        }),
+      });
+
+      // THEN
+      expect(stack).to(haveResourceLike('AWS::AppMesh::Route', {
+        Spec: {
+          Priority: 0,
+          Http2Route: {},
+        },
+      }));
+      expect(stack).to(haveResourceLike('AWS::AppMesh::Route', {
+        Spec: {
+          Priority: 10,
+          HttpRoute: {},
+        },
+      }));
+      expect(stack).to(haveResourceLike('AWS::AppMesh::Route', {
+        Spec: {
+          Priority: 20,
+          GrpcRoute: {},
+        },
+      }));
+      expect(stack).to(haveResourceLike('AWS::AppMesh::Route', {
+        Spec: {
+          Priority: 30,
+          TcpRoute: {},
+        },
+      }));
+
+      test.done();
+    },
   },
 
   'Can import Routes using an ARN'(test: Test) {

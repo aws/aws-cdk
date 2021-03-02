@@ -174,6 +174,13 @@ router.addRoute('route-4', {
   }),
 });
 
+router.addRoute('route-5', {
+  routeSpec: appmesh.RouteSpec.http2({
+    priority: 10,
+    weightedTargets: [{ virtualNode: node2 }],
+  }),
+});
+
 const gateway = mesh.addVirtualGateway('gateway1', {
   accessLog: appmesh.AccessLog.fromFilePath('/dev/stdout'),
   virtualGatewayName: 'gateway1',
