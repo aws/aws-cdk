@@ -606,40 +606,40 @@
           ]
         },
         "Create": {
-          "service": "EC2",
-          "action": "modifyVpcEndpointServiceConfiguration",
-          "parameters": {
-            "ServiceId": {
-              "Ref": "VPCES3AE7D565"
-            },
-            "PrivateDnsName": "my-stuff.aws-cdk.dev"
-          },
-          "physicalResourceId": {
-            "id": "awscdkvpcendpointdnsintegVPCES2D7BC258"
-          }
+          "Fn::Join": [
+            "",
+            [
+              "{\"service\":\"EC2\",\"action\":\"modifyVpcEndpointServiceConfiguration\",\"parameters\":{\"ServiceId\":\"",
+              {
+                "Ref": "VPCES3AE7D565"
+              },
+              "\",\"PrivateDnsName\":\"my-stuff.aws-cdk.dev\"},\"physicalResourceId\":{\"id\":\"awscdkvpcendpointdnsintegVPCES2D7BC258\"}}"
+            ]
+          ]
         },
         "Update": {
-          "service": "EC2",
-          "action": "modifyVpcEndpointServiceConfiguration",
-          "parameters": {
-            "ServiceId": {
-              "Ref": "VPCES3AE7D565"
-            },
-            "PrivateDnsName": "my-stuff.aws-cdk.dev"
-          },
-          "physicalResourceId": {
-            "id": "awscdkvpcendpointdnsintegVPCES2D7BC258"
-          }
+          "Fn::Join": [
+            "",
+            [
+              "{\"service\":\"EC2\",\"action\":\"modifyVpcEndpointServiceConfiguration\",\"parameters\":{\"ServiceId\":\"",
+              {
+                "Ref": "VPCES3AE7D565"
+              },
+              "\",\"PrivateDnsName\":\"my-stuff.aws-cdk.dev\"},\"physicalResourceId\":{\"id\":\"awscdkvpcendpointdnsintegVPCES2D7BC258\"}}"
+            ]
+          ]
         },
         "Delete": {
-          "service": "EC2",
-          "action": "modifyVpcEndpointServiceConfiguration",
-          "parameters": {
-            "ServiceId": {
-              "Ref": "VPCES3AE7D565"
-            },
-            "RemovePrivateDnsName": "TRUE:BOOLEAN"
-          }
+          "Fn::Join": [
+            "",
+            [
+              "{\"service\":\"EC2\",\"action\":\"modifyVpcEndpointServiceConfiguration\",\"parameters\":{\"ServiceId\":\"",
+              {
+                "Ref": "VPCES3AE7D565"
+              },
+              "\",\"RemovePrivateDnsName\":true}}"
+            ]
+          ]
         },
         "InstallLatestAwsSdk": true
       },
@@ -686,32 +686,28 @@
           ]
         },
         "Create": {
-          "service": "EC2",
-          "action": "describeVpcEndpointServiceConfigurations",
-          "parameters": {
-            "ServiceIds": [
+          "Fn::Join": [
+            "",
+            [
+              "{\"service\":\"EC2\",\"action\":\"describeVpcEndpointServiceConfigurations\",\"parameters\":{\"ServiceIds\":[\"",
               {
                 "Ref": "VPCES3AE7D565"
-              }
+              },
+              "\"]},\"physicalResourceId\":{\"id\":\"0b26ca4969ad06c279e229b1b55b9bc2\"}}"
             ]
-          },
-          "physicalResourceId": {
-            "id": "0b26ca4969ad06c279e229b1b55b9bc2"
-          }
+          ]
         },
         "Update": {
-          "service": "EC2",
-          "action": "describeVpcEndpointServiceConfigurations",
-          "parameters": {
-            "ServiceIds": [
+          "Fn::Join": [
+            "",
+            [
+              "{\"service\":\"EC2\",\"action\":\"describeVpcEndpointServiceConfigurations\",\"parameters\":{\"ServiceIds\":[\"",
               {
                 "Ref": "VPCES3AE7D565"
-              }
+              },
+              "\"]},\"physicalResourceId\":{\"id\":\"0b26ca4969ad06c279e229b1b55b9bc2\"}}"
             ]
-          },
-          "physicalResourceId": {
-            "id": "0b26ca4969ad06c279e229b1b55b9bc2"
-          }
+          ]
         },
         "InstallLatestAwsSdk": true
       },
@@ -831,64 +827,68 @@
           ]
         },
         "Create": {
-          "service": "EC2",
-          "action": "startVpcEndpointServicePrivateDnsVerification",
-          "parameters": {
-            "ServiceId": {
-              "Ref": "VPCES3AE7D565"
-            }
-          },
-          "physicalResourceId": {
-            "id": {
-              "Fn::Join": [
-                ":",
-                [
-                  {
-                    "Fn::GetAtt": [
-                      "EndpointDomainGetNames9E697ED2",
-                      "ServiceConfigurations.0.PrivateDnsNameConfiguration.Name"
-                    ]
-                  },
-                  {
-                    "Fn::GetAtt": [
-                      "EndpointDomainGetNames9E697ED2",
-                      "ServiceConfigurations.0.PrivateDnsNameConfiguration.Value"
-                    ]
-                  }
+          "Fn::Join": [
+            "",
+            [
+              "{\"service\":\"EC2\",\"action\":\"startVpcEndpointServicePrivateDnsVerification\",\"parameters\":{\"ServiceId\":\"",
+              {
+                "Ref": "VPCES3AE7D565"
+              },
+              "\"},\"physicalResourceId\":{\"id\":\"",
+              {
+                "Fn::Join": [
+                  ":",
+                  [
+                    {
+                      "Fn::GetAtt": [
+                        "EndpointDomainGetNames9E697ED2",
+                        "ServiceConfigurations.0.PrivateDnsNameConfiguration.Name"
+                      ]
+                    },
+                    {
+                      "Fn::GetAtt": [
+                        "EndpointDomainGetNames9E697ED2",
+                        "ServiceConfigurations.0.PrivateDnsNameConfiguration.Value"
+                      ]
+                    }
+                  ]
                 ]
-              ]
-            }
-          }
+              },
+              "\"}}"
+            ]
+          ]
         },
         "Update": {
-          "service": "EC2",
-          "action": "startVpcEndpointServicePrivateDnsVerification",
-          "parameters": {
-            "ServiceId": {
-              "Ref": "VPCES3AE7D565"
-            }
-          },
-          "physicalResourceId": {
-            "id": {
-              "Fn::Join": [
-                ":",
-                [
-                  {
-                    "Fn::GetAtt": [
-                      "EndpointDomainGetNames9E697ED2",
-                      "ServiceConfigurations.0.PrivateDnsNameConfiguration.Name"
-                    ]
-                  },
-                  {
-                    "Fn::GetAtt": [
-                      "EndpointDomainGetNames9E697ED2",
-                      "ServiceConfigurations.0.PrivateDnsNameConfiguration.Value"
-                    ]
-                  }
+          "Fn::Join": [
+            "",
+            [
+              "{\"service\":\"EC2\",\"action\":\"startVpcEndpointServicePrivateDnsVerification\",\"parameters\":{\"ServiceId\":\"",
+              {
+                "Ref": "VPCES3AE7D565"
+              },
+              "\"},\"physicalResourceId\":{\"id\":\"",
+              {
+                "Fn::Join": [
+                  ":",
+                  [
+                    {
+                      "Fn::GetAtt": [
+                        "EndpointDomainGetNames9E697ED2",
+                        "ServiceConfigurations.0.PrivateDnsNameConfiguration.Name"
+                      ]
+                    },
+                    {
+                      "Fn::GetAtt": [
+                        "EndpointDomainGetNames9E697ED2",
+                        "ServiceConfigurations.0.PrivateDnsNameConfiguration.Value"
+                      ]
+                    }
+                  ]
                 ]
-              ]
-            }
-          }
+              },
+              "\"}}"
+            ]
+          ]
         },
         "InstallLatestAwsSdk": true
       },
@@ -936,7 +936,7 @@
       "Properties": {
         "Code": {
           "S3Bucket": {
-            "Ref": "AssetParametersb64b129569a5ac7a9abf88a18ac0b504d1fb1208872460476ed3fd435830eb94S3Bucket38F1BB8E"
+            "Ref": "AssetParameters0625b1566df06e0ffd948f0f65f97a3d22d48242e66196d3f72b480f5309b343S3Bucket65227904"
           },
           "S3Key": {
             "Fn::Join": [
@@ -949,7 +949,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParametersb64b129569a5ac7a9abf88a18ac0b504d1fb1208872460476ed3fd435830eb94S3VersionKeyCCDC67C0"
+                          "Ref": "AssetParameters0625b1566df06e0ffd948f0f65f97a3d22d48242e66196d3f72b480f5309b343S3VersionKey3AF0E7DF"
                         }
                       ]
                     }
@@ -962,7 +962,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParametersb64b129569a5ac7a9abf88a18ac0b504d1fb1208872460476ed3fd435830eb94S3VersionKeyCCDC67C0"
+                          "Ref": "AssetParameters0625b1566df06e0ffd948f0f65f97a3d22d48242e66196d3f72b480f5309b343S3VersionKey3AF0E7DF"
                         }
                       ]
                     }
@@ -972,13 +972,13 @@
             ]
           }
         },
-        "Handler": "index.handler",
         "Role": {
           "Fn::GetAtt": [
             "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2",
             "Arn"
           ]
         },
+        "Handler": "index.handler",
         "Runtime": "nodejs12.x",
         "Timeout": 120
       },
@@ -988,17 +988,17 @@
     }
   },
   "Parameters": {
-    "AssetParametersb64b129569a5ac7a9abf88a18ac0b504d1fb1208872460476ed3fd435830eb94S3Bucket38F1BB8E": {
+    "AssetParameters0625b1566df06e0ffd948f0f65f97a3d22d48242e66196d3f72b480f5309b343S3Bucket65227904": {
       "Type": "String",
-      "Description": "S3 bucket for asset \"b64b129569a5ac7a9abf88a18ac0b504d1fb1208872460476ed3fd435830eb94\""
+      "Description": "S3 bucket for asset \"0625b1566df06e0ffd948f0f65f97a3d22d48242e66196d3f72b480f5309b343\""
     },
-    "AssetParametersb64b129569a5ac7a9abf88a18ac0b504d1fb1208872460476ed3fd435830eb94S3VersionKeyCCDC67C0": {
+    "AssetParameters0625b1566df06e0ffd948f0f65f97a3d22d48242e66196d3f72b480f5309b343S3VersionKey3AF0E7DF": {
       "Type": "String",
-      "Description": "S3 key for asset version \"b64b129569a5ac7a9abf88a18ac0b504d1fb1208872460476ed3fd435830eb94\""
+      "Description": "S3 key for asset version \"0625b1566df06e0ffd948f0f65f97a3d22d48242e66196d3f72b480f5309b343\""
     },
-    "AssetParametersb64b129569a5ac7a9abf88a18ac0b504d1fb1208872460476ed3fd435830eb94ArtifactHash782948FC": {
+    "AssetParameters0625b1566df06e0ffd948f0f65f97a3d22d48242e66196d3f72b480f5309b343ArtifactHash0C561FF5": {
       "Type": "String",
-      "Description": "Artifact hash for asset \"b64b129569a5ac7a9abf88a18ac0b504d1fb1208872460476ed3fd435830eb94\""
+      "Description": "Artifact hash for asset \"0625b1566df06e0ffd948f0f65f97a3d22d48242e66196d3f72b480f5309b343\""
     }
   }
 }

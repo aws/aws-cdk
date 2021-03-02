@@ -66,6 +66,9 @@
       "python": {
         "distName": "aws-cdk.lib",
         "module": "aws_cdk.lib"
+      },
+      "go": {
+        "moduleName": "github.com/aws/aws-cdk-go"
       }
     },
     "projectReferences": false
@@ -293,7 +296,7 @@
     "ubergen": "0.0.0"
   },
   "peerDependencies": {
-    "constructs": "^3.0.4"
+    "constructs": "^3.2.0"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "engines": {
