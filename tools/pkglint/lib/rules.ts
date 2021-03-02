@@ -704,9 +704,8 @@ export class JSIIGolangTarget extends ValidationRule {
 
     const moduleName = cdkModuleName(pkg.json.name);
 
-    // See: https://github.com/aws/jsii/blob/master/docs/configuration.md#configuring-python
-
-    expectJSON(this.name, pkg, 'jsii.targets.go.moduleName', moduleName.goRootModuleName);
+    // See: https://aws.github.io/jsii/user-guides/lib-author/configuration/targets/go
+    expectJSON(this.name, pkg, 'jsii.targets.go.moduleName', moduleName.goRepositoryName);
   }
 }
 
@@ -884,7 +883,7 @@ function cdkModuleName(name: string) {
       distName: `aws-cdk.${pythonName}`,
       module: `aws_cdk.${pythonName.replace(/-/g, '_')}`,
     },
-    goRootModuleName: 'github.com/aws/aws-cdk-go',
+    goRepositoryName: 'github.com/aws/aws-cdk-go',
   };
 }
 
