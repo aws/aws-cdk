@@ -161,6 +161,6 @@
     "jest": true
   },
   "publishConfig": {
-    "tag": "latest"
+    "tag": "next"
   }
 }
