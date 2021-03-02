@@ -164,7 +164,7 @@ level of complete patterns or applications.  These constructs still largely
 focus on a single logical resource -- in constrast to "patterns" which combine
 multiple resources -- but are customized for a specific common usage scenario of
 an L2. Examples of L2.5s in the CDK are `aws-apigateway.LambdaRestApi`,
-`aws-lambda-nodejs.NodeJsFunction`, and `aws-rds.ServerlessCluster`.
+`aws-lambda-nodejs.NodeJsFunction`, `aws-rds.ServerlessCluster` and `eks.FargateCluster`.
 
 L2.5 constructs will be considered for inclusion in the CDK if they...
 
