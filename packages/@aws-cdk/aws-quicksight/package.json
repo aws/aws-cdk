@@ -29,6 +29,9 @@
         ],
         "distName": "aws-cdk.aws-quicksight",
         "module": "aws_cdk.aws_quicksight"
+      },
+      "go": {
+        "moduleName": "github.com/aws/aws-cdk-go"
       }
     }
   },
