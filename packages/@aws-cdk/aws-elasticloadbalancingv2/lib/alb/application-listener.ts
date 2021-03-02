@@ -263,12 +263,18 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
       this.certificateArns.push(first.certificateArn);
     }
 
-    // Only one certificate can be specified per resource, even though 
+    // Only one certificate can be specified per resource, even though
     // `certificates` is of type Array
-    for (const cert of additionalCerts) {
-      new ApplicationListenerCertificate(this, id, {
+    for (let i = 0; i < additionalCerts.length; i++) {
+      let certId = id;
+      // ids should look like: `id`, `id2`, `id3` (for backwards-compatibility)
+      if (i > 0) {
+        certId += i + 1;
+      }
+
+      new ApplicationListenerCertificate(this, certId, {
         listener: this,
-        certificates: [cert],
+        certificates: [additionalCerts[i]],
       });
     }
   }
