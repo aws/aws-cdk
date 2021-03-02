@@ -118,12 +118,12 @@ in target languages.
 
 ## What's Included
 
-The AWS CDK includes the AWS Construct Library, which contains constructs
+The AWS Construct Library, which is shipped as part of the AWS CDK constructs
 representing AWS resources.
 
-The AWS Construct Library has three different levels of constructs, beginning
+The AWS Construct Library has multiple layers of constructs, beginning
 with low-level constructs, which we call _CFN Resources_ (or L1, short for
-"level 1") or Cfn (short for CloudFormation) resources. These constructs
+"level 1") or CFN Resources (short for CloudFormation). These constructs
 directly represent all resources available in AWS CloudFormation. CFN Resources
 are periodically generated from the AWS CloudFormation Resource
 Specification. They are named **Cfn**_Xyz_, where _Xyz_ is name of the
@@ -135,28 +135,28 @@ the details of the underlying AWS CloudFormation resource model.
 The next level of constructs, L2, also represent AWS resources, but with a
 higher-level, intent-based API. They provide similar functionality, but provide
 the defaults, boilerplate, and glue logic you'd be writing yourself with a CFN
-Resource construct. AWS constructs offer convenient defaults and reduce the need
+Resource construct. L2 constructs offer convenient defaults and reduce the need
 to know all the details about the AWS resources they represent, while providing
 convenience methods that make it simpler to work with the resource. For example,
-the s3.Bucket class represents an Amazon S3 bucket with additional properties
-and methods, such as bucket.addLifeCycleRule(), which adds a lifecycle rule to
+the `s3.Bucket` class represents an Amazon S3 bucket with additional properties
+and methods, such as `bucket.addLifeCycleRule()`, which adds a lifecycle rule to
 the bucket.
 
 Examples of behaviors that an L2 commonly include:
 
-- Modeling of the underlying L1 properties
-- Methods for adding related resources (e.g., adding an event notification to
+- Strongly-typed modeling of the underlying L1 properties
+- Methods for integrating other AWS resources (e.g., adding an event notification to
   an S3 bucket).
 - Modeling of permissions and resource policies
 - Modeling of metrics
 
-In addition to the above, some higher-order L2s may introduce more complex and
+In addition to the above, some L2s may introduce more complex and
 helpful functionality, either part of the original L2 itself, or as part of a
 separate construct. The most common form of these L2s are integration constructs
 that model interactions between different services (e.g., SNS publishing to SQS,
 CodePipeline actions that trigger Lambda functions).
 
-The third level of abstraction present within the CDK are what we designate as
+The next level of abstraction present within the CDK are what we designate as
 "L2.5s": a step above the L2s in terms of abstraction, but not quite at the
 level of complete patterns or applications.  These constructs still largely
 focus on a single logical resource -- in constrast to "patterns" which combine
@@ -168,7 +168,7 @@ L2.5 constructs will be considered for inclusion in the CDK if they...
 - cover a common usage scenario that can be used by a significant portion of
   the community;
 - provide significant ease of use over the base L2 (via usage-specific defaults
-  or convenience methods);
+  convenience methods or improved strong-typing);
 - simplify or enable another L2 within the CDK
 
 The CDK also currently includes some even higher-level constructs, which we call
