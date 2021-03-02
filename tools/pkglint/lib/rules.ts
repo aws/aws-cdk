@@ -695,6 +695,20 @@ export class JSIIPythonTarget extends ValidationRule {
   }
 }
 
+
+export class JSIIGolangTarget extends ValidationRule {
+  public readonly name = 'jsii/go';
+
+  public validate(pkg: PackageJson): void {
+    if (!isJSII(pkg)) { return; }
+
+    const moduleName = cdkModuleName(pkg.json.name);
+
+    // See: https://aws.github.io/jsii/user-guides/lib-author/configuration/targets/go
+    expectJSON(this.name, pkg, 'jsii.targets.go.moduleName', moduleName.goRepositoryName);
+  }
+}
+
 export class CDKPackage extends ValidationRule {
   public readonly name = 'package-info/scripts/package';
 
@@ -869,6 +883,7 @@ function cdkModuleName(name: string) {
       distName: `aws-cdk.${pythonName}`,
       module: `aws_cdk.${pythonName.replace(/-/g, '_')}`,
     },
+    goRepositoryName: 'github.com/aws/aws-cdk-go',
   };
 }
 
