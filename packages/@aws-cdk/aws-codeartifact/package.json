@@ -27,6 +27,9 @@
         ],
         "distName": "aws-cdk.aws-codeartifact",
         "module": "aws_cdk.aws_codeartifact"
+      },
+      "go": {
+        "moduleName": "github.com/aws/aws-cdk-go"
       }
     }
   },

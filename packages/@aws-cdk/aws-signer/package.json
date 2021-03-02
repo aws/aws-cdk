@@ -27,6 +27,9 @@
         ],
         "distName": "aws-cdk.aws-signer",
         "module": "aws_cdk.aws_signer"
+      },
+      "go": {
+        "moduleName": "github.com/aws/aws-cdk-go"
       }
     }
   },

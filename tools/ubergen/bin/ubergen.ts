@@ -52,6 +52,9 @@ interface PackageJson {
         readonly module: string;
         readonly [key: string]: unknown;
       },
+      readonly go?: {
+        readonly moduleName: string;
+      },
       readonly [language: string]: unknown,
     },
   };
@@ -291,6 +294,11 @@ function transformTargets(monoConfig: PackageJson['jsii']['targets'], targets: P
           result[language] = {
             module: `${monoConfig.python.module}.${(config as any).module.replace(/^aws_cdk\./, '')}`,
           };
+        }
+        break;
+      case 'go':
+        if (monoConfig?.go != null) {
+          result[language] = monoConfig?.go;
         }
         break;
       default:
