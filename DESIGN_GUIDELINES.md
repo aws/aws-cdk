@@ -8,6 +8,8 @@ The purpose of this document is to provide guidelines for designing the APIs in
 the AWS Construct Library in order to ensure a consistent and integrated
 experience across the entire AWS surface area.
 
+## Preface
+
 As much as possible, the guidelines in this document are enforced using the
 [**awslint** tool](https://www.npmjs.com/package/awslint) which reflects on the
 APIs and verifies that the APIs adhere to the guidelines. When a guideline is
@@ -333,14 +335,30 @@ from harnessing the full power of the resource, and customizing its behavior.
   alignment.
 
 The **@default** documentation tag must be included on all optional properties
-of interfaces. Since there are cases where the default behavior is not a
-specific value but rather depends on circumstances/context, the default
-documentation tag must always begin with a “**-**" and then include a
-description of the default behavior _[awslint:props-default-doc]_.
+of interfaces.
 
-For example:
+In cases where the default behavior can be described by a value (typically the
+case for booleans, sometimes for strings and numbers), the value immediately
+follows the **@default** tag (as in: `@default false`).
+
+In the majority of cases, the default behavior is not a specific value but
+rather depends on circumstances/context. The default documentation tag must
+begin with a “**-**" and then include a description of the default behavior
+_[awslint:props-default-doc]_. This is specially true if the property
+is a a complex value or a reference to an object: don't write `@default
+undefined`, describe the behavior that happens if the property is not
+supplied instead.
+
+Describe the default value or default behavior, even if it's not CDK that
+controls the default. For example, if an absent value does not get rendered
+into the template and it's ultimately the AWS *service* that determines the
+default behavior, we still describe it in our documentation.
+
+Examples:
 
 ```ts
+// ✅ DO - uses a '-' and describes the behavior
+
 /**
  * External KMS key to use for bucket encryption.
  *
@@ -348,6 +366,32 @@ For example:
  * new KMS key will be created and associated with this bucket.
  */
 encryptionKey?: kms.IEncryptionKey;
+```
+
+```ts
+/**
+ * External KMS key to use for bucket encryption.
+ *
+ * @default undefined
+ *            ❌ DO NOT - that the value is 'undefined' by default is implied. However,
+ *                        what will the *behavior* be if the value is left out?
+ */
+encryptionKey?: kms.IEncryptionKey;
+```
+
+```ts
+/**
+ * Minimum capacity of the AutoScaling resource
+ *
+ * @default - no minimum capacity
+ *             ❌ DO NOT - there most certainly is. It's probably 0 or 1.
+ *
+ * // OR
+ * @default - the minimum capacity is the default minimum capacity
+ *             ❌ DO NOT - this is circular and useless to the reader.
+ *                         Describe what will actually happen.
+ */
+minCapacity?: number;
 ```
 
 #### Flat
