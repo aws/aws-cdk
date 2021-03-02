@@ -109,6 +109,16 @@ globalTable.autoScaleWriteCapacity({
 }).scaleOnUtilization({ targetUtilizationPercent: 75 });
 ```
 
+For large tables, you might want to increase the timeout for the replication operation:
+
+```ts
+const globalTable = new dynamodb.Table(this, 'Table', {
+  partitionKey: { name: 'id', type: dynamodb.AttributeType.STRING },
+  replicationRegions: ['us-east-1', 'us-east-2', 'us-west-2'],
+  replicationTimeout: Duration.hours(2), // defaults to Duration.minutes(30)
+});
+```
+
 ## Encryption
 
 All user data stored in Amazon DynamoDB is fully encrypted at rest. When creating a new table, you can choose to encrypt using the following customer master keys (CMK) to encrypt your table:
