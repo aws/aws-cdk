@@ -282,6 +282,242 @@ export = {
       }));
       test.done();
     },
+
+    'should allow http retries'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const mesh = new appmesh.Mesh(stack, 'mesh', {
+        meshName: 'test-mesh',
+      });
+      const router = new appmesh.VirtualRouter(stack, 'router', {
+        mesh,
+      });
+      const virtualNode = mesh.addVirtualNode('test-node', {
+        serviceDiscovery: appmesh.ServiceDiscovery.dns('test'),
+        listeners: [appmesh.VirtualNodeListener.http()],
+      });
+
+      // WHEN
+      router.addRoute('test-http-route', {
+        routeSpec: appmesh.RouteSpec.http({
+          weightedTargets: [{ virtualNode }],
+          retryPolicy: {
+            httpRetryEvents: [appmesh.HttpRetryEvent.CLIENT_ERROR],
+            tcpRetryEvents: [appmesh.TcpRetryEvent.CONNECTION_ERROR],
+            maxRetries: 5,
+            perRetryTimeout: cdk.Duration.seconds(10),
+          },
+        }),
+      });
+
+      // THEN
+      expect(stack).to(haveResourceLike('AWS::AppMesh::Route', {
+        Spec: {
+          HttpRoute: {
+            RetryPolicy: {
+              HttpRetryEvents: ['client-error'],
+              TcpRetryEvents: ['connection-error'],
+              MaxRetries: 5,
+              PerRetryTimeout: {
+                Unit: 'ms',
+                Value: 10000,
+              },
+            },
+          },
+        },
+      }));
+
+      test.done();
+    },
+
+    'errors when http retry policy has no events'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const mesh = new appmesh.Mesh(stack, 'mesh', {
+        meshName: 'test-mesh',
+      });
+      const router = new appmesh.VirtualRouter(stack, 'router', {
+        mesh,
+      });
+      const virtualNode = mesh.addVirtualNode('test-node', {
+        serviceDiscovery: appmesh.ServiceDiscovery.dns('test'),
+        listeners: [appmesh.VirtualNodeListener.http()],
+      });
+
+      // WHEN
+      test.throws(() => {
+        router.addRoute('test-http-route', {
+          routeSpec: appmesh.RouteSpec.http({
+            weightedTargets: [{ virtualNode }],
+            retryPolicy: {
+              maxRetries: 5,
+              perRetryTimeout: cdk.Duration.seconds(10),
+            },
+          }),
+        });
+      }, /specify one value for at least/i);
+
+      test.done();
+    },
+
+    'errors when retry event arrays are empty'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const mesh = new appmesh.Mesh(stack, 'mesh', {
+        meshName: 'test-mesh',
+      });
+      const virtualNode = mesh.addVirtualNode('test-node', {
+        serviceDiscovery: appmesh.ServiceDiscovery.dns('test'),
+        listeners: [appmesh.VirtualNodeListener.http()],
+      });
+
+      // WHEN
+      test.throws(() => {
+        appmesh.RouteSpec.http({
+          weightedTargets: [{ virtualNode }],
+          retryPolicy: {
+            httpRetryEvents: [],
+            tcpRetryEvents: [appmesh.TcpRetryEvent.CONNECTION_ERROR],
+            maxRetries: 5,
+            perRetryTimeout: cdk.Duration.seconds(10),
+          },
+        });
+      }, /at least one.*httpRetryEvents/);
+
+      test.throws(() => {
+        appmesh.RouteSpec.http({
+          weightedTargets: [{ virtualNode }],
+          retryPolicy: {
+            httpRetryEvents: [appmesh.HttpRetryEvent.CLIENT_ERROR],
+            tcpRetryEvents: [],
+            maxRetries: 5,
+            perRetryTimeout: cdk.Duration.seconds(10),
+          },
+        });
+      }, /at least one.*tcpRetryEvents/);
+
+      test.throws(() => {
+        appmesh.RouteSpec.grpc({
+          weightedTargets: [{ virtualNode }],
+          match: { serviceName: 'servicename' },
+          retryPolicy: {
+            grpcRetryEvents: [],
+            tcpRetryEvents: [appmesh.TcpRetryEvent.CONNECTION_ERROR],
+            maxRetries: 5,
+            perRetryTimeout: cdk.Duration.seconds(10),
+          },
+        });
+      }, /at least one.*grpcRetryEvents/i);
+
+      test.throws(() => {
+        appmesh.RouteSpec.grpc({
+          weightedTargets: [{ virtualNode }],
+          match: { serviceName: 'servicename' },
+          retryPolicy: {
+            httpRetryEvents: [],
+            tcpRetryEvents: [appmesh.TcpRetryEvent.CONNECTION_ERROR],
+            maxRetries: 5,
+            perRetryTimeout: cdk.Duration.seconds(10),
+          },
+        });
+      }, /at least one.*httpRetryEvents/i);
+
+      test.throws(() => {
+        appmesh.RouteSpec.grpc({
+          weightedTargets: [{ virtualNode }],
+          match: { serviceName: 'servicename' },
+          retryPolicy: {
+            httpRetryEvents: [appmesh.HttpRetryEvent.CLIENT_ERROR],
+            tcpRetryEvents: [],
+            maxRetries: 5,
+            perRetryTimeout: cdk.Duration.seconds(10),
+          },
+        });
+      }, /at least one.*tcpRetryEvents/i);
+
+      test.done();
+    },
+
+    'should allow grpc retries'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const mesh = new appmesh.Mesh(stack, 'mesh', {
+        meshName: 'test-mesh',
+      });
+      const router = new appmesh.VirtualRouter(stack, 'router', {
+        mesh,
+      });
+      const virtualNode = mesh.addVirtualNode('test-node', {
+        serviceDiscovery: appmesh.ServiceDiscovery.dns('test'),
+        listeners: [appmesh.VirtualNodeListener.http()],
+      });
+
+      // WHEN
+      router.addRoute('test-grpc-route', {
+        routeSpec: appmesh.RouteSpec.grpc({
+          weightedTargets: [{ virtualNode }],
+          match: { serviceName: 'servicename' },
+          retryPolicy: {
+            grpcRetryEvents: [appmesh.GrpcRetryEvent.DEADLINE_EXCEEDED],
+            httpRetryEvents: [appmesh.HttpRetryEvent.CLIENT_ERROR],
+            tcpRetryEvents: [appmesh.TcpRetryEvent.CONNECTION_ERROR],
+            maxRetries: 5,
+            perRetryTimeout: cdk.Duration.seconds(10),
+          },
+        }),
+      });
+
+      // THEN
+      expect(stack).to(haveResourceLike('AWS::AppMesh::Route', {
+        Spec: {
+          GrpcRoute: {
+            RetryPolicy: {
+              GrpcRetryEvents: ['deadline-exceeded'],
+              HttpRetryEvents: ['client-error'],
+              TcpRetryEvents: ['connection-error'],
+              MaxRetries: 5,
+              PerRetryTimeout: {
+                Unit: 'ms',
+                Value: 10000,
+              },
+            },
+          },
+        },
+      }));
+
+      test.done();
+    },
+
+    'errors when grpc retry policy has no events'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const mesh = new appmesh.Mesh(stack, 'mesh', {
+        meshName: 'test-mesh',
+      });
+      const router = new appmesh.VirtualRouter(stack, 'router', {
+        mesh,
+      });
+      const virtualNode = mesh.addVirtualNode('test-node', {
+        serviceDiscovery: appmesh.ServiceDiscovery.dns('test'),
+        listeners: [appmesh.VirtualNodeListener.http()],
+      });
+
+      // WHEN
+      test.throws(() => {
+        router.addRoute('test-grpc-route', {
+          routeSpec: appmesh.RouteSpec.grpc({
+            weightedTargets: [{ virtualNode }],
+            match: { serviceName: 'servicename' },
+            retryPolicy: {
+              maxRetries: 5,
+              perRetryTimeout: cdk.Duration.seconds(10),
+            },
+          }),
+        });
+      }, /specify one value for at least/i);
+
+      test.done();
+    },
   },
 
   'Can import Routes using an ARN'(test: Test) {
