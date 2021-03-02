@@ -141,8 +141,9 @@ export interface IHeaderMatchMethod {
   /**
    * Produce the match method.
    */
-  renderMatch(): CfnRoute.HeaderMatchMethodProperty;
+  renderMatchMethod(): CfnRoute.HeaderMatchMethodProperty;
 }
+
 /**
  * Used to generate header matching methods.
  */
@@ -152,7 +153,7 @@ export abstract class HeaderMatchMethod {
    */
   static exact(exact: string): IHeaderMatchMethod {
     return {
-      renderMatch: () => ({ exact }),
+      renderMatchMethod: () => ({ exact }),
     };
   }
 
@@ -161,7 +162,7 @@ export abstract class HeaderMatchMethod {
    */
   static prefix(prefix: string): IHeaderMatchMethod {
     return {
-      renderMatch: () => ({ prefix }),
+      renderMatchMethod: () => ({ prefix }),
     };
   }
 
@@ -170,7 +171,7 @@ export abstract class HeaderMatchMethod {
    */
   static suffix(suffix: string): IHeaderMatchMethod {
     return {
-      renderMatch: () => ({ suffix }),
+      renderMatchMethod: () => ({ suffix }),
     };
   }
 
@@ -179,7 +180,7 @@ export abstract class HeaderMatchMethod {
    */
   static regex(regex: string): IHeaderMatchMethod {
     return {
-      renderMatch: () => ({ regex }),
+      renderMatchMethod: () => ({ regex }),
     };
   }
 
@@ -190,7 +191,7 @@ export abstract class HeaderMatchMethod {
    */
   static range(start: number, end: number): IHeaderMatchMethod {
     return {
-      renderMatch: () => ({
+      renderMatchMethod: () => ({
         range: {
           start,
           end,
@@ -386,7 +387,7 @@ class HttpRouteSpec extends RouteSpec {
       headers = this.match.headers.map(header => ({
         name: header.name,
         invert: header.invert,
-        match: header.match?.renderMatch(),
+        match: header.match?.renderMatchMethod(),
       }));
     }
 
