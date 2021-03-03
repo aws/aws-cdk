@@ -99,7 +99,7 @@ of `$` will be used.
 The following example provides the field named `input` as the input to the `Task`
 state that runs a Lambda function.
 
-```ts fixture=with-lambda
+```ts
 const submitJob = new tasks.LambdaInvoke(this, 'Invoke Handler', {
   lambdaFunction: fn,
   inputPath: '$.input'
@@ -119,7 +119,7 @@ as well as other metadata.
 
 The following example assigns the output from the Task to a field named `result`
 
-```ts fixture=with-lambda
+```ts
 const submitJob = new tasks.LambdaInvoke(this, 'Invoke Handler', {
   lambdaFunction: fn,
   outputPath: '$.Payload.result'
@@ -137,7 +137,7 @@ value of `$` will be used.
 The following example adds the item from calling DynamoDB's `getItem` API to the state
 input and passes it to the next state.
 
-```ts fixture=with-ddb-table
+```ts
 new tasks.DynamoPutItem(this, 'PutItem', {
   item: {
     MessageId: tasks.DynamoAttributeValue.fromString('message-id')
@@ -162,7 +162,7 @@ using methods such as `JsonPath.stringAt()`.
 The following example provides the field named `input` as the input to the Lambda function
 and invokes it asynchronously.
 
-```ts fixture=with-lambda
+```ts
 const submitJob = new tasks.LambdaInvoke(this, 'Invoke Handler', {
   lambdaFunction: fn,
   payload: sfn.TaskInput.fromDataAt('$.input'),
@@ -334,7 +334,7 @@ Read more about calling DynamoDB APIs [here](https://docs.aws.amazon.com/step-fu
 
 The [GetItem](https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_GetItem.html) operation returns a set of attributes for the item with the given primary key.
 
-```ts fixture=with-ddb-table
+```ts
 new tasks.DynamoGetItem(this, 'Get Item', {
   key: { messageId: tasks.DynamoAttributeValue.fromString('message-007') },
   table: myTable,
@@ -345,7 +345,7 @@ new tasks.DynamoGetItem(this, 'Get Item', {
 
 The [PutItem](https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_PutItem.html) operation creates a new item, or replaces an old item with a new item.
 
-```ts fixture=with-ddb-table
+```ts
 new tasks.DynamoPutItem(this, 'PutItem', {
   item: {
     MessageId: tasks.DynamoAttributeValue.fromString('message-007'),
@@ -360,7 +360,7 @@ new tasks.DynamoPutItem(this, 'PutItem', {
 
 The [DeleteItem](https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_DeleteItem.html) operation deletes a single item in a table by primary key.
 
-```ts fixture=with-ddb-table
+```ts
 new tasks.DynamoDeleteItem(this, 'DeleteItem', {
   key: { MessageId: tasks.DynamoAttributeValue.fromString('message-007') },
   table: myTable,
@@ -373,7 +373,7 @@ new tasks.DynamoDeleteItem(this, 'DeleteItem', {
 The [UpdateItem](https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_UpdateItem.html) operation edits an existing item's attributes, or adds a new item
 to the table if it does not already exist.
 
-```ts fixture=with-ddb-table
+```ts
 new tasks.DynamoUpdateItem(this, 'UpdateItem', {
   key: {
     MessageId: tasks.DynamoAttributeValue.fromString('message-007')
@@ -669,7 +669,7 @@ as the input.
 The following snippet invokes a Lambda Function with the state input as the payload
 by referencing the `$` path.
 
-```ts fixture=with-lambda
+```ts
 new tasks.LambdaInvoke(this, 'Invoke with state input', {
   lambdaFunction: fn,
 });
@@ -684,7 +684,7 @@ back.
 The following snippet invokes a Lambda Function by referencing the `$.Payload` path
 to reference the output of a Lambda executed before it.
 
-```ts fixture=with-lambda
+```ts
 new tasks.LambdaInvoke(this, 'Invoke with empty object as payload', {
   lambdaFunction: fn,
   payload: sfn.TaskInput.fromObject({}),
@@ -700,7 +700,7 @@ new tasks.LambdaInvoke(this, 'Invoke with payload field in the state input', {
 The following snippet invokes a Lambda and sets the task output to only include
 the Lambda function response.
 
-```ts fixture=with-lambda
+```ts
 new tasks.LambdaInvoke(this, 'Invoke and set function response as task output', {
   lambdaFunction: fn,
   outputPath: '$.Payload',
@@ -712,7 +712,7 @@ the `payloadResponseOnly` property and specify the `resultPath`. This will put t
 Lambda function ARN directly in the "Resource" string, but it conflicts with the
 integrationPattern, invocationType, clientContext, and qualifier properties.
 
-```ts fixture=with-lambda
+```ts
 new tasks.LambdaInvoke(this, 'Invoke and combine function response with task input', {
   lambdaFunction: fn,
   payloadResponseOnly: true,
@@ -730,7 +730,7 @@ indicate that the task has completed and the state machine should resume executi
 The following snippet invokes a Lambda with the task token as part of the input
 to the Lambda.
 
-```ts fixture=with-lambda
+```ts
 new tasks.LambdaInvoke(this, 'Invoke with callback', {
   lambdaFunction: fn,
   integrationPattern: sfn.IntegrationPattern.WAIT_FOR_TASK_TOKEN,
