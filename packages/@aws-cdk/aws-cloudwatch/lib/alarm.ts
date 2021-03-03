@@ -227,18 +227,40 @@ export class Alarm extends AlarmBase {
   private renderMetric(metric: IMetric) {
     const self = this;
     return dispatchMetric(metric, {
-      withStat(st) {
-        self.validateMetricStat(st, metric);
+      withStat(stat, conf) {
+        self.validateMetricStat(stat, metric);
 
-        return dropUndefined({
-          dimensions: st.dimensions,
-          namespace: st.namespace,
-          metricName: st.metricName,
-          period: st.period?.toSeconds(),
-          statistic: renderIfSimpleStatistic(st.statistic),
-          extendedStatistic: renderIfExtendedStatistic(st.statistic),
-          unit: st.unitFilter,
-        });
+        if (conf.renderingProperties?.label == undefined) {
+          return dropUndefined({
+            dimensions: stat.dimensions,
+            namespace: stat.namespace,
+            metricName: stat.metricName,
+            period: stat.period?.toSeconds(),
+            statistic: renderIfSimpleStatistic(stat.statistic),
+            extendedStatistic: renderIfExtendedStatistic(stat.statistic),
+            unit: stat.unitFilter,
+          });
+        }
+
+        return {
+          metrics: [
+            {
+              metricStat: {
+                metric: {
+                  metricName: stat.metricName,
+                  namespace: stat.namespace,
+                  dimensions: stat.dimensions,
+                },
+                period: stat.period.toSeconds(),
+                stat: stat.statistic,
+                unit: stat.unitFilter,
+              },
+              id: stat.metricName,
+              label: conf.renderingProperties?.label,
+              returnData: true,
+            } as CfnAlarm.MetricDataQueryProperty,
+          ],
+        };
       },
 
       withExpression() {
