@@ -439,12 +439,7 @@ class GrpcRouteSpec extends RouteSpec {
         throw new Error('You must specify one value for at least one of `grpcRetryEvents`, `httpRetryEvents`, `tcpRetryEvents`');
       }
 
-      this.retryPolicy = {
-        ...props.retryPolicy,
-        grpcRetryEvents: mapEmptyArrayOrUndefinedToUndefined(props.retryPolicy.grpcRetryEvents),
-        httpRetryEvents: mapEmptyArrayOrUndefinedToUndefined(props.retryPolicy.httpRetryEvents),
-        tcpRetryEvents: mapEmptyArrayOrUndefinedToUndefined(props.retryPolicy.tcpRetryEvents),
-      };
+      this.retryPolicy = props.retryPolicy;
     }
   }
 
@@ -498,12 +493,6 @@ function renderTimeout(timeout?: HttpTimeout): CfnRoute.HttpTimeoutProperty | un
         : undefined,
     }
     : undefined;
-}
-
-function mapEmptyArrayOrUndefinedToUndefined<T>(arr: T[] | undefined): T[] | undefined {
-  return !arr || arr.length === 0
-    ? undefined
-    : arr;
 }
 
 function renderHttpRetryPolicy(retryPolicy: HttpRetryPolicy): CfnRoute.HttpRetryPolicyProperty {
