@@ -487,13 +487,14 @@ describe('User Pool Client', () => {
         UserPoolClientIdentityProvider.FACEBOOK,
         UserPoolClientIdentityProvider.AMAZON,
         UserPoolClientIdentityProvider.GOOGLE,
+        UserPoolClientIdentityProvider.APPLE,
       ],
     });
 
     // THEN
     expect(stack).toHaveResource('AWS::Cognito::UserPoolClient', {
       ClientName: 'AllEnabled',
-      SupportedIdentityProviders: ['COGNITO', 'Facebook', 'LoginWithAmazon', 'Google'],
+      SupportedIdentityProviders: ['COGNITO', 'Facebook', 'LoginWithAmazon', 'Google', 'SignInWithApple'],
     });
   });
 
