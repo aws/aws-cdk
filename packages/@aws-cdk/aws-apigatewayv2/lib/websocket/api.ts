@@ -89,7 +89,7 @@ export class WebSocketApi extends ApiBase implements IWebSocketApi {
   public readonly webSocketApiName?: string;
 
   /**
-   * default stage of the api resource
+   * The default stage for this API
    */
   public readonly defaultStage: IStage | undefined;
 
@@ -117,8 +117,7 @@ export class WebSocketApi extends ApiBase implements IWebSocketApi {
     }
 
     if (!props?.defaultStageName && props?.defaultDomainMapping) {
-      throw new Error('defaultDomainMapping not supported when defaultStageName is not provided',
-      );
+      throw new Error('defaultDomainMapping not supported when defaultStageName is not provided');
     }
 
     if (props?.connectRouteOptions) {
@@ -136,7 +135,7 @@ export class WebSocketApi extends ApiBase implements IWebSocketApi {
    * @internal
    */
   public _addIntegration(scope: Construct, config: WebSocketRouteIntegrationConfig): WebSocketIntegration {
-    const { configHash, integration: existingIntegration } = this._integrationCache.getSavedIntegration(scope, config);
+    const { configHash, integration: existingIntegration } = this._integrationCache.getIntegration(scope, config);
     if (existingIntegration) {
       return existingIntegration as WebSocketIntegration;
     }

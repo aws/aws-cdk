@@ -1,8 +1,7 @@
 import { Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnStage } from '../apigatewayv2.generated';
-import { CommonStageOptions, IStage, StageAttributes } from '../common';
-import { IApi } from '../common/api';
+import { StageOptions, IApi, IStage, StageAttributes } from '../common';
 import { StageBase } from '../common/base';
 import { IWebSocketApi } from './api';
 
@@ -10,12 +9,16 @@ import { IWebSocketApi } from './api';
  * Represents the WebSocketStage
  */
 export interface IWebSocketStage extends IStage {
+  /**
+   * The API this stage is associated to.
+   */
+  readonly api: IWebSocketApi;
 }
 
 /**
  * Properties to initialize an instance of `WebSocketStage`.
  */
-export interface WebSocketStageProps extends CommonStageOptions {
+export interface WebSocketStageProps extends StageOptions {
   /**
    * The WebSocket API to which this stage is associated.
    */
@@ -31,6 +34,10 @@ export interface WebSocketStageProps extends CommonStageOptions {
  * The attributes used to import existing WebSocketStage
  */
 export interface WebSocketStageAttributes extends StageAttributes {
+  /**
+   * The API to which this stage is associated
+   */
+  readonly api: IWebSocketApi;
 }
 
 /**
@@ -43,6 +50,7 @@ export class WebSocketStage extends StageBase implements IWebSocketStage {
    */
   public static fromWebSocketStageAttributes(scope: Construct, id: string, attrs: WebSocketStageAttributes): IWebSocketStage {
     class Import extends StageBase implements IWebSocketStage {
+      public readonly baseApi = attrs.api;
       public readonly stageName = attrs.stageName;
       public readonly api = attrs.api;
 
@@ -53,14 +61,16 @@ export class WebSocketStage extends StageBase implements IWebSocketStage {
     return new Import(scope, id);
   }
 
+  protected readonly baseApi: IApi;
   public readonly stageName: string;
-  public readonly api: IApi;
+  public readonly api: IWebSocketApi;
 
   constructor(scope: Construct, id: string, props: WebSocketStageProps) {
     super(scope, id, {
       physicalName: props.stageName,
     });
 
+    this.baseApi = props.webSocketApi;
     this.api = props.webSocketApi;
     this.stageName = this.physicalName;
 

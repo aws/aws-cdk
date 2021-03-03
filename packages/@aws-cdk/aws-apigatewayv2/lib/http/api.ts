@@ -180,7 +180,7 @@ abstract class HttpApiBase extends ApiBase implements IHttpApi { // note that th
    * @internal
    */
   public _addIntegration(scope: Construct, config: HttpRouteIntegrationConfig): HttpIntegration {
-    const { configHash, integration: existingIntegration } = this._integrationCache.getSavedIntegration(scope, config);
+    const { configHash, integration: existingIntegration } = this._integrationCache.getIntegration(scope, config);
     if (existingIntegration) {
       return existingIntegration as HttpIntegration;
     }
@@ -252,7 +252,7 @@ export class HttpApi extends HttpApiBase {
   public readonly disableExecuteApiEndpoint?: boolean;
 
   /**
-   * default stage of the api resource
+   * The default stage of this API
    */
   public readonly defaultStage: IStage | undefined;
 

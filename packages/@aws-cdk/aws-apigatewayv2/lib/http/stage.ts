@@ -1,7 +1,7 @@
 import { Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnStage } from '../apigatewayv2.generated';
-import { CommonStageOptions, IStage, StageAttributes } from '../common';
+import { StageOptions, IStage, StageAttributes } from '../common';
 import { IApi } from '../common/api';
 import { StageBase } from '../common/base';
 import { IHttpApi } from './api';
@@ -12,12 +12,16 @@ const DEFAULT_STAGE_NAME = '$default';
  * Represents the HttpStage
  */
 export interface IHttpStage extends IStage {
+  /**
+   * The API this stage is associated to.
+   */
+  readonly api: IHttpApi;
 }
 
 /**
  * The options to create a new Stage for an HTTP API
  */
-export interface HttpStageOptions extends CommonStageOptions {
+export interface HttpStageOptions extends StageOptions {
   /**
    * The name of the stage. See `StageName` class for more details.
    * @default '$default' the default stage of the API. This stage will have the URL at the root of the API endpoint.
@@ -39,6 +43,10 @@ export interface HttpStageProps extends HttpStageOptions {
  * The attributes used to import existing HttpStage
  */
 export interface HttpStageAttributes extends StageAttributes {
+  /**
+   * The API to which this stage is associated
+   */
+  readonly api: IHttpApi;
 }
 
 /**
@@ -51,6 +59,7 @@ export class HttpStage extends StageBase implements IHttpStage {
    */
   public static fromHttpStageAttributes(scope: Construct, id: string, attrs: HttpStageAttributes): IHttpStage {
     class Import extends StageBase implements IHttpStage {
+      protected readonly baseApi = attrs.api;
       public readonly stageName = attrs.stageName;
       public readonly api = attrs.api;
 
@@ -61,8 +70,9 @@ export class HttpStage extends StageBase implements IHttpStage {
     return new Import(scope, id);
   }
 
+  protected readonly baseApi: IApi;
   public readonly stageName: string;
-  public readonly api: IApi;
+  public readonly api: IHttpApi;
 
   constructor(scope: Construct, id: string, props: HttpStageProps) {
     super(scope, id, {
@@ -76,6 +86,7 @@ export class HttpStage extends StageBase implements IHttpStage {
     });
 
     this.stageName = this.physicalName;
+    this.baseApi = props.httpApi;
     this.api = props.httpApi;
 
     if (props.domainMapping) {

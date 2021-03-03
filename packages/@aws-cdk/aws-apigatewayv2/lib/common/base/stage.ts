@@ -10,7 +10,7 @@ import { DomainMappingOptions, IStage } from '../stage';
  */
 export abstract class StageBase extends Resource implements IStage {
   public abstract readonly stageName: string;
-  public abstract readonly api: IApi;
+  protected abstract readonly baseApi: IApi;
 
   /**
    * The URL to this stage.
@@ -22,7 +22,7 @@ export abstract class StageBase extends Resource implements IStage {
    */
   protected _addDomainMapping(domainMapping: DomainMappingOptions) {
     new ApiMapping(this, `${domainMapping.domainName}${domainMapping.mappingKey}`, {
-      api: this.api,
+      api: this.baseApi,
       domainName: domainMapping.domainName,
       stage: this,
       apiMappingKey: domainMapping.mappingKey,
@@ -32,8 +32,8 @@ export abstract class StageBase extends Resource implements IStage {
   }
 
   public metric(metricName: string, props?: MetricOptions): Metric {
-    return this.api.metric(metricName, props).with({
-      dimensions: { ApiId: this.api.apiId, Stage: this.stageName },
+    return this.baseApi.metric(metricName, props).with({
+      dimensions: { ApiId: this.baseApi.apiId, Stage: this.stageName },
     }).attachTo(this);
   }
 

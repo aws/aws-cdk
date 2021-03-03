@@ -1,6 +1,5 @@
 import { Metric, MetricOptions } from '@aws-cdk/aws-cloudwatch';
 import { IResource } from '@aws-cdk/core';
-import { IApi } from './api';
 import { IDomainName } from './domain-name';
 
 /**
@@ -12,12 +11,6 @@ export interface IStage extends IResource {
    * @attribute
    */
   readonly stageName: string;
-
-  /**
-   * The API this stage is associated to.
-   * @attribute
-   */
-  readonly api: IApi;
 
   /**
    * The URL to this stage.
@@ -98,7 +91,7 @@ export interface DomainMappingOptions {
  * Options required to create a new stage.
  * Options that are common between HTTP and Websocket APIs.
  */
-export interface CommonStageOptions {
+export interface StageOptions {
 
 
   /**
@@ -123,9 +116,4 @@ export interface StageAttributes {
    * The name of the stage
    */
   readonly stageName: string;
-
-  /**
-   * The API to which this stage is associated
-   */
-  readonly api: IApi;
 }

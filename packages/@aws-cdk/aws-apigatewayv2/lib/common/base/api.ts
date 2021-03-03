@@ -1,7 +1,7 @@
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import { Resource } from '@aws-cdk/core';
+import { IntegrationCache } from '../../private/integration-cache';
 import { IApi } from '../api';
-import { IntegrationCache } from '../private/integration-cache';
 
 /**
  * Base class representing an API

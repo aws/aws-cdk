@@ -151,11 +151,12 @@ const httpEndpoint = new HttpApi(stack, 'HttpProxyPrivateApi', {
 
 ## WebSocket APIs
 
-WebSocket integrations connect a route to backend resources. Currently supported integrations include: LambdaWebSocketIntegration
+WebSocket integrations connect a route to backend resources. The following integrations are supported in the CDK.
 
 ### Lambda WebSocket Integration
 
-Lambda integrations enable integrating a WebSocket API route with a Lambda function. When a client connects/disconnects or sends message specific to a route, the API Gateway service forwards the request to the Lambda function
+Lambda integrations enable integrating a WebSocket API route with a Lambda function. When a client connects/disconnects 
+or sends message specific to a route, the API Gateway service forwards the request to the Lambda function
 
 The API Gateway service will invoke the lambda function with an event payload of a specific format.
 
