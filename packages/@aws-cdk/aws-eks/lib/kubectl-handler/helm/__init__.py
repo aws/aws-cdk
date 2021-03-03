@@ -20,7 +20,6 @@ def helm_handler(event, context):
 
     # resource properties
     cluster_name = props['ClusterName']
-    role_arn     = props['RoleArn']
     release      = props['Release']
     chart        = props['Chart']
     version      = props.get('Version', None)
@@ -33,7 +32,6 @@ def helm_handler(event, context):
 
     # "log in" to the cluster
     subprocess.check_call([ 'aws', 'eks', 'update-kubeconfig',
-        '--role-arn', role_arn,
         '--name', cluster_name,
         '--kubeconfig', kubeconfig
     ])

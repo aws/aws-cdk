@@ -1,5 +1,4 @@
 import * as path from 'path';
-import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import { Duration, Stack, NestedStack, Names } from '@aws-cdk/core';
 import * as cr from '@aws-cdk/custom-resources';
@@ -49,11 +48,6 @@ export class KubectlProvider extends NestedStack {
    */
   public readonly roleArn: string;
 
-  /**
-   * The IAM execution role of the handler.
-   */
-  public readonly handlerRole: iam.IRole;
-
   public constructor(scope: Construct, id: string, props: KubectlProviderProps) {
     super(scope as CoreConstruct, id);
 
@@ -77,6 +71,7 @@ export class KubectlProvider extends NestedStack {
       description: 'onEvent handler for EKS kubectl resource provider',
       memorySize,
       environment: cluster.kubectlEnvironment,
+      role: cluster.kubectlRole,
 
       // defined only when using private access
       vpc: cluster.kubectlPrivateSubnets ? cluster.vpc : undefined,
@@ -91,16 +86,6 @@ export class KubectlProvider extends NestedStack {
     } else {
       handler.addLayers(props.cluster.kubectlLayer);
     }
-
-    this.handlerRole = handler.role!;
-
-    this.handlerRole.addToPrincipalPolicy(new iam.PolicyStatement({
-      actions: ['eks:DescribeCluster'],
-      resources: [cluster.clusterArn],
-    }));
-
-    // allow this handler to assume the kubectl role
-    cluster.kubectlRole.grant(this.handlerRole, 'sts:AssumeRole');
 
     const provider = new cr.Provider(this, 'Provider', {
       onEventHandler: handler,
