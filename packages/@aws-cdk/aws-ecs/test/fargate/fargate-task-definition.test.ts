@@ -5,7 +5,7 @@ import { nodeunitShim, Test } from 'nodeunit-shim';
 import * as ecs from '../../lib';
 
 nodeunitShim({
-  'When creating an Fargate TaskDefinition': {
+  'When creating a Fargate TaskDefinition': {
     'with only required properties set, it correctly sets default properties'(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();
@@ -110,6 +110,92 @@ nodeunitShim({
       test.throws(() => {
         taskDefinition.addPlacementConstraint(ecs.PlacementConstraint.memberOf('attribute:ecs.instance-type =~ t2.*'));
       }, /Cannot set placement constraints on tasks that run on Fargate/);
+
+      test.done();
+    },
+  },
+
+  'When importing from an existing Fargate TaskDefinition': {
+    'can succeed using TaskDefinition Arn'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const expectTaskDefinitionArn = 'TD_ARN';
+
+      // WHEN
+      const taskDefinition = ecs.FargateTaskDefinition.fromFargateTaskDefinitionArn(stack, 'FARGATE_TD_ID', expectTaskDefinitionArn);
+
+      // THEN
+      test.equal(taskDefinition.taskDefinitionArn, expectTaskDefinitionArn);
+      test.done();
+    },
+
+    'can succeed using attributes'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const expectTaskDefinitionArn = 'TD_ARN';
+      const expectNetworkMode = ecs.NetworkMode.AWS_VPC;
+      const expectTaskRole = new iam.Role(stack, 'TaskRole', {
+        assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
+      });
+
+      // WHEN
+      const taskDefinition = ecs.FargateTaskDefinition.fromFargateTaskDefinitionAttributes(stack, 'TD_ID', {
+        taskDefinitionArn: expectTaskDefinitionArn,
+        networkMode: expectNetworkMode,
+        taskRole: expectTaskRole,
+      });
+
+      // THEN
+      test.equal(taskDefinition.taskDefinitionArn, expectTaskDefinitionArn);
+      test.equal(taskDefinition.compatibility, ecs.Compatibility.FARGATE);
+      test.ok(taskDefinition.isFargateCompatible);
+      test.equal(taskDefinition.isEc2Compatible, false);
+      test.equal(taskDefinition.networkMode, expectNetworkMode);
+      test.equal(taskDefinition.taskRole, expectTaskRole);
+
+      test.done();
+    },
+
+    'returns a Fargate TaskDefinition that will throw an error when trying to access its networkMode but its networkMode is undefined'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const expectTaskDefinitionArn = 'TD_ARN';
+      const expectTaskRole = new iam.Role(stack, 'TaskRole', {
+        assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
+      });
+
+      // WHEN
+      const taskDefinition = ecs.FargateTaskDefinition.fromFargateTaskDefinitionAttributes(stack, 'TD_ID', {
+        taskDefinitionArn: expectTaskDefinitionArn,
+        taskRole: expectTaskRole,
+      });
+
+      // THEN
+      test.throws(() => {
+        taskDefinition.networkMode;
+      }, 'This operation requires the networkMode in ImportedTaskDefinition to be defined. ' +
+        'Add the \'networkMode\' in ImportedTaskDefinitionProps to instantiate ImportedTaskDefinition');
+
+      test.done();
+    },
+
+    'returns a Fargate TaskDefinition that will throw an error when trying to access its taskRole but its taskRole is undefined'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const expectTaskDefinitionArn = 'TD_ARN';
+      const expectNetworkMode = ecs.NetworkMode.AWS_VPC;
+
+      // WHEN
+      const taskDefinition = ecs.FargateTaskDefinition.fromFargateTaskDefinitionAttributes(stack, 'TD_ID', {
+        taskDefinitionArn: expectTaskDefinitionArn,
+        networkMode: expectNetworkMode,
+      });
+
+      // THEN
+      test.throws(() => {
+        taskDefinition.taskRole;
+      }, 'This operation requires the taskRole in ImportedTaskDefinition to be defined. ' +
+        'Add the \'taskRole\' in ImportedTaskDefinitionProps to instantiate ImportedTaskDefinition');
 
       test.done();
     },
