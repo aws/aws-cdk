@@ -27,9 +27,6 @@
         ],
         "distName": "aws-cdk.aws-networkfirewall",
         "module": "aws_cdk.aws_networkfirewall"
-      },
-      "go": {
-        "moduleName": "github.com/aws/aws-cdk-go"
       }
     }
   },
