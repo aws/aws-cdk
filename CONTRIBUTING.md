@@ -330,7 +330,7 @@ $ yarn compat
 To figure out if the changes you made were breaking. See the section [API Compatibility
 Checks](#api-compatibility-checks) for more information.
 
-#### Dealing with API surface changes
+#### Dealing with breaking API surface changes
 
 If you need to change the type of some API element, introduce a new API
 element and mark the old API element as `@deprecated`.
@@ -387,17 +387,17 @@ in our use base.
 Determining whether or not behavioral changes are breaking requires expertise
 and judgement on the part of the library owner, and testing.
 
-#### Dealing with behavior changes
+#### Dealing with breaking behavior changes
 
 Most of the time, behavioral changes will arise because we want to change the
 default value or default behavior of some property (i.e., we want to change the
 interpretation of what it means if the value is missing).
 
-The user must opt in to the new behavior, either by:
+If the new behavior is going to be breaking, the user must opt in to it, either by:
 
 * Adding a new API element (class, property, method, ...) to have users
-  explicitly opt in to the new behavior at the source code level;
-  * Potentially `@deprecate`ing the old API element.
+  explicitly opt in to the new behavior at the source code level (potentially
+  `@deprecate`ing the old API element); or
 * Use the [feature flag](#feature-flags) mechanism to have the user opt in to the new
   behavior without changing the source code.
 
