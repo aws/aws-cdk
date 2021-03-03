@@ -1,9 +1,9 @@
 import * as ecs from '@aws-cdk/aws-ecs';
 import * as awslogs from '@aws-cdk/aws-logs';
-import { Construct } from '@aws-cdk/core';
 import { Service } from '../service';
 import { Container } from './container';
 import { ContainerMutatingHook, ServiceExtension } from './extension-interfaces';
+import { Construct } from '@aws-cdk/core';
 
 /**
  * Settings for the hook which mutates the application container

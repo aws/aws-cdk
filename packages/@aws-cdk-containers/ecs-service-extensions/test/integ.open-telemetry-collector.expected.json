@@ -533,14 +533,20 @@
         }
       }
     },
+    "nameopentelemetryconfigBFE57654": {
+      "Type": "AWS::SSM::Parameter",
+      "Properties": {
+        "Type": "String",
+        "Value": "\n  extensions:\n    health_check:\n\n  receivers:\n    otlp:\n      protocols:\n        grpc:\n          endpoint: 0.0.0.0:55680\n        http:\n          endpoint: 0.0.0.0:55681\n    awsxray:\n      endpoint: 0.0.0.0:2000\n      transport: udp\n    awsecscontainermetrics:\n\n  processors:\n    batch/traces:\n      timeout: 1s\n      send_batch_size: 50\n    batch/metrics:\n      timeout: 60s\n    filter:\n      metrics:\n        include:\n          match_type: strict\n          metric_names:\n            - ecs.task.memory.reserved\n            - ecs.task.memory.utilized\n            - ecs.task.cpu.reserved\n            - ecs.task.cpu.utilized\n            - ecs.task.network.rate.rx\n            - ecs.task.network.rate.tx\n            - ecs.task.storage.read_bytes\n            - ecs.task.storage.write_bytes\n    metricstransform:\n      transforms:\n        - metric_name: ecs.task.memory.utilized\n          action: update\n          new_name: MemoryUtilized\n        - metric_name: ecs.task.memory.reserved\n          action: update\n          new_name: MemoryReserved\n        - metric_name: ecs.task.cpu.utilized\n          action: update\n          new_name: CpuUtilized\n        - metric_name: ecs.task.cpu.reserved\n          action: update\n          new_name: CpuReserved\n        - metric_name: ecs.task.network.rate.rx\n          action: update\n          new_name: NetworkRxBytes\n        - metric_name: ecs.task.network.rate.tx\n          action: update\n          new_name: NetworkTxBytes\n        - metric_name: ecs.task.storage.read_bytes\n          action: update\n          new_name: StorageReadBytes\n        - metric_name: ecs.task.storage.write_bytes\n          action: update\n          new_name: StorageWriteBytes\n    resource:\n      attributes:\n        - key: ClusterName\n          from_attribute: aws.ecs.cluster.name\n          action: insert\n        - key: aws.ecs.cluster.name\n          action: delete\n        - key: ServiceName\n          from_attribute: aws.ecs.service.name\n          action: insert\n        - key: ServiceName\n          action: update\n          value: name\n        - key: aws.ecs.service.name\n          action: delete\n        - key: TaskId\n          from_attribute: aws.ecs.task.id\n          action: insert\n        - key: aws.ecs.task.id\n          action: delete\n        - key: TaskDefinitionFamily\n          from_attribute: aws.ecs.task.family\n          action: insert\n        - key: aws.ecs.task.family\n          action: delete\n  exporters:\n    awsxray:\n    awsemf/application:\n      log_group_name: 'aws/ecs/containerinsights/{ClusterName}/application/metrics'\n      log_stream_name: '{TaskId}'\n    awsemf/performance:\n      namespace: ECS/ContainerInsights\n      log_group_name: '/aws/ecs/containerinsights/{ClusterName}/performance'\n      log_stream_name: '{TaskId}'\n      resource_to_telemetry_conversion:\n        enabled: true\n      dimension_rollup_option: NoDimensionRollup\n      metric_declarations:\n        dimensions: [ [ ClusterName ], [ ClusterName, TaskDefinitionFamily ], [ ClusterName, ServiceName ] ]\n        metric_name_selectors: [ . ]\n  service:\n    pipelines:\n      traces:\n        receivers: [otlp,awsxray]\n        processors: [batch/traces]\n        exporters: [awsxray]\n      metrics/application:\n        receivers: [otlp]\n        processors: [batch/metrics]\n        exporters: [awsemf/application]\n      metrics/performance:\n        receivers: [awsecscontainermetrics ]\n        processors: [filter, metricstransform, resource]\n        exporters: [ awsemf/performance ]\n\n    extensions: [health_check]\n  "
+      }
+    },
     "namelogsF4B17D31": {
       "Type": "AWS::Logs::LogGroup",
       "Properties": {
-        "LogGroupName": "name-logs",
-        "RetentionInDays": 7
+        "RetentionInDays": 731
       },
-      "UpdateReplacePolicy": "Delete",
-      "DeletionPolicy": "Delete"
+      "UpdateReplacePolicy": "Retain",
+      "DeletionPolicy": "Retain"
     },
     "nametaskdefinitionTaskRole50FE844E": {
       "Type": "AWS::IAM::Role",
@@ -556,47 +562,7 @@
             }
           ],
           "Version": "2012-10-17"
-        },
-        "ManagedPolicyArns": [
-          {
-            "Fn::Join": [
-              "",
-              [
-                "arn:",
-                {
-                  "Ref": "AWS::Partition"
-                },
-                ":iam::aws:policy/AWSXRayDaemonWriteAccess"
-              ]
-            ]
-          }
-        ]
-      }
-    },
-    "nametaskdefinitionTaskRoleDefaultPolicyE66EDC68": {
-      "Type": "AWS::IAM::Policy",
-      "Properties": {
-        "PolicyDocument": {
-          "Statement": [
-            {
-              "Action": [
-                "logs:CreateLogGroup",
-                "logs:CreateLogStream",
-                "logs:DescribeLogStreams",
-                "logs:PutLogEvents"
-              ],
-              "Effect": "Allow",
-              "Resource": "*"
-            }
-          ],
-          "Version": "2012-10-17"
-        },
-        "PolicyName": "nametaskdefinitionTaskRoleDefaultPolicyE66EDC68",
-        "Roles": [
-          {
-            "Ref": "nametaskdefinitionTaskRole50FE844E"
-          }
-        ]
+        }
       }
     },
     "nametaskdefinition690762BB": {
@@ -607,20 +573,8 @@
             "Cpu": 1024,
             "DependsOn": [
               {
-                "Condition": "START",
-                "ContainerName": "firelens"
-              },
-              {
                 "Condition": "HEALTHY",
                 "ContainerName": "envoy"
-              },
-              {
-                "Condition": "START",
-                "ContainerName": "cloudwatch-agent"
-              },
-              {
-                "Condition": "HEALTHY",
-                "ContainerName": "xray"
               }
             ],
             "Environment": [
@@ -654,16 +608,15 @@
               ]
             },
             "LogConfiguration": {
-              "LogDriver": "awsfirelens",
+              "LogDriver": "awslogs",
               "Options": {
-                "Name": "cloudwatch",
-                "region": {
-                  "Ref": "AWS::Region"
-                },
-                "log_group_name": {
+                "awslogs-group": {
                   "Ref": "namelogsF4B17D31"
                 },
-                "log_stream_prefix": "name/"
+                "awslogs-stream-prefix": "name",
+                "awslogs-region": {
+                  "Ref": "AWS::Region"
+                }
               }
             },
             "Memory": 2048,
@@ -777,107 +730,56 @@
             "User": "1337"
           },
           {
-            "DependsOn": [
-              {
-                "Condition": "HEALTHY",
-                "ContainerName": "envoy"
-              }
-            ],
             "Essential": true,
-            "FirelensConfiguration": {
-              "Type": "fluentbit"
-            },
-            "Image": {
-              "Ref": "SsmParameterValueawsserviceawsforfluentbitlatestC96584B6F00A464EAD1953AFF4B05118Parameter"
-            },
+            "Image": "amazon/aws-otel-collector:latest",
             "LogConfiguration": {
               "LogDriver": "awslogs",
               "Options": {
                 "awslogs-group": {
-                  "Ref": "nametaskdefinitionfirelensLogGroup80DDA60F"
+                  "Ref": "nametaskdefinitionopentelemetrycollectorLogGroup014D70FD"
                 },
-                "awslogs-stream-prefix": "firelens",
+                "awslogs-stream-prefix": "open-telemetry-collector",
                 "awslogs-region": {
                   "Ref": "AWS::Region"
                 }
               }
             },
             "MemoryReservation": 50,
-            "Name": "firelens",
-            "User": "0:1338"
-          },
-          {
-            "DependsOn": [
+            "Name": "open-telemetry-collector",
+            "PortMappings": [
               {
-                "Condition": "HEALTHY",
-                "ContainerName": "envoy"
+                "ContainerPort": 55680,
+                "Protocol": "tcp"
               }
             ],
-            "Environment": [
+            "Secrets": [
               {
-                "Name": "AWS_REGION",
-                "Value": {
-                  "Ref": "AWS::Region"
+                "Name": "AOT_CONFIG_CONTENT",
+                "ValueFrom": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":ssm:",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      ":",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":parameter/",
+                      {
+                        "Ref": "nameopentelemetryconfigBFE57654"
+                      }
+                    ]
+                  ]
                 }
               }
             ],
-            "Essential": true,
-            "HealthCheck": {
-              "Command": [
-                "CMD-SHELL",
-                "curl -s http://localhost:2000"
-              ],
-              "Interval": 5,
-              "Retries": 3,
-              "StartPeriod": 10,
-              "Timeout": 2
-            },
-            "Image": "amazon/aws-xray-daemon:latest",
-            "LogConfiguration": {
-              "LogDriver": "awslogs",
-              "Options": {
-                "awslogs-group": {
-                  "Ref": "nametaskdefinitionxrayLogGroup4AF4CA37"
-                },
-                "awslogs-stream-prefix": "xray",
-                "awslogs-region": {
-                  "Ref": "AWS::Region"
-                }
-              }
-            },
-            "MemoryReservation": 256,
-            "Name": "xray",
-            "User": "1337"
-          },
-          {
-            "DependsOn": [
-              {
-                "Condition": "HEALTHY",
-                "ContainerName": "envoy"
-              }
-            ],
-            "Environment": [
-              {
-                "Name": "CW_CONFIG_CONTENT",
-                "Value": "{\"logs\":{\"metrics_collected\":{\"emf\":{}}},\"metrics\":{\"metrics_collected\":{\"statsd\":{}}}}"
-              }
-            ],
-            "Essential": true,
-            "Image": "amazon/cloudwatch-agent:latest",
-            "LogConfiguration": {
-              "LogDriver": "awslogs",
-              "Options": {
-                "awslogs-group": {
-                  "Ref": "nametaskdefinitioncloudwatchagentLogGroup78DDC685"
-                },
-                "awslogs-stream-prefix": "cloudwatch-agent",
-                "awslogs-region": {
-                  "Ref": "AWS::Region"
-                }
-              }
-            },
-            "MemoryReservation": 50,
-            "Name": "cloudwatch-agent",
             "User": "0:1338"
           }
         ],
@@ -990,6 +892,19 @@
             },
             {
               "Action": [
+                "logs:CreateLogStream",
+                "logs:PutLogEvents"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "namelogsF4B17D31",
+                  "Arn"
+                ]
+              }
+            },
+            {
+              "Action": [
                 "ecr:BatchCheckLayerAvailability",
                 "ecr:GetDownloadUrlForLayer",
                 "ecr:BatchGetImage"
@@ -1033,50 +948,46 @@
             },
             {
               "Action": [
-                "ecr:GetAuthorizationToken",
-                "ecr:BatchCheckLayerAvailability",
-                "ecr:GetDownloadUrlForLayer",
-                "ecr:BatchGetImage"
-              ],
-              "Effect": "Allow",
-              "Resource": "*"
-            },
-            {
-              "Action": [
                 "logs:CreateLogStream",
                 "logs:PutLogEvents"
               ],
               "Effect": "Allow",
               "Resource": {
                 "Fn::GetAtt": [
-                  "nametaskdefinitionfirelensLogGroup80DDA60F",
+                  "nametaskdefinitionopentelemetrycollectorLogGroup014D70FD",
                   "Arn"
                 ]
               }
             },
             {
               "Action": [
-                "logs:CreateLogStream",
-                "logs:PutLogEvents"
+                "ssm:DescribeParameters",
+                "ssm:GetParameters",
+                "ssm:GetParameter",
+                "ssm:GetParameterHistory"
               ],
               "Effect": "Allow",
               "Resource": {
-                "Fn::GetAtt": [
-                  "nametaskdefinitionxrayLogGroup4AF4CA37",
-                  "Arn"
-                ]
-              }
-            },
-            {
-              "Action": [
-                "logs:CreateLogStream",
-                "logs:PutLogEvents"
-              ],
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "nametaskdefinitioncloudwatchagentLogGroup78DDC685",
-                  "Arn"
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":ssm:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":parameter/",
+                    {
+                      "Ref": "nameopentelemetryconfigBFE57654"
+                    }
+                  ]
                 ]
               }
             }
@@ -1096,17 +1007,7 @@
       "UpdateReplacePolicy": "Retain",
       "DeletionPolicy": "Retain"
     },
-    "nametaskdefinitionfirelensLogGroup80DDA60F": {
-      "Type": "AWS::Logs::LogGroup",
-      "UpdateReplacePolicy": "Retain",
-      "DeletionPolicy": "Retain"
-    },
-    "nametaskdefinitionxrayLogGroup4AF4CA37": {
-      "Type": "AWS::Logs::LogGroup",
-      "UpdateReplacePolicy": "Retain",
-      "DeletionPolicy": "Retain"
-    },
-    "nametaskdefinitioncloudwatchagentLogGroup78DDC685": {
+    "nametaskdefinitionopentelemetrycollectorLogGroup014D70FD": {
       "Type": "AWS::Logs::LogGroup",
       "UpdateReplacePolicy": "Retain",
       "DeletionPolicy": "Retain"
@@ -1134,20 +1035,31 @@
         ]
       }
     },
-    "namepublishmetricsF329C7AE": {
+    "nameopentelemetry714A6F15": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
           "Statement": [
             {
-              "Action": "cloudwatch:PutMetricData",
+              "Action": [
+                "logs:PutLogEvents",
+                "logs:CreateLogGroup",
+                "logs:CreateLogStream",
+                "logs:DescribeLogStreams",
+                "logs:DescribeLogGroups",
+                "xray:PutTraceSegments",
+                "xray:PutTelemetryRecords",
+                "xray:GetSamplingRules",
+                "xray:GetSamplingTargets",
+                "xray:GetSamplingStatisticSummaries"
+              ],
               "Effect": "Allow",
               "Resource": "*"
             }
           ],
           "Version": "2012-10-17"
         },
-        "PolicyName": "namepublishmetricsF329C7AE",
+        "PolicyName": "nameopentelemetry714A6F15",
         "Roles": [
           {
             "Ref": "nametaskdefinitionTaskRole50FE844E"
@@ -1452,14 +1364,20 @@
         "VirtualServiceName": "name.production"
       }
     },
+    "greetingopentelemetryconfig4E0B7010": {
+      "Type": "AWS::SSM::Parameter",
+      "Properties": {
+        "Type": "String",
+        "Value": "\n  extensions:\n    health_check:\n\n  receivers:\n    otlp:\n      protocols:\n        grpc:\n          endpoint: 0.0.0.0:55680\n        http:\n          endpoint: 0.0.0.0:55681\n    awsxray:\n      endpoint: 0.0.0.0:2000\n      transport: udp\n    awsecscontainermetrics:\n\n  processors:\n    batch/traces:\n      timeout: 1s\n      send_batch_size: 50\n    batch/metrics:\n      timeout: 60s\n    filter:\n      metrics:\n        include:\n          match_type: strict\n          metric_names:\n            - ecs.task.memory.reserved\n            - ecs.task.memory.utilized\n            - ecs.task.cpu.reserved\n            - ecs.task.cpu.utilized\n            - ecs.task.network.rate.rx\n            - ecs.task.network.rate.tx\n            - ecs.task.storage.read_bytes\n            - ecs.task.storage.write_bytes\n    metricstransform:\n      transforms:\n        - metric_name: ecs.task.memory.utilized\n          action: update\n          new_name: MemoryUtilized\n        - metric_name: ecs.task.memory.reserved\n          action: update\n          new_name: MemoryReserved\n        - metric_name: ecs.task.cpu.utilized\n          action: update\n          new_name: CpuUtilized\n        - metric_name: ecs.task.cpu.reserved\n          action: update\n          new_name: CpuReserved\n        - metric_name: ecs.task.network.rate.rx\n          action: update\n          new_name: NetworkRxBytes\n        - metric_name: ecs.task.network.rate.tx\n          action: update\n          new_name: NetworkTxBytes\n        - metric_name: ecs.task.storage.read_bytes\n          action: update\n          new_name: StorageReadBytes\n        - metric_name: ecs.task.storage.write_bytes\n          action: update\n          new_name: StorageWriteBytes\n    resource:\n      attributes:\n        - key: ClusterName\n          from_attribute: aws.ecs.cluster.name\n          action: insert\n        - key: aws.ecs.cluster.name\n          action: delete\n        - key: ServiceName\n          from_attribute: aws.ecs.service.name\n          action: insert\n        - key: ServiceName\n          action: update\n          value: greeting\n        - key: aws.ecs.service.name\n          action: delete\n        - key: TaskId\n          from_attribute: aws.ecs.task.id\n          action: insert\n        - key: aws.ecs.task.id\n          action: delete\n        - key: TaskDefinitionFamily\n          from_attribute: aws.ecs.task.family\n          action: insert\n        - key: aws.ecs.task.family\n          action: delete\n  exporters:\n    awsxray:\n    awsemf/application:\n      log_group_name: 'aws/ecs/containerinsights/{ClusterName}/application/metrics'\n      log_stream_name: '{TaskId}'\n    awsemf/performance:\n      namespace: ECS/ContainerInsights\n      log_group_name: '/aws/ecs/containerinsights/{ClusterName}/performance'\n      log_stream_name: '{TaskId}'\n      resource_to_telemetry_conversion:\n        enabled: true\n      dimension_rollup_option: NoDimensionRollup\n      metric_declarations:\n        dimensions: [ [ ClusterName ], [ ClusterName, TaskDefinitionFamily ], [ ClusterName, ServiceName ] ]\n        metric_name_selectors: [ . ]\n  service:\n    pipelines:\n      traces:\n        receivers: [otlp,awsxray]\n        processors: [batch/traces]\n        exporters: [awsxray]\n      metrics/application:\n        receivers: [otlp]\n        processors: [batch/metrics]\n        exporters: [awsemf/application]\n      metrics/performance:\n        receivers: [awsecscontainermetrics ]\n        processors: [filter, metricstransform, resource]\n        exporters: [ awsemf/performance ]\n\n    extensions: [health_check]\n  "
+      }
+    },
     "greetinglogsCC360934": {
       "Type": "AWS::Logs::LogGroup",
       "Properties": {
-        "LogGroupName": "greeting-logs",
-        "RetentionInDays": 7
+        "RetentionInDays": 731
       },
-      "UpdateReplacePolicy": "Delete",
-      "DeletionPolicy": "Delete"
+      "UpdateReplacePolicy": "Retain",
+      "DeletionPolicy": "Retain"
     },
     "greetingtaskdefinitionTaskRole9179DA4A": {
       "Type": "AWS::IAM::Role",
@@ -1475,47 +1393,7 @@
             }
           ],
           "Version": "2012-10-17"
-        },
-        "ManagedPolicyArns": [
-          {
-            "Fn::Join": [
-              "",
-              [
-                "arn:",
-                {
-                  "Ref": "AWS::Partition"
-                },
-                ":iam::aws:policy/AWSXRayDaemonWriteAccess"
-              ]
-            ]
-          }
-        ]
-      }
-    },
-    "greetingtaskdefinitionTaskRoleDefaultPolicy5DB4510A": {
-      "Type": "AWS::IAM::Policy",
-      "Properties": {
-        "PolicyDocument": {
-          "Statement": [
-            {
-              "Action": [
-                "logs:CreateLogGroup",
-                "logs:CreateLogStream",
-                "logs:DescribeLogStreams",
-                "logs:PutLogEvents"
-              ],
-              "Effect": "Allow",
-              "Resource": "*"
-            }
-          ],
-          "Version": "2012-10-17"
-        },
-        "PolicyName": "greetingtaskdefinitionTaskRoleDefaultPolicy5DB4510A",
-        "Roles": [
-          {
-            "Ref": "greetingtaskdefinitionTaskRole9179DA4A"
-          }
-        ]
+        }
       }
     },
     "greetingtaskdefinition31690093": {
@@ -1526,20 +1404,8 @@
             "Cpu": 1024,
             "DependsOn": [
               {
-                "Condition": "START",
-                "ContainerName": "firelens"
-              },
-              {
                 "Condition": "HEALTHY",
                 "ContainerName": "envoy"
-              },
-              {
-                "Condition": "START",
-                "ContainerName": "cloudwatch-agent"
-              },
-              {
-                "Condition": "HEALTHY",
-                "ContainerName": "xray"
               }
             ],
             "Environment": [
@@ -1573,16 +1439,15 @@
               ]
             },
             "LogConfiguration": {
-              "LogDriver": "awsfirelens",
+              "LogDriver": "awslogs",
               "Options": {
-                "Name": "cloudwatch",
-                "region": {
-                  "Ref": "AWS::Region"
-                },
-                "log_group_name": {
+                "awslogs-group": {
                   "Ref": "greetinglogsCC360934"
                 },
-                "log_stream_prefix": "greeting/"
+                "awslogs-stream-prefix": "greeting",
+                "awslogs-region": {
+                  "Ref": "AWS::Region"
+                }
               }
             },
             "Memory": 2048,
@@ -1696,107 +1561,56 @@
             "User": "1337"
           },
           {
-            "DependsOn": [
-              {
-                "Condition": "HEALTHY",
-                "ContainerName": "envoy"
-              }
-            ],
             "Essential": true,
-            "FirelensConfiguration": {
-              "Type": "fluentbit"
-            },
-            "Image": {
-              "Ref": "SsmParameterValueawsserviceawsforfluentbitlatestC96584B6F00A464EAD1953AFF4B05118Parameter"
-            },
+            "Image": "amazon/aws-otel-collector:latest",
             "LogConfiguration": {
               "LogDriver": "awslogs",
               "Options": {
                 "awslogs-group": {
-                  "Ref": "greetingtaskdefinitionfirelensLogGroupD7A398A7"
+                  "Ref": "greetingtaskdefinitionopentelemetrycollectorLogGroup91BC9983"
                 },
-                "awslogs-stream-prefix": "firelens",
+                "awslogs-stream-prefix": "open-telemetry-collector",
                 "awslogs-region": {
                   "Ref": "AWS::Region"
                 }
               }
             },
             "MemoryReservation": 50,
-            "Name": "firelens",
-            "User": "0:1338"
-          },
-          {
-            "DependsOn": [
+            "Name": "open-telemetry-collector",
+            "PortMappings": [
               {
-                "Condition": "HEALTHY",
-                "ContainerName": "envoy"
+                "ContainerPort": 55680,
+                "Protocol": "tcp"
               }
             ],
-            "Environment": [
+            "Secrets": [
               {
-                "Name": "AWS_REGION",
-                "Value": {
-                  "Ref": "AWS::Region"
+                "Name": "AOT_CONFIG_CONTENT",
+                "ValueFrom": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":ssm:",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      ":",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":parameter/",
+                      {
+                        "Ref": "greetingopentelemetryconfig4E0B7010"
+                      }
+                    ]
+                  ]
                 }
               }
             ],
-            "Essential": true,
-            "HealthCheck": {
-              "Command": [
-                "CMD-SHELL",
-                "curl -s http://localhost:2000"
-              ],
-              "Interval": 5,
-              "Retries": 3,
-              "StartPeriod": 10,
-              "Timeout": 2
-            },
-            "Image": "amazon/aws-xray-daemon:latest",
-            "LogConfiguration": {
-              "LogDriver": "awslogs",
-              "Options": {
-                "awslogs-group": {
-                  "Ref": "greetingtaskdefinitionxrayLogGroupD25C072D"
-                },
-                "awslogs-stream-prefix": "xray",
-                "awslogs-region": {
-                  "Ref": "AWS::Region"
-                }
-              }
-            },
-            "MemoryReservation": 256,
-            "Name": "xray",
-            "User": "1337"
-          },
-          {
-            "DependsOn": [
-              {
-                "Condition": "HEALTHY",
-                "ContainerName": "envoy"
-              }
-            ],
-            "Environment": [
-              {
-                "Name": "CW_CONFIG_CONTENT",
-                "Value": "{\"logs\":{\"metrics_collected\":{\"emf\":{}}},\"metrics\":{\"metrics_collected\":{\"statsd\":{}}}}"
-              }
-            ],
-            "Essential": true,
-            "Image": "amazon/cloudwatch-agent:latest",
-            "LogConfiguration": {
-              "LogDriver": "awslogs",
-              "Options": {
-                "awslogs-group": {
-                  "Ref": "greetingtaskdefinitioncloudwatchagentLogGroupCEF72742"
-                },
-                "awslogs-stream-prefix": "cloudwatch-agent",
-                "awslogs-region": {
-                  "Ref": "AWS::Region"
-                }
-              }
-            },
-            "MemoryReservation": 50,
-            "Name": "cloudwatch-agent",
             "User": "0:1338"
           }
         ],
@@ -1909,6 +1723,19 @@
             },
             {
               "Action": [
+                "logs:CreateLogStream",
+                "logs:PutLogEvents"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "greetinglogsCC360934",
+                  "Arn"
+                ]
+              }
+            },
+            {
+              "Action": [
                 "ecr:BatchCheckLayerAvailability",
                 "ecr:GetDownloadUrlForLayer",
                 "ecr:BatchGetImage"
@@ -1952,50 +1779,46 @@
             },
             {
               "Action": [
-                "ecr:GetAuthorizationToken",
-                "ecr:BatchCheckLayerAvailability",
-                "ecr:GetDownloadUrlForLayer",
-                "ecr:BatchGetImage"
-              ],
-              "Effect": "Allow",
-              "Resource": "*"
-            },
-            {
-              "Action": [
                 "logs:CreateLogStream",
                 "logs:PutLogEvents"
               ],
               "Effect": "Allow",
               "Resource": {
                 "Fn::GetAtt": [
-                  "greetingtaskdefinitionfirelensLogGroupD7A398A7",
+                  "greetingtaskdefinitionopentelemetrycollectorLogGroup91BC9983",
                   "Arn"
                 ]
               }
             },
             {
               "Action": [
-                "logs:CreateLogStream",
-                "logs:PutLogEvents"
+                "ssm:DescribeParameters",
+                "ssm:GetParameters",
+                "ssm:GetParameter",
+                "ssm:GetParameterHistory"
               ],
               "Effect": "Allow",
               "Resource": {
-                "Fn::GetAtt": [
-                  "greetingtaskdefinitionxrayLogGroupD25C072D",
-                  "Arn"
-                ]
-              }
-            },
-            {
-              "Action": [
-                "logs:CreateLogStream",
-                "logs:PutLogEvents"
-              ],
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "greetingtaskdefinitioncloudwatchagentLogGroupCEF72742",
-                  "Arn"
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":ssm:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":parameter/",
+                    {
+                      "Ref": "greetingopentelemetryconfig4E0B7010"
+                    }
+                  ]
                 ]
               }
             }
@@ -2015,17 +1838,7 @@
       "UpdateReplacePolicy": "Retain",
       "DeletionPolicy": "Retain"
     },
-    "greetingtaskdefinitionfirelensLogGroupD7A398A7": {
-      "Type": "AWS::Logs::LogGroup",
-      "UpdateReplacePolicy": "Retain",
-      "DeletionPolicy": "Retain"
-    },
-    "greetingtaskdefinitionxrayLogGroupD25C072D": {
-      "Type": "AWS::Logs::LogGroup",
-      "UpdateReplacePolicy": "Retain",
-      "DeletionPolicy": "Retain"
-    },
-    "greetingtaskdefinitioncloudwatchagentLogGroupCEF72742": {
+    "greetingtaskdefinitionopentelemetrycollectorLogGroup91BC9983": {
       "Type": "AWS::Logs::LogGroup",
       "UpdateReplacePolicy": "Retain",
       "DeletionPolicy": "Retain"
@@ -2053,20 +1866,31 @@
         ]
       }
     },
-    "greetingpublishmetricsF17124EF": {
+    "greetingopentelemetry24E84940": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
           "Statement": [
             {
-              "Action": "cloudwatch:PutMetricData",
+              "Action": [
+                "logs:PutLogEvents",
+                "logs:CreateLogGroup",
+                "logs:CreateLogStream",
+                "logs:DescribeLogStreams",
+                "logs:DescribeLogGroups",
+                "xray:PutTraceSegments",
+                "xray:PutTelemetryRecords",
+                "xray:GetSamplingRules",
+                "xray:GetSamplingTargets",
+                "xray:GetSamplingStatisticSummaries"
+              ],
               "Effect": "Allow",
               "Resource": "*"
             }
           ],
           "Version": "2012-10-17"
         },
-        "PolicyName": "greetingpublishmetricsF17124EF",
+        "PolicyName": "greetingopentelemetry24E84940",
         "Roles": [
           {
             "Ref": "greetingtaskdefinitionTaskRole9179DA4A"
@@ -2371,14 +2195,20 @@
         "VirtualServiceName": "greeting.production"
       }
     },
+    "greeteropentelemetryconfig99BB229E": {
+      "Type": "AWS::SSM::Parameter",
+      "Properties": {
+        "Type": "String",
+        "Value": "\n  extensions:\n    health_check:\n\n  receivers:\n    otlp:\n      protocols:\n        grpc:\n          endpoint: 0.0.0.0:55680\n        http:\n          endpoint: 0.0.0.0:55681\n    awsxray:\n      endpoint: 0.0.0.0:2000\n      transport: udp\n    awsecscontainermetrics:\n\n  processors:\n    batch/traces:\n      timeout: 1s\n      send_batch_size: 50\n    batch/metrics:\n      timeout: 60s\n    filter:\n      metrics:\n        include:\n          match_type: strict\n          metric_names:\n            - ecs.task.memory.reserved\n            - ecs.task.memory.utilized\n            - ecs.task.cpu.reserved\n            - ecs.task.cpu.utilized\n            - ecs.task.network.rate.rx\n            - ecs.task.network.rate.tx\n            - ecs.task.storage.read_bytes\n            - ecs.task.storage.write_bytes\n    metricstransform:\n      transforms:\n        - metric_name: ecs.task.memory.utilized\n          action: update\n          new_name: MemoryUtilized\n        - metric_name: ecs.task.memory.reserved\n          action: update\n          new_name: MemoryReserved\n        - metric_name: ecs.task.cpu.utilized\n          action: update\n          new_name: CpuUtilized\n        - metric_name: ecs.task.cpu.reserved\n          action: update\n          new_name: CpuReserved\n        - metric_name: ecs.task.network.rate.rx\n          action: update\n          new_name: NetworkRxBytes\n        - metric_name: ecs.task.network.rate.tx\n          action: update\n          new_name: NetworkTxBytes\n        - metric_name: ecs.task.storage.read_bytes\n          action: update\n          new_name: StorageReadBytes\n        - metric_name: ecs.task.storage.write_bytes\n          action: update\n          new_name: StorageWriteBytes\n    resource:\n      attributes:\n        - key: ClusterName\n          from_attribute: aws.ecs.cluster.name\n          action: insert\n        - key: aws.ecs.cluster.name\n          action: delete\n        - key: ServiceName\n          from_attribute: aws.ecs.service.name\n          action: insert\n        - key: ServiceName\n          action: update\n          value: greeter\n        - key: aws.ecs.service.name\n          action: delete\n        - key: TaskId\n          from_attribute: aws.ecs.task.id\n          action: insert\n        - key: aws.ecs.task.id\n          action: delete\n        - key: TaskDefinitionFamily\n          from_attribute: aws.ecs.task.family\n          action: insert\n        - key: aws.ecs.task.family\n          action: delete\n  exporters:\n    awsxray:\n    awsemf/application:\n      log_group_name: 'aws/ecs/containerinsights/{ClusterName}/application/metrics'\n      log_stream_name: '{TaskId}'\n    awsemf/performance:\n      namespace: ECS/ContainerInsights\n      log_group_name: '/aws/ecs/containerinsights/{ClusterName}/performance'\n      log_stream_name: '{TaskId}'\n      resource_to_telemetry_conversion:\n        enabled: true\n      dimension_rollup_option: NoDimensionRollup\n      metric_declarations:\n        dimensions: [ [ ClusterName ], [ ClusterName, TaskDefinitionFamily ], [ ClusterName, ServiceName ] ]\n        metric_name_selectors: [ . ]\n  service:\n    pipelines:\n      traces:\n        receivers: [otlp,awsxray]\n        processors: [batch/traces]\n        exporters: [awsxray]\n      metrics/application:\n        receivers: [otlp]\n        processors: [batch/metrics]\n        exporters: [awsemf/application]\n      metrics/performance:\n        receivers: [awsecscontainermetrics ]\n        processors: [filter, metricstransform, resource]\n        exporters: [ awsemf/performance ]\n\n    extensions: [health_check]\n  "
+      }
+    },
     "greeterlogsCCD2F8B2": {
       "Type": "AWS::Logs::LogGroup",
       "Properties": {
-        "LogGroupName": "greeter-logs",
-        "RetentionInDays": 7
+        "RetentionInDays": 731
       },
-      "UpdateReplacePolicy": "Delete",
-      "DeletionPolicy": "Delete"
+      "UpdateReplacePolicy": "Retain",
+      "DeletionPolicy": "Retain"
     },
     "greeterloadbalancer85256741": {
       "Type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
@@ -2505,47 +2335,7 @@
             }
           ],
           "Version": "2012-10-17"
-        },
-        "ManagedPolicyArns": [
-          {
-            "Fn::Join": [
-              "",
-              [
-                "arn:",
-                {
-                  "Ref": "AWS::Partition"
-                },
-                ":iam::aws:policy/AWSXRayDaemonWriteAccess"
-              ]
-            ]
-          }
-        ]
-      }
-    },
-    "greetertaskdefinitionTaskRoleDefaultPolicyD0F53B1C": {
-      "Type": "AWS::IAM::Policy",
-      "Properties": {
-        "PolicyDocument": {
-          "Statement": [
-            {
-              "Action": [
-                "logs:CreateLogGroup",
-                "logs:CreateLogStream",
-                "logs:DescribeLogStreams",
-                "logs:PutLogEvents"
-              ],
-              "Effect": "Allow",
-              "Resource": "*"
-            }
-          ],
-          "Version": "2012-10-17"
-        },
-        "PolicyName": "greetertaskdefinitionTaskRoleDefaultPolicyD0F53B1C",
-        "Roles": [
-          {
-            "Ref": "greetertaskdefinitionTaskRole2A098ACC"
-          }
-        ]
+        }
       }
     },
     "greetertaskdefinitionE956EEA2": {
@@ -2556,20 +2346,8 @@
             "Cpu": 1024,
             "DependsOn": [
               {
-                "Condition": "START",
-                "ContainerName": "firelens"
-              },
-              {
                 "Condition": "HEALTHY",
                 "ContainerName": "envoy"
-              },
-              {
-                "Condition": "START",
-                "ContainerName": "cloudwatch-agent"
-              },
-              {
-                "Condition": "HEALTHY",
-                "ContainerName": "xray"
               }
             ],
             "Environment": [
@@ -2611,16 +2389,15 @@
               ]
             },
             "LogConfiguration": {
-              "LogDriver": "awsfirelens",
+              "LogDriver": "awslogs",
               "Options": {
-                "Name": "cloudwatch",
-                "region": {
-                  "Ref": "AWS::Region"
-                },
-                "log_group_name": {
+                "awslogs-group": {
                   "Ref": "greeterlogsCCD2F8B2"
                 },
-                "log_stream_prefix": "greeter/"
+                "awslogs-stream-prefix": "greeter",
+                "awslogs-region": {
+                  "Ref": "AWS::Region"
+                }
               }
             },
             "Memory": 2048,
@@ -2734,107 +2511,56 @@
             "User": "1337"
           },
           {
-            "DependsOn": [
-              {
-                "Condition": "HEALTHY",
-                "ContainerName": "envoy"
-              }
-            ],
             "Essential": true,
-            "FirelensConfiguration": {
-              "Type": "fluentbit"
-            },
-            "Image": {
-              "Ref": "SsmParameterValueawsserviceawsforfluentbitlatestC96584B6F00A464EAD1953AFF4B05118Parameter"
-            },
+            "Image": "amazon/aws-otel-collector:latest",
             "LogConfiguration": {
               "LogDriver": "awslogs",
               "Options": {
                 "awslogs-group": {
-                  "Ref": "greetertaskdefinitionfirelensLogGroupD5BAAC35"
+                  "Ref": "greetertaskdefinitionopentelemetrycollectorLogGroup74E5288C"
                 },
-                "awslogs-stream-prefix": "firelens",
+                "awslogs-stream-prefix": "open-telemetry-collector",
                 "awslogs-region": {
                   "Ref": "AWS::Region"
                 }
               }
             },
             "MemoryReservation": 50,
-            "Name": "firelens",
-            "User": "0:1338"
-          },
-          {
-            "DependsOn": [
+            "Name": "open-telemetry-collector",
+            "PortMappings": [
               {
-                "Condition": "HEALTHY",
-                "ContainerName": "envoy"
+                "ContainerPort": 55680,
+                "Protocol": "tcp"
               }
             ],
-            "Environment": [
+            "Secrets": [
               {
-                "Name": "AWS_REGION",
-                "Value": {
-                  "Ref": "AWS::Region"
+                "Name": "AOT_CONFIG_CONTENT",
+                "ValueFrom": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":ssm:",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      ":",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":parameter/",
+                      {
+                        "Ref": "greeteropentelemetryconfig99BB229E"
+                      }
+                    ]
+                  ]
                 }
               }
             ],
-            "Essential": true,
-            "HealthCheck": {
-              "Command": [
-                "CMD-SHELL",
-                "curl -s http://localhost:2000"
-              ],
-              "Interval": 5,
-              "Retries": 3,
-              "StartPeriod": 10,
-              "Timeout": 2
-            },
-            "Image": "amazon/aws-xray-daemon:latest",
-            "LogConfiguration": {
-              "LogDriver": "awslogs",
-              "Options": {
-                "awslogs-group": {
-                  "Ref": "greetertaskdefinitionxrayLogGroupBC1558B6"
-                },
-                "awslogs-stream-prefix": "xray",
-                "awslogs-region": {
-                  "Ref": "AWS::Region"
-                }
-              }
-            },
-            "MemoryReservation": 256,
-            "Name": "xray",
-            "User": "1337"
-          },
-          {
-            "DependsOn": [
-              {
-                "Condition": "HEALTHY",
-                "ContainerName": "envoy"
-              }
-            ],
-            "Environment": [
-              {
-                "Name": "CW_CONFIG_CONTENT",
-                "Value": "{\"logs\":{\"metrics_collected\":{\"emf\":{}}},\"metrics\":{\"metrics_collected\":{\"statsd\":{}}}}"
-              }
-            ],
-            "Essential": true,
-            "Image": "amazon/cloudwatch-agent:latest",
-            "LogConfiguration": {
-              "LogDriver": "awslogs",
-              "Options": {
-                "awslogs-group": {
-                  "Ref": "greetertaskdefinitioncloudwatchagentLogGroupE7EAF327"
-                },
-                "awslogs-stream-prefix": "cloudwatch-agent",
-                "awslogs-region": {
-                  "Ref": "AWS::Region"
-                }
-              }
-            },
-            "MemoryReservation": 50,
-            "Name": "cloudwatch-agent",
             "User": "0:1338"
           }
         ],
@@ -2947,6 +2673,19 @@
             },
             {
               "Action": [
+                "logs:CreateLogStream",
+                "logs:PutLogEvents"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "greeterlogsCCD2F8B2",
+                  "Arn"
+                ]
+              }
+            },
+            {
+              "Action": [
                 "ecr:BatchCheckLayerAvailability",
                 "ecr:GetDownloadUrlForLayer",
                 "ecr:BatchGetImage"
@@ -2990,50 +2729,46 @@
             },
             {
               "Action": [
-                "ecr:GetAuthorizationToken",
-                "ecr:BatchCheckLayerAvailability",
-                "ecr:GetDownloadUrlForLayer",
-                "ecr:BatchGetImage"
-              ],
-              "Effect": "Allow",
-              "Resource": "*"
-            },
-            {
-              "Action": [
                 "logs:CreateLogStream",
                 "logs:PutLogEvents"
               ],
               "Effect": "Allow",
               "Resource": {
                 "Fn::GetAtt": [
-                  "greetertaskdefinitionfirelensLogGroupD5BAAC35",
+                  "greetertaskdefinitionopentelemetrycollectorLogGroup74E5288C",
                   "Arn"
                 ]
               }
             },
             {
               "Action": [
-                "logs:CreateLogStream",
-                "logs:PutLogEvents"
+                "ssm:DescribeParameters",
+                "ssm:GetParameters",
+                "ssm:GetParameter",
+                "ssm:GetParameterHistory"
               ],
               "Effect": "Allow",
               "Resource": {
-                "Fn::GetAtt": [
-                  "greetertaskdefinitionxrayLogGroupBC1558B6",
-                  "Arn"
-                ]
-              }
-            },
-            {
-              "Action": [
-                "logs:CreateLogStream",
-                "logs:PutLogEvents"
-              ],
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "greetertaskdefinitioncloudwatchagentLogGroupE7EAF327",
-                  "Arn"
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":ssm:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":parameter/",
+                    {
+                      "Ref": "greeteropentelemetryconfig99BB229E"
+                    }
+                  ]
                 ]
               }
             }
@@ -3053,17 +2788,7 @@
       "UpdateReplacePolicy": "Retain",
       "DeletionPolicy": "Retain"
     },
-    "greetertaskdefinitionfirelensLogGroupD5BAAC35": {
-      "Type": "AWS::Logs::LogGroup",
-      "UpdateReplacePolicy": "Retain",
-      "DeletionPolicy": "Retain"
-    },
-    "greetertaskdefinitionxrayLogGroupBC1558B6": {
-      "Type": "AWS::Logs::LogGroup",
-      "UpdateReplacePolicy": "Retain",
-      "DeletionPolicy": "Retain"
-    },
-    "greetertaskdefinitioncloudwatchagentLogGroupE7EAF327": {
+    "greetertaskdefinitionopentelemetrycollectorLogGroup74E5288C": {
       "Type": "AWS::Logs::LogGroup",
       "UpdateReplacePolicy": "Retain",
       "DeletionPolicy": "Retain"
@@ -3091,20 +2816,31 @@
         ]
       }
     },
-    "greeterpublishmetrics0CCA359A": {
+    "greeteropentelemetryCE264770": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
           "Statement": [
             {
-              "Action": "cloudwatch:PutMetricData",
+              "Action": [
+                "logs:PutLogEvents",
+                "logs:CreateLogGroup",
+                "logs:CreateLogStream",
+                "logs:DescribeLogStreams",
+                "logs:DescribeLogGroups",
+                "xray:PutTraceSegments",
+                "xray:PutTelemetryRecords",
+                "xray:GetSamplingRules",
+                "xray:GetSamplingTargets",
+                "xray:GetSamplingStatisticSummaries"
+              ],
               "Effect": "Allow",
               "Resource": "*"
             }
           ],
           "Version": "2012-10-17"
         },
-        "PolicyName": "greeterpublishmetrics0CCA359A",
+        "PolicyName": "greeteropentelemetryCE264770",
         "Roles": [
           {
             "Ref": "greetertaskdefinitionTaskRole2A098ACC"
@@ -3623,12 +3359,6 @@
       "ap-east-1": {
         "ecrRepo": "856666278305"
       }
-    }
-  },
-  "Parameters": {
-    "SsmParameterValueawsserviceawsforfluentbitlatestC96584B6F00A464EAD1953AFF4B05118Parameter": {
-      "Type": "AWS::SSM::Parameter::Value<String>",
-      "Default": "/aws/service/aws-for-fluent-bit/latest"
     }
   },
   "Outputs": {

@@ -1,9 +1,9 @@
 import * as ecs from '@aws-cdk/aws-ecs';
 import * as iam from '@aws-cdk/aws-iam';
 import * as ssm from '@aws-cdk/aws-ssm';
-import { Construct } from '@aws-cdk/core';
 import { Service } from '../service';
 import { ContainerMutatingHook, ServiceExtension } from './extension-interfaces';
+import { Construct } from '@aws-cdk/core';
 
 const AWS_OPEN_TELEMETRY = 'amazon/aws-otel-collector:latest';
 
