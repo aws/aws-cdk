@@ -27,9 +27,6 @@
         ],
         "distName": "aws-cdk.aws-licensemanager",
         "module": "aws_cdk.aws_licensemanager"
-      },
-      "go": {
-        "moduleName": "github.com/aws/aws-cdk-go"
       }
     }
   },

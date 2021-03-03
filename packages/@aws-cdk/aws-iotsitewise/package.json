@@ -27,9 +27,6 @@
         ],
         "distName": "aws-cdk.aws-iotsitewise",
         "module": "aws_cdk.aws_iotsitewise"
-      },
-      "go": {
-        "moduleName": "github.com/aws/aws-cdk-go"
       }
     }
   },

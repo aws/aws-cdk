@@ -109,9 +109,6 @@
           "Framework :: AWS CDK",
           "Framework :: AWS CDK :: 1"
         ]
-      },
-      "go": {
-        "moduleName": "github.com/aws/aws-cdk-go"
       }
     },
     "projectReferences": true

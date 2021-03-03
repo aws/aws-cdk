@@ -27,9 +27,6 @@
         ],
         "distName": "aws-cdk.aws-auditmanager",
         "module": "aws_cdk.aws_auditmanager"
-      },
-      "go": {
-        "moduleName": "github.com/aws/aws-cdk-go"
       }
     }
   },

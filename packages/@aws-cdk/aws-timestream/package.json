@@ -27,9 +27,6 @@
         ],
         "distName": "aws-cdk.aws-timestream",
         "module": "aws_cdk.aws_timestream"
-      },
-      "go": {
-        "moduleName": "github.com/aws/aws-cdk-go"
       }
     }
   },
