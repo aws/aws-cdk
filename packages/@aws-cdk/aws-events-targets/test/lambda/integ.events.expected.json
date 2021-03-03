@@ -170,7 +170,9 @@
       }
     },
     "Queue4A7E3555": {
-      "Type": "AWS::SQS::Queue"
+      "Type": "AWS::SQS::Queue",
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
     },
     "QueuePolicy25439813": {
       "Type": "AWS::SQS::QueuePolicy",
