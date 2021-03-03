@@ -78,9 +78,9 @@
     "pkglint": "0.0.0"
   },
   "dependencies": {
-    "@aws-cdk/assets": "0.0.0",
     "@aws-cdk/aws-certificatemanager": "0.0.0",
     "@aws-cdk/aws-cloudwatch": "0.0.0",
+    "@aws-cdk/aws-cognito": "0.0.0",
     "@aws-cdk/aws-ec2": "0.0.0",
     "@aws-cdk/aws-elasticloadbalancingv2": "0.0.0",
     "@aws-cdk/aws-iam": "0.0.0",
@@ -94,9 +94,9 @@
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/assets": "0.0.0",
     "@aws-cdk/aws-certificatemanager": "0.0.0",
     "@aws-cdk/aws-cloudwatch": "0.0.0",
+    "@aws-cdk/aws-cognito": "0.0.0",
     "@aws-cdk/aws-ec2": "0.0.0",
     "@aws-cdk/aws-elasticloadbalancingv2": "0.0.0",
     "@aws-cdk/aws-iam": "0.0.0",
@@ -318,12 +318,17 @@
       "attribute-tag:@aws-cdk/aws-apigateway.RestApi.restApiName",
       "attribute-tag:@aws-cdk/aws-apigateway.SpecRestApi.restApiName",
       "attribute-tag:@aws-cdk/aws-apigateway.LambdaRestApi.restApiName",
-      "from-method:@aws-cdk/aws-apigateway.Stage"
+      "from-method:@aws-cdk/aws-apigateway.Stage",
+      "resource-attribute:@aws-cdk/aws-apigateway.ApiKey.apiKeyId",
+      "resource-attribute:@aws-cdk/aws-apigateway.RateLimitedApiKey.apiKeyId"
     ]
   },
   "stability": "stable",
   "awscdkio": {
     "announce": false
   },
-  "maturity": "stable"
+  "maturity": "stable",
+  "publishConfig": {
+    "tag": "latest"
+  }
 }

@@ -49,7 +49,9 @@
             ]
           ]
         }
-      }
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
     },
     "ServiceloadbalancerD5D60894": {
       "Type": "AWS::ElasticLoadBalancingV2::LoadBalancer",

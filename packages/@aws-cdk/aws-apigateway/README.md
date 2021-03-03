@@ -32,6 +32,7 @@ running on AWS Lambda, or any web application.
   - [IAM-based authorizer](#iam-based-authorizer)
   - [Lambda-based token authorizer](#lambda-based-token-authorizer)
   - [Lambda-based request authorizer](#lambda-based-request-authorizer)
+  - [Cognito User Pools authorizer](#cognito-user-pools-authorizer)
 - [Mutual TLS](#mutal-tls-mtls)
 - [Deployments](#deployments)
   - [Deep dive: Invalidation of deployments](#deep-dive-invalidation-of-deployments)
@@ -156,13 +157,24 @@ book.addMethod('GET', getBookIntegration, {
 });
 ```
 
+It is possible to also integrate with AWS services in a different region. The following code integrates with Amazon SQS in the
+`eu-west-1` region.
+
+```ts
+const getMessageIntegration = new apigateway.AwsIntegration({
+  service: 'sqs', 
+  path: 'queueName', 
+  region: 'eu-west-1' 
+});
+```
+
 ## API Keys
 
 The following example shows how to use an API Key with a usage plan:
 
 ```ts
 const hello = new lambda.Function(this, 'hello', {
-  runtime: lambda.Runtime.NODEJS_10_X,
+  runtime: lambda.Runtime.NODEJS_12_X,
   handler: 'hello.handler',
   code: lambda.Code.fromAsset('lambda')
 });
@@ -229,7 +241,7 @@ The following example shows how to use a rate limited api key :
 
 ```ts
 const hello = new lambda.Function(this, 'hello', {
-  runtime: lambda.Runtime.NODEJS_10_X,
+  runtime: lambda.Runtime.NODEJS_12_X,
   handler: 'hello.handler',
   code: lambda.Code.fromAsset('lambda')
 });
@@ -259,7 +271,7 @@ have to define your models and mappings for the request, response, and integrati
 
 ```ts
 const hello = new lambda.Function(this, 'hello', {
-  runtime: lambda.Runtime.NODEJS_10_X,
+  runtime: lambda.Runtime.NODEJS_12_X,
   handler: 'hello.handler',
   code: lambda.Code.fromAsset('lambda')
 });
@@ -580,6 +592,25 @@ Authorizers can also be passed via the `defaultMethodOptions` property within th
 explicitly overridden, the specified defaults will be applied across all `Method`s across the `RestApi` or across all `Resource`s,
 depending on where the defaults were specified.
 
+### Cognito User Pools authorizer
+
+API Gateway also allows [Amazon Cognito user pools as authorizer](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-integrate-with-cognito.html)
+
+The following snippet configures a Cognito user pool as an authorizer:
+
+```ts
+const userPool = new cognito.UserPool(stack, 'UserPool');
+
+const auth = new apigateway.CognitoUserPoolsAuthorizer(this, 'booksAuthorizer', {
+  cognitoUserPools: [userPool]
+});
+
+books.addMethod('GET', new apigateway.HttpIntegration('http://amazon.com'), {
+  authorizer: auth,
+  authorizationType: apigateway.AuthorizationType.COGNITO,
+});
+```
+
 ## Mutual TLS (mTLS)
 
 Mutual TLS can be configured to limit access to your API based by using client certificates instead of (or as an extension of) using authorization headers.
@@ -809,9 +840,10 @@ new apigateway.RestApi(this, 'books', {
   deployOptions: {
     accessLogDestination: new apigateway.LogGroupLogDestination(logGroup),
     accessLogFormat: apigateway.AccessLogFormat.custom(
-      `${AccessLogFormat.contextRequestId()} ${AccessLogField.contextErrorMessage()} ${AccessLogField.contextErrorMessageString()}`);
-  })
-};
+      `${AccessLogField.contextRequestId()} ${AccessLogField.contextErrorMessage()} ${AccessLogField.contextErrorMessageString()}`
+    )
+  }
+});
 ```
 
 You can use the `methodOptions` property to configure
