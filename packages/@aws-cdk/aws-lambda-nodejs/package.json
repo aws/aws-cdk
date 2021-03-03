@@ -26,6 +26,9 @@
           "Framework :: AWS CDK",
           "Framework :: AWS CDK :: 1"
         ]
+      },
+      "go": {
+        "moduleName": "github.com/aws/aws-cdk-go"
       }
     },
     "projectReferences": true
@@ -67,7 +70,7 @@
     "cdk-build-tools": "0.0.0",
     "cdk-integ-tools": "0.0.0",
     "delay": "5.0.0",
-    "esbuild": "^0.8.50",
+    "esbuild": "^0.8.54",
     "pkglint": "0.0.0"
   },
   "dependencies": {
