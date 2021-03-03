@@ -1,3 +1,4 @@
+/// !cdk-integ pragma:ignore-assets
 import { SubnetType, Vpc } from '@aws-cdk/aws-ec2';
 import { ContainerImage } from '@aws-cdk/aws-ecs';
 import { CnameRecord, PublicHostedZone } from '@aws-cdk/aws-route53';

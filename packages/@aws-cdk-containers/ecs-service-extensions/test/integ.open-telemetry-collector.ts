@@ -1,3 +1,4 @@
+/// !cdk-integ pragma:ignore-assets
 import { Mesh } from '@aws-cdk/aws-appmesh';
 import * as ecs from '@aws-cdk/aws-ecs';
 import { App, Stack } from '@aws-cdk/core';

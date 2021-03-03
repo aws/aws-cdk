@@ -1,10 +1,11 @@
+/// !cdk-integ pragma:ignore-assets
 import { Mesh } from '@aws-cdk/aws-appmesh';
 import { ContainerImage } from '@aws-cdk/aws-ecs';
 import { App, Stack } from '@aws-cdk/core';
 import { AppMeshExtension, CloudwatchAgentExtension, Container, Environment, FireLensExtension, HttpLoadBalancerExtension, ScaleOnCpuUtilization, Service, ServiceDescription, XRayExtension } from '../lib';
 
 const app = new App();
-const stack = new Stack(app, 'aws-ecs-integ-all-service-addons');
+const stack = new Stack(app, 'aws-ecs-integ');
 
 const mesh = new Mesh(stack, 'my-mesh');
 const environment = new Environment(stack, 'production');

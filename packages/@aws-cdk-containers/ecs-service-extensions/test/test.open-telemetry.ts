@@ -50,9 +50,6 @@ export = {
           ],
         },
         {
-          Command: [
-            '--log-level=DEBUG',
-          ],
           Essential: true,
           Image: 'amazon/aws-otel-collector:latest',
           LogConfiguration: {

@@ -1,3 +1,4 @@
+/// !cdk-integ pragma:ignore-assets
 import * as ecs from '@aws-cdk/aws-ecs';
 import * as cdk from '@aws-cdk/core';
 import { Container, Environment, Service, ServiceBuild, ServiceDescription, ServiceExtension } from '../lib';

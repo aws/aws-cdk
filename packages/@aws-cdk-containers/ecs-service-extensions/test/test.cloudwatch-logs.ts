@@ -49,7 +49,6 @@ export = {
 
     // THEN
     expect(stack).to(haveResource('AWS::Logs::LogGroup', {
-      LogGroupName: 'my-service-logs',
       RetentionInDays: 731,
     }));
 
