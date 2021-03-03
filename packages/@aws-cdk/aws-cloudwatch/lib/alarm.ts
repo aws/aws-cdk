@@ -235,19 +235,21 @@ export class Alarm extends AlarmBase {
       this.alarmActionArns = [];
     }
 
-    this.alarmActionArns.push(...actions.map(a => {
-      const actionArn = a.bind(this, this).alarmActionArn;
+    this.alarmActionArns.push(...actions.map(a =>
+      this.validateActionArn(a.bind(this, this).alarmActionArn),
+    ));
+  }
 
-      const ec2ActionsRegexp: RegExp = /arn:aws:automate:[a-z|\d|-]+:ec2:[a-z]+/;
-      if (ec2ActionsRegexp.test(actionArn)) {
-        // Check per-instance metric
-        const metricConfig = this.metric.toMetricConfig();
-        if (metricConfig.metricStat?.dimensions?.length != 1 || metricConfig.metricStat?.dimensions![0].name != 'InstanceId') {
-          throw new Error('EC2 alarm actions must use an EC2 Per-Instance Metric');
-        }
+  private validateActionArn(actionArn: string): string {
+    const ec2ActionsRegexp: RegExp = /arn:aws:automate:[a-z|\d|-]+:ec2:[a-z]+/;
+    if (ec2ActionsRegexp.test(actionArn)) {
+      // Check per-instance metric
+      const metricConfig = this.metric.toMetricConfig();
+      if (metricConfig.metricStat?.dimensions?.length != 1 || metricConfig.metricStat?.dimensions![0].name != 'InstanceId') {
+        throw new Error(`EC2 alarm actions requires an EC2 Per-Instance Metric. (${JSON.stringify(metricConfig)} does not have an 'InstanceId' dimension)`);
       }
-      return actionArn;
-    }));
+    }
+    return actionArn;
   }
 
   private renderMetric(metric: IMetric) {
