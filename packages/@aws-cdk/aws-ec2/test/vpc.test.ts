@@ -14,6 +14,7 @@ import {
   InterfaceVpcEndpoint,
   InterfaceVpcEndpointService,
   NatProvider,
+  NatTrafficDirection,
   NetworkAcl,
   NetworkAclEntry,
   Peer,
@@ -25,7 +26,6 @@ import {
   SubnetType,
   TrafficDirection,
   Vpc,
-  Traffic,
 } from '../lib';
 
 nodeunitShim({
@@ -1016,7 +1016,7 @@ nodeunitShim({
         machineImage: new GenericLinuxImage({
           'us-east-1': 'ami-1',
         }),
-        defaultAllowAll: Traffic.INBOUND_AND_OUTBOUND,
+        defaultAllowedTraffic: NatTrafficDirection.INBOUND_AND_OUTBOUND,
       });
       new Vpc(stack, 'TheVPC', {
         natGatewayProvider: provider,
@@ -1053,7 +1053,7 @@ nodeunitShim({
         machineImage: new GenericLinuxImage({
           'us-east-1': 'ami-1',
         }),
-        defaultAllowAll: Traffic.OUTBOUND_ONLY,
+        defaultAllowedTraffic: NatTrafficDirection.OUTBOUND_ONLY,
       });
       new Vpc(stack, 'TheVPC', {
         natGatewayProvider: provider,
@@ -1083,7 +1083,7 @@ nodeunitShim({
         machineImage: new GenericLinuxImage({
           'us-east-1': 'ami-1',
         }),
-        defaultAllowAll: Traffic.NONE,
+        defaultAllowedTraffic: NatTrafficDirection.NONE,
       });
       new Vpc(stack, 'TheVPC', {
         natGatewayProvider: provider,
