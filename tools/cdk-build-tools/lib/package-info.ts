@@ -83,7 +83,7 @@ export interface CompilerOverrides {
  */
 export function packageCompiler(compilers: CompilerOverrides): string[] {
   if (isJsii()) {
-    return [compilers.jsii || require.resolve('jsii/bin/jsii'), '--silence-warnings=reserved-word'];
+    return [compilers.jsii || require.resolve('jsii/bin/jsii'), '--silence-warnings=reserved-word', '--strip-deprecated'];
   } else {
     return [compilers.tsc || require.resolve('typescript/bin/tsc'), '--build'];
   }
