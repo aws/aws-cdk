@@ -33,7 +33,7 @@
   },
   "dependencies": {
     "fs-extra": "^9.1.0",
-    "typescript": "~3.9.7"
+    "typescript": "~3.9.9"
   },
   "keywords": [
     "aws",

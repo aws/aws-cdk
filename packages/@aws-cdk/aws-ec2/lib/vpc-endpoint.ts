@@ -287,6 +287,7 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public static readonly KMS = new InterfaceVpcEndpointAwsService('kms');
   public static readonly CLOUDWATCH_LOGS = new InterfaceVpcEndpointAwsService('logs');
   public static readonly CLOUDWATCH = new InterfaceVpcEndpointAwsService('monitoring');
+  public static readonly RDS = new InterfaceVpcEndpointAwsService('rds');
   public static readonly SAGEMAKER_API = new InterfaceVpcEndpointAwsService('sagemaker.api');
   public static readonly SAGEMAKER_RUNTIME = new InterfaceVpcEndpointAwsService('sagemaker.runtime');
   public static readonly SAGEMAKER_RUNTIME_FIPS = new InterfaceVpcEndpointAwsService('sagemaker.runtime-fips');
