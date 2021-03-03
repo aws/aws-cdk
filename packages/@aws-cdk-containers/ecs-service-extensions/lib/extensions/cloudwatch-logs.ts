@@ -78,10 +78,8 @@ export class CloudWatchLogsExtension extends ServiceExtension {
     this.parentService = service;
 
     if (!this.logGroup) {
-      // If the user did not manually pass a log group in create one
-      this.logGroup = new awslogs.LogGroup(scope, `${service.id}-logs`, {
-        logGroupName: `${service.id}-logs`,
-      });
+      // If the user did not manually pass a log group in then create one for them
+      this.logGroup = new awslogs.LogGroup(scope, `${service.id}-logs`);
     }
   }
 

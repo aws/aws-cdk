@@ -5,7 +5,6 @@ import { Construct } from '@aws-cdk/core';
 import { Service } from '../service';
 import { ContainerMutatingHook, ServiceExtension } from './extension-interfaces';
 
-//const AWS_OPEN_TELEMETRY = 'rhossai2/aoc:v0.0.19';
 const AWS_OPEN_TELEMETRY = 'amazon/aws-otel-collector:latest';
 
 interface OpenTelemetryConfigProps {
@@ -203,7 +202,7 @@ export class OpenTelemetryCollector extends ServiceExtension {
     this.container = taskDefinition.addContainer('open-telemetry-collector', {
       image: ecs.ContainerImage.fromRegistry(AWS_OPEN_TELEMETRY),
       logging: new ecs.AwsLogDriver({ streamPrefix: 'open-telemetry-collector' }),
-      command: ['--log-level=DEBUG'],
+      //command: ['--log-level=DEBUG'],
       user: '0:1338', // Ensure that collector's outbound traffic doesn't go through proxy
       secrets: {
         AOT_CONFIG_CONTENT: ecs.Secret.fromSsmParameter(this.config),

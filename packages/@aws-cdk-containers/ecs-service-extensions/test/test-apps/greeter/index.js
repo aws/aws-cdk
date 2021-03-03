@@ -11,6 +11,7 @@ if (process.env.TEST_NEWRELIC == 'true') {
 
 if (process.env.TEST_XRAY == 'true') {
   AWSXRay = require('aws-xray-sdk');
+  AWSXRay.captureHTTPsGlobal(require('http'));
 }
 
 var request = require('request-promise-native');
@@ -33,11 +34,30 @@ if (!NAME_URL) {
 }
 
 if (process.env.TEST_XRAY == 'true') {
-  app.use(AWSXRay.express.openSegment('greeting'));
+  app.use(AWSXRay.express.openSegment('greeter'));
 }
 
-app.get('*', async function (req, res) {
-  res.send(`From ${hostname}: ` + await request(GREETING_URL) + ' ' + await request(NAME_URL));
+app.get('*', function (req, res) {
+  var greeting, name;
+  request(GREETING_URL, function (err, resp, body) {
+    if (err) {
+      console.error('Error talking to the greeting service: ' + err);
+      return res.send(200, 'Failed to communciate to the greeting service, check logs');
+    }
+
+    greeting = body;
+
+    request(NAME_URL, function (err, resp, body) {
+      if (err) {
+        console.error('Error talking to the name service: ' + err);
+        return res.send(200, 'Failed to communciate to the name service, check logs');
+      }
+
+      name = body;
+
+      res.send(`From ${hostname}: ${greeting} ${name}`);
+    })
+  })
 });
 
 if (process.env.TEST_XRAY == 'true') {

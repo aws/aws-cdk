@@ -4,7 +4,7 @@ import { App, Stack } from '@aws-cdk/core';
 import { AppMeshExtension, CloudwatchAgentExtension, Container, Environment, FireLensExtension, HttpLoadBalancerExtension, ScaleOnCpuUtilization, Service, ServiceDescription, XRayExtension } from '../lib';
 
 const app = new App();
-const stack = new Stack(app, 'aws-ecs-integ');
+const stack = new Stack(app, 'aws-ecs-integ-all-service-addons');
 
 const mesh = new Mesh(stack, 'my-mesh');
 const environment = new Environment(stack, 'production');
@@ -18,6 +18,7 @@ nameDescription.add(new Container({
   image: ContainerImage.fromAsset('./test-apps/name'),
   environment: {
     PORT: '80',
+    TEST_XRAY: 'true',
   },
 }));
 nameDescription.add(new AppMeshExtension({ mesh }));
@@ -43,6 +44,7 @@ greetingDescription.add(new Container({
   image: ContainerImage.fromAsset('./test-apps/greeting'),
   environment: {
     PORT: '80',
+    TEST_XRAY: 'true',
   },
 }));
 greetingDescription.add(new AppMeshExtension({ mesh }));
@@ -70,6 +72,7 @@ greeterDescription.add(new Container({
     PORT: '80',
     GREETING_URL: 'http://greeting.production',
     NAME_URL: 'http://name.production',
+    TEST_XRAY: 'true',
   },
 }));
 greeterDescription.add(new AppMeshExtension({ mesh }));
