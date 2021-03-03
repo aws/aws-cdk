@@ -351,7 +351,7 @@ class SomeClass implements ICountable {
       throw new Error('This operation requires that a \'count\' is specified when SomeClass is created.');
       // ❌ DO NOT: just throw an error like 'count is missing'
     }
-    return this_.count;
+    return this._count;
   }
 }
 ```
