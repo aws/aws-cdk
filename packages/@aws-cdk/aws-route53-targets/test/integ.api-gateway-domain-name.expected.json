@@ -390,8 +390,7 @@
             "REGIONAL"
           ]
         },
-        "RegionalCertificateArn": "arn:aws:acm:us-east-1:111111111111:certificate",
-        "SecurityPolicy": "TLS_1_2"
+        "RegionalCertificateArn": "arn:aws:acm:us-east-1:111111111111:certificate"
       }
     },
     "apiCustomDomainMapawscdkapigwaliasintegapiF4DF08ACCF365F22": {
