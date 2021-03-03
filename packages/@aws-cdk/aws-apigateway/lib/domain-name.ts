@@ -122,7 +122,7 @@ export class DomainName extends Resource implements IDomainName {
       regionalCertificateArn: edge ? undefined : props.certificate.certificateArn,
       endpointConfiguration: { types: [endpointType] },
       mutualTlsAuthentication: mtlsConfig,
-      securityPolicy: props.securityPolicy ?? SecurityPolicy.TLS_1_2,
+      securityPolicy: props.securityPolicy,
     });
 
     this.domainName = resource.ref;

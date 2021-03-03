@@ -1,3 +1,4 @@
+import { ABSENT } from '@aws-cdk/assert';
 import '@aws-cdk/assert/jest';
 import * as acm from '@aws-cdk/aws-certificatemanager';
 import { Bucket } from '@aws-cdk/aws-s3';
@@ -105,7 +106,7 @@ describe('domains', () => {
       'DomainName': 'default.example.com',
       'EndpointConfiguration': { 'Types': ['REGIONAL'] },
       'RegionalCertificateArn': { 'Ref': 'Cert5C9FAEC1' },
-      'SecurityPolicy': 'TLS_1_2',
+      'SecurityPolicy': ABSENT,
     });
   });
 
@@ -331,8 +332,6 @@ describe('domains', () => {
         'Ref': 'apiDeploymentStageprod896C8101',
       },
     });
-
-
   });
 
   test('"addBasePathMapping" can be used to add base path mapping to the domain with specific stage', () => {
