@@ -109,7 +109,8 @@ globalTable.autoScaleWriteCapacity({
 }).scaleOnUtilization({ targetUtilizationPercent: 75 });
 ```
 
-For large tables, you might want to increase the timeout for the replication operation:
+When adding a replica region for a large table, you might want to increase the
+timeout for the replication operation:
 
 ```ts
 const globalTable = new dynamodb.Table(this, 'Table', {
