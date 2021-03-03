@@ -53,7 +53,7 @@ export = {
 
     test.throws(() => {
       alarm.addAlarmAction(new Ec2TestAlarmAction('arn:aws:automate:us-east-1:ec2:reboot'));
-    }, /EC2 alarm actions must use an EC2 Per-Instance Metric/);
+    }, /EC2 alarm actions requires an EC2 Per-Instance Metric. \(.+ does not have an 'InstanceId' dimension\)/);
     test.done();
   },
   'can make simple alarm'(test: Test) {
