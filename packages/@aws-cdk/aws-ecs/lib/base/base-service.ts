@@ -902,9 +902,8 @@ export enum PropagatedTagSource {
 
 /**
  * Options for `determineContainerNameAndPort`
- * @internal
  */
-export interface DetermineContainerNameAndPortOptions {
+interface DetermineContainerNameAndPortOptions {
   dnsRecordType: cloudmap.DnsRecordType;
   taskDefinition: TaskDefinition;
   container?: ContainerDefinition;
