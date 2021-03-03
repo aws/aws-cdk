@@ -267,7 +267,7 @@ describe('domains', () => {
     // WHEN & THEN
     expect(() => {
       new apigw.DomainName(stack, 'someDomain', { domainName: 'someDomainWithUpercase.domain.com', certificate });
-    }).toThrow(/Domain name does not support uppercase letters./);
+    }).toThrow(/uppercase/);
   });
 
   test('multiple domain names can be added', () => {
