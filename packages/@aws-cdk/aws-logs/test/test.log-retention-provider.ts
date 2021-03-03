@@ -208,7 +208,7 @@ export = {
   },
 
   async 'responds with FAILED on error'(test: Test) {
-    const createLogGroupFake = sinon.fake.rejects(new Error('UnkownError'));
+    const createLogGroupFake = sinon.fake.rejects(new Error('UnknownError'));
 
     AWS.mock('CloudWatchLogs', 'createLogGroup', createLogGroupFake);
 
