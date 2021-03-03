@@ -27,6 +27,7 @@ export = {
 
     // THEN
     expect(stack).to(haveResource('AWS::Events::Rule', {
+      State: 'ENABLED',
       Targets: [
         {
           Arn: { 'Fn::GetAtt': ['EcsCluster97242B84', 'Arn'] },
@@ -78,6 +79,7 @@ export = {
 
     new ScheduledEc2Task(stack, 'ScheduledEc2Task', {
       cluster,
+      enabled: false,
       scheduledEc2TaskImageOptions: {
         image: ecs.ContainerImage.fromRegistry('henk'),
         memoryLimitMiB: 512,
@@ -92,6 +94,7 @@ export = {
     // THEN
     expect(stack).to(haveResource('AWS::Events::Rule', {
       Name: 'sample-scheduled-task-rule',
+      State: 'DISABLED',
       Targets: [
         {
           Arn: { 'Fn::GetAtt': ['EcsCluster97242B84', 'Arn'] },

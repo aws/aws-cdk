@@ -3,8 +3,9 @@ import '@aws-cdk/assert/jest';
 import * as appscaling from '@aws-cdk/aws-applicationautoscaling';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
-import { App, Aws, CfnDeletionPolicy, ConstructNode, Duration, PhysicalName, RemovalPolicy, Stack, Tags } from '@aws-cdk/core';
+import { App, Aws, CfnDeletionPolicy, ConstructNode, Duration, PhysicalName, RemovalPolicy, Resource, Stack, Tags } from '@aws-cdk/core';
 import { testLegacyBehavior } from 'cdk-build-tools/lib/feature-flag';
+import { Construct } from 'constructs';
 import {
   Attribute,
   AttributeType,
@@ -16,6 +17,7 @@ import {
   Table,
   TableEncryption,
   Operation,
+  CfnTable,
 } from '../lib';
 
 /* eslint-disable quote-props */
@@ -2812,6 +2814,29 @@ describe('global', () => {
     // THEN
     expect(SynthUtils.toCloudFormation(stack).Conditions).toBeUndefined();
   });
+});
+
+test('L1 inside L2 expects removalpolicy to have been set', () => {
+  // Check that the "stateful L1 validation generation" works. Do it here
+  // because we know DDB tables are stateful.
+  const app = new App();
+  const stack = new Stack(app, 'Stack');
+
+  class FakeTableL2 extends Resource {
+    constructor(scope: Construct, id: string) {
+      super(scope, id);
+
+      new CfnTable(this, 'Resource', {
+        keySchema: [{ attributeName: 'hash', keyType: 'S' }],
+      });
+    }
+  }
+
+  new FakeTableL2(stack, 'Table');
+
+  expect(() => {
+    SynthUtils.toCloudFormation(stack);
+  }).toThrow(/is a stateful resource type/);
 });
 
 function testGrant(expectedActions: string[], invocation: (user: iam.IPrincipal, table: Table) => void) {
