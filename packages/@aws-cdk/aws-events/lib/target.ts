@@ -48,6 +48,12 @@ export interface RuleTargetConfig {
   readonly batchParameters?: CfnRule.BatchParametersProperty;
 
   /**
+   * Contains information about a dead-letter queue configuration.
+   * @default no dead-letter queue set
+   */
+  readonly deadLetterConfig?: CfnRule.DeadLetterConfigProperty;
+
+  /**
    * The Amazon ECS task definition and task count to use, if the event target
    * is an Amazon ECS task.
    */
