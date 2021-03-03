@@ -5,9 +5,13 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
+import { testFutureBehavior } from 'cdk-build-tools/lib/feature-flag';
 import * as s3deploy from '../lib';
 
 /* eslint-disable max-len */
+
+const s3GrantWriteCtx = { [cxapi.S3_GRANT_WRITE_WITHOUT_ACL]: true };
 
 test('deploy from local directory asset', () => {
   // GIVEN
@@ -297,7 +301,7 @@ test('user metadata is correctly transformed', () => {
 
   // THEN
   expect(stack).toHaveResource('Custom::CDKBucketDeployment', {
-    UserMetadata: { 'x-amzn-meta-a': '1', 'x-amzn-meta-b': '2' },
+    UserMetadata: { a: '1', b: '2' },
   });
 });
 
@@ -449,9 +453,9 @@ test('fails if distribution paths provided but not distribution ID', () => {
 
 });
 
-test('lambda execution role gets permissions to read from the source bucket and read/write in destination', () => {
+testFutureBehavior('lambda execution role gets permissions to read from the source bucket and read/write in destination', s3GrantWriteCtx, cdk.App, (app) => {
   // GIVEN
-  const stack = new cdk.Stack();
+  const stack = new cdk.Stack(app);
   const source = new s3.Bucket(stack, 'Source');
   const bucket = new s3.Bucket(stack, 'Dest');
 
@@ -501,7 +505,7 @@ test('lambda execution role gets permissions to read from the source bucket and 
             's3:GetBucket*',
             's3:List*',
             's3:DeleteObject*',
-            's3:PutObject*',
+            's3:PutObject',
             's3:Abort*',
           ],
           Effect: 'Allow',

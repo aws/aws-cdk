@@ -102,5 +102,8 @@
     "announce": false
   },
   "maturity": "stable",
-  "stability": "stable"
+  "stability": "stable",
+  "publishConfig": {
+    "tag": "latest"
+  }
 }

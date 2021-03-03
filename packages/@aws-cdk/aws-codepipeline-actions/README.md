@@ -57,6 +57,26 @@ const sourceAction = new codepipeline_actions.CodeCommitSourceAction({
 });
 ```
 
+If you want to clone the entire CodeCommit repository (only available for CodeBuild actions),
+you can set the `codeBuildCloneOutput` property to `true`:
+
+```ts
+const sourceOutput = new codepipeline.Artifact();
+const sourceAction = new codepipeline_actions.CodeCommitSourceAction({
+  actionName: 'CodeCommit',
+  repository: repo,
+  output: sourceOutput,
+  codeBuildCloneOutput: true,
+});
+
+const buildAction = new codepipeline_actions.CodeBuildAction({
+  actionName: 'CodeBuild',
+  project,
+  input: sourceOutput, // The build action must use the CodeCommitSourceAction output as input.
+  outputs: [new codepipeline.Artifact()], // optional
+});
+```
+
 The CodeCommit source action emits variables:
 
 ```ts
@@ -609,7 +629,7 @@ const lambdaCode = lambda.Code.fromCfnParameters();
 const func = new lambda.Function(lambdaStack, 'Lambda', {
   code: lambdaCode,
   handler: 'index.handler',
-  runtime: lambda.Runtime.NODEJS_10_X,
+  runtime: lambda.Runtime.NODEJS_12_X,
 });
 // used to make sure each CDK synthesis produces a different Version
 const version = func.addVersion('NewVersion');
@@ -901,7 +921,7 @@ import * as lambda from '@aws-cdk/aws-lambda';
 const lambdaInvokeAction = new codepipeline_actions.LambdaInvokeAction({
   actionName: 'Lambda',
   lambda: new lambda.Function(this, 'Func', {
-    runtime: lambda.Runtime.NODEJS_10_X,
+    runtime: lambda.Runtime.NODEJS_12_X,
     handler: 'index.handler',
     code: lambda.Code.fromInline(`
         const AWS = require('aws-sdk');

@@ -83,11 +83,26 @@ export const KMS_DEFAULT_KEY_POLICIES = '@aws-cdk/aws-kms:defaultKeyPolicies';
 /**
  * Change the old 's3:PutObject*' permission to 's3:PutObject' on Bucket,
  * as the former includes 's3:PutObjectAcl',
- * which allows changing the visibility of an object written to the Bucket.
+ * which could be used to grant read/write object access to IAM principals in other accounts.
  * Use a feature flag to make sure existing customers who might be relying
  * on the overly-broad permissions are not broken.
  */
 export const S3_GRANT_WRITE_WITHOUT_ACL = '@aws-cdk/aws-s3:grantWriteWithoutAcl';
+
+/**
+ * ApplicationLoadBalancedServiceBase, ApplicationMultipleTargetGroupServiceBase,
+ * NetworkLoadBalancedServiceBase, NetworkMultipleTargetGroupServiceBase, and
+ * QueueProcessingServiceBase currently determine a default value for the desired count of
+ * a CfnService if a desiredCount is not provided.
+ *
+ * If this flag is not set, the default behaviour for CfnService.desiredCount is to set a
+ * desiredCount of 1, if one is not provided. If true, a default will not be defined for
+ * CfnService.desiredCount and as such desiredCount will be undefined, if one is not provided.
+ *
+ * This is a feature flag as the old behavior was technically incorrect, but
+ * users may have come to depend on it.
+ */
+export const ECS_REMOVE_DEFAULT_DESIRED_COUNT = '@aws-cdk/aws-ecs-patterns:removeDefaultDesiredCount';
 
 /**
  * This map includes context keys and values for feature flags that enable
@@ -102,7 +117,7 @@ export const S3_GRANT_WRITE_WITHOUT_ACL = '@aws-cdk/aws-s3:grantWriteWithoutAcl'
  *
  * Tests must cover the default (disabled) case and the future (enabled) case.
  */
-export const FUTURE_FLAGS = {
+export const FUTURE_FLAGS: { [key: string]: any } = {
   [ENABLE_STACK_NAME_DUPLICATES_CONTEXT]: 'true',
   [ENABLE_DIFF_NO_FAIL_CONTEXT]: 'true',
   [STACK_RELATIVE_EXPORTS_CONTEXT]: 'true',
@@ -110,10 +125,18 @@ export const FUTURE_FLAGS = {
   [SECRETS_MANAGER_PARSE_OWNED_SECRET_NAME]: true,
   [KMS_DEFAULT_KEY_POLICIES]: true,
   [S3_GRANT_WRITE_WITHOUT_ACL]: true,
+  [ECS_REMOVE_DEFAULT_DESIRED_COUNT]: true,
 
   // We will advertise this flag when the feature is complete
   // [NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: 'true',
 };
+
+/**
+ * The list of future flags that are now expired. This is going to be used to identify
+ * and block usages of old feature flags in the new major version of CDK.
+ */
+export const FUTURE_FLAGS_EXPIRED: string[] = [
+];
 
 /**
  * The set of defaults that should be applied if the feature flag is not
@@ -128,6 +151,7 @@ const FUTURE_FLAGS_DEFAULTS: { [key: string]: boolean } = {
   [SECRETS_MANAGER_PARSE_OWNED_SECRET_NAME]: false,
   [KMS_DEFAULT_KEY_POLICIES]: false,
   [S3_GRANT_WRITE_WITHOUT_ACL]: false,
+  [ECS_REMOVE_DEFAULT_DESIRED_COUNT]: false,
 };
 
 export function futureFlagDefault(flag: string): boolean {

@@ -109,7 +109,7 @@ new BucketDeployment(this, 'HTMLBucketDeployment', {
 You can specify metadata to be set on all the objects in your deployment.
 There are 2 types of metadata in S3: system-defined metadata and user-defined metadata.
 System-defined metadata have a special purpose, for example cache-control defines how long to keep an object cached.
-User-defined metadata are not used by S3 and keys always begin with `x-amzn-meta-` (if this is not provided, it is added automatically).
+User-defined metadata are not used by S3 and keys always begin with `x-amz-meta-` (this prefix is added automatically).
 
 System defined metadata keys include the following:
 
@@ -156,39 +156,15 @@ import * as origins from '@aws-cdk/aws-cloudfront-origins';
 
 const bucket = new s3.Bucket(this, 'Destination');
 
-// Option 1 (Experimental): Handles buckets whether or not they are configured for website hosting.
+// Handles buckets whether or not they are configured for website hosting.
 const distribution = new cloudfront.Distribution(this, 'Distribution', {
   defaultBehavior: { origin: new origins.S3Origin(bucket) },
-});
-
-// Option 2 (Stable): Use this if the bucket has website hosting enabled.
-const distribution_for_website_bucket = new cloudfront.CloudFrontWebDistribution(this, 'DistributionForWebBucket', {
-  originConfigs: [
-    {
-      customOriginSource: {
-        domainName: bucket.bucketWebsiteDomainName,
-      },
-      behaviors : [ {isDefaultBehavior: true}]
-    }
-  ]
-});
-
-// Option 3 (Stable): Use this version if the bucket does not have website hosting enabled.
-const distribution_for_bucket = new cloudfront.CloudFrontWebDistribution(this, 'DistributionForBucket', {
-  originConfigs: [
-    {
-      s3OriginSource: {
-        s3BucketSource: bucket
-      },
-      behaviors : [ {isDefaultBehavior: true}]
-    }
-  ]
 });
 
 new s3deploy.BucketDeployment(this, 'DeployWithInvalidation', {
   sources: [s3deploy.Source.asset('./website-dist')],
   destinationBucket: bucket,
-  distribution, // or distribution_for_website_bucket or distribution_for_bucket
+  distribution,
   distributionPaths: ['/images/*.png'],
 });
 ```
@@ -229,5 +205,4 @@ might be tricky to build on Windows.
 
 ## Roadmap
 
- - [ ] Support "progressive" mode (no `--delete`) ([#953](https://github.com/aws/aws-cdk/issues/953))
  - [ ] Support "blue/green" deployments ([#954](https://github.com/aws/aws-cdk/issues/954))

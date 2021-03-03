@@ -51,8 +51,6 @@ export class EdgeFunction extends Resource implements lambda.IVersion {
   public readonly role?: iam.IRole;
   public readonly version: string;
 
-  // functionStack needed for `addAlias`.
-  private readonly functionStack: Stack;
   private readonly _edgeFunction: lambda.Function;
 
   constructor(scope: Construct, id: string, props: EdgeFunctionProps) {
@@ -60,11 +58,10 @@ export class EdgeFunction extends Resource implements lambda.IVersion {
 
     // Create a simple Function if we're already in us-east-1; otherwise create a cross-region stack.
     const regionIsUsEast1 = !Token.isUnresolved(this.stack.region) && this.stack.region === 'us-east-1';
-    const { functionStack, edgeFunction, edgeArn } = regionIsUsEast1
+    const { edgeFunction, edgeArn } = regionIsUsEast1
       ? this.createInRegionFunction(props)
       : this.createCrossRegionFunction(id, props);
 
-    this.functionStack = functionStack;
     this.edgeArn = edgeArn;
 
     this.functionArn = edgeArn;
@@ -89,7 +86,7 @@ export class EdgeFunction extends Resource implements lambda.IVersion {
   }
 
   public addAlias(aliasName: string, options: lambda.AliasOptions = {}): lambda.Alias {
-    return new lambda.Alias(this.functionStack, `Alias${aliasName}`, {
+    return new lambda.Alias(this._edgeFunction, `Alias${aliasName}`, {
       aliasName,
       version: this._edgeFunction.currentVersion,
       ...options,
@@ -146,7 +143,7 @@ export class EdgeFunction extends Resource implements lambda.IVersion {
     const edgeFunction = new lambda.Function(this, 'Fn', props);
     addEdgeLambdaToRoleTrustStatement(edgeFunction.role!);
 
-    return { edgeFunction, edgeArn: edgeFunction.currentVersion.edgeArn, functionStack: this.stack };
+    return { edgeFunction, edgeArn: edgeFunction.currentVersion.edgeArn };
   }
 
   /** Create a support stack and function in us-east-1, and a SSM reader in-region */
@@ -166,7 +163,7 @@ export class EdgeFunction extends Resource implements lambda.IVersion {
 
     const edgeArn = this.createCrossRegionArnReader(parameterNamePrefix, parameterName, edgeFunction);
 
-    return { edgeFunction, edgeArn, functionStack };
+    return { edgeFunction, edgeArn };
   }
 
   private createCrossRegionArnReader(parameterNamePrefix: string, parameterName: string, edgeFunction: lambda.Function): string {
@@ -183,7 +180,7 @@ export class EdgeFunction extends Resource implements lambda.IVersion {
     const resourceType = 'Custom::CrossRegionStringParameterReader';
     const serviceToken = CustomResourceProvider.getOrCreate(this, resourceType, {
       codeDirectory: path.join(__dirname, 'edge-function'),
-      runtime: CustomResourceProviderRuntime.NODEJS_12,
+      runtime: CustomResourceProviderRuntime.NODEJS_12_X,
       policyStatements: [{
         Effect: 'Allow',
         Resource: parameterArnPrefix,
@@ -214,11 +211,14 @@ export class EdgeFunction extends Resource implements lambda.IVersion {
       throw new Error('stacks which use EdgeFunctions must have an explicitly set region');
     }
 
-    const edgeStackId = stackId ?? `edge-lambda-stack-${region}`;
+    const edgeStackId = stackId ?? `edge-lambda-stack-${this.stack.node.addr}`;
     let edgeStack = stage.node.tryFindChild(edgeStackId) as Stack;
     if (!edgeStack) {
       edgeStack = new Stack(stage, edgeStackId, {
-        env: { region: EdgeFunction.EDGE_REGION },
+        env: {
+          region: EdgeFunction.EDGE_REGION,
+          account: Stack.of(this).account,
+        },
       });
     }
     this.stack.addDependency(edgeStack);
@@ -230,7 +230,6 @@ export class EdgeFunction extends Resource implements lambda.IVersion {
 interface FunctionConfig {
   readonly edgeFunction: lambda.Function;
   readonly edgeArn: string;
-  readonly functionStack: Stack;
 }
 
 function addEdgeLambdaToRoleTrustStatement(role: iam.IRole) {

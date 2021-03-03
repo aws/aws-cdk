@@ -4,6 +4,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import { BitBucketSourceAction } from '..';
 import { Action } from '../action';
+import { CodeCommitSourceAction } from '../codecommit/source-action';
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
 // eslint-disable-next-line no-duplicate-imports, import/order
@@ -96,6 +97,8 @@ export interface CodeBuildActionProps extends codepipeline.CommonAwsActionProps 
   /**
    * Trigger a batch build.
    *
+   * Enabling this will enable batch builds on the CodeBuild project.
+   *
    * @default false
    */
   readonly executeBatchBuild?: boolean;
@@ -153,7 +156,7 @@ export class CodeBuildAction extends Action {
     options.role.addToPolicy(new iam.PolicyStatement({
       resources: [this.props.project.projectArn],
       actions: [
-        'codebuild:BatchGetBuilds',
+        `codebuild:${this.props.executeBatchBuild ? 'BatchGetBuildBatches' : 'BatchGetBuilds'}`,
         `codebuild:${this.props.executeBatchBuild ? 'StartBuildBatch' : 'StartBuild'}`,
         `codebuild:${this.props.executeBatchBuild ? 'StopBuildBatch' : 'StopBuild'}`,
       ],
@@ -176,15 +179,26 @@ export class CodeBuildAction extends Action {
       });
     }
 
-    // if any of the inputs come from the BitBucketSourceAction
-    // with codeBuildCloneOutput=true,
-    // grant the Project's Role to use the connection
     for (const inputArtifact of this.actionProperties.inputs || []) {
+      // if any of the inputs come from the BitBucketSourceAction
+      // with codeBuildCloneOutput=true,
+      // grant the Project's Role to use the connection
       const connectionArn = inputArtifact.getMetadata(BitBucketSourceAction._CONNECTION_ARN_PROPERTY);
       if (connectionArn) {
         this.props.project.addToRolePolicy(new iam.PolicyStatement({
           actions: ['codestar-connections:UseConnection'],
           resources: [connectionArn],
+        }));
+      }
+
+      // if any of the inputs come from the CodeCommitSourceAction
+      // with codeBuildCloneOutput=true,
+      // grant the Project's Role git pull access to the repository
+      const codecommitRepositoryArn = inputArtifact.getMetadata(CodeCommitSourceAction._FULL_CLONE_ARN_PROPERTY);
+      if (codecommitRepositoryArn) {
+        this.props.project.addToRolePolicy(new iam.PolicyStatement({
+          actions: ['codecommit:GitPull'],
+          resources: [codecommitRepositoryArn],
         }));
       }
     }
@@ -193,7 +207,7 @@ export class CodeBuildAction extends Action {
       ProjectName: this.props.project.projectName,
       EnvironmentVariables: this.props.environmentVariables &&
         cdk.Stack.of(scope).toJsonString(codebuild.Project.serializeEnvVariables(this.props.environmentVariables,
-          this.props.checkSecretsInPlainTextEnvVariables ?? true)),
+          this.props.checkSecretsInPlainTextEnvVariables ?? true, this.props.project)),
     };
     if ((this.actionProperties.inputs || []).length > 1) {
       // lazy, because the Artifact name might be generated lazily
@@ -201,6 +215,7 @@ export class CodeBuildAction extends Action {
     }
     if (this.props.executeBatchBuild) {
       configuration.BatchEnabled = 'true';
+      this.props.project.enableBatchBuilds();
     }
     return {
       configuration,

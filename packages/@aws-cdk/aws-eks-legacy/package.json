@@ -1,6 +1,7 @@
 {
   "name": "@aws-cdk/aws-eks-legacy",
   "version": "0.0.0",
+  "deprecated": "Use the @aws-cdk/aws-eks module instead",
   "description": "The CDK Construct Library for AWS::EKS (Legacy)",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -126,5 +127,8 @@
   "awscdkio": {
     "announce": false
   },
-  "maturity": "deprecated"
+  "maturity": "deprecated",
+  "publishConfig": {
+    "tag": "latest"
+  }
 }

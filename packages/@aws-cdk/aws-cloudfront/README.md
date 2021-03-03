@@ -51,7 +51,7 @@ new cloudfront.Distribution(this, 'myDist', {
 
 The above will treat the bucket differently based on if `IBucket.isWebsite` is set or not. If the bucket is configured as a website, the bucket is
 treated as an HTTP origin, and the built-in S3 redirects and error pages can be used. Otherwise, the bucket is handled as a bucket origin and
-CloudFront's redirect and error handling will be used. In the latter case, the Origin wil create an origin access identity and grant it access to the
+CloudFront's redirect and error handling will be used. In the latter case, the Origin will create an origin access identity and grant it access to the
 underlying bucket. This can be used in conjunction with a bucket that is not public to require that your users access your content using CloudFront
 URLs and not S3 URLs directly.
 
@@ -239,6 +239,34 @@ new cloudfront.Distribution(this, 'myDistCustomPolicy', {
 });
 ```
 
+### Validating signed URLs or signed cookies with Trusted Key Groups
+
+CloudFront Distribution now supports validating signed URLs or signed cookies using key groups. When a cache behavior contains trusted key groups, CloudFront requires signed URLs or signed cookies for all requests that match the cache behavior.
+
+Example:
+
+```ts
+// public key in PEM format
+const pubKey = new PublicKey(stack, 'MyPubKey', {
+  encodedKey: publicKey,
+});
+
+const keyGroup = new KeyGroup(stack, 'MyKeyGroup', {
+  items: [
+    pubKey,
+  ],
+});
+
+new cloudfront.Distribution(stack, 'Dist', {
+  defaultBehavior: {
+    origin: new origins.HttpOrigin('www.example.com'),
+    trustedKeyGroups: [
+      keyGroup,
+    ],
+  },
+});
+```
+
 ### Lambda@Edge
 
 Lambda@Edge is an extension of AWS Lambda, a compute service that lets you execute functions that customize the content that CloudFront delivers.
@@ -254,7 +282,7 @@ The following shows a Lambda@Edge function added to the default behavior and tri
 
 ```ts
 const myFunc = new cloudfront.experimental.EdgeFunction(this, 'MyFunction', {
-  runtime: lambda.Runtime.NODEJS_10_X,
+  runtime: lambda.Runtime.NODEJS_12_X,
   handler: 'index.handler',
   code: lambda.Code.fromAsset(path.join(__dirname, 'lambda-handler')),
 });
@@ -274,7 +302,7 @@ new cloudfront.Distribution(this, 'myDist', {
 > **Note:** Lambda@Edge functions must be created in the `us-east-1` region, regardless of the region of the CloudFront distribution and stack.
 > To make it easier to request functions for Lambda@Edge, the `EdgeFunction` construct can be used.
 > The `EdgeFunction` construct will automatically request a function in `us-east-1`, regardless of the region of the current stack.
-> `EdgeFunction` has the same interface as `Function` and can be created and used interchangably.
+> `EdgeFunction` has the same interface as `Function` and can be created and used interchangeably.
 > Please note that using `EdgeFunction` requires that the `us-east-1` region has been bootstrapped.
 > See https://docs.aws.amazon.com/cdk/latest/guide/bootstrapping.html for more about bootstrapping regions.
 
@@ -282,25 +310,25 @@ If the stack is in `us-east-1`, a "normal" `lambda.Function` can be used instead
 
 ```ts
 const myFunc = new lambda.Function(this, 'MyFunction', {
-  runtime: lambda.Runtime.NODEJS_10_X,
+  runtime: lambda.Runtime.NODEJS_12_X,
   handler: 'index.handler',
   code: lambda.Code.fromAsset(path.join(__dirname, 'lambda-handler')),
 });
 ```
 
 If the stack is not in `us-east-1`, and you need references from different applications on the same account,
-you can also set a specific stack ID for each Lamba@Edge.
+you can also set a specific stack ID for each Lambda@Edge.
 
 ```ts
 const myFunc1 = new cloudfront.experimental.EdgeFunction(this, 'MyFunction1', {
-  runtime: lambda.Runtime.NODEJS_10_X,
+  runtime: lambda.Runtime.NODEJS_12_X,
   handler: 'index.handler',
   code: lambda.Code.fromAsset(path.join(__dirname, 'lambda-handler1')),
   stackId: 'edge-lambda-stack-id-1'
 });
 
 const myFunc2 = new cloudfront.experimental.EdgeFunction(this, 'MyFunction2', {
-  runtime: lambda.Runtime.NODEJS_10_X,
+  runtime: lambda.Runtime.NODEJS_12_X,
   handler: 'index.handler',
   code: lambda.Code.fromAsset(path.join(__dirname, 'lambda-handler2')),
   stackId: 'edge-lambda-stack-id-2'
@@ -373,10 +401,10 @@ new cloudfront.Distribution(this, 'myDist', {
 // You can optionally log to a specific bucket, configure whether cookies are logged, and give the log files a prefix.
 new cloudfront.Distribution(this, 'myDist', {
   defaultBehavior: { origin: new origins.HttpOrigin('www.example.com') },
-  enableLogging: true, // Optional, this is implied if loggingBucket is specified
-  loggingBucket: new s3.Bucket(this, 'LoggingBucket'),
-  loggingFilePrefix: 'distribution-access-logs/',
-  loggingIncludesCookies: true,
+  enableLogging: true, // Optional, this is implied if logBucket is specified
+  logBucket: new s3.Bucket(this, 'LogBucket'),
+  logFilePrefix: 'distribution-access-logs/',
+  logIncludesCookies: true,
 });
 ```
 
@@ -427,7 +455,7 @@ You can customize the default certificate aliases. This is intended to be used i
 
 Example:
 
-[create a distrubution with an default certificiate example](test/example.default-cert-alias.lit.ts)
+[create a distribution with an default certificate example](test/example.default-cert-alias.lit.ts)
 
 #### ACM certificate
 
@@ -438,7 +466,7 @@ For more information, see [the aws-certificatemanager module documentation](http
 
 Example:
 
-[create a distrubution with an acm certificate example](test/example.acm-cert-alias.lit.ts)
+[create a distribution with an acm certificate example](test/example.acm-cert-alias.lit.ts)
 
 #### IAM certificate
 
@@ -448,7 +476,43 @@ See [Importing an SSL/TLS Certificate](https://docs.aws.amazon.com/AmazonCloudFr
 
 Example:
 
-[create a distrubution with an iam certificate example](test/example.iam-cert-alias.lit.ts)
+[create a distribution with an iam certificate example](test/example.iam-cert-alias.lit.ts)
+
+### Trusted Key Groups
+
+CloudFront Web Distributions supports validating signed URLs or signed cookies using key groups. When a cache behavior contains trusted key groups, CloudFront requires signed URLs or signed cookies for all requests that match the cache behavior.
+
+Example:
+
+```ts
+const pubKey = new PublicKey(stack, 'MyPubKey', {
+  encodedKey: publicKey,
+});
+
+const keyGroup = new KeyGroup(stack, 'MyKeyGroup', {
+  items: [
+    pubKey,
+  ],
+});
+
+new CloudFrontWebDistribution(stack, 'AnAmazingWebsiteProbably', {
+  originConfigs: [
+    {
+      s3OriginSource: {
+        s3BucketSource: sourceBucket,
+      },
+      behaviors: [
+        {
+          isDefaultBehavior: true,
+          trustedKeyGroups: [
+            keyGroup,
+          ],
+        },
+      ],
+    },
+  ],
+});
+```
 
 ### Restrictions
 
@@ -505,7 +569,7 @@ new CloudFrontWebDistribution(stack, 'ADistribution', {
       },
       failoverS3OriginSource: {
         s3BucketSource: s3.Bucket.fromBucketName(stack, 'aBucketFallback', 'myoriginbucketfallback'),
-        originPath: '/somwhere',
+        originPath: '/somewhere',
         originHeaders: {
           'myHeader2': '21',
         },
@@ -520,3 +584,40 @@ new CloudFrontWebDistribution(stack, 'ADistribution', {
   ],
 });
 ```
+
+## KeyGroup & PublicKey API
+
+Now you can create a key group to use with CloudFront signed URLs and signed cookies. You can add public keys to use with CloudFront features such as signed URLs, signed cookies, and field-level encryption.
+
+The following example command uses OpenSSL to generate an RSA key pair with a length of 2048 bits and save to the file named `private_key.pem`.
+
+```bash
+openssl genrsa -out private_key.pem 2048
+```
+
+The resulting file contains both the public and the private key. The following example command extracts the public key from the file named `private_key.pem` and stores it in `public_key.pem`. 
+
+```bash
+openssl rsa -pubout -in private_key.pem -out public_key.pem
+```
+
+Note: Don't forget to copy/paste the contents of `public_key.pem` file including `-----BEGIN PUBLIC KEY-----` and `-----END PUBLIC KEY-----` lines into `encodedKey` parameter when creating a `PublicKey`.
+
+Example:
+
+```ts
+  new cloudfront.KeyGroup(stack, 'MyKeyGroup', {
+    items: [
+      new cloudfront.PublicKey(stack, 'MyPublicKey', {
+        encodedKey: '...', // contents of public_key.pem file
+        // comment: 'Key is expiring on ...',
+      }),
+    ],
+    // comment: 'Key group containing public keys ...',
+  });
+```
+
+See:
+
+* https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/PrivateContent.html
+* https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-trusted-signers.html 
