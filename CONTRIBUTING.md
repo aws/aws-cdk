@@ -351,7 +351,7 @@ class SomeClass implements ICountable {
       throw new Error('This operation requires that a \'count\' is specified when SomeClass is created.');
       // ❌ DO NOT: just throw an error like 'count is missing'
     }
-    return this_.count;
+    return this._count;
   }
 }
 ```
@@ -363,7 +363,7 @@ written against the previous API, but may change their meaning. In practice,
 even though the user didn't change their code, the CloudFormation template
 that gets synthesized is now different.
 
-Not all template changes are breaking changes! Consider a user that has
+**Not all template changes are breaking changes!** Consider a user that has
 created a Stack using the previous version of the library, has updated their
 version of the CDK library and is now deploying an update. A behavior change
 is breaking if:
