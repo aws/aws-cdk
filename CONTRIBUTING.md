@@ -14,6 +14,7 @@ and let us know if it's not up-to-date (even better, submit a PR with your  corr
   - [Step 4: Commit](#step-4-commit)
   - [Step 5: Pull Request](#step-5-pull-request)
   - [Step 6: Merge](#step-6-merge)
+- [Breaking Changes](#breaking-changes)
 - [Tools](#tools)
   - [Main build scripts](#main-build-scripts)
   - [Partial build tools](#partial-build-tools)
@@ -265,6 +266,143 @@ BREAKING CHANGE: Description of what broke and how to achieve this behavior now
 * Make sure your PR builds successfully (we have CodeBuild setup to automatically build all PRs).
 * Once approved and tested, a maintainer will squash-merge to master and will use your PR title/description as the
   commit message.
+
+## Breaking Changes
+
+Whenever you are making changes, there is a chance for those changes to be
+*breaking* existing users of the library. A change is breaking if there are
+programs that customers could have been writing against the current version
+of the CDK, that will no longer "work correctly" with the proposed new
+version of the CDK.
+
+Breaking changes are not allowed in *stable* libraries¹. They are permissible
+but still *highly discouraged* in experimental libraries, and require explicit
+callouts in the bodies of Pull Requests that introduce them.
+
+> ¹) Note that starting in version 2 of the CDK, the majority of library code will be
+> bundled into a single main CDK library which will be considered stable, and so
+> no code in there can undergo breaking changes.
+
+Breaking changes come in two flavors:
+
+* API surface changes
+* Behavior changes
+
+### API surface changes
+
+This encompasses any changes that affect the shape of the API. Changes that
+will make existing programs fail to compile are not allowed. Typical examples
+of that are:
+
+* Renaming classes or methods
+* Adding required properties to a struct that is used as an input to a constructor
+  or method. This also includes changing a type from nullable to non-nullable.
+* Removing properties from a struct that is returned from a method, or removing
+  properties from a class. This also includes changing a type from non-nullable
+  to nullable.
+
+To see why the latter is a problem, consider the following class:
+
+```ts
+class SomeClass {
+  public readonly count: number;
+  //               ❓ let's say I want to change this to 'count?: number',
+  //                  i.e. make it optional.
+}
+
+// Someone could have written the following code:
+const obj = new SomeClass();
+console.log(obj.count + 1);
+
+// After the proposed change, this code that used to compile fine will now throw:
+console.log(obj.count + 1);
+//          ~~~~~~~~~ Error: Object is possibly 'undefined'.
+```
+
+CDK comes with build tooling to check whether changes you made introduce breaking
+changes to the API surface. In a package directory, run:
+
+```shell
+$ yarn build
+$ yarn compat
+```
+
+To figure out if the changes you made were breaking. See the section [API Compatibility
+Checks](#api-compatibility-checks) for more information.
+
+#### Dealing with breaking API surface changes
+
+If you need to change the type of some API element, introduce a new API
+element and mark the old API element as `@deprecated`.
+
+If you need to pretend to have a value for the purposes of implementing an API
+and you don't actually have a useful value to return, it is acceptable to make
+the property a `getter` and throw an exception (keeping in mind to write error
+messages that will be useful to a user of your construct):
+
+```ts
+class SomeClass implements ICountable {
+  constructor(private readonly _count?: number) {
+  }
+
+  public get count(): number {
+    if (this._count === undefined) {
+      // ✅ DO: throw a descriptive error that tells the user what to do
+      throw new Error('This operation requires that a \'count\' is specified when SomeClass is created.');
+      // ❌ DO NOT: just throw an error like 'count is missing'
+    }
+    return this._count;
+  }
+}
+```
+
+### Behavior changes
+
+These are changes that do not directly affect the compilation of programs
+written against the previous API, but may change their meaning. In practice,
+even though the user didn't change their code, the CloudFormation template
+that gets synthesized is now different.
+
+**Not all template changes are breaking changes!** Consider a user that has
+created a Stack using the previous version of the library, has updated their
+version of the CDK library and is now deploying an update. A behavior change
+is breaking if:
+
+* The update cannot be applied at all
+* The update can be applied but causes service interruption or data loss.
+
+Data loss happens when the [Logical
+ID](https://docs.aws.amazon.com/cdk/latest/guide/identifiers.html#identifiers_logical_ids)
+of a stateful resource changes, or one of the [resource properties that requires
+replacement](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html)
+is modified. In both of these cases, CloudFormation will delete the
+resource, and if it was a stateful resource like a database the data in it is now gone.
+
+If a change applies cleanly and does not cause any service interruption, it
+is not breaking. Nevertheless, it might still be wise to avoid those kinds of
+changes as users are understandably wary of unexpected template changes, will
+scrutinize them heavily, and we don't want to cause unnecessary panic and churn
+in our use base.
+
+Determining whether or not behavioral changes are breaking requires expertise
+and judgement on the part of the library owner, and testing.
+
+#### Dealing with breaking behavior changes
+
+Most of the time, behavioral changes will arise because we want to change the
+default value or default behavior of some property (i.e., we want to change the
+interpretation of what it means if the value is missing).
+
+If the new behavior is going to be breaking, the user must opt in to it, either by:
+
+* Adding a new API element (class, property, method, ...) to have users
+  explicitly opt in to the new behavior at the source code level (potentially
+  `@deprecate`ing the old API element); or
+* Use the [feature flag](#feature-flags) mechanism to have the user opt in to the new
+  behavior without changing the source code.
+
+Of these two, the first one is preferred if possible (as feature flags have
+non-local effects which can cause unintended effects).
 
 ## Tools
 
