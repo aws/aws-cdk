@@ -62,34 +62,42 @@ export enum HttpRouteMatchMethod {
    * GET request
    */
   GET = 'GET',
+
   /**
    * HEAD request
    */
   HEAD = 'HEAD',
+
   /**
    * POST request
    */
   POST = 'POST',
+
   /**
    * PUT request
    */
   PUT = 'PUT',
+
   /**
    * DELETE request
    */
   DELETE = 'DELETE',
+
   /**
    * CONNECT request
    */
   CONNECT = 'CONNECT',
+
   /**
    * OPTIONS request
    */
   OPTIONS = 'OPTIONS',
+
   /**
    * TRACE request
    */
   TRACE = 'TRACE',
+
   /**
    * PATCH request
    */
