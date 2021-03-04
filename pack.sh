@@ -36,6 +36,8 @@ function lerna_scopes() {
   done
 }
 
+if false; then
+
 # Compile examples with respect to "decdk" directory, as all packages will
 # be symlinked there so they can all be included.
 echo "Extracting code samples" >&2
@@ -57,6 +59,8 @@ $PACMAK \
 echo "Packaging non-jsii modules" >&2
 lerna run $(lerna_scopes $(cat $TMPDIR/nonjsii.txt)) --sort --concurrency=1 --stream package
 
+fi
+
 # Finally rsync all 'dist' directories together into a global 'dist' directory
 for dir in $(find packages -name dist | grep -v node_modules | grep -v run-wrappers); do
   echo "Merging ${dir} into ${distdir}" >&2
@@ -64,13 +68,14 @@ for dir in $(find packages -name dist | grep -v node_modules | grep -v run-wrapp
 done
 
 # Record the dependency order of NPM packages into a file
-# (This file will be opportunistically used during publishing, it does not need to be complete)
-node_modules/.bin/lerna exec \
-  --sort \
-  --concurrency=1 \
-  --no-private \
-  --no-bail \
-  "cd dist/js && ls >> ${distdir}/js/npm-publish-order.txt"
+# (This file will be opportunistically used during publishing)
+#
+# Manually sort 'aws-cdk' to the end, as the 'cdk init' command has implicit dependencies
+# on other packages (that should not appear in 'package.json' and so
+# there is no way to tell lerna about these).
+for dir in $(lerna ls --toposort -p | grep -v packages/aws-cdk) $PWD/packages/aws-cdk; do
+  (cd $dir/dist/js && ls >> ${distdir}/js/npm-publish-order.txt) || true
+done
 
 # Remove a JSII aggregate POM that may have snuk past
 rm -rf dist/java/software/amazon/jsii
