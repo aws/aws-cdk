@@ -209,26 +209,36 @@ export interface GrpcRetryPolicy extends HttpRetryPolicy {
 export enum GrpcRetryEvent {
   /**
    * Request was cancelled
+   *
+   * @see https://grpc.github.io/grpc/core/md_doc_statuscodes.html
    */
   CANCELLED = 'cancelled',
 
   /**
    * The deadline was exceeded
+   *
+   * @see https://grpc.github.io/grpc/core/md_doc_statuscodes.html
    */
   DEADLINE_EXCEEDED = 'deadline-exceeded',
 
   /**
    * Internal error
+   *
+   * @see https://grpc.github.io/grpc/core/md_doc_statuscodes.html
    */
   INTERNAL_ERROR = 'internal',
 
   /**
    * A resource was exhausted
+   *
+   * @see https://grpc.github.io/grpc/core/md_doc_statuscodes.html
    */
   RESOURCE_EXHAUSTED = 'resource-exhausted',
 
   /**
    * The service is unavailable
+   *
+   * @see https://grpc.github.io/grpc/core/md_doc_statuscodes.html
    */
   UNAVAILABLE = 'unavailable',
 }
