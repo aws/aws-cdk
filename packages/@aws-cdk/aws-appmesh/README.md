@@ -327,10 +327,14 @@ router.addRoute('route-http2-retry', {
   routeSpec: appmesh.RouteSpec.http2({
     weightedTargets: [{ virtualNode: node }],
     retryPolicy: {
-      httpRetryEvents: [appmesh.HttpRetryEvent.CLIENT_ERROR],
+      // Retry if the connection failed:
       tcpRetryEvents: [appmesh.TcpRetryEvent.CONNECTION_ERROR],
-      maxRetries: 5,
-      perRetryTimeout: cdk.Duration.seconds(1),
+      // Retry if there's an HTTP gateway error (502, 503, 504)
+      httpRetryEvents: [appmesh.HttpRetryEvent.GATEWAY_ERROR],
+      // Retry five times
+      retryAttempts: 5,
+      // Use a 1 second timeout per retry
+      retryTimeout: cdk.Duration.seconds(1),
     },
   }),
 });
@@ -344,11 +348,17 @@ router.addRoute('route-grpc-retry', {
     weightedTargets: [{ virtualNode: node }],
     match: { serviceName: 'servicename' },
     retryPolicy: {
-      grpcRetryEvents: [appmesh.GrpcRetryEvent.DEADLINE_EXCEEDED],
-      httpRetryEvents: [appmesh.HttpRetryEvent.CLIENT_ERROR],
       tcpRetryEvents: [appmesh.TcpRetryEvent.CONNECTION_ERROR],
-      maxRetries: 5,
-      perRetryTimeout: cdk.Duration.seconds(1),
+      httpRetryEvents: [appmesh.HttpRetryEvent.GATEWAY_ERROR],
+      // Retry if the request was cancelled, a resource exhausted, or if the
+      // service is available:
+      grpcRetryEvents: [
+        appmesh.GrpcRetryEvent.CANCELLED,
+        appmesh.GrpcRetryEvent.RESOURCE_EXHAUSTED,
+        appmesh.GrpcRetryEvent.UNAVAILABLE,
+      ],
+      retryAttempts: 5,
+      retryTimeout: cdk.Duration.seconds(1),
     },
   }),
 });
