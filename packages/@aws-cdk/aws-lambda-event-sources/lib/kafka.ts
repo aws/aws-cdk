@@ -41,7 +41,7 @@ export enum AuthenticationMethod {
   /**
    * SASL_SCRAM_256_AUTH authentication method for your Kafka cluster
    */
-  SASL_SCRAM_256_AUTH = 'SASL_SCRAM_512_AUTH',
+  SASL_SCRAM_256_AUTH = 'SASL_SCRAM_256_AUTH',
 }
 
 /**
