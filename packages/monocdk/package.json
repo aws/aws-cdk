@@ -73,7 +73,7 @@
         "module": "monocdk"
       },
       "go": {
-        "moduleName": "github.com/aws/aws-cdk-go"
+        "moduleName": "github.com/aws/aws-cdk-go/awscdk"
       }
     },
     "projectReferences": false
