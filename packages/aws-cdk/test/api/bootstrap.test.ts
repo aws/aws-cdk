@@ -49,6 +49,7 @@ beforeEach(() => {
       executed = true;
       return {};
     }),
+    deleteChangeSet: jest.fn(),
     getTemplate: jest.fn(() => {
       executed = true;
       return {};

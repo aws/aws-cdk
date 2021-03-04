@@ -140,11 +140,17 @@ abstract class StateMachineBase extends Resource implements IStateMachine {
   public static fromStateMachineArn(scope: Construct, id: string, stateMachineArn: string): IStateMachine {
     class Import extends StateMachineBase {
       public readonly stateMachineArn = stateMachineArn;
+      public readonly grantPrincipal = new iam.UnknownPrincipal({ resource: this });
     }
     return new Import(scope, id);
   }
 
   public abstract readonly stateMachineArn: string;
+
+  /**
+   * The principal this state machine is running as
+   */
+  public abstract readonly grantPrincipal: iam.IPrincipal;
 
   /**
    * Grant the given identity permissions to start an execution of this state
@@ -380,11 +386,11 @@ export class StateMachine extends StateMachineBase {
     const graph = new StateGraph(props.definition.startState, `State Machine ${id} definition`);
     graph.timeout = props.timeout;
 
-    this.stateMachineType = props.stateMachineType ? props.stateMachineType : StateMachineType.STANDARD;
+    this.stateMachineType = props.stateMachineType ?? StateMachineType.STANDARD;
 
     const resource = new CfnStateMachine(this, 'Resource', {
       stateMachineName: this.physicalName,
-      stateMachineType: props.stateMachineType ? props.stateMachineType : undefined,
+      stateMachineType: props.stateMachineType ?? undefined,
       roleArn: this.role.roleArn,
       definitionString: Stack.of(this).toJsonString(graph.toGraphJson()),
       loggingConfiguration: props.logs ? this.buildLoggingConfiguration(props.logs) : undefined,
@@ -404,6 +410,13 @@ export class StateMachine extends StateMachineBase {
       resourceName: this.physicalName,
       sep: ':',
     });
+  }
+
+  /**
+   * The principal this state machine is running as
+   */
+  public get grantPrincipal() {
+    return this.role.grantPrincipal;
   }
 
   /**
@@ -461,7 +474,7 @@ export class StateMachine extends StateMachineBase {
 /**
  * A State Machine
  */
-export interface IStateMachine extends IResource {
+export interface IStateMachine extends IResource, iam.IGrantable {
   /**
    * The ARN of the state machine
    * @attribute

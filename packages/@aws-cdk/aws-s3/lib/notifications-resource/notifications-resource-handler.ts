@@ -138,7 +138,7 @@ const handler = (event: any, context: any) => {
 
   // eslint-disable-next-line max-len
   // adapted from https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lambda-function-code.html#cfn-lambda-function-code-cfnresponsemodule
-  // to allow sending an error messge as a reason.
+  // to allow sending an error message as a reason.
   function submitResponse(responseStatus: string, reason?: string) {
     const responseBody = JSON.stringify({
       Status: responseStatus,

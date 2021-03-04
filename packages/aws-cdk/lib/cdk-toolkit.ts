@@ -110,7 +110,7 @@ export class CdkToolkit {
   public async deploy(options: DeployOptions) {
     const stacks = await this.selectStacksForDeploy(options.stackNames, options.exclusively);
 
-    const requireApproval = options.requireApproval !== undefined ? options.requireApproval : RequireApproval.Broadening;
+    const requireApproval = options.requireApproval ?? RequireApproval.Broadening;
 
     const parameterMap: { [name: string]: { [name: string]: string | undefined } } = { '*': {} };
     for (const key in options.parameters) {
@@ -186,6 +186,7 @@ export class CdkToolkit {
           notificationArns: options.notificationArns,
           tags,
           execute: options.execute,
+          changeSetName: options.changeSetName,
           force: options.force,
           parameters: Object.assign({}, parameterMap['*'], parameterMap[stack.stackName]),
           usePreviousParameters: options.usePreviousParameters,
@@ -553,6 +554,12 @@ export interface DeployOptions {
    * @default true
    */
   execute?: boolean;
+
+  /**
+   * Optional name to use for the CloudFormation change set.
+   * If not provided, a name will be generated automatically.
+   */
+  changeSetName?: string;
 
   /**
    * Always deploy, even if templates are identical.
