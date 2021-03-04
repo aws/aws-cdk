@@ -8,7 +8,6 @@ export async function onEventHandler(event: OnEventRequest): Promise<OnEventResp
   const dynamodb = new DynamoDB();
 
   let updateTableAction: 'Create' | 'Update' | 'Delete';
-
   if (event.RequestType === 'Create' || event.RequestType === 'Delete') {
     updateTableAction = event.RequestType;
   } else { // Update
@@ -31,11 +30,9 @@ export async function onEventHandler(event: OnEventRequest): Promise<OnEventResp
   }).promise();
   console.log('Update table: %j', data);
 
-  if (event.RequestType === 'Create' || event.RequestType === 'Update') {
-    return { PhysicalResourceId: `${event.ResourceProperties.TableName}-${event.ResourceProperties.Region}` };
-  }
-
-  return {};
+  return event.RequestType === 'Create' || event.RequestType === 'Update'
+    ? { PhysicalResourceId: `${event.ResourceProperties.TableName}-${event.ResourceProperties.Region}` }
+    : {};
 }
 
 export async function isCompleteHandler(event: IsCompleteRequest): Promise<IsCompleteResponse> {
