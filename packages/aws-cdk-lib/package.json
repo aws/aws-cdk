@@ -66,9 +66,6 @@
       "python": {
         "distName": "aws-cdk.lib",
         "module": "aws_cdk.lib"
-      },
-      "go": {
-        "moduleName": "github.com/aws/aws-cdk-go"
       }
     },
     "projectReferences": false

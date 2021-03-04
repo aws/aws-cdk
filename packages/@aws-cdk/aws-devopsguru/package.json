@@ -27,9 +27,6 @@
         ],
         "distName": "aws-cdk.aws-devopsguru",
         "module": "aws_cdk.aws_devopsguru"
-      },
-      "go": {
-        "moduleName": "github.com/aws/aws-cdk-go"
       }
     }
   },
