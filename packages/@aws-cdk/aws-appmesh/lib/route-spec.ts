@@ -72,6 +72,7 @@ export interface HttpRouteSpecOptions {
 
   /**
    * The retry policy
+   *
    * @default - no retry policy
    */
   readonly retryPolicy?: HttpRetryPolicy;
