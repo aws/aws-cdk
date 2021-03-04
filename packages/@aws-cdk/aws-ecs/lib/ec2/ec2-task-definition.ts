@@ -1,7 +1,16 @@
-import { Resource } from '@aws-cdk/core';
 import { Construct } from 'constructs';
-import { CommonTaskDefinitionProps, Compatibility, IpcMode, ITaskDefinition, NetworkMode, PidMode, TaskDefinition } from '../base/task-definition';
+import {
+  CommonTaskDefinitionAttributes,
+  CommonTaskDefinitionProps,
+  Compatibility,
+  IpcMode,
+  ITaskDefinition,
+  NetworkMode,
+  PidMode,
+  TaskDefinition,
+} from '../base/task-definition';
 import { PlacementConstraint } from '../placement';
+import { ImportedTaskDefinition } from '../base/_imported-task-definition';
 
 /**
  * The properties for a task definition run on an EC2 cluster.
@@ -52,6 +61,13 @@ export interface IEc2TaskDefinition extends ITaskDefinition {
 }
 
 /**
+ * Attributes used to import an existing EC2 task definition
+ */
+export interface Ec2TaskDefinitionAttributes extends CommonTaskDefinitionAttributes {
+
+}
+
+/**
  * The details of a task definition run on an EC2 cluster.
  *
  * @resource AWS::ECS::TaskDefinition
@@ -62,13 +78,25 @@ export class Ec2TaskDefinition extends TaskDefinition implements IEc2TaskDefinit
    * Imports a task definition from the specified task definition ARN.
    */
   public static fromEc2TaskDefinitionArn(scope: Construct, id: string, ec2TaskDefinitionArn: string): IEc2TaskDefinition {
-    class Import extends Resource implements IEc2TaskDefinition {
-      public readonly taskDefinitionArn = ec2TaskDefinitionArn;
-      public readonly compatibility = Compatibility.EC2;
-      public readonly isEc2Compatible = true;
-      public readonly isFargateCompatible = false;
-    }
-    return new Import(scope, id);
+    return new ImportedTaskDefinition(scope, id, {
+      taskDefinitionArn: ec2TaskDefinitionArn,
+    });
+  }
+
+  /**
+   * Imports an existing Ec2 task definition from its attributes
+   */
+  public static fromEc2TaskDefinitionAttributes(
+    scope: Construct,
+    id: string,
+    attrs: Ec2TaskDefinitionAttributes,
+  ): IEc2TaskDefinition {
+    return new ImportedTaskDefinition(scope, id, {
+      taskDefinitionArn: attrs.taskDefinitionArn,
+      compatibility: Compatibility.EC2,
+      networkMode: attrs.networkMode,
+      taskRole: attrs.taskRole,
+    });
   }
 
   /**
