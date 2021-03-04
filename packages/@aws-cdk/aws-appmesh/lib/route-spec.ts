@@ -37,18 +37,21 @@ export interface HttpRouteMatch {
 
   /**
    * Specifies the client request headers to match on
+   *
    * @default - do not match on headers
    */
-  readonly headers?: HttpRouteHeader[];
+  readonly headers?: HeaderMatch[];
 
   /**
    * The client request method to match on. Specify only one.
+   *
    * @default - do not match on request method
    */
   readonly method?: HttpRouteMatchMethod;
 
   /**
    * The client request scheme to match on. Specify only one. Applicable only for HTTP2 routes.
+   *
    * @default - do not match on HTTP2 scheme
    */
   readonly scheme?: HttpRouteMatchScheme;
@@ -120,91 +123,131 @@ export enum HttpRouteMatchScheme {
 }
 
 /**
- * An object that represents the HTTP header in the request to match.
+ * Configuration for `HeaderMatch`
  */
-export interface HttpRouteHeader {
+export interface HeaderMatchConfig {
   /**
-   * Specify `true` to match anything except the match criteria.
+   * The Http header name
+   */
+  readonly name: string;
+
+  /**
+   * Invert the matching condition.
+   *
    * @default false
    */
   readonly invert?: boolean;
 
   /**
-   * The method to use to match the header.
-   * @default - no match method
+   * The match property.
    */
-  readonly match?: IHeaderMatchMethod;
-
-  /**
-   * A name for the HTTP header in the client request that will be matched on.
-   * @example 'content-type'
-   */
-  readonly name: string;
-}
-
-/**
- * Match method.
- */
-export interface IHeaderMatchMethod {
-  /**
-   * Produce the match method.
-   */
-  renderMatchMethod(): CfnRoute.HeaderMatchMethodProperty;
+  readonly matchProperty: CfnRoute.HeaderMatchMethodProperty;
 }
 
 /**
  * Used to generate header matching methods.
  */
-export abstract class HeaderMatchMethod {
+export abstract class HeaderMatch {
   /**
    * The value sent by the client must match the specified value exactly.
    */
-  static exact(exact: string): IHeaderMatchMethod {
-    return {
-      renderMatchMethod: () => ({ exact }),
-    };
+  static valueIs(name: string, exact: string): HeaderMatch {
+    return new HeaderMatchImpl(name, false, { exact });
   }
 
   /**
-   * The value sent by the client must begin with the specified characters.
+   * The value sent by the client must not match the specified value exactly.
    */
-  static prefix(prefix: string): IHeaderMatchMethod {
-    return {
-      renderMatchMethod: () => ({ prefix }),
-    };
+  static valueIsNot(name: string, exact: string): HeaderMatch {
+    return new HeaderMatchImpl(name, true, { exact });
+  }
+
+  /**
+   * The value sent by the client must start with the specified characters.
+   */
+  static valueStartsWith(name: string, prefix: string): HeaderMatch {
+    return new HeaderMatchImpl(name, false, { prefix });
+  }
+
+  /**
+   * The value sent by the client must not start with the specified characters.
+   */
+  static valueDoesNotStartWith(name: string, prefix: string): HeaderMatch {
+    return new HeaderMatchImpl(name, true, { prefix });
   }
 
   /**
    * The value sent by the client must end with the specified characters.
    */
-  static suffix(suffix: string): IHeaderMatchMethod {
-    return {
-      renderMatchMethod: () => ({ suffix }),
-    };
+  static valueEndsWith(name: string, suffix: string): HeaderMatch {
+    return new HeaderMatchImpl(name, false, { suffix });
+  }
+
+  /**
+   * The value sent by the client must not end with the specified characters.
+   */
+  static valueDoesNotEndWith(name: string, suffix: string): HeaderMatch {
+    return new HeaderMatchImpl(name, true, { suffix });
   }
 
   /**
    * The value sent by the client must include the specified characters.
    */
-  static regex(regex: string): IHeaderMatchMethod {
-    return {
-      renderMatchMethod: () => ({ regex }),
-    };
+  static valueMatchesRegex(name: string, regex: string): HeaderMatch {
+    return new HeaderMatchImpl(name, false, { regex });
   }
 
   /**
-   * Match on a numeric range of values.
+   * The value sent by the client must not include the specified characters.
+   */
+  static valueDoesNotMatchRegex(name: string, regex: string): HeaderMatch {
+    return new HeaderMatchImpl(name, true, { regex });
+  }
+
+  /**
+   * The value sent by the client must be in a range of values
    * @param start Match on values starting at and including this value
    * @param end Match on values up to but not including this value
    */
-  static range(start: number, end: number): IHeaderMatchMethod {
+  static valuesIsInRange(name: string, start: number, end: number): HeaderMatch {
+    return new HeaderMatchImpl(name, false, {
+      range: {
+        start,
+        end,
+      },
+    });
+  }
+
+  /**
+   * The value sent by the client must not be in a range of values
+   * @param start Match on values starting at and including this value
+   * @param end Match on values up to but not including this value
+   */
+  static valuesIsNotInRange(name: string, start: number, end: number): HeaderMatch {
+    return new HeaderMatchImpl(name, true, {
+      range: {
+        start,
+        end,
+      },
+    });
+  }
+
+  /**
+   * Returns the header match configuration.
+   */
+  abstract bind(scope: Construct): HeaderMatchConfig;
+}
+
+class HeaderMatchImpl extends HeaderMatch {
+  constructor(private readonly name: string, private readonly invert: boolean, private readonly matchProperty: CfnRoute.HeaderMatchMethodProperty) {
+    super();
+  }
+
+  bind(_scope: Construct): HeaderMatchConfig {
     return {
-      renderMatchMethod: () => ({
-        range: {
-          start,
-          end,
-        },
-      }),
+      name: this.name,
+      invert: this.invert,
+      matchProperty: this.matchProperty,
     };
   }
 }
@@ -419,11 +462,14 @@ class HttpRouteSpec extends RouteSpec {
 
     let headers: CfnRoute.HttpRouteHeaderProperty[] | undefined;
     if (this.match?.headers) {
-      headers = this.match.headers.map(header => ({
-        name: header.name,
-        invert: header.invert,
-        match: header.match?.renderMatchMethod(),
-      }));
+      headers = this.match.headers.map(header => {
+        const config = header.bind(_scope);
+        return {
+          name: config.name,
+          invert: config.invert,
+          match: config.matchProperty,
+        };
+      });
     }
 
     const httpConfig: CfnRoute.HttpRouteProperty = {

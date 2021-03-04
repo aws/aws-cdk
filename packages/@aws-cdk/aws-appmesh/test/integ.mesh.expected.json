@@ -652,38 +652,80 @@
             "Match": {
               "Headers": [
                 {
+                  "Invert": false,
                   "Match": {
                     "Exact": "application/json"
                   },
                   "Name": "Content-Type"
                 },
                 {
+                  "Invert": false,
                   "Match": {
-                    "Prefix": "application/"
+                    "Prefix": "application/json"
                   },
                   "Name": "Content-Type"
                 },
                 {
-                  "Invert": true,
+                  "Invert": false,
                   "Match": {
-                    "Suffix": "/x-www-form-urlencoded"
+                    "Suffix": "application/json"
                   },
                   "Name": "Content-Type"
                 },
                 {
+                  "Invert": false,
                   "Match": {
-                    "Regex": ".*"
+                    "Regex": "application/.*"
                   },
                   "Name": "Content-Type"
                 },
                 {
+                  "Invert": false,
                   "Match": {
                     "Range": {
                       "End": 5,
                       "Start": 1
                     }
                   },
-                  "Name": "Max-Forwards"
+                  "Name": "Content-Type"
+                },
+                {
+                  "Invert": true,
+                  "Match": {
+                    "Exact": "application/json"
+                  },
+                  "Name": "Content-Type"
+                },
+                {
+                  "Invert": true,
+                  "Match": {
+                    "Prefix": "application/json"
+                  },
+                  "Name": "Content-Type"
+                },
+                {
+                  "Invert": true,
+                  "Match": {
+                    "Suffix": "application/json"
+                  },
+                  "Name": "Content-Type"
+                },
+                {
+                  "Invert": true,
+                  "Match": {
+                    "Regex": "application/.*"
+                  },
+                  "Name": "Content-Type"
+                },
+                {
+                  "Invert": true,
+                  "Match": {
+                    "Range": {
+                      "End": 5,
+                      "Start": 1
+                    }
+                  },
+                  "Name": "Content-Type"
                 }
               ],
               "Method": "POST",

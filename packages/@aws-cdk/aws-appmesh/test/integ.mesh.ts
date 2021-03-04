@@ -148,27 +148,16 @@ router.addRoute('route-4', {
       method: appmesh.HttpRouteMatchMethod.POST,
       scheme: appmesh.HttpRouteMatchScheme.HTTPS,
       headers: [
-        {
-          name: 'Content-Type',
-          match: appmesh.HeaderMatchMethod.exact('application/json'),
-        },
-        {
-          name: 'Content-Type',
-          match: appmesh.HeaderMatchMethod.prefix('application/'),
-        },
-        {
-          name: 'Content-Type',
-          invert: true,
-          match: appmesh.HeaderMatchMethod.suffix('/x-www-form-urlencoded'),
-        },
-        {
-          name: 'Content-Type',
-          match: appmesh.HeaderMatchMethod.regex('.*'),
-        },
-        {
-          name: 'Max-Forwards',
-          match: appmesh.HeaderMatchMethod.range(1, 5),
-        },
+        appmesh.HeaderMatch.valueIs('Content-Type', 'application/json'),
+        appmesh.HeaderMatch.valueStartsWith('Content-Type', 'application/json'),
+        appmesh.HeaderMatch.valueEndsWith('Content-Type', 'application/json'),
+        appmesh.HeaderMatch.valueMatchesRegex('Content-Type', 'application/.*'),
+        appmesh.HeaderMatch.valuesIsInRange('Content-Type', 1, 5),
+        appmesh.HeaderMatch.valueIsNot('Content-Type', 'application/json'),
+        appmesh.HeaderMatch.valueDoesNotStartWith('Content-Type', 'application/json'),
+        appmesh.HeaderMatch.valueDoesNotEndWith('Content-Type', 'application/json'),
+        appmesh.HeaderMatch.valueDoesNotMatchRegex('Content-Type', 'application/.*'),
+        appmesh.HeaderMatch.valuesIsNotInRange('Content-Type', 1, 5),
       ],
     },
   }),

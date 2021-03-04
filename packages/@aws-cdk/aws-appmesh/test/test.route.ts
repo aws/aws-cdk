@@ -306,27 +306,16 @@ export = {
           match: {
             prefixPath: '/',
             headers: [
-              {
-                name: 'Content-Type',
-                match: appmesh.HeaderMatchMethod.exact('application/json'),
-              },
-              {
-                name: 'Content-Type',
-                match: appmesh.HeaderMatchMethod.prefix('application/'),
-              },
-              {
-                name: 'Content-Type',
-                invert: true,
-                match: appmesh.HeaderMatchMethod.suffix('/json+foobar'),
-              },
-              {
-                name: 'Content-Type',
-                match: appmesh.HeaderMatchMethod.regex('.*'),
-              },
-              {
-                name: 'Max-Forwards',
-                match: appmesh.HeaderMatchMethod.range(1, 5),
-              },
+              appmesh.HeaderMatch.valueIs('Content-Type', 'application/json'),
+              appmesh.HeaderMatch.valueIsNot('Content-Type', 'text/html'),
+              appmesh.HeaderMatch.valueStartsWith('Content-Type', 'application/'),
+              appmesh.HeaderMatch.valueDoesNotStartWith('Content-Type', 'text/'),
+              appmesh.HeaderMatch.valueEndsWith('Content-Type', '/json'),
+              appmesh.HeaderMatch.valueDoesNotEndWith('Content-Type', '/json+foobar'),
+              appmesh.HeaderMatch.valueMatchesRegex('Content-Type', 'application/.*'),
+              appmesh.HeaderMatch.valueDoesNotMatchRegex('Content-Type', 'text/.*'),
+              appmesh.HeaderMatch.valuesIsInRange('Max-Forward', 1, 5),
+              appmesh.HeaderMatch.valuesIsNotInRange('Max-Forward', 1, 5),
             ],
           },
         }),
@@ -340,30 +329,64 @@ export = {
               Prefix: '/',
               Headers: [
                 {
-                  Name: 'Content-Type',
+                  Invert: false,
                   Match: { Exact: 'application/json' },
+                  Name: 'Content-Type',
                 },
                 {
+                  Invert: true,
+                  Match: { Exact: 'text/html' },
                   Name: 'Content-Type',
+                },
+                {
+                  Invert: false,
                   Match: { Prefix: 'application/' },
+                  Name: 'Content-Type',
                 },
                 {
+                  Invert: true,
+                  Match: { Prefix: 'text/' },
                   Name: 'Content-Type',
+                },
+                {
+                  Invert: false,
+                  Match: { Suffix: '/json' },
+                  Name: 'Content-Type',
+                },
+                {
                   Invert: true,
                   Match: { Suffix: '/json+foobar' },
-                },
-                {
                   Name: 'Content-Type',
-                  Match: { Regex: '.*' },
                 },
                 {
-                  Name: 'Max-Forwards',
+                  Invert: false,
+                  Match: { Regex: 'application/.*' },
+                  Name: 'Content-Type',
+                },
+                {
+                  Invert: true,
+                  Match: { Regex: 'text/.*' },
+                  Name: 'Content-Type',
+                },
+                {
+                  Invert: false,
                   Match: {
                     Range: {
                       End: 5,
                       Start: 1,
                     },
                   },
+                  Name: 'Max-Forward',
+                },
+                {
+                  Invert: true,
+                  Match: {
+                    Range: {
+                      End: 5,
+                      Start: 1,
+                    },
+                  },
+                  Name: 'Max-Forward',
                 },
               ],
             },
