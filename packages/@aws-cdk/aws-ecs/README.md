@@ -699,7 +699,7 @@ const service = new ecs.Ec2Service(stack, 'Service', {
 });
 ```
 
-By default `SRV` DNS record types will target the default container and default
+With `bridge` or `host` network modes, only `SRV` DNS record types are supported. By default, `SRV` DNS record types will target the default container and default
 port. However, you may target a different container and port on the same ECS task:
 
 ```ts
