@@ -313,10 +313,7 @@ router.addRoute('route-http2', {
       method: appmesh.HttpRouteMatchMethod.POST,
       scheme: appmesh.HttpRouteMatchScheme.HTTPS,
       headers: [
-        {
-          name: 'Content-Type',
-          match: appmesh.HeaderMatchMethod.exact('application/json'),
-        },
+        appmesh.HeaderMatch.valueIs('Content-Type', 'application/json'),
       ]
     },
   }),
