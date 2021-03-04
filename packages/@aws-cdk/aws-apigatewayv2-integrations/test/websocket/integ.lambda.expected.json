@@ -35,7 +35,7 @@
       "Type": "AWS::Lambda::Function",
       "Properties": {
         "Code": {
-          "ZipFile": "exports.handler = async function(event, context) { console.log(event); return { statusCode: 200, body: \"conencted\" }; };"
+          "ZipFile": "exports.handler = async function(event, context) { console.log(event); return { statusCode: 200, body: \"connected\" }; };"
         },
         "Role": {
           "Fn::GetAtt": [

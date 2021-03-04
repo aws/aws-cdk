@@ -40,8 +40,10 @@ export interface ApiMappingProps {
 
   /**
    * stage for the ApiMapping resource
+   * required for WebSocket API
+   * defaults to default stage of an HTTP API
    *
-   * @default - Default stage of the passed API
+   * @default - Default stage of the passed API for HTTP API, undefined for WebSocket API
    */
   readonly stage?: IStage;
 }

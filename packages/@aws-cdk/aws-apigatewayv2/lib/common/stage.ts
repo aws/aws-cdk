@@ -92,8 +92,6 @@ export interface DomainMappingOptions {
  * Options that are common between HTTP and Websocket APIs.
  */
 export interface StageOptions {
-
-
   /**
    * Whether updates to an API automatically trigger a new deployment.
    * @default false
