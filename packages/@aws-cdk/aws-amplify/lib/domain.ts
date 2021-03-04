@@ -27,14 +27,14 @@ export interface DomainOptions {
    *
    * @default false
    */
-  readonly domainEnableAutoSubDomain: boolean;
+  readonly enableAutoSubdomain?: boolean;
 
   /**
    * Branches which should automatically create subdomains
    *
    * @default - all repository branches *, pr*
    */
-  readonly domainAutoSubDomainCreationPatterns?: string[];
+  readonly autoSubdomainCreationPatterns?: string[];
 }
 
 /**
@@ -120,8 +120,8 @@ export class Domain extends Resource {
       appId: props.app.appId,
       domainName,
       subDomainSettings: Lazy.any({ produce: () => this.renderSubDomainSettings() }, { omitEmptyArray: true }),
-      enableAutoSubDomain: !!props.domainEnableAutoSubDomain,
-      autoSubDomainCreationPatterns: props.domainAutoSubDomainCreationPatterns,
+      enableAutoSubDomain: !!props.enableAutoSubdomain,
+      autoSubDomainCreationPatterns: props.autoSubdomainCreationPatterns,
     });
 
     this.arn = domain.attrArn;
