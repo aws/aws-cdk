@@ -147,7 +147,7 @@ router.addRoute('route-http2-retry', {
       httpRetryEvents: [appmesh.HttpRetryEvent.CLIENT_ERROR],
       tcpRetryEvents: [appmesh.TcpRetryEvent.CONNECTION_ERROR],
       maxRetries: 5,
-      perRetryTimeout: cdk.Duration.seconds(1),
+      retryTimeout: cdk.Duration.seconds(1),
     },
   }),
 });
@@ -161,7 +161,7 @@ router.addRoute('route-grpc-retry', {
       httpRetryEvents: [appmesh.HttpRetryEvent.CLIENT_ERROR],
       tcpRetryEvents: [appmesh.TcpRetryEvent.CONNECTION_ERROR],
       maxRetries: 5,
-      perRetryTimeout: cdk.Duration.seconds(1),
+      retryTimeout: cdk.Duration.seconds(1),
     },
   }),
 });

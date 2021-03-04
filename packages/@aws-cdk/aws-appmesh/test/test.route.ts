@@ -305,7 +305,7 @@ export = {
             httpRetryEvents: [appmesh.HttpRetryEvent.CLIENT_ERROR],
             tcpRetryEvents: [appmesh.TcpRetryEvent.CONNECTION_ERROR],
             maxRetries: 5,
-            perRetryTimeout: cdk.Duration.seconds(10),
+            retryTimeout: cdk.Duration.seconds(10),
           },
         }),
       });
@@ -352,7 +352,7 @@ export = {
             httpRetryEvents: [],
             tcpRetryEvents: [appmesh.TcpRetryEvent.CONNECTION_ERROR],
             maxRetries: 5,
-            perRetryTimeout: cdk.Duration.seconds(10),
+            retryTimeout: cdk.Duration.seconds(10),
           },
         }),
       });
@@ -364,7 +364,7 @@ export = {
             httpRetryEvents: [appmesh.HttpRetryEvent.CLIENT_ERROR],
             tcpRetryEvents: [],
             maxRetries: 5,
-            perRetryTimeout: cdk.Duration.seconds(10),
+            retryTimeout: cdk.Duration.seconds(10),
           },
         }),
       });
@@ -415,7 +415,7 @@ export = {
             weightedTargets: [{ virtualNode }],
             retryPolicy: {
               maxRetries: 5,
-              perRetryTimeout: cdk.Duration.seconds(10),
+              retryTimeout: cdk.Duration.seconds(10),
             },
           }),
         });
@@ -448,7 +448,7 @@ export = {
             httpRetryEvents: [appmesh.HttpRetryEvent.CLIENT_ERROR],
             tcpRetryEvents: [appmesh.TcpRetryEvent.CONNECTION_ERROR],
             maxRetries: 5,
-            perRetryTimeout: cdk.Duration.seconds(10),
+            retryTimeout: cdk.Duration.seconds(10),
           },
         }),
       });
@@ -498,7 +498,7 @@ export = {
             httpRetryEvents: [],
             tcpRetryEvents: [appmesh.TcpRetryEvent.CONNECTION_ERROR],
             maxRetries: 5,
-            perRetryTimeout: cdk.Duration.seconds(10),
+            retryTimeout: cdk.Duration.seconds(10),
           },
         }),
       });
@@ -512,7 +512,7 @@ export = {
             httpRetryEvents: [],
             tcpRetryEvents: [],
             maxRetries: 5,
-            perRetryTimeout: cdk.Duration.seconds(10),
+            retryTimeout: cdk.Duration.seconds(10),
           },
         }),
       });
@@ -566,7 +566,7 @@ export = {
             match: { serviceName: 'servicename' },
             retryPolicy: {
               maxRetries: 5,
-              perRetryTimeout: cdk.Duration.seconds(10),
+              retryTimeout: cdk.Duration.seconds(10),
             },
           }),
         });

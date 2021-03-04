@@ -97,7 +97,7 @@ export interface HttpRetryPolicy {
   /**
    * The timeout for each retry attempt
    */
-  readonly perRetryTimeout: cdk.Duration;
+  readonly retryTimeout: cdk.Duration;
 
   /**
    * TCP events on which to retry. The event occurs before any processing of a
@@ -497,7 +497,7 @@ function renderHttpRetryPolicy(retryPolicy: HttpRetryPolicy): CfnRoute.HttpRetry
     maxRetries: retryPolicy.maxRetries,
     perRetryTimeout: {
       unit: 'ms',
-      value: retryPolicy.perRetryTimeout.toMilliseconds(),
+      value: retryPolicy.retryTimeout.toMilliseconds(),
     },
     httpRetryEvents: retryPolicy.httpRetryEvents,
     tcpRetryEvents: retryPolicy.tcpRetryEvents,
