@@ -983,24 +983,23 @@ asset.grantRead( instance.role );
 
 ### Multipart user data
 
-In addition to above the `MultipartUserData` can be used to change instance startup behavior. Multipart user data are composed
+In addition, to above the `MultipartUserData` can be used to change instance startup behavior. Multipart user data are composed
 from separate parts forming archive. The most common parts are scripts executed during instance set-up. However, there are other
 kinds, too.
 
 The advantage of multipart archive is in flexibility when it's needed to add additional parts or to use specialized parts to
 fine tune instance startup. Some services (like AWS Batch) supports only `MultipartUserData`.
 
-The parts can be executed at different moment of instance start-up and can server different purposes. This is controlled by `contentType` property.
+The parts can be executed at different moment of instance start-up and can serve a different purposes. This is controlled by `contentType` property.
+For common scripts, `text/x-shellscript; charset="utf-8"` can be used as content type.
 
-However, most common parts are script parts which can be created by `MultipartUserData.fromUserData`, and which have `contentType` `text/x-shellscript; charset="utf-8"`.
+In order to create archive the `MultipartUserData` has to be instantiated. Than, user can add parts to multipart archive using `addPart`. The `MultipartBody` contains methods supporting creation of body parts.
 
-
-In order to create archive the `MultipartUserData` has to be instantiated. Than user can add parts to multipart archive using `addPart`. The `MultipartBody` contains methods supporting creation of body parts.
-
-If the custom parts is required, it can be created using `MultipartUserData.fromRawBody`, in this case full control over content type,
+If the very custom part is required, it can be created using `MultipartUserData.fromRawBody`, in this case full control over content type,
 transfer encoding, and body properties is given to the user.
 
-Below is an example for creating multipart user data with single body part responsible for installing `awscli`
+Below is an example for creating multipart user data with single body part responsible for installing `awscli` and configuring maximum size
+of storage used by Docker containers:
 
 ```ts
 const bootHookConf = ec2.UserData.forLinux();
