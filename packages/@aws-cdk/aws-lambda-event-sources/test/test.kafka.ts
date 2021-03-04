@@ -10,7 +10,7 @@ import { TestFunction } from './test-function';
 
 export = {
   'msk': {
-    'sufficiently complex example'(test: Test) {
+    'default'(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();
       const fn = new TestFunction(stack, 'Fn');
@@ -86,7 +86,7 @@ export = {
   },
 
   'self managed kafka': {
-    'sufficiently complex example'(test: Test) {
+    'default'(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();
       const fn = new TestFunction(stack, 'Fn');
@@ -176,7 +176,7 @@ export = {
       test.done();
     },
 
-    'self managed Kafka in VPC: setting vpc requires vpcSubnets to be set'(test: Test) {
+    'VPC: setting vpc requires vpcSubnets to be set'(test: Test) {
       const stack = new cdk.Stack();
       const fn = new TestFunction(stack, 'Fn');
       const kafkaTopic = 'some-topic';
@@ -200,7 +200,7 @@ export = {
       test.done();
     },
 
-    'self managed Kafka in VPC: setting vpc requires securityGroup to be set'(test: Test) {
+    'VPC: setting vpc requires securityGroup to be set'(test: Test) {
       const stack = new cdk.Stack();
       const fn = new TestFunction(stack, 'Fn');
       const kafkaTopic = 'some-topic';
