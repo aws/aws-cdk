@@ -102,6 +102,7 @@ export class ManagedKafkaEventSource extends StreamEventSource {
       this.enrichMappingOptions({
         eventSourceArn: this.innerProps.cluster.clusterArn,
         startingPosition: this.innerProps.startingPosition,
+        // From https://docs.aws.amazon.com/msk/latest/developerguide/msk-password.html#msk-password-limitations, "Amazon MSK only supports SCRAM-SHA-512 authentication."
         sourceAccessConfigurations: [{ type: lambda.SourceAccessConfigurationType.SASL_SCRAM_512_AUTH, uri: this.innerProps.secret.secretArn }],
         kafkaTopic: this.innerProps.topic,
       }),
