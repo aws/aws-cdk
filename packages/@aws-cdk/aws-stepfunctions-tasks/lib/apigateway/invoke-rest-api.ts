@@ -3,13 +3,13 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
-import { BaseInvokeApiGatewayApi } from './base';
-import { BaseInvokeApiGatewayApiProps } from './base-types';
+import { InvokeApiGatewayApiBase } from './base';
+import { InvokeApiGatewayApiBaseProps } from './base-types';
 
 /**
  * Properties for invoking an REST API Endpoint
  */
-export interface InvokeApiGatewayRestApiProps extends BaseInvokeApiGatewayApiProps {
+export interface InvokeApiGatewayRestApiProps extends InvokeApiGatewayApiBaseProps {
   /**
    * API to call
    */
@@ -26,7 +26,7 @@ export interface InvokeApiGatewayRestApiProps extends BaseInvokeApiGatewayApiPro
  *
  * @see https://docs.aws.amazon.com/step-functions/latest/dg/connect-api-gateway.html
  */
-export class InvokeApiGatewayRestApi extends BaseInvokeApiGatewayApi {
+export class InvokeApiGatewayRestApi extends InvokeApiGatewayApiBase {
   protected readonly taskMetrics?: sfn.TaskMetricsConfig | undefined;
   protected readonly taskPolicies?: iam.PolicyStatement[] | undefined;
 
@@ -38,7 +38,7 @@ export class InvokeApiGatewayRestApi extends BaseInvokeApiGatewayApi {
     super(scope, id, props);
 
     this.apiEndpoint = this.getApiEndpoint();
-    this.arnForExecuteApi = props.api.arnForExecuteApi(props.method, props.path, props.stageName);
+    this.arnForExecuteApi = props.api.arnForExecuteApi(props.method, props.apiPath, props.stageName);
     this.stageName = props.stageName;
 
     this.taskPolicies = this.createPolicyStatements();

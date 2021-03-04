@@ -2,31 +2,37 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import { Construct } from 'constructs';
 import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
-import { AuthType, BaseInvokeApiGatewayApiProps } from './base-types';
+import { AuthType, InvokeApiGatewayApiBaseProps } from './base-types';
 
 /**
  * Base ApiGateway Invoke Task
  * @internal
  */
-export abstract class BaseInvokeApiGatewayApi extends sfn.TaskStateBase {
+export abstract class InvokeApiGatewayApiBase extends sfn.TaskStateBase {
   private static readonly SUPPORTED_INTEGRATION_PATTERNS: sfn.IntegrationPattern[] = [
     sfn.IntegrationPattern.REQUEST_RESPONSE,
     sfn.IntegrationPattern.WAIT_FOR_TASK_TOKEN,
   ];
 
-  private readonly baseProps: BaseInvokeApiGatewayApiProps;
+  private readonly baseProps: InvokeApiGatewayApiBaseProps;
   private readonly integrationPattern: sfn.IntegrationPattern;
 
   protected abstract readonly apiEndpoint: string;
   protected abstract readonly arnForExecuteApi: string;
   protected abstract readonly stageName?: string;
 
-  constructor(scope: Construct, id: string, props: BaseInvokeApiGatewayApiProps) {
+  constructor(scope: Construct, id: string, props: InvokeApiGatewayApiBaseProps) {
     super(scope, id, props);
 
     this.baseProps = props;
     this.integrationPattern = props.integrationPattern ?? sfn.IntegrationPattern.REQUEST_RESPONSE;
-    validatePatternSupported(this.integrationPattern, BaseInvokeApiGatewayApi.SUPPORTED_INTEGRATION_PATTERNS);
+    validatePatternSupported(this.integrationPattern, InvokeApiGatewayApiBase.SUPPORTED_INTEGRATION_PATTERNS);
+
+    if (this.integrationPattern === sfn.IntegrationPattern.WAIT_FOR_TASK_TOKEN) {
+      if (!sfn.FieldUtils.containsTaskToken(this.baseProps.headers)) {
+        throw new Error('Task Token is required in `headers` for WAIT_FOR_TASK_TOKEN pattern. Use JsonPath.taskToken to set the token.');
+      }
+    }
   }
 
   /**
@@ -40,7 +46,7 @@ export abstract class BaseInvokeApiGatewayApi extends sfn.TaskStateBase {
         Method: this.baseProps.method,
         Headers: this.baseProps.headers?.value,
         Stage: this.stageName,
-        Path: this.baseProps.path,
+        Path: this.baseProps.apiPath,
         QueryParameters: this.baseProps.queryParameters?.value,
         RequestBody: this.baseProps.requestBody?.value,
         AuthType: this.baseProps.authType ? this.baseProps.authType : 'NO_AUTH',
@@ -49,29 +55,15 @@ export abstract class BaseInvokeApiGatewayApi extends sfn.TaskStateBase {
   }
 
   protected createPolicyStatements(): iam.PolicyStatement[] {
-    if (this.baseProps.authType === AuthType.IAM_ROLE) {
-      return [
-        new iam.PolicyStatement({
-          resources: [this.arnForExecuteApi],
-          actions: ['ExecuteAPI:Invoke'],
-        }),
-      ];
-    } else if (this.baseProps.authType === AuthType.RESOURCE_POLICY) {
-      if (!sfn.FieldUtils.containsTaskToken(this.baseProps.headers)) {
-        throw new Error('Task Token is required in `headers` Use JsonPath.taskToken to set the token.');
-      }
-      return [
-        new iam.PolicyStatement({
-          resources: [this.arnForExecuteApi],
-          actions: ['ExecuteAPI:Invoke'],
-          conditions: {
-            StringEquals: {
-              'aws:SourceArn': '*',
-            },
-          },
-        }),
-      ];
+    if (this.baseProps.authType === AuthType.NO_AUTH) {
+      return [];
     }
-    return [];
+
+    return [
+      new iam.PolicyStatement({
+        resources: [this.arnForExecuteApi],
+        actions: ['ExecuteAPI:Invoke'],
+      }),
+    ];
   }
 }

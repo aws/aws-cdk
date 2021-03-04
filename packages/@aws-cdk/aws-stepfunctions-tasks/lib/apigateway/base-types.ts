@@ -31,7 +31,7 @@ export enum AuthType {
   /** Call the API direclty with no authorization method */
   NO_AUTH = 'NO_AUTH',
 
-  /** * Use the IAM role associated with the current state machine for authorization */
+  /** Use the IAM role associated with the current state machine for authorization */
   IAM_ROLE = 'IAM_ROLE',
 
   /** Use the resource policy of the API for authorization */
@@ -41,7 +41,7 @@ export enum AuthType {
 /**
  * Base ApiGateway Invoke Task Props
  */
-export interface BaseInvokeApiGatewayApiProps extends sfn.TaskStateBaseProps {
+export interface InvokeApiGatewayApiBaseProps extends sfn.TaskStateBaseProps {
   /**
    * Http method for the API
    */
@@ -53,12 +53,11 @@ export interface BaseInvokeApiGatewayApiProps extends sfn.TaskStateBaseProps {
    */
   readonly headers?: sfn.TaskInput;
 
-
   /**
    * Path parameters appended after API endpoint
    * @default - No path
    */
-  readonly path?: string;
+  readonly apiPath?: string;
 
   /**
    * Query strings attatched to end of request
@@ -68,7 +67,7 @@ export interface BaseInvokeApiGatewayApiProps extends sfn.TaskStateBaseProps {
 
   /**
    * HTTP Request body
-   * @default - No requestBody
+   * @default - No request body
    */
   readonly requestBody?: sfn.TaskInput;
 

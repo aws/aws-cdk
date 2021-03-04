@@ -3,13 +3,13 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
-import { BaseInvokeApiGatewayApi } from './base';
-import { BaseInvokeApiGatewayApiProps } from './base-types';
+import { InvokeApiGatewayApiBase } from './base';
+import { InvokeApiGatewayApiBaseProps } from './base-types';
 
 /**
  * Properties for invoking an HTTP API Endpoint
  */
-export interface InvokeApiGatewayHttpApiProps extends BaseInvokeApiGatewayApiProps {
+export interface InvokeApiGatewayHttpApiProps extends InvokeApiGatewayApiBaseProps {
   /**
    * API to call
    */
@@ -27,7 +27,7 @@ export interface InvokeApiGatewayHttpApiProps extends BaseInvokeApiGatewayApiPro
  *
  * @see https://docs.aws.amazon.com/step-functions/latest/dg/connect-api-gateway.html
  */
-export class InvokeApiGatewayHttpApi extends BaseInvokeApiGatewayApi {
+export class InvokeApiGatewayHttpApi extends InvokeApiGatewayApiBase {
   protected readonly taskMetrics?: sfn.TaskMetricsConfig | undefined;
   protected readonly taskPolicies?: iam.PolicyStatement[] | undefined;
 
@@ -50,13 +50,13 @@ export class InvokeApiGatewayHttpApi extends BaseInvokeApiGatewayApi {
   }
 
   private getArnForExecuteApi(): string {
-    const { api, stageName, method, path } = this.props;
+    const { api, stageName, method, apiPath } = this.props;
 
     return cdk.Stack.of(api).formatArn({
       service: 'execute-api',
       resource: api.httpApiId,
       sep: '/',
-      resourceName: `${stageName}/${method}${path}`,
+      resourceName: `${stageName}/${method}${apiPath}`,
     });
   }
 }

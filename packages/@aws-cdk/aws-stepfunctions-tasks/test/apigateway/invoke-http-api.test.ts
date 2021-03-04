@@ -1,7 +1,7 @@
 import * as apigatewayv2 from '@aws-cdk/aws-apigatewayv2';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import * as cdk from '@aws-cdk/core';
-import { AuthType, HttpMethod, InvokeApiGatewayHttpApi } from '../../lib';
+import { HttpMethod, InvokeApiGatewayHttpApi } from '../../lib';
 
 describe('InvokeApiGatewayHttpApi', () => {
   test('default', () => {
@@ -124,8 +124,22 @@ describe('InvokeApiGatewayHttpApi', () => {
         api: httpApi,
         method: HttpMethod.GET,
         integrationPattern: sfn.IntegrationPattern.WAIT_FOR_TASK_TOKEN,
-        authType: AuthType.RESOURCE_POLICY,
       });
-    }).toThrow('Task Token is required in `headers` Use JsonPath.taskToken to set the token.');
+    }).toThrow(/Task Token is required in `headers` for WAIT_FOR_TASK_TOKEN pattern. Use JsonPath.taskToken to set the token./);
+  });
+
+  test('unsupported integration pattern - RUN_JOB', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const httpApi = new apigatewayv2.HttpApi(stack, 'HttpApi');
+
+    // THEN
+    expect(() => {
+      new InvokeApiGatewayHttpApi(stack, 'Invoke', {
+        api: httpApi,
+        method: HttpMethod.GET,
+        integrationPattern: sfn.IntegrationPattern.RUN_JOB,
+      });
+    }).toThrow(/Unsupported service integration pattern./);
   });
 });
