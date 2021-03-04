@@ -1,5 +1,5 @@
 import { IAccelerator } from '@aws-cdk/aws-globalaccelerator';
-import { IRecordSet, IAliasRecordTarget, AliasRecordTargetConfig } from '@aws-cdk/aws-route53';
+import { IAliasRecordTarget, AliasRecordTargetConfig } from '@aws-cdk/aws-route53';
 
 export class GlobalAcceleratorTarget implements IAliasRecordTarget {
   /**
@@ -18,7 +18,7 @@ export class GlobalAcceleratorTarget implements IAliasRecordTarget {
   constructor(private readonly accelerator: string | IAccelerator) {
   }
 
-  bind(record: IRecordSet): AliasRecordTargetConfig {
+  bind(): AliasRecordTargetConfig {
     let acceleratorDomainName;
     if (typeof this.accelerator === 'string') {
       acceleratorDomainName = this.accelerator;
