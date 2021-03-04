@@ -229,7 +229,7 @@ export enum GrpcRetryEvent {
   /**
    * The service is unavailable
    */
-  UNAVAILABILE = 'unavailable',
+  UNAVAILABLE = 'unavailable',
 }
 
 /**
