@@ -46,7 +46,7 @@ export enum LogLevel {
   /**
    * Log all errors
    */
-  ERROR= 'ERROR',
+  ERROR = 'ERROR',
   /**
    * Log fatal errors
    */
@@ -379,6 +379,10 @@ export class StateMachine extends StateMachineBase {
       physicalName: props.stateMachineName,
     });
 
+    if (props.stateMachineName != undefined) {
+      this.validateStateMachineName(props.stateMachineName);
+    }
+
     this.role = props.role || new iam.Role(this, 'Role', {
       assumedBy: new iam.ServicePrincipal('states.amazonaws.com'),
     });
@@ -424,6 +428,15 @@ export class StateMachine extends StateMachineBase {
    */
   public addToRolePolicy(statement: iam.PolicyStatement) {
     this.role.addToPrincipalPolicy(statement);
+  }
+
+  private validateStateMachineName(stateMachineName: string) {
+    if (stateMachineName.length < 1 || stateMachineName.length > 80) {
+      throw new Error('StateMachine name length must be between 1 and 80 characters');
+    }
+    if (stateMachineName.match('[0-9a-zA-Z\_\-]+')?.length != 1) {
+      throw new Error('StateMachine name must match [0-9a-zA-Z\_\-]+');
+    }
   }
 
   private buildLoggingConfiguration(logOptions: LogOptions): CfnStateMachine.LoggingConfigurationProperty {
