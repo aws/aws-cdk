@@ -219,7 +219,7 @@ export enum GrpcRetryEvent {
   /**
    * Internal error
    */
-  INTERNAL = 'internal',
+  INTERNAL_ERROR = 'internal',
 
   /**
    * A resource was exhausted
