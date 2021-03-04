@@ -36,8 +36,6 @@ function lerna_scopes() {
   done
 }
 
-if false; then
-
 # Compile examples with respect to "decdk" directory, as all packages will
 # be symlinked there so they can all be included.
 echo "Extracting code samples" >&2
@@ -58,8 +56,6 @@ $PACMAK \
 # module
 echo "Packaging non-jsii modules" >&2
 lerna run $(lerna_scopes $(cat $TMPDIR/nonjsii.txt)) --sort --concurrency=1 --stream package
-
-fi
 
 # Finally rsync all 'dist' directories together into a global 'dist' directory
 for dir in $(find packages -name dist | grep -v node_modules | grep -v run-wrappers); do
