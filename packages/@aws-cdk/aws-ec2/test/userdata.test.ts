@@ -279,11 +279,10 @@ nodeunitShim({
     linuxUserData.addCommands('echo "Hello world"');
 
     // WHEN
-    const defaultRender1 = ec2.MultipartUserDataPart.fromUserData(linuxUserData);
-    const defaultRender2 = ec2.MultipartUserDataPart.fromUserData(linuxUserData, {
-      contentType: 'text/cloud-boothook; charset=\"utf-8\"',
-    });
-    const defaultRender3 = ec2.MultipartUserDataPart.fromUserData(linuxUserData, {});
+    const defaultRender1 = ec2.MultipartBody.fromUserData(linuxUserData);
+    const defaultRender2 = ec2.MultipartBody.fromUserData(linuxUserData, 'text/cloud-boothook; charset=\"utf-8\"');
+
+    const defaultRender3 = ec2.MultipartBody.fromUserData(linuxUserData);
 
     // THEN
     test.equals(defaultRender1.contentType, 'text/x-shellscript; charset=\"utf-8\"');
@@ -295,4 +294,75 @@ nodeunitShim({
 
     test.done();
   },
+
+  'Default parts separator used, if not specified'(test: Test) {
+    // GIVEN
+    const multipart = new ec2.MultipartUserData();
+
+    multipart.addPart(ec2.MultipartBody.fromRawBody({
+      contentType: 'CT',
+    }));
+
+    // WHEN
+    const out = multipart.render();
+
+    // WHEN
+    test.equals(out, [
+      'Content-Type: multipart/mixed; boundary=\"+AWS+CDK+User+Data+Separator==\"',
+      'MIME-Version: 1.0',
+      '',
+      '--+AWS+CDK+User+Data+Separator==',
+      'Content-Type: CT',
+      '',
+      '--+AWS+CDK+User+Data+Separator==--',
+      '',
+    ].join('\n'));
+
+    test.done();
+  },
+
+  'Non-default parts separator used, if not specified'(test: Test) {
+    // GIVEN
+    const multipart = new ec2.MultipartUserData({
+      partsSeparator: '//',
+    });
+
+    multipart.addPart(ec2.MultipartBody.fromRawBody({
+      contentType: 'CT',
+    }));
+
+    // WHEN
+    const out = multipart.render();
+
+    // WHEN
+    test.equals(out, [
+      'Content-Type: multipart/mixed; boundary=\"//\"',
+      'MIME-Version: 1.0',
+      '',
+      '--//',
+      'Content-Type: CT',
+      '',
+      '--//--',
+      '',
+    ].join('\n'));
+
+    test.done();
+  },
+
+  'Multipart separator validation'(test: Test) {
+    // Happy path
+    new ec2.MultipartUserData();
+    new ec2.MultipartUserData({
+      partsSeparator: 'a-zA-Z0-9()+,-./:=?',
+    });
+
+    [' ', '\n', '\r', '[', ']', '<', '>', '違う'].forEach(s => test.throws(() => {
+      new ec2.MultipartUserData({
+        partsSeparator: s,
+      });
+    }, /Invalid characters in separator/));
+
+    test.done();
+  },
+
 });

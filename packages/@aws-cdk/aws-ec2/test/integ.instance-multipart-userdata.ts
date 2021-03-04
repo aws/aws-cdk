@@ -11,9 +11,8 @@ class TestStack extends cdk.Stack {
 
     const vpc = new ec2.Vpc(this, 'VPC');
 
-    const multipartUserData = new ec2.MultipartUserData({
-      partsSeparator: '---separator---',
-    });
+    // Here we test default separator as probably most useful
+    const multipartUserData = new ec2.MultipartUserData();
 
     const userData1 = ec2.UserData.forLinux();
     userData1.addCommands('echo 大らと > /var/tmp/echo1');
@@ -22,12 +21,12 @@ class TestStack extends cdk.Stack {
     const userData2 = ec2.UserData.forLinux();
     userData2.addCommands(`echo 大らと ${vpc.vpcId}  > /var/tmp/echo2`);
 
-    const rawPart1 = ec2.MultipartUserDataPart.fromRawBody({
+    const rawPart1 = ec2.MultipartBody.fromRawBody({
       contentType: 'text/x-shellscript',
       body: 'echo "RawPart" > /var/tmp/rawPart1',
     });
 
-    const rawPart2 = ec2.MultipartUserDataPart.fromRawBody({
+    const rawPart2 = ec2.MultipartBody.fromRawBody({
       contentType: 'text/x-shellscript',
       body: `echo "RawPart ${vpc.vpcId}" > /var/tmp/rawPart2`,
     });
@@ -38,13 +37,17 @@ class TestStack extends cdk.Stack {
       'cloud-init-per once docker_options echo \'OPTIONS="${OPTIONS} --storage-opt dm.basesize=20G"\' >> /etc/sysconfig/docker',
     );
 
-    multipartUserData.addUserDataPart(userData1);
-    multipartUserData.addUserDataPart(userData2);
-    multipartUserData.addUserDataPart(bootHook, {
-      contentType: 'text/cloud-boothook',
+    multipartUserData.addPart(ec2.MultipartBody.fromUserData(userData1));
+    multipartUserData.addPart(ec2.MultipartBody.fromUserData(userData2));
+    multipartUserData.addPart(ec2.MultipartBody.fromUserData(bootHook, 'text/cloud-boothook'));
+
+    const rawPart3 = ec2.MultipartBody.fromRawBody({
+      contentType: 'text/x-shellscript',
+      body: 'cp $0 /var/tmp/upstart # Should be one line file no new line at the end and beginning',
     });
     multipartUserData.addPart(rawPart1);
     multipartUserData.addPart(rawPart2);
+    multipartUserData.addPart(rawPart3);
 
     const instance = new ec2.Instance(this, 'Instance', {
       vpc,

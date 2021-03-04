@@ -646,11 +646,11 @@
             "Fn::Join": [
               "",
               [
-                "Content-Type: multipart/mixed; boundary=\"---separator---\"\nMIME-Version: 1.0\n\n-----separator---\nContent-Type: text/x-shellscript; charset=\"utf-8\"\nContent-Transfer-Encoding: base64\n\n",
+                "Content-Type: multipart/mixed; boundary=\"+AWS+CDK+User+Data+Separator==\"\nMIME-Version: 1.0\n\n--+AWS+CDK+User+Data+Separator==\nContent-Type: text/x-shellscript; charset=\"utf-8\"\nContent-Transfer-Encoding: base64\n\n",
                 {
                   "Fn::Base64": "#!/bin/bash\necho 大らと > /var/tmp/echo1\ncp /var/tmp/echo1 /var/tmp/echo1-copy"
                 },
-                "\n-----separator---\nContent-Type: text/x-shellscript; charset=\"utf-8\"\nContent-Transfer-Encoding: base64\n\n",
+                "\n--+AWS+CDK+User+Data+Separator==\nContent-Type: text/x-shellscript; charset=\"utf-8\"\nContent-Transfer-Encoding: base64\n\n",
                 {
                   "Fn::Base64": {
                     "Fn::Join": [
@@ -665,15 +665,15 @@
                     ]
                   }
                 },
-                "\n-----separator---\nContent-Type: text/cloud-boothook\nContent-Transfer-Encoding: base64\n\n",
+                "\n--+AWS+CDK+User+Data+Separator==\nContent-Type: text/cloud-boothook\nContent-Transfer-Encoding: base64\n\n",
                 {
                   "Fn::Base64": "#!/bin/bash\necho \"Boothook2\" > /var/tmp/boothook\ncloud-init-per once docker_options echo 'OPTIONS=\"${OPTIONS} --storage-opt dm.basesize=20G\"' >> /etc/sysconfig/docker"
                 },
-                "\n-----separator---\nContent-Type: text/x-shellscript\n\necho \"RawPart\" > /var/tmp/rawPart1\n-----separator---\nContent-Type: text/x-shellscript\n\necho \"RawPart ",
+                "\n--+AWS+CDK+User+Data+Separator==\nContent-Type: text/x-shellscript\n\necho \"RawPart\" > /var/tmp/rawPart1\n--+AWS+CDK+User+Data+Separator==\nContent-Type: text/x-shellscript\n\necho \"RawPart ",
                 {
                   "Ref": "VPCB9E5F0B4"
                 },
-                "\" > /var/tmp/rawPart2\n-----separator-----\n"
+                "\" > /var/tmp/rawPart2\n--+AWS+CDK+User+Data+Separator==\nContent-Type: text/x-shellscript\n\ncp $0 /var/tmp/upstart # Should be one line file no new line at the end and beginning\n--+AWS+CDK+User+Data+Separator==--\n"
               ]
             ]
           }
