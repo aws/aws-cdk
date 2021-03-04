@@ -27,9 +27,6 @@
         ],
         "distName": "aws-cdk.aws-mwaa",
         "module": "aws_cdk.aws_mwaa"
-      },
-      "go": {
-        "moduleName": "github.com/aws/aws-cdk-go"
       }
     }
   },

@@ -29,9 +29,6 @@
         ],
         "distName": "aws-cdk.aws-servicecatalogappregistry",
         "module": "aws_cdk.aws_servicecatalogappregistry"
-      },
-      "go": {
-        "moduleName": "github.com/aws/aws-cdk-go"
       }
     }
   },
