@@ -6,6 +6,7 @@ import * as s3 from '@aws-cdk/aws-s3';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import * as ssm from '@aws-cdk/aws-ssm';
 import * as cdk from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
 import { testFutureBehavior } from 'cdk-build-tools/lib/feature-flag';
 import * as ecs from '../lib';
 
@@ -700,6 +701,55 @@ describe('container definition', () => {
     });
 
 
+  });
+
+  test('can add port mappings to the container definition by props', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
+
+    // WHEN
+    taskDefinition.addContainer('cont', {
+      image: ecs.ContainerImage.fromRegistry('test'),
+      memoryLimitMiB: 1024,
+      portMappings: [{ containerPort: 80 }],
+    });
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
+      ContainerDefinitions: [
+        {
+          PortMappings: [{ ContainerPort: 80 }],
+        },
+      ],
+    });
+  });
+
+  test('can add port mappings using props and addPortMappings and both are included', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
+
+    // WHEN
+    const containerDefinition = taskDefinition.addContainer('cont', {
+      image: ecs.ContainerImage.fromRegistry('test'),
+      memoryLimitMiB: 1024,
+      portMappings: [{ containerPort: 80 }],
+    });
+
+    containerDefinition.addPortMappings({ containerPort: 443 });
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
+      ContainerDefinitions: [
+        {
+          PortMappings: [
+            { ContainerPort: 80 },
+            { ContainerPort: 443 },
+          ],
+        },
+      ],
+    });
   });
 
   describe('Environment Files', () => {
@@ -1643,7 +1693,7 @@ describe('container definition', () => {
     });
   });
 
-  testFutureBehavior('can use a DockerImageAsset directly for a container image', { '@aws-cdk/aws-ecr-assets:dockerIgnoreSupport': true }, cdk.App, (app) => {
+  testFutureBehavior('can use a DockerImageAsset directly for a container image', { [cxapi.DOCKER_IGNORE_SUPPORT]: true }, cdk.App, (app) => {
     // GIVEN
     const stack = new cdk.Stack(app, 'Stack');
     const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
