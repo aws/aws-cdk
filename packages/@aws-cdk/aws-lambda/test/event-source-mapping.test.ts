@@ -212,4 +212,53 @@ describe('event source mapping', () => {
       target: fn,
     })).toThrow(/kafkaBootStrapServers must not be empty if set/);
   });
+
+  test('eventSourceArn appears in stack', () => {
+    const stack = new cdk.Stack();
+    const topicNameParam = new cdk.CfnParameter(stack, 'TopicNameParam', {
+      type: 'String',
+    });
+
+    const fn = new Function(stack, 'fn', {
+      handler: 'index.handler',
+      code: Code.fromInline('exports.handler = ${handler.toString()}'),
+      runtime: Runtime.NODEJS_10_X,
+    });
+
+    let eventSourceArn = 'some-arn';
+
+    new EventSourceMapping(stack, 'test', {
+      target: fn,
+      eventSourceArn: eventSourceArn,
+      kafkaTopic: topicNameParam.valueAsString,
+    });
+
+    expect(stack).toHaveResourceLike('AWS::Lambda::EventSourceMapping', {
+      EventSourceArn: eventSourceArn,
+    });
+  });
+
+  test('kafkaBootstrapServers appears in stack', () => {
+    const stack = new cdk.Stack();
+    const topicNameParam = new cdk.CfnParameter(stack, 'TopicNameParam', {
+      type: 'String',
+    });
+
+    const fn = new Function(stack, 'fn', {
+      handler: 'index.handler',
+      code: Code.fromInline('exports.handler = ${handler.toString()}'),
+      runtime: Runtime.NODEJS_10_X,
+    });
+
+    let kafkaBootstrapServers = ['kafka-broker.example.com:9092'];
+    new EventSourceMapping(stack, 'test', {
+      target: fn,
+      kafkaBootstrapServers: kafkaBootstrapServers,
+      kafkaTopic: topicNameParam.valueAsString,
+    });
+
+    expect(stack).toHaveResourceLike('AWS::Lambda::EventSourceMapping', {
+      SelfManagedEventSource: { Endpoints: { KafkaBootstrapServers: kafkaBootstrapServers } },
+    });
+  });
 });
