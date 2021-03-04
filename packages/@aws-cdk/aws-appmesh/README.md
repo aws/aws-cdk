@@ -313,7 +313,9 @@ router.addRoute('route-http2', {
       method: appmesh.HttpRouteMatchMethod.POST,
       scheme: appmesh.HttpRouteMatchScheme.HTTPS,
       headers: [
-        appmesh.HeaderMatch.valueIs('Content-Type', 'application/json'),
+        // All specified headers must match for the route to match.
+        appmesh.HeaderMatch.valueStartsWith('Content-Type', 'application/json'),
+        appmesh.HeaderMatch.valueIsNot('Content-Type', 'application/json+unsupported'),
       ]
     },
   }),

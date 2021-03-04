@@ -36,7 +36,8 @@ export interface HttpRouteMatch {
   readonly prefixPath: string;
 
   /**
-   * Specifies the client request headers to match on
+   * Specifies the client request headers to match on. All specified headers
+   * must match for the route to match.
    *
    * @default - do not match on headers
    */
