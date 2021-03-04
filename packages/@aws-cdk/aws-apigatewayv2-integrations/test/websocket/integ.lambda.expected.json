@@ -208,16 +208,6 @@
         "RouteSelectionExpression": "$request.body.action"
       }
     },
-    "mywsapiDefaultStageD7F52467": {
-      "Type": "AWS::ApiGatewayV2::Stage",
-      "Properties": {
-        "ApiId": {
-          "Ref": "mywsapi32E6CE11"
-        },
-        "StageName": "dev",
-        "AutoDeploy": true
-      }
-    },
     "mywsapiconnectRouteWebSocketApiIntegmywsapiconnectRoute456CB290Permission2D0BC294": {
       "Type": "AWS::Lambda::Permission",
       "Properties": {
@@ -504,6 +494,16 @@
             ]
           ]
         }
+      }
+    },
+    "mystage114C35EC": {
+      "Type": "AWS::ApiGatewayV2::Stage",
+      "Properties": {
+        "ApiId": {
+          "Ref": "mywsapi32E6CE11"
+        },
+        "StageName": "dev",
+        "AutoDeploy": true
       }
     }
   },

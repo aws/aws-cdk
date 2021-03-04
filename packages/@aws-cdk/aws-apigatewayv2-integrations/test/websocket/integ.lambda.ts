@@ -1,4 +1,4 @@
-import { WebSocketApi } from '@aws-cdk/aws-apigatewayv2';
+import { WebSocketApi, WebSocketStage } from '@aws-cdk/aws-apigatewayv2';
 import * as lambda from '@aws-cdk/aws-lambda';
 import { App, CfnOutput, Stack } from '@aws-cdk/core';
 import { LambdaWebSocketIntegration } from '../../lib';
@@ -39,12 +39,16 @@ const messageHandler = new lambda.Function(stack, 'MessageHandler', {
 });
 
 const webSocketApi = new WebSocketApi(stack, 'mywsapi', {
-  defaultStageName: 'dev',
   connectRouteOptions: { integration: new LambdaWebSocketIntegration({ handler: connectHandler }) },
   disconnectRouteOptions: { integration: new LambdaWebSocketIntegration({ handler: disconnetHandler }) },
   defaultRouteOptions: { integration: new LambdaWebSocketIntegration({ handler: defaultHandler }) },
 });
+const stage = new WebSocketStage(stack, 'mystage', {
+  webSocketApi,
+  stageName: 'dev',
+  autoDeploy: true,
+});
 
 webSocketApi.addRoute('sendmessage', { integration: new LambdaWebSocketIntegration({ handler: messageHandler }) });
 
-new CfnOutput(stack, 'ApiEndpoint', { value: webSocketApi.defaultStage?.url! });
+new CfnOutput(stack, 'ApiEndpoint', { value: stage.url });

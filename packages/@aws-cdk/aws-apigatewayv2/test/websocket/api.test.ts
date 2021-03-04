@@ -24,23 +24,6 @@ describe('WebSocketApi', () => {
     expect(stack).not.toHaveResource('AWS::ApiGatewayV2::Integration');
   });
 
-  test('setting defaultStageName', () => {
-    // GIVEN
-    const stack = new Stack();
-
-    // WHEN
-    const api = new WebSocketApi(stack, 'api', {
-      defaultStageName: 'dev',
-    });
-
-    // THEN
-    expect(stack).toHaveResource('AWS::ApiGatewayV2::Stage', {
-      ApiId: stack.resolve(api.apiId),
-      StageName: 'dev',
-      AutoDeploy: true,
-    });
-  });
-
   test('addRoute: adds a route with passed key', () => {
     // GIVEN
     const stack = new Stack();

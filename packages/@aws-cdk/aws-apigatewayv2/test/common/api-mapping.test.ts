@@ -1,7 +1,7 @@
 import '@aws-cdk/assert/jest';
 import { Certificate } from '@aws-cdk/aws-certificatemanager';
 import { Stack } from '@aws-cdk/core';
-import { DomainName, HttpApi, ApiMapping } from '../../lib';
+import { DomainName, HttpApi, ApiMapping, WebSocketApi } from '../../lib';
 
 const domainName = 'example.com';
 const certArn = 'arn:aws:acm:us-east-1:111111111111:certificate';
@@ -217,5 +217,43 @@ describe('ApiMapping', () => {
     } );
 
     expect(imported.apiMappingId).toEqual(mapping.apiMappingId);
+  });
+
+  test('stage validation - throws if defaultStage not available for HttpApi', () => {
+    // GIVEN
+    const stack = new Stack();
+    const api = new HttpApi(stack, 'Api', {
+      createDefaultStage: false,
+    });
+    const dn = new DomainName(stack, 'DomainName', {
+      domainName,
+      certificate: Certificate.fromCertificateArn(stack, 'cert', certArn),
+    });
+
+    // WHEN
+    expect(() => {
+      new ApiMapping(stack, 'Mapping', {
+        api,
+        domainName: dn,
+      });
+    }).toThrow(/stage is required if default stage is not available/);
+  });
+
+  test('stage validation - throws if stage not provided for WebSocketApi', () => {
+    // GIVEN
+    const stack = new Stack();
+    const api = new WebSocketApi(stack, 'api');
+    const dn = new DomainName(stack, 'DomainName', {
+      domainName,
+      certificate: Certificate.fromCertificateArn(stack, 'cert', certArn),
+    });
+
+    // WHEN
+    expect(() => {
+      new ApiMapping(stack, 'Mapping', {
+        api,
+        domainName: dn,
+      });
+    }).toThrow(/stage is required for WebSocket API/);
   });
 });

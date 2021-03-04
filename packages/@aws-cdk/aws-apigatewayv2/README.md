@@ -298,20 +298,23 @@ Integrations are available in the `aws-apigatewayv2-integrations` module and mor
 To add the default WebSocket routes supported by API Gateway (`$connect`, `$disconnect` and `$default`), configure them as part of api props:
 
 ```ts
-new WebSocketApi(stack, 'mywsapi', {
-  defaultStageName: 'dev',
+const webSocketApi = new WebSocketApi(stack, 'mywsapi', {
   connectRouteOptions: { integration: new LambdaWebSocketIntegration({ handler: connectHandler }) },
   disconnectRouteOptions: { integration: new LambdaWebSocketIntegration({ handler: disconnetHandler }) },
   defaultRouteOptions: { integration: new LambdaWebSocketIntegration({ handler: defaultHandler }) },
+});
+
+new WebSocketStage(stack, 'mystage', {
+  webSocketApi,
+  stageName: 'dev',
+  autoDeploy: true,
 });
 ```
 
 To add any other route:
 
 ```ts
-const webSocketApi = new WebSocketApi(stack, 'mywsapi', {
-  defaultStageName: 'dev',
-});
+const webSocketApi = new WebSocketApi(stack, 'mywsapi');
 webSocketApi.addRoute('sendmessage', {
   integration: new LambdaWebSocketIntegration({
     handler: messageHandler,

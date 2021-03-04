@@ -1,10 +1,10 @@
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
-import { IStage } from './stage';
+import { IResource } from '@aws-cdk/core';
 
 /**
  * Represents a API Gateway HTTP/WebSocket API
  */
-export interface IApi {
+export interface IApi extends IResource {
   /**
    * The identifier of this API Gateway API.
    * @attribute
@@ -16,11 +16,6 @@ export interface IApi {
    * @attribute
    */
   readonly apiEndpoint: string;
-
-  /**
-   * The default stage for this API
-   */
-  readonly defaultStage?: IStage;
 
   /**
    * Return the given named metric for this Api Gateway

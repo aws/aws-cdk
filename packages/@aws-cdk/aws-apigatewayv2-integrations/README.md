@@ -163,8 +163,11 @@ The API Gateway service will invoke the lambda function with an event payload of
 The following code configures a `sendmessage` route with a Lambda integration
 
 ```ts
-const webSocketApi = new WebSocketApi(stack, 'mywsapi', {
-  defaultStageName: 'dev',
+const webSocketApi = new WebSocketApi(stack, 'mywsapi');
+new WebSocketStage(stack, 'mystage', {
+  webSocketApi,
+  stageName: 'dev',
+  autoDeploy: true,
 });
 
 const messageHandler = new lambda.Function(stack, 'MessageHandler', {...});

@@ -2,10 +2,8 @@ import { Construct } from 'constructs';
 import { CfnApi } from '../apigatewayv2.generated';
 import { IApi } from '../common/api';
 import { ApiBase } from '../common/base';
-import { DomainMappingOptions, IStage } from '../common/stage';
 import { WebSocketRouteIntegrationConfig, WebSocketIntegration } from './integration';
 import { WebSocketRoute, WebSocketRouteOptions } from './route';
-import { WebSocketStage } from './stage';
 
 /**
  * Represents a WebSocket API
@@ -39,19 +37,6 @@ export interface WebSocketApiProps {
    * @default '$request.body.action'
    */
   readonly routeSelectionExpression?: string;
-
-  /**
-   * The name of the default stage with deployment
-   * @default - No default stage is created
-   */
-  readonly defaultStageName?: string;
-
-  /**
-   * Configure a custom domain with the API mapping resource to the WebSocket API
-   *
-   * @default - no default domain mapping configured. meaningless if `defaultStageName` is not provided.
-   */
-  readonly defaultDomainMapping?: DomainMappingOptions;
 
   /**
    * Options to configure a '$connect' route
@@ -88,11 +73,6 @@ export class WebSocketApi extends ApiBase implements IWebSocketApi {
    */
   public readonly webSocketApiName?: string;
 
-  /**
-   * The default stage for this API
-   */
-  public readonly defaultStage: IStage | undefined;
-
   constructor(scope: Construct, id: string, props?: WebSocketApiProps) {
     super(scope, id);
 
@@ -106,19 +86,6 @@ export class WebSocketApi extends ApiBase implements IWebSocketApi {
     });
     this.apiId = resource.ref;
     this.apiEndpoint = resource.attrApiEndpoint;
-
-    if (props?.defaultStageName) {
-      this.defaultStage = new WebSocketStage(this, 'DefaultStage', {
-        webSocketApi: this,
-        stageName: props.defaultStageName,
-        autoDeploy: true,
-        domainMapping: props?.defaultDomainMapping,
-      });
-    }
-
-    if (!props?.defaultStageName && props?.defaultDomainMapping) {
-      throw new Error('defaultDomainMapping not supported when defaultStageName is not provided');
-    }
 
     if (props?.connectRouteOptions) {
       this.addRoute('$connect', props.connectRouteOptions);

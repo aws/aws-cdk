@@ -1,6 +1,7 @@
 import { IResource, Resource } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnApiMapping, CfnApiMappingProps } from '../apigatewayv2.generated';
+import { HttpApi } from '../http/api';
 import { IApi } from './api';
 import { IDomainName } from './domain-name';
 import { IStage } from './stage';
@@ -82,8 +83,17 @@ export class ApiMapping extends Resource implements IApiMapping {
   constructor(scope: Construct, id: string, props: ApiMappingProps) {
     super(scope, id);
 
-    if ((!props.stage?.stageName) && !props.api.defaultStage) {
-      throw new Error('stage is required if default stage is not available');
+    let stage = props.stage;
+    if (!stage) {
+      if (props.api instanceof HttpApi) {
+        if (props.api.defaultStage) {
+          stage = props.api.defaultStage;
+        } else {
+          throw new Error('stage is required if default stage is not available');
+        }
+      } else {
+        throw new Error('stage is required for WebSocket API');
+      }
     }
 
     const paramRe = '^[a-zA-Z0-9]*[-_.+!,$]?[a-zA-Z0-9]*$';
@@ -98,21 +108,14 @@ export class ApiMapping extends Resource implements IApiMapping {
     const apiMappingProps: CfnApiMappingProps = {
       apiId: props.api.apiId,
       domainName: props.domainName.name,
-      stage: props.stage?.stageName ?? props.api.defaultStage!.stageName,
+      stage: stage.stageName,
       apiMappingKey: props.apiMappingKey,
     };
 
     const resource = new CfnApiMapping(this, 'Resource', apiMappingProps);
 
     // ensure the dependency on the provided stage
-    if (props.stage) {
-      this.node.addDependency(props.stage);
-    }
-
-    // if stage not specified, we ensure the default stage is ready before we create the api mapping
-    if (!props.stage?.stageName && props.api.defaultStage) {
-      this.node.addDependency(props.api.defaultStage!);
-    }
+    this.node.addDependency(stage);
 
     this.apiMappingId = resource.ref;
     this.mappingKey = props.apiMappingKey;
