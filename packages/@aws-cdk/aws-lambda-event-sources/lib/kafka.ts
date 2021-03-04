@@ -148,9 +148,8 @@ export class SelfManagedKafkaEventSource extends StreamEventSource {
 
   public bind(target: lambda.IFunction) {
     if (!Construct.isConstruct(target)) { throw new Error('Function is not a construct. Unexpected error.'); }
-    const idHash = crypto.createHash('md5').update(Stack.of(target).resolve(this.innerProps.bootstrapServers)).digest('hex');
     target.addEventSourceMapping(
-      `KafkaEventSource:${idHash}:${this.innerProps.topic}`,
+      this.mappingId(target),
       this.enrichMappingOptions({
         kafkaBootstrapServers: this.innerProps.bootstrapServers,
         kafkaTopic: this.innerProps.topic,
@@ -159,6 +158,11 @@ export class SelfManagedKafkaEventSource extends StreamEventSource {
       }),
     );
     this.innerProps.secret.grantRead(target);
+  }
+
+  private mappingId(target: lambda.IFunction) {
+    const idHash = crypto.createHash('md5').update(JSON.stringify(Stack.of(target).resolve(this.innerProps.bootstrapServers))).digest('hex');
+    return `KafkaEventSource:${idHash}:${this.innerProps.topic}`;
   }
 
   private sourceAccessConfigurations() {
