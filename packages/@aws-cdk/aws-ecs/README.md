@@ -693,7 +693,7 @@ const service = new ecs.Ec2Service(stack, 'Service', {
   cluster,
   taskDefinition,
   cloudMapOptions: {
-    // Create A records - useful for VPC networking.
+    // Create A records - useful for AWSVPC network mode.
     dnsRecordType: cloudmap.DnsRecordType.A,
   },
 });
