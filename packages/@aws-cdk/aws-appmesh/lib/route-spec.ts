@@ -82,7 +82,9 @@ export interface HttpRouteSpecOptions {
  */
 export interface HttpRetryPolicy {
   /**
-   * Specify HTTP events on which to retry
+   * Specify HTTP events on which to retry. You must specify at least one value
+   * for at least one types of retry events.
+   *
    * @default - no retries for http events
    */
   readonly httpRetryEvents?: HttpRetryEvent[];
@@ -100,7 +102,9 @@ export interface HttpRetryPolicy {
   /**
    * TCP events on which to retry. The event occurs before any processing of a
    * request has started and is encountered when the upstream is temporarily or
-   * permanently unavailable.
+   * permanently unavailable. You must specify at least one value for at least
+   * one types of retry events.
+   *
    * @default - no retries for tcp events
    */
   readonly tcpRetryEvents?: TcpRetryEvent[];
@@ -181,6 +185,7 @@ export interface GrpcRouteSpecOptions {
 
   /**
    * The retry policy
+   *
    * @default - no retry policy
    */
   readonly retryPolicy?: GrpcRetryPolicy;
@@ -189,7 +194,9 @@ export interface GrpcRouteSpecOptions {
 /** gRPC retry policy */
 export interface GrpcRetryPolicy extends HttpRetryPolicy {
   /**
-   * gRPC events on which to retry
+   * gRPC events on which to retry. You must specify at least one value
+   * for at least one types of retry events.
+   *
    * @default - no retries for gRPC events
    */
   readonly grpcRetryEvents?: GrpcRetryEvent[];
@@ -215,12 +222,12 @@ export enum GrpcRetryEvent {
   INTERNAL = 'internal',
 
   /**
-   * Resource was exhausted
+   * A resource was exhausted
    */
   RESOURCE_EXHAUSTED = 'resource-exhausted',
 
   /**
-   * Unavailable
+   * The service is unavailable
    */
   UNAVAILABILE = 'unavailable',
 }
