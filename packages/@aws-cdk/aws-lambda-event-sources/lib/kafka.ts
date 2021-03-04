@@ -79,7 +79,7 @@ export interface SelfManagedKafkaEventSourceProps extends KafkaEventSourceProps 
   /**
    * The authentication method for your Kafka cluster
    *
-   * @default - SASL_SCRAM_512_AUTH
+   * @default AuthenticationMethod.SASL_SCRAM_512_AUTH
    */
   readonly authenticationMethod?: AuthenticationMethod
 }
