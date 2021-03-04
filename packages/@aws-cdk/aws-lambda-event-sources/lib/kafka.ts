@@ -4,7 +4,12 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as msk from '@aws-cdk/aws-msk';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
+import { Stack } from '@aws-cdk/core';
 import { StreamEventSource, StreamEventSourceProps } from './stream';
+
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct } from '@aws-cdk/core';
 
 /**
  * Properties for a Kafka event source
@@ -142,6 +147,7 @@ export class SelfManagedKafkaEventSource extends StreamEventSource {
   }
 
   public bind(target: lambda.IFunction) {
+    if (!Construct.isConstruct(target)) { throw new Error('Function is not a construct. Unexpected error.'); }
     let authenticationMethod;
     switch (this.innerProps.authenticationMethod) {
       case AuthenticationMethod.SASL_SCRAM_256_AUTH:
@@ -163,7 +169,7 @@ export class SelfManagedKafkaEventSource extends StreamEventSource {
         sourceAccessConfigurations.push({ type: lambda.SourceAccessConfigurationType.VPC_SUBNET, uri: id });
       });
     }
-    const idHash = crypto.createHash('md5').update(JSON.stringify(this.innerProps.bootstrapServers)).digest('hex');
+    const idHash = crypto.createHash('md5').update(Stack.of(target).resolve(this.innerProps.bootstrapServers)).digest('hex');
     target.addEventSourceMapping(
       `KafkaEventSource:${idHash}:${this.innerProps.topic}`,
       this.enrichMappingOptions({
