@@ -249,7 +249,7 @@ export class NatInstanceProvider extends NatProvider implements IConnectable {
 
   public configureNat(options: ConfigureNatOptions) {
     const defaultDirection = this.props.defaultAllowedTraffic ??
-      (this.props.allowAllTraffic ?? true) ? NatTrafficDirection.INBOUND_AND_OUTBOUND : NatTrafficDirection.OUTBOUND_ONLY;
+      (this.props.allowAllTraffic ?? true ? NatTrafficDirection.INBOUND_AND_OUTBOUND : NatTrafficDirection.OUTBOUND_ONLY);
 
     // Create the NAT instances. They can share a security group and a Role.
     const machineImage = this.props.machineImage || new NatInstanceImage();
