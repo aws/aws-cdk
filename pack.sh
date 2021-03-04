@@ -63,6 +63,15 @@ for dir in $(find packages -name dist | grep -v node_modules | grep -v run-wrapp
   rsync -a $dir/ ${distdir}/
 done
 
+# Record the dependency order of NPM packages into a file
+# (This file will be opportunistically used during publishing, it does not need to be complete)
+node_modules/.bin/lerna exec \
+  --sort \
+  --concurrency=1 \
+  --no-private \
+  --no-bail \
+  "cd dist/js && ls >> ${distdir}/js/npm-publish-order.txt"
+
 # Remove a JSII aggregate POM that may have snuk past
 rm -rf dist/java/software/amazon/jsii
 
