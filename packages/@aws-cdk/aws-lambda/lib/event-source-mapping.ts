@@ -40,7 +40,10 @@ export class SourceAccessConfigurationType {
     return new SourceAccessConfigurationType(name);
   }
 
-  /** The key to use in `CfnEventSourceMapping.SourceAccessConfigurationProperty.Type` */
+  /**
+   * The key to use in `SourceAccessConfigurationProperty.Type` property in CloudFormation
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lambda-eventsourcemapping-sourceaccessconfiguration.html#cfn-lambda-eventsourcemapping-sourceaccessconfiguration-type
+   */
   public readonly type: string;
 
   private constructor(type: string) {
