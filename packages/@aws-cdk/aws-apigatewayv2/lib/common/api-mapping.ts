@@ -43,7 +43,7 @@ export interface ApiMappingProps {
    * required for WebSocket API
    * defaults to default stage of an HTTP API
    *
-   * @default - Default stage of the passed API for HTTP API, undefined for WebSocket API
+   * @default - Default stage of the passed API for HTTP API, required for WebSocket API
    */
   readonly stage?: IStage;
 }
