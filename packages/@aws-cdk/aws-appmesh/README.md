@@ -327,9 +327,9 @@ router.addRoute('route-http2-retry', {
   routeSpec: appmesh.RouteSpec.http2({
     weightedTargets: [{ virtualNode: node }],
     retryPolicy: {
-      // Retry if the connection failed:
+      // Retry if the connection failed
       tcpRetryEvents: [appmesh.TcpRetryEvent.CONNECTION_ERROR],
-      // Retry if there's an HTTP gateway error (502, 503, 504)
+      // Retry if HTTP responds with a gateway error (502, 503, 504)
       httpRetryEvents: [appmesh.HttpRetryEvent.GATEWAY_ERROR],
       // Retry five times
       retryAttempts: 5,
@@ -350,8 +350,8 @@ router.addRoute('route-grpc-retry', {
     retryPolicy: {
       tcpRetryEvents: [appmesh.TcpRetryEvent.CONNECTION_ERROR],
       httpRetryEvents: [appmesh.HttpRetryEvent.GATEWAY_ERROR],
-      // Retry if the request was cancelled, a resource exhausted, or if the
-      // service is available:
+      // Retry if gRPC responds that the request was cancelled, a resource
+      // was exhausted, or if the service is unavailable
       grpcRetryEvents: [
         appmesh.GrpcRetryEvent.CANCELLED,
         appmesh.GrpcRetryEvent.RESOURCE_EXHAUSTED,
