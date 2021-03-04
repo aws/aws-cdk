@@ -339,21 +339,18 @@ class HttpRouteSpec extends RouteSpec {
     this.timeout = props.timeout;
 
     if (props.retryPolicy) {
-      if (props.retryPolicy.httpRetryEvents && props.retryPolicy.httpRetryEvents.length === 0) {
-        throw new Error('Specify at least one value in `httpRetryEvents` or leave it undefined');
-      }
+      const httpRetryEvents = props.retryPolicy.httpRetryEvents ?? [];
+      const tcpRetryEvents = props.retryPolicy.tcpRetryEvents ?? [];
 
-      if (props.retryPolicy.tcpRetryEvents && props.retryPolicy.tcpRetryEvents.length === 0) {
-        throw new Error('Specify at least one value in `tcpRetryEvents` or leave it undefined');
-      }
-
-      const numHttpRetryEvents = (props.retryPolicy.httpRetryEvents ?? []).length;
-      const numTcpRetryEvents = (props.retryPolicy.tcpRetryEvents ?? []).length;
-      if (numHttpRetryEvents + numTcpRetryEvents === 0) {
+      if (httpRetryEvents.length + tcpRetryEvents.length === 0) {
         throw new Error('You must specify one value for at least one of `httpRetryEvents` or `tcpRetryEvents`');
       }
 
-      this.retryPolicy = props.retryPolicy;
+      this.retryPolicy = {
+        ...props.retryPolicy,
+        httpRetryEvents: httpRetryEvents.length > 0 ? httpRetryEvents : undefined,
+        tcpRetryEvents: tcpRetryEvents.length > 0 ? tcpRetryEvents : undefined,
+      };
     }
   }
 
@@ -426,27 +423,20 @@ class GrpcRouteSpec extends RouteSpec {
     this.timeout = props.timeout;
 
     if (props.retryPolicy) {
-      if (props.retryPolicy.grpcRetryEvents && props.retryPolicy.grpcRetryEvents.length === 0) {
-        throw new Error('Specify at least one value in `grpcRetryEvents` or leave it undefined');
-      }
+      const grpcRetryEvents = props.retryPolicy.grpcRetryEvents ?? [];
+      const httpRetryEvents = props.retryPolicy.httpRetryEvents ?? [];
+      const tcpRetryEvents = props.retryPolicy.tcpRetryEvents ?? [];
 
-      if (props.retryPolicy.httpRetryEvents && props.retryPolicy.httpRetryEvents.length === 0) {
-        throw new Error('Specify at least one value in `httpRetryEvents` or leave it undefined');
-      }
-
-      if (props.retryPolicy.tcpRetryEvents && props.retryPolicy.tcpRetryEvents.length === 0) {
-        throw new Error('Specify at least one value in `tcpRetryEvents` or leave it undefined');
-      }
-
-      const numGrpcRetryEvents = (props.retryPolicy.grpcRetryEvents ?? []).length;
-      const numHttpRetryEvents = (props.retryPolicy.httpRetryEvents ?? []).length;
-      const numTcpRetryEvents = (props.retryPolicy.tcpRetryEvents ?? []).length;
-
-      if (numGrpcRetryEvents + numHttpRetryEvents + numTcpRetryEvents === 0) {
+      if (grpcRetryEvents.length + httpRetryEvents.length + tcpRetryEvents.length === 0) {
         throw new Error('You must specify one value for at least one of `grpcRetryEvents`, `httpRetryEvents`, `tcpRetryEvents`');
       }
 
-      this.retryPolicy = props.retryPolicy;
+      this.retryPolicy = {
+        ...props.retryPolicy,
+        grpcRetryEvents: grpcRetryEvents.length > 0 ? grpcRetryEvents : undefined,
+        httpRetryEvents: httpRetryEvents.length > 0 ? httpRetryEvents : undefined,
+        tcpRetryEvents: tcpRetryEvents.length > 0 ? tcpRetryEvents : undefined,
+      };
     }
   }
 
