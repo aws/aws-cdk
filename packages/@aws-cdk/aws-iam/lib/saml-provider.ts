@@ -55,7 +55,7 @@ export abstract class SamlMetadataDocument {
   }
 
   /**
-   * Create a SAML metadata document from an XML file
+   * Create a SAML metadata document from a XML file
    */
   public static fromFile(path: string): SamlMetadataDocument {
     return { xml: fs.readFileSync(path, 'utf-8') };

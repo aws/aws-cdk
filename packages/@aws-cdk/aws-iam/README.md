@@ -376,7 +376,7 @@ IAM trust policy.
 
 ```ts
 new iam.SamlProvider(this, 'Provider', {
-  metadataDocument: fs.readFileSync('/path/to/saml-metadata-document.xml', 'utf-8'),
+  metadataDocument: iam.SamlMetadataDocument.fromFile('/path/to/saml-metadata-document.xml'),
 });
 ```
 
@@ -384,7 +384,7 @@ The `SamlPrincipal` class can be used as a principal with a `SamlProvider`:
 
 ```ts
 const provider = new iam.SamlProvider(this, 'Provider', {
-  metadataDocument: fs.readFileSync('/path/to/saml-metadata-document.xml', 'utf-8'),
+  metadataDocument: iam.SamlMetadataDocument.fromFile('/path/to/saml-metadata-document.xml'),
 });
 const principal = new iam.SamlPrincipal(provider, {
   StringEquals: {
@@ -398,7 +398,7 @@ class:
 
 ```ts
 const provider = new iam.SamlProvider(this, 'Provider', {
-  metadataDocument: fs.readFileSync('/path/to/saml-metadata-document.xml', 'utf-8'),
+  metadataDocument: iam.SamlMetadataDocument.fromFile('/path/to/saml-metadata-document.xml'),
 });
 new iam.Role(this, 'Role', {
   assumedBy: new iam.SamlConsolePrincipal(provider),
