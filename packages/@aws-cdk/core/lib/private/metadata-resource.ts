@@ -1,3 +1,4 @@
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
 import { RegionInfo } from '@aws-cdk/region-info';
 import { CfnCondition } from '../cfn-condition';
@@ -76,7 +77,7 @@ function makeCdkMetadataAvailableCondition() {
     .map(ri => Fn.conditionEquals(Aws.REGION, ri.name)));
 }
 
-function formatModules(runtime: cxapi.RuntimeInfo): string {
+function formatModules(runtime: cxschema.RuntimeInfo): string {
   const modules = new Array<string>();
 
   // inject toolkit version to list of modules
