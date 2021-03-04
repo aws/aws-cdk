@@ -3,7 +3,7 @@
 name: auto-approve
 on:
   pull_request:
-    types: [ labeled ]
+    types: [ labeled, unlabeled, opened, synchronize, reopened, ready_for_review, review_requested ]
 
 jobs:
   auto-approve:
