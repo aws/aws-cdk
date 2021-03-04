@@ -92,7 +92,7 @@ export interface HttpRetryPolicy {
   /**
    * The maximum number of retry attempts
    */
-  readonly maxRetries: number;
+  readonly retryAttempts: number;
 
   /**
    * The timeout for each retry attempt
@@ -494,7 +494,7 @@ function renderTimeout(timeout?: HttpTimeout): CfnRoute.HttpTimeoutProperty | un
 
 function renderHttpRetryPolicy(retryPolicy: HttpRetryPolicy): CfnRoute.HttpRetryPolicyProperty {
   return {
-    maxRetries: retryPolicy.maxRetries,
+    maxRetries: retryPolicy.retryAttempts,
     perRetryTimeout: {
       unit: 'ms',
       value: retryPolicy.retryTimeout.toMilliseconds(),

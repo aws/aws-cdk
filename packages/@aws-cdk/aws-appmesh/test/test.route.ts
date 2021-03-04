@@ -304,7 +304,7 @@ export = {
           retryPolicy: {
             httpRetryEvents: [appmesh.HttpRetryEvent.CLIENT_ERROR],
             tcpRetryEvents: [appmesh.TcpRetryEvent.CONNECTION_ERROR],
-            maxRetries: 5,
+            retryAttempts: 5,
             retryTimeout: cdk.Duration.seconds(10),
           },
         }),
@@ -351,7 +351,7 @@ export = {
           retryPolicy: {
             httpRetryEvents: [],
             tcpRetryEvents: [appmesh.TcpRetryEvent.CONNECTION_ERROR],
-            maxRetries: 5,
+            retryAttempts: 5,
             retryTimeout: cdk.Duration.seconds(10),
           },
         }),
@@ -363,7 +363,7 @@ export = {
           retryPolicy: {
             httpRetryEvents: [appmesh.HttpRetryEvent.CLIENT_ERROR],
             tcpRetryEvents: [],
-            maxRetries: 5,
+            retryAttempts: 5,
             retryTimeout: cdk.Duration.seconds(10),
           },
         }),
@@ -414,7 +414,7 @@ export = {
           routeSpec: appmesh.RouteSpec.http({
             weightedTargets: [{ virtualNode }],
             retryPolicy: {
-              maxRetries: 5,
+              retryAttempts: 5,
               retryTimeout: cdk.Duration.seconds(10),
             },
           }),
@@ -447,7 +447,7 @@ export = {
             grpcRetryEvents: [appmesh.GrpcRetryEvent.DEADLINE_EXCEEDED],
             httpRetryEvents: [appmesh.HttpRetryEvent.CLIENT_ERROR],
             tcpRetryEvents: [appmesh.TcpRetryEvent.CONNECTION_ERROR],
-            maxRetries: 5,
+            retryAttempts: 5,
             retryTimeout: cdk.Duration.seconds(10),
           },
         }),
@@ -497,7 +497,7 @@ export = {
             grpcRetryEvents: [],
             httpRetryEvents: [],
             tcpRetryEvents: [appmesh.TcpRetryEvent.CONNECTION_ERROR],
-            maxRetries: 5,
+            retryAttempts: 5,
             retryTimeout: cdk.Duration.seconds(10),
           },
         }),
@@ -511,7 +511,7 @@ export = {
             grpcRetryEvents: [appmesh.GrpcRetryEvent.CANCELLED],
             httpRetryEvents: [],
             tcpRetryEvents: [],
-            maxRetries: 5,
+            retryAttempts: 5,
             retryTimeout: cdk.Duration.seconds(10),
           },
         }),
@@ -565,7 +565,7 @@ export = {
             weightedTargets: [{ virtualNode }],
             match: { serviceName: 'servicename' },
             retryPolicy: {
-              maxRetries: 5,
+              retryAttempts: 5,
               retryTimeout: cdk.Duration.seconds(10),
             },
           }),

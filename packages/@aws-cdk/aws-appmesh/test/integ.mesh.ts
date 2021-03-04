@@ -146,7 +146,7 @@ router.addRoute('route-http2-retry', {
     retryPolicy: {
       httpRetryEvents: [appmesh.HttpRetryEvent.CLIENT_ERROR],
       tcpRetryEvents: [appmesh.TcpRetryEvent.CONNECTION_ERROR],
-      maxRetries: 5,
+      retryAttempts: 5,
       retryTimeout: cdk.Duration.seconds(1),
     },
   }),
@@ -160,7 +160,7 @@ router.addRoute('route-grpc-retry', {
       grpcRetryEvents: [appmesh.GrpcRetryEvent.DEADLINE_EXCEEDED],
       httpRetryEvents: [appmesh.HttpRetryEvent.CLIENT_ERROR],
       tcpRetryEvents: [appmesh.TcpRetryEvent.CONNECTION_ERROR],
-      maxRetries: 5,
+      retryAttempts: 5,
       retryTimeout: cdk.Duration.seconds(1),
     },
   }),
