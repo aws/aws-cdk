@@ -148,17 +148,31 @@ export class SelfManagedKafkaEventSource extends StreamEventSource {
 
   public bind(target: lambda.IFunction) {
     if (!Construct.isConstruct(target)) { throw new Error('Function is not a construct. Unexpected error.'); }
-    let authenticationMethod;
+    const idHash = crypto.createHash('md5').update(Stack.of(target).resolve(this.innerProps.bootstrapServers)).digest('hex');
+    target.addEventSourceMapping(
+      `KafkaEventSource:${idHash}:${this.innerProps.topic}`,
+      this.enrichMappingOptions({
+        kafkaBootstrapServers: this.innerProps.bootstrapServers,
+        kafkaTopic: this.innerProps.topic,
+        startingPosition: this.innerProps.startingPosition,
+        sourceAccessConfigurations: this.sourceAccessConfigurations(),
+      }),
+    );
+    this.innerProps.secret.grantRead(target);
+  }
+
+  private sourceAccessConfigurations() {
+    let authType;
     switch (this.innerProps.authenticationMethod) {
       case AuthenticationMethod.SASL_SCRAM_256_AUTH:
-        authenticationMethod = lambda.SourceAccessConfigurationType.SASL_SCRAM_256_AUTH;
+        authType = lambda.SourceAccessConfigurationType.SASL_SCRAM_256_AUTH;
         break;
       case AuthenticationMethod.SASL_SCRAM_512_AUTH:
       default:
-        authenticationMethod = lambda.SourceAccessConfigurationType.SASL_SCRAM_512_AUTH;
+        authType = lambda.SourceAccessConfigurationType.SASL_SCRAM_512_AUTH;
         break;
     }
-    let sourceAccessConfigurations = [{ type: authenticationMethod, uri: this.innerProps.secret.secretArn }];
+    let sourceAccessConfigurations = [{ type: authType, uri: this.innerProps.secret.secretArn }];
     if (this.innerProps.vpcSubnets !== undefined && this.innerProps.securityGroup !== undefined) {
       sourceAccessConfigurations.push({
         type: lambda.SourceAccessConfigurationType.VPC_SECURITY_GROUP,
@@ -169,16 +183,6 @@ export class SelfManagedKafkaEventSource extends StreamEventSource {
         sourceAccessConfigurations.push({ type: lambda.SourceAccessConfigurationType.VPC_SUBNET, uri: id });
       });
     }
-    const idHash = crypto.createHash('md5').update(Stack.of(target).resolve(this.innerProps.bootstrapServers)).digest('hex');
-    target.addEventSourceMapping(
-      `KafkaEventSource:${idHash}:${this.innerProps.topic}`,
-      this.enrichMappingOptions({
-        kafkaBootstrapServers: this.innerProps.bootstrapServers,
-        kafkaTopic: this.innerProps.topic,
-        startingPosition: this.innerProps.startingPosition,
-        sourceAccessConfigurations,
-      }),
-    );
-    this.innerProps.secret.grantRead(target);
+    return sourceAccessConfigurations;
   }
 }
