@@ -1,3 +1,4 @@
+import * as fs from 'fs';
 import { IResource, Resource, Token } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnSAMLProvider } from './iam.generated';
@@ -39,7 +40,31 @@ export interface SamlProviderProps {
    * document using the identity management software that is used as your
    * organization's IdP.
    */
-  readonly metadataDocument: string;
+  readonly metadataDocument: SamlMetadataDocument;
+}
+
+/**
+ * A SAML metadata document
+ */
+export abstract class SamlMetadataDocument {
+  /**
+   * Create a SAML metadata document from a XML string
+   */
+  public static fromXml(xml: string): SamlMetadataDocument {
+    return { xml };
+  }
+
+  /**
+   * Create a SAML metadata document from an XML file
+   */
+  public static fromFile(path: string): SamlMetadataDocument {
+    return { xml: fs.readFileSync(path, 'utf-8') };
+  }
+
+  /**
+   * The XML content of the metadata document
+   */
+  public abstract readonly xml: string;
 }
 
 /**
@@ -67,7 +92,7 @@ export class SamlProvider extends Resource implements ISamlProvider {
 
     const samlProvider = new CfnSAMLProvider(this, 'Resource', {
       name: this.physicalName,
-      samlMetadataDocument: props.metadataDocument,
+      samlMetadataDocument: props.metadataDocument.xml,
     });
 
     this.samlProviderArn = samlProvider.ref;

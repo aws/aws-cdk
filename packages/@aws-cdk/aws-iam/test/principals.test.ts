@@ -133,7 +133,7 @@ test('SAML principal', () => {
   // GIVEN
   const stack = new Stack();
   const provider = new iam.SamlProvider(stack, 'MyProvider', {
-    metadataDocument: 'document',
+    metadataDocument: iam.SamlMetadataDocument.fromXml('document'),
   });
 
   // WHEN

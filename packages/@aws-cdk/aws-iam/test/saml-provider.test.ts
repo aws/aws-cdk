@@ -1,6 +1,6 @@
 import '@aws-cdk/assert/jest';
 import { Stack } from '@aws-cdk/core';
-import { SamlProvider } from '../lib';
+import { SamlMetadataDocument, SamlProvider } from '../lib';
 
 let stack: Stack;
 beforeEach(() => {
@@ -9,7 +9,7 @@ beforeEach(() => {
 
 test('SAML provider', () => {
   new SamlProvider(stack, 'Provider', {
-    metadataDocument: 'document',
+    metadataDocument: SamlMetadataDocument.fromXml('document'),
   });
 
   expect(stack).toHaveResource('AWS::IAM::SAMLProvider', {
@@ -20,6 +20,6 @@ test('SAML provider', () => {
 test('throws with invalid name', () => {
   expect(() => new SamlProvider(stack, 'Provider', {
     name: 'invalid name',
-    metadataDocument: 'document',
+    metadataDocument: SamlMetadataDocument.fromXml('document'),
   })).toThrow(/Invalid SAML provider name/);
 });

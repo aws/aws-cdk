@@ -1,4 +1,3 @@
-import * as fs from 'fs';
 import * as path from 'path';
 import { App, Stack, StackProps } from '@aws-cdk/core';
 import { Construct } from 'constructs';
@@ -9,7 +8,7 @@ class TestStack extends Stack {
     super(scope, id, props);
 
     const provider = new iam.SamlProvider(this, 'Provider', {
-      metadataDocument: fs.readFileSync(path.join(__dirname, 'saml-metadata-document.xml'), 'utf-8'),
+      metadataDocument: iam.SamlMetadataDocument.fromFile(path.join(__dirname, 'saml-metadata-document.xml')),
     });
 
     new iam.Role(this, 'Role', {
