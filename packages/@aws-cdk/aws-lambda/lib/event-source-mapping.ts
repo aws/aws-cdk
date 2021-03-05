@@ -101,6 +101,19 @@ export interface EventSourceMappingOptions {
    * @default - no topic
    */
   readonly kafkaTopic?: string;
+
+  /**
+   * The size of the tumbling windows to group records sent to DynamoDB or Kinesis
+   *
+   * @see https://docs.aws.amazon.com/lambda/latest/dg/with-ddb.html#services-ddb-windows
+   *
+   * Valid Range:
+   * * Minimum value of 0
+   * * Maximum value of 900
+   *
+   * @default - None
+   */
+  readonly tumblingWindowInSeconds?: cdk.Duration;
 }
 
 /**
@@ -174,6 +187,10 @@ export class EventSourceMapping extends cdk.Resource implements IEventSourceMapp
       }
     });
 
+    if (props.tumblingWindowInSeconds && props.tumblingWindowInSeconds.toSeconds() > 900) {
+      throw new Error(`tumblingWindowInSeconds cannot be over 900 seconds, got ${props.tumblingWindowInSeconds.toSeconds()}`);
+    }
+
 
     let destinationConfig;
 
@@ -196,6 +213,7 @@ export class EventSourceMapping extends cdk.Resource implements IEventSourceMapp
       maximumRetryAttempts: props.retryAttempts,
       parallelizationFactor: props.parallelizationFactor,
       topics: props.kafkaTopic !== undefined ? [props.kafkaTopic] : undefined,
+      tumblingWindowInSeconds: props.tumblingWindowInSeconds?.toSeconds(),
     });
     this.eventSourceMappingId = cfnEventSourceMapping.ref;
   }

@@ -170,4 +170,19 @@ describe('event source mapping', () => {
       }],
     });
   });
+
+  test('throws if tumblingWindowInSeconds > 900 seconds', () => {
+    const stack = new cdk.Stack();
+    const fn = new Function(stack, 'fn', {
+      handler: 'index.handler',
+      code: Code.fromInline('exports.handler = ${handler.toString()}'),
+      runtime: Runtime.NODEJS_10_X,
+    });
+
+    expect(() => new EventSourceMapping(stack, 'test', {
+      target: fn,
+      eventSourceArn: '',
+      tumblingWindowInSeconds: cdk.Duration.seconds(901),
+    })).toThrow(/tumblingWindowInSeconds cannot be over 900 seconds/);
+  });
 });
