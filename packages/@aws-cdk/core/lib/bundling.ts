@@ -12,7 +12,7 @@ export interface BundlingOptions {
   /**
    * The Docker image where the command will run.
    */
-  readonly image: BundlingDockerImage;
+  readonly image: DockerImage;
 
   /**
    * The entrypoint to run in the Docker container.
