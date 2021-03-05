@@ -99,7 +99,8 @@
           "Ref": "FC4345940"
         },
         "BatchSize": 5,
-        "StartingPosition": "TRIM_HORIZON"
+        "StartingPosition": "TRIM_HORIZON",
+        "TumblingWindowInSeconds": 60
       }
     },
     "TD925BC7E": {

@@ -106,7 +106,8 @@
           "Ref": "FC4345940"
         },
         "BatchSize": 100,
-        "StartingPosition": "TRIM_HORIZON"
+        "StartingPosition": "TRIM_HORIZON",
+        "TumblingWindowInSeconds": 60
       }
     },
     "Q63C6E3AB": {

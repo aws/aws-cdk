@@ -76,6 +76,67 @@ export = {
     test.done();
   },
 
+  'specific tumblingWindowInSeconds'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new TestFunction(stack, 'Fn');
+    const table = new dynamodb.Table(stack, 'T', {
+      partitionKey: {
+        name: 'id',
+        type: dynamodb.AttributeType.STRING,
+      },
+      stream: dynamodb.StreamViewType.NEW_IMAGE,
+    });
+
+    // WHEN
+    fn.addEventSource(new sources.DynamoEventSource(table, {
+      batchSize: 50,
+      startingPosition: lambda.StartingPosition.LATEST,
+      tumblingWindowInSeconds: cdk.Duration.seconds(60),
+    }));
+
+    // THEN
+    expect(stack).to(haveResource('AWS::Lambda::EventSourceMapping', {
+      'EventSourceArn': {
+        'Fn::GetAtt': [
+          'TD925BC7E',
+          'StreamArn',
+        ],
+      },
+      'FunctionName': {
+        'Ref': 'Fn9270CBC0',
+      },
+      'BatchSize': 50,
+      'StartingPosition': 'LATEST',
+      'TumblingWindowInSeconds': 60,
+    }));
+
+    test.done();
+  },
+
+  'fails if tumblingWindowInSeconds > 900 seconds'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new TestFunction(stack, 'Fn');
+    const table = new dynamodb.Table(stack, 'T', {
+      partitionKey: {
+        name: 'id',
+        type: dynamodb.AttributeType.STRING,
+      },
+      stream: dynamodb.StreamViewType.NEW_IMAGE,
+    });
+
+    // THEN
+    test.throws(() =>
+      fn.addEventSource(new sources.DynamoEventSource(table, {
+        maxBatchingWindow: cdk.Duration.seconds(60),
+        startingPosition: lambda.StartingPosition.LATEST,
+        tumblingWindowInSeconds: cdk.Duration.seconds(901),
+      })), /tumblingWindowInSeconds cannot be over 900 seconds/);
+
+    test.done();
+  },
+
   'specific batch size'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
