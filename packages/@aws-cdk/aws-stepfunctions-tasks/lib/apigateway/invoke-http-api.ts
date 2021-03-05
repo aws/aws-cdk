@@ -46,7 +46,7 @@ export class InvokeApiGatewayHttpApi extends InvokeApiGatewayApiBase {
 
   private getApiEndpoint(): string {
     const apiStack = cdk.Stack.of(this.props.api);
-    return `${this.props.api.httpApiId}.execute-api.${apiStack.region}.${apiStack.urlSuffix}`;
+    return `${this.props.api.apiId}.execute-api.${apiStack.region}.${apiStack.urlSuffix}`;
   }
 
   private getArnForExecuteApi(): string {
@@ -54,7 +54,7 @@ export class InvokeApiGatewayHttpApi extends InvokeApiGatewayApiBase {
 
     return cdk.Stack.of(api).formatArn({
       service: 'execute-api',
-      resource: api.httpApiId,
+      resource: api.apiId,
       sep: '/',
       resourceName: `${stageName}/${method}${apiPath}`,
     });
