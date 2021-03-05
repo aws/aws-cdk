@@ -23,7 +23,7 @@ new route53.ARecord(stack, 'LocalGlobalAcceleratorAlias', {
 
 new route53.ARecord(stack, 'ExistingGlobalAcceleratorAlias', {
   comment: 'Alias to the an existing Global Accelerator',
-  target: route53.RecordTarget.fromAlias(new targets.GlobalAcceleratorTarget('someexisting.awsglobalaccelerator.com')),
+  target: route53.RecordTarget.fromAlias(new targets.GlobalAcceleratorDomainTarget('someexisting.awsglobalaccelerator.com')),
   recordName: 'test-existing',
   zone,
 });

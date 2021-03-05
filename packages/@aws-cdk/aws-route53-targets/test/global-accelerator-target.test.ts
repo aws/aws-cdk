@@ -6,6 +6,7 @@ import * as targets from '../lib';
 
 test('GlobalAcceleratorTarget exposes a public constant of the zone id', () => {
   expect(targets.GlobalAcceleratorTarget.GLOBAL_ACCELERATOR_ZONE_ID).toStrictEqual('Z2BJ6XQ5FK7U4H');
+  expect(targets.GlobalAcceleratorDomainTarget.GLOBAL_ACCELERATOR_ZONE_ID).toStrictEqual('Z2BJ6XQ5FK7U4H');
 });
 
 test('GlobalAcceleratorTarget creates an alias resource with a string domain name', () => {
@@ -15,7 +16,7 @@ test('GlobalAcceleratorTarget creates an alias resource with a string domain nam
 
   // WHEN
   new route53.ARecord(stack, 'GlobalAcceleratorAlias', {
-    target: route53.RecordTarget.fromAlias(new targets.GlobalAcceleratorTarget('xyz.awsglobalaccelerator.com')),
+    target: route53.RecordTarget.fromAlias(new targets.GlobalAcceleratorDomainTarget('xyz.awsglobalaccelerator.com')),
     recordName: 'test',
     zone,
   });

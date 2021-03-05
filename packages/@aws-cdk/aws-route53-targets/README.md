@@ -69,11 +69,11 @@ For example, if the Amazon-provided DNS for the load balancer is `ALB-xxxxxxx.us
   new route53.ARecord(stack, 'AliasRecord', {
     zone,
     target: route53.RecordTarget.fromAlias(new targets.GlobalAcceleratorTarget(accelerator)),
-    // or - route53.RecordTarget.fromAlias(new targets.GlobalAcceleratorTarget('xyz.awsglobalaccelerator.com')),
+    // or - route53.RecordTarget.fromAlias(new targets.GlobalAcceleratorDomainTarget('xyz.awsglobalaccelerator.com')),
   });
   ```
 
-**Important:** If you pass the global accelerator target a string rather than an instance of IAccelerator, ensure that the string is a valid domain name of an existing Global Accelerator instance.
+**Important:** If you use GlobalAcceleratorDomainTarget, passing a string rather than an instance of IAccelerator, ensure that the string is a valid domain name of an existing Global Accelerator instance.
 See [the documentation on DNS addressing](https://docs.aws.amazon.com/global-accelerator/latest/dg/dns-addressing-custom-domains.dns-addressing.html) with Global Accelerator for more info.
 
 * InterfaceVpcEndpoints
