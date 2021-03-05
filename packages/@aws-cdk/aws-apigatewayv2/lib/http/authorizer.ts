@@ -112,7 +112,7 @@ export class HttpAuthorizer extends Resource implements IHttpAuthorizer {
 
     const resource = new CfnAuthorizer(this, 'Resource', {
       name: props.authorizerName ?? id,
-      apiId: props.httpApi.httpApiId,
+      apiId: props.httpApi.apiId,
       authorizerType: props.type,
       identitySource: props.identitySource,
       jwtConfiguration: undefinedIfNoKeys({
