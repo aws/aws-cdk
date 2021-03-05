@@ -70,6 +70,12 @@ export interface DeployStackOptions {
   execute?: boolean;
 
   /**
+   * Optional name to use for the CloudFormation change set.
+   * If not provided, a name will be generated automatically.
+   */
+  changeSetName?: string;
+
+  /**
    * Force deployment, even if the deployed template is identical to the one we are about to deploy.
    * @default false deployment will be skipped if the template is identical
    */
@@ -173,6 +179,7 @@ export class CloudFormationDeployments {
       toolkitInfo,
       tags: options.tags,
       execute: options.execute,
+      changeSetName: options.changeSetName,
       force: options.force,
       parameters: options.parameters,
       usePreviousParameters: options.usePreviousParameters,
@@ -281,10 +288,6 @@ export class CloudFormationDeployments {
     toolkitInfo: ToolkitInfo) {
 
     if (requiresBootstrapStackVersion === undefined) { return; }
-
-    if (!toolkitInfo.found) {
-      throw new Error(`${stackName}: publishing assets requires bootstrap stack version '${requiresBootstrapStackVersion}', no bootstrap stack found. Please run 'cdk bootstrap'.`);
-    }
 
     try {
       await toolkitInfo.validateVersion(requiresBootstrapStackVersion, bootstrapStackVersionSsmParameter);

@@ -8,6 +8,7 @@ import * as sqs from '@aws-cdk/aws-sqs';
 import { Annotations, CfnResource, Duration, Fn, Lazy, Names, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { Code, CodeConfig } from './code';
+import { ICodeSigningConfig } from './code-signing-config';
 import { EventInvokeConfigOptions } from './event-invoke-config';
 import { IEventSource } from './event-source';
 import { FileSystem } from './filesystem';
@@ -290,6 +291,13 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
    * @default - AWS Lambda creates and uses an AWS managed customer master key (CMK).
    */
   readonly environmentEncryption?: kms.IKey;
+
+  /**
+   * Code signing config associated with this function
+   *
+   * @default - Not Sign the Code
+   */
+  readonly codeSigningConfig?: ICodeSigningConfig;
 }
 
 export interface FunctionProps extends FunctionOptions {
@@ -574,7 +582,7 @@ export class Function extends FunctionBase {
 
     let profilingGroupEnvironmentVariables: { [key: string]: string } = {};
     if (props.profilingGroup && props.profiling !== false) {
-      this.validateProfilingEnvironmentVariables(props);
+      this.validateProfiling(props);
       props.profilingGroup.grantPublish(this.role);
       profilingGroupEnvironmentVariables = {
         AWS_CODEGURU_PROFILER_GROUP_ARN: Stack.of(scope).formatArn({
@@ -585,7 +593,7 @@ export class Function extends FunctionBase {
         AWS_CODEGURU_PROFILER_ENABLED: 'TRUE',
       };
     } else if (props.profiling) {
-      this.validateProfilingEnvironmentVariables(props);
+      this.validateProfiling(props);
       const profilingGroup = new ProfilingGroup(this, 'ProfilingGroup', {
         computePlatform: ComputePlatform.AWS_LAMBDA,
       });
@@ -641,6 +649,7 @@ export class Function extends FunctionBase {
       }),
       kmsKeyArn: props.environmentEncryption?.keyArn,
       fileSystemConfigs,
+      codeSigningConfigArn: props.codeSigningConfig?.codeSigningConfigArn,
     });
 
     resource.node.addDependency(this.role);
@@ -941,7 +950,10 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
     };
   }
 
-  private validateProfilingEnvironmentVariables(props: FunctionProps) {
+  private validateProfiling(props: FunctionProps) {
+    if (!props.runtime.supportsCodeGuruProfiling) {
+      throw new Error(`CodeGuru profiling is not supported by runtime ${props.runtime.name}`);
+    }
     if (props.environment && (props.environment.AWS_CODEGURU_PROFILER_GROUP_ARN || props.environment.AWS_CODEGURU_PROFILER_ENABLED)) {
       throw new Error('AWS_CODEGURU_PROFILER_GROUP_ARN and AWS_CODEGURU_PROFILER_ENABLED must not be set when profiling options enabled');
     }
