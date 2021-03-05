@@ -188,15 +188,19 @@
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Resource": {
-                "Fn::Join": [
-                  "",
-                  [
-                    "arn:",
-                    {
-                      "Ref": "AWS::Partition"
-                    },
-                    ":iam::12345678:role/cdk-hnb659fds-deploy-role-12345678-test-region"
-                  ]
+                "Fn::GetAtt": [
+                  "PipelinePreProdStackDeployCodePipelineActionRole3CF68A37",
+                  "Arn"
+                ]
+              }
+            },
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "PipelinePreProdStackPrepareCodePipelineActionRole683F6888",
+                  "Arn"
                 ]
               }
             }
@@ -437,15 +441,9 @@
                 ],
                 "Name": "Stack.Prepare",
                 "RoleArn": {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "arn:",
-                      {
-                        "Ref": "AWS::Partition"
-                      },
-                      ":iam::12345678:role/cdk-hnb659fds-deploy-role-12345678-test-region"
-                    ]
+                  "Fn::GetAtt": [
+                    "PipelinePreProdStackPrepareCodePipelineActionRole683F6888",
+                    "Arn"
                   ]
                 },
                 "RunOrder": 1
@@ -464,15 +462,9 @@
                 },
                 "Name": "Stack.Deploy",
                 "RoleArn": {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "arn:",
-                      {
-                        "Ref": "AWS::Partition"
-                      },
-                      ":iam::12345678:role/cdk-hnb659fds-deploy-role-12345678-test-region"
-                    ]
+                  "Fn::GetAtt": [
+                    "PipelinePreProdStackDeployCodePipelineActionRole3CF68A37",
+                    "Arn"
                   ]
                 },
                 "RunOrder": 2
@@ -1060,6 +1052,204 @@
             "Arn"
           ]
         }
+      }
+    },
+    "PipelinePreProdStackDeployCodePipelineActionRole3CF68A37": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":iam::12345678:root"
+                    ]
+                  ]
+                }
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      }
+    },
+    "PipelinePreProdStackDeployCodePipelineActionRoleDefaultPolicy3242BF42": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "cloudformation:DescribeChangeSet",
+                "cloudformation:DescribeStacks",
+                "cloudformation:ExecuteChangeSet"
+              ],
+              "Condition": {
+                "StringEqualsIfExists": {
+                  "cloudformation:ChangeSetName": "PipelineChange"
+                }
+              },
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":cloudformation:test-region:12345678:stack/PreProd-Stack/*"
+                  ]
+                ]
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "PipelinePreProdStackDeployCodePipelineActionRoleDefaultPolicy3242BF42",
+        "Roles": [
+          {
+            "Ref": "PipelinePreProdStackDeployCodePipelineActionRole3CF68A37"
+          }
+        ]
+      }
+    },
+    "PipelinePreProdStackPrepareCodePipelineActionRole683F6888": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":iam::12345678:root"
+                    ]
+                  ]
+                }
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      }
+    },
+    "PipelinePreProdStackPrepareCodePipelineActionRoleDefaultPolicyF15D6F54": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "iam:PassRole",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":iam::12345678:role/cdk-hnb659fds-cfn-exec-role-12345678-test-region"
+                  ]
+                ]
+              }
+            },
+            {
+              "Action": [
+                "s3:GetObject*",
+                "s3:GetBucket*",
+                "s3:List*"
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "PipelineArtifactsBucketAEA9A052",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "PipelineArtifactsBucketAEA9A052",
+                          "Arn"
+                        ]
+                      },
+                      "/*"
+                    ]
+                  ]
+                }
+              ]
+            },
+            {
+              "Action": [
+                "kms:Decrypt",
+                "kms:DescribeKey"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "PipelineArtifactsBucketEncryptionKeyF5BF0670",
+                  "Arn"
+                ]
+              }
+            },
+            {
+              "Action": [
+                "cloudformation:CreateChangeSet",
+                "cloudformation:DeleteChangeSet",
+                "cloudformation:DescribeChangeSet",
+                "cloudformation:DescribeStacks"
+              ],
+              "Condition": {
+                "StringEqualsIfExists": {
+                  "cloudformation:ChangeSetName": "PipelineChange"
+                }
+              },
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":cloudformation:test-region:12345678:stack/PreProd-Stack/*"
+                  ]
+                ]
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "PipelinePreProdStackPrepareCodePipelineActionRoleDefaultPolicyF15D6F54",
+        "Roles": [
+          {
+            "Ref": "PipelinePreProdStackPrepareCodePipelineActionRole683F6888"
+          }
+        ]
       }
     },
     "PipelineUpdatePipelineSelfMutationRole57E559E8": {

@@ -73,16 +73,10 @@ test('action has right settings for same-env deployment', () => {
         objectLike({
           Name: 'Stack.Prepare',
           RoleArn: {
-            'Fn::Join': ['', [
-              'arn:',
-              { Ref: 'AWS::Partition' },
-              ':iam::',
-              { Ref: 'AWS::AccountId' },
-              ':role/cdk-hnb659fds-deploy-role-',
-              { Ref: 'AWS::AccountId' },
-              '-',
-              { Ref: 'AWS::Region' },
-            ]],
+            'Fn::GetAtt': [
+              'CdkPipelineSameStackPrepareCodePipelineActionRole40D7F88C',
+              'Arn',
+            ],
           },
           Configuration: objectLike({
             StackName: 'Same-Stack',
@@ -103,179 +97,13 @@ test('action has right settings for same-env deployment', () => {
         objectLike({
           Name: 'Stack.Deploy',
           RoleArn: {
-            'Fn::Join': ['', [
-              'arn:',
-              { Ref: 'AWS::Partition' },
-              ':iam::',
-              { Ref: 'AWS::AccountId' },
-              ':role/cdk-hnb659fds-deploy-role-',
-              { Ref: 'AWS::AccountId' },
-              '-',
-              { Ref: 'AWS::Region' },
-            ]],
+            'Fn::GetAtt': [
+              'CdkPipelineSameStackDeployCodePipelineActionRole64323150',
+              'Arn',
+            ],
           },
           Configuration: objectLike({
             StackName: 'Same-Stack',
-          }),
-        }),
-      ],
-    }),
-  });
-});
-
-test('action has right settings for cross-account deployment', () => {
-  // WHEN
-  pipeline.addApplicationStage(new OneStackApp(app, 'CrossAccount', { env: { account: 'you' } }));
-
-  // THEN
-  expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
-    Stages: arrayWith({
-      Name: 'CrossAccount',
-      Actions: [
-        objectLike({
-          Name: 'Stack.Prepare',
-          RoleArn: {
-            'Fn::Join': ['', [
-              'arn:',
-              { Ref: 'AWS::Partition' },
-              ':iam::you:role/cdk-hnb659fds-deploy-role-you-',
-              { Ref: 'AWS::Region' },
-            ]],
-          },
-          Configuration: objectLike({
-            StackName: 'CrossAccount-Stack',
-            RoleArn: {
-              'Fn::Join': ['', [
-                'arn:',
-                { Ref: 'AWS::Partition' },
-                ':iam::you:role/cdk-hnb659fds-cfn-exec-role-you-',
-                { Ref: 'AWS::Region' },
-              ]],
-            },
-          }),
-        }),
-        objectLike({
-          Name: 'Stack.Deploy',
-          RoleArn: {
-            'Fn::Join': ['', [
-              'arn:',
-              { Ref: 'AWS::Partition' },
-              ':iam::you:role/cdk-hnb659fds-deploy-role-you-',
-              { Ref: 'AWS::Region' },
-            ]],
-          },
-          Configuration: objectLike({
-            StackName: 'CrossAccount-Stack',
-          }),
-        }),
-      ],
-    }),
-  });
-});
-
-test('action has right settings for cross-region deployment', () => {
-  // WHEN
-  pipeline.addApplicationStage(new OneStackApp(app, 'CrossRegion', { env: { region: 'elsewhere' } }));
-
-  // THEN
-  expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
-    Stages: arrayWith({
-      Name: 'CrossRegion',
-      Actions: [
-        objectLike({
-          Name: 'Stack.Prepare',
-          RoleArn: {
-            'Fn::Join': ['', [
-              'arn:',
-              { Ref: 'AWS::Partition' },
-              ':iam::',
-              { Ref: 'AWS::AccountId' },
-              ':role/cdk-hnb659fds-deploy-role-',
-              { Ref: 'AWS::AccountId' },
-              '-elsewhere',
-            ]],
-          },
-          Region: 'elsewhere',
-          Configuration: objectLike({
-            StackName: 'CrossRegion-Stack',
-            RoleArn: {
-              'Fn::Join': ['', [
-                'arn:',
-                { Ref: 'AWS::Partition' },
-                ':iam::',
-                { Ref: 'AWS::AccountId' },
-                ':role/cdk-hnb659fds-cfn-exec-role-',
-                { Ref: 'AWS::AccountId' },
-                '-elsewhere',
-              ]],
-            },
-          }),
-        }),
-        objectLike({
-          Name: 'Stack.Deploy',
-          RoleArn: {
-            'Fn::Join': ['', [
-              'arn:',
-              { Ref: 'AWS::Partition' },
-              ':iam::',
-              { Ref: 'AWS::AccountId' },
-              ':role/cdk-hnb659fds-deploy-role-',
-              { Ref: 'AWS::AccountId' },
-              '-elsewhere',
-            ]],
-          },
-          Region: 'elsewhere',
-          Configuration: objectLike({
-            StackName: 'CrossRegion-Stack',
-          }),
-        }),
-      ],
-    }),
-  });
-});
-
-test('action has right settings for cross-account/cross-region deployment', () => {
-  // WHEN
-  pipeline.addApplicationStage(new OneStackApp(app, 'CrossBoth', { env: { account: 'you', region: 'elsewhere' } }));
-
-  // THEN
-  expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
-    Stages: arrayWith({
-      Name: 'CrossBoth',
-      Actions: [
-        objectLike({
-          Name: 'Stack.Prepare',
-          RoleArn: {
-            'Fn::Join': ['', [
-              'arn:',
-              { Ref: 'AWS::Partition' },
-              ':iam::you:role/cdk-hnb659fds-deploy-role-you-elsewhere',
-            ]],
-          },
-          Region: 'elsewhere',
-          Configuration: objectLike({
-            StackName: 'CrossBoth-Stack',
-            RoleArn: {
-              'Fn::Join': ['', [
-                'arn:',
-                { Ref: 'AWS::Partition' },
-                ':iam::you:role/cdk-hnb659fds-cfn-exec-role-you-elsewhere',
-              ]],
-            },
-          }),
-        }),
-        objectLike({
-          Name: 'Stack.Deploy',
-          RoleArn: {
-            'Fn::Join': ['', [
-              'arn:',
-              { Ref: 'AWS::Partition' },
-              ':iam::you:role/cdk-hnb659fds-deploy-role-you-elsewhere',
-            ]],
-          },
-          Region: 'elsewhere',
-          Configuration: objectLike({
-            StackName: 'CrossBoth-Stack',
           }),
         }),
       ],

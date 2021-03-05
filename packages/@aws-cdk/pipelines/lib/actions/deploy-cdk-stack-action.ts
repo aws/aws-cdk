@@ -76,11 +76,11 @@ export interface DeployCdkStackActionProps extends DeployCdkStackActionOptions {
   readonly templatePath: string;
 
   /**
-   * Role for the action to assume
+   * The account to deploy into
    *
-   * This controls the account to deploy into
+   * @default - current account
    */
-  readonly actionRole: iam.IRole;
+  readonly account?: string;
 
   /**
    * The name of the stack that should be created/updated
@@ -162,7 +162,6 @@ export class DeployCdkStackAction implements codepipeline.IAction {
     const artAccount = artifact.environment.account;
     const account = artAccount === Stack.of(scope).account || artAccount === cxapi.UNKNOWN_ACCOUNT ? undefined : artAccount;
 
-    const actionRole = roleFromPlaceholderArn(scope, region, account, artifact.assumeRoleArn);
     const cloudFormationExecutionRole = roleFromPlaceholderArn(scope, region, account, artifact.cloudFormationExecutionRoleArn);
 
     // We need the path of the template relative to the root Cloud Assembly
@@ -184,7 +183,7 @@ export class DeployCdkStackAction implements codepipeline.IAction {
     }
 
     return new DeployCdkStackAction({
-      actionRole,
+      account,
       cloudFormationExecutionRole,
       templatePath: toPosixPath(path.relative(appAsmRoot, fullTemplatePath)),
       templateConfigurationPath: fullConfigPath ? toPosixPath(path.relative(appAsmRoot, fullConfigPath)) : undefined,
@@ -245,7 +244,7 @@ export class DeployCdkStackAction implements codepipeline.IAction {
       stackName: this.stackName,
       templatePath: props.cloudAssemblyInput.atPath(props.templatePath),
       adminPermissions: false,
-      role: props.actionRole,
+      account: props.account,
       deploymentRole: props.cloudFormationExecutionRole,
       region: props.region,
       cfnCapabilities: [CfnCapabilities.NAMED_IAM, CfnCapabilities.AUTO_EXPAND],
@@ -256,7 +255,7 @@ export class DeployCdkStackAction implements codepipeline.IAction {
       changeSetName,
       runOrder: this.executeRunOrder,
       stackName: this.stackName,
-      role: props.actionRole,
+      account: props.account,
       region: props.region,
       outputFileName: props.outputFileName,
       output: props.output,

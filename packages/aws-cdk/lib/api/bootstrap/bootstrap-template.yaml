@@ -312,30 +312,6 @@ Resources:
       Policies:
         - PolicyDocument:
             Statement:
-              - Action:
-                  # Permissions needed in CodePipeline.
-                  # S3 and KMS are needed on '*',
-                  # as we don't know the IDs of the CodePipeline's bucket and key in advance
-                  - cloudformation:CreateChangeSet
-                  - cloudformation:DeleteChangeSet
-                  - cloudformation:DescribeChangeSet
-                  - cloudformation:DescribeStacks
-                  - cloudformation:ExecuteChangeSet
-                  - s3:GetObject*
-                  - s3:GetBucket*
-                  - s3:List*
-                  - s3:Abort*
-                  - s3:DeleteObject*
-                  - s3:PutObject*
-                  # Necessary to write to the cross-region artifact replication bucket
-                  # https://aws.amazon.com/premiumsupport/knowledge-center/codepipeline-deploy-cloudformation/.
-                  - kms:Decrypt
-                  - kms:DescribeKey
-                  - kms:Encrypt
-                  - kms:ReEncrypt*
-                  - kms:GenerateDataKey*
-                Resource: "*"
-                Effect: Allow
               - Action: iam:PassRole
                 Resource:
                   Fn::Sub: "${CloudFormationExecutionRole.Arn}"
