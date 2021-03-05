@@ -570,6 +570,13 @@ export interface DomainProps {
   readonly enableVersionUpgrade?: boolean;
 
   /**
+   * Policy to apply when the domain is removed from the stack
+   *
+   * @default RemovalPolicy.RETAIN
+   */
+  readonly removalPolicy?: cdk.RemovalPolicy;
+
+  /**
    * To configure a custom domain configure these options
    *
    * If you specify a Route53 hosted zone it will create a CNAME record and use DNS validation for the certificate
@@ -1663,6 +1670,7 @@ export class Domain extends DomainBase implements IDomain {
         }
         : undefined,
     });
+    this.domain.applyRemovalPolicy(props.removalPolicy);
 
     if (props.enableVersionUpgrade) {
       this.domain.cfnOptions.updatePolicy = {

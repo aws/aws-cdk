@@ -4,6 +4,7 @@ import { ABSENT, ResourcePart } from '@aws-cdk/assert';
 import * as ecr from '@aws-cdk/aws-ecr';
 import * as cdk from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
+import { testFutureBehavior } from 'cdk-build-tools/lib/feature-flag';
 import * as lambda from '../lib';
 
 /* eslint-disable dot-notation */
@@ -275,9 +276,10 @@ describe('code', () => {
   });
 
   describe('lambda.Code.fromImageAsset', () => {
-    test('repository uri is correctly identified', () => {
+    const flags = { [cxapi.DOCKER_IGNORE_SUPPORT]: true };
+    testFutureBehavior('repository uri is correctly identified', flags, cdk.App, (app) => {
       // given
-      const stack = new cdk.Stack();
+      const stack = new cdk.Stack(app);
 
       // when
       new lambda.Function(stack, 'Fn', {
@@ -296,7 +298,7 @@ describe('code', () => {
               { Ref: 'AWS::Region' },
               '.',
               { Ref: 'AWS::URLSuffix' },
-              '/aws-cdk/assets:0874c7dfd254e95f5181cc7fa643e4abf010f68e5717e373b6e635b49a115b2b',
+              '/aws-cdk/assets:e8a944aeb0a08ba4811503d9c138e514b112dadca84daa5b4608e4a0fb80a0c9',
             ]],
           },
         },
@@ -325,6 +327,29 @@ describe('code', () => {
           EntryPoint: ['entrypoint', 'param2'],
         },
       });
+    });
+  });
+
+  describe('lambda.Code.fromDockerBuild', () => {
+    test('can use the result of a Docker build as an asset', () => {
+      // given
+      const stack = new cdk.Stack();
+      stack.node.setContext(cxapi.ASSET_RESOURCE_METADATA_ENABLED_CONTEXT, true);
+
+      // when
+      new lambda.Function(stack, 'Fn', {
+        code: lambda.Code.fromDockerBuild(path.join(__dirname, 'docker-build-lambda')),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.NODEJS_12_X,
+      });
+
+      // then
+      expect(stack).toHaveResource('AWS::Lambda::Function', {
+        Metadata: {
+          [cxapi.ASSET_RESOURCE_METADATA_PATH_KEY]: 'asset.38cd320fa97b348accac88e48d9cede4923f7cab270ce794c95a665be83681a8',
+          [cxapi.ASSET_RESOURCE_METADATA_PROPERTY_KEY]: 'Code',
+        },
+      }, ResourcePart.CompleteDefinition);
     });
   });
 });
