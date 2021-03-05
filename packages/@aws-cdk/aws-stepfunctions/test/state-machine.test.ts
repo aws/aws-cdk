@@ -74,15 +74,17 @@ describe('State Machine', () => {
         stateMachineType: stepfunctions.StateMachineType.EXPRESS,
       });
     };
+    const tooLongName = 'M'.repeat(81);
+    const invalidCharactersName = '*';
 
     // THEN
     expect(() => {
-      createStateMachine('M'.repeat(81));
-    }).toThrow('StateMachine name length must be between 1 and 80 characters');
+      createStateMachine(tooLongName);
+    }).toThrow(`State Machine name must be between 1 and 80 characters. Received: ${tooLongName}`);
 
     expect(() => {
-      createStateMachine('*');
-    }).toThrow('StateMachine name must match [0-9a-zA-Z\_\-]+');
+      createStateMachine(invalidCharactersName);
+    }).toThrow(`State Machine name must match "^[0-9a-zA-Z\_\-]+$". Received: ${invalidCharactersName}`);
   });
 
   test('log configuration', () => {
