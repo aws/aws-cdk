@@ -158,6 +158,12 @@ export class OAuthScope {
  */
 export class UserPoolClientIdentityProvider {
   /**
+   * Allow users to sign in using 'Sign In With Apple'.
+   * A `UserPoolIdentityProviderApple` must be attached to the user pool.
+   */
+  public static readonly APPLE = new UserPoolClientIdentityProvider('SignInWithApple');
+
+  /**
    * Allow users to sign in using 'Facebook Login'.
    * A `UserPoolIdentityProviderFacebook` must be attached to the user pool.
    */
