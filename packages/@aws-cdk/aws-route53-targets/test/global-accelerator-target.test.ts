@@ -49,8 +49,8 @@ test('GlobalAcceleratorTarget creates an alias resource with a Global Accelerato
       DNSName: {
         'Fn::GetAtt': [
           logicalId,
-          'DnsName'
-        ]
+          'DnsName',
+        ],
       },
       HostedZoneId: 'Z2BJ6XQ5FK7U4H',
     },
