@@ -54,25 +54,62 @@ test('on event', async () => {
   });
 
   expect(data).toEqual({
-    PhysicalResourceId: 'eu-west-2',
+    PhysicalResourceId: 'my-table-eu-west-2',
   });
 });
 
-test('on event does not call updateTable for Update requests', async () => {
+test('on event calls updateTable with Create for Update requests with table replacement', async () => {
   const updateTableMock = sinon.fake.resolves({});
 
   AWS.mock('DynamoDB', 'updateTable', updateTableMock);
 
   const data = await onEventHandler({
     ...createEvent,
+    OldResourceProperties: {
+      TableName: 'my-old-table',
+    },
     RequestType: 'Update',
   });
 
-  sinon.assert.notCalled(updateTableMock);
+  sinon.assert.calledWith(updateTableMock, {
+    TableName: 'my-table',
+    ReplicaUpdates: [
+      {
+        Create: {
+          RegionName: 'eu-west-2',
+        },
+      },
+    ],
+  });
 
   expect(data).toEqual({
-    PhysicalResourceId: 'eu-west-2',
+    PhysicalResourceId: 'my-table-eu-west-2',
   });
+});
+
+test('on event calls updateTable with Delete', async () => {
+  const updateTableMock = sinon.fake.resolves({});
+
+  AWS.mock('DynamoDB', 'updateTable', updateTableMock);
+
+  const data = await onEventHandler({
+    ...createEvent,
+    RequestType: 'Delete',
+  });
+
+  sinon.assert.calledWith(updateTableMock, {
+    TableName: 'my-table',
+    ReplicaUpdates: [
+      {
+        Delete: {
+          RegionName: 'eu-west-2',
+        },
+      },
+    ],
+  });
+
+  // Physical resource id never changed on Delete
+  expect(data).toEqual({});
 });
 
 test('is complete for create returns false without replicas', async () => {
