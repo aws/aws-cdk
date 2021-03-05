@@ -116,6 +116,8 @@ export class Domain extends Resource {
     this.domainAutoSubDomainCreationPatterns = domain.attrAutoSubDomainCreationPatterns;
     this.domainAutoSubDomainIamRole = domain.attrAutoSubDomainIamRole;
     this.domainEnableAutoSubDomain = domain.attrEnableAutoSubDomain;
+
+    this.node.addValidation({ validate: () => this.validateDomain() });
   }
 
   /**
@@ -136,7 +138,7 @@ export class Domain extends Resource {
     return this.mapSubDomain(branch, '');
   }
 
-  protected validate() {
+  private validateDomain() {
     if (this.subDomains.length === 0) {
       return ['The domain doesn\'t contain any subdomains'];
     }
