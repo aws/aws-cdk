@@ -3,7 +3,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as sqs from '@aws-cdk/aws-sqs';
 import { Annotations, Names, Token, TokenComparison } from '@aws-cdk/core';
-import { IConstruct } from 'constructs';
+import { IConstruct, Node as ConstructNode } from 'constructs';
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
 // eslint-disable-next-line no-duplicate-imports, import/order
