@@ -220,8 +220,8 @@ export class DefaultStackSynthesizer extends StackSynthesizer {
   private repositoryName?: string;
   private _deployRoleArn?: string;
   private _cloudFormationExecutionRoleArn?: string;
-  private fileAssetPublishingRoleArn?: string;
-  private imageAssetPublishingRoleArn?: string;
+  private _fileAssetPublishingRoleArn?: string;
+  private _imageAssetPublishingRoleArn?: string;
   private qualifier?: string;
   private bucketPrefix?: string
 
@@ -280,8 +280,8 @@ export class DefaultStackSynthesizer extends StackSynthesizer {
     this.repositoryName = specialize(this.props.imageAssetsRepositoryName ?? DefaultStackSynthesizer.DEFAULT_IMAGE_ASSETS_REPOSITORY_NAME);
     this._deployRoleArn = specialize(this.props.deployRoleArn ?? DefaultStackSynthesizer.DEFAULT_DEPLOY_ROLE_ARN);
     this._cloudFormationExecutionRoleArn = specialize(this.props.cloudFormationExecutionRole ?? DefaultStackSynthesizer.DEFAULT_CLOUDFORMATION_ROLE_ARN);
-    this.fileAssetPublishingRoleArn = specialize(this.props.fileAssetPublishingRoleArn ?? DefaultStackSynthesizer.DEFAULT_FILE_ASSET_PUBLISHING_ROLE_ARN);
-    this.imageAssetPublishingRoleArn = specialize(this.props.imageAssetPublishingRoleArn ?? DefaultStackSynthesizer.DEFAULT_IMAGE_ASSET_PUBLISHING_ROLE_ARN);
+    this._fileAssetPublishingRoleArn = specialize(this.props.fileAssetPublishingRoleArn ?? DefaultStackSynthesizer.DEFAULT_FILE_ASSET_PUBLISHING_ROLE_ARN);
+    this._imageAssetPublishingRoleArn = specialize(this.props.imageAssetPublishingRoleArn ?? DefaultStackSynthesizer.DEFAULT_IMAGE_ASSET_PUBLISHING_ROLE_ARN);
     this.bucketPrefix = specialize(this.props.bucketPrefix ?? DefaultStackSynthesizer.DEFAULT_FILE_ASSET_PREFIX);
     /* eslint-enable max-len */
   }
@@ -306,7 +306,7 @@ export class DefaultStackSynthesizer extends StackSynthesizer {
           bucketName: this.bucketName,
           objectKey,
           region: resolvedOr(this.stack.region, undefined),
-          assumeRoleArn: this.fileAssetPublishingRoleArn,
+          assumeRoleArn: this._fileAssetPublishingRoleArn,
           assumeRoleExternalId: this.props.fileAssetPublishingExternalId,
         },
       },
@@ -347,7 +347,7 @@ export class DefaultStackSynthesizer extends StackSynthesizer {
           repositoryName: this.repositoryName,
           imageTag,
           region: resolvedOr(this.stack.region, undefined),
-          assumeRoleArn: this.imageAssetPublishingRoleArn,
+          assumeRoleArn: this._imageAssetPublishingRoleArn,
           assumeRoleExternalId: this.props.imageAssetPublishingExternalId,
         },
       },
@@ -403,6 +403,26 @@ export class DefaultStackSynthesizer extends StackSynthesizer {
       throw new Error('deployRoleArn getter can only be called after the synthesizer has been bound to a Stack');
     }
     return this._deployRoleArn;
+  }
+
+  /**
+   * Returns the ARN of the image asset publishing Role.
+   */
+  public get imageAssetPublishingRoleArn(): string {
+    if (!this._imageAssetPublishingRoleArn) {
+      throw new Error('imageAssetPublishingRoleArn getter can only be called after the synthesizer has been bound to a Stack');
+    }
+    return this._imageAssetPublishingRoleArn;
+  }
+
+  /**
+   * Returns the ARN of the file asset publishing Role.
+   */
+  public get fileAssetPublishingRoleArn(): string {
+    if (!this._fileAssetPublishingRoleArn) {
+      throw new Error('fileAssetPublishingRoleArn getter can only be called after the synthesizer has been bound to a Stack');
+    }
+    return this._fileAssetPublishingRoleArn;
   }
 
   /**
