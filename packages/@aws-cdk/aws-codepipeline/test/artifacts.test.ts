@@ -1,4 +1,4 @@
-import { expect, haveResourceLike } from '@aws-cdk/assert';
+import { expect, haveResourceLike, SynthUtils } from '@aws-cdk/assert';
 import * as cdk from '@aws-cdk/core';
 import { nodeunitShim, Test } from 'nodeunit-shim';
 import * as codepipeline from '../lib';
@@ -41,12 +41,14 @@ nodeunitShim({
         ],
       });
 
-      const errors = validate(stack);
+      // synthesize - this is where names for artifact without names are allocated
+      SynthUtils.synthesize(stack, { skipValidation: true });
+
+      const errors = pipeline.node.validate();
 
       test.equal(errors.length, 1);
       const error = errors[0];
-      test.same(error.source, pipeline);
-      test.equal(error.message, "Action 'Build' is using an unnamed input Artifact, which is not being produced in this pipeline");
+      test.equal(error, "Action 'Build' is using an unnamed input Artifact, which is not being produced in this pipeline");
 
       test.done();
     },
@@ -77,12 +79,11 @@ nodeunitShim({
         ],
       });
 
-      const errors = validate(stack);
+      const errors = pipeline.node.validate();
 
       test.equal(errors.length, 1);
       const error = errors[0];
-      test.same(error.source, pipeline);
-      test.equal(error.message, "Action 'Build' is using input Artifact 'named', which is not being produced in this pipeline");
+      test.equal(error, "Action 'Build' is using input Artifact 'named', which is not being produced in this pipeline");
 
       test.done();
     },
@@ -114,12 +115,12 @@ nodeunitShim({
         ],
       });
 
-      const errors = validate(stack);
+      SynthUtils.synthesize(stack, { skipValidation: true });
 
+      const errors = pipeline.node.validate();
       test.equal(errors.length, 1);
       const error = errors[0];
-      test.same(error.source, pipeline);
-      test.equal(error.message, "Both Actions 'Source' and 'Build' are producting Artifact 'Artifact_Source_Source'. Every artifact can only be produced once.");
+      test.equal(error, "Both Actions 'Source' and 'Build' are producting Artifact 'Artifact_Source_Source'. Every artifact can only be produced once.");
 
       test.done();
     },
@@ -216,12 +217,11 @@ nodeunitShim({
         ],
       });
 
-      const errors = validate(stack);
+      const errors = pipeline.node.validate();
 
       test.equal(errors.length, 1);
       const error = errors[0];
-      test.same(error.source, pipeline);
-      test.equal(error.message, "Stage 2 Action 2 ('Build'/'build2') is consuming input Artifact 'buildOutput1' before it is being produced at Stage 2 Action 3 ('Build'/'build1')");
+      test.equal(error, "Stage 2 Action 2 ('Build'/'build2') is consuming input Artifact 'buildOutput1' before it is being produced at Stage 2 Action 3 ('Build'/'build1')");
 
       test.done();
     },
@@ -284,10 +284,3 @@ nodeunitShim({
     },
   },
 });
-
-/* eslint-disable cdk/no-core-construct */
-function validate(construct: cdk.IConstruct): cdk.ValidationError[] {
-  cdk.ConstructNode.prepare(construct.node);
-  return cdk.ConstructNode.validate(construct.node);
-}
-/* eslint-enable cdk/no-core-construct */
