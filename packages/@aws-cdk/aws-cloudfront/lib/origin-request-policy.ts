@@ -188,7 +188,7 @@ export class OriginRequestHeaderBehavior {
       throw new Error(`Maximum allowed headers in Origin Request Policy is 10; got ${headers.length}.`);
     }
     if (/Authorization/i.test(headers.join('|')) || /Accept-Encoding/i.test(headers.join('|'))) {
-      throw new Error('You cannot pass `Authorization` or `Accept-Encoding` as header values.');
+      throw new Error('you cannot pass `Authorization` or `Accept-Encoding` as header values; use a CachePolicy to forward these headers instead');
     }
     return new OriginRequestHeaderBehavior('whitelist', headers);
   }

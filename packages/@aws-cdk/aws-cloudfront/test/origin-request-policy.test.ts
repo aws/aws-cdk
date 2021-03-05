@@ -78,7 +78,7 @@ describe('OriginRequestPolicy', () => {
   });
 
   test('throws if prohibited headers are being passed', () => {
-    const errorMessage = /You cannot pass `Authorization` or `Accept-Encoding` as header values./;
+    const errorMessage = /you cannot pass `Authorization` or `Accept-Encoding` as header values/;
     expect(() => new OriginRequestPolicy(stack, 'OriginRequestPolicy1', { headerBehavior: OriginRequestHeaderBehavior.allowList('Authorization') })).toThrow(errorMessage);
     expect(() => new OriginRequestPolicy(stack, 'OriginRequestPolicy2', { headerBehavior: OriginRequestHeaderBehavior.allowList('Accept-Encoding') })).toThrow(errorMessage);
     expect(() => new OriginRequestPolicy(stack, 'OriginRequestPolicy3', { headerBehavior: OriginRequestHeaderBehavior.allowList('authorization') })).toThrow(errorMessage);
