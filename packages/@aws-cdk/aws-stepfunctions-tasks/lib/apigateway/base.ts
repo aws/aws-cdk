@@ -62,7 +62,7 @@ export abstract class InvokeApiGatewayApiBase extends sfn.TaskStateBase {
     return [
       new iam.PolicyStatement({
         resources: [this.arnForExecuteApi],
-        actions: ['ExecuteAPI:Invoke'],
+        actions: ['execute-api:Invoke'],
       }),
     ];
   }

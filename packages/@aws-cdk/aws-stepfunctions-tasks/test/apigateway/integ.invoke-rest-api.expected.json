@@ -280,7 +280,7 @@
         "PolicyDocument": {
           "Statement": [
             {
-              "Action": "ExecuteAPI:Invoke",
+              "Action": "execute-api:Invoke",
               "Effect": "Allow",
               "Resource": {
                 "Fn::Join": [

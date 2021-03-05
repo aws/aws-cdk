@@ -54,6 +54,22 @@
         }
       }
     },
+    "MyHttpApiANYHttpIntegration71abbf75d6f8e5ea93ec2120c0d78b754BBCECF5": {
+      "Type": "AWS::ApiGatewayV2::Integration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "MyHttpApi8AEAAC21"
+        },
+        "IntegrationType": "AWS_PROXY",
+        "IntegrationUri": {
+          "Fn::GetAtt": [
+            "HelloHandler2E4FBA4D",
+            "Arn"
+          ]
+        },
+        "PayloadFormatVersion": "2.0"
+      }
+    },
     "MyHttpApiANYC3543576": {
       "Type": "AWS::ApiGatewayV2::Route",
       "Properties": {
@@ -73,22 +89,6 @@
             ]
           ]
         }
-      }
-    },
-    "MyHttpApiANYHttpIntegration71abbf75d6f8e5ea93ec2120c0d78b754BBCECF5": {
-      "Type": "AWS::ApiGatewayV2::Integration",
-      "Properties": {
-        "ApiId": {
-          "Ref": "MyHttpApi8AEAAC21"
-        },
-        "IntegrationType": "AWS_PROXY",
-        "IntegrationUri": {
-          "Fn::GetAtt": [
-            "HelloHandler2E4FBA4D",
-            "Arn"
-          ]
-        },
-        "PayloadFormatVersion": "2.0"
       }
     },
     "HelloHandlerServiceRole11EF7C63": {
@@ -175,7 +175,7 @@
         "PolicyDocument": {
           "Statement": [
             {
-              "Action": "ExecuteAPI:Invoke",
+              "Action": "execute-api:Invoke",
               "Effect": "Allow",
               "Resource": {
                 "Fn::Join": [
