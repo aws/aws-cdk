@@ -602,7 +602,6 @@ class SingletonLocationSythesizer extends DefaultStackSynthesizer {
       objectKey: 'MyAssetFile',
       httpUrl,
       s3ObjectUrl: httpUrl,
-      s3Url: httpUrl,
     };
   }
 }
