@@ -22,25 +22,23 @@ const lambdaFunction2 = new cloudfront.experimental.EdgeFunction(stack, 'Lambda2
   stackId: `edge-lambda-stack-${region}-2`,
 });
 
+lambdaFunction.addAlias('live');
+lambdaFunction2.addAlias('live');
+
 new cloudfront.Distribution(stack, 'Dist', {
   defaultBehavior: {
     origin: new TestOrigin('www.example.com'),
     cachePolicy: cloudfront.CachePolicy.CACHING_DISABLED,
-    edgeLambdas: [{
-      functionVersion: lambdaFunction.currentVersion,
-      eventType: cloudfront.LambdaEdgeEventType.ORIGIN_REQUEST,
-    }],
-  },
-});
-
-new cloudfront.Distribution(stack, 'Dist2', {
-  defaultBehavior: {
-    origin: new TestOrigin('www.example2.com'),
-    cachePolicy: cloudfront.CachePolicy.CACHING_DISABLED,
-    edgeLambdas: [{
-      functionVersion: lambdaFunction2.currentVersion,
-      eventType: cloudfront.LambdaEdgeEventType.ORIGIN_REQUEST,
-    }],
+    edgeLambdas: [
+      {
+        functionVersion: lambdaFunction.currentVersion,
+        eventType: cloudfront.LambdaEdgeEventType.ORIGIN_REQUEST,
+      },
+      {
+        functionVersion: lambdaFunction2.currentVersion,
+        eventType: cloudfront.LambdaEdgeEventType.ORIGIN_RESPONSE,
+      },
+    ],
   },
 });
 
