@@ -533,12 +533,7 @@ class AssetPublishing extends CoreConstruct {
     // allow assuming any role in a different account
     assetRole.addToPolicy(new iam.PolicyStatement({
       actions: ['sts:AssumeRole'],
-      resources: ['*'],
-      conditions: {
-        StringNotEquals: {
-          'aws:PrincipalAccount': Fn.ref('AWS::AccountId'),
-        },
-      },
+      notResources: [Fn.sub('arn:${AWS::Partition}:iam::${AWS::AccountId}:role/*')],
     }));
 
     // Artifact access

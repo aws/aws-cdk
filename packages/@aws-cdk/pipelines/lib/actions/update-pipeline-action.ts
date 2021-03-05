@@ -89,12 +89,7 @@ export class UpdatePipelineAction extends CoreConstruct implements codepipeline.
     // because custom names may have been used
     selfMutationProject.addToRolePolicy(new iam.PolicyStatement({
       actions: ['sts:AssumeRole'],
-      resources: ['*'],
-      conditions: {
-        StringNotEquals: {
-          'aws:PrincipalAccount': Fn.ref('AWS::AccountId'),
-        },
-      },
+      notResources: [Fn.sub('arn:${AWS::Partition}:iam::${AWS::AccountId}:role/*')],
     }));
     selfMutationProject.addToRolePolicy(new iam.PolicyStatement({
       actions: ['cloudformation:DescribeStacks'],

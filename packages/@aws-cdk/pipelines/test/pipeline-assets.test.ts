@@ -492,15 +492,10 @@ function expectedAssetRolePolicy(publishRoleArn: string, attachedRole: string) {
       },
       {
         Action: 'sts:AssumeRole',
-        Condition: {
-          StringNotEquals: {
-            'aws:PrincipalAccount': {
-              Ref: 'AWS::AccountId',
-            },
-          },
-        },
         Effect: 'Allow',
-        Resource: '*',
+        NotResource: {
+          'Fn::Sub': 'arn:${AWS::Partition}:iam::${AWS::AccountId}:role/*',
+        },
       },
       {
         Action: ['s3:GetObject*', 's3:GetBucket*', 's3:List*'],

@@ -1168,15 +1168,10 @@
             },
             {
               "Action": "sts:AssumeRole",
-              "Condition": {
-                "StringNotEquals": {
-                  "aws:PrincipalAccount": {
-                    "Ref": "AWS::AccountId"
-                  }
-                }
-              },
               "Effect": "Allow",
-              "Resource": "*"
+              "NotResource": {
+                "Fn::Sub": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/*"
+              }
             },
             {
               "Action": "cloudformation:DescribeStacks",
@@ -1382,15 +1377,10 @@
             },
             {
               "Action": "sts:AssumeRole",
-              "Condition": {
-                "StringNotEquals": {
-                  "aws:PrincipalAccount": {
-                    "Ref": "AWS::AccountId"
-                  }
-                }
-              },
               "Effect": "Allow",
-              "Resource": "*"
+              "NotResource": {
+                "Fn::Sub": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/*"
+              }
             },
             {
               "Action": [

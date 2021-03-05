@@ -137,12 +137,7 @@ export class PublishAssetsAction extends CoreConstruct implements codepipeline.I
     // because custom names may have been used
     project.addToRolePolicy(new iam.PolicyStatement({
       actions: ['sts:AssumeRole'],
-      resources: ['*'],
-      conditions: {
-        StringNotEquals: {
-          'aws:PrincipalAccount': Fn.ref('AWS::AccountId'),
-        },
-      },
+      notResources: [Fn.sub('arn:${AWS::Partition}:iam::${AWS::AccountId}:role/*')],
     }));
 
     this.action = new codepipeline_actions.CodeBuildAction({
