@@ -8,7 +8,7 @@ import { embeddedAsmPath } from '../private/construct-internals';
 
 // v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
 // eslint-disable-next-line
-import { Construct as CoreConstruct } from '@aws-cdk/core';
+import { Construct as CoreConstruct, Fn } from '@aws-cdk/core';
 
 /**
  * Props for the UpdatePipelineAction
@@ -23,6 +23,11 @@ export interface UpdatePipelineActionProps {
    * Name of the pipeline stack
    */
   readonly pipelineStackName: string;
+
+  /**
+   * Role arns that might need to be assumed by the `cdk deploy` call
+   */
+  readonly roleArnsForCdkDeploy: string[];
 
   /**
    * Version of CDK CLI to 'npm install'.
@@ -78,7 +83,18 @@ export class UpdatePipelineAction extends CoreConstruct implements codepipeline.
     // allow the self-mutating project permissions to assume the bootstrap Action role
     selfMutationProject.addToRolePolicy(new iam.PolicyStatement({
       actions: ['sts:AssumeRole'],
-      resources: ['arn:*:iam::*:role/*-deploy-role-*', 'arn:*:iam::*:role/*-publishing-role-*'],
+      resources: props.roleArnsForCdkDeploy.map((arn) => Fn.sub(arn)),
+    }));
+    // allow assuming any role in a different account
+    // because custom names may have been used
+    selfMutationProject.addToRolePolicy(new iam.PolicyStatement({
+      actions: ['sts:AssumeRole'],
+      resources: ['*'],
+      conditions: {
+        StringNotEquals: {
+          'aws:PrincipalAccount': Fn.ref('AWS::AccountId'),
+        },
+      },
     }));
     selfMutationProject.addToRolePolicy(new iam.PolicyStatement({
       actions: ['cloudformation:DescribeStacks'],

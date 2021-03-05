@@ -202,7 +202,7 @@ describe('basic pipeline', () => {
     });
   });
 
-  test('file image asset publishers do not use privilegedmode, have right AssumeRole', () => {
+  test('file image asset publishers do not use privilegedmode', () => {
     // WHEN
     pipeline.addApplicationStage(new FileAssetApp(app, 'FileAssetApp'));
 
@@ -222,19 +222,9 @@ describe('basic pipeline', () => {
         Image: 'aws/codebuild/standard:4.0',
       }),
     });
-
-    expect(pipelineStack).toHaveResourceLike('AWS::IAM::Policy', {
-      PolicyDocument: {
-        Statement: arrayWith({
-          Action: 'sts:AssumeRole',
-          Effect: 'Allow',
-          Resource: 'arn:*:iam::*:role/*-file-publishing-role-*',
-        }),
-      },
-    });
   });
 
-  test('docker image asset publishers use privilegedmode, have right AssumeRole', () => {
+  test('docker image asset publishers use privilegedmode', () => {
     // WHEN
     pipeline.addApplicationStage(new DockerAssetApp(app, 'DockerAssetApp'));
 
@@ -253,15 +243,6 @@ describe('basic pipeline', () => {
         Image: 'aws/codebuild/standard:4.0',
         PrivilegedMode: true,
       }),
-    });
-    expect(pipelineStack).toHaveResourceLike('AWS::IAM::Policy', {
-      PolicyDocument: {
-        Statement: arrayWith({
-          Action: 'sts:AssumeRole',
-          Effect: 'Allow',
-          Resource: 'arn:*:iam::*:role/*-image-publishing-role-*',
-        }),
-      },
     });
   });
 
@@ -311,7 +292,7 @@ describe('basic pipeline', () => {
         },
       });
       expect(pipelineStack).toHaveResourceLike('AWS::IAM::Policy',
-        expectedAssetRolePolicy('arn:*:iam::*:role/*-file-publishing-role-*', 'CdkAssetsFileRole6BE17A07'));
+        expectedAssetRolePolicy('arn:${AWS::Partition}:iam::123pipeline:role/cdk-hnb659fds-file-publishing-role-123pipeline-us-pipeline', 'CdkAssetsFileRole6BE17A07'));
     });
 
     test('includes image publishing assets role for apps with Docker assets', () => {
@@ -334,7 +315,7 @@ describe('basic pipeline', () => {
         },
       });
       expect(pipelineStack).toHaveResourceLike('AWS::IAM::Policy',
-        expectedAssetRolePolicy('arn:*:iam::*:role/*-image-publishing-role-*', 'CdkAssetsDockerRole484B6DD3'));
+        expectedAssetRolePolicy('arn:${AWS::Partition}:iam::123pipeline:role/cdk-hnb659fds-image-publishing-role-123pipeline-us-pipeline', 'CdkAssetsDockerRole484B6DD3'));
     });
 
     test('includes both roles for apps with both file and Docker assets', () => {
@@ -342,9 +323,9 @@ describe('basic pipeline', () => {
       pipeline.addApplicationStage(new DockerAssetApp(app, 'App2'));
 
       expect(pipelineStack).toHaveResourceLike('AWS::IAM::Policy',
-        expectedAssetRolePolicy('arn:*:iam::*:role/*-file-publishing-role-*', 'CdkAssetsFileRole6BE17A07'));
+        expectedAssetRolePolicy('arn:${AWS::Partition}:iam::123pipeline:role/cdk-hnb659fds-file-publishing-role-123pipeline-us-pipeline', 'CdkAssetsFileRole6BE17A07'));
       expect(pipelineStack).toHaveResourceLike('AWS::IAM::Policy',
-        expectedAssetRolePolicy('arn:*:iam::*:role/*-image-publishing-role-*', 'CdkAssetsDockerRole484B6DD3'));
+        expectedAssetRolePolicy('arn:${AWS::Partition}:iam::123pipeline:role/cdk-hnb659fds-image-publishing-role-123pipeline-us-pipeline', 'CdkAssetsDockerRole484B6DD3'));
     });
   });
 });
@@ -472,7 +453,7 @@ class MegaAssetsApp extends Stage {
   }
 }
 
-function expectedAssetRolePolicy(assumeRolePattern: string, attachedRole: string) {
+function expectedAssetRolePolicy(publishRoleArn: string, attachedRole: string) {
   return {
     PolicyDocument: {
       Statement: [{
@@ -505,7 +486,21 @@ function expectedAssetRolePolicy(assumeRolePattern: string, attachedRole: string
       {
         Action: 'sts:AssumeRole',
         Effect: 'Allow',
-        Resource: assumeRolePattern,
+        Resource: {
+          'Fn::Sub': publishRoleArn,
+        },
+      },
+      {
+        Action: 'sts:AssumeRole',
+        Condition: {
+          StringNotEquals: {
+            'aws:PrincipalAccount': {
+              Ref: 'AWS::AccountId',
+            },
+          },
+        },
+        Effect: 'Allow',
+        Resource: '*',
       },
       {
         Action: ['s3:GetObject*', 's3:GetBucket*', 's3:List*'],

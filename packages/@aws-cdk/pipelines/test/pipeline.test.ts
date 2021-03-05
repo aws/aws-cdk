@@ -342,7 +342,7 @@ test('selfmutation stage correctly identifies nested assembly of pipeline stack'
 });
 
 test('selfmutation feature can be turned off', () => {
-  const stack = new Stack();
+  const stack = new Stack(app);
   const cloudAssemblyArtifact = new cp.Artifact();
   // WHEN
   new TestGitHubNpmPipeline(stack, 'Cdk', {

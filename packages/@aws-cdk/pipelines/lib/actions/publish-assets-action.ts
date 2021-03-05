@@ -4,7 +4,7 @@ import * as codepipeline_actions from '@aws-cdk/aws-codepipeline-actions';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
-import { Lazy } from '@aws-cdk/core';
+import { Fn, Lazy } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 
 // v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
@@ -82,6 +82,11 @@ export interface PublishAssetsActionProps {
    * @default - All private subnets.
    */
   readonly subnetSelection?: ec2.SubnetSelection;
+
+  /**
+   * Role arns that might need to be assumed by the `cdk-assets` call
+   */
+  readonly roleArnsForCdkAssets: string;
 }
 
 /**
@@ -124,13 +129,20 @@ export class PublishAssetsAction extends CoreConstruct implements codepipeline.I
       role: props.role,
     });
 
-    const rolePattern = props.assetType === AssetType.DOCKER_IMAGE
-      ? 'arn:*:iam::*:role/*-image-publishing-role-*'
-      : 'arn:*:iam::*:role/*-file-publishing-role-*';
-
     project.addToRolePolicy(new iam.PolicyStatement({
       actions: ['sts:AssumeRole'],
-      resources: [rolePattern],
+      resources: [Fn.sub(props.roleArnsForCdkAssets)],
+    }));
+    // allow assuming any role in a different account
+    // because custom names may have been used
+    project.addToRolePolicy(new iam.PolicyStatement({
+      actions: ['sts:AssumeRole'],
+      resources: ['*'],
+      conditions: {
+        StringNotEquals: {
+          'aws:PrincipalAccount': Fn.ref('AWS::AccountId'),
+        },
+      },
     }));
 
     this.action = new codepipeline_actions.CodeBuildAction({

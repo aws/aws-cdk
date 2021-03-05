@@ -2,7 +2,7 @@ import * as path from 'path';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
-import { Annotations, App, Aws, CfnOutput, PhysicalName, Stack, Stage } from '@aws-cdk/core';
+import { Annotations, App, Aws, CfnOutput, DefaultStackSynthesizer, Fn, PhysicalName, Stack, Stage } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { AssetType, DeployCdkStackAction, PublishAssetsAction, UpdatePipelineAction } from './actions';
 import { appOf, assemblyBuilderOf } from './private/construct-internals';
@@ -139,6 +139,7 @@ export class CdkPipeline extends CoreConstruct {
   private readonly _stages: CdkStage[] = [];
   private readonly _outputArtifacts: Record<string, codepipeline.Artifact> = {};
   private readonly _cloudAssemblyArtifact: codepipeline.Artifact;
+  private readonly _stackSynthesizer: DefaultStackSynthesizer;
 
   constructor(scope: Construct, id: string, props: CdkPipelineProps) {
     super(scope, id);
@@ -149,6 +150,11 @@ export class CdkPipeline extends CoreConstruct {
 
     this._cloudAssemblyArtifact = props.cloudAssemblyArtifact;
     const pipelineStack = Stack.of(this);
+
+    if (!(pipelineStack.synthesizer instanceof DefaultStackSynthesizer)) {
+      throw new Error('`DefaultStackSynthesizer` must be used with a CdkPipeline. use the \'DefaultStackSynthesizer\' synthesizer, or set the \'@aws-cdk/core:newStyleStackSynthesis\' context key.');
+    }
+    this._stackSynthesizer = pipelineStack.synthesizer;
 
     if (props.codePipeline) {
       if (props.pipelineName) {
@@ -198,6 +204,11 @@ export class CdkPipeline extends CoreConstruct {
         actions: [new UpdatePipelineAction(this, 'UpdatePipeline', {
           cloudAssemblyInput: this._cloudAssemblyArtifact,
           pipelineStackName: pipelineStack.stackName,
+          roleArnsForCdkDeploy: [
+            this._stackSynthesizer.deployRoleArn,
+            this._stackSynthesizer.imageAssetPublishingRoleArn,
+            this._stackSynthesizer.fileAssetPublishingRoleArn,
+          ],
           cdkCliVersion: props.cdkCliVersion,
           projectName: maybeSuffix(props.pipelineName, '-selfupdate'),
         })],
@@ -211,6 +222,7 @@ export class CdkPipeline extends CoreConstruct {
       projectName: maybeSuffix(props.pipelineName, '-publish'),
       vpc: props.vpc,
       subnetSelection: props.subnetSelection,
+      stackSynthesizer: this._stackSynthesizer,
     });
   }
 
@@ -354,6 +366,7 @@ function flatMap<A, B>(xs: A[], f: (x: A) => B[]): B[] {
 interface AssetPublishingProps {
   readonly cloudAssemblyInput: codepipeline.Artifact;
   readonly pipeline: codepipeline.Pipeline;
+  readonly stackSynthesizer: DefaultStackSynthesizer;
   readonly cdkCliVersion?: string;
   readonly projectName?: string;
   readonly vpc?: ec2.IVpc;
@@ -441,6 +454,9 @@ class AssetPublishing extends CoreConstruct {
         cdkCliVersion: this.props.cdkCliVersion,
         assetType: command.assetType,
         role: this.assetRoles[command.assetType],
+        roleArnsForCdkAssets: command.assetType === AssetType.DOCKER_IMAGE
+          ? this.props.stackSynthesizer.imageAssetPublishingRoleArn
+          : this.props.stackSynthesizer.fileAssetPublishingRoleArn,
         vpc: this.props.vpc,
         subnetSelection: this.props.subnetSelection,
       });
@@ -505,12 +521,24 @@ class AssetPublishing extends CoreConstruct {
     }));
 
     // Publishing role access
-    const rolePattern = assetType === AssetType.DOCKER_IMAGE
-      ? 'arn:*:iam::*:role/*-image-publishing-role-*'
-      : 'arn:*:iam::*:role/*-file-publishing-role-*';
+    const publishingRoleThisAccount = Fn.sub(
+      assetType === AssetType.DOCKER_IMAGE
+        ? this.props.stackSynthesizer.imageAssetPublishingRoleArn
+        : this.props.stackSynthesizer.fileAssetPublishingRoleArn,
+    );
     assetRole.addToPolicy(new iam.PolicyStatement({
       actions: ['sts:AssumeRole'],
-      resources: [rolePattern],
+      resources: [publishingRoleThisAccount],
+    }));
+    // allow assuming any role in a different account
+    assetRole.addToPolicy(new iam.PolicyStatement({
+      actions: ['sts:AssumeRole'],
+      resources: ['*'],
+      conditions: {
+        StringNotEquals: {
+          'aws:PrincipalAccount': Fn.ref('AWS::AccountId'),
+        },
+      },
     }));
 
     // Artifact access
