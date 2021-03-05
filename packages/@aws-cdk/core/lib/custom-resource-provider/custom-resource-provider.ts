@@ -63,6 +63,13 @@ export interface CustomResourceProviderProps {
    * @default - No environment variables.
    */
   readonly environment?: { [key: string]: string };
+
+  /**
+   * A description of the function.
+   *
+   * @default - No description.
+   */
+  readonly description?: string;
 }
 
 /**
@@ -73,8 +80,20 @@ export interface CustomResourceProviderProps {
 export enum CustomResourceProviderRuntime {
   /**
    * Node.js 12.x
+   *
+   * @deprecated Use {@link NODEJS_12_X}
    */
-  NODEJS_12 = 'nodejs12'
+  NODEJS_12 = 'nodejs12.x',
+
+  /**
+   * Node.js 12.x
+   */
+  NODEJS_12_X = 'nodejs12.x',
+
+  /**
+   * Node.js 14.x
+   */
+  NODEJS_14_X = 'nodejs14.x',
 }
 
 /**
@@ -199,8 +218,9 @@ export class CustomResourceProvider extends Construct {
         MemorySize: memory.toMebibytes(),
         Handler: `${ENTRYPOINT_FILENAME}.handler`,
         Role: role.getAtt('Arn'),
-        Runtime: 'nodejs12.x',
+        Runtime: props.runtime,
         Environment: this.renderEnvironmentVariables(props.environment),
+        Description: props.description ?? undefined,
       },
     });
 

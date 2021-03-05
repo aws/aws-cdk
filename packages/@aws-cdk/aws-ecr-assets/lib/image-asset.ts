@@ -2,7 +2,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as assets from '@aws-cdk/assets';
 import * as ecr from '@aws-cdk/aws-ecr';
-import { Annotations, FeatureFlags, IgnoreMode, Stack, Token } from '@aws-cdk/core';
+import { Annotations, AssetStaging, FeatureFlags, FileFingerprintOptions, IgnoreMode, Stack, SymlinkFollowMode, Token } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
@@ -12,7 +12,7 @@ import { Construct } from 'constructs';
 /**
  * Options for DockerImageAsset
  */
-export interface DockerImageAssetOptions extends assets.FingerprintOptions {
+export interface DockerImageAssetOptions extends assets.FingerprintOptions, FileFingerprintOptions {
   /**
    * ECR repository name
    *
@@ -140,8 +140,9 @@ export class DockerImageAsset extends Construct implements assets.IAsset {
     // deletion of the ECR repository the app used).
     extraHash.version = '1.21.0';
 
-    const staging = new assets.Staging(this, 'Staging', {
+    const staging = new AssetStaging(this, 'Staging', {
       ...props,
+      follow: props.followSymlinks ?? toSymlinkFollow(props.follow),
       exclude,
       ignoreMode,
       sourcePath: dir,
@@ -182,5 +183,15 @@ function validateBuildArgs(buildArgs?: { [key: string]: string }) {
     if (Token.isUnresolved(key) || Token.isUnresolved(value)) {
       throw new Error('Cannot use tokens in keys or values of "buildArgs" since they are needed before deployment');
     }
+  }
+}
+
+function toSymlinkFollow(follow?: assets.FollowMode): SymlinkFollowMode | undefined {
+  switch (follow) {
+    case undefined: return undefined;
+    case assets.FollowMode.NEVER: return SymlinkFollowMode.NEVER;
+    case assets.FollowMode.ALWAYS: return SymlinkFollowMode.ALWAYS;
+    case assets.FollowMode.BLOCK_EXTERNAL: return SymlinkFollowMode.BLOCK_EXTERNAL;
+    case assets.FollowMode.EXTERNAL: return SymlinkFollowMode.EXTERNAL;
   }
 }
