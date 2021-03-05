@@ -31,7 +31,10 @@ describe('HttpStage', () => {
       httpApi: api,
     });
 
-    const imported = HttpStage.fromStageName(stack, 'Import', stage.stageName );
+    const imported = HttpStage.fromHttpStageAttributes(stack, 'Import', {
+      stageName: stage.stageName,
+      api,
+    });
 
     expect(imported.stageName).toEqual(stage.stageName);
   });
