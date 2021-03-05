@@ -1,6 +1,7 @@
 {
   "name": "@aws-cdk/aws-apigatewayv2-integrations",
   "version": "0.0.0",
+  "private": true,
   "description": "Integrations for AWS APIGateway V2",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -84,7 +85,7 @@
     "@aws-cdk/aws-lambda": "0.0.0",
     "@aws-cdk/aws-servicediscovery": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "constructs": "^3.2.0"
+    "constructs": "10.0.0-pre.5"
   },
   "peerDependencies": {
     "@aws-cdk/aws-apigatewayv2": "0.0.0",
@@ -94,7 +95,7 @@
     "@aws-cdk/aws-lambda": "0.0.0",
     "@aws-cdk/aws-servicediscovery": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "constructs": "^3.2.0"
+    "constructs": "10.0.0-pre.5"
   },
   "engines": {
     "node": ">= 10.13.0 <13 || >=13.7.0"
