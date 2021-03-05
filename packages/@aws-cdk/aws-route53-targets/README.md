@@ -66,7 +66,7 @@ For example, if the Amazon-provided DNS for the load balancer is `ALB-xxxxxxx.us
 * GlobalAccelerator
 
   ```ts
-  new route53.ARecord(stack, 'GlobalAcceleratorAlias', {
+  new route53.ARecord(stack, 'AliasRecord', {
     zone,
     target: route53.RecordTarget.fromAlias(new targets.GlobalAcceleratorTarget(accelerator)),
     // or - route53.RecordTarget.fromAlias(new targets.GlobalAcceleratorTarget('xyz.awsglobalaccelerator.com')),
