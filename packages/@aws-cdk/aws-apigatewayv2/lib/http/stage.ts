@@ -1,11 +1,10 @@
-import { Metric, MetricOptions } from '@aws-cdk/aws-cloudwatch';
-import { Resource, Stack } from '@aws-cdk/core';
+import { Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnStage } from '../apigatewayv2.generated';
-import { CommonStageOptions, IDomainName, IStage } from '../common';
+import { StageOptions, IStage, StageAttributes } from '../common';
+import { IApi } from '../common/api';
+import { StageBase } from '../common/base';
 import { IHttpApi } from './api';
-import { HttpApiMapping } from './api-mapping';
-
 
 const DEFAULT_STAGE_NAME = '$default';
 
@@ -13,18 +12,21 @@ const DEFAULT_STAGE_NAME = '$default';
  * Represents the HttpStage
  */
 export interface IHttpStage extends IStage {
+  /**
+   * The API this stage is associated to.
+   */
+  readonly api: IHttpApi;
 }
 
 /**
- * Options to create a new stage for an HTTP API.
+ * The options to create a new Stage for an HTTP API
  */
-export interface HttpStageOptions extends CommonStageOptions {
+export interface HttpStageOptions extends StageOptions {
   /**
-   * The options for custom domain and api mapping
-   *
-   * @default - no custom domain and api mapping configuration
+   * The name of the stage. See `StageName` class for more details.
+   * @default '$default' the default stage of the API. This stage will have the URL at the root of the API endpoint.
    */
-  readonly domainMapping?: DomainMappingOptions;
+  readonly stageName?: string;
 }
 
 /**
@@ -38,51 +40,39 @@ export interface HttpStageProps extends HttpStageOptions {
 }
 
 /**
- * Options for defaultDomainMapping
+ * The attributes used to import existing HttpStage
  */
-export interface DefaultDomainMappingOptions {
+export interface HttpStageAttributes extends StageAttributes {
   /**
-   * The domain name for the mapping
-   *
+   * The API to which this stage is associated
    */
-  readonly domainName: IDomainName;
-
-  /**
-   * The API mapping key. Leave it undefined for the root path mapping.
-   * @default - empty key for the root path mapping
-   */
-  readonly mappingKey?: string;
-}
-
-/**
- * Options for DomainMapping
- */
-export interface DomainMappingOptions extends DefaultDomainMappingOptions {
-  /**
-   * The API Stage
-   *
-   * @default - the $default stage
-   */
-  readonly stage?: IStage;
+  readonly api: IHttpApi;
 }
 
 /**
  * Represents a stage where an instance of the API is deployed.
  * @resource AWS::ApiGatewayV2::Stage
  */
-export class HttpStage extends Resource implements IStage {
+export class HttpStage extends StageBase implements IHttpStage {
   /**
    * Import an existing stage into this CDK app.
    */
-  public static fromStageName(scope: Construct, id: string, stageName: string): IStage {
-    class Import extends Resource implements IStage {
-      public readonly stageName = stageName;
+  public static fromHttpStageAttributes(scope: Construct, id: string, attrs: HttpStageAttributes): IHttpStage {
+    class Import extends StageBase implements IHttpStage {
+      protected readonly baseApi = attrs.api;
+      public readonly stageName = attrs.stageName;
+      public readonly api = attrs.api;
+
+      get url(): string {
+        throw new Error('url is not available for imported stages.');
+      }
     }
     return new Import(scope, id);
   }
 
+  protected readonly baseApi: IApi;
   public readonly stageName: string;
-  private httpApi: IHttpApi;
+  public readonly api: IHttpApi;
 
   constructor(scope: Construct, id: string, props: HttpStageProps) {
     super(scope, id, {
@@ -90,25 +80,18 @@ export class HttpStage extends Resource implements IStage {
     });
 
     new CfnStage(this, 'Resource', {
-      apiId: props.httpApi.httpApiId,
+      apiId: props.httpApi.apiId,
       stageName: this.physicalName,
       autoDeploy: props.autoDeploy,
     });
 
     this.stageName = this.physicalName;
-    this.httpApi = props.httpApi;
+    this.baseApi = props.httpApi;
+    this.api = props.httpApi;
 
     if (props.domainMapping) {
-      new HttpApiMapping(this, `${props.domainMapping.domainName}${props.domainMapping.mappingKey}`, {
-        api: props.httpApi,
-        domainName: props.domainMapping.domainName,
-        stage: this,
-        apiMappingKey: props.domainMapping.mappingKey,
-      });
-      // ensure the dependency
-      this.node.addDependency(props.domainMapping.domainName);
+      this._addDomainMapping(props.domainMapping);
     }
-
   }
 
   /**
@@ -117,75 +100,6 @@ export class HttpStage extends Resource implements IStage {
   public get url(): string {
     const s = Stack.of(this);
     const urlPath = this.stageName === DEFAULT_STAGE_NAME ? '' : this.stageName;
-    return `https://${this.httpApi.httpApiId}.execute-api.${s.region}.${s.urlSuffix}/${urlPath}`;
-  }
-
-  /**
-   * Return the given named metric for this HTTP Api Gateway Stage
-   *
-   * @default - average over 5 minutes
-   */
-  public metric(metricName: string, props?: MetricOptions): Metric {
-    var api = this.httpApi;
-    return api.metric(metricName, props).with({
-      dimensions: { ApiId: this.httpApi.httpApiId, Stage: this.stageName },
-    }).attachTo(this);
-  }
-
-  /**
-   * Metric for the number of client-side errors captured in a given period.
-   *
-   * @default - sum over 5 minutes
-   */
-  public metricClientError(props?: MetricOptions): Metric {
-    return this.metric('4XXError', { statistic: 'Sum', ...props });
-  }
-
-  /**
-   * Metric for the number of server-side errors captured in a given period.
-   *
-   * @default - sum over 5 minutes
-   */
-  public metricServerError(props?: MetricOptions): Metric {
-    return this.metric('5XXError', { statistic: 'Sum', ...props });
-  }
-
-  /**
-   * Metric for the amount of data processed in bytes.
-   *
-   * @default - sum over 5 minutes
-   */
-  public metricDataProcessed(props?: MetricOptions): Metric {
-    return this.metric('DataProcessed', { statistic: 'Sum', ...props });
-  }
-
-  /**
-   * Metric for the total number API requests in a given period.
-   *
-   * @default - SampleCount over 5 minutes
-   */
-  public metricCount(props?: MetricOptions): Metric {
-    return this.metric('Count', { statistic: 'SampleCount', ...props });
-  }
-
-  /**
-   * Metric for the time between when API Gateway relays a request to the backend
-   * and when it receives a response from the backend.
-   *
-   * @default - no statistic
-   */
-  public metricIntegrationLatency(props?: MetricOptions): Metric {
-    return this.metric('IntegrationLatency', props);
-  }
-
-  /**
-   * The time between when API Gateway receives a request from a client
-   * and when it returns a response to the client.
-   * The latency includes the integration latency and other API Gateway overhead.
-   *
-   * @default - no statistic
-   */
-  public metricLatency(props?: MetricOptions): Metric {
-    return this.metric('Latency', props);
+    return `https://${this.api.apiId}.execute-api.${s.region}.${s.urlSuffix}/${urlPath}`;
   }
 }
