@@ -1,6 +1,14 @@
-import { Resource, Tokenization } from '@aws-cdk/core';
+import { Tokenization } from '@aws-cdk/core';
 import { Construct } from 'constructs';
-import { CommonTaskDefinitionProps, Compatibility, ITaskDefinition, NetworkMode, TaskDefinition } from '../base/task-definition';
+import {
+  CommonTaskDefinitionAttributes,
+  CommonTaskDefinitionProps,
+  Compatibility,
+  ITaskDefinition,
+  NetworkMode,
+  TaskDefinition,
+} from '../base/task-definition';
+import { ImportedTaskDefinition } from '../base/_imported-task-definition';
 
 /**
  * The properties for a task definition.
@@ -52,6 +60,13 @@ export interface IFargateTaskDefinition extends ITaskDefinition {
 }
 
 /**
+ * Attributes used to import an existing Fargate task definition
+ */
+export interface FargateTaskDefinitionAttributes extends CommonTaskDefinitionAttributes {
+
+}
+
+/**
  * The details of a task definition run on a Fargate cluster.
  *
  * @resource AWS::ECS::TaskDefinition
@@ -62,14 +77,23 @@ export class FargateTaskDefinition extends TaskDefinition implements IFargateTas
    * Imports a task definition from the specified task definition ARN.
    */
   public static fromFargateTaskDefinitionArn(scope: Construct, id: string, fargateTaskDefinitionArn: string): IFargateTaskDefinition {
-    class Import extends Resource implements IFargateTaskDefinition {
-      public readonly taskDefinitionArn = fargateTaskDefinitionArn;
-      public readonly compatibility = Compatibility.FARGATE;
-      public readonly isEc2Compatible = false;
-      public readonly isFargateCompatible = true;
-    }
+    return new ImportedTaskDefinition(scope, id, { taskDefinitionArn: fargateTaskDefinitionArn });
+  }
 
-    return new Import(scope, id);
+  /**
+   * Import an existing Fargate task definition from its attributes
+   */
+  public static fromFargateTaskDefinitionAttributes(
+    scope: Construct,
+    id: string,
+    attrs: FargateTaskDefinitionAttributes,
+  ): IFargateTaskDefinition {
+    return new ImportedTaskDefinition(scope, id, {
+      taskDefinitionArn: attrs.taskDefinitionArn,
+      compatibility: Compatibility.FARGATE,
+      networkMode: attrs.networkMode,
+      taskRole: attrs.taskRole,
+    });
   }
 
   /**

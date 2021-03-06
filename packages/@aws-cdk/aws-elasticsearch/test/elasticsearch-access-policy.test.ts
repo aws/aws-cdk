@@ -33,29 +33,25 @@ test('minimal example renders correctly', () => {
         'Arn',
       ],
     },
-    Create: {
-      service: 'ES',
+    Create: JSON.stringify({
       action: 'updateElasticsearchDomainConfig',
+      service: 'ES',
       parameters: {
         DomainName: 'TestDomain',
-        AccessPolicies: '{\"Statement\":[{\"Action\":\"es:ESHttp*\",\"Effect\":\"Allow\",\"Principal\":\"*\",\"Resource\":\"test:arn\"}],\"Version\":\"2012-10-17\"}',
+        AccessPolicies: '{"Statement":[{"Action":"es:ESHttp*","Effect":"Allow","Principal":"*","Resource":"test:arn"}],"Version":"2012-10-17"}',
       },
       outputPath: 'DomainConfig.ElasticsearchClusterConfig.AccessPolicies',
-      physicalResourceId: {
-        id: 'TestDomainAccessPolicy',
-      },
-    },
-    Update: {
-      service: 'ES',
+      physicalResourceId: { id: 'TestDomainAccessPolicy' },
+    }),
+    Update: JSON.stringify({
       action: 'updateElasticsearchDomainConfig',
+      service: 'ES',
       parameters: {
         DomainName: 'TestDomain',
-        AccessPolicies: '{\"Statement\":[{\"Action\":\"es:ESHttp*\",\"Effect\":\"Allow\",\"Principal\":\"*\",\"Resource\":\"test:arn\"}],\"Version\":\"2012-10-17\"}',
+        AccessPolicies: '{"Statement":[{"Action":"es:ESHttp*","Effect":"Allow","Principal":"*","Resource":"test:arn"}],"Version":"2012-10-17"}',
       },
       outputPath: 'DomainConfig.ElasticsearchClusterConfig.AccessPolicies',
-      physicalResourceId: {
-        id: 'TestDomainAccessPolicy',
-      },
-    },
+      physicalResourceId: { id: 'TestDomainAccessPolicy' },
+    }),
   });
 });

@@ -8,8 +8,8 @@ import * as cloudmap from '@aws-cdk/aws-servicediscovery';
 import { Annotations, Duration, IResolvable, IResource, Lazy, Resource, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { LoadBalancerTargetOptions, NetworkMode, TaskDefinition } from '../base/task-definition';
+import { ContainerDefinition, Protocol } from '../container-definition';
 import { ICluster, CapacityProviderStrategy } from '../cluster';
-import { Protocol } from '../container-definition';
 import { CfnService } from '../ecs.generated';
 import { ScalableTaskCount } from './scalable-task-count';
 
@@ -572,10 +572,12 @@ export abstract class BaseService extends Resource
       }
     }
 
-    // If the task definition that your service task specifies uses the AWSVPC network mode and a type SRV DNS record is
-    // used, you must specify a containerName and containerPort combination
-    const containerName = dnsRecordType === cloudmap.DnsRecordType.SRV ? this.taskDefinition.defaultContainer!.containerName : undefined;
-    const containerPort = dnsRecordType === cloudmap.DnsRecordType.SRV ? this.taskDefinition.defaultContainer!.containerPort : undefined;
+    const { containerName, containerPort } = determineContainerNameAndPort({
+      taskDefinition: this.taskDefinition,
+      dnsRecordType: dnsRecordType!,
+      container: options.container,
+      containerPort: options.containerPort,
+    });
 
     const cloudmapService = new cloudmap.Service(this, 'CloudmapService', {
       namespace: sdNamespace,
@@ -799,7 +801,19 @@ export interface CloudMapOptions {
    *
    * NOTE: This is used for HealthCheckCustomConfig
    */
-  readonly failureThreshold?: number,
+  readonly failureThreshold?: number;
+
+  /**
+   * The container to point to for a SRV record.
+   * @default - the task definition's default container
+   */
+  readonly container?: ContainerDefinition;
+
+  /**
+   * The port to point to for a SRV record.
+   * @default - the default port of the task definition's default container
+   */
+  readonly containerPort?: number;
 }
 
 /**
@@ -884,4 +898,43 @@ export enum PropagatedTagSource {
    * Do not propagate
    */
   NONE = 'NONE'
+}
+
+/**
+ * Options for `determineContainerNameAndPort`
+ */
+interface DetermineContainerNameAndPortOptions {
+  dnsRecordType: cloudmap.DnsRecordType;
+  taskDefinition: TaskDefinition;
+  container?: ContainerDefinition;
+  containerPort?: number;
+}
+
+/**
+ * Determine the name of the container and port to target for the service registry.
+ */
+function determineContainerNameAndPort(options: DetermineContainerNameAndPortOptions) {
+  // If the record type is SRV, then provide the containerName and containerPort to target.
+  // We use the name of the default container and the default port of the default container
+  // unless the user specifies otherwise.
+  if (options.dnsRecordType === cloudmap.DnsRecordType.SRV) {
+    // Ensure the user-provided container is from the right task definition.
+    if (options.container && options.container.taskDefinition != options.taskDefinition) {
+      throw new Error('Cannot add discovery for a container from another task definition');
+    }
+
+    const container = options.container ?? options.taskDefinition.defaultContainer!;
+
+    // Ensure that any port given by the user is mapped.
+    if (options.containerPort && !container.portMappings.some(mapping => mapping.containerPort === options.containerPort)) {
+      throw new Error('Cannot add discovery for a container port that has not been mapped');
+    }
+
+    return {
+      containerName: container.containerName,
+      containerPort: options.containerPort ?? options.taskDefinition.defaultContainer!.containerPort,
+    };
+  }
+
+  return {};
 }

@@ -1,4 +1,5 @@
-import { ABSENT, countResources, expect, haveResource, ResourcePart, haveResourceLike, anything } from '@aws-cdk/assert';
+import '@aws-cdk/assert/jest';
+import { ABSENT, ResourcePart, anything } from '@aws-cdk/assert';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as targets from '@aws-cdk/aws-events-targets';
 import { ManagedPolicy, Role, ServicePrincipal, AccountPrincipal } from '@aws-cdk/aws-iam';
@@ -7,20 +8,20 @@ import * as lambda from '@aws-cdk/aws-lambda';
 import * as logs from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
-import { nodeunitShim, Test } from 'nodeunit-shim';
+import * as cxapi from '@aws-cdk/cx-api';
+import { testFutureBehavior } from 'cdk-build-tools/lib/feature-flag';
 import * as rds from '../lib';
 
 let stack: cdk.Stack;
 let vpc: ec2.Vpc;
 
-nodeunitShim({
-  'setUp'(cb: () => void) {
+describe('instance', () => {
+  beforeEach(() => {
     stack = new cdk.Stack();
     vpc = new ec2.Vpc(stack, 'VPC');
-    cb();
-  },
+  });
 
-  'create a DB instance'(test: Test) {
+  test('create a DB instance', () => {
     // WHEN
     new rds.DatabaseInstance(stack, 'Instance', {
       engine: rds.DatabaseInstanceEngine.oracleSe2({ version: rds.OracleEngineVersion.VER_19_0_0_0_2020_04_R1 }),
@@ -48,7 +49,7 @@ nodeunitShim({
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::RDS::DBInstance', {
+    expect(stack).toHaveResource('AWS::RDS::DBInstance', {
       Properties: {
         DBInstanceClass: 'db.t2.medium',
         AllocatedStorage: '100',
@@ -116,9 +117,9 @@ nodeunitShim({
       },
       DeletionPolicy: 'Snapshot',
       UpdateReplacePolicy: 'Snapshot',
-    }, ResourcePart.CompleteDefinition));
+    }, ResourcePart.CompleteDefinition);
 
-    expect(stack).to(haveResource('AWS::RDS::DBSubnetGroup', {
+    expect(stack).toHaveResource('AWS::RDS::DBSubnetGroup', {
       DBSubnetGroupDescription: 'Subnet group for Instance database',
       SubnetIds: [
         {
@@ -128,13 +129,13 @@ nodeunitShim({
           Ref: 'VPCPrivateSubnet2SubnetCFCDAA7A',
         },
       ],
-    }));
+    });
 
-    expect(stack).to(haveResource('AWS::EC2::SecurityGroup', {
+    expect(stack).toHaveResource('AWS::EC2::SecurityGroup', {
       GroupDescription: 'Security group for Instance database',
-    }));
+    });
 
-    expect(stack).to(haveResource('AWS::IAM::Role', {
+    expect(stack).toHaveResource('AWS::IAM::Role', {
       AssumeRolePolicyDocument: {
         Statement: [
           {
@@ -161,9 +162,9 @@ nodeunitShim({
           ],
         },
       ],
-    }));
+    });
 
-    expect(stack).to(haveResource('AWS::SecretsManager::Secret', {
+    expect(stack).toHaveResource('AWS::SecretsManager::Secret', {
       Description: {
         'Fn::Join': [
           '',
@@ -181,9 +182,9 @@ nodeunitShim({
         PasswordLength: 30,
         SecretStringTemplate: '{"username":"syscdk"}',
       },
-    }));
+    });
 
-    expect(stack).to(haveResource('AWS::SecretsManager::SecretTargetAttachment', {
+    expect(stack).toHaveResource('AWS::SecretsManager::SecretTargetAttachment', {
       SecretId: {
         Ref: 'InstanceSecret478E0A47',
       },
@@ -191,14 +192,14 @@ nodeunitShim({
         Ref: 'InstanceC1063A87',
       },
       TargetType: 'AWS::RDS::DBInstance',
-    }));
+    });
 
-    expect(stack).to(countResources('Custom::LogRetention', 4));
+    expect(stack).toCountResources('Custom::LogRetention', 4);
 
-    test.done();
-  },
 
-  'instance with option and parameter group'(test: Test) {
+  });
+
+  test('instance with option and parameter group', () => {
     const optionGroup = new rds.OptionGroup(stack, 'OptionGroup', {
       engine: rds.DatabaseInstanceEngine.oracleSe2({ version: rds.OracleEngineVersion.VER_19_0_0_0_2020_04_R1 }),
       configurations: [
@@ -227,19 +228,19 @@ nodeunitShim({
       parameterGroup,
     });
 
-    expect(stack).to(haveResource('AWS::RDS::DBInstance', {
+    expect(stack).toHaveResource('AWS::RDS::DBInstance', {
       DBParameterGroupName: {
         Ref: 'ParameterGroup5E32DECB',
       },
       OptionGroupName: {
         Ref: 'OptionGroupACA43DC1',
       },
-    }));
+    });
 
-    test.done();
-  },
 
-  'can specify subnet type'(test: Test) {
+  });
+
+  test('can specify subnet type', () => {
     new rds.DatabaseInstance(stack, 'Instance', {
       engine: rds.DatabaseInstanceEngine.mysql({
         version: rds.MysqlEngineVersion.VER_8_0_19,
@@ -251,13 +252,13 @@ nodeunitShim({
       },
     });
 
-    expect(stack).to(haveResource('AWS::RDS::DBInstance', {
+    expect(stack).toHaveResource('AWS::RDS::DBInstance', {
       DBSubnetGroupName: {
         Ref: 'InstanceSubnetGroupF2CBA54F',
       },
       PubliclyAccessible: false,
-    }));
-    expect(stack).to(haveResource('AWS::RDS::DBSubnetGroup', {
+    });
+    expect(stack).toHaveResource('AWS::RDS::DBSubnetGroup', {
       DBSubnetGroupDescription: 'Subnet group for Instance database',
       SubnetIds: [
         {
@@ -267,13 +268,13 @@ nodeunitShim({
           Ref: 'VPCPrivateSubnet2SubnetCFCDAA7A',
         },
       ],
-    }));
+    });
 
-    test.done();
-  },
 
-  'DatabaseInstanceFromSnapshot': {
-    'create an instance from snapshot'(test: Test) {
+  });
+
+  describe('DatabaseInstanceFromSnapshot', () => {
+    test('create an instance from snapshot', () => {
       new rds.DatabaseInstanceFromSnapshot(stack, 'Instance', {
         snapshotIdentifier: 'my-snapshot',
         engine: rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_12_3 }),
@@ -281,14 +282,14 @@ nodeunitShim({
         vpc,
       });
 
-      expect(stack).to(haveResource('AWS::RDS::DBInstance', {
+      expect(stack).toHaveResource('AWS::RDS::DBInstance', {
         DBSnapshotIdentifier: 'my-snapshot',
-      }));
+      });
 
-      test.done();
-    },
 
-    'can generate a new snapshot password'(test: Test) {
+    });
+
+    test('can generate a new snapshot password', () => {
       new rds.DatabaseInstanceFromSnapshot(stack, 'Instance', {
         snapshotIdentifier: 'my-snapshot',
         engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_19 }),
@@ -298,13 +299,13 @@ nodeunitShim({
         }),
       });
 
-      expect(stack).to(haveResourceLike('AWS::RDS::DBInstance', {
+      expect(stack).toHaveResourceLike('AWS::RDS::DBInstance', {
         MasterUsername: ABSENT,
         MasterUserPassword: {
           'Fn::Join': ['', ['{{resolve:secretsmanager:', { Ref: 'InstanceSecret478E0A47' }, ':SecretString:password::}}']],
         },
-      }));
-      expect(stack).to(haveResource('AWS::SecretsManager::Secret', {
+      });
+      expect(stack).toHaveResource('AWS::SecretsManager::Secret', {
         Description: {
           'Fn::Join': ['', ['Generated by the CDK for stack: ', { Ref: 'AWS::StackName' }]],
         },
@@ -314,12 +315,12 @@ nodeunitShim({
           PasswordLength: 30,
           SecretStringTemplate: '{"username":"admin"}',
         },
-      }));
+      });
 
-      test.done();
-    },
 
-    'fromGeneratedSecret'(test: Test) {
+    });
+
+    test('fromGeneratedSecret', () => {
       new rds.DatabaseInstanceFromSnapshot(stack, 'Instance', {
         snapshotIdentifier: 'my-snapshot',
         engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_19 }),
@@ -329,29 +330,29 @@ nodeunitShim({
         }),
       });
 
-      expect(stack).to(haveResourceLike('AWS::RDS::DBInstance', {
+      expect(stack).toHaveResourceLike('AWS::RDS::DBInstance', {
         MasterUsername: ABSENT,
         MasterUserPassword: {
           // logical id of secret has a hash
           'Fn::Join': ['', ['{{resolve:secretsmanager:', { Ref: 'InstanceSecretB6DFA6BE8ee0a797cad8a68dbeb85f8698cdb5bb' }, ':SecretString:password::}}']],
         },
-      }));
+      });
 
-      test.done();
-    },
 
-    'throws if generating a new password without a username'(test: Test) {
-      test.throws(() => new rds.DatabaseInstanceFromSnapshot(stack, 'Instance', {
+    });
+
+    test('throws if generating a new password without a username', () => {
+      expect(() => new rds.DatabaseInstanceFromSnapshot(stack, 'Instance', {
         snapshotIdentifier: 'my-snapshot',
         engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_19 }),
         vpc,
         credentials: { generatePassword: true },
-      }), /`credentials` `username` must be specified when `generatePassword` is set to true/);
+      })).toThrow(/`credentials` `username` must be specified when `generatePassword` is set to true/);
 
-      test.done();
-    },
 
-    'can set a new snapshot password from an existing SecretValue'(test: Test) {
+    });
+
+    test('can set a new snapshot password from an existing SecretValue', () => {
       new rds.DatabaseInstanceFromSnapshot(stack, 'Instance', {
         snapshotIdentifier: 'my-snapshot',
         engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_19 }),
@@ -360,15 +361,15 @@ nodeunitShim({
       });
 
       // TODO - Expect this to be broken
-      expect(stack).to(haveResourceLike('AWS::RDS::DBInstance', {
+      expect(stack).toHaveResourceLike('AWS::RDS::DBInstance', {
         MasterUsername: ABSENT,
         MasterUserPassword: 'mysecretpassword',
-      }));
+      });
 
-      test.done();
-    },
 
-    'can set a new snapshot password from an existing Secret'(test: Test) {
+    });
+
+    test('can set a new snapshot password from an existing Secret', () => {
       const secret = new rds.DatabaseSecret(stack, 'DBSecret', {
         username: 'admin',
         encryptionKey: new kms.Key(stack, 'PasswordKey'),
@@ -380,18 +381,18 @@ nodeunitShim({
         credentials: rds.SnapshotCredentials.fromSecret(secret),
       });
 
-      expect(stack).to(haveResourceLike('AWS::RDS::DBInstance', {
+      expect(stack).toHaveResourceLike('AWS::RDS::DBInstance', {
         MasterUsername: ABSENT,
         MasterUserPassword: {
           'Fn::Join': ['', ['{{resolve:secretsmanager:', { Ref: 'DBSecretD58955BC' }, ':SecretString:password::}}']],
         },
-      }));
+      });
 
-      test.done();
-    },
-  },
 
-  'create a read replica in the same region - with the subnet group name'(test: Test) {
+    });
+  });
+
+  test('create a read replica in the same region - with the subnet group name', () => {
     const sourceInstance = new rds.DatabaseInstance(stack, 'Instance', {
       engine: rds.DatabaseInstanceEngine.MYSQL,
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
@@ -406,7 +407,7 @@ nodeunitShim({
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::RDS::DBInstance', {
+    expect(stack).toHaveResource('AWS::RDS::DBInstance', {
       SourceDBInstanceIdentifier: {
         'Fn::Join': ['', [
           'arn:',
@@ -422,12 +423,12 @@ nodeunitShim({
       DBSubnetGroupName: {
         Ref: 'ReadReplicaSubnetGroup680C605C',
       },
-    }));
+    });
 
-    test.done();
-  },
 
-  'on event'(test: Test) {
+  });
+
+  test('on event', () => {
     const instance = new rds.DatabaseInstance(stack, 'Instance', {
       engine: rds.DatabaseInstanceEngine.MYSQL,
       vpc,
@@ -442,7 +443,7 @@ nodeunitShim({
     instance.onEvent('InstanceEvent', { target: new targets.LambdaFunction(fn) });
 
     // THEN
-    expect(stack).to(haveResource('AWS::Events::Rule', {
+    expect(stack).toHaveResource('AWS::Events::Rule', {
       EventPattern: {
         source: [
           'aws.rds',
@@ -484,12 +485,12 @@ nodeunitShim({
           Id: 'Target0',
         },
       ],
-    }));
+    });
 
-    test.done();
-  },
 
-  'on event without target'(test: Test) {
+  });
+
+  test('on event without target', () => {
     const instance = new rds.DatabaseInstance(stack, 'Instance', {
       engine: rds.DatabaseInstanceEngine.MYSQL,
       vpc,
@@ -499,7 +500,7 @@ nodeunitShim({
     instance.onEvent('InstanceEvent');
 
     // THEN
-    expect(stack).to(haveResource('AWS::Events::Rule', {
+    expect(stack).toHaveResource('AWS::Events::Rule', {
       EventPattern: {
         source: [
           'aws.rds',
@@ -530,12 +531,12 @@ nodeunitShim({
           },
         ],
       },
-    }));
+    });
 
-    test.done();
-  },
 
-  'can use metricCPUUtilization'(test: Test) {
+  });
+
+  test('can use metricCPUUtilization', () => {
     // WHEN
     const instance = new rds.DatabaseInstance(stack, 'Instance', {
       engine: rds.DatabaseInstanceEngine.MYSQL,
@@ -543,7 +544,7 @@ nodeunitShim({
     });
 
     // THEN
-    test.deepEqual(stack.resolve(instance.metricCPUUtilization()), {
+    expect(stack.resolve(instance.metricCPUUtilization())).toEqual({
       dimensions: { DBInstanceIdentifier: { Ref: 'InstanceC1063A87' } },
       namespace: 'AWS/RDS',
       metricName: 'CPUUtilization',
@@ -551,21 +552,21 @@ nodeunitShim({
       statistic: 'Average',
     });
 
-    test.done();
-  },
 
-  'can resolve endpoint port and socket address'(test: Test) {
+  });
+
+  test('can resolve endpoint port and socket address', () => {
     // WHEN
     const instance = new rds.DatabaseInstance(stack, 'Instance', {
       engine: rds.DatabaseInstanceEngine.MYSQL,
       vpc,
     });
 
-    test.deepEqual(stack.resolve(instance.instanceEndpoint.port), {
+    expect(stack.resolve(instance.instanceEndpoint.port)).toEqual({
       'Fn::GetAtt': ['InstanceC1063A87', 'Endpoint.Port'],
     });
 
-    test.deepEqual(stack.resolve(instance.instanceEndpoint.socketAddress), {
+    expect(stack.resolve(instance.instanceEndpoint.socketAddress)).toEqual({
       'Fn::Join': [
         '',
         [
@@ -576,10 +577,10 @@ nodeunitShim({
       ],
     });
 
-    test.done();
-  },
 
-  'can deactivate backup'(test: Test) {
+  });
+
+  test('can deactivate backup', () => {
     // WHEN
     new rds.DatabaseInstance(stack, 'Instance', {
       engine: rds.DatabaseInstanceEngine.MYSQL,
@@ -588,14 +589,14 @@ nodeunitShim({
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::RDS::DBInstance', {
+    expect(stack).toHaveResource('AWS::RDS::DBInstance', {
       BackupRetentionPeriod: 0,
-    }));
+    });
 
-    test.done();
-  },
 
-  'imported instance with imported security group with allowAllOutbound set to false'(test: Test) {
+  });
+
+  test('imported instance with imported security group with allowAllOutbound set to false', () => {
     const instance = rds.DatabaseInstance.fromDatabaseInstanceAttributes(stack, 'Database', {
       instanceEndpointAddress: 'address',
       instanceIdentifier: 'identifier',
@@ -609,14 +610,14 @@ nodeunitShim({
     instance.connections.allowToAnyIpv4(ec2.Port.tcp(443));
 
     // THEN
-    expect(stack).to(haveResource('AWS::EC2::SecurityGroupEgress', {
+    expect(stack).toHaveResource('AWS::EC2::SecurityGroupEgress', {
       GroupId: 'sg-123456789',
-    }));
+    });
 
-    test.done();
-  },
 
-  'create an instance with imported monitoring role'(test: Test) {
+  });
+
+  test('create an instance with imported monitoring role', () => {
     const monitoringRole = new Role(stack, 'MonitoringRole', {
       assumedBy: new ServicePrincipal('monitoring.rds.amazonaws.com'),
       managedPolicies: [
@@ -633,17 +634,17 @@ nodeunitShim({
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::RDS::DBInstance', {
+    expect(stack).toHaveResource('AWS::RDS::DBInstance', {
       MonitoringInterval: 60,
       MonitoringRoleArn: {
         'Fn::GetAtt': ['MonitoringRole90457BF9', 'Arn'],
       },
-    }, ResourcePart.Properties));
+    }, ResourcePart.Properties);
 
-    test.done();
-  },
 
-  'create an instance with an existing security group'(test: Test) {
+  });
+
+  test('create an instance with an existing security group', () => {
     const securityGroup = ec2.SecurityGroup.fromSecurityGroupId(stack, 'SG', 'sg-123456789', {
       allowAllOutbound: false,
     });
@@ -657,11 +658,11 @@ nodeunitShim({
     instance.connections.allowDefaultPortFromAnyIpv4();
 
     // THEN
-    expect(stack).to(haveResource('AWS::RDS::DBInstance', {
+    expect(stack).toHaveResource('AWS::RDS::DBInstance', {
       VPCSecurityGroups: ['sg-123456789'],
-    }));
+    });
 
-    expect(stack).to(haveResource('AWS::EC2::SecurityGroupIngress', {
+    expect(stack).toHaveResource('AWS::EC2::SecurityGroupIngress', {
       FromPort: {
         'Fn::GetAtt': [
           'InstanceC1063A87',
@@ -675,12 +676,12 @@ nodeunitShim({
           'Endpoint.Port',
         ],
       },
-    }));
+    });
 
-    test.done();
-  },
 
-  'throws when trying to add rotation to an instance without secret'(test: Test) {
+  });
+
+  test('throws when trying to add rotation to an instance without secret', () => {
     const instance = new rds.DatabaseInstance(stack, 'Database', {
       engine: rds.DatabaseInstanceEngine.SQL_SERVER_EE,
       credentials: rds.Credentials.fromUsername('syscdk', { password: cdk.SecretValue.plainText('tooshort') }),
@@ -688,12 +689,12 @@ nodeunitShim({
     });
 
     // THEN
-    test.throws(() => instance.addRotationSingleUser(), /without secret/);
+    expect(() => instance.addRotationSingleUser()).toThrow(/without secret/);
 
-    test.done();
-  },
 
-  'throws when trying to add single user rotation multiple times'(test: Test) {
+  });
+
+  test('throws when trying to add single user rotation multiple times', () => {
     const instance = new rds.DatabaseInstance(stack, 'Database', {
       engine: rds.DatabaseInstanceEngine.SQL_SERVER_EE,
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
@@ -705,12 +706,12 @@ nodeunitShim({
     instance.addRotationSingleUser();
 
     // THEN
-    test.throws(() => instance.addRotationSingleUser(), /A single user rotation was already added to this instance/);
+    expect(() => instance.addRotationSingleUser()).toThrow(/A single user rotation was already added to this instance/);
 
-    test.done();
-  },
 
-  'throws when timezone is set for non-sqlserver database engine'(test: Test) {
+  });
+
+  test('throws when timezone is set for non-sqlserver database engine', () => {
     const tzSupportedEngines = [rds.DatabaseInstanceEngine.SQL_SERVER_EE, rds.DatabaseInstanceEngine.SQL_SERVER_EX,
       rds.DatabaseInstanceEngine.SQL_SERVER_SE, rds.DatabaseInstanceEngine.SQL_SERVER_WEB];
     const tzUnsupportedEngines = [rds.DatabaseInstanceEngine.MYSQL, rds.DatabaseInstanceEngine.POSTGRES,
@@ -718,25 +719,25 @@ nodeunitShim({
 
     // THEN
     tzSupportedEngines.forEach((engine) => {
-      test.ok(new rds.DatabaseInstance(stack, `${engine.engineType}-db`, {
+      expect(new rds.DatabaseInstance(stack, `${engine.engineType}-db`, {
         engine,
         timezone: 'Europe/Zurich',
         vpc,
-      }));
+      })).toBeDefined();
     });
 
     tzUnsupportedEngines.forEach((engine) => {
-      test.throws(() => new rds.DatabaseInstance(stack, `${engine.engineType}-db`, {
+      expect(() => new rds.DatabaseInstance(stack, `${engine.engineType}-db`, {
         engine,
         timezone: 'Europe/Zurich',
         vpc,
-      }), /timezone property can not be configured for/);
+      })).toThrow(/timezone property can not be configured for/);
     });
 
-    test.done();
-  },
 
-  'create an instance from snapshot with maximum allocated storage'(test: Test) {
+  });
+
+  test('create an instance from snapshot with maximum allocated storage', () => {
     // WHEN
     new rds.DatabaseInstanceFromSnapshot(stack, 'Instance', {
       snapshotIdentifier: 'my-snapshot',
@@ -746,15 +747,15 @@ nodeunitShim({
       maxAllocatedStorage: 200,
     });
 
-    expect(stack).to(haveResource('AWS::RDS::DBInstance', {
+    expect(stack).toHaveResource('AWS::RDS::DBInstance', {
       DBSnapshotIdentifier: 'my-snapshot',
       MaxAllocatedStorage: 200,
-    }));
+    });
 
-    test.done();
-  },
 
-  'create a DB instance with maximum allocated storage'(test: Test) {
+  });
+
+  test('create a DB instance with maximum allocated storage', () => {
     // WHEN
     new rds.DatabaseInstance(stack, 'Instance', {
       engine: rds.DatabaseInstanceEngine.MYSQL,
@@ -764,28 +765,28 @@ nodeunitShim({
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::RDS::DBInstance', {
+    expect(stack).toHaveResource('AWS::RDS::DBInstance', {
       BackupRetentionPeriod: 0,
       MaxAllocatedStorage: 250,
-    }));
+    });
 
-    test.done();
-  },
 
-  'iam authentication - off by default'(test: Test) {
+  });
+
+  test('iam authentication - off by default', () => {
     new rds.DatabaseInstance(stack, 'Instance', {
       engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_19 }),
       vpc,
     });
 
-    expect(stack).to(haveResourceLike('AWS::RDS::DBInstance', {
+    expect(stack).toHaveResourceLike('AWS::RDS::DBInstance', {
       EnableIAMDatabaseAuthentication: ABSENT,
-    }));
+    });
 
-    test.done();
-  },
 
-  'createGrant - creates IAM policy and enables IAM auth'(test: Test) {
+  });
+
+  test('createGrant - creates IAM policy and enables IAM auth', () => {
     const instance = new rds.DatabaseInstance(stack, 'Instance', {
       engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_19 }),
       vpc,
@@ -795,10 +796,10 @@ nodeunitShim({
     });
     instance.grantConnect(role);
 
-    expect(stack).to(haveResourceLike('AWS::RDS::DBInstance', {
+    expect(stack).toHaveResourceLike('AWS::RDS::DBInstance', {
       EnableIAMDatabaseAuthentication: true,
-    }));
-    expect(stack).to(haveResource('AWS::IAM::Policy', {
+    });
+    expect(stack).toHaveResource('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [{
           Effect: 'Allow',
@@ -809,12 +810,12 @@ nodeunitShim({
         }],
         Version: '2012-10-17',
       },
-    }));
+    });
 
-    test.done();
-  },
 
-  'createGrant - throws if IAM auth disabled'(test: Test) {
+  });
+
+  test('createGrant - throws if IAM auth disabled', () => {
     const instance = new rds.DatabaseInstance(stack, 'Instance', {
       engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_19 }),
       vpc,
@@ -824,12 +825,12 @@ nodeunitShim({
       assumedBy: new AccountPrincipal(stack.account),
     });
 
-    test.throws(() => { instance.grantConnect(role); }, /Cannot grant connect when IAM authentication is disabled/);
+    expect(() => { instance.grantConnect(role); }).toThrow(/Cannot grant connect when IAM authentication is disabled/);
 
-    test.done();
-  },
 
-  'domain - sets domain property'(test: Test) {
+  });
+
+  test('domain - sets domain property', () => {
     const domain = 'd-90670a8d36';
 
     // WHEN
@@ -840,14 +841,14 @@ nodeunitShim({
     });
 
     // THEN
-    expect(stack).to(haveResourceLike('AWS::RDS::DBInstance', {
+    expect(stack).toHaveResourceLike('AWS::RDS::DBInstance', {
       Domain: domain,
-    }));
+    });
 
-    test.done();
-  },
 
-  'domain - uses role if provided'(test: Test) {
+  });
+
+  test('domain - uses role if provided', () => {
     const domain = 'd-90670a8d36';
 
     // WHEN
@@ -860,15 +861,15 @@ nodeunitShim({
     });
 
     // THEN
-    expect(stack).to(haveResourceLike('AWS::RDS::DBInstance', {
+    expect(stack).toHaveResourceLike('AWS::RDS::DBInstance', {
       Domain: domain,
       DomainIAMRoleName: stack.resolve(role.roleName),
-    }));
+    });
 
-    test.done();
-  },
 
-  'domain - creates role if not provided'(test: Test) {
+  });
+
+  test('domain - creates role if not provided', () => {
     const domain = 'd-90670a8d36';
 
     // WHEN
@@ -879,12 +880,12 @@ nodeunitShim({
     });
 
     // THEN
-    expect(stack).to(haveResourceLike('AWS::RDS::DBInstance', {
+    expect(stack).toHaveResourceLike('AWS::RDS::DBInstance', {
       Domain: domain,
       DomainIAMRoleName: anything(),
-    }));
+    });
 
-    expect(stack).to(haveResource('AWS::IAM::Role', {
+    expect(stack).toHaveResource('AWS::IAM::Role', {
       AssumeRolePolicyDocument: {
         Statement: [
           {
@@ -911,12 +912,12 @@ nodeunitShim({
           ],
         },
       ],
-    }));
+    });
 
-    test.done();
-  },
 
-  'throws when domain is set for mariadb database engine'(test: Test) {
+  });
+
+  test('throws when domain is set for mariadb database engine', () => {
     const domainSupportedEngines = [rds.DatabaseInstanceEngine.SQL_SERVER_EE, rds.DatabaseInstanceEngine.SQL_SERVER_EX,
       rds.DatabaseInstanceEngine.SQL_SERVER_SE, rds.DatabaseInstanceEngine.SQL_SERVER_WEB, rds.DatabaseInstanceEngine.MYSQL,
       rds.DatabaseInstanceEngine.POSTGRES, rds.DatabaseInstanceEngine.ORACLE_EE];
@@ -924,28 +925,28 @@ nodeunitShim({
 
     // THEN
     domainSupportedEngines.forEach((engine) => {
-      test.ok(new rds.DatabaseInstance(stack, `${engine.engineType}-db`, {
+      expect(() => new rds.DatabaseInstance(stack, `${engine.engineType}-db`, {
         engine,
         domain: 'd-90670a8d36',
         vpc,
-      }));
+      })).not.toThrow();
     });
 
     domainUnsupportedEngines.forEach((engine) => {
       const expectedError = new RegExp(`domain property cannot be configured for ${engine.engineType}`);
 
-      test.throws(() => new rds.DatabaseInstance(stack, `${engine.engineType}-db`, {
+      expect(() => new rds.DatabaseInstance(stack, `${engine.engineType}-db`, {
         engine,
         domain: 'd-90670a8d36',
         vpc,
-      }), expectedError);
+      })).toThrow(expectedError);
     });
 
-    test.done();
-  },
 
-  'performance insights': {
-    'instance with all performance insights properties'(test: Test) {
+  });
+
+  describe('performance insights', () => {
+    test('instance with all performance insights properties', () => {
       new rds.DatabaseInstance(stack, 'Instance', {
         engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_19 }),
         vpc,
@@ -954,72 +955,72 @@ nodeunitShim({
         performanceInsightEncryptionKey: new kms.Key(stack, 'Key'),
       });
 
-      expect(stack).to(haveResource('AWS::RDS::DBInstance', {
+      expect(stack).toHaveResource('AWS::RDS::DBInstance', {
         EnablePerformanceInsights: true,
         PerformanceInsightsRetentionPeriod: 731,
         PerformanceInsightsKMSKeyId: { 'Fn::GetAtt': ['Key961B73FD', 'Arn'] },
-      }));
+      });
 
-      test.done();
-    },
 
-    'setting performance insights fields enables performance insights'(test: Test) {
+    });
+
+    test('setting performance insights fields enables performance insights', () => {
       new rds.DatabaseInstance(stack, 'Instance', {
         engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_19 }),
         vpc,
         performanceInsightRetention: rds.PerformanceInsightRetention.LONG_TERM,
       });
 
-      expect(stack).to(haveResource('AWS::RDS::DBInstance', {
+      expect(stack).toHaveResource('AWS::RDS::DBInstance', {
         EnablePerformanceInsights: true,
         PerformanceInsightsRetentionPeriod: 731,
-      }));
+      });
 
-      test.done();
-    },
 
-    'throws if performance insights fields are set but performance insights is disabled'(test: Test) {
-      test.throws(() => {
+    });
+
+    test('throws if performance insights fields are set but performance insights is disabled', () => {
+      expect(() => {
         new rds.DatabaseInstance(stack, 'Instance', {
           engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_19 }),
           vpc,
           enablePerformanceInsights: false,
           performanceInsightRetention: rds.PerformanceInsightRetention.DEFAULT,
         });
-      }, /`enablePerformanceInsights` disabled, but `performanceInsightRetention` or `performanceInsightEncryptionKey` was set/);
+      }).toThrow(/`enablePerformanceInsights` disabled, but `performanceInsightRetention` or `performanceInsightEncryptionKey` was set/);
 
-      test.done();
-    },
-  },
 
-  'reuse an existing subnet group'(test: Test) {
+    });
+  });
+
+  test('reuse an existing subnet group', () => {
     new rds.DatabaseInstance(stack, 'Database', {
       engine: rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_12_3 }),
       vpc,
       subnetGroup: rds.SubnetGroup.fromSubnetGroupName(stack, 'SubnetGroup', 'my-subnet-group'),
     });
 
-    expect(stack).to(haveResourceLike('AWS::RDS::DBInstance', {
+    expect(stack).toHaveResourceLike('AWS::RDS::DBInstance', {
       DBSubnetGroupName: 'my-subnet-group',
-    }));
-    expect(stack).to(countResources('AWS::RDS::DBSubnetGroup', 0));
+    });
+    expect(stack).toCountResources('AWS::RDS::DBSubnetGroup', 0);
 
-    test.done();
-  },
 
-  'defaultChild returns the DB Instance'(test: Test) {
+  });
+
+  test('defaultChild returns the DB Instance', () => {
     const instance = new rds.DatabaseInstance(stack, 'Database', {
       engine: rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_12_3 }),
       vpc,
     });
 
     // THEN
-    test.ok(instance.node.defaultChild instanceof rds.CfnDBInstance);
+    expect(instance.node.defaultChild instanceof rds.CfnDBInstance).toBeTruthy();
 
-    test.done();
-  },
 
-  "PostgreSQL database instance uses a different default master username than 'admin', which is a reserved word"(test: Test) {
+  });
+
+  test("PostgreSQL database instance uses a different default master username than 'admin', which is a reserved word", () => {
     new rds.DatabaseInstance(stack, 'Instance', {
       vpc,
       engine: rds.DatabaseInstanceEngine.postgres({
@@ -1028,17 +1029,19 @@ nodeunitShim({
     });
 
     // THEN
-    expect(stack).to(haveResourceLike('AWS::SecretsManager::Secret', {
+    expect(stack).toHaveResourceLike('AWS::SecretsManager::Secret', {
       GenerateSecretString: {
         SecretStringTemplate: '{"username":"postgres"}',
       },
-    }));
+    });
 
-    test.done();
-  },
 
-  'S3 Import/Export': {
-    'instance with s3 import and export buckets'(test: Test) {
+  });
+
+  describe('S3 Import/Export', () => {
+    testFutureBehavior('instance with s3 import and export buckets', { [cxapi.S3_GRANT_WRITE_WITHOUT_ACL]: true }, cdk.App, (app) => {
+      stack = new cdk.Stack(app);
+      vpc = new ec2.Vpc(stack, 'VPC');
       new rds.DatabaseInstance(stack, 'DB', {
         engine: rds.DatabaseInstanceEngine.sqlServerSe({ version: rds.SqlServerEngineVersion.VER_14_00_3192_2_V1 }),
         vpc,
@@ -1046,7 +1049,7 @@ nodeunitShim({
         s3ExportBuckets: [new s3.Bucket(stack, 'S3Export')],
       });
 
-      expect(stack).to(haveResource('AWS::RDS::DBInstance', {
+      expect(stack).toHaveResource('AWS::RDS::DBInstance', {
         AssociatedRoles: [
           {
             FeatureName: 'S3_INTEGRATION',
@@ -1054,10 +1057,10 @@ nodeunitShim({
           },
         ],
         OptionGroupName: { Ref: 'DBInstanceOptionGroup46C68006' },
-      }));
+      });
 
       // Can read from import bucket, and read/write from export bucket
-      expect(stack).to(haveResource('AWS::IAM::Policy', {
+      expect(stack).toHaveResource('AWS::IAM::Policy', {
         PolicyDocument: {
           Statement: [{
             Action: [
@@ -1077,7 +1080,7 @@ nodeunitShim({
               's3:GetBucket*',
               's3:List*',
               's3:DeleteObject*',
-              's3:PutObject*',
+              's3:PutObject',
               's3:Abort*',
             ],
             Effect: 'Allow',
@@ -1088,58 +1091,58 @@ nodeunitShim({
           }],
           Version: '2012-10-17',
         },
-      }));
+      });
 
-      test.done();
-    },
 
-    'throws if using s3 import on unsupported engine'(test: Test) {
+    });
+
+    test('throws if using s3 import on unsupported engine', () => {
       const s3ImportRole = new Role(stack, 'S3ImportRole', {
         assumedBy: new ServicePrincipal('rds.amazonaws.com'),
       });
 
-      test.throws(() => {
+      expect(() => {
         new rds.DatabaseInstance(stack, 'DBWithImportBucket', {
           engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_19 }),
           vpc,
           s3ImportBuckets: [new s3.Bucket(stack, 'S3Import')],
         });
-      }, /Engine 'mysql-8.0.19' does not support S3 import/);
-      test.throws(() => {
+      }).toThrow(/Engine 'mysql-8.0.19' does not support S3 import/);
+      expect(() => {
         new rds.DatabaseInstance(stack, 'DBWithImportRole', {
           engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_19 }),
           vpc,
           s3ImportRole,
         });
-      }, /Engine 'mysql-8.0.19' does not support S3 import/);
+      }).toThrow(/Engine 'mysql-8.0.19' does not support S3 import/);
 
-      test.done();
-    },
 
-    'throws if using s3 export on unsupported engine'(test: Test) {
+    });
+
+    test('throws if using s3 export on unsupported engine', () => {
       const s3ExportRole = new Role(stack, 'S3ExportRole', {
         assumedBy: new ServicePrincipal('rds.amazonaws.com'),
       });
 
-      test.throws(() => {
+      expect(() => {
         new rds.DatabaseInstance(stack, 'DBWithExportBucket', {
           engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_19 }),
           vpc,
           s3ExportBuckets: [new s3.Bucket(stack, 'S3Export')],
         });
-      }, /Engine 'mysql-8.0.19' does not support S3 export/);
-      test.throws(() => {
+      }).toThrow(/Engine 'mysql-8.0.19' does not support S3 export/);
+      expect(() => {
         new rds.DatabaseInstance(stack, 'DBWithExportRole', {
           engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_19 }),
           vpc,
           s3ExportRole: s3ExportRole,
         });
-      }, /Engine 'mysql-8.0.19' does not support S3 export/);
+      }).toThrow(/Engine 'mysql-8.0.19' does not support S3 export/);
 
-      test.done();
-    },
 
-    'throws if provided two different roles for import/export'(test: Test) {
+    });
+
+    test('throws if provided two different roles for import/export', () => {
       const s3ImportRole = new Role(stack, 'S3ImportRole', {
         assumedBy: new ServicePrincipal('rds.amazonaws.com'),
       });
@@ -1147,20 +1150,20 @@ nodeunitShim({
         assumedBy: new ServicePrincipal('rds.amazonaws.com'),
       });
 
-      test.throws(() => {
+      expect(() => {
         new rds.DatabaseInstance(stack, 'DBWithExportBucket', {
           engine: rds.DatabaseInstanceEngine.sqlServerEe({ version: rds.SqlServerEngineVersion.VER_14_00_3192_2_V1 }),
           vpc,
           s3ImportRole,
           s3ExportRole,
         });
-      }, /S3 import and export roles must be the same/);
+      }).toThrow(/S3 import and export roles must be the same/);
 
-      test.done();
-    },
-  },
 
-  'fromGeneratedSecret'(test: Test) {
+    });
+  });
+
+  test('fromGeneratedSecret', () => {
     // WHEN
     new rds.DatabaseInstance(stack, 'Database', {
       engine: rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_12_3 }),
@@ -1169,7 +1172,7 @@ nodeunitShim({
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::RDS::DBInstance', {
+    expect(stack).toHaveResource('AWS::RDS::DBInstance', {
       MasterUsername: 'postgres', // username is a string
       MasterUserPassword: {
         'Fn::Join': [
@@ -1183,12 +1186,12 @@ nodeunitShim({
           ],
         ],
       },
-    }));
+    });
 
-    test.done();
-  },
 
-  'fromPassword'(test: Test) {
+  });
+
+  test('fromPassword', () => {
     // WHEN
     new rds.DatabaseInstance(stack, 'Database', {
       engine: rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_12_3 }),
@@ -1197,15 +1200,15 @@ nodeunitShim({
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::RDS::DBInstance', {
+    expect(stack).toHaveResource('AWS::RDS::DBInstance', {
       MasterUsername: 'postgres', // username is a string
       MasterUserPassword: '{{resolve:ssm-secure:/dbPassword:1}}', // reference to SSM
-    }));
+    });
 
-    test.done();
-  },
 
-  'can set publiclyAccessible to false with public subnets'(test: Test) {
+  });
+
+  test('can set publiclyAccessible to false with public subnets', () => {
     new rds.DatabaseInstance(stack, 'Instance', {
       engine: rds.DatabaseInstanceEngine.mysql({
         version: rds.MysqlEngineVersion.VER_8_0_19,
@@ -1217,14 +1220,14 @@ nodeunitShim({
       publiclyAccessible: false,
     });
 
-    expect(stack).to(haveResource('AWS::RDS::DBInstance', {
+    expect(stack).toHaveResource('AWS::RDS::DBInstance', {
       PubliclyAccessible: false,
-    }));
+    });
 
-    test.done();
-  },
 
-  'can set publiclyAccessible to true with private subnets'(test: Test) {
+  });
+
+  test('can set publiclyAccessible to true with private subnets', () => {
     new rds.DatabaseInstance(stack, 'Instance', {
       engine: rds.DatabaseInstanceEngine.mysql({
         version: rds.MysqlEngineVersion.VER_8_0_19,
@@ -1236,12 +1239,10 @@ nodeunitShim({
       publiclyAccessible: true,
     });
 
-    expect(stack).to(haveResource('AWS::RDS::DBInstance', {
+    expect(stack).toHaveResource('AWS::RDS::DBInstance', {
       PubliclyAccessible: true,
-    }));
-
-    test.done();
-  },
+    });
+  });
 });
 
 test.each([
@@ -1249,6 +1250,10 @@ test.each([
   [cdk.RemovalPolicy.SNAPSHOT, 'Snapshot', ABSENT],
   [cdk.RemovalPolicy.DESTROY, 'Delete', ABSENT],
 ])('if Instance RemovalPolicy is \'%s\', the instance has DeletionPolicy \'%s\' and the DBSubnetGroup has \'%s\'', (instanceRemovalPolicy, instanceValue, subnetValue) => {
+  // GIVEN
+  stack = new cdk.Stack();
+  vpc = new ec2.Vpc(stack, 'VPC');
+
   // WHEN
   new rds.DatabaseInstance(stack, 'Instance', {
     engine: rds.DatabaseInstanceEngine.mysql({
@@ -1260,13 +1265,13 @@ test.each([
   });
 
   // THEN
-  expect(stack).to(haveResourceLike('AWS::RDS::DBInstance', {
+  expect(stack).toHaveResourceLike('AWS::RDS::DBInstance', {
     DeletionPolicy: instanceValue,
     UpdateReplacePolicy: instanceValue,
-  }, ResourcePart.CompleteDefinition));
+  }, ResourcePart.CompleteDefinition);
 
-  expect(stack).to(haveResourceLike('AWS::RDS::DBSubnetGroup', {
+  expect(stack).toHaveResourceLike('AWS::RDS::DBSubnetGroup', {
     DeletionPolicy: subnetValue,
     UpdateReplacePolicy: subnetValue,
-  }, ResourcePart.CompleteDefinition));
+  }, ResourcePart.CompleteDefinition);
 });

@@ -381,7 +381,7 @@ export class FilterGroup {
    * Create a new FilterGroup with an added condition:
    * the push that is the source of the event must affect a file that matches the given pattern.
    * Note that you can only use this method if this Group contains only the `PUSH` event action,
-   * and only for GitHub and GitHubEnterprise sources.
+   * and only for GitHub, Bitbucket and GitHubEnterprise sources.
    *
    * @param pattern a regular expression
    */
@@ -393,7 +393,7 @@ export class FilterGroup {
    * Create a new FilterGroup with an added condition:
    * the push that is the source of the event must not affect a file that matches the given pattern.
    * Note that you can only use this method if this Group contains only the `PUSH` event action,
-   * and only for GitHub and GitHubEnterprise sources.
+   * and only for GitHub, Bitbucket and GitHubEnterprise sources.
    *
    * @param pattern a regular expression
    */
@@ -788,11 +788,6 @@ class BitBucketSource extends ThirdPartyGitSource {
       throw new Error('BitBucket sources do not support the PULL_REQUEST_REOPENED webhook event action');
     }
 
-    // they also don't support file path conditions
-    if (this.anyWebhookFilterContainsFilePathConditions()) {
-      throw new Error('BitBucket sources do not support file path conditions for webhook filters');
-    }
-
     const superConfig = super.bind(_scope, _project);
     return {
       sourceProperty: {
@@ -807,12 +802,6 @@ class BitBucketSource extends ThirdPartyGitSource {
   private anyWebhookFilterContainsPrReopenedEventAction() {
     return this.webhookFilters.findIndex(fg => {
       return fg._actions.findIndex(a => a === EventAction.PULL_REQUEST_REOPENED) !== -1;
-    }) !== -1;
-  }
-
-  private anyWebhookFilterContainsFilePathConditions() {
-    return this.webhookFilters.findIndex(fg => {
-      return fg._filters.findIndex(f => f.type === WebhookFilterTypes.FILE_PATH) !== -1;
     }) !== -1;
   }
 }

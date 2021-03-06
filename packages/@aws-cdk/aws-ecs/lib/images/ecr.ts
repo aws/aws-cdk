@@ -22,10 +22,14 @@ export class EcrImage extends ContainerImage {
   /**
    * Constructs a new instance of the EcrImage class.
    */
-  constructor(private readonly repository: ecr.IRepository, private readonly tag: string) {
+  constructor(private readonly repository: ecr.IRepository, private readonly tagOrDigest: string) {
     super();
 
-    this.imageName = this.repository.repositoryUriForTag(this.tag);
+    if (tagOrDigest?.startsWith('sha256:')) {
+      this.imageName = this.repository.repositoryUriForDigest(this.tagOrDigest);
+    } else {
+      this.imageName = this.repository.repositoryUriForTag(this.tagOrDigest);
+    }
   }
 
   public bind(_scope: CoreConstruct, containerDefinition: ContainerDefinition): ContainerImageConfig {

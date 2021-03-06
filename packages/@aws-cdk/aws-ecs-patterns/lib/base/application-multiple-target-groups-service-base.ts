@@ -47,7 +47,9 @@ export interface ApplicationMultipleTargetGroupsServiceBaseProps {
   /**
    * The desired number of instantiations of the task definition to keep running on the service.
    *
-   * @default 1
+   * @default - If the feature flag, ECS_REMOVE_DEFAULT_DESIRED_COUNT is false, the default is 1;
+   * if true, the default is 1 for all new services and uses the existing services desired count
+   * when updating an existing service.
    */
   readonly desiredCount?: number;
 
@@ -329,11 +331,18 @@ export interface ApplicationListenerProps {
  * The base class for ApplicationMultipleTargetGroupsEc2Service and ApplicationMultipleTargetGroupsFargateService classes.
  */
 export abstract class ApplicationMultipleTargetGroupsServiceBase extends CoreConstruct {
+  /**
+   * The desired number of instantiations of the task definition to keep running on the service.
+   * @deprecated - Use `internalDesiredCount` instead.
+   */
+  public readonly desiredCount: number;
 
   /**
    * The desired number of instantiations of the task definition to keep running on the service.
+   * The default is 1 for all new services and uses the existing services desired count
+   * when updating an existing service, if one is not provided.
    */
-  public readonly desiredCount: number;
+  public readonly internalDesiredCount?: number;
 
   /**
    * The default Application Load Balancer for the service (first added load balancer).
@@ -365,7 +374,10 @@ export abstract class ApplicationMultipleTargetGroupsServiceBase extends CoreCon
     this.validateInput(props);
 
     this.cluster = props.cluster || this.getDefaultCluster(this, props.vpc);
+
     this.desiredCount = props.desiredCount || 1;
+    this.internalDesiredCount = props.desiredCount;
+
     if (props.taskImageOptions) {
       this.logDriver = this.createLogDriver(props.taskImageOptions.enableLogging, props.taskImageOptions.logDriver);
     }

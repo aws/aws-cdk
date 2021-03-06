@@ -746,6 +746,14 @@ describe('CDK Include', () => {
     }).toThrow(/Mapping with name 'NonExistentMapping' was not found in the template/);
   });
 
+  test('can ingest a template that uses Fn::FindInMap with the first argument being a dynamic reference', () => {
+    includeTestTemplate(stack, 'find-in-map-with-dynamic-mapping.json');
+
+    expect(stack).toMatchTemplate(
+      loadTestFileToJsObject('find-in-map-with-dynamic-mapping.json'),
+    );
+  });
+
   test('handles renaming Mapping references', () => {
     const cfnTemplate = includeTestTemplate(stack, 'only-mapping-and-bucket.json');
     const someMapping = cfnTemplate.getMapping('SomeMapping');

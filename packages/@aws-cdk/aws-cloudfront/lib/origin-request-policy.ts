@@ -121,7 +121,7 @@ export class OriginRequestPolicy extends Resource implements IOriginRequestPolic
 }
 
 /**
- * Ddetermines whether any cookies in viewer requests (and if so, which cookies)
+ * Determines whether any cookies in viewer requests (and if so, which cookies)
  * are included in requests that CloudFront sends to the origin.
  */
 export class OriginRequestCookieBehavior {
@@ -183,6 +183,12 @@ export class OriginRequestHeaderBehavior {
   public static allowList(...headers: string[]) {
     if (headers.length === 0) {
       throw new Error('At least one header to allow must be provided');
+    }
+    if (headers.length > 10) {
+      throw new Error(`Maximum allowed headers in Origin Request Policy is 10; got ${headers.length}.`);
+    }
+    if (/Authorization/i.test(headers.join('|')) || /Accept-Encoding/i.test(headers.join('|'))) {
+      throw new Error('you cannot pass `Authorization` or `Accept-Encoding` as header values; use a CachePolicy to forward these headers instead');
     }
     return new OriginRequestHeaderBehavior('whitelist', headers);
   }

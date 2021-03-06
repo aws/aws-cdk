@@ -31,29 +31,16 @@ test('custom resource exists', () => {
         ],
       },
       Create: {
-        action: 'describeSecurityGroups',
-        service: 'EC2',
-        parameters: {
-          Filters: [
+        'Fn::Join': [
+          '',
+          [
+            '{"service":"EC2","action":"describeSecurityGroups","parameters":{"Filters":[{"Name":"group-name","Values":["GlobalAccelerator"]},{"Name":"vpc-id","Values":["',
             {
-              Name: 'group-name',
-              Values: [
-                'GlobalAccelerator',
-              ],
+              Ref: 'VPCB9E5F0B4',
             },
-            {
-              Name: 'vpc-id',
-              Values: [
-                {
-                  Ref: 'VPCB9E5F0B4',
-                },
-              ],
-            },
+            '"]}]},"physicalResourceId":{"responsePath":"SecurityGroups.0.GroupId"}}',
           ],
-        },
-        physicalResourceId: {
-          responsePath: 'SecurityGroups.0.GroupId',
-        },
+        ],
       },
       InstallLatestAwsSdk: true,
     },

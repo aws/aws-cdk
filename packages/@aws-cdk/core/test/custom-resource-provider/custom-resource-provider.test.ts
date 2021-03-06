@@ -14,7 +14,7 @@ nodeunitShim({
     // WHEN
     CustomResourceProvider.getOrCreate(stack, 'Custom:MyResourceType', {
       codeDirectory: TEST_HANDLER,
-      runtime: CustomResourceProviderRuntime.NODEJS_12,
+      runtime: CustomResourceProviderRuntime.NODEJS_12_X,
     });
 
     // THEN
@@ -149,7 +149,7 @@ nodeunitShim({
     // WHEN
     CustomResourceProvider.getOrCreate(stack, 'Custom:MyResourceType', {
       codeDirectory: TEST_HANDLER,
-      runtime: CustomResourceProviderRuntime.NODEJS_12,
+      runtime: CustomResourceProviderRuntime.NODEJS_12_X,
     });
 
     // THEN -- no exception
@@ -167,7 +167,7 @@ nodeunitShim({
     // WHEN
     CustomResourceProvider.getOrCreate(stack, 'Custom:MyResourceType', {
       codeDirectory: TEST_HANDLER,
-      runtime: CustomResourceProviderRuntime.NODEJS_12,
+      runtime: CustomResourceProviderRuntime.NODEJS_12_X,
       policyStatements: [
         { statement1: 123 },
         { statement2: { foo: 111 } },
@@ -187,16 +187,17 @@ nodeunitShim({
     test.done();
   },
 
-  'memorySize and timeout'(test: Test) {
+  'memorySize, timeout and description'(test: Test) {
     // GIVEN
     const stack = new Stack();
 
     // WHEN
     CustomResourceProvider.getOrCreate(stack, 'Custom:MyResourceType', {
       codeDirectory: TEST_HANDLER,
-      runtime: CustomResourceProviderRuntime.NODEJS_12,
+      runtime: CustomResourceProviderRuntime.NODEJS_12_X,
       memorySize: Size.gibibytes(2),
       timeout: Duration.minutes(5),
+      description: 'veni vidi vici',
     });
 
     // THEN
@@ -204,6 +205,7 @@ nodeunitShim({
     const lambda = template.Resources.CustomMyResourceTypeCustomResourceProviderHandler29FBDD2A;
     test.deepEqual(lambda.Properties.MemorySize, 2048);
     test.deepEqual(lambda.Properties.Timeout, 300);
+    test.deepEqual(lambda.Properties.Description, 'veni vidi vici');
     test.done();
   },
 
@@ -214,7 +216,7 @@ nodeunitShim({
     // WHEN
     CustomResourceProvider.getOrCreate(stack, 'Custom:MyResourceType', {
       codeDirectory: TEST_HANDLER,
-      runtime: CustomResourceProviderRuntime.NODEJS_12,
+      runtime: CustomResourceProviderRuntime.NODEJS_12_X,
       environment: {
         B: 'b',
         A: 'a',
@@ -240,7 +242,7 @@ nodeunitShim({
     // WHEN
     const cr = CustomResourceProvider.getOrCreateProvider(stack, 'Custom:MyResourceType', {
       codeDirectory: TEST_HANDLER,
-      runtime: CustomResourceProviderRuntime.NODEJS_12,
+      runtime: CustomResourceProviderRuntime.NODEJS_12_X,
     });
 
     // THEN

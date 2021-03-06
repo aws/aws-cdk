@@ -4,6 +4,15 @@ import { IUserPool } from '../user-pool';
  * An attribute available from a third party identity provider.
  */
 export class ProviderAttribute {
+  /** The email attribute provided by Apple */
+  public static readonly APPLE_EMAIL = new ProviderAttribute('email');
+  /** The name attribute provided by Apple */
+  public static readonly APPLE_NAME = new ProviderAttribute('name');
+  /** The first name attribute provided by Apple */
+  public static readonly APPLE_FIRST_NAME = new ProviderAttribute('firstName');
+  /** The last name attribute provided by Apple */
+  public static readonly APPLE_LAST_NAME = new ProviderAttribute('lastName');
+
   /** The user id attribute provided by Amazon */
   public static readonly AMAZON_USER_ID = new ProviderAttribute('user_id');
   /** The email attribute provided by Amazon */
