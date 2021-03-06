@@ -2,6 +2,7 @@ import { arrayWith, ResourcePart } from '@aws-cdk/assert';
 import '@aws-cdk/assert/jest';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
 import { testFutureBehavior, testLegacyBehavior } from 'cdk-build-tools/lib/feature-flag';
 import * as kms from '../lib';
 
@@ -40,7 +41,7 @@ const LEGACY_ADMIN_ACTIONS: string[] = [
   'kms:UntagResource',
 ];
 
-const flags = { '@aws-cdk/aws-kms:defaultKeyPolicies': true };
+const flags = { [cxapi.KMS_DEFAULT_KEY_POLICIES]: true };
 
 testFutureBehavior('default key', flags, cdk.App, (app) => {
   const stack = new cdk.Stack(app);
