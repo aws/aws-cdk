@@ -121,7 +121,7 @@ test('throws at synthesis without subdomains', () => {
   expect(() => app.synth()).toThrow(/The domain doesn't contain any subdomains/);
 });
 
-test('auto subdomain all branches', ()=>{
+test('auto subdomain all branches', () => {
   // GIVEN
   const stack = new Stack();
   const app = new amplify.App(stack, 'App', {
@@ -131,20 +131,21 @@ test('auto subdomain all branches', ()=>{
       oauthToken: SecretValue.plainText('secret'),
     }),
   });
+  const prodBranch = app.addBranch('master');
 
   // WHEN
-  app.addDomain('amazon.com', {
+  const domain = app.addDomain('amazon.com', {
     enableAutoSubdomain: true,
   });
+  domain.mapRoot(prodBranch);
 
   // THEN
   expect(stack).toHaveResource('AWS::Amplify::Domain', {
     EnableAutoSubDomain: true,
-    AutoSubDomainCreationPatterns: ['*', 'pr*'],
   });
 });
 
-test('auto subdomain some branches', ()=>{
+test('auto subdomain some branches', () => {
   // GIVEN
   const stack = new Stack();
   const app = new amplify.App(stack, 'App', {
@@ -154,12 +155,14 @@ test('auto subdomain some branches', ()=>{
       oauthToken: SecretValue.plainText('secret'),
     }),
   });
+  const prodBranch = app.addBranch('master');
 
   // WHEN
-  app.addDomain('amazon.com', {
+  const domain = app.addDomain('amazon.com', {
     enableAutoSubdomain: true,
     autoSubdomainCreationPatterns: ['features/**'],
   });
+  domain.mapRoot(prodBranch);
 
   // THEN
   expect(stack).toHaveResource('AWS::Amplify::Domain', {
