@@ -60,6 +60,7 @@ export class CodeBuildProject implements events.IRuleTarget {
     return {
       id: '',
       arn: this.project.projectArn,
+      deadLetterConfig: this.props.deadLetterQueue ? { arn: this.props.deadLetterQueue?.queueArn } : undefined,
       role: this.props.eventRole || singletonEventRole(this.project, [
         new iam.PolicyStatement({
           actions: ['codebuild:StartBuild'],

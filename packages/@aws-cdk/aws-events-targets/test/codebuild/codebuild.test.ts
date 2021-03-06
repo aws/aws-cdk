@@ -148,6 +148,14 @@ describe('CodeBuild event target', () => {
         {
           Arn: projectArn,
           Id: 'Target0',
+          DeadLetterConfig: {
+            Arn: {
+              'Fn::GetAtt': [
+                'Queue4A7E3555',
+                'Arn',
+              ],
+            },
+          },
           Input: JSON.stringify(eventInput),
           RoleArn: {
             'Fn::GetAtt': ['MyProjectEventsRole5B7D93F5', 'Arn'],
