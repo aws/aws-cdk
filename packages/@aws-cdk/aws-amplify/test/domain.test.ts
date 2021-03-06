@@ -135,7 +135,7 @@ test('auto subdomain all branches', ()=>{
   // WHEN
   app.addDomain('amazon.com', {
     enableAutoSubdomain: true,
-  })
+  });
 
   // THEN
   expect(stack).toHaveResource('AWS::Amplify::Domain', {
@@ -158,8 +158,8 @@ test('auto subdomain some branches', ()=>{
   // WHEN
   app.addDomain('amazon.com', {
     enableAutoSubdomain: true,
-    autoSubdomainCreationPatterns: ['features/**']
-  })
+    autoSubdomainCreationPatterns: ['features/**'],
+  });
 
   // THEN
   expect(stack).toHaveResource('AWS::Amplify::Domain', {
