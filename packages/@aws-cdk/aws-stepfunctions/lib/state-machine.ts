@@ -434,8 +434,8 @@ export class StateMachine extends StateMachineBase {
     if (stateMachineName.length < 1 || stateMachineName.length > 80) {
       throw new Error(`State Machine name must be between 1 and 80 characters. Received: ${stateMachineName}`);
     }
-    if (!stateMachineName.match('^[0-9a-zA-Z\_\-]+$')) {
-      throw new Error(`State Machine name must match "^[0-9a-zA-Z\_\-]+$". Received: ${stateMachineName}`);
+    if (!stateMachineName.match('^[0-9a-zA-Z+!@._-]+$')) {
+      throw new Error(`State Machine name must match "^[0-9a-zA-Z+!@._-]+$". Received: ${stateMachineName}`);
     }
   }
 
