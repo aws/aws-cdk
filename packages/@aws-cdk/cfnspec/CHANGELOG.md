@@ -1,3 +1,77 @@
+# CloudFormation Resource Specification v30.0.0
+
+## New Resource Types
+
+* AWS::EC2::TransitGatewayConnect
+* AWS::EKS::Addon
+* AWS::EMR::Studio
+* AWS::EMR::StudioSessionMapping
+* AWS::IAM::OIDCProvider
+* AWS::IAM::SAMLProvider
+* AWS::IAM::ServerCertificate
+* AWS::IAM::VirtualMFADevice
+* AWS::SageMaker::Image
+* AWS::SageMaker::ImageVersion
+
+## Attribute Changes
+
+* AWS::IoTSiteWise::Portal PortalStatus (__deleted__)
+* AWS::MediaPackage::Channel HlsIngest (__deleted__)
+* AWS::QuickSight::Dashboard Version (__deleted__)
+* AWS::QuickSight::Template Version (__deleted__)
+* AWS::QuickSight::Theme Version (__deleted__)
+* AWS::S3::AccessPoint PolicyStatus (__deleted__)
+* AWS::SageMaker::Project ServiceCatalogProvisionedProductDetails (__deleted__)
+* AWS::ServiceCatalog::CloudFormationProvisionedProduct Outputs (__deleted__)
+
+## Property Changes
+
+* AWS::ECR::PublicRepository Tags (__added__)
+* AWS::IVS::Channel RecordingConfigurationArn (__added__)
+* AWS::IoTSiteWise::AssetModel AssetModelCompositeModels (__added__)
+* AWS::IoTSiteWise::Portal PortalAuthMode (__added__)
+* AWS::SageMaker::Model InferenceExecutionConfig (__added__)
+
+## Property Type Changes
+
+* AWS::IoTSiteWise::Portal.MonitorErrorDetails (__removed__)
+* AWS::IoTSiteWise::Portal.PortalStatus (__removed__)
+* AWS::MediaPackage::Channel.HlsIngest (__removed__)
+* AWS::MediaPackage::Channel.IngestEndpoint (__removed__)
+* AWS::QuickSight::Dashboard.DashboardError (__removed__)
+* AWS::QuickSight::Dashboard.DashboardVersion (__removed__)
+* AWS::QuickSight::Dashboard.Sheet (__removed__)
+* AWS::QuickSight::Template.ColumnGroupColumnSchema (__removed__)
+* AWS::QuickSight::Template.ColumnGroupSchema (__removed__)
+* AWS::QuickSight::Template.ColumnSchema (__removed__)
+* AWS::QuickSight::Template.DataSetConfiguration (__removed__)
+* AWS::QuickSight::Template.DataSetSchema (__removed__)
+* AWS::QuickSight::Template.Sheet (__removed__)
+* AWS::QuickSight::Template.TemplateError (__removed__)
+* AWS::QuickSight::Template.TemplateVersion (__removed__)
+* AWS::QuickSight::Theme.ThemeError (__removed__)
+* AWS::QuickSight::Theme.ThemeVersion (__removed__)
+* AWS::IoTSiteWise::AccessPolicy.IamRole (__added__)
+* AWS::IoTSiteWise::AccessPolicy.IamUser (__added__)
+* AWS::IoTSiteWise::AssetModel.AssetModelCompositeModel (__added__)
+* AWS::SageMaker::Model.InferenceExecutionConfig (__added__)
+* AWS::ACMPCA::Certificate.Validity Value.PrimitiveType (__changed__)
+  * Old: Integer
+  * New: Double
+* AWS::CodeBuild::ReportGroup.S3ReportExportConfig BucketOwner (__added__)
+* AWS::IoTSiteWise::AccessPolicy.AccessPolicyIdentity IamRole (__added__)
+* AWS::IoTSiteWise::AccessPolicy.AccessPolicyIdentity IamUser (__added__)
+* AWS::IoTSiteWise::AssetModel.AssetModelProperty DataTypeSpec (__added__)
+* AWS::Pinpoint::Campaign.CampaignSmsMessage EntityId (__added__)
+* AWS::Pinpoint::Campaign.CampaignSmsMessage TemplateId (__added__)
+* AWS::Synthetics::Canary.Code Handler.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::Synthetics::Canary.RunConfig TimeoutInSeconds.Required (__changed__)
+  * Old: true
+  * New: false
+
+
 # CloudFormation Resource Specification v29.0.0
 
 ## New Resource Types
