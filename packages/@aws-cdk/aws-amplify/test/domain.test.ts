@@ -120,3 +120,51 @@ test('throws at synthesis without subdomains', () => {
   // THEN
   expect(() => app.synth()).toThrow(/The domain doesn't contain any subdomains/);
 });
+
+test('auto subdomain all branches', ()=>{
+  // GIVEN
+  const stack = new Stack();
+  const app = new amplify.App(stack, 'App', {
+    sourceCodeProvider: new amplify.GitHubSourceCodeProvider({
+      owner: 'aws',
+      repository: 'aws-cdk',
+      oauthToken: SecretValue.plainText('secret'),
+    }),
+  });
+
+  // WHEN
+  app.addDomain('amazon.com', {
+    enableAutoSubdomain: true,
+  })
+
+  // THEN
+  expect(stack).toHaveResource('AWS::Amplify::Domain', {
+    EnableAutoSubDomain: true,
+    AutoSubDomainCreationPatterns: ['*', 'pr*'],
+  });
+});
+
+test('auto subdomain some branches', ()=>{
+  // GIVEN
+  const stack = new Stack();
+  const app = new amplify.App(stack, 'App', {
+    sourceCodeProvider: new amplify.GitHubSourceCodeProvider({
+      owner: 'aws',
+      repository: 'aws-cdk',
+      oauthToken: SecretValue.plainText('secret'),
+    }),
+  });
+
+  // WHEN
+  app.addDomain('amazon.com', {
+    enableAutoSubdomain: true,
+    autoSubdomainCreationPatterns: ['features/**']
+  })
+
+  // THEN
+  expect(stack).toHaveResource('AWS::Amplify::Domain', {
+    EnableAutoSubDomain: true,
+    AutoSubDomainCreationPatterns: ['features/**'],
+  });
+});
+
