@@ -257,7 +257,7 @@ export = {
     const eventBus = new EventBus(stack, 'EventBus');
 
     // WHEN
-    eventBus.grantPut(role);
+    eventBus.grantPutEventsTo(role);
 
     // THEN
     expect(stack).to(haveResource('AWS::IAM::Policy', {

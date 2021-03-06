@@ -22,7 +22,7 @@ export class EventBridgeDestination implements lambda.IDestination {
    * Returns a destination configuration
    */
   public bind(_scope: Construct, fn: lambda.IFunction, _options?: lambda.DestinationOptions): lambda.DestinationConfig {
-    this.eventBus.grantPut(fn);
+    this.eventBus.grantPutEventsTo(fn);
 
     return {
       destination: this.eventBus && this.eventBus.eventBusArn || Stack.of(fn).formatArn({

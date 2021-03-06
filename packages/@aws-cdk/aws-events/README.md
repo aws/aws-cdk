@@ -192,11 +192,11 @@ bus.archive('MyArchive', {
 To import an existing EventBus into your CDK application, use `EventBus.fromEventBusArn` or `EventBus.fromEventBusAttributes`
 factory method.
 
-Then, you can use the `grantPut` method to grant `event:PutEvents` to the eventBus.
+Then, you can use the `grantPutEventsTo` method to grant `event:PutEvents` to the eventBus.
 
 ```ts
 const eventBus = EventBus.fromEventBusArn(this, 'ImportedEventBus', 'arn:aws:events:us-east-1:111111111:event-bus/my-event-bus');
 
 // now you can just call methods on the eventbus
-eventBus.grantPut(lambdaFunction);
+eventBus.grantPutEventsTo(lambdaFunction);
 ```
