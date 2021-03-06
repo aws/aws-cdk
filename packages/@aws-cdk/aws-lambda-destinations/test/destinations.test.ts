@@ -47,7 +47,12 @@ test('event bus as destination', () => {
         {
           Action: 'events:PutEvents',
           Effect: 'Allow',
-          Resource: '*',
+          Resource: {
+            'Fn::GetAtt': [
+              'EventBus7B8748AA',
+              'Arn',
+            ],
+          },
         },
       ],
       Version: '2012-10-17',

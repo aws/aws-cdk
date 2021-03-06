@@ -47,6 +47,14 @@ export interface IEventBus extends IResource {
    * @param props Properties of the archive
    */
   archive(id: string, props: BaseArchiveProps): Archive;
+
+  /**
+   * Grants an IAM Principal to send custom events to the eventBus
+   * so that they can be matched to rules.
+   *
+   * @param grantee The principal (no-op if undefined)
+   */
+  grantPut(grantee: iam.IGrantable): iam.Grant;
 }
 
 /**
@@ -135,6 +143,14 @@ abstract class EventBusBase extends Resource implements IEventBus {
       eventPattern: props.eventPattern,
       retention: props.retention,
       archiveName: props.archiveName,
+    });
+  }
+
+  public grantPut(grantee: iam.IGrantable): iam.Grant {
+    return iam.Grant.addToPrincipal({
+      grantee,
+      actions: ['events:PutEvents'],
+      resourceArns: [this.eventBusArn],
     });
   }
 }

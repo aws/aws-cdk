@@ -247,6 +247,44 @@ export = {
 
     test.done();
   },
+  'can grant PutEvents to a specific event bus'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    const role = new iam.Role(stack, 'Role', {
+      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+    });
+
+    const eventBus = new EventBus(stack, 'EventBus');
+
+    // WHEN
+    eventBus.grantPut(role);
+
+    // THEN
+    expect(stack).to(haveResource('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'events:PutEvents',
+            Effect: 'Allow',
+            Resource: {
+              'Fn::GetAtt': [
+                'EventBus7B8748AA',
+                'Arn',
+              ],
+            },
+          },
+        ],
+        Version: '2012-10-17',
+      },
+      Roles: [
+        {
+          Ref: 'Role1ABCC5F0',
+        },
+      ],
+    }));
+
+    test.done();
+  },
   'can archive events'(test: Test) {
     // GIVEN
     const stack = new Stack();

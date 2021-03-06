@@ -22,8 +22,7 @@ export class EventBridgeDestination implements lambda.IDestination {
    * Returns a destination configuration
    */
   public bind(_scope: Construct, fn: lambda.IFunction, _options?: lambda.DestinationOptions): lambda.DestinationConfig {
-    // deduplicated automatically
-    events.EventBus.grantPutEvents(fn); // Cannot restrict to a specific resource
+    this.eventBus.grantPut(fn);
 
     return {
       destination: this.eventBus && this.eventBus.eventBusArn || Stack.of(fn).formatArn({
