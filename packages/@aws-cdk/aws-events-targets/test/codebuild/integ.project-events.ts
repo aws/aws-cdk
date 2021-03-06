@@ -20,6 +20,7 @@ const project = new codebuild.Project(stack, 'MyProject', {
 });
 
 const queue = new sqs.Queue(stack, 'MyQueue');
+const deadLetterQueue = new sqs.Queue(stack, 'DeadLetterQueue');
 
 const topic = new sns.Topic(stack, 'MyTopic');
 topic.addSubscription(new subs.SqsSubscription(queue));
@@ -39,7 +40,9 @@ project.onPhaseChange('PhaseChange', {
 
 // trigger a build when a commit is pushed to the repo
 const onCommitRule = repo.onCommit('OnCommit', {
-  target: new targets.CodeBuildProject(project),
+  target: new targets.CodeBuildProject(project, {
+    deadLetterQueue: deadLetterQueue,
+  }),
   branches: ['master'],
 });
 
