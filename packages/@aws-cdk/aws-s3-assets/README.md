@@ -143,7 +143,7 @@ const asset = new assets.Asset(this, 'BundledAsset', {
 ```
 
 Use `BundlingOutput.ARCHIVED` if the bundling output contains a single archive file and
-you don't want it to be zippped.
+you don't want it to be zipped.
 
 ## CloudFormation Resource Metadata
 

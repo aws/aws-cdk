@@ -64,7 +64,7 @@ export interface CorsOptions {
    * Access-Control-Allow-Methods and Access-Control-Allow-Headers headers)
    * can be cached.
    *
-   * To disable caching altogther use `disableCache: true`.
+   * To disable caching altogether use `disableCache: true`.
    *
    * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Max-Age
    * @default - browser-specific (see reference)

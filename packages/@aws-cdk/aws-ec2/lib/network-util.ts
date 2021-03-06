@@ -244,7 +244,7 @@ export class CidrBlock {
   }
 
   /*
-   * The maximum IP in the CIDR Blcok e.g. '10.0.8.255'
+   * The maximum IP in the CIDR Block e.g. '10.0.8.255'
    */
   public maxIp(): string {
     // min + (2^(32-mask)) - 1 [zero needs to count]
@@ -252,7 +252,7 @@ export class CidrBlock {
   }
 
   /*
-   * The minimum IP in the CIDR Blcok e.g. '10.0.0.0'
+   * The minimum IP in the CIDR Block e.g. '10.0.0.0'
    */
   public minIp(): string {
     return NetworkUtils.numToIp(this.minAddress());
