@@ -54,7 +54,7 @@ export interface IEventBus extends IResource {
    *
    * @param grantee The principal (no-op if undefined)
    */
-  grantPutEvents(grantee: iam.IGrantable): iam.Grant;
+  grantPutEventsTo(grantee: iam.IGrantable): iam.Grant;
 }
 
 /**
@@ -146,7 +146,7 @@ abstract class EventBusBase extends Resource implements IEventBus {
     });
   }
 
-  public grantPutEvents(grantee: iam.IGrantable): iam.Grant {
+  public grantPutEventsTo(grantee: iam.IGrantable): iam.Grant {
     return iam.Grant.addToPrincipal({
       grantee,
       actions: ['events:PutEvents'],
@@ -186,6 +186,22 @@ export class EventBus extends EventBusBase {
    */
   public static fromEventBusAttributes(scope: Construct, id: string, attrs: EventBusAttributes): IEventBus {
     return new ImportedEventBus(scope, id, attrs);
+  }
+
+  /**
+   * Permits an IAM Principal to send custom events to EventBridge
+   * so that they can be matched to rules.
+   *
+   * @param grantee The principal (no-op if undefined)
+   */
+  public static grantPutEvents(grantee: iam.IGrantable): iam.Grant {
+    // It's currently not possible to restrict PutEvents to specific resources.
+    // See https://docs.aws.amazon.com/eventbridge/latest/userguide/permissions-reference-eventbridge.html
+    return iam.Grant.addToPrincipal({
+      grantee,
+      actions: ['events:PutEvents'],
+      resourceArns: ['*'],
+    });
   }
 
   private static eventBusProps(defaultEventBusName: string, props?: EventBusProps) {
