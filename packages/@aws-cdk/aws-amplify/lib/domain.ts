@@ -1,3 +1,4 @@
+import * as iam from '@aws-cdk/aws-iam';
 import { Lazy, Resource, IResolvable } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnDomain } from './amplify.generated';
@@ -45,6 +46,12 @@ export interface DomainProps extends DomainOptions {
    * The application to which the domain must be connected
    */
   readonly app: IApp;
+
+  /**
+   * The IAM role with access to Route53 when using enableAutoSubdomain
+   * @default the IAM role from App.grantPrincipal
+   */
+  readonly autoSubDomainIamRole?: iam.IRole;
 }
 
 /**
@@ -122,6 +129,7 @@ export class Domain extends Resource {
       subDomainSettings: Lazy.any({ produce: () => this.renderSubDomainSettings() }, { omitEmptyArray: true }),
       enableAutoSubDomain: !!props.enableAutoSubdomain,
       autoSubDomainCreationPatterns: props.autoSubdomainCreationPatterns,
+      autoSubDomainIamRole: props.autoSubDomainIamRole?.roleArn,
     });
 
     this.arn = domain.attrArn;
