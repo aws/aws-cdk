@@ -13,6 +13,7 @@ class KinesisEventSourceTest extends cdk.Stack {
 
     fn.addEventSource(new KinesisEventSource(stream, {
       startingPosition: lambda.StartingPosition.TRIM_HORIZON,
+      tumblingWindowInSeconds: cdk.Duration.seconds(60),
     }));
   }
 }

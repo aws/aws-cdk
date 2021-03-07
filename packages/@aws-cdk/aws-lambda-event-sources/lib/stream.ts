@@ -79,6 +79,16 @@ export interface StreamEventSourceProps {
   readonly maxBatchingWindow?: Duration;
 
   /**
+   * The size of the tumbling windows to group records sent to DynamoDB or Kinesis
+   * Valid Range:
+   * * Minimum value of 0
+   * * Maximum value of 900
+   *
+   * @default - None
+   */
+  readonly tumblingWindowInSeconds?: Duration;
+
+  /**
    * If the stream event source mapping should be enabled.
    *
    * @default true
@@ -106,6 +116,7 @@ export abstract class StreamEventSource implements lambda.IEventSource {
       retryAttempts: this.props.retryAttempts,
       parallelizationFactor: this.props.parallelizationFactor,
       onFailure: this.props.onFailure,
+      tumblingWindowInSeconds: this.props.tumblingWindowInSeconds,
       enabled: this.props.enabled,
     };
   }
