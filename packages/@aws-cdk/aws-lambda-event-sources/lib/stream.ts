@@ -86,7 +86,7 @@ export interface StreamEventSourceProps {
    *
    * @default - None
    */
-  readonly tumblingWindowInSeconds?: Duration;
+  readonly tumblingWindow?: Duration;
 
   /**
    * If the stream event source mapping should be enabled.
@@ -116,7 +116,7 @@ export abstract class StreamEventSource implements lambda.IEventSource {
       retryAttempts: this.props.retryAttempts,
       parallelizationFactor: this.props.parallelizationFactor,
       onFailure: this.props.onFailure,
-      tumblingWindowInSeconds: this.props.tumblingWindowInSeconds,
+      tumblingWindow: this.props.tumblingWindow,
       enabled: this.props.enabled,
     };
   }

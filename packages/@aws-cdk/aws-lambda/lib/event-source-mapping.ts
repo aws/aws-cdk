@@ -113,7 +113,7 @@ export interface EventSourceMappingOptions {
    *
    * @default - None
    */
-  readonly tumblingWindowInSeconds?: cdk.Duration;
+  readonly tumblingWindow?: cdk.Duration;
 }
 
 /**
@@ -187,8 +187,8 @@ export class EventSourceMapping extends cdk.Resource implements IEventSourceMapp
       }
     });
 
-    if (props.tumblingWindowInSeconds && props.tumblingWindowInSeconds.toSeconds() > 900) {
-      throw new Error(`tumblingWindowInSeconds cannot be over 900 seconds, got ${props.tumblingWindowInSeconds.toSeconds()}`);
+    if (props.tumblingWindow && props.tumblingWindow.toSeconds() > 900) {
+      throw new Error(`tumblingWindow cannot be over 900 seconds, got ${props.tumblingWindow.toSeconds()}`);
     }
 
 
@@ -213,7 +213,7 @@ export class EventSourceMapping extends cdk.Resource implements IEventSourceMapp
       maximumRetryAttempts: props.retryAttempts,
       parallelizationFactor: props.parallelizationFactor,
       topics: props.kafkaTopic !== undefined ? [props.kafkaTopic] : undefined,
-      tumblingWindowInSeconds: props.tumblingWindowInSeconds?.toSeconds(),
+      tumblingWindowInSeconds: props.tumblingWindow?.toSeconds(),
     });
     this.eventSourceMappingId = cfnEventSourceMapping.ref;
   }

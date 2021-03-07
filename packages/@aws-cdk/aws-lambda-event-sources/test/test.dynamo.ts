@@ -76,7 +76,7 @@ export = {
     test.done();
   },
 
-  'specific tumblingWindowInSeconds'(test: Test) {
+  'specific tumblingWindow'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
     const fn = new TestFunction(stack, 'Fn');
@@ -92,7 +92,7 @@ export = {
     fn.addEventSource(new sources.DynamoEventSource(table, {
       batchSize: 50,
       startingPosition: lambda.StartingPosition.LATEST,
-      tumblingWindowInSeconds: cdk.Duration.seconds(60),
+      tumblingWindow: cdk.Duration.seconds(60),
     }));
 
     // THEN
@@ -114,7 +114,7 @@ export = {
     test.done();
   },
 
-  'fails if tumblingWindowInSeconds > 900 seconds'(test: Test) {
+  'fails if tumblingWindow > 900 seconds'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
     const fn = new TestFunction(stack, 'Fn');
@@ -131,8 +131,8 @@ export = {
       fn.addEventSource(new sources.DynamoEventSource(table, {
         maxBatchingWindow: cdk.Duration.seconds(60),
         startingPosition: lambda.StartingPosition.LATEST,
-        tumblingWindowInSeconds: cdk.Duration.seconds(901),
-      })), /tumblingWindowInSeconds cannot be over 900 seconds/);
+        tumblingWindow: cdk.Duration.seconds(901),
+      })), /tumblingWindow cannot be over 900 seconds/);
 
     test.done();
   },

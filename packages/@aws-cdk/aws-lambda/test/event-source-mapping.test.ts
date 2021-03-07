@@ -171,7 +171,7 @@ describe('event source mapping', () => {
     });
   });
 
-  test('throws if tumblingWindowInSeconds > 900 seconds', () => {
+  test('throws if tumblingWindow > 900 seconds', () => {
     const stack = new cdk.Stack();
     const fn = new Function(stack, 'fn', {
       handler: 'index.handler',
@@ -182,7 +182,7 @@ describe('event source mapping', () => {
     expect(() => new EventSourceMapping(stack, 'test', {
       target: fn,
       eventSourceArn: '',
-      tumblingWindowInSeconds: cdk.Duration.seconds(901),
-    })).toThrow(/tumblingWindowInSeconds cannot be over 900 seconds/);
+      tumblingWindow: cdk.Duration.seconds(901),
+    })).toThrow(/tumblingWindow cannot be over 900 seconds/);
   });
 });
