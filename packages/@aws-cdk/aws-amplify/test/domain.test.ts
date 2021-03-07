@@ -143,6 +143,10 @@ test('auto subdomain all branches', () => {
   // THEN
   expect(stack).toHaveResource('AWS::Amplify::Domain', {
     EnableAutoSubDomain: true,
+    AutoSubDomainCreationPatterns: [
+      '*',
+      'pr*',
+    ],
     AutoSubDomainIAMRole: {
       'Fn::GetAtt': [
         'AppRole1AF9B530',
