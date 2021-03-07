@@ -266,23 +266,15 @@ export interface DatabaseClusterAttributes {
 }
 
 /**
- * Create a clustered database with a given number of instances.
- *
- * @resource AWS::Neptune::DBCluster
+ * A new or imported database cluster.
  */
-export class DatabaseCluster extends Resource implements IDatabaseCluster {
-
-  /**
-   * The default number of instances in the Neptune cluster if none are
-   * specified
-   */
-  public static readonly DEFAULT_NUM_INSTANCES = 1;
+export abstract class DatabaseClusterBase extends Resource implements IDatabaseCluster {
 
   /**
    * Import an existing DatabaseCluster from properties
    */
   public static fromDatabaseClusterAttributes(scope: Construct, id: string, attrs: DatabaseClusterAttributes): IDatabaseCluster {
-    class Import extends Resource implements IDatabaseCluster {
+    class Import extends DatabaseClusterBase implements IDatabaseCluster {
       public readonly defaultPort = ec2.Port.tcp(attrs.port);
       public readonly connections = new ec2.Connections({
         securityGroups: [attrs.securityGroup],
@@ -299,17 +291,41 @@ export class DatabaseCluster extends Resource implements IDatabaseCluster {
   /**
    * Identifier of the cluster
    */
-  public readonly clusterIdentifier: string;
+  public abstract readonly clusterIdentifier: string;
 
   /**
    * The endpoint to use for read/write operations
    */
-  public readonly clusterEndpoint: Endpoint;
+  public abstract readonly clusterEndpoint: Endpoint;
 
   /**
    * Endpoint to use for load-balanced read-only operations.
    */
+  public abstract readonly clusterReadEndpoint: Endpoint;
+
+  /**
+   * The connections object to implement IConnectable
+   */
+  public abstract readonly connections: ec2.Connections;
+}
+
+/**
+ * Create a clustered database with a given number of instances.
+ *
+ * @resource AWS::Neptune::DBCluster
+ */
+export class DatabaseCluster extends DatabaseClusterBase implements IDatabaseCluster {
+
+  /**
+   * The default number of instances in the Neptune cluster if none are
+   * specified
+   */
+  public static readonly DEFAULT_NUM_INSTANCES = 1;
+
+  public readonly clusterIdentifier: string;
+  public readonly clusterEndpoint: Endpoint;
   public readonly clusterReadEndpoint: Endpoint;
+  public readonly connections: ec2.Connections;
 
   /**
    * The resource id for the cluster; for example: cluster-ABCD1234EFGH5678IJKL90MNOP. The cluster ID uniquely
@@ -317,11 +333,6 @@ export class DatabaseCluster extends Resource implements IDatabaseCluster {
    * @attribute ClusterResourceId
    */
   public readonly clusterResourceIdentifier: string;
-
-  /**
-   * The connections object to implement IConnectable
-   */
-  public readonly connections: ec2.Connections;
 
   /**
    * The VPC where the DB subnet group is created.
