@@ -1,7 +1,7 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
-import { Duration, IResource, RemovalPolicy, Resource, Token } from '@aws-cdk/core';
+import { Aws, Duration, IResource, Lazy, RemovalPolicy, Resource, Token } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { Endpoint } from './endpoint';
 import { InstanceType } from './instance';
@@ -120,6 +120,13 @@ export interface DatabaseClusterProps {
   readonly dbClusterName?: string;
 
   /**
+   * Map AWS Identity and Access Management (IAM) accounts to database accounts
+   *
+   * @default - `false`
+   */
+  readonly iamAuthentication?: boolean;
+
+  /**
    * Base identifier for instances
    *
    * Every replica is named by appending the replica number to this string, 1-based.
@@ -233,6 +240,11 @@ export interface IDatabaseCluster extends IResource, ec2.IConnectable {
    * @attribute ReadEndpoint
    */
   readonly clusterReadEndpoint: Endpoint;
+
+  /**
+   * Grant the given identity connection access to the database.
+   */
+  grantConnect(grantee: iam.IGrantable): iam.Grant;
 }
 
 /**
@@ -283,6 +295,7 @@ export abstract class DatabaseClusterBase extends Resource implements IDatabaseC
       public readonly clusterIdentifier = attrs.clusterIdentifier;
       public readonly clusterEndpoint = new Endpoint(attrs.clusterEndpointAddress, attrs.port);
       public readonly clusterReadEndpoint = new Endpoint(attrs.readerEndpointAddress, attrs.port);
+      protected enableIamAuthentication = true;
     }
 
     return new Import(scope, id);
@@ -307,6 +320,30 @@ export abstract class DatabaseClusterBase extends Resource implements IDatabaseC
    * The connections object to implement IConnectable
    */
   public abstract readonly connections: ec2.Connections;
+
+  protected abstract enableIamAuthentication?: boolean;
+
+  public grantConnect(grantee: iam.IGrantable): iam.Grant {
+    if (this.enableIamAuthentication === false) {
+      throw new Error('Cannot grant connect when IAM authentication is disabled');
+    }
+
+    this.enableIamAuthentication = true;
+    return iam.Grant.addToPrincipal({
+      grantee,
+      actions: ['neptune-db:*'],
+      resourceArns: [
+        [
+          'arn',
+          Aws.PARTITION,
+          'neptune-db',
+          Aws.REGION,
+          Aws.ACCOUNT_ID,
+          `${this.clusterIdentifier}/*`,
+        ].join(':'),
+      ],
+    });
+  }
 }
 
 /**
@@ -359,6 +396,8 @@ export class DatabaseCluster extends DatabaseClusterBase implements IDatabaseClu
    */
   public readonly instanceEndpoints: Endpoint[] = [];
 
+  protected enableIamAuthentication?: boolean;
+
   constructor(scope: Construct, id: string, props: DatabaseClusterProps) {
     super(scope, id);
 
@@ -396,6 +435,8 @@ export class DatabaseCluster extends DatabaseClusterBase implements IDatabaseClu
 
     const deletionProtection = props.deletionProtection ?? (props.removalPolicy === RemovalPolicy.RETAIN ? true : undefined);
 
+    this.enableIamAuthentication = props.iamAuthentication;
+
     // Create the Neptune cluster
     const cluster = new CfnDBCluster(this, 'Resource', {
       // Basic
@@ -407,6 +448,7 @@ export class DatabaseCluster extends DatabaseClusterBase implements IDatabaseClu
       dbClusterParameterGroupName: props.clusterParameterGroup?.clusterParameterGroupName,
       deletionProtection: deletionProtection,
       associatedRoles: props.associatedRoles ? props.associatedRoles.map(role => ({ roleArn: role.roleArn })) : undefined,
+      iamAuthEnabled: Lazy.any({ produce: () => this.enableIamAuthentication }),
       // Backup
       backupRetentionPeriod: props.backupRetention?.toDays(),
       preferredBackupWindow: props.preferredBackupWindow,
