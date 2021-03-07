@@ -1112,9 +1112,6 @@ export = {
       taskImageOptions: {
         image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
       },
-      deploymentController: {
-        type: ecs.DeploymentControllerType.ECS,
-      },
       circuitBreaker: { rollback: true },
     });
 
@@ -1125,6 +1122,9 @@ export = {
           Enable: true,
           Rollback: true,
         },
+      },
+      DeploymentController: {
+        Type: 'ECS',
       },
     }));
 
@@ -1145,9 +1145,6 @@ export = {
       taskImageOptions: {
         image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
       },
-      deploymentController: {
-        type: ecs.DeploymentControllerType.ECS,
-      },
       circuitBreaker: { rollback: true },
     });
 
@@ -1158,6 +1155,9 @@ export = {
           Enable: true,
           Rollback: true,
         },
+      },
+      DeploymentController: {
+        Type: 'ECS',
       },
     }));
 

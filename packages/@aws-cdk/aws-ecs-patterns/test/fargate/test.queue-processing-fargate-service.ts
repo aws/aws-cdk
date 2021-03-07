@@ -344,9 +344,6 @@ export = {
       serviceName: 'fargate-test-service',
       family: 'fargate-task-family',
       platformVersion: ecs.FargatePlatformVersion.VERSION1_4,
-      deploymentController: {
-        type: ecs.DeploymentControllerType.CODE_DEPLOY,
-      },
       circuitBreaker: { rollback: true },
     });
 
@@ -365,7 +362,7 @@ export = {
       ServiceName: 'fargate-test-service',
       PlatformVersion: ecs.FargatePlatformVersion.VERSION1_4,
       DeploymentController: {
-        Type: 'CODE_DEPLOY',
+        Type: 'ECS',
       },
     }));
 

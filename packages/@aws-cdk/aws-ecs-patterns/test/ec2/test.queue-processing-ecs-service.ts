@@ -209,9 +209,6 @@ export = {
       maxHealthyPercent: 150,
       serviceName: 'ecs-test-service',
       family: 'ecs-task-family',
-      deploymentController: {
-        type: ecs.DeploymentControllerType.CODE_DEPLOY,
-      },
       circuitBreaker: { rollback: true },
     });
 
@@ -229,7 +226,7 @@ export = {
       LaunchType: 'EC2',
       ServiceName: 'ecs-test-service',
       DeploymentController: {
-        Type: 'CODE_DEPLOY',
+        Type: 'ECS',
       },
     }));
 

@@ -436,9 +436,6 @@ export = {
       taskImageOptions: {
         image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
       },
-      deploymentController: {
-        type: ecs.DeploymentControllerType.ECS,
-      },
       circuitBreaker: { rollback: true },
     });
     // THEN
@@ -448,6 +445,9 @@ export = {
           Enable: true,
           Rollback: true,
         },
+      },
+      DeploymentController: {
+        Type: 'ECS',
       },
     }));
     test.done();
@@ -462,9 +462,6 @@ export = {
       taskImageOptions: {
         image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
       },
-      deploymentController: {
-        type: ecs.DeploymentControllerType.ECS,
-      },
       circuitBreaker: { rollback: true },
     });
     // THEN
@@ -474,6 +471,9 @@ export = {
           Enable: true,
           Rollback: true,
         },
+      },
+      DeploymentController: {
+        Type: 'ECS',
       },
     }));
     test.done();

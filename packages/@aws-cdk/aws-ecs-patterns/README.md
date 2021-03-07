@@ -410,9 +410,6 @@ const service = new ApplicationLoadBalancedFargateService(stack, 'Service', {
   taskImageOptions: {
     image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
   },
-  deploymentController: {
-    type: ecs.DeploymentControllerType.ECS,
-  },
   circuitBreaker: { rollback: true },
 });
 ```
