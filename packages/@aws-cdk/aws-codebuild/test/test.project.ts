@@ -960,4 +960,37 @@ export = {
       test.done();
     },
   },
+
+  'Timeouts': {
+    'can add queued timeout'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      // WHEN
+      new codebuild.Project(stack, 'Project', {
+        queuedTimeout: cdk.Duration.minutes(30),
+      });
+
+      // THEN
+      expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
+        QueuedTimeoutInMinutes: 30,
+      }));
+
+      test.done();
+    },
+    'can override build timeout'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      // WHEN
+      new codebuild.Project(stack, 'Project', {
+        timeout: cdk.Duration.minutes(30),
+      });
+
+      // THEN
+      expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
+        TimeoutInMinutes: 30,
+      }));
+    },
+  },
 };
