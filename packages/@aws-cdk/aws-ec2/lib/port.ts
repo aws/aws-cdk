@@ -9,6 +9,8 @@ export enum Protocol {
   UDP = 'udp',
   ICMP = 'icmp',
   ICMPV6 = '58',
+  ESP = 'esp',
+  AH = 'ah',
 }
 
 /**
@@ -168,6 +170,30 @@ export class Port {
     return new Port({
       protocol: Protocol.ALL,
       stringRepresentation: 'ALL TRAFFIC',
+    });
+  }
+
+  /**
+   * A single ESP port
+   */
+  public static esp(): Port {
+    return new Port({
+      protocol: Protocol.ESP,
+      fromPort: 50,
+      toPort: 50,
+      stringRepresentation: 'ESP 50',
+    });
+  }
+
+  /**
+   * A single AH port
+   */
+  public static ah(): Port {
+    return new Port({
+      protocol: Protocol.AH,
+      fromPort: 51,
+      toPort: 51,
+      stringRepresentation: 'AH 51',
     });
   }
 
