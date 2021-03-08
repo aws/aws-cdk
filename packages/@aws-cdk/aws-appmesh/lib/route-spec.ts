@@ -439,7 +439,7 @@ class GrpcRouteSpec extends RouteSpec {
       const tcpRetryEvents = props.retryPolicy.tcpRetryEvents ?? [];
 
       if (grpcRetryEvents.length + httpRetryEvents.length + tcpRetryEvents.length === 0) {
-        throw new Error('You must specify one value for at least one of `grpcRetryEvents`, `httpRetryEvents`, `tcpRetryEvents`');
+        throw new Error('You must specify one value for at least one of `grpcRetryEvents`, `httpRetryEvents` or `tcpRetryEvents`');
       }
 
       this.retryPolicy = {
