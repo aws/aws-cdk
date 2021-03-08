@@ -49,4 +49,20 @@ export class TagParameterContainerImage extends ContainerImage {
       },
     });
   }
+
+  /**
+   * Returns the value of the CloudFormation Parameter that represents the tag of the image
+   * in the ECR repository.
+   */
+  public get tagParameterValue(): string {
+    return cdk.Lazy.string({
+      produce: () => {
+        if (this.imageTagParameter) {
+          return this.imageTagParameter.valueAsString;
+        } else {
+          throw new Error('TagParameterContainerImage must be used in a container definition when using tagParameterValue');
+        }
+      },
+    });
+  }
 }
