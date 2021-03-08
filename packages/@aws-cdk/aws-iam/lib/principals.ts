@@ -2,6 +2,7 @@ import * as cdk from '@aws-cdk/core';
 import { Default, RegionInfo } from '@aws-cdk/region-info';
 import { IOpenIdConnectProvider } from './oidc-provider';
 import { Condition, Conditions, PolicyStatement } from './policy-statement';
+import { ISamlProvider } from './saml-provider';
 import { mergePrincipal } from './util';
 
 /**
@@ -490,6 +491,38 @@ export class OpenIdConnectPrincipal extends WebIdentityPrincipal {
 
   public toString() {
     return `OpenIdConnectPrincipal(${this.federated})`;
+  }
+}
+
+/**
+ * Principal entity that represents a SAML federated identity provider
+ */
+export class SamlPrincipal extends FederatedPrincipal {
+  constructor(samlProvider: ISamlProvider, conditions: Conditions) {
+    super(samlProvider.samlProviderArn, conditions, 'sts:AssumeRoleWithSAML');
+  }
+
+  public toString() {
+    return `SamlPrincipal(${this.federated})`;
+  }
+}
+
+/**
+ * Principal entity that represents a SAML federated identity provider for
+ * programmatic and AWS Management Console access.
+ */
+export class SamlConsolePrincipal extends SamlPrincipal {
+  constructor(samlProvider: ISamlProvider, conditions: Conditions = {}) {
+    super(samlProvider, {
+      ...conditions,
+      StringEquals: {
+        'SAML:aud': 'https://signin.aws.amazon.com/saml',
+      },
+    });
+  }
+
+  public toString() {
+    return `SamlConsolePrincipal(${this.federated})`;
   }
 }
 
