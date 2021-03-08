@@ -991,6 +991,8 @@ export = {
       expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
         TimeoutInMinutes: 30,
       }));
+
+      test.done();
     },
   },
 };
