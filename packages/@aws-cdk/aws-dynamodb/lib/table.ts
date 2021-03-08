@@ -3,8 +3,8 @@ import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import {
-  Aws, CfnCondition, CfnCustomResource, CustomResource, Fn,
-  IResource, Lazy, Names, RemovalPolicy, Resource, Stack, Token,
+  Aws, CfnCondition, CfnCustomResource, CustomResource, Duration,
+  Fn, IResource, Lazy, Names, RemovalPolicy, Resource, Stack, Token,
 } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { DynamoDBMetrics } from './dynamodb-canned-metrics.generated';
@@ -218,6 +218,13 @@ export interface TableOptions {
    * @experimental
    */
   readonly replicationRegions?: string[];
+
+  /**
+   * The timeout for a table replication operation in a single region.
+   *
+   * @default Duration.minutes(30)
+   */
+  readonly replicationTimeout?: Duration;
 }
 
 /**
@@ -1135,7 +1142,7 @@ export class Table extends TableBase {
     }
 
     if (props.replicationRegions && props.replicationRegions.length > 0) {
-      this.createReplicaTables(props.replicationRegions);
+      this.createReplicaTables(props.replicationRegions, props.replicationTimeout);
     }
   }
 
@@ -1451,14 +1458,14 @@ export class Table extends TableBase {
    *
    * @param regions regions where to create tables
    */
-  private createReplicaTables(regions: string[]) {
+  private createReplicaTables(regions: string[], timeout?: Duration) {
     const stack = Stack.of(this);
 
     if (!Token.isUnresolved(stack.region) && regions.includes(stack.region)) {
       throw new Error('`replicationRegions` cannot include the region where this stack is deployed.');
     }
 
-    const provider = ReplicaProvider.getOrCreate(this);
+    const provider = ReplicaProvider.getOrCreate(this, { timeout });
 
     // Documentation at https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/V2gt_IAM.html
     // is currently incorrect. AWS Support recommends `dynamodb:*` in both source and destination regions
