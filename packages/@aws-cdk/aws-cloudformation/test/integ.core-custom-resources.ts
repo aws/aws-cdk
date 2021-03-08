@@ -23,7 +23,7 @@ class TestStack extends Stack {
 
     const serviceToken = CustomResourceProvider.getOrCreate(this, resourceType, {
       codeDirectory: `${__dirname}/core-custom-resource-provider-fixture`,
-      runtime: CustomResourceProviderRuntime.NODEJS_12,
+      runtime: CustomResourceProviderRuntime.NODEJS_12_X,
       description: 'veni vidi vici',
     });
 
