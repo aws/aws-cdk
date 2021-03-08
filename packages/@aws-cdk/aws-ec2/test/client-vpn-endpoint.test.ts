@@ -1,8 +1,10 @@
 import { ResourcePart } from '@aws-cdk/assert';
 import '@aws-cdk/assert/jest';
+import { SamlMetadataDocument, SamlProvider } from '@aws-cdk/aws-iam';
 import * as logs from '@aws-cdk/aws-logs';
 import { Stack } from '@aws-cdk/core';
 import * as ec2 from '../lib';
+import { ClientVpnUserBasedAuthentication } from '../lib/client-vpn-endpoint';
 
 let stack: Stack;
 let vpc: ec2.IVpc;
@@ -12,13 +14,17 @@ beforeEach(() => {
 });
 
 test('client vpn endpoint', () => {
+  const samlProvider = new SamlProvider(stack, 'Provider', {
+    metadataDocument: SamlMetadataDocument.fromXml('xml'),
+  });
+
   vpc.addClientVpnEndpoint('Endpoint', {
     cidr: '10.100.0.0/16',
     serverCertificate: { certificateArn: 'server-certificate-arn' },
     clientCertificate: { certificateArn: 'client-certificate-arn' },
     clientConnectionHandler: { functionArn: 'function-arn', functionName: 'AWSClientVPN-function-name' },
     dnsServers: ['8.8.8.8', '8.8.4.4'],
-    userBasedAuthentication: ec2.ClientVpnUserBasedAuthentication.federated('saml-provider-arn'),
+    userBasedAuthentication: ClientVpnUserBasedAuthentication.federated(samlProvider),
   });
 
   expect(stack).toHaveResource('AWS::EC2::ClientVpnEndpoint', {
@@ -31,7 +37,9 @@ test('client vpn endpoint', () => {
       },
       {
         FederatedAuthentication: {
-          SAMLProviderArn: 'saml-provider-arn',
+          SAMLProviderArn: {
+            Ref: 'Provider2281708E',
+          },
         },
         Type: 'federated-authentication',
       },
@@ -253,17 +261,6 @@ test('throws when specifying logGroup with logging disabled', () => {
     logging: false,
     logGroup: new logs.LogGroup(stack, 'LogGroup'),
   })).toThrow(/Cannot specify `logGroup` or `logStream` when logging is disabled/);
-});
-
-test('throws with both active directory and federated', () => {
-  expect(() => vpc.addClientVpnEndpoint('Endpoint', {
-    cidr: '10.100.0.0/16',
-    serverCertificate: { certificateArn: 'server-certificate-arn' },
-    userBasedAuthentication: { // should not happen with static methods
-      directoryId: 'directory-id',
-      samlProviderArn: 'saml-provider-arn',
-    },
-  })).toThrow(/Cannot use both Active Directory and Federated authentication/);
 });
 
 test('throws without authentication options', () => {

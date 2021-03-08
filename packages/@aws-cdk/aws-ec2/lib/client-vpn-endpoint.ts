@@ -1,3 +1,4 @@
+import { ISamlProvider } from '@aws-cdk/aws-iam';
 import * as logs from '@aws-cdk/aws-logs';
 import { CfnOutput, ConcreteDependable, IDependable, Resource, Token } from '@aws-cdk/core';
 import { Construct } from 'constructs';
@@ -158,25 +159,51 @@ export abstract class ClientVpnUserBasedAuthentication {
    * Active Directory authentication
    */
   public static activeDirectory(directoryId: string): ClientVpnUserBasedAuthentication {
-    return { directoryId };
+    return new ActiveDirectoryAuthentication(directoryId);
   }
 
-  /**
-   * Federated authentication
-   */
-  public static federated(samlProviderArn: string, selfServiceSamlProviderArn?: string): ClientVpnUserBasedAuthentication {
+  /** Federated authentication */
+  public static federated(samlProvider: ISamlProvider, selfServiceSamlProvider?: ISamlProvider): ClientVpnUserBasedAuthentication {
+    return new FederatedAuthentication(samlProvider, selfServiceSamlProvider);
+  }
+
+  /** Renders the user based authentication */
+  public abstract render(): any;
+}
+
+/**
+ * Active Directory authentication
+ */
+class ActiveDirectoryAuthentication extends ClientVpnUserBasedAuthentication {
+  constructor(private readonly directoryId: string) {
+    super();
+  }
+
+  render(): any {
     return {
-      samlProviderArn,
-      selfServiceSamlProviderArn,
+      type: 'directory-service-authentication',
+      activeDirectory: { directoryId: this.directoryId },
     };
   }
+}
 
-  /** The ID of the Active Directory to be used for authentication */
-  public abstract readonly directoryId?: string;
-  /** The Amazon Resource Name (ARN) of the IAM SAML identity provider */
-  public abstract readonly samlProviderArn?: string;
-  /** The Amazon Resource Name (ARN) of the IAM SAML identity provider for the self-service portal */
-  public abstract readonly selfServiceSamlProviderArn?: string;
+/**
+ * Federated authentication
+ */
+class FederatedAuthentication extends ClientVpnUserBasedAuthentication {
+  constructor(private readonly samlProvider: ISamlProvider, private readonly selfServiceSamlProvider?: ISamlProvider) {
+    super();
+  }
+
+  render(): any {
+    return {
+      type: 'federated-authentication',
+      federatedAuthentication: {
+        samlProviderArn: this.samlProvider.samlProviderArn,
+        selfServiceSamlProviderArn: this.selfServiceSamlProvider?.samlProviderArn,
+      },
+    };
+  }
 }
 
 /**
@@ -357,27 +384,8 @@ function renderAuthenticationOptions(
     });
   }
 
-  if (userBasedAuthentication?.directoryId && userBasedAuthentication.samlProviderArn) {
-    throw new Error('Cannot use both Active Directory and Federated authentication');
-  }
-
-  if (userBasedAuthentication?.directoryId) {
-    authenticationOptions.push({
-      type: 'directory-service-authentication',
-      activeDirectory: {
-        directoryId: userBasedAuthentication.directoryId,
-      },
-    });
-  }
-
-  if (userBasedAuthentication?.samlProviderArn) {
-    authenticationOptions.push({
-      type: 'federated-authentication',
-      federatedAuthentication: {
-        samlProviderArn: userBasedAuthentication.samlProviderArn,
-        selfServiceSamlProviderArn: userBasedAuthentication.selfServiceSamlProviderArn,
-      },
-    });
+  if (userBasedAuthentication) {
+    authenticationOptions.push(userBasedAuthentication.render());
   }
 
   if (authenticationOptions.length === 0) {
