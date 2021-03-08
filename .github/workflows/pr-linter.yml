@@ -2,7 +2,15 @@
 # https://github.com/actions/toolkit/blob/master/packages/github/src/context.ts
 
 name: PR Linter
-on: pull_request
+on:
+  pull_request:
+    types:
+      - labeled
+      - unlabeled
+      - edited
+      - opened
+      - synchronize
+      - reopened
 
 jobs:
   validate-pr:

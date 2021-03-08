@@ -1,5 +1,5 @@
 import '@aws-cdk/assert/jest';
-import { Stack } from '@aws-cdk/core';
+import { Stack, App } from '@aws-cdk/core';
 import {
   HttpApi, HttpAuthorizer, HttpAuthorizerType, HttpConnectionType, HttpIntegrationType, HttpMethod, HttpRoute, HttpRouteAuthorizerBindOptions,
   HttpRouteAuthorizerConfig, HttpRouteIntegrationConfig, HttpRouteKey, IHttpRouteAuthorizer, IHttpRouteIntegration, PayloadFormatVersion,
@@ -17,7 +17,7 @@ describe('HttpRoute', () => {
     });
 
     expect(stack).toHaveResource('AWS::ApiGatewayV2::Route', {
-      ApiId: stack.resolve(httpApi.httpApiId),
+      ApiId: stack.resolve(httpApi.apiId),
       RouteKey: 'GET /books',
       Target: {
         'Fn::Join': [
@@ -25,7 +25,7 @@ describe('HttpRoute', () => {
           [
             'integrations/',
             {
-              Ref: 'HttpApiHttpIntegrationcff2618c192d3bd8581dd2a4093464f6CDB667B8',
+              Ref: 'HttpRouteHttpIntegrationcff2618c192d3bd8581dd2a4093464f6FB1097D0',
             },
           ],
         ],
@@ -33,7 +33,7 @@ describe('HttpRoute', () => {
     });
 
     expect(stack).toHaveResource('AWS::ApiGatewayV2::Integration', {
-      ApiId: stack.resolve(httpApi.httpApiId),
+      ApiId: stack.resolve(httpApi.apiId),
     });
   });
 
@@ -48,7 +48,7 @@ describe('HttpRoute', () => {
     });
 
     expect(stack).toHaveResource('AWS::ApiGatewayV2::Integration', {
-      ApiId: stack.resolve(httpApi.httpApiId),
+      ApiId: stack.resolve(httpApi.apiId),
       IntegrationType: 'HTTP_PROXY',
       PayloadFormatVersion: '2.0',
       IntegrationUri: 'some-uri',
@@ -112,6 +112,27 @@ describe('HttpRoute', () => {
 
     // THEN
     expect(stack1).toCountResources('AWS::ApiGatewayV2::Integration', 1);
+    expect(stack2).toCountResources('AWS::ApiGatewayV2::Integration', 1);
+  });
+
+  test('route defined in a separate stack does not create cycles', () => {
+    // GIVEN
+    const integration = new DummyIntegration();
+
+    // WHEN
+    const app = new App();
+    const stack1 = new Stack(app, 'ApiStack');
+    const httpApi = new HttpApi(stack1, 'HttpApi');
+
+    const stack2 = new Stack(app, 'RouteStack');
+    new HttpRoute(stack2, 'HttpRoute1', {
+      httpApi,
+      integration,
+      routeKey: HttpRouteKey.with('/books', HttpMethod.GET),
+    });
+
+    // THEN
+    expect(stack1).toCountResources('AWS::ApiGatewayV2::Integration', 0);
     expect(stack2).toCountResources('AWS::ApiGatewayV2::Integration', 1);
   });
 
@@ -188,7 +209,7 @@ describe('HttpRoute', () => {
     });
 
     expect(stack).toHaveResource('AWS::ApiGatewayV2::Integration', {
-      ApiId: stack.resolve(httpApi.httpApiId),
+      ApiId: stack.resolve(httpApi.apiId),
       IntegrationType: 'HTTP_PROXY',
       PayloadFormatVersion: '2.0',
       IntegrationUri: 'some-uri',

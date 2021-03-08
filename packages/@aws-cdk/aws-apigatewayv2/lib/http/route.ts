@@ -140,7 +140,7 @@ export class HttpRoute extends Resource implements IHttpRoute {
       scope: this,
     });
 
-    const integration = props.httpApi._addIntegration(config);
+    const integration = props.httpApi._addIntegration(this, config);
 
     const authBindResult = props.authorizer ? props.authorizer.bind({
       route: this,
@@ -157,7 +157,7 @@ export class HttpRoute extends Resource implements IHttpRoute {
     }
 
     const routeProps: CfnRouteProps = {
-      apiId: props.httpApi.httpApiId,
+      apiId: props.httpApi.apiId,
       routeKey: props.routeKey.key,
       target: `integrations/${integration.integrationId}`,
       authorizerId: authBindResult?.authorizerId,
