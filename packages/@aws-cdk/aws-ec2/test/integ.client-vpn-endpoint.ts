@@ -24,8 +24,8 @@ class TestStack extends Stack {
 
     vpc.addClientVpnEndpoint('Endpoint', {
       cidr: '10.100.0.0/16',
-      serverCertificate: { certificateArn: certificates.serverCertificateArn },
-      clientCertificate: { certificateArn: certificates.clientCertificateArn },
+      serverCertificateArn: certificates.serverCertificateArn,
+      clientCertificateArn: certificates.clientCertificateArn,
       logGroup,
     });
   }

@@ -20,8 +20,8 @@ test('client vpn endpoint', () => {
 
   vpc.addClientVpnEndpoint('Endpoint', {
     cidr: '10.100.0.0/16',
-    serverCertificate: { certificateArn: 'server-certificate-arn' },
-    clientCertificate: { certificateArn: 'client-certificate-arn' },
+    serverCertificateArn: 'server-certificate-arn',
+    clientCertificateArn: 'client-certificate-arn',
     clientConnectionHandler: { functionArn: 'function-arn', functionName: 'AWSClientVPN-function-name' },
     dnsServers: ['8.8.8.8', '8.8.4.4'],
     userBasedAuthentication: ClientVpnUserBasedAuthentication.federated(samlProvider),
@@ -125,8 +125,8 @@ test('client vpn endpoint', () => {
 test('client vpn endpoint with custom security groups', () => {
   vpc.addClientVpnEndpoint('Endpoint', {
     cidr: '10.100.0.0/16',
-    serverCertificate: { certificateArn: 'server-certificate-arn' },
-    clientCertificate: { certificateArn: 'client-certificate-arn' },
+    serverCertificateArn: 'server-certificate-arn',
+    clientCertificateArn: 'client-certificate-arn',
     securityGroups: [
       new ec2.SecurityGroup(stack, 'SG1', { vpc }),
       new ec2.SecurityGroup(stack, 'SG2', { vpc }),
@@ -157,8 +157,8 @@ test('client vpn endpoint with custom logging', () => {
   });
   vpc.addClientVpnEndpoint('Endpoint', {
     cidr: '10.100.0.0/16',
-    serverCertificate: { certificateArn: 'server-certificate-arn' },
-    clientCertificate: { certificateArn: 'client-certificate-arn' },
+    serverCertificateArn: 'server-certificate-arn',
+    clientCertificateArn: 'client-certificate-arn',
     logGroup,
     logStream: logGroup.addStream('LogStream'),
   });
@@ -179,8 +179,8 @@ test('client vpn endpoint with custom logging', () => {
 test('client vpn endpoint with logging disabled', () => {
   vpc.addClientVpnEndpoint('Endpoint', {
     cidr: '10.100.0.0/16',
-    serverCertificate: { certificateArn: 'server-certificate-arn' },
-    clientCertificate: { certificateArn: 'client-certificate-arn' },
+    serverCertificateArn: 'server-certificate-arn',
+    clientCertificateArn: 'client-certificate-arn',
     logging: false,
   });
 
@@ -194,8 +194,8 @@ test('client vpn endpoint with logging disabled', () => {
 test('client vpn endpoint with custom authorization rules', () => {
   const endpoint = vpc.addClientVpnEndpoint('Endpoint', {
     cidr: '10.100.0.0/16',
-    serverCertificate: { certificateArn: 'server-certificate-arn' },
-    clientCertificate: { certificateArn: 'client-certificate-arn' },
+    serverCertificateArn: 'server-certificate-arn',
+    clientCertificateArn: 'client-certificate-arn',
     authorizeAllUsersToVpcCidr: false,
   });
 
@@ -219,8 +219,8 @@ test('client vpn endpoint with custom authorization rules', () => {
 test('client vpn endpoint with custom route', () => {
   const endpoint = vpc.addClientVpnEndpoint('Endpoint', {
     cidr: '10.100.0.0/16',
-    serverCertificate: { certificateArn: 'server-certificate-arn' },
-    clientCertificate: { certificateArn: 'client-certificate-arn' },
+    serverCertificateArn: 'server-certificate-arn',
+    clientCertificateArn: 'client-certificate-arn',
     authorizeAllUsersToVpcCidr: false,
   });
 
@@ -247,8 +247,8 @@ test('client vpn endpoint with custom route', () => {
 test('throws with more than 2 dns servers', () => {
   expect(() => vpc.addClientVpnEndpoint('Endpoint', {
     cidr: '10.100.0.0/16',
-    serverCertificate: { certificateArn: 'server-certificate-arn' },
-    clientCertificate: { certificateArn: 'client-certificate-arn' },
+    serverCertificateArn: 'server-certificate-arn',
+    clientCertificateArn: 'client-certificate-arn',
     dnsServers: ['1.1.1.1', '2.2.2.2', '3.3.3.3'],
   })).toThrow(/A client VPN endpoint can have up to two DNS servers/);
 });
@@ -256,8 +256,8 @@ test('throws with more than 2 dns servers', () => {
 test('throws when specifying logGroup with logging disabled', () => {
   expect(() => vpc.addClientVpnEndpoint('Endpoint', {
     cidr: '10.100.0.0/16',
-    serverCertificate: { certificateArn: 'server-certificate-arn' },
-    clientCertificate: { certificateArn: 'client-certificate-arn' },
+    serverCertificateArn: 'server-certificate-arn',
+    clientCertificateArn: 'client-certificate-arn',
     logging: false,
     logGroup: new logs.LogGroup(stack, 'LogGroup'),
   })).toThrow(/Cannot specify `logGroup` or `logStream` when logging is disabled/);
@@ -266,6 +266,6 @@ test('throws when specifying logGroup with logging disabled', () => {
 test('throws without authentication options', () => {
   expect(() => vpc.addClientVpnEndpoint('Endpoint', {
     cidr: '10.100.0.0/16',
-    serverCertificate: { certificateArn: 'server-certificate-arn' },
+    serverCertificateArn: 'server-certificate-arn',
   })).toThrow(/A client VPN endpoint must use at least one authentication option/);
 });

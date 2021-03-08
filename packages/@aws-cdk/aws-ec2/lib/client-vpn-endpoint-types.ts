@@ -32,16 +32,6 @@ export interface IClientVpnConnectionHandler {
 }
 
 /**
- * A certificate
- */
-export interface ICertificate {
-  /**
-   * The ARN of the certificate
-   */
-  readonly certificateArn: string;
-}
-
-/**
  * Transport protocol for client VPN
  */
 export enum TransportProtocol {

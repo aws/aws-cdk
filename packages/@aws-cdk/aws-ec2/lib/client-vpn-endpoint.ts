@@ -3,7 +3,7 @@ import * as logs from '@aws-cdk/aws-logs';
 import { CfnOutput, ConcreteDependable, IDependable, Resource, Token } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { ClientVpnAuthorizationRule, ClientVpnAuthorizationRuleOptions } from './client-vpn-authorization-rule';
-import { ICertificate, IClientVpnConnectionHandler, IClientVpnEndpoint, TransportProtocol, VpnPort } from './client-vpn-endpoint-types';
+import { IClientVpnConnectionHandler, IClientVpnEndpoint, TransportProtocol, VpnPort } from './client-vpn-endpoint-types';
 import { ClientVpnRoute, ClientVpnRouteOptions } from './client-vpn-route';
 import { Connections } from './connections';
 import { CfnClientVpnEndpoint, CfnClientVpnTargetNetworkAssociation } from './ec2.generated';
@@ -27,13 +27,14 @@ export interface ClientVpnEndpointOptions {
   readonly cidr: string;
 
   /**
-   * The client certificate for mutual authentication.
+   * The ARN of the client certificate for mutual authentication.
    *
-   * The certificate must be signed by a certificate authority (CA).
+   * The certificate must be signed by a certificate authority (CA) and it must
+   * be provisioned in AWS Certificate Manager (ACM).
    *
    * @default - use user-based authentication
    */
-  readonly clientCertificate?: ICertificate; // Redefined ICertificate to avoid circular dependency
+  readonly clientCertificateArn?: string;
 
   /**
    * The type of user-based authentication to use.
@@ -96,9 +97,9 @@ export interface ClientVpnEndpointOptions {
   readonly selfServicePortal?: boolean;
 
   /**
-   * The server certificate
+   * The ARN of the server certificate
    */
-  readonly serverCertificate: ICertificate;
+  readonly serverCertificateArn: string;
 
   /**
    * Indicates whether split-tunnel is enabled on the AWS Client VPN endpoint.
@@ -294,7 +295,7 @@ export class ClientVpnEndpoint extends Resource implements IClientVpnEndpoint {
     this.connections = new Connections({ securityGroups });
 
     const endpoint = new CfnClientVpnEndpoint(this, 'Resource', {
-      authenticationOptions: renderAuthenticationOptions(props.clientCertificate, props.userBasedAuthentication),
+      authenticationOptions: renderAuthenticationOptions(props.clientCertificateArn, props.userBasedAuthentication),
       clientCidrBlock: props.cidr,
       clientConnectOptions: props.clientConnectionHandler
         ? {
@@ -311,7 +312,7 @@ export class ClientVpnEndpoint extends Resource implements IClientVpnEndpoint {
       dnsServers: props.dnsServers,
       securityGroupIds: securityGroups.map(s => s.securityGroupId),
       selfServicePortal: booleanToEnabledDisabled(props.selfServicePortal),
-      serverCertificateArn: props.serverCertificate.certificateArn,
+      serverCertificateArn: props.serverCertificateArn,
       splitTunnel: props.splitTunnel,
       transportProtocol: props.transportProtocol,
       vpcId: props.vpc.vpcId,
@@ -371,15 +372,15 @@ export class ClientVpnEndpoint extends Resource implements IClientVpnEndpoint {
 }
 
 function renderAuthenticationOptions(
-  clientCertificate?: ICertificate,
+  clientCertificateArn?: string,
   userBasedAuthentication?: ClientVpnUserBasedAuthentication): CfnClientVpnEndpoint.ClientAuthenticationRequestProperty[] {
   const authenticationOptions: CfnClientVpnEndpoint.ClientAuthenticationRequestProperty[] = [];
 
-  if (clientCertificate) {
+  if (clientCertificateArn) {
     authenticationOptions.push({
       type: 'certificate-authentication',
       mutualAuthentication: {
-        clientRootCertificateChainArn: clientCertificate.certificateArn,
+        clientRootCertificateChainArn: clientCertificateArn,
       },
     });
   }

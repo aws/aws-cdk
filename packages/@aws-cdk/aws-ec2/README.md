@@ -689,9 +689,9 @@ Use the `addClientVpnEndpoint()` method to add a client VPN endpoint to a VPC:
 ```ts fixture=client-vpn
 vpc.addClientVpnEndpoint('Endpoint', {
   cidr: '10.100.0.0/16',
-  serverCertificate: acm.Certificate.fromCertificateArn(this, 'Server', 'server-arn'),
+  serverCertificateArn: 'arn:aws:acm:us-east-1:123456789012:certificate/server-certificate-id',
   // Mutual authentication
-  clientCertificate: acm.Certificate.fromCertificateArn(this, 'Client', 'client-arn'),
+  clientCertificateArn: 'arn:aws:acm:us-east-1:123456789012:certificate/client-certificate-id',
   // User-based authentication
   userBasedAuthentication: ec2.ClientVpnUserBasedAuthentication.federated(samlProvider),
 });
@@ -714,7 +714,7 @@ and use `addaddAuthorizationRule()`:
 ```ts fixture=client-vpn
 const endpoint = vpc.addClientVpnEndpoint('Endpoint', {
   cidr: '10.100.0.0/16',
-  serverCertificate: acm.Certificate.fromCertificateArn(this, 'Server', 'server-arn'),
+  serverCertificateArn: 'arn:aws:acm:us-east-1:123456789012:certificate/server-certificate-id',
   userBasedAuthentication: ec2.ClientVpnUserBasedAuthentication.federated(samlProvider),
   authorizeAllUsersToVpcCidr: false,
 });
@@ -730,7 +730,7 @@ Use `addRoute()` to configure network routes:
 ```ts fixture=client-vpn
 const endpoint = vpc.addClientVpnEndpoint('Endpoint', {
   cidr: '10.100.0.0/16',
-  serverCertificate: acm.Certificate.fromCertificateArn(this, 'Server', 'server-arn'),
+  serverCertificateArn: 'arn:aws:acm:us-east-1:123456789012:certificate/server-certificate-id',
   userBasedAuthentication: ec2.ClientVpnUserBasedAuthentication.federated(samlProvider),
 });
 
