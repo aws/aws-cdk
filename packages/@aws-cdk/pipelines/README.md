@@ -173,7 +173,7 @@ class MyPipelineStack extends Stack {
 }
 
 const app = new App();
-new MyPipelineStack(this, 'PipelineStack', {
+new MyPipelineStack(app, 'PipelineStack', {
   env: {
     account: '111111111111',
     region: 'eu-west-1',
@@ -198,7 +198,8 @@ const codePipeline = new cp.Pipeline(pipelineStack, 'CodePipeline', {
   ],
 });
 
-const cdkPipeline = new CdkPipeline(this, 'CdkPipeline', {
+const app = new App();
+const cdkPipeline = new CdkPipeline(app, 'CdkPipeline', {
   codePipeline,
   cloudAssemblyArtifact,
 });
