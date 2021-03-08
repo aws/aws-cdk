@@ -51,6 +51,20 @@ new glue.Database(stack, 'MyDatabase', {
 });
 ```
 
+A `Database` can also be created as a resource link to a database in an external account by specifying a `targetDatabase` property:
+
+```ts
+new glue.Database(stack, 'MyResouceLink', {
+  databaseName: 'my_resource_link',
+  targetDatabase: {
+    catalogId: '123456789012',
+    databaseName: 'target_database'
+  }
+});
+```
+
+See [DatabaseIdentifier Structure](https://docs.aws.amazon.com/glue/latest/dg/aws-glue-api-catalog-databases.html#aws-glue-api-catalog-databases-DatabaseIdentifier) documentation for more information on the target database for resource linking.
+
 ## SecurityConfiguration
 
 A `SecurityConfiguration` is a set of security properties that can be used by AWS Glue to encrypt data at rest.
