@@ -41,7 +41,7 @@ export class LambdaProxyIntegration implements IHttpRouteIntegration {
       principal: new ServicePrincipal('apigateway.amazonaws.com'),
       sourceArn: Stack.of(route).formatArn({
         service: 'execute-api',
-        resource: route.httpApi.httpApiId,
+        resource: route.httpApi.apiId,
         resourceName: `*/*${route.path ?? ''}`, // empty string in the case of the catch-all route $default
       }),
     });
