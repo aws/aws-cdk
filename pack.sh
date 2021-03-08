@@ -63,6 +63,16 @@ for dir in $(find packages -name dist | grep -v node_modules | grep -v run-wrapp
   rsync -a $dir/ ${distdir}/
 done
 
+# Record the dependency order of NPM packages into a file
+# (This file will be opportunistically used during publishing)
+#
+# Manually sort 'aws-cdk' to the end, as the 'cdk init' command has implicit dependencies
+# on other packages (that should not appear in 'package.json' and so
+# there is no way to tell lerna about these).
+for dir in $(lerna ls --toposort -p | grep -v packages/aws-cdk) $PWD/packages/aws-cdk; do
+  (cd $dir/dist/js && ls >> ${distdir}/js/npm-publish-order.txt) || true
+done
+
 # Remove a JSII aggregate POM that may have snuk past
 rm -rf dist/java/software/amazon/jsii
 

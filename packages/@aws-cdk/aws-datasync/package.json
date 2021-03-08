@@ -27,9 +27,6 @@
         ],
         "distName": "aws-cdk.aws-datasync",
         "module": "aws_cdk.aws_datasync"
-      },
-      "go": {
-        "moduleName": "github.com/aws/aws-cdk-go"
       }
     }
   },
