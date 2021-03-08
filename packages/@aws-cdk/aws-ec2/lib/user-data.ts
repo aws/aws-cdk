@@ -296,7 +296,7 @@ export interface MultipartBodyOptions {
   /**
    * `Content-Transfer-Encoding` header specifying part encoding.
    *
-   * @default undefined - don't add this header
+   * @default undefined - body is not encoded
    */
   readonly transferEncoding?: string;
 
@@ -312,6 +312,15 @@ export interface MultipartBodyOptions {
  * The base class for all classes which can be used as {@link MultipartUserData}.
  */
 export abstract class MultipartBody {
+  /**
+   * Content type for shell scripts
+   */
+  public static readonly SHELL_SCRIPT = 'text/x-shellscript; charset="utf-8"';
+
+  /**
+   * Content type for boot hooks
+   */
+  public static readonly CLOUD_BOOTHOOK = 'text/cloud-boothook; charset="utf-8"';
 
   /**
    * Constructs the new `MultipartBody` wrapping existing `UserData`. Modification to `UserData` are reflected
@@ -336,21 +345,6 @@ export abstract class MultipartBody {
     return new MultipartBodyRaw(opts);
   }
 
-  protected static readonly DEFAULT_CONTENT_TYPE = 'text/x-shellscript; charset="utf-8"';
-
-  /** The body of this MIME part. */
-  public abstract get body(): string | undefined;
-
-  /** `Content-Type` header of this part */
-  public abstract get contentType(): string;
-
-  /**
-   * `Content-Transfer-Encoding` header specifying part encoding.
-   *
-   * @default undefined - don't add this header
-   */
-  public abstract get transferEncoding(): string | undefined;
-
   public constructor() {
   }
 
@@ -359,39 +353,37 @@ export abstract class MultipartBody {
    *
    * Subclasses should not add leading nor trailing new line characters (\r \n)
    */
-  public renderBodyPart(): string {
-    const result: string[] = [];
-
-    result.push(`Content-Type: ${this.contentType}`);
-
-    if (this.transferEncoding != null) {
-      result.push(`Content-Transfer-Encoding: ${this.transferEncoding}`);
-    }
-    // One line free after separator
-    result.push('');
-
-    if (this.body != null) {
-      result.push(this.body);
-      // The new line added after join will be consumed by encapsulating or closing boundary
-    }
-
-    return result.join('\n');
-  }
+  public abstract renderBodyPart(): string[];
 }
 
 /**
  * The raw part of multi-part user data, which can be added to {@link MultipartUserData}.
  */
 class MultipartBodyRaw extends MultipartBody {
-  public readonly body: string | undefined;
-  public readonly contentType: string;
-  public readonly transferEncoding: string | undefined;
-
-  public constructor(props: MultipartBodyOptions) {
+  public constructor(private readonly props: MultipartBodyOptions) {
     super();
+  }
 
-    this.body = props.body;
-    this.contentType = props.contentType;
+  /**
+   * Render body part as the string.
+   */
+  public renderBodyPart(): string[] {
+    const result: string[] = [];
+
+    result.push(`Content-Type: ${this.props.contentType}`);
+
+    if (this.props.transferEncoding != null) {
+      result.push(`Content-Transfer-Encoding: ${this.props.transferEncoding}`);
+    }
+    // One line free after separator
+    result.push('');
+
+    if (this.props.body != null) {
+      result.push(this.props.body);
+      // The new line added after join will be consumed by encapsulating or closing boundary
+    }
+
+    return result;
   }
 }
 
@@ -399,20 +391,26 @@ class MultipartBodyRaw extends MultipartBody {
  * Wrapper for `UserData`.
  */
 class MultipartBodyUserDataWrapper extends MultipartBody {
+  private readonly contentType: string;
 
-  public readonly contentType: string;
-  public readonly transferEncoding: string | undefined;
-
-  public constructor(public readonly userData: UserData, contentType?: string) {
+  public constructor(private readonly userData: UserData, contentType?: string) {
     super();
 
-    this.contentType = contentType || MultipartBody.DEFAULT_CONTENT_TYPE;
-    this.transferEncoding = 'base64';
+    this.contentType = contentType || MultipartBody.SHELL_SCRIPT;
   }
 
-  public get body(): string {
-    // Wrap rendered user data with Base64 function, in case data contains non ASCII characters
-    return Fn.base64(this.userData.render());
+  /**
+   * Render body part as the string.
+   */
+  public renderBodyPart(): string[] {
+    const result: string[] = [];
+
+    result.push(`Content-Type: ${this.contentType}`);
+    result.push('Content-Transfer-Encoding: base64');
+    result.push('');
+    result.push(Fn.base64(this.userData.render()));
+
+    return result;
   }
 }
 
@@ -469,10 +467,21 @@ export class MultipartUserData extends UserData {
   /**
    * Adds a part to the list of parts.
    */
-  public addPart(part: MultipartBody): this {
+  public addPart(part: MultipartBody) {
     this.parts.push(part);
+  }
 
-    return this;
+  /**
+   * Adds a multipart part based on a UserData object
+   *
+   * This is the same as calling:
+   *
+   * ```ts
+   * multiPart.addPart(MultipartBody.fromUserData(userData, contentType));
+   * ```
+   */
+  public addUserDataPart(userData: UserData, contentType?: string) {
+    this.addPart(MultipartBody.fromUserData(userData, contentType));
   }
 
   public render(): string {
@@ -491,7 +500,7 @@ export class MultipartUserData extends UserData {
     // Add parts - each part starts with boundary
     this.parts.forEach(part => {
       resultArchive.push(`--${boundary}`);
-      resultArchive.push(part.renderBodyPart());
+      resultArchive.push(...part.renderBodyPart());
     });
 
     // Add closing boundary

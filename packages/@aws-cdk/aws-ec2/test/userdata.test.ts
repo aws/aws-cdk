@@ -275,6 +275,7 @@ nodeunitShim({
 
   'Linux user rendering multipart headers'(test: Test) {
     // GIVEN
+    const stack = new Stack();
     const linuxUserData = ec2.UserData.forLinux();
     linuxUserData.addCommands('echo "Hello world"');
 
@@ -282,15 +283,19 @@ nodeunitShim({
     const defaultRender1 = ec2.MultipartBody.fromUserData(linuxUserData);
     const defaultRender2 = ec2.MultipartBody.fromUserData(linuxUserData, 'text/cloud-boothook; charset=\"utf-8\"');
 
-    const defaultRender3 = ec2.MultipartBody.fromUserData(linuxUserData);
-
     // THEN
-    test.equals(defaultRender1.contentType, 'text/x-shellscript; charset=\"utf-8\"');
-    test.equals(defaultRender2.contentType, 'text/cloud-boothook; charset=\"utf-8\"');
-    test.equals(defaultRender3.contentType, 'text/x-shellscript; charset=\"utf-8\"');
-
-    test.equals(defaultRender1.transferEncoding, 'base64');
-    test.equals(defaultRender2.transferEncoding, 'base64');
+    expect(stack.resolve(defaultRender1.renderBodyPart())).toEqual([
+      'Content-Type: text/x-shellscript; charset=\"utf-8\"',
+      'Content-Transfer-Encoding: base64',
+      '',
+      { 'Fn::Base64': '#!/bin/bash\necho \"Hello world\"' },
+    ]);
+    expect(stack.resolve(defaultRender2.renderBodyPart())).toEqual([
+      'Content-Type: text/cloud-boothook; charset=\"utf-8\"',
+      'Content-Transfer-Encoding: base64',
+      '',
+      { 'Fn::Base64': '#!/bin/bash\necho \"Hello world\"' },
+    ]);
 
     test.done();
   },
