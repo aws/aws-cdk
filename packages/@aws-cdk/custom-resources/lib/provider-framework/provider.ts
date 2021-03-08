@@ -9,7 +9,7 @@ import { calculateRetryPolicy } from './util';
 import { WaiterStateMachine } from './waiter-state-machine';
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
+// eslint-disable-next-line
 import { CustomResourceProviderConfig, ICustomResourceProvider } from '@aws-cdk/aws-cloudformation';
 
 const RUNTIME_HANDLER_PATH = path.join(__dirname, 'runtime');
