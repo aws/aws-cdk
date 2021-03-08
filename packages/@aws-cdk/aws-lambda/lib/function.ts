@@ -22,7 +22,7 @@ import { Runtime } from './runtime';
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
 // eslint-disable-next-line
-import { LogRetentionRetryOptions } from './log-retention';
+import { LogRetentionRetryOptions } from '@aws-cdk/aws-logs';
 
 /**
  * X-Ray Tracing Modes (https://docs.aws.amazon.com/lambda/latest/dg/API_TracingConfig.html)

@@ -130,7 +130,7 @@ export abstract class Code {
    * @deprecated this value is ignored since inline is now determined based on the
    * the `inlineCode` field of `CodeConfig` returned from `bind()`.
    */
-  public abstract readonly isInline: boolean;
+  public abstract readonly isInline?: boolean;
 
   /**
    * Called when the lambda or layer is initialized to allow this object to bind
