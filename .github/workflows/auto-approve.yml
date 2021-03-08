@@ -1,0 +1,19 @@
+# Approve PRs with "pr/auto-approve". mergify takes care of the actual merge.
+
+name: auto-approve
+on:
+  pull_request:
+    types: [ labeled, unlabeled, opened, synchronize, reopened, ready_for_review, review_requested ]
+
+jobs:
+  auto-approve:
+    if: >
+       contains(github.event.pull_request.labels.*.name, 'pr/auto-approve') &&
+       (github.event.pull_request.user.login == 'aws-cdk-automation'
+        || github.event.pull_request.user.login == 'dependabot[bot]'
+        || github.event.pull_request.user.login == 'dependabot-preview[bot]')
+    runs-on: ubuntu-latest
+    steps:
+    - uses: hmarr/auto-approve-action@v2.0.0
+      with:
+        github-token: "${{ secrets.GITHUB_TOKEN }}"

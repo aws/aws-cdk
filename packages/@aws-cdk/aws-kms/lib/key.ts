@@ -156,7 +156,7 @@ abstract class KeyBase extends Resource implements IKey {
       resourceArns: [this.keyArn],
       resourceSelfArns: crossEnvironment ? undefined : ['*'],
     };
-    if (this.trustAccountIdentities) {
+    if (this.trustAccountIdentities && !crossEnvironment) {
       return iam.Grant.addToPrincipalOrResource(grantOptions);
     } else {
       return iam.Grant.addToPrincipalAndResource({
@@ -285,7 +285,7 @@ export interface KeyProps {
   /**
    * Custom policy document to attach to the KMS key.
    *
-   * NOTE - If the '@aws-cdk/aws-kms:defaultKeyPolicies' feature flag is set (the default for new projects),
+   * NOTE - If the `@aws-cdk/aws-kms:defaultKeyPolicies` feature flag is set (the default for new projects),
    * this policy will *override* the default key policy and become the only key policy for the key. If the
    * feature flag is not set, this policy will be appended to the default key policy.
    *
@@ -322,12 +322,12 @@ export interface KeyProps {
    * to how it works for other AWS resources). This matches the default behavior
    * when creating KMS keys via the API or console.
    *
-   * If the '@aws-cdk/aws-kms:defaultKeyPolicies' feature flag is set (the default for new projects),
+   * If the `@aws-cdk/aws-kms:defaultKeyPolicies` feature flag is set (the default for new projects),
    * this flag will always be treated as 'true' and does not need to be explicitly set.
    *
-   * @default - false, unless the '@aws-cdk/aws-kms:defaultKeyPolicies' feature flag is set.
+   * @default - false, unless the `@aws-cdk/aws-kms:defaultKeyPolicies` feature flag is set.
    * @see https://docs.aws.amazon.com/kms/latest/developerguide/key-policies.html#key-policy-default-allow-root-enable-iam
-   * @deprecated redundant with the '@aws-cdk/aws-kms:defaultKeyPolicies' feature flag
+   * @deprecated redundant with the `@aws-cdk/aws-kms:defaultKeyPolicies` feature flag
    */
   readonly trustAccountIdentities?: boolean;
 
@@ -471,7 +471,7 @@ export class Key extends KeyBase {
    * Grants the account admin privileges -- not full account access -- plus the GenerateDataKey action.
    * The GenerateDataKey action was added for interop with S3 in https://github.com/aws/aws-cdk/issues/3458.
    *
-   * This policy is discouraged and deprecated by the '@aws-cdk/aws-kms:defaultKeyPolicies' feature flag.
+   * This policy is discouraged and deprecated by the `@aws-cdk/aws-kms:defaultKeyPolicies` feature flag.
    *
    * @link https://docs.aws.amazon.com/kms/latest/developerguide/key-policies.html#key-policy-default
    * @deprecated

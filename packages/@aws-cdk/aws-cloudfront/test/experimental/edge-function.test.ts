@@ -102,6 +102,25 @@ describe('stacks', () => {
     });
   });
 
+  test('us-east-1 stack inherits account of parent stack', () => {
+    new cloudfront.experimental.EdgeFunction(stack, 'MyFn', defaultEdgeFunctionProps());
+
+    const fnStack = getFnStack();
+
+    expect(fnStack.account).toEqual('111111111111');
+  });
+
+  test('us-east-1 stack inherits account of parent stack, when parent stack account is undefined', () => {
+    stack = new cdk.Stack(app, 'StackWithDefaultAccount', {
+      env: { region: 'testregion' },
+    });
+    new cloudfront.experimental.EdgeFunction(stack, 'MyFn', defaultEdgeFunctionProps());
+
+    const fnStack = getFnStack();
+
+    expect(fnStack.account).toEqual(cdk.Aws.ACCOUNT_ID);
+  });
+
   test('creates minimal constructs if scope region is us-east-1', () => {
     app = new cdk.App();
     stack = new cdk.Stack(app, 'Stack', {
@@ -196,6 +215,17 @@ test('addAlias() creates alias in function stack', () => {
   expect(fnStack).toHaveResourceLike('AWS::Lambda::Alias', {
     Name: 'MyCurrentAlias',
   });
+});
+
+test('mutliple aliases with the same name can be added to the same stack', () => {
+  const fn1 = new cloudfront.experimental.EdgeFunction(stack, 'MyFn1', defaultEdgeFunctionProps());
+  const fn2 = new cloudfront.experimental.EdgeFunction(stack, 'MyFn2', defaultEdgeFunctionProps());
+  fn1.addAlias('live');
+  fn2.addAlias('live');
+
+  const fnStack = getFnStack();
+  expect(fnStack).toCountResources('AWS::Lambda::Function', 2);
+  expect(fnStack).toCountResources('AWS::Lambda::Alias', 2);
 });
 
 test('addPermission() creates permissions in function stack', () => {
