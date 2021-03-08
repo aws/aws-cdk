@@ -203,7 +203,7 @@
               "Arn"
             ]
           },
-          "Runtime": "nodejs10.x",
+          "Runtime": "nodejs14.x",
           "Description": "Lambda to make DynamoDB a global table",
           "Timeout": 300
         },
