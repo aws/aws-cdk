@@ -490,6 +490,9 @@ export abstract class RestApiBase extends Resource implements IRestApi {
     ignore(deployment);
   }
 
+  /**
+   * @deprecated This method will be made internal. No replacement
+   */
   protected configureCloudWatchRole(apiResource: CfnRestApi) {
     const role = new iam.Role(this, 'CloudWatchRole', {
       assumedBy: new iam.ServicePrincipal('apigateway.amazonaws.com'),
@@ -503,7 +506,10 @@ export abstract class RestApiBase extends Resource implements IRestApi {
     resource.node.addDependency(apiResource);
   }
 
-  protected configureDeployment(props: RestApiOptions) {
+  /**
+   * @deprecated This method will be made internal. No replacement
+   */
+  protected configureDeployment(props: RestApiBaseProps) {
     const deploy = props.deploy ?? true;
     if (deploy) {
 
