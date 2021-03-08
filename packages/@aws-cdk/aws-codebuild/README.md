@@ -620,22 +620,28 @@ if (project.enableBatchBuilds()) {
 
 ## Timeouts
 
-There are two types of timeouts that can be set when creating your Project. The `timeout` property can be used to set an upper limit on how long your Project is able to run without being marked as completed. The default is 60 minutes. An example of overriding the default follows.
+There are two types of timeouts that can be set when creating your Project.
+The `timeout` property can be used to set an upper limit on how long your Project is able to run without being marked as completed.
+The default is 60 minutes.
+An example of overriding the default follows.
 
 ```ts
 import * as codebuild from '@aws-cdk/aws-codebuild';
 
 new codebuild.Project(stack, 'MyProject', {
   timeout: Duration.minutes(90)
-};
+});
 ```
 
-The `queuedTimeout` property can be used to set an upper limit on how your Project remains queued to run. There is no default value for this property. As an example, to allow your Project to queue for up to thirty (30) minutes before the build fails, use the following code.
+The `queuedTimeout` property can be used to set an upper limit on how your Project remains queued to run.
+There is no default value for this property.
+As an example, to allow your Project to queue for up to thirty (30) minutes before the build fails,
+use the following code.
 
 ```ts
 import * as codebuild from '@aws-cdk/aws-codebuild';
 
 new codebuild.Project(stack, 'MyProject', {
   queuedTimeout: Duration.minutes(30)
-};
+});
 ```
