@@ -76,7 +76,8 @@ nodeunitShim({
     const tag = `cdk-${tagHash}`;
 
     test.ok(spawnSyncStub.firstCall.calledWith('docker', [
-      'build', '-t', tag,
+      'buildx', 'build',
+      '-t', tag,
       '--build-arg', 'TEST_ARG=cdk-test',
       'docker-path',
     ]));
