@@ -693,7 +693,7 @@ vpc.addClientVpnEndpoint('Endpoint', {
   // Mutual authentication
   clientCertificate: acm.Certificate.fromCertificateArn(this, 'Client', 'client-arn'),
   // User-based authentication
-  userBasedAuthentication: ec2.ClientVpnUserBasedAuthentication.federated('saml-provider-arn'),
+  userBasedAuthentication: ec2.ClientVpnUserBasedAuthentication.federated(samlProvider),
 });
 ```
 
@@ -715,7 +715,7 @@ and use `addaddAuthorizationRule()`:
 const endpoint = vpc.addClientVpnEndpoint('Endpoint', {
   cidr: '10.100.0.0/16',
   serverCertificate: acm.Certificate.fromCertificateArn(this, 'Server', 'server-arn'),
-  userBasedAuthentication: ec2.ClientVpnUserBasedAuthentication.federated('saml-provider-arn'),
+  userBasedAuthentication: ec2.ClientVpnUserBasedAuthentication.federated(samlProvider),
   authorizeAllUsersToVpcCidr: false,
 });
 
@@ -731,7 +731,7 @@ Use `addRoute()` to configure network routes:
 const endpoint = vpc.addClientVpnEndpoint('Endpoint', {
   cidr: '10.100.0.0/16',
   serverCertificate: acm.Certificate.fromCertificateArn(this, 'Server', 'server-arn'),
-  userBasedAuthentication: ec2.ClientVpnUserBasedAuthentication.federated('saml-provider-arn'),
+  userBasedAuthentication: ec2.ClientVpnUserBasedAuthentication.federated(samlProvider),
 });
 
 // Client-to-client access
