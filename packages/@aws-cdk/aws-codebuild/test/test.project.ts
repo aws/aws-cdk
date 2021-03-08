@@ -968,6 +968,10 @@ export = {
 
       // WHEN
       new codebuild.Project(stack, 'Project', {
+        source: codebuild.Source.s3({
+          bucket: new s3.Bucket(stack, 'Bucket'),
+          path: 'path',
+        }),
         queuedTimeout: cdk.Duration.minutes(30),
       });
 
@@ -984,6 +988,10 @@ export = {
 
       // WHEN
       new codebuild.Project(stack, 'Project', {
+        source: codebuild.Source.s3({
+          bucket: new s3.Bucket(stack, 'Bucket'),
+          path: 'path',
+        }),
         timeout: cdk.Duration.minutes(30),
       });
 
