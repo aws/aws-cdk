@@ -2,9 +2,30 @@ import { countResources, expect as cdkExpect, haveResource, haveResourceLike, is
 import { CfnOutput, CfnResource, Fn, Lazy, Stack, Tags } from '@aws-cdk/core';
 import { nodeunitShim, Test } from 'nodeunit-shim';
 import {
-  AclCidr, AclTraffic, BastionHostLinux, CfnSubnet, CfnVPC, SubnetFilter, DefaultInstanceTenancy, GenericLinuxImage,
-  InstanceType, InterfaceVpcEndpoint, InterfaceVpcEndpointService, NatProvider, NetworkAcl, NetworkAclEntry, Peer, Port, PrivateSubnet,
-  PublicSubnet, RouterType, Subnet, SubnetType, TrafficDirection, Vpc,
+  AclCidr,
+  AclTraffic,
+  BastionHostLinux,
+  CfnSubnet,
+  CfnVPC,
+  SubnetFilter,
+  DefaultInstanceTenancy,
+  GenericLinuxImage,
+  InstanceType,
+  InterfaceVpcEndpoint,
+  InterfaceVpcEndpointService,
+  NatProvider,
+  NatTrafficDirection,
+  NetworkAcl,
+  NetworkAclEntry,
+  Peer,
+  Port,
+  PrivateSubnet,
+  PublicSubnet,
+  RouterType,
+  Subnet,
+  SubnetType,
+  TrafficDirection,
+  Vpc,
 } from '../lib';
 
 nodeunitShim({
@@ -904,6 +925,22 @@ nodeunitShim({
         DestinationCidrBlock: '0.0.0.0/0',
         InstanceId: { Ref: 'TheVPCPublicSubnet1NatInstanceCC514192' },
       }));
+      cdkExpect(stack).to(haveResource('AWS::EC2::SecurityGroup', {
+        SecurityGroupEgress: [
+          {
+            CidrIp: '0.0.0.0/0',
+            Description: 'Allow all outbound traffic by default',
+            IpProtocol: '-1',
+          },
+        ],
+        SecurityGroupIngress: [
+          {
+            CidrIp: '0.0.0.0/0',
+            Description: 'from 0.0.0.0/0:ALL TRAFFIC',
+            IpProtocol: '-1',
+          },
+        ],
+      }));
 
       test.done();
     },
@@ -929,7 +966,7 @@ nodeunitShim({
       test.done();
     },
 
-    'can configure Security Groups of NAT instances'(test: Test) {
+    'can configure Security Groups of NAT instances with allowAllTraffic false'(test: Test) {
       // GIVEN
       const stack = getTestStack();
 
@@ -948,12 +985,118 @@ nodeunitShim({
 
       // THEN
       cdkExpect(stack).to(haveResource('AWS::EC2::SecurityGroup', {
+        SecurityGroupEgress: [
+          {
+            CidrIp: '0.0.0.0/0',
+            Description: 'Allow all outbound traffic by default',
+            IpProtocol: '-1',
+          },
+        ],
         SecurityGroupIngress: [
           {
             CidrIp: '1.2.3.4/32',
             Description: 'from 1.2.3.4/32:86',
             FromPort: 86,
             IpProtocol: 'tcp',
+            ToPort: 86,
+          },
+        ],
+      }));
+
+      test.done();
+    },
+
+    'can configure Security Groups of NAT instances with defaultAllowAll INBOUND_AND_OUTBOUND'(test: Test) {
+      // GIVEN
+      const stack = getTestStack();
+
+      // WHEN
+      const provider = NatProvider.instance({
+        instanceType: new InstanceType('q86.mega'),
+        machineImage: new GenericLinuxImage({
+          'us-east-1': 'ami-1',
+        }),
+        defaultAllowedTraffic: NatTrafficDirection.INBOUND_AND_OUTBOUND,
+      });
+      new Vpc(stack, 'TheVPC', {
+        natGatewayProvider: provider,
+      });
+
+      // THEN
+      cdkExpect(stack).to(haveResource('AWS::EC2::SecurityGroup', {
+        SecurityGroupEgress: [
+          {
+            CidrIp: '0.0.0.0/0',
+            Description: 'Allow all outbound traffic by default',
+            IpProtocol: '-1',
+          },
+        ],
+        SecurityGroupIngress: [
+          {
+            CidrIp: '0.0.0.0/0',
+            Description: 'from 0.0.0.0/0:ALL TRAFFIC',
+            IpProtocol: '-1',
+          },
+        ],
+      }));
+
+      test.done();
+    },
+
+    'can configure Security Groups of NAT instances with defaultAllowAll OUTBOUND_ONLY'(test: Test) {
+      // GIVEN
+      const stack = getTestStack();
+
+      // WHEN
+      const provider = NatProvider.instance({
+        instanceType: new InstanceType('q86.mega'),
+        machineImage: new GenericLinuxImage({
+          'us-east-1': 'ami-1',
+        }),
+        defaultAllowedTraffic: NatTrafficDirection.OUTBOUND_ONLY,
+      });
+      new Vpc(stack, 'TheVPC', {
+        natGatewayProvider: provider,
+      });
+
+      // THEN
+      cdkExpect(stack).to(haveResource('AWS::EC2::SecurityGroup', {
+        SecurityGroupEgress: [
+          {
+            CidrIp: '0.0.0.0/0',
+            Description: 'Allow all outbound traffic by default',
+            IpProtocol: '-1',
+          },
+        ],
+      }));
+
+      test.done();
+    },
+
+    'can configure Security Groups of NAT instances with defaultAllowAll NONE'(test: Test) {
+      // GIVEN
+      const stack = getTestStack();
+
+      // WHEN
+      const provider = NatProvider.instance({
+        instanceType: new InstanceType('q86.mega'),
+        machineImage: new GenericLinuxImage({
+          'us-east-1': 'ami-1',
+        }),
+        defaultAllowedTraffic: NatTrafficDirection.NONE,
+      });
+      new Vpc(stack, 'TheVPC', {
+        natGatewayProvider: provider,
+      });
+
+      // THEN
+      cdkExpect(stack).to(haveResource('AWS::EC2::SecurityGroup', {
+        SecurityGroupEgress: [
+          {
+            CidrIp: '255.255.255.255/32',
+            Description: 'Disallow all traffic',
+            FromPort: 252,
+            IpProtocol: 'icmp',
             ToPort: 86,
           },
         ],
