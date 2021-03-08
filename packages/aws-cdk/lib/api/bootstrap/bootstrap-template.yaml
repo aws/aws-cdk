@@ -78,6 +78,7 @@ Resources:
   FileAssetsBucketEncryptionKey:
     Type: AWS::KMS::Key
     Properties:
+      EnableKeyRotation: true
       KeyPolicy:
         Statement:
           - Action:
