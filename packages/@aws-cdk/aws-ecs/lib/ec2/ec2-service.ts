@@ -181,13 +181,11 @@ export class Ec2Service extends BaseService implements IEc2Service {
       throw new Error('Only one of SecurityGroup or SecurityGroups can be populated.');
     }
 
-    const propagateTagsFromSource = props.propagateTaskTagsFrom !== undefined ? props.propagateTaskTagsFrom
-      : (props.propagateTags !== undefined ? props.propagateTags : PropagatedTagSource.NONE);
+    const propagateTagsFromSource = props.propagateTaskTagsFrom ?? props.propagateTags ?? PropagatedTagSource.NONE;
 
     super(scope, id, {
       ...props,
-      // If daemon, desiredCount must be undefined and that's what we want. Otherwise, default to 1.
-      desiredCount: props.daemon || props.desiredCount !== undefined ? props.desiredCount : 1,
+      desiredCount: props.desiredCount,
       maxHealthyPercent: props.daemon && props.maxHealthyPercent === undefined ? 100 : props.maxHealthyPercent,
       minHealthyPercent: props.daemon && props.minHealthyPercent === undefined ? 0 : props.minHealthyPercent,
       launchType: LaunchType.EC2,
@@ -231,9 +229,9 @@ export class Ec2Service extends BaseService implements IEc2Service {
     this.addPlacementConstraints(...props.placementConstraints || []);
     this.addPlacementStrategies(...props.placementStrategies || []);
 
-    if (!this.taskDefinition.defaultContainer) {
-      throw new Error('A TaskDefinition must have at least one essential container');
-    }
+    this.node.addValidation({
+      validate: () => !this.taskDefinition.defaultContainer ? ['A TaskDefinition must have at least one essential container'] : [],
+    });
   }
 
   /**
@@ -251,7 +249,7 @@ export class Ec2Service extends BaseService implements IEc2Service {
   }
 
   /**
-   * Adds one or more placement strategies to use for tasks in the service. For more information, see
+   * Adds one or more placement constraints to use for tasks in the service. For more information, see
    * [Amazon ECS Task Placement Constraints](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task-placement-constraints.html).
    */
   public addPlacementConstraints(...constraints: PlacementConstraint[]) {

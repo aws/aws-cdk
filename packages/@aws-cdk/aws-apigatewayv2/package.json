@@ -14,8 +14,6 @@
       "dotnet": {
         "namespace": "Amazon.CDK.AWS.APIGatewayv2",
         "packageId": "Amazon.CDK.AWS.APIGatewayv2",
-        "signAssembly": true,
-        "assemblyOriginatorKeyFile": "../../key.snk",
         "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
       },
       "java": {
@@ -53,8 +51,8 @@
     "watch": "cdk-watch",
     "cfn2ts": "cfn2ts",
     "compat": "cdk-compat",
-    "build+test": "npm run build && npm test",
-    "build+test+package": "npm run build+test && npm run package",
+    "build+test": "yarn build && yarn test",
+    "build+test+package": "yarn build+test && yarn package",
     "gen": "cfn2ts",
     "rosetta:extract": "yarn --silent jsii-rosetta extract"
   },
@@ -105,13 +103,16 @@
   },
   "awslint": {
     "exclude": [
+      "props-physical-name:@aws-cdk/aws-apigatewayv2.ApiMappingProps",
       "from-method:@aws-cdk/aws-apigatewayv2.HttpIntegration",
       "from-method:@aws-cdk/aws-apigatewayv2.HttpRoute",
-      "from-method:@aws-cdk/aws-apigatewayv2.HttpStage",
-      "props-physical-name-type:@aws-cdk/aws-apigatewayv2.HttpStageProps.stageName",
-      "props-physical-name:@aws-cdk/aws-apigatewayv2.HttpApiMappingProps",
       "props-physical-name:@aws-cdk/aws-apigatewayv2.HttpIntegrationProps",
-      "props-physical-name:@aws-cdk/aws-apigatewayv2.HttpRouteProps"
+      "props-physical-name:@aws-cdk/aws-apigatewayv2.HttpRouteProps",
+      "from-method:@aws-cdk/aws-apigatewayv2.WebSocketApi",
+      "from-method:@aws-cdk/aws-apigatewayv2.WebSocketIntegration",
+      "from-method:@aws-cdk/aws-apigatewayv2.WebSocketRoute",
+      "props-physical-name:@aws-cdk/aws-apigatewayv2.WebSocketIntegrationProps",
+      "props-physical-name:@aws-cdk/aws-apigatewayv2.WebSocketRouteProps"
     ]
   },
   "stability": "experimental",
@@ -123,10 +124,13 @@
     },
     {
       "name": "Higher level constructs for Websocket APIs",
-      "stability": "Not Implemented"
+      "stability": "Experimental"
     }
   ],
   "awscdkio": {
     "announce": false
+  },
+  "publishConfig": {
+    "tag": "latest"
   }
 }

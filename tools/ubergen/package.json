@@ -17,8 +17,8 @@
     "lint": "cdk-lint",
     "pkglint": "pkglint -f",
     "test": "echo success",
-    "build+test+package": "npm run build+test",
-    "build+test": "npm run build && npm test"
+    "build+test+package": "yarn build+test",
+    "build+test": "yarn build && yarn test"
   },
   "author": {
     "name": "Amazon Web Services",
@@ -32,8 +32,8 @@
     "pkglint": "0.0.0"
   },
   "dependencies": {
-    "fs-extra": "^9.0.1",
-    "typescript": "~3.9.7"
+    "fs-extra": "^9.1.0",
+    "typescript": "~3.9.9"
   },
   "keywords": [
     "aws",

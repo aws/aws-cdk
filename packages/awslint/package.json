@@ -8,26 +8,26 @@
     "test": "echo ok",
     "watch": "tsc -b -w",
     "package": "mkdir -p dist/js && mv $( npm pack ) dist/js/",
-    "build+test+package": "npm run build+test && npm run package",
-    "build+test": "npm run build && npm test",
+    "build+test+package": "yarn build+test && yarn package",
+    "build+test": "yarn build && yarn test",
     "pkglint": "pkglint -f"
   },
   "bin": {
     "awslint": "bin/awslint"
   },
   "dependencies": {
-    "@jsii/spec": "^1.15.0",
+    "@jsii/spec": "^1.24.0",
     "camelcase": "^6.2.0",
     "colors": "^1.4.0",
-    "fs-extra": "^9.0.1",
-    "jsii-reflect": "^1.15.0",
+    "fs-extra": "^9.1.0",
+    "jsii-reflect": "^1.24.0",
     "yargs": "^16.2.0"
   },
   "devDependencies": {
     "@types/fs-extra": "^8.1.1",
-    "@types/yargs": "^15.0.10",
+    "@types/yargs": "^15.0.13",
     "pkglint": "0.0.0",
-    "typescript": "~3.9.7"
+    "typescript": "~3.9.9"
   },
   "repository": {
     "type": "git",
@@ -49,5 +49,8 @@
   "stability": "experimental",
   "engines": {
     "node": ">= 10.13.0 <13 || >=13.7.0"
+  },
+  "publishConfig": {
+    "tag": "latest"
   }
 }

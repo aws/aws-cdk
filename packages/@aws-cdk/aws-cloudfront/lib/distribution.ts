@@ -6,6 +6,7 @@ import { Construct } from 'constructs';
 import { ICachePolicy } from './cache-policy';
 import { CfnDistribution } from './cloudfront.generated';
 import { GeoRestriction } from './geo-restriction';
+import { IKeyGroup } from './key-group';
 import { IOrigin, OriginBindConfig, OriginBindOptions } from './origin';
 import { IOriginRequestPolicy } from './origin-request-policy';
 import { CacheBehavior } from './private/cache-behavior';
@@ -206,6 +207,16 @@ export interface DistributionProps {
    * @default - No custom error responses.
    */
   readonly errorResponses?: ErrorResponse[];
+
+  /**
+    * The minimum version of the SSL protocol that you want CloudFront to use for HTTPS connections.
+    *
+    * CloudFront serves your objects only to browsers or devices that support at
+    * least the SSL version that you specify.
+    *
+    * @default SecurityPolicyProtocol.TLS_V1_2_2019
+    */
+  readonly minimumProtocolVersion?: SecurityPolicyProtocol;
 }
 
 /**
@@ -284,7 +295,7 @@ export class Distribution extends Resource implements IDistribution {
         logging: this.renderLogging(props),
         priceClass: props.priceClass ?? undefined,
         restrictions: this.renderRestrictions(props.geoRestriction),
-        viewerCertificate: this.certificate ? this.renderViewerCertificate(this.certificate) : undefined,
+        viewerCertificate: this.certificate ? this.renderViewerCertificate(this.certificate, props.minimumProtocolVersion) : undefined,
         webAclId: props.webAclId,
       },
     });
@@ -427,11 +438,12 @@ export class Distribution extends Resource implements IDistribution {
     } : undefined;
   }
 
-  private renderViewerCertificate(certificate: acm.ICertificate): CfnDistribution.ViewerCertificateProperty {
+  private renderViewerCertificate(certificate: acm.ICertificate,
+    minimumProtocolVersion: SecurityPolicyProtocol = SecurityPolicyProtocol.TLS_V1_2_2019) : CfnDistribution.ViewerCertificateProperty {
     return {
       acmCertificateArn: certificate.certificateArn,
       sslSupportMethod: SSLMethod.SNI,
-      minimumProtocolVersion: SecurityPolicyProtocol.TLS_V1_2_2019,
+      minimumProtocolVersion: minimumProtocolVersion,
     };
   }
 }
@@ -600,7 +612,7 @@ export enum LambdaEdgeEventType {
   VIEWER_REQUEST = 'viewer-request',
 
   /**
-   * The viewer-response specifies the outgoing reponse
+   * The viewer-response specifies the outgoing response
    */
   VIEWER_RESPONSE = 'viewer-response',
 }
@@ -695,6 +707,14 @@ export interface AddBehaviorOptions {
    * @see https://aws.amazon.com/lambda/edge
    */
   readonly edgeLambdas?: EdgeLambda[];
+
+  /**
+   * A list of Key Groups that CloudFront can use to validate signed URLs or signed cookies.
+   *
+   * @default - no KeyGroups are associated with cache behavior
+   * @see https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/PrivateContent.html
+   */
+  readonly trustedKeyGroups?: IKeyGroup[];
 }
 
 /**

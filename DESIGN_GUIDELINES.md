@@ -8,13 +8,77 @@ The purpose of this document is to provide guidelines for designing the APIs in
 the AWS Construct Library in order to ensure a consistent and integrated
 experience across the entire AWS surface area.
 
+* [Preface](#preface)
+* [What's Included](#what-s-included)
+* [API Design](#api-design)
+  * [Modules](#modules)
+  * [Construct Class](#construct-class)
+  * [Construct Interface](#construct-interface)
+    * [Owned vs. Unowned Constructs](#owned-vs-unowned-constructs)
+    * [Abstract Base](#abstract-base)
+  * [Props](#props)
+    * [Types](#types)
+    * [Defaults](#defaults)
+    * [Flat](#flat)
+    * [Concise](#concise)
+    * [Naming](#naming)
+    * [Property Documentation](#property-documentation)
+    * [Enums](#enums)
+    * [Unions](#unions)
+  * [Attributes](#attributes)
+  * [Configuration](#configuration)
+    * [Prefer Additions](#prefer-additions)
+    * [Dropped Mutations](#dropped-mutations)
+  * [Factories](#factories)
+  * [Imports](#imports)
+    * [“from” Methods](#-from--methods)
+    * [From-attributes](#from-attributes)
+  * [Roles](#roles)
+  * [Resource Policies](#resource-policies)
+  * [VPC](#vpc)
+  * [Grants](#grants)
+  * [Metrics](#metrics)
+  * [Events](#events)
+  * [Connections](#connections)
+  * [Integrations](#integrations)
+  * [State](#state)
+  * [Physical Names - TODO](#physical-names---todo)
+  * [Tags](#tags)
+  * [Secrets](#secrets)
+* [Project Structure](#project-structure)
+  * [Code Organization](#code-organization)
+* [Implementation](#implementation)
+  * [General Principles](#general-principles)
+  * [Construct IDs](#construct-ids)
+  * [Errors](#errors)
+    * [Avoid Errors If Possible](#avoid-errors-if-possible)
+    * [Error reporting mechanism](#error-reporting-mechanism)
+    * [Throwing exceptions](#throwing-exceptions)
+    * [Never Catch Exceptions](#never-catch-exceptions)
+    * [Attaching (lazy) Validators](#attaching--lazy--validators)
+    * [Attaching Errors/Warnings](#attaching-errors-warnings)
+    * [Error messages](#error-messages)
+  * [Tokens](#tokens)
+* [Documentation](#documentation)
+  * [Inline Documentation](#inline-documentation)
+  * [Readme](#readme)
+* [Testing](#testing)
+  * [Unit tests](#unit-tests)
+  * [Integration tests](#integration-tests)
+  * [Versioning](#versioning)
+* [Naming & Style](#naming---style)
+  * [Naming Conventions](#naming-conventions)
+  * [Coding Style](#coding-style)
+
+## Preface
+
 As much as possible, the guidelines in this document are enforced using the
 [**awslint** tool](https://www.npmjs.com/package/awslint) which reflects on the
 APIs and verifies that the APIs adhere to the guidelines. When a guideline is
 backed by a linter rule, the rule name will be referenced like this:
 _[awslint:resource-class-is-construct]_.
 
-For the purpose of this document we will use "Foo" to denote the official name
+For the purpose of this document, we will use "Foo" to denote the official name
 of the resource as defined in the AWS CloudFormation resource specification
 (i.e. "Bucket", "Queue", "Topic", etc). This notation allows deriving names from
 the official name. For example, `FooProps` would be `BucketProps`, `TopicProps`,
@@ -55,6 +119,73 @@ Construct Library.
 allows the library to be used from all supported programming languages. jsii
 poses restrictions on language features that cannot be idiomatically represented
 in target languages.
+
+## What's Included
+
+The AWS Construct Library, which is shipped as part of the AWS CDK constructs
+representing AWS resources.
+
+The AWS Construct Library has multiple layers of constructs, beginning
+with low-level constructs, which we call _CFN Resources_ (or L1, short for
+"level 1") or CFN Resources (short for CloudFormation). These constructs
+directly represent all resources available in AWS CloudFormation. CFN Resources
+are periodically generated from the AWS CloudFormation Resource
+Specification. They are named **Cfn**_Xyz_, where _Xyz_ is name of the
+resource. For example, CfnBucket represents the AWS::S3::Bucket AWS
+CloudFormation resource. When you use Cfn resources, you must explicitly
+configure all resource properties, which requires a complete understanding of
+the details of the underlying AWS CloudFormation resource model.
+
+The next level of constructs, L2, also represent AWS resources, but with a
+higher-level, intent-based API. They provide similar functionality, but provide
+the defaults, boilerplate, and glue logic you'd be writing yourself with a CFN
+Resource construct. L2 constructs offer convenient defaults and reduce the need
+to know all the details about the AWS resources they represent, while providing
+convenience methods that make it simpler to work with the resource. For example,
+the `s3.Bucket` class represents an Amazon S3 bucket with additional properties
+and methods, such as `bucket.addLifeCycleRule()`, which adds a lifecycle rule to
+the bucket.
+
+Examples of behaviors that an L2 commonly include:
+
+- Strongly-typed modeling of the underlying L1 properties
+- Methods for integrating other AWS resources (e.g., adding an event notification to
+  an S3 bucket).
+- Modeling of permissions and resource policies
+- Modeling of metrics
+
+In addition to the above, some L2s may introduce more complex and
+helpful functionality, either part of the original L2 itself, or as part of a
+separate construct. The most common form of these L2s are integration constructs
+that model interactions between different services (e.g., SNS publishing to SQS,
+CodePipeline actions that trigger Lambda functions).
+
+The next level of abstraction present within the CDK are what we designate as
+"L2.5s": a step above the L2s in terms of abstraction, but not quite at the
+level of complete patterns or applications.  These constructs still largely
+focus on a single logical resource -- in constrast to "patterns" which combine
+multiple resources -- but are customized for a specific common usage scenario of
+an L2. Examples of L2.5s in the CDK are `aws-apigateway.LambdaRestApi`,
+`aws-lambda-nodejs.NodeJsFunction`, `aws-rds.ServerlessCluster` and `eks.FargateCluster`.
+
+L2.5 constructs will be considered for inclusion in the CDK if they...
+
+- cover a common usage scenario that can be used by a significant portion of
+  the community;
+- provide significant ease of use over the base L2 (via usage-specific defaults
+  convenience methods or improved strong-typing);
+- simplify or enable another L2 within the CDK
+
+The CDK also currently includes some even higher-level constructs, which we call
+patterns. These constructs often involve multiple kinds of resources and are
+designed to help you complete common tasks in AWS or represent entire
+applications. For example, the
+`aws-ecs-patterns.ApplicationLoadBalancedFargateService` construct represents an
+architecture that includes an AWS Fargate container cluster employing an
+Application Load Balancer (ALB). These patterns are typically difficult to
+design to be one-size-fits-all and are best suited to be published as separate
+libraries, rather than included directly in the CDK. The patterns that currently
+exist in the CDK will be removed in the next CDK major version (CDKv2).
 
 ## API Design
 
@@ -98,8 +229,8 @@ or abstractions. However, you will notice that some sections explicitly call out
 guidelines that apply only to AWS resources (and in many cases
 enforced/implemented by the **Resource** base class).
 
-AWS services are modeled around the concept of *resources*. Service normally
-expose through their APIs one or more resources, which can be provisioned
+AWS services are modeled around the concept of *resources*. Services normally
+expose one or more resources through their APIs, which can be provisioned
 through the APIs control plane or through AWS CloudFormation.
 
 Every resource available in the AWS platform will have a corresponding resource
@@ -199,7 +330,7 @@ the fact that the Bucket class needs the ARN or that it needs to request
 encryption permissions are not the user's concern, and the API of the Bucket
 class should not “leak” these implementation details. In the future, the Bucket
 class can decide to interact differently with the **key** and this won't require
-expanding it's surface area. It also allows the **Key** class to change it's
+expanding its surface area. It also allows the **Key** class to change its
 behavior (i.e. add an IAM action to enable encryption of certain types of keys)
 without affecting the API of the consumer.
 
@@ -207,7 +338,7 @@ without affecting the API of the consumer.
 
 Using object references instead of attribute references provides a richer API,
 but also introduces an inherent challenge: how do we reference constructs that
-are not defined inside the same app (“**owned**” by the app). These could be
+are not defined inside the same app (“**owned**” by the app)? These could be
 resources that were created by some other AWS CDK app, via the AWS console,
 etc. We call these **“unowned” constructs.**
 
@@ -272,7 +403,7 @@ as “props” (to distinguish them from JavaScript object properties).
 Props are the most important aspect of designing a construct. Props are the
 entry point of the construct. They should reflect the entire surface area of the
 service through semantics that are intuitive to how developers perceive the
-service and it's capabilities.
+service and its capabilities.
 
 When designing the props of an AWS resource, consult the AWS Console experience
 for creating this resource. Service teams spend a lot of energy thinking about
@@ -300,7 +431,7 @@ API. In almost all cases, a richer object-oriented API can be exposed to
 encapsulate the low-level surface [_awslint:props-no-cfn-types_].
 
 Do not use the **Token** type. It provides zero type safety, and is a functional
-interface that may not translate cleanly in other JSII runtimes: ergo it should
+interface that may not translate cleanly in other JSII runtimes. Therefore, it should
 be avoided wherever possible [_awslint:props-no-tokens_].
 
 **deCDK** allows users to synthesize CDK stacks through a CloudFormation-like
@@ -308,7 +439,7 @@ be avoided wherever possible [_awslint:props-no-tokens_].
   like CloudFormation resources. Technically, this means that when a construct
   is defined, users supply an ID, type and a set of properties. In order to
   allow users to instantiate all AWS Construct Library constructs through the
-  deCDK syntax, we pose restrictions on prop types _[awslint:props-decdk]_:
+  deCDK syntax, we impose restrictions on prop types _[awslint:props-decdk]_:
 
 * Primitives (string, number, boolean, date)
 * Collections (list, map)
@@ -333,14 +464,31 @@ from harnessing the full power of the resource, and customizing its behavior.
   alignment.
 
 The **@default** documentation tag must be included on all optional properties
-of interfaces. Since there are cases where the default behavior is not a
-specific value but rather depends on circumstances/context, the default
-documentation tag must always begin with a “**-**" and then include a
-description of the default behavior _[awslint:props-default-doc]_.
+of interfaces.
 
-For example:
+In cases where the default behavior can be described by a value (typically the
+case for booleans and enums, sometimes for strings and numbers), the value immediately
+follows the **@default** tag and should be a valid JavaScript value (as in:
+`@default false`, or `@default "stringValue"`).
+
+In the majority of cases, the default behavior is not a specific value but
+rather depends on circumstances/context. The default documentation tag must
+begin with a “**-**" and then include a description of the default behavior
+_[awslint:props-default-doc]_. This is specially true if the property
+is a complex value or a reference to an object: don't write `@default
+undefined`, describe the behavior that happens if the property is not
+supplied.
+
+Describe the default value or default behavior, even if it's not CDK that
+controls the default. For example, if an absent value does not get rendered
+into the template and it's ultimately the AWS *service* that determines the
+default behavior, we still describe it in our documentation.
+
+Examples:
 
 ```ts
+// ✅ DO - uses a '-' and describes the behavior
+
 /**
  * External KMS key to use for bucket encryption.
  *
@@ -348,6 +496,32 @@ For example:
  * new KMS key will be created and associated with this bucket.
  */
 encryptionKey?: kms.IEncryptionKey;
+```
+
+```ts
+/**
+ * External KMS key to use for bucket encryption.
+ *
+ * @default undefined
+ *            ❌ DO NOT - that the value is 'undefined' by default is implied. However,
+ *                        what will the *behavior* be if the value is left out?
+ */
+encryptionKey?: kms.IEncryptionKey;
+```
+
+```ts
+/**
+ * Minimum capacity of the AutoScaling resource
+ *
+ * @default - no minimum capacity
+ *             ❌ DO NOT - there most certainly is. It's probably 0 or 1.
+ *
+ * // OR
+ * @default - the minimum capacity is the default minimum capacity
+ *             ❌ DO NOT - this is circular and useless to the reader.
+ *                         Describe what will actually happen.
+ */
+minCapacity?: number;
 ```
 
 #### Flat
@@ -390,19 +564,19 @@ item). It just means that you can remove redundant context from the property
 names. For example, there is no need to repeat the resource type, the property
 type or indicate that this is a "configuration".
 
-For example prefer “readCapacity” versus “readCapacityUnits”.
+For example, prefer “readCapacity” versus “readCapacityUnits”.
 
 #### Naming
 
 We prefer the terminology used by the official AWS service documentation over
 new terminology, even if you think it's not ideal. It helps users diagnose
 issues and map the mental model of the construct to the service APIs,
-documentation and examples. For example don't be tempted to change SQS's
+documentation and examples. For example, don't be tempted to change SQS's
 **dataKeyReusePeriod** with **keyRotation** because it will be hard for people
 to diagnose problems. They won't be able to just search for “sqs dataKeyReuse”
 and find topics on it.
 
-> We can relax this guidelines when this is about generic terms (like
+> We can relax this guideline when this is about generic terms (like
   `httpStatus` instead of `statusCode`). The important semantics to preserve are
   for *service features*: I wouldn't want to rename "lambda layers" to "lambda
   dependencies" just because it makes more sense because then users won't be
@@ -546,7 +720,7 @@ be treated as an opaque token, the JSDoc “@returns” annotation should begin 
 
 When an app defines a construct or resource, it specifies its provisioning
 configuration upon initialization. For example, when an SQS queue is defined,
-it's visibility timeout can be configured.
+its visibility timeout can be configured.
 
 Naturally, when constructs are imported (unowned), the importing app does not
 have control over its configuration (e.g. you cannot change the visibility
@@ -609,17 +783,17 @@ consistency and interoperability, we allow mutating methods to be exposed on the
 interface. For example, **grant** methods are exposed on the construct interface
 and not on the concrete class. In most cases, when you grant a permission on an
 AWS resource, the *principal's* policy needs to be updated, which mutates the
-consumer . However, there are certain cases where a *resource policy* must be
+consumer. However, there are certain cases where a *resource policy* must be
 updated. However, if the resource is unowned, it doesn't make sense (or even
 impossible) to update its policy (there is usually a 1:1 relationship between a
-resource and a resource policy). In such a case, we decided that grant methods
-will simply skip any changes to resource policies, but will issue attach a
+resource and a resource policy). In such cases, we decided that grant methods
+will simply skip any changes to resource policies, but will attach a
 **permission notice** to the app, which will be printed when the stack is
 synthesized by the toolkit.
 
 ### Factories
 
-In most AWS services, there's a one or more resource which can be referred to as
+In most AWS services, there are one or more resources which can be referred to as
 “primary resources” (normally one), while other resources exposed by the service
 can be considered “secondary resources”.
 
@@ -687,7 +861,7 @@ their app.
 The signature of all “from” methods should adhere to the following rules
 _[awslint:from-signature]_:
 
-* First argument must be **scope** of type **Construct**
+* First argument must be **scope** of type **Construct**.
 * Second argument is a **string**. This string will be used to determine the
   ID of the new construct. If the import method uses some value that is
   promised to be unique within the stack scope (such as ARN, export name),
@@ -697,8 +871,8 @@ _[awslint:from-signature]_:
 #### “from” Methods
 
 Resource constructs should export static “from” methods for importing unowned
-resources given one more of it's physical attributes such as ARN, name, etc. All
-constructs should have at least one fromXxx method _[awslint:from-method]_:
+resources given one or more of its physical attributes such as ARN, name, etc. All
+constructs should have at least one `fromXxx` method _[awslint:from-method]_:
 
 ```ts
 static fromFooArn(scope: Construct, id: string, bucketArn: string): IFoo;
@@ -713,7 +887,7 @@ static fromFooName(scope: Construct, id: string, bucketName: string): IFoo;
   doesn't have unresolved tokens (using **Token.unresolved**). Preferably, they
   can use **Stack.parseArn** to achieve this purpose.
 
-If a resource has an ARN attribute it should implement at least a **fromFooArn**
+If a resource has an ARN attribute, it should implement at least a **fromFooArn**
 import method [_awslint:from-arn_].
 
 To implement **fromAttribute** methods, use the abstract base class construct as
@@ -769,7 +943,7 @@ interface FooProps {
 }
 ```
 
-The construct interface should expose a **role**property, and extends
+The construct interface should expose a **role** property, and extends
 **iam.IGrantable** _[awslint:role-property]_:
 
 ```ts
@@ -793,7 +967,7 @@ interface IFoo {
 }
 ```
 
-If the construct is unowned this method should no-op and issue a **permissions
+If the construct is unowned, this method should no-op and issue a **permissions
 notice** (TODO) to the user indicating that they should ensure that the role of
 this resource should have the specified permission.
 
@@ -870,7 +1044,7 @@ vpcSubnetSelection?: ec2.SubnetSelection;
 
 ### Grants
 
-Grants are one of the most powerful concept in the AWS Construct Library. They
+Grants are one of the most powerful concepts in the AWS Construct Library. They
 offer a higher level, intent-based, API for managing IAM permissions for AWS
 resources.
 
@@ -947,7 +1121,7 @@ suffix and adhere to the following rules _[awslint:metrics-method-signature]:_
 
 * Name should be “metricXxx” where “Xxx” is the official metric name
 * Accepts a single “options” argument of type **MetricOptions**
-* Returns a **Metric** object.
+* Returns a **Metric** object
 
 ```ts
 interface IFunction {
@@ -974,7 +1148,7 @@ class Function extends Resource implements IFunction {
 
 ### Events
 
-Many AWS resource emit events to the CloudWatch event bus. Such resources should
+Many AWS resources emit events to the CloudWatch event bus. Such resources should
 have a set of “onXxx” methods available on their construct interface
 _[awslint:events-in-interface]_.
 
@@ -1001,7 +1175,7 @@ extend **ec2.IConnectable** _[awslint:connectable-interface]_.
 
 ### Integrations
 
-Many AWS services offer “integrations” to other services. For example, AWS
+Many AWS services offer “integrations” with other services. For example, AWS
 CodePipeline has actions that can trigger AWS Lambda functions, ECS tasks,
 CodeBuild projects and more. AWS Lambda can be triggered by a variety of event
 sources, AWS CloudWatch event rules can trigger many types of targets, SNS can
@@ -1017,7 +1191,7 @@ the central service and can be triggered by multiple event sources.
 
 Integrations are an abstract concept, not necessarily a specific mechanism. For
 example, each AWS Lambda event source is implemented in a different way (SNS,
-Bucket notifications, CloudWatch events, etc), but conceptually, *some*users
+Bucket notifications, CloudWatch events, etc), but conceptually, *some* users
 like to think about AWS Lambda as the “center”. It is also completely legitimate
 to have multiple ways to connect two services on AWS. To trigger an AWS Lambda
 function from an SNS topic, you could either use the integration or the SNS APIs
@@ -1102,7 +1276,7 @@ export class Table { }
 ```
 
 Persistent resources must have a **removalPolicy** prop, defaults to
-**Orphan**_[awslint:state-removal-policy-prop]_:
+**Orphan** _[awslint:state-removal-policy-prop]_:
 
 ```ts
 import { RemovalPolicy } from '@aws-cdk/cdk';
@@ -1179,14 +1353,14 @@ implementation of AWS constructs.
   not one that you made up and you force them to learn.
 * Multiple ways of achieving the same thing is legitimate.
 * Constantly maintain the invariants.
-* Fewer “if statements” the better.
+* The fewer “if statements” the better.
 
 ### Construct IDs
 
 Construct IDs (the second argument passed to all constructs when they are
 defined) are used to formulate resource logical IDs which must be **stable**
 across updates. The logical ID of a resource is calculated based on the **full
-path** of it's construct in the construct scope hierarchy. This means that any
+path** of its construct in the construct scope hierarchy. This means that any
 change to a logical ID in this path will invalidate all the logical IDs within
 this scope. This will result in **replacements of all underlying resources**
 within the next update, which is extremely undesirable.
@@ -1196,7 +1370,7 @@ construct.
 
 Therefore, when implementing constructs, you should treat the construct
 hierarchy and all construct IDs as part of the **external contract** of the
-construct. Any chance to either should be considered and called out as a
+construct. Any change to either should be considered and called out as a
 breaking change.
 
 There is no need to concatenate logical IDs. If you find yourself needing to
@@ -1216,20 +1390,7 @@ for (const az of availabilityZones) {
 
 ### Errors
 
-#### Input Validation
-
-Prefer to validate input as early as it is passed into your code (ctor, methods,
-etc) and bail out by throwing an **Error** (no need to create subclasses of
-Error since all errors in the CDK are unrecoverable):
-
-* All lowercase sentences (usually they are printed after “Error: \<message\>”)
-* Include a descriptive message
-* Include the value provided
-* Include the expected/allowed values
-* No need to include information that can be obtained from the stack trace.
-* No need to add a period at the end of error messages.
-
-#### Avoid Errors if Possible
+#### Avoid Errors If Possible
 
 Always prefer to do the right thing for the user instead of raising an
 error. Only fail if the user has explicitly specified bad configuration. For
@@ -1237,18 +1398,79 @@ example, VPC has **enableDnsHostnames** and **enableDnsSupport**. DNS hostnames
 *require* DNS support, so only fail if the user enabled DNS hostnames but
 explicitly disabled DNS support. Otherwise, auto-enable DNS support for them.
 
+#### Error reporting mechanism
+
+There are three mechanism you can use to report errors:
+
+* Eagerly throw an exception (fails synthesis)
+* Attach a (lazy) validator to a construct (fails synthesis)
+* Attach errors to a construct (succeeds synthesis, fails deployment)
+
+Between these, the first two fail synthesis, while the latter doesn't. Failing synthesis
+means that no Cloud Assembly will be produced.
+
+The distinction becomes apparent when you consider multiple stacks in the same Cloud
+Assembly:
+
+* If synthesis fails due to an error in *one* stack (either by throwing an exception
+  or by failing validation), the other stack can also not be deployed.
+* In contrast, if you attach an error to a construct in one stack, that stack cannot
+  be deployed but the other one still can.
+
+Choose one of the first two methods if the failure is caused by a misuse of the API,
+which the user should be alerted to and fix as quickly as possible. Choose attaching
+an error to a construct if the failure is due to environmental factors outside the
+direct use of the API surface (for example, lack of context provider lookup values).
+
+#### Throwing exceptions
+
+This should be the preferred error reporting method.
+
+Validate input as early as it is passed into your code (ctor, methods,
+etc) and bail out by throwing an `Error`. No need to create subclasses of
+Error since all errors in the CDK are unrecoverable.
+
+When validating inputs, don't forget to account for the fact that these
+values may be `Token`s and not available for inspection at synthesis time.
+
+Example:
+
+```ts
+if (!Token.isUnresolved(props.minCapacity) && props.minCapacity < 1) {
+  throw new Error(`'minCapacity' should be at least 1, got '${props.minCapacity}'`);
+}
+```
+
 #### Never Catch Exceptions
 
-All CDK errors are unrecoverable.  If a method wishes to signal a recoverable
+All CDK errors are unrecoverable. If a method wishes to signal a recoverable
 error, this should be modeled in a return value and not through exceptions.
 
-#### Post Validation
+#### Attaching (lazy) Validators
 
-In the rare case where the integrity of your construct can only be checked right
-before synthesis, override the **Construct.validate()** method and return
-meaningful errors. Always prefer early input validation over post-validation.
+In the rare case where the integrity of your construct can only be checked
+after the app has completed its initialization, call the
+**this.node.addValidation()** method to add a validation object. This will
+generally only be necessary if you want to produce an error when a certain
+interaction with your construct did *not* happen (for example, a property
+that should have been configured over the lifetime of the construct, wasn't):
 
-#### Attached Errors/Warnings
+Always prefer early input validation over post-validation, as the necessity
+of these should be rare.
+
+Example:
+
+```ts
+this.node.addValidation({
+  // 'validate' should return a string[] list of errors
+  validate: () => this.rules.length === 0
+    ? ['At least one Rule must be added. Call \'addRule()\' to add Rules.']
+    : []
+  }
+});
+```
+
+#### Attaching Errors/Warnings
 
 You can also “attach” an error or a warning to a construct via
 the **Annotations** class. These methods (e.g., `Annotations.of(construct).addWarning`)
@@ -1256,7 +1478,46 @@ will attach CDK metadata to your construct, which will be displayed to the user
 by the toolchain when the stack is deployed.
 
 Errors will not allow deployment and warnings will only be displayed in
-highlight (unless **--strict** mode is used).
+highlight (unless `--strict` mode is used).
+
+```ts
+if (!Token.isUnresolved(subnetIds) && subnetIds.length < 2) {
+  Annotations.of(this).addError(`Need at least 2 subnet ids, got: ${JSON.stringify(subnetIds)}`);
+}
+```
+
+#### Error messages
+
+Think about error messages from the point of view of the end user of the CDK.
+This is not necessarily someone who knows about the internals of your
+construct library, so try to phrase the message in a way that would make
+sense to them.
+
+For example, if a value the user supplied gets handed off between a number of
+functions before finally being validated, phrase the message in terms of the
+API the user interacted with, not in terms of the internal APIs.
+
+A good error message should include the following components:
+
+* What went wrong, in a way that makes sense to a top-level user
+* An example of the incorrect value provided (if applicable)
+* An example of the expected/allowed values (if applicable)
+* The message should explain the (most likely) cause and change the user can
+  make to rectify the situation
+
+The message should be all lowercase and not end in a period, or contain
+information that can be obtained from the stack trace.
+
+```ts
+// ✅ DO - show the value you got and be specific about what the user should do
+`supply at least one of minCapacity or maxCapacity, got ${JSON.stringify(action)}`
+
+// ❌ DO NOT - this tells the user nothing about what's wrong or what they should do
+`required values are missing`
+
+// ❌ DO NOT - this error only makes sense if you know the implementation
+`'undefined' is not a number`
+```
 
 ### Tokens
 

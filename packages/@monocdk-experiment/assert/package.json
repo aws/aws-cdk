@@ -11,8 +11,8 @@
     "test": "cdk-test",
     "pkglint": "pkglint -f",
     "package": "cdk-package",
-    "build+test+package": "npm run build+test && npm run package",
-    "build+test": "npm run build && npm test"
+    "build+test+package": "yarn build+test && yarn package",
+    "build+test": "yarn build && yarn test"
   },
   "cdk-build": {
     "jest": true,
@@ -34,20 +34,20 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@monocdk-experiment/rewrite-imports": "0.0.0",
-    "@types/jest": "^26.0.15",
-    "@types/node": "^10.17.48",
+    "@types/jest": "^26.0.20",
+    "@types/node": "^10.17.54",
     "cdk-build-tools": "0.0.0",
     "constructs": "^3.2.0",
     "jest": "^26.6.3",
     "monocdk": "0.0.0",
     "pkglint": "0.0.0",
-    "ts-jest": "^26.4.4"
+    "ts-jest": "^26.5.3"
   },
   "dependencies": {
     "@aws-cdk/cloudformation-diff": "0.0.0"
   },
   "peerDependencies": {
-    "constructs": "^3.0.4",
+    "constructs": "^3.2.0",
     "jest": "^26.6.3",
     "monocdk": "^0.0.0"
   },
@@ -65,5 +65,8 @@
     "node": ">= 10.13.0 <13 || >=13.7.0"
   },
   "stability": "experimental",
-  "maturity": "developer-preview"
+  "maturity": "developer-preview",
+  "publishConfig": {
+    "tag": "latest"
+  }
 }

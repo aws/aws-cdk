@@ -17,8 +17,8 @@
     "watch": "tsc -w",
     "pkglint": "pkglint -f",
     "test": "ln -sf ../../package2 test/test-fixture/package1/node_modules/ && jest",
-    "build+test+package": "npm run build+test",
-    "build+test": "npm run build && npm test"
+    "build+test+package": "yarn build+test",
+    "build+test": "yarn build && yarn test"
   },
   "cdk-build": {
     "jest": true
@@ -38,12 +38,12 @@
     ]
   },
   "devDependencies": {
-    "@types/jest": "^26.0.15",
-    "@types/node": "^10.17.48",
+    "@types/jest": "^26.0.20",
+    "@types/node": "^10.17.54",
     "@types/yarnpkg__lockfile": "^1.1.4",
     "jest": "^26.6.3",
     "pkglint": "0.0.0",
-    "typescript": "~3.9.7"
+    "typescript": "~3.9.9"
   },
   "dependencies": {
     "@yarnpkg/lockfile": "^1.1.0"

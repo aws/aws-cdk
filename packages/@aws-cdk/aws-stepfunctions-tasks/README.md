@@ -54,7 +54,10 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
   - [Cancel Step](#cancel-step)
   - [Modify Instance Fleet](#modify-instance-fleet)
   - [Modify Instance Group](#modify-instance-group)
+- [EKS](#eks)
+  - [Call](#call)
 - [Glue](#glue)
+- [Glue DataBrew](#glue-databrew)
 - [Lambda](#lambda)
 - [SageMaker](#sagemaker)
   - [Create Training Job](#create-training-job)
@@ -153,7 +156,7 @@ merge a subset of the task output to the input.
 Most tasks take parameters. Parameter values can either be static, supplied directly
 in the workflow definition (by specifying their values), or a value available at runtime
 in the state machine's execution (either as its input or an output of a prior state).
-Parameter values available at runtime can be specified via the `Data` class,
+Parameter values available at runtime can be specified via the `JsonPath` class,
 using methods such as `JsonPath.stringAt()`.
 
 The following example provides the field named `input` as the input to the Lambda function
@@ -185,8 +188,8 @@ const convertToSeconds = new tasks.EvaluateExpression(this, 'Convert to seconds'
 
 const createMessage = new tasks.EvaluateExpression(this, 'Create message', {
   // Note: this is a string inside a string.
-    expression: '`Now waiting ${$.waitSeconds} seconds...`',
-    runtime: lambda.Runtime.NODEJS_10_X,
+  expression: '`Now waiting ${$.waitSeconds} seconds...`',
+  runtime: lambda.Runtime.NODEJS_14_X,
   resultPath: '$.message',
 });
 
@@ -209,9 +212,8 @@ new sfn.StateMachine(this, 'StateMachine', {
 ```
 
 The `EvaluateExpression` supports a `runtime` prop to specify the Lambda
-runtime to use to evaluate the expression. Currently, the only runtime
-supported is `lambda.Runtime.NODEJS_10_X`.
-
+runtime to use to evaluate the expression. Currently, only runtimes
+of the Node.js family are supported.
 
 ## Athena
 
@@ -435,6 +437,8 @@ CPU and memory. Similarly, when you scale down the task count, Amazon ECS must d
 which tasks to terminate. You can apply task placement strategies and constraints to
 customize how Amazon ECS places and terminates tasks. Learn more about [task placement](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task-placement.html)
 
+The latest ACTIVE revision of the passed task definition is used for running the task.
+
 The following example runs a job from a task definition on EC2
 
 ```ts
@@ -488,7 +492,9 @@ isolation by design. Learn more about [Fargate](https://aws.amazon.com/fargate/)
 
 The Fargate launch type allows you to run your containerized applications without the need
 to provision and manage the backend infrastructure. Just register your task definition and
-Fargate launches the container for you.
+Fargate launches the container for you. The latest ACTIVE revision of the passed 
+task definition is used for running the task. Learn more about 
+[Fargate Versioning](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_DescribeTaskDefinition.html)
 
 The following example runs a job from a task definition on Fargate
 
@@ -659,6 +665,37 @@ new tasks.EmrModifyInstanceGroupByName(stack, 'Task', {
 });
 ```
 
+## EKS
+
+Step Functions supports Amazon EKS through the service integration pattern.
+The service integration APIs correspond to Amazon EKS APIs.
+
+[Read more](https://docs.aws.amazon.com/step-functions/latest/dg/connect-eks.html) about the differences when using these service integrations.
+
+### Call
+
+Read and write Kubernetes resource objects via a Kubernetes API endpoint.
+Corresponds to the [`call`](https://docs.aws.amazon.com/step-functions/latest/dg/connect-eks.html) API in Step Functions Connector.
+
+The following code snippet includes a Task state that uses eks:call to list the pods.
+
+```ts
+import * as eks from '@aws-cdk/aws-eks';
+import * as sfn from '@aws-cdk/aws-stepfunctions';
+import * as tasks from '@aws-cdk/aws-stepfunctions-tasks';
+
+const myEksCluster = new eks.Cluster(this, 'my sample cluster', {
+   version: eks.KubernetesVersion.V1_18,
+   clusterName: 'myEksCluster',
+ });
+
+new tasks.EksCall(stack, 'Call a EKS Endpoint', {
+  cluster: myEksCluster,
+  httpMethod: MethodType.GET,
+  httpPath: '/api/v1/namespaces/default/pods',
+});
+```
+
 ## Glue
 
 Step Functions supports [AWS Glue](https://docs.aws.amazon.com/step-functions/latest/dg/connect-glue.html) through the service integration pattern.
@@ -667,12 +704,24 @@ You can call the [`StartJobRun`](https://docs.aws.amazon.com/glue/latest/dg/aws-
 
 ```ts
 new GlueStartJobRun(stack, 'Task', {
-  jobName: 'my-glue-job',
+  glueJobName: 'my-glue-job',
   arguments: {
     key: 'value',
   },
   timeout: cdk.Duration.minutes(30),
   notifyDelayAfter: cdk.Duration.minutes(5),
+});
+```
+
+## Glue DataBrew
+
+Step Functions supports [AWS Glue DataBrew](https://docs.aws.amazon.com/step-functions/latest/dg/connect-databrew.html) through the service integration pattern.
+
+You can call the [`StartJobRun`](https://docs.aws.amazon.com/databrew/latest/dg/API_StartJobRun.html) API from a `Task` state.
+
+```ts
+new GlueDataBrewStartJobRun(stack, 'Task', {
+  Name: 'databrew-job',
 });
 ```
 
@@ -794,7 +843,7 @@ Step Functions supports [AWS SageMaker](https://docs.aws.amazon.com/step-functio
 You can call the [`CreateTrainingJob`](https://docs.aws.amazon.com/sagemaker/latest/dg/API_CreateTrainingJob.html) API from a `Task` state.
 
 ```ts
-new sfn.SagemakerTrainTask(this, 'TrainSagemaker', {
+new sfn.SageMakerCreateTrainingJob(this, 'TrainSagemaker', {
   trainingJobName: sfn.JsonPath.stringAt('$.JobName'),
   role,
   algorithmSpecification: {
@@ -829,7 +878,7 @@ new sfn.SagemakerTrainTask(this, 'TrainSagemaker', {
 You can call the [`CreateTransformJob`](https://docs.aws.amazon.com/sagemaker/latest/dg/API_CreateTransformJob.html) API from a `Task` state.
 
 ```ts
-new sfn.SagemakerTransformTask(this, 'Batch Inference', {
+new sfn.SageMakerCreateTransformJob(this, 'Batch Inference', {
   transformJobName: 'MyTransformJob',
   modelName: 'MyModelName',
   modelClientOptions: {

@@ -115,6 +115,9 @@ $ cdk synth
 
 $ # Synthesize cloud assembly for StackName, but don't include dependencies
 $ cdk synth MyStackName --exclusively
+
+$ # Synthesize cloud assembly for StackName, but don't cloudFormation template output to STDOUT
+$ cdk synth MyStackName --quiet
 ```
 
 See the [AWS Documentation](https://docs.aws.amazon.com/cdk/latest/guide/apps.html#apps_cloud_assembly) to learn more about cloud assemblies.
@@ -204,7 +207,7 @@ Usage of output in a CDK stack
 const fn = new lambda.Function(this, "fn", {
   handler: "index.handler",
   code: lambda.Code.fromInline(`exports.handler = \${handler.toString()}`),
-  runtime: lambda.Runtime.NODEJS_10_X
+  runtime: lambda.Runtime.NODEJS_12_X
 });
 
 new cdk.CfnOutput(this, 'FunctionArn', {
@@ -281,6 +284,19 @@ When `cdk deploy` is executed, deployment events will include the complete histo
 ```
 
 The `progress` key can also be specified as a user setting (`~/.cdk.json`)
+
+#### Externally Executable CloudFormation Change Sets
+
+For more control over when stack changes are deployed, the CDK can generate a
+CloudFormation change set but not execute it. The default name of the generated
+change set is *cdk-deploy-change-set*, and a previous change set with that
+name will be overwritten. The change set will always be created, even if it
+is empty. A name can also be given to the change set to make it easier to later 
+execute.
+
+```console
+$ cdk deploy --no-execute --change-set-name MyChangeSetName
+```
 
 ### `cdk destroy`
 

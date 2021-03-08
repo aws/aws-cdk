@@ -36,8 +36,6 @@
       "dotnet": {
         "namespace": "Amazon.CDK.Yaml.Cfn",
         "packageId": "Amazon.CDK.Yaml.Cfn",
-        "signAssembly": true,
-        "assemblyOriginatorKeyFile": "../../key.snk",
         "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
       },
       "python": {
@@ -59,8 +57,8 @@
     "pkglint": "pkglint -f",
     "package": "cdk-package",
     "awslint": "cdk-awslint",
-    "build+test+package": "npm run build+test && npm run package",
-    "build+test": "npm run build && npm test",
+    "build+test+package": "yarn build+test && yarn package",
+    "build+test": "yarn build && yarn test",
     "compat": "cdk-compat",
     "rosetta:extract": "yarn --silent jsii-rosetta extract"
   },
@@ -69,7 +67,7 @@
   },
   "devDependencies": {
     "@aws-cdk/assert": "0.0.0",
-    "@types/jest": "^26.0.15",
+    "@types/jest": "^26.0.20",
     "@types/yaml": "^1.9.7",
     "cdk-build-tools": "0.0.0",
     "jest": "^26.6.3",
@@ -88,5 +86,8 @@
   "maturity": "experimental",
   "awscdkio": {
     "announce": false
+  },
+  "publishConfig": {
+    "tag": "latest"
   }
 }

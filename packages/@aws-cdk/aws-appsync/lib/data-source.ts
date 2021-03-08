@@ -1,9 +1,9 @@
 import { ITable } from '@aws-cdk/aws-dynamodb';
 import { Grant, IGrantable, IPrincipal, IRole, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
 import { IFunction } from '@aws-cdk/aws-lambda';
-import { IDatabaseCluster } from '@aws-cdk/aws-rds';
+import { IServerlessCluster } from '@aws-cdk/aws-rds';
 import { ISecret } from '@aws-cdk/aws-secretsmanager';
-import { IResolvable, Stack } from '@aws-cdk/core';
+import { IResolvable, Lazy, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { BaseAppsyncFunctionProps, AppsyncFunction } from './appsync-function';
 import { CfnDataSource } from './appsync.generated';
@@ -126,7 +126,11 @@ export abstract class BaseDataSource extends CoreConstruct {
    * creates a new resolver for this datasource and API using the given properties
    */
   public createResolver(props: BaseResolverProps): Resolver {
-    return this.api.createResolver({ dataSource: this, ...props });
+    return new Resolver(this, `${props.typeName}${props.fieldName}Resolver`, {
+      api: this.api,
+      dataSource: this,
+      ...props,
+    });
   }
 
   /**
@@ -299,13 +303,19 @@ export class LambdaDataSource extends BackedDataSource {
  */
 export interface RdsDataSourceProps extends BackedDataSourceProps {
   /**
-   * The database cluster to call to interact with this data source
+   * The serverless cluster to call to interact with this data source
    */
-  readonly databaseCluster: IDatabaseCluster;
+  readonly serverlessCluster: IServerlessCluster;
   /**
    * The secret containing the credentials for the database
    */
   readonly secretStore: ISecret;
+  /**
+   * The name of the database to use within the cluster
+   *
+   * @default - None
+   */
+  readonly databaseName?: string;
 }
 
 /**
@@ -317,18 +327,27 @@ export class RdsDataSource extends BackedDataSource {
       type: 'RELATIONAL_DATABASE',
       relationalDatabaseConfig: {
         rdsHttpEndpointConfig: {
-          awsRegion: props.databaseCluster.stack.region,
-          dbClusterIdentifier: props.databaseCluster.clusterIdentifier,
+          awsRegion: props.serverlessCluster.stack.region,
+          dbClusterIdentifier: Lazy.string({
+            produce: () => {
+              return Stack.of(this).formatArn({
+                service: 'rds',
+                resource: `cluster:${props.serverlessCluster.clusterIdentifier}`,
+              });
+            },
+          }),
           awsSecretStoreArn: props.secretStore.secretArn,
+          databaseName: props.databaseName,
         },
         relationalDatabaseSourceType: 'RDS_HTTP_ENDPOINT',
       },
     });
-    props.secretStore.grantRead(this);
     const clusterArn = Stack.of(this).formatArn({
       service: 'rds',
-      resource: `cluster:${props.databaseCluster.clusterIdentifier}`,
+      resource: `cluster:${props.serverlessCluster.clusterIdentifier}`,
     });
+    props.secretStore.grantRead(this);
+
     // Change to grant with RDS grant becomes implemented
     Grant.addToPrincipal({
       grantee: this,

@@ -694,6 +694,93 @@ export = {
 
       test.done();
     },
+
+    'with webhookTriggersBatchBuild option'(test: Test) {
+      const stack = new cdk.Stack();
+
+      new codebuild.Project(stack, 'Project', {
+        source: codebuild.Source.gitHub({
+          owner: 'testowner',
+          repo: 'testrepo',
+          webhook: true,
+          webhookTriggersBatchBuild: true,
+        }),
+      });
+
+      expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
+        Triggers: {
+          Webhook: true,
+          BuildType: 'BUILD_BATCH',
+        },
+        BuildBatchConfig: {
+          ServiceRole: {
+            'Fn::GetAtt': [
+              'ProjectBatchServiceRoleF97A1CFB',
+              'Arn',
+            ],
+          },
+        },
+      }));
+
+      expect(stack).to(haveResourceLike('AWS::IAM::Role', {
+        AssumeRolePolicyDocument: {
+          Statement: [
+            {
+              Action: 'sts:AssumeRole',
+              Effect: 'Allow',
+              Principal: {
+                Service: 'codebuild.amazonaws.com',
+              },
+            },
+          ],
+          Version: '2012-10-17',
+        },
+      }));
+
+      expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Statement: [
+            {
+              Action: [
+                'codebuild:StartBuild',
+                'codebuild:StopBuild',
+                'codebuild:RetryBuild',
+              ],
+              Effect: 'Allow',
+              Resource: {
+                'Fn::GetAtt': [
+                  'ProjectC78D97AD',
+                  'Arn',
+                ],
+              },
+            },
+          ],
+          Version: '2012-10-17',
+        },
+      }));
+
+      test.done();
+    },
+
+    'fail creating a Project when webhook false and webhookTriggersBatchBuild option'(test: Test) {
+      [false, undefined].forEach((webhook) => {
+        const stack = new cdk.Stack();
+
+        test.throws(() => {
+          new codebuild.Project(stack, 'Project', {
+            source: codebuild.Source.gitHub({
+              owner: 'testowner',
+              repo: 'testrepo',
+              webhook,
+              webhookTriggersBatchBuild: true,
+            }),
+          });
+        }, /`webhookTriggersBatchBuild` cannot be used when `webhook` is `false`/);
+      });
+
+      test.done();
+    },
+
     'fail creating a Project when no build spec is given'(test: Test) {
       const stack = new cdk.Stack();
 
@@ -1233,12 +1320,11 @@ export = {
         });
 
         expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
-          'Artifacts':
-            {
-              'Name': ABSENT,
-              'ArtifactIdentifier': 'artifact1',
-              'OverrideArtifactName': true,
-            },
+          'Artifacts': {
+            'Name': ABSENT,
+            'ArtifactIdentifier': 'artifact1',
+            'OverrideArtifactName': true,
+          },
         }));
 
         test.done();
@@ -1260,12 +1346,11 @@ export = {
         });
 
         expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
-          'Artifacts':
-            {
-              'ArtifactIdentifier': 'artifact1',
-              'Name': 'specificname',
-              'OverrideArtifactName': ABSENT,
-            },
+          'Artifacts': {
+            'ArtifactIdentifier': 'artifact1',
+            'Name': 'specificname',
+            'OverrideArtifactName': ABSENT,
+          },
         }));
 
         test.done();
@@ -1439,7 +1524,7 @@ export = {
                 '',
                 [
                   '111',
-                  { twotwotwo: '222' },
+                  { twotwotwo: '222' },
                 ],
               ],
             },
@@ -1670,6 +1755,25 @@ export = {
       test.done();
     },
 
+    'cannot be used when webhook is false'(test: Test) {
+      const stack = new cdk.Stack();
+
+      test.throws(() => {
+        new codebuild.Project(stack, 'Project', {
+          source: codebuild.Source.bitBucket({
+            owner: 'owner',
+            repo: 'repo',
+            webhook: false,
+            webhookFilters: [
+              codebuild.FilterGroup.inEventOf(codebuild.EventAction.PUSH),
+            ],
+          }),
+        });
+      }, /`webhookFilters` cannot be used when `webhook` is `false`/);
+
+      test.done();
+    },
+
     'can have FILE_PATH filters if the Group contains PUSH and PR_CREATED events'(test: Test) {
       codebuild.FilterGroup.inEventOf(
         codebuild.EventAction.PULL_REQUEST_CREATED,
@@ -1697,19 +1801,17 @@ export = {
       test.done();
     },
 
-    'BitBucket sources do not support file path conditions'(test: Test) {
+    'BitBucket sources support file path conditions'(test: Test) {
       const stack = new cdk.Stack();
       const filterGroup = codebuild.FilterGroup.inEventOf(codebuild.EventAction.PUSH).andFilePathIs('.*');
 
-      test.throws(() => {
-        new codebuild.Project(stack, 'Project', {
-          source: codebuild.Source.bitBucket({
-            owner: 'owner',
-            repo: 'repo',
-            webhookFilters: [filterGroup],
-          }),
-        });
-      }, /BitBucket sources do not support file path conditions for webhook filters/);
+      new codebuild.Project(stack, 'Project', {
+        source: codebuild.Source.bitBucket({
+          owner: 'owner',
+          repo: 'repo',
+          webhookFilters: [filterGroup],
+        }),
+      });
 
       test.done();
     },
@@ -1800,5 +1902,71 @@ export = {
         test.done();
       },
     },
+  },
+
+  'enableBatchBuilds()'(test: Test) {
+    const stack = new cdk.Stack();
+
+    const project = new codebuild.Project(stack, 'Project', {
+      source: codebuild.Source.gitHub({
+        owner: 'testowner',
+        repo: 'testrepo',
+      }),
+    });
+
+    const returnVal = project.enableBatchBuilds();
+    if (!returnVal?.role) {
+      throw new Error('Expecting return value with role');
+    }
+
+    expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
+      BuildBatchConfig: {
+        ServiceRole: {
+          'Fn::GetAtt': [
+            'ProjectBatchServiceRoleF97A1CFB',
+            'Arn',
+          ],
+        },
+      },
+    }));
+
+    expect(stack).to(haveResourceLike('AWS::IAM::Role', {
+      AssumeRolePolicyDocument: {
+        Statement: [
+          {
+            Action: 'sts:AssumeRole',
+            Effect: 'Allow',
+            Principal: {
+              Service: 'codebuild.amazonaws.com',
+            },
+          },
+        ],
+        Version: '2012-10-17',
+      },
+    }));
+
+    expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: [
+              'codebuild:StartBuild',
+              'codebuild:StopBuild',
+              'codebuild:RetryBuild',
+            ],
+            Effect: 'Allow',
+            Resource: {
+              'Fn::GetAtt': [
+                'ProjectC78D97AD',
+                'Arn',
+              ],
+            },
+          },
+        ],
+        Version: '2012-10-17',
+      },
+    }));
+
+    test.done();
   },
 };

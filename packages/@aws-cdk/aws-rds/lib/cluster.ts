@@ -10,7 +10,7 @@ import { IClusterEngine } from './cluster-engine';
 import { DatabaseClusterAttributes, IDatabaseCluster } from './cluster-ref';
 import { Endpoint } from './endpoint';
 import { IParameterGroup } from './parameter-group';
-import { applyRemovalPolicy, DEFAULT_PASSWORD_EXCLUDE_CHARS, defaultDeletionProtection, renderCredentials, setupS3ImportExport } from './private/util';
+import { DEFAULT_PASSWORD_EXCLUDE_CHARS, defaultDeletionProtection, renderCredentials, setupS3ImportExport, helperRemovalPolicy, renderUnless } from './private/util';
 import { BackupProps, Credentials, InstanceProps, PerformanceInsightRetention, RotationSingleUserOptions, RotationMultiUserOptions } from './props';
 import { DatabaseProxy, DatabaseProxyOptions, ProxyTarget } from './proxy';
 import { CfnDBCluster, CfnDBClusterProps, CfnDBInstance } from './rds.generated';
@@ -310,7 +310,7 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
       description: `Subnets for ${id} database`,
       vpc: props.instanceProps.vpc,
       vpcSubnets: props.instanceProps.vpcSubnets,
-      removalPolicy: props.removalPolicy === RemovalPolicy.RETAIN ? props.removalPolicy : undefined,
+      removalPolicy: renderUnless(helperRemovalPolicy(props.removalPolicy), RemovalPolicy.DESTROY),
     });
 
     this.securityGroups = props.instanceProps.securityGroups ?? [
@@ -512,7 +512,7 @@ export class DatabaseCluster extends DatabaseClusterNew {
       defaultPort: ec2.Port.tcp(this.clusterEndpoint.port),
     });
 
-    applyRemovalPolicy(cluster, props.removalPolicy);
+    cluster.applyRemovalPolicy(props.removalPolicy ?? RemovalPolicy.SNAPSHOT);
 
     if (secret) {
       this.secret = secret.attach(this);
@@ -608,7 +608,7 @@ export class DatabaseClusterFromSnapshot extends DatabaseClusterNew {
       defaultPort: ec2.Port.tcp(this.clusterEndpoint.port),
     });
 
-    applyRemovalPolicy(cluster, props.removalPolicy);
+    cluster.applyRemovalPolicy(props.removalPolicy ?? RemovalPolicy.SNAPSHOT);
 
     setLogRetention(this, props);
     createInstances(this, props, this.subnetGroup);
@@ -687,8 +687,6 @@ function createInstances(cluster: DatabaseClusterNew, props: DatabaseClusterBase
       props.clusterIdentifier != null ? `${props.clusterIdentifier}instance${instanceIndex}` :
         undefined;
 
-    const publiclyAccessible = instanceProps.vpcSubnets && instanceProps.vpcSubnets.subnetType === ec2.SubnetType.PUBLIC;
-
     const instance = new CfnDBInstance(cluster, `Instance${instanceIndex}`, {
       // Link to cluster
       engine: props.engine.engineType,
@@ -697,7 +695,8 @@ function createInstances(cluster: DatabaseClusterNew, props: DatabaseClusterBase
       dbInstanceIdentifier: instanceIdentifier,
       // Instance properties
       dbInstanceClass: databaseInstanceType(instanceType),
-      publiclyAccessible,
+      publiclyAccessible: instanceProps.publiclyAccessible ??
+        (instanceProps.vpcSubnets && instanceProps.vpcSubnets.subnetType === ec2.SubnetType.PUBLIC),
       enablePerformanceInsights: enablePerformanceInsights || instanceProps.enablePerformanceInsights, // fall back to undefined if not set
       performanceInsightsKmsKeyId: instanceProps.performanceInsightEncryptionKey?.keyArn,
       performanceInsightsRetentionPeriod: enablePerformanceInsights
@@ -713,13 +712,11 @@ function createInstances(cluster: DatabaseClusterNew, props: DatabaseClusterBase
       deleteAutomatedBackups: props.instanceProps.deleteAutomatedBackups,
     });
 
-    // If removalPolicy isn't explicitly set,
-    // it's Snapshot for Cluster.
-    // Because of that, in this case,
-    // we can safely use the CFN default of Delete for DbInstances with dbClusterIdentifier set.
-    if (props.removalPolicy) {
-      applyRemovalPolicy(instance, props.removalPolicy);
-    }
+    // For instances that are part of a cluster:
+    //
+    //  Cluster DESTROY or SNAPSHOT -> DESTROY (snapshot is good enough to recreate)
+    //  Cluster RETAIN              -> RETAIN (otherwise cluster state will disappear)
+    instance.applyRemovalPolicy(helperRemovalPolicy(props.removalPolicy));
 
     // We must have a dependency on the NAT gateway provider here to create
     // things in the right order.

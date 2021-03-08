@@ -263,10 +263,14 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
       this.certificateArns.push(first.certificateArn);
     }
 
-    if (additionalCerts.length > 0) {
-      new ApplicationListenerCertificate(this, id, {
+    // Only one certificate can be specified per resource, even though
+    // `certificates` is of type Array
+    for (let i = 0; i < additionalCerts.length; i++) {
+      // ids should look like: `id`, `id2`, `id3` (for backwards-compatibility)
+      const certId = (i > 0) ? `${id}${i + 1}` : id;
+      new ApplicationListenerCertificate(this, certId, {
         listener: this,
-        certificates: additionalCerts,
+        certificates: [additionalCerts[i]],
       });
     }
   }
@@ -363,6 +367,7 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
       protocol: props.protocol,
       slowStart: props.slowStart,
       stickinessCookieDuration: props.stickinessCookieDuration,
+      stickinessCookieName: props.stickinessCookieName,
       targetGroupName: props.targetGroupName,
       targets: props.targets,
       vpc: this.loadBalancer.vpc,
@@ -653,7 +658,7 @@ class ImportedApplicationListener extends ExternalApplicationListener {
     if (props.securityGroup) {
       securityGroup = props.securityGroup;
     } else if (props.securityGroupId) {
-      securityGroup = ec2.SecurityGroup.fromSecurityGroupId(scope, 'SecurityGroup', props.securityGroupId, {
+      securityGroup = ec2.SecurityGroup.fromSecurityGroupId(this, 'SecurityGroup', props.securityGroupId, {
         allowAllOutbound: props.securityGroupAllowsAllOutbound,
       });
     } else {
@@ -812,6 +817,20 @@ export interface AddApplicationTargetsProps extends AddRuleProps {
    * @default Stickiness disabled
    */
   readonly stickinessCookieDuration?: Duration;
+
+  /**
+   * The name of an application-based stickiness cookie.
+   *
+   * Names that start with the following prefixes are not allowed: AWSALB, AWSALBAPP,
+   * and AWSALBTG; they're reserved for use by the load balancer.
+   *
+   * Note: `stickinessCookieName` parameter depends on the presence of `stickinessCookieDuration` parameter.
+   * If `stickinessCookieDuration` is not set, `stickinessCookieName` will be omitted.
+   *
+   * @default - If `stickinessCookieDuration` is set, a load-balancer generated cookie is used. Otherwise, no stickiness is defined.
+   * @see https://docs.aws.amazon.com/elasticloadbalancing/latest/application/sticky-sessions.html
+   */
+  readonly stickinessCookieName?: string;
 
   /**
    * The targets to add to this target group.

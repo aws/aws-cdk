@@ -3,7 +3,8 @@ import { Construct } from 'constructs';
 import { CfnRoute, CfnRouteProps } from '../apigatewayv2.generated';
 import { IRoute } from '../common';
 import { IHttpApi } from './api';
-import { HttpIntegration, IHttpRouteIntegration } from './integration';
+import { IHttpRouteAuthorizer } from './authorizer';
+import { IHttpRouteIntegration } from './integration';
 
 /**
  * Represents a Route for an HTTP API.
@@ -103,6 +104,20 @@ export interface HttpRouteProps extends BatchHttpRouteOptions {
    * The key to this route. This is a combination of an HTTP method and an HTTP path.
    */
   readonly routeKey: HttpRouteKey;
+
+  /**
+   * Authorizer for a WebSocket API or an HTTP API.
+   * @default - No authorizer
+   */
+  readonly authorizer?: IHttpRouteAuthorizer;
+
+  /**
+   * The list of OIDC scopes to include in the authorization.
+   *
+   * These scopes will be merged with the scopes from the attached authorizer
+   * @default - no additional authorization scopes
+   */
+  readonly authorizationScopes?: string[];
 }
 
 /**
@@ -125,20 +140,29 @@ export class HttpRoute extends Resource implements IHttpRoute {
       scope: this,
     });
 
-    const integration = new HttpIntegration(this, `${this.node.id}-Integration`, {
-      httpApi: props.httpApi,
-      integrationType: config.type,
-      integrationUri: config.uri,
-      method: config.method,
-      connectionId: config.connectionId,
-      connectionType: config.connectionType,
-      payloadFormatVersion: config.payloadFormatVersion,
-    });
+    const integration = props.httpApi._addIntegration(this, config);
+
+    const authBindResult = props.authorizer ? props.authorizer.bind({
+      route: this,
+      scope: this.httpApi instanceof Construct ? this.httpApi : this, // scope under the API if it's not imported
+    }) : undefined;
+
+    let authorizationScopes = authBindResult?.authorizationScopes ?? [];
+
+    if (authBindResult && props.authorizationScopes) {
+      authorizationScopes = Array.from(new Set([
+        ...authorizationScopes,
+        ...props.authorizationScopes,
+      ]));
+    }
 
     const routeProps: CfnRouteProps = {
-      apiId: props.httpApi.httpApiId,
+      apiId: props.httpApi.apiId,
       routeKey: props.routeKey.key,
       target: `integrations/${integration.integrationId}`,
+      authorizerId: authBindResult?.authorizerId,
+      authorizationType: authBindResult?.authorizationType,
+      authorizationScopes,
     };
 
     const route = new CfnRoute(this, 'Resource', routeProps);

@@ -109,22 +109,20 @@ When creating a virtual service:
 Adding a virtual router as the provider:
 
 ```ts
-mesh.addVirtualService('virtual-service', {
-  virtualRouter: router,
-  virtualServiceName: 'my-service.default.svc.cluster.local',
+new appmesh.VirtualService('virtual-service', {
+  virtualServiceName: 'my-service.default.svc.cluster.local', // optional
+  virtualServiceProvider: appmesh.VirtualServiceProvider.virtualRouter(router),
 });
 ```
 
 Adding a virtual node as the provider:
 
 ```ts
-mesh.addVirtualService('virtual-service', {
-  virtualNode: node,
-  virtualServiceName: `my-service.default.svc.cluster.local`,
+new appmesh.VirtualService('virtual-service', {
+  virtualServiceName: `my-service.default.svc.cluster.local`, // optional
+  virtualServiceProvider: appmesh.VirtualServiceProvider.virtualNode(node),
 });
 ```
-
-**Note** that only one must of `virtualNode` or `virtualRouter` must be chosen.
 
 ## Adding a VirtualNode
 
@@ -240,6 +238,44 @@ The `listeners` property can be left blank and added later with the `node.addLis
 The `backends` property can be added with `node.addBackend()`. We define a virtual service and add it to the virtual node to allow egress traffic to other node.
 
 The `backendsDefaultClientPolicy` property are added to the node while creating the virtual node. These are virtual node's service backends client policy defaults.
+
+## Adding TLS to a listener
+
+The `tlsCertificate` property can be added to a Virtual Node listener or Virtual Gateway listener to add TLS configuration. 
+A certificate from AWS Certificate Manager can be incorporated or a customer provided certificate can be specified with a `certificateChain` path file and a `privateKey` file path.
+
+```typescript
+import * as certificatemanager from '@aws-cdk/aws-certificatemanager';
+
+// A Virtual Node with listener TLS from an ACM provided certificate
+const cert = new certificatemanager.Certificate(this, 'cert', {...});
+
+const node = new appmesh.VirtualNode(stack, 'node', {
+  mesh,
+  dnsHostName: 'node',
+  listeners: [appmesh.VirtualNodeListener.grpc({
+    port: 80,
+    tlsCertificate: appmesh.TlsCertificate.acm({
+      certificate: cert,
+      tlsMode: TlsMode.STRICT,
+    }),
+  })],
+});
+
+// A Virtual Gateway with listener TLS from a customer provided file certificate
+const gateway = new appmesh.VirtualGateway(this, 'gateway', {
+  mesh: mesh,
+  listeners: [appmesh.VirtualGatewayListener.grpc({
+    port: 8080,
+    tlsCertificate: appmesh.TlsCertificate.file({
+      certificateChain: 'path/to/certChain',
+      privateKey: 'path/to/privateKey',
+      tlsMode: TlsMode.STRICT,
+    }),
+  })],
+  virtualGatewayName: 'gateway',
+});
+```
 
 ## Adding a Route
 

@@ -1,7 +1,7 @@
-import { ABSENT } from '@aws-cdk/assert';
+import { ABSENT, arrayWith } from '@aws-cdk/assert';
 import '@aws-cdk/assert/jest';
 import { Stack, Duration } from '@aws-cdk/core';
-import { OAuthScope, ResourceServerScope, UserPool, UserPoolClient, UserPoolClientIdentityProvider, UserPoolIdentityProvider } from '../lib';
+import { OAuthScope, ResourceServerScope, UserPool, UserPoolClient, UserPoolClientIdentityProvider, UserPoolIdentityProvider, ClientAttributes } from '../lib';
 
 describe('User Pool Client', () => {
   test('default setup', () => {
@@ -487,13 +487,14 @@ describe('User Pool Client', () => {
         UserPoolClientIdentityProvider.FACEBOOK,
         UserPoolClientIdentityProvider.AMAZON,
         UserPoolClientIdentityProvider.GOOGLE,
+        UserPoolClientIdentityProvider.APPLE,
       ],
     });
 
     // THEN
     expect(stack).toHaveResource('AWS::Cognito::UserPoolClient', {
       ClientName: 'AllEnabled',
-      SupportedIdentityProviders: ['COGNITO', 'Facebook', 'LoginWithAmazon', 'Google'],
+      SupportedIdentityProviders: ['COGNITO', 'Facebook', 'LoginWithAmazon', 'Google', 'SignInWithApple'],
     });
   });
 
@@ -824,6 +825,63 @@ describe('User Pool Client', () => {
         TokenValidityUnits: {
           IdToken: 'minutes',
         },
+      });
+    });
+  });
+
+  describe('read and write attributes', () => {
+    test('undefined by default', () => {
+      // GIVEN
+      const stack = new Stack();
+      const pool = new UserPool(stack, 'Pool');
+
+      // WHEN
+      pool.addClient('Client', {});
+
+      // EXPECT
+      expect(stack).toHaveResourceLike('AWS::Cognito::UserPoolClient', {
+        ReadAttributes: ABSENT,
+        WriteAttributes: ABSENT,
+      });
+    });
+
+    test('set attributes', () => {
+      // GIVEN
+      const stack = new Stack();
+      const pool = new UserPool(stack, 'Pool');
+      const writeAttributes = (new ClientAttributes()).withCustomAttributes('my_first').withStandardAttributes({ givenName: true, familyName: true });
+      const readAttributes = (new ClientAttributes()).withStandardAttributes({
+        address: true,
+        birthdate: true,
+        email: true,
+        emailVerified: true,
+        familyName: true,
+        fullname: true,
+        gender: true,
+        givenName: true,
+        lastUpdateTime: true,
+        locale: true,
+        middleName: true,
+        nickname: true,
+        phoneNumber: true,
+        phoneNumberVerified: true,
+        preferredUsername: true,
+        profilePage: true,
+        profilePicture: true,
+        timezone: true,
+        website: true,
+      });
+
+      // WHEN
+      pool.addClient('Client', {
+        readAttributes,
+        writeAttributes,
+      });
+
+      // EXPECT
+      expect(stack).toHaveResourceLike('AWS::Cognito::UserPoolClient', {
+        ReadAttributes: arrayWith('name', 'given_name', 'family_name', 'middle_name', 'nickname', 'preferred_username', 'profile', 'picture', 'website', 'email', 'email_verified', 'gender', 'birthdate', 'zoneinfo', 'locale', 'phone_number', 'phone_number_verified', 'address', 'updated_at'),
+        WriteAttributes: arrayWith('given_name', 'family_name', 'custom:my_first'),
       });
     });
   });

@@ -635,6 +635,11 @@ export class KubernetesVersion {
   public static readonly V1_18 = KubernetesVersion.of('1.18');
 
   /**
+   * Kubernetes version 1.19
+   */
+  public static readonly V1_19 = KubernetesVersion.of('1.19');
+
+  /**
    * Custom cluster version
    * @param version custom version number
    */
@@ -961,8 +966,13 @@ export class Cluster extends ClusterBase {
 
     this.vpcSubnets = props.vpcSubnets ?? [{ subnetType: ec2.SubnetType.PUBLIC }, { subnetType: ec2.SubnetType.PRIVATE }];
 
+    const selectedSubnetIdsPerGroup = this.vpcSubnets.map(s => this.vpc.selectSubnets(s).subnetIds);
+    if (selectedSubnetIdsPerGroup.some(Token.isUnresolved) && selectedSubnetIdsPerGroup.length > 1) {
+      throw new Error('eks.Cluster: cannot select multiple subnet groups from a VPC imported from list tokens with unknown length. Select only one subnet group, pass a length to Fn.split, or switch to Vpc.fromLookup.');
+    }
+
     // Get subnetIds for all selected subnets
-    const subnetIds = [...new Set(Array().concat(...this.vpcSubnets.map(s => this.vpc.selectSubnets(s).subnetIds)))];
+    const subnetIds = Array.from(new Set(flatten(selectedSubnetIdsPerGroup)));
 
 
     this.endpointAccess = props.endpointAccess ?? EndpointAccess.PUBLIC_AND_PRIVATE;
@@ -1100,7 +1110,7 @@ export class Cluster extends ClusterBase {
     commonCommandOptions.push(`--role-arn ${mastersRole.roleArn}`);
 
     // allocate default capacity if non-zero (or default).
-    const minCapacity = props.defaultCapacity === undefined ? DEFAULT_CAPACITY_COUNT : props.defaultCapacity;
+    const minCapacity = props.defaultCapacity ?? DEFAULT_CAPACITY_COUNT;
     if (minCapacity > 0) {
       const instanceType = props.defaultCapacityInstance || DEFAULT_CAPACITY_TYPE;
       this.defaultCapacity = props.defaultCapacityType === DefaultCapacityType.EC2 ?
@@ -1110,7 +1120,7 @@ export class Cluster extends ClusterBase {
         this.addNodegroupCapacity('DefaultCapacity', { instanceTypes: [instanceType], minSize: minCapacity }) : undefined;
     }
 
-    const outputConfigCommand = props.outputConfigCommand === undefined ? true : props.outputConfigCommand;
+    const outputConfigCommand = props.outputConfigCommand ?? true;
     if (outputConfigCommand) {
       const postfix = commonCommandOptions.join(' ');
       new CfnOutput(this, 'ConfigCommand', { value: `${updateConfigCommandPrefix} ${postfix}` });
@@ -1181,6 +1191,7 @@ export class Cluster extends ClusterBase {
       bootstrapOptions: options.bootstrapOptions,
       bootstrapEnabled: options.bootstrapEnabled,
       machineImageType: options.machineImageType,
+      spotInterruptHandler: options.spotInterruptHandler,
     });
 
     if (nodeTypeForInstanceType(options.instanceType) === NodeType.INFERENTIA) {
@@ -1245,7 +1256,7 @@ export class Cluster extends ClusterBase {
     // allow traffic to/from managed node groups (eks attaches this security group to the managed nodes)
     autoScalingGroup.addSecurityGroup(this.clusterSecurityGroup);
 
-    const bootstrapEnabled = options.bootstrapEnabled !== undefined ? options.bootstrapEnabled : true;
+    const bootstrapEnabled = options.bootstrapEnabled ?? true;
     if (options.bootstrapOptions && !bootstrapEnabled) {
       throw new Error('Cannot specify "bootstrapOptions" if "bootstrapEnabled" is false');
     }
@@ -1262,13 +1273,17 @@ export class Cluster extends ClusterBase {
     autoScalingGroup.role.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonEC2ContainerRegistryReadOnly'));
 
     // EKS Required Tags
+    // https://docs.aws.amazon.com/eks/latest/userguide/worker.html
     Tags.of(autoScalingGroup).add(`kubernetes.io/cluster/${this.clusterName}`, 'owned', {
       applyToLaunchedInstances: true,
+      // exclude security groups to avoid multiple "owned" security groups.
+      // (the cluster security group already has this tag)
+      excludeResourceTypes: ['AWS::EC2::SecurityGroup'],
     });
 
     // do not attempt to map the role if `kubectl` is not enabled for this
     // cluster or if `mapRole` is set to false. By default this should happen.
-    const mapRole = options.mapRole === undefined ? true : options.mapRole;
+    const mapRole = options.mapRole ?? true;
     if (mapRole) {
       // see https://docs.aws.amazon.com/en_us/eks/latest/userguide/add-user-role.html
       this.awsAuth.addRoleMapping(autoScalingGroup.role, {
@@ -1286,8 +1301,9 @@ export class Cluster extends ClusterBase {
       });
     }
 
+    const addSpotInterruptHandler = options.spotInterruptHandler ?? true;
     // if this is an ASG with spot instances, install the spot interrupt handler (only if kubectl is enabled).
-    if (autoScalingGroup.spotPrice) {
+    if (autoScalingGroup.spotPrice && addSpotInterruptHandler) {
       this.addSpotInterruptHandler();
     }
   }
@@ -1440,11 +1456,13 @@ export class Cluster extends ClusterBase {
     if (!this._spotInterruptHandler) {
       this._spotInterruptHandler = this.addHelmChart('spot-interrupt-handler', {
         chart: 'aws-node-termination-handler',
-        version: '0.9.5',
+        version: '0.13.2',
         repository: 'https://aws.github.io/eks-charts',
         namespace: 'kube-system',
         values: {
-          'nodeSelector.lifecycle': LifecycleLabel.SPOT,
+          nodeSelector: {
+            lifecycle: LifecycleLabel.SPOT,
+          },
         },
       });
     }
@@ -1480,7 +1498,7 @@ export class Cluster extends ClusterBase {
         if (!ec2.Subnet.isVpcSubnet(subnet)) {
           // message (if token): "could not auto-tag public/private subnet with tag..."
           // message (if not token): "count not auto-tag public/private subnet xxxxx with tag..."
-          const subnetID = Token.isUnresolved(subnet.subnetId) ? '' : ` ${subnet.subnetId}`;
+          const subnetID = Token.isUnresolved(subnet.subnetId) || Token.isUnresolved([subnet.subnetId]) ? '' : ` ${subnet.subnetId}`;
           Annotations.of(this).addWarning(`Could not auto-tag ${type} subnet${subnetID} with "${tag}=1", please remember to do this manually`);
           continue;
         }
@@ -1576,6 +1594,14 @@ export interface AutoScalingGroupCapacityOptions extends autoscaling.CommonAutoS
    * @default MachineImageType.AMAZON_LINUX_2
    */
   readonly machineImageType?: MachineImageType;
+
+  /**
+   * Installs the AWS spot instance interrupt handler on the cluster if it's not
+   * already added. Only relevant if `spotPrice` is used.
+   *
+   * @default true
+   */
+  readonly spotInterruptHandler?: boolean;
 }
 
 /**
@@ -1667,6 +1693,14 @@ export interface AutoScalingGroupOptions {
    * @default MachineImageType.AMAZON_LINUX_2
    */
   readonly machineImageType?: MachineImageType;
+
+  /**
+   * Installs the AWS spot instance interrupt handler on the cluster if it's not
+   * already added. Only relevant if `spotPrice` is configured on the auto-scaling group.
+   *
+   * @default true
+   */
+  readonly spotInterruptHandler?: boolean;
 }
 
 /**
@@ -1921,3 +1955,6 @@ function cpuArchForInstanceType(instanceType: ec2.InstanceType) {
       CpuArch.X86_64;
 }
 
+function flatten<A>(xss: A[][]): A[] {
+  return Array.prototype.concat.call([], ...xss);
+}
