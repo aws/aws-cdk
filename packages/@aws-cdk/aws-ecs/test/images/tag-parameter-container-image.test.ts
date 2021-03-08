@@ -21,6 +21,7 @@ nodeunitShim({
 
       test.done();
     },
+
     'throws an error when tagParameterValue() is used without binding the image'(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();
