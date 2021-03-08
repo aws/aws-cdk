@@ -173,7 +173,7 @@ class MyPipelineStack extends Stack {
 }
 
 const app = new App();
-new MyPipelineStack(this, 'PipelineStack', {
+new MyPipelineStack(app, 'PipelineStack', {
   env: {
     account: '111111111111',
     region: 'eu-west-1',
@@ -198,7 +198,8 @@ const codePipeline = new cp.Pipeline(pipelineStack, 'CodePipeline', {
   ],
 });
 
-const cdkPipeline = new CdkPipeline(this, 'CdkPipeline', {
+const app = new App();
+const cdkPipeline = new CdkPipeline(app, 'CdkPipeline', {
   codePipeline,
   cloudAssemblyArtifact,
 });
@@ -655,6 +656,12 @@ These command lines explained:
 > Make sure you trust all the code and dependencies that make up your CDK app.
 > Check with the appropriate department within your organization to decide on the
 > proper policy to use.
+>
+> If your policy includes permissions to create on attach permission to a role, 
+> developers can escalate their privilege with more permissive permission. 
+> Thus, we recommend implementing [permissions boundary](https://aws.amazon.com/premiumsupport/knowledge-center/iam-permission-boundaries/) 
+> in the CDK Execution role. To do this, you can bootstrap with the `--template` option with 
+> [a customized template](https://github.com/aws-samples/aws-bootstrap-kit-examples/blob/ba28a97d289128281bc9483bcba12c1793f2c27a/source/1-SDLC-organization/lib/cdk-bootstrap-template.yml#L395) that contains a permission boundary.
 
 ### Migrating from old bootstrap stack
 
