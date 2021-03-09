@@ -67,18 +67,16 @@ class Trie extends Map<string, Trie> { }
  * Or is compressed and base64-encoded, and then formatted as:
  * v2:deflate64:{prefixEncodedListCompressedAndEncoded}
  *
- * Exported/visible (and `forcePlaintext` parameter) for ease of testing.
+ * Exported/visible for ease of testing.
  */
-export function formatAnalytics(infos: ConstructInfo[], forcePlaintext: boolean = false) {
+export function formatAnalytics(infos: ConstructInfo[]) {
   const trie = new Trie();
   infos.forEach(info => insertFqnInTrie(`${info.version}!${info.fqn}`, trie));
 
   const plaintextEncodedConstructs = prefixEncodeTrie(trie);
   const compressedConstructs = zlib.gzipSync(Buffer.from(plaintextEncodedConstructs)).toString('base64');
 
-  return (plaintextEncodedConstructs.length < compressedConstructs.length || forcePlaintext)
-    ? `v2:plaintext:${plaintextEncodedConstructs}`
-    : `v2:deflate64:${compressedConstructs}`;
+  return `v2:deflate64:${compressedConstructs}`;
 }
 
 /**
@@ -86,11 +84,11 @@ export function formatAnalytics(infos: ConstructInfo[], forcePlaintext: boolean 
  * and insert each piece of the FQN in nested map (i.e., simple trie).
  */
 function insertFqnInTrie(fqn: string, trie: Trie) {
-  fqn.replace(/[^a-z0-9]/gi, '$& ').split(' ').forEach(fqnPart => {
+  for (const fqnPart of fqn.replace(/[^a-z0-9]/gi, '$& ').split(' ')) {
     const nextLevelTreeRef = trie.get(fqnPart) ?? new Trie();
     trie.set(fqnPart, nextLevelTreeRef);
     trie = nextLevelTreeRef;
-  });
+  }
   return trie;
 }
 

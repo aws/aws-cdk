@@ -4,6 +4,7 @@ import { formatAnalytics } from '../lib/private/metadata-resource';
 
 // eslint-disable-next-line no-duplicate-imports, import/order
 import { Construct } from '../lib';
+import { ConstructInfo } from '../lib/private/runtime-info';
 
 describe('MetadataResource', () => {
   let app: App;
@@ -49,7 +50,7 @@ describe('MetadataResource', () => {
     // A very simple check that the jsii runtime psuedo-construct is present.
     // This check works whether we're running locally or on CodeBuild, on v1 or v2.
     // Other tests(in app.test.ts) will test version-specific results.
-    expect(stackAnalytics()).toMatch(/v2:plaintext:.*jsii-runtime.Runtime.*/);
+    expect(stackAnalytics()).toMatch(/jsii-runtime.Runtime/);
   });
 
   test('includes the current jsii runtime version', () => {
@@ -72,15 +73,22 @@ describe('MetadataResource', () => {
   });
 
   function stackAnalytics(stackName: string = 'Stack') {
-    return app.synth().getStackByName(stackName).template.Resources?.CDKMetadata?.Properties?.Analytics;
+    const encodedAnalytics = app.synth().getStackByName(stackName).template.Resources?.CDKMetadata?.Properties?.Analytics as string;
+    return plaintextConstructsFromAnalytics(encodedAnalytics);
   }
 });
 
 describe('formatAnalytics', () => {
+  test('analytics are formatted with a prefix of v2:deflate64:', () => {
+    const constructInfo = [{ fqn: 'aws-cdk-lib.Construct', version: '1.2.3' }];
+
+    expect(formatAnalytics(constructInfo)).toMatch(/v2:deflate64:.*/);
+  });
+
   test('single construct', () => {
     const constructInfo = [{ fqn: 'aws-cdk-lib.Construct', version: '1.2.3' }];
 
-    expect(formatAnalytics(constructInfo, true)).toEqual('v2:plaintext:1.2.3!aws-cdk-lib.Construct');
+    expectAnalytics(constructInfo, '1.2.3!aws-cdk-lib.Construct');
   });
 
   test('common prefixes with same versions are combined', () => {
@@ -90,7 +98,7 @@ describe('formatAnalytics', () => {
       { fqn: 'aws-cdk-lib.Stack', version: '1.2.3' },
     ];
 
-    expect(formatAnalytics(constructInfo, true)).toEqual('v2:plaintext:1.2.3!aws-cdk-lib.{Construct,CfnResource,Stack}');
+    expectAnalytics(constructInfo, '1.2.3!aws-cdk-lib.{Construct,CfnResource,Stack}');
   });
 
   test('nested modules with common prefixes and same versions are combined', () => {
@@ -102,7 +110,7 @@ describe('formatAnalytics', () => {
       { fqn: 'aws-cdk-lib.aws_servicefoo.OtherResource', version: '1.2.3' },
     ];
 
-    expect(formatAnalytics(constructInfo, true)).toEqual('v2:plaintext:1.2.3!aws-cdk-lib.{Construct,CfnResource,Stack,aws_servicefoo.{CoolResource,OtherResource}}');
+    expectAnalytics(constructInfo, '1.2.3!aws-cdk-lib.{Construct,CfnResource,Stack,aws_servicefoo.{CoolResource,OtherResource}}');
   });
 
   test('constructs are grouped by version', () => {
@@ -114,20 +122,20 @@ describe('formatAnalytics', () => {
       { fqn: 'aws-cdk-lib.OtherResource', version: '0.1.2' },
     ];
 
-    expect(formatAnalytics(constructInfo, true)).toEqual('v2:plaintext:1.2.3!aws-cdk-lib.{Construct,CfnResource,Stack},0.1.2!aws-cdk-lib.{CoolResource,OtherResource}');
+    expectAnalytics(constructInfo, '1.2.3!aws-cdk-lib.{Construct,CfnResource,Stack},0.1.2!aws-cdk-lib.{CoolResource,OtherResource}');
   });
 
-  test('analytics are compressed and base64 encoded if that saves space', () => {
-    const smallerConstructInfo = [...new Array(5).keys()].map((_, index) => { return { fqn: `aws-cdk-lib.Construct${index}`, version: '1.2.3' }; });
-    const biggerConstructInfo = [...new Array(20).keys()].map((_, index) => { return { fqn: `aws-cdk-lib.Construct${index}`, version: '1.2.3' }; });
+  // Compares the output of formatAnalytics with an expected (plaintext) output.
+  // For ease of testing, the plaintext versions are compared rather than the encoded versions.
+  function expectAnalytics(constructs: ConstructInfo[], expectedPlaintext: string) {
+    expect(plaintextConstructsFromAnalytics(formatAnalytics(constructs))).toEqual(expectedPlaintext);
+  }
 
-    expect(formatAnalytics(smallerConstructInfo)).toMatch(/v2:plaintext:.*/);
-
-    const expectedPlaintext = '1.2.3!aws-cdk-lib.{' + [...new Array(20).keys()].map((_, index) => `Construct${index}`).join(',') + '}';
-    const expectedCompressed = zlib.gzipSync(Buffer.from(expectedPlaintext)).toString('base64');
-    expect(formatAnalytics(biggerConstructInfo)).toEqual(`v2:deflate64:${expectedCompressed}`);
-  });
 });
+
+function plaintextConstructsFromAnalytics(analytics: string) {
+  return zlib.gunzipSync(Buffer.from(analytics.split(':')[2], 'base64')).toString('utf-8');
+}
 
 const JSII_RUNTIME_SYMBOL = Symbol.for('jsii.rtti');
 

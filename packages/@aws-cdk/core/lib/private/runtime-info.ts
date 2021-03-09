@@ -31,6 +31,9 @@ export function constructInfoFromConstruct(construct: IConstruct): ConstructInfo
     && typeof jsiiRuntimeInfo.fqn === 'string'
     && typeof jsiiRuntimeInfo.version === 'string') {
     return { fqn: jsiiRuntimeInfo.fqn, version: jsiiRuntimeInfo.version };
+  } else if (jsiiRuntimeInfo) {
+    // There is something defined, but doesn't match our expectations. Fail fast and hard.
+    throw new Error(`malformed jsii runtime info for construct: '${construct.node.path}'`);
   }
   return undefined;
 }
@@ -41,13 +44,11 @@ export function constructInfoFromConstruct(construct: IConstruct): ConstructInfo
  * as long as the construct fully-qualified names match the defined allow list.
  */
 export function constructInfoFromStack(stack: Stack): ConstructInfo[] {
-  function isConstructInfo(value: ConstructInfo | undefined): value is ConstructInfo {
-    return value !== undefined;
-  }
+  const isDefined = (value: ConstructInfo | undefined): value is ConstructInfo => value !== undefined;
 
   const allConstructInfos = constructsInStack(stack)
     .map(construct => constructInfoFromConstruct(construct))
-    .filter(isConstructInfo) // Type simplification
+    .filter(isDefined)
     .filter(info => ALLOWED_FQN_PREFIXES.find(prefix => info.fqn.startsWith(prefix)));
 
   // Adds the jsii runtime as a psuedo construct for reporting purposes.

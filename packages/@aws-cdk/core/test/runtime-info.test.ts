@@ -59,6 +59,26 @@ describeTscSafe('constructInfoFromConstruct', () => {
     const constructInfo = constructInfoFromConstruct(construct);
     expect(constructInfo?.fqn).toEqual('aws-cdk-lib.TestConstruct');
   });
+
+  test('throws if the jsii runtime info is not as expected', () => {
+    const constructRuntimeInfoNotObject = new class extends Construct {
+      // @ts-ignore
+      private static readonly [JSII_RUNTIME_SYMBOL] = 'HelloWorld';
+    }(stack, 'RuntimeNotObject');
+    const constructWithWrongRuntimeInfoMembers = new class extends Construct {
+      // @ts-ignore
+      private static readonly [JSII_RUNTIME_SYMBOL] = { foo: 'bar' };
+    }(stack, 'RuntimeWrongMembers');
+    const constructWithWrongRuntimeInfoTypes = new class extends Construct {
+      // @ts-ignore
+      private static readonly [JSII_RUNTIME_SYMBOL] = { fqn: 42, version: { name: '0.0.0' } };
+    }(stack, 'RuntimeWrongTypes');
+
+    const errorMessage = 'malformed jsii runtime info for construct';
+    [constructRuntimeInfoNotObject, constructWithWrongRuntimeInfoMembers, constructWithWrongRuntimeInfoTypes].forEach(construct => {
+      expect(() => constructInfoFromConstruct(construct)).toThrow(errorMessage);
+    });
+  });
 });
 
 describeTscSafe('constructInfoForStack', () => {
@@ -154,20 +174,15 @@ function cdkMajorVersion(): number {
 
 /**
  * The exact values we expect from testing against version numbers in this suite depend on whether we're running
- * locally or on CodeBuild. If local, the version reported for all constructs will be 0.0.0; for CodeBuild, this
- * will instead be the real CDK version number.
- * Returns an accurate version number if running on CodeBuild; otherwise returns 0.0.0 for local development
+ * on a development or release branch. Returns the local package.json version, which will be '0.0.0' unless we're
+ * on a release branch, in which case it should be the real version numbers (e.g., 1.91.0).
  */
 function localCdkVersion(): string {
   if (!_cdkVersion) {
-    if (codeBuild) {
-      // eslint-disable-next-line @typescript-eslint/no-require-imports
-      _cdkVersion = require(path.join('..', '..', '..', '..', 'scripts', 'resolve-version.js')).version;
-      if (!_cdkVersion) {
-        throw new Error('Unable to determine CDK version');
-      }
-    } else {
-      _cdkVersion = '0.0.0';
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    _cdkVersion = require(path.join('..', 'package.json')).version;
+    if (!_cdkVersion) {
+      throw new Error('Unable to determine CDK version');
     }
   }
   return _cdkVersion;
