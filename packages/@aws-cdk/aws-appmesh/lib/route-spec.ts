@@ -44,14 +44,14 @@ export interface HttpRouteMatch {
   readonly headers?: HeaderMatch[];
 
   /**
-   * The client request method to match on. Specify only one.
+   * The HTTP client request method to match on.
    *
    * @default - do not match on request method
    */
   readonly method?: HttpRouteMatchMethod;
 
   /**
-   * The client request scheme to match on. Specify only one. Applicable only for HTTP2 routes.
+   * The client request scheme to match on. Applicable only for HTTP2 routes.
    *
    * @default - do not match on HTTP2 scheme
    */
