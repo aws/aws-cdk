@@ -151,67 +151,84 @@ export interface HeaderMatchConfig {
 export abstract class HeaderMatch {
   /**
    * The value sent by the client must match the specified value exactly.
+   * @param headerName Test against the value of this HTTP request header
+   * @param exact The exact value to test against
    */
-  static valueIs(name: string, exact: string): HeaderMatch {
-    return new HeaderMatchImpl(name, false, { exact });
+  static valueIs(headerName: string, exact: string): HeaderMatch {
+    return new HeaderMatchImpl(headerName, false, { exact });
   }
 
   /**
    * The value sent by the client must not match the specified value exactly.
+   * @param headerName Test against the value of this HTTP request header
+   * @param exact The exact value to test against
    */
-  static valueIsNot(name: string, exact: string): HeaderMatch {
-    return new HeaderMatchImpl(name, true, { exact });
+  static valueIsNot(headerName: string, exact: string): HeaderMatch {
+    return new HeaderMatchImpl(headerName, true, { exact });
   }
 
   /**
    * The value sent by the client must start with the specified characters.
+   * @param headerName Test against the value of this HTTP request header
+   * @param prefix The prefix to test against
    */
-  static valueStartsWith(name: string, prefix: string): HeaderMatch {
-    return new HeaderMatchImpl(name, false, { prefix });
+  static valueStartsWith(headerName: string, prefix: string): HeaderMatch {
+    return new HeaderMatchImpl(headerName, false, { prefix });
   }
 
   /**
    * The value sent by the client must not start with the specified characters.
+   * @param headerName Test against the value of this HTTP request header
+   * @param prefix The prefix to test against
    */
-  static valueDoesNotStartWith(name: string, prefix: string): HeaderMatch {
-    return new HeaderMatchImpl(name, true, { prefix });
+  static valueDoesNotStartWith(headerName: string, prefix: string): HeaderMatch {
+    return new HeaderMatchImpl(headerName, true, { prefix });
   }
 
   /**
    * The value sent by the client must end with the specified characters.
+   * @param headerName Test against the value of this HTTP request header
+   * @param suffix The suffix to test against
    */
-  static valueEndsWith(name: string, suffix: string): HeaderMatch {
-    return new HeaderMatchImpl(name, false, { suffix });
+  static valueEndsWith(headerName: string, suffix: string): HeaderMatch {
+    return new HeaderMatchImpl(headerName, false, { suffix });
   }
 
   /**
    * The value sent by the client must not end with the specified characters.
+   * @param headerName Test against the value of this HTTP request header
+   * @param suffix The suffix to test against
    */
-  static valueDoesNotEndWith(name: string, suffix: string): HeaderMatch {
-    return new HeaderMatchImpl(name, true, { suffix });
+  static valueDoesNotEndWith(headerName: string, suffix: string): HeaderMatch {
+    return new HeaderMatchImpl(headerName, true, { suffix });
   }
 
   /**
    * The value sent by the client must include the specified characters.
+   * @param headerName Test against the value of this HTTP request header
+   * @param regex The regex to test against
    */
-  static valueMatchesRegex(name: string, regex: string): HeaderMatch {
-    return new HeaderMatchImpl(name, false, { regex });
+  static valueMatchesRegex(headerName: string, regex: string): HeaderMatch {
+    return new HeaderMatchImpl(headerName, false, { regex });
   }
 
   /**
    * The value sent by the client must not include the specified characters.
+   * @param headerName Test against the value of this HTTP request header
+   * @param regex The regex to test against
    */
-  static valueDoesNotMatchRegex(name: string, regex: string): HeaderMatch {
-    return new HeaderMatchImpl(name, true, { regex });
+  static valueDoesNotMatchRegex(headerName: string, regex: string): HeaderMatch {
+    return new HeaderMatchImpl(headerName, true, { regex });
   }
 
   /**
    * The value sent by the client must be in a range of values
+   * @param headerName Test against the value of this HTTP request header
    * @param start Match on values starting at and including this value
    * @param end Match on values up to but not including this value
    */
-  static valuesIsInRange(name: string, start: number, end: number): HeaderMatch {
-    return new HeaderMatchImpl(name, false, {
+  static valuesIsInRange(headerName: string, start: number, end: number): HeaderMatch {
+    return new HeaderMatchImpl(headerName, false, {
       range: {
         start,
         end,
@@ -221,11 +238,12 @@ export abstract class HeaderMatch {
 
   /**
    * The value sent by the client must not be in a range of values
+   * @param headerName Test against the value of this HTTP request header
    * @param start Match on values starting at and including this value
    * @param end Match on values up to but not including this value
    */
-  static valuesIsNotInRange(name: string, start: number, end: number): HeaderMatch {
-    return new HeaderMatchImpl(name, true, {
+  static valuesIsNotInRange(headerName: string, start: number, end: number): HeaderMatch {
+    return new HeaderMatchImpl(headerName, true, {
       range: {
         start,
         end,
@@ -240,13 +258,17 @@ export abstract class HeaderMatch {
 }
 
 class HeaderMatchImpl extends HeaderMatch {
-  constructor(private readonly name: string, private readonly invert: boolean, private readonly matchProperty: CfnRoute.HeaderMatchMethodProperty) {
+  constructor(
+    private readonly headerName: string,
+    private readonly invert: boolean,
+    private readonly matchProperty: CfnRoute.HeaderMatchMethodProperty,
+  ) {
     super();
   }
 
   bind(_scope: Construct): HeaderMatchConfig {
     return {
-      headerName: this.name,
+      headerName: this.headerName,
       invert: this.invert,
       matchProperty: this.matchProperty,
     };
