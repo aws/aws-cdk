@@ -222,7 +222,7 @@ export class Cluster extends Resource implements ICluster {
     const autoScalingGroup = new autoscaling.AutoScalingGroup(this, id, {
       vpc: this.vpc,
       machineImage,
-      updateType: options.updateType || autoscaling.UpdateType.REPLACING_UPDATE,
+      updatePolicy: options.updatePolicy ?? autoscaling.UpdatePolicy.replacingUpdate(),
       ...options,
     });
 
