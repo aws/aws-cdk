@@ -150,25 +150,31 @@ export interface HeaderMatchConfig {
  */
 export abstract class HeaderMatch {
   /**
-   * The value sent by the client must match the specified value exactly.
+   * The value of the header with the given name in the request must match the
+   * specified value exactly.
+   *
    * @param headerName Test against the value of this HTTP request header
-   * @param exact The exact value to test against
+   * @param headerValue The exact value to test against
    */
-  static valueIs(headerName: string, exact: string): HeaderMatch {
-    return new HeaderMatchImpl(headerName, false, { exact });
+  static valueIs(headerName: string, headerValue: string): HeaderMatch {
+    return new HeaderMatchImpl(headerName, false, { exact: headerValue });
   }
 
   /**
-   * The value sent by the client must not match the specified value exactly.
+   * The value of the header with the given name in the request must not match
+   * the specified value exactly.
+   *
    * @param headerName Test against the value of this HTTP request header
-   * @param exact The exact value to test against
+   * @param headerValue The exact value to test against
    */
-  static valueIsNot(headerName: string, exact: string): HeaderMatch {
-    return new HeaderMatchImpl(headerName, true, { exact });
+  static valueIsNot(headerName: string, headerValue: string): HeaderMatch {
+    return new HeaderMatchImpl(headerName, true, { exact: headerValue });
   }
 
   /**
-   * The value sent by the client must start with the specified characters.
+   * The value of the header with the given name in the request must start with
+   * the specified characters.
+   *
    * @param headerName Test against the value of this HTTP request header
    * @param prefix The prefix to test against
    */
@@ -177,7 +183,9 @@ export abstract class HeaderMatch {
   }
 
   /**
-   * The value sent by the client must not start with the specified characters.
+   * The value of the header with the given name in the request must not start
+   * with the specified characters.
+   *
    * @param headerName Test against the value of this HTTP request header
    * @param prefix The prefix to test against
    */
@@ -186,7 +194,9 @@ export abstract class HeaderMatch {
   }
 
   /**
-   * The value sent by the client must end with the specified characters.
+   * The value of the header with the given name in the request must end with
+   * the specified characters.
+   *
    * @param headerName Test against the value of this HTTP request header
    * @param suffix The suffix to test against
    */
@@ -195,7 +205,9 @@ export abstract class HeaderMatch {
   }
 
   /**
-   * The value sent by the client must not end with the specified characters.
+   * The value of the header with the given name in the request must not end
+   * with the specified characters.
+   *
    * @param headerName Test against the value of this HTTP request header
    * @param suffix The suffix to test against
    */
@@ -204,7 +216,9 @@ export abstract class HeaderMatch {
   }
 
   /**
-   * The value sent by the client must include the specified characters.
+   * The value of the header with the given name in the request must include
+   * the specified characters.
+   *
    * @param headerName Test against the value of this HTTP request header
    * @param regex The regex to test against
    */
@@ -213,7 +227,9 @@ export abstract class HeaderMatch {
   }
 
   /**
-   * The value sent by the client must not include the specified characters.
+   * The value of the header with the given name in the request must not
+   * include the specified characters.
+   *
    * @param headerName Test against the value of this HTTP request header
    * @param regex The regex to test against
    */
@@ -222,7 +238,9 @@ export abstract class HeaderMatch {
   }
 
   /**
-   * The value sent by the client must be in a range of values
+   * The value of the header with the given name in the request must be in a
+   * range of values.
+   *
    * @param headerName Test against the value of this HTTP request header
    * @param start Match on values starting at and including this value
    * @param end Match on values up to but not including this value
@@ -237,7 +255,9 @@ export abstract class HeaderMatch {
   }
 
   /**
-   * The value sent by the client must not be in a range of values
+   * The value of the header with the given name in the request must not be in
+   * a range of values.
+   *
    * @param headerName Test against the value of this HTTP request header
    * @param start Match on values starting at and including this value
    * @param end Match on values up to but not including this value
