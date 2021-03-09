@@ -346,7 +346,7 @@ describe('code', () => {
       // then
       expect(stack).toHaveResource('AWS::Lambda::Function', {
         Metadata: {
-          [cxapi.ASSET_RESOURCE_METADATA_PATH_KEY]: 'asset.38cd320fa97b348accac88e48d9cede4923f7cab270ce794c95a665be83681a8',
+          [cxapi.ASSET_RESOURCE_METADATA_PATH_KEY]: 'asset.20276d7803bfd6f4a2a5dc48692eb300d676b2a0dfdd4bda78c56c7c2c461515',
           [cxapi.ASSET_RESOURCE_METADATA_PROPERTY_KEY]: 'Code',
         },
       }, ResourcePart.CompleteDefinition);
