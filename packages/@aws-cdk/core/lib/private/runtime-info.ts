@@ -60,9 +60,9 @@ export function constructInfoFromStack(stack: Stack): ConstructInfo[] {
   const uniqKeys = new Set();
   return allConstructInfos.filter(construct => {
     const constructKey = `${construct.fqn}@${construct.version}`;
-    const isUnique = uniqKeys.has(constructKey);
+    const isDuplicate = uniqKeys.has(constructKey);
     uniqKeys.add(constructKey);
-    return !isUnique;
+    return !isDuplicate;
   });
 }
 
