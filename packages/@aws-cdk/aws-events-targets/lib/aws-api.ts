@@ -2,7 +2,7 @@ import * as path from 'path';
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
-import * as SDK from 'aws-sdk';
+import { Annotations } from '@aws-cdk/core';
 import { metadata } from './sdk-api-metadata.generated';
 import { addLambdaPermission } from './util';
 
@@ -82,8 +82,6 @@ export class AwsApi implements events.IRuleTarget {
    * result from an EventBridge event.
    */
   public bind(rule: events.IRule, id?: string): events.RuleTargetConfig {
-    const normalizedServiceName = checkServiceAndActionExists(this.props.service, this.props.action);
-
     const handler = new lambda.SingletonFunction(rule as events.Rule, `${rule.node.id}${id}Handler`, {
       code: lambda.Code.fromAsset(path.join(__dirname, 'aws-api-handler')),
       runtime: lambda.Runtime.NODEJS_12_X,
@@ -92,11 +90,13 @@ export class AwsApi implements events.IRuleTarget {
       lambdaPurpose: 'AWS',
     });
 
+    checkServiceExists(this.props.service, handler);
+
     if (this.props.policyStatement) {
       handler.addToRolePolicy(this.props.policyStatement);
     } else {
       handler.addToRolePolicy(new iam.PolicyStatement({
-        actions: [awsSdkToIamAction(normalizedServiceName, this.props.action)],
+        actions: [awsSdkToIamAction(this.props.service, this.props.action)],
         resources: ['*'],
       }));
     }
@@ -105,7 +105,7 @@ export class AwsApi implements events.IRuleTarget {
     addLambdaPermission(rule, handler);
 
     const input: AwsApiInput = {
-      service: normalizedServiceName,
+      service: this.props.service,
       action: this.props.action,
       parameters: this.props.parameters,
       catchErrorPattern: this.props.catchErrorPattern,
@@ -122,6 +122,18 @@ export class AwsApi implements events.IRuleTarget {
 }
 
 /**
+ * Check if the given service exists in the AWS SDK. If not, a warning will be raised.
+ * @param service Service name
+ */
+function checkServiceExists(service: string, handler: lambda.SingletonFunction) {
+  const sdkService = awsSdkMetadata[service.toLowerCase()];
+  if (!sdkService) {
+    Annotations.of(handler).addWarning(`Service ${service} does not exist in the AWS SDK. Check the list of available \
+services and actions from https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/index.html`);
+  }
+}
+
+/**
  * Transform SDK service/action to IAM action using metadata from aws-sdk module.
  */
 function awsSdkToIamAction(service: string, action: string): string {
@@ -129,38 +141,4 @@ function awsSdkToIamAction(service: string, action: string): string {
   const iamService = awsSdkMetadata[srv].prefix || srv;
   const iamAction = action.charAt(0).toUpperCase() + action.slice(1);
   return `${iamService}:${iamAction}`;
-}
-
-const sdkDocsUrl = 'https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/index.html';
-
-/**
- * Check that the given service and actions exist in the AWS SDK. If the service name is given in an incorrect case
- * e.g. rds instead of RDS, the normalized service name is returned.
- * @param service Service name
- * @param action Action name
- * @param apiVersion API version
- * @returns Normalized service name
- * @throws {Error} The given service and/or action don't exist
- */
-function checkServiceAndActionExists(service: string, action: string, apiVersion?: string): string {
-  let sdkService: any;
-  let normalizedServiceName: string;
-
-  if ((SDK as any)[service]) {
-    sdkService = (SDK as any)[service];
-    normalizedServiceName = service;
-  } else if ((SDK as any)[service.toUpperCase()]) {
-    sdkService = (SDK as any)[service.toUpperCase()];
-    normalizedServiceName = service.toUpperCase();
-  } else {
-    throw new Error(`The service ${service} does not exist, check the list of available services from ${sdkDocsUrl}`);
-  }
-
-  const sdkServiceInstance = new sdkService(apiVersion && { apiVersion });
-  if (!sdkServiceInstance[action]) {
-    throw new Error(`The action ${action} for the service ${service} does not exist, check the list of available \
-services and actions from ${sdkDocsUrl}`);
-  }
-
-  return normalizedServiceName;
 }

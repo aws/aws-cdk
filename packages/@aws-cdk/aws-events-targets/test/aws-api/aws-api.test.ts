@@ -1,4 +1,4 @@
-import { countResources, expect as stackExpect, haveResource } from '@aws-cdk/assert';
+import { countResources, expect as cdkExpect, haveResource, SynthUtils } from '@aws-cdk/assert';
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
 import { Stack } from '@aws-cdk/core';
@@ -32,7 +32,7 @@ test('use AwsApi as an event rule target', () => {
   }));
 
   // THEN
-  stackExpect(stack).to(haveResource('AWS::Events::Rule', {
+  cdkExpect(stack).to(haveResource('AWS::Events::Rule', {
     Targets: [
       {
         Arn: {
@@ -73,9 +73,9 @@ test('use AwsApi as an event rule target', () => {
   }));
 
   // Uses a singleton function
-  stackExpect(stack).to(countResources('AWS::Lambda::Function', 1));
+  cdkExpect(stack).to(countResources('AWS::Lambda::Function', 1));
 
-  stackExpect(stack).to(haveResource('AWS::IAM::Policy', {
+  cdkExpect(stack).to(haveResource('AWS::IAM::Policy', {
     PolicyDocument: {
       Statement: [
         {
@@ -103,8 +103,8 @@ test('with policy statement', () => {
 
   // WHEN
   rule.addTarget(new targets.AwsApi({
-    service: 'S3',
-    action: 'getObject',
+    service: 'service',
+    action: 'action',
     policyStatement: new iam.PolicyStatement({
       actions: ['s3:GetObject'],
       resources: ['resource'],
@@ -112,7 +112,7 @@ test('with policy statement', () => {
   }));
 
   // THEN
-  stackExpect(stack).to(haveResource('AWS::Events::Rule', {
+  cdkExpect(stack).to(haveResource('AWS::Events::Rule', {
     Targets: [
       {
         Arn: {
@@ -123,14 +123,14 @@ test('with policy statement', () => {
         },
         Id: 'Target0',
         Input: JSON.stringify({ // No `policyStatement`
-          service: 'S3',
-          action: 'getObject',
+          service: 'service',
+          action: 'action',
         }),
       },
     ],
   }));
 
-  stackExpect(stack).to(haveResource('AWS::IAM::Policy', {
+  cdkExpect(stack).to(haveResource('AWS::IAM::Policy', {
     PolicyDocument: {
       Statement: [
         {
@@ -144,31 +144,28 @@ test('with policy statement', () => {
   }));
 });
 
-test('with nonexistent service', () => {
+test('with service not in AWS SDK', () => {
   // GIVEN
   const stack = new Stack();
   const rule = new events.Rule(stack, 'Rule', {
     schedule: events.Schedule.expression('rate(15 minutes)'),
   });
-
-  // THEN
-  expect(() => rule.addTarget(new targets.AwsApi({
+  const awsApi = new targets.AwsApi({
     service: 'no-such-service',
     action: 'no-such-action',
-  }))).toThrowError('The service no-such-service does not exist, check the list of available services from https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/index.html');
-
-});
-
-test('with nonexistent action', () => {
-  // GIVEN
-  const stack = new Stack();
-  const rule = new events.Rule(stack, 'Rule', {
-    schedule: events.Schedule.expression('rate(15 minutes)'),
+    policyStatement: new iam.PolicyStatement({
+      actions: ['s3:GetObject'],
+      resources: ['resource'],
+    }),
   });
 
+  // WHEN
+  rule.addTarget(awsApi);
+
   // THEN
-  expect(() => rule.addTarget(new targets.AwsApi({
-    service: 'S3',
-    action: 'no-such-action',
-  }))).toThrowError('The action no-such-action for the service S3 does not exist, check the list of available services and actions from https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/index.html');
+  const assembly = SynthUtils.synthesize(stack);
+  expect(assembly.messages.length).toBe(1);
+  const message = assembly.messages[0];
+  expect(message.entry.type).toBe('aws:cdk:warning');
+  expect(message.entry.data).toBe('Service no-such-service does not exist in the AWS SDK. Check the list of available services and actions from https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/index.html');
 });
