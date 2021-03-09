@@ -1,7 +1,7 @@
 import { Lazy } from '../lazy';
 import { DefaultTokenResolver, IFragmentConcatenator, IResolveContext } from '../resolvable';
-import { isResolvableObject, Token } from '../token';
-import { TokenMap } from './token-map';
+import { Token } from '../token';
+import { INTRINSIC_KEY_PREFIX, ResolutionTypeHint, resolvedTypeHint } from './resolve';
 
 /**
  * Routines that know how to do operations at the CloudFormation document language level
@@ -21,7 +21,7 @@ export class CloudFormationLang {
    * @param space Indentation to use (default: no pretty-printing)
    */
   public static toJSON(obj: any, space?: number): string {
-    return Lazy.stringValue({
+    return Lazy.uncachedString({
       // We used to do this by hooking into `JSON.stringify()` by adding in objects
       // with custom `toJSON()` functions, but it's ultimately simpler just to
       // reimplement the `stringify()` function from scratch.
@@ -61,51 +61,77 @@ function fnJoinConcat(parts: any[]) {
 /**
  * Perform a JSON.stringify()-like operation, except aware of Tokens and CloudFormation intrincics
  *
- * Tokens will be resolved and if they resolve to CloudFormation intrinsics, the intrinsics
- * will be lifted to the top of a giant `{ Fn::Join}` expression.
+ * Tokens will be resolved and if any resolve to CloudFormation intrinsics, the intrinsics
+ * will be lifted to the top of a giant `{ Fn::Join }` expression.
  *
- * We are looking to do the following transforms:
+ * If Tokens resolve to primitive types (for example, by using Lazies), we'll
+ * use the primitive type to determine how to encode the value into the JSON.
  *
- * (a) Token in a string context
+ * If Tokens resolve to CloudFormation intrinsics, we'll use the type of the encoded
+ * value as a type hint to determine how to encode the value into the JSON. The difference
+ * is that we add quotes (") around strings, and don't add anything around non-strings.
  *
- *     { "field": "a${TOKEN}b" } -> "{ \"field\": \"a" ++ resolve(TOKEN) ++ "b\" }"
- *     { "a${TOKEN}b": "value" } -> "{ \"a" ++ resolve(TOKEN) ++ "b\": \"value\" }"
+ * The following structure:
  *
- * (b) Standalone token
+ *    { SomeAttr: resource.someAttr }
  *
- *     { "field": TOKEN } ->
+ * Will JSONify to either:
  *
- *         if TOKEN resolves to a string (or is a non-encoded or string-encoded intrinsic) ->
- *             "{ \"field\": \"" ++ resolve(TOKEN) ++ "\" }"
- *         if TOKEN resolves to a non-string (or is a non-string-encoded intrinsic)  ->
- *             "{ \"field\": " ++ resolve(TOKEN) ++ " }"
+ *    '{ "SomeAttr": "' ++ { Fn::GetAtt: [Resource, SomeAttr] } ++ '" }'
+ * or '{ "SomeAttr": ' ++ { Fn::GetAtt: [Resource, SomeAttr] } ++ ' }'
+ *
+ * Depending on whether `someAttr` is type-hinted to be a string or not.
  *
  * (Where ++ is the CloudFormation string-concat operation (`{ Fn::Join }`).
  *
- * -------------------
+ * -----------------------
  *
- * Here come complex type interpretation rules, which we are unable to simplify because
- * some clients our there are already taking dependencies on the unintended side effects
- * of the old implementation.
+ * This work requires 2 features from the `resolve()` function:
  *
- * 1. If TOKEN is embedded in a string with a prefix or postfix, we'll render the token
- *    as a string regardless of whether it returns an intrinsic or a literal.
+ * - INTRINSICS TYPE HINTS: intrinsics only have values like `{ Ref: 'XYZ' }`. This value can reference either
+ *   a string or a list/number at deploy time, and from the value alone there's no way to know which. The difference
+ *   will be whether we JSONify this to:
  *
- * 2. If TOKEN resolves to an intrinsic:
- *     - We'll treat it as a string if the TOKEN itself was not encoded or string-encoded
- *       (this covers the 99% case of what CloudFormation intrinsics resolve to).
- *     - We'll treat it as a non-string otherwise; the intrinsic MUST resolve to a number;
- *        * if resolves to a list { Fn::Join } will fail
- *        * if it resolves to a string after all the JSON will be malformed at API call time.
+ *      '{ "referencedValue": "' ++ { Ref: XYZ } ++ '"}'
+ *   or '{ "referencedValue": ' ++ { Ref: XYZ } ++ '}'
  *
- * 3. Otherwise, the type of the value it resolves to (string, number, complex object, ...)
- *    determines how the value is rendered.
+ *   I.e., whether or not we need to enclose the reference in quotes or not.
+ *
+ *   We COULD have done this by resolving one token at a time, and looking at the
+ *   type of the encoded token we were resolving to obtain a type hint. However,
+ *   the `resolve()` and Token system resists a level-at-a-time resolve
+ *   operation; because of the existence of post-processors, we must have done a
+ *   complete recursive resolution of a token before we can look at its result
+ *   (after which any type information about the sources of nested resolved
+ *   values is lost).
+ *
+ *   To fix this, "type hints" have been added to the `resolve()` function,
+ *   giving an idea of the type of the source value for compplex result values.
+ *   This only works for complex values (not strings and numbers) but fortunately
+ *   we only care about the types of intrinsics, which are always complex values.
+ *
+ *   Type Hints could have been added to `IResolvable` as well, but for now we just
+ *   use the type of an encoded value as a type hint.
+ *
+ * - COMPLEX KEYS: contrary to regular JavaScript objects, it is feasible in a JSON string to use an intrinsic in
+ *   the key position of an object.
+ *
+ *   The simplest implementation of `tokenAwareStringify` would do a complete `resolve()` of the data structure, and
+ *   afterwards encode the resolved object to a string, taking care to properly encode intrinsics.
+ *
+ *   However, the intermediary representation (the result of `resolve()`) could not hold complex key values in memory
+ *   in a JavaScript object. We therefore extend the intermediary representation to be able to store these, deviating
+ *   from straight JavaScript object semantics somewhat by using special key prefixes.
  */
 function tokenAwareStringify(root: any, space: number, ctx: IResolveContext) {
   let indent = 0;
 
   const ret = new Array<Segment>();
-  recurse(root);
+
+  // First completely resolve the tree, then encode to JSON while respecting the type
+  // hints we got for the resolved intrinsics.
+  recurse(ctx.resolve(root, { allowIntrinsicKeys: true }));
+
   switch (ret.length) {
     case 0: return '';
     case 1: return renderSegment(ret[0]);
@@ -118,13 +144,24 @@ function tokenAwareStringify(root: any, space: number, ctx: IResolveContext) {
    */
   function recurse(obj: any): void {
     if (Token.isUnresolved(obj)) {
-      return handleToken(obj);
+      throw new Error('This shouldnt happen anymore');
     }
     if (Array.isArray(obj)) {
       return renderCollection('[', ']', obj, recurse);
     }
     if (typeof obj === 'object' && obj != null && !(obj instanceof Date)) {
+      // Treat as an intrinsic if this LOOKS like a CFN intrinsic (`{ Ref: ... }`)
+      // AND it's the result of a token resolution. Otherwise, we just treat this
+      // value as a regular old JSON object (that happens to look a lot like an intrinsic).
+      if (isIntrinsic(obj) && resolvedTypeHint(obj)) {
+        return renderIntrinsic(obj);
+      }
+
       return renderCollection('{', '}', definedEntries(obj), ([key, value]) => {
+        if (key.startsWith(INTRINSIC_KEY_PREFIX)) {
+          [key, value] = value;
+        }
+
         recurse(key);
         pushLiteral(prettyPunctuation(':'));
         recurse(value);
@@ -152,57 +189,18 @@ function tokenAwareStringify(root: any, space: number, ctx: IResolveContext) {
     pushLiteral(post);
   }
 
-  /**
-   * Handle a Token.
-   *
-   * Can be any of:
-   *
-   * - Straight up IResolvable
-   * - Encoded string, number or list
-   */
-  function handleToken(token: any) {
-    if (typeof token === 'string') {
-      // Encoded string, treat like a string if it has a token and at least one other
-      // component, otherwise treat like a regular token and base the output quoting on the
-      // type of the result.
-      const fragments = TokenMap.instance().splitString(token);
-      if (fragments.length > 1) {
+  function renderIntrinsic(intrinsic: any) {
+    switch (resolvedTypeHint(intrinsic)) {
+      case ResolutionTypeHint.STRING:
         pushLiteral('"');
-        fragments.visit({
-          visitLiteral: pushLiteral,
-          visitToken: (tok) => {
-            const resolved = ctx.resolve(tok);
-            if (isIntrinsic(resolved)) {
-              pushIntrinsic(quoteInsideIntrinsic(resolved));
-            } else {
-              // We're already in a string context, so stringify and escape
-              pushLiteral(quoteString(`${resolved}`));
-            }
-          },
-          // This potential case is the result of poor modeling in the tokenized string, it should not happen
-          visitIntrinsic: () => { throw new Error('Intrinsic not expected in a freshly-split string'); },
-        });
+        pushIntrinsic(quoteInsideIntrinsic(intrinsic));
         pushLiteral('"');
-        return;
-      }
-    }
+        break;
 
-    const resolved = ctx.resolve(token);
-    if (isIntrinsic(resolved)) {
-      if (isResolvableObject(token) || typeof token === 'string') {
-        // If the input was an unencoded IResolvable or a string-encoded value,
-        // treat it like it was a string (for the 99% case)
-        pushLiteral('"');
-        pushIntrinsic(quoteInsideIntrinsic(resolved));
-        pushLiteral('"');
-      } else {
-        pushIntrinsic(resolved);
-      }
-      return;
+      default:
+        pushIntrinsic(intrinsic);
+        break;
     }
-
-    // Otherwise we got an arbitrary JSON structure from the token, recurse
-    recurse(resolved);
   }
 
   /**
@@ -348,6 +346,11 @@ function* definedEntries<A extends object>(xs: A): IterableIterator<[string, any
 
 /**
  * Quote string literals inside an intrinsic
+ *
+ * Formally, this should only match string literals that will be interpreted as
+ * string literals. Fortunately, the strings that should NOT be quoted are
+ * Logical IDs and attribute names, which cannot contain quotes anyway. Hence,
+ * we can get away not caring about the distinction and just quoting everything.
  */
 function quoteInsideIntrinsic(x: any): any {
   if (typeof x === 'object' && x != null && Object.keys(x).length === 1) {

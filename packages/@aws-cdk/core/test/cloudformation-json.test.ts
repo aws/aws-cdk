@@ -1,4 +1,4 @@
-import { App, CfnOutput, Fn, Lazy, Stack, Token } from '../lib';
+import { App, CfnOutput, Fn, IPostProcessor, IResolvable, IResolveContext, Lazy, Stack, Token } from '../lib';
 import { Intrinsic } from '../lib/private/intrinsic';
 import { evaluateCFN } from './evaluate-cfn';
 
@@ -85,13 +85,24 @@ describe('tokens that return literals', () => {
     expect(evaluateCFN(stack.resolve(stack.toJsonString({ someList })))).toEqual('{"someList":[1,2,3]}');
   });
 
-  test('List Tokens do not have quotes applied', () => {
+  test('Literal-resolving List Tokens do not have quotes applied', () => {
     // GIVEN
     const someList = Token.asList([1, 2, 3]);
 
     // WHEN
     expect(evaluateCFN(stack.resolve(stack.toJsonString({ someList })))).toEqual('{"someList":[1,2,3]}');
   });
+
+  test('Intrinsic-resolving List Tokens do not have quotes applied', () => {
+    // GIVEN
+    const someList = Token.asList(new Intrinsic({ Ref: 'Thing' }));
+
+    // WHEN
+    expect(stack.resolve(stack.toJsonString({ someList }))).toEqual({
+      'Fn::Join': ['', ['{"someList":', { Ref: 'Thing' }, '}']],
+    });
+  });
+
 
   test('tokens in strings survive additional TokenJSON.stringification()', () => {
     // GIVEN
@@ -192,6 +203,20 @@ describe('tokens returning CloudFormation intrinsics', () => {
     // THEN
     const context = { MyBucket: 'TheName' };
     expect(evaluateCFN(resolved, context)).toEqual('{"theBucket":"The bucket name is TheName"}');
+  });
+
+  test('Intrinsics in postprocessors are handled correctly', () => {
+    // GIVEN
+    const bucketName = new Intrinsic({ Ref: 'MyBucket' });
+    const combinedName = new DummyPostProcessor(['this', 'is', bucketName]);
+
+    // WHEN
+    const resolved = stack.resolve(stack.toJsonString({ theBucket: combinedName }));
+
+    // THEN
+    expect(resolved).toEqual({
+      'Fn::Join': ['', ['{"theBucket":["this","is","', { Ref: 'MyBucket' }, '"]}']],
+    });
   });
 
   test('Doubly nested strings evaluate correctly in JSON context', () => {
@@ -323,4 +348,21 @@ function tokensThatResolveTo(value: any): Token[] {
     new Intrinsic(value),
     Lazy.any({ produce: () => value }),
   ];
+}
+
+class DummyPostProcessor implements IResolvable, IPostProcessor {
+  public readonly creationStack: string[];
+
+  constructor(private readonly value: any) {
+    this.creationStack = ['test'];
+  }
+
+  public resolve(context: IResolveContext) {
+    context.registerPostProcessor(this);
+    return context.resolve(this.value);
+  }
+
+  public postProcess(o: any, _context: IResolveContext): any {
+    return o;
+  }
 }
