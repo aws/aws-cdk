@@ -63,7 +63,7 @@
       },
       "python": {
         "distName": "aws-cdk-lib",
-        "module": "aws_cdk_lib"
+        "module": "aws_cdk"
       }
     },
     "projectReferences": false
