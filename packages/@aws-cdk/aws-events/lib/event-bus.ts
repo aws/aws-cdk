@@ -47,6 +47,14 @@ export interface IEventBus extends IResource {
    * @param props Properties of the archive
    */
   archive(id: string, props: BaseArchiveProps): Archive;
+
+  /**
+   * Grants an IAM Principal to send custom events to the eventBus
+   * so that they can be matched to rules.
+   *
+   * @param grantee The principal (no-op if undefined)
+   */
+  grantPutEventsTo(grantee: iam.IGrantable): iam.Grant;
 }
 
 /**
@@ -137,6 +145,14 @@ abstract class EventBusBase extends Resource implements IEventBus {
       archiveName: props.archiveName,
     });
   }
+
+  public grantPutEventsTo(grantee: iam.IGrantable): iam.Grant {
+    return iam.Grant.addToPrincipal({
+      grantee,
+      actions: ['events:PutEvents'],
+      resourceArns: [this.eventBusArn],
+    });
+  }
 }
 
 /**
@@ -177,10 +193,25 @@ export class EventBus extends EventBusBase {
    * so that they can be matched to rules.
    *
    * @param grantee The principal (no-op if undefined)
+   * @deprecated use grantAllPutEvents instead
    */
   public static grantPutEvents(grantee: iam.IGrantable): iam.Grant {
     // It's currently not possible to restrict PutEvents to specific resources.
     // See https://docs.aws.amazon.com/eventbridge/latest/userguide/permissions-reference-eventbridge.html
+    return iam.Grant.addToPrincipal({
+      grantee,
+      actions: ['events:PutEvents'],
+      resourceArns: ['*'],
+    });
+  }
+
+  /**
+   * Permits an IAM Principal to send custom events to EventBridge
+   * so that they can be matched to rules.
+   *
+   * @param grantee The principal (no-op if undefined)
+   */
+  public static grantAllPutEvents(grantee: iam.IGrantable): iam.Grant {
     return iam.Grant.addToPrincipal({
       grantee,
       actions: ['events:PutEvents'],
