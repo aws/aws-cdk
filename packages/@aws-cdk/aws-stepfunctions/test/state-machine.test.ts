@@ -62,6 +62,36 @@ describe('State Machine', () => {
 
   }),
 
+  test('State Machine with invalid name', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const createStateMachine = (name: string) => {
+      new stepfunctions.StateMachine(stack, name + 'StateMachine', {
+        stateMachineName: name,
+        definition: stepfunctions.Chain.start(new stepfunctions.Pass(stack, name + 'Pass')),
+        stateMachineType: stepfunctions.StateMachineType.EXPRESS,
+      });
+    };
+    const tooShortName = '';
+    const tooLongName = 'M'.repeat(81);
+    const invalidCharactersName = '*';
+
+    // THEN
+    expect(() => {
+      createStateMachine(tooShortName);
+    }).toThrow(`State Machine name must be between 1 and 80 characters. Received: ${tooShortName}`);
+
+    expect(() => {
+      createStateMachine(tooLongName);
+    }).toThrow(`State Machine name must be between 1 and 80 characters. Received: ${tooLongName}`);
+
+    expect(() => {
+      createStateMachine(invalidCharactersName);
+    }).toThrow(`State Machine name must match "^[0-9a-zA-Z+!@._-]+$". Received: ${invalidCharactersName}`);
+  });
+
   test('log configuration', () => {
     // GIVEN
     const stack = new cdk.Stack();
