@@ -157,7 +157,7 @@ export class HttpRoute extends Resource implements IHttpRoute {
     }
 
     const routeProps: CfnRouteProps = {
-      apiId: props.httpApi.httpApiId,
+      apiId: props.httpApi.apiId,
       routeKey: props.routeKey.key,
       target: `integrations/${integration.integrationId}`,
       authorizerId: authBindResult?.authorizerId,
