@@ -161,7 +161,7 @@ export class VirtualGateway extends VirtualGatewayBase {
 
   constructor(scope: Construct, id: string, props: VirtualGatewayProps) {
     super(scope, id, {
-      physicalName: props.virtualGatewayName || cdk.Lazy.stringValue({ produce: () => this.node.uniqueId }),
+      physicalName: props.virtualGatewayName || cdk.Lazy.string({ produce: () => cdk.Names.uniqueId(this) }),
     });
 
     this.mesh = props.mesh;
