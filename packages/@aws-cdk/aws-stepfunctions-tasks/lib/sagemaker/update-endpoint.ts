@@ -73,6 +73,13 @@ export class SageMakerUpdateEndpoint extends sfn.TaskStateBase {
             // SageMaker uses lowercase for resource name in the arn
             resourceName: sfn.JsonPath.isEncodedJsonPath(this.props.endpointName) ? '*' : `${this.props.endpointName.toLowerCase()}`,
           }),
+          stack.formatArn({
+            service: 'sagemaker',
+            resource: 'endpoint-config',
+            // If the endpointConfig name comes from input, we cannot target the policy to a particular ARN prefix reliably.
+            // SageMaker uses lowercase for resource name in the arn
+            resourceName: sfn.JsonPath.isEncodedJsonPath(this.props.endpointConfigName) ? '*' : `${this.props.endpointConfigName.toLowerCase()}`,
+          }),
         ],
       }),
     ];
