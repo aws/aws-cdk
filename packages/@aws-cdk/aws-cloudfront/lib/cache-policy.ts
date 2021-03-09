@@ -231,6 +231,9 @@ export class CacheHeaderBehavior {
     if (headers.length === 0) {
       throw new Error('At least one header to allow must be provided');
     }
+    if (headers.length > 10) {
+      throw new Error(`Maximum allowed headers in Cache Policy is 10; got ${headers.length}.`);
+    }
     return new CacheHeaderBehavior('whitelist', headers);
   }
 
