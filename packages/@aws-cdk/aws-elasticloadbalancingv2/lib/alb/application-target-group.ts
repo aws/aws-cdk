@@ -119,6 +119,9 @@ export class ApplicationTargetGroup extends TargetGroupBase implements IApplicat
 
     if (props) {
       if (props.slowStart !== undefined) {
+        if (props.slowStart.toSeconds() < 30 || props.slowStart.toSeconds() > 900) {
+          throw new Error('Slow start duration value must be between 30 and 900 seconds.');
+        }
         this.setAttribute('slow_start.duration_seconds', props.slowStart.toSeconds().toString());
       }
       if (props.stickinessCookieDuration) {

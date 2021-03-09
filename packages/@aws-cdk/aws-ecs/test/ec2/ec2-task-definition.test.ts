@@ -531,6 +531,146 @@ describe('ec2 task definition', () => {
 
     });
 
+    test('correctly sets containers from ECR repository using an image tag', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
+
+      taskDefinition.addContainer('web', {
+        image: ecs.ContainerImage.fromEcrRepository(new Repository(stack, 'myECRImage'), 'myTag'),
+        memoryLimitMiB: 512,
+      });
+
+      // THEN
+      expect(stack).toHaveResource('AWS::ECS::TaskDefinition', {
+        ContainerDefinitions: [{
+          Essential: true,
+          Memory: 512,
+          Image: {
+            'Fn::Join': [
+              '',
+              [
+                {
+                  'Fn::Select': [
+                    4,
+                    {
+                      'Fn::Split': [
+                        ':',
+                        {
+                          'Fn::GetAtt': [
+                            'myECRImage7DEAE474',
+                            'Arn',
+                          ],
+                        },
+                      ],
+                    },
+                  ],
+                },
+                '.dkr.ecr.',
+                {
+                  'Fn::Select': [
+                    3,
+                    {
+                      'Fn::Split': [
+                        ':',
+                        {
+                          'Fn::GetAtt': [
+                            'myECRImage7DEAE474',
+                            'Arn',
+                          ],
+                        },
+                      ],
+                    },
+                  ],
+                },
+                '.',
+                {
+                  Ref: 'AWS::URLSuffix',
+                },
+                '/',
+                {
+                  Ref: 'myECRImage7DEAE474',
+                },
+                ':myTag',
+              ],
+            ],
+          },
+          Name: 'web',
+        }],
+      });
+    });
+
+    test('correctly sets containers from ECR repository using an image digest', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
+
+      taskDefinition.addContainer('web', {
+        image: ecs.ContainerImage.fromEcrRepository(new Repository(stack, 'myECRImage'), 'sha256:94afd1f2e64d908bc90dbca0035a5b567EXAMPLE'),
+        memoryLimitMiB: 512,
+      });
+
+      // THEN
+      expect(stack).toHaveResource('AWS::ECS::TaskDefinition', {
+        ContainerDefinitions: [{
+          Essential: true,
+          Memory: 512,
+          Image: {
+            'Fn::Join': [
+              '',
+              [
+                {
+                  'Fn::Select': [
+                    4,
+                    {
+                      'Fn::Split': [
+                        ':',
+                        {
+                          'Fn::GetAtt': [
+                            'myECRImage7DEAE474',
+                            'Arn',
+                          ],
+                        },
+                      ],
+                    },
+                  ],
+                },
+                '.dkr.ecr.',
+                {
+                  'Fn::Select': [
+                    3,
+                    {
+                      'Fn::Split': [
+                        ':',
+                        {
+                          'Fn::GetAtt': [
+                            'myECRImage7DEAE474',
+                            'Arn',
+                          ],
+                        },
+                      ],
+                    },
+                  ],
+                },
+                '.',
+                {
+                  Ref: 'AWS::URLSuffix',
+                },
+                '/',
+                {
+                  Ref: 'myECRImage7DEAE474',
+                },
+                '@sha256:94afd1f2e64d908bc90dbca0035a5b567EXAMPLE',
+              ],
+            ],
+          },
+          Name: 'web',
+        }],
+      });
+    });
+
     test('correctly sets containers from ECR repository using default props', () => {
       // GIVEN
       const stack = new cdk.Stack();
@@ -1059,6 +1199,85 @@ describe('ec2 task definition', () => {
     });
   });
 
+  describe('When importing from an existing Ec2 TaskDefinition', () => {
+    test('can succeed using TaskDefinition Arn', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const expectTaskDefinitionArn = 'TD_ARN';
+
+      // WHEN
+      const taskDefinition = ecs.Ec2TaskDefinition.fromEc2TaskDefinitionArn(stack, 'EC2_TD_ID', expectTaskDefinitionArn);
+
+      // THEN
+      expect(taskDefinition.taskDefinitionArn).toBe(expectTaskDefinitionArn);
+    });
+  });
+
+  describe('When importing from an existing Ec2 TaskDefinition using attributes', () => {
+    test('can set the imported task attribuets successfully', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const expectTaskDefinitionArn = 'TD_ARN';
+      const expectNetworkMode = ecs.NetworkMode.AWS_VPC;
+      const expectTaskRole = new iam.Role(stack, 'TaskRole', {
+        assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
+      });
+
+      // WHEN
+      const taskDefinition = ecs.Ec2TaskDefinition.fromEc2TaskDefinitionAttributes(stack, 'TD_ID', {
+        taskDefinitionArn: expectTaskDefinitionArn,
+        networkMode: expectNetworkMode,
+        taskRole: expectTaskRole,
+      });
+
+      // THEN
+      expect(taskDefinition.taskDefinitionArn).toBe(expectTaskDefinitionArn);
+      expect(taskDefinition.compatibility).toBe(ecs.Compatibility.EC2);
+      expect(taskDefinition.isEc2Compatible).toBeTruthy();
+      expect(taskDefinition.isFargateCompatible).toBeFalsy();
+      expect(taskDefinition.networkMode).toBe(expectNetworkMode);
+      expect(taskDefinition.taskRole).toBe(expectTaskRole);
+    });
+
+    test('returns an Ec2 TaskDefinition that will throw an error when trying to access its yet to defined networkMode', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const expectTaskDefinitionArn = 'TD_ARN';
+      const expectTaskRole = new iam.Role(stack, 'TaskRole', {
+        assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
+      });
+
+      // WHEN
+      const taskDefinition = ecs.Ec2TaskDefinition.fromEc2TaskDefinitionAttributes(stack, 'TD_ID', {
+        taskDefinitionArn: expectTaskDefinitionArn,
+        taskRole: expectTaskRole,
+      });
+
+      // THEN
+      expect(() => taskDefinition.networkMode).toThrow(
+        'This operation requires the networkMode in ImportedTaskDefinition to be defined. ' +
+        'Add the \'networkMode\' in ImportedTaskDefinitionProps to instantiate ImportedTaskDefinition');
+    });
+
+    test('returns an Ec2 TaskDefinition that will throw an error when trying to access its yet to defined taskRole', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const expectTaskDefinitionArn = 'TD_ARN';
+      const expectNetworkMode = ecs.NetworkMode.AWS_VPC;
+
+      // WHEN
+      const taskDefinition = ecs.Ec2TaskDefinition.fromEc2TaskDefinitionAttributes(stack, 'TD_ID', {
+        taskDefinitionArn: expectTaskDefinitionArn,
+        networkMode: expectNetworkMode,
+      });
+
+      // THEN
+      expect(() => { taskDefinition.taskRole; }).toThrow(
+        'This operation requires the taskRole in ImportedTaskDefinition to be defined. ' +
+        'Add the \'taskRole\' in ImportedTaskDefinitionProps to instantiate ImportedTaskDefinition');
+    });
+  });
+
   test('throws when setting proxyConfiguration without networkMode AWS_VPC', () => {
     // GIVEN
     const stack = new cdk.Stack();
@@ -1078,7 +1297,5 @@ describe('ec2 task definition', () => {
     expect(() => {
       new ecs.Ec2TaskDefinition(stack, 'TaskDef', { networkMode: ecs.NetworkMode.BRIDGE, proxyConfiguration });
     }).toThrow(/ProxyConfiguration can only be used with AwsVpc network mode, got: bridge/);
-
-
   });
 });

@@ -163,3 +163,26 @@ In this situation, the CDK will wire the 2 accounts together:
 
 For more information, see the
 [AWS documentation on cross-account events](https://docs.aws.amazon.com/eventbridge/latest/userguide/eventbridge-cross-account-event-delivery.html).
+
+## Archiving
+
+It is possible to archive all or some events sent to an event bus. It is then possible to [replay these events](https://aws.amazon.com/blogs/aws/new-archive-and-replay-events-with-amazon-eventbridge/).
+
+```ts
+import * as cdk from '@aws-cdk/core';
+
+const stack = new stack();
+
+const bus = new EventBus(stack, 'bus', {
+  eventBusName: 'MyCustomEventBus'
+});
+
+bus.archive('MyArchive', {
+  archiveName: 'MyCustomEventBusArchive',
+  description: 'MyCustomerEventBus Archive',
+  eventPattern: {
+    account: [stack.account],
+  },
+  retention: cdk.Duration.days(365),
+});
+```

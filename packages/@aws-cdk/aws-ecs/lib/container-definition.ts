@@ -284,6 +284,12 @@ export interface ContainerDefinitionOptions {
    * @default - No GPUs assigned.
    */
   readonly gpuCount?: number;
+
+  /**
+   * The port mappings to add to the container definition.
+   * @default - No ports are mapped.
+   */
+  readonly portMappings?: PortMapping[];
 }
 
 /**
@@ -429,6 +435,10 @@ export class ContainerDefinition extends Construct {
     }
 
     props.taskDefinition._linkContainer(this);
+
+    if (props.portMappings) {
+      this.addPortMappings(...props.portMappings);
+    }
   }
 
   /**

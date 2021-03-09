@@ -182,6 +182,9 @@ lb.addRedirect({
 
 If you do not provide any options for this method, it redirects HTTP port 80 to HTTPS port 443.
 
+By default all ingress traffic will be allowed on the source port. If you want to be more selective with your
+ingress rules then set `open: false` and use the listener's `connections` object to selectively grant access to the listener.
+
 ## Defining a Network Load Balancer
 
 Network Load Balancers are defined in a similar way to Application Load

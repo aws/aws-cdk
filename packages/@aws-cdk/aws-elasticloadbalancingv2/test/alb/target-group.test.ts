@@ -205,4 +205,21 @@ describe('tests', () => {
       });
     }).toThrow(/Stickiness cookie duration value must be between 1 second and 7 days \(604800 seconds\)./);
   });
+
+  test('Bad slow start duration value', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'Stack');
+    const vpc = new ec2.Vpc(stack, 'VPC', {});
+
+    // THEN
+    [cdk.Duration.minutes(16), cdk.Duration.seconds(29)].forEach((badDuration, i) => {
+      expect(() => {
+        new elbv2.ApplicationTargetGroup(stack, `TargetGroup${i}`, {
+          slowStart: badDuration,
+          vpc,
+        });
+      }).toThrow(/Slow start duration value must be between 30 and 900 seconds./);
+    });
+  });
 });

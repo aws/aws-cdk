@@ -247,4 +247,131 @@ export = {
 
     test.done();
   },
+  'can archive events'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    const event = new EventBus(stack, 'Bus');
+
+    event.archive('MyArchive', {
+      eventPattern: {
+        account: [stack.account],
+      },
+      archiveName: 'MyArchive',
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::Events::EventBus', {
+      Name: 'Bus',
+    }));
+
+    expect(stack).to(haveResource('AWS::Events::Archive', {
+      SourceArn: {
+        'Fn::GetAtt': [
+          'BusEA82B648',
+          'Arn',
+        ],
+      },
+      Description: {
+        'Fn::Join': [
+          '',
+          [
+            'Event Archive for ',
+            {
+              Ref: 'BusEA82B648',
+            },
+            ' Event Bus',
+          ],
+        ],
+      },
+      EventPattern: {
+        account: [
+          {
+            Ref: 'AWS::AccountId',
+          },
+        ],
+      },
+      RetentionDays: 0,
+      ArchiveName: 'MyArchive',
+    }));
+
+    test.done();
+  },
+  'can archive events from an imported EventBus'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    const bus = new EventBus(stack, 'Bus');
+
+    const importedBus = EventBus.fromEventBusArn(stack, 'ImportedBus', bus.eventBusArn);
+
+    importedBus.archive('MyArchive', {
+      eventPattern: {
+        account: [stack.account],
+      },
+      archiveName: 'MyArchive',
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::Events::EventBus', {
+      Name: 'Bus',
+    }));
+
+    expect(stack).to(haveResource('AWS::Events::Archive', {
+      SourceArn: {
+        'Fn::GetAtt': [
+          'BusEA82B648',
+          'Arn',
+        ],
+      },
+      Description: {
+        'Fn::Join': [
+          '',
+          [
+            'Event Archive for ',
+            {
+              'Fn::Select': [
+                1,
+                {
+                  'Fn::Split': [
+                    '/',
+                    {
+                      'Fn::Select': [
+                        5,
+                        {
+                          'Fn::Split': [
+                            ':',
+                            {
+                              'Fn::GetAtt': [
+                                'BusEA82B648',
+                                'Arn',
+                              ],
+                            },
+                          ],
+                        },
+                      ],
+                    },
+                  ],
+                },
+              ],
+            },
+            ' Event Bus',
+          ],
+        ],
+      },
+      EventPattern: {
+        account: [
+          {
+            Ref: 'AWS::AccountId',
+          },
+        ],
+      },
+      RetentionDays: 0,
+      ArchiveName: 'MyArchive',
+    }));
+
+    test.done();
+  },
 };

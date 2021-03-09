@@ -76,7 +76,7 @@ const cert = new acm.Certificate(this, 'Certificate', {
   domainName: 'test.example.com',
   subjectAlternativeNames: ['cool.example.com', 'test.example.net'],
   validation: acm.CertificateValidation.fromDnsMultiZone({
-    'text.example.com': exampleCom,
+    'test.example.com': exampleCom,
     'cool.example.com': exampleCom,
     'test.example.net': exampleNet,
   }),
