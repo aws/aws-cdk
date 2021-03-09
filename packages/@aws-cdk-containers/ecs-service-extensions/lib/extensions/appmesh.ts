@@ -165,6 +165,7 @@ export class AppMeshExtension extends ServiceExtension {
 
         'me-south-1': this.accountIdForRegion('me-south-1'),
         'ap-east-1': this.accountIdForRegion('ap-east-1'),
+        'af-south-1': this.accountIdForRegion('af-south-1'),
       },
     });
 
