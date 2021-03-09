@@ -70,6 +70,6 @@
   "stability": "experimental",
   "maturity": "experimental",
   "publishConfig": {
-    "tag": "latest"
+    "tag": "next"
   }
 }
