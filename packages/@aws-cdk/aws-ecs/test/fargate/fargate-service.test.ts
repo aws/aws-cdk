@@ -312,6 +312,51 @@ nodeunitShim({
       test.done();
     },
 
+    'errors when more than one service registry used'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
+
+      const container = taskDefinition.addContainer('web', {
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+        memoryLimitMiB: 512,
+      });
+      container.addPortMappings({ containerPort: 8000 });
+
+      const cloudMapNamespace = new cloudmap.PrivateDnsNamespace(stack, 'TestCloudMapNamespace', {
+        name: 'scorekeep.com',
+        vpc,
+      });
+
+      const ecsService = new ecs.FargateService(stack, 'FargateService', {
+        cluster,
+        taskDefinition,
+      });
+
+      ecsService.enableCloudMap({
+        cloudMapNamespace,
+      });
+
+      const cloudMapService = new cloudmap.Service(stack, 'Service', {
+        name: 'service-name',
+        namespace: cloudMapNamespace,
+        dnsRecordType: cloudmap.DnsRecordType.SRV,
+      });
+
+      // WHEN / THEN
+      test.throws(() => {
+        ecsService.associateCloudMapService({
+          service: cloudMapService,
+          container: container,
+          containerPort: 8000,
+        });
+      }, /at most one service registry/i);
+
+      test.done();
+    },
+
     'with all properties set'(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();
