@@ -21,5 +21,21 @@ nodeunitShim({
 
       test.done();
     },
+
+    'throws an error when tagParameterValue() is used without binding the image'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const repository = new ecr.Repository(stack, 'Repository');
+      const tagParameterContainerImage = new ecs.TagParameterContainerImage(repository);
+      new cdk.CfnOutput(stack, 'Output', {
+        value: tagParameterContainerImage.tagParameterValue,
+      });
+
+      test.throws(() => {
+        SynthUtils.synthesize(stack);
+      }, /TagParameterContainerImage must be used in a container definition when using tagParameterValue/);
+
+      test.done();
+    },
   },
 });

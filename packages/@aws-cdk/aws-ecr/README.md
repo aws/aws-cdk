@@ -57,7 +57,7 @@ const user = new iam.User(this, 'User', { ... });
 ecr.AuthorizationToken.grantRead(user);
 ```
 
-If you access images in the [Public ECR Gallery](https://gallery.ecr.aws/) as well, it is recommended you authenticate to the regsitry to benefit from
+If you access images in the [Public ECR Gallery](https://gallery.ecr.aws/) as well, it is recommended you authenticate to the registry to benefit from
 higher rate and bandwidth limits.
 
 > See `Pricing` in https://aws.amazon.com/blogs/aws/amazon-ecr-public-a-new-public-container-registry/ and [Service quotas](https://docs.aws.amazon.com/AmazonECR/latest/public/public-service-quotas.html).
