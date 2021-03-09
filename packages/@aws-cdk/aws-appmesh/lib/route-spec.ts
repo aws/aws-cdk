@@ -59,7 +59,7 @@ export interface HttpRouteMatch {
 }
 
 /**
- * Supported request matching methods.
+ * Supported values for matching routes based on the HTTP request method
  */
 export enum HttpRouteMatchMethod {
   /**
