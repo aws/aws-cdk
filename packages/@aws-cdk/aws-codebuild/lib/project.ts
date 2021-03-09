@@ -571,6 +571,15 @@ export interface CommonProjectProps {
    * @default - no log configuration is set
    */
   readonly logging?: LoggingOptions;
+
+  /**
+   * The number of minutes after which AWS CodeBuild stops the build if it's
+   * still in queue. For valid values, see the timeoutInMinutes field in the AWS
+   * CodeBuild User Guide.
+   *
+   * @default - no queue timeout is set
+   */
+  readonly queuedTimeout?: Duration
 }
 
 export interface ProjectProps extends CommonProjectProps {
@@ -865,6 +874,7 @@ export class Project extends ProjectBase {
       cache: cache._toCloudFormation(),
       name: this.physicalName,
       timeoutInMinutes: props.timeout && props.timeout.toMinutes(),
+      queuedTimeoutInMinutes: props.queuedTimeout && props.queuedTimeout.toMinutes(),
       secondarySources: Lazy.any({ produce: () => this.renderSecondarySources() }),
       secondarySourceVersions: Lazy.any({ produce: () => this.renderSecondarySourceVersions() }),
       secondaryArtifacts: Lazy.any({ produce: () => this.renderSecondaryArtifacts() }),

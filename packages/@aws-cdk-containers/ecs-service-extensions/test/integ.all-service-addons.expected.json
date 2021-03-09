@@ -3354,6 +3354,9 @@
       },
       "ap-east-1": {
         "ecrRepo": "856666278305"
+      },
+      "af-south-1": {
+        "ecrRepo": "924023996002"
       }
     },
     "greetingenvoyimageaccountmapping": {
@@ -3413,6 +3416,9 @@
       },
       "ap-east-1": {
         "ecrRepo": "856666278305"
+      },
+      "af-south-1": {
+        "ecrRepo": "924023996002"
       }
     },
     "greeterenvoyimageaccountmapping": {
@@ -3472,6 +3478,9 @@
       },
       "ap-east-1": {
         "ecrRepo": "856666278305"
+      },
+      "af-south-1": {
+        "ecrRepo": "924023996002"
       }
     }
   },

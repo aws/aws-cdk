@@ -18,7 +18,7 @@ describe('HttpAuthorizer', () => {
     });
 
     expect(stack).toHaveResource('AWS::ApiGatewayV2::Authorizer', {
-      ApiId: stack.resolve(httpApi.httpApiId),
+      ApiId: stack.resolve(httpApi.apiId),
       Name: 'HttpAuthorizer',
       AuthorizerType: 'JWT',
       IdentitySource: ['identitysource.1', 'identitysource.2'],

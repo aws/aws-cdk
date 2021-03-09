@@ -5,14 +5,26 @@ import { Duration, NestedStack, Stack } from '@aws-cdk/core';
 import * as cr from '@aws-cdk/custom-resources';
 import { Construct } from 'constructs';
 
+/**
+ * Properties for a ReplicaProvider
+ */
+export interface ReplicaProviderProps {
+  /**
+   * The timeout for the replication operation.
+   *
+   * @default Duration.minutes(30)
+   */
+  readonly timeout?: Duration;
+}
+
 export class ReplicaProvider extends NestedStack {
   /**
    * Creates a stack-singleton resource provider nested stack.
    */
-  public static getOrCreate(scope: Construct) {
+  public static getOrCreate(scope: Construct, props: ReplicaProviderProps = {}) {
     const stack = Stack.of(scope);
     const uid = '@aws-cdk/aws-dynamodb.ReplicaProvider';
-    return stack.node.tryFindChild(uid) as ReplicaProvider || new ReplicaProvider(stack, uid);
+    return stack.node.tryFindChild(uid) as ReplicaProvider ?? new ReplicaProvider(stack, uid, props);
   }
 
   /**
@@ -30,8 +42,13 @@ export class ReplicaProvider extends NestedStack {
    */
   public readonly isCompleteHandler: lambda.Function;
 
+<<<<<<< HEAD
+  private constructor(scope: Construct, id: string, props: ReplicaProviderProps = {}) {
+    super(scope as CoreConstruct, id);
+=======
   private constructor(scope: Construct, id: string) {
     super(scope, id);
+>>>>>>> refs/rewritten/origin-v2-main-2
 
     const code = lambda.Code.fromAsset(path.join(__dirname, 'replica-handler'));
 
@@ -76,6 +93,7 @@ export class ReplicaProvider extends NestedStack {
       onEventHandler: this.onEventHandler,
       isCompleteHandler: this.isCompleteHandler,
       queryInterval: Duration.seconds(10),
+      totalTimeout: props.timeout,
     });
   }
 }

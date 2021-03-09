@@ -19,7 +19,7 @@ describe('HttpApi', () => {
     });
 
     expect(stack).toHaveResource('AWS::ApiGatewayV2::Stage', {
-      ApiId: stack.resolve(api.httpApiId),
+      ApiId: stack.resolve(api.apiId),
       StageName: '$default',
       AutoDeploy: true,
     });
@@ -34,7 +34,7 @@ describe('HttpApi', () => {
     const stack = new Stack();
     const imported = HttpApi.fromHttpApiAttributes(stack, 'imported', { httpApiId: 'http-1234', apiEndpoint: 'api-endpoint' });
 
-    expect(imported.httpApiId).toEqual('http-1234');
+    expect(imported.apiId).toEqual('http-1234');
     expect(imported.apiEndpoint).toEqual('api-endpoint');
   });
 
@@ -55,12 +55,12 @@ describe('HttpApi', () => {
     });
 
     expect(stack).toHaveResourceLike('AWS::ApiGatewayV2::Route', {
-      ApiId: stack.resolve(httpApi.httpApiId),
+      ApiId: stack.resolve(httpApi.apiId),
       RouteKey: '$default',
     });
 
     expect(stack).toHaveResourceLike('AWS::ApiGatewayV2::Integration', {
-      ApiId: stack.resolve(httpApi.httpApiId),
+      ApiId: stack.resolve(httpApi.apiId),
     });
   });
 
@@ -75,12 +75,12 @@ describe('HttpApi', () => {
     });
 
     expect(stack).toHaveResourceLike('AWS::ApiGatewayV2::Route', {
-      ApiId: stack.resolve(httpApi.httpApiId),
+      ApiId: stack.resolve(httpApi.apiId),
       RouteKey: 'GET /pets',
     });
 
     expect(stack).toHaveResourceLike('AWS::ApiGatewayV2::Route', {
-      ApiId: stack.resolve(httpApi.httpApiId),
+      ApiId: stack.resolve(httpApi.apiId),
       RouteKey: 'PATCH /pets',
     });
   });
@@ -95,7 +95,7 @@ describe('HttpApi', () => {
     });
 
     expect(stack).toHaveResourceLike('AWS::ApiGatewayV2::Route', {
-      ApiId: stack.resolve(httpApi.httpApiId),
+      ApiId: stack.resolve(httpApi.apiId),
       RouteKey: 'ANY /pets',
     });
   });
@@ -149,7 +149,7 @@ describe('HttpApi', () => {
       });
       const metricName = '4xxError';
       const statistic = 'Sum';
-      const apiId = api.httpApiId;
+      const apiId = api.apiId;
 
       // WHEN
       const countMetric = api.metric(metricName, { statistic });
@@ -168,7 +168,7 @@ describe('HttpApi', () => {
         createDefaultStage: false,
       });
       const color = '#00ff00';
-      const apiId = api.httpApiId;
+      const apiId = api.apiId;
 
       // WHEN
       const metrics = new Array<Metric>();
