@@ -1,5 +1,6 @@
 import { Lazy, Stack, Token } from '@aws-cdk/core';
 import { Construct } from 'constructs';
+import { IAlarmAction } from './alarm-action';
 import { AlarmBase, IAlarm } from './alarm-base';
 import { CfnAlarm, CfnAlarmProps } from './cloudwatch.generated';
 import { HorizontalAnnotation } from './graph';
@@ -222,6 +223,33 @@ export class Alarm extends AlarmBase {
    */
   public toAnnotation(): HorizontalAnnotation {
     return this.annotation;
+  }
+
+  /**
+   * Trigger this action if the alarm fires
+   *
+   * Typically the ARN of an SNS topic or ARN of an AutoScaling policy.
+   */
+  public addAlarmAction(...actions: IAlarmAction[]) {
+    if (this.alarmActionArns === undefined) {
+      this.alarmActionArns = [];
+    }
+
+    this.alarmActionArns.push(...actions.map(a =>
+      this.validateActionArn(a.bind(this, this).alarmActionArn),
+    ));
+  }
+
+  private validateActionArn(actionArn: string): string {
+    const ec2ActionsRegexp: RegExp = /arn:aws:automate:[a-z|\d|-]+:ec2:[a-z]+/;
+    if (ec2ActionsRegexp.test(actionArn)) {
+      // Check per-instance metric
+      const metricConfig = this.metric.toMetricConfig();
+      if (metricConfig.metricStat?.dimensions?.length != 1 || metricConfig.metricStat?.dimensions![0].name != 'InstanceId') {
+        throw new Error(`EC2 alarm actions requires an EC2 Per-Instance Metric. (${JSON.stringify(metricConfig)} does not have an 'InstanceId' dimension)`);
+      }
+    }
+    return actionArn;
   }
 
   private renderMetric(metric: IMetric) {

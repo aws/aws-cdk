@@ -42,6 +42,20 @@ export = {
 
     test.done();
   },
+  'non ec2 instance related alarm does not accept EC2 action'(test: Test) {
+
+    const stack = new Stack();
+    const alarm = new Alarm(stack, 'Alarm', {
+      metric: testMetric,
+      threshold: 1000,
+      evaluationPeriods: 2,
+    });
+
+    test.throws(() => {
+      alarm.addAlarmAction(new Ec2TestAlarmAction('arn:aws:automate:us-east-1:ec2:reboot'));
+    }, /EC2 alarm actions requires an EC2 Per-Instance Metric. \(.+ does not have an 'InstanceId' dimension\)/);
+    test.done();
+  },
   'can make simple alarm'(test: Test) {
     // GIVEN
     const stack = new Stack();
@@ -246,6 +260,15 @@ export = {
 };
 
 class TestAlarmAction implements IAlarmAction {
+  constructor(private readonly arn: string) {
+  }
+
+  public bind(_scope: Construct, _alarm: IAlarm) {
+    return { alarmActionArn: this.arn };
+  }
+}
+
+class Ec2TestAlarmAction implements IAlarmAction {
   constructor(private readonly arn: string) {
   }
 

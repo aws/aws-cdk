@@ -1834,6 +1834,52 @@ nodeunitShim({
 
       test.done();
     },
+
+    'user can select any container and port'(test: Test) {
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+
+      cluster.addDefaultCloudMapNamespace({
+        name: 'foo.com',
+        type: cloudmap.NamespaceType.DNS_PRIVATE,
+      });
+
+      const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
+      const mainContainer = taskDefinition.addContainer('MainContainer', {
+        image: ecs.ContainerImage.fromRegistry('hello'),
+        memoryLimitMiB: 512,
+      });
+      mainContainer.addPortMappings({ containerPort: 8000 });
+
+      const otherContainer = taskDefinition.addContainer('OtherContainer', {
+        image: ecs.ContainerImage.fromRegistry('hello'),
+        memoryLimitMiB: 512,
+      });
+      otherContainer.addPortMappings({ containerPort: 8001 });
+
+      new ecs.FargateService(stack, 'Service', {
+        cluster,
+        taskDefinition,
+        cloudMapOptions: {
+          dnsRecordType: cloudmap.DnsRecordType.SRV,
+          container: otherContainer,
+          containerPort: 8001,
+        },
+      });
+
+      expect(stack).to(haveResourceLike('AWS::ECS::Service', {
+        ServiceRegistries: [
+          {
+            RegistryArn: { 'Fn::GetAtt': ['ServiceCloudmapService046058A4', 'Arn'] },
+            ContainerName: 'OtherContainer',
+            ContainerPort: 8001,
+          },
+        ],
+      }));
+
+      test.done();
+    },
   },
 
   'Metric'(test: Test) {
