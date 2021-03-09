@@ -102,8 +102,8 @@ The following example provides the field named `input` as the input to the `Task
 state that runs a Lambda function.
 
 ```ts
-const submitJob = new tasks.LambdaInvoke(stack, 'Invoke Handler', {
-  lambdaFunction: submitJobLambda,
+const submitJob = new tasks.LambdaInvoke(this, 'Invoke Handler', {
+  lambdaFunction: fn,
   inputPath: '$.input'
 });
 ```
@@ -122,8 +122,8 @@ as well as other metadata.
 The following example assigns the output from the Task to a field named `result`
 
 ```ts
-const submitJob = new tasks.LambdaInvoke(stack, 'Invoke Handler', {
-  lambdaFunction: submitJobLambda,
+const submitJob = new tasks.LambdaInvoke(this, 'Invoke Handler', {
+  lambdaFunction: fn,
   outputPath: '$.Payload.result'
 });
 ```
@@ -140,9 +140,11 @@ The following example adds the item from calling DynamoDB's `getItem` API to the
 input and passes it to the next state.
 
 ```ts
-new tasks.DynamoGetItem(this, 'PutItem', {
-  item: { MessageId: { s: '12345'} },
-  tableName: 'my-table',
+new tasks.DynamoPutItem(this, 'PutItem', {
+  item: {
+    MessageId: tasks.DynamoAttributeValue.fromString('message-id')
+  },
+  table: myTable,
   resultPath: `$.Item`,
 });
 ```
@@ -163,10 +165,10 @@ The following example provides the field named `input` as the input to the Lambd
 and invokes it asynchronously.
 
 ```ts
-const submitJob = new tasks.LambdaInvoke(stack, 'Invoke Handler', {
-  lambdaFunction: submitJobLambda,
-  payload: sfn.JsonPath.StringAt('$.input'),
-  invocationType: tasks.InvocationType.EVENT,
+const submitJob = new tasks.LambdaInvoke(this, 'Invoke Handler', {
+  lambdaFunction: fn,
+  payload: sfn.TaskInput.fromDataAt('$.input'),
+  invocationType: tasks.LambdaInvocationType.EVENT,
 });
 ```
 
@@ -194,7 +196,7 @@ const createMessage = new tasks.EvaluateExpression(this, 'Create message', {
 });
 
 const publishMessage = new tasks.SnsPublish(this, 'Publish message', {
-  topic,
+  topic: new sns.Topic(this, 'cool-topic'),
   message: sfn.TaskInput.fromDataAt('$.message'),
   resultPath: '$.sns',
 });
@@ -224,19 +226,19 @@ Step Functions supports [Athena](https://docs.aws.amazon.com/step-functions/late
 The [StartQueryExecution](https://docs.aws.amazon.com/athena/latest/APIReference/API_StartQueryExecution.html) API runs the SQL query statement.
 
 ```ts
-import * as sfn from '@aws-cdk/aws-stepfunctions';
-import * as tasks from `@aws-cdk/aws-stepfunctions-tasks`;
-
-const startQueryExecutionJob = new tasks.AthenaStartQueryExecution(stack, 'Start Athena Query', {
+const startQueryExecutionJob = new tasks.AthenaStartQueryExecution(this, 'Start Athena Query', {
   queryString: sfn.JsonPath.stringAt('$.queryString'),
   queryExecutionContext: {
-    database: 'mydatabase',
+    databaseName: 'mydatabase',
   },
   resultConfiguration: {
     encryptionConfiguration: {
       encryptionOption: tasks.EncryptionOption.S3_MANAGED,
     },
-    outputLocation: sfn.JsonPath.stringAt('$.outputLocation'),
+    outputLocation: {
+      bucketName: 'query-results-bucket',
+      objectKey: 'folder',
+    },
   },
 });
 ```
@@ -246,10 +248,7 @@ const startQueryExecutionJob = new tasks.AthenaStartQueryExecution(stack, 'Start
 The [GetQueryExecution](https://docs.aws.amazon.com/athena/latest/APIReference/API_GetQueryExecution.html) API gets information about a single execution of a query.
 
 ```ts
-import * as sfn from '@aws-cdk/aws-stepfunctions';
-import * as tasks from `@aws-cdk/aws-stepfunctions-tasks`;
-
-const getQueryExecutionJob = new tasks.AthenaGetQueryExecution(stack, 'Get Query Execution', {
+const getQueryExecutionJob = new tasks.AthenaGetQueryExecution(this, 'Get Query Execution', {
   queryExecutionId: sfn.JsonPath.stringAt('$.QueryExecutionId'),
 });
 ```
@@ -259,10 +258,7 @@ const getQueryExecutionJob = new tasks.AthenaGetQueryExecution(stack, 'Get Query
 The [GetQueryResults](https://docs.aws.amazon.com/athena/latest/APIReference/API_GetQueryResults.html) API that streams the results of a single query execution specified by QueryExecutionId from S3.
 
 ```ts
-import * as sfn from '@aws-cdk/aws-stepfunctions';
-import * as tasks from `@aws-cdk/aws-stepfunctions-tasks`;
-
-const getQueryResultsJob = new tasks.AthenaGetQueryResults(stack, 'Get Query Results', {
+const getQueryResultsJob = new tasks.AthenaGetQueryResults(this, 'Get Query Results', {
   queryExecutionId: sfn.JsonPath.stringAt('$.QueryExecutionId'),
 });
 ```
@@ -272,10 +268,7 @@ const getQueryResultsJob = new tasks.AthenaGetQueryResults(stack, 'Get Query Res
 The [StopQueryExecution](https://docs.aws.amazon.com/athena/latest/APIReference/API_StopQueryExecution.html) API that stops a query execution.
 
 ```ts
-import * as sfn from '@aws-cdk/aws-stepfunctions';
-import * as tasks from `@aws-cdk/aws-stepfunctions-tasks`;
-
-const stopQueryExecutionJob = new tasks.AthenaStopQueryExecution(stack, 'Stop Query Execution', {
+const stopQueryExecutionJob = new tasks.AthenaStopQueryExecution(this, 'Stop Query Execution', {
   queryExecutionId: sfn.JsonPath.stringAt('$.QueryExecutionId'),
 });
 ```
@@ -288,27 +281,7 @@ Step Functions supports [Batch](https://docs.aws.amazon.com/step-functions/lates
 
 The [SubmitJob](https://docs.aws.amazon.com/batch/latest/APIReference/API_SubmitJob.html) API submits an AWS Batch job from a job definition.
 
-```ts
-import * as batch from '@aws-cdk/aws-batch';
-import * as tasks from '@aws-cdk/aws-stepfunctions-tasks';
-
-const batchQueue = new batch.JobQueue(this, 'JobQueue', {
-  computeEnvironments: [
-    {
-      order: 1,
-      computeEnvironment: new batch.ComputeEnvironment(this, 'ComputeEnv', {
-        computeResources: { vpc },
-      }),
-    },
-  ],
-});
-
-const batchJobDefinition = new batch.JobDefinition(this, 'JobDefinition', {
-  container: {
-    image: ecs.ContainerImage.fromAsset(path.resolve(__dirname, 'batchjob-image')),
-  },
-});
-
+```ts fixture=with-batch-job
 const task = new tasks.BatchSubmitJob(this, 'Submit Job', {
   jobDefinition: batchJobDefinition,
   jobName: 'MyJob',
@@ -326,10 +299,8 @@ Step Functions supports [CodeBuild](https://docs.aws.amazon.com/step-functions/l
 
 ```ts
 import * as codebuild from '@aws-cdk/aws-codebuild';
-import * as tasks from '@aws-cdk/aws-stepfunctions-tasks';
-import * as sfn from '@aws-cdk/aws-stepfunctions';
 
-const codebuildProject = new codebuild.Project(stack, 'Project', {
+const codebuildProject = new codebuild.Project(this, 'Project', {
   projectName: 'MyTestProject',
   buildSpec: codebuild.BuildSpec.fromObject({
     version: '0.2',
@@ -343,7 +314,7 @@ const codebuildProject = new codebuild.Project(stack, 'Project', {
   }),
 });
 
-const task = new tasks.CodeBuildStartBuild(stack, 'Task', {
+const task = new tasks.CodeBuildStartBuild(this, 'Task', {
   project: codebuildProject,
   integrationPattern: sfn.IntegrationPattern.RUN_JOB,
   environmentVariablesOverride: {
@@ -367,7 +338,7 @@ The [GetItem](https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API
 ```ts
 new tasks.DynamoGetItem(this, 'Get Item', {
   key: { messageId: tasks.DynamoAttributeValue.fromString('message-007') },
-  table,
+  table: myTable,
 });
 ```
 
@@ -382,7 +353,7 @@ new tasks.DynamoPutItem(this, 'PutItem', {
     Text: tasks.DynamoAttributeValue.fromString(sfn.JsonPath.stringAt('$.bar')),
     TotalCount: tasks.DynamoAttributeValue.fromNumber(10),
   },
-  table,
+  table: myTable,
 });
 ```
 
@@ -391,12 +362,9 @@ new tasks.DynamoPutItem(this, 'PutItem', {
 The [DeleteItem](https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_DeleteItem.html) operation deletes a single item in a table by primary key.
 
 ```ts
-import * as sfn from '@aws-cdk/aws-stepfunctions';
-import * as tasks from '@aws-cdk/aws-stepfunctions-tasks';
-
 new tasks.DynamoDeleteItem(this, 'DeleteItem', {
   key: { MessageId: tasks.DynamoAttributeValue.fromString('message-007') },
-  table,
+  table: myTable,
   resultPath: sfn.JsonPath.DISCARD,
 });
 ```
@@ -408,8 +376,10 @@ to the table if it does not already exist.
 
 ```ts
 new tasks.DynamoUpdateItem(this, 'UpdateItem', {
-  key: { MessageId: tasks.DynamoAttributeValue.fromString('message-007') },
-  table,
+  key: {
+    MessageId: tasks.DynamoAttributeValue.fromString('message-007')
+  },
+  table: myTable,
   expressionAttributeValues: {
     ':val': tasks.DynamoAttributeValue.numberFromString(sfn.JsonPath.stringAt('$.Item.TotalCount.N')),
     ':rand': tasks.DynamoAttributeValue.fromNumber(20),
@@ -443,20 +413,18 @@ The following example runs a job from a task definition on EC2
 
 ```ts
 import * as ecs from '@aws-cdk/aws-ecs';
-import * as tasks from '@aws-cdk/aws-stepfunctions-tasks';
-import * as sfn from '@aws-cdk/aws-stepfunctions';
 
-const vpc = ec2.Vpc.fromLookup(stack, 'Vpc', {
+const vpc = ec2.Vpc.fromLookup(this, 'Vpc', {
   isDefault: true,
 });
 
-const cluster = new ecs.Cluster(stack, 'Ec2Cluster', { vpc });
+const cluster = new ecs.Cluster(this, 'Ec2Cluster', { vpc });
 cluster.addCapacity('DefaultAutoScalingGroup', {
   instanceType: new ec2.InstanceType('t2.micro'),
   vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
 });
 
-const taskDefinition = new ecs.TaskDefinition(stack, 'TD', {
+const taskDefinition = new ecs.TaskDefinition(this, 'TD', {
   compatibility: ecs.Compatibility.EC2,
 });
 
@@ -465,7 +433,7 @@ taskDefinition.addContainer('TheContainer', {
   memoryLimitMiB: 256,
 });
 
-const runTask = new tasks.EcsRunTask(stack, 'Run', {
+const runTask = new tasks.EcsRunTask(this, 'Run', {
     integrationPattern: sfn.IntegrationPattern.RUN_JOB,
     cluster,
     taskDefinition,
@@ -500,16 +468,14 @@ The following example runs a job from a task definition on Fargate
 
 ```ts
 import * as ecs from '@aws-cdk/aws-ecs';
-import * as tasks from '@aws-cdk/aws-stepfunctions-tasks';
-import * as sfn from '@aws-cdk/aws-stepfunctions';
 
-const vpc = ec2.Vpc.fromLookup(stack, 'Vpc', {
+const vpc = ec2.Vpc.fromLookup(this, 'Vpc', {
   isDefault: true,
 });
 
-const cluster = new ecs.Cluster(stack, 'FargateCluster', { vpc });
+const cluster = new ecs.Cluster(this, 'FargateCluster', { vpc });
 
-const taskDefinition = new ecs.TaskDefinition(stack, 'TD', {
+const taskDefinition = new ecs.TaskDefinition(this, 'TD', {
   memoryMiB: '512',
   cpu: '256',
   compatibility: ecs.Compatibility.FARGATE,
@@ -520,7 +486,7 @@ const containerDefinition = taskDefinition.addContainer('TheContainer', {
   memoryLimitMiB: 256,
 });
 
-const runTask = new tasks.EcsRunTask(stack, 'RunFargate', {
+const runTask = new tasks.EcsRunTask(this, 'RunFargate', {
   integrationPattern: sfn.IntegrationPattern.RUN_JOB,
   cluster,
   taskDefinition,
@@ -548,15 +514,15 @@ Corresponds to the [`runJobFlow`](https://docs.aws.amazon.com/emr/latest/APIRefe
 
 ```ts
 
-const clusterRole = new iam.Role(stack, 'ClusterRole', {
+const clusterRole = new iam.Role(this, 'ClusterRole', {
   assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
 });
 
-const serviceRole = new iam.Role(stack, 'ServiceRole', {
+const serviceRole = new iam.Role(this, 'ServiceRole', {
   assumedBy: new iam.ServicePrincipal('elasticmapreduce.amazonaws.com'),
 });
 
-const autoScalingRole = new iam.Role(stack, 'AutoScalingRole', {
+const autoScalingRole = new iam.Role(this, 'AutoScalingRole', {
   assumedBy: new iam.ServicePrincipal('elasticmapreduce.amazonaws.com'),
 });
 
@@ -569,16 +535,15 @@ autoScalingRole.assumeRolePolicy?.addStatements(
     actions: [
       'sts:AssumeRole',
     ],
-  });
+  }));
 )
 
-new tasks.EmrCreateCluster(stack, 'Create Cluster', {
+new tasks.EmrCreateCluster(this, 'Create Cluster', {
   instances: {},
   clusterRole,
   name: sfn.TaskInput.fromDataAt('$.ClusterName').value,
   serviceRole,
   autoScalingRole,
-  integrationPattern: sfn.ServiceIntegrationPattern.FIRE_AND_FORGET,
 });
 ```
 
@@ -590,7 +555,7 @@ terminated by user intervention, an API call, or a job-flow error.
 Corresponds to the [`setTerminationProtection`](https://docs.aws.amazon.com/step-functions/latest/dg/connect-emr.html) API in EMR.
 
 ```ts
-new tasks.EmrSetClusterTerminationProtection(stack, 'Task', {
+new tasks.EmrSetClusterTerminationProtection(this, 'Task', {
   clusterId: 'ClusterId',
   terminationProtected: false,
 });
@@ -602,7 +567,7 @@ Shuts down a cluster (job flow).
 Corresponds to the [`terminateJobFlows`](https://docs.aws.amazon.com/emr/latest/APIReference/API_TerminateJobFlows.html) API in EMR.
 
 ```ts
-new tasks.EmrTerminateCluster(stack, 'Task', {
+new tasks.EmrTerminateCluster(this, 'Task', {
   clusterId: 'ClusterId'
 });
 ```
@@ -613,7 +578,7 @@ Adds a new step to a running cluster.
 Corresponds to the [`addJobFlowSteps`](https://docs.aws.amazon.com/emr/latest/APIReference/API_AddJobFlowSteps.html) API in EMR.
 
 ```ts
-new tasks.EmrAddStep(stack, 'Task', {
+new tasks.EmrAddStep(this, 'Task', {
     clusterId: 'ClusterId',
     name: 'StepName',
     jar: 'Jar',
@@ -627,7 +592,7 @@ Cancels a pending step in a running cluster.
 Corresponds to the [`cancelSteps`](https://docs.aws.amazon.com/emr/latest/APIReference/API_CancelSteps.html) API in EMR.
 
 ```ts
-new tasks.EmrCancelStep(stack, 'Task', {
+new tasks.EmrCancelStep(this, 'Task', {
   clusterId: 'ClusterId',
   stepId: 'StepId',
 });
@@ -641,7 +606,7 @@ fleet with the specified InstanceFleetName.
 Corresponds to the [`modifyInstanceFleet`](https://docs.aws.amazon.com/emr/latest/APIReference/API_ModifyInstanceFleet.html) API in EMR.
 
 ```ts
-new sfn.EmrModifyInstanceFleetByName(stack, 'Task', {
+new tasks.EmrModifyInstanceFleetByName(this, 'Task', {
   clusterId: 'ClusterId',
   instanceFleetName: 'InstanceFleetName',
   targetOnDemandCapacity: 2,
@@ -656,7 +621,7 @@ Modifies the number of nodes and configuration settings of an instance group.
 Corresponds to the [`modifyInstanceGroups`](https://docs.aws.amazon.com/emr/latest/APIReference/API_ModifyInstanceGroups.html) API in EMR.
 
 ```ts
-new tasks.EmrModifyInstanceGroupByName(stack, 'Task', {
+new tasks.EmrModifyInstanceGroupByName(this, 'Task', {
   clusterId: 'ClusterId',
   instanceGroupName: sfn.JsonPath.stringAt('$.InstanceGroupName'),
   instanceGroup: {
@@ -703,11 +668,11 @@ Step Functions supports [AWS Glue](https://docs.aws.amazon.com/step-functions/la
 You can call the [`StartJobRun`](https://docs.aws.amazon.com/glue/latest/dg/aws-glue-api-jobs-runs.html#aws-glue-api-jobs-runs-StartJobRun) API from a `Task` state.
 
 ```ts
-new GlueStartJobRun(stack, 'Task', {
+new tasks.GlueStartJobRun(this, 'Task', {
   glueJobName: 'my-glue-job',
-  arguments: {
-    key: 'value',
-  },
+  arguments: sfn.TaskInput.fromObject({
+    key: 'value',  
+  }),
   timeout: cdk.Duration.minutes(30),
   notifyDelayAfter: cdk.Duration.minutes(5),
 });
@@ -720,8 +685,8 @@ Step Functions supports [AWS Glue DataBrew](https://docs.aws.amazon.com/step-fun
 You can call the [`StartJobRun`](https://docs.aws.amazon.com/databrew/latest/dg/API_StartJobRun.html) API from a `Task` state.
 
 ```ts
-new GlueDataBrewStartJobRun(stack, 'Task', {
-  Name: 'databrew-job',
+new tasks.GlueDataBrewStartJobRun(this, 'Task', {
+  name: 'databrew-job',
 });
 ```
 
@@ -737,23 +702,8 @@ The following snippet invokes a Lambda Function with the state input as the payl
 by referencing the `$` path.
 
 ```ts
-import * as lambda from '@aws-cdk/aws-lambda';
-import * as sfn from '@aws-cdk/aws-stepfunctions';
-import * as tasks from '@aws-cdk/aws-stepfunctions-tasks';
-
-const myLambda = new lambda.Function(this, 'my sample lambda', {
-  code: Code.fromInline(`exports.handler = async () => {
-    return {
-      statusCode: '200',
-      body: 'hello, world!'
-    };
-  };`),
-  runtime: Runtime.NODEJS_12_X,
-  handler: 'index.handler',
-});
-
 new tasks.LambdaInvoke(this, 'Invoke with state input', {
-  lambdaFunction: myLambda,
+  lambdaFunction: fn,
 });
 ```
 
@@ -768,13 +718,13 @@ to reference the output of a Lambda executed before it.
 
 ```ts
 new tasks.LambdaInvoke(this, 'Invoke with empty object as payload', {
-  lambdaFunction: myLambda,
+  lambdaFunction: fn,
   payload: sfn.TaskInput.fromObject({}),
 });
 
-// use the output of myLambda as input
+// use the output of fn as input
 new tasks.LambdaInvoke(this, 'Invoke with payload field in the state input', {
-  lambdaFunction: myOtherLambda,
+  lambdaFunction: fn,
   payload: sfn.TaskInput.fromDataAt('$.Payload'),
 });
 ```
@@ -784,8 +734,7 @@ the Lambda function response.
 
 ```ts
 new tasks.LambdaInvoke(this, 'Invoke and set function response as task output', {
-  lambdaFunction: myLambda,
-  payload: sfn.TaskInput.fromDataAt('$'),
+  lambdaFunction: fn,
   outputPath: '$.Payload',
 });
 ```
@@ -797,9 +746,9 @@ integrationPattern, invocationType, clientContext, and qualifier properties.
 
 ```ts
 new tasks.LambdaInvoke(this, 'Invoke and combine function response with task input', {
-  lambdaFunction: myLambda,
+  lambdaFunction: fn,
   payloadResponseOnly: true,
-  resultPath: '$.myLambda',
+  resultPath: '$.fn',
 });
 ```
 
@@ -814,8 +763,8 @@ The following snippet invokes a Lambda with the task token as part of the input
 to the Lambda.
 
 ```ts
-new tasks.LambdaInvoke(stack, 'Invoke with callback', {
-  lambdaFunction: myLambda,
+new tasks.LambdaInvoke(this, 'Invoke with callback', {
+  lambdaFunction: fn,
   integrationPattern: sfn.IntegrationPattern.WAIT_FOR_TASK_TOKEN,
   payload: sfn.TaskInput.fromObject({
     token: sfn.JsonPath.taskToken,
@@ -830,7 +779,7 @@ Token](https://docs.aws.amazon.com/step-functions/latest/dg/connect-to-resource.
 
 AWS Lambda can occasionally experience transient service errors. In this case, invoking Lambda
 results in a 500 error, such as `ServiceException`, `AWSLambdaException`, or `SdkClientException`.
-As a best practive, the `LambdaInvoke` task will retry on those errors with an interval of 2 seconds,
+As a best practice, the `LambdaInvoke` task will retry on those errors with an interval of 2 seconds,
 a back-off rate of 2 and 6 maximum attempts. Set the `retryOnServiceExceptions` prop to `false` to
 disable this behavior.
 
@@ -843,9 +792,8 @@ Step Functions supports [AWS SageMaker](https://docs.aws.amazon.com/step-functio
 You can call the [`CreateTrainingJob`](https://docs.aws.amazon.com/sagemaker/latest/dg/API_CreateTrainingJob.html) API from a `Task` state.
 
 ```ts
-new sfn.SageMakerCreateTrainingJob(this, 'TrainSagemaker', {
+new tasks.SageMakerCreateTrainingJob(this, 'TrainSagemaker', {
   trainingJobName: sfn.JsonPath.stringAt('$.JobName'),
-  role,
   algorithmSpecification: {
     algorithmName: 'BlazingText',
     trainingInputMode: tasks.InputMode.FILE,
@@ -860,16 +808,16 @@ new sfn.SageMakerCreateTrainingJob(this, 'TrainSagemaker', {
     },
   }],
   outputDataConfig: {
-    s3OutputLocation: tasks.S3Location.fromBucket(s3.Bucket.fromBucketName(stack, 'Bucket', 'mybucket'), 'myoutputpath'),
+    s3OutputLocation: tasks.S3Location.fromBucket(s3.Bucket.fromBucketName(this, 'Bucket', 'mybucket'), 'myoutputpath'),
   },
   resourceConfig: {
     instanceCount: 1,
     instanceType: ec2.InstanceType.of(ec2.InstanceClass.P3, ec2.InstanceSize.XLARGE2),
     volumeSize: cdk.Size.gibibytes(50),
-  },
+  }, // optional: default is 1 instance of EC2 `M4.XLarge` with `10GB` volume
   stoppingCondition: {
-    maxRuntime: cdk.Duration.hours(1),
-  },
+    maxRuntime: cdk.Duration.hours(2),
+  }, // optional: default is 1 hour
 });
 ```
 
@@ -878,19 +826,18 @@ new sfn.SageMakerCreateTrainingJob(this, 'TrainSagemaker', {
 You can call the [`CreateTransformJob`](https://docs.aws.amazon.com/sagemaker/latest/dg/API_CreateTransformJob.html) API from a `Task` state.
 
 ```ts
-new sfn.SageMakerCreateTransformJob(this, 'Batch Inference', {
+new tasks.SageMakerCreateTransformJob(this, 'Batch Inference', {
   transformJobName: 'MyTransformJob',
   modelName: 'MyModelName',
   modelClientOptions: {
-    invocationMaxRetries: 3,  // default is 0
-    invocationTimeout: cdk.Duration.minutes(5),  // default is 60 seconds
-  }
-  role,
+    invocationsMaxRetries: 3,  // default is 0
+    invocationsTimeout: cdk.Duration.minutes(5),  // default is 60 seconds
+  },
   transformInput: {
     transformDataSource: {
       s3DataSource: {
         s3Uri: 's3://inputbucket/train',
-        s3DataType: S3DataType.S3Prefix,
+        s3DataType: tasks.S3DataType.S3_PREFIX,
       }
     }
   },
@@ -899,7 +846,7 @@ new sfn.SageMakerCreateTransformJob(this, 'Batch Inference', {
   },
   transformResources: {
     instanceCount: 1,
-    instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.XLarge),
+    instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.XLARGE),
   }
 });
 
@@ -910,7 +857,7 @@ new sfn.SageMakerCreateTransformJob(this, 'Batch Inference', {
 You can call the [`CreateEndpoint`](https://docs.aws.amazon.com/sagemaker/latest/APIReference/API_CreateEndpoint.html) API from a `Task` state.
 
 ```ts
-new sfn.SageMakerCreateEndpoint(this, 'SagemakerEndpoint', {
+new tasks.SageMakerCreateEndpoint(this, 'SagemakerEndpoint', {
   endpointName: sfn.JsonPath.stringAt('$.EndpointName'),
   endpointConfigName: sfn.JsonPath.stringAt('$.EndpointConfigName'),
 });
@@ -921,7 +868,7 @@ new sfn.SageMakerCreateEndpoint(this, 'SagemakerEndpoint', {
 You can call the [`CreateEndpointConfig`](https://docs.aws.amazon.com/sagemaker/latest/APIReference/API_CreateEndpointConfig.html) API from a `Task` state.
 
 ```ts
-new sfn.SageMakerCreateEndpointConfig(this, 'SagemakerEndpointConfig', {
+new tasks.SageMakerCreateEndpointConfig(this, 'SagemakerEndpointConfig', {
   endpointConfigName: 'MyEndpointConfig',
   productionVariants: [{
   initialInstanceCount: 2,
@@ -937,7 +884,7 @@ new sfn.SageMakerCreateEndpointConfig(this, 'SagemakerEndpointConfig', {
 You can call the [`CreateModel`](https://docs.aws.amazon.com/sagemaker/latest/APIReference/API_CreateModel.html) API from a `Task` state.
 
 ```ts
-new sfn.SageMakerCreateModel(this, 'Sagemaker', {
+new tasks.SageMakerCreateModel(this, 'Sagemaker', {
   modelName: 'MyModel',
   primaryContainer: new tasks.ContainerDefinition({
    image: tasks.DockerImage.fromJsonExpression(sfn.JsonPath.stringAt('$.Model.imageName')),
@@ -952,7 +899,7 @@ new sfn.SageMakerCreateModel(this, 'Sagemaker', {
 You can call the [`UpdateEndpoint`](https://docs.aws.amazon.com/sagemaker/latest/APIReference/API_UpdateEndpoint.html) API from a `Task` state.
 
 ```ts
-new sfn.SageMakerUpdateEndpoint(this, 'SagemakerEndpoint', {
+new tasks.SageMakerUpdateEndpoint(this, 'SagemakerEndpoint', {
     endpointName: sfn.JsonPath.stringAt('$.Endpoint.Name'),
     endpointConfigName: sfn.JsonPath.stringAt('$.Endpoint.EndpointConfig'),
   });
@@ -965,12 +912,6 @@ Step Functions supports [Amazon SNS](https://docs.aws.amazon.com/step-functions/
 You can call the [`Publish`](https://docs.aws.amazon.com/sns/latest/api/API_Publish.html) API from a `Task` state to publish to an SNS topic.
 
 ```ts
-import * as sns from '@aws-cdk/aws-sns';
-import * as sfn from '@aws-cdk/aws-stepfunctions';
-import * as tasks from '@aws-cdk/aws-stepfunctions-tasks';
-
-// ...
-
 const topic = new sns.Topic(this, 'Topic');
 
 // Use a field from the execution data as message.
@@ -1001,12 +942,12 @@ AWS Step Functions supports it's own [`StartExecution`](https://docs.aws.amazon.
 
 ```ts
 // Define a state machine with one Pass state
-const child = new sfn.StateMachine(stack, 'ChildStateMachine', {
-    definition: sfn.Chain.start(new sfn.Pass(stack, 'PassState')),
+const child = new sfn.StateMachine(this, 'ChildStateMachine', {
+    definition: sfn.Chain.start(new sfn.Pass(this, 'PassState')),
 });
 
 // Include the state machine in a Task state with callback pattern
-const task = new StepFunctionsStartExecution(stack, 'ChildTask', {
+const task = new tasks.StepFunctionsStartExecution(this, 'ChildTask', {
   stateMachine: child,
   integrationPattern: sfn.IntegrationPattern.WAIT_FOR_TASK_TOKEN,
   input: sfn.TaskInput.fromObject({
@@ -1017,7 +958,7 @@ const task = new StepFunctionsStartExecution(stack, 'ChildTask', {
 });
 
 // Define a second state machine with the Task state above
-new sfn.StateMachine(stack, 'ParentStateMachine', {
+new sfn.StateMachine(this, 'ParentStateMachine', {
   definition: task
 });
 ```
@@ -1057,12 +998,6 @@ You can call the [`SendMessage`](https://docs.aws.amazon.com/AWSSimpleQueueServi
 to send a message to an SQS queue.
 
 ```ts
-import * as sfn from '@aws-cdk/aws-stepfunctions';
-import * as tasks from '@aws-cdk/aws-stepfunctions-tasks';
-import * as sqs from '@aws-cdk/aws-sqs';
-
-// ...
-
 const queue = new sqs.Queue(this, 'Queue');
 
 // Use a field from the execution data as message.
