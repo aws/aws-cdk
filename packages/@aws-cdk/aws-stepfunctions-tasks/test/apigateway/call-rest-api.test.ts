@@ -1,16 +1,16 @@
 import * as apigateway from '@aws-cdk/aws-apigateway';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import * as cdk from '@aws-cdk/core';
-import { HttpMethod, InvokeApiGatewayRestApi } from '../../lib';
+import { HttpMethod, CallApiGatewayRestApiEndpoint } from '../../lib';
 
-describe('InvokeApiGatewayRestApi', () => {
+describe('CallApiGatewayRestApiEndpoint', () => {
   test('default', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const restApi = new apigateway.RestApi(stack, 'RestApi');
 
     // WHEN
-    const task = new InvokeApiGatewayRestApi(stack, 'Invoke', {
+    const task = new CallApiGatewayRestApiEndpoint(stack, 'Call', {
       api: restApi,
       method: HttpMethod.GET,
       stageName: 'dev',
@@ -64,7 +64,7 @@ describe('InvokeApiGatewayRestApi', () => {
     const restApi = new apigateway.RestApi(stack, 'RestApi');
 
     // WHEN
-    const task = new InvokeApiGatewayRestApi(stack, 'Invoke', {
+    const task = new CallApiGatewayRestApiEndpoint(stack, 'Call', {
       api: restApi,
       method: HttpMethod.GET,
       stageName: 'dev',
@@ -124,7 +124,7 @@ describe('InvokeApiGatewayRestApi', () => {
 
     // THEN
     expect(() => {
-      new InvokeApiGatewayRestApi(stack, 'Invoke', {
+      new CallApiGatewayRestApiEndpoint(stack, 'Call', {
         api: restApi,
         method: HttpMethod.GET,
         stageName: 'dev',
@@ -140,7 +140,7 @@ describe('InvokeApiGatewayRestApi', () => {
 
     // THEN
     expect(() => {
-      new InvokeApiGatewayRestApi(stack, 'Invoke', {
+      new CallApiGatewayRestApiEndpoint(stack, 'Call', {
         api: restApi,
         method: HttpMethod.GET,
         stageName: 'dev',

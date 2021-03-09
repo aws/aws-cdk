@@ -2,7 +2,7 @@ import * as apigateway from '@aws-cdk/aws-apigateway';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import * as cdk from '@aws-cdk/core';
-import { AuthType, HttpMethod, InvokeApiGatewayRestApi } from '../../lib';
+import { AuthType, HttpMethod, CallApiGatewayRestApiEndpoint } from '../../lib';
 
 /*
  * Stack verification steps:
@@ -13,7 +13,7 @@ import { AuthType, HttpMethod, InvokeApiGatewayRestApi } from '../../lib';
  */
 
 const app = new cdk.App();
-const stack = new cdk.Stack(app, 'InvokeRestApiInteg');
+const stack = new cdk.Stack(app, 'CallRestApiInteg');
 const restApi = new apigateway.RestApi(stack, 'MyRestApi');
 
 const hello = new apigateway.LambdaIntegration(new lambda.Function(stack, 'Hello', {
@@ -23,7 +23,7 @@ const hello = new apigateway.LambdaIntegration(new lambda.Function(stack, 'Hello
 }));
 restApi.root.addMethod('ANY', hello);
 
-const invokeJob = new InvokeApiGatewayRestApi(stack, 'Invoke APIGW', {
+const callEndpointJob = new CallApiGatewayRestApiEndpoint(stack, 'Call APIGW', {
   api: restApi,
   stageName: 'prod',
   method: HttpMethod.GET,
@@ -31,7 +31,7 @@ const invokeJob = new InvokeApiGatewayRestApi(stack, 'Invoke APIGW', {
   outputPath: sfn.JsonPath.stringAt('$.ResponseBody'),
 });
 
-const chain = sfn.Chain.start(invokeJob);
+const chain = sfn.Chain.start(callEndpointJob);
 
 const sm = new sfn.StateMachine(stack, 'StateMachine', {
   definition: chain,

@@ -29,8 +29,8 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
 - [Parameters](#task-parameters-from-the-state-json)
 - [Evaluate Expression](#evaluate-expression)
 - [API Gateway](#api-gateway)
-  - [InvokeRestApi](#invoke-rest-api)
-  - [InvokeHttpApi](#invoke-http-api)
+  - [Call REST API Endpoint](#call-rest-api-endpoint)
+  - [Call HTTP API Endpoint](#call-http-api-endpoint)
 - [Athena](#athena)
   - [StartQueryExecution](#startQueryExecution)
   - [GetQueryExecution](#getQueryExecution)
@@ -226,9 +226,9 @@ HTTP APIs are designed for low-latency, cost-effective integrations with AWS ser
 HTTP APIs support OIDC and OAuth 2.0 authorization, and come with built-in support for CORS and automatic deployments. 
 Previous-generation REST APIs currently offer more features. More details can be found [here](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-vs-rest.html).
 
-### Invoke REST API
+### Call REST API Endpoint
 
-The `InvokeApiGatewayRestApi` calls the REST API endpoint.
+The `CallApiGatewayRestApiEndpoint` calls the REST API endpoint.
 
 ```ts
 import * as sfn from '@aws-cdk/aws-stepfunctions';
@@ -236,16 +236,16 @@ import * as tasks from `@aws-cdk/aws-stepfunctions-tasks`;
 
 const restApi = new apigateway.RestApi(stack, 'MyRestApi');
 
-const invokeTask = new tasks.InvokeApiGatewayRestApi(stack, 'Invoke REST API', {
+const invokeTask = new tasks.CallApiGatewayRestApiEndpoint(stack, 'Call REST API', {
   api: restApi,
   stageName: 'prod',
   method: HttpMethod.GET,
 });
 ```
 
-### Invoke HTTP API
+### Call HTTP API Endpoint
 
-The `InvokeApiGatewayHttpApi` calls the HTTP API endpoint.
+The `CallApiGatewayHttpApiEndpoint` calls the HTTP API endpoint.
 
 ```ts
 import * as sfn from '@aws-cdk/aws-stepfunctions';
@@ -253,7 +253,7 @@ import * as tasks from `@aws-cdk/aws-stepfunctions-tasks`;
 
 const httpApi = new apigatewayv2.HttpApi(stack, 'MyHttpApi');
 
-const invokeTask = new tasks.InvokeApiGatewayHttpApi(stack, 'Invoke HTTP API', {
+const invokeTask = new tasks.CallApiGatewayHttpApiEndpoint(stack, 'Call HTTP API', {
   api: httpApi,
   method: HttpMethod.GET,
 });

@@ -3,7 +3,7 @@ import * as integrations from '@aws-cdk/aws-apigatewayv2-integrations';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import * as cdk from '@aws-cdk/core';
-import { AuthType, HttpMethod, InvokeApiGatewayHttpApi } from '../../lib';
+import { AuthType, HttpMethod, CallApiGatewayHttpApiEndpoint } from '../../lib';
 
 /*
  * Stack verification steps:
@@ -14,7 +14,7 @@ import { AuthType, HttpMethod, InvokeApiGatewayHttpApi } from '../../lib';
  */
 
 const app = new cdk.App();
-const stack = new cdk.Stack(app, 'InvokeHttpApiInteg');
+const stack = new cdk.Stack(app, 'CallHttpApiInteg');
 const httpApi = new apigatewayv2.HttpApi(stack, 'MyHttpApi');
 
 const handler = new lambda.Function(stack, 'HelloHandler', {
@@ -29,14 +29,14 @@ httpApi.addRoutes({
   }),
 });
 
-const invokeJob = new InvokeApiGatewayHttpApi(stack, 'Invoke APIGW', {
+const callEndpointJob = new CallApiGatewayHttpApiEndpoint(stack, 'Call APIGW', {
   api: httpApi,
   method: HttpMethod.GET,
   authType: AuthType.IAM_ROLE,
   outputPath: sfn.JsonPath.stringAt('$.ResponseBody'),
 });
 
-const chain = sfn.Chain.start(invokeJob);
+const chain = sfn.Chain.start(callEndpointJob);
 
 const sm = new sfn.StateMachine(stack, 'StateMachine', {
   definition: chain,

@@ -2,31 +2,31 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import { Construct } from 'constructs';
 import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
-import { AuthType, InvokeApiGatewayApiBaseProps } from './base-types';
+import { AuthType, CallApiGatewayEndpointBaseProps } from './base-types';
 
 /**
- * Base ApiGateway Invoke Task
+ * Base CallApiGatewayEndpoint Task
  * @internal
  */
-export abstract class InvokeApiGatewayApiBase extends sfn.TaskStateBase {
+export abstract class CallApiGatewayEndpointBase extends sfn.TaskStateBase {
   private static readonly SUPPORTED_INTEGRATION_PATTERNS: sfn.IntegrationPattern[] = [
     sfn.IntegrationPattern.REQUEST_RESPONSE,
     sfn.IntegrationPattern.WAIT_FOR_TASK_TOKEN,
   ];
 
-  private readonly baseProps: InvokeApiGatewayApiBaseProps;
+  private readonly baseProps: CallApiGatewayEndpointBaseProps;
   private readonly integrationPattern: sfn.IntegrationPattern;
 
   protected abstract readonly apiEndpoint: string;
   protected abstract readonly arnForExecuteApi: string;
   protected abstract readonly stageName?: string;
 
-  constructor(scope: Construct, id: string, props: InvokeApiGatewayApiBaseProps) {
+  constructor(scope: Construct, id: string, props: CallApiGatewayEndpointBaseProps) {
     super(scope, id, props);
 
     this.baseProps = props;
     this.integrationPattern = props.integrationPattern ?? sfn.IntegrationPattern.REQUEST_RESPONSE;
-    validatePatternSupported(this.integrationPattern, InvokeApiGatewayApiBase.SUPPORTED_INTEGRATION_PATTERNS);
+    validatePatternSupported(this.integrationPattern, CallApiGatewayEndpointBase.SUPPORTED_INTEGRATION_PATTERNS);
 
     if (this.integrationPattern === sfn.IntegrationPattern.WAIT_FOR_TASK_TOKEN) {
       if (!sfn.FieldUtils.containsTaskToken(this.baseProps.headers)) {

@@ -1,16 +1,16 @@
 import * as apigatewayv2 from '@aws-cdk/aws-apigatewayv2';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import * as cdk from '@aws-cdk/core';
-import { HttpMethod, InvokeApiGatewayHttpApi } from '../../lib';
+import { HttpMethod, CallApiGatewayHttpApiEndpoint } from '../../lib';
 
-describe('InvokeApiGatewayHttpApi', () => {
+describe('CallApiGatewayHttpApiEndpoint', () => {
   test('default', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const httpApi = new apigatewayv2.HttpApi(stack, 'HttpApi');
 
     // WHEN
-    const task = new InvokeApiGatewayHttpApi(stack, 'Invoke', {
+    const task = new CallApiGatewayHttpApiEndpoint(stack, 'Call', {
       api: httpApi,
       method: HttpMethod.GET,
     });
@@ -62,7 +62,7 @@ describe('InvokeApiGatewayHttpApi', () => {
     const httpApi = new apigatewayv2.HttpApi(stack, 'HttpApi');
 
     // WHEN
-    const task = new InvokeApiGatewayHttpApi(stack, 'Invoke', {
+    const task = new CallApiGatewayHttpApiEndpoint(stack, 'Call', {
       api: httpApi,
       method: HttpMethod.GET,
       integrationPattern: sfn.IntegrationPattern.WAIT_FOR_TASK_TOKEN,
@@ -120,7 +120,7 @@ describe('InvokeApiGatewayHttpApi', () => {
 
     // THEN
     expect(() => {
-      new InvokeApiGatewayHttpApi(stack, 'Invoke', {
+      new CallApiGatewayHttpApiEndpoint(stack, 'Call', {
         api: httpApi,
         method: HttpMethod.GET,
         integrationPattern: sfn.IntegrationPattern.WAIT_FOR_TASK_TOKEN,
@@ -135,7 +135,7 @@ describe('InvokeApiGatewayHttpApi', () => {
 
     // THEN
     expect(() => {
-      new InvokeApiGatewayHttpApi(stack, 'Invoke', {
+      new CallApiGatewayHttpApiEndpoint(stack, 'Call', {
         api: httpApi,
         method: HttpMethod.GET,
         integrationPattern: sfn.IntegrationPattern.RUN_JOB,

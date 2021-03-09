@@ -3,13 +3,13 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
-import { InvokeApiGatewayApiBase } from './base';
-import { InvokeApiGatewayApiBaseProps } from './base-types';
+import { CallApiGatewayEndpointBase } from './base';
+import { CallApiGatewayEndpointBaseProps } from './base-types';
 
 /**
- * Properties for invoking an HTTP API Endpoint
+ * Properties for calling an HTTP API Endpoint
  */
-export interface InvokeApiGatewayHttpApiProps extends InvokeApiGatewayApiBaseProps {
+export interface CallApiGatewayHttpApiEndpointProps extends CallApiGatewayEndpointBaseProps {
   /**
    * API to call
    */
@@ -23,11 +23,11 @@ export interface InvokeApiGatewayHttpApiProps extends InvokeApiGatewayApiBasePro
 }
 
 /**
- * Invoke HTTP API endpoint as a Task
+ * Call HTTP API endpoint as a Task
  *
  * @see https://docs.aws.amazon.com/step-functions/latest/dg/connect-api-gateway.html
  */
-export class InvokeApiGatewayHttpApi extends InvokeApiGatewayApiBase {
+export class CallApiGatewayHttpApiEndpoint extends CallApiGatewayEndpointBase {
   protected readonly taskMetrics?: sfn.TaskMetricsConfig | undefined;
   protected readonly taskPolicies?: iam.PolicyStatement[] | undefined;
 
@@ -35,7 +35,7 @@ export class InvokeApiGatewayHttpApi extends InvokeApiGatewayApiBase {
   protected readonly arnForExecuteApi: string;
   protected readonly stageName?: string;
 
-  constructor(scope: Construct, id: string, private readonly props: InvokeApiGatewayHttpApiProps) {
+  constructor(scope: Construct, id: string, private readonly props: CallApiGatewayHttpApiEndpointProps) {
     super(scope, id, props);
 
     this.apiEndpoint = this.getApiEndpoint();

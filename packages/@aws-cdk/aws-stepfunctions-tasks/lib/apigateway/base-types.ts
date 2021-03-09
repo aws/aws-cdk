@@ -39,9 +39,9 @@ export enum AuthType {
 }
 
 /**
- * Base ApiGateway Invoke Task Props
+ * Base CallApiGatewayEdnpoint Task Props
  */
-export interface InvokeApiGatewayApiBaseProps extends sfn.TaskStateBaseProps {
+export interface CallApiGatewayEndpointBaseProps extends sfn.TaskStateBaseProps {
   /**
    * Http method for the API
    */
