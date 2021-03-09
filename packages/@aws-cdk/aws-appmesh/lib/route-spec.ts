@@ -463,29 +463,11 @@ export abstract class RouteSpec {
 }
 
 class HttpRouteSpec extends RouteSpec {
-  /**
-   * The priority for the route.
-   */
   public readonly priority?: number;
-
-  /**
-   * Type of route you are creating
-   */
   public readonly protocol: Protocol;
-
-  /**
-   * The criteria for determining a request match
-   */
   public readonly match?: HttpRouteMatch;
-
-  /**
-   * The criteria for determining a timeout configuration
-   */
   public readonly timeout?: HttpTimeout;
 
-  /**
-   * List of targets that traffic is routed to when a request matches the route
-   */
   public readonly weightedTargets: WeightedTarget[];
 
   constructor(props: HttpRouteSpecOptions, protocol: Protocol) {
