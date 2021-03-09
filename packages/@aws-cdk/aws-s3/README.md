@@ -43,7 +43,7 @@ new Bucket(this, 'MyFirstBucket');
 Define a KMS-encrypted bucket:
 
 ```ts
-const bucket = new Bucket(this, 'MyUnencryptedBucket', {
+const bucket = new Bucket(this, 'MyEncryptedBucket', {
     encryption: BucketEncryption.KMS
 });
 
