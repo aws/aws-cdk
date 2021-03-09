@@ -128,21 +128,9 @@ export enum HttpRouteProtocol {
  */
 export interface HeaderMatchConfig {
   /**
-   * The Http header name
+   * The HTTP route header.
    */
-  readonly headerName: string;
-
-  /**
-   * Invert the matching condition.
-   *
-   * @default false
-   */
-  readonly invert?: boolean;
-
-  /**
-   * The match property.
-   */
-  readonly matchProperty: CfnRoute.HeaderMatchMethodProperty;
+  readonly httpRouteHeader: CfnRoute.HttpRouteHeaderProperty;
 }
 
 /**
@@ -288,9 +276,11 @@ class HeaderMatchImpl extends HeaderMatch {
 
   bind(_scope: Construct): HeaderMatchConfig {
     return {
-      headerName: this.headerName,
-      invert: this.invert,
-      matchProperty: this.matchProperty,
+      httpRouteHeader: {
+        name: this.headerName,
+        invert: this.invert,
+        match: this.matchProperty,
+      },
     };
   }
 }
@@ -479,7 +469,7 @@ class HttpRouteSpec extends RouteSpec {
     this.priority = props.priority;
   }
 
-  public bind(_scope: Construct): RouteSpecConfig {
+  public bind(scope: Construct): RouteSpecConfig {
     const prefixPath = this.match ? this.match.prefixPath : '/';
     if (prefixPath[0] != '/') {
       throw new Error(`Prefix Path must start with \'/\', got: ${prefixPath}`);
@@ -491,14 +481,7 @@ class HttpRouteSpec extends RouteSpec {
       },
       match: {
         prefix: prefixPath,
-        headers: this.match?.headers?.map(header => {
-          const config = header.bind(_scope);
-          return {
-            name: config.headerName,
-            invert: config.invert,
-            match: config.matchProperty,
-          };
-        }),
+        headers: this.match?.headers?.map(header => header.bind(scope).httpRouteHeader),
         method: this.match?.method,
         scheme: this.match?.protocol,
       },
