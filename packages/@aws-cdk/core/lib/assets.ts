@@ -238,6 +238,7 @@ export interface FileAssetLocation {
 
   /**
    * The HTTP URL of this asset on Amazon S3.
+   * @default - value specified in `httpUrl` is used.
    * @deprecated use `httpUrl`
    */
   readonly s3Url?: string;
