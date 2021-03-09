@@ -179,9 +179,11 @@ export class VirtualGateway extends VirtualGatewayBase {
       meshName: this.mesh.meshName,
       spec: {
         listeners: this.listeners.map(listener => listener.listener),
-        backendDefaults: props.backendDefaults !== undefined ? {
-          clientPolicy: props.backendDefaults?.clientPolicy?.bind(this).clientPolicy,
-        } : undefined,
+        backendDefaults: props.backendDefaults !== undefined
+          ? {
+            clientPolicy: props.backendDefaults?.clientPolicy?.bind(this).clientPolicy,
+          }
+          : undefined,
         logging: accessLogging !== undefined ? {
           accessLog: accessLogging.virtualGatewayAccessLog,
         } : undefined,

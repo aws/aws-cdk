@@ -109,7 +109,7 @@ export = {
         listeners: [appmesh.VirtualNodeListener.http({
           port: 8080,
         })],
-        backends: [appmesh.Backend.virtualServiceBackend({
+        backends: [appmesh.Backend.virtualService({
           virtualService: service1,
         })],
       });
@@ -184,7 +184,7 @@ export = {
         listeners: [appmesh.VirtualNodeListener.http({
           port: 8080,
         })],
-        backends: [appmesh.Backend.virtualServiceBackend({
+        backends: [appmesh.Backend.virtualService({
           virtualService: service1,
         })],
       });
@@ -193,7 +193,7 @@ export = {
         listeners: [appmesh.VirtualNodeListener.http({
           port: 8080,
         })],
-        backends: [appmesh.Backend.virtualServiceBackend({
+        backends: [appmesh.Backend.virtualService({
           virtualService: service2,
         })],
       });
@@ -202,7 +202,7 @@ export = {
         listeners: [appmesh.VirtualNodeListener.http({
           port: 8080,
         })],
-        backends: [appmesh.Backend.virtualServiceBackend({
+        backends: [appmesh.Backend.virtualService({
           virtualService: service1,
         })],
       });
@@ -342,7 +342,7 @@ export = {
         listeners: [appmesh.VirtualNodeListener.http({
           port: 8080,
         })],
-        backends: [appmesh.Backend.virtualServiceBackend({
+        backends: [appmesh.Backend.virtualService({
           virtualService: service1,
         })],
       });

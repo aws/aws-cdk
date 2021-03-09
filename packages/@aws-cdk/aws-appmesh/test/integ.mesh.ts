@@ -28,16 +28,6 @@ const virtualService = new appmesh.VirtualService(stack, 'service', {
   virtualServiceName: 'service1.domain.local',
 });
 
-const virtualService2 = new appmesh.VirtualService(stack, 'service2', {
-  virtualServiceProvider: appmesh.VirtualServiceProvider.none(mesh),
-  virtualServiceName: 'service2.domain.local',
-});
-
-const virtualService3 = new appmesh.VirtualService(stack, 'service3', {
-  virtualServiceProvider: appmesh.VirtualServiceProvider.none(mesh),
-  virtualServiceName: 'service3.domain.local',
-});
-
 const node = mesh.addVirtualNode('node', {
   serviceDiscovery: appmesh.ServiceDiscovery.dns(`node1.${namespace.namespaceName}`),
   listeners: [appmesh.VirtualNodeListener.http({
@@ -46,13 +36,16 @@ const node = mesh.addVirtualNode('node', {
       path: '/check-path',
     },
   })],
-  backends: [appmesh.Backend.virtualServiceBackend({
+  backends: [appmesh.Backend.virtualService({
     virtualService: virtualService,
   })],
 });
 
-node.addBackend(appmesh.Backend.virtualServiceBackend({
-  virtualService: virtualService2,
+node.addBackend(appmesh.Backend.virtualService({
+  virtualService: new appmesh.VirtualService(stack, 'service-2', {
+    virtualServiceName: 'service2.domain.local',
+    virtualServiceProvider: appmesh.VirtualServiceProvider.none(mesh),
+  }),
 }));
 
 router.addRoute('route-1', {
@@ -91,8 +84,11 @@ const node2 = mesh.addVirtualNode('node2', {
       certificateChain: 'path/to/cert',
     }),
   },
-  backends: [appmesh.Backend.virtualServiceBackend({
-    virtualService: virtualService3,
+  backends: [appmesh.Backend.virtualService({
+    virtualService: new appmesh.VirtualService(stack, 'service-3', {
+      virtualServiceName: 'service3.domain.local',
+      virtualServiceProvider: appmesh.VirtualServiceProvider.none(mesh),
+    }),
   })],
 });
 

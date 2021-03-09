@@ -183,9 +183,11 @@ export class VirtualNode extends VirtualNodeBase {
       spec: {
         backends: cdk.Lazy.anyValue({ produce: () => this.backends }, { omitEmptyArray: true }),
         listeners: cdk.Lazy.anyValue({ produce: () => this.listeners.map(listener => listener.listener) }, { omitEmptyArray: true }),
-        backendDefaults: props.backendDefaults !== undefined ? {
-          clientPolicy: props.backendDefaults?.clientPolicy?.bind(this).clientPolicy,
-        } : undefined,
+        backendDefaults: props.backendDefaults !== undefined
+          ? {
+            clientPolicy: props.backendDefaults?.clientPolicy?.bind(this).clientPolicy,
+          }
+          : undefined,
         serviceDiscovery: {
           dns: serviceDiscovery?.dns,
           awsCloudMap: serviceDiscovery?.cloudmap,

@@ -650,7 +650,7 @@
               "VirtualService": {
                 "VirtualServiceName": {
                   "Fn::GetAtt": [
-                    "service2B2862B6B",
+                    "service27C65CF7D",
                     "VirtualServiceName"
                   ]
                 }
@@ -711,7 +711,7 @@
               "VirtualService": {
                 "VirtualServiceName": {
                   "Fn::GetAtt": [
-                    "service3529E2EB1",
+                    "service3859EB104",
                     "VirtualServiceName"
                   ]
                 }
@@ -969,7 +969,7 @@
         "VirtualServiceName": "service1.domain.local"
       }
     },
-    "service2B2862B6B": {
+    "service27C65CF7D": {
       "Type": "AWS::AppMesh::VirtualService",
       "Properties": {
         "MeshName": {
@@ -982,7 +982,7 @@
         "VirtualServiceName": "service2.domain.local"
       }
     },
-    "service3529E2EB1": {
+    "service3859EB104": {
       "Type": "AWS::AppMesh::VirtualService",
       "Properties": {
         "MeshName": {

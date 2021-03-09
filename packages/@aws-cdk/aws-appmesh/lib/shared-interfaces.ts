@@ -243,7 +243,7 @@ export abstract class Backend {
   /**
    * Construct a Virtual Service backend
    */
-  public static virtualServiceBackend(props: VirtualServiceBackendOptions): Backend {
+  public static virtualService(props: VirtualServiceBackendOptions): Backend {
     return new VirtualServiceBackend(props.virtualService, props.clientPolicy);
   }
 
