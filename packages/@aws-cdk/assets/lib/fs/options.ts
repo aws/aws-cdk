@@ -10,7 +10,6 @@ export interface CopyOptions {
    * A strategy for how to handle symlinks.
    *
    * @default Never
-   * @deprecated use `followSymlinks` instead
    */
   readonly follow?: FollowMode;
 
