@@ -70,17 +70,10 @@ class Trie extends Map<string, Trie> { }
  * Exported/visible (and `forcePlaintext` parameter) for ease of testing.
  */
 export function formatAnalytics(infos: ConstructInfo[], forcePlaintext: boolean = false) {
-  const fqnsByVersion = infos.reduce(function (grouped, info) {
-    (grouped[info.version] = grouped[info.version] ?? new Set()).add(info.fqn);
-    return grouped;
-  }, {} as Record<string, Set<string>>);
+  const trie = new Trie();
+  infos.forEach(info => insertFqnInTrie(`${info.version}!${info.fqn}`, trie));
 
-  const plaintextEncodedConstructs = Object.entries(fqnsByVersion).map(([version, fqns]) => {
-    const versionTrie = new Trie();
-    [...fqns].forEach(fqn => insertFqnInTrie(fqn, versionTrie));
-    return `${version}!${prefixEncodeTrie(versionTrie)}`;
-  }).join(',');
-
+  const plaintextEncodedConstructs = prefixEncodeTrie(trie);
   const compressedConstructs = zlib.gzipSync(Buffer.from(plaintextEncodedConstructs)).toString('base64');
 
   return (plaintextEncodedConstructs.length < compressedConstructs.length || forcePlaintext)
@@ -92,13 +85,13 @@ export function formatAnalytics(infos: ConstructInfo[], forcePlaintext: boolean 
  * Splits after non-alphanumeric characters (e.g., '.', '/') in the FQN
  * and insert each piece of the FQN in nested map (i.e., simple trie).
  */
-function insertFqnInTrie(fqn: string, treeRef: Trie) {
+function insertFqnInTrie(fqn: string, trie: Trie) {
   fqn.replace(/[^a-z0-9]/gi, '$& ').split(' ').forEach(fqnPart => {
-    const nextLevelTreeRef = treeRef.get(fqnPart) ?? new Trie();
-    treeRef.set(fqnPart, nextLevelTreeRef);
-    treeRef = nextLevelTreeRef;
+    const nextLevelTreeRef = trie.get(fqnPart) ?? new Trie();
+    trie.set(fqnPart, nextLevelTreeRef);
+    trie = nextLevelTreeRef;
   });
-  return treeRef;
+  return trie;
 }
 
 /**
