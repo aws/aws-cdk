@@ -103,7 +103,7 @@ export interface VpnGatewayProps {
   readonly type: string;
 
   /**
-   * Explicitely specify an Asn or let aws pick an Asn for you.
+   * Explicitly specify an Asn or let aws pick an Asn for you.
    * @default 65000
    */
   readonly amazonSideAsn?: number;
@@ -114,7 +114,7 @@ export interface VpnGatewayProps {
  */
 export interface EnableVpnGatewayOptions extends VpnGatewayProps {
   /**
-   * Provide an array of subnets where the route propagation shoud be added.
+   * Provide an array of subnets where the route propagation should be added.
    * @default noPropagation
    */
   readonly vpnRoutePropagation?: SubnetSelection[]
@@ -224,7 +224,7 @@ export class VpnConnection extends Resource implements IVpnConnection {
       });
     }
 
-    if (!net.isIPv4(props.ip)) {
+    if (!Token.isUnresolved(props.ip) && !net.isIPv4(props.ip)) {
       throw new Error(`The \`ip\` ${props.ip} is not a valid IPv4 address.`);
     }
 

@@ -1,14 +1,14 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import * as cfn from '@aws-cdk/aws-cloudformation';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as cpactions from '@aws-cdk/aws-codepipeline-actions';
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
-import { Aws, Stack } from '@aws-cdk/core';
+import { Aws, CfnCapabilities, Stack } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Construct, Node } from 'constructs';
 import { appOf, assemblyBuilderOf } from '../private/construct-internals';
+import { toPosixPath } from '../private/fs';
 
 // v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
 // eslint-disable-next-line
@@ -186,8 +186,8 @@ export class DeployCdkStackAction implements codepipeline.IAction {
     return new DeployCdkStackAction({
       actionRole,
       cloudFormationExecutionRole,
-      templatePath: path.relative(appAsmRoot, fullTemplatePath),
-      templateConfigurationPath: fullConfigPath ? path.relative(appAsmRoot, fullConfigPath) : undefined,
+      templatePath: toPosixPath(path.relative(appAsmRoot, fullTemplatePath)),
+      templateConfigurationPath: fullConfigPath ? toPosixPath(path.relative(appAsmRoot, fullConfigPath)) : undefined,
       region,
       stackArtifactId: artifact.id,
       dependencyStackArtifactIds: artifact.dependencies.filter(isStackArtifact).map(s => s.id),
@@ -248,7 +248,7 @@ export class DeployCdkStackAction implements codepipeline.IAction {
       role: props.actionRole,
       deploymentRole: props.cloudFormationExecutionRole,
       region: props.region,
-      capabilities: [cfn.CloudFormationCapabilities.NAMED_IAM, cfn.CloudFormationCapabilities.AUTO_EXPAND],
+      cfnCapabilities: [CfnCapabilities.NAMED_IAM, CfnCapabilities.AUTO_EXPAND],
       templateConfiguration: props.templateConfigurationPath ? props.cloudAssemblyInput.atPath(props.templateConfigurationPath) : undefined,
     });
     this.executeChangeSetAction = new cpactions.CloudFormationExecuteChangeSetAction({

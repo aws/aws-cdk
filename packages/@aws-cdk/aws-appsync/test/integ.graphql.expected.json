@@ -28,7 +28,9 @@
           "EmailSubject": "Verify your new account",
           "SmsMessage": "The verification code to your new account is {####}"
         }
-      }
+      },
+      "UpdateReplacePolicy": "Retain",
+      "DeletionPolicy": "Retain"
     },
     "ApiF70053CD": {
       "Type": "AWS::AppSync::GraphQLApi",
@@ -141,6 +143,7 @@
                 "dynamodb:Query",
                 "dynamodb:GetItem",
                 "dynamodb:Scan",
+                "dynamodb:ConditionCheckItem",
                 "dynamodb:BatchWriteItem",
                 "dynamodb:PutItem",
                 "dynamodb:UpdateItem",
@@ -353,6 +356,7 @@
                 "dynamodb:Query",
                 "dynamodb:GetItem",
                 "dynamodb:Scan",
+                "dynamodb:ConditionCheckItem",
                 "dynamodb:BatchWriteItem",
                 "dynamodb:PutItem",
                 "dynamodb:UpdateItem",
@@ -744,6 +748,7 @@
                 "dynamodb:Query",
                 "dynamodb:GetItem",
                 "dynamodb:Scan",
+                "dynamodb:ConditionCheckItem",
                 "dynamodb:BatchWriteItem",
                 "dynamodb:PutItem",
                 "dynamodb:UpdateItem",

@@ -3,7 +3,11 @@ import '@aws-cdk/assert/jest';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
+import { testFutureBehavior } from 'cdk-build-tools/lib/feature-flag';
 import * as elbv2 from '../../lib';
+
+const s3GrantWriteCtx = { [cxapi.S3_GRANT_WRITE_WITHOUT_ACL]: true };
 
 describe('tests', () => {
   test('Trivial construction: internet facing', () => {
@@ -69,9 +73,9 @@ describe('tests', () => {
     });
   });
 
-  test('Access logging', () => {
+  testFutureBehavior('Access logging', s3GrantWriteCtx, cdk.App, (app) => {
     // GIVEN
-    const stack = new cdk.Stack(undefined, undefined, { env: { region: 'us-east-1' } });
+    const stack = new cdk.Stack(app, undefined, { env: { region: 'us-east-1' } });
     const vpc = new ec2.Vpc(stack, 'Stack');
     const bucket = new s3.Bucket(stack, 'AccessLoggingBucket');
     const lb = new elbv2.NetworkLoadBalancer(stack, 'LB', { vpc });
@@ -101,7 +105,7 @@ describe('tests', () => {
         Version: '2012-10-17',
         Statement: [
           {
-            Action: ['s3:PutObject*', 's3:Abort*'],
+            Action: ['s3:PutObject', 's3:Abort*'],
             Effect: 'Allow',
             Principal: { AWS: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::127311923021:root']] } },
             Resource: {
@@ -137,9 +141,9 @@ describe('tests', () => {
     }, ResourcePart.CompleteDefinition);
   });
 
-  test('access logging with prefix', () => {
+  testFutureBehavior('access logging with prefix', s3GrantWriteCtx, cdk.App, (app) => {
     // GIVEN
-    const stack = new cdk.Stack(undefined, undefined, { env: { region: 'us-east-1' } });
+    const stack = new cdk.Stack(app, undefined, { env: { region: 'us-east-1' } });
     const vpc = new ec2.Vpc(stack, 'Stack');
     const bucket = new s3.Bucket(stack, 'AccessLoggingBucket');
     const lb = new elbv2.NetworkLoadBalancer(stack, 'LB', { vpc });
@@ -172,7 +176,7 @@ describe('tests', () => {
         Version: '2012-10-17',
         Statement: [
           {
-            Action: ['s3:PutObject*', 's3:Abort*'],
+            Action: ['s3:PutObject', 's3:Abort*'],
             Effect: 'Allow',
             Principal: { AWS: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::127311923021:root']] } },
             Resource: {
@@ -401,4 +405,64 @@ describe('tests', () => {
       Type: 'network',
     });
   });
+
+  describe('lookup', () => {
+    test('Can look up a NetworkLoadBalancer', () => {
+      // GIVEN
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'stack', {
+        env: {
+          account: '123456789012',
+          region: 'us-west-2',
+        },
+      });
+
+      // WHEN
+      const loadBalancer = elbv2.NetworkLoadBalancer.fromLookup(stack, 'a', {
+        loadBalancerTags: {
+          some: 'tag',
+        },
+      });
+
+      // THEN
+      expect(stack).not.toHaveResource('AWS::ElasticLoadBalancingV2::NetworkLoadBalancer');
+      expect(loadBalancer.loadBalancerArn).toEqual('arn:aws:elasticloadbalancing:us-west-2:123456789012:loadbalancer/network/my-load-balancer/50dc6c495c0c9188');
+      expect(loadBalancer.loadBalancerCanonicalHostedZoneId).toEqual('Z3DZXE0EXAMPLE');
+      expect(loadBalancer.loadBalancerDnsName).toEqual('my-load-balancer-1234567890.us-west-2.elb.amazonaws.com');
+    });
+
+    test('Can add listeners to a looked-up NetworkLoadBalancer', () => {
+      // GIVEN
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'stack', {
+        env: {
+          account: '123456789012',
+          region: 'us-west-2',
+        },
+      });
+
+      const loadBalancer = elbv2.NetworkLoadBalancer.fromLookup(stack, 'a', {
+        loadBalancerTags: {
+          some: 'tag',
+        },
+      });
+
+      const targetGroup = new elbv2.NetworkTargetGroup(stack, 'tg', {
+        vpc: loadBalancer.vpc,
+        port: 3000,
+      });
+
+      // WHEN
+      loadBalancer.addListener('listener', {
+        protocol: elbv2.Protocol.TCP_UDP,
+        port: 3000,
+        defaultAction: elbv2.NetworkListenerAction.forward([targetGroup]),
+      });
+
+      // THEN
+      expect(stack).not.toHaveResource('AWS::ElasticLoadBalancingV2::NetworkLoadBalancer');
+      expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::Listener');
+    });
+  });
 });
+

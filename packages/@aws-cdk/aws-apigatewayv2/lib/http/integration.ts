@@ -34,6 +34,20 @@ export enum HttpIntegrationType {
 }
 
 /**
+ * Supported connection types
+ */
+export enum HttpConnectionType {
+  /**
+   * For private connections between API Gateway and resources in a VPC
+   */
+  VPC_LINK = 'VPC_LINK',
+  /**
+   * For connections through public routable internet
+   */
+  INTERNET = 'INTERNET',
+}
+
+/**
  * Payload format version for lambda proxy integration
  * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-integrations-lambda.html
  */
@@ -87,6 +101,20 @@ export interface HttpIntegrationProps {
   readonly method?: HttpMethod;
 
   /**
+   * The ID of the VPC link for a private integration. Supported only for HTTP APIs.
+   *
+   * @default - undefined
+   */
+  readonly connectionId?: string;
+
+  /**
+   * The type of the network connection to the integration endpoint
+   *
+   * @default HttpConnectionType.INTERNET
+   */
+  readonly connectionType?: HttpConnectionType;
+
+  /**
    * The version of the payload format
    * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-integrations-lambda.html
    * @default - defaults to latest in the case of HttpIntegrationType.LAMBDA_PROXY`, irrelevant otherwise.
@@ -106,10 +134,12 @@ export class HttpIntegration extends Resource implements IHttpIntegration {
   constructor(scope: Construct, id: string, props: HttpIntegrationProps) {
     super(scope, id);
     const integ = new CfnIntegration(this, 'Resource', {
-      apiId: props.httpApi.httpApiId,
+      apiId: props.httpApi.apiId,
       integrationType: props.integrationType,
       integrationUri: props.integrationUri,
       integrationMethod: props.method,
+      connectionId: props.connectionId,
+      connectionType: props.connectionType,
       payloadFormatVersion: props.payloadFormatVersion?.version,
     });
     this.integrationId = integ.ref;
@@ -164,6 +194,20 @@ export interface HttpRouteIntegrationConfig {
    * @default - undefined
    */
   readonly method?: HttpMethod;
+
+  /**
+   * The ID of the VPC link for a private integration. Supported only for HTTP APIs.
+   *
+   * @default - undefined
+   */
+  readonly connectionId?: string;
+
+  /**
+   * The type of the network connection to the integration endpoint
+   *
+   * @default HttpConnectionType.INTERNET
+   */
+  readonly connectionType?: HttpConnectionType;
 
   /**
    * Payload format version in the case of lambda proxy integration

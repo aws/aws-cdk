@@ -245,10 +245,10 @@ export class LoadBalancer extends Resource implements IConnectable {
     this.elb = new CfnLoadBalancer(this, 'Resource', {
       securityGroups: [this.securityGroup.securityGroupId],
       subnets: selectedSubnets.subnetIds,
-      listeners: Lazy.anyValue({ produce: () => this.listeners }),
+      listeners: Lazy.any({ produce: () => this.listeners }),
       scheme: props.internetFacing ? 'internet-facing' : 'internal',
       healthCheck: props.healthCheck && healthCheckToJSON(props.healthCheck),
-      crossZone: (props.crossZone === undefined || props.crossZone) ? true : false,
+      crossZone: props.crossZone ?? true,
     });
     if (props.internetFacing) {
       this.elb.node.addDependency(selectedSubnets.internetConnectivityEstablished);

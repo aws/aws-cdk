@@ -1,6 +1,6 @@
-## Amazon EC2 Construct Library
-
+# Amazon EC2 Construct Library
 <!--BEGIN STABILITY BANNER-->
+
 ---
 
 ![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)
@@ -8,7 +8,9 @@
 ![cdk-constructs: Stable](https://img.shields.io/badge/cdk--constructs-stable-success.svg?style=for-the-badge)
 
 ---
+
 <!--END STABILITY BANNER-->
+
 
 The `@aws-cdk/aws-ec2` package contains primitives for setting up networking and
 instances.
@@ -273,7 +275,7 @@ DatabaseSubnet3   |`ISOLATED`|`10.0.6.32/28`|#3|Only routes within the VPC
 
 ### Accessing the Internet Gateway
 
-If you need access to the internet gateway, you can get it's ID like so:
+If you need access to the internet gateway, you can get its ID like so:
 
 ```ts
 const igwId = vpc.internetGatewayId;
@@ -380,9 +382,44 @@ otherwise. Subnet names will be determined from the `aws-cdk:subnet-name` tag
 on the subnet if it exists, or will mirror the subnet type otherwise (i.e.
 a public subnet will have the name `"Public"`).
 
+The result of the `Vpc.fromLookup()` operation will be written to a file
+called `cdk.context.json`. You must commit this file to source control so
+that the lookup values are available in non-privileged environments such
+as CI build steps, and to ensure your template builds are repeatable.
+
 Here's how `Vpc.fromLookup()` can be used:
 
 [importing existing VPCs](test/integ.import-default-vpc.lit.ts)
+
+`Vpc.fromLookup` is the recommended way to import VPCs. If for whatever
+reason you do not want to use the context mechanism to look up a VPC at
+synthesis time, you can also use `Vpc.fromVpcAttributes`. This has the
+following limitations:
+
+* Every subnet group in the VPC must have a subnet in each availability zone
+  (for example, each AZ must have both a public and private subnet). Asymmetric
+  VPCs are not supported.
+* All VpcId, SubnetId, RouteTableId, ... parameters must either be known at
+  synthesis time, or they must come from deploy-time list parameters whose
+  deploy-time lengths are known at synthesis time.
+
+Using `Vpc.fromVpcAttributes()` looks like this:
+
+```ts
+const vpc = ec2.Vpc.fromVpcAttributes(stack, 'VPC', {
+  vpcId: 'vpc-1234',
+  availabilityZones: ['us-east-1a', 'us-east-1b'],
+
+  // Either pass literals for all IDs
+  publicSubnetIds: ['s-12345', 's-67890'],
+
+  // OR: import a list of known length
+  privateSubnetIds: Fn.importListValue('PrivateSubnetIds', 2),
+
+  // OR: split an imported string to a list of known length
+  isolatedSubnetIds: Fn.split(',', ssm.StringParameter.valueForStringParameter(stack, `MyParameter`), 2),
+});
+```
 
 ## Allowing Connections
 
@@ -501,6 +538,9 @@ examples of things you might want to use:
 > `cdk.context.json`, or use the `cdk context` command. For more information, see
 > [Runtime Context](https://docs.aws.amazon.com/cdk/latest/guide/context.html) in the CDK
 > developer guide.
+>
+> `MachineImage.genericLinux()`, `MachineImage.genericWindows()` will use `CfnMapping` in
+> an agnostic stack.
 
 ## Special VPC configurations
 
@@ -620,6 +660,23 @@ new VpcEndpointService(this, 'EndpointService', {
   whitelistedPrincipals: [new ArnPrincipal('arn:aws:iam::123456789012:root')]
 });
 ```
+
+Endpoint services support private DNS, which makes it easier for clients to connect to your service by automatically setting up DNS in their VPC.
+You can enable private DNS on an endpoint service like so:
+
+```ts
+import { VpcEndpointServiceDomainName } from '@aws-cdk/aws-route53';
+
+new VpcEndpointServiceDomainName(stack, 'EndpointDomain', {
+  endpointService: vpces,
+  domainName: 'my-stuff.aws-cdk.dev',
+  publicHostedZone: zone,
+});
+```
+
+Note: The domain name must be owned (registered through Route53) by the account the endpoint service is in, or delegated to the account.
+The VpcEndpointServiceDomainName will handle the AWS side of domain verification, the process for which can be found
+[here](https://docs.aws.amazon.com/vpc/latest/userguide/endpoint-services-dns-validation.html)
 
 ## Instances
 
@@ -924,6 +981,51 @@ instance.userData.addExecuteFileCommand({
 asset.grantRead( instance.role );
 ```
 
+### Multipart user data
+
+In addition, to above the `MultipartUserData` can be used to change instance startup behavior. Multipart user data are composed
+from separate parts forming archive. The most common parts are scripts executed during instance set-up. However, there are other
+kinds, too.
+
+The advantage of multipart archive is in flexibility when it's needed to add additional parts or to use specialized parts to
+fine tune instance startup. Some services (like AWS Batch) supports only `MultipartUserData`.
+
+The parts can be executed at different moment of instance start-up and can serve a different purposes. This is controlled by `contentType` property.
+For common scripts, `text/x-shellscript; charset="utf-8"` can be used as content type.
+
+In order to create archive the `MultipartUserData` has to be instantiated. Than, user can add parts to multipart archive using `addPart`. The `MultipartBody` contains methods supporting creation of body parts.
+
+If the very custom part is required, it can be created using `MultipartUserData.fromRawBody`, in this case full control over content type,
+transfer encoding, and body properties is given to the user.
+
+Below is an example for creating multipart user data with single body part responsible for installing `awscli` and configuring maximum size
+of storage used by Docker containers:
+
+```ts
+const bootHookConf = ec2.UserData.forLinux();
+bootHookConf.addCommands('cloud-init-per once docker_options echo \'OPTIONS="${OPTIONS} --storage-opt dm.basesize=40G"\' >> /etc/sysconfig/docker');
+
+const setupCommands = ec2.UserData.forLinux();
+setupCommands.addCommands('sudo yum install awscli && echo Packages installed らと > /var/tmp/setup');
+
+const multipartUserData = new ec2.MultipartUserData();
+// The docker has to be configured at early stage, so content type is overridden to boothook
+multipartUserData.addPart(ec2.MultipartBody.fromUserData(bootHookConf, 'text/cloud-boothook; charset="us-ascii"'));
+// Execute the rest of setup
+multipartUserData.addPart(ec2.MultipartBody.fromUserData(setupCommands));
+
+new ec2.LaunchTemplate(stack, '', {
+  userData: multipartUserData,
+  blockDevices: [
+    // Block device configuration rest
+  ]
+});
+```
+
+For more information see 
+[Specifying Multiple User Data Blocks Using a MIME Multi Part Archive](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/bootstrap_container_instance.html#multi-part_user_data)
+
+
 ## Importing existing subnet
 
 To import an existing Subnet, call `Subnet.fromSubnetAttributes()` or
@@ -944,4 +1046,25 @@ const subnet = Subnet.fromSubnetAttributes(this, 'SubnetFromAttributes', {
 
 // Supply only subnet id
 const subnet = Subnet.fromSubnetId(this, 'SubnetFromId', 's-1234');
+```
+
+## Launch Templates
+
+A Launch Template is a standardized template that contains the configuration information to launch an instance.
+They can be used when launching instances on their own, through Amazon EC2 Auto Scaling, EC2 Fleet, and Spot Fleet.
+Launch templates enable you to store launch parameters so that you do not have to specify them every time you launch
+an instance. For information on Launch Templates please see the
+[official documentation](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-launch-templates.html).
+
+The following demonstrates how to create a launch template with an Amazon Machine Image, and security group.
+
+```ts
+const vpc = new ec2.Vpc(...);
+// ...
+const template = new ec2.LaunchTemplate(this, 'LaunchTemplate', {
+  machineImage: new ec2.AmazonMachineImage(),
+  securityGroup: new ec2.SecurityGroup(this, 'LaunchTemplateSG', {
+    vpc: vpc,
+  }),
+});
 ```

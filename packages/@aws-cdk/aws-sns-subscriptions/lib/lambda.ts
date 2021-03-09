@@ -1,8 +1,12 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as sns from '@aws-cdk/aws-sns';
-import { Construct, Stack } from '@aws-cdk/core';
+import { Names, Stack } from '@aws-cdk/core';
 import { SubscriptionProps } from './subscription';
+
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct } from '@aws-cdk/core';
 
 /**
  * Properties for a Lambda subscription
@@ -27,7 +31,7 @@ export class LambdaSubscription implements sns.ITopicSubscription {
       throw new Error('The supplied lambda Function object must be an instance of Construct');
     }
 
-    this.fn.addPermission(`AllowInvoke:${topic.node.uniqueId}`, {
+    this.fn.addPermission(`AllowInvoke:${Names.nodeUniqueId(topic.node)}`, {
       sourceArn: topic.topicArn,
       principal: new iam.ServicePrincipal('sns.amazonaws.com'),
     });

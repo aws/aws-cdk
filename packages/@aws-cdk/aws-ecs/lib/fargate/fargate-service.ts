@@ -67,6 +67,7 @@ export interface FargateServiceProps extends BaseServiceOptions {
    * @default PropagatedTagSource.NONE
    */
   readonly propagateTaskTagsFrom?: PropagatedTagSource;
+
 }
 
 /**
@@ -141,13 +142,19 @@ export class FargateService extends BaseService implements IFargateService {
       throw new Error('Only one of SecurityGroup or SecurityGroups can be populated.');
     }
 
-    const propagateTagsFromSource = props.propagateTaskTagsFrom !== undefined ? props.propagateTaskTagsFrom
-      : (props.propagateTags !== undefined ? props.propagateTags : PropagatedTagSource.NONE);
+    if (props.taskDefinition.referencesSecretJsonField
+        && props.platformVersion
+        && SECRET_JSON_FIELD_UNSUPPORTED_PLATFORM_VERSIONS.includes(props.platformVersion)) {
+      throw new Error(`The task definition of this service uses at least one container that references a secret JSON field. This feature requires platform version ${FargatePlatformVersion.VERSION1_4} or later.`);
+    }
+
+    const propagateTagsFromSource = props.propagateTaskTagsFrom ?? props.propagateTags ?? PropagatedTagSource.NONE;
 
     super(scope, id, {
       ...props,
-      desiredCount: props.desiredCount !== undefined ? props.desiredCount : 1,
+      desiredCount: props.desiredCount,
       launchType: LaunchType.FARGATE,
+      capacityProviderStrategies: props.capacityProviderStrategies,
       propagateTags: propagateTagsFromSource,
       enableECSManagedTags: props.enableECSManagedTags,
     }, {
@@ -165,9 +172,9 @@ export class FargateService extends BaseService implements IFargateService {
 
     this.configureAwsVpcNetworkingWithSecurityGroups(props.cluster.vpc, props.assignPublicIp, props.vpcSubnets, securityGroups);
 
-    if (!props.taskDefinition.defaultContainer) {
-      throw new Error('A TaskDefinition must have at least one essential container');
-    }
+    this.node.addValidation({
+      validate: () => !this.taskDefinition.defaultContainer ? ['A TaskDefinition must have at least one essential container'] : [],
+    });
   }
 }
 
@@ -219,3 +226,10 @@ export enum FargatePlatformVersion {
    */
   VERSION1_0 = '1.0.0',
 }
+
+const SECRET_JSON_FIELD_UNSUPPORTED_PLATFORM_VERSIONS = [
+  FargatePlatformVersion.VERSION1_0,
+  FargatePlatformVersion.VERSION1_1,
+  FargatePlatformVersion.VERSION1_2,
+  FargatePlatformVersion.VERSION1_3,
+];

@@ -1,5 +1,9 @@
-import { Construct, Duration, Token } from '@aws-cdk/core';
+import { Duration, Token } from '@aws-cdk/core';
 import { CfnDistribution } from './cloudfront.generated';
+
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct } from '@aws-cdk/core';
 
 /**
  * The failover configuration used for Origin Groups,
@@ -48,8 +52,6 @@ export interface IOrigin {
 
 /**
  * Properties to define an Origin.
- *
- * @experimental
  */
 export interface OriginProps {
   /**
@@ -85,8 +87,6 @@ export interface OriginProps {
 
 /**
  * Options passed to Origin.bind().
- *
- * @experimental
  */
 export interface OriginBindOptions {
   /**
@@ -99,8 +99,6 @@ export interface OriginBindOptions {
 /**
  * Represents a distribution origin, that describes the Amazon S3 bucket, HTTP server (for example, a web server),
  * Amazon MediaStore, or other server from which CloudFront gets your files.
- *
- * @experimental
  */
 export abstract class OriginBase implements IOrigin {
   private readonly domainName: string;

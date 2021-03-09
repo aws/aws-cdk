@@ -1,5 +1,6 @@
-import { anything, arrayWith, deepObjectLike, encodedJson } from '@aws-cdk/assert';
+import { anything, arrayWith, deepObjectLike, encodedJson, objectLike } from '@aws-cdk/assert';
 import '@aws-cdk/assert/jest';
+import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
@@ -328,6 +329,98 @@ test('run ShellScriptAction with Security Group', () => {
       },
     },
   });
+});
+
+test('run ShellScriptAction with specified codebuild image', () => {
+  // WHEN
+  pipeline.addStage('Test').addActions(new cdkp.ShellScriptAction({
+    actionName: 'imageAction',
+    additionalArtifacts: [integTestArtifact],
+    commands: ['true'],
+    environment: { buildImage: codebuild.LinuxBuildImage.STANDARD_2_0 },
+  }));
+
+  // THEN
+  expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
+    Stages: arrayWith({
+      Name: 'Test',
+      Actions: [
+        deepObjectLike({
+          Name: 'imageAction',
+        }),
+      ],
+    }),
+  });
+  expect(pipelineStack).toHaveResourceLike('AWS::CodeBuild::Project', {
+    Environment: {
+      Image: 'aws/codebuild/standard:2.0',
+    },
+  });
+});
+
+test('run ShellScriptAction with specified BuildEnvironment', () => {
+  // WHEN
+  pipeline.addStage('Test').addActions(new cdkp.ShellScriptAction({
+    actionName: 'imageAction',
+    additionalArtifacts: [integTestArtifact],
+    commands: ['true'],
+    environment: {
+      buildImage: codebuild.LinuxBuildImage.STANDARD_2_0,
+      computeType: codebuild.ComputeType.LARGE,
+      environmentVariables: { FOO: { value: 'BAR', type: codebuild.BuildEnvironmentVariableType.PLAINTEXT } },
+      privileged: true,
+    },
+  }));
+
+  // THEN
+  expect(pipelineStack).toHaveResourceLike('AWS::CodeBuild::Project', {
+    Environment: {
+      Image: 'aws/codebuild/standard:2.0',
+      PrivilegedMode: true,
+      ComputeType: 'BUILD_GENERAL1_LARGE',
+      EnvironmentVariables: [
+        {
+          Type: 'PLAINTEXT',
+          Value: 'BAR',
+          Name: 'FOO',
+        },
+      ],
+    },
+  });
+});
+
+test('run ShellScriptAction with specified environment variables', () => {
+  // WHEN
+  pipeline.addStage('Test').addActions(new cdkp.ShellScriptAction({
+    actionName: 'imageAction',
+    additionalArtifacts: [integTestArtifact],
+    commands: ['true'],
+    environmentVariables: {
+      VERSION: { value: codepipeline.GlobalVariables.executionId },
+    },
+  }));
+
+  // THEN
+  expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
+    Stages: arrayWith({
+      Name: 'Test',
+      Actions: [
+        objectLike({
+          Name: 'imageAction',
+          Configuration: objectLike({
+            EnvironmentVariables: encodedJson([
+              {
+                name: 'VERSION',
+                type: 'PLAINTEXT',
+                value: '#{codepipeline.PipelineExecutionId}',
+              },
+            ]),
+          }),
+        }),
+      ],
+    }),
+  });
+
 });
 
 class AppWithStackOutput extends Stage {

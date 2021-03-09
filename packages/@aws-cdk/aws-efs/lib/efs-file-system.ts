@@ -40,17 +40,22 @@ export enum LifecyclePolicy {
 /**
  * EFS Performance mode.
  *
- * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-efs-filesystem.html#cfn-efs-filesystem-performancemode
+ * @see https://docs.aws.amazon.com/efs/latest/ug/performance.html#performancemodes
  */
 export enum PerformanceMode {
   /**
-   * This is the general purpose performance mode for most file systems.
+   * General Purpose is ideal for latency-sensitive use cases, like web serving
+   * environments, content management systems, home directories, and general file serving.
+   * Recommended for the majority of Amazon EFS file systems.
    */
   GENERAL_PURPOSE = 'generalPurpose',
 
   /**
-   * This performance mode can scale to higher levels of aggregate throughput and operations per second with a
-   * tradeoff of slightly higher latencies.
+   * File systems in the Max I/O mode can scale to higher levels of aggregate
+   * throughput and operations per second. This scaling is done with a tradeoff
+   * of slightly higher latencies for file metadata operations.
+   * Highly parallelized applications and workloads, such as big data analysis,
+   * media processing, and genomics analysis, can benefit from this mode.
    */
   MAX_IO = 'maxIO'
 }
@@ -58,11 +63,11 @@ export enum PerformanceMode {
 /**
  * EFS Throughput mode.
  *
- * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-efs-filesystem.html#cfn-elasticfilesystem-filesystem-throughputmode
+ * @see https://docs.aws.amazon.com/efs/latest/ug/performance.html#throughput-modes
  */
 export enum ThroughputMode {
   /**
-   *  This mode on Amazon EFS scales as the size of the file system in the standard storage class grows.
+   * This mode on Amazon EFS scales as the size of the file system in the standard storage class grows.
    */
   BURSTING = 'bursting',
 
@@ -73,7 +78,7 @@ export enum ThroughputMode {
 }
 
 /**
- * Interface to implement AWS File Systems.
+ * Represents an Amazon EFS file system
  */
 export interface IFileSystem extends ec2.IConnectable, IResource {
   /**
@@ -103,7 +108,7 @@ export interface FileSystemProps {
   /**
    * Security Group to assign to this file system.
    *
-   * @default - creates new security group which allow all out bound traffic
+   * @default - creates new security group which allows all outbound traffic
    */
   readonly securityGroup?: ec2.ISecurityGroup;
 
@@ -117,12 +122,12 @@ export interface FileSystemProps {
   /**
    * Defines if the data at rest in the file system is encrypted or not.
    *
-   * @default - false
+   * @default false
    */
   readonly encrypted?: boolean;
 
   /**
-   * The filesystem's name.
+   * The file system's name.
    *
    * @default - CDK generated name
    */
@@ -131,28 +136,30 @@ export interface FileSystemProps {
   /**
    * The KMS key used for encryption. This is required to encrypt the data at rest if @encrypted is set to true.
    *
-   * @default - if @encrypted is true, the default key for EFS (/aws/elasticfilesystem) is used
+   * @default - if 'encrypted' is true, the default key for EFS (/aws/elasticfilesystem) is used
    */
   readonly kmsKey?: kms.IKey;
 
   /**
    * A policy used by EFS lifecycle management to transition files to the Infrequent Access (IA) storage class.
    *
-   * @default - none
+   * @default - None. EFS will not transition files to the IA storage class.
    */
   readonly lifecyclePolicy?: LifecyclePolicy;
 
   /**
-   * Enum to mention the performance mode of the file system.
+   * The performance mode that the file system will operate under.
+   * An Amazon EFS file system's performance mode can't be changed after the file system has been created.
+   * Updating this property will replace the file system.
    *
-   * @default - GENERAL_PURPOSE
+   * @default PerformanceMode.GENERAL_PURPOSE
    */
   readonly performanceMode?: PerformanceMode;
 
   /**
    * Enum to mention the throughput mode of the file system.
    *
-   * @default - BURSTING
+   * @default ThroughputMode.BURSTING
    */
   readonly throughputMode?: ThroughputMode;
 
@@ -206,27 +213,17 @@ export interface FileSystemAttributes {
  * @resource AWS::EFS::FileSystem
  */
 export class FileSystem extends Resource implements IFileSystem {
+  /**
+   * The default port File System listens on.
+   */
+  public static readonly DEFAULT_PORT: number = 2049;
 
   /**
    * Import an existing File System from the given properties.
    */
   public static fromFileSystemAttributes(scope: Construct, id: string, attrs: FileSystemAttributes): IFileSystem {
-    class Import extends Resource implements IFileSystem {
-      public readonly fileSystemId = attrs.fileSystemId;
-      public readonly connections = new ec2.Connections({
-        securityGroups: [attrs.securityGroup],
-        defaultPort: ec2.Port.tcp(FileSystem.DEFAULT_PORT),
-      });
-      public readonly mountTargetsAvailable = new ConcreteDependable();
-    }
-
-    return new Import(scope, id);
+    return new ImportedFileSystem(scope, id, attrs);
   }
-
-  /**
-   * The default port File System listens on.
-   */
-  private static readonly DEFAULT_PORT: number = 2049;
 
   /**
    * The security groups/rules used to allow network connections to the file system.
@@ -254,7 +251,7 @@ export class FileSystem extends Resource implements IFileSystem {
 
     const filesystem = new CfnFileSystem(this, 'Resource', {
       encrypted: props.encrypted,
-      kmsKeyId: (props.kmsKey ? props.kmsKey.keyId : undefined),
+      kmsKeyId: props.kmsKey?.keyArn,
       lifecyclePolicies: (props.lifecyclePolicy ? [{ transitionToIa: props.lifecyclePolicy }] : undefined),
       performanceMode: props.performanceMode,
       throughputMode: props.throughputMode,
@@ -275,7 +272,7 @@ export class FileSystem extends Resource implements IFileSystem {
       defaultPort: ec2.Port.tcp(FileSystem.DEFAULT_PORT),
     });
 
-    const subnets = props.vpc.selectSubnets(props.vpcSubnets);
+    const subnets = props.vpc.selectSubnets(props.vpcSubnets ?? { onePerAz: true });
 
     // We now have to create the mount target for each of the mentioned subnet
     let mountTargetCount = 0;
@@ -301,5 +298,35 @@ export class FileSystem extends Resource implements IFileSystem {
       fileSystem: this,
       ...accessPointOptions,
     });
+  }
+}
+
+class ImportedFileSystem extends Resource implements IFileSystem {
+  /**
+   * The security groups/rules used to allow network connections to the file system.
+   */
+  public readonly connections: ec2.Connections;
+
+  /**
+   * @attribute
+   */
+  public readonly fileSystemId: string;
+
+  /**
+   * Dependable that can be depended upon to ensure the mount targets of the filesystem are ready
+   */
+  public readonly mountTargetsAvailable: IDependable;
+
+  constructor(scope: Construct, id: string, attrs: FileSystemAttributes) {
+    super(scope, id);
+
+    this.fileSystemId = attrs.fileSystemId;
+
+    this.connections = new ec2.Connections({
+      securityGroups: [attrs.securityGroup],
+      defaultPort: ec2.Port.tcp(FileSystem.DEFAULT_PORT),
+    });
+
+    this.mountTargetsAvailable = new ConcreteDependable();
   }
 }

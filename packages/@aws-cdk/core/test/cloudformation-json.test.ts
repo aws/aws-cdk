@@ -194,9 +194,22 @@ describe('tokens returning CloudFormation intrinsics', () => {
     expect(evaluateCFN(resolved, context)).toEqual('{"theBucket":"The bucket name is TheName"}');
   });
 
+  test('Doubly nested strings evaluate correctly in JSON context', () => {
+    // WHEN
+    const fidoSays = Lazy.string({ produce: () => 'woof' });
+
+    // WHEN
+    const resolved = stack.resolve(stack.toJsonString({
+      information: `Did you know that Fido says: ${fidoSays}`,
+    }));
+
+    // THEN
+    expect(evaluateCFN(resolved)).toEqual('{"information":"Did you know that Fido says: woof"}');
+  });
+
   test('Doubly nested intrinsics evaluate correctly in JSON context', () => {
     // GIVEN
-    const fidoSays = Lazy.anyValue({ produce: () => Token.asAny({ Ref: 'Something' }) });
+    const fidoSays = Lazy.any({ produce: () => ({ Ref: 'Something' }) });
 
     // WHEN
     const resolved = stack.resolve(stack.toJsonString({
@@ -206,6 +219,18 @@ describe('tokens returning CloudFormation intrinsics', () => {
     // THEN
     const context = { Something: 'woof woof' };
     expect(evaluateCFN(resolved, context)).toEqual('{"information":"Did you know that Fido says: woof woof"}');
+  });
+
+  test('Nested strings are quoted correctly', () => {
+    const fidoSays = Lazy.string({ produce: () => '"woof"' });
+
+    // WHEN
+    const resolved = stack.resolve(stack.toJsonString({
+      information: `Did you know that Fido says: ${fidoSays}`,
+    }));
+
+    // THEN
+    expect(evaluateCFN(resolved)).toEqual('{"information":"Did you know that Fido says: \\"woof\\""}');
   });
 
   test('cross-stack references are also properly converted by toJsonString()', () => {
@@ -270,6 +295,24 @@ describe('tokens returning CloudFormation intrinsics', () => {
     expect(evaluatedJson).toEqual('{"embeddedJson":"{\\"message\\":\\"the bucket name is Bucky\\"}"}');
     expect(JSON.parse(JSON.parse(evaluatedJson).embeddedJson).message).toEqual('the bucket name is Bucky');
   });
+
+  test('Every Token used inside a JSONified string is given an opportunity to be uncached', () => {
+    // Check that tokens aren't accidentally fully resolved by the first invocation/resolution
+    // of toJsonString(). On every evaluation, Tokens referenced inside the structure should be
+    // given a chance to be either cached or uncached.
+    //
+    // (NOTE: This does not check whether the implementation of toJsonString() itself is cached or
+    // not; that depends on aws/aws-cdk#11224 and should be done in a different PR).
+
+    // WHEN
+    let counter = 0;
+    const counterString = Token.asString({ resolve: () => `${++counter}` });
+    const jsonString = stack.toJsonString({ counterString });
+
+    // THEN
+    expect(stack.resolve(jsonString)).toEqual('{"counterString":"1"}');
+    expect(stack.resolve(jsonString)).toEqual('{"counterString":"2"}');
+  });
 });
 
 /**
@@ -278,6 +321,6 @@ describe('tokens returning CloudFormation intrinsics', () => {
 function tokensThatResolveTo(value: any): Token[] {
   return [
     new Intrinsic(value),
-    Lazy.anyValue({ produce: () => value }),
+    Lazy.any({ produce: () => value }),
   ];
 }

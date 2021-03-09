@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { nodeunitShim, Test } from 'nodeunit-shim';
-import { AssetStaging, CustomResourceProvider, CustomResourceProviderRuntime, Duration, Size, Stack } from '../../lib';
+import { App, AssetStaging, CustomResourceProvider, CustomResourceProviderRuntime, DockerImageAssetLocation, DockerImageAssetSource, Duration, FileAssetLocation, FileAssetSource, ISynthesisSession, Size, Stack } from '../../lib';
 import { toCloudFormation } from '../util';
 
 const TEST_HANDLER = `${__dirname}/mock-provider`;
@@ -14,7 +14,7 @@ nodeunitShim({
     // WHEN
     CustomResourceProvider.getOrCreate(stack, 'Custom:MyResourceType', {
       codeDirectory: TEST_HANDLER,
-      runtime: CustomResourceProviderRuntime.NODEJS_12,
+      runtime: CustomResourceProviderRuntime.NODEJS_12_X,
     });
 
     // THEN
@@ -123,6 +123,43 @@ nodeunitShim({
     test.done();
   },
 
+  'custom resource provided creates asset in new-style synthesis with relative path'(test: Test) {
+    // GIVEN
+
+    let assetFilename : string | undefined;
+
+    const app = new App();
+    const stack = new Stack(app, 'Stack', {
+      synthesizer: {
+        bind(_stack: Stack): void { },
+
+        addFileAsset(asset: FileAssetSource): FileAssetLocation {
+          assetFilename = asset.fileName;
+          return { bucketName: '', httpUrl: '', objectKey: '', s3ObjectUrl: '', s3Url: '', kmsKeyArn: '' };
+        },
+
+        addDockerImageAsset(_asset: DockerImageAssetSource): DockerImageAssetLocation {
+          return { imageUri: '', repositoryName: '' };
+        },
+
+        synthesize(_session: ISynthesisSession): void { },
+      },
+    });
+
+    // WHEN
+    CustomResourceProvider.getOrCreate(stack, 'Custom:MyResourceType', {
+      codeDirectory: TEST_HANDLER,
+      runtime: CustomResourceProviderRuntime.NODEJS_12_X,
+    });
+
+    // THEN -- no exception
+    if (!assetFilename || assetFilename.startsWith(path.sep)) {
+      throw new Error(`Asset filename must be a relative path, got: ${assetFilename}`);
+    }
+
+    test.done();
+  },
+
   'policyStatements can be used to add statements to the inline policy'(test: Test) {
     // GIVEN
     const stack = new Stack();
@@ -130,7 +167,7 @@ nodeunitShim({
     // WHEN
     CustomResourceProvider.getOrCreate(stack, 'Custom:MyResourceType', {
       codeDirectory: TEST_HANDLER,
-      runtime: CustomResourceProviderRuntime.NODEJS_12,
+      runtime: CustomResourceProviderRuntime.NODEJS_12_X,
       policyStatements: [
         { statement1: 123 },
         { statement2: { foo: 111 } },
@@ -150,16 +187,17 @@ nodeunitShim({
     test.done();
   },
 
-  'memorySize and timeout'(test: Test) {
+  'memorySize, timeout and description'(test: Test) {
     // GIVEN
     const stack = new Stack();
 
     // WHEN
     CustomResourceProvider.getOrCreate(stack, 'Custom:MyResourceType', {
       codeDirectory: TEST_HANDLER,
-      runtime: CustomResourceProviderRuntime.NODEJS_12,
+      runtime: CustomResourceProviderRuntime.NODEJS_12_X,
       memorySize: Size.gibibytes(2),
       timeout: Duration.minutes(5),
+      description: 'veni vidi vici',
     });
 
     // THEN
@@ -167,6 +205,7 @@ nodeunitShim({
     const lambda = template.Resources.CustomMyResourceTypeCustomResourceProviderHandler29FBDD2A;
     test.deepEqual(lambda.Properties.MemorySize, 2048);
     test.deepEqual(lambda.Properties.Timeout, 300);
+    test.deepEqual(lambda.Properties.Description, 'veni vidi vici');
     test.done();
   },
 
@@ -177,7 +216,7 @@ nodeunitShim({
     // WHEN
     CustomResourceProvider.getOrCreate(stack, 'Custom:MyResourceType', {
       codeDirectory: TEST_HANDLER,
-      runtime: CustomResourceProviderRuntime.NODEJS_12,
+      runtime: CustomResourceProviderRuntime.NODEJS_12_X,
       environment: {
         B: 'b',
         A: 'a',
@@ -192,6 +231,26 @@ nodeunitShim({
         A: 'a',
         B: 'b',
       },
+    });
+    test.done();
+  },
+
+  'roleArn'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    const cr = CustomResourceProvider.getOrCreateProvider(stack, 'Custom:MyResourceType', {
+      codeDirectory: TEST_HANDLER,
+      runtime: CustomResourceProviderRuntime.NODEJS_12_X,
+    });
+
+    // THEN
+    test.deepEqual(stack.resolve(cr.roleArn), {
+      'Fn::GetAtt': [
+        'CustomMyResourceTypeCustomResourceProviderRoleBD5E655F',
+        'Arn',
+      ],
     });
     test.done();
   },

@@ -210,6 +210,7 @@
         "Environment": {
           "ComputeType": "BUILD_GENERAL1_SMALL",
           "Image": "aws/codebuild/standard:1.0",
+          "ImagePullCredentialsType": "CODEBUILD",
           "PrivilegedMode": false,
           "Type": "LINUX_CONTAINER"
         },
@@ -339,7 +340,9 @@
       }
     },
     "MyQueueE6CA6235": {
-      "Type": "AWS::SQS::Queue"
+      "Type": "AWS::SQS::Queue",
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
     },
     "MyQueuePolicy6BBEDDAC": {
       "Type": "AWS::SQS::QueuePolicy",

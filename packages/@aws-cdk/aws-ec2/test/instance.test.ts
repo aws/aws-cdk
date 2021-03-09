@@ -1,20 +1,26 @@
-import { arrayWith, expect as cdkExpect, haveResource, ResourcePart, stringLike } from '@aws-cdk/assert';
+import * as path from 'path';
+import { arrayWith, expect as cdkExpect, haveResource, ResourcePart, stringLike, SynthUtils } from '@aws-cdk/assert';
 import '@aws-cdk/assert/jest';
+import { Asset } from '@aws-cdk/aws-s3-assets';
 import { StringParameter } from '@aws-cdk/aws-ssm';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { Stack } from '@aws-cdk/core';
 import { nodeunitShim, Test } from 'nodeunit-shim';
 import {
   AmazonLinuxImage, BlockDeviceVolume, CloudFormationInit,
-  EbsDeviceVolumeType, InitCommand, Instance, InstanceClass, InstanceSize, InstanceType, Vpc,
+  EbsDeviceVolumeType, InitCommand, Instance, InstanceArchitecture, InstanceClass, InstanceSize, InstanceType, UserData, Vpc,
 } from '../lib';
+
+
+let stack: Stack;
+let vpc: Vpc;
+beforeEach(() => {
+  stack = new Stack();
+  vpc = new Vpc(stack, 'VPC');
+});
 
 nodeunitShim({
   'instance is created correctly'(test: Test) {
-    // GIVEN
-    const stack = new Stack();
-    const vpc = new Vpc(stack, 'VPC');
-
     // WHEN
     new Instance(stack, 'Instance', {
       vpc,
@@ -30,10 +36,6 @@ nodeunitShim({
     test.done();
   },
   'instance is created with source/dest check switched off'(test: Test) {
-    // GIVEN
-    const stack = new Stack();
-    const vpc = new Vpc(stack, 'VPC');
-
     // WHEN
     new Instance(stack, 'Instance', {
       vpc,
@@ -52,8 +54,6 @@ nodeunitShim({
   },
   'instance is grantable'(test: Test) {
     // GIVEN
-    const stack = new Stack();
-    const vpc = new Vpc(stack, 'VPC');
     const param = new StringParameter(stack, 'Param', { stringValue: 'Foobar' });
     const instance = new Instance(stack, 'Instance', {
       vpc,
@@ -107,13 +107,58 @@ nodeunitShim({
 
     test.done();
   },
+  'instance architecture is correctly discerned for arm instances'(test: Test) {
+    // GIVEN
+    const sampleInstanceClasses = [
+      'a1', 't4g', 'c6g', 'c6gd', 'c6gn', 'm6g', 'm6gd', 'r6g', 'r6gd', // current Graviton-based instance classes
+      'a13', 't11g', 'y10ng', 'z11ngd', // theoretical future Graviton-based instance classes
+    ];
 
+    for (const instanceClass of sampleInstanceClasses) {
+      // WHEN
+      const instanceType = InstanceType.of(instanceClass as InstanceClass, InstanceSize.XLARGE18);
+
+      // THEN
+      expect(instanceType.architecture).toBe(InstanceArchitecture.ARM_64);
+    }
+
+    test.done();
+  },
+  'instance architecture is correctly discerned for x86-64 instance'(test: Test) {
+    // GIVEN
+    const sampleInstanceClasses = ['c5', 'm5ad', 'r5n', 'm6', 't3a']; // A sample of x86-64 instance classes
+
+    for (const instanceClass of sampleInstanceClasses) {
+      // WHEN
+      const instanceType = InstanceType.of(instanceClass as InstanceClass, InstanceSize.XLARGE18);
+
+      // THEN
+      expect(instanceType.architecture).toBe(InstanceArchitecture.X86_64);
+    }
+
+    test.done();
+  },
+  'instance architecture throws an error when instance type is invalid'(test: Test) {
+    // GIVEN
+    const malformedInstanceTypes = ['t4', 't4g.nano.', 't4gnano', ''];
+
+    for (const malformedInstanceType of malformedInstanceTypes) {
+      // WHEN
+      const instanceType = new InstanceType(malformedInstanceType);
+
+      // THEN
+      try {
+        instanceType.architecture;
+        expect(true).toBe(false); // The line above should have thrown an error
+      } catch (err) {
+        expect(err.message).toBe('Malformed instance type identifier');
+      }
+    }
+
+    test.done();
+  },
   blockDeviceMappings: {
     'can set blockDeviceMappings'(test: Test) {
-      // GIVEN
-      const stack = new Stack();
-      const vpc = new Vpc(stack, 'VPC');
-
       // WHEN
       new Instance(stack, 'Instance', {
         vpc,
@@ -176,10 +221,6 @@ nodeunitShim({
     },
 
     'throws if ephemeral volumeIndex < 0'(test: Test) {
-      // GIVEN
-      const stack = new Stack();
-      const vpc = new Vpc(stack, 'VPC');
-
       // THEN
       test.throws(() => {
         new Instance(stack, 'Instance', {
@@ -197,10 +238,6 @@ nodeunitShim({
     },
 
     'throws if volumeType === IO1 without iops'(test: Test) {
-      // GIVEN
-      const stack = new Stack();
-      const vpc = new Vpc(stack, 'VPC');
-
       // THEN
       test.throws(() => {
         new Instance(stack, 'Instance', {
@@ -222,10 +259,6 @@ nodeunitShim({
     },
 
     'warning if iops without volumeType'(test: Test) {
-      // GIVEN
-      const stack = new Stack();
-      const vpc = new Vpc(stack, 'VPC');
-
       const instance = new Instance(stack, 'Instance', {
         vpc,
         machineImage: new AmazonLinuxImage(),
@@ -248,10 +281,6 @@ nodeunitShim({
     },
 
     'warning if iops and volumeType !== IO1'(test: Test) {
-      // GIVEN
-      const stack = new Stack();
-      const vpc = new Vpc(stack, 'VPC');
-
       const instance = new Instance(stack, 'Instance', {
         vpc,
         machineImage: new AmazonLinuxImage(),
@@ -276,10 +305,6 @@ nodeunitShim({
   },
 
   'instance can be created with Private IP Address'(test: Test) {
-    // GIVEN
-    const stack = new Stack();
-    const vpc = new Vpc(stack, 'VPC');
-
     // WHEN
     new Instance(stack, 'Instance', {
       vpc,
@@ -300,8 +325,6 @@ nodeunitShim({
 
 test('add CloudFormation Init to instance', () => {
   // GIVEN
-  const stack = new Stack();
-  const vpc = new Vpc(stack, 'VPC');
   new Instance(stack, 'Instance', {
     vpc,
     machineImage: new AmazonLinuxImage(),
@@ -347,4 +370,46 @@ test('add CloudFormation Init to instance', () => {
       },
     },
   }, ResourcePart.CompleteDefinition));
+});
+
+test('cause replacement from s3 asset in userdata', () => {
+  // GIVEN
+  const userData1 = UserData.forLinux();
+  const asset1 = new Asset(stack, 'UserDataAssets1', {
+    path: path.join(__dirname, 'asset-fixture', 'data.txt'),
+  });
+  userData1.addS3DownloadCommand({ bucket: asset1.bucket, bucketKey: asset1.s3ObjectKey });
+
+  const userData2 = UserData.forLinux();
+  const asset2 = new Asset(stack, 'UserDataAssets2', {
+    path: path.join(__dirname, 'asset-fixture', 'data.txt'),
+  });
+  userData2.addS3DownloadCommand({ bucket: asset2.bucket, bucketKey: asset2.s3ObjectKey });
+
+  // WHEN
+  new Instance(stack, 'InstanceOne', {
+    vpc,
+    machineImage: new AmazonLinuxImage(),
+    instanceType: InstanceType.of(InstanceClass.T3, InstanceSize.LARGE),
+    userData: userData1,
+    userDataCausesReplacement: true,
+  });
+  new Instance(stack, 'InstanceTwo', {
+    vpc,
+    machineImage: new AmazonLinuxImage(),
+    instanceType: InstanceType.of(InstanceClass.T3, InstanceSize.LARGE),
+    userData: userData2,
+    userDataCausesReplacement: true,
+  });
+
+  // THEN -- both instances have the same userData hash, telling us the hash is based
+  // on the actual asset hash and not accidentally on the token stringification of them.
+  // (which would base the hash on '${Token[1234.bla]}'
+  const hash = 'f88eace39faf39d7';
+  expect(SynthUtils.toCloudFormation(stack)).toEqual(expect.objectContaining({
+    Resources: expect.objectContaining({
+      [`InstanceOne5B821005${hash}`]: expect.objectContaining({ Type: 'AWS::EC2::Instance', Properties: expect.anything() }),
+      [`InstanceTwoDC29A7A7${hash}`]: expect.objectContaining({ Type: 'AWS::EC2::Instance', Properties: expect.anything() }),
+    }),
+  }));
 });

@@ -1,113 +1,21 @@
-import * as fs from 'fs';
+import * as os from 'os';
 import * as path from 'path';
-import * as lambda from '@aws-cdk/aws-lambda';
+import { AssetCode, Code, Runtime } from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
-import { DockerBundler, Installer, LocalBundler, LockFile } from './bundlers';
-import { PackageJsonManager } from './package-json-manager';
-import { findUp } from './util';
+import { BundlingOptions } from './types';
+import { exec, extractDependencies, findUp, getEsBuildVersion, LockFile } from './util';
+
+const ESBUILD_VERSION = '0';
 
 /**
- * Base options for Parcel bundling
+ * Bundling properties
  */
-export interface ParcelBaseOptions {
+export interface BundlingProps extends BundlingOptions {
   /**
-   * Whether to minify files when bundling.
-   *
-   * @default false
+   * Path to lock file
    */
-  readonly minify?: boolean;
+  readonly depsLockFilePath: string;
 
-  /**
-   * Whether to include source maps when bundling.
-   *
-   * @default false
-   */
-  readonly sourceMaps?: boolean;
-
-  /**
-   * The cache directory (relative to the project root)
-   *
-   * Parcel uses a filesystem cache for fast rebuilds.
-   *
-   * @default - `.parcel-cache` in the working directory
-   */
-  readonly cacheDir?: string;
-
-  /**
-   * The root of the project. This will be used as the source for the volume
-   * mounted in the Docker container. If you specify this prop, ensure that
-   * this path includes `entry` and any module/dependencies used by your
-   * function otherwise bundling will not be possible.
-   *
-   * @default - the closest path containing a .git folder
-   */
-  readonly projectRoot?: string;
-
-  /**
-   * Environment variables defined when Parcel runs.
-   *
-   * @default - no environment variables are defined.
-   */
-  readonly parcelEnvironment?: { [key: string]: string; };
-
-  /**
-   * A list of modules that should be considered as externals (already available
-   * in the runtime).
-   *
-   * @default ['aws-sdk']
-   */
-  readonly externalModules?: string[];
-
-  /**
-   * A list of modules that should be installed instead of bundled. Modules are
-   * installed in a Lambda compatible environnment.
-   *
-   * @default - all modules are bundled
-   */
-  readonly nodeModules?: string[];
-
-  /**
-   * The version of Parcel to use when running in a Docker container.
-   *
-   * @default - 2.0.0-beta.1
-   */
-  readonly parcelVersion?: string;
-
-  /**
-   * Build arguments to pass when building the bundling image.
-   *
-   * @default - no build arguments are passed
-   */
-  readonly buildArgs?: { [key:string] : string };
-
-  /**
-   * Force bundling in a Docker container even if local bundling is
-   * possible.This  is useful if your function relies on node modules
-   * that should be installed (`nodeModules`) in a Lambda compatible
-   * environment.
-   *
-   * @default false
-   */
-  readonly forceDockerBundling?: boolean;
-
-  /**
-   * A custom bundling Docker image.
-   *
-   * This image should have Parcel installed at `/`. If you plan to use `nodeModules`
-   * it should also have `npm` or `yarn` depending on the lock file you're using.
-   *
-   * See https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/aws-lambda-nodejs/parcel/Dockerfile
-   * for the default image provided by @aws-cdk/aws-lambda-nodejs.
-   *
-   * @default - use the Docker image provided by @aws-cdk/aws-lambda-nodejs
-   */
-  readonly bundlingDockerImage?: cdk.BundlingDockerImage;
-}
-
-/**
- * Options for Parcel bundling
- */
-export interface ParcelOptions extends ParcelBaseOptions {
   /**
    * Entry file
    */
@@ -116,117 +24,241 @@ export interface ParcelOptions extends ParcelBaseOptions {
   /**
    * The runtime of the lambda function
    */
-  readonly runtime: lambda.Runtime;
+  readonly runtime: Runtime;
 }
 
 /**
- * Bundling
+ * Bundling with esbuild
  */
-export class Bundling {
+export class Bundling implements cdk.BundlingOptions {
   /**
-   * Parcel bundled Lambda asset code
+   * esbuild bundled Lambda asset code
    */
-  public static parcel(options: ParcelOptions): lambda.AssetCode {
-    // Find project root
-    const projectRoot = options.projectRoot
-      ?? findUp(`.git${path.sep}`)
-      ?? findUp(LockFile.YARN)
-      ?? findUp(LockFile.NPM)
-      ?? findUp('package.json');
-    if (!projectRoot) {
-      throw new Error('Cannot find project root. Please specify it with `projectRoot`.');
-    }
-    const relativeEntryPath = path.relative(projectRoot, path.resolve(options.entry));
-
-    const packageJsonManager = new PackageJsonManager(path.dirname(options.entry));
-
-    // Collect external and install modules
-    let includeNodeModules: { [key: string]: boolean } | undefined;
-    let dependencies: { [key: string]: string } | undefined;
-    const externalModules = options.externalModules ?? ['aws-sdk'];
-    if (externalModules || options.nodeModules) {
-      const modules = [...externalModules, ...options.nodeModules ?? []];
-      includeNodeModules = {};
-      for (const mod of modules) {
-        includeNodeModules[mod] = false;
-      }
-      if (options.nodeModules) {
-        dependencies = packageJsonManager.getVersions(options.nodeModules);
-      }
-    }
-
-    let installer = Installer.NPM;
-    let lockFile: LockFile | undefined;
-    if (dependencies) {
-      // Use npm unless we have a yarn.lock.
-      if (fs.existsSync(path.join(projectRoot, LockFile.YARN))) {
-        installer = Installer.YARN;
-        lockFile = LockFile.YARN;
-      } else if (fs.existsSync(path.join(projectRoot, LockFile.NPM))) {
-        lockFile = LockFile.NPM;
-      }
-    }
-
-    // Configure target in package.json for Parcel
-    packageJsonManager.update({
-      targets: {
-        'cdk-lambda': {
-          context: 'node',
-          includeNodeModules: includeNodeModules ?? true,
-          sourceMap: options.sourceMaps ?? false,
-          minify: options.minify ?? false,
-          engines: {
-            node: `>= ${runtimeVersion(options.runtime)}`,
-          },
-        },
-      },
-    });
-
-    // Local
-    let localBundler: cdk.ILocalBundling | undefined;
-    if (!options.forceDockerBundling) {
-      localBundler = new LocalBundler({
-        projectRoot,
-        relativeEntryPath,
-        cacheDir: options.cacheDir,
-        environment: options.parcelEnvironment,
-        dependencies,
-        installer,
-        lockFile,
-      });
-    }
-
-    // Docker
-    const dockerBundler = new DockerBundler({
-      runtime: options.runtime,
-      relativeEntryPath,
-      cacheDir: options.cacheDir,
-      environment: options.parcelEnvironment,
-      bundlingDockerImage: options.bundlingDockerImage,
-      buildImage: !LocalBundler.runsLocally(projectRoot) || options.forceDockerBundling, // build image only if we can't run locally
-      buildArgs: options.buildArgs,
-      parcelVersion: options.parcelVersion,
-      dependencies,
-      installer,
-      lockFile,
-    });
-
-    return lambda.Code.fromAsset(projectRoot, {
+  public static bundle(options: BundlingProps): AssetCode {
+    return Code.fromAsset(path.dirname(options.depsLockFilePath), {
       assetHashType: cdk.AssetHashType.OUTPUT,
-      bundling: {
-        local: localBundler,
-        ...dockerBundler.bundlingOptions,
-      },
+      bundling: new Bundling(options),
     });
+  }
+
+  public static clearRunsLocallyCache(): void {
+    this.runsLocally = undefined;
+  }
+
+  private static runsLocally?: boolean;
+
+  // Core bundling options
+  public readonly image: cdk.BundlingDockerImage;
+  public readonly command: string[];
+  public readonly environment?: { [key: string]: string };
+  public readonly workingDirectory: string;
+  public readonly local?: cdk.ILocalBundling;
+
+  private readonly relativeEntryPath: string;
+  private readonly relativeTsconfigPath?: string;
+  private readonly externals: string[];
+
+  constructor(private readonly props: BundlingProps) {
+    Bundling.runsLocally = Bundling.runsLocally
+      ?? getEsBuildVersion()?.startsWith(ESBUILD_VERSION)
+      ?? false;
+
+    const projectRoot = path.dirname(props.depsLockFilePath);
+    this.relativeEntryPath = path.relative(projectRoot, path.resolve(props.entry));
+
+    if (props.tsconfig) {
+      this.relativeTsconfigPath = path.relative(projectRoot, path.resolve(props.tsconfig));
+    }
+
+    this.externals = [
+      ...props.externalModules ?? ['aws-sdk'], // Mark aws-sdk as external by default (available in the runtime)
+      ...props.nodeModules ?? [], // Mark the modules that we are going to install as externals also
+    ];
+
+    // Docker bundling
+    const shouldBuildImage = props.forceDockerBundling || !Bundling.runsLocally;
+    this.image = shouldBuildImage
+      ? props.dockerImage ?? cdk.BundlingDockerImage.fromAsset(path.join(__dirname, '../lib'), {
+        buildArgs: {
+          ...props.buildArgs ?? {},
+          IMAGE: props.runtime.bundlingDockerImage.image,
+          ESBUILD_VERSION: props.esbuildVersion ?? ESBUILD_VERSION,
+        },
+      })
+      : cdk.BundlingDockerImage.fromRegistry('dummy'); // Do not build if we don't need to
+
+    const bundlingCommand = this.createBundlingCommand(cdk.AssetStaging.BUNDLING_INPUT_DIR, cdk.AssetStaging.BUNDLING_OUTPUT_DIR);
+    this.command = ['bash', '-c', bundlingCommand];
+    this.environment = props.environment;
+    // Bundling sets the working directory to cdk.AssetStaging.BUNDLING_INPUT_DIR
+    // and we want to force npx to use the globally installed esbuild.
+    this.workingDirectory = '/';
+
+    // Local bundling
+    if (!props.forceDockerBundling) { // only if Docker is not forced
+      const osPlatform = os.platform();
+      const createLocalCommand = (outputDir: string) => this.createBundlingCommand(projectRoot, outputDir, osPlatform);
+
+      this.local = {
+        tryBundle(outputDir: string) {
+          if (Bundling.runsLocally === false) {
+            process.stderr.write('esbuild cannot run locally. Switching to Docker bundling.\n');
+            return false;
+          }
+
+          const localCommand = createLocalCommand(outputDir);
+
+          exec(
+            osPlatform === 'win32' ? 'cmd' : 'bash',
+            [
+              osPlatform === 'win32' ? '/c' : '-c',
+              localCommand,
+            ],
+            {
+              env: { ...process.env, ...props.environment ?? {} },
+              stdio: [ // show output
+                'ignore', // ignore stdio
+                process.stderr, // redirect stdout to stderr
+                'inherit', // inherit stderr
+              ],
+              cwd: path.dirname(props.entry),
+              windowsVerbatimArguments: osPlatform === 'win32',
+            });
+
+          return true;
+        },
+      };
+    }
+  }
+
+  public createBundlingCommand(inputDir: string, outputDir: string, osPlatform: NodeJS.Platform = 'linux'): string {
+    const pathJoin = osPathJoin(osPlatform);
+
+    const npx = osPlatform === 'win32' ? 'npx.cmd' : 'npx';
+    const loaders = Object.entries(this.props.loader ?? {});
+    const defines = Object.entries(this.props.define ?? {});
+
+    const esbuildCommand: string = [
+      npx, 'esbuild',
+      '--bundle', `"${pathJoin(inputDir, this.relativeEntryPath)}"`,
+      `--target=${this.props.target ?? toTarget(this.props.runtime)}`,
+      '--platform=node',
+      `--outfile="${pathJoin(outputDir, 'index.js')}"`,
+      ...this.props.minify ? ['--minify'] : [],
+      ...this.props.sourceMap ? ['--sourcemap'] : [],
+      ...this.externals.map(external => `--external:${external}`),
+      ...loaders.map(([ext, name]) => `--loader:${ext}=${name}`),
+      ...defines.map(([key, value]) => `--define:${key}=${value}`),
+      ...this.props.logLevel ? [`--log-level=${this.props.logLevel}`] : [],
+      ...this.props.keepNames ? ['--keep-names'] : [],
+      ...this.relativeTsconfigPath ? [`--tsconfig=${pathJoin(inputDir, this.relativeTsconfigPath)}`] : [],
+      ...this.props.metafile ? [`--metafile=${pathJoin(outputDir, 'index.meta.json')}`] : [],
+      ...this.props.banner ? [`--banner='${this.props.banner}'`] : [],
+      ...this.props.footer ? [`--footer='${this.props.footer}'`] : [],
+    ].join(' ');
+
+    let depsCommand = '';
+    if (this.props.nodeModules) {
+      // Find 'package.json' closest to entry folder, we are going to extract the
+      // modules versions from it.
+      const pkgPath = findUp('package.json', path.dirname(this.props.entry));
+      if (!pkgPath) {
+        throw new Error('Cannot find a `package.json` in this project. Using `nodeModules` requires a `package.json`.');
+      }
+
+      // Determine dependencies versions, lock file and installer
+      const dependencies = extractDependencies(pkgPath, this.props.nodeModules);
+      let installer = Installer.NPM;
+      let lockFile = LockFile.NPM;
+      if (this.props.depsLockFilePath.endsWith(LockFile.YARN)) {
+        lockFile = LockFile.YARN;
+        installer = Installer.YARN;
+      }
+
+      const osCommand = new OsCommand(osPlatform);
+
+      // Create dummy package.json, copy lock file if any and then install
+      depsCommand = chain([
+        osCommand.writeJson(pathJoin(outputDir, 'package.json'), { dependencies }),
+        osCommand.copy(pathJoin(inputDir, lockFile), pathJoin(outputDir, lockFile)),
+        osCommand.changeDirectory(outputDir),
+        `${installer} install`,
+      ]);
+    }
+
+    return chain([
+      ...this.props.commandHooks?.beforeBundling(inputDir, outputDir) ?? [],
+      esbuildCommand,
+      ...(this.props.nodeModules && this.props.commandHooks?.beforeInstall(inputDir, outputDir)) ?? [],
+      depsCommand,
+      ...this.props.commandHooks?.afterBundling(inputDir, outputDir) ?? [],
+    ]);
   }
 }
 
-function runtimeVersion(runtime: lambda.Runtime): string {
+enum Installer {
+  NPM = 'npm',
+  YARN = 'yarn',
+}
+
+/**
+ * OS agnostic command
+ */
+class OsCommand {
+  constructor(private readonly osPlatform: NodeJS.Platform) {}
+
+  public writeJson(filePath: string, data: any): string {
+    const stringifiedData = JSON.stringify(data);
+    if (this.osPlatform === 'win32') {
+      return `echo ^${stringifiedData}^ > ${filePath}`;
+    }
+
+    return `echo '${stringifiedData}' > ${filePath}`;
+  }
+
+  public copy(src: string, dest: string): string {
+    if (this.osPlatform === 'win32') {
+      return `copy ${src} ${dest}`;
+    }
+
+    return `cp ${src} ${dest}`;
+  }
+
+  public changeDirectory(dir: string): string {
+    return `cd ${dir}`;
+  }
+}
+
+/**
+ * Chain commands
+ */
+function chain(commands: string[]): string {
+  return commands.filter(c => !!c).join(' && ');
+}
+
+/**
+ * Platform specific path join
+ */
+function osPathJoin(platform: NodeJS.Platform) {
+  return function(...paths: string[]): string {
+    const joined = path.join(...paths);
+    // If we are on win32 but need posix style paths
+    if (os.platform() === 'win32' && platform !== 'win32') {
+      return joined.replace(/\\/g, '/');
+    }
+    return joined;
+  };
+}
+
+/**
+ * Converts a runtime to an esbuild node target
+ */
+function toTarget(runtime: Runtime): string {
   const match = runtime.name.match(/nodejs(\d+)/);
 
   if (!match) {
     throw new Error('Cannot extract version from runtime.');
   }
 
-  return match[1];
+  return `node${match[1]}`;
 }

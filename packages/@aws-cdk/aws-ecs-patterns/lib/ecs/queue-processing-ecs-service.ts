@@ -1,4 +1,5 @@
 import { Ec2Service, Ec2TaskDefinition } from '@aws-cdk/aws-ecs';
+import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
 import { QueueProcessingServiceBase, QueueProcessingServiceBaseProps } from '../base/queue-processing-service-base';
 
@@ -52,6 +53,13 @@ export interface QueueProcessingEc2ServiceProps extends QueueProcessingServiceBa
    * @default - No memory reserved.
    */
   readonly memoryReservationMiB?: number;
+
+  /**
+   * Optional name for the container added
+   *
+   * @default - QueueProcessingContainer
+   */
+  readonly containerName?: string;
 }
 
 /**
@@ -74,11 +82,13 @@ export class QueueProcessingEc2Service extends QueueProcessingServiceBase {
   constructor(scope: Construct, id: string, props: QueueProcessingEc2ServiceProps) {
     super(scope, id, props);
 
+    const containerName = props.containerName ?? 'QueueProcessingContainer';
+
     // Create a Task Definition for the container to start
     this.taskDefinition = new Ec2TaskDefinition(this, 'QueueProcessingTaskDef', {
       family: props.family,
     });
-    this.taskDefinition.addContainer('QueueProcessingContainer', {
+    this.taskDefinition.addContainer(containerName, {
       image: props.image,
       memoryLimitMiB: props.memoryLimitMiB,
       memoryReservationMiB: props.memoryReservationMiB,
@@ -89,18 +99,23 @@ export class QueueProcessingEc2Service extends QueueProcessingServiceBase {
       logging: this.logDriver,
     });
 
+    // The desiredCount should be removed from the fargate service when the feature flag is removed.
+    const desiredCount = this.node.tryGetContext(cxapi.ECS_REMOVE_DEFAULT_DESIRED_COUNT) ? undefined : this.desiredCount;
+
     // Create an ECS service with the previously defined Task Definition and configure
     // autoscaling based on cpu utilization and number of messages visible in the SQS queue.
     this.service = new Ec2Service(this, 'QueueProcessingService', {
       cluster: this.cluster,
-      desiredCount: this.desiredCount,
+      desiredCount: desiredCount,
       taskDefinition: this.taskDefinition,
       serviceName: props.serviceName,
       minHealthyPercent: props.minHealthyPercent,
       maxHealthyPercent: props.maxHealthyPercent,
       propagateTags: props.propagateTags,
       enableECSManagedTags: props.enableECSManagedTags,
+      deploymentController: props.deploymentController,
     });
+
     this.configureAutoscalingForService(this.service);
     this.grantPermissionsToService(this.service);
   }

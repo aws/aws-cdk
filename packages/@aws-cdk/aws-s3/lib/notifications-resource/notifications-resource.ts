@@ -3,6 +3,10 @@ import { Bucket, EventType, NotificationKeyFilter } from '../bucket';
 import { BucketNotificationDestinationType, IBucketNotificationDestination } from '../destination';
 import { NotificationsResourceHandler } from './notifications-resource-handler';
 
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct } from '@aws-cdk/core';
+
 interface NotificationsProps {
   /**
    * The bucket to manage notifications for.
@@ -28,14 +32,14 @@ interface NotificationsProps {
  * @see
  * https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-s3-bucket-notificationconfig.html
  */
-export class BucketNotifications extends cdk.Construct {
+export class BucketNotifications extends Construct {
   private readonly lambdaNotifications = new Array<LambdaFunctionConfiguration>();
   private readonly queueNotifications = new Array<QueueConfiguration>();
   private readonly topicNotifications = new Array<TopicConfiguration>();
   private resource?: cdk.CfnResource;
   private readonly bucket: Bucket;
 
-  constructor(scope: cdk.Construct, id: string, props: NotificationsProps) {
+  constructor(scope: Construct, id: string, props: NotificationsProps) {
     super(scope, id);
     this.bucket = props.bucket;
   }
@@ -107,7 +111,7 @@ export class BucketNotifications extends cdk.Construct {
         properties: {
           ServiceToken: handlerArn,
           BucketName: this.bucket.bucketName,
-          NotificationConfiguration: cdk.Lazy.anyValue({ produce: () => this.renderNotificationConfiguration() }),
+          NotificationConfiguration: cdk.Lazy.any({ produce: () => this.renderNotificationConfiguration() }),
         },
       });
     }

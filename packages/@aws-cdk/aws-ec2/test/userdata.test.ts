@@ -1,6 +1,6 @@
 import { Bucket } from '@aws-cdk/aws-s3';
+import { Aws, Stack } from '@aws-cdk/core';
 import { nodeunitShim, Test } from 'nodeunit-shim';
-import { Stack } from '../../core/lib';
 import * as ec2 from '../lib';
 
 nodeunitShim({
@@ -52,7 +52,7 @@ nodeunitShim({
 
     test.equals(rendered, '<powershell>trap {\n' +
         '$success=($PSItem.Exception.Message -eq "Success")\n' +
-        'cfn-signal --stack Default --resource RESOURCE1989552F --region ${Token[AWS.Region.4]} --success ($success.ToString().ToLower())\n' +
+        `cfn-signal --stack Default --resource RESOURCE1989552F --region ${Aws.REGION} --success ($success.ToString().ToLower())\n` +
         'break\n' +
         '}\n' +
         'command1\n' +
@@ -157,7 +157,7 @@ nodeunitShim({
     test.equals(rendered, '#!/bin/bash\n' +
         'function exitTrap(){\n' +
         'exitCode=$?\n' +
-        '/opt/aws/bin/cfn-signal --stack Default --resource RESOURCE1989552F --region ${Token[AWS.Region.4]} -e $exitCode || echo \'Failed to send Cloudformation Signal\'\n' +
+        `/opt/aws/bin/cfn-signal --stack Default --resource RESOURCE1989552F --region ${Aws.REGION} -e $exitCode || echo \'Failed to send Cloudformation Signal\'\n` +
         '}\n' +
         'trap exitTrap EXIT\n' +
         'command1');
@@ -270,6 +270,103 @@ nodeunitShim({
       userData.addExecuteFileCommand({
         filePath: '/tmp/filename.sh',
       } ));
+    test.done();
+  },
+
+  'Linux user rendering multipart headers'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    const linuxUserData = ec2.UserData.forLinux();
+    linuxUserData.addCommands('echo "Hello world"');
+
+    // WHEN
+    const defaultRender1 = ec2.MultipartBody.fromUserData(linuxUserData);
+    const defaultRender2 = ec2.MultipartBody.fromUserData(linuxUserData, 'text/cloud-boothook; charset=\"utf-8\"');
+
+    // THEN
+    expect(stack.resolve(defaultRender1.renderBodyPart())).toEqual([
+      'Content-Type: text/x-shellscript; charset=\"utf-8\"',
+      'Content-Transfer-Encoding: base64',
+      '',
+      { 'Fn::Base64': '#!/bin/bash\necho \"Hello world\"' },
+    ]);
+    expect(stack.resolve(defaultRender2.renderBodyPart())).toEqual([
+      'Content-Type: text/cloud-boothook; charset=\"utf-8\"',
+      'Content-Transfer-Encoding: base64',
+      '',
+      { 'Fn::Base64': '#!/bin/bash\necho \"Hello world\"' },
+    ]);
+
+    test.done();
+  },
+
+  'Default parts separator used, if not specified'(test: Test) {
+    // GIVEN
+    const multipart = new ec2.MultipartUserData();
+
+    multipart.addPart(ec2.MultipartBody.fromRawBody({
+      contentType: 'CT',
+    }));
+
+    // WHEN
+    const out = multipart.render();
+
+    // WHEN
+    test.equals(out, [
+      'Content-Type: multipart/mixed; boundary=\"+AWS+CDK+User+Data+Separator==\"',
+      'MIME-Version: 1.0',
+      '',
+      '--+AWS+CDK+User+Data+Separator==',
+      'Content-Type: CT',
+      '',
+      '--+AWS+CDK+User+Data+Separator==--',
+      '',
+    ].join('\n'));
+
+    test.done();
+  },
+
+  'Non-default parts separator used, if not specified'(test: Test) {
+    // GIVEN
+    const multipart = new ec2.MultipartUserData({
+      partsSeparator: '//',
+    });
+
+    multipart.addPart(ec2.MultipartBody.fromRawBody({
+      contentType: 'CT',
+    }));
+
+    // WHEN
+    const out = multipart.render();
+
+    // WHEN
+    test.equals(out, [
+      'Content-Type: multipart/mixed; boundary=\"//\"',
+      'MIME-Version: 1.0',
+      '',
+      '--//',
+      'Content-Type: CT',
+      '',
+      '--//--',
+      '',
+    ].join('\n'));
+
+    test.done();
+  },
+
+  'Multipart separator validation'(test: Test) {
+    // Happy path
+    new ec2.MultipartUserData();
+    new ec2.MultipartUserData({
+      partsSeparator: 'a-zA-Z0-9()+,-./:=?',
+    });
+
+    [' ', '\n', '\r', '[', ']', '<', '>', '違う'].forEach(s => test.throws(() => {
+      new ec2.MultipartUserData({
+        partsSeparator: s,
+      });
+    }, /Invalid characters in separator/));
+
     test.done();
   },
 

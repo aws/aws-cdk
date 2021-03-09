@@ -167,6 +167,7 @@ Resources:
             RestrictPublicBuckets: true
           - Ref: AWS::NoValue
     UpdateReplacePolicy: Retain
+    DeletionPolicy: Retain
   StagingBucketPolicy:
     Type: 'AWS::S3::BucketPolicy'
     Properties:
@@ -352,6 +353,12 @@ Resources:
                   - sts:GetCallerIdentity
                 Resource: "*"
                 Effect: Allow
+              - Sid: ReadVersion
+                Effect: Allow
+                Action:
+                  - ssm:GetParameter
+                Resource:
+                  - Fn::Sub: "arn:${AWS::Partition}:ssm:${AWS::Region}:${AWS::AccountId}:parameter${CdkBootstrapVersion}"
             Version: '2012-10-17'
           PolicyName: default
       RoleName:
@@ -370,7 +377,12 @@ Resources:
         Fn::If:
           - HasCloudFormationExecutionPolicies
           - Ref: CloudFormationExecutionPolicies
-          - Ref: AWS::NoValue
+          - Fn::If:
+            - HasTrustedAccounts
+            # The CLI will prevent this case from occurring
+            - Ref: AWS::NoValue
+            # The CLI will advertise that we picked this implicitly
+            - - Fn::Sub: "arn:${AWS::Partition}:iam::aws:policy/AdministratorAccess"
       RoleName:
         Fn::Sub: cdk-${Qualifier}-cfn-exec-role-${AWS::AccountId}-${AWS::Region}
   # The SSM parameter is used in pipeline-deployed templates to verify the version
@@ -381,7 +393,7 @@ Resources:
       Type: String
       Name:
         Fn::Sub: '/cdk-bootstrap/${Qualifier}/version'
-      Value: 4
+      Value: '5'
 Outputs:
   BucketName:
     Description: The name of the S3 bucket owned by the CDK toolkit stack

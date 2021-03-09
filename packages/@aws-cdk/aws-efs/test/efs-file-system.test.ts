@@ -1,4 +1,4 @@
-import { expect as expectCDK, haveResource, ResourcePart } from '@aws-cdk/assert';
+import { expect as expectCDK, haveResource, ResourcePart, countResources } from '@aws-cdk/assert';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as kms from '@aws-cdk/aws-kms';
 import { RemovalPolicy, Size, Stack, Tags } from '@aws-cdk/core';
@@ -70,7 +70,10 @@ test('encrypted file system is created correctly with custom KMS', () => {
   expectCDK(stack).to(haveResource('AWS::EFS::FileSystem', {
     Encrypted: true,
     KmsKeyId: {
-      Ref: 'customKeyFSDDB87C6D',
+      'Fn::GetAtt': [
+        'customKeyFSDDB87C6D',
+        'Arn',
+      ],
     },
   }));
 });
@@ -236,4 +239,18 @@ test('can specify backup policy', () => {
       Status: 'ENABLED',
     },
   }));
+});
+
+test('can create when using a VPC with multiple subnets per availability zone', () => {
+  // create a vpc with two subnets in the same availability zone.
+  const oneAzVpc = new ec2.Vpc(stack, 'Vpc', {
+    maxAzs: 1,
+    subnetConfiguration: [{ name: 'One', subnetType: ec2.SubnetType.ISOLATED }, { name: 'Two', subnetType: ec2.SubnetType.ISOLATED }],
+    natGateways: 0,
+  });
+  new FileSystem(stack, 'EfsFileSystem', {
+    vpc: oneAzVpc,
+  });
+  // make sure only one mount target is created.
+  expectCDK(stack).to(countResources('AWS::EFS::MountTarget', 1));
 });

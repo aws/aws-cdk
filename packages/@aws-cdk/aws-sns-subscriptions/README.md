@@ -1,10 +1,12 @@
 # CDK Construct Library for Amazon Simple Notification Service Subscriptions
 <!--BEGIN STABILITY BANNER-->
+
 ---
 
 ![cdk-constructs: Stable](https://img.shields.io/badge/cdk--constructs-stable-success.svg?style=for-the-badge)
 
 ---
+
 <!--END STABILITY BANNER-->
 
 This library provides constructs for adding subscriptions to an Amazon SNS topic.
@@ -76,7 +78,7 @@ import * as subscriptions from '@aws-cdk/aws-sns-subscriptions';
 
 const myFunction = new lambda.Function(this, 'Echo', {
   handler: 'index.handler',
-  runtime: lambda.Runtime.NODEJS_10_X,
+  runtime: lambda.Runtime.NODEJS_12_X,
   code: lambda.Code.fromInline(`exports.handler = ${handler.toString()}`)
 });
 

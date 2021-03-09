@@ -17,8 +17,6 @@
       "dotnet": {
         "namespace": "Amazon.CDK.AWS.CodePipeline.Actions",
         "packageId": "Amazon.CDK.AWS.CodePipeline.Actions",
-        "signAssembly": true,
-        "assemblyOriginatorKeyFile": "../../key.snk",
         "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
       },
       "python": {
@@ -46,9 +44,10 @@
     "pkglint": "pkglint -f",
     "package": "cdk-package",
     "awslint": "cdk-awslint",
-    "build+test+package": "npm run build+test && npm run package",
-    "build+test": "npm run build && npm test",
-    "compat": "cdk-compat"
+    "build+test+package": "yarn build+test && yarn package",
+    "build+test": "yarn build && yarn test",
+    "compat": "cdk-compat",
+    "rosetta:extract": "yarn --silent jsii-rosetta extract"
   },
   "nyc": {
     "statements": 70
@@ -69,12 +68,12 @@
   "devDependencies": {
     "@aws-cdk/assert": "0.0.0",
     "@aws-cdk/aws-cloudtrail": "0.0.0",
-    "@types/lodash": "^4.14.161",
-    "@types/nodeunit": "^0.0.31",
+    "@aws-cdk/cx-api": "0.0.0",
+    "@types/lodash": "^4.14.168",
     "cdk-build-tools": "0.0.0",
     "cdk-integ-tools": "0.0.0",
-    "lodash": "^4.17.20",
-    "nodeunit": "^0.11.3",
+    "lodash": "^4.17.21",
+    "nodeunit-shim": "0.0.0",
     "pkglint": "0.0.0"
   },
   "dependencies": {
@@ -97,7 +96,7 @@
     "@aws-cdk/aws-stepfunctions": "0.0.0",
     "@aws-cdk/core": "0.0.0",
     "case": "1.6.3",
-    "constructs": "^3.0.4"
+    "constructs": "^3.2.0"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
@@ -119,7 +118,7 @@
     "@aws-cdk/aws-sns-subscriptions": "0.0.0",
     "@aws-cdk/aws-stepfunctions": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "constructs": "^3.0.4"
+    "constructs": "^3.2.0"
   },
   "bundledDependencies": [
     "case"
@@ -178,8 +177,12 @@
   },
   "maturity": "stable",
   "cdk-build": {
+    "jest": true,
     "env": {
       "AWSLINT_BASE_CONSTRUCT": true
     }
+  },
+  "publishConfig": {
+    "tag": "latest"
   }
 }

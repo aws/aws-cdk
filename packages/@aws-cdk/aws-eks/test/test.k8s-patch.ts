@@ -1,5 +1,5 @@
 import { expect, haveResource } from '@aws-cdk/assert';
-import { Stack } from '@aws-cdk/core';
+import { Names, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import * as eks from '../lib';
 import { KubernetesPatch, PatchType } from '../lib/k8s-patch';
@@ -44,7 +44,7 @@ export = {
     }));
 
     // also make sure a dependency on the barrier is added to the patch construct.
-    test.deepEqual(patch.node.dependencies.map(d => d.target.node.uniqueId), ['MyClusterKubectlReadyBarrier7547948A']);
+    test.deepEqual(patch.node.dependencies.map(d => Names.nodeUniqueId(d.target.node)), ['MyClusterKubectlReadyBarrier7547948A']);
 
     test.done();
   },

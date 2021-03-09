@@ -1,6 +1,8 @@
 import * as path from 'path';
 import * as colors from 'colors/safe';
 import * as fs from 'fs-extra';
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const bundled = require('npm-bundled');
 
 // do not descend into these directories when searching for `package.json` files.
 export const PKGLINT_IGNORES = ['node_modules', 'cdk.out', '.cdk.staging'];
@@ -63,7 +65,7 @@ export class PackageJson {
   private readonly includeRules: RegExp[];
   private readonly excludeRules: RegExp[];
 
-  private reports: Report[] = [];
+  private _reports: Report[] = [];
 
   constructor(public readonly fullPath: string) {
     this.json = JSON.parse(fs.readFileSync(fullPath, { encoding: 'utf-8' }));
@@ -97,7 +99,11 @@ export class PackageJson {
   }
 
   public report(report: Report) {
-    this.reports.push(report);
+    this._reports.push(report);
+  }
+
+  public get reports() {
+    return this._reports;
   }
 
   public get dependencies(): {[key: string]: string} {
@@ -113,8 +119,8 @@ export class PackageJson {
   }
 
   public applyFixes() {
-    const fixable = this.reports.filter(r => r.fix);
-    const nonFixable = this.reports.filter(r => !r.fix);
+    const fixable = this._reports.filter(r => r.fix);
+    const nonFixable = this._reports.filter(r => !r.fix);
 
     if (fixable.length > 0) {
       process.stderr.write(`${path.resolve(this.fullPath)}\n`);
@@ -126,20 +132,20 @@ export class PackageJson {
     }
 
     this.save();
-    this.reports = nonFixable;
+    this._reports = nonFixable;
   }
 
   public displayReports(relativeTo: string) {
     if (this.hasReports) {
       process.stderr.write(`In package ${colors.blue(path.relative(relativeTo, this.fullPath))}\n`);
-      this.reports.forEach(report => {
+      this._reports.forEach(report => {
         process.stderr.write(`- [${colors.yellow(report.ruleName)}] ${report.message}${report.fix ? colors.green(' (fixable)') : ''}\n`);
       });
     }
   }
 
   public get hasReports() {
-    return this.reports.length > 0;
+    return this._reports.length > 0;
   }
 
   /**
@@ -203,6 +209,13 @@ export class PackageJson {
    */
   public getDependencies(predicate: (s: string) => boolean): Array<{ name: string, version: string }> {
     return Object.keys(this.json.dependencies || {}).filter(predicate).map(name => ({ name, version: this.json.dependencies[name] }));
+  }
+
+  /**
+   * Retrieves all packages that are bundled in, including transitive bundled dependency of a bundled dependency.
+   */
+  public getAllBundledDependencies(): string[] {
+    return bundled.sync({ path: this.packageRoot });
   }
 
   /**
@@ -273,6 +286,14 @@ export class PackageJson {
   public fileContainsSync(fileName: string, line: string): boolean {
     const lines = this.readFileLinesSync(fileName);
     return lines.indexOf(line) !== -1;
+  }
+
+  /**
+   * Whether the package-level file begins with the specified lines
+   */
+  public fileBeginsWith(fileName: string, ...lines: string[]): boolean {
+    const fileLines = this.readFileLinesSync(fileName).slice(0, lines.length);
+    return fileLines.every((fileLine, index) => fileLine === lines[index]);
   }
 
   /**

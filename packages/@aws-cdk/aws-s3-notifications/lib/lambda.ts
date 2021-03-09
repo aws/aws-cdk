@@ -1,7 +1,11 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as s3 from '@aws-cdk/aws-s3';
-import { CfnResource, Construct, Stack } from '@aws-cdk/core';
+import { CfnResource, Names, Stack } from '@aws-cdk/core';
+
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct } from '@aws-cdk/core';
 
 /**
  * Use a Lambda function as a bucket notification destination
@@ -11,10 +15,10 @@ export class LambdaDestination implements s3.IBucketNotificationDestination {
   }
 
   public bind(_scope: Construct, bucket: s3.IBucket): s3.BucketNotificationDestinationConfig {
-    const permissionId = `AllowBucketNotificationsTo${this.fn.permissionsNode.uniqueId}`;
+    const permissionId = `AllowBucketNotificationsTo${Names.nodeUniqueId(this.fn.permissionsNode)}`;
 
     if (!Construct.isConstruct(bucket)) {
-      throw new Error(`LambdaDestination for function ${this.fn.permissionsNode.uniqueId} can only be configured on a
+      throw new Error(`LambdaDestination for function ${Names.nodeUniqueId(this.fn.permissionsNode)} can only be configured on a
         bucket construct (Bucket ${bucket.bucketName})`);
     }
 

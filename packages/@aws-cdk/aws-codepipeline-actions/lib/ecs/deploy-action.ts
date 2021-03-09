@@ -1,9 +1,13 @@
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as ecs from '@aws-cdk/aws-ecs';
 import * as iam from '@aws-cdk/aws-iam';
-import { Construct } from '@aws-cdk/core';
+import { Duration } from '@aws-cdk/core';
 import { Action } from '../action';
 import { deployArtifactBounds } from '../common';
+
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct } from '@aws-cdk/core';
 
 /**
  * Construction properties of {@link EcsDeployAction}.
@@ -40,6 +44,14 @@ export interface EcsDeployActionProps extends codepipeline.CommonAwsActionProps 
    * The ECS Service to deploy.
    */
   readonly service: ecs.IBaseService;
+
+  /**
+   * Timeout for the ECS deployment in minutes. Value must be between 1-60.
+   *
+   * @default - 60 minutes
+   * @see https://docs.aws.amazon.com/codepipeline/latest/userguide/action-reference-ECS.html
+   */
+  readonly deploymentTimeout?: Duration;
 }
 
 /**
@@ -47,6 +59,7 @@ export interface EcsDeployActionProps extends codepipeline.CommonAwsActionProps 
  */
 export class EcsDeployAction extends Action {
   private readonly props: EcsDeployActionProps;
+  private readonly deploymentTimeout?: number
 
   constructor(props: EcsDeployActionProps) {
     super({
@@ -58,7 +71,13 @@ export class EcsDeployAction extends Action {
       resource: props.service,
     });
 
+    const deploymentTimeout = props.deploymentTimeout?.toMinutes({ integral: true });
+    if (deploymentTimeout !== undefined && (deploymentTimeout < 1 || deploymentTimeout > 60)) {
+      throw new Error(`Deployment timeout must be between 1 and 60 minutes, got: ${deploymentTimeout}`);
+    }
+
     this.props = props;
+    this.deploymentTimeout = deploymentTimeout;
   }
 
   protected bound(_scope: Construct, _stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
@@ -96,7 +115,8 @@ export class EcsDeployAction extends Action {
       configuration: {
         ClusterName: this.props.service.cluster.clusterName,
         ServiceName: this.props.service.serviceName,
-        FileName: this.props.imageFile && this.props.imageFile.fileName,
+        FileName: this.props.imageFile?.fileName,
+        DeploymentTimeout: this.deploymentTimeout,
       },
     };
   }

@@ -1,12 +1,17 @@
 import '@aws-cdk/assert/jest';
 import * as path from 'path';
 import * as cloudfront from '@aws-cdk/aws-cloudfront';
+import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
+import { testFutureBehavior } from 'cdk-build-tools/lib/feature-flag';
 import * as s3deploy from '../lib';
 
 /* eslint-disable max-len */
+
+const s3GrantWriteCtx = { [cxapi.S3_GRANT_WRITE_WITHOUT_ACL]: true };
 
 test('deploy from local directory asset', () => {
   // GIVEN
@@ -296,7 +301,7 @@ test('user metadata is correctly transformed', () => {
 
   // THEN
   expect(stack).toHaveResource('Custom::CDKBucketDeployment', {
-    UserMetadata: { 'x-amzn-meta-a': '1', 'x-amzn-meta-b': '2' },
+    UserMetadata: { a: '1', b: '2' },
   });
 });
 
@@ -448,9 +453,9 @@ test('fails if distribution paths provided but not distribution ID', () => {
 
 });
 
-test('lambda execution role gets permissions to read from the source bucket and read/write in destination', () => {
+testFutureBehavior('lambda execution role gets permissions to read from the source bucket and read/write in destination', s3GrantWriteCtx, cdk.App, (app) => {
   // GIVEN
-  const stack = new cdk.Stack();
+  const stack = new cdk.Stack(app);
   const source = new s3.Bucket(stack, 'Source');
   const bucket = new s3.Bucket(stack, 'Dest');
 
@@ -500,7 +505,7 @@ test('lambda execution role gets permissions to read from the source bucket and 
             's3:GetBucket*',
             's3:List*',
             's3:DeleteObject*',
-            's3:PutObject*',
+            's3:PutObject',
             's3:Abort*',
           ],
           Effect: 'Allow',
@@ -619,5 +624,83 @@ test('deploy without deleting missing files from destination', () => {
 
   expect(stack).toHaveResourceLike('Custom::CDKBucketDeployment', {
     Prune: false,
+  });
+});
+
+test('deployment allows vpc to be implicitly supplied to lambda', () => {
+
+  // GIVEN
+  const stack = new cdk.Stack();
+  const bucket = new s3.Bucket(stack, 'Dest');
+  const vpc: ec2.IVpc = new ec2.Vpc(stack, 'SomeVpc1', {});
+
+  // WHEN
+  new s3deploy.BucketDeployment(stack, 'DeployWithVpc1', {
+    sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
+    destinationBucket: bucket,
+    vpc,
+  });
+
+  // THEN
+  expect(stack).toHaveResource('AWS::Lambda::Function', {
+    VpcConfig: {
+      SecurityGroupIds: [
+        {
+          'Fn::GetAtt': [
+            'CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CSecurityGroup4B1A9777',
+            'GroupId',
+          ],
+        },
+      ],
+      SubnetIds: [
+        {
+          Ref: 'SomeVpc1PrivateSubnet1SubnetCBA5DD76',
+        }, {
+          Ref: 'SomeVpc1PrivateSubnet2SubnetD4B3A566',
+        },
+      ],
+    },
+  });
+});
+
+test('deployment allows vpc and subnets to be implicitly supplied to lambda', () => {
+
+  // GIVEN
+  const stack = new cdk.Stack();
+  const bucket = new s3.Bucket(stack, 'Dest');
+  const vpc: ec2.IVpc = new ec2.Vpc(stack, 'SomeVpc2', {});
+  new ec2.PrivateSubnet(stack, 'SomeSubnet', {
+    vpcId: vpc.vpcId,
+    availabilityZone: vpc.availabilityZones[0],
+    cidrBlock: vpc.vpcCidrBlock,
+  });
+
+  // WHEN
+  new s3deploy.BucketDeployment(stack, 'DeployWithVpc2', {
+    sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
+    destinationBucket: bucket,
+    vpc,
+    vpcSubnets: {
+      availabilityZones: [vpc.availabilityZones[0]],
+    },
+  });
+
+  // THEN
+  expect(stack).toHaveResource('AWS::Lambda::Function', {
+    VpcConfig: {
+      SecurityGroupIds: [
+        {
+          'Fn::GetAtt': [
+            'CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CSecurityGroup4B1A9777',
+            'GroupId',
+          ],
+        },
+      ],
+      SubnetIds: [
+        {
+          Ref: 'SomeVpc2PrivateSubnet1SubnetB1DC76FF',
+        },
+      ],
+    },
   });
 });

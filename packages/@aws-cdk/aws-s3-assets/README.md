@@ -1,12 +1,18 @@
-## AWS CDK Assets
+# AWS CDK Assets
 <!--BEGIN STABILITY BANNER-->
+
 ---
 
 ![cdk-constructs: Experimental](https://img.shields.io/badge/cdk--constructs-experimental-important.svg?style=for-the-badge)
 
-> The APIs of higher level constructs in this module are experimental and under active development. They are subject to non-backward compatible changes or removal in any future version. These are not subject to the [Semantic Versioning](https://semver.org/) model and breaking changes will be announced in the release notes. This means that while you may use them, you may need to update your source code when upgrading to a newer version of this package.
+> The APIs of higher level constructs in this module are experimental and under active development.
+> They are subject to non-backward compatible changes or removal in any future version. These are
+> not subject to the [Semantic Versioning](https://semver.org/) model and breaking changes will be
+> announced in the release notes. This means that while you may use them, you may need to update
+> your source code when upgrading to a newer version of this package.
 
 ---
+
 <!--END STABILITY BANNER-->
 
 Assets are local files or directories which are needed by a CDK app. A common
@@ -50,7 +56,7 @@ The following examples grants an IAM group read permissions on an asset:
 
 [Example of granting read access to an asset](./test/integ.assets.permissions.lit.ts)
 
-## How does it work?
+## How does it work
 
 When an asset is defined in a construct, a construct metadata entry
 `aws:cdk:asset` is emitted with instructions on where to find the asset and what
@@ -82,8 +88,8 @@ The following example uses custom asset bundling to convert a markdown file to h
 
 [Example of using asset bundling](./test/integ.assets.bundling.lit.ts).
 
-The bundling docker image (`image`) can either come from a registry (`BundlingDockerImage.fromRegistry`)
-or it can be built from a `Dockerfile` located inside your project (`BundlingDockerImage.fromAsset`).
+The bundling docker image (`image`) can either come from a registry (`DockerImage.fromRegistry`)
+or it can be built from a `Dockerfile` located inside your project (`DockerImage.fromBuild`).
 
 You can set the `CDK_DOCKER` environment variable in order to provide a custom
 docker program to execute. This may sometime be needed when building in
@@ -108,7 +114,8 @@ new assets.Asset(this, 'BundledAsset', {
       },
     },
     // Docker bundling fallback
-    image: BundlingDockerImage.fromRegistry('alpine'),
+    image: DockerImage.fromRegistry('alpine'),
+    entrypoint: ['/bin/sh', '-c'],
     command: ['bundle'],
   },
 });
@@ -116,6 +123,27 @@ new assets.Asset(this, 'BundledAsset', {
 
 Although optional, it's recommended to provide a local bundling method which can
 greatly improve performance.
+
+If the bundling output contains a single archive file (zip or jar) it will be
+uploaded to S3 as-is and will not be zipped. Otherwise the contents of the
+output directory will be zipped and the zip file will be uploaded to S3. This
+is the default behavior for `bundling.outputType` (`BundlingOutput.AUTO_DISCOVER`).
+
+Use `BundlingOutput.NOT_ARCHIVED` if the bundling output must always be zipped:
+
+```ts
+const asset = new assets.Asset(this, 'BundledAsset', {
+  path: '/path/to/asset',
+  bundling: {
+    image: DockerImage.fromRegistry('alpine'),
+    command: ['command-that-produces-an-archive.sh'],
+    outputType: BundlingOutput.NOT_ARCHIVED, // Bundling output will be zipped even though it produces a single archive file.
+  },
+});
+```
+
+Use `BundlingOutput.ARCHIVED` if the bundling output contains a single archive file and
+you don't want it to be zippped.
 
 ## CloudFormation Resource Metadata
 
@@ -128,8 +156,8 @@ locally for debugging purposes.
 To enable such use cases, external tools will consult a set of metadata entries on AWS CloudFormation
 resources:
 
-- `aws:asset:path` points to the local path of the asset.
-- `aws:asset:property` is the name of the resource property where the asset is used
+* `aws:asset:path` points to the local path of the asset.
+* `aws:asset:property` is the name of the resource property where the asset is used
 
 Using these two metadata entries, tools will be able to identify that assets are used
 by a certain resource, and enable advanced local experiences.

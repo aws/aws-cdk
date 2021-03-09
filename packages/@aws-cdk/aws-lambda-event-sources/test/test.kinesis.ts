@@ -144,7 +144,7 @@ export = {
 
     // WHEN
     fn.addEventSource(new sources.KinesisEventSource(stream, {
-      batchSize: cdk.Lazy.numberValue({ produce: () => 10 }),
+      batchSize: cdk.Lazy.number({ produce: () => 10 }),
       startingPosition: lambda.StartingPosition.LATEST,
     }));
 

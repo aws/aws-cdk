@@ -81,6 +81,7 @@
                   "dynamodb:Query",
                   "dynamodb:GetItem",
                   "dynamodb:Scan",
+                  "dynamodb:ConditionCheckItem",
                   "dynamodb:BatchWriteItem",
                   "dynamodb:PutItem",
                   "dynamodb:UpdateItem",
@@ -196,6 +197,45 @@
           },
           "Name": "none",
           "Type": "NONE"
+        }
+      },
+      "api2nonepipelinefunctionFunction2426F465": {
+        "Type": "AWS::AppSync::FunctionConfiguration",
+        "Properties": {
+          "ApiId": {
+            "Fn::ImportValue": "baseStack:ExportsOutputFnGetAttbaseApiCDA4D43AApiId50287E68"
+          },
+          "DataSourceName": "none",
+          "FunctionVersion": "2018-05-29",
+          "Name": "pipeline_function",
+          "RequestMappingTemplate": "{\"version\":\"2017-02-28\"}",
+          "ResponseMappingTemplate": "{\"version\":\"v1\"}"
+        },
+        "DependsOn": [
+          "api2noneC88DB89F"
+        ]
+      },
+      "pipelineresolver843133EA": {
+        "Type": "AWS::AppSync::Resolver",
+        "Properties": {
+          "ApiId": {
+            "Fn::ImportValue": "baseStack:ExportsOutputFnGetAttbaseApiCDA4D43AApiId50287E68"
+          },
+          "FieldName": "version",
+          "TypeName": "test",
+          "Kind": "PIPELINE",
+          "PipelineConfig": {
+            "Functions": [
+              {
+                "Fn::GetAtt": [
+                  "api2nonepipelinefunctionFunction2426F465",
+                  "FunctionId"
+                ]
+              }
+            ]
+          },
+          "RequestMappingTemplate": "{\"version\":\"2017-02-28\"}",
+          "ResponseMappingTemplate": "{\"version\":\"v1\"}"
         }
       }
     }
