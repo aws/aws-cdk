@@ -1086,7 +1086,6 @@
         },
         "UpdatePolicy": {
           "AutoScalingRollingUpdate": {
-            "WaitOnResourceSignals": false,
             "PauseTime": "PT0S",
             "SuspendProcesses": [
               "HealthCheck",
