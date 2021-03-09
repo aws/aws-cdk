@@ -133,7 +133,7 @@ function tokenAwareStringify(root: any, space: number, ctx: IResolveContext) {
   recurse(ctx.resolve(root, { allowIntrinsicKeys: true }));
 
   switch (ret.length) {
-    case 0: return '';
+    case 0: return undefined;
     case 1: return renderSegment(ret[0]);
     default:
       return fnJoinConcat(ret.map(renderSegment));
