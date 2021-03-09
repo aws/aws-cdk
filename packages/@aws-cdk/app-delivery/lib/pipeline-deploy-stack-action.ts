@@ -1,4 +1,3 @@
-import * as cfn from '@aws-cdk/aws-cloudformation';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as cpactions from '@aws-cdk/aws-codepipeline-actions';
 import * as events from '@aws-cdk/aws-events';
@@ -76,7 +75,7 @@ export interface PipelineDeployStackActionProps {
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-iam-template.html#using-iam-capabilities
    * @default [AnonymousIAM, AutoExpand], unless `adminPermissions` is true
    */
-  readonly capabilities?: cfn.CloudFormationCapabilities[];
+  readonly capabilities?: cdk.CfnCapabilities[];
 
   /**
    * Whether to grant admin permissions to CloudFormation while deploying this template.
@@ -138,7 +137,7 @@ export class PipelineDeployStackAction implements codepipeline.IAction {
       templatePath: props.input.atPath(props.stack.templateFile),
       adminPermissions: props.adminPermissions,
       deploymentRole: props.role,
-      capabilities,
+      cfnCapabilities: capabilities,
     });
     this.executeChangeSetAction = new cpactions.CloudFormationExecuteChangeSetAction({
       actionName: props.executeChangeSetActionName ?? 'Execute',
@@ -191,13 +190,13 @@ export class PipelineDeployStackAction implements codepipeline.IAction {
   }
 }
 
-function cfnCapabilities(adminPermissions: boolean, capabilities?: cfn.CloudFormationCapabilities[]): cfn.CloudFormationCapabilities[] {
+function cfnCapabilities(adminPermissions: boolean, capabilities?: cdk.CfnCapabilities[]): cdk.CfnCapabilities[] {
   if (adminPermissions && capabilities === undefined) {
     // admin true default capability to NamedIAM and AutoExpand
-    return [cfn.CloudFormationCapabilities.NAMED_IAM, cfn.CloudFormationCapabilities.AUTO_EXPAND];
+    return [cdk.CfnCapabilities.NAMED_IAM, cdk.CfnCapabilities.AUTO_EXPAND];
   } else if (capabilities === undefined) {
     // else capabilities are undefined set AnonymousIAM and AutoExpand
-    return [cfn.CloudFormationCapabilities.ANONYMOUS_IAM, cfn.CloudFormationCapabilities.AUTO_EXPAND];
+    return [cdk.CfnCapabilities.ANONYMOUS_IAM, cdk.CfnCapabilities.AUTO_EXPAND];
   } else {
     // else capabilities are defined use them
     return capabilities;

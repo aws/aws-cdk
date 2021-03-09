@@ -1,4 +1,3 @@
-import * as cfn from '@aws-cdk/aws-cloudformation';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as cpactions from '@aws-cdk/aws-codepipeline-actions';
 import * as s3 from '@aws-cdk/aws-s3';
@@ -34,7 +33,7 @@ stage.addAction(new cicd.PipelineDeployStackAction({
   executeChangeSetRunOrder: 999,
   input: sourceOutput,
   adminPermissions: false,
-  capabilities: [cfn.CloudFormationCapabilities.NONE],
+  capabilities: [cdk.CfnCapabilities.NONE],
 }));
 
 app.synth();

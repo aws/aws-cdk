@@ -1,5 +1,4 @@
 import { expect, haveResource, haveResourceLike, isSuperObject } from '@aws-cdk/assert';
-import * as cfn from '@aws-cdk/aws-cloudformation';
 import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as cpactions from '@aws-cdk/aws-codepipeline-actions';
@@ -107,31 +106,31 @@ export = nodeunit.testCase({
     selfUpdateStage1.addAction(new PipelineDeployStackAction({
       stack: pipelineStack,
       input: selfUpdatingStack.synthesizedApp,
-      capabilities: [cfn.CloudFormationCapabilities.NAMED_IAM],
+      capabilities: [cdk.CfnCapabilities.NAMED_IAM],
       adminPermissions: false,
     }));
     selfUpdateStage2.addAction(new PipelineDeployStackAction({
       stack: stackWithNoCapability,
       input: selfUpdatingStack.synthesizedApp,
-      capabilities: [cfn.CloudFormationCapabilities.NONE],
+      capabilities: [cdk.CfnCapabilities.NONE],
       adminPermissions: false,
     }));
     selfUpdateStage3.addAction(new PipelineDeployStackAction({
       stack: stackWithAnonymousCapability,
       input: selfUpdatingStack.synthesizedApp,
-      capabilities: [cfn.CloudFormationCapabilities.ANONYMOUS_IAM],
+      capabilities: [cdk.CfnCapabilities.ANONYMOUS_IAM],
       adminPermissions: false,
     }));
     selfUpdateStage4.addAction(new PipelineDeployStackAction({
       stack: stackWithAutoExpandCapability,
       input: selfUpdatingStack.synthesizedApp,
-      capabilities: [cfn.CloudFormationCapabilities.AUTO_EXPAND],
+      capabilities: [cdk.CfnCapabilities.AUTO_EXPAND],
       adminPermissions: false,
     }));
     selfUpdateStage5.addAction(new PipelineDeployStackAction({
       stack: stackWithAnonymousAndAutoExpandCapability,
       input: selfUpdatingStack.synthesizedApp,
-      capabilities: [cfn.CloudFormationCapabilities.ANONYMOUS_IAM, cfn.CloudFormationCapabilities.AUTO_EXPAND],
+      capabilities: [cdk.CfnCapabilities.ANONYMOUS_IAM, cdk.CfnCapabilities.AUTO_EXPAND],
       adminPermissions: false,
     }));
     expect(pipelineStack).to(haveResource('AWS::CodePipeline::Pipeline', hasPipelineAction({
