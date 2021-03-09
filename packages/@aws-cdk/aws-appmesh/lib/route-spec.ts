@@ -130,7 +130,7 @@ export interface HeaderMatchConfig {
   /**
    * The Http header name
    */
-  readonly name: string;
+  readonly headerName: string;
 
   /**
    * Invert the matching condition.
@@ -246,7 +246,7 @@ class HeaderMatchImpl extends HeaderMatch {
 
   bind(_scope: Construct): HeaderMatchConfig {
     return {
-      name: this.name,
+      headerName: this.name,
       invert: this.invert,
       matchProperty: this.matchProperty,
     };
@@ -466,7 +466,7 @@ class HttpRouteSpec extends RouteSpec {
       headers = this.match.headers.map(header => {
         const config = header.bind(_scope);
         return {
-          name: config.name,
+          name: config.headerName,
           invert: config.invert,
           match: config.matchProperty,
         };
