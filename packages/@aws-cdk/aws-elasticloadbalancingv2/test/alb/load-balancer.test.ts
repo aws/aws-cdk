@@ -4,7 +4,11 @@ import { Metric } from '@aws-cdk/aws-cloudwatch';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
+import { testFutureBehavior } from 'cdk-build-tools/lib/feature-flag';
 import * as elbv2 from '../../lib';
+
+const s3GrantWriteCtx = { [cxapi.S3_GRANT_WRITE_WITHOUT_ACL]: true };
 
 describe('tests', () => {
   test('Trivial construction: internet facing', () => {
@@ -122,9 +126,9 @@ describe('tests', () => {
     });
   });
 
-  test('Access logging', () => {
+  testFutureBehavior('Access logging', s3GrantWriteCtx, cdk.App, (app) => {
     // GIVEN
-    const stack = new cdk.Stack(undefined, undefined, { env: { region: 'us-east-1' } });
+    const stack = new cdk.Stack(app, undefined, { env: { region: 'us-east-1' } });
     const vpc = new ec2.Vpc(stack, 'Stack');
     const bucket = new s3.Bucket(stack, 'AccessLoggingBucket');
     const lb = new elbv2.ApplicationLoadBalancer(stack, 'LB', { vpc });
@@ -154,7 +158,7 @@ describe('tests', () => {
         Version: '2012-10-17',
         Statement: [
           {
-            Action: ['s3:PutObject*', 's3:Abort*'],
+            Action: ['s3:PutObject', 's3:Abort*'],
             Effect: 'Allow',
             Principal: { AWS: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::127311923021:root']] } },
             Resource: {
@@ -172,9 +176,9 @@ describe('tests', () => {
     }, ResourcePart.CompleteDefinition);
   });
 
-  test('access logging with prefix', () => {
+  testFutureBehavior('access logging with prefix', s3GrantWriteCtx, cdk.App, (app) => {
     // GIVEN
-    const stack = new cdk.Stack(undefined, undefined, { env: { region: 'us-east-1' } });
+    const stack = new cdk.Stack(app, undefined, { env: { region: 'us-east-1' } });
     const vpc = new ec2.Vpc(stack, 'Stack');
     const bucket = new s3.Bucket(stack, 'AccessLoggingBucket');
     const lb = new elbv2.ApplicationLoadBalancer(stack, 'LB', { vpc });
@@ -207,7 +211,7 @@ describe('tests', () => {
         Version: '2012-10-17',
         Statement: [
           {
-            Action: ['s3:PutObject*', 's3:Abort*'],
+            Action: ['s3:PutObject', 's3:Abort*'],
             Effect: 'Allow',
             Principal: { AWS: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::127311923021:root']] } },
             Resource: {
@@ -315,7 +319,7 @@ describe('tests', () => {
     expect(() => listener.addTargets('Targets', { port: 8080 })).not.toThrow();
   });
 
-  test.only('can add secondary security groups', () => {
+  test('can add secondary security groups', () => {
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'Stack');
 
@@ -355,11 +359,11 @@ describe('tests', () => {
 
       // THEN
       expect(stack).not.toHaveResource('AWS::ElasticLoadBalancingV2::ApplicationLoadBalancer');
-      expect(loadBalancer.loadBalancerArn).toEqual('arn:aws:elasticloadbalancing:us-west-2:123456789012:loadbalancer/app/my-load-balancer/50dc6c495c0c9188');
+      expect(loadBalancer.loadBalancerArn).toEqual('arn:aws:elasticloadbalancing:us-west-2:123456789012:loadbalancer/application/my-load-balancer/50dc6c495c0c9188');
       expect(loadBalancer.loadBalancerCanonicalHostedZoneId).toEqual('Z3DZXE0EXAMPLE');
       expect(loadBalancer.loadBalancerDnsName).toEqual('my-load-balancer-1234567890.us-west-2.elb.amazonaws.com');
       expect(loadBalancer.ipAddressType).toEqual(elbv2.IpAddressType.DUAL_STACK);
-      expect(loadBalancer.connections.securityGroups[0].securityGroupId).toEqual('sg-1234');
+      expect(loadBalancer.connections.securityGroups[0].securityGroupId).toEqual('sg-12345');
     });
 
     test('Can add listeners to a looked-up ApplicationLoadBalancer', () => {
@@ -381,6 +385,7 @@ describe('tests', () => {
       // WHEN
       loadBalancer.addListener('listener', {
         protocol: elbv2.ApplicationProtocol.HTTP,
+        defaultAction: elbv2.ListenerAction.fixedResponse(200),
       });
 
       // THEN

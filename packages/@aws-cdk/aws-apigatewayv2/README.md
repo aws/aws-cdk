@@ -1,18 +1,29 @@
-## AWS::APIGatewayv2 Construct Library
+# AWS::APIGatewayv2 Construct Library
 <!--BEGIN STABILITY BANNER-->
----
-
-| Features | Stability |
-| --- | --- |
-| CFN Resources | ![Stable](https://img.shields.io/badge/stable-success.svg?style=for-the-badge) |
-| Higher level constructs for HTTP APIs | ![Experimental](https://img.shields.io/badge/experimental-important.svg?style=for-the-badge) |
-| Higher level constructs for Websocket APIs | ![Not Implemented](https://img.shields.io/badge/not--implemented-black.svg?style=for-the-badge) |
-
-> **CFN Resources:** All classes with the `Cfn` prefix in this module ([CFN Resources](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) are always stable and safe to use.
-
-> **Experimental:** Higher level constructs in this module that are marked as experimental are under active development. They are subject to non-backward compatible changes or removal in any future version. These are not subject to the [Semantic Versioning](https://semver.org/) model and breaking changes will be announced in the release notes. This means that while you may use them, you may need to update your source code when upgrading to a newer version of this package.
 
 ---
+
+Features                                   | Stability
+-------------------------------------------|--------------------------------------------------------
+CFN Resources                              | ![Stable](https://img.shields.io/badge/stable-success.svg?style=for-the-badge)
+Higher level constructs for HTTP APIs      | ![Experimental](https://img.shields.io/badge/experimental-important.svg?style=for-the-badge)
+Higher level constructs for Websocket APIs | ![Experimental](https://img.shields.io/badge/experimental-important.svg?style=for-the-badge)
+
+> **CFN Resources:** All classes with the `Cfn` prefix in this module ([CFN Resources]) are always
+> stable and safe to use.
+>
+> [CFN Resources]: https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib
+
+<!-- -->
+
+> **Experimental:** Higher level constructs in this module that are marked as experimental are
+> under active development. They are subject to non-backward compatible changes or removal in any
+> future version. These are not subject to the [Semantic Versioning](https://semver.org/) model and
+> breaking changes will be announced in the release notes. This means that while you may use them,
+> you may need to update your source code when upgrading to a newer version of this package.
+
+---
+
 <!--END STABILITY BANNER-->
 
 ## Table of Contents
@@ -23,9 +34,11 @@
   - [Cross Origin Resource Sharing (CORS)](#cross-origin-resource-sharing-cors)
   - [Publishing HTTP APIs](#publishing-http-apis)
   - [Custom Domain](#custom-domain)
+  - [Managing access](#managing-access)
   - [Metrics](#metrics)
   - [VPC Link](#vpc-link)
   - [Private Integration](#private-integration)
+- [WebSocket API](#websocket-api)
 
 ## Introduction
 
@@ -84,7 +97,13 @@ httpApi.addRoutes({
 });
 ```
 
-The URL to the endpoint can be retrieved via the `apiEndpoint` attribute.
+The URL to the endpoint can be retrieved via the `apiEndpoint` attribute. By default this URL is enabled for clients. Use `disableExecuteApiEndpoint` to disable it.
+
+```ts
+const httpApi = new HttpApi(stack, 'HttpApi', {
+  disableExecuteApiEndpoint: true,
+});
+```
 
 The `defaultIntegration` option while defining HTTP APIs lets you create a default catch-all integration that is
 matched when a client reaches a route that is not explicitly defined.
@@ -205,23 +224,29 @@ with 3 API mapping resources across different APIs and Stages.
 | api | beta  |   `https://${domainName}/bar`  |
 | apiDemo | $default  |   `https://${domainName}/demo`  |
 
-## Metrics
+### Managing access
+
+API Gateway supports multiple mechanisms for [controlling and managing access to your HTTP
+API](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-access-control.html) through authorizers.
+
+These authorizers can be found in the [APIGatewayV2-Authorizers](https://docs.aws.amazon.com/cdk/api/latest/docs/aws-apigatewayv2-authorizers-readme.html) constructs library.
+
+### Metrics
 
 The API Gateway v2 service sends metrics around the performance of HTTP APIs to Amazon CloudWatch.
 These metrics can be referred to using the metric APIs available on the `HttpApi` construct.
 The APIs with the `metric` prefix can be used to get reference to specific metrics for this API. For example,
 the method below refers to the client side errors metric for this API.
 
-```
+```ts
 const api = new apigw.HttpApi(stack, 'my-api');
 const clientErrorMetric = api.metricClientError();
-
 ```
 
 Please note that this will return a metric for all the stages defined in the api. It is also possible to refer to metrics for a specific Stage using
 the `metric` methods from the `Stage` construct.
 
-```
+```ts
 const api = new apigw.HttpApi(stack, 'my-api');
 const stage = new HttpStage(stack, 'Stage', {
    httpApi: api,
@@ -253,3 +278,46 @@ Amazon ECS container-based applications.  Using private integrations, resources 
 clients outside of the VPC.
 
 These integrations can be found in the [APIGatewayV2-Integrations](https://docs.aws.amazon.com/cdk/api/latest/docs/aws-apigatewayv2-integrations-readme.html) constructs library.
+
+## WebSocket API
+
+A WebSocket API in API Gateway is a collection of WebSocket routes that are integrated with backend HTTP endpoints, 
+Lambda functions, or other AWS services. You can use API Gateway features to help you with all aspects of the API 
+lifecycle, from creation through monitoring your production APIs. [Read more](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-websocket-api-overview.html)
+
+WebSocket APIs have two fundamental concepts - Routes and Integrations.
+
+WebSocket APIs direct JSON messages to backend integrations based on configured routes. (Non-JSON messages are directed 
+to the configured `$default` route.)
+
+Integrations define how the WebSocket API behaves when a client reaches a specific Route. Learn more at
+[Configuring integrations](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-websocket-api-integration-requests.html).
+
+Integrations are available in the `aws-apigatewayv2-integrations` module and more information is available in that module.
+
+To add the default WebSocket routes supported by API Gateway (`$connect`, `$disconnect` and `$default`), configure them as part of api props:
+
+```ts
+const webSocketApi = new WebSocketApi(stack, 'mywsapi', {
+  connectRouteOptions: { integration: new LambdaWebSocketIntegration({ handler: connectHandler }) },
+  disconnectRouteOptions: { integration: new LambdaWebSocketIntegration({ handler: disconnetHandler }) },
+  defaultRouteOptions: { integration: new LambdaWebSocketIntegration({ handler: defaultHandler }) },
+});
+
+new WebSocketStage(stack, 'mystage', {
+  webSocketApi,
+  stageName: 'dev',
+  autoDeploy: true,
+});
+```
+
+To add any other route:
+
+```ts
+const webSocketApi = new WebSocketApi(stack, 'mywsapi');
+webSocketApi.addRoute('sendmessage', {
+  integration: new LambdaWebSocketIntegration({
+    handler: messageHandler,
+  }),
+});
+```

@@ -14,11 +14,7 @@
         "PolicyDocument": {
           "Statement": [
             {
-              "Action": [
-                "s3:GetObject*",
-                "s3:GetBucket*",
-                "s3:List*"
-              ],
+              "Action": "s3:GetObject",
               "Effect": "Allow",
               "Principal": {
                 "CanonicalUser": {
@@ -28,28 +24,20 @@
                   ]
                 }
               },
-              "Resource": [
-                {
-                  "Fn::GetAtt": [
-                    "Bucket83908E77",
-                    "Arn"
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    {
+                      "Fn::GetAtt": [
+                        "Bucket83908E77",
+                        "Arn"
+                      ]
+                    },
+                    "/*"
                   ]
-                },
-                {
-                  "Fn::Join": [
-                    "",
-                    [
-                      {
-                        "Fn::GetAtt": [
-                          "Bucket83908E77",
-                          "Arn"
-                        ]
-                      },
-                      "/*"
-                    ]
-                  ]
-                }
-              ]
+                ]
+              }
             }
           ],
           "Version": "2012-10-17"
@@ -141,7 +129,10 @@
             },
             {
               "CustomOriginConfig": {
-                "OriginProtocolPolicy": "https-only"
+                "OriginProtocolPolicy": "https-only",
+                "OriginSSLProtocols": [
+                  "TLSv1.2"
+                ]
               },
               "DomainName": "www.example.com",
               "Id": "cloudfrontorigingroupDistributionOrigin2CCE5D500"

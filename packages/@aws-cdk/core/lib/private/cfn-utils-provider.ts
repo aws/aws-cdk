@@ -7,7 +7,7 @@ import { CustomResourceProvider, CustomResourceProviderRuntime } from '../custom
 export class CfnUtilsProvider extends Construct {
   public static getOrCreate(scope: Construct) {
     return CustomResourceProvider.getOrCreate(scope, 'AWSCDKCfnUtilsProvider', {
-      runtime: CustomResourceProviderRuntime.NODEJS_12,
+      runtime: CustomResourceProviderRuntime.NODEJS_12_X,
       codeDirectory: `${__dirname}/cfn-utils-provider`,
     });
   }

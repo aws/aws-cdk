@@ -58,6 +58,9 @@ than one test will run at a time in that region.
 If `AWS_REGIONS` is not set, all tests will sequentially run in the one
 region set in `AWS_REGION`.
 
+Run with `env INTEG_NO_CLEAN=1` to forego cleaning up the temporary directory,
+in order to be able to debug 'cdk synth' output.
+
 ### CLI integration tests
 
 CLI tests will exercise a number of common CLI scenarios, and deploy actual
@@ -149,7 +152,7 @@ Following are the steps involved in running these tests:
     - Download the previous version tarball from npm and extract the integration tests.
     - Export a `FRAMWORK_VERSION` env variable based on the caller, and execute the integration tests of the previous version.
 
-7. Our integration tests now run and have knowledge of which framework version they should [install](./test/integ/cli/cdk-helpers.ts#L74).
+7. Our integration tests now run and have knowledge of which framework version they should [install](./test/integ/helpers/cdk.ts#L74).
 
 That "basically" it, hope it makes sense...
 

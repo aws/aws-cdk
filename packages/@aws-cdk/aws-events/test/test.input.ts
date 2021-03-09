@@ -156,7 +156,7 @@ export = {
         schedule: Schedule.rate(cdk.Duration.minutes(1)),
       });
 
-      const world = cdk.Lazy.stringValue({ produce: () => 'world' });
+      const world = cdk.Lazy.string({ produce: () => 'world' });
 
       // WHEN
       rule.addTarget(new SomeTarget(RuleTargetInput.fromText(`hello ${world}`)));

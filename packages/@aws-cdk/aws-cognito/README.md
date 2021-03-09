@@ -1,18 +1,26 @@
-## Amazon Cognito Construct Library
+# Amazon Cognito Construct Library
 <!--BEGIN STABILITY BANNER-->
----
-
-| Features | Stability |
-| --- | --- |
-| CFN Resources | ![Stable](https://img.shields.io/badge/stable-success.svg?style=for-the-badge) |
-| Higher level constructs for User Pools | ![Stable](https://img.shields.io/badge/stable-success.svg?style=for-the-badge) |
-| Higher level constructs for Identity Pools | ![Not Implemented](https://img.shields.io/badge/not--implemented-black.svg?style=for-the-badge) |
-
-> **CFN Resources:** All classes with the `Cfn` prefix in this module ([CFN Resources](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) are always stable and safe to use.
-
-> **Stable:** Higher level constructs in this module that are marked stable will not undergo any breaking changes. They will strictly follow the [Semantic Versioning](https://semver.org/) model.
 
 ---
+
+Features                                   | Stability
+-------------------------------------------|--------------------------------------------------------
+CFN Resources                              | ![Stable](https://img.shields.io/badge/stable-success.svg?style=for-the-badge)
+Higher level constructs for User Pools     | ![Stable](https://img.shields.io/badge/stable-success.svg?style=for-the-badge)
+Higher level constructs for Identity Pools | ![Not Implemented](https://img.shields.io/badge/not--implemented-black.svg?style=for-the-badge)
+
+> **CFN Resources:** All classes with the `Cfn` prefix in this module ([CFN Resources]) are always
+> stable and safe to use.
+>
+> [CFN Resources]: https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib
+
+<!-- -->
+
+> **Stable:** Higher level constructs in this module that are marked stable will not undergo any
+> breaking changes. They will strictly follow the [Semantic Versioning](https://semver.org/) model.
+
+---
+
 <!--END STABILITY BANNER-->
 
 [Amazon Cognito](https://docs.aws.amazon.com/cognito/latest/developerguide/what-is-amazon-cognito.html) provides
@@ -113,10 +121,10 @@ here](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-poo
 Users registering or signing in into your application can do so with multiple identifiers. There are 4 options
 available:
 
-* `username`: Allow signing in using the one time immutable user name that the user chose at the time of sign up.
-* `email`: Allow signing in using the email address that is associated with the account.
-* `phone`: Allow signing in using the phone number that is associated with the account.
-* `preferredUsername`: Allow signing in with an alternate user name that the user can change at any time. However, this
+- `username`: Allow signing in using the one time immutable user name that the user chose at the time of sign up.
+- `email`: Allow signing in using the email address that is associated with the account.
+- `phone`: Allow signing in using the phone number that is associated with the account.
+- `preferredUsername`: Allow signing in with an alternate user name that the user can change at any time. However, this
   is not available if the `username` option is not chosen.
 
 The following code sets up a user pool so that the user can sign in with either their username or their email address -
@@ -335,7 +343,7 @@ on the construct, as so -
 
 ```ts
 const authChallengeFn = new lambda.Function(this, 'authChallengeFn', {
-  runtime: lambda.Runtime.NODEJS_10_X,
+  runtime: lambda.Runtime.NODEJS_12_X,
   handler: 'index.handler',
   code: lambda.Code.fromInline('auth challenge'),
 });
@@ -349,7 +357,7 @@ const userpool = new cognito.UserPool(this, 'myuserpool', {
 });
 
 userpool.addTrigger(cognito.UserPoolOperation.USER_MIGRATION, new lambda.Function(this, 'userMigrationFn', {
-    runtime: lambda.Runtime.NODEJS_10_X,
+    runtime: lambda.Runtime.NODEJS_12_X,
   handler: 'index.handler',
   code: lambda.Code.fromInline('user migration'),
 }));
@@ -407,9 +415,10 @@ Party](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-po
 
 The following third-party identity providers are currently supported in the CDK -
 
-* [Login With Amazon](https://developer.amazon.com/apps-and-games/login-with-amazon)
-* [Facebook Login](https://developers.facebook.com/docs/facebook-login/)
-* [Google Login](https://developers.google.com/identity/sign-in/web/sign-in)
+- [Login With Amazon](https://developer.amazon.com/apps-and-games/login-with-amazon)
+- [Facebook Login](https://developers.facebook.com/docs/facebook-login/)
+- [Google Login](https://developers.google.com/identity/sign-in/web/sign-in)
+- [Sign In With Apple](https://developer.apple.com/sign-in-with-apple/get-started/)
 
 The following code configures a user pool to federate with the third party provider, 'Login with Amazon'. The identity
 provider needs to be configured with a set of credentials that the Cognito backend can use to federate with the
@@ -547,6 +556,44 @@ pool.addClient('app-client', {
     cognito.UserPoolClientIdentityProvider.AMAZON,
     cognito.UserPoolClientIdentityProvider.COGNITO,
   ]
+});
+```
+
+In accordance with the OIDC open standard, Cognito user pool clients provide access tokens, ID tokens and refresh tokens.
+More information is available at [Using Tokens with User Pools](https://docs.aws.amazon.com/en_us/cognito/latest/developerguide/amazon-cognito-user-pools-using-tokens-with-identity-providers.html).
+The expiration time for these tokens can be configured as shown below.
+
+```ts
+const pool = new cognito.UserPool(this, 'Pool');
+pool.addClient('app-client', {
+  // ...
+  accessTokenValidity: Duration.minutes(60),
+  idTokenValidity: Duration.minutes(60),
+  refreshTokenValidity: Duration.days(30),
+});
+```
+
+Clients can (and should) be allowed to read and write relevant user attributes only. Usually every client can be allowed to read the `given_name`
+attribute but not every client should be allowed to set the `email_verified` attribute.
+The same criteria applies for both standard and custom attributes, more info is available at
+[Attribute Permissions and Scopes](https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-attributes.html#user-pool-settings-attribute-permissions-and-scopes).
+The default behaviour is to allow read and write permissions on all attributes. The following code shows how this can be configured for a client.
+
+```ts
+const pool = new cognito.UserPool(this, 'Pool');
+
+const clientWriteAttributes = (new ClientAttributes())
+  .withStandardAttributes({fullname: true, email: true})
+  .withCustomAttributes('favouritePizza', 'favouriteBeverage');
+
+const clientReadAttributes = clientWriteAttributes
+  .withStandardAttributes({emailVerified: true})
+  .withCustomAttributes('pointsEarned');
+
+pool.addClient('app-client', {
+  // ...
+  readAttributes: clientReadAttributes,
+  writeAttributes: clientWriteAttributes,
 });
 ```
 

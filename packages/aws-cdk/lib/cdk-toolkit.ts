@@ -110,7 +110,7 @@ export class CdkToolkit {
   public async deploy(options: DeployOptions) {
     const stacks = await this.selectStacksForDeploy(options.stackNames, options.exclusively);
 
-    const requireApproval = options.requireApproval !== undefined ? options.requireApproval : RequireApproval.Broadening;
+    const requireApproval = options.requireApproval ?? RequireApproval.Broadening;
 
     const parameterMap: { [name: string]: { [name: string]: string | undefined } } = { '*': {} };
     for (const key in options.parameters) {
@@ -186,6 +186,7 @@ export class CdkToolkit {
           notificationArns: options.notificationArns,
           tags,
           execute: options.execute,
+          changeSetName: options.changeSetName,
           force: options.force,
           parameters: Object.assign({}, parameterMap['*'], parameterMap[stack.stackName]),
           usePreviousParameters: options.usePreviousParameters,
@@ -295,12 +296,15 @@ export class CdkToolkit {
    * OUTPUT: If more than one stack ends up being selected, an output directory
    * should be supplied, where the templates will be written.
    */
-  public async synth(stackNames: string[], exclusively: boolean): Promise<any> {
+  public async synth(stackNames: string[], exclusively: boolean, quiet: boolean): Promise<any> {
     const stacks = await this.selectStacksForDiff(stackNames, exclusively);
 
     // if we have a single stack, print it to STDOUT
     if (stacks.stackCount === 1) {
-      return stacks.firstStack.template;
+      if (!quiet) {
+        return stacks.firstStack.template;
+      }
+      return undefined;
     }
 
     // This is a slight hack; in integ mode we allow multiple stacks to be synthesized to stdout sequentially.
@@ -550,6 +554,12 @@ export interface DeployOptions {
    * @default true
    */
   execute?: boolean;
+
+  /**
+   * Optional name to use for the CloudFormation change set.
+   * If not provided, a name will be generated automatically.
+   */
+  changeSetName?: string;
 
   /**
    * Always deploy, even if templates are identical.

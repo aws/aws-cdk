@@ -18,24 +18,57 @@ beforeEach(() => {
 
 test('appsync should configure pipeline when pipelineConfig has contents', () => {
   // WHEN
-  new appsync.Resolver(stack, 'resolver', {
-    api: api,
+  const ds = api.addNoneDataSource('none');
+  const test1 = ds.createFunction({
+    name: 'test1',
+  });
+  const test2 = ds.createFunction({
+    name: 'test2',
+  });
+  api.createResolver({
     typeName: 'test',
     fieldName: 'test2',
-    pipelineConfig: ['test', 'test'],
+    pipelineConfig: [test1, test2],
   });
 
   // THEN
   expect(stack).toHaveResourceLike('AWS::AppSync::Resolver', {
     Kind: 'PIPELINE',
-    PipelineConfig: { Functions: ['test', 'test'] },
+    PipelineConfig: {
+      Functions: [
+        { 'Fn::GetAtt': ['apinonetest1FunctionEF63046F', 'FunctionId'] },
+        { 'Fn::GetAtt': ['apinonetest2Function615111D0', 'FunctionId'] },
+      ],
+    },
   });
+});
+
+test('appsync should error when creating pipeline resolver with data source', () => {
+  // WHEN
+  const ds = api.addNoneDataSource('none');
+  const test1 = ds.createFunction({
+    name: 'test1',
+  });
+  const test2 = ds.createFunction({
+    name: 'test2',
+  });
+
+  // THEN
+  expect(() => {
+    ds.createResolver({
+      typeName: 'test',
+      fieldName: 'test2',
+      pipelineConfig: [test1, test2],
+    });
+  }).toThrowError('Pipeline Resolver cannot have data source. Received: none');
 });
 
 test('appsync should configure resolver as unit when pipelineConfig is empty', () => {
   // WHEN
+  const ds = api.addNoneDataSource('none');
   new appsync.Resolver(stack, 'resolver', {
     api: api,
+    dataSource: ds,
     typeName: 'test',
     fieldName: 'test2',
   });
@@ -48,8 +81,7 @@ test('appsync should configure resolver as unit when pipelineConfig is empty', (
 
 test('appsync should configure resolver as unit when pipelineConfig is empty array', () => {
   // WHEN
-  new appsync.Resolver(stack, 'resolver', {
-    api: api,
+  api.createResolver({
     typeName: 'test',
     fieldName: 'test2',
     pipelineConfig: [],

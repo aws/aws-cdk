@@ -1,11 +1,12 @@
 import * as crypto from 'crypto';
-import { Metric, MetricOptions } from '@aws-cdk/aws-cloudwatch';
+import { Metric, MetricOptions, MetricProps } from '@aws-cdk/aws-cloudwatch';
 import * as iam from '@aws-cdk/aws-iam';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { Code } from './code';
 import { Schedule } from './schedule';
+import { CloudWatchSyntheticsMetrics } from './synthetics-canned-metrics.generated';
 import { CfnCanary } from './synthetics.generated';
 
 /**
@@ -76,7 +77,7 @@ export class Runtime {
    * - Puppeteer-core version 1.14.0
    * - The Chromium version that matches Puppeteer-core 1.14.0
    *
-   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries_Library.html#CloudWatch_Synthetics_runtimeversion-1.0
+   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_nodejs_puppeteer.html#CloudWatch_Synthetics_runtimeversion-1.0
    */
   public static readonly SYNTHETICS_1_0 = new Runtime('syn-1.0');
 
@@ -84,11 +85,42 @@ export class Runtime {
    * `syn-nodejs-2.0` includes the following:
    * - Lambda runtime Node.js 10.x
    * - Puppeteer-core version 3.3.0
-   * - Chromium version 81.0.4044.0
+   * - Chromium version 83.0.4103.0
    *
-   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries_Library.html#CloudWatch_Synthetics_runtimeversion-2.0
+   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_nodejs_puppeteer.html#CloudWatch_Synthetics_runtimeversion-2.0
    */
   public static readonly SYNTHETICS_NODEJS_2_0 = new Runtime('syn-nodejs-2.0');
+
+
+  /**
+   * `syn-nodejs-2.1` includes the following:
+   * - Lambda runtime Node.js 10.x
+   * - Puppeteer-core version 3.3.0
+   * - Chromium version 83.0.4103.0
+   *
+   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_nodejs_puppeteer.html#CloudWatch_Synthetics_runtimeversion-2.1
+   */
+  public static readonly SYNTHETICS_NODEJS_2_1 = new Runtime('syn-nodejs-2.1');
+
+  /**
+   * `syn-nodejs-2.2` includes the following:
+   * - Lambda runtime Node.js 10.x
+   * - Puppeteer-core version 3.3.0
+   * - Chromium version 83.0.4103.0
+   *
+   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_nodejs_puppeteer.html#CloudWatch_Synthetics_runtimeversion-2.2
+   */
+  public static readonly SYNTHETICS_NODEJS_2_2 = new Runtime('syn-nodejs-2.2');
+
+  /**
+   * `syn-nodejs-puppeteer-3.0` includes the following:
+   * - Lambda runtime Node.js 12.x
+   * - Puppeteer-core version 5.5.0
+   * - Chromium version 88.0.4298.0
+   *
+   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_nodejs_puppeteer.html#CloudWatch_Synthetics_runtimeversion-nodejs-puppeteer-3.0
+   */
+  public static readonly SYNTHETICS_NODEJS_PUPPETEER_3_0 = new Runtime('syn-nodejs-puppeteer-3.0');
 
   /**
    * @param name The name of the runtime version
@@ -243,7 +275,7 @@ export class Canary extends cdk.Resource {
     }
 
     super(scope, id, {
-      physicalName: props.canaryName || cdk.Lazy.stringValue({
+      physicalName: props.canaryName || cdk.Lazy.string({
         produce: () => this.generateUniqueName(),
       }),
     });
@@ -279,7 +311,7 @@ export class Canary extends cdk.Resource {
    * @default avg over 5 minutes
    */
   public metricDuration(options?: MetricOptions): Metric {
-    return this.metric('Duration', options);
+    return this.cannedMetric(CloudWatchSyntheticsMetrics.durationAverage, options);
   }
 
   /**
@@ -290,41 +322,25 @@ export class Canary extends cdk.Resource {
    * @default avg over 5 minutes
    */
   public metricSuccessPercent(options?: MetricOptions): Metric {
-    return this.metric('SuccessPercent', options);
+    return this.cannedMetric(CloudWatchSyntheticsMetrics.successPercentAverage, options);
   }
 
   /**
    * Measure the number of failed canary runs over a given time period.
    *
-   * @param options - configuration options for the metric
+   * Default: sum over 5 minutes
    *
-   * @default avg over 5 minutes
+   * @param options - configuration options for the metric
    */
   public metricFailed(options?: MetricOptions): Metric {
-    return this.metric('Failed', options);
-  }
-
-  /**
-   * @param metricName - the name of the metric
-   * @param options - configuration options for the metric
-   *
-   * @returns a CloudWatch metric associated with the canary.
-   * @default avg over 5 minutes
-   */
-  private metric(metricName: string, options?: MetricOptions): Metric {
-    return new Metric({
-      metricName,
-      namespace: 'CloudWatchSynthetics',
-      dimensions: { CanaryName: this.canaryName },
-      statistic: 'avg',
-      ...options,
-    }).attachTo(this);
+    return this.cannedMetric(CloudWatchSyntheticsMetrics.failedSum, options);
   }
 
   /**
    * Returns a default role for the canary
    */
   private createDefaultRole(prefix?: string): iam.IRole {
+    const { partition } = cdk.Stack.of(this);
     // Created role will need these policies to run the Canary.
     // https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-synthetics-canary.html#cfn-synthetics-canary-executionrolearn
     const policy = new iam.PolicyDocument({
@@ -343,7 +359,7 @@ export class Canary extends cdk.Resource {
           conditions: { StringEquals: { 'cloudwatch:namespace': 'CloudWatchSynthetics' } },
         }),
         new iam.PolicyStatement({
-          resources: ['arn:aws:logs:::*'],
+          resources: [`arn:${partition}:logs:::*`],
           actions: ['logs:CreateLogStream', 'logs:CreateLogGroup', 'logs:PutLogEvents'],
         }),
       ],
@@ -394,6 +410,15 @@ export class Canary extends cdk.Resource {
     } else {
       return name.substring(0, 15) + nameHash(name);
     }
+  }
+
+  private cannedMetric(
+    fn: (dims: { CanaryName: string }) => MetricProps,
+    props?: MetricOptions): Metric {
+    return new Metric({
+      ...fn({ CanaryName: this.canaryName }),
+      ...props,
+    }).attachTo(this);
   }
 }
 

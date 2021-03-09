@@ -8,6 +8,26 @@ import { ISecurityGroup, SecurityGroup } from './security-group';
 import { PrivateSubnet, PublicSubnet, RouterType, Vpc } from './vpc';
 
 /**
+ * Direction of traffic to allow all by default.
+ */
+export enum NatTrafficDirection {
+  /**
+   * Allow all outbound traffic and disallow all inbound traffic.
+   */
+  OUTBOUND_ONLY = 'OUTBOUND_ONLY',
+
+  /**
+   * Allow all outbound and inbound traffic.
+   */
+  INBOUND_AND_OUTBOUND = 'INBOUND_AND_OUTBOUND',
+
+  /**
+   * Disallow all outbound and inbound traffic.
+   */
+  NONE = 'NONE',
+}
+
+/**
  * Pair represents a gateway created by NAT Provider
  */
 export interface GatewayConfig {
@@ -148,7 +168,7 @@ export interface NatInstanceProps {
   readonly securityGroup?: ISecurityGroup;
 
   /**
-   * Allow all traffic through the NAT instance
+   * Allow all inbound traffic through the NAT instance
    *
    * If you set this to false, you must configure the NAT instance's security
    * groups in another way, either by passing in a fully configured Security
@@ -157,8 +177,24 @@ export interface NatInstanceProps {
    * Provider to a Vpc.
    *
    * @default true
+   * @deprecated - Use `defaultAllowedTraffic`.
    */
   readonly allowAllTraffic?: boolean;
+
+  /**
+   * Direction to allow all traffic through the NAT instance by default.
+   *
+   * By default, inbound and outbound traffic is allowed.
+   *
+   * If you set this to another value than INBOUND_AND_OUTBOUND, you must
+   * configure the NAT instance's security groups in another way, either by
+   * passing in a fully configured Security Group using the `securityGroup`
+   * property, or by configuring it using the `.securityGroup` or
+   * `.connections` members after passing the NAT Instance Provider to a Vpc.
+   *
+   * @default NatTrafficDirection.INBOUND_AND_OUTBOUND
+   */
+  readonly defaultAllowedTraffic?: NatTrafficDirection;
 }
 
 /**
@@ -205,18 +241,26 @@ export class NatInstanceProvider extends NatProvider implements IConnectable {
 
   constructor(private readonly props: NatInstanceProps) {
     super();
+
+    if (props.defaultAllowedTraffic !== undefined && props.allowAllTraffic !== undefined) {
+      throw new Error('Can not specify both of \'defaultAllowedTraffic\' and \'defaultAllowedTraffic\'; prefer \'defaultAllowedTraffic\'');
+    }
   }
 
   public configureNat(options: ConfigureNatOptions) {
+    const defaultDirection = this.props.defaultAllowedTraffic ??
+      (this.props.allowAllTraffic ?? true ? NatTrafficDirection.INBOUND_AND_OUTBOUND : NatTrafficDirection.OUTBOUND_ONLY);
+
     // Create the NAT instances. They can share a security group and a Role.
     const machineImage = this.props.machineImage || new NatInstanceImage();
     this._securityGroup = this.props.securityGroup ?? new SecurityGroup(options.vpc, 'NatSecurityGroup', {
       vpc: options.vpc,
       description: 'Security Group for NAT instances',
+      allowAllOutbound: isOutboundAllowed(defaultDirection),
     });
     this._connections = new Connections({ securityGroups: [this._securityGroup] });
 
-    if (this.props.allowAllTraffic ?? true) {
+    if (isInboundAllowed(defaultDirection)) {
       this.connections.allowFromAnyIpv4(Port.allTraffic());
     }
 
@@ -324,4 +368,13 @@ export class NatInstanceImage extends LookupMachineImage {
       owners: ['amazon'],
     });
   }
+}
+
+function isOutboundAllowed(direction: NatTrafficDirection) {
+  return direction === NatTrafficDirection.INBOUND_AND_OUTBOUND ||
+    direction === NatTrafficDirection.OUTBOUND_ONLY;
+}
+
+function isInboundAllowed(direction: NatTrafficDirection) {
+  return direction === NatTrafficDirection.INBOUND_AND_OUTBOUND;
 }

@@ -1,16 +1,36 @@
 import '@aws-cdk/assert/jest';
-import { Runtime } from '@aws-cdk/aws-lambda';
-import { Stack } from '@aws-cdk/core';
+import { Code, Runtime } from '@aws-cdk/aws-lambda';
+import { AssetHashType, AssetOptions, Stack } from '@aws-cdk/core';
 import { PythonFunction } from '../lib';
 import { bundle } from '../lib/bundling';
 
 jest.mock('../lib/bundling', () => {
   return {
-    bundle: jest.fn().mockReturnValue({
-      bind: () => {
-        return { inlineCode: 'code' };
-      },
-      bindToResource: () => { return; },
+    bundle: jest.fn().mockImplementation((options: AssetOptions): Code => {
+      const mockObjectKey = (() => {
+        const hashType = options.assetHashType ?? (options.assetHash ? 'custom' : 'source');
+        switch (hashType) {
+          case 'source': return 'SOURCE_MOCK';
+          case 'output': return 'OUTPUT_MOCK';
+          case 'custom': {
+            if (!options.assetHash) { throw new Error('no custom hash'); }
+            return options.assetHash;
+          }
+        }
+
+        throw new Error('unexpected asset hash type');
+      })();
+
+      return {
+        isInline: false,
+        bind: () => ({
+          s3Location: {
+            bucketName: 'mock-bucket-name',
+            objectKey: mockObjectKey,
+          },
+        }),
+        bindToResource: () => { return; },
+      };
     }),
     hasDependencies: jest.fn().mockReturnValue(false),
   };
@@ -72,4 +92,54 @@ test('throws with the wrong runtime family', () => {
     entry: 'test/lambda-handler',
     runtime: Runtime.NODEJS_12_X,
   })).toThrow(/Only `PYTHON` runtimes are supported/);
+});
+
+test('allows specifying hash type', () => {
+  new PythonFunction(stack, 'source1', {
+    entry: 'test/lambda-handler-nodeps',
+    index: 'index.py',
+    handler: 'handler',
+  });
+
+  new PythonFunction(stack, 'source2', {
+    entry: 'test/lambda-handler-nodeps',
+    index: 'index.py',
+    handler: 'handler',
+    assetHashType: AssetHashType.SOURCE,
+  });
+
+  new PythonFunction(stack, 'output', {
+    entry: 'test/lambda-handler-nodeps',
+    index: 'index.py',
+    handler: 'handler',
+    assetHashType: AssetHashType.OUTPUT,
+  });
+
+  new PythonFunction(stack, 'custom', {
+    entry: 'test/lambda-handler-nodeps',
+    index: 'index.py',
+    handler: 'handler',
+    assetHash: 'MY_CUSTOM_HASH',
+  });
+
+  expect(stack).toHaveResource('AWS::Lambda::Function', {
+    Code: {
+      S3Bucket: 'mock-bucket-name',
+      S3Key: 'SOURCE_MOCK',
+    },
+  });
+
+  expect(stack).toHaveResource('AWS::Lambda::Function', {
+    Code: {
+      S3Bucket: 'mock-bucket-name',
+      S3Key: 'OUTPUT_MOCK',
+    },
+  });
+
+  expect(stack).toHaveResource('AWS::Lambda::Function', {
+    Code: {
+      S3Bucket: 'mock-bucket-name',
+      S3Key: 'MY_CUSTOM_HASH',
+    },
+  });
 });

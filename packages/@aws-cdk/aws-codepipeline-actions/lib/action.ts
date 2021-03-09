@@ -1,6 +1,10 @@
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as events from '@aws-cdk/aws-events';
-import { Construct, Lazy } from '@aws-cdk/core';
+import { Lazy } from '@aws-cdk/core';
+
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct } from '@aws-cdk/core';
 
 /**
  * Low-level class for generic CodePipeline Actions.
@@ -24,7 +28,7 @@ export abstract class Action implements codepipeline.IAction {
 
   protected constructor(actionProperties: codepipeline.ActionProperties) {
     this.customerProvidedNamespace = actionProperties.variablesNamespace;
-    this.namespaceOrToken = Lazy.stringValue({
+    this.namespaceOrToken = Lazy.string({
       produce: () => {
       // make sure the action was bound (= added to a pipeline)
         if (this.actualNamespace !== undefined) {

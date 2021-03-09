@@ -1,5 +1,6 @@
-## Amazon Simple Notification Service Construct Library
+# Amazon Simple Notification Service Construct Library
 <!--BEGIN STABILITY BANNER-->
+
 ---
 
 ![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)
@@ -7,6 +8,7 @@
 ![cdk-constructs: Stable](https://img.shields.io/badge/cdk--constructs-stable-success.svg?style=for-the-badge)
 
 ---
+
 <!--END STABILITY BANNER-->
 
 Add an SNS Topic to your stack:
@@ -19,7 +21,22 @@ const topic = new sns.Topic(this, 'Topic', {
 });
 ```
 
-### Subscriptions
+Add a FIFO SNS topic with content-based de-duplication to your stack:
+
+```ts
+import * as sns from '@aws-cdk/aws-sns';
+
+const topic = new sns.Topic(this, 'Topic', {
+    contentBasedDeduplication: true,
+    displayName: 'Customer subscription topic',
+    fifo: true,
+    topicName: 'customerTopic',
+});
+```
+
+Note that FIFO topics require a topic name to be provided. The required `.fifo` suffix will be automatically added to the topic name if it is not explicitly provided.
+
+## Subscriptions
 
 Various subscriptions can be added to the topic by calling the
 `.addSubscription(...)` method on the topic. It accepts a *subscription* object,
@@ -45,10 +62,12 @@ myTopic.addSubscription(new subs.SqsSubscription(queue));
 Note that subscriptions of queues in different accounts need to be manually confirmed by
 reading the initial message from the queue and visiting the link found in it.
 
-#### Filter policy
+### Filter policy
+
 A filter policy can be specified when subscribing an endpoint to a topic.
 
 Example with a Lambda subscription:
+
 ```ts
 const myTopic = new sns.Topic(this, 'MyTopic');
 const fn = new lambda.Function(this, 'Function', ...);
@@ -76,7 +95,8 @@ topic.addSubscription(new subs.LambdaSubscription(fn, {
 }));
 ```
 
-### DLQ setup for SNS Subscription
+## DLQ setup for SNS Subscription
+
 CDK can attach provided Queue as DLQ for your SNS subscription.
 See the [SNS DLQ configuration docs](https://docs.aws.amazon.com/sns/latest/dg/sns-configure-dead-letter-queue.html) for more information about this feature.
 
@@ -97,7 +117,7 @@ new sns.Subscription(stack, 'Subscription', {
 });
 ```
 
-### CloudWatch Event Rule Target
+## CloudWatch Event Rule Target
 
 SNS topics can be used as targets for CloudWatch event rules.
 

@@ -28,7 +28,9 @@
           "EmailSubject": "Verify your new account",
           "SmsMessage": "The verification code to your new account is {####}"
         }
-      }
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
     },
     "myuserpoolmyserver50C4D8E9": {
       "Type": "AWS::Cognito::UserPoolResourceServer",

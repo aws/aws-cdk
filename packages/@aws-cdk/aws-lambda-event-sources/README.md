@@ -1,10 +1,12 @@
-## AWS Lambda Event Sources
+# AWS Lambda Event Sources
 <!--BEGIN STABILITY BANNER-->
+
 ---
 
 ![cdk-constructs: Stable](https://img.shields.io/badge/cdk--constructs-stable-success.svg?style=for-the-badge)
 
 ---
+
 <!--END STABILITY BANNER-->
 
 An event source mapping is an AWS Lambda resource that reads from an event source and invokes a Lambda function.
@@ -34,7 +36,7 @@ The `eventSourceId` property contains the event source id. This will be a
 [token](https://docs.aws.amazon.com/cdk/latest/guide/tokens.html) that will resolve to the final value at the time of
 deployment.
 
-### SQS
+## SQS
 
 Amazon Simple Queue Service (Amazon SQS) allows you to build asynchronous
 workflows. For more information about Amazon SQS, see Amazon Simple Queue
@@ -68,7 +70,7 @@ lambda.addEventSource(new SqsEventSource(queue, {
 }));
 ```
 
-### S3
+## S3
 
 You can write Lambda functions to process S3 bucket events, such as the
 object-created or object-deleted events. For example, when a user uploads a
@@ -91,7 +93,7 @@ lambda.addEventSource(new S3EventSource(bucket, {
 }));
 ```
 
-### SNS
+## SNS
 
 You can write Lambda functions to process Amazon Simple Notification Service
 notifications. When a message is published to an Amazon SNS topic, the service
@@ -130,7 +132,7 @@ times. After three tries, if Amazon SNS still could not successfully invoke the
 Lambda function, then Amazon SNS will send a delivery status failure message to
 CloudWatch.
 
-### DynamoDB Streams
+## DynamoDB Streams
 
 You can write Lambda functions to process change events from a DynamoDB Table. An event is emitted to a DynamoDB stream (if configured) whenever a write (Put, Delete, Update)
 operation is performed against the table. See [Using AWS Lambda with Amazon DynamoDB](https://docs.aws.amazon.com/lambda/latest/dg/with-ddb.html) for more information about configuring Lambda function event sources with DynamoDB.
@@ -171,7 +173,7 @@ function.addEventSource(new DynamoEventSource(table, {
 }));
 ```
 
-### Kinesis
+## Kinesis
 
 You can write Lambda functions to process streaming data in Amazon Kinesis Streams. For more information about Amazon Kinesis, see [Amazon Kinesis
 Service](https://aws.amazon.com/kinesis/data-streams/). To learn more about configuring Lambda function event sources with kinesis and view a sample event,

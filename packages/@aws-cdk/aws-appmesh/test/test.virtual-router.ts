@@ -101,11 +101,11 @@ export = {
 
       const service1 = new appmesh.VirtualService(stack, 'service-1', {
         virtualServiceName: 'service1.domain.local',
-        mesh,
+        virtualServiceProvider: appmesh.VirtualServiceProvider.none(mesh),
       });
 
       const node = mesh.addVirtualNode('test-node', {
-        dnsHostName: 'test',
+        serviceDiscovery: appmesh.ServiceDiscovery.dns('test'),
         listeners: [appmesh.VirtualNodeListener.http({
           port: 8080,
         })],
@@ -113,13 +113,17 @@ export = {
       });
 
       router.addRoute('route-1', {
-        routeTargets: [
-          {
-            virtualNode: node,
-            weight: 50,
+        routeSpec: appmesh.RouteSpec.http({
+          weightedTargets: [
+            {
+              virtualNode: node,
+              weight: 50,
+            },
+          ],
+          match: {
+            prefixPath: '/',
           },
-        ],
-        prefix: '/',
+        }),
       });
 
       // THEN
@@ -166,15 +170,15 @@ export = {
 
       const service1 = new appmesh.VirtualService(stack, 'service-1', {
         virtualServiceName: 'service1.domain.local',
-        mesh,
+        virtualServiceProvider: appmesh.VirtualServiceProvider.none(mesh),
       });
       const service2 = new appmesh.VirtualService(stack, 'service-2', {
         virtualServiceName: 'service2.domain.local',
-        mesh,
+        virtualServiceProvider: appmesh.VirtualServiceProvider.none(mesh),
       });
 
       const node = mesh.addVirtualNode('test-node', {
-        dnsHostName: 'test',
+        serviceDiscovery: appmesh.ServiceDiscovery.dns('test'),
         listeners: [appmesh.VirtualNodeListener.http({
           port: 8080,
         })],
@@ -183,7 +187,7 @@ export = {
         ],
       });
       const node2 = mesh.addVirtualNode('test-node2', {
-        dnsHostName: 'test',
+        serviceDiscovery: appmesh.ServiceDiscovery.dns('test'),
         listeners: [appmesh.VirtualNodeListener.http({
           port: 8080,
         })],
@@ -192,7 +196,7 @@ export = {
         ],
       });
       const node3 = mesh.addVirtualNode('test-node3', {
-        dnsHostName: 'test',
+        serviceDiscovery: appmesh.ServiceDiscovery.dns('test'),
         listeners: [appmesh.VirtualNodeListener.http({
           port: 8080,
         })],
@@ -202,33 +206,45 @@ export = {
       });
 
       router.addRoute('route-1', {
-        routeTargets: [
-          {
-            virtualNode: node,
-            weight: 50,
+        routeSpec: appmesh.RouteSpec.http({
+          weightedTargets: [
+            {
+              virtualNode: node,
+              weight: 50,
+            },
+          ],
+          match: {
+            prefixPath: '/',
           },
-        ],
-        prefix: '/',
+        }),
       });
 
       router.addRoute('route-2', {
-        routeTargets: [
-          {
-            virtualNode: node2,
-            weight: 30,
+        routeSpec: appmesh.RouteSpec.http({
+          weightedTargets: [
+            {
+              virtualNode: node2,
+              weight: 30,
+            },
+          ],
+          match: {
+            prefixPath: '/path2',
           },
-        ],
-        prefix: '/path2',
+        }),
       });
 
       router.addRoute('route-3', {
-        routeTargets: [
-          {
-            virtualNode: node3,
-            weight: 20,
+        routeSpec: appmesh.RouteSpec.http({
+          weightedTargets: [
+            {
+              virtualNode: node3,
+              weight: 20,
+            },
+          ],
+          match: {
+            prefixPath: '/path3',
           },
-        ],
-        prefix: '/path3',
+        }),
       });
 
       // THEN
@@ -316,11 +332,11 @@ export = {
 
       const service1 = new appmesh.VirtualService(stack, 'service-1', {
         virtualServiceName: 'service1.domain.local',
-        mesh,
+        virtualServiceProvider: appmesh.VirtualServiceProvider.none(mesh),
       });
 
       const node = mesh.addVirtualNode('test-node', {
-        dnsHostName: 'test',
+        serviceDiscovery: appmesh.ServiceDiscovery.dns('test'),
         listeners: [appmesh.VirtualNodeListener.http({
           port: 8080,
         })],
@@ -330,12 +346,14 @@ export = {
       });
 
       router.addRoute('route-tcp-1', {
-        routeTargets: [
-          {
-            virtualNode: node,
-            weight: 50,
-          },
-        ],
+        routeSpec: appmesh.RouteSpec.tcp({
+          weightedTargets: [
+            {
+              virtualNode: node,
+              weight: 50,
+            },
+          ],
+        }),
       });
 
       // THEN

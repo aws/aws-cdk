@@ -1,5 +1,5 @@
 import { strictEqual } from 'assert';
-import { expect as expectCDK, haveResource } from '@aws-cdk/assert';
+import { expect as expectCDK, haveResource, ResourcePart } from '@aws-cdk/assert';
 import { ISubnet, Port, SecurityGroup, Subnet, Vpc } from '@aws-cdk/aws-ec2';
 import { Key } from '@aws-cdk/aws-kms';
 import { Aws, Stack, Token } from '@aws-cdk/core';
@@ -40,6 +40,10 @@ describe('FSx for Lustre File System', () => {
     strictEqual(
       fileSystem.dnsName,
       `${fileSystem.fileSystemId}.fsx.${stack.region}.${Aws.URL_SUFFIX}`);
+
+    expectCDK(stack).to(haveResource('AWS::FSx::FileSystem', {
+      DeletionPolicy: 'Retain',
+    }, ResourcePart.CompleteDefinition));
   });
 
   test('file system is created correctly when security group is provided', () => {

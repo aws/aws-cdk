@@ -1,10 +1,12 @@
-## Cloud Assembly Schema
+# Cloud Assembly Schema
 <!--BEGIN STABILITY BANNER-->
+
 ---
 
 ![cdk-constructs: Stable](https://img.shields.io/badge/cdk--constructs-stable-success.svg?style=for-the-badge)
 
 ---
+
 <!--END STABILITY BANNER-->
 
 This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.
@@ -19,6 +21,7 @@ Its essentially a set of files and directories, one of which is the `manifest.js
 needed in order to deploy the assembly directory.
 
 > For example, when `cdk deploy` is executed, the CLI reads this file and performs its instructions:
+>
 > - Build container images.
 > - Upload assets.
 > - Deploy CloudFormation templates.

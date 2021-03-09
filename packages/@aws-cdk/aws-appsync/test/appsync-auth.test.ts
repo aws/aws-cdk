@@ -405,7 +405,7 @@ describe('AppSync User Pool Authorization', () => {
     });
   });
 
-  test('User Pool property defaultAction does not configure when in additional auth', () => {
+  test('User Pool property defaultAction does not configure when in additional auth (complex)', () => {
     // WHEN
     new appsync.GraphqlApi(stack, 'api', {
       name: 'api',

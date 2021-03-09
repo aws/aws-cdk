@@ -515,6 +515,16 @@
             },
             "Match": {
               "Prefix": "/"
+            },
+            "Timeout": {
+              "Idle": {
+                "Unit": "ms",
+                "Value": 10000
+              },
+              "PerRequest": {
+                "Unit": "ms",
+                "Value": 10000
+              }
             }
           }
         },
@@ -553,6 +563,16 @@
             },
             "Match": {
               "Prefix": "/path2"
+            },
+            "Timeout": {
+              "Idle": {
+                "Unit": "ms",
+                "Value": 11000
+              },
+              "PerRequest": {
+                "Unit": "ms",
+                "Value": 11000
+              }
             }
           }
         },
@@ -588,6 +608,12 @@
                   "Weight": 20
                 }
               ]
+            },
+            "Timeout": {
+              "Idle": {
+                "Unit": "ms",
+                "Value": 12000
+              }
             }
           }
         },
@@ -597,30 +623,6 @@
             "VirtualRouterName"
           ]
         }
-      }
-    },
-    "meshserviceE06ECED5": {
-      "Type": "AWS::AppMesh::VirtualService",
-      "Properties": {
-        "MeshName": {
-          "Fn::GetAtt": [
-            "meshACDFE68E",
-            "MeshName"
-          ]
-        },
-        "Spec": {
-          "Provider": {
-            "VirtualRouter": {
-              "VirtualRouterName": {
-                "Fn::GetAtt": [
-                  "meshrouter81B8087E",
-                  "VirtualRouterName"
-                ]
-              }
-            }
-          }
-        },
-        "VirtualServiceName": "service1.domain.local"
       }
     },
     "meshnode726C787D": {
@@ -638,7 +640,7 @@
               "VirtualService": {
                 "VirtualServiceName": {
                   "Fn::GetAtt": [
-                    "meshserviceE06ECED5",
+                    "service6D174F83",
                     "VirtualServiceName"
                   ]
                 }
@@ -691,6 +693,19 @@
           ]
         },
         "Spec": {
+          "BackendDefaults": {
+            "ClientPolicy": {
+              "TLS": {
+                "Validation": {
+                  "Trust": {
+                    "File": {
+                      "CertificateChain": "path/to/cert"
+                    }
+                  }
+                }
+              }
+            }
+          },
           "Backends": [
             {
               "VirtualService": {
@@ -739,6 +754,19 @@
           ]
         },
         "Spec": {
+          "BackendDefaults": {
+            "ClientPolicy": {
+              "TLS": {
+                "Validation": {
+                  "Trust": {
+                    "File": {
+                      "CertificateChain": "path-to-certificate"
+                    }
+                  }
+                }
+              }
+            }
+          },
           "Listeners": [
             {
               "HealthCheck": {
@@ -818,7 +846,7 @@
                 "VirtualService": {
                   "VirtualServiceName": {
                     "Fn::GetAtt": [
-                      "meshserviceE06ECED5",
+                      "service6D174F83",
                       "VirtualServiceName"
                     ]
                   }
@@ -855,7 +883,7 @@
                 "VirtualService": {
                   "VirtualServiceName": {
                     "Fn::GetAtt": [
-                      "meshserviceE06ECED5",
+                      "service6D174F83",
                       "VirtualServiceName"
                     ]
                   }
@@ -892,7 +920,7 @@
                 "VirtualService": {
                   "VirtualServiceName": {
                     "Fn::GetAtt": [
-                      "meshserviceE06ECED5",
+                      "service6D174F83",
                       "VirtualServiceName"
                     ]
                   }
@@ -902,7 +930,7 @@
             "Match": {
               "ServiceName": {
                 "Fn::GetAtt": [
-                  "meshserviceE06ECED5",
+                  "service6D174F83",
                   "VirtualServiceName"
                 ]
               }
@@ -915,6 +943,30 @@
             "VirtualGatewayName"
           ]
         }
+      }
+    },
+    "service6D174F83": {
+      "Type": "AWS::AppMesh::VirtualService",
+      "Properties": {
+        "MeshName": {
+          "Fn::GetAtt": [
+            "meshACDFE68E",
+            "MeshName"
+          ]
+        },
+        "Spec": {
+          "Provider": {
+            "VirtualRouter": {
+              "VirtualRouterName": {
+                "Fn::GetAtt": [
+                  "meshrouter81B8087E",
+                  "VirtualRouterName"
+                ]
+              }
+            }
+          }
+        },
+        "VirtualServiceName": "service1.domain.local"
       }
     },
     "service27C65CF7D": {
@@ -967,6 +1019,15 @@
               "PortMapping": {
                 "Port": 443,
                 "Protocol": "http"
+              },
+              "TLS": {
+                "Certificate": {
+                  "File": {
+                    "CertificateChain": "path/to/certChain",
+                    "PrivateKey": "path/to/privateKey"
+                  }
+                },
+                "Mode": "STRICT"
               }
             }
           ]

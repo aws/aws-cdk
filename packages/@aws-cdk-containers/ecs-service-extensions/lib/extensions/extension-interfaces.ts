@@ -2,6 +2,10 @@ import * as ecs from '@aws-cdk/aws-ecs';
 import * as cdk from '@aws-cdk/core';
 import { Service } from '../service';
 
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct } from '@aws-cdk/core';
+
 /**
  * A list of the capacity types that are supported. These
  * capacity types may change the behavior of an extension.
@@ -141,7 +145,7 @@ export abstract class ServiceExtension {
    * the task.
    * @param props - Properties of the task definition to be created
    */
-  public modifyTaskDefinitionProps(props: ecs.TaskDefinitionProps) {
+  public modifyTaskDefinitionProps(props: ecs.TaskDefinitionProps): ecs.TaskDefinitionProps {
     return {
       ...props,
     } as ecs.TaskDefinitionProps;
@@ -154,7 +158,7 @@ export abstract class ServiceExtension {
    * @param parent - The parent service which this extension has been added to
    * @param scope - The scope that this extension should create resources in
    */
-  public prehook(parent: Service, scope: cdk.Construct) {
+  public prehook(parent: Service, scope: Construct) {
     this.parentService = parent;
     this.scope = scope;
   }
@@ -185,7 +189,7 @@ export abstract class ServiceExtension {
    * of the service to be created
    * @param props - The service properties to mutate
    */
-  public modifyServiceProps(props: ServiceBuild) {
+  public modifyServiceProps(props: ServiceBuild): ServiceBuild {
     return {
       ...props,
     } as ServiceBuild;
@@ -225,7 +229,7 @@ export abstract class ContainerMutatingHook {
    * settings of the application container.
    * @param props - The container definition to mutate
    */
-  public mutateContainerDefinition(props: ecs.ContainerDefinitionOptions) {
+  public mutateContainerDefinition(props: ecs.ContainerDefinitionOptions): ecs.ContainerDefinitionOptions {
     return {
       ...props,
     } as ecs.ContainerDefinitionOptions;

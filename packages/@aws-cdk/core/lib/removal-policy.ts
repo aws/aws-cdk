@@ -1,3 +1,28 @@
+/**
+ * Possible values for a resource's Removal Policy
+ *
+ * The removal policy controls what happens to the resource if it stops being
+ * managed by CloudFormation. This can happen in one of three situations:
+ *
+ * - The resource is removed from the template, so CloudFormation stops managing it;
+ * - A change to the resource is made that requires it to be replaced, so CloudFormation stops
+ *   managing it;
+ * - The stack is deleted, so CloudFormation stops managing all resources in it.
+ *
+ * The Removal Policy applies to all above cases.
+ *
+ * Many stateful resources in the AWS Construct Library will accept a
+ * `removalPolicy` as a property, typically defaulting it to `RETAIN`.
+ *
+ * If the AWS Construct Library resource does not accept a `removalPolicy`
+ * argument, you can always configure it by using the escape hatch mechanism,
+ * as shown in the following example:
+ *
+ * ```ts
+ * const cfnBucket = bucket.node.findChild('Resource') as cdk.CfnResource;
+ * cfnBucket.applyRemovalPolicy(cdk.RemovalPolicy.DESTROY);
+ * ```
+ */
 export enum RemovalPolicy {
   /**
    * This is the default removal policy. It means that when the resource is

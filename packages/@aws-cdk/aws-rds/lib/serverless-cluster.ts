@@ -8,7 +8,7 @@ import { IClusterEngine } from './cluster-engine';
 import { Endpoint } from './endpoint';
 import { IParameterGroup } from './parameter-group';
 import { DATA_API_ACTIONS } from './perms';
-import { applyRemovalPolicy, defaultDeletionProtection, DEFAULT_PASSWORD_EXCLUDE_CHARS, renderCredentials } from './private/util';
+import { defaultDeletionProtection, DEFAULT_PASSWORD_EXCLUDE_CHARS, renderCredentials } from './private/util';
 import { Credentials, RotationMultiUserOptions, RotationSingleUserOptions } from './props';
 import { CfnDBCluster } from './rds.generated';
 import { ISubnetGroup, SubnetGroup } from './subnet-group';
@@ -224,6 +224,8 @@ export enum AuroraCapacityUnit {
   ACU_1 = 1,
   /** 2 Aurora Capacity Units */
   ACU_2 = 2,
+  /** 4 Aurora Capacity Units */
+  ACU_4 = 4,
   /** 8 Aurora Capacity Units */
   ACU_8 = 8,
   /** 16 Aurora Capacity Units */
@@ -466,7 +468,7 @@ export class ServerlessCluster extends ServerlessClusterBase {
       defaultPort: ec2.Port.tcp(this.clusterEndpoint.port),
     });
 
-    applyRemovalPolicy(cluster, props.removalPolicy);
+    cluster.applyRemovalPolicy(props.removalPolicy ?? RemovalPolicy.SNAPSHOT);
 
     if (secret) {
       this.secret = secret.attach(this);

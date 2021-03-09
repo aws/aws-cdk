@@ -8,6 +8,8 @@ import { AwsIntegration } from './aws';
 export interface LambdaIntegrationOptions extends IntegrationOptions {
   /**
    * Use proxy integration or normal (request/response mapping) integration.
+   * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/set-up-lambda-proxy-integrations.html#api-gateway-simple-proxy-for-lambda-output-format
+   *
    * @default true
    */
   readonly proxy?: boolean;
@@ -39,7 +41,7 @@ export class LambdaIntegration extends AwsIntegration {
   private readonly enableTest: boolean;
 
   constructor(handler: lambda.IFunction, options: LambdaIntegrationOptions = { }) {
-    const proxy = options.proxy === undefined ? true : options.proxy;
+    const proxy = options.proxy ?? true;
 
     super({
       proxy,
@@ -49,7 +51,7 @@ export class LambdaIntegration extends AwsIntegration {
     });
 
     this.handler = handler;
-    this.enableTest = options.allowTestInvoke === undefined ? true : options.allowTestInvoke;
+    this.enableTest = options.allowTestInvoke ?? true;
   }
 
   public bind(method: Method): IntegrationConfig {
@@ -61,7 +63,7 @@ export class LambdaIntegration extends AwsIntegration {
     this.handler.addPermission(`ApiPermission.${desc}`, {
       principal,
       scope: method,
-      sourceArn: Lazy.stringValue({ produce: () => method.methodArn }),
+      sourceArn: Lazy.string({ produce: () => method.methodArn }),
     });
 
     // add permission to invoke from the console

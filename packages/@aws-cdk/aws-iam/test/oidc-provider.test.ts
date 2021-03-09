@@ -1,5 +1,5 @@
 import '@aws-cdk/assert/jest';
-import { App, Stack } from '@aws-cdk/core';
+import { App, Stack, Token } from '@aws-cdk/core';
 import * as sinon from 'sinon';
 import * as iam from '../lib';
 import { arrayDiff } from '../lib/oidc-provider/diff';
@@ -402,11 +402,11 @@ describe('OIDC issuer', () => {
 
     // THEN
     expect(stack.resolve(provider.openIdConnectProviderIssuer)).toStrictEqual(
-      { 'Fn::Select': [1, { 'Fn::Split': ['oidc-provider/', { Ref: 'MyProvider730BA1C8' }] }] },
+      { 'Fn::Select': [1, { 'Fn::Split': [':oidc-provider/', { Ref: 'MyProvider730BA1C8' }] }] },
     );
   });
 
-  test('extract issuer properly in the imported provider', () => {
+  test('extract issuer properly in a literal imported provider', () => {
     // GIVEN
     const stack = new Stack();
 
@@ -415,6 +415,19 @@ describe('OIDC issuer', () => {
 
     // THEN
     expect(stack.resolve(provider.openIdConnectProviderIssuer)).toStrictEqual('oidc.eks.us-east-1.amazonaws.com/id/someid');
+  });
+
+  test('extract issuer properly in a Token imported provider', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    const provider = iam.OpenIdConnectProvider.fromOpenIdConnectProviderArn(stack, 'MyProvider', Token.asString({ Ref: 'ARN' }));
+
+    // THEN
+    expect(stack.resolve(provider.openIdConnectProviderIssuer)).toStrictEqual({
+      'Fn::Select': [1, { 'Fn::Split': [':oidc-provider/', { Ref: 'ARN' }] }],
+    });
   });
 });
 

@@ -8,9 +8,10 @@ import { Connections, IConnectable } from './connections';
 import { CfnInstance } from './ec2.generated';
 import { InstanceType } from './instance-types';
 import { IMachineImage, OperatingSystemType } from './machine-image';
+import { instanceBlockDeviceMappings } from './private/ebs-util';
 import { ISecurityGroup, SecurityGroup } from './security-group';
 import { UserData } from './user-data';
-import { BlockDevice, synthesizeBlockDeviceMappings } from './volume';
+import { BlockDevice } from './volume';
 import { IVpc, Subnet, SubnetSelection } from './vpc';
 
 /**
@@ -324,8 +325,8 @@ export class Instance extends Resource implements IInstance {
     // use delayed evaluation
     const imageConfig = props.machineImage.getImage(this);
     this.userData = props.userData ?? imageConfig.userData;
-    const userDataToken = Lazy.stringValue({ produce: () => Fn.base64(this.userData.render()) });
-    const securityGroupsToken = Lazy.listValue({ produce: () => this.securityGroups.map(sg => sg.securityGroupId) });
+    const userDataToken = Lazy.string({ produce: () => Fn.base64(this.userData.render()) });
+    const securityGroupsToken = Lazy.list({ produce: () => this.securityGroups.map(sg => sg.securityGroupId) });
 
     const { subnets } = props.vpc.selectSubnets(props.vpcSubnets);
     let subnet;
@@ -362,7 +363,7 @@ export class Instance extends Resource implements IInstance {
       subnetId: subnet.subnetId,
       availabilityZone: subnet.availabilityZone,
       sourceDestCheck: props.sourceDestCheck,
-      blockDeviceMappings: props.blockDevices !== undefined ? synthesizeBlockDeviceMappings(this, props.blockDevices) : undefined,
+      blockDeviceMappings: props.blockDevices !== undefined ? instanceBlockDeviceMappings(this, props.blockDevices) : undefined,
       privateIpAddress: props.privateIpAddress,
     });
     this.instance.node.addDependency(this.role);
@@ -384,16 +385,27 @@ export class Instance extends Resource implements IInstance {
     this.applyUpdatePolicies(props);
 
     // Trigger replacement (via new logical ID) on user data change, if specified or cfn-init is being used.
+    //
+    // This is slightly tricky -- we need to resolve the UserData string (in order to get at actual Asset hashes,
+    // instead of the Token stringifications of them ('${Token[1234]}'). However, in the case of CFN Init usage,
+    // a UserData is going to contain the logicalID of the resource itself, which means infinite recursion if we
+    // try to naively resolve. We need a recursion breaker in this.
     const originalLogicalId = Stack.of(this).getLogicalId(this.instance);
-    this.instance.overrideLogicalId(Lazy.stringValue({
-      produce: () => {
-        let logicalId = originalLogicalId;
-        if (props.userDataCausesReplacement ?? props.initOptions) {
-          const md5 = crypto.createHash('md5');
-          md5.update(this.userData.render());
-          logicalId += md5.digest('hex').substr(0, 16);
+    let recursing = false;
+    this.instance.overrideLogicalId(Lazy.uncachedString({
+      produce: (context) => {
+        if (recursing) { return originalLogicalId; }
+        if (!(props.userDataCausesReplacement ?? props.initOptions)) { return originalLogicalId; }
+
+        const md5 = crypto.createHash('md5');
+        recursing = true;
+        try {
+          md5.update(JSON.stringify(context.resolve(this.userData.render())));
+        } finally {
+          recursing = false;
         }
-        return logicalId;
+        const digest = md5.digest('hex').substr(0, 16);
+        return `${originalLogicalId}${digest}`;
       },
     }));
   }

@@ -1,7 +1,10 @@
-import * as cdk from '@aws-cdk/core';
 import { CfnGatewayRoute } from './appmesh.generated';
 import { Protocol } from './shared-interfaces';
 import { IVirtualService } from './virtual-service';
+
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct } from '@aws-cdk/core';
 
 /**
  * The criterion for determining a request match for this GatewayRoute
@@ -29,7 +32,7 @@ export interface GrpcGatewayRouteMatch {
 /**
  * Properties specific for HTTP Based GatewayRoutes
  */
-export interface HttpRouteSpecProps {
+export interface HttpGatewayRouteSpecOptions {
   /**
    * The criterion for determining a request match for this GatewayRoute
    *
@@ -46,7 +49,7 @@ export interface HttpRouteSpecProps {
 /**
  * Properties specific for a GRPC GatewayRoute
  */
-export interface GrpcRouteSpecProps {
+export interface GrpcGatewayRouteSpecOptions {
   /**
    * The criterion for determining a request match for this GatewayRoute
    */
@@ -91,35 +94,35 @@ export abstract class GatewayRouteSpec {
   /**
    * Creates an HTTP Based GatewayRoute
    *
-   * @param props - no http gateway route
+   * @param options - no http gateway route
    */
-  public static httpRouteSpec(props: HttpRouteSpecProps): GatewayRouteSpec {
-    return new HttpGatewayRouteSpec(props, Protocol.HTTP);
+  public static http(options: HttpGatewayRouteSpecOptions): GatewayRouteSpec {
+    return new HttpGatewayRouteSpec(options, Protocol.HTTP);
   }
 
   /**
    * Creates an HTTP2 Based GatewayRoute
    *
-   * @param props - no http2 gateway route
+   * @param options - no http2 gateway route
    */
-  public static http2RouteSpec(props: HttpRouteSpecProps): GatewayRouteSpec {
-    return new HttpGatewayRouteSpec(props, Protocol.HTTP2);
+  public static http2(options: HttpGatewayRouteSpecOptions): GatewayRouteSpec {
+    return new HttpGatewayRouteSpec(options, Protocol.HTTP2);
   }
 
   /**
    * Creates an GRPC Based GatewayRoute
    *
-   * @param props - no grpc gateway route
+   * @param options - no grpc gateway route
    */
-  public static grpcRouteSpec(props: GrpcRouteSpecProps): GatewayRouteSpec {
-    return new GrpcGatewayRouteSpec(props);
+  public static grpc(options: GrpcGatewayRouteSpecOptions): GatewayRouteSpec {
+    return new GrpcGatewayRouteSpec(options);
   }
 
   /**
    * Called when the GatewayRouteSpec type is initialized. Can be used to enforce
    * mutual exclusivity with future properties
    */
-  public abstract bind(scope: cdk.Construct): GatewayRouteSpecConfig;
+  public abstract bind(scope: Construct): GatewayRouteSpecConfig;
 }
 
 class HttpGatewayRouteSpec extends GatewayRouteSpec {
@@ -140,14 +143,14 @@ class HttpGatewayRouteSpec extends GatewayRouteSpec {
    */
   readonly routeType: Protocol;
 
-  constructor(props: HttpRouteSpecProps, protocol: Protocol.HTTP | Protocol.HTTP2) {
+  constructor(options: HttpGatewayRouteSpecOptions, protocol: Protocol.HTTP | Protocol.HTTP2) {
     super();
-    this.routeTarget = props.routeTarget;
+    this.routeTarget = options.routeTarget;
     this.routeType = protocol;
-    this.match = props.match;
+    this.match = options.match;
   }
 
-  public bind(_scope: cdk.Construct): GatewayRouteSpecConfig {
+  public bind(_scope: Construct): GatewayRouteSpecConfig {
     const prefixPath = this.match ? this.match.prefixPath : '/';
     if (prefixPath[0] != '/') {
       throw new Error(`Prefix Path must start with \'/\', got: ${prefixPath}`);
@@ -184,13 +187,13 @@ class GrpcGatewayRouteSpec extends GatewayRouteSpec {
    */
   readonly routeTarget: IVirtualService;
 
-  constructor(props: GrpcRouteSpecProps) {
+  constructor(options: GrpcGatewayRouteSpecOptions) {
     super();
-    this.match = props.match;
-    this.routeTarget = props.routeTarget;
+    this.match = options.match;
+    this.routeTarget = options.routeTarget;
   }
 
-  public bind(_scope: cdk.Construct): GatewayRouteSpecConfig {
+  public bind(_scope: Construct): GatewayRouteSpecConfig {
     return {
       grpcSpecConfig: {
         action: {

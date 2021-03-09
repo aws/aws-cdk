@@ -118,7 +118,7 @@ abstract class LambdaAuthorizer extends Authorizer implements IAuthorizer {
    * Throws an error, during token resolution, if no RestApi is attached to this authorizer.
    */
   protected lazyRestApiId() {
-    return Lazy.stringValue({
+    return Lazy.string({
       produce: () => {
         if (!this.restApiId) {
           throw new Error(`Authorizer (${this.node.path}) must be attached to a RestApi`);

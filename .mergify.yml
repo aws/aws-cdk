@@ -6,7 +6,7 @@ pull_request_rules:
       label:
         add: [ contribution/core ]
     conditions:
-      - author~=^(eladb|RomainMuller|garnaat|nija-at|shivlaks|skinny85|rix0rrr|NGL321|Jerry-AWS|SomayaB|MrArnoldPalmer|NetaNir|iliapolo|njlynch|ericzbeard|ccfife|fulghum|pkandasamy91|SoManyHs|uttarasridhar)$
+      - author~=^(eladb|RomainMuller|garnaat|nija-at|skinny85|rix0rrr|NGL321|Jerry-AWS|MrArnoldPalmer|NetaNir|iliapolo|njlynch|ericzbeard|ccfife|fulghum|pkandasamy91|SoManyHs|uttarasridhar)$
       - -label~="contribution/core"
   - name: automatic merge
     actions:
@@ -19,7 +19,6 @@ pull_request_rules:
         commit_message: title+body
     conditions:
       - base!=release
-      - -base~=^v2
       - -title~=(WIP|wip)
       - -label~=(blocked|do-not-merge|no-squash|two-approvers)
       - -merged
@@ -34,7 +33,7 @@ pull_request_rules:
   - name: automatic merge (2+ approvers)
     actions:
       comment:
-        message: Thank you for contributing! Your pull request will be updated from master and then merged automatically (do not update manually, and be sure to [allow changes to be pushed to your fork](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/allowing-changes-to-a-pull-request-branch-created-from-a-fork)).
+        message: Thank you for contributing! Your pull request will be automatically updated and merged (do not update manually, and be sure to [allow changes to be pushed to your fork](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/allowing-changes-to-a-pull-request-branch-created-from-a-fork)).
       merge:
         strict: smart
         method: squash
@@ -42,7 +41,6 @@ pull_request_rules:
         commit_message: title+body
     conditions:
       - base!=release
-      - -base~=^v2
       - -title~=(WIP|wip)
       - label~=two-approvers
       - -label~=(blocked|do-not-merge|no-squash)
@@ -58,7 +56,7 @@ pull_request_rules:
   - name: automatic merge (no-squash)
     actions:
       comment:
-        message: Thank you for contributing! Your pull request will be updated from master and then merged automatically without squashing (do not update manually, and be sure to [allow changes to be pushed to your fork](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/allowing-changes-to-a-pull-request-branch-created-from-a-fork)).
+        message: Thank you for contributing! Your pull request will be automatically updated and merged without squashing (do not update manually, and be sure to [allow changes to be pushed to your fork](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/allowing-changes-to-a-pull-request-branch-created-from-a-fork)).
       merge:
         strict: smart
         # Merge instead of squash
@@ -66,7 +64,6 @@ pull_request_rules:
         strict_method: merge
         commit_message: title+body
     conditions:
-      - -base~=^v2
       - -title~=(WIP|wip)
       - -label~=(blocked|do-not-merge)
       # Only if no-squash is set
@@ -122,21 +119,3 @@ pull_request_rules:
       - "#changes-requested-reviews-by=0"
       - status-success~=AWS CodeBuild us-east-1
       - status-success=validate-pr
-  - name: automatic merge of v2 forward merges
-    actions:
-      comment:
-        message: Forward merge successful!
-      merge:
-        method: merge
-        strict: smart+fasttrack
-        strict_method: merge
-        commit_message: title+body
-    conditions:
-      - base=v2-main
-      - label~=forward-merge
-      - -label~=(blocked|do-not-merge)
-      - -merged
-      - -closed
-      - author~=aws-cdk-automation
-      - "#approved-reviews-by>=1"
-      - status-success~=AWS CodeBuild us-east-1

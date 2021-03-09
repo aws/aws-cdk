@@ -177,7 +177,7 @@ export class ProfilingGroup extends ProfilingGroupBase {
 
   constructor(scope: Construct, id: string, props: ProfilingGroupProps = {}) {
     super(scope, id, {
-      physicalName: props.profilingGroupName ?? Lazy.stringValue({ produce: () => this.generateUniqueId() }),
+      physicalName: props.profilingGroupName ?? Lazy.string({ produce: () => this.generateUniqueId() }),
     });
 
     const profilingGroup = new CfnProfilingGroup(this, 'ProfilingGroup', {

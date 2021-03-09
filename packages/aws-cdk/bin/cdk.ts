@@ -1,6 +1,5 @@
 #!/usr/bin/env node
 import 'source-map-support/register';
-
 import * as cxapi from '@aws-cdk/cx-api';
 import * as colors from 'colors/safe';
 import * as yargs from 'yargs';
@@ -37,7 +36,7 @@ async function parseCommandLineArguments() {
   //
   //   ./prog --arg one --arg two position  =>  will parse to  { arg: ['one', 'two'], _: ['positional'] }.
 
-  const initTemplateLanuages = await availableInitLanguages;
+  const initTemplateLanuages = await availableInitLanguages();
   return yargs
     .env('CDK')
     .usage('Usage: cdk -a <cdk-app> COMMAND')
@@ -46,6 +45,7 @@ async function parseCommandLineArguments() {
     .option('plugin', { type: 'array', alias: 'p', desc: 'Name or path of a node package that extend the CDK features. Can be specified multiple times', nargs: 1 })
     .option('trace', { type: 'boolean', desc: 'Print trace for stack warnings' })
     .option('strict', { type: 'boolean', desc: 'Do not construct stacks with warnings' })
+    .option('lookups', { type: 'boolean', desc: 'Perform context lookups (synthesis fails if this is disabled and context lookups need to be performed)', default: true })
     .option('ignore-errors', { type: 'boolean', default: false, desc: 'Ignores synthesis errors, which will likely produce an invalid output' })
     .option('json', { type: 'boolean', alias: 'j', desc: 'Use JSON output instead of YAML when templates are printed to STDOUT', default: false })
     .option('verbose', { type: 'boolean', alias: 'v', desc: 'Show debug logs (specify multiple times to increase verbosity)', default: false })
@@ -67,7 +67,8 @@ async function parseCommandLineArguments() {
       .option('long', { type: 'boolean', default: false, alias: 'l', desc: 'Display environment information for each stack' }),
     )
     .command(['synthesize [STACKS..]', 'synth [STACKS..]'], 'Synthesizes and prints the CloudFormation template for this stack', yargs => yargs
-      .option('exclusively', { type: 'boolean', alias: 'e', desc: 'Only synthesize requested stacks, don\'t include dependencies' }))
+      .option('exclusively', { type: 'boolean', alias: 'e', desc: 'Only synthesize requested stacks, don\'t include dependencies' })
+      .option('quiet', { type: 'boolean', alias: 'q', desc: 'Do not output CloudFormation Template to stdout', default: false }))
     .command('bootstrap [ENVIRONMENTS..]', 'Deploys the CDK toolkit stack into an AWS environment', yargs => yargs
       .option('bootstrap-bucket-name', { type: 'string', alias: ['b', 'toolkit-bucket-name'], desc: 'The name of the CDK toolkit bucket; bucket will be created and must not exist', default: undefined })
       .option('bootstrap-kms-key-id', { type: 'string', desc: 'AWS KMS master key ID used for the SSE-KMS encryption', default: undefined, conflicts: 'bootstrap-customer-key' })
@@ -93,6 +94,7 @@ async function parseCommandLineArguments() {
       // @deprecated(v2) -- tags are part of the Cloud Assembly and tags specified here will be overwritten on the next deployment
       .option('tags', { type: 'array', alias: 't', desc: 'Tags to add to the stack (KEY=VALUE), overrides tags from Cloud Assembly (deprecated)', nargs: 1, requiresArg: true })
       .option('execute', { type: 'boolean', desc: 'Whether to execute ChangeSet (--no-execute will NOT execute the ChangeSet)', default: true })
+      .option('change-set-name', { type: 'string', desc: 'Name of the CloudFormation change set to create' })
       .option('force', { alias: 'f', type: 'boolean', desc: 'Always deploy stack even if templates are identical', default: false })
       .option('parameters', { type: 'array', desc: 'Additional parameters passed to CloudFormation at deploy time (STACK:KEY=VALUE)', nargs: 1, requiresArg: true, default: {} })
       .option('outputs-file', { type: 'string', alias: 'O', desc: 'Path to file where stack outputs will be written as JSON', requiresArg: true })
@@ -141,8 +143,10 @@ async function initCommandLine() {
   debug('Command line arguments:', argv);
 
   const configuration = new Configuration({
-    ...argv,
-    _: argv._ as [Command, ...string[]], // TypeScript at its best
+    commandLineArguments: {
+      ...argv,
+      _: argv._ as [Command, ...string[]], // TypeScript at its best
+    },
   });
   await configuration.load();
 
@@ -190,6 +194,10 @@ async function initCommandLine() {
   loadPlugins(configuration.settings);
 
   const cmd = argv._[0];
+
+  if (typeof(cmd) !== 'string') {
+    throw new Error(`First argument should be a string. Got: ${cmd} (${typeof(cmd)})`);
+  }
 
   // Bundle up global objects so the commands have access to them
   const commandOptions = { args: argv, configuration, aws: sdkProvider };
@@ -309,6 +317,7 @@ async function initCommandLine() {
           reuseAssets: args['build-exclude'],
           tags: configuration.settings.get(['tags']),
           execute: args.execute,
+          changeSetName: args.changeSetName,
           force: args.force,
           parameters: parameterMap,
           usePreviousParameters: args['previous-parameters'],
@@ -327,7 +336,7 @@ async function initCommandLine() {
 
       case 'synthesize':
       case 'synth':
-        return cli.synth(args.STACKS, args.exclusively);
+        return cli.synth(args.STACKS, args.exclusively, args.quiet);
 
       case 'metadata':
         return cli.metadata(args.STACK);

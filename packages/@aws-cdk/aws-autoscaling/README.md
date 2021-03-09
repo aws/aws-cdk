@@ -1,6 +1,6 @@
-## Amazon EC2 Auto Scaling Construct Library
-
+# Amazon EC2 Auto Scaling Construct Library
 <!--BEGIN STABILITY BANNER-->
+
 ---
 
 ![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)
@@ -8,11 +8,13 @@
 ![cdk-constructs: Stable](https://img.shields.io/badge/cdk--constructs-stable-success.svg?style=for-the-badge)
 
 ---
+
 <!--END STABILITY BANNER-->
+
 
 This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.
 
-### Auto Scaling Group
+## Auto Scaling Group
 
 An `AutoScalingGroup` represents a number of instances on which you run your code. You
 pick the size of the fleet, the instance type and the OS image:
@@ -43,7 +45,7 @@ new autoscaling.AutoScalingGroup(this, 'ASG', {
 });
 ```
 
-### Machine Images (AMIs)
+## Machine Images (AMIs)
 
 AMIs control the OS that gets launched when you start your EC2 instance. The EC2
 library contains constructs to select the AMI you want to use.
@@ -62,7 +64,7 @@ selectable by instantiating one of these classes:
 >
 > We will add command-line options to make this step easier in the future.
 
-### AutoScaling Instance Counts
+## AutoScaling Instance Counts
 
 AutoScalingGroups make it possible to raise and lower the number of instances in the group,
 in response to (or in advance of) changes in workload.
@@ -107,14 +109,14 @@ autoScalingGroup.scaleToTrackMetric(...);
 autoScalingGroup.scaleOnSchedule(...);
 ```
 
-#### Step Scaling
+### Step Scaling
 
 This type of scaling scales in and out in deterministics steps that you
 configure, in response to metric values. For example, your scaling strategy to
 scale in response to a metric that represents your average worker pool usage
 might look like this:
 
-```
+```plaintext
  Scaling        -1          (no change)          +1       +3
             │        │                       │        │        │
             ├────────┼───────────────────────┼────────┼────────┤
@@ -152,7 +154,7 @@ capacity.scaleOnMetric('ScaleToCPU', {
 The AutoScaling construct library will create the required CloudWatch alarms and
 AutoScaling policies for you.
 
-#### Target Tracking Scaling
+### Target Tracking Scaling
 
 This type of scaling scales in and out in order to keep a metric around a value
 you prefer. There are four types of predefined metrics you can track, or you can
@@ -194,7 +196,7 @@ autoScalingGroup.scaleOnRequestCount('LimitRPS', {
 });
 ```
 
-#### Scheduled Scaling
+### Scheduled Scaling
 
 This type of scaling is used to change capacities based on time. It works by
 changing `minCapacity`, `maxCapacity` and `desiredCapacity` of the
@@ -223,7 +225,7 @@ autoScalingGroup.scaleOnSchedule('AllowDownscalingAtNight', {
 });
 ```
 
-### Configuring Instances using CloudFormation Init
+## Configuring Instances using CloudFormation Init
 
 It is possible to use the CloudFormation Init mechanism to configure the
 instances in the AutoScalingGroup. You can write files to it, run commands,
@@ -256,7 +258,7 @@ new autoscaling.AutoScalingGroup(this, 'ASG', {
 });
 ```
 
-### Signals
+## Signals
 
 In normal operation, CloudFormation will send a Create or Update command to
 an AutoScalingGroup and proceed with the rest of the deployment without waiting
@@ -292,7 +294,7 @@ There are two `options` you can configure:
   update to succeed. If you set this value lower than 100, some percentage of hosts may
   report failure, while still considering the deployment a success. Default is 100%.
 
-### Update Policy
+## Update Policy
 
 The *update policy* describes what should happen to running instances when the definition
 of the AutoScalingGroup is changed. For example, if you add a command to the UserData
@@ -318,24 +320,24 @@ The following update policies are available:
   If the deployment needs to be rolled back, the new AutoScalingGroup is
   deleted and the old one is left unchanged.
 
-### Allowing Connections
+## Allowing Connections
 
 See the documentation of the `@aws-cdk/aws-ec2` package for more information
 about allowing connections between resources backed by instances.
 
-### Max Instance Lifetime
+## Max Instance Lifetime
 
 To enable the max instance lifetime support, specify `maxInstanceLifetime` property
 for the `AutoscalingGroup` resource. The value must be between 7 and 365 days(inclusive).
 To clear a previously set value, leave this property undefined.
 
-### Instance Monitoring
+## Instance Monitoring
 
 To disable detailed instance monitoring, specify `instanceMonitoring` property
 for the `AutoscalingGroup` resource as `Monitoring.BASIC`. Otherwise detailed monitoring
 will be enabled.
 
-### Monitoring Group Metrics
+## Monitoring Group Metrics
 
 Group metrics are used to monitor group level properties; they describe the group rather than any of its instances (e.g GroupMaxSize, the group maximum size). To enable group metrics monitoring, use the `groupMetrics` property.
 All group metrics are reported in a granularity of 1 minute at no additional charge.
@@ -358,7 +360,7 @@ new autoscaling.AutoScalingGroup(stack, 'ASG', {
 });
 ```
 
-### Future work
+## Future work
 
-- [ ] CloudWatch Events (impossible to add currently as the AutoScalingGroup ARN is
+* [ ] CloudWatch Events (impossible to add currently as the AutoScalingGroup ARN is
   necessary to make this rule and this cannot be accessed from CloudFormation).

@@ -1,7 +1,7 @@
 import { expect, haveResourceLike } from '@aws-cdk/assert';
+import * as acm from '@aws-cdk/aws-certificatemanager';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-
 import * as appmesh from '../lib';
 
 export = {
@@ -21,7 +21,7 @@ export = {
 
       new appmesh.VirtualGateway(stack, 'httpGateway', {
         mesh: mesh,
-        listeners: [appmesh.VirtualGatewayListener.httpGatewayListener({
+        listeners: [appmesh.VirtualGatewayListener.http({
           port: 443,
           healthCheck: {
             interval: cdk.Duration.seconds(10),
@@ -31,7 +31,7 @@ export = {
 
       new appmesh.VirtualGateway(stack, 'http2Gateway', {
         mesh: mesh,
-        listeners: [appmesh.VirtualGatewayListener.http2GatewayListener({
+        listeners: [appmesh.VirtualGatewayListener.http2({
           port: 443,
           healthCheck: {
             interval: cdk.Duration.seconds(10),
@@ -113,7 +113,7 @@ export = {
 
       new appmesh.VirtualGateway(stack, 'testGateway', {
         virtualGatewayName: 'test-gateway',
-        listeners: [appmesh.VirtualGatewayListener.grpcGatewayListener({
+        listeners: [appmesh.VirtualGatewayListener.grpc({
           port: 80,
           healthCheck: {
           },
@@ -153,6 +153,142 @@ export = {
       }));
       test.done();
     },
+
+    'with an http listener with a TLS certificate from ACM'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      // WHEN
+      const mesh = new appmesh.Mesh(stack, 'mesh', {
+        meshName: 'test-mesh',
+      });
+
+      const cert = new acm.Certificate(stack, 'cert', {
+        domainName: '',
+      });
+
+      new appmesh.VirtualGateway(stack, 'testGateway', {
+        virtualGatewayName: 'test-gateway',
+        mesh: mesh,
+        listeners: [appmesh.VirtualGatewayListener.http({
+          port: 8080,
+          tlsCertificate: appmesh.TlsCertificate.acm({
+            tlsMode: appmesh.TlsMode.STRICT,
+            certificate: cert,
+          }),
+        })],
+      });
+
+      // THEN
+      expect(stack).to(haveResourceLike('AWS::AppMesh::VirtualGateway', {
+        Spec: {
+          Listeners: [
+            {
+              TLS: {
+                Mode: appmesh.TlsMode.STRICT,
+                Certificate: {
+                  ACM: {
+                    CertificateArn: {
+                      Ref: 'cert56CA94EB',
+                    },
+                  },
+                },
+              },
+            },
+          ],
+        },
+      }));
+
+      test.done();
+    },
+
+    'with an grpc listener with a TLS certificate from file'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      // WHEN
+      const mesh = new appmesh.Mesh(stack, 'mesh', {
+        meshName: 'test-mesh',
+      });
+
+      new appmesh.VirtualGateway(stack, 'testGateway', {
+        virtualGatewayName: 'test-gateway',
+        mesh: mesh,
+        listeners: [appmesh.VirtualGatewayListener.grpc({
+          port: 8080,
+          tlsCertificate: appmesh.TlsCertificate.file({
+            certificateChainPath: 'path/to/certChain',
+            privateKeyPath: 'path/to/privateKey',
+            tlsMode: appmesh.TlsMode.STRICT,
+          }),
+        })],
+      });
+
+      // THEN
+      expect(stack).to(haveResourceLike('AWS::AppMesh::VirtualGateway', {
+        Spec: {
+          Listeners: [
+            {
+              TLS: {
+                Mode: appmesh.TlsMode.STRICT,
+                Certificate: {
+                  File: {
+                    CertificateChain: 'path/to/certChain',
+                    PrivateKey: 'path/to/privateKey',
+                  },
+                },
+              },
+            },
+          ],
+        },
+      }));
+
+      test.done();
+    },
+
+    'with an grpc listener with the TLS mode permissive'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      // WHEN
+      const mesh = new appmesh.Mesh(stack, 'mesh', {
+        meshName: 'test-mesh',
+      });
+
+      new appmesh.VirtualGateway(stack, 'testGateway', {
+        virtualGatewayName: 'test-gateway',
+        mesh: mesh,
+        listeners: [appmesh.VirtualGatewayListener.grpc({
+          port: 8080,
+          tlsCertificate: appmesh.TlsCertificate.file({
+            certificateChainPath: 'path/to/certChain',
+            privateKeyPath: 'path/to/privateKey',
+            tlsMode: appmesh.TlsMode.PERMISSIVE,
+          }),
+        })],
+      });
+
+      // THEN
+      expect(stack).to(haveResourceLike('AWS::AppMesh::VirtualGateway', {
+        Spec: {
+          Listeners: [
+            {
+              TLS: {
+                Mode: appmesh.TlsMode.PERMISSIVE,
+                Certificate: {
+                  File: {
+                    CertificateChain: 'path/to/certChain',
+                    PrivateKey: 'path/to/privateKey',
+                  },
+                },
+              },
+            },
+          ],
+        },
+      }));
+
+      test.done();
+    },
   },
 
   'When adding a gateway route to existing VirtualGateway ': {
@@ -170,11 +306,13 @@ export = {
         mesh: mesh,
       });
 
-      const virtualService = mesh.addVirtualService('virtualService', {});
+      const virtualService = new appmesh.VirtualService(stack, 'virtualService', {
+        virtualServiceProvider: appmesh.VirtualServiceProvider.none(mesh),
+      });
 
       virtualGateway.addGatewayRoute('testGatewayRoute', {
         gatewayRouteName: 'test-gateway-route',
-        routeSpec: appmesh.GatewayRouteSpec.httpRouteSpec({
+        routeSpec: appmesh.GatewayRouteSpec.http({
           routeTarget: virtualService,
         }),
       });
@@ -188,7 +326,7 @@ export = {
               Target: {
                 VirtualService: {
                   VirtualServiceName: {
-                    'Fn::GetAtt': ['meshvirtualService93460D43', 'VirtualServiceName'],
+                    'Fn::GetAtt': ['virtualService03A04B87', 'VirtualServiceName'],
                   },
                 },
               },
@@ -213,18 +351,20 @@ export = {
         meshName: 'test-mesh',
       });
 
-      const virtualService = mesh.addVirtualService('virtualService', {});
+      const virtualService = new appmesh.VirtualService(stack, 'virtualService', {
+        virtualServiceProvider: appmesh.VirtualServiceProvider.none(mesh),
+      });
 
       const virtualGateway = mesh.addVirtualGateway('gateway');
       virtualGateway.addGatewayRoute('testGatewayRoute', {
         gatewayRouteName: 'test-gateway-route',
-        routeSpec: appmesh.GatewayRouteSpec.httpRouteSpec({
+        routeSpec: appmesh.GatewayRouteSpec.http({
           routeTarget: virtualService,
         }),
       });
       virtualGateway.addGatewayRoute('testGatewayRoute2', {
         gatewayRouteName: 'test-gateway-route-2',
-        routeSpec: appmesh.GatewayRouteSpec.httpRouteSpec({
+        routeSpec: appmesh.GatewayRouteSpec.http({
           routeTarget: virtualService,
         }),
       });
@@ -238,6 +378,49 @@ export = {
       test.done();
     },
   },
+
+  'When creating a VirtualGateway with backend defaults': {
+    'should add backend defaults to the VirtualGateway'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      // WHEN
+      const mesh = new appmesh.Mesh(stack, 'mesh', {
+        meshName: 'test-mesh',
+      });
+
+      new appmesh.VirtualGateway(stack, 'virtual-gateway', {
+        virtualGatewayName: 'virtual-gateway',
+        mesh: mesh,
+        backendsDefaultClientPolicy: appmesh.ClientPolicy.fileTrust({
+          certificateChain: 'path-to-certificate',
+        }),
+      });
+
+      // THEN
+      expect(stack).to(haveResourceLike('AWS::AppMesh::VirtualGateway', {
+        VirtualGatewayName: 'virtual-gateway',
+        Spec: {
+          BackendDefaults: {
+            ClientPolicy: {
+              TLS: {
+                Validation: {
+                  Trust: {
+                    File: {
+                      CertificateChain: 'path-to-certificate',
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      }));
+
+      test.done();
+    },
+  },
+
   'Can import VirtualGateways using an ARN'(test: Test) {
     const app = new cdk.App();
     // GIVEN

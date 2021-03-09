@@ -4,7 +4,6 @@ import { CfnMesh } from './appmesh.generated';
 import { VirtualGateway, VirtualGatewayBaseProps } from './virtual-gateway';
 import { VirtualNode, VirtualNodeBaseProps } from './virtual-node';
 import { VirtualRouter, VirtualRouterBaseProps } from './virtual-router';
-import { VirtualService, VirtualServiceBaseProps } from './virtual-service';
 
 /**
  * A utility enum defined for the egressFilter type property, the default of DROP_ALL,
@@ -47,11 +46,6 @@ export interface IMesh extends cdk.IResource {
   addVirtualRouter(id: string, props?: VirtualRouterBaseProps): VirtualRouter;
 
   /**
-   * Adds a VirtualService with the given id
-   */
-  addVirtualService(id: string, props?: VirtualServiceBaseProps): VirtualService;
-
-  /**
    * Adds a VirtualNode to the Mesh
    */
   addVirtualNode(id: string, props?: VirtualNodeBaseProps): VirtualNode;
@@ -81,16 +75,6 @@ abstract class MeshBase extends cdk.Resource implements IMesh {
    */
   public addVirtualRouter(id: string, props: VirtualRouterBaseProps = {}): VirtualRouter {
     return new VirtualRouter(this, id, {
-      ...props,
-      mesh: this,
-    });
-  }
-
-  /**
-   * Adds a VirtualService with the given id
-   */
-  public addVirtualService(id: string, props: VirtualServiceBaseProps = {}): VirtualService {
-    return new VirtualService(this, id, {
       ...props,
       mesh: this,
     });
@@ -186,7 +170,7 @@ export class Mesh extends MeshBase {
 
   constructor(scope: Construct, id: string, props: MeshProps = {}) {
     super(scope, id, {
-      physicalName: props.meshName || cdk.Lazy.stringValue({ produce: () => cdk.Names.uniqueId(this) }),
+      physicalName: props.meshName || cdk.Lazy.string({ produce: () => cdk.Names.uniqueId(this) }),
     });
 
     const mesh = new CfnMesh(this, 'Resource', {

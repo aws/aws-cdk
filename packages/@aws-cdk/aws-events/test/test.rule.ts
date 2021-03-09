@@ -49,6 +49,39 @@ export = {
     test.done();
   },
 
+  'get rate as token'(test: Test) {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'MyScheduledStack');
+    const lazyDuration = cdk.Duration.minutes(cdk.Lazy.number({ produce: () => 5 }));
+
+    new Rule(stack, 'MyScheduledRule', {
+      ruleName: 'rateInMinutes',
+      schedule: Schedule.rate(lazyDuration),
+    });
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::Events::Rule', {
+      'Name': 'rateInMinutes',
+      'ScheduleExpression': 'rate(5 minutes)',
+    }));
+
+    test.done();
+  },
+
+  'Seconds is not an allowed value for Schedule rate'(test: Test) {
+    const lazyDuration = cdk.Duration.seconds(cdk.Lazy.number({ produce: () => 5 }));
+    test.throws(() => Schedule.rate(lazyDuration), /Allowed unit for scheduling is: 'minute', 'minutes', 'hour', 'hours', 'day', 'days'/);
+    test.done();
+  },
+
+  'Millis is not an allowed value for Schedule rate'(test: Test) {
+    const lazyDuration = cdk.Duration.millis(cdk.Lazy.number({ produce: () => 5 }));
+
+    // THEN
+    test.throws(() => Schedule.rate(lazyDuration), /Allowed unit for scheduling is: 'minute', 'minutes', 'hour', 'hours', 'day', 'days'/);
+    test.done();
+  },
+
   'rule with physical name'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
@@ -126,14 +159,14 @@ export = {
     rule.addEventPattern({
       account: ['12345'],
       detail: {
-        foo: ['hello'],
+        foo: ['hello', 'bar', 'hello'],
       },
     });
 
     rule.addEventPattern({
       source: ['aws.source'],
       detail: {
-        foo: ['bar'],
+        foo: ['bar', 'hello'],
         goo: {
           hello: ['world'],
         },
@@ -162,6 +195,37 @@ export = {
               },
               'source': [
                 'aws.source',
+              ],
+            },
+            'State': 'ENABLED',
+          },
+        },
+      },
+    });
+    test.done();
+  },
+
+  'addEventPattern can de-duplicate filters and keep the order'(test: Test) {
+    const stack = new cdk.Stack();
+
+    const rule = new Rule(stack, 'MyRule');
+    rule.addEventPattern({
+      detailType: ['AWS API Call via CloudTrail', 'AWS API Call via CloudTrail'],
+    });
+
+    rule.addEventPattern({
+      detailType: ['EC2 Instance State-change Notification', 'AWS API Call via CloudTrail'],
+    });
+
+    expect(stack).toMatch({
+      'Resources': {
+        'MyRuleA44AB831': {
+          'Type': 'AWS::Events::Rule',
+          'Properties': {
+            'EventPattern': {
+              'detail-type': [
+                'AWS API Call via CloudTrail',
+                'EC2 Instance State-change Notification',
               ],
             },
             'State': 'ENABLED',

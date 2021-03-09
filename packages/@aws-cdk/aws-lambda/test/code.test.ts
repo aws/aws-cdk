@@ -1,8 +1,10 @@
 import '@aws-cdk/assert/jest';
 import * as path from 'path';
-import { ResourcePart } from '@aws-cdk/assert';
+import { ABSENT, ResourcePart } from '@aws-cdk/assert';
+import * as ecr from '@aws-cdk/aws-ecr';
 import * as cdk from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
+import { testFutureBehavior } from 'cdk-build-tools/lib/feature-flag';
 import * as lambda from '../lib';
 
 /* eslint-disable dot-notation */
@@ -75,6 +77,26 @@ describe('code', () => {
           [cxapi.ASSET_RESOURCE_METADATA_PROPERTY_KEY]: 'Code',
         },
       }, ResourcePart.CompleteDefinition);
+    });
+
+    test('fails if asset is bound with a second stack', () => {
+      // GIVEN
+      const asset = lambda.Code.fromAsset(path.join(__dirname, 'my-lambda-handler'));
+
+      const app = new cdk.App();
+      const stack1 = new cdk.Stack(app, 'Stack1');
+      new lambda.Function(stack1, 'Func', {
+        code: asset,
+        runtime: lambda.Runtime.NODEJS_10_X,
+        handler: 'foom',
+      });
+
+      const stack2 = new cdk.Stack(app, 'Stack2');
+      expect(() => new lambda.Function(stack2, 'Func', {
+        code: asset,
+        runtime: lambda.Runtime.NODEJS_10_X,
+        handler: 'foom',
+      })).toThrow(/already associated/);
     });
   });
 
@@ -167,6 +189,167 @@ describe('code', () => {
       // then
       expect(overrides['BucketNameParam']).toEqual('SomeBucketName');
       expect(overrides['ObjectKeyParam']).toEqual('SomeObjectKey');
+    });
+  });
+
+  describe('lambda.Code.fromEcr', () => {
+    test('repository uri is correctly identified', () => {
+      // given
+      const stack = new cdk.Stack();
+      const repo = new ecr.Repository(stack, 'Repo');
+
+      // when
+      new lambda.Function(stack, 'Fn', {
+        code: lambda.Code.fromEcrImage(repo),
+        handler: lambda.Handler.FROM_IMAGE,
+        runtime: lambda.Runtime.FROM_IMAGE,
+      });
+
+      // then
+      expect(stack).toHaveResource('AWS::Lambda::Function', {
+        Code: {
+          ImageUri: stack.resolve(repo.repositoryUriForTag('latest')),
+        },
+        ImageConfig: ABSENT,
+      });
+    });
+
+    test('props are correctly resolved', () => {
+      // given
+      const stack = new cdk.Stack();
+      const repo = new ecr.Repository(stack, 'Repo');
+
+      // when
+      new lambda.Function(stack, 'Fn', {
+        code: lambda.Code.fromEcrImage(repo, {
+          cmd: ['cmd', 'param1'],
+          entrypoint: ['entrypoint', 'param2'],
+          tag: 'mytag',
+        }),
+        handler: lambda.Handler.FROM_IMAGE,
+        runtime: lambda.Runtime.FROM_IMAGE,
+      });
+
+      // then
+      expect(stack).toHaveResource('AWS::Lambda::Function', {
+        Code: {
+          ImageUri: stack.resolve(repo.repositoryUriForTag('mytag')),
+        },
+        ImageConfig: {
+          Command: ['cmd', 'param1'],
+          EntryPoint: ['entrypoint', 'param2'],
+        },
+      });
+    });
+
+    test('permission grants', () => {
+      // given
+      const stack = new cdk.Stack();
+      const repo = new ecr.Repository(stack, 'Repo');
+
+      // when
+      new lambda.Function(stack, 'Fn', {
+        code: lambda.Code.fromEcrImage(repo),
+        handler: lambda.Handler.FROM_IMAGE,
+        runtime: lambda.Runtime.FROM_IMAGE,
+      });
+
+      // then
+      expect(stack).toHaveResourceLike('AWS::ECR::Repository', {
+        RepositoryPolicyText: {
+          Statement: [
+            {
+              Action: [
+                'ecr:BatchCheckLayerAvailability',
+                'ecr:GetDownloadUrlForLayer',
+                'ecr:BatchGetImage',
+              ],
+              Effect: 'Allow',
+              Principal: {
+                Service: 'lambda.amazonaws.com',
+              },
+            },
+          ],
+        },
+      });
+    });
+  });
+
+  describe('lambda.Code.fromImageAsset', () => {
+    const flags = { [cxapi.DOCKER_IGNORE_SUPPORT]: true };
+    testFutureBehavior('repository uri is correctly identified', flags, cdk.App, (app) => {
+      // given
+      const stack = new cdk.Stack(app);
+
+      // when
+      new lambda.Function(stack, 'Fn', {
+        code: lambda.Code.fromAssetImage(path.join(__dirname, 'docker-lambda-handler')),
+        handler: lambda.Handler.FROM_IMAGE,
+        runtime: lambda.Runtime.FROM_IMAGE,
+      });
+
+      // then
+      expect(stack).toHaveResource('AWS::Lambda::Function', {
+        Code: {
+          ImageUri: {
+            'Fn::Join': ['', [
+              { Ref: 'AWS::AccountId' },
+              '.dkr.ecr.',
+              { Ref: 'AWS::Region' },
+              '.',
+              { Ref: 'AWS::URLSuffix' },
+              '/aws-cdk/assets:e8a944aeb0a08ba4811503d9c138e514b112dadca84daa5b4608e4a0fb80a0c9',
+            ]],
+          },
+        },
+        ImageConfig: ABSENT,
+      });
+    });
+
+    test('props are correctly resolved', () => {
+      // given
+      const stack = new cdk.Stack();
+
+      // when
+      new lambda.Function(stack, 'Fn', {
+        code: lambda.Code.fromAssetImage(path.join(__dirname, 'docker-lambda-handler'), {
+          cmd: ['cmd', 'param1'],
+          entrypoint: ['entrypoint', 'param2'],
+        }),
+        handler: lambda.Handler.FROM_IMAGE,
+        runtime: lambda.Runtime.FROM_IMAGE,
+      });
+
+      // then
+      expect(stack).toHaveResource('AWS::Lambda::Function', {
+        ImageConfig: {
+          Command: ['cmd', 'param1'],
+          EntryPoint: ['entrypoint', 'param2'],
+        },
+      });
+    });
+  });
+
+  describe('lambda.Code.fromDockerBuild', () => {
+    test('can use the result of a Docker build as an asset', () => {
+      // given
+      const stack = new cdk.Stack();
+      stack.node.setContext(cxapi.ASSET_RESOURCE_METADATA_ENABLED_CONTEXT, true);
+
+      // when
+      new lambda.Function(stack, 'Fn', {
+        code: lambda.Code.fromDockerBuild(path.join(__dirname, 'docker-build-lambda')),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.NODEJS_12_X,
+      });
+
+      // then
+      expect(stack).toHaveResource('AWS::Lambda::Function', {
+        Metadata: {
+          [cxapi.ASSET_RESOURCE_METADATA_PATH_KEY]: 'asset.38cd320fa97b348accac88e48d9cede4923f7cab270ce794c95a665be83681a8',
+          [cxapi.ASSET_RESOURCE_METADATA_PROPERTY_KEY]: 'Code',
+        },
+      }, ResourcePart.CompleteDefinition);
     });
   });
 });

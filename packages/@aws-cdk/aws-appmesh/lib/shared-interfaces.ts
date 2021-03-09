@@ -1,6 +1,60 @@
 import * as cdk from '@aws-cdk/core';
 import { CfnVirtualGateway, CfnVirtualNode } from './appmesh.generated';
 
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct } from '@aws-cdk/core';
+
+/**
+ * Represents timeouts for HTTP protocols.
+ */
+export interface HttpTimeout {
+  /**
+   * Represents an idle timeout. The amount of time that a connection may be idle.
+   *
+   * @default - none
+   */
+  readonly idle?: cdk.Duration;
+
+  /**
+   * Represents per request timeout.
+   *
+   * @default - 15 s
+   */
+  readonly perRequest?: cdk.Duration;
+}
+
+/**
+ * Represents timeouts for GRPC protocols.
+ */
+export interface GrpcTimeout {
+  /**
+   * Represents an idle timeout. The amount of time that a connection may be idle.
+   *
+   * @default - none
+   */
+  readonly idle?: cdk.Duration;
+
+  /**
+   * Represents per request timeout.
+   *
+   * @default - 15 s
+   */
+  readonly perRequest?: cdk.Duration;
+}
+
+/**
+ * Represents timeouts for TCP protocols.
+ */
+export interface TcpTimeout {
+  /**
+   * Represents an idle timeout. The amount of time that a connection may be idle.
+   *
+   * @default - none
+   */
+  readonly idle?: cdk.Duration;
+}
+
 /**
  * Enum of supported AppMesh protocols
  */
@@ -105,7 +159,7 @@ export abstract class AccessLog {
    * Called when the AccessLog type is initialized. Can be used to enforce
    * mutual exclusivity with future properties
    */
-  public abstract bind(scope: cdk.Construct): AccessLogConfig;
+  public abstract bind(scope: Construct): AccessLogConfig;
 }
 
 /**
@@ -124,7 +178,7 @@ class FileAccessLog extends AccessLog {
     this.filePath = filePath;
   }
 
-  public bind(_scope: cdk.Construct): AccessLogConfig {
+  public bind(_scope: Construct): AccessLogConfig {
     return {
       virtualNodeAccessLog: {
         file: {
@@ -139,3 +193,4 @@ class FileAccessLog extends AccessLog {
     };
   }
 }
+

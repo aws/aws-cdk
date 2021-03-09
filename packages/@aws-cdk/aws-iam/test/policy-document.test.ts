@@ -311,8 +311,8 @@ describe('IAM policy document', () => {
     const stack = new Stack();
 
     const statement = new PolicyStatement();
-    statement.addActions(...Lazy.listValue({ produce: () => ['a', 'b', 'c'] }));
-    statement.addResources(...Lazy.listValue({ produce: () => ['x', 'y', 'z'] }));
+    statement.addActions(...Lazy.list({ produce: () => ['a', 'b', 'c'] }));
+    statement.addResources(...Lazy.list({ produce: () => ['x', 'y', 'z'] }));
 
     expect(stack.resolve(statement.toStatementJson())).toEqual({
       Effect: 'Allow',
@@ -558,7 +558,7 @@ describe('IAM policy document', () => {
 
       // WHEN
       const p = new ArnPrincipal('arn:of:principal').withConditions({
-        StringEquals: Lazy.anyValue({ produce: () => ({ goo: 'zar' }) }),
+        StringEquals: Lazy.any({ produce: () => ({ goo: 'zar' }) }),
       });
 
       statement.addPrincipals(p);
@@ -582,7 +582,7 @@ describe('IAM policy document', () => {
       const p = new FederatedPrincipal('fed', {
         StringEquals: { foo: 'bar' },
       }).withConditions({
-        StringEquals: Lazy.anyValue({ produce: () => ({ goo: 'zar' }) }),
+        StringEquals: Lazy.any({ produce: () => ({ goo: 'zar' }) }),
       });
 
       const statement = new PolicyStatement();
@@ -644,12 +644,12 @@ describe('IAM policy document', () => {
       const p = new PolicyDocument();
 
       const statement1 = new PolicyStatement();
-      statement1.addResources(Lazy.stringValue({ produce: () => 'resource' }));
-      statement1.addActions(Lazy.stringValue({ produce: () => 'action' }));
+      statement1.addResources(Lazy.string({ produce: () => 'resource' }));
+      statement1.addActions(Lazy.string({ produce: () => 'action' }));
 
       const statement2 = new PolicyStatement();
-      statement2.addResources(Lazy.stringValue({ produce: () => 'resource' }));
-      statement2.addActions(Lazy.stringValue({ produce: () => 'action' }));
+      statement2.addResources(Lazy.string({ produce: () => 'resource' }));
+      statement2.addActions(Lazy.string({ produce: () => 'action' }));
 
       // WHEN
       p.addStatements(statement1);

@@ -11,8 +11,8 @@
     "test": "cdk-test",
     "pkglint": "pkglint -f",
     "package": "cdk-package",
-    "build+test+package": "npm run build+test && npm run package",
-    "build+test": "npm run build && npm test"
+    "build+test+package": "yarn build+test && yarn package",
+    "build+test": "yarn build && yarn test"
   },
   "author": {
     "name": "Amazon Web Services",
@@ -21,11 +21,11 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@types/jest": "^26.0.15",
+    "@types/jest": "^26.0.20",
     "cdk-build-tools": "0.0.0",
     "jest": "^26.6.3",
     "pkglint": "0.0.0",
-    "ts-jest": "^26.4.4"
+    "ts-jest": "^26.5.3"
   },
   "dependencies": {
     "@aws-cdk/cloud-assembly-schema": "0.0.0",
@@ -56,5 +56,8 @@
   "maturity": "experimental",
   "cdk-build": {
     "jest": true
+  },
+  "publishConfig": {
+    "tag": "latest"
   }
 }

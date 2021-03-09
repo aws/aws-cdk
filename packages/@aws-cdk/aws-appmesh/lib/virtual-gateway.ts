@@ -1,8 +1,8 @@
 import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnVirtualGateway } from './appmesh.generated';
+import { ClientPolicy } from './client-policy';
 import { GatewayRoute, GatewayRouteBaseProps } from './gateway-route';
-
 import { IMesh, Mesh } from './mesh';
 import { AccessLog } from './shared-interfaces';
 import { VirtualGatewayListener, VirtualGatewayListenerConfig } from './virtual-gateway-listener';
@@ -60,6 +60,13 @@ export interface VirtualGatewayBaseProps {
    * @default - no access logging
    */
   readonly accessLog?: AccessLog;
+
+  /**
+   * Default Configuration Virtual Node uses to communicate with Virtual Service
+   *
+   * @default - No Config
+   */
+  readonly backendsDefaultClientPolicy?: ClientPolicy;
 }
 
 /**
@@ -161,7 +168,7 @@ export class VirtualGateway extends VirtualGatewayBase {
 
     if (!props.listeners) {
       // Use listener default of http listener port 8080 if no listener is defined
-      this.listeners.push(VirtualGatewayListener.httpGatewayListener().bind(this));
+      this.listeners.push(VirtualGatewayListener.http().bind(this));
     } else {
       props.listeners.forEach(listener => this.listeners.push(listener.bind(this)));
     }
@@ -173,6 +180,7 @@ export class VirtualGateway extends VirtualGatewayBase {
       meshName: this.mesh.meshName,
       spec: {
         listeners: this.listeners.map(listener => listener.listener),
+        backendDefaults: props.backendsDefaultClientPolicy?.bind(this),
         logging: accessLogging !== undefined ? {
           accessLog: accessLogging.virtualGatewayAccessLog,
         } : undefined,

@@ -501,6 +501,28 @@ export enum CompressionType {
 //
 
 /**
+ * Configures the timeout and maximum number of retries for processing a transform job invocation.
+ *
+ *  @experimental
+ */
+export interface ModelClientOptions {
+
+  /**
+   * The maximum number of retries when invocation requests are failing.
+   *
+   * @default 0
+   */
+  readonly invocationsMaxRetries?: number;
+
+  /**
+   * The timeout duration for an invocation request.
+   *
+   * @default Duration.minutes(1)
+   */
+  readonly invocationsTimeout?: Duration;
+}
+
+/**
  *  Dataset to be transformed and the Amazon S3 location where it is stored.
  *
  *  @experimental

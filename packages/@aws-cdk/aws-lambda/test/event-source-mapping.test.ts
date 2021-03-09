@@ -89,7 +89,7 @@ describe('event source mapping', () => {
     new EventSourceMapping(stack, 'test', {
       target: fn,
       eventSourceArn: '',
-      retryAttempts: cdk.Lazy.numberValue({ produce: () => 100 }),
+      retryAttempts: cdk.Lazy.number({ produce: () => 100 }),
     });
   });
 
@@ -134,7 +134,7 @@ describe('event source mapping', () => {
     new EventSourceMapping(stack, 'test', {
       target: fn,
       eventSourceArn: '',
-      parallelizationFactor: cdk.Lazy.numberValue({ produce: () => 20 }),
+      parallelizationFactor: cdk.Lazy.number({ produce: () => 20 }),
     });
   });
 

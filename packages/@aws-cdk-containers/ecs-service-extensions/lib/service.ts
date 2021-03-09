@@ -5,6 +5,10 @@ import { IEnvironment } from './environment';
 import { EnvironmentCapacityType, ServiceBuild } from './extensions/extension-interfaces';
 import { ServiceDescription } from './service-description';
 
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct } from '@aws-cdk/core';
+
 /**
  * The settings for an ECS Service
  */
@@ -24,7 +28,7 @@ export interface ServiceProps {
  * A service builder class. This construct support various extensions
  * which can construct an ECS service progressively.
  */
-export class Service extends cdk.Construct {
+export class Service extends Construct {
   /**
    * The underlying ECS service that was created
    */
@@ -74,7 +78,7 @@ export class Service extends cdk.Construct {
 
   private readonly scope: cdk.Construct;
 
-  constructor(scope: cdk.Construct, id: string, props: ServiceProps) {
+  constructor(scope: Construct, id: string, props: ServiceProps) {
     super(scope, id);
 
     this.scope = scope;

@@ -1,8 +1,9 @@
 import * as child_process from 'child_process';
+import * as crypto from 'crypto';
 import * as path from 'path';
 import { nodeunitShim, Test } from 'nodeunit-shim';
 import * as sinon from 'sinon';
-import { BundlingDockerImage, FileSystem } from '../lib';
+import { BundlingDockerImage, DockerImage, FileSystem } from '../lib';
 
 nodeunitShim({
   'tearDown'(callback: any) {
@@ -46,11 +47,10 @@ nodeunitShim({
   },
 
   'bundling with image from asset'(test: Test) {
-    const imageId = 'sha256:abcdef123456';
     const spawnSyncStub = sinon.stub(child_process, 'spawnSync').returns({
       status: 0,
       stderr: Buffer.from('stderr'),
-      stdout: Buffer.from(imageId),
+      stdout: Buffer.from('stdout'),
       pid: 123,
       output: ['stdout', 'stderr'],
       signal: null,
@@ -67,30 +67,24 @@ nodeunitShim({
     });
     image.run();
 
+    const tagHash = crypto.createHash('sha256').update(JSON.stringify({
+      path: 'docker-path',
+      buildArgs: {
+        TEST_ARG: 'cdk-test',
+      },
+    })).digest('hex');
+    const tag = `cdk-${tagHash}`;
+
     test.ok(spawnSyncStub.firstCall.calledWith('docker', [
-      'build', '-q',
+      'build', '-t', tag,
       '--build-arg', 'TEST_ARG=cdk-test',
       'docker-path',
     ]));
 
     test.ok(spawnSyncStub.secondCall.calledWith('docker', [
       'run', '--rm',
-      imageId,
+      tag,
     ]));
-    test.done();
-  },
-
-  'throws if image id cannot be extracted from build output'(test: Test) {
-    sinon.stub(child_process, 'spawnSync').returns({
-      status: 0,
-      stderr: Buffer.from('stderr'),
-      stdout: Buffer.from('stdout'),
-      pid: 123,
-      output: ['stdout', 'stderr'],
-      signal: null,
-    });
-
-    test.throws(() => BundlingDockerImage.fromAsset('docker-path'), /Failed to extract image ID from Docker build output/);
     test.done();
   },
 
@@ -133,11 +127,10 @@ nodeunitShim({
   },
 
   'BundlerDockerImage json is the bundler image if building an image'(test: Test) {
-    const imageId = 'sha256:abcdef123456';
     sinon.stub(child_process, 'spawnSync').returns({
       status: 0,
       stderr: Buffer.from('stderr'),
-      stdout: Buffer.from(imageId),
+      stdout: Buffer.from('stdout'),
       pid: 123,
       output: ['stdout', 'stderr'],
       signal: null,
@@ -148,7 +141,11 @@ nodeunitShim({
 
     const image = BundlingDockerImage.fromAsset('docker-path');
 
-    test.equals(image.image, imageId);
+    const tagHash = crypto.createHash('sha256').update(JSON.stringify({
+      path: 'docker-path',
+    })).digest('hex');
+
+    test.equals(image.image, `cdk-${tagHash}`);
     test.equals(image.toJSON(), imageHash);
     test.ok(fingerprintStub.calledWith('docker-path', sinon.match({ extraHash: JSON.stringify({}) })));
     test.done();
@@ -164,13 +161,53 @@ nodeunitShim({
       signal: null,
     });
 
-    BundlingDockerImage.fromAsset(path.join(__dirname, 'fs/fixtures/test1'), {
+    const imagePath = path.join(__dirname, 'fs/fixtures/test1');
+    BundlingDockerImage.fromAsset(imagePath, {
       file: 'my-dockerfile',
     });
 
     test.ok(spawnSyncStub.calledOnce);
-    test.ok(/-f my-dockerfile/.test(spawnSyncStub.firstCall.args[1]?.join(' ') ?? ''));
+    const expected = path.join(imagePath, 'my-dockerfile');
+    test.ok(new RegExp(`-f ${expected}`).test(spawnSyncStub.firstCall.args[1]?.join(' ') ?? ''));
 
+    test.done();
+  },
+
+  'custom entrypoint is passed through to docker exec'(test: Test) {
+    const spawnSyncStub = sinon.stub(child_process, 'spawnSync').returns({
+      status: 0,
+      stderr: Buffer.from('stderr'),
+      stdout: Buffer.from('stdout'),
+      pid: 123,
+      output: ['stdout', 'stderr'],
+      signal: null,
+    });
+
+    const image = BundlingDockerImage.fromRegistry('alpine');
+    image.run({
+      entrypoint: ['/cool/entrypoint', '--cool-entrypoint-arg'],
+      command: ['cool', 'command'],
+      environment: {
+        VAR1: 'value1',
+        VAR2: 'value2',
+      },
+      volumes: [{ hostPath: '/host-path', containerPath: '/container-path' }],
+      workingDirectory: '/working-directory',
+      user: 'user:group',
+    });
+
+    test.ok(spawnSyncStub.calledWith('docker', [
+      'run', '--rm',
+      '-u', 'user:group',
+      '-v', '/host-path:/container-path:delegated',
+      '--env', 'VAR1=value1',
+      '--env', 'VAR2=value2',
+      '-w', '/working-directory',
+      '--entrypoint', '/cool/entrypoint',
+      'alpine',
+      '--cool-entrypoint-arg',
+      'cool', 'command',
+    ], { stdio: ['ignore', process.stderr, 'inherit'] }));
     test.done();
   },
 
@@ -226,6 +263,27 @@ nodeunitShim({
 
     // THEN
     test.ok(spawnSyncStub.calledWith(sinon.match.any, ['rm', '-v', containerId]));
+    test.done();
+  },
+
+  'cp utility copies to a temp dir of outputPath is omitted'(test: Test) {
+    // GIVEN
+    const containerId = '1234567890abcdef1234567890abcdef';
+    sinon.stub(child_process, 'spawnSync').returns({
+      status: 0,
+      stderr: Buffer.from('stderr'),
+      stdout: Buffer.from(`${containerId}\n`),
+      pid: 123,
+      output: ['stdout', 'stderr'],
+      signal: null,
+    });
+
+    // WHEN
+    const tempPath = DockerImage.fromRegistry('alpine').cp('/foo/bar');
+
+    // THEN
+    test.ok(/cdk-docker-cp-/.test(tempPath));
+
     test.done();
   },
 });

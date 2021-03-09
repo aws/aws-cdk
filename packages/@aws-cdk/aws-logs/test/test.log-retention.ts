@@ -40,6 +40,11 @@ export = {
       ],
     }));
 
+    expect(stack).to(haveResource('AWS::Lambda::Function', {
+      Handler: 'index.handler',
+      Runtime: 'nodejs12.x',
+    }));
+
     expect(stack).to(haveResource('Custom::LogRetention', {
       'ServiceToken': {
         'Fn::GetAtt': [

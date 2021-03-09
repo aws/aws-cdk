@@ -44,7 +44,7 @@ test('Canary can have generated name', () => {
       handler: 'index.handler',
       code: synthetics.Code.fromInline('/* Synthetics handler code */'),
     }),
-    runtime: synthetics.Runtime.SYNTHETICS_NODEJS_2_0,
+    runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_0,
   });
 
   // THEN
@@ -59,7 +59,7 @@ test('Name validation does not fail when using Tokens', () => {
 
   // WHEN
   new synthetics.Canary(stack, 'Canary', {
-    canaryName: Lazy.stringValue({ produce: () => 'My Canary' }),
+    canaryName: Lazy.string({ produce: () => 'My Canary' }),
     test: synthetics.Test.custom({
       handler: 'index.handler',
       code: synthetics.Code.fromInline('/* Synthetics handler code */'),

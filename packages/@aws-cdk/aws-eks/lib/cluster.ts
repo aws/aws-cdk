@@ -6,7 +6,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as ssm from '@aws-cdk/aws-ssm';
-import { Annotations, CfnOutput, CfnResource, IResource, Resource, Stack, Tags, Token, Duration } from '@aws-cdk/core';
+import { Annotations, CfnOutput, CfnResource, IResource, Resource, Stack, Tags, Token, Duration, Size } from '@aws-cdk/core';
 import { Construct, Node } from 'constructs';
 import * as YAML from 'yaml';
 import { AwsAuth } from './aws-auth';
@@ -67,10 +67,16 @@ export interface ICluster extends IResource, ec2.IConnectable {
   readonly clusterCertificateAuthorityData: string;
 
   /**
-   * The cluster security group that was created by Amazon EKS for the cluster.
+   * The id of the cluster security group that was created by Amazon EKS for the cluster.
    * @attribute
    */
   readonly clusterSecurityGroupId: string;
+
+  /**
+   * The cluster security group that was created by Amazon EKS for the cluster.
+   * @attribute
+   */
+  readonly clusterSecurityGroup: ec2.ISecurityGroup;
 
   /**
    * Amazon Resource Name (ARN) or alias of the customer master key (CMK).
@@ -92,14 +98,13 @@ export interface ICluster extends IResource, ec2.IConnectable {
 
   /**
    * Custom environment variables when running `kubectl` against this cluster.
-   * @default - no additional environment variables
    */
   readonly kubectlEnvironment?: { [key: string]: string };
 
   /**
    * A security group to use for `kubectl` execution.
    *
-   * @default - If not specified, the k8s endpoint is expected to be accessible
+   * If this is undefined, the k8s endpoint is expected to be accessible
    * publicly.
    */
   readonly kubectlSecurityGroup?: ec2.ISecurityGroup;
@@ -107,7 +112,7 @@ export interface ICluster extends IResource, ec2.IConnectable {
   /**
    * Subnets to host the `kubectl` compute resources.
    *
-   * @default - If not specified, the k8s endpoint is expected to be accessible
+   * If this is undefined, the k8s endpoint is expected to be accessible
    * publicly.
    */
   readonly kubectlPrivateSubnets?: ec2.ISubnet[];
@@ -118,6 +123,19 @@ export interface ICluster extends IResource, ec2.IConnectable {
    * If not defined, a default layer will be used.
    */
   readonly kubectlLayer?: lambda.ILayerVersion;
+
+  /**
+   * Amount of memory to allocate to the provider's lambda function.
+   */
+  readonly kubectlMemory?: Size;
+
+  /**
+   * Indicates whether Kubernetes resources can be automatically pruned. When
+   * this is enabled (default), prune labels will be allocated and injected to
+   * each resource. These labels will then be used when issuing the `kubectl
+   * apply` operation with the `--prune` switch.
+   */
+  readonly prune: boolean;
 
   /**
    * Creates a new service account with corresponding IAM Role (IRSA).
@@ -136,7 +154,7 @@ export interface ICluster extends IResource, ec2.IConnectable {
    * @param manifest a list of Kubernetes resource specifications
    * @returns a `KubernetesManifest` object.
    */
-  addManifest(id: string, ...manifest: any[]): KubernetesManifest;
+  addManifest(id: string, ...manifest: Record<string, any>[]): KubernetesManifest;
 
   /**
    * Defines a Helm chart in this cluster.
@@ -243,34 +261,35 @@ export interface ClusterAttributes {
   readonly openIdConnectProvider?: iam.IOpenIdConnectProvider;
 
   /**
-   * An AWS Lambda Layer which includes `kubectl`, Helm and the AWS CLI.
+   * An AWS Lambda Layer which includes `kubectl`, Helm and the AWS CLI. This layer
+   * is used by the kubectl handler to apply manifests and install helm charts.
    *
-   * By default, the provider will use the layer included in the
-   * "aws-lambda-layer-kubectl" SAR application which is available in all
-   * commercial regions.
+   * The handler expects the layer to include the following executables:
    *
-   * To deploy the layer locally, visit
-   * https://github.com/aws-samples/aws-lambda-layer-kubectl/blob/master/cdk/README.md
-   * for instructions on how to prepare the .zip file and then define it in your
-   * app as follows:
+   *    helm/helm
+   *    kubectl/kubectl
+   *    awscli/aws
    *
-   * ```ts
-   * const layer = new lambda.LayerVersion(this, 'kubectl-layer', {
-   *   code: lambda.Code.fromAsset(`${__dirname}/layer.zip`)),
-   *   compatibleRuntimes: [lambda.Runtime.PROVIDED]
-   * });
-   *
-   * Or you can use the standard layer like this (with options
-   * to customize the version and SAR application ID):
-   *
-   * ```ts
-   * const layer = new eks.KubectlLayer(this, 'KubectlLayer');
-   * ```
-   *
-   * @default - the layer provided by the `aws-lambda-layer-kubectl` SAR app.
-   * @see https://github.com/aws-samples/aws-lambda-layer-kubectl
+   * @default - a layer bundled with this module.
    */
   readonly kubectlLayer?: lambda.ILayerVersion;
+
+  /**
+   * Amount of memory to allocate to the provider's lambda function.
+   *
+   * @default Size.gibibytes(1)
+   */
+  readonly kubectlMemory?: Size;
+
+  /**
+   * Indicates whether Kubernetes resources added through `addManifest()` can be
+   * automatically pruned. When this is enabled (default), prune labels will be
+   * allocated and injected to each resource. These labels will then be used
+   * when issuing the `kubectl apply` operation with the `--prune` switch.
+   *
+   * @default true
+   */
+  readonly prune?: boolean;
 }
 
 /**
@@ -394,6 +413,13 @@ export interface ClusterOptions extends CommonClusterOptions {
   readonly kubectlEnvironment?: { [key: string]: string };
 
   /**
+   * Custom environment variables when interacting with the EKS endpoint to manage the cluster lifecycle.
+   *
+   * @default - No environment variables.
+   */
+  readonly clusterHandlerEnvironment?: { [key: string]: string };
+
+  /**
    * An AWS Lambda Layer which includes `kubectl`, Helm and the AWS CLI.
    *
    * By default, the provider will use the layer included in the
@@ -416,6 +442,31 @@ export interface ClusterOptions extends CommonClusterOptions {
    * @see https://github.com/aws-samples/aws-lambda-layer-kubectl
    */
   readonly kubectlLayer?: lambda.ILayerVersion;
+
+  /**
+   * Amount of memory to allocate to the provider's lambda function.
+   *
+   * @default Size.gibibytes(1)
+   */
+  readonly kubectlMemory?: Size;
+
+  /**
+   * Indicates whether Kubernetes resources added through `addManifest()` can be
+   * automatically pruned. When this is enabled (default), prune labels will be
+   * allocated and injected to each resource. These labels will then be used
+   * when issuing the `kubectl apply` operation with the `--prune` switch.
+   *
+   * @default true
+   */
+  readonly prune?: boolean;
+
+  /**
+   * If set to true, the cluster handler functions will be placed in the private subnets
+   * of the cluster vpc, subject to the `vpcSubnets` selection strategy.
+   *
+   * @default false
+   */
+  readonly placeClusterHandlerInVpc?: boolean;
 }
 
 /**
@@ -516,28 +567,6 @@ export class EndpointAccess {
  * Common configuration props for EKS clusters.
  */
 export interface ClusterProps extends ClusterOptions {
-  /**
-   * NOT SUPPORTED: We no longer allow disabling kubectl-support. Setting this
-   * option to `false` will throw an error.
-   *
-   * To temporary allow you to retain existing clusters created with
-   * `kubectlEnabled: false`, you can use `eks.LegacyCluster` class, which is a
-   * drop-in replacement for `eks.Cluster` with `kubectlEnabled: false`.
-   *
-   * Bear in mind that this is a temporary workaround. We have plans to remove
-   * `eks.LegacyCluster`. If you have a use case for using `eks.LegacyCluster`,
-   * please add a comment here https://github.com/aws/aws-cdk/issues/9332 and
-   * let us know so we can make sure to continue to support your use case with
-   * `eks.Cluster`. This issue also includes additional context into why this
-   * class is being removed.
-   *
-   * @deprecated `eks.LegacyCluster` is __temporarily__ provided as a drop-in
-   * replacement until you are able to migrate to `eks.Cluster`.
-   *
-   * @see https://github.com/aws/aws-cdk/issues/9332
-   * @default true
-   */
-  readonly kubectlEnabled?: boolean;
 
   /**
    * Number of instances to allocate as an initial capacity for this cluster.
@@ -606,6 +635,11 @@ export class KubernetesVersion {
   public static readonly V1_18 = KubernetesVersion.of('1.18');
 
   /**
+   * Kubernetes version 1.19
+   */
+  public static readonly V1_19 = KubernetesVersion.of('1.19');
+
+  /**
    * Custom cluster version
    * @param version custom version number
    */
@@ -625,11 +659,14 @@ abstract class ClusterBase extends Resource implements ICluster {
   public abstract readonly clusterEndpoint: string;
   public abstract readonly clusterCertificateAuthorityData: string;
   public abstract readonly clusterSecurityGroupId: string;
+  public abstract readonly clusterSecurityGroup: ec2.ISecurityGroup;
   public abstract readonly clusterEncryptionConfigKeyArn: string;
   public abstract readonly kubectlRole?: iam.IRole;
   public abstract readonly kubectlEnvironment?: { [key: string]: string };
   public abstract readonly kubectlSecurityGroup?: ec2.ISecurityGroup;
   public abstract readonly kubectlPrivateSubnets?: ec2.ISubnet[];
+  public abstract readonly kubectlMemory?: Size;
+  public abstract readonly prune: boolean;
   public abstract readonly openIdConnectProvider: iam.IOpenIdConnectProvider;
 
   /**
@@ -641,7 +678,7 @@ abstract class ClusterBase extends Resource implements ICluster {
    * @param manifest a list of Kubernetes resource specifications
    * @returns a `KubernetesResource` object.
    */
-  public addManifest(id: string, ...manifest: any[]): KubernetesManifest {
+  public addManifest(id: string, ...manifest: Record<string, any>[]): KubernetesManifest {
     return new KubernetesManifest(this, `manifest-${id}`, { cluster: this, manifest });
   }
 
@@ -754,9 +791,14 @@ export class Cluster extends ClusterBase {
   public readonly clusterCertificateAuthorityData: string;
 
   /**
-   * The cluster security group that was created by Amazon EKS for the cluster.
+   * The id of the cluster security group that was created by Amazon EKS for the cluster.
    */
   public readonly clusterSecurityGroupId: string;
+
+  /**
+   * The cluster security group that was created by Amazon EKS for the cluster.
+   */
+  public readonly clusterSecurityGroup: ec2.ISecurityGroup;
 
   /**
    * Amazon Resource Name (ARN) or alias of the customer master key (CMK).
@@ -799,7 +841,6 @@ export class Cluster extends ClusterBase {
 
   /**
    * Custom environment variables when running `kubectl` against this cluster.
-   * @default - no additional environment variables
    */
   public readonly kubectlEnvironment?: { [key: string]: string };
 
@@ -841,6 +882,16 @@ export class Cluster extends ClusterBase {
    * undefined, a SAR app that contains this layer will be used.
    */
   public readonly kubectlLayer?: lambda.ILayerVersion;
+
+  /**
+   * The amount of memory allocated to the kubectl provider's lambda function.
+   */
+  public readonly kubectlMemory?: Size;
+
+  /**
+   * Determines if Kubernetes resources can be pruned automatically.
+   */
+  public readonly prune: boolean;
 
   /**
    * If this cluster is kubectl-enabled, returns the `ClusterResource` object
@@ -892,16 +943,9 @@ export class Cluster extends ClusterBase {
       physicalName: props.clusterName,
     });
 
-    if (props.kubectlEnabled === false) {
-      throw new Error(
-        'The "eks.Cluster" class no longer allows disabling kubectl support. ' +
-        'As a temporary workaround, you can use the drop-in replacement class `eks.LegacyCluster`, ' +
-        'but bear in mind that this class will soon be removed and will no longer receive additional ' +
-        'features or bugfixes. See https://github.com/aws/aws-cdk/issues/9332 for more details');
-    }
-
     const stack = Stack.of(this);
 
+    this.prune = props.prune ?? true;
     this.vpc = props.vpc || new ec2.Vpc(this, 'DefaultVpc');
     this.version = props.version;
 
@@ -922,13 +966,19 @@ export class Cluster extends ClusterBase {
 
     this.vpcSubnets = props.vpcSubnets ?? [{ subnetType: ec2.SubnetType.PUBLIC }, { subnetType: ec2.SubnetType.PRIVATE }];
 
+    const selectedSubnetIdsPerGroup = this.vpcSubnets.map(s => this.vpc.selectSubnets(s).subnetIds);
+    if (selectedSubnetIdsPerGroup.some(Token.isUnresolved) && selectedSubnetIdsPerGroup.length > 1) {
+      throw new Error('eks.Cluster: cannot select multiple subnet groups from a VPC imported from list tokens with unknown length. Select only one subnet group, pass a length to Fn.split, or switch to Vpc.fromLookup.');
+    }
+
     // Get subnetIds for all selected subnets
-    const subnetIds = [...new Set(Array().concat(...this.vpcSubnets.map(s => this.vpc.selectSubnets(s).subnetIds)))];
+    const subnetIds = Array.from(new Set(flatten(selectedSubnetIdsPerGroup)));
 
 
     this.endpointAccess = props.endpointAccess ?? EndpointAccess.PUBLIC_AND_PRIVATE;
     this.kubectlEnvironment = props.kubectlEnvironment;
     this.kubectlLayer = props.kubectlLayer;
+    this.kubectlMemory = props.kubectlMemory;
 
     const privateSubents = this.selectPrivateSubnets().slice(0, 16);
     const publicAccessDisabled = !this.endpointAccess._config.publicAccess;
@@ -948,8 +998,15 @@ export class Cluster extends ClusterBase {
       throw new Error('Vpc must contain private subnets when public endpoint access is restricted');
     }
 
+    const placeClusterHandlerInVpc = props.placeClusterHandlerInVpc ?? false;
+
+    if (placeClusterHandlerInVpc && privateSubents.length === 0) {
+      throw new Error('Cannot place cluster handler in the VPC since no private subnets could be selected');
+    }
+
     const resource = this._clusterResource = new ClusterResource(this, 'Resource', {
       name: this.physicalName,
+      environment: props.clusterHandlerEnvironment,
       roleArn: this.role.roleArn,
       version: props.version.version,
       resourcesVpcConfig: {
@@ -969,6 +1026,7 @@ export class Cluster extends ClusterBase {
       publicAccessCidrs: this.endpointAccess._config.publicCidrs,
       secretsEncryptionKey: props.secretsEncryptionKey,
       vpc: this.vpc,
+      subnets: placeClusterHandlerInVpc ? privateSubents : undefined,
     });
 
     if (this.endpointAccess._config.privateAccess && privateSubents.length !== 0) {
@@ -1010,16 +1068,16 @@ export class Cluster extends ClusterBase {
     this.clusterSecurityGroupId = resource.attrClusterSecurityGroupId;
     this.clusterEncryptionConfigKeyArn = resource.attrEncryptionConfigKeyArn;
 
-    const clusterSecurityGroup = ec2.SecurityGroup.fromSecurityGroupId(this, 'ClusterSecurityGroup', this.clusterSecurityGroupId);
+    this.clusterSecurityGroup = ec2.SecurityGroup.fromSecurityGroupId(this, 'ClusterSecurityGroup', this.clusterSecurityGroupId);
 
     this.connections = new ec2.Connections({
-      securityGroups: [clusterSecurityGroup, securityGroup],
+      securityGroups: [this.clusterSecurityGroup, securityGroup],
       defaultPort: ec2.Port.tcp(443), // Control Plane has an HTTPS API
     });
 
     // we can use the cluster security group since its already attached to the cluster
     // and configured to allow connections from itself.
-    this.kubectlSecurityGroup = clusterSecurityGroup;
+    this.kubectlSecurityGroup = this.clusterSecurityGroup;
 
     // use the cluster creation role to issue kubectl commands against the cluster because when the
     // cluster is first created, that's the only role that has "system:masters" permissions
@@ -1052,17 +1110,17 @@ export class Cluster extends ClusterBase {
     commonCommandOptions.push(`--role-arn ${mastersRole.roleArn}`);
 
     // allocate default capacity if non-zero (or default).
-    const minCapacity = props.defaultCapacity === undefined ? DEFAULT_CAPACITY_COUNT : props.defaultCapacity;
+    const minCapacity = props.defaultCapacity ?? DEFAULT_CAPACITY_COUNT;
     if (minCapacity > 0) {
       const instanceType = props.defaultCapacityInstance || DEFAULT_CAPACITY_TYPE;
       this.defaultCapacity = props.defaultCapacityType === DefaultCapacityType.EC2 ?
         this.addAutoScalingGroupCapacity('DefaultCapacity', { instanceType, minCapacity }) : undefined;
 
       this.defaultNodegroup = props.defaultCapacityType !== DefaultCapacityType.EC2 ?
-        this.addNodegroupCapacity('DefaultCapacity', { instanceType, minSize: minCapacity }) : undefined;
+        this.addNodegroupCapacity('DefaultCapacity', { instanceTypes: [instanceType], minSize: minCapacity }) : undefined;
     }
 
-    const outputConfigCommand = props.outputConfigCommand === undefined ? true : props.outputConfigCommand;
+    const outputConfigCommand = props.outputConfigCommand ?? true;
     if (outputConfigCommand) {
       const postfix = commonCommandOptions.join(' ');
       new CfnOutput(this, 'ConfigCommand', { value: `${updateConfigCommandPrefix} ${postfix}` });
@@ -1133,6 +1191,7 @@ export class Cluster extends ClusterBase {
       bootstrapOptions: options.bootstrapOptions,
       bootstrapEnabled: options.bootstrapEnabled,
       machineImageType: options.machineImageType,
+      spotInterruptHandler: options.spotInterruptHandler,
     });
 
     if (nodeTypeForInstanceType(options.instanceType) === NodeType.INFERENTIA) {
@@ -1194,7 +1253,10 @@ export class Cluster extends ClusterBase {
     autoScalingGroup.connections.allowToAnyIpv4(ec2.Port.allUdp());
     autoScalingGroup.connections.allowToAnyIpv4(ec2.Port.allIcmp());
 
-    const bootstrapEnabled = options.bootstrapEnabled !== undefined ? options.bootstrapEnabled : true;
+    // allow traffic to/from managed node groups (eks attaches this security group to the managed nodes)
+    autoScalingGroup.addSecurityGroup(this.clusterSecurityGroup);
+
+    const bootstrapEnabled = options.bootstrapEnabled ?? true;
     if (options.bootstrapOptions && !bootstrapEnabled) {
       throw new Error('Cannot specify "bootstrapOptions" if "bootstrapEnabled" is false');
     }
@@ -1211,13 +1273,17 @@ export class Cluster extends ClusterBase {
     autoScalingGroup.role.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonEC2ContainerRegistryReadOnly'));
 
     // EKS Required Tags
+    // https://docs.aws.amazon.com/eks/latest/userguide/worker.html
     Tags.of(autoScalingGroup).add(`kubernetes.io/cluster/${this.clusterName}`, 'owned', {
       applyToLaunchedInstances: true,
+      // exclude security groups to avoid multiple "owned" security groups.
+      // (the cluster security group already has this tag)
+      excludeResourceTypes: ['AWS::EC2::SecurityGroup'],
     });
 
     // do not attempt to map the role if `kubectl` is not enabled for this
     // cluster or if `mapRole` is set to false. By default this should happen.
-    const mapRole = options.mapRole === undefined ? true : options.mapRole;
+    const mapRole = options.mapRole ?? true;
     if (mapRole) {
       // see https://docs.aws.amazon.com/en_us/eks/latest/userguide/add-user-role.html
       this.awsAuth.addRoleMapping(autoScalingGroup.role, {
@@ -1235,8 +1301,9 @@ export class Cluster extends ClusterBase {
       });
     }
 
+    const addSpotInterruptHandler = options.spotInterruptHandler ?? true;
     // if this is an ASG with spot instances, install the spot interrupt handler (only if kubectl is enabled).
-    if (autoScalingGroup.spotPrice) {
+    if (autoScalingGroup.spotPrice && addSpotInterruptHandler) {
       this.addSpotInterruptHandler();
     }
   }
@@ -1352,18 +1419,20 @@ export class Cluster extends ClusterBase {
 
   private selectPrivateSubnets(): ec2.ISubnet[] {
     const privateSubnets: ec2.ISubnet[] = [];
+    const vpcPrivateSubnetIds = this.vpc.privateSubnets.map(s => s.subnetId);
+    const vpcPublicSubnetIds = this.vpc.publicSubnets.map(s => s.subnetId);
 
     for (const placement of this.vpcSubnets) {
 
       for (const subnet of this.vpc.selectSubnets(placement).subnets) {
 
-        if (this.vpc.privateSubnets.includes(subnet)) {
+        if (vpcPrivateSubnetIds.includes(subnet.subnetId)) {
           // definitely private, take it.
           privateSubnets.push(subnet);
           continue;
         }
 
-        if (this.vpc.publicSubnets.includes(subnet)) {
+        if (vpcPublicSubnetIds.includes(subnet.subnetId)) {
           // definitely public, skip it.
           continue;
         }
@@ -1387,11 +1456,13 @@ export class Cluster extends ClusterBase {
     if (!this._spotInterruptHandler) {
       this._spotInterruptHandler = this.addHelmChart('spot-interrupt-handler', {
         chart: 'aws-node-termination-handler',
-        version: '0.9.5',
+        version: '0.13.2',
         repository: 'https://aws.github.io/eks-charts',
         namespace: 'kube-system',
         values: {
-          'nodeSelector.lifecycle': LifecycleLabel.SPOT,
+          nodeSelector: {
+            lifecycle: LifecycleLabel.SPOT,
+          },
         },
       });
     }
@@ -1427,7 +1498,7 @@ export class Cluster extends ClusterBase {
         if (!ec2.Subnet.isVpcSubnet(subnet)) {
           // message (if token): "could not auto-tag public/private subnet with tag..."
           // message (if not token): "count not auto-tag public/private subnet xxxxx with tag..."
-          const subnetID = Token.isUnresolved(subnet.subnetId) ? '' : ` ${subnet.subnetId}`;
+          const subnetID = Token.isUnresolved(subnet.subnetId) || Token.isUnresolved([subnet.subnetId]) ? '' : ` ${subnet.subnetId}`;
           Annotations.of(this).addWarning(`Could not auto-tag ${type} subnet${subnetID} with "${tag}=1", please remember to do this manually`);
           continue;
         }
@@ -1523,6 +1594,14 @@ export interface AutoScalingGroupCapacityOptions extends autoscaling.CommonAutoS
    * @default MachineImageType.AMAZON_LINUX_2
    */
   readonly machineImageType?: MachineImageType;
+
+  /**
+   * Installs the AWS spot instance interrupt handler on the cluster if it's not
+   * already added. Only relevant if `spotPrice` is used.
+   *
+   * @default true
+   */
+  readonly spotInterruptHandler?: boolean;
 }
 
 /**
@@ -1614,6 +1693,14 @@ export interface AutoScalingGroupOptions {
    * @default MachineImageType.AMAZON_LINUX_2
    */
   readonly machineImageType?: MachineImageType;
+
+  /**
+   * Installs the AWS spot instance interrupt handler on the cluster if it's not
+   * already added. Only relevant if `spotPrice` is configured on the auto-scaling group.
+   *
+   * @default true
+   */
+  readonly spotInterruptHandler?: boolean;
 }
 
 /**
@@ -1628,6 +1715,12 @@ class ImportedCluster extends ClusterBase {
   public readonly kubectlSecurityGroup?: ec2.ISecurityGroup | undefined;
   public readonly kubectlPrivateSubnets?: ec2.ISubnet[] | undefined;
   public readonly kubectlLayer?: lambda.ILayerVersion;
+  public readonly kubectlMemory?: Size;
+  public readonly prune: boolean;
+
+  // so that `clusterSecurityGroup` on `ICluster` can be configured without optionality, avoiding users from having
+  // to null check on an instance of `Cluster`, which will always have this configured.
+  private readonly _clusterSecurityGroup?: ec2.ISecurityGroup;
 
   constructor(scope: Construct, id: string, private readonly props: ClusterAttributes) {
     super(scope, id);
@@ -1639,6 +1732,8 @@ class ImportedCluster extends ClusterBase {
     this.kubectlEnvironment = props.kubectlEnvironment;
     this.kubectlPrivateSubnets = props.kubectlPrivateSubnetIds ? props.kubectlPrivateSubnetIds.map((subnetid, index) => ec2.Subnet.fromSubnetId(this, `KubectlSubnet${index}`, subnetid)) : undefined;
     this.kubectlLayer = props.kubectlLayer;
+    this.kubectlMemory = props.kubectlMemory;
+    this.prune = props.prune ?? true;
 
     let i = 1;
     for (const sgid of props.securityGroupIds ?? []) {
@@ -1647,7 +1742,8 @@ class ImportedCluster extends ClusterBase {
     }
 
     if (props.clusterSecurityGroupId) {
-      this.connections.addSecurityGroup(ec2.SecurityGroup.fromSecurityGroupId(this, 'ClusterSecurityGroup', props.clusterSecurityGroupId));
+      this._clusterSecurityGroup = ec2.SecurityGroup.fromSecurityGroupId(this, 'ClusterSecurityGroup', this.clusterSecurityGroupId);
+      this.connections.addSecurityGroup(this._clusterSecurityGroup);
     }
   }
 
@@ -1656,6 +1752,13 @@ class ImportedCluster extends ClusterBase {
       throw new Error('"vpc" is not defined for this imported cluster');
     }
     return this.props.vpc;
+  }
+
+  public get clusterSecurityGroup(): ec2.ISecurityGroup {
+    if (!this._clusterSecurityGroup) {
+      throw new Error('"clusterSecurityGroup" is not defined for this imported cluster');
+    }
+    return this._clusterSecurityGroup;
   }
 
   public get clusterSecurityGroupId(): string {
@@ -1852,3 +1955,6 @@ function cpuArchForInstanceType(instanceType: ec2.InstanceType) {
       CpuArch.X86_64;
 }
 
+function flatten<A>(xss: A[][]): A[] {
+  return Array.prototype.concat.call([], ...xss);
+}

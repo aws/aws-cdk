@@ -10,8 +10,6 @@
       "dotnet": {
         "namespace": "Amazon.CDK.AWS.SecretsManager",
         "packageId": "Amazon.CDK.AWS.SecretsManager",
-        "signAssembly": true,
-        "assemblyOriginatorKeyFile": "../../key.snk",
         "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
       },
       "java": {
@@ -48,10 +46,11 @@
     "watch": "cdk-watch",
     "awslint": "cdk-awslint",
     "cfn2ts": "cfn2ts",
-    "build+test+package": "npm run build+test && npm run package",
-    "build+test": "npm run build && npm test",
+    "build+test+package": "yarn build+test && yarn package",
+    "build+test": "yarn build && yarn test",
     "compat": "cdk-compat",
-    "gen": "cfn2ts"
+    "gen": "cfn2ts",
+    "rosetta:extract": "yarn --silent jsii-rosetta extract"
   },
   "cdk-build": {
     "cloudformation": "AWS::SecretsManager",
@@ -86,6 +85,7 @@
     "@aws-cdk/aws-lambda": "0.0.0",
     "@aws-cdk/aws-sam": "0.0.0",
     "@aws-cdk/core": "0.0.0",
+    "@aws-cdk/cx-api": "0.0.0",
     "constructs": "^3.2.0"
   },
   "peerDependencies": {
@@ -95,6 +95,7 @@
     "@aws-cdk/aws-lambda": "0.0.0",
     "@aws-cdk/aws-sam": "0.0.0",
     "@aws-cdk/core": "0.0.0",
+    "@aws-cdk/cx-api": "0.0.0",
     "constructs": "^3.2.0"
   },
   "engines": {
@@ -126,5 +127,8 @@
   "awscdkio": {
     "announce": false
   },
-  "maturity": "stable"
+  "maturity": "stable",
+  "publishConfig": {
+    "tag": "latest"
+  }
 }

@@ -17,8 +17,6 @@
       "dotnet": {
         "namespace": "Amazon.CDK.AWS.EC2",
         "packageId": "Amazon.CDK.AWS.EC2",
-        "signAssembly": true,
-        "assemblyOriginatorKeyFile": "../../key.snk",
         "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
       },
       "python": {
@@ -47,10 +45,11 @@
     "package": "cdk-package",
     "awslint": "cdk-awslint",
     "cfn2ts": "cfn2ts",
-    "build+test+package": "npm run build+test && npm run package",
-    "build+test": "npm run build && npm test",
+    "build+test+package": "yarn build+test && yarn package",
+    "build+test": "yarn build && yarn test",
     "compat": "cdk-compat",
-    "gen": "cfn2ts"
+    "gen": "cfn2ts",
+    "rosetta:extract": "yarn --silent jsii-rosetta extract"
   },
   "cdk-build": {
     "cloudformation": "AWS::EC2",
@@ -73,6 +72,7 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@aws-cdk/assert": "0.0.0",
+    "@aws-cdk/cx-api": "0.0.0",
     "cdk-build-tools": "0.0.0",
     "cdk-integ-tools": "0.0.0",
     "cfn2ts": "0.0.0",
@@ -96,7 +96,6 @@
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/assets": "0.0.0",
     "@aws-cdk/aws-cloudwatch": "0.0.0",
     "@aws-cdk/aws-iam": "0.0.0",
     "@aws-cdk/aws-kms": "0.0.0",
@@ -141,6 +140,7 @@
       "docs-public-apis:@aws-cdk/aws-ec2.WindowsVersion.WINDOWS_SERVER_2012_R2_RTM_ENGLISH_64BIT_HYPERV",
       "docs-public-apis:@aws-cdk/aws-ec2.WindowsVersion.WINDOWS_SERVER_2019_SWEDISH_FULL_BASE",
       "docs-public-apis:@aws-cdk/aws-ec2.WindowsVersion.WINDOWS_SERVER_2019_PORTUGESE_PORTUGAL_FULL_BASE",
+      "docs-public-apis:@aws-cdk/aws-ec2.WindowsVersion.WINDOWS_SERVER_2019_PORTUGUESE_PORTUGAL_FULL_BASE",
       "docs-public-apis:@aws-cdk/aws-ec2.WindowsVersion.WINDOWS_SERVER_2016_JAPANESE_FULL_SQL_2016_SP2_STANDARD",
       "docs-public-apis:@aws-cdk/aws-ec2.WindowsVersion.WINDOWS_SERVER_2016_ENGLISH_CORE_SQL_2016_SP2_STANDARD",
       "docs-public-apis:@aws-cdk/aws-ec2.WindowsVersion.WINDOWS_SERVER_2012_RTM_JAPANESE_64BIT_SQL_2014_SP3_EXPRESS",
@@ -150,6 +150,7 @@
       "docs-public-apis:@aws-cdk/aws-ec2.WindowsVersion.WINDOWS_SERVER_2008_R2_SP1_ENGLISH_64BIT_SHAREPOINT_2010_SP2_FOUNDATION",
       "docs-public-apis:@aws-cdk/aws-ec2.WindowsVersion.WINDOWS_SERVER_2008_R2_SP1_ENGLISH_64BIT_SQL_2008_R2_SP3_STANDARD",
       "docs-public-apis:@aws-cdk/aws-ec2.WindowsVersion.WINDOWS_SERVER_2019_PORTUGESE_BRAZIL_FULL_BASE",
+      "docs-public-apis:@aws-cdk/aws-ec2.WindowsVersion.WINDOWS_SERVER_2019_PORTUGUESE_BRAZIL_FULL_BASE",
       "docs-public-apis:@aws-cdk/aws-ec2.WindowsVersion.WINDOWS_SERVER_2016_ENGLISH_FULL_SQL_2017_STANDARD",
       "docs-public-apis:@aws-cdk/aws-ec2.WindowsVersion.WINDOWS_SERVER_2016_ENGLISH_CORE_SQL_2016_SP2_WEB",
       "docs-public-apis:@aws-cdk/aws-ec2.WindowsVersion.WINDOWS_SERVER_2016_ENGLISH_CORE_SQL_2016_SP2_EXPRESS",
@@ -163,9 +164,11 @@
       "docs-public-apis:@aws-cdk/aws-ec2.WindowsVersion.WINDOWS_SERVER_2016_JAPANESE_FULL_SQL_2016_SP1_STANDARD",
       "docs-public-apis:@aws-cdk/aws-ec2.WindowsVersion.WINDOWS_SERVER_2016_CZECH_FULL_BASE",
       "docs-public-apis:@aws-cdk/aws-ec2.WindowsVersion.WINDOWS_SERVER_2012_RTM_PORTUGESE_PORTUGAL_64BIT_BASE",
+      "docs-public-apis:@aws-cdk/aws-ec2.WindowsVersion.WINDOWS_SERVER_2012_RTM_PORTUGUESE_PORTUGAL_64BIT_BASE",
       "docs-public-apis:@aws-cdk/aws-ec2.WindowsVersion.WINDOWS_SERVER_2012_RTM_JAPANESE_64BIT_SQL_2012_SP4_EXPRESS",
       "docs-public-apis:@aws-cdk/aws-ec2.WindowsVersion.WINDOWS_SERVER_2012_R2_RTM_JAPANESE_64BIT_SQL_2014_SP2_STANDARD",
       "docs-public-apis:@aws-cdk/aws-ec2.WindowsVersion.WINDOWS_SERVER_2008_SP2_PORTUGESE_BRAZIL_32BIT_BASE",
+      "docs-public-apis:@aws-cdk/aws-ec2.WindowsVersion.WINDOWS_SERVER_2008_SP2_PORTUGUESE_BRAZIL_32BIT_BASE",
       "docs-public-apis:@aws-cdk/aws-ec2.WindowsVersion.WINDOWS_SERVER_2008_R2_SP1_ENGLISH_64BIT_SQL_2012_SP4_STANDARD",
       "docs-public-apis:@aws-cdk/aws-ec2.WindowsVersion.WINDOWS_SERVER_2008_R2_SP1_ENGLISH_61BIT_SQL_2012_RTM_SP2_ENTERPRISE",
       "docs-public-apis:@aws-cdk/aws-ec2.WindowsVersion.WINDOWS_SERVER_1709_ENGLISH_CORE_BASE",
@@ -205,6 +208,7 @@
       "docs-public-apis:@aws-cdk/aws-ec2.GatewayVpcEndpointAwsService.DYNAMODB",
       "docs-public-apis:@aws-cdk/aws-ec2.GatewayVpcEndpointAwsService.S3",
       "docs-public-apis:@aws-cdk/aws-ec2.InterfaceVpcEndpointAwsService.APIGATEWAY",
+      "docs-public-apis:@aws-cdk/aws-ec2.InterfaceVpcEndpointAwsService.ATHENA",
       "docs-public-apis:@aws-cdk/aws-ec2.InterfaceVpcEndpointAwsService.CLOUDFORMATION",
       "docs-public-apis:@aws-cdk/aws-ec2.InterfaceVpcEndpointAwsService.CLOUDTRAIL",
       "docs-public-apis:@aws-cdk/aws-ec2.InterfaceVpcEndpointAwsService.CLOUDWATCH",
@@ -229,9 +233,11 @@
       "docs-public-apis:@aws-cdk/aws-ec2.InterfaceVpcEndpointAwsService.ELASTIC_FILESYSTEM_FIPS",
       "docs-public-apis:@aws-cdk/aws-ec2.InterfaceVpcEndpointAwsService.ELASTIC_INFERENCE_RUNTIME",
       "docs-public-apis:@aws-cdk/aws-ec2.InterfaceVpcEndpointAwsService.ELASTIC_LOAD_BALANCING",
+      "docs-public-apis:@aws-cdk/aws-ec2.InterfaceVpcEndpointAwsService.GLUE",
       "docs-public-apis:@aws-cdk/aws-ec2.InterfaceVpcEndpointAwsService.KINESIS_STREAMS",
       "docs-public-apis:@aws-cdk/aws-ec2.InterfaceVpcEndpointAwsService.KINESIS_FIREHOSE",
       "docs-public-apis:@aws-cdk/aws-ec2.InterfaceVpcEndpointAwsService.KMS",
+      "docs-public-apis:@aws-cdk/aws-ec2.InterfaceVpcEndpointAwsService.RDS",
       "docs-public-apis:@aws-cdk/aws-ec2.InterfaceVpcEndpointAwsService.SAGEMAKER_API",
       "docs-public-apis:@aws-cdk/aws-ec2.InterfaceVpcEndpointAwsService.SAGEMAKER_NOTEBOOK",
       "docs-public-apis:@aws-cdk/aws-ec2.InterfaceVpcEndpointAwsService.SAGEMAKER_RUNTIME",
@@ -313,6 +319,8 @@
       "docs-public-apis:@aws-cdk/aws-ec2.Protocol.UDP",
       "docs-public-apis:@aws-cdk/aws-ec2.Protocol.ICMP",
       "docs-public-apis:@aws-cdk/aws-ec2.Protocol.ICMPV6",
+      "docs-public-apis:@aws-cdk/aws-ec2.Protocol.ESP",
+      "docs-public-apis:@aws-cdk/aws-ec2.Protocol.AH",
       "docs-public-apis:@aws-cdk/aws-ec2.WindowsVersion.WINDOWS_SERVER_2008_SP2_ENGLISH_64BIT_SQL_2008_SP4_EXPRESS",
       "docs-public-apis:@aws-cdk/aws-ec2.WindowsVersion.WINDOWS_SERVER_2012_R2_RTM_CHINESE_SIMPLIFIED_64BIT_BASE",
       "docs-public-apis:@aws-cdk/aws-ec2.WindowsVersion.WINDOWS_SERVER_2012_R2_RTM_CHINESE_TRADITIONAL_64BIT_BASE",
@@ -323,10 +331,12 @@
       "docs-public-apis:@aws-cdk/aws-ec2.WindowsVersion.WINDOWS_SERVER_2016_ENGLISH_CORE_CONTAINERS",
       "docs-public-apis:@aws-cdk/aws-ec2.WindowsVersion.WINDOWS_SERVER_2016_ENGLISH_CORE_SQL_2016_SP1_WEB",
       "docs-public-apis:@aws-cdk/aws-ec2.WindowsVersion.WINDOWS_SERVER_2016_GERMAL_FULL_BASE",
+      "docs-public-apis:@aws-cdk/aws-ec2.WindowsVersion.WINDOWS_SERVER_2016_GERMAN_FULL_BASE",
       "docs-public-apis:@aws-cdk/aws-ec2.WindowsVersion.WINDOWS_SERVER_2003_R2_SP2_LANGUAGE_PACKS_32BIT_BASE",
       "docs-public-apis:@aws-cdk/aws-ec2.WindowsVersion.WINDOWS_SERVER_2008_R2_SP1_ENGLISH_64BIT_SQL_2008_R2_SP3_WEB",
       "docs-public-apis:@aws-cdk/aws-ec2.WindowsVersion.WINDOWS_SERVER_2008_R2_SP1_ENGLISH_64BIT_SQL_2012_SP4_EXPRESS",
       "docs-public-apis:@aws-cdk/aws-ec2.WindowsVersion.WINDOWS_SERVER_2012_R2_SP1_PORTUGESE_BRAZIL_64BIT_CORE",
+      "docs-public-apis:@aws-cdk/aws-ec2.WindowsVersion.WINDOWS_SERVER_2012_R2_SP1_PORTUGUESE_BRAZIL_64BIT_CORE",
       "docs-public-apis:@aws-cdk/aws-ec2.WindowsVersion.WINDOWS_SERVER_2012_R2_RTM_ENGLISH_64BIT_SQL_2016_SP2_STANDARD",
       "docs-public-apis:@aws-cdk/aws-ec2.WindowsVersion.WINDOWS_SERVER_2012_RTM_ENGLISH_64BIT_SQL_2014_SP2_EXPRESS",
       "docs-public-apis:@aws-cdk/aws-ec2.WindowsVersion.WINDOWS_SERVER_2012_RTM_ITALIAN_64BIT_BASE",
@@ -340,6 +350,7 @@
       "docs-public-apis:@aws-cdk/aws-ec2.WindowsVersion.WINDOWS_SERVER_2016_KOREAN_FULL_BASE",
       "docs-public-apis:@aws-cdk/aws-ec2.WindowsVersion.WINDOWS_SERVER_2016_KOREAN_FULL_SQL_2016_SP2_STANDARD",
       "docs-public-apis:@aws-cdk/aws-ec2.WindowsVersion.WINDOWS_SERVER_2016_PORTUGESE_PORTUGAL_FULL_BASE",
+      "docs-public-apis:@aws-cdk/aws-ec2.WindowsVersion.WINDOWS_SERVER_2016_PORTUGUESE_PORTUGAL_FULL_BASE",
       "docs-public-apis:@aws-cdk/aws-ec2.WindowsVersion.WINDOWS_SERVER_2019_ENGLISH_FULL_SQL_2017_WEB",
       "docs-public-apis:@aws-cdk/aws-ec2.WindowsVersion.WINDOWS_SERVER_2019_FRENCH_FULL_BASE",
       "docs-public-apis:@aws-cdk/aws-ec2.WindowsVersion.WINDOWS_SERVER_2019_KOREAN_FULL_BASE",
@@ -402,7 +413,9 @@
       "docs-public-apis:@aws-cdk/aws-ec2.WindowsVersion.WINDOWS_SERVER_2012_R2_RTM_ENGLISH_64BIT_SQL_2014_SP3_WEB",
       "docs-public-apis:@aws-cdk/aws-ec2.WindowsVersion.WINDOWS_SERVER_2012_R2_RTM_JAPANESE_64BIT_SQL_2016_SP1_WEB",
       "docs-public-apis:@aws-cdk/aws-ec2.WindowsVersion.WINDOWS_SERVER_2012_R2_RTM_PORTUGESE_BRAZIL_64BIT_BASE",
+      "docs-public-apis:@aws-cdk/aws-ec2.WindowsVersion.WINDOWS_SERVER_2012_R2_RTM_PORTUGUESE_BRAZIL_64BIT_BASE",
       "docs-public-apis:@aws-cdk/aws-ec2.WindowsVersion.WINDOWS_SERVER_2012_R2_RTM_PORTUGESE_PORTUGAL_64BIT_BASE",
+      "docs-public-apis:@aws-cdk/aws-ec2.WindowsVersion.WINDOWS_SERVER_2012_R2_RTM_PORTUGUESE_PORTUGAL_64BIT_BASE",
       "docs-public-apis:@aws-cdk/aws-ec2.WindowsVersion.WINDOWS_SERVER_2012_R2_RTM_SWEDISH_64BIT_BASE",
       "docs-public-apis:@aws-cdk/aws-ec2.WindowsVersion.WINDOWS_SERVER_2016_ENGLISH_FULL_SQL_2016_SP1_EXPRESS",
       "docs-public-apis:@aws-cdk/aws-ec2.WindowsVersion.WINDOWS_SERVER_2016_ITALIAN_FULL_BASE",
@@ -415,6 +428,7 @@
       "docs-public-apis:@aws-cdk/aws-ec2.WindowsVersion.WINDOWS_SERVER_2012_RTM_JAPANESE_64BIT_SQL_2014_SP2_WEB",
       "docs-public-apis:@aws-cdk/aws-ec2.WindowsVersion.WINDOWS_SERVER_2016_ENGLISH_CORE_SQL_2016_SP2_ENTERPRISE",
       "docs-public-apis:@aws-cdk/aws-ec2.WindowsVersion.WINDOWS_SERVER_2016_PORTUGESE_BRAZIL_FULL_BASE",
+      "docs-public-apis:@aws-cdk/aws-ec2.WindowsVersion.WINDOWS_SERVER_2016_PORTUGUESE_BRAZIL_FULL_BASE",
       "docs-public-apis:@aws-cdk/aws-ec2.WindowsVersion.WINDOWS_SERVER_2019_ENGLISH_FULL_BASE",
       "docs-public-apis:@aws-cdk/aws-ec2.WindowsVersion.WINDOWS_SERVER_2003_R2_SP2_ENGLISH_32BIT_BASE",
       "docs-public-apis:@aws-cdk/aws-ec2.WindowsVersion.WINDOWS_SERVER_2012_R2_RTM_CZECH_64BIT_BASE",
@@ -439,6 +453,7 @@
       "docs-public-apis:@aws-cdk/aws-ec2.WindowsVersion.WINDOWS_SERVER_2008_R2_SP1_ENGLISH_64BIT_BASE",
       "docs-public-apis:@aws-cdk/aws-ec2.WindowsVersion.WINDOWS_SERVER_2008_R2_SP1_LANGUAGE_PACKS_64BIT_SQL_2008_R2_SP3_EXPRESS",
       "docs-public-apis:@aws-cdk/aws-ec2.WindowsVersion.WINDOWS_SERVER_2012_SP2_PORTUGESE_BRAZIL_64BIT_BASE",
+      "docs-public-apis:@aws-cdk/aws-ec2.WindowsVersion.WINDOWS_SERVER_2012_SP2_PORTUGUESE_BRAZIL_64BIT_BASE",
       "docs-public-apis:@aws-cdk/aws-ec2.WindowsVersion.WINDOWS_SERVER_2012_R2_RTM_ENGLISH_64BIT_SQL_2016_SP1_WEB",
       "docs-public-apis:@aws-cdk/aws-ec2.WindowsVersion.WINDOWS_SERVER_2012_R2_RTM_JAPANESE_64BIT_SQL_2014_SP3_EXPRESS",
       "docs-public-apis:@aws-cdk/aws-ec2.WindowsVersion.WINDOWS_SERVER_2012_R2_RTM_JAPANESE_64BIT_SQL_2016_SP2_ENTERPRISE",
@@ -452,6 +467,7 @@
       "docs-public-apis:@aws-cdk/aws-ec2.WindowsVersion.WINDOWS_SERVER_2008_SP2_ENGLISH_64BIT_SQL_2008_SP4_STANDARD",
       "docs-public-apis:@aws-cdk/aws-ec2.WindowsVersion.WINDOWS_SERVER_2012_R2_RTM_ENGLISH_64BIT_BASE",
       "docs-public-apis:@aws-cdk/aws-ec2.WindowsVersion.WINDOWS_SERVER_2012_RTM_PORTUGESE_BRAZIL_64BIT_BASE",
+      "docs-public-apis:@aws-cdk/aws-ec2.WindowsVersion.WINDOWS_SERVER_2012_RTM_PORTUGUESE_BRAZIL_64BIT_BASE",
       "docs-public-apis:@aws-cdk/aws-ec2.WindowsVersion.WINDOWS_SERVER_2016_ENGLISH_FULL_SQL_2016_SP1_WEB",
       "docs-public-apis:@aws-cdk/aws-ec2.WindowsVersion.WINDOWS_SERVER_2016_ENGLISH_P3",
       "docs-public-apis:@aws-cdk/aws-ec2.WindowsVersion.WINDOWS_SERVER_2016_JAPANESE_FULL_SQL_2016_SP1_ENTERPRISE",
@@ -476,6 +492,7 @@
       "docs-public-apis:@aws-cdk/aws-ec2.WindowsVersion.WINDOWS_SERVER_2019_POLISH_FULL_BASE",
       "docs-public-apis:@aws-cdk/aws-ec2.WindowsVersion.WINDOWS_SERVER_2008_R2_SP1_JAPANESE_64BIT_SQL_2008_R2_SP3_WEB",
       "docs-public-apis:@aws-cdk/aws-ec2.WindowsVersion.WINDOWS_SERVER_2008_R2_SP1_PORTUGESE_BRAZIL_64BIT_BASE",
+      "docs-public-apis:@aws-cdk/aws-ec2.WindowsVersion.WINDOWS_SERVER_2008_R2_SP1_PORTUGUESE_BRAZIL_64BIT_BASE",
       "props-default-doc:@aws-cdk/aws-ec2.InterfaceVpcEndpointAttributes.securityGroupId",
       "props-default-doc:@aws-cdk/aws-ec2.InterfaceVpcEndpointAttributes.securityGroups",
       "props-physical-name:@aws-cdk/aws-ec2.VpnGatewayProps"
@@ -485,5 +502,8 @@
   "awscdkio": {
     "announce": false
   },
-  "maturity": "stable"
+  "maturity": "stable",
+  "publishConfig": {
+    "tag": "latest"
+  }
 }

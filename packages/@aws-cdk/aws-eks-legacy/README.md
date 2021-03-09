@@ -1,6 +1,6 @@
-## Amazon EKS Construct Library
-
+# Amazon EKS Construct Library
 <!--BEGIN STABILITY BANNER-->
+
 ---
 
 ![Deprecated](https://img.shields.io/badge/deprecated-critical.svg?style=for-the-badge)
@@ -8,11 +8,14 @@
 > This API may emit warnings. Backward compatibility is not guaranteed.
 
 ---
+
 <!--END STABILITY BANNER-->
+
 
 **This module is available for backwards compatibility purposes only ([details](https://github.com/aws/aws-cdk/pull/5540)). It will
 no longer be released with the CDK starting March 1st, 2020. See [issue
-# 5544](https://github.com/aws/aws-cdk/issues/5544) for upgrade instructions.**
+
+## 5544](https://github.com/aws/aws-cdk/issues/5544) for upgrade instructions.**
 
 ---
 
@@ -165,7 +168,7 @@ with the `update-kubeconfig` command.
 
 Something like this:
 
-```
+```plaintext
 Outputs:
 eks-integ-defaults.ClusterConfigCommand43AAE40F = aws eks update-kubeconfig --name cluster-ba7c166b-c4f3-421c-bf8a-6812e4036a33 --role-arn arn:aws:iam::112233445566:role/eks-integ-defaults-Role1ABCC5F0-1EFK2W5ZJD98Y
 ```

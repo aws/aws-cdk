@@ -3,7 +3,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as s3 from '@aws-cdk/aws-s3';
 import {
-  App, BootstraplessSynthesizer, Construct as CoreConstruct, DefaultStackSynthesizer,
+  App, BootstraplessSynthesizer, DefaultStackSynthesizer,
   IStackSynthesizer, Lazy, Names, PhysicalName, RemovalPolicy, Resource, Stack, Token,
 } from '@aws-cdk/core';
 import { Construct } from 'constructs';
@@ -14,6 +14,10 @@ import { FullActionDescriptor } from './private/full-action-descriptor';
 import { RichAction } from './private/rich-action';
 import { Stage } from './private/stage';
 import { validateName, validateNamespaceName, validateSourceAction } from './private/validation';
+
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 /**
  * Allows you to control where to place a new Stage when it's added to the Pipeline.
@@ -283,9 +287,9 @@ export class Pipeline extends PipelineBase {
     });
 
     const codePipeline = new CfnPipeline(this, 'Resource', {
-      artifactStore: Lazy.anyValue({ produce: () => this.renderArtifactStoreProperty() }),
-      artifactStores: Lazy.anyValue({ produce: () => this.renderArtifactStoresProperty() }),
-      stages: Lazy.anyValue({ produce: () => this.renderStages() }),
+      artifactStore: Lazy.any({ produce: () => this.renderArtifactStoreProperty() }),
+      artifactStores: Lazy.any({ produce: () => this.renderArtifactStoresProperty() }),
+      stages: Lazy.any({ produce: () => this.renderStages() }),
       roleArn: this.role.roleArn,
       restartExecutionOnUpdate: props && props.restartExecutionOnUpdate,
       name: this.physicalName,

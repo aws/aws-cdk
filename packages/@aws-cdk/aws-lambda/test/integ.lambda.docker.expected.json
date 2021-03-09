@@ -1,0 +1,71 @@
+{
+  "Resources": {
+    "MyLambdaServiceRole4539ECB6": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+              ]
+            ]
+          }
+        ]
+      }
+    },
+    "MyLambdaCCE802FB": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "ImageUri": {
+            "Fn::Join": [
+              "",
+              [
+                {
+                  "Ref": "AWS::AccountId"
+                },
+                ".dkr.ecr.",
+                {
+                  "Ref": "AWS::Region"
+                },
+                ".",
+                {
+                  "Ref": "AWS::URLSuffix"
+                },
+                "/aws-cdk/assets:e8a944aeb0a08ba4811503d9c138e514b112dadca84daa5b4608e4a0fb80a0c9"
+              ]
+            ]
+          }
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "MyLambdaServiceRole4539ECB6",
+            "Arn"
+          ]
+        },
+        "PackageType": "Image"
+      },
+      "DependsOn": [
+        "MyLambdaServiceRole4539ECB6"
+      ]
+    }
+  }
+}

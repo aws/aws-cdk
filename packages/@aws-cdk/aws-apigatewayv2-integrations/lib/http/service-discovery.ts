@@ -1,26 +1,16 @@
-import { HttpMethod, IVpcLink, HttpRouteIntegrationBindOptions, HttpRouteIntegrationConfig } from '@aws-cdk/aws-apigatewayv2';
+import { HttpRouteIntegrationBindOptions, HttpRouteIntegrationConfig } from '@aws-cdk/aws-apigatewayv2';
 import * as servicediscovery from '@aws-cdk/aws-servicediscovery';
+import { HttpPrivateIntegrationOptions } from './base-types';
 import { HttpPrivateIntegration } from './private/integration';
 
 /**
  * Properties to initialize `HttpServiceDiscoveryIntegration`.
  */
-export interface HttpServiceDiscoveryIntegrationProps {
+export interface HttpServiceDiscoveryIntegrationProps extends HttpPrivateIntegrationOptions {
   /**
    * The discovery service used for the integration
    */
-  readonly service: servicediscovery.Service;
-
-  /**
-   * The vpc link to be used for the private integration
-   */
-  readonly vpcLink: IVpcLink;
-
-  /**
-   * The HTTP method that must be used to invoke the underlying HTTP proxy.
-   * @default HttpMethod.ANY
-   */
-  readonly method?: HttpMethod;
+  readonly service: servicediscovery.IService;
 }
 
 /**
@@ -32,6 +22,10 @@ export class HttpServiceDiscoveryIntegration extends HttpPrivateIntegration {
   }
 
   public bind(_: HttpRouteIntegrationBindOptions): HttpRouteIntegrationConfig {
+    if (!this.props.vpcLink) {
+      throw new Error('The vpcLink property is mandatory');
+    }
+
     return {
       method: this.props.method ?? this.httpMethod,
       payloadFormatVersion: this.payloadFormatVersion,

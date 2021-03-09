@@ -105,7 +105,9 @@ export = {
     // WHEN
     new appmesh.VirtualNode(stack, 'test-node', {
       mesh,
-      cloudMapService: service,
+      serviceDiscovery: appmesh.ServiceDiscovery.cloudMap({
+        service: service,
+      }),
     });
 
     // THEN
@@ -123,120 +125,6 @@ export = {
     test.done();
   },
 
-  'When adding a VirtualService to a mesh': {
-    'with VirtualRouter and VirtualNode as providers': {
-      'should throw error'(test: Test) {
-        // GIVEN
-        const stack = new cdk.Stack();
-
-        // WHEN
-        const mesh = new appmesh.Mesh(stack, 'mesh', {
-          meshName: 'test-mesh',
-        });
-
-        const testNode = new appmesh.VirtualNode(stack, 'test-node', {
-          mesh,
-          dnsHostName: 'test-node',
-        });
-
-        const testRouter = mesh.addVirtualRouter('router', {
-          listeners: [
-            appmesh.VirtualRouterListener.http(),
-          ],
-        });
-
-        // THEN
-        test.throws(() => {
-          mesh.addVirtualService('service', {
-            virtualServiceName: 'test-service.domain.local',
-            virtualNode: testNode,
-            virtualRouter: testRouter,
-          });
-        });
-
-        test.done();
-      },
-    },
-    'with single virtual router provider resource': {
-      'should create service'(test: Test) {
-        // GIVEN
-        const stack = new cdk.Stack();
-
-        // WHEN
-        const mesh = new appmesh.Mesh(stack, 'mesh', {
-          meshName: 'test-mesh',
-        });
-
-        const testRouter = mesh.addVirtualRouter('test-router', {
-          listeners: [
-            appmesh.VirtualRouterListener.http(),
-          ],
-        });
-
-        mesh.addVirtualService('service', {
-          virtualServiceName: 'test-service.domain.local',
-          virtualRouter: testRouter,
-        });
-
-        // THEN
-        expect(stack).to(
-          haveResource('AWS::AppMesh::VirtualService', {
-            Spec: {
-              Provider: {
-                VirtualRouter: {
-                  VirtualRouterName: {
-                    'Fn::GetAtt': ['meshtestrouterF78D72DD', 'VirtualRouterName'],
-                  },
-                },
-              },
-            },
-          }),
-        );
-
-        test.done();
-      },
-    },
-    'with single virtual node provider resource': {
-      'should create service'(test: Test) {
-        // GIVEN
-        const stack = new cdk.Stack();
-
-        // WHEN
-        const mesh = new appmesh.Mesh(stack, 'mesh', {
-          meshName: 'test-mesh',
-        });
-
-        const node = mesh.addVirtualNode('test-node', {
-          dnsHostName: 'test.domain.local',
-          listeners: [appmesh.VirtualNodeListener.http({
-            port: 8080,
-          })],
-        });
-
-        mesh.addVirtualService('service2', {
-          virtualServiceName: 'test-service.domain.local',
-          virtualNode: node,
-        });
-
-        // THEN
-        expect(stack).to(
-          haveResource('AWS::AppMesh::VirtualService', {
-            Spec: {
-              Provider: {
-                VirtualNode: {
-                  VirtualNodeName: {
-                    'Fn::GetAtt': ['meshtestnodeF93946D4', 'VirtualNodeName'],
-                  },
-                },
-              },
-            },
-          }),
-        );
-
-        test.done();
-      },
-    },
-  },
   'When adding a VirtualNode to a mesh': {
     'with empty default listeners and backends': {
       'should create default resource'(test: Test) {
@@ -249,7 +137,7 @@ export = {
         });
 
         mesh.addVirtualNode('test-node', {
-          dnsHostName: 'test.domain.local',
+          serviceDiscovery: appmesh.ServiceDiscovery.dns('test.domain.local'),
         });
 
         // THEN
@@ -283,7 +171,7 @@ export = {
         });
 
         mesh.addVirtualNode('test-node', {
-          dnsHostName: 'test.domain.local',
+          serviceDiscovery: appmesh.ServiceDiscovery.dns('test.domain.local'),
           listeners: [appmesh.VirtualNodeListener.http({
             port: 8080,
           })],
@@ -322,7 +210,7 @@ export = {
         });
 
         mesh.addVirtualNode('test-node', {
-          dnsHostName: 'test.domain.local',
+          serviceDiscovery: appmesh.ServiceDiscovery.dns('test.domain.local'),
           listeners: [appmesh.VirtualNodeListener.http({
             port: 8080,
             healthCheck: {
@@ -374,11 +262,11 @@ export = {
 
         const service1 = new appmesh.VirtualService(stack, 'service-1', {
           virtualServiceName: 'service1.domain.local',
-          mesh,
+          virtualServiceProvider: appmesh.VirtualServiceProvider.none(mesh),
         });
 
         mesh.addVirtualNode('test-node', {
-          dnsHostName: 'test.domain.local',
+          serviceDiscovery: appmesh.ServiceDiscovery.dns('test.domain.local'),
           listeners: [appmesh.VirtualNodeListener.http({
             port: 8080,
           })],
@@ -413,8 +301,9 @@ export = {
     const stack2 = new cdk.Stack();
     const mesh2 = appmesh.Mesh.fromMeshName(stack2, 'imported-mesh', 'abc');
 
-    mesh2.addVirtualService('service', {
+    new appmesh.VirtualService(stack2, 'service', {
       virtualServiceName: 'test.domain.local',
+      virtualServiceProvider: appmesh.VirtualServiceProvider.none(mesh2),
     });
 
     // THEN

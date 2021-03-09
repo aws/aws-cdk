@@ -57,7 +57,6 @@ export class BootstraplessSynthesizer extends DefaultStackSynthesizer {
     this.emitStackArtifact(this.stack, session, {
       assumeRoleArn: this.deployRoleArn,
       cloudFormationExecutionRoleArn: this.cloudFormationExecutionRoleArn,
-      requiresBootstrapStackVersion: 1,
     });
   }
 }

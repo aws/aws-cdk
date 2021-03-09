@@ -34,7 +34,7 @@ test('Eval with Node.js', () => {
   });
 
   expect(stack).toHaveResource('AWS::Lambda::Function', {
-    Runtime: 'nodejs10.x',
+    Runtime: 'nodejs14.x',
   });
 });
 
@@ -57,6 +57,31 @@ test('expression does not contain paths', () => {
             'Fn::GetAtt': ['Evala0d2ce44871b4e7487a1f5e63d7c3bdc4DAC06E1', 'Arn'],
           },
           '","Parameters":{"expression":"2 + 2","expressionAttributeValues":{}}}}}',
+        ],
+      ],
+    },
+  });
+});
+
+test('with dash and underscore in path', () => {
+  // WHEN
+  const task = new tasks.EvaluateExpression(stack, 'Task', {
+    expression: '$.a_b + $.c-d + $[_e]',
+  });
+  new sfn.StateMachine(stack, 'SM', {
+    definition: task,
+  });
+
+  expect(stack).toHaveResource('AWS::StepFunctions::StateMachine', {
+    DefinitionString: {
+      'Fn::Join': [
+        '',
+        [
+          '{"StartAt":"Task","States":{"Task":{"End":true,"Type":"Task","Resource":"',
+          {
+            'Fn::GetAtt': ['Evala0d2ce44871b4e7487a1f5e63d7c3bdc4DAC06E1', 'Arn'],
+          },
+          '","Parameters":{"expression":"$.a_b + $.c-d + $[_e]","expressionAttributeValues":{"$.a_b.$":"$.a_b","$.c-d.$":"$.c-d","$[_e].$":"$[_e]"}}}}}',
         ],
       ],
     },

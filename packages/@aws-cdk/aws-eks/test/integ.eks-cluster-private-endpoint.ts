@@ -5,7 +5,7 @@ import { App } from '@aws-cdk/core';
 import * as eks from '../lib';
 import { TestStack } from './util';
 
-const CLUSTER_VERSION = eks.KubernetesVersion.V1_18;
+const CLUSTER_VERSION = eks.KubernetesVersion.V1_19;
 
 
 class EksClusterStack extends TestStack {
@@ -26,6 +26,7 @@ class EksClusterStack extends TestStack {
       defaultCapacity: 2,
       version: CLUSTER_VERSION,
       endpointAccess: eks.EndpointAccess.PRIVATE,
+      prune: false,
     });
 
     // this is the valdiation. it won't work if the private access is not setup properly.

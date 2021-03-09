@@ -5,6 +5,7 @@ import { CfnOutput, IResource as IResourceBase, Resource, Stack } from '@aws-cdk
 import { Construct } from 'constructs';
 import { ApiDefinition } from './api-definition';
 import { ApiKey, ApiKeyOptions, IApiKey } from './api-key';
+import { ApiGatewayMetrics } from './apigateway-canned-metrics.generated';
 import { CfnAccount, CfnRestApi } from './apigateway.generated';
 import { CorsOptions } from './cors';
 import { Deployment } from './deployment';
@@ -397,63 +398,66 @@ export abstract class RestApiBase extends Resource implements IRestApi {
       metricName,
       dimensions: { ApiName: this.restApiName },
       ...props,
-    });
+    }).attachTo(this);
   }
 
   /**
    * Metric for the number of client-side errors captured in a given period.
    *
-   * @default - sum over 5 minutes
+   * Default: sum over 5 minutes
    */
   public metricClientError(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.metric('4XXError', { statistic: 'Sum', ...props });
+    return this.cannedMetric(ApiGatewayMetrics._4XxErrorSum, props);
   }
 
   /**
    * Metric for the number of server-side errors captured in a given period.
    *
-   * @default - sum over 5 minutes
+   * Default: sum over 5 minutes
    */
   public metricServerError(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.metric('5XXError', { statistic: 'Sum', ...props });
+    return this.cannedMetric(ApiGatewayMetrics._5XxErrorSum, props);
   }
 
   /**
    * Metric for the number of requests served from the API cache in a given period.
    *
-   * @default - sum over 5 minutes
+   * Default: sum over 5 minutes
    */
   public metricCacheHitCount(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.metric('CacheHitCount', { statistic: 'Sum', ...props });
+    return this.cannedMetric(ApiGatewayMetrics.cacheHitCountSum, props);
   }
 
   /**
    * Metric for the number of requests served from the backend in a given period,
    * when API caching is enabled.
    *
-   * @default - sum over 5 minutes
+   * Default: sum over 5 minutes
    */
   public metricCacheMissCount(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.metric('CacheMissCount', { statistic: 'Sum', ...props });
+    return this.cannedMetric(ApiGatewayMetrics.cacheMissCountSum, props);
   }
 
   /**
    * Metric for the total number API requests in a given period.
    *
-   * @default - SampleCount over 5 minutes
+   * Default: samplecount over 5 minutes
    */
   public metricCount(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.metric('Count', { statistic: 'SampleCount', ...props });
+    return this.cannedMetric(ApiGatewayMetrics.countSum, {
+      statistic: 'SampleCount',
+      ...props,
+    });
   }
 
   /**
    * Metric for the time between when API Gateway relays a request to the backend
    * and when it receives a response from the backend.
    *
-   * @default - no statistic
+   * Default: average over 5 minutes.
    */
   public metricIntegrationLatency(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.metric('IntegrationLatency', props);
+    return this.cannedMetric(ApiGatewayMetrics.integrationLatencyAverage, props);
   }
 
   /**
@@ -461,10 +465,10 @@ export abstract class RestApiBase extends Resource implements IRestApi {
    * and when it returns a response to the client.
    * The latency includes the integration latency and other API Gateway overhead.
    *
-   * @default - no statistic
+   * Default: average over 5 minutes.
    */
   public metricLatency(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.metric('Latency', props);
+    return this.cannedMetric(ApiGatewayMetrics.latencyAverage, props);
   }
 
   /**
@@ -500,7 +504,7 @@ export abstract class RestApiBase extends Resource implements IRestApi {
   }
 
   protected configureDeployment(props: RestApiOptions) {
-    const deploy = props.deploy === undefined ? true : props.deploy;
+    const deploy = props.deploy ?? true;
     if (deploy) {
 
       this._latestDeployment = new Deployment(this, 'Deployment', {
@@ -544,6 +548,13 @@ export abstract class RestApiBase extends Resource implements IRestApi {
     }
     return undefined;
   }
+
+  private cannedMetric(fn: (dims: { ApiName: string }) => cloudwatch.MetricProps, props?: cloudwatch.MetricOptions) {
+    return new cloudwatch.Metric({
+      ...fn({ ApiName: this.restApiName }),
+      ...props,
+    }).attachTo(this);
+  }
 }
 
 /**
@@ -582,7 +593,7 @@ export class SpecRestApi extends RestApiBase {
       name: this.restApiName,
       policy: props.policy,
       failOnWarnings: props.failOnWarnings,
-      body: apiDefConfig.inlineDefinition ? apiDefConfig.inlineDefinition : undefined,
+      body: apiDefConfig.inlineDefinition ?? undefined,
       bodyS3Location: apiDefConfig.inlineDefinition ? undefined : apiDefConfig.s3Location,
       endpointConfiguration: this._configureEndpoints(props),
       parameters: props.parameters,
@@ -597,7 +608,7 @@ export class SpecRestApi extends RestApiBase {
       this.addDomainName('CustomDomain', props.domainName);
     }
 
-    const cloudWatchRole = props.cloudWatchRole !== undefined ? props.cloudWatchRole : true;
+    const cloudWatchRole = props.cloudWatchRole ?? true;
     if (cloudWatchRole) {
       this.configureCloudWatchRole(resource);
     }
@@ -689,13 +700,13 @@ export class RestApi extends RestApiBase {
       binaryMediaTypes: props.binaryMediaTypes,
       endpointConfiguration: this._configureEndpoints(props),
       apiKeySourceType: props.apiKeySourceType,
-      cloneFrom: props.cloneFrom ? props.cloneFrom.restApiId : undefined,
+      cloneFrom: props.cloneFrom?.restApiId,
       parameters: props.parameters,
     });
     this.node.defaultChild = resource;
     this.restApiId = resource.ref;
 
-    const cloudWatchRole = props.cloudWatchRole !== undefined ? props.cloudWatchRole : true;
+    const cloudWatchRole = props.cloudWatchRole ?? true;
     if (cloudWatchRole) {
       this.configureCloudWatchRole(resource);
     }

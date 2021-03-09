@@ -3,15 +3,20 @@ import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import {
-  Aws, CfnCondition, CfnCustomResource, Construct as CoreConstruct, CustomResource, Fn,
-  IResource, Lazy, Names, RemovalPolicy, Resource, Stack, Token,
+  Aws, CfnCondition, CfnCustomResource, CustomResource, Duration,
+  Fn, IResource, Lazy, Names, RemovalPolicy, Resource, Stack, Token,
 } from '@aws-cdk/core';
 import { Construct } from 'constructs';
+import { DynamoDBMetrics } from './dynamodb-canned-metrics.generated';
 import { CfnTable, CfnTableProps } from './dynamodb.generated';
 import * as perms from './perms';
 import { ReplicaProvider } from './replica-provider';
 import { EnableScalingProps, IScalableTableAttribute } from './scalable-attribute-api';
 import { ScalableTableAttribute } from './scalable-table-attribute';
+
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 const HASH_KEY_TYPE = 'HASH';
 const RANGE_KEY_TYPE = 'RANGE';
@@ -213,6 +218,13 @@ export interface TableOptions {
    * @experimental
    */
   readonly replicationRegions?: string[];
+
+  /**
+   * The timeout for a table replication operation in a single region.
+   *
+   * @default Duration.minutes(30)
+   */
+  readonly replicationTimeout?: Duration;
 }
 
 /**
@@ -439,6 +451,14 @@ export interface ITable extends IResource {
   metricSystemErrors(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 
   /**
+   * Metric for the system errors this table
+   *
+   * @param props properties of a metric
+   *
+   */
+  metricSystemErrorsForOperations(props?: SystemErrorsForOperationsMetricOptions): cloudwatch.IMetric;
+
+  /**
    * Metric for the user errors
    *
    * @param props properties of a metric
@@ -453,13 +473,20 @@ export interface ITable extends IResource {
   metricConditionalCheckFailedRequests(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 
   /**
+   * Metric for throttled requests
+   *
+   * @param props properties of a metric
+   *
+   */
+  metricThrottledRequests(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+
+  /**
    * Metric for the successful request latency
    *
    * @param props properties of a metric
    *
    */
   metricSuccessfulRequestLatency(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
-
 }
 
 /**
@@ -558,9 +585,9 @@ abstract class TableBase extends Resource implements ITable {
       actions,
       resourceArns: [
         this.tableArn,
-        Lazy.stringValue({ produce: () => this.hasIndex ? `${this.tableArn}/index/*` : Aws.NO_VALUE }),
+        Lazy.string({ produce: () => this.hasIndex ? `${this.tableArn}/index/*` : Aws.NO_VALUE }),
         ...this.regionalArns,
-        ...this.regionalArns.map(arn => Lazy.stringValue({
+        ...this.regionalArns.map(arn => Lazy.string({
           produce: () => this.hasIndex ? `${arn}/index/*` : Aws.NO_VALUE,
         })),
       ],
@@ -692,7 +719,7 @@ abstract class TableBase extends Resource implements ITable {
         TableName: this.tableName,
       },
       ...props,
-    });
+    }).attachTo(this);
   }
 
   /**
@@ -702,7 +729,7 @@ abstract class TableBase extends Resource implements ITable {
    * You can customize this by using the `statistic` and `period` properties.
    */
   public metricConsumedReadCapacityUnits(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.metric('ConsumedReadCapacityUnits', { statistic: 'sum', ...props });
+    return this.cannedMetric(DynamoDBMetrics.consumedReadCapacityUnitsSum, props);
   }
 
   /**
@@ -712,7 +739,7 @@ abstract class TableBase extends Resource implements ITable {
    * You can customize this by using the `statistic` and `period` properties.
    */
   public metricConsumedWriteCapacityUnits(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.metric('ConsumedWriteCapacityUnits', { statistic: 'sum', ...props });
+    return this.cannedMetric(DynamoDBMetrics.consumedWriteCapacityUnitsSum, props);
   }
 
   /**
@@ -721,7 +748,6 @@ abstract class TableBase extends Resource implements ITable {
    * @deprecated use `metricSystemErrorsForOperations`.
    */
   public metricSystemErrors(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-
     if (!props?.dimensions?.Operation) {
       // 'Operation' must be passed because its an operational metric.
       throw new Error("'Operation' dimension must be passed for the 'SystemErrors' metric.");
@@ -743,7 +769,6 @@ abstract class TableBase extends Resource implements ITable {
    * You can customize this by using the `statistic` and `period` properties.
    */
   public metricUserErrors(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-
     if (props?.dimensions) {
       throw new Error("'dimensions' is not supported for the 'UserErrors' metric");
     }
@@ -764,24 +789,35 @@ abstract class TableBase extends Resource implements ITable {
   }
 
   /**
+   * How many requests are throttled on this table
+   *
+   * Default: sum over 5 minutes
+   */
+  public metricThrottledRequests(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return this.cannedMetric(DynamoDBMetrics.throttledRequestsSum, props);
+  }
+
+  /**
    * Metric for the successful request latency this table.
    *
    * By default, the metric will be calculated as an average over a period of 5 minutes.
    * You can customize this by using the `statistic` and `period` properties.
-   *
    */
   public metricSuccessfulRequestLatency(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-
     if (!props?.dimensions?.Operation) {
       throw new Error("'Operation' dimension must be passed for the 'SuccessfulRequestLatency' metric.");
     }
 
     const dimensions = {
       TableName: this.tableName,
-      ...props?.dimensions ?? {},
+      Operation: props.dimensions.Operation,
     };
 
-    return this.metric('SuccessfulRequestLatency', { statistic: 'avg', ...props, dimensions });
+    return new cloudwatch.Metric({
+      ...DynamoDBMetrics.successfulRequestLatencyAverage(dimensions),
+      ...props,
+      dimensions,
+    }).attachTo(this);
   }
 
   /**
@@ -873,9 +909,9 @@ abstract class TableBase extends Resource implements ITable {
   ): iam.Grant {
     if (opts.tableActions) {
       const resources = [this.tableArn,
-        Lazy.stringValue({ produce: () => this.hasIndex ? `${this.tableArn}/index/*` : Aws.NO_VALUE }),
+        Lazy.string({ produce: () => this.hasIndex ? `${this.tableArn}/index/*` : Aws.NO_VALUE }),
         ...this.regionalArns,
-        ...this.regionalArns.map(arn => Lazy.stringValue({
+        ...this.regionalArns.map(arn => Lazy.string({
           produce: () => this.hasIndex ? `${arn}/index/*` : Aws.NO_VALUE,
         }))];
       const ret = iam.Grant.addToPrincipal({
@@ -903,6 +939,15 @@ abstract class TableBase extends Resource implements ITable {
       return ret;
     }
     throw new Error(`Unexpected 'action', ${ opts.tableActions || opts.streamActions }`);
+  }
+
+  private cannedMetric(
+    fn: (dims: { TableName: string }) => cloudwatch.MetricProps,
+    props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return new cloudwatch.Metric({
+      ...fn({ TableName: this.tableName }),
+      ...props,
+    }).attachTo(this);
   }
 }
 
@@ -1030,15 +1075,14 @@ export class Table extends TableBase {
   private readonly indexScaling = new Map<string, ScalableAttributePair>();
   private readonly scalingRole: iam.IRole;
 
+  private readonly globalReplicaCustomResources = new Array<CustomResource>();
+
   constructor(scope: Construct, id: string, props: TableProps) {
     super(scope, id, {
       physicalName: props.tableName,
     });
 
     const { sseSpecification, encryptionKey } = this.parseEncryption(props);
-
-    this.billingMode = props.billingMode || BillingMode.PROVISIONED;
-    this.validateProvisioning(props);
 
     let streamSpecification: CfnTable.StreamSpecificationProperty | undefined;
     if (props.replicationRegions) {
@@ -1047,20 +1091,21 @@ export class Table extends TableBase {
       }
       streamSpecification = { streamViewType: StreamViewType.NEW_AND_OLD_IMAGES };
 
-      if (props.billingMode && props.billingMode !== BillingMode.PAY_PER_REQUEST) {
-        throw new Error('The `PAY_PER_REQUEST` billing mode must be used when specifying `replicationRegions`');
+      this.billingMode = props.billingMode ?? BillingMode.PAY_PER_REQUEST;
+    } else {
+      this.billingMode = props.billingMode ?? BillingMode.PROVISIONED;
+      if (props.stream) {
+        streamSpecification = { streamViewType: props.stream };
       }
-      this.billingMode = BillingMode.PAY_PER_REQUEST;
-    } else if (props.stream) {
-      streamSpecification = { streamViewType: props.stream };
     }
+    this.validateProvisioning(props);
 
     this.table = new CfnTable(this, 'Resource', {
       tableName: this.physicalName,
       keySchema: this.keySchema,
       attributeDefinitions: this.attributeDefinitions,
-      globalSecondaryIndexes: Lazy.anyValue({ produce: () => this.globalSecondaryIndexes }, { omitEmptyArray: true }),
-      localSecondaryIndexes: Lazy.anyValue({ produce: () => this.localSecondaryIndexes }, { omitEmptyArray: true }),
+      globalSecondaryIndexes: Lazy.any({ produce: () => this.globalSecondaryIndexes }, { omitEmptyArray: true }),
+      localSecondaryIndexes: Lazy.any({ produce: () => this.localSecondaryIndexes }, { omitEmptyArray: true }),
       pointInTimeRecoverySpecification: props.pointInTimeRecovery ? { pointInTimeRecoveryEnabled: props.pointInTimeRecovery } : undefined,
       billingMode: this.billingMode === BillingMode.PAY_PER_REQUEST ? this.billingMode : undefined,
       provisionedThroughput: this.billingMode === BillingMode.PAY_PER_REQUEST ? undefined : {
@@ -1097,7 +1142,7 @@ export class Table extends TableBase {
     }
 
     if (props.replicationRegions && props.replicationRegions.length > 0) {
-      this.createReplicaTables(props.replicationRegions);
+      this.createReplicaTables(props.replicationRegions, props.replicationTimeout);
     }
   }
 
@@ -1188,13 +1233,17 @@ export class Table extends TableBase {
       throw new Error('AutoScaling is not available for tables with PAY_PER_REQUEST billing mode');
     }
 
-    return this.tableScaling.scalableWriteAttribute = new ScalableTableAttribute(this, 'WriteScaling', {
+    this.tableScaling.scalableWriteAttribute = new ScalableTableAttribute(this, 'WriteScaling', {
       serviceNamespace: appscaling.ServiceNamespace.DYNAMODB,
       resourceId: `table/${this.tableName}`,
       dimension: 'dynamodb:table:WriteCapacityUnits',
       role: this.scalingRole,
       ...props,
     });
+    for (const globalReplicaCustomResource of this.globalReplicaCustomResources) {
+      globalReplicaCustomResource.node.addDependency(this.tableScaling.scalableWriteAttribute);
+    }
+    return this.tableScaling.scalableWriteAttribute;
   }
 
   /**
@@ -1262,6 +1311,17 @@ export class Table extends TableBase {
     }
     if (this.localSecondaryIndexes.length > 0 && !this.tableSortKey) {
       errors.push('a sort key of the table must be specified to add local secondary indexes');
+    }
+
+    if (this.globalReplicaCustomResources.length > 0 && this.billingMode === BillingMode.PROVISIONED) {
+      const writeAutoScaleAttribute = this.tableScaling.scalableWriteAttribute;
+      if (!writeAutoScaleAttribute) {
+        errors.push('A global Table that uses PROVISIONED as the billing mode needs auto-scaled write capacity. ' +
+          'Use the autoScaleWriteCapacity() method to enable it.');
+      } else if (!writeAutoScaleAttribute._scalingPolicyCreated) {
+        errors.push('A global Table that uses PROVISIONED as the billing mode needs auto-scaled write capacity with a policy. ' +
+          'Call one of the scaleOn*() methods of the object returned from autoScaleWriteCapacity()');
+      }
     }
 
     return errors;
@@ -1338,8 +1398,8 @@ export class Table extends TableBase {
     }
 
     return {
-      projectionType: props.projectionType ? props.projectionType : ProjectionType.ALL,
-      nonKeyAttributes: props.nonKeyAttributes ? props.nonKeyAttributes : undefined,
+      projectionType: props.projectionType ?? ProjectionType.ALL,
+      nonKeyAttributes: props.nonKeyAttributes ?? undefined,
     };
   }
 
@@ -1398,14 +1458,14 @@ export class Table extends TableBase {
    *
    * @param regions regions where to create tables
    */
-  private createReplicaTables(regions: string[]) {
+  private createReplicaTables(regions: string[], timeout?: Duration) {
     const stack = Stack.of(this);
 
     if (!Token.isUnresolved(stack.region) && regions.includes(stack.region)) {
       throw new Error('`replicationRegions` cannot include the region where this stack is deployed.');
     }
 
-    const provider = ReplicaProvider.getOrCreate(this);
+    const provider = ReplicaProvider.getOrCreate(this, { timeout });
 
     // Documentation at https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/V2gt_IAM.html
     // is currently incorrect. AWS Support recommends `dynamodb:*` in both source and destination regions
@@ -1433,6 +1493,7 @@ export class Table extends TableBase {
         onEventHandlerPolicy.policy,
         isCompleteHandlerPolicy.policy,
       );
+      this.globalReplicaCustomResources.push(currentRegion);
 
       // Deploy time check to prevent from creating a replica in the region
       // where this stack is deployed. Only needed for environment agnostic
@@ -1616,12 +1677,19 @@ interface ScalableAttributePair {
  */
 class SourceTableAttachedPolicy extends CoreConstruct implements iam.IGrantable {
   public readonly grantPrincipal: iam.IPrincipal;
-  public readonly policy: iam.IPolicy;
+  public readonly policy: iam.IManagedPolicy;
 
   public constructor(sourceTable: Table, role: iam.IRole) {
-    super(sourceTable, `SourceTableAttachedPolicy-${Names.nodeUniqueId(role.node)}`);
+    super(sourceTable, `SourceTableAttachedManagedPolicy-${Names.nodeUniqueId(role.node)}`);
 
-    const policy = new iam.Policy(this, 'Resource', { roles: [role] });
+    const policy = new iam.ManagedPolicy(this, 'Resource', {
+      // A CF update of the description property of a managed policy requires
+      // a replacement. Use the table name in the description to force a managed
+      // policy replacement when the table name changes. This way we preserve permissions
+      // to delete old replicas in case of a table replacement.
+      description: `DynamoDB replication managed policy for table ${sourceTable.tableName}`,
+      roles: [role],
+    });
     this.policy = policy;
     this.grantPrincipal = new SourceTableAttachedPrincipal(role, policy);
   }
@@ -1632,7 +1700,7 @@ class SourceTableAttachedPolicy extends CoreConstruct implements iam.IGrantable 
  * `SourceTableAttachedPolicy` class so it can act as an `IGrantable`.
  */
 class SourceTableAttachedPrincipal extends iam.PrincipalBase {
-  public constructor(private readonly role: iam.IRole, private readonly policy: iam.Policy) {
+  public constructor(private readonly role: iam.IRole, private readonly policy: iam.ManagedPolicy) {
     super();
   }
 

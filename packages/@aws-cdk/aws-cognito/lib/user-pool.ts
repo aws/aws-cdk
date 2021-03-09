@@ -1,6 +1,6 @@
 import { IRole, PolicyDocument, PolicyStatement, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
-import { Duration, IResource, Lazy, Names, Resource, Stack, Token } from '@aws-cdk/core';
+import { Duration, IResource, Lazy, Names, RemovalPolicy, Resource, Stack, Token } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { toASCII as punycodeEncode } from 'punycode/';
 import { CfnUserPool } from './cognito.generated';
@@ -34,7 +34,7 @@ export interface SignInAliases {
   readonly phone?: boolean;
 
   /**
-   * Whether a user is allowed to ign in with a secondary username, that can be set and modified after sign up.
+   * Whether a user is allowed to sign in with a secondary username, that can be set and modified after sign up.
    * Can only be used in conjunction with `USERNAME`.
    * @default false
    */
@@ -567,6 +567,13 @@ export interface UserPoolProps {
    * @default AccountRecovery.PHONE_WITHOUT_MFA_AND_EMAIL
    */
   readonly accountRecovery?: AccountRecovery;
+
+  /**
+   * Policy to apply when the user pool is removed from the stack
+   *
+   * @default RemovalPolicy.RETAIN
+   */
+  readonly removalPolicy?: RemovalPolicy;
 }
 
 /**
@@ -723,7 +730,7 @@ export class UserPool extends UserPoolBase {
       emailSubject: props.userInvitation?.emailSubject,
       smsMessage: props.userInvitation?.smsMessage,
     };
-    const selfSignUpEnabled = props.selfSignUpEnabled !== undefined ? props.selfSignUpEnabled : false;
+    const selfSignUpEnabled = props.selfSignUpEnabled ?? false;
     const adminCreateUserConfig: CfnUserPool.AdminCreateUserConfigProperty = {
       allowAdminCreateUserOnly: !selfSignUpEnabled,
       inviteMessageTemplate: props.userInvitation !== undefined ? inviteMessageTemplate : undefined,
@@ -736,7 +743,7 @@ export class UserPool extends UserPoolBase {
       usernameAttributes: signIn.usernameAttrs,
       aliasAttributes: signIn.aliasAttrs,
       autoVerifiedAttributes: signIn.autoVerifyAttrs,
-      lambdaConfig: Lazy.anyValue({ produce: () => undefinedIfNoKeys(this.triggers) }),
+      lambdaConfig: Lazy.any({ produce: () => undefinedIfNoKeys(this.triggers) }),
       smsConfiguration: this.smsConfiguration(props),
       adminCreateUserConfig,
       emailVerificationMessage,
@@ -756,6 +763,7 @@ export class UserPool extends UserPoolBase {
       }),
       accountRecoverySetting: this.accountRecovery(props),
     });
+    userPool.applyRemovalPolicy(props.removalPolicy);
 
     this.userPoolId = userPool.ref;
     this.userPoolArn = userPool.attrArn;

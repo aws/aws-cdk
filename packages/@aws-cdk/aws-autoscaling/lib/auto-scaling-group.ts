@@ -936,8 +936,8 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
     // use delayed evaluation
     const imageConfig = props.machineImage.getImage(this);
     this.userData = props.userData ?? imageConfig.userData;
-    const userDataToken = Lazy.stringValue({ produce: () => Fn.base64(this.userData.render()) });
-    const securityGroupsToken = Lazy.listValue({ produce: () => this.securityGroups.map(sg => sg.securityGroupId) });
+    const userDataToken = Lazy.string({ produce: () => Fn.base64(this.userData.render()) });
+    const securityGroupsToken = Lazy.list({ produce: () => this.securityGroups.map(sg => sg.securityGroupId) });
 
     const launchConfig = new CfnLaunchConfiguration(this, 'LaunchConfig', {
       imageId: imageConfig.imageId,
@@ -957,9 +957,8 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
 
     // desiredCapacity just reflects what the user has supplied.
     const desiredCapacity = props.desiredCapacity;
-    const minCapacity = props.minCapacity !== undefined ? props.minCapacity : 1;
-    const maxCapacity = props.maxCapacity !== undefined ? props.maxCapacity :
-      desiredCapacity !== undefined ? desiredCapacity : Math.max(minCapacity, 1);
+    const minCapacity = props.minCapacity ?? 1;
+    const maxCapacity = props.maxCapacity ?? desiredCapacity ?? Math.max(minCapacity, 1);
 
     withResolved(minCapacity, maxCapacity, (min, max) => {
       if (min > max) {
@@ -1009,15 +1008,15 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
     const { subnetIds, hasPublic } = props.vpc.selectSubnets(props.vpcSubnets);
     const asgProps: CfnAutoScalingGroupProps = {
       autoScalingGroupName: this.physicalName,
-      cooldown: props.cooldown !== undefined ? props.cooldown.toSeconds().toString() : undefined,
+      cooldown: props.cooldown?.toSeconds().toString(),
       minSize: Tokenization.stringifyNumber(minCapacity),
       maxSize: Tokenization.stringifyNumber(maxCapacity),
       desiredCapacity: desiredCapacity !== undefined ? Tokenization.stringifyNumber(desiredCapacity) : undefined,
       launchConfigurationName: launchConfig.ref,
-      loadBalancerNames: Lazy.listValue({ produce: () => this.loadBalancerNames }, { omitEmpty: true }),
-      targetGroupArns: Lazy.listValue({ produce: () => this.targetGroupArns }, { omitEmpty: true }),
+      loadBalancerNames: Lazy.list({ produce: () => this.loadBalancerNames }, { omitEmpty: true }),
+      targetGroupArns: Lazy.list({ produce: () => this.targetGroupArns }, { omitEmpty: true }),
       notificationConfigurations: this.renderNotificationConfiguration(),
-      metricsCollection: Lazy.anyValue({ produce: () => this.renderMetricsCollection() }),
+      metricsCollection: Lazy.any({ produce: () => this.renderMetricsCollection() }),
       vpcZoneIdentifier: subnetIds,
       healthCheckType: props.healthCheck && props.healthCheck.type,
       healthCheckGracePeriod: props.healthCheck && props.healthCheck.gracePeriod && props.healthCheck.gracePeriod.toSeconds(),
@@ -1509,7 +1508,7 @@ enum HealthCheckType {
  * Render the rolling update configuration into the appropriate object
  */
 function renderRollingUpdateConfig(config: RollingUpdateConfiguration = {}): CfnAutoScalingRollingUpdate {
-  const waitOnResourceSignals = config.minSuccessfulInstancesPercent !== undefined ? true : false;
+  const waitOnResourceSignals = config.minSuccessfulInstancesPercent !== undefined;
   const pauseTime = config.pauseTime || (waitOnResourceSignals ? Duration.minutes(5) : Duration.seconds(0));
 
   return {

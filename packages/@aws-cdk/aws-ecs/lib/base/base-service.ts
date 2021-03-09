@@ -8,8 +8,8 @@ import * as cloudmap from '@aws-cdk/aws-servicediscovery';
 import { Annotations, Duration, IResolvable, IResource, Lazy, Resource, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { LoadBalancerTargetOptions, NetworkMode, TaskDefinition } from '../base/task-definition';
-import { ICluster } from '../cluster';
-import { Protocol } from '../container-definition';
+import { ContainerDefinition, Protocol } from '../container-definition';
+import { ICluster, CapacityProviderStrategy } from '../cluster';
 import { CfnService } from '../ecs.generated';
 import { ScalableTaskCount } from './scalable-task-count';
 
@@ -42,6 +42,18 @@ export interface DeploymentController {
    * @default DeploymentControllerType.ECS
    */
   readonly type?: DeploymentControllerType;
+}
+
+/**
+ * The deployment circuit breaker to use for the service
+ */
+export interface DeploymentCircuitBreaker {
+  /**
+   * Whether to enable rollback on deployment failure
+   * @default false
+   */
+  readonly rollback?: boolean;
+
 }
 
 export interface EcsTarget {
@@ -93,7 +105,8 @@ export interface BaseServiceOptions {
   /**
    * The desired number of instantiations of the task definition to keep running on the service.
    *
-   * @default 1
+   * @default - When creating the service, default is 1; when updating the service, default uses
+   * the current task number.
    */
   readonly desiredCount?: number;
 
@@ -161,6 +174,21 @@ export interface BaseServiceOptions {
    * @default - Rolling update (ECS)
    */
   readonly deploymentController?: DeploymentController;
+
+  /**
+   * Whether to enable the deployment circuit breaker. If this property is defined, circuit breaker will be implicitly
+   * enabled.
+   * @default - disabled
+   */
+  readonly circuitBreaker?: DeploymentCircuitBreaker;
+
+  /**
+   * A list of Capacity Provider strategies used to place a service.
+   *
+   * @default - undefined
+   *
+   */
+  readonly capacityProviderStrategies?: CapacityProviderStrategy[];
 }
 
 /**
@@ -170,6 +198,10 @@ export interface BaseServiceOptions {
 export interface BaseServiceProps extends BaseServiceOptions {
   /**
    * The launch type on which to run your service.
+   *
+   * LaunchType will be omitted if capacity provider strategies are specified on the service.
+   *
+   * @see - https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ecs-service.html#cfn-ecs-service-capacityproviderstrategy
    *
    * Valid values are: LaunchType.ECS or LaunchType.FARGATE
    */
@@ -214,8 +246,7 @@ class ApplicationListenerConfig extends ListenerConfig {
   public addTargets(id: string, target: LoadBalancerTargetOptions, service: BaseService) {
     const props = this.props || {};
     const protocol = props.protocol;
-    const port = props.port !== undefined ? props.port : (protocol === undefined ? 80 :
-      (protocol === elbv2.ApplicationProtocol.HTTPS ? 443 : 80));
+    const port = props.port ?? (protocol === elbv2.ApplicationProtocol.HTTPS ? 443 : 80);
     this.listener.addTargets(id, {
       ... props,
       targets: [
@@ -240,7 +271,7 @@ class NetworkListenerConfig extends ListenerConfig {
    * Create and attach a target group to listener.
    */
   public addTargets(id: string, target: LoadBalancerTargetOptions, service: BaseService) {
-    const port = this.props !== undefined ? this.props.port : 80;
+    const port = this.props?.port ?? 80;
     this.listener.addTargets(id, {
       ... this.props,
       targets: [
@@ -337,22 +368,32 @@ export abstract class BaseService extends Resource
 
     this.taskDefinition = taskDefinition;
 
+    // launchType will set to undefined if using external DeploymentController or capacityProviderStrategies
+    const launchType = props.deploymentController?.type === DeploymentControllerType.EXTERNAL ||
+      props.capacityProviderStrategies !== undefined ?
+      undefined : props.launchType;
+
     this.resource = new CfnService(this, 'Service', {
       desiredCount: props.desiredCount,
       serviceName: this.physicalName,
-      loadBalancers: Lazy.anyValue({ produce: () => this.loadBalancers }, { omitEmptyArray: true }),
+      loadBalancers: Lazy.any({ produce: () => this.loadBalancers }, { omitEmptyArray: true }),
       deploymentConfiguration: {
         maximumPercent: props.maxHealthyPercent || 200,
         minimumHealthyPercent: props.minHealthyPercent === undefined ? 50 : props.minHealthyPercent,
+        deploymentCircuitBreaker: props.circuitBreaker ? {
+          enable: true,
+          rollback: props.circuitBreaker.rollback ?? false,
+        } : undefined,
       },
       propagateTags: props.propagateTags === PropagatedTagSource.NONE ? undefined : props.propagateTags,
-      enableEcsManagedTags: props.enableECSManagedTags === undefined ? false : props.enableECSManagedTags,
+      enableEcsManagedTags: props.enableECSManagedTags ?? false,
       deploymentController: props.deploymentController,
-      launchType: props.deploymentController?.type === DeploymentControllerType.EXTERNAL ? undefined : props.launchType,
+      launchType: launchType,
+      capacityProviderStrategy: props.capacityProviderStrategies,
       healthCheckGracePeriodSeconds: this.evaluateHealthGracePeriod(props.healthCheckGracePeriod),
       /* role: never specified, supplanted by Service Linked Role */
-      networkConfiguration: Lazy.anyValue({ produce: () => this.networkConfiguration }, { omitEmptyArray: true }),
-      serviceRegistries: Lazy.anyValue({ produce: () => this.serviceRegistries }, { omitEmptyArray: true }),
+      networkConfiguration: Lazy.any({ produce: () => this.networkConfiguration }, { omitEmptyArray: true }),
+      serviceRegistries: Lazy.any({ produce: () => this.serviceRegistries }, { omitEmptyArray: true }),
       ...additionalProps,
     });
 
@@ -501,7 +542,7 @@ export abstract class BaseService extends Resource
    * @returns The created CloudMap service
    */
   public enableCloudMap(options: CloudMapOptions): cloudmap.Service {
-    const sdNamespace = options.cloudMapNamespace !== undefined ? options.cloudMapNamespace : this.cluster.defaultCloudMapNamespace;
+    const sdNamespace = options.cloudMapNamespace ?? this.cluster.defaultCloudMapNamespace;
     if (sdNamespace === undefined) {
       throw new Error('Cannot enable service discovery if a Cloudmap Namespace has not been created in the cluster.');
     }
@@ -531,10 +572,12 @@ export abstract class BaseService extends Resource
       }
     }
 
-    // If the task definition that your service task specifies uses the AWSVPC network mode and a type SRV DNS record is
-    // used, you must specify a containerName and containerPort combination
-    const containerName = dnsRecordType === cloudmap.DnsRecordType.SRV ? this.taskDefinition.defaultContainer!.containerName : undefined;
-    const containerPort = dnsRecordType === cloudmap.DnsRecordType.SRV ? this.taskDefinition.defaultContainer!.containerPort : undefined;
+    const { containerName, containerPort } = determineContainerNameAndPort({
+      taskDefinition: this.taskDefinition,
+      dnsRecordType: dnsRecordType!,
+      container: options.container,
+      containerPort: options.containerPort,
+    });
 
     const cloudmapService = new cloudmap.Service(this, 'CloudmapService', {
       namespace: sdNamespace,
@@ -606,7 +649,7 @@ export abstract class BaseService extends Resource
       awsvpcConfiguration: {
         assignPublicIp: assignPublicIp ? 'ENABLED' : 'DISABLED',
         subnets: vpc.selectSubnets(vpcSubnets).subnetIds,
-        securityGroups: Lazy.listValue({ produce: () => [securityGroup!.securityGroupId] }),
+        securityGroups: Lazy.list({ produce: () => [securityGroup!.securityGroupId] }),
       },
     };
   }
@@ -714,10 +757,8 @@ export abstract class BaseService extends Resource
    *  healthCheckGracePeriod is not already set
    */
   private evaluateHealthGracePeriod(providedHealthCheckGracePeriod?: Duration): IResolvable {
-    return Lazy.anyValue({
-      produce: () => providedHealthCheckGracePeriod !== undefined ? providedHealthCheckGracePeriod.toSeconds() :
-        this.loadBalancers.length > 0 ? 60 :
-          undefined,
+    return Lazy.any({
+      produce: () => providedHealthCheckGracePeriod?.toSeconds() ?? (this.loadBalancers.length > 0 ? 60 : undefined),
     });
   }
 }
@@ -760,7 +801,19 @@ export interface CloudMapOptions {
    *
    * NOTE: This is used for HealthCheckCustomConfig
    */
-  readonly failureThreshold?: number,
+  readonly failureThreshold?: number;
+
+  /**
+   * The container to point to for a SRV record.
+   * @default - the task definition's default container
+   */
+  readonly container?: ContainerDefinition;
+
+  /**
+   * The port to point to for a SRV record.
+   * @default - the default port of the task definition's default container
+   */
+  readonly containerPort?: number;
 }
 
 /**
@@ -845,4 +898,43 @@ export enum PropagatedTagSource {
    * Do not propagate
    */
   NONE = 'NONE'
+}
+
+/**
+ * Options for `determineContainerNameAndPort`
+ */
+interface DetermineContainerNameAndPortOptions {
+  dnsRecordType: cloudmap.DnsRecordType;
+  taskDefinition: TaskDefinition;
+  container?: ContainerDefinition;
+  containerPort?: number;
+}
+
+/**
+ * Determine the name of the container and port to target for the service registry.
+ */
+function determineContainerNameAndPort(options: DetermineContainerNameAndPortOptions) {
+  // If the record type is SRV, then provide the containerName and containerPort to target.
+  // We use the name of the default container and the default port of the default container
+  // unless the user specifies otherwise.
+  if (options.dnsRecordType === cloudmap.DnsRecordType.SRV) {
+    // Ensure the user-provided container is from the right task definition.
+    if (options.container && options.container.taskDefinition != options.taskDefinition) {
+      throw new Error('Cannot add discovery for a container from another task definition');
+    }
+
+    const container = options.container ?? options.taskDefinition.defaultContainer!;
+
+    // Ensure that any port given by the user is mapped.
+    if (options.containerPort && !container.portMappings.some(mapping => mapping.containerPort === options.containerPort)) {
+      throw new Error('Cannot add discovery for a container port that has not been mapped');
+    }
+
+    return {
+      containerName: container.containerName,
+      containerPort: options.containerPort ?? options.taskDefinition.defaultContainer!.containerPort,
+    };
+  }
+
+  return {};
 }

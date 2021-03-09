@@ -37,13 +37,13 @@
         "Code": {
           "ZipFile": "exports.handler = async function(event, context) { return { statusCode: 200, body: \"success\" }; };"
         },
-        "Handler": "index.handler",
         "Role": {
           "Fn::GetAtt": [
             "AlwaysSuccessServiceRole6DB8C2F6",
             "Arn"
           ]
         },
+        "Handler": "index.handler",
         "Runtime": "nodejs12.x"
       },
       "DependsOn": [
@@ -94,7 +94,28 @@
         }
       }
     },
-    "LambdaProxyApiDefaultRouteDefaultRouteIntegration97D5250B": {
+    "LambdaProxyApiDefaultRoute1EB30A46": {
+      "Type": "AWS::ApiGatewayV2::Route",
+      "Properties": {
+        "ApiId": {
+          "Ref": "LambdaProxyApi67594471"
+        },
+        "RouteKey": "$default",
+        "AuthorizationScopes": [],
+        "Target": {
+          "Fn::Join": [
+            "",
+            [
+              "integrations/",
+              {
+                "Ref": "LambdaProxyApiDefaultRouteHttpIntegration70df0ec52c3e3b6bbc96e64ce3a05f24EE575CBA"
+              }
+            ]
+          ]
+        }
+      }
+    },
+    "LambdaProxyApiDefaultRouteHttpIntegration70df0ec52c3e3b6bbc96e64ce3a05f24EE575CBA": {
       "Type": "AWS::ApiGatewayV2::Integration",
       "Properties": {
         "ApiId": {
@@ -108,26 +129,6 @@
           ]
         },
         "PayloadFormatVersion": "2.0"
-      }
-    },
-    "LambdaProxyApiDefaultRoute1EB30A46": {
-      "Type": "AWS::ApiGatewayV2::Route",
-      "Properties": {
-        "ApiId": {
-          "Ref": "LambdaProxyApi67594471"
-        },
-        "RouteKey": "$default",
-        "Target": {
-          "Fn::Join": [
-            "",
-            [
-              "integrations/",
-              {
-                "Ref": "LambdaProxyApiDefaultRouteDefaultRouteIntegration97D5250B"
-              }
-            ]
-          ]
-        }
       }
     },
     "LambdaProxyApiDefaultStage07C38681": {
@@ -147,7 +148,28 @@
         "ProtocolType": "HTTP"
       }
     },
-    "HttpProxyApiDefaultRouteDefaultRouteIntegrationF2E17850": {
+    "HttpProxyApiDefaultRoute8AF66B5C": {
+      "Type": "AWS::ApiGatewayV2::Route",
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpProxyApiD0217C67"
+        },
+        "RouteKey": "$default",
+        "AuthorizationScopes": [],
+        "Target": {
+          "Fn::Join": [
+            "",
+            [
+              "integrations/",
+              {
+                "Ref": "HttpProxyApiDefaultRouteHttpIntegration8eeecf9ecdb91f31bebf6bd54fb711a41921AB82"
+              }
+            ]
+          ]
+        }
+      }
+    },
+    "HttpProxyApiDefaultRouteHttpIntegration8eeecf9ecdb91f31bebf6bd54fb711a41921AB82": {
       "Type": "AWS::ApiGatewayV2::Integration",
       "Properties": {
         "ApiId": {
@@ -176,26 +198,6 @@
           ]
         },
         "PayloadFormatVersion": "1.0"
-      }
-    },
-    "HttpProxyApiDefaultRoute8AF66B5C": {
-      "Type": "AWS::ApiGatewayV2::Route",
-      "Properties": {
-        "ApiId": {
-          "Ref": "HttpProxyApiD0217C67"
-        },
-        "RouteKey": "$default",
-        "Target": {
-          "Fn::Join": [
-            "",
-            [
-              "integrations/",
-              {
-                "Ref": "HttpProxyApiDefaultRouteDefaultRouteIntegrationF2E17850"
-              }
-            ]
-          ]
-        }
       }
     },
     "HttpProxyApiDefaultStageA88F9DE3": {

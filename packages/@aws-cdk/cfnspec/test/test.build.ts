@@ -1,5 +1,5 @@
 import { Test } from 'nodeunit';
-import { massageSpec } from '../build-tools/build';
+import { massageSpec } from '../build-tools/massage-spec';
 import { schema } from '../lib';
 
 export = {

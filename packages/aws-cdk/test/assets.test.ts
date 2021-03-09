@@ -3,15 +3,13 @@ import { ToolkitInfo } from '../lib';
 import { addMetadataAssetsToManifest } from '../lib/assets';
 import { AssetManifestBuilder } from '../lib/util/asset-manifest-builder';
 import { testStack } from './util';
+import { MockSdk } from './util/mock-sdk';
+import { MockToolkitInfo } from './util/mock-toolkitinfo';
 
 let toolkit: ToolkitInfo;
 let assets: AssetManifestBuilder;
 beforeEach(() => {
-  toolkit = {
-    bucketUrl: 'https://bucket',
-    bucketName: 'bucket',
-    prepareEcrRepository: jest.fn(),
-  } as any;
+  toolkit = new MockToolkitInfo(new MockSdk());
   assets = new AssetManifestBuilder();
 });
 
@@ -35,7 +33,7 @@ describe('file assets', () => {
 
     // THEN
     expect(params).toEqual({
-      BucketParameter: 'bucket',
+      BucketParameter: 'MockToolkitBucketName',
       KeyParameter: 'assets/SomeStackSomeResource4567/||source-hash.js',
       ArtifactHashParameter: 'source-hash',
     });
@@ -43,7 +41,7 @@ describe('file assets', () => {
     expect(assets.toManifest('.').entries).toEqual([
       expect.objectContaining({
         destination: {
-          bucketName: 'bucket',
+          bucketName: 'MockToolkitBucketName',
           objectKey: 'assets/SomeStackSomeResource4567/source-hash.js',
         },
         source: {
@@ -75,7 +73,7 @@ describe('file assets', () => {
     expect(assets.toManifest('.').entries).toEqual([
       expect.objectContaining({
         destination: {
-          bucketName: 'bucket',
+          bucketName: 'MockToolkitBucketName',
           objectKey: 'assets/source-hash.js',
         },
       }),
