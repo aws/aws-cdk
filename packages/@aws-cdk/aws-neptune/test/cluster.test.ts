@@ -1,4 +1,4 @@
-import { expect as expectCDK, haveResource, ResourcePart } from '@aws-cdk/assert';
+import { ABSENT, expect as expectCDK, haveResource, ResourcePart } from '@aws-cdk/assert';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
@@ -429,6 +429,75 @@ describe('DatabaseCluster', () => {
     expectCDK(stack).to(haveResource('AWS::Neptune::DBCluster', {
       PreferredMaintenanceWindow: '07:34-08:04',
     }));
+  });
+
+  test('iam authentication - off by default', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new DatabaseCluster(stack, 'Cluster', {
+      vpc,
+      instanceType: InstanceType.R5_LARGE,
+    });
+
+    // THEN
+    expectCDK(stack).to(haveResource('AWS::Neptune::DBCluster', {
+      IamAuthEnabled: ABSENT,
+    }));
+  });
+
+  test('createGrant - creates IAM policy and enables IAM auth', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    const cluster = new DatabaseCluster(stack, 'Cluster', {
+      vpc,
+      instanceType: InstanceType.R5_LARGE,
+    });
+    const role = new iam.Role(stack, 'DBRole', {
+      assumedBy: new iam.AccountPrincipal(stack.account),
+    });
+    cluster.grantConnect(role);
+
+    // THEN
+    expectCDK(stack).to(haveResource('AWS::Neptune::DBCluster', {
+      IamAuthEnabled: true,
+    }));
+    expectCDK(stack).to(haveResource('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [{
+          Effect: 'Allow',
+          Action: 'neptune-db:*',
+          Resource: {
+            'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':neptune-db:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':', { Ref: 'ClusterEB0386A7' }, '/*']],
+          },
+        }],
+        Version: '2012-10-17',
+      },
+    }));
+  });
+
+  test('createGrant - throws if IAM auth disabled', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    const cluster = new DatabaseCluster(stack, 'Cluster', {
+      vpc,
+      instanceType: InstanceType.R5_LARGE,
+      iamAuthentication: false,
+    });
+    const role = new iam.Role(stack, 'DBRole', {
+      assumedBy: new iam.AccountPrincipal(stack.account),
+    });
+
+    // THEN
+    expect(() => { cluster.grantConnect(role); }).toThrow(/Cannot grant connect when IAM authentication is disabled/);
   });
 });
 

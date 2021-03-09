@@ -38,7 +38,7 @@ export = {
     // THEN
     expect(stack).to(haveResource('AWS::ECR::Repository', {
       ImageScanningConfiguration: {
-        scanOnPush: true,
+        ScanOnPush: true,
       },
     }));
     test.done();
