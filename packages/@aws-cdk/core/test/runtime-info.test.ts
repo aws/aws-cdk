@@ -1,5 +1,5 @@
 import * as path from 'path';
-import { App, Stack } from '../lib';
+import { App, NestedStack, Stack, Stage } from '../lib';
 import { constructInfoFromConstruct, constructInfoFromStack } from '../lib/private/runtime-info';
 
 // eslint-disable-next-line no-duplicate-imports, import/order
@@ -108,6 +108,42 @@ describeTscSafe('constructInfoForStack', () => {
 
     expect(constructInfos.length).toEqual(4);
     expect(constructInfos.map(info => info.fqn)).toContain('@aws-cdk/test.TestV1Construct');
+  });
+
+  test('does not return info from nested stacks', () => {
+    new class extends Construct {
+      constructor(scope: Construct, id: string) {
+        super(scope, id);
+
+        new class extends Construct {
+          // @ts-ignore
+          private static readonly [JSII_RUNTIME_SYMBOL] = { fqn: '@aws-cdk/test.TestV1Construct', version: localCdkVersion() }
+        }(this, 'TestConstruct');
+
+        new class extends Stack {
+          // @ts-ignore
+          private static readonly [JSII_RUNTIME_SYMBOL] = { fqn: '@aws-cdk/test.TestStackInsideStack', version: localCdkVersion() }
+        }(this, 'StackInsideStack');
+
+        new class extends NestedStack {
+          // @ts-ignore
+          private static readonly [JSII_RUNTIME_SYMBOL] = { fqn: '@aws-cdk/test.TestNestedStackInsideStack', version: localCdkVersion() }
+        }(this, 'NestedStackInsideStack');
+
+        new class extends Stage {
+          // @ts-ignore
+          private static readonly [JSII_RUNTIME_SYMBOL] = { fqn: '@aws-cdk/test.TestStageInsideStack', version: localCdkVersion() }
+        }(this, 'StageInsideStack');
+      }
+    }(stack, 'ParentConstruct');
+
+    const constructInfos = constructInfoFromStack(stack);
+
+    const fqns = constructInfos.map(info => info.fqn);
+    expect(fqns).toContain('@aws-cdk/test.TestV1Construct');
+    expect(fqns).not.toContain('@aws-cdk/test.TestStackInsideStack');
+    expect(fqns).not.toContain('@aws-cdk/test.TestNestedStackInsideStack');
+    expect(fqns).not.toContain('@aws-cdk/test.TestStageInsideStack');
   });
 });
 

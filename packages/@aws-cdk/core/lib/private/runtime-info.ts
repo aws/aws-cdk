@@ -1,5 +1,6 @@
 import { IConstruct } from '../construct-compat';
 import { Stack } from '../stack';
+import { Stage } from '../stage';
 
 const ALLOWED_FQN_PREFIXES = [
   // SCOPES
@@ -44,7 +45,7 @@ export function constructInfoFromStack(stack: Stack): ConstructInfo[] {
     return value !== undefined;
   }
 
-  const allConstructInfos = stack.node.findAll()
+  const allConstructInfos = constructsInStack(stack)
     .map(construct => constructInfoFromConstruct(construct))
     .filter(isConstructInfo) // Type simplification
     .filter(info => ALLOWED_FQN_PREFIXES.find(prefix => info.fqn.startsWith(prefix)));
@@ -56,7 +57,25 @@ export function constructInfoFromStack(stack: Stack): ConstructInfo[] {
   });
 
   // Filter out duplicate values
-  return allConstructInfos.filter((info, index) => index === allConstructInfos.findIndex(i => i.fqn === info.fqn && i.version === info.version));
+  const uniqKeys = new Set();
+  return allConstructInfos.filter(construct => {
+    const constructKey = `${construct.fqn}@${construct.version}`;
+    const isUnique = uniqKeys.has(constructKey);
+    uniqKeys.add(constructKey);
+    return !isUnique;
+  });
+}
+
+/**
+ * Returns all constructs under the parent construct (including the parent),
+ * stopping when it reaches a boundary of another stack (e.g., Stack, Stage, NestedStack).
+ */
+function constructsInStack(construct: IConstruct): IConstruct[] {
+  const constructs = [construct];
+  construct.node.children
+    .filter(child => !Stage.isStage(child) && !Stack.isStack(child))
+    .forEach(child => constructs.push(...constructsInStack(child)));
+  return constructs;
 }
 
 function getJsiiAgentVersion() {

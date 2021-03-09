@@ -121,7 +121,7 @@ function prefixEncodeTrie(trie: Trie) {
       prefixEncoded += '{';
       prefixEncoded += prefixEncodeTrie(value);
       prefixEncoded += '}';
-    } else if (value.size == 1) {
+    } else {
       prefixEncoded += prefixEncodeTrie(value);
     }
   });
