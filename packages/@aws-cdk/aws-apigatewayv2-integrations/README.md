@@ -21,6 +21,8 @@
   - [Lambda Integration](#lambda)
   - [HTTP Proxy Integration](#http-proxy)
   - [Private Integration](#private-integration)
+- [WebSocket APIs](#websocket-apis)
+  - [Lambda WebSocket Integration](#lambda-websocket-integration)
 
 ## HTTP APIs
 
@@ -143,6 +145,35 @@ const httpEndpoint = new HttpApi(stack, 'HttpProxyPrivateApi', {
   defaultIntegration: new HttpServiceDiscoveryIntegration({
     vpcLink,
     service,
+  }),
+});
+```
+
+## WebSocket APIs
+
+WebSocket integrations connect a route to backend resources. The following integrations are supported in the CDK.
+
+### Lambda WebSocket Integration
+
+Lambda integrations enable integrating a WebSocket API route with a Lambda function. When a client connects/disconnects 
+or sends message specific to a route, the API Gateway service forwards the request to the Lambda function
+
+The API Gateway service will invoke the lambda function with an event payload of a specific format.
+
+The following code configures a `sendmessage` route with a Lambda integration
+
+```ts
+const webSocketApi = new WebSocketApi(stack, 'mywsapi');
+new WebSocketStage(stack, 'mystage', {
+  webSocketApi,
+  stageName: 'dev',
+  autoDeploy: true,
+});
+
+const messageHandler = new lambda.Function(stack, 'MessageHandler', {...});
+webSocketApi.addRoute('sendmessage', {
+  integration: new LambdaWebSocketIntegration({
+    handler: connectHandler,
   }),
 });
 ```

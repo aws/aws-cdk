@@ -1,7 +1,7 @@
 import '@aws-cdk/assert/jest';
 import { Certificate } from '@aws-cdk/aws-certificatemanager';
 import { Stack } from '@aws-cdk/core';
-import { DomainName, HttpApi, HttpApiMapping } from '../../lib';
+import { DomainName, HttpApi, ApiMapping, WebSocketApi } from '../../lib';
 
 const domainName = 'example.com';
 const certArn = 'arn:aws:acm:us-east-1:111111111111:certificate';
@@ -17,7 +17,7 @@ describe('ApiMapping', () => {
       certificate: Certificate.fromCertificateArn(stack, 'cert', certArn),
     });
 
-    new HttpApiMapping(stack, 'Mapping', {
+    new ApiMapping(stack, 'Mapping', {
       api,
       domainName: dn,
     });
@@ -47,7 +47,7 @@ describe('ApiMapping', () => {
       certificate: Certificate.fromCertificateArn(stack, 'cert', certArn),
     });
 
-    new HttpApiMapping(stack, 'Mapping', {
+    new ApiMapping(stack, 'Mapping', {
       api,
       domainName: dn,
       stage: beta,
@@ -75,7 +75,7 @@ describe('ApiMapping', () => {
     });
 
     expect(() => {
-      new HttpApiMapping(stack, 'Mapping', {
+      new ApiMapping(stack, 'Mapping', {
         api,
         domainName: dn,
         apiMappingKey: '',
@@ -94,7 +94,7 @@ describe('ApiMapping', () => {
     });
 
     expect(() => {
-      new HttpApiMapping(stack, 'Mapping', {
+      new ApiMapping(stack, 'Mapping', {
         api,
         domainName: dn,
         apiMappingKey: '/',
@@ -113,7 +113,7 @@ describe('ApiMapping', () => {
     });
 
     expect(() => {
-      new HttpApiMapping(stack, 'Mapping', {
+      new ApiMapping(stack, 'Mapping', {
         api,
         domainName: dn,
         apiMappingKey: '/foo',
@@ -132,7 +132,7 @@ describe('ApiMapping', () => {
     });
 
     expect(() => {
-      new HttpApiMapping(stack, 'Mapping', {
+      new ApiMapping(stack, 'Mapping', {
         api,
         domainName: dn,
         apiMappingKey: 'foo/bar',
@@ -151,7 +151,7 @@ describe('ApiMapping', () => {
     });
 
     expect(() => {
-      new HttpApiMapping(stack, 'Mapping', {
+      new ApiMapping(stack, 'Mapping', {
         api,
         domainName: dn,
         apiMappingKey: 'foo/',
@@ -170,7 +170,7 @@ describe('ApiMapping', () => {
     });
 
     expect(() => {
-      new HttpApiMapping(stack, 'Mapping', {
+      new ApiMapping(stack, 'Mapping', {
         api,
         domainName: dn,
         apiMappingKey: '^foo',
@@ -189,7 +189,7 @@ describe('ApiMapping', () => {
     });
 
     expect(() => {
-      new HttpApiMapping(stack, 'Mapping', {
+      new ApiMapping(stack, 'Mapping', {
         api,
         domainName: dn,
         apiMappingKey: 'foo.*$',
@@ -207,15 +207,53 @@ describe('ApiMapping', () => {
       certificate: Certificate.fromCertificateArn(stack, 'cert', certArn),
     });
 
-    const mapping = new HttpApiMapping(stack, 'Mapping', {
+    const mapping = new ApiMapping(stack, 'Mapping', {
       api,
       domainName: dn,
     });
 
-    const imported = HttpApiMapping.fromHttpApiMappingAttributes(stack, 'ImportedMapping', {
+    const imported = ApiMapping.fromApiMappingAttributes(stack, 'ImportedMapping', {
       apiMappingId: mapping.apiMappingId,
     } );
 
     expect(imported.apiMappingId).toEqual(mapping.apiMappingId);
+  });
+
+  test('stage validation - throws if defaultStage not available for HttpApi', () => {
+    // GIVEN
+    const stack = new Stack();
+    const api = new HttpApi(stack, 'Api', {
+      createDefaultStage: false,
+    });
+    const dn = new DomainName(stack, 'DomainName', {
+      domainName,
+      certificate: Certificate.fromCertificateArn(stack, 'cert', certArn),
+    });
+
+    // WHEN
+    expect(() => {
+      new ApiMapping(stack, 'Mapping', {
+        api,
+        domainName: dn,
+      });
+    }).toThrow(/stage is required if default stage is not available/);
+  });
+
+  test('stage validation - throws if stage not provided for WebSocketApi', () => {
+    // GIVEN
+    const stack = new Stack();
+    const api = new WebSocketApi(stack, 'api');
+    const dn = new DomainName(stack, 'DomainName', {
+      domainName,
+      certificate: Certificate.fromCertificateArn(stack, 'cert', certArn),
+    });
+
+    // WHEN
+    expect(() => {
+      new ApiMapping(stack, 'Mapping', {
+        api,
+        domainName: dn,
+      });
+    }).toThrow(/stage is required for WebSocket API/);
   });
 });

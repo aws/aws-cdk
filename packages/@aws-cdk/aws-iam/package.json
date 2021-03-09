@@ -106,6 +106,7 @@
       "from-signature:@aws-cdk/aws-iam.Role.fromRoleArn",
       "construct-interface-extends-iconstruct:@aws-cdk/aws-iam.IManagedPolicy",
       "props-physical-name:@aws-cdk/aws-iam.OpenIdConnectProviderProps",
+      "props-physical-name:@aws-cdk/aws-iam.SamlProviderProps",
       "resource-interface-extends-resource:@aws-cdk/aws-iam.IManagedPolicy",
       "docs-public-apis:@aws-cdk/aws-iam.IUser"
     ]
