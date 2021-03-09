@@ -51,11 +51,11 @@ export interface HttpRouteMatch {
   readonly method?: HttpRouteMatchMethod;
 
   /**
-   * The client request scheme to match on. Applicable only for HTTP2 routes.
+   * The client request protocol to match on. Applicable only for HTTP2 routes.
    *
-   * @default - do not match on HTTP2 scheme
+   * @default - do not match on HTTP2 request protocol
    */
-  readonly scheme?: HttpRouteMatchScheme;
+  readonly protocol?: HttpRouteMatchScheme;
 }
 
 /**
@@ -481,7 +481,7 @@ class HttpRouteSpec extends RouteSpec {
         prefix: prefixPath,
         headers: headers,
         method: this.match?.method,
-        scheme: this.match?.scheme,
+        scheme: this.match?.protocol,
       },
       timeout: renderTimeout(this.timeout),
     };

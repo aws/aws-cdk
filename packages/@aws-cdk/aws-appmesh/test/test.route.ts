@@ -461,7 +461,7 @@ export = {
           weightedTargets: [{ virtualNode }],
           match: {
             prefixPath: '/',
-            scheme: appmesh.HttpRouteMatchScheme.HTTP,
+            protocol: appmesh.HttpRouteMatchScheme.HTTP,
           },
         }),
       });
