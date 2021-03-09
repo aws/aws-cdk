@@ -282,7 +282,11 @@ class ImportedEventBus extends EventBusBase {
   public readonly eventBusPolicy: string;
   public readonly eventSourceName?: string;
   constructor(scope: Construct, id: string, attrs: EventBusAttributes) {
-    super(scope, id);
+    const arnParts = Stack.of(scope).parseArn(attrs.eventBusArn);
+    super(scope, id, {
+      account: arnParts.account,
+      region: arnParts.region,
+    });
 
     this.eventBusArn = attrs.eventBusArn;
     this.eventBusName = attrs.eventBusName;
