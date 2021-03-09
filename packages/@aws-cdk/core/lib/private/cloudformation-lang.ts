@@ -157,7 +157,7 @@ function tokenAwareStringify(root: any, space: number, ctx: IResolveContext) {
    * Stringify a JSON element
    */
   function recurse(obj: any): void {
-    if (obj == null) { return; }
+    if (obj === undefined) { return; }
 
     if (Token.isUnresolved(obj)) {
       throw new Error('This shouldnt happen anymore');
