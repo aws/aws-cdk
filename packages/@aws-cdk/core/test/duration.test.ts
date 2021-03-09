@@ -168,6 +168,32 @@ nodeunitShim({
 
     test.done();
   },
+
+  'get unit label from duration'(test: Test) {
+    test.equal(Duration.minutes(Lazy.number({ produce: () => 10 })).unitLabel(), 'minutes');
+    test.equal(Duration.minutes(62).unitLabel(), 'minutes');
+    test.equal(Duration.seconds(10).unitLabel(), 'seconds');
+    test.equal(Duration.millis(1).unitLabel(), 'millis');
+    test.equal(Duration.hours(1000).unitLabel(), 'hours');
+    test.equal(Duration.days(2).unitLabel(), 'days');
+    test.done();
+  },
+
+  'format number token to number'(test: Test) {
+    const stack = new Stack();
+    const lazyDuration = Duration.minutes(Lazy.number({ produce: () => 10 }));
+    test.equal(stack.resolve(lazyDuration.formatTokenToNumber()), '10 minutes');
+    test.equal(Duration.hours(10).formatTokenToNumber(), '10 hours');
+    test.equal(Duration.days(5).formatTokenToNumber(), '5 days');
+    test.done();
+  },
+
+  'duration is unresolved'(test: Test) {
+    const lazyDuration = Duration.minutes(Lazy.number({ produce: () => 10 }));
+    test.equal(lazyDuration.isUnresolved(), true);
+    test.equal(Duration.hours(10).isUnresolved(), false);
+    test.done();
+  },
 });
 
 function floatEqual(test: Test, actual: number, expected: number) {
