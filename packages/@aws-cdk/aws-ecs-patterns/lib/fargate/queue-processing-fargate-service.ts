@@ -145,6 +145,7 @@ export class QueueProcessingFargateService extends QueueProcessingServiceBase {
       enableECSManagedTags: props.enableECSManagedTags,
       platformVersion: props.platformVersion,
       deploymentController: props.deploymentController,
+      circuitBreaker: props.circuitBreaker,
       securityGroups: props.securityGroups,
       vpcSubnets: props.taskSubnets,
       assignPublicIp: props.assignPublicIp,
