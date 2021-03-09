@@ -146,7 +146,7 @@ router.addRoute('route-4', {
     match: {
       prefixPath: '/',
       method: appmesh.HttpRouteMatchMethod.POST,
-      protocol: appmesh.HttpRouteMatchScheme.HTTPS,
+      protocol: appmesh.HttpRouteProtocol.HTTPS,
       headers: [
         appmesh.HeaderMatch.valueIs('Content-Type', 'application/json'),
         appmesh.HeaderMatch.valueStartsWith('Content-Type', 'application/json'),

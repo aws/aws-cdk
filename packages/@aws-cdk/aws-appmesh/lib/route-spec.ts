@@ -55,7 +55,7 @@ export interface HttpRouteMatch {
    *
    * @default - do not match on HTTP2 request protocol
    */
-  readonly protocol?: HttpRouteMatchScheme;
+  readonly protocol?: HttpRouteProtocol;
 }
 
 /**
@@ -111,7 +111,7 @@ export enum HttpRouteMatchMethod {
 /**
  * Supported :scheme options for HTTP2
  */
-export enum HttpRouteMatchScheme {
+export enum HttpRouteProtocol {
   /**
    * Match HTTP requests
    */
