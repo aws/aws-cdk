@@ -85,25 +85,6 @@ export class TokenizedStringFragments {
   }
 
   /**
-   * Visit all fragments of the string
-   */
-  public visit(visitor: ITokenVisitor) {
-    for (const f of this.fragments) {
-      switch (f.type) {
-        case 'literal':
-          visitor.visitLiteral(f.lit);
-          break;
-        case 'token':
-          visitor.visitToken(f.token);
-          break;
-        case 'intrinsic':
-          visitor.visitIntrinsic(f.value);
-          break;
-      }
-    }
-  }
-
-  /**
    * Combine the string fragments using the given joiner.
    *
    * If there are any
@@ -133,28 +114,6 @@ export interface ITokenMapper {
    * Replace a single token
    */
   mapToken(t: IResolvable): any;
-}
-
-/**
- * Interface to visit parts of an encoded token string
- *
- * Interface so it can be exported via jsii.
- */
-export interface ITokenVisitor {
-  /**
-   * Visit a literal
-   */
-  visitLiteral(lit: string): void;
-
-  /**
-   * Visit a token
-   */
-  visitToken(tok: IResolvable): void;
-
-  /**
-   * Visit an intrinsic
-   */
-  visitIntrinsic(intrinsic: any): void;
 }
 
 /**

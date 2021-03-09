@@ -24,6 +24,10 @@ test('JSONification of literals looks like JSON.stringify', () => {
   expect(stack.resolve(stack.toJsonString(structure, 2))).toEqual(JSON.stringify(structure, undefined, 2));
 });
 
+test('JSONification of undefined leads to undefined', () => {
+  expect(stack.resolve(stack.toJsonString(undefined))).toEqual(undefined);
+});
+
 describe('tokens that return literals', () => {
 
   test('string tokens can be JSONified and JSONification can be reversed', () => {

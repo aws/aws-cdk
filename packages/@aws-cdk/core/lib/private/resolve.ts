@@ -23,6 +23,12 @@ const RESOLUTION_TYPEHINT_SYM = Symbol.for('@aws-cdk/core.resolvedTypeHint');
 
 /**
  * Prefix used for intrinsic keys
+ *
+ * If a key with this prefix is found in an object, the actual value of the
+ * key doesn't matter. The value of this key will be an `[ actualKey, actualValue ]`
+ * tuple, and the `actualKey` will be a value which otherwise couldn't be represented
+ * in the types of `string | number | symbol`, which are the only possible JavaScript
+ * object keys.
  */
 export const INTRINSIC_KEY_PREFIX = '$IntrinsicKey$';
 

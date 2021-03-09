@@ -88,9 +88,10 @@ function fnJoinConcat(parts: any[]) {
  *
  * This work requires 2 features from the `resolve()` function:
  *
- * - INTRINSICS TYPE HINTS: intrinsics only have values like `{ Ref: 'XYZ' }`. This value can reference either
- *   a string or a list/number at deploy time, and from the value alone there's no way to know which. The difference
- *   will be whether we JSONify this to:
+ * - INTRINSICS TYPE HINTS: intrinsics are represented by values like
+ *   `{ Ref: 'XYZ' }`. These values can reference either a string or a list/number at
+ *   deploy time, and from the value alone there's no way to know which. We need
+ *   to know the type to know whether to JSONify this reference to:
  *
  *      '{ "referencedValue": "' ++ { Ref: XYZ } ++ '"}'
  *   or '{ "referencedValue": ' ++ { Ref: XYZ } ++ '}'
@@ -99,29 +100,42 @@ function fnJoinConcat(parts: any[]) {
  *
  *   We COULD have done this by resolving one token at a time, and looking at the
  *   type of the encoded token we were resolving to obtain a type hint. However,
- *   the `resolve()` and Token system resists a level-at-a-time resolve
- *   operation; because of the existence of post-processors, we must have done a
+ *   the `resolve()` and Token system resist a level-at-a-time resolve
+ *   operation: because of the existence of post-processors, we must have done a
  *   complete recursive resolution of a token before we can look at its result
  *   (after which any type information about the sources of nested resolved
  *   values is lost).
  *
  *   To fix this, "type hints" have been added to the `resolve()` function,
  *   giving an idea of the type of the source value for compplex result values.
- *   This only works for complex values (not strings and numbers) but fortunately
+ *   This only works for objects (not strings and numbers) but fortunately
  *   we only care about the types of intrinsics, which are always complex values.
  *
- *   Type Hints could have been added to `IResolvable` as well, but for now we just
- *   use the type of an encoded value as a type hint.
+ *   Type hinting could have been added to the `IResolvable` protocol as well,
+ *   but for now we just use the type of an encoded value as a type hint. That way
+ *   we don't need to annotate anything more at the L1 level--we will use the type
+ *   encodings added by construct authors at the L2 levels. L1 users can escape the
+ *   default decision of "string" by using `Token.asList()`.
  *
- * - COMPLEX KEYS: contrary to regular JavaScript objects, it is feasible in a JSON string to use an intrinsic in
- *   the key position of an object.
+ * - COMPLEX KEYS: since tokens can be string-encoded, we can use string-encoded tokens
+ *   as the keys in JavaScript objects. However, after resolution, those string-encoded
+ *   tokens could resolve to intrinsics (`{ Ref: ... }`), which CANNOT be stored in
+ *   JavaScript objects anymore.
  *
- *   The simplest implementation of `tokenAwareStringify` would do a complete `resolve()` of the data structure, and
- *   afterwards encode the resolved object to a string, taking care to properly encode intrinsics.
+ *   We therefore need a protocol to store the resolved values somewhere in the JavaScript
+ *   type model,  which can be returned by `resolve()`, and interpreted by `tokenAwareStringify()`
+ *   to produce the correct JSON.
  *
- *   However, the intermediary representation (the result of `resolve()`) could not hold complex key values in memory
- *   in a JavaScript object. We therefore extend the intermediary representation to be able to store these, deviating
- *   from straight JavaScript object semantics somewhat by using special key prefixes.
+ *   And example will quickly show the point:
+ *
+ *    User writes:
+ *       { [resource.resourceName]: 'SomeValue' }
+ *    ------ string actually looks like ------>
+ *       { '${Token[1234]}': 'SomeValue' }
+ *    ------ resolve ------->
+ *       { '$IntrinsicKey$0': [ {Ref: Resource}, 'SomeValue' ] }
+ *    ------ tokenAwareStringify ------->
+ *       '{ "' ++ { Ref: Resource } ++ '": "SomeValue" }'
  */
 function tokenAwareStringify(root: any, space: number, ctx: IResolveContext) {
   let indent = 0;
@@ -143,6 +157,8 @@ function tokenAwareStringify(root: any, space: number, ctx: IResolveContext) {
    * Stringify a JSON element
    */
   function recurse(obj: any): void {
+    if (obj == null) { return; }
+
     if (Token.isUnresolved(obj)) {
       throw new Error('This shouldnt happen anymore');
     }
