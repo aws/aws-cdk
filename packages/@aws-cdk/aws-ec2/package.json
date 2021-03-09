@@ -319,6 +319,8 @@
       "docs-public-apis:@aws-cdk/aws-ec2.Protocol.UDP",
       "docs-public-apis:@aws-cdk/aws-ec2.Protocol.ICMP",
       "docs-public-apis:@aws-cdk/aws-ec2.Protocol.ICMPV6",
+      "docs-public-apis:@aws-cdk/aws-ec2.Protocol.ESP",
+      "docs-public-apis:@aws-cdk/aws-ec2.Protocol.AH",
       "docs-public-apis:@aws-cdk/aws-ec2.WindowsVersion.WINDOWS_SERVER_2008_SP2_ENGLISH_64BIT_SQL_2008_SP4_EXPRESS",
       "docs-public-apis:@aws-cdk/aws-ec2.WindowsVersion.WINDOWS_SERVER_2012_R2_RTM_CHINESE_SIMPLIFIED_64BIT_BASE",
       "docs-public-apis:@aws-cdk/aws-ec2.WindowsVersion.WINDOWS_SERVER_2012_R2_RTM_CHINESE_TRADITIONAL_64BIT_BASE",
