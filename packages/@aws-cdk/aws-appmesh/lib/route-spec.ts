@@ -503,25 +503,20 @@ class HttpRouteSpec extends RouteSpec {
       throw new Error(`Prefix Path must start with \'/\', got: ${prefixPath}`);
     }
 
-    let headers: CfnRoute.HttpRouteHeaderProperty[] | undefined;
-    if (this.match?.headers) {
-      headers = this.match.headers.map(header => {
-        const config = header.bind(_scope);
-        return {
-          name: config.headerName,
-          invert: config.invert,
-          match: config.matchProperty,
-        };
-      });
-    }
-
     const httpConfig: CfnRoute.HttpRouteProperty = {
       action: {
         weightedTargets: renderWeightedTargets(this.weightedTargets),
       },
       match: {
         prefix: prefixPath,
-        headers: headers,
+        headers: this.match?.headers?.map(header => {
+          const config = header.bind(_scope);
+          return {
+            name: config.headerName,
+            invert: config.invert,
+            match: config.matchProperty,
+          };
+        }),
         method: this.match?.method,
         scheme: this.match?.protocol,
       },
