@@ -3,6 +3,7 @@ import { Duration } from '@aws-cdk/core';
 
 /**
  * Properties for FunctionTask
+ * @deprecated - use `StepFunctionsInvokeActivity` and `StepFunctionsInvokeActivityProps`.
  */
 export interface InvokeActivityProps {
   /**

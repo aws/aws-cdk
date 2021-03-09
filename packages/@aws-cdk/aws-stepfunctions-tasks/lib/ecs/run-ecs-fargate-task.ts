@@ -4,6 +4,7 @@ import { CommonEcsRunTaskProps, EcsRunTaskBase } from './run-ecs-task-base';
 
 /**
  * Properties to define an ECS service
+ * @deprecated - replaced by `EcsRunTask` and `EcsRunTaskProps`
  */
 export interface RunEcsFargateTaskProps extends CommonEcsRunTaskProps {
   /**
