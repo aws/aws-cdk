@@ -2,11 +2,12 @@ import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as sqs from '@aws-cdk/aws-sqs';
-import { Annotations, ConstructNode, IConstruct, Names, Token, TokenComparison } from '@aws-cdk/core';
+import { Annotations, Names, Token, TokenComparison } from '@aws-cdk/core';
+import { IConstruct, Node as ConstructNode } from 'constructs';
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
 // eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 
 /**
  * Obtain the Role for the EventBridge event
@@ -19,7 +20,7 @@ export function singletonEventRole(scope: IConstruct, policyStatements: iam.Poli
   const existing = scope.node.tryFindChild(id) as iam.IRole;
   if (existing) { return existing; }
 
-  const role = new iam.Role(scope as Construct, id, {
+  const role = new iam.Role(scope, id, {
     assumedBy: new iam.ServicePrincipal('events.amazonaws.com'),
   });
 
