@@ -28,6 +28,9 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
   - [ResultPath](#resultpath)
 - [Parameters](#task-parameters-from-the-state-json)
 - [Evaluate Expression](#evaluate-expression)
+- [API Gateway](#api-gateway)
+  - [Call REST API Endpoint](#call-rest-api-endpoint)
+  - [Call HTTP API Endpoint](#call-http-api-endpoint)
 - [Athena](#athena)
   - [StartQueryExecution](#startQueryExecution)
   - [GetQueryExecution](#getQueryExecution)
@@ -216,6 +219,47 @@ new sfn.StateMachine(this, 'StateMachine', {
 The `EvaluateExpression` supports a `runtime` prop to specify the Lambda
 runtime to use to evaluate the expression. Currently, only runtimes
 of the Node.js family are supported.
+
+## API Gateway
+
+Step Functions supports [API Gateway](https://docs.aws.amazon.com/step-functions/latest/dg/connect-api-gateway.html) through the service integration pattern.
+
+HTTP APIs are designed for low-latency, cost-effective integrations with AWS services, including AWS Lambda, and HTTP endpoints. 
+HTTP APIs support OIDC and OAuth 2.0 authorization, and come with built-in support for CORS and automatic deployments. 
+Previous-generation REST APIs currently offer more features. More details can be found [here](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-vs-rest.html).
+
+### Call REST API Endpoint
+
+The `CallApiGatewayRestApiEndpoint` calls the REST API endpoint.
+
+```ts
+import * as sfn from '@aws-cdk/aws-stepfunctions';
+import * as tasks from `@aws-cdk/aws-stepfunctions-tasks`;
+
+const restApi = new apigateway.RestApi(stack, 'MyRestApi');
+
+const invokeTask = new tasks.CallApiGatewayRestApiEndpoint(stack, 'Call REST API', {
+  api: restApi,
+  stageName: 'prod',
+  method: HttpMethod.GET,
+});
+```
+
+### Call HTTP API Endpoint
+
+The `CallApiGatewayHttpApiEndpoint` calls the HTTP API endpoint.
+
+```ts
+import * as sfn from '@aws-cdk/aws-stepfunctions';
+import * as tasks from `@aws-cdk/aws-stepfunctions-tasks`;
+
+const httpApi = new apigatewayv2.HttpApi(stack, 'MyHttpApi');
+
+const invokeTask = new tasks.CallApiGatewayHttpApiEndpoint(stack, 'Call HTTP API', {
+  api: httpApi,
+  method: HttpMethod.GET,
+});
+```
 
 ## Athena
 
