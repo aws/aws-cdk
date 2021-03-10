@@ -119,11 +119,11 @@ export abstract class Code {
 
   /**
    * Determines whether this Code is inline code or not.
-   *
+   * @default - code is not inline code.
    * @deprecated this value is ignored since inline is now determined based on the
    * the `inlineCode` field of `CodeConfig` returned from `bind()`.
    */
-  public abstract readonly isInline: boolean;
+  public abstract readonly isInline?: boolean;
 
   /**
    * Called when the lambda or layer is initialized to allow this object to bind
@@ -198,7 +198,7 @@ export interface CodeImageConfig {
  * Lambda code from an S3 archive.
  */
 export class S3Code extends Code {
-  public readonly isInline = false;
+  public readonly isInline? = false;
   private bucketName: string;
 
   constructor(bucket: s3.IBucket, private key: string, private objectVersion?: string) {
@@ -226,7 +226,7 @@ export class S3Code extends Code {
  * Lambda code from an inline string (limited to 4KiB).
  */
 export class InlineCode extends Code {
-  public readonly isInline = true;
+  public readonly isInline? = true;
 
   constructor(private code: string) {
     super();
@@ -251,7 +251,7 @@ export class InlineCode extends Code {
  * Lambda code from a local directory.
  */
 export class AssetCode extends Code {
-  public readonly isInline = false;
+  public readonly isInline? = false;
   private asset?: s3_assets.Asset;
 
   /**
@@ -336,7 +336,7 @@ export interface CfnParametersCodeProps {
  * you can fill the parameters using the {@link #assign} method.
  */
 export class CfnParametersCode extends Code {
-  public readonly isInline = false;
+  public readonly isInline? = false;
   private _bucketNameParam?: cdk.CfnParameter;
   private _objectKeyParam?: cdk.CfnParameter;
 
@@ -436,7 +436,7 @@ export interface EcrImageCodeProps {
  * Represents a Docker image in ECR that can be bound as Lambda Code.
  */
 export class EcrImageCode extends Code {
-  public readonly isInline: boolean = false;
+  public readonly isInline?: boolean = false;
 
   constructor(private readonly repository: ecr.IRepository, private readonly props: EcrImageCodeProps = {}) {
     super();
@@ -481,7 +481,7 @@ export interface AssetImageCodeProps extends ecr_assets.DockerImageAssetOptions 
  * Represents an ECR image that will be constructed from the specified asset and can be bound as Lambda code.
  */
 export class AssetImageCode extends Code {
-  public readonly isInline: boolean = false;
+  public readonly isInline?: boolean = false;
 
   constructor(private readonly directory: string, private readonly props: AssetImageCodeProps) {
     super();
