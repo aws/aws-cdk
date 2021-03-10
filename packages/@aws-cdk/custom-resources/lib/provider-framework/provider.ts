@@ -180,7 +180,7 @@ export class Provider extends CoreConstruct implements ICustomResourceProvider {
    * Called by `CustomResource` which uses this provider.
    * @deprecated use `provider.serviceToken` instead
    */
-  public bind(_: CoreConstruct): CustomResourceProviderConfig {
+  public bind(_scope: CoreConstruct): CustomResourceProviderConfig {
     return {
       serviceToken: this.entrypoint.functionArn,
     };

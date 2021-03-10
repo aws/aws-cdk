@@ -5,7 +5,7 @@ import { Task } from './states/task';
 
 /**
  * Interface for resources that can be used as tasks
- * @deprecated - replaced by `TaskStateBase`.
+ * @deprecated replaced by `TaskStateBase`.
  */
 export interface IStepFunctionsTask {
   /**
@@ -16,7 +16,7 @@ export interface IStepFunctionsTask {
 
 /**
  * Properties that define what kind of task should be created
- * @deprecated - used by `IStepFunctionsTask`. `IStepFunctionsTask` is deprecated and replaced by `TaskStateBase`.
+ * @deprecated used by `IStepFunctionsTask`. `IStepFunctionsTask` is deprecated and replaced by `TaskStateBase`.
  */
 export interface StepFunctionsTaskConfig {
   /**
