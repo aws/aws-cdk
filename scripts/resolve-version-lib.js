@@ -38,7 +38,6 @@ function resolveVersion(rootdir) {
   //
 
   const currentVersion = require(versionFilePath).version;
-  console.error(`current version: ${currentVersion}`);
   if (!currentVersion.startsWith(`${majorVersion}.`)) {
     throw new Error(`current version "${currentVersion}" does not use the expected major version ${majorVersion}`);
   }
