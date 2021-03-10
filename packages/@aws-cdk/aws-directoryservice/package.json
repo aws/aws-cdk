@@ -1,6 +1,7 @@
 {
   "name": "@aws-cdk/aws-directoryservice",
   "version": "0.0.0",
+  "private": true,
   "description": "The CDK Construct Library for AWS::DirectoryService",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -78,12 +79,12 @@
   },
   "dependencies": {
     "@aws-cdk/core": "0.0.0",
-    "constructs": "^3.2.0"
+    "constructs": "10.0.0-pre.5"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
     "@aws-cdk/core": "0.0.0",
-    "constructs": "^3.2.0"
+    "constructs": "10.0.0-pre.5"
   },
   "engines": {
     "node": ">= 10.13.0 <13 || >=13.7.0"

@@ -1,6 +1,7 @@
 {
   "name": "@aws-cdk/aws-cloudfront-origins",
   "version": "0.0.0",
+  "private": true,
   "description": "The CDK Construct Library for AWS CloudFront Origins",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -82,12 +83,12 @@
     "@aws-cdk/aws-iam": "0.0.0",
     "@aws-cdk/aws-s3": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "constructs": "^3.2.0"
+    "constructs": "10.0.0-pre.5"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
     "@aws-cdk/core": "0.0.0",
-    "constructs": "^3.2.0",
+    "constructs": "10.0.0-pre.5",
     "@aws-cdk/aws-cloudfront": "0.0.0",
     "@aws-cdk/aws-elasticloadbalancingv2": "0.0.0",
     "@aws-cdk/aws-iam": "0.0.0",
