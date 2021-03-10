@@ -17,7 +17,7 @@ beforeEach(() => {
   getGoBuildVersionMock.mockReturnValue(true);
   fromAssetMock.mockReturnValue({
     image: 'built-image',
-    cp: () => {},
+    cp: () => 'built-image',
     run: () => {},
     toJSON: () => 'build-image',
   });
