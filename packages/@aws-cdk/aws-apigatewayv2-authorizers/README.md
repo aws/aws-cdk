@@ -53,22 +53,6 @@ const api = new HttpApi(stack, 'HttpApi', {
   defaultAuthorizer: authorizer,
   defaultAuthorizationScopes: ['manage:books'],
 });
-
-api.addRoutes({
-  integration: new HttpProxyIntegration({
-    url: 'https://add-books-proxy.myproxy.internal',
-  }),
-  path: '/books',
-  method: 'get',
-});
-
-api.addRoutes({
-  integration: new HttpProxyIntegration({
-    url: 'https://get-books-proxy.myproxy.internal',
-  }),
-  path: '/books',
-  method: 'post',
-});
 ```
 
 ### Route Authorization
