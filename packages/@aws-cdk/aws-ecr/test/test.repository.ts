@@ -63,6 +63,20 @@ export = {
     test.done();
   },
 
+
+  'image tag mutability can be set'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    new ecr.Repository(stack, 'Repo', { imageTagMutability: ecr.TagMutability.IMMUTABLE });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ECR::Repository', {
+      ImageTagMutability: 'IMMUTABLE',
+    }));
+
+    test.done();
+  },
+
   'add day-based lifecycle policy'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();

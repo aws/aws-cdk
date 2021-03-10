@@ -74,6 +74,14 @@ ecr.PublicGalleryAuthorizationToken.grantRead(user);
 
 This user can then proceed to login to the registry using one of the [authentication methods](https://docs.aws.amazon.com/AmazonECR/latest/public/public-registries.html#public-registry-auth).
 
+### Image tag immutability
+
+You can set tag immutability on images in our repository using the `imageTagMutability` construct prop.
+
+```ts
+new ecr.Repository(stack, 'Repo', { imageTagMutability: ecr.TagMutability.IMMUTABLE });
+```
+
 ## Automatically clean up repositories
 
 You can set life cycle rules to automatically clean up old images from your

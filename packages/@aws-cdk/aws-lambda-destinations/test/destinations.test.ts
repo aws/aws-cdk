@@ -47,56 +47,12 @@ test('event bus as destination', () => {
         {
           Action: 'events:PutEvents',
           Effect: 'Allow',
-          Resource: '*',
-        },
-      ],
-      Version: '2012-10-17',
-    },
-  });
-});
-
-test('event bus as destination defaults to default event bus', () => {
-  // WHEN
-  new lambda.Function(stack, 'Function', {
-    ...lambdaProps,
-    onSuccess: new destinations.EventBridgeDestination(),
-  });
-
-  // THEN
-  expect(stack).toHaveResource('AWS::Lambda::EventInvokeConfig', {
-    DestinationConfig: {
-      OnSuccess: {
-        Destination: {
-          'Fn::Join': [
-            '',
-            [
-              'arn:',
-              {
-                Ref: 'AWS::Partition',
-              },
-              ':events:',
-              {
-                Ref: 'AWS::Region',
-              },
-              ':',
-              {
-                Ref: 'AWS::AccountId',
-              },
-              ':event-bus/default',
+          Resource: {
+            'Fn::GetAtt': [
+              'EventBus7B8748AA',
+              'Arn',
             ],
-          ],
-        },
-      },
-    },
-  });
-
-  expect(stack).toHaveResource('AWS::IAM::Policy', {
-    PolicyDocument: {
-      Statement: [
-        {
-          Action: 'events:PutEvents',
-          Effect: 'Allow',
-          Resource: '*',
+          },
         },
       ],
       Version: '2012-10-17',
@@ -215,7 +171,26 @@ test('lambda payload as destination', () => {
         {
           Action: 'events:PutEvents',
           Effect: 'Allow',
-          Resource: '*',
+          Resource: {
+            'Fn::Join': [
+              '',
+              [
+                'arn:',
+                {
+                  Ref: 'AWS::Partition',
+                },
+                ':events:',
+                {
+                  Ref: 'AWS::Region',
+                },
+                ':',
+                {
+                  Ref: 'AWS::AccountId',
+                },
+                ':event-bus/default',
+              ],
+            ],
+          },
         },
       ],
       Version: '2012-10-17',

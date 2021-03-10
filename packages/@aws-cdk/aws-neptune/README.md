@@ -67,13 +67,13 @@ versions and limitations.
 The following example shows enabling IAM authentication for a database cluster and granting connection access to an IAM role.
 
 ```ts
-const cluster = new rds.DatabaseCluster(stack, 'Cluster', {
+const cluster = new neptune.DatabaseCluster(this, 'Cluster', {
   vpc,
   instanceType: neptune.InstanceType.R5_LARGE,
   iamAuthentication: true, // Optional - will be automatically set if you call grantConnect().
 });
-const role = new Role(stack, 'DBRole', { assumedBy: new AccountPrincipal(stack.account) });
-instance.grantConnect(role); // Grant the role connection access to the DB.
+const role = new iam.Role(this, 'DBRole', { assumedBy: new iam.AccountPrincipal(this.account) });
+cluster.grantConnect(role); // Grant the role connection access to the DB.
 ```
 
 ## Customizing parameters
