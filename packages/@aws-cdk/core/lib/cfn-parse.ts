@@ -132,6 +132,12 @@ export class FromCloudFormation {
       return new FromCloudFormationResult(value.toString());
     }
 
+    // CloudFormation treats booleans and strings interchangeably;
+    // so, if we get a boolean here, convert it to a string
+    if (typeof value === 'boolean') {
+      return new FromCloudFormationResult(value.toString());
+    }
+
     // in all other cases, just return the input,
     // and let a validator handle it if it's not a string
     return new FromCloudFormationResult(value);
