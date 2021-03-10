@@ -1,4 +1,4 @@
-import { Duration } from '@aws-cdk/core';
+import { Duration, Stack, Lazy } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import * as events from '../lib';
 
@@ -33,8 +33,15 @@ export = {
 
   'rate must be whole number of minutes'(test: Test) {
     test.throws(() => {
-      events.Schedule.rate(Duration.seconds(12345));
-    }, /'12345 seconds' cannot be converted into a whole number of minutes/);
+      events.Schedule.rate(Duration.minutes(0.13456));
+    }, /'0.13456 minutes' cannot be converted into a whole number of seconds/);
+    test.done();
+  },
+
+  'rate must be whole number'(test: Test) {
+    test.throws(() => {
+      events.Schedule.rate(Duration.minutes(1/8));
+    }, /'0.125 minutes' cannot be converted into a whole number of seconds/);
     test.done();
   },
 
@@ -42,6 +49,35 @@ export = {
     test.throws(() => {
       events.Schedule.rate(Duration.days(0));
     }, /Duration cannot be 0/);
+    test.done();
+  },
+
+  'rate can be from a token'(test: Test) {
+    const stack = new Stack();
+    const lazyDuration = Duration.minutes(Lazy.number({ produce: () => 5 }));
+    const rate = events.Schedule.rate(lazyDuration);
+    test.equal('rate(5 minutes)', stack.resolve(rate).expressionString);
+    test.done();
+  },
+
+  'rate can be in minutes'(test: Test) {
+    test.equal('rate(10 minutes)',
+      events.Schedule.rate(Duration.minutes(10))
+        .expressionString);
+    test.done();
+  },
+
+  'rate can be in days'(test: Test) {
+    test.equal('rate(10 days)',
+      events.Schedule.rate(Duration.days(10))
+        .expressionString);
+    test.done();
+  },
+
+  'rate can be in hours'(test: Test) {
+    test.equal('rate(10 hours)',
+      events.Schedule.rate(Duration.hours(10))
+        .expressionString);
     test.done();
   },
 };

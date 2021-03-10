@@ -99,6 +99,7 @@
     "@aws-cdk/aws-logs": "0.0.0",
     "@aws-cdk/aws-s3": "0.0.0",
     "@aws-cdk/aws-s3-assets": "0.0.0",
+    "@aws-cdk/aws-signer": "0.0.0",
     "@aws-cdk/aws-sqs": "0.0.0",
     "@aws-cdk/core": "0.0.0",
     "@aws-cdk/cx-api": "0.0.0",
@@ -119,6 +120,7 @@
     "@aws-cdk/aws-logs": "0.0.0",
     "@aws-cdk/aws-s3": "0.0.0",
     "@aws-cdk/aws-s3-assets": "0.0.0",
+    "@aws-cdk/aws-signer": "0.0.0",
     "@aws-cdk/aws-sqs": "0.0.0",
     "@aws-cdk/core": "0.0.0",
     "@aws-cdk/cx-api": "0.0.0",
@@ -169,7 +171,8 @@
       "props-default-doc:@aws-cdk/aws-lambda.Permission.sourceArn",
       "docs-public-apis:@aws-cdk/aws-lambda.ResourceBindOptions",
       "docs-public-apis:@aws-cdk/aws-lambda.VersionAttributes",
-      "props-physical-name:@aws-cdk/aws-lambda.EventInvokeConfigProps"
+      "props-physical-name:@aws-cdk/aws-lambda.EventInvokeConfigProps",
+      "props-physical-name:@aws-cdk/aws-lambda.CodeSigningConfigProps"
     ]
   },
   "stability": "stable",

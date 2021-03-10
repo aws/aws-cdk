@@ -1,4 +1,5 @@
 import { Ec2Service, Ec2TaskDefinition } from '@aws-cdk/aws-ecs';
+import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
 import { NetworkLoadBalancedServiceBase, NetworkLoadBalancedServiceBaseProps } from '../base/network-load-balanced-service-base';
 
@@ -115,9 +116,11 @@ export class NetworkLoadBalancedEc2Service extends NetworkLoadBalancedServiceBas
       throw new Error('You must specify one of: taskDefinition or image');
     }
 
+    const desiredCount = this.node.tryGetContext(cxapi.ECS_REMOVE_DEFAULT_DESIRED_COUNT) ? this.internalDesiredCount : this.desiredCount;
+
     this.service = new Ec2Service(this, 'Service', {
       cluster: this.cluster,
-      desiredCount: this.desiredCount,
+      desiredCount: desiredCount,
       taskDefinition: this.taskDefinition,
       assignPublicIp: false,
       serviceName: props.serviceName,

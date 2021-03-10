@@ -1,4 +1,4 @@
-import { arrayWith, expect, haveResource, haveResourceLike, objectLike } from '@aws-cdk/assert';
+import { ABSENT, arrayWith, expect, haveResource, haveResourceLike, objectLike } from '@aws-cdk/assert';
 import { Certificate } from '@aws-cdk/aws-certificatemanager';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecs from '@aws-cdk/aws-ecs';
@@ -6,6 +6,7 @@ import { ApplicationLoadBalancer, ApplicationProtocol, NetworkLoadBalancer } fro
 import { PublicHostedZone } from '@aws-cdk/aws-route53';
 import * as cloudmap from '@aws-cdk/aws-servicediscovery';
 import * as cdk from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
 import { Test } from 'nodeunit';
 import * as ecsPatterns from '../../lib';
 
@@ -55,6 +56,102 @@ export = {
           Memory: 1024,
         },
       ],
+    }));
+
+    test.done();
+  },
+
+  'ApplicationLoadBalancedEc2Service desiredCount can be undefined when feature flag is set'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    stack.node.setContext(cxapi.ECS_REMOVE_DEFAULT_DESIRED_COUNT, true);
+
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+    cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+
+    // WHEN
+    new ecsPatterns.ApplicationLoadBalancedEc2Service(stack, 'Service', {
+      cluster,
+      memoryLimitMiB: 1024,
+      taskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry('test'),
+      },
+    });
+
+    expect(stack).to(haveResource('AWS::ECS::Service', {
+      DesiredCount: ABSENT,
+    }));
+
+    test.done();
+  },
+
+  'ApplicationLoadBalancedFargateService desiredCount can be undefined when feature flag is set'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    stack.node.setContext(cxapi.ECS_REMOVE_DEFAULT_DESIRED_COUNT, true);
+
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+
+    // WHEN
+    new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'Service', {
+      cluster,
+      taskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry('test'),
+      },
+    });
+
+    expect(stack).to(haveResource('AWS::ECS::Service', {
+      DesiredCount: ABSENT,
+    }));
+
+    test.done();
+  },
+
+  'NetworkLoadBalancedEc2Service desiredCount can be undefined when feature flag is set'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    stack.node.setContext(cxapi.ECS_REMOVE_DEFAULT_DESIRED_COUNT, true);
+
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+    cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+
+    // WHEN
+    new ecsPatterns.NetworkLoadBalancedEc2Service(stack, 'Service', {
+      cluster,
+      memoryLimitMiB: 1024,
+      taskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry('test'),
+      },
+    });
+
+    expect(stack).to(haveResource('AWS::ECS::Service', {
+      DesiredCount: ABSENT,
+    }));
+
+    test.done();
+  },
+
+  'NetworkLoadBalancedFargateService desiredCount can be undefined when feature flag is set'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    stack.node.setContext(cxapi.ECS_REMOVE_DEFAULT_DESIRED_COUNT, true);
+
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+
+    // WHEN
+    new ecsPatterns.NetworkLoadBalancedFargateService(stack, 'Service', {
+      cluster,
+      taskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry('test'),
+      },
+    });
+
+    expect(stack).to(haveResource('AWS::ECS::Service', {
+      DesiredCount: ABSENT,
     }));
 
     test.done();

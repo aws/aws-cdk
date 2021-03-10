@@ -58,7 +58,7 @@ export class EvaluateExpression extends sfn.TaskStateBase {
   constructor(scope: Construct, id: string, private readonly props: EvaluateExpressionProps) {
     super(scope, id, props);
 
-    this.evalFn = createEvalFn(this.props.runtime || lambda.Runtime.NODEJS_14_X, this);
+    this.evalFn = createEvalFn(this.props.runtime ?? lambda.Runtime.NODEJS_14_X, this);
 
     this.taskPolicies = [
       new iam.PolicyStatement({
@@ -97,17 +97,18 @@ export class EvaluateExpression extends sfn.TaskStateBase {
 }
 
 function createEvalFn(runtime: lambda.Runtime, scope: Construct) {
-  const code = lambda.Code.asset(path.join(__dirname, `eval-${runtime.name}-handler`));
   const lambdaPurpose = 'Eval';
 
   switch (runtime) {
+    case lambda.Runtime.NODEJS_14_X:
+    case lambda.Runtime.NODEJS_12_X:
     case lambda.Runtime.NODEJS_10_X:
       return new lambda.SingletonFunction(scope, 'EvalFunction', {
         runtime,
         handler: 'index.handler',
         uuid: 'a0d2ce44-871b-4e74-87a1-f5e63d7c3bdc',
         lambdaPurpose,
-        code,
+        code: lambda.Code.fromAsset(path.join(__dirname, 'eval-nodejs-handler')),
       });
     case lambda.Runtime.NODEJS_12_X:
       return new lambda.SingletonFunction(scope, 'EvalFunction', {
@@ -115,7 +116,7 @@ function createEvalFn(runtime: lambda.Runtime, scope: Construct) {
         handler: 'index.handler',
         uuid: '2b81e383-aad2-44db-8aaf-b4809ae0e3b4',
         lambdaPurpose,
-        code,
+        code: lambda.Code.fromAsset(path.join(__dirname, 'eval-nodejs-handler')),
       });
     case lambda.Runtime.NODEJS_14_X:
       return new lambda.SingletonFunction(scope, 'EvalFunction', {
@@ -123,7 +124,7 @@ function createEvalFn(runtime: lambda.Runtime, scope: Construct) {
         handler: 'index.handler',
         uuid: 'da2d1181-604e-4a45-8694-1a6abd7fe42d',
         lambdaPurpose,
-        code,
+        code: lambda.Code.fromAsset(path.join(__dirname, 'eval-nodejs-handler')),
       });
     // TODO: implement other runtimes
     default:

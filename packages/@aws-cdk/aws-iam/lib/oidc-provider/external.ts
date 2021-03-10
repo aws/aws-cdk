@@ -28,7 +28,7 @@ async function downloadThumbprint(issuerUrl: string) {
     if (!purl.host) {
       return ko(new Error(`unable to determine host from issuer url ${issuerUrl}`));
     }
-    const socket = tls.connect(port, purl.host, { rejectUnauthorized: false });
+    const socket = tls.connect(port, purl.host, { rejectUnauthorized: false, servername: purl.host });
     socket.once('error', ko);
     socket.once('secureConnect', () => {
       const cert = socket.getPeerCertificate();

@@ -34,7 +34,7 @@ test('Eval with Node.js', () => {
   });
 
   expect(stack).toHaveResource('AWS::Lambda::Function', {
-    Runtime: 'nodejs10.x',
+    Runtime: 'nodejs14.x',
   });
 });
 
