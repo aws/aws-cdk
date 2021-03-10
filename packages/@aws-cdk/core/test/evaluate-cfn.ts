@@ -42,16 +42,8 @@ export function evaluateCFN(object: any, context: {[key: string]: string} = {}):
       return context[key];
     },
 
-    'Fn::Sub'(argument: string | [string, Record<string, string>]) {
-      let template;
-      let placeholders: Record<string, string>;
-      if (Array.isArray(argument)) {
-        template = argument[0];
-        placeholders = evaluate(argument[1]);
-      } else {
-        template = argument;
-        placeholders = context;
-      }
+    'Fn::Sub'(template: string, explicitPlaceholders?: Record<string, string>) {
+      const placeholders = explicitPlaceholders ? evaluate(explicitPlaceholders) : context;
 
       if (typeof template !== 'string') {
         throw new Error('The first argument to {Fn::Sub} must be a string literal (cannot be the result of an expression)');
@@ -79,7 +71,7 @@ export function evaluateCFN(object: any, context: {[key: string]: string} = {}):
 
       const ret: {[key: string]: any} = {};
       for (const key of Object.keys(obj)) {
-        ret[key] = evaluateCFN(obj[key]);
+        ret[key] = evaluate(obj[key]);
       }
       return ret;
     }
