@@ -7,7 +7,7 @@ and let us know if it's not up-to-date (even better, submit a PR with your  corr
 
 - [Getting Started](#getting-started)
 - [Pull Requests](#pull-requests)
-  - [Step 1: Finding something to work on](#step-1-finding-something-to-work-on)
+  - [Step 1: Find something to work on](#step-1-find-something-to-work-on)
   - [Step 2: Design (optional)](#step-2-design-optional)
   - [Step 3: Work your Magic](#step-3-work-your-magic)
   - [Step 4: Commit](#step-4-commit)
@@ -24,7 +24,7 @@ and let us know if it's not up-to-date (even better, submit a PR with your  corr
   - [Linking against this repository](#linking-against-this-repository)
   - [Running integration tests in parallel](#running-integration-tests-in-parallel)
   - [Visualizing dependencies in a CloudFormation Template](#visualizing-dependencies-in-a-cloudformation-template)
-  - [Finding dependency cycles between packages](#finding-dependency-cycles-between-packages)
+  - [Find dependency cycles between packages](#find-dependency-cycles-between-packages)
 - [Running CLI integration tests](#running-cli-integration-tests)
 - [Changing the Cloud Assembly Schema](#changing-cloud-assembly-schema)
 - [Feature Flags](#feature-flags)
@@ -176,7 +176,7 @@ eval $(gp env -e)
 
 ## Pull Requests
 
-### Step 1: Finding something to work on
+### Step 1: Find something to work on
 
 If you want to contribute a specific feature or fix you have in mind, look at active [pull
 requests](https://github.com/aws/aws-cdk/pulls) to see if someone else is already working on it. If not, you can start
@@ -689,7 +689,7 @@ Use GraphViz with `template-deps-to-dot`:
 $ cdk -a some.app.js synth | $awscdk/scripts/template-deps-to-dot | dot -Tpng > deps.png
 ```
 
-### Finding dependency cycles between packages
+### Find dependency cycles between packages
 
 You can use `find-cycles` to print a list of internal dependency cycles:
 
