@@ -57,9 +57,7 @@ const api = new HttpApi(stack, 'HttpApi', {
 
 ### Route Authorization
 
-In most occasions, you'll want different levels of access per route. Route authorization allows us to set authorization settings that only affect one route.
-
-Route authorization also takes higher precedence over default authorization settings. This allows us to create granular access levels.
+Authorization can also configured for each Route. When a route authorization is configured, it takes precedence over default authorization.
 
 The example below showcases default authorization, along with route authorization. It also shows how to remove authorization entirely for a route.
 
