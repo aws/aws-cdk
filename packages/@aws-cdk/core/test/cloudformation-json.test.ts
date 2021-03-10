@@ -1,4 +1,4 @@
-import { App, CfnOutput, Fn, IPostProcessor, IResolvable, IResolveContext, Lazy, Stack, Token } from '../lib';
+import { App, Aws, CfnOutput, Fn, IPostProcessor, IResolvable, IResolveContext, Lazy, Stack, Token } from '../lib';
 import { Intrinsic } from '../lib/private/intrinsic';
 import { evaluateCFN } from './evaluate-cfn';
 
@@ -196,6 +196,35 @@ describe('tokens returning CloudFormation intrinsics', () => {
     expect(evaluateCFN(resolved, context)).toEqual(expected);
   });
 
+  test('embedded string literals are escaped in Fn.sub (implicit references)', () => {
+    // GIVEN
+    const token = Fn.sub('I am in account "${AWS::AccountId}"');
+
+    // WHEN
+    const resolved = stack.resolve(stack.toJsonString({ token }));
+
+    // THEN
+    const context = { 'AWS::AccountId': '1234' };
+    const expected = '{"token":"I am in account \\"1234\\""}';
+    expect(evaluateCFN(resolved, context)).toEqual(expected);
+  });
+
+  test('embedded string literals are escaped in Fn.sub (explicit references)', () => {
+    // GIVEN
+    const token = Fn.sub('I am in account "${Acct}", also wanted to say: ${Also}', {
+      Acct: Aws.ACCOUNT_ID,
+      Also: '"hello world"',
+    });
+
+    // WHEN
+    const resolved = stack.resolve(stack.toJsonString({ token }));
+
+    // THEN
+    const context = { 'AWS::AccountId': '1234' };
+    const expected = '{"token":"I am in account \\"1234\\", also wanted to say: \\"hello world\\""}';
+    expect(evaluateCFN(resolved, context)).toEqual(expected);
+  });
+
   test('Tokens in Tokens are handled correctly', () => {
     // GIVEN
     const bucketName = new Intrinsic({ Ref: 'MyBucket' });
@@ -343,6 +372,26 @@ describe('tokens returning CloudFormation intrinsics', () => {
     expect(stack.resolve(jsonString)).toEqual('{"counterString":"2"}');
   });
 });
+
+test('JSON strings nested inside JSON strings have correct quoting', () => {
+  // GIVEN
+  const payload = stack.toJsonString({
+    message: Fn.sub('I am in account "${AWS::AccountId}"'),
+  });
+
+  // WHEN
+  const resolved = stack.resolve(stack.toJsonString({ payload }));
+
+  // THEN
+  const context = { 'AWS::AccountId': '1234' };
+  const expected = '{"payload":"{\\"message\\":\\"I am in account \\\\\\"1234\\\\\\"\\"}"}';
+  const evaluated = evaluateCFN(resolved, context);
+  expect(evaluated).toEqual(expected);
+
+  // Is this even correct? Let's ask JavaScript because I have trouble reading this many backslashes.
+  expect(JSON.parse(JSON.parse(evaluated).payload).message).toEqual('I am in account "1234"');
+});
+
 
 /**
  * Return two Tokens, one of which evaluates to a Token directly, one which evaluates to it lazily

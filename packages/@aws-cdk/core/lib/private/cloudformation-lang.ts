@@ -209,7 +209,7 @@ function tokenAwareStringify(root: any, space: number, ctx: IResolveContext) {
     switch (resolvedTypeHint(intrinsic)) {
       case ResolutionTypeHint.STRING:
         pushLiteral('"');
-        pushIntrinsic(quoteInsideIntrinsic(intrinsic));
+        pushIntrinsic(deepQuoteStringLiterals(intrinsic));
         pushLiteral('"');
         break;
 
@@ -368,22 +368,16 @@ function* definedEntries<A extends object>(xs: A): IterableIterator<[string, any
  * Logical IDs and attribute names, which cannot contain quotes anyway. Hence,
  * we can get away not caring about the distinction and just quoting everything.
  */
-function quoteInsideIntrinsic(x: any): any {
-  if (typeof x === 'object' && x != null && Object.keys(x).length === 1) {
-    const key = Object.keys(x)[0];
-    const params = x[key];
-    switch (key) {
-      case 'Fn::If':
-        return { 'Fn::If': [params[0], quoteInsideIntrinsic(params[1]), quoteInsideIntrinsic(params[2])] };
-      case 'Fn::Join':
-        return { 'Fn::Join': [quoteInsideIntrinsic(params[0]), params[1].map(quoteInsideIntrinsic)] };
-      case 'Fn::Sub':
-        if (Array.isArray(params)) {
-          return { 'Fn::Sub': [quoteInsideIntrinsic(params[0]), params[1]] };
-        } else {
-          return { 'Fn::Sub': quoteInsideIntrinsic(params[0]) };
-        }
+function deepQuoteStringLiterals(x: any): any {
+  if (Array.isArray(x)) {
+    return x.map(deepQuoteStringLiterals);
+  }
+  if (typeof x === 'object' && x != null) {
+    const ret: any = {};
+    for (const [key, value] of Object.entries(x)) {
+      ret[deepQuoteStringLiterals(key)] = deepQuoteStringLiterals(value);
     }
+    return ret;
   }
   if (typeof x === 'string') {
     return quoteString(x);
