@@ -54,6 +54,12 @@ export interface RuleTargetConfig {
   readonly deadLetterConfig?: CfnRule.DeadLetterConfigProperty;
 
   /**
+   * A RetryPolicy object that includes information about the retry policy settings.
+   * @default EventBridge default retry policy
+   */
+  readonly retryPolicy?: CfnRule.RetryPolicyProperty;
+
+  /**
    * The Amazon ECS task definition and task count to use, if the event target
    * is an Amazon ECS task.
    */

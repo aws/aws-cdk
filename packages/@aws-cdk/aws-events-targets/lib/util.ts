@@ -2,11 +2,63 @@ import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as sqs from '@aws-cdk/aws-sqs';
-import { Annotations, ConstructNode, IConstruct, Names, Token, TokenComparison } from '@aws-cdk/core';
+import { Annotations, ConstructNode, IConstruct, Names, Token, TokenComparison, Duration } from '@aws-cdk/core';
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
 // eslint-disable-next-line no-duplicate-imports, import/order
 import { Construct } from '@aws-cdk/core';
+
+/**
+ * The generic properties for an RuleTarget
+ */
+export interface TargetBaseProps {
+  /**
+   * The SQS queue to be used as deadLetterQueue.
+   * Check out the [considerations for using a dead-letter queue](https://docs.aws.amazon.com/eventbridge/latest/userguide/rule-dlq.html#dlq-considerations).
+   *
+   * The events not successfully delivered are automatically retried for a specified period of time,
+   * depending on the retry policy of the target.
+   * If an event is not delivered before all retry attempts are exhausted, it will be sent to the dead letter queue.
+   *
+   * @default - no dead-letter queue
+   */
+  readonly deadLetterQueue?: sqs.IQueue;
+  /**
+   * The maximum age of a request that Lambda sends to a function for
+   * processing.
+   *
+   * Minimum value of 60.
+   * Maximum value of 86400.
+   *
+   * @default Duration.hours(24)
+   */
+  readonly maxEventAge?: Duration;
+
+  /**
+   * The maximum number of times to retry when the function returns an error.
+   *
+   * Minimum value of 0.
+   * Maximum value of 185.
+   *
+   * @default 185
+   */
+  readonly retryAttempts?: number;
+}
+
+/**
+ * Use an AWS Lambda function as an event rule target.
+ */
+export function bindBaseProps(props: TargetBaseProps) {
+    return {
+      deadLetterConfig: props.deadLetterQueue ? { arn: props.deadLetterQueue?.queueArn } : undefined,
+      retryPolicy: {
+        maximumRetryAttempts: props.retryAttempts,
+        maximumEventAgeInSeconds: props.maxEventAge?.toSeconds({ integral: true }),
+      },
+    };
+  }
+}
+
 
 /**
  * Obtain the Role for the EventBridge event

@@ -15,17 +15,17 @@ to the `rule.addTarget()` method.
 
 Currently supported are:
 
-* Start a CodeBuild build
-* Start a CodePipeline pipeline
+* [Start a CodeBuild build](#start-a-codebuild-build)
+* [Start a CodePipeline pipeline](#start-a-codepipeline-pipeline)
 * Run an ECS task
-* Invoke a Lambda function
+* [Invoke a Lambda function](#invoke-a-lambda-function)
 * Publish a message to an SNS topic
 * Send a message to an SQS queue
-* Start a StepFunctions state machine
+* [Start a StepFunctions state machine](#start-a-stepfunctions-state-machine)
 * Queue a Batch job
 * Make an AWS API call
 * Put a record to a Kinesis stream
-* Log an event into a LogGroup
+* [Log an event into a LogGroup](#log-an-event-into-a-loggroup)
 * Put a record to a Kinesis Data Firehose stream
 * Put an event on an EventBridge bus
 
@@ -90,7 +90,7 @@ const rule = new events.Rule(this, 'rule', {
 rule.addTarget(new targets.CloudWatchLogGroup(logGroup));
 ```
 
-## Trigger a CodeBuild project
+## Start a CodeBuild build
 
 Use the `CodeBuildProject` target to trigger a CodeBuild project.
 
@@ -123,7 +123,26 @@ const onCommitRule = repo.onCommit('OnCommit', {
 });
 ```
 
-## Trigger a State Machine
+## Start a CodePipeline pipeline
+
+Use the `CodePipeline` target to trigger a CodePipeline pipeline.
+
+The code snippet below creates a CodePipeline pipeline that is triggered every hour
+
+```ts
+import * as codepipeline from '@aws-sdk/aws-codepipeline';
+import * as sqs from '@aws-sdk/aws-sqs';
+
+const pipeline = new codepipeline.Pipeline(this, 'Pipeline');
+
+const rule = new events.Rule(stack, 'Rule', {
+  schedule: events.Schedule.expression('rate(1 hour)'),
+});
+
+rule.addTarget(new targets.CodePipeline(pipeline));
+```
+
+## Start a StepFunctions state machine
 
 Use the `SfnStateMachine` target to trigger a State Machine.
 
