@@ -388,11 +388,7 @@ export class HttpApi extends HttpApiBase {
   public addRoutes(options: AddRoutesOptions): HttpRoute[] {
     const methods = options.methods ?? [HttpMethod.ANY];
     return methods.map((method) => {
-      let authorizationScopes = this.defaultAuthorizationScopes;
-
-      if (options.authorizationScopes) {
-        authorizationScopes = options.authorizationScopes;
-      }
+      const authorizationScopes = options.authorizationScopes ?? this.defaultAuthorizationScopes;
 
       return new HttpRoute(this, `${method}${options.path}`, {
         httpApi: this,
