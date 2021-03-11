@@ -238,7 +238,7 @@ export class GraphWidget extends ConcreteWidget {
     this.rightMetrics = props.right ?? [];
 
     if (this.props.period !== undefined && this.props.period.toSeconds() % 60 !== 0) {
-      throw new Error(`'period' must be a multiple of 60 seconds`);
+      throw new Error('\'period\' must be a multiple of 60 seconds');
     }
   }
 
