@@ -530,7 +530,7 @@ export = {
       height: 6,
       properties: {
         view: 'timeSeries',
-        title: 'My live graph',
+        title: 'My custom period graph',
         region: { Ref: 'AWS::Region' },
         metrics: [
           ['CDK', 'Test'],
