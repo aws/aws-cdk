@@ -870,11 +870,14 @@ export class AcceleratorType {
 export interface DataProcessing {
   /**
    * JSONPath expression used to select a portion of the input data to pass to the algorithm.
+   *
+   * @default - $
    */
   readonly inputFilter?: string;
 
   /**
    * Specifies the source of the data to join with the transformed data.
+   *
    * @default - None
    */
   readonly joinSource?: 'Input' | 'None';
@@ -882,6 +885,8 @@ export interface DataProcessing {
   /**
    * JSONPath expression used to select a portion of the joined dataset to save in the output
    * file for a batch transform job.
+   *
+   * @default - $
    */
   readonly outputFilter?: string;
 }

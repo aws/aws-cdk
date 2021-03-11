@@ -35,6 +35,8 @@ export interface SageMakerCreateTransformJobProps extends sfn.TaskStateBaseProps
   /**
    * Specifies the data to be used for inference,
    * and to associate the data that is relevant to the prediction results in the output.
+   *
+   * @default - No data processing attributes
    */
   readonly dataProcessing?: DataProcessing;
 
