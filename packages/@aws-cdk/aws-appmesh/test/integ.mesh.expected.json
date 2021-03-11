@@ -625,7 +625,7 @@
         "RouteName": "route-3"
       }
     },
-    "meshrouterroute417D3F5B5": {
+    "meshrouterroutematchingACC12F04": {
       "Type": "AWS::AppMesh::Route",
       "Properties": {
         "MeshName": {
@@ -740,7 +740,58 @@
             "VirtualRouterName"
           ]
         },
-        "RouteName": "route-4"
+        "RouteName": "route-matching"
+      }
+    },
+    "meshrouterroutehttp2retryCC41345F": {
+      "Type": "AWS::AppMesh::Route",
+      "Properties": {
+        "MeshName": {
+          "Fn::GetAtt": [
+            "meshACDFE68E",
+            "MeshName"
+          ]
+        },
+        "Spec": {
+          "Http2Route": {
+            "Action": {
+              "WeightedTargets": [
+                {
+                  "VirtualNode": {
+                    "Fn::GetAtt": [
+                      "meshnode3D2A19CF2",
+                      "VirtualNodeName"
+                    ]
+                  },
+                  "Weight": 1
+                }
+              ]
+            },
+            "Match": {
+              "Prefix": "/"
+            },
+            "RetryPolicy": {
+              "HttpRetryEvents": [
+                "client-error"
+              ],
+              "MaxRetries": 5,
+              "PerRetryTimeout": {
+                "Unit": "ms",
+                "Value": 1000
+              },
+              "TcpRetryEvents": [
+                "connection-error"
+              ]
+            }
+          }
+        },
+        "VirtualRouterName": {
+          "Fn::GetAtt": [
+            "meshrouter81B8087E",
+            "VirtualRouterName"
+          ]
+        },
+        "RouteName": "route-http2-retry"
       }
     },
     "meshrouterroute53F46B0FE": {
@@ -780,6 +831,60 @@
           ]
         },
         "RouteName": "route-5"
+      }
+    },
+    "meshrouterroutegrpcretry9BEB798A": {
+      "Type": "AWS::AppMesh::Route",
+      "Properties": {
+        "MeshName": {
+          "Fn::GetAtt": [
+            "meshACDFE68E",
+            "MeshName"
+          ]
+        },
+        "Spec": {
+          "GrpcRoute": {
+            "Action": {
+              "WeightedTargets": [
+                {
+                  "VirtualNode": {
+                    "Fn::GetAtt": [
+                      "meshnode3D2A19CF2",
+                      "VirtualNodeName"
+                    ]
+                  },
+                  "Weight": 1
+                }
+              ]
+            },
+            "Match": {
+              "ServiceName": "servicename"
+            },
+            "RetryPolicy": {
+              "GrpcRetryEvents": [
+                "deadline-exceeded"
+              ],
+              "HttpRetryEvents": [
+                "client-error"
+              ],
+              "MaxRetries": 5,
+              "PerRetryTimeout": {
+                "Unit": "ms",
+                "Value": 1000
+              },
+              "TcpRetryEvents": [
+                "connection-error"
+              ]
+            }
+          }
+        },
+        "VirtualRouterName": {
+          "Fn::GetAtt": [
+            "meshrouter81B8087E",
+            "VirtualRouterName"
+          ]
+        },
+        "RouteName": "route-grpc-retry"
       }
     },
     "meshnode726C787D": {

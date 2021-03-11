@@ -140,7 +140,7 @@ router.addRoute('route-3', {
   }),
 });
 
-router.addRoute('route-4', {
+router.addRoute('route-matching', {
   routeSpec: appmesh.RouteSpec.http2({
     weightedTargets: [{ virtualNode: node3 }],
     match: {
@@ -163,10 +163,36 @@ router.addRoute('route-4', {
   }),
 });
 
+router.addRoute('route-http2-retry', {
+  routeSpec: appmesh.RouteSpec.http2({
+    weightedTargets: [{ virtualNode: node3 }],
+    retryPolicy: {
+      httpRetryEvents: [appmesh.HttpRetryEvent.CLIENT_ERROR],
+      tcpRetryEvents: [appmesh.TcpRetryEvent.CONNECTION_ERROR],
+      retryAttempts: 5,
+      retryTimeout: cdk.Duration.seconds(1),
+    },
+  }),
+});
+
 router.addRoute('route-5', {
   routeSpec: appmesh.RouteSpec.http2({
     priority: 10,
     weightedTargets: [{ virtualNode: node2 }],
+  }),
+});
+
+router.addRoute('route-grpc-retry', {
+  routeSpec: appmesh.RouteSpec.grpc({
+    weightedTargets: [{ virtualNode: node3 }],
+    match: { serviceName: 'servicename' },
+    retryPolicy: {
+      grpcRetryEvents: [appmesh.GrpcRetryEvent.DEADLINE_EXCEEDED],
+      httpRetryEvents: [appmesh.HttpRetryEvent.CLIENT_ERROR],
+      tcpRetryEvents: [appmesh.TcpRetryEvent.CONNECTION_ERROR],
+      retryAttempts: 5,
+      retryTimeout: cdk.Duration.seconds(1),
+    },
   }),
 });
 
