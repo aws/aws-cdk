@@ -67,9 +67,19 @@ export abstract class Code {
    * @param options Docker build options
    */
   public static fromDockerBuild(path: string, options: DockerBuildAssetOptions = {}): AssetCode {
+    let imagePath = options.imagePath ?? '/asset/.';
+
+    // ensure imagePath ends with /. to copy the **content** at this path
+    if (imagePath.endsWith('/')) {
+      imagePath = `${imagePath}.`;
+    } else if (!imagePath.endsWith('/.')) {
+      imagePath = `${imagePath}/.`;
+    }
+
     const assetPath = cdk.DockerImage
       .fromBuild(path, options)
-      .cp(options.imagePath ?? '/asset', options.outputPath);
+      .cp(imagePath, options.outputPath);
+
     return new AssetCode(assetPath);
   }
 

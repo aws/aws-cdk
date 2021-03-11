@@ -331,6 +331,23 @@ describe('code', () => {
   });
 
   describe('lambda.Code.fromDockerBuild', () => {
+    let fromBuildMock: jest.SpyInstance<cdk.DockerImage>;
+    let cpMock: jest.Mock<any, any>;
+
+    beforeEach(() => {
+      cpMock = jest.fn().mockReturnValue(path.join(__dirname, 'docker-build-lambda'));
+      fromBuildMock = jest.spyOn(cdk.DockerImage, 'fromBuild').mockImplementation(() => ({
+        cp: cpMock,
+        image: 'tag',
+        run: jest.fn(),
+        toJSON: jest.fn(),
+      }));
+    });
+
+    afterEach(() => {
+      fromBuildMock.mockRestore();
+    });
+
     test('can use the result of a Docker build as an asset', () => {
       // given
       const stack = new cdk.Stack();
@@ -346,10 +363,47 @@ describe('code', () => {
       // then
       expect(stack).toHaveResource('AWS::Lambda::Function', {
         Metadata: {
-          [cxapi.ASSET_RESOURCE_METADATA_PATH_KEY]: 'asset.38cd320fa97b348accac88e48d9cede4923f7cab270ce794c95a665be83681a8',
+          [cxapi.ASSET_RESOURCE_METADATA_PATH_KEY]: 'asset.fbafdbb9ae8d1bae0def415b791a93c486d18ebc63270c748abecc3ac0ab9533',
           [cxapi.ASSET_RESOURCE_METADATA_PROPERTY_KEY]: 'Code',
         },
       }, ResourcePart.CompleteDefinition);
+
+      expect(fromBuildMock).toHaveBeenCalledWith(path.join(__dirname, 'docker-build-lambda'), {});
+      expect(cpMock).toHaveBeenCalledWith('/asset/.', undefined);
+    });
+
+    test('fromDockerBuild appends /. to an image path not ending with a /', () => {
+      // given
+      const stack = new cdk.Stack();
+
+      // when
+      new lambda.Function(stack, 'Fn', {
+        code: lambda.Code.fromDockerBuild(path.join(__dirname, 'docker-build-lambda'), {
+          imagePath: '/my/image/path',
+        }),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.NODEJS_12_X,
+      });
+
+      // then
+      expect(cpMock).toHaveBeenCalledWith('/my/image/path/.', undefined);
+    });
+
+    test('fromDockerBuild appends . to an image path ending with a /', () => {
+      // given
+      const stack = new cdk.Stack();
+
+      // when
+      new lambda.Function(stack, 'Fn', {
+        code: lambda.Code.fromDockerBuild(path.join(__dirname, 'docker-build-lambda'), {
+          imagePath: '/my/image/path/',
+        }),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.NODEJS_12_X,
+      });
+
+      // then
+      expect(cpMock).toHaveBeenCalledWith('/my/image/path/.', undefined);
     });
   });
 });
