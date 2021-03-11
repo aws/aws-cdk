@@ -210,7 +210,7 @@ export class VirtualNode extends VirtualNodeBase {
   public addListener(listener: VirtualNodeListener) {
     if (this.listeners.length >= 1) {
       // @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-appmesh-virtualnode-virtualnodespec.html#cfn-appmesh-virtualnode-virtualnodespec-listeners
-      throw new Error('Cannot add virtual node listener. Virtual Nodes support at most one listener at this time.');
+      throw new Error('Cannot add `VirtualNodeListener`. Virtual Nodes support at most one listener at this time.');
     }
     this.listeners.push(listener.bind(this));
   }
