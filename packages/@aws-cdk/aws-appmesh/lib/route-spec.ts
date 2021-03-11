@@ -1,3 +1,4 @@
+import * as cdk from '@aws-cdk/core';
 import { CfnRoute } from './appmesh.generated';
 import { Protocol, HttpTimeout, GrpcTimeout, TcpTimeout } from './shared-interfaces';
 import { IVirtualNode } from './virtual-node';
@@ -68,6 +69,81 @@ export interface HttpRouteSpecOptions {
    * @default - None
    */
   readonly timeout?: HttpTimeout;
+
+  /**
+   * The retry policy
+   *
+   * @default - no retry policy
+   */
+  readonly retryPolicy?: HttpRetryPolicy;
+}
+
+/**
+ * HTTP retry policy
+ */
+export interface HttpRetryPolicy {
+  /**
+   * Specify HTTP events on which to retry. You must specify at least one value
+   * for at least one types of retry events.
+   *
+   * @default - no retries for http events
+   */
+  readonly httpRetryEvents?: HttpRetryEvent[];
+
+  /**
+   * The maximum number of retry attempts
+   */
+  readonly retryAttempts: number;
+
+  /**
+   * The timeout for each retry attempt
+   */
+  readonly retryTimeout: cdk.Duration;
+
+  /**
+   * TCP events on which to retry. The event occurs before any processing of a
+   * request has started and is encountered when the upstream is temporarily or
+   * permanently unavailable. You must specify at least one value for at least
+   * one types of retry events.
+   *
+   * @default - no retries for tcp events
+   */
+  readonly tcpRetryEvents?: TcpRetryEvent[];
+}
+
+/**
+ * HTTP events on which to retry.
+ */
+export enum HttpRetryEvent {
+  /**
+   * HTTP status codes 500, 501, 502, 503, 504, 505, 506, 507, 508, 510, and 511
+   */
+  SERVER_ERROR = 'server-error',
+
+  /**
+   * HTTP status codes 502, 503, and 504
+   */
+  GATEWAY_ERROR = 'gateway-error',
+
+  /**
+   * HTTP status code 409
+   */
+  CLIENT_ERROR = 'client-error',
+
+  /**
+   * Retry on refused stream
+   */
+  STREAM_ERROR = 'stream-error',
+}
+
+/**
+ * TCP events on which you may retry
+ */
+export enum TcpRetryEvent {
+  /**
+   * A connection error
+   */
+  CONNECTION_ERROR = 'connection-error',
 }
 
 /**
@@ -107,6 +183,64 @@ export interface GrpcRouteSpecOptions {
    * List of targets that traffic is routed to when a request matches the route
    */
   readonly weightedTargets: WeightedTarget[];
+
+  /**
+   * The retry policy
+   *
+   * @default - no retry policy
+   */
+  readonly retryPolicy?: GrpcRetryPolicy;
+}
+
+/** gRPC retry policy */
+export interface GrpcRetryPolicy extends HttpRetryPolicy {
+  /**
+   * gRPC events on which to retry. You must specify at least one value
+   * for at least one types of retry events.
+   *
+   * @default - no retries for gRPC events
+   */
+  readonly grpcRetryEvents?: GrpcRetryEvent[];
+}
+
+/**
+ * gRPC events
+ */
+export enum GrpcRetryEvent {
+  /**
+   * Request was cancelled
+   *
+   * @see https://grpc.github.io/grpc/core/md_doc_statuscodes.html
+   */
+  CANCELLED = 'cancelled',
+
+  /**
+   * The deadline was exceeded
+   *
+   * @see https://grpc.github.io/grpc/core/md_doc_statuscodes.html
+   */
+  DEADLINE_EXCEEDED = 'deadline-exceeded',
+
+  /**
+   * Internal error
+   *
+   * @see https://grpc.github.io/grpc/core/md_doc_statuscodes.html
+   */
+  INTERNAL_ERROR = 'internal',
+
+  /**
+   * A resource was exhausted
+   *
+   * @see https://grpc.github.io/grpc/core/md_doc_statuscodes.html
+   */
+  RESOURCE_EXHAUSTED = 'resource-exhausted',
+
+  /**
+   * The service is unavailable
+   *
+   * @see https://grpc.github.io/grpc/core/md_doc_statuscodes.html
+   */
+  UNAVAILABLE = 'unavailable',
 }
 
 /**
@@ -203,12 +337,32 @@ class HttpRouteSpec extends RouteSpec {
    */
   public readonly weightedTargets: WeightedTarget[];
 
+  /**
+   * The retry policy
+   */
+  public readonly retryPolicy?: HttpRetryPolicy;
+
   constructor(props: HttpRouteSpecOptions, protocol: Protocol) {
     super();
     this.protocol = protocol;
     this.match = props.match;
     this.weightedTargets = props.weightedTargets;
     this.timeout = props.timeout;
+
+    if (props.retryPolicy) {
+      const httpRetryEvents = props.retryPolicy.httpRetryEvents ?? [];
+      const tcpRetryEvents = props.retryPolicy.tcpRetryEvents ?? [];
+
+      if (httpRetryEvents.length + tcpRetryEvents.length === 0) {
+        throw new Error('You must specify one value for at least one of `httpRetryEvents` or `tcpRetryEvents`');
+      }
+
+      this.retryPolicy = {
+        ...props.retryPolicy,
+        httpRetryEvents: httpRetryEvents.length > 0 ? httpRetryEvents : undefined,
+        tcpRetryEvents: tcpRetryEvents.length > 0 ? tcpRetryEvents : undefined,
+      };
+    }
   }
 
   public bind(_scope: Construct): RouteSpecConfig {
@@ -216,6 +370,7 @@ class HttpRouteSpec extends RouteSpec {
     if (prefixPath[0] != '/') {
       throw new Error(`Prefix Path must start with \'/\', got: ${prefixPath}`);
     }
+
     const httpConfig: CfnRoute.HttpRouteProperty = {
       action: {
         weightedTargets: renderWeightedTargets(this.weightedTargets),
@@ -224,6 +379,7 @@ class HttpRouteSpec extends RouteSpec {
         prefix: prefixPath,
       },
       timeout: renderTimeout(this.timeout),
+      retryPolicy: this.retryPolicy ? renderHttpRetryPolicy(this.retryPolicy) : undefined,
     };
     return {
       httpRouteSpec: this.protocol === Protocol.HTTP ? httpConfig : undefined,
@@ -266,11 +422,33 @@ class GrpcRouteSpec extends RouteSpec {
   public readonly match: GrpcRouteMatch;
   public readonly timeout?: GrpcTimeout;
 
+  /**
+   * The retry policy.
+   */
+  public readonly retryPolicy?: GrpcRetryPolicy;
+
   constructor(props: GrpcRouteSpecOptions) {
     super();
     this.weightedTargets = props.weightedTargets;
     this.match = props.match;
     this.timeout = props.timeout;
+
+    if (props.retryPolicy) {
+      const grpcRetryEvents = props.retryPolicy.grpcRetryEvents ?? [];
+      const httpRetryEvents = props.retryPolicy.httpRetryEvents ?? [];
+      const tcpRetryEvents = props.retryPolicy.tcpRetryEvents ?? [];
+
+      if (grpcRetryEvents.length + httpRetryEvents.length + tcpRetryEvents.length === 0) {
+        throw new Error('You must specify one value for at least one of `grpcRetryEvents`, `httpRetryEvents` or `tcpRetryEvents`');
+      }
+
+      this.retryPolicy = {
+        ...props.retryPolicy,
+        grpcRetryEvents: grpcRetryEvents.length > 0 ? grpcRetryEvents : undefined,
+        httpRetryEvents: httpRetryEvents.length > 0 ? httpRetryEvents : undefined,
+        tcpRetryEvents: tcpRetryEvents.length > 0 ? tcpRetryEvents : undefined,
+      };
+    }
   }
 
   public bind(_scope: Construct): RouteSpecConfig {
@@ -283,6 +461,7 @@ class GrpcRouteSpec extends RouteSpec {
           serviceName: this.match.serviceName,
         },
         timeout: renderTimeout(this.timeout),
+        retryPolicy: this.retryPolicy ? renderGrpcRetryPolicy(this.retryPolicy) : undefined,
       },
     };
   }
@@ -322,4 +501,23 @@ function renderTimeout(timeout?: HttpTimeout): CfnRoute.HttpTimeoutProperty | un
         : undefined,
     }
     : undefined;
+}
+
+function renderHttpRetryPolicy(retryPolicy: HttpRetryPolicy): CfnRoute.HttpRetryPolicyProperty {
+  return {
+    maxRetries: retryPolicy.retryAttempts,
+    perRetryTimeout: {
+      unit: 'ms',
+      value: retryPolicy.retryTimeout.toMilliseconds(),
+    },
+    httpRetryEvents: retryPolicy.httpRetryEvents,
+    tcpRetryEvents: retryPolicy.tcpRetryEvents,
+  };
+}
+
+function renderGrpcRetryPolicy(retryPolicy: GrpcRetryPolicy): CfnRoute.GrpcRetryPolicyProperty {
+  return {
+    ...renderHttpRetryPolicy(retryPolicy),
+    grpcRetryEvents: retryPolicy.grpcRetryEvents,
+  };
 }
