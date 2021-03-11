@@ -291,6 +291,18 @@ dashboard.addWidgets(new GraphWidget({
 }));
 ```
 
+The graph's period can be adjusted to a custom value. The default is 5 minutes, 
+and any period specified in individual metrics take precedence over this value.
+
+```ts
+dashboard.addWidgets(new GraphWidget({
+  // ...
+  // ...
+
+  period: Duration.Minutes(1),
+}));
+```
+
 The graph view can be changed from default 'timeSeries' to 'bar' or 'pie'.
 
 ```ts
