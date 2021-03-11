@@ -1,3 +1,62 @@
+# CloudFormation Resource Specification v30.1.0
+
+## New Resource Types
+
+* AWS::Events::ApiDestination
+* AWS::Events::Connection
+* AWS::IoT::AccountAuditConfiguration
+* AWS::IoT::CustomMetric
+* AWS::IoT::Dimension
+* AWS::IoT::MitigationAction
+* AWS::IoT::ScheduledAudit
+* AWS::IoT::SecurityProfile
+* AWS::S3Outposts::AccessPoint
+* AWS::S3Outposts::Bucket
+* AWS::S3Outposts::BucketPolicy
+* AWS::S3Outposts::Endpoint
+
+## Attribute Changes
+
+* AWS::Athena::WorkGroup EffectiveEngineVersion (__added__)
+
+## Property Changes
+
+* AWS::Backup::BackupVault BackupVaultTags.PrimitiveType (__deleted__)
+* AWS::Backup::BackupVault BackupVaultTags.PrimitiveItemType (__added__)
+* AWS::Backup::BackupVault BackupVaultTags.Type (__added__)
+* AWS::Cloud9::EnvironmentEC2 ImageId (__added__)
+* AWS::CloudFormation::ModuleVersion ModuleName.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::CloudFormation::ModuleVersion ModulePackage.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::DataBrew::Dataset Format (__added__)
+* AWS::Detective::MemberInvitation DisableEmailNotification (__added__)
+* AWS::IVS::Channel RecordingConfigurationArn (__deleted__)
+* AWS::SecretsManager::Secret ReplicaRegions (__added__)
+* AWS::ServiceDiscovery::HttpNamespace Tags.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::ServiceDiscovery::PrivateDnsNamespace Tags.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::ServiceDiscovery::PublicDnsNamespace Tags.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::ServiceDiscovery::Service Tags.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+
+## Property Type Changes
+
+* AWS::Athena::WorkGroup.EngineVersion (__added__)
+* AWS::SecretsManager::Secret.ReplicaRegion (__added__)
+* AWS::Athena::WorkGroup.WorkGroupConfiguration EngineVersion (__added__)
+* AWS::Athena::WorkGroup.WorkGroupConfigurationUpdates EngineVersion (__added__)
+* AWS::Backup::BackupVault.NotificationObjectType BackupVaultEvents.DuplicatesAllowed (__added__)
+
+
 # CloudFormation Resource Specification v30.0.0
 
 ## New Resource Types

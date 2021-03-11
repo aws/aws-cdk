@@ -4,7 +4,6 @@ import { nodeunitShim, Test } from 'nodeunit-shim';
 import { CfnResource, Construct, Stack, StackProps } from '../lib';
 import { Annotations } from '../lib/annotations';
 import { App, AppProps } from '../lib/app';
-import { MetadataResource } from '../lib/private/metadata-resource';
 
 function withApp(props: AppProps, block: (app: App) => void): cxapi.CloudAssembly {
   const app = new App({
@@ -260,90 +259,6 @@ nodeunitShim({
     test.done();
   },
 
-  'runtime library versions'(test: Test) {
-    v1(() => {
-      MetadataResource.clearModulesCache();
-
-      const response = withApp({ analyticsReporting: true }, app => {
-        const stack = new Stack(app, 'stack1');
-        new CfnResource(stack, 'MyResource', { type: 'Resource::Type' });
-      });
-
-      const stackTemplate = response.getStackByName('stack1').template;
-      const libs = parseModules(stackTemplate.Resources?.CDKMetadata?.Properties?.Modules);
-
-      // eslint-disable-next-line @typescript-eslint/no-require-imports
-      const version = require('../package.json').version;
-      test.deepEqual(libs['@aws-cdk/core'], version);
-      test.deepEqual(libs['@aws-cdk/cx-api'], version);
-      test.deepEqual(libs['jsii-runtime'], `node.js/${process.version}`);
-    });
-    test.done();
-  },
-
-  'CDK version'(test: Test) {
-    MetadataResource.clearModulesCache();
-
-    withCliVersion(() => {
-      const response = withApp({ analyticsReporting: true }, app => {
-        const stack = new Stack(app, 'stack1');
-        new CfnResource(stack, 'MyResource', { type: 'Resource::Type' });
-      });
-
-      const stackTemplate = response.getStackByName('stack1').template;
-      const libs = parseModules(stackTemplate.Resources?.CDKMetadata?.Properties?.Modules);
-
-      // eslint-disable-next-line @typescript-eslint/no-require-imports
-      test.deepEqual(libs['aws-cdk'], '1.2.3');
-    });
-
-    test.done();
-  },
-
-  'jsii-runtime version loaded from JSII_AGENT'(test: Test) {
-    process.env.JSII_AGENT = 'Java/1.2.3.4';
-    MetadataResource.clearModulesCache();
-
-    withCliVersion(() => {
-      const response = withApp({ analyticsReporting: true }, app => {
-        const stack = new Stack(app, 'stack1');
-        new CfnResource(stack, 'MyResource', { type: 'Resource::Type' });
-      });
-
-      const stackTemplate = response.getStackByName('stack1').template;
-      const libs = parseModules(stackTemplate.Resources?.CDKMetadata?.Properties?.Modules);
-
-      test.deepEqual(libs['jsii-runtime'], 'Java/1.2.3.4');
-    });
-
-    delete process.env.JSII_AGENT;
-    test.done();
-  },
-
-  'version reporting includes only @aws-cdk, aws-cdk and jsii libraries'(test: Test) {
-    v1(() => {
-      MetadataResource.clearModulesCache();
-
-      const response = withApp({ analyticsReporting: true }, app => {
-        const stack = new Stack(app, 'stack1');
-        new CfnResource(stack, 'MyResource', { type: 'Resource::Type' });
-      });
-
-      const stackTemplate = response.getStackByName('stack1').template;
-      const libs = parseModules(stackTemplate.Resources?.CDKMetadata?.Properties?.Modules);
-      const libNames = Object.keys(libs).sort();
-
-      test.deepEqual(libNames, [
-        '@aws-cdk/cloud-assembly-schema',
-        '@aws-cdk/core',
-        '@aws-cdk/cx-api',
-        '@aws-cdk/region-info',
-        'jsii-runtime',
-      ]);
-    });
-    test.done();
-  },
-
   'deep stack is shown and synthesized properly'(test: Test) {
   // WHEN
     const response = withApp({}, (app) => {
@@ -418,44 +333,5 @@ class MyConstruct extends Construct {
 
     new CfnResource(this, 'r1', { type: 'ResourceType1' });
     new CfnResource(this, 'r2', { type: 'ResourceType2', properties: { FromContext: this.node.tryGetContext('ctx1') } });
-  }
-}
-
-function parseModules(x?: string): Record<string, string> {
-  if (x === undefined) { return {}; }
-
-  const ret: Record<string, string> = {};
-  for (const clause of x.split(',')) {
-    const [key, value] = clause.split('=');
-    if (key !== undefined && value !== undefined) {
-      ret[key] = value;
-    }
-  }
-  return ret;
-}
-
-/**
- * Set the CLI_VERSION_ENV environment variable
- *
- * This is necessary to get the Stack to emit the metadata resource
- */
-function withCliVersion<A>(block: () => A): A {
-  process.env[cxapi.CLI_VERSION_ENV] = '1.2.3';
-  try {
-    return block();
-  } finally {
-    delete process.env[cxapi.CLI_VERSION_ENV];
-  }
-}
-
-function v1(block: () => void) {
-  onVersion(1, block);
-}
-
-function onVersion(version: number, block: () => void) {
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
-  const mv: number = require('../../../../release.json').majorVersion;
-  if (version === mv) {
-    block();
   }
 }

@@ -49,6 +49,39 @@ export = {
     test.done();
   },
 
+  'get rate as token'(test: Test) {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'MyScheduledStack');
+    const lazyDuration = cdk.Duration.minutes(cdk.Lazy.number({ produce: () => 5 }));
+
+    new Rule(stack, 'MyScheduledRule', {
+      ruleName: 'rateInMinutes',
+      schedule: Schedule.rate(lazyDuration),
+    });
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::Events::Rule', {
+      'Name': 'rateInMinutes',
+      'ScheduleExpression': 'rate(5 minutes)',
+    }));
+
+    test.done();
+  },
+
+  'Seconds is not an allowed value for Schedule rate'(test: Test) {
+    const lazyDuration = cdk.Duration.seconds(cdk.Lazy.number({ produce: () => 5 }));
+    test.throws(() => Schedule.rate(lazyDuration), /Allowed unit for scheduling is: 'minute', 'minutes', 'hour', 'hours', 'day', 'days'/);
+    test.done();
+  },
+
+  'Millis is not an allowed value for Schedule rate'(test: Test) {
+    const lazyDuration = cdk.Duration.millis(cdk.Lazy.number({ produce: () => 5 }));
+
+    // THEN
+    test.throws(() => Schedule.rate(lazyDuration), /Allowed unit for scheduling is: 'minute', 'minutes', 'hour', 'hours', 'day', 'days'/);
+    test.done();
+  },
+
   'rule with physical name'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();

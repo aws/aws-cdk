@@ -116,6 +116,14 @@ describe('CDK Include', () => {
     );
   });
 
+  test('accepts booleans for properties with type string', () => {
+    includeTestTemplate(stack, 'boolean-for-string.json');
+
+    expect(stack).toMatchTemplate(
+      loadTestFileToJsObject('boolean-for-string.json'),
+    );
+  });
+
   test('correctly changes the logical IDs, including references, if imported with preserveLogicalIds=false', () => {
     const cfnTemplate = includeTestTemplate(stack, 'bucket-with-encryption-key.json', {
       preserveLogicalIds: false,

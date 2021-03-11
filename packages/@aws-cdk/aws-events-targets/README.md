@@ -89,3 +89,72 @@ const rule = new events.Rule(this, 'rule', {
 
 rule.addTarget(new targets.CloudWatchLogGroup(logGroup));
 ```
+
+## Trigger a CodeBuild project
+
+Use the `CodeBuildProject` target to trigger a CodeBuild project.
+
+The code snippet below creates a CodeCommit repository that triggers a CodeBuild project
+on commit to the master branch. You can optionally attach a
+[dead letter queue](https://docs.aws.amazon.com/eventbridge/latest/userguide/rule-dlq.html).
+
+```ts
+import * as codebuild from '@aws-sdk/aws-codebuild';
+import * as codecommit from '@aws-sdk/aws-codecommit';
+import * as sqs from '@aws-sdk/aws-sqs';
+import * as targets from "@aws-cdk/aws-events-targets";
+
+const repo = new codecommit.Repository(this, 'MyRepo', {
+  repositoryName: 'aws-cdk-codebuild-events',
+});
+
+const project = new codebuild.Project(this, 'MyProject', {
+  source: codebuild.Source.codeCommit({ repository: repo }),
+});
+
+const deadLetterQueue = new sqs.Queue(this, 'DeadLetterQueue');
+
+// trigger a build when a commit is pushed to the repo
+const onCommitRule = repo.onCommit('OnCommit', {
+  target: new targets.CodeBuildProject(project, {
+    deadLetterQueue: deadLetterQueue,
+  }),
+  branches: ['master'],
+});
+```
+
+## Trigger a State Machine
+
+Use the `SfnStateMachine` target to trigger a State Machine.
+
+The code snippet below creates a Simple StateMachine that is triggered every minute with a
+dummy object as input.
+You can optionally attach a
+[dead letter queue](https://docs.aws.amazon.com/eventbridge/latest/userguide/rule-dlq.html)
+to the target.
+
+```ts
+import * as iam from '@aws-sdk/aws-iam';
+import * as sqs from '@aws-sdk/aws-sqs';
+import * as sfn from '@aws-cdk/aws-stepfunctions';
+import * as targets from "@aws-cdk/aws-events-targets";
+
+const rule = new events.Rule(stack, 'Rule', {
+  schedule: events.Schedule.rate(cdk.Duration.minutes(1)),
+});
+
+const dlq = new sqs.Queue(stack, 'DeadLetterQueue');
+
+const role = new iam.Role(stack, 'Role', {
+  assumedBy: new iam.ServicePrincipal('events.amazonaws.com'),
+});
+const stateMachine = new sfn.StateMachine(stack, 'SM', {
+  definition: new sfn.Wait(stack, 'Hello', { time: sfn.WaitTime.duration(cdk.Duration.seconds(10)) }),
+  role,
+});
+
+rule.addTarget(new targets.SfnStateMachine(stateMachine, {
+  input: events.RuleTargetInput.fromObject({ SomeParam: 'SomeValue' }),
+  deadLetterQueue: dlq,
+}));
+```

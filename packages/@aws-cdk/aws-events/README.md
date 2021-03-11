@@ -83,6 +83,7 @@ onCommitRule.addTarget(new targets.SnsTopic(topic, {
 ## Scheduling
 
 You can configure a Rule to run on a schedule (cron or rate).
+Rate must be specified in minutes, hours or days.
 
 The following example runs a task every day at 4am:
 
@@ -185,4 +186,18 @@ bus.archive('MyArchive', {
   },
   retention: cdk.Duration.days(365),
 });
+```
+
+## Granting PutEvents to an existing EventBus
+
+To import an existing EventBus into your CDK application, use `EventBus.fromEventBusArn` or `EventBus.fromEventBusAttributes`
+factory method.
+
+Then, you can use the `grantPutEventsTo` method to grant `event:PutEvents` to the eventBus.
+
+```ts
+const eventBus = EventBus.fromEventBusArn(this, 'ImportedEventBus', 'arn:aws:events:us-east-1:111111111:event-bus/my-event-bus');
+
+// now you can just call methods on the eventbus
+eventBus.grantPutEventsTo(lambdaFunction);
 ```
