@@ -140,6 +140,32 @@ router.addRoute('route-3', {
   }),
 });
 
+router.addRoute('route-http2-retry', {
+  routeSpec: appmesh.RouteSpec.http2({
+    weightedTargets: [{ virtualNode: node3 }],
+    retryPolicy: {
+      httpRetryEvents: [appmesh.HttpRetryEvent.CLIENT_ERROR],
+      tcpRetryEvents: [appmesh.TcpRetryEvent.CONNECTION_ERROR],
+      retryAttempts: 5,
+      retryTimeout: cdk.Duration.seconds(1),
+    },
+  }),
+});
+
+router.addRoute('route-grpc-retry', {
+  routeSpec: appmesh.RouteSpec.grpc({
+    weightedTargets: [{ virtualNode: node3 }],
+    match: { serviceName: 'servicename' },
+    retryPolicy: {
+      grpcRetryEvents: [appmesh.GrpcRetryEvent.DEADLINE_EXCEEDED],
+      httpRetryEvents: [appmesh.HttpRetryEvent.CLIENT_ERROR],
+      tcpRetryEvents: [appmesh.TcpRetryEvent.CONNECTION_ERROR],
+      retryAttempts: 5,
+      retryTimeout: cdk.Duration.seconds(1),
+    },
+  }),
+});
+
 const gateway = mesh.addVirtualGateway('gateway1', {
   accessLog: appmesh.AccessLog.fromFilePath('/dev/stdout'),
   virtualGatewayName: 'gateway1',
