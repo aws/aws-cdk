@@ -206,6 +206,12 @@ export interface GraphWidgetProps extends MetricWidgetProps {
    */
   readonly liveData?: boolean;
 
+  /**
+   * The period for the graph
+   *
+   * @default Duration.minutes(5)
+   */
+  readonly period?: cdk.Duration;
 
   /**
    * Display this metric
@@ -230,6 +236,10 @@ export class GraphWidget extends ConcreteWidget {
     this.props = props;
     this.leftMetrics = props.left ?? [];
     this.rightMetrics = props.right ?? [];
+
+    if (this.props.period !== undefined && this.props.period.toSeconds() % 60 !== 0) {
+      throw new Error(`'period' must be a multiple of 60 seconds`);
+    }
   }
 
   /**
@@ -276,6 +286,7 @@ export class GraphWidget extends ConcreteWidget {
         },
         legend: this.props.legendPosition !== undefined ? { position: this.props.legendPosition } : undefined,
         liveData: this.props.liveData,
+        period: this.props.period !== undefined ? this.props.period.toSeconds() : undefined,
       },
     }];
   }

@@ -1,4 +1,4 @@
-import { Stack } from '@aws-cdk/core';
+import { Duration, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import { Alarm, AlarmWidget, Color, GraphWidget, GraphWidgetView, LegendPosition, LogQueryWidget, Metric, Shading, SingleValueWidget, LogQueryVisualizationType } from '../lib';
 
@@ -508,6 +508,51 @@ export = {
         yAxis: {},
       },
     }]);
+
+    test.done();
+  },
+
+  'specify period property on graph'(test: Test) {
+    // WHEN
+    const stack = new Stack();
+    const widget = new GraphWidget({
+      title: 'My custom period graph',
+      left: [
+        new Metric({ namespace: 'CDK', metricName: 'Test' }),
+      ],
+      period: Duration.minutes(1),
+    });
+
+    // THEN
+    test.deepEqual(stack.resolve(widget.toJson()), [{
+      type: 'metric',
+      width: 6,
+      height: 6,
+      properties: {
+        view: 'timeSeries',
+        title: 'My live graph',
+        region: { Ref: 'AWS::Region' },
+        metrics: [
+          ['CDK', 'Test'],
+        ],
+        yAxis: {},
+        period: 60,
+      },
+    }]);
+
+    test.done();
+  },
+
+  'cannot use invalid period in GraphWidget'(test: Test) {
+    test.throws(() => {
+      new GraphWidget({
+        title: 'My invalid custom period graph',
+        left: [
+          new Metric({ namespace: 'CDK', metricName: 'Test' }),
+        ],
+        period: Duration.seconds(30),
+      });
+    }, /'period' must be a multiple of 60 seconds/);
 
     test.done();
   },
