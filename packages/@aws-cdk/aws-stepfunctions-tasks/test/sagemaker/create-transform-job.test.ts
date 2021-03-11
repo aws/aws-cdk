@@ -138,7 +138,7 @@ test('create complex transform job', () => {
       inputFilter: '$[1:]',
       joinSource: 'Input',
       outputFilter: '$[0,-1]',
-    }
+    },
   });
 
   // THEN

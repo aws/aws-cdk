@@ -194,8 +194,8 @@ export class SageMakerCreateTransformJob extends sfn.TaskStateBase {
         InputFilter: dataProcessing.inputFilter,
         JoinSource: dataProcessing.joinSource,
         OutputFilter: dataProcessing.outputFilter,
-      }
-    }
+      },
+    };
   }
 
   private renderModelClientOptions(options: ModelClientOptions): { [key: string]: any } {
