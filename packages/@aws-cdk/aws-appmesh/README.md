@@ -320,6 +320,50 @@ router.addRoute('route-http', {
 });
 ```
 
+Add an http2 route with retries:
+
+```ts
+router.addRoute('route-http2-retry', {
+  routeSpec: appmesh.RouteSpec.http2({
+    weightedTargets: [{ virtualNode: node }],
+    retryPolicy: {
+      // Retry if the connection failed
+      tcpRetryEvents: [appmesh.TcpRetryEvent.CONNECTION_ERROR],
+      // Retry if HTTP responds with a gateway error (502, 503, 504)
+      httpRetryEvents: [appmesh.HttpRetryEvent.GATEWAY_ERROR],
+      // Retry five times
+      retryAttempts: 5,
+      // Use a 1 second timeout per retry
+      retryTimeout: cdk.Duration.seconds(1),
+    },
+  }),
+});
+```
+
+Add a gRPC route with retries:
+
+```ts
+router.addRoute('route-grpc-retry', {
+  routeSpec: appmesh.RouteSpec.grpc({
+    weightedTargets: [{ virtualNode: node }],
+    match: { serviceName: 'servicename' },
+    retryPolicy: {
+      tcpRetryEvents: [appmesh.TcpRetryEvent.CONNECTION_ERROR],
+      httpRetryEvents: [appmesh.HttpRetryEvent.GATEWAY_ERROR],
+      // Retry if gRPC responds that the request was cancelled, a resource
+      // was exhausted, or if the service is unavailable
+      grpcRetryEvents: [
+        appmesh.GrpcRetryEvent.CANCELLED,
+        appmesh.GrpcRetryEvent.RESOURCE_EXHAUSTED,
+        appmesh.GrpcRetryEvent.UNAVAILABLE,
+      ],
+      retryAttempts: 5,
+      retryTimeout: cdk.Duration.seconds(1),
+    },
+  }),
+});
+```
+
 The _RouteSpec_ class provides an easy interface for defining new protocol specific route specs.
 The `tcp()`, `http()` and `http2()` methods provide the spec necessary to define a protocol specific spec.
 
