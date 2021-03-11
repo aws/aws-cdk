@@ -602,6 +602,27 @@ export abstract class BaseService extends Resource
   }
 
   /**
+   * Associates this service with a CloudMap service
+   */
+  public associateCloudMapService(options: AssociateCloudMapServiceOptions): void {
+    const service = options.service;
+
+    const { containerName, containerPort } = determineContainerNameAndPort({
+      taskDefinition: this.taskDefinition,
+      dnsRecordType: service.dnsRecordType,
+      container: options.container,
+      containerPort: options.containerPort,
+    });
+
+    // add Cloudmap service to the ECS Service's serviceRegistry
+    this.addServiceRegistry({
+      arn: service.serviceArn,
+      containerName,
+      containerPort,
+    });
+  }
+
+  /**
    * This method returns the specified CloudWatch metric name for this service.
    */
   public metric(metricName: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
@@ -748,6 +769,10 @@ export abstract class BaseService extends Resource
    * Associate Service Discovery (Cloud Map) service
    */
   private addServiceRegistry(registry: ServiceRegistry) {
+    if (this.serviceRegistries.length >= 1) {
+      throw new Error('Cannot associate with the given service discovery registry. ECS supports at most one service registry per service.');
+    }
+
     const sr = this.renderServiceRegistry(registry);
     this.serviceRegistries.push(sr);
   }
@@ -802,6 +827,28 @@ export interface CloudMapOptions {
    * NOTE: This is used for HealthCheckCustomConfig
    */
   readonly failureThreshold?: number;
+
+  /**
+   * The container to point to for a SRV record.
+   * @default - the task definition's default container
+   */
+  readonly container?: ContainerDefinition;
+
+  /**
+   * The port to point to for a SRV record.
+   * @default - the default port of the task definition's default container
+   */
+  readonly containerPort?: number;
+}
+
+/**
+ * The options for using a cloudmap service.
+ */
+export interface AssociateCloudMapServiceOptions {
+  /**
+   * The cloudmap service to register with.
+   */
+  readonly service: cloudmap.IService;
 
   /**
    * The container to point to for a SRV record.
