@@ -50,22 +50,22 @@
     "outdir": "dist",
     "targets": {
       "dotnet": {
-        "namespace": "Amazon.CDK.Lib",
+        "namespace": "Amazon.CDK",
         "packageId": "Amazon.CDK.Lib",
         "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png",
         "versionSuffix": "-devpreview"
       },
       "java": {
-        "package": "software.amazon.awscdk.lib",
+        "package": "software.amazon.awscdk.core",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "lib",
+          "artifactId": "aws-cdk-lib",
           "versionSuffix": ".DEVPREVIEW"
         }
       },
       "python": {
-        "distName": "aws-cdk.lib",
-        "module": "aws_cdk.lib"
+        "distName": "aws-cdk-lib",
+        "module": "aws_cdk"
       }
     },
     "projectReferences": false
@@ -247,6 +247,7 @@
     "@aws-cdk/aws-s3-assets": "0.0.0",
     "@aws-cdk/aws-s3-deployment": "0.0.0",
     "@aws-cdk/aws-s3-notifications": "0.0.0",
+    "@aws-cdk/aws-s3outposts": "0.0.0",
     "@aws-cdk/aws-sagemaker": "0.0.0",
     "@aws-cdk/aws-sam": "0.0.0",
     "@aws-cdk/aws-sdb": "0.0.0",
