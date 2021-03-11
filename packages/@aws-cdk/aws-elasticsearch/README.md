@@ -76,12 +76,12 @@ logging the domain logs and slow search logs.
 
 ## A note about SLR
 
-Some cluster configurations require the existence of the [`AWSServiceRoleForAmazonElasticsearchService`](https://docs.aws.amazon.com/elasticsearch-service/latest/developerguide/slr-es.html) Service-Linked Role.
+Some cluster configurations (e.g VPC access) require the existence of the [`AWSServiceRoleForAmazonElasticsearchService`](https://docs.aws.amazon.com/elasticsearch-service/latest/developerguide/slr-es.html) Service-Linked Role.
 
 When performing such operations via the AWS Console, this SLR is created automatically when needed. However, this is not the behavior when using CloudFormation. If an SLR is needed, but doesn't exist, you will encounter a failure message simlar to:
 
 ```console
-Before you can proceed, you must enable a service-linked role to give Amazon ES permissions to associate your certificate
+Before you can proceed, you must enable a service-linked role to give Amazon ES...
 ```
 
 To resolve this, you need to create the SLR. You can either do this [manually](https://docs.aws.amazon.com/IAM/latest/UserGuide/using-service-linked-roles.html#create-service-linked-role), or using the CDK:
