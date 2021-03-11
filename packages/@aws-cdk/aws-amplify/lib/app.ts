@@ -289,6 +289,7 @@ export class App extends Resource implements IApp, iam.IGrantable {
     return new Domain(this, id, {
       ...options,
       app: this,
+      autoSubDomainIamRole: this.grantPrincipal as iam.IRole,
     });
   }
 }

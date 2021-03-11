@@ -262,6 +262,101 @@ nodeunitShim({
       test.done();
     },
 
+    'with user-provided cloudmap service'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
+
+      const container = taskDefinition.addContainer('web', {
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+        memoryLimitMiB: 512,
+      });
+      container.addPortMappings({ containerPort: 8000 });
+
+      const cloudMapNamespace = new cloudmap.PrivateDnsNamespace(stack, 'TestCloudMapNamespace', {
+        name: 'scorekeep.com',
+        vpc,
+      });
+
+      const cloudMapService = new cloudmap.Service(stack, 'Service', {
+        name: 'service-name',
+        namespace: cloudMapNamespace,
+        dnsRecordType: cloudmap.DnsRecordType.SRV,
+      });
+
+      const ecsService = new ecs.FargateService(stack, 'FargateService', {
+        cluster,
+        taskDefinition,
+      });
+
+      // WHEN
+      ecsService.associateCloudMapService({
+        service: cloudMapService,
+        container: container,
+        containerPort: 8000,
+      });
+
+      // THEN
+      expect(stack).to(haveResource('AWS::ECS::Service', {
+        ServiceRegistries: [
+          {
+            ContainerName: 'web',
+            ContainerPort: 8000,
+            RegistryArn: { 'Fn::GetAtt': ['ServiceDBC79909', 'Arn'] },
+          },
+        ],
+      }));
+
+      test.done();
+    },
+
+    'errors when more than one service registry used'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
+
+      const container = taskDefinition.addContainer('web', {
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+        memoryLimitMiB: 512,
+      });
+      container.addPortMappings({ containerPort: 8000 });
+
+      const cloudMapNamespace = new cloudmap.PrivateDnsNamespace(stack, 'TestCloudMapNamespace', {
+        name: 'scorekeep.com',
+        vpc,
+      });
+
+      const ecsService = new ecs.FargateService(stack, 'FargateService', {
+        cluster,
+        taskDefinition,
+      });
+
+      ecsService.enableCloudMap({
+        cloudMapNamespace,
+      });
+
+      const cloudMapService = new cloudmap.Service(stack, 'Service', {
+        name: 'service-name',
+        namespace: cloudMapNamespace,
+        dnsRecordType: cloudmap.DnsRecordType.SRV,
+      });
+
+      // WHEN / THEN
+      test.throws(() => {
+        ecsService.associateCloudMapService({
+          service: cloudMapService,
+          container: container,
+          containerPort: 8000,
+        });
+      }, /at most one service registry/i);
+
+      test.done();
+    },
+
     'with all properties set'(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();
@@ -1830,6 +1925,52 @@ nodeunitShim({
             'Id',
           ],
         },
+      }));
+
+      test.done();
+    },
+
+    'user can select any container and port'(test: Test) {
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+
+      cluster.addDefaultCloudMapNamespace({
+        name: 'foo.com',
+        type: cloudmap.NamespaceType.DNS_PRIVATE,
+      });
+
+      const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
+      const mainContainer = taskDefinition.addContainer('MainContainer', {
+        image: ecs.ContainerImage.fromRegistry('hello'),
+        memoryLimitMiB: 512,
+      });
+      mainContainer.addPortMappings({ containerPort: 8000 });
+
+      const otherContainer = taskDefinition.addContainer('OtherContainer', {
+        image: ecs.ContainerImage.fromRegistry('hello'),
+        memoryLimitMiB: 512,
+      });
+      otherContainer.addPortMappings({ containerPort: 8001 });
+
+      new ecs.FargateService(stack, 'Service', {
+        cluster,
+        taskDefinition,
+        cloudMapOptions: {
+          dnsRecordType: cloudmap.DnsRecordType.SRV,
+          container: otherContainer,
+          containerPort: 8001,
+        },
+      });
+
+      expect(stack).to(haveResourceLike('AWS::ECS::Service', {
+        ServiceRegistries: [
+          {
+            RegistryArn: { 'Fn::GetAtt': ['ServiceCloudmapService046058A4', 'Arn'] },
+            ContainerName: 'OtherContainer',
+            ContainerPort: 8001,
+          },
+        ],
       }));
 
       test.done();
