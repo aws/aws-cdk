@@ -29,12 +29,10 @@ export = {
         const node = new appmesh.VirtualNode(stack, 'test-node', {
           mesh,
           serviceDiscovery: appmesh.ServiceDiscovery.dns('test'),
-          backends: [appmesh.Backend.virtualService({
-            virtualService: service1,
-          })],
+          backends: [appmesh.Backend.virtualService(service1)],
         });
 
-        node.addBackend(appmesh.Backend.virtualService({ virtualService: service2 }));
+        node.addBackend(appmesh.Backend.virtualService(service2));
 
         // THEN
         expect(stack).to(haveResourceLike('AWS::AppMesh::VirtualNode', {
@@ -326,8 +324,7 @@ export = {
           virtualServiceProvider: appmesh.VirtualServiceProvider.none(mesh),
         });
 
-        node.addBackend(appmesh.Backend.virtualService({
-          virtualService: service1,
+        node.addBackend(appmesh.Backend.virtualService(service1, {
           clientPolicy: appmesh.ClientPolicy.fileTrust({
             certificateChain: 'path-to-certificate',
             ports: [8080, 8081],

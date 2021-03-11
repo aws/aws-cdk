@@ -212,10 +212,6 @@ export interface BackendDefaults {
  * Represents the properties needed to define a Virtual Service backend
  */
 export interface VirtualServiceBackendOptions {
-  /**
-   * The Virtual Service this backend points to
-   */
-  readonly virtualService: IVirtualService;
 
   /**
    * Client policy for the backend
@@ -243,8 +239,8 @@ export abstract class Backend {
   /**
    * Construct a Virtual Service backend
    */
-  public static virtualService(props: VirtualServiceBackendOptions): Backend {
-    return new VirtualServiceBackend(props.virtualService, props.clientPolicy);
+  public static virtualService(virtualService: IVirtualService, props: VirtualServiceBackendOptions = {}): Backend {
+    return new VirtualServiceBackend(virtualService, props.clientPolicy);
   }
 
   /**

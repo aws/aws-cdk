@@ -270,9 +270,7 @@ export = {
           listeners: [appmesh.VirtualNodeListener.http({
             port: 8080,
           })],
-          backends: [appmesh.Backend.virtualService({
-            virtualService: service1,
-          })],
+          backends: [appmesh.Backend.virtualService(service1)],
         });
 
         // THEN
