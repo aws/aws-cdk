@@ -41,7 +41,7 @@ export interface HttpRouteMatch {
    *
    * @default - do not match on headers
    */
-  readonly headers?: HeaderMatch[];
+  readonly headers?: HttpHeaderMatch[];
 
   /**
    * The HTTP client request method to match on.
@@ -126,7 +126,7 @@ export enum HttpRouteProtocol {
 /**
  * Configuration for `HeaderMatch`
  */
-export interface HeaderMatchConfig {
+export interface HttpHeaderMatchConfig {
   /**
    * The HTTP route header.
    */
@@ -136,15 +136,15 @@ export interface HeaderMatchConfig {
 /**
  * Used to generate header matching methods.
  */
-export abstract class HeaderMatch {
+export abstract class HttpHeaderMatch {
   /**
    * The value of the header with the given name in the request must match the
    * specified value exactly.
    *
-   * @param headerName Test against the value of this HTTP request header
+   * @param headerName the name of the HTTP header to match against
    * @param headerValue The exact value to test against
    */
-  static valueIs(headerName: string, headerValue: string): HeaderMatch {
+  static valueIs(headerName: string, headerValue: string): HttpHeaderMatch {
     return new HeaderMatchImpl(headerName, false, { exact: headerValue });
   }
 
@@ -152,10 +152,10 @@ export abstract class HeaderMatch {
    * The value of the header with the given name in the request must not match
    * the specified value exactly.
    *
-   * @param headerName Test against the value of this HTTP request header
+   * @param headerName the name of the HTTP header to match against
    * @param headerValue The exact value to test against
    */
-  static valueIsNot(headerName: string, headerValue: string): HeaderMatch {
+  static valueIsNot(headerName: string, headerValue: string): HttpHeaderMatch {
     return new HeaderMatchImpl(headerName, true, { exact: headerValue });
   }
 
@@ -163,10 +163,10 @@ export abstract class HeaderMatch {
    * The value of the header with the given name in the request must start with
    * the specified characters.
    *
-   * @param headerName Test against the value of this HTTP request header
+   * @param headerName the name of the HTTP header to match against
    * @param prefix The prefix to test against
    */
-  static valueStartsWith(headerName: string, prefix: string): HeaderMatch {
+  static valueStartsWith(headerName: string, prefix: string): HttpHeaderMatch {
     return new HeaderMatchImpl(headerName, false, { prefix });
   }
 
@@ -174,10 +174,10 @@ export abstract class HeaderMatch {
    * The value of the header with the given name in the request must not start
    * with the specified characters.
    *
-   * @param headerName Test against the value of this HTTP request header
+   * @param headerName the name of the HTTP header to match against
    * @param prefix The prefix to test against
    */
-  static valueDoesNotStartWith(headerName: string, prefix: string): HeaderMatch {
+  static valueDoesNotStartWith(headerName: string, prefix: string): HttpHeaderMatch {
     return new HeaderMatchImpl(headerName, true, { prefix });
   }
 
@@ -185,10 +185,10 @@ export abstract class HeaderMatch {
    * The value of the header with the given name in the request must end with
    * the specified characters.
    *
-   * @param headerName Test against the value of this HTTP request header
+   * @param headerName the name of the HTTP header to match against
    * @param suffix The suffix to test against
    */
-  static valueEndsWith(headerName: string, suffix: string): HeaderMatch {
+  static valueEndsWith(headerName: string, suffix: string): HttpHeaderMatch {
     return new HeaderMatchImpl(headerName, false, { suffix });
   }
 
@@ -196,10 +196,10 @@ export abstract class HeaderMatch {
    * The value of the header with the given name in the request must not end
    * with the specified characters.
    *
-   * @param headerName Test against the value of this HTTP request header
+   * @param headerName the name of the HTTP header to match against
    * @param suffix The suffix to test against
    */
-  static valueDoesNotEndWith(headerName: string, suffix: string): HeaderMatch {
+  static valueDoesNotEndWith(headerName: string, suffix: string): HttpHeaderMatch {
     return new HeaderMatchImpl(headerName, true, { suffix });
   }
 
@@ -207,10 +207,10 @@ export abstract class HeaderMatch {
    * The value of the header with the given name in the request must include
    * the specified characters.
    *
-   * @param headerName Test against the value of this HTTP request header
+   * @param headerName the name of the HTTP header to match against
    * @param regex The regex to test against
    */
-  static valueMatchesRegex(headerName: string, regex: string): HeaderMatch {
+  static valueMatchesRegex(headerName: string, regex: string): HttpHeaderMatch {
     return new HeaderMatchImpl(headerName, false, { regex });
   }
 
@@ -218,10 +218,10 @@ export abstract class HeaderMatch {
    * The value of the header with the given name in the request must not
    * include the specified characters.
    *
-   * @param headerName Test against the value of this HTTP request header
+   * @param headerName the name of the HTTP header to match against
    * @param regex The regex to test against
    */
-  static valueDoesNotMatchRegex(headerName: string, regex: string): HeaderMatch {
+  static valueDoesNotMatchRegex(headerName: string, regex: string): HttpHeaderMatch {
     return new HeaderMatchImpl(headerName, true, { regex });
   }
 
@@ -229,11 +229,11 @@ export abstract class HeaderMatch {
    * The value of the header with the given name in the request must be in a
    * range of values.
    *
-   * @param headerName Test against the value of this HTTP request header
+   * @param headerName the name of the HTTP header to match against
    * @param start Match on values starting at and including this value
    * @param end Match on values up to but not including this value
    */
-  static valuesIsInRange(headerName: string, start: number, end: number): HeaderMatch {
+  static valuesIsInRange(headerName: string, start: number, end: number): HttpHeaderMatch {
     return new HeaderMatchImpl(headerName, false, {
       range: {
         start,
@@ -246,11 +246,11 @@ export abstract class HeaderMatch {
    * The value of the header with the given name in the request must not be in
    * a range of values.
    *
-   * @param headerName Test against the value of this HTTP request header
+   * @param headerName the name of the HTTP header to match against
    * @param start Match on values starting at and including this value
    * @param end Match on values up to but not including this value
    */
-  static valuesIsNotInRange(headerName: string, start: number, end: number): HeaderMatch {
+  static valuesIsNotInRange(headerName: string, start: number, end: number): HttpHeaderMatch {
     return new HeaderMatchImpl(headerName, true, {
       range: {
         start,
@@ -262,10 +262,10 @@ export abstract class HeaderMatch {
   /**
    * Returns the header match configuration.
    */
-  abstract bind(scope: Construct): HeaderMatchConfig;
+  abstract bind(scope: Construct): HttpHeaderMatchConfig;
 }
 
-class HeaderMatchImpl extends HeaderMatch {
+class HeaderMatchImpl extends HttpHeaderMatch {
   constructor(
     private readonly headerName: string,
     private readonly invert: boolean,
@@ -274,7 +274,7 @@ class HeaderMatchImpl extends HeaderMatch {
     super();
   }
 
-  bind(_scope: Construct): HeaderMatchConfig {
+  bind(_scope: Construct): HttpHeaderMatchConfig {
     return {
       httpRouteHeader: {
         name: this.headerName,

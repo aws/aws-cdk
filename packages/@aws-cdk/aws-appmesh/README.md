@@ -309,13 +309,13 @@ router.addRoute('route-http2', {
       },
     ],
     match: {
-      prefixPath: '/path-to-app',
+      prefixPath: '/',
       method: appmesh.HttpRouteMatchMethod.POST,
-      scheme: appmesh.HttpRouteMatchScheme.HTTPS,
+      protocol: appmesh.HttpRouteProtocol.HTTPS,
       headers: [
         // All specified headers must match for the route to match.
-        appmesh.HeaderMatch.valueStartsWith('Content-Type', 'application/json'),
-        appmesh.HeaderMatch.valueIsNot('Content-Type', 'application/json+unsupported'),
+        appmesh.HttpHeaderMatch.valueIs('Content-Type', 'application/json'),
+        appmesh.HttpHeaderMatch.valueIsNot('Content-Type', 'application/json'),
       ]
     },
   }),
