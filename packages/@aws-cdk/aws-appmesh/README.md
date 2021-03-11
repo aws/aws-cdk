@@ -232,9 +232,7 @@ const virtualService = new appmesh.VirtualService(stack, 'service-1', {
   }),
 });
 
-node.addBackend(appmesh.Backend.virtualService({
-  virtualService: virtualService,
-}));
+node.addBackend(appmesh.Backend.virtualService(virtualService));
 ```
 
 The `listeners` property can be left blank and added later with the `node.addListener()` method. The `healthcheck` and `timeout` properties are optional but if specifying a listener, the `port` must be added.
