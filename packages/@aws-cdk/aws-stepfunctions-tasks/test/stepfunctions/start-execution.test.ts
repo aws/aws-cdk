@@ -12,7 +12,42 @@ beforeEach(() => {
   });
 });
 
-test('Execute State Machine - Default - Request Response', () => {
+test('Execute State Machine - Default - Request Response Default Input', () => {
+  const task = new StepFunctionsStartExecution(stack, 'ChildTask', {
+    stateMachine: child,
+    name: 'myExecutionName',
+  });
+
+  new sfn.StateMachine(stack, 'ParentStateMachine', {
+    definition: task,
+  });
+
+  expect(stack.resolve(task.toStateJson())).toEqual({
+    Type: 'Task',
+    Resource: {
+      'Fn::Join': [
+        '',
+        [
+          'arn:',
+          {
+            Ref: 'AWS::Partition',
+          },
+          ':states:::states:startExecution',
+        ],
+      ],
+    },
+    End: true,
+    Parameters: {
+      'Input.$': '$',
+      'Name': 'myExecutionName',
+      'StateMachineArn': {
+        Ref: 'ChildStateMachine9133117F',
+      },
+    },
+  });
+});
+
+test('Execute State Machine - Default - Request Response Specified Input', () => {
   const task = new StepFunctionsStartExecution(stack, 'ChildTask', {
     stateMachine: child,
     input: sfn.TaskInput.fromObject({
@@ -50,6 +85,17 @@ test('Execute State Machine - Default - Request Response', () => {
       },
     },
   });
+});
+
+test('Execute State Machine - Default - Request Response Invalid Input Type', () => {
+  expect(() => {
+    new StepFunctionsStartExecution(stack, 'ChildTask', {
+      input: sfn.TaskInput.fromObject({
+        foo: 'bar',
+      }).value,
+      stateMachine: child,
+    });
+  }).toThrow('StepFunctionsStartExecution `input` must be of type `TaskInput`.');
 });
 
 test('Execute State Machine - Run Job', () => {

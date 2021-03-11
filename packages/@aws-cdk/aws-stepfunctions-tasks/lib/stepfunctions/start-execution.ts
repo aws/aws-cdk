@@ -52,6 +52,10 @@ export class StepFunctionsStartExecution extends sfn.TaskStateBase {
   constructor(scope: Construct, id: string, private readonly props: StepFunctionsStartExecutionProps) {
     super(scope, id, props);
 
+    if (props.input && !(props.input instanceof sfn.TaskInput)) {
+      throw new Error('StepFunctionsStartExecution `input` must be of type `TaskInput`.');
+    }
+
     this.integrationPattern = props.integrationPattern || sfn.IntegrationPattern.REQUEST_RESPONSE;
     validatePatternSupported(this.integrationPattern, StepFunctionsStartExecution.SUPPORTED_INTEGRATION_PATTERNS);
 
