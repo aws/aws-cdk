@@ -62,7 +62,6 @@ export = {
     });
 
     // THEN
-<<<<<<< HEAD
     expect(stack).to(countResources('AWS::IAM::Role', 1));
     expect(stack).to(haveResourceLike('AWS::Logs::SubscriptionFilter', {
       RoleArn: {
@@ -72,9 +71,6 @@ export = {
         ],
       },
     }));
-=======
-    expect(stack).to(haveResource('AWS::IAM::Role'));
->>>>>>> b0906bee5b2098e752ee62158c991e8bfc5a7751
 
     test.done();
   },
