@@ -140,6 +140,29 @@ router.addRoute('route-3', {
   }),
 });
 
+router.addRoute('route-matching', {
+  routeSpec: appmesh.RouteSpec.http2({
+    weightedTargets: [{ virtualNode: node3 }],
+    match: {
+      prefixPath: '/',
+      method: appmesh.HttpRouteMatchMethod.POST,
+      protocol: appmesh.HttpRouteProtocol.HTTPS,
+      headers: [
+        appmesh.HttpHeaderMatch.valueIs('Content-Type', 'application/json'),
+        appmesh.HttpHeaderMatch.valueStartsWith('Content-Type', 'application/json'),
+        appmesh.HttpHeaderMatch.valueEndsWith('Content-Type', 'application/json'),
+        appmesh.HttpHeaderMatch.valueMatchesRegex('Content-Type', 'application/.*'),
+        appmesh.HttpHeaderMatch.valuesIsInRange('Content-Type', 1, 5),
+        appmesh.HttpHeaderMatch.valueIsNot('Content-Type', 'application/json'),
+        appmesh.HttpHeaderMatch.valueDoesNotStartWith('Content-Type', 'application/json'),
+        appmesh.HttpHeaderMatch.valueDoesNotEndWith('Content-Type', 'application/json'),
+        appmesh.HttpHeaderMatch.valueDoesNotMatchRegex('Content-Type', 'application/.*'),
+        appmesh.HttpHeaderMatch.valuesIsNotInRange('Content-Type', 1, 5),
+      ],
+    },
+  }),
+});
+
 router.addRoute('route-http2-retry', {
   routeSpec: appmesh.RouteSpec.http2({
     weightedTargets: [{ virtualNode: node3 }],
@@ -149,6 +172,13 @@ router.addRoute('route-http2-retry', {
       retryAttempts: 5,
       retryTimeout: cdk.Duration.seconds(1),
     },
+  }),
+});
+
+router.addRoute('route-5', {
+  routeSpec: appmesh.RouteSpec.http2({
+    priority: 10,
+    weightedTargets: [{ virtualNode: node2 }],
   }),
 });
 
