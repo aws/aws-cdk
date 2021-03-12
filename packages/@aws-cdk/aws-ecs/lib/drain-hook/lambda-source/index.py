@@ -48,8 +48,6 @@ def container_instance_arn(cluster, instance_id):
 def container_instance_task_arns(cluster, instance_arn):
   """Fetch tasks for a container instance ARN."""
   arns = ecs.list_tasks(cluster=cluster, containerInstance=instance_arn)['taskArns']
-  if not arns:
-    return None
   return arns
 
 def has_tasks(cluster, instance_arn, task_arns):
