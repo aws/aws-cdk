@@ -36,16 +36,15 @@ const node = mesh.addVirtualNode('node', {
       path: '/check-path',
     },
   })],
-  backends: [
-    virtualService,
-  ],
+  backends: [appmesh.Backend.virtualService(virtualService)],
 });
 
-node.addBackend(new appmesh.VirtualService(stack, 'service-2', {
-  virtualServiceName: 'service2.domain.local',
-  virtualServiceProvider: appmesh.VirtualServiceProvider.none(mesh),
-}),
-);
+node.addBackend(appmesh.Backend.virtualService(
+  new appmesh.VirtualService(stack, 'service-2', {
+    virtualServiceName: 'service2.domain.local',
+    virtualServiceProvider: appmesh.VirtualServiceProvider.none(mesh),
+  }),
+));
 
 router.addRoute('route-1', {
   routeSpec: appmesh.RouteSpec.http({
@@ -78,15 +77,17 @@ const node2 = mesh.addVirtualNode('node2', {
       unhealthyThreshold: 2,
     },
   })],
-  backendsDefaultClientPolicy: appmesh.ClientPolicy.fileTrust({
-    certificateChain: 'path/to/cert',
-  }),
-  backends: [
+  backendDefaults: {
+    clientPolicy: appmesh.ClientPolicy.fileTrust({
+      certificateChain: 'path/to/cert',
+    }),
+  },
+  backends: [appmesh.Backend.virtualService(
     new appmesh.VirtualService(stack, 'service-3', {
       virtualServiceName: 'service3.domain.local',
       virtualServiceProvider: appmesh.VirtualServiceProvider.none(mesh),
     }),
-  ],
+  )],
 });
 
 const node3 = mesh.addVirtualNode('node3', {
@@ -102,9 +103,11 @@ const node3 = mesh.addVirtualNode('node3', {
       unhealthyThreshold: 2,
     },
   })],
-  backendsDefaultClientPolicy: appmesh.ClientPolicy.fileTrust({
-    certificateChain: 'path-to-certificate',
-  }),
+  backendDefaults: {
+    clientPolicy: appmesh.ClientPolicy.fileTrust({
+      certificateChain: 'path-to-certificate',
+    }),
+  },
   accessLog: appmesh.AccessLog.fromFilePath('/dev/stdout'),
 });
 
