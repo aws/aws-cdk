@@ -295,7 +295,7 @@ parallel.next(closeOrder);
 ### Succeed
 
 Reaching a `Succeed` state terminates the state machine execution with a
-succesful status.
+successful status.
 
 ```ts
 const success = new sfn.Succeed(this, 'We did it!');

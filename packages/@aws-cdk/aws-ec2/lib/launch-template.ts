@@ -646,7 +646,7 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
    */
   public get connections(): Connections {
     if (!this._connections) {
-      throw new Error('LaunchTemplate can only be used as IConnectable if a securityGroup is provided when contructing it.');
+      throw new Error('LaunchTemplate can only be used as IConnectable if a securityGroup is provided when constructing it.');
     }
     return this._connections;
   }
