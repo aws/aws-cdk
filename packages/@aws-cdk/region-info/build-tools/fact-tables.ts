@@ -140,6 +140,7 @@ export const APPMESH_ECR_ACCOUNTS: { [region: string]: string } = {
   'ap-east-1': '856666278305',
   'ap-northeast-1': '840364872350',
   'ap-northeast-2': '840364872350',
+  'ap-northeast-3': '840364872350',
   'ap-south-1': '840364872350',
   'ap-southeast-1': '840364872350',
   'ap-southeast-2': '840364872350',
