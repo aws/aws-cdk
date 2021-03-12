@@ -156,6 +156,24 @@ describe('tests', () => {
     });
   });
 
+  test('Can set a protocol version', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'Stack');
+    const vpc = new ec2.Vpc(stack, 'VPC', {});
+
+    // WHEN
+    new elbv2.ApplicationTargetGroup(stack, 'TargetGroup', {
+      vpc,
+      protocolVersion: elbv2.ApplicationProtocolVersion.GRPC,
+    });
+
+    // THEN
+    expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::TargetGroup', {
+      ProtocolVersion: 'GRPC',
+    });
+  });
+
   test('Bad stickiness cookie names', () => {
     // GIVEN
     const app = new cdk.App();
