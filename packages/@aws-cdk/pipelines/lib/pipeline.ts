@@ -376,7 +376,7 @@ class AssetPublishing extends CoreConstruct {
   private readonly MAX_PUBLISHERS_PER_STAGE = 50;
 
   private readonly publishers: Record<string, PublishAssetsAction> = {};
-  private readonly assetRoles: Record<string, iam.IRole> = {};
+  private readonly assetRoles: Record<string, iam.Role> = {};
   private readonly myCxAsmRoot: string;
 
   private readonly lastStageBeforePublishing?: codepipeline.IStage;
@@ -432,6 +432,12 @@ class AssetPublishing extends CoreConstruct {
         }));
       }
 
+      // TODO does this deduplicate?
+      this.assetRoles[command.assetType].addToPolicy(new iam.PolicyStatement({
+        actions: ['sts:AssumeRole'],
+        resources: [Fn.sub(command.publishRoleArn)],
+      }));
+
       // The asset ID would be a logical candidate for the construct path and project names, but if the asset
       // changes it leads to recreation of a number of Role/Policy/Project resources which is slower than
       // necessary. Number sequentially instead.
@@ -448,8 +454,8 @@ class AssetPublishing extends CoreConstruct {
         cloudAssemblyInput: this.props.cloudAssemblyInput,
         cdkCliVersion: this.props.cdkCliVersion,
         assetType: command.assetType,
-        role: this.assetRoles[command.assetType],
-        publishRoleArn: command.publishRoleArn,
+        role: this.assetRoles[command.assetType].withoutPolicyUpdates(), // TODO this is pointless given it updates a role that has updates disabled?
+        publishRoleArn: command.publishRoleArn, // TODO this is pointless given it updates a role that has updates disabled?
         vpc: this.props.vpc,
         subnetSelection: this.props.subnetSelection,
       });
@@ -466,7 +472,7 @@ class AssetPublishing extends CoreConstruct {
    * Generates one role per asset type to separate file and Docker/image-based permissions.
    */
   private generateAssetRole(assetType: AssetType) {
-    if (this.assetRoles[assetType]) { return this.assetRoles[assetType]; }
+    if (this.assetRoles[assetType]) { return; }
 
     const rolePrefix = assetType === AssetType.DOCKER_IMAGE ? 'Docker' : 'File';
     const assetRole = new iam.Role(this, `${rolePrefix}Role`, {
@@ -514,15 +520,6 @@ class AssetPublishing extends CoreConstruct {
     }));
 
     // Publishing role access
-    const publishingRoleThisAccount = Fn.sub(
-      assetType === AssetType.DOCKER_IMAGE
-        ? this.props.stackSynthesizer.imageAssetPublishingRoleArn
-        : this.props.stackSynthesizer.fileAssetPublishingRoleArn,
-    );
-    assetRole.addToPolicy(new iam.PolicyStatement({
-      actions: ['sts:AssumeRole'],
-      resources: [publishingRoleThisAccount],
-    }));
     // allow assuming any role in a different account
     assetRole.addToPolicy(new iam.PolicyStatement({
       actions: ['sts:AssumeRole'],
@@ -566,8 +563,7 @@ class AssetPublishing extends CoreConstruct {
       }));
     }
 
-    this.assetRoles[assetType] = assetRole.withoutPolicyUpdates();
-    return this.assetRoles[assetType];
+    this.assetRoles[assetType] = assetRole;
   }
 }
 
