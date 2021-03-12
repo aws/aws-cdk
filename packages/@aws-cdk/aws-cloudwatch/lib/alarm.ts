@@ -257,7 +257,6 @@ export class Alarm extends AlarmBase {
     return dispatchMetric(metric, {
       withStat(stat, conf) {
         self.validateMetricStat(stat, metric);
-
         if (conf.renderingProperties?.label == undefined) {
           return dropUndefined({
             dimensions: stat.dimensions,
@@ -283,7 +282,7 @@ export class Alarm extends AlarmBase {
                 stat: stat.statistic,
                 unit: stat.unitFilter,
               },
-              id: stat.metricName,
+              id: 'm1',
               label: conf.renderingProperties?.label,
               returnData: true,
             } as CfnAlarm.MetricDataQueryProperty,

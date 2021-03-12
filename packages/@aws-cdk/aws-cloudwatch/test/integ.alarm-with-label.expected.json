@@ -5,7 +5,7 @@
             "Properties": {
                 "Metrics": [
                     {
-                        "Id": "Metric",
+                        "Id": "m1",
                         "Label": "Metric [AVG: ${AVG}]",
                         "MetricStat": {
                             "Metric": {
@@ -28,7 +28,7 @@
             "Properties": {
                 "Metrics": [
                     {
-                        "Id": "Metric",
+                        "Id": "m1",
                         "Label": "Metric [AVG: ${AVG}]",
                         "MetricStat": {
                             "Metric": {
