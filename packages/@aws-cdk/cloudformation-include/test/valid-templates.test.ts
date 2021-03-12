@@ -116,6 +116,14 @@ describe('CDK Include', () => {
     );
   });
 
+  test('accepts booleans for properties with type string', () => {
+    includeTestTemplate(stack, 'boolean-for-string.json');
+
+    expect(stack).toMatchTemplate(
+      loadTestFileToJsObject('boolean-for-string.json'),
+    );
+  });
+
   test('correctly changes the logical IDs, including references, if imported with preserveLogicalIds=false', () => {
     const cfnTemplate = includeTestTemplate(stack, 'bucket-with-encryption-key.json', {
       preserveLogicalIds: false,
@@ -744,6 +752,14 @@ describe('CDK Include', () => {
     expect(() => {
       cfnTemplate.getMapping('NonExistentMapping');
     }).toThrow(/Mapping with name 'NonExistentMapping' was not found in the template/);
+  });
+
+  test('can ingest a template that uses Fn::FindInMap with the first argument being a dynamic reference', () => {
+    includeTestTemplate(stack, 'find-in-map-with-dynamic-mapping.json');
+
+    expect(stack).toMatchTemplate(
+      loadTestFileToJsObject('find-in-map-with-dynamic-mapping.json'),
+    );
   });
 
   test('handles renaming Mapping references', () => {

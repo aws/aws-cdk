@@ -68,7 +68,7 @@ When working with multiple domains, use the `CertificateValidation.fromDnsMultiZ
 const exampleCom = new route53.HostedZone(this, 'ExampleCom', {
   zoneName: 'example.com',
 });
-const exampleNet = new route53.HostedZone(this, 'ExampelNet', {
+const exampleNet = new route53.HostedZone(this, 'ExampleNet', {
   zoneName: 'example.net',
 });
 
@@ -76,7 +76,7 @@ const cert = new acm.Certificate(this, 'Certificate', {
   domainName: 'test.example.com',
   subjectAlternativeNames: ['cool.example.com', 'test.example.net'],
   validation: acm.CertificateValidation.fromDnsMultiZone({
-    'text.example.com': exampleCom,
+    'test.example.com': exampleCom,
     'cool.example.com': exampleCom,
     'test.example.net': exampleNet,
   }),

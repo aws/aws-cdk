@@ -299,6 +299,8 @@ obtained from either DockerHub or from ECR repositories, or built directly from 
   image directly from a `Dockerfile` in your source directory.
 - `ecs.ContainerImage.fromDockerImageAsset(asset)`: uses an existing
   `@aws-cdk/aws-ecr-assets.DockerImageAsset` as a container image.
+- `new ecs.TagParameterContainerImage(repository)`: use the given ECR repository as the image 
+  but a CloudFormation parameter as the tag.
 
 ### Environment variables
 
@@ -680,6 +682,63 @@ taskDefinition.addContainer('TheContainer', {
       tag: 'example-tag'
     }
   })
+});
+```
+
+## CloudMap Service Discovery
+
+To register your ECS service with a CloudMap Service Registry, you may add the
+`cloudMapOptions` property to your service:
+
+```ts
+const service = new ecs.Ec2Service(stack, 'Service', {
+  cluster,
+  taskDefinition,
+  cloudMapOptions: {
+    // Create A records - useful for AWSVPC network mode.
+    dnsRecordType: cloudmap.DnsRecordType.A,
+  },
+});
+```
+
+With `bridge` or `host` network modes, only `SRV` DNS record types are supported. 
+By default, `SRV` DNS record types will target the default container and default
+port. However, you may target a different container and port on the same ECS task:
+
+```ts
+// Add a container to the task definition
+const specificContainer = taskDefinition.addContainer(...);
+
+// Add a port mapping
+specificContainer.addPortMappings({
+  containerPort: 7600,
+  protocol: ecs.Protocol.TCP,
+});
+
+new ecs.Ec2Service(stack, 'Service', {
+  cluster,
+  taskDefinition,
+  cloudMapOptions: {
+    // Create SRV records - useful for bridge networking
+    dnsRecordType: cloudmap.DnsRecordType.SRV,
+    // Targets port TCP port 7600 `specificContainer`
+    container: specificContainer,
+    containerPort: 7600,
+  },
+});
+```
+
+### Associate With a Specific CloudMap Service
+
+You may associate an ECS service with a specific CloudMap service. To do
+this, use the service's `associateCloudMapService` method:
+
+```ts
+const cloudMapService = new cloudmap.Service(...);
+const ecsService = new ecs.FargateService(...);
+
+ecsService.associateCloudMapService({
+  service: cloudMapService,
 });
 ```
 

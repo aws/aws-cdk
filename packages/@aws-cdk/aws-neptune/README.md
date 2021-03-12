@@ -58,6 +58,24 @@ attributes:
 const writeAddress = cluster.clusterEndpoint.socketAddress;   // "HOSTNAME:PORT"
 ```
 
+## IAM Authentication
+
+You can also authenticate to a database cluster using AWS Identity and Access Management (IAM) database authentication;
+See <https://docs.aws.amazon.com/neptune/latest/userguide/iam-auth.html> for more information and a list of supported
+versions and limitations.
+
+The following example shows enabling IAM authentication for a database cluster and granting connection access to an IAM role.
+
+```ts
+const cluster = new neptune.DatabaseCluster(this, 'Cluster', {
+  vpc,
+  instanceType: neptune.InstanceType.R5_LARGE,
+  iamAuthentication: true, // Optional - will be automatically set if you call grantConnect().
+});
+const role = new iam.Role(this, 'DBRole', { assumedBy: new iam.AccountPrincipal(this.account) });
+cluster.grantConnect(role); // Grant the role connection access to the DB.
+```
+
 ## Customizing parameters
 
 Neptune allows configuring database behavior by supplying custom parameter groups.  For more details, refer to the
