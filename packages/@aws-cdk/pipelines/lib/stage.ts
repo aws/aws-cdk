@@ -243,21 +243,29 @@ export class CdkStage extends CoreConstruct {
 
       for (const entry of manifest.entries) {
         let assetType: AssetType;
+        let publishRoleArn: string | undefined = undefined;
         if (entry instanceof DockerImageManifestEntry) {
           assetType = AssetType.DOCKER_IMAGE;
+          publishRoleArn = entry.destination.assumeRoleArn;
         } else if (entry instanceof FileManifestEntry) {
-          // Don't publishg the template for this stack
+          // Don't publish the template for this stack
           if (entry.source.packaging === 'file' && entry.source.path === stackArtifact.templateFile) {
             continue;
           }
 
           assetType = AssetType.FILE;
+          publishRoleArn = entry.destination.assumeRoleArn;
         } else {
           throw new Error(`Unrecognized asset type: ${entry.type}`);
         }
 
+        if (!publishRoleArn) {
+          throw new Error('assumeRoleArn is missing on asset and required');
+        }
+
         this.host.publishAsset({
           assetManifestPath: manifestArtifact.file,
+          publishRoleArn,
           assetId: entry.id.assetId,
           assetSelector: entry.id.toString(),
           assetType,
@@ -342,6 +350,11 @@ export interface AssetPublishingCommand {
    * Asset manifest path
    */
   readonly assetManifestPath: string;
+
+  /**
+   * ARN for the role that needs to be assumed for publishing
+   */
+  readonly publishRoleArn: string;
 
   /**
    * Asset identifier

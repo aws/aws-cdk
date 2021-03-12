@@ -449,9 +449,7 @@ class AssetPublishing extends CoreConstruct {
         cdkCliVersion: this.props.cdkCliVersion,
         assetType: command.assetType,
         role: this.assetRoles[command.assetType],
-        roleArnsForCdkAssets: command.assetType === AssetType.DOCKER_IMAGE
-          ? this.props.stackSynthesizer.imageAssetPublishingRoleArn
-          : this.props.stackSynthesizer.fileAssetPublishingRoleArn,
+        publishRoleArn: command.publishRoleArn,
         vpc: this.props.vpc,
         subnetSelection: this.props.subnetSelection,
       });

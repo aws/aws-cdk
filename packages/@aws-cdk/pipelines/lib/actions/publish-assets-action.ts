@@ -84,9 +84,9 @@ export interface PublishAssetsActionProps {
   readonly subnetSelection?: ec2.SubnetSelection;
 
   /**
-   * Role arns that might need to be assumed by the `cdk-assets` call
+   * The ARN of the role that `cdk-assets` will need to assume
    */
-  readonly roleArnsForCdkAssets: string;
+  readonly publishRoleArn: string;
 }
 
 /**
@@ -131,7 +131,7 @@ export class PublishAssetsAction extends CoreConstruct implements codepipeline.I
 
     project.addToRolePolicy(new iam.PolicyStatement({
       actions: ['sts:AssumeRole'],
-      resources: [Fn.sub(props.roleArnsForCdkAssets)],
+      resources: [Fn.sub(props.publishRoleArn)],
     }));
     // allow assuming any role in a different account
     // because custom names may have been used

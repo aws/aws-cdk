@@ -121,7 +121,8 @@
       "events-generic:@aws-cdk/pipelines.PublishAssetsAction",
       "events-method-signature:@aws-cdk/pipelines.PublishAssetsAction.onStateChange",
       "events-generic:@aws-cdk/pipelines.UpdatePipelineAction",
-      "events-method-signature:@aws-cdk/pipelines.UpdatePipelineAction.onStateChange"
+      "events-method-signature:@aws-cdk/pipelines.UpdatePipelineAction.onStateChange",
+      "props-no-arn-refs:@aws-cdk/pipelines.PublishAssetsActionProps.publishRoleArn"
     ]
   },
   "homepage": "https://github.com/aws/aws-cdk",
