@@ -31,7 +31,7 @@ export interface ApplicationTargetGroupProps extends BaseTargetGroupProps {
   /**
    * The protocol version to use
    *
-   * @default - No protocol version
+   * @default ApplicationProtocolVersion.HTTP1
    */
   readonly protocolVersion?: ApplicationProtocolVersion;
 
