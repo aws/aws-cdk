@@ -204,11 +204,6 @@ export class CdkPipeline extends CoreConstruct {
         actions: [new UpdatePipelineAction(this, 'UpdatePipeline', {
           cloudAssemblyInput: this._cloudAssemblyArtifact,
           pipelineStackName: pipelineStack.stackName,
-          roleArnsForCdkDeploy: [
-            this._stackSynthesizer.deployRoleArn,
-            this._stackSynthesizer.imageAssetPublishingRoleArn,
-            this._stackSynthesizer.fileAssetPublishingRoleArn,
-          ],
           cdkCliVersion: props.cdkCliVersion,
           projectName: maybeSuffix(props.pipelineName, '-selfupdate'),
         })],

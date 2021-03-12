@@ -3,8 +3,10 @@ import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as cpactions from '@aws-cdk/aws-codepipeline-actions';
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
+import { AssetManifestArtifact, CloudArtifact, CloudFormationStackArtifact } from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
-import { embeddedAsmPath } from '../private/construct-internals';
+import { AssetManifestReader, DockerImageManifestEntry, FileManifestEntry } from '../private/asset-manifest';
+import { cloudAssemblyForStage, embeddedAsmPath, stageOrAppOf } from '../private/construct-internals';
 
 // v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
 // eslint-disable-next-line
@@ -23,11 +25,6 @@ export interface UpdatePipelineActionProps {
    * Name of the pipeline stack
    */
   readonly pipelineStackName: string;
-
-  /**
-   * Role arns that might need to be assumed by the `cdk deploy` call
-   */
-  readonly roleArnsForCdkDeploy: string[];
 
   /**
    * Version of CDK CLI to 'npm install'.
@@ -59,6 +56,37 @@ export class UpdatePipelineAction extends CoreConstruct implements codepipeline.
   constructor(scope: Construct, id: string, props: UpdatePipelineActionProps) {
     super(scope, id);
 
+    const roleArnsForCdkDeploy: string[] = [];
+
+    const cloudAssembly = cloudAssemblyForStage(stageOrAppOf(scope));
+    // TODO is props.pipelineStackName really the key?
+    const artifactManifest = cloudAssembly.manifest.artifacts?.[props.pipelineStackName];
+    if (!artifactManifest) {
+      throw new Error('Missing pipeline artifact manifest');
+    }
+    const cloudArtifact = CloudArtifact.fromManifest(cloudAssembly, props.pipelineStackName /* TODO correct? */, artifactManifest);
+    if (!(cloudArtifact instanceof CloudFormationStackArtifact)) {
+      throw new Error('Pipeline cloud artifact was not a CloudFormationStackArtifact');
+    }
+
+    if (cloudArtifact.assumeRoleArn) {
+      roleArnsForCdkDeploy.push(cloudArtifact.assumeRoleArn);
+    }
+
+    artifactManifest.dependencies?.forEach((dependencyId) => {
+      const depCloudArtifact = CloudArtifact.fromManifest(cloudAssembly, dependencyId, artifactManifest);
+      if ((depCloudArtifact instanceof AssetManifestArtifact)) {
+        const assetManifest = AssetManifestReader.fromFile(depCloudArtifact.file);
+        assetManifest.entries.forEach((entry) => {
+          if (entry instanceof FileManifestEntry || entry instanceof DockerImageManifestEntry) {
+            if (entry.destination.assumeRoleArn) {
+              roleArnsForCdkDeploy.push(entry.destination.assumeRoleArn);
+            }
+          }
+        });
+      }
+    });
+
     const installSuffix = props.cdkCliVersion ? `@${props.cdkCliVersion}` : '';
 
     const selfMutationProject = new codebuild.PipelineProject(this, 'SelfMutation', {
@@ -83,7 +111,7 @@ export class UpdatePipelineAction extends CoreConstruct implements codepipeline.
     // allow the self-mutating project permissions to assume the bootstrap Action role
     selfMutationProject.addToRolePolicy(new iam.PolicyStatement({
       actions: ['sts:AssumeRole'],
-      resources: props.roleArnsForCdkDeploy.map((arn) => Fn.sub(arn)),
+      resources: roleArnsForCdkDeploy.map((arn) => Fn.sub(arn)),
     }));
     // allow assuming any role in a different account
     // because custom names may have been used

@@ -20,12 +20,20 @@ export function assemblyBuilderOf(stage: Stage): cxapi.CloudAssemblyBuilder {
   return (stage as any)._assemblyBuilder;
 }
 
+export function stageOrAppOf(scope: IConstruct): Stage {
+  return Stage.of(scope) ?? appOf(scope);
+}
+
+export function cloudAssemblyForStage(stage: Stage): cxapi.CloudAssembly {
+  return new cxapi.CloudAssembly(assemblyBuilderOf(stage).outdir);
+}
+
 /**
  * Return the relative path from the app assembly to the scope's (nested) assembly
  */
 export function embeddedAsmPath(scope: IConstruct) {
   const appAsmRoot = assemblyBuilderOf(appOf(scope)).outdir;
-  const stage = Stage.of(scope) ?? appOf(scope);
+  const stage = stageOrAppOf(scope);
   const stageAsmRoot = assemblyBuilderOf(stage).outdir;
   return path.relative(appAsmRoot, stageAsmRoot) || '.';
 }
