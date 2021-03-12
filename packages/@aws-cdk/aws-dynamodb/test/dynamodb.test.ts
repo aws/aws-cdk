@@ -4,6 +4,7 @@ import * as appscaling from '@aws-cdk/aws-applicationautoscaling';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import { App, Aws, CfnDeletionPolicy, ConstructNode, Duration, PhysicalName, RemovalPolicy, Resource, Stack, Tags } from '@aws-cdk/core';
+import * as cr from '@aws-cdk/custom-resources';
 import { testLegacyBehavior } from 'cdk-build-tools/lib/feature-flag';
 import { Construct } from 'constructs';
 import {
@@ -19,6 +20,8 @@ import {
   Operation,
   CfnTable,
 } from '../lib';
+
+jest.mock('@aws-cdk/custom-resources');
 
 /* eslint-disable quote-props */
 
@@ -2295,12 +2298,6 @@ describe('global', () => {
     // THEN
     expect(stack).toHaveResource('Custom::DynamoDBReplica', {
       Properties: {
-        ServiceToken: {
-          'Fn::GetAtt': [
-            'awscdkawsdynamodbReplicaProviderNestedStackawscdkawsdynamodbReplicaProviderNestedStackResource18E3F12D',
-            'Outputs.awscdkawsdynamodbReplicaProviderframeworkonEventF9504691Arn',
-          ],
-        },
         TableName: {
           Ref: 'TableCD117FA1',
         },
@@ -2311,12 +2308,6 @@ describe('global', () => {
 
     expect(stack).toHaveResource('Custom::DynamoDBReplica', {
       Properties: {
-        ServiceToken: {
-          'Fn::GetAtt': [
-            'awscdkawsdynamodbReplicaProviderNestedStackawscdkawsdynamodbReplicaProviderNestedStackResource18E3F12D',
-            'Outputs.awscdkawsdynamodbReplicaProviderframeworkonEventF9504691Arn',
-          ],
-        },
         TableName: {
           Ref: 'TableCD117FA1',
         },
@@ -2813,6 +2804,26 @@ describe('global', () => {
 
     // THEN
     expect(SynthUtils.toCloudFormation(stack).Conditions).toBeUndefined();
+  });
+
+  test('can configure timeout', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new Table(stack, 'Table', {
+      partitionKey: {
+        name: 'id',
+        type: AttributeType.STRING,
+      },
+      replicationRegions: ['eu-central-1'],
+      replicationTimeout: Duration.hours(1),
+    });
+
+    // THEN
+    expect(cr.Provider).toHaveBeenCalledWith(expect.anything(), expect.any(String), expect.objectContaining({
+      totalTimeout: Duration.hours(1),
+    }));
   });
 });
 
