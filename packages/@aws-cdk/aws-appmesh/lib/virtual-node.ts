@@ -206,12 +206,15 @@ export class VirtualNode extends VirtualNodeBase {
 
   /**
    * Utility method to add an inbound listener for this VirtualNode
+   *
+   * Note: At this time, Virtual Nodes support at most one listener. Adding
+   * more than one will result in a failure to deploy the CloudFormation stack.
+   * However, the App Mesh team has plans to add support for multiple listeners
+   * on Virtual Nodes and Virtual Routers.
+   *
+   * @see https://github.com/aws/aws-app-mesh-roadmap/issues/120
    */
   public addListener(listener: VirtualNodeListener) {
-    if (this.listeners.length >= 1) {
-      // @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-appmesh-virtualnode-virtualnodespec.html#cfn-appmesh-virtualnode-virtualnodespec-listeners
-      throw new Error('Cannot add `VirtualNodeListener`. Virtual Nodes support at most one listener at this time.');
-    }
     this.listeners.push(listener.bind(this));
   }
 

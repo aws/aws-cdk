@@ -518,7 +518,6 @@ export = {
 
     test.done();
   },
-
   'Can import Virtual Nodes using attributes'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
@@ -532,44 +531,6 @@ export = {
     // THEN
     test.equal(virtualNode.mesh.meshName, meshName);
     test.equal(virtualNode.virtualNodeName, virtualNodeName);
-
-    test.done();
-  },
-
-  'Throws when more than one listener added'(test: Test) {
-    // GIVEN
-    const stack = new cdk.Stack();
-    const meshName = 'testMesh';
-
-    // WHEN
-    test.throws(() => {
-      new appmesh.VirtualNode(stack, 'VirtualNode', {
-        mesh: appmesh.Mesh.fromMeshName(stack, 'Mesh', meshName),
-        listeners: [
-          appmesh.VirtualNodeListener.http(),
-          appmesh.VirtualNodeListener.grpc(),
-        ],
-      });
-    }, /at most one listener/i);
-
-    test.done();
-  },
-
-  'Throws when more than one listener added by addListener'(test: Test) {
-    // GIVEN
-    const stack = new cdk.Stack();
-    const meshName = 'testMesh';
-    const virtualNode = new appmesh.VirtualNode(stack, 'VirtualNode', {
-      mesh: appmesh.Mesh.fromMeshName(stack, 'Mesh', meshName),
-      listeners: [
-        appmesh.VirtualNodeListener.http(),
-      ],
-    });
-
-    // WHEN
-    test.throws(() => {
-      virtualNode.addListener(appmesh.VirtualNodeListener.grpc());
-    }, /at most one listener/i);
 
     test.done();
   },
