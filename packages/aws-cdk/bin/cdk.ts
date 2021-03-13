@@ -54,6 +54,7 @@ async function parseCommandLineArguments() {
     .option('profile', { type: 'string', desc: 'Use the indicated AWS profile as the default environment', requiresArg: true })
     .option('proxy', { type: 'string', desc: 'Use the indicated proxy. Will read from HTTPS_PROXY environment variable if not specified', requiresArg: true })
     .option('ca-bundle-path', { type: 'string', desc: 'Path to CA certificate to use when validating HTTPS requests. Will read from AWS_CA_BUNDLE environment variable if not specified', requiresArg: true })
+    .option('http-timeout', { type: 'number', desc: 'Timeout in ms of HTTPS requests. Default: 120000ms', requiresArg: true })
     .option('ec2creds', { type: 'boolean', alias: 'i', default: undefined, desc: 'Force trying to fetch EC2 instance credentials. Default: guess EC2 instance status' })
     .option('version-reporting', { type: 'boolean', desc: 'Include the "AWS::CDK::Metadata" resource in synthesized templates (enabled by default)', default: undefined })
     .option('path-metadata', { type: 'boolean', desc: 'Include "aws:cdk:path" CloudFormation metadata for each resource (enabled by default)', default: true })
@@ -156,6 +157,7 @@ async function initCommandLine() {
     httpOptions: {
       proxyAddress: argv.proxy,
       caBundlePath: argv['ca-bundle-path'],
+      timeout: argv['http-timeout'],
     },
   });
 
