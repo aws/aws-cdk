@@ -1,4 +1,13 @@
-import { countResources, expect, haveResource, haveResourceLike, objectLike, not, ResourcePart, arrayWith } from '@aws-cdk/assert';
+import {
+  arrayWith,
+  countResources,
+  expect,
+  haveResource,
+  haveResourceLike,
+  not,
+  objectLike,
+  ResourcePart,
+} from '@aws-cdk/assert';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as logs from '@aws-cdk/aws-logs';
@@ -47,6 +56,34 @@ export = {
     expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
       Source: {
         BuildSpec: '{\n  "phases": [\n    "say hi"\n  ]\n}',
+      },
+    }));
+
+    test.done();
+  },
+
+  'can use yamlbuildspec literal'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new codebuild.Project(stack, 'Project', {
+      buildSpec: codebuild.BuildSpec.yamlFromObject({
+        text: 'text',
+        decimal: 10,
+        list: ['say hi'],
+        obj: {
+          text: 'text',
+          decimal: 10,
+          list: ['say hi'],
+        },
+      }),
+    });
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
+      Source: {
+        BuildSpec: 'text: text\ndecimal: 10\nlist:\n  - say hi\nobj:\n  text: text\n  decimal: 10\n  list:\n    - say hi\n',
       },
     }));
 

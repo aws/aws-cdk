@@ -1,4 +1,5 @@
 import { IResolveContext, Lazy, Stack } from '@aws-cdk/core';
+import * as yaml_cfn from '@aws-cdk/yaml-cfn';
 
 /**
  * BuildSpec for CodeBuild projects
@@ -6,6 +7,15 @@ import { IResolveContext, Lazy, Stack } from '@aws-cdk/core';
 export abstract class BuildSpec {
   public static fromObject(value: {[key: string]: any}): BuildSpec {
     return new ObjectBuildSpec(value);
+  }
+
+  /**
+   * Export a YAML from an object
+   *
+   * @param value object to be exported to YAML
+   */
+  public static yamlFromObject(value: {[key: string]: any}): BuildSpec {
+    return new YamlBuildSpec(value);
   }
 
   /**
@@ -66,6 +76,22 @@ class ObjectBuildSpec extends BuildSpec {
     return Lazy.uncachedString({
       produce: (ctx: IResolveContext) =>
         Stack.of(ctx.scope).toJsonString(this.spec, 2),
+    });
+  }
+}
+
+/**
+ * BuildSpec that exports into YAML format
+ */
+class YamlBuildSpec extends BuildSpec {
+  public readonly isImmediate: boolean = true;
+
+  constructor(public readonly spec: {[key: string]: any}) {
+    super();
+  }
+  public toBuildSpec(): string {
+    return Lazy.uncachedString({
+      produce: () => yaml_cfn.serialize(this.spec),
     });
   }
 }
