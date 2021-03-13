@@ -55,7 +55,7 @@ export interface TopicRuleActionConfig {
   /**
    * Describes an action that writes data to an Amazon Elasticsearch Service domain.
    */
-  readonly elasticseach?: CfnTopicRule.ElasticsearchActionProperty;
+  readonly elasticsearch?: CfnTopicRule.ElasticsearchActionProperty;
   /**
    * Describes an action that writes data to an Amazon Kinesis Firehose stream.
    */
@@ -80,7 +80,7 @@ export interface TopicRuleActionConfig {
   /**
    * Describes an action to invoke a Lambda function.
    */
-  readonly lambdaA?: CfnTopicRule.LambdaActionProperty;
+  readonly lambda?: CfnTopicRule.LambdaActionProperty;
   /**
    * Describes an action to republish to another topic.
    */

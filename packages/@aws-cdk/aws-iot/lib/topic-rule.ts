@@ -2,7 +2,7 @@ import { Resource, IResource, Lazy } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnTopicRule } from './iot.generated';
 import { ITopicRuleAction } from './topic-rule-action';
-import { parseTopicRuleArn } from './util';
+import { parseRuleName } from './util';
 
 /**
  * An IoT Topic Rule
@@ -14,6 +14,19 @@ export interface ITopicRule extends IResource {
   readonly ruleName: string;
   /**
    * Then name of the topic rule
+   *
+   * @attribute
+   *
+   */
+  readonly topicRuleArn: string;
+}
+/**
+ * A reference to an IoT Topic Rule.
+ */
+export interface TopicRuleAttributes {
+  /**
+   * The ARN of the IoT Topic Rule. At least one of bucketArn or bucketName must be
+   * defined in order to initialize a bucket ref.
    */
   readonly topicRuleArn: string;
 }
@@ -51,10 +64,14 @@ export interface TopicRuleProps {
   readonly awsIotSqlVersion?: string;
   /**
    * The topic rule description.
+   *
+   * @default - none
    */
   readonly description?: string;
   /**
    * The rule actions to preform on error.
+   *
+   * @default - none
    */
   readonly errorAction?: ITopicRuleAction;
 }
@@ -63,11 +80,23 @@ export interface TopicRuleProps {
  * A new topic rule
  */
 export class TopicRule extends Resource implements ITopicRule {
-  public static fromReceiptRuleName(scope: Construct, id: string, topicRuleName: string): ITopicRule {
+  /**
+   * Import topic rule attributes
+   */
+  public static fromTopicRuleArn(scope: Construct, id: string, topicRuleArn: string): ITopicRule {
+    return TopicRule.fromTopicRuleAttributes(scope, id, { topicRuleArn });
+  }
+  /**
+   * Import topic rule attributes
+   */
+  public static fromTopicRuleAttributes(scope: Construct, id: string, attrs: TopicRuleAttributes): ITopicRule {
+    const topicRuleArn = attrs.topicRuleArn;
+    const ruleName = parseRuleName(attrs.topicRuleArn);
     class Import extends Resource implements ITopicRule {
-      public readonly ruleName = topicRuleName;
-      public readonly topicRuleArn = parseTopicRuleArn(scope, topicRuleName);
+      public readonly ruleName = ruleName;
+      public readonly topicRuleArn = topicRuleArn;
     }
+
     return new Import(scope, id);
   }
 
@@ -81,7 +110,11 @@ export class TopicRule extends Resource implements ITopicRule {
     });
 
     const resource = new CfnTopicRule(this, 'Resource', {
+      ruleName: this.physicalName,
       topicRulePayload: {
+        ...props.errorAction,
+        description: props.description || '',
+        awsIotSqlVersion: props.awsIotSqlVersion || '2015-10-08',
         sql: props.sql,
         ruleDisabled: props.ruleDisabled || false,
         actions: Lazy.any({ produce: () => this.renderActions() }),

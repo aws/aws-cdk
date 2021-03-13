@@ -93,7 +93,27 @@
     "exclude": [
       "docs-public-apis:@aws-cdk/aws-iot.TopicRule.fromReceiptRuleName",
       "docs-public-apis:@aws-cdk/aws-iot.TopicRule.renderActions",
-      "props-default-doc:@aws-cdk/aws-iot.TopicRuleActionProperty.cloudwatchAlarm"
+      "no-unused-type:@aws-cdk/aws-iot.TopicRuleAttributes",
+      "props-physical-name:@aws-cdk/aws-iot.TopicRuleProps",
+      "props-default-doc:@aws-cdk/aws-iot.TopicRuleActionProperty.cloudwatchAlarm",
+      "props-default-doc:@aws-cdk/aws-iot.TopicRuleAttributes.ruleName",
+      "props-default-doc:@aws-cdk/aws-iot.TopicRuleAttributes.topicRuleArn",
+      "props-default-doc:@aws-cdk/aws-iot.TopicRuleActionConfig.cloudwatchAlarm",
+      "props-default-doc:@aws-cdk/aws-iot.TopicRuleActionConfig.cloudwatchAlarmMetric",
+      "props-default-doc:@aws-cdk/aws-iot.TopicRuleActionConfig.dynamoDB",
+      "props-default-doc:@aws-cdk/aws-iot.TopicRuleActionConfig.dynamoDBv2",
+      "props-default-doc:@aws-cdk/aws-iot.TopicRuleActionConfig.elasticsearch",
+      "props-default-doc:@aws-cdk/aws-iot.TopicRuleActionConfig.firehose",
+      "props-default-doc:@aws-cdk/aws-iot.TopicRuleActionConfig.http",
+      "props-default-doc:@aws-cdk/aws-iot.TopicRuleActionConfig.iotAnalytics",
+      "props-default-doc:@aws-cdk/aws-iot.TopicRuleActionConfig.iotSiteWise",
+      "props-default-doc:@aws-cdk/aws-iot.TopicRuleActionConfig.kinesis",
+      "props-default-doc:@aws-cdk/aws-iot.TopicRuleActionConfig.lambda",
+      "props-default-doc:@aws-cdk/aws-iot.TopicRuleActionConfig.republish",
+      "props-default-doc:@aws-cdk/aws-iot.TopicRuleActionConfig.s3",
+      "props-default-doc:@aws-cdk/aws-iot.TopicRuleActionConfig.sns",
+      "props-default-doc:@aws-cdk/aws-iot.TopicRuleActionConfig.sqs",
+      "props-default-doc:@aws-cdk/aws-iot.TopicRuleActionConfig.stepFunctions"
     ]
   },
   "stability": "experimental",
