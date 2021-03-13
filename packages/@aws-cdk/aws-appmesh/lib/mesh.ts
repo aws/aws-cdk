@@ -1,4 +1,5 @@
 import * as cdk from '@aws-cdk/core';
+import * as iam from '@aws-cdk/aws-iam';
 import { Construct } from 'constructs';
 import { CfnMesh } from './appmesh.generated';
 import { VirtualGateway, VirtualGatewayBaseProps } from './virtual-gateway';
@@ -54,6 +55,21 @@ export interface IMesh extends cdk.IResource {
    * Adds a VirtualGateway to the Mesh
    */
   addVirtualGateway(id: string, props?: VirtualGatewayBaseProps): VirtualGateway;
+
+  /**
+   * Grants the given entity permissions to read all resources in the mesh.
+   */
+  grantReadOnlyAllMeshResources(identity: iam.IGrantable): iam.Grant;
+
+  /**
+   * Grants the given entity all permissions for this mesh.
+   */
+  grantAll(identity: iam.IGrantable): iam.Grant;
+
+  /**
+   * Grant the specified actions for this mesh.
+   */
+  grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant;
 }
 
 /**
@@ -99,6 +115,48 @@ abstract class MeshBase extends cdk.Resource implements IMesh {
       mesh: this,
     });
   }
+
+  public grantReadOnlyAllMeshResources(identity: iam.IGrantable): iam.Grant {
+    return iam.Grant.addToPrincipal({
+      grantee: identity,
+      actions: [
+        'appmesh:DescribeMesh',
+        'appmesh:ListMeshes',
+        'appmesh:DescribeVirtualService',
+        'appmesh:ListVirtualServices',
+        'appmesh:DescribeVirtualRouter',
+        'appmesh:ListVirtualRouter',
+        'appmesh:DescribeRoute',
+        'appmesh:ListRoutes',
+        'appmesh:DescribeVirtualNode',
+        'appmesh:ListVirtualNodes',
+        'appmesh:DescribeVirtualGateway',
+        'appmesh:ListVirtualGateways',
+        'appmesh:DescribeGatewayRoute',
+        'appmesh:ListGatewayRoutes',
+      ],
+      resourceArns: [this.meshArn + '/*'],
+    });
+  }
+
+  public grantAll(identity: iam.IGrantable): iam.Grant {
+    return this.grant(identity,
+      'appmesh:DescribeMesh',
+      'appmesh:UpdateMesh',
+      'appmesh:DeleteMesh',
+      'appmesh:TagResource',
+      'appmesh:UntagResource',
+    );
+  }
+
+  public grant(grantee: iam.IGrantable, ...actions: string[]) {
+    return iam.Grant.addToPrincipal({
+      grantee,
+      actions,
+      resourceArns: [this.meshArn],
+    });
+  }
+
 }
 
 /**

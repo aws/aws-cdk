@@ -1,5 +1,6 @@
 import { expect, haveResourceLike } from '@aws-cdk/assert';
 import * as acm from '@aws-cdk/aws-certificatemanager';
+import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import * as appmesh from '../lib';
@@ -458,6 +459,74 @@ export = {
     // THEN
     test.equal(virtualGateway.mesh.meshName, meshName);
     test.equal(virtualGateway.virtualGatewayName, virtualGatewayName);
+
+    test.done();
+  },
+  'Can grant an identity all permissions for a given VirtualGateway'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const mesh = new appmesh.Mesh(stack, 'mesh', {
+      meshName: 'test-mesh',
+    });
+    const gateway = new appmesh.VirtualGateway(stack, 'testGateway', {
+      mesh: mesh,
+    });
+
+    // WHEN
+    const user = new iam.User(stack, 'test');
+    gateway.grantAll(user);
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: [
+              'appmesh:DescribeVirtualGateway',
+              'appmesh:UpdateVirtualGateway',
+              'appmesh:DeleteVirtualGateway',
+              'appmesh:TagResource',
+              'appmesh:UntagResource',
+            ],
+            Effect: 'Allow',
+            Resource: {
+              Ref: 'testGatewayF09EC349',
+            },
+          },
+        ],
+      },
+    }));
+
+    test.done();
+  },
+  'Can grant an identity a specific permission for a given VirtualGateway'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const mesh = new appmesh.Mesh(stack, 'mesh', {
+      meshName: 'test-mesh',
+    });
+    const gateway = new appmesh.VirtualGateway(stack, 'testGateway', {
+      mesh: mesh,
+    });
+
+    // WHEN
+    const user = new iam.User(stack, 'test');
+    gateway.grant(user, 'appmesh:DescribeVirtualGateway');
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'appmesh:DescribeVirtualGateway',
+            Effect: 'Allow',
+            Resource: {
+              Ref: 'testGatewayF09EC349',
+            },
+          },
+        ],
+      },
+    }));
 
     test.done();
   },

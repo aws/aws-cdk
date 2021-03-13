@@ -1,4 +1,5 @@
 import * as cdk from '@aws-cdk/core';
+import * as iam from '@aws-cdk/aws-iam';
 import { Construct } from 'constructs';
 import { CfnVirtualService } from './appmesh.generated';
 import { IMesh, Mesh } from './mesh';
@@ -27,6 +28,16 @@ export interface IVirtualService extends cdk.IResource {
    * The Mesh which the VirtualService belongs to
    */
   readonly mesh: IMesh;
+
+  /**
+   * Grants the given entity all permissions for this VirtualService.
+   */
+  grantAll(identity: iam.IGrantable): iam.Grant;
+
+  /**
+   * Grant the specified actions for this VirtualService.
+   */
+  grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant;
 }
 
 /**
@@ -50,6 +61,51 @@ export interface VirtualServiceProps {
   readonly virtualServiceProvider: VirtualServiceProvider;
 }
 
+abstract class VirtualServiceBase extends cdk.Resource implements IVirtualService {
+  /**
+   * The name of the VirtualService
+   *
+   * @attribute
+   */
+  public abstract readonly virtualServiceName: string;
+
+  /**
+   * The Amazon Resource Name (ARN) for the virtual service
+   *
+   * @attribute
+   */
+  public abstract readonly virtualServiceArn: string;
+
+  /**
+   * The Mesh which the VirtualService belongs to
+   */
+  public abstract readonly mesh: IMesh;
+
+  /**
+   * Grants the given entity all permissions for this VirtualService.
+   */
+  public grantAll(identity: iam.IGrantable): iam.Grant {
+    return this.grant(identity,
+      'appmesh:DescribeVirtualService',
+      'appmesh:UpdateVirtualService',
+      'appmesh:DeleteVirtualService',
+      'appmesh:TagResource',
+      'appmesh:UntagResource',
+    );
+  }
+
+  /**
+   * Grant the specified actions for this VirtualService.
+   */
+  public grant(grantee: iam.IGrantable, ...actions: string[]) {
+    return iam.Grant.addToPrincipal({
+      grantee,
+      actions,
+      resourceArns: [this.virtualServiceArn],
+    });
+  }
+}
+
 /**
  * VirtualService represents a service inside an AppMesh
  *
@@ -57,12 +113,12 @@ export interface VirtualServiceProps {
  *
  * @see https://docs.aws.amazon.com/app-mesh/latest/userguide/virtual_services.html
  */
-export class VirtualService extends cdk.Resource implements IVirtualService {
+export class VirtualService extends VirtualServiceBase {
   /**
    * Import an existing VirtualService given an ARN
    */
   public static fromVirtualServiceArn(scope: Construct, id: string, virtualServiceArn: string): IVirtualService {
-    return new class extends cdk.Resource implements IVirtualService {
+    return new class extends VirtualServiceBase {
       readonly virtualServiceArn = virtualServiceArn;
       private readonly parsedArn = cdk.Fn.split('/', cdk.Stack.of(scope).parseArn(virtualServiceArn).resourceName!);
       readonly virtualServiceName = cdk.Fn.select(2, this.parsedArn);
@@ -74,7 +130,7 @@ export class VirtualService extends cdk.Resource implements IVirtualService {
    * Import an existing VirtualService given its attributes
    */
   public static fromVirtualServiceAttributes(scope: Construct, id: string, attrs: VirtualServiceAttributes): IVirtualService {
-    return new class extends cdk.Resource implements IVirtualService {
+    return new class extends VirtualServiceBase {
       readonly virtualServiceName = attrs.virtualServiceName;
       readonly mesh = attrs.mesh;
       readonly virtualServiceArn = cdk.Stack.of(this).formatArn({

@@ -1,4 +1,5 @@
 import * as cdk from '@aws-cdk/core';
+import * as iam from '@aws-cdk/aws-iam';
 import { Construct } from 'constructs';
 import { CfnVirtualNode } from './appmesh.generated';
 import { IMesh, Mesh } from './mesh';
@@ -32,6 +33,16 @@ export interface IVirtualNode extends cdk.IResource {
    * The Mesh which the VirtualNode belongs to
    */
   readonly mesh: IMesh;
+
+  /**
+   * Grants the given entity all permissions for this VirtualNode.
+   */
+  grantAll(identity: iam.IGrantable): iam.Grant;
+
+  /**
+   * Grant the specified actions for this VirtualNode.
+   */
+  grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant;
 
 }
 
@@ -108,6 +119,30 @@ abstract class VirtualNodeBase extends cdk.Resource implements IVirtualNode {
    * The Mesh which the VirtualNode belongs to
    */
   public abstract readonly mesh: IMesh;
+
+  /**
+   * Grants the given entity all permissions for this VirtualNode.
+   */
+  public grantAll(identity: iam.IGrantable): iam.Grant {
+    return this.grant(identity,
+      'appmesh:DescribeVirtualNode',
+      'appmesh:UpdateVirtualNode',
+      'appmesh:DeleteVirtualNode',
+      'appmesh:TagResource',
+      'appmesh:UntagResource',
+    );
+  }
+
+  /**
+   * Grant the specified actions for this VirtualNode.
+   */
+  public grant(grantee: iam.IGrantable, ...actions: string[]) {
+    return iam.Grant.addToPrincipal({
+      grantee,
+      actions,
+      resourceArns: [this.virtualNodeArn],
+    });
+  }
 }
 
 /**

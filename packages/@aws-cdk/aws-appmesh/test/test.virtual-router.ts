@@ -1,4 +1,5 @@
 import { expect, haveResourceLike } from '@aws-cdk/assert';
+import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 
@@ -408,6 +409,70 @@ export = {
     // THEN
     test.equal(virtualRouter1.mesh.meshName, meshName);
     test.equal(virtualRouter1.virtualRouterName, virtualRouterName);
+
+    test.done();
+  },
+  'Can grant an identity all permissions for a given VirtualRouter'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const mesh = new appmesh.Mesh(stack, 'mesh', {
+      meshName: 'test-mesh',
+    });
+    const router = mesh.addVirtualRouter('http-router-listener');
+
+    // WHEN
+    const user = new iam.User(stack, 'test');
+    router.grantAll(user);
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: [
+              'appmesh:DescribeVirtualRouter',
+              'appmesh:UpdateVirtualRouter',
+              'appmesh:DeleteVirtualRouter',
+              'appmesh:TagResource',
+              'appmesh:UntagResource',
+            ],
+            Effect: 'Allow',
+            Resource: {
+              Ref: 'meshhttprouterlistener0FB34F60',
+            },
+          },
+        ],
+      },
+    }));
+
+    test.done();
+  },
+  'Can grant an identity a specific permission for a given VirtualRouter'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const mesh = new appmesh.Mesh(stack, 'mesh', {
+      meshName: 'test-mesh',
+    });
+    const router = mesh.addVirtualRouter('http-router-listener');
+
+    // WHEN
+    const user = new iam.User(stack, 'test');
+    router.grant(user, 'appmesh:DescribeVirtualRouter');
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'appmesh:DescribeVirtualRouter',
+            Effect: 'Allow',
+            Resource: {
+              Ref: 'meshhttprouterlistener0FB34F60',
+            },
+          },
+        ],
+      },
+    }));
 
     test.done();
   },

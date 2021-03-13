@@ -1,4 +1,5 @@
 import * as cdk from '@aws-cdk/core';
+import * as iam from '@aws-cdk/aws-iam';
 import { Construct } from 'constructs';
 import { CfnVirtualGateway } from './appmesh.generated';
 import { GatewayRoute, GatewayRouteBaseProps } from './gateway-route';
@@ -33,6 +34,16 @@ export interface IVirtualGateway extends cdk.IResource {
    * Utility method to add a new GatewayRoute to the VirtualGateway
    */
   addGatewayRoute(id: string, route: GatewayRouteBaseProps): GatewayRoute;
+
+  /**
+   * Grants the given entity all permissions for this VirtualGateway.
+   */
+  grantAll(identity: iam.IGrantable): iam.Grant;
+
+  /**
+   * Grant the specified actions for this VirtualGateway.
+   */
+  grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant;
 }
 
 /**
@@ -101,6 +112,30 @@ abstract class VirtualGatewayBase extends cdk.Resource implements IVirtualGatewa
     return new GatewayRoute(this, id, {
       ...props,
       virtualGateway: this,
+    });
+  }
+
+  /**
+   * Grants the given entity all permissions for this VirtualGateway.
+   */
+  public grantAll(identity: iam.IGrantable): iam.Grant {
+    return this.grant(identity,
+      'appmesh:DescribeVirtualGateway',
+      'appmesh:UpdateVirtualGateway',
+      'appmesh:DeleteVirtualGateway',
+      'appmesh:TagResource',
+      'appmesh:UntagResource',
+    );
+  }
+
+  /**
+   * Grant the specified actions for this VirtualGateway.
+   */
+  public grant(grantee: iam.IGrantable, ...actions: string[]) {
+    return iam.Grant.addToPrincipal({
+      grantee,
+      actions,
+      resourceArns: [this.virtualGatewayArn],
     });
   }
 }

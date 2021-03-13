@@ -1,6 +1,7 @@
 import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as cloudmap from '@aws-cdk/aws-servicediscovery';
+import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 
@@ -312,6 +313,119 @@ export = {
         VirtualServiceName: 'test.domain.local',
       }),
     );
+
+    test.done();
+  },
+  'Can grant an identity all permissions for a given mesh'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const mesh = new appmesh.Mesh(stack, 'mesh', {
+      meshName: 'test-mesh',
+    });
+
+    // WHEN
+    const user = new iam.User(stack, 'test');
+    mesh.grantAll(user);
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: [
+              'appmesh:DescribeMesh',
+              'appmesh:UpdateMesh',
+              'appmesh:DeleteMesh',
+              'appmesh:TagResource',
+              'appmesh:UntagResource',
+            ],
+            Effect: 'Allow',
+            Resource: {
+              Ref: 'meshACDFE68E',
+            },
+          },
+        ],
+      },
+    }));
+
+    test.done();
+  },
+  'Can grant an identity a specific permission for a given mesh'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const mesh = new appmesh.Mesh(stack, 'mesh', {
+      meshName: 'test-mesh',
+    });
+
+    // WHEN
+    const user = new iam.User(stack, 'test');
+    mesh.grant(user, 'appmesh:DescribeMesh');
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'appmesh:DescribeMesh',
+            Effect: 'Allow',
+            Resource: {
+              Ref: 'meshACDFE68E',
+            },
+          },
+        ],
+      },
+    }));
+
+    test.done();
+  },
+  'Can grant an identity all read permissions for resources in a mesh'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const mesh = new appmesh.Mesh(stack, 'mesh', {
+      meshName: 'test-mesh',
+    });
+
+    // WHEN
+    const user = new iam.User(stack, 'test');
+    mesh.grantReadOnlyAllMeshResources(user);
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: [
+              'appmesh:DescribeMesh',
+              'appmesh:ListMeshes',
+              'appmesh:DescribeVirtualService',
+              'appmesh:ListVirtualServices',
+              'appmesh:DescribeVirtualRouter',
+              'appmesh:ListVirtualRouter',
+              'appmesh:DescribeRoute',
+              'appmesh:ListRoutes',
+              'appmesh:DescribeVirtualNode',
+              'appmesh:ListVirtualNodes',
+              'appmesh:DescribeVirtualGateway',
+              'appmesh:ListVirtualGateways',
+              'appmesh:DescribeGatewayRoute',
+              'appmesh:ListGatewayRoutes',
+            ],
+            Effect: 'Allow',
+            Resource: {
+              'Fn::Join': [
+                '',
+                [
+                  {
+                    Ref: 'meshACDFE68E',
+                  },
+                  '/*',
+                ],
+              ],
+            },
+          },
+        ],
+      },
+    }));
 
     test.done();
   },

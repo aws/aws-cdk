@@ -1,4 +1,5 @@
 import * as cdk from '@aws-cdk/core';
+import * as iam from '@aws-cdk/aws-iam';
 import { Construct } from 'constructs';
 import { CfnRoute } from './appmesh.generated';
 import { IMesh } from './mesh';
@@ -27,6 +28,16 @@ export interface IRoute extends cdk.IResource {
    * The VirtualRouter the Route belongs to
    */
   readonly virtualRouter: IVirtualRouter;
+
+  /**
+   * Grants the given entity all permissions for this Route.
+   */
+  grantAll(identity: iam.IGrantable): iam.Grant;
+
+  /**
+   * Grant the specified actions for this Route.
+   */
+  grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant;
 }
 
 /**
@@ -61,17 +72,62 @@ export interface RouteProps extends RouteBaseProps {
   readonly virtualRouter: IVirtualRouter;
 }
 
+abstract class RouteBase extends cdk.Resource implements IRoute {
+  /**
+   * The name of the Route
+   *
+   * @attribute
+   */
+  public abstract readonly routeName: string;
+
+  /**
+   * The Amazon Resource Name (ARN) for the Route
+   *
+   * @attribute
+   */
+  public abstract readonly routeArn: string;
+
+  /**
+   * The VirtualRouter the Route belongs to
+   */
+  public abstract readonly virtualRouter: IVirtualRouter;
+
+  /**
+   * Grants the given entity all permissions for this Route.
+   */
+  public grantAll(identity: iam.IGrantable): iam.Grant {
+    return this.grant(identity,
+      'appmesh:DescribeRoute',
+      'appmesh:UpdateRoute',
+      'appmesh:DeleteRoute',
+      'appmesh:TagResource',
+      'appmesh:UntagResource',
+    );
+  }
+
+  /**
+   * Grant the specified actions for this Route.
+   */
+  public grant(grantee: iam.IGrantable, ...actions: string[]) {
+    return iam.Grant.addToPrincipal({
+      grantee,
+      actions,
+      resourceArns: [this.routeArn],
+    });
+  }
+}
+
 /**
  * Route represents a new or existing route attached to a VirtualRouter and Mesh
  *
  * @see https://docs.aws.amazon.com/app-mesh/latest/userguide/routes.html
  */
-export class Route extends cdk.Resource implements IRoute {
+export class Route extends RouteBase {
   /**
    * Import an existing Route given an ARN
    */
   public static fromRouteArn(scope: Construct, id: string, routeArn: string): IRoute {
-    return new class extends cdk.Resource implements IRoute {
+    return new class extends RouteBase {
       readonly routeArn = routeArn;
       readonly virtualRouter = VirtualRouter.fromVirtualRouterArn(this, 'VirtualRouter', routeArn);
       readonly routeName = cdk.Fn.select(4, cdk.Fn.split('/', cdk.Stack.of(scope).parseArn(routeArn).resourceName!));
@@ -82,7 +138,7 @@ export class Route extends cdk.Resource implements IRoute {
    * Import an existing Route given attributes
    */
   public static fromRouteAttributes(scope: Construct, id: string, attrs: RouteAttributes): IRoute {
-    return new class extends cdk.Resource implements IRoute {
+    return new class extends RouteBase {
       readonly routeName = attrs.routeName;
       readonly virtualRouter = attrs.virtualRouter;
       readonly routeArn = cdk.Stack.of(this).formatArn({

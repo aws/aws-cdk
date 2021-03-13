@@ -2,6 +2,7 @@ import { expect, haveResourceLike } from '@aws-cdk/assert';
 import * as acmpca from '@aws-cdk/aws-acmpca';
 import * as acm from '@aws-cdk/aws-certificatemanager';
 import * as cdk from '@aws-cdk/core';
+import * as iam from '@aws-cdk/aws-iam';
 import { Test } from 'nodeunit';
 import * as appmesh from '../lib';
 
@@ -534,6 +535,90 @@ export = {
     // THEN
     test.equal(virtualNode.mesh.meshName, meshName);
     test.equal(virtualNode.virtualNodeName, virtualNodeName);
+
+    test.done();
+  },
+  'Can grant an identity all permissions for a given VirtualNode'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const mesh = new appmesh.Mesh(stack, 'mesh', {
+      meshName: 'test-mesh',
+    });
+    const node = new appmesh.VirtualNode(stack, 'test-node', {
+      mesh,
+      listeners: [appmesh.VirtualNodeListener.http({
+        port: 80,
+        tlsCertificate: appmesh.TlsCertificate.file({
+          certificateChainPath: 'path/to/certChain',
+          privateKeyPath: 'path/to/privateKey',
+          tlsMode: appmesh.TlsMode.PERMISSIVE,
+        }),
+      })],
+    });
+
+    // WHEN
+    const user = new iam.User(stack, 'test');
+    node.grantAll(user);
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: [
+              'appmesh:DescribeVirtualNode',
+              'appmesh:UpdateVirtualNode',
+              'appmesh:DeleteVirtualNode',
+              'appmesh:TagResource',
+              'appmesh:UntagResource',
+            ],
+            Effect: 'Allow',
+            Resource: {
+              Ref: 'testnode3EE2776E',
+            },
+          },
+        ],
+      },
+    }));
+
+    test.done();
+  },
+  'Can grant an identity a specific permission for a given VirtualNode'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const mesh = new appmesh.Mesh(stack, 'mesh', {
+      meshName: 'test-mesh',
+    });
+    const node = new appmesh.VirtualNode(stack, 'test-node', {
+      mesh,
+      listeners: [appmesh.VirtualNodeListener.http({
+        port: 80,
+        tlsCertificate: appmesh.TlsCertificate.file({
+          certificateChainPath: 'path/to/certChain',
+          privateKeyPath: 'path/to/privateKey',
+          tlsMode: appmesh.TlsMode.PERMISSIVE,
+        }),
+      })],
+    });
+
+    // WHEN
+    const user = new iam.User(stack, 'test');
+    node.grant(user, 'appmesh:DescribeVirtualNode');
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'appmesh:DescribeVirtualNode',
+            Effect: 'Allow',
+            Resource: {
+              Ref: 'testnode3EE2776E',
+            },
+          },
+        ],
+      },
+    }));
 
     test.done();
   },

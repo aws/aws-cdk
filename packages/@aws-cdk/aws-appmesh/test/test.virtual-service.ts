@@ -1,4 +1,5 @@
-import { expect, haveResource } from '@aws-cdk/assert';
+import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
+import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 
@@ -121,5 +122,99 @@ export = {
         test.done();
       },
     },
+  },
+  'Can grant an identity all permissions for a given VirtualService'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const mesh = new appmesh.Mesh(stack, 'mesh', {
+      meshName: 'test-mesh',
+    });
+    const node = new appmesh.VirtualNode(stack, 'test-node', {
+      mesh,
+      listeners: [appmesh.VirtualNodeListener.http({
+        port: 80,
+        tlsCertificate: appmesh.TlsCertificate.file({
+          certificateChainPath: 'path/to/certChain',
+          privateKeyPath: 'path/to/privateKey',
+          tlsMode: appmesh.TlsMode.PERMISSIVE,
+        }),
+      })],
+    });
+
+    const myService = new appmesh.VirtualService(stack, 'service2', {
+      virtualServiceName: 'test-service.domain.local',
+      virtualServiceProvider: appmesh.VirtualServiceProvider.virtualNode(node),
+    });
+
+    // WHEN
+    const user = new iam.User(stack, 'test');
+    myService.grantAll(user);
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: [
+              'appmesh:DescribeVirtualService',
+              'appmesh:UpdateVirtualService',
+              'appmesh:DeleteVirtualService',
+              'appmesh:TagResource',
+              'appmesh:UntagResource',
+            ],
+            Effect: 'Allow',
+            Resource: {
+              Ref: 'service2B2862B6B',
+            },
+          },
+        ],
+      },
+    }));
+
+    test.done();
+  },
+  'Can grant an identity a specific permission for a given VirtualService'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const mesh = new appmesh.Mesh(stack, 'mesh', {
+      meshName: 'test-mesh',
+    });
+    const node = new appmesh.VirtualNode(stack, 'test-node', {
+      mesh,
+      listeners: [appmesh.VirtualNodeListener.http({
+        port: 80,
+        tlsCertificate: appmesh.TlsCertificate.file({
+          certificateChainPath: 'path/to/certChain',
+          privateKeyPath: 'path/to/privateKey',
+          tlsMode: appmesh.TlsMode.PERMISSIVE,
+        }),
+      })],
+    });
+
+    const myService = new appmesh.VirtualService(stack, 'service2', {
+      virtualServiceName: 'test-service.domain.local',
+      virtualServiceProvider: appmesh.VirtualServiceProvider.virtualNode(node),
+    });
+
+    // WHEN
+    const user = new iam.User(stack, 'test');
+    myService.grant(user, 'appmesh:DescribeVirtualService');
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'appmesh:DescribeVirtualService',
+            Effect: 'Allow',
+            Resource: {
+              Ref: 'service2B2862B6B',
+            },
+          },
+        ],
+      },
+    }));
+
+    test.done();
   },
 };

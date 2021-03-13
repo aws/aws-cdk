@@ -1,4 +1,5 @@
 import * as cdk from '@aws-cdk/core';
+import * as iam from '@aws-cdk/aws-iam';
 import { Construct } from 'constructs';
 import { CfnGatewayRoute } from './appmesh.generated';
 import { GatewayRouteSpec } from './gateway-route-spec';
@@ -26,6 +27,61 @@ export interface IGatewayRoute extends cdk.IResource {
    * The VirtualGateway the GatewayRoute belongs to
    */
   readonly virtualGateway: IVirtualGateway;
+
+  /**
+   * Grants the given entity all permissions for this GatewayRoute.
+   */
+  grantAll(identity: iam.IGrantable): iam.Grant;
+
+  /**
+   * Grant the specified actions for this GatewayRoute.
+   */
+  grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant;
+}
+
+abstract class GatewayRouteBase extends cdk.Resource implements IGatewayRoute {
+  /**
+   * The name of the GatewayRoute
+   *
+   * @attribute
+   */
+  public abstract readonly gatewayRouteName: string;
+
+  /**
+   * The Amazon Resource Name (ARN) for the GatewayRoute
+   *
+   * @attribute
+   */
+  public abstract readonly gatewayRouteArn: string;
+
+  /**
+   * The VirtualGateway the GatewayRoute belongs to
+   */
+  public abstract readonly virtualGateway: IVirtualGateway;
+
+  /**
+   * Grants the given entity all permissions for this GatewayRoute.
+   */
+  public grantAll(identity: iam.IGrantable): iam.Grant {
+    return this.grant(identity,
+      'appmesh:DescribeGatewayRoute',
+      'appmesh:UpdateGatewayRoute',
+      'appmesh:DeleteGatewayRoute',
+      'appmesh:TagResource',
+      'appmesh:UntagResource',
+    );
+  }
+
+  /**
+   * Grant the specified actions for this GatewayRoute.
+   */
+  public grant(grantee: iam.IGrantable, ...actions: string[]) {
+    return iam.Grant.addToPrincipal({
+      grantee,
+      actions,
+      resourceArns: [this.gatewayRouteArn],
+    });
+  }
 }
 
 /**
@@ -60,12 +116,12 @@ export interface GatewayRouteProps extends GatewayRouteBaseProps {
  *
  * @see https://docs.aws.amazon.com/app-mesh/latest/userguide/gateway-routes.html
  */
-export class GatewayRoute extends cdk.Resource implements IGatewayRoute {
+export class GatewayRoute extends GatewayRouteBase {
   /**
    * Import an existing GatewayRoute given an ARN
    */
   public static fromGatewayRouteArn(scope: Construct, id: string, gatewayRouteArn: string): IGatewayRoute {
-    return new class extends cdk.Resource implements IGatewayRoute {
+    return new class extends GatewayRouteBase {
       readonly gatewayRouteArn = gatewayRouteArn;
       readonly gatewayRouteName = cdk.Fn.select(4, cdk.Fn.split('/', cdk.Stack.of(scope).parseArn(gatewayRouteArn).resourceName!));
       readonly virtualGateway = VirtualGateway.fromVirtualGatewayArn(this, 'virtualGateway', gatewayRouteArn);
@@ -76,7 +132,7 @@ export class GatewayRoute extends cdk.Resource implements IGatewayRoute {
    * Import an existing GatewayRoute given attributes
    */
   public static fromGatewayRouteAttributes(scope: Construct, id: string, attrs: GatewayRouteAttributes): IGatewayRoute {
-    return new class extends cdk.Resource implements IGatewayRoute {
+    return new class extends GatewayRouteBase {
       readonly gatewayRouteName = attrs.gatewayRouteName;
       readonly gatewayRouteArn = cdk.Stack.of(scope).formatArn({
         service: 'appmesh',

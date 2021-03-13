@@ -1,4 +1,5 @@
 import * as cdk from '@aws-cdk/core';
+import * as iam from '@aws-cdk/aws-iam';
 import { Construct } from 'constructs';
 import { CfnVirtualRouter } from './appmesh.generated';
 import { IMesh, Mesh } from './mesh';
@@ -32,6 +33,16 @@ export interface IVirtualRouter extends cdk.IResource {
    * Add a single route to the router
    */
   addRoute(id: string, props: RouteBaseProps): Route;
+
+  /**
+   * Grants the given entity all permissions for this VirtualRouter.
+   */
+  grantAll(identity: iam.IGrantable): iam.Grant;
+
+  /**
+   * Grant the specified actions for this VirtualRouter.
+   */
+  grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant;
 }
 
 /**
@@ -81,6 +92,30 @@ abstract class VirtualRouterBase extends cdk.Resource implements IVirtualRouter 
     });
 
     return route;
+  }
+
+  /**
+   * Grants the given entity all permissions for this VirtualRouter.
+   */
+  public grantAll(identity: iam.IGrantable): iam.Grant {
+    return this.grant(identity,
+      'appmesh:DescribeVirtualRouter',
+      'appmesh:UpdateVirtualRouter',
+      'appmesh:DeleteVirtualRouter',
+      'appmesh:TagResource',
+      'appmesh:UntagResource',
+    );
+  }
+
+  /**
+   * Grant the specified actions for this VirtualService.
+   */
+  public grant(grantee: iam.IGrantable, ...actions: string[]) {
+    return iam.Grant.addToPrincipal({
+      grantee,
+      actions,
+      resourceArns: [this.virtualRouterArn],
+    });
   }
 }
 
