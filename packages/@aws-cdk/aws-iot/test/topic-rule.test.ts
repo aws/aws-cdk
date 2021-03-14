@@ -63,6 +63,74 @@ nodeunitShim({
     test.deepEqual(topic.ruleName, 'MyTopicRule');
     test.done();
   },
+  'can construct with error action'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    // WHEN
+    const rule = new TopicRule(stack, 'IotTopicRule', {
+      sql: 'SELECT * FROM \'topic/subtopic\'',
+      errorAction: new DummyAction(),
+    });
+
+    rule.addAction(new DummyAction());
+
+    // THEN
+    expect(stack).to(haveResource('AWS::IoT::TopicRule', {
+      TopicRulePayload: {
+        Actions: [{
+          Republish: {
+            RoleArn: 'arn:iam::::role/MyRole',
+            Topic: 'topic/subtopic',
+          },
+        }],
+        AwsIotSqlVersion: '2015-10-08',
+        Description: '',
+        ErrorAction: {
+          Republish: {
+            RoleArn: 'arn:iam::::role/MyRole',
+            Topic: 'topic/subtopic',
+          },
+        },
+        RuleDisabled: false,
+        Sql: 'SELECT * FROM \'topic/subtopic\'',
+      },
+    }));
+    test.done();
+  },
+  'can add error action after construction'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    // WHEN
+    const rule = new TopicRule(stack, 'IotTopicRule', {
+      sql: 'SELECT * FROM \'topic/subtopic\'',
+      actions: [new DummyAction()],
+    });
+
+    rule.addErrorAction(new DummyAction());
+
+    // THEN
+    expect(stack).to(haveResource('AWS::IoT::TopicRule', {
+      TopicRulePayload: {
+        Actions: [{
+          Republish: {
+            RoleArn: 'arn:iam::::role/MyRole',
+            Topic: 'topic/subtopic',
+          },
+        }],
+        AwsIotSqlVersion: '2015-10-08',
+        Description: '',
+        ErrorAction: {
+          Republish: {
+            RoleArn: 'arn:iam::::role/MyRole',
+            Topic: 'topic/subtopic',
+          },
+        },
+        RuleDisabled: false,
+        Sql: 'SELECT * FROM \'topic/subtopic\'',
+      },
+    }));
+    test.done();
+  },
 });
 
 class DummyAction implements ITopicRuleAction {

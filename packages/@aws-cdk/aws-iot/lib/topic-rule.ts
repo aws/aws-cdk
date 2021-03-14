@@ -2,7 +2,7 @@ import { Resource, IResource, Lazy } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnTopicRule } from './iot.generated';
 import { ITopicRuleAction } from './topic-rule-action';
-import { parseRuleName } from './util';
+import { parseRuleName, undefinedIfAllValuesAreEmpty } from './util';
 
 /**
  * An IoT Topic Rule
@@ -103,15 +103,22 @@ export class TopicRule extends Resource implements ITopicRule {
   public readonly ruleName: string;
   public readonly topicRuleArn: string;
   private readonly actions = new Array<CfnTopicRule.ActionProperty>();
+  private errorAction: CfnTopicRule.ActionProperty = {};
 
   constructor(scope: Construct, id: string, props: TopicRuleProps) {
     super(scope, id, {
       physicalName: props.ruleName,
     });
 
+
+    if (props.errorAction) {
+      this.addErrorAction(props.errorAction);
+    }
+
     const resource = new CfnTopicRule(this, 'Resource', {
       ruleName: this.physicalName,
       topicRulePayload: {
+        errorAction: Lazy.any({ produce: () => undefinedIfAllValuesAreEmpty(this.errorAction) }),
         description: props.description || '',
         awsIotSqlVersion: props.awsIotSqlVersion || '2015-10-08',
         sql: props.sql,
@@ -132,6 +139,13 @@ export class TopicRule extends Resource implements ITopicRule {
    */
   public addAction(action: ITopicRuleAction) {
     this.actions.push(action.bind(this));
+  }
+
+  /**
+   * Adds an error action to this topic rule.
+   */
+  public addErrorAction(action: ITopicRuleAction) {
+    this.errorAction = action.bind(this);
   }
 
   public renderActions() {
