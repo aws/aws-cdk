@@ -1544,15 +1544,16 @@ export class Table extends TableBase {
     const isCompleteHandlerPolicy = new SourceTableAttachedPolicy(this, provider.isCompleteHandler.role!);
 
     // Permissions
-    this.grant(onEventHandlerPolicy, 'dynamodb:*');
-    this.grant(isCompleteHandlerPolicy, 'dynamodb:*');
+    const permissions = ['dynamodb:DescribeTimeToLive', 'dynamodb:UpdateTimeToLive'];
+    this.grant(onEventHandlerPolicy, ...permissions);
+    this.grant(isCompleteHandlerPolicy, ...permissions);
 
     const timeToLive = new CustomResource(this, `${id}TimeToLive`, {
       serviceToken: provider.provider.serviceToken,
       resourceType: 'Custom::DynamoDBTimeToLive',
       properties: {
         TableName: this.tableName,
-        TimeToLiveAttribute: timeToLiveAttribute,
+        TimeToLiveAttribute: timeToLiveAttribute !== '' ? timeToLiveAttribute : undefined,
       },
     });
 
