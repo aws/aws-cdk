@@ -1,19 +1,18 @@
 import * as iot from '@aws-cdk/aws-iot';
-
 import * as cdk from '@aws-cdk/core';
 import * as actions from '../lib';
 
 
 // --------------------------------
-// Define a rule that triggers an Lambda funcion when data is received.
+// Define a rule that triggers to republish received data.
 // Automatically creates invoke lambda permission
 //
 const app = new cdk.App();
 
-const stack = new cdk.Stack(app, 'aws-cdk-topic-rule-lambda-action');
+const stack = new cdk.Stack(app, 'aws-cdk-topic-rule-republish-action');
 
 // Create an IoT topic rule with an error action.
-new iot.TopicRule(stack, 'MyIotTopicRule', {
+new iot.TopicRule(stack, 'MyRepublishTopicRule', {
   sql: 'SELECT * FROM \'topic/subtopic\'',
   actions: [
     new actions.Republish({

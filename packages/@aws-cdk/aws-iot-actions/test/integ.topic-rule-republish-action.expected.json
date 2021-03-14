@@ -1,6 +1,6 @@
 {
   "Resources": {
-    "MyIotTopicRuleFE4E2C8B": {
+    "MyRepublishTopicRuleD870AE64": {
       "Type": "AWS::IoT::TopicRule",
       "Properties": {
         "TopicRulePayload": {
@@ -10,7 +10,7 @@
                 "Qos": 0,
                 "RoleArn": {
                   "Fn::GetAtt": [
-                    "MyIotTopicRuleAllowIot2CEDF6FE",
+                    "MyRepublishTopicRuleAllowIotE447F1AF",
                     "Arn"
                   ]
                 },
@@ -26,7 +26,7 @@
         "RuleName": "TODO"
       }
     },
-    "MyIotTopicRuleAllowIot2CEDF6FE": {
+    "MyRepublishTopicRuleAllowIotE447F1AF": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
@@ -43,7 +43,7 @@
         }
       }
     },
-    "MyIotTopicRuleAllowIotDefaultPolicy118BC1CA": {
+    "MyRepublishTopicRuleAllowIotDefaultPolicy0E6BCB09": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
@@ -75,10 +75,10 @@
           ],
           "Version": "2012-10-17"
         },
-        "PolicyName": "MyIotTopicRuleAllowIotDefaultPolicy118BC1CA",
+        "PolicyName": "MyRepublishTopicRuleAllowIotDefaultPolicy0E6BCB09",
         "Roles": [
           {
-            "Ref": "MyIotTopicRuleAllowIot2CEDF6FE"
+            "Ref": "MyRepublishTopicRuleAllowIotE447F1AF"
           }
         ]
       }
