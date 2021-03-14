@@ -26,7 +26,6 @@ nodeunitShim({
         RuleDisabled: false,
         Sql: 'SELECT * FROM \'topic/subtopic\'',
       },
-      RuleName: 'TODO',
     }));
     test.done();
   },
@@ -54,7 +53,6 @@ nodeunitShim({
         RuleDisabled: false,
         Sql: 'SELECT * FROM \'topic/subtopic\'',
       },
-      RuleName: 'TODO',
     }));
     test.done();
   },

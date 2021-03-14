@@ -106,7 +106,7 @@ export class TopicRule extends Resource implements ITopicRule {
 
   constructor(scope: Construct, id: string, props: TopicRuleProps) {
     super(scope, id, {
-      physicalName: props.ruleName || 'TODO',
+      physicalName: props.ruleName,
     });
 
     const resource = new CfnTopicRule(this, 'Resource', {
