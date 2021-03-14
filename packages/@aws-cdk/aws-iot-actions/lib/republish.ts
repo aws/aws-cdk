@@ -1,5 +1,6 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as iot from '@aws-cdk/aws-iot';
+import { Stack, Arn } from '@aws-cdk/core';
 import { singletonTopicRuleRole } from './util';
 
 /**
@@ -39,14 +40,18 @@ export class Republish implements iot.ITopicRuleAction {
   }
 
   public bind(rule: iot.ITopicRule): iot.TopicRuleActionConfig {
+    const stack = Stack.of(rule);
     // Allow rule to publish to topic
     const role = this.props.role || singletonTopicRuleRole(rule, [new iam.PolicyStatement({
       actions: ['iot:Publish'],
-      resources: [this.props.topic],
+      resources: [
+        Arn.format({
+          resource: 'topic',
+          service: 'iot',
+          resourceName: this.props.topic,
+        }, stack),
+      ],
     })]);
-
-    // Ensure permission is deployed before rule
-    rule.node.addDependency(role);
 
     return {
       republish: {

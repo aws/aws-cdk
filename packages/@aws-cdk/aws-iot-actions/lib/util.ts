@@ -13,7 +13,7 @@ import { Construct } from '@aws-cdk/core';
  */
 export function singletonTopicRuleRole(scope: IConstruct, policyStatements: iam.PolicyStatement[]): iam.IRole {
   const stack = Stack.of(scope);
-  const id = 'DefaultPolicy';
+  const id = 'AllowIot';
   const existing = stack.node.tryFindChild(id) as iam.IRole;
   if (existing) { return existing; }
 

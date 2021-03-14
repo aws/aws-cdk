@@ -57,9 +57,6 @@ export class Sns implements iot.ITopicRuleAction {
       resources: [this.props.topic.topicArn],
     })]);
 
-    // Ensure permission is deployed before rule
-    rule.node.addDependency(role);
-
     return {
       sns: {
         messageFormat: this.props.messageFormat || MessageFormats.RAW,

@@ -66,7 +66,7 @@ test('add sns action', () => {
         {
           Sns: {
             MessageFormat: 'RAW',
-            RoleArn: { 'Fn::GetAtt': ['PublishSnsRuleDefaultPolicyF2EC542D', 'Arn'] },
+            RoleArn: { 'Fn::GetAtt': ['PublishSnsRuleAllowIot34A25A9A', 'Arn'] },
             TargetArn: { Ref: 'MyTopic86869434' },
           },
         },
@@ -92,7 +92,7 @@ test('add republish action', () => {
         {
           Republish: {
             Qos: 0,
-            RoleArn: { 'Fn::GetAtt': ['RepublishRuleDefaultPolicy143E0758', 'Arn'] },
+            RoleArn: { 'Fn::GetAtt': ['RepublishRuleAllowIotB39A8B3C', 'Arn'] },
             Topic: '$$aws/things/MyThing/shadow/update',
           },
         },
