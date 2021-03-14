@@ -1,7 +1,7 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
-import { Duration, IResource, RemovalPolicy, Resource, Token } from '@aws-cdk/core';
+import { Aws, Duration, IResource, Lazy, RemovalPolicy, Resource, Token } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { Endpoint } from './endpoint';
 import { InstanceType } from './instance';
@@ -120,6 +120,13 @@ export interface DatabaseClusterProps {
   readonly dbClusterName?: string;
 
   /**
+   * Map AWS Identity and Access Management (IAM) accounts to database accounts
+   *
+   * @default - `false`
+   */
+  readonly iamAuthentication?: boolean;
+
+  /**
    * Base identifier for instances
    *
    * Every replica is named by appending the replica number to this string, 1-based.
@@ -233,6 +240,11 @@ export interface IDatabaseCluster extends IResource, ec2.IConnectable {
    * @attribute ReadEndpoint
    */
   readonly clusterReadEndpoint: Endpoint;
+
+  /**
+   * Grant the given identity connection access to the database.
+   */
+  grantConnect(grantee: iam.IGrantable): iam.Grant;
 }
 
 /**
@@ -266,23 +278,15 @@ export interface DatabaseClusterAttributes {
 }
 
 /**
- * Create a clustered database with a given number of instances.
- *
- * @resource AWS::Neptune::DBCluster
+ * A new or imported database cluster.
  */
-export class DatabaseCluster extends Resource implements IDatabaseCluster {
-
-  /**
-   * The default number of instances in the Neptune cluster if none are
-   * specified
-   */
-  public static readonly DEFAULT_NUM_INSTANCES = 1;
+export abstract class DatabaseClusterBase extends Resource implements IDatabaseCluster {
 
   /**
    * Import an existing DatabaseCluster from properties
    */
   public static fromDatabaseClusterAttributes(scope: Construct, id: string, attrs: DatabaseClusterAttributes): IDatabaseCluster {
-    class Import extends Resource implements IDatabaseCluster {
+    class Import extends DatabaseClusterBase implements IDatabaseCluster {
       public readonly defaultPort = ec2.Port.tcp(attrs.port);
       public readonly connections = new ec2.Connections({
         securityGroups: [attrs.securityGroup],
@@ -291,6 +295,7 @@ export class DatabaseCluster extends Resource implements IDatabaseCluster {
       public readonly clusterIdentifier = attrs.clusterIdentifier;
       public readonly clusterEndpoint = new Endpoint(attrs.clusterEndpointAddress, attrs.port);
       public readonly clusterReadEndpoint = new Endpoint(attrs.readerEndpointAddress, attrs.port);
+      protected enableIamAuthentication = true;
     }
 
     return new Import(scope, id);
@@ -299,17 +304,65 @@ export class DatabaseCluster extends Resource implements IDatabaseCluster {
   /**
    * Identifier of the cluster
    */
-  public readonly clusterIdentifier: string;
+  public abstract readonly clusterIdentifier: string;
 
   /**
    * The endpoint to use for read/write operations
    */
-  public readonly clusterEndpoint: Endpoint;
+  public abstract readonly clusterEndpoint: Endpoint;
 
   /**
    * Endpoint to use for load-balanced read-only operations.
    */
+  public abstract readonly clusterReadEndpoint: Endpoint;
+
+  /**
+   * The connections object to implement IConnectable
+   */
+  public abstract readonly connections: ec2.Connections;
+
+  protected abstract enableIamAuthentication?: boolean;
+
+  public grantConnect(grantee: iam.IGrantable): iam.Grant {
+    if (this.enableIamAuthentication === false) {
+      throw new Error('Cannot grant connect when IAM authentication is disabled');
+    }
+
+    this.enableIamAuthentication = true;
+    return iam.Grant.addToPrincipal({
+      grantee,
+      actions: ['neptune-db:*'],
+      resourceArns: [
+        [
+          'arn',
+          Aws.PARTITION,
+          'neptune-db',
+          Aws.REGION,
+          Aws.ACCOUNT_ID,
+          `${this.clusterIdentifier}/*`,
+        ].join(':'),
+      ],
+    });
+  }
+}
+
+/**
+ * Create a clustered database with a given number of instances.
+ *
+ * @resource AWS::Neptune::DBCluster
+ */
+export class DatabaseCluster extends DatabaseClusterBase implements IDatabaseCluster {
+
+  /**
+   * The default number of instances in the Neptune cluster if none are
+   * specified
+   */
+  public static readonly DEFAULT_NUM_INSTANCES = 1;
+
+  public readonly clusterIdentifier: string;
+  public readonly clusterEndpoint: Endpoint;
   public readonly clusterReadEndpoint: Endpoint;
+  public readonly connections: ec2.Connections;
 
   /**
    * The resource id for the cluster; for example: cluster-ABCD1234EFGH5678IJKL90MNOP. The cluster ID uniquely
@@ -317,11 +370,6 @@ export class DatabaseCluster extends Resource implements IDatabaseCluster {
    * @attribute ClusterResourceId
    */
   public readonly clusterResourceIdentifier: string;
-
-  /**
-   * The connections object to implement IConectable
-   */
-  public readonly connections: ec2.Connections;
 
   /**
    * The VPC where the DB subnet group is created.
@@ -347,6 +395,8 @@ export class DatabaseCluster extends Resource implements IDatabaseCluster {
    * Endpoints which address each individual instance.
    */
   public readonly instanceEndpoints: Endpoint[] = [];
+
+  protected enableIamAuthentication?: boolean;
 
   constructor(scope: Construct, id: string, props: DatabaseClusterProps) {
     super(scope, id);
@@ -385,6 +435,8 @@ export class DatabaseCluster extends Resource implements IDatabaseCluster {
 
     const deletionProtection = props.deletionProtection ?? (props.removalPolicy === RemovalPolicy.RETAIN ? true : undefined);
 
+    this.enableIamAuthentication = props.iamAuthentication;
+
     // Create the Neptune cluster
     const cluster = new CfnDBCluster(this, 'Resource', {
       // Basic
@@ -396,6 +448,7 @@ export class DatabaseCluster extends Resource implements IDatabaseCluster {
       dbClusterParameterGroupName: props.clusterParameterGroup?.clusterParameterGroupName,
       deletionProtection: deletionProtection,
       associatedRoles: props.associatedRoles ? props.associatedRoles.map(role => ({ roleArn: role.roleArn })) : undefined,
+      iamAuthEnabled: Lazy.any({ produce: () => this.enableIamAuthentication }),
       // Backup
       backupRetentionPeriod: props.backupRetention?.toDays(),
       preferredBackupWindow: props.preferredBackupWindow,

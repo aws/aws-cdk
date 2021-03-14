@@ -1,6 +1,6 @@
 import { IResolvable } from '../resolvable';
 import { TokenizedStringFragments } from '../string-fragments';
-import { Token } from '../token';
+import { isResolvableObject, Token } from '../token';
 import {
   BEGIN_LIST_TOKEN_MARKER, BEGIN_STRING_TOKEN_MARKER, createTokenDouble,
   END_TOKEN_MARKER, extractTokenDouble, TokenString, VALID_KEY_CHARS,
@@ -104,6 +104,7 @@ export class TokenMap {
    * Lookup a token from an encoded value
    */
   public tokenFromEncoding(x: any): IResolvable | undefined {
+    if (isResolvableObject(x)) { return x; }
     if (typeof x === 'string') { return this.lookupString(x); }
     if (Array.isArray(x)) { return this.lookupList(x); }
     if (Token.isUnresolved(x)) { return x; }
