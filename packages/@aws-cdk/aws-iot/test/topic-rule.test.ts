@@ -22,7 +22,6 @@ nodeunitShim({
           },
         }],
         AwsIotSqlVersion: '2015-10-08',
-        Description: '',
         RuleDisabled: false,
         Sql: 'SELECT * FROM \'topic/subtopic\'',
       },
@@ -49,7 +48,6 @@ nodeunitShim({
           },
         }],
         AwsIotSqlVersion: '2015-10-08',
-        Description: '',
         RuleDisabled: false,
         Sql: 'SELECT * FROM \'topic/subtopic\'',
       },
@@ -84,7 +82,6 @@ nodeunitShim({
           },
         }],
         AwsIotSqlVersion: '2015-10-08',
-        Description: '',
         ErrorAction: {
           Republish: {
             RoleArn: 'arn:iam::::role/MyRole',
@@ -118,7 +115,6 @@ nodeunitShim({
           },
         }],
         AwsIotSqlVersion: '2015-10-08',
-        Description: '',
         ErrorAction: {
           Republish: {
             RoleArn: 'arn:iam::::role/MyRole',

@@ -5,6 +5,35 @@ import { ITopicRuleAction } from './topic-rule-action';
 import { parseRuleName, undefinedIfAllValuesAreEmpty } from './util';
 
 /**
+ * The AWS IoT rules engine uses an SQL-like syntax to select data from MQTT
+ * messages. The SQL statements are interpreted based on an SQL version
+ * specified with the awsIotSqlVersion property in a JSON document that describes
+ * the rule.
+ */
+export enum AwsIotSqlVersion {
+  /**
+   * Version beta
+   *
+   * The most recent beta SQL version. If you use this version, it might
+   * introduce breaking changes to your rules.
+   */
+  BETA = 'beta',
+  /**
+   * Version 2015-10-08
+   *
+   * The original SQL version built on 2015-10-08.
+   */
+  VERSION2015_10_08 = '2015-10-08',
+  /**
+   * Version 2016-03-23
+   *
+   * The SQL version built on 2016-03-23.
+   *
+   * Supports secrets, task recycling.
+   */
+  VERSION2016_03_23 = '2016-03-23',
+}
+/**
  * An IoT Topic Rule
  */
 export interface ITopicRule extends IResource {
@@ -61,7 +90,7 @@ export interface TopicRuleProps {
    *
    * @default - 2012-17-10
    */
-  readonly awsIotSqlVersion?: string;
+  readonly awsIotSqlVersion?: AwsIotSqlVersion;
   /**
    * The topic rule description.
    *
@@ -119,8 +148,8 @@ export class TopicRule extends Resource implements ITopicRule {
       ruleName: this.physicalName,
       topicRulePayload: {
         errorAction: Lazy.any({ produce: () => undefinedIfAllValuesAreEmpty(this.errorAction) }),
-        description: props.description || '',
-        awsIotSqlVersion: props.awsIotSqlVersion || '2015-10-08',
+        description: props.description,
+        awsIotSqlVersion: props.awsIotSqlVersion || AwsIotSqlVersion.VERSION2015_10_08,
         sql: props.sql,
         ruleDisabled: props.ruleDisabled || false,
         actions: Lazy.any({ produce: () => this.renderActions() }),
