@@ -112,7 +112,6 @@ export class TopicRule extends Resource implements ITopicRule {
     const resource = new CfnTopicRule(this, 'Resource', {
       ruleName: this.physicalName,
       topicRulePayload: {
-        ...props.errorAction,
         description: props.description || '',
         awsIotSqlVersion: props.awsIotSqlVersion || '2015-10-08',
         sql: props.sql,
