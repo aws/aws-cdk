@@ -19,11 +19,9 @@
             }
           ],
           "AwsIotSqlVersion": "2015-10-08",
-          "Description": "",
           "RuleDisabled": false,
           "Sql": "SELECT * FROM 'topic/subtopic'"
-        },
-        "RuleName": "TODO"
+        }
       }
     },
     "MyRepublishTopicRuleAllowIotE447F1AF": {
