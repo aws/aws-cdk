@@ -1,4 +1,4 @@
-import { expect, haveResource, SynthUtils } from '@aws-cdk/assert';
+import { expect, haveResource, haveResourceLike, SynthUtils } from '@aws-cdk/assert';
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as cdk from '@aws-cdk/core';
 import * as fc from 'fast-check';
@@ -148,6 +148,81 @@ export = {
         ],
       },
 
+    }));
+
+    test.done();
+  },
+
+  'step scaling from percentile metric'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const target = createScalableTarget(stack);
+
+    // WHEN
+    target.scaleOnMetric('Tracking', {
+      metric: new cloudwatch.Metric({ namespace: 'Test', metricName: 'Metric', statistic: 'p99' }),
+      scalingSteps: [
+        { upper: 0, change: -1 },
+        { lower: 100, change: +1 },
+        { lower: 500, change: +5 },
+      ],
+    });
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::ApplicationAutoScaling::ScalingPolicy', {
+      PolicyType: 'StepScaling',
+      StepScalingPolicyConfiguration: {
+        AdjustmentType: 'ChangeInCapacity',
+        MetricAggregationType: 'Average',
+      },
+    }));
+    expect(stack).to(haveResource('AWS::CloudWatch::Alarm', {
+      ComparisonOperator: 'GreaterThanOrEqualToThreshold',
+      EvaluationPeriods: 1,
+      AlarmActions: [
+        { Ref: 'TargetTrackingUpperPolicy72CEFA77' },
+      ],
+      ExtendedStatistic: 'p99',
+      MetricName: 'Metric',
+      Namespace: 'Test',
+      Threshold: 100,
+    }));
+
+    test.done();
+  },
+
+  'step scaling with evaluation period configured'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const target = createScalableTarget(stack);
+
+    // WHEN
+    target.scaleOnMetric('Tracking', {
+      metric: new cloudwatch.Metric({ namespace: 'Test', metricName: 'Metric', statistic: 'p99' }),
+      scalingSteps: [
+        { upper: 0, change: -1 },
+        { lower: 100, change: +1 },
+        { lower: 500, change: +5 },
+      ],
+      evaluationPeriods: 10,
+      metricAggregationType: appscaling.MetricAggregationType.MAXIMUM,
+    });
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::ApplicationAutoScaling::ScalingPolicy', {
+      PolicyType: 'StepScaling',
+      StepScalingPolicyConfiguration: {
+        AdjustmentType: 'ChangeInCapacity',
+        MetricAggregationType: 'Maximum',
+      },
+    }));
+    expect(stack).to(haveResource('AWS::CloudWatch::Alarm', {
+      ComparisonOperator: 'GreaterThanOrEqualToThreshold',
+      EvaluationPeriods: 10,
+      ExtendedStatistic: 'p99',
+      MetricName: 'Metric',
+      Namespace: 'Test',
+      Threshold: 100,
     }));
 
     test.done();

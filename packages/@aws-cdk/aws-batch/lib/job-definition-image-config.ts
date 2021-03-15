@@ -10,6 +10,54 @@ import { TaskDefinition } from './task-definition';
 import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 /**
+<<<<<<< HEAD
+=======
+ * TaskDefinitionRole
+ *
+ * Defines the required properties of a Batch Job Definition.
+ */
+interface TaskDefinitionProps {
+  /**
+   * Defines the IAM role used when executing this task definition
+   */
+  readonly executionRole: iam.IRole;
+}
+
+/**
+ * Batch Job Task Definition
+ *
+ * Defines a Batch Job Task Definition. The properties of this task definition mirrors
+ * those of an {@link ecs.ContainerDefinition}. This class is a wrapper on that structure.
+ */
+class TaskDefinition {
+  /**
+   * The IAM role used during execution of the task definition. This IAM role should
+   * contain the relevant access required to interact with resources your application needs to perform.
+   */
+  public readonly executionRole: iam.IRole;
+
+  constructor(props: TaskDefinitionProps) {
+    this.executionRole = props.executionRole;
+  }
+
+  /**
+   * Internal function to allow the Batch Job task definition
+   * to match the CDK requirements of an EC2 task definition.
+   *
+   * @internal
+   */
+  public _linkContainer() {}
+
+  /**
+   * Retrieves the execution role for this task definition
+   */
+  public obtainExecutionRole(): iam.IRole {
+    return this.executionRole;
+  }
+}
+
+/**
+>>>>>>> remotes/upstream/master
  * The configuration for creating a batch container image.
  */
 export class JobDefinitionImageConfig {

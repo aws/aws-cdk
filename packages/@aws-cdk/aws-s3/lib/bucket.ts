@@ -183,7 +183,7 @@ export interface IBucket extends IResource {
   grantPutAcl(identity: iam.IGrantable, objectsKeyPattern?: string): iam.Grant;
 
   /**
-   * Grants s3:DeleteObject* permission to an IAM pricipal for objects
+   * Grants s3:DeleteObject* permission to an IAM principal for objects
    * in this bucket.
    *
    * @param identity The principal
@@ -628,7 +628,7 @@ abstract class BucketBase extends Resource implements IBucket {
   }
 
   /**
-   * Grants s3:DeleteObject* permission to an IAM pricipal for objects
+   * Grants s3:DeleteObject* permission to an IAM principal for objects
    * in this bucket.
    *
    * @param identity The principal
@@ -1062,6 +1062,14 @@ export interface BucketProps {
   readonly encryptionKey?: kms.IKey;
 
   /**
+  * Enforces SSL for requests. S3.5 of the AWS Foundational Security Best Practices Regarding S3.
+  * @see https://docs.aws.amazon.com/config/latest/developerguide/s3-bucket-ssl-requests-only.html
+  *
+  * @default false
+  */
+  readonly enforceSSL?: boolean;
+
+  /**
    * Specifies whether Amazon S3 should use an S3 Bucket Key with server-side
    * encryption using KMS (SSE-KMS) for new objects in the bucket.
    *
@@ -1357,6 +1365,11 @@ export class Bucket extends BucketBase {
     this.disallowPublicAccess = props.blockPublicAccess && props.blockPublicAccess.blockPublicPolicy;
     this.accessControl = props.accessControl;
 
+    // Enforce AWS Foundational Security Best Practice
+    if (props.enforceSSL) {
+      this.enforceSSLStatement();
+    }
+
     if (props.serverAccessLogsBucket instanceof Bucket) {
       props.serverAccessLogsBucket.allowLogDelivery();
     }
@@ -1479,6 +1492,22 @@ export class Bucket extends BucketBase {
     this.inventories.push(inventory);
   }
 
+  /**
+   * Adds an iam statement to enforce SSL requests only.
+   */
+  private enforceSSLStatement() {
+    const statement = new iam.PolicyStatement({
+      actions: ['s3:*'],
+      conditions: {
+        Bool: { 'aws:SecureTransport': 'false' },
+      },
+      effect: iam.Effect.DENY,
+      resources: [this.arnForObjects('*')],
+      principals: [new iam.AnyPrincipal()],
+    });
+    this.addToResourcePolicy(statement);
+  }
+
   private validateBucketName(physicalName: string): void {
     const bucketName = physicalName;
     if (!bucketName || Token.isUnresolved(bucketName)) {
@@ -1591,7 +1620,7 @@ export class Bucket extends BucketBase {
   }
 
   /**
-   * Parse the lifecycle configuration out of the uucket props
+   * Parse the lifecycle configuration out of the bucket props
    * @param props Par
    */
   private parseLifecycleConfiguration(): CfnBucket.LifecycleConfigurationProperty | undefined {
@@ -1801,6 +1830,7 @@ export class Bucket extends BucketBase {
     const provider = CustomResourceProvider.getOrCreateProvider(this, AUTO_DELETE_OBJECTS_RESOURCE_TYPE, {
       codeDirectory: path.join(__dirname, 'auto-delete-objects-handler'),
       runtime: CustomResourceProviderRuntime.NODEJS_12,
+      description: `Lambda function for auto-deleting objects in ${this.bucketName} S3 bucket.`,
     });
 
     // Use a bucket policy to allow the custom resource to delete

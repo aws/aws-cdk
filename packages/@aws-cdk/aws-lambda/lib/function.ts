@@ -8,6 +8,7 @@ import * as sqs from '@aws-cdk/aws-sqs';
 import { Annotations, CfnResource, Duration, Fn, Lazy, Names, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { Code, CodeConfig } from './code';
+import { ICodeSigningConfig } from './code-signing-config';
 import { EventInvokeConfigOptions } from './event-invoke-config';
 import { IEventSource } from './event-source';
 import { FileSystem } from './filesystem';
@@ -213,7 +214,7 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
   /**
    * A list of layers to add to the function's execution environment. You can configure your Lambda function to pull in
    * additional code during initialization in the form of layers. Layers are packages of libraries or other dependencies
-   * that can be used by mulitple functions.
+   * that can be used by multiple functions.
    *
    * @default - No layers.
    */
@@ -290,6 +291,13 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
    * @default - AWS Lambda creates and uses an AWS managed customer master key (CMK).
    */
   readonly environmentEncryption?: kms.IKey;
+
+  /**
+   * Code signing config associated with this function
+   *
+   * @default - Not Sign the Code
+   */
+  readonly codeSigningConfig?: ICodeSigningConfig;
 }
 
 export interface FunctionProps extends FunctionOptions {
@@ -555,7 +563,7 @@ export class Function extends FunctionBase {
     });
     this.grantPrincipal = this.role;
 
-    // add additonal managed policies when necessary
+    // add additional managed policies when necessary
     if (props.filesystem) {
       const config = props.filesystem.config;
       if (config.policies) {
@@ -641,6 +649,7 @@ export class Function extends FunctionBase {
       }),
       kmsKeyArn: props.environmentEncryption?.keyArn,
       fileSystemConfigs,
+      codeSigningConfigArn: props.codeSigningConfig?.codeSigningConfigArn,
     });
 
     resource.node.addDependency(this.role);

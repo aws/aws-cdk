@@ -22,6 +22,7 @@ const listener = lb.addListener('Listener', {
 const group1 = listener.addTargets('Target', {
   port: 80,
   targets: [new elbv2.IpTarget('10.0.128.4')],
+  stickinessCookieDuration: cdk.Duration.minutes(5),
 });
 
 const group2 = listener.addTargets('ConditionalTarget', {
@@ -29,6 +30,9 @@ const group2 = listener.addTargets('ConditionalTarget', {
   hostHeader: 'example.com',
   port: 80,
   targets: [new elbv2.IpTarget('10.0.128.5')],
+  stickinessCookieDuration: cdk.Duration.minutes(5),
+  stickinessCookieName: 'MyDeliciousCookie',
+  slowStart: cdk.Duration.minutes(1),
 });
 
 group1.metricTargetResponseTime().createAlarm(stack, 'ResponseTimeHigh1', {

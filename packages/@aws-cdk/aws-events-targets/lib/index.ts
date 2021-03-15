@@ -7,6 +7,7 @@ export * from './aws-api';
 export * from './lambda';
 export * from './ecs-task-properties';
 export * from './ecs-task';
+export * from './event-bus';
 export * from './state-machine';
 export * from './kinesis-stream';
 export * from './log-group';

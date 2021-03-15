@@ -1801,19 +1801,17 @@ export = {
       test.done();
     },
 
-    'BitBucket sources do not support file path conditions'(test: Test) {
+    'BitBucket sources support file path conditions'(test: Test) {
       const stack = new cdk.Stack();
       const filterGroup = codebuild.FilterGroup.inEventOf(codebuild.EventAction.PUSH).andFilePathIs('.*');
 
-      test.throws(() => {
-        new codebuild.Project(stack, 'Project', {
-          source: codebuild.Source.bitBucket({
-            owner: 'owner',
-            repo: 'repo',
-            webhookFilters: [filterGroup],
-          }),
-        });
-      }, /BitBucket sources do not support file path conditions for webhook filters/);
+      new codebuild.Project(stack, 'Project', {
+        source: codebuild.Source.bitBucket({
+          owner: 'owner',
+          repo: 'repo',
+          webhookFilters: [filterGroup],
+        }),
+      });
 
       test.done();
     },

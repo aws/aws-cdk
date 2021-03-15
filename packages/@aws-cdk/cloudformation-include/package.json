@@ -186,6 +186,7 @@
     "@aws-cdk/aws-route53": "0.0.0",
     "@aws-cdk/aws-route53resolver": "0.0.0",
     "@aws-cdk/aws-s3": "0.0.0",
+    "@aws-cdk/aws-s3outposts": "0.0.0",
     "@aws-cdk/aws-sagemaker": "0.0.0",
     "@aws-cdk/aws-sam": "0.0.0",
     "@aws-cdk/aws-sdb": "0.0.0",
@@ -334,6 +335,7 @@
     "@aws-cdk/aws-route53": "0.0.0",
     "@aws-cdk/aws-route53resolver": "0.0.0",
     "@aws-cdk/aws-s3": "0.0.0",
+    "@aws-cdk/aws-s3outposts": "0.0.0",
     "@aws-cdk/aws-sagemaker": "0.0.0",
     "@aws-cdk/aws-sam": "0.0.0",
     "@aws-cdk/aws-sdb": "0.0.0",
@@ -367,7 +369,7 @@
     "cdk-integ-tools": "0.0.0",
     "jest": "^26.6.3",
     "pkglint": "0.0.0",
-    "ts-jest": "^26.5.1"
+    "ts-jest": "^26.5.3"
   },
   "keywords": [
     "aws",

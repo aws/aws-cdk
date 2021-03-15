@@ -24,5 +24,18 @@ if echo "$@" | grep "DOCKER_STUB_SUCCESS"; then
   exit 0
 fi
 
-echo "Docker mock only supports one of the following commands: DOCKER_STUB_SUCCESS_NO_OUTPUT,DOCKER_STUB_FAIL,DOCKER_STUB_SUCCESS"
+if echo "$@" | grep "DOCKER_STUB_MULTIPLE_FILES"; then
+  outdir=$(echo "$@" | xargs -n1 | grep "/asset-output" | head -n1 | cut -d":" -f1)
+  touch ${outdir}/test1.txt
+  touch ${outdir}/test2.txt
+  exit 0
+fi
+
+if echo "$@" | grep "DOCKER_STUB_SINGLE_ARCHIVE"; then
+  outdir=$(echo "$@" | xargs -n1 | grep "/asset-output" | head -n1 | cut -d":" -f1)
+  touch ${outdir}/test.zip
+  exit 0
+fi
+
+echo "Docker mock only supports one of the following commands: DOCKER_STUB_SUCCESS_NO_OUTPUT,DOCKER_STUB_FAIL,DOCKER_STUB_SUCCESS,DOCKER_STUB_MULTIPLE_FILES,DOCKER_SINGLE_ARCHIVE"
 exit 1
