@@ -232,9 +232,7 @@ const virtualService = new appmesh.VirtualService(stack, 'service-1', {
   }),
 });
 
-node.addBackend(appmesh.Backend.virtualService({
-  virtualService: virtualService,
-}));
+node.addBackend(appmesh.Backend.virtualService(virtualService));
 ```
 
 The `listeners` property can be left blank and added later with the `node.addListener()` method. The `healthcheck` and `timeout` properties are optional but if specifying a listener, the `port` must be added.
@@ -302,6 +300,30 @@ router.addRoute('route-http', {
 });
 ```
 
+Add an HTTP2 route that matches based on method, scheme and header:
+
+```ts
+router.addRoute('route-http2', {
+  routeSpec: appmesh.RouteSpec.http2({
+    weightedTargets: [
+      {
+        virtualNode: node,
+      },
+    ],
+    match: {
+      prefixPath: '/',
+      method: appmesh.HttpRouteMatchMethod.POST,
+      protocol: appmesh.HttpRouteProtocol.HTTPS,
+      headers: [
+        // All specified headers must match for the route to match.
+        appmesh.HttpHeaderMatch.valueIs('Content-Type', 'application/json'),
+        appmesh.HttpHeaderMatch.valueIsNot('Content-Type', 'application/json'),
+      ]
+    },
+  }),
+});
+```
+
 Add a single route with multiple targets and split traffic 50/50
 
 ```ts
@@ -319,6 +341,50 @@ router.addRoute('route-http', {
     ],
     match: {
       prefixPath: '/path-to-app',
+    },
+  }),
+});
+```
+
+Add an http2 route with retries:
+
+```ts
+router.addRoute('route-http2-retry', {
+  routeSpec: appmesh.RouteSpec.http2({
+    weightedTargets: [{ virtualNode: node }],
+    retryPolicy: {
+      // Retry if the connection failed
+      tcpRetryEvents: [appmesh.TcpRetryEvent.CONNECTION_ERROR],
+      // Retry if HTTP responds with a gateway error (502, 503, 504)
+      httpRetryEvents: [appmesh.HttpRetryEvent.GATEWAY_ERROR],
+      // Retry five times
+      retryAttempts: 5,
+      // Use a 1 second timeout per retry
+      retryTimeout: cdk.Duration.seconds(1),
+    },
+  }),
+});
+```
+
+Add a gRPC route with retries:
+
+```ts
+router.addRoute('route-grpc-retry', {
+  routeSpec: appmesh.RouteSpec.grpc({
+    weightedTargets: [{ virtualNode: node }],
+    match: { serviceName: 'servicename' },
+    retryPolicy: {
+      tcpRetryEvents: [appmesh.TcpRetryEvent.CONNECTION_ERROR],
+      httpRetryEvents: [appmesh.HttpRetryEvent.GATEWAY_ERROR],
+      // Retry if gRPC responds that the request was cancelled, a resource
+      // was exhausted, or if the service is unavailable
+      grpcRetryEvents: [
+        appmesh.GrpcRetryEvent.CANCELLED,
+        appmesh.GrpcRetryEvent.RESOURCE_EXHAUSTED,
+        appmesh.GrpcRetryEvent.UNAVAILABLE,
+      ],
+      retryAttempts: 5,
+      retryTimeout: cdk.Duration.seconds(1),
     },
   }),
 });
@@ -465,3 +531,31 @@ appmesh.Mesh.fromMeshArn(stack, 'imported-mesh', arn);
 ```ts
 appmesh.Mesh.fromMeshName(stack, 'imported-mesh', 'abc');
 ```
+
+## IAM Grants
+
+Each mesh resource includes 2 methods to generate IAM policy documents. `grantAll` grants the user full read/write 
+access to the resource. `grant` only grants the listed actions and you can list more than 1.
+
+```ts
+const gateway = new appmesh.VirtualGateway(stack, 'testGateway', { mesh: mesh });
+const user = new iam.User(stack, 'myUser');
+
+/**
+ * This will grant the user the following actions:
+ * - appmesh:DescribeVirtualGateway
+ * - appmesh:UpdateVirtualGateway
+ * - appmesh:DeleteVirtualGateway
+ * - appmesh:TagResource
+ * - appmesh:UntagResource
+ * ONLY for the resource the grant was created for. 
+ */
+gateway.grantAll(user);
+
+/**
+ * This will only grant the user "appmesh:DescribeVirtualGateway" for the Virtual Gateway. 
+ */
+gateway.grant(user, 'appmesh:DescribeVirtualGateway');
+
+
+``` 

@@ -1,5 +1,5 @@
-import * as cdk from '@aws-cdk/core';
 import * as iam from '@aws-cdk/aws-iam';
+import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnVirtualRouter } from './appmesh.generated';
 import { IMesh, Mesh } from './mesh';

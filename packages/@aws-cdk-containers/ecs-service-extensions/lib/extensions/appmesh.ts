@@ -347,7 +347,11 @@ export class AppMeshExtension extends ServiceExtension {
     // Next update the app mesh config so that the local Envoy
     // proxy on this service knows how to route traffic to
     // nodes from the other service.
+<<<<<<< HEAD
     this.virtualNode.addBackend(appmesh.Backend.virtualService(otherAppMesh.virtualService ));
+=======
+    this.virtualNode.addBackend(appmesh.Backend.virtualService(otherAppMesh.virtualService));
+>>>>>>> 20a2820ee4d022663fcd0928fbc0f61153ae953f
   }
 
   private routeSpec(weightedTargets: appmesh.WeightedTarget[], serviceName: string): appmesh.RouteSpec {

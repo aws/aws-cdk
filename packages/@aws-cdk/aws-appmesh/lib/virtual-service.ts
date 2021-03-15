@@ -1,5 +1,5 @@
-import * as cdk from '@aws-cdk/core';
 import * as iam from '@aws-cdk/aws-iam';
+import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnVirtualService } from './appmesh.generated';
 import { IMesh, Mesh } from './mesh';
@@ -57,6 +57,7 @@ export interface VirtualServiceProps {
 
   /**
    * The VirtualNode or VirtualRouter which the VirtualService uses as its provider
+<<<<<<< HEAD
    */
   readonly virtualServiceProvider: VirtualServiceProvider;
 }
@@ -73,6 +74,8 @@ abstract class VirtualServiceBase extends cdk.Resource implements IVirtualServic
    * The Amazon Resource Name (ARN) for the virtual service
    *
    * @attribute
+=======
+>>>>>>> 20a2820ee4d022663fcd0928fbc0f61153ae953f
    */
   public abstract readonly virtualServiceArn: string;
 

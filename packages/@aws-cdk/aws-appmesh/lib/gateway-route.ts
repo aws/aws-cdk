@@ -1,5 +1,5 @@
-import * as cdk from '@aws-cdk/core';
 import * as iam from '@aws-cdk/aws-iam';
+import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnGatewayRoute } from './appmesh.generated';
 import { GatewayRouteSpec } from './gateway-route-spec';

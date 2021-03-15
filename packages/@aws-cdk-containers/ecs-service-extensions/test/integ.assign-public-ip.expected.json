@@ -1044,7 +1044,7 @@
           }
         },
         "Handler": "framework.onEvent",
-        "Runtime": "nodejs10.x",
+        "Runtime": "nodejs14.x",
         "Timeout": 900
       },
       "DependsOn": [

@@ -1,5 +1,5 @@
-import * as cdk from '@aws-cdk/core';
 import * as iam from '@aws-cdk/aws-iam';
+import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnRoute } from './appmesh.generated';
 import { IMesh } from './mesh';
@@ -182,6 +182,7 @@ export class Route extends RouteBase {
         httpRoute: spec.httpRouteSpec,
         http2Route: spec.http2RouteSpec,
         grpcRoute: spec.grpcRouteSpec,
+        priority: spec.priority,
       },
     });
 
