@@ -233,6 +233,12 @@
     "StateMachine81935E76": {
       "Type": "AWS::StepFunctions::StateMachine",
       "Properties": {
+        "RoleArn": {
+          "Fn::GetAtt": [
+            "StateMachineRole543B9670",
+            "Arn"
+          ]
+        },
         "DefinitionString": {
           "Fn::Join": [
             "",
@@ -243,12 +249,6 @@
               },
               ":states:::glue:startJobRun.sync\",\"Parameters\":{\"JobName\":\"My Glue Job\",\"Arguments\":{\"--enable-metrics\":\"true\"}}},\"End Task\":{\"Type\":\"Pass\",\"End\":true}}}"
             ]
-          ]
-        },
-        "RoleArn": {
-          "Fn::GetAtt": [
-            "StateMachineRole543B9670",
-            "Arn"
           ]
         }
       },

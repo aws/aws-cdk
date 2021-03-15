@@ -31,7 +31,7 @@ test('creates CloudFormation Custom Resource', () => {
   });
   expect(stack).toHaveResource('AWS::Lambda::Function', {
     Handler: 'index.certificateRequestHandler',
-    Runtime: 'nodejs10.x',
+    Runtime: 'nodejs14.x',
     Timeout: 900,
   });
   expect(stack).toHaveResource('AWS::IAM::Policy', {
