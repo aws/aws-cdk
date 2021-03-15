@@ -387,7 +387,9 @@ export abstract class BaseService extends Resource
       },
       propagateTags: props.propagateTags === PropagatedTagSource.NONE ? undefined : props.propagateTags,
       enableEcsManagedTags: props.enableECSManagedTags ?? false,
-      deploymentController: props.deploymentController,
+      deploymentController: props.circuitBreaker ? {
+        type: DeploymentControllerType.ECS,
+      } : props.deploymentController,
       launchType: launchType,
       capacityProviderStrategy: props.capacityProviderStrategies,
       healthCheckGracePeriodSeconds: this.evaluateHealthGracePeriod(props.healthCheckGracePeriod),
