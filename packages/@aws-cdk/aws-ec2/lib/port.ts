@@ -2,10 +2,6 @@ import { Token } from '@aws-cdk/core';
 
 /**
  * Protocol for use in Connection Rules
- */
-
-/**
- * Protocol for use in Connection Rules
  *
  * https://www.iana.org/assignments/protocol-numbers/protocol-numbers.xhtml
  */
