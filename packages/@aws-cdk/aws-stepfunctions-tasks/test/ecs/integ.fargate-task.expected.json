@@ -252,6 +252,12 @@
     "StateMachine2E01A3A5": {
       "Type": "AWS::StepFunctions::StateMachine",
       "Properties": {
+        "RoleArn": {
+          "Fn::GetAtt": [
+            "StateMachineRoleB840431D",
+            "Arn"
+          ]
+        },
         "DefinitionString": {
           "Fn::Join": [
             "",
@@ -280,12 +286,6 @@
               },
               ":states:::ecs:runTask.sync\"}}}"
             ]
-          ]
-        },
-        "RoleArn": {
-          "Fn::GetAtt": [
-            "StateMachineRoleB840431D",
-            "Arn"
           ]
         }
       },
