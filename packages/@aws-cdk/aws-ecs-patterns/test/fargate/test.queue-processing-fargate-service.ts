@@ -344,9 +344,7 @@ export = {
       serviceName: 'fargate-test-service',
       family: 'fargate-task-family',
       platformVersion: ecs.FargatePlatformVersion.VERSION1_4,
-      deploymentController: {
-        type: ecs.DeploymentControllerType.CODE_DEPLOY,
-      },
+      circuitBreaker: { rollback: true },
     });
 
     // THEN - QueueWorker is of FARGATE launch type, an SQS queue is created and all optional properties are set.
@@ -355,12 +353,16 @@ export = {
       DeploymentConfiguration: {
         MinimumHealthyPercent: 60,
         MaximumPercent: 150,
+        DeploymentCircuitBreaker: {
+          Enable: true,
+          Rollback: true,
+        },
       },
       LaunchType: 'FARGATE',
       ServiceName: 'fargate-test-service',
       PlatformVersion: ecs.FargatePlatformVersion.VERSION1_4,
       DeploymentController: {
-        Type: 'CODE_DEPLOY',
+        Type: 'ECS',
       },
     }));
 
