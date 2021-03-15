@@ -386,7 +386,7 @@
       "docs-public-apis:@aws-cdk/aws-ec2.Protocol.ISO_TP4",
       "docs-public-apis:@aws-cdk/aws-ec2.Protocol.I_NLSP",
       "docs-public-apis:@aws-cdk/aws-ec2.Protocol.KRYPTOLAN",
-      "docs-public-apis:@aws-cdk/aws-ec2.Protocol.L2TP",
+      "docs-public-apis:@aws-cdk/aws-ec2.Protocol.L2_T_P",
       "docs-public-apis:@aws-cdk/aws-ec2.Protocol.LARP",
       "docs-public-apis:@aws-cdk/aws-ec2.Protocol.LEAF_1",
       "docs-public-apis:@aws-cdk/aws-ec2.Protocol.LEAF_2",
