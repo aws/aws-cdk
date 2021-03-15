@@ -1225,7 +1225,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
         ...this.autoScalingGroup.cfnOptions.creationPolicy,
         resourceSignal: {
           count: props.resourceSignalCount,
-          timeout: props.resourceSignalTimeout && props.resourceSignalTimeout.toIsoString(),
+          timeout: props.resourceSignalTimeout && props.resourceSignalTimeout.toISOString(),
         },
       };
     }
@@ -1516,7 +1516,7 @@ function renderRollingUpdateConfig(config: RollingUpdateConfiguration = {}): Cfn
     minInstancesInService: config.minInstancesInService,
     minSuccessfulInstancesPercent: validatePercentage(config.minSuccessfulInstancesPercent),
     waitOnResourceSignals,
-    pauseTime: pauseTime && pauseTime.toIsoString(),
+    pauseTime: pauseTime && pauseTime.toISOString(),
     suspendProcesses: config.suspendProcesses ?? DEFAULT_SUSPEND_PROCESSES,
   };
 }

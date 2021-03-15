@@ -74,7 +74,7 @@ export class CfnJson extends CoreConstruct implements IResolvable {
     return this.jsonString;
   }
 
-  public resolve(_context: IResolveContext): any {
+  public resolve(_: IResolveContext): any {
     return this.value;
   }
 }

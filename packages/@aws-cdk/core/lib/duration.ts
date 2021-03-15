@@ -178,6 +178,17 @@ export class Duration {
   }
 
   /**
+   * Return an ISO 8601 representation of this period
+   *
+   * @returns a string starting with 'P' describing the period
+   * @see https://www.iso.org/fr/standard/70907.html
+   * @deprecated Use `toIsoString()` instead.
+   */
+  public toISOString(): string {
+    return this.toIsoString();
+  }
+
+  /**
    * Turn this duration into a human-readable string
    */
   public toHumanString(): string {
