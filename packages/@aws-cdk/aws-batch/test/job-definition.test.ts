@@ -1,3 +1,4 @@
+import { throws } from 'assert';
 import { Template } from '@aws-cdk/assertions';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecr from '@aws-cdk/aws-ecr';
@@ -61,6 +62,7 @@ describe('Batch Job Definition', () => {
       },
       retryAttempts: 2,
       timeout: cdk.Duration.seconds(30),
+      platformCapabilities: [batch.PlatformCapabilities.EC2],
     };
   });
 
@@ -112,6 +114,7 @@ describe('Batch Job Definition', () => {
         AttemptDurationSeconds: jobDefProps.timeout ? jobDefProps.timeout.toSeconds() : -1,
       },
       Type: 'container',
+      PlatformCapabilities: ['EC2'],
     });
   });
   test('can use an ecr image', () => {
@@ -284,6 +287,45 @@ describe('Batch Job Definition', () => {
           ],
         },
       },
+    });
+  });
+  describe('using fargate job definition', () => {
+    test('can configure platform configuration properly', () => {
+      // GIVEN
+      const platformConfiguration: batch.FargatePlatformConfiguration = {
+        platformVersion: ecs.FargatePlatformVersion.LATEST,
+      };
+      const executionRole = new iam.Role(stack, 'execution-role', {
+        assumedBy: new iam.ServicePrincipal('batch.amazonaws.com'),
+      });
+      // WHEN
+      new batch.JobDefinition(stack, 'job-def', {
+        platformCapabilities: [batch.PlatformCapabilities.FARGATE],
+        container: {
+          image: ecs.EcrImage.fromRegistry('docker/whalesay'),
+          fargatePlatformConfiguration: platformConfiguration,
+          executionRole: executionRole,
+        },
+      });
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::Batch::JobDefinition', {
+        ContainerProperties: {
+          FargatePlatformConfiguration: {
+            PlatformVersion: 'LATEST',
+          },
+        },
+      });
+    });
+    test('must require executionRole', () => {
+      throws(() => {
+        // WHEN
+        new batch.JobDefinition(stack, 'job-def', {
+          platformCapabilities: [batch.PlatformCapabilities.FARGATE],
+          container: {
+            image: ecs.EcrImage.fromRegistry('docker/whalesay'),
+          },
+        });
+      });
     });
   });
 });
