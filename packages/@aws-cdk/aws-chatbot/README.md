@@ -34,11 +34,6 @@ const slackChannel = new chatbot.SlackChannelConfiguration(this, 'MySlackChannel
   slackChannelId: 'YOUR_SLACK_CHANNEL_ID',
 });
 
-slackChannel.addLambdaInvokeCommandPermissions();
-slackChannel.addNotificationPermissions();
-slackChannel.addSupportCommandPermissions();
-slackChannel.addReadOnlyCommandPermissions();
-
 slackChannel.addToPrincipalPolicy(new iam.PolicyStatement({
   effect: iam.Effect.ALLOW,
   actions: [
