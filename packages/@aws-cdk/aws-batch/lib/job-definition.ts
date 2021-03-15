@@ -1,11 +1,15 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
-import * as ecs from '@aws-cdk/aws-ecs';
 import * as iam from '@aws-cdk/aws-iam';
 import { Duration, IResource, Resource, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
+
 import { CfnJobDefinition } from './batch.generated';
+import { MountPoint, Ulimit } from './container-definition';
+import { ContainerImage } from './container-image';
 import { ExposedSecret } from './exposed-secret';
 import { JobDefinitionImageConfig } from './job-definition-image-config';
+import { LinuxParameters } from './linux-parameters';
+import { Volume } from './volume';
 
 /**
  * The log driver to use for the container.
@@ -100,7 +104,7 @@ export interface JobDefinitionContainer {
   /**
    * The image used to start a container.
    */
-  readonly image: ecs.ContainerImage;
+  readonly image: ContainerImage;
 
   /**
    * The instance type to use for a multi-node parallel job. Currently all node groups in a
@@ -124,7 +128,7 @@ export interface JobDefinitionContainer {
    *
    * @default - None will be used.
    */
-  readonly linuxParams?: ecs.LinuxParameters;
+  readonly linuxParams?: LinuxParameters;
 
   /**
    * The log configuration specification for the container.
@@ -146,7 +150,7 @@ export interface JobDefinitionContainer {
    *
    * @default - No mount points will be used.
    */
-  readonly mountPoints?: ecs.MountPoint[];
+  readonly mountPoints?: MountPoint[];
 
   /**
    * When this parameter is true, the container is given elevated privileges on the host container instance (similar to the root user).
@@ -174,7 +178,7 @@ export interface JobDefinitionContainer {
    *
    * @default - No limits.
    */
-  readonly ulimits?: ecs.Ulimit[];
+  readonly ulimits?: Ulimit[];
 
   /**
    * The user name to use inside the container.
@@ -196,7 +200,7 @@ export interface JobDefinitionContainer {
    *
    * @default - No data volumes will be used.
    */
-  readonly volumes?: ecs.Volume[];
+  readonly volumes?: Volume[];
 }
 
 /**
@@ -438,7 +442,7 @@ export class JobDefinition extends Resource implements IJobDefinition {
       instanceType: container.instanceType && container.instanceType.toString(),
       jobRoleArn: container.jobRole && container.jobRole.roleArn,
       linuxParameters: container.linuxParams
-        ? { devices: container.linuxParams.renderLinuxParameters().devices }
+        ? container.linuxParams.renderLinuxParameters()
         : undefined,
       logConfiguration: container.logConfiguration ? {
         logDriver: container.logConfiguration.logDriver,
