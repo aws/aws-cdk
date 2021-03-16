@@ -1,6 +1,6 @@
 
 import { expect, haveResource } from '@aws-cdk/assert';
-import { Stack } from '@aws-cdk/core';
+import { App, Stack } from '@aws-cdk/core';
 import { nodeunitShim, Test } from 'nodeunit-shim';
 import * as iot from '../lib';
 
@@ -12,7 +12,10 @@ nodeunitShim({
     const stack = new Stack();
 
     new iot.Policy(stack, 'MyIotPolicy', {
-      statements: [new iot.PolicyStatement({ actions: ['iot:Connect'] })],
+      statements: [new iot.PolicyStatement({
+        actions: ['iot:Connect'],
+        resources: ['arn:aws:iot:us-east-1:123456789012:client/myClientId'],
+      })],
     });
 
     expect(stack).to(haveResource('AWS::IoT::Policy', {
@@ -23,6 +26,7 @@ nodeunitShim({
           {
             'Effect': 'Allow',
             'Action': 'iot:Connect',
+            'Resource': 'arn:aws:iot:us-east-1:123456789012:client/myClientId',
           },
         ],
       },
@@ -35,6 +39,7 @@ nodeunitShim({
     new iot.Policy(stack, 'MyIotPolicy', {
       statements: [new iot.PolicyStatement({
         actions: ['iot:Connect'],
+        resources: ['arn:aws:iot:us-east-1:123456789012:client/myClientId'],
       })],
     });
 
@@ -46,6 +51,7 @@ nodeunitShim({
           {
             'Effect': 'Allow',
             'Action': 'iot:Connect',
+            'Resource': 'arn:aws:iot:us-east-1:123456789012:client/myClientId',
           },
         ],
       },
@@ -58,6 +64,7 @@ nodeunitShim({
       policyName: 'policyName',
       statements: [new iot.PolicyStatement({
         actions: ['iot:Connect'],
+        resources: ['arn:aws:iot:us-east-1:123456789012:client/myClientId'],
       })],
     });
     expect(stack).to(haveResource('AWS::IoT::Policy', {
@@ -71,6 +78,7 @@ nodeunitShim({
       document: new iot.PolicyDocument({
         statements: [new iot.PolicyStatement({
           actions: ['iot:Connect'],
+          resources: ['arn:aws:iot:us-east-1:123456789012:client/myClientId'],
         })],
       }),
     });
@@ -82,6 +90,7 @@ nodeunitShim({
           {
             'Effect': 'Allow',
             'Action': 'iot:Connect',
+            'Resource': 'arn:aws:iot:us-east-1:123456789012:client/myClientId',
           },
         ],
       },
@@ -102,7 +111,10 @@ nodeunitShim({
   'can provide statements after creation'(test: Test) {
     const stack = new Stack();
     const policy = new iot.Policy(stack, 'MyIotPolicy');
-    policy.addStatements(new iot.PolicyStatement({ actions: ['iot:Connect'] }));
+    policy.addStatements(new iot.PolicyStatement({
+      actions: ['iot:Connect'],
+      resources: ['arn:aws:iot:us-east-1:123456789012:client/myClientId'],
+    }));
 
     expect(stack).to(haveResource('AWS::IoT::Policy', {
       'PolicyName': 'MyIotPolicyCB76D4D8',
@@ -112,6 +124,7 @@ nodeunitShim({
           {
             'Effect': 'Allow',
             'Action': 'iot:Connect',
+            'Resource': 'arn:aws:iot:us-east-1:123456789012:client/myClientId',
           },
         ],
       },
@@ -120,12 +133,16 @@ nodeunitShim({
   },
   'can attach policy to certificate'(test: Test) {
     const stack = new Stack();
+    const statement = new iot.PolicyStatement();
+    statement.addActions('iot:Connect');
+    statement.addAllResources();
     const policy = new iot.Policy(stack, 'MyIotPolicy', {
-      statements: [new iot.PolicyStatement({})],
+      statements: [statement],
     });
 
     const cert = new iot.Certificate(stack, 'MyCertificate', {
       status: iot.CertificateStatus.ACTIVE,
+      certificateSigningRequest: 'csr',
     });
 
     policy.attachToCertificate(cert);
@@ -150,6 +167,34 @@ nodeunitShim({
     test.deepEqual(stack.resolve(policy.policyArn), {
       'Fn::GetAtt': ['MyIotPolicyCB76D4D8', 'Arn'],
     });
+    test.done();
+  },
+  'fails if policy document is missing actions'(test: Test) {
+    const app = new App();
+    const stack = new Stack(app, 'MyStack');
+    new iot.Policy(stack, 'MyIotPolicy', {
+      statements: [new iot.PolicyStatement({})],
+    });
+    test.throws(() => { app.synth(); }, /An IoT PolicyStatement must specify at least one 'action'./);
+    test.done();
+  },
+  'fails if policy document is missing resources'(test: Test) {
+    const app = new App();
+    const stack = new Stack(app, 'MyStack');
+    new iot.Policy(stack, 'MyIotPolicy', {
+      statements: [new iot.PolicyStatement({
+        actions: ['iot:Connect'],
+      })],
+    });
+    test.throws(() => { app.synth(); }, /An IoT PolicyStatement must specify at least one 'resource'./);
+    test.done();
+  },
+  'reading policyName forces a Policy to materialize'(test: Test) {
+    const app = new App();
+    const stack = new Stack(app, 'MyStack');
+    const policy = new iot.Policy(stack, 'MyIotPolicy');
+    Array.isArray(policy.policyName);
+    test.throws(() => { app.synth(); }, /You must add statements ot the policy/);
     test.done();
   },
 });

@@ -1,7 +1,8 @@
 import { Resource, IResource } from '@aws-cdk/core';
 import { Construct } from 'constructs';
-import { CfnCertificate, CfnPolicyPrincipalAttachment } from './iot.generated';
+import { CfnCertificate, CfnPolicyPrincipalAttachment, CfnThingPrincipalAttachment } from './iot.generated';
 import { IPolicy } from './policy';
+import { IThing } from './thing';
 import { parseCertificateId, parseCertificateArn } from './util';
 
 /**
@@ -72,6 +73,11 @@ export interface ICertificate extends IResource {
    * Adds a principal policy attachment.
    */
   attachPolicy(policy: IPolicy): void;
+
+  /**
+   * Adds a thing principal attachment.
+   */
+  attachThing(thing: IThing): void;
 }
 /**
  * Properties to initialize an instance of `Certificate`.
@@ -159,10 +165,26 @@ abstract class CertificateBase extends Resource implements ICertificate {
    * @param policy IPolicy
    */
   public attachPolicy(policy: IPolicy): void {
-    new CfnPolicyPrincipalAttachment(this, 'PrincipalPolicyAttachment', {
+    const attachment = new CfnPolicyPrincipalAttachment(this, 'PrincipalPolicyAttachment', {
       policyName: policy.policyName,
       principal: this.certificateArn,
     });
+    this.node.addDependency(policy);
+    attachment.node.addDependency(policy);
+  }
+
+  /**
+   * Attaches an IoT Thing to the Certificate
+   *
+   * @param thing IThing
+   */
+  public attachThing(thing: IThing): void {
+    const attachment = new CfnThingPrincipalAttachment(this, 'ThingPrincipalAttachment', {
+      principal: this.certificateArn,
+      thingName: thing.thingName,
+    });
+    this.node.addDependency(thing);
+    attachment.node.addDependency(thing);
   }
 }
 
@@ -211,14 +233,23 @@ export class Certificate extends CertificateBase {
     super(scope, id, {});
 
     if (props.caCertificatePem && props.certificateMode == CertificateMode.SNI_ONLY) {
-      throw new Error('Certificate invalid. CACertificatePem not available when CertificateMode is SNI_ONLY.');
+      throw new Error('Certificate invalid. CaCertificatePem not available when CertificateMode is SNI_ONLY.');
     }
 
-    let rest = { ...props };
-    delete rest.status;
+    if (props.certificatePem && props.certificateMode != CertificateMode.SNI_ONLY && !props.caCertificatePem) {
+      throw new Error('Certificate invalid. Requires SNI_ONLY or the accompanying CACertificatePem for registration.');
+    }
+
+    if (!props.certificateMode && !props.certificateSigningRequest && !props.certificatePem && !props.caCertificatePem) {
+      throw new Error('Certificate invalid. Default requires CSR or CACertificatePem and CertificatePem');
+    }
+
     const resource = new CfnCertificate(this, 'Resource', {
       status: props.status || CertificateStatus.INACTIVE,
-      ...rest,
+      certificateMode: props.certificateMode || CertificateMode.DEFAULT,
+      caCertificatePem: props.caCertificatePem,
+      certificatePem: props.certificatePem,
+      certificateSigningRequest: props.certificateSigningRequest,
     });
 
     this.certificateArn = resource.attrArn;

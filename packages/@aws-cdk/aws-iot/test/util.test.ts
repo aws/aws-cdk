@@ -1,33 +1,33 @@
 import * as cdk from '@aws-cdk/core';
 import { nodeunitShim, Test } from 'nodeunit-shim';
-import { parseCertificateArn, parsePolicyArn } from '../lib/util';
+import { parseCertificateArn, parseCertificateId, parsePolicyArn } from '../lib/util';
 
 nodeunitShim({
   certificateArnFromId: {
     'produce arn from certificate id'(test: Test) {
       const stack = new cdk.Stack();
       const certificateId = 'hello';
+
       test.deepEqual(stack.resolve(parseCertificateArn(stack, { certificateId })), {
         'Fn::Join':
           ['',
             ['arn:',
               { Ref: 'AWS::Partition' },
-              'iot:::cert/hello']],
+              ':iot:',
+              { Ref: 'AWS::Region' },
+              ':',
+              { Ref: 'AWS::AccountId' },
+              ':cert/hello']],
       });
+
       test.done();
     },
   },
   certificateIdFromArn: {
-    'produce arn from certificate id'(test: Test) {
+    'produce certificate id when given arn'(test: Test) {
       const stack = new cdk.Stack();
-      const certificateArn = 'arn:aws:iot:::cert/hello';
-      test.deepEqual(stack.resolve(parseCertificateArn(stack, { certificateArn })), {
-        'Fn::Join':
-          ['',
-            ['arn:',
-              { Ref: 'AWS::Partition' },
-              'iot:::cert/hello']],
-      });
+      const certificateArn = 'arn:aws:iot:us-east-1:123456789012:cert/hello';
+      test.deepEqual(parseCertificateId(stack, { certificateArn }), 'hello');
       test.done();
     },
   },
@@ -40,7 +40,11 @@ nodeunitShim({
           ['',
             ['arn:',
               { Ref: 'AWS::Partition' },
-              'iot:::policy/hello']],
+              ':iot:',
+              { Ref: 'AWS::Region' },
+              ':',
+              { Ref: 'AWS::AccountId' },
+              ':policy/hello']],
       });
       test.done();
     },

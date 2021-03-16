@@ -143,7 +143,11 @@ export class Policy extends Resource implements IPolicy {
   }
 
   /**
-   * Attaches this policy to a certificate
+   * Attaches an AWS IoT policy to a principal (an x.509 certificate or other
+   * credential).
+   *
+   * a certificate ARN (as returned from the CreateCertificate operation) or an
+   * Amazon Cognito ID.
    */
   public attachToCertificate(certificate: ICertificate) {
     certificate.attachPolicy(this);

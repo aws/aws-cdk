@@ -17,7 +17,7 @@ describe('IoT policy document', () => {
     expect(stack.resolve(p.toStatementJson())).toEqual({
       Action:
       ['iot:GetPendingJobExecutions',
-        'iot:StartnextPendingJobExecution',
+        'iot:StartNextPendingJobExecution',
         'iot:UpdateJobExecution'],
       Resource:
       ['arn:aws:iot:us-east-1:123456789012:thing/thingOne',
@@ -190,7 +190,7 @@ describe('IoT policy document', () => {
   });
 
   describe('fromJson', () => {
-    test("throws error when Statement isn't an array", () => {
+    test('throws error when Statement isn\'t an array', () => {
       expect(() => {
         PolicyDocument.fromJson({
           Statement: 'asdf',

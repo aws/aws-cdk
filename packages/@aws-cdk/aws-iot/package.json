@@ -73,6 +73,7 @@
   "devDependencies": {
     "@aws-cdk/assert": "0.0.0",
     "cdk-build-tools": "0.0.0",
+    "cdk-integ-tools": "0.0.0",
     "cfn2ts": "0.0.0",
     "nodeunit-shim": "0.0.0",
     "pkglint": "0.0.0"
@@ -97,6 +98,7 @@
       "docs-public-apis:@aws-cdk/aws-iot.PolicyProps",
       "no-unused-type:@aws-cdk/aws-iot.CertificateStatus",
       "no-unused-type:@aws-cdk/aws-iot.CertificateAttributes",
+      "no-unused-type:@aws-cdk/aws-iot.ThingAttributes",
       "props-default-doc:@aws-cdk/aws-iot.CertificateAttributes.certificateArn",
       "props-default-doc:@aws-cdk/aws-iot.CertificateAttributes.certificateId",
       "props-physical-name:@aws-cdk/aws-iot.CertificateProps",

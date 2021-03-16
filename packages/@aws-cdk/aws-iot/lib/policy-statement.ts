@@ -37,7 +37,6 @@ export class PolicyStatement {
   public effect: Effect;
 
   private readonly action = new Array<any>();
-  private readonly notAction = new Array<any>();
   private readonly resource = new Array<any>();
 
   constructor(props: PolicyStatementProps = {}) {
@@ -67,9 +66,6 @@ export class PolicyStatement {
    * @param actions actions that will be allowed.
    */
   public addActions(...actions: string[]) {
-    if (actions.length > 0 && this.notAction.length > 0) {
-      throw new Error('Cannot add \'Actions\' to policy statement if \'NotActions\' have been added');
-    }
     this.action.push(...actions);
   }
 
@@ -172,6 +168,9 @@ export class PolicyStatement {
     const errors = new Array<string>();
     if (this.action.length === 0) {
       errors.push('An IoT PolicyStatement must specify at least one \'action\'.');
+    }
+    if (this.resource.length === 0) {
+      errors.push('An IoT PolicyStatement must specify at least one \'resource\'.');
     }
     return errors;
   }

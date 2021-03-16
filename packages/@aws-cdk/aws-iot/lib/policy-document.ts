@@ -117,7 +117,7 @@ export class PolicyDocument implements cdk.IResolvable {
 }
 
 /**
- * Removes duplicate statements and assign Sids if necessary
+ * Removes duplicate statements
  */
 class RemoveDuplicateStatements implements cdk.IPostProcessor {
   constructor() {

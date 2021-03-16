@@ -3,7 +3,6 @@ import { Stack } from '@aws-cdk/core';
 import { PolicyDocument, PolicyStatement } from '../lib';
 
 describe('IoT policy statement', () => {
-
   describe('from JSON', () => {
     test('parses', () => {
       // given
