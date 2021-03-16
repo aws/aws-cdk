@@ -625,6 +625,124 @@
         "RouteName": "route-3"
       }
     },
+    "meshrouterroutematchingACC12F04": {
+      "Type": "AWS::AppMesh::Route",
+      "Properties": {
+        "MeshName": {
+          "Fn::GetAtt": [
+            "meshACDFE68E",
+            "MeshName"
+          ]
+        },
+        "Spec": {
+          "Http2Route": {
+            "Action": {
+              "WeightedTargets": [
+                {
+                  "VirtualNode": {
+                    "Fn::GetAtt": [
+                      "meshnode3D2A19CF2",
+                      "VirtualNodeName"
+                    ]
+                  },
+                  "Weight": 1
+                }
+              ]
+            },
+            "Match": {
+              "Headers": [
+                {
+                  "Invert": false,
+                  "Match": {
+                    "Exact": "application/json"
+                  },
+                  "Name": "Content-Type"
+                },
+                {
+                  "Invert": false,
+                  "Match": {
+                    "Prefix": "application/json"
+                  },
+                  "Name": "Content-Type"
+                },
+                {
+                  "Invert": false,
+                  "Match": {
+                    "Suffix": "application/json"
+                  },
+                  "Name": "Content-Type"
+                },
+                {
+                  "Invert": false,
+                  "Match": {
+                    "Regex": "application/.*"
+                  },
+                  "Name": "Content-Type"
+                },
+                {
+                  "Invert": false,
+                  "Match": {
+                    "Range": {
+                      "End": 5,
+                      "Start": 1
+                    }
+                  },
+                  "Name": "Content-Type"
+                },
+                {
+                  "Invert": true,
+                  "Match": {
+                    "Exact": "application/json"
+                  },
+                  "Name": "Content-Type"
+                },
+                {
+                  "Invert": true,
+                  "Match": {
+                    "Prefix": "application/json"
+                  },
+                  "Name": "Content-Type"
+                },
+                {
+                  "Invert": true,
+                  "Match": {
+                    "Suffix": "application/json"
+                  },
+                  "Name": "Content-Type"
+                },
+                {
+                  "Invert": true,
+                  "Match": {
+                    "Regex": "application/.*"
+                  },
+                  "Name": "Content-Type"
+                },
+                {
+                  "Invert": true,
+                  "Match": {
+                    "Range": {
+                      "End": 5,
+                      "Start": 1
+                    }
+                  },
+                  "Name": "Content-Type"
+                }
+              ],
+              "Method": "POST",
+              "Prefix": "/",
+              "Scheme": "https"
+            }
+          }
+        },
+        "VirtualRouterName": {
+          "Fn::GetAtt": [
+            "meshrouter81B8087E",
+            "VirtualRouterName"
+          ]
+        },
+        "RouteName": "route-matching"
+      }
+    },
     "meshrouterroutehttp2retryCC41345F": {
       "Type": "AWS::AppMesh::Route",
       "Properties": {
@@ -674,6 +792,45 @@
           ]
         },
         "RouteName": "route-http2-retry"
+      }
+    },
+    "meshrouterroute53F46B0FE": {
+      "Type": "AWS::AppMesh::Route",
+      "Properties": {
+        "MeshName": {
+          "Fn::GetAtt": [
+            "meshACDFE68E",
+            "MeshName"
+          ]
+        },
+        "Spec": {
+          "Http2Route": {
+            "Action": {
+              "WeightedTargets": [
+                {
+                  "VirtualNode": {
+                    "Fn::GetAtt": [
+                      "meshnode2092BA426",
+                      "VirtualNodeName"
+                    ]
+                  },
+                  "Weight": 1
+                }
+              ]
+            },
+            "Match": {
+              "Prefix": "/"
+            }
+          },
+          "Priority": 10
+        },
+        "VirtualRouterName": {
+          "Fn::GetAtt": [
+            "meshrouter81B8087E",
+            "VirtualRouterName"
+          ]
+        },
+        "RouteName": "route-5"
       }
     },
     "meshrouterroutegrpcretry9BEB798A": {

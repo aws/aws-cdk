@@ -432,7 +432,7 @@ the `additionalArtifacts` property.
 Here are some typical examples for how you might want to bring in additional
 files from several sources:
 
-* Directoy from the source repository
+* Directory from the source repository
 * Additional compiled artifacts from the synth step
 
 ### Controlling IAM permissions
@@ -523,7 +523,7 @@ const validationAction = new ShellScriptAction({
 });
 ```
 
-#### Add Additional permissions to the CodeBuild Project Role for building and synthing
+#### Add Additional permissions to the CodeBuild Project Role for building and synthesizing
 
 You can customize the role permissions used by the CodeBuild project so it has access to
 the needed resources. eg: Adding CodeArtifact repo permissions so we pull npm packages
@@ -677,7 +677,7 @@ contains:
   assets in these storage locations *without* the use of CloudFormation template
   parameters.
 * A set of roles with permissions to access these asset locations and to execute
-  CloudFormation, assumeable from whatever accounts you specify under `--trust`.
+  CloudFormation, assumable from whatever accounts you specify under `--trust`.
 
 It is possible and safe to migrate from the old bootstrap stack to the new
 bootstrap stack. This will create a new S3 file asset bucket in your account
