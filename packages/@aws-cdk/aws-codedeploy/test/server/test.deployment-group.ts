@@ -28,6 +28,19 @@ export = {
       test.done();
     },
 
+    'creating an application with physical name if needed'(test: Test) {
+      const stack = new cdk.Stack();
+      new codedeploy.ServerDeploymentGroup(stack, 'MyDG', {
+        deploymentGroupName: cdk.PhysicalName.GENERATE_IF_NEEDED,
+      });
+
+      expect(stack).to(haveResource('AWS::CodeDeploy::Application', {
+        'ApplicationName': 'WeirdStringHereYouWillNeedToCopyPasteFromAFailingTest',
+      }));
+
+      test.done();
+    },
+
     'can be imported'(test: Test) {
       const stack = new cdk.Stack();
 
