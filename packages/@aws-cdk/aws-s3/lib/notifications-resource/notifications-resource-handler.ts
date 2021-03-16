@@ -82,7 +82,7 @@ export class NotificationsResourceHandler extends Construct {
         Code: { ZipFile: `exports.handler = ${handler.toString()};` },
         Handler: 'index.handler',
         Role: role.roleArn,
-        Runtime: 'nodejs14.x',
+        Runtime: 'nodejs12.x',
         Timeout: 300,
       },
     });
