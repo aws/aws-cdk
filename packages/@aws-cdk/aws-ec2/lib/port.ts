@@ -151,7 +151,7 @@ export enum Protocol {
   ETHERNET = '143',
   EXPERIMENT_1 = '253',
   EXPERIMENT_2 = '254',
-  RESERVED = '255',  
+  RESERVED = '255',
 }
 
 /**
