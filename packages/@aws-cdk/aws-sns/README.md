@@ -152,6 +152,7 @@ topicPolicy.document.addStatements(new iam.PolicyStatement({
 ```
 
 A policy document can also be passed on `TopicPolicy` construction
+
 ```ts
 const topic = new sns.Topic(stack, 'Topic');
 const policyDocument = new iam.PolicyDocument({
