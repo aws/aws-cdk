@@ -3,7 +3,7 @@
 exports[`built-in data is correct 1`] = `
 Object {
   "af-south-1": Object {
-    "cdkMetadataResourceAvailable": false,
+    "cdkMetadataResourceAvailable": true,
     "domainSuffix": "amazonaws.com",
     "partition": "aws",
     "s3StaticWebsiteEndpoint": "s3-website.af-south-1.amazonaws.com",
@@ -263,7 +263,7 @@ Object {
     "vpcEndPointServiceNamePrefix": "com.amazonaws.vpce",
   },
   "eu-south-1": Object {
-    "cdkMetadataResourceAvailable": false,
+    "cdkMetadataResourceAvailable": true,
     "domainSuffix": "amazonaws.com",
     "partition": "aws",
     "s3StaticWebsiteEndpoint": "s3-website.eu-south-1.amazonaws.com",
