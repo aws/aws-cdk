@@ -174,6 +174,7 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
+    "@aws-cdk/aws-s3": "^1.93.0",
     "@types/lodash": "^4.14.168",
     "@types/minimatch": "^3.0.3",
     "@types/node": "^10.17.55",
@@ -188,8 +189,10 @@
     "ts-mock-imports": "^1.3.3"
   },
   "dependencies": {
+    "@aws-cdk/assert": "^1.93.0",
+    "@aws-cdk/aws-ssm": "^1.93.0",
     "@aws-cdk/cloud-assembly-schema": "0.0.0",
-    "@aws-cdk/cx-api": "0.0.0",
+    "@aws-cdk/cx-api": "^1.93.0",
     "@aws-cdk/region-info": "0.0.0",
     "@balena/dockerignore": "^1.0.2",
     "constructs": "^3.2.0",
@@ -206,9 +209,11 @@
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
     "@aws-cdk/cloud-assembly-schema": "0.0.0",
-    "@aws-cdk/cx-api": "0.0.0",
+    "@aws-cdk/cx-api": "^1.93.0",
     "@aws-cdk/region-info": "0.0.0",
-    "constructs": "^3.2.0"
+    "constructs": "^3.2.0",
+    "@aws-cdk/assert": "^1.93.0",
+    "@aws-cdk/aws-ssm": "^1.93.0"
   },
   "engines": {
     "node": ">= 10.13.0 <13 || >=13.7.0"

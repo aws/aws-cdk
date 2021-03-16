@@ -1,3 +1,6 @@
+import * as ssm from '@aws-cdk/aws-ssm';
+import * as cxapi from '@aws-cdk/cx-api';
+
 // ----------------------------------------------------
 // CROSS REFERENCES
 // ----------------------------------------------------
@@ -6,6 +9,7 @@ import { CfnElement } from '../cfn-element';
 import { CfnOutput } from '../cfn-output';
 import { CfnParameter } from '../cfn-parameter';
 import { IConstruct } from '../construct-compat';
+import { FeatureFlags } from '../feature-flags';
 import { Names } from '../names';
 import { Reference } from '../reference';
 import { IResolvable } from '../resolvable';
@@ -100,6 +104,11 @@ function resolveValue(consumer: Stack, reference: CfnReference): IResolvable {
   consumer.addDependency(producer,
     `${consumer.node.path} -> ${reference.target.node.path}.${reference.displayName}`);
 
+  const looseReferenceFeatureEnabled = FeatureFlags.of(consumer).isEnabled(cxapi.LOOSE_CROSS_STACK_REF);
+  if (looseReferenceFeatureEnabled) {
+    return createParameterStoreGet(consumer, reference);
+  }
+
   return createImportValue(reference);
 }
 
@@ -151,6 +160,30 @@ function findAllReferences(root: IConstruct) {
   }
 
   return result;
+}
+
+// ------------------------------------------------------------------------------------------------
+// parmaterstore put/get
+// ------------------------------------------------------------------------------------------------
+/*
+ * use paramter store as a way of storing and retrieving values
+ */
+
+function createParameterStoreGet(consumer: Stack, reference: Reference): IResolvable {
+
+  const providerStack = Stack.of(reference.target);
+  consumer.addDependency(providerStack);
+
+  const parameterName = `/cdk/${providerStack.stackName}/${reference.displayName}`;
+
+  new ssm.StringParameter(providerStack, 'parameter', {
+    parameterName,
+    stringValue: Token.asString(reference),
+  });
+  return new CfnParameter(consumer, 'id', {
+    type: 'AWS::SSM::Parameter::Value<String>',
+    default: parameterName,
+  });
 }
 
 // ------------------------------------------------------------------------------------------------
