@@ -576,6 +576,278 @@ export = {
     },
   },
 
+  'should match routes based on headers'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const mesh = new appmesh.Mesh(stack, 'mesh', {
+      meshName: 'test-mesh',
+    });
+
+    const router = new appmesh.VirtualRouter(stack, 'router', {
+      mesh,
+    });
+
+    const virtualNode = mesh.addVirtualNode('test-node', {
+      serviceDiscovery: appmesh.ServiceDiscovery.dns('test'),
+      listeners: [appmesh.VirtualNodeListener.http()],
+    });
+
+    // WHEN
+    router.addRoute('route', {
+      routeSpec: appmesh.RouteSpec.http2({
+        weightedTargets: [{ virtualNode }],
+        match: {
+          prefixPath: '/',
+          headers: [
+            appmesh.HttpHeaderMatch.valueIs('Content-Type', 'application/json'),
+            appmesh.HttpHeaderMatch.valueIsNot('Content-Type', 'text/html'),
+            appmesh.HttpHeaderMatch.valueStartsWith('Content-Type', 'application/'),
+            appmesh.HttpHeaderMatch.valueDoesNotStartWith('Content-Type', 'text/'),
+            appmesh.HttpHeaderMatch.valueEndsWith('Content-Type', '/json'),
+            appmesh.HttpHeaderMatch.valueDoesNotEndWith('Content-Type', '/json+foobar'),
+            appmesh.HttpHeaderMatch.valueMatchesRegex('Content-Type', 'application/.*'),
+            appmesh.HttpHeaderMatch.valueDoesNotMatchRegex('Content-Type', 'text/.*'),
+            appmesh.HttpHeaderMatch.valuesIsInRange('Max-Forward', 1, 5),
+            appmesh.HttpHeaderMatch.valuesIsNotInRange('Max-Forward', 1, 5),
+          ],
+        },
+      }),
+    });
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::AppMesh::Route', {
+      Spec: {
+        Http2Route: {
+          Match: {
+            Prefix: '/',
+            Headers: [
+              {
+                Invert: false,
+                Match: { Exact: 'application/json' },
+                Name: 'Content-Type',
+              },
+              {
+                Invert: true,
+                Match: { Exact: 'text/html' },
+                Name: 'Content-Type',
+              },
+              {
+                Invert: false,
+                Match: { Prefix: 'application/' },
+                Name: 'Content-Type',
+              },
+              {
+                Invert: true,
+                Match: { Prefix: 'text/' },
+                Name: 'Content-Type',
+              },
+              {
+                Invert: false,
+                Match: { Suffix: '/json' },
+                Name: 'Content-Type',
+              },
+              {
+                Invert: true,
+                Match: { Suffix: '/json+foobar' },
+                Name: 'Content-Type',
+              },
+              {
+                Invert: false,
+                Match: { Regex: 'application/.*' },
+                Name: 'Content-Type',
+              },
+              {
+                Invert: true,
+                Match: { Regex: 'text/.*' },
+                Name: 'Content-Type',
+              },
+              {
+                Invert: false,
+                Match: {
+                  Range: {
+                    End: 5,
+                    Start: 1,
+                  },
+                },
+                Name: 'Max-Forward',
+              },
+              {
+                Invert: true,
+                Match: {
+                  Range: {
+                    End: 5,
+                    Start: 1,
+                  },
+                },
+                Name: 'Max-Forward',
+              },
+            ],
+          },
+        },
+      },
+    }));
+
+    test.done();
+  },
+
+  'should match routes based on method'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const mesh = new appmesh.Mesh(stack, 'mesh', {
+      meshName: 'test-mesh',
+    });
+
+    const router = new appmesh.VirtualRouter(stack, 'router', {
+      mesh,
+    });
+
+    const virtualNode = mesh.addVirtualNode('test-node', {
+      serviceDiscovery: appmesh.ServiceDiscovery.dns('test'),
+      listeners: [appmesh.VirtualNodeListener.http()],
+    });
+
+    // WHEN
+    router.addRoute('route', {
+      routeSpec: appmesh.RouteSpec.http2({
+        weightedTargets: [{ virtualNode }],
+        match: {
+          prefixPath: '/',
+          method: appmesh.HttpRouteMatchMethod.GET,
+        },
+      }),
+    });
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::AppMesh::Route', {
+      Spec: {
+        Http2Route: {
+          Match: {
+            Prefix: '/',
+            Method: 'GET',
+          },
+        },
+      },
+    }));
+
+    test.done();
+  },
+
+  'should match routes based on scheme'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const mesh = new appmesh.Mesh(stack, 'mesh', {
+      meshName: 'test-mesh',
+    });
+
+    const router = new appmesh.VirtualRouter(stack, 'router', {
+      mesh,
+    });
+
+    const virtualNode = mesh.addVirtualNode('test-node', {
+      serviceDiscovery: appmesh.ServiceDiscovery.dns('test'),
+      listeners: [appmesh.VirtualNodeListener.http()],
+    });
+
+    // WHEN
+    router.addRoute('route', {
+      routeSpec: appmesh.RouteSpec.http2({
+        weightedTargets: [{ virtualNode }],
+        match: {
+          prefixPath: '/',
+          protocol: appmesh.HttpRouteProtocol.HTTP,
+        },
+      }),
+    });
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::AppMesh::Route', {
+      Spec: {
+        Http2Route: {
+          Match: {
+            Prefix: '/',
+            Scheme: 'http',
+          },
+        },
+      },
+    }));
+
+    test.done();
+  },
+
+  'should allow route priority'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const mesh = new appmesh.Mesh(stack, 'mesh', {
+      meshName: 'test-mesh',
+    });
+
+    const router = new appmesh.VirtualRouter(stack, 'router', {
+      mesh,
+    });
+
+    const virtualNode = mesh.addVirtualNode('test-node', {
+      serviceDiscovery: appmesh.ServiceDiscovery.dns('test'),
+      listeners: [appmesh.VirtualNodeListener.http()],
+    });
+
+    // WHEN
+    router.addRoute('http2', {
+      routeSpec: appmesh.RouteSpec.http2({
+        priority: 0,
+        weightedTargets: [{ virtualNode }],
+      }),
+    });
+    router.addRoute('http', {
+      routeSpec: appmesh.RouteSpec.http({
+        priority: 10,
+        weightedTargets: [{ virtualNode }],
+      }),
+    });
+    router.addRoute('grpc', {
+      routeSpec: appmesh.RouteSpec.grpc({
+        priority: 20,
+        weightedTargets: [{ virtualNode }],
+        match: {
+          serviceName: 'test',
+        },
+      }),
+    });
+    router.addRoute('tcp', {
+      routeSpec: appmesh.RouteSpec.tcp({
+        priority: 30,
+        weightedTargets: [{ virtualNode }],
+      }),
+    });
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::AppMesh::Route', {
+      Spec: {
+        Priority: 0,
+        Http2Route: {},
+      },
+    }));
+    expect(stack).to(haveResourceLike('AWS::AppMesh::Route', {
+      Spec: {
+        Priority: 10,
+        HttpRoute: {},
+      },
+    }));
+    expect(stack).to(haveResourceLike('AWS::AppMesh::Route', {
+      Spec: {
+        Priority: 20,
+        GrpcRoute: {},
+      },
+    }));
+    expect(stack).to(haveResourceLike('AWS::AppMesh::Route', {
+      Spec: {
+        Priority: 30,
+        TcpRoute: {},
+      },
+    }));
+
+    test.done();
+  },
+
   'Can import Routes using an ARN'(test: Test) {
     const app = new cdk.App();
     // GIVEN

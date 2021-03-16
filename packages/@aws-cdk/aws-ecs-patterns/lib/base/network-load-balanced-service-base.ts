@@ -1,5 +1,8 @@
 import { IVpc } from '@aws-cdk/aws-ec2';
-import { AwsLogDriver, BaseService, CloudMapOptions, Cluster, ContainerImage, DeploymentController, ICluster, LogDriver, PropagatedTagSource, Secret } from '@aws-cdk/aws-ecs';
+import {
+  AwsLogDriver, BaseService, CloudMapOptions, Cluster, ContainerImage, DeploymentController, DeploymentCircuitBreaker,
+  ICluster, LogDriver, PropagatedTagSource, Secret,
+} from '@aws-cdk/aws-ecs';
 import { INetworkLoadBalancer, NetworkListener, NetworkLoadBalancer, NetworkTargetGroup } from '@aws-cdk/aws-elasticloadbalancingv2';
 import { IRole } from '@aws-cdk/aws-iam';
 import { ARecord, CnameRecord, IHostedZone, RecordTarget } from '@aws-cdk/aws-route53';
@@ -176,6 +179,13 @@ export interface NetworkLoadBalancedServiceBaseProps {
  * @default - Rolling update (ECS)
  */
   readonly deploymentController?: DeploymentController;
+
+  /**
+   * Whether to enable the deployment circuit breaker. If this property is defined, circuit breaker will be implicitly
+   * enabled.
+   * @default - disabled
+   */
+  readonly circuitBreaker?: DeploymentCircuitBreaker;
 }
 
 export interface NetworkLoadBalancedTaskImageOptions {
