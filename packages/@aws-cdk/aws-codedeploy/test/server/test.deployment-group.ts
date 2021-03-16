@@ -35,7 +35,7 @@ export = {
       });
 
       expect(stack).to(haveResource('AWS::CodeDeploy::Application', {
-        'ApplicationName': 'WeirdStringHereYouWillNeedToCopyPasteFromAFailingTest',
+        'ComputePlatform': 'Server',
       }));
 
       test.done();
