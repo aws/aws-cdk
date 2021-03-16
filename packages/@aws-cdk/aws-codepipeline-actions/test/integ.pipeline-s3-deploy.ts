@@ -19,9 +19,12 @@ const sourceAction = new cpactions.S3SourceAction({
   bucketKey: 'key',
 });
 
-const deployBucket = new s3.Bucket(stack, 'DeployBucket', {});
+const deployBucket = new s3.Bucket(stack, 'DeployBucket', {
+  removalPolicy: cdk.RemovalPolicy.DESTROY,
+});
 
 new codepipeline.Pipeline(stack, 'Pipeline', {
+  artifactBucket: bucket,
   stages: [
     {
       stageName: 'Source',

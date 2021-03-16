@@ -1,10 +1,9 @@
-import { Duration, Resource, Token } from '@aws-cdk/core';
+import { Duration, Names, Resource, Token } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnCachePolicy } from './cloudfront.generated';
 
 /**
  * Represents a Cache Policy
- * @experimental
  */
 export interface ICachePolicy {
   /**
@@ -16,7 +15,6 @@ export interface ICachePolicy {
 
 /**
  * Properties for creating a Cache Policy
- * @experimental
  */
 export interface CachePolicyProps {
   /**
@@ -75,13 +73,18 @@ export interface CachePolicyProps {
    * @default false
    */
   readonly enableAcceptEncodingGzip?: boolean;
+
+  /**
+   * Whether to normalize and include the `Accept-Encoding` header in the cache key when the `Accept-Encoding` header is 'br'.
+   * @default false
+   */
+  readonly enableAcceptEncodingBrotli?: boolean;
 }
 
 /**
  * A Cache Policy configuration.
  *
  * @resource AWS::CloudFront::CachePolicy
- * @experimental
  */
 export class CachePolicy extends Resource implements ICachePolicy {
 
@@ -122,7 +125,7 @@ export class CachePolicy extends Resource implements ICachePolicy {
       physicalName: props.cachePolicyName,
     });
 
-    const cachePolicyName = props.cachePolicyName ?? this.node.uniqueId;
+    const cachePolicyName = props.cachePolicyName ?? Names.uniqueId(this);
     if (!Token.isUnresolved(cachePolicyName) && !cachePolicyName.match(/^[\w-]+$/i)) {
       throw new Error(`'cachePolicyName' can only include '-', '_', and alphanumeric characters, got: '${props.cachePolicyName}'`);
     }
@@ -160,6 +163,7 @@ export class CachePolicy extends Resource implements ICachePolicy {
         headers: headers.headers,
       },
       enableAcceptEncodingGzip: props.enableAcceptEncodingGzip ?? false,
+      enableAcceptEncodingBrotli: props.enableAcceptEncodingBrotli ?? false,
       queryStringsConfig: {
         queryStringBehavior: queryStrings.behavior,
         queryStrings: queryStrings.queryStrings,
@@ -171,7 +175,6 @@ export class CachePolicy extends Resource implements ICachePolicy {
 /**
  * Determines whether any cookies in viewer requests are included in the cache key and
  * automatically included in requests that CloudFront sends to the origin.
- * @experimental
  */
 export class CacheCookieBehavior {
   /**
@@ -219,7 +222,6 @@ export class CacheCookieBehavior {
 
 /**
  * Determines whether any HTTP headers are included in the cache key and automatically included in requests that CloudFront sends to the origin.
- * @experimental
  */
 export class CacheHeaderBehavior {
   /** HTTP headers are not included in the cache key and are not automatically included in requests that CloudFront sends to the origin. */
@@ -228,6 +230,9 @@ export class CacheHeaderBehavior {
   public static allowList(...headers: string[]) {
     if (headers.length === 0) {
       throw new Error('At least one header to allow must be provided');
+    }
+    if (headers.length > 10) {
+      throw new Error(`Maximum allowed headers in Cache Policy is 10; got ${headers.length}.`);
     }
     return new CacheHeaderBehavior('whitelist', headers);
   }
@@ -246,7 +251,6 @@ export class CacheHeaderBehavior {
 /**
  * Determines whether any URL query strings in viewer requests are included in the cache key
  * and automatically included in requests that CloudFront sends to the origin.
- * @experimental
  */
 export class CacheQueryStringBehavior {
   /**

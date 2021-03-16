@@ -1,13 +1,18 @@
-import { Resource } from '@aws-cdk/core';
-import { Construct } from 'constructs';
-import { StandardAttributeNames } from '../private/attr-names';
 import { IUserPool } from '../user-pool';
-import { IUserPoolIdentityProvider } from '../user-pool-idp';
 
 /**
  * An attribute available from a third party identity provider.
  */
 export class ProviderAttribute {
+  /** The email attribute provided by Apple */
+  public static readonly APPLE_EMAIL = new ProviderAttribute('email');
+  /** The name attribute provided by Apple */
+  public static readonly APPLE_NAME = new ProviderAttribute('name');
+  /** The first name attribute provided by Apple */
+  public static readonly APPLE_FIRST_NAME = new ProviderAttribute('firstName');
+  /** The last name attribute provided by Apple */
+  public static readonly APPLE_LAST_NAME = new ProviderAttribute('lastName');
+
   /** The user id attribute provided by Amazon */
   public static readonly AMAZON_USER_ID = new ProviderAttribute('user_id');
   /** The email attribute provided by Amazon */
@@ -35,6 +40,25 @@ export class ProviderAttribute {
   public static readonly FACEBOOK_GENDER = new ProviderAttribute('gender');
   /** The locale attribute provided by Facebook */
   public static readonly FACEBOOK_LOCALE = new ProviderAttribute('locale');
+
+  /** The name attribute provided by Google */
+  public static readonly GOOGLE_NAMES = new ProviderAttribute('names');
+  /** The gender attribute provided by Google */
+  public static readonly GOOGLE_GENDER = new ProviderAttribute('gender');
+  /** The birthday attribute provided by Google */
+  public static readonly GOOGLE_BIRTHDAYS = new ProviderAttribute('birthdays');
+  /** The phone number attribute provided by Google */
+  public static readonly GOOGLE_PHONE_NUMBERS = new ProviderAttribute('phoneNumbers');
+  /** The email attribute provided by Google */
+  public static readonly GOOGLE_EMAIL = new ProviderAttribute('email');
+  /** The name attribute provided by Google */
+  public static readonly GOOGLE_NAME = new ProviderAttribute('name');
+  /** The picture attribute provided by Google */
+  public static readonly GOOGLE_PICTURE = new ProviderAttribute('picture');
+  /** The given name attribute provided by Google */
+  public static readonly GOOGLE_GIVEN_NAME = new ProviderAttribute('given_name');
+  /** The family name attribute provided by Google */
+  public static readonly GOOGLE_FAMILY_NAME = new ProviderAttribute('family_name');
 
   /**
    * Use this to specify an attribute from the identity provider that is not pre-defined in the CDK.
@@ -167,6 +191,7 @@ export interface AttributeMapping {
 
 /**
  * Properties to create a new instance of UserPoolIdentityProvider
+ *
  */
 export interface UserPoolIdentityProviderProps {
   /**
@@ -179,36 +204,4 @@ export interface UserPoolIdentityProviderProps {
    * @default - no attribute mapping
    */
   readonly attributeMapping?: AttributeMapping;
-}
-
-/**
- * Options to integrate with the various social identity providers.
- */
-export abstract class UserPoolIdentityProviderBase extends Resource implements IUserPoolIdentityProvider {
-  public abstract readonly providerName: string;
-
-  public constructor(scope: Construct, id: string, private readonly props: UserPoolIdentityProviderProps) {
-    super(scope, id);
-    props.userPool.registerIdentityProvider(this);
-  }
-
-  protected configureAttributeMapping(): any {
-    if (!this.props.attributeMapping) {
-      return undefined;
-    }
-    type SansCustom = Omit<AttributeMapping, 'custom'>;
-    let mapping: { [key: string]: string } = {};
-    mapping = Object.entries(this.props.attributeMapping)
-      .filter(([k, _]) => k !== 'custom') // 'custom' handled later separately
-      .reduce((agg, [k, v]) => {
-        return { ...agg, [StandardAttributeNames[k as keyof SansCustom]]: v.attributeName };
-      }, mapping);
-    if (this.props.attributeMapping.custom) {
-      mapping = Object.entries(this.props.attributeMapping.custom).reduce((agg, [k, v]) => {
-        return { ...agg, [k]: v.attributeName };
-      }, mapping);
-    }
-    if (Object.keys(mapping).length === 0) { return undefined; }
-    return mapping;
-  }
 }

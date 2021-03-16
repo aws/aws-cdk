@@ -116,6 +116,14 @@ describe('CDK Include', () => {
     );
   });
 
+  test('accepts booleans for properties with type string', () => {
+    includeTestTemplate(stack, 'boolean-for-string.json');
+
+    expect(stack).toMatchTemplate(
+      loadTestFileToJsObject('boolean-for-string.json'),
+    );
+  });
+
   test('correctly changes the logical IDs, including references, if imported with preserveLogicalIds=false', () => {
     const cfnTemplate = includeTestTemplate(stack, 'bucket-with-encryption-key.json', {
       preserveLogicalIds: false,
@@ -746,6 +754,14 @@ describe('CDK Include', () => {
     }).toThrow(/Mapping with name 'NonExistentMapping' was not found in the template/);
   });
 
+  test('can ingest a template that uses Fn::FindInMap with the first argument being a dynamic reference', () => {
+    includeTestTemplate(stack, 'find-in-map-with-dynamic-mapping.json');
+
+    expect(stack).toMatchTemplate(
+      loadTestFileToJsObject('find-in-map-with-dynamic-mapping.json'),
+    );
+  });
+
   test('handles renaming Mapping references', () => {
     const cfnTemplate = includeTestTemplate(stack, 'only-mapping-and-bucket.json');
     const someMapping = cfnTemplate.getMapping('SomeMapping');
@@ -775,6 +791,14 @@ describe('CDK Include', () => {
         },
       },
     });
+  });
+
+  test('can ingest a template that uses Fn::FindInMap for the value of a boolean property', () => {
+    includeTestTemplate(stack, 'find-in-map-for-boolean-property.json');
+
+    expect(stack).toMatchTemplate(
+      loadTestFileToJsObject('find-in-map-for-boolean-property.json'),
+    );
   });
 
   test('can ingest a template that contains Rules, and allows retrieving those Rules', () => {
@@ -990,6 +1014,14 @@ describe('CDK Include', () => {
         },
       });
     }).toThrow(/Parameter with logical ID 'FakeParameter' was not found in the template/);
+  });
+
+  test('can ingest a template that contains properties not in the current CFN spec, and output it unchanged', () => {
+    includeTestTemplate(stack, 'properties-not-in-cfn-spec.json');
+
+    expect(stack).toMatchTemplate(
+      loadTestFileToJsObject('properties-not-in-cfn-spec.json'),
+    );
   });
 });
 

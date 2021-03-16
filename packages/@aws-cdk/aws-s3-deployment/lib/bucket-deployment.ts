@@ -1,16 +1,17 @@
-import * as crypto from 'crypto';
-import * as fs from 'fs';
 import * as path from 'path';
 import * as cloudfront from '@aws-cdk/aws-cloudfront';
+import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
+import { AwsCliLayer } from '@aws-cdk/lambda-layer-awscli';
 import { Construct } from 'constructs';
 import { ISource, SourceConfig } from './source';
 
-const handlerCodeBundle = path.join(__dirname, '..', 'lambda', 'bundle.zip');
-const handlerSourceDirectory = path.join(__dirname, '..', 'lambda', 'src');
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 export interface BucketDeploymentProps {
   /**
@@ -161,9 +162,24 @@ export interface BucketDeploymentProps {
    * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/ServerSideEncryptionCustomerKeys.html#sse-c-how-to-programmatically-intro
    */
   readonly serverSideEncryptionCustomerAlgorithm?: string;
+
+  /**
+   * The VPC network to place the deployment lambda handler in.
+   *
+   * @default None
+   */
+  readonly vpc?: ec2.IVpc;
+
+  /**
+   * Where in the VPC to place the deployment lambda handler.
+   * Only used if 'vpc' is supplied.
+   *
+   * @default - the Vpc default strategy if not specified
+   */
+  readonly vpcSubnets?: ec2.SubnetSelection;
 }
 
-export class BucketDeployment extends cdk.Construct {
+export class BucketDeployment extends CoreConstruct {
   constructor(scope: Construct, id: string, props: BucketDeploymentProps) {
     super(scope, id);
 
@@ -171,17 +187,18 @@ export class BucketDeployment extends cdk.Construct {
       throw new Error('Distribution must be specified if distribution paths are specified');
     }
 
-    const assetHash = calcSourceHash(handlerSourceDirectory);
-
     const handler = new lambda.SingletonFunction(this, 'CustomResourceHandler', {
       uuid: this.renderSingletonUuid(props.memoryLimit),
-      code: lambda.Code.fromAsset(handlerCodeBundle, { assetHash }),
+      code: lambda.Code.fromAsset(path.join(__dirname, 'lambda')),
+      layers: [new AwsCliLayer(this, 'AwsCliLayer')],
       runtime: lambda.Runtime.PYTHON_3_6,
       handler: 'index.handler',
       lambdaPurpose: 'Custom::CDKBucketDeployment',
       timeout: cdk.Duration.minutes(15),
       role: props.role,
       memorySize: props.memoryLimit,
+      vpc: props.vpc,
+      vpcSubnets: props.vpcSubnets,
     });
 
     const handlerRole = handler.role;
@@ -210,7 +227,7 @@ export class BucketDeployment extends cdk.Construct {
         Prune: props.prune ?? true,
         UserMetadata: props.metadata ? mapUserMetadata(props.metadata) : undefined,
         SystemMetadata: mapSystemMetadata(props),
-        DistributionId: props.distribution ? props.distribution.distributionId : undefined,
+        DistributionId: props.distribution?.distributionId,
         DistributionPaths: props.distributionPaths,
       },
     });
@@ -236,33 +253,11 @@ export class BucketDeployment extends cdk.Construct {
 }
 
 /**
- * We need a custom source hash calculation since the bundle.zip file
- * contains python dependencies installed during build and results in a
- * non-deterministic behavior.
- *
- * So we just take the `src/` directory of our custom resoruce code.
- */
-function calcSourceHash(srcDir: string): string {
-  const sha = crypto.createHash('sha256');
-  for (const file of fs.readdirSync(srcDir)) {
-    const data = fs.readFileSync(path.join(srcDir, file));
-    sha.update(`<file name=${file}>`);
-    sha.update(data);
-    sha.update('</file>');
-  }
-
-  return sha.digest('hex');
-}
-
-/**
  * Metadata
  */
 
 function mapUserMetadata(metadata: UserDefinedObjectMetadata) {
-  const mapKey = (key: string) =>
-    key.toLowerCase().startsWith('x-amzn-meta-')
-      ? key.toLowerCase()
-      : `x-amzn-meta-${key.toLowerCase()}`;
+  const mapKey = (key: string) => key.toLowerCase();
 
   return Object.keys(metadata).reduce((o, key) => ({ ...o, [mapKey(key)]: metadata[key] }), {});
 }
@@ -360,7 +355,7 @@ export class Expires {
 export interface UserDefinedObjectMetadata {
   /**
    * Arbitrary metadata key-values
-   * Keys must begin with `x-amzn-meta-` (will be added automatically if not provided)
+   * The `x-amz-meta-` prefix will automatically be added to keys.
    * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingMetadata.html#UserMetadata
    */
   readonly [key: string]: string;

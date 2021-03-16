@@ -6,6 +6,7 @@ import { Annotations } from '../annotations';
 import { Construct, IConstruct, ISynthesisSession } from '../construct-compat';
 import { Stack } from '../stack';
 import { IInspectable, TreeInspector } from '../tree';
+import { ConstructInfo, constructInfoFromConstruct } from './runtime-info';
 
 const FILE_PATH = 'tree.json';
 
@@ -46,6 +47,7 @@ export class TreeMetadata extends Construct {
         path: construct.node.path,
         children: Object.keys(childrenMap).length === 0 ? undefined : childrenMap,
         attributes: this.synthAttributes(construct),
+        constructInfo: constructInfoFromConstruct(construct),
       };
 
       lookup[node.path] = node;
@@ -87,8 +89,13 @@ export class TreeMetadata extends Construct {
 }
 
 interface Node {
-  id: string;
-  path: string;
-  children?: { [key: string]: Node };
-  attributes?: { [key: string]: any };
+  readonly id: string;
+  readonly path: string;
+  readonly children?: { [key: string]: Node };
+  readonly attributes?: { [key: string]: any };
+
+  /**
+   * Information on the construct class that led to this node, if available
+   */
+  readonly constructInfo?: ConstructInfo;
 }

@@ -12,9 +12,61 @@ import { CfnTag } from './cfn-tag';
 import { Lazy } from './lazy';
 import { CfnReference, ReferenceRendering } from './private/cfn-reference';
 import { IResolvable } from './resolvable';
-import { Mapper, Validator } from './runtime';
+import { Validator } from './runtime';
 import { isResolvableObject, Token } from './token';
 import { undefinedIfAllValuesAreEmpty } from './util';
+
+/**
+ * The class used as the intermediate result from the generated L1 methods
+ * that convert from CloudFormation's UpperCase to CDK's lowerCase property names.
+ * Saves any extra properties that were present in the argument object,
+ * but that were not found in the CFN schema,
+ * so that they're not lost from the final CDK-rendered template.
+ */
+export class FromCloudFormationResult<T> {
+  public readonly value: T;
+  public readonly extraProperties: { [key: string]: any };
+
+  public constructor(value: T) {
+    this.value = value;
+    this.extraProperties = {};
+  }
+
+  public appendExtraProperties(prefix: string, properties: { [key: string]: any } | undefined): void {
+    for (const [key, val] of Object.entries(properties ?? {})) {
+      this.extraProperties[`${prefix}.${key}`] = val;
+    }
+  }
+}
+
+/**
+ * A property object we will accumulate properties into
+ */
+export class FromCloudFormationPropertyObject<T extends Record<string, any>> extends FromCloudFormationResult<T> {
+  private readonly recognizedProperties = new Set<string>();
+
+  public constructor() {
+    super({} as any); // We're still accumulating
+  }
+
+  /**
+   * Add a parse result under a given key
+   */
+  public addPropertyResult(cdkPropName: keyof T, cfnPropName: string, result?: FromCloudFormationResult<any>): void {
+    this.recognizedProperties.add(cfnPropName);
+    if (!result) { return; }
+    this.value[cdkPropName] = result.value;
+    this.appendExtraProperties(cfnPropName, result.extraProperties);
+  }
+
+  public addUnrecognizedPropertiesAsExtra(properties: object): void {
+    for (const [key, val] of Object.entries(properties)) {
+      if (!this.recognizedProperties.has(key)) {
+        this.extraProperties[key] = val;
+      }
+    }
+  }
+}
 
 /**
  * This class contains static methods called when going from
@@ -31,90 +83,98 @@ import { undefinedIfAllValuesAreEmpty } from './util';
  */
 export class FromCloudFormation {
   // nothing to for any but return it
-  public static getAny(value: any) { return value; }
+  public static getAny(value: any): FromCloudFormationResult<any> {
+    return new FromCloudFormationResult(value);
+  }
 
-  public static getBoolean(value: any): boolean | IResolvable {
+  public static getBoolean(value: any): FromCloudFormationResult<boolean | IResolvable> {
     if (typeof value === 'string') {
       // CloudFormation allows passing strings as boolean
       switch (value) {
-        case 'true': return true;
-        case 'false': return false;
+        case 'true': return new FromCloudFormationResult(true);
+        case 'false': return new FromCloudFormationResult(false);
         default: throw new Error(`Expected 'true' or 'false' for boolean value, got: '${value}'`);
       }
     }
 
     // in all other cases, just return the value,
     // and let a validator handle if it's not a boolean
-    return value;
+    return new FromCloudFormationResult(value);
   }
 
-  public static getDate(value: any): Date | IResolvable {
+  public static getDate(value: any): FromCloudFormationResult<Date | IResolvable> {
     // if the date is a deploy-time value, just return it
     if (isResolvableObject(value)) {
-      return value;
+      return new FromCloudFormationResult(value);
     }
 
     // if the date has been given as a string, convert it
     if (typeof value === 'string') {
-      return new Date(value);
+      return new FromCloudFormationResult(new Date(value));
     }
 
     // all other cases - just return the value,
     // if it's not a Date, a validator should catch it
-    return value;
+    return new FromCloudFormationResult(value);
   }
 
   // won't always return a string; if the input can't be resolved to a string,
   // the input will be returned.
-  public static getString(value: any): string {
+  public static getString(value: any): FromCloudFormationResult<string> {
     // if the string is a deploy-time value, serialize it to a Token
     if (isResolvableObject(value)) {
-      return value.toString();
+      return new FromCloudFormationResult(value.toString());
     }
 
     // CloudFormation treats numbers and strings interchangeably;
     // so, if we get a number here, convert it to a string
     if (typeof value === 'number') {
-      return value.toString();
+      return new FromCloudFormationResult(value.toString());
+    }
+
+    // CloudFormation treats booleans and strings interchangeably;
+    // so, if we get a boolean here, convert it to a string
+    if (typeof value === 'boolean') {
+      return new FromCloudFormationResult(value.toString());
     }
 
     // in all other cases, just return the input,
     // and let a validator handle it if it's not a string
-    return value;
+    return new FromCloudFormationResult(value);
   }
 
   // won't always return a number; if the input can't be parsed to a number,
   // the input will be returned.
-  public static getNumber(value: any): number {
+  public static getNumber(value: any): FromCloudFormationResult<number> {
     // if the string is a deploy-time value, serialize it to a Token
     if (isResolvableObject(value)) {
-      return Token.asNumber(value);
+      return new FromCloudFormationResult(Token.asNumber(value));
     }
 
     // return a number, if the input can be parsed as one
     if (typeof value === 'string') {
       const parsedValue = parseFloat(value);
       if (!isNaN(parsedValue)) {
-        return parsedValue;
+        return new FromCloudFormationResult(parsedValue);
       }
     }
 
     // otherwise return the input,
     // and let a validator handle it if it's not a number
-    return value;
+    return new FromCloudFormationResult(value);
   }
 
-  public static getStringArray(value: any): string[] {
+  public static getStringArray(value: any): FromCloudFormationResult<string[]> {
     // if the array is a deploy-time value, serialize it to a Token
     if (isResolvableObject(value)) {
-      return Token.asList(value);
+      return new FromCloudFormationResult(Token.asList(value));
     }
 
     // in all other cases, delegate to the standard mapping logic
     return this.getArray(this.getString)(value);
   }
 
-  public static getArray<T>(mapper: (arg: any) => T): (x: any) => T[] {
+  public static getArray<T>(mapper: (arg: any) => FromCloudFormationResult<T>): (x: any) => FromCloudFormationResult<T[]> {
     return (value: any) => {
       if (!Array.isArray(value)) {
         // break the type system, and just return the given value,
@@ -122,54 +182,65 @@ export class FromCloudFormation {
         // of the property we're transforming
         // (unless it's a deploy-time value,
         // which we can't map over at build time anyway)
-        return value;
+        return new FromCloudFormationResult(value);
       }
 
-      return value.map(mapper);
+      const values = new Array<any>();
+      const ret = new FromCloudFormationResult(values);
+      for (let i = 0; i < value.length; i++) {
+        const result = mapper(value[i]);
+        values.push(result.value);
+        ret.appendExtraProperties(`${i}`, result.extraProperties);
+      }
+      return ret;
     };
   }
 
-  public static getMap<T>(mapper: (arg: any) => T): (x: any) => { [key: string]: T } {
+  public static getMap<T>(mapper: (arg: any) => FromCloudFormationResult<T>): (x: any) => FromCloudFormationResult<{ [key: string]: T }> {
     return (value: any) => {
       if (typeof value !== 'object') {
         // if the input is not a map (= object in JS land),
         // just return it, and let the validator of this property handle it
         // (unless it's a deploy-time value,
         // which we can't map over at build time anyway)
-        return value;
+        return new FromCloudFormationResult(value);
       }
 
-      const ret: { [key: string]: T } = {};
+      const values: { [key: string]: T } = {};
+      const ret = new FromCloudFormationResult(values);
       for (const [key, val] of Object.entries(value)) {
-        ret[key] = mapper(val);
+        const result = mapper(val);
+        values[key] = result.value;
+        ret.appendExtraProperties(key, result.extraProperties);
       }
       return ret;
     };
   }
 
-  public static getCfnTag(tag: any): CfnTag {
+  public static getCfnTag(tag: any): FromCloudFormationResult<CfnTag> {
     return tag == null
-      ? { } as any // break the type system - this should be detected at runtime by a tag validator
-      : {
+      ? new FromCloudFormationResult({ } as any) // break the type system - this should be detected at runtime by a tag validator
+      : new FromCloudFormationResult({
         key: tag.Key,
         value: tag.Value,
-      };
+      });
   }
 
   /**
    * Return a function that, when applied to a value, will return the first validly deserialized one
    */
-  public static getTypeUnion(validators: Validator[], mappers: Mapper[]): (x: any) => any {
-    return (value: any): any => {
+  public static getTypeUnion(validators: Validator[], mappers: Array<(x: any) => FromCloudFormationResult<any>>):
+  (x: any) => FromCloudFormationResult<any> {
+    return (value: any) => {
       for (let i = 0; i < validators.length; i++) {
         const candidate = mappers[i](value);
-        if (validators[i](candidate).isSuccess) {
+        if (validators[i](candidate.value).isSuccess) {
           return candidate;
         }
       }
 
       // if nothing matches, just return the input unchanged, and let validators catch it
-      return value;
+      return new FromCloudFormationResult(value);
     };
   }
 }
@@ -326,7 +397,7 @@ export class CfnParser {
       if (typeof p !== 'object') { return undefined; }
 
       return undefinedIfAllValuesAreEmpty({
-        minSuccessfulInstancesPercent: FromCloudFormation.getNumber(p.MinSuccessfulInstancesPercent),
+        minSuccessfulInstancesPercent: FromCloudFormation.getNumber(p.MinSuccessfulInstancesPercent).value,
       });
     }
 
@@ -334,8 +405,8 @@ export class CfnParser {
       if (typeof p !== 'object') { return undefined; }
 
       return undefinedIfAllValuesAreEmpty({
-        count: FromCloudFormation.getNumber(p.Count),
-        timeout: FromCloudFormation.getString(p.Timeout),
+        count: FromCloudFormation.getNumber(p.Count).value,
+        timeout: FromCloudFormation.getString(p.Timeout).value,
       });
     }
   }
@@ -351,8 +422,8 @@ export class CfnParser {
       autoScalingRollingUpdate: parseAutoScalingRollingUpdate(policy.AutoScalingRollingUpdate),
       autoScalingScheduledAction: parseAutoScalingScheduledAction(policy.AutoScalingScheduledAction),
       codeDeployLambdaAliasUpdate: parseCodeDeployLambdaAliasUpdate(policy.CodeDeployLambdaAliasUpdate),
-      enableVersionUpgrade: FromCloudFormation.getBoolean(policy.EnableVersionUpgrade),
-      useOnlineResharding: FromCloudFormation.getBoolean(policy.UseOnlineResharding),
+      enableVersionUpgrade: FromCloudFormation.getBoolean(policy.EnableVersionUpgrade).value,
+      useOnlineResharding: FromCloudFormation.getBoolean(policy.UseOnlineResharding).value,
     });
 
     function parseAutoScalingReplacingUpdate(p: any): CfnAutoScalingReplacingUpdate | undefined {
@@ -367,12 +438,12 @@ export class CfnParser {
       if (typeof p !== 'object') { return undefined; }
 
       return undefinedIfAllValuesAreEmpty({
-        maxBatchSize: FromCloudFormation.getNumber(p.MaxBatchSize),
-        minInstancesInService: FromCloudFormation.getNumber(p.MinInstancesInService),
-        minSuccessfulInstancesPercent: FromCloudFormation.getNumber(p.MinSuccessfulInstancesPercent),
-        pauseTime: FromCloudFormation.getString(p.PauseTime),
-        suspendProcesses: FromCloudFormation.getStringArray(p.SuspendProcesses),
-        waitOnResourceSignals: FromCloudFormation.getBoolean(p.WaitOnResourceSignals),
+        maxBatchSize: FromCloudFormation.getNumber(p.MaxBatchSize).value,
+        minInstancesInService: FromCloudFormation.getNumber(p.MinInstancesInService).value,
+        minSuccessfulInstancesPercent: FromCloudFormation.getNumber(p.MinSuccessfulInstancesPercent).value,
+        pauseTime: FromCloudFormation.getString(p.PauseTime).value,
+        suspendProcesses: FromCloudFormation.getStringArray(p.SuspendProcesses).value,
+        waitOnResourceSignals: FromCloudFormation.getBoolean(p.WaitOnResourceSignals).value,
       });
     }
 
@@ -380,10 +451,10 @@ export class CfnParser {
       if (typeof p !== 'object') { return undefined; }
 
       return {
-        beforeAllowTrafficHook: FromCloudFormation.getString(p.BeforeAllowTrafficHook),
-        afterAllowTrafficHook: FromCloudFormation.getString(p.AfterAllowTrafficHook),
-        applicationName: FromCloudFormation.getString(p.ApplicationName),
-        deploymentGroupName: FromCloudFormation.getString(p.DeploymentGroupName),
+        beforeAllowTrafficHook: FromCloudFormation.getString(p.BeforeAllowTrafficHook).value,
+        afterAllowTrafficHook: FromCloudFormation.getString(p.AfterAllowTrafficHook).value,
+        applicationName: FromCloudFormation.getString(p.ApplicationName).value,
+        deploymentGroupName: FromCloudFormation.getString(p.DeploymentGroupName).value,
       };
     }
 
@@ -391,7 +462,7 @@ export class CfnParser {
       if (typeof p !== 'object') { return undefined; }
 
       return undefinedIfAllValuesAreEmpty({
-        ignoreUnmodifiedGroupSizeProperties: p.IgnoreUnmodifiedGroupSizeProperties,
+        ignoreUnmodifiedGroupSizeProperties: FromCloudFormation.getBoolean(p.IgnoreUnmodifiedGroupSizeProperties).value,
       });
     }
   }
@@ -492,7 +563,7 @@ export class CfnParser {
         // as otherwise Fn.join() will try to concatenate
         // the non-token parts,
         // causing a diff with the original template
-        return Fn.join(value[0], Lazy.listValue({ produce: () => value[1] }));
+        return Fn.join(value[0], Lazy.list({ produce: () => value[1] }));
       }
       case 'Fn::Cidr': {
         const value = this.parseValue(object[key]);
@@ -501,11 +572,19 @@ export class CfnParser {
       case 'Fn::FindInMap': {
         const value = this.parseValue(object[key]);
         // the first argument to FindInMap is the mapping name
-        const mapping = this.finder.findMapping(value[0]);
-        if (!mapping) {
-          throw new Error(`Mapping used in FindInMap expression with name '${value[0]}' was not found in the template`);
+        let mappingName: string;
+        if (Token.isUnresolved(value[0])) {
+          // the first argument can be a dynamic expression like Ref: Param;
+          // if it is, we can't find the mapping in advance
+          mappingName = value[0];
+        } else {
+          const mapping = this.finder.findMapping(value[0]);
+          if (!mapping) {
+            throw new Error(`Mapping used in FindInMap expression with name '${value[0]}' was not found in the template`);
+          }
+          mappingName = mapping.logicalId;
         }
-        return Fn.findInMap(mapping.logicalId, value[1], value[2]);
+        return Fn._findInMap(mappingName, value[1], value[2]);
       }
       case 'Fn::Select': {
         const value = this.parseValue(object[key]);
@@ -670,7 +749,7 @@ export class CfnParser {
         // as Fn.valueOf() returns a string,
         // which is incorrect
         // (Fn::ValueOf can also return an array)
-        return Lazy.anyValue({ produce: () => ({ 'Fn::ValueOf': [param.logicalId, value[1]] }) });
+        return Lazy.any({ produce: () => ({ 'Fn::ValueOf': [param.logicalId, value[1]] }) });
       }
       default:
         // I don't want to hard-code the list of supported Rules-specific intrinsics in this function;

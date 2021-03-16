@@ -1,6 +1,6 @@
-import * as lockfile from '@yarnpkg/lockfile';
-import { promises as fs } from 'fs';
+import { promises as fs, exists } from 'fs';
 import * as path from 'path';
+import * as lockfile from '@yarnpkg/lockfile';
 import { hoistDependencies } from './hoisting';
 import { PackageJson, PackageLock, PackageLockEntry, PackageLockPackage, YarnLock } from './types';
 
@@ -42,7 +42,7 @@ export async function generateShrinkwrap(options: ShrinkwrapOptions): Promise<Pa
 
   if (options.outputFile) {
     // Write the shrinkwrap file
-    await fs.writeFile(options.outputFile, JSON.stringify(lock, undefined, 2), { encoding: 'utf8'} );
+    await fs.writeFile(options.outputFile, JSON.stringify(lock, undefined, 2), { encoding: 'utf8' });
   }
 
   return lock;
@@ -66,9 +66,9 @@ async function dependenciesFor(deps: Record<string, string>, yarnLock: YarnLock,
   rootDir = await fs.realpath(rootDir);
 
   for (const [depName, versionRange] of Object.entries(deps)) {
-    const depPkgJsonFile = require.resolve(`${depName}/package.json`, { paths: [rootDir] });
+    const depDir = await findPackageDir(depName, rootDir);
+    const depPkgJsonFile = path.join(depDir, 'package.json');
     const depPkgJson = await loadPackageJson(depPkgJsonFile);
-    const depDir = path.dirname(depPkgJsonFile);
     const yarnKey = `${depName}@${versionRange}`;
 
     // Sanity check
@@ -150,4 +150,40 @@ export function formatPackageLock(entry: PackageLockEntry) {
       recurse([...names, depName], depEntry);
     }
   }
+}
+
+/**
+ * Find package directory
+ *
+ * Do this by walking upwards in the directory tree until we find
+ * `<dir>/node_modules/<package>/package.json`.
+ *
+ * -------
+ *
+ * Things that we tried but don't work:
+ *
+ * 1.    require.resolve(`${depName}/package.json`, { paths: [rootDir] });
+ *
+ * Breaks with ES Modules if `package.json` has not been exported, which is
+ * being enforced starting Node12.
+ *
+ * 2.    findPackageJsonUpwardFrom(require.resolve(depName, { paths: [rootDir] }))
+ *
+ * Breaks if a built-in NodeJS package name conflicts with an NPM package name
+ * (in Node15 `string_decoder` is introduced...)
+ */
+async function findPackageDir(depName: string, rootDir: string) {
+  let prevDir;
+  let dir = rootDir;
+  while (dir !== prevDir) {
+    const candidateDir = path.join(dir, 'node_modules', depName);
+    if (await new Promise(ok => exists(path.join(candidateDir, 'package.json'), ok))) {
+      return candidateDir;
+    }
+
+    prevDir = dir;
+    dir = path.dirname(dir); // dirname('/') -> '/', dirname('c:\\') -> 'c:\\'
+  }
+
+  throw new Error(`Did not find '${depName}' upwards of '${rootDir}'`);
 }

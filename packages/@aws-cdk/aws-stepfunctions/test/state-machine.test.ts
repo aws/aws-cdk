@@ -1,5 +1,6 @@
 import '@aws-cdk/assert/jest';
 import * as logs from '@aws-cdk/aws-logs';
+import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
 import * as stepfunctions from '../lib';
 
@@ -60,6 +61,36 @@ describe('State Machine', () => {
     });
 
   }),
+
+  test('State Machine with invalid name', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const createStateMachine = (name: string) => {
+      new stepfunctions.StateMachine(stack, name + 'StateMachine', {
+        stateMachineName: name,
+        definition: stepfunctions.Chain.start(new stepfunctions.Pass(stack, name + 'Pass')),
+        stateMachineType: stepfunctions.StateMachineType.EXPRESS,
+      });
+    };
+    const tooShortName = '';
+    const tooLongName = 'M'.repeat(81);
+    const invalidCharactersName = '*';
+
+    // THEN
+    expect(() => {
+      createStateMachine(tooShortName);
+    }).toThrow(`State Machine name must be between 1 and 80 characters. Received: ${tooShortName}`);
+
+    expect(() => {
+      createStateMachine(tooLongName);
+    }).toThrow(`State Machine name must be between 1 and 80 characters. Received: ${tooLongName}`);
+
+    expect(() => {
+      createStateMachine(invalidCharactersName);
+    }).toThrow(`State Machine name must match "^[0-9a-zA-Z+!@._-]+$". Received: ${invalidCharactersName}`);
+  });
 
   test('log configuration', () => {
     // GIVEN
@@ -150,6 +181,63 @@ describe('State Machine', () => {
           Effect: 'Allow',
           Resource: '*',
         }],
+        Version: '2012-10-17',
+      },
+      PolicyName: 'MyStateMachineRoleDefaultPolicyE468EB18',
+      Roles: [
+        {
+          Ref: 'MyStateMachineRoleD59FFEBC',
+        },
+      ],
+    });
+  });
+
+  test('grant access', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const sm = new stepfunctions.StateMachine(stack, 'MyStateMachine', {
+      definition: stepfunctions.Chain.start(new stepfunctions.Pass(stack, 'Pass')),
+    });
+    const bucket = new s3.Bucket(stack, 'MyBucket');
+    bucket.grantRead(sm);
+
+    // THEN
+    expect(stack).toHaveResource('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: [
+              's3:GetObject*',
+              's3:GetBucket*',
+              's3:List*',
+            ],
+            Effect: 'Allow',
+            Resource: [
+              {
+                'Fn::GetAtt': [
+                  'MyBucketF68F3FF0',
+                  'Arn',
+                ],
+              },
+              {
+                'Fn::Join': [
+                  '',
+                  [
+                    {
+                      'Fn::GetAtt': [
+                        'MyBucketF68F3FF0',
+                        'Arn',
+                      ],
+                    },
+                    '/*',
+                  ],
+                ],
+              },
+            ],
+          },
+        ],
         Version: '2012-10-17',
       },
       PolicyName: 'MyStateMachineRoleDefaultPolicyE468EB18',

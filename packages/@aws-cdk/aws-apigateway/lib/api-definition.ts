@@ -1,6 +1,9 @@
 import * as s3 from '@aws-cdk/aws-s3';
 import * as s3_assets from '@aws-cdk/aws-s3-assets';
-import * as cdk from '@aws-cdk/core';
+
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct } from '@aws-cdk/core';
 
 /**
  * Represents an OpenAPI definition asset.
@@ -80,7 +83,7 @@ export abstract class ApiDefinition {
    * @param scope The binding scope. Don't be smart about trying to down-cast or
    * assume it's initialized. You may just use it as a construct scope.
    */
-  public abstract bind(scope: cdk.Construct): ApiDefinitionConfig;
+  public abstract bind(scope: Construct): ApiDefinitionConfig;
 }
 
 /**
@@ -136,7 +139,7 @@ export class S3ApiDefinition extends ApiDefinition {
     this.bucketName = bucket.bucketName;
   }
 
-  public bind(_scope: cdk.Construct): ApiDefinitionConfig {
+  public bind(_scope: Construct): ApiDefinitionConfig {
     return {
       s3Location: {
         bucket: this.bucketName,
@@ -164,7 +167,7 @@ export class InlineApiDefinition extends ApiDefinition {
     }
   }
 
-  public bind(_scope: cdk.Construct): ApiDefinitionConfig {
+  public bind(_scope: Construct): ApiDefinitionConfig {
     return {
       inlineDefinition: this.definition,
     };
@@ -182,7 +185,7 @@ export class AssetApiDefinition extends ApiDefinition {
     super();
   }
 
-  public bind(scope: cdk.Construct): ApiDefinitionConfig {
+  public bind(scope: Construct): ApiDefinitionConfig {
     // If the same AssetAPIDefinition is used multiple times, retain only the first instantiation.
     if (this.asset === undefined) {
       this.asset = new s3_assets.Asset(scope, 'APIDefinition', {

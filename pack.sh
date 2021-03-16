@@ -7,12 +7,21 @@ export PATH=$PWD/node_modules/.bin:$PATH
 export NODE_OPTIONS="--max-old-space-size=4096 ${NODE_OPTIONS:-}"
 root=$PWD
 
+# Get version and changelog file name (these require that .versionrc.json would have been generated)
+version=$(node -p "require('./scripts/resolve-version').version")
+changelog_file=$(node -p "require('./scripts/resolve-version').changelogFile")
+marker=$(node -p "require('./scripts/resolve-version').marker")
+
 PACMAK=${PACMAK:-jsii-pacmak}
 ROSETTA=${ROSETTA:-jsii-rosetta}
 TMPDIR=${TMPDIR:-$(dirname $(mktemp -u))}
 distdir="$PWD/dist"
 rm -fr ${distdir}
 mkdir -p ${distdir}
+
+if ${CHECK_PREREQS:-true}; then
+  /bin/bash ./scripts/check-pack-prerequisites.sh
+fi
 
 # Split out jsii and non-jsii packages. Jsii packages will be built all at once.
 # Non-jsii packages will be run individually.
@@ -54,17 +63,18 @@ for dir in $(find packages -name dist | grep -v node_modules | grep -v run-wrapp
   rsync -a $dir/ ${distdir}/
 done
 
+# Record the dependency order of NPM packages into a file
+# (This file will be opportunistically used during publishing)
+#
+# Manually sort 'aws-cdk' to the end, as the 'cdk init' command has implicit dependencies
+# on other packages (that should not appear in 'package.json' and so
+# there is no way to tell lerna about these).
+for dir in $(lerna ls --toposort -p | grep -v packages/aws-cdk) $PWD/packages/aws-cdk; do
+  (cd $dir/dist/js && ls >> ${distdir}/js/npm-publish-order.txt) || true
+done
+
 # Remove a JSII aggregate POM that may have snuk past
 rm -rf dist/java/software/amazon/jsii
-
-# Get version
-version="$(node -p "require('./scripts/get-version')")"
-
-# Ensure we don't publish anything beyond 1.x for now
-if [[ ! "${version}" == "1."* ]]; then
-  echo "ERROR: accidentally releasing a major version? Expecting repo version to start with '1.' but got '${version}'"
-  exit 1
-fi
 
 # Get commit from CodePipeline (or git, if we are in CodeBuild)
 # If CODEBUILD_RESOLVED_SOURCE_VERSION is not defined (i.e. local
@@ -83,13 +93,12 @@ cat > ${distdir}/build.json <<HERE
 HERE
 
 # copy CHANGELOG.md to dist/ for github releases
-cp CHANGELOG.md ${distdir}/
+cp ${changelog_file} ${distdir}/CHANGELOG.md
 
 # defensive: make sure our artifacts don't use the version marker (this means
 # that "pack" will always fails when building in a dev environment)
 # when we get to 10.0.0, we can fix this...
-marker=$(node -p "require('./scripts/get-version-marker')")
-if find dist/ | grep "${marker}"; then
+if find dist/ | grep -F "${marker}"; then
   echo "ERROR: build artifacts use the version marker '${marker}' instead of a real version."
   echo "This is expected for builds in a development environment but should not happen in CI builds!"
   exit 1

@@ -35,7 +35,7 @@ class EksClusterStack extends TestStack {
       vpc: this.vpc,
       mastersRole,
       defaultCapacity: 2,
-      version: eks.KubernetesVersion.V1_17,
+      version: eks.KubernetesVersion.V1_19,
       secretsEncryptionKey,
     });
 
@@ -53,11 +53,15 @@ class EksClusterStack extends TestStack {
 
     this.assertNodeGroupX86();
 
+    this.assertNodeGroupSpot();
+
     this.assertNodeGroupArm();
 
     this.assertNodeGroupCustomAmi();
 
     this.assertSimpleManifest();
+
+    this.assertManifestWithoutValidation();
 
     this.assertSimpleHelmChart();
 
@@ -137,6 +141,20 @@ class EksClusterStack extends TestStack {
     // apply a kubernetes manifest
     this.cluster.addManifest('HelloApp', ...hello.resources);
   }
+  private assertManifestWithoutValidation() {
+    // apply a kubernetes manifest
+    new eks.KubernetesManifest(this, 'HelloAppWithoutValidation', {
+      cluster: this.cluster,
+      manifest: [{
+        apiVersion: 'v1',
+        kind: 'ConfigMap',
+        data: { hello: 'world' },
+        metadata: { name: 'config-map' },
+        unknown: { key: 'value' },
+      }],
+      skipValidation: true,
+    });
+  }
   private assertNodeGroupX86() {
     // add a extra nodegroup
     this.cluster.addNodegroupCapacity('extra-ng', {
@@ -144,6 +162,20 @@ class EksClusterStack extends TestStack {
       minSize: 1,
       // reusing the default capacity nodegroup instance role when available
       nodeRole: this.cluster.defaultCapacity ? this.cluster.defaultCapacity.role : undefined,
+    });
+  }
+  private assertNodeGroupSpot() {
+    // add a extra nodegroup
+    this.cluster.addNodegroupCapacity('extra-ng-spot', {
+      instanceTypes: [
+        new ec2.InstanceType('c5.large'),
+        new ec2.InstanceType('c5a.large'),
+        new ec2.InstanceType('c5d.large'),
+      ],
+      minSize: 3,
+      // reusing the default capacity nodegroup instance role when available
+      nodeRole: this.cluster.defaultCapacity ? this.cluster.defaultCapacity.role : undefined,
+      capacityType: eks.CapacityType.SPOT,
     });
   }
   private assertNodeGroupCustomAmi() {
@@ -155,7 +187,9 @@ class EksClusterStack extends TestStack {
     );
     const lt = new ec2.CfnLaunchTemplate(this, 'LaunchTemplate', {
       launchTemplateData: {
-        imageId: new eks.EksOptimizedImage().getImage(this).imageId,
+        imageId: new eks.EksOptimizedImage({
+          kubernetesVersion: eks.KubernetesVersion.V1_19.version,
+        }).getImage(this).imageId,
         instanceType: new ec2.InstanceType('t3.small').toString(),
         userData: Fn.base64(userData.render()),
       },

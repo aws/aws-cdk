@@ -1,6 +1,7 @@
 import '@aws-cdk/assert/jest';
 import { Stack } from '@aws-cdk/core';
-import { ProviderAttribute, UserPool, UserPoolIdentityProviderBase } from '../../lib';
+import { ProviderAttribute, UserPool } from '../../lib';
+import { UserPoolIdentityProviderBase } from '../../lib/user-pool-idps/private/user-pool-idp-base';
 
 class MyIdp extends UserPoolIdentityProviderBase {
   public readonly providerName = 'MyProvider';

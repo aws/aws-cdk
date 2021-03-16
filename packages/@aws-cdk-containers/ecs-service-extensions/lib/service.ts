@@ -1,9 +1,13 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecs from '@aws-cdk/aws-ecs';
 import * as cdk from '@aws-cdk/core';
-import { Environment } from './environment';
+import { IEnvironment } from './environment';
 import { EnvironmentCapacityType, ServiceBuild } from './extensions/extension-interfaces';
 import { ServiceDescription } from './service-description';
+
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct } from '@aws-cdk/core';
 
 /**
  * The settings for an ECS Service
@@ -17,14 +21,14 @@ export interface ServiceProps {
   /**
    * The environment to launch the service in
    */
-  readonly environment: Environment
+  readonly environment: IEnvironment
 }
 
 /**
  * A service builder class. This construct support various extensions
  * which can construct an ECS service progressively.
  */
-export class Service extends cdk.Construct {
+export class Service extends Construct {
   /**
    * The underlying ECS service that was created
    */
@@ -44,7 +48,7 @@ export class Service extends cdk.Construct {
    * The cluster that is providing capacity for this service
    * [disable-awslint:ref-via-interface]
    */
-  public readonly cluster: ecs.Cluster;
+  public readonly cluster: ecs.ICluster;
 
   /**
    * The capacity type that this service will use
@@ -59,7 +63,7 @@ export class Service extends cdk.Construct {
   /**
    * The environment this service was launched in
    */
-  public readonly environment: Environment;
+  public readonly environment: IEnvironment;
 
   /**
    * The generated task definition for this service, is only
@@ -74,7 +78,7 @@ export class Service extends cdk.Construct {
 
   private readonly scope: cdk.Construct;
 
-  constructor(scope: cdk.Construct, id: string, props: ServiceProps) {
+  constructor(scope: Construct, id: string, props: ServiceProps) {
     super(scope, id);
 
     this.scope = scope;

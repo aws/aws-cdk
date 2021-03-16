@@ -2,7 +2,7 @@ import * as path from 'path';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
-import { Annotations, App, CfnOutput, PhysicalName, Stack, Stage, Aspects } from '@aws-cdk/core';
+import { Annotations, App, Aws, CfnOutput, PhysicalName, Stack, Stage } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { AssetType, DeployCdkStackAction, PublishAssetsAction, UpdatePipelineAction } from './actions';
 import { appOf, assemblyBuilderOf } from './private/construct-internals';
@@ -105,6 +105,20 @@ export interface CdkPipelineProps {
    * @default - All private subnets.
    */
   readonly subnetSelection?: ec2.SubnetSelection;
+
+  /**
+   * Whether the pipeline will update itself
+   *
+   * This needs to be set to `true` to allow the pipeline to reconfigure
+   * itself when assets or stages are being added to it, and `true` is the
+   * recommended setting.
+   *
+   * You can temporarily set this to `false` while you are iterating
+   * on the pipeline itself and prefer to deploy changes using `cdk deploy`.
+   *
+   * @default true
+   */
+  readonly selfMutating?: boolean;
 }
 
 /**
@@ -178,15 +192,17 @@ export class CdkPipeline extends CoreConstruct {
       });
     }
 
-    this._pipeline.addStage({
-      stageName: 'UpdatePipeline',
-      actions: [new UpdatePipelineAction(this, 'UpdatePipeline', {
-        cloudAssemblyInput: this._cloudAssemblyArtifact,
-        pipelineStackName: pipelineStack.stackName,
-        cdkCliVersion: props.cdkCliVersion,
-        projectName: maybeSuffix(props.pipelineName, '-selfupdate'),
-      })],
-    });
+    if (props.selfMutating ?? true) {
+      this._pipeline.addStage({
+        stageName: 'UpdatePipeline',
+        actions: [new UpdatePipelineAction(this, 'UpdatePipeline', {
+          cloudAssemblyInput: this._cloudAssemblyArtifact,
+          pipelineStackName: pipelineStack.stackName,
+          cdkCliVersion: props.cdkCliVersion,
+          projectName: maybeSuffix(props.pipelineName, '-selfupdate'),
+        })],
+      });
+    }
 
     this._assets = new AssetPublishing(this, 'Assets', {
       cloudAssemblyInput: this._cloudAssemblyArtifact,
@@ -196,8 +212,6 @@ export class CdkPipeline extends CoreConstruct {
       vpc: props.vpc,
       subnetSelection: props.subnetSelection,
     });
-
-    Aspects.of(this).add({ visit: () => this._assets.removeAssetsStageIfEmpty() });
   }
 
   /**
@@ -309,10 +323,10 @@ export class CdkPipeline extends CoreConstruct {
 
         if (depAction === undefined) {
           Annotations.of(this).addWarning(`Stack '${stackAction.stackName}' depends on stack ` +
-              `'${depId}', but that dependency is not deployed through the pipeline!`);
+            `'${depId}', but that dependency is not deployed through the pipeline!`);
         } else if (!(depAction.executeRunOrder < stackAction.prepareRunOrder)) {
           yield `Stack '${stackAction.stackName}' depends on stack ` +
-              `'${depAction.stackName}', but is deployed before it in the pipeline!`;
+            `'${depAction.stackName}', but is deployed before it in the pipeline!`;
         }
       }
     }
@@ -350,23 +364,29 @@ interface AssetPublishingProps {
  * Add appropriate publishing actions to the asset publishing stage
  */
 class AssetPublishing extends CoreConstruct {
+  // CodePipelines has a hard limit of 50 actions per stage. See https://github.com/aws/aws-cdk/issues/9353
+  private readonly MAX_PUBLISHERS_PER_STAGE = 50;
+
   private readonly publishers: Record<string, PublishAssetsAction> = {};
   private readonly assetRoles: Record<string, iam.IRole> = {};
   private readonly myCxAsmRoot: string;
 
-  private readonly stage: codepipeline.IStage;
+  private readonly lastStageBeforePublishing?: codepipeline.IStage;
+  private readonly stages: codepipeline.IStage[] = [];
   private readonly pipeline: codepipeline.Pipeline;
-  private _fileAssetCtr = 1;
-  private _dockerAssetCtr = 1;
+
+  private _fileAssetCtr = 0;
+  private _dockerAssetCtr = 0;
 
   constructor(scope: Construct, id: string, private readonly props: AssetPublishingProps) {
     super(scope, id);
     this.myCxAsmRoot = path.resolve(assemblyBuilderOf(appOf(this)).outdir);
 
-    // We MUST add the Stage immediately here, otherwise it will be in the wrong place
-    // in the pipeline!
-    this.stage = this.props.pipeline.addStage({ stageName: 'Assets' });
     this.pipeline = this.props.pipeline;
+    // Hacks to get access to the innards of Pipeline
+    const stages: codepipeline.IStage[] = (this.props.pipeline as any)._stages;
+    // Any asset publishing stages will be added directly after the last stage that currently exists.
+    this.lastStageBeforePublishing = stages.slice(-1)[0];
   }
 
   /**
@@ -394,13 +414,23 @@ class AssetPublishing extends CoreConstruct {
 
     let action = this.publishers[command.assetId];
     if (!action) {
+      // Dynamically create new stages as needed, with `MAX_PUBLISHERS_PER_STAGE` assets per stage.
+      const stageIndex = Math.floor((this._fileAssetCtr + this._dockerAssetCtr) / this.MAX_PUBLISHERS_PER_STAGE);
+      if (stageIndex >= this.stages.length) {
+        const previousStage = this.stages.slice(-1)[0] ?? this.lastStageBeforePublishing;
+        this.stages.push(this.pipeline.addStage({
+          stageName: `Assets${stageIndex > 0 ? stageIndex + 1 : ''}`,
+          placement: { justAfter: previousStage },
+        }));
+      }
+
       // The asset ID would be a logical candidate for the construct path and project names, but if the asset
       // changes it leads to recreation of a number of Role/Policy/Project resources which is slower than
       // necessary. Number sequentially instead.
       //
       // FIXME: The ultimate best solution is probably to generate a single Project per asset type
       // and reuse that for all assets.
-      const id = command.assetType === AssetType.FILE ? `FileAsset${this._fileAssetCtr++}` : `DockerAsset${this._dockerAssetCtr++}`;
+      const id = command.assetType === AssetType.FILE ? `FileAsset${++this._fileAssetCtr}` : `DockerAsset${++this._dockerAssetCtr}`;
 
       // NOTE: It's important that asset changes don't force a pipeline self-mutation.
       // This can cause an infinite loop of updates (see https://github.com/aws/aws-cdk/issues/9080).
@@ -414,26 +444,10 @@ class AssetPublishing extends CoreConstruct {
         vpc: this.props.vpc,
         subnetSelection: this.props.subnetSelection,
       });
-      this.stage.addAction(action);
+      this.stages[stageIndex].addAction(action);
     }
 
     action.addPublishCommand(relativePath, command.assetSelector);
-  }
-
-  /**
-   * Remove the Assets stage if it turns out we didn't add any Assets to publish
-   */
-  public removeAssetsStageIfEmpty() {
-    if (Object.keys(this.publishers).length === 0) {
-      // Hacks to get access to innards of Pipeline
-      // Modify 'stages' array in-place to remove Assets stage if empty
-      const stages: codepipeline.IStage[] = (this.props.pipeline as any)._stages;
-
-      const ix = stages.indexOf(this.stage);
-      if (ix > -1) {
-        stages.splice(ix, 1);
-      }
-    }
   }
 
   /**
@@ -501,6 +515,40 @@ class AssetPublishing extends CoreConstruct {
 
     // Artifact access
     this.pipeline.artifactBucket.grantRead(assetRole);
+
+    // VPC permissions required for CodeBuild
+    // Normally CodeBuild itself takes care of this but we're creating a singleton role so now
+    // we need to do this.
+    if (this.props.vpc) {
+      assetRole.attachInlinePolicy(new iam.Policy(assetRole, 'VpcPolicy', {
+        statements: [
+          new iam.PolicyStatement({
+            resources: [`arn:${Aws.PARTITION}:ec2:${Aws.REGION}:${Aws.ACCOUNT_ID}:network-interface/*`],
+            actions: ['ec2:CreateNetworkInterfacePermission'],
+            conditions: {
+              StringEquals: {
+                'ec2:Subnet': this.props.vpc
+                  .selectSubnets(this.props.subnetSelection).subnetIds
+                  .map(si => `arn:${Aws.PARTITION}:ec2:${Aws.REGION}:${Aws.ACCOUNT_ID}:subnet/${si}`),
+                'ec2:AuthorizedService': 'codebuild.amazonaws.com',
+              },
+            },
+          }),
+          new iam.PolicyStatement({
+            resources: ['*'],
+            actions: [
+              'ec2:CreateNetworkInterface',
+              'ec2:DescribeNetworkInterfaces',
+              'ec2:DeleteNetworkInterface',
+              'ec2:DescribeSubnets',
+              'ec2:DescribeSecurityGroups',
+              'ec2:DescribeDhcpOptions',
+              'ec2:DescribeVpcs',
+            ],
+          }),
+        ],
+      }));
+    }
 
     this.assetRoles[assetType] = assetRole.withoutPolicyUpdates();
     return this.assetRoles[assetType];

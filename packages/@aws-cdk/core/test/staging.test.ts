@@ -1,10 +1,11 @@
 import * as os from 'os';
 import * as path from 'path';
+import { FileAssetPackaging } from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as fs from 'fs-extra';
 import { nodeunitShim, Test } from 'nodeunit-shim';
 import * as sinon from 'sinon';
-import { App, AssetHashType, AssetStaging, BundlingDockerImage, BundlingOptions, FileSystem, Stack } from '../lib';
+import { App, AssetHashType, AssetStaging, BundlingDockerImage, BundlingOptions, BundlingOutput, FileSystem, Stack, Stage } from '../lib';
 
 const STUB_INPUT_FILE = '/tmp/docker-stub.input';
 const STUB_INPUT_CONCAT_FILE = '/tmp/docker-stub.input.concat';
@@ -12,8 +13,13 @@ const STUB_INPUT_CONCAT_FILE = '/tmp/docker-stub.input.concat';
 enum DockerStubCommand {
   SUCCESS = 'DOCKER_STUB_SUCCESS',
   FAIL = 'DOCKER_STUB_FAIL',
-  SUCCESS_NO_OUTPUT = 'DOCKER_STUB_SUCCESS_NO_OUTPUT'
+  SUCCESS_NO_OUTPUT = 'DOCKER_STUB_SUCCESS_NO_OUTPUT',
+  MULTIPLE_FILES = 'DOCKER_STUB_MULTIPLE_FILES',
+  SINGLE_ARCHIVE = 'DOCKER_STUB_SINGLE_ARCHIVE',
 }
+
+const FIXTURE_TEST1_DIR = path.join(__dirname, 'fs', 'fixtures', 'test1');
+const FIXTURE_TARBALL = path.join(__dirname, 'fs', 'fixtures.tar.gz');
 
 const userInfo = os.userInfo();
 const USER_ARG = `-u ${userInfo.uid}:${userInfo.gid}`;
@@ -45,7 +51,86 @@ nodeunitShim({
 
     test.deepEqual(staging.sourceHash, '2f37f937c51e2c191af66acf9b09f548926008ec68c575bd2ee54b6e997c0e00');
     test.deepEqual(staging.sourcePath, sourcePath);
-    test.deepEqual(stack.resolve(staging.stagedPath), 'asset.2f37f937c51e2c191af66acf9b09f548926008ec68c575bd2ee54b6e997c0e00');
+    test.deepEqual(path.basename(staging.stagedPath), 'asset.2f37f937c51e2c191af66acf9b09f548926008ec68c575bd2ee54b6e997c0e00');
+    test.deepEqual(path.basename(staging.relativeStagedPath(stack)), 'asset.2f37f937c51e2c191af66acf9b09f548926008ec68c575bd2ee54b6e997c0e00');
+    test.deepEqual(staging.packaging, FileAssetPackaging.ZIP_DIRECTORY);
+    test.deepEqual(staging.isArchive, true);
+    test.done();
+  },
+
+  'staging of an archive file correctly sets packaging and isArchive'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    const sourcePath = path.join(__dirname, 'archive', 'archive.zip');
+
+    // WHEN
+    const staging = new AssetStaging(stack, 's1', { sourcePath });
+
+    test.deepEqual(staging.packaging, FileAssetPackaging.FILE);
+    test.deepEqual(staging.isArchive, true);
+    test.done();
+  },
+
+  'asset packaging type is correct when staging is skipped because of memory cache'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    const sourcePath = path.join(__dirname, 'archive', 'archive.zip');
+
+    // WHEN
+    const staging1 = new AssetStaging(stack, 's1', { sourcePath });
+    const staging2 = new AssetStaging(stack, 's2', { sourcePath });
+
+    test.deepEqual(staging1.packaging, FileAssetPackaging.FILE);
+    test.deepEqual(staging1.isArchive, true);
+    test.deepEqual(staging2.packaging, staging1.packaging);
+    test.deepEqual(staging2.isArchive, staging1.isArchive);
+    test.done();
+  },
+
+  'asset packaging type is correct when staging is skipped because of disk cache'(test: Test) {
+    // GIVEN
+    const TEST_OUTDIR = path.join(__dirname, 'cdk.out');
+    if (fs.existsSync(TEST_OUTDIR)) {
+      fs.removeSync(TEST_OUTDIR);
+    }
+
+    const sourcePath = path.join(__dirname, 'archive', 'archive.zip');
+
+    const app1 = new App({ outdir: TEST_OUTDIR });
+    const stack1 = new Stack(app1, 'Stack');
+
+    const app2 = new App({ outdir: TEST_OUTDIR }); // same OUTDIR
+    const stack2 = new Stack(app2, 'stack');
+
+    // WHEN
+    const staging1 = new AssetStaging(stack1, 'Asset', { sourcePath });
+
+    // Now clear asset hash cache to show that during the second staging
+    // even though the asset is already available on disk it will correctly
+    // be considered as a FileAssetPackaging.FILE.
+    AssetStaging.clearAssetHashCache();
+
+    const staging2 = new AssetStaging(stack2, 'Asset', { sourcePath });
+
+    // THEN
+    test.deepEqual(staging1.packaging, FileAssetPackaging.FILE);
+    test.deepEqual(staging1.isArchive, true);
+    test.deepEqual(staging2.packaging, staging1.packaging);
+    test.deepEqual(staging2.isArchive, staging1.isArchive);
+
+    test.done();
+  },
+
+  'staging of a non-archive file correctly sets packaging and isArchive'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    const sourcePath = __filename;
+
+    // WHEN
+    const staging = new AssetStaging(stack, 's1', { sourcePath });
+
+    test.deepEqual(staging.packaging, FileAssetPackaging.FILE);
+    test.deepEqual(staging.isArchive, false);
     test.done();
   },
 
@@ -60,7 +145,8 @@ nodeunitShim({
 
     test.deepEqual(staging.sourceHash, '2f37f937c51e2c191af66acf9b09f548926008ec68c575bd2ee54b6e997c0e00');
     test.deepEqual(staging.sourcePath, sourcePath);
-    test.deepEqual(stack.resolve(staging.stagedPath), sourcePath);
+    test.deepEqual(staging.stagedPath, sourcePath);
+    test.deepEqual(staging.relativeStagedPath(stack), sourcePath);
     test.done();
   },
 
@@ -68,12 +154,10 @@ nodeunitShim({
     // GIVEN
     const app = new App();
     const stack = new Stack(app, 'stack');
-    const directory = path.join(__dirname, 'fs', 'fixtures', 'test1');
-    const file = path.join(__dirname, 'fs', 'fixtures.tar.gz');
 
     // WHEN
-    new AssetStaging(stack, 's1', { sourcePath: directory });
-    new AssetStaging(stack, 'file', { sourcePath: file });
+    new AssetStaging(stack, 's1', { sourcePath: FIXTURE_TEST1_DIR });
+    new AssetStaging(stack, 'file', { sourcePath: FIXTURE_TARBALL });
 
     // THEN
     const assembly = app.synth();
@@ -83,6 +167,31 @@ nodeunitShim({
       'cdk.out',
       'manifest.json',
       'stack.template.json',
+      'tree.json',
+    ]);
+    test.done();
+  },
+
+  'assets in nested assemblies get staged into assembly root directory'(test: Test) {
+    // GIVEN
+    const app = new App();
+    const stack1 = new Stack(new Stage(app, 'Stage1'), 'Stack');
+    const stack2 = new Stack(new Stage(app, 'Stage2'), 'Stack');
+
+    // WHEN
+    new AssetStaging(stack1, 's1', { sourcePath: FIXTURE_TEST1_DIR });
+    new AssetStaging(stack2, 's1', { sourcePath: FIXTURE_TEST1_DIR });
+
+    // THEN
+    const assembly = app.synth();
+
+    // One asset directory at the top
+    test.deepEqual(fs.readdirSync(assembly.directory), [
+      'assembly-Stage1',
+      'assembly-Stage2',
+      'asset.2f37f937c51e2c191af66acf9b09f548926008ec68c575bd2ee54b6e997c0e00',
+      'cdk.out',
+      'manifest.json',
       'tree.json',
     ]);
     test.done();
@@ -141,7 +250,7 @@ nodeunitShim({
     test.done();
   },
 
-  'bundler succeeds when staging is disabled'(test: Test) {
+  'bundled resources have absolute path when staging is disabled'(test: Test) {
     // GIVEN
     const app = new App();
     const stack = new Stack(app, 'stack');
@@ -171,7 +280,7 @@ nodeunitShim({
     test.equal(asset.sourceHash, 'b1e32e86b3523f2fa512eb99180ee2975a50a4439e63e8badd153f2a68d61aa4');
     test.equal(asset.sourcePath, directory);
 
-    const resolvedStagePath = stack.resolve(asset.stagedPath);
+    const resolvedStagePath = asset.relativeStagedPath(stack);
     // absolute path ending with bundling dir
     test.ok(path.isAbsolute(resolvedStagePath));
     test.ok(new RegExp('asset.b1e32e86b3523f2fa512eb99180ee2975a50a4439e63e8badd153f2a68d61aa4$').test(resolvedStagePath));
@@ -682,7 +791,7 @@ nodeunitShim({
     test.done();
   },
 
-  'bundling looks at bundling stacks in context'(test: Test) {
+  'bundling can be skipped by setting context'(test: Test) {
     // GIVEN
     const app = new App();
     const stack = new Stack(app, 'MyStack');
@@ -700,9 +809,10 @@ nodeunitShim({
     });
 
     test.throws(() => readDockerStubInput()); // Bundling did not run
-    test.equal(asset.assetHash, '3d96e735e26b857743a7c44523c9160c285c2d3ccf273d80fa38a1e674c32cb3'); // hash of MyStack/Asset
     test.equal(asset.sourcePath, directory);
-    test.equal(stack.resolve(asset.stagedPath), directory);
+    test.equal(asset.stagedPath, directory);
+    test.equal(asset.relativeStagedPath(stack), directory);
+    test.equal(asset.assetHash, 'f66d7421aa2d044a6c1f60ddfc76dc78571fcd8bd228eb48eb394e2dbad94a5c');
 
     test.done();
   },
@@ -755,6 +865,89 @@ nodeunitShim({
       `run --rm ${USER_ARG} -v /input:/asset-input:delegated -v /output:/asset-output:delegated -w /asset-input alpine DOCKER_STUB_SUCCESS`,
     );
     test.equal(asset.assetHash, '33cbf2cae5432438e0f046bc45ba8c3cef7b6afcf47b59d1c183775c1918fb1f'); // hash of MyStack/Asset
+
+    test.done();
+  },
+
+  'bundling that produces a single archive file is autodiscovered'(test: Test) {
+    // GIVEN
+    const app = new App();
+    const stack = new Stack(app, 'stack');
+    const directory = path.join(__dirname, 'fs', 'fixtures', 'test1');
+
+    // WHEN
+    const staging = new AssetStaging(stack, 'Asset', {
+      sourcePath: directory,
+      bundling: {
+        image: BundlingDockerImage.fromRegistry('alpine'),
+        command: [DockerStubCommand.SINGLE_ARCHIVE],
+      },
+    });
+
+    // THEN
+    const assembly = app.synth();
+    test.deepEqual(fs.readdirSync(assembly.directory), [
+      'asset.f43148c61174f444925231b5849b468f21e93b5d1469cd07c53625ffd039ef48', // this is the bundle dir but it's empty
+      'asset.f43148c61174f444925231b5849b468f21e93b5d1469cd07c53625ffd039ef48.zip',
+      'cdk.out',
+      'manifest.json',
+      'stack.template.json',
+      'tree.json',
+    ]);
+    test.equal(fs.readdirSync(path.join(assembly.directory, 'asset.f43148c61174f444925231b5849b468f21e93b5d1469cd07c53625ffd039ef48')).length, 0); // empty bundle dir
+    test.deepEqual(staging.packaging, FileAssetPackaging.FILE);
+    test.deepEqual(staging.isArchive, true);
+
+    test.done();
+  },
+
+  'bundling that produces a single archive file with NOT_ARCHIVED'(test: Test) {
+    // GIVEN
+    const app = new App();
+    const stack = new Stack(app, 'stack');
+    const directory = path.join(__dirname, 'fs', 'fixtures', 'test1');
+
+    // WHEN
+    const staging = new AssetStaging(stack, 'Asset', {
+      sourcePath: directory,
+      bundling: {
+        image: BundlingDockerImage.fromRegistry('alpine'),
+        command: [DockerStubCommand.SINGLE_ARCHIVE],
+        outputType: BundlingOutput.NOT_ARCHIVED,
+      },
+    });
+
+    // THEN
+    const assembly = app.synth();
+    test.deepEqual(fs.readdirSync(assembly.directory), [
+      'asset.86ec07746e1d859290cfd8b9c648e581555649c75f51f741f11e22cab6775abc',
+      'cdk.out',
+      'manifest.json',
+      'stack.template.json',
+      'tree.json',
+    ]);
+    test.deepEqual(staging.packaging, FileAssetPackaging.ZIP_DIRECTORY);
+    test.deepEqual(staging.isArchive, true);
+
+    test.done();
+  },
+
+  'throws with ARCHIVED and bundling that does not produce a single archive file'(test: Test) {
+    // GIVEN
+    const app = new App();
+    const stack = new Stack(app, 'stack');
+    const directory = path.join(__dirname, 'fs', 'fixtures', 'test1');
+
+    // WHEN
+    test.throws(() => new AssetStaging(stack, 'Asset', {
+      sourcePath: directory,
+      bundling: {
+        image: BundlingDockerImage.fromRegistry('alpine'),
+        command: [DockerStubCommand.MULTIPLE_FILES],
+        outputType: BundlingOutput.ARCHIVED,
+      },
+    }), /Bundling output directory is expected to include only a single .zip or .jar file when `output` is set to `ARCHIVED`/);
+
 
     test.done();
   },

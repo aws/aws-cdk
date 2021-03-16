@@ -87,7 +87,29 @@
               {
                 "Ref": "AWS::Region"
               },
-              "\",\"query\":\"SOURCE 'my-log-group' | fields @message\\n                | filter @message like /Error/\"}}]}"
+              "\",\"query\":\"SOURCE 'my-log-group' | fields @message\\n                | filter @message like /Error/\"}},{\"type\":\"metric\",\"width\":6,\"height\":3,\"x\":0,\"y\":47,\"properties\":{\"view\":\"singleValue\",\"title\":\"Sent message size\",\"region\":\"",
+              {
+                "Ref": "AWS::Region"
+              },
+              "\",\"metrics\":[[\"AWS/SQS\",\"SentMessageSize\",\"QueueName\",\"",
+              {
+                "Fn::GetAtt": [
+                  "queue",
+                  "QueueName"
+                ]
+              },
+              "\"]],\"singleValueFullPrecision\":false}},{\"type\":\"metric\",\"width\":6,\"height\":3,\"x\":0,\"y\":50,\"properties\":{\"view\":\"singleValue\",\"title\":\"Sent message size with full precision\",\"region\":\"",
+              {
+                "Ref": "AWS::Region"
+              },
+              "\",\"metrics\":[[\"AWS/SQS\",\"SentMessageSize\",\"QueueName\",\"",
+              {
+                "Fn::GetAtt": [
+                  "queue",
+                  "QueueName"
+                ]
+              },
+              "\"]],\"singleValueFullPrecision\":true}}]}"
             ]
           ]
         },

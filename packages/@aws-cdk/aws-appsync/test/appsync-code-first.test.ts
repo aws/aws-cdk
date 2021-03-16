@@ -80,7 +80,7 @@ describe('code-first implementation through GraphQL Api functions`', () => {
     });
   });
 
-  test('addField dynamically adds field to schema', () => {
+  test('addField dynamically adds field to schema for ObjectType', () => {
     // WHEN
     const test = api.addType(new appsync.ObjectType('Test', {
       definition: {
@@ -121,7 +121,7 @@ describe('code-first implementation through GraphQL Api functions`', () => {
     });
   });
 
-  test('addField dynamically adds field to schema', () => {
+  test('addField dynamically adds field to schema for InterfaceType', () => {
     // WHEN
     const test = api.addType(new appsync.InterfaceType('Test', {
       definition: {
@@ -228,7 +228,7 @@ describe('code-first implementation through Schema functions`', () => {
     });
   });
 
-  test('addField dynamically adds field to schema', () => {
+  test('schema.addField dynamically adds field to schema for ObjectType', () => {
     // WHEN
     const test = schema.addType(new appsync.ObjectType('Test', {
       definition: {
@@ -277,7 +277,7 @@ describe('code-first implementation through Schema functions`', () => {
     });
   });
 
-  test('addField dynamically adds field to schema', () => {
+  test('schema addField dynamically adds field to schema for InterfaceType', () => {
     // WHEN
     const test = schema.addType(new appsync.InterfaceType('Test', {
       definition: {

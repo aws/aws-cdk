@@ -1,10 +1,10 @@
+import { throws } from 'assert';
 import { expect, haveResource, haveResourceLike, ResourcePart } from '@aws-cdk/assert';
 import '@aws-cdk/assert/jest';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecs from '@aws-cdk/aws-ecs';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
-import { throws } from 'assert';
 import * as batch from '../lib';
 
 describe('Batch Compute Evironment', () => {
@@ -184,6 +184,7 @@ describe('Batch Compute Evironment', () => {
           ],
           maxvCpus: 4,
           minvCpus: 1,
+          placementGroup: 'example-cluster-group',
           securityGroups: [
             new ec2.SecurityGroup(stack, 'test-sg', {
               vpc,
@@ -230,6 +231,7 @@ describe('Batch Compute Evironment', () => {
           ],
           MaxvCpus: props.computeResources.maxvCpus,
           MinvCpus: props.computeResources.minvCpus,
+          PlacementGroup: props.computeResources.placementGroup,
           SecurityGroupIds: [
             {
               'Fn::GetAtt': [
@@ -240,10 +242,10 @@ describe('Batch Compute Evironment', () => {
           ],
           Subnets: [
             {
-              Ref: `${vpc.node.uniqueId}PrivateSubnet1Subnet865FB50A`,
+              Ref: `${cdk.Names.uniqueId(vpc)}PrivateSubnet1Subnet865FB50A`,
             },
             {
-              Ref: `${vpc.node.uniqueId}PrivateSubnet2Subnet23D3396F`,
+              Ref: `${cdk.Names.uniqueId(vpc)}PrivateSubnet2Subnet23D3396F`,
             },
           ],
           Tags: {

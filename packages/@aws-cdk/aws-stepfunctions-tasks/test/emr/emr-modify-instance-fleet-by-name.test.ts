@@ -1,3 +1,4 @@
+import '@aws-cdk/assert/jest';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import * as cdk from '@aws-cdk/core';
 import * as tasks from '../../lib';
@@ -41,6 +42,54 @@ test('Modify an InstanceFleet with static ClusterId, InstanceFleetName, and Inst
         TargetOnDemandCapacity: 2,
         TargetSpotCapacity: 0,
       },
+    },
+  });
+});
+
+test('task policies are generated', () => {
+  // WHEN
+  const task = new tasks.EmrModifyInstanceFleetByName(stack, 'Task', {
+    clusterId: 'ClusterId',
+    instanceFleetName: 'InstanceFleetName',
+    targetOnDemandCapacity: 2,
+    targetSpotCapacity: 0,
+  });
+  new sfn.StateMachine(stack, 'SM', {
+    definition: task,
+  });
+
+  // THEN
+  expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Statement: [
+        {
+          Action: [
+            'elasticmapreduce:ModifyInstanceFleet',
+            'elasticmapreduce:ListInstanceFleets',
+          ],
+          Effect: 'Allow',
+          Resource: {
+            'Fn::Join': [
+              '',
+              [
+                'arn:',
+                {
+                  Ref: 'AWS::Partition',
+                },
+                ':elasticmapreduce:',
+                {
+                  Ref: 'AWS::Region',
+                },
+                ':',
+                {
+                  Ref: 'AWS::AccountId',
+                },
+                ':cluster/*',
+              ],
+            ],
+          },
+        },
+      ],
     },
   });
 });

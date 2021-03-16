@@ -49,6 +49,7 @@ describe(synthetics.Code.fromAsset, () => {
         handler: 'canary.handler',
         code: directoryAsset,
       }),
+      runtime: synthetics.Runtime.SYNTHETICS_NODEJS_2_0,
     });
 
     // THEN
@@ -73,12 +74,15 @@ describe(synthetics.Code.fromAsset, () => {
         handler: 'canary.handler',
         code: directoryAsset,
       }),
+      runtime: synthetics.Runtime.SYNTHETICS_NODEJS_2_0,
     });
+
     new synthetics.Canary(stack, 'Canary2', {
       test: synthetics.Test.custom({
         handler: 'canary.handler',
         code: directoryAsset,
       }),
+      runtime: synthetics.Runtime.SYNTHETICS_NODEJS_2_0,
     });
 
     // THEN

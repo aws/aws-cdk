@@ -78,7 +78,7 @@ export class CloudFormationStackDriftDetectionCheck extends ManagedRule {
       ...props,
       identifier: ManagedRuleIdentifiers.CLOUDFORMATION_STACK_DRIFT_DETECTION_CHECK,
       inputParameters: {
-        cloudformationRoleArn: Lazy.stringValue({ produce: () => this.role.roleArn }),
+        cloudformationRoleArn: Lazy.string({ produce: () => this.role.roleArn }),
       },
     });
 

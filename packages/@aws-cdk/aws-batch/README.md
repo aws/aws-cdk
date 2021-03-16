@@ -1,17 +1,24 @@
-## AWS Batch Construct Library
-
+# AWS Batch Construct Library
 <!--BEGIN STABILITY BANNER-->
+
 ---
 
 ![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)
 
-> All classes with the `Cfn` prefix in this module ([CFN Resources](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) are always stable and safe to use.
+> All classes with the `Cfn` prefix in this module ([CFN Resources]) are always stable and safe to use.
+>
+> [CFN Resources]: https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib
 
 ![cdk-constructs: Experimental](https://img.shields.io/badge/cdk--constructs-experimental-important.svg?style=for-the-badge)
 
-> The APIs of higher level constructs in this module are experimental and under active development. They are subject to non-backward compatible changes or removal in any future version. These are not subject to the [Semantic Versioning](https://semver.org/) model and breaking changes will be announced in the release notes. This means that while you may use them, you may need to update your source code when upgrading to a newer version of this package.
+> The APIs of higher level constructs in this module are experimental and under active development.
+> They are subject to non-backward compatible changes or removal in any future version. These are
+> not subject to the [Semantic Versioning](https://semver.org/) model and breaking changes will be
+> announced in the release notes. This means that while you may use them, you may need to update
+> your source code when upgrading to a newer version of this package.
 
 ---
+
 <!--END STABILITY BANNER-->
 
 This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.
@@ -71,14 +78,14 @@ const spotEnvironment = new batch.ComputeEnvironment(stack, 'MySpotEnvironment',
 
 AWS Batch uses an [allocation strategy](https://docs.aws.amazon.com/batch/latest/userguide/allocation-strategies.html) to determine what compute resource will efficiently handle incoming job requests. By default, **BEST_FIT** will pick an available compute instance based on vCPU requirements. If none exist, the job will wait until resources become available. However, with this strategy, you may have jobs waiting in the queue unnecessarily despite having more powerful instances available. Below is an example of how that situation might look like:
 
-```
+```plaintext
 Compute Environment:
 
 1. m5.xlarge => 4 vCPU
 2. m5.2xlarge => 8 vCPU
 ```
 
-```
+```plaintext
 Job Queue:
 ---------
 | A | B |
@@ -96,7 +103,8 @@ The alternative would be to use the `BEST_FIT_PROGRESSIVE` strategy in order for
 ### Launch template support
 
 Simply define your Launch Template:
-```typescript
+
+```ts
 const myLaunchTemplate = new ec2.CfnLaunchTemplate(this, 'LaunchTemplate', {
   launchTemplateName: 'extra-storage-template',
   launchTemplateData: {
@@ -116,7 +124,7 @@ const myLaunchTemplate = new ec2.CfnLaunchTemplate(this, 'LaunchTemplate', {
 
 and use it:
 
-```typescript
+```ts
 const myComputeEnv = new batch.ComputeEnvironment(this, 'ComputeEnv', {
   computeResources: {
     launchTemplate: {
@@ -140,7 +148,7 @@ const computeEnv = batch.ComputeEnvironment.fromComputeEnvironmentArn(this, 'imp
 
 ### Change the baseline AMI of the compute resources
 
-Ocassionally, you will need to deviate from the default processing AMI.
+Occasionally, you will need to deviate from the default processing AMI.
 
 ECS Optimized Amazon Linux 2 example:
 
@@ -178,7 +186,7 @@ const jobQueue = new batch.JobQueue(stack, 'JobQueue', {
     {
       // Defines a collection of compute resources to handle assigned batch jobs
       computeEnvironment,
-      // Order determines the allocation order for jobs (i.e. Lower means higher preferance for job assignment)
+      // Order determines the allocation order for jobs (i.e. Lower means higher preference for job assignment)
       order: 1,
     },
   ],
@@ -236,6 +244,25 @@ new batch.JobDefinition(stack, 'batch-job-def-from-local', {
   container: {
     // todo-list is a directory containing a Dockerfile to build the application
     image: ecs.ContainerImage.fromAsset('../todo-list'),
+  },
+});
+```
+
+### Providing custom log configuration
+
+You can provide custom log driver and its configuration for the container.
+
+```ts
+new batch.JobDefinition(stack, 'job-def', {
+  container: {
+    image: ecs.EcrImage.fromRegistry('docker/whalesay'),
+    logConfiguration: {
+      logDriver: batch.LogDriver.AWSLOGS,
+      options: { 'awslogs-region': 'us-east-1' },
+      secretOptions: [
+        batch.ExposedSecret.fromParametersStore('xyz', ssm.StringParameter.fromStringParameterName(stack, 'parameter', 'xyz')),
+      ],
+    },
   },
 });
 ```

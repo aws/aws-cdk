@@ -1,0 +1,3 @@
+{
+    "app": "%python-executable% app.py"
+}

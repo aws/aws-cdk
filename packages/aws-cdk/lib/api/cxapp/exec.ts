@@ -15,6 +15,11 @@ export async function execProgram(aws: SdkProvider, config: Configuration): Prom
   const context = config.context.all;
   await populateDefaultEnvironmentIfNeeded(aws, env);
 
+  const debugMode: boolean = config.settings.get(['debug']) ?? true;
+  if (debugMode) {
+    env.CDK_DEBUG = 'true';
+  }
+
   const pathMetadata: boolean = config.settings.get(['pathMetadata']) ?? true;
   if (pathMetadata) {
     context[cxapi.PATH_METADATA_ENABLE_CONTEXT] = true;
@@ -87,7 +92,7 @@ export async function execProgram(aws: SdkProvider, config: Configuration): Prom
   }
 
   async function exec() {
-    return new Promise<string>((ok, fail) => {
+    return new Promise<void>((ok, fail) => {
       // We use a slightly lower-level interface to:
       //
       // - Pass arguments in an array instead of a string, to get around a

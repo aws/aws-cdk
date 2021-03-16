@@ -1,3 +1,4 @@
+/// !cdk-integ pragma:ignore-assets
 import * as path from 'path';
 import { Vpc, SubnetType } from '@aws-cdk/aws-ec2';
 import { Runtime } from '@aws-cdk/aws-lambda';

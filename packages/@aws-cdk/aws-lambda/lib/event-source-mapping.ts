@@ -68,7 +68,7 @@ export interface EventSourceMappingOptions {
    * * Minimum value of 60 seconds
    * * Maximum value of 7 days
    *
-   * @default Duration.days(7)
+   * @default - infinite or until the record expires.
    */
   readonly maxRecordAge?: cdk.Duration;
 

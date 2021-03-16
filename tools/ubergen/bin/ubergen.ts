@@ -1,15 +1,22 @@
 import * as console from 'console';
+import * as os from 'os';
 import * as path from 'path';
 import * as process from 'process';
 import * as fs from 'fs-extra';
 import * as ts from 'typescript';
 
 const LIB_ROOT = path.resolve(process.cwd(), 'lib');
+const ROOT_PATH = findWorkspacePath();
+const UBER_PACKAGE_JSON_PATH = path.resolve(process.cwd(), 'package.json');
 
 async function main() {
-  const libraries = await findLibrariesToPackage();
-  const packageJson = await verifyDependencies(libraries);
-  await prepareSourceFiles(libraries, packageJson);
+  console.log(`🌴  workspace root path is: ${ROOT_PATH}`);
+
+  const uberPackageJson = await fs.readJson(UBER_PACKAGE_JSON_PATH);
+
+  const libraries = await findLibrariesToPackage(uberPackageJson);
+  await verifyDependencies(uberPackageJson, libraries);
+  await prepareSourceFiles(libraries, uberPackageJson);
 }
 
 main().then(
@@ -52,28 +59,56 @@ interface PackageJson {
   readonly types: string;
   readonly version: string;
   readonly [key: string]: unknown;
+  readonly ubergen?: {
+    readonly deprecatedPackages?: readonly string[];
+  };
 }
 
-async function findLibrariesToPackage(): Promise<readonly LibraryReference[]> {
+/**
+ * Find the workspace root path. Walk up the directory tree until you find lerna.json
+ */
+function findWorkspacePath(): string {
+
+  return _findRootPath(process.cwd());
+
+  function _findRootPath(part: string): string {
+    if (process.cwd() === os.homedir()) {
+      throw new Error('couldn\'t find a \'lerna.json\' file when walking up the directory tree, are you in a aws-cdk project?');
+    }
+
+    if (fs.existsSync(path.resolve(part, 'lerna.json'))) {
+      return part;
+    }
+
+    return _findRootPath(path.resolve(part, '..'));
+  }
+}
+
+async function findLibrariesToPackage(uberPackageJson: PackageJson): Promise<readonly LibraryReference[]> {
   console.log('🔍 Discovering libraries that need packaging...');
 
+  const deprecatedPackages = uberPackageJson.ubergen?.deprecatedPackages;
   const result = new Array<LibraryReference>();
+  const librariesRoot = path.resolve(ROOT_PATH, 'packages', '@aws-cdk');
 
-  const librariesRoot = path.resolve(process.cwd(), '..', '..', 'packages', '@aws-cdk');
   for (const dir of await fs.readdir(librariesRoot)) {
     const packageJson = await fs.readJson(path.resolve(librariesRoot, dir, 'package.json'));
 
-    if (packageJson.private) {
-      console.log(`\t⚠️ Skipping (private):          ${packageJson.name}`);
-      continue;
-    } else if (packageJson.deprecated) {
-      console.log(`\t⚠️ Skipping (deprecated):       ${packageJson.name}`);
+    if (packageJson.ubergen?.exclude) {
+      console.log(`\t⚠️ Skipping (ubergen excluded):   ${packageJson.name}`);
       continue;
     } else if (packageJson.jsii == null ) {
-      console.log(`\t⚠️ Skipping (not jsii-enabled): ${packageJson.name}`);
+      console.log(`\t⚠️ Skipping (not jsii-enabled):   ${packageJson.name}`);
+      continue;
+    } else if (deprecatedPackages) {
+      if (deprecatedPackages.some(packageName => packageName === packageJson.name)) {
+        console.log(`\t⚠️ Skipping (ubergen deprecated): ${packageJson.name}`);
+        continue;
+      }
+    } else if (packageJson.deprecated) {
+      console.log(`\t⚠️ Skipping (deprecated):         ${packageJson.name}`);
       continue;
     }
-
     result.push({
       packageJson,
       root: path.join(librariesRoot, dir),
@@ -86,10 +121,8 @@ async function findLibrariesToPackage(): Promise<readonly LibraryReference[]> {
   return result;
 }
 
-async function verifyDependencies(libraries: readonly LibraryReference[]): Promise<PackageJson> {
+async function verifyDependencies(packageJson: any, libraries: readonly LibraryReference[]): Promise<void> {
   console.log('🧐 Verifying dependencies are complete...');
-  const packageJsonPath = path.resolve(process.cwd(), 'package.json');
-  const packageJson = await fs.readJson(packageJsonPath);
 
   let changed = false;
   const toBundle: Record<string, string> = {};
@@ -121,8 +154,7 @@ async function verifyDependencies(libraries: readonly LibraryReference[]): Promi
       [library.packageJson.name]: library.packageJson.version,
     });
   }
-
-  const workspacePath = path.resolve(process.cwd(), '..', '..', 'package.json');
+  const workspacePath = path.resolve(ROOT_PATH, 'package.json');
   const workspace = await fs.readJson(workspacePath);
   let workspaceChanged = false;
 
@@ -171,12 +203,11 @@ async function verifyDependencies(libraries: readonly LibraryReference[]): Promi
   }
 
   if (changed) {
-    await fs.writeFile(packageJsonPath, JSON.stringify(packageJson, null, 2) + '\n', { encoding: 'utf8' });
+    await fs.writeFile(UBER_PACKAGE_JSON_PATH, JSON.stringify(packageJson, null, 2) + '\n', { encoding: 'utf8' });
 
     throw new Error('Fixed dependency inconsistencies. Commit the updated package.json file.');
   }
   console.log('\t✅ Dependencies are correct!');
-  return packageJson;
 }
 
 async function prepareSourceFiles(libraries: readonly LibraryReference[], packageJson: PackageJson) {
@@ -187,7 +218,7 @@ async function prepareSourceFiles(libraries: readonly LibraryReference[], packag
   const indexStatements = new Array<string>();
   for (const library of libraries) {
     const libDir = path.join(LIB_ROOT, library.shortName);
-    await transformPackage(library, packageJson.jsii.targets, libDir, libraries);
+    await transformPackage(library, packageJson, libDir, libraries);
 
     if (library.shortName === 'core') {
       indexStatements.push(`export * from './${library.shortName}';`);
@@ -203,13 +234,13 @@ async function prepareSourceFiles(libraries: readonly LibraryReference[], packag
 
 async function transformPackage(
   library: LibraryReference,
-  config: PackageJson['jsii']['targets'],
+  uberPackageJson: PackageJson,
   destination: string,
   allLibraries: readonly LibraryReference[],
 ) {
   await fs.mkdirp(destination);
 
-  await copyOrTransformFiles(library.root, destination, allLibraries);
+  await copyOrTransformFiles(library.root, destination, allLibraries, uberPackageJson);
 
   await fs.writeFile(
     path.join(destination, 'index.ts'),
@@ -218,6 +249,7 @@ async function transformPackage(
   );
 
   if (library.shortName !== 'core') {
+    const config = uberPackageJson.jsii.targets;
     await fs.writeJson(
       path.join(destination, '.jsiirc.json'),
       {
@@ -269,7 +301,7 @@ function transformTargets(monoConfig: PackageJson['jsii']['targets'], targets: P
   return result;
 }
 
-async function copyOrTransformFiles(from: string, to: string, libraries: readonly LibraryReference[]) {
+async function copyOrTransformFiles(from: string, to: string, libraries: readonly LibraryReference[], uberPackageJson: PackageJson) {
   const promises = (await fs.readdir(from)).map(async name => {
     if (shouldIgnoreFile(name)) { return; }
 
@@ -286,7 +318,7 @@ async function copyOrTransformFiles(from: string, to: string, libraries: readonl
     const stat = await fs.stat(source);
     if (stat.isDirectory()) {
       await fs.mkdirp(destination);
-      return copyOrTransformFiles(source, destination, libraries);
+      return copyOrTransformFiles(source, destination, libraries, uberPackageJson);
     }
     if (name.endsWith('.ts')) {
       return fs.writeFile(
@@ -294,6 +326,20 @@ async function copyOrTransformFiles(from: string, to: string, libraries: readonl
         await rewriteImports(source, to, libraries),
         { encoding: 'utf8' },
       );
+    } else if (name === 'cfn-types-2-classes.json') {
+      // This is a special file used by the cloudformation-include module that contains mappings
+      // of CFN resource types to the fully-qualified class names of the CDK L1 classes.
+      // We need to rewrite it to refer to the uberpackage instead of the individual packages
+      const cfnTypes2Classes: { [key: string]: string } = await fs.readJson(source);
+      for (const cfnType of Object.keys(cfnTypes2Classes)) {
+        const fqn = cfnTypes2Classes[cfnType];
+        // replace @aws-cdk/aws-<service> with <uber-package-name>/aws-<service>,
+        // except for @aws-cdk/core, which maps just to the name of the uberpackage
+        cfnTypes2Classes[cfnType] = fqn.startsWith('@aws-cdk/core.')
+          ? fqn.replace('@aws-cdk/core', uberPackageJson.name)
+          : fqn.replace('@aws-cdk', uberPackageJson.name);
+      }
+      await fs.writeJson(destination, cfnTypes2Classes, { spaces: 2 });
     } else {
       return fs.copyFile(source, destination);
     }

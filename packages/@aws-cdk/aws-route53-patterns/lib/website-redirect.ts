@@ -3,7 +3,7 @@ import { DnsValidatedCertificate, ICertificate } from '@aws-cdk/aws-certificatem
 import { CloudFrontWebDistribution, OriginProtocolPolicy, PriceClass, ViewerProtocolPolicy } from '@aws-cdk/aws-cloudfront';
 import { ARecord, AaaaRecord, IHostedZone, RecordTarget } from '@aws-cdk/aws-route53';
 import { CloudFrontTarget } from '@aws-cdk/aws-route53-targets';
-import { Bucket, RedirectProtocol } from '@aws-cdk/aws-s3';
+import { BlockPublicAccess, Bucket, RedirectProtocol } from '@aws-cdk/aws-s3';
 import { RemovalPolicy, Stack, Token } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 
@@ -81,6 +81,7 @@ export class HttpsRedirect extends CoreConstruct {
         protocol: RedirectProtocol.HTTPS,
       },
       removalPolicy: RemovalPolicy.DESTROY,
+      blockPublicAccess: BlockPublicAccess.BLOCK_ALL,
     });
     const redirectDist = new CloudFrontWebDistribution(this, 'RedirectDistribution', {
       defaultRootObject: '',

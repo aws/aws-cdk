@@ -1,7 +1,7 @@
 /*
  * We write unit tests using the Jest framework
  * (some modules might still use NodeUnit,
- * but it's considered legacy, and we want to migrate to Jest).
+ * but it's considered Names, and we want to migrate to Jest).
  */
 
 // import the various CDK assertion helpers

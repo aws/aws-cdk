@@ -70,7 +70,7 @@ export function testAssembly(assembly: TestAssembly): cxapi.CloudAssembly {
 
     builder.addArtifact(stack.stackName, {
       type: cxschema.ArtifactType.AWS_CLOUDFORMATION_STACK,
-      environment: stack.env || 'aws://12345/here',
+      environment: stack.env || 'aws://123456789012/here',
 
       dependencies: stack.depends,
       metadata,

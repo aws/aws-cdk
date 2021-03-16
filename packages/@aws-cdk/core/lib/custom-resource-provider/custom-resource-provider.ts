@@ -41,7 +41,7 @@ export interface CustomResourceProviderProps {
    *
    * @example
    *
-   *   policyStatements: [ { Effect: 'Allow', Action: 's3:PutObject*', Resource: '*' } ]
+   *   [{ Effect: 'Allow', Action: 's3:PutObject*', Resource: '*' }]
    *
    */
   readonly policyStatements?: any[];
@@ -67,6 +67,13 @@ export interface CustomResourceProviderProps {
    * @default - No environment variables.
    */
   readonly environment?: { [key: string]: string };
+
+  /**
+   * A description of the function.
+   *
+   * @default - No description.
+   */
+  readonly description?: string;
 }
 
 /**
@@ -77,8 +84,20 @@ export interface CustomResourceProviderProps {
 export enum CustomResourceProviderRuntime {
   /**
    * Node.js 12.x
+   *
+   * @deprecated Use {@link NODEJS_12_X}
    */
-  NODEJS_12 = 'nodejs12'
+  NODEJS_12 = 'nodejs12.x',
+
+  /**
+   * Node.js 12.x
+   */
+  NODEJS_12_X = 'nodejs12.x',
+
+  /**
+   * Node.js 14.x
+   */
+  NODEJS_14_X = 'nodejs14.x',
 }
 
 /**
@@ -100,12 +119,27 @@ export class CustomResourceProvider extends CoreConstruct {
    * used when defining a `CustomResource`.
    */
   public static getOrCreate(scope: Construct, uniqueid: string, props: CustomResourceProviderProps) {
+    return this.getOrCreateProvider(scope, uniqueid, props).serviceToken;
+  }
+
+  /**
+   * Returns a stack-level singleton for the custom resource provider.
+   *
+   * @param scope Construct scope
+   * @param uniqueid A globally unique id that will be used for the stack-level
+   * construct.
+   * @param props Provider properties which will only be applied when the
+   * provider is first created.
+   * @returns the service token of the custom resource provider, which should be
+   * used when defining a `CustomResource`.
+   */
+  public static getOrCreateProvider(scope: Construct, uniqueid: string, props: CustomResourceProviderProps) {
     const id = `${uniqueid}CustomResourceProvider`;
     const stack = Stack.of(scope);
     const provider = stack.node.tryFindChild(id) as CustomResourceProvider
       ?? new CustomResourceProvider(stack, id, props);
 
-    return provider.serviceToken;
+    return provider;
   }
 
   /**
@@ -113,14 +147,18 @@ export class CustomResourceProvider extends CoreConstruct {
    * `serviceToken` when defining a custom resource.
    *
    * @example
-   *
    *   new CustomResource(this, 'MyCustomResource', {
    *     // ...
-   *     serviceToken: provider.serviceToken // <--- here
+   *     serviceToken: myProvider.serviceToken, // <--- here
    *   })
    *
    */
   public readonly serviceToken: string;
+
+  /**
+   * The ARN of the provider's AWS Lambda function role.
+   */
+  public readonly roleArn: string;
 
   protected constructor(scope: Construct, id: string, props: CustomResourceProviderProps) {
     super(scope, id);
@@ -140,7 +178,7 @@ export class CustomResourceProvider extends CoreConstruct {
     });
 
     const asset = stack.addFileAsset({
-      fileName: staging.stagedPath,
+      fileName: staging.relativeStagedPath(stack),
       sourceHash: staging.sourceHash,
       packaging: FileAssetPackaging.ZIP_DIRECTORY,
     });
@@ -168,6 +206,7 @@ export class CustomResourceProvider extends CoreConstruct {
         Policies: policies,
       },
     });
+    this.roleArn = Token.asString(role.getAtt('Arn'));
 
     const timeout = props.timeout ?? Duration.minutes(15);
     const memory = props.memorySize ?? Size.mebibytes(128);
@@ -183,8 +222,9 @@ export class CustomResourceProvider extends CoreConstruct {
         MemorySize: memory.toMebibytes(),
         Handler: `${ENTRYPOINT_FILENAME}.handler`,
         Role: role.getAtt('Arn'),
-        Runtime: 'nodejs12.x',
+        Runtime: props.runtime,
         Environment: this.renderEnvironmentVariables(props.environment),
+        Description: props.description ?? undefined,
       },
     });
 
