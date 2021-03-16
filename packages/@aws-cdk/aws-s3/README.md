@@ -43,7 +43,7 @@ new Bucket(this, 'MyFirstBucket');
 Define a KMS-encrypted bucket:
 
 ```ts
-const bucket = new Bucket(this, 'MyUnencryptedBucket', {
+const bucket = new Bucket(this, 'MyEncryptedBucket', {
     encryption: BucketEncryption.KMS
 });
 
@@ -119,6 +119,18 @@ bucket.grantReadWrite(lambda);
 
 Will give the Lambda's execution role permissions to read and write
 from the bucket.
+
+## AWS Foundational Security Best Practices
+
+### Enforcing SSL
+
+To require all requests use Secure Socket Layer (SSL):
+
+```ts
+const bucket = new Bucket(this, 'Bucket', {
+    enforceSSL: true
+});
+```
 
 ## Sharing buckets between stacks
 

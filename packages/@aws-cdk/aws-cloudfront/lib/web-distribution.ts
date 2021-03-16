@@ -771,10 +771,10 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
     let distributionConfig: CfnDistribution.DistributionConfigProperty = {
       comment: props.comment,
       enabled: true,
-      defaultRootObject: props.defaultRootObject !== undefined ? props.defaultRootObject : 'index.html',
+      defaultRootObject: props.defaultRootObject ?? 'index.html',
       httpVersion: props.httpVersion || HttpVersion.HTTP2,
       priceClass: props.priceClass || PriceClass.PRICE_CLASS_100,
-      ipv6Enabled: (props.enableIpV6 !== undefined) ? props.enableIpV6 : true,
+      ipv6Enabled: props.enableIpV6 ?? true,
       // eslint-disable-next-line max-len
       customErrorResponses: props.errorConfigurations, // TODO: validation : https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cloudfront-distribution-customerrorresponse.html#cfn-cloudfront-distribution-customerrorresponse-errorcachingminttl
       webAclId: props.webACLId,
@@ -1027,9 +1027,15 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
       // first case for backwards compatibility
       if (originConfig.s3OriginSource.originAccessIdentity) {
         // grant CloudFront OriginAccessIdentity read access to S3 bucket
-        originConfig.s3OriginSource.s3BucketSource.grantRead(
-          originConfig.s3OriginSource.originAccessIdentity,
-        );
+        // Used rather than `grantRead` because `grantRead` will grant overly-permissive policies.
+        // Only GetObject is needed to retrieve objects for the distribution.
+        // This also excludes KMS permissions; currently, OAI only supports SSE-S3 for buckets.
+        // Source: https://aws.amazon.com/blogs/networking-and-content-delivery/serving-sse-kms-encrypted-content-from-s3-using-cloudfront/
+        originConfig.s3OriginSource.s3BucketSource.addToResourcePolicy(new iam.PolicyStatement({
+          resources: [originConfig.s3OriginSource.s3BucketSource.arnForObjects('*')],
+          actions: ['s3:GetObject'],
+          principals: [originConfig.s3OriginSource.originAccessIdentity.grantPrincipal],
+        }));
 
         s3OriginConfig = {
           originAccessIdentity: `origin-access-identity/cloudfront/${originConfig.s3OriginSource.originAccessIdentity.originAccessIdentityName}`,

@@ -1,6 +1,6 @@
 import '@aws-cdk/assert/jest';
 import { PublicHostedZone } from '@aws-cdk/aws-route53';
-import { App, Stack } from '@aws-cdk/core';
+import { App, Aws, Stack } from '@aws-cdk/core';
 import { Certificate, DnsValidatedCertificate } from '../lib';
 import { apexDomain, getCertificateRegion, isDnsValidatedCertificate } from '../lib/util';
 
@@ -99,7 +99,7 @@ describe('getCertificateRegion', () => {
       domainName: 'www.example.com',
     });
 
-    expect(getCertificateRegion(certificate)).toEqual('${Token[AWS.Region.4]}');
+    expect(getCertificateRegion(certificate)).toEqual(Aws.REGION);
   });
 
 });

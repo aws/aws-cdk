@@ -67,7 +67,7 @@ one to run tasks on AWS Fargate.
 Here are the main differences:
 
 - **Amazon EC2**: instances are under your control. Complete control of task to host
-  allocation. Required to specify at least a memory reseration or limit for
+  allocation. Required to specify at least a memory reservation or limit for
   every container. Can use Host, Bridge and AwsVpc networking modes. Can attach
   Classic Load Balancer. Can share volumes between container and host.
 - **AWS Fargate**: tasks run on AWS-managed instances, AWS manages task to host
@@ -175,7 +175,7 @@ cluster.addCapacity('AsgSpot', {
 When the `ecs.AddCapacityOptions` that you provide has a non-zero `taskDrainTime` (the default) then an SNS topic and Lambda are created to ensure that the
 cluster's instances have been properly drained of tasks before terminating. The SNS Topic is sent the instance-terminating lifecycle event from the AutoScalingGroup,
 and the Lambda acts on that event. If you wish to engage [server-side encryption](https://docs.aws.amazon.com/sns/latest/dg/sns-data-encryption.html) for this SNS Topic
-then you may do so by providing a KMS key for the `topicEncryptionKey` propery of `ecs.AddCapacityOptions`.
+then you may do so by providing a KMS key for the `topicEncryptionKey` property of `ecs.AddCapacityOptions`.
 
 ```ts
 // Given
@@ -190,7 +190,7 @@ cluster.addCapacity('ASGEncryptedSNS', {
 
 ## Task definitions
 
-A task Definition describes what a single copy of a **task** should look like.
+A task definition describes what a single copy of a **task** should look like.
 A task definition has one or more containers; typically, it has one
 main container (the *default container* is the first one that's added
 to the task definition, and it is marked *essential*) and optionally
@@ -237,23 +237,35 @@ const container = ec2TaskDefinition.addContainer("WebContainer", {
 
 You can specify container properties when you add them to the task definition, or with various methods, e.g.:
 
+To add a port mapping when adding a container to the task definition, specify the `portMappings` option:
+
+```ts
+taskDefinition.addContainer("WebContainer", {
+  image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+  memoryLimitMiB: 1024,
+  portMappings: [{ containerPort: 3000 }]
+});
+```
+
+To add port mappings directly to a container definition, call `addPortMappings()`:
+
 ```ts
 container.addPortMappings({
   containerPort: 3000
-})
+});
 ```
 
 To add data volumes to a task definition, call `addVolume()`:
 
 ```ts
-const volume = ecs.Volume("Volume", {
+const volume = {
   // Use an Elastic FileSystem
   name: "mydatavolume",
   efsVolumeConfiguration: ecs.EfsVolumeConfiguration({
     fileSystemId: "EFS"
     // ... other options here ...
   })
-});
+};
 
 const container = fargateTaskDefinition.addVolume("mydatavolume");
 ```
@@ -287,6 +299,8 @@ obtained from either DockerHub or from ECR repositories, or built directly from 
   image directly from a `Dockerfile` in your source directory.
 - `ecs.ContainerImage.fromDockerImageAsset(asset)`: uses an existing
   `@aws-cdk/aws-ecr-assets.DockerImageAsset` as a container image.
+- `new ecs.TagParameterContainerImage(repository)`: use the given ECR repository as the image 
+  but a CloudFormation parameter as the tag.
 
 ### Environment variables
 
@@ -669,4 +683,108 @@ taskDefinition.addContainer('TheContainer', {
     }
   })
 });
+```
+
+## CloudMap Service Discovery
+
+To register your ECS service with a CloudMap Service Registry, you may add the
+`cloudMapOptions` property to your service:
+
+```ts
+const service = new ecs.Ec2Service(stack, 'Service', {
+  cluster,
+  taskDefinition,
+  cloudMapOptions: {
+    // Create A records - useful for AWSVPC network mode.
+    dnsRecordType: cloudmap.DnsRecordType.A,
+  },
+});
+```
+
+With `bridge` or `host` network modes, only `SRV` DNS record types are supported. 
+By default, `SRV` DNS record types will target the default container and default
+port. However, you may target a different container and port on the same ECS task:
+
+```ts
+// Add a container to the task definition
+const specificContainer = taskDefinition.addContainer(...);
+
+// Add a port mapping
+specificContainer.addPortMappings({
+  containerPort: 7600,
+  protocol: ecs.Protocol.TCP,
+});
+
+new ecs.Ec2Service(stack, 'Service', {
+  cluster,
+  taskDefinition,
+  cloudMapOptions: {
+    // Create SRV records - useful for bridge networking
+    dnsRecordType: cloudmap.DnsRecordType.SRV,
+    // Targets port TCP port 7600 `specificContainer`
+    container: specificContainer,
+    containerPort: 7600,
+  },
+});
+```
+
+### Associate With a Specific CloudMap Service
+
+You may associate an ECS service with a specific CloudMap service. To do
+this, use the service's `associateCloudMapService` method:
+
+```ts
+const cloudMapService = new cloudmap.Service(...);
+const ecsService = new ecs.FargateService(...);
+
+ecsService.associateCloudMapService({
+  service: cloudMapService,
+});
+```
+
+## Capacity Providers
+
+Currently, only `FARGATE` and `FARGATE_SPOT` capacity providers are supported.
+
+To enable capacity providers on your cluster, set the `capacityProviders` field
+to [`FARGATE`, `FARGATE_SPOT`]. Then, specify capacity provider strategies on
+the `capacityProviderStrategies` field for your Fargate Service.
+
+```ts
+import * as cdk from '@aws-cdk/core';
+import * as ec2 from '@aws-cdk/aws-ec2';
+import * as ecs from '../../lib';
+
+const app = new cdk.App();
+const stack = new cdk.Stack(app, 'aws-ecs-integ-capacity-provider');
+
+const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 2 });
+
+const cluster = new ecs.Cluster(stack, 'FargateCPCluster', {
+  vpc,
+  capacityProviders: ['FARGATE', 'FARGATE_SPOT'],
+});
+
+const taskDefinition = new ecs.FargateTaskDefinition(stack, 'TaskDef');
+
+taskDefinition.addContainer('web', {
+  image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+});
+
+new ecs.FargateService(stack, 'FargateService', {
+  cluster,
+  taskDefinition,
+  capacityProviderStrategies: [
+    {
+      capacityProvider: 'FARGATE_SPOT',
+      weight: 2,
+    },
+    {
+      capacityProvider: 'FARGATE',
+      weight: 1,
+    }
+  ],
+});
+
+app.synth();
 ```

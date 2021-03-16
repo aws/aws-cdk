@@ -40,6 +40,15 @@ export interface IRepository extends IResource {
   repositoryUriForTag(tag?: string): string;
 
   /**
+   * Returns the URI of the repository for a certain tag. Can be used in `docker push/pull`.
+   *
+   *    ACCOUNT.dkr.ecr.REGION.amazonaws.com/REPOSITORY[@DIGEST]
+   *
+   * @param digest Image digest to use (tools usually default to the image with the "latest" tag if omitted)
+   */
+  repositoryUriForDigest(digest?: string): string;
+
+  /**
    * Add a policy statement to the repository's resource policy
    */
   addToResourcePolicy(statement: iam.PolicyStatement): iam.AddToResourcePolicyResult;
@@ -136,8 +145,29 @@ export abstract class RepositoryBase extends Resource implements IRepository {
    */
   public repositoryUriForTag(tag?: string): string {
     const tagSuffix = tag ? `:${tag}` : '';
+    return this.repositoryUriWithSuffix(tagSuffix);
+  }
+
+  /**
+   * Returns the URL of the repository. Can be used in `docker push/pull`.
+   *
+   *    ACCOUNT.dkr.ecr.REGION.amazonaws.com/REPOSITORY[@DIGEST]
+   *
+   * @param digest Optional image digest
+   */
+  public repositoryUriForDigest(digest?: string): string {
+    const digestSuffix = digest ? `@${digest}` : '';
+    return this.repositoryUriWithSuffix(digestSuffix);
+  }
+
+  /**
+   * Returns the repository URI, with an appended suffix, if provided.
+   * @param suffix An image tag or an image digest.
+   * @private
+   */
+  private repositoryUriWithSuffix(suffix?: string): string {
     const parts = this.stack.parseArn(this.repositoryArn);
-    return `${parts.account}.dkr.ecr.${parts.region}.${this.stack.urlSuffix}/${this.repositoryName}${tagSuffix}`;
+    return `${parts.account}.dkr.ecr.${parts.region}.${this.stack.urlSuffix}/${this.repositoryName}${suffix}`;
   }
 
   /**
@@ -202,7 +232,7 @@ export abstract class RepositoryBase extends Resource implements IRepository {
       detail: {
         'repository-name': [this.repositoryName],
         'scan-status': ['COMPLETE'],
-        'image-tags': options.imageTags ? options.imageTags : undefined,
+        'image-tags': options.imageTags ?? undefined,
       },
     });
     return rule;
@@ -324,6 +354,13 @@ export interface RepositoryProps {
    *  @default false
    */
   readonly imageScanOnPush?: boolean;
+
+  /**
+   * The tag mutability setting for the repository. If this parameter is omitted, the default setting of MUTABLE will be used which will allow image tags to be overwritten.
+   *
+   *  @default TagMutability.MUTABLE
+   */
+  readonly imageTagMutability?: TagMutability;
 }
 
 export interface RepositoryAttributes {
@@ -420,8 +457,9 @@ export class Repository extends RepositoryBase {
       repositoryPolicyText: Lazy.any({ produce: () => this.policyDocument }),
       lifecyclePolicy: Lazy.any({ produce: () => this.renderLifecyclePolicy() }),
       imageScanningConfiguration: !props.imageScanOnPush ? undefined : {
-        scanOnPush: true,
+        ScanOnPush: true,
       },
+      imageTagMutability: props.imageTagMutability || undefined,
     });
 
     resource.applyRemovalPolicy(props.removalPolicy);
@@ -526,7 +564,7 @@ export class Repository extends RepositoryBase {
     for (const rule of prioritizedRules.concat(autoPrioritizedRules).concat(anyRules)) {
       ret.push({
         ...rule,
-        rulePriority: rule.rulePriority !== undefined ? rule.rulePriority : autoPrio++,
+        rulePriority: rule.rulePriority ?? autoPrio++,
       });
     }
 
@@ -557,7 +595,7 @@ function renderLifecycleRule(rule: LifecycleRule) {
       tagStatus: rule.tagStatus || TagStatus.ANY,
       tagPrefixList: rule.tagPrefixList,
       countType: rule.maxImageAge !== undefined ? CountType.SINCE_IMAGE_PUSHED : CountType.IMAGE_COUNT_MORE_THAN,
-      countNumber: rule.maxImageAge !== undefined ? rule.maxImageAge.toDays() : rule.maxImageCount,
+      countNumber: rule.maxImageAge?.toDays() ?? rule.maxImageCount,
       countUnit: rule.maxImageAge !== undefined ? 'days' : undefined,
     },
     action: {
@@ -579,4 +617,20 @@ const enum CountType {
    * Set an age limit on the images in your repository
    */
   SINCE_IMAGE_PUSHED = 'sinceImagePushed',
+}
+
+/**
+ * The tag mutability setting for your repository.
+ */
+export enum TagMutability {
+  /**
+   * allow image tags to be overwritten.
+   */
+  MUTABLE = 'MUTABLE',
+
+  /**
+   * all image tags within the repository will be immutable which will prevent them from being overwritten.
+   */
+  IMMUTABLE = 'IMMUTABLE',
+
 }

@@ -8,6 +8,75 @@ import * as util from '../../lib/provider-framework/util';
 
 import '@aws-cdk/assert/jest';
 
+test('security groups are applied to all framework functions', () => {
+
+  // GIVEN
+  const stack = new Stack();
+
+  const vpc = new ec2.Vpc(stack, 'Vpc');
+  const securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup', { vpc });
+
+  // WHEN
+  new cr.Provider(stack, 'MyProvider', {
+    onEventHandler: new lambda.Function(stack, 'OnEvent', {
+      code: lambda.Code.fromInline('foo'),
+      handler: 'index.onEvent',
+      runtime: lambda.Runtime.NODEJS_10_X,
+    }),
+    isCompleteHandler: new lambda.Function(stack, 'IsComplete', {
+      code: lambda.Code.fromInline('foo'),
+      handler: 'index.isComplete',
+      runtime: lambda.Runtime.NODEJS_10_X,
+    }),
+    vpc: vpc,
+    vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE },
+    securityGroups: [securityGroup],
+  });
+
+  expect(stack).toHaveResourceLike('AWS::Lambda::Function', {
+    Handler: 'framework.onEvent',
+    VpcConfig: {
+      SecurityGroupIds: [
+        {
+          'Fn::GetAtt': [
+            'SecurityGroupDD263621',
+            'GroupId',
+          ],
+        },
+      ],
+    },
+  });
+
+  expect(stack).toHaveResourceLike('AWS::Lambda::Function', {
+    Handler: 'framework.isComplete',
+    VpcConfig: {
+      SecurityGroupIds: [
+        {
+          'Fn::GetAtt': [
+            'SecurityGroupDD263621',
+            'GroupId',
+          ],
+        },
+      ],
+    },
+  });
+
+  expect(stack).toHaveResourceLike('AWS::Lambda::Function', {
+    Handler: 'framework.onTimeout',
+    VpcConfig: {
+      SecurityGroupIds: [
+        {
+          'Fn::GetAtt': [
+            'SecurityGroupDD263621',
+            'GroupId',
+          ],
+        },
+      ],
+    },
+  });
+
+});
+
 test('vpc is applied to all framework functions', () => {
 
   // GIVEN

@@ -8,6 +8,7 @@ import { FirelensLogRouter, FirelensLogRouterDefinitionOptions, FirelensLogRoute
 import { AwsLogDriver } from '../log-drivers/aws-log-driver';
 import { PlacementConstraint } from '../placement';
 import { ProxyConfiguration } from '../proxy-configuration/proxy-configuration';
+import { ImportedTaskDefinition } from './_imported-task-definition';
 
 /**
  * The interface for all task definitions.
@@ -38,6 +39,16 @@ export interface ITaskDefinition extends IResource {
    * Return true if the task definition can be run on a Fargate cluster
    */
   readonly isFargateCompatible: boolean;
+
+  /**
+   * The networking mode to use for the containers in the task.
+   */
+  readonly networkMode: NetworkMode;
+
+  /**
+   * The name of the IAM role that grants containers in the task permission to call AWS APIs on your behalf.
+   */
+  readonly taskRole: iam.IRole;
 }
 
 /**
@@ -175,10 +186,48 @@ export interface TaskDefinitionProps extends CommonTaskDefinitionProps {
   readonly pidMode?: PidMode;
 }
 
+/**
+ * The common task definition attributes used across all types of task definitions.
+ */
+export interface CommonTaskDefinitionAttributes {
+  /**
+   * The arn of the task definition
+   */
+  readonly taskDefinitionArn: string;
+
+  /**
+   * The networking mode to use for the containers in the task.
+   *
+   * @default Network mode cannot be provided to the imported task.
+   */
+  readonly networkMode?: NetworkMode;
+
+  /**
+   * The name of the IAM role that grants containers in the task permission to call AWS APIs on your behalf.
+   *
+   * @default Permissions cannot be granted to the imported task.
+   */
+  readonly taskRole?: iam.IRole;
+}
+
+/**
+ *  A reference to an existing task definition
+ */
+export interface TaskDefinitionAttributes extends CommonTaskDefinitionAttributes {
+  /**
+   * What launch types this task definition should be compatible with.
+   *
+   * @default Compatibility.EC2_AND_FARGATE
+   */
+  readonly compatibility?: Compatibility;
+}
+
 abstract class TaskDefinitionBase extends Resource implements ITaskDefinition {
 
   public abstract readonly compatibility: Compatibility;
+  public abstract readonly networkMode: NetworkMode;
   public abstract readonly taskDefinitionArn: string;
+  public abstract readonly taskRole: iam.IRole;
   public abstract readonly executionRole?: iam.IRole;
 
   /**
@@ -207,13 +256,19 @@ export class TaskDefinition extends TaskDefinitionBase {
    * The task will have a compatibility of EC2+Fargate.
    */
   public static fromTaskDefinitionArn(scope: Construct, id: string, taskDefinitionArn: string): ITaskDefinition {
-    class Import extends TaskDefinitionBase {
-      public readonly taskDefinitionArn = taskDefinitionArn;
-      public readonly compatibility = Compatibility.EC2_AND_FARGATE;
-      public readonly executionRole?: iam.IRole = undefined;
-    }
+    return new ImportedTaskDefinition(scope, id, { taskDefinitionArn: taskDefinitionArn });
+  }
 
-    return new Import(scope, id);
+  /**
+   * Create a task definition from a task definition reference
+   */
+  public static fromTaskDefinitionAttributes(scope: Construct, id: string, attrs: TaskDefinitionAttributes): ITaskDefinition {
+    return new ImportedTaskDefinition(scope, id, {
+      taskDefinitionArn: attrs.taskDefinitionArn,
+      compatibility: attrs.compatibility,
+      networkMode: attrs.networkMode,
+      taskRole: attrs.taskRole,
+    });
   }
 
   /**
@@ -248,7 +303,7 @@ export class TaskDefinition extends TaskDefinitionBase {
   public defaultContainer?: ContainerDefinition;
 
   /**
-   * The task launch type compatiblity requirement.
+   * The task launch type compatibility requirement.
    */
   public readonly compatibility: Compatibility;
 
@@ -284,8 +339,7 @@ export class TaskDefinition extends TaskDefinitionBase {
       props.volumes.forEach(v => this.addVolume(v));
     }
 
-    this.networkMode = props.networkMode !== undefined ? props.networkMode :
-      this.isFargateCompatible ? NetworkMode.AWS_VPC : NetworkMode.BRIDGE;
+    this.networkMode = props.networkMode ?? (this.isFargateCompatible ? NetworkMode.AWS_VPC : NetworkMode.BRIDGE);
     if (this.isFargateCompatible && this.networkMode !== NetworkMode.AWS_VPC) {
       throw new Error(`Fargate tasks can only have AwsVpc network mode, got: ${this.networkMode}`);
     }
@@ -891,13 +945,13 @@ export interface ITaskDefinitionExtension {
 /**
  * Return true if the given task definition can be run on an EC2 cluster
  */
-function isEc2Compatible(compatibility: Compatibility): boolean {
+export function isEc2Compatible(compatibility: Compatibility): boolean {
   return [Compatibility.EC2, Compatibility.EC2_AND_FARGATE].includes(compatibility);
 }
 
 /**
  * Return true if the given task definition can be run on a Fargate cluster
  */
-function isFargateCompatible(compatibility: Compatibility): boolean {
+export function isFargateCompatible(compatibility: Compatibility): boolean {
   return [Compatibility.FARGATE, Compatibility.EC2_AND_FARGATE].includes(compatibility);
 }

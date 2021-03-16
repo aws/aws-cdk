@@ -1,5 +1,5 @@
 /// !cdk-integ pragma:ignore-assets
-import { App, CfnOutput, Stack } from '@aws-cdk/core';
+import { App, CfnOutput, RemovalPolicy, Stack } from '@aws-cdk/core';
 import { UserPool } from '../lib';
 
 /*
@@ -10,7 +10,9 @@ import { UserPool } from '../lib';
 const app = new App();
 const stack = new Stack(app, 'integ-user-pool-domain-cfdist');
 
-const userpool = new UserPool(stack, 'UserPool');
+const userpool = new UserPool(stack, 'UserPool', {
+  removalPolicy: RemovalPolicy.DESTROY,
+});
 
 const domain = userpool.addDomain('Domain', {
   cognitoDomain: {

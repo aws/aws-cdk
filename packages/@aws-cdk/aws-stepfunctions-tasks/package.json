@@ -72,6 +72,9 @@
     "pkglint": "0.0.0"
   },
   "dependencies": {
+    "@aws-cdk/aws-apigateway": "0.0.0",
+    "@aws-cdk/aws-apigatewayv2": "0.0.0",
+    "@aws-cdk/aws-apigatewayv2-integrations": "0.0.0",
     "@aws-cdk/aws-batch": "0.0.0",
     "@aws-cdk/aws-cloudwatch": "0.0.0",
     "@aws-cdk/aws-codebuild": "0.0.0",
@@ -81,6 +84,7 @@
     "@aws-cdk/aws-ecr": "0.0.0",
     "@aws-cdk/aws-ecr-assets": "0.0.0",
     "@aws-cdk/aws-ecs": "0.0.0",
+    "@aws-cdk/aws-eks": "0.0.0",
     "@aws-cdk/aws-glue": "0.0.0",
     "@aws-cdk/aws-iam": "0.0.0",
     "@aws-cdk/aws-kms": "0.0.0",
@@ -94,6 +98,9 @@
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
+    "@aws-cdk/aws-apigateway": "0.0.0",
+    "@aws-cdk/aws-apigatewayv2": "0.0.0",
+    "@aws-cdk/aws-apigatewayv2-integrations": "0.0.0",
     "@aws-cdk/aws-batch": "0.0.0",
     "@aws-cdk/aws-cloudwatch": "0.0.0",
     "@aws-cdk/aws-codebuild": "0.0.0",
@@ -103,6 +110,7 @@
     "@aws-cdk/aws-ecr": "0.0.0",
     "@aws-cdk/aws-ecr-assets": "0.0.0",
     "@aws-cdk/aws-ecs": "0.0.0",
+    "@aws-cdk/aws-eks": "0.0.0",
     "@aws-cdk/aws-glue": "0.0.0",
     "@aws-cdk/aws-iam": "0.0.0",
     "@aws-cdk/aws-kms": "0.0.0",
@@ -127,5 +135,8 @@
     "env": {
       "AWSLINT_BASE_CONSTRUCT": true
     }
+  },
+  "publishConfig": {
+    "tag": "latest"
   }
 }

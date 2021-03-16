@@ -18,7 +18,7 @@ export interface EcsTaskProps {
   /**
    * Task Definition of the task that should be started
    */
-  readonly taskDefinition: ecs.TaskDefinition;
+  readonly taskDefinition: ecs.ITaskDefinition;
 
   /**
    * How many tasks should be started when this event is triggered
@@ -103,7 +103,7 @@ export class EcsTask implements events.IRuleTarget {
    */
   public readonly securityGroups?: ec2.ISecurityGroup[];
   private readonly cluster: ecs.ICluster;
-  private readonly taskDefinition: ecs.TaskDefinition;
+  private readonly taskDefinition: ecs.ITaskDefinition;
   private readonly taskCount: number;
   private readonly role: iam.IRole;
   private readonly platformVersion?: ecs.FargatePlatformVersion;
@@ -115,7 +115,7 @@ export class EcsTask implements events.IRuleTarget {
 
     this.cluster = props.cluster;
     this.taskDefinition = props.taskDefinition;
-    this.taskCount = props.taskCount !== undefined ? props.taskCount : 1;
+    this.taskCount = props.taskCount ?? 1;
     this.platformVersion = props.platformVersion;
 
     if (props.role) {
@@ -137,6 +137,13 @@ export class EcsTask implements events.IRuleTarget {
       this.securityGroups = props.securityGroups;
       return;
     }
+
+    if (!cdk.Construct.isConstruct(this.taskDefinition)) {
+      throw new Error('Cannot create a security group for ECS task. ' +
+        'The task definition in ECS task is not a Construct. ' +
+        'Please pass a taskDefinition as a Construct in EcsTaskProps.');
+    }
+
     let securityGroup = props.securityGroup || this.taskDefinition.node.tryFindChild('SecurityGroup') as ec2.ISecurityGroup;
     securityGroup = securityGroup || new ec2.SecurityGroup(this.taskDefinition, 'SecurityGroup', { vpc: this.props.cluster.vpc });
     this.securityGroup = securityGroup; // Maintain backwards-compatibility for customers that read the generated security group.

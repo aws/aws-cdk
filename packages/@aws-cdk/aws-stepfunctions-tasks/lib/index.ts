@@ -44,3 +44,5 @@ export * from './athena/stop-query-execution';
 export * from './athena/get-query-execution';
 export * from './athena/get-query-results';
 export * from './databrew/start-job-run';
+export * from './eks/call';
+export * from './apigateway';

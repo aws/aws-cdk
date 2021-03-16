@@ -66,8 +66,8 @@
     "@aws-cdk/aws-ec2": "0.0.0",
     "cdk-build-tools": "0.0.0",
     "cdk-integ-tools": "0.0.0",
-    "delay": "4.4.0",
-    "esbuild": "^0.8.34",
+    "delay": "5.0.0",
+    "esbuild": "^0.8.55",
     "pkglint": "0.0.0"
   },
   "dependencies": {
@@ -91,5 +91,8 @@
   },
   "cdk-build": {
     "jest": true
+  },
+  "publishConfig": {
+    "tag": "latest"
   }
 }

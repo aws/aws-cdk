@@ -10,6 +10,7 @@ import {
   GeoRestriction,
   KeyGroup,
   LambdaEdgeEventType,
+  OriginAccessIdentity,
   PublicKey,
   SecurityPolicyProtocol,
   SSLMethod,
@@ -196,6 +197,59 @@ nodeunitShim({
     });
     test.done();
   },
+
+  'distribution with bucket and OAI'(test: Test) {
+    const stack = new cdk.Stack();
+    const s3BucketSource = new s3.Bucket(stack, 'Bucket');
+    const originAccessIdentity = new OriginAccessIdentity(stack, 'OAI');
+
+    new CloudFrontWebDistribution(stack, 'AnAmazingWebsiteProbably', {
+      originConfigs: [{
+        s3OriginSource: { s3BucketSource, originAccessIdentity },
+        behaviors: [{ isDefaultBehavior: true }],
+      }],
+    });
+
+    expect(stack).to(haveResourceLike('AWS::CloudFront::Distribution', {
+      DistributionConfig: {
+        Origins: [
+          {
+            ConnectionAttempts: 3,
+            ConnectionTimeout: 10,
+            DomainName: {
+              'Fn::GetAtt': [
+                'Bucket83908E77',
+                'RegionalDomainName',
+              ],
+            },
+            Id: 'origin1',
+            S3OriginConfig: {
+              OriginAccessIdentity: {
+                'Fn::Join': ['', ['origin-access-identity/cloudfront/', { Ref: 'OAIE1EFC67F' }]],
+              },
+            },
+          },
+        ],
+      },
+    }));
+
+    expect(stack).to(haveResourceLike('AWS::S3::BucketPolicy', {
+      PolicyDocument: {
+        Statement: [{
+          Action: 's3:GetObject',
+          Principal: {
+            CanonicalUser: { 'Fn::GetAtt': ['OAIE1EFC67F', 'S3CanonicalUserId'] },
+          },
+          Resource: {
+            'Fn::Join': ['', [{ 'Fn::GetAtt': ['Bucket83908E77', 'Arn'] }, '/*']],
+          },
+        }],
+      },
+    }));
+
+    test.done();
+  },
+
 
   'distribution with trusted signers on default distribution'(test: Test) {
     const stack = new cdk.Stack();

@@ -1,4 +1,4 @@
-import { schema } from '@aws-cdk/cfnspec';
+import { schema, cfnLintAnnotations } from '@aws-cdk/cfnspec';
 import { CodeMaker } from 'codemaker';
 import * as genspec from './genspec';
 import { itemTypeNames, PropertyAttributeName, scalarTypeNames, SpecName } from './spec-utils';
@@ -125,7 +125,7 @@ export default class CodeGenerator {
     this.code.closeBlock();
 
     this.code.line();
-    this.emitValidator(resourceContext, name, spec.Properties, conversionTable);
+    this.emitPropertiesValidator(resourceContext, name, spec.Properties, conversionTable);
     this.code.line();
     this.emitCloudFormationMapper(resourceContext, name, spec.Properties, conversionTable);
     this.emitFromCfnFactoryFunction(resourceContext, name, spec.Properties, conversionTable, false);
@@ -343,6 +343,13 @@ export default class CodeGenerator {
         }
       }
     }
+
+    //
+    //  Validator
+    //
+    this.emitConstructValidator(resourceName);
+
+    // End constructor
     this.code.closeBlock();
 
     this.code.line();
@@ -383,6 +390,37 @@ export default class CodeGenerator {
     this.code.openBlock('protected renderProperties(props: {[key: string]: any}): { [key: string]: any } ');
     this.code.line(`return ${genspec.cfnMapperName(propsType).fqn}(props);`);
     this.code.closeBlock();
+  }
+
+  /**
+   * Add validations for the given construct
+   *
+   * The generated code looks like this:
+   *
+   * ```
+   * this.node.addValidation({ validate: () => /* validation code * / });
+   * }
+   * ```
+   */
+  private emitConstructValidator(resourceType: genspec.CodeName) {
+    const cfnLint = cfnLintAnnotations(resourceType.specName?.fqn ?? '');
+
+    if (cfnLint.stateful) {
+      // Do a statefulness check. A deletionPolicy is required (and in normal operation an UpdateReplacePolicy
+      // would also be set if a user doesn't do complicated shenanigans, in which case they probably know what
+      // they're doing.
+      //
+      // Only do this for L1s embedded in L2s (to force L2 authors to add a way to set this policy). If we did it for all L1s:
+      //
+      // - users working at the L1 level would start getting synthesis failures when we add this feature
+      // - the `cloudformation-include` library that loads CFN templates to L1s would start failing when it loads
+      //   templates that don't have DeletionPolicy set.
+      this.code.openBlock(`if (this.node.scope && ${CORE}.Resource.isResource(this.node.scope))`);
+      this.code.line('this.node.addValidation({ validate: () => this.cfnOptions.deletionPolicy === undefined');
+      this.code.line(`  ? [\'\\\'${resourceType.specName?.fqn}\\\' is a stateful resource type, and you must specify a Removal Policy for it. Call \\\'resource.applyRemovalPolicy()\\\'.\']`);
+      this.code.line('  : [] });');
+      this.code.closeBlock();
+    }
   }
 
   /**
@@ -665,7 +703,7 @@ export default class CodeGenerator {
    *
    * Generated as a top-level function outside any namespace so we can hide it from library consumers.
    */
-  private emitValidator(
+  private emitPropertiesValidator(
     resource: genspec.CodeName,
     typeName: genspec.CodeName,
     propSpecs: { [name: string]: schema.Property },
@@ -683,6 +721,15 @@ export default class CodeGenerator {
     this.code.line(`if (!${CORE}.canInspect(properties)) { return ${CORE}.VALIDATION_SUCCESS; }`);
 
     this.code.line(`const errors = new ${CORE}.ValidationResults();`);
+
+    // check that the argument is an object
+    // normally, we would have to explicitly check for null here,
+    // as typeof null is 'object' in JavaScript,
+    // but validators are never called with null
+    // (as evidenced by the code below accessing properties of the argument without checking for null)
+    this.code.openBlock("if (typeof properties !== 'object')");
+    this.code.line(`errors.collect(new ${CORE}.ValidationResult('Expected an object, but received: ' + JSON.stringify(properties)));`);
+    this.code.closeBlock();
 
     Object.keys(propSpecs).forEach(cfnPropName => {
       const propSpec = propSpecs[cfnPropName];
@@ -819,7 +866,7 @@ export default class CodeGenerator {
     this.endNamespace(typeName);
 
     this.code.line();
-    this.emitValidator(resourceContext, typeName, propTypeSpec.Properties, conversionTable);
+    this.emitPropertiesValidator(resourceContext, typeName, propTypeSpec.Properties, conversionTable);
     this.code.line();
     this.emitCloudFormationMapper(resourceContext, typeName, propTypeSpec.Properties, conversionTable);
     this.emitFromCfnFactoryFunction(resourceContext, typeName, propTypeSpec.Properties, conversionTable, true);
@@ -898,7 +945,7 @@ export default class CodeGenerator {
     this.code.line('/**');
     before.forEach(line => this.code.line(` * ${line}`.trimRight()));
     if (link) {
-      this.code.line(` * @see ${link}`);
+      this.code.line(` * @link ${link}`);
     }
     this.code.line(' */');
     return;

@@ -957,9 +957,8 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
 
     // desiredCapacity just reflects what the user has supplied.
     const desiredCapacity = props.desiredCapacity;
-    const minCapacity = props.minCapacity !== undefined ? props.minCapacity : 1;
-    const maxCapacity = props.maxCapacity !== undefined ? props.maxCapacity :
-      desiredCapacity !== undefined ? desiredCapacity : Math.max(minCapacity, 1);
+    const minCapacity = props.minCapacity ?? 1;
+    const maxCapacity = props.maxCapacity ?? desiredCapacity ?? Math.max(minCapacity, 1);
 
     withResolved(minCapacity, maxCapacity, (min, max) => {
       if (min > max) {
@@ -1009,7 +1008,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
     const { subnetIds, hasPublic } = props.vpc.selectSubnets(props.vpcSubnets);
     const asgProps: CfnAutoScalingGroupProps = {
       autoScalingGroupName: this.physicalName,
-      cooldown: props.cooldown !== undefined ? props.cooldown.toSeconds().toString() : undefined,
+      cooldown: props.cooldown?.toSeconds().toString(),
       minSize: Tokenization.stringifyNumber(minCapacity),
       maxSize: Tokenization.stringifyNumber(maxCapacity),
       desiredCapacity: desiredCapacity !== undefined ? Tokenization.stringifyNumber(desiredCapacity) : undefined,
@@ -1509,7 +1508,7 @@ enum HealthCheckType {
  * Render the rolling update configuration into the appropriate object
  */
 function renderRollingUpdateConfig(config: RollingUpdateConfiguration = {}): CfnAutoScalingRollingUpdate {
-  const waitOnResourceSignals = config.minSuccessfulInstancesPercent !== undefined ? true : false;
+  const waitOnResourceSignals = config.minSuccessfulInstancesPercent !== undefined;
   const pauseTime = config.pauseTime || (waitOnResourceSignals ? Duration.minutes(5) : Duration.seconds(0));
 
   return {

@@ -82,6 +82,8 @@ test('url subscription with user provided dlq', () => {
       },
       'DeadLetterQueue9F481546': {
         'Type': 'AWS::SQS::Queue',
+        'DeletionPolicy': 'Delete',
+        'UpdateReplacePolicy': 'Delete',
         'Properties': {
           'MessageRetentionPeriod': 1209600,
           'QueueName': 'MySubscription_DLQ',
@@ -248,6 +250,8 @@ test('queue subscription', () => {
       },
       'MyQueueE6CA6235': {
         'Type': 'AWS::SQS::Queue',
+        'DeletionPolicy': 'Delete',
+        'UpdateReplacePolicy': 'Delete',
       },
       'MyQueuePolicy6BBEDDAC': {
         'Type': 'AWS::SQS::QueuePolicy',
@@ -325,6 +329,8 @@ test('queue subscription with user provided dlq', () => {
       },
       'MyQueueE6CA6235': {
         'Type': 'AWS::SQS::Queue',
+        'DeletionPolicy': 'Delete',
+        'UpdateReplacePolicy': 'Delete',
       },
       'MyQueuePolicy6BBEDDAC': {
         'Type': 'AWS::SQS::QueuePolicy',
@@ -386,6 +392,8 @@ test('queue subscription with user provided dlq', () => {
       },
       'DeadLetterQueue9F481546': {
         'Type': 'AWS::SQS::Queue',
+        'DeletionPolicy': 'Delete',
+        'UpdateReplacePolicy': 'Delete',
         'Properties': {
           'MessageRetentionPeriod': 1209600,
           'QueueName': 'MySubscription_DLQ',
@@ -745,6 +753,8 @@ test('multiple subscriptions', () => {
       },
       'MyQueueE6CA6235': {
         'Type': 'AWS::SQS::Queue',
+        'DeletionPolicy': 'Delete',
+        'UpdateReplacePolicy': 'Delete',
       },
       'MyQueuePolicy6BBEDDAC': {
         'Type': 'AWS::SQS::QueuePolicy',

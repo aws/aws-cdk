@@ -84,7 +84,7 @@
     "cfn2ts": "0.0.0",
     "jest": "^26.6.3",
     "pkglint": "0.0.0",
-    "sinon": "^9.2.1"
+    "sinon": "^9.2.4"
   },
   "dependencies": {
     "@aws-cdk/core": "0.0.0",
@@ -105,6 +105,7 @@
       "from-signature:@aws-cdk/aws-iam.Role.fromRoleArn",
       "construct-interface-extends-iconstruct:@aws-cdk/aws-iam.IManagedPolicy",
       "props-physical-name:@aws-cdk/aws-iam.OpenIdConnectProviderProps",
+      "props-physical-name:@aws-cdk/aws-iam.SamlProviderProps",
       "resource-interface-extends-resource:@aws-cdk/aws-iam.IManagedPolicy",
       "docs-public-apis:@aws-cdk/aws-iam.IUser"
     ]
@@ -113,5 +114,8 @@
   "awscdkio": {
     "announce": false
   },
-  "maturity": "stable"
+  "maturity": "stable",
+  "publishConfig": {
+    "tag": "latest"
+  }
 }

@@ -225,3 +225,20 @@ const domain = new es.Domain(this, 'Domain', {
     },
 });
 ```
+
+## Custom endpoint
+
+Custom endpoints can be configured to reach the ES domain under a custom domain name.
+
+```ts
+new Domain(stack, 'Domain', {
+    version: ElasticsearchVersion.V7_7,
+    customEndpoint: {
+        domainName: 'search.example.com',
+    },
+});
+```
+
+It is also possible to specify a custom certificate instead of the auto-generated one.
+
+Additionally, an automatic CNAME-Record is created if a hosted zone is provided for the custom endpoint

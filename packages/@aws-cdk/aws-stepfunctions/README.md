@@ -295,7 +295,7 @@ parallel.next(closeOrder);
 ### Succeed
 
 Reaching a `Succeed` state terminates the state machine execution with a
-succesful status.
+successful status.
 
 ```ts
 const success = new sfn.Succeed(this, 'We did it!');
@@ -397,7 +397,7 @@ const sm = new sfn.StateMachine(this, 'StateMachine', {
 });
 
 // don't forget permissions. You need to assign them
-table.grantWriteData(sm.role);
+table.grantWriteData(sm);
 ```
 
 ## Task Chaining

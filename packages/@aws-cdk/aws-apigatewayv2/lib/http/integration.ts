@@ -134,7 +134,7 @@ export class HttpIntegration extends Resource implements IHttpIntegration {
   constructor(scope: Construct, id: string, props: HttpIntegrationProps) {
     super(scope, id);
     const integ = new CfnIntegration(this, 'Resource', {
-      apiId: props.httpApi.httpApiId,
+      apiId: props.httpApi.apiId,
       integrationType: props.integrationType,
       integrationUri: props.integrationUri,
       integrationMethod: props.method,

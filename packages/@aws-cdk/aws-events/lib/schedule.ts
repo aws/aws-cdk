@@ -17,6 +17,13 @@ export abstract class Schedule {
    * Construct a schedule from an interval and a time unit
    */
   public static rate(duration: Duration): Schedule {
+    const validDurationUnit = ['minute', 'minutes', 'hour', 'hours', 'day', 'days'];
+    if (validDurationUnit.indexOf(duration.unitLabel()) === -1) {
+      throw new Error('Allowed unit for scheduling is: \'minute\', \'minutes\', \'hour\', \'hours\', \'day\', \'days\'');
+    }
+    if (duration.isUnresolved()) {
+      return new LiteralSchedule(`rate(${duration.formatTokenToNumber()})`);
+    }
     if (duration.toSeconds() === 0) {
       throw new Error('Duration cannot be 0');
     }
@@ -115,7 +122,7 @@ class LiteralSchedule extends Schedule {
 }
 
 function fallback<T>(x: T | undefined, def: T): T {
-  return x === undefined ? def : x;
+  return x ?? def;
 }
 
 /**

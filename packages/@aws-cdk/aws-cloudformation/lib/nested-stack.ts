@@ -71,7 +71,7 @@ export class NestedStack extends core.NestedStack {
     super(scope, id, {
       parameters: props.parameters,
       timeout: props.timeout,
-      notificationArns: props.notifications ? props.notifications.map(n => n.topicArn) : undefined,
+      notificationArns: props.notifications?.map(n => n.topicArn),
     });
   }
 }

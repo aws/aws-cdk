@@ -1,7 +1,7 @@
 import '@aws-cdk/assert/jest';
 import * as path from 'path';
-import { Vpc, SecurityGroup, SubnetType, InstanceType, InstanceClass, InstanceSize } from '@aws-cdk/aws-ec2';
-import { DatabaseSecret, DatabaseCluster, DatabaseClusterEngine, AuroraMysqlEngineVersion } from '@aws-cdk/aws-rds';
+import { Vpc, SecurityGroup, SubnetType } from '@aws-cdk/aws-ec2';
+import { DatabaseSecret, DatabaseClusterEngine, AuroraMysqlEngineVersion, ServerlessCluster } from '@aws-cdk/aws-rds';
 import * as cdk from '@aws-cdk/core';
 import * as appsync from '../lib';
 
@@ -21,7 +21,7 @@ beforeEach(() => {
 describe('Rds Data Source configuration', () => {
   // GIVEN
   let secret: DatabaseSecret;
-  let cluster: DatabaseCluster;
+  let cluster: ServerlessCluster;
   beforeEach(() => {
     const vpc = new Vpc(stack, 'Vpc', { maxAzs: 2 });
     const securityGroup = new SecurityGroup(stack, 'AuroraSecurityGroup', {
@@ -31,16 +31,13 @@ describe('Rds Data Source configuration', () => {
     secret = new DatabaseSecret(stack, 'AuroraSecret', {
       username: 'clusteradmin',
     });
-    cluster = new DatabaseCluster(stack, 'AuroraCluster', {
+    cluster = new ServerlessCluster(stack, 'AuroraCluster', {
       engine: DatabaseClusterEngine.auroraMysql({ version: AuroraMysqlEngineVersion.VER_2_07_1 }),
       credentials: { username: 'clusteradmin' },
       clusterIdentifier: 'db-endpoint-test',
-      instanceProps: {
-        instanceType: InstanceType.of(InstanceClass.BURSTABLE2, InstanceSize.SMALL),
-        vpcSubnets: { subnetType: SubnetType.PRIVATE },
-        vpc,
-        securityGroups: [securityGroup],
-      },
+      vpc,
+      vpcSubnets: { subnetType: SubnetType.PRIVATE },
+      securityGroups: [securityGroup],
       defaultDatabaseName: 'Animals',
     });
   });
@@ -123,6 +120,34 @@ describe('Rds Data Source configuration', () => {
     });
   });
 
+  test('databaseName saved to RdsHttpEndpointConfig', () => {
+    // WHEN
+    const testDatabaseName = 'testDatabaseName';
+    api.addRdsDataSource('ds', cluster, secret, testDatabaseName);
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::AppSync::DataSource', {
+      Type: 'RELATIONAL_DATABASE',
+      RelationalDatabaseConfig: {
+        RdsHttpEndpointConfig: {
+          AwsRegion: { Ref: 'AWS::Region' },
+          AwsSecretStoreArn: { Ref: 'AuroraSecret41E6E877' },
+          DbClusterIdentifier: {
+            'Fn::Join': ['', ['arn:',
+              { Ref: 'AWS::Partition' },
+              ':rds:',
+              { Ref: 'AWS::Region' },
+              ':',
+              { Ref: 'AWS::AccountId' },
+              ':cluster:',
+              { Ref: 'AuroraCluster23D869C0' }]],
+          },
+          DatabaseName: testDatabaseName,
+        },
+      },
+    });
+  });
+
   test('default configuration produces name identical to the id', () => {
     // WHEN
     api.addRdsDataSource('ds', cluster, secret);
@@ -136,7 +161,7 @@ describe('Rds Data Source configuration', () => {
 
   test('appsync configures name correctly', () => {
     // WHEN
-    api.addRdsDataSource('ds', cluster, secret, {
+    api.addRdsDataSource('ds', cluster, secret, undefined, {
       name: 'custom',
     });
 
@@ -149,7 +174,7 @@ describe('Rds Data Source configuration', () => {
 
   test('appsync configures name and description correctly', () => {
     // WHEN
-    api.addRdsDataSource('ds', cluster, secret, {
+    api.addRdsDataSource('ds', cluster, secret, undefined, {
       name: 'custom',
       description: 'custom description',
     });
@@ -177,7 +202,7 @@ describe('Rds Data Source configuration', () => {
 describe('adding rds data source from imported api', () => {
   // GIVEN
   let secret: DatabaseSecret;
-  let cluster: DatabaseCluster;
+  let cluster: ServerlessCluster;
   beforeEach(() => {
     const vpc = new Vpc(stack, 'Vpc', { maxAzs: 2 });
     const securityGroup = new SecurityGroup(stack, 'AuroraSecurityGroup', {
@@ -187,16 +212,13 @@ describe('adding rds data source from imported api', () => {
     secret = new DatabaseSecret(stack, 'AuroraSecret', {
       username: 'clusteradmin',
     });
-    cluster = new DatabaseCluster(stack, 'AuroraCluster', {
+    cluster = new ServerlessCluster(stack, 'AuroraCluster', {
       engine: DatabaseClusterEngine.auroraMysql({ version: AuroraMysqlEngineVersion.VER_2_07_1 }),
       credentials: { username: 'clusteradmin' },
       clusterIdentifier: 'db-endpoint-test',
-      instanceProps: {
-        instanceType: InstanceType.of(InstanceClass.BURSTABLE2, InstanceSize.SMALL),
-        vpcSubnets: { subnetType: SubnetType.PRIVATE },
-        vpc,
-        securityGroups: [securityGroup],
-      },
+      vpc,
+      vpcSubnets: { subnetType: SubnetType.PRIVATE },
+      securityGroups: [securityGroup],
       defaultDatabaseName: 'Animals',
     });
   });

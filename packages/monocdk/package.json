@@ -100,7 +100,7 @@
     "jsonschema": "^1.4.0",
     "minimatch": "^3.0.4",
     "punycode": "^2.1.1",
-    "semver": "^7.3.2",
+    "semver": "^7.3.4",
     "yaml": "1.10.0"
   },
   "devDependencies": {
@@ -113,6 +113,7 @@
     "@aws-cdk/aws-amplify": "0.0.0",
     "@aws-cdk/aws-apigateway": "0.0.0",
     "@aws-cdk/aws-apigatewayv2": "0.0.0",
+    "@aws-cdk/aws-apigatewayv2-authorizers": "0.0.0",
     "@aws-cdk/aws-apigatewayv2-integrations": "0.0.0",
     "@aws-cdk/aws-appconfig": "0.0.0",
     "@aws-cdk/aws-appflow": "0.0.0",
@@ -207,6 +208,7 @@
     "@aws-cdk/aws-kendra": "0.0.0",
     "@aws-cdk/aws-kinesis": "0.0.0",
     "@aws-cdk/aws-kinesisanalytics": "0.0.0",
+    "@aws-cdk/aws-kinesisanalytics-flink": "0.0.0",
     "@aws-cdk/aws-kinesisfirehose": "0.0.0",
     "@aws-cdk/aws-kms": "0.0.0",
     "@aws-cdk/aws-lakeformation": "0.0.0",
@@ -250,6 +252,7 @@
     "@aws-cdk/aws-s3-assets": "0.0.0",
     "@aws-cdk/aws-s3-deployment": "0.0.0",
     "@aws-cdk/aws-s3-notifications": "0.0.0",
+    "@aws-cdk/aws-s3outposts": "0.0.0",
     "@aws-cdk/aws-sagemaker": "0.0.0",
     "@aws-cdk/aws-sam": "0.0.0",
     "@aws-cdk/aws-sdb": "0.0.0",
@@ -286,12 +289,12 @@
     "@aws-cdk/region-info": "0.0.0",
     "@aws-cdk/yaml-cfn": "0.0.0",
     "@types/fs-extra": "^8.1.1",
-    "@types/node": "^10.17.51",
+    "@types/node": "^10.17.54",
     "cdk-build-tools": "0.0.0",
     "constructs": "^3.2.0",
     "fs-extra": "^9.1.0",
     "pkglint": "0.0.0",
-    "ts-node": "^9.1.0",
+    "ts-node": "^9.1.1",
     "typescript": "~3.8.3",
     "ubergen": "0.0.0"
   },
@@ -308,5 +311,8 @@
   ],
   "awscdkio": {
     "announce": false
+  },
+  "publishConfig": {
+    "tag": "latest"
   }
 }

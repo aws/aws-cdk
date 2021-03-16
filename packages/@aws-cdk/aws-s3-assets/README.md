@@ -88,8 +88,8 @@ The following example uses custom asset bundling to convert a markdown file to h
 
 [Example of using asset bundling](./test/integ.assets.bundling.lit.ts).
 
-The bundling docker image (`image`) can either come from a registry (`BundlingDockerImage.fromRegistry`)
-or it can be built from a `Dockerfile` located inside your project (`BundlingDockerImage.fromAsset`).
+The bundling docker image (`image`) can either come from a registry (`DockerImage.fromRegistry`)
+or it can be built from a `Dockerfile` located inside your project (`DockerImage.fromBuild`).
 
 You can set the `CDK_DOCKER` environment variable in order to provide a custom
 docker program to execute. This may sometime be needed when building in
@@ -114,7 +114,8 @@ new assets.Asset(this, 'BundledAsset', {
       },
     },
     // Docker bundling fallback
-    image: BundlingDockerImage.fromRegistry('alpine'),
+    image: DockerImage.fromRegistry('alpine'),
+    entrypoint: ['/bin/sh', '-c'],
     command: ['bundle'],
   },
 });
@@ -122,6 +123,27 @@ new assets.Asset(this, 'BundledAsset', {
 
 Although optional, it's recommended to provide a local bundling method which can
 greatly improve performance.
+
+If the bundling output contains a single archive file (zip or jar) it will be
+uploaded to S3 as-is and will not be zipped. Otherwise the contents of the
+output directory will be zipped and the zip file will be uploaded to S3. This
+is the default behavior for `bundling.outputType` (`BundlingOutput.AUTO_DISCOVER`).
+
+Use `BundlingOutput.NOT_ARCHIVED` if the bundling output must always be zipped:
+
+```ts
+const asset = new assets.Asset(this, 'BundledAsset', {
+  path: '/path/to/asset',
+  bundling: {
+    image: DockerImage.fromRegistry('alpine'),
+    command: ['command-that-produces-an-archive.sh'],
+    outputType: BundlingOutput.NOT_ARCHIVED, // Bundling output will be zipped even though it produces a single archive file.
+  },
+});
+```
+
+Use `BundlingOutput.ARCHIVED` if the bundling output contains a single archive file and
+you don't want it to be zipped.
 
 ## CloudFormation Resource Metadata
 

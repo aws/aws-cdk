@@ -75,18 +75,18 @@
     "@aws-cdk/aws-events": "0.0.0",
     "@aws-cdk/aws-s3": "0.0.0",
     "@aws-cdk/aws-ssm": "0.0.0",
-    "@types/aws-lambda": "^8.10.64",
+    "@types/aws-lambda": "^8.10.72",
     "@types/fs-extra": "^8.1.1",
-    "@types/sinon": "^9.0.9",
-    "aws-sdk": "^2.830.0",
+    "@types/sinon": "^9.0.10",
+    "aws-sdk": "^2.848.0",
     "aws-sdk-mock": "^5.1.0",
     "cdk-build-tools": "0.0.0",
     "cdk-integ-tools": "0.0.0",
     "cfn2ts": "0.0.0",
     "fs-extra": "^9.1.0",
-    "nock": "^13.0.5",
+    "nock": "^13.0.10",
     "pkglint": "0.0.0",
-    "sinon": "^9.2.1"
+    "sinon": "^9.2.4"
   },
   "dependencies": {
     "@aws-cdk/aws-cloudformation": "0.0.0",
@@ -121,5 +121,8 @@
   "awscdkio": {
     "announce": false
   },
-  "maturity": "stable"
+  "maturity": "stable",
+  "publishConfig": {
+    "tag": "latest"
+  }
 }

@@ -104,6 +104,9 @@ export = {
 
       test.deepEqual(stack.resolve(repo.repositoryCloneUrlGrc), 'codecommit::us-west-2://my-repo');
 
+      test.deepEqual(repo.env.account, '585695036304');
+      test.deepEqual(repo.env.region, 'us-west-2');
+
       test.done();
     },
 

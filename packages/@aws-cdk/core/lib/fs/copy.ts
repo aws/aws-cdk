@@ -5,7 +5,7 @@ import { CopyOptions, SymlinkFollowMode } from './options';
 import { shouldFollow } from './utils';
 
 export function copyDirectory(srcDir: string, destDir: string, options: CopyOptions = { }, rootDir?: string) {
-  const follow = options.follow !== undefined ? options.follow : SymlinkFollowMode.EXTERNAL;
+  const follow = options.follow ?? SymlinkFollowMode.EXTERNAL;
 
   rootDir = rootDir || srcDir;
 

@@ -1213,7 +1213,7 @@ export class Vpc extends VpcBase {
 
     this.availabilityZones = stack.availabilityZones;
 
-    const maxAZs = props.maxAzs !== undefined ? props.maxAzs : 3;
+    const maxAZs = props.maxAzs ?? 3;
     this.availabilityZones = this.availabilityZones.slice(0, maxAZs);
 
     this.vpcId = this.resource.ref;
@@ -1597,7 +1597,7 @@ export class Subnet extends Resource implements ISubnet {
   }
 
   /**
-   * Adds an entry to this subnets route table that points to the passed NATGatwayId
+   * Adds an entry to this subnets route table that points to the passed NATGatewayId
    * @param natGatewayId The ID of the NAT gateway
    */
   public addDefaultNatRoute(natGatewayId: string) {
@@ -1788,7 +1788,7 @@ export class PrivateSubnet extends Subnet implements IPrivateSubnet {
 }
 
 function ifUndefined<T>(value: T | undefined, defaultValue: T): T {
-  return value !== undefined ? value : defaultValue;
+  return value ?? defaultValue;
 }
 
 class ImportedVpc extends VpcBase {
@@ -1886,6 +1886,7 @@ class LookedUpVpc extends VpcBase {
         availabilityZone: vpcSubnet.availabilityZone,
         subnetId: vpcSubnet.subnetId,
         routeTableId: vpcSubnet.routeTableId,
+        ipv4CidrBlock: vpcSubnet.cidr,
       }));
     }
     return ret;

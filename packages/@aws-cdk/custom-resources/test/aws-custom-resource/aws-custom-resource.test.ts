@@ -34,7 +34,7 @@ test('aws sdk js custom resource with onCreate and onDelete', () => {
 
   // THEN
   expect(stack).toHaveResource('Custom::LogRetentionPolicy', {
-    'Create': {
+    'Create': JSON.stringify({
       'service': 'CloudWatchLogs',
       'action': 'putRetentionPolicy',
       'parameters': {
@@ -44,14 +44,14 @@ test('aws sdk js custom resource with onCreate and onDelete', () => {
       'physicalResourceId': {
         'id': 'loggroup',
       },
-    },
-    'Delete': {
+    }),
+    'Delete': JSON.stringify({
       'service': 'CloudWatchLogs',
       'action': 'deleteRetentionPolicy',
       'parameters': {
         'logGroupName': '/aws/lambda/loggroup',
       },
-    },
+    }),
     'InstallLatestAwsSdk': true,
   });
 
@@ -96,7 +96,7 @@ test('onCreate defaults to onUpdate', () => {
 
   // THEN
   expect(stack).toHaveResource('Custom::S3PutObject', {
-    'Create': {
+    'Create': JSON.stringify({
       'service': 's3',
       'action': 'putObject',
       'parameters': {
@@ -107,8 +107,8 @@ test('onCreate defaults to onUpdate', () => {
       'physicalResourceId': {
         'responsePath': 'ETag',
       },
-    },
-    'Update': {
+    }),
+    'Update': JSON.stringify({
       'service': 's3',
       'action': 'putObject',
       'parameters': {
@@ -119,7 +119,7 @@ test('onCreate defaults to onUpdate', () => {
       'physicalResourceId': {
         'responsePath': 'ETag',
       },
-    },
+    }),
   });
 });
 
@@ -185,7 +185,7 @@ test('fails when no physical resource method is specified', () => {
   })).toThrow(/`physicalResourceId`/);
 });
 
-test('encodes booleans', () => {
+test('booleans are encoded in the stringified parameters object', () => {
   // GIVEN
   const stack = new cdk.Stack();
 
@@ -208,19 +208,19 @@ test('encodes booleans', () => {
 
   // THEN
   expect(stack).toHaveResource('Custom::ServiceAction', {
-    'Create': {
+    'Create': JSON.stringify({
       'service': 'service',
       'action': 'action',
       'parameters': {
-        'trueBoolean': 'TRUE:BOOLEAN',
+        'trueBoolean': true,
         'trueString': 'true',
-        'falseBoolean': 'FALSE:BOOLEAN',
+        'falseBoolean': false,
         'falseString': 'false',
       },
       'physicalResourceId': {
         'id': 'id',
       },
-    },
+    }),
   });
 });
 
@@ -264,20 +264,20 @@ test('encodes physical resource id reference', () => {
 
   // THEN
   expect(stack).toHaveResource('Custom::ServiceAction', {
-    'Create': {
+    'Create': JSON.stringify({
       'service': 'service',
       'action': 'action',
       'parameters': {
-        'trueBoolean': 'TRUE:BOOLEAN',
+        'trueBoolean': true,
         'trueString': 'true',
-        'falseBoolean': 'FALSE:BOOLEAN',
+        'falseBoolean': false,
         'falseString': 'false',
         'physicalResourceIdReference': 'PHYSICAL:RESOURCEID:',
       },
       'physicalResourceId': {
         'id': 'id',
       },
-    },
+    }),
   });
 });
 
@@ -526,19 +526,19 @@ test('getDataString', () => {
   // THEN
   expect(stack).toHaveResource('Custom::AWS', {
     Create: {
-      service: 'service',
-      action: 'action',
-      parameters: {
-        a: {
-          'Fn::GetAtt': [
-            'AwsSdk155B91071',
-            'Data',
-          ],
-        },
-      },
-      physicalResourceId: {
-        'id': 'id',
-      },
+      'Fn::Join': [
+        '',
+        [
+          '{"service":"service","action":"action","parameters":{"a":"',
+          {
+            'Fn::GetAtt': [
+              'AwsSdk155B91071',
+              'Data',
+            ],
+          },
+          '"},"physicalResourceId":{"id":"id"}}',
+        ],
+      ],
     },
   });
 });
@@ -662,6 +662,53 @@ test('separate policies per custom resource', () => {
         },
       ],
       Version: '2012-10-17',
+    },
+  });
+});
+
+test('tokens can be used as dictionary keys', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const dummy = new cdk.CfnResource(stack, 'MyResource', {
+    type: 'AWS::My::Resource',
+  });
+
+  // WHEN
+  new AwsCustomResource(stack, 'Custom1', {
+    onCreate: {
+      service: 'service1',
+      action: 'action1',
+      physicalResourceId: PhysicalResourceId.of('id1'),
+      parameters: {
+        [dummy.ref]: {
+          Foo: 1234,
+          Bar: dummy.getAtt('Foorz'),
+        },
+      },
+    },
+    policy: AwsCustomResourcePolicy.fromSdkCalls({ resources: AwsCustomResourcePolicy.ANY_RESOURCE }),
+  });
+
+  // THEN
+  expect(stack).toHaveResource('Custom::AWS', {
+    Create: {
+      'Fn::Join': [
+        '',
+        [
+          '{"service":"service1","action":"action1","physicalResourceId":{"id":"id1"},"parameters":{"',
+          {
+            'Ref': 'MyResource',
+          },
+          '":{"Foo":1234,"Bar":"',
+          {
+            'Fn::GetAtt': [
+              'MyResource',
+              'Foorz',
+            ],
+          },
+          '"}}}',
+        ],
+      ],
     },
   });
 });

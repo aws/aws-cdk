@@ -276,18 +276,18 @@ export abstract class ResourceBase extends ResourceConstruct implements IResourc
     //
     // statusCode
 
-    const statusCode = options.statusCode !== undefined ? options.statusCode : 204;
+    const statusCode = options.statusCode ?? 204;
 
     //
     // prepare responseParams
 
     const integrationResponseParams: { [p: string]: string } = { };
-    const methodReponseParams: { [p: string]: boolean } = { };
+    const methodResponseParams: { [p: string]: boolean } = { };
 
     for (const [name, value] of Object.entries(headers)) {
       const key = `method.response.header.${name}`;
       integrationResponseParams[key] = value;
-      methodReponseParams[key] = true;
+      methodResponseParams[key] = true;
     }
 
     return this.addMethod('OPTIONS', new MockIntegration({
@@ -297,7 +297,7 @@ export abstract class ResourceBase extends ResourceConstruct implements IResourc
       ],
     }), {
       methodResponses: [
-        { statusCode: `${statusCode}`, responseParameters: methodReponseParams },
+        { statusCode: `${statusCode}`, responseParameters: methodResponseParams },
       ],
     });
 
@@ -522,7 +522,7 @@ export class ProxyResource extends Resource {
       defaultMethodOptions: props.defaultMethodOptions,
     });
 
-    const anyMethod = props.anyMethod !== undefined ? props.anyMethod : true;
+    const anyMethod = props.anyMethod ?? true;
     if (anyMethod) {
       this.anyMethod = this.addMethod('ANY');
     }

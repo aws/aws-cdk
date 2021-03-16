@@ -55,8 +55,7 @@ test('appsync should error when creating pipeline resolver with data source', ()
 
   // THEN
   expect(() => {
-    api.createResolver({
-      dataSource: ds,
+    ds.createResolver({
       typeName: 'test',
       fieldName: 'test2',
       pipelineConfig: [test1, test2],

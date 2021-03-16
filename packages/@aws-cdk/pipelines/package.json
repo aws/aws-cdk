@@ -124,5 +124,8 @@
       "events-method-signature:@aws-cdk/pipelines.UpdatePipelineAction.onStateChange"
     ]
   },
-  "homepage": "https://github.com/aws/aws-cdk"
+  "homepage": "https://github.com/aws/aws-cdk",
+  "publishConfig": {
+    "tag": "latest"
+  }
 }
