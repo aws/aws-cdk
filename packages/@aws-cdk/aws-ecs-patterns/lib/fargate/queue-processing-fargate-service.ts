@@ -148,6 +148,7 @@ export class QueueProcessingFargateService extends QueueProcessingServiceBase {
       securityGroups: props.securityGroups,
       vpcSubnets: props.taskSubnets,
       assignPublicIp: props.assignPublicIp,
+      circuitBreaker: props.circuitBreaker,
     });
 
     this.configureAutoscalingForService(this.service);
