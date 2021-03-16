@@ -161,7 +161,9 @@ export class SelfManagedKafkaEventSource extends StreamEventSource {
   }
 
   private mappingId(target: lambda.IFunction) {
-    const idHash = crypto.createHash('md5').update(JSON.stringify(Stack.of(target).resolve(this.innerProps.bootstrapServers))).digest('hex');
+    let hash = crypto.createHash('md5');
+    hash.update(JSON.stringify(Stack.of(target).resolve(this.innerProps.bootstrapServers)));
+    const idHash = hash.digest('hex');
     return `KafkaEventSource:${idHash}:${this.innerProps.topic}`;
   }
 
