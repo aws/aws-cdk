@@ -56,7 +56,3 @@ incompatible-argument:@aws-cdk/aws-ecs.TaskDefinition.addVolume
 # We made properties optional and it's really fine but our differ doesn't think so.
 weakened:@aws-cdk/cloud-assembly-schema.DockerImageSource
 weakened:@aws-cdk/cloud-assembly-schema.FileSource
-
-# Added required property to SNS TopicPolicy to prevent synth errors when not provided.
-# No sensible default could be found.
-strengthened:@aws-cdk/aws-sns.TopicPolicyProps
