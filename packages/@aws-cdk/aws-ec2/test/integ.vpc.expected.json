@@ -567,7 +567,7 @@
             "FromPort": 800,
             "IpProtocol": "udp",
             "ToPort": 801
-          },
+          }
         ],
         "VpcId": {
           "Ref": "MyVpcF9F0CA6F"
