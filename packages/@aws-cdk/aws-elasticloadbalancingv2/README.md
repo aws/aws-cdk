@@ -273,6 +273,20 @@ const tg2 = new elbv2.ApplicationTargetGroup(stack, 'TG2', {
 
 For more information see: https://docs.aws.amazon.com/elasticloadbalancing/latest/application/sticky-sessions.html#application-based-stickiness
 
+### Setting the target group protocol version
+
+By default, Application Load Balancers send requests to targets using HTTP/1.1. You can use the [protocol version](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-target-groups.html#target-group-protocol-version) to send requests to targets using HTTP/2 or gRPC.
+
+```ts
+const tg = new elbv2.ApplicationTargetGroup(stack, 'TG', {
+  targetType: elbv2.TargetType.IP,
+  port: 50051,
+  protocol: elbv2.ApplicationProtocol.HTTP,
+  protocolVersion: elbv2.ApplicationProtocolVersion.GRPC,
+  vpc,
+});
+```
+
 ## Using Lambda Targets
 
 To use a Lambda Function as a target, use the integration class in the

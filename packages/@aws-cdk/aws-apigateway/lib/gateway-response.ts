@@ -206,7 +206,7 @@ export class ResponseType {
    */
   public static readonly WAF_FILTERED = new ResponseType('WAF_FILTERED');
 
-  /** A custom response type to suppport future cases. */
+  /** A custom response type to support future cases. */
   public static of(type: string): ResponseType {
     return new ResponseType(type.toUpperCase());
   }

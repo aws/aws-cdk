@@ -72,13 +72,13 @@
             ]
           }
         },
-        "Handler": "index.main",
         "Role": {
           "Fn::GetAtt": [
             "HandlerServiceRoleFCDC14AE",
             "Arn"
           ]
         },
+        "Handler": "index.main",
         "Runtime": "python3.6"
       },
       "DependsOn": [
@@ -157,13 +157,13 @@
             ]
           }
         },
-        "Handler": "index.main",
         "Role": {
           "Fn::GetAtt": [
             "CallbackHandlerServiceRole3689695E",
             "Arn"
           ]
         },
+        "Handler": "index.main",
         "Runtime": "python3.6"
       },
       "DependsOn": [
@@ -237,6 +237,12 @@
     "StateMachine2E01A3A5": {
       "Type": "AWS::StepFunctions::StateMachine",
       "Properties": {
+        "RoleArn": {
+          "Fn::GetAtt": [
+            "StateMachineRoleB840431D",
+            "Arn"
+          ]
+        },
         "DefinitionString": {
           "Fn::Join": [
             "",
@@ -258,12 +264,6 @@
               },
               ":states:::lambda:invoke.waitForTaskToken\",\"ResultPath\":\"$.status\"},\"Job Complete?\":{\"Type\":\"Choice\",\"Choices\":[{\"Variable\":\"$.status\",\"StringEquals\":\"FAILED\",\"Next\":\"Job Failed\"},{\"Variable\":\"$.status\",\"StringEquals\":\"SUCCEEDED\",\"Next\":\"Final step\"}]},\"Job Failed\":{\"Type\":\"Fail\",\"Error\":\"DescribeJob returned FAILED\",\"Cause\":\"AWS Batch Job Failed\"},\"Final step\":{\"Type\":\"Pass\",\"End\":true}},\"TimeoutSeconds\":30}"
             ]
-          ]
-        },
-        "RoleArn": {
-          "Fn::GetAtt": [
-            "StateMachineRoleB840431D",
-            "Arn"
           ]
         }
       },

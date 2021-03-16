@@ -7,7 +7,7 @@ import {
   BaseTargetGroupProps, ITargetGroup, loadBalancerNameFromListenerArn, LoadBalancerTargetProps,
   TargetGroupAttributes, TargetGroupBase, TargetGroupImportProps,
 } from '../shared/base-target-group';
-import { ApplicationProtocol, Protocol, TargetType } from '../shared/enums';
+import { ApplicationProtocol, ApplicationProtocolVersion, Protocol, TargetType } from '../shared/enums';
 import { ImportedTargetGroupBase } from '../shared/imported';
 import { determineProtocolAndPort } from '../shared/util';
 import { IApplicationListener } from './application-listener';
@@ -27,6 +27,13 @@ export interface ApplicationTargetGroupProps extends BaseTargetGroupProps {
    * @default - Determined from port if known, optional for Lambda targets.
    */
   readonly protocol?: ApplicationProtocol;
+
+  /**
+   * The protocol version to use
+   *
+   * @default ApplicationProtocolVersion.HTTP1
+   */
+  readonly protocolVersion?: ApplicationProtocolVersion;
 
   /**
    * The port on which the listener listens for requests.
@@ -110,8 +117,10 @@ export class ApplicationTargetGroup extends TargetGroupBase implements IApplicat
 
   constructor(scope: Construct, id: string, props: ApplicationTargetGroupProps = {}) {
     const [protocol, port] = determineProtocolAndPort(props.protocol, props.port);
+    const { protocolVersion } = props;
     super(scope, id, { ...props }, {
       protocol,
+      protocolVersion,
       port,
     });
 

@@ -1537,7 +1537,6 @@
             "MeshName"
           ]
         },
-        "RouteName": "name-production-route",
         "Spec": {
           "HttpRoute": {
             "Action": {
@@ -1563,7 +1562,8 @@
             "nameproductionvirtualrouter00E3366D",
             "VirtualRouterName"
           ]
-        }
+        },
+        "RouteName": "name-production-route"
       }
     },
     "nameproductionvirtualservice4D49D5F6": {
@@ -2061,7 +2061,6 @@
             "MeshName"
           ]
         },
-        "RouteName": "name-development-route",
         "Spec": {
           "HttpRoute": {
             "Action": {
@@ -2087,7 +2086,8 @@
             "namedevelopmentvirtualrouter0AE5105D",
             "VirtualRouterName"
           ]
-        }
+        },
+        "RouteName": "name-development-route"
       }
     },
     "namedevelopmentvirtualserviceD936E3FD": {

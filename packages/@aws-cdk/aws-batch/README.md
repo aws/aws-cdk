@@ -148,7 +148,7 @@ const computeEnv = batch.ComputeEnvironment.fromComputeEnvironmentArn(this, 'imp
 
 ### Change the baseline AMI of the compute resources
 
-Ocassionally, you will need to deviate from the default processing AMI.
+Occasionally, you will need to deviate from the default processing AMI.
 
 ECS Optimized Amazon Linux 2 example:
 
@@ -186,7 +186,7 @@ const jobQueue = new batch.JobQueue(stack, 'JobQueue', {
     {
       // Defines a collection of compute resources to handle assigned batch jobs
       computeEnvironment,
-      // Order determines the allocation order for jobs (i.e. Lower means higher preferance for job assignment)
+      // Order determines the allocation order for jobs (i.e. Lower means higher preference for job assignment)
       order: 1,
     },
   ],

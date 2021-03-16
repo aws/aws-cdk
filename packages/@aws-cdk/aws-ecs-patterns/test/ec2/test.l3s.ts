@@ -1098,6 +1098,72 @@ export = {
     test.done();
   },
 
+  'ALB with circuit breaker'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+    cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+
+    // WHEN
+    new ecsPatterns.ApplicationLoadBalancedEc2Service(stack, 'Service', {
+      cluster,
+      memoryLimitMiB: 1024,
+      taskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+      },
+      circuitBreaker: { rollback: true },
+    });
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::ECS::Service', {
+      DeploymentConfiguration: {
+        DeploymentCircuitBreaker: {
+          Enable: true,
+          Rollback: true,
+        },
+      },
+      DeploymentController: {
+        Type: 'ECS',
+      },
+    }));
+
+    test.done();
+  },
+
+  'NLB with circuit breaker'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+    cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+
+    // WHEN
+    new ecsPatterns.NetworkLoadBalancedEc2Service(stack, 'Service', {
+      cluster,
+      memoryLimitMiB: 1024,
+      taskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+      },
+      circuitBreaker: { rollback: true },
+    });
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::ECS::Service', {
+      DeploymentConfiguration: {
+        DeploymentCircuitBreaker: {
+          Enable: true,
+          Rollback: true,
+        },
+      },
+      DeploymentController: {
+        Type: 'ECS',
+      },
+    }));
+
+    test.done();
+  },
+
   'NetworkLoadbalancedEC2Service accepts previously created load balancer'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();

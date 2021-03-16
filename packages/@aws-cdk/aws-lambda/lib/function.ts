@@ -214,7 +214,7 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
   /**
    * A list of layers to add to the function's execution environment. You can configure your Lambda function to pull in
    * additional code during initialization in the form of layers. Layers are packages of libraries or other dependencies
-   * that can be used by mulitple functions.
+   * that can be used by multiple functions.
    *
    * @default - No layers.
    */
@@ -563,7 +563,7 @@ export class Function extends FunctionBase {
     });
     this.grantPrincipal = this.role;
 
-    // add additonal managed policies when necessary
+    // add additional managed policies when necessary
     if (props.filesystem) {
       const config = props.filesystem.config;
       if (config.policies) {
