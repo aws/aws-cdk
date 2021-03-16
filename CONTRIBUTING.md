@@ -49,6 +49,8 @@ The following tools need to be installed on your system prior to installing the 
   - We recommend using a version in [Active LTS](https://nodejs.org/en/about/releases/)
   - ⚠️ versions `13.0.0` to `13.6.0` are not supported due to compatibility issues with our dependencies.
 - [Yarn >= 1.19.1, < 2](https://yarnpkg.com/lang/en/docs/install)
+- [.NET Core SDK 3.1.x](https://www.microsoft.com/net/download)
+- [Python >= 3.6.5, < 4.0](https://www.python.org/downloads/release/python-365/)
 
 Run the following commands to clone the repository locally.
 
@@ -156,9 +158,8 @@ Just click the button below to create your private workspace:
 
 [![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/aws/aws-cdk)
 
-This will start a new Gitpod workspace, and immediately kick off a build of the CDK code.
-Once it's done (it takes around an hour, unfortunately), you can work on any package that you want to modify,
-as described in ['Quick Iteration'](#quick-iteration) below.
+This will start a new Gitpod workspace, with the CDK repository [pre-built](https://www.gitpod.io/docs/prebuilds/).
+You can now work on your CDK repository, as described in the [Getting Started](#getting-started) section.
 
 Gitpod is free for 50 hours per month - make sure to stop your workspace when you're done
 (you can always resume it later, and it won't need to run the build again).
@@ -185,7 +186,8 @@ contributing your changes.
 On the other hand, if you are here looking for an issue to work on, explore our [backlog of
 issues](https://github.com/aws/aws-cdk/issues) and find something that piques your interest. We have labeled all of our
 issues for easy filtration.
-If you are looking for your first contribution, the 'good-first-issue' label will be of help.
+If you are looking for your first contribution, the ['good first issue'
+label](https://github.com/aws/aws-cdk/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22) will be of help.
 
 ### Step 2: Design (optional)
 
