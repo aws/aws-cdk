@@ -120,7 +120,7 @@ export enum Protocol {
   VRRP = '112',
   PGM = '113',
   ANY_0_HOP = '114',
-  L2TP = '115',
+  L2_T_P = '115',
   DDX = '116',
   IATP = '117',
   STP = '118',

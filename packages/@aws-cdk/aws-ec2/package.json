@@ -429,7 +429,7 @@
       "docs-public-apis:@aws-cdk/aws-ec2.Protocol.VRRP",
       "docs-public-apis:@aws-cdk/aws-ec2.Protocol.PGM",
       "docs-public-apis:@aws-cdk/aws-ec2.Protocol.ANY_0_HOP",
-      "docs-public-apis:@aws-cdk/aws-ec2.Protocol.L2TP",
+      "docs-public-apis:@aws-cdk/aws-ec2.Protocol.L2_T_P",
       "docs-public-apis:@aws-cdk/aws-ec2.Protocol.DDX",
       "docs-public-apis:@aws-cdk/aws-ec2.Protocol.IATP",
       "docs-public-apis:@aws-cdk/aws-ec2.Protocol.STP",
