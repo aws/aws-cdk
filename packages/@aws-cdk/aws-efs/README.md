@@ -90,9 +90,9 @@ efs.AccessPoint.fromAccessPointAttributes(this, 'ap', {
 ⚠️ Notice: When importing an Access Point using `fromAccessPointAttributes()`, you must make sure
 the mount targets are deployed and their lifecycle state is `available`. Otherwise, you may encounter
 the following error when deploying:
-> EFS file system <ARN of efs> referenced by access point <ARN of access point of EFS> has
+> EFS file system &lt;ARN of efs&gt; referenced by access point &lt;ARN of access point of EFS&gt; has
 > mount targets created in all availability zones the function will execute in, but not all
->are in the available life cycle state yet. Please wait for them to become available and
+> are in the available life cycle state yet. Please wait for them to become available and
 > try the request again.
 
 ### Connecting
