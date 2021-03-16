@@ -1,5 +1,5 @@
-import { Asset } from '@aws-cdk/aws-s3-assets';
 import { Policy, PolicyStatement } from '@aws-cdk/aws-iam';
+import { Asset } from '@aws-cdk/aws-s3-assets';
 import { CustomResource, Duration, Names, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { ICluster } from './cluster';
