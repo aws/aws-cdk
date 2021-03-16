@@ -11,7 +11,7 @@ const forTesting = process.env.BUMP_CANDIDATE || false;
 
 async function main() {
   if (releaseAs !== 'minor' && releaseAs !== 'patch') {
-    throw new error(`invalid bump type "${releaseAs}". only "minor" (the default) and "patch" are allowed. major version bumps require *slightly* more intention`);
+    throw new Error(`invalid bump type "${releaseAs}". only "minor" (the default) and "patch" are allowed. major version bumps require *slightly* more intention`);
   }
 
   console.error(`Starting ${releaseAs} version bump`);
