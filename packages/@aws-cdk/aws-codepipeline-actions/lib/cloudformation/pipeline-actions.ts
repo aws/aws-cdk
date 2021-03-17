@@ -1,4 +1,3 @@
-import * as cloudformation from '@aws-cdk/aws-cloudformation';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
@@ -156,20 +155,6 @@ interface CloudFormationDeployActionProps extends CloudFormationActionProps {
   readonly deploymentRole?: iam.IRole;
 
   /**
-   * Acknowledge certain changes made as part of deployment
-   *
-   * For stacks that contain certain resources, explicit acknowledgement that AWS CloudFormation
-   * might create or update those resources. For example, you must specify `AnonymousIAM` or `NamedIAM`
-   * if your stack template contains AWS Identity and Access Management (IAM) resources. For more
-   * information see the link below.
-   *
-   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-iam-template.html#using-iam-capabilities
-   * @default None, unless `adminPermissions` is true
-   * @deprecated use {@link cfnCapabilities} instead
-   */
-  readonly capabilities?: cloudformation.CloudFormationCapabilities[];
-
-  /**
    * Acknowledge certain changes made as part of deployment.
    *
    * For stacks that contain certain resources,
@@ -314,15 +299,7 @@ abstract class CloudFormationDeployAction extends CloudFormationAction {
 
     SingletonPolicy.forRole(options.role).grantPassRole(this._deploymentRole);
 
-    const providedCapabilities = this.props2.cfnCapabilities ??
-      this.props2.capabilities?.map(c => {
-        switch (c) {
-          case cloudformation.CloudFormationCapabilities.NONE: return cdk.CfnCapabilities.NONE;
-          case cloudformation.CloudFormationCapabilities.ANONYMOUS_IAM: return cdk.CfnCapabilities.ANONYMOUS_IAM;
-          case cloudformation.CloudFormationCapabilities.NAMED_IAM: return cdk.CfnCapabilities.NAMED_IAM;
-          case cloudformation.CloudFormationCapabilities.AUTO_EXPAND: return cdk.CfnCapabilities.AUTO_EXPAND;
-        }
-      });
+    const providedCapabilities = this.props2.cfnCapabilities;
     const capabilities = this.props2.adminPermissions && providedCapabilities === undefined
       ? [cdk.CfnCapabilities.NAMED_IAM]
       : providedCapabilities;
