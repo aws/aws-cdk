@@ -157,6 +157,7 @@ export class NetworkLoadBalancedFargateService extends NetworkLoadBalancedServic
       cloudMapOptions: props.cloudMapOptions,
       platformVersion: props.platformVersion,
       deploymentController: props.deploymentController,
+      circuitBreaker: props.circuitBreaker,
       vpcSubnets: props.taskSubnets,
     });
     this.addServiceAsTarget(this.service);
