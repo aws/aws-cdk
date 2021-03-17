@@ -573,6 +573,24 @@
         "ProtocolType": "HTTP"
       }
     },
+    "HttpProxyPrivateApiDefaultRouteHttpIntegration1a580b19954e4317026ffbce1f7d5ade7A32685B": {
+      "Type": "AWS::ApiGatewayV2::Integration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpProxyPrivateApiA55E154D"
+        },
+        "IntegrationType": "HTTP_PROXY",
+        "ConnectionId": {
+          "Ref": "HttpProxyPrivateApiVpcLink190366CAE"
+        },
+        "ConnectionType": "VPC_LINK",
+        "IntegrationMethod": "ANY",
+        "IntegrationUri": {
+          "Ref": "lblistener657ADDEC"
+        },
+        "PayloadFormatVersion": "1.0"
+      }
+    },
     "HttpProxyPrivateApiDefaultRoute1BDCA252": {
       "Type": "AWS::ApiGatewayV2::Route",
       "Properties": {
@@ -580,7 +598,6 @@
           "Ref": "HttpProxyPrivateApiA55E154D"
         },
         "RouteKey": "$default",
-        "AuthorizationScopes": [],
         "Target": {
           "Fn::Join": [
             "",
@@ -610,24 +627,6 @@
           }
         ],
         "SecurityGroupIds": []
-      }
-    },
-    "HttpProxyPrivateApiDefaultRouteHttpIntegration1a580b19954e4317026ffbce1f7d5ade7A32685B": {
-      "Type": "AWS::ApiGatewayV2::Integration",
-      "Properties": {
-        "ApiId": {
-          "Ref": "HttpProxyPrivateApiA55E154D"
-        },
-        "IntegrationType": "HTTP_PROXY",
-        "ConnectionId": {
-          "Ref": "HttpProxyPrivateApiVpcLink190366CAE"
-        },
-        "ConnectionType": "VPC_LINK",
-        "IntegrationMethod": "ANY",
-        "IntegrationUri": {
-          "Ref": "lblistener657ADDEC"
-        },
-        "PayloadFormatVersion": "1.0"
       }
     },
     "HttpProxyPrivateApiDefaultStage18B3706E": {
