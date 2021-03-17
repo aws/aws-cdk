@@ -15,7 +15,7 @@ Amazon EventBridge delivers a near real-time stream of system events that
 describe changes in AWS resources. For example, an AWS CodePipeline emits the
 [State
 Change](https://docs.aws.amazon.com/eventbridge/latest/userguide/event-types.html#codepipeline-event-type)
-event when the pipeline changes it's state.
+event when the pipeline changes its state.
 
 * __Events__: An event indicates a change in your AWS environment. AWS resources
   can generate events when their state changes. For example, Amazon EC2
@@ -83,6 +83,7 @@ onCommitRule.addTarget(new targets.SnsTopic(topic, {
 ## Scheduling
 
 You can configure a Rule to run on a schedule (cron or rate).
+Rate must be specified in minutes, hours or days.
 
 The following example runs a task every day at 4am:
 
@@ -185,4 +186,18 @@ bus.archive('MyArchive', {
   },
   retention: cdk.Duration.days(365),
 });
+```
+
+## Granting PutEvents to an existing EventBus
+
+To import an existing EventBus into your CDK application, use `EventBus.fromEventBusArn` or `EventBus.fromEventBusAttributes`
+factory method.
+
+Then, you can use the `grantPutEventsTo` method to grant `event:PutEvents` to the eventBus.
+
+```ts
+const eventBus = EventBus.fromEventBusArn(this, 'ImportedEventBus', 'arn:aws:events:us-east-1:111111111:event-bus/my-event-bus');
+
+// now you can just call methods on the eventbus
+eventBus.grantPutEventsTo(lambdaFunction);
 ```

@@ -1,6 +1,9 @@
 import { Certificate, CertificateValidation, ICertificate } from '@aws-cdk/aws-certificatemanager';
 import { IVpc } from '@aws-cdk/aws-ec2';
-import { AwsLogDriver, BaseService, CloudMapOptions, Cluster, ContainerImage, DeploymentController, ICluster, LogDriver, PropagatedTagSource, Secret } from '@aws-cdk/aws-ecs';
+import {
+  AwsLogDriver, BaseService, CloudMapOptions, Cluster, ContainerImage, DeploymentController, DeploymentCircuitBreaker,
+  ICluster, LogDriver, PropagatedTagSource, Secret,
+} from '@aws-cdk/aws-ecs';
 import {
   ApplicationListener, ApplicationLoadBalancer, ApplicationProtocol, ApplicationTargetGroup,
   IApplicationLoadBalancer, ListenerCertificate, ListenerAction, AddApplicationTargetsProps,
@@ -226,6 +229,14 @@ export interface ApplicationLoadBalancedServiceBaseProps {
    * @default - Rolling update (ECS)
    */
   readonly deploymentController?: DeploymentController;
+
+  /**
+   * Whether to enable the deployment circuit breaker. If this property is defined, circuit breaker will be implicitly
+   * enabled.
+   * @default - disabled
+   */
+  readonly circuitBreaker?: DeploymentCircuitBreaker;
+
 }
 
 export interface ApplicationLoadBalancedTaskImageOptions {
