@@ -9,10 +9,6 @@ import { determineFullyQualifiedDomainName } from './util';
 
 const CROSS_ACCOUNT_ZONE_DELEGATION_RESOURCE_TYPE = 'Custom::CrossAccountZoneDelegation';
 
-// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
-// eslint-disable-next-line
-import { Construct as CoreConstruct } from '@aws-cdk/core';
-
 /**
  * A record set
  */
@@ -598,7 +594,7 @@ export interface CrossAccountZoneDelegationRecordProps {
 /**
  * A Cross Account Zone Delegation record
  */
-export class CrossAccountZoneDelegationRecord extends CoreConstruct {
+export class CrossAccountZoneDelegationRecord extends Construct {
   constructor(scope: Construct, id: string, props: CrossAccountZoneDelegationRecordProps) {
     super(scope, id);
 
