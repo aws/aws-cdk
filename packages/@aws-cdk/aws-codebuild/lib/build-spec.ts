@@ -10,11 +10,11 @@ export abstract class BuildSpec {
   }
 
   /**
-   * Export a YAML from an object
+   * Create a buildspec from an object that will be rendered as YAML in the resulting CloudFormation template.
    *
-   * @param value object to be exported to YAML
+   * @param value the object containing the buildspec that will be rendered as YAML
    */
-  public static yamlFromObject(value: {[key: string]: any}): BuildSpec {
+  public static fromObjectToYaml(value: {[key: string]: any}): BuildSpec {
     return new YamlBuildSpec(value);
   }
 
@@ -89,10 +89,9 @@ class YamlBuildSpec extends BuildSpec {
   constructor(public readonly spec: {[key: string]: any}) {
     super();
   }
+
   public toBuildSpec(): string {
-    return Lazy.uncachedString({
-      produce: () => yaml_cfn.serialize(this.spec),
-    });
+    return yaml_cfn.serialize(this.spec);
   }
 }
 

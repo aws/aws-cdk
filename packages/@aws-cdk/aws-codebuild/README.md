@@ -139,7 +139,7 @@ CodeBuild Projects can produce Artifacts and upload them to S3. For example:
 
 ```ts
 const project = codebuild.Project(stack, 'MyProject', {
-  buildSpec: codebuild.BuildSpec.fromObject({
+  buildSpec: codebuild.BuildSpec.fromObjectToYaml({
     version: '0.2',
   }),
   artifacts: codebuild.Artifacts.s3({
@@ -377,7 +377,7 @@ You can specify a test report in your buildspec:
 
 ```ts
 const project = new codebuild.Project(this, 'Project', {
-  buildSpec: codebuild.BuildSpec.fromObject({
+  buildSpec: codebuild.BuildSpec.fromObjectToYaml({
     // ...
     reports: {
       myReport: {
@@ -412,7 +412,7 @@ instead of a simple name, in your buildspec:
 const reportGroup = new codebuild.ReportGroup(this, 'ReportGroup');
 
 const project = new codebuild.Project(this, 'Project', {
-  buildSpec: codebuild.BuildSpec.fromObject({
+  buildSpec: codebuild.BuildSpec.fromObjectToYaml({
     // ...
     reports: {
       [reportGroup.reportGroupArn]: {
@@ -504,7 +504,7 @@ So, a buildspec for the above Project could look something like this:
 ```ts
 const project = new codebuild.Project(this, 'MyProject', {
   // secondary sources and artifacts as above...
-  buildSpec: codebuild.BuildSpec.fromObject({
+  buildSpec: codebuild.BuildSpec.fromObjectToYaml({
     version: '0.2',
     phases: {
       build: {
@@ -563,7 +563,7 @@ For example:
 const vpc = new ec2.Vpc(this, 'MyVPC');
 const project = new codebuild.Project(this, 'MyProject', {
   vpc: vpc,
-  buildSpec: codebuild.BuildSpec.fromObject({
+  buildSpec: codebuild.BuildSpec.fromObjectToYaml({
     // ...
   }),
 });
@@ -583,7 +583,7 @@ For example:
 
 ```ts
 new codebuild.Project(stack, 'MyProject', {
-  buildSpec: codebuild.BuildSpec.fromObject({
+  buildSpec: codebuild.BuildSpec.fromObjectToYaml({
     version: '0.2',
   }),
   fileSystemLocations: [
