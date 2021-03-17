@@ -1,6 +1,6 @@
 {
   "Resources": {
-    "Evala0d2ce44871b4e7487a1f5e63d7c3bdcServiceRoleDC85DDD3": {
+    "Evalda2d1181604e4a4586941a6abd7fe42dServiceRoleED144118": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
@@ -31,7 +31,7 @@
         ]
       }
     },
-    "Evala0d2ce44871b4e7487a1f5e63d7c3bdc4DAC06E1": {
+    "Evalda2d1181604e4a4586941a6abd7fe42dF371675D": {
       "Type": "AWS::Lambda::Function",
       "Properties": {
         "Code": {
@@ -74,7 +74,7 @@
         },
         "Role": {
           "Fn::GetAtt": [
-            "Evala0d2ce44871b4e7487a1f5e63d7c3bdcServiceRoleDC85DDD3",
+            "Evalda2d1181604e4a4586941a6abd7fe42dServiceRoleED144118",
             "Arn"
           ]
         },
@@ -82,7 +82,7 @@
         "Runtime": "nodejs14.x"
       },
       "DependsOn": [
-        "Evala0d2ce44871b4e7487a1f5e63d7c3bdcServiceRoleDC85DDD3"
+        "Evalda2d1181604e4a4586941a6abd7fe42dServiceRoleED144118"
       ]
     },
     "StateMachineRoleB840431D": {
@@ -123,7 +123,7 @@
               "Effect": "Allow",
               "Resource": {
                 "Fn::GetAtt": [
-                  "Evala0d2ce44871b4e7487a1f5e63d7c3bdc4DAC06E1",
+                  "Evalda2d1181604e4a4586941a6abd7fe42dF371675D",
                   "Arn"
                 ]
               }
@@ -155,21 +155,21 @@
               "{\"StartAt\":\"Sum\",\"States\":{\"Sum\":{\"Next\":\"Multiply\",\"Type\":\"Task\",\"ResultPath\":\"$.c\",\"Resource\":\"",
               {
                 "Fn::GetAtt": [
-                  "Evala0d2ce44871b4e7487a1f5e63d7c3bdc4DAC06E1",
+                  "Evalda2d1181604e4a4586941a6abd7fe42dF371675D",
                   "Arn"
                 ]
               },
               "\",\"Parameters\":{\"expression\":\"$.a + $.b\",\"expressionAttributeValues\":{\"$.a.$\":\"$.a\",\"$.b.$\":\"$.b\"}}},\"Multiply\":{\"Next\":\"Wait\",\"Type\":\"Task\",\"ResultPath\":\"$.d\",\"Resource\":\"",
               {
                 "Fn::GetAtt": [
-                  "Evala0d2ce44871b4e7487a1f5e63d7c3bdc4DAC06E1",
+                  "Evalda2d1181604e4a4586941a6abd7fe42dF371675D",
                   "Arn"
                 ]
               },
               "\",\"Parameters\":{\"expression\":\"$.c * 2\",\"expressionAttributeValues\":{\"$.c.$\":\"$.c\"}}},\"Wait\":{\"Type\":\"Wait\",\"SecondsPath\":\"$.d\",\"Next\":\"Now\"},\"Now\":{\"End\":true,\"Type\":\"Task\",\"ResultPath\":\"$.now\",\"Resource\":\"",
               {
                 "Fn::GetAtt": [
-                  "Evala0d2ce44871b4e7487a1f5e63d7c3bdc4DAC06E1",
+                  "Evalda2d1181604e4a4586941a6abd7fe42dF371675D",
                   "Arn"
                 ]
               },
