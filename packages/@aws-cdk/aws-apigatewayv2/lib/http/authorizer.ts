@@ -15,9 +15,6 @@ export enum HttpAuthorizerType {
 
   /** Lambda Authorizer */
   LAMBDA = 'REQUEST',
-
-  /** No authorizer */
-  NONE = 'NONE'
 }
 
 /**
@@ -29,6 +26,9 @@ export enum HttpRouteAuthorizerType {
 
   /** Lambda Authorizer */
   LAMBDA = 'CUSTOM',
+
+  /** No authorizer */
+  NONE = 'NONE'
 }
 
 /**
@@ -249,7 +249,7 @@ function undefinedIfNoKeys<A>(obj: A): A | undefined {
 export class HttpNoneAuthorizer implements IHttpRouteAuthorizer {
   public bind(_: HttpRouteAuthorizerBindOptions): HttpRouteAuthorizerConfig {
     return {
-      authorizationType: HttpAuthorizerType.NONE,
+      authorizationType: HttpRouteAuthorizerType.NONE,
     };
   }
 }
