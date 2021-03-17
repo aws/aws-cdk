@@ -63,7 +63,7 @@
     "rosetta:extract": "yarn --silent jsii-rosetta extract"
   },
   "dependencies": {
-    "yaml": "1.10.0"
+    "yaml": "1.10.2"
   },
   "devDependencies": {
     "@aws-cdk/assert": "0.0.0",
