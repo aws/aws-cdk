@@ -50,22 +50,22 @@
     "outdir": "dist",
     "targets": {
       "dotnet": {
-        "namespace": "Amazon.CDK.Lib",
+        "namespace": "Amazon.CDK",
         "packageId": "Amazon.CDK.Lib",
         "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png",
         "versionSuffix": "-devpreview"
       },
       "java": {
-        "package": "software.amazon.awscdk.lib",
+        "package": "software.amazon.awscdk.core",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "lib",
+          "artifactId": "aws-cdk-lib",
           "versionSuffix": ".DEVPREVIEW"
         }
       },
       "python": {
-        "distName": "aws-cdk.lib",
-        "module": "aws_cdk.lib"
+        "distName": "aws-cdk-lib",
+        "module": "aws_cdk"
       }
     },
     "projectReferences": false

@@ -1555,7 +1555,7 @@ export class Table extends TableBase {
 
     if (encryptionType === undefined) {
       encryptionType = props.encryptionKey != null
-        // If there is a configured encyptionKey, the encryption is implicitly CUSTOMER_MANAGED
+        // If there is a configured encryptionKey, the encryption is implicitly CUSTOMER_MANAGED
         ? TableEncryption.CUSTOMER_MANAGED
         // Otherwise, if severSideEncryption is enabled, it's AWS_MANAGED; else undefined (do not set anything)
         : props.serverSideEncryption ? TableEncryption.AWS_MANAGED : undefined;
@@ -1613,7 +1613,7 @@ export enum AttributeType {
 }
 
 /**
- * DyanmoDB's Read/Write capacity modes.
+ * DynamoDB's Read/Write capacity modes.
  */
 export enum BillingMode {
   /**
