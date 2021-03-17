@@ -131,3 +131,43 @@ codeCommitRepository.onCommit(new targets.SnsTopic(myTopic));
 
 This will result in adding a target to the event rule and will also modify the
 topic resource policy to allow CloudWatch events to publish to the topic.
+
+## Topic Policy
+
+A topic policy is automatically created when `addToResourcePolicy` is called, if
+one doesn't already exist. Using `addToResourcePolicy` is the simplest way to
+add policies, but a `TopicPolicy` can also be created manually.
+
+```ts
+const topic = new sns.Topic(stack, 'Topic');
+const topicPolicy = new sns.TopicPolicy(stack, 'TopicPolicy', {
+  topics: [topic],
+});
+
+topicPolicy.document.addStatements(new iam.PolicyStatement({
+  actions: ["sns:Subscribe"],
+  principals: [new iam.AnyPrincipal()],
+  resources: [topic.topicArn],
+}));
+```
+
+A policy document can also be passed on `TopicPolicy` construction
+
+```ts
+const topic = new sns.Topic(stack, 'Topic');
+const policyDocument = new iam.PolicyDocument({
+  assignSids: true,
+  statements: [
+    new iam.PolicyStatement({
+      actions: ["sns:Subscribe"],
+      principals: [new iam.AnyPrincipal()],
+      resources: [topic.topicArn] 
+    }),
+  ],
+});
+
+const topicPolicy = new sns.TopicPolicy(this, 'Policy', {
+  topics: [topic],
+  policyDocument,
+});
+```
