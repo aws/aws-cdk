@@ -4,27 +4,17 @@ import * as lambda from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
 
 /**
- * Construction properties for a Lambda action.
- */
-export interface LambdaProps {
-  /**
-   * The Lambda function to invoke
-   */
-  readonly function: lambda.IFunction;
-}
-
-/**
  * Calls an AWS Lambda function
  */
-export class Lambda implements iot.ITopicRuleAction {
-  constructor(private readonly props: LambdaProps) {
+export class LambdaFunction implements iot.ITopicRuleAction {
+  constructor(private readonly handler: lambda.IFunction) {
   }
 
   public bind(rule: iot.ITopicRule): iot.TopicRuleActionConfig {
     // Allow rule to invoke lambda function
     const permissionId = 'AllowIot';
-    if (!this.props.function.permissionsNode.tryFindChild(permissionId)) {
-      this.props.function.addPermission(permissionId, {
+    if (!this.handler.permissionsNode.tryFindChild(permissionId)) {
+      this.handler.addPermission(permissionId, {
         action: 'lambda:InvokeFunction',
         principal: new iam.ServicePrincipal('iot.amazonaws.com'),
         sourceAccount: cdk.Aws.ACCOUNT_ID,
@@ -32,7 +22,7 @@ export class Lambda implements iot.ITopicRuleAction {
     }
 
     // Ensure permission is deployed before rule
-    const permission = this.props.function.permissionsNode.tryFindChild(permissionId) as lambda.CfnPermission;
+    const permission = this.handler.permissionsNode.tryFindChild(permissionId) as lambda.CfnPermission;
     if (permission) {
       rule.node.addDependency(permission);
     } else {
@@ -42,7 +32,7 @@ export class Lambda implements iot.ITopicRuleAction {
 
     return {
       lambda: {
-        functionArn: this.props.function.functionArn,
+        functionArn: this.handler.functionArn,
       },
     };
   }

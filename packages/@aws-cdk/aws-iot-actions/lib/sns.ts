@@ -19,11 +19,7 @@ export enum MessageFormats {
 /**
  * Construction properties for a sns publish action.
  */
-export interface SnsProps {
-  /**
-   * The Topic to publish on
-   */
-  readonly topic: sns.ITopic;
+export interface SnsTopicProps {
   /**
    * (Optional) The message format of the message to publish. Accepted values
    * are "JSON" and "RAW". The default value of the attribute is "RAW". SNS uses
@@ -46,21 +42,21 @@ export interface SnsProps {
 /**
  * Publishes to a Topic
  */
-export class Sns implements iot.ITopicRuleAction {
-  constructor(private readonly props: SnsProps) {
+export class SnsTopic implements iot.ITopicRuleAction {
+  constructor(private readonly topic: sns.ITopic, private readonly props: SnsTopicProps = {}) {
   }
 
   public bind(_rule: iot.ITopicRule): iot.TopicRuleActionConfig {
     // Allow rule to publish to topic
     const grantable = this.props.role ? this.props.role : new iam.ServicePrincipal('iot.amazonaws.com');
-    this.props.topic.grantPublish(grantable);
+    this.topic.grantPublish(grantable);
 
     const role = this.props.role ? this.props.role : singletonTopicRuleRole(_rule, []);
 
     return {
       sns: {
         messageFormat: this.props.messageFormat || MessageFormats.RAW,
-        targetArn: this.props.topic.topicArn,
+        targetArn: this.topic.topicArn,
         roleArn: role.roleArn,
       },
     };

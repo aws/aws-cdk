@@ -16,9 +16,7 @@ test('add lambda action', () => {
     runtime: lambda.Runtime.NODEJS_8_10,
   });
 
-  rule.addAction(new actions.Lambda({
-    function: fn,
-  }));
+  rule.addAction(new actions.LambdaFunction(fn));
 
   expect(stack).toHaveResourceLike('AWS::IoT::TopicRule', {
     TopicRulePayload: {
@@ -56,8 +54,8 @@ test('adding different lambda functions as target mutiple times creates multiple
   });
 
   // WHEN
-  rule.addAction(new actions.Lambda({ function: fn1 }));
-  rule.addAction(new actions.Lambda({ function: fn2 }));
+  rule.addAction(new actions.LambdaFunction(fn1));
+  rule.addAction(new actions.LambdaFunction(fn2));
 
   // THEN
   expect(stack).toCountResources('AWS::Lambda::Permission', 2);
@@ -71,8 +69,8 @@ test('adding same lambda function as target mutiple times creates permission onl
   });
 
   // WHEN
-  rule.addAction(new actions.Lambda({ function: fn }));
-  rule.addAction(new actions.Lambda({ function: fn }));
+  rule.addAction(new actions.LambdaFunction(fn));
+  rule.addAction(new actions.LambdaFunction(fn));
 
   // THEN
   expect(stack).toCountResources('AWS::Lambda::Permission', 1);
@@ -92,8 +90,9 @@ test('adding same singleton lambda function as target mutiple times creates perm
   });
 
   // WHEN
-  rule.addAction(new actions.Lambda({ function: fn }));
-  rule.addAction(new actions.Lambda({ function: fn }));
+  rule.addAction(new actions.LambdaFunction(fn));
+  rule.addAction(new actions.LambdaFunction(fn));
+
   // THEN
   expect(stack).toCountResources('AWS::Lambda::Permission', 1);
 });

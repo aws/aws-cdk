@@ -1,47 +1,52 @@
 import { expect, haveResource, countResources } from '@aws-cdk/assert';
 import * as iam from '@aws-cdk/aws-iam';
 import * as iot from '@aws-cdk/aws-iot';
-import * as sns from '@aws-cdk/aws-sns';
+import * as sqs from '@aws-cdk/aws-sqs';
 import { Stack } from '@aws-cdk/core';
 import * as actions from '../../lib';
 
 test('sns topic as a rule action', () => {
   // GIVEN
   const stack = new Stack();
-  const topic = new sns.Topic(stack, 'MyTopic');
+  const queue = new sqs.Queue(stack, 'MyQueue');
   const rule = new iot.TopicRule(stack, 'MyRule', {
     sql: 'SELECT',
   });
 
   // WHEN
-  rule.addAction(new actions.SnsTopic(topic));
+  rule.addAction(new actions.SqsQueue(queue));
 
   // THEN
-  expect(stack).to(haveResource('AWS::SNS::TopicPolicy', {
+  expect(stack).to(haveResource('AWS::SQS::QueuePolicy', {
     PolicyDocument: {
       Statement: [
         {
-          Sid: '0',
-          Action: 'sns:Publish',
+          Action: [
+            'sqs:SendMessage',
+            'sqs:GetQueueAttributes',
+            'sqs:GetQueueUrl',
+          ],
           Effect: 'Allow',
           Principal: { Service: 'iot.amazonaws.com' },
-          Resource: { Ref: 'MyTopic86869434' },
+          Resource: {
+            'Fn::GetAtt': ['MyQueueE6CA6235', 'Arn'],
+          },
         },
       ],
       Version: '2012-10-17',
     },
-    Topics: [{ Ref: 'MyTopic86869434' }],
+    Queues: [{ Ref: 'MyQueueE6CA6235' }],
   }));
   expect(stack).to(haveResource('AWS::IoT::TopicRule', {
     TopicRulePayload: {
       Actions: [
         {
-          Sns: {
-            MessageFormat: 'RAW',
+          Sqs: {
+            QueueUrl: { Ref: 'MyQueueE6CA6235' },
             RoleArn: {
               'Fn::GetAtt': ['MyRuleAllowIot33481905', 'Arn'],
             },
-            TargetArn: { Ref: 'MyTopic86869434' },
+            UseBase64: false,
           },
         },
       ],
@@ -52,10 +57,10 @@ test('sns topic as a rule action', () => {
   }));
 });
 
-test('sns topic with role as a rule action', () => {
+test('sqs topic with role as a rule action', () => {
   // GIVEN
   const stack = new Stack();
-  const topic = new sns.Topic(stack, 'MyTopic');
+  const queue = new sqs.Queue(stack, 'MyQueue');
   const role = new iam.Role(stack, 'MyCustomRole', {
     assumedBy: new iam.ServicePrincipal('iot.amazonaws.com'),
   });
@@ -64,18 +69,18 @@ test('sns topic with role as a rule action', () => {
   });
 
   // WHEN
-  rule.addAction(new actions.SnsTopic(topic, { role: role }));
+  rule.addAction(new actions.SqsQueue(queue, { role: role }));
 
   expect(stack).to(haveResource('AWS::IoT::TopicRule', {
     TopicRulePayload: {
       Actions: [
         {
-          Sns: {
-            MessageFormat: 'RAW',
+          Sqs: {
+            QueueUrl: { Ref: 'MyQueueE6CA6235' },
             RoleArn: {
               'Fn::GetAtt': ['MyCustomRoleC8C89DCB', 'Arn'],
             },
-            TargetArn: { Ref: 'MyTopic86869434' },
+            UseBase64: false,
           },
         },
       ],
@@ -85,34 +90,39 @@ test('sns topic with role as a rule action', () => {
     },
   }));
 });
-test('multiple uses of a topic as a target results in a single policy statement', () => {
+test('multiple uses of a queue as an action results in a single policy statement', () => {
   // GIVEN
   const stack = new Stack();
-  const topic = new sns.Topic(stack, 'MyTopic');
+  const queue = new sqs.Queue(stack, 'MyQueue');
 
   //WHEN
   for (let i = 0; i < 5; ++i) {
     const rule = new iot.TopicRule(stack, `Rule${i}`, {
       sql: 'SELECT',
     });
-    rule.addAction(new actions.SnsTopic(topic));
+    rule.addAction(new actions.SqsQueue(queue));
   }
 
   // THEN
-  expect(stack).to(countResources('AWS::SNS::TopicPolicy', 1));
-  expect(stack).to(haveResource('AWS::SNS::TopicPolicy', {
+  expect(stack).to(countResources('AWS::SQS::QueuePolicy', 1));
+  expect(stack).to(haveResource('AWS::SQS::QueuePolicy', {
     PolicyDocument: {
       Statement: [
         {
-          Sid: '0',
-          Action: 'sns:Publish',
+          Action: [
+            'sqs:SendMessage',
+            'sqs:GetQueueAttributes',
+            'sqs:GetQueueUrl',
+          ],
           Effect: 'Allow',
           Principal: { Service: 'iot.amazonaws.com' },
-          Resource: { Ref: 'MyTopic86869434' },
+          Resource: {
+            'Fn::GetAtt': ['MyQueueE6CA6235', 'Arn'],
+          },
         },
       ],
       Version: '2012-10-17',
     },
-    Topics: [{ Ref: 'MyTopic86869434' }],
+    Queues: [{ Ref: 'MyQueueE6CA6235' }],
   }));
 });
