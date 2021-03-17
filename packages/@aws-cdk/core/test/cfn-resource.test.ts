@@ -1,3 +1,4 @@
+import { Construct } from 'constructs';
 import { nodeunitShim, Test } from 'nodeunit-shim';
 import * as core from '../lib';
 
@@ -145,7 +146,7 @@ nodeunitShim({
 
     const app = new core.App();
     const stack = new core.Stack(app, 'TestStack');
-    const subtree = new core.Construct(stack, 'subtree');
+    const subtree = new Construct(stack, 'subtree');
 
     // WHEN
     new HiddenCfnResource(subtree, 'R1', { type: 'Foo::R1' });
