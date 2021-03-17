@@ -2,8 +2,7 @@ import * as iot from '@aws-cdk/aws-iot';
 import * as lambda from '@aws-cdk/aws-lambda';
 
 import * as cdk from '@aws-cdk/core';
-import * as actions from '../lib';
-
+import * as actions from '../../lib';
 
 // --------------------------------
 // Define a rule that triggers an Lambda funcion when data is received.
@@ -11,7 +10,7 @@ import * as actions from '../lib';
 //
 const app = new cdk.App();
 
-const stack = new cdk.Stack(app, 'aws-cdk-topic-rule-lambda-action');
+const stack = new cdk.Stack(app, 'aws-cdk-lambda-topic-rule-action');
 
 // Create an IoT topic rule with an error action.
 new iot.TopicRule(stack, 'MyIotTopicRule', {

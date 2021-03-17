@@ -50,12 +50,12 @@ export class Sns implements iot.ITopicRuleAction {
   constructor(private readonly props: SnsProps) {
   }
 
-  public bind(rule: iot.ITopicRule): iot.TopicRuleActionConfig {
+  public bind(_rule: iot.ITopicRule): iot.TopicRuleActionConfig {
     // Allow rule to publish to topic
-    const role = this.props.role || singletonTopicRuleRole(rule, [new iam.PolicyStatement({
-      actions: ['sns:Publish'],
-      resources: [this.props.topic.topicArn],
-    })]);
+    const grantable = this.props.role ? this.props.role : new iam.ServicePrincipal('iot.amazonaws.com');
+    this.props.topic.grantPublish(grantable);
+
+    const role = this.props.role ? this.props.role : singletonTopicRuleRole(_rule, []);
 
     return {
       sns: {

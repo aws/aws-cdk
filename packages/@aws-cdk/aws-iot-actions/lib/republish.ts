@@ -42,6 +42,8 @@ export class Republish implements iot.ITopicRuleAction {
   public bind(rule: iot.ITopicRule): iot.TopicRuleActionConfig {
     const stack = Stack.of(rule);
     // Allow rule to publish to topic
+    // TODO: accept topic rule as prop - this.props.topic.topicRuleArn;
+    // TODO: grantable topic rules - this.props.topic.grantPublish(rule);
     const role = this.props.role || singletonTopicRuleRole(rule, [new iam.PolicyStatement({
       actions: ['iot:Publish'],
       resources: [
