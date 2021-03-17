@@ -77,7 +77,6 @@
           "Ref": "MyHttpApi8AEAAC21"
         },
         "RouteKey": "GET /",
-        "AuthorizationScopes": [],
         "AuthorizationType": "JWT",
         "AuthorizerId": {
           "Ref": "MyHttpApiUserPoolAuthorizer8754262B"

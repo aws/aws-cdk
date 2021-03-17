@@ -3,7 +3,7 @@ import { Duration } from '@aws-cdk/core';
 
 /**
  * The set of properties for event sources that follow the streaming model,
- * such as, Dynamo and Kinesis.
+ * such as, Dynamo, Kinesis and Kafka.
  */
 export interface StreamEventSourceProps {
   /**
