@@ -1,5 +1,6 @@
 import '@aws-cdk/assert/jest';
 import * as iot from '@aws-cdk/aws-iot';
+import * as sns from '@aws-cdk/aws-sns';
 import { Stack } from '@aws-cdk/core';
 import * as actions from '../../lib';
 
@@ -12,9 +13,12 @@ test('add republish action', () => {
     sql: 'SELECT * FROM \'topic/subtopic\'',
   });
 
-  rule.addAction(new actions.Republish({
-    topic: '$$aws/things/MyThing/shadow/update',
-  }));
+  const downstream = new iot.TopicRule(stack, 'DownstreamRule', {
+    sql: 'SELECT teapot FROM \'coffe/shop\'',
+    actions: [new actions.SnsTopic(new sns.Topic(stack, 'MySnsTopic'))],
+  });
+
+  rule.addAction(new actions.RepublishTopic(downstream, { topic: 'coffee/shop' }));
 
   expect(stack).toHaveResourceLike('AWS::IoT::TopicRule', {
     TopicRulePayload: {
@@ -23,7 +27,7 @@ test('add republish action', () => {
           Republish: {
             Qos: 0,
             RoleArn: { 'Fn::GetAtt': ['RepublishRuleAllowIotB39A8B3C', 'Arn'] },
-            Topic: '$$aws/things/MyThing/shadow/update',
+            Topic: 'coffee/shop',
           },
         },
       ],
@@ -47,7 +51,7 @@ test('add republish action', () => {
                 { Ref: 'AWS::Region' },
                 ':',
                 { Ref: 'AWS::AccountId' },
-                ':topic/$$aws/things/MyThing/shadow/update',
+                ':topic/coffee/shop',
               ],
             ],
           },

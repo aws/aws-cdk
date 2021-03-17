@@ -1,8 +1,9 @@
+import { Grant, IGrantable, PolicyStatement, AddToResourcePolicyResult } from '@aws-cdk/aws-iam';
 import { Resource, IResource, Lazy } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnTopicRule } from './iot.generated';
 import { ITopicRuleAction } from './topic-rule-action';
-import { parseRuleName, undefinedIfAllValuesAreEmpty } from './util';
+import { singletonTopicRuleRole, parseRuleName, undefinedIfAllValuesAreEmpty, topicArn } from './util';
 
 /**
  * The AWS IoT rules engine uses an SQL-like syntax to select data from MQTT
@@ -48,6 +49,14 @@ export interface ITopicRule extends IResource {
    *
    */
   readonly topicRuleArn: string;
+  /**
+   * Adds a statement to the IAM resource created for this topic rule
+   */
+  addToResourcePolicy(statement: PolicyStatement): AddToResourcePolicyResult;
+  /**
+   *  Grant topic publishing permissions to the given identity
+   */
+  grantPublish(identity: IGrantable, topic: string): Grant;
 }
 /**
  * A reference to an IoT Topic Rule.
@@ -106,9 +115,36 @@ export interface TopicRuleProps {
 }
 
 /**
+ * Either a new or imported topic rule
+ */
+export abstract class TopicRuleBase extends Resource implements ITopicRule {
+  public abstract readonly ruleName: string;
+  public abstract readonly topicRuleArn: string;
+
+  /**
+   * Add a statement to the IAM resource for this rule
+   */
+  public addToResourcePolicy(statement: PolicyStatement): AddToResourcePolicyResult {
+    singletonTopicRuleRole(this, [statement]);
+    return { statementAdded: true };
+  }
+
+  /**
+   * Grant topic publishing permissions to the given identity
+   */
+  public grantPublish(grantee: IGrantable, topic: string): Grant {
+    return Grant.addToPrincipalOrResource({
+      grantee,
+      actions: ['iot:Publish'],
+      resourceArns: [topicArn(this, topic)],
+      resource: this,
+    });
+  }
+}
+/**
  * A new topic rule
  */
-export class TopicRule extends Resource implements ITopicRule {
+export class TopicRule extends TopicRuleBase {
   /**
    * Import topic rule attributes
    */
@@ -121,7 +157,7 @@ export class TopicRule extends Resource implements ITopicRule {
   public static fromTopicRuleAttributes(scope: Construct, id: string, attrs: TopicRuleAttributes): ITopicRule {
     const topicRuleArn = attrs.topicRuleArn;
     const ruleName = parseRuleName(attrs.topicRuleArn);
-    class Import extends Resource implements ITopicRule {
+    class Import extends TopicRuleBase {
       public readonly ruleName = ruleName;
       public readonly topicRuleArn = topicRuleArn;
     }
@@ -138,7 +174,6 @@ export class TopicRule extends Resource implements ITopicRule {
     super(scope, id, {
       physicalName: props.ruleName,
     });
-
 
     if (props.errorAction) {
       this.addErrorAction(props.errorAction);
@@ -179,7 +214,7 @@ export class TopicRule extends Resource implements ITopicRule {
 
   public renderActions() {
     if (this.actions.length === 0) {
-      return undefined;
+      throw new Error('Topic invalid. Must contain at least one action');
     }
     return this.actions;
   }

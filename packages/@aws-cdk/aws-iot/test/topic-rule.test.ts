@@ -1,5 +1,6 @@
 import { expect, haveResource } from '@aws-cdk/assert';
-import { Stack } from '@aws-cdk/core';
+import { Role, ServicePrincipal } from '@aws-cdk/aws-iam';
+import { App, Stack } from '@aws-cdk/core';
 import { nodeunitShim, Test } from 'nodeunit-shim';
 import { TopicRule, ITopicRuleAction, TopicRuleActionConfig } from '../lib';
 
@@ -124,6 +125,68 @@ nodeunitShim({
         RuleDisabled: false,
         Sql: 'SELECT * FROM \'topic/subtopic\'',
       },
+    }));
+    test.done();
+  },
+  'throws when not given actions'(test: Test) {
+    // GIVEN
+    const app = new App();
+    const stack = new Stack(app);
+    // WHEN
+    new TopicRule(stack, 'IotTopicRule', {
+      sql: 'SELECT * FROM \'topic/subtopic\'',
+    });
+    test.throws(() => app.synth(), /Topic invalid/);
+    test.done();
+  },
+  'grant publish to topic arn'(test: Test) {
+    const stack = new Stack();
+    const role = new Role(stack, 'MyRole', {
+      assumedBy: new ServicePrincipal('iot.amazonaws.com'),
+    });
+    const topic = new TopicRule(stack, 'IotTopicRule', {
+      sql: 'SELECT * FROM \'topic/subtopic\'',
+      actions: [new DummyAction()],
+    });
+    topic.grantPublish(role, 'coffee/shops');
+    expect(stack).to(haveResource('AWS::IAM::Role', {
+      AssumeRolePolicyDocument: {
+        Statement: [
+          {
+            Action: 'sts:AssumeRole',
+            Effect: 'Allow',
+            Principal: { Service: 'iot.amazonaws.com' },
+          },
+        ],
+        Version: '2012-10-17',
+      },
+    }));
+    expect(stack).to(haveResource('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'iot:Publish',
+            Effect: 'Allow',
+            Resource: {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  { Ref: 'AWS::Partition' },
+                  ':iot:',
+                  { Ref: 'AWS::Region' },
+                  ':',
+                  { Ref: 'AWS::AccountId' },
+                  ':topic/coffee/shops',
+                ],
+              ],
+            },
+          },
+        ],
+        Version: '2012-10-17',
+      },
+      PolicyName: 'MyRoleDefaultPolicyA36BE1DD',
+      Roles: [{ Ref: 'MyRoleF48FFE04' }],
     }));
     test.done();
   },
