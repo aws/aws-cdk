@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.94.1](https://github.com/aws/aws-cdk/compare/v1.94.0...v1.94.1) (2021-03-16)
+
+
+### Bug Fixes
+
+* **s3:** Notifications fail to deploy due to incompatible node runtime ([#13624](https://github.com/aws/aws-cdk/issues/13624)) ([26bc3d4](https://github.com/aws/aws-cdk/commit/26bc3d4951a96a4bdf3e3e10464a4e3b80ed563f))
+
 ## [1.94.0](https://github.com/aws/aws-cdk/compare/v1.93.0...v1.94.0) (2021-03-16)
 
 
@@ -70,7 +77,7 @@ All notable changes to this project will be documented in this file. See [standa
 
 ## [1.92.0](https://github.com/aws/aws-cdk/compare/v1.91.0...v1.92.0) (2021-03-06)
 
-* **ecs-patterns**: the `desiredCount` property stored on the above constructs will be optional, allowing them to be undefined. This is enabled through the `@aws-cdk/aws-ecs-patterns:removeDefaultDesiredCount` feature flag. We would recommend all CDK users to set the `@aws-cdk/aws-ecs-patterns:removeDefaultDesiredCount` flag to `true` for all of their existing applications. 
+* **ecs-patterns**: the `desiredCount` property stored on the above constructs will be optional, allowing them to be undefined. This is enabled through the `@aws-cdk/aws-ecs-patterns:removeDefaultDesiredCount` feature flag. We would recommend all CDK users to set the `@aws-cdk/aws-ecs-patterns:removeDefaultDesiredCount` flag to `true` for all of their existing applications.
 
 ### ⚠ BREAKING CHANGES TO EXPERIMENTAL FEATURES
 
