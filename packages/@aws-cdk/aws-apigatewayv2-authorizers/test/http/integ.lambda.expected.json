@@ -77,7 +77,6 @@
           "Ref": "MyHttpApi8AEAAC21"
         },
         "RouteKey": "GET /",
-        "AuthorizationScopes": [],
         "AuthorizationType": "CUSTOM",
         "AuthorizerId": {
           "Ref": "MyHttpApiLambdaAuthorizerB8A0E2A4"
