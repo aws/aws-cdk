@@ -449,10 +449,10 @@ const service = new ecs.Ec2Service(this, 'Service', { /* ... */ });
 
 const lb = new elb.LoadBalancer(stack, 'LB', { vpc });
 lb.addListener({ externalPort: 80 });
-lb.addTarget(service.loadBalancerTarget{
+lb.addTarget(service.loadBalancerTarget({
   containerName: 'MyContainer',
   containerPort: 80
-});
+}));
 ```
 
 There are two higher-level constructs available which include a load balancer for you that can be found in the aws-ecs-patterns module:
