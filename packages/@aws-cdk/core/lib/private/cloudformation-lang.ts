@@ -1,6 +1,8 @@
 import { Lazy } from '../lazy';
 import { DefaultTokenResolver, IFragmentConcatenator, IResolveContext } from '../resolvable';
+import { Stack } from '../stack';
 import { Token } from '../token';
+import { CfnUtils } from './cfn-utils-provider';
 import { INTRINSIC_KEY_PREFIX, ResolutionTypeHint, resolvedTypeHint } from './resolve';
 
 /**
@@ -170,7 +172,8 @@ function tokenAwareStringify(root: any, space: number, ctx: IResolveContext) {
       // AND it's the result of a token resolution. Otherwise, we just treat this
       // value as a regular old JSON object (that happens to look a lot like an intrinsic).
       if (isIntrinsic(obj) && resolvedTypeHint(obj)) {
-        return renderIntrinsic(obj);
+        renderIntrinsic(obj);
+        return;
       }
 
       return renderCollection('{', '}', definedEntries(obj), ([key, value]) => {
@@ -211,12 +214,34 @@ function tokenAwareStringify(root: any, space: number, ctx: IResolveContext) {
         pushLiteral('"');
         pushIntrinsic(deepQuoteStringLiterals(intrinsic));
         pushLiteral('"');
-        break;
+        return;
 
-      default:
+      case ResolutionTypeHint.LIST:
+        // We need this to look like:
+        //
+        //    '{"listValue":' ++ STRINGIFY(CFN_EVAL({ Ref: MyList })) ++ '}'
+        //
+        // However, STRINGIFY would need to execute at CloudFormation deployment time, and that doesn't exist.
+        //
+        // We could *ALMOST* use:
+        //
+        //   '{"listValue":["' ++ JOIN('","', { Ref: MyList }) ++ '"]}'
+        //
+        // But that has the unfortunate side effect that if `CFN_EVAL({ Ref: MyList }) == []`, then it would
+        // evaluate to `[""]`, which is a different value. Since CloudFormation does not have arbitrary
+        // conditionals there's no way to deal with this case properly.
+        //
+        // Therefore, if we encounter lists we need to defer to a custom resource to handle
+        // them properly at deploy time.
+        pushIntrinsic(CfnUtils.stringify(Stack.of(ctx.scope), `CdkJsonStringify${stringifyCounter++}`, intrinsic));
+        return;
+
+      case ResolutionTypeHint.NUMBER:
         pushIntrinsic(intrinsic);
-        break;
+        return;
     }
+
+    throw new Error(`Unexpected type hint: ${resolvedTypeHint(intrinsic)}`);
   }
 
   /**
@@ -392,3 +417,5 @@ function quoteString(s: string) {
   s = JSON.stringify(s);
   return s.substring(1, s.length - 1);
 }
+
+let stringifyCounter = 1;
