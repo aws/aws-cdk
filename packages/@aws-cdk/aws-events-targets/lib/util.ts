@@ -47,16 +47,20 @@ export interface TargetBaseProps {
 
 /**
  * Use an AWS Lambda function as an event rule target.
+ * @internal
  */
 export function bindBaseProps(props: TargetBaseProps) {
-    return {
-      deadLetterConfig: props.deadLetterQueue ? { arn: props.deadLetterQueue?.queueArn } : undefined,
-      retryPolicy: {
-        maximumRetryAttempts: props.retryAttempts,
-        maximumEventAgeInSeconds: props.maxEventAge?.toSeconds({ integral: true }),
-      },
-    };
-  }
+  let { deadLetterQueue, retryAttempts, maxEventAge } = props;
+
+  return {
+    deadLetterConfig: deadLetterQueue ? { arn: deadLetterQueue?.queueArn } : undefined,
+    retryPolicy: retryAttempts || maxEventAge
+      ? {
+        maximumRetryAttempts: retryAttempts,
+        maximumEventAgeInSeconds: maxEventAge?.toSeconds({ integral: true }),
+      }
+      : undefined,
+  };
 }
 
 
@@ -65,6 +69,7 @@ export function bindBaseProps(props: TargetBaseProps) {
  *
  * If a role already exists, it will be returned. This ensures that if multiple
  * events have the same target, they will share a role.
+ * @internal
  */
 export function singletonEventRole(scope: IConstruct, policyStatements: iam.PolicyStatement[]): iam.IRole {
   const id = 'EventsRole';
@@ -82,6 +87,7 @@ export function singletonEventRole(scope: IConstruct, policyStatements: iam.Poli
 
 /**
  * Allows a Lambda function to be called from a rule
+ * @internal
  */
 export function addLambdaPermission(rule: events.IRule, handler: lambda.IFunction): void {
   let scope: Construct | undefined;
@@ -106,6 +112,7 @@ export function addLambdaPermission(rule: events.IRule, handler: lambda.IFunctio
 
 /**
  * Allow a rule to send events with failed invocation to an Amazon SQS queue.
+ * @internal
  */
 export function addToDeadLetterQueueResourcePolicy(rule: events.IRule, queue: sqs.IQueue) {
   if (!sameEnvDimension(rule.env.region, queue.env.region)) {
@@ -141,6 +148,7 @@ export function addToDeadLetterQueueResourcePolicy(rule: events.IRule, queue: sq
  *
  * Used to compare either accounts or regions, and also returns true if both
  * are unresolved (in which case both are expted to be "current region" or "current account").
+ * @internal
  */
 function sameEnvDimension(dim1: string, dim2: string) {
   return [TokenComparison.SAME, TokenComparison.BOTH_UNRESOLVED].includes(Token.compareStrings(dim1, dim2));

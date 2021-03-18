@@ -1,7 +1,6 @@
 import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
-import * as sqs from '@aws-cdk/aws-sqs';
 import { addToDeadLetterQueueResourcePolicy, bindBaseProps, singletonEventRole, TargetBaseProps } from './util';
 
 /**
