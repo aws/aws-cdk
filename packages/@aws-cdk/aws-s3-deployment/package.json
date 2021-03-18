@@ -79,7 +79,7 @@
   "devDependencies": {
     "@aws-cdk/assert": "0.0.0",
     "@aws-cdk/cx-api": "0.0.0",
-    "@types/jest": "^26.0.20",
+    "@types/jest": "^26.0.21",
     "cdk-build-tools": "0.0.0",
     "cdk-integ-tools": "0.0.0",
     "jest": "^26.6.3",
