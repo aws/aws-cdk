@@ -3,7 +3,7 @@
 exports[`built-in data is correct 1`] = `
 Object {
   "af-south-1": Object {
-    "cdkMetadataResourceAvailable": false,
+    "cdkMetadataResourceAvailable": true,
     "domainSuffix": "amazonaws.com",
     "partition": "aws",
     "s3StaticWebsiteEndpoint": "s3-website.af-south-1.amazonaws.com",
@@ -79,6 +79,26 @@ Object {
       "sns": "sns.amazonaws.com",
       "sqs": "sqs.amazonaws.com",
       "states": "states.ap-northeast-2.amazonaws.com",
+    },
+    "vpcEndPointServiceNamePrefix": "com.amazonaws.vpce",
+  },
+  "ap-northeast-3": Object {
+    "cdkMetadataResourceAvailable": false,
+    "domainSuffix": "amazonaws.com",
+    "partition": "aws",
+    "s3StaticWebsiteEndpoint": "s3-website.ap-northeast-3.amazonaws.com",
+    "servicePrincipals": Object {
+      "application-autoscaling": "application-autoscaling.amazonaws.com",
+      "autoscaling": "autoscaling.amazonaws.com",
+      "codedeploy": "codedeploy.ap-northeast-3.amazonaws.com",
+      "ec2": "ec2.amazonaws.com",
+      "events": "events.amazonaws.com",
+      "lambda": "lambda.amazonaws.com",
+      "logs": "logs.ap-northeast-3.amazonaws.com",
+      "s3": "s3.amazonaws.com",
+      "sns": "sns.amazonaws.com",
+      "sqs": "sqs.amazonaws.com",
+      "states": "states.ap-northeast-3.amazonaws.com",
     },
     "vpcEndPointServiceNamePrefix": "com.amazonaws.vpce",
   },
@@ -243,7 +263,7 @@ Object {
     "vpcEndPointServiceNamePrefix": "com.amazonaws.vpce",
   },
   "eu-south-1": Object {
-    "cdkMetadataResourceAvailable": false,
+    "cdkMetadataResourceAvailable": true,
     "domainSuffix": "amazonaws.com",
     "partition": "aws",
     "s3StaticWebsiteEndpoint": "s3-website.eu-south-1.amazonaws.com",

@@ -253,6 +253,7 @@
     "@aws-cdk/aws-s3-assets": "0.0.0",
     "@aws-cdk/aws-s3-deployment": "0.0.0",
     "@aws-cdk/aws-s3-notifications": "0.0.0",
+    "@aws-cdk/aws-s3outposts": "0.0.0",
     "@aws-cdk/aws-sagemaker": "0.0.0",
     "@aws-cdk/aws-sam": "0.0.0",
     "@aws-cdk/aws-sdb": "0.0.0",
