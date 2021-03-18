@@ -77,7 +77,6 @@
           "Ref": "MyHttpApi8AEAAC21"
         },
         "RouteKey": "ANY /",
-        "AuthorizationScopes": [],
         "Target": {
           "Fn::Join": [
             "",

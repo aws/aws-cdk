@@ -96,7 +96,7 @@
     "@aws-cdk/lambda-layer-awscli": "0.0.0",
     "@aws-cdk/lambda-layer-kubectl": "0.0.0",
     "constructs": "10.0.0-pre.5",
-    "yaml": "1.10.0"
+    "yaml": "1.10.2"
   },
   "bundledDependencies": [
     "yaml"
