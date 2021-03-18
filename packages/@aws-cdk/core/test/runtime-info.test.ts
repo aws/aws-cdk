@@ -10,7 +10,6 @@ const JSII_RUNTIME_SYMBOL = Symbol.for('jsii.rtti');
 let app: App;
 let stack: Stack;
 let _cdkVersion: string | undefined = undefined;
-const modulePrefix = cdkMajorVersion() === 1 ? '@aws-cdk/core' : 'aws-cdk-lib';
 
 // The runtime metadata this test relies on is only available if the most
 // recent compile has happened using 'jsii', as the jsii compiler injects
@@ -40,24 +39,15 @@ describeTscSafe('constructInfoFromConstruct', () => {
   test('returns fqn and version for core constructs', () => {
     const constructInfo = constructInfoFromConstruct(stack);
     expect(constructInfo).toBeDefined();
-    expect(constructInfo?.fqn).toEqual(`${modulePrefix}.Stack`);
+    expect(constructInfo?.fqn).toEqual('@aws-cdk/core.Stack');
     expect(constructInfo?.version).toEqual(localCdkVersion());
   });
 
-  test('returns base construct info if no more specific info is present', () => {
-    const simpleConstruct = new class extends Construct { }(stack, 'Simple');
-    const constructInfo = constructInfoFromConstruct(simpleConstruct);
-    expect(constructInfo?.fqn).toEqual(`${modulePrefix}.Construct`);
-  });
-
-  test('returns more specific subclass info if present', () => {
-    const construct = new class extends Construct {
-      // @ts-ignore
-      private static readonly [JSII_RUNTIME_SYMBOL] = { fqn: 'aws-cdk-lib.TestConstruct', version: localCdkVersion() }
-    }(stack, 'TestConstruct');
+  test('returns jsii runtime info if present', () => {
+    const construct = new TestConstruct(stack, 'TestConstruct');
 
     const constructInfo = constructInfoFromConstruct(construct);
-    expect(constructInfo?.fqn).toEqual('aws-cdk-lib.TestConstruct');
+    expect(constructInfo?.fqn).toEqual('@aws-cdk/test.TestConstruct');
   });
 
   test('throws if the jsii runtime info is not as expected', () => {
@@ -89,45 +79,41 @@ describeTscSafe('constructInfoForStack', () => {
 
     const stackInfo = constructInfos.find(i => /Stack/.test(i.fqn));
     const jsiiInfo = constructInfos.find(i => i.fqn === 'jsii-runtime.Runtime');
-    expect(stackInfo?.fqn).toEqual(`${modulePrefix}.Stack`);
+    expect(stackInfo?.fqn).toEqual('@aws-cdk/core.Stack');
     expect(stackInfo?.version).toEqual(localCdkVersion());
     expect(jsiiInfo?.version).toMatch(/node.js/);
   });
 
   test('returns info for constructs added to the stack', () => {
-    new class extends Construct { }(stack, 'Simple');
+    new TestConstruct(stack, 'TestConstruct');
 
     const constructInfos = constructInfoFromStack(stack);
 
     expect(constructInfos.length).toEqual(3);
-    expect(constructInfos.map(info => info.fqn)).toContain(`${modulePrefix}.Construct`);
+    expect(constructInfos.map(info => info.fqn)).toContain('@aws-cdk/test.TestConstruct');
   });
 
   test('returns unique info (no duplicates)', () => {
-    new class extends Construct { }(stack, 'Simple1');
-    new class extends Construct { }(stack, 'Simple2');
+    new TestConstruct(stack, 'TestConstruct1');
+    new TestConstruct(stack, 'TestConstruct2');
 
     const constructInfos = constructInfoFromStack(stack);
 
     expect(constructInfos.length).toEqual(3);
-    expect(constructInfos.map(info => info.fqn)).toContain(`${modulePrefix}.Construct`);
+    expect(constructInfos.map(info => info.fqn)).toContain('@aws-cdk/test.TestConstruct');
   });
 
   test('returns info from nested constructs', () => {
     new class extends Construct {
       constructor(scope: Construct, id: string) {
         super(scope, id);
-        return new class extends Construct {
-          // @ts-ignore
-          private static readonly [JSII_RUNTIME_SYMBOL] = { fqn: '@aws-cdk/test.TestV1Construct', version: localCdkVersion() }
-        }(this, 'TestConstruct');
+        new TestConstruct(this, 'TestConstruct');
       }
     }(stack, 'Nested');
 
     const constructInfos = constructInfoFromStack(stack);
 
-    expect(constructInfos.length).toEqual(4);
-    expect(constructInfos.map(info => info.fqn)).toContain('@aws-cdk/test.TestV1Construct');
+    expect(constructInfos.map(info => info.fqn)).toContain('@aws-cdk/test.TestConstruct');
   });
 
   test('does not return info from nested stacks', () => {
@@ -135,10 +121,7 @@ describeTscSafe('constructInfoForStack', () => {
       constructor(scope: Construct, id: string) {
         super(scope, id);
 
-        new class extends Construct {
-          // @ts-ignore
-          private static readonly [JSII_RUNTIME_SYMBOL] = { fqn: '@aws-cdk/test.TestV1Construct', version: localCdkVersion() }
-        }(this, 'TestConstruct');
+        new TestConstruct(this, 'TestConstruct');
 
         new class extends Stack {
           // @ts-ignore
@@ -160,16 +143,16 @@ describeTscSafe('constructInfoForStack', () => {
     const constructInfos = constructInfoFromStack(stack);
 
     const fqns = constructInfos.map(info => info.fqn);
-    expect(fqns).toContain('@aws-cdk/test.TestV1Construct');
+    expect(fqns).toContain('@aws-cdk/test.TestConstruct');
     expect(fqns).not.toContain('@aws-cdk/test.TestStackInsideStack');
     expect(fqns).not.toContain('@aws-cdk/test.TestNestedStackInsideStack');
     expect(fqns).not.toContain('@aws-cdk/test.TestStageInsideStack');
   });
 });
 
-function cdkMajorVersion(): number {
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
-  return require('../../../../release.json').majorVersion;
+class TestConstruct extends Construct {
+  // @ts-ignore
+  private static readonly [JSII_RUNTIME_SYMBOL] = { fqn: '@aws-cdk/test.TestConstruct', version: localCdkVersion() }
 }
 
 /**
