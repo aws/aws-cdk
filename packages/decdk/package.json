@@ -211,18 +211,18 @@
     "@aws-cdk/yaml-cfn": "0.0.0",
     "constructs": "^3.2.0",
     "fs-extra": "^9.1.0",
-    "jsii-reflect": "^1.24.0",
+    "jsii-reflect": "^1.25.0",
     "jsonschema": "^1.4.0",
-    "yaml": "1.10.0",
+    "yaml": "1.10.2",
     "yargs": "^16.2.0"
   },
   "devDependencies": {
     "@types/fs-extra": "^8.1.1",
-    "@types/jest": "^26.0.20",
+    "@types/jest": "^26.0.21",
     "@types/yaml": "1.9.7",
     "@types/yargs": "^15.0.13",
     "jest": "^26.6.3",
-    "jsii": "^1.24.0"
+    "jsii": "^1.25.0"
   },
   "keywords": [
     "aws",

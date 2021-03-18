@@ -427,6 +427,58 @@ export = {
     test.done();
   },
 
+  'setting ALB circuitBreaker works'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'Service', {
+      taskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
+      },
+      circuitBreaker: { rollback: true },
+    });
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::ECS::Service', {
+      DeploymentConfiguration: {
+        DeploymentCircuitBreaker: {
+          Enable: true,
+          Rollback: true,
+        },
+      },
+      DeploymentController: {
+        Type: 'ECS',
+      },
+    }));
+    test.done();
+  },
+
+  'setting NLB circuitBreaker works'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new ecsPatterns.NetworkLoadBalancedFargateService(stack, 'Service', {
+      taskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
+      },
+      circuitBreaker: { rollback: true },
+    });
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::ECS::Service', {
+      DeploymentConfiguration: {
+        DeploymentCircuitBreaker: {
+          Enable: true,
+          Rollback: true,
+        },
+      },
+      DeploymentController: {
+        Type: 'ECS',
+      },
+    }));
+    test.done();
+  },
+
   'setting NLB special listener port to create the listener'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();

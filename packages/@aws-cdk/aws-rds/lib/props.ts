@@ -144,6 +144,7 @@ export interface CredentialsBaseOptions {
 
 /**
  * Options for creating Credentials from a username.
+ * @deprecated supporting API `fromUsername()` has been deprecated. See deprecation notice of the API.
  */
 export interface CredentialsFromUsernameOptions extends CredentialsBaseOptions {
   /**

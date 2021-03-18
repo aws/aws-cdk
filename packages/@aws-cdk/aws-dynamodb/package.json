@@ -72,7 +72,7 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@aws-cdk/assert": "0.0.0",
-    "@types/jest": "^26.0.20",
+    "@types/jest": "^26.0.21",
     "aws-sdk": "^2.848.0",
     "aws-sdk-mock": "^5.1.0",
     "cdk-build-tools": "0.0.0",
@@ -81,7 +81,7 @@
     "jest": "^26.6.3",
     "pkglint": "0.0.0",
     "sinon": "^9.2.4",
-    "ts-jest": "^26.5.3"
+    "ts-jest": "^26.5.4"
   },
   "dependencies": {
     "@aws-cdk/aws-applicationautoscaling": "0.0.0",
