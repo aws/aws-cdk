@@ -3,7 +3,7 @@ import { Construct } from 'constructs';
 import { CfnRoute, CfnRouteProps } from '../apigatewayv2.generated';
 import { IRoute } from '../common';
 import { IHttpApi } from './api';
-import { IHttpRouteAuthorizer } from './authorizer';
+import { HttpAuthorizerType, IHttpRouteAuthorizer } from './authorizer';
 import { IHttpRouteIntegration } from './integration';
 
 /**
@@ -147,21 +147,27 @@ export class HttpRoute extends Resource implements IHttpRoute {
       scope: this.httpApi instanceof Construct ? this.httpApi : this, // scope under the API if it's not imported
     }) : undefined;
 
-    let authorizationScopes = authBindResult?.authorizationScopes ?? [];
+    let authorizationScopes = authBindResult?.authorizationScopes;
 
     if (authBindResult && props.authorizationScopes) {
       authorizationScopes = Array.from(new Set([
-        ...authorizationScopes,
+        ...authorizationScopes ?? [],
         ...props.authorizationScopes,
       ]));
     }
 
+    const authorizationType = authBindResult?.authorizationType === HttpAuthorizerType.NONE ? undefined : authBindResult?.authorizationType;
+
+    if (authorizationScopes?.length === 0) {
+      authorizationScopes = undefined;
+    }
+
     const routeProps: CfnRouteProps = {
-      apiId: props.httpApi.httpApiId,
+      apiId: props.httpApi.apiId,
       routeKey: props.routeKey.key,
       target: `integrations/${integration.integrationId}`,
       authorizerId: authBindResult?.authorizerId,
-      authorizationType: authBindResult?.authorizationType,
+      authorizationType,
       authorizationScopes,
     };
 

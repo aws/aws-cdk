@@ -162,7 +162,7 @@ describe('tests', () => {
       ],
     });
 
-    expect(listener.node.tryFindChild('DefaultCertificates')).toBeDefined();
+    expect(listener.node.tryFindChild('DefaultCertificates1')).toBeDefined();
     expect(listener.node.tryFindChild('DefaultCertificates2')).toBeDefined();
     expect(listener.node.tryFindChild('DefaultCertificates3')).not.toBeDefined();
 

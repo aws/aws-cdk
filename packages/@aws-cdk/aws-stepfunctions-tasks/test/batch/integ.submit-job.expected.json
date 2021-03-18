@@ -988,6 +988,12 @@
     "StateMachine2E01A3A5": {
       "Type": "AWS::StepFunctions::StateMachine",
       "Properties": {
+        "RoleArn": {
+          "Fn::GetAtt": [
+            "StateMachineRoleB840431D",
+            "Arn"
+          ]
+        },
         "DefinitionString": {
           "Fn::Join": [
             "",
@@ -1006,12 +1012,6 @@
               },
               "\",\"Parameters\":{\"foo.$\":\"$.bar\"},\"ContainerOverrides\":{\"Environment\":[{\"Name\":\"key\",\"Value\":\"value\"}],\"Memory\":256,\"Vcpus\":1},\"RetryStrategy\":{\"Attempts\":3},\"Timeout\":{\"AttemptDurationSeconds\":60}}}}}"
             ]
-          ]
-        },
-        "RoleArn": {
-          "Fn::GetAtt": [
-            "StateMachineRoleB840431D",
-            "Arn"
           ]
         }
       },

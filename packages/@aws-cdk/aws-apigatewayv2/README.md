@@ -7,7 +7,7 @@ Features                                   | Stability
 -------------------------------------------|--------------------------------------------------------
 CFN Resources                              | ![Stable](https://img.shields.io/badge/stable-success.svg?style=for-the-badge)
 Higher level constructs for HTTP APIs      | ![Experimental](https://img.shields.io/badge/experimental-important.svg?style=for-the-badge)
-Higher level constructs for Websocket APIs | ![Not Implemented](https://img.shields.io/badge/not--implemented-black.svg?style=for-the-badge)
+Higher level constructs for Websocket APIs | ![Experimental](https://img.shields.io/badge/experimental-important.svg?style=for-the-badge)
 
 > **CFN Resources:** All classes with the `Cfn` prefix in this module ([CFN Resources]) are always
 > stable and safe to use.
@@ -38,6 +38,7 @@ Higher level constructs for Websocket APIs | ![Not Implemented](https://img.shie
   - [Metrics](#metrics)
   - [VPC Link](#vpc-link)
   - [Private Integration](#private-integration)
+- [WebSocket API](#websocket-api)
 
 ## Introduction
 
@@ -186,7 +187,7 @@ const api = new HttpApi(stack, 'HttpProxyProdApi', {
 });
 ```
 
-To associate a specifc `Stage` to a custom domain mapping -
+To associate a specific `Stage` to a custom domain mapping -
 
 ```ts
 api.addStage('beta', {
@@ -230,7 +231,7 @@ API](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-acces
 
 These authorizers can be found in the [APIGatewayV2-Authorizers](https://docs.aws.amazon.com/cdk/api/latest/docs/aws-apigatewayv2-authorizers-readme.html) constructs library.
 
-## Metrics
+### Metrics
 
 The API Gateway v2 service sends metrics around the performance of HTTP APIs to Amazon CloudWatch.
 These metrics can be referred to using the metric APIs available on the `HttpApi` construct.
@@ -277,3 +278,46 @@ Amazon ECS container-based applications.  Using private integrations, resources 
 clients outside of the VPC.
 
 These integrations can be found in the [APIGatewayV2-Integrations](https://docs.aws.amazon.com/cdk/api/latest/docs/aws-apigatewayv2-integrations-readme.html) constructs library.
+
+## WebSocket API
+
+A WebSocket API in API Gateway is a collection of WebSocket routes that are integrated with backend HTTP endpoints, 
+Lambda functions, or other AWS services. You can use API Gateway features to help you with all aspects of the API 
+lifecycle, from creation through monitoring your production APIs. [Read more](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-websocket-api-overview.html)
+
+WebSocket APIs have two fundamental concepts - Routes and Integrations.
+
+WebSocket APIs direct JSON messages to backend integrations based on configured routes. (Non-JSON messages are directed 
+to the configured `$default` route.)
+
+Integrations define how the WebSocket API behaves when a client reaches a specific Route. Learn more at
+[Configuring integrations](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-websocket-api-integration-requests.html).
+
+Integrations are available in the `aws-apigatewayv2-integrations` module and more information is available in that module.
+
+To add the default WebSocket routes supported by API Gateway (`$connect`, `$disconnect` and `$default`), configure them as part of api props:
+
+```ts
+const webSocketApi = new WebSocketApi(stack, 'mywsapi', {
+  connectRouteOptions: { integration: new LambdaWebSocketIntegration({ handler: connectHandler }) },
+  disconnectRouteOptions: { integration: new LambdaWebSocketIntegration({ handler: disconnetHandler }) },
+  defaultRouteOptions: { integration: new LambdaWebSocketIntegration({ handler: defaultHandler }) },
+});
+
+new WebSocketStage(stack, 'mystage', {
+  webSocketApi,
+  stageName: 'dev',
+  autoDeploy: true,
+});
+```
+
+To add any other route:
+
+```ts
+const webSocketApi = new WebSocketApi(stack, 'mywsapi');
+webSocketApi.addRoute('sendmessage', {
+  integration: new LambdaWebSocketIntegration({
+    handler: messageHandler,
+  }),
+});
+```

@@ -266,9 +266,7 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
     // Only one certificate can be specified per resource, even though
     // `certificates` is of type Array
     for (let i = 0; i < additionalCerts.length; i++) {
-      // ids should look like: `id`, `id2`, `id3` (for backwards-compatibility)
-      const certId = (i > 0) ? `${id}${i + 1}` : id;
-      new ApplicationListenerCertificate(this, certId, {
+      new ApplicationListenerCertificate(this, `${id}${i + 1}`, {
         listener: this,
         certificates: [additionalCerts[i]],
       });
@@ -494,8 +492,14 @@ export interface IApplicationListener extends IResource, ec2.IConnectable {
 
   /**
    * Add one or more certificates to this listener.
+   * @deprecated use `addCertificates()`
    */
   addCertificateArns(id: string, arns: string[]): void;
+
+  /**
+   * Add one or more certificates to this listener.
+   */
+  addCertificates(id: string, certificates: IListenerCertificate[]): void;
 
   /**
    * Load balance incoming requests to the given target groups.
@@ -591,8 +595,17 @@ abstract class ExternalApplicationListener extends Resource implements IApplicat
 
   /**
    * Add one or more certificates to this listener.
+   * @deprecated use `addCertificates()`
    */
   public addCertificateArns(id: string, arns: string[]): void {
+    this.addCertificates(id, arns.map(ListenerCertificate.fromArn));
+  }
+
+  /**
+   * Add one or more certificates to this listener.
+   */
+  public addCertificates(id: string, certificates: IListenerCertificate[]): void {
+    const arns = certificates.map(c => c.certificateArn);
     new ApplicationListenerCertificate(this, id, {
       listener: this,
       certificateArns: arns,
