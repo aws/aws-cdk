@@ -818,6 +818,23 @@ nodeunitShim({
 
     test.done();
   },
+
+  'cluster arn is correct when cluster identifier has uppercase letters'(test: Test) {
+    const stack = testStack();
+    const clusterIdentifier = 'TestClusterIdentifier';
+    const vpc = ec2.Vpc.fromLookup(stack, 'VPC', { isDefault: true });
+    const cluster = new ServerlessCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.AURORA_MYSQL,
+      vpc,
+      clusterIdentifier,
+    });
+
+    test.equal(stack.resolve(cluster.clusterArn), 'test');
+    test.equal(cluster.clusterArn, 'test');
+    // test.equals(cluster.clusterIdentifier, 'identifier');
+
+    test.done();
+  },
 });
 
 
