@@ -32,6 +32,11 @@ Currently supported are:
 See the README of the `@aws-cdk/aws-events` library for more information on
 EventBridge.
 
+## Event retry policy and using dead-letter queues
+
+The Codebuild, CodePipeline, Lambda, StepFunctions and LogGroup targets support attaching a [dead letter queue and setting retry policies](https://docs.aws.amazon.com/eventbridge/latest/userguide/rule-dlq.html). See the [lambda example](#invoke-a-lambda-function).
+Use [escape hatches](https://docs.aws.amazon.com/cdk/latest/guide/cfn_layer.html) for the other target types.
+
 ## Invoke a Lambda function
 
 Use the `LambdaFunction` target to invoke a lambda function.
@@ -45,6 +50,7 @@ import * as lambda from "@aws-cdk/aws-lambda";
 import * as events from "@aws-cdk/aws-events";
 import * as sqs from "@aws-cdk/aws-sqs";
 import * as targets from "@aws-cdk/aws-events-targets";
+import * as cdk from '@aws-cdk/core';
 
 const fn = new lambda.Function(this, 'MyFunc', {
   runtime: lambda.Runtime.NODEJS_12_X,
@@ -62,6 +68,8 @@ const queue = new sqs.Queue(this, 'Queue');
 
 rule.addTarget(new targets.LambdaFunction(fn, {
   deadLetterQueue: queue, // Optional: add a dead letter queue
+  maxEventAge: cdk.Duration.hours(2), // Otional: set the maxEventAge retry policy
+  retryAttempts: 2, // Optional: set the max number of retry attempts
 }));
 ```
 
