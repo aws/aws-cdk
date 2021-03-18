@@ -339,6 +339,7 @@ describe('DatabaseCluster', () => {
     const cluster = DatabaseCluster.fromDatabaseClusterAttributes(stack, 'Database', {
       clusterEndpointAddress: 'addr',
       clusterIdentifier: 'identifier',
+      clusterResourceIdentifier: 'resourceIdentifier',
       port: 3306,
       readerEndpointAddress: 'reader-address',
       securityGroup: ec2.SecurityGroup.fromSecurityGroupId(stack, 'SG', 'sg-123456789', {
@@ -360,6 +361,7 @@ describe('DatabaseCluster', () => {
     const cluster = DatabaseCluster.fromDatabaseClusterAttributes(stack, 'Database', {
       clusterEndpointAddress: 'addr',
       clusterIdentifier: 'identifier',
+      clusterResourceIdentifier: 'resourceIdentifier',
       port: 3306,
       readerEndpointAddress: 'reader-address',
       securityGroup: ec2.SecurityGroup.fromSecurityGroupId(stack, 'SG', 'sg-123456789', {
@@ -474,7 +476,29 @@ describe('DatabaseCluster', () => {
           Effect: 'Allow',
           Action: 'neptune-db:*',
           Resource: {
-            'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':neptune-db:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':', { Ref: 'ClusterEB0386A7' }, '/*']],
+            'Fn::Join': [
+              '', [
+                'arn:', {
+                  Ref: 'AWS::Partition',
+                },
+                ':neptune-db:',
+                {
+                  Ref: 'AWS::Region',
+                },
+                ':',
+                {
+                  Ref: 'AWS::AccountId',
+                },
+                ':',
+                {
+                  'Fn::GetAtt': [
+                    'ClusterEB0386A7',
+                    'ClusterResourceId',
+                  ],
+                },
+                '/*',
+              ],
+            ],
           },
         }],
         Version: '2012-10-17',
