@@ -1,6 +1,6 @@
 import '@aws-cdk/assert/jest';
 import * as cdk from '@aws-cdk/core';
-import * as constructs from 'constructs';
+import { Construct } from 'constructs';
 import * as stepfunctions from '../lib';
 
 describe('States Language', () => {
@@ -579,7 +579,7 @@ describe('States Language', () => {
   test('No duplicate state IDs', () => {
     // GIVEN
     const stack = new cdk.Stack();
-    const intermediateParent = new cdk.Construct(stack, 'Parent');
+    const intermediateParent = new Construct(stack, 'Parent');
 
     const state1 = new stepfunctions.Pass(stack, 'State');
     const state2 = new stepfunctions.Pass(intermediateParent, 'State');
@@ -593,7 +593,7 @@ describe('States Language', () => {
   test('No duplicate state IDs even across Parallel branches', () => {
     // GIVEN
     const stack = new cdk.Stack();
-    const intermediateParent = new cdk.Construct(stack, 'Parent');
+    const intermediateParent = new Construct(stack, 'Parent');
 
     const state1 = new stepfunctions.Pass(stack, 'State');
     const state2 = new stepfunctions.Pass(intermediateParent, 'State');
@@ -693,7 +693,7 @@ describe('States Language', () => {
 class ReusableStateMachine extends stepfunctions.StateMachineFragment {
   public readonly startState: stepfunctions.State;
   public readonly endStates: stepfunctions.INextable[];
-  constructor(scope: constructs.Construct, id: string) {
+  constructor(scope: Construct, id: string) {
     super(scope, id);
 
     const choice = new stepfunctions.Choice(this, 'Choice')
@@ -710,7 +710,7 @@ class SimpleChain extends stepfunctions.StateMachineFragment {
   public readonly endStates: stepfunctions.INextable[];
 
   private readonly task2: stepfunctions.Task;
-  constructor(scope: constructs.Construct, id: string) {
+  constructor(scope: Construct, id: string) {
     super(scope, id);
 
     const task1 = new stepfunctions.Task(this, 'Task1', { task: new FakeTask() });
