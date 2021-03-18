@@ -1593,7 +1593,7 @@ export class Subnet extends Resource implements ISubnet {
   }
 
   /**
-   * Adds an entry to this subnets route table that points to the passed NATGatwayId
+   * Adds an entry to this subnets route table that points to the passed NATGatewayId
    * @param natGatewayId The ID of the NAT gateway
    */
   public addDefaultNatRoute(natGatewayId: string) {

@@ -170,6 +170,7 @@ export class ApplicationLoadBalancedFargateService extends ApplicationLoadBalanc
       cloudMapOptions: props.cloudMapOptions,
       platformVersion: props.platformVersion,
       deploymentController: props.deploymentController,
+      circuitBreaker: props.circuitBreaker,
       securityGroups: props.securityGroups,
       vpcSubnets: props.taskSubnets,
     });

@@ -32,7 +32,7 @@ export interface DnsValidatedCertificateProps extends CertificateProps {
    * aws-cn partition, the default endpoint is not working now, hence the right endpoint
    * need to be specified through this prop.
    *
-   * Route53 is not been offically launched in China, it is only available for AWS
+   * Route53 is not been officially launched in China, it is only available for AWS
    * internal accounts now. To make DnsValidatedCertificate work for internal accounts
    * now, a special endpoint needs to be provided.
    *
@@ -77,7 +77,7 @@ export class DnsValidatedCertificate extends cdk.Resource implements ICertificat
     const requestorFunction = new lambda.Function(this, 'CertificateRequestorFunction', {
       code: lambda.Code.fromAsset(path.resolve(__dirname, '..', 'lambda-packages', 'dns_validated_certificate_handler', 'lib')),
       handler: 'index.certificateRequestHandler',
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
       timeout: cdk.Duration.minutes(15),
       role: props.customResourceRole,
     });

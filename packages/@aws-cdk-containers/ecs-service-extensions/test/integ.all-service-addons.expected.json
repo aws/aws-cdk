@@ -1349,7 +1349,6 @@
             "MeshName"
           ]
         },
-        "RouteName": "name-route",
         "Spec": {
           "HttpRoute": {
             "Action": {
@@ -1375,7 +1374,8 @@
             "namevirtualrouterC00E1ACE",
             "VirtualRouterName"
           ]
-        }
+        },
+        "RouteName": "name-route"
       }
     },
     "namevirtualservice3DDDDF1E": {
@@ -2218,7 +2218,6 @@
             "MeshName"
           ]
         },
-        "RouteName": "greeting-route",
         "Spec": {
           "HttpRoute": {
             "Action": {
@@ -2244,7 +2243,8 @@
             "greetingvirtualrouter0F898D1A",
             "VirtualRouterName"
           ]
-        }
+        },
+        "RouteName": "greeting-route"
       }
     },
     "greetingvirtualservice60AD3AD9": {
@@ -3242,7 +3242,6 @@
             "MeshName"
           ]
         },
-        "RouteName": "greeter-route",
         "Spec": {
           "HttpRoute": {
             "Action": {
@@ -3268,7 +3267,8 @@
             "greetervirtualrouter193840BB",
             "VirtualRouterName"
           ]
-        }
+        },
+        "RouteName": "greeter-route"
       }
     },
     "greetervirtualservice6559950C": {

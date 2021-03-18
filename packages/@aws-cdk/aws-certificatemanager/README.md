@@ -102,7 +102,7 @@ new acm.Certificate(this, 'Certificate', {
 ## Cross-region Certificates
 
 ACM certificates that are used with CloudFront -- or higher-level constructs which rely on CloudFront -- must be in the `us-east-1` region.
-The `DnsValidatedCertificate` construct exists to faciliate creating these certificates cross-region. This resource can only be used with
+The `DnsValidatedCertificate` construct exists to facilitate creating these certificates cross-region. This resource can only be used with
 Route53-based DNS validation.
 
 ```ts

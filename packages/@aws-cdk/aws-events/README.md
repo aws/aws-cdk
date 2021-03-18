@@ -15,7 +15,7 @@ Amazon EventBridge delivers a near real-time stream of system events that
 describe changes in AWS resources. For example, an AWS CodePipeline emits the
 [State
 Change](https://docs.aws.amazon.com/eventbridge/latest/userguide/event-types.html#codepipeline-event-type)
-event when the pipeline changes it's state.
+event when the pipeline changes its state.
 
 * __Events__: An event indicates a change in your AWS environment. AWS resources
   can generate events when their state changes. For example, Amazon EC2

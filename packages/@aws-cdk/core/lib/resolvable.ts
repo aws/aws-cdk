@@ -20,12 +20,24 @@ export interface IResolveContext {
   /**
    * Resolve an inner object
    */
-  resolve(x: any): any;
+  resolve(x: any, options?: ResolveChangeContextOptions): any;
 
   /**
    * Use this postprocessor after the entire token structure has been resolved
    */
   registerPostProcessor(postProcessor: IPostProcessor): void;
+}
+
+/**
+ * Options that can be changed while doing a recursive resolve
+ */
+export interface ResolveChangeContextOptions {
+  /**
+   * Change the 'allowIntrinsicKeys' option
+   *
+   * @default - Unchanged
+   */
+  readonly allowIntrinsicKeys?: boolean;
 }
 
 /**
