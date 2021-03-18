@@ -228,7 +228,6 @@ export abstract class Credentials {
     return {
       username: username ?? secret.secretValueFromJson('username').toString(),
       password: secret.secretValueFromJson('password'),
-      secretName: secret.secretName,
       encryptionKey: secret.encryptionKey,
       secret,
     };

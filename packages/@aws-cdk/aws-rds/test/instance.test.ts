@@ -1243,7 +1243,6 @@ describe('instance', () => {
       Name: secretName,
     });
   });
-  });
 
   test('can set publiclyAccessible to false with public subnets', () => {
     new rds.DatabaseInstance(stack, 'Instance', {
