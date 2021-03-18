@@ -680,7 +680,7 @@ const deployStage = pipeline.addStage({
 #### Deploying ECS applications stored in a separate source code repository
 
 The idiomatic CDK way of deploying an ECS application is to have your Dockerfiles and your CDK code in the same source code repository,
-leveraging [Docker Assets])(https://docs.aws.amazon.com/cdk/latest/guide/assets.html#assets_types_docker),
+leveraging [Docker Assets](https://docs.aws.amazon.com/cdk/latest/guide/assets.html#assets_types_docker),
 and use the [CDK Pipelines module](https://docs.aws.amazon.com/cdk/api/latest/docs/pipelines-readme.html).
 
 However, if you want to deploy a Docker application whose source code is kept in a separate version control repository than the CDK code,
