@@ -22,6 +22,7 @@ jest.mock('../lib/bundling', () => {
       })();
 
       return {
+        isInline: false,
         bind: () => ({
           s3Location: {
             bucketName: 'mock-bucket-name',
