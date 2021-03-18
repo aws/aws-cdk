@@ -1345,7 +1345,7 @@ export class Domain extends DomainBase implements IDomain {
     const unsignedAccessPolicy = new iam.PolicyStatement({
       effect: iam.Effect.ALLOW,
       actions: ['es:ESHttp*'],
-      principals: [new iam.Anyone()],
+      principals: [new iam.AnyPrincipal()],
       resources: [cdk.Lazy.string({ produce: () => `${this.domainArn}/*` })],
     });
 

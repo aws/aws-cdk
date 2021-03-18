@@ -51,7 +51,6 @@ export class KinesisStream implements events.IRuleTarget {
     })];
 
     return {
-      id: '',
       arn: this.stream.streamArn,
       role: singletonEventRole(this.stream, policyStatements),
       input: this.props.message,

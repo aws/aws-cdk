@@ -37,7 +37,6 @@ export class KinesisFirehoseStream implements events.IRuleTarget {
     })];
 
     return {
-      id: '',
       arn: this.stream.attrArn,
       role: singletonEventRole(this.stream, policyStatements),
       input: this.props.message,

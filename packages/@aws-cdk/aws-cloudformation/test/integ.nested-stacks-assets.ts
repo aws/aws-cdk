@@ -15,7 +15,7 @@ class NestedStack extends cfn.NestedStack {
     super(scope, id);
 
     new lambda.Function(this, 'Handler', {
-      code: lambda.Code.asset(path.join(__dirname, 'asset-directory-fixture')),
+      code: lambda.Code.fromAsset(path.join(__dirname, 'asset-directory-fixture')),
       runtime: lambda.Runtime.NODEJS_10_X,
       handler: 'index.handler',
     });

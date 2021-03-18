@@ -94,6 +94,7 @@
       "duration-prop-type:@aws-cdk/aws-cloudwatch.MetricAlarmConfig.period",
       "duration-prop-type:@aws-cdk/aws-cloudwatch.MetricGraphConfig.period",
       "duration-prop-type:@aws-cdk/aws-cloudwatch.MetricRenderingProperties.period",
+      "no-unused-type:@aws-cdk/aws-cloudwatch.Statistic",
       "props-default-doc:@aws-cdk/aws-cloudwatch.MetricAlarmConfig.dimensions",
       "props-default-doc:@aws-cdk/aws-cloudwatch.MetricAlarmConfig.extendedStatistic",
       "props-default-doc:@aws-cdk/aws-cloudwatch.MetricAlarmConfig.statistic",
