@@ -49,6 +49,47 @@ nodeunitShim({
       test.done();
     },
 
+    'allows setting enable execute command'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
+
+      taskDefinition.addContainer('web', {
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+        memoryLimitMiB: 512,
+      });
+
+      new ecs.Ec2Service(stack, 'Ec2Service', {
+        cluster,
+        taskDefinition,
+        enableExecuteCommand: true,
+      });
+
+      // THEN
+      expect(stack).to(haveResource('AWS::ECS::Service', {
+        TaskDefinition: {
+          Ref: 'Ec2TaskDef0226F28C',
+        },
+        Cluster: {
+          Ref: 'EcsCluster97242B84',
+        },
+        DeploymentConfiguration: {
+          MaximumPercent: 200,
+          MinimumHealthyPercent: 50,
+        },
+        LaunchType: LaunchType.EC2,
+        SchedulingStrategy: 'REPLICA',
+        EnableECSManagedTags: false,
+        EnableExecuteCommand: true,
+      }));
+
+      test.done();
+    },
+
+
     'with custom cloudmap namespace'(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();

@@ -195,6 +195,63 @@ nodeunitShim({
       test.done();
     },
 
+    'allows setting enable execute command'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
+
+      taskDefinition.addContainer('web', {
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+      });
+
+      new ecs.FargateService(stack, 'FargateService', {
+        cluster,
+        taskDefinition,
+        enableExecuteCommand: true,
+      });
+
+      // THEN
+      expect(stack).to(haveResource('AWS::ECS::Service', {
+        TaskDefinition: {
+          Ref: 'FargateTaskDefC6FB60B4',
+        },
+        Cluster: {
+          Ref: 'EcsCluster97242B84',
+        },
+        DeploymentConfiguration: {
+          MaximumPercent: 200,
+          MinimumHealthyPercent: 50,
+        },
+        LaunchType: LaunchType.FARGATE,
+        EnableECSManagedTags: false,
+        EnableExecuteCommand: true,
+        NetworkConfiguration: {
+          AwsvpcConfiguration: {
+            AssignPublicIp: 'DISABLED',
+            SecurityGroups: [
+              {
+                'Fn::GetAtt': [
+                  'FargateServiceSecurityGroup0A0E79CB',
+                  'GroupId',
+                ],
+              },
+            ],
+            Subnets: [
+              {
+                Ref: 'MyVpcPrivateSubnet1Subnet5057CF7E',
+              },
+              {
+                Ref: 'MyVpcPrivateSubnet2Subnet0040C983',
+              },
+            ],
+          },
+        },
+      }));
+      test.done();
+    },
+
     'with custom cloudmap namespace'(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();
