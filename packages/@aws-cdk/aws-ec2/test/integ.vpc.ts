@@ -16,8 +16,6 @@ const rules = [
   ec2.Port.allUdp(),
   ec2.Port.udp(123),
   ec2.Port.udpRange(800, 801),
-  ec2.Port.esp(),
-  ec2.Port.ah(),
 ];
 
 for (const rule of rules) {
