@@ -1,9 +1,8 @@
 import * as zlib from 'zlib';
+import { Construct } from 'constructs';
 import { App, Stack } from '../lib';
 import { formatAnalytics } from '../lib/private/metadata-resource';
 
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct } from '../lib';
 import { ConstructInfo } from '../lib/private/runtime-info';
 
 describe('MetadataResource', () => {
