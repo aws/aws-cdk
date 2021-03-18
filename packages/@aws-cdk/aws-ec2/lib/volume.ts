@@ -75,12 +75,7 @@ export interface EbsDeviceOptionsBase {
    * @default {@link EbsDeviceVolumeType.GP2}
    */
   readonly volumeType?: EbsDeviceVolumeType;
-}
 
-/**
- * Block device options for an EBS volume
- */
-export interface EbsDeviceOptions extends EbsDeviceOptionsBase {
   /**
    * Specifies whether the EBS volume is encrypted.
    * Encrypted EBS volumes can only be attached to instances that support Amazon EBS encryption
@@ -117,7 +112,7 @@ export interface EbsDeviceOptions extends EbsDeviceOptionsBase {
    *
    * @default None
    */
-  readonly kmsKeyId?: IKey;
+  readonly kmsKey?: IKey;
 }
 
 /**
@@ -156,16 +151,17 @@ export class BlockDeviceVolume {
    * @param volumeSize The volume size, in Gibibytes (GiB)
    * @param options additional device options
    */
-  public static ebs(volumeSize: number, options: EbsDeviceOptions = {}): BlockDeviceVolume {
-    // If KmsKeyId is specified, the encrypted state must be true.
-    if (options.kmsKeyId) {
+  public static ebs(volumeSize: number, options: EbsDeviceOptionsBase = {}): BlockDeviceVolume {
+    // If KmsKey is specified, the encrypted state must be true.
+    if (options.kmsKey) {
       if (options.encrypted === false) {
-        throw new Error('`encrypted` must be not false when providing `kmsKeyId`.');
+        throw new Error('`encrypted` must be not false when providing `kmsKey`.');
       } else {
-        // Encryption is implied if KMS key is specified.
-        (options.encrypted as unknown as boolean) = true;
-        // String is expected
-        (options.kmsKeyId as unknown as string) = options.kmsKeyId.keyArn;
+        options = {
+          ...options,
+          // Encryption is implied if KMS key is specified.
+          encrypted: true,
+        };
       }
     }
     return new this({ ...options, volumeSize });

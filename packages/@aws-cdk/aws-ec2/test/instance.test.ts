@@ -221,79 +221,7 @@ nodeunitShim({
       test.done();
     },
 
-    'can set customer managed CMK'(test: Test) {
-      // GIVEN
-      const kmsKey = new kms.Key(stack, 'CustomKey');
-
-      // WHEN
-      new Instance(stack, 'Instance', {
-        vpc,
-        machineImage: new AmazonLinuxImage(),
-        instanceType: InstanceType.of(InstanceClass.T3, InstanceSize.LARGE),
-        blockDevices: [{
-          deviceName: 'ebs',
-          mappingEnabled: true,
-          volume: BlockDeviceVolume.ebs(15, {
-            deleteOnTermination: true,
-            encrypted: true,
-            kmsKeyId: kmsKey,
-            volumeType: EbsDeviceVolumeType.IO1,
-            iops: 5000,
-          }),
-        }, {
-          deviceName: 'ebs-snapshot',
-          mappingEnabled: false,
-          volume: BlockDeviceVolume.ebsFromSnapshot('snapshot-id', {
-            volumeSize: 500,
-            deleteOnTermination: false,
-            volumeType: EbsDeviceVolumeType.SC1,
-          }),
-        }, {
-          deviceName: 'ephemeral',
-          volume: BlockDeviceVolume.ephemeral(0),
-        }],
-      });
-
-      // THEN
-      cdkExpect(stack).to(haveResource('AWS::EC2::Instance', {
-        BlockDeviceMappings: [
-          {
-            DeviceName: 'ebs',
-            Ebs: {
-              DeleteOnTermination: true,
-              Encrypted: true,
-              Iops: 5000,
-              KmsKeyId: {
-                'Fn::GetAtt': [
-                  'CustomKey1E6D0D07',
-                  'Arn',
-                ],
-              },
-              VolumeSize: 15,
-              VolumeType: 'io1',
-            },
-          },
-          {
-            DeviceName: 'ebs-snapshot',
-            Ebs: {
-              DeleteOnTermination: false,
-              SnapshotId: 'snapshot-id',
-              VolumeSize: 500,
-              VolumeType: 'sc1',
-            },
-            NoDevice: {},
-          },
-          {
-            DeviceName: 'ephemeral',
-            VirtualName: 'ephemeral0',
-          },
-        ],
-      }));
-
-      test.done();
-    },
-
-    'when specifying only kmsKeyId'(test: Test) {
+    'can set customer managed key'(test: Test) {
       // GIVEN
       const key = new kms.Key(stack, 'CustomKey');
 
@@ -307,7 +235,8 @@ nodeunitShim({
           mappingEnabled: true,
           volume: BlockDeviceVolume.ebs(15, {
             deleteOnTermination: true,
-            kmsKeyId: key,
+            encrypted: true,
+            kmsKey: key,
             volumeType: EbsDeviceVolumeType.IO1,
             iops: 5000,
           }),
@@ -334,7 +263,7 @@ nodeunitShim({
               DeleteOnTermination: true,
               Encrypted: true,
               Iops: 5000,
-              KmsKeyId: {
+              KmsKey: {
                 'Fn::GetAtt': [
                   'CustomKey1E6D0D07',
                   'Arn',
@@ -364,7 +293,78 @@ nodeunitShim({
       test.done();
     },
 
-    'throws when specifying kmsKeyId and set encrypted to false'(test: Test) {
+    'when specifying only customer managed key'(test: Test) {
+      // GIVEN
+      const key = new kms.Key(stack, 'CustomKey');
+
+      // WHEN
+      new Instance(stack, 'Instance', {
+        vpc,
+        machineImage: new AmazonLinuxImage(),
+        instanceType: InstanceType.of(InstanceClass.T3, InstanceSize.LARGE),
+        blockDevices: [{
+          deviceName: 'ebs',
+          mappingEnabled: true,
+          volume: BlockDeviceVolume.ebs(15, {
+            deleteOnTermination: true,
+            kmsKey: key,
+            volumeType: EbsDeviceVolumeType.IO1,
+            iops: 5000,
+          }),
+        }, {
+          deviceName: 'ebs-snapshot',
+          mappingEnabled: false,
+          volume: BlockDeviceVolume.ebsFromSnapshot('snapshot-id', {
+            volumeSize: 500,
+            deleteOnTermination: false,
+            volumeType: EbsDeviceVolumeType.SC1,
+          }),
+        }, {
+          deviceName: 'ephemeral',
+          volume: BlockDeviceVolume.ephemeral(0),
+        }],
+      });
+
+      // THEN
+      cdkExpect(stack).to(haveResource('AWS::EC2::Instance', {
+        BlockDeviceMappings: [
+          {
+            DeviceName: 'ebs',
+            Ebs: {
+              DeleteOnTermination: true,
+              Encrypted: true,
+              Iops: 5000,
+              KmsKey: {
+                'Fn::GetAtt': [
+                  'CustomKey1E6D0D07',
+                  'Arn',
+                ],
+              },
+              VolumeSize: 15,
+              VolumeType: 'io1',
+            },
+          },
+          {
+            DeviceName: 'ebs-snapshot',
+            Ebs: {
+              DeleteOnTermination: false,
+              SnapshotId: 'snapshot-id',
+              VolumeSize: 500,
+              VolumeType: 'sc1',
+            },
+            NoDevice: {},
+          },
+          {
+            DeviceName: 'ephemeral',
+            VirtualName: 'ephemeral0',
+          },
+        ],
+      }));
+
+      test.done();
+    },
+
+    'throws when specifying customer managed key and set encrypted to false'(test: Test) {
       // GIVEN
       const key = new kms.Key(stack, 'CustomKey');
 
@@ -380,13 +380,13 @@ nodeunitShim({
             volume: BlockDeviceVolume.ebs(15, {
               deleteOnTermination: true,
               encrypted: false,
-              kmsKeyId: key,
+              kmsKey: key,
               volumeType: EbsDeviceVolumeType.IO1,
               iops: 5000,
             }),
           }],
         });
-      }, /`encrypted` must be not false when providing `kmsKeyId`/);
+      }, /`encrypted` must be not false when providing `kmsKey`/);
 
       test.done();
     },

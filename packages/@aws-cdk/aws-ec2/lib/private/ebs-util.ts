@@ -23,9 +23,10 @@ export function launchTemplateBlockDeviceMappings(construct: Construct, blockDev
 function synthesizeBlockDeviceMappings<RT, NDT>(construct: Construct, blockDevices: BlockDevice[], noDeviceValue: NDT): RT[] {
   return blockDevices.map<RT>(({ deviceName, volume, mappingEnabled }): RT => {
     const { virtualName, ebsDevice: ebs } = volume;
+    let cfnEbs: CfnInstance.EbsProperty | undefined;
 
     if (ebs) {
-      const { iops, volumeType } = ebs;
+      const { iops, volumeType, kmsKey } = ebs;
 
       if (!iops) {
         if (volumeType === EbsDeviceVolumeType.IO1) {
@@ -34,9 +35,19 @@ function synthesizeBlockDeviceMappings<RT, NDT>(construct: Construct, blockDevic
       } else if (volumeType !== EbsDeviceVolumeType.IO1) {
         Annotations.of(construct).addWarning('iops will be ignored without volumeType: EbsDeviceVolumeType.IO1');
       }
+
+      cfnEbs = {
+        ...ebs,
+        kmsKeyId: kmsKey?.keyArn,
+      };
     }
 
     const noDevice = mappingEnabled === false ? noDeviceValue : undefined;
-    return { deviceName, ebs, virtualName, noDevice } as any;
+    return {
+      deviceName,
+      ebs: cfnEbs,
+      virtualName,
+      noDevice,
+    } as any;
   });
 }

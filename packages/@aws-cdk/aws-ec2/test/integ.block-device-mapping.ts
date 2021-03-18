@@ -21,7 +21,7 @@ class TestStack extends cdk.Stack {
         deviceName: '/dev/sda1',
         volume: ec2.BlockDeviceVolume.ebs(10, {
           encrypted: true,
-          kmsKeyId: key,
+          kmsKey: key,
         }),
       }],
     });
