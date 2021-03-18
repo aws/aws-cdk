@@ -65,7 +65,7 @@ https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.Read
 
 You can have DynamoDB automatically raise and lower the read and write capacities
 of your table by setting up autoscaling. You can use this to either keep your
-tables at a desired utilization level, or by scaling up and down at preconfigured
+tables at a desired utilization level, or by scaling up and down at pre-configured
 times of the day:
 
 Auto-scaling is only relevant for tables with the billing mode, PROVISIONED.
@@ -125,7 +125,7 @@ const globalTable = new dynamodb.Table(this, 'Table', {
 All user data stored in Amazon DynamoDB is fully encrypted at rest. When creating a new table, you can choose to encrypt using the following customer master keys (CMK) to encrypt your table:
 
 * AWS owned CMK - By default, all tables are encrypted under an AWS owned customer master key (CMK) in the DynamoDB service account (no additional charges apply).
-* AWS managed CMK - AWS KMS keys (one per region) are created in your account, managed, and used on your behalf by AWS DynamoDB (AWS KMS chages apply).
+* AWS managed CMK - AWS KMS keys (one per region) are created in your account, managed, and used on your behalf by AWS DynamoDB (AWS KMS charges apply).
 * Customer managed CMK - You have full control over the KMS key used to encrypt the DynamoDB Table (AWS KMS charges apply).
 
 Creating a Table encrypted with a customer managed CMK:
