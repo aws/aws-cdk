@@ -490,7 +490,10 @@ export abstract class RestApiBase extends Resource implements IRestApi {
     ignore(deployment);
   }
 
-  protected configureCloudWatchRole(apiResource: CfnRestApi) {
+  /**
+   * @internal
+   */
+  protected _configureCloudWatchRole(apiResource: CfnRestApi) {
     const role = new iam.Role(this, 'CloudWatchRole', {
       assumedBy: new iam.ServicePrincipal('apigateway.amazonaws.com'),
       managedPolicies: [iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonAPIGatewayPushToCloudWatchLogs')],
@@ -503,7 +506,24 @@ export abstract class RestApiBase extends Resource implements IRestApi {
     resource.node.addDependency(apiResource);
   }
 
-  protected configureDeployment(props: RestApiOptions) {
+  /**
+   * @deprecated This method will be made internal. No replacement
+   */
+  protected configureCloudWatchRole(apiResource: CfnRestApi) {
+    this._configureCloudWatchRole(apiResource);
+  }
+
+  /**
+   * @deprecated This method will be made internal. No replacement
+   */
+  protected configureDeployment(props: RestApiBaseProps) {
+    this._configureDeployment(props);
+  }
+
+  /**
+   * @internal
+   */
+  protected _configureDeployment(props: RestApiBaseProps) {
     const deploy = props.deploy ?? true;
     if (deploy) {
 
@@ -603,14 +623,14 @@ export class SpecRestApi extends RestApiBase {
     this.restApiRootResourceId = resource.attrRootResourceId;
     this.root = new RootResource(this, {}, this.restApiRootResourceId);
 
-    this.configureDeployment(props);
+    this._configureDeployment(props);
     if (props.domainName) {
       this.addDomainName('CustomDomain', props.domainName);
     }
 
     const cloudWatchRole = props.cloudWatchRole ?? true;
     if (cloudWatchRole) {
-      this.configureCloudWatchRole(resource);
+      this._configureCloudWatchRole(resource);
     }
   }
 }
@@ -708,10 +728,10 @@ export class RestApi extends RestApiBase {
 
     const cloudWatchRole = props.cloudWatchRole ?? true;
     if (cloudWatchRole) {
-      this.configureCloudWatchRole(resource);
+      this._configureCloudWatchRole(resource);
     }
 
-    this.configureDeployment(props);
+    this._configureDeployment(props);
     if (props.domainName) {
       this.addDomainName('CustomDomain', props.domainName);
     }

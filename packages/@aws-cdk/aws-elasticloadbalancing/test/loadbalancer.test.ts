@@ -165,14 +165,14 @@ describe('tests', () => {
     new LoadBalancer(stack, 'LB', {
       vpc,
       subnetSelection: {
-        subnetName: 'private1',
+        subnetGroupName: 'private1',
       },
     });
 
     // THEN
     expect(stack).to(haveResource('AWS::ElasticLoadBalancing::LoadBalancer', {
       Subnets: vpc.selectSubnets({
-        subnetName: 'private1',
+        subnetGroupName: 'private1',
       }).subnetIds.map((subnetId: string) => stack.resolve(subnetId)),
     }));
   });

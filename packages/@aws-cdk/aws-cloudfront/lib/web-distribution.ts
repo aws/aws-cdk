@@ -52,6 +52,7 @@ export enum FailoverStatusCode {
  * "cloudfront.net" domain. To use this feature you must provide the list of
  * additional domains, and the ACM Certificate that CloudFront should use for
  * these additional domains.
+ * @deprecated see {@link CloudFrontWebDistributionProps#viewerCertificate} with {@link ViewerCertificate#acmCertificate}
  */
 export interface AliasConfiguration {
   /**

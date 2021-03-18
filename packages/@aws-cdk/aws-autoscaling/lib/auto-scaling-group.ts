@@ -1097,7 +1097,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
    * Adds a statement to the IAM role assumed by instances of this fleet.
    */
   public addToRolePolicy(statement: iam.PolicyStatement) {
-    this.role.addToPolicy(statement);
+    this.role.addToPrincipalPolicy(statement);
   }
 
   /**
@@ -1225,7 +1225,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
         ...this.autoScalingGroup.cfnOptions.creationPolicy,
         resourceSignal: {
           count: props.resourceSignalCount,
-          timeout: props.resourceSignalTimeout && props.resourceSignalTimeout.toISOString(),
+          timeout: props.resourceSignalTimeout && props.resourceSignalTimeout.toIsoString(),
         },
       };
     }
@@ -1327,6 +1327,7 @@ export enum ScalingEvent {
 
 /**
  * Additional settings when a rolling update is selected
+ * @deprecated use `UpdatePolicy.rollingUpdate()`
  */
 export interface RollingUpdateConfiguration {
   /**
@@ -1516,7 +1517,7 @@ function renderRollingUpdateConfig(config: RollingUpdateConfiguration = {}): Cfn
     minInstancesInService: config.minInstancesInService,
     minSuccessfulInstancesPercent: validatePercentage(config.minSuccessfulInstancesPercent),
     waitOnResourceSignals,
-    pauseTime: pauseTime && pauseTime.toISOString(),
+    pauseTime: pauseTime && pauseTime.toIsoString(),
     suspendProcesses: config.suspendProcesses ?? DEFAULT_SUSPEND_PROCESSES,
   };
 }

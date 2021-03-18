@@ -73,7 +73,7 @@ nodeunitShim({
 
 class FakeNotificationTarget implements autoscaling.ILifecycleHookTarget {
   public bind(_scope: constructs.Construct, lifecycleHook: autoscaling.ILifecycleHook): autoscaling.LifecycleHookTargetConfig {
-    lifecycleHook.role.addToPolicy(new iam.PolicyStatement({
+    lifecycleHook.role.addToPrincipalPolicy(new iam.PolicyStatement({
       actions: ['action:Work'],
       resources: ['*'],
     }));

@@ -181,8 +181,8 @@ export class VirtualNode extends VirtualNodeBase {
       virtualNodeName: this.physicalName,
       meshName: this.mesh.meshName,
       spec: {
-        backends: cdk.Lazy.anyValue({ produce: () => this.backends }, { omitEmptyArray: true }),
-        listeners: cdk.Lazy.anyValue({ produce: () => this.listeners.map(listener => listener.listener) }, { omitEmptyArray: true }),
+        backends: cdk.Lazy.any({ produce: () => this.backends }, { omitEmptyArray: true }),
+        listeners: cdk.Lazy.any({ produce: () => this.listeners.map(listener => listener.listener) }, { omitEmptyArray: true }),
         backendDefaults: props.backendDefaults !== undefined
           ? {
             clientPolicy: props.backendDefaults?.clientPolicy?.bind(this).clientPolicy,

@@ -943,7 +943,7 @@ class StandardDockerImage extends DockerImage {
       this.repository.grantPull(task);
     }
     if (this.allowAnyEcrImagePull) {
-      task.grantPrincipal.addToPolicy(new iam.PolicyStatement({
+      task.grantPrincipal.addToPrincipalPolicy(new iam.PolicyStatement({
         actions: [
           'ecr:BatchCheckLayerAvailability',
           'ecr:GetDownloadUrlForLayer',
@@ -986,7 +986,7 @@ class StandardS3Location extends S3Location {
       if (opts.forWriting) {
         actions.push('s3:PutObject');
       }
-      task.grantPrincipal.addToPolicy(new iam.PolicyStatement({ actions, resources: ['*'] }));
+      task.grantPrincipal.addToPrincipalPolicy(new iam.PolicyStatement({ actions, resources: ['*'] }));
     }
     return { uri: this.uri };
   }

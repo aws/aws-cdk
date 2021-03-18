@@ -18,8 +18,11 @@ import { Handler } from './handler';
 import { Version, VersionOptions } from './lambda-version';
 import { CfnFunction } from './lambda.generated';
 import { ILayerVersion } from './layers';
-import { LogRetentionRetryOptions } from './log-retention';
 import { Runtime } from './runtime';
+
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line
+import { LogRetentionRetryOptions } from './log-retention';
 
 /**
  * X-Ray Tracing Modes (https://docs.aws.amazon.com/lambda/latest/dg/API_TracingConfig.html)
@@ -568,13 +571,13 @@ export class Function extends FunctionBase {
       const config = props.filesystem.config;
       if (config.policies) {
         config.policies.forEach(p => {
-          this.role?.addToPolicy(p);
+          this.role?.addToPrincipalPolicy(p);
         });
       }
     }
 
     for (const statement of (props.initialPolicy || [])) {
-      this.role.addToPolicy(statement);
+      this.role.addToPrincipalPolicy(statement);
     }
 
     const code = props.code.bind(this);

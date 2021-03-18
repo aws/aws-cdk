@@ -811,7 +811,7 @@ export = {
     const nested = new NestedStack(parent, 'nested-stack');
 
     // WHEN
-    const location = nested.addDockerImageAsset({
+    const location = nested.synthesizer.addDockerImageAsset({
       directoryName: 'my-image',
       dockerBuildArgs: { key: 'value', boom: 'bam' },
       dockerBuildTarget: 'buildTarget',

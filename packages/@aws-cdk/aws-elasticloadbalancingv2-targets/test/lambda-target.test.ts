@@ -16,7 +16,7 @@ beforeEach(() => {
   listener = lb.addListener('Listener', { port: 80 });
 
   fn = new lambda.Function(stack, 'Fun', {
-    code: lambda.Code.inline('foo'),
+    code: lambda.Code.fromInline('foo'),
     runtime: lambda.Runtime.PYTHON_3_6,
     handler: 'index.handler',
   });

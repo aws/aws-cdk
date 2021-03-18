@@ -1,5 +1,4 @@
 import { expect, haveResourceLike } from '@aws-cdk/assert';
-import { CloudFormationCapabilities } from '@aws-cdk/aws-cloudformation';
 import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as codecommit from '@aws-cdk/aws-codecommit';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
@@ -439,8 +438,8 @@ nodeunitShim({
       stackName: 'MyStack',
       templatePath: stack.sourceOutput.atPath('template.yaml'),
       adminPermissions: false,
-      capabilities: [
-        CloudFormationCapabilities.NAMED_IAM,
+      cfnCapabilities: [
+        cdk.CfnCapabilities.NAMED_IAM,
       ],
     }));
 
@@ -482,9 +481,9 @@ nodeunitShim({
       stackName: 'MyStack',
       templatePath: stack.sourceOutput.atPath('template.yaml'),
       adminPermissions: false,
-      capabilities: [
-        CloudFormationCapabilities.NAMED_IAM,
-        CloudFormationCapabilities.AUTO_EXPAND,
+      cfnCapabilities: [
+        cdk.CfnCapabilities.NAMED_IAM,
+        cdk.CfnCapabilities.AUTO_EXPAND,
       ],
     }));
 
@@ -526,8 +525,8 @@ nodeunitShim({
       stackName: 'MyStack',
       templatePath: stack.sourceOutput.atPath('template.yaml'),
       adminPermissions: false,
-      capabilities: [
-        CloudFormationCapabilities.NONE,
+      cfnCapabilities: [
+        cdk.CfnCapabilities.NONE,
       ],
     }));
 

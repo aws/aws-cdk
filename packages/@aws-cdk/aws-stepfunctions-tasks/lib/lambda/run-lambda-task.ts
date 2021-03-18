@@ -106,6 +106,7 @@ export class RunLambdaTask implements sfn.IStepFunctionsTask {
 
 /**
  * Invocation type of a Lambda
+ * @deprecated use `LambdaInvocationType`
  */
 export enum InvocationType {
   /**

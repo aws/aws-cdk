@@ -1332,7 +1332,7 @@ describe('User Pool', () => {
 function fooFunction(scope: Construct, name: string): lambda.IFunction {
   return new lambda.Function(scope, name, {
     functionName: name,
-    code: lambda.Code.inline('foo'),
+    code: lambda.Code.fromInline('foo'),
     runtime: lambda.Runtime.NODEJS_12_X,
     handler: 'index.handler',
   });

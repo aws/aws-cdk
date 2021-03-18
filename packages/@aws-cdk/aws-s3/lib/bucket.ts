@@ -683,7 +683,7 @@ abstract class BucketBase extends Resource implements IBucket {
     return iam.Grant.addToPrincipalOrResource({
       actions: allowedActions,
       resourceArns: [this.arnForObjects(keyPrefix)],
-      grantee: new iam.Anyone(),
+      grantee: new iam.AnyPrincipal(),
       resource: this,
     });
   }

@@ -61,7 +61,6 @@ export class SfnStateMachine implements events.IRuleTarget {
     }
 
     return {
-      id: '',
       arn: this.machine.stateMachineArn,
       deadLetterConfig: this.props.deadLetterQueue ? { arn: this.props.deadLetterQueue?.queueArn } : undefined,
       role: this.role,

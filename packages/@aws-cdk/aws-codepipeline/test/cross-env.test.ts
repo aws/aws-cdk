@@ -115,7 +115,7 @@ describe.each(['legacy', 'modern'])('with %s synthesis', (synthesisStyle: string
 
         // THEN
         const asm = app.synth();
-        const supportStack = asm.getStack(`${stack.stackName}-support-eu-west-1`);
+        const supportStack = asm.getStackByName(`${stack.stackName}-support-eu-west-1`);
 
         // THEN
         expect(supportStack).not.toHaveResource('AWS::KMS::Key');
