@@ -424,7 +424,6 @@ const IGNORED_FILE_NAMES = new Set([
   '.gitignore',
   '.jest.config.js',
   '.jsii',
-  '.npmignore',
   'node_modules',
   'package.json',
   'test',
