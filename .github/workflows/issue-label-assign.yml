@@ -159,6 +159,7 @@ jobs:
            {"keywords":["(@aws-cdk/aws-servicediscovery)","(aws-servicediscovery)","(servicediscovery)","(service discovery)","(service-discovery)"],"labels":["@aws-cdk/aws-servicediscovery"],"assignees":["MrArnoldPalmer"]},
            {"keywords":["(@aws-cdk/aws-ses)","(aws-ses)","(ses)"],"labels":["@aws-cdk/aws-ses"],"assignees":["iliapolo"]},
            {"keywords":["(@aws-cdk/aws-ses-actions)","(aws-ses-actions)","(ses-actions)","(ses actions)"],"labels":["@aws-cdk/aws-ses-actions"],"assignees":["iliapolo"]},
+           {"keywords":["(@aws-cdk/aws-signer)","(aws-signer)","(signer)"],"labels":["@aws-cdk/aws-signer"],"assignees":["nija-at"]},
            {"keywords":["(@aws-cdk/aws-sns)","(aws-sns)","(sns)"],"labels":["@aws-cdk/aws-sns"],"assignees":["MrArnoldPalmer"]},
            {"keywords":["(@aws-cdk/aws-sns-subscriptions)","(aws-sns-subscriptions)","(sns-subscriptions)","(sns subscriptions)"],"labels":["@aws-cdk/aws-sns-subscriptions"],"assignees":["MrArnoldPalmer"]},
            {"keywords":["(@aws-cdk/aws-sqs)","(aws-sqs)","(sqs)"],"labels":["@aws-cdk/aws-sqs"],"assignees":["MrArnoldPalmer"]},
