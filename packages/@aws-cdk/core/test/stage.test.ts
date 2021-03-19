@@ -1,7 +1,8 @@
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
+import { Construct, IConstruct } from 'constructs';
 import { nodeunitShim, Test } from 'nodeunit-shim';
-import { App, CfnResource, Construct, IAspect, IConstruct, Stack, Stage, Aspects } from '../lib';
+import { App, CfnResource, IAspect, Stack, Stage, Aspects } from '../lib';
 
 nodeunitShim({
   'Stack inherits unspecified part of the env from Stage'(test: Test) {
@@ -115,28 +116,6 @@ nodeunitShim({
     test.throws(() => {
       stack2.addDependency(stack1);
     }, /dependency cannot cross stage boundaries/);
-
-    test.done();
-  },
-
-  'When we synth() a stage, prepare must be called on constructs in the stage'(test: Test) {
-    // GIVEN
-    const app = new App();
-    let prepared = false;
-    const stage = new Stage(app, 'MyStage');
-    const stack = new BogusStack(stage, 'Stack');
-    class HazPrepare extends Construct {
-      protected prepare() {
-        prepared = true;
-      }
-    }
-    new HazPrepare(stack, 'Preparable');
-
-    // WHEN
-    stage.synth();
-
-    // THEN
-    test.equals(prepared, true);
 
     test.done();
   },

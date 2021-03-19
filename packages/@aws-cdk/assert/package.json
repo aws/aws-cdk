@@ -1,6 +1,7 @@
 {
   "name": "@aws-cdk/assert",
   "version": "0.0.0",
+  "private": true,
   "description": "An assertion library for use with CDK Apps",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -32,11 +33,11 @@
     "@aws-cdk/cloudformation-diff": "0.0.0",
     "@aws-cdk/core": "0.0.0",
     "@aws-cdk/cx-api": "0.0.0",
-    "constructs": "^3.2.0"
+    "constructs": "10.0.0-pre.5"
   },
   "peerDependencies": {
     "@aws-cdk/core": "0.0.0",
-    "constructs": "^3.2.0",
+    "constructs": "10.0.0-pre.5",
     "jest": "^26.6.3"
   },
   "repository": {
