@@ -749,7 +749,7 @@ ID: ...)
 The stack failed its previous deployment, and is in a non-retryable state.
 Go into the CloudFormation console, delete the stack, and retry the deployment.
 
-### Cannot find module 'xxxx' or its corresponding type declarations.
+### Cannot find module 'xxxx' or its corresponding type declarations
 
 You may see this if you are using TypeScript or other NPM-based languages,
 when using NPM 7 on your workstation (where you generate `package-lock.json`)
