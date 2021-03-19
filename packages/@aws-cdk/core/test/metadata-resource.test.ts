@@ -4,9 +4,6 @@ import { App, Stack } from '../lib';
 import { formatAnalytics } from '../lib/private/metadata-resource';
 import { ConstructInfo } from '../lib/private/runtime-info';
 
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct } from '../lib';
-
 describe('MetadataResource', () => {
   let app: App;
   let stack: Stack;
