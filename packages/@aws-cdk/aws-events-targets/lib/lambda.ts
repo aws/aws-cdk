@@ -50,7 +50,6 @@ export class LambdaFunction implements events.IRuleTarget {
     }
 
     return {
-      id: '',
       arn: this.handler.functionArn,
       deadLetterConfig: this.props.deadLetterQueue ? { arn: this.props.deadLetterQueue?.queueArn } : undefined,
       input: this.props.event,
