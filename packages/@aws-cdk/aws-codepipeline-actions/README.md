@@ -174,8 +174,6 @@ const sourceAction = new codepipeline_actions.BitBucketSourceAction({
   repo: 'aws-cdk',
   output: sourceOutput,
   connectionArn: 'arn:aws:codestar-connections:us-east-1:123456789012:connection/12345678-abcd-12ab-34cdef5678gh',
-  codeBuildCloneOutput: false,
-  detectChanges: true,
 });
 ```
 
