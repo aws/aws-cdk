@@ -45,7 +45,6 @@ export class CloudWatchLogGroup implements events.IRuleTarget {
     }
 
     return {
-      id: '',
       arn: logGroupStack.formatArn({
         service: 'logs',
         resource: 'log-group',
