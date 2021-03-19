@@ -371,6 +371,9 @@
     "pkglint": "0.0.0",
     "ts-jest": "^26.5.4"
   },
+  "bundledDependencies": [
+    "@aws-cdk/yaml-cfn"
+  ],
   "keywords": [
     "aws",
     "cdk",
