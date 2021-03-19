@@ -1,4 +1,5 @@
 import * as zlib from 'zlib';
+import { Construct } from 'constructs';
 import { App, Stack } from '../lib';
 import { formatAnalytics } from '../lib/private/metadata-resource';
 import { ConstructInfo } from '../lib/private/runtime-info';
