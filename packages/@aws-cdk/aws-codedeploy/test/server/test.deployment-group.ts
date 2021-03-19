@@ -1,4 +1,4 @@
-import { expect, haveResource, SynthUtils } from '@aws-cdk/assert';
+import { expect, haveOutput, haveResource, SynthUtils } from '@aws-cdk/assert';
 import * as autoscaling from '@aws-cdk/aws-autoscaling';
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as ec2 from '@aws-cdk/aws-ec2';
@@ -29,13 +29,19 @@ export = {
     },
 
     'creating an application with physical name if needed'(test: Test) {
-      const stack = new cdk.Stack();
-      new codedeploy.ServerDeploymentGroup(stack, 'MyDG', {
+      const stack = new cdk.Stack(undefined, undefined, { env: { account: '12345', region: 'us-test-1' } });
+      const stack2 = new cdk.Stack(undefined, undefined, { env: { account: '12346', region: 'us-test-2' } });
+      const serverDeploymentGroup = new codedeploy.ServerDeploymentGroup(stack, 'MyDG', {
         deploymentGroupName: cdk.PhysicalName.GENERATE_IF_NEEDED,
       });
 
-      expect(stack).to(haveResource('AWS::CodeDeploy::Application', {
-        'ComputePlatform': 'Server',
+      new cdk.CfnOutput(stack2, 'Output', {
+        value: serverDeploymentGroup.application.applicationName,
+      });
+
+      expect(stack2).to(haveOutput({
+        outputName: 'Output',
+        outputValue: 'defaultmydgapplication78dba0bb0c7580b32033',
       }));
 
       test.done();
