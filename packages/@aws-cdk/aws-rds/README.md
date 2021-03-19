@@ -247,6 +247,7 @@ It's also possible to create user credentials together with the instance/cluster
 ```ts
 const myUserSecret = new rds.DatabaseSecret(this, 'MyUserSecret', {
   username: 'myuser',
+  secretName: 'my-user-secret', // optional, defaults to a CloudFormation-generated name
   masterSecret: instance.secret,
   excludeCharacters: '{}[]()\'"/\\', // defaults to the set " %+~`#$&*()|[]{}:;<>?!'/@\"\\"
 });
