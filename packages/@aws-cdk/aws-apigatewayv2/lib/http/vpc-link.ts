@@ -92,9 +92,9 @@ export class VpcLink extends Resource implements IVpcLink {
     this.vpc = props.vpc;
 
     const cfnResource = new CfnVpcLink(this, 'Resource', {
-      name: props.vpcLinkName || Lazy.stringValue({ produce: () => Names.uniqueId(this) }),
-      subnetIds: Lazy.listValue({ produce: () => this.renderSubnets() }),
-      securityGroupIds: Lazy.listValue({ produce: () => this.renderSecurityGroups() }),
+      name: props.vpcLinkName || Lazy.string({ produce: () => Names.uniqueId(this) }),
+      subnetIds: Lazy.list({ produce: () => this.renderSubnets() }),
+      securityGroupIds: Lazy.list({ produce: () => this.renderSecurityGroups() }),
     });
 
     this.vpcLinkId = cfnResource.ref;

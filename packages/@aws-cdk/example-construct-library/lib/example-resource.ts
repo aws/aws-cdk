@@ -173,7 +173,7 @@ abstract class ExampleResourceBase extends core.Resource implements IExampleReso
   /** Implement the convenience {@link IExampleResource.addToRolePolicy} method. */
   public addToRolePolicy(policyStatement: iam.PolicyStatement): boolean {
     if (this.role) {
-      this.role.addToPolicy(policyStatement);
+      this.role.addToPrincipalPolicy(policyStatement);
       return true;
     } else {
       return false;

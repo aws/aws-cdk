@@ -15,7 +15,7 @@ class TestStack extends Stack {
     const listener = lb.addListener('Listener', { port: 80 });
 
     const fn = new lambda.Function(this, 'Fun', {
-      code: lambda.Code.inline(`
+      code: lambda.Code.fromInline(`
 def handler(event, context):
   return {
     "isBase64Encoded": False,

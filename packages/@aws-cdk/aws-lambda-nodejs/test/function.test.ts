@@ -7,6 +7,7 @@ import { Runtime } from '@aws-cdk/aws-lambda';
 import { Stack } from '@aws-cdk/core';
 import { NodejsFunction } from '../lib';
 import { Bundling } from '../lib/bundling';
+import { nodeMajorVersion } from '../lib/util';
 
 jest.mock('../lib/bundling', () => {
   return {
@@ -35,8 +36,13 @@ test('NodejsFunction with .ts handler', () => {
     entry: expect.stringContaining('function.test.handler1.ts'), // Automatically finds .ts handler file
   }));
 
+  const runtime = nodeMajorVersion() >= 14
+    ? Runtime.NODEJS_14_X
+    : Runtime.NODEJS_12_X;
+
   expect(stack).toHaveResource('AWS::Lambda::Function', {
     Handler: 'index.handler',
+    Runtime: runtime.name,
   });
 });
 

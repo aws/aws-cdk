@@ -246,7 +246,7 @@ export class Trail extends Resource {
 
       logsRole = new iam.Role(this, 'LogsRole', { assumedBy: cloudTrailPrincipal });
 
-      logsRole.addToPolicy(new iam.PolicyStatement({
+      logsRole.addToPrincipalPolicy(new iam.PolicyStatement({
         actions: ['logs:PutLogEvents', 'logs:CreateLogStream'],
         resources: [this.logGroup.logGroupArn],
       }));

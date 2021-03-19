@@ -27,7 +27,6 @@ export class CodePipeline implements events.IRuleTarget {
 
   public bind(_rule: events.IRule, _id?: string): events.RuleTargetConfig {
     return {
-      id: '',
       arn: this.pipeline.pipelineArn,
       role: this.options.eventRole || singletonEventRole(this.pipeline, [new iam.PolicyStatement({
         resources: [this.pipeline.pipelineArn],

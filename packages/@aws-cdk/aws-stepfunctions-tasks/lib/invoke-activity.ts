@@ -3,6 +3,7 @@ import { Duration } from '@aws-cdk/core';
 
 /**
  * Properties for FunctionTask
+ * @deprecated use `StepFunctionsInvokeActivity` and `StepFunctionsInvokeActivityProps`.
  */
 export interface InvokeActivityProps {
   /**
@@ -20,7 +21,7 @@ export interface InvokeActivityProps {
  *
  * An Activity can be used directly as a Resource.
  *
- * @deprecated - use `StepFunctionsInvokeActivity`
+ * @deprecated use `StepFunctionsInvokeActivity`
  */
 export class InvokeActivity implements sfn.IStepFunctionsTask {
   constructor(private readonly activity: sfn.IActivity, private readonly props: InvokeActivityProps = {}) {

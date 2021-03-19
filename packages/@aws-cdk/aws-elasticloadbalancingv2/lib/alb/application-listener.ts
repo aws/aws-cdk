@@ -492,8 +492,14 @@ export interface IApplicationListener extends IResource, ec2.IConnectable {
 
   /**
    * Add one or more certificates to this listener.
+   * @deprecated use `addCertificates()`
    */
   addCertificateArns(id: string, arns: string[]): void;
+
+  /**
+   * Add one or more certificates to this listener.
+   */
+  addCertificates(id: string, certificates: IListenerCertificate[]): void;
 
   /**
    * Load balance incoming requests to the given target groups.
@@ -589,8 +595,17 @@ abstract class ExternalApplicationListener extends Resource implements IApplicat
 
   /**
    * Add one or more certificates to this listener.
+   * @deprecated use `addCertificates()`
    */
   public addCertificateArns(id: string, arns: string[]): void {
+    this.addCertificates(id, arns.map(ListenerCertificate.fromArn));
+  }
+
+  /**
+   * Add one or more certificates to this listener.
+   */
+  public addCertificates(id: string, certificates: IListenerCertificate[]): void {
+    const arns = certificates.map(c => c.certificateArn);
     new ApplicationListenerCertificate(this, id, {
       listener: this,
       certificateArns: arns,
