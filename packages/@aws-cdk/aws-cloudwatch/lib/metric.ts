@@ -302,6 +302,7 @@ export class Metric implements IMetric {
     };
   }
 
+  /** @deprecated use toMetricConfig() */
   public toAlarmConfig(): MetricAlarmConfig {
     const metricConfig = this.toMetricConfig();
     if (metricConfig.metricStat === undefined) {
@@ -320,6 +321,9 @@ export class Metric implements IMetric {
     };
   }
 
+  /**
+   * @deprecated use toMetricConfig()
+   */
   public toGraphConfig(): MetricGraphConfig {
     const metricConfig = this.toMetricConfig();
     if (metricConfig.metricStat === undefined) {
@@ -475,10 +479,16 @@ export class MathExpression implements IMetric {
     });
   }
 
+  /**
+   * @deprecated use toMetricConfig()
+   */
   public toAlarmConfig(): MetricAlarmConfig {
     throw new Error('Using a math expression is not supported here. Pass a \'Metric\' object instead');
   }
 
+  /**
+   * @deprecated use toMetricConfig()
+   */
   public toGraphConfig(): MetricGraphConfig {
     throw new Error('Using a math expression is not supported here. Pass a \'Metric\' object instead');
   }

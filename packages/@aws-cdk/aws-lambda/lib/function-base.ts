@@ -261,7 +261,7 @@ export abstract class FunctionBase extends Resource implements IFunction {
       return;
     }
 
-    this.role.addToPolicy(statement);
+    this.role.addToPrincipalPolicy(statement);
   }
 
   /**
