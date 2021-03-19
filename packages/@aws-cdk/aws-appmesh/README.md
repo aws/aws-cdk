@@ -534,28 +534,42 @@ appmesh.Mesh.fromMeshName(stack, 'imported-mesh', 'abc');
 
 ## IAM Grants
 
-Each mesh resource includes 2 methods to generate IAM policy documents. `grantAll` grants the user full read/write 
-access to the resource. `grant` only grants the listed actions and you can list more than 1.
+Each mesh resource includes 2 methods to generate IAM policy documents. `grantRead` grants the user read access to the 
+resource all of it's subresources. And similarly `grantWrite` grants the user write access to the resource to all 
+subresources. Virtual Node and Virtual Gateway implement a separate `grantStreamAggregatedResources` method for 
+identities that are running Envoy and need to access generated config.
 
 ```ts
 const gateway = new appmesh.VirtualGateway(stack, 'testGateway', { mesh: mesh });
-const user = new iam.User(stack, 'myUser');
+const gatewayAdminUser = new iam.User(stack, 'gatewayAdminUser');
+const envoyUser = new iam.User(stack, 'envoyUser');
 
 /**
  * This will grant the user the following actions:
- * - appmesh:DescribeVirtualGateway
+ * - appmesh:CreateVirtualGateway
  * - appmesh:UpdateVirtualGateway
  * - appmesh:DeleteVirtualGateway
+ * - appmesh:CreateGatewayRoute
+ * - appmesh:UpdateGatewayRoute
+ * - appmesh:DeleteGatewayRoute
  * - appmesh:TagResource
  * - appmesh:UntagResource
- * ONLY for the resource the grant was created for. 
+ * ONLY for this gateway.
  */
-gateway.grantAll(user);
+gateway.grantWrite(gatewayAdminUser);
 
 /**
- * This will only grant the user "appmesh:DescribeVirtualGateway" for the Virtual Gateway. 
+ * This will grant the user the following actions:
+ * - appmesh:ListVirtualGateway
+ * - appmesh:DescribeVirtualGateway
+ * - appmesh:ListGatewayRoute
+ * - appmesh:DescribeGatewayRoute
+ * ONLY for this gateway.
  */
-gateway.grant(user, 'appmesh:DescribeVirtualGateway');
+gateway.grantRead(gatewayAdminUser);
 
-
+/**
+ * This will grant `grantStreamAggregatedResources` ONLY for this gateway.
+ */
+gateway.grantStreamAggregatedResources(envoyUser)
 ``` 
