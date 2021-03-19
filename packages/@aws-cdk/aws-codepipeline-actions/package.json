@@ -1,6 +1,7 @@
 {
   "name": "@aws-cdk/aws-codepipeline-actions",
   "version": "0.0.0",
+  "private": true,
   "description": "Concrete Actions for AWS Code Pipeline",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -96,7 +97,7 @@
     "@aws-cdk/aws-stepfunctions": "0.0.0",
     "@aws-cdk/core": "0.0.0",
     "case": "1.6.3",
-    "constructs": "^3.2.0"
+    "constructs": "10.0.0-pre.5"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
@@ -118,7 +119,7 @@
     "@aws-cdk/aws-sns-subscriptions": "0.0.0",
     "@aws-cdk/aws-stepfunctions": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "constructs": "^3.2.0"
+    "constructs": "10.0.0-pre.5"
   },
   "bundledDependencies": [
     "case"
