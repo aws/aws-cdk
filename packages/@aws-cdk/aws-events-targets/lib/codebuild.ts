@@ -1,7 +1,7 @@
 import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
-import { addToDeadLetterQueueResourcePolicy, bindBaseProps, singletonEventRole, TargetBaseProps } from './util';
+import { addToDeadLetterQueueResourcePolicy, bindBaseTargetConfig, singletonEventRole, TargetBaseProps } from './util';
 
 /**
  * Customize the CodeBuild Event Target
@@ -45,8 +45,7 @@ export class CodeBuildProject implements events.IRuleTarget {
     }
 
     return {
-      ...bindBaseProps(this.props),
-      id: '',
+      ...bindBaseTargetConfig(this.props),
       arn: this.project.projectArn,
       role: this.props.eventRole || singletonEventRole(this.project, [
         new iam.PolicyStatement({

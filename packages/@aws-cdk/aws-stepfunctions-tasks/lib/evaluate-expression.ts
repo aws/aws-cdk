@@ -99,19 +99,28 @@ export class EvaluateExpression extends sfn.TaskStateBase {
 function createEvalFn(runtime: lambda.Runtime, scope: Construct) {
   const lambdaPurpose = 'Eval';
 
+  const nodeJsGuids = {
+    [lambda.Runtime.NODEJS_14_X.name]: 'da2d1181-604e-4a45-8694-1a6abd7fe42d',
+    [lambda.Runtime.NODEJS_12_X.name]: '2b81e383-aad2-44db-8aaf-b4809ae0e3b4',
+    [lambda.Runtime.NODEJS_10_X.name]: 'a0d2ce44-871b-4e74-87a1-f5e63d7c3bdc',
+  };
+
   switch (runtime) {
     case lambda.Runtime.NODEJS_14_X:
     case lambda.Runtime.NODEJS_12_X:
     case lambda.Runtime.NODEJS_10_X:
-      return new lambda.SingletonFunction(scope, 'EvalFunction', {
-        runtime,
-        handler: 'index.handler',
-        uuid: 'a0d2ce44-871b-4e74-87a1-f5e63d7c3bdc',
-        lambdaPurpose,
-        code: lambda.Code.fromAsset(path.join(__dirname, 'eval-nodejs-handler')),
-      });
-    // TODO: implement other runtimes
-    default:
-      throw new Error(`The runtime ${runtime.name} is currently not supported.`);
+      const uuid = nodeJsGuids[runtime.name];
+      if (uuid) {
+        return new lambda.SingletonFunction(scope, 'EvalFunction', {
+          runtime,
+          uuid,
+          handler: 'index.handler',
+          lambdaPurpose,
+          code: lambda.Code.fromAsset(path.join(__dirname, 'eval-nodejs-handler')),
+        });
+      }
+      break;
   }
+
+  throw new Error(`The runtime ${runtime.name} is currently not supported.`);
 }

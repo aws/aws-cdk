@@ -1,7 +1,7 @@
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
-import { addToDeadLetterQueueResourcePolicy, bindBaseProps, singletonEventRole, TargetBaseProps } from './util';
+import { addToDeadLetterQueueResourcePolicy, bindBaseTargetConfig, singletonEventRole, TargetBaseProps } from './util';
 
 /**
  * Customize the Step Functions State Machine target
@@ -48,8 +48,7 @@ export class SfnStateMachine implements events.IRuleTarget {
     }
 
     return {
-      ...bindBaseProps(this.props),
-      id: '',
+      ...bindBaseTargetConfig(this.props),
       arn: this.machine.stateMachineArn,
       role: this.role,
       input: this.props.input,

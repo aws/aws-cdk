@@ -3,7 +3,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as logs from '@aws-cdk/aws-logs';
 import * as cdk from '@aws-cdk/core';
 import { LogGroupResourcePolicy } from './log-group-resource-policy';
-import { TargetBaseProps, bindBaseProps } from './util';
+import { TargetBaseProps, bindBaseTargetConfig } from './util';
 
 /**
  * Customize the CloudWatch LogGroup Event Target
@@ -46,8 +46,7 @@ export class CloudWatchLogGroup implements events.IRuleTarget {
     }
 
     return {
-      ...bindBaseProps(this.props),
-      id: '',
+      ...bindBaseTargetConfig(this.props),
       arn: logGroupStack.formatArn({
         service: 'logs',
         resource: 'log-group',

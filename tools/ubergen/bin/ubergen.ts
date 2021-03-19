@@ -17,6 +17,7 @@ async function main() {
   const libraries = await findLibrariesToPackage(uberPackageJson);
   await verifyDependencies(uberPackageJson, libraries);
   await prepareSourceFiles(libraries, uberPackageJson);
+  await combineRosettaFixtures(libraries);
 }
 
 main().then(
@@ -228,6 +229,25 @@ async function prepareSourceFiles(libraries: readonly LibraryReference[], packag
   }
 
   await fs.writeFile(path.join(LIB_ROOT, 'index.ts'), indexStatements.join('\n'), { encoding: 'utf8' });
+
+  console.log('\t🍺 Success!');
+}
+
+async function combineRosettaFixtures(libraries: readonly LibraryReference[]) {
+  console.log('📝 Combining Rosetta fixtures...');
+
+  const uberRosettaDir = path.resolve(LIB_ROOT, '..', 'rosetta');
+  await fs.remove(uberRosettaDir);
+
+  for (const library of libraries) {
+    const packageRosettaDir = path.join(library.root, 'rosetta');
+    if (await fs.pathExists(packageRosettaDir)) {
+      await fs.copy(packageRosettaDir, uberRosettaDir, {
+        overwrite: true,
+        recursive: true,
+      });
+    }
+  }
 
   console.log('\t🍺 Success!');
 }

@@ -1,6 +1,6 @@
 import * as events from '@aws-cdk/aws-events';
 import * as lambda from '@aws-cdk/aws-lambda';
-import { addLambdaPermission, addToDeadLetterQueueResourcePolicy, TargetBaseProps, bindBaseProps } from './util';
+import { addLambdaPermission, addToDeadLetterQueueResourcePolicy, TargetBaseProps, bindBaseTargetConfig } from './util';
 
 /**
  * Customize the Lambda Event Target
@@ -37,8 +37,7 @@ export class LambdaFunction implements events.IRuleTarget {
     }
 
     return {
-      ...bindBaseProps(this.props),
-      id: '',
+      ...bindBaseTargetConfig(this.props),
       arn: this.handler.functionArn,
       input: this.props.event,
       targetResource: this.handler,

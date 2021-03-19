@@ -1,3 +1,145 @@
+# CloudFormation Resource Specification v31.0.0
+
+## New Resource Types
+
+* AWS::CE::AnomalyMonitor
+* AWS::CE::AnomalySubscription
+* AWS::CertificateManager::Account
+* AWS::ECS::ClusterCapacityProviderAssociations
+* AWS::RDS::DBProxyEndpoint
+
+## Attribute Changes
+
+* AWS::SSM::ResourceDataSync SyncName (__added__)
+
+## Property Changes
+
+* AWS::AppSync::GraphQLApi LambdaAuthorizerConfig (__added__)
+* AWS::Backup::BackupPlan BackupPlanTags.PrimitiveType (__deleted__)
+* AWS::Backup::BackupPlan BackupPlanTags.PrimitiveItemType (__added__)
+* AWS::Backup::BackupPlan BackupPlanTags.Type (__added__)
+* AWS::DynamoDB::Table KinesisStreamSpecification (__deleted__)
+* AWS::DynamoDB::Table ContributorInsightsSpecification (__added__)
+* AWS::EC2::LaunchTemplate TagSpecifications (__added__)
+* AWS::ECS::CapacityProvider AutoScalingGroupProvider.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::ECS::Cluster Configuration (__added__)
+* AWS::ECS::Service EnableExecuteCommand (__added__)
+* AWS::EFS::FileSystem AvailabilityZoneName (__added__)
+
+## Property Type Changes
+
+* AWS::DynamoDB::Table.KinesisStreamSpecification (__removed__)
+* AWS::AppSync::GraphQLApi.LambdaAuthorizerConfig (__added__)
+* AWS::DynamoDB::Table.ContributorInsightsSpecification (__added__)
+* AWS::EC2::LaunchTemplate.TagSpecifications (__added__)
+* AWS::ECS::Cluster.ClusterConfiguration (__added__)
+* AWS::ECS::Cluster.ExecuteCommandConfiguration (__added__)
+* AWS::ECS::Cluster.ExecuteCommandLogConfiguration (__added__)
+* AWS::AppSync::GraphQLApi.AdditionalAuthenticationProvider LambdaAuthorizerConfig (__added__)
+* AWS::Backup::BackupPlan.BackupPlanResourceType AdvancedBackupSettings.DuplicatesAllowed (__added__)
+* AWS::Backup::BackupPlan.BackupPlanResourceType BackupPlanRule.DuplicatesAllowed (__added__)
+* AWS::Backup::BackupPlan.BackupRuleResourceType CopyActions.DuplicatesAllowed (__added__)
+* AWS::Backup::BackupPlan.BackupRuleResourceType RecoveryPointTags.PrimitiveType (__deleted__)
+* AWS::Backup::BackupPlan.BackupRuleResourceType RecoveryPointTags.PrimitiveItemType (__added__)
+* AWS::Backup::BackupPlan.BackupRuleResourceType RecoveryPointTags.Type (__added__)
+* AWS::DynamoDB::Table.GlobalSecondaryIndex ContributorInsightsSpecification (__added__)
+* AWS::ECS::CapacityProvider.AutoScalingGroupProvider ManagedScaling.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::ECS::CapacityProvider.AutoScalingGroupProvider ManagedTerminationProtection.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::ECS::CapacityProvider.ManagedScaling MaximumScalingStepSize.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::ECS::CapacityProvider.ManagedScaling MinimumScalingStepSize.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::ECS::CapacityProvider.ManagedScaling Status.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::ECS::CapacityProvider.ManagedScaling TargetCapacity.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::GameLift::Alias.RoutingStrategy Type.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::IoT::TopicRule.S3Action CannedAcl (__added__)
+* AWS::IoT::TopicRule.TopicRulePayload Actions.DuplicatesAllowed (__deleted__)
+* AWS::IoT::TopicRule.TopicRulePayload RuleDisabled.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::SSM::ResourceDataSync.AwsOrganizationsSource OrganizationSourceType.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::SSM::ResourceDataSync.AwsOrganizationsSource OrganizationalUnits.DuplicatesAllowed (__added__)
+* AWS::SSM::ResourceDataSync.SyncSource SourceRegions.DuplicatesAllowed (__added__)
+* AWS::SSM::ResourceDataSync.SyncSource SourceType.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+
+
+# CloudFormation Resource Specification v30.1.0
+
+## New Resource Types
+
+* AWS::Events::ApiDestination
+* AWS::Events::Connection
+* AWS::IoT::AccountAuditConfiguration
+* AWS::IoT::CustomMetric
+* AWS::IoT::Dimension
+* AWS::IoT::MitigationAction
+* AWS::IoT::ScheduledAudit
+* AWS::IoT::SecurityProfile
+* AWS::S3Outposts::AccessPoint
+* AWS::S3Outposts::Bucket
+* AWS::S3Outposts::BucketPolicy
+* AWS::S3Outposts::Endpoint
+
+## Attribute Changes
+
+* AWS::Athena::WorkGroup EffectiveEngineVersion (__added__)
+
+## Property Changes
+
+* AWS::Backup::BackupVault BackupVaultTags.PrimitiveType (__deleted__)
+* AWS::Backup::BackupVault BackupVaultTags.PrimitiveItemType (__added__)
+* AWS::Backup::BackupVault BackupVaultTags.Type (__added__)
+* AWS::Cloud9::EnvironmentEC2 ImageId (__added__)
+* AWS::CloudFormation::ModuleVersion ModuleName.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::CloudFormation::ModuleVersion ModulePackage.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::DataBrew::Dataset Format (__added__)
+* AWS::Detective::MemberInvitation DisableEmailNotification (__added__)
+* AWS::IVS::Channel RecordingConfigurationArn (__deleted__)
+* AWS::SecretsManager::Secret ReplicaRegions (__added__)
+* AWS::ServiceDiscovery::HttpNamespace Tags.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::ServiceDiscovery::PrivateDnsNamespace Tags.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::ServiceDiscovery::PublicDnsNamespace Tags.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::ServiceDiscovery::Service Tags.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+
+## Property Type Changes
+
+* AWS::Athena::WorkGroup.EngineVersion (__added__)
+* AWS::SecretsManager::Secret.ReplicaRegion (__added__)
+* AWS::Athena::WorkGroup.WorkGroupConfiguration EngineVersion (__added__)
+* AWS::Athena::WorkGroup.WorkGroupConfigurationUpdates EngineVersion (__added__)
+* AWS::Backup::BackupVault.NotificationObjectType BackupVaultEvents.DuplicatesAllowed (__added__)
+
+
 # CloudFormation Resource Specification v30.0.0
 
 ## New Resource Types

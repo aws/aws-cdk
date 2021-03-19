@@ -46,10 +46,10 @@ export interface TargetBaseProps {
 }
 
 /**
- * Use an AWS Lambda function as an event rule target.
+ * Bind props to base rule target config.
  * @internal
  */
-export function bindBaseProps(props: TargetBaseProps) {
+export function bindBaseTargetConfig(props: TargetBaseProps) {
   let { deadLetterQueue, retryAttempts, maxEventAge } = props;
 
   return {
