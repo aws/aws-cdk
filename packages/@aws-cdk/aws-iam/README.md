@@ -433,6 +433,18 @@ const user = User.fromUserAttributes(stack, 'MyImportedUserByAttributes', {
 });
 ```
 
+To add a user to a group (both for a new and imported user/group):
+
+```ts
+const user = new User(this, 'MyUser');
+const group = new Group(this, 'MyGroup');
+
+user.addToGroup(group);
+// OR
+group.addUser(user);
+```
+
+
 ## Features
 
  * Policy name uniqueness is enforced. If two policies by the same name are attached to the same
