@@ -316,7 +316,7 @@ export = {
 
     test.done();
   },
-  'Can grant an identity all permissions for a given mesh'(test: Test) {
+  'Can grant an identity all read permissions for a given mesh'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
     const mesh = new appmesh.Mesh(stack, 'mesh', {
@@ -325,69 +325,7 @@ export = {
 
     // WHEN
     const user = new iam.User(stack, 'test');
-    mesh.grantAll(user);
-
-    // THEN
-    expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
-      PolicyDocument: {
-        Statement: [
-          {
-            Action: [
-              'appmesh:DescribeMesh',
-              'appmesh:UpdateMesh',
-              'appmesh:DeleteMesh',
-              'appmesh:TagResource',
-              'appmesh:UntagResource',
-            ],
-            Effect: 'Allow',
-            Resource: {
-              Ref: 'meshACDFE68E',
-            },
-          },
-        ],
-      },
-    }));
-
-    test.done();
-  },
-  'Can grant an identity a specific permission for a given mesh'(test: Test) {
-    // GIVEN
-    const stack = new cdk.Stack();
-    const mesh = new appmesh.Mesh(stack, 'mesh', {
-      meshName: 'test-mesh',
-    });
-
-    // WHEN
-    const user = new iam.User(stack, 'test');
-    mesh.grant(user, 'appmesh:DescribeMesh');
-
-    // THEN
-    expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
-      PolicyDocument: {
-        Statement: [
-          {
-            Action: 'appmesh:DescribeMesh',
-            Effect: 'Allow',
-            Resource: {
-              Ref: 'meshACDFE68E',
-            },
-          },
-        ],
-      },
-    }));
-
-    test.done();
-  },
-  'Can grant an identity all read permissions for resources in a mesh'(test: Test) {
-    // GIVEN
-    const stack = new cdk.Stack();
-    const mesh = new appmesh.Mesh(stack, 'mesh', {
-      meshName: 'test-mesh',
-    });
-
-    // WHEN
-    const user = new iam.User(stack, 'test');
-    mesh.grantReadOnlyAllMeshResources(user);
+    mesh.grantRead(user);
 
     // THEN
     expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
@@ -411,17 +349,87 @@ export = {
               'appmesh:ListGatewayRoutes',
             ],
             Effect: 'Allow',
-            Resource: {
-              'Fn::Join': [
-                '',
-                [
-                  {
-                    Ref: 'meshACDFE68E',
-                  },
-                  '/*',
+            Resource: [
+              {
+                Ref: 'meshACDFE68E',
+              },
+              {
+                'Fn::Join': [
+                  '',
+                  [
+                    {
+                      Ref: 'meshACDFE68E',
+                    },
+                    '/*',
+                  ],
                 ],
-              ],
-            },
+              },
+            ],
+          },
+        ],
+      },
+    }));
+
+    test.done();
+  },
+  'Can grant an identity all write permissions for a given mesh'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const mesh = new appmesh.Mesh(stack, 'mesh', {
+      meshName: 'test-mesh',
+    });
+
+    // WHEN
+    const user = new iam.User(stack, 'test');
+    mesh.grantWrite(user);
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: [
+              'appmesh:CreateMesh',
+              'appmesh:UpdateMesh',
+              'appmesh:DeleteMesh',
+              'appmesh:CreateVirtualNode',
+              'appmesh:UpdateVirtualNode',
+              'appmesh:DeleteVirtualNode',
+              'appmesh:CreateVirtualRouter',
+              'appmesh:UpdateVirtualRouter',
+              'appmesh:DeleteVirtualRouter',
+              'appmesh:CreateRoute',
+              'appmesh:UpdateRoute',
+              'appmesh:DeleteRoute',
+              'appmesh:CreateVirtualGateway',
+              'appmesh:UpdateVirtualGateway',
+              'appmesh:DeleteVirtualGateway',
+              'appmesh:CreateGatewayRoute',
+              'appmesh:UpdateGatewayRoute',
+              'appmesh:DeleteGatewayRoute',
+              'appmesh:CreateVirtualService',
+              'appmesh:UpdateVirtualService',
+              'appmesh:DeleteVirtualService',
+              'appmesh:TagResource',
+              'appmesh:UntagResource',
+            ],
+            Effect: 'Allow',
+            Resource: [
+              {
+                Ref: 'meshACDFE68E',
+              },
+              {
+                'Fn::Join': [
+                  '',
+                  [
+                    {
+                      Ref: 'meshACDFE68E',
+                    },
+                    '/*',
+                  ],
+                ],
+              },
+            ],
           },
         ],
       },

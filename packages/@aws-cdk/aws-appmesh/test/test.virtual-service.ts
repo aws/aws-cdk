@@ -123,7 +123,7 @@ export = {
       },
     },
   },
-  'Can grant an identity all permissions for a given VirtualService'(test: Test) {
+  'Can grant an identity all read permissions for a given VirtualService'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
     const mesh = new appmesh.Mesh(stack, 'mesh', {
@@ -148,7 +148,7 @@ export = {
 
     // WHEN
     const user = new iam.User(stack, 'test');
-    myService.grantAll(user);
+    myService.grantRead(user);
 
     // THEN
     expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
@@ -157,10 +157,7 @@ export = {
           {
             Action: [
               'appmesh:DescribeVirtualService',
-              'appmesh:UpdateVirtualService',
-              'appmesh:DeleteVirtualService',
-              'appmesh:TagResource',
-              'appmesh:UntagResource',
+              'appmesh:ListVirtualService',
             ],
             Effect: 'Allow',
             Resource: {
@@ -173,7 +170,7 @@ export = {
 
     test.done();
   },
-  'Can grant an identity a specific permission for a given VirtualService'(test: Test) {
+  'Can grant an identity all write permissions for a given VirtualService'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
     const mesh = new appmesh.Mesh(stack, 'mesh', {
@@ -198,14 +195,20 @@ export = {
 
     // WHEN
     const user = new iam.User(stack, 'test');
-    myService.grant(user, 'appmesh:DescribeVirtualService');
+    myService.grantWrite(user);
 
     // THEN
     expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
-            Action: 'appmesh:DescribeVirtualService',
+            Action: [
+              'appmesh:CreateVirtualService',
+              'appmesh:UpdateVirtualService',
+              'appmesh:DeleteVirtualService',
+              'appmesh:TagResource',
+              'appmesh:UntagResource',
+            ],
             Effect: 'Allow',
             Resource: {
               Ref: 'service2B2862B6B',

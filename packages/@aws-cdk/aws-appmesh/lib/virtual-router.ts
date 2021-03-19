@@ -35,14 +35,15 @@ export interface IVirtualRouter extends cdk.IResource {
   addRoute(id: string, props: RouteBaseProps): Route;
 
   /**
-   * Grants the given entity all permissions for this VirtualRouter.
+   * Grants the given entity all read permissions for this VirtualRouter.
    */
-  grantAll(identity: iam.IGrantable): iam.Grant;
+  grantRead(identity: iam.IGrantable): iam.Grant;
 
   /**
-   * Grant the specified actions for this VirtualRouter.
+   * Grants the given entity all write permissions for this VirtualRouter.
    */
-  grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant;
+  grantWrite(identity: iam.IGrantable): iam.Grant;
+
 }
 
 /**
@@ -95,13 +96,28 @@ abstract class VirtualRouterBase extends cdk.Resource implements IVirtualRouter 
   }
 
   /**
-   * Grants the given entity all permissions for this VirtualRouter.
+   * Grants the given entity all read permissions for this VirtualRouter.
    */
-  public grantAll(identity: iam.IGrantable): iam.Grant {
+  public grantRead(identity: iam.IGrantable): iam.Grant {
     return this.grant(identity,
       'appmesh:DescribeVirtualRouter',
+      'appmesh:ListVirtualRouter',
+      'appmesh:DescribeRoute',
+      'appmesh:ListRoute',
+    );
+  }
+
+  /**
+   * Grants the given entity all write permissions for this VirtualRouter.
+   */
+  public grantWrite(identity: iam.IGrantable): iam.Grant {
+    return this.grant(identity,
+      'appmesh:CreateVirtualRouter',
       'appmesh:UpdateVirtualRouter',
       'appmesh:DeleteVirtualRouter',
+      'appmesh:CreateRoute',
+      'appmesh:UpdateRoute',
+      'appmesh:Route',
       'appmesh:TagResource',
       'appmesh:UntagResource',
     );
@@ -110,11 +126,11 @@ abstract class VirtualRouterBase extends cdk.Resource implements IVirtualRouter 
   /**
    * Grant the specified actions for this VirtualService.
    */
-  public grant(grantee: iam.IGrantable, ...actions: string[]) {
+  private grant(grantee: iam.IGrantable, ...actions: string[]) {
     return iam.Grant.addToPrincipal({
       grantee,
       actions,
-      resourceArns: [this.virtualRouterArn],
+      resourceArns: [this.virtualRouterArn, this.virtualRouterArn + '/route/*'],
     });
   }
 }

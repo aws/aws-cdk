@@ -35,15 +35,19 @@ export interface IVirtualNode extends cdk.IResource {
   readonly mesh: IMesh;
 
   /**
-   * Grants the given entity all permissions for this VirtualNode.
+   * Grants the given entity all read permissions for this VirtualNode.
    */
-  grantAll(identity: iam.IGrantable): iam.Grant;
+  grantRead(identity: iam.IGrantable): iam.Grant;
 
   /**
-   * Grant the specified actions for this VirtualNode.
+   * Grants the given entity all write permissions for this VirtualNode.
    */
-  grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant;
+  grantWrite(identity: iam.IGrantable): iam.Grant;
 
+  /**
+   * Grants the given entity `appmesh:StreamAggregatedResources`.
+   */
+  grantStreamAggregatedResources(identity: iam.IGrantable): iam.Grant;
 }
 
 /**
@@ -121,11 +125,21 @@ abstract class VirtualNodeBase extends cdk.Resource implements IVirtualNode {
   public abstract readonly mesh: IMesh;
 
   /**
-   * Grants the given entity all permissions for this VirtualNode.
+   * Grants the given entity all read permissions for this VirtualNode.
    */
-  public grantAll(identity: iam.IGrantable): iam.Grant {
+  public grantRead(identity: iam.IGrantable): iam.Grant {
     return this.grant(identity,
       'appmesh:DescribeVirtualNode',
+      'appmesh:ListVirtualNode',
+    );
+  }
+
+  /**
+   * Grants the given entity all write permissions for this VirtualNode.
+   */
+  public grantWrite(identity: iam.IGrantable): iam.Grant {
+    return this.grant(identity,
+      'appmesh:CreateVirtualNode',
       'appmesh:UpdateVirtualNode',
       'appmesh:DeleteVirtualNode',
       'appmesh:TagResource',
@@ -134,9 +148,20 @@ abstract class VirtualNodeBase extends cdk.Resource implements IVirtualNode {
   }
 
   /**
+   * Grants the given entity `appmesh:StreamAggregatedResources`.
+   */
+  public grantStreamAggregatedResources(identity: iam.IGrantable): iam.Grant {
+    return iam.Grant.addToPrincipal({
+      grantee: identity,
+      actions: ['appmesh:StreamAggregatedResources'],
+      resourceArns: [this.virtualNodeArn],
+    });
+  }
+
+  /**
    * Grant the specified actions for this VirtualNode.
    */
-  public grant(grantee: iam.IGrantable, ...actions: string[]) {
+  private grant(grantee: iam.IGrantable, ...actions: string[]) {
     return iam.Grant.addToPrincipal({
       grantee,
       actions,

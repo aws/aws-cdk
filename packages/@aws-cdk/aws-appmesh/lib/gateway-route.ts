@@ -29,14 +29,15 @@ export interface IGatewayRoute extends cdk.IResource {
   readonly virtualGateway: IVirtualGateway;
 
   /**
-   * Grants the given entity all permissions for this GatewayRoute.
+   * Grants the given entity all read permissions for this GatewayRoute.
    */
-  grantAll(identity: iam.IGrantable): iam.Grant;
+  grantRead(identity: iam.IGrantable): iam.Grant;
 
   /**
-   * Grant the specified actions for this GatewayRoute.
+   * Grants the given entity all write permissions for this GatewayRoute.
    */
-  grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant;
+  grantWrite(identity: iam.IGrantable): iam.Grant;
+
 }
 
 abstract class GatewayRouteBase extends cdk.Resource implements IGatewayRoute {
@@ -60,11 +61,21 @@ abstract class GatewayRouteBase extends cdk.Resource implements IGatewayRoute {
   public abstract readonly virtualGateway: IVirtualGateway;
 
   /**
-   * Grants the given entity all permissions for this GatewayRoute.
+   * Grants the given entity all read permissions for this VirtualGateway.
    */
-  public grantAll(identity: iam.IGrantable): iam.Grant {
+  public grantRead(identity: iam.IGrantable): iam.Grant {
     return this.grant(identity,
       'appmesh:DescribeGatewayRoute',
+      'appmesh:ListGatewayRoute',
+    );
+  }
+
+  /**
+   * Grants the given entity all write permissions for this VirtualGateway.
+   */
+  public grantWrite(identity: iam.IGrantable): iam.Grant {
+    return this.grant(identity,
+      'appmesh:CreateGatewayRoute',
       'appmesh:UpdateGatewayRoute',
       'appmesh:DeleteGatewayRoute',
       'appmesh:TagResource',
@@ -75,7 +86,7 @@ abstract class GatewayRouteBase extends cdk.Resource implements IGatewayRoute {
   /**
    * Grant the specified actions for this GatewayRoute.
    */
-  public grant(grantee: iam.IGrantable, ...actions: string[]) {
+  private grant(grantee: iam.IGrantable, ...actions: string[]) {
     return iam.Grant.addToPrincipal({
       grantee,
       actions,

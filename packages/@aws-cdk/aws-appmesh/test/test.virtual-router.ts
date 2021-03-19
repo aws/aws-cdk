@@ -412,7 +412,7 @@ export = {
 
     test.done();
   },
-  'Can grant an identity all permissions for a given VirtualRouter'(test: Test) {
+  'Can grant an identity all read permissions for a given VirtualRouter'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
     const mesh = new appmesh.Mesh(stack, 'mesh', {
@@ -422,7 +422,7 @@ export = {
 
     // WHEN
     const user = new iam.User(stack, 'test');
-    router.grantAll(user);
+    router.grantRead(user);
 
     // THEN
     expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
@@ -431,15 +431,27 @@ export = {
           {
             Action: [
               'appmesh:DescribeVirtualRouter',
-              'appmesh:UpdateVirtualRouter',
-              'appmesh:DeleteVirtualRouter',
-              'appmesh:TagResource',
-              'appmesh:UntagResource',
+              'appmesh:ListVirtualRouter',
+              'appmesh:DescribeRoute',
+              'appmesh:ListRoute',
             ],
             Effect: 'Allow',
-            Resource: {
-              Ref: 'meshhttprouterlistener0FB34F60',
-            },
+            Resource: [
+              {
+                Ref: 'meshhttprouterlistener0FB34F60',
+              },
+              {
+                'Fn::Join': [
+                  '',
+                  [
+                    {
+                      Ref: 'meshhttprouterlistener0FB34F60',
+                    },
+                    '/route/*',
+                  ],
+                ],
+              },
+            ],
           },
         ],
       },
@@ -447,7 +459,7 @@ export = {
 
     test.done();
   },
-  'Can grant an identity a specific permission for a given VirtualRouter'(test: Test) {
+  'Can grant an identity all write permissions for a given VirtualRouter'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
     const mesh = new appmesh.Mesh(stack, 'mesh', {
@@ -457,18 +469,40 @@ export = {
 
     // WHEN
     const user = new iam.User(stack, 'test');
-    router.grant(user, 'appmesh:DescribeVirtualRouter');
+    router.grantWrite(user);
 
     // THEN
     expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
-            Action: 'appmesh:DescribeVirtualRouter',
+            Action: [
+              'appmesh:CreateVirtualRouter',
+              'appmesh:UpdateVirtualRouter',
+              'appmesh:DeleteVirtualRouter',
+              'appmesh:CreateRoute',
+              'appmesh:UpdateRoute',
+              'appmesh:Route',
+              'appmesh:TagResource',
+              'appmesh:UntagResource',
+            ],
             Effect: 'Allow',
-            Resource: {
-              Ref: 'meshhttprouterlistener0FB34F60',
-            },
+            Resource: [
+              {
+                Ref: 'meshhttprouterlistener0FB34F60',
+              },
+              {
+                'Fn::Join': [
+                  '',
+                  [
+                    {
+                      Ref: 'meshhttprouterlistener0FB34F60',
+                    },
+                    '/route/*',
+                  ],
+                ],
+              },
+            ],
           },
         ],
       },

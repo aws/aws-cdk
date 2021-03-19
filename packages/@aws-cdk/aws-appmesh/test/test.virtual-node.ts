@@ -538,7 +538,7 @@ export = {
 
     test.done();
   },
-  'Can grant an identity all permissions for a given VirtualNode'(test: Test) {
+  'Can grant an identity all read permissions for a given VirtualNode'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
     const mesh = new appmesh.Mesh(stack, 'mesh', {
@@ -558,7 +558,7 @@ export = {
 
     // WHEN
     const user = new iam.User(stack, 'test');
-    node.grantAll(user);
+    node.grantRead(user);
 
     // THEN
     expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
@@ -567,6 +567,48 @@ export = {
           {
             Action: [
               'appmesh:DescribeVirtualNode',
+              'appmesh:ListVirtualNode',
+            ],
+            Effect: 'Allow',
+            Resource: {
+              Ref: 'testnode3EE2776E',
+            },
+          },
+        ],
+      },
+    }));
+
+    test.done();
+  },
+  'Can grant an identity all write permissions for a given VirtualNode'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const mesh = new appmesh.Mesh(stack, 'mesh', {
+      meshName: 'test-mesh',
+    });
+    const node = new appmesh.VirtualNode(stack, 'test-node', {
+      mesh,
+      listeners: [appmesh.VirtualNodeListener.http({
+        port: 80,
+        tlsCertificate: appmesh.TlsCertificate.file({
+          certificateChainPath: 'path/to/certChain',
+          privateKeyPath: 'path/to/privateKey',
+          tlsMode: appmesh.TlsMode.PERMISSIVE,
+        }),
+      })],
+    });
+
+    // WHEN
+    const user = new iam.User(stack, 'test');
+    node.grantWrite(user);
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: [
+              'appmesh:CreateVirtualNode',
               'appmesh:UpdateVirtualNode',
               'appmesh:DeleteVirtualNode',
               'appmesh:TagResource',
@@ -583,7 +625,7 @@ export = {
 
     test.done();
   },
-  'Can grant an identity a specific permission for a given VirtualNode'(test: Test) {
+  'Can grant an identity StreamAggregatedResources for a given VirtualNode'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
     const mesh = new appmesh.Mesh(stack, 'mesh', {
@@ -603,14 +645,14 @@ export = {
 
     // WHEN
     const user = new iam.User(stack, 'test');
-    node.grant(user, 'appmesh:DescribeVirtualNode');
+    node.grantStreamAggregatedResources(user);
 
     // THEN
     expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
-            Action: 'appmesh:DescribeVirtualNode',
+            Action: 'appmesh:StreamAggregatedResources',
             Effect: 'Allow',
             Resource: {
               Ref: 'testnode3EE2776E',

@@ -462,7 +462,7 @@ export = {
 
     test.done();
   },
-  'Can grant an identity all permissions for a given VirtualGateway'(test: Test) {
+  'Can grant an identity all read permissions for a given VirtualGateway'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
     const mesh = new appmesh.Mesh(stack, 'mesh', {
@@ -474,7 +474,7 @@ export = {
 
     // WHEN
     const user = new iam.User(stack, 'test');
-    gateway.grantAll(user);
+    gateway.grantRead(user);
 
     // THEN
     expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
@@ -483,15 +483,27 @@ export = {
           {
             Action: [
               'appmesh:DescribeVirtualGateway',
-              'appmesh:UpdateVirtualGateway',
-              'appmesh:DeleteVirtualGateway',
-              'appmesh:TagResource',
-              'appmesh:UntagResource',
+              'appmesh:ListVirtualGateway',
+              'appmesh:DescribeGatewayRoute',
+              'appmesh:ListGatewayRoute',
             ],
             Effect: 'Allow',
-            Resource: {
-              Ref: 'testGatewayF09EC349',
-            },
+            Resource: [
+              {
+                Ref: 'testGatewayF09EC349',
+              },
+              {
+                'Fn::Join': [
+                  '',
+                  [
+                    {
+                      Ref: 'testGatewayF09EC349',
+                    },
+                    '/gatewayRoute/*',
+                  ],
+                ],
+              },
+            ],
           },
         ],
       },
@@ -499,7 +511,7 @@ export = {
 
     test.done();
   },
-  'Can grant an identity a specific permission for a given VirtualGateway'(test: Test) {
+  'Can grant an identity all write permissions for a given VirtualGateway'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
     const mesh = new appmesh.Mesh(stack, 'mesh', {
@@ -511,14 +523,67 @@ export = {
 
     // WHEN
     const user = new iam.User(stack, 'test');
-    gateway.grant(user, 'appmesh:DescribeVirtualGateway');
+    gateway.grantWrite(user);
 
     // THEN
     expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
-            Action: 'appmesh:DescribeVirtualGateway',
+            Action: [
+              'appmesh:CreateVirtualGateway',
+              'appmesh:UpdateVirtualGateway',
+              'appmesh:DeleteVirtualGateway',
+              'appmesh:CreateGatewayRoute',
+              'appmesh:UpdateGatewayRoute',
+              'appmesh:DeleteGatewayRoute',
+              'appmesh:TagResource',
+              'appmesh:UntagResource',
+            ],
+            Effect: 'Allow',
+            Resource: [
+              {
+                Ref: 'testGatewayF09EC349',
+              },
+              {
+                'Fn::Join': [
+                  '',
+                  [
+                    {
+                      Ref: 'testGatewayF09EC349',
+                    },
+                    '/gatewayRoute/*',
+                  ],
+                ],
+              },
+            ],
+          },
+        ],
+      },
+    }));
+
+    test.done();
+  },
+  'Can grant an identity StreamAggregatedResources for a given VirtualGateway'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const mesh = new appmesh.Mesh(stack, 'mesh', {
+      meshName: 'test-mesh',
+    });
+    const gateway = new appmesh.VirtualGateway(stack, 'testGateway', {
+      mesh: mesh,
+    });
+
+    // WHEN
+    const user = new iam.User(stack, 'test');
+    gateway.grantStreamAggregatedResources(user);
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'appmesh:StreamAggregatedResources',
             Effect: 'Allow',
             Resource: {
               Ref: 'testGatewayF09EC349',

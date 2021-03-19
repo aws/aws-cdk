@@ -57,19 +57,14 @@ export interface IMesh extends cdk.IResource {
   addVirtualGateway(id: string, props?: VirtualGatewayBaseProps): VirtualGateway;
 
   /**
-   * Grants the given entity permissions to read all resources in the mesh.
+   * Grants the given entity all read permissions for this mesh.
    */
-  grantReadOnlyAllMeshResources(identity: iam.IGrantable): iam.Grant;
+  grantRead(identity: iam.IGrantable): iam.Grant;
 
   /**
-   * Grants the given entity all permissions for this mesh.
+   * Grants the given entity all write permissions for this mesh.
    */
-  grantAll(identity: iam.IGrantable): iam.Grant;
-
-  /**
-   * Grant the specified actions for this mesh.
-   */
-  grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant;
+  grantWrite(identity: iam.IGrantable): iam.Grant;
 }
 
 /**
@@ -116,44 +111,58 @@ abstract class MeshBase extends cdk.Resource implements IMesh {
     });
   }
 
-  public grantReadOnlyAllMeshResources(identity: iam.IGrantable): iam.Grant {
-    return iam.Grant.addToPrincipal({
-      grantee: identity,
-      actions: [
-        'appmesh:DescribeMesh',
-        'appmesh:ListMeshes',
-        'appmesh:DescribeVirtualService',
-        'appmesh:ListVirtualServices',
-        'appmesh:DescribeVirtualRouter',
-        'appmesh:ListVirtualRouter',
-        'appmesh:DescribeRoute',
-        'appmesh:ListRoutes',
-        'appmesh:DescribeVirtualNode',
-        'appmesh:ListVirtualNodes',
-        'appmesh:DescribeVirtualGateway',
-        'appmesh:ListVirtualGateways',
-        'appmesh:DescribeGatewayRoute',
-        'appmesh:ListGatewayRoutes',
-      ],
-      resourceArns: [this.meshArn + '/*'],
-    });
-  }
-
-  public grantAll(identity: iam.IGrantable): iam.Grant {
+  public grantRead(identity: iam.IGrantable): iam.Grant {
     return this.grant(identity,
       'appmesh:DescribeMesh',
+      'appmesh:ListMeshes',
+      'appmesh:DescribeVirtualService',
+      'appmesh:ListVirtualServices',
+      'appmesh:DescribeVirtualRouter',
+      'appmesh:ListVirtualRouter',
+      'appmesh:DescribeRoute',
+      'appmesh:ListRoutes',
+      'appmesh:DescribeVirtualNode',
+      'appmesh:ListVirtualNodes',
+      'appmesh:DescribeVirtualGateway',
+      'appmesh:ListVirtualGateways',
+      'appmesh:DescribeGatewayRoute',
+      'appmesh:ListGatewayRoutes',
+    );
+  }
+
+  public grantWrite(identity: iam.IGrantable): iam.Grant {
+    return this.grant(identity,
+      'appmesh:CreateMesh',
       'appmesh:UpdateMesh',
       'appmesh:DeleteMesh',
+      'appmesh:CreateVirtualNode',
+      'appmesh:UpdateVirtualNode',
+      'appmesh:DeleteVirtualNode',
+      'appmesh:CreateVirtualRouter',
+      'appmesh:UpdateVirtualRouter',
+      'appmesh:DeleteVirtualRouter',
+      'appmesh:CreateRoute',
+      'appmesh:UpdateRoute',
+      'appmesh:DeleteRoute',
+      'appmesh:CreateVirtualGateway',
+      'appmesh:UpdateVirtualGateway',
+      'appmesh:DeleteVirtualGateway',
+      'appmesh:CreateGatewayRoute',
+      'appmesh:UpdateGatewayRoute',
+      'appmesh:DeleteGatewayRoute',
+      'appmesh:CreateVirtualService',
+      'appmesh:UpdateVirtualService',
+      'appmesh:DeleteVirtualService',
       'appmesh:TagResource',
       'appmesh:UntagResource',
     );
   }
 
-  public grant(grantee: iam.IGrantable, ...actions: string[]) {
+  private grant(grantee: iam.IGrantable, ...actions: string[]) {
     return iam.Grant.addToPrincipal({
       grantee,
       actions,
-      resourceArns: [this.meshArn],
+      resourceArns: [this.meshArn, this.meshArn + '/*'],
     });
   }
 

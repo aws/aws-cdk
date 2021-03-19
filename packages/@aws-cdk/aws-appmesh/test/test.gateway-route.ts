@@ -179,7 +179,7 @@ export = {
     test.equal(gatewayRoute.virtualGateway.mesh.meshName, meshName);
     test.done();
   },
-  'Can grant an identity all permissions for a given GatewayRoute'(test: Test) {
+  'Can grant an identity all read permissions for a given GatewayRoute'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
     const mesh = new appmesh.Mesh(stack, 'mesh', {
@@ -202,7 +202,7 @@ export = {
 
     // WHEN
     const user = new iam.User(stack, 'test');
-    gr.grantAll(user);
+    gr.grantRead(user);
 
     // THEN
     expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
@@ -211,10 +211,7 @@ export = {
           {
             Action: [
               'appmesh:DescribeGatewayRoute',
-              'appmesh:UpdateGatewayRoute',
-              'appmesh:DeleteGatewayRoute',
-              'appmesh:TagResource',
-              'appmesh:UntagResource',
+              'appmesh:ListGatewayRoute',
             ],
             Effect: 'Allow',
             Resource: {
@@ -227,7 +224,7 @@ export = {
 
     test.done();
   },
-  'Can grant an identity a specific permission for a given GatewayRoute'(test: Test) {
+  'Can grant an identity all write permissions for a given GatewayRoute'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
     const mesh = new appmesh.Mesh(stack, 'mesh', {
@@ -250,14 +247,20 @@ export = {
 
     // WHEN
     const user = new iam.User(stack, 'test');
-    gr.grant(user, 'appmesh:DescribeGatewayRoute');
+    gr.grantWrite(user);
 
     // THEN
     expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
-            Action: 'appmesh:DescribeGatewayRoute',
+            Action: [
+              'appmesh:CreateGatewayRoute',
+              'appmesh:UpdateGatewayRoute',
+              'appmesh:DeleteGatewayRoute',
+              'appmesh:TagResource',
+              'appmesh:UntagResource',
+            ],
             Effect: 'Allow',
             Resource: {
               Ref: 'testGatewaygatewayhttprouteD65B806A',

@@ -891,7 +891,7 @@ export = {
 
     test.done();
   },
-  'Can grant an identity all permissions for a given Route'(test: Test) {
+  'Can grant an identity all read permissions for a given Route'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
     const mesh = new appmesh.Mesh(stack, 'mesh', {
@@ -920,7 +920,7 @@ export = {
 
     // WHEN
     const user = new iam.User(stack, 'test');
-    route.grantAll(user);
+    route.grantRead(user);
 
     // THEN
     expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
@@ -929,10 +929,7 @@ export = {
           {
             Action: [
               'appmesh:DescribeRoute',
-              'appmesh:UpdateRoute',
-              'appmesh:DeleteRoute',
-              'appmesh:TagResource',
-              'appmesh:UntagResource',
+              'appmesh:ListRoute',
             ],
             Effect: 'Allow',
             Resource: {
@@ -945,7 +942,7 @@ export = {
 
     test.done();
   },
-  'Can grant an identity a specific permission for a given Route'(test: Test) {
+  'Can grant an identity all write permissions for a given Route'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
     const mesh = new appmesh.Mesh(stack, 'mesh', {
@@ -974,14 +971,20 @@ export = {
 
     // WHEN
     const user = new iam.User(stack, 'test');
-    route.grant(user, 'appmesh:DescribeRoute');
+    route.grantWrite(user);
 
     // THEN
     expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
-            Action: 'appmesh:DescribeRoute',
+            Action: [
+              'appmesh:CreateRoute',
+              'appmesh:UpdateRoute',
+              'appmesh:DeleteRoute',
+              'appmesh:TagResource',
+              'appmesh:UntagResource',
+            ],
             Effect: 'Allow',
             Resource: {
               Ref: 'meshhttprouterlistenertesthttprouteDAB0AC41',

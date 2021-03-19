@@ -30,14 +30,15 @@ export interface IRoute extends cdk.IResource {
   readonly virtualRouter: IVirtualRouter;
 
   /**
-   * Grants the given entity all permissions for this Route.
+   * Grants the given entity read permissions for this Route.
    */
-  grantAll(identity: iam.IGrantable): iam.Grant;
+  grantRead(identity: iam.IGrantable): iam.Grant;
 
   /**
-   * Grant the specified actions for this Route.
+   * Grants the given entity write permissions for this Route.
    */
-  grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant;
+  grantWrite(identity: iam.IGrantable): iam.Grant;
+
 }
 
 /**
@@ -93,11 +94,20 @@ abstract class RouteBase extends cdk.Resource implements IRoute {
   public abstract readonly virtualRouter: IVirtualRouter;
 
   /**
-   * Grants the given entity all permissions for this Route.
+   * Grants the given entity all read permissions for this Route.
    */
-  public grantAll(identity: iam.IGrantable): iam.Grant {
+  public grantRead(identity: iam.IGrantable): iam.Grant {
     return this.grant(identity,
       'appmesh:DescribeRoute',
+      'appmesh:ListRoute',
+    );
+  }
+  /**
+   * Grants the given entity all write permissions for this Route.
+   */
+  public grantWrite(identity: iam.IGrantable): iam.Grant {
+    return this.grant(identity,
+      'appmesh:CreateRoute',
       'appmesh:UpdateRoute',
       'appmesh:DeleteRoute',
       'appmesh:TagResource',
@@ -108,7 +118,7 @@ abstract class RouteBase extends cdk.Resource implements IRoute {
   /**
    * Grant the specified actions for this Route.
    */
-  public grant(grantee: iam.IGrantable, ...actions: string[]) {
+  private grant(grantee: iam.IGrantable, ...actions: string[]) {
     return iam.Grant.addToPrincipal({
       grantee,
       actions,

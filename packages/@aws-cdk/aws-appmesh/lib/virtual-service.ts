@@ -30,14 +30,14 @@ export interface IVirtualService extends cdk.IResource {
   readonly mesh: IMesh;
 
   /**
-   * Grants the given entity all permissions for this VirtualService.
+   * Grants the given entity all read permissions for this VirtualService.
    */
-  grantAll(identity: iam.IGrantable): iam.Grant;
+  grantRead(identity: iam.IGrantable): iam.Grant;
 
   /**
-   * Grant the specified actions for this VirtualService.
+   * Grants the given entity all write permissions for this VirtualService.
    */
-  grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant;
+  grantWrite(identity: iam.IGrantable): iam.Grant;
 }
 
 /**
@@ -57,7 +57,6 @@ export interface VirtualServiceProps {
 
   /**
    * The VirtualNode or VirtualRouter which the VirtualService uses as its provider
-<<<<<<< HEAD
    */
   readonly virtualServiceProvider: VirtualServiceProvider;
 }
@@ -74,8 +73,6 @@ abstract class VirtualServiceBase extends cdk.Resource implements IVirtualServic
    * The Amazon Resource Name (ARN) for the virtual service
    *
    * @attribute
-=======
->>>>>>> 20a2820ee4d022663fcd0928fbc0f61153ae953f
    */
   public abstract readonly virtualServiceArn: string;
 
@@ -85,11 +82,21 @@ abstract class VirtualServiceBase extends cdk.Resource implements IVirtualServic
   public abstract readonly mesh: IMesh;
 
   /**
-   * Grants the given entity all permissions for this VirtualService.
+   * Grants the given entity all read permissions for this VirtualService.
    */
-  public grantAll(identity: iam.IGrantable): iam.Grant {
+  public grantRead(identity: iam.IGrantable): iam.Grant {
     return this.grant(identity,
       'appmesh:DescribeVirtualService',
+      'appmesh:ListVirtualService',
+    );
+  }
+
+  /**
+   * Grants the given entity all write permissions for this VirtualService.
+   */
+  public grantWrite(identity: iam.IGrantable): iam.Grant {
+    return this.grant(identity,
+      'appmesh:CreateVirtualService',
       'appmesh:UpdateVirtualService',
       'appmesh:DeleteVirtualService',
       'appmesh:TagResource',
@@ -100,7 +107,7 @@ abstract class VirtualServiceBase extends cdk.Resource implements IVirtualServic
   /**
    * Grant the specified actions for this VirtualService.
    */
-  public grant(grantee: iam.IGrantable, ...actions: string[]) {
+  private grant(grantee: iam.IGrantable, ...actions: string[]) {
     return iam.Grant.addToPrincipal({
       grantee,
       actions,
