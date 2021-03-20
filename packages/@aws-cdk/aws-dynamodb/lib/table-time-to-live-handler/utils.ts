@@ -38,7 +38,7 @@ export async function enableTimeToLive(event: OnEventRequest) {
   }
 }
 
-export async function isTimeToLiveStableAndCorrect(event: OnEventRequest): Promise<boolean> {
+export async function isTimeToLiveStable(event: OnEventRequest): Promise<boolean> {
   const currentTtl = await dynamodb.describeTimeToLive({
     TableName: event.ResourceProperties.TableName,
   }).promise();
@@ -46,9 +46,16 @@ export async function isTimeToLiveStableAndCorrect(event: OnEventRequest): Promi
   return !!(
     currentTtl.TimeToLiveDescription?.TimeToLiveStatus === 'ENABLED'
     || currentTtl.TimeToLiveDescription?.TimeToLiveStatus === 'DISABLED'
-  ) &&
-  !!(
-    currentTtl.TimeToLiveDescription.AttributeName ===
+  );
+}
+
+export async function isTimeToLiveCorrect(event: OnEventRequest): Promise<boolean> {
+  const currentTtl = await dynamodb.describeTimeToLive({
+    TableName: event.ResourceProperties.TableName,
+  }).promise();
+
+  return !!(
+    currentTtl.TimeToLiveDescription?.AttributeName ===
     event.ResourceProperties.TimeToLiveAttribute
   );
 }

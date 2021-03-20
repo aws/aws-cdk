@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 import type { IsCompleteRequest, IsCompleteResponse, OnEventRequest, OnEventResponse } from '@aws-cdk/custom-resources/lib/provider-framework/types';
 import { DynamoDB } from 'aws-sdk'; // eslint-disable-line import/no-extraneous-dependencies
-import { disableTimeToLive, enableTimeToLive, isTimeToLiveStableAndCorrect } from './utils';
+import { disableTimeToLive, enableTimeToLive, isTimeToLiveCorrect, isTimeToLiveStable } from './utils';
 
 const dynamodb = new DynamoDB({ apiVersion: '2012-08-10' });
 
@@ -48,7 +48,7 @@ export async function isCompleteHandler(event: IsCompleteRequest): Promise<IsCom
 
   const tableActive = !!(data.Table?.TableStatus === 'ACTIVE');
 
-  if (await isTimeToLiveStableAndCorrect(event)) {
+  if (await isTimeToLiveStable(event)) {
     await onEventHandler(event);
   }
 
@@ -56,7 +56,7 @@ export async function isCompleteHandler(event: IsCompleteRequest): Promise<IsCom
     case 'Create':
     case 'Update':
       // Complete when time to live is fully functional
-      return { IsComplete: tableActive && await isTimeToLiveStableAndCorrect(event) };
+      return { IsComplete: tableActive && await isTimeToLiveStable(event) && await isTimeToLiveCorrect(event) };
     case 'Delete':
       // There is nothing to delete, as time to live is connected to the table
       return { IsComplete: true };
