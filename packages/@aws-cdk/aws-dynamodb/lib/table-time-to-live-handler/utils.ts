@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 import type { OnEventRequest } from '@aws-cdk/custom-resources/lib/provider-framework/types';
-import { DynamoDB } from 'aws-sdk'; // eslint-disable-line import/no-extraneous-dependencies
+import { AWSError, DynamoDB } from 'aws-sdk'; // eslint-disable-line import/no-extraneous-dependencies
 const dynamodb = new DynamoDB({ apiVersion: '2012-08-10' });
 
 
@@ -16,13 +16,26 @@ export async function disableTimeToLive(event: OnEventRequest) {
 }
 
 export async function enableTimeToLive(event: OnEventRequest) {
-  await dynamodb.updateTimeToLive({
-    TableName: event.ResourceProperties.TableName,
-    TimeToLiveSpecification: {
-      AttributeName: event.ResourceProperties.TimeToLiveAttribute,
-      Enabled: true,
-    },
-  }).promise();
+  try {
+    await dynamodb.updateTimeToLive({
+      TableName: event.ResourceProperties.TableName,
+      TimeToLiveSpecification: {
+        AttributeName: event.ResourceProperties.TimeToLiveAttribute,
+        Enabled: true,
+      },
+    }).promise();
+  } catch (err) {
+    // Catch exception so we can try enabling again at a later point in time.
+    // This is necessary if the ttl was just disabled as enabling is not available right away.
+    const awsError = err as AWSError;
+    if (
+      awsError.code === 'ValidationException' &&
+      awsError.message === 'Time to live has been modified multiple times within a fixed interval'
+    ) {
+      return;
+    }
+    throw awsError;
+  }
 }
 
 export async function isTimeToLiveStableAndCorrect(event: OnEventRequest): Promise<boolean> {
