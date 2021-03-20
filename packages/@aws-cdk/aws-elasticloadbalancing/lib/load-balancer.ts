@@ -187,7 +187,7 @@ export interface LoadBalancerListener {
   readonly policyNames?: string[];
 
   /**
-   * ID of SSL certificate
+   * the ARN of the SSL certificate
    */
   readonly sslCertificateId?: string;
 
