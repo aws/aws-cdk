@@ -829,10 +829,17 @@ nodeunitShim({
       clusterIdentifier,
     });
 
-    test.equal(stack.resolve(cluster.clusterArn), 'test');
-    test.equal(cluster.clusterArn, 'test');
-    // test.equals(cluster.clusterIdentifier, 'identifier');
-
+    test.deepEqual(
+      stack.resolve(cluster.clusterArn),
+      {
+        'Fn::Join': [
+          '',
+          [
+            'arn:', { Ref: 'AWS::Partition' },
+            ':rds:us-test-1:12345:cluster:testclusteridentifier',
+          ],
+        ],
+      } );
     test.done();
   },
 });

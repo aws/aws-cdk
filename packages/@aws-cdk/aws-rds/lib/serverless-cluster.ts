@@ -457,7 +457,7 @@ export class ServerlessCluster extends ServerlessClusterBase {
       vpcSecurityGroupIds: securityGroups.map(sg => sg.securityGroupId),
     });
 
-    this.clusterIdentifier = cluster.ref;
+    this.clusterIdentifier = cluster.dbClusterIdentifier?.toLowerCase() || cluster.ref;
 
     // create a number token that represents the port of the cluster
     const portAttribute = Token.asNumber(cluster.attrEndpointPort);
