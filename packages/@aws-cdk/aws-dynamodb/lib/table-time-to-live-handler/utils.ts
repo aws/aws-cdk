@@ -25,7 +25,7 @@ export async function enableTimeToLive(event: OnEventRequest) {
   }).promise();
 }
 
-export async function isTimeToLiveStable(event: OnEventRequest): Promise<boolean> {
+export async function isTimeToLiveStableAndCorrect(event: OnEventRequest): Promise<boolean> {
   const currentTtl = await dynamodb.describeTimeToLive({
     TableName: event.ResourceProperties.TableName,
   }).promise();
@@ -33,5 +33,9 @@ export async function isTimeToLiveStable(event: OnEventRequest): Promise<boolean
   return !!(
     currentTtl.TimeToLiveDescription?.TimeToLiveStatus === 'ENABLED'
     || currentTtl.TimeToLiveDescription?.TimeToLiveStatus === 'DISABLED'
+  ) &&
+  !!(
+    currentTtl.TimeToLiveDescription.AttributeName ===
+    event.ResourceProperties.TimeToLiveAttribute
   );
 }
