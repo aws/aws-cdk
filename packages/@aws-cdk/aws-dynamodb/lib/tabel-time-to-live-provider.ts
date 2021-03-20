@@ -43,7 +43,7 @@ export class TableTimeToLiveProvider extends CoreConstruct {
       code,
       runtime: lambda.Runtime.NODEJS_12_X,
       handler: 'index.onEventHandler',
-      timeout: Duration.minutes(5),
+      timeout: Duration.seconds(30),
     });
 
     // Checks if table is back to `ACTIVE` state
@@ -57,8 +57,11 @@ export class TableTimeToLiveProvider extends CoreConstruct {
     this.provider = new cr.Provider(this, 'Provider', {
       onEventHandler: this.onEventHandler,
       isCompleteHandler: this.isCompleteHandler,
-      queryInterval: Duration.seconds(10),
+      // Using a total timeout of 75 minutes as disabling can take up to 1 hour.
+      // Additionally an enabling afterwards can be necessary.
       totalTimeout: Duration.minutes(75),
+      // As a tradeoff the query interval is set to 1 minute to reduce the number of lambda calls.
+      queryInterval: Duration.minutes(1),
     });
   }
 }
