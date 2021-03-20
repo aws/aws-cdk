@@ -1540,13 +1540,10 @@ export class Table extends TableBase {
   private setTimeToLive(id: string, timeToLiveAttribute?: string) {
     const provider = TableTimeToLiveProvider.getOrCreate(this);
 
-    const onEventHandlerPolicy = new SourceTableAttachedPolicy(this, provider.onEventHandler.role!);
-    const isCompleteHandlerPolicy = new SourceTableAttachedPolicy(this, provider.isCompleteHandler.role!);
-
     // Permissions
     const permissions = ['dynamodb:DescribeTimeToLive', 'dynamodb:UpdateTimeToLive'];
-    this.grant(onEventHandlerPolicy, ...permissions);
-    this.grant(isCompleteHandlerPolicy, ...permissions);
+    this.grant(provider.onEventHandler, ...permissions);
+    this.grant( provider.isCompleteHandler, ...permissions);
 
     const timeToLive = new CustomResource(this, `${id}TimeToLive`, {
       serviceToken: provider.provider.serviceToken,
@@ -1558,8 +1555,6 @@ export class Table extends TableBase {
     });
 
     timeToLive.node.addDependency(
-      onEventHandlerPolicy.policy,
-      isCompleteHandlerPolicy.policy,
       this,
     );
   }
