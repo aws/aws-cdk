@@ -5,10 +5,6 @@ import { BaseDataSource } from './data-source';
 import { IGraphqlApi } from './graphqlapi-base';
 import { MappingTemplate } from './mapping-template';
 
-// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
-// eslint-disable-next-line
-import { Construct as CoreConstruct } from '@aws-cdk/core';
-
 /**
  * Basic properties for an AppSync resolver
  */
@@ -67,7 +63,7 @@ export interface ResolverProps extends ExtendedResolverProps {
 /**
  * An AppSync resolver
  */
-export class Resolver extends CoreConstruct {
+export class Resolver extends Construct {
   /**
    * the ARN of the resolver
    */
