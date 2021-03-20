@@ -1,6 +1,7 @@
 {
   "name": "@aws-cdk/aws-cognito",
   "version": "0.0.0",
+  "private": true,
   "description": "The CDK Construct Library for AWS::Cognito",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -85,7 +86,7 @@
     "@aws-cdk/aws-lambda": "0.0.0",
     "@aws-cdk/core": "0.0.0",
     "@aws-cdk/custom-resources": "0.0.0",
-    "constructs": "^3.2.0",
+    "constructs": "10.0.0-pre.5",
     "punycode": "^2.1.1"
   },
   "homepage": "https://github.com/aws/aws-cdk",
@@ -95,7 +96,7 @@
     "@aws-cdk/aws-lambda": "0.0.0",
     "@aws-cdk/core": "0.0.0",
     "@aws-cdk/custom-resources": "0.0.0",
-    "constructs": "^3.2.0"
+    "constructs": "10.0.0-pre.5"
   },
   "bundledDependencies": [
     "punycode"
