@@ -1540,7 +1540,7 @@ export class Table extends TableBase {
     const provider = TableTimeToLiveProvider.getOrCreate(this);
 
     // Permissions
-    const permissions = ['dynamodb:DescribeTimeToLive', 'dynamodb:UpdateTimeToLive'];
+    const permissions = ['dynamodb:DescribeTable', 'dynamodb:DescribeTimeToLive', 'dynamodb:UpdateTimeToLive'];
     this.grant(provider.onEventHandler, ...permissions);
     this.grant( provider.isCompleteHandler, ...permissions);
 
