@@ -1,7 +1,6 @@
 import * as path from 'path';
-import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
-import { Duration, NestedStack, Stack } from '@aws-cdk/core';
+import { Duration, Stack } from '@aws-cdk/core';
 import * as cr from '@aws-cdk/custom-resources';
 import { Construct } from 'constructs';
 
@@ -9,14 +8,14 @@ import { Construct } from 'constructs';
 // eslint-disable-next-line no-duplicate-imports, import/order
 import { Construct as CoreConstruct } from '@aws-cdk/core';
 
-export class TableTimeToLiveProvider extends NestedStack {
+export class TableTimeToLiveProvider extends CoreConstruct {
   /**
-   * Creates a stack-singleton resource provider nested stack.
+   * Creates a stack-singleton resource provider.
    */
-  public static getOrCreate(scope: Construct) {
+  public static getOrCreate(scope: Construct): TableTimeToLiveProvider {
     const stack = Stack.of(scope);
-    const uid = '@aws-cdk/aws-dynamodb.TableTimeToLiveProvider';
-    return stack.node.tryFindChild(uid) as TableTimeToLiveProvider || new TableTimeToLiveProvider(stack, uid);
+    const logicalId = 'TableTimeToLiveProvider15b48ecf0bc70966e44f6d4becded765';
+    return (stack.node.tryFindChild(logicalId) ?? new TableTimeToLiveProvider(stack, logicalId)) as TableTimeToLiveProvider;
   }
 
   /**
@@ -55,18 +54,11 @@ export class TableTimeToLiveProvider extends NestedStack {
       timeout: Duration.seconds(30),
     });
 
-    // Required for replica table creation
-    this.onEventHandler.addToRolePolicy(
-      new iam.PolicyStatement({
-        actions: ['dynamodb:DescribeLimits'],
-        resources: ['*'],
-      }),
-    );
-
     this.provider = new cr.Provider(this, 'Provider', {
       onEventHandler: this.onEventHandler,
       isCompleteHandler: this.isCompleteHandler,
       queryInterval: Duration.seconds(10),
+      totalTimeout: Duration.minutes(75),
     });
   }
 }
