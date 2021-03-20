@@ -10,3 +10,4 @@ export * from './code';
 export * from './schema';
 export * from './security-configuration';
 export * from './table';
+export * from './view';
