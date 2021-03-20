@@ -906,7 +906,7 @@ abstract class TableBase extends Resource implements ITable {
    */
   private combinedGrant(
     grantee: iam.IGrantable,
-    opts: { keyActions?: string[], tableActions?: string[], streamActions?: string[] },
+    opts: {keyActions?: string[], tableActions?: string[], streamActions?: string[]},
   ): iam.Grant {
     if (opts.tableActions) {
       const resources = [this.tableArn,
@@ -939,7 +939,7 @@ abstract class TableBase extends Resource implements ITable {
       });
       return ret;
     }
-    throw new Error(`Unexpected 'action', ${opts.tableActions || opts.streamActions}`);
+    throw new Error(`Unexpected 'action', ${ opts.tableActions || opts.streamActions }`);
   }
 
   private cannedMetric(
