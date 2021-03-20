@@ -575,6 +575,24 @@
         "TableTimeToLiveProvider15b48ecf0bc70966e44f6d4becded765OnEventHandlerServiceRoleCC8E9CB9"
       ]
     },
+    "TableWithGlobalAndLocalSecondaryIndexTimeToLive4103D09D": {
+      "Type": "Custom::DynamoDBTimeToLive",
+      "Properties": {
+        "ServiceToken": {
+          "Fn::GetAtt": [
+            "TableTimeToLiveProvider15b48ecf0bc70966e44f6d4becded765ProviderframeworkonEventD14AFB7C",
+            "Arn"
+          ]
+        },
+        "TableName": {
+          "Ref": "TableWithGlobalAndLocalSecondaryIndexBC540710"
+        },
+        "TimeToLiveAttribute": "timeToLive"
+      },
+      "DependsOn": "TableWithGlobalAndLocalSecondaryIndexBC540710",
+      "DeletionPolicy": "Delete",
+      "UpdateReplacePolicy": "Delete"
+    },
     "TableTimeToLiveProvider15b48ecf0bc70966e44f6d4becded765IsCompleteHandlerServiceRoleA529D064": {
       "Type": "AWS::IAM::Role",
       "Properties": {
@@ -849,7 +867,7 @@
           }
         },
         "Handler": "framework.onEvent",
-        "Runtime": "nodejs14.x",
+        "Runtime": "nodejs10.x",
         "Timeout": 900
       },
       "DependsOn": [
@@ -989,7 +1007,7 @@
           }
         },
         "Handler": "framework.isComplete",
-        "Runtime": "nodejs14.x",
+        "Runtime": "nodejs10.x",
         "Timeout": 900
       },
       "DependsOn": [
@@ -1129,7 +1147,7 @@
           }
         },
         "Handler": "framework.onTimeout",
-        "Runtime": "nodejs14.x",
+        "Runtime": "nodejs10.x",
         "Timeout": 900
       },
       "DependsOn": [
