@@ -1,5 +1,4 @@
-import '@aws-cdk/assert/jest';
-import { ABSENT, ResourcePart } from '@aws-cdk/assert';
+import { ABSENT, expect as expectCDK, haveResource, ResourcePart } from '@aws-cdk/assert';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
@@ -21,7 +20,7 @@ describe('DatabaseCluster', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::Neptune::DBCluster', {
+    expectCDK(stack).to(haveResource('AWS::Neptune::DBCluster', {
       Properties: {
         DBSubnetGroupName: { Ref: 'DatabaseSubnets3C9252C9' },
         VpcSecurityGroupIds: [{ 'Fn::GetAtt': ['DatabaseSecurityGroup5C91FDCB', 'GroupId'] }],
@@ -29,20 +28,20 @@ describe('DatabaseCluster', () => {
       },
       DeletionPolicy: 'Retain',
       UpdateReplacePolicy: 'Retain',
-    }, ResourcePart.CompleteDefinition);
+    }, ResourcePart.CompleteDefinition));
 
-    expect(stack).toHaveResource('AWS::Neptune::DBInstance', {
+    expectCDK(stack).to(haveResource('AWS::Neptune::DBInstance', {
       DeletionPolicy: 'Retain',
       UpdateReplacePolicy: 'Retain',
-    }, ResourcePart.CompleteDefinition);
+    }, ResourcePart.CompleteDefinition));
 
-    expect(stack).toHaveResource('AWS::Neptune::DBSubnetGroup', {
+    expectCDK(stack).to(haveResource('AWS::Neptune::DBSubnetGroup', {
       SubnetIds: [
         { Ref: 'VPCPrivateSubnet1Subnet8BCA10E0' },
         { Ref: 'VPCPrivateSubnet2SubnetCFCDAA7A' },
         { Ref: 'VPCPrivateSubnet3Subnet3EDCD457' },
       ],
-    });
+    }));
   });
 
   test('can create a cluster with a single instance', () => {
@@ -58,10 +57,10 @@ describe('DatabaseCluster', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::Neptune::DBCluster', {
+    expectCDK(stack).to(haveResource('AWS::Neptune::DBCluster', {
       DBSubnetGroupName: { Ref: 'DatabaseSubnets3C9252C9' },
       VpcSecurityGroupIds: [{ 'Fn::GetAtt': ['DatabaseSecurityGroup5C91FDCB', 'GroupId'] }],
-    });
+    }));
   });
 
   test('errors when less than one instance is specified', () => {
@@ -112,11 +111,11 @@ describe('DatabaseCluster', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::Neptune::DBCluster', {
+    expectCDK(stack).to(haveResource('AWS::Neptune::DBCluster', {
       EngineVersion: '1.0.4.1',
       DBSubnetGroupName: { Ref: 'DatabaseSubnets3C9252C9' },
       VpcSecurityGroupIds: [{ 'Fn::GetAtt': ['DatabaseSecurityGroup5C91FDCB', 'GroupId'] }],
-    });
+    }));
   });
 
   test('can create a cluster with imported vpc and security group', () => {
@@ -136,10 +135,10 @@ describe('DatabaseCluster', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::Neptune::DBCluster', {
+    expectCDK(stack).to(haveResource('AWS::Neptune::DBCluster', {
       DBSubnetGroupName: { Ref: 'DatabaseSubnets3C9252C9' },
       VpcSecurityGroupIds: ['SecurityGroupId12345'],
-    });
+    }));
   });
 
   test('cluster with parameter group', () => {
@@ -161,9 +160,9 @@ describe('DatabaseCluster', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::Neptune::DBCluster', {
+    expectCDK(stack).to(haveResource('AWS::Neptune::DBCluster', {
       DBClusterParameterGroupName: { Ref: 'ParamsA8366201' },
-    });
+    }));
   });
 
   test('cluster with associated role', () => {
@@ -184,7 +183,7 @@ describe('DatabaseCluster', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::Neptune::DBCluster', {
+    expectCDK(stack).to(haveResource('AWS::Neptune::DBCluster', {
       AssociatedRoles: [
         {
           RoleArn: {
@@ -195,7 +194,7 @@ describe('DatabaseCluster', () => {
           },
         },
       ],
-    });
+    }));
   });
 
   test('cluster with imported parameter group', () => {
@@ -213,9 +212,9 @@ describe('DatabaseCluster', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::Neptune::DBCluster', {
+    expectCDK(stack).to(haveResource('AWS::Neptune::DBCluster', {
       DBClusterParameterGroupName: 'ParamGroupName',
-    });
+    }));
   });
 
   test('create an encrypted cluster with custom KMS key', () => {
@@ -231,7 +230,7 @@ describe('DatabaseCluster', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::Neptune::DBCluster', {
+    expectCDK(stack).to(haveResource('AWS::Neptune::DBCluster', {
       KmsKeyId: {
         'Fn::GetAtt': [
           'Key961B73FD',
@@ -239,7 +238,7 @@ describe('DatabaseCluster', () => {
         ],
       },
       StorageEncrypted: true,
-    });
+    }));
   });
 
   test('creating a cluster defaults to using encryption', () => {
@@ -254,9 +253,9 @@ describe('DatabaseCluster', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::Neptune::DBCluster', {
+    expectCDK(stack).to(haveResource('AWS::Neptune::DBCluster', {
       StorageEncrypted: true,
-    });
+    }));
   });
 
   test('supplying a KMS key with storageEncryption false throws an error', () => {
@@ -307,9 +306,9 @@ describe('DatabaseCluster', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::Neptune::DBInstance', {
+    expectCDK(stack).to(haveResource('AWS::Neptune::DBInstance', {
       DBInstanceIdentifier: `${instanceIdentifierBase}1`,
-    });
+    }));
   });
 
   test('cluster identifier used', () => {
@@ -326,9 +325,9 @@ describe('DatabaseCluster', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::Neptune::DBInstance', {
+    expectCDK(stack).to(haveResource('AWS::Neptune::DBInstance', {
       DBInstanceIdentifier: `${clusterIdentifier}instance1`,
-    });
+    }));
   });
 
   test('imported cluster has supplied attributes', () => {
@@ -373,9 +372,9 @@ describe('DatabaseCluster', () => {
     cluster.connections.allowToAnyIpv4(ec2.Port.tcp(443));
 
     // THEN
-    expect(stack).toHaveResource('AWS::EC2::SecurityGroupEgress', {
+    expectCDK(stack).to(haveResource('AWS::EC2::SecurityGroupEgress', {
       GroupId: 'sg-123456789',
-    });
+    }));
   });
 
   test('backup retention period respected', () => {
@@ -391,9 +390,9 @@ describe('DatabaseCluster', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::Neptune::DBCluster', {
+    expectCDK(stack).to(haveResource('AWS::Neptune::DBCluster', {
       BackupRetentionPeriod: 20,
-    });
+    }));
   });
 
   test('backup maintenance window respected', () => {
@@ -410,10 +409,10 @@ describe('DatabaseCluster', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::Neptune::DBCluster', {
+    expectCDK(stack).to(haveResource('AWS::Neptune::DBCluster', {
       BackupRetentionPeriod: 20,
       PreferredBackupWindow: '07:34-08:04',
-    });
+    }));
   });
 
   test('regular maintenance window respected', () => {
@@ -429,9 +428,9 @@ describe('DatabaseCluster', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::Neptune::DBCluster', {
+    expectCDK(stack).to(haveResource('AWS::Neptune::DBCluster', {
       PreferredMaintenanceWindow: '07:34-08:04',
-    });
+    }));
   });
 
   test('iam authentication - off by default', () => {
@@ -446,9 +445,9 @@ describe('DatabaseCluster', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::Neptune::DBCluster', {
+    expectCDK(stack).to(haveResource('AWS::Neptune::DBCluster', {
       IamAuthEnabled: ABSENT,
-    });
+    }));
   });
 
   test('createGrant - creates IAM policy and enables IAM auth', () => {
@@ -467,10 +466,10 @@ describe('DatabaseCluster', () => {
     cluster.grantConnect(role);
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::Neptune::DBCluster', {
+    expectCDK(stack).to(haveResource('AWS::Neptune::DBCluster', {
       IamAuthEnabled: true,
-    });
-    expect(stack).toHaveResource('AWS::IAM::Policy', {
+    }));
+    expectCDK(stack).to(haveResource('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [{
           Effect: 'Allow',
@@ -503,7 +502,7 @@ describe('DatabaseCluster', () => {
         }],
         Version: '2012-10-17',
       },
-    });
+    }));
   });
 
   test('createGrant - throws if IAM auth disabled', () => {
