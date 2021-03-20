@@ -1148,7 +1148,7 @@ export class Table extends TableBase {
     }
 
     if (props.timeToLiveAttribute) {
-      this.setTimeToLive(id, props.timeToLiveAttribute);
+      this.setTimeToLive(props.timeToLiveAttribute);
     }
   }
 
@@ -1537,7 +1537,7 @@ export class Table extends TableBase {
     }));
   }
 
-  private setTimeToLive(id: string, timeToLiveAttribute?: string) {
+  private setTimeToLive(timeToLiveAttribute?: string) {
     const provider = TableTimeToLiveProvider.getOrCreate(this);
 
     // Permissions
@@ -1545,7 +1545,7 @@ export class Table extends TableBase {
     this.grant(provider.onEventHandler, ...permissions);
     this.grant( provider.isCompleteHandler, ...permissions);
 
-    const timeToLive = new CustomResource(this, `${id}TimeToLive`, {
+    const timeToLive = new CustomResource(this, 'TimeToLive', {
       serviceToken: provider.provider.serviceToken,
       resourceType: 'Custom::DynamoDBTimeToLive',
       properties: {
