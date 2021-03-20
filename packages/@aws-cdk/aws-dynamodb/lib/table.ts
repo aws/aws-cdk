@@ -193,7 +193,16 @@ export interface TableOptions {
 
   /**
    * The name of TTL attribute.
-   * @default - TTL is disabled
+   *
+   * If a value is passed a custom resource is created. The custom resource does add support
+   * for changes to the TTL attribute later.
+   *
+   * If the TTL should be removed from the table, you should pass an empty string (e.g., '').
+   *
+   * If wish to remove the custom resource, you can leave the default (undefined). However,
+   * note that this will leave the table in the current state. A new table will not have a disabled
+   * TTL, while an enabled TTL will remain in place if you defined one before.
+   * @default - TTL stays in the current state (disabled for newly created tables).
    */
   readonly timeToLiveAttribute?: string;
 
