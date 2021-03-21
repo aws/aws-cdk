@@ -139,7 +139,7 @@ CodeBuild Projects can produce Artifacts and upload them to S3. For example:
 
 ```ts
 const project = codebuild.Project(stack, 'MyProject', {
-  buildSpec: codebuild.BuildSpec.fromObjectToYaml({
+  buildSpec: codebuild.BuildSpec.fromObject({
     version: '0.2',
   }),
   artifacts: codebuild.Artifacts.s3({
@@ -151,6 +151,8 @@ const project = codebuild.Project(stack, 'MyProject', {
     }),
 });
 ```
+
+If you'd prefer your buildspec to be rendered as YAML in the template, use the `fromObjectToYaml()` method instead of `fromObject()`.
 
 Because we've not set the `name` property, this example will set the
 `overrideArtifactName` parameter, and produce an artifact named as defined in
@@ -377,7 +379,7 @@ You can specify a test report in your buildspec:
 
 ```ts
 const project = new codebuild.Project(this, 'Project', {
-  buildSpec: codebuild.BuildSpec.fromObjectToYaml({
+  buildSpec: codebuild.BuildSpec.fromObject({
     // ...
     reports: {
       myReport: {
@@ -412,7 +414,7 @@ instead of a simple name, in your buildspec:
 const reportGroup = new codebuild.ReportGroup(this, 'ReportGroup');
 
 const project = new codebuild.Project(this, 'Project', {
-  buildSpec: codebuild.BuildSpec.fromObjectToYaml({
+  buildSpec: codebuild.BuildSpec.fromObject({
     // ...
     reports: {
       [reportGroup.reportGroupArn]: {
@@ -504,7 +506,7 @@ So, a buildspec for the above Project could look something like this:
 ```ts
 const project = new codebuild.Project(this, 'MyProject', {
   // secondary sources and artifacts as above...
-  buildSpec: codebuild.BuildSpec.fromObjectToYaml({
+  buildSpec: codebuild.BuildSpec.fromObject({
     version: '0.2',
     phases: {
       build: {
@@ -563,7 +565,7 @@ For example:
 const vpc = new ec2.Vpc(this, 'MyVPC');
 const project = new codebuild.Project(this, 'MyProject', {
   vpc: vpc,
-  buildSpec: codebuild.BuildSpec.fromObjectToYaml({
+  buildSpec: codebuild.BuildSpec.fromObject({
     // ...
   }),
 });
@@ -583,7 +585,7 @@ For example:
 
 ```ts
 new codebuild.Project(stack, 'MyProject', {
-  buildSpec: codebuild.BuildSpec.fromObjectToYaml({
+  buildSpec: codebuild.BuildSpec.fromObject({
     version: '0.2',
   }),
   fileSystemLocations: [
@@ -616,32 +618,4 @@ const project = new codebuild.Project(this, 'MyProject', { ... });
 if (project.enableBatchBuilds()) {
   console.log('Batch builds were enabled');
 }
-```
-
-## Timeouts
-
-There are two types of timeouts that can be set when creating your Project.
-The `timeout` property can be used to set an upper limit on how long your Project is able to run without being marked as completed.
-The default is 60 minutes.
-An example of overriding the default follows.
-
-```ts
-import * as codebuild from '@aws-cdk/aws-codebuild';
-
-new codebuild.Project(stack, 'MyProject', {
-  timeout: Duration.minutes(90)
-});
-```
-
-The `queuedTimeout` property can be used to set an upper limit on how your Project remains queued to run.
-There is no default value for this property.
-As an example, to allow your Project to queue for up to thirty (30) minutes before the build fails,
-use the following code.
-
-```ts
-import * as codebuild from '@aws-cdk/aws-codebuild';
-
-new codebuild.Project(stack, 'MyProject', {
-  queuedTimeout: Duration.minutes(30)
-});
 ```
