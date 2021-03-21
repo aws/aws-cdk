@@ -4,6 +4,7 @@ import * as AWS from 'aws-sdk';
  * AWS SDK operations required by Asset Publishing
  */
 export interface IAws {
+  discoverPartition(): Promise<string>;
   discoverDefaultRegion(): Promise<string>;
   discoverCurrentAccount(): Promise<Account>;
 

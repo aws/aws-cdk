@@ -1,52 +1,42 @@
 import * as os from 'os';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as AWS from 'aws-sdk';
-import * as SDKMock from 'aws-sdk-mock';
 import type { ConfigurationOptions } from 'aws-sdk/lib/config-base';
+import * as promptly from 'promptly';
 import * as uuid from 'uuid';
 import { PluginHost } from '../../lib';
-import { ISDK, Mode, SdkProvider } from '../../lib/api/aws-auth';
+import { ISDK, Mode, SDK, SdkProvider } from '../../lib/api/aws-auth';
 import * as logging from '../../lib/logging';
 import * as bockfs from '../bockfs';
 import { withMocked } from '../util';
+import { FakeSts, RegisterRoleOptions, RegisterUserOptions } from './fake-sts';
 
-// Mock promptly prompt to test MFA support
 jest.mock('promptly', () => ({
-  prompt: jest.fn().mockRejectedValue(new Error('test')),
+  prompt: jest.fn().mockResolvedValue('1234'),
 }));
-
-SDKMock.setSDKInstance(AWS);
-
-type AwsCallback<T> = (err: Error | null, val: T) => void;
 
 const defaultCredOptions = {
   ec2creds: false,
   containerCreds: false,
 };
 
-// Account cache buster
 let uid: string;
 let pluginQueried = false;
-let defaultEnv: cxapi.Environment;
-let getCallerIdentityError: Error | null = null;
 
 beforeEach(() => {
+  // Cache busters!
+  // We prefix everything with UUIDs because:
+  //
+  // - We have a cache from account# -> credentials
+  // - We have a cache from access key -> account
   uid = `(${uuid.v4()})`;
 
   logging.setLogLevel(logging.LogLevel.TRACE);
 
-  SDKMock.mock('STS', 'getCallerIdentity', (cb: AwsCallback<AWS.STS.GetCallerIdentityResponse>) => {
-    return cb(getCallerIdentityError, {
-      Account: `${uid}the_account_#`,
-      UserId: 'you!',
-      Arn: 'arn:aws-here:iam::12345:role/test',
-    });
-  });
-
   PluginHost.instance.credentialProviderSources.splice(0);
   PluginHost.instance.credentialProviderSources.push({
     isAvailable() { return Promise.resolve(true); },
-    canProvideCredentials(account) { return Promise.resolve(account === `${uid}plugin_account_#`); },
+    canProvideCredentials(account) { return Promise.resolve(account === uniq('99999')); },
     getProvider() {
       pluginQueried = true;
       return Promise.resolve(new AWS.Credentials({
@@ -58,104 +48,109 @@ beforeEach(() => {
     name: 'test plugin',
   });
 
-  defaultEnv = cxapi.EnvironmentUtils.make(`${uid}the_account_#`, 'def');
-
-  // Scrub some environment variables that might be set if we're running on CodeBuild which will interfere with the tests.
-  delete process.env.AWS_PROFILE;
-  delete process.env.AWS_REGION;
-  delete process.env.AWS_DEFAULT_REGION;
-  delete process.env.AWS_ACCESS_KEY_ID;
-  delete process.env.AWS_SECRET_ACCESS_KEY;
-  delete process.env.AWS_SESSION_TOKEN;
+  // Make sure these point to nonexistant files to start, if we don't call
+  // prepare() then we don't accidentally want to fall back to system config.
+  process.env.AWS_CONFIG_FILE = '/dev/null';
+  process.env.AWS_SHARED_CREDENTIALS_FILE = '/dev/null';
 });
 
 afterEach(() => {
-  logging.setLogLevel(logging.LogLevel.DEFAULT);
-
-  SDKMock.restore();
   bockfs.restore();
 });
 
-describe('with default config files', () => {
+function uniq(account: string) {
+  return `${uid}${account}`;
+}
+
+function env(account: string) {
+  return cxapi.EnvironmentUtils.make(account, 'def');
+}
+
+describe('with intercepted network calls', () => {
+  // Most tests will use intercepted network calls, except one test that tests
+  // that the right HTTP `Agent` is used.
+
+  let fakeSts: FakeSts;
   beforeEach(() => {
-    bockfs({
-      '/home/me/.bxt/credentials': dedent(`
-        [default]
-        aws_access_key_id=${uid}access
-        aws_secret_access_key=secret
+    fakeSts = new FakeSts();
+    fakeSts.begin();
 
-        [foo]
-        aws_access_key_id=${uid}fooccess
-        aws_secret_access_key=secret
-
-        [assumer]
-        aws_access_key_id=${uid}assumer
-        aws_secret_access_key=secret
-
-        [mfa]
-        aws_access_key_id=${uid}mfaccess
-        aws_secret_access_key=secret
-      `),
-      '/home/me/.bxt/config': dedent(`
-        [default]
-        region=eu-bla-5
-
-        [profile foo]
-        region=eu-west-1
-
-        [profile boo]
-        aws_access_key_id=${uid}booccess
-        aws_secret_access_key=boocret
-        # No region here
-
-        [profile assumable]
-        role_arn=arn:aws:iam::12356789012:role/Assumable
-        source_profile=assumer
-
-        [profile assumer]
-        region=us-east-2
-
-        [profile mfa]
-        region=eu-west-1
-
-        [profile mfa-role]
-        source_profile=mfa
-        role_arn=arn:aws:iam::account:role/role
-        mfa_serial=arn:aws:iam::account:mfa/user
-      `),
-    });
-
-    // Set environment variables that we want
-    process.env.AWS_CONFIG_FILE = bockfs.path('/home/me/.bxt/config');
-    process.env.AWS_SHARED_CREDENTIALS_FILE = bockfs.path('/home/me/.bxt/credentials');
+    // Make sure the KeyID returned by the plugin is recognized
+    fakeSts.registerUser(uniq('99999'), uniq('plugin_key'));
   });
 
-  describe('CLI compatible credentials loading', () => {
-    test('default config credentials', async () => {
+  afterEach(() => {
+    fakeSts.restore();
+  });
+
+  // Set of tests where the CDK will not trigger assume-role
+  // (the INI file might still do assume-role)
+  describe('when CDK does not AssumeRole', () => {
+    test('uses default credentials by default', async () => {
       // WHEN
-      const provider = await SdkProvider.withAwsCliCompatibleDefaults({ ...defaultCredOptions });
+      prepareCreds({
+        fakeSts,
+        credentials: {
+          default: { aws_access_key_id: 'access', $account: '11111', $fakeStsOptions: { partition: 'aws-here' } },
+        },
+        config: {
+          default: { region: 'eu-bla-5' },
+        },
+      });
+      const provider = await providerFromProfile(undefined);
 
       // THEN
       expect(provider.defaultRegion).toEqual('eu-bla-5');
-      await expect(provider.defaultAccount()).resolves.toEqual({ accountId: `${uid}the_account_#`, partition: 'aws-here' });
-      const sdk = await provider.forEnvironment({ ...defaultEnv, region: 'rgn' }, Mode.ForReading);
-      expect(sdkConfig(sdk).credentials!.accessKeyId).toEqual(`${uid}access`);
-      expect(sdkConfig(sdk).region).toEqual('rgn');
+      await expect(provider.defaultAccount()).resolves.toEqual({ accountId: uniq('11111'), partition: 'aws-here' });
+
+      // Ask for a different region
+      const sdk = await provider.forEnvironment({ ...env(uniq('11111')), region: 'rgn' }, Mode.ForReading);
+      expect(sdkConfig(sdk).credentials!.accessKeyId).toEqual(uniq('access'));
+      expect(sdk.currentRegion).toEqual('rgn');
     });
 
-    test('unknown account and region uses current', async () => {
+    test('throws if profile credentials are not for the right account', async () => {
       // WHEN
-      const provider = await SdkProvider.withAwsCliCompatibleDefaults({ ...defaultCredOptions });
+      prepareCreds({
+        fakeSts,
+        config: {
+          'profile boo': { aws_access_key_id: 'access', $account: '11111' },
+        },
+      });
+      const provider = await providerFromProfile('boo');
+
+      await expect(provider.forEnvironment(env(uniq('some_account_#')), Mode.ForReading)).rejects.toThrow('Need to perform AWS calls');
+    });
+
+    test('use profile acct/region if agnostic env requested', async () => {
+      // WHEN
+      prepareCreds({
+        fakeSts,
+        credentials: {
+          default: { aws_access_key_id: 'access', $account: '11111' },
+        },
+        config: {
+          default: { region: 'eu-bla-5' },
+        },
+      });
+      const provider = await providerFromProfile(undefined);
 
       // THEN
       const sdk = await provider.forEnvironment(cxapi.EnvironmentUtils.make(cxapi.UNKNOWN_ACCOUNT, cxapi.UNKNOWN_REGION), Mode.ForReading);
-      expect(sdkConfig(sdk).credentials!.accessKeyId).toEqual(`${uid}access`);
-      expect(sdkConfig(sdk).region).toEqual('eu-bla-5');
+      expect(sdkConfig(sdk).credentials!.accessKeyId).toEqual(uniq('access'));
+      expect((await sdk.currentAccount()).accountId).toEqual(uniq('11111'));
+      expect(sdk.currentRegion).toEqual('eu-bla-5');
     });
 
-    test('passing profile does not use EnvironmentCredentials', async () => {
+    test('passing profile skips EnvironmentCredentials', async () => {
       // GIVEN
-      const provider = await SdkProvider.withAwsCliCompatibleDefaults({ ...defaultCredOptions, profile: 'foo' });
+      prepareCreds({
+        fakeSts,
+        credentials: {
+          foo: { aws_access_key_id: 'access', $account: '11111' },
+        },
+      });
+      const provider = await providerFromProfile('foo');
 
       const environmentCredentialsPrototype = (new AWS.EnvironmentCredentials('AWS')).constructor.prototype;
 
@@ -163,404 +158,414 @@ describe('with default config files', () => {
         refresh.mockImplementation((callback: (err?: Error) => void) => callback(new Error('This function should not have been called')));
 
         // WHEN
-        await provider.defaultAccount();
+        expect((await provider.defaultAccount())?.accountId).toEqual(uniq('11111'));
 
         expect(refresh).not.toHaveBeenCalled();
       });
     });
 
-    test('mixed profile credentials', async () => {
+    test('supports profile spread over config_file and credentials_file', async () => {
       // WHEN
+      prepareCreds({
+        fakeSts,
+        credentials: {
+          foo: { aws_access_key_id: 'fooccess', $account: '22222' },
+        },
+        config: {
+          'default': { region: 'eu-bla-5' },
+          'profile foo': { region: 'eu-west-1' },
+        },
+      });
       const provider = await SdkProvider.withAwsCliCompatibleDefaults({ ...defaultCredOptions, profile: 'foo' });
 
       // THEN
       expect(provider.defaultRegion).toEqual('eu-west-1');
-      await expect(provider.defaultAccount()).resolves.toEqual({ accountId: `${uid}the_account_#`, partition: 'aws-here' });
-      const sdk = await provider.forEnvironment(defaultEnv, Mode.ForReading);
-      expect(sdkConfig(sdk).credentials!.accessKeyId).toEqual(`${uid}fooccess`);
+      await expect(provider.defaultAccount()).resolves.toEqual({ accountId: uniq('22222'), partition: 'aws' });
+
+      const sdk = await provider.forEnvironment(env(uniq('22222')), Mode.ForReading);
+      expect(sdkConfig(sdk).credentials!.accessKeyId).toEqual(uniq('fooccess'));
     });
 
-    test('pure config credentials', async () => {
+    test('supports profile only in config_file', async () => {
       // WHEN
-      const provider = await SdkProvider.withAwsCliCompatibleDefaults({ ...defaultCredOptions, profile: 'boo' });
+      prepareCreds({
+        fakeSts,
+        config: {
+          'default': { region: 'eu-bla-5' },
+          'profile foo': { aws_access_key_id: 'fooccess', $account: '22222' },
+        },
+      });
+      const provider = await providerFromProfile('foo');
 
       // THEN
       expect(provider.defaultRegion).toEqual('eu-bla-5'); // Fall back to default config
-      await expect(provider.defaultAccount()).resolves.toEqual({ accountId: `${uid}the_account_#`, partition: 'aws-here' });
-      const sdk = await provider.forEnvironment(defaultEnv, Mode.ForReading);
-      expect(sdkConfig(sdk).credentials!.accessKeyId).toEqual(`${uid}booccess`);
+      await expect(provider.defaultAccount()).resolves.toEqual({ accountId: uniq('22222'), partition: 'aws' });
+
+      const sdk = await provider.forEnvironment(env(uniq('22222')), Mode.ForReading);
+      expect(sdkConfig(sdk).credentials!.accessKeyId).toEqual(uniq('fooccess'));
     });
 
-    test('mfa_serial in profile will ask user for token', async () => {
+    test('can assume-role configured in config', async () => {
+      // GIVEN
+      prepareCreds({
+        fakeSts,
+        credentials: {
+          assumer: { aws_access_key_id: 'assumer', $account: '11111' },
+        },
+        config: {
+          'default': { region: 'eu-bla-5' },
+          'profile assumer': { region: 'us-east-2' },
+          'profile assumable': {
+            role_arn: 'arn:aws:iam::66666:role/Assumable',
+            source_profile: 'assumer',
+            $account: '66666',
+            $fakeStsOptions: { allowedAccounts: ['11111'] },
+          },
+        },
+      });
+      const provider = await providerFromProfile('assumable');
+
       // WHEN
-      const provider = await SdkProvider.withAwsCliCompatibleDefaults({ ...defaultCredOptions, profile: 'mfa-role' });
+      const sdk = await provider.forEnvironment(env(uniq('66666')), Mode.ForReading);
 
       // THEN
-      try {
-        await provider.withAssumedRole('arn:aws:iam::account:role/role', undefined, undefined);
-      } catch (e) {
-        // Mock response was set to fail with message test to make sure we don't call STS
-        expect(e.message).toEqual('Error fetching MFA token: test');
-      }
+      expect((await sdk.currentAccount()).accountId).toEqual(uniq('66666'));
     });
 
-    test('different account throws', async () => {
-      const provider = await SdkProvider.withAwsCliCompatibleDefaults({ ...defaultCredOptions, profile: 'boo' });
-
-      await expect(provider.forEnvironment({ ...defaultEnv, account: `${uid}some_account_#` }, Mode.ForReading)).rejects.toThrow('Need to perform AWS calls');
-    });
-
-    test('even when using a profile to assume another profile, STS calls goes through the proxy', async () => {
-      // Messy mocking
-      let called = false;
-      jest.mock('proxy-agent', () => {
-        // eslint-disable-next-line @typescript-eslint/no-require-imports
-        class FakeAgent extends require('https').Agent {
-          public addRequest(_: any, __: any) {
-            // FIXME: this error takes 6 seconds to be completely handled. It
-            // might be retries in the SDK somewhere, or something about the Node
-            // event loop. I've spent an hour trying to figure it out and I can't,
-            // and I gave up. We'll just have to live with this until someone gets
-            // inspired.
-            const error = new Error('ABORTED BY TEST');
-            (error as any).code = 'RequestAbortedError';
-            (error as any).retryable = false;
-            called = true;
-            throw error;
-          }
-        }
-        return FakeAgent;
-      });
-
-      // WHEN
-      const provider = await SdkProvider.withAwsCliCompatibleDefaults({
-        ...defaultCredOptions,
-        profile: 'assumable',
-        httpOptions: {
-          proxyAddress: 'http://DOESNTMATTER/',
+    test('can assume role even if [default] profile is missing', async () => {
+      // GIVEN
+      prepareCreds({
+        fakeSts,
+        credentials: {
+          assumer: { aws_access_key_id: 'assumer', $account: '22222' },
+          assumable: { role_arn: 'arn:aws:iam::12356789012:role/Assumable', source_profile: 'assumer', $account: '22222' },
+        },
+        config: {
+          'profile assumable': { region: 'eu-bla-5' },
         },
       });
 
-      await provider.defaultAccount();
+      // WHEN
+      const provider = await providerFromProfile('assumable');
 
-      // THEN -- the fake proxy agent got called, we don't care about the result
-      expect(called).toEqual(true);
+      // THEN
+      expect((await provider.defaultAccount())?.accountId).toEqual(uniq('22222'));
+    });
+
+    test('mfa_serial in profile will ask user for token', async () => {
+      // GIVEN
+      prepareCreds({
+        fakeSts,
+        credentials: {
+          assumer: { aws_access_key_id: 'assumer', $account: '66666' },
+        },
+        config: {
+          'default': { region: 'eu-bla-5' },
+          'profile assumer': { region: 'us-east-2' },
+          'profile mfa-role': {
+            role_arn: 'arn:aws:iam::66666:role/Assumable',
+            source_profile: 'assumer',
+            mfa_serial: 'arn:aws:iam::account:mfa/user',
+            $account: '66666',
+          },
+        },
+      });
+      const provider = await providerFromProfile('mfa-role');
+
+      const promptlyMockCalls = (promptly.prompt as jest.Mock).mock.calls.length;
+
+      // THEN
+      const sdk = await provider.forEnvironment(env(uniq('66666')), Mode.ForReading);
+      expect((await sdk.currentAccount()).accountId).toEqual(uniq('66666'));
+      expect(fakeSts.assumedRoles[0]).toEqual(expect.objectContaining({
+        roleArn: 'arn:aws:iam::66666:role/Assumable',
+        serialNumber: 'arn:aws:iam::account:mfa/user',
+        tokenCode: '1234',
+      }));
+
+      // Mock response was set to fail to make sure we don't call STS
+      // Make sure the MFA mock was called during this test
+      expect((promptly.prompt as jest.Mock).mock.calls.length).toBe(promptlyMockCalls + 1);
+    });
+  });
+
+  // For DefaultSynthesis we will do an assume-role after having gotten base credentials
+  describe('when CDK AssumeRoles', () => {
+    beforeEach(() => {
+      // All these tests share that 'arn:aws:role' is a role into account 88888 which can be assumed from 11111
+      fakeSts.registerRole(uniq('88888'), 'arn:aws:role', { allowedAccounts: [uniq('11111')] });
     });
 
     test('error we get from assuming a role is useful', async () => {
       // GIVEN
-      // Because of the way ChainableTemporaryCredentials gets its STS client, it's not mockable
-      // using 'mock-aws-sdk'. So instead, we have to mess around with its internals.
-      function makeAssumeRoleFail(s: ISDK) {
-        (s as any).credentials.service.assumeRole = jest.fn().mockImplementation((_request, cb) => {
-          cb(new Error('Nope!'));
-        });
-      }
-
-      const provider = await SdkProvider.withAwsCliCompatibleDefaults({
-        ...defaultCredOptions,
-        httpOptions: {
-          proxyAddress: 'http://localhost:8080/',
+      prepareCreds({
+        fakeSts,
+        config: {
+          default: { aws_access_key_id: 'foo' },
         },
       });
+      const provider = await providerFromProfile(undefined);
 
       // WHEN
-      const sdk = await provider.withAssumedRole('bla.role.arn', undefined, undefined);
-      makeAssumeRoleFail(sdk);
+      const promise = provider.forEnvironment(env(uniq('88888')), Mode.ForReading, {
+        assumeRoleArn: 'doesnotexist.role.arn',
+      });
 
       // THEN - error message contains both a helpful hint and the underlying AssumeRole message
-      await expect(sdk.s3().listBuckets().promise()).rejects.toThrow('did you bootstrap');
-      await expect(sdk.s3().listBuckets().promise()).rejects.toThrow('Nope!');
+      await expect(promise).rejects.toThrow('did you bootstrap');
+      await expect(promise).rejects.toThrow('doesnotexist.role.arn');
     });
 
     test('assuming a role sanitizes the username into the session name', async () => {
       // GIVEN
-      SDKMock.restore();
+      prepareCreds({
+        fakeSts,
+        config: {
+          default: { aws_access_key_id: 'foo', $account: '11111' },
+        },
+      });
 
       await withMocked(os, 'userInfo', async (userInfo) => {
         userInfo.mockReturnValue({ username: 'skål', uid: 1, gid: 1, homedir: '/here', shell: '/bin/sh' });
 
-        await withMocked((new AWS.STS()).constructor.prototype, 'assumeRole', async (assumeRole) => {
-          let assumeRoleRequest;
+        // WHEN
+        const provider = await providerFromProfile(undefined);
 
-          assumeRole.mockImplementation(function (
-            this: any,
-            request: AWS.STS.Types.AssumeRoleRequest,
-            cb?: (err: Error | null, x: AWS.STS.Types.AssumeRoleResponse) => void) {
+        const sdk = await provider.forEnvironment(env(uniq('88888')), Mode.ForReading, { assumeRoleArn: 'arn:aws:role' }) as SDK;
+        await sdk.currentAccount();
 
-            // Part of the request is stored on "this"
-            assumeRoleRequest = { ...this.config.params, ...request };
-
-            const response = {
-              Credentials: { AccessKeyId: `${uid}aid`, Expiration: new Date(), SecretAccessKey: 's', SessionToken: '' },
-            };
-            if (cb) { cb(null, response); }
-            return { promise: () => Promise.resolve(response) };
-          });
-
-          // WHEN
-          const provider = new SdkProvider(new AWS.CredentialProviderChain([() => new AWS.Credentials({ accessKeyId: 'a', secretAccessKey: 's' })]), 'eu-somewhere');
-          const sdk = await provider.withAssumedRole('bla.role.arn', undefined, undefined);
-
-          await sdk.currentCredentials();
-
-          expect(assumeRoleRequest).toEqual(expect.objectContaining({
-            RoleSessionName: 'aws-cdk-sk@l',
-          }));
-        });
+        // THEN
+        expect(fakeSts.assumedRoles[0]).toEqual(expect.objectContaining({
+          roleSessionName: 'aws-cdk-sk@l',
+        }));
       });
+    });
+
+    test('even if current credentials are for the wrong account, we will still use them to AssumeRole', async () => {
+      // GIVEN
+      prepareCreds({
+        fakeSts,
+        config: {
+          default: { aws_access_key_id: 'foo', $account: '11111' },
+        },
+      });
+      const provider = await providerFromProfile(undefined);
+
+      // WHEN
+      const sdk = await provider.forEnvironment(env(uniq('88888')), Mode.ForReading, { assumeRoleArn: 'arn:aws:role' }) as SDK;
+
+      // THEN
+      expect((await sdk.currentAccount()).accountId).toEqual(uniq('88888'));
+    });
+
+    test('if AssumeRole fails but current credentials are for the right account, we will still use them', async () => {
+      // GIVEN
+      prepareCreds({
+        fakeSts,
+        config: {
+          default: { aws_access_key_id: 'foo', $account: '88888' },
+        },
+      });
+      const provider = await providerFromProfile(undefined);
+
+      // WHEN - assumeRole fails because the role can only be assumed from account 11111
+      const sdk = await provider.forEnvironment(env(uniq('88888')), Mode.ForReading, { assumeRoleArn: 'arn:aws:role' }) as SDK;
+
+      // THEN
+      expect((await sdk.currentAccount()).accountId).toEqual(uniq('88888'));
     });
   });
 
   describe('Plugins', () => {
     test('does not use plugins if current credentials are for expected account', async () => {
-      const provider = await SdkProvider.withAwsCliCompatibleDefaults({ ...defaultCredOptions });
-      await provider.forEnvironment(defaultEnv, Mode.ForReading);
+      prepareCreds({
+        fakeSts,
+        config: {
+          default: { aws_access_key_id: 'foo', $account: '11111' },
+        },
+      });
+      const provider = await providerFromProfile(undefined);
+      await provider.forEnvironment(env(uniq('11111')), Mode.ForReading);
       expect(pluginQueried).toEqual(false);
     });
 
-    test('uses plugin for other account', async () => {
-      const provider = await SdkProvider.withAwsCliCompatibleDefaults({ ...defaultCredOptions });
-      await provider.forEnvironment({ ...defaultEnv, account: `${uid}plugin_account_#` }, Mode.ForReading);
+    test('uses plugin for account 99999', async () => {
+      const provider = await providerFromProfile(undefined);
+      await provider.forEnvironment(env(uniq('99999')), Mode.ForReading);
+      expect(pluginQueried).toEqual(true);
+    });
+
+    test('can assume role with credentials from plugin', async () => {
+      fakeSts.registerRole(uniq('99999'), 'arn:aws:iam::99999:role/Assumable');
+
+      const provider = await providerFromProfile(undefined);
+      await provider.forEnvironment(env(uniq('99999')), Mode.ForReading, {
+        assumeRoleArn: 'arn:aws:iam::99999:role/Assumable',
+      });
+
+      expect(fakeSts.assumedRoles[0]).toEqual(expect.objectContaining({
+        roleArn: 'arn:aws:iam::99999:role/Assumable',
+      }));
+      expect(pluginQueried).toEqual(true);
+    });
+
+    test('even if AssumeRole fails but current credentials are from a plugin, we will still use them', async () => {
+      const provider = await providerFromProfile(undefined);
+      const sdk = await provider.forEnvironment(env(uniq('99999')), Mode.ForReading, { assumeRoleArn: 'does:not:exist' });
+
+      // THEN
+      expect((await sdk.currentAccount()).accountId).toEqual(uniq('99999'));
+    });
+
+    test('plugins are still queried even if current credentials are expired (or otherwise invalid)', async () => {
+      // GIVEN
+      process.env.AWS_ACCESS_KEY_ID = `${uid}akid`;
+      process.env.AWS_SECRET_ACCESS_KEY = 'sekrit';
+      const provider = await providerFromProfile(undefined);
+
+      // WHEN
+      await provider.forEnvironment(env(uniq('99999')), Mode.ForReading);
+
+      // THEN
       expect(pluginQueried).toEqual(true);
     });
   });
-});
 
-test('can assume role without a [default] profile', async () => {
-  // GIVEN
-  bockfs({
-    '/home/me/.bxt/credentials': dedent(`
-      [assumer]
-      aws_access_key_id=${uid}assumer
-      aws_secret_access_key=secret
+  describe('support for credential_source', () => {
+    test('can assume role with ecs credentials', async () => {
+      return withMocked(AWS.ECSCredentials.prototype, 'needsRefresh', async (needsRefresh) => {
+        // GIVEN
+        prepareCreds({
+          config: {
+            'profile ecs': { role_arn: 'arn:aws:iam::12356789012:role/Assumable', credential_source: 'EcsContainer', $account: '22222' },
+          },
+        });
+        const provider = await providerFromProfile('ecs');
 
-      [assumable]
-      role_arn=arn:aws:iam::12356789012:role/Assumable
-      source_profile=assumer
-    `),
-    '/home/me/.bxt/config': dedent(`
-      [profile assumable]
-      region=eu-bla-5
-    `),
-  });
+        // WHEN
+        await provider.defaultAccount();
 
-  SDKMock.mock('STS', 'assumeRole', (_request: AWS.STS.AssumeRoleRequest, cb: AwsCallback<AWS.STS.AssumeRoleResponse>) => {
-    return cb(null, {
-      Credentials: {
-        AccessKeyId: `${uid}access`, // Needs UID in here otherwise key will be cached
-        Expiration: new Date(Date.now() + 10000),
-        SecretAccessKey: 'b',
-        SessionToken: 'c',
-      },
+        // THEN
+        expect(needsRefresh).toHaveBeenCalled();
+      });
+
+    });
+
+    test('can assume role with ec2 credentials', async () => {
+      return withMocked(AWS.EC2MetadataCredentials.prototype, 'needsRefresh', async (needsRefresh) => {
+        // GIVEN
+        prepareCreds({
+          config: {
+            'profile ecs': { role_arn: 'arn:aws:iam::12356789012:role/Assumable', credential_source: 'Ec2InstanceMetadata', $account: '22222' },
+          },
+        });
+        const provider = await providerFromProfile('ecs');
+
+        // WHEN
+        await provider.defaultAccount();
+
+        // THEN
+        expect(needsRefresh).toHaveBeenCalled();
+
+      });
+
+    });
+
+    test('can assume role with env credentials', async () => {
+      return withMocked(AWS.EnvironmentCredentials.prototype, 'needsRefresh', async (needsRefresh) => {
+        // GIVEN
+        prepareCreds({
+          config: {
+            'profile ecs': { role_arn: 'arn:aws:iam::12356789012:role/Assumable', credential_source: 'Environment', $account: '22222' },
+          },
+        });
+        const provider = await providerFromProfile('ecs');
+
+        // WHEN
+        await provider.defaultAccount();
+
+        // THEN
+        expect(needsRefresh).toHaveBeenCalled();
+      });
+    });
+
+    test('assume fails with unsupported credential_source', async () => {
+      // GIVEN
+      prepareCreds({
+        config: {
+          'profile ecs': { role_arn: 'arn:aws:iam::12356789012:role/Assumable', credential_source: 'unsupported', $account: '22222' },
+        },
+      });
+      const provider = await providerFromProfile('ecs');
+
+      // WHEN
+      const account = await provider.defaultAccount();
+
+      // THEN
+      expect(account?.accountId).toEqual(undefined);
     });
   });
 
-  // Set environment variables that we want
-  process.env.AWS_CONFIG_FILE = bockfs.path('/home/me/.bxt/config');
-  process.env.AWS_SHARED_CREDENTIALS_FILE = bockfs.path('/home/me/.bxt/credentials');
+  test('defaultAccount returns undefined if STS call fails', async () => {
+    // GIVEN
+    process.env.AWS_ACCESS_KEY_ID = `${uid}akid`;
+    process.env.AWS_SECRET_ACCESS_KEY = 'sekrit';
+
+    // WHEN
+    const provider = await providerFromProfile(undefined);
+
+    // THEN
+    await expect(provider.defaultAccount()).resolves.toBe(undefined);
+  });
+});
+
+test('even when using a profile to assume another profile, STS calls goes through the proxy', async () => {
+  prepareCreds({
+    credentials: {
+      assumer: { aws_access_key_id: 'assumer' },
+    },
+    config: {
+      'default': { region: 'eu-bla-5' },
+      'profile assumable': { role_arn: 'arn:aws:iam::66666:role/Assumable', source_profile: 'assumer', $account: '66666' },
+      'profile assumer': { region: 'us-east-2' },
+    },
+  });
+
+  // Messy mocking
+  let called = false;
+  jest.mock('proxy-agent', () => {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    class FakeAgent extends require('https').Agent {
+      public addRequest(_: any, __: any) {
+        // FIXME: this error takes 6 seconds to be completely handled. It
+        // might be retries in the SDK somewhere, or something about the Node
+        // event loop. I've spent an hour trying to figure it out and I can't,
+        // and I gave up. We'll just have to live with this until someone gets
+        // inspired.
+        const error = new Error('ABORTED BY TEST');
+        (error as any).code = 'RequestAbortedError';
+        (error as any).retryable = false;
+        called = true;
+        throw error;
+      }
+    }
+    return FakeAgent;
+  });
 
   // WHEN
   const provider = await SdkProvider.withAwsCliCompatibleDefaults({
     ...defaultCredOptions,
     profile: 'assumable',
+    httpOptions: {
+      proxyAddress: 'http://DOESNTMATTER/',
+    },
   });
 
-  const account = await provider.defaultAccount();
+  await provider.defaultAccount();
 
-  // THEN
-  expect(account?.accountId).toEqual(`${uid}the_account_#`);
+  // THEN -- the fake proxy agent got called, we don't care about the result
+  expect(called).toEqual(true);
 });
-
-test('can assume role with ecs credentials', async () => {
-
-  return withMocked(AWS.ECSCredentials.prototype, 'needsRefresh', async (needsRefresh) => {
-
-    // GIVEN
-    bockfs({
-      '/home/me/.bxt/credentials': '',
-      '/home/me/.bxt/config': dedent(`
-      [profile ecs]
-      role_arn=arn:aws:iam::12356789012:role/Assumable
-      credential_source = EcsContainer
-    `),
-    });
-
-    // Set environment variables that we want
-    process.env.AWS_CONFIG_FILE = bockfs.path('/home/me/.bxt/config');
-    process.env.AWS_SHARED_CREDENTIALS_FILE = bockfs.path('/home/me/.bxt/credentials');
-
-    // WHEN
-    const provider = await SdkProvider.withAwsCliCompatibleDefaults({
-      ...defaultCredOptions,
-      profile: 'ecs',
-    });
-
-    await provider.defaultAccount();
-
-    // THEN
-    // expect(account?.accountId).toEqual(`${uid}the_account_#`);
-    expect(needsRefresh).toHaveBeenCalled();
-
-  });
-
-});
-
-test('can assume role with ec2 credentials', async () => {
-
-  return withMocked(AWS.EC2MetadataCredentials.prototype, 'needsRefresh', async (needsRefresh) => {
-
-    // GIVEN
-    bockfs({
-      '/home/me/.bxt/credentials': '',
-      '/home/me/.bxt/config': dedent(`
-      [profile ecs]
-      role_arn=arn:aws:iam::12356789012:role/Assumable
-      credential_source = Ec2InstanceMetadata
-    `),
-    });
-
-    // Set environment variables that we want
-    process.env.AWS_CONFIG_FILE = bockfs.path('/home/me/.bxt/config');
-    process.env.AWS_SHARED_CREDENTIALS_FILE = bockfs.path('/home/me/.bxt/credentials');
-
-    // WHEN
-    const provider = await SdkProvider.withAwsCliCompatibleDefaults({
-      ...defaultCredOptions,
-      profile: 'ecs',
-    });
-
-    await provider.defaultAccount();
-
-    // THEN
-    // expect(account?.accountId).toEqual(`${uid}the_account_#`);
-    expect(needsRefresh).toHaveBeenCalled();
-
-  });
-
-});
-
-test('can assume role with env credentials', async () => {
-
-  return withMocked(AWS.EnvironmentCredentials.prototype, 'needsRefresh', async (needsRefresh) => {
-
-    // GIVEN
-    bockfs({
-      '/home/me/.bxt/credentials': '',
-      '/home/me/.bxt/config': dedent(`
-      [profile ecs]
-      role_arn=arn:aws:iam::12356789012:role/Assumable
-      credential_source = Environment
-    `),
-    });
-
-    // Set environment variables that we want
-    process.env.AWS_CONFIG_FILE = bockfs.path('/home/me/.bxt/config');
-    process.env.AWS_SHARED_CREDENTIALS_FILE = bockfs.path('/home/me/.bxt/credentials');
-
-    // WHEN
-    const provider = await SdkProvider.withAwsCliCompatibleDefaults({
-      ...defaultCredOptions,
-      profile: 'ecs',
-    });
-
-    await provider.defaultAccount();
-
-    // THEN
-    // expect(account?.accountId).toEqual(`${uid}the_account_#`);
-    expect(needsRefresh).toHaveBeenCalled();
-
-  });
-
-});
-
-test('assume fails with unsupported credential_source', async () => {
-  // GIVEN
-  bockfs({
-    '/home/me/.bxt/credentials': '',
-    '/home/me/.bxt/config': dedent(`
-      [profile assumable]
-      role_arn=arn:aws:iam::12356789012:role/Assumable
-      credential_source = unsupported
-    `),
-  });
-
-  SDKMock.mock('STS', 'assumeRole', (_request: AWS.STS.AssumeRoleRequest, cb: AwsCallback<AWS.STS.AssumeRoleResponse>) => {
-    return cb(null, {
-      Credentials: {
-        AccessKeyId: `${uid}access`, // Needs UID in here otherwise key will be cached
-        Expiration: new Date(Date.now() + 10000),
-        SecretAccessKey: 'b',
-        SessionToken: 'c',
-      },
-    });
-  });
-
-  // Set environment variables that we want
-  process.env.AWS_CONFIG_FILE = bockfs.path('/home/me/.bxt/config');
-  process.env.AWS_SHARED_CREDENTIALS_FILE = bockfs.path('/home/me/.bxt/credentials');
-
-  // WHEN
-  const provider = await SdkProvider.withAwsCliCompatibleDefaults({
-    ...defaultCredOptions,
-    profile: 'assumable',
-  });
-
-  const account = await provider.defaultAccount();
-
-  // THEN
-  expect(account?.accountId).toEqual(undefined);
-});
-
-test('defaultAccount returns undefined if STS call fails', async () => {
-  // GIVEN
-  process.env.AWS_ACCESS_KEY_ID = `${uid}akid`;
-  process.env.AWS_SECRET_ACCESS_KEY = 'sekrit';
-  getCallerIdentityError = new Error('Something is wrong here');
-
-  // WHEN
-  const provider = await SdkProvider.withAwsCliCompatibleDefaults({
-    ...defaultCredOptions,
-  });
-
-  // THEN
-  await expect(provider.defaultAccount()).resolves.toBe(undefined);
-});
-
-test('plugins are still queried even if current credentials are expired', async () => {
-  // GIVEN
-  process.env.AWS_ACCESS_KEY_ID = `${uid}akid`;
-  process.env.AWS_SECRET_ACCESS_KEY = 'sekrit';
-  getCallerIdentityError = new Error('Something is wrong here');
-
-  // WHEN
-  const provider = await SdkProvider.withAwsCliCompatibleDefaults({ ...defaultCredOptions });
-  await provider.forEnvironment({ ...defaultEnv, account: `${uid}plugin_account_#` }, Mode.ForReading);
-
-  // THEN
-  expect(pluginQueried).toEqual(true);
-});
-
-/**
- * Strip shared whitespace from the start of lines
- */
-function dedent(x: string): string {
-  const lines = x.split('\n');
-  while (lines.length > 0 && lines[0].trim() === '') { lines.shift(); }
-  while (lines.length > 0 && lines[lines.length - 1].trim() === '') { lines.pop(); }
-
-  const wsRe = /^\s*/;
-  const lineParts: Array<[string, string]> = x.split('\n').map(s => {
-    const ws = wsRe.exec(s)![0];
-    return [ws, s.substr(ws.length)];
-  });
-
-  if (lineParts.length === 0) { return ''; } // Reduce won't work well in this case
-
-  // Calculate common whitespace only for non-empty lines
-  const sharedWs = lineParts.reduce((commonWs: string, [ws, text]) => text !== '' ? commonPrefix(commonWs, ws) : commonWs, lineParts[0][0]);
-  return lines.map(s => s.substr(sharedWs.length)).join('\n');
-}
 
 /**
  * Use object hackery to get the credentials out of the SDK object
@@ -569,10 +574,94 @@ function sdkConfig(sdk: ISDK): ConfigurationOptions {
   return (sdk as any).config;
 }
 
-function commonPrefix(a: string, b: string): string {
-  const N = Math.min(a.length, b.length);
-  for (let i = 0; i < N; i++) {
-    if (a[i] !== b[i]) { return a.substring(0, i); }
+/**
+ * Fixture for SDK auth for this test suite
+ *
+ * Has knowledge of the cache buster, will write proper fake config files and
+ * register users and roles in FakeSts at the same time.
+ */
+function prepareCreds(options: PrepareCredsOptions) {
+  function convertSections(sections?: Record<string, ProfileUser | ProfileRole>) {
+    const ret = [];
+    for (const [profile, user] of Object.entries(sections ?? {})) {
+      ret.push(`[${profile}]`);
+
+      if (isProfileRole(user)) {
+        ret.push(`role_arn=${user.role_arn}`);
+        if ('source_profile' in user) {
+          ret.push(`source_profile=${user.source_profile}`);
+        }
+        if ('credential_source' in user) {
+          ret.push(`credential_source=${user.credential_source}`);
+        }
+        if (user.mfa_serial) {
+          ret.push(`mfa_serial=${user.mfa_serial}`);
+        }
+        options.fakeSts?.registerRole(uniq(user.$account ?? '00000'), user.role_arn, {
+          ...user.$fakeStsOptions,
+          allowedAccounts: user.$fakeStsOptions?.allowedAccounts?.map(uniq),
+        });
+      } else {
+        if (user.aws_access_key_id) {
+          ret.push(`aws_access_key_id=${uniq(user.aws_access_key_id)}`);
+          ret.push('aws_secret_access_key=secret');
+          options.fakeSts?.registerUser(uniq(user.$account ?? '00000'), uniq(user.aws_access_key_id), user.$fakeStsOptions);
+        }
+      }
+
+      if (user.region) {
+        ret.push(`region=${user.region}`);
+      }
+    }
+    return ret.join('\n');
   }
-  return a.substr(N);
+
+  bockfs({
+    '/home/me/.bxt/credentials': convertSections(options.credentials),
+    '/home/me/.bxt/config': convertSections(options.config),
+  });
+
+  // Set environment variables that we want
+  process.env.AWS_CONFIG_FILE = bockfs.path('/home/me/.bxt/config');
+  process.env.AWS_SHARED_CREDENTIALS_FILE = bockfs.path('/home/me/.bxt/credentials');
+}
+
+interface PrepareCredsOptions {
+  /**
+   * Write the aws/credentials file
+   */
+  readonly credentials?: Record<string, ProfileUser | ProfileRole>;
+
+  /**
+   * Write the aws/config file
+   */
+  readonly config?: Record<string, ProfileUser | ProfileRole>;
+
+  /**
+   * If given, add users to FakeSTS
+   */
+  readonly fakeSts?: FakeSts;
+}
+
+interface ProfileUser {
+  readonly aws_access_key_id?: string;
+  readonly $account?: string;
+  readonly region?: string;
+  readonly $fakeStsOptions?: RegisterUserOptions;
+}
+
+type ProfileRole = {
+  readonly role_arn: string;
+  readonly mfa_serial?: string;
+  readonly $account: string;
+  readonly region?: string;
+  readonly $fakeStsOptions?: RegisterRoleOptions;
+} & ({ readonly source_profile: string } | { readonly credential_source: string });
+
+function isProfileRole(x: ProfileUser | ProfileRole): x is ProfileRole {
+  return 'role_arn' in x;
+}
+
+function providerFromProfile(profile: string | undefined) {
+  return SdkProvider.withAwsCliCompatibleDefaults({ ...defaultCredOptions, profile });
 }

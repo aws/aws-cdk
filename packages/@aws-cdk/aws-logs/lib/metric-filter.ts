@@ -42,7 +42,7 @@ export class MetricFilter extends Resource {
       metricTransformations: [{
         metricNamespace: props.metricNamespace,
         metricName: props.metricName,
-        metricValue: props.metricValue !== undefined ? props.metricValue : '1',
+        metricValue: props.metricValue ?? '1',
         defaultValue: props.defaultValue,
       }],
     });

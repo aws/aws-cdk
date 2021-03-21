@@ -72,13 +72,13 @@
         "Code": {
           "ZipFile": "exports.handler = async function handler(event) {\n    console.log('event:', JSON.stringify(event, undefined, 2));\n    return { event };\n}"
         },
-        "Handler": "index.handler",
         "Role": {
           "Fn::GetAtt": [
             "FServiceRole3AC82EE1",
             "Arn"
           ]
         },
+        "Handler": "index.handler",
         "Runtime": "nodejs10.x"
       },
       "DependsOn": [
@@ -89,16 +89,16 @@
     "FDynamoDBEventSourcelambdaeventsourcedynamodbT7967476AE652DA48": {
       "Type": "AWS::Lambda::EventSourceMapping",
       "Properties": {
+        "FunctionName": {
+          "Ref": "FC4345940"
+        },
+        "BatchSize": 5,
         "EventSourceArn": {
           "Fn::GetAtt": [
             "TD925BC7E",
             "StreamArn"
           ]
         },
-        "FunctionName": {
-          "Ref": "FC4345940"
-        },
-        "BatchSize": 5,
         "StartingPosition": "TRIM_HORIZON"
       }
     },

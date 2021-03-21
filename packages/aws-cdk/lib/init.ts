@@ -3,8 +3,10 @@ import * as path from 'path';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as colors from 'colors/safe';
 import * as fs from 'fs-extra';
+import * as semver from 'semver';
 import { error, print, warning } from './logging';
 import { cdkHomeDir } from './util/directories';
+import { versionNumber } from './version';
 
 export type InvokeHook = (targetDirectory: string) => Promise<void>;
 
@@ -13,8 +15,6 @@ export type InvokeHook = (targetDirectory: string) => Promise<void>;
 const camelCase = require('camelcase');
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const decamelize = require('decamelize');
-
-const TEMPLATES_DIR = path.join(__dirname, 'init-templates');
 
 /**
  * Initialize a CDK package in the current directory
@@ -27,7 +27,7 @@ export async function cliInit(type?: string, language?: string, canUseNetwork = 
 
   type = type || 'default'; // "default" is the default type (and maps to "app")
 
-  const template = (await availableInitTemplates).find(t => t.hasName(type!));
+  const template = (await availableInitTemplates()).find(t => t.hasName(type!));
   if (!template) {
     await printAvailableTemplates(language);
     throw new Error(`Unknown init template: ${type}`);
@@ -57,8 +57,8 @@ function pythonExecutable() {
 const INFO_DOT_JSON = 'info.json';
 
 export class InitTemplate {
-  public static async fromName(name: string) {
-    const basePath = path.join(TEMPLATES_DIR, name);
+  public static async fromName(templatesDir: string, name: string) {
+    const basePath = path.join(templatesDir, name);
     const languages = (await listDirectory(basePath)).filter(f => f !== INFO_DOT_JSON);
     const info = await fs.readJson(path.join(basePath, INFO_DOT_JSON));
     return new InitTemplate(basePath, name, languages, info);
@@ -179,10 +179,15 @@ export class InitTemplate {
       return;
     }
 
+    const futureFlags: {[key: string]: any} = {};
+    Object.entries(cxapi.FUTURE_FLAGS)
+      .filter(([k, _]) => !cxapi.FUTURE_FLAGS_EXPIRED.includes(k))
+      .forEach(([k, v]) => futureFlags[k] = v);
+
     const config = await fs.readJson(cdkJson);
     config.context = {
       ...config.context,
-      ...cxapi.FUTURE_FLAGS,
+      ...futureFlags,
     };
 
     await fs.writeJson(cdkJson, config, { spaces: 2 });
@@ -194,18 +199,33 @@ interface ProjectInfo {
   readonly name: string;
 }
 
-export const availableInitTemplates: Promise<InitTemplate[]> =
-  new Promise(async resolve => {
-    const templateNames = await listDirectory(TEMPLATES_DIR);
+function versionedTemplatesDir(): Promise<string> {
+  return new Promise(async resolve => {
+    let currentVersion = versionNumber();
+    // If the CLI is invoked from source (i.e., developement), rather than from a packaged distribution,
+    // the version number will be '0.0.0'. We will (currently) default to the v1 templates in this case.
+    if (currentVersion === '0.0.0') {
+      currentVersion = '1.0.0';
+    }
+    const majorVersion = semver.major(currentVersion);
+    resolve(path.join(__dirname, 'init-templates', `v${majorVersion}`));
+  });
+}
+
+export async function availableInitTemplates(): Promise<InitTemplate[]> {
+  return new Promise(async resolve => {
+    const templatesDir = await versionedTemplatesDir();
+    const templateNames = await listDirectory(templatesDir);
     const templates = new Array<InitTemplate>();
     for (const templateName of templateNames) {
-      templates.push(await InitTemplate.fromName(templateName));
+      templates.push(await InitTemplate.fromName(templatesDir, templateName));
     }
     resolve(templates);
   });
-export const availableInitLanguages: Promise<string[]> =
-  new Promise(async resolve => {
-    const templates = await availableInitTemplates;
+}
+export async function availableInitLanguages(): Promise<string[]> {
+  return new Promise(async resolve => {
+    const templates = await availableInitTemplates();
     const result = new Set<string>();
     for (const template of templates) {
       for (const language of template.languages) {
@@ -214,6 +234,8 @@ export const availableInitLanguages: Promise<string[]> =
     }
     resolve([...result]);
   });
+}
+
 /**
  * @param dirPath is the directory to be listed.
  * @returns the list of file or directory names contained in ``dirPath``, excluding any dot-file, and sorted.
@@ -226,7 +248,7 @@ async function listDirectory(dirPath: string) {
 
 export async function printAvailableTemplates(language?: string) {
   print('Available templates:');
-  for (const template of await availableInitTemplates) {
+  for (const template of await availableInitTemplates()) {
     if (language && template.languages.indexOf(language) === -1) { continue; }
     print(`* ${colors.green(template.name)}: ${template.description}`);
     const languageArg = language ? colors.bold(language)
@@ -323,13 +345,13 @@ async function postInstallJava(canUseNetwork: boolean, cwd: string) {
 
 async function postInstallPython(cwd: string) {
   const python = pythonExecutable();
-  warning(`Please run '${python} -m venv .env'!`);
+  warning(`Please run '${python} -m venv .venv'!`);
   print(`Executing ${colors.green('Creating virtualenv...')}`);
   try {
-    await execute(python, ['-m venv', '.env'], { cwd });
+    await execute(python, ['-m venv', '.venv'], { cwd });
   } catch (e) {
     warning('Unable to create virtualenv automatically');
-    warning(`Please run '${python} -m venv .env'!`);
+    warning(`Please run '${python} -m venv .venv'!`);
   }
 }
 

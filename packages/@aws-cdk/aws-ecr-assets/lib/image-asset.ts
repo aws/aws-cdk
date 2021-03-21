@@ -2,9 +2,13 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as assets from '@aws-cdk/assets';
 import * as ecr from '@aws-cdk/aws-ecr';
-import { Annotations, Construct as CoreConstruct, Stack, Token } from '@aws-cdk/core';
+import { Annotations, FeatureFlags, IgnoreMode, Stack, Token } from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
-import * as minimatch from 'minimatch';
+
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 /**
  * Options for DockerImageAsset
@@ -97,20 +101,28 @@ export class DockerImageAsset extends CoreConstruct implements assets.IAsset {
       throw new Error(`Cannot find file at ${file}`);
     }
 
+    const defaultIgnoreMode = FeatureFlags.of(this).isEnabled(cxapi.DOCKER_IGNORE_SUPPORT)
+      ? IgnoreMode.DOCKER : IgnoreMode.GLOB;
+    let ignoreMode = props.ignoreMode ?? defaultIgnoreMode;
+
     let exclude: string[] = props.exclude || [];
 
     const ignore = path.join(dir, '.dockerignore');
 
     if (fs.existsSync(ignore)) {
-      exclude = [...exclude, ...fs.readFileSync(ignore).toString().split('\n').filter(e => !!e)];
+      const dockerIgnorePatterns = fs.readFileSync(ignore).toString().split('\n').filter(e => !!e);
+
+      exclude = [
+        ...dockerIgnorePatterns,
+        ...exclude,
+
+        // Ensure .dockerignore is whitelisted no matter what.
+        '!.dockerignore',
+      ];
     }
 
-    // make sure the docker file and the dockerignore file end up in the staging area
-    // see https://github.com/aws/aws-cdk/issues/6004
-    exclude = exclude.filter(ignoreExpression => {
-      return !(minimatch(file, ignoreExpression, { matchBase: true }) ||
-             minimatch(ignore, ignoreExpression, { matchBase: true }));
-    });
+    // Ensure the Dockerfile is whitelisted no matter what.
+    exclude.push('!' + path.basename(file));
 
     if (props.repositoryName) {
       Annotations.of(this).addWarning('DockerImageAsset.repositoryName is deprecated. Override "core.Stack.addDockerImageAsset" to control asset locations');
@@ -132,6 +144,7 @@ export class DockerImageAsset extends CoreConstruct implements assets.IAsset {
     const staging = new assets.Staging(this, 'Staging', {
       ...props,
       exclude,
+      ignoreMode,
       sourcePath: dir,
       extraHash: Object.keys(extraHash).length === 0
         ? undefined
@@ -142,7 +155,7 @@ export class DockerImageAsset extends CoreConstruct implements assets.IAsset {
 
     const stack = Stack.of(this);
     const location = stack.synthesizer.addDockerImageAsset({
-      directoryName: staging.stagedPath,
+      directoryName: staging.relativeStagedPath(stack),
       dockerBuildArgs: props.buildArgs,
       dockerBuildTarget: props.target,
       dockerFile: props.file,

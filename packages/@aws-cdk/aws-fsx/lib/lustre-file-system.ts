@@ -198,6 +198,7 @@ export class LustreFileSystem extends FileSystemBase {
       securityGroupIds: [securityGroup.securityGroupId],
       storageCapacity: props.storageCapacityGiB,
     });
+    this.fileSystem.applyRemovalPolicy(props.removalPolicy);
 
     this.fileSystemId = this.fileSystem.ref;
     this.dnsName = `${this.fileSystemId}.fsx.${this.stack.region}.${Aws.URL_SUFFIX}`;

@@ -125,7 +125,7 @@ export class ScalableTarget extends Resource implements IScalableTarget {
       resourceId: props.resourceId,
       roleArn: this.role.roleArn,
       scalableDimension: props.scalableDimension,
-      scheduledActions: Lazy.anyValue({ produce: () => this.actions }, { omitEmptyArray: true }),
+      scheduledActions: Lazy.any({ produce: () => this.actions }, { omitEmptyArray: true }),
       serviceNamespace: props.serviceNamespace,
     });
 
@@ -136,7 +136,7 @@ export class ScalableTarget extends Resource implements IScalableTarget {
    * Add a policy statement to the role's policy
    */
   public addToRolePolicy(statement: iam.PolicyStatement) {
-    this.role.addToPolicy(statement);
+    this.role.addToPrincipalPolicy(statement);
   }
 
   /**
@@ -274,4 +274,9 @@ export enum ServiceNamespace {
    * Comprehend
    */
   COMPREHEND = 'comprehend',
+
+  /**
+   * Kafka
+   */
+  KAFKA = 'kafka',
 }

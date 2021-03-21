@@ -11,11 +11,11 @@
   },
   "license": "Apache-2.0",
   "dependencies": {
-    "github-api": "^3.3.0"
+    "github-api": "^3.4.0"
   },
   "scripts": {
     "build": "echo success",
-    "test": "echo sucees",
+    "test": "echo success",
     "build+test": "npm run build test && npm run test"
   }
 }

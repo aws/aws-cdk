@@ -2,15 +2,17 @@ import '@aws-cdk/assert/jest';
 import * as fs from 'fs';
 import * as path from 'path';
 import { ABSENT } from '@aws-cdk/assert';
+import { Vpc } from '@aws-cdk/aws-ec2';
 import { Runtime } from '@aws-cdk/aws-lambda';
 import { Stack } from '@aws-cdk/core';
 import { NodejsFunction } from '../lib';
 import { Bundling } from '../lib/bundling';
+import { nodeMajorVersion } from '../lib/util';
 
 jest.mock('../lib/bundling', () => {
   return {
     Bundling: {
-      parcel: jest.fn().mockReturnValue({
+      bundle: jest.fn().mockReturnValue({
         bind: () => {
           return { inlineCode: 'code' };
         },
@@ -30,12 +32,17 @@ test('NodejsFunction with .ts handler', () => {
   // WHEN
   new NodejsFunction(stack, 'handler1');
 
-  expect(Bundling.parcel).toHaveBeenCalledWith(expect.objectContaining({
+  expect(Bundling.bundle).toHaveBeenCalledWith(expect.objectContaining({
     entry: expect.stringContaining('function.test.handler1.ts'), // Automatically finds .ts handler file
   }));
 
+  const runtime = nodeMajorVersion() >= 14
+    ? Runtime.NODEJS_14_X
+    : Runtime.NODEJS_12_X;
+
   expect(stack).toHaveResource('AWS::Lambda::Function', {
     Handler: 'index.handler',
+    Runtime: runtime.name,
   });
 });
 
@@ -44,7 +51,7 @@ test('NodejsFunction with .js handler', () => {
   new NodejsFunction(stack, 'handler2');
 
   // THEN
-  expect(Bundling.parcel).toHaveBeenCalledWith(expect.objectContaining({
+  expect(Bundling.bundle).toHaveBeenCalledWith(expect.objectContaining({
     entry: expect.stringContaining('function.test.handler2.js'), // Automatically finds .ts handler file
   }));
 });
@@ -52,13 +59,15 @@ test('NodejsFunction with .js handler', () => {
 test('NodejsFunction with container env vars', () => {
   // WHEN
   new NodejsFunction(stack, 'handler1', {
-    parcelEnvironment: {
-      KEY: 'VALUE',
+    bundling: {
+      environment: {
+        KEY: 'VALUE',
+      },
     },
   });
 
-  expect(Bundling.parcel).toHaveBeenCalledWith(expect.objectContaining({
-    parcelEnvironment: {
+  expect(Bundling.bundle).toHaveBeenCalledWith(expect.objectContaining({
+    environment: {
       KEY: 'VALUE',
     },
   }));
@@ -98,13 +107,35 @@ test('throws with the wrong runtime family', () => {
   })).toThrow(/Only `NODEJS` runtimes are supported/);
 });
 
+test('throws with non existing lock file', () => {
+  expect(() => new NodejsFunction(stack, 'handler1', {
+    depsLockFilePath: '/does/not/exist.lock',
+  })).toThrow(/Lock file at \/does\/not\/exist.lock doesn't exist/);
+});
+
+test('throws when depsLockFilePath is not a file', () => {
+  expect(() => new NodejsFunction(stack, 'handler1', {
+    depsLockFilePath: __dirname,
+  })).toThrow(/\`depsLockFilePath\` should point to a file/);
+});
+
+test('resolves depsLockFilePath to an absolute path', () => {
+  new NodejsFunction(stack, 'handler1', {
+    depsLockFilePath: './package.json',
+  });
+
+  expect(Bundling.bundle).toHaveBeenCalledWith(expect.objectContaining({
+    depsLockFilePath: expect.stringMatching(/@aws-cdk\/aws-lambda-nodejs\/package.json$/),
+  }));
+});
+
 test('resolves entry to an absolute path', () => {
   // WHEN
   new NodejsFunction(stack, 'fn', {
     entry: 'lib/index.ts',
   });
 
-  expect(Bundling.parcel).toHaveBeenCalledWith(expect.objectContaining({
+  expect(Bundling.bundle).toHaveBeenCalledWith(expect.objectContaining({
     entry: expect.stringMatching(/@aws-cdk\/aws-lambda-nodejs\/lib\/index.ts$/),
   }));
 });
@@ -130,5 +161,35 @@ test('can opt-out of connection reuse for aws sdk', () => {
 
   expect(stack).toHaveResource('AWS::Lambda::Function', {
     Environment: ABSENT,
+  });
+});
+
+test('NodejsFunction in a VPC', () => {
+  // GIVEN
+  const vpc = new Vpc(stack, 'Vpc');
+
+  // WHEN
+  new NodejsFunction(stack, 'handler1', { vpc });
+
+  // THEN
+  expect(stack).toHaveResource('AWS::Lambda::Function', {
+    VpcConfig: {
+      SecurityGroupIds: [
+        {
+          'Fn::GetAtt': [
+            'handler1SecurityGroup30688A62',
+            'GroupId',
+          ],
+        },
+      ],
+      SubnetIds: [
+        {
+          Ref: 'VpcPrivateSubnet1Subnet536B997A',
+        },
+        {
+          Ref: 'VpcPrivateSubnet2Subnet3788AAA1',
+        },
+      ],
+    },
   });
 });

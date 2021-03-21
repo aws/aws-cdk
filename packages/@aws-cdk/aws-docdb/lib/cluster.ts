@@ -238,7 +238,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
   public readonly clusterResourceIdentifier: string;
 
   /**
-   * The connections object to implement IConectable
+   * The connections object to implement IConnectable
    */
   public readonly connections: ec2.Connections;
 

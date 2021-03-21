@@ -210,6 +210,30 @@ describe('node count', () => {
       });
     }).toThrow(/Number of nodes for cluster type multi-node must be at least 2 and no more than 100/);
   });
+
+  test('Multi-Node Clusters should allow input parameter for number of nodes', () => {
+    // WHEN
+    const numberOfNodesParam = new cdk.CfnParameter(stack, 'numberOfNodes', {
+      type: 'Number',
+    });
+
+    new Cluster(stack, 'Redshift', {
+      masterUser: {
+        masterUsername: 'admin',
+      },
+      vpc,
+      clusterType: ClusterType.MULTI_NODE,
+      numberOfNodes: numberOfNodesParam.valueAsNumber,
+    });
+
+    // THEN
+    cdkExpect(stack).to(haveResource('AWS::Redshift::Cluster', {
+      ClusterType: 'multi-node',
+      NumberOfNodes: {
+        Ref: 'numberOfNodes',
+      },
+    }));
+  });
 });
 
 test('create an encrypted cluster with custom KMS key', () => {
@@ -255,6 +279,22 @@ test('cluster with parameter group', () => {
     ClusterParameterGroupName: { Ref: 'ParamsA8366201' },
   }));
 
+});
+
+test('publicly accessible cluster', () => {
+  // WHEN
+  new Cluster(stack, 'Redshift', {
+    masterUser: {
+      masterUsername: 'admin',
+    },
+    vpc,
+    publiclyAccessible: true,
+  });
+
+  // THEN
+  cdkExpect(stack).to(haveResource('AWS::Redshift::Cluster', {
+    PubliclyAccessible: true,
+  }));
 });
 
 test('imported cluster with imported security group honors allowAllOutbound', () => {

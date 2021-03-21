@@ -7,14 +7,13 @@
     "alwaysStrict": true,
     "declaration": true,
     "inlineSourceMap": true,
-    "inlineSources": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
     "resolveJsonModule": true,
     "composite": true,
-    "incremental": true
+    "incremental": true,
   },
   "include": ["**/*.ts"]
 }

@@ -1,7 +1,7 @@
 ---
 name: "\U0001F41B Bug Report"
 about: Report a bug
-title: "[module] "
+title: "(module name): short issue description"
 labels: bug, needs-triage
 ---
 
@@ -33,7 +33,7 @@ What is the unexpected behavior you were seeing? If you got an error, paste it h
 
 ### Environment
 
-  - **CLI Version      :**
+  - **CDK CLI Version  :**
   - **Framework Version:**
   - **Node.js Version:** <!-- Version of Node.js (run the command `node -v`) -->
   - **OS               :**

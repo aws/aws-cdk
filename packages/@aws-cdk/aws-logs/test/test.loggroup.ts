@@ -1,10 +1,30 @@
 import { expect, haveResource, matchTemplate } from '@aws-cdk/assert';
 import * as iam from '@aws-cdk/aws-iam';
+import * as kms from '@aws-cdk/aws-kms';
 import { CfnParameter, RemovalPolicy, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import { LogGroup, RetentionDays } from '../lib';
 
 export = {
+  'set kms key when provided'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    const encryptionKey = new kms.Key(stack, 'Key');
+
+    // WHEN
+    new LogGroup(stack, 'LogGroup', {
+      encryptionKey,
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::Logs::LogGroup', {
+      KmsKeyId: { 'Fn::GetAtt': ['Key961B73FD', 'Arn'] },
+
+    }));
+
+    test.done();
+  },
+
   'fixed retention'(test: Test) {
     // GIVEN
     const stack = new Stack();

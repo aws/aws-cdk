@@ -102,6 +102,7 @@ new codepipeline.Pipeline(stack, 'MyPipeline', {
           actionName: 'DeployAction',
           input: buildOutput,
           service,
+          deploymentTimeout: cdk.Duration.minutes(60),
         }),
       ],
     },

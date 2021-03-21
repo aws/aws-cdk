@@ -557,6 +557,17 @@
                 }
             }
         },
+        "AWS::Serverless::Function.ProvisionedConcurrencyConfig": {
+            "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#provisioned-concurrency-config-object",
+            "Properties": {
+                "ProvisionedConcurrentExecutions": {
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#provisioned-concurrency-config-object",
+                    "PrimitiveType": "String",
+                    "Required": true,
+                    "UpdateType": "Immutable"
+                }
+            }
+        },
         "AWS::Serverless::Function.QueueSAMPT": {
             "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/docs/policy_templates.rst",
             "Properties": {
@@ -940,6 +951,29 @@
                     "PrimitiveItemType": "String",
                     "Required": true,
                     "Type": "List",
+                    "UpdateType": "Immutable"
+                }
+            }
+        },
+        "AWS::Serverless::LayerVersion.S3Location": {
+            "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#s3-location-object",
+            "Properties": {
+                "Bucket": {
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction",
+                    "PrimitiveType": "String",
+                    "Required": true,
+                    "UpdateType": "Immutable"
+                },
+                "Key": {
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction",
+                    "PrimitiveType": "String",
+                    "Required": true,
+                    "UpdateType": "Immutable"
+                },
+                "Version": {
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction",
+                    "PrimitiveType": "Integer",
+                    "Required": false,
                     "UpdateType": "Immutable"
                 }
             }
@@ -1494,6 +1528,12 @@
                     ],
                     "UpdateType": "Immutable"
                 },
+                "ProvisionedConcurrencyConfig": {
+                    "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction",
+                    "Required": false,
+                    "Type": "ProvisionedConcurrencyConfig",
+                    "UpdateType": "Immutable"
+                },
                 "ReservedConcurrentExecutions": {
                     "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction",
                     "PrimitiveType": "Integer",
@@ -1551,8 +1591,13 @@
                 },
                 "ContentUri": {
                     "Documentation": "https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlesslayerversion",
-                    "PrimitiveType": "String",
+                    "PrimitiveTypes": [
+                        "String"
+                    ],
                     "Required": false,
+                    "Types": [
+                        "S3Location"
+                    ],
                     "UpdateType": "Immutable"
                 },
                 "Description": {

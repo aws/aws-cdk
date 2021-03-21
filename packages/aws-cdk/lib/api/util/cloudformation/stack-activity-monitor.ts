@@ -522,7 +522,7 @@ export class HistoryActivityPrinter extends ActivityPrinterBase {
   private progress(): string {
     if (this.resourcesTotal == null) {
       // Don't have total, show simple count and hope the human knows
-      return padLeft(3, util.format('%s', this.resourcesDone)); // max 200 resources
+      return padLeft(3, util.format('%s', this.resourcesDone)); // max 500 resources
     }
 
     return util.format('%s/%s',

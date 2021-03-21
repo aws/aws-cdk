@@ -277,7 +277,7 @@ export class ServerDeploymentGroup extends ServerDeploymentGroupBase {
     });
 
     this._autoScalingGroups = props.autoScalingGroups || [];
-    this.installAgent = props.installAgent === undefined ? true : props.installAgent;
+    this.installAgent = props.installAgent ?? true;
     this.codeDeployBucket = s3.Bucket.fromBucketName(this, 'Bucket', `aws-codedeploy-${cdk.Stack.of(this).region}`);
     for (const asg of this._autoScalingGroups) {
       this.addCodeDeployAgentInstallUserData(asg);
@@ -291,7 +291,7 @@ export class ServerDeploymentGroup extends ServerDeploymentGroupBase {
       serviceRoleArn: this.role.roleArn,
       deploymentConfigName: props.deploymentConfig &&
         props.deploymentConfig.deploymentConfigName,
-      autoScalingGroups: cdk.Lazy.listValue({ produce: () => this._autoScalingGroups.map(asg => asg.autoScalingGroupName) }, { omitEmpty: true }),
+      autoScalingGroups: cdk.Lazy.list({ produce: () => this._autoScalingGroups.map(asg => asg.autoScalingGroupName) }, { omitEmpty: true }),
       loadBalancerInfo: this.loadBalancerInfo(props.loadBalancer),
       deploymentStyle: props.loadBalancer === undefined
         ? undefined
@@ -300,8 +300,8 @@ export class ServerDeploymentGroup extends ServerDeploymentGroupBase {
         },
       ec2TagSet: this.ec2TagSet(props.ec2InstanceTags),
       onPremisesTagSet: this.onPremiseTagSet(props.onPremiseInstanceTags),
-      alarmConfiguration: cdk.Lazy.anyValue({ produce: () => renderAlarmConfiguration(this.alarms, props.ignorePollAlarmsFailure) }),
-      autoRollbackConfiguration: cdk.Lazy.anyValue({ produce: () => renderAutoRollbackConfiguration(this.alarms, props.autoRollback) }),
+      alarmConfiguration: cdk.Lazy.any({ produce: () => renderAlarmConfiguration(this.alarms, props.ignorePollAlarmsFailure) }),
+      autoRollbackConfiguration: cdk.Lazy.any({ produce: () => renderAutoRollbackConfiguration(this.alarms, props.autoRollback) }),
     });
 
     this.deploymentGroupName = this.getResourceNameAttribute(resource.ref);
@@ -348,18 +348,28 @@ export class ServerDeploymentGroup extends ServerDeploymentGroupBase {
     switch (asg.osType) {
       case ec2.OperatingSystemType.LINUX:
         asg.addUserData(
+          'set +e', // make sure we don't exit on the `which` failing
           'PKG_CMD=`which yum 2>/dev/null`',
+          'set -e', // continue with failing on error
           'if [ -z "$PKG_CMD" ]; then',
           'PKG_CMD=apt-get',
           'else',
           'PKG=CMD=yum',
           'fi',
           '$PKG_CMD update -y',
+          'set +e', // make sure we don't exit on the next command failing (we check its exit code below)
           '$PKG_CMD install -y ruby2.0',
-          'if [ $? -ne 0 ]; then',
+          'RUBY2_INSTALL=$?',
+          'set -e', // continue with failing on error
+          'if [ $RUBY2_INSTALL -ne 0 ]; then',
           '$PKG_CMD install -y ruby',
           'fi',
-          '$PKG_CMD install -y awscli',
+          'AWS_CLI_PACKAGE_NAME=awscli',
+          'if [[ "$PKG_CMD" = "yum" ]];',
+          'then',
+          'AWS_CLI_PACKAGE_NAME=aws-cli',
+          'fi',
+          '$PKG_CMD install -y $AWS_CLI_PACKAGE_NAME',
           'TMP_DIR=`mktemp -d`',
           'cd $TMP_DIR',
           `aws s3 cp s3://aws-codedeploy-${cdk.Stack.of(this).region}/latest/install . --region ${cdk.Stack.of(this).region}`,
@@ -372,7 +382,8 @@ export class ServerDeploymentGroup extends ServerDeploymentGroupBase {
         asg.addUserData(
           'Set-Variable -Name TEMPDIR -Value (New-TemporaryFile).DirectoryName',
           `aws s3 cp s3://aws-codedeploy-${cdk.Stack.of(this).region}/latest/codedeploy-agent.msi $TEMPDIR\\codedeploy-agent.msi`,
-          '$TEMPDIR\\codedeploy-agent.msi /quiet /l c:\\temp\\host-agent-install-log.txt',
+          'cd $TEMPDIR',
+          '.\\codedeploy-agent.msi /quiet /l c:\\temp\\host-agent-install-log.txt',
         );
         break;
     }

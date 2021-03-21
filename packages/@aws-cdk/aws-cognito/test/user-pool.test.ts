@@ -1,5 +1,5 @@
 import '@aws-cdk/assert/jest';
-import { ABSENT } from '@aws-cdk/assert/lib/assertions/have-resource';
+import { ABSENT, ResourcePart } from '@aws-cdk/assert/lib/assertions/have-resource';
 import { Role, ServicePrincipal } from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import { CfnParameter, Duration, Stack, Tags } from '@aws-cdk/core';
@@ -32,6 +32,10 @@ describe('User Pool', () => {
       SmsConfiguration: ABSENT,
       lambdaTriggers: ABSENT,
     });
+
+    expect(stack).toHaveResource('AWS::Cognito::UserPool', {
+      DeletionPolicy: 'Retain',
+    }, ResourcePart.CompleteDefinition);
   });
 
   test('self sign up option is correctly configured', () => {
@@ -883,6 +887,36 @@ describe('User Pool', () => {
     });
   });
 
+  test('addResourceServer', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    const userpool = new UserPool(stack, 'Pool');
+    userpool.addResourceServer('ResourceServer', {
+      identifier: 'users',
+      scopes: [
+        {
+          scopeName: 'read',
+          scopeDescription: 'Read-only access',
+        },
+      ],
+    });
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::Cognito::UserPoolResourceServer', {
+      Identifier: 'users',
+      Name: 'users',
+      UserPoolId: stack.resolve(userpool.userPoolId),
+      Scopes: [
+        {
+          ScopeDescription: 'Read-only access',
+          ScopeName: 'read',
+        },
+      ],
+    });
+  });
+
   test('addDomain', () => {
     // GIVEN
     const stack = new Stack();
@@ -1271,13 +1305,34 @@ describe('User Pool', () => {
       })).toThrow(/enableSmsRole cannot be disabled/);
     });
   });
+
+  test('email transmission with cyrillic characters are encoded', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new UserPool(stack, 'Pool', {
+      emailSettings: {
+        from: 'от@домен.рф',
+        replyTo: 'ответить@домен.рф',
+      },
+    });
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::Cognito::UserPool', {
+      EmailConfiguration: {
+        From: 'от@xn--d1acufc.xn--p1ai',
+        ReplyToEmailAddress: 'ответить@xn--d1acufc.xn--p1ai',
+      },
+    });
+  });
 });
 
 
 function fooFunction(scope: Construct, name: string): lambda.IFunction {
   return new lambda.Function(scope, name, {
     functionName: name,
-    code: lambda.Code.inline('foo'),
+    code: lambda.Code.fromInline('foo'),
     runtime: lambda.Runtime.NODEJS_12_X,
     handler: 'index.handler',
   });

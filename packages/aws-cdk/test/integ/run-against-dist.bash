@@ -4,6 +4,8 @@ npmws=/tmp/cdk-rundist
 rm -rf $npmws
 mkdir -p $npmws
 
+set -x
+
 # This script must create 1 or 2 traps, and the 'trap' command will replace
 # the previous trap, so get some 'dynamic traps' mechanism in place
 TRAPS=()

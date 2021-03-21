@@ -1,6 +1,7 @@
 import * as cfnSpec from '@aws-cdk/cfnspec';
 import * as fs from 'fs-extra';
 import { AugmentationGenerator } from './augmentation-generator';
+import { CannedMetricsGenerator } from './canned-metrics-generator';
 import CodeGenerator, { CodeGeneratorOptions } from './codegen';
 import { packageName } from './genspec';
 
@@ -24,6 +25,11 @@ export default async function(scopes: string | string[], outPath: string, option
     const augs = new AugmentationGenerator(name, spec, affix);
     if (augs.emitCode()) {
       await augs.save(outPath);
+    }
+
+    const canned = new CannedMetricsGenerator(name, scope);
+    if (canned.generate()) {
+      await canned.save(outPath);
     }
   }
 }

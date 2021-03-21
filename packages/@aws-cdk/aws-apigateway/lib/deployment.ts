@@ -1,9 +1,13 @@
 import * as crypto from 'crypto';
-import { Construct as CoreConstruct, Lazy, RemovalPolicy, Resource, CfnResource } from '@aws-cdk/core';
+import { Lazy, RemovalPolicy, Resource, CfnResource } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnDeployment } from './apigateway.generated';
 import { Method } from './method';
 import { IRestApi, RestApi, SpecRestApi, RestApiBase } from './restapi';
+
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 export interface DeploymentProps {
   /**
@@ -78,7 +82,7 @@ export class Deployment extends Resource {
     }
 
     this.api = props.api;
-    this.deploymentId = Lazy.stringValue({ produce: () => this.resource.ref });
+    this.deploymentId = Lazy.string({ produce: () => this.resource.ref });
 
     if (props.api instanceof RestApiBase) {
       props.api._attachDeployment(this);
@@ -141,7 +145,7 @@ class LatestDeploymentResource extends CfnDeployment {
 
     this.api = props.restApi;
     this.originalLogicalId = this.stack.getLogicalId(this);
-    this.overrideLogicalId(Lazy.stringValue({ produce: () => this.calculateLogicalId() }));
+    this.overrideLogicalId(Lazy.uncachedString({ produce: () => this.calculateLogicalId() }));
   }
 
   /**
