@@ -660,22 +660,26 @@ export class UserPool extends UserPoolBase {
    * Import an existing user pool based on its id.
    */
   public static fromUserPoolId(scope: Construct, id: string, userPoolId: string): IUserPool {
-    class Import extends UserPoolBase {
-      public readonly userPoolId = userPoolId;
-      public readonly userPoolArn = Stack.of(this).formatArn({
-        service: 'cognito-idp',
-        resource: 'userpool',
-        resourceName: userPoolId,
-      });
-    }
-    return new Import(scope, id);
+    let userPoolArn = Stack.of(scope).formatArn({
+      service: 'cognito-idp',
+      resource: 'userpool',
+      resourceName: userPoolId,
+    });
+
+    return new ImportedUserPool(scope, id, {
+      userPoolId: userPoolId,
+      userPoolArn: userPoolArn,
+    });
   }
 
   /**
    * Import an existing user pool based on its ARN.
    */
   public static fromUserPoolArn(scope: Construct, id: string, userPoolArn: string): IUserPool {
-    return UserPool.fromUserPoolId(scope, id, Stack.of(scope).parseArn(userPoolArn).resourceName!);
+    return new ImportedUserPool(scope, id, {
+      userPoolId: Stack.of(scope).parseArn(userPoolArn).resourceName!,
+      userPoolArn: userPoolArn,
+    });
   }
 
   /**
@@ -1040,6 +1044,33 @@ export class UserPool extends UserPoolBase {
     }
   }
 }
+
+interface UserPoolAttributes {
+  /**
+   * The physical ID of this user pool resource
+   */
+  userPoolId: string;
+  /**
+   * The ARN of the user pool
+   */
+  userPoolArn: string
+}
+
+class ImportedUserPool extends UserPoolBase {
+  public readonly userPoolArn: string;
+  public readonly userPoolId: string;
+  constructor(scope: Construct, id: string, attrs: UserPoolAttributes) {
+    const arnParts = Stack.of(scope).parseArn(attrs.userPoolArn);
+    super(scope, id, {
+      account: arnParts.account,
+      region: arnParts.region,
+    });
+
+    this.userPoolArn = attrs.userPoolArn;
+    this.userPoolId = attrs.userPoolId;
+  }
+}
+
 
 function undefinedIfNoKeys(struct: object): object | undefined {
   const allUndefined = Object.values(struct).every(val => val === undefined);

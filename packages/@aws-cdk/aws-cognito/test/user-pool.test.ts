@@ -211,17 +211,24 @@ describe('User Pool', () => {
     // WHEN
     const pool = UserPool.fromUserPoolArn(stack, 'userpool', userPoolArn);
     expect(pool.userPoolId).toEqual('test-user-pool');
-    expect(stack.resolve(pool.userPoolArn)).toEqual({
-      'Fn::Join': ['', [
-        'arn:',
-        { Ref: 'AWS::Partition' },
-        ':cognito-idp:',
-        { Ref: 'AWS::Region' },
-        ':',
-        { Ref: 'AWS::AccountId' },
-        ':userpool/test-user-pool',
-      ]],
+    expect(stack.resolve(pool.userPoolArn)).toEqual('arn:aws:cognito-idp:us-east-1:0123456789012:userpool/test-user-pool');
+  });
+
+  test('import from different account region using arn', () => {
+    // GIVEN
+    const userPoolArn = 'arn:aws:cognito-idp:us-east-1:0123456789012:userpool/test-user-pool';
+
+    const stack = new Stack(undefined, undefined, {
+      env: {
+        account: '111111111111',
+        region: 'us-east-2',
+      },
     });
+
+    // WHEN
+    const pool = UserPool.fromUserPoolArn(stack, 'userpool', userPoolArn);
+    expect(pool.env.account).toEqual('0123456789012');
+    expect(pool.env.region).toEqual('us-east-1');
   });
 
   test('support tags', () => {
