@@ -82,11 +82,12 @@ nodeunitShim({
 
     test.done();
   },
-  'setting detectChanges=false reflects in the configuration'(test: Test) {
+
+  'setting triggerOnPush=false reflects in the configuration'(test: Test) {
     const stack = new Stack();
 
     createBitBucketAndCodeBuildPipeline(stack, {
-      detectChanges: false,
+      triggerOnPush: false,
     });
 
     expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {

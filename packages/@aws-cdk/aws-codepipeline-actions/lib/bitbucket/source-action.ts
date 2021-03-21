@@ -72,7 +72,7 @@ export interface BitBucketSourceActionProps extends codepipeline.CommonAwsAction
    * @default true
    * @see https://docs.aws.amazon.com/codepipeline/latest/userguide/action-reference-CodestarConnectionSource.html
    */
-  readonly detectChanges?: boolean;
+  readonly triggerOnPush?: boolean;
 }
 
 /**
@@ -134,7 +134,7 @@ export class BitBucketSourceAction extends Action {
         OutputArtifactFormat: this.props.codeBuildCloneOutput === true
           ? 'CODEBUILD_CLONE_REF'
           : undefined,
-        DetectChanges: this.props.detectChanges,
+        DetectChanges: this.props.triggerOnPush,
       },
     };
   }
