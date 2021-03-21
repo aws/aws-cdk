@@ -183,7 +183,7 @@ export interface IBucket extends IResource {
   grantPutAcl(identity: iam.IGrantable, objectsKeyPattern?: string): iam.Grant;
 
   /**
-   * Grants s3:DeleteObject* permission to an IAM pricipal for objects
+   * Grants s3:DeleteObject* permission to an IAM principal for objects
    * in this bucket.
    *
    * @param identity The principal
@@ -638,7 +638,7 @@ export abstract class BucketBase extends Resource implements IBucket {
   }
 
   /**
-   * Grants s3:DeleteObject* permission to an IAM pricipal for objects
+   * Grants s3:DeleteObject* permission to an IAM principal for objects
    * in this bucket.
    *
    * @param identity The principal
@@ -693,7 +693,7 @@ export abstract class BucketBase extends Resource implements IBucket {
     return iam.Grant.addToPrincipalOrResource({
       actions: allowedActions,
       resourceArns: [this.arnForObjects(keyPrefix)],
-      grantee: new iam.Anyone(),
+      grantee: new iam.AnyPrincipal(),
       resource: this,
     });
   }
@@ -1625,7 +1625,7 @@ export class Bucket extends BucketBase {
   }
 
   /**
-   * Parse the lifecycle configuration out of the uucket props
+   * Parse the lifecycle configuration out of the bucket props
    * @param props Par
    */
   private parseLifecycleConfiguration(): CfnBucket.LifecycleConfigurationProperty | undefined {
