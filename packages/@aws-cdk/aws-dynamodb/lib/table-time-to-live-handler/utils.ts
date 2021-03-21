@@ -32,6 +32,7 @@ export async function enableTimeToLive(event: OnEventRequest) {
       awsError.code === 'ValidationException' &&
       awsError.message === 'Time to live has been modified multiple times within a fixed interval'
     ) {
+      console.log('Time to live has been modified multiple times within a fixed interval. Try again later.');
       return;
     }
     throw awsError;

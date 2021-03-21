@@ -12,6 +12,7 @@ export async function onEventHandler(event: OnEventRequest): Promise<OnEventResp
     const currentTtl = await dynamodb.describeTimeToLive({
       TableName: event.ResourceProperties.TableName,
     }).promise();
+    console.log('Describe time to live: %j', currentTtl);
 
     switch (currentTtl.TimeToLiveDescription?.TimeToLiveStatus) {
       case 'ENABLING':
