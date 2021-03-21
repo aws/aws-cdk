@@ -364,12 +364,12 @@
   },
   "devDependencies": {
     "@aws-cdk/assert": "0.0.0",
-    "@types/jest": "^26.0.20",
+    "@types/jest": "^26.0.21",
     "cdk-build-tools": "0.0.0",
     "cdk-integ-tools": "0.0.0",
     "jest": "^26.6.3",
     "pkglint": "0.0.0",
-    "ts-jest": "^26.5.3"
+    "ts-jest": "^26.5.4"
   },
   "keywords": [
     "aws",
