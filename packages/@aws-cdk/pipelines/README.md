@@ -749,6 +749,18 @@ ID: ...)
 The stack failed its previous deployment, and is in a non-retryable state.
 Go into the CloudFormation console, delete the stack, and retry the deployment.
 
+### Cannot find module 'xxxx' or its corresponding type declarations
+
+You may see this if you are using TypeScript or other NPM-based languages,
+when using NPM 7 on your workstation (where you generate `package-lock.json`)
+and NPM 6 on the CodeBuild image used for synthesizing.
+
+It looks like NPM 7 has started writing less information to `package-lock.json`,
+leading NPM 6 reading that same file to not install all required packages anymore.
+
+Make sure you are using the same NPM version everywhere, either downgrade your
+workstation's version or upgrade the CodeBuild version.
+
 ## Current Limitations
 
 Limitations that we are aware of and will address:

@@ -1204,8 +1204,44 @@ describe('instance', () => {
       MasterUsername: 'postgres', // username is a string
       MasterUserPassword: '{{resolve:ssm-secure:/dbPassword:1}}', // reference to SSM
     });
+  });
 
+  test('can set custom name to database secret by fromSecret', () => {
+    // WHEN
+    const secretName = 'custom-secret-name';
+    const secret = new rds.DatabaseSecret(stack, 'Secret', {
+      username: 'admin',
+      secretName,
+    } );
+    new rds.DatabaseInstance(stack, 'Instance', {
+      engine: rds.DatabaseInstanceEngine.mysql({
+        version: rds.MysqlEngineVersion.VER_8_0_19,
+      }),
+      credentials: rds.Credentials.fromSecret(secret),
+      vpc,
+    });
 
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::SecretsManager::Secret', {
+      Name: secretName,
+    });
+  });
+
+  test('can set custom name to database secret by fromGeneratedSecret', () => {
+    // WHEN
+    const secretName = 'custom-secret-name';
+    new rds.DatabaseInstance(stack, 'Instance', {
+      engine: rds.DatabaseInstanceEngine.mysql({
+        version: rds.MysqlEngineVersion.VER_8_0_19,
+      }),
+      credentials: rds.Credentials.fromGeneratedSecret('admin', { secretName }),
+      vpc,
+    });
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::SecretsManager::Secret', {
+      Name: secretName,
+    });
   });
 
   test('can set publiclyAccessible to false with public subnets', () => {
