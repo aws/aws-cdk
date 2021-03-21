@@ -84,15 +84,19 @@ When performing such operations via the AWS Console, this SLR is created automat
 Before you can proceed, you must enable a service-linked role to give Amazon ES...
 ```
 
-To resolve this, you need to create the SLR. You can either do this [manually](https://docs.aws.amazon.com/IAM/latest/UserGuide/using-service-linked-roles.html#create-service-linked-role), or using the CDK:
+To resolve this, you need to [create](https://docs.aws.amazon.com/IAM/latest/UserGuide/using-service-linked-roles.html#create-service-linked-role) the SLR. We recommend using the AWS CLI:
+
+```console
+aws iam create-service-linked-role --aws-service-name es.amazonaws.com
+```
+
+You can also create it using the CDK, **but note that only the first application deploying this will succeed**:
 
 ```ts
 const slr = new iam.CfnServiceLinkedRole(this, 'ElasticSLR', {
   awsServiceName: 'es.amazonaws.com'
 });
 ```
-
-But note that this must be a singleton across all your applications that deploy to the same account.
 
 ## Importing existing domains
 
