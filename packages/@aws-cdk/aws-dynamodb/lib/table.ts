@@ -202,6 +202,9 @@ export interface TableOptions {
    * If you wish to remove the custom resource, you can leave the default (undefined). However,
    * note that this will leave the table in the current state. A new table will not have a disabled
    * TTL, while an enabled TTL will remain in place if you defined one before.
+   *
+   * A 'Time to live has been modified multiple times within a fixed interval' error can occur if
+   * you recently changed the ttl. In this case wait some time and try again.
    * @default - TTL stays in the current state (disabled for newly created tables).
    */
   readonly timeToLiveAttribute?: string;
