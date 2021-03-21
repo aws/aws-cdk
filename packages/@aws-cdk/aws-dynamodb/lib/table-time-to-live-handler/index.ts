@@ -26,7 +26,7 @@ export async function onEventHandler(event: OnEventRequest): Promise<OnEventResp
         }
         break;
       case 'DISABLED':
-        if (currentTtl.TimeToLiveDescription.AttributeName) {
+        if (event.ResourceProperties.TimeToLiveAttribute) {
           await enableTimeToLive(event);
         }
         break;
