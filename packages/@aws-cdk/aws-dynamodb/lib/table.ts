@@ -885,8 +885,6 @@ abstract class TableBase extends Resource implements ITable {
     return metrics;
   }
 
-  protected abstract get hasIndex(): boolean;
-
   /**
    * Adds an IAM policy statement associated with this table to an IAM
    * principal's policy.
@@ -997,8 +995,6 @@ export class Table extends TableBase {
       public readonly tableArn: string;
       public readonly tableStreamArn?: string;
       public readonly encryptionKey?: kms.IKey;
-      protected readonly hasIndex = (attrs.globalIndexes ?? []).length > 0 ||
-        (attrs.localIndexes ?? []).length > 0;
 
       constructor(_tableArn: string, tableName: string, tableStreamArn?: string) {
         super(scope, id);
@@ -1521,13 +1517,6 @@ export class Table extends TableBase {
       actions: ['dynamodb:*'],
       resources: this.regionalArns,
     }));
-  }
-
-  /**
-   * Whether this table has indexes
-   */
-  protected get hasIndex(): boolean {
-    return this.globalSecondaryIndexes.length + this.localSecondaryIndexes.length > 0;
   }
 
   /**
