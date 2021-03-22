@@ -114,6 +114,7 @@ export class QueueProcessingEc2Service extends QueueProcessingServiceBase {
       propagateTags: props.propagateTags,
       enableECSManagedTags: props.enableECSManagedTags,
       deploymentController: props.deploymentController,
+      circuitBreaker: props.circuitBreaker,
     });
 
     this.configureAutoscalingForService(this.service);
