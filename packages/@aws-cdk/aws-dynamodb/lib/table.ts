@@ -13,7 +13,7 @@ import * as perms from './perms';
 import { ReplicaProvider } from './replica-provider';
 import { EnableScalingProps, IScalableTableAttribute } from './scalable-attribute-api';
 import { ScalableTableAttribute } from './scalable-table-attribute';
-import { TableTimeToLiveProvider } from './tabel-time-to-live-provider';
+import { TableTimeToLiveProvider } from './table-time-to-live-provider';
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
 // eslint-disable-next-line no-duplicate-imports, import/order
