@@ -4,8 +4,9 @@ import { Metric } from '@aws-cdk/aws-cloudwatch';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import { Duration, Stack } from '@aws-cdk/core';
 import {
+  CorsHttpMethod,
   HttpApi, HttpAuthorizer, HttpAuthorizerType, HttpIntegrationType, HttpMethod, HttpRouteAuthorizerBindOptions, HttpRouteAuthorizerConfig,
-  HttpRouteIntegrationBindOptions, HttpRouteIntegrationConfig, IHttpRouteAuthorizer, IHttpRouteIntegration, PayloadFormatVersion,
+  HttpRouteIntegrationBindOptions, HttpRouteIntegrationConfig, IHttpRouteAuthorizer, IHttpRouteIntegration, HttpNoneAuthorizer, PayloadFormatVersion,
 } from '../../lib';
 
 describe('HttpApi', () => {
@@ -106,7 +107,7 @@ describe('HttpApi', () => {
       new HttpApi(stack, 'HttpApi', {
         corsPreflight: {
           allowHeaders: ['Authorization'],
-          allowMethods: [HttpMethod.GET, HttpMethod.HEAD, HttpMethod.OPTIONS, HttpMethod.POST],
+          allowMethods: [CorsHttpMethod.GET, CorsHttpMethod.HEAD, CorsHttpMethod.OPTIONS, CorsHttpMethod.POST, CorsHttpMethod.ANY],
           allowOrigins: ['*'],
           maxAge: Duration.seconds(36400),
         },
@@ -115,7 +116,7 @@ describe('HttpApi', () => {
       expect(stack).toHaveResource('AWS::ApiGatewayV2::Api', {
         CorsConfiguration: {
           AllowHeaders: ['Authorization'],
-          AllowMethods: ['GET', 'HEAD', 'OPTIONS', 'POST'],
+          AllowMethods: ['GET', 'HEAD', 'OPTIONS', 'POST', '*'],
           AllowOrigins: ['*'],
           MaxAge: 36400,
         },
@@ -370,6 +371,121 @@ describe('HttpApi', () => {
     const api = HttpApi.fromHttpApiAttributes(stack, 'imported', { httpApiId: 'api-1234' });
 
     expect(() => api.apiEndpoint).toThrow(/apiEndpoint is not configured/);
+  });
+
+
+  describe('default authorization settings', () => {
+    test('can add default authorizer', () => {
+      const stack = new Stack();
+
+      const authorizer = new DummyAuthorizer();
+
+      const httpApi = new HttpApi(stack, 'api', {
+        defaultAuthorizer: authorizer,
+        defaultAuthorizationScopes: ['read:pets'],
+      });
+
+      httpApi.addRoutes({
+        path: '/pets',
+        methods: [HttpMethod.GET],
+        integration: new DummyRouteIntegration(),
+      });
+
+      expect(stack).toHaveResource('AWS::ApiGatewayV2::Route', {
+        AuthorizerId: 'auth-1234',
+        AuthorizationType: 'JWT',
+        AuthorizationScopes: ['read:pets'],
+      });
+    });
+
+    test('can add default authorizer, but remove it for a route', () => {
+      const stack = new Stack();
+      const authorizer = new DummyAuthorizer();
+
+      const httpApi = new HttpApi(stack, 'api', {
+        defaultAuthorizer: authorizer,
+        defaultAuthorizationScopes: ['read:pets'],
+      });
+
+      httpApi.addRoutes({
+        path: '/pets',
+        methods: [HttpMethod.GET],
+        integration: new DummyRouteIntegration(),
+      });
+
+      httpApi.addRoutes({
+        path: '/chickens',
+        methods: [HttpMethod.GET],
+        integration: new DummyRouteIntegration(),
+        authorizer: new HttpNoneAuthorizer(),
+      });
+
+      expect(stack).toHaveResource('AWS::ApiGatewayV2::Route', {
+        RouteKey: 'GET /pets',
+        AuthorizerId: 'auth-1234',
+      });
+
+      expect(stack).toHaveResource('AWS::ApiGatewayV2::Route', {
+        RouteKey: 'GET /chickens',
+        AuthorizerId: ABSENT,
+      });
+    });
+
+    test('can remove default scopes for a route', () => {
+      const stack = new Stack();
+
+      const authorizer = new DummyAuthorizer();
+
+      const httpApi = new HttpApi(stack, 'api', {
+        defaultAuthorizer: authorizer,
+        defaultAuthorizationScopes: ['read:books'],
+      });
+
+      httpApi.addRoutes({
+        path: '/pets',
+        methods: [HttpMethod.GET, HttpMethod.PATCH],
+        integration: new DummyRouteIntegration(),
+        authorizationScopes: [],
+      });
+
+      expect(stack).toHaveResource('AWS::ApiGatewayV2::Route', {
+        AuthorizationScopes: ABSENT,
+      });
+    });
+
+    test('can override scopes for a route', () => {
+      const stack = new Stack();
+
+      const authorizer = new DummyAuthorizer();
+
+      const httpApi = new HttpApi(stack, 'api', {
+        defaultAuthorizer: authorizer,
+        defaultAuthorizationScopes: ['read:pets'],
+      });
+
+      httpApi.addRoutes({
+        path: '/pets',
+        methods: [HttpMethod.GET, HttpMethod.PATCH],
+        integration: new DummyRouteIntegration(),
+      });
+
+      httpApi.addRoutes({
+        path: '/chickens',
+        methods: [HttpMethod.GET, HttpMethod.PATCH],
+        integration: new DummyRouteIntegration(),
+        authorizationScopes: ['read:chickens'],
+      });
+
+      expect(stack).toHaveResource('AWS::ApiGatewayV2::Route', {
+        RouteKey: 'GET /pets',
+        AuthorizationScopes: ['read:pets'],
+      });
+
+      expect(stack).toHaveResource('AWS::ApiGatewayV2::Route', {
+        RouteKey: 'GET /chickens',
+        AuthorizationScopes: ['read:chickens'],
+      });
+    });
   });
 });
 
