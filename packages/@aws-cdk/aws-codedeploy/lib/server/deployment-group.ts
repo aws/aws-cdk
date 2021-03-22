@@ -269,7 +269,9 @@ export class ServerDeploymentGroup extends ServerDeploymentGroupBase {
       physicalName: props.deploymentGroupName,
     });
 
-    this.application = props.application || new ServerApplication(this, 'Application');
+    this.application = props.application || new ServerApplication(this, 'Application', {
+      applicationName: props.deploymentGroupName === cdk.PhysicalName.GENERATE_IF_NEEDED ? cdk.PhysicalName.GENERATE_IF_NEEDED : undefined,
+    });
 
     this.role = props.role || new iam.Role(this, 'Role', {
       assumedBy: new iam.ServicePrincipal('codedeploy.amazonaws.com'),
