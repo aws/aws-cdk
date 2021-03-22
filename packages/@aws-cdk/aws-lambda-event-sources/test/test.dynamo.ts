@@ -97,18 +97,7 @@ export = {
 
     // THEN
     expect(stack).to(haveResource('AWS::Lambda::EventSourceMapping', {
-      'EventSourceArn': {
-        'Fn::GetAtt': [
-          'TD925BC7E',
-          'StreamArn',
-        ],
-      },
-      'FunctionName': {
-        'Ref': 'Fn9270CBC0',
-      },
-      'BatchSize': 50,
-      'StartingPosition': 'LATEST',
-      'TumblingWindowInSeconds': 60,
+      TumblingWindowInSeconds: 60,
     }));
 
     test.done();
