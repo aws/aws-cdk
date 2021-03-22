@@ -1,4 +1,4 @@
-import { expect, haveResourceLike } from '@aws-cdk/assert';
+import { arrayWith, expect, haveResourceLike, objectLike } from '@aws-cdk/assert';
 import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import { Stack } from '@aws-cdk/core';
@@ -82,7 +82,37 @@ nodeunitShim({
 
     test.done();
   },
-
+  'grant s3 putObjectACL to the following CodeBuild Project'(test: Test) {
+    const stack = new Stack();
+    createBitBucketAndCodeBuildPipeline(stack, {
+        codeBuildCloneOutput: true,
+    });
+    expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
+        'PolicyDocument': {
+            'Statement': arrayWith(
+              objectLike({
+                'Action': 's3:PutObjectAcl',
+                'Effect': 'Allow',
+                'Resource': {
+                  'Fn::Join': [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "PipelineArtifactsBucket22248F97",
+                          "Arn"
+                        ]
+                      },
+                      "/*",
+                    ],
+                  ],
+                },
+              }),
+            ),
+          },
+    }));
+    test.done();
+  },
   'setting triggerOnPush=false reflects in the configuration'(test: Test) {
     const stack = new Stack();
 
