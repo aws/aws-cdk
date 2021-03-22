@@ -170,3 +170,9 @@ const table = new dynamodb.Table(stack, 'MyTable', {
 
 // In this case, the CMK _cannot_ be accessed through table.encryptionKey.
 ```
+
+## Time to Live
+
+To help manage the time to live attribute of a table, a custom resource will be created if `timeToLiveAttribute` inside the tables options is set to any other value then undefined (_default_).
+The resource allows to directly change the time to live attribute, without manually disabling and afterwards enabling it.
+If a time to live attribute is set for a table and `timeToLiveAttribute` is then set to undefined, the table will keep the attribute while the custom resource will be removed.
