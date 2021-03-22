@@ -525,10 +525,6 @@ export interface TableAttributes {
 
   /**
    * The name of the global indexes set for this Table.
-   * Note that you need to set either this property,
-   * or {@link localIndexes},
-   * if you want methods like grantReadData()
-   * to grant permissions for indexes as well as the table itself.
    *
    * @default - no global indexes
    */
@@ -536,10 +532,6 @@ export interface TableAttributes {
 
   /**
    * The name of the local indexes set for this Table.
-   * Note that you need to set either this property,
-   * or {@link globalIndexes},
-   * if you want methods like grantReadData()
-   * to grant permissions for indexes as well as the table itself.
    *
    * @default - no local indexes
    */
@@ -900,6 +892,7 @@ abstract class TableBase extends Resource implements ITable {
   /**
    * Adds an IAM policy statement associated with this table to an IAM
    * principal's policy.
+   * NOTE: Always include index resources, whether indexes are known to exist or not.
    * @param grantee The principal (no-op if undefined)
    * @param opts Options for keyActions, tableActions and streamActions
    */
@@ -909,11 +902,9 @@ abstract class TableBase extends Resource implements ITable {
   ): iam.Grant {
     if (opts.tableActions) {
       const resources = [this.tableArn,
-        Lazy.string({ produce: () => this.hasIndex ? `${this.tableArn}/index/*` : Aws.NO_VALUE }),
+        Lazy.string({ produce: () => `${this.tableArn}/index/*` }),
         ...this.regionalArns,
-        ...this.regionalArns.map(arn => Lazy.string({
-          produce: () => this.hasIndex ? `${arn}/index/*` : Aws.NO_VALUE,
-        }))];
+        ...this.regionalArns.map(arn => Lazy.string({ produce: () => `${arn}/index/*` }))];
       const ret = iam.Grant.addToPrincipal({
         grantee,
         actions: opts.tableActions,
