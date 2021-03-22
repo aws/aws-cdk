@@ -41,7 +41,11 @@ export interface ClientParameters {
 export interface Parameter {
   /**
    * Specifies whether the value is a secret.
+<<<<<<< HEAD
    * @default - True
+=======
+   *    * @default - True
+>>>>>>> a3c220a8ead093e8986834c21eb0c4517a3ed527
    */
   readonly IsValueSecret?: string;
 
@@ -98,25 +102,37 @@ export interface OAuthParameters {
 export interface AuthParameters {
   /**
    * Contains the API key authorization parameters to use for the connection.
+<<<<<<< HEAD
    * @default - None
+=======
+>>>>>>> a3c220a8ead093e8986834c21eb0c4517a3ed527
    */
   readonly ApiKeyAuthParameters?: ApiKeyAuthParameters;
 
   /**
    * Contains the Basic authorization parameters to use for the connection.
+<<<<<<< HEAD
    * @default - None
+=======
+>>>>>>> a3c220a8ead093e8986834c21eb0c4517a3ed527
    */
   readonly BasicAuthParameters?: BasicAuthParameters;
 
   /**
    * Contains the API key authorization parameters to use for the connection.
+<<<<<<< HEAD
    * @default - None
+=======
+>>>>>>> a3c220a8ead093e8986834c21eb0c4517a3ed527
    */
   readonly InvocationHttpParameters?: HttpParameters;
 
   /**
    * Contains the OAuth authorization parameters to use for the connection.
+<<<<<<< HEAD
    * @default - None
+=======
+>>>>>>> a3c220a8ead093e8986834c21eb0c4517a3ed527
    */
   readonly OAuthParameters?: OAuthParameters;
 }
@@ -158,7 +174,11 @@ export interface BaseConnectionProps {
 /**
  * The event connection properties
  */
+<<<<<<< HEAD
 export interface ConnectionProps extends BaseConnectionProps {
+=======
+export interface ArchiveProps extends BaseConnectionProps {
+>>>>>>> a3c220a8ead093e8986834c21eb0c4517a3ed527
 
 }
 
