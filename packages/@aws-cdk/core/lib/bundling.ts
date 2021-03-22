@@ -278,6 +278,49 @@ export class DockerImage extends BundlingDockerImage {
     const hash = FileSystem.fingerprint(path, { extraHash: JSON.stringify(options) });
     return new DockerImage(tag, hash);
   }
+
+  /**
+   * Reference an image on DockerHub or another online registry.
+   *
+   * @param image the image name
+   */
+  public static fromRegistry(image: string) {
+    return new DockerImage(image);
+  }
+
+  /** @param image The Docker image */
+  constructor(public readonly image: string, _imageHash?: string) {
+    super(image, _imageHash);
+  }
+
+  /**
+   * Provides a stable representation of this image for JSON serialization.
+   *
+   * @return The overridden image name if set or image hash name in that order
+   */
+  public toJSON() {
+    return super.toJSON();
+  }
+
+  /**
+   * Runs a Docker image
+   */
+  public run(options: DockerRunOptions = {}) {
+    return super.run(options);
+  }
+
+  /**
+   * Copies a file or directory out of the Docker image to the local filesystem.
+   *
+   * If `outputPath` is omitted the destination path is a temporary directory.
+   *
+   * @param imagePath the path in the Docker image
+   * @param outputPath the destination path for the copy operation
+   * @returns the destination path
+   */
+  public cp(imagePath: string, outputPath?: string): string {
+    return super.cp(imagePath, outputPath);
+  }
 }
 
 /**
