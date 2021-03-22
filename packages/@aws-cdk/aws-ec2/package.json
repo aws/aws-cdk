@@ -636,7 +636,10 @@
       "docs-public-apis:@aws-cdk/aws-ec2.WindowsVersion.WINDOWS_SERVER_2008_R2_SP1_PORTUGUESE_BRAZIL_64BIT_BASE",
       "props-default-doc:@aws-cdk/aws-ec2.InterfaceVpcEndpointAttributes.securityGroupId",
       "props-default-doc:@aws-cdk/aws-ec2.InterfaceVpcEndpointAttributes.securityGroups",
-      "props-physical-name:@aws-cdk/aws-ec2.VpnGatewayProps"
+      "props-physical-name:@aws-cdk/aws-ec2.VpnGatewayProps",
+      "props-physical-name:@aws-cdk/aws-ec2.ClientVpnEndpointProps",
+      "props-physical-name:@aws-cdk/aws-ec2.ClientVpnAuthorizationRuleProps",
+      "props-physical-name:@aws-cdk/aws-ec2.ClientVpnRouteProps"
     ]
   },
   "stability": "stable",
