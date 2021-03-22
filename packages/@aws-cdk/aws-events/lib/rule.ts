@@ -292,6 +292,7 @@ export class Rule extends Resource implements IRule {
       arn: targetProps.arn,
       roleArn,
       ecsParameters: targetProps.ecsParameters,
+      httpParameters: targetProps.httpParameters,
       kinesisParameters: targetProps.kinesisParameters,
       runCommandParameters: targetProps.runCommandParameters,
       batchParameters: targetProps.batchParameters,
