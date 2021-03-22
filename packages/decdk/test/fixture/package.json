@@ -5,15 +5,67 @@
   "main": "index.js",
   "types": "index.d.ts",
   "jsii": {
-    "outdir": "dist"
+    "outdir": "dist",
+    "projectReferences": true,
+    "targets": {
+      "java": {
+        "maven": {
+          "groupId": "software.amazon.awscdk",
+          "artifactId": "cdk-fixture"
+        },
+        "package": "software.amazon.awscdk.fixture"
+      },
+      "python": {
+        "distName": "aws-cdk.fixture",
+        "module": "aws_cdk.fixture",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
+      },
+      "dotnet": {
+        "namespace": "Amazon.CDK.Fixture",
+        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
+      }
+    }
   },
   "repository": {
-    "url": "https://github.com/aws/aws-cdk",
-    "type": "git"
+    "url": "https://github.com/aws/aws-cdk.git",
+    "type": "git",
+    "directory": "packages/decdk/test/fixture"
   },
   "author": {
     "name": "Amazon Web Services",
-    "url": "https://aws.amazon.com"
+    "url": "https://aws.amazon.com",
+    "organization": true
   },
-  "license": "Apache-2.0"
+  "license": "Apache-2.0",
+  "publishConfig": {
+    "tag": "latest"
+  },
+  "homepage": "https://github.com/aws/aws-cdk",
+  "keywords": [
+    "aws",
+    "cdk"
+  ],
+  "scripts": {
+    "package": "cdk-package",
+    "build": "cdk-build",
+    "watch": "cdk-watch",
+    "rosetta:extract": "yarn --silent jsii-rosetta extract",
+    "compat": "cdk-compat",
+    "pkglint": "pkglint -f",
+    "build+test": "yarn build",
+    "build+test+package": "yarn build+test"
+  },
+  "devDependencies": {
+    "cdk-build-tools": "0.0.0",
+    "pkglint": "0.0.0"
+  },
+  "engines": {
+    "node": ">= 10.13.0 <13 || >=13.7.0"
+  },
+  "awscdkio": {
+    "announce": false
+  }
 }

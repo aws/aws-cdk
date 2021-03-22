@@ -89,6 +89,7 @@
     "yaml"
   ],
   "dependencies": {
+    "@aws-cdk/yaml-cfn": "0.0.0",
     "@balena/dockerignore": "^1.0.2",
     "case": "1.6.3",
     "fs-extra": "^9.1.0",
