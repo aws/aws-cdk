@@ -117,6 +117,7 @@ export class BitBucketSourceAction extends Action {
 
     // the action needs to write the output to the pipeline bucket
     options.bucket.grantReadWrite(options.role);
+    options.bucket.grantPutAcl(options.role);
 
     // if codeBuildCloneOutput is true,
     // save the connectionArn in the Artifact instance
