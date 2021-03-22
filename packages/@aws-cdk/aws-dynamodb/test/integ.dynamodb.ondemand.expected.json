@@ -369,6 +369,7 @@
           "Statement": [
             {
               "Action": [
+                "dynamodb:DescribeTable",
                 "dynamodb:DescribeTimeToLive",
                 "dynamodb:UpdateTimeToLive"
               ],
@@ -412,7 +413,7 @@
       "Properties": {
         "Code": {
           "S3Bucket": {
-            "Ref": "AssetParametersac0a33049f87c7fb3edf58d9f846228b42060e26654b19eec5793ae587ae94f0S3BucketAFE0D178"
+            "Ref": "AssetParameters8bdf3f0e1607db128eaafb85935195fdf89921f6ac08c5741bf8eaccaacf036aS3Bucket71E0D600"
           },
           "S3Key": {
             "Fn::Join": [
@@ -425,7 +426,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParametersac0a33049f87c7fb3edf58d9f846228b42060e26654b19eec5793ae587ae94f0S3VersionKeyFB1EA75F"
+                          "Ref": "AssetParameters8bdf3f0e1607db128eaafb85935195fdf89921f6ac08c5741bf8eaccaacf036aS3VersionKey69BC2BD5"
                         }
                       ]
                     }
@@ -438,7 +439,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParametersac0a33049f87c7fb3edf58d9f846228b42060e26654b19eec5793ae587ae94f0S3VersionKeyFB1EA75F"
+                          "Ref": "AssetParameters8bdf3f0e1607db128eaafb85935195fdf89921f6ac08c5741bf8eaccaacf036aS3VersionKey69BC2BD5"
                         }
                       ]
                     }
@@ -456,7 +457,7 @@
         },
         "Handler": "index.onEventHandler",
         "Runtime": "nodejs12.x",
-        "Timeout": 300
+        "Timeout": 30
       },
       "DependsOn": [
         "TableTimeToLiveProvider15b48ecf0bc70966e44f6d4becded765OnEventHandlerServiceRoleDefaultPolicyF806C6EE",
@@ -521,6 +522,7 @@
           "Statement": [
             {
               "Action": [
+                "dynamodb:DescribeTable",
                 "dynamodb:DescribeTimeToLive",
                 "dynamodb:UpdateTimeToLive"
               ],
@@ -564,7 +566,7 @@
       "Properties": {
         "Code": {
           "S3Bucket": {
-            "Ref": "AssetParametersac0a33049f87c7fb3edf58d9f846228b42060e26654b19eec5793ae587ae94f0S3BucketAFE0D178"
+            "Ref": "AssetParameters8bdf3f0e1607db128eaafb85935195fdf89921f6ac08c5741bf8eaccaacf036aS3Bucket71E0D600"
           },
           "S3Key": {
             "Fn::Join": [
@@ -577,7 +579,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParametersac0a33049f87c7fb3edf58d9f846228b42060e26654b19eec5793ae587ae94f0S3VersionKeyFB1EA75F"
+                          "Ref": "AssetParameters8bdf3f0e1607db128eaafb85935195fdf89921f6ac08c5741bf8eaccaacf036aS3VersionKey69BC2BD5"
                         }
                       ]
                     }
@@ -590,7 +592,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParametersac0a33049f87c7fb3edf58d9f846228b42060e26654b19eec5793ae587ae94f0S3VersionKeyFB1EA75F"
+                          "Ref": "AssetParameters8bdf3f0e1607db128eaafb85935195fdf89921f6ac08c5741bf8eaccaacf036aS3VersionKey69BC2BD5"
                         }
                       ]
                     }
@@ -1116,7 +1118,7 @@
           "Fn::Join": [
             "",
             [
-              "{\"StartAt\":\"framework-isComplete-task\",\"States\":{\"framework-isComplete-task\":{\"End\":true,\"Retry\":[{\"ErrorEquals\":[\"States.ALL\"],\"IntervalSeconds\":10,\"MaxAttempts\":450,\"BackoffRate\":1}],\"Catch\":[{\"ErrorEquals\":[\"States.ALL\"],\"Next\":\"framework-onTimeout-task\"}],\"Type\":\"Task\",\"Resource\":\"",
+              "{\"StartAt\":\"framework-isComplete-task\",\"States\":{\"framework-isComplete-task\":{\"End\":true,\"Retry\":[{\"ErrorEquals\":[\"States.ALL\"],\"IntervalSeconds\":60,\"MaxAttempts\":75,\"BackoffRate\":1}],\"Catch\":[{\"ErrorEquals\":[\"States.ALL\"],\"Next\":\"framework-onTimeout-task\"}],\"Type\":\"Task\",\"Resource\":\"",
               {
                 "Fn::GetAtt": [
                   "TableTimeToLiveProvider15b48ecf0bc70966e44f6d4becded765ProviderframeworkisCompleteD50D28E0",
@@ -1148,17 +1150,17 @@
     }
   },
   "Parameters": {
-    "AssetParametersac0a33049f87c7fb3edf58d9f846228b42060e26654b19eec5793ae587ae94f0S3BucketAFE0D178": {
+    "AssetParameters8bdf3f0e1607db128eaafb85935195fdf89921f6ac08c5741bf8eaccaacf036aS3Bucket71E0D600": {
       "Type": "String",
-      "Description": "S3 bucket for asset \"ac0a33049f87c7fb3edf58d9f846228b42060e26654b19eec5793ae587ae94f0\""
+      "Description": "S3 bucket for asset \"8bdf3f0e1607db128eaafb85935195fdf89921f6ac08c5741bf8eaccaacf036a\""
     },
-    "AssetParametersac0a33049f87c7fb3edf58d9f846228b42060e26654b19eec5793ae587ae94f0S3VersionKeyFB1EA75F": {
+    "AssetParameters8bdf3f0e1607db128eaafb85935195fdf89921f6ac08c5741bf8eaccaacf036aS3VersionKey69BC2BD5": {
       "Type": "String",
-      "Description": "S3 key for asset version \"ac0a33049f87c7fb3edf58d9f846228b42060e26654b19eec5793ae587ae94f0\""
+      "Description": "S3 key for asset version \"8bdf3f0e1607db128eaafb85935195fdf89921f6ac08c5741bf8eaccaacf036a\""
     },
-    "AssetParametersac0a33049f87c7fb3edf58d9f846228b42060e26654b19eec5793ae587ae94f0ArtifactHash51DA5143": {
+    "AssetParameters8bdf3f0e1607db128eaafb85935195fdf89921f6ac08c5741bf8eaccaacf036aArtifactHash4C67D23D": {
       "Type": "String",
-      "Description": "Artifact hash for asset \"ac0a33049f87c7fb3edf58d9f846228b42060e26654b19eec5793ae587ae94f0\""
+      "Description": "Artifact hash for asset \"8bdf3f0e1607db128eaafb85935195fdf89921f6ac08c5741bf8eaccaacf036a\""
     },
     "AssetParametersdaeb79e3cee39c9b902dc0d5c780223e227ed573ea60976252947adab5fb2be1S3BucketDC4B98B1": {
       "Type": "String",
