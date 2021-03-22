@@ -1,4 +1,4 @@
-import { BundlingDockerImage, DockerImage } from '@aws-cdk/core';
+import { DockerImage } from '@aws-cdk/core';
 
 export interface LambdaRuntimeProps {
   /**
@@ -211,7 +211,7 @@ export class Runtime {
   /**
    * The bundling Docker image for this runtime.
    */
-  public readonly bundlingDockerImage: BundlingDockerImage;
+  public readonly bundlingDockerImage: DockerImage;
 
   constructor(name: string, family?: RuntimeFamily, props: LambdaRuntimeProps = { }) {
     this.name = name;
