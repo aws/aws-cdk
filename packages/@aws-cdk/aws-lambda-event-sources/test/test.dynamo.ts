@@ -103,29 +103,6 @@ export = {
     test.done();
   },
 
-  'fails if tumblingWindow > 900 seconds'(test: Test) {
-    // GIVEN
-    const stack = new cdk.Stack();
-    const fn = new TestFunction(stack, 'Fn');
-    const table = new dynamodb.Table(stack, 'T', {
-      partitionKey: {
-        name: 'id',
-        type: dynamodb.AttributeType.STRING,
-      },
-      stream: dynamodb.StreamViewType.NEW_IMAGE,
-    });
-
-    // THEN
-    test.throws(() =>
-      fn.addEventSource(new sources.DynamoEventSource(table, {
-        maxBatchingWindow: cdk.Duration.seconds(60),
-        startingPosition: lambda.StartingPosition.LATEST,
-        tumblingWindow: cdk.Duration.seconds(901),
-      })), /tumblingWindow cannot be over 900 seconds/);
-
-    test.done();
-  },
-
   'specific batch size'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
