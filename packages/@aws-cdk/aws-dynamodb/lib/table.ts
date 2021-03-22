@@ -892,7 +892,10 @@ abstract class TableBase extends Resource implements ITable {
   /**
    * Adds an IAM policy statement associated with this table to an IAM
    * principal's policy.
-   * NOTE: Always include index resources, whether indexes are known to exist or not.
+   *
+   * **Note**: this method always adds permissions to all of the Table's indexes as well,
+   *   whether they are known to exist or not.
+   *
    * @param grantee The principal (no-op if undefined)
    * @param opts Options for keyActions, tableActions and streamActions
    */
