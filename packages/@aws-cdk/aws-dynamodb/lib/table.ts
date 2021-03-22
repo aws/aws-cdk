@@ -901,9 +901,9 @@ abstract class TableBase extends Resource implements ITable {
   ): iam.Grant {
     if (opts.tableActions) {
       const resources = [this.tableArn,
-        Lazy.string({ produce: () => `${this.tableArn}/index/*` }),
+        `${this.tableArn}/index/*`,
         ...this.regionalArns,
-        ...this.regionalArns.map(arn => Lazy.string({ produce: () => `${arn}/index/*` }))];
+        ...this.regionalArns.map(arn => {return `${arn}/index/*`;})];
       const ret = iam.Grant.addToPrincipal({
         grantee,
         actions: opts.tableActions,
