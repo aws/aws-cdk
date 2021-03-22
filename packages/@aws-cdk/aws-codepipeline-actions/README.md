@@ -234,8 +234,8 @@ const key = 'some/key.zip';
 const trail = new cloudtrail.Trail(this, 'CloudTrail');
 trail.addS3EventSelector([{
   bucket: sourceBucket,
-  objectPrefix: key
-  }], {
+  objectPrefix: key,
+}], {
   readWriteType: cloudtrail.ReadWriteType.WRITE_ONLY,
 });
 const sourceAction = new codepipeline_actions.S3SourceAction({
