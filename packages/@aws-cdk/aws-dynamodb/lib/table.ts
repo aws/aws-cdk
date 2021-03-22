@@ -1158,7 +1158,7 @@ export class Table extends TableBase {
       this.createReplicaTables(props.replicationRegions, props.replicationTimeout);
     }
 
-    if (props.timeToLiveAttribute) {
+    if (props.timeToLiveAttribute !== undefined) {
       this.setTimeToLive(props.timeToLiveAttribute);
     }
   }
