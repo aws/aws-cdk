@@ -1,7 +1,6 @@
 export * from './aspect';
 export * from './tag-aspect';
 
-export * from './construct-compat';
 export * from './token';
 export * from './resolvable';
 export * from './lazy';
