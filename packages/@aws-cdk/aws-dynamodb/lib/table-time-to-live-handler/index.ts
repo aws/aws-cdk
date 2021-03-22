@@ -32,11 +32,12 @@ export async function onEventHandler(event: OnEventRequest): Promise<OnEventResp
         }
         break;
     }
+
+    console.log('Update table: %j', event.ResourceProperties.TableName);
+    return { PhysicalResourceId: event.PhysicalResourceId ?? event.LogicalResourceId };
   }
 
-  console.log('Update table: %j', event.ResourceProperties.TableName);
-
-  return { PhysicalResourceId: event.ResourceProperties.Region };
+  return { PhysicalResourceId: event.PhysicalResourceId };
 }
 
 export async function isCompleteHandler(event: IsCompleteRequest): Promise<IsCompleteResponse> {
