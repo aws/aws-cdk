@@ -187,7 +187,7 @@ export class EventSourceMapping extends cdk.Resource implements IEventSourceMapp
       }
     });
 
-    if (props.tumblingWindow && props.tumblingWindow.toSeconds() > 900) {
+    if (props.tumblingWindow && !props.tumblingWindow.isUnresolved() && props.tumblingWindow.toSeconds() > 900) {
       throw new Error(`tumblingWindow cannot be over 900 seconds, got ${props.tumblingWindow.toSeconds()}`);
     }
 
