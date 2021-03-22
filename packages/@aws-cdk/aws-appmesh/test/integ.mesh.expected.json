@@ -497,7 +497,6 @@
             "MeshName"
           ]
         },
-        "RouteName": "route-1",
         "Spec": {
           "HttpRoute": {
             "Action": {
@@ -533,7 +532,8 @@
             "meshrouter81B8087E",
             "VirtualRouterName"
           ]
-        }
+        },
+        "RouteName": "route-1"
       }
     },
     "meshrouterroute2486D9DEF": {
@@ -545,7 +545,6 @@
             "MeshName"
           ]
         },
-        "RouteName": "route-2",
         "Spec": {
           "HttpRoute": {
             "Action": {
@@ -581,7 +580,8 @@
             "meshrouter81B8087E",
             "VirtualRouterName"
           ]
-        }
+        },
+        "RouteName": "route-2"
       }
     },
     "meshrouterroute3BD0FA22F": {
@@ -593,7 +593,6 @@
             "MeshName"
           ]
         },
-        "RouteName": "route-3",
         "Spec": {
           "TcpRoute": {
             "Action": {
@@ -622,7 +621,270 @@
             "meshrouter81B8087E",
             "VirtualRouterName"
           ]
-        }
+        },
+        "RouteName": "route-3"
+      }
+    },
+    "meshrouterroutematchingACC12F04": {
+      "Type": "AWS::AppMesh::Route",
+      "Properties": {
+        "MeshName": {
+          "Fn::GetAtt": [
+            "meshACDFE68E",
+            "MeshName"
+          ]
+        },
+        "Spec": {
+          "Http2Route": {
+            "Action": {
+              "WeightedTargets": [
+                {
+                  "VirtualNode": {
+                    "Fn::GetAtt": [
+                      "meshnode3D2A19CF2",
+                      "VirtualNodeName"
+                    ]
+                  },
+                  "Weight": 1
+                }
+              ]
+            },
+            "Match": {
+              "Headers": [
+                {
+                  "Invert": false,
+                  "Match": {
+                    "Exact": "application/json"
+                  },
+                  "Name": "Content-Type"
+                },
+                {
+                  "Invert": false,
+                  "Match": {
+                    "Prefix": "application/json"
+                  },
+                  "Name": "Content-Type"
+                },
+                {
+                  "Invert": false,
+                  "Match": {
+                    "Suffix": "application/json"
+                  },
+                  "Name": "Content-Type"
+                },
+                {
+                  "Invert": false,
+                  "Match": {
+                    "Regex": "application/.*"
+                  },
+                  "Name": "Content-Type"
+                },
+                {
+                  "Invert": false,
+                  "Match": {
+                    "Range": {
+                      "End": 5,
+                      "Start": 1
+                    }
+                  },
+                  "Name": "Content-Type"
+                },
+                {
+                  "Invert": true,
+                  "Match": {
+                    "Exact": "application/json"
+                  },
+                  "Name": "Content-Type"
+                },
+                {
+                  "Invert": true,
+                  "Match": {
+                    "Prefix": "application/json"
+                  },
+                  "Name": "Content-Type"
+                },
+                {
+                  "Invert": true,
+                  "Match": {
+                    "Suffix": "application/json"
+                  },
+                  "Name": "Content-Type"
+                },
+                {
+                  "Invert": true,
+                  "Match": {
+                    "Regex": "application/.*"
+                  },
+                  "Name": "Content-Type"
+                },
+                {
+                  "Invert": true,
+                  "Match": {
+                    "Range": {
+                      "End": 5,
+                      "Start": 1
+                    }
+                  },
+                  "Name": "Content-Type"
+                }
+              ],
+              "Method": "POST",
+              "Prefix": "/",
+              "Scheme": "https"
+            }
+          }
+        },
+        "VirtualRouterName": {
+          "Fn::GetAtt": [
+            "meshrouter81B8087E",
+            "VirtualRouterName"
+          ]
+        },
+        "RouteName": "route-matching"
+      }
+    },
+    "meshrouterroutehttp2retryCC41345F": {
+      "Type": "AWS::AppMesh::Route",
+      "Properties": {
+        "MeshName": {
+          "Fn::GetAtt": [
+            "meshACDFE68E",
+            "MeshName"
+          ]
+        },
+        "Spec": {
+          "Http2Route": {
+            "Action": {
+              "WeightedTargets": [
+                {
+                  "VirtualNode": {
+                    "Fn::GetAtt": [
+                      "meshnode3D2A19CF2",
+                      "VirtualNodeName"
+                    ]
+                  },
+                  "Weight": 1
+                }
+              ]
+            },
+            "Match": {
+              "Prefix": "/"
+            },
+            "RetryPolicy": {
+              "HttpRetryEvents": [
+                "client-error"
+              ],
+              "MaxRetries": 5,
+              "PerRetryTimeout": {
+                "Unit": "ms",
+                "Value": 1000
+              },
+              "TcpRetryEvents": [
+                "connection-error"
+              ]
+            }
+          }
+        },
+        "VirtualRouterName": {
+          "Fn::GetAtt": [
+            "meshrouter81B8087E",
+            "VirtualRouterName"
+          ]
+        },
+        "RouteName": "route-http2-retry"
+      }
+    },
+    "meshrouterroute53F46B0FE": {
+      "Type": "AWS::AppMesh::Route",
+      "Properties": {
+        "MeshName": {
+          "Fn::GetAtt": [
+            "meshACDFE68E",
+            "MeshName"
+          ]
+        },
+        "Spec": {
+          "Http2Route": {
+            "Action": {
+              "WeightedTargets": [
+                {
+                  "VirtualNode": {
+                    "Fn::GetAtt": [
+                      "meshnode2092BA426",
+                      "VirtualNodeName"
+                    ]
+                  },
+                  "Weight": 1
+                }
+              ]
+            },
+            "Match": {
+              "Prefix": "/"
+            }
+          },
+          "Priority": 10
+        },
+        "VirtualRouterName": {
+          "Fn::GetAtt": [
+            "meshrouter81B8087E",
+            "VirtualRouterName"
+          ]
+        },
+        "RouteName": "route-5"
+      }
+    },
+    "meshrouterroutegrpcretry9BEB798A": {
+      "Type": "AWS::AppMesh::Route",
+      "Properties": {
+        "MeshName": {
+          "Fn::GetAtt": [
+            "meshACDFE68E",
+            "MeshName"
+          ]
+        },
+        "Spec": {
+          "GrpcRoute": {
+            "Action": {
+              "WeightedTargets": [
+                {
+                  "VirtualNode": {
+                    "Fn::GetAtt": [
+                      "meshnode3D2A19CF2",
+                      "VirtualNodeName"
+                    ]
+                  },
+                  "Weight": 1
+                }
+              ]
+            },
+            "Match": {
+              "ServiceName": "servicename"
+            },
+            "RetryPolicy": {
+              "GrpcRetryEvents": [
+                "deadline-exceeded"
+              ],
+              "HttpRetryEvents": [
+                "client-error"
+              ],
+              "MaxRetries": 5,
+              "PerRetryTimeout": {
+                "Unit": "ms",
+                "Value": 1000
+              },
+              "TcpRetryEvents": [
+                "connection-error"
+              ]
+            }
+          }
+        },
+        "VirtualRouterName": {
+          "Fn::GetAtt": [
+            "meshrouter81B8087E",
+            "VirtualRouterName"
+          ]
+        },
+        "RouteName": "route-grpc-retry"
       }
     },
     "meshnode726C787D": {
@@ -832,7 +1094,6 @@
     "meshgateway1gateway1routehttpE8D6F433": {
       "Type": "AWS::AppMesh::GatewayRoute",
       "Properties": {
-        "GatewayRouteName": "meshstackmeshgateway1gateway1routehttpBA921D42",
         "MeshName": {
           "Fn::GetAtt": [
             "meshACDFE68E",
@@ -863,13 +1124,13 @@
             "meshgateway1B02387E8",
             "VirtualGatewayName"
           ]
-        }
+        },
+        "GatewayRouteName": "meshstackmeshgateway1gateway1routehttpBA921D42"
       }
     },
     "meshgateway1gateway1routehttp2FD69C306": {
       "Type": "AWS::AppMesh::GatewayRoute",
       "Properties": {
-        "GatewayRouteName": "meshstackmeshgateway1gateway1routehttp255781963",
         "MeshName": {
           "Fn::GetAtt": [
             "meshACDFE68E",
@@ -900,13 +1161,13 @@
             "meshgateway1B02387E8",
             "VirtualGatewayName"
           ]
-        }
+        },
+        "GatewayRouteName": "meshstackmeshgateway1gateway1routehttp255781963"
       }
     },
     "meshgateway1gateway1routegrpc76486062": {
       "Type": "AWS::AppMesh::GatewayRoute",
       "Properties": {
-        "GatewayRouteName": "meshstackmeshgateway1gateway1routegrpcCD4D891D",
         "MeshName": {
           "Fn::GetAtt": [
             "meshACDFE68E",
@@ -942,7 +1203,8 @@
             "meshgateway1B02387E8",
             "VirtualGatewayName"
           ]
-        }
+        },
+        "GatewayRouteName": "meshstackmeshgateway1gateway1routegrpcCD4D891D"
       }
     },
     "service6D174F83": {

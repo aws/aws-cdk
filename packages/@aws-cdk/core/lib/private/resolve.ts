@@ -1,5 +1,5 @@
 import { IConstruct } from 'constructs';
-import { DefaultTokenResolver, IPostProcessor, IResolvable, IResolveContext, ITokenResolver, StringConcat } from '../resolvable';
+import { DefaultTokenResolver, IPostProcessor, IResolvable, IResolveContext, ITokenResolver, ResolveChangeContextOptions, StringConcat } from '../resolvable';
 import { TokenizedStringFragments } from '../string-fragments';
 import { containsListTokenElement, TokenString, unresolved } from './encoding';
 import { TokenMap } from './token-map';
@@ -9,8 +9,37 @@ import { TokenMap } from './token-map';
 import { IConstruct as ICoreConstruct } from '../construct-compat';
 
 // This file should not be exported to consumers, resolving should happen through Construct.resolve()
-
 const tokenMap = TokenMap.instance();
+
+/**
+ * Resolved complex values will have a type hint applied.
+ *
+ * The type hint will be based on the type of the input value that was resolved.
+ *
+ * If the value was encoded, the type hint will be the type of the encoded value. In case
+ * of a plain `IResolvable`, a type hint of 'string' will be assumed.
+ */
+const RESOLUTION_TYPEHINT_SYM = Symbol.for('@aws-cdk/core.resolvedTypeHint');
+
+/**
+ * Prefix used for intrinsic keys
+ *
+ * If a key with this prefix is found in an object, the actual value of the
+ * key doesn't matter. The value of this key will be an `[ actualKey, actualValue ]`
+ * tuple, and the `actualKey` will be a value which otherwise couldn't be represented
+ * in the types of `string | number | symbol`, which are the only possible JavaScript
+ * object keys.
+ */
+export const INTRINSIC_KEY_PREFIX = '$IntrinsicKey$';
+
+/**
+ * Type hints for resolved values
+ */
+export enum ResolutionTypeHint {
+  STRING = 'string',
+  NUMBER = 'number',
+  LIST = 'list',
+}
 
 /**
  * Options to the resolve() operation
@@ -25,6 +54,36 @@ export interface IResolveOptions {
   preparing: boolean;
   resolver: ITokenResolver;
   prefix?: string[];
+
+  /**
+   * Whether or not to allow intrinsics in keys of an object
+   *
+   * Because keys of an object must be strings, a (resolved) intrinsic, which
+   * is an object, cannot be stored in that position. By default, we reject these
+   * intrinsics if we encounter them.
+   *
+   * If this is set to `true`, in order to store the complex value in a map,
+   * keys that happen to evaluate to intrinsics will be added with a unique key
+   * identified by an uncomming prefix, mapped to a tuple that represents the
+   * actual key/value-pair. The map will look like this:
+   *
+   * {
+   *    '$IntrinsicKey$0': [ { Ref: ... }, 'value1' ],
+   *    '$IntrinsicKey$1': [ { Ref: ... }, 'value2' ],
+   *    'regularKey': 'value3',
+   *    ...
+   * }
+   *
+   * Callers should only set this option to `true` if they are prepared to deal with
+   * the object in this weird shape, and massage it back into a correct object afterwards.
+   *
+   * (A regular but uncommon string was chosen over something like symbols or
+   * other ways of tagging the extra values in order to simplify the implementation which
+   * maintains the desired behavior `resolve(resolve(x)) == resolve(x)`).
+   *
+   * @default false
+   */
+  allowIntrinsicKeys?: boolean;
 }
 
 /**
@@ -50,7 +109,7 @@ export function resolve(obj: any, options: IResolveOptions): any {
       preparing: options.preparing,
       scope: options.scope as ICoreConstruct,
       registerPostProcessor(pp) { postProcessor = pp; },
-      resolve(x: any) { return resolve(x, { ...options, prefix: newPrefix }); },
+      resolve(x: any, changeOptions?: ResolveChangeContextOptions) { return resolve(x, { ...options, ...changeOptions, prefix: newPrefix }); },
     };
 
     return [context, { postProcess(x) { return postProcessor ? postProcessor.postProcess(x, context) : x; } }];
@@ -98,7 +157,7 @@ export function resolve(obj: any, options: IResolveOptions): any {
     const str = TokenString.forString(obj);
     if (str.test()) {
       const fragments = str.split(tokenMap.lookupToken.bind(tokenMap));
-      return options.resolver.resolveString(fragments, makeContext()[0]);
+      return tagResolvedValue(options.resolver.resolveString(fragments, makeContext()[0]), ResolutionTypeHint.STRING);
     }
     return obj;
   }
@@ -107,7 +166,7 @@ export function resolve(obj: any, options: IResolveOptions): any {
   // number - potentially decode Tokenized number
   //
   if (typeof(obj) === 'number') {
-    return resolveNumberToken(obj, makeContext()[0]);
+    return tagResolvedValue(resolveNumberToken(obj, makeContext()[0]), ResolutionTypeHint.NUMBER);
   }
 
   //
@@ -124,7 +183,7 @@ export function resolve(obj: any, options: IResolveOptions): any {
 
   if (Array.isArray(obj)) {
     if (containsListTokenElement(obj)) {
-      return options.resolver.resolveList(obj, makeContext()[0]);
+      return tagResolvedValue(options.resolver.resolveList(obj, makeContext()[0]), ResolutionTypeHint.LIST);
     }
 
     const arr = obj
@@ -140,7 +199,8 @@ export function resolve(obj: any, options: IResolveOptions): any {
 
   if (unresolved(obj)) {
     const [context, postProcessor] = makeContext();
-    return options.resolver.resolveToken(obj, context, postProcessor);
+    const ret = tagResolvedValue(options.resolver.resolveToken(obj, context, postProcessor), ResolutionTypeHint.STRING);
+    return ret;
   }
 
   //
@@ -155,24 +215,40 @@ export function resolve(obj: any, options: IResolveOptions): any {
   }
 
   const result: any = { };
+  let intrinsicKeyCtr = 0;
   for (const key of Object.keys(obj)) {
-    const resolvedKey = makeContext()[0].resolve(key);
-    if (typeof(resolvedKey) !== 'string') {
-      // eslint-disable-next-line max-len
-      throw new Error(`"${key}" is used as the key in a map so must resolve to a string, but it resolves to: ${JSON.stringify(resolvedKey)}. Consider using "CfnJson" to delay resolution to deployment-time`);
-    }
-
-    const value = makeContext(key)[0].resolve(obj[key]);
+    const value = makeContext(String(key))[0].resolve(obj[key]);
 
     // skip undefined
     if (typeof(value) === 'undefined') {
       continue;
     }
 
-    result[resolvedKey] = value;
+    // Simple case -- not an unresolved key
+    if (!unresolved(key)) {
+      result[key] = value;
+      continue;
+    }
+
+    const resolvedKey = makeContext()[0].resolve(key);
+    if (typeof(resolvedKey) === 'string') {
+      result[resolvedKey] = value;
+    } else {
+      if (!options.allowIntrinsicKeys) {
+        // eslint-disable-next-line max-len
+        throw new Error(`"${String(key)}" is used as the key in a map so must resolve to a string, but it resolves to: ${JSON.stringify(resolvedKey)}. Consider using "CfnJson" to delay resolution to deployment-time`);
+      }
+
+      // Can't represent this object in a JavaScript key position, but we can store it
+      // in value position. Use a unique symbol as the key.
+      result[`${INTRINSIC_KEY_PREFIX}${intrinsicKeyCtr++}`] = [resolvedKey, value];
+    }
   }
 
-  return result;
+  // Because we may be called to recurse on already resolved values (that already have type hints applied)
+  // and we just copied those values into a fresh object, be sure to retain any type hints.
+  const previousTypeHint = resolvedTypeHint(obj);
+  return previousTypeHint ? tagResolvedValue(result, previousTypeHint) : result;
 }
 
 /**
@@ -221,4 +297,33 @@ function resolveNumberToken(x: number, context: IResolveContext): any {
   const token = TokenMap.instance().lookupNumberToken(x);
   if (token === undefined) { return x; }
   return context.resolve(token);
+}
+
+/**
+ * Apply a type hint to a resolved value
+ *
+ * The type hint will only be applied to objects.
+ *
+ * These type hints are used for correct JSON-ification of intrinsic values.
+ */
+function tagResolvedValue(value: any, typeHint: ResolutionTypeHint): any {
+  if (typeof value !== 'object' || value == null) { return value; }
+  Object.defineProperty(value, RESOLUTION_TYPEHINT_SYM, {
+    value: typeHint,
+    configurable: true,
+  });
+  return value;
+}
+
+/**
+ * Return the type hint from the given value
+ *
+ * If the value is not a resolved value (i.e, the result of resolving a token),
+ * `undefined` will be returned.
+ *
+ * These type hints are used for correct JSON-ification of intrinsic values.
+ */
+export function resolvedTypeHint(value: any): ResolutionTypeHint | undefined {
+  if (typeof value !== 'object' || value == null) { return undefined; }
+  return value[RESOLUTION_TYPEHINT_SYM];
 }
