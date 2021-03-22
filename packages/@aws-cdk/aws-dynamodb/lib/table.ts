@@ -579,7 +579,7 @@ abstract class TableBase extends Resource implements ITable {
         this.tableArn,
         `${this.tableArn}/index/*`,
         ...this.regionalArns,
-        ...this.regionalArns.map(arn => {return `${arn}/index/*`;}),
+        ...this.regionalArns.map(arn => `${arn}/index/*`),
       ],
       scope: this,
     });
@@ -903,7 +903,7 @@ abstract class TableBase extends Resource implements ITable {
       const resources = [this.tableArn,
         `${this.tableArn}/index/*`,
         ...this.regionalArns,
-        ...this.regionalArns.map(arn => {return `${arn}/index/*`;})];
+        ...this.regionalArns.map(arn => `${arn}/index/*`)];
       const ret = iam.Grant.addToPrincipal({
         grantee,
         actions: opts.tableActions,
