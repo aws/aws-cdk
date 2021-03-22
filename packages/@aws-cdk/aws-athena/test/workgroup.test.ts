@@ -19,6 +19,9 @@ describe('WorkGroup', () => {
     new athena.WorkGroup(stack, 'ExampleWorkGroup', {
       workGroupName: 'awesome',
       description: 'Test WorkGroup',
+      configuration: {
+        engineVersion: 'Athena engine version 2',
+      },
       tags: {
         key1: 'value1',
         key2: 'value2',
@@ -26,20 +29,22 @@ describe('WorkGroup', () => {
     });
 
     // THEN
-    cdkAsserts.expect(stack).to(cdkAsserts.haveResource('AWS::Athena::WorkGroup', {
-      Name: 'awesome',
-      Description: 'Test WorkGroup',
-      Tags: [
-        {
-          Key: 'key1',
-          Value: 'value1',
+    cdkAsserts.expect(stack).to(cdkAsserts.haveResourceLike('Custom::WorkGroup', {
+      Properties: {
+        ServiceToken: {
+          'Fn::GetAtt': [
+            'AWS679f53fac002430cb0da5b7982bd22872D164C4C',
+            'Arn',
+          ],
         },
-        {
-          Key: 'key2',
-          Value: 'value2',
-        },
+        Create: '{"service":"Athena","action":"createWorkGroup","parameters":{"Name":"awesome","Description":"Test WorkGroup","Configuration":{"EngineVersion":{"SelectedEngineVersion":"Athena engine version 2"}},"Tags":[{"Key":"key1","Value":"value1"},{"Key":"key2","Value":"value2"}]},"physicalResourceId":{"id":"ExampleWorkGroup"}}',
+        Update: '{"service":"Athena","action":"updateWorkGroup","parameters":{"WorkGroup":"awesome","Description":"Test WorkGroup","ConfigurationUpdates":{"EngineVersion":{"SelectedEngineVersion":"Athena engine version 2"},"RemoveBytesScannedCutoffPerQuery":true,"ResultConfigurationUpdates":{"RemoveEncryptionConfiguration":true,"RemoveOutputLocation":true}}},"physicalResourceId":{"id":"ExampleWorkGroup"}}',
+        Delete: '{"service":"Athena","action":"deleteWorkGroup","parameters":{"WorkGroup":"awesome"}}',
+      },
+      DependsOn: [
+        'ExampleWorkGroupCustomResourcePolicyBF5EB43A',
       ],
-    }));
+    }, cdkAsserts.ResourcePart.CompleteDefinition));
   });
 
   test('creates workgroup with configuration', () => {
@@ -70,99 +75,58 @@ describe('WorkGroup', () => {
     });
 
     // THEN
-    cdkAsserts.expect(stack).to(cdkAsserts.haveResource('AWS::Athena::WorkGroup', {
-      Name: 'awesome',
-      Description: 'Test WorkGroup',
-      RecursiveDeleteOption: true,
-      State: 'ENABLED',
-      WorkGroupConfiguration: {
-        RequesterPaysEnabled: true,
-        PublishCloudWatchMetricsEnabled: true,
-        EnforceWorkGroupConfiguration: true,
-        BytesScannedCutoffPerQuery: 1234,
-        ResultConfiguration: {
-          EncryptionConfiguration: {
-            EncryptionOption: 'SSE_KMS',
-            KmsKey: {
-              'Fn::GetAtt': [
-                'Key961B73FD',
-                'Arn',
-              ],
-            },
-          },
-          OutputLocation: {
-            'Fn::Join': [
-              '',
-              [
-                's3://',
-                {
-                  Ref: 'AthenaBucketFA1FB7C3',
-                },
-                '/athena/results/',
-              ],
+    cdkAsserts.expect(stack).to(cdkAsserts.haveResourceLike('Custom::WorkGroup', {
+      Properties: {
+        ServiceToken: {
+          'Fn::GetAtt': [
+            'AWS679f53fac002430cb0da5b7982bd22872D164C4C',
+            'Arn',
+          ],
+        },
+        Create: {
+          'Fn::Join': [
+            '',
+            [
+              '{"service":"Athena","action":"createWorkGroup","parameters":{"Name":"awesome","Description":"Test WorkGroup","Configuration":{"BytesScannedCutoffPerQuery":1234,"EnforceWorkGroupConfiguration":true,"PublishCloudWatchMetricsEnabled":true,"RequesterPaysEnabled":true,"ResultConfiguration":{"OutputLocation":"s3://',
+              {
+                Ref: 'AthenaBucketFA1FB7C3',
+              },
+              '/athena/results/","EncryptionConfiguration":{"EncryptionOption":"SSE_KMS","KmsKey":"',
+              {
+                'Fn::GetAtt': [
+                  'Key961B73FD',
+                  'Arn',
+                ],
+              },
+              '"}}}},"physicalResourceId":{"id":"ExampleWorkGroup"}}',
             ],
-          },
+          ],
         },
-      },
-    }));
-  });
-
-  test('creates workgroup with configuration update', () => {
-    // WHEN
-    new athena.WorkGroup(stack, 'ExampleWorkGroup', {
-      workGroupName: 'new-awesome',
-      description: 'Updated Test WorkGroup',
-      recursiveDeleteOption: false,
-      state: athena.WorkGroupState.ENABLED,
-      configurationUpdates: {
-        requesterPaysEnabled: true,
-        publishCloudWatchMetricsEnabled: true,
-        enforceWorkGroupConfiguration: false,
-        removeBytesScannedCutoffPerQuery: true,
-        resultConfigurationUpdates: {
-          encryptionConfiguration: {
-            encryptionOption: athena.EncryptionOption.S3_MANAGED,
-          },
-          outputLocation: {
-            bucket: new s3.Bucket(stack, 'AthenaBucket', {
-              bucketName: 'some-bucket',
-            }),
-            s3Prefix: 'athena/results/',
-          },
-        },
-      },
-    });
-
-    // THEN
-    cdkAsserts.expect(stack).to(cdkAsserts.haveResource('AWS::Athena::WorkGroup', {
-      Name: 'new-awesome',
-      Description: 'Updated Test WorkGroup',
-      RecursiveDeleteOption: false,
-      State: 'ENABLED',
-      WorkGroupConfigurationUpdates: {
-        RequesterPaysEnabled: true,
-        PublishCloudWatchMetricsEnabled: true,
-        EnforceWorkGroupConfiguration: false,
-        RemoveBytesScannedCutoffPerQuery: true,
-        ResultConfigurationUpdates: {
-          EncryptionConfiguration: {
-            EncryptionOption: 'SSE_S3',
-          },
-          OutputLocation: {
-            'Fn::Join': [
-              '',
-              [
-                's3://',
-                {
-                  Ref: 'AthenaBucketFA1FB7C3',
-                },
-                '/athena/results/',
-              ],
+        Update: {
+          'Fn::Join': [
+            '',
+            [
+              '{"service":"Athena","action":"updateWorkGroup","parameters":{"WorkGroup":"awesome","State":"ENABLED","Description":"Test WorkGroup","ConfigurationUpdates":{"BytesScannedCutoffPerQuery":1234,"EnforceWorkGroupConfiguration":true,"PublishCloudWatchMetricsEnabled":true,"RequesterPaysEnabled":true,"RemoveBytesScannedCutoffPerQuery":false,"ResultConfigurationUpdates":{"OutputLocation":"s3://',
+              {
+                Ref: 'AthenaBucketFA1FB7C3',
+              },
+              '/athena/results/","EncryptionConfiguration":{"EncryptionOption":"SSE_KMS","KmsKey":"',
+              {
+                'Fn::GetAtt': [
+                  'Key961B73FD',
+                  'Arn',
+                ],
+              },
+              '"},"RemoveEncryptionConfiguration":false,"RemoveOutputLocation":false}}},"physicalResourceId":{"id":"ExampleWorkGroup"}}',
             ],
-          },
+          ],
         },
+        Delete: '{"service":"Athena","action":"deleteWorkGroup","parameters":{"WorkGroup":"awesome","RecursiveDeleteOption":true}}',
       },
-    }));
+      DependsOn: [
+        'ExampleWorkGroupCustomResourcePolicyBF5EB43A',
+      ],
+    }, cdkAsserts.ResourcePart.CompleteDefinition));
   });
 
   test('WorkGroup.fromWorkGroupAttributes', () => {

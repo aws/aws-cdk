@@ -1,8 +1,8 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
+import { AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId } from '@aws-cdk/custom-resources';
 import * as constructs from 'constructs';
-import { CfnWorkGroup } from './athena.generated';
-import { ResultConfiguration, WorkGroupConfiguration, WorkGroupConfigurationUpdates, WorkGroupState } from './interfaces';
+import { ResultConfiguration, WorkGroupConfiguration, WorkGroupState } from './interfaces';
 import { GENERAL_ACTIONS, MANAGEMENT_ACTIONS, USER_ACTIONS } from './private/permissions';
 
 /**
@@ -40,12 +40,6 @@ export interface WorkGroupProps {
    */
   readonly configuration?: WorkGroupConfiguration;
   /**
-   * The configuration information that will be updated for this workgroup
-   *
-   * @default - Not specified
-   */
-  readonly configurationUpdates?: WorkGroupConfigurationUpdates;
-  /**
    * An array of key-value pairs to apply to this resource.
    *
    * @default - No tags
@@ -73,6 +67,11 @@ export interface IWorkGroup extends cdk.IResource {
    * @attribute
    */
   readonly creationTime?: string;
+  /**
+   * The engine version on which the query runs.
+   * @attribute
+   */
+  readonly effectiveEngineVersion?: string;
 
 }
 
@@ -81,6 +80,7 @@ export interface IWorkGroup extends cdk.IResource {
  */
 abstract class WorkGroupBase extends cdk.Resource implements IWorkGroup {
   abstract readonly creationTime?: string;
+  abstract readonly effectiveEngineVersion?: string;
   abstract readonly workgroupArn: string;
   abstract readonly workgroupName: string;
 
@@ -168,6 +168,7 @@ export class WorkGroup extends WorkGroupBase {
       public readonly workgroupName = attrs.workgroupName;
       public readonly workgroupArn = attrs.workgroupArn;
       public readonly creationTime = undefined;
+      public readonly effectiveEngineVersion = undefined;
     }
     return new Import(scope, id);
   }
@@ -183,6 +184,10 @@ export class WorkGroup extends WorkGroupBase {
    * Name of the workgroup
    */
   public readonly workgroupName: string;
+  /**
+   * The engine version on which the query runs.
+   */
+  public readonly effectiveEngineVersion?: string;
 
   constructor(scope: constructs.Construct, id: string, props: WorkGroupProps) {
     super(scope, id, {
@@ -196,39 +201,95 @@ export class WorkGroup extends WorkGroupBase {
     if (props.description && props.description.length >= 1024) {
       throw new Error('A WorkGroup description exceeds allowed maximum of 1024');
     }
-    const resource = new CfnWorkGroup(this, 'Resource', {
-      name: props.workGroupName,
-      description: props.description,
-      recursiveDeleteOption: props.recursiveDeleteOption,
-      state: props.state,
-      workGroupConfiguration: (props.configuration) ?
-        {
-          bytesScannedCutoffPerQuery: props.configuration.bytesScannedCutoffPerQuery,
-          enforceWorkGroupConfiguration: props.configuration.enforceWorkGroupConfiguration,
-          publishCloudWatchMetricsEnabled: props.configuration.publishCloudWatchMetricsEnabled,
-          requesterPaysEnabled: props.configuration.requesterPaysEnabled,
-          resultConfiguration: this.resolveResultConfiguration(props.configuration.resultConfigurations),
-        } : undefined,
-      workGroupConfigurationUpdates: (props.configurationUpdates) ? {
-        bytesScannedCutoffPerQuery: props.configurationUpdates.bytesScannedCutoffPerQuery,
-        enforceWorkGroupConfiguration: props.configurationUpdates.enforceWorkGroupConfiguration,
-        publishCloudWatchMetricsEnabled: props.configurationUpdates.publishCloudWatchMetricsEnabled,
-        requesterPaysEnabled: props.configurationUpdates.requesterPaysEnabled,
-        removeBytesScannedCutoffPerQuery: props.configurationUpdates.removeBytesScannedCutoffPerQuery,
-        resultConfigurationUpdates: {
-          ...this.resolveResultConfiguration(props.configurationUpdates.resultConfigurationUpdates),
-          removeEncryptionConfiguration: props.configurationUpdates.resultConfigurationUpdates?.removeEncryptionConfiguration,
-          removeOutputLocation: props.configurationUpdates.resultConfigurationUpdates?.removeOutputLocation,
-        },
-      } : undefined,
-      tags: (props.tags) ? Object.keys(props.tags).map(key => new cdk.Tag(key, props.tags![key])) : undefined,
 
-    });
-    this.creationTime = resource.attrCreationTime;
-    this.workgroupName = resource.name;
     this.workgroupArn = cdk.Stack.of(this).formatArn({
-      resource: 'workgroup', resourceName: resource.name, service: 'athena',
+      resource: 'workgroup', resourceName: props.workGroupName, service: 'athena',
     });
+
+    const uniqueId = cdk.Names.uniqueId(this);
+    const policy = AwsCustomResourcePolicy.fromStatements(
+      [new iam.PolicyStatement({
+        actions: ['athena:DeleteWorkGroup', 'athena:UpdateWorkGroup', 'athena:GetWorkGroup', 'athena:CreateWorkGroup'],
+        effect: iam.Effect.ALLOW,
+        resources: [this.workgroupArn],
+      })]);
+
+    const workGroupConfiguration = {
+      BytesScannedCutoffPerQuery: props.configuration?.bytesScannedCutoffPerQuery,
+      EnforceWorkGroupConfiguration: props.configuration?.enforceWorkGroupConfiguration,
+      PublishCloudWatchMetricsEnabled: props.configuration?.publishCloudWatchMetricsEnabled,
+      RequesterPaysEnabled: props.configuration?.requesterPaysEnabled,
+      ...(props.configuration?.engineVersion) ? {
+        EngineVersion: {
+          SelectedEngineVersion: props.configuration?.engineVersion,
+        },
+      } : {},
+    };
+    const resource = new AwsCustomResource(this, 'Resource', {
+      policy,
+      resourceType: 'Custom::WorkGroup',
+      onCreate: {
+        service: 'Athena',
+        action: 'createWorkGroup',
+        parameters: {
+          Name: props.workGroupName,
+          Description: props.description,
+          Configuration: {
+            ...workGroupConfiguration,
+            ResultConfiguration: this.resolveResultConfiguration(props.configuration?.resultConfigurations),
+          },
+          Tags: (props.tags) ? Object.keys(props.tags)
+            .map(key => ({ Key: key, Value: props.tags![key] })) : undefined,
+        },
+        physicalResourceId: PhysicalResourceId.of(uniqueId),
+      },
+      onUpdate: {
+        service: 'Athena',
+        action: 'updateWorkGroup',
+        parameters: {
+          WorkGroup: props.workGroupName,
+          State: props.state,
+          Description: props.description,
+          ConfigurationUpdates: {
+            ...workGroupConfiguration,
+            RemoveBytesScannedCutoffPerQuery: props.configuration?.bytesScannedCutoffPerQuery === undefined,
+            ResultConfigurationUpdates: {
+              ...this.resolveResultConfiguration(props.configuration?.resultConfigurations),
+              RemoveEncryptionConfiguration: props.configuration?.resultConfigurations?.encryptionConfiguration === undefined,
+              RemoveOutputLocation: props.configuration?.resultConfigurations?.outputLocation === undefined,
+            },
+          },
+        },
+        physicalResourceId: PhysicalResourceId.of(uniqueId),
+      },
+      onDelete: {
+        service: 'Athena',
+        action: 'deleteWorkGroup',
+        parameters: {
+          WorkGroup: props.workGroupName,
+          RecursiveDeleteOption: props.recursiveDeleteOption,
+        },
+      },
+    });
+    const workgroupLookup = new AwsCustomResource(this, 'Lookup', {
+      policy,
+      resourceType: 'Custom::WorkGroupLookup',
+      onUpdate: {
+        service: 'Athena',
+        action: 'getWorkGroup',
+        parameters: {
+          WorkGroup: props.workGroupName,
+        },
+        physicalResourceId: PhysicalResourceId.of(uniqueId + 'Lookup'),
+      },
+    });
+
+    // Ensure WorkGroup is created before getWorkGroup is called
+    workgroupLookup.node.addDependency(resource);
+    // TODO figure out why 'WorkGroup.CreationTime' is unavailable in response
+    this.creationTime = undefined;
+    this.workgroupName = workgroupLookup.getResponseField('WorkGroup.Name');
+    this.effectiveEngineVersion = workgroupLookup.getResponseField('WorkGroup.Configuration.EngineVersion.EffectiveEngineVersion');
   }
 
   private resolveResultConfiguration(resultCfg: ResultConfiguration | undefined) {
@@ -237,12 +298,12 @@ export class WorkGroup extends WorkGroupBase {
         throw new Error(`${resultCfg.encryptionConfiguration.encryptionOption} requires providing a kms key`);
       }
       return {
-        outputLocation: resultCfg.outputLocation?.bucket.s3UrlForObject(
+        OutputLocation: resultCfg.outputLocation?.bucket.s3UrlForObject(
           resultCfg.outputLocation?.s3Prefix),
-        encryptionConfiguration: (resultCfg.encryptionConfiguration) ?
+        EncryptionConfiguration: (resultCfg.encryptionConfiguration) ?
           {
-            encryptionOption: resultCfg.encryptionConfiguration.encryptionOption,
-            kmsKey: resultCfg.encryptionConfiguration.kmsKey?.keyArn,
+            EncryptionOption: resultCfg.encryptionConfiguration.encryptionOption,
+            KmsKey: resultCfg.encryptionConfiguration.kmsKey?.keyArn,
           } : undefined,
       };
     } else {

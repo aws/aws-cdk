@@ -132,69 +132,11 @@ export interface WorkGroupConfiguration {
    */
   readonly resultConfigurations?: ResultConfiguration;
 
-}
-
-/**
- * The information about the updates in the query results
- *
- * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-athena-workgroup-resultconfigurationupdates.html
- */
-export interface ResultConfigurationUpdates extends ResultConfiguration {
   /**
-   * Whether previously specified encryption configuration should be ignored
+   * The Athena engine version for running queries.
+   * If None specified, the engine version defaults to Auto and is chosed by Athena
    *
-   * @default - False
+   * @default - Auto
    */
-  readonly removeEncryptionConfiguration?: boolean;
-  /**
-   * Whether previously set output location should be ignored
-   *
-   * @default - False
-   */
-  readonly removeOutputLocation?: boolean;
-}
-
-/**
- * The configuration information that will be updated for this workgroup
- *
- * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-athena-workgroup-workgroupconfigurationupdates.html
- */
-export interface WorkGroupConfigurationUpdates {
-  /**
-   * The upper limit (cutoff) for the amount of bytes a single query in a workgroup is allowed to scan.
-   *
-   * @default - No limit
-   */
-  readonly bytesScannedCutoffPerQuery?: number;
-  /**
-   * Whether workgroup should override client-side setting
-   *
-   * @see https://docs.aws.amazon.com/athena/latest/ug/workgroups-settings-override.html
-   * @default - False
-   */
-  readonly enforceWorkGroupConfiguration?: boolean;
-  /**
-   * Whether CloudWatch metrics are enabled for the workgroup
-   *
-   * @default - False
-   */
-  readonly publishCloudWatchMetricsEnabled?: boolean;
-  /**
-   * Whether the limit should be removed
-   *
-   * @default - False
-   */
-  readonly removeBytesScannedCutoffPerQuery?: boolean;
-  /**
-   * Whether Amazon S3 Requester Pays buckets can be queried
-   *
-   * @default - False
-   */
-  readonly requesterPaysEnabled?: boolean;
-  /**
-   * The result configuration information about the queries in this workgroup that will be updated
-   *
-   * @default - None
-   */
-  readonly resultConfigurationUpdates?: ResultConfigurationUpdates;
+  readonly engineVersion?: string;
 }
