@@ -1,6 +1,6 @@
 import { PolicyStatement, ServicePrincipal } from '@aws-cdk/aws-iam';
 import { IQueue } from '@aws-cdk/aws-sqs';
-import { Resource } from '@aws-cdk/core';
+import { Resource, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnSubscription } from './sns.generated';
 import { SubscriptionFilter } from './subscription-filter';
@@ -111,10 +111,9 @@ export class Subscription extends Resource {
       topicArn: props.topic.topicArn,
       rawMessageDelivery: props.rawMessageDelivery,
       filterPolicy: this.filterPolicy,
-      region: props.region,
+      region: props.region ?? Stack.of(this).region,
       redrivePolicy: this.buildDeadLetterConfig(this.deadLetterQueue),
     });
-
   }
 
   private buildDeadLetterQueue(props: SubscriptionProps) {

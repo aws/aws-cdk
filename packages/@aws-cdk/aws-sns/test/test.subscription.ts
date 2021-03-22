@@ -28,6 +28,32 @@ export = {
     test.done();
   },
 
+  'account region is present when creating a subscription'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const topic = new sns.Topic(stack, 'Topic');
+
+    // WHEN
+    new sns.Subscription(stack, 'Subscription', {
+      endpoint: 'endpoint',
+      protocol: sns.SubscriptionProtocol.LAMBDA,
+      topic,
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::SNS::Subscription', {
+      Endpoint: 'endpoint',
+      Protocol: 'lambda',
+      TopicArn: {
+        Ref: 'TopicBFC7AF6E',
+      },
+      Region: {
+        Ref: 'AWS::Region',
+      },
+    }));
+    test.done();
+  },
+
   'create a subscription with DLQ when client provides DLQ'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
