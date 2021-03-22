@@ -38,6 +38,9 @@ test('url subscription', () => {
           'TopicArn': {
             'Ref': 'MyTopic86869434',
           },
+          'Region': {
+            'Ref': 'AWS::Region',
+          },
         },
       },
     },
@@ -77,6 +80,9 @@ test('url subscription with user provided dlq', () => {
                 'Arn',
               ],
             },
+          },
+          'Region': {
+            'Ref': 'AWS::Region',
           },
         },
       },
@@ -149,6 +155,9 @@ test('url subscription (with raw delivery)', () => {
           'Protocol': 'https',
           'TopicArn': { 'Ref': 'MyTopic86869434' },
           'RawMessageDelivery': true,
+          'Region': {
+            'Ref': 'AWS::Region',
+          },
         },
       },
     },
@@ -176,6 +185,9 @@ test('url subscription (unresolved url with protocol)', () => {
           },
           'Protocol': 'https',
           'TopicArn': { 'Ref': 'MyTopic86869434' },
+          'Region': {
+            'Ref': 'AWS::Region',
+          },
         },
       },
     },
@@ -206,6 +218,9 @@ test('url subscription (double unresolved url with protocol)', () => {
           },
           'Protocol': 'https',
           'TopicArn': { 'Ref': 'MyTopic86869434' },
+          'Region': {
+            'Ref': 'AWS::Region',
+          },
         },
       },
       'MyTopicTokenSubscription293BFE3F9': {
@@ -216,6 +231,9 @@ test('url subscription (double unresolved url with protocol)', () => {
           },
           'Protocol': 'https',
           'TopicArn': { 'Ref': 'MyTopic86869434' },
+          'Region': {
+            'Ref': 'AWS::Region',
+          },
         },
       },
     },
@@ -300,6 +318,9 @@ test('queue subscription', () => {
               'MyQueueE6CA6235',
               'Arn',
             ],
+          },
+          'Region': {
+            'Ref': 'AWS::Region',
           },
         },
       },
@@ -387,6 +408,9 @@ test('queue subscription with user provided dlq', () => {
                 'Arn',
               ],
             },
+          },
+          'Region': {
+            'Ref': 'AWS::Region',
           },
         },
       },
@@ -555,6 +579,9 @@ test('lambda subscription', () => {
               'Arn',
             ],
           },
+          'Region': {
+            'Ref': 'AWS::Region',
+          },
         },
       },
     },
@@ -580,6 +607,9 @@ test('email subscription', () => {
           'Protocol': 'email',
           'TopicArn': {
             'Ref': 'MyTopic86869434',
+          },
+          'Region': {
+            'Ref': 'AWS::Region',
           },
         },
       },
@@ -609,6 +639,9 @@ test('email subscription with unresolved', () => {
           'Protocol': 'email',
           'TopicArn': {
             'Ref': 'MyTopic86869434',
+          },
+          'Region': {
+            'Ref': 'AWS::Region',
           },
         },
       },
@@ -641,6 +674,9 @@ test('email and url subscriptions with unresolved', () => {
           'TopicArn': {
             'Ref': 'MyTopic86869434',
           },
+          'Region': {
+            'Ref': 'AWS::Region',
+          },
         },
       },
       'MyTopicTokenSubscription293BFE3F9': {
@@ -652,6 +688,9 @@ test('email and url subscriptions with unresolved', () => {
           'Protocol': 'https',
           'TopicArn': {
             'Ref': 'MyTopic86869434',
+          },
+          'Region': {
+            'Ref': 'AWS::Region',
           },
         },
       },
@@ -689,6 +728,9 @@ test('email and url subscriptions with unresolved - four subscriptions', () => {
           'TopicArn': {
             'Ref': 'MyTopic86869434',
           },
+          'Region': {
+            'Ref': 'AWS::Region',
+          },
         },
       },
       'MyTopicTokenSubscription293BFE3F9': {
@@ -700,6 +742,9 @@ test('email and url subscriptions with unresolved - four subscriptions', () => {
           'Protocol': 'email',
           'TopicArn': {
             'Ref': 'MyTopic86869434',
+          },
+          'Region': {
+            'Ref': 'AWS::Region',
           },
         },
       },
@@ -713,6 +758,9 @@ test('email and url subscriptions with unresolved - four subscriptions', () => {
           'TopicArn': {
             'Ref': 'MyTopic86869434',
           },
+          'Region': {
+            'Ref': 'AWS::Region',
+          },
         },
       },
       'MyTopicTokenSubscription4DBE52A3F': {
@@ -724,6 +772,9 @@ test('email and url subscriptions with unresolved - four subscriptions', () => {
           'Protocol': 'email',
           'TopicArn': {
             'Ref': 'MyTopic86869434',
+          },
+          'Region': {
+            'Ref': 'AWS::Region',
           },
         },
       },
@@ -803,6 +854,9 @@ test('multiple subscriptions', () => {
               'MyQueueE6CA6235',
               'Arn',
             ],
+          },
+          'Region': {
+            'Ref': 'AWS::Region',
           },
         },
       },
@@ -884,6 +938,9 @@ test('multiple subscriptions', () => {
               'MyFunc8A243A2C',
               'Arn',
             ],
+          },
+          'Region': {
+            'Ref': 'AWS::Region',
           },
         },
       },
@@ -1029,6 +1086,9 @@ test('sms subscription', () => {
             'Ref': 'MyTopic86869434',
           },
           'Endpoint': '+15551231234',
+          'Region': {
+            'Ref': 'AWS::Region',
+          },
         },
       },
     },
@@ -1057,6 +1117,9 @@ test('sms subscription with unresolved', () => {
           'Protocol': 'sms',
           'TopicArn': {
             'Ref': 'MyTopic86869434',
+          },
+          'Region': {
+            'Ref': 'AWS::Region',
           },
         },
       },

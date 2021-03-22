@@ -89,6 +89,9 @@
               "Arn"
             ]
           }
+        },
+        "Region": {
+          "Ref": "AWS::Region"
         }
       }
     },
@@ -210,6 +213,9 @@
             "Filtered186C0D0A",
             "Arn"
           ]
+        },
+        "Region": {
+          "Ref": "AWS::Region"
         },
         "FilterPolicy": {
           "color": [
