@@ -642,7 +642,18 @@ testLegacyBehavior('if an encryption key is included, encrypt/decrypt permission
                     ],
                   },
                   {
-                    'Ref': 'AWS::NoValue',
+                    'Fn::Join': [
+                      '',
+                      [
+                        {
+                          'Fn::GetAtt': [
+                            'TableA3D7B5AFA',
+                            'Arn',
+                          ],
+                        },
+                        '/index/*',
+                      ],
+                    ],
                   },
                 ],
               },
@@ -1709,7 +1720,18 @@ describe('grants', () => {
                 ],
               },
               {
-                'Ref': 'AWS::NoValue',
+                'Fn::Join': [
+                  '',
+                  [
+                    {
+                      'Fn::GetAtt': [
+                        'mytable0324D45C',
+                        'Arn',
+                      ],
+                    },
+                    '/index/*',
+                  ],
+                ],
               },
             ],
           },
@@ -1980,7 +2002,25 @@ describe('grants', () => {
                 ],
               },
               {
-                Ref: 'AWS::NoValue',
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    {
+                      Ref: 'AWS::Partition',
+                    },
+                    ':dynamodb:',
+                    {
+                      Ref: 'AWS::Region',
+                    },
+                    ':',
+                    {
+                      Ref: 'AWS::AccountId',
+                    },
+                    ':table/my-table',
+                    '/index/*',
+                  ],
+                ],
               },
             ],
           },
@@ -2061,7 +2101,7 @@ describe('import', () => {
             'Effect': 'Allow',
             'Resource': [
               tableArn,
-              { 'Ref': 'AWS::NoValue' },
+              `${tableArn}/index/*`,
             ],
           },
         ],
@@ -2127,7 +2167,25 @@ describe('import', () => {
                 ],
               },
               {
-                'Ref': 'AWS::NoValue',
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    {
+                      'Ref': 'AWS::Partition',
+                    },
+                    ':dynamodb:',
+                    {
+                      'Ref': 'AWS::Region',
+                    },
+                    ':',
+                    {
+                      'Ref': 'AWS::AccountId',
+                    },
+                    ':table/MyTable',
+                    '/index/*',
+                  ],
+                ],
               },
             ],
           },
@@ -2875,7 +2933,18 @@ function testGrant(expectedActions: string[], invocation: (user: iam.IPrincipal,
               ],
             },
             {
-              'Ref': 'AWS::NoValue',
+              'Fn::Join': [
+                '',
+                [
+                  {
+                    'Fn::GetAtt': [
+                      'TableA3D7B5AFA',
+                      'Arn',
+                    ],
+                  },
+                  '/index/*',
+                ],
+              ],
             },
           ],
         },
