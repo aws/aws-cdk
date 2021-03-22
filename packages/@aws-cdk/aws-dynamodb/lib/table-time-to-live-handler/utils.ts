@@ -44,7 +44,7 @@ export async function isTimeToLiveStable(event: OnEventRequest): Promise<boolean
     TableName: event.ResourceProperties.TableName,
   }).promise();
 
-  return !!(
+  return (
     currentTtl.TimeToLiveDescription?.TimeToLiveStatus === 'ENABLED'
     || currentTtl.TimeToLiveDescription?.TimeToLiveStatus === 'DISABLED'
   );
@@ -55,7 +55,7 @@ export async function isTimeToLiveCorrect(event: OnEventRequest): Promise<boolea
     TableName: event.ResourceProperties.TableName,
   }).promise();
 
-  return !!(
+  return (
     currentTtl.TimeToLiveDescription?.AttributeName ===
     event.ResourceProperties.TimeToLiveAttribute
   );

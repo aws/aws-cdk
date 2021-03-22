@@ -47,7 +47,7 @@ export async function isCompleteHandler(event: IsCompleteRequest): Promise<IsCom
   }).promise();
   console.log('Describe table: %j', data);
 
-  const tableActive = !!(data.Table?.TableStatus === 'ACTIVE');
+  const tableActive = (data.Table?.TableStatus === 'ACTIVE');
 
   if (await isTimeToLiveStable(event)) {
     await onEventHandler(event);
