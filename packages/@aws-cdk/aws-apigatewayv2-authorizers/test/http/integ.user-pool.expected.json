@@ -54,6 +54,22 @@
         }
       }
     },
+    "MyHttpApiGETHttpIntegration6f095b8469365f72e33fa33d9711b140516EBE31": {
+      "Type": "AWS::ApiGatewayV2::Integration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "MyHttpApi8AEAAC21"
+        },
+        "IntegrationType": "AWS_PROXY",
+        "IntegrationUri": {
+          "Fn::GetAtt": [
+            "lambda8B5974B5",
+            "Arn"
+          ]
+        },
+        "PayloadFormatVersion": "2.0"
+      }
+    },
     "MyHttpApiGETE0EFC6F8": {
       "Type": "AWS::ApiGatewayV2::Route",
       "Properties": {
@@ -61,7 +77,6 @@
           "Ref": "MyHttpApi8AEAAC21"
         },
         "RouteKey": "GET /",
-        "AuthorizationScopes": [],
         "AuthorizationType": "JWT",
         "AuthorizerId": {
           "Ref": "MyHttpApiUserPoolAuthorizer8754262B"
@@ -77,22 +92,6 @@
             ]
           ]
         }
-      }
-    },
-    "MyHttpApiGETHttpIntegration6f095b8469365f72e33fa33d9711b140516EBE31": {
-      "Type": "AWS::ApiGatewayV2::Integration",
-      "Properties": {
-        "ApiId": {
-          "Ref": "MyHttpApi8AEAAC21"
-        },
-        "IntegrationType": "AWS_PROXY",
-        "IntegrationUri": {
-          "Fn::GetAtt": [
-            "lambda8B5974B5",
-            "Arn"
-          ]
-        },
-        "PayloadFormatVersion": "2.0"
       }
     },
     "MyHttpApiUserPoolAuthorizer8754262B": {

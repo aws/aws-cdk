@@ -36,16 +36,15 @@ const node = mesh.addVirtualNode('node', {
       path: '/check-path',
     },
   })],
-  backends: [
-    virtualService,
-  ],
+  backends: [appmesh.Backend.virtualService(virtualService)],
 });
 
-node.addBackend(new appmesh.VirtualService(stack, 'service-2', {
-  virtualServiceName: 'service2.domain.local',
-  virtualServiceProvider: appmesh.VirtualServiceProvider.none(mesh),
-}),
-);
+node.addBackend(appmesh.Backend.virtualService(
+  new appmesh.VirtualService(stack, 'service-2', {
+    virtualServiceName: 'service2.domain.local',
+    virtualServiceProvider: appmesh.VirtualServiceProvider.none(mesh),
+  }),
+));
 
 router.addRoute('route-1', {
   routeSpec: appmesh.RouteSpec.http({
@@ -78,15 +77,17 @@ const node2 = mesh.addVirtualNode('node2', {
       unhealthyThreshold: 2,
     },
   })],
-  backendsDefaultClientPolicy: appmesh.ClientPolicy.fileTrust({
-    certificateChain: 'path/to/cert',
-  }),
-  backends: [
+  backendDefaults: {
+    clientPolicy: appmesh.ClientPolicy.fileTrust({
+      certificateChain: 'path/to/cert',
+    }),
+  },
+  backends: [appmesh.Backend.virtualService(
     new appmesh.VirtualService(stack, 'service-3', {
       virtualServiceName: 'service3.domain.local',
       virtualServiceProvider: appmesh.VirtualServiceProvider.none(mesh),
     }),
-  ],
+  )],
 });
 
 const node3 = mesh.addVirtualNode('node3', {
@@ -102,9 +103,11 @@ const node3 = mesh.addVirtualNode('node3', {
       unhealthyThreshold: 2,
     },
   })],
-  backendsDefaultClientPolicy: appmesh.ClientPolicy.fileTrust({
-    certificateChain: 'path-to-certificate',
-  }),
+  backendDefaults: {
+    clientPolicy: appmesh.ClientPolicy.fileTrust({
+      certificateChain: 'path-to-certificate',
+    }),
+  },
   accessLog: appmesh.AccessLog.fromFilePath('/dev/stdout'),
 });
 
@@ -140,6 +143,29 @@ router.addRoute('route-3', {
   }),
 });
 
+router.addRoute('route-matching', {
+  routeSpec: appmesh.RouteSpec.http2({
+    weightedTargets: [{ virtualNode: node3 }],
+    match: {
+      prefixPath: '/',
+      method: appmesh.HttpRouteMatchMethod.POST,
+      protocol: appmesh.HttpRouteProtocol.HTTPS,
+      headers: [
+        appmesh.HttpHeaderMatch.valueIs('Content-Type', 'application/json'),
+        appmesh.HttpHeaderMatch.valueStartsWith('Content-Type', 'application/json'),
+        appmesh.HttpHeaderMatch.valueEndsWith('Content-Type', 'application/json'),
+        appmesh.HttpHeaderMatch.valueMatchesRegex('Content-Type', 'application/.*'),
+        appmesh.HttpHeaderMatch.valuesIsInRange('Content-Type', 1, 5),
+        appmesh.HttpHeaderMatch.valueIsNot('Content-Type', 'application/json'),
+        appmesh.HttpHeaderMatch.valueDoesNotStartWith('Content-Type', 'application/json'),
+        appmesh.HttpHeaderMatch.valueDoesNotEndWith('Content-Type', 'application/json'),
+        appmesh.HttpHeaderMatch.valueDoesNotMatchRegex('Content-Type', 'application/.*'),
+        appmesh.HttpHeaderMatch.valuesIsNotInRange('Content-Type', 1, 5),
+      ],
+    },
+  }),
+});
+
 router.addRoute('route-http2-retry', {
   routeSpec: appmesh.RouteSpec.http2({
     weightedTargets: [{ virtualNode: node3 }],
@@ -149,6 +175,13 @@ router.addRoute('route-http2-retry', {
       retryAttempts: 5,
       retryTimeout: cdk.Duration.seconds(1),
     },
+  }),
+});
+
+router.addRoute('route-5', {
+  routeSpec: appmesh.RouteSpec.http2({
+    priority: 10,
+    weightedTargets: [{ virtualNode: node2 }],
   }),
 });
 
