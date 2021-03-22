@@ -42,13 +42,8 @@ export class ReplicaProvider extends NestedStack {
    */
   public readonly isCompleteHandler: lambda.Function;
 
-<<<<<<< HEAD
   private constructor(scope: Construct, id: string, props: ReplicaProviderProps = {}) {
-    super(scope as CoreConstruct, id);
-=======
-  private constructor(scope: Construct, id: string) {
     super(scope, id);
->>>>>>> refs/rewritten/origin-v2-main-2
 
     const code = lambda.Code.fromAsset(path.join(__dirname, 'replica-handler'));
 

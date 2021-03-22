@@ -233,7 +233,7 @@ export class Ec2Service extends BaseService implements IEc2Service {
       validate: () => !this.taskDefinition.defaultContainer ? ['A TaskDefinition must have at least one essential container'] : [],
     });
 
-    this.node.addValidation({ validate: () => this.validateEc2Service() });
+    this.node.addValidation({ validate: this.validateEc2Service.bind(this) });
   }
 
   /**
