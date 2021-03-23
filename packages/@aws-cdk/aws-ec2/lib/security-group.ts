@@ -321,6 +321,13 @@ export class SecurityGroup extends SecurityGroupBase {
 
   /**
    * Import an existing security group into this app.
+   *
+   * This method will assume that the Security Group has a rule in it which allows
+   * all outbound traffic, and so will not add egress rules to the imported Security
+   * Group (only ingress rules).
+   *
+   * If your existing Security Group needs to have egress rules added, pass the
+   * `allowAllOutbound: false` option on import.
    */
   public static fromSecurityGroupId(scope: Construct, id: string, securityGroupId: string, options: SecurityGroupImportOptions = {}): ISecurityGroup {
     class MutableImport extends SecurityGroupBase {

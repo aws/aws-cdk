@@ -19,8 +19,8 @@
     "lint": "cdk-lint",
     "test": "cdk-test",
     "pkglint": "pkglint -f",
-    "build+test+package": "npm run build+test",
-    "build+test": "npm run build && npm test"
+    "build+test+package": "yarn build+test",
+    "build+test": "yarn build && yarn test"
   },
   "author": {
     "name": "Amazon Web Services",
@@ -30,7 +30,7 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@types/fs-extra": "^8.1.1",
-    "@types/yargs": "^15.0.10",
+    "@types/yargs": "^15.0.13",
     "cdk-build-tools": "0.0.0",
     "pkglint": "0.0.0"
   },
@@ -39,7 +39,7 @@
     "@aws-cdk/cx-api": "0.0.0",
     "@aws-cdk/assert": "0.0.0",
     "aws-cdk": "0.0.0",
-    "fs-extra": "^9.0.1",
+    "fs-extra": "^9.1.0",
     "yargs": "^16.2.0"
   },
   "keywords": [

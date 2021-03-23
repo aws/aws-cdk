@@ -51,9 +51,11 @@ export class Bundling implements cdk.BundlingOptions {
   public readonly image: cdk.BundlingDockerImage;
   public readonly command: string[];
   public readonly environment?: { [key: string]: string };
+  public readonly workingDirectory: string;
   public readonly local?: cdk.ILocalBundling;
 
   private readonly relativeEntryPath: string;
+  private readonly relativeTsconfigPath?: string;
   private readonly externals: string[];
 
   constructor(private readonly props: BundlingProps) {
@@ -63,6 +65,10 @@ export class Bundling implements cdk.BundlingOptions {
 
     const projectRoot = path.dirname(props.depsLockFilePath);
     this.relativeEntryPath = path.relative(projectRoot, path.resolve(props.entry));
+
+    if (props.tsconfig) {
+      this.relativeTsconfigPath = path.relative(projectRoot, path.resolve(props.tsconfig));
+    }
 
     this.externals = [
       ...props.externalModules ?? ['aws-sdk'], // Mark aws-sdk as external by default (available in the runtime)
@@ -84,6 +90,9 @@ export class Bundling implements cdk.BundlingOptions {
     const bundlingCommand = this.createBundlingCommand(cdk.AssetStaging.BUNDLING_INPUT_DIR, cdk.AssetStaging.BUNDLING_OUTPUT_DIR);
     this.command = ['bash', '-c', bundlingCommand];
     this.environment = props.environment;
+    // Bundling sets the working directory to cdk.AssetStaging.BUNDLING_INPUT_DIR
+    // and we want to force npx to use the globally installed esbuild.
+    this.workingDirectory = '/';
 
     // Local bundling
     if (!props.forceDockerBundling) { // only if Docker is not forced
@@ -127,19 +136,25 @@ export class Bundling implements cdk.BundlingOptions {
 
     const npx = osPlatform === 'win32' ? 'npx.cmd' : 'npx';
     const loaders = Object.entries(this.props.loader ?? {});
+    const defines = Object.entries(this.props.define ?? {});
 
     const esbuildCommand: string = [
       npx, 'esbuild',
-      '--bundle', pathJoin(inputDir, this.relativeEntryPath),
+      '--bundle', `"${pathJoin(inputDir, this.relativeEntryPath)}"`,
       `--target=${this.props.target ?? toTarget(this.props.runtime)}`,
       '--platform=node',
-      `--outfile=${pathJoin(outputDir, 'index.js')}`,
+      `--outfile="${pathJoin(outputDir, 'index.js')}"`,
       ...this.props.minify ? ['--minify'] : [],
       ...this.props.sourceMap ? ['--sourcemap'] : [],
       ...this.externals.map(external => `--external:${external}`),
       ...loaders.map(([ext, name]) => `--loader:${ext}=${name}`),
+      ...defines.map(([key, value]) => `--define:${key}=${value}`),
       ...this.props.logLevel ? [`--log-level=${this.props.logLevel}`] : [],
       ...this.props.keepNames ? ['--keep-names'] : [],
+      ...this.relativeTsconfigPath ? [`--tsconfig=${pathJoin(inputDir, this.relativeTsconfigPath)}`] : [],
+      ...this.props.metafile ? [`--metafile=${pathJoin(outputDir, 'index.meta.json')}`] : [],
+      ...this.props.banner ? [`--banner='${this.props.banner}'`] : [],
+      ...this.props.footer ? [`--footer='${this.props.footer}'`] : [],
     ].join(' ');
 
     let depsCommand = '';

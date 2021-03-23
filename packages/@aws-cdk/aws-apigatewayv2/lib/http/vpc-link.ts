@@ -1,5 +1,5 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
-import { IResource, Lazy, Resource } from '@aws-cdk/core';
+import { IResource, Lazy, Names, Resource } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnVpcLink } from '../apigatewayv2.generated';
 
@@ -39,7 +39,7 @@ export interface VpcLinkProps {
    *
    * @default - private subnets of the provided VPC. Use `addSubnets` to add more subnets
    */
-  readonly subnets?: ec2.ISubnet[];
+  readonly subnets?: ec2.SubnetSelection;
 
   /**
    * A list of security groups for the VPC link.
@@ -92,18 +92,15 @@ export class VpcLink extends Resource implements IVpcLink {
     this.vpc = props.vpc;
 
     const cfnResource = new CfnVpcLink(this, 'Resource', {
-      name: props.vpcLinkName || Lazy.stringValue({ produce: () => this.node.uniqueId }),
-      subnetIds: Lazy.listValue({ produce: () => this.renderSubnets() }),
-      securityGroupIds: Lazy.listValue({ produce: () => this.renderSecurityGroups() }),
+      name: props.vpcLinkName || Lazy.string({ produce: () => Names.uniqueId(this) }),
+      subnetIds: Lazy.list({ produce: () => this.renderSubnets() }),
+      securityGroupIds: Lazy.list({ produce: () => this.renderSecurityGroups() }),
     });
 
     this.vpcLinkId = cfnResource.ref;
 
-    this.addSubnets(...props.vpc.privateSubnets);
-
-    if (props.subnets) {
-      this.addSubnets(...props.subnets);
-    }
+    const { subnets } = props.vpc.selectSubnets(props.subnets ?? { subnetType: ec2.SubnetType.PRIVATE });
+    this.addSubnets(...subnets);
 
     if (props.securityGroups) {
       this.addSecurityGroups(...props.securityGroups);

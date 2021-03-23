@@ -1,5 +1,11 @@
 import * as cdk from '@aws-cdk/core';
 import { CfnVirtualGateway, CfnVirtualNode } from './appmesh.generated';
+import { ClientPolicy } from './client-policy';
+import { IVirtualService } from './virtual-service';
+
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct } from '@aws-cdk/core';
 
 /**
  * Represents timeouts for HTTP protocols.
@@ -155,7 +161,7 @@ export abstract class AccessLog {
    * Called when the AccessLog type is initialized. Can be used to enforce
    * mutual exclusivity with future properties
    */
-  public abstract bind(scope: cdk.Construct): AccessLogConfig;
+  public abstract bind(scope: Construct): AccessLogConfig;
 }
 
 /**
@@ -174,7 +180,7 @@ class FileAccessLog extends AccessLog {
     this.filePath = filePath;
   }
 
-  public bind(_scope: cdk.Construct): AccessLogConfig {
+  public bind(_scope: Construct): AccessLogConfig {
     return {
       virtualNodeAccessLog: {
         file: {
@@ -190,3 +196,80 @@ class FileAccessLog extends AccessLog {
   }
 }
 
+/**
+ * Represents the properties needed to define backend defaults
+ */
+export interface BackendDefaults {
+  /**
+   * Client policy for backend defaults
+   *
+   * @default none
+   */
+  readonly clientPolicy?: ClientPolicy;
+}
+
+/**
+ * Represents the properties needed to define a Virtual Service backend
+ */
+export interface VirtualServiceBackendOptions {
+
+  /**
+   * Client policy for the backend
+   *
+   * @default none
+   */
+  readonly clientPolicy?: ClientPolicy;
+}
+
+/**
+ * Properties for a backend
+ */
+export interface BackendConfig {
+  /**
+   * Config for a Virtual Service backend
+   */
+  readonly virtualServiceBackend: CfnVirtualNode.BackendProperty;
+}
+
+
+/**
+ * Contains static factory methods to create backends
+ */
+export abstract class Backend {
+  /**
+   * Construct a Virtual Service backend
+   */
+  public static virtualService(virtualService: IVirtualService, props: VirtualServiceBackendOptions = {}): Backend {
+    return new VirtualServiceBackend(virtualService, props.clientPolicy);
+  }
+
+  /**
+   * Return backend config
+   */
+  public abstract bind(_scope: Construct): BackendConfig;
+}
+
+/**
+ * Represents the properties needed to define a Virtual Service backend
+ */
+class VirtualServiceBackend extends Backend {
+
+  constructor (private readonly virtualService: IVirtualService,
+    private readonly clientPolicy: ClientPolicy | undefined) {
+    super();
+  }
+
+  /**
+   * Return config for a Virtual Service backend
+   */
+  public bind(_scope: Construct): BackendConfig {
+    return {
+      virtualServiceBackend: {
+        virtualService: {
+          virtualServiceName: this.virtualService.virtualServiceName,
+          clientPolicy: this.clientPolicy?.bind(_scope).clientPolicy,
+        },
+      },
+    };
+  }
+}

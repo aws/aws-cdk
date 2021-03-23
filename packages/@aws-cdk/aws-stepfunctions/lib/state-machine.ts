@@ -46,7 +46,7 @@ export enum LogLevel {
   /**
    * Log all errors
    */
-  ERROR= 'ERROR',
+  ERROR = 'ERROR',
   /**
    * Log fatal errors
    */
@@ -140,11 +140,17 @@ abstract class StateMachineBase extends Resource implements IStateMachine {
   public static fromStateMachineArn(scope: Construct, id: string, stateMachineArn: string): IStateMachine {
     class Import extends StateMachineBase {
       public readonly stateMachineArn = stateMachineArn;
+      public readonly grantPrincipal = new iam.UnknownPrincipal({ resource: this });
     }
     return new Import(scope, id);
   }
 
   public abstract readonly stateMachineArn: string;
+
+  /**
+   * The principal this state machine is running as
+   */
+  public abstract readonly grantPrincipal: iam.IPrincipal;
 
   /**
    * Grant the given identity permissions to start an execution of this state
@@ -373,6 +379,10 @@ export class StateMachine extends StateMachineBase {
       physicalName: props.stateMachineName,
     });
 
+    if (props.stateMachineName != undefined) {
+      this.validateStateMachineName(props.stateMachineName);
+    }
+
     this.role = props.role || new iam.Role(this, 'Role', {
       assumedBy: new iam.ServicePrincipal('states.amazonaws.com'),
     });
@@ -380,11 +390,11 @@ export class StateMachine extends StateMachineBase {
     const graph = new StateGraph(props.definition.startState, `State Machine ${id} definition`);
     graph.timeout = props.timeout;
 
-    this.stateMachineType = props.stateMachineType ? props.stateMachineType : StateMachineType.STANDARD;
+    this.stateMachineType = props.stateMachineType ?? StateMachineType.STANDARD;
 
     const resource = new CfnStateMachine(this, 'Resource', {
       stateMachineName: this.physicalName,
-      stateMachineType: props.stateMachineType ? props.stateMachineType : undefined,
+      stateMachineType: props.stateMachineType ?? undefined,
       roleArn: this.role.roleArn,
       definitionString: Stack.of(this).toJsonString(graph.toGraphJson()),
       loggingConfiguration: props.logs ? this.buildLoggingConfiguration(props.logs) : undefined,
@@ -407,10 +417,26 @@ export class StateMachine extends StateMachineBase {
   }
 
   /**
+   * The principal this state machine is running as
+   */
+  public get grantPrincipal() {
+    return this.role.grantPrincipal;
+  }
+
+  /**
    * Add the given statement to the role's policy
    */
   public addToRolePolicy(statement: iam.PolicyStatement) {
     this.role.addToPrincipalPolicy(statement);
+  }
+
+  private validateStateMachineName(stateMachineName: string) {
+    if (stateMachineName.length < 1 || stateMachineName.length > 80) {
+      throw new Error(`State Machine name must be between 1 and 80 characters. Received: ${stateMachineName}`);
+    }
+    if (!stateMachineName.match('^[0-9a-zA-Z+!@._-]+$')) {
+      throw new Error(`State Machine name must match "^[0-9a-zA-Z+!@._-]+$". Received: ${stateMachineName}`);
+    }
   }
 
   private buildLoggingConfiguration(logOptions: LogOptions): CfnStateMachine.LoggingConfigurationProperty {
@@ -461,7 +487,7 @@ export class StateMachine extends StateMachineBase {
 /**
  * A State Machine
  */
-export interface IStateMachine extends IResource {
+export interface IStateMachine extends IResource, iam.IGrantable {
   /**
    * The ARN of the state machine
    * @attribute

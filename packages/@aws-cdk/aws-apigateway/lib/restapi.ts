@@ -174,7 +174,7 @@ export interface RestApiBaseProps {
 
 /**
  * Represents the props that all Rest APIs share.
- * @deprecated - superceded by `RestApiBaseProps`
+ * @deprecated - superseded by `RestApiBaseProps`
  */
 export interface RestApiOptions extends RestApiBaseProps, ResourceOptions {
 }
@@ -441,7 +441,7 @@ export abstract class RestApiBase extends Resource implements IRestApi {
   /**
    * Metric for the total number API requests in a given period.
    *
-   * Default: samplecount over 5 minutes
+   * Default: sample count over 5 minutes
    */
   public metricCount(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return this.cannedMetric(ApiGatewayMetrics.countSum, {
@@ -490,7 +490,10 @@ export abstract class RestApiBase extends Resource implements IRestApi {
     ignore(deployment);
   }
 
-  protected configureCloudWatchRole(apiResource: CfnRestApi) {
+  /**
+   * @internal
+   */
+  protected _configureCloudWatchRole(apiResource: CfnRestApi) {
     const role = new iam.Role(this, 'CloudWatchRole', {
       assumedBy: new iam.ServicePrincipal('apigateway.amazonaws.com'),
       managedPolicies: [iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonAPIGatewayPushToCloudWatchLogs')],
@@ -503,8 +506,25 @@ export abstract class RestApiBase extends Resource implements IRestApi {
     resource.node.addDependency(apiResource);
   }
 
-  protected configureDeployment(props: RestApiOptions) {
-    const deploy = props.deploy === undefined ? true : props.deploy;
+  /**
+   * @deprecated This method will be made internal. No replacement
+   */
+  protected configureCloudWatchRole(apiResource: CfnRestApi) {
+    this._configureCloudWatchRole(apiResource);
+  }
+
+  /**
+   * @deprecated This method will be made internal. No replacement
+   */
+  protected configureDeployment(props: RestApiBaseProps) {
+    this._configureDeployment(props);
+  }
+
+  /**
+   * @internal
+   */
+  protected _configureDeployment(props: RestApiBaseProps) {
+    const deploy = props.deploy ?? true;
     if (deploy) {
 
       this._latestDeployment = new Deployment(this, 'Deployment', {
@@ -593,7 +613,7 @@ export class SpecRestApi extends RestApiBase {
       name: this.restApiName,
       policy: props.policy,
       failOnWarnings: props.failOnWarnings,
-      body: apiDefConfig.inlineDefinition ? apiDefConfig.inlineDefinition : undefined,
+      body: apiDefConfig.inlineDefinition ?? undefined,
       bodyS3Location: apiDefConfig.inlineDefinition ? undefined : apiDefConfig.s3Location,
       endpointConfiguration: this._configureEndpoints(props),
       parameters: props.parameters,
@@ -603,14 +623,14 @@ export class SpecRestApi extends RestApiBase {
     this.restApiRootResourceId = resource.attrRootResourceId;
     this.root = new RootResource(this, {}, this.restApiRootResourceId);
 
-    this.configureDeployment(props);
+    this._configureDeployment(props);
     if (props.domainName) {
       this.addDomainName('CustomDomain', props.domainName);
     }
 
-    const cloudWatchRole = props.cloudWatchRole !== undefined ? props.cloudWatchRole : true;
+    const cloudWatchRole = props.cloudWatchRole ?? true;
     if (cloudWatchRole) {
-      this.configureCloudWatchRole(resource);
+      this._configureCloudWatchRole(resource);
     }
   }
 }
@@ -700,18 +720,18 @@ export class RestApi extends RestApiBase {
       binaryMediaTypes: props.binaryMediaTypes,
       endpointConfiguration: this._configureEndpoints(props),
       apiKeySourceType: props.apiKeySourceType,
-      cloneFrom: props.cloneFrom ? props.cloneFrom.restApiId : undefined,
+      cloneFrom: props.cloneFrom?.restApiId,
       parameters: props.parameters,
     });
     this.node.defaultChild = resource;
     this.restApiId = resource.ref;
 
-    const cloudWatchRole = props.cloudWatchRole !== undefined ? props.cloudWatchRole : true;
+    const cloudWatchRole = props.cloudWatchRole ?? true;
     if (cloudWatchRole) {
-      this.configureCloudWatchRole(resource);
+      this._configureCloudWatchRole(resource);
     }
 
-    this.configureDeployment(props);
+    this._configureDeployment(props);
     if (props.domainName) {
       this.addDomainName('CustomDomain', props.domainName);
     }

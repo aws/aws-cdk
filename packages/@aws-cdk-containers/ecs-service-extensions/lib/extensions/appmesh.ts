@@ -9,6 +9,10 @@ import { Service } from '../service';
 import { Container } from './container';
 import { ServiceExtension, ServiceBuild } from './extension-interfaces';
 
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct } from '@aws-cdk/core';
+
 // The version of the App Mesh envoy sidecar to add to the task.
 const APP_MESH_ENVOY_SIDECAR_VERSION = 'v1.15.1.0-prod';
 
@@ -63,7 +67,7 @@ export class AppMeshExtension extends ServiceExtension {
     }
   }
 
-  public prehook(service: Service, scope: cdk.Construct) {
+  public prehook(service: Service, scope: Construct) {
     this.parentService = service;
     this.scope = scope;
 
@@ -161,6 +165,7 @@ export class AppMeshExtension extends ServiceExtension {
 
         'me-south-1': this.accountIdForRegion('me-south-1'),
         'ap-east-1': this.accountIdForRegion('ap-east-1'),
+        'af-south-1': this.accountIdForRegion('af-south-1'),
       },
     });
 
@@ -312,8 +317,7 @@ export class AppMeshExtension extends ServiceExtension {
     // Now create a virtual service. Relationship goes like this:
     // virtual service -> virtual router -> virtual node
     this.virtualService = new appmesh.VirtualService(this.scope, `${this.parentService.id}-virtual-service`, {
-      mesh: this.mesh,
-      virtualRouter: this.virtualRouter,
+      virtualServiceProvider: appmesh.VirtualServiceProvider.virtualRouter(this.virtualRouter),
       virtualServiceName: serviceName,
     });
   }
@@ -343,7 +347,7 @@ export class AppMeshExtension extends ServiceExtension {
     // Next update the app mesh config so that the local Envoy
     // proxy on this service knows how to route traffic to
     // nodes from the other service.
-    this.virtualNode.addBackend(otherAppMesh.virtualService);
+    this.virtualNode.addBackend(appmesh.Backend.virtualService(otherAppMesh.virtualService));
   }
 
   private routeSpec(weightedTargets: appmesh.WeightedTarget[], serviceName: string): appmesh.RouteSpec {

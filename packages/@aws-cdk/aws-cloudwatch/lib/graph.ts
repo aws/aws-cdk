@@ -114,7 +114,7 @@ export class AlarmWidget extends ConcreteWidget {
           alarms: [this.props.alarm.alarmArn],
         },
         yAxis: {
-          left: this.props.leftYAxis !== undefined ? this.props.leftYAxis : undefined,
+          left: this.props.leftYAxis ?? undefined,
         },
       },
     }];
@@ -271,8 +271,8 @@ export class GraphWidget extends ConcreteWidget {
         metrics: metrics.length > 0 ? metrics : undefined,
         annotations: horizontalAnnotations.length > 0 ? { horizontal: horizontalAnnotations } : undefined,
         yAxis: {
-          left: this.props.leftYAxis !== undefined ? this.props.leftYAxis : undefined,
-          right: this.props.rightYAxis !== undefined ? this.props.rightYAxis : undefined,
+          left: this.props.leftYAxis ?? undefined,
+          right: this.props.rightYAxis ?? undefined,
         },
         legend: this.props.legendPosition !== undefined ? { position: this.props.legendPosition } : undefined,
         liveData: this.props.liveData,
@@ -296,6 +296,13 @@ export interface SingleValueWidgetProps extends MetricWidgetProps {
    * @default false
    */
   readonly setPeriodToTimeRange?: boolean;
+
+  /**
+   * Whether to show as many digits as can fit, before rounding.
+   *
+   * @default false
+   */
+  readonly fullPrecision?: boolean;
 }
 
 /**
@@ -322,6 +329,7 @@ export class SingleValueWidget extends ConcreteWidget {
         region: this.props.region || cdk.Aws.REGION,
         metrics: allMetricsGraphJson(this.props.metrics, []),
         setPeriodToTimeRange: this.props.setPeriodToTimeRange,
+        singleValueFullPrecision: this.props.fullPrecision,
       },
     }];
   }

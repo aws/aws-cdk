@@ -1,5 +1,5 @@
 import '@aws-cdk/assert/jest';
-import { ABSENT } from '@aws-cdk/assert/lib/assertions/have-resource';
+import { ABSENT, ResourcePart } from '@aws-cdk/assert/lib/assertions/have-resource';
 import { Role, ServicePrincipal } from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import { CfnParameter, Duration, Stack, Tags } from '@aws-cdk/core';
@@ -32,6 +32,10 @@ describe('User Pool', () => {
       SmsConfiguration: ABSENT,
       lambdaTriggers: ABSENT,
     });
+
+    expect(stack).toHaveResource('AWS::Cognito::UserPool', {
+      DeletionPolicy: 'Retain',
+    }, ResourcePart.CompleteDefinition);
   });
 
   test('self sign up option is correctly configured', () => {
@@ -1328,7 +1332,7 @@ describe('User Pool', () => {
 function fooFunction(scope: Construct, name: string): lambda.IFunction {
   return new lambda.Function(scope, name, {
     functionName: name,
-    code: lambda.Code.inline('foo'),
+    code: lambda.Code.fromInline('foo'),
     runtime: lambda.Runtime.NODEJS_12_X,
     handler: 'index.handler',
   });

@@ -18,8 +18,8 @@
     "pkglint": "pkglint -f",
     "package": "cdk-package",
     "awslint": "cdk-awslint",
-    "build+test+package": "npm run build+test && npm run package",
-    "build+test": "npm run build && npm test",
+    "build+test+package": "yarn build+test && yarn package",
+    "build+test": "yarn build && yarn test",
     "compat": "cdk-compat"
   },
   "keywords": [
@@ -100,5 +100,8 @@
     "announce": false
   },
   "maturity": "stable",
-  "stability": "stable"
+  "stability": "stable",
+  "publishConfig": {
+    "tag": "latest"
+  }
 }

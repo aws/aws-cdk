@@ -1,6 +1,7 @@
 import * as iam from '@aws-cdk/aws-iam';
 import { IResource, Lazy, Names, Resource, Stack, Token } from '@aws-cdk/core';
 import { Construct } from 'constructs';
+import { Archive, BaseArchiveProps } from './archive';
 import { CfnEventBus } from './events.generated';
 
 /**
@@ -37,6 +38,23 @@ export interface IEventBus extends IResource {
    * @link https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-events-eventbus.html#cfn-events-eventbus-eventsourcename
    */
   readonly eventSourceName?: string;
+
+  /**
+   * Create an EventBridge archive to send events to.
+   * When you create an archive, incoming events might not immediately start being sent to the archive.
+   * Allow a short period of time for changes to take effect.
+   *
+   * @param props Properties of the archive
+   */
+  archive(id: string, props: BaseArchiveProps): Archive;
+
+  /**
+   * Grants an IAM Principal to send custom events to the eventBus
+   * so that they can be matched to rules.
+   *
+   * @param grantee The principal (no-op if undefined)
+   */
+  grantPutEventsTo(grantee: iam.IGrantable): iam.Grant;
 }
 
 /**
@@ -96,12 +114,53 @@ export interface EventBusAttributes {
   readonly eventSourceName?: string;
 }
 
+abstract class EventBusBase extends Resource implements IEventBus {
+  /**
+   * The physical ID of this event bus resource
+   */
+  public abstract readonly eventBusName: string;
+
+  /**
+   * The ARN of the event bus, such as:
+   * arn:aws:events:us-east-2:123456789012:event-bus/aws.partner/PartnerName/acct1/repo1.
+   */
+  public abstract readonly eventBusArn: string;
+
+  /**
+   * The policy for the event bus in JSON form.
+   */
+  public abstract readonly eventBusPolicy: string;
+
+  /**
+   * The name of the partner event source
+   */
+  public abstract readonly eventSourceName?: string;
+
+  public archive(id: string, props: BaseArchiveProps): Archive {
+    return new Archive(this, id, {
+      sourceEventBus: this,
+      description: props.description || `Event Archive for ${this.eventBusName} Event Bus`,
+      eventPattern: props.eventPattern,
+      retention: props.retention,
+      archiveName: props.archiveName,
+    });
+  }
+
+  public grantPutEventsTo(grantee: iam.IGrantable): iam.Grant {
+    return iam.Grant.addToPrincipal({
+      grantee,
+      actions: ['events:PutEvents'],
+      resourceArns: [this.eventBusArn],
+    });
+  }
+}
+
 /**
  * Define an EventBridge EventBus
  *
  * @resource AWS::Events::EventBus
  */
-export class EventBus extends Resource implements IEventBus {
+export class EventBus extends EventBusBase {
 
   /**
    * Import an existing event bus resource
@@ -112,13 +171,11 @@ export class EventBus extends Resource implements IEventBus {
   public static fromEventBusArn(scope: Construct, id: string, eventBusArn: string): IEventBus {
     const parts = Stack.of(scope).parseArn(eventBusArn);
 
-    class Import extends Resource implements IEventBus {
-      public readonly eventBusArn = eventBusArn;
-      public readonly eventBusName = parts.resourceName || '';
-      public readonly eventBusPolicy = '';
-    }
-
-    return new Import(scope, id);
+    return new ImportedEventBus(scope, id, {
+      eventBusArn: eventBusArn,
+      eventBusName: parts.resourceName || '',
+      eventBusPolicy: '',
+    });
   }
 
   /**
@@ -128,14 +185,24 @@ export class EventBus extends Resource implements IEventBus {
    * @param attrs Imported event bus properties
    */
   public static fromEventBusAttributes(scope: Construct, id: string, attrs: EventBusAttributes): IEventBus {
-    class Import extends Resource implements IEventBus {
-      public readonly eventBusArn = attrs.eventBusArn;
-      public readonly eventBusName = attrs.eventBusName;
-      public readonly eventBusPolicy = attrs.eventBusPolicy;
-      public readonly eventSourceName = attrs.eventSourceName;
-    }
+    return new ImportedEventBus(scope, id, attrs);
+  }
 
-    return new Import(scope, id);
+  /**
+   * Permits an IAM Principal to send custom events to EventBridge
+   * so that they can be matched to rules.
+   *
+   * @param grantee The principal (no-op if undefined)
+   * @deprecated use grantAllPutEvents instead
+   */
+  public static grantPutEvents(grantee: iam.IGrantable): iam.Grant {
+    // It's currently not possible to restrict PutEvents to specific resources.
+    // See https://docs.aws.amazon.com/eventbridge/latest/userguide/permissions-reference-eventbridge.html
+    return iam.Grant.addToPrincipal({
+      grantee,
+      actions: ['events:PutEvents'],
+      resourceArns: ['*'],
+    });
   }
 
   /**
@@ -144,9 +211,7 @@ export class EventBus extends Resource implements IEventBus {
    *
    * @param grantee The principal (no-op if undefined)
    */
-  public static grantPutEvents(grantee: iam.IGrantable): iam.Grant {
-    // It's currently not possible to restrict PutEvents to specific resources.
-    // See https://docs.aws.amazon.com/eventbridge/latest/userguide/permissions-reference-eventbridge.html
+  public static grantAllPutEvents(grantee: iam.IGrantable): iam.Grant {
     return iam.Grant.addToPrincipal({
       grantee,
       actions: ['events:PutEvents'],
@@ -239,5 +304,24 @@ export class EventBus extends Resource implements IEventBus {
     this.eventBusName = this.getResourceNameAttribute(eventBus.ref);
     this.eventBusPolicy = eventBus.attrPolicy;
     this.eventSourceName = eventBus.eventSourceName;
+  }
+}
+
+class ImportedEventBus extends EventBusBase {
+  public readonly eventBusArn: string;
+  public readonly eventBusName: string;
+  public readonly eventBusPolicy: string;
+  public readonly eventSourceName?: string;
+  constructor(scope: Construct, id: string, attrs: EventBusAttributes) {
+    const arnParts = Stack.of(scope).parseArn(attrs.eventBusArn);
+    super(scope, id, {
+      account: arnParts.account,
+      region: arnParts.region,
+    });
+
+    this.eventBusArn = attrs.eventBusArn;
+    this.eventBusName = attrs.eventBusName;
+    this.eventBusPolicy = attrs.eventBusPolicy;
+    this.eventSourceName = attrs.eventSourceName;
   }
 }

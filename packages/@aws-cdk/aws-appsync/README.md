@@ -75,20 +75,23 @@ const demoTable = new db.Table(stack, 'DemoTable', {
 
 const demoDS = api.addDynamoDbDataSource('demoDataSource', demoTable);
 
-// Resolver for the Query "getDemos" that scans the DyanmoDb table and returns the entire list.
+// Resolver for the Query "getDemos" that scans the DynamoDb table and returns the entire list.
 demoDS.createResolver({
   typeName: 'Query',
   fieldName: 'getDemos',
-  requestMappingTemplate: MappingTemplate.dynamoDbScanTable(),
-  responseMappingTemplate: MappingTemplate.dynamoDbResultList(),
+  requestMappingTemplate: appsync.MappingTemplate.dynamoDbScanTable(),
+  responseMappingTemplate: appsync.MappingTemplate.dynamoDbResultList(),
 });
 
 // Resolver for the Mutation "addDemo" that puts the item into the DynamoDb table.
 demoDS.createResolver({
   typeName: 'Mutation',
   fieldName: 'addDemo',
-  requestMappingTemplate: MappingTemplate.dynamoDbPutItem(PrimaryKey.partition('id').auto(), Values.projecting('demo')),
-  responseMappingTemplate: MappingTemplate.dynamoDbResultItem(),
+  requestMappingTemplate: appsync.MappingTemplate.dynamoDbPutItem(
+    appsync.PrimaryKey.partition('id').auto(),
+    appsync.Values.projecting('input')
+  ),
+  responseMappingTemplate: appsync.MappingTemplate.dynamoDbResultItem(),
 });
 ```
 
@@ -104,16 +107,20 @@ const secret = new rds.DatabaseSecret(stack, 'AuroraSecret', {
   username: 'clusteradmin',
 });
 
-// Create the DB cluster, provide all values needed to customise the database.
-const cluster = new rds.DatabaseCluster(stack, 'AuroraCluster', {
-  engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_2_07_1 }),
+// The VPC to place the cluster in
+const vpc = new ec2.Vpc(stack, 'AuroraVpc');
+
+// Create the serverless cluster, provide all values needed to customise the database.
+const cluster = new rds.ServerlessCluster(stack, 'AuroraCluster', {
+  engine: rds.DatabaseClusterEngine.AURORA_MYSQL,
+  vpc,
   credentials: { username: 'clusteradmin' },
   clusterIdentifier: 'db-endpoint-test',
   defaultDatabaseName: 'demos',
 });
 
 // Build a data source for AppSync to access the database.
-const rdsDS = api.addRdsDataSource('rds', 'The rds data source', cluster, secret);
+const rdsDS = api.addRdsDataSource('rds', cluster, secret, 'demos');
 
 // Set up a resolver for an RDS query.
 rdsDS.createResolver({

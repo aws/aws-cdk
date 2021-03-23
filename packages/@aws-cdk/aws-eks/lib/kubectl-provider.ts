@@ -3,9 +3,10 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import { Duration, Stack, NestedStack, Names } from '@aws-cdk/core';
 import * as cr from '@aws-cdk/custom-resources';
+import { AwsCliLayer } from '@aws-cdk/lambda-layer-awscli';
+import { KubectlLayer } from '@aws-cdk/lambda-layer-kubectl';
 import { Construct } from 'constructs';
 import { ICluster, Cluster } from './cluster';
-import { KubectlLayer, KubectlLayerProps } from './kubectl-layer';
 
 // v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
 // eslint-disable-next-line
@@ -66,7 +67,6 @@ export class KubectlProvider extends NestedStack {
       throw new Error('"kubectlSecurityGroup" is required if "kubectlSubnets" is specified');
     }
 
-    const layer = cluster.kubectlLayer ?? getOrCreateKubectlLayer(this);
     const memorySize = cluster.kubectlMemory ? cluster.kubectlMemory.toMebibytes() : 1024;
 
     const handler = new lambda.Function(this, 'Handler', {
@@ -75,7 +75,6 @@ export class KubectlProvider extends NestedStack {
       handler: 'index.handler',
       timeout: Duration.minutes(15),
       description: 'onEvent handler for EKS kubectl resource provider',
-      layers: [layer],
       memorySize,
       environment: cluster.kubectlEnvironment,
 
@@ -85,9 +84,17 @@ export class KubectlProvider extends NestedStack {
       vpcSubnets: cluster.kubectlPrivateSubnets ? { subnets: cluster.kubectlPrivateSubnets } : undefined,
     });
 
+    // allow user to customize the layer
+    if (!props.cluster.kubectlLayer) {
+      handler.addLayers(new AwsCliLayer(this, 'AwsCliLayer'));
+      handler.addLayers(new KubectlLayer(this, 'KubectlLayer'));
+    } else {
+      handler.addLayers(props.cluster.kubectlLayer);
+    }
+
     this.handlerRole = handler.role!;
 
-    this.handlerRole.addToPolicy(new iam.PolicyStatement({
+    this.handlerRole.addToPrincipalPolicy(new iam.PolicyStatement({
       actions: ['eks:DescribeCluster'],
       resources: [cluster.clusterArn],
     }));
@@ -97,26 +104,13 @@ export class KubectlProvider extends NestedStack {
 
     const provider = new cr.Provider(this, 'Provider', {
       onEventHandler: handler,
+      vpc: cluster.kubectlPrivateSubnets ? cluster.vpc : undefined,
+      vpcSubnets: cluster.kubectlPrivateSubnets ? { subnets: cluster.kubectlPrivateSubnets } : undefined,
+      securityGroups: cluster.kubectlSecurityGroup ? [cluster.kubectlSecurityGroup] : undefined,
     });
 
     this.serviceToken = provider.serviceToken;
     this.roleArn = cluster.kubectlRole.roleArn;
   }
 
-}
-
-/**
- * Gets or create a singleton instance of KubectlLayer.
- *
- * (exported for unit tests).
- */
-export function getOrCreateKubectlLayer(scope: Construct, props: KubectlLayerProps = {}): KubectlLayer {
-  const stack = Stack.of(scope);
-  const id = 'kubectl-layer-' + (props.version ? props.version : '8C2542BC-BF2B-4DFE-B765-E181FD30A9A0');
-  const exists = stack.node.tryFindChild(id) as KubectlLayer;
-  if (exists) {
-    return exists;
-  }
-
-  return new KubectlLayer(stack, id, props);
 }

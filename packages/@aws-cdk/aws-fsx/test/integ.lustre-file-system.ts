@@ -1,5 +1,5 @@
 import { AmazonLinuxGeneration, AmazonLinuxImage, Instance, InstanceClass, InstanceSize, InstanceType, SubnetType, Vpc } from '@aws-cdk/aws-ec2';
-import { App, Stack } from '@aws-cdk/core';
+import { App, RemovalPolicy, Stack } from '@aws-cdk/core';
 import { LustreDeploymentType, LustreFileSystem } from '../lib';
 
 const app = new App();
@@ -17,6 +17,7 @@ const fs = new LustreFileSystem(stack, 'FsxLustreFileSystem', {
   storageCapacityGiB: storageCapacity,
   vpc,
   vpcSubnet: vpc.privateSubnets[0],
+  removalPolicy: RemovalPolicy.DESTROY,
 });
 
 const inst = new Instance(stack, 'inst', {

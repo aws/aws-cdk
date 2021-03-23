@@ -4,6 +4,11 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import { BitBucketSourceAction } from '..';
 import { Action } from '../action';
+import { CodeCommitSourceAction } from '../codecommit/source-action';
+
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct } from '@aws-cdk/core';
 
 /**
  * The type of the CodeBuild action that determines its CodePipeline Category -
@@ -79,7 +84,20 @@ export interface CodeBuildActionProps extends codepipeline.CommonAwsActionProps 
   readonly environmentVariables?: { [name: string]: codebuild.BuildEnvironmentVariable };
 
   /**
+   * Whether to check for the presence of any secrets in the environment variables of the default type, BuildEnvironmentVariableType.PLAINTEXT.
+   * Since using a secret for the value of that kind of variable would result in it being displayed in plain text in the AWS Console,
+   * the construct will throw an exception if it detects a secret was passed there.
+   * Pass this property as false if you want to skip this validation,
+   * and keep using a secret in a plain text environment variable.
+   *
+   * @default true
+   */
+  readonly checkSecretsInPlainTextEnvVariables?: boolean;
+
+  /**
    * Trigger a batch build.
+   *
+   * Enabling this will enable batch builds on the CodeBuild project.
    *
    * @default false
    */
@@ -121,7 +139,7 @@ export class CodeBuildAction extends Action {
     return this.variableExpression(variableName);
   }
 
-  protected bound(scope: cdk.Construct, _stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
+  protected bound(scope: Construct, _stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
   codepipeline.ActionConfig {
     // check for a cross-account action if there are any outputs
     if ((this.actionProperties.outputs || []).length > 0) {
@@ -138,9 +156,9 @@ export class CodeBuildAction extends Action {
     options.role.addToPolicy(new iam.PolicyStatement({
       resources: [this.props.project.projectArn],
       actions: [
-        'codebuild:BatchGetBuilds',
-        'codebuild:StartBuild',
-        'codebuild:StopBuild',
+        `codebuild:${this.props.executeBatchBuild ? 'BatchGetBuildBatches' : 'BatchGetBuilds'}`,
+        `codebuild:${this.props.executeBatchBuild ? 'StartBuildBatch' : 'StartBuild'}`,
+        `codebuild:${this.props.executeBatchBuild ? 'StopBuildBatch' : 'StopBuild'}`,
       ],
     }));
 
@@ -161,10 +179,10 @@ export class CodeBuildAction extends Action {
       });
     }
 
-    // if any of the inputs come from the BitBucketSourceAction
-    // with codeBuildCloneOutput=true,
-    // grant the Project's Role to use the connection
     for (const inputArtifact of this.actionProperties.inputs || []) {
+      // if any of the inputs come from the BitBucketSourceAction
+      // with codeBuildCloneOutput=true,
+      // grant the Project's Role to use the connection
       const connectionArn = inputArtifact.getMetadata(BitBucketSourceAction._CONNECTION_ARN_PROPERTY);
       if (connectionArn) {
         this.props.project.addToRolePolicy(new iam.PolicyStatement({
@@ -172,12 +190,24 @@ export class CodeBuildAction extends Action {
           resources: [connectionArn],
         }));
       }
+
+      // if any of the inputs come from the CodeCommitSourceAction
+      // with codeBuildCloneOutput=true,
+      // grant the Project's Role git pull access to the repository
+      const codecommitRepositoryArn = inputArtifact.getMetadata(CodeCommitSourceAction._FULL_CLONE_ARN_PROPERTY);
+      if (codecommitRepositoryArn) {
+        this.props.project.addToRolePolicy(new iam.PolicyStatement({
+          actions: ['codecommit:GitPull'],
+          resources: [codecommitRepositoryArn],
+        }));
+      }
     }
 
     const configuration: any = {
       ProjectName: this.props.project.projectName,
       EnvironmentVariables: this.props.environmentVariables &&
-        cdk.Stack.of(scope).toJsonString(codebuild.Project.serializeEnvVariables(this.props.environmentVariables)),
+        cdk.Stack.of(scope).toJsonString(codebuild.Project.serializeEnvVariables(this.props.environmentVariables,
+          this.props.checkSecretsInPlainTextEnvVariables ?? true, this.props.project)),
     };
     if ((this.actionProperties.inputs || []).length > 1) {
       // lazy, because the Artifact name might be generated lazily
@@ -185,6 +215,7 @@ export class CodeBuildAction extends Action {
     }
     if (this.props.executeBatchBuild) {
       configuration.BatchEnabled = 'true';
+      this.props.project.enableBatchBuilds();
     }
     return {
       configuration,

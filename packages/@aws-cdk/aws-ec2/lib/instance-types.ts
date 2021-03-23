@@ -169,6 +169,16 @@ export enum InstanceClass {
   R6G = 'r6g',
 
   /**
+   * Memory optimized instances, 6th generation with Graviton2 processors and local NVME drive
+   */
+  MEMORY6_GRAVITON2_NVME_DRIVE = 'r6gd',
+
+  /**
+   * Memory optimized instances, 6th generation with Graviton2 processors and local NVME drive
+   */
+  R6GD = 'r6gd',
+
+  /**
    * Compute optimized instances, 3rd generation
    */
   COMPUTE3 = 'c3',
@@ -249,6 +259,18 @@ export enum InstanceClass {
    * and local NVME drive
    */
   C6GD = 'c6gd',
+
+  /**
+   * Compute optimized instances for high performance computing, 6th generation with Graviton2 processors
+   * and high network bandwidth capabilities
+   */
+  COMPUTE6_GRAVITON2_HIGH_NETWORK_BANDWITH = 'c6gn',
+
+  /**
+   * Compute optimized instances for high performance computing, 6th generation with Graviton2 processors
+   * and high network bandwidth capabilities
+   */
+  C6GN = 'c6gn',
 
   /**
    * Storage-optimized instances, 2nd generation
@@ -421,6 +443,16 @@ export enum InstanceClass {
   M6G = 'm6g',
 
   /**
+   * Standard instances, 6th generation with Graviton2 processors and local NVME drive
+   */
+  STANDARD6_GRAVITON2_NVME_DRIVE = 'm6gd',
+
+  /**
+   * Standard instances, 6th generation with Graviton2 processors and local NVME drive
+   */
+  M6GD = 'm6gd',
+
+  /**
    * High memory and compute capacity instances, 1st generation
    */
   HIGH_COMPUTE_MEMORY1 = 'z1d',
@@ -439,6 +471,21 @@ export enum InstanceClass {
    * Inferentia Chips based instances for machine learning inference applications, 1st generation
    */
   INF1 = 'inf1'
+}
+
+/**
+ * Identifies an instance's CPU architecture
+ */
+export enum InstanceArchitecture {
+  /**
+   * ARM64 architecture
+   */
+  ARM_64 = 'arm64',
+
+  /**
+   * x86-64 architecture
+   */
+  X86_64 = 'x86_64',
 }
 
 /**
@@ -564,5 +611,27 @@ export class InstanceType {
    */
   public toString(): string {
     return this.instanceTypeIdentifier;
+  }
+
+  /**
+   * The instance's CPU architecture
+   */
+  public get architecture(): InstanceArchitecture {
+    // capture the family, generation, capabilities, and size portions of the instance type id
+    const instanceTypeComponents = this.instanceTypeIdentifier.match(/^([a-z]+)(\d{1,2})([a-z]*)\.([a-z0-9]+)$/);
+    if (instanceTypeComponents == null) {
+      throw new Error('Malformed instance type identifier');
+    }
+
+    const family = instanceTypeComponents[1];
+    const capabilities = instanceTypeComponents[3];
+
+    // Instance family `a` are first-gen Graviton instances
+    // Capability `g` indicates the instance is Graviton2 powered
+    if (family === 'a' || capabilities.includes('g')) {
+      return InstanceArchitecture.ARM_64;
+    }
+
+    return InstanceArchitecture.X86_64;
   }
 }

@@ -6,10 +6,14 @@ import * as codepipeline_actions from '@aws-cdk/aws-codepipeline-actions';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
-import { Construct, Stack } from '@aws-cdk/core';
+import { Stack } from '@aws-cdk/core';
 import { cloudAssemblyBuildSpecDir } from '../private/construct-internals';
 import { toPosixPath } from '../private/fs';
 import { copyEnvironmentVariables, filterEmpty } from './_util';
+
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct } from '@aws-cdk/core';
 
 /**
  * Configuration options for a SimpleSynth
@@ -320,7 +324,6 @@ export class SimpleSynthAction implements codepipeline.IAction, iam.IGrantable {
 
     const environmentVariables = {
       ...copyEnvironmentVariables(...this.props.copyEnvironmentVariables || []),
-      ...this.props.environmentVariables,
     };
 
     // A hash over the values that make the CodeBuild Project unique (and necessary
@@ -360,6 +363,7 @@ export class SimpleSynthAction implements codepipeline.IAction, iam.IGrantable {
       // Hence, the pipeline will be restarted. This is necessary if the users
       // adds (for example) build or test commands to the buildspec.
       environmentVariables: {
+        ...this.props.environmentVariables,
         _PROJECT_CONFIG_HASH: { value: projectConfigHash },
       },
       project,

@@ -20,7 +20,7 @@ beforeEach(() => {
   getEsBuildVersionMock.mockReturnValue('0.8.8');
   fromAssetMock.mockReturnValue({
     image: 'built-image',
-    cp: () => {},
+    cp: () => 'dest-path',
     run: () => {},
     toJSON: () => 'built-image',
   });
@@ -28,6 +28,7 @@ beforeEach(() => {
 
 let depsLockFilePath = '/project/yarn.lock';
 let entry = '/project/lib/handler.ts';
+let tsconfig = '/project/lib/custom-tsconfig.ts';
 
 test('esbuild bundling in Docker', () => {
   Bundling.bundle({
@@ -52,8 +53,9 @@ test('esbuild bundling in Docker', () => {
       },
       command: [
         'bash', '-c',
-        'npx esbuild --bundle /asset-input/lib/handler.ts --target=node12 --platform=node --outfile=/asset-output/index.js --external:aws-sdk --loader:.png=dataurl',
+        'npx esbuild --bundle "/asset-input/lib/handler.ts" --target=node12 --platform=node --outfile="/asset-output/index.js" --external:aws-sdk --loader:.png=dataurl',
       ],
+      workingDirectory: '/',
     }),
   });
 });
@@ -72,7 +74,7 @@ test('esbuild bundling with handler named index.ts', () => {
     bundling: expect.objectContaining({
       command: [
         'bash', '-c',
-        'npx esbuild --bundle /asset-input/lib/index.ts --target=node12 --platform=node --outfile=/asset-output/index.js --external:aws-sdk',
+        'npx esbuild --bundle "/asset-input/lib/index.ts" --target=node12 --platform=node --outfile="/asset-output/index.js" --external:aws-sdk',
       ],
     }),
   });
@@ -92,7 +94,7 @@ test('esbuild bundling with tsx handler', () => {
     bundling: expect.objectContaining({
       command: [
         'bash', '-c',
-        'npx esbuild --bundle /asset-input/lib/handler.tsx --target=node12 --platform=node --outfile=/asset-output/index.js --external:aws-sdk',
+        'npx esbuild --bundle "/asset-input/lib/handler.tsx" --target=node12 --platform=node --outfile="/asset-output/index.js" --external:aws-sdk',
       ],
     }),
   });
@@ -137,7 +139,7 @@ test('esbuild bundling with externals and dependencies', () => {
       command: [
         'bash', '-c',
         [
-          'npx esbuild --bundle /asset-input/test/bundling.test.js --target=node12 --platform=node --outfile=/asset-output/index.js --external:abc --external:delay',
+          'npx esbuild --bundle "/asset-input/test/bundling.test.js" --target=node12 --platform=node --outfile="/asset-output/index.js" --external:abc --external:delay',
           `echo \'{\"dependencies\":{\"delay\":\"${delayVersion}\"}}\' > /asset-output/package.json`,
           'cp /asset-input/package-lock.json /asset-output/package-lock.json',
           'cd /asset-output',
@@ -161,7 +163,15 @@ test('esbuild bundling with esbuild options', () => {
     },
     logLevel: LogLevel.SILENT,
     keepNames: true,
+    tsconfig,
+    metafile: true,
+    banner: '/* comments */',
+    footer: '/* comments */',
     forceDockerBundling: true,
+    define: {
+      'DEBUG': 'true',
+      'process.env.KEY': JSON.stringify('VALUE'),
+    },
   });
 
   // Correctly bundles with esbuild
@@ -171,10 +181,12 @@ test('esbuild bundling with esbuild options', () => {
       command: [
         'bash', '-c',
         [
-          'npx esbuild --bundle /asset-input/lib/handler.ts',
-          '--target=es2020 --platform=node --outfile=/asset-output/index.js',
+          'npx esbuild --bundle "/asset-input/lib/handler.ts"',
+          '--target=es2020 --platform=node --outfile="/asset-output/index.js"',
           '--minify --sourcemap --external:aws-sdk --loader:.png=dataurl',
-          '--log-level=silent --keep-names',
+          '--define:DEBUG=true --define:process.env.KEY="VALUE"',
+          '--log-level=silent --keep-names --tsconfig=/asset-input/lib/custom-tsconfig.ts',
+          '--metafile=/asset-output/index.meta.json --banner=\'/* comments */\' --footer=\'/* comments */\'',
         ].join(' '),
       ],
     }),

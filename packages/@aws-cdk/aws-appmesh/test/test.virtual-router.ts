@@ -101,7 +101,7 @@ export = {
 
       const service1 = new appmesh.VirtualService(stack, 'service-1', {
         virtualServiceName: 'service1.domain.local',
-        mesh,
+        virtualServiceProvider: appmesh.VirtualServiceProvider.none(mesh),
       });
 
       const node = mesh.addVirtualNode('test-node', {
@@ -109,7 +109,7 @@ export = {
         listeners: [appmesh.VirtualNodeListener.http({
           port: 8080,
         })],
-        backends: [service1],
+        backends: [appmesh.Backend.virtualService(service1)],
       });
 
       router.addRoute('route-1', {
@@ -170,11 +170,11 @@ export = {
 
       const service1 = new appmesh.VirtualService(stack, 'service-1', {
         virtualServiceName: 'service1.domain.local',
-        mesh,
+        virtualServiceProvider: appmesh.VirtualServiceProvider.none(mesh),
       });
       const service2 = new appmesh.VirtualService(stack, 'service-2', {
         virtualServiceName: 'service2.domain.local',
-        mesh,
+        virtualServiceProvider: appmesh.VirtualServiceProvider.none(mesh),
       });
 
       const node = mesh.addVirtualNode('test-node', {
@@ -182,27 +182,21 @@ export = {
         listeners: [appmesh.VirtualNodeListener.http({
           port: 8080,
         })],
-        backends: [
-          service1,
-        ],
+        backends: [appmesh.Backend.virtualService(service1)],
       });
       const node2 = mesh.addVirtualNode('test-node2', {
         serviceDiscovery: appmesh.ServiceDiscovery.dns('test'),
         listeners: [appmesh.VirtualNodeListener.http({
           port: 8080,
         })],
-        backends: [
-          service2,
-        ],
+        backends: [appmesh.Backend.virtualService(service2)],
       });
       const node3 = mesh.addVirtualNode('test-node3', {
         serviceDiscovery: appmesh.ServiceDiscovery.dns('test'),
         listeners: [appmesh.VirtualNodeListener.http({
           port: 8080,
         })],
-        backends: [
-          service1,
-        ],
+        backends: [appmesh.Backend.virtualService(service1)],
       });
 
       router.addRoute('route-1', {
@@ -332,7 +326,7 @@ export = {
 
       const service1 = new appmesh.VirtualService(stack, 'service-1', {
         virtualServiceName: 'service1.domain.local',
-        mesh,
+        virtualServiceProvider: appmesh.VirtualServiceProvider.none(mesh),
       });
 
       const node = mesh.addVirtualNode('test-node', {
@@ -340,9 +334,7 @@ export = {
         listeners: [appmesh.VirtualNodeListener.http({
           port: 8080,
         })],
-        backends: [
-          service1,
-        ],
+        backends: [appmesh.Backend.virtualService(service1)],
       });
 
       router.addRoute('route-tcp-1', {

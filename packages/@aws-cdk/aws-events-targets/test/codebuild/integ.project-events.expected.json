@@ -43,6 +43,14 @@
                 "Arn"
               ]
             },
+            "DeadLetterConfig": {
+              "Arn": {
+                "Fn::GetAtt": [
+                  "DeadLetterQueue9F481546",
+                  "Arn"
+                ]
+              }
+            },
             "Id": "Target0",
             "RoleArn": {
               "Fn::GetAtt": [
@@ -340,7 +348,9 @@
       }
     },
     "MyQueueE6CA6235": {
-      "Type": "AWS::SQS::Queue"
+      "Type": "AWS::SQS::Queue",
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
     },
     "MyQueuePolicy6BBEDDAC": {
       "Type": "AWS::SQS::QueuePolicy",
@@ -390,6 +400,50 @@
             "Arn"
           ]
         }
+      }
+    },
+    "DeadLetterQueue9F481546": {
+      "Type": "AWS::SQS::Queue",
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
+    "DeadLetterQueuePolicyB1FB890C": {
+      "Type": "AWS::SQS::QueuePolicy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sqs:SendMessage",
+              "Condition": {
+                "ArnEquals": {
+                  "aws:SourceArn": {
+                    "Fn::GetAtt": [
+                      "MyRepoOnCommit0E80B304",
+                      "Arn"
+                    ]
+                  }
+                }
+              },
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "events.amazonaws.com"
+              },
+              "Resource": {
+                "Fn::GetAtt": [
+                  "DeadLetterQueue9F481546",
+                  "Arn"
+                ]
+              },
+              "Sid": "AllowEventRuleawscdkcodebuildeventsMyRepoOnCommit0ED1137A"
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "Queues": [
+          {
+            "Ref": "DeadLetterQueue9F481546"
+          }
+        ]
       }
     },
     "MyTopic86869434": {

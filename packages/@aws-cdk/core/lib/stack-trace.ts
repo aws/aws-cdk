@@ -8,11 +8,8 @@ import { debugModeEnabled } from './debug';
  * large. Consequently, users are stronly advised to condition capturing stack
  * traces to specific user opt-in.
  *
- * If the `CDK_DISABLE_STACK_TRACE` environment variable is set (to any value,
- * except for an empty string), no stack traces will be captured, and instead
- * the literal value `['stack traces disabled']` will be returned instead. This
- * is only true if the `CDK_DEBUG` environment variable is not set to `'true'`
- * or '1', in which case stack traces are *always* captured.
+ * Stack traces will only be captured if the `CDK_DEBUG` environment variable
+ * is set to `'true'` or `1`.
  *
  * @param below an optional function starting from which stack frames will be
  *              ignored. Defaults to the `captureStackTrace` function itself.
@@ -26,7 +23,7 @@ export function captureStackTrace(
   below: Function = captureStackTrace,
   limit = Number.MAX_SAFE_INTEGER,
 ): string[] {
-  if (process.env.CDK_DISABLE_STACK_TRACE && !debugModeEnabled()) {
+  if (!debugModeEnabled()) {
     return ['stack traces disabled'];
   }
 

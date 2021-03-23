@@ -8,7 +8,7 @@ import { Stack } from '@aws-cdk/core';
 import { nodeunitShim, Test } from 'nodeunit-shim';
 import {
   AmazonLinuxImage, BlockDeviceVolume, CloudFormationInit,
-  EbsDeviceVolumeType, InitCommand, Instance, InstanceClass, InstanceSize, InstanceType, UserData, Vpc,
+  EbsDeviceVolumeType, InitCommand, Instance, InstanceArchitecture, InstanceClass, InstanceSize, InstanceType, UserData, Vpc,
 } from '../lib';
 
 
@@ -107,7 +107,56 @@ nodeunitShim({
 
     test.done();
   },
+  'instance architecture is correctly discerned for arm instances'(test: Test) {
+    // GIVEN
+    const sampleInstanceClasses = [
+      'a1', 't4g', 'c6g', 'c6gd', 'c6gn', 'm6g', 'm6gd', 'r6g', 'r6gd', // current Graviton-based instance classes
+      'a13', 't11g', 'y10ng', 'z11ngd', // theoretical future Graviton-based instance classes
+    ];
 
+    for (const instanceClass of sampleInstanceClasses) {
+      // WHEN
+      const instanceType = InstanceType.of(instanceClass as InstanceClass, InstanceSize.XLARGE18);
+
+      // THEN
+      expect(instanceType.architecture).toBe(InstanceArchitecture.ARM_64);
+    }
+
+    test.done();
+  },
+  'instance architecture is correctly discerned for x86-64 instance'(test: Test) {
+    // GIVEN
+    const sampleInstanceClasses = ['c5', 'm5ad', 'r5n', 'm6', 't3a']; // A sample of x86-64 instance classes
+
+    for (const instanceClass of sampleInstanceClasses) {
+      // WHEN
+      const instanceType = InstanceType.of(instanceClass as InstanceClass, InstanceSize.XLARGE18);
+
+      // THEN
+      expect(instanceType.architecture).toBe(InstanceArchitecture.X86_64);
+    }
+
+    test.done();
+  },
+  'instance architecture throws an error when instance type is invalid'(test: Test) {
+    // GIVEN
+    const malformedInstanceTypes = ['t4', 't4g.nano.', 't4gnano', ''];
+
+    for (const malformedInstanceType of malformedInstanceTypes) {
+      // WHEN
+      const instanceType = new InstanceType(malformedInstanceType);
+
+      // THEN
+      try {
+        instanceType.architecture;
+        expect(true).toBe(false); // The line above should have thrown an error
+      } catch (err) {
+        expect(err.message).toBe('Malformed instance type identifier');
+      }
+    }
+
+    test.done();
+  },
   blockDeviceMappings: {
     'can set blockDeviceMappings'(test: Test) {
       // WHEN

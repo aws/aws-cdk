@@ -1,10 +1,13 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import * as lambda from '@aws-cdk/aws-lambda';
-import * as cdk from '@aws-cdk/core';
 import { Bundling } from './bundling';
 import { BundlingOptions } from './types';
 import { callsites, findUp, LockFile, nodeMajorVersion } from './util';
+
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct } from '@aws-cdk/core';
 
 /**
  * Properties for a NodejsFunction
@@ -31,8 +34,8 @@ export interface NodejsFunctionProps extends lambda.FunctionOptions {
    * The runtime environment. Only runtimes of the Node.js family are
    * supported.
    *
-   * @default - `NODEJS_12_X` if `process.versions.node` >= '12.0.0',
-   * `NODEJS_10_X` otherwise.
+   * @default - `NODEJS_14_X` if `process.versions.node` >= '14.0.0',
+   * `NODEJS_12_X` otherwise.
    */
   readonly runtime?: lambda.Runtime;
 
@@ -76,7 +79,7 @@ export interface NodejsFunctionProps extends lambda.FunctionOptions {
  * A Node.js Lambda function bundled using esbuild
  */
 export class NodejsFunction extends lambda.Function {
-  constructor(scope: cdk.Construct, id: string, props: NodejsFunctionProps = {}) {
+  constructor(scope: Construct, id: string, props: NodejsFunctionProps = {}) {
     if (props.runtime && props.runtime.family !== lambda.RuntimeFamily.NODEJS) {
       throw new Error('Only `NODEJS` runtimes are supported.');
     }
@@ -102,9 +105,9 @@ export class NodejsFunction extends lambda.Function {
     // Entry and defaults
     const entry = path.resolve(findEntry(id, props.entry));
     const handler = props.handler ?? 'handler';
-    const defaultRunTime = nodeMajorVersion() >= 12
-      ? lambda.Runtime.NODEJS_12_X
-      : lambda.Runtime.NODEJS_10_X;
+    const defaultRunTime = nodeMajorVersion() >= 14
+      ? lambda.Runtime.NODEJS_14_X
+      : lambda.Runtime.NODEJS_12_X;
     const runtime = props.runtime ?? defaultRunTime;
 
     super(scope, id, {

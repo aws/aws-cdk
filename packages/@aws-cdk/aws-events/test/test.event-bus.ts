@@ -1,6 +1,6 @@
 import { expect, haveResource } from '@aws-cdk/assert';
 import * as iam from '@aws-cdk/aws-iam';
-import { Aws, CfnResource, Stack } from '@aws-cdk/core';
+import { Aws, CfnResource, Stack, Arn } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import { EventBus } from '../lib';
 
@@ -51,6 +51,65 @@ export = {
       Name: 'aws.partner/PartnerName/acct1/repo1',
       EventSourceName: 'aws.partner/PartnerName/acct1/repo1',
     }));
+
+    test.done();
+  },
+
+  'imported event bus'(test: Test) {
+    const stack = new Stack();
+
+    const eventBus = new EventBus(stack, 'Bus');
+
+    const importEB = EventBus.fromEventBusArn(stack, 'ImportBus', eventBus.eventBusArn);
+
+    // WHEN
+    new CfnResource(stack, 'Res', {
+      type: 'Test::Resource',
+      properties: {
+        EventBusArn1: eventBus.eventBusArn,
+        EventBusArn2: importEB.eventBusArn,
+      },
+    });
+
+    expect(stack).to(haveResource('Test::Resource', {
+      EventBusArn1: { 'Fn::GetAtt': ['BusEA82B648', 'Arn'] },
+      EventBusArn2: { 'Fn::GetAtt': ['BusEA82B648', 'Arn'] },
+    }));
+
+    test.done();
+  },
+
+  'same account imported event bus has right resource env'(test: Test) {
+    const stack = new Stack();
+
+    const eventBus = new EventBus(stack, 'Bus');
+
+    const importEB = EventBus.fromEventBusArn(stack, 'ImportBus', eventBus.eventBusArn);
+
+    // WHEN
+    test.deepEqual(stack.resolve(importEB.env.account), { 'Fn::Select': [4, { 'Fn::Split': [':', { 'Fn::GetAtt': ['BusEA82B648', 'Arn'] }] }] });
+    test.deepEqual(stack.resolve(importEB.env.region), { 'Fn::Select': [3, { 'Fn::Split': [':', { 'Fn::GetAtt': ['BusEA82B648', 'Arn'] }] }] });
+
+    test.done();
+  },
+
+  'cross account imported event bus has right resource env'(test: Test) {
+    const stack = new Stack();
+
+    const arnParts = {
+      resource: 'bus',
+      service: 'events',
+      account: 'myAccount',
+      region: 'us-west-1',
+    };
+
+    const arn = Arn.format(arnParts, stack);
+
+    const importEB = EventBus.fromEventBusArn(stack, 'ImportBus', arn);
+
+    // WHEN
+    test.deepEqual(importEB.env.account, arnParts.account);
+    test.deepEqual(importEB.env.region, arnParts.region);
 
     test.done();
   },
@@ -243,6 +302,203 @@ export = {
           Ref: 'Role1ABCC5F0',
         },
       ],
+    }));
+
+    test.done();
+  },
+
+  'can grant PutEvents using grantAllPutEvents'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    const role = new iam.Role(stack, 'Role', {
+      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+    });
+
+    // WHEN
+    EventBus.grantAllPutEvents(role);
+
+    // THEN
+    expect(stack).to(haveResource('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'events:PutEvents',
+            Effect: 'Allow',
+            Resource: '*',
+          },
+        ],
+        Version: '2012-10-17',
+      },
+      Roles: [
+        {
+          Ref: 'Role1ABCC5F0',
+        },
+      ],
+    }));
+
+    test.done();
+  },
+  'can grant PutEvents to a specific event bus'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    const role = new iam.Role(stack, 'Role', {
+      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+    });
+
+    const eventBus = new EventBus(stack, 'EventBus');
+
+    // WHEN
+    eventBus.grantPutEventsTo(role);
+
+    // THEN
+    expect(stack).to(haveResource('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'events:PutEvents',
+            Effect: 'Allow',
+            Resource: {
+              'Fn::GetAtt': [
+                'EventBus7B8748AA',
+                'Arn',
+              ],
+            },
+          },
+        ],
+        Version: '2012-10-17',
+      },
+      Roles: [
+        {
+          Ref: 'Role1ABCC5F0',
+        },
+      ],
+    }));
+
+    test.done();
+  },
+  'can archive events'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    const event = new EventBus(stack, 'Bus');
+
+    event.archive('MyArchive', {
+      eventPattern: {
+        account: [stack.account],
+      },
+      archiveName: 'MyArchive',
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::Events::EventBus', {
+      Name: 'Bus',
+    }));
+
+    expect(stack).to(haveResource('AWS::Events::Archive', {
+      SourceArn: {
+        'Fn::GetAtt': [
+          'BusEA82B648',
+          'Arn',
+        ],
+      },
+      Description: {
+        'Fn::Join': [
+          '',
+          [
+            'Event Archive for ',
+            {
+              Ref: 'BusEA82B648',
+            },
+            ' Event Bus',
+          ],
+        ],
+      },
+      EventPattern: {
+        account: [
+          {
+            Ref: 'AWS::AccountId',
+          },
+        ],
+      },
+      RetentionDays: 0,
+      ArchiveName: 'MyArchive',
+    }));
+
+    test.done();
+  },
+  'can archive events from an imported EventBus'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    const bus = new EventBus(stack, 'Bus');
+
+    const importedBus = EventBus.fromEventBusArn(stack, 'ImportedBus', bus.eventBusArn);
+
+    importedBus.archive('MyArchive', {
+      eventPattern: {
+        account: [stack.account],
+      },
+      archiveName: 'MyArchive',
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::Events::EventBus', {
+      Name: 'Bus',
+    }));
+
+    expect(stack).to(haveResource('AWS::Events::Archive', {
+      SourceArn: {
+        'Fn::GetAtt': [
+          'BusEA82B648',
+          'Arn',
+        ],
+      },
+      Description: {
+        'Fn::Join': [
+          '',
+          [
+            'Event Archive for ',
+            {
+              'Fn::Select': [
+                1,
+                {
+                  'Fn::Split': [
+                    '/',
+                    {
+                      'Fn::Select': [
+                        5,
+                        {
+                          'Fn::Split': [
+                            ':',
+                            {
+                              'Fn::GetAtt': [
+                                'BusEA82B648',
+                                'Arn',
+                              ],
+                            },
+                          ],
+                        },
+                      ],
+                    },
+                  ],
+                },
+              ],
+            },
+            ' Event Bus',
+          ],
+        ],
+      },
+      EventPattern: {
+        account: [
+          {
+            Ref: 'AWS::AccountId',
+          },
+        ],
+      },
+      RetentionDays: 0,
+      ArchiveName: 'MyArchive',
     }));
 
     test.done();

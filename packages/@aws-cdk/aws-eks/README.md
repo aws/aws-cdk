@@ -5,17 +5,7 @@
 
 ![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)
 
-> All classes with the `Cfn` prefix in this module ([CFN Resources]) are always stable and safe to use.
->
-> [CFN Resources]: https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib
-
-![cdk-constructs: Developer Preview](https://img.shields.io/badge/cdk--constructs-developer--preview-informational.svg?style=for-the-badge)
-
-> The APIs of higher level constructs in this module are in **developer preview** before they
-> become stable. We will only make breaking changes to address unforeseen API issues. Therefore,
-> these APIs are not subject to [Semantic Versioning](https://semver.org/), and breaking changes
-> will be announced in release notes. This means that while you may use them, you may need to
-> update your source code when upgrading to a newer version of this package.
+![cdk-constructs: Stable](https://img.shields.io/badge/cdk--constructs-stable-success.svg?style=for-the-badge)
 
 ---
 
@@ -59,7 +49,7 @@ This example defines an Amazon EKS cluster with the following configuration:
 ```ts
 // provisiong a cluster
 const cluster = new eks.Cluster(this, 'hello-eks', {
-  version: eks.KubernetesVersion.V1_18,
+  version: eks.KubernetesVersion.V1_19,
 });
 
 // apply a kubernetes manifest to the cluster
@@ -152,7 +142,7 @@ Creating a new cluster is done using the `Cluster` or `FargateCluster` construct
 
 ```ts
 new eks.Cluster(this, 'HelloEKS', {
-  version: eks.KubernetesVersion.V1_18,
+  version: eks.KubernetesVersion.V1_19,
 });
 ```
 
@@ -160,7 +150,7 @@ You can also use `FargateCluster` to provision a cluster that uses only fargate 
 
 ```ts
 new eks.FargateCluster(this, 'HelloEKS', {
-  version: eks.KubernetesVersion.V1_18,
+  version: eks.KubernetesVersion.V1_19,
 });
 ```
 
@@ -184,7 +174,7 @@ At cluster instantiation time, you can customize the number of instances and the
 
 ```ts
 new eks.Cluster(this, 'HelloEKS', {
-  version: eks.KubernetesVersion.V1_18,
+  version: eks.KubernetesVersion.V1_19,
   defaultCapacity: 5,
   defaultCapacityInstance: ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.SMALL),
 });
@@ -196,12 +186,12 @@ Additional customizations are available post instantiation. To apply them, set t
 
 ```ts
 const cluster = new eks.Cluster(this, 'HelloEKS', {
-  version: eks.KubernetesVersion.V1_18,
+  version: eks.KubernetesVersion.V1_19,
   defaultCapacity: 0,
 });
 
 cluster.addNodegroupCapacity('custom-node-group', {
-  instanceType: new ec2.InstanceType('m5.large'),
+  instanceTypes: [new ec2.InstanceType('m5.large')],
   minSize: 4,
   diskSize: 100,
   amiType: eks.NodegroupAmiType.AL2_X86_64_GPU,
@@ -209,10 +199,63 @@ cluster.addNodegroupCapacity('custom-node-group', {
 });
 ```
 
+#### Spot Instances Support
+
+Use `capacityType` to create managed node groups comprised of spot instances. To maximize the availability of your applications while using
+Spot Instances, we recommend that you configure a Spot managed node group to use multiple instance types with the `instanceTypes` property. 
+
+> For more details visit [Managed node group capacity types](https://docs.aws.amazon.com/eks/latest/userguide/managed-node-groups.html#managed-node-group-capacity-types).
+
+
+```ts
+cluster.addNodegroupCapacity('extra-ng-spot', {
+  instanceTypes: [
+    new ec2.InstanceType('c5.large'),
+    new ec2.InstanceType('c5a.large'),
+    new ec2.InstanceType('c5d.large'),
+  ],
+  minSize: 3,
+  capacityType: eks.CapacityType.SPOT,
+});
+
+```
+
 #### Launch Template Support
 
-You can specify a launch template that the node group will use. Note that when using a custom AMI, Amazon EKS doesn't merge any user data.
-Rather, You are responsible for supplying the required bootstrap commands for nodes to join the cluster.
+You can specify a launch template that the node group will use. For example, this can be useful if you want to use
+a custom AMI or add custom user data.
+
+When supplying a custom user data script, it must be encoded in the MIME multi-part archive format, since Amazon EKS merges with its own user data. Visit the [Launch Template Docs](https://docs.aws.amazon.com/eks/latest/userguide/launch-templates.html#launch-template-user-data)
+for mode details.
+
+```ts
+const userData = `MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="==MYBOUNDARY=="
+
+--==MYBOUNDARY==
+Content-Type: text/x-shellscript; charset="us-ascii"
+
+#!/bin/bash
+echo "Running custom user data script"
+
+--==MYBOUNDARY==--\\
+`;
+const lt = new ec2.CfnLaunchTemplate(this, 'LaunchTemplate', {
+  launchTemplateData: {
+    instanceType: 't3.small',
+    userData: Fn.base64(userData),
+  },
+});
+cluster.addNodegroupCapacity('extra-ng', {
+  launchTemplateSpec: {
+    id: lt.ref,
+    version: lt.attrLatestVersionNumber,
+  },
+});
+
+```
+
+Note that when using a custom AMI, Amazon EKS doesn't merge any user data. Which means you do not need the multi-part encoding. and are responsible for supplying the required bootstrap commands for nodes to join the cluster.
 In the following example, `/ect/eks/bootstrap.sh` from the AMI will be used to bootstrap the node.
 
 ```ts
@@ -224,19 +267,21 @@ userData.addCommands(
 const lt = new ec2.CfnLaunchTemplate(this, 'LaunchTemplate', {
   launchTemplateData: {
     imageId: 'some-ami-id', // custom AMI
-    instanceType: new ec2.InstanceType('t3.small').toString(),
+    instanceType: 't3.small',
     userData: Fn.base64(userData.render()),
   },
 });
 cluster.addNodegroupCapacity('extra-ng', {
   launchTemplateSpec: {
     id: lt.ref,
-    version: lt.attrDefaultVersionNumber,
+    version: lt.attrLatestVersionNumber,
   },
 });
 ```
 
-> For more details visit [Launch Template Support](https://docs.aws.amazon.com/en_ca/eks/latest/userguide/launch-templates.html).
+You may specify one `instanceType` in the launch template or multiple `instanceTypes` in the node group, **but not both**.
+
+> For more details visit [Launch Template Support](https://docs.aws.amazon.com/eks/latest/userguide/launch-templates.html).
 
 Graviton 2 instance types are supported including `c6g`, `m6g`, `r6g` and `t4g`.
 
@@ -277,7 +322,7 @@ The following code defines an Amazon EKS cluster with a default Fargate Profile 
 
 ```ts
 const cluster = new eks.FargateCluster(this, 'MyCluster', {
-  version: eks.KubernetesVersion.V1_18,
+  version: eks.KubernetesVersion.V1_19,
 });
 ```
 
@@ -336,7 +381,7 @@ You can also configure the cluster to use an auto-scaling group as the default c
 
 ```ts
 cluster = new eks.Cluster(this, 'HelloEKS', {
-  version: eks.KubernetesVersion.V1_18,
+  version: eks.KubernetesVersion.V1_19,
   defaultCapacityType: eks.DefaultCapacityType.EC2,
 });
 ```
@@ -378,6 +423,8 @@ terminated.
 >
 > Chart Version: [0.9.5](https://github.com/aws/eks-charts/blob/v0.0.28/stable/aws-node-termination-handler/Chart.yaml)
 
+To disable the installation of the termination handler, set the `spotInterruptHandler` property to `false`. This applies both to `addAutoScalingGroupCapacity` and `connectAutoScalingGroupCapacity`.
+
 #### Bottlerocket
 
 [Bottlerocket](https://aws.amazon.com/bottlerocket/) is a Linux-based open-source operating system that is purpose-built by Amazon Web Services for running containers on virtual machines or bare metal hosts.
@@ -414,10 +461,12 @@ You can configure the [cluster endpoint access](https://docs.aws.amazon.com/eks/
 
 ```ts
 const cluster = new eks.Cluster(this, 'hello-eks', {
-  version: eks.KubernetesVersion.V1_18,
+  version: eks.KubernetesVersion.V1_19,
   endpointAccess: eks.EndpointAccess.PRIVATE // No access outside of your VPC.
 });
 ```
+
+The default value is `eks.EndpointAccess.PUBLIC_AND_PRIVATE`. Which means the cluster endpoint is accessible from outside of your VPC, but worker node traffic and `kubectl` commands issued by this library stay within your VPC.
 
 ### VPC Support
 
@@ -427,11 +476,13 @@ You can specify the VPC of the cluster using the `vpc` and `vpcSubnets` properti
 const vpc = new ec2.Vpc(this, 'Vpc');
 
 new eks.Cluster(this, 'HelloEKS', {
-  version: eks.KubernetesVersion.V1_18,
+  version: eks.KubernetesVersion.V1_19,
   vpc,
   vpcSubnets: [{ subnetType: ec2.SubnetType.PRIVATE }]
 });
 ```
+
+> Note: Isolated VPCs (i.e with no internet access) are not currently supported. See https://github.com/aws/aws-cdk/issues/12171
 
 If you do not specify a VPC, one will be created on your behalf, which you can then access via `cluster.vpc`. The cluster VPC will be associated to any EKS managed capacity (i.e Managed Node Groups and Fargate Profiles).
 
@@ -444,8 +495,7 @@ cluster.addAutoScalingGroupCapacity('nodes', {
 });
 ```
 
-In addition to the cluster and the capacity, there are two additional components you might want to
-provision within a VPC.
+There are two additional components you might want to provision within the VPC.
 
 #### Kubectl Handler
 
@@ -459,7 +509,18 @@ If the endpoint does not expose private access (via `EndpointAccess.PUBLIC`) **o
 
 #### Cluster Handler
 
-The `ClusterHandler` is a Lambda function responsible to interact the EKS API in order to control the cluster lifecycle. At the moment, this function cannot be provisioned inside the VPC. See [Attach all Lambda Function to a VPC](https://github.com/aws/aws-cdk/issues/9509) for more details.
+The `ClusterHandler` is a Lambda function responsible to interact with the EKS API in order to control the cluster lifecycle. To provision this function inside the VPC, set the `placeClusterHandlerInVpc` property to `true`. This will place the function inside the private subnets of the VPC based on the selection strategy specified in the [`vpcSubnets`](https://docs.aws.amazon.com/cdk/api/latest/docs/@aws-cdk_aws-eks.Cluster.html#vpcsubnetsspan-classapi-icon-api-icon-experimental-titlethis-api-element-is-experimental-it-may-change-without-noticespan) property.
+
+You can configure the environment of this function by specifying it at cluster instantiation. For example, this can be useful in order to configure an http proxy:
+
+```ts
+const cluster = new eks.Cluster(this, 'hello-eks', {
+  version: eks.KubernetesVersion.V1_19,
+  clusterHandlerEnvironment: {
+    'http_proxy': 'http://proxy.myproxy.com'
+  }
+});
+```
 
 ### Kubectl Support
 
@@ -471,7 +532,7 @@ You can configure the environment of this function by specifying it at cluster i
 
 ```ts
 const cluster = new eks.Cluster(this, 'hello-eks', {
-  version: eks.KubernetesVersion.V1_18,
+  version: eks.KubernetesVersion.V1_19,
   kubectlEnvironment: {
     'http_proxy': 'http://proxy.myproxy.com'
   }
@@ -480,26 +541,32 @@ const cluster = new eks.Cluster(this, 'hello-eks', {
 
 #### Runtime
 
-By default, the `kubectl`, `helm` and `aws` commands used to operate the cluster are provided by an AWS Lambda Layer from the AWS Serverless Application in [aws-lambda-layer-kubectl](https://github.com/aws-samples/aws-lambda-layer-kubectl). In most cases this should be sufficient.
+The kubectl handler uses `kubectl`, `helm` and the `aws` CLI in order to
+interact with the cluster. These are bundled into AWS Lambda layers included in
+the `@aws-cdk/lambda-layer-awscli` and `@aws-cdk/lambda-layer-kubectl` modules.
 
-You can provide a custom layer in case the default layer does not meet your
-needs or if the SAR app is not available in your region.
+You can specify a custom `lambda.LayerVersion` if you wish to use a different
+version of these tools. The handler expects the layer to include the following
+three executables:
+
+```text
+helm/helm
+kubectl/kubectl
+awscli/aws
+```
+
+See more information in the
+[Dockerfile](https://github.com/aws/aws-cdk/tree/master/packages/%40aws-cdk/lambda-layer-awscli/layer) for @aws-cdk/lambda-layer-awscli
+and the
+[Dockerfile](https://github.com/aws/aws-cdk/tree/master/packages/%40aws-cdk/lambda-layer-kubectl/layer) for @aws-cdk/lambda-layer-kubectl.
 
 ```ts
-// custom build:
 const layer = new lambda.LayerVersion(this, 'KubectlLayer', {
-  code: lambda.Code.fromAsset(`${__dirname}/layer.zip`)),
-  compatibleRuntimes: [lambda.Runtime.PROVIDED]
-});
-
-// or, a specific version or appid of aws-lambda-layer-kubectl:
-const layer = new eks.KubectlLayer(this, 'KubectlLayer', {
-  version: '2.0.0',    // optional
-  applicationId: '...' // optional
+  code: lambda.Code.fromAsset('layer.zip'),
 });
 ```
 
-Pass it to `kubectlLayer` when you create or import a cluster:
+Now specify when the cluster is defined:
 
 ```ts
 const cluster = new eks.Cluster(this, 'MyCluster', {
@@ -511,9 +578,6 @@ const cluster = eks.Cluster.fromClusterAttributes(this, 'MyCluster', {
   kubectlLayer: layer,
 });
 ```
-
-> Instructions on how to build `layer.zip` can be found
-> [here](https://github.com/aws-samples/aws-lambda-layer-kubectl/blob/master/cdk/README.md).
 
 #### Memory
 
@@ -540,7 +604,7 @@ Amazon Linux 2 AMI for ARM64 will be automatically selected.
 ```ts
 // add a managed ARM64 nodegroup
 cluster.addNodegroupCapacity('extra-ng-arm', {
-  instanceType: new ec2.InstanceType('m6g.medium'),
+  instanceTypes: [new ec2.InstanceType('m6g.medium')],
   minSize: 2,
 });
 
@@ -558,7 +622,7 @@ When you create a cluster, you can specify a `mastersRole`. The `Cluster` constr
 ```ts
 const role = new iam.Role(...);
 new eks.Cluster(this, 'HelloEKS', {
-  version: eks.KubernetesVersion.V1_18,
+  version: eks.KubernetesVersion.V1_19,
   mastersRole: role,
 });
 ```
@@ -571,8 +635,6 @@ This is the role you see as part of the stack outputs mentioned in the [Quick St
 $ aws eks update-kubeconfig --name cluster-xxxxx --role-arn arn:aws:iam::112233445566:role/yyyyy
 Added new context arn:aws:eks:rrrrr:112233445566:cluster/cluster-xxxxx to /home/boom/.kube/config
 ```
-
-The default value is `eks.EndpointAccess.PUBLIC_AND_PRIVATE`. Which means the cluster endpoint is accessible from outside of your VPC, but worker node traffic and `kubectl` commands issued by this library stay within your VPC.
 
 ### Encryption
 
@@ -841,6 +903,19 @@ when a cluster is defined:
 ```ts
 new Cluster(this, 'MyCluster', {
   prune: false
+});
+```
+
+#### Manifests Validation
+
+The `kubectl` CLI supports applying a manifest by skipping the validation.
+This can be accomplished by setting the `skipValidation` flag to `true` in the `KubernetesManifest` props.
+
+```ts
+new eks.KubernetesManifest(this, 'HelloAppWithoutValidation', {
+  cluster: this.cluster,
+  manifest: [ deployment, service ],
+  skipValidation: true,
 });
 ```
 
@@ -1122,6 +1197,5 @@ Kubernetes [endpoint access](#endpoint-access), you must also specify:
 ## Known Issues and Limitations
 
 * [One cluster per stack](https://github.com/aws/aws-cdk/issues/10073)
-* [Object pruning](https://github.com/aws/aws-cdk/issues/10495)
 * [Service Account dependencies](https://github.com/aws/aws-cdk/issues/9910)
-* [Attach all Lambda Functions to VPC](https://github.com/aws/aws-cdk/issues/9509)
+* [Support isolated VPCs](https://github.com/aws/aws-cdk/issues/12171)

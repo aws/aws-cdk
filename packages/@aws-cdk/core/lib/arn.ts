@@ -77,10 +77,10 @@ export class Arn {
    * can be 'undefined'.
    */
   public static format(components: ArnComponents, stack: Stack): string {
-    const partition = components.partition !== undefined ? components.partition : stack.partition;
-    const region = components.region !== undefined ? components.region : stack.region;
-    const account = components.account !== undefined ? components.account : stack.account;
-    const sep = components.sep !== undefined ? components.sep : '/';
+    const partition = components.partition ?? stack.partition;
+    const region = components.region ?? stack.region;
+    const account = components.account ?? stack.account;
+    const sep = components.sep ?? '/';
 
     const values = ['arn', ':', partition, ':', components.service, ':', region, ':', account, ':', components.resource];
 

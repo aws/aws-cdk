@@ -37,6 +37,17 @@ const devDomain = new es.Domain(this, 'Domain', {
 });
 ```
 
+To perform version upgrades without replacing the entire domain, specify the `enableVersionUpgrade` property.
+
+```ts
+import * as es from '@aws-cdk/aws-elasticsearch';
+
+const devDomain = new es.Domain(this, 'Domain', {
+    version: es.ElasticsearchVersion.V7_9,
+    enableVersionUpgrade: true // defaults to false
+});
+```
+
 Create a production grade cluster by also specifying things like capacity and az distribution
 
 ```ts
@@ -62,6 +73,30 @@ const prodDomain = new es.Domain(this, 'Domain', {
 
 This creates an Elasticsearch cluster and automatically sets up log groups for
 logging the domain logs and slow search logs.
+
+## A note about SLR
+
+Some cluster configurations (e.g VPC access) require the existence of the [`AWSServiceRoleForAmazonElasticsearchService`](https://docs.aws.amazon.com/elasticsearch-service/latest/developerguide/slr-es.html) Service-Linked Role.
+
+When performing such operations via the AWS Console, this SLR is created automatically when needed. However, this is not the behavior when using CloudFormation. If an SLR is needed, but doesn't exist, you will encounter a failure message simlar to:
+
+```console
+Before you can proceed, you must enable a service-linked role to give Amazon ES...
+```
+
+To resolve this, you need to [create](https://docs.aws.amazon.com/IAM/latest/UserGuide/using-service-linked-roles.html#create-service-linked-role) the SLR. We recommend using the AWS CLI:
+
+```console
+aws iam create-service-linked-role --aws-service-name es.amazonaws.com
+```
+
+You can also create it using the CDK, **but note that only the first application deploying this will succeed**:
+
+```ts
+const slr = new iam.CfnServiceLinkedRole(this, 'ElasticSLR', {
+  awsServiceName: 'es.amazonaws.com'
+});
+```
 
 ## Importing existing domains
 
@@ -199,3 +234,35 @@ const domain = new es.Domain(this, 'Domain', {
     },
 });
 ```
+
+## UltraWarm
+
+UltraWarm nodes can be enabled to provide a cost-effective way to store large amounts of read-only data.
+
+```ts
+const domain = new es.Domain(this, 'Domain', {
+    version: es.ElasticsearchVersion.V7_9,
+    capacity: {
+        masterNodes: 2,
+        warmNodes: 2,
+        warmInstanceType: 'ultrawarm1.medium.elasticsearch',
+    },
+});
+```
+
+## Custom endpoint
+
+Custom endpoints can be configured to reach the ES domain under a custom domain name.
+
+```ts
+new Domain(stack, 'Domain', {
+    version: ElasticsearchVersion.V7_7,
+    customEndpoint: {
+        domainName: 'search.example.com',
+    },
+});
+```
+
+It is also possible to specify a custom certificate instead of the auto-generated one.
+
+Additionally, an automatic CNAME-Record is created if a hosted zone is provided for the custom endpoint

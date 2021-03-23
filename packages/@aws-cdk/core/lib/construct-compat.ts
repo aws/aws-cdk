@@ -473,6 +473,13 @@ export class ConstructNode {
   }
 
   /**
+   * Add a validator to this construct Node
+   */
+  public addValidation(validation: constructs.IValidation) {
+    this._actualNode.addValidation(validation);
+  }
+
+  /**
    * All parent scopes of this construct.
    *
    * @returns a list of parent scopes. The last element in the list will always

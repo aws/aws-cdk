@@ -119,7 +119,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
     return this.addListener(`Redirect${sourcePort}To${targetPort}`, {
       protocol: props.sourceProtocol ?? ApplicationProtocol.HTTP,
       port: sourcePort,
-      open: true,
+      open: props.open ?? true,
       defaultAction: ListenerAction.redirect({
         port: targetPort,
         protocol: props.targetProtocol ?? ApplicationProtocol.HTTPS,
@@ -664,5 +664,20 @@ export interface ApplicationLoadBalancerRedirectConfig {
    * @default 443
    */
   readonly targetPort?: number;
+
+  /**
+   * Allow anyone to connect to this listener
+   *
+   * If this is specified, the listener will be opened up to anyone who can reach it.
+   * For internal load balancers this is anyone in the same VPC. For public load
+   * balancers, this is anyone on the internet.
+   *
+   * If you want to be more selective about who can access this load
+   * balancer, set this to `false` and use the listener's `connections`
+   * object to selectively grant access to the listener.
+   *
+   * @default true
+   */
+  readonly open?: boolean;
 
 }

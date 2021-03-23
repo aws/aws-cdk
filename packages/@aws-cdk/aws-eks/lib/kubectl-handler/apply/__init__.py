@@ -23,7 +23,8 @@ def apply_handler(event, context):
     manifest_text = props['Manifest']
     role_arn      = props['RoleArn']
     prune_label   = props.get('PruneLabel', None)
-    overwrite     = props.get('Overwrite', False)
+    overwrite     = props.get('Overwrite', 'false').lower() == 'true'
+    skip_validation = props.get('SkipValidation', 'false').lower() == 'true'
 
     # "log in" to the cluster
     cmd = [ 'aws', 'eks', 'update-kubeconfig',
@@ -43,20 +44,25 @@ def apply_handler(event, context):
 
     logger.info("manifest written to: %s" % manifest_file)
 
+    kubectl_opts = []
+    if skip_validation:
+        kubectl_opts.extend(['--validate=false'])
+
     if request_type == 'Create':
         # if "overwrite" is enabled, then we use "apply" for CREATE operations
         # which technically means we can determine the desired state of an
         # existing resource.
         if overwrite:
-            kubectl('apply', manifest_file)
+            kubectl('apply', manifest_file, *kubectl_opts)
         else:
             # --save-config will allow us to use "apply" later
-            kubectl('create', manifest_file, '--save-config')
+            kubectl_opts.extend(['--save-config'])
+            kubectl('create', manifest_file, *kubectl_opts)
     elif request_type == 'Update':
-        opts = []
         if prune_label is not None:
-            opts = ['--prune', '-l', prune_label]
-        kubectl('apply', manifest_file, *opts)
+            kubectl_opts.extend(['--prune', '-l', prune_label])
+
+        kubectl('apply', manifest_file, *kubectl_opts)
     elif request_type == "Delete":
         try:
             kubectl('delete', manifest_file)

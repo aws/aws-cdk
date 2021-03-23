@@ -7,7 +7,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
-import { Aws, Duration, IResource, Lazy, Names, PhysicalName, Resource, Stack } from '@aws-cdk/core';
+import { Aws, Duration, IResource, Lazy, Names, PhysicalName, Resource, SecretValue, Stack, Tokenization } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { IArtifacts } from './artifacts';
 import { BuildSpec } from './build-spec';
@@ -28,6 +28,14 @@ import { CODEPIPELINE_SOURCE_ARTIFACTS_TYPE, NO_SOURCE_TYPE } from './source-typ
 // eslint-disable-next-line
 import { Construct as CoreConstruct } from '@aws-cdk/core';
 
+/**
+ * The type returned from {@link IProject#enableBatchBuilds}.
+ */
+export interface BatchBuildConfig {
+  /** The IAM batch service Role of this Project. */
+  readonly role: iam.IRole;
+}
+
 export interface IProject extends IResource, iam.IGrantable, ec2.IConnectable {
   /**
    * The ARN of this Project.
@@ -43,6 +51,14 @@ export interface IProject extends IResource, iam.IGrantable, ec2.IConnectable {
 
   /** The IAM service Role of this Project. Undefined for imported Projects. */
   readonly role?: iam.IRole;
+
+  /**
+   * Enable batch builds.
+   *
+   * Returns an object contining the batch service role if batch builds
+   * could be enabled.
+   */
+  enableBatchBuilds(): BatchBuildConfig | undefined;
 
   addToRolePolicy(policyStatement: iam.PolicyStatement): void;
 
@@ -196,13 +212,17 @@ abstract class ProjectBase extends Resource implements IProject {
     return this._connections;
   }
 
+  public enableBatchBuilds(): BatchBuildConfig | undefined {
+    return undefined;
+  }
+
   /**
    * Add a permission only if there's a policy attached.
    * @param statement The permissions statement to add
    */
   public addToRolePolicy(statement: iam.PolicyStatement) {
     if (this.role) {
-      this.role.addToPolicy(statement);
+      this.role.addToPrincipalPolicy(statement);
     }
   }
 
@@ -466,6 +486,17 @@ export interface CommonProjectProps {
   readonly environmentVariables?: { [name: string]: BuildEnvironmentVariable };
 
   /**
+   * Whether to check for the presence of any secrets in the environment variables of the default type, BuildEnvironmentVariableType.PLAINTEXT.
+   * Since using a secret for the value of that kind of variable would result in it being displayed in plain text in the AWS Console,
+   * the construct will throw an exception if it detects a secret was passed there.
+   * Pass this property as false if you want to skip this validation,
+   * and keep using a secret in a plain text environment variable.
+   *
+   * @default true
+   */
+  readonly checkSecretsInPlainTextEnvVariables?: boolean;
+
+  /**
    * The physical, human-readable name of the CodeBuild Project.
    *
    * @default - Name is automatically generated.
@@ -544,6 +575,15 @@ export interface CommonProjectProps {
    * @default - no log configuration is set
    */
   readonly logging?: LoggingOptions;
+
+  /**
+   * The number of minutes after which AWS CodeBuild stops the build if it's
+   * still in queue. For valid values, see the timeoutInMinutes field in the AWS
+   * CodeBuild User Guide.
+   *
+   * @default - no queue timeout is set
+   */
+  readonly queuedTimeout?: Duration
 }
 
 export interface ProjectProps extends CommonProjectProps {
@@ -659,15 +699,81 @@ export class Project extends ProjectBase {
    * which is the representation of environment variables in CloudFormation.
    *
    * @param environmentVariables the map of string to environment variables
+   * @param validateNoPlainTextSecrets whether to throw an exception
+   *   if any of the plain text environment variables contain secrets, defaults to 'false'
    * @returns an array of {@link CfnProject.EnvironmentVariableProperty} instances
    */
-  public static serializeEnvVariables(environmentVariables: { [name: string]: BuildEnvironmentVariable }):
-  CfnProject.EnvironmentVariableProperty[] {
-    return Object.keys(environmentVariables).map(name => ({
-      name,
-      type: environmentVariables[name].type || BuildEnvironmentVariableType.PLAINTEXT,
-      value: environmentVariables[name].value,
-    }));
+  public static serializeEnvVariables(environmentVariables: { [name: string]: BuildEnvironmentVariable },
+    validateNoPlainTextSecrets: boolean = false, principal?: iam.IGrantable): CfnProject.EnvironmentVariableProperty[] {
+
+    const ret = new Array<CfnProject.EnvironmentVariableProperty>();
+    const ssmVariables = new Array<string>();
+    const secretsManagerSecrets = new Array<string>();
+
+    for (const [name, envVariable] of Object.entries(environmentVariables)) {
+      const cfnEnvVariable: CfnProject.EnvironmentVariableProperty = {
+        name,
+        type: envVariable.type || BuildEnvironmentVariableType.PLAINTEXT,
+        value: envVariable.value?.toString(),
+      };
+      ret.push(cfnEnvVariable);
+
+      // validate that the plain-text environment variables don't contain any secrets in them
+      if (validateNoPlainTextSecrets && cfnEnvVariable.type === BuildEnvironmentVariableType.PLAINTEXT) {
+        const fragments = Tokenization.reverseString(cfnEnvVariable.value);
+        for (const token of fragments.tokens) {
+          if (token instanceof SecretValue) {
+            throw new Error(`Plaintext environment variable '${name}' contains a secret value! ` +
+              'This means the value of this variable will be visible in plain text in the AWS Console. ' +
+              "Please consider using CodeBuild's SecretsManager environment variables feature instead. " +
+              "If you'd like to continue with having this secret in the plaintext environment variables, " +
+              'please set the checkSecretsInPlainTextEnvVariables property to false');
+          }
+        }
+      }
+
+      if (principal) {
+        // save the SSM env variables
+        if (envVariable.type === BuildEnvironmentVariableType.PARAMETER_STORE) {
+          const envVariableValue = envVariable.value.toString();
+          ssmVariables.push(Stack.of(principal).formatArn({
+            service: 'ssm',
+            resource: 'parameter',
+            // If the parameter name starts with / the resource name is not separated with a double '/'
+            // arn:aws:ssm:region:1111111111:parameter/PARAM_NAME
+            resourceName: envVariableValue.startsWith('/')
+              ? envVariableValue.substr(1)
+              : envVariableValue,
+          }));
+        }
+
+        // save SecretsManager env variables
+        if (envVariable.type === BuildEnvironmentVariableType.SECRETS_MANAGER) {
+          secretsManagerSecrets.push(Stack.of(principal).formatArn({
+            service: 'secretsmanager',
+            resource: 'secret',
+            // we don't know the exact ARN of the Secret just from its name, but we can get close
+            resourceName: `${envVariable.value}-??????`,
+            sep: ':',
+          }));
+        }
+      }
+    }
+
+    if (ssmVariables.length !== 0) {
+      principal?.grantPrincipal.addToPrincipalPolicy(new iam.PolicyStatement({
+        actions: ['ssm:GetParameters'],
+        resources: ssmVariables,
+      }));
+    }
+    if (secretsManagerSecrets.length !== 0) {
+      principal?.grantPrincipal.addToPrincipalPolicy(new iam.PolicyStatement({
+        actions: ['secretsmanager:GetSecretValue'],
+        resources: secretsManagerSecrets,
+      }));
+    }
+
+    return ret;
   }
 
   public readonly grantPrincipal: iam.IPrincipal;
@@ -694,6 +800,7 @@ export class Project extends ProjectBase {
   private readonly _secondaryArtifacts: CfnProject.ArtifactsProperty[];
   private _encryptionKey?: kms.IKey;
   private readonly _fileSystemLocations: CfnProject.ProjectFileSystemLocationProperty[];
+  private _batchServiceRole?: iam.Role;
 
   constructor(scope: Construct, id: string, props: ProjectProps) {
     super(scope, id, {
@@ -761,7 +868,7 @@ export class Project extends ProjectBase {
       },
       artifacts: artifactsConfig.artifactsProperty,
       serviceRole: this.role.roleArn,
-      environment: this.renderEnvironment(props.environment, environmentVariables),
+      environment: this.renderEnvironment(props, environmentVariables),
       fileSystemLocations: Lazy.any({ produce: () => this.renderFileSystemLocations() }),
       // lazy, because we have a setter for it in setEncryptionKey
       // The 'alias/aws/s3' default is necessary because leaving the `encryptionKey` field
@@ -771,6 +878,7 @@ export class Project extends ProjectBase {
       cache: cache._toCloudFormation(),
       name: this.physicalName,
       timeoutInMinutes: props.timeout && props.timeout.toMinutes(),
+      queuedTimeoutInMinutes: props.queuedTimeout && props.queuedTimeout.toMinutes(),
       secondarySources: Lazy.any({ produce: () => this.renderSecondarySources() }),
       secondarySourceVersions: Lazy.any({ produce: () => this.renderSecondarySourceVersions() }),
       secondaryArtifacts: Lazy.any({ produce: () => this.renderSecondaryArtifacts() }),
@@ -778,6 +886,14 @@ export class Project extends ProjectBase {
       sourceVersion: sourceConfig.sourceVersion,
       vpcConfig: this.configureVpc(props),
       logsConfig: this.renderLoggingConfiguration(props.logging),
+      buildBatchConfig: Lazy.any({
+        produce: () => {
+          const config: CfnProject.ProjectBuildBatchConfigProperty | undefined = this._batchServiceRole ? {
+            serviceRole: this._batchServiceRole.roleArn,
+          } : undefined;
+          return config;
+        },
+      }),
     });
 
     this.addVpcRequiredPermissions(props, resource);
@@ -790,7 +906,6 @@ export class Project extends ProjectBase {
     this.projectName = this.getResourceNameAttribute(resource.ref);
 
     this.addToRolePolicy(this.createLoggingPermission());
-    this.addParameterStorePermission(props);
     // add permissions to create and use test report groups
     // with names starting with the project's name,
     // unless the customer explicitly opts out of it
@@ -816,6 +931,27 @@ export class Project extends ProjectBase {
     if (bindFunction) {
       bindFunction.call(this.buildImage, this, this, {});
     }
+  }
+
+  public enableBatchBuilds(): BatchBuildConfig | undefined {
+    if (!this._batchServiceRole) {
+      this._batchServiceRole = new iam.Role(this, 'BatchServiceRole', {
+        assumedBy: new iam.ServicePrincipal('codebuild.amazonaws.com'),
+      });
+      this._batchServiceRole.addToPrincipalPolicy(new iam.PolicyStatement({
+        resources: [Lazy.string({
+          produce: () => this.projectArn,
+        })],
+        actions: [
+          'codebuild:StartBuild',
+          'codebuild:StopBuild',
+          'codebuild:RetryBuild',
+        ],
+      }));
+    }
+    return {
+      role: this._batchServiceRole,
+    };
   }
 
   /**
@@ -922,38 +1058,11 @@ export class Project extends ProjectBase {
     });
   }
 
-  private addParameterStorePermission(props: ProjectProps) {
-    if (!props.environmentVariables) {
-      return;
-    }
-
-    const resources = Object.values(props.environmentVariables)
-      .filter(envVariable => envVariable.type === BuildEnvironmentVariableType.PARAMETER_STORE)
-      .map(envVariable =>
-        // If the parameter name starts with / the resource name is not separated with a double '/'
-        // arn:aws:ssm:region:1111111111:parameter/PARAM_NAME
-        (envVariable.value as string).startsWith('/')
-          ? (envVariable.value as string).substr(1)
-          : envVariable.value)
-      .map(envVariable => Stack.of(this).formatArn({
-        service: 'ssm',
-        resource: 'parameter',
-        resourceName: envVariable,
-      }));
-
-    if (resources.length === 0) {
-      return;
-    }
-
-    this.addToRolePolicy(new iam.PolicyStatement({
-      actions: ['ssm:GetParameters'],
-      resources,
-    }));
-  }
-
   private renderEnvironment(
-    env: BuildEnvironment = {},
+    props: ProjectProps,
     projectVars: { [name: string]: BuildEnvironmentVariable } = {}): CfnProject.EnvironmentProperty {
+
+    const env = props.environment ?? {};
     const vars: { [name: string]: BuildEnvironmentVariable } = {};
     const containerVars = env.environmentVariables || {};
 
@@ -1008,7 +1117,9 @@ export class Project extends ProjectBase {
         : undefined,
       privilegedMode: env.privileged || false,
       computeType: env.computeType || this.buildImage.defaultComputeType,
-      environmentVariables: hasEnvironmentVars ? Project.serializeEnvVariables(vars) : undefined,
+      environmentVariables: hasEnvironmentVars
+        ? Project.serializeEnvVariables(vars, props.checkSecretsInPlainTextEnvVariables ?? true, this)
+        : undefined,
     };
   }
 
@@ -1076,18 +1187,19 @@ export class Project extends ProjectBase {
   private renderLoggingConfiguration(props: LoggingOptions | undefined): CfnProject.LogsConfigProperty | undefined {
     if (props === undefined) {
       return undefined;
-    };
+    }
 
-    let s3Config: CfnProject.S3LogsConfigProperty|undefined = undefined;
-    let cloudwatchConfig: CfnProject.CloudWatchLogsConfigProperty|undefined = undefined;
+    let s3Config: CfnProject.S3LogsConfigProperty | undefined = undefined;
+    let cloudwatchConfig: CfnProject.CloudWatchLogsConfigProperty | undefined = undefined;
 
     if (props.s3) {
       const s3Logs = props.s3;
       s3Config = {
         status: (s3Logs.enabled ?? true) ? 'ENABLED' : 'DISABLED',
-        location: `${s3Logs.bucket.bucketName}/${s3Logs.prefix}`,
+        location: `${s3Logs.bucket.bucketName}` + (s3Logs.prefix ? `/${s3Logs.prefix}` : ''),
         encryptionDisabled: s3Logs.encrypted,
       };
+      s3Logs.bucket?.grantWrite(this);
     }
 
     if (props.cloudWatch) {
@@ -1097,6 +1209,7 @@ export class Project extends ProjectBase {
       if (status === 'ENABLED' && !(cloudWatchLogs.logGroup)) {
         throw new Error('Specifying a LogGroup is required if CloudWatch logging for CodeBuild is enabled');
       }
+      cloudWatchLogs.logGroup?.grantWrite(this);
 
       cloudwatchConfig = {
         status,
@@ -1116,7 +1229,7 @@ export class Project extends ProjectBase {
       return;
     }
 
-    this.role.addToPolicy(new iam.PolicyStatement({
+    this.role.addToPrincipalPolicy(new iam.PolicyStatement({
       resources: [`arn:${Aws.PARTITION}:ec2:${Aws.REGION}:${Aws.ACCOUNT_ID}:network-interface/*`],
       actions: ['ec2:CreateNetworkInterfacePermission'],
       conditions: {
@@ -1287,10 +1400,10 @@ export interface IBuildImage {
 }
 
 /** Optional arguments to {@link IBuildImage.binder} - currently empty. */
-export interface BuildImageBindOptions {}
+export interface BuildImageBindOptions { }
 
 /** The return type from {@link IBuildImage.binder} - currently empty. */
-export interface BuildImageConfig {}
+export interface BuildImageConfig { }
 
 // @deprecated(not in tsdoc on purpose): add bind() to IBuildImage
 // and get rid of IBindableBuildImage
@@ -1373,6 +1486,8 @@ export class LinuxBuildImage implements IBuildImage {
   public static readonly STANDARD_3_0 = LinuxBuildImage.codeBuildImage('aws/codebuild/standard:3.0');
   /** The `aws/codebuild/standard:4.0` build image. */
   public static readonly STANDARD_4_0 = LinuxBuildImage.codeBuildImage('aws/codebuild/standard:4.0');
+  /** The `aws/codebuild/standard:5.0` build image. */
+  public static readonly STANDARD_5_0 = LinuxBuildImage.codeBuildImage('aws/codebuild/standard:5.0');
 
   public static readonly AMAZON_LINUX_2 = LinuxBuildImage.codeBuildImage('aws/codebuild/amazonlinux2-x86_64-standard:1.0');
   public static readonly AMAZON_LINUX_2_2 = LinuxBuildImage.codeBuildImage('aws/codebuild/amazonlinux2-x86_64-standard:2.0');
@@ -1713,8 +1828,10 @@ export interface BuildEnvironmentVariable {
   readonly type?: BuildEnvironmentVariableType;
 
   /**
-   * The value of the environment variable (or the name of the parameter in
-   * the SSM parameter store.)
+   * The value of the environment variable.
+   * For plain-text variables (the default), this is the literal value of variable.
+   * For SSM parameter variables, pass the name of the parameter here (`parameterName` property of `IParameter`).
+   * For SecretsManager variables secrets, pass the secret name here (`secretName` property of `ISecret`).
    */
   readonly value: any;
 }

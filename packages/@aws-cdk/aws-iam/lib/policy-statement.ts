@@ -1,4 +1,5 @@
 import * as cdk from '@aws-cdk/core';
+import { Group } from './group';
 import {
   AccountPrincipal, AccountRootPrincipal, Anyone, ArnPrincipal, CanonicalUserPrincipal,
   FederatedPrincipal, IPrincipal, PrincipalBase, PrincipalPolicyFragment, ServicePrincipal, ServicePrincipalOpts,
@@ -63,7 +64,8 @@ export class PolicyStatement {
   constructor(props: PolicyStatementProps = {}) {
     // Validate actions
     for (const action of [...props.actions || [], ...props.notActions || []]) {
-      if (!/^(\*|[a-zA-Z0-9-]+:[a-zA-Z0-9*]+)$/.test(action)) {
+
+      if (!/^(\*|[a-zA-Z0-9-]+:[a-zA-Z0-9*]+)$/.test(action) && !cdk.Token.isUnresolved(action)) {
         throw new Error(`Action '${action}' is invalid. An action string consists of a service namespace, a colon, and the name of an action. Action names can include wildcards.`);
       }
     }
@@ -138,6 +140,7 @@ export class PolicyStatement {
       throw new Error('Cannot add \'Principals\' to policy statement if \'NotPrincipals\' have been added');
     }
     for (const principal of principals) {
+      this.validatePolicyPrincipal(principal);
       const fragment = principal.policyFragment;
       mergePrincipal(this.principal, fragment.principalJson);
       this.addPrincipalConditions(fragment.conditions);
@@ -157,9 +160,16 @@ export class PolicyStatement {
       throw new Error('Cannot add \'NotPrincipals\' to policy statement if \'Principals\' have been added');
     }
     for (const notPrincipal of notPrincipals) {
+      this.validatePolicyPrincipal(notPrincipal);
       const fragment = notPrincipal.policyFragment;
       mergePrincipal(this.notPrincipal, fragment.principalJson);
       this.addPrincipalConditions(fragment.conditions);
+    }
+  }
+
+  private validatePolicyPrincipal(principal: IPrincipal) {
+    if (principal instanceof Group) {
+      throw new Error('Cannot use an IAM Group as the \'Principal\' or \'NotPrincipal\' in an IAM Policy');
     }
   }
 

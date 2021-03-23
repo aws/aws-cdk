@@ -57,6 +57,26 @@ const sourceAction = new codepipeline_actions.CodeCommitSourceAction({
 });
 ```
 
+If you want to clone the entire CodeCommit repository (only available for CodeBuild actions),
+you can set the `codeBuildCloneOutput` property to `true`:
+
+```ts
+const sourceOutput = new codepipeline.Artifact();
+const sourceAction = new codepipeline_actions.CodeCommitSourceAction({
+  actionName: 'CodeCommit',
+  repository: repo,
+  output: sourceOutput,
+  codeBuildCloneOutput: true,
+});
+
+const buildAction = new codepipeline_actions.CodeBuildAction({
+  actionName: 'CodeBuild',
+  project,
+  input: sourceOutput, // The build action must use the CodeCommitSourceAction output as input.
+  outputs: [new codepipeline.Artifact()], // optional
+});
+```
+
 The CodeCommit source action emits variables:
 
 ```ts
@@ -137,7 +157,7 @@ CodePipeline can use a BitBucket Git repository as a source:
 **Note**: you have to manually connect CodePipeline through the AWS Console with your BitBucket account.
 This is a one-time operation for a given AWS account in a given region.
 The simplest way to do that is to either start creating a new CodePipeline,
-or edit na existing one, while being logged in to BitBucket.
+or edit an existing one, while being logged in to BitBucket.
 Choose BitBucket as the source,
 and grant CodePipeline permissions to your BitBucket account.
 Copy & paste the Connection ARN that you get in the console,
@@ -212,7 +232,10 @@ import * as cloudtrail from '@aws-cdk/aws-cloudtrail';
 
 const key = 'some/key.zip';
 const trail = new cloudtrail.Trail(this, 'CloudTrail');
-trail.addS3EventSelector([sourceBucket.arnForObjects(key)], {
+trail.addS3EventSelector([{
+  bucket: sourceBucket,
+  objectPrefix: key,
+}], {
   readWriteType: cloudtrail.ReadWriteType.WRITE_ONLY,
 });
 const sourceAction = new codepipeline_actions.S3SourceAction({
@@ -609,7 +632,7 @@ const lambdaCode = lambda.Code.fromCfnParameters();
 const func = new lambda.Function(lambdaStack, 'Lambda', {
   code: lambdaCode,
   handler: 'index.handler',
-  runtime: lambda.Runtime.NODEJS_10_X,
+  runtime: lambda.Runtime.NODEJS_12_X,
 });
 // used to make sure each CDK synthesis produces a different Version
 const version = func.addVersion('NewVersion');
@@ -660,7 +683,7 @@ const deployStage = pipeline.addStage({
 #### Deploying ECS applications stored in a separate source code repository
 
 The idiomatic CDK way of deploying an ECS application is to have your Dockerfiles and your CDK code in the same source code repository,
-leveraging [Docker Assets])(https://docs.aws.amazon.com/cdk/latest/guide/assets.html#assets_types_docker),
+leveraging [Docker Assets](https://docs.aws.amazon.com/cdk/latest/guide/assets.html#assets_types_docker),
 and use the [CDK Pipelines module](https://docs.aws.amazon.com/cdk/api/latest/docs/pipelines-readme.html).
 
 However, if you want to deploy a Docker application whose source code is kept in a separate version control repository than the CDK code,
@@ -686,6 +709,70 @@ const deployAction = new codepipeline_actions.S3DeployAction({
 const deployStage = pipeline.addStage({
   stageName: 'Deploy',
   actions: [deployAction],
+});
+```
+
+#### Invalidating the CloudFront cache when deploying to S3
+
+There is currently no native support in CodePipeline for invalidating a CloudFront cache after deployment.
+One workaround is to add another build step after the deploy step,
+and use the AWS CLI to invalidate the cache:
+
+```ts
+// Create a Cloudfront Web Distribution
+const distribution = new cloudfront.Distribution(this, `Distribution`, {
+  // ...
+});
+
+// Create the build project that will invalidate the cache
+const invalidateBuildProject = new codebuild.PipelineProject(this, `InvalidateProject`, {
+  buildSpec: codebuild.BuildSpec.fromObject({
+    version: '0.2',
+    phases: {
+      build: {
+        commands:[
+          'aws cloudfront create-invalidation --distribution-id ${CLOUDFRONT_ID} --paths "/*"',
+          // Choose whatever files or paths you'd like, or all files as specified here
+        ],
+      },
+    },
+  }),
+  environmentVariables: {
+    CLOUDFRONT_ID: { value: distribution.distributionId },
+  },
+});
+
+// Add Cloudfront invalidation permissions to the project
+const distributionArn = `arn:aws:cloudfront::${this.account}:distribution/${distribution.distributionId}`;
+invalidateBuildProject.addToRolePolicy(new iam.PolicyStatement({
+  resources: [distributionArn],
+  actions: [
+    'cloudfront:CreateInvalidation',
+  ],
+}));
+
+// Create the pipeline (here only the S3 deploy and Invalidate cache build)
+new codepipeline.Pipeline(this, 'Pipeline', {
+  stages: [
+    // ...
+    {
+      stageName: 'Deploy',
+      actions: [
+        new codepipelineActions.S3DeployAction({
+          actionName: 'S3Deploy',
+          bucket: deployBucket,
+          input: deployInput,
+          runOrder: 1,
+        }),
+        new codepipelineActions.CodeBuildAction({
+          actionName: 'InvalidateCache',
+          project: invalidateBuildProject,
+          input: deployInput,
+          runOrder: 2,
+        }),
+      ],
+    },
+  ],
 });
 ```
 
@@ -837,7 +924,7 @@ import * as lambda from '@aws-cdk/aws-lambda';
 const lambdaInvokeAction = new codepipeline_actions.LambdaInvokeAction({
   actionName: 'Lambda',
   lambda: new lambda.Function(this, 'Func', {
-    runtime: lambda.Runtime.NODEJS_10_X,
+    runtime: lambda.Runtime.NODEJS_12_X,
     handler: 'index.handler',
     code: lambda.Code.fromInline(`
         const AWS = require('aws-sdk');

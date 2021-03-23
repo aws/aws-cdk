@@ -2,7 +2,7 @@ import * as fs from 'fs';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
 import { nodeunitShim, Test } from 'nodeunit-shim';
-import { App, CfnResource, DefaultStackSynthesizer, FileAssetPackaging, Stack } from '../../lib';
+import { App, Aws, CfnResource, DefaultStackSynthesizer, FileAssetPackaging, Stack } from '../../lib';
 import { evaluateCFN } from '../evaluate-cfn';
 
 const CFN_CONTEXT = {
@@ -36,9 +36,9 @@ nodeunitShim({
     // THEN -- the S3 url is advertised on the stack artifact
     const stackArtifact = asm.getStackArtifact('Stack');
 
-    const templateHash = last(stackArtifact.stackTemplateAssetObjectUrl?.split('/'));
+    const templateObjectKey = last(stackArtifact.stackTemplateAssetObjectUrl?.split('/'));
 
-    test.equals(stackArtifact.stackTemplateAssetObjectUrl, `s3://cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}/${templateHash}`);
+    test.equals(stackArtifact.stackTemplateAssetObjectUrl, `s3://cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}/${templateObjectKey}`);
 
     // THEN - the template is in the asset manifest
     const manifestArtifact = asm.artifacts.filter(isAssetManifest)[0];
@@ -52,7 +52,7 @@ nodeunitShim({
       destinations: {
         'current_account-current_region': {
           bucketName: 'cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}',
-          objectKey: templateHash,
+          objectKey: templateObjectKey,
           assumeRoleArn: 'arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}',
         },
       },
@@ -111,7 +111,7 @@ nodeunitShim({
 
     // THEN - we have a fixed asset location with region placeholders
     test.equals(evalCFN(location.bucketName), 'cdk-hnb659fds-assets-the_account-the_region');
-    test.equals(evalCFN(location.s3Url), 'https://s3.the_region.domain.aws/cdk-hnb659fds-assets-the_account-the_region/abcdef');
+    test.equals(evalCFN(location.s3Url), 'https://s3.the_region.domain.aws/cdk-hnb659fds-assets-the_account-the_region/abcdef.js');
 
     // THEN - object key contains source hash somewhere
     test.ok(location.objectKey.indexOf('abcdef') > -1);
@@ -149,10 +149,14 @@ nodeunitShim({
     const asm = app.synth();
 
     // THEN - we have an asset manifest with both assets and the stack template in there
-    const manifest = readAssetManifest(asm);
+    const manifestArtifact = getAssetManifest(asm);
+    const manifest = readAssetManifest(manifestArtifact);
 
     test.equals(Object.keys(manifest.files || {}).length, 2);
     test.equals(Object.keys(manifest.dockerImages || {}).length, 1);
+
+    // THEN - the asset manifest has an SSM parameter entry
+    expect(manifestArtifact.bootstrapStackVersionSsmParameter).toEqual('/cdk-bootstrap/hnb659fds/version');
 
     // THEN - every artifact has an assumeRoleArn
     for (const file of Object.values(manifest.files ?? {})) {
@@ -200,11 +204,11 @@ nodeunitShim({
 
     // THEN
     const asm = myapp.synth();
-    const manifest = readAssetManifest(asm);
+    const manifest = readAssetManifest(getAssetManifest(asm));
 
     test.deepEqual(manifest.files?.['file-asset-hash']?.destinations?.['current_account-current_region'], {
       bucketName: 'file-asset-bucket',
-      objectKey: 'file-asset-hash',
+      objectKey: 'file-asset-hash.js',
       assumeRoleArn: 'file:role:arn',
       assumeRoleExternalId: 'file-external-id',
     });
@@ -243,16 +247,23 @@ nodeunitShim({
     // WHEN
     const asm = myapp.synth();
 
+    // THEN -- the S3 url is advertised on the stack artifact
+    const stackArtifact = asm.getStackArtifact('mystack-bucketPrefix');
+
     // THEN - we have an asset manifest with both assets and the stack template in there
-    const manifest = readAssetManifest(asm);
+    const manifest = readAssetManifest(getAssetManifest(asm));
 
     // THEN
     test.deepEqual(manifest.files?.['file-asset-hash-with-prefix']?.destinations?.['current_account-current_region'], {
       bucketName: 'file-asset-bucket',
-      objectKey: '000000000000/file-asset-hash-with-prefix',
+      objectKey: '000000000000/file-asset-hash-with-prefix.js',
       assumeRoleArn: 'file:role:arn',
       assumeRoleExternalId: 'file-external-id',
     });
+
+    const templateHash = last(stackArtifact.stackTemplateAssetObjectUrl?.split('/'));
+
+    test.equals(stackArtifact.stackTemplateAssetObjectUrl, `s3://file-asset-bucket/000000000000/${templateHash}`);
 
     test.done();
   },
@@ -270,6 +281,15 @@ nodeunitShim({
   },
 });
 
+test('get an exception when using tokens for parameters', () => {
+  expect(() => {
+    // GIVEN
+    new DefaultStackSynthesizer({
+      fileAssetsBucketName: `my-bucket-${Aws.REGION}`,
+    });
+  }).toThrow(/cannot contain tokens/);
+});
+
 /**
  * Evaluate a possibly string-containing value the same way CFN would do
  *
@@ -283,10 +303,13 @@ function isAssetManifest(x: cxapi.CloudArtifact): x is cxapi.AssetManifestArtifa
   return x instanceof cxapi.AssetManifestArtifact;
 }
 
-function readAssetManifest(asm: cxapi.CloudAssembly): cxschema.AssetManifest {
+function getAssetManifest(asm: cxapi.CloudAssembly): cxapi.AssetManifestArtifact {
   const manifestArtifact = asm.artifacts.filter(isAssetManifest)[0];
   if (!manifestArtifact) { throw new Error('no asset manifest in assembly'); }
+  return manifestArtifact;
+}
 
+function readAssetManifest(manifestArtifact: cxapi.AssetManifestArtifact): cxschema.AssetManifest {
   return JSON.parse(fs.readFileSync(manifestArtifact.file, { encoding: 'utf-8' }));
 }
 

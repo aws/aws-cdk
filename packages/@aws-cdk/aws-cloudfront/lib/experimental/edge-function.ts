@@ -1,14 +1,15 @@
-import * as crypto from 'crypto';
 import * as path from 'path';
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
+// hack, as this is not exported by the Lambda module
+import { calculateFunctionHash } from '@aws-cdk/aws-lambda/lib/function-hash';
 import * as ssm from '@aws-cdk/aws-ssm';
 import {
-  BootstraplessSynthesizer, CfnResource, ConstructNode,
+  ConstructNode,
   CustomResource, CustomResourceProvider, CustomResourceProviderRuntime,
-  DefaultStackSynthesizer, IStackSynthesizer, Resource, Stack, Stage, Token,
+  Resource, Stack, Stage, Token,
 } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 
@@ -16,13 +17,23 @@ import { Construct } from 'constructs';
  * Properties for creating a Lambda@Edge function
  * @experimental
  */
-export interface EdgeFunctionProps extends lambda.FunctionProps { }
+export interface EdgeFunctionProps extends lambda.FunctionProps {
+  /**
+   * The stack ID of Lambda@Edge function.
+   *
+   * @default - `edge-lambda-stack-${region}`
+   */
+  readonly stackId?: string;
+}
 
 /**
  * A Lambda@Edge function.
  *
  * Convenience resource for requesting a Lambda function in the 'us-east-1' region for use with Lambda@Edge.
  * Implements several restrictions enforced by Lambda@Edge.
+ *
+ * Note that this construct requires that the 'us-east-1' region has been bootstrapped.
+ * See https://docs.aws.amazon.com/cdk/latest/guide/bootstrapping.html or 'cdk bootstrap --help' for options.
  *
  * @resource AWS::Lambda::Function
  * @experimental
@@ -40,8 +51,6 @@ export class EdgeFunction extends Resource implements lambda.IVersion {
   public readonly role?: iam.IRole;
   public readonly version: string;
 
-  // functionStack needed for `addAlias`.
-  private readonly functionStack: Stack;
   private readonly _edgeFunction: lambda.Function;
 
   constructor(scope: Construct, id: string, props: EdgeFunctionProps) {
@@ -49,11 +58,10 @@ export class EdgeFunction extends Resource implements lambda.IVersion {
 
     // Create a simple Function if we're already in us-east-1; otherwise create a cross-region stack.
     const regionIsUsEast1 = !Token.isUnresolved(this.stack.region) && this.stack.region === 'us-east-1';
-    const { functionStack, edgeFunction, edgeArn } = regionIsUsEast1
+    const { edgeFunction, edgeArn } = regionIsUsEast1
       ? this.createInRegionFunction(props)
       : this.createCrossRegionFunction(id, props);
 
-    this.functionStack = functionStack;
     this.edgeArn = edgeArn;
 
     this.functionArn = edgeArn;
@@ -78,7 +86,7 @@ export class EdgeFunction extends Resource implements lambda.IVersion {
   }
 
   public addAlias(aliasName: string, options: lambda.AliasOptions = {}): lambda.Alias {
-    return new lambda.Alias(this.functionStack, `Alias${aliasName}`, {
+    return new lambda.Alias(this._edgeFunction, `Alias${aliasName}`, {
       aliasName,
       version: this._edgeFunction.currentVersion,
       ...options,
@@ -135,14 +143,14 @@ export class EdgeFunction extends Resource implements lambda.IVersion {
     const edgeFunction = new lambda.Function(this, 'Fn', props);
     addEdgeLambdaToRoleTrustStatement(edgeFunction.role!);
 
-    return { edgeFunction, edgeArn: edgeFunction.currentVersion.edgeArn, functionStack: this.stack };
+    return { edgeFunction, edgeArn: edgeFunction.currentVersion.edgeArn };
   }
 
   /** Create a support stack and function in us-east-1, and a SSM reader in-region */
-  private createCrossRegionFunction(id: string, props: lambda.FunctionProps): FunctionConfig {
+  private createCrossRegionFunction(id: string, props: EdgeFunctionProps): FunctionConfig {
     const parameterNamePrefix = 'EdgeFunctionArn';
     const parameterName = `${parameterNamePrefix}${id}`;
-    const functionStack = this.edgeStack();
+    const functionStack = this.edgeStack(props.stackId);
 
     const edgeFunction = new lambda.Function(functionStack, id, props);
     addEdgeLambdaToRoleTrustStatement(edgeFunction.role!);
@@ -155,7 +163,7 @@ export class EdgeFunction extends Resource implements lambda.IVersion {
 
     const edgeArn = this.createCrossRegionArnReader(parameterNamePrefix, parameterName, edgeFunction);
 
-    return { edgeFunction, edgeArn, functionStack };
+    return { edgeFunction, edgeArn };
   }
 
   private createCrossRegionArnReader(parameterNamePrefix: string, parameterName: string, edgeFunction: lambda.Function): string {
@@ -172,7 +180,7 @@ export class EdgeFunction extends Resource implements lambda.IVersion {
     const resourceType = 'Custom::CrossRegionStringParameterReader';
     const serviceToken = CustomResourceProvider.getOrCreate(this, resourceType, {
       codeDirectory: path.join(__dirname, 'edge-function'),
-      runtime: CustomResourceProviderRuntime.NODEJS_12,
+      runtime: CustomResourceProviderRuntime.NODEJS_12_X,
       policyStatements: [{
         Effect: 'Allow',
         Resource: parameterArnPrefix,
@@ -193,9 +201,9 @@ export class EdgeFunction extends Resource implements lambda.IVersion {
     return resource.getAttString('FunctionArn');
   }
 
-  private edgeStack(): Stack {
-    const stage = this.node.root;
-    if (!stage || !Stage.isStage(stage)) {
+  private edgeStack(stackId?: string): Stack {
+    const stage = Stage.of(this);
+    if (!stage) {
       throw new Error('stacks which use EdgeFunctions must be part of a CDK app or stage');
     }
     const region = this.env.region;
@@ -203,12 +211,14 @@ export class EdgeFunction extends Resource implements lambda.IVersion {
       throw new Error('stacks which use EdgeFunctions must have an explicitly set region');
     }
 
-    const edgeStackId = `edge-lambda-stack-${region}`;
+    const edgeStackId = stackId ?? `edge-lambda-stack-${this.stack.node.addr}`;
     let edgeStack = stage.node.tryFindChild(edgeStackId) as Stack;
     if (!edgeStack) {
       edgeStack = new Stack(stage, edgeStackId, {
-        synthesizer: crossRegionSupportSynthesizer(this.stack),
-        env: { region: EdgeFunction.EDGE_REGION },
+        env: {
+          region: EdgeFunction.EDGE_REGION,
+          account: Stack.of(this).account,
+        },
       });
     }
     this.stack.addDependency(edgeStack);
@@ -220,22 +230,6 @@ export class EdgeFunction extends Resource implements lambda.IVersion {
 interface FunctionConfig {
   readonly edgeFunction: lambda.Function;
   readonly edgeArn: string;
-  readonly functionStack: Stack;
-}
-
-// Stolen (and modified) from `@aws-cdk/aws-codepipeline`'s `Pipeline`.
-function crossRegionSupportSynthesizer(stack: Stack): IStackSynthesizer | undefined {
-  // If we have the new synthesizer we need a bootstrapless copy of it,
-  // because we don't want to require bootstrapping the environment
-  // of the account in this replication region.
-  // Otherwise, return undefined to use the default.
-  const scopeStackSynthesizer = stack.synthesizer;
-  return (scopeStackSynthesizer instanceof DefaultStackSynthesizer)
-    ? new BootstraplessSynthesizer({
-      deployRoleArn: scopeStackSynthesizer.deployRoleArn,
-      cloudFormationExecutionRoleArn: scopeStackSynthesizer.cloudFormationExecutionRoleArn,
-    })
-    : undefined;
 }
 
 function addEdgeLambdaToRoleTrustStatement(role: iam.IRole) {
@@ -246,17 +240,4 @@ function addEdgeLambdaToRoleTrustStatement(role: iam.IRole) {
     statement.addActions(edgeLambdaServicePrincipal.assumeRoleAction);
     role.assumeRolePolicy.addStatements(statement);
   }
-}
-
-// Stolen from @aws-lambda/lib/function-hash.ts, which isn't currently exported.
-// This should be DRY'ed up (exported by @aws-lambda) before this is marked as stable.
-function calculateFunctionHash(fn: lambda.Function) {
-  const stack = Stack.of(fn);
-  const functionResource = fn.node.defaultChild as CfnResource;
-  // render the cloudformation resource from this function
-  const config = stack.resolve((functionResource as any)._toCloudFormation());
-
-  const hash = crypto.createHash('md5');
-  hash.update(JSON.stringify(config));
-  return hash.digest('hex');
 }

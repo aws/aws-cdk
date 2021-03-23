@@ -39,6 +39,10 @@ class PublishingAws implements cdk_assets.IAws {
     private readonly targetEnv: cxapi.Environment) {
   }
 
+  public async discoverPartition(): Promise<string> {
+    return (await this.aws.baseCredentialsPartition(this.targetEnv, Mode.ForWriting)) ?? 'aws';
+  }
+
   public async discoverDefaultRegion(): Promise<string> {
     return this.targetEnv.region;
   }

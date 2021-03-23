@@ -53,6 +53,34 @@ export = {
     test.done();
   },
 
+  'can use yamlbuildspec literal'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new codebuild.Project(stack, 'Project', {
+      buildSpec: codebuild.BuildSpec.fromObjectToYaml({
+        text: 'text',
+        decimal: 10,
+        list: ['say hi'],
+        obj: {
+          text: 'text',
+          decimal: 10,
+          list: ['say hi'],
+        },
+      }),
+    });
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
+      Source: {
+        BuildSpec: 'text: text\ndecimal: 10\nlist:\n  - say hi\nobj:\n  text: text\n  decimal: 10\n  list:\n    - say hi\n',
+      },
+    }));
+
+    test.done();
+  },
+
   'must supply buildspec when using nosource'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
@@ -711,11 +739,9 @@ export = {
         logging: {
           cloudWatch: {
             logGroup,
-            prefix: '/my-logs',
           },
           s3: {
             bucket,
-            prefix: 'my-logs',
           },
         },
       });
@@ -726,10 +752,9 @@ export = {
           CloudWatchLogs: {
             GroupName: 'MyLogGroupName',
             Status: 'ENABLED',
-            StreamName: '/my-logs',
           },
           S3Logs: {
-            Location: 'MyBucketName/my-logs',
+            Location: 'MyBucketName',
             Status: 'ENABLED',
           },
         }),
@@ -885,6 +910,122 @@ export = {
             'Effect': 'Allow',
           })),
         },
+      }));
+
+      test.done();
+    },
+
+    "grants the Project's Role read permissions to the  SecretsManager environment variables"(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      // WHEN
+      new codebuild.PipelineProject(stack, 'Project', {
+        environmentVariables: {
+          'ENV_VAR1': {
+            type: codebuild.BuildEnvironmentVariableType.SECRETS_MANAGER,
+            value: 'my-secret',
+          },
+        },
+      });
+
+      // THEN
+      expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
+        'PolicyDocument': {
+          'Statement': arrayWith({
+            'Action': 'secretsmanager:GetSecretValue',
+            'Effect': 'Allow',
+            'Resource': {
+              'Fn::Join': ['', [
+                'arn:',
+                { Ref: 'AWS::Partition' },
+                ':secretsmanager:',
+                { Ref: 'AWS::Region' },
+                ':',
+                { Ref: 'AWS::AccountId' },
+                ':secret:my-secret-??????',
+              ]],
+            },
+          }),
+        },
+      }));
+
+      test.done();
+    },
+
+    'should fail creating when using a secret value in a plaintext variable'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      // THEN
+      test.throws(() => {
+        new codebuild.PipelineProject(stack, 'Project', {
+          environmentVariables: {
+            'a': {
+              value: `a_${cdk.SecretValue.secretsManager('my-secret')}_b`,
+            },
+          },
+        });
+      }, /Plaintext environment variable 'a' contains a secret value!/);
+
+      test.done();
+    },
+
+    "should allow opting out of the 'secret value in a plaintext variable' validation"(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      // THEN
+      new codebuild.PipelineProject(stack, 'Project', {
+        environmentVariables: {
+          'b': {
+            value: cdk.SecretValue.secretsManager('my-secret'),
+          },
+        },
+        checkSecretsInPlainTextEnvVariables: false,
+      });
+
+      test.done();
+    },
+  },
+
+  'Timeouts': {
+    'can add queued timeout'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      // WHEN
+      new codebuild.Project(stack, 'Project', {
+        source: codebuild.Source.s3({
+          bucket: new s3.Bucket(stack, 'Bucket'),
+          path: 'path',
+        }),
+        queuedTimeout: cdk.Duration.minutes(30),
+      });
+
+      // THEN
+      expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
+        QueuedTimeoutInMinutes: 30,
+      }));
+
+      test.done();
+    },
+    'can override build timeout'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      // WHEN
+      new codebuild.Project(stack, 'Project', {
+        source: codebuild.Source.s3({
+          bucket: new s3.Bucket(stack, 'Bucket'),
+          path: 'path',
+        }),
+        timeout: cdk.Duration.minutes(30),
+      });
+
+      // THEN
+      expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
+        TimeoutInMinutes: 30,
       }));
 
       test.done();
