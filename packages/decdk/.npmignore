@@ -22,10 +22,3 @@ dist
 
 *.tsbuildinfo
 
-
-# exclude cdk artifacts
-**/cdk.out
-test/
-tsconfig.json
-junit.xml
-.eslintrc.js

@@ -371,7 +371,7 @@
     "ts-jest": "^26.5.4"
   },
   "bundledDependencies": [
-    "@aws-cdk/yaml-cfn"
+    "@aws-cdk/yaml-cfn", "yaml"
   ],
   "keywords": [
     "aws",
