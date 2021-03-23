@@ -1,4 +1,4 @@
-import { Duration } from '@aws-cdk/core';
+import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnRoute } from './appmesh.generated';
 import { Protocol, HttpTimeout, GrpcTimeout, TcpTimeout } from './shared-interfaces';
@@ -357,7 +357,7 @@ export interface HttpRetryPolicy {
   /**
    * The timeout for each retry attempt
    */
-  readonly retryTimeout: Duration;
+  readonly retryTimeout: cdk.Duration;
 
   /**
    * TCP events on which to retry. The event occurs before any processing of a

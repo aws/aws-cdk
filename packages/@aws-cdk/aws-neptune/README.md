@@ -31,7 +31,7 @@ import * as neptune from '@aws-cdk/aws-neptune';
 
 ## Starting a Neptune Database
 
-To set up a Neptune database, define a `DatabaseCluster`. You must always launch a database in a VPC.
+To set up a Neptune database, define a `DatabaseCluster`. You must always launch a database in a VPC. 
 
 ```ts
 const cluster = new neptune.DatabaseCluster(this, 'Database', {
