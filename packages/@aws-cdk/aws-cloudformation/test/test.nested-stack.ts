@@ -424,7 +424,7 @@ export = {
       },
     });
 
-    // verify a depedency was established between the parents
+    // verify a dependency was established between the parents
     const stack1Artifact = assembly.getStackByName(stack1.stackName);
     const stack2Artifact = assembly.getStackByName(stack2.stackName);
     test.deepEqual(stack1Artifact.dependencies.length, 1);
