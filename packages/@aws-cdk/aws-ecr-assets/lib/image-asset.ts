@@ -87,6 +87,7 @@ export class DockerImageAsset extends CoreConstruct implements IAsset {
    * A hash of the source of this asset, which is available at construction time. As this is a plain
    * string, it can be used in construct IDs in order to enforce creation of a new resource when
    * the content hash has changed.
+   * @deprecated use assetHash
    */
   public readonly sourceHash: string;
 
