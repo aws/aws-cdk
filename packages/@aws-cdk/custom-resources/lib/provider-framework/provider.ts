@@ -179,7 +179,6 @@ export class Provider extends CoreConstruct implements ICustomResourceProvider {
         interval: retry.interval,
         maxAttempts: retry.maxAttempts,
       });
-
       // the on-event entrypoint is going to start the execution of the waiter
       onEventFunction.addEnvironment(consts.WAITER_STATE_MACHINE_ARN_ENV, waiterStateMachine.stateMachineArn);
       waiterStateMachine.grantStartExecution(onEventFunction);
