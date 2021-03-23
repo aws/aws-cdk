@@ -676,8 +676,14 @@ export class UserPool extends UserPoolBase {
    * Import an existing user pool based on its ARN.
    */
   public static fromUserPoolArn(scope: Construct, id: string, userPoolArn: string): IUserPool {
+    let userPoolId = Stack.of(scope).parseArn(userPoolArn).resourceName;
+
+    if (!userPoolId) {
+      throw new Error('UserPool.fromUserPoolArn requires an arn with a resourceName.');
+    }
+
     return new ImportedUserPool(scope, id, {
-      userPoolId: Stack.of(scope).parseArn(userPoolArn).resourceName!,
+      userPoolId: userPoolId,
       userPoolArn: userPoolArn,
     });
   }

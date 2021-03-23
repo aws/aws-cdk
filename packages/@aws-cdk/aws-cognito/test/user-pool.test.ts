@@ -214,6 +214,17 @@ describe('User Pool', () => {
     expect(stack.resolve(pool.userPoolArn)).toEqual('arn:aws:cognito-idp:us-east-1:0123456789012:userpool/test-user-pool');
   });
 
+  test('import using arn without resourceName fails', () => {
+    // GIVEN
+    const stack = new Stack();
+    const userPoolArn = 'arn:aws:cognito-idp:us-east-1:0123456789012:*';
+
+    // WHEN
+    expect(() => {
+      UserPool.fromUserPoolArn(stack, 'userpool', userPoolArn);
+    }).toThrowError(/UserPool\.fromUserPoolArn requires an arn with a resourceName\./);
+  });
+
   test('import from different account region using arn', () => {
     // GIVEN
     const userPoolArn = 'arn:aws:cognito-idp:us-east-1:0123456789012:userpool/test-user-pool';
