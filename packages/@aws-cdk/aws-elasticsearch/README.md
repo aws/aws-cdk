@@ -74,6 +74,30 @@ const prodDomain = new es.Domain(this, 'Domain', {
 This creates an Elasticsearch cluster and automatically sets up log groups for
 logging the domain logs and slow search logs.
 
+## A note about SLR
+
+Some cluster configurations (e.g VPC access) require the existence of the [`AWSServiceRoleForAmazonElasticsearchService`](https://docs.aws.amazon.com/elasticsearch-service/latest/developerguide/slr-es.html) Service-Linked Role.
+
+When performing such operations via the AWS Console, this SLR is created automatically when needed. However, this is not the behavior when using CloudFormation. If an SLR is needed, but doesn't exist, you will encounter a failure message simlar to:
+
+```console
+Before you can proceed, you must enable a service-linked role to give Amazon ES...
+```
+
+To resolve this, you need to [create](https://docs.aws.amazon.com/IAM/latest/UserGuide/using-service-linked-roles.html#create-service-linked-role) the SLR. We recommend using the AWS CLI:
+
+```console
+aws iam create-service-linked-role --aws-service-name es.amazonaws.com
+```
+
+You can also create it using the CDK, **but note that only the first application deploying this will succeed**:
+
+```ts
+const slr = new iam.CfnServiceLinkedRole(this, 'ElasticSLR', {
+  awsServiceName: 'es.amazonaws.com'
+});
+```
+
 ## Importing existing domains
 
 To import an existing domain into your CDK application, use the `Domain.fromDomainEndpoint` factory method.
