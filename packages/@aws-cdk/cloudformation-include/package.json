@@ -211,7 +211,7 @@
     "@aws-cdk/aws-workspaces": "0.0.0",
     "@aws-cdk/core": "0.0.0",
     "@aws-cdk/yaml-cfn": "0.0.0",
-    "constructs": "^3.2.0"
+    "constructs": "^3.3.69"
   },
   "peerDependencies": {
     "@aws-cdk/alexa-ask": "0.0.0",
@@ -360,7 +360,7 @@
     "@aws-cdk/aws-workspaces": "0.0.0",
     "@aws-cdk/core": "0.0.0",
     "@aws-cdk/yaml-cfn": "0.0.0",
-    "constructs": "^3.2.0"
+    "constructs": "^3.3.69"
   },
   "devDependencies": {
     "@aws-cdk/assert": "0.0.0",
