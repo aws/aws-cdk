@@ -176,7 +176,62 @@ describe('tests', () => {
       }).subnetIds.map((subnetId: string) => stack.resolve(subnetId)),
     }));
   });
+
+  test('does not fail when deprecated property sslCertificateId is used', () => {
+    // GIVEN
+    const sslCertificateArn = 'arn:aws:acm:us-east-1:12345:test/12345';
+    const stack = new Stack();
+    const vpc = new Vpc(stack, 'VCP');
+
+    // WHEN
+    const lb = new LoadBalancer(stack, 'LB', { vpc });
+
+    lb.addListener({
+      externalPort: 80,
+      internalPort: 8080,
+      sslCertificateId: sslCertificateArn,
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ElasticLoadBalancing::LoadBalancer', {
+      Listeners: [{
+        InstancePort: '8080',
+        InstanceProtocol: 'http',
+        LoadBalancerPort: '80',
+        Protocol: 'http',
+        SSLCertificateId: sslCertificateArn,
+      }],
+    }));
+  });
+
+  test('does not fail when sslCertificateArn is used', () => {
+    // GIVEN
+    const sslCertificateArn = 'arn:aws:acm:us-east-1:12345:test/12345';
+    const stack = new Stack();
+    const vpc = new Vpc(stack, 'VCP');
+
+    // WHEN
+    const lb = new LoadBalancer(stack, 'LB', { vpc });
+
+    lb.addListener({
+      externalPort: 80,
+      internalPort: 8080,
+      sslCertificateArn: sslCertificateArn,
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ElasticLoadBalancing::LoadBalancer', {
+      Listeners: [{
+        InstancePort: '8080',
+        InstanceProtocol: 'http',
+        LoadBalancerPort: '80',
+        Protocol: 'http',
+        SSLCertificateId: sslCertificateArn,
+      }],
+    }));
+  });
 });
+
 
 class FakeTarget implements ILoadBalancerTarget {
   public readonly connections = new Connections({
