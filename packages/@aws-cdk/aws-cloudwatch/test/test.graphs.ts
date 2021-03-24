@@ -3,12 +3,13 @@ import { Test } from 'nodeunit';
 import { Alarm, AlarmWidget, Color, GraphWidget, GraphWidgetView, LegendPosition, LogQueryWidget, Metric, Shading, SingleValueWidget, LogQueryVisualizationType } from '../lib';
 
 export = {
-  'add stacked property to graphs'(test: Test) {
+  'add stacked and setPeriodToTimeRange properties to graphs'(test: Test) {
     // WHEN
     const stack = new Stack();
     const widget = new GraphWidget({
       title: 'Test widget',
       stacked: true,
+      setPeriodToTimeRange: true
     });
 
     // THEN
@@ -22,11 +23,13 @@ export = {
         region: { Ref: 'AWS::Region' },
         stacked: true,
         yAxis: {},
+        setPeriodToTimeRange: true
       },
     }]);
 
     test.done();
   },
+
 
   'add metrics to graphs on either axis'(test: Test) {
     // WHEN
