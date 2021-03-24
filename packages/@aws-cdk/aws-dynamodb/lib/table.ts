@@ -1555,7 +1555,7 @@ export class Table extends TableBase {
     this.grant(provider.onEventHandler, ...permissions);
     this.grant( provider.isCompleteHandler, ...permissions);
 
-    const timeToLive = new CustomResource(this, 'TimeToLive', {
+    new CustomResource(this, 'TimeToLive', {
       serviceToken: provider.provider.serviceToken,
       resourceType: 'Custom::DynamoDBTimeToLive',
       properties: {
@@ -1563,10 +1563,6 @@ export class Table extends TableBase {
         TimeToLiveAttribute: timeToLiveAttribute !== '' ? timeToLiveAttribute : undefined,
       },
     });
-
-    timeToLive.node.addDependency(
-      this,
-    );
   }
 
   /**
