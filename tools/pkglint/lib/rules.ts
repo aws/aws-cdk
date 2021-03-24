@@ -627,10 +627,11 @@ export class NoPeerDependenciesMonocdk extends ValidationRule {
  * Note: v1 and v2 use different versions respectively.
  */
 export class ConstructsVersion extends ValidationRule {
-  public readonly name = 'deps/constructs';
-  private readonly expectedRange = cdkMajorVersion() === 2
+  public static readonly VERSION = cdkMajorVersion() === 2
     ? '10.0.0-pre.5'
-    : '^3.2.0';
+    : '^3.3.69';
+
+  public readonly name = 'deps/constructs';
 
   public validate(pkg: PackageJson) {
     const toCheck = new Array<string>();
@@ -646,7 +647,7 @@ export class ConstructsVersion extends ValidationRule {
     }
 
     for (const cfg of toCheck) {
-      expectJSON(this.name, pkg, `${cfg}.constructs`, this.expectedRange);
+      expectJSON(this.name, pkg, `${cfg}.constructs`, ConstructsVersion.VERSION);
     }
   }
 }
@@ -1443,7 +1444,7 @@ export class ConstructsDependency extends ValidationRule {
   public readonly name = 'constructs/dependency';
 
   public validate(pkg: PackageJson) {
-    const REQUIRED_VERSION = '^3.3.69';
+    const REQUIRED_VERSION = ConstructsVersion.VERSION;;
 
     if (pkg.devDependencies?.constructs && pkg.devDependencies?.constructs !== REQUIRED_VERSION) {
       pkg.report({
