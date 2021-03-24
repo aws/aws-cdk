@@ -8,14 +8,14 @@ import { Construct } from 'constructs';
 // eslint-disable-next-line no-duplicate-imports, import/order
 import { Construct as CoreConstruct } from '@aws-cdk/core';
 
-export class TableTimeToLiveProvider extends CoreConstruct {
+export class TimeToLiveProvider extends CoreConstruct {
   /**
    * Creates a stack-singleton resource provider.
    */
-  public static getOrCreate(scope: Construct): TableTimeToLiveProvider {
+  public static getOrCreate(scope: Construct): TimeToLiveProvider {
     const stack = Stack.of(scope);
     const logicalId = '@aws-cdk/aws-dynamodb.TimeToLiveProvider';
-    return stack.node.tryFindChild(logicalId) as TableTimeToLiveProvider ?? new TableTimeToLiveProvider(stack, logicalId);
+    return stack.node.tryFindChild(logicalId) as TimeToLiveProvider ?? new TimeToLiveProvider(stack, logicalId);
   }
 
   /**
