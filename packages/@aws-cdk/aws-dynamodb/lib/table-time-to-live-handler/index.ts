@@ -37,7 +37,7 @@ export async function onEventHandler(event: OnEventRequest): Promise<OnEventResp
     return { PhysicalResourceId: event.PhysicalResourceId ?? event.LogicalResourceId };
   }
 
-  return { PhysicalResourceId: event.PhysicalResourceId };
+  return {};
 }
 
 export async function isCompleteHandler(event: IsCompleteRequest): Promise<IsCompleteResponse> {
