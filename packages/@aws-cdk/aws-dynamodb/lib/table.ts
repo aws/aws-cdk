@@ -1127,7 +1127,6 @@ export class Table extends TableBase {
       },
       sseSpecification,
       streamSpecification,
-      timeToLiveSpecification: undefined,
     });
     this.table.applyRemovalPolicy(props.removalPolicy);
 
