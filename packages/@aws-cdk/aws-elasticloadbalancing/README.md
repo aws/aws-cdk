@@ -44,3 +44,6 @@ lb.addListener({
     allowConnectionsFrom: [mySecurityGroup]
 });
 ```
+
+The `sslCertificateId` property of the `LoadBalancerListener` class has been deprecated.
+It is recommended to use `sslCertificateArn` property instead.
