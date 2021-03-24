@@ -80,9 +80,7 @@ export interface StreamEventSourceProps {
 
   /**
    * The size of the tumbling windows to group records sent to DynamoDB or Kinesis
-   * Valid Range:
-   * * Minimum value of 0
-   * * Maximum value of 900
+   * Valid Range: 0 - 15 minutes
    *
    * @default - None
    */
