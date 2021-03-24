@@ -131,6 +131,7 @@
     "@aws-cdk/aws-emrcontainers": "0.0.0",
     "@aws-cdk/aws-events": "0.0.0",
     "@aws-cdk/aws-eventschemas": "0.0.0",
+    "@aws-cdk/aws-fis": "0.0.0",
     "@aws-cdk/aws-fms": "0.0.0",
     "@aws-cdk/aws-fsx": "0.0.0",
     "@aws-cdk/aws-gamelift": "0.0.0",
@@ -186,6 +187,7 @@
     "@aws-cdk/aws-route53": "0.0.0",
     "@aws-cdk/aws-route53resolver": "0.0.0",
     "@aws-cdk/aws-s3": "0.0.0",
+    "@aws-cdk/aws-s3objectlambda": "0.0.0",
     "@aws-cdk/aws-s3outposts": "0.0.0",
     "@aws-cdk/aws-sagemaker": "0.0.0",
     "@aws-cdk/aws-sam": "0.0.0",
@@ -280,6 +282,7 @@
     "@aws-cdk/aws-emrcontainers": "0.0.0",
     "@aws-cdk/aws-events": "0.0.0",
     "@aws-cdk/aws-eventschemas": "0.0.0",
+    "@aws-cdk/aws-fis": "0.0.0",
     "@aws-cdk/aws-fms": "0.0.0",
     "@aws-cdk/aws-fsx": "0.0.0",
     "@aws-cdk/aws-gamelift": "0.0.0",
@@ -335,6 +338,7 @@
     "@aws-cdk/aws-route53": "0.0.0",
     "@aws-cdk/aws-route53resolver": "0.0.0",
     "@aws-cdk/aws-s3": "0.0.0",
+    "@aws-cdk/aws-s3objectlambda": "0.0.0",
     "@aws-cdk/aws-s3outposts": "0.0.0",
     "@aws-cdk/aws-sagemaker": "0.0.0",
     "@aws-cdk/aws-sam": "0.0.0",
@@ -359,7 +363,6 @@
     "@aws-cdk/aws-wafv2": "0.0.0",
     "@aws-cdk/aws-workspaces": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "@aws-cdk/yaml-cfn": "0.0.0",
     "constructs": "^3.2.0"
   },
   "devDependencies": {
@@ -371,6 +374,9 @@
     "pkglint": "0.0.0",
     "ts-jest": "^26.5.4"
   },
+  "bundledDependencies": [
+    "@aws-cdk/yaml-cfn"
+  ],
   "keywords": [
     "aws",
     "cdk",
