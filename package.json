@@ -51,6 +51,9 @@
     "nohoist": [
       "**/jszip",
       "**/jszip/**",
+      "@aws-cdk/aws-codebuild/@aws-cdk/yaml-cfn",
+      "@aws-cdk/aws-codebuild/@aws-cdk/yaml-cfn/yaml",
+      "@aws-cdk/aws-codebuild/@aws-cdk/yaml-cfn/yaml/**",
       "@aws-cdk/aws-codepipeline-actions/case",
       "@aws-cdk/aws-codepipeline-actions/case/**",
       "@aws-cdk/aws-cognito/punycode",
