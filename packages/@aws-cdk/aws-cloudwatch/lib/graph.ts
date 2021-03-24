@@ -213,6 +213,13 @@ export interface GraphWidgetProps extends MetricWidgetProps {
    * @default TimeSeries
    */
   readonly view?: GraphWidgetView;
+
+  /**
+   * Whether to show the value from the entire time range.
+   *
+   * @default false
+   */
+  readonly setPeriodToTimeRange?: boolean;
 }
 
 /**
@@ -276,6 +283,7 @@ export class GraphWidget extends ConcreteWidget {
         },
         legend: this.props.legendPosition !== undefined ? { position: this.props.legendPosition } : undefined,
         liveData: this.props.liveData,
+        setPeriodToTimeRange: this.props.setPeriodToTimeRange,
       },
     }];
   }
