@@ -15,7 +15,7 @@ export class TableTimeToLiveProvider extends CoreConstruct {
   public static getOrCreate(scope: Construct): TableTimeToLiveProvider {
     const stack = Stack.of(scope);
     const logicalId = 'TableTimeToLiveProvider15b48ecf0bc70966e44f6d4becded765';
-    return (stack.node.tryFindChild(logicalId) ?? new TableTimeToLiveProvider(stack, logicalId)) as TableTimeToLiveProvider;
+    return stack.node.tryFindChild(logicalId) as TableTimeToLiveProvider ?? new TableTimeToLiveProvider(stack, logicalId);
   }
 
   /**
