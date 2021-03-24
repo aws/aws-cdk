@@ -302,6 +302,17 @@ dashboard.addWidgets(new GraphWidget({
 }));
 ```
 
+The graph can show the value from the entire time range.
+
+```ts
+dashboard.addWidgets(new GraphWidget({
+  // ...
+  // ...
+
+  setPeriodToTimeRange: true,
+}));
+```
+
 ### Alarm widget
 
 An alarm widget shows the graph and the alarm line of a single alarm:
