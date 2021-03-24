@@ -1,4 +1,4 @@
-import { BundlingDockerImage } from '@aws-cdk/core';
+import { BundlingDockerImage, DockerImage } from '@aws-cdk/core';
 
 export interface LambdaRuntimeProps {
   /**
@@ -218,7 +218,7 @@ export class Runtime {
     this.supportsInlineCode = !!props.supportsInlineCode;
     this.family = family;
     const imageName = props.bundlingDockerImage ?? `amazon/aws-sam-cli-build-image-${name}`;
-    this.bundlingDockerImage = BundlingDockerImage.fromRegistry(imageName);
+    this.bundlingDockerImage = DockerImage.fromRegistry(imageName);
     this.supportsCodeGuruProfiling = props.supportsCodeGuruProfiling ?? false;
 
     Runtime.ALL.push(this);
