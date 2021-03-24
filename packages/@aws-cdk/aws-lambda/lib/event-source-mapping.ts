@@ -107,9 +107,7 @@ export interface EventSourceMappingOptions {
    *
    * @see https://docs.aws.amazon.com/lambda/latest/dg/with-ddb.html#services-ddb-windows
    *
-   * Valid Range:
-   * * Minimum value of 0
-   * * Maximum value of 900
+   * Valid Range: 0 - 15 minutes
    *
    * @default - None
    */
