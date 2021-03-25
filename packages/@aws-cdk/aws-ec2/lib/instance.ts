@@ -431,7 +431,7 @@ export class Instance extends Resource implements IInstance {
    * Adds a statement to the IAM role assumed by the instance.
    */
   public addToRolePolicy(statement: iam.PolicyStatement) {
-    this.role.addToPolicy(statement);
+    this.role.addToPrincipalPolicy(statement);
   }
 
   /**
@@ -485,7 +485,7 @@ export class Instance extends Resource implements IInstance {
       this.instance.cfnOptions.creationPolicy = {
         ...this.instance.cfnOptions.creationPolicy,
         resourceSignal: {
-          timeout: props.resourceSignalTimeout && props.resourceSignalTimeout.toISOString(),
+          timeout: props.resourceSignalTimeout && props.resourceSignalTimeout.toIsoString(),
         },
       };
     }

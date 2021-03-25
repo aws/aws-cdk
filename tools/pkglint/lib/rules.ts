@@ -1,6 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import * as caseUtils from 'case';
+import * as fse from 'fs-extra';
 import * as glob from 'glob';
 import * as semver from 'semver';
 import { LICENSE, NOTICE } from './licensing';
@@ -11,6 +12,7 @@ import {
   fileShouldBe, fileShouldBeginWith, fileShouldContain,
   fileShouldNotContain,
   findInnerPackages,
+  findPackageDir,
   monoRepoRoot,
 } from './util';
 
@@ -625,10 +627,11 @@ export class NoPeerDependenciesMonocdk extends ValidationRule {
  * Note: v1 and v2 use different versions respectively.
  */
 export class ConstructsVersion extends ValidationRule {
-  public readonly name = 'deps/constructs';
-  private readonly expectedRange = cdkMajorVersion() === 2
+  public static readonly VERSION = cdkMajorVersion() === 2
     ? '10.0.0-pre.5'
-    : '^3.2.0';
+    : '^3.3.69';
+
+  public readonly name = 'deps/constructs';
 
   public validate(pkg: PackageJson) {
     const toCheck = new Array<string>();
@@ -644,7 +647,7 @@ export class ConstructsVersion extends ValidationRule {
     }
 
     for (const cfg of toCheck) {
-      expectJSON(this.name, pkg, `${cfg}.constructs`, this.expectedRange);
+      expectJSON(this.name, pkg, `${cfg}.constructs`, ConstructsVersion.VERSION);
     }
   }
 }
@@ -1370,24 +1373,41 @@ export class FastFailingBuildScripts extends ValidationRule {
   }
 }
 
+/**
+ * For every bundled dependency, we need to make sure that package and all of its transitive dependencies are nohoisted
+ *
+ * Bundling literally works by including `<package>/node_modules/<dep>` into
+ * the tarball when `npm pack` is run, and if that directory does not exist at
+ * that exact location (because it has been hoisted) then NPM shrugs its
+ * shoulders and the dependency will be missing from the distribution.
+ *
+ * --
+ *
+ * We also must not forget to nohoist transitive dependencies. Strictly
+ * speaking, we need to only hoist transitive *runtime* dependencies (`dependencies`, not
+ * `devDependencies`).
+ *
+ * For 3rd party deps, there is no difference and we short-circuit by adding a
+ * catch-all glob (`<package>/node_modules/<dep>/**`), but for in-repo bundled
+ * dependencies, we DO need the `devDependencies` installed as per normal and
+ * only the transitive runtime dependencies nohoisted (recursively).
+ */
 export class YarnNohoistBundledDependencies extends ValidationRule {
   public readonly name = 'yarn/nohoist-bundled-dependencies';
 
-  public validate(pkg: PackageJson) {
+  public async validate(pkg: PackageJson) {
     const bundled: string[] = pkg.json.bundleDependencies || pkg.json.bundledDependencies || [];
-    if (bundled.length === 0) { return; }
 
     const repoPackageJson = path.resolve(__dirname, '../../../package.json');
+    const nohoist = new Set<string>(require(repoPackageJson).workspaces.nohoist); // eslint-disable-line @typescript-eslint/no-require-imports
 
-    const nohoist: string[] = require(repoPackageJson).workspaces.nohoist; // eslint-disable-line @typescript-eslint/no-require-imports
+    const expectedNoHoistEntries = new Array<string>();
 
-    const missing = new Array<string>();
     for (const dep of bundled) {
-      for (const entry of [`${pkg.packageName}/${dep}`, `${pkg.packageName}/${dep}/**`]) {
-        if (nohoist.indexOf(entry) >= 0) { continue; }
-        missing.push(entry);
-      }
+      await noHoistDependency(pkg.packageName, dep, pkg.packageRoot);
     }
+
+    const missing = expectedNoHoistEntries.filter(entry => !nohoist.has(entry));
 
     if (missing.length > 0) {
       pkg.report({
@@ -1400,6 +1420,23 @@ export class YarnNohoistBundledDependencies extends ValidationRule {
         },
       });
     }
+
+    async function noHoistDependency(parentPackageHierarchy: string, depName: string, parentPackageDir: string) {
+      expectedNoHoistEntries.push(`${parentPackageHierarchy}/${depName}`);
+
+      const dependencyDir = await findPackageDir(depName, parentPackageDir);
+      if (!isMonoRepoPackageDir(dependencyDir)) {
+        // Not one of ours, so we can just ignore everything underneath as well
+        expectedNoHoistEntries.push(`${parentPackageHierarchy}/${depName}/**`);
+        return;
+      }
+
+      // A monorepo package, recurse into dependencies (but not devDependencies)
+      const packageJson = await fse.readJson(path.join(dependencyDir, 'package.json'));
+      for (const dep of Object.keys(packageJson.dependencies ?? {})) {
+        await noHoistDependency(`${parentPackageHierarchy}/${depName}`, dep, dependencyDir);
+      }
+    }
   }
 }
 
@@ -1407,7 +1444,7 @@ export class ConstructsDependency extends ValidationRule {
   public readonly name = 'constructs/dependency';
 
   public validate(pkg: PackageJson) {
-    const REQUIRED_VERSION = '^3.2.0';
+    const REQUIRED_VERSION = ConstructsVersion.VERSION;;
 
     if (pkg.devDependencies?.constructs && pkg.devDependencies?.constructs !== REQUIRED_VERSION) {
       pkg.report({
@@ -1668,4 +1705,15 @@ function cdkMajorVersion() {
   // eslint-disable-next-line @typescript-eslint/no-require-imports
   const releaseJson = require(`${__dirname}/../../../release.json`);
   return releaseJson.majorVersion as number;
+}
+
+/**
+ * Whether this is a package in the monorepo or not
+ *
+ * We're going to be cheeky and not do too much analysis, and say that
+ * a package that has `/node_modules/` in the directory name is NOT in the
+ * monorepo, otherwise it is.
+ */
+function isMonoRepoPackageDir(packageDir: string) {
+  return path.resolve(packageDir).indexOf(`${path.sep}node_modules${path.sep}`) === -1;
 }

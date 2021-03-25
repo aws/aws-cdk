@@ -269,7 +269,9 @@ export class ServerDeploymentGroup extends ServerDeploymentGroupBase {
       physicalName: props.deploymentGroupName,
     });
 
-    this.application = props.application || new ServerApplication(this, 'Application');
+    this.application = props.application || new ServerApplication(this, 'Application', {
+      applicationName: props.deploymentGroupName === cdk.PhysicalName.GENERATE_IF_NEEDED ? cdk.PhysicalName.GENERATE_IF_NEEDED : undefined,
+    });
 
     this.role = props.role || new iam.Role(this, 'Role', {
       assumedBy: new iam.ServicePrincipal('codedeploy.amazonaws.com'),
@@ -364,7 +366,12 @@ export class ServerDeploymentGroup extends ServerDeploymentGroupBase {
           'if [ $RUBY2_INSTALL -ne 0 ]; then',
           '$PKG_CMD install -y ruby',
           'fi',
-          '$PKG_CMD install -y awscli',
+          'AWS_CLI_PACKAGE_NAME=awscli',
+          'if [[ "$PKG_CMD" = "yum" ]];',
+          'then',
+          'AWS_CLI_PACKAGE_NAME=aws-cli',
+          'fi',
+          '$PKG_CMD install -y $AWS_CLI_PACKAGE_NAME',
           'TMP_DIR=`mktemp -d`',
           'cd $TMP_DIR',
           `aws s3 cp s3://aws-codedeploy-${cdk.Stack.of(this).region}/latest/install . --region ${cdk.Stack.of(this).region}`,
