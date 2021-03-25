@@ -1670,14 +1670,3 @@ function cdkMajorVersion() {
   const releaseJson = require(`${__dirname}/../../../release.json`);
   return releaseJson.majorVersion as number;
 }
-
-/**
- * Whether this is a package in the monorepo or not
- *
- * We're going to be cheeky and not do too much analysis, and say that
- * a package that has `/node_modules/` in the directory name is NOT in the
- * monorepo, otherwise it is.
- */
-function isMonoRepoPackageDir(packageDir: string) {
-  return path.resolve(packageDir).indexOf(`${path.sep}node_modules${path.sep}`) === -1;
-}
