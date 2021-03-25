@@ -77,6 +77,7 @@ nodeunitShim({
 
     test.ok(spawnSyncStub.firstCall.calledWith('docker', [
       'buildx', 'build',
+      '--load',
       '-t', tag,
       '--build-arg', 'TEST_ARG=cdk-test',
       'docker-path',

@@ -1,0 +1,156 @@
+{
+  "version": "9.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "cdk-integ-assets-bundling": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "cdk-integ-assets-bundling.template.json"
+      },
+      "metadata": {
+        "/cdk-integ-assets-bundling": [
+          {
+            "type": "aws:cdk:asset",
+            "data": {
+              "path": "/Users/reaganelm/Development/aws-cdk/packages/@aws-cdk/aws-s3-assets/test/markdown-asset",
+              "id": "8995e9405bdcae88dc6fc76b4fc224fecfd00ef93663cb759b491c6a13cc59c2",
+              "packaging": "zip",
+              "sourceHash": "8995e9405bdcae88dc6fc76b4fc224fecfd00ef93663cb759b491c6a13cc59c2",
+              "s3BucketParameter": "AssetParameters8995e9405bdcae88dc6fc76b4fc224fecfd00ef93663cb759b491c6a13cc59c2S3Bucket32756583",
+              "s3KeyParameter": "AssetParameters8995e9405bdcae88dc6fc76b4fc224fecfd00ef93663cb759b491c6a13cc59c2S3VersionKey39CCFFC8",
+              "artifactHashParameter": "AssetParameters8995e9405bdcae88dc6fc76b4fc224fecfd00ef93663cb759b491c6a13cc59c2ArtifactHashDF68D9B9"
+            },
+            "trace": [
+              "ConstructNode.addMetadata (/Users/reaganelm/Development/aws-cdk/packages/@aws-cdk/core/lib/construct-compat.js:399:62)",
+              "LegacyStackSynthesizer.doAddFileAsset (/Users/reaganelm/Development/aws-cdk/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:175:29)",
+              "LegacyStackSynthesizer.addFileAsset (/Users/reaganelm/Development/aws-cdk/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:83:25)",
+              "TestStack.addFileAsset (/Users/reaganelm/Development/aws-cdk/packages/@aws-cdk/core/lib/stack.js:402:33)",
+              "LegacyStackSynthesizer.addFileAsset (/Users/reaganelm/Development/aws-cdk/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:87:31)",
+              "new Asset (/Users/reaganelm/Development/aws-cdk/packages/@aws-cdk/aws-s3-assets/lib/asset.js:40:44)",
+              "new TestStack (/Users/reaganelm/Development/aws-cdk/packages/@aws-cdk/aws-s3-assets/test/integ.assets.bundling.lit.js:11:23)",
+              "Object.<anonymous> (/Users/reaganelm/Development/aws-cdk/packages/@aws-cdk/aws-s3-assets/test/integ.assets.bundling.lit.js:28:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1092:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1121:10)",
+              "Module.load (node:internal/modules/cjs/loader:972:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:813:14)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:76:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/cdk-integ-assets-bundling/AssetParameters/8995e9405bdcae88dc6fc76b4fc224fecfd00ef93663cb759b491c6a13cc59c2/S3Bucket": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParameters8995e9405bdcae88dc6fc76b4fc224fecfd00ef93663cb759b491c6a13cc59c2S3Bucket32756583",
+            "trace": [
+              "new FileAssetParameters (/Users/reaganelm/Development/aws-cdk/packages/@aws-cdk/core/lib/private/asset-parameters.js:12:36)",
+              "LegacyStackSynthesizer.doAddFileAsset (/Users/reaganelm/Development/aws-cdk/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:162:22)",
+              "LegacyStackSynthesizer.addFileAsset (/Users/reaganelm/Development/aws-cdk/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:83:25)",
+              "TestStack.addFileAsset (/Users/reaganelm/Development/aws-cdk/packages/@aws-cdk/core/lib/stack.js:402:33)",
+              "LegacyStackSynthesizer.addFileAsset (/Users/reaganelm/Development/aws-cdk/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:87:31)",
+              "new Asset (/Users/reaganelm/Development/aws-cdk/packages/@aws-cdk/aws-s3-assets/lib/asset.js:40:44)",
+              "new TestStack (/Users/reaganelm/Development/aws-cdk/packages/@aws-cdk/aws-s3-assets/test/integ.assets.bundling.lit.js:11:23)",
+              "Object.<anonymous> (/Users/reaganelm/Development/aws-cdk/packages/@aws-cdk/aws-s3-assets/test/integ.assets.bundling.lit.js:28:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1092:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1121:10)",
+              "Module.load (node:internal/modules/cjs/loader:972:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:813:14)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:76:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/cdk-integ-assets-bundling/AssetParameters/8995e9405bdcae88dc6fc76b4fc224fecfd00ef93663cb759b491c6a13cc59c2/S3VersionKey": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParameters8995e9405bdcae88dc6fc76b4fc224fecfd00ef93663cb759b491c6a13cc59c2S3VersionKey39CCFFC8",
+            "trace": [
+              "new FileAssetParameters (/Users/reaganelm/Development/aws-cdk/packages/@aws-cdk/core/lib/private/asset-parameters.js:16:35)",
+              "LegacyStackSynthesizer.doAddFileAsset (/Users/reaganelm/Development/aws-cdk/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:162:22)",
+              "LegacyStackSynthesizer.addFileAsset (/Users/reaganelm/Development/aws-cdk/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:83:25)",
+              "TestStack.addFileAsset (/Users/reaganelm/Development/aws-cdk/packages/@aws-cdk/core/lib/stack.js:402:33)",
+              "LegacyStackSynthesizer.addFileAsset (/Users/reaganelm/Development/aws-cdk/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:87:31)",
+              "new Asset (/Users/reaganelm/Development/aws-cdk/packages/@aws-cdk/aws-s3-assets/lib/asset.js:40:44)",
+              "new TestStack (/Users/reaganelm/Development/aws-cdk/packages/@aws-cdk/aws-s3-assets/test/integ.assets.bundling.lit.js:11:23)",
+              "Object.<anonymous> (/Users/reaganelm/Development/aws-cdk/packages/@aws-cdk/aws-s3-assets/test/integ.assets.bundling.lit.js:28:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1092:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1121:10)",
+              "Module.load (node:internal/modules/cjs/loader:972:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:813:14)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:76:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/cdk-integ-assets-bundling/AssetParameters/8995e9405bdcae88dc6fc76b4fc224fecfd00ef93663cb759b491c6a13cc59c2/ArtifactHash": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssetParameters8995e9405bdcae88dc6fc76b4fc224fecfd00ef93663cb759b491c6a13cc59c2ArtifactHashDF68D9B9",
+            "trace": [
+              "new FileAssetParameters (/Users/reaganelm/Development/aws-cdk/packages/@aws-cdk/core/lib/private/asset-parameters.js:20:38)",
+              "LegacyStackSynthesizer.doAddFileAsset (/Users/reaganelm/Development/aws-cdk/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:162:22)",
+              "LegacyStackSynthesizer.addFileAsset (/Users/reaganelm/Development/aws-cdk/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:83:25)",
+              "TestStack.addFileAsset (/Users/reaganelm/Development/aws-cdk/packages/@aws-cdk/core/lib/stack.js:402:33)",
+              "LegacyStackSynthesizer.addFileAsset (/Users/reaganelm/Development/aws-cdk/packages/@aws-cdk/core/lib/stack-synthesizers/legacy.js:87:31)",
+              "new Asset (/Users/reaganelm/Development/aws-cdk/packages/@aws-cdk/aws-s3-assets/lib/asset.js:40:44)",
+              "new TestStack (/Users/reaganelm/Development/aws-cdk/packages/@aws-cdk/aws-s3-assets/test/integ.assets.bundling.lit.js:11:23)",
+              "Object.<anonymous> (/Users/reaganelm/Development/aws-cdk/packages/@aws-cdk/aws-s3-assets/test/integ.assets.bundling.lit.js:28:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1092:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1121:10)",
+              "Module.load (node:internal/modules/cjs/loader:972:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:813:14)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:76:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/cdk-integ-assets-bundling/MyUser/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyUserDC45028B",
+            "trace": [
+              "new User (/Users/reaganelm/Development/aws-cdk/packages/@aws-cdk/aws-iam/lib/user.js:52:22)",
+              "new TestStack (/Users/reaganelm/Development/aws-cdk/packages/@aws-cdk/aws-s3-assets/test/integ.assets.bundling.lit.js:23:22)",
+              "Object.<anonymous> (/Users/reaganelm/Development/aws-cdk/packages/@aws-cdk/aws-s3-assets/test/integ.assets.bundling.lit.js:28:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1092:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1121:10)",
+              "Module.load (node:internal/modules/cjs/loader:972:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:813:14)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:76:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ],
+        "/cdk-integ-assets-bundling/MyUser/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyUserDefaultPolicy7B897426",
+            "trace": [
+              "new Policy (/Users/reaganelm/Development/aws-cdk/packages/@aws-cdk/aws-iam/lib/policy.js:56:26)",
+              "User.addToPrincipalPolicy (/Users/reaganelm/Development/aws-cdk/packages/@aws-cdk/aws-iam/lib/user.js:181:34)",
+              "Function.addToPrincipal (/Users/reaganelm/Development/aws-cdk/packages/@aws-cdk/aws-iam/lib/grant.js:90:65)",
+              "Function.addToPrincipalOrResource (/Users/reaganelm/Development/aws-cdk/packages/@aws-cdk/aws-iam/lib/grant.js:45:30)",
+              "Import.grant (/Users/reaganelm/Development/aws-cdk/packages/@aws-cdk/aws-s3/lib/bucket.js:380:31)",
+              "Import.grantRead (/Users/reaganelm/Development/aws-cdk/packages/@aws-cdk/aws-s3/lib/bucket.js:244:21)",
+              "Asset.grantRead (/Users/reaganelm/Development/aws-cdk/packages/@aws-cdk/aws-s3-assets/lib/asset.js:93:21)",
+              "new TestStack (/Users/reaganelm/Development/aws-cdk/packages/@aws-cdk/aws-s3-assets/test/integ.assets.bundling.lit.js:24:15)",
+              "Object.<anonymous> (/Users/reaganelm/Development/aws-cdk/packages/@aws-cdk/aws-s3-assets/test/integ.assets.bundling.lit.js:28:1)",
+              "Module._compile (node:internal/modules/cjs/loader:1092:14)",
+              "Object.Module._extensions..js (node:internal/modules/cjs/loader:1121:10)",
+              "Module.load (node:internal/modules/cjs/loader:972:32)",
+              "Function.Module._load (node:internal/modules/cjs/loader:813:14)",
+              "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:76:12)",
+              "node:internal/main/run_main_module:17:47"
+            ]
+          }
+        ]
+      }
+    }
+  }
+}

@@ -171,6 +171,7 @@ export class BundlingDockerImage {
 
     const dockerArgs: string[] = [
       'buildx', 'build',
+      '--load',
       '-t', tag,
       ...(options.file ? ['-f', join(path, options.file)] : []),
       ...(options.plaftorm ? ['--platform', options.plaftorm] : []),
