@@ -45,7 +45,7 @@ export class GlobalTableCoordinator extends cdk.Stack {
  */
 function grantCreateGlobalTableLambda(principal?: iam.IPrincipal): void {
   if (principal) {
-    principal.addToPolicy(new iam.PolicyStatement({
+    principal.addToPrincipalPolicy(new iam.PolicyStatement({
       resources: ['*'],
       actions: [
         'iam:CreateServiceLinkedRole',
