@@ -237,7 +237,7 @@ class CloudWatchLogsDestination extends FlowLogDestination {
       logGroup = this.props.logGroup;
     }
 
-    iamRole.addToPolicy(
+    iamRole.addToPrincipalPolicy(
       new iam.PolicyStatement({
         actions: [
           'logs:CreateLogStream',
@@ -249,7 +249,7 @@ class CloudWatchLogsDestination extends FlowLogDestination {
       }),
     );
 
-    iamRole.addToPolicy(
+    iamRole.addToPrincipalPolicy(
       new iam.PolicyStatement({
         actions: ['iam:PassRole'],
         effect: iam.Effect.ALLOW,

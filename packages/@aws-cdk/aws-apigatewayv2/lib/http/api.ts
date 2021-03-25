@@ -83,6 +83,42 @@ export interface HttpApiProps {
    * @default false execute-api endpoint enabled.
    */
   readonly disableExecuteApiEndpoint?: boolean;
+
+  /**
+   * Default Authorizer to applied to all routes in the gateway
+   *
+   * @default - No authorizer
+   */
+  readonly defaultAuthorizer?: IHttpRouteAuthorizer;
+
+  /**
+   * Default OIDC scopes attached to all routes in the gateway, unless explicitly configured on the route.
+   *
+   * @default - no default authorization scopes
+   */
+  readonly defaultAuthorizationScopes?: string[];
+}
+
+/**
+ * Supported CORS HTTP methods
+ */
+export enum CorsHttpMethod{
+  /** HTTP ANY */
+  ANY = '*',
+  /** HTTP DELETE */
+  DELETE = 'DELETE',
+  /** HTTP GET */
+  GET = 'GET',
+  /** HTTP HEAD */
+  HEAD = 'HEAD',
+  /** HTTP OPTIONS */
+  OPTIONS = 'OPTIONS',
+  /** HTTP PATCH */
+  PATCH = 'PATCH',
+  /** HTTP POST */
+  POST = 'POST',
+  /** HTTP PUT */
+  PUT = 'PUT',
 }
 
 /**
@@ -105,7 +141,7 @@ export interface CorsPreflightOptions {
    * Represents a collection of allowed HTTP methods.
    * @default - No Methods are allowed.
    */
-  readonly allowMethods?: HttpMethod[];
+  readonly allowMethods?: CorsHttpMethod[];
 
   /**
    * Represents a collection of allowed origins.
@@ -143,15 +179,20 @@ export interface AddRoutesOptions extends BatchHttpRouteOptions {
 
   /**
    * Authorizer to be associated to these routes.
-   * @default - No authorizer
+   *
+   * Use NoneAuthorizer to remove the default authorizer for the api
+   *
+   * @default - uses the default authorizer if one is specified on the HttpApi
    */
   readonly authorizer?: IHttpRouteAuthorizer;
 
   /**
    * The list of OIDC scopes to include in the authorization.
    *
-   * These scopes will be merged with the scopes from the attached authorizer
-   * @default - no additional authorization scopes
+   * These scopes will override the default authorization scopes on the gateway.
+   * Set to [] to remove default scopes
+   *
+   * @default - uses defaultAuthorizationScopes if configured on the API, otherwise none.
    */
   readonly authorizationScopes?: string[];
 }
@@ -258,6 +299,9 @@ export class HttpApi extends HttpApiBase {
 
   private readonly _apiEndpoint: string;
 
+  private readonly defaultAuthorizer?: IHttpRouteAuthorizer;
+  private readonly defaultAuthorizationScopes?: string[];
+
   constructor(scope: Construct, id: string, props?: HttpApiProps) {
     super(scope, id);
 
@@ -300,6 +344,8 @@ export class HttpApi extends HttpApiBase {
     this.apiId = resource.ref;
     this.httpApiId = resource.ref;
     this._apiEndpoint = resource.attrApiEndpoint;
+    this.defaultAuthorizer = props?.defaultAuthorizer;
+    this.defaultAuthorizationScopes = props?.defaultAuthorizationScopes;
 
     if (props?.defaultIntegration) {
       new HttpRoute(this, 'DefaultRoute', {
@@ -363,12 +409,16 @@ export class HttpApi extends HttpApiBase {
    */
   public addRoutes(options: AddRoutesOptions): HttpRoute[] {
     const methods = options.methods ?? [HttpMethod.ANY];
-    return methods.map((method) => new HttpRoute(this, `${method}${options.path}`, {
-      httpApi: this,
-      routeKey: HttpRouteKey.with(options.path, method),
-      integration: options.integration,
-      authorizer: options.authorizer,
-      authorizationScopes: options.authorizationScopes,
-    }));
+    return methods.map((method) => {
+      const authorizationScopes = options.authorizationScopes ?? this.defaultAuthorizationScopes;
+
+      return new HttpRoute(this, `${method}${options.path}`, {
+        httpApi: this,
+        routeKey: HttpRouteKey.with(options.path, method),
+        integration: options.integration,
+        authorizer: options.authorizer ?? this.defaultAuthorizer,
+        authorizationScopes,
+      });
+    });
   }
 }

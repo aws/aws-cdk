@@ -29,14 +29,14 @@
     "table": "^6.0.7"
   },
   "devDependencies": {
-    "@types/jest": "^26.0.20",
+    "@types/jest": "^26.0.21",
     "@types/string-width": "^4.0.1",
     "@types/table": "^6.0.0",
     "cdk-build-tools": "0.0.0",
-    "fast-check": "^2.13.0",
+    "fast-check": "^2.14.0",
     "jest": "^26.6.3",
     "pkglint": "0.0.0",
-    "ts-jest": "^26.5.3"
+    "ts-jest": "^26.5.4"
   },
   "repository": {
     "url": "https://github.com/aws/aws-cdk.git",

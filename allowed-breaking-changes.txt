@@ -56,3 +56,8 @@ incompatible-argument:@aws-cdk/aws-ecs.TaskDefinition.addVolume
 # We made properties optional and it's really fine but our differ doesn't think so.
 weakened:@aws-cdk/cloud-assembly-schema.DockerImageSource
 weakened:@aws-cdk/cloud-assembly-schema.FileSource
+
+# Changed required deprecated props from required -> optional.
+# These are fine, since they shouldn't be widely used.
+weakened:@aws-cdk/core.FileAssetLocation
+weakened:@aws-cdk/aws-events.RuleTargetConfig

@@ -222,7 +222,7 @@ abstract class ProjectBase extends Resource implements IProject {
    */
   public addToRolePolicy(statement: iam.PolicyStatement) {
     if (this.role) {
-      this.role.addToPolicy(statement);
+      this.role.addToPrincipalPolicy(statement);
     }
   }
 
@@ -1229,7 +1229,7 @@ export class Project extends ProjectBase {
       return;
     }
 
-    this.role.addToPolicy(new iam.PolicyStatement({
+    this.role.addToPrincipalPolicy(new iam.PolicyStatement({
       resources: [`arn:${Aws.PARTITION}:ec2:${Aws.REGION}:${Aws.ACCOUNT_ID}:network-interface/*`],
       actions: ['ec2:CreateNetworkInterfacePermission'],
       conditions: {

@@ -461,14 +461,14 @@ export class TaskDefinition extends TaskDefinitionBase {
    * Adds a policy statement to the task IAM role.
    */
   public addToTaskRolePolicy(statement: iam.PolicyStatement) {
-    this.taskRole.addToPolicy(statement);
+    this.taskRole.addToPrincipalPolicy(statement);
   }
 
   /**
    * Adds a policy statement to the task execution IAM role.
    */
   public addToExecutionRolePolicy(statement: iam.PolicyStatement) {
-    this.obtainExecutionRole().addToPolicy(statement);
+    this.obtainExecutionRole().addToPrincipalPolicy(statement);
   }
 
   /**

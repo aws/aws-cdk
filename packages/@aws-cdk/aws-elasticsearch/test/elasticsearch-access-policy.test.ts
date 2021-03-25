@@ -20,7 +20,7 @@ test('minimal example renders correctly', () => {
     accessPolicies: [new iam.PolicyStatement({
       effect: iam.Effect.ALLOW,
       actions: ['es:ESHttp*'],
-      principals: [new iam.Anyone()],
+      principals: [new iam.AnyPrincipal()],
       resources: ['test:arn'],
 
     })],
