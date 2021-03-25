@@ -93,7 +93,7 @@
     "@aws-cdk/core": "0.0.0",
     "@aws-cdk/cx-api": "0.0.0",
     "@aws-cdk/region-info": "0.0.0",
-    "constructs": "^3.3.69"
+    "constructs": "^10.0.0"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
@@ -108,7 +108,7 @@
     "@aws-cdk/cx-api": "0.0.0",
     "@aws-cdk/cloud-assembly-schema": "0.0.0",
     "@aws-cdk/region-info": "0.0.0",
-    "constructs": "^3.3.69"
+    "constructs": "^10.0.0"
   },
   "engines": {
     "node": ">= 10.13.0 <13 || >=13.7.0"

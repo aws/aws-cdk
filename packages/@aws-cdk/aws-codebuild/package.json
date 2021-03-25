@@ -102,7 +102,7 @@
     "@aws-cdk/core": "0.0.0",
     "@aws-cdk/region-info": "0.0.0",
     "@aws-cdk/yaml-cfn": "0.0.0",
-    "constructs": "^3.3.69"
+    "constructs": "^10.0.0"
   },
   "bundledDependencies": [
     "@aws-cdk/yaml-cfn"
@@ -123,7 +123,7 @@
     "@aws-cdk/aws-secretsmanager": "0.0.0",
     "@aws-cdk/core": "0.0.0",
     "@aws-cdk/region-info": "0.0.0",
-    "constructs": "^3.3.69"
+    "constructs": "^10.0.0"
   },
   "engines": {
     "node": ">= 10.13.0 <13 || >=13.7.0"
