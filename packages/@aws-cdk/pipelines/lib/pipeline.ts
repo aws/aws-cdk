@@ -417,7 +417,7 @@ class AssetPublishing extends CoreConstruct {
       }
       const id = command.assetType === AssetType.FILE ? 'FileAsset' : 'DockerAsset';
 
-      action = this.publishers[command.assetId] = new PublishAssetsAction(this, id, {
+      action = this.publishers[command.assetType.toString()] = new PublishAssetsAction(this, id, {
         actionName: id,
         cloudAssemblyInput: this.props.cloudAssemblyInput,
         cdkCliVersion: this.props.cdkCliVersion,
