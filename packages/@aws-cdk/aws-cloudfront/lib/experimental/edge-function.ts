@@ -148,9 +148,10 @@ export class EdgeFunction extends Resource implements lambda.IVersion {
 
   /** Create a support stack and function in us-east-1, and a SSM reader in-region */
   private createCrossRegionFunction(id: string, props: EdgeFunctionProps): FunctionConfig {
-    const parameterNamePrefix = 'EdgeFunctionArn';
-    const parameterName = `${parameterNamePrefix}${id}`;
     const functionStack = this.edgeStack(props.stackId);
+
+    const parameterNamePrefix = 'EdgeFunctionArn';
+    const parameterName = `${parameterNamePrefix}${functionStack.node.addr}${id}`;
 
     const edgeFunction = new lambda.Function(functionStack, id, props);
     addEdgeLambdaToRoleTrustStatement(edgeFunction.role!);
