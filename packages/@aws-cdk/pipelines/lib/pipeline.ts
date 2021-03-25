@@ -364,8 +364,6 @@ interface AssetPublishingProps {
  * Add appropriate publishing actions to the asset publishing stage
  */
 class AssetPublishing extends CoreConstruct {
-  // CodePipelines has a hard limit of 50 actions per stage. See https://github.com/aws/aws-cdk/issues/9353
-  private readonly MAX_PUBLISHERS_PER_STAGE = 50;
 
   private readonly publishers: Record<string, PublishAssetsAction> = {};
   private readonly assetRoles: Record<string, iam.IRole> = {};
@@ -374,8 +372,6 @@ class AssetPublishing extends CoreConstruct {
   private readonly lastStageBeforePublishing?: codepipeline.IStage;
   private readonly stages: codepipeline.IStage[] = [];
   private readonly pipeline: codepipeline.Pipeline;
-
-  private _dockerAssetCtr = 0;
 
   constructor(scope: Construct, id: string, private readonly props: AssetPublishingProps) {
     super(scope, id);
