@@ -1,5 +1,5 @@
 {
-  "name": "@aws-cdk-lib/rewrite-imports",
+  "name": "@aws-cdk/v2-migration",
   "version": "0.0.0",
   "description": "Rewrites typescript 'import' statements from @aws-cdk/xxx to aws-cdk-lib",
   "bin": {
@@ -45,7 +45,7 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/aws/aws-cdk.git",
-    "directory": "packages/@aws-cdk-lib/rewrite-imports"
+    "directory": "packages/@aws-cdk/v2-migration"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "stability": "experimental",

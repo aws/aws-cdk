@@ -1,7 +1,8 @@
 {
-  "name": "@aws-cdk-lib/assert",
+  "name": "@aws-cdk/assert2",
   "version": "0.0.0",
-  "description": "An assertion library for use with CDK Apps",
+  "private": true,
+  "description": "An assertion library for use with CDKv2 Apps",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "scripts": {
@@ -12,7 +13,8 @@
     "pkglint": "pkglint -f",
     "package": "cdk-package",
     "build+test+package": "yarn build+test && yarn package",
-    "build+test": "yarn build && yarn test"
+    "build+test": "yarn build && yarn test",
+    "postpack": "./fix-package-name.sh"
   },
   "cdk-build": {
     "jest": true,
@@ -33,7 +35,8 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk-lib/rewrite-imports": "0.0.0",
+    "@aws-cdk/v2-migration": "0.0.0",
+    "@aws-cdk/assert": "0.0.0",
     "@types/jest": "^26.0.20",
     "@types/node": "^10.17.54",
     "cdk-build-tools": "0.0.0",
@@ -63,6 +66,9 @@
   "homepage": "https://github.com/aws/aws-cdk",
   "engines": {
     "node": ">= 10.13.0 <13 || >=13.7.0"
+  },
+  "ubergen": {
+    "exclude": true
   },
   "stability": "experimental",
   "maturity": "developer-preview",

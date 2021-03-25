@@ -20,7 +20,7 @@ Migrate TypeScript `import` statements from modular CDK (i.e. `@aws-cdk/aws-s3`)
 Usage:
 
 ```shell
-$ rewrite-imports lib/**/*.ts
+$ npx -p @aws-cdk/v2-migration rewrite-imports lib/**/*.ts
 ```
 
 NOTE: `node_modules` and `*.d.ts` files are ignored.
