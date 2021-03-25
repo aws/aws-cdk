@@ -35,7 +35,7 @@ export enum HttpRouteAuthorizerType {
  * Payload format version for lambda authorizers
  * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-lambda-authorizer.html
  */
-export enum AuthorizerPayloadFormatVersion {
+export enum AuthorizerPayloadVersion {
   /** Version 1.0 */
   VERSION_1_0 = '1.0',
 
@@ -97,7 +97,7 @@ export interface HttpAuthorizerProps {
    *
    * @default - 2.0
    */
-  readonly payloadFormatVersion?: AuthorizerPayloadFormatVersion;
+  readonly payloadFormatVersion?: AuthorizerPayloadVersion;
 
   /**
    * The authorizer's Uniform Resource Identifier (URI).

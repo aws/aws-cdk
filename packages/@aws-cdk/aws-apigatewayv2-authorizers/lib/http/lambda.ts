@@ -5,7 +5,7 @@ import {
   HttpRouteAuthorizerBindOptions,
   HttpRouteAuthorizerConfig,
   IHttpRouteAuthorizer,
-  AuthorizerPayloadFormatVersion,
+  AuthorizerPayloadVersion,
 } from '@aws-cdk/aws-apigatewayv2';
 import { IFunction } from '@aws-cdk/aws-lambda';
 import { Token, Stack, Duration } from '@aws-cdk/core';
@@ -44,7 +44,7 @@ export interface HttpLambdaAuthorizerProps {
    *
    * @default - 2.0
    */
-  readonly payloadFormatVersion?: AuthorizerPayloadFormatVersion;
+  readonly payloadFormatVersion?: AuthorizerPayloadVersion;
 
   /**
    * The lambda function used for authorization
@@ -72,7 +72,7 @@ export class HttpLambdaAuthorizer implements IHttpRouteAuthorizer {
   private authorizer?: HttpAuthorizer;
 
   constructor(private readonly props: HttpLambdaAuthorizerProps) {
-    if (props.type === HttpLambdaAuthorizerType.SIMPLE && props.payloadFormatVersion === AuthorizerPayloadFormatVersion.VERSION_1_0) {
+    if (props.type === HttpLambdaAuthorizerType.SIMPLE && props.payloadFormatVersion === AuthorizerPayloadVersion.VERSION_1_0) {
       throw new Error('The simple authorizer type can only be used with payloadFormatVersion 2.0');
     }
   }
@@ -93,7 +93,7 @@ export class HttpLambdaAuthorizer implements IHttpRouteAuthorizer {
           this.props.type === HttpLambdaAuthorizerType.SIMPLE,
         payloadFormatVersion:
           this.props.payloadFormatVersion ??
-          AuthorizerPayloadFormatVersion.VERSION_2_0,
+          AuthorizerPayloadVersion.VERSION_2_0,
         authorizerUri: lambdaAuthorizerArn(this.props.handler),
         resultsCacheTtl: this.props.resultsCacheTtl ?? Duration.minutes(5),
       });

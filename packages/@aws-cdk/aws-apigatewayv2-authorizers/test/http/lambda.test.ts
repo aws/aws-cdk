@@ -1,5 +1,5 @@
 import '@aws-cdk/assert/jest';
-import { AuthorizerPayloadFormatVersion, HttpApi, HttpIntegrationType, HttpRouteIntegrationBindOptions, IHttpRouteIntegration, PayloadFormatVersion } from '@aws-cdk/aws-apigatewayv2';
+import { AuthorizerPayloadVersion, HttpApi, HttpIntegrationType, HttpRouteIntegrationBindOptions, IHttpRouteIntegration, PayloadFormatVersion } from '@aws-cdk/aws-apigatewayv2';
 import { Code, Function, Runtime } from '@aws-cdk/aws-lambda';
 import { Duration, Stack } from '@aws-cdk/core';
 import { HttpLambdaAuthorizer, HttpLambdaAuthorizerType } from '../../lib';
@@ -129,7 +129,7 @@ describe('HttpLambdaAuthorizer', () => {
     const authorizer = new HttpLambdaAuthorizer({
       type: HttpLambdaAuthorizerType.AWS_IAM,
       handler,
-      payloadFormatVersion: AuthorizerPayloadFormatVersion.VERSION_1_0,
+      payloadFormatVersion: AuthorizerPayloadVersion.VERSION_1_0,
     });
 
     // WHEN
@@ -158,7 +158,7 @@ describe('HttpLambdaAuthorizer', () => {
     expect(() => new HttpLambdaAuthorizer({
       type: HttpLambdaAuthorizerType.SIMPLE,
       handler,
-      payloadFormatVersion: AuthorizerPayloadFormatVersion.VERSION_1_0,
+      payloadFormatVersion: AuthorizerPayloadVersion.VERSION_1_0,
     })).toThrow('The simple authorizer type can only be used with payloadFormatVersion 2.0');
   });
 });
