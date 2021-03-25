@@ -150,8 +150,8 @@ export class EdgeFunction extends Resource implements lambda.IVersion {
   private createCrossRegionFunction(id: string, props: EdgeFunctionProps): FunctionConfig {
     const functionStack = this.edgeStack(props.stackId);
 
-    const parameterNamePrefix = 'EdgeFunctionArn';
-    const parameterName = `${parameterNamePrefix}${Stack.of(this).stackName}${id}`;
+    const parameterNamePrefix = '/EdgeFunctionArn';
+    const parameterName = `${parameterNamePrefix}/${this.stack.region}/${this.node.path}`;
 
     const edgeFunction = new lambda.Function(functionStack, id, props);
     addEdgeLambdaToRoleTrustStatement(edgeFunction.role!);
@@ -175,7 +175,8 @@ export class EdgeFunction extends Resource implements lambda.IVersion {
       service: 'ssm',
       region: EdgeFunction.EDGE_REGION,
       resource: 'parameter',
-      resourceName: parameterNamePrefix + '*',
+      resourceName: parameterNamePrefix + '/*',
+      sep: '',
     });
 
     const resourceType = 'Custom::CrossRegionStringParameterReader';

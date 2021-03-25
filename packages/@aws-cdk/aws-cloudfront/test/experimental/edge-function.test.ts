@@ -39,7 +39,7 @@ describe('stacks', () => {
           Statement: [{
             Effect: 'Allow',
             Resource: {
-              'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':ssm:us-east-1:111111111111:parameter/EdgeFunctionArn*']],
+              'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':ssm:us-east-1:111111111111:parameter/EdgeFunctionArn/*']],
             },
             Action: ['ssm:GetParameter'],
           }],
@@ -57,7 +57,7 @@ describe('stacks', () => {
         'Fn::GetAtt': ['CustomCrossRegionStringParameterReaderCustomResourceProviderHandler65B5F33A', 'Arn'],
       },
       Region: 'us-east-1',
-      ParameterName: 'EdgeFunctionArnStackMyFn',
+      ParameterName: '/EdgeFunctionArn/testregion/Stack/MyFn',
     });
   });
 
@@ -98,7 +98,7 @@ describe('stacks', () => {
     expect(fnStack).toHaveResource('AWS::SSM::Parameter', {
       Type: 'String',
       Value: { Ref: 'MyFnCurrentVersion309B29FC29686ce94039b6e08d1645be854b3ac9' },
-      Name: 'EdgeFunctionArnStackMyFn',
+      Name: '/EdgeFunctionArn/testregion/Stack/MyFn',
     });
   });
 
@@ -201,7 +201,7 @@ describe('stacks', () => {
         'Fn::GetAtt': ['CustomCrossRegionStringParameterReaderCustomResourceProviderHandler65B5F33A', 'Arn'],
       },
       Region: 'us-east-1',
-      ParameterName: 'EdgeFunctionArnStage-StackMyFn',
+      ParameterName: '/EdgeFunctionArn/testregion/Stage/Stack/MyFn',
     });
   });
 
@@ -221,10 +221,10 @@ describe('stacks', () => {
 
     // Two SSM parameters
     expect(firstFnStack).toHaveResourceLike('AWS::SSM::Parameter', {
-      Name: 'EdgeFunctionArnFirstStackMyFn',
+      Name: '/EdgeFunctionArn/testregion/FirstStack/MyFn',
     });
     expect(secondFnStack).toHaveResourceLike('AWS::SSM::Parameter', {
-      Name: 'EdgeFunctionArnSecondStackMyFn',
+      Name: '/EdgeFunctionArn/testregion/SecondStack/MyFn',
     });
   });
 });
