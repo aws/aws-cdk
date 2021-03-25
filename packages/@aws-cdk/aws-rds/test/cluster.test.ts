@@ -740,7 +740,7 @@ describe('cluster', () => {
     });
 
     // THEN
-    expect(() => cluster.addRotationSingleUser()).toThrow(/without secret/);
+    expect(() => cluster.addRotationSingleUser()).toThrow(/without master secret/);
 
 
   });
@@ -762,7 +762,55 @@ describe('cluster', () => {
     cluster.addRotationSingleUser();
 
     // THEN
-    expect(() => cluster.addRotationSingleUser()).toThrow(/A single user rotation was already added to this cluster/);
+    expect(() => cluster.addRotationSingleUser()).toThrow(/A single user rotation for master secret is already added to this cluster/);
+
+
+  });
+
+  test('throws when trying to add single user rotation for additional secret which is master secret', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const cluster = new DatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.AURORA_MYSQL,
+      credentials: { username: 'admin' },
+      instanceProps: {
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+        vpc,
+      },
+    });
+
+    // WHEN
+    cluster.addRotationSingleUser();
+
+    // THEN
+    expect(() => cluster.addRotationSingleUser({ secret: cluster.secret!! })).toThrow(/A single user rotation for master secret is already added to this cluster/);
+
+
+  });
+
+  test('throws when trying to add single user rotation for additional secret multiple times', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const cluster = new DatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.AURORA_MYSQL,
+      credentials: { username: 'admin' },
+      instanceProps: {
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+        vpc,
+      },
+    });
+    const secret = new DatabaseSecret(stack, 'AdditionalSecret', {
+      username: 'myuser',
+    });
+    secret.attach(cluster);
+
+    // WHEN
+    cluster.addRotationSingleUser({ secret });
+
+    // THEN
+    expect(() => cluster.addRotationSingleUser({ secret })).toThrow(/A single user rotation for additional secret is already added to this cluster/);
 
 
   });

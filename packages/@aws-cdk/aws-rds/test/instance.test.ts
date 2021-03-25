@@ -700,7 +700,7 @@ describe('instance', () => {
     });
 
     // THEN
-    expect(() => instance.addRotationSingleUser()).toThrow(/without secret/);
+    expect(() => instance.addRotationSingleUser()).toThrow(/without master secret/);
 
 
   });
@@ -717,7 +717,45 @@ describe('instance', () => {
     instance.addRotationSingleUser();
 
     // THEN
-    expect(() => instance.addRotationSingleUser()).toThrow(/A single user rotation was already added to this instance/);
+    expect(() => instance.addRotationSingleUser()).toThrow(/A single user rotation for master secret is already added to this instance/);
+
+
+  });
+
+  test('throws when trying to add single user rotation for additional secret which is master secret', () => {
+    const instance = new rds.DatabaseInstance(stack, 'Database', {
+      engine: rds.DatabaseInstanceEngine.SQL_SERVER_EE,
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+      credentials: rds.Credentials.fromUsername('syscdk'),
+      vpc,
+    });
+
+    // WHEN
+    instance.addRotationSingleUser();
+
+    // THEN
+    expect(() => instance.addRotationSingleUser({ secret: instance.secret!! })).toThrow(/A single user rotation for master secret is already added to this instance/);
+
+
+  });
+
+  test('throws when trying to add single user rotation for additional secret multiple times', () => {
+    const instance = new rds.DatabaseInstance(stack, 'Database', {
+      engine: rds.DatabaseInstanceEngine.SQL_SERVER_EE,
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+      credentials: rds.Credentials.fromUsername('syscdk'),
+      vpc,
+    });
+    const secret = new rds.DatabaseSecret(stack, 'AdditionalSecret', {
+      username: 'myuser',
+    });
+    secret.attach(instance);
+
+    // WHEN
+    instance.addRotationSingleUser({ secret });
+
+    // THEN
+    expect(() => instance.addRotationSingleUser({ secret })).toThrow(/A single user rotation for additional secret is already added to this instance/);
 
 
   });

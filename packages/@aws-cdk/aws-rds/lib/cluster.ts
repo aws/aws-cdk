@@ -542,23 +542,38 @@ export class DatabaseCluster extends DatabaseClusterNew {
    * Adds the single user rotation of the master password to this cluster.
    */
   public addRotationSingleUser(options: RotationSingleUserOptions = {}): secretsmanager.SecretRotation {
+    if (options.secret) {
+      //TODO: check given secret is not master secret of this!
+      //TODO: check given secret is not added already!
+      //TODO: how to generate proper ID?
+      const id = 'AdditionalSecretRotation';
+      return this.newSecretRotation(id, options);
+    } else {
+      return this.addRotationSingleUserMasterSecret(options);
+    }
+  }
+
+  private addRotationSingleUserMasterSecret(options: RotationSingleUserOptions): secretsmanager.SecretRotation {
     if (!this.secret) {
-      throw new Error('Cannot add single user rotation for a cluster without secret.');
+      throw new Error('Cannot add single user rotation for a cluster without master secret.');
     }
 
     const id = 'RotationSingleUser';
-    const existing = this.node.tryFindChild(id);
-    if (existing) {
-      throw new Error('A single user rotation was already added to this cluster.');
+    if (this.node.tryFindChild(id)) {
+      throw new Error('A single user rotation for master secret is already added to this cluster.');
     }
 
+    return this.newSecretRotation(id, { ...options, secret: this.secret });
+  }
+
+  private newSecretRotation(id: string, options: RotationSingleUserOptions): secretsmanager.SecretRotation {
     return new secretsmanager.SecretRotation(this, id, {
-      secret: this.secret,
       application: this.singleUserRotationApplication,
       vpc: this.vpc,
       vpcSubnets: this.vpcSubnets,
       target: this,
       ...options,
+      secret: options.secret!!,
       excludeCharacters: options.excludeCharacters ?? DEFAULT_PASSWORD_EXCLUDE_CHARS,
     });
   }

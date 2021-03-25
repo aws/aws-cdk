@@ -446,6 +446,11 @@ interface CommonRotationUserOptions {
  * Options to add the multi user rotation
  */
 export interface RotationSingleUserOptions extends CommonRotationUserOptions {
+  /**
+   * The secret to rotate, must be already attached!
+   * @default - master secret of the instance
+   */
+  readonly secret?: secretsmanager.ISecret;
 }
 
 /**

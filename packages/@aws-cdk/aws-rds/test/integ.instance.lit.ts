@@ -74,6 +74,11 @@ class DatabaseInstanceStack extends cdk.Stack {
     // Rotate the master user password every 30 days
     instance.addRotationSingleUser();
 
+    // Rotate additional secret in single-user mode
+    const additionalSecret = new rds.DatabaseSecret(this, 'AdditionalSecret', { username: 'additional-user' });
+    additionalSecret.attach(instance);
+    instance.addRotationSingleUser({ secret: additionalSecret });
+
     // Add alarm for high CPU
     new cloudwatch.Alarm(this, 'HighCPU', {
       metric: instance.metricCPUUtilization(),
