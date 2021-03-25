@@ -218,8 +218,6 @@ describe('stacks', () => {
     // Two stacks in us-east-1
     const firstFnStack = app.node.findChild(`edge-lambda-stack-${firstStack.node.addr}`) as cdk.Stack;
     const secondFnStack = app.node.findChild(`edge-lambda-stack-${secondStack.node.addr}`) as cdk.Stack;
-    expect(firstFnStack).toBeDefined();
-    expect(secondFnStack).toBeDefined();
 
     // Two SSM parameters
     expect(firstFnStack).toHaveResourceLike('AWS::SSM::Parameter', {
