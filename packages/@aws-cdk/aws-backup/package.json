@@ -90,7 +90,7 @@
     "@aws-cdk/aws-rds": "0.0.0",
     "@aws-cdk/aws-sns": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "constructs": "^3.3.69"
+    "constructs": "^10.0.0"
   },
   "peerDependencies": {
     "@aws-cdk/aws-dynamodb": "0.0.0",
@@ -102,7 +102,7 @@
     "@aws-cdk/aws-rds": "0.0.0",
     "@aws-cdk/aws-sns": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "constructs": "^3.3.69"
+    "constructs": "^10.0.0"
   },
   "engines": {
     "node": ">= 10.13.0 <13 || >=13.7.0"
