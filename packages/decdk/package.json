@@ -211,7 +211,7 @@
     "@aws-cdk/pipelines": "0.0.0",
     "@aws-cdk/region-info": "0.0.0",
     "@aws-cdk/yaml-cfn": "0.0.0",
-    "constructs": "^3.2.0",
+    "constructs": "^3.3.69",
     "fs-extra": "^9.1.0",
     "jsii-reflect": "^1.26.0",
     "jsonschema": "^1.4.0",
