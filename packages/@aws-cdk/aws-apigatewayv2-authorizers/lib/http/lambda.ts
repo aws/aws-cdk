@@ -11,14 +11,14 @@ import { IFunction } from '@aws-cdk/aws-lambda';
 import { Token, Stack, Duration } from '@aws-cdk/core';
 
 /**
- * Specifies the type of lambda authorizer
+ * Specifies the type responses the lambda returns
  */
-export enum HttpLambdaAuthorizerType {
+export enum HttpLambdaResponseType {
   /** Returns simple boolean response */
   SIMPLE,
 
   /** Returns an IAM Policy */
-  AWS_IAM,
+  IAM,
 }
 
 /**
@@ -40,13 +40,6 @@ export interface HttpLambdaAuthorizerProps {
   readonly identitySource?: string[];
 
   /**
-   * Specifies the format of the payload sent to an HTTP API Lambda authorizer.
-   *
-   * @default - 2.0
-   */
-  readonly payloadFormatVersion?: AuthorizerPayloadVersion;
-
-  /**
    * The lambda function used for authorization
    */
   readonly handler: IFunction;
@@ -60,9 +53,12 @@ export interface HttpLambdaAuthorizerProps {
   readonly resultsCacheTtl?: Duration;
 
   /**
-   * Type of lambda authorizer
+   * The types of responses the lambda can return
+   *
+   * If HttpLambdaResponseType.SIMPLE is included then
+   * response format 2.0 will be used.
    */
-  readonly type: HttpLambdaAuthorizerType;
+  readonly responseTypes: HttpLambdaResponseType[];
 }
 
 /**
@@ -72,15 +68,14 @@ export class HttpLambdaAuthorizer implements IHttpRouteAuthorizer {
   private authorizer?: HttpAuthorizer;
 
   constructor(private readonly props: HttpLambdaAuthorizerProps) {
-    if (props.type === HttpLambdaAuthorizerType.SIMPLE && props.payloadFormatVersion === AuthorizerPayloadVersion.VERSION_1_0) {
-      throw new Error('The simple authorizer type can only be used with payloadFormatVersion 2.0');
-    }
   }
 
   public bind(options: HttpRouteAuthorizerBindOptions): HttpRouteAuthorizerConfig {
     if (!this.authorizer) {
       const id = this.props.authorizerName && !Token.isUnresolved(this.props.authorizerName) ?
         this.props.authorizerName : 'LambdaAuthorizer';
+
+      const enableSimpleResponses = this.props.responseTypes.includes(HttpLambdaResponseType.SIMPLE) || undefined;
 
       this.authorizer = new HttpAuthorizer(options.scope, id, {
         httpApi: options.route.httpApi,
@@ -89,11 +84,8 @@ export class HttpLambdaAuthorizer implements IHttpRouteAuthorizer {
         ],
         type: HttpAuthorizerType.LAMBDA,
         authorizerName: this.props.authorizerName,
-        enableSimpleResponses:
-          this.props.type === HttpLambdaAuthorizerType.SIMPLE,
-        payloadFormatVersion:
-          this.props.payloadFormatVersion ??
-          AuthorizerPayloadVersion.VERSION_2_0,
+        enableSimpleResponses,
+        payloadFormatVersion: enableSimpleResponses ? AuthorizerPayloadVersion.VERSION_2_0 : AuthorizerPayloadVersion.VERSION_1_0,
         authorizerUri: lambdaAuthorizerArn(this.props.handler),
         resultsCacheTtl: this.props.resultsCacheTtl ?? Duration.minutes(5),
       });

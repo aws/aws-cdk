@@ -3,7 +3,7 @@ import { HttpApi, HttpMethod } from '@aws-cdk/aws-apigatewayv2';
 import { LambdaProxyIntegration } from '@aws-cdk/aws-apigatewayv2-integrations';
 import * as lambda from '@aws-cdk/aws-lambda';
 import { App, Stack } from '@aws-cdk/core';
-import { HttpLambdaAuthorizer, HttpLambdaAuthorizerType } from '../../lib';
+import { HttpLambdaAuthorizer, HttpLambdaResponseType } from '../../lib';
 
 /*
  * Stack verification steps:
@@ -25,7 +25,7 @@ const authHandler = new lambda.Function(stack, 'auth-function', {
 
 const authorizer = new HttpLambdaAuthorizer({
   handler: authHandler,
-  type: HttpLambdaAuthorizerType.SIMPLE,
+  responseTypes: [HttpLambdaResponseType.SIMPLE],
 });
 
 const handler = new lambda.Function(stack, 'lambda', {

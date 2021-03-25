@@ -1,8 +1,8 @@
 import '@aws-cdk/assert/jest';
-import { AuthorizerPayloadVersion, HttpApi, HttpIntegrationType, HttpRouteIntegrationBindOptions, IHttpRouteIntegration, PayloadFormatVersion } from '@aws-cdk/aws-apigatewayv2';
+import { HttpApi, HttpIntegrationType, HttpRouteIntegrationBindOptions, IHttpRouteIntegration, PayloadFormatVersion } from '@aws-cdk/aws-apigatewayv2';
 import { Code, Function, Runtime } from '@aws-cdk/aws-lambda';
 import { Duration, Stack } from '@aws-cdk/core';
-import { HttpLambdaAuthorizer, HttpLambdaAuthorizerType } from '../../lib';
+import { HttpLambdaAuthorizer, HttpLambdaResponseType } from '../../lib';
 
 describe('HttpLambdaAuthorizer', () => {
   test('default simple', () => {
@@ -10,14 +10,14 @@ describe('HttpLambdaAuthorizer', () => {
     const stack = new Stack();
     const api = new HttpApi(stack, 'HttpApi');
 
-    const handler = new Function(stack, 'auth-functon', {
+    const handler = new Function(stack, 'auth-function', {
       runtime: Runtime.NODEJS_12_X,
       code: Code.fromInline('exports.handler = () => {return true}'),
       handler: 'index.handler',
     });
 
     const authorizer = new HttpLambdaAuthorizer({
-      type: HttpLambdaAuthorizerType.SIMPLE,
+      responseTypes: [HttpLambdaResponseType.SIMPLE],
       handler,
     });
 
@@ -50,14 +50,14 @@ describe('HttpLambdaAuthorizer', () => {
     const stack = new Stack();
     const api = new HttpApi(stack, 'HttpApi');
 
-    const handler = new Function(stack, 'auth-functon', {
+    const handler = new Function(stack, 'auth-function', {
       runtime: Runtime.NODEJS_12_X,
       code: Code.fromInline('exports.handler = () => {return true}'),
       handler: 'index.handler',
     });
 
     const authorizer = new HttpLambdaAuthorizer({
-      type: HttpLambdaAuthorizerType.AWS_IAM,
+      responseTypes: [HttpLambdaResponseType.IAM],
       handler,
     });
 
@@ -73,8 +73,7 @@ describe('HttpLambdaAuthorizer', () => {
       Name: 'LambdaAuthorizer',
       AuthorizerType: 'REQUEST',
       AuthorizerResultTtlInSeconds: 300,
-      AuthorizerPayloadFormatVersion: '2.0',
-      EnableSimpleResponses: false,
+      AuthorizerPayloadFormatVersion: '1.0',
       IdentitySource: [
         '$request.header.Authorization',
       ],
@@ -82,6 +81,36 @@ describe('HttpLambdaAuthorizer', () => {
 
     expect(stack).toHaveResource('AWS::ApiGatewayV2::Route', {
       AuthorizationType: 'CUSTOM',
+    });
+  });
+
+  test('should use format 2.0 and simple responses when both response types are requested', () => {
+    // GIVEN
+    const stack = new Stack();
+    const api = new HttpApi(stack, 'HttpApi');
+
+    const handler = new Function(stack, 'auth-function', {
+      runtime: Runtime.NODEJS_12_X,
+      code: Code.fromInline('exports.handler = () => {return true}'),
+      handler: 'index.handler',
+    });
+
+    const authorizer = new HttpLambdaAuthorizer({
+      responseTypes: [HttpLambdaResponseType.IAM, HttpLambdaResponseType.SIMPLE],
+      handler,
+    });
+
+    // WHEN
+    api.addRoutes({
+      integration: new DummyRouteIntegration(),
+      path: '/books',
+      authorizer,
+    });
+
+    // THEN
+    expect(stack).toHaveResource('AWS::ApiGatewayV2::Authorizer', {
+      AuthorizerPayloadFormatVersion: '2.0',
+      EnableSimpleResponses: true,
     });
   });
 
@@ -97,7 +126,7 @@ describe('HttpLambdaAuthorizer', () => {
     });
 
     const authorizer = new HttpLambdaAuthorizer({
-      type: HttpLambdaAuthorizerType.SIMPLE,
+      responseTypes: [HttpLambdaResponseType.SIMPLE],
       handler,
       resultsCacheTtl: Duration.minutes(10),
     });
@@ -113,53 +142,6 @@ describe('HttpLambdaAuthorizer', () => {
     expect(stack).toHaveResource('AWS::ApiGatewayV2::Authorizer', {
       AuthorizerResultTtlInSeconds: 600,
     });
-  });
-
-  test('can override payload version', () => {
-    // GIVEN
-    const stack = new Stack();
-    const api = new HttpApi(stack, 'HttpApi');
-
-    const handler = new Function(stack, 'auth-functon', {
-      runtime: Runtime.NODEJS_12_X,
-      code: Code.fromInline('exports.handler = () => {return true}'),
-      handler: 'index.handler',
-    });
-
-    const authorizer = new HttpLambdaAuthorizer({
-      type: HttpLambdaAuthorizerType.AWS_IAM,
-      handler,
-      payloadFormatVersion: AuthorizerPayloadVersion.VERSION_1_0,
-    });
-
-    // WHEN
-    api.addRoutes({
-      integration: new DummyRouteIntegration(),
-      path: '/books',
-      authorizer,
-    });
-
-    // THEN
-    expect(stack).toHaveResource('AWS::ApiGatewayV2::Authorizer', {
-      AuthorizerPayloadFormatVersion: '1.0',
-    });
-  });
-
-  test('should throw error when using 1.0 with simple responses', () => {
-    // GIVEN
-    const stack = new Stack();
-
-    const handler = new Function(stack, 'auth-functon', {
-      runtime: Runtime.NODEJS_12_X,
-      code: Code.fromInline('exports.handler = () => {return true}'),
-      handler: 'index.handler',
-    });
-
-    expect(() => new HttpLambdaAuthorizer({
-      type: HttpLambdaAuthorizerType.SIMPLE,
-      handler,
-      payloadFormatVersion: AuthorizerPayloadVersion.VERSION_1_0,
-    })).toThrow('The simple authorizer type can only be used with payloadFormatVersion 2.0');
   });
 });
 

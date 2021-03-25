@@ -169,8 +169,8 @@ export class HttpAuthorizer extends Resource implements IHttpAuthorizer {
       throw new Error('jwtAudience and jwtIssuer are mandatory for JWT authorizers');
     }
 
-    if (props.type === HttpAuthorizerType.LAMBDA && (typeof props.enableSimpleResponses === 'undefined' || !props.authorizerUri)) {
-      throw new Error('enableSimpleResponses, and authorizerUri are mandatory for Lambda authorizers');
+    if (props.type === HttpAuthorizerType.LAMBDA && !props.authorizerUri) {
+      throw new Error('authorizerUri is mandatory for Lambda authorizers');
     }
 
     const resource = new CfnAuthorizer(this, 'Resource', {
