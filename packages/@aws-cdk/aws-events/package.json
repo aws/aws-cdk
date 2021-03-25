@@ -1,6 +1,7 @@
 {
   "name": "@aws-cdk/aws-events",
   "version": "0.0.0",
+  "private": true,
   "description": "Amazon EventBridge Construct Library",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",

@@ -4,6 +4,7 @@
   "description": "The CDK Construct Library for AWS::S3",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
+  "private": true,
   "jsii": {
     "outdir": "dist",
     "targets": {

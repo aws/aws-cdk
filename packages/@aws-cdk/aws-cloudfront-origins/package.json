@@ -1,6 +1,7 @@
 {
   "name": "@aws-cdk/aws-cloudfront-origins",
   "version": "0.0.0",
+  "private": true,
   "description": "The CDK Construct Library for AWS CloudFront Origins",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",

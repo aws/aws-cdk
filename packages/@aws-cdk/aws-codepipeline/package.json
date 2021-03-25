@@ -1,6 +1,7 @@
 {
   "name": "@aws-cdk/aws-codepipeline",
   "version": "0.0.0",
+  "private": true,
   "description": "Better interface to AWS Code Pipeline",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",

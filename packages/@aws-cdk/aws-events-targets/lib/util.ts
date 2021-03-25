@@ -6,7 +6,7 @@ import { Annotations, ConstructNode, IConstruct, Names, Token, TokenComparison, 
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
 // eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 
 /**
  * The generic properties for an RuleTarget
@@ -76,7 +76,7 @@ export function singletonEventRole(scope: IConstruct, policyStatements: iam.Poli
   const existing = scope.node.tryFindChild(id) as iam.IRole;
   if (existing) { return existing; }
 
-  const role = new iam.Role(scope as Construct, id, {
+  const role = new iam.Role(scope, id, {
     assumedBy: new iam.ServicePrincipal('events.amazonaws.com'),
   });
 

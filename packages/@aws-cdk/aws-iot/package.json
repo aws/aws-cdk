@@ -1,6 +1,7 @@
 {
   "name": "@aws-cdk/aws-iot",
   "version": "0.0.0",
+  "private": true,
   "description": "The CDK Construct Library for AWS::IoT",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",

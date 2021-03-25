@@ -2,6 +2,7 @@
   "name": "@aws-cdk/app-delivery",
   "description": "Continuous Integration / Continuous Delivery for CDK Applications",
   "deprecated": "Use the @aws-cdk/pipelines module instead",
+  "private": true,
   "version": "0.0.0",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
