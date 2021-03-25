@@ -361,5 +361,5 @@ export abstract class ValidationRule {
   /**
    * Will be executed for every package definition once, should mutate the package object
    */
-  public abstract validate(pkg: PackageJson): void;
+  public abstract validate(pkg: PackageJson): void | Promise<void>;
 }

@@ -4,7 +4,8 @@ import {
   IDependable, IResource, Lazy, Resource, Stack, Token, Tags, Names,
 } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
-import { Construct, IConstruct, Node } from 'constructs';
+import { Construct, Node } from 'constructs';
+import { ClientVpnEndpoint, ClientVpnEndpointOptions } from './client-vpn-endpoint';
 import {
   CfnEIP, CfnInternetGateway, CfnNatGateway, CfnRoute, CfnRouteTable, CfnSubnet,
   CfnSubnetRouteTableAssociation, CfnVPC, CfnVPCGatewayAttachment, CfnVPNGatewayRoutePropagation,
@@ -127,6 +128,11 @@ export interface IVpc extends IResource {
    * Adds a new VPN connection to this VPC
    */
   addVpnConnection(id: string, options: VpnConnectionOptions): VpnConnection;
+
+  /**
+   * Adds a new client VPN endpoint to this VPC
+   */
+  addClientVpnEndpoint(id: string, options: ClientVpnEndpointOptions): ClientVpnEndpoint;
 
   /**
    * Adds a new gateway endpoint to this VPC
@@ -414,6 +420,16 @@ abstract class VpcBase extends Resource implements IVpc {
     return new VpnConnection(this, id, {
       vpc: this,
       ...options,
+    });
+  }
+
+  /**
+   * Adds a new client VPN endpoint to this VPC
+   */
+  public addClientVpnEndpoint(id: string, options: ClientVpnEndpointOptions): ClientVpnEndpoint {
+    return new ClientVpnEndpoint(this, id, {
+      ...options,
+      vpc: this,
     });
   }
 
