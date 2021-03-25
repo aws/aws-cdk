@@ -1,10 +1,12 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import * as assets from '@aws-cdk/assets';
 import * as ecr from '@aws-cdk/aws-ecr';
 import { Annotations, FeatureFlags, IgnoreMode, Stack, Token } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line
+import { FingerprintOptions, IAsset, Staging } from '@aws-cdk/assets';
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
 // eslint-disable-next-line no-duplicate-imports, import/order
 import { Construct } from 'constructs';
@@ -12,7 +14,7 @@ import { Construct } from 'constructs';
 /**
  * Options for DockerImageAsset
  */
-export interface DockerImageAssetOptions extends assets.FingerprintOptions {
+export interface DockerImageAssetOptions extends FingerprintOptions {
   /**
    * ECR repository name
    *
@@ -68,7 +70,7 @@ export interface DockerImageAssetProps extends DockerImageAssetOptions {
  *
  * The image will be created in build time and uploaded to an ECR repository.
  */
-export class DockerImageAsset extends Construct implements assets.IAsset {
+export class DockerImageAsset extends CoreConstruct implements IAsset {
   /**
    * The full URI of the image (including a tag). Use this reference to pull
    * the asset.
@@ -80,7 +82,20 @@ export class DockerImageAsset extends Construct implements assets.IAsset {
    */
   public repository: ecr.IRepository;
 
+  /**
+   * A hash of the source of this asset, which is available at construction time. As this is a plain
+   * string, it can be used in construct IDs in order to enforce creation of a new resource when
+   * the content hash has changed.
+   * @deprecated use assetHash
+   */
   public readonly sourceHash: string;
+
+  /**
+   * A hash of this asset, which is available at construction time. As this is a plain string, it
+   * can be used in construct IDs in order to enforce creation of a new resource when the content
+   * hash has changed.
+   */
+  public readonly assetHash: string;
 
   constructor(scope: Construct, id: string, props: DockerImageAssetProps) {
     super(scope, id);
@@ -140,7 +155,7 @@ export class DockerImageAsset extends Construct implements assets.IAsset {
     // deletion of the ECR repository the app used).
     extraHash.version = '1.21.0';
 
-    const staging = new assets.Staging(this, 'Staging', {
+    const staging = new Staging(this, 'Staging', {
       ...props,
       exclude,
       ignoreMode,
@@ -150,7 +165,8 @@ export class DockerImageAsset extends Construct implements assets.IAsset {
         : JSON.stringify(extraHash),
     });
 
-    this.sourceHash = staging.sourceHash;
+    this.sourceHash = staging.assetHash;
+    this.assetHash = staging.assetHash;
 
     const stack = Stack.of(this);
     const location = stack.synthesizer.addDockerImageAsset({
@@ -158,8 +174,7 @@ export class DockerImageAsset extends Construct implements assets.IAsset {
       dockerBuildArgs: props.buildArgs,
       dockerBuildTarget: props.target,
       dockerFile: props.file,
-      repositoryName: props.repositoryName,
-      sourceHash: staging.sourceHash,
+      sourceHash: staging.assetHash,
     });
 
     this.repository = ecr.Repository.fromRepositoryName(this, 'Repository', location.repositoryName);

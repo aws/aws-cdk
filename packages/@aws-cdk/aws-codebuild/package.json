@@ -101,8 +101,12 @@
     "@aws-cdk/aws-secretsmanager": "0.0.0",
     "@aws-cdk/core": "0.0.0",
     "@aws-cdk/region-info": "0.0.0",
-    "constructs": "10.0.0-pre.5"
+    "@aws-cdk/yaml-cfn": "0.0.0",
+    "constructs": "^10.0.0"
   },
+  "bundledDependencies": [
+    "@aws-cdk/yaml-cfn"
+  ],
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
     "@aws-cdk/aws-cloudwatch": "0.0.0",
@@ -119,7 +123,7 @@
     "@aws-cdk/aws-secretsmanager": "0.0.0",
     "@aws-cdk/core": "0.0.0",
     "@aws-cdk/region-info": "0.0.0",
-    "constructs": "10.0.0-pre.5"
+    "constructs": "^10.0.0"
   },
   "engines": {
     "node": ">= 10.13.0 <13 || >=13.7.0"
