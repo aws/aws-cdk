@@ -375,7 +375,6 @@ class AssetPublishing extends CoreConstruct {
   private readonly stages: codepipeline.IStage[] = [];
   private readonly pipeline: codepipeline.Pipeline;
 
-  private _fileAssetCtr = 0;
   private _dockerAssetCtr = 0;
 
   constructor(scope: Construct, id: string, private readonly props: AssetPublishingProps) {
@@ -412,29 +411,16 @@ class AssetPublishing extends CoreConstruct {
       this.generateAssetRole(command.assetType);
     }
 
-    let action = this.publishers[command.assetId];
+    let action = this.publishers[command.assetType.toString()];
     if (!action) {
-      // Dynamically create new stages as needed, with `MAX_PUBLISHERS_PER_STAGE` assets per stage.
-      const stageIndex = Math.floor((this._fileAssetCtr + this._dockerAssetCtr) / this.MAX_PUBLISHERS_PER_STAGE);
-      if (stageIndex >= this.stages.length) {
-        const previousStage = this.stages.slice(-1)[0] ?? this.lastStageBeforePublishing;
+      if (this.stages.length == 0) {
         this.stages.push(this.pipeline.addStage({
-          stageName: `Assets${stageIndex > 0 ? stageIndex + 1 : ''}`,
-          placement: { justAfter: previousStage },
+          stageName: 'Assets',
+          placement: { justAfter: this.lastStageBeforePublishing },
         }));
       }
+      const id = command.assetType === AssetType.FILE ? 'FileAsset' : 'DockerAsset';
 
-      // The asset ID would be a logical candidate for the construct path and project names, but if the asset
-      // changes it leads to recreation of a number of Role/Policy/Project resources which is slower than
-      // necessary. Number sequentially instead.
-      //
-      // FIXME: The ultimate best solution is probably to generate a single Project per asset type
-      // and reuse that for all assets.
-      const id = command.assetType === AssetType.FILE ? `FileAsset${++this._fileAssetCtr}` : `DockerAsset${++this._dockerAssetCtr}`;
-
-      // NOTE: It's important that asset changes don't force a pipeline self-mutation.
-      // This can cause an infinite loop of updates (see https://github.com/aws/aws-cdk/issues/9080).
-      // For that reason, we use the id as the actionName below, rather than the asset hash.
       action = this.publishers[command.assetId] = new PublishAssetsAction(this, id, {
         actionName: id,
         cloudAssemblyInput: this.props.cloudAssemblyInput,
@@ -444,7 +430,7 @@ class AssetPublishing extends CoreConstruct {
         vpc: this.props.vpc,
         subnetSelection: this.props.subnetSelection,
       });
-      this.stages[stageIndex].addAction(action);
+      this.stages[0].addAction(action);
     }
 
     action.addPublishCommand(relativePath, command.assetSelector);
