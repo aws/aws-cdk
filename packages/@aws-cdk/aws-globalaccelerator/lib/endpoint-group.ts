@@ -3,10 +3,6 @@ import { Construct } from 'constructs';
 import * as ga from './globalaccelerator.generated';
 import { IListener } from './listener';
 
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct as CoreConstruct } from '@aws-cdk/core';
-
 /**
  * The interface of the EndpointGroup
  */
@@ -117,7 +113,7 @@ export interface EndpointGroupProps {
 /**
  * The class for endpoint configuration
  */
-export class EndpointConfiguration extends CoreConstruct {
+export class EndpointConfiguration extends Construct {
   /**
    * The property containing all the configuration to be rendered
    */

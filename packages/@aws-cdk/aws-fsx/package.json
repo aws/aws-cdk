@@ -1,6 +1,7 @@
 {
   "name": "@aws-cdk/aws-fsx",
   "version": "0.0.0",
+  "private": true,
   "description": "The CDK Construct Library for AWS::FSx",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",

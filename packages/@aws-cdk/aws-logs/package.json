@@ -1,6 +1,7 @@
 {
   "name": "@aws-cdk/aws-logs",
   "version": "0.0.0",
+  "private": true,
   "description": "The CDK Construct Library for AWS::Logs",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",

@@ -10,10 +10,6 @@ import { Construct, Node } from 'constructs';
 import { appOf, assemblyBuilderOf } from '../private/construct-internals';
 import { toPosixPath } from '../private/fs';
 
-// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
-// eslint-disable-next-line
-import { Construct as CoreConstruct } from '@aws-cdk/core';
-
 /**
  * Customization options for a DeployCdkStackAction
  */
@@ -167,7 +163,7 @@ export class DeployCdkStackAction implements codepipeline.IAction {
 
     // We need the path of the template relative to the root Cloud Assembly
     // It should be easier to get this, but for now it is what it is.
-    const appAsmRoot = assemblyBuilderOf(appOf(scope as CoreConstruct)).outdir;
+    const appAsmRoot = assemblyBuilderOf(appOf(scope)).outdir;
     const fullTemplatePath = path.join(artifact.assembly.directory, artifact.templateFile);
 
     let fullConfigPath;
@@ -266,7 +262,7 @@ export class DeployCdkStackAction implements codepipeline.IAction {
   /**
    * Exists to implement IAction
    */
-  public bind(scope: CoreConstruct, stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
+  public bind(scope: Construct, stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
   codepipeline.ActionConfig {
     stage.addAction(this.prepareChangeSetAction);
 

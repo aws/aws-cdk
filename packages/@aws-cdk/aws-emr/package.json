@@ -1,6 +1,7 @@
 {
   "name": "@aws-cdk/aws-emr",
   "version": "0.0.0",
+  "private": true,
   "description": "The CDK Construct Library for AWS::EMR",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",

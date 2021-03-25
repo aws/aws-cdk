@@ -1,6 +1,7 @@
 {
   "name": "@aws-cdk/aws-cloudwatch-actions",
   "version": "0.0.0",
+  "private": true,
   "description": "Alarm Actions for AWS CloudWatch CDK library",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
