@@ -11,7 +11,7 @@
             ]
           },
           "Region": "us-east-1",
-          "ParameterName": "EdgeFunctionArnc8417eb8f576934608616903f247687299c2ae060cLambda",
+          "ParameterName": "EdgeFunctionArninteg-distribution-lambda-cross-regionLambda",
           "RefreshToken": "4412ddb0ae449da20173ca211c51fddc"
         },
         "UpdateReplacePolicy": "Delete",
@@ -137,7 +137,7 @@
             ]
           },
           "Region": "us-east-1",
-          "ParameterName": "EdgeFunctionArnc8d9c7e5fe8c564d9f0ffd3686de06aa27ee3ab226Lambda2",
+          "ParameterName": "EdgeFunctionArninteg-distribution-lambda-cross-regionLambda2",
           "RefreshToken": "8f81ceb404ac454f09648e62822d9ca9"
         },
         "UpdateReplacePolicy": "Delete",
@@ -278,7 +278,7 @@
           "Value": {
             "Ref": "LambdaCurrentVersionDF706F6A97fb843e9bd06fcd2bb15eeace80e13e"
           },
-          "Name": "EdgeFunctionArnc8417eb8f576934608616903f247687299c2ae060cLambda"
+          "Name": "EdgeFunctionArninteg-distribution-lambda-cross-regionLambda"
         }
       },
       "LambdaAliaslive79C8A712": {
@@ -372,7 +372,7 @@
           "Value": {
             "Ref": "Lambda2CurrentVersion72012B74b9eef8becb98501bc795baca3c6169c4"
           },
-          "Name": "EdgeFunctionArnc8d9c7e5fe8c564d9f0ffd3686de06aa27ee3ab226Lambda2"
+          "Name": "EdgeFunctionArninteg-distribution-lambda-cross-regionLambda2"
         }
       },
       "Lambda2Aliaslive77F6085F": {

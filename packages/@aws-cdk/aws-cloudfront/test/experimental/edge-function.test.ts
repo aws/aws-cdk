@@ -57,7 +57,7 @@ describe('stacks', () => {
         'Fn::GetAtt': ['CustomCrossRegionStringParameterReaderCustomResourceProviderHandler65B5F33A', 'Arn'],
       },
       Region: 'us-east-1',
-      ParameterName: 'EdgeFunctionArnc88e8326180bdc320e75c78346a9348595fc2c2522MyFn',
+      ParameterName: 'EdgeFunctionArnStackMyFn',
     });
   });
 
@@ -98,7 +98,7 @@ describe('stacks', () => {
     expect(fnStack).toHaveResource('AWS::SSM::Parameter', {
       Type: 'String',
       Value: { Ref: 'MyFnCurrentVersion309B29FC29686ce94039b6e08d1645be854b3ac9' },
-      Name: 'EdgeFunctionArnc88e8326180bdc320e75c78346a9348595fc2c2522MyFn',
+      Name: 'EdgeFunctionArnStackMyFn',
     });
   });
 
@@ -201,7 +201,7 @@ describe('stacks', () => {
         'Fn::GetAtt': ['CustomCrossRegionStringParameterReaderCustomResourceProviderHandler65B5F33A', 'Arn'],
       },
       Region: 'us-east-1',
-      ParameterName: 'EdgeFunctionArnc806df76a6426deb981ce4ae509345d6b72062ff5cMyFn',
+      ParameterName: 'EdgeFunctionArnStage-StackMyFn',
     });
   });
 
@@ -221,10 +221,10 @@ describe('stacks', () => {
 
     // Two SSM parameters
     expect(firstFnStack).toHaveResourceLike('AWS::SSM::Parameter', {
-      Name: 'EdgeFunctionArnc8a7f7d1de31fbd55163844116df47879dbdc7b253MyFn',
+      Name: 'EdgeFunctionArnFirstStackMyFn',
     });
     expect(secondFnStack).toHaveResourceLike('AWS::SSM::Parameter', {
-      Name: 'EdgeFunctionArnc84d4750807eb40baad5b19adea2f98545d8414f05MyFn',
+      Name: 'EdgeFunctionArnSecondStackMyFn',
     });
   });
 });
