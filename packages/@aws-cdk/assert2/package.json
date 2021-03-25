@@ -14,7 +14,8 @@
     "package": "cdk-package",
     "build+test+package": "yarn build+test && yarn package",
     "build+test": "yarn build && yarn test",
-    "postpack": "./fix-package-name.sh"
+    "prepack": "./prepack.sh",
+    "postpack": "./postpack.sh"
   },
   "cdk-build": {
     "jest": true,
