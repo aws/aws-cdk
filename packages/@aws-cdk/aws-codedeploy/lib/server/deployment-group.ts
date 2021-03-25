@@ -356,7 +356,7 @@ export class ServerDeploymentGroup extends ServerDeploymentGroupBase {
           'if [ -z "$PKG_CMD" ]; then',
           'PKG_CMD=apt-get',
           'else',
-          'PKG=CMD=yum',
+          'PKG_CMD=yum',
           'fi',
           '$PKG_CMD update -y',
           'set +e', // make sure we don't exit on the next command failing (we check its exit code below)
@@ -367,8 +367,7 @@ export class ServerDeploymentGroup extends ServerDeploymentGroupBase {
           '$PKG_CMD install -y ruby',
           'fi',
           'AWS_CLI_PACKAGE_NAME=awscli',
-          'if [[ "$PKG_CMD" = "yum" ]];',
-          'then',
+          'if [ "$PKG_CMD" = "yum" ]; then',
           'AWS_CLI_PACKAGE_NAME=aws-cli',
           'fi',
           '$PKG_CMD install -y $AWS_CLI_PACKAGE_NAME',
