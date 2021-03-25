@@ -95,7 +95,7 @@ export interface HttpAuthorizerProps {
   /**
    * Specifies the format of the payload sent to an HTTP API Lambda authorizer.
    *
-   * @default - 2.0
+   * @default AuthorizerPayloadFormatVersion.VERSION_2_0
    */
   readonly payloadFormatVersion?: AuthorizerPayloadVersion;
 
