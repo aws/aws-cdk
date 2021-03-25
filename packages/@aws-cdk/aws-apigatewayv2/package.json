@@ -1,6 +1,7 @@
 {
   "name": "@aws-cdk/aws-apigatewayv2",
   "version": "0.0.0",
+  "private": true,
   "description": "The CDK Construct Library for AWS::APIGatewayv2",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",

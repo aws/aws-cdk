@@ -1,6 +1,7 @@
 {
   "name": "@aws-cdk/aws-s3-assets",
   "version": "0.0.0",
+  "private": true,
   "description": "Deploy local files and directories to S3",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",

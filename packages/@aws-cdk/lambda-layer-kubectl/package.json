@@ -1,6 +1,5 @@
 {
   "name": "@aws-cdk/lambda-layer-kubectl",
-  "private": false,
   "version": "0.0.0",
   "description": "An AWS Lambda layer that contains the `kubectl` and `helm`",
   "main": "lib/index.js",
@@ -109,5 +108,6 @@
   },
   "publishConfig": {
     "tag": "latest"
-  }
+  },
+  "private": true
 }

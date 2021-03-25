@@ -96,5 +96,6 @@
   },
   "publishConfig": {
     "tag": "latest"
-  }
+  },
+  "private": true
 }

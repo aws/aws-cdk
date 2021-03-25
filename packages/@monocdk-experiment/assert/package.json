@@ -1,6 +1,7 @@
 {
   "name": "@monocdk-experiment/assert",
   "version": "0.0.0",
+  "private": true,
   "description": "An assertion library for use with CDK Apps",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -25,6 +26,9 @@
     "pkglint": {
       "disable": true
     }
+  },
+  "pkglint": {
+    "ignore": true
   },
   "author": {
     "name": "Amazon Web Services",
