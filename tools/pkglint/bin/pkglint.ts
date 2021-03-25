@@ -24,16 +24,8 @@ async function main(): Promise<void> {
 
   const pkgs = findPackageJsons(argv.directory as string);
 
-  for (const rule of rules) {
-    for (const pkg of pkgs.filter(pkg => pkg.shouldApply(rule))) {
-      rule.prepare(pkg);
-    }
-  }
-  for (const rule of rules) {
-    for (const pkg of pkgs.filter(pkg => pkg.shouldApply(rule))) {
-      await rule.validate(pkg);
-    }
-  }
+  rules.forEach(rule => pkgs.filter(pkg => pkg.shouldApply(rule)).forEach(pkg => rule.prepare(pkg)));
+  rules.forEach(rule => pkgs.filter(pkg => pkg.shouldApply(rule)).forEach(pkg => rule.validate(pkg)));
 
   if (argv.fix) {
     pkgs.forEach(pkg => pkg.applyFixes());
