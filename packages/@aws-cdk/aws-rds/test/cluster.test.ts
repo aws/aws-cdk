@@ -54,6 +54,15 @@ describe('cluster', () => {
 
   });
 
+  test('check instanceCount is a token', () => {
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    expect(() => {
+      createRDSCluster(stack, vpc);
+    }).toThrow('The number of instances a RDS Cluster consists of cannot be provided as a deploy-time only value!');
+
+  });
+
   test('can create a cluster with a single instance', () => {
     // GIVEN
     const stack = testStack();
@@ -1958,4 +1967,15 @@ function testStack(app?: cdk.App) {
   const stack = new cdk.Stack(app, undefined, { env: { account: '12345', region: 'us-test-1' } });
   stack.node.setContext('availability-zones:12345:us-test-1', ['us-test-1a', 'us-test-1b']);
   return stack;
+}
+
+function createRDSCluster(stack: any, vpc: any) {
+  new DatabaseCluster(stack, 'Database', {
+    instances: cdk.Token.asNumber('1'),
+    engine: DatabaseClusterEngine.AURORA,
+    instanceProps: {
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+      vpc,
+    },
+  });
 }
