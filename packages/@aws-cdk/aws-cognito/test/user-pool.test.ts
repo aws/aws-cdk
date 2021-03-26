@@ -222,7 +222,7 @@ describe('User Pool', () => {
     // WHEN
     expect(() => {
       UserPool.fromUserPoolArn(stack, 'userpool', userPoolArn);
-    }).toThrowError(/UserPool\.fromUserPoolArn requires an arn with a resourceName\./);
+    }).toThrowError(/invalid user pool ARN/);
   });
 
   test('import from different account region using arn', () => {
