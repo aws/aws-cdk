@@ -52,6 +52,29 @@ test('create listener', () => {
   }));
 });
 
+test('toPort defaults to fromPort if left out', () => {
+  // GIVEN
+  const { stack } = testFixture();
+
+  // WHEN
+  const accelerator = new ga.Accelerator(stack, 'Accelerator');
+  accelerator.addListener('Listener', {
+    portRanges: [
+      { fromPort: 123 },
+    ],
+  });
+
+  // THEN
+  expect(stack).to(haveResourceLike('AWS::GlobalAccelerator::Listener', {
+    PortRanges: [
+      {
+        FromPort: 123,
+        ToPort: 123,
+      },
+    ],
+  }));
+});
+
 test('create endpointgroup', () => {
   // GIVEN
   const { stack } = testFixture();

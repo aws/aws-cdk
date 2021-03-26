@@ -1,6 +1,7 @@
 import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import * as ga from './globalaccelerator.generated';
+import { Listener, ListenerOptions } from './listener';
 
 /**
  * The interface of the Accelerator
@@ -91,5 +92,15 @@ export class Accelerator extends cdk.Resource implements IAccelerator {
 
     this.acceleratorArn = resource.attrAcceleratorArn;
     this.dnsName = resource.attrDnsName;
+  }
+
+  /**
+   * Add a listener to the accelerator
+   */
+  public addListener(id: string, options: ListenerOptions) {
+    return new Listener(this, id, {
+      accelerator: this,
+      ...options,
+    });
   }
 }

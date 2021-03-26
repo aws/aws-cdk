@@ -16,20 +16,15 @@ export interface IListener extends cdk.IResource {
 }
 
 /**
- * construct properties for Listener
+ * Construct optiosn for Listener
  */
-export interface ListenerProps {
+export interface ListenerOptions {
   /**
    * Name of the listener
    *
    * @default - logical ID of the resource
    */
   readonly listenerName?: string;
-
-  /**
-   * The accelerator for this listener
-   */
-  readonly accelerator: IAccelerator;
 
   /**
    * The list of port ranges for the connections from clients to the accelerator
@@ -52,17 +47,30 @@ export interface ListenerProps {
 }
 
 /**
+ * Construct properties for Listener
+ */
+export interface ListenerProps extends ListenerOptions {
+  /**
+   * The accelerator for this listener
+   */
+  readonly accelerator: IAccelerator;
+}
+
+/**
  * The list of port ranges for the connections from clients to the accelerator.
  */
 export interface PortRange {
   /**
    * The first port in the range of ports, inclusive.
    */
-  readonly fromPort: number,
+  readonly fromPort: number;
+
   /**
    * The last port in the range of ports, inclusive.
+   *
+   * @default - same as `fromPort`
    */
-  readonly toPort: number,
+  readonly toPort?: number;
 }
 
 /**
@@ -127,7 +135,7 @@ export class Listener extends cdk.Resource implements IListener {
       acceleratorArn: props.accelerator.acceleratorArn,
       portRanges: props.portRanges.map(m => ({
         fromPort: m.fromPort,
-        toPort: m.toPort,
+        toPort: m.toPort ?? m.fromPort,
       })),
       protocol: props.protocol ?? ConnectionProtocol.TCP,
       clientAffinity: props.clientAffinity ?? ClientAffinity.NONE,

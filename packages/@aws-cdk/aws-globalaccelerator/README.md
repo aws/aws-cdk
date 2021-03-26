@@ -36,8 +36,7 @@ To create the `Accelerator`:
 ```ts
 import globalaccelerator = require('@aws-cdk/aws-globalaccelerator');
 
-new globalaccelerator.Accelerator(stack, 'Accelerator');
-
+const accelerator = new globalaccelerator.Accelerator(stack, 'Accelerator');
 ```
 
 ## Listener
@@ -47,13 +46,9 @@ The `Listener` resource is a Global Accelerator resource type that contains info
 To create the `Listener` listening on TCP 80:
 
 ```ts
-new globalaccelerator.Listener(stack, 'Listener', {
-  accelerator,
+const listener = accelerator.addListener('Listener', {
   portRanges: [
-    {
-      fromPort: 80,
-      toPort: 80,
-    },
+    { fromPort: 80 },
   ],
 });
 ```
@@ -114,12 +109,10 @@ for a VPC using an AwsCustomResource.
 const vpc = new Vpc(stack, 'VPC', {});
 const alb = new elbv2.ApplicationLoadBalancer(stack, 'ALB', { vpc, internetFacing: false  });
 const accelerator = new ga.Accelerator(stack, 'Accelerator');
-const listener = new ga.Listener(stack, 'Listener', {
-  accelerator,
+const listener = accelerator.addListener('Listener', {
   portRanges: [
     {
       fromPort: 443,
-      toPort: 443,
     },
   ],
 });
