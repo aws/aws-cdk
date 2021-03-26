@@ -2,12 +2,6 @@ version: 0.2
 
 # This buildspec is intended to be run by CodePipeline builds.
 
-env:
-  variables:
-    # Enable docker buildx
-    DOCKER_BUILDKIT: 1
-    DOCKER_CLI_EXPERIMENTAL: enabled
-
 phases:
   install:
     commands:

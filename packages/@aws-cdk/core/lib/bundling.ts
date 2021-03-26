@@ -170,11 +170,10 @@ export class BundlingDockerImage {
     const tag = `cdk-${tagHash}`;
 
     const dockerArgs: string[] = [
-      'buildx', 'build',
-      '--load',
+      ...(options.platform ? ['buildx', 'build', '--load'] : ['build']),
       '-t', tag,
       ...(options.file ? ['-f', join(path, options.file)] : []),
-      ...(options.plaftorm ? ['--platform', options.plaftorm] : []),
+      ...(options.platform ? ['--platform', options.platform] : []),
       ...flatten(Object.entries(buildArgs).map(([k, v]) => ['--build-arg', `${k}=${v}`])),
       path,
     ];
@@ -437,7 +436,7 @@ export interface DockerBuildOptions {
    *
    * @default - none
    */
-  readonly plaftorm?: string;
+  readonly platform?: string;
 }
 
 function flatten(x: string[][]) {

@@ -76,9 +76,7 @@ nodeunitShim({
     const tag = `cdk-${tagHash}`;
 
     test.ok(spawnSyncStub.firstCall.calledWith('docker', [
-      'buildx', 'build',
-      '--load',
-      '-t', tag,
+      'build', '-t', tag,
       '--build-arg', 'TEST_ARG=cdk-test',
       'docker-path',
     ]));
@@ -87,6 +85,55 @@ nodeunitShim({
       'run', '--rm',
       tag,
     ]));
+    test.done();
+  },
+
+  'bundling with image from asset and platform option'(test: Test) {
+    const spawnSyncStub = sinon.stub(child_process, 'spawnSync').returns({
+      status: 0,
+      stderr: Buffer.from('stderr'),
+      stdout: Buffer.from('stdout'),
+      pid: 123,
+      output: ['stdout', 'stderr'],
+      signal: null,
+    });
+
+    const platform = 'linux/amd64';
+    const imageHash = '123456abcdef';
+    const fingerprintStub = sinon.stub(FileSystem, 'fingerprint');
+    fingerprintStub.callsFake(() => imageHash);
+
+    const image = BundlingDockerImage.fromAsset('docker-path', {
+      buildArgs: {
+        TEST_ARG: 'cdk-test',
+      },
+      platform,
+    });
+    image.run();
+
+    const tagHash = crypto.createHash('sha256').update(JSON.stringify({
+      path: 'docker-path',
+      buildArgs: {
+        TEST_ARG: 'cdk-test',
+      },
+      platform,
+    })).digest('hex');
+    const tag = `cdk-${tagHash}`;
+
+    test.ok(spawnSyncStub.firstCall.calledWith('docker', [
+      'buildx', 'build',
+      '--load',
+      '-t', tag,
+      '--platform', platform,
+      '--build-arg', 'TEST_ARG=cdk-test',
+      'docker-path',
+    ]));
+
+    test.ok(spawnSyncStub.secondCall.calledWith('docker', [
+      'run', '--rm',
+      tag,
+    ]));
+
     test.done();
   },
 
