@@ -41,7 +41,7 @@
     "@aws-cdk/aws-ecr-assets": "0.0.0"
   },
   "peerDependencies": {
-    "constructs": "10.0.0-pre.5",
+    "constructs": "^10.0.0",
     "@aws-cdk/core": "0.0.0",
     "@aws-cdk/aws-codebuild": "0.0.0",
     "@aws-cdk/aws-codepipeline": "0.0.0",
@@ -54,7 +54,7 @@
     "@aws-cdk/cx-api": "0.0.0"
   },
   "dependencies": {
-    "constructs": "10.0.0-pre.5",
+    "constructs": "^10.0.0",
     "@aws-cdk/core": "0.0.0",
     "@aws-cdk/aws-codebuild": "0.0.0",
     "@aws-cdk/aws-codepipeline": "0.0.0",
