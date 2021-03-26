@@ -15,6 +15,7 @@ export interface ApiGatewayProps {
    * @default '*' that treated as ANY
    */
   readonly method?: string;
+
   /**
    * The api resource invoked by the rule.
    * We can use wildcards('*') to specify the path. In that case,
@@ -23,23 +24,29 @@ export interface ApiGatewayProps {
    * @default '/'
    */
   readonly path?: string;
+
   /**
    * The deploy stage of api gateway invoked by the rule.
+   *
+   * @default the value of deploymentStage.stageName of target api gateway.
    */
-  readonly stage: string;
+  readonly stage?: string;
+
   /**
    * The headers to be set when requesting API
    *
-   * @default no headers
+   * @default no header parameters
    */
   readonly headerParameters?: { [key: string]: (string) };
+
   /**
    * The path parameter values to be used to
    * populate to wildcards("*") of requesting api path
    *
-   * @default noe parameters
+   * @default no path parameters
    */
   readonly pathParameterValues?: string[];
+
   /**
    * The query parameters to be set when requesting API.
    *
@@ -91,7 +98,7 @@ export interface ApiGatewayProps {
  */
 export class ApiGateway implements events.IRuleTarget {
 
-  constructor(public readonly restApi: api.RestApi, private readonly props: ApiGatewayProps) {
+  constructor(public readonly restApi: api.RestApi, private readonly props?: ApiGatewayProps) {
   }
 
   /**
@@ -101,31 +108,31 @@ export class ApiGateway implements events.IRuleTarget {
    * @see https://docs.aws.amazon.com/eventbridge/latest/userguide/resource-based-policies-eventbridge.html#sqs-permissions
    */
   public bind(rule: events.IRule, _id?: string): events.RuleTargetConfig {
-    if (this.props.deadLetterQueue) {
+    if (this.props?.deadLetterQueue) {
       addToDeadLetterQueueResourcePolicy(rule, this.props.deadLetterQueue);
     }
 
     const restApiArn = this.restApi.arnForExecuteApi(
-      this.props.method,
-      this.props.path || '/',
-      this.props.stage,
+      this.props?.method,
+      this.props?.path || '/',
+      this.props?.stage || this.restApi.deploymentStage.stageName,
     );
     return {
       arn: restApiArn,
-      role: this.props.eventRole || singletonEventRole(this.restApi, [new iam.PolicyStatement({
+      role: this.props?.eventRole || singletonEventRole(this.restApi, [new iam.PolicyStatement({
         resources: [restApiArn],
         actions: [
           'execute-api:Invoke',
           'execute-api:ManageConnections',
         ],
       })]),
-      deadLetterConfig: this.props.deadLetterQueue && { arn: this.props.deadLetterQueue?.queueArn },
-      input: this.props.message,
+      deadLetterConfig: this.props?.deadLetterQueue && { arn: this.props.deadLetterQueue?.queueArn },
+      input: this.props?.message,
       targetResource: this.restApi,
       httpParameters: {
-        headerParameters: this.props.headerParameters,
-        queryStringParameters: this.props.queryStringParameters,
-        pathParameterValues: this.props.pathParameterValues,
+        headerParameters: this.props?.headerParameters,
+        queryStringParameters: this.props?.queryStringParameters,
+        pathParameterValues: this.props?.pathParameterValues,
       },
     };
   }
