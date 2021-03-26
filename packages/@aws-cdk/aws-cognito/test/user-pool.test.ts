@@ -240,6 +240,7 @@ describe('User Pool', () => {
     const pool = UserPool.fromUserPoolArn(stack, 'userpool', userPoolArn);
     expect(pool.env.account).toEqual('0123456789012');
     expect(pool.env.region).toEqual('us-east-1');
+    expect(pool.userPoolArn).toEqual('arn:aws:cognito-idp:us-east-1:0123456789012:userpool/test-user-pool');
   });
 
   test('support tags', () => {

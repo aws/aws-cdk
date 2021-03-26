@@ -673,34 +673,26 @@ export class UserPool extends UserPoolBase {
    * Import an existing user pool based on its ARN.
    */
   public static fromUserPoolArn(scope: Construct, id: string, userPoolArn: string): IUserPool {
-    let userPoolId = Stack.of(scope).parseArn(userPoolArn).resourceName;
+    const arnParts = Stack.of(scope).parseArn(userPoolArn);
 
-    if (!userPoolId) {
+    if (!arnParts.resourceName) {
       throw new Error('invalid user pool ARN');
     }
 
+    const userPoolId = arnParts.resourceName;
+
     class ImportedUserPool extends UserPoolBase {
-      public readonly userPoolArn: string;
-      public readonly userPoolId: string;
-      constructor(_scope: Construct, _id: string, attrs: {
-        userPoolId: string;
-        userPoolArn: string
-      }) {
-        const arnParts = Stack.of(_scope).parseArn(attrs.userPoolArn);
-        super(_scope, _id, {
+      public readonly userPoolArn = userPoolArn;
+      public readonly userPoolId = userPoolId;
+      constructor() {
+        super(scope, id, {
           account: arnParts.account,
           region: arnParts.region,
         });
-
-        this.userPoolArn = attrs.userPoolArn;
-        this.userPoolId = attrs.userPoolId;
       }
     }
 
-    return new ImportedUserPool(scope, id, {
-      userPoolId: userPoolId,
-      userPoolArn: userPoolArn,
-    });
+    return new ImportedUserPool();
   }
 
   /**
