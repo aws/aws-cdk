@@ -308,17 +308,17 @@ function parseArnShape(arn: string): 'token' | string[] {
 
   const partition = components.length > 1 ? components[1] : undefined;
   if (!partition) {
-    throw new Error('The `partition` component (2nd component) is required: ' + arn);
+    throw new Error('The `partition` component (2nd component) of an ARN is required: ' + arn);
   }
 
   const service = components.length > 2 ? components[2] : undefined;
   if (!service) {
-    throw new Error('The `service` component (3rd component) is required: ' + arn);
+    throw new Error('The `service` component (3rd component) of an ARN is required: ' + arn);
   }
 
   const resource = components.length > 5 ? components[5] : undefined;
   if (!resource) {
-    throw new Error('The `resource` component (6th component) is required: ' + arn);
+    throw new Error('The `resource` component (6th component) of an ARN is required: ' + arn);
   }
 
   // Region can be missing in global ARNs (such as used by IAM)

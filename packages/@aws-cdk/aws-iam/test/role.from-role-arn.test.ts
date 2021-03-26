@@ -530,7 +530,7 @@ describe('IAM Role.fromRoleArn', () => {
         expect(() => {
           Role.fromRoleArn(roleStack, 'Role',
             `arn:${Aws.PARTITION}:iam:${Aws.ACCOUNT_ID}:role/AwsCicd-${Aws.REGION}-CodeBuildRole`);
-        }).toThrow(/The `resource` component \(6th component\) is required:/);
+        }).toThrow(/The `resource` component \(6th component\) of an ARN is required:/);
       });
     });
   });
