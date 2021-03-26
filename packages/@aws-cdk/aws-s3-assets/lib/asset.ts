@@ -10,9 +10,6 @@ import { toSymlinkFollow } from './compat';
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
 // eslint-disable-next-line no-duplicate-imports, import/order
 import { CopyOptions } from '@aws-cdk/assets';
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 export interface AssetOptions extends CopyOptions, cdk.AssetOptions {
   /**
