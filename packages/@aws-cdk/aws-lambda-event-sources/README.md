@@ -151,6 +151,7 @@ and add it to your Lambda function. The following parameters will impact Amazon 
 * __parallelizationFactor__: The number of batches to concurrently process on each shard.
 * __retryAttempts__: The maximum number of times a record should be retried in the event of failure.
 * __startingPosition__: Will determine where to being consumption, either at the most recent ('LATEST') record or the oldest record ('TRIM_HORIZON'). 'TRIM_HORIZON' will ensure you process all available data, while 'LATEST' will ignore all records that arrived prior to attaching the event source.
+* __tumblingWindow__: The duration in seconds of a processing window when using streams.
 * __enabled__: If the DynamoDB Streams event source mapping should be enabled. The default is true.
 
 ```ts
@@ -195,6 +196,7 @@ behavior:
 * __parallelizationFactor__: The number of batches to concurrently process on each shard.
 * __retryAttempts__: The maximum number of times a record should be retried in the event of failure.
 * __startingPosition__: Will determine where to being consumption, either at the most recent ('LATEST') record or the oldest record ('TRIM_HORIZON'). 'TRIM_HORIZON' will ensure you process all available data, while 'LATEST' will ignore all records that arrived prior to attaching the event source.
+* __tumblingWindow__: The duration in seconds of a processing window when using streams.
 * __enabled__: If the DynamoDB Streams event source mapping should be enabled. The default is true.
 
 ```ts
