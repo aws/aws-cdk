@@ -106,11 +106,6 @@
             "Arn"
           ]
         },
-        "FunctionName": {
-          "Ref": "FC4345940"
-        },
-        "BatchSize": 100,
-        "StartingPosition": "TRIM_HORIZON",
         "TumblingWindowInSeconds": 60,
         "StartingPosition": "TRIM_HORIZON"
       }

@@ -178,7 +178,7 @@ export interface EventSourceMappingOptions {
    * @default - None
    */
   readonly tumblingWindow?: cdk.Duration;
-  
+
   /**
    * A list of host and port pairs that are the addresses of the Kafka brokers in a self managed "bootstrap" Kafka cluster
    * that a Kafka client connects to initially to bootstrap itself.
