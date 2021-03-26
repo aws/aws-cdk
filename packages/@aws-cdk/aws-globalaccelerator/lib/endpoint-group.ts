@@ -107,6 +107,105 @@ export interface EndpointGroupOptions {
    * @default - the region of the current stack
    */
   readonly region?: string;
+
+  /**
+   * The time between health checks for each endpoint
+   *
+   * Must be either 10 or 30 seconds.
+   *
+   * @default Duration.seconds(30)
+   */
+  readonly healthCheckInterval?: cdk.Duration;
+
+  /**
+   * The ping path for health checks (if the protocol is HTTP(S)).
+   *
+   * @default '/'
+   */
+  readonly healthCheckPath?: string;
+
+  /**
+   * The port used to perform health checks
+   *
+   * @default - The listener's port
+   */
+  readonly healthCheckPort?: number;
+
+  /**
+   * The protocol used to perform health checks
+   *
+   * @default HealthCheckProtocol.TCP
+   */
+  readonly healthCheckProtocol?: HealthCheckProtocol;
+
+  /**
+   * The number of consecutive health checks required to set the state of a
+   * healthy endpoint to unhealthy, or to set an unhealthy endpoint to healthy.
+   *
+   * @default 3
+   */
+  readonly healthCheckThreshold?: number;
+
+  /**
+   * The percentage of traffic to send to this AWS Region.
+   *
+   * Additional traffic is distributed to other endpoint groups for this listener.
+   *
+   * Use this action to increase (dial up) or decrease (dial down) traffic to a
+   * specific Region. The percentage is applied to the traffic that would
+   * otherwise have been routed to the Region based on optimal routing.
+   *
+   * @default 100
+   */
+  readonly trafficDialPercentage?: number;
+
+  /**
+   * Override the destination ports used to route traffic to an endpoint.
+   *
+   * Unless overridden, the port used to hit the endpoint will be the same as the port
+   * that traffic arrives on at the listener.
+   *
+   * @default - No overrides
+   */
+  readonly portOverrides?: PortOverride[]
+}
+
+
+/**
+ * Override specific listener ports used to route traffic to endpoints that are part of an endpoint group.
+ */
+export interface PortOverride {
+  /**
+   * The listener port that you want to map to a specific endpoint port.
+   *
+   * This is the port that user traffic arrives to the Global Accelerator on.
+   */
+  readonly listenerPort: number;
+
+  /**
+   * The endpoint port that you want a listener port to be mapped to.
+   *
+   * This is the port on the endpoint, such as the Application Load Balancer or Amazon EC2 instance.
+   */
+  readonly endpointPort: number;
+}
+
+/**
+ * The protocol for the connections from clients to the accelerator.
+ */
+export enum HealthCheckProtocol {
+  /**
+   * TCP
+   */
+  TCP = 'TCP',
+  /**
+   * HTTP
+   */
+  HTTP = 'HTTP',
+  /**
+   * HTTPS
+   */
+  HTTPS = 'HTTPS',
 }
 
 /**
@@ -181,6 +280,16 @@ export class EndpointGroup extends cdk.Resource implements IEndpointGroup {
       listenerArn: props.listener.listenerArn,
       endpointGroupRegion: props.region ?? cdk.Stack.of(this).region,
       endpointConfigurations: cdk.Lazy.any({ produce: () => this.renderEndpoints() }, { omitEmptyArray: true }),
+      healthCheckIntervalSeconds: props.healthCheckInterval?.toSeconds({ integral: true }),
+      healthCheckPath: props.healthCheckPath,
+      healthCheckPort: props.healthCheckPort,
+      healthCheckProtocol: props.healthCheckProtocol,
+      thresholdCount: props.healthCheckThreshold,
+      trafficDialPercentage: props.trafficDialPercentage,
+      portOverrides: props.portOverrides?.map(o => ({
+        endpointPort: o.endpointPort,
+        listenerPort: o.listenerPort,
+      })),
     });
 
     this.endpointGroupArn = resource.attrEndpointGroupArn;

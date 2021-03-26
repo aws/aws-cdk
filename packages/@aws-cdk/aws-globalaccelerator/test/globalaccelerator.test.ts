@@ -1,6 +1,7 @@
 import { expect, haveResourceLike } from '@aws-cdk/assert';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
+import { Duration } from '@aws-cdk/core';
 import * as ga from '../lib';
 import { testFixture } from './util';
 
@@ -103,6 +104,49 @@ test('create endpointgroup', () => {
         'ListenerArn',
       ],
     },
+  }));
+});
+
+test('endpointgroup with all parameters', () => {
+  // GIVEN
+  const { stack } = testFixture();
+
+  // WHEN
+  const accelerator = new ga.Accelerator(stack, 'Accelerator');
+  const listener = accelerator.addListener('Listener', {
+    portRanges: [{ fromPort: 80 }],
+  });
+  listener.addEndpointGroup('Group', {
+    region: 'us-bla-5',
+    healthCheckInterval: Duration.seconds(10),
+    healthCheckPath: '/ping',
+    healthCheckPort: 123,
+    healthCheckProtocol: ga.HealthCheckProtocol.HTTPS,
+    healthCheckThreshold: 23,
+    trafficDialPercentage: 86,
+    portOverrides: [
+      {
+        listenerPort: 80,
+        endpointPort: 8080,
+      },
+    ],
+  });
+
+  // THEN
+  expect(stack).to(haveResourceLike('AWS::GlobalAccelerator::EndpointGroup', {
+    EndpointGroupRegion: 'us-bla-5',
+    HealthCheckIntervalSeconds: 10,
+    HealthCheckPath: '/ping',
+    HealthCheckPort: 123,
+    HealthCheckProtocol: 'HTTPS',
+    PortOverrides: [
+      {
+        EndpointPort: 8080,
+        ListenerPort: 80,
+      },
+    ],
+    ThresholdCount: 23,
+    TrafficDialPercentage: 86,
   }));
 });
 
