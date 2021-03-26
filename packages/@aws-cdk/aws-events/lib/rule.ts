@@ -297,6 +297,7 @@ export class Rule extends Resource implements IRule {
       batchParameters: targetProps.batchParameters,
       deadLetterConfig: targetProps.deadLetterConfig,
       sqsParameters: targetProps.sqsParameters,
+      httpParameters: targetProps.httpParameters,
       input: inputProps && inputProps.input,
       inputPath: inputProps && inputProps.inputPath,
       inputTransformer: inputProps?.inputTemplate !== undefined ? {
