@@ -58,7 +58,6 @@ new globalaccelerator.Listener(stack, 'Listener', {
 });
 ```
 
-
 ## EndpointGroup
 
 The `EndpointGroup` resource is a Global Accelerator resource type that contains information about how you create an endpoint group for the specified listener. An endpoint group is a collection of endpoints in one AWS Region.
@@ -67,7 +66,6 @@ To create the `EndpointGroup`:
 
 ```ts
 new globalaccelerator.EndpointGroup(stack, 'Group', { listener });
-
 ```
 
 ## Add Endpoint into EndpointGroup
@@ -78,7 +76,6 @@ You may use the following methods to add endpoints into the `EndpointGroup`:
 - `addLoadBalancer` to add an Application Load Balancer or Network Load Balancer.
 - `addEc2Instance` to add an EC2 Instance.
 - `addElasticIpAddress` to add an Elastic IP Address.
-
 
 ```ts
 const endpointGroup = new globalaccelerator.EndpointGroup(stack, 'Group', { listener });

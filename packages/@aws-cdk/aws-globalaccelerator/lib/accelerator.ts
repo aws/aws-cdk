@@ -63,7 +63,7 @@ export class Accelerator extends cdk.Resource implements IAccelerator {
   /**
    * import from attributes
    */
-  public static fromAcceleratorAttributes(scope: Construct, id: string, attrs: AcceleratorAttributes ): IAccelerator {
+  public static fromAcceleratorAttributes(scope: Construct, id: string, attrs: AcceleratorAttributes): IAccelerator {
     class Import extends cdk.Resource implements IAccelerator {
       public readonly acceleratorArn = attrs.acceleratorArn;
       public readonly dnsName = attrs.dnsName;
@@ -86,7 +86,7 @@ export class Accelerator extends cdk.Resource implements IAccelerator {
 
     const resource = new ga.CfnAccelerator(this, 'Resource', {
       enabled: props.enabled ?? true,
-      name: props.acceleratorName ?? id,
+      name: props.acceleratorName ?? cdk.Names.uniqueId(this),
     });
 
     this.acceleratorArn = resource.attrAcceleratorArn;
