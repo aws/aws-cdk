@@ -209,9 +209,15 @@ export class Runtime {
   public readonly family?: RuntimeFamily;
 
   /**
-   * The bundling Docker image for this runtime.
+   * DEPRECATED
+   * @deprecated use `bundlingImage`
    */
   public readonly bundlingDockerImage: BundlingDockerImage;
+
+  /**
+   * The bundling Docker image for this runtime.
+   */
+  public readonly bundlingImage: DockerImage;
 
   constructor(name: string, family?: RuntimeFamily, props: LambdaRuntimeProps = { }) {
     this.name = name;
@@ -219,6 +225,7 @@ export class Runtime {
     this.family = family;
     const imageName = props.bundlingDockerImage ?? `amazon/aws-sam-cli-build-image-${name}`;
     this.bundlingDockerImage = DockerImage.fromRegistry(imageName);
+    this.bundlingImage = this.bundlingDockerImage;
     this.supportsCodeGuruProfiling = props.supportsCodeGuruProfiling ?? false;
 
     Runtime.ALL.push(this);
