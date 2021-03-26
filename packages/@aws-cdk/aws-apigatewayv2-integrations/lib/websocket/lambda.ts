@@ -38,7 +38,7 @@ export class LambdaWebSocketIntegration implements IWebSocketRouteIntegration {
 
     return {
       type: WebSocketIntegrationType.AWS_PROXY,
-      uri: this.props.handler.functionArn,
+      uri: `arn:aws:apigateway:${Stack.of(route).region}:lambda:path/2015-03-31/functions/${this.props.handler.functionArn}/invocations`,
     };
   }
 }
