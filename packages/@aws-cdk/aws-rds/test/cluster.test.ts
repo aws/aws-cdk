@@ -55,14 +55,13 @@ describe('cluster', () => {
   test('validates that the number of instances is not a deploy-time value', () => {
     const stack = testStack();
     const vpc = new ec2.Vpc(stack, 'VPC');
-    const parameter = new cdk.CfnParameter(stack, 'Param');
+    const parameter = new cdk.CfnParameter(stack, 'Param', { type: 'Number' });
 
     expect(() => {
       new DatabaseCluster(stack, 'Database', {
         instances: parameter.valueAsNumber,
         engine: DatabaseClusterEngine.AURORA,
         instanceProps: {
-          instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
           vpc,
         },
       });
