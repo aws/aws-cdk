@@ -1,6 +1,7 @@
 import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { IAccelerator } from './accelerator';
+import { EndpointGroup, EndpointGroupOptions } from './endpoint-group';
 import * as ga from './globalaccelerator.generated';
 
 /**
@@ -143,6 +144,15 @@ export class Listener extends cdk.Resource implements IListener {
 
     this.listenerArn = resource.attrListenerArn;
     this.listenerName = props.listenerName ?? resource.logicalId;
+  }
 
+  /**
+   * Add a new endpoint group to this listener
+   */
+  public addEndpointGroup(id: string, options: EndpointGroupOptions = {}) {
+    return new EndpointGroup(this, id, {
+      listener: this,
+      ...options,
+    });
   }
 }

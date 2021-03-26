@@ -91,20 +91,15 @@ export interface ElasticIpAddress {
 }
 
 /**
- * Property of the EndpointGroup
+ * Basic options for creating a new EndpointGroup
  */
-export interface EndpointGroupProps {
+export interface EndpointGroupOptions {
   /**
    * Name of the endpoint group
    *
    * @default - logical ID of the resource
    */
   readonly endpointGroupName?: string;
-
-  /**
-   * The Amazon Resource Name (ARN) of the listener.
-   */
-  readonly listener: IListener;
 
   /**
    * The AWS Region where the endpoint group is located.
@@ -115,7 +110,19 @@ export interface EndpointGroupProps {
 }
 
 /**
+ * Property of the EndpointGroup
+ */
+export interface EndpointGroupProps extends EndpointGroupOptions {
+  /**
+   * The Amazon Resource Name (ARN) of the listener.
+   */
+  readonly listener: IListener;
+}
+
+/**
  * The class for endpoint configuration
+ *
+ * @deprecated Use XXX instead
  */
 export class EndpointConfiguration extends CoreConstruct {
   /**
