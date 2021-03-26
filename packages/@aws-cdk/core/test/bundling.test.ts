@@ -60,7 +60,7 @@ nodeunitShim({
     const fingerprintStub = sinon.stub(FileSystem, 'fingerprint');
     fingerprintStub.callsFake(() => imageHash);
 
-    const image = BundlingDockerImage.fromAsset('docker-path', {
+    const image = DockerImage.fromBuild('docker-path', {
       buildArgs: {
         TEST_ARG: 'cdk-test',
       },
@@ -139,7 +139,7 @@ nodeunitShim({
     const fingerprintStub = sinon.stub(FileSystem, 'fingerprint');
     fingerprintStub.callsFake(() => imageHash);
 
-    const image = BundlingDockerImage.fromAsset('docker-path');
+    const image = DockerImage.fromBuild('docker-path');
 
     const tagHash = crypto.createHash('sha256').update(JSON.stringify({
       path: 'docker-path',
