@@ -53,6 +53,34 @@ export = {
     test.done();
   },
 
+  'can use yamlbuildspec literal'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new codebuild.Project(stack, 'Project', {
+      buildSpec: codebuild.BuildSpec.fromObjectToYaml({
+        text: 'text',
+        decimal: 10,
+        list: ['say hi'],
+        obj: {
+          text: 'text',
+          decimal: 10,
+          list: ['say hi'],
+        },
+      }),
+    });
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
+      Source: {
+        BuildSpec: 'text: text\ndecimal: 10\nlist:\n  - say hi\nobj:\n  text: text\n  decimal: 10\n  list:\n    - say hi\n',
+      },
+    }));
+
+    test.done();
+  },
+
   'must supply buildspec when using nosource'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
@@ -956,6 +984,49 @@ export = {
         },
         checkSecretsInPlainTextEnvVariables: false,
       });
+
+      test.done();
+    },
+  },
+
+  'Timeouts': {
+    'can add queued timeout'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      // WHEN
+      new codebuild.Project(stack, 'Project', {
+        source: codebuild.Source.s3({
+          bucket: new s3.Bucket(stack, 'Bucket'),
+          path: 'path',
+        }),
+        queuedTimeout: cdk.Duration.minutes(30),
+      });
+
+      // THEN
+      expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
+        QueuedTimeoutInMinutes: 30,
+      }));
+
+      test.done();
+    },
+    'can override build timeout'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      // WHEN
+      new codebuild.Project(stack, 'Project', {
+        source: codebuild.Source.s3({
+          bucket: new s3.Bucket(stack, 'Bucket'),
+          path: 'path',
+        }),
+        timeout: cdk.Duration.minutes(30),
+      });
+
+      // THEN
+      expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
+        TimeoutInMinutes: 30,
+      }));
 
       test.done();
     },

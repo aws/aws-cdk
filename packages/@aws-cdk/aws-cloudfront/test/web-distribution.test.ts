@@ -530,7 +530,7 @@ nodeunitShim({
     const sourceBucket = new s3.Bucket(stack, 'Bucket');
 
     const lambdaFunction = new lambda.Function(stack, 'Lambda', {
-      code: lambda.Code.inline('foo'),
+      code: lambda.Code.fromInline('foo'),
       handler: 'index.handler',
       runtime: lambda.Runtime.NODEJS_10_X,
     });
@@ -580,7 +580,7 @@ nodeunitShim({
     const sourceBucket = new s3.Bucket(stack, 'Bucket');
 
     const lambdaFunction = new lambda.Function(stack, 'Lambda', {
-      code: lambda.Code.inline('foo'),
+      code: lambda.Code.fromInline('foo'),
       handler: 'index.handler',
       runtime: lambda.Runtime.NODEJS_10_X,
     });
@@ -618,7 +618,7 @@ nodeunitShim({
     const sourceBucket = new s3.Bucket(stack, 'Bucket');
 
     const lambdaFunction = new lambda.Function(stack, 'Lambda', {
-      code: lambda.Code.inline('foo'),
+      code: lambda.Code.fromInline('foo'),
       handler: 'index.handler',
       runtime: lambda.Runtime.NODEJS_10_X,
       environment: {

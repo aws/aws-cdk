@@ -299,6 +299,8 @@ obtained from either DockerHub or from ECR repositories, or built directly from 
   image directly from a `Dockerfile` in your source directory.
 - `ecs.ContainerImage.fromDockerImageAsset(asset)`: uses an existing
   `@aws-cdk/aws-ecr-assets.DockerImageAsset` as a container image.
+- `new ecs.TagParameterContainerImage(repository)`: use the given ECR repository as the image 
+  but a CloudFormation parameter as the tag.
 
 ### Environment variables
 
@@ -447,10 +449,10 @@ const service = new ecs.Ec2Service(this, 'Service', { /* ... */ });
 
 const lb = new elb.LoadBalancer(stack, 'LB', { vpc });
 lb.addListener({ externalPort: 80 });
-lb.addTarget(service.loadBalancerTarget{
+lb.addTarget(service.loadBalancerTarget({
   containerName: 'MyContainer',
   containerPort: 80
-});
+}));
 ```
 
 There are two higher-level constructs available which include a load balancer for you that can be found in the aws-ecs-patterns module:
@@ -723,6 +725,20 @@ new ecs.Ec2Service(stack, 'Service', {
     container: specificContainer,
     containerPort: 7600,
   },
+});
+```
+
+### Associate With a Specific CloudMap Service
+
+You may associate an ECS service with a specific CloudMap service. To do
+this, use the service's `associateCloudMapService` method:
+
+```ts
+const cloudMapService = new cloudmap.Service(...);
+const ecsService = new ecs.FargateService(...);
+
+ecsService.associateCloudMapService({
+  service: cloudMapService,
 });
 ```
 
