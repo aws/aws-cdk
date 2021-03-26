@@ -110,7 +110,7 @@ nodeunitShim({
 
       'if the ARN doesnt have enough components'(test: Test) {
         const stack = new Stack();
-        test.throws(() => stack.parseArn('arn:is:too:short'), /ARNs must.*have at least 6 components.*arn:is:too:short/);
+        test.throws(() => stack.parseArn('arn:is:too:short'), /The `resource` component \(6th component\) is required/);
         test.done();
       },
 
