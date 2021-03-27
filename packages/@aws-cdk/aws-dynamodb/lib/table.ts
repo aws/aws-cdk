@@ -205,7 +205,7 @@ export interface TableOptions {
    *
    * A 'Time to live has been modified multiple times within a fixed interval' error can occur if
    * you recently changed the ttl. In this case wait some time and try again.
-   * @default - TTL stays in the current state (disabled for newly created tables).
+   * @default - TTL is disabled
    */
   readonly timeToLiveAttribute?: string;
 
