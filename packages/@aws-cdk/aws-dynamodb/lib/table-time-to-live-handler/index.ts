@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 import type { IsCompleteRequest, IsCompleteResponse, OnEventRequest, OnEventResponse } from '@aws-cdk/custom-resources/lib/provider-framework/types';
 import { DynamoDB } from 'aws-sdk'; // eslint-disable-line import/no-extraneous-dependencies
-import { disableTimeToLive, enableTimeToLive, isTimeToLiveCorrect, isTimeToLiveStable } from './utils';
+import { disableTimeToLive, enableTimeToLive, timeToLiveStatus } from './utils';
 
 const dynamodb = new DynamoDB({ apiVersion: '2012-08-10' });
 
@@ -41,8 +41,11 @@ export async function onEventHandler(event: OnEventRequest): Promise<OnEventResp
 export async function isCompleteHandler(event: IsCompleteRequest): Promise<IsCompleteResponse> {
   console.log('Event: %j', event);
 
-  if (await isTimeToLiveStable(event)) {
+  let { stable, correct } = await timeToLiveStatus(event);
+
+  if (stable && !correct) {
     await onEventHandler(event);
+    ({ stable, correct } = await timeToLiveStatus(event));
   }
 
   const data = await dynamodb.describeTable({
@@ -56,7 +59,7 @@ export async function isCompleteHandler(event: IsCompleteRequest): Promise<IsCom
     case 'Create':
     case 'Update':
       // Complete when time to live is fully functional
-      return { IsComplete: tableActive && await isTimeToLiveStable(event) && await isTimeToLiveCorrect(event) };
+      return { IsComplete: tableActive && stable && correct };
     case 'Delete':
       // There is nothing to delete, as time to live is connected to the table
       return { IsComplete: true };

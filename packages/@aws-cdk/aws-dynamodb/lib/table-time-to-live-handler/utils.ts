@@ -38,24 +38,19 @@ export async function enableTimeToLive(event: OnEventRequest) {
   }
 }
 
-export async function isTimeToLiveStable(event: OnEventRequest): Promise<boolean> {
+export async function timeToLiveStatus(event: OnEventRequest): Promise<{stable: boolean, correct: boolean}> {
   const currentTtl = await dynamodb.describeTimeToLive({
     TableName: event.ResourceProperties.TableName,
   }).promise();
 
-  return (
-    currentTtl.TimeToLiveDescription?.TimeToLiveStatus === 'ENABLED'
-    || currentTtl.TimeToLiveDescription?.TimeToLiveStatus === 'DISABLED'
-  );
-}
-
-export async function isTimeToLiveCorrect(event: OnEventRequest): Promise<boolean> {
-  const currentTtl = await dynamodb.describeTimeToLive({
-    TableName: event.ResourceProperties.TableName,
-  }).promise();
-
-  return (
-    currentTtl.TimeToLiveDescription?.AttributeName ===
-    event.ResourceProperties.TimeToLiveAttribute
-  );
+  return {
+    stable: (
+      currentTtl.TimeToLiveDescription?.TimeToLiveStatus === 'ENABLED'
+      || currentTtl.TimeToLiveDescription?.TimeToLiveStatus === 'DISABLED'
+    ),
+    correct: (
+      currentTtl.TimeToLiveDescription?.AttributeName ===
+      event.ResourceProperties.TimeToLiveAttribute
+    ),
+  };
 }
