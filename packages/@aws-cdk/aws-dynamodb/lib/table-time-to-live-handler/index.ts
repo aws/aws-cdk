@@ -17,10 +17,8 @@ export async function onEventHandler(event: OnEventRequest): Promise<OnEventResp
     switch (currentTtl.TimeToLiveDescription?.TimeToLiveStatus) {
       case 'ENABLING':
         throw new Error('Can not change time to live while it is being enabled.');
-        break;
       case 'DISABLING':
         throw new Error('Can not change time to live while it is being disabled.');
-        break;
       case 'ENABLED':
         if (event.ResourceProperties.TimeToLiveAttribute !== currentTtl.TimeToLiveDescription.AttributeName) {
           await disableTimeToLive(event);
