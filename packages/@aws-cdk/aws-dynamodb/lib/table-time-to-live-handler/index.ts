@@ -41,16 +41,16 @@ export async function onEventHandler(event: OnEventRequest): Promise<OnEventResp
 export async function isCompleteHandler(event: IsCompleteRequest): Promise<IsCompleteResponse> {
   console.log('Event: %j', event);
 
+  if (await isTimeToLiveStable(event)) {
+    await onEventHandler(event);
+  }
+
   const data = await dynamodb.describeTable({
     TableName: event.ResourceProperties.TableName,
   }).promise();
   console.log('Describe table: %j', data);
 
   const tableActive = (data.Table?.TableStatus === 'ACTIVE');
-
-  if (await isTimeToLiveStable(event)) {
-    await onEventHandler(event);
-  }
 
   switch (event.RequestType) {
     case 'Create':
