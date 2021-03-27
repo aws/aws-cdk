@@ -1158,7 +1158,7 @@ export class Table extends TableBase {
     }
 
     if (props.timeToLiveAttribute !== undefined) {
-      this.setTimeToLive(props.timeToLiveAttribute);
+      this.createTimeToLiveCustomResource(props.timeToLiveAttribute);
     }
   }
 
@@ -1547,7 +1547,7 @@ export class Table extends TableBase {
     }));
   }
 
-  private setTimeToLive(timeToLiveAttribute?: string) {
+  private createTimeToLiveCustomResource(timeToLiveAttribute?: string) {
     const provider = TimeToLiveProvider.getOrCreate(this);
 
     // Permissions
