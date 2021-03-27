@@ -174,5 +174,8 @@ const table = new dynamodb.Table(stack, 'MyTable', {
 ## Time to Live
 
 To help manage the time to live attribute of a table, a custom resource will be created if `timeToLiveAttribute` inside the tables options is set to any other value then undefined (_default_).
+This is necessary, as the CFN construct comes with some limitations. For example the TTL can not be changed to a
+new attribute directly and the disabling process takes quite some time. For more convince a custom resource is introduced. To read more about this have a look at the CFN documentation [here](https://docs.aws.amazon.com/de_de/AWSCloudFormation/latest/UserGuide/aws-properties-dynamodb-table-timetolivespecification.html) and the DynamoDB documentation [here](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/time-to-live-ttl-how-to.html).
+
 The resource allows to directly change the time to live attribute, without manually disabling and afterwards enabling it.
 If a time to live attribute is set for a table and `timeToLiveAttribute` is then set to undefined, the table will keep the attribute while the custom resource will be removed.
