@@ -78,6 +78,13 @@ export interface ContainerDefinitionOptions {
   readonly image: ContainerImage;
 
   /**
+   * The name of the container.
+   *
+   * @default - id of node associated with ContainerDefinition.
+   */
+  readonly containerName?: string;
+
+  /**
    * The command that is passed to the container.
    *
    * If you provide a shell command as a single string, you have to quote command-line arguments.
@@ -409,7 +416,7 @@ export class ContainerDefinition extends CoreConstruct {
     this.taskDefinition = props.taskDefinition;
     this.memoryLimitSpecified = props.memoryLimitMiB !== undefined || props.memoryReservationMiB !== undefined;
     this.linuxParameters = props.linuxParameters;
-    this.containerName = this.node.id;
+    this.containerName = props.containerName ?? this.node.id;
 
     this.imageConfig = props.image.bind(this, this);
     if (props.logging) {
