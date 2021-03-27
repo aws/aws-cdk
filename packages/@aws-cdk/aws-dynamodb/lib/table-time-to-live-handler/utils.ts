@@ -5,11 +5,10 @@ const dynamodb = new DynamoDB({ apiVersion: '2012-08-10' });
 
 
 export async function disableTimeToLive(event: OnEventRequest) {
-  const ttl = await dynamodb.describeTimeToLive({ TableName: event.ResourceProperties.TableName }).promise();
   await dynamodb.updateTimeToLive({
     TableName: event.ResourceProperties.TableName,
     TimeToLiveSpecification: {
-      AttributeName: ttl.TimeToLiveDescription?.AttributeName ?? '',
+      AttributeName: event.OldResourceProperties?.TimeToLiveAttribute,
       Enabled: false,
     },
   }).promise();
