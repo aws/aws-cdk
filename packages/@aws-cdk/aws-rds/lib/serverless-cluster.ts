@@ -1,8 +1,9 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
+import * as cxapi from '@aws-cdk/cx-api';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
-import { Resource, Duration, Token, Annotations, RemovalPolicy, IResource, Stack, Lazy } from '@aws-cdk/core';
+import { Resource, Duration, Token, Annotations, RemovalPolicy, IResource, Stack, Lazy, FeatureFlags } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { IClusterEngine } from './cluster-engine';
 import { Endpoint } from './endpoint';
@@ -438,10 +439,16 @@ export class ServerlessCluster extends ServerlessClusterBase {
       }),
     ];
 
+    let clusterIdentifier = props.clusterIdentifier;
+    const clusterIdentifierToLowercaseFeatureEnabled = FeatureFlags.of(this).isEnabled(cxapi.RDS_CLUSTER_IDENTIFIER_TO_LOWERCASE);
+    if ( clusterIdentifierToLowercaseFeatureEnabled ) {
+      clusterIdentifier = clusterIdentifier?.toLowerCase();
+    }
+
     const cluster = new CfnDBCluster(this, 'Resource', {
       backupRetentionPeriod: props.backupRetention?.toDays(),
       databaseName: props.defaultDatabaseName,
-      dbClusterIdentifier: props.clusterIdentifier,
+      dbClusterIdentifier: clusterIdentifier,
       dbClusterParameterGroupName: clusterParameterGroupConfig?.parameterGroupName,
       dbSubnetGroupName: this.subnetGroup.subnetGroupName,
       deletionProtection: defaultDeletionProtection(props.deletionProtection, props.removalPolicy),
@@ -457,7 +464,7 @@ export class ServerlessCluster extends ServerlessClusterBase {
       vpcSecurityGroupIds: securityGroups.map(sg => sg.securityGroupId),
     });
 
-    this.clusterIdentifier = cluster.dbClusterIdentifier?.toLowerCase() || cluster.ref;
+    this.clusterIdentifier = cluster.ref;
 
     // create a number token that represents the port of the cluster
     const portAttribute = Token.asNumber(cluster.attrEndpointPort);
