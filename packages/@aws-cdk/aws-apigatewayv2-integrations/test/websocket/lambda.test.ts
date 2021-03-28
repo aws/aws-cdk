@@ -25,7 +25,11 @@ describe('LambdaWebSocketIntegration', () => {
         'Fn::Join': [
           '',
           [
-            'arn:aws:apigateway:',
+            'arn:',
+            {
+              Ref: 'AWS::Partition',
+            },
+            ':apigateway:',
             {
               Ref: 'AWS::Region',
             },

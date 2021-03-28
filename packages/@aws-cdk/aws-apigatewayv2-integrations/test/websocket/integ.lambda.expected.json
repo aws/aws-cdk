@@ -245,7 +245,7 @@
         }
       }
     },
-    "mywsapiconnectRouteWebSocketIntegration3d16e69aeba86ea7f94f03452e143173BF6D06FD": {
+    "mywsapiconnectRouteWebSocketIntegration3025fc0297cc8d73dae555b46106edcd38569D62": {
       "Type": "AWS::ApiGatewayV2::Integration",
       "Properties": {
         "ApiId": {
@@ -256,7 +256,11 @@
           "Fn::Join": [
             "",
             [
-              "arn:aws:apigateway:",
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":apigateway:",
               {
                 "Ref": "AWS::Region"
               },
@@ -286,7 +290,7 @@
             [
               "integrations/",
               {
-                "Ref": "mywsapiconnectRouteWebSocketIntegration3d16e69aeba86ea7f94f03452e143173BF6D06FD"
+                "Ref": "mywsapiconnectRouteWebSocketIntegration3025fc0297cc8d73dae555b46106edcd38569D62"
               }
             ]
           ]
@@ -330,7 +334,7 @@
         }
       }
     },
-    "mywsapidisconnectRouteWebSocketIntegrationd497e20f852d7bce91263f2ac587aa13562113BF": {
+    "mywsapidisconnectRouteWebSocketIntegrationfc84ffd6c52488b90783abae35d28ebdAE5C6063": {
       "Type": "AWS::ApiGatewayV2::Integration",
       "Properties": {
         "ApiId": {
@@ -341,7 +345,11 @@
           "Fn::Join": [
             "",
             [
-              "arn:aws:apigateway:",
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":apigateway:",
               {
                 "Ref": "AWS::Region"
               },
@@ -371,7 +379,7 @@
             [
               "integrations/",
               {
-                "Ref": "mywsapidisconnectRouteWebSocketIntegrationd497e20f852d7bce91263f2ac587aa13562113BF"
+                "Ref": "mywsapidisconnectRouteWebSocketIntegrationfc84ffd6c52488b90783abae35d28ebdAE5C6063"
               }
             ]
           ]
@@ -415,7 +423,7 @@
         }
       }
     },
-    "mywsapidefaultRouteWebSocketIntegratione0e84e49525fe7ce76fdd65d96ea9959A32B460C": {
+    "mywsapidefaultRouteWebSocketIntegrationa07b7cec9837e31a8c70446e1e1f1fd5055B3083": {
       "Type": "AWS::ApiGatewayV2::Integration",
       "Properties": {
         "ApiId": {
@@ -426,7 +434,11 @@
           "Fn::Join": [
             "",
             [
-              "arn:aws:apigateway:",
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":apigateway:",
               {
                 "Ref": "AWS::Region"
               },
@@ -456,7 +468,7 @@
             [
               "integrations/",
               {
-                "Ref": "mywsapidefaultRouteWebSocketIntegratione0e84e49525fe7ce76fdd65d96ea9959A32B460C"
+                "Ref": "mywsapidefaultRouteWebSocketIntegrationa07b7cec9837e31a8c70446e1e1f1fd5055B3083"
               }
             ]
           ]
@@ -500,7 +512,7 @@
         }
       }
     },
-    "mywsapisendmessageRouteWebSocketIntegrationc08cfd007c7675950e2fc742051c450e96D3CD6C": {
+    "mywsapisendmessageRouteWebSocketIntegrationeb46e3593c10ed57eb0ca9ef3247823d74153661": {
       "Type": "AWS::ApiGatewayV2::Integration",
       "Properties": {
         "ApiId": {
@@ -511,7 +523,11 @@
           "Fn::Join": [
             "",
             [
-              "arn:aws:apigateway:",
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":apigateway:",
               {
                 "Ref": "AWS::Region"
               },
@@ -541,7 +557,7 @@
             [
               "integrations/",
               {
-                "Ref": "mywsapisendmessageRouteWebSocketIntegrationc08cfd007c7675950e2fc742051c450e96D3CD6C"
+                "Ref": "mywsapisendmessageRouteWebSocketIntegrationeb46e3593c10ed57eb0ca9ef3247823d74153661"
               }
             ]
           ]
