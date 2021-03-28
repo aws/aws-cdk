@@ -4,7 +4,7 @@ import { CfnApiDestination } from './events.generated';
 
 
 /**
- * Supported DynamoDB table operations.
+ * Supported HTTP operations.
  */
 export enum HttpMethod {
 
@@ -51,7 +51,7 @@ export interface BaseApiDestinationProps {
   /**
    * The maximum number of requests per second to send to the HTTP invocation endpoint.
    */
-  readonly invocationRateLimitPerSecond: Duration;
+  readonly invocationRateLimit: Duration;
   /**
    * The name for the API destination.
    */
@@ -86,7 +86,7 @@ export class ApiDestination extends Resource {
       description: props.description,
       httpMethod: props.httpMethod,
       invocationEndpoint: props.invocationEndpoint,
-      invocationRateLimitPerSecond: props.invocationRateLimitPerSecond?.toSeconds(),
+      invocationRateLimitPerSecond: props.invocationRateLimit?.toSeconds(),
       name: this.physicalName,
     });
 

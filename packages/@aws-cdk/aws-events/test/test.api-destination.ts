@@ -15,7 +15,7 @@ export = {
       description: 'ApiDestination',
       httpMethod: HttpMethod.GET,
       invocationEndpoint: 'someendpoint',
-      invocationRateLimitPerSecond: Duration.seconds(60),
+      invocationRateLimit: Duration.seconds(60),
       name: 'ApiDestination',
     });
 

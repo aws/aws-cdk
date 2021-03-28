@@ -6,135 +6,119 @@ export interface ApiKeyAuthParameters {
   /**
    * The name of the API key to use for authorization.
    */
-  readonly ApiKeyName: string;
+  readonly apiKeyName: string;
 
   /**
    * The value for the API key to use for authorization.
    */
-  readonly ApiKeyValue: string;
+  readonly apiKeyValue: string;
 }
 
 export interface BasicAuthParameters {
   /**
    * The password associated with the user name to use for Basic authorization.
    */
-  readonly Password: string;
+  readonly password: string;
 
   /**
    * The user name to use for Basic authorization.
    */
-  readonly Username: string;
+  readonly username: string;
 }
 
 export interface ClientParameters {
   /**
    * The client secret associated with the client ID to use for OAuth authorization for the connection.
    */
-  readonly ClientID: string;
+  readonly clientID: string;
 
   /**
    * The client ID to use for OAuth authorization for the connection.
    */
-  readonly ClientSecret: string;
+  readonly clientSecret: string;
 }
 
 export interface Parameter {
   /**
    * Specifies whether the value is a secret.
-<<<<<<< HEAD
    * @default - True
-=======
-   *    * @default - True
->>>>>>> a3c220a8ead093e8986834c21eb0c4517a3ed527
    */
-  readonly IsValueSecret?: string;
+  readonly isValueSecret?: string;
 
   /**
    * The key for the parameter.
    */
-  readonly Key: string;
+  readonly key: string;
 
   /**
    * The value associated with the key for the parameter.
    */
-  readonly Value: string;
+  readonly value: string;
 }
 
 export interface HttpParameters {
   /**
    * The body that need to be sent as part of request invoking the API Gateway REST API or EventBridge ApiDestination.
    */
-  readonly BodyParameters?: Parameter[];
+  readonly bodyParameters?: Parameter[];
 
   /**
    * The headers that need to be sent as part of request invoking the API Gateway REST API or EventBridge ApiDestination.
    */
-  readonly HeaderParameters?: Parameter[];
+  readonly headerParameters?: Parameter[];
 
   /**
    * The query string keys/values that need to be sent as part of request invoking the API Gateway REST API or EventBridge ApiDestination.
    */
-  readonly QueryStringParameters?: Parameter[];
+  readonly queryStringParameters?: Parameter[];
 }
 
 export interface OAuthParameters {
   /**
    * The URL to the authorization endpoint when OAuth is specified as the authorization type.
    */
-  readonly AuthorizationEndpoint: string;
+  readonly authorizationEndpoint: string;
 
   /**
    * Contains the client parameters for OAuth authorization.
    */
-  readonly ClientParameters: ClientParameters;
+  readonly clientParameters: ClientParameters;
 
   /**
    * The method to use for the authorization request.
    */
-  readonly HttpMethod: string;
+  readonly httpMethod: string;
 
   /**
    * Contains the OAuth authorization parameters to use for the connection.
    */
-  readonly OAuthHttpParameters?: HttpParameters;
+  readonly oauthHttpParameters?: HttpParameters;
 }
 
 export interface AuthParameters {
   /**
    * Contains the API key authorization parameters to use for the connection.
-<<<<<<< HEAD
    * @default - None
-=======
->>>>>>> a3c220a8ead093e8986834c21eb0c4517a3ed527
    */
-  readonly ApiKeyAuthParameters?: ApiKeyAuthParameters;
+  readonly apiKeyAuthParameters?: ApiKeyAuthParameters;
 
   /**
    * Contains the Basic authorization parameters to use for the connection.
-<<<<<<< HEAD
    * @default - None
-=======
->>>>>>> a3c220a8ead093e8986834c21eb0c4517a3ed527
    */
-  readonly BasicAuthParameters?: BasicAuthParameters;
+  readonly basicAuthParameters?: BasicAuthParameters;
 
   /**
    * Contains the API key authorization parameters to use for the connection.
-<<<<<<< HEAD
    * @default - None
-=======
->>>>>>> a3c220a8ead093e8986834c21eb0c4517a3ed527
    */
-  readonly InvocationHttpParameters?: HttpParameters;
+  readonly invocationHttpParameters?: HttpParameters;
 
   /**
    * Contains the OAuth authorization parameters to use for the connection.
-<<<<<<< HEAD
    * @default - None
-=======
->>>>>>> a3c220a8ead093e8986834c21eb0c4517a3ed527
    */
-  readonly OAuthParameters?: OAuthParameters;
+  readonly oauthParameters?: OAuthParameters;
 }
 
 /**
@@ -174,11 +158,7 @@ export interface BaseConnectionProps {
 /**
  * The event connection properties
  */
-<<<<<<< HEAD
 export interface ConnectionProps extends BaseConnectionProps {
-=======
-export interface ArchiveProps extends BaseConnectionProps {
->>>>>>> a3c220a8ead093e8986834c21eb0c4517a3ed527
 
 }
 

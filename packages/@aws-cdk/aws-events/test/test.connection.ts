@@ -12,9 +12,9 @@ export = {
     new Connection(stack, 'Connection', {
       authorizationType: 'BASIC',
       authParameters: {
-        BasicAuthParameters: {
-          Password: 'password',
-          Username: 'username',
+        basicAuthParameters: {
+          password: 'password',
+          username: 'username',
         },
       },
       description: 'ConnectionDescription',
