@@ -1,7 +1,7 @@
 import * as crypto from 'crypto';
 import { Duration, Lazy, Names, Resource } from '@aws-cdk/core';
 import { Construct } from 'constructs';
-import { Connection } from './connection';
+import { IConnection } from './connection';
 import { CfnApiDestination } from './events.generated';
 
 /**
@@ -33,7 +33,7 @@ export interface ApiDestinationProps {
   /**
    * The ARN of the connection to use for the API destination
    */
-  readonly connection: Connection;
+  readonly connection: IConnection;
   /**
    * A description for the API destination.
    *
@@ -68,7 +68,7 @@ export class ApiDestination extends Resource {
   /**
    * The Connection to associate with Api Destination
    */
-  public readonly connection: Connection;
+  public readonly connection: IConnection;
 
   /**
    * The Name of the Api Destination created.

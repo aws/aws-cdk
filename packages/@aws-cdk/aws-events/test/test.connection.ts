@@ -1,7 +1,7 @@
 import { expect, haveResource } from '@aws-cdk/assert';
 import { Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
-import { Connection } from '../lib/connection';
+import { AuthorizationType, Connection } from '../lib/connection';
 
 export = {
   'creates an connection for an EventBus'(test: Test) {
@@ -10,7 +10,7 @@ export = {
 
     // WHEN
     new Connection(stack, 'Connection', {
-      authorizationType: 'BASIC',
+      authorizationType: AuthorizationType.BASIC,
       authParameters: {
         basicAuthParameters: {
           password: 'password',
