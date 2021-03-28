@@ -1,4 +1,5 @@
-import { Resource, Duration, IResource } from '@aws-cdk/core';
+import * as crypto from 'crypto';
+import { Duration, Lazy, Names, Resource } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { Connection } from './connection';
 import { CfnApiDestination } from './events.generated';
@@ -32,7 +33,7 @@ export interface ApiDestinationProps {
   /**
    * The ARN of the connection to use for the API destination
    */
-  readonly connectionArn: Connection['connectionArn'];
+  readonly connection: Connection;
   /**
    * A description for the API destination.
    *
@@ -53,23 +54,9 @@ export interface ApiDestinationProps {
   readonly invocationRateLimit: Duration;
   /**
    * The name for the API destination.
-   * @default - none
-   */
-  readonly name?: string;
-}
-
-export interface IApiDestination extends IResource {
-  /**
-   * The Name of the Api Destination created.
-   * @attribute
+   * @default - A unique name will be generated from the construct ID
    */
   readonly apiDestinationName: string;
-
-  /**
-   * The ARN of the Api Destination created.
-   * @attribute
-   */
-  readonly apiDestinationArn: string;
 }
 
 /**
@@ -77,22 +64,35 @@ export interface IApiDestination extends IResource {
  *
  * @resource AWS::Events::ApiDestination
  */
-export class ApiDestination extends Resource implements IApiDestination {
+export class ApiDestination extends Resource {
+  /**
+   * The Connection to associate with Api Destination
+   */
+  public readonly connection: Connection;
+
   /**
    * The Name of the Api Destination created.
+   * @attribute
    */
   public readonly apiDestinationName: string;
 
   /**
    * The ARN of the Api Destination created.
+   * @attribute
    */
   public readonly apiDestinationArn: string;
 
   constructor(scope: Construct, id: string, props: ApiDestinationProps) {
-    super(scope, id, { physicalName: props.name });
+    super(scope, id, {
+      physicalName: props.apiDestinationName || Lazy.string({
+        produce: () => this.generateUniqueName(),
+      }),
+    });
+
+    this.connection = props.connection;
 
     let apiDestination = new CfnApiDestination(this, 'ApiDestination', {
-      connectionArn: props.connectionArn,
+      connectionArn: this.connection.connectionArn,
       description: props.description,
       httpMethod: props.httpMethod,
       invocationEndpoint: props.invocationEndpoint,
@@ -100,7 +100,30 @@ export class ApiDestination extends Resource implements IApiDestination {
       name: this.physicalName,
     });
 
-    this.apiDestinationName = apiDestination.name || 'API Destination';
+    this.apiDestinationName = this.getResourceNameAttribute(apiDestination.ref);
     this.apiDestinationArn = apiDestination.attrArn;
   }
+
+  /**
+   * Creates a unique name for the Api Destination. The generated name is the physical ID of the Api Destination.
+   */
+  private generateUniqueName(): string {
+    const name = Names.uniqueId(this).toLowerCase().replace(' ', '-');
+    if (name.length <= 21) {
+      return name;
+    } else {
+      return name.substring(0, 15) + nameHash(name);
+    }
+  }
 }
+
+/**
+ * Take a hash of the given name.
+ *
+ * @param name the name to be hashed
+ */
+function nameHash(name: string): string {
+  const md5 = crypto.createHash('sha256').update(name).digest('hex');
+  return md5.slice(0, 6);
+}
+

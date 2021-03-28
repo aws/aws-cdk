@@ -17,8 +17,8 @@ export = {
           username: 'username',
         },
       },
+      connectionName: 'testConnection',
       description: 'ConnectionDescription',
-      name: 'testConnection',
     });
 
     // THEN

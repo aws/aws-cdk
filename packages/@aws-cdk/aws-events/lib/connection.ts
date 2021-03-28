@@ -1,4 +1,5 @@
-import { Resource } from '@aws-cdk/core';
+import * as crypto from 'crypto';
+import { Lazy, Names, Resource } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnConnection } from './events.generated';
 
@@ -114,7 +115,7 @@ export interface OAuthParameters {
    * Contains the OAuth authorization parameters to use for the connection.
    * @default - none
    */
-  readonly oauthHttpParameters?: HttpParameters;
+  readonly oAuthHttpParameters?: HttpParameters;
 }
 
 /**
@@ -143,7 +144,7 @@ export interface AuthParameters {
    * Contains the OAuth authorization parameters to use for the connection.
    * @default - None
    */
-  readonly oauthParameters?: OAuthParameters;
+  readonly oAuthParameters?: OAuthParameters;
 }
 
 /**
@@ -176,7 +177,7 @@ export interface BaseConnectionProps {
    *
    * @default - none
    */
-  readonly name: string;
+  readonly connectionName: string;
 }
 
 
@@ -212,7 +213,11 @@ export class Connection extends Resource {
   public readonly connectionSecretArn: string;
 
   constructor(scope: Construct, id: string, props: ConnectionProps) {
-    super(scope, id, { physicalName: props.name });
+    super(scope, id, {
+      physicalName: props.connectionName || Lazy.string({
+        produce: () => this.generateUniqueName(),
+      }),
+    });
 
     let connection = new CfnConnection(this, 'Connection', {
       authorizationType: props.authorizationType,
@@ -225,4 +230,27 @@ export class Connection extends Resource {
     this.connectionArn = connection.attrArn;
     this.connectionSecretArn = connection.attrSecretArn;
   }
+
+  /**
+   * Creates a unique name for the Api Destination. The generated name is the physical ID of the Api Destination.
+   */
+  private generateUniqueName(): string {
+    const name = Names.uniqueId(this).toLowerCase().replace(' ', '-');
+    if (name.length <= 21) {
+      return name;
+    } else {
+      return name.substring(0, 15) + nameHash(name);
+    }
+  }
 }
+
+/**
+ * Take a hash of the given name.
+ *
+ * @param name the name to be hashed
+ */
+function nameHash(name: string): string {
+  const md5 = crypto.createHash('sha256').update(name).digest('hex');
+  return md5.slice(0, 6);
+}
+
