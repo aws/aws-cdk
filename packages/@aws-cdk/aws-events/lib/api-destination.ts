@@ -1,7 +1,7 @@
-import { Resource, Duration } from '@aws-cdk/core';
+import { Resource, Duration, IResource } from '@aws-cdk/core';
 import { Construct } from 'constructs';
+import { Connection } from './connection';
 import { CfnApiDestination } from './events.generated';
-
 
 /**
  * Supported HTTP operations.
@@ -25,15 +25,14 @@ export enum HttpMethod {
 
 }
 
-
 /**
- * The event Api Destination base properties
+ * The event Api Destination properties
  */
-export interface BaseApiDestinationProps {
+export interface ApiDestinationProps {
   /**
    * The ARN of the connection to use for the API destination
    */
-  readonly connectionArn: string;
+  readonly connectionArn: Connection['connectionArn'];
   /**
    * A description for the API destination.
    *
@@ -54,16 +53,23 @@ export interface BaseApiDestinationProps {
   readonly invocationRateLimit: Duration;
   /**
    * The name for the API destination.
+   * @default - none
    */
-  readonly name: string;
+  readonly name?: string;
 }
 
+export interface IApiDestination extends IResource {
+  /**
+   * The Name of the Api Destination created.
+   * @attribute
+   */
+  readonly apiDestinationName: string;
 
-/**
- * The event Api Destination properties
- */
-export interface ApiDestinationProps extends BaseApiDestinationProps {
-
+  /**
+   * The ARN of the Api Destination created.
+   * @attribute
+   */
+  readonly apiDestinationArn: string;
 }
 
 /**
@@ -71,10 +77,14 @@ export interface ApiDestinationProps extends BaseApiDestinationProps {
  *
  * @resource AWS::Events::ApiDestination
  */
-export class ApiDestination extends Resource {
+export class ApiDestination extends Resource implements IApiDestination {
+  /**
+   * The Name of the Api Destination created.
+   */
+  public readonly apiDestinationName: string;
+
   /**
    * The ARN of the Api Destination created.
-   * @attribute
    */
   public readonly apiDestinationArn: string;
 
@@ -90,6 +100,7 @@ export class ApiDestination extends Resource {
       name: this.physicalName,
     });
 
+    this.apiDestinationName = apiDestination.name || 'API Destination';
     this.apiDestinationArn = apiDestination.attrArn;
   }
 }

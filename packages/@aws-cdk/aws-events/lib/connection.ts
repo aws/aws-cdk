@@ -2,6 +2,9 @@ import { Resource } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnConnection } from './events.generated';
 
+/**
+ * Contains the API key authorization parameters to use for the connection.
+ */
 export interface ApiKeyAuthParameters {
   /**
    * The name of the API key to use for authorization.
@@ -14,6 +17,9 @@ export interface ApiKeyAuthParameters {
   readonly apiKeyValue: string;
 }
 
+/**
+ * Contains the Basic authorization parameters to use for the connection.
+ */
 export interface BasicAuthParameters {
   /**
    * The password associated with the user name to use for Basic authorization.
@@ -26,6 +32,9 @@ export interface BasicAuthParameters {
   readonly username: string;
 }
 
+/**
+ * Contains the client parameters for OAuth authorization.
+ */
 export interface ClientParameters {
   /**
    * The client secret associated with the client ID to use for OAuth authorization for the connection.
@@ -38,6 +47,9 @@ export interface ClientParameters {
   readonly clientSecret: string;
 }
 
+/**
+ * Additional parameters to include with the connection.
+ */
 export interface Parameter {
   /**
    * Specifies whether the value is a secret.
@@ -56,23 +68,32 @@ export interface Parameter {
   readonly value: string;
 }
 
+/**
+ * These are custom parameter to be used when the target is an API Gateway REST APIs or EventBridge ApiDestinations.
+ */
 export interface HttpParameters {
   /**
    * The body that need to be sent as part of request invoking the API Gateway REST API or EventBridge ApiDestination.
+   * @default - none
    */
   readonly bodyParameters?: Parameter[];
 
   /**
    * The headers that need to be sent as part of request invoking the API Gateway REST API or EventBridge ApiDestination.
+   * @default - none
    */
   readonly headerParameters?: Parameter[];
 
   /**
    * The query string keys/values that need to be sent as part of request invoking the API Gateway REST API or EventBridge ApiDestination.
+   * @default - none
    */
   readonly queryStringParameters?: Parameter[];
 }
 
+/**
+ * Contains the OAuth authorization parameters to use for the connection.
+ */
 export interface OAuthParameters {
   /**
    * The URL to the authorization endpoint when OAuth is specified as the authorization type.
@@ -91,10 +112,14 @@ export interface OAuthParameters {
 
   /**
    * Contains the OAuth authorization parameters to use for the connection.
+   * @default - none
    */
   readonly oauthHttpParameters?: HttpParameters;
 }
 
+/**
+ * Contains the authorization parameters to use to authorize with the endpoint.
+ */
 export interface AuthParameters {
   /**
    * Contains the API key authorization parameters to use for the connection.
@@ -168,6 +193,11 @@ export interface ConnectionProps extends BaseConnectionProps {
  * @resource AWS::Events::Connection
  */
 export class Connection extends Resource {
+  /**
+   * The Name for the connection.
+   * @attribute
+   */
+  public readonly connectionName: string;
 
   /**
    * The ARN of the connection created.
@@ -191,6 +221,7 @@ export class Connection extends Resource {
       name: this.physicalName,
     });
 
+    this.connectionName = connection.name || 'Connection';
     this.connectionArn = connection.attrArn;
     this.connectionSecretArn = connection.attrSecretArn;
   }
