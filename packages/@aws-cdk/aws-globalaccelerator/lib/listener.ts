@@ -35,14 +35,21 @@ export interface ListenerOptions {
   /**
    * The protocol for the connections from clients to the accelerator
    *
-   * @default TCP
+   * @default ConnectionProtocol.TCP
    */
   readonly protocol?: ConnectionProtocol;
 
   /**
    * Client affinity to direct all requests from a user to the same endpoint
    *
-   * @default NONE
+   * If you have stateful applications, client affinity lets you direct all
+   * requests from a user to the same endpoint.
+   *
+   * By default, each connection from each client is routed to seperate
+   * endpoints. Set client affinity to SOURCE_IP to route all connections from
+   * a single client to the same endpoint.
+   *
+   * @default ClientAffinity.NONE
    */
   readonly clientAffinity?: ClientAffinity;
 }
@@ -89,20 +96,20 @@ export enum ConnectionProtocol {
 }
 
 /**
- * Client affinity lets you direct all requests from a user to the same endpoint, if you have stateful applications,
- * regardless of the port and protocol of the client request. Client affinity gives you control over whether to always
- * route each client to the same specific endpoint. If you want a given client to always be routed to the same
- * endpoint, set client affinity to SOURCE_IP.
+ * Client affinity gives you control over whether to always route each client to the same specific endpoint.
  *
  * @see https://docs.aws.amazon.com/global-accelerator/latest/dg/about-listeners.html#about-listeners-client-affinity
  */
 export enum ClientAffinity {
   /**
-   * default affinity
+   * Route traffic based on the 5-tuple `(source IP, source port, destination IP, destination port, protocol)`
    */
   NONE = 'NONE',
+
   /**
-   * affinity by source IP
+   * Route traffic based on the 2-tuple `(source IP, destination IP)`
+   *
+   * The result is that multiple connections from the same client will be routed the same.
    */
   SOURCE_IP = 'SOURCE_IP',
 }
