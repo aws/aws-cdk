@@ -17,7 +17,7 @@ export interface IListener extends cdk.IResource {
 }
 
 /**
- * Construct optiosn for Listener
+ * Construct options for Listener
  */
 export interface ListenerOptions {
   /**
