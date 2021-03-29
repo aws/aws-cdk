@@ -40,3 +40,7 @@ httpApi.addRoutes({
   integration: new LambdaProxyIntegration({ handler }),
   authorizer,
 });
+
+new CfnOutput(stack, 'URL', {
+  value: httpApi.url
+});
