@@ -19,9 +19,6 @@ export enum HttpLambdaResponseType {
 
   /** Returns an IAM Policy */
   IAM,
-
-  /** Returns an IAM Policy, with simple responses enabled */
-  IAM_SIMPLE,
 }
 
 /**
@@ -78,10 +75,7 @@ export class HttpLambdaAuthorizer implements IHttpRouteAuthorizer {
       const id = this.props.authorizerName && !Token.isUnresolved(this.props.authorizerName) ?
         this.props.authorizerName : 'LambdaAuthorizer';
 
-      const enableSimpleResponses =
-        this.props.responseTypes.includes(HttpLambdaResponseType.SIMPLE) ||
-        this.props.responseTypes.includes(HttpLambdaResponseType.IAM_SIMPLE) ||
-        undefined;
+      const enableSimpleResponses = this.props.responseTypes.includes(HttpLambdaResponseType.SIMPLE) || undefined;
 
       this.authorizer = new HttpAuthorizer(options.scope, id, {
         httpApi: options.route.httpApi,
