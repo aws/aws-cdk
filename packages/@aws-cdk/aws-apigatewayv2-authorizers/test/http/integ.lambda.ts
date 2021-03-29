@@ -2,7 +2,7 @@ import * as path from 'path';
 import { HttpApi, HttpMethod } from '@aws-cdk/aws-apigatewayv2';
 import { LambdaProxyIntegration } from '@aws-cdk/aws-apigatewayv2-integrations';
 import * as lambda from '@aws-cdk/aws-lambda';
-import { App, Stack } from '@aws-cdk/core';
+import { App, Stack, CfnOutput } from '@aws-cdk/core';
 import { HttpLambdaAuthorizer, HttpLambdaResponseType } from '../../lib';
 
 /*
@@ -42,5 +42,5 @@ httpApi.addRoutes({
 });
 
 new CfnOutput(stack, 'URL', {
-  value: httpApi.url
+  value: httpApi.url!,
 });

@@ -329,5 +329,29 @@
       "Type": "String",
       "Description": "Artifact hash for asset \"ad8283fb381981eaa3bd524a2ecf9c842bb663a8850bec1a714f2936bf8ca3de\""
     }
+  },
+  "Outputs": {
+    "URL": {
+      "Value": {
+        "Fn::Join": [
+          "",
+          [
+            "https://",
+            {
+              "Ref": "MyHttpApi8AEAAC21"
+            },
+            ".execute-api.",
+            {
+              "Ref": "AWS::Region"
+            },
+            ".",
+            {
+              "Ref": "AWS::URLSuffix"
+            },
+            "/"
+          ]
+        ]
+      }
+    }
   }
 }
