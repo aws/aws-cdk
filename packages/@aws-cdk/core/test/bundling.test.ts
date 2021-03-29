@@ -173,6 +173,25 @@ nodeunitShim({
     test.done();
   },
 
+  'fromAsset'(test: Test) {
+    sinon.stub(child_process, 'spawnSync').returns({
+      status: 0,
+      stderr: Buffer.from('stderr'),
+      stdout: Buffer.from('sha256:1234567890abcdef'),
+      pid: 123,
+      output: ['stdout', 'stderr'],
+      signal: null,
+    });
+
+    const imagePath = path.join(__dirname, 'fs/fixtures/test1');
+    const image = BundlingDockerImage.fromAsset(imagePath, {
+      file: 'my-dockerfile',
+    });
+    test.ok(image);
+    test.ok(image.image);
+    test.done();
+  },
+
   'custom entrypoint is passed through to docker exec'(test: Test) {
     const spawnSyncStub = sinon.stub(child_process, 'spawnSync').returns({
       status: 0,
