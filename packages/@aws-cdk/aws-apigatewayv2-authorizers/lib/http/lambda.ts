@@ -49,7 +49,7 @@ export interface HttpLambdaAuthorizerProps {
 
   /**
    * How long APIGateway should cache the results. Max 1 hour.
-   * Disable caching by setting this to 0.
+   * Disable caching by setting this to `Duration.seconds(0)`.
    *
    * @default Duration.minutes(5)
    */
