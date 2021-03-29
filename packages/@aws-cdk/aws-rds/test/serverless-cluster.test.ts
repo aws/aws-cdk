@@ -3,8 +3,11 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as cdk from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
 import { nodeunitShim, Test } from 'nodeunit-shim';
 import { AuroraPostgresEngineVersion, ServerlessCluster, DatabaseClusterEngine, ParameterGroup, AuroraCapacityUnit, DatabaseSecret } from '../lib';
+
+const flags = { [cxapi.RDS_CLUSTER_IDENTIFIER_TO_LOWERCASE]: true };
 
 nodeunitShim({
   'can create a Serverless Cluster with Aurora Postgres database engine'(test: Test) {
@@ -819,33 +822,53 @@ nodeunitShim({
     test.done();
   },
 
-  'cluster arn is correct when cluster identifier has uppercase letters'(test: Test) {
-    const stack = testStack();
+  'when cluster identifier has uppercase letters (when the clusterIdentifierToLowercase feature flag is enabled)'(test: Test) {
+    // GIVEN
+    const app = new cdk.App({ context: flags });
+    const stack = testStack(app);
     const clusterIdentifier = 'TestClusterIdentifier';
     const vpc = ec2.Vpc.fromLookup(stack, 'VPC', { isDefault: true });
-    const cluster = new ServerlessCluster(stack, 'Database', {
+
+    // WHEN
+    new ServerlessCluster(stack, 'Database', {
       engine: DatabaseClusterEngine.AURORA_MYSQL,
       vpc,
       clusterIdentifier,
     });
 
-    test.deepEqual(
-      stack.resolve(cluster.clusterArn),
-      {
-        'Fn::Join': ['', [
-          'arn:',
-          { Ref: 'AWS::Partition' },
-          ':rds:us-test-1:12345:cluster:testclusteridentifier',
-        ]],
-      });
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::RDS::DBCluster', {
+      DBClusterIdentifier: clusterIdentifier.toLowerCase(),
+    }));
+
+    test.done();
+  },
+
+  'when cluster identifier has uppercase letters (when the clusterIdentifierToLowercase feature flag is not configured)'(test: Test) {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = testStack(app);
+    const clusterIdentifier = 'TestClusterIdentifier';
+    const vpc = ec2.Vpc.fromLookup(stack, 'VPC', { isDefault: true });
+
+    // WHEN
+    new ServerlessCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.AURORA_MYSQL,
+      vpc,
+      clusterIdentifier,
+    });
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::RDS::DBCluster', {
+      DBClusterIdentifier: clusterIdentifier,
+    }));
 
     test.done();
   },
 });
 
-
-function testStack() {
-  const stack = new cdk.Stack(undefined, undefined, { env: { account: '12345', region: 'us-test-1' } });
+function testStack(app?: cdk.App, id?: string) {
+  const stack = new cdk.Stack(app, id, { env: { account: '12345', region: 'us-test-1' } });
   stack.node.setContext('availability-zones:12345:us-test-1', ['us-test-1a', 'us-test-1b']);
   return stack;
 }

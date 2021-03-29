@@ -1,9 +1,9 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
-import * as cxapi from '@aws-cdk/cx-api';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import { Resource, Duration, Token, Annotations, RemovalPolicy, IResource, Stack, Lazy, FeatureFlags } from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
 import { IClusterEngine } from './cluster-engine';
 import { Endpoint } from './endpoint';
