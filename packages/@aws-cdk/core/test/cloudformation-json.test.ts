@@ -103,7 +103,11 @@ describe('tokens that return literals', () => {
 
     // WHEN
     expect(stack.resolve(stack.toJsonString({ someList }))).toEqual({
-      'Fn::Join': ['', ['{"someList":', { Ref: 'Thing' }, '}']],
+      'Fn::Join': ['', [
+        '{"someList":',
+        { 'Fn::GetAtt': [expect.stringContaining('CdkJsonStringify'), 'Value'] },
+        '}',
+      ]],
     });
   });
 
