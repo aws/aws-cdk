@@ -95,7 +95,7 @@ export interface HttpAuthorizerProps {
   /**
    * Specifies the format of the payload sent to an HTTP API Lambda authorizer.
    *
-   * @default AuthorizerPayloadFormatVersion.VERSION_2_0
+   * @default AuthorizerPayloadVersion.VERSION_2_0 if the authorizer type is HttpAuthorizerType.LAMBDA
    */
   readonly payloadFormatVersion?: AuthorizerPayloadVersion;
 
@@ -165,12 +165,22 @@ export class HttpAuthorizer extends Resource implements IHttpAuthorizer {
   constructor(scope: Construct, id: string, props: HttpAuthorizerProps) {
     super(scope, id);
 
+    let authorizerPayloadFormatVersion = props.payloadFormatVersion;
+
     if (props.type === HttpAuthorizerType.JWT && (!props.jwtAudience || props.jwtAudience.length === 0 || !props.jwtIssuer)) {
       throw new Error('jwtAudience and jwtIssuer are mandatory for JWT authorizers');
     }
 
     if (props.type === HttpAuthorizerType.LAMBDA && !props.authorizerUri) {
       throw new Error('authorizerUri is mandatory for Lambda authorizers');
+    }
+
+    /**
+     * This check is required because Cloudformation will fail stack creation is this property
+     * is set for the JWT authorizer. AuthorizerPayloadFormatVersion can only be set for REQUEST authorizer
+     */
+    if (props.type === HttpAuthorizerType.LAMBDA && typeof authorizerPayloadFormatVersion === 'undefined') {
+      authorizerPayloadFormatVersion = AuthorizerPayloadVersion.VERSION_2_0;
     }
 
     const resource = new CfnAuthorizer(this, 'Resource', {
@@ -183,7 +193,7 @@ export class HttpAuthorizer extends Resource implements IHttpAuthorizer {
         issuer: props.jwtIssuer,
       }),
       enableSimpleResponses: props.enableSimpleResponses,
-      authorizerPayloadFormatVersion: props.payloadFormatVersion,
+      authorizerPayloadFormatVersion,
       authorizerUri: props.authorizerUri,
       authorizerResultTtlInSeconds: props.resultsCacheTtl?.toSeconds(),
     });
