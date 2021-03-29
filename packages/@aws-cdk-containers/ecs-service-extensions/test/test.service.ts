@@ -1,6 +1,7 @@
 import { countResources, expect, haveResource } from '@aws-cdk/assert';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecs from '@aws-cdk/aws-ecs';
+import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import { Container, EnvironmentCapacityType, Environment, Service, ServiceDescription } from '../lib';
@@ -40,6 +41,9 @@ export = {
       capacityType: EnvironmentCapacityType.EC2,
     });
     const serviceDescription = new ServiceDescription();
+    const taskRole = new iam.Role(stack, 'CustomTaskRole', {
+      assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
+    });
 
     serviceDescription.add(new Container({
       cpu: 256,
@@ -51,6 +55,7 @@ export = {
     new Service(stack, 'my-service', {
       environment,
       serviceDescription,
+      taskRole,
     });
 
     // THEN
@@ -89,7 +94,7 @@ export = {
       ],
       TaskRoleArn: {
         'Fn::GetAtt': [
-          'myservicetaskdefinitionTaskRole92ACD903',
+          'CustomTaskRole3C6B13FD',
           'Arn',
         ],
       },
