@@ -148,7 +148,7 @@ export class EdgeFunction extends Resource implements lambda.IVersion {
 
   /** Create a support stack and function in us-east-1, and a SSM reader in-region */
   private createCrossRegionFunction(id: string, props: EdgeFunctionProps): FunctionConfig {
-    const parameterNamePrefix = '/EdgeFunctionArn';
+    const parameterNamePrefix = '/cdk/EdgeFunctionArn';
     if (Token.isUnresolved(this.env.region)) {
       throw new Error('stacks which use EdgeFunctions must have an explicitly set region');
     }
