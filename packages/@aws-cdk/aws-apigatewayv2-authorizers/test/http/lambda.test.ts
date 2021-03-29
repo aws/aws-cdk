@@ -114,7 +114,7 @@ describe('HttpLambdaAuthorizer', () => {
       Name: 'LambdaAuthorizer',
       AuthorizerType: 'REQUEST',
       AuthorizerResultTtlInSeconds: 300,
-      AuthorizerPayloadFormatVersion: '1.0',
+      AuthorizerPayloadFormatVersion: '2.0',
       EnableSimpleResponses: true,
       IdentitySource: [
         '$request.header.Authorization',
