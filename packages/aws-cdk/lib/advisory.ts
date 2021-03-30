@@ -1,7 +1,6 @@
 import * as path from 'path';
 import * as fs from 'fs-extra';
 import { warning } from './logging';
-import { toYAML } from './serialize';
 
 export function printAdvisories() {
   const advisories: Advisory[] = [
@@ -15,22 +14,36 @@ export function printAdvisories() {
   }
 }
 
-interface Advisory {
-  message(): string | void;
+export interface Advisory {
+  message(): string | undefined;
 }
 
-class NetmaskAdvisory implements Advisory {
-  public message(): string | void {
-    const pkgLockJsonPath = path.join(process.cwd(), 'package-lock.json');
-    const pkgJsonPath = path.join(process.cwd(), 'package.json');
+export class NetmaskAdvisory implements Advisory {
+  constructor(private readonly cwd = process.cwd()) {}
 
-    if (!fs.existsSync(pkgJsonPath) || fs.existsSync(pkgLockJsonPath)) {
+  public message(): string | undefined {
+    const yarnLockPath = path.join(this.cwd, 'yarn.lock');
+    const pkgJsonPath = path.join(this.cwd, 'package.json');
+
+    if (!fs.existsSync(pkgJsonPath)) {
+      // we're not in an node package, or at the package root
+      return;
+    }
+    if (!fs.existsSync(yarnLockPath)) {
+      // this is not a yarn package
       return;
     }
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     const json = require(pkgJsonPath);
+    if (!('aws-cdk' in json.dependencies) && !('aws-cdk' in json.devDependencies)) {
+      return;
+    }
+    // eslint-disable-next-line no-console
+    console.log(`pkgjson ${JSON.stringify(json)}`);
     const netmaskVer = json?.resolutions?.netmask;
-    if (typeof(netmaskVer) === 'string' && netmaskVer.startsWith('2')) {
+    // eslint-disable-next-line no-console
+    console.log(`ver ${netmaskVer}`);
+    if (typeof(netmaskVer) === 'string' && netmaskVer.match(/^[~^]?2/)) {
       return;
     }
     return '<message goes here TODO>';
