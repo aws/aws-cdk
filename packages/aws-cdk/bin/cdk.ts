@@ -5,6 +5,7 @@ import * as colors from 'colors/safe';
 import * as yargs from 'yargs';
 
 import { ToolkitInfo, BootstrapSource, Bootstrapper } from '../lib';
+import { printAdvisories } from '../lib/advisory';
 import { SdkProvider } from '../lib/api/aws-auth';
 import { CloudFormationDeployments } from '../lib/api/cloudformation-deployments';
 import { CloudExecutable } from '../lib/api/cxapp/cloud-executable';
@@ -245,6 +246,7 @@ async function initCommandLine() {
         return cli.list(args.STACKS, { long: args.long });
 
       case 'diff':
+        printAdvisories();
         const enableDiffNoFail = isFeatureEnabled(configuration, cxapi.ENABLE_DIFF_NO_FAIL);
         return cli.diff({
           stackNames: args.STACKS,
@@ -262,6 +264,7 @@ async function initCommandLine() {
         // In code it's optimistically called "default" bootstrapping but that is in
         // anticipation of flipping the switch, in user messaging we still call it
         // "new" bootstrapping.
+        printAdvisories();
         let source: BootstrapSource = { source: 'legacy' };
         const newStyleStackSynthesis = isFeatureEnabled(configuration, cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT);
         if (args.template) {
@@ -300,6 +303,7 @@ async function initCommandLine() {
         });
 
       case 'deploy':
+        printAdvisories();
         const parameterMap: { [name: string]: string | undefined } = {};
         for (const parameter of args.parameters) {
           if (typeof parameter === 'string') {
@@ -336,6 +340,7 @@ async function initCommandLine() {
 
       case 'synthesize':
       case 'synth':
+        printAdvisories();
         return cli.synth(args.STACKS, args.exclusively, args.quiet);
 
       case 'metadata':
