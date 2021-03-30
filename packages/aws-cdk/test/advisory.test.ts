@@ -5,10 +5,11 @@ import { NetmaskAdvisory } from '../lib/advisory';
 
 describe('advisories', () => {
   describe('netmask advisory', () => {
-    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'cdk-advisories-test-'));
+    const dir: string = fs.mkdtempSync(path.join(os.tmpdir(), 'cdk-advisories-test-'));
 
     beforeEach(() => {
-      fs.emptyDirSync(dir);
+      fs.removeSync(dir);
+      fs.mkdirSync(dir);
     });
 
     test('report', () => {
@@ -92,7 +93,7 @@ describe('advisories', () => {
       expect(msg).toBeUndefined();
     });
 
-    test.each(['2.x.y', '~2.x.y', ['^2.x.y']])('skip if netmask version is %s', () => {
+    test.each(['2.x.y', '~2.x.y', '^2.x.y'])('skip if netmask version is %s', () => {
       // GIVEN
       fs.writeJSONSync(path.join(dir, 'package.json'), {
         dependencies: {
