@@ -1,4 +1,4 @@
-# Event Targets for Amazon EventBridge
+# Endpoints for AWS Global Accelerator
 <!--BEGIN STABILITY BANNER-->
 
 ---
