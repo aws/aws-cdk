@@ -1386,6 +1386,7 @@ export = {
 
       test.done();
     },
+
     'can override build timeout'(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();
@@ -1403,6 +1404,20 @@ export = {
       expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
         TimeoutInMinutes: 30,
       }));
+
+      test.done();
+    },
+  },
+
+  'can be imported': {
+    'by ARN'(test: Test) {
+      const stack = new cdk.Stack();
+      const project = codebuild.Project.fromProjectArn(stack, 'Project',
+        'arn:aws:codebuild:us-west-2:123456789012:project/My-Project');
+
+      test.equal(project.projectName, 'My-Project');
+      test.equal(project.env.account, '123456789012');
+      test.equal(project.env.region, 'us-west-2');
 
       test.done();
     },
