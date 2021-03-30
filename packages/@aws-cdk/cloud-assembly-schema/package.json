@@ -89,7 +89,7 @@
   },
   "dependencies": {
     "jsonschema": "^1.4.0",
-    "semver": "^7.3.4"
+    "semver": "^7.3.5"
   },
   "awscdkio": {
     "announce": false
