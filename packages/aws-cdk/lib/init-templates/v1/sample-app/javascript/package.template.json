@@ -19,5 +19,8 @@
     "@aws-cdk/aws-sns-subscriptions": "%cdk-version%",
     "@aws-cdk/aws-sqs": "%cdk-version%",
     "@aws-cdk/core": "%cdk-version%"
+  },
+  "resolutions": {
+    "netmask": "2.0.1"
   }
 }
