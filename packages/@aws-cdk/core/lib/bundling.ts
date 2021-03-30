@@ -157,8 +157,8 @@ export class BundlingDockerImage {
    *
    * @deprecated use DockerImage.fromBuild()
    */
-  public static fromAsset(path: string, options: DockerBuildOptions = {}) {
-    DockerImage.fromBuild(path, options) as BundlingDockerImage;
+  public static fromAsset(path: string, options: DockerBuildOptions = {}): BundlingDockerImage {
+    return DockerImage.fromBuild(path, options);
   }
 
   /** @param image The Docker image */
