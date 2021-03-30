@@ -1,5 +1,5 @@
-import * as cdk from 'aws-cdk-lib';
-import * as cx from 'aws-cdk-lib/cx-api';
+import * as cdk from '@aws-cdk/core';
+import * as cx from '@aws-cdk/cx-api';
 import * as constructs from 'constructs';
 
 import { countResources, countResourcesLike, exist, expect as cdkExpect, haveType, MatchStyle, matchTemplate } from '../lib/index';

@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import * as core from 'aws-cdk-lib';
-import * as cxapi from 'aws-cdk-lib/cx-api';
+import * as core from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
 
 export class SynthUtils {
   /**

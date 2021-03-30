@@ -1,4 +1,4 @@
-import { App, Stack } from 'aws-cdk-lib';
+import { App, Stack } from '@aws-cdk/core';
 import { SynthUtils } from '../lib';
 
 test('SynthUtils.synthesize() is always executed against the root of the tree', () => {

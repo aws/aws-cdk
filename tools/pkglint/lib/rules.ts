@@ -625,10 +625,11 @@ export class NoPeerDependenciesMonocdk extends ValidationRule {
  * Note: v1 and v2 use different versions respectively.
  */
 export class ConstructsVersion extends ValidationRule {
-  public readonly name = 'deps/constructs';
-  private readonly expectedRange = cdkMajorVersion() === 2
+  public static readonly VERSION = cdkMajorVersion() === 2
     ? '10.0.0-pre.5'
-    : '^3.2.0';
+    : '^3.3.69';
+
+  public readonly name = 'deps/constructs';
 
   public validate(pkg: PackageJson) {
     const toCheck = new Array<string>();
@@ -644,7 +645,7 @@ export class ConstructsVersion extends ValidationRule {
     }
 
     for (const cfg of toCheck) {
-      expectJSON(this.name, pkg, `${cfg}.constructs`, this.expectedRange);
+      expectJSON(this.name, pkg, `${cfg}.constructs`, ConstructsVersion.VERSION);
     }
   }
 }
@@ -1339,7 +1340,7 @@ export class PackageInJsiiPackageNoRuntimeDeps extends ValidationRule {
       if (Object.keys(innerPkg.dependencies).length > 0) {
         pkg.report({
           ruleName: `${this.name}:1`,
-          message: `NPM Package '${innerPkg.packageName}' inside jsii package can only have devDepencencies`,
+          message: `NPM Package '${innerPkg.packageName}' inside jsii package can only have devDependencies`,
         });
       }
 
@@ -1407,7 +1408,7 @@ export class ConstructsDependency extends ValidationRule {
   public readonly name = 'constructs/dependency';
 
   public validate(pkg: PackageJson) {
-    const REQUIRED_VERSION = '^3.2.0';
+    const REQUIRED_VERSION = ConstructsVersion.VERSION;;
 
     if (pkg.devDependencies?.constructs && pkg.devDependencies?.constructs !== REQUIRED_VERSION) {
       pkg.report({
@@ -1437,6 +1438,28 @@ export class ConstructsDependency extends ValidationRule {
           },
         });
       }
+    }
+  }
+}
+
+/**
+ * Packages must depend on 'assert-internal', not on '@aws-cdk/assert'
+ */
+export class AssertDependency extends ValidationRule {
+  public readonly name = 'assert/assert-dependency';
+
+  public validate(pkg: PackageJson) {
+    const devDeps = pkg.json.devDependencies ?? {};
+
+    if ('@aws-cdk/assert' in devDeps) {
+      pkg.report({
+        ruleName: this.name,
+        message: 'Package should depend on \'assert-internal\', not on \'@aws-cdk/assert\'',
+        fix: () => {
+          pkg.json.devDependencies['assert-internal'] = pkg.json.devDependencies['@aws-cdk/assert'];
+          delete pkg.json.devDependencies['@aws-cdk/assert'];
+        },
+      });
     }
   }
 }
@@ -1545,8 +1568,7 @@ export class UbergenPackageVisibility extends ValidationRule {
   public readonly name = 'ubergen/package-visibility';
 
   // These include dependencies of the CDK CLI (aws-cdk).
-  private readonly publicPackagesInV2 = [
-    '@aws-cdk/assert2',
+  private readonly publicPackages = [
     '@aws-cdk/cfnspec',
     '@aws-cdk/cloud-assembly-schema',
     '@aws-cdk/cloudformation-diff',
@@ -1563,7 +1585,7 @@ export class UbergenPackageVisibility extends ValidationRule {
   public validate(pkg: PackageJson): void {
     if (cdkMajorVersion() === 2) {
       // Only packages in the publicPackages list should be "public". Everything else should be private.
-      if (this.publicPackagesInV2.includes(pkg.json.name) && pkg.json.private === true) {
+      if (this.publicPackages.includes(pkg.json.name) && pkg.json.private === true) {
         pkg.report({
           ruleName: this.name,
           message: 'Package must be public',
@@ -1571,7 +1593,7 @@ export class UbergenPackageVisibility extends ValidationRule {
             delete pkg.json.private;
           },
         });
-      } else if (!this.publicPackagesInV2.includes(pkg.json.name) && pkg.json.private !== true) {
+      } else if (!this.publicPackages.includes(pkg.json.name) && pkg.json.private !== true) {
         pkg.report({
           ruleName: this.name,
           message: 'Package must not be public',

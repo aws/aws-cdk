@@ -1,7 +1,7 @@
 import { writeFileSync } from 'fs';
 import { join } from 'path';
-import * as cxschema from 'aws-cdk-lib/cloud-assembly-schema';
-import * as cxapi from 'aws-cdk-lib/cx-api';
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
+import * as cxapi from '@aws-cdk/cx-api';
 import { ABSENT, arrayWith, exactValue, expect as cdkExpect, haveResource, haveResourceLike, Capture, anything } from '../lib/index';
 
 test('support resource with no properties', () => {
