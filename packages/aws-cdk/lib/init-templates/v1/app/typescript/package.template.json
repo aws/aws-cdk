@@ -23,5 +23,8 @@
   "dependencies": {
     "@aws-cdk/core": "%cdk-version%",
     "source-map-support": "^0.5.16"
+  },
+  "resolutions": {
+    "netmask": "2.0.1"
   }
 }
