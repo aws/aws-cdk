@@ -86,10 +86,9 @@ export interface Parameter {
  */
 export interface HttpParameters {
   /**
-   * The body that need to be sent as part of request invoking the API Gateway REST API or EventBridge ApiDestination.
-   * @default - none
+   * Not currently supported by AWS CloudFormation.
    */
-  readonly bodyParameters?: Parameter[];
+  // readonly bodyParameters?: Parameter[];
 
   /**
    * The headers that need to be sent as part of request invoking the API Gateway REST API or EventBridge ApiDestination.
@@ -262,13 +261,13 @@ export class Connection extends Resource implements IConnection {
    * @param id Construct ID
    * @param connectionArn ARN of imported connection
    */
-  public static fromEventBusArn(scope: Construct, id: string, connectionArn: string): IConnection {
+  public static fromEventBusArn(scope: Construct, id: string, connectionArn: string, connectionSecretArn: string): IConnection {
     const parts = Stack.of(scope).parseArn(connectionArn);
 
     return new ImportedConnection(scope, id, {
       connectionArn: connectionArn,
       connectionName: parts.resourceName || '',
-      connectionSecretArn: '', //TODO
+      connectionSecretArn: connectionSecretArn,
     });
   }
 
@@ -307,49 +306,69 @@ export class Connection extends Resource implements IConnection {
       }),
     });
 
-    let authParameters;
+    let authParameters: any;
+
+    if (props.authorizationType === AuthorizationType.API_KEY) {
+      if (props.authParameters?.apiKeyAuthParameters !== undefined) {
+        authParameters = {
+          ApiKeyAuthParameters: {
+            ApiKeyName: props.authParameters?.apiKeyAuthParameters?.apiKeyValue,
+            ApiKeyValue: props.authParameters?.apiKeyAuthParameters?.apiKeyValue,
+          },
+        };
+      } else {
+        throw new Error('You must supply the relevant authParameters for this authorizationType');
+      };
+    };
 
     if (props.authorizationType === AuthorizationType.BASIC) {
-      if (props.authParameters?.basicAuthParameters?.password !== undefined || props.authParameters?.basicAuthParameters?.username !== undefined) {
+      if (props.authParameters?.basicAuthParameters !== undefined) {
         authParameters = {
           BasicAuthParameters: {
             Password: props.authParameters?.basicAuthParameters?.password,
             Username: props.authParameters?.basicAuthParameters?.username,
           },
         };
+      } else {
+        throw new Error('You must supply the relevant authParameters for this authorizationType');
       };
-      // else {
-      //   throw new Error('AuthorizationType Basic requires username and password to be set');
-      // };
     };
-    // {
-    //           ApiKeyAuthParameters: {
-    //       ApiKeyName: props.authParameters?.apiKeyAuthParameters?.apiKeyName,
-    //       ApiKeyValue: props.authParameters?.apiKeyAuthParameters?.apiKeyValue,
-    //     },
-    //     BasicAuthParameters: {
-    //       Password: props.authParameters?.basicAuthParameters?.password,
-    //       Username: props.authParameters?.basicAuthParameters?.username,
-    //     },
-    //     InvocationHttpParameters: {
-    //       BodyParameters: props.authParameters?.invocationHttpParameters?.bodyParameters,
-    //       HeaderParameters: props.authParameters?.invocationHttpParameters?.headerParameters,
-    //       QueryStringParameters: props.authParameters?.invocationHttpParameters?.queryStringParameters,
-    //     },
-    //     OAuthParameters: {
-    //       AuthorizationEndpoint: props.authParameters?.oAuthParameters?.authorizationEndpoint,
-    //       ClientParameters: {
-    //         ClientID: props.authParameters?.oAuthParameters?.clientParameters.clientID,
-    //         ClientSecret: props.authParameters?.oAuthParameters?.clientParameters.clientSecret,
-    //       },
-    //       HttpMethod: props.authParameters?.oAuthParameters?.httpMethod,
-    //       OAuthHttpParameters: {
-    //         BodyParameters: props.authParameters?.oAuthParameters?.oAuthHttpParameters?.bodyParameters,
-    //         HeaderParameters: props.authParameters?.oAuthParameters?.oAuthHttpParameters?.headerParameters,
-    //         QueryStringParameters: props.authParameters?.oAuthParameters?.oAuthHttpParameters?.queryStringParameters,
-    //       },
-    //     },
-    // }
+
+    if (props.authorizationType === AuthorizationType.OAUTH_CLIENT_CREDENTIALS) {
+      if (props.authParameters?.oAuthParameters !== undefined) {
+        authParameters = {
+          OAuthParameters: {
+            AuthorizationEndpoint: props.authParameters?.oAuthParameters?.authorizationEndpoint,
+            ClientParameters: {
+              ClientID: props.authParameters?.oAuthParameters?.clientParameters.clientID,
+              ClientSecret: props.authParameters?.oAuthParameters?.clientParameters.clientSecret,
+            },
+            HttpMethod: props.authParameters?.oAuthParameters?.httpMethod,
+            //OAuthHttpParameters: props.authParameters?.oAuthParameters?.oAuthHttpParameters,
+          },
+        };
+      } else {
+        throw new Error('You must supply the relevant authParameters for this authorizationType');
+      };
+    };
+
+    if (props.authParameters?.invocationHttpParameters !== undefined) {
+      if (props.authParameters?.invocationHttpParameters?.headerParameters !== undefined) {
+        let headers: { IsValueSecret: string | undefined; Key: string; Value: string; }[] = [];
+        props.authParameters?.invocationHttpParameters?.headerParameters.forEach(header => {
+          let headerBuilder = {
+            IsValueSecret: header.isValueSecret,
+            Key: header.key,
+            Value: header.value,
+          };
+          headers.push(headerBuilder);
+        });
+        authParameters.InvocationHttpParameters = {
+          HeaderParameters: headers,
+        };
+      }
+    };
+
     let connection = new CfnConnection(this, 'Connection', {
       authorizationType: props.authorizationType,
       authParameters,
