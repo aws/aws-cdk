@@ -101,11 +101,11 @@ function updatedLocationOf(modulePath: string): string | undefined {
     return 'monocdk';
   }
 
-  if (modulePath === 'assert-internal') {
+  if (modulePath === '@aws-cdk/assert') {
     return '@monocdk-experiment/assert';
   }
 
-  if (modulePath === 'assert-internal/jest') {
+  if (modulePath === '@aws-cdk/assert/jest') {
     return '@monocdk-experiment/assert/jest';
   }
 

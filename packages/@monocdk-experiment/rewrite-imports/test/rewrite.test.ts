@@ -4,7 +4,7 @@ describe(rewriteImports, () => {
   test('correctly rewrites naked "import"', () => {
     const output = rewriteImports(`
     // something before
-    import 'assert-internal/jest';
+    import '@aws-cdk/assert/jest';
     // something after
 
     console.log('Look! I did something!');`, 'subhect.ts');
@@ -20,7 +20,7 @@ describe(rewriteImports, () => {
   test('correctly rewrites naked "require"', () => {
     const output = rewriteImports(`
     // something before
-    require('assert-internal/jest');
+    require('@aws-cdk/assert/jest');
     // something after
 
     console.log('Look! I did something!');`, 'subhect.ts');
