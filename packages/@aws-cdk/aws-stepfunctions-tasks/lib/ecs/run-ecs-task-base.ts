@@ -45,6 +45,7 @@ export interface CommonEcsRunTaskProps {
 
 /**
  * Construction properties for the BaseRunTaskProps
+ * @deprecated No replacement
  */
 export interface EcsRunTaskBaseProps extends CommonEcsRunTaskProps {
   /**
@@ -57,6 +58,7 @@ export interface EcsRunTaskBaseProps extends CommonEcsRunTaskProps {
 
 /**
  * A StepFunctions Task to run a Task on ECS or Fargate
+ * @deprecated No replacement
  */
 export class EcsRunTaskBase implements ec2.IConnectable, sfn.IStepFunctionsTask {
   /**
