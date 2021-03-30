@@ -57,6 +57,7 @@ export interface HttpLambdaAuthorizerProps {
    *
    * If HttpLambdaResponseType.SIMPLE is included then
    * response format 2.0 will be used.
+   * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-lambda-authorizer.html#http-api-lambda-authorizer.payload-format-response
    */
   readonly responseTypes: HttpLambdaResponseType[];
 }
