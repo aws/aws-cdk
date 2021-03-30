@@ -74,7 +74,7 @@
     "cdk-build-tools": "0.0.0",
     "cdk-integ-tools": "0.0.0",
     "pkglint": "0.0.0",
-    "assert-internal": "0.0.0"
+    "@aws-cdk/assert-internal": "0.0.0"
   },
   "dependencies": {
     "@aws-cdk/aws-cloudfront": "0.0.0",

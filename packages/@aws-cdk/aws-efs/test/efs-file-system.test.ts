@@ -1,4 +1,4 @@
-import { expect as expectCDK, haveResource, ResourcePart, countResources } from 'assert-internal';
+import { expect as expectCDK, haveResource, ResourcePart, countResources } from '@aws-cdk/assert-internal';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as kms from '@aws-cdk/aws-kms';
 import { RemovalPolicy, Size, Stack, Tags } from '@aws-cdk/core';

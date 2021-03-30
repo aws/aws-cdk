@@ -6,7 +6,7 @@ import { Duration, Stack } from '@aws-cdk/core';
 import * as cr from '../../lib';
 import * as util from '../../lib/provider-framework/util';
 
-import 'assert-internal/jest';
+import '@aws-cdk/assert-internal/jest';
 
 test('security groups are applied to all framework functions', () => {
 

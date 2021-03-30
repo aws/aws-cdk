@@ -1,4 +1,4 @@
-import { SynthUtils } from 'assert-internal';
+import { SynthUtils } from '@aws-cdk/assert-internal';
 import * as cdk from '@aws-cdk/core';
 import { nodeunitShim, Test } from 'nodeunit-shim';
 import { HostedZone } from '../lib';

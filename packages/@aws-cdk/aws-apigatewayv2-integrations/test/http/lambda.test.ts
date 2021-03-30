@@ -1,4 +1,4 @@
-import 'assert-internal/jest';
+import '@aws-cdk/assert-internal/jest';
 import { HttpApi, HttpRoute, HttpRouteKey, PayloadFormatVersion } from '@aws-cdk/aws-apigatewayv2';
 import { Code, Function, Runtime } from '@aws-cdk/aws-lambda';
 import { App, Stack } from '@aws-cdk/core';

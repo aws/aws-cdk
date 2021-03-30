@@ -1,4 +1,4 @@
-import { expect, haveResourceLike } from 'assert-internal';
+import { expect, haveResourceLike } from '@aws-cdk/assert-internal';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as sns from '@aws-cdk/aws-sns';
 import { SecretValue, Stack } from '@aws-cdk/core';

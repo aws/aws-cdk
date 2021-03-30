@@ -80,7 +80,7 @@
     "nodeunit": "^0.11.3",
     "pkglint": "0.0.0",
     "sinon": "^9.2.4",
-    "assert-internal": "0.0.0"
+    "@aws-cdk/assert-internal": "0.0.0"
   },
   "dependencies": {
     "@aws-cdk/aws-cloudwatch": "0.0.0",

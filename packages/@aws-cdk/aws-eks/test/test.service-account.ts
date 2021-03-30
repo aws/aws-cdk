@@ -1,4 +1,4 @@
-import { expect, haveResource } from 'assert-internal';
+import { expect, haveResource } from '@aws-cdk/assert-internal';
 import * as iam from '@aws-cdk/aws-iam';
 import { Test } from 'nodeunit';
 import * as eks from '../lib';

@@ -1,4 +1,4 @@
-import 'assert-internal/jest';
+import '@aws-cdk/assert-internal/jest';
 import * as path from 'path';
 import { Vpc, SecurityGroup, SubnetType } from '@aws-cdk/aws-ec2';
 import { DatabaseSecret, DatabaseClusterEngine, AuroraMysqlEngineVersion, ServerlessCluster } from '@aws-cdk/aws-rds';

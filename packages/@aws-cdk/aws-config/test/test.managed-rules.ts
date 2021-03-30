@@ -1,4 +1,4 @@
-import { expect, haveResource } from 'assert-internal';
+import { expect, haveResource } from '@aws-cdk/assert-internal';
 import * as sns from '@aws-cdk/aws-sns';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';

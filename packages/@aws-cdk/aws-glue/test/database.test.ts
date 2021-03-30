@@ -1,6 +1,6 @@
 import { deepEqual, throws } from 'assert';
-import { expect } from 'assert-internal';
-import 'assert-internal/jest';
+import { expect } from '@aws-cdk/assert-internal';
+import '@aws-cdk/assert-internal/jest';
 import { Stack } from '@aws-cdk/core';
 import * as glue from '../lib';
 

@@ -1,5 +1,5 @@
-import { arrayWith, objectLike } from 'assert-internal';
-import 'assert-internal/jest';
+import { arrayWith, objectLike } from '@aws-cdk/assert-internal';
+import '@aws-cdk/assert-internal/jest';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import * as stepfunctions from '../lib';

@@ -1,4 +1,4 @@
-import { expect, haveResource } from 'assert-internal';
+import { expect, haveResource } from '@aws-cdk/assert-internal';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
 import { App, Stack } from '@aws-cdk/core';

@@ -1,4 +1,4 @@
-import 'assert-internal/jest';
+import '@aws-cdk/assert-internal/jest';
 import * as path from 'path';
 import { Protocol } from '@aws-cdk/aws-ec2';
 import { Repository } from '@aws-cdk/aws-ecr';

@@ -1,6 +1,6 @@
 import { deepEqual, doesNotThrow, equal, notEqual, ok } from 'assert';
-import { expect as cdkExpect, haveResource, ResourcePart } from 'assert-internal';
-import 'assert-internal/jest';
+import { expect as cdkExpect, haveResource, ResourcePart } from '@aws-cdk/assert-internal';
+import '@aws-cdk/assert-internal/jest';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as s3 from '@aws-cdk/aws-s3';

@@ -1,4 +1,4 @@
-import 'assert-internal/jest';
+import '@aws-cdk/assert-internal/jest';
 import { Bucket } from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
 import { GitHubRepository, RepositoryVisibility } from '../lib';

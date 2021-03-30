@@ -1,4 +1,4 @@
-import { expect, haveResource } from 'assert-internal';
+import { expect, haveResource } from '@aws-cdk/assert-internal';
 import { ArnPrincipal } from '@aws-cdk/aws-iam';
 import { Stack } from '@aws-cdk/core';
 import { nodeunitShim, Test } from 'nodeunit-shim';

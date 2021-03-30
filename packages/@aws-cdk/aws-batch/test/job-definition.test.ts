@@ -1,5 +1,5 @@
-import 'assert-internal/jest';
-import { ResourcePart } from 'assert-internal/lib/assertions/have-resource';
+import '@aws-cdk/assert-internal/jest';
+import { ResourcePart } from '@aws-cdk/assert-internal/lib/assertions/have-resource';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecr from '@aws-cdk/aws-ecr';
 import * as ecs from '@aws-cdk/aws-ecs';

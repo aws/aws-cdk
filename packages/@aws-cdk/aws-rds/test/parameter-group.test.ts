@@ -1,4 +1,4 @@
-import { countResources, expect, haveResource } from 'assert-internal';
+import { countResources, expect, haveResource } from '@aws-cdk/assert-internal';
 import * as cdk from '@aws-cdk/core';
 import { nodeunitShim, Test } from 'nodeunit-shim';
 import { DatabaseClusterEngine, ParameterGroup } from '../lib';

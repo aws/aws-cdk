@@ -1,5 +1,5 @@
 import { join } from 'path';
-import 'assert-internal/jest';
+import '@aws-cdk/assert-internal/jest';
 import * as cdk from '@aws-cdk/core';
 import * as appsync from '../lib';
 import * as t from './scalar-type-defintions';

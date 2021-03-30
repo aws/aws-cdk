@@ -1,4 +1,4 @@
-import 'assert-internal/jest';
+import '@aws-cdk/assert-internal/jest';
 import * as yaml_cfn from '../lib';
 
 test('Unquoted year-month-day is treated as a string, not a Date', () => {

@@ -1,4 +1,4 @@
-import { expect, haveResource } from 'assert-internal';
+import { expect, haveResource } from '@aws-cdk/assert-internal';
 import { Attribute, AttributeType, StreamViewType, Table } from '@aws-cdk/aws-dynamodb';
 import { App, CfnOutput, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';

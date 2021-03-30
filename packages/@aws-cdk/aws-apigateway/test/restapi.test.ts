@@ -1,5 +1,5 @@
-import 'assert-internal/jest';
-import { ResourcePart, SynthUtils } from 'assert-internal';
+import '@aws-cdk/assert-internal/jest';
+import { ResourcePart, SynthUtils } from '@aws-cdk/assert-internal';
 import { GatewayVpcEndpoint } from '@aws-cdk/aws-ec2';
 import { App, CfnElement, CfnResource, Stack } from '@aws-cdk/core';
 import * as apigw from '../lib';

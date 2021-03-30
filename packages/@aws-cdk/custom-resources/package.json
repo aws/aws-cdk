@@ -86,7 +86,7 @@
     "nock": "^13.0.11",
     "pkglint": "0.0.0",
     "sinon": "^9.2.4",
-    "assert-internal": "0.0.0"
+    "@aws-cdk/assert-internal": "0.0.0"
   },
   "dependencies": {
     "@aws-cdk/aws-cloudformation": "0.0.0",

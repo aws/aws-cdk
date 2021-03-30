@@ -7,7 +7,7 @@ src="../assert-internal"
 rsync -av $src/lib/ lib/
 rsync -av $src/test/ test/
 
-majorversion=$(node -p 'require("../../release.json").majorVersion')
+majorversion=$(node -p 'require("../../../release.json").majorVersion')
 
 files="README.md LICENSE NOTICE .npmignore jest.ts"
 

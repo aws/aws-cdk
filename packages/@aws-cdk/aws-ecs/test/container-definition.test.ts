@@ -1,6 +1,6 @@
-import 'assert-internal/jest';
+import '@aws-cdk/assert-internal/jest';
 import * as path from 'path';
-import { InspectionFailure } from 'assert-internal';
+import { InspectionFailure } from '@aws-cdk/assert-internal';
 import * as ecr_assets from '@aws-cdk/aws-ecr-assets';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';

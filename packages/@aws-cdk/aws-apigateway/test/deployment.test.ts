@@ -1,6 +1,6 @@
 import * as path from 'path';
-import 'assert-internal/jest';
-import { ResourcePart, SynthUtils } from 'assert-internal';
+import '@aws-cdk/assert-internal/jest';
+import { ResourcePart, SynthUtils } from '@aws-cdk/assert-internal';
 import * as lambda from '@aws-cdk/aws-lambda';
 import { CfnResource, Lazy, Stack } from '@aws-cdk/core';
 import * as apigateway from '../lib';

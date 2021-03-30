@@ -1,7 +1,7 @@
-import 'assert-internal/jest';
+import '@aws-cdk/assert-internal/jest';
 import * as fs from 'fs';
 import * as path from 'path';
-import { ABSENT } from 'assert-internal';
+import { ABSENT } from '@aws-cdk/assert-internal';
 import { Vpc } from '@aws-cdk/aws-ec2';
 import { Runtime } from '@aws-cdk/aws-lambda';
 import { Stack } from '@aws-cdk/core';

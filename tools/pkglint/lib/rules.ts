@@ -1454,9 +1454,9 @@ export class AssertDependency extends ValidationRule {
     if ('@aws-cdk/assert' in devDeps) {
       pkg.report({
         ruleName: this.name,
-        message: 'Package should depend on \'assert-internal\', not on \'@aws-cdk/assert\'',
+        message: 'Package should depend on \'@aws-cdk/assert-internal\', not on \'@aws-cdk/assert\'',
         fix: () => {
-          pkg.json.devDependencies['assert-internal'] = pkg.json.devDependencies['@aws-cdk/assert'];
+          pkg.json.devDependencies['@aws-cdk/assert-internal'] = pkg.json.devDependencies['@aws-cdk/assert'];
           delete pkg.json.devDependencies['@aws-cdk/assert'];
         },
       });

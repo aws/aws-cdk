@@ -1,4 +1,4 @@
-import 'assert-internal/jest';
+import '@aws-cdk/assert-internal/jest';
 import * as cognito from '@aws-cdk/aws-cognito';
 import { Duration, Stack } from '@aws-cdk/core';
 import { AuthorizationType, CognitoUserPoolsAuthorizer, RestApi } from '../../lib';

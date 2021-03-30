@@ -1,4 +1,4 @@
-import 'assert-internal/jest';
+import '@aws-cdk/assert-internal/jest';
 import * as signer from '@aws-cdk/aws-signer';
 import * as cdk from '@aws-cdk/core';
 import * as lambda from '../lib';

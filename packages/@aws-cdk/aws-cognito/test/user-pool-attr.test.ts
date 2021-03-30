@@ -1,4 +1,4 @@
-import 'assert-internal/jest';
+import '@aws-cdk/assert-internal/jest';
 import { CfnParameter, Stack } from '@aws-cdk/core';
 import { BooleanAttribute, CustomAttributeConfig, DateTimeAttribute, ICustomAttribute, NumberAttribute, StringAttribute, ClientAttributes } from '../lib';
 import { StandardAttributeNames } from '../lib/private/attr-names';

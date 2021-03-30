@@ -1,4 +1,4 @@
-import { expect as expectCDK, matchTemplate, MatchStyle } from 'assert-internal';
+import { expect as expectCDK, matchTemplate, MatchStyle } from '@aws-cdk/assert-internal';
 import * as cdk from '@aws-cdk/core';
 import * as %name.PascalCased% from '../lib/%name%-stack';
 

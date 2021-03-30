@@ -1,4 +1,4 @@
-import { expect, haveResource, ResourcePart } from 'assert-internal';
+import { expect, haveResource, ResourcePart } from '@aws-cdk/assert-internal';
 import { Port } from '@aws-cdk/aws-ec2';
 import * as ga from '../lib';
 import { testFixture, testFixtureAlb } from './util';

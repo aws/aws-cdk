@@ -1,4 +1,4 @@
-import { ABSENT, arrayWith, expect, haveResource, haveResourceLike, objectLike } from 'assert-internal';
+import { ABSENT, arrayWith, expect, haveResource, haveResourceLike, objectLike } from '@aws-cdk/assert-internal';
 import { Certificate } from '@aws-cdk/aws-certificatemanager';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecs from '@aws-cdk/aws-ecs';

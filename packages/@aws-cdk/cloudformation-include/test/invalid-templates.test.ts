@@ -1,6 +1,6 @@
 import * as path from 'path';
-import { SynthUtils } from 'assert-internal';
-import 'assert-internal/jest';
+import { SynthUtils } from '@aws-cdk/assert-internal';
+import '@aws-cdk/assert-internal/jest';
 import * as core from '@aws-cdk/core';
 import * as constructs from 'constructs';
 import * as inc from '../lib';

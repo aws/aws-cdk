@@ -1,5 +1,5 @@
 import * as iam from '@aws-cdk/aws-iam';
-import 'assert-internal/jest';
+import '@aws-cdk/assert-internal/jest';
 import { App, SecretValue, Stack } from '@aws-cdk/core';
 import * as amplify from '../lib';
 

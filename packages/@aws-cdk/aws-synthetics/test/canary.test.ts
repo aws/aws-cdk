@@ -1,5 +1,5 @@
-import 'assert-internal/jest';
-import { objectLike } from 'assert-internal';
+import '@aws-cdk/assert-internal/jest';
+import { objectLike } from '@aws-cdk/assert-internal';
 import * as iam from '@aws-cdk/aws-iam';
 import * as s3 from '@aws-cdk/aws-s3';
 import { App, Duration, Lazy, Stack } from '@aws-cdk/core';

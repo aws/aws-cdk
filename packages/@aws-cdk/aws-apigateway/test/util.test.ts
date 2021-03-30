@@ -1,4 +1,4 @@
-import 'assert-internal/jest';
+import '@aws-cdk/assert-internal/jest';
 import { JsonSchema, JsonSchemaType } from '../lib';
 import { JsonSchemaMapper, parseAwsApiCall, parseMethodOptionsPath } from '../lib/util';
 

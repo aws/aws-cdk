@@ -1,4 +1,4 @@
-import { arrayWith, expect, haveResourceLike, objectLike } from 'assert-internal';
+import { arrayWith, expect, haveResourceLike, objectLike } from '@aws-cdk/assert-internal';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import * as codebuild from '../lib';

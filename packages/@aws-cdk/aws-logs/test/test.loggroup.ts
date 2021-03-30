@@ -1,4 +1,4 @@
-import { expect, haveResource, matchTemplate } from 'assert-internal';
+import { expect, haveResource, matchTemplate } from '@aws-cdk/assert-internal';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import { CfnParameter, RemovalPolicy, Stack } from '@aws-cdk/core';

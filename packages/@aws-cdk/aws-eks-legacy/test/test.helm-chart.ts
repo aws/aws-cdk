@@ -1,4 +1,4 @@
-import { expect, haveResource } from 'assert-internal';
+import { expect, haveResource } from '@aws-cdk/assert-internal';
 import { Test } from 'nodeunit';
 import * as eks from '../lib';
 import { testFixtureCluster } from './util';

@@ -1,4 +1,4 @@
-import { ABSENT, expect, haveResource, haveResourceLike, InspectionFailure, ResourcePart } from 'assert-internal';
+import { ABSENT, expect, haveResource, haveResourceLike, InspectionFailure, ResourcePart } from '@aws-cdk/assert-internal';
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';

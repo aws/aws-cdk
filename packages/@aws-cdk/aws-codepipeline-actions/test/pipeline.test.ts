@@ -1,4 +1,4 @@
-import { countResources, expect, haveResource, haveResourceLike, not, SynthUtils } from 'assert-internal';
+import { countResources, expect, haveResource, haveResourceLike, not, SynthUtils } from '@aws-cdk/assert-internal';
 import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as codecommit from '@aws-cdk/aws-codecommit';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';

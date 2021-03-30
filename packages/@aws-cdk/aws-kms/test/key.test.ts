@@ -1,5 +1,5 @@
-import { arrayWith, ResourcePart } from 'assert-internal';
-import 'assert-internal/jest';
+import { arrayWith, ResourcePart } from '@aws-cdk/assert-internal';
+import '@aws-cdk/assert-internal/jest';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';

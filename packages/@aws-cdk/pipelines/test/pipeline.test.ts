@@ -9,8 +9,8 @@ import {
   notMatching,
   objectLike,
   stringLike,
-} from 'assert-internal';
-import 'assert-internal/jest';
+} from '@aws-cdk/assert-internal';
+import '@aws-cdk/assert-internal/jest';
 import * as cp from '@aws-cdk/aws-codepipeline';
 import * as cpa from '@aws-cdk/aws-codepipeline-actions';
 import { Stack, Stage, StageProps, SecretValue, Tags } from '@aws-cdk/core';

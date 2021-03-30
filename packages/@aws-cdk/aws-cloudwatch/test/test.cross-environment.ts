@@ -1,4 +1,4 @@
-import { expect, haveResourceLike } from 'assert-internal';
+import { expect, haveResourceLike } from '@aws-cdk/assert-internal';
 import { Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import { Alarm, GraphWidget, IWidget, Metric } from '../lib';

@@ -1,5 +1,5 @@
-import { arrayWith, objectLike } from 'assert-internal';
-import 'assert-internal/jest';
+import { arrayWith, objectLike } from '@aws-cdk/assert-internal';
+import '@aws-cdk/assert-internal/jest';
 import { App, Stack, Stage, StageProps } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import * as cdkp from '../lib';

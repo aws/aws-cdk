@@ -1,4 +1,4 @@
-import 'assert-internal/jest';
+import '@aws-cdk/assert-internal/jest';
 import * as events from '@aws-cdk/aws-events';
 import { App, Duration, Stack } from '@aws-cdk/core';
 import { BackupPlan, BackupPlanRule, BackupVault } from '../lib';

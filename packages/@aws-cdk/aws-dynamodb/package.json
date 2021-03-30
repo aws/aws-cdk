@@ -81,7 +81,7 @@
     "pkglint": "0.0.0",
     "sinon": "^9.2.4",
     "ts-jest": "^26.5.4",
-    "assert-internal": "0.0.0"
+    "@aws-cdk/assert-internal": "0.0.0"
   },
   "dependencies": {
     "@aws-cdk/aws-applicationautoscaling": "0.0.0",

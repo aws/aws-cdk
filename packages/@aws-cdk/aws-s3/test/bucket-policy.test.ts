@@ -1,4 +1,4 @@
-import { expect, haveResource } from 'assert-internal';
+import { expect, haveResource } from '@aws-cdk/assert-internal';
 import { AnyPrincipal, PolicyStatement } from '@aws-cdk/aws-iam';
 import { RemovalPolicy, Stack, App } from '@aws-cdk/core';
 import { nodeunitShim, Test } from 'nodeunit-shim';

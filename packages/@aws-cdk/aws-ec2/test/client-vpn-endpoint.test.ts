@@ -1,5 +1,5 @@
-import { ResourcePart } from 'assert-internal';
-import 'assert-internal/jest';
+import { ResourcePart } from '@aws-cdk/assert-internal';
+import '@aws-cdk/assert-internal/jest';
 import { SamlMetadataDocument, SamlProvider } from '@aws-cdk/aws-iam';
 import * as logs from '@aws-cdk/aws-logs';
 import { Stack } from '@aws-cdk/core';

@@ -1,6 +1,6 @@
 /* eslint-disable jest/no-disabled-tests */
-import { expect as cdkExpect, haveResource, haveResourceLike, ResourcePart } from 'assert-internal';
-import 'assert-internal/jest';
+import { expect as cdkExpect, haveResource, haveResourceLike, ResourcePart } from '@aws-cdk/assert-internal';
+import '@aws-cdk/assert-internal/jest';
 import { IVpcEndpointServiceLoadBalancer, VpcEndpointService } from '@aws-cdk/aws-ec2';
 import { Stack } from '@aws-cdk/core';
 import { PublicHostedZone, VpcEndpointServiceDomainName } from '../lib';

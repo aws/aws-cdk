@@ -1,7 +1,7 @@
-import * as cdkassert from 'assert-internal';
+import * as cdkassert from '@aws-cdk/assert-internal';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as cdk from '@aws-cdk/core';
-import 'assert-internal/jest';
+import '@aws-cdk/assert-internal/jest';
 import * as glue from '../lib';
 
 test('a connection with connection properties', () => {

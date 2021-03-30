@@ -1,4 +1,4 @@
-import { expect, haveResource, haveResourceLike, ResourcePart } from 'assert-internal';
+import { expect, haveResource, haveResourceLike, ResourcePart } from '@aws-cdk/assert-internal';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import { Stack, Tags } from '@aws-cdk/core';

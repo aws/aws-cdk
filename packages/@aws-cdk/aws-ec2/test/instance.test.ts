@@ -1,6 +1,6 @@
 import * as path from 'path';
-import { arrayWith, expect as cdkExpect, haveResource, ResourcePart, stringLike, SynthUtils } from 'assert-internal';
-import 'assert-internal/jest';
+import { arrayWith, expect as cdkExpect, haveResource, ResourcePart, stringLike, SynthUtils } from '@aws-cdk/assert-internal';
+import '@aws-cdk/assert-internal/jest';
 import { Asset } from '@aws-cdk/aws-s3-assets';
 import { StringParameter } from '@aws-cdk/aws-ssm';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';

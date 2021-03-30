@@ -1,4 +1,4 @@
-import 'assert-internal/jest';
+import '@aws-cdk/assert-internal/jest';
 import { HttpApi, HttpRoute, HttpRouteIntegrationBindOptions, HttpRouteIntegrationConfig, HttpRouteKey } from '@aws-cdk/aws-apigatewayv2';
 import { Stack } from '@aws-cdk/core';
 import { HttpPrivateIntegration } from '../../../lib/http/private/integration';

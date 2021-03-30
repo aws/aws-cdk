@@ -1,5 +1,5 @@
-import { anything, arrayWith, deepObjectLike, encodedJson, objectLike } from 'assert-internal';
-import 'assert-internal/jest';
+import { anything, arrayWith, deepObjectLike, encodedJson, objectLike } from '@aws-cdk/assert-internal';
+import '@aws-cdk/assert-internal/jest';
 import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as ec2 from '@aws-cdk/aws-ec2';

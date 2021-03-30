@@ -1,5 +1,5 @@
-import { ABSENT, arrayWith } from 'assert-internal';
-import 'assert-internal/jest';
+import { ABSENT, arrayWith } from '@aws-cdk/assert-internal';
+import '@aws-cdk/assert-internal/jest';
 import { Stack, Duration } from '@aws-cdk/core';
 import { OAuthScope, ResourceServerScope, UserPool, UserPoolClient, UserPoolClientIdentityProvider, UserPoolIdentityProvider, ClientAttributes } from '../lib';
 

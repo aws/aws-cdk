@@ -61,7 +61,7 @@
     "cdk-integ-tools": "0.0.0",
     "nodeunit": "^0.11.3",
     "pkglint": "0.0.0",
-    "assert-internal": "0.0.0"
+    "@aws-cdk/assert-internal": "0.0.0"
   },
   "peerDependencies": {
     "@aws-cdk/aws-dynamodb": "0.0.0",

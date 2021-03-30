@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { countResources, expect, haveResource, haveResourceLike } from 'assert-internal';
+import { countResources, expect, haveResource, haveResourceLike } from '@aws-cdk/assert-internal';
 import * as asg from '@aws-cdk/aws-autoscaling';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';

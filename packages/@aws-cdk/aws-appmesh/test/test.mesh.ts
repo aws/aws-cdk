@@ -1,4 +1,4 @@
-import { expect, haveResource, haveResourceLike } from 'assert-internal';
+import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert-internal';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as cloudmap from '@aws-cdk/aws-servicediscovery';
 import * as cdk from '@aws-cdk/core';

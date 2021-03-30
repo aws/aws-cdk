@@ -1,4 +1,4 @@
-import { expect } from 'assert-internal';
+import { expect } from '@aws-cdk/assert-internal';
 import { Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import { ReceiptFilter, ReceiptFilterPolicy, WhiteListReceiptFilter } from '../lib';

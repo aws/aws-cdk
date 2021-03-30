@@ -5,9 +5,9 @@
  */
 
 // import the various CDK assertion helpers
-import { ABSENT, ResourcePart } from 'assert-internal';
+import { ABSENT, ResourcePart } from '@aws-cdk/assert-internal';
 // always import our Jest-specific helpers
-import 'assert-internal/jest';
+import '@aws-cdk/assert-internal/jest';
 
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';

@@ -1,5 +1,5 @@
-import * as cdk from 'aws-cdk-lib';
-import * as api from 'aws-cdk-lib/cx-api';
+import * as cdk from '@aws-cdk/core';
+import * as api from '@aws-cdk/cx-api';
 import { StackInspector } from './inspector';
 import { SynthUtils } from './synth-utils';
 

@@ -1,4 +1,4 @@
-import 'assert-internal/jest';
+import '@aws-cdk/assert-internal/jest';
 import { GeoRestriction } from '../lib';
 
 describe.each([

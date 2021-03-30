@@ -1,5 +1,5 @@
-import { ResourcePart } from 'assert-internal';
-import 'assert-internal/jest';
+import { ResourcePart } from '@aws-cdk/assert-internal';
+import '@aws-cdk/assert-internal/jest';
 import { App, CfnResource, Stack } from '@aws-cdk/core';
 import { AnyPrincipal, CfnPolicy, Group, Policy, PolicyDocument, PolicyStatement, Role, ServicePrincipal, User } from '../lib';
 

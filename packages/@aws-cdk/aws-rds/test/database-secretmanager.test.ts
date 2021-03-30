@@ -1,4 +1,4 @@
-import { expect, haveResource, ResourcePart } from 'assert-internal';
+import { expect, haveResource, ResourcePart } from '@aws-cdk/assert-internal';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import * as cdk from '@aws-cdk/core';

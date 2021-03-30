@@ -1,4 +1,4 @@
-import { expect, haveResource, haveResourceLike, isSuperObject } from 'assert-internal';
+import { expect, haveResource, haveResourceLike, isSuperObject } from '@aws-cdk/assert-internal';
 import * as cfn from '@aws-cdk/aws-cloudformation';
 import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
