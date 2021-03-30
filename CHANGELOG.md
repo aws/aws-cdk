@@ -2,8 +2,10 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-### [1.95.2](https://github.com/aws/aws-cdk/compare/v1.95.1...v1.95.2) (2021-03-30)
+## [1.95.2](https://github.com/aws/aws-cdk/compare/v1.95.1...v1.95.2) (2021-03-30)
 
+* upgrade `netmask` dependency to address [CVE-2021-28918](https://github.com/advisories/GHSA-pch5-whg9-qr2r)
+  
 ## [1.95.1](https://github.com/aws/aws-cdk/compare/v1.95.0...v1.95.1) (2021-03-25)
 
 
