@@ -33,7 +33,8 @@
   "cdk-build": {
     "eslint": {
       "disable": true
-    }
+    },
+    "stripDeprecated": true
   },
   "pkglint": {
     "exclude": [
@@ -190,6 +191,7 @@
     "@aws-cdk/aws-fsx": "0.0.0",
     "@aws-cdk/aws-gamelift": "0.0.0",
     "@aws-cdk/aws-globalaccelerator": "0.0.0",
+    "@aws-cdk/aws-globalaccelerator-endpoints": "0.0.0",
     "@aws-cdk/aws-glue": "0.0.0",
     "@aws-cdk/aws-greengrass": "0.0.0",
     "@aws-cdk/aws-greengrassv2": "0.0.0",
