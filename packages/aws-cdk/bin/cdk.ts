@@ -264,7 +264,6 @@ async function initCommandLine() {
         // In code it's optimistically called "default" bootstrapping but that is in
         // anticipation of flipping the switch, in user messaging we still call it
         // "new" bootstrapping.
-        printAdvisories();
         let source: BootstrapSource = { source: 'legacy' };
         const newStyleStackSynthesis = isFeatureEnabled(configuration, cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT);
         if (args.template) {

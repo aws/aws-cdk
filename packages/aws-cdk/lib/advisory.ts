@@ -1,6 +1,7 @@
 import * as path from 'path';
 import * as fs from 'fs-extra';
 import { warning } from './logging';
+import { toYAML } from './serialize';
 
 export function printAdvisories() {
   const advisories: Advisory[] = [
@@ -23,16 +24,14 @@ class NetmaskAdvisory implements Advisory {
     const pkgLockJsonPath = path.join(process.cwd(), 'package-lock.json');
     const pkgJsonPath = path.join(process.cwd(), 'package.json');
 
-    if (fs.existsSync(pkgLockJsonPath)) {
+    if (!fs.existsSync(pkgJsonPath) || fs.existsSync(pkgLockJsonPath)) {
       return;
     }
-    if (fs.existsSync(pkgJsonPath)) {
-      // eslint-disable-next-line @typescript-eslint/no-require-imports
-      const json = require(pkgJsonPath);
-      const netmaskVer = json?.resolutions?.netmask;
-      if (typeof(netmaskVer) === 'string' && netmaskVer.startsWith('2')) {
-        return;
-      }
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const json = require(pkgJsonPath);
+    const netmaskVer = json?.resolutions?.netmask;
+    if (typeof(netmaskVer) === 'string' && netmaskVer.startsWith('2')) {
+      return;
     }
     return '<message goes here TODO>';
   }
