@@ -1,5 +1,5 @@
 {
-  "name": "assert-internal",
+  "name": "@aws-cdk/assert-internal",
   "private": true,
   "version": "0.0.0",
   "description": "An assertion library for use with CDK Apps",
@@ -43,7 +43,7 @@
   "repository": {
     "url": "https://github.com/aws/aws-cdk.git",
     "type": "git",
-    "directory": "tools/assert-internal"
+    "directory": "packages/@aws-cdk/assert-internal"
   },
   "keywords": [
     "aws",
