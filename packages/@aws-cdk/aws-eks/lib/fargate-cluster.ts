@@ -21,7 +21,7 @@ export interface FargateClusterProps extends ClusterOptions {
    *            all etcd volumes used by Amazon EKS are encrypted at the disk-level
    *            using AWS-Managed encryption keys.
    */
-   readonly secretsEncryptionKey?: kms.IKey;
+  readonly secretsEncryptionKey?: kms.IKey;
 }
 
 /**
