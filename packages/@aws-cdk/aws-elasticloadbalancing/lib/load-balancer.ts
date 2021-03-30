@@ -187,7 +187,7 @@ export interface LoadBalancerListener {
   readonly policyNames?: string[];
 
   /**
-   * the ARN of SSL certificate
+   * the ARN of the SSL certificate
    * @deprecated - use sslCertificateArn instead
    */
   readonly sslCertificateId?: string;
@@ -195,7 +195,7 @@ export interface LoadBalancerListener {
   /**
    * the ARN of the SSL certificate
    *
-   * @default none
+   * @default - none
    */
   readonly sslCertificateArn?: string;
 
@@ -272,9 +272,12 @@ export class LoadBalancer extends Resource implements IConnectable {
    * @returns A ListenerPort object that controls connections to the listener port
    */
   public addListener(listener: LoadBalancerListener): ListenerPort {
+    if (listener.sslCertificateArn && listener.sslCertificateId) {
+      throw new Error('"sslCertificateId" is deprecated, please use "sslCertificateArn" only.');
+    }
     const protocol = ifUndefinedLazy(listener.externalProtocol, () => wellKnownProtocol(listener.externalPort));
     const instancePort = listener.internalPort || listener.externalPort;
-    const sslCertificateArn = listener.sslCertificateId || listener.sslCertificateArn;
+    const sslCertificateArn = listener.sslCertificateArn || listener.sslCertificateId;
     const instanceProtocol = ifUndefined(listener.internalProtocol,
       ifUndefined(tryWellKnownProtocol(instancePort),
         isHttpProtocol(protocol) ? LoadBalancingProtocol.HTTP : LoadBalancingProtocol.TCP));
