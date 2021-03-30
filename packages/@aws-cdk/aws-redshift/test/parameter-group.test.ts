@@ -1,4 +1,4 @@
-import { expect as cdkExpect, haveResource } from '@aws-cdk/assert';
+import { expect as cdkExpect, haveResource } from 'assert-internal';
 import * as cdk from '@aws-cdk/core';
 import { ClusterParameterGroup } from '../lib';
 

@@ -1,4 +1,4 @@
-import { expect, haveResource, haveResourceLike, ResourcePart } from '@aws-cdk/assert';
+import { expect, haveResource, haveResourceLike, ResourcePart } from 'assert-internal';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
 import { ICallbackFunction, Test } from 'nodeunit';

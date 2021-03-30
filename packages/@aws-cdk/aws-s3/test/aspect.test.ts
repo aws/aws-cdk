@@ -1,5 +1,5 @@
-// import { expect, haveResource, haveResourceLike, SynthUtils } from '@aws-cdk/assert';
-import { SynthUtils } from '@aws-cdk/assert';
+// import { expect, haveResource, haveResourceLike, SynthUtils } from 'assert-internal';
+import { SynthUtils } from 'assert-internal';
 import * as cdk from '@aws-cdk/core';
 import { IConstruct } from 'constructs';
 import { nodeunitShim, Test } from 'nodeunit-shim';

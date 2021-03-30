@@ -1,4 +1,4 @@
-import { expect, haveResource } from '@aws-cdk/assert';
+import { expect, haveResource } from 'assert-internal';
 import { Connections, Peer, SubnetType, Vpc } from '@aws-cdk/aws-ec2';
 import { Duration, Stack } from '@aws-cdk/core';
 import { ILoadBalancerTarget, LoadBalancer, LoadBalancingProtocol } from '../lib';

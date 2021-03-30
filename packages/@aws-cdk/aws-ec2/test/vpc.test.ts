@@ -1,4 +1,4 @@
-import { countResources, expect as cdkExpect, haveResource, haveResourceLike, isSuperObject, MatchStyle, SynthUtils } from '@aws-cdk/assert';
+import { countResources, expect as cdkExpect, haveResource, haveResourceLike, isSuperObject, MatchStyle, SynthUtils } from 'assert-internal';
 import { CfnOutput, CfnResource, Fn, Lazy, Stack, Tags } from '@aws-cdk/core';
 import { nodeunitShim, Test } from 'nodeunit-shim';
 import {

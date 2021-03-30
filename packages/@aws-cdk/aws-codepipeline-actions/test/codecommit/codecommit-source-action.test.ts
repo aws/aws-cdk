@@ -1,4 +1,4 @@
-import { arrayWith, countResources, expect, haveResourceLike, not, objectLike } from '@aws-cdk/assert';
+import { arrayWith, countResources, expect, haveResourceLike, not, objectLike } from 'assert-internal';
 import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as codecommit from '@aws-cdk/aws-codecommit';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';

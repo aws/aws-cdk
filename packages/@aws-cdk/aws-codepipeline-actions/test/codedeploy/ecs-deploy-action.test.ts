@@ -1,4 +1,4 @@
-import { expect, haveResourceLike } from '@aws-cdk/assert';
+import { expect, haveResourceLike } from 'assert-internal';
 import * as codedeploy from '@aws-cdk/aws-codedeploy';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as cdk from '@aws-cdk/core';

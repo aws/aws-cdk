@@ -1,5 +1,5 @@
-import { ABSENT } from '@aws-cdk/assert';
-import '@aws-cdk/assert/jest';
+import { ABSENT } from 'assert-internal';
+import 'assert-internal/jest';
 import * as acm from '@aws-cdk/aws-certificatemanager';
 import { Bucket } from '@aws-cdk/aws-s3';
 import { Stack } from '@aws-cdk/core';

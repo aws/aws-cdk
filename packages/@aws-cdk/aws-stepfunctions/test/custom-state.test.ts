@@ -1,4 +1,4 @@
-import '@aws-cdk/assert/jest';
+import 'assert-internal/jest';
 import * as cdk from '@aws-cdk/core';
 import * as sfn from '../lib';
 import { render } from './private/render-util';

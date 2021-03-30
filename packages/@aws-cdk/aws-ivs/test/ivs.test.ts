@@ -1,5 +1,5 @@
-import '@aws-cdk/assert/jest';
-import { expect as expectStack } from '@aws-cdk/assert';
+import 'assert-internal/jest';
+import { expect as expectStack } from 'assert-internal';
 import { Stack } from '@aws-cdk/core';
 import * as ivs from '../lib';
 

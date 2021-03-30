@@ -3,7 +3,7 @@
 scriptdir=$(cd $(dirname $0) && pwd)
 cd $scriptdir
 set -euo pipefail
-src="../../tools/assert-internal"
+src="../../../tools/assert-internal"
 rsync -av $src/lib/ lib/
 rsync -av $src/test/ test/
 

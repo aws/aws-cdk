@@ -1,4 +1,4 @@
-import '@aws-cdk/assert/jest';
+import 'assert-internal/jest';
 import { Duration, Stack, App } from '@aws-cdk/core';
 import { AnyPrincipal, ArnPrincipal, CompositePrincipal, FederatedPrincipal, ManagedPolicy, PolicyStatement, Role, ServicePrincipal, User, Policy, PolicyDocument } from '../lib';
 

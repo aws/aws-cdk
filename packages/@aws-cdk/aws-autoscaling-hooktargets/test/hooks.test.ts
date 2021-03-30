@@ -1,5 +1,5 @@
-import '@aws-cdk/assert/jest';
-import { arrayWith } from '@aws-cdk/assert';
+import 'assert-internal/jest';
+import { arrayWith } from 'assert-internal';
 import * as autoscaling from '@aws-cdk/aws-autoscaling';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as kms from '@aws-cdk/aws-kms';

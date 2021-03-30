@@ -1,4 +1,4 @@
-import '@aws-cdk/assert/jest';
+import 'assert-internal/jest';
 import * as iam from '@aws-cdk/aws-iam';
 import { App, Stack } from '@aws-cdk/core';
 import { ElasticsearchAccessPolicy } from '../lib/elasticsearch-access-policy';

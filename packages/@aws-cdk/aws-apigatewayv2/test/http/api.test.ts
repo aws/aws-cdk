@@ -1,5 +1,5 @@
-import '@aws-cdk/assert/jest';
-import { ABSENT } from '@aws-cdk/assert';
+import 'assert-internal/jest';
+import { ABSENT } from 'assert-internal';
 import { Metric } from '@aws-cdk/aws-cloudwatch';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import { Duration, Stack } from '@aws-cdk/core';

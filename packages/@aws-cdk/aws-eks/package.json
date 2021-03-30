@@ -70,7 +70,6 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "0.0.0",
     "@types/nodeunit": "^0.0.31",
     "@types/yaml": "1.9.6",
     "aws-sdk": "^2.848.0",
@@ -81,7 +80,8 @@
     "pkglint": "0.0.0",
     "sinon": "^9.2.4",
     "cdk8s-plus": "^0.33.0",
-    "cdk8s": "^0.33.0"
+    "cdk8s": "^0.33.0",
+    "assert-internal": "0.0.0"
   },
   "dependencies": {
     "@aws-cdk/aws-autoscaling": "0.0.0",

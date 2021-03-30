@@ -1,4 +1,4 @@
-import { expect as cdkExpect, haveResource } from '@aws-cdk/assert';
+import { expect as cdkExpect, haveResource } from 'assert-internal';
 import * as events from '@aws-cdk/aws-events';
 import * as sqs from '@aws-cdk/aws-sqs';
 import { Duration, Stack } from '@aws-cdk/core';

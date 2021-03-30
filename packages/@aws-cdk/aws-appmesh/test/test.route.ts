@@ -1,4 +1,4 @@
-import { ABSENT, expect, haveResourceLike } from '@aws-cdk/assert';
+import { ABSENT, expect, haveResourceLike } from 'assert-internal';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 

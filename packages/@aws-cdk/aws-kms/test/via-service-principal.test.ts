@@ -1,4 +1,4 @@
-import '@aws-cdk/assert/jest';
+import 'assert-internal/jest';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '../lib';
 

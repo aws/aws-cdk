@@ -1,4 +1,4 @@
-import { beASupersetOfTemplate, exactlyMatchTemplate, expect, haveResource } from '@aws-cdk/assert';
+import { beASupersetOfTemplate, exactlyMatchTemplate, expect, haveResource } from 'assert-internal';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as cdk from '@aws-cdk/core';
 import { nodeunitShim, Test } from 'nodeunit-shim';

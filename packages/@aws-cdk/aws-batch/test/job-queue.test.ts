@@ -1,5 +1,5 @@
-import { ResourcePart } from '@aws-cdk/assert';
-import '@aws-cdk/assert/jest';
+import { ResourcePart } from 'assert-internal';
+import 'assert-internal/jest';
 import * as cdk from '@aws-cdk/core';
 import * as batch from '../lib';
 

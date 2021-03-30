@@ -1,5 +1,5 @@
-import { arrayWith, objectLike, ResourcePart } from '@aws-cdk/assert';
-import '@aws-cdk/assert/jest';
+import { arrayWith, objectLike, ResourcePart } from 'assert-internal';
+import 'assert-internal/jest';
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';

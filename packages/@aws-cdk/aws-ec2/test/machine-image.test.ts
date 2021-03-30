@@ -1,4 +1,4 @@
-import { expect as cdkExpect, matchTemplate, MatchStyle } from '@aws-cdk/assert';
+import { expect as cdkExpect, matchTemplate, MatchStyle } from 'assert-internal';
 import { App, Stack } from '@aws-cdk/core';
 import * as ec2 from '../lib';
 

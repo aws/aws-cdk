@@ -1,5 +1,5 @@
-import { objectLike } from '@aws-cdk/assert';
-import '@aws-cdk/assert/jest';
+import { objectLike } from 'assert-internal';
+import 'assert-internal/jest';
 import * as cp from '@aws-cdk/aws-codepipeline';
 import { Stack } from '@aws-cdk/core';
 import * as cdkp from '../lib';

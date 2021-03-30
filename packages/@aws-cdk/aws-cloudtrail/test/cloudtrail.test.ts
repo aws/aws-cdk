@@ -1,5 +1,5 @@
-import { ABSENT, SynthUtils } from '@aws-cdk/assert';
-import '@aws-cdk/assert/jest';
+import { ABSENT, SynthUtils } from 'assert-internal';
+import 'assert-internal/jest';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as lambda from '@aws-cdk/aws-lambda';

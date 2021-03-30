@@ -1,4 +1,4 @@
-import '@aws-cdk/assert/jest';
+import 'assert-internal/jest';
 import { Code, Runtime } from '@aws-cdk/aws-lambda';
 import { AssetHashType, AssetOptions, Stack } from '@aws-cdk/core';
 import { PythonFunction } from '../lib';

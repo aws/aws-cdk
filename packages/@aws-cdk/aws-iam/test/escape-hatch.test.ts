@@ -1,7 +1,7 @@
 // tests for the L1 escape hatches (overrides). those are in the IAM module
 // because we want to verify them end-to-end, as a complement to the unit
 // tests in the @aws-cdk/core module
-import '@aws-cdk/assert/jest';
+import 'assert-internal/jest';
 import { Stack } from '@aws-cdk/core';
 import * as iam from '../lib';
 

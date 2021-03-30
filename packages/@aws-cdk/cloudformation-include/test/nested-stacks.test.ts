@@ -1,6 +1,6 @@
 import * as path from 'path';
-import { ABSENT, ResourcePart } from '@aws-cdk/assert';
-import '@aws-cdk/assert/jest';
+import { ABSENT, ResourcePart } from 'assert-internal';
+import 'assert-internal/jest';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as core from '@aws-cdk/core';
 import * as inc from '../lib';

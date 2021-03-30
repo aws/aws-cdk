@@ -1,4 +1,4 @@
-import '@aws-cdk/assert/jest';
+import 'assert-internal/jest';
 import { Stack } from '@aws-cdk/core';
 import { ProviderAttribute, UserPool, UserPoolIdentityProviderApple } from '../../lib';
 

@@ -1,5 +1,5 @@
-import '@aws-cdk/assert/jest';
-import { ABSENT, ResourcePart, SynthUtils } from '@aws-cdk/assert';
+import 'assert-internal/jest';
+import { ABSENT, ResourcePart, SynthUtils } from 'assert-internal';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import { ManagedPolicy, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';

@@ -1,4 +1,4 @@
-import { expect, haveResource, MatchStyle } from '@aws-cdk/assert';
+import { expect, haveResource, MatchStyle } from 'assert-internal';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as cdk from '@aws-cdk/core';
 import * as constructs from 'constructs';

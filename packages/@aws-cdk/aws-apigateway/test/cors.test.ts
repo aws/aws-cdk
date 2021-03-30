@@ -1,4 +1,4 @@
-import '@aws-cdk/assert/jest';
+import 'assert-internal/jest';
 import * as lambda from '@aws-cdk/aws-lambda';
 import { Duration, Stack } from '@aws-cdk/core';
 import * as apigw from '../lib';

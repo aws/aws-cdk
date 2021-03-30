@@ -1,5 +1,5 @@
-import '@aws-cdk/assert/jest';
-import { ABSENT, ResourcePart, anything } from '@aws-cdk/assert';
+import 'assert-internal/jest';
+import { ABSENT, ResourcePart, anything } from 'assert-internal';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as targets from '@aws-cdk/aws-events-targets';
 import { ManagedPolicy, Role, ServicePrincipal, AccountPrincipal } from '@aws-cdk/aws-iam';

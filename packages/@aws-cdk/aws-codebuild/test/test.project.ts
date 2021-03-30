@@ -1,4 +1,4 @@
-import { countResources, expect, haveResource, haveResourceLike, objectLike, not, ResourcePart, arrayWith } from '@aws-cdk/assert';
+import { countResources, expect, haveResource, haveResourceLike, objectLike, not, ResourcePart, arrayWith } from 'assert-internal';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as logs from '@aws-cdk/aws-logs';

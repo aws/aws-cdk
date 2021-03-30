@@ -1,5 +1,5 @@
-import { ABSENT, expect as cdkExpect, haveResource, ResourcePart } from '@aws-cdk/assert';
-import '@aws-cdk/assert/jest';
+import { ABSENT, expect as cdkExpect, haveResource, ResourcePart } from 'assert-internal';
+import 'assert-internal/jest';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as kms from '@aws-cdk/aws-kms';
 import * as s3 from '@aws-cdk/aws-s3';

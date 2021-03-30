@@ -1,4 +1,4 @@
-import { expect, haveResource, isSuperObject } from '@aws-cdk/assert';
+import { expect, haveResource, isSuperObject } from 'assert-internal';
 import { App, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import { Dashboard, GraphWidget, PeriodOverride, TextWidget } from '../lib';

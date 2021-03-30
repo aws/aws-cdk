@@ -1,4 +1,4 @@
-import '@aws-cdk/assert/jest';
+import 'assert-internal/jest';
 import * as cdk from '@aws-cdk/core';
 import { OriginAccessIdentity } from '../lib';
 

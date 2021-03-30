@@ -1,6 +1,6 @@
-import '@aws-cdk/assert/jest';
+import 'assert-internal/jest';
 import * as path from 'path';
-import { canonicalizeTemplate, ResourcePart, SynthUtils } from '@aws-cdk/assert';
+import { canonicalizeTemplate, ResourcePart, SynthUtils } from 'assert-internal';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';

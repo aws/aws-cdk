@@ -1,4 +1,4 @@
-import { expect as expectCDK, haveResource } from '@aws-cdk/assert';
+import { expect as expectCDK, haveResource } from 'assert-internal';
 import * as cdk from '@aws-cdk/core';
 import * as %name.PascalCased% from '../lib/%name%-stack';
 

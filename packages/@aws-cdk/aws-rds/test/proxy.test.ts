@@ -1,4 +1,4 @@
-import { ABSENT, expect, haveResourceLike, ResourcePart } from '@aws-cdk/assert';
+import { ABSENT, expect, haveResourceLike, ResourcePart } from 'assert-internal';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import { AccountPrincipal, Role } from '@aws-cdk/aws-iam';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';

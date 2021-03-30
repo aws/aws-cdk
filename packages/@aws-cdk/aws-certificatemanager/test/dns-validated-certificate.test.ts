@@ -1,5 +1,5 @@
-import '@aws-cdk/assert/jest';
-import { SynthUtils } from '@aws-cdk/assert';
+import 'assert-internal/jest';
+import { SynthUtils } from 'assert-internal';
 import * as iam from '@aws-cdk/aws-iam';
 import { HostedZone, PublicHostedZone } from '@aws-cdk/aws-route53';
 import { App, Stack, Token } from '@aws-cdk/core';

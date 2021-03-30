@@ -1,4 +1,4 @@
-import { expect, haveResourceLike, SynthUtils } from '@aws-cdk/assert';
+import { expect, haveResourceLike, SynthUtils } from 'assert-internal';
 import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import { SecretValue, Stack } from '@aws-cdk/core';

@@ -1,5 +1,5 @@
-import { arrayWith, SynthUtils } from '@aws-cdk/assert';
-import '@aws-cdk/assert/jest';
+import { arrayWith, SynthUtils } from 'assert-internal';
+import 'assert-internal/jest';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as sqs from '@aws-cdk/aws-sqs';
 import { Stack } from '@aws-cdk/core';

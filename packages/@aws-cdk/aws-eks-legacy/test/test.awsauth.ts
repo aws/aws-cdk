@@ -1,4 +1,4 @@
-import { countResources, expect, haveResource } from '@aws-cdk/assert';
+import { countResources, expect, haveResource } from 'assert-internal';
 import * as iam from '@aws-cdk/aws-iam';
 import { Test } from 'nodeunit';
 import { Cluster, KubernetesResource } from '../lib';

@@ -1,5 +1,5 @@
-import '@aws-cdk/assert/jest';
-import { ResourcePart } from '@aws-cdk/assert';
+import 'assert-internal/jest';
+import { ResourcePart } from 'assert-internal';
 import * as cdk from '@aws-cdk/core';
 import * as apigateway from '../lib';
 

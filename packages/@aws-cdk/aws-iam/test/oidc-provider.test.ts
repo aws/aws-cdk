@@ -1,4 +1,4 @@
-import '@aws-cdk/assert/jest';
+import 'assert-internal/jest';
 import { App, Stack, Token } from '@aws-cdk/core';
 import * as sinon from 'sinon';
 import * as iam from '../lib';

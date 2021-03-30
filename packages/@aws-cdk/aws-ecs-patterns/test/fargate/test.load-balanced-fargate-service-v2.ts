@@ -1,4 +1,4 @@
-import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
+import { expect, haveResource, haveResourceLike } from 'assert-internal';
 import { Vpc } from '@aws-cdk/aws-ec2';
 import * as ecs from '@aws-cdk/aws-ecs';
 import { CompositePrincipal, Role, ServicePrincipal } from '@aws-cdk/aws-iam';

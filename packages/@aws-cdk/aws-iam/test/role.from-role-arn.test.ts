@@ -1,4 +1,4 @@
-import '@aws-cdk/assert/jest';
+import 'assert-internal/jest';
 import { App, CfnElement, Lazy, Stack } from '@aws-cdk/core';
 import { AnyPrincipal, ArnPrincipal, IRole, Policy, PolicyStatement, Role } from '../lib';
 

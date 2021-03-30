@@ -1,5 +1,5 @@
 import { join } from 'path';
-import '@aws-cdk/assert/jest';
+import 'assert-internal/jest';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import * as appsync from '../lib';

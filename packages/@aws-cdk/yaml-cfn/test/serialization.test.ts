@@ -1,4 +1,4 @@
-import '@aws-cdk/assert/jest';
+import 'assert-internal/jest';
 import * as yaml_cfn from '../lib';
 
 test('An object with a single string value is serialized as a simple string', () => {

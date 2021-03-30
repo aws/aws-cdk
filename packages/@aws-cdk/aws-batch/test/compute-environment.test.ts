@@ -1,6 +1,6 @@
 import { throws } from 'assert';
-import { expect, haveResource, haveResourceLike, ResourcePart } from '@aws-cdk/assert';
-import '@aws-cdk/assert/jest';
+import { expect, haveResource, haveResourceLike, ResourcePart } from 'assert-internal';
+import 'assert-internal/jest';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecs from '@aws-cdk/aws-ecs';
 import * as iam from '@aws-cdk/aws-iam';
