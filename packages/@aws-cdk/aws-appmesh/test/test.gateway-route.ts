@@ -155,6 +155,7 @@ export = {
     test.equal(gatewayRoute.virtualGateway.mesh.meshName, meshName);
     test.done();
   },
+
   'Can import Gateway Routes using attributes'(test: Test) {
     const app = new cdk.App();
     // GIVEN
@@ -179,6 +180,7 @@ export = {
     test.equal(gatewayRoute.virtualGateway.mesh.meshName, meshName);
     test.done();
   },
+
   'Can grant an identity all read permissions for a given GatewayRoute'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
@@ -224,6 +226,7 @@ export = {
 
     test.done();
   },
+
   'Can grant an identity all write permissions for a given GatewayRoute'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();

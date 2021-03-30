@@ -891,6 +891,7 @@ export = {
 
     test.done();
   },
+
   'Can grant an identity all read permissions for a given Route'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
@@ -942,6 +943,7 @@ export = {
 
     test.done();
   },
+
   'Can grant an identity all write permissions for a given Route'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();

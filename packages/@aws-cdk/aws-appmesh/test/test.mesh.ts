@@ -354,15 +354,40 @@ export = {
                 Ref: 'meshACDFE68E',
               },
               {
-                'Fn::Join': [
-                  '',
-                  [
-                    {
-                      Ref: 'meshACDFE68E',
-                    },
-                    '/*',
-                  ],
-                ],
+                'Fn::Join': ['', [
+                  { Ref: 'meshACDFE68E' },
+                  '/virtualNode/*',
+                ]],
+              },
+              {
+                'Fn::Join': ['', [
+                  { Ref: 'meshACDFE68E' },
+                  '/virtualRouter/*',
+                ]],
+              },
+              {
+                'Fn::Join': ['', [
+                  { Ref: 'meshACDFE68E' },
+                  '/virtualRouter/*/route/*',
+                ]],
+              },
+              {
+                'Fn::Join': ['', [
+                  { Ref: 'meshACDFE68E' },
+                  '/virtualGateway/*',
+                ]],
+              },
+              {
+                'Fn::Join': ['', [
+                  { Ref: 'meshACDFE68E' },
+                  '/virtualGateway/*/gatewayRoute/*',
+                ]],
+              },
+              {
+                'Fn::Join': ['', [
+                  { Ref: 'meshACDFE68E' },
+                  '/virtualService/*',
+                ]],
               },
             ],
           },
@@ -419,15 +444,40 @@ export = {
                 Ref: 'meshACDFE68E',
               },
               {
-                'Fn::Join': [
-                  '',
-                  [
-                    {
-                      Ref: 'meshACDFE68E',
-                    },
-                    '/*',
-                  ],
-                ],
+                'Fn::Join': ['', [
+                  { Ref: 'meshACDFE68E' },
+                  '/virtualNode/*',
+                ]],
+              },
+              {
+                'Fn::Join': ['', [
+                  { Ref: 'meshACDFE68E' },
+                  '/virtualRouter/*',
+                ]],
+              },
+              {
+                'Fn::Join': ['', [
+                  { Ref: 'meshACDFE68E' },
+                  '/virtualRouter/*/route/*',
+                ]],
+              },
+              {
+                'Fn::Join': ['', [
+                  { Ref: 'meshACDFE68E' },
+                  '/virtualGateway/*',
+                ]],
+              },
+              {
+                'Fn::Join': ['', [
+                  { Ref: 'meshACDFE68E' },
+                  '/virtualGateway/*/gatewayRoute/*',
+                ]],
+              },
+              {
+                'Fn::Join': ['', [
+                  { Ref: 'meshACDFE68E' },
+                  '/virtualService/*',
+                ]],
               },
             ],
           },

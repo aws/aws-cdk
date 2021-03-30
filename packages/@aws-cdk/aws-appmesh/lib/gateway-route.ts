@@ -37,7 +37,6 @@ export interface IGatewayRoute extends cdk.IResource {
    * Grants the given entity all write permissions for this GatewayRoute.
    */
   grantWrite(identity: iam.IGrantable): iam.Grant;
-
 }
 
 abstract class GatewayRouteBase extends cdk.Resource implements IGatewayRoute {

@@ -43,7 +43,6 @@ export interface IVirtualRouter extends cdk.IResource {
    * Grants the given entity all write permissions for this VirtualRouter.
    */
   grantWrite(identity: iam.IGrantable): iam.Grant;
-
 }
 
 /**

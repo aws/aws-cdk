@@ -158,14 +158,21 @@ abstract class MeshBase extends cdk.Resource implements IMesh {
     );
   }
 
-  private grant(grantee: iam.IGrantable, ...actions: string[]) {
+  private grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
     return iam.Grant.addToPrincipal({
       grantee,
       actions,
-      resourceArns: [this.meshArn, this.meshArn + '/*'],
+      resourceArns: [
+        this.meshArn,
+        this.meshArn + '/virtualNode/*',
+        this.meshArn + '/virtualRouter/*',
+        this.meshArn + '/virtualRouter/*/route/*',
+        this.meshArn + '/virtualGateway/*',
+        this.meshArn + '/virtualGateway/*/gatewayRoute/*',
+        this.meshArn + '/virtualService/*',
+      ],
     });
   }
-
 }
 
 /**

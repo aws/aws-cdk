@@ -442,6 +442,7 @@ export = {
     test.equal(virtualGateway.virtualGatewayName, virtualGatewayName);
     test.done();
   },
+
   'Can import VirtualGateways using attributes'(test: Test) {
     const app = new cdk.App();
     // GIVEN
@@ -462,6 +463,7 @@ export = {
 
     test.done();
   },
+
   'Can grant an identity all read permissions for a given VirtualGateway'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
@@ -511,6 +513,7 @@ export = {
 
     test.done();
   },
+
   'Can grant an identity all write permissions for a given VirtualGateway'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
@@ -564,6 +567,7 @@ export = {
 
     test.done();
   },
+
   'Can grant an identity StreamAggregatedResources for a given VirtualGateway'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();

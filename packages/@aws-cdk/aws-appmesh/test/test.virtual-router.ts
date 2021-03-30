@@ -394,6 +394,7 @@ export = {
 
     test.done();
   },
+
   'Can import Virtual Routers using attributes'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
@@ -412,6 +413,7 @@ export = {
 
     test.done();
   },
+
   'Can grant an identity all read permissions for a given VirtualRouter'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
@@ -459,6 +461,7 @@ export = {
 
     test.done();
   },
+
   'Can grant an identity all write permissions for a given VirtualRouter'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();

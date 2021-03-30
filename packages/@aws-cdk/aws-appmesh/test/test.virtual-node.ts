@@ -522,6 +522,7 @@ export = {
 
     test.done();
   },
+
   'Can import Virtual Nodes using attributes'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
@@ -538,6 +539,7 @@ export = {
 
     test.done();
   },
+
   'Can grant an identity all read permissions for a given VirtualNode'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
@@ -580,6 +582,7 @@ export = {
 
     test.done();
   },
+
   'Can grant an identity all write permissions for a given VirtualNode'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
@@ -625,6 +628,7 @@ export = {
 
     test.done();
   },
+
   'Can grant an identity StreamAggregatedResources for a given VirtualNode'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();

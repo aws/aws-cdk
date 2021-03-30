@@ -123,6 +123,7 @@ export = {
       },
     },
   },
+
   'Can grant an identity all read permissions for a given VirtualService'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
@@ -170,6 +171,7 @@ export = {
 
     test.done();
   },
+
   'Can grant an identity all write permissions for a given VirtualService'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
