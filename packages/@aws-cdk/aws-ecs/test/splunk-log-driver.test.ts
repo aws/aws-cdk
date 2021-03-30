@@ -111,7 +111,7 @@ nodeunitShim({
       logging: ecs.LogDrivers.splunk({
         token: cdk.SecretValue.secretsManager('my-splunk-token'),
         url: 'my-splunk-url',
-        tag: 'abc'
+        tag: 'abc',
       }),
       memoryLimitMiB: 128,
     });
