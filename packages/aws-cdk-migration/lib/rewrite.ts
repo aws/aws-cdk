@@ -101,12 +101,13 @@ function updatedLocationOf(modulePath: string): string | undefined {
     return 'aws-cdk-lib';
   }
 
-  if (modulePath === 'assert-internal') {
-    return '@aws-cdk-lib/assert';
+  // These 2 are unchanged
+  if (modulePath === '@aws-cdk/assert') {
+    return '@aws-cdk/assert';
   }
 
-  if (modulePath === 'assert-internal/jest') {
-    return '@aws-cdk-lib/assert/jest';
+  if (modulePath === '@aws-cdk/assert/jest') {
+    return '@aws-cdk/assert/jest';
   }
 
   return `aws-cdk-lib/${modulePath.substring(9)}`;

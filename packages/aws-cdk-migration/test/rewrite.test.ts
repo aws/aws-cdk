@@ -4,14 +4,14 @@ describe(rewriteImports, () => {
   test('correctly rewrites naked "import"', () => {
     const output = rewriteImports(`
     // something before
-    import 'assert-internal/jest';
+    import '@aws-cdk/aws-s3/hello';
     // something after
 
     console.log('Look! I did something!');`, 'subhect.ts');
 
     expect(output).toBe(`
     // something before
-    import '@aws-cdk-lib/assert/jest';
+    import 'aws-cdk-lib/aws-s3/hello';
     // something after
 
     console.log('Look! I did something!');`);
@@ -20,14 +20,14 @@ describe(rewriteImports, () => {
   test('correctly rewrites naked "require"', () => {
     const output = rewriteImports(`
     // something before
-    require('assert-internal/jest');
+    require('@aws-cdk/aws-s3/hello');
     // something after
 
     console.log('Look! I did something!');`, 'subhect.ts');
 
     expect(output).toBe(`
     // something before
-    require('@aws-cdk-lib/assert/jest');
+    require('aws-cdk-lib/aws-s3/hello');
     // something after
 
     console.log('Look! I did something!');`);
@@ -71,5 +71,21 @@ describe(rewriteImports, () => {
   // something after
 
   console.log('Look! I did something!');`);
+  });
+
+  test('does not rewrite @aws-cdk/assert', () => {
+    const output = rewriteImports(`
+    // something before
+    import '@aws-cdk/assert/jest';
+    // something after
+
+    console.log('Look! I did something!');`, 'subhect.ts');
+
+    expect(output).toBe(`
+    // something before
+    import '@aws-cdk/assert/jest';
+    // something after
+
+    console.log('Look! I did something!');`);
   });
 });
