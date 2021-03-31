@@ -1,5 +1,5 @@
 import * as path from 'path';
-import { adjustRequiredVersionsInPlace, generateShrinkwrap } from '../lib';
+import { checkRequiredVersions, generateShrinkwrap } from '../lib';
 
 test('generate lock for fixture directory', async () => {
   const lockFile = await generateShrinkwrap({
@@ -86,23 +86,5 @@ test('adjust requires when necessary', async () => {
     },
   };
 
-  adjustRequiredVersionsInPlace(lockFile);
-
-  expect(lockFile).toEqual({
-    lockfileVersion: 1,
-    name: 'package1',
-    requires: true,
-    version: '1.1.1',
-    dependencies: {
-      package1: {
-        version: '2.2.2',
-        requires: {
-          package2: '^4.4.4',
-        },
-      },
-      package2: {
-        version: '4.4.4',
-      },
-    },
-  });
+  expect(() => checkRequiredVersions(lockFile)).toThrow(/This can never/);
 });

@@ -58,7 +58,7 @@ async function generateLockFile(pkgJson: PackageJson, yarnLock: YarnLock, rootDi
     dependencies: await dependenciesFor(pkgJson.dependencies || {}, yarnLock, rootDir),
   };
 
-  adjustRequiredVersionsInPlace(lockFile);
+  checkRequiredVersions(lockFile);
 
   return lockFile;
 }
@@ -194,7 +194,7 @@ async function findPackageDir(depName: string, rootDir: string) {
 }
 
 /**
- * We may sometimes need to adjust a package version to a version that's incompatible with the declared requirement.
+ * We may sometimes try to adjust a package version to a version that's incompatible with the declared requirement.
  *
  * For example, this recently happened for 'netmask', where the package we
  * depend on has `{ requires: { netmask: '^1.0.6', } }`, but we need to force-substitute in version `2.0.1`.
@@ -215,34 +215,35 @@ async function findPackageDir(depName: string, rootDir: string) {
  * NPM is going to disregard the swhinkrwap and still give `resolver` its own private
  * copy of netmask `^1.0.6`.
  *
- * In order to prevent this from happening, what we're going to do is:
+ * We tried overriding the `requires` version, and that works for `npm install` (yay)
+ * but if anyone runs `npm ls` afterwards, `npm ls` is going to check the actual source
+ * `package.jsons` against the actual `node_modules` file tree, and complain that the
+ * versions don't match.
  *
- * - Assume the state of our node_modules/yarn.lock is SANE and should be preserved
- *   exactly as-is.
- * - If we encounter a `requires` statement where the resolved version is not inside
- *   the `requires` range, we're going to assume the `requires` is wrong, and override
- *   it (this will prevent NPM from assuming the exact opposite during installation, and
- *   preferring the `requires` over the resolved).
+ * We run `npm ls` in our tests to make sure our dependency tree is sane, and our customers
+ * might too, so this is not a great solution.
  *
- * Note that the `package.json` files of each package on disk are still the same, and will
- * still have the non-overwritten requirements version. Fortunately, NPM doesn't look at those
- * during `npm install`.
+ * To cut any discussion short in the future, we're going to detect this situation and
+ * tell our future selves that is cannot and will not work, and we should find another
+ * solution.
  */
-export function adjustRequiredVersionsInPlace(root: PackageLock | PackageLockPackage) {
+export function checkRequiredVersions(root: PackageLock | PackageLockPackage) {
   recurse(root, []);
 
   function recurse(entry: PackageLock | PackageLockPackage, parentChain: PackageLockEntry[]) {
     // On the root, 'requires' is the value 'true', for God knows what reason. Don't care about those.
     if (typeof entry.requires === 'object') {
 
-      // For every 'reuqires' dependency, find the version it actually got resolved to and compare.
+      // For every 'requires' dependency, find the version it actually got resolved to and compare.
       for (const [name, range] of Object.entries(entry.requires)) {
         const resolvedPackage = findResolved(name, [entry, ...parentChain]);
         if (!resolvedPackage) { continue; }
 
         if (!semver.satisfies(resolvedPackage.version, range)) {
-          // NPM would not like this. Make sure it does.
-          entry.requires[name] = `^${resolvedPackage.version}`;
+          // Ruh-roh.
+          throw new Error(`Looks like we're trying to force '${name}' to version '${resolvedPackage.version}', but the dependency `
+            + `is specified as '${range}'. This can never properly work via shrinkwrapping. Try vendoring a patched `
+            + 'version of the intermediary dependencies instead.');
         }
       }
     }
