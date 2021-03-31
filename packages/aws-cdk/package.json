@@ -26,7 +26,8 @@
     "gen": "./generate.sh"
   },
   "cdk-build": {
-    "jest": true
+    "jest": true,
+    "pre": ["./apply-patches.sh"]
   },
   "cdk-package": {
     "shrinkWrap": true

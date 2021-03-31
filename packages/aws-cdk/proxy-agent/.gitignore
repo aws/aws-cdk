@@ -1,2 +1,5 @@
-!*.js
 !*.d.ts
+
+# the order of the next 2 lines is important
+!*.js
+index.js
