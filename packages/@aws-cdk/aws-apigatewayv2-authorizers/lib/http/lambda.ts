@@ -6,6 +6,7 @@ import {
   HttpRouteAuthorizerConfig,
   IHttpRouteAuthorizer,
   AuthorizerPayloadVersion,
+  IHttpApi,
 } from '@aws-cdk/aws-apigatewayv2';
 import { IFunction } from '@aws-cdk/aws-lambda';
 import { Stack, Duration } from '@aws-cdk/core';
@@ -66,16 +67,22 @@ export interface HttpLambdaAuthorizerProps {
  */
 export class HttpLambdaAuthorizer implements IHttpRouteAuthorizer {
   private authorizer?: HttpAuthorizer;
+  private httpApi?: IHttpApi;
 
   constructor(private readonly props: HttpLambdaAuthorizerProps) {
   }
 
   public bind(options: HttpRouteAuthorizerBindOptions): HttpRouteAuthorizerConfig {
+    if (this.httpApi && (this.httpApi.apiId !== options.route.httpApi.apiId)) {
+      throw new Error('Cannot attach the same authorizer to multiple Apis');
+    }
+
     if (!this.authorizer) {
       const id = this.props.authorizerName;
 
       const enableSimpleResponses = this.props.responseTypes.includes(HttpLambdaResponseType.SIMPLE) || undefined;
 
+      this.httpApi = options.route.httpApi;
       this.authorizer = new HttpAuthorizer(options.scope, id, {
         httpApi: options.route.httpApi,
         identitySource: this.props.identitySource ?? [
