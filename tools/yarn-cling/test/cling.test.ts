@@ -67,7 +67,7 @@ test('generate hoisted lock for fixture directory', async () => {
   });
 });
 
-test('adjust requires when necessary', async () => {
+test('fail when requires cannot be satisfied', async () => {
   const lockFile = {
     lockfileVersion: 1,
     name: 'package1',
