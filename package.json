@@ -25,7 +25,6 @@
     "standard-version": "^9.1.1",
     "typescript": "~3.9.9"
   },
-  "netmask-resolutions-comment": "transitive dep from proxy-agent@4.0.1. review when dependencies upgrade",
   "tap-mocha-reporter-resolutions-comment": "should be removed or reviewed when nodeunit dependency is dropped or adjusted",
   "resolutions": {
     "tap-mocha-reporter": "^5.0.1"
