@@ -94,6 +94,9 @@ async function dependenciesFor(deps: Record<string, string>, yarnLock: YarnLock,
         dependencies: await dependenciesFor(depPkgJson.dependencies || {}, yarnLock, depDir),
       };
     }
+    if (ret[depName].requires && depPkgJson.dependencies && 'netmask' in depPkgJson.dependencies) {
+      ret[depName].requires!.netmask = '^2.0.1';
+    }
 
     // Simplify by removing useless entries
     if (Object.keys(ret[depName].requires ?? {}).length === 0) { delete ret[depName].requires; }
