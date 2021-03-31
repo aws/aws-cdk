@@ -822,7 +822,7 @@ nodeunitShim({
     test.done();
   },
 
-  'when cluster identifier has uppercase letters (when the clusterIdentifierToLowercase feature flag is enabled)'(test: Test) {
+  'changes the case of the cluster identifier if the clusterIdentifierToLowercase feature flag is enabled'(test: Test) {
     // GIVEN
     const app = new cdk.App({ context: flags });
     const stack = testStack(app);
