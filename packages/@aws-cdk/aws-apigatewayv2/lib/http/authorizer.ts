@@ -111,7 +111,7 @@ export interface HttpAuthorizerProps {
   /**
    * How long APIGateway should cache the results. Max 1 hour.
    *
-   * @default - not specified
+   * @default - API Gateway will not cache authorizer responses
    */
   readonly resultsCacheTtl?: Duration;
 }
