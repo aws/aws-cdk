@@ -24,6 +24,6 @@
     "constructs": "^3.0.4"
   },
   "resolutions": {
-    "netmask": "2.0.1"
+    "netmask": "^2.0.1"
   }
 }

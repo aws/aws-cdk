@@ -25,6 +25,6 @@
     "source-map-support": "^0.5.16"
   },
   "resolutions": {
-    "netmask": "2.0.1"
+    "netmask": "^2.0.1"
   }
 }
