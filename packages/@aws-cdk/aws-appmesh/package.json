@@ -183,7 +183,8 @@
       "duration-prop-type:@aws-cdk/aws-appmesh.TcpVirtualNodeListenerOptions.timeout",
       "duration-prop-type:@aws-cdk/aws-appmesh.GrpcRouteSpecOptions.timeout",
       "duration-prop-type:@aws-cdk/aws-appmesh.HttpRouteSpecOptions.timeout",
-      "duration-prop-type:@aws-cdk/aws-appmesh.TcpRouteSpecOptions.timeout"
+      "duration-prop-type:@aws-cdk/aws-appmesh.TcpRouteSpecOptions.timeout",
+      "no-unused-type:@aws-cdk/aws-appmesh.ConnectionPoolConfig"
     ]
   },
   "stability": "experimental",

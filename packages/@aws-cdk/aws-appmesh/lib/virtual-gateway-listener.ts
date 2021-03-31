@@ -1,7 +1,14 @@
 import * as cdk from '@aws-cdk/core';
 import { CfnVirtualGateway } from './appmesh.generated';
 import { validateHealthChecks } from './private/utils';
-import { HealthCheck, Protocol } from './shared-interfaces';
+import {
+  ConnectionPoolConfig,
+  GrpcConnectionPool,
+  HealthCheck,
+  Http2ConnectionPool,
+  HttpConnectionPool,
+  Protocol,
+} from './shared-interfaces';
 import { TlsCertificate, TlsCertificateConfig } from './tls-certificate';
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
@@ -32,6 +39,46 @@ export interface HttpGatewayListenerOptions {
    * @default - none
    */
   readonly tlsCertificate?: TlsCertificate;
+
+  /**
+   * Connection pool for http listeners
+   *
+   * @default - None
+   */
+  readonly connectionPool?: HttpConnectionPool;
+}
+
+/**
+ * Represents the properties needed to define HTTP2 Listeners for a VirtualGateway
+ */
+export interface Http2GatewayListenerOptions {
+  /**
+   * Port to listen for connections on
+   *
+   * @default - 8080
+   */
+  readonly port?: number
+
+  /**
+   * The health check information for the listener
+   *
+   * @default - no healthcheck
+   */
+  readonly healthCheck?: HealthCheck;
+
+  /**
+   * Represents the configuration for enabling TLS on a listener
+   *
+   * @default - none
+   */
+  readonly tlsCertificate?: TlsCertificate;
+
+  /**
+   * Connection pool for http listeners
+   *
+   * @default - None
+   */
+  readonly connectionPool?: Http2ConnectionPool;
 }
 
 /**
@@ -58,6 +105,13 @@ export interface GrpcGatewayListenerOptions {
    * @default - none
    */
   readonly tlsCertificate?: TlsCertificate;
+
+  /**
+   * Connection pool for http listeners
+   *
+   * @default - None
+   */
+  readonly connectionPool?: GrpcConnectionPool;
 }
 
 /**
@@ -78,21 +132,21 @@ export abstract class VirtualGatewayListener {
    * Returns an HTTP Listener for a VirtualGateway
    */
   public static http(options: HttpGatewayListenerOptions = {}): VirtualGatewayListener {
-    return new VirtualGatewayListenerImpl(Protocol.HTTP, options.healthCheck, options.port, options.tlsCertificate);
+    return new VirtualGatewayListenerImpl(Protocol.HTTP, options.healthCheck, options.port, options.tlsCertificate, options.connectionPool);
   }
 
   /**
    * Returns an HTTP2 Listener for a VirtualGateway
    */
-  public static http2(options: HttpGatewayListenerOptions = {}): VirtualGatewayListener {
-    return new VirtualGatewayListenerImpl(Protocol.HTTP2, options.healthCheck, options.port, options.tlsCertificate);
+  public static http2(options: Http2GatewayListenerOptions = {}): VirtualGatewayListener {
+    return new VirtualGatewayListenerImpl(Protocol.HTTP2, options.healthCheck, options.port, options.tlsCertificate, options.connectionPool);
   }
 
   /**
    * Returns a GRPC Listener for a VirtualGateway
    */
   public static grpc(options: GrpcGatewayListenerOptions = {}): VirtualGatewayListener {
-    return new VirtualGatewayListenerImpl(Protocol.GRPC, options.healthCheck, options.port, options.tlsCertificate);
+    return new VirtualGatewayListenerImpl(Protocol.GRPC, options.healthCheck, options.port, options.tlsCertificate, options.connectionPool);
   }
 
   /**
@@ -110,7 +164,8 @@ class VirtualGatewayListenerImpl extends VirtualGatewayListener {
   constructor(private readonly protocol: Protocol,
     private readonly healthCheck: HealthCheck | undefined,
     private readonly port: number = 8080,
-    private readonly tlsCertificate: TlsCertificate | undefined) {
+    private readonly tlsCertificate: TlsCertificate | undefined,
+    private readonly connectionPool: ConnectionPoolConfig | undefined) {
     super();
   }
 
@@ -128,6 +183,7 @@ class VirtualGatewayListenerImpl extends VirtualGatewayListener {
         },
         healthCheck: this.healthCheck ? renderHealthCheck(this.healthCheck, this.protocol, this.port): undefined,
         tls: tlsConfig ? renderTls(tlsConfig) : undefined,
+        connectionPool: this.connectionPool ? renderConnectionPool(this.connectionPool, this.protocol) : undefined,
       },
     };
   }
@@ -170,4 +226,15 @@ function renderHealthCheck(hc: HealthCheck, listenerProtocol: Protocol,
   validateHealthChecks(healthCheck);
 
   return healthCheck;
+}
+
+function renderConnectionPool(connectionPool: ConnectionPoolConfig, listenerProtocol: Protocol):
+CfnVirtualGateway.VirtualGatewayConnectionPoolProperty {
+  return ({
+    [listenerProtocol]: {
+      maxRequests: connectionPool?.maxRequests !== undefined ? connectionPool.maxRequests : undefined,
+      maxConnections: connectionPool?.maxConnections !== undefined ? connectionPool.maxConnections : undefined,
+      maxPendingRequests: connectionPool?.maxPendingRequests !== undefined ? connectionPool.maxPendingRequests : undefined,
+    },
+  });
 }

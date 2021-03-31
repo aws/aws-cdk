@@ -273,3 +273,84 @@ class VirtualServiceBackend extends Backend {
     };
   }
 }
+
+/**
+ * Generated Connection pool config
+ */
+export interface ConnectionPoolConfig {
+  /**
+   * The maximum connections in the pool
+   *
+   * @default - none
+   */
+  readonly maxConnections?: number;
+
+  /**
+   * The maximum pending requests in the pool
+   *
+   * @default - none
+   */
+  readonly maxPendingRequests?: number;
+
+  /**
+   * The maximum requests in the pool
+   *
+   * @default - none
+   */
+  readonly maxRequests?: number;
+}
+
+/**
+ * Connection pool properties for HTTP listeners
+ */
+export interface HttpConnectionPool {
+  /**
+   * The maximum connections in the pool
+   *
+   * @default - none
+   */
+  readonly maxConnections: number;
+
+  /**
+   * The maximum pending requests in the pool
+   *
+   * @default - none
+   */
+  readonly maxPendingRequests: number;
+}
+
+/**
+ * Connection pool properties for TCP listeners
+ */
+export interface TcpConnectionPool {
+  /**
+   * The maximum connections in the pool
+   *
+   * @default - none
+   */
+  readonly maxConnections: number;
+}
+
+/**
+ * Connection pool properties for gRPC listeners
+ */
+export interface GrpcConnectionPool {
+  /**
+   * The maximum requests in the pool
+   *
+   * @default - none
+   */
+  readonly maxRequests: number;
+}
+
+/**
+ * Connection pool properties for HTTP2 listeners
+ */
+export interface Http2ConnectionPool {
+  /**
+   * The maximum requests in the pool
+   *
+   * @default - none
+   */
+  readonly maxRequests: number;
+}

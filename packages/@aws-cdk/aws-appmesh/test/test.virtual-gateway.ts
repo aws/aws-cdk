@@ -423,6 +423,131 @@ export = {
     },
   },
 
+  'Can add an http connection pool to listener'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const mesh = new appmesh.Mesh(stack, 'mesh', {
+      meshName: 'test-mesh',
+    });
+
+    new appmesh.VirtualGateway(stack, 'virtual-gateway', {
+      virtualGatewayName: 'virtual-gateway',
+      mesh: mesh,
+      listeners: [
+        appmesh.VirtualGatewayListener.http({
+          port: 80,
+          connectionPool: {
+            maxConnections: 100,
+            maxPendingRequests: 10,
+          },
+        }),
+      ],
+    });
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::AppMesh::VirtualGateway', {
+      VirtualGatewayName: 'virtual-gateway',
+      Spec: {
+        Listeners: [
+          {
+            ConnectionPool: {
+              HTTP: {
+                MaxConnections: 100,
+                MaxPendingRequests: 10,
+              },
+            },
+          },
+        ],
+      },
+    }));
+
+    test.done();
+  },
+
+  'Can add an grpc connection pool to listener'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const mesh = new appmesh.Mesh(stack, 'mesh', {
+      meshName: 'test-mesh',
+    });
+
+    new appmesh.VirtualGateway(stack, 'virtual-gateway', {
+      virtualGatewayName: 'virtual-gateway',
+      mesh: mesh,
+      listeners: [
+        appmesh.VirtualGatewayListener.grpc({
+          port: 80,
+          connectionPool: {
+            maxRequests: 10,
+          },
+        }),
+      ],
+    });
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::AppMesh::VirtualGateway', {
+      VirtualGatewayName: 'virtual-gateway',
+      Spec: {
+        Listeners: [
+          {
+            ConnectionPool: {
+              GRPC: {
+                MaxRequests: 10,
+              },
+            },
+          },
+        ],
+      },
+    }));
+
+    test.done();
+  },
+
+  'Can add an http2 connection pool to listener'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const mesh = new appmesh.Mesh(stack, 'mesh', {
+      meshName: 'test-mesh',
+    });
+
+    new appmesh.VirtualGateway(stack, 'virtual-gateway', {
+      virtualGatewayName: 'virtual-gateway',
+      mesh: mesh,
+      listeners: [
+        appmesh.VirtualGatewayListener.http2({
+          port: 80,
+          connectionPool: {
+            maxRequests: 10,
+          },
+        }),
+      ],
+    });
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::AppMesh::VirtualGateway', {
+      VirtualGatewayName: 'virtual-gateway',
+      Spec: {
+        Listeners: [
+          {
+            ConnectionPool: {
+              HTTP2: {
+                MaxRequests: 10,
+              },
+            },
+          },
+        ],
+      },
+    }));
+
+    test.done();
+  },
+
   'Can import VirtualGateways using an ARN'(test: Test) {
     const app = new cdk.App();
     // GIVEN
