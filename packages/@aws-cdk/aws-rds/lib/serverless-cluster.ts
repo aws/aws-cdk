@@ -439,11 +439,9 @@ export class ServerlessCluster extends ServerlessClusterBase {
       }),
     ];
 
-    let clusterIdentifier = props.clusterIdentifier;
-    const clusterIdentifierToLowercaseFeatureEnabled = FeatureFlags.of(this).isEnabled(cxapi.RDS_CLUSTER_IDENTIFIER_TO_LOWERCASE);
-    if ( clusterIdentifierToLowercaseFeatureEnabled ) {
-      clusterIdentifier = clusterIdentifier?.toLowerCase();
-    }
+    const clusterIdentifier = FeatureFlags.of(this).isEnabled(cxapi.RDS_CLUSTER_IDENTIFIER_TO_LOWERCASE)
+      ? props.clusterIdentifier?.toLowerCase()
+      : props.clusterIdentifier;
 
     const cluster = new CfnDBCluster(this, 'Resource', {
       backupRetentionPeriod: props.backupRetention?.toDays(),
