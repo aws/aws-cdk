@@ -495,15 +495,24 @@ export interface DomainProps {
   readonly vpc?: ec2.IVpc;
 
   /**
-   * The security groups attached to the domain. Only used if `vpc` is specified.
+   * The list of security groups that are associated with the VPC endpoints
+   * for the domain.
    *
+   * Only used if `vpc` is specified.
+   *
+   * @see https://docs.aws.amazon.com/vpc/latest/userguide/VPC_SecurityGroups.html
    * @default - One new security group is created.
    */
   readonly securityGroups?: ec2.ISecurityGroup[];
 
   /**
-   * Which specific subnets to place the domain in. Only used if `vpc` is specified.
+   * The specific vpc subnets the domain will be placed in. You must provide one subnet for each Availability Zone
+   * that your domain uses. For example, you must specify three subnet IDs for a three Availability Zone
+   * domain.
    *
+   * Only used if `vpc` is specified.
+   *
+   * @see https://docs.aws.amazon.com/vpc/latest/userguide/VPC_Subnets.html
    * @default - All private subnets.
    */
   readonly vpcSubnets?: ec2.SubnetSelection[];
