@@ -85,10 +85,9 @@ export interface HttpAuthorizerProps {
   /**
    * Specifies whether a Lambda authorizer returns a response in a simple format.
    *
-   * By default, a Lambda authorizer must return an IAM policy.
    * If enabled, the Lambda authorizer can return a boolean value instead of an IAM policy.
    *
-   * @default - required for Request authorizer types
+   * @default - The lambda authorizer must return an IAM policy as its response
    */
   readonly enableSimpleResponses?: boolean;
 
