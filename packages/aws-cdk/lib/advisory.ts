@@ -35,14 +35,13 @@ export class NetmaskAdvisory implements Advisory {
     }
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     const json = require(pkgJsonPath);
-    if (!('aws-cdk' in json.dependencies) && !('aws-cdk' in json.devDependencies)) {
+    if (
+      !('aws-cdk' in (json.dependencies ?? {})) &&
+      !('aws-cdk' in (json.devDependencies ?? {}))
+    ) {
       return;
     }
-    // eslint-disable-next-line no-console
-    console.log(`pkgjson ${JSON.stringify(json)}`);
     const netmaskVer = json?.resolutions?.netmask;
-    // eslint-disable-next-line no-console
-    console.log(`ver ${netmaskVer}`);
     if (typeof(netmaskVer) === 'string' && netmaskVer.match(/^[~^]?2/)) {
       return;
     }

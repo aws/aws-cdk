@@ -5,11 +5,13 @@ import { NetmaskAdvisory } from '../lib/advisory';
 
 describe('advisories', () => {
   describe('netmask advisory', () => {
-    const dir: string = fs.mkdtempSync(path.join(os.tmpdir(), 'cdk-advisories-test-'));
+    let dir: string;
 
     beforeEach(() => {
-      fs.removeSync(dir);
-      fs.mkdirSync(dir);
+      if (dir) {
+        fs.removeSync(dir);
+      }
+      dir = fs.mkdtempSync(path.join(os.tmpdir(), 'cdk-advisories-test-'));
     });
 
     test('report', () => {
