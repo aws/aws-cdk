@@ -117,7 +117,7 @@ export const ECS_REMOVE_DEFAULT_DESIRED_COUNT = '@aws-cdk/aws-ecs-patterns:remov
  * This feature flag make correct the ServerlessCluster.clusterArn when
  * clusterIdentifier contains a Upper case letters.
  */
-export const RDS_CLUSTER_IDENTIFIER_TO_LOWERCASE = '@aws-cdk/aws-rds:clusterIdentifierToLowercase';
+export const RDS_LOWERCASE_DB_IDENTIFIER = '@aws-cdk/aws-rds:lowercaseDbIdentifier';
 
 /**
  * This map includes context keys and values for feature flags that enable
@@ -141,7 +141,7 @@ export const FUTURE_FLAGS: { [key: string]: any } = {
   [KMS_DEFAULT_KEY_POLICIES]: true,
   [S3_GRANT_WRITE_WITHOUT_ACL]: true,
   [ECS_REMOVE_DEFAULT_DESIRED_COUNT]: true,
-  [RDS_CLUSTER_IDENTIFIER_TO_LOWERCASE]: true,
+  [RDS_LOWERCASE_DB_IDENTIFIER]: true,
 
   // We will advertise this flag when the feature is complete
   // [NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: 'true',
@@ -168,7 +168,7 @@ const FUTURE_FLAGS_DEFAULTS: { [key: string]: boolean } = {
   [KMS_DEFAULT_KEY_POLICIES]: false,
   [S3_GRANT_WRITE_WITHOUT_ACL]: false,
   [ECS_REMOVE_DEFAULT_DESIRED_COUNT]: false,
-  [RDS_CLUSTER_IDENTIFIER_TO_LOWERCASE]: false,
+  [RDS_LOWERCASE_DB_IDENTIFIER]: false,
 };
 
 export function futureFlagDefault(flag: string): boolean {

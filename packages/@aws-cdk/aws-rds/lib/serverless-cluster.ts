@@ -439,7 +439,7 @@ export class ServerlessCluster extends ServerlessClusterBase {
       }),
     ];
 
-    const clusterIdentifier = FeatureFlags.of(this).isEnabled(cxapi.RDS_CLUSTER_IDENTIFIER_TO_LOWERCASE)
+    const clusterIdentifier = FeatureFlags.of(this).isEnabled(cxapi.RDS_LOWERCASE_DB_IDENTIFIER)
       ? props.clusterIdentifier?.toLowerCase()
       : props.clusterIdentifier;
 

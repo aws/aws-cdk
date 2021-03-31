@@ -7,8 +7,6 @@ import * as cxapi from '@aws-cdk/cx-api';
 import { nodeunitShim, Test } from 'nodeunit-shim';
 import { AuroraPostgresEngineVersion, ServerlessCluster, DatabaseClusterEngine, ParameterGroup, AuroraCapacityUnit, DatabaseSecret } from '../lib';
 
-const flags = { [cxapi.RDS_CLUSTER_IDENTIFIER_TO_LOWERCASE]: true };
-
 nodeunitShim({
   'can create a Serverless Cluster with Aurora Postgres database engine'(test: Test) {
     // GIVEN
@@ -822,9 +820,11 @@ nodeunitShim({
     test.done();
   },
 
-  'changes the case of the cluster identifier if the clusterIdentifierToLowercase feature flag is enabled'(test: Test) {
+  'changes the case of the cluster identifier if the lowercaseDbIdentifier feature flag is enabled'(test: Test) {
     // GIVEN
-    const app = new cdk.App({ context: flags });
+    const app = new cdk.App({
+      context: { [cxapi.RDS_LOWERCASE_DB_IDENTIFIER]: true },
+    });
     const stack = testStack(app);
     const clusterIdentifier = 'TestClusterIdentifier';
     const vpc = ec2.Vpc.fromLookup(stack, 'VPC', { isDefault: true });
@@ -844,7 +844,7 @@ nodeunitShim({
     test.done();
   },
 
-  'does not change the case of the cluster identifier if the clusterIdentifierToLowercase feature flag is disabled'(test: Test) {
+  'does not change the case of the cluster identifier if the lowercaseDbIdentifier feature flag is disabled'(test: Test) {
     // GIVEN
     const app = new cdk.App();
     const stack = testStack(app);
@@ -867,7 +867,7 @@ nodeunitShim({
   },
 });
 
-function testStack(app?: cdk.App, id?: string) {
+function testStack(app?: cdk.App, id?: string): cdk.Stack {
   const stack = new cdk.Stack(app, id, { env: { account: '12345', region: 'us-test-1' } });
   stack.node.setContext('availability-zones:12345:us-test-1', ['us-test-1a', 'us-test-1b']);
   return stack;
