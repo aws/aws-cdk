@@ -16,5 +16,8 @@
   "dependencies": {
     "aws-cdk-lib": "%cdk-version%",
     "constructs": "^3.0.4"
+  },
+  "resolutions": {
+    "netmask": "^2.0.1"
   }
 }
