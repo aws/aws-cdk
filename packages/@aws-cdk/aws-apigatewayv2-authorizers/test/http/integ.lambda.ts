@@ -19,7 +19,7 @@ const httpApi = new HttpApi(stack, 'MyHttpApi');
 const authHandler = new lambda.Function(stack, 'auth-function', {
   runtime: lambda.Runtime.NODEJS_14_X,
   handler: 'index.handler',
-  code: lambda.Code.fromAsset(path.join(__dirname, '../integ.lambda.auth.handler')),
+  code: lambda.Code.fromAsset(path.join(__dirname, '../auth-handler')),
 });
 
 
