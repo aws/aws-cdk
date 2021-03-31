@@ -30,6 +30,15 @@ const readWriteActions = [
   ...writeActions,
 ];
 
+test('connections throws if domain is placed inside a vpc', () => {
+
+  expect(() => {
+    new Domain(stack, 'Domain', {
+      version: ElasticsearchVersion.V7_1,
+    }).connections;
+  }).toThrowError("Connections are only available on VPC enabled domains. Use the 'vpc' property to place a domain inside a VPC");
+});
+
 test('subnets and security groups can be provided when vpc is used', () => {
 
   const vpc = new Vpc(stack, 'Vpc');
