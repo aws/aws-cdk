@@ -1,4 +1,5 @@
 import * as path from 'path';
+// eslint-disable-next-line import/no-extraneous-dependencies
 import * as glue from '@aws-cdk/aws-glue';
 import * as iam from '@aws-cdk/aws-iam';
 import * as assets from '@aws-cdk/aws-s3-assets';
