@@ -146,6 +146,33 @@ This sets up the domain with node to node encryption and encryption at
 rest. You can also choose to supply your own KMS key to use for encryption at
 rest.
 
+## VPC Support
+
+Elasticsearch domains can be placed inside a VPC, providing a secure communication between Amazon ES and other services within the VPC without the need for an internet gateway, NAT device, or VPN connection.
+
+> Visit [VPC Support for Amazon Elasticsearch Service Domains](https://docs.aws.amazon.com/elasticsearch-service/latest/developerguide/es-vpc.html) for more details.
+
+```ts
+const vpc = new ec2.Vpc(this, 'Vpc');
+const domainProps: es.DomainProps = {
+  version: es.ElasticsearchVersion.V7_1,
+  removalPolicy: RemovalPolicy.DESTROY,
+  vpc,
+  // must be enabled since our VPC contains multiple private subnets.
+  zoneAwareness: {
+    enabled: true,
+  },
+  capacity: {
+    // must be an even number since the default az count is 2.
+    dataNodes: 2,
+  },
+};
+new es.Domain(this, 'Domain', domainProps);
+```
+
+In addition, you can use the `vpcSubnets` property to control which specific subnets will be used, and the `securityGroups` property to control
+which security groups will be attached to the domain. By default, CDK will select all *private* subnets in the VPC, and create one dedicated security group.
+
 ## Metrics
 
 Helper methods exist to access common domain metrics for example:
