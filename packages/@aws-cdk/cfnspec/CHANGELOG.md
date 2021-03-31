@@ -1,3 +1,61 @@
+# CloudFormation Resource Specification v31.2.0
+
+## New Resource Types
+
+* AWS::AppIntegrations::EventIntegration
+* AWS::CustomerProfiles::Domain
+* AWS::CustomerProfiles::Integration
+* AWS::CustomerProfiles::ObjectType
+* AWS::LookoutMetrics::Alert
+* AWS::LookoutMetrics::AnomalyDetector
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::AppSync::GraphQLApi LambdaAuthorizerConfig (__deleted__)
+* AWS::CloudFormation::ResourceVersion ExecutionRoleArn.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::CloudFormation::ResourceVersion LoggingConfig.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::CloudFormation::ResourceVersion SchemaHandlerPackage.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::CloudFormation::ResourceVersion TypeName.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+
+## Property Type Changes
+
+* AWS::AppSync::GraphQLApi.LambdaAuthorizerConfig (__removed__)
+* AWS::Batch::JobDefinition.AuthorizationConfig (__added__)
+* AWS::Batch::JobDefinition.EfsVolumeConfiguration (__added__)
+* AWS::MediaLive::Channel.ArchiveCdnSettings (__added__)
+* AWS::MediaLive::Channel.ArchiveS3Settings (__added__)
+* AWS::MediaLive::Channel.CaptionRectangle (__added__)
+* AWS::MediaLive::Channel.FrameCaptureCdnSettings (__added__)
+* AWS::MediaLive::Channel.FrameCaptureHlsSettings (__added__)
+* AWS::MediaLive::Channel.FrameCaptureS3Settings (__added__)
+* AWS::MediaLive::Channel.HlsS3Settings (__added__)
+* AWS::AppSync::GraphQLApi.AdditionalAuthenticationProvider LambdaAuthorizerConfig (__deleted__)
+* AWS::Batch::JobDefinition.Volumes EfsVolumeConfiguration (__added__)
+* AWS::CloudFormation::ResourceVersion.LoggingConfig LogGroupName.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::CloudFormation::ResourceVersion.LoggingConfig LogRoleArn.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::MediaLive::Channel.ArchiveGroupSettings ArchiveCdnSettings (__added__)
+* AWS::MediaLive::Channel.EbuTtDDestinationSettings CopyrightHolder (__added__)
+* AWS::MediaLive::Channel.FrameCaptureGroupSettings FrameCaptureCdnSettings (__added__)
+* AWS::MediaLive::Channel.HlsCdnSettings HlsS3Settings (__added__)
+* AWS::MediaLive::Channel.HlsSettings FrameCaptureHlsSettings (__added__)
+* AWS::MediaLive::Channel.TeletextSourceSettings OutputRectangle (__added__)
+
+
 # CloudFormation Resource Specification v31.1.0
 
 ## New Resource Types
