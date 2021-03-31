@@ -787,8 +787,8 @@ describe('metrics', () => {
 
   test('Can use metricClusterIndexWriteBlocked on an Elasticsearch Domain', () => {
     testMetric(
-      (domain) => domain.metricClusterIndexWriteBlocked(),
-      'ClusterIndexWriteBlocked',
+      (domain) => domain.metricClusterIndexWritesBlocked(),
+      'ClusterIndexWritesBlocked',
       Statistic.MAXIMUM,
       Duration.minutes(1),
     );

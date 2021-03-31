@@ -714,7 +714,7 @@ export interface IDomain extends cdk.IResource {
    *
    * @default maximum over 1 minute
    */
-  metricClusterIndexWriteBlocked(props?: MetricOptions): Metric;
+  metricClusterIndexWritesBlocked(props?: MetricOptions): Metric;
 
   /**
    * Metric for the number of nodes.
@@ -997,8 +997,8 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
    *
    * @default maximum over 1 minute
    */
-  public metricClusterIndexWriteBlocked(props?: MetricOptions): Metric {
-    return this.metric('ClusterIndexWriteBlocked', {
+  public metricClusterIndexWritesBlocked(props?: MetricOptions): Metric {
+    return this.metric('ClusterIndexWritesBlocked', {
       statistic: Statistic.MAXIMUM,
       period: cdk.Duration.minutes(1),
       ...props,
