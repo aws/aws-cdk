@@ -366,17 +366,17 @@ export class AwsCustomResource extends CoreConstruct implements iam.IGrantable {
     } else {
       // Derive statements from AWS SDK calls
       for (const call of [props.onCreate, props.onUpdate, props.onDelete]) {
-        if (call && call.AssumedRoleArn == null) {
+        if (call && call.assumedRoleArn == null) {
           const statement = new iam.PolicyStatement({
             actions: [awsSdkToIamAction(call.service, call.action)],
             resources: props.policy.resources,
           });
           statements.push(statement);
         }
-		else if (call && call.AssumedRoleArn != null) {
+		else if (call && call.assumedRoleArn != null) {
 			const statement = new iam.PolicyStatement({
             actions: ['sts:AssumeRole'],
-            resources: [call.AssumedRoleArn],
+            resources: [call.assumedRoleArn],
           });
           statements.push(statement);
 		}			
