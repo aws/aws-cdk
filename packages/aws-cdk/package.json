@@ -83,7 +83,7 @@
     "json-diff": "^0.5.4",
     "minimatch": ">=3.0",
     "promptly": "^3.2.0",
-    "proxy-agent": "^4.0.1",
+    "proxy-agent": "file:./proxy-agent",
     "semver": "^7.3.5",
     "source-map-support": "^0.5.19",
     "table": "^6.0.7",
