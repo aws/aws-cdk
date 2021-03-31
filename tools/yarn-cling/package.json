@@ -46,7 +46,8 @@
     "typescript": "~3.9.9"
   },
   "dependencies": {
-    "@yarnpkg/lockfile": "^1.1.0"
+    "@yarnpkg/lockfile": "^1.1.0",
+    "semver": "^7.3.5"
   },
   "keywords": [
     "aws",
