@@ -6,7 +6,7 @@
 Features                           | Stability
 -----------------------------------|----------------------------------------------------------------
 CFN Resources                      | ![Stable](https://img.shields.io/badge/stable-success.svg?style=for-the-badge)
-Higher level constructs for Domain | ![Experimental](https://img.shields.io/badge/experimental-important.svg?style=for-the-badge)
+Higher level constructs for Domain | ![Stable](https://img.shields.io/badge/stable-success.svg?style=for-the-badge)
 
 > **CFN Resources:** All classes with the `Cfn` prefix in this module ([CFN Resources]) are always
 > stable and safe to use.
@@ -15,11 +15,8 @@ Higher level constructs for Domain | ![Experimental](https://img.shields.io/badg
 
 <!-- -->
 
-> **Experimental:** Higher level constructs in this module that are marked as experimental are
-> under active development. They are subject to non-backward compatible changes or removal in any
-> future version. These are not subject to the [Semantic Versioning](https://semver.org/) model and
-> breaking changes will be announced in the release notes. This means that while you may use them,
-> you may need to update your source code when upgrading to a newer version of this package.
+> **Stable:** Higher level constructs in this module that are marked stable will not undergo any
+> breaking changes. They will strictly follow the [Semantic Versioning](https://semver.org/) model.
 
 ---
 
