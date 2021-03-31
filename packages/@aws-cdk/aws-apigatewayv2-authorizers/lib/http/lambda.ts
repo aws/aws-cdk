@@ -8,7 +8,7 @@ import {
   AuthorizerPayloadVersion,
 } from '@aws-cdk/aws-apigatewayv2';
 import { IFunction } from '@aws-cdk/aws-lambda';
-import { Token, Stack, Duration } from '@aws-cdk/core';
+import { Stack, Duration } from '@aws-cdk/core';
 
 /**
  * Specifies the type responses the lambda returns
@@ -28,9 +28,8 @@ export interface HttpLambdaAuthorizerProps {
 
   /**
    * The name of the authorizer
-   * @default 'LambdaAuthorizer'
    */
-  readonly authorizerName?: string;
+  readonly authorizerName: string;
 
   /**
    * The identity source for which authorization is requested.
@@ -73,8 +72,7 @@ export class HttpLambdaAuthorizer implements IHttpRouteAuthorizer {
 
   public bind(options: HttpRouteAuthorizerBindOptions): HttpRouteAuthorizerConfig {
     if (!this.authorizer) {
-      const id = this.props.authorizerName && !Token.isUnresolved(this.props.authorizerName) ?
-        this.props.authorizerName : 'LambdaAuthorizer';
+      const id = this.props.authorizerName;
 
       const enableSimpleResponses = this.props.responseTypes.includes(HttpLambdaResponseType.SIMPLE) || undefined;
 

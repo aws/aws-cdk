@@ -79,7 +79,7 @@
         "RouteKey": "GET /",
         "AuthorizationType": "CUSTOM",
         "AuthorizerId": {
-          "Ref": "MyHttpApiLambdaAuthorizerB8A0E2A4"
+          "Ref": "MyHttpApimysimpleauthorizer98398C16"
         },
         "Target": {
           "Fn::Join": [
@@ -94,7 +94,7 @@
         }
       }
     },
-    "MyHttpApiLambdaAuthorizerB8A0E2A4": {
+    "MyHttpApimysimpleauthorizer98398C16": {
       "Type": "AWS::ApiGatewayV2::Authorizer",
       "Properties": {
         "ApiId": {
@@ -104,7 +104,7 @@
         "IdentitySource": [
           "$request.header.Authorization"
         ],
-        "Name": "LambdaAuthorizer",
+        "Name": "my-simple-authorizer",
         "AuthorizerPayloadFormatVersion": "2.0",
         "AuthorizerResultTtlInSeconds": 300,
         "AuthorizerUri": {

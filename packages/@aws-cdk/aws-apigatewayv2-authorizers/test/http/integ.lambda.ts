@@ -24,6 +24,7 @@ const authHandler = new lambda.Function(stack, 'auth-function', {
 
 
 const authorizer = new HttpLambdaAuthorizer({
+  authorizerName: 'my-simple-authorizer',
   handler: authHandler,
   responseTypes: [HttpLambdaResponseType.SIMPLE],
 });

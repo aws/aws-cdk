@@ -18,6 +18,7 @@ describe('HttpLambdaAuthorizer', () => {
     });
 
     const authorizer = new HttpLambdaAuthorizer({
+      authorizerName: 'my-simple-authorizer',
       responseTypes: [HttpLambdaResponseType.SIMPLE],
       handler,
     });
@@ -31,7 +32,7 @@ describe('HttpLambdaAuthorizer', () => {
 
     // THEN
     expect(stack).toHaveResource('AWS::ApiGatewayV2::Authorizer', {
-      Name: 'LambdaAuthorizer',
+      Name: 'my-simple-authorizer',
       AuthorizerType: 'REQUEST',
       AuthorizerResultTtlInSeconds: 300,
       AuthorizerPayloadFormatVersion: '2.0',
@@ -58,6 +59,7 @@ describe('HttpLambdaAuthorizer', () => {
     });
 
     const authorizer = new HttpLambdaAuthorizer({
+      authorizerName: 'my-iam-authorizer',
       responseTypes: [HttpLambdaResponseType.IAM],
       handler,
     });
@@ -71,7 +73,7 @@ describe('HttpLambdaAuthorizer', () => {
 
     // THEN
     expect(stack).toHaveResource('AWS::ApiGatewayV2::Authorizer', {
-      Name: 'LambdaAuthorizer',
+      Name: 'my-iam-authorizer',
       AuthorizerType: 'REQUEST',
       AuthorizerResultTtlInSeconds: 300,
       EnableSimpleResponses: ABSENT,
@@ -98,6 +100,7 @@ describe('HttpLambdaAuthorizer', () => {
     });
 
     const authorizer = new HttpLambdaAuthorizer({
+      authorizerName: 'my-simple-iam-authorizer',
       responseTypes: [HttpLambdaResponseType.IAM, HttpLambdaResponseType.SIMPLE],
       handler,
     });
@@ -128,6 +131,7 @@ describe('HttpLambdaAuthorizer', () => {
     });
 
     const authorizer = new HttpLambdaAuthorizer({
+      authorizerName: 'my-simple-authorizer',
       responseTypes: [HttpLambdaResponseType.SIMPLE],
       handler,
       resultsCacheTtl: Duration.minutes(10),
