@@ -42,9 +42,3 @@ IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
 CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
 TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-
-[http-proxy-agent]: https://github.com/TooTallNate/node-http-proxy-agent
-[https-proxy-agent]: https://github.com/TooTallNate/node-https-proxy-agent
-[socks-proxy-agent]: https://github.com/TooTallNate/node-socks-proxy-agent
-[pac-proxy-agent]: https://github.com/TooTallNate/node-pac-proxy-agent
