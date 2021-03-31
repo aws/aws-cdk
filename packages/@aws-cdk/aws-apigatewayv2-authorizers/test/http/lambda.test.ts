@@ -6,7 +6,47 @@ import { Duration, Stack } from '@aws-cdk/core';
 import { HttpLambdaAuthorizer, HttpLambdaResponseType } from '../../lib';
 
 describe('HttpLambdaAuthorizer', () => {
-  test('default simple', () => {
+
+  test('default', () => {
+    // GIVEN
+    const stack = new Stack();
+    const api = new HttpApi(stack, 'HttpApi');
+
+    const handler = new Function(stack, 'auth-function', {
+      runtime: Runtime.NODEJS_12_X,
+      code: Code.fromInline('exports.handler = () => {return true}'),
+      handler: 'index.handler',
+    });
+
+    const authorizer = new HttpLambdaAuthorizer({
+      authorizerName: 'default-authorizer',
+      handler,
+    });
+
+    // WHEN
+    api.addRoutes({
+      integration: new DummyRouteIntegration(),
+      path: '/books',
+      authorizer,
+    });
+
+    // THEN
+    expect(stack).toHaveResource('AWS::ApiGatewayV2::Authorizer', {
+      Name: 'default-authorizer',
+      AuthorizerType: 'REQUEST',
+      AuthorizerResultTtlInSeconds: 300,
+      AuthorizerPayloadFormatVersion: '1.0',
+      IdentitySource: [
+        '$request.header.Authorization',
+      ],
+    });
+
+    expect(stack).toHaveResource('AWS::ApiGatewayV2::Route', {
+      AuthorizationType: 'CUSTOM',
+    });
+  });
+
+  test('should use format 2.0 and simple responses when simple response type is requested', () => {
     // GIVEN
     const stack = new Stack();
     const api = new HttpApi(stack, 'HttpApi');
@@ -32,22 +72,12 @@ describe('HttpLambdaAuthorizer', () => {
 
     // THEN
     expect(stack).toHaveResource('AWS::ApiGatewayV2::Authorizer', {
-      Name: 'my-simple-authorizer',
-      AuthorizerType: 'REQUEST',
-      AuthorizerResultTtlInSeconds: 300,
       AuthorizerPayloadFormatVersion: '2.0',
       EnableSimpleResponses: true,
-      IdentitySource: [
-        '$request.header.Authorization',
-      ],
-    });
-
-    expect(stack).toHaveResource('AWS::ApiGatewayV2::Route', {
-      AuthorizationType: 'CUSTOM',
     });
   });
 
-  test('default iam', () => {
+  test('should use format 1.0 when only IAM response type is requested', () => {
     // GIVEN
     const stack = new Stack();
     const api = new HttpApi(stack, 'HttpApi');
@@ -73,18 +103,8 @@ describe('HttpLambdaAuthorizer', () => {
 
     // THEN
     expect(stack).toHaveResource('AWS::ApiGatewayV2::Authorizer', {
-      Name: 'my-iam-authorizer',
-      AuthorizerType: 'REQUEST',
-      AuthorizerResultTtlInSeconds: 300,
-      EnableSimpleResponses: ABSENT,
       AuthorizerPayloadFormatVersion: '1.0',
-      IdentitySource: [
-        '$request.header.Authorization',
-      ],
-    });
-
-    expect(stack).toHaveResource('AWS::ApiGatewayV2::Route', {
-      AuthorizationType: 'CUSTOM',
+      EnableSimpleResponses: ABSENT,
     });
   });
 
