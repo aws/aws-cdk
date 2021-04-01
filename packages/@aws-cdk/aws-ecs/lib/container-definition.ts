@@ -294,6 +294,12 @@ export interface ContainerDefinitionOptions {
    * @default - No ports are mapped.
    */
   readonly portMappings?: PortMapping[];
+
+  /**
+   * The type and amount of a resource to assign to a container.
+   * @default - No resources assigned.
+   */
+  readonly resourceRequirements?: ResourceRequirement[];
 }
 
 /**
@@ -387,6 +393,11 @@ export class ContainerDefinition extends CoreConstruct {
   public readonly referencesSecretJsonField?: boolean;
 
   /**
+   * The type and amount of resource assigned to this container.
+   */
+  private readonly resourceRequirements: ResourceRequirement[] = [];
+
+  /**
    * The configured container links
    */
   private readonly links = new Array<string>();
@@ -442,6 +453,10 @@ export class ContainerDefinition extends CoreConstruct {
 
     if (props.portMappings) {
       this.addPortMappings(...props.portMappings);
+    }
+
+    if (props.resourceRequirements) {
+      this.addResourceRequirements(...props.resourceRequirements);
     }
   }
 
@@ -513,6 +528,25 @@ export class ContainerDefinition extends CoreConstruct {
       }
 
       return pm;
+    }));
+  }
+
+  /**
+   * This method adds one or more resources to the container.
+   */
+  private addResourceRequirements(...resourceRequirements: ResourceRequirement[]) {
+    if (!this.taskDefinition.inferenceAccelerators) {
+      throw new Error('InferenceAccelerator resource(s) defined in container definition without specifying any inference accelerators in task definition.');
+    }
+    this.resourceRequirements.push(...resourceRequirements.map(resource => {
+      for (const inferenceAccelerator of this.taskDefinition.inferenceAccelerators) {
+        if (resource.value === inferenceAccelerator.deviceName) {
+          return {
+            ...resource,
+          };
+        }
+      }
+      throw new Error(`Resource value (${resource.value}) doesn't match any inference accelerator device name.`);
     }));
   }
 
@@ -631,7 +665,7 @@ export class ContainerDefinition extends CoreConstruct {
       healthCheck: this.props.healthCheck && renderHealthCheck(this.props.healthCheck),
       links: cdk.Lazy.list({ produce: () => this.links }, { omitEmpty: true }),
       linuxParameters: this.linuxParameters && this.linuxParameters.renderLinuxParameters(),
-      resourceRequirements: (this.props.gpuCount !== undefined) ? renderResourceRequirements(this.props.gpuCount) : undefined,
+      resourceRequirements: renderResourceRequirements(this.props.gpuCount, this.resourceRequirements),
     };
   }
 }
@@ -742,12 +776,53 @@ function getHealthCheckCommand(hc: HealthCheck): string[] {
   return hcCommand.concat(cmd);
 }
 
-function renderResourceRequirements(gpuCount: number): CfnTaskDefinition.ResourceRequirementProperty[] | undefined {
-  if (gpuCount === 0) { return undefined; }
-  return [{
-    type: 'GPU',
-    value: gpuCount.toString(),
-  }];
+/**
+ * The type and amount of a resource to assign to a container.
+ */
+export interface ResourceRequirement {
+  /**
+   * The type of resource to assign to a container.
+   */
+  readonly type: ResourceRequirementType,
+
+  /**
+   * The value for the specified resource type.
+   */
+  readonly value: string,
+}
+
+/** Type of resource to assign to a container. */
+export enum ResourceRequirementType {
+  /**
+   * GPU.
+   */
+  GPU = 'GPU',
+  /**
+   * InferenceAccelerator.
+   */
+  INFERENCEACCELERATOR = 'InferenceAccelerator'
+}
+
+function renderResourceRequirements(gpuCount: number = 0, resourceRequirements: ResourceRequirement[] = []):
+CfnTaskDefinition.ResourceRequirementProperty[] | undefined {
+  if (resourceRequirements.length > 0) {
+    const ret = [];
+
+    for (const resource of resourceRequirements) {
+      ret.push({
+        type: ResourceRequirementType.INFERENCEACCELERATOR,
+        value: resource.value,
+      });
+    }
+    return ret;
+  }
+  if (gpuCount > 0) {
+    return [{
+      type: ResourceRequirementType.GPU,
+      value: gpuCount.toString(),
+    }];
+  }
+  return undefined;
 }
 
 /**

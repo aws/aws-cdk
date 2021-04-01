@@ -1199,6 +1199,33 @@ describe('ec2 task definition', () => {
     });
   });
 
+  test('correctly sets inferenceAccelerators', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const inferenceAccelerator = [{
+      deviceName: 'device1',
+      deviceType: 'eia2.medium',
+    }];
+
+    const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
+      inferenceAccelerators: inferenceAccelerator,
+    });
+
+    taskDefinition.addContainer('web', {
+      image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+      memoryLimitMiB: 512,
+    });
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
+      Family: 'Ec2TaskDef',
+      InferenceAccelerators: [{
+        DeviceName: 'device1',
+        DeviceType: 'eia2.medium',
+      }],
+    });
+  });
+
   describe('When importing from an existing Ec2 TaskDefinition', () => {
     test('can succeed using TaskDefinition Arn', () => {
       // GIVEN

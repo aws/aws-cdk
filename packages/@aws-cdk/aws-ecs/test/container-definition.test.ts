@@ -997,6 +997,83 @@ describe('container definition', () => {
     });
   });
 
+  describe('Given InferenceAccelerator resource requirement', () => {
+    test('correctly adds resource requirements to container definition using props', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      const inferenceAccelerator = [{
+        deviceName: 'device1',
+        deviceType: 'eia2.medium',
+      }];
+
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
+        inferenceAccelerators: inferenceAccelerator,
+      });
+
+      const resourceRequirements = [{
+        type: ecs.ResourceRequirementType.INFERENCEACCELERATOR,
+        value: 'device1',
+      }];
+
+      // WHEN
+      taskDefinition.addContainer('cont', {
+        image: ecs.ContainerImage.fromRegistry('test'),
+        memoryLimitMiB: 1024,
+        resourceRequirements: resourceRequirements,
+      });
+
+      // THEN
+      expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
+        Family: 'Ec2TaskDef',
+        InferenceAccelerators: [{
+          DeviceName: 'device1',
+          DeviceType: 'eia2.medium',
+        }],
+        ContainerDefinitions: [
+          {
+            Image: 'test',
+            ResourceRequirements: [
+              {
+                Type: 'InferenceAccelerator',
+                Value: 'device1',
+              },
+            ],
+          },
+        ],
+      });
+
+
+    });
+    test('throws when the value in resource requirement does not match any inference accelerators defined in the Task Definition', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      const inferenceAccelerator = [{
+        deviceName: 'device1',
+        deviceType: 'eia2.medium',
+      }];
+
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
+        inferenceAccelerators: inferenceAccelerator,
+      });
+
+      const resourceRequirements = [{
+        type: ecs.ResourceRequirementType.INFERENCEACCELERATOR,
+        value: 'device2',
+      }];
+
+      // THEN
+      expect(() => {
+        taskDefinition.addContainer('cont', {
+          image: ecs.ContainerImage.fromRegistry('test'),
+          memoryLimitMiB: 1024,
+          resourceRequirements: resourceRequirements,
+        });
+      }).toThrow();
+    });
+  });
+
   test('can add secret environment variables to the container definition', () => {
     // GIVEN
     const stack = new cdk.Stack();

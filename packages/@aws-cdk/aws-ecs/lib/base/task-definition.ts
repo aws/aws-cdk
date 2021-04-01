@@ -184,6 +184,15 @@ export interface TaskDefinitionProps extends CommonTaskDefinitionProps {
    * @default - PidMode used by the task is not specified
    */
   readonly pidMode?: PidMode;
+
+  /**
+   * The inference accelerators to use for the containers in the task.
+   *
+   * Not supported in Fargate.
+   *
+   * @default - No inference accelerators.
+   */
+  readonly inferenceAccelerators?: InferenceAccelerator[];
 }
 
 /**
@@ -322,6 +331,11 @@ export class TaskDefinition extends TaskDefinitionBase {
    */
   private readonly placementConstraints = new Array<CfnTaskDefinition.TaskDefinitionPlacementConstraintProperty>();
 
+  /**
+   * Inference accelerators for task instances
+   */
+  public readonly inferenceAccelerators: InferenceAccelerator[] = [];
+
   private _executionRole?: iam.IRole;
 
   private _referencesSecretJsonField?: boolean;
@@ -354,6 +368,10 @@ export class TaskDefinition extends TaskDefinitionBase {
       throw new Error(`Fargate-compatible tasks require both CPU (${props.cpu}) and memory (${props.memoryMiB}) specifications`);
     }
 
+    if (props.inferenceAccelerators && props.inferenceAccelerators.length > 0 && this.isFargateCompatible) {
+      throw new Error('Cannot use inference accelerators on tasks that run on Fargate');
+    }
+
     this._executionRole = props.executionRole;
 
     this.taskRole = props.taskRole || new iam.Role(this, 'TaskRole', {
@@ -380,10 +398,18 @@ export class TaskDefinition extends TaskDefinitionBase {
       memory: props.memoryMiB,
       ipcMode: props.ipcMode,
       pidMode: props.pidMode,
+      inferenceAccelerators: Lazy.any({
+        produce: () =>
+          !isFargateCompatible(this.compatibility) ? this.renderInferenceAccelerators() : undefined,
+      }, { omitEmptyArray: true }),
     });
 
     if (props.placementConstraints) {
       props.placementConstraints.forEach(pc => this.addPlacementConstraint(pc));
+    }
+
+    if (props.inferenceAccelerators) {
+      props.inferenceAccelerators.forEach(ia => this.addInferenceAccelerator(ia));
     }
 
     this.taskDefinitionArn = taskDef.ref;
@@ -415,6 +441,20 @@ export class TaskDefinition extends TaskDefinitionBase {
           transitEncryptionPort: spec.efsVolumeConfiguration.transitEncryptionPort,
 
         },
+      };
+    }
+  }
+
+  private renderInferenceAccelerators(): CfnTaskDefinition.InferenceAcceleratorProperty[] {
+    if (isFargateCompatible(this.compatibility)) {
+      throw new Error('Cannot use inference accelerators on tasks that run on Fargate');
+    }
+    return this.inferenceAccelerators.map(renderInferenceAccelerator);
+
+    function renderInferenceAccelerator(inferenceAccelerator: InferenceAccelerator) : CfnTaskDefinition.InferenceAcceleratorProperty {
+      return {
+        deviceName: inferenceAccelerator.deviceName,
+        deviceType: inferenceAccelerator.deviceType,
       };
     }
   }
@@ -529,6 +569,13 @@ export class TaskDefinition extends TaskDefinitionBase {
    */
   public addExtension(extension: ITaskDefinitionExtension) {
     extension.extend(this);
+  }
+
+  /**
+   * Adds an inference accelerator to the task definition.
+   */
+  public addInferenceAccelerator(inferenceAccelerator: InferenceAccelerator) {
+    this.inferenceAccelerators.push(inferenceAccelerator);
   }
 
   /**
@@ -681,6 +728,23 @@ export enum PidMode {
    * If task is specified, all containers within the specified task share the same process namespace.
    */
   TASK = 'task',
+}
+
+/**
+ * Elastic Inference Accelerator.
+ */
+export interface InferenceAccelerator {
+  /**
+   * The Elastic Inference accelerator device name.
+   * @default - empty
+   */
+  readonly deviceName?: string;
+
+  /**
+   * The Elastic Inference accelerator type to use.
+   * @default - empty
+   */
+  readonly deviceType?: string;
 }
 
 /**
