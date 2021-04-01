@@ -34,7 +34,7 @@ In addition, the library also supports defining Kubernetes resource manifests wi
   * [Kubernetes Manifests](#kubernetes-manifests)
   * [Helm Charts](#helm-charts)
   * [CDK8s Charts](#cdk8s-charts)
-* [Patching Kuberentes Resources](#patching-kubernetes-resources)
+* [Patching Kubernetes Resources](#patching-kubernetes-resources)
 * [Querying Kubernetes Resources](#querying-kubernetes-resources)
 * [Using existing clusters](#using-existing-clusters)
 * [Known Issues and Limitations](#known-issues-and-limitations)
