@@ -119,7 +119,7 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
 
       if (call.assumedRoleArn) {
 
-        const stsService = new (AWS as any)[call.service]({
+        const stsService = new (AWS as any).STS({
           apiVersion: call.apiVersion,
           region: call.region,
         });
