@@ -49,6 +49,7 @@
     "build+test": "yarn build && yarn test",
     "compat": "cdk-compat",
     "gen": "cfn2ts",
+    "postpack": "cdk-postpack",
     "rosetta:extract": "yarn --silent jsii-rosetta extract"
   },
   "cdk-build": {

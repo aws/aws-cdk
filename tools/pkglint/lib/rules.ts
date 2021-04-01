@@ -1440,6 +1440,26 @@ export class YarnNohoistBundledDependencies extends ValidationRule {
   }
 }
 
+/**
+ * If this package has bundled dependencies that come from the monorepo, it MUST use `cdk-postpack` as postpack script
+ */
+export class BundledMonorepoDependencies extends ValidationRule {
+  public readonly name = 'monorepo/monorepo-bundled-dependencies';
+
+  public async validate(pkg: PackageJson) {
+    const bundled: string[] = pkg.json.bundleDependencies || pkg.json.bundledDependencies || [];
+
+    const bundledDepsMonoRepo = await Promise.all(bundled.map(async (dep) => {
+      const dependencyDir = await findPackageDir(dep, pkg.packageRoot);
+      return isMonoRepoPackageDir(dependencyDir);
+    }));
+
+    if (bundledDepsMonoRepo.some(x => x)) {
+      expectJSON(this.name, pkg, 'scripts.postpack', 'cdk-postpack');
+    }
+  }
+}
+
 export class ConstructsDependency extends ValidationRule {
   public readonly name = 'constructs/dependency';
 

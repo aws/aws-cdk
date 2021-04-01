@@ -23,7 +23,8 @@
     "build+test+package": "yarn build+test && yarn package",
     "watch": "cdk-watch",
     "compat": "cdk-compat",
-    "rosetta:extract": "yarn --silent jsii-rosetta extract"
+    "rosetta:extract": "yarn --silent jsii-rosetta extract",
+    "postpack": "cdk-postpack"
   },
   "awslint": {
     "exclude": [
