@@ -145,8 +145,7 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
           credentials: creds,
         });
 
-      }
-      else {
+      } else {
         awsService = new (AWS as any)[call.service]({
           apiVersion: call.apiVersion,
           region: call.region,
