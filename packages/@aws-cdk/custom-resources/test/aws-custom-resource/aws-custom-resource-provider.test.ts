@@ -340,7 +340,7 @@ test('can specify apiVersion and region', async () => {
 test('can specify assumedRoleArn', async () => {
   const publishFake = sinon.fake.resolves({});
 
-  const assumedRoleArn: 'arn:aws:iam::OTHERACCOUNT:role/CrossAccount/SnsPublish';
+  const assumedRoleArnFake = 'arn:aws:iam::OTHERACCOUNT:role/CrossAccount/SnsPublish';
 
   AWS.mock('SNS', 'publish', publishFake);
 
@@ -356,7 +356,7 @@ test('can specify assumedRoleArn', async () => {
           Message: 'message',
           TopicArn: 'topic',
         },
-        assumedRoleArn: assumedRoleArn,
+        assumedRoleArn: assumedRoleArnFake,
         physicalResourceId: PhysicalResourceId.of('id'),
       } as AwsSdkCall),
     },
@@ -364,7 +364,7 @@ test('can specify assumedRoleArn', async () => {
 
   const request = createRequest(body =>
     body.Status === 'SUCCESS' &&
-    body.Data!.assumedRoleArn === assumedRoleArn,
+    body.Data!.assumedRoleArn === assumedRoleArnFake,
   );
 
   await handler(event, {} as AWSLambda.Context);
