@@ -75,7 +75,7 @@ export = {
 
     test.throws(() => new sqs.Queue(stack, 'AnotherQueue', {
       retentionPeriod: Duration.days(15),
-    }), /message retention period must be 1209600 seconds of less/);
+    }), /message retention period must be 1209600 seconds or less/);
 
     test.done();
   },
