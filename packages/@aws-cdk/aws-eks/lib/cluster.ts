@@ -1638,6 +1638,16 @@ export interface BootstrapOptions {
   readonly dockerConfigJson?: string;
 
   /**
+
+   * Overrides the IP address to use for DNS queries within the
+   * cluster.
+   *
+   * @default - 10.100.0.10 or 172.20.0.10 based on the IP
+   * address of the primary interface.
+   */
+  readonly dnsClusterIp?: string;
+
+  /**
    * Extra arguments to add to the kubelet. Useful for adding labels or taints.
    *
    * @example --node-labels foo=bar,goo=far
