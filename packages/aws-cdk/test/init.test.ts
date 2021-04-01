@@ -98,6 +98,66 @@ describe.each(['1', '2'])('v%s tests', (majorVersion) => {
   });
 });
 
+describe('constructs version', () => {
+  beforeEach(() => {
+    mockMajorVersion = '2.0.0';
+    jest.resetAllMocks();
+  });
+
+  cliTest('java', async (workDir) => {
+    await cliInit('app', 'java', false, true, workDir);
+
+    expect(await fs.pathExists(path.join(workDir, 'pom.xml'))).toBeTruthy();
+
+    const pom = (await fs.readFile(path.join(workDir, 'pom.xml'), 'utf8')).split(/\r?\n/);
+    const matches = pom.map(line => line.match(/\<constructs\.version\>(.*)\<\/constructs\.version\>/))
+      .filter(l => l);
+
+    expect(matches.length).toEqual(1);
+    matches.forEach(m => {
+      const version = m && m[1];
+      expect(version).toMatch(/\[10\.[\d]+\.[\d]+,11\.0\.0\)/);
+    });
+  });
+
+  cliTest('.NET', async (workDir) => {
+    await cliInit('app', 'csharp', false, true, workDir);
+
+    // convert dir name from aws-cdk-test-xyz to AwsCdkTestXyz
+    const slnName = path.basename(workDir).split('-').map(s => `${s[0].toUpperCase()}${s.slice(1)}`).join('');
+    const csprojFile = path.join(workDir, 'src', slnName, `${slnName}.csproj`);
+
+    expect(await fs.pathExists(csprojFile)).toBeTruthy();
+    const csproj = (await fs.readFile(csprojFile, 'utf8')).split(/\r?\n/);
+    // return RegExpMatchArray (result of line.match()) for every lines that match re.
+    const matches = csproj.map(line => line.match(/\<PackageReference Include="Constructs" Version="(.*)"/))
+      .filter(l => l);
+
+    expect(matches.length).toEqual(1);
+    matches.forEach(m => {
+      const version = m && m[1];
+      expect(version).toMatch(/\[10\.[\d]+\.[\d]+,11\.0\.0\)/);
+    });
+  });
+
+  cliTest('Python', async (workDir) => {
+    await cliInit('app', 'python', false, true, workDir);
+
+    // convert dir name from aws-cdk-test-xyz to AwsCdkTestXyz
+    expect(await fs.pathExists(path.join(workDir, 'setup.py'))).toBeTruthy();
+    const setupPy = (await fs.readFile(path.join(workDir, 'setup.py'), 'utf8')).split(/\r?\n/);
+    // return RegExpMatchArray (result of line.match()) for every lines that match re.
+    const matches = setupPy.map(line => line.match(/^\s*"constructs(.*)",/))
+      .filter(l => l);
+
+    expect(matches.length).toEqual(1);
+    matches.forEach(m => {
+      const version = m && m[1];
+      expect(version).toMatch(/>=10\.\d+\.\d,<11\.0\.0/);
+    });
+  });
+});
+
 test('when no version number is present (e.g., local development), the v1 templates are chosen by default', async () => {
   mockMajorVersion = '0.0.0';
   jest.resetAllMocks();
