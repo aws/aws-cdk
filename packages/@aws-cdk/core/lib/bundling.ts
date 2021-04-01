@@ -12,7 +12,7 @@ export interface BundlingOptions {
   /**
    * The Docker image where the command will run.
    */
-  readonly image: BundlingDockerImage;
+  readonly image: DockerImage;
 
   /**
    * The entrypoint to run in the Docker container.
@@ -157,34 +157,8 @@ export class BundlingDockerImage {
    *
    * @deprecated use DockerImage.fromBuild()
    */
-  public static fromAsset(path: string, options: DockerBuildOptions = {}) {
-    const buildArgs = options.buildArgs || {};
-
-    if (options.file && isAbsolute(options.file)) {
-      throw new Error(`"file" must be relative to the docker build directory. Got ${options.file}`);
-    }
-
-    // Image tag derived from path and build options
-    const input = JSON.stringify({ path, ...options });
-    const tagHash = crypto.createHash('sha256').update(input).digest('hex');
-    const tag = `cdk-${tagHash}`;
-
-    const dockerArgs: string[] = [
-      'build', '-t', tag,
-      ...(options.file ? ['-f', join(path, options.file)] : []),
-      ...flatten(Object.entries(buildArgs).map(([k, v]) => ['--build-arg', `${k}=${v}`])),
-      path,
-    ];
-
-    dockerExec(dockerArgs);
-
-    // Fingerprints the directory containing the Dockerfile we're building and
-    // differentiates the fingerprint based on build arguments. We do this so
-    // we can provide a stable image hash. Otherwise, the image ID will be
-    // different every time the Docker layer cache is cleared, due primarily to
-    // timestamps.
-    const hash = FileSystem.fingerprint(path, { extraHash: JSON.stringify(options) });
-    return new BundlingDockerImage(tag, hash);
+  public static fromAsset(path: string, options: DockerBuildOptions = {}): BundlingDockerImage {
+    return DockerImage.fromBuild(path, options);
   }
 
   /** @param image The Docker image */
@@ -276,7 +250,33 @@ export class DockerImage extends BundlingDockerImage {
    * @param options Docker build options
    */
   public static fromBuild(path: string, options: DockerBuildOptions = {}) {
-    return BundlingDockerImage.fromAsset(path, options);
+    const buildArgs = options.buildArgs || {};
+
+    if (options.file && isAbsolute(options.file)) {
+      throw new Error(`"file" must be relative to the docker build directory. Got ${options.file}`);
+    }
+
+    // Image tag derived from path and build options
+    const input = JSON.stringify({ path, ...options });
+    const tagHash = crypto.createHash('sha256').update(input).digest('hex');
+    const tag = `cdk-${tagHash}`;
+
+    const dockerArgs: string[] = [
+      'build', '-t', tag,
+      ...(options.file ? ['-f', join(path, options.file)] : []),
+      ...flatten(Object.entries(buildArgs).map(([k, v]) => ['--build-arg', `${k}=${v}`])),
+      path,
+    ];
+
+    dockerExec(dockerArgs);
+
+    // Fingerprints the directory containing the Dockerfile we're building and
+    // differentiates the fingerprint based on build arguments. We do this so
+    // we can provide a stable image hash. Otherwise, the image ID will be
+    // different every time the Docker layer cache is cleared, due primarily to
+    // timestamps.
+    const hash = FileSystem.fingerprint(path, { extraHash: JSON.stringify(options) });
+    return new DockerImage(tag, hash);
   }
 
   /**
