@@ -654,6 +654,15 @@ const cluster = new eks.Cluster(this, 'MyCluster', {
 });
 ```
 
+You can also use a similiar configuration for running a cluster built using the FargateCluster construct.
+
+```ts
+const secretsKey = new kms.Key(this, 'SecretsKey');
+const cluster = new eks.FargateCluster(this, 'MyFargateCluster', {
+  secretsEncryptionKey: secretsKey
+});
+```
+
 The Amazon Resource Name (ARN) for that CMK can be retrieved.
 
 ```ts
