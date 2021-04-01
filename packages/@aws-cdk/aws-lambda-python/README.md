@@ -92,7 +92,7 @@ new lambda.PythonFunction(this, 'MyFunction', {
 
 **Lambda with custom Docker Build Time Variables**
 
-Use the `build_args` parameter to pass build arguments when building the bundling image:
+Use the `buildArgs` parameter to pass build arguments when building the bundling image:
 
 ```ts
 new lambda.PythonFunction(this, 'MyFunction', {

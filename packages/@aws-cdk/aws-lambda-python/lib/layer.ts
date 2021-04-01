@@ -27,7 +27,7 @@ export interface PythonLayerVersionProps extends lambda.LayerVersionOptions {
    *
    * @default - no build arguments are passed
    */
-  readonly buildArgs?: { [key:string] : string };
+  readonly buildArgs?: { [key:string]: string };
 
 }
 
