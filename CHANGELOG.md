@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file. See [standa
 
 ## [1.95.2](https://github.com/aws/aws-cdk/compare/v1.95.1...v1.95.2) (2021-04-01)
 
-* Upgrade downstream dependency ([pac-resolver](https://github.com/TooTallNate/node-pac-resolver)) of the aws-cdk (the CDK CLI), to mitigate [CVE-2021-28918](https://github.com/advisories/GHSA-pch5-whg9-qr2r) ([13914](https://github.com/aws/aws-cdk/pull/13914)) ([794c951](https://github.com/aws/aws-cdk/commit/794c951b5da900fd30827e6f7b0b631bf21df979))
+* Upgrade a downstream dependency([pac-resolver](https://github.com/TooTallNate/node-pac-resolver)) of the aws-cdk (the CDK CLI), to mitigate [CVE-2021-28918](https://github.com/advisories/GHSA-pch5-whg9-qr2r) ([13914](https://github.com/aws/aws-cdk/pull/13914)) ([794c951](https://github.com/aws/aws-cdk/commit/794c951b5da900fd30827e6f7b0b631bf21df979))
 
 ## [1.95.1](https://github.com/aws/aws-cdk/compare/v1.95.0...v1.95.1) (2021-03-25)
 
