@@ -1,4 +1,3 @@
-import * as kms from '@aws-cdk/aws-kms';
 import { Construct } from 'constructs';
 import { Cluster, ClusterOptions, CoreDnsComputeType } from './cluster';
 import { FargateProfileOptions } from './fargate-profile';
@@ -14,14 +13,6 @@ export interface FargateClusterProps extends ClusterOptions {
    *            selectors will be created if this is left undefined.
    */
   readonly defaultProfile?: FargateProfileOptions;
-  /**
-   * KMS secret for envelope encryption for Kubernetes secrets.
-   *
-   * @default - By default, Kubernetes stores all secret object data within etcd and
-   *            all etcd volumes used by Amazon EKS are encrypted at the disk-level
-   *            using AWS-Managed encryption keys.
-   */
-  readonly secretsEncryptionKey?: kms.IKey;
 }
 
 /**
