@@ -157,10 +157,15 @@ export class InitTemplate {
 
   private expand(template: string, project: ProjectInfo) {
     const MATCH_VER_BUILD = /\+[a-f0-9]+$/; // Matches "+BUILD" in "x.y.z-beta+BUILD"
+    const MATCH_RANGE_SPECIFIER = /^[~^]/;
     // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const cdkVersion = require('../package.json').version.replace(MATCH_VER_BUILD, '');
+    const cdkVersion = require('../package.json').version
+      .replace(MATCH_VER_BUILD, '')
+      .replace(MATCH_RANGE_SPECIFIER, '');
     // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const constructsVersion = require('../package.json').devDependencies.constructs.replace(MATCH_VER_BUILD, '');
+    const constructsVersion = require('../package.json').devDependencies.constructs
+      .replace(MATCH_VER_BUILD, '')
+      .replace(MATCH_RANGE_SPECIFIER, '');
     return template.replace(/%name%/g, project.name)
       .replace(/%name\.camelCased%/g, camelCase(project.name))
       .replace(/%name\.PascalCased%/g, camelCase(project.name, { pascalCase: true }))

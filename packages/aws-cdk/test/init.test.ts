@@ -12,6 +12,7 @@ import * as os from 'os';
 import * as path from 'path';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as fs from 'fs-extra';
+import * as semver from 'semver';
 import { availableInitTemplates, cliInit } from '../lib/init';
 
 describe.each(['1', '2'])('v%s tests', (majorVersion) => {
@@ -95,6 +96,63 @@ describe.each(['1', '2'])('v%s tests', (majorVersion) => {
         });
       }
     }
+  });
+
+  describe('cdk & constructs versions are well formed', () => {
+    cliTest('java', async (workDir) => {
+      const re = [/\<cdk\.version\>(.*)\<\/cdk\.version\>/];
+      if (majorVersion === '2') {
+        re.push(/\<constructs\.version\>(.*)\<\/constructs\.version\>/);
+      }
+
+      await cliInit('app', 'java', false, true, workDir);
+
+      expect(await fs.pathExists(path.join(workDir, 'pom.xml'))).toBeTruthy();
+
+      const pom = (await fs.readFile(path.join(workDir, 'pom.xml'), 'utf8')).split(/\r?\n/);
+      // return RegExpMatchArray (result of line.match()) for every lines that match re.
+      const matches = pom.map(line => {
+        const found = re.map(r => line.match(r)).filter(r => r);
+        return found[0];
+      }).filter(l => l);
+
+      expect(matches.length).toEqual(re.length);
+      matches.forEach(m => {
+        const version = m && m[1];
+        expect(semver.valid(version)).toEqual(version); // semver.valid() returns the version back if it's valid
+      });
+    });
+
+    cliTest('.NET', async (workDir) => {
+      const re: RegExp[] = [];
+      if (majorVersion === '1') {
+        re.push(/\<PackageReference Include="Amazon\.CDK" Version="(.*)"/);
+      }
+      if (majorVersion === '2') {
+        re.push(/\<PackageReference Include="Amazon\.CDK\.Lib" Version="(.*)"/);
+        re.push(/\<PackageReference Include="Constructs" Version="(.*)"/);
+      }
+
+      await cliInit('app', 'csharp', false, true, workDir);
+
+      // convert dir name from aws-cdk-test-xyz to AwsCdkTestXyz
+      const slnName = path.basename(workDir).split('-').map(s => `${s[0].toUpperCase()}${s.slice(1)}`).join('');
+      const csprojFile = path.join(workDir, 'src', slnName, `${slnName}.csproj`);
+
+      expect(await fs.pathExists(csprojFile)).toBeTruthy();
+      const csproj = (await fs.readFile(csprojFile, 'utf8')).split(/\r?\n/);
+      // return RegExpMatchArray (result of line.match()) for every lines that match re.
+      const matches = csproj.map(line => {
+        const found = re.map(r => line.match(r)).filter(r => r);
+        return found[0];
+      }).filter(l => l);
+
+      expect(matches.length).toEqual(re.length);
+      matches.forEach(m => {
+        const version = m && m[1];
+        expect(semver.valid(version)).toEqual(version); // semver.valid() returns the version back if it's valid
+      });
+    });
   });
 });
 
