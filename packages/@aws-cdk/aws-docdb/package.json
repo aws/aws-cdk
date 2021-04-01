@@ -104,8 +104,8 @@
       "attribute-tag:@aws-cdk/aws-docdb.DatabaseSecret.secretName"
     ]
   },
-  "stability": "experimental",
-  "maturity": "experimental",
+  "stability": "stable",
+  "maturity": "stable",
   "awscdkio": {
     "announce": false
   },
