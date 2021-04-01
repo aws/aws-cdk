@@ -12,7 +12,6 @@ import * as os from 'os';
 import * as path from 'path';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as fs from 'fs-extra';
-import * as semver from 'semver';
 import { availableInitTemplates, cliInit } from '../lib/init';
 
 describe.each(['1', '2'])('v%s tests', (majorVersion) => {
@@ -97,61 +96,64 @@ describe.each(['1', '2'])('v%s tests', (majorVersion) => {
       }
     }
   });
+});
 
-  describe('cdk & constructs versions are well formed', () => {
-    cliTest('java', async (workDir) => {
-      const re = [/\<cdk\.version\>(.*)\<\/cdk\.version\>/];
-      if (majorVersion === '2') {
-        re.push(/\<constructs\.version\>(.*)\<\/constructs\.version\>/);
-      }
+describe('constructs version', () => {
+  beforeEach(() => {
+    mockMajorVersion = '2.0.0';
+    jest.resetAllMocks();
+  });
 
-      await cliInit('app', 'java', false, true, workDir);
+  cliTest('java', async (workDir) => {
+    await cliInit('app', 'java', false, true, workDir);
 
-      expect(await fs.pathExists(path.join(workDir, 'pom.xml'))).toBeTruthy();
+    expect(await fs.pathExists(path.join(workDir, 'pom.xml'))).toBeTruthy();
 
-      const pom = (await fs.readFile(path.join(workDir, 'pom.xml'), 'utf8')).split(/\r?\n/);
-      // return RegExpMatchArray (result of line.match()) for every lines that match re.
-      const matches = pom.map(line => {
-        const found = re.map(r => line.match(r)).filter(r => r);
-        return found[0];
-      }).filter(l => l);
+    const pom = (await fs.readFile(path.join(workDir, 'pom.xml'), 'utf8')).split(/\r?\n/);
+    const matches = pom.map(line => line.match(/\<constructs\.version\>(.*)\<\/constructs\.version\>/))
+      .filter(l => l);
 
-      expect(matches.length).toEqual(re.length);
-      matches.forEach(m => {
-        const version = m && m[1];
-        expect(semver.valid(version)).toEqual(version); // semver.valid() returns the version back if it's valid
-      });
+    expect(matches.length).toEqual(1);
+    matches.forEach(m => {
+      const version = m && m[1];
+      expect(version).toMatch(/\[10\.[\d]+\.[\d]+,11\.0\.0\)/);
     });
+  });
 
-    cliTest('.NET', async (workDir) => {
-      const re: RegExp[] = [];
-      if (majorVersion === '1') {
-        re.push(/\<PackageReference Include="Amazon\.CDK" Version="(.*)"/);
-      }
-      if (majorVersion === '2') {
-        re.push(/\<PackageReference Include="Amazon\.CDK\.Lib" Version="(.*)"/);
-        re.push(/\<PackageReference Include="Constructs" Version="(.*)"/);
-      }
+  cliTest('.NET', async (workDir) => {
+    await cliInit('app', 'csharp', false, true, workDir);
 
-      await cliInit('app', 'csharp', false, true, workDir);
+    // convert dir name from aws-cdk-test-xyz to AwsCdkTestXyz
+    const slnName = path.basename(workDir).split('-').map(s => `${s[0].toUpperCase()}${s.slice(1)}`).join('');
+    const csprojFile = path.join(workDir, 'src', slnName, `${slnName}.csproj`);
 
-      // convert dir name from aws-cdk-test-xyz to AwsCdkTestXyz
-      const slnName = path.basename(workDir).split('-').map(s => `${s[0].toUpperCase()}${s.slice(1)}`).join('');
-      const csprojFile = path.join(workDir, 'src', slnName, `${slnName}.csproj`);
+    expect(await fs.pathExists(csprojFile)).toBeTruthy();
+    const csproj = (await fs.readFile(csprojFile, 'utf8')).split(/\r?\n/);
+    // return RegExpMatchArray (result of line.match()) for every lines that match re.
+    const matches = csproj.map(line => line.match(/\<PackageReference Include="Constructs" Version="(.*)"/))
+      .filter(l => l);
 
-      expect(await fs.pathExists(csprojFile)).toBeTruthy();
-      const csproj = (await fs.readFile(csprojFile, 'utf8')).split(/\r?\n/);
-      // return RegExpMatchArray (result of line.match()) for every lines that match re.
-      const matches = csproj.map(line => {
-        const found = re.map(r => line.match(r)).filter(r => r);
-        return found[0];
-      }).filter(l => l);
+    expect(matches.length).toEqual(1);
+    matches.forEach(m => {
+      const version = m && m[1];
+      expect(version).toMatch(/\[10\.[\d]+\.[\d]+,11\.0\.0\)/);
+    });
+  });
 
-      expect(matches.length).toEqual(re.length);
-      matches.forEach(m => {
-        const version = m && m[1];
-        expect(semver.valid(version)).toEqual(version); // semver.valid() returns the version back if it's valid
-      });
+  cliTest('Python', async (workDir) => {
+    await cliInit('app', 'python', false, true, workDir);
+
+    // convert dir name from aws-cdk-test-xyz to AwsCdkTestXyz
+    expect(await fs.pathExists(path.join(workDir, 'setup.py'))).toBeTruthy();
+    const setupPy = (await fs.readFile(path.join(workDir, 'setup.py'), 'utf8')).split(/\r?\n/);
+    // return RegExpMatchArray (result of line.match()) for every lines that match re.
+    const matches = setupPy.map(line => line.match(/^\s*"constructs(.*)",/))
+      .filter(l => l);
+
+    expect(matches.length).toEqual(1);
+    matches.forEach(m => {
+      const version = m && m[1];
+      expect(version).toMatch(/>=10\.\d+\.\d,<11\.0\.0/);
     });
   });
 });
