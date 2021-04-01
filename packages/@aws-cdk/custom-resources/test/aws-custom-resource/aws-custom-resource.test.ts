@@ -734,7 +734,7 @@ test('assumedRoleArn adds statement for sts:assumeRole', () => {
     PolicyDocument: {
       Statement: [
         {
-          Action: 'sts:assumeRole',
+          Action: 'sts:AssumeRole',
           Effect: 'Allow',
           Resource: 'roleArn',
         },
