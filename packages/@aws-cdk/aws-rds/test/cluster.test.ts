@@ -1860,6 +1860,48 @@ describe('cluster', () => {
 
 
   });
+
+  test('changes the case of the cluster identifier if the lowercaseDbIdentifier feature flag is enabled', () => {
+    // GIVEN
+    const app = new cdk.App({
+      context: { [cxapi.RDS_LOWERCASE_DB_IDENTIFIER]: true },
+    });
+    const stack = testStack(app);
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    const clusterIdentifier = 'TestClusterIdentifier';
+    new DatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.AURORA,
+      instanceProps: { vpc },
+      clusterIdentifier,
+    });
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::RDS::DBCluster', {
+      DBClusterIdentifier: clusterIdentifier.toLowerCase(),
+    });
+  });
+
+  test('does not changes the case of the cluster identifier if the lowercaseDbIdentifier feature flag is disabled', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = testStack(app);
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    const clusterIdentifier = 'TestClusterIdentifier';
+    new DatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.AURORA,
+      instanceProps: { vpc },
+      clusterIdentifier,
+    });
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::RDS::DBCluster', {
+      DBClusterIdentifier: clusterIdentifier,
+    });
+  });
 });
 
 test.each([
