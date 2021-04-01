@@ -115,44 +115,44 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
     const call: AwsSdkCall | undefined = event.ResourceProperties[event.RequestType];
 
     if (call) {
-		let awsService;
-		
-		if(call.assumedRoleArn) {
-			
-			const stsService = new (AWS as any)[call.service]({
-			apiVersion: call.apiVersion,
-			region: call.region,
-			});
-			
-			const timestamp = (new Date()).getTime();
+      let awsService;
 
-			const params = {
-				RoleArn: call.assumedRoleArn,
-				RoleSessionName: `${physicalResourceId}-${timestamp}`
-			};
+      if (call.assumedRoleArn) {
 
-			const assumeRoleResponse = await stsService['assumeRole'](params).promise();
+        const stsService = new (AWS as any)[call.service]({
+          apiVersion: call.apiVersion,
+          region: call.region,
+        });
 
-			const creds = new AWS.Credentials({
-				accessKeyId: assumeRoleResponse.Credentials.AccessKeyId,
-				secretAccessKey: assumeRoleResponse.Credentials.SecretAccessKey,
-				sessionToken: assumeRoleResponse.Credentials.SessionToken
-			});
+        const timestamp = (new Date()).getTime();
 
-			awsService = new AWS[call.service]({
-				apiVersion: call.apiVersion,
-				region: call.region,
-				credentials: creds
-			});
-			
-		}
-		else {
-			awsService = new (AWS as any)[call.service]({
-			apiVersion: call.apiVersion,
-			region: call.region,
-			});
-		}
-			
+        const params = {
+          RoleArn: call.assumedRoleArn,
+          RoleSessionName: `${physicalResourceId}-${timestamp}`,
+        };
+
+        const assumeRoleResponse = await stsService.assumeRole(params).promise();
+
+        const creds = new AWS.Credentials({
+          accessKeyId: assumeRoleResponse.Credentials.AccessKeyId,
+          secretAccessKey: assumeRoleResponse.Credentials.SecretAccessKey,
+          sessionToken: assumeRoleResponse.Credentials.SessionToken,
+        });
+
+        awsService = new AWS[call.service]({
+          apiVersion: call.apiVersion,
+          region: call.region,
+          credentials: creds,
+        });
+
+      }
+      else {
+        awsService = new (AWS as any)[call.service]({
+          apiVersion: call.apiVersion,
+          region: call.region,
+        });
+      }
+
       try {
         const response = await awsService[call.action](
           call.parameters && decodeSpecialValues(call.parameters, physicalResourceId)).promise();

@@ -373,13 +373,13 @@ export class AwsCustomResource extends CoreConstruct implements iam.IGrantable {
           });
           statements.push(statement);
         }
-		else if (call && call.assumedRoleArn != null) {
-			const statement = new iam.PolicyStatement({
+        else if (call && call.assumedRoleArn != null) {
+          const statement = new iam.PolicyStatement({
             actions: ['sts:AssumeRole'],
             resources: [call.assumedRoleArn],
           });
           statements.push(statement);
-		}			
+        }
       }
     }
     const policy = new iam.Policy(this, 'CustomResourcePolicy', {
