@@ -339,10 +339,11 @@ test('can specify apiVersion and region', async () => {
 
 test('can specify assumedRoleArn', async () => {
   const publishFake = sinon.fake.resolves({});
-
-  const assumedRoleArnFake = 'arn:aws:iam::OTHERACCOUNT:role/CrossAccount/SnsPublish';
+  const assumeRoleFake = sinon.fake.resolves({});
+  const assumedRoleArnExcepted = 'arn:aws:iam::OTHERACCOUNT:role/CrossAccount/SnsPublish';
 
   AWS.mock('SNS', 'publish', publishFake);
+  AWS.mock('STS', 'assumeRole', assumeRoleFake);
 
   const event: AWSLambda.CloudFormationCustomResourceCreateEvent = {
     ...eventCommon,
