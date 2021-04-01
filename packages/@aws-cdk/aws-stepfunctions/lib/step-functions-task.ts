@@ -5,6 +5,7 @@ import { Task } from './states/task';
 
 /**
  * Interface for resources that can be used as tasks
+ * @deprecated replaced by `TaskStateBase`.
  */
 export interface IStepFunctionsTask {
   /**
@@ -15,6 +16,7 @@ export interface IStepFunctionsTask {
 
 /**
  * Properties that define what kind of task should be created
+ * @deprecated used by `IStepFunctionsTask`. `IStepFunctionsTask` is deprecated and replaced by `TaskStateBase`.
  */
 export interface StepFunctionsTaskConfig {
   /**
@@ -84,7 +86,7 @@ export interface StepFunctionsTaskConfig {
  * Three ways to call an integrated service: Request Response, Run a Job and Wait for a Callback with Task Token.
  * @see https://docs.aws.amazon.com/step-functions/latest/dg/connect-to-resource.html
  *
- * Here, they are named as FIRE_AND_FORGET, SYNC and WAIT_FOR_TASK_TOKEN respectly.
+ * Here, they are named as FIRE_AND_FORGET, SYNC and WAIT_FOR_TASK_TOKEN respectfully.
  *
  * @default FIRE_AND_FORGET
  */
@@ -100,7 +102,7 @@ export enum ServiceIntegrationPattern {
   SYNC = 'SYNC',
 
   /**
-   * Call a service with a task token and wait until that token is returned by SendTaskSuccess/SendTaskFailure with paylaod
+   * Call a service with a task token and wait until that token is returned by SendTaskSuccess/SendTaskFailure with payload.
    */
   WAIT_FOR_TASK_TOKEN = 'WAIT_FOR_TASK_TOKEN'
 }

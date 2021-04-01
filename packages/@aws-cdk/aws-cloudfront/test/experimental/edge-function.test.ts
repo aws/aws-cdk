@@ -217,6 +217,17 @@ test('addAlias() creates alias in function stack', () => {
   });
 });
 
+test('mutliple aliases with the same name can be added to the same stack', () => {
+  const fn1 = new cloudfront.experimental.EdgeFunction(stack, 'MyFn1', defaultEdgeFunctionProps());
+  const fn2 = new cloudfront.experimental.EdgeFunction(stack, 'MyFn2', defaultEdgeFunctionProps());
+  fn1.addAlias('live');
+  fn2.addAlias('live');
+
+  const fnStack = getFnStack();
+  expect(fnStack).toCountResources('AWS::Lambda::Function', 2);
+  expect(fnStack).toCountResources('AWS::Lambda::Alias', 2);
+});
+
 test('addPermission() creates permissions in function stack', () => {
   const fn = new cloudfront.experimental.EdgeFunction(stack, 'MyFn', defaultEdgeFunctionProps());
 

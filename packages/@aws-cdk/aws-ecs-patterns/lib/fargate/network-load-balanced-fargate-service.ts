@@ -1,5 +1,6 @@
 import { SubnetSelection } from '@aws-cdk/aws-ec2';
 import { FargatePlatformVersion, FargateService, FargateTaskDefinition } from '@aws-cdk/aws-ecs';
+import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
 import { NetworkLoadBalancedServiceBase, NetworkLoadBalancedServiceBaseProps } from '../base/network-load-balanced-service-base';
 
@@ -140,9 +141,11 @@ export class NetworkLoadBalancedFargateService extends NetworkLoadBalancedServic
       throw new Error('You must specify one of: taskDefinition or image');
     }
 
+    const desiredCount = this.node.tryGetContext(cxapi.ECS_REMOVE_DEFAULT_DESIRED_COUNT) ? this.internalDesiredCount : this.desiredCount;
+
     this.service = new FargateService(this, 'Service', {
       cluster: this.cluster,
-      desiredCount: this.desiredCount,
+      desiredCount: desiredCount,
       taskDefinition: this.taskDefinition,
       assignPublicIp: this.assignPublicIp,
       serviceName: props.serviceName,
@@ -154,6 +157,7 @@ export class NetworkLoadBalancedFargateService extends NetworkLoadBalancedServic
       cloudMapOptions: props.cloudMapOptions,
       platformVersion: props.platformVersion,
       deploymentController: props.deploymentController,
+      circuitBreaker: props.circuitBreaker,
       vpcSubnets: props.taskSubnets,
     });
     this.addServiceAsTarget(this.service);

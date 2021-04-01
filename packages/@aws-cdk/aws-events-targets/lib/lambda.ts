@@ -1,11 +1,11 @@
 import * as events from '@aws-cdk/aws-events';
 import * as lambda from '@aws-cdk/aws-lambda';
-import { addLambdaPermission } from './util';
+import { addLambdaPermission, addToDeadLetterQueueResourcePolicy, TargetBaseProps, bindBaseTargetConfig } from './util';
 
 /**
  * Customize the Lambda Event Target
  */
-export interface LambdaFunctionProps {
+export interface LambdaFunctionProps extends TargetBaseProps {
   /**
    * The event to send to the Lambda
    *
@@ -32,8 +32,12 @@ export class LambdaFunction implements events.IRuleTarget {
     // Allow handler to be called from rule
     addLambdaPermission(rule, this.handler);
 
+    if (this.props.deadLetterQueue) {
+      addToDeadLetterQueueResourcePolicy(rule, this.props.deadLetterQueue);
+    }
+
     return {
-      id: '',
+      ...bindBaseTargetConfig(this.props),
       arn: this.handler.functionArn,
       input: this.props.event,
       targetResource: this.handler,

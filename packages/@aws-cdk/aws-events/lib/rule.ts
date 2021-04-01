@@ -295,6 +295,8 @@ export class Rule extends Resource implements IRule {
       kinesisParameters: targetProps.kinesisParameters,
       runCommandParameters: targetProps.runCommandParameters,
       batchParameters: targetProps.batchParameters,
+      deadLetterConfig: targetProps.deadLetterConfig,
+      retryPolicy: targetProps.retryPolicy,
       sqsParameters: targetProps.sqsParameters,
       input: inputProps && inputProps.input,
       inputPath: inputProps && inputProps.inputPath,

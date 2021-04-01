@@ -1,6 +1,9 @@
 import { Certificate, CertificateValidation, ICertificate } from '@aws-cdk/aws-certificatemanager';
 import { IVpc } from '@aws-cdk/aws-ec2';
-import { AwsLogDriver, BaseService, CloudMapOptions, Cluster, ContainerImage, DeploymentController, ICluster, LogDriver, PropagatedTagSource, Secret } from '@aws-cdk/aws-ecs';
+import {
+  AwsLogDriver, BaseService, CloudMapOptions, Cluster, ContainerImage, DeploymentController, DeploymentCircuitBreaker,
+  ICluster, LogDriver, PropagatedTagSource, Secret,
+} from '@aws-cdk/aws-ecs';
 import {
   ApplicationListener, ApplicationLoadBalancer, ApplicationProtocol, ApplicationTargetGroup,
   IApplicationLoadBalancer, ListenerCertificate, ListenerAction, AddApplicationTargetsProps,
@@ -78,7 +81,9 @@ export interface ApplicationLoadBalancedServiceBaseProps {
    * The desired number of instantiations of the task definition to keep running on the service.
    * The minimum value is 1
    *
-   * @default 1
+   * @default - If the feature flag, ECS_REMOVE_DEFAULT_DESIRED_COUNT is false, the default is 1;
+   * if true, the default is 1 for all new services and uses the existing services desired count
+   * when updating an existing service.
    */
   readonly desiredCount?: number;
 
@@ -224,6 +229,14 @@ export interface ApplicationLoadBalancedServiceBaseProps {
    * @default - Rolling update (ECS)
    */
   readonly deploymentController?: DeploymentController;
+
+  /**
+   * Whether to enable the deployment circuit breaker. If this property is defined, circuit breaker will be implicitly
+   * enabled.
+   * @default - disabled
+   */
+  readonly circuitBreaker?: DeploymentCircuitBreaker;
+
 }
 
 export interface ApplicationLoadBalancedTaskImageOptions {
@@ -311,11 +324,18 @@ export interface ApplicationLoadBalancedTaskImageOptions {
  * The base class for ApplicationLoadBalancedEc2Service and ApplicationLoadBalancedFargateService services.
  */
 export abstract class ApplicationLoadBalancedServiceBase extends CoreConstruct {
+  /**
+   * The desired number of instantiations of the task definition to keep running on the service.
+   * @deprecated - Use `internalDesiredCount` instead.
+   */
+  public readonly desiredCount: number;
 
   /**
    * The desired number of instantiations of the task definition to keep running on the service.
+   * The default is 1 for all new services and uses the existing services desired count
+   * when updating an existing service if one is not provided.
    */
-  public readonly desiredCount: number;
+  public readonly internalDesiredCount?: number;
 
   /**
    * The Application Load Balancer for the service.
@@ -368,7 +388,9 @@ export abstract class ApplicationLoadBalancedServiceBase extends CoreConstruct {
     if (props.desiredCount !== undefined && props.desiredCount < 1) {
       throw new Error('You must specify a desiredCount greater than 0');
     }
+
     this.desiredCount = props.desiredCount || 1;
+    this.internalDesiredCount = props.desiredCount;
 
     const internetFacing = props.publicLoadBalancer ?? true;
 

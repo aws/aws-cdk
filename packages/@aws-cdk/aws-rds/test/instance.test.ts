@@ -8,6 +8,7 @@ import * as lambda from '@aws-cdk/aws-lambda';
 import * as logs from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
 import { testFutureBehavior } from 'cdk-build-tools/lib/feature-flag';
 import * as rds from '../lib';
 
@@ -1038,7 +1039,7 @@ describe('instance', () => {
   });
 
   describe('S3 Import/Export', () => {
-    testFutureBehavior('instance with s3 import and export buckets', { '@aws-cdk/aws-s3:grantWriteWithoutAcl': true }, cdk.App, (app) => {
+    testFutureBehavior('instance with s3 import and export buckets', { [cxapi.S3_GRANT_WRITE_WITHOUT_ACL]: true }, cdk.App, (app) => {
       stack = new cdk.Stack(app);
       vpc = new ec2.Vpc(stack, 'VPC');
       new rds.DatabaseInstance(stack, 'DB', {
@@ -1203,8 +1204,44 @@ describe('instance', () => {
       MasterUsername: 'postgres', // username is a string
       MasterUserPassword: '{{resolve:ssm-secure:/dbPassword:1}}', // reference to SSM
     });
+  });
 
+  test('can set custom name to database secret by fromSecret', () => {
+    // WHEN
+    const secretName = 'custom-secret-name';
+    const secret = new rds.DatabaseSecret(stack, 'Secret', {
+      username: 'admin',
+      secretName,
+    } );
+    new rds.DatabaseInstance(stack, 'Instance', {
+      engine: rds.DatabaseInstanceEngine.mysql({
+        version: rds.MysqlEngineVersion.VER_8_0_19,
+      }),
+      credentials: rds.Credentials.fromSecret(secret),
+      vpc,
+    });
 
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::SecretsManager::Secret', {
+      Name: secretName,
+    });
+  });
+
+  test('can set custom name to database secret by fromGeneratedSecret', () => {
+    // WHEN
+    const secretName = 'custom-secret-name';
+    new rds.DatabaseInstance(stack, 'Instance', {
+      engine: rds.DatabaseInstanceEngine.mysql({
+        version: rds.MysqlEngineVersion.VER_8_0_19,
+      }),
+      credentials: rds.Credentials.fromGeneratedSecret('admin', { secretName }),
+      vpc,
+    });
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::SecretsManager::Secret', {
+      Name: secretName,
+    });
   });
 
   test('can set publiclyAccessible to false with public subnets', () => {
@@ -1241,8 +1278,6 @@ describe('instance', () => {
     expect(stack).toHaveResource('AWS::RDS::DBInstance', {
       PubliclyAccessible: true,
     });
-
-
   });
 });
 

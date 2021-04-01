@@ -157,6 +157,17 @@ book.addMethod('GET', getBookIntegration, {
 });
 ```
 
+It is possible to also integrate with AWS services in a different region. The following code integrates with Amazon SQS in the
+`eu-west-1` region.
+
+```ts
+const getMessageIntegration = new apigateway.AwsIntegration({
+  service: 'sqs', 
+  path: 'queueName', 
+  region: 'eu-west-1' 
+});
+```
+
 ## API Keys
 
 The following example shows how to use an API Key with a usage plan:

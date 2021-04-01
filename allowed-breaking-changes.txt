@@ -57,9 +57,7 @@ incompatible-argument:@aws-cdk/aws-ecs.TaskDefinition.addVolume
 weakened:@aws-cdk/cloud-assembly-schema.DockerImageSource
 weakened:@aws-cdk/cloud-assembly-schema.FileSource
 
-# https://github.com/aws/aws-cdk/pull/13145
-removed:@aws-cdk/core.AssetStaging.isArchive
-removed:@aws-cdk/core.AssetStaging.packaging
-removed:@aws-cdk/core.BundlingOutput
-removed:@aws-cdk/core.BundlingOptions.outputType
-
+# Changed required deprecated props from required -> optional.
+# These are fine, since they shouldn't be widely used.
+weakened:@aws-cdk/core.FileAssetLocation
+weakened:@aws-cdk/aws-events.RuleTargetConfig

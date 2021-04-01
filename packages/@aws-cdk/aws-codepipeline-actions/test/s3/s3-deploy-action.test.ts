@@ -2,6 +2,7 @@ import '@aws-cdk/assert/jest';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as s3 from '@aws-cdk/aws-s3';
 import { App, Duration, SecretValue, Stack } from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
 import { testFutureBehavior } from 'cdk-build-tools/lib/feature-flag';
 import * as cpactions from '../../lib';
 
@@ -48,7 +49,7 @@ describe('', () => {
 
     });
 
-    testFutureBehavior('grant the pipeline correct access to the target bucket', { '@aws-cdk/aws-s3:grantWriteWithoutAcl': true }, App, (app) => {
+    testFutureBehavior('grant the pipeline correct access to the target bucket', { [cxapi.S3_GRANT_WRITE_WITHOUT_ACL]: true }, App, (app) => {
       const stack = new Stack(app);
       minimalPipeline(stack);
 

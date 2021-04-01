@@ -1,9 +1,9 @@
-import * as crypto from 'crypto';
-import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
-import { Duration, IResource, Resource, Stack } from '@aws-cdk/core';
+import { Duration } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnApi, CfnApiProps } from '../apigatewayv2.generated';
-import { DefaultDomainMappingOptions } from '../http/stage';
+import { IApi } from '../common/api';
+import { ApiBase } from '../common/base';
+import { DomainMappingOptions, IStage } from '../common/stage';
 import { IHttpRouteAuthorizer } from './authorizer';
 import { IHttpRouteIntegration, HttpIntegration, HttpRouteIntegrationConfig } from './integration';
 import { BatchHttpRouteOptions, HttpMethod, HttpRoute, HttpRouteKey } from './route';
@@ -13,75 +13,13 @@ import { VpcLink, VpcLinkProps } from './vpc-link';
 /**
  * Represents an HTTP API
  */
-export interface IHttpApi extends IResource {
+export interface IHttpApi extends IApi {
   /**
    * The identifier of this API Gateway HTTP API.
    * @attribute
+   * @deprecated - use apiId instead
    */
   readonly httpApiId: string;
-
-  /**
-   * The default endpoint for an API
-   * @attribute
-   */
-  readonly apiEndpoint: string;
-
-  /**
-   * The default stage
-   */
-  readonly defaultStage?: HttpStage;
-
-  /**
-   * Return the given named metric for this HTTP Api Gateway
-   *
-   * @default - average over 5 minutes
-   */
-  metric(metricName: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric;
-
-  /**
-   * Metric for the number of client-side errors captured in a given period.
-   *
-   * @default - sum over 5 minutes
-   */
-  metricClientError(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
-
-  /**
-   * Metric for the number of server-side errors captured in a given period.
-   *
-   * @default - sum over 5 minutes
-   */
-  metricServerError(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
-
-  /**
-   * Metric for the amount of data processed in bytes.
-   *
-   * @default - sum over 5 minutes
-   */
-  metricDataProcessed(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
-
-  /**
-   * Metric for the total number API requests in a given period.
-   *
-   * @default - SampleCount over 5 minutes
-   */
-  metricCount(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
-
-  /**
-   * Metric for the time between when API Gateway relays a request to the backend
-   * and when it receives a response from the backend.
-   *
-   * @default - no statistic
-   */
-  metricIntegrationLatency(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
-
-  /**
-   * The time between when API Gateway receives a request from a client
-   * and when it returns a response to the client.
-   * The latency includes the integration latency and other API Gateway overhead.
-   *
-   * @default - no statistic
-   */
-  metricLatency(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 
   /**
    * Add a new VpcLink
@@ -135,7 +73,7 @@ export interface HttpApiProps {
    *
    * @default - no default domain mapping configured. meaningless if `createDefaultStage` is `false`.
    */
-  readonly defaultDomainMapping?: DefaultDomainMappingOptions;
+  readonly defaultDomainMapping?: DomainMappingOptions;
 
   /**
    * Specifies whether clients can invoke your API using the default endpoint.
@@ -145,6 +83,42 @@ export interface HttpApiProps {
    * @default false execute-api endpoint enabled.
    */
   readonly disableExecuteApiEndpoint?: boolean;
+
+  /**
+   * Default Authorizer to applied to all routes in the gateway
+   *
+   * @default - No authorizer
+   */
+  readonly defaultAuthorizer?: IHttpRouteAuthorizer;
+
+  /**
+   * Default OIDC scopes attached to all routes in the gateway, unless explicitly configured on the route.
+   *
+   * @default - no default authorization scopes
+   */
+  readonly defaultAuthorizationScopes?: string[];
+}
+
+/**
+ * Supported CORS HTTP methods
+ */
+export enum CorsHttpMethod{
+  /** HTTP ANY */
+  ANY = '*',
+  /** HTTP DELETE */
+  DELETE = 'DELETE',
+  /** HTTP GET */
+  GET = 'GET',
+  /** HTTP HEAD */
+  HEAD = 'HEAD',
+  /** HTTP OPTIONS */
+  OPTIONS = 'OPTIONS',
+  /** HTTP PATCH */
+  PATCH = 'PATCH',
+  /** HTTP POST */
+  POST = 'POST',
+  /** HTTP PUT */
+  PUT = 'PUT',
 }
 
 /**
@@ -167,7 +141,7 @@ export interface CorsPreflightOptions {
    * Represents a collection of allowed HTTP methods.
    * @default - No Methods are allowed.
    */
-  readonly allowMethods?: HttpMethod[];
+  readonly allowMethods?: CorsHttpMethod[];
 
   /**
    * Represents a collection of allowed origins.
@@ -205,58 +179,30 @@ export interface AddRoutesOptions extends BatchHttpRouteOptions {
 
   /**
    * Authorizer to be associated to these routes.
-   * @default - No authorizer
+   *
+   * Use NoneAuthorizer to remove the default authorizer for the api
+   *
+   * @default - uses the default authorizer if one is specified on the HttpApi
    */
   readonly authorizer?: IHttpRouteAuthorizer;
 
   /**
    * The list of OIDC scopes to include in the authorization.
    *
-   * These scopes will be merged with the scopes from the attached authorizer
-   * @default - no additional authorization scopes
+   * These scopes will override the default authorization scopes on the gateway.
+   * Set to [] to remove default scopes
+   *
+   * @default - uses defaultAuthorizationScopes if configured on the API, otherwise none.
    */
   readonly authorizationScopes?: string[];
 }
 
-abstract class HttpApiBase extends Resource implements IHttpApi { // note that this is not exported
+abstract class HttpApiBase extends ApiBase implements IHttpApi { // note that this is not exported
 
+  public abstract readonly apiId: string;
   public abstract readonly httpApiId: string;
   public abstract readonly apiEndpoint: string;
   private vpcLinks: Record<string, VpcLink> = {};
-  private httpIntegrations: Record<string, HttpIntegration> = {};
-
-  public metric(metricName: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return new cloudwatch.Metric({
-      namespace: 'AWS/ApiGateway',
-      metricName,
-      dimensions: { ApiId: this.httpApiId },
-      ...props,
-    }).attachTo(this);
-  }
-
-  public metricClientError(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.metric('4XXError', { statistic: 'Sum', ...props });
-  }
-
-  public metricServerError(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.metric('5XXError', { statistic: 'Sum', ...props });
-  }
-
-  public metricDataProcessed(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.metric('DataProcessed', { statistic: 'Sum', ...props });
-  }
-
-  public metricCount(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.metric('Count', { statistic: 'SampleCount', ...props });
-  }
-
-  public metricIntegrationLatency(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.metric('IntegrationLatency', props);
-  }
-
-  public metricLatency(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.metric('Latency', props);
-  }
 
   public addVpcLink(options: VpcLinkProps): VpcLink {
     const { vpcId } = options.vpc;
@@ -275,11 +221,9 @@ abstract class HttpApiBase extends Resource implements IHttpApi { // note that t
    * @internal
    */
   public _addIntegration(scope: Construct, config: HttpRouteIntegrationConfig): HttpIntegration {
-    const stringifiedConfig = JSON.stringify(Stack.of(scope).resolve(config));
-    const configHash = crypto.createHash('md5').update(stringifiedConfig).digest('hex');
-
-    if (configHash in this.httpIntegrations) {
-      return this.httpIntegrations[configHash];
+    const { configHash, integration: existingIntegration } = this._integrationCache.getIntegration(scope, config);
+    if (existingIntegration) {
+      return existingIntegration as HttpIntegration;
     }
 
     const integration = new HttpIntegration(scope, `HttpIntegration-${configHash}`, {
@@ -291,7 +235,7 @@ abstract class HttpApiBase extends Resource implements IHttpApi { // note that t
       connectionType: config.connectionType,
       payloadFormatVersion: config.payloadFormatVersion,
     });
-    this.httpIntegrations[configHash] = integration;
+    this._integrationCache.saveIntegration(scope, config, integration);
 
     return integration;
   }
@@ -322,6 +266,7 @@ export class HttpApi extends HttpApiBase {
    */
   public static fromHttpApiAttributes(scope: Construct, id: string, attrs: HttpApiAttributes): IHttpApi {
     class Import extends HttpApiBase {
+      public readonly apiId = attrs.httpApiId;
       public readonly httpApiId = attrs.httpApiId;
       private readonly _apiEndpoint = attrs.apiEndpoint;
 
@@ -339,6 +284,7 @@ export class HttpApi extends HttpApiBase {
    * A human friendly name for this HTTP API. Note that this is different from `httpApiId`.
    */
   public readonly httpApiName?: string;
+  public readonly apiId: string;
   public readonly httpApiId: string;
 
   /**
@@ -347,11 +293,14 @@ export class HttpApi extends HttpApiBase {
   public readonly disableExecuteApiEndpoint?: boolean;
 
   /**
-   * default stage of the api resource
+   * The default stage of this API
    */
-  public readonly defaultStage: HttpStage | undefined;
+  public readonly defaultStage: IStage | undefined;
 
   private readonly _apiEndpoint: string;
+
+  private readonly defaultAuthorizer?: IHttpRouteAuthorizer;
+  private readonly defaultAuthorizationScopes?: string[];
 
   constructor(scope: Construct, id: string, props?: HttpApiProps) {
     super(scope, id);
@@ -392,8 +341,11 @@ export class HttpApi extends HttpApiBase {
     };
 
     const resource = new CfnApi(this, 'Resource', apiProps);
+    this.apiId = resource.ref;
     this.httpApiId = resource.ref;
     this._apiEndpoint = resource.attrApiEndpoint;
+    this.defaultAuthorizer = props?.defaultAuthorizer;
+    this.defaultAuthorizationScopes = props?.defaultAuthorizationScopes;
 
     if (props?.defaultIntegration) {
       new HttpRoute(this, 'DefaultRoute', {
@@ -457,12 +409,16 @@ export class HttpApi extends HttpApiBase {
    */
   public addRoutes(options: AddRoutesOptions): HttpRoute[] {
     const methods = options.methods ?? [HttpMethod.ANY];
-    return methods.map((method) => new HttpRoute(this, `${method}${options.path}`, {
-      httpApi: this,
-      routeKey: HttpRouteKey.with(options.path, method),
-      integration: options.integration,
-      authorizer: options.authorizer,
-      authorizationScopes: options.authorizationScopes,
-    }));
+    return methods.map((method) => {
+      const authorizationScopes = options.authorizationScopes ?? this.defaultAuthorizationScopes;
+
+      return new HttpRoute(this, `${method}${options.path}`, {
+        httpApi: this,
+        routeKey: HttpRouteKey.with(options.path, method),
+        integration: options.integration,
+        authorizer: options.authorizer ?? this.defaultAuthorizer,
+        authorizationScopes,
+      });
+    });
   }
 }

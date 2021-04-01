@@ -275,7 +275,7 @@ DatabaseSubnet3   |`ISOLATED`|`10.0.6.32/28`|#3|Only routes within the VPC
 
 ### Accessing the Internet Gateway
 
-If you need access to the internet gateway, you can get it's ID like so:
+If you need access to the internet gateway, you can get its ID like so:
 
 ```ts
 const igwId = vpc.internetGatewayId;
@@ -520,6 +520,27 @@ listener.connections.allowDefaultPortFromAnyIpv4('Allow public');
 appFleet.connections.allowDefaultPortTo(rdsDatabase, 'Fleet can access database');
 ```
 
+### Security group rules
+
+By default, security group wills be added inline to the security group in the output cloud formation
+template, if applicable.  This includes any static rules by ip address and port range.  This
+optimization helps to minimize the size of the template.
+
+In some environments this is not desirable, for example if your security group access is controlled
+via tags. You can disable inline rules per security group or globally via the context key
+`@aws-cdk/aws-ec2.securityGroupDisableInlineRules`.
+
+```ts fixture=with-vpc
+const mySecurityGroupWithoutInlineRules = new ec2.SecurityGroup(this, 'SecurityGroup', {
+  vpc,
+  description: 'Allow ssh access to ec2 instances',
+  allowAllOutbound: true,
+  disableInlineRules: true
+});
+//This will add the rule as an external cloud formation construct
+mySecurityGroupWithoutInlineRules.addIngressRule(ec2.Peer.anyIpv4(), ec2.Port.tcp(22), 'allow ssh access from the world');
+```
+
 ## Machine Images (AMIs)
 
 AMIs control the OS that gets launched when you start your EC2 instance. The EC2
@@ -677,6 +698,71 @@ new VpcEndpointServiceDomainName(stack, 'EndpointDomain', {
 Note: The domain name must be owned (registered through Route53) by the account the endpoint service is in, or delegated to the account.
 The VpcEndpointServiceDomainName will handle the AWS side of domain verification, the process for which can be found
 [here](https://docs.aws.amazon.com/vpc/latest/userguide/endpoint-services-dns-validation.html)
+
+### Client VPN endpoint
+
+AWS Client VPN is a managed client-based VPN service that enables you to securely access your AWS
+resources and resources in your on-premises network. With Client VPN, you can access your resources
+from any location using an OpenVPN-based VPN client.
+
+Use the `addClientVpnEndpoint()` method to add a client VPN endpoint to a VPC:
+
+```ts fixture=client-vpn
+vpc.addClientVpnEndpoint('Endpoint', {
+  cidr: '10.100.0.0/16',
+  serverCertificateArn: 'arn:aws:acm:us-east-1:123456789012:certificate/server-certificate-id',
+  // Mutual authentication
+  clientCertificateArn: 'arn:aws:acm:us-east-1:123456789012:certificate/client-certificate-id',
+  // User-based authentication
+  userBasedAuthentication: ec2.ClientVpnUserBasedAuthentication.federated(samlProvider),
+});
+```
+
+The endpoint must use at least one [authentication method](https://docs.aws.amazon.com/vpn/latest/clientvpn-admin/client-authentication.html):
+
+* Mutual authentication with a client certificate
+* User-based authentication (directory or federated)
+
+If user-based authentication is used, the [self-service portal URL](https://docs.aws.amazon.com/vpn/latest/clientvpn-user/self-service-portal.html)
+is made available via a CloudFormation output.
+
+By default, a new security group is created and logging is enabled. Moreover, a rule to
+authorize all users to the VPC CIDR is created.
+
+To customize authorization rules, set the `authorizeAllUsersToVpcCidr` prop to `false`
+and use `addaddAuthorizationRule()`:
+
+```ts fixture=client-vpn
+const endpoint = vpc.addClientVpnEndpoint('Endpoint', {
+  cidr: '10.100.0.0/16',
+  serverCertificateArn: 'arn:aws:acm:us-east-1:123456789012:certificate/server-certificate-id',
+  userBasedAuthentication: ec2.ClientVpnUserBasedAuthentication.federated(samlProvider),
+  authorizeAllUsersToVpcCidr: false,
+});
+
+endpoint.addAuthorizationRule('Rule', {
+  cidr: '10.0.10.0/32',
+  groupId: 'group-id',
+});
+```
+
+Use `addRoute()` to configure network routes:
+
+```ts fixture=client-vpn
+const endpoint = vpc.addClientVpnEndpoint('Endpoint', {
+  cidr: '10.100.0.0/16',
+  serverCertificateArn: 'arn:aws:acm:us-east-1:123456789012:certificate/server-certificate-id',
+  userBasedAuthentication: ec2.ClientVpnUserBasedAuthentication.federated(samlProvider),
+});
+
+// Client-to-client access
+endpoint.addRoute('Route', {
+  cidr: '10.100.0.0/16',
+  target: ec2.ClientVpnRouteTarget.local(),
+});
+```
+
+Use the `connections` object of the endpoint to allow traffic to other security groups.
 
 ## Instances
 
@@ -980,6 +1066,51 @@ instance.userData.addExecuteFileCommand({
 });
 asset.grantRead( instance.role );
 ```
+
+### Multipart user data
+
+In addition, to above the `MultipartUserData` can be used to change instance startup behavior. Multipart user data are composed
+from separate parts forming archive. The most common parts are scripts executed during instance set-up. However, there are other
+kinds, too.
+
+The advantage of multipart archive is in flexibility when it's needed to add additional parts or to use specialized parts to
+fine tune instance startup. Some services (like AWS Batch) supports only `MultipartUserData`.
+
+The parts can be executed at different moment of instance start-up and can serve a different purposes. This is controlled by `contentType` property.
+For common scripts, `text/x-shellscript; charset="utf-8"` can be used as content type.
+
+In order to create archive the `MultipartUserData` has to be instantiated. Than, user can add parts to multipart archive using `addPart`. The `MultipartBody` contains methods supporting creation of body parts.
+
+If the very custom part is required, it can be created using `MultipartUserData.fromRawBody`, in this case full control over content type,
+transfer encoding, and body properties is given to the user.
+
+Below is an example for creating multipart user data with single body part responsible for installing `awscli` and configuring maximum size
+of storage used by Docker containers:
+
+```ts
+const bootHookConf = ec2.UserData.forLinux();
+bootHookConf.addCommands('cloud-init-per once docker_options echo \'OPTIONS="${OPTIONS} --storage-opt dm.basesize=40G"\' >> /etc/sysconfig/docker');
+
+const setupCommands = ec2.UserData.forLinux();
+setupCommands.addCommands('sudo yum install awscli && echo Packages installed らと > /var/tmp/setup');
+
+const multipartUserData = new ec2.MultipartUserData();
+// The docker has to be configured at early stage, so content type is overridden to boothook
+multipartUserData.addPart(ec2.MultipartBody.fromUserData(bootHookConf, 'text/cloud-boothook; charset="us-ascii"'));
+// Execute the rest of setup
+multipartUserData.addPart(ec2.MultipartBody.fromUserData(setupCommands));
+
+new ec2.LaunchTemplate(stack, '', {
+  userData: multipartUserData,
+  blockDevices: [
+    // Block device configuration rest
+  ]
+});
+```
+
+For more information see 
+[Specifying Multiple User Data Blocks Using a MIME Multi Part Archive](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/bootstrap_container_instance.html#multi-part_user_data)
+
 
 ## Importing existing subnet
 
