@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { Code, Runtime } from '@aws-cdk/aws-lambda';
-import { FileSystem } from '@aws-cdk/core';
+import { FileSystem, DockerImage } from '@aws-cdk/core';
 import { stageDependencies, bundle } from '../lib/bundling';
 
 jest.mock('@aws-cdk/aws-lambda');
@@ -138,4 +138,24 @@ describe('Dependency detection', () => {
     const sourcedir = FileSystem.mkdtemp('source-');
     expect(stageDependencies(sourcedir, '/dummy')).toEqual(false);
   });
+});
+
+let fromAssetMock = jest.spyOn(DockerImage, 'fromBuild');
+test('with Docker build args', () => {
+  const entry = path.join(__dirname, 'lambda-handler');
+
+  bundle({
+    entry,
+    runtime: Runtime.PYTHON_3_7,
+    buildArgs: {
+      HELLO: 'WORLD',
+    },
+    outputPathSuffix: 'python',
+  });
+
+  expect(fromAssetMock).toHaveBeenCalledWith(expect.stringMatching(/python-bundling-/), expect.objectContaining({
+    buildArgs: expect.objectContaining({
+      HELLO: 'WORLD',
+    }),
+  }));
 });

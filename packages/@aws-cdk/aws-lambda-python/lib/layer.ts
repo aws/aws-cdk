@@ -21,6 +21,14 @@ export interface PythonLayerVersionProps extends lambda.LayerVersionOptions {
    * @default - All runtimes are supported.
    */
   readonly compatibleRuntimes?: lambda.Runtime[];
+
+  /**
+   * Build arguments to pass when building the bundling image.
+   *
+   * @default - no build arguments are passed
+   */
+  readonly buildArgs?: { [key:string] : string };
+
 }
 
 /**
@@ -51,6 +59,7 @@ export class PythonLayerVersion extends lambda.LayerVersion {
         entry,
         runtime,
         outputPathSuffix: 'python',
+        buildArgs: props.buildArgs,
       }),
     });
   }

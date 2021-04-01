@@ -33,6 +33,9 @@ new PythonFunction(this, 'MyFunction', {
   index: 'my_index.py', // optional, defaults to 'index.py'
   handler: 'my_exported_func', // optional, defaults to 'handler'
   runtime: lambda.Runtime.PYTHON_3_6, // optional, defaults to lambda.Runtime.PYTHON_3_7
+  build_args: {
+    HTTPS_PROXY: 'https://127.0.0.1:3001',
+  }, // optional, defaults to {}
 });
 ```
 
@@ -84,5 +87,17 @@ new lambda.PythonFunction(this, 'MyFunction', {
       entry: '/path/to/my/layer', // point this to your library's directory
     }),
   ],
+});
+```
+
+**Lambda with custom Docker Build Time Variables**
+
+Use the `build_args` parameter to pass build arguments when building the bundling image:
+
+```ts
+new lambda.PythonFunction(this, 'MyFunction', {
+  buildArgs: {
+    HTTPS_PROXY: 'https://127.0.0.1:3001',
+  },
 });
 ```

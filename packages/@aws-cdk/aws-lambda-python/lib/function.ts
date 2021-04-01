@@ -77,6 +77,14 @@ export interface PythonFunctionProps extends lambda.FunctionOptions {
    * @default - based on `assetHashType`
    */
   readonly assetHash?: string;
+
+  /**
+   * Build arguments to pass when building the bundling image.
+   *
+   * @default - no build arguments are passed
+   */
+  readonly buildArgs?: { [key:string] : string };
+
 }
 
 /**
@@ -112,6 +120,7 @@ export class PythonFunction extends lambda.Function {
         outputPathSuffix: '.',
         assetHashType: props.assetHashType,
         assetHash: props.assetHash,
+        buildArgs: props.buildArgs,
       }),
       handler: `${index.slice(0, -3)}.${handler}`,
     });

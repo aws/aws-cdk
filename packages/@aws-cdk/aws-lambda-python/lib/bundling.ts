@@ -71,6 +71,13 @@ export interface BundlingOptions {
    * @default - based on `assetHashType`
    */
   readonly assetHash?: string;
+
+  /**
+   * Build arguments to pass when building the bundling image.
+   *
+   * @default - no build arguments are passed
+   */
+  readonly buildArgs?: { [key:string] : string };
 }
 
 /**
@@ -100,6 +107,7 @@ export function bundle(options: BundlingOptions): lambda.Code {
 
   const image = cdk.DockerImage.fromBuild(stagedir, {
     buildArgs: {
+      ...options.buildArgs ?? {},
       IMAGE: runtime.bundlingDockerImage.image,
     },
     file: dockerfile,
