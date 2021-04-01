@@ -337,6 +337,41 @@ test('can specify apiVersion and region', async () => {
   expect(request.isDone()).toBeTruthy();
 });
 
+test('can specify assumedRoleArn', async () => {
+  const publishFake = sinon.fake.resolves({});
+
+  const assumedRoleArn: 'arn:aws:iam::OTHERACCOUNT:role/CrossAccount/SnsPublish';
+
+  AWS.mock('SNS', 'publish', publishFake);
+
+  const event: AWSLambda.CloudFormationCustomResourceCreateEvent = {
+    ...eventCommon,
+    RequestType: 'Create',
+    ResourceProperties: {
+      ServiceToken: 'token',
+      Create: JSON.stringify({
+        service: 'SNS',
+        action: 'publish',
+        parameters: {
+          Message: 'message',
+          TopicArn: 'topic',
+        },
+        assumedRoleArn: assumedRoleArn,
+        physicalResourceId: PhysicalResourceId.of('id'),
+      } as AwsSdkCall),
+    },
+  };
+
+  const request = createRequest(body =>
+    body.Status === 'SUCCESS' &&
+    body.Data!.assumedRoleArn === assumedRoleArn,
+  );
+
+  await handler(event, {} as AWSLambda.Context);
+
+  expect(request.isDone()).toBeTruthy();
+});
+
 test('flatten correctly flattens a nested object', () => {
   expect(flatten({
     a: { b: 'c' },
