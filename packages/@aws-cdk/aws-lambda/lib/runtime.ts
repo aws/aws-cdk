@@ -9,7 +9,7 @@ export interface LambdaRuntimeProps {
 
   /**
    * The Docker image name to be used for bundling in this runtime.
-   * @default - the latest docker image "amazon/aws-sam-cli-build-image-<runtime>" from https://hub.docker.com/u/amazon
+   * @default - the latest docker image "amazon/public.ecr.aws/sam/build-<runtime>" from https://gallery.ecr.aws
    */
   readonly bundlingDockerImage?: string;
 
@@ -219,11 +219,12 @@ export class Runtime {
    */
   public readonly bundlingImage: DockerImage;
 
-  constructor(name: string, family?: RuntimeFamily, props: LambdaRuntimeProps = { }) {
+  constructor(name: string, family?: RuntimeFamily, props: LambdaRuntimeProps = {}) {
     this.name = name;
     this.supportsInlineCode = !!props.supportsInlineCode;
     this.family = family;
-    const imageName = props.bundlingDockerImage ?? `amazon/aws-sam-cli-build-image-${name}`;
+
+    const imageName = props.bundlingDockerImage ?? `public.ecr.aws/sam/build-${name}`;
     this.bundlingDockerImage = DockerImage.fromRegistry(imageName);
     this.bundlingImage = this.bundlingDockerImage;
     this.supportsCodeGuruProfiling = props.supportsCodeGuruProfiling ?? false;
@@ -237,7 +238,7 @@ export class Runtime {
 
   public runtimeEquals(other: Runtime): boolean {
     return other.name === this.name &&
-           other.family === this.family &&
-           other.supportsInlineCode === this.supportsInlineCode;
+      other.family === this.family &&
+      other.supportsInlineCode === this.supportsInlineCode;
   }
 }
