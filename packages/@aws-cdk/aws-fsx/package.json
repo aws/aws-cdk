@@ -102,8 +102,8 @@
       "resource-interface:@aws-cdk/aws-fsx.LustreFileSystem"
     ]
   },
-  "stability": "experimental",
-  "maturity": "experimental",
+  "stability": "stable",
+  "maturity": "stable",
   "awscdkio": {
     "announce": false
   },
