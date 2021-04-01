@@ -788,3 +788,39 @@ new ecs.FargateService(stack, 'FargateService', {
 
 app.synth();
 ```
+
+## Elastic Inference Accelerators
+
+Currently, not supported on Fargate.
+
+To add elastic inference accelerators to your EC2 instance, first add
+`inferenceAccelerator` field to the EC2TaskDefinition and set the `deviceName`
+and `deviceType` properties.
+
+```ts
+const inferenceAccelerator = [{
+  deviceName: 'device1',
+  deviceType: 'eia2.medium',
+}];
+
+const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
+  inferenceAccelerators: inferenceAccelerator,
+});
+```
+
+To enable using the inference accelerator in the containers, set the
+`type` and `value` properties accordingly. The `value` should match the
+`DeviceName` for an `InferenceAccelerator` specified in a task definition. 
+
+```ts
+const resourceRequirements = [{
+  type: ecs.ResourceRequirementType.INFERENCEACCELERATOR,
+  value: 'device1',
+}];
+
+taskDefinition.addContainer('cont', {
+  image: ecs.ContainerImage.fromRegistry('test'),
+  memoryLimitMiB: 1024,
+  resourceRequirements: resourceRequirements,
+});
+```
