@@ -175,8 +175,8 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@types/lodash": "^4.14.168",
-    "@types/minimatch": "^3.0.3",
-    "@types/node": "^10.17.55",
+    "@types/minimatch": "^3.0.4",
+    "@types/node": "^10.17.56",
     "@types/sinon": "^9.0.11",
     "cdk-build-tools": "0.0.0",
     "cfn2ts": "0.0.0",
