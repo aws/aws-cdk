@@ -2,6 +2,58 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.96.0](https://github.com/aws/aws-cdk/compare/v1.95.2...v1.96.0) (2021-04-01)
+
+
+### ⚠ BREAKING CHANGES TO EXPERIMENTAL FEATURES
+
+* **globalaccelerator:** automatic naming algorithm has been changed: if you have existing Accelerators you will need to pass an
+explicit name to prevent them from being replaced. All endpoints are now added by calling `addEndpoint()` with a
+target-specific class that can be found in `@aws-cdk/aws-globalaccelerator-endpoints`. The generated Security Group
+is now looked up by calling `endpointGroup.connectionsPeer()`.
+* **docdb:** `DatabaseClusterProps.instanceProps` was hoisted and all its properties are now available one level up directly in `DatabaseClusterProps`.
+* **docdb**: `DatabaseInstanceProps.instanceClass` renamed to `DatabaseInstanceProps.instanceType`.
+* **core:** The type of the `image` property in `BundlingOptions`
+is changed from `BundlingDockerImage` to `DockerImage`.
+* **core:** The return type of the `DockerImage.fromBuild()` API is
+changed from `BundlingDockerImage` to `DockerImage`.
+
+### Features
+
+* **autoscaling-common:** graduate to stable 🚀  ([#13862](https://github.com/aws/aws-cdk/issues/13862)) ([2d623d0](https://github.com/aws/aws-cdk/commit/2d623d08d8d5d8c356d871ccd69a8cdac9c4170e))
+* **chatbot:** graduate to stable 🚀  ([#13863](https://github.com/aws/aws-cdk/issues/13863)) ([2384cdd](https://github.com/aws/aws-cdk/commit/2384cdd39bae1639bf3e6bfdeb7a08edc6306cac))
+* **cli:** app init template for golang ([#13840](https://github.com/aws/aws-cdk/issues/13840)) ([41fd42b](https://github.com/aws/aws-cdk/commit/41fd42b89f6f9a95c6e736c17bd404d80c4756a7)), closes [aws/jsii#2678](https://github.com/aws/jsii/issues/2678)
+* **cloudformation-diff:** graduate to stable 🚀  ([#13857](https://github.com/aws/aws-cdk/issues/13857)) ([294f546](https://github.com/aws/aws-cdk/commit/294f54692c609eaf20257caba0b53ceb9882ff35))
+* **docdb:** graduate to stable 🚀  ([#13875](https://github.com/aws/aws-cdk/issues/13875)) ([169c2fc](https://github.com/aws/aws-cdk/commit/169c2fc55c3de2426380d0a1151d1d33cbcc2190))
+* **ec2:** allow disabling inline security group rules ([#13613](https://github.com/aws/aws-cdk/issues/13613)) ([793230c](https://github.com/aws/aws-cdk/commit/793230c7a6dcaf93408206e680bd26159ece1b7d))
+* **elasticloadbalancingv2:** graduate to stable 🚀  ([#13861](https://github.com/aws/aws-cdk/issues/13861)) ([08fa5ed](https://github.com/aws/aws-cdk/commit/08fa5ede1721f5165fad5fcf402a83fc2496bc46))
+* **fsx:** graduate to stable 🚀  ([#13860](https://github.com/aws/aws-cdk/issues/13860)) ([b2322aa](https://github.com/aws/aws-cdk/commit/b2322aac00dbbf5b171d5887fef2a3c8f3267c73))
+* **globalaccelerator:** graduate to stable 🚀 ([#13843](https://github.com/aws/aws-cdk/issues/13843)) ([8571008](https://github.com/aws/aws-cdk/commit/8571008884df8e048754fc4e0cfdf06ab20f0149))
+* **lambda:** switch bundling images from DockerHub to ECR public gallery ([#13473](https://github.com/aws/aws-cdk/issues/13473)) ([e2e008b](https://github.com/aws/aws-cdk/commit/e2e008bd19c3ff1b08ccb093dba576551ec73240)), closes [#11296](https://github.com/aws/aws-cdk/issues/11296)
+* **lambda-event-sources:** support for batching window to sqs event source ([#13406](https://github.com/aws/aws-cdk/issues/13406)) ([6743e3b](https://github.com/aws/aws-cdk/commit/6743e3bb79a8281a4be5677fff018d702c85038d)), closes [#11722](https://github.com/aws/aws-cdk/issues/11722) [#11724](https://github.com/aws/aws-cdk/issues/11724) [#13770](https://github.com/aws/aws-cdk/issues/13770)
+* **lambda-event-sources:** tumbling window ([#13412](https://github.com/aws/aws-cdk/issues/13412)) ([e9f2773](https://github.com/aws/aws-cdk/commit/e9f2773aedeb7f01ebf2a05face719be9bb8b0d7)), closes [#13411](https://github.com/aws/aws-cdk/issues/13411)
+* **lambda-nodejs:** graduate to stable 🚀  ([#13844](https://github.com/aws/aws-cdk/issues/13844)) ([37a5502](https://github.com/aws/aws-cdk/commit/37a5502ced1bf1b451ac4bd921752746277461bf))
+
+
+### Bug Fixes
+
+* **aws-ecs:** broken splunk-logging `tag`-option in fargate platform version 1.4 ([#13882](https://github.com/aws/aws-cdk/issues/13882)) ([e9d9299](https://github.com/aws/aws-cdk/commit/e9d9299b6bcdab489d94c974074e8c796bce00f3)), closes [#13881](https://github.com/aws/aws-cdk/issues/13881)
+* **cloudfront:** auto-generated cache policy name might conflict cross-region ([#13737](https://github.com/aws/aws-cdk/issues/13737)) ([4f067cb](https://github.com/aws/aws-cdk/commit/4f067cb90d43d04659f68dec6b866ba77f10642c)), closes [#13629](https://github.com/aws/aws-cdk/issues/13629)
+* **cloudfront:** Origin Request Policy headers enforce soft limit of 10 ([#13907](https://github.com/aws/aws-cdk/issues/13907)) ([9b0a6cf](https://github.com/aws/aws-cdk/commit/9b0a6cf0d349ef3ce1c941b25bbe8e630e09c639)), closes [#13410](https://github.com/aws/aws-cdk/issues/13410) [#13903](https://github.com/aws/aws-cdk/issues/13903)
+* **codebuild:** allow passing the ARN of the Secret in environment variables ([#13706](https://github.com/aws/aws-cdk/issues/13706)) ([6f6e079](https://github.com/aws/aws-cdk/commit/6f6e079569fcdb7e0631717fbe269e94f8f7b127)), closes [#12703](https://github.com/aws/aws-cdk/issues/12703)
+* **codebuild:** take the account & region of an imported Project from its ARN ([#13708](https://github.com/aws/aws-cdk/issues/13708)) ([fb65123](https://github.com/aws/aws-cdk/commit/fb6512314db1b11fc608cd62753090684ad0d3c4)), closes [#13694](https://github.com/aws/aws-cdk/issues/13694)
+* **codedeploy:** script installing CodeDeploy agent fails ([#13758](https://github.com/aws/aws-cdk/issues/13758)) ([25e8d04](https://github.com/aws/aws-cdk/commit/25e8d04d7266a2642f11154750bef49a31b1892e)), closes [#13755](https://github.com/aws/aws-cdk/issues/13755)
+* **cognito:** imported userpool not retaining environment from arn ([#13715](https://github.com/aws/aws-cdk/issues/13715)) ([aa9fd9c](https://github.com/aws/aws-cdk/commit/aa9fd9cd9bbaea4149927e08d57d29e547933f49)), closes [#13691](https://github.com/aws/aws-cdk/issues/13691)
+* **core:** BundlingDockerImage.fromAsset() does not return a BundlingDockerImage ([#13846](https://github.com/aws/aws-cdk/issues/13846)) ([7176a5d](https://github.com/aws/aws-cdk/commit/7176a5d5208da7d727bbf5112bc12533983380ea))
+* **dynamodb:** table with replicas fails to deploy with "Unresolved resource dependencies" error ([#13889](https://github.com/aws/aws-cdk/issues/13889)) ([5c99d0d](https://github.com/aws/aws-cdk/commit/5c99d0d0e0fde00582e469b667265ebc9f5ef330))
+* **iam:** Role import doesn't fail when forgetting the region in the ARN ([#13821](https://github.com/aws/aws-cdk/issues/13821)) ([560a853](https://github.com/aws/aws-cdk/commit/560a8536ffc31f74fe2366b1365681c1e56e33da)), closes [#13812](https://github.com/aws/aws-cdk/issues/13812)
+* **rds:** fail with a descriptive error if Cluster's instance count is a deploy-time value ([#13765](https://github.com/aws/aws-cdk/issues/13765)) ([dd22e8f](https://github.com/aws/aws-cdk/commit/dd22e8fc29f1fc33d391d1bb9ae93963bfd82563)), closes [#13558](https://github.com/aws/aws-cdk/issues/13558)
+* **yaml-cfn:** do not deserialize year-month-date as strings ([#13745](https://github.com/aws/aws-cdk/issues/13745)) ([ffea818](https://github.com/aws/aws-cdk/commit/ffea818f26a383e7f314dac3505c46f3b4b4348d)), closes [#13709](https://github.com/aws/aws-cdk/issues/13709)
+
+## [1.95.2](https://github.com/aws/aws-cdk/compare/v1.95.1...v1.95.2) (2021-04-01)
+
+* Upgrade a downstream dependency([pac-resolver](https://github.com/TooTallNate/node-pac-resolver)) of the aws-cdk (the CDK CLI), to mitigate [CVE-2021-28918](https://github.com/advisories/GHSA-pch5-whg9-qr2r) ([13914](https://github.com/aws/aws-cdk/pull/13914)) ([794c951](https://github.com/aws/aws-cdk/commit/794c951b5da900fd30827e6f7b0b631bf21df979))
+
 ## [1.95.1](https://github.com/aws/aws-cdk/compare/v1.95.0...v1.95.1) (2021-03-25)
 
 
