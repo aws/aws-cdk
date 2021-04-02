@@ -24,7 +24,7 @@ describe('CachePolicy', () => {
 
     expect(stack).toHaveResource('AWS::CloudFront::CachePolicy', {
       CachePolicyConfig: {
-        Name: 'StackCachePolicy0D6FCBC0',
+        Name: 'StackCachePolicy0D6FCBC0-testregion',
         MinTTL: 0,
         DefaultTTL: 86400,
         MaxTTL: 31536000,
@@ -94,17 +94,6 @@ describe('CachePolicy', () => {
     expect(() => new CachePolicy(stack, 'CachePolicy4', { cachePolicyName: 'MyPolicy' })).not.toThrow();
     expect(() => new CachePolicy(stack, 'CachePolicy5', { cachePolicyName: 'My-Policy' })).not.toThrow();
     expect(() => new CachePolicy(stack, 'CachePolicy6', { cachePolicyName: 'My_Policy' })).not.toThrow();
-  });
-
-  test('throws if more than 10 CacheHeaderBehavior headers are being passed', () => {
-    const errorMessage = /Maximum allowed headers in Cache Policy is 10; got (.*?)/;
-    expect(() => new CachePolicy(stack, 'CachePolicy1', {
-      headerBehavior: CacheHeaderBehavior.allowList('Lorem', 'ipsum', 'dolor', 'sit', 'amet', 'consectetur', 'adipiscing', 'elit', 'sed', 'do', 'eiusmod'),
-    })).toThrow(errorMessage);
-
-    expect(() => new CachePolicy(stack, 'CachePolicy2', {
-      headerBehavior: CacheHeaderBehavior.allowList('Lorem', 'ipsum', 'dolor', 'sit', 'amet', 'consectetur', 'adipiscing', 'elit', 'sed', 'do'),
-    })).not.toThrow();
   });
 
   test('does not throw if cachePolicyName is a token', () => {
