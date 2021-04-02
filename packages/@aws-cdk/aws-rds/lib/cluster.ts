@@ -4,7 +4,8 @@ import * as kms from '@aws-cdk/aws-kms';
 import * as logs from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
-import { Annotations, Duration, RemovalPolicy, Resource, Token } from '@aws-cdk/core';
+import { Annotations, Duration, FeatureFlags, RemovalPolicy, Resource, Token } from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
 import { IClusterEngine } from './cluster-engine';
 import { DatabaseClusterAttributes, IDatabaseCluster } from './cluster-ref';
@@ -340,11 +341,15 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
     const clusterParameterGroupConfig = clusterParameterGroup?.bindToCluster({});
     this.engine = props.engine;
 
+    const clusterIdentifier = FeatureFlags.of(this).isEnabled(cxapi.RDS_LOWERCASE_DB_IDENTIFIER)
+      ? props.clusterIdentifier?.toLowerCase()
+      : props.clusterIdentifier;
+
     this.newCfnProps = {
       // Basic
       engine: props.engine.engineType,
       engineVersion: props.engine.engineVersion?.fullVersion,
-      dbClusterIdentifier: props.clusterIdentifier,
+      dbClusterIdentifier: clusterIdentifier,
       dbSubnetGroupName: this.subnetGroup.subnetGroupName,
       vpcSecurityGroupIds: this.securityGroups.map(sg => sg.securityGroupId),
       port: props.port ?? clusterEngineBindConfig.port,
