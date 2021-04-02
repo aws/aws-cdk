@@ -97,6 +97,38 @@ describe('cluster', () => {
     });
   });
 
+
+  test('check exposure of EnableIAMDatabaseAuthentication property in DBCluster', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new DatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.AURORA,
+      instances: 1,
+      credentials: {
+        username: 'admin',
+        password: cdk.SecretValue.plainText('tooshort'),
+      },
+      instanceProps: {
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+        vpc,
+      },
+      iamAuthentication: false
+    });
+
+    // THEN
+    expect(stack).toHaveResource('AWS::RDS::DBCluster', {
+      Engine: 'aurora',
+      DBSubnetGroupName: { Ref: 'DatabaseSubnets56F17B9A' },
+      MasterUsername: 'admin',
+      MasterUserPassword: 'tooshort',
+      EnableIAMDatabaseAuthentication: false,
+      VpcSecurityGroupIds: [{ 'Fn::GetAtt': ['DatabaseSecurityGroup5C91FDCB', 'GroupId'] }],
+    });
+  });
+
   test('can create a cluster with imported vpc and security group', () => {
     // GIVEN
     const stack = testStack();
