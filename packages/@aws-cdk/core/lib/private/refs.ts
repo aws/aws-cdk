@@ -1,4 +1,3 @@
-//import * as ssm from '@aws-cdk/aws-ssm';
 import * as cxapi from '@aws-cdk/cx-api';
 
 // ----------------------------------------------------
