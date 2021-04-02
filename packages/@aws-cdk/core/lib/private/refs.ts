@@ -1,4 +1,4 @@
-import * as ssm from '@aws-cdk/aws-ssm';
+//import * as ssm from '@aws-cdk/aws-ssm';
 import * as cxapi from '@aws-cdk/cx-api';
 
 // ----------------------------------------------------
@@ -8,6 +8,7 @@ import * as cxapi from '@aws-cdk/cx-api';
 import { CfnElement } from '../cfn-element';
 import { CfnOutput } from '../cfn-output';
 import { CfnParameter } from '../cfn-parameter';
+import { CfnResource } from '../cfn-resource';
 import { IConstruct } from '../construct-compat';
 import { FeatureFlags } from '../feature-flags';
 import { Names } from '../names';
@@ -176,10 +177,16 @@ function createParameterStoreGet(consumer: Stack, reference: Reference): IResolv
 
   const parameterName = `/cdk/${providerStack.stackName}/${reference.displayName}`;
 
-  new ssm.StringParameter(providerStack, 'parameter', {
-    parameterName,
-    stringValue: Token.asString(reference),
+  new CfnResource(providerStack, 'ref-parameter', {
+    type: 'AWS::SSM::Parameter',
+    properties: {
+      description: `Created by ${providerStack.stackName}`,
+      name: parameterName,
+      type: 'String',
+      value: Token.asString(reference),
+    },
   });
+
   return new CfnParameter(consumer, 'id', {
     type: 'AWS::SSM::Parameter::Value<String>',
     default: parameterName,

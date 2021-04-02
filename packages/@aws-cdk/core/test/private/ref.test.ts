@@ -1,32 +1,37 @@
-import * as s3 from '@aws-cdk/aws-s3';
-import { expect as expectCDK, haveResource } from '@aws-cdk/assert';
+import { nodeunitShim, Test } from 'nodeunit-shim';
 import { App, Construct, Stack, StackProps, CfnOutput } from '../../lib';
+import { toCloudFormation } from '../util';
 
 interface extraProps extends StackProps {
-  otherProp: s3.Bucket;
+  otherProp: string;
 }
 
 class StackOne extends Stack {
-  bucket: s3.Bucket;
+  toShare: string;
   constructor(scope: Construct, id: string, props?: extraProps) {
     super(scope, id, props);
-    this.bucket = new s3.Bucket(this, 'bucket');
+    this.toShare = 'Some Cross Stack Value';
   }
 }
 class StackTwo extends Stack {
-  bucket: s3.IBucket;
+  valueFromStackOne: string;
   constructor(scope: Construct, id: string, props: extraProps) {
     super(scope, id, props);
-    this.bucket = s3.Bucket.fromBucketName(this, 'bucket', props.otherProp.bucketName);
+    this.valueFromStackOne = props.otherProp;
+    new CfnOutput(this, 'TestOutput', { value: this.valueFromStackOne });
   }
 }
 
-test('Cross stack references create Parameters', () => {
-  const app = new App();
-  // WHEN
-  const stackOne = new StackOne(app, 'MyTestStackOne');
-  const stackTwo = new StackTwo(app, 'MyTestStackTwo', { otherProp: stackOne.bucket });
-  new CfnOutput(stackTwo, 'TestOutput', { value: stackTwo.bucket.bucketArn });
-  // THEN
-  expectCDK(stackOne).to(haveResource('AWS::SSM::Parameter'));
+nodeunitShim({
+  crossStackRefCreatesParameter: {
+    'Cross stack references create Parameters'(test: Test) {
+      const app = new App();
+      // WHEN
+      const stackOne = new StackOne(app, 'MyTestStackOne');
+      new StackTwo(app, 'MyTestStackTwo', { otherProp: stackOne.toShare });
+      const cfn = toCloudFormation(stackOne);
+      test.deepEqual(cfn, { });
+      test.done();
+    },
+  },
 });
