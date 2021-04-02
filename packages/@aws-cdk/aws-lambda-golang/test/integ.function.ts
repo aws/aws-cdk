@@ -1,6 +1,5 @@
 import * as path from 'path';
-import { Runtime } from '@aws-cdk/aws-lambda';
-import { App, BundlingDockerImage, Stack, StackProps } from '@aws-cdk/core';
+import { App, DockerImage, Stack, StackProps } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import * as lambda from '../lib';
 
@@ -16,7 +15,7 @@ class TestStack extends Stack {
     new lambda.GolangFunction(this, 'go-handler-docker', {
       entry: path.join(__dirname, 'lambda-handler-vendor/cmd/api'),
       bundling: {
-        dockerImage: BundlingDockerImage.fromAsset(path.join(__dirname, '../lib'), {
+        dockerImage: DockerImage.fromBuild(path.join(__dirname, '../lib'), {
           buildArgs: {
             IMAGE: 'public.ecr.aws/bitnami/golang:1.15',
           },
@@ -34,7 +33,6 @@ class TestStack extends Stack {
         },
         goBuildFlags: ['-ldflags "-s -w"'],
       },
-      runtime: Runtime.PROVIDED_AL2,
     });
   }
 }
