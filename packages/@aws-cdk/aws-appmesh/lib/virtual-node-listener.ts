@@ -1,8 +1,8 @@
 import * as cdk from '@aws-cdk/core';
 import { CfnVirtualNode } from './appmesh.generated';
-import { validateHealthChecks } from './private/utils';
+import { validateHealthChecks, ConnectionPoolConfig } from './private/utils';
 import {
-  ConnectionPoolConfig, GrpcConnectionPool, GrpcTimeout, HealthCheck, Http2ConnectionPool, HttpConnectionPool,
+  GrpcConnectionPool, GrpcTimeout, HealthCheck, Http2ConnectionPool, HttpConnectionPool,
   HttpTimeout, Protocol, TcpConnectionPool, TcpTimeout,
 } from './shared-interfaces';
 import { TlsCertificate, TlsCertificateConfig } from './tls-certificate';

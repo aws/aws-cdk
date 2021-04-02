@@ -1,8 +1,7 @@
 import * as cdk from '@aws-cdk/core';
 import { CfnVirtualGateway } from './appmesh.generated';
-import { validateHealthChecks } from './private/utils';
+import { validateHealthChecks, ConnectionPoolConfig } from './private/utils';
 import {
-  ConnectionPoolConfig,
   GrpcConnectionPool,
   HealthCheck,
   Http2ConnectionPool,
@@ -16,9 +15,9 @@ import { TlsCertificate, TlsCertificateConfig } from './tls-certificate';
 import { Construct } from '@aws-cdk/core';
 
 /**
- * Represents the properties needed to define HTTP Listeners for a VirtualGateway
+ * Represents the properties needed to define a Listeners for a VirtualGateway
  */
-export interface HttpGatewayListenerOptions {
+interface VirtualGatewayListenerCommonOptions {
   /**
    * Port to listen for connections on
    *
@@ -39,7 +38,12 @@ export interface HttpGatewayListenerOptions {
    * @default - none
    */
   readonly tlsCertificate?: TlsCertificate;
+}
 
+/**
+ * Represents the properties needed to define HTTP Listeners for a VirtualGateway
+ */
+export interface HttpGatewayListenerOptions extends VirtualGatewayListenerCommonOptions {
   /**
    * Connection pool for http listeners
    *
@@ -51,28 +55,7 @@ export interface HttpGatewayListenerOptions {
 /**
  * Represents the properties needed to define HTTP2 Listeners for a VirtualGateway
  */
-export interface Http2GatewayListenerOptions {
-  /**
-   * Port to listen for connections on
-   *
-   * @default - 8080
-   */
-  readonly port?: number
-
-  /**
-   * The health check information for the listener
-   *
-   * @default - no healthcheck
-   */
-  readonly healthCheck?: HealthCheck;
-
-  /**
-   * Represents the configuration for enabling TLS on a listener
-   *
-   * @default - none
-   */
-  readonly tlsCertificate?: TlsCertificate;
-
+export interface Http2GatewayListenerOptions extends VirtualGatewayListenerCommonOptions {
   /**
    * Connection pool for http listeners
    *
@@ -84,28 +67,7 @@ export interface Http2GatewayListenerOptions {
 /**
  * Represents the properties needed to define GRPC Listeners for a VirtualGateway
  */
-export interface GrpcGatewayListenerOptions {
-  /**
-   * Port to listen for connections on
-   *
-   * @default - 8080
-   */
-  readonly port?: number
-
-  /**
-   * The health check information for the listener
-   *
-   * @default - no healthcheck
-   */
-  readonly healthCheck?: HealthCheck;
-
-  /**
-   * Represents the listener certificate
-   *
-   * @default - none
-   */
-  readonly tlsCertificate?: TlsCertificate;
-
+export interface GrpcGatewayListenerOptions extends VirtualGatewayListenerCommonOptions {
   /**
    * Connection pool for http listeners
    *
