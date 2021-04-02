@@ -44,7 +44,7 @@ export class Bundling implements cdk.BundlingOptions {
   private static runsLocally?: boolean;
 
   // Core bundling options
-  public readonly image: cdk.BundlingDockerImage;
+  public readonly image: cdk.DockerImage;
   public readonly command: string[];
   public readonly environment?: { [key: string]: string };
   public readonly local?: cdk.ILocalBundling;
@@ -62,20 +62,20 @@ export class Bundling implements cdk.BundlingOptions {
     const cgoEnabled = props.cgoEnabled ? '1' : '0';
 
     const environment = {
-      ...props.environment,
       CGO_ENABLED: cgoEnabled,
       GO111MODULE: 'on',
       GOARCH: 'amd64',
       GOOS: 'linux',
+      ...props.environment,
     };
 
     // Docker bundling
     const shouldBuildImage = props.forcedDockerBundling || !Bundling.runsLocally;
     this.image = shouldBuildImage
-      ? props.dockerImage ?? cdk.BundlingDockerImage.fromAsset(path.join(__dirname, '../lib'), {
+      ? props.dockerImage ?? cdk.DockerImage.fromBuild(path.join(__dirname, '../lib'), {
         buildArgs: {
           ...props.buildArgs ?? {},
-          IMAGE: Runtime.GO_1_X.bundlingDockerImage.image, // always use the GO_1_X build image
+          IMAGE: Runtime.GO_1_X.bundlingImage.image, // always use the GO_1_X build image
         },
       })
       : cdk.BundlingDockerImage.fromRegistry('dummy'); // Do not build if we don't need to

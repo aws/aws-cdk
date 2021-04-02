@@ -2,12 +2,12 @@ import * as child_process from 'child_process';
 import * as os from 'os';
 import * as path from 'path';
 import { Code, Runtime } from '@aws-cdk/aws-lambda';
-import { AssetHashType, BundlingDockerImage } from '@aws-cdk/core';
+import { AssetHashType, DockerImage } from '@aws-cdk/core';
 import { Bundling } from '../lib/bundling';
 import * as util from '../lib/util';
 
 jest.mock('@aws-cdk/aws-lambda');
-const fromAssetMock = jest.spyOn(BundlingDockerImage, 'fromAsset');
+const fromAssetMock = jest.spyOn(DockerImage, 'fromBuild');
 let getGoBuildVersionMock = jest.spyOn(util, 'getGoBuildVersion');
 
 beforeEach(() => {
@@ -192,7 +192,7 @@ test('Custom bundling docker image', () => {
     modFilePath,
     runtime: Runtime.GO_1_X,
     forcedDockerBundling: true,
-    dockerImage: BundlingDockerImage.fromRegistry('my-custom-image'),
+    dockerImage: DockerImage.fromRegistry('my-custom-image'),
   });
 
   expect(Code.fromAsset).toHaveBeenCalledWith('/project', {
