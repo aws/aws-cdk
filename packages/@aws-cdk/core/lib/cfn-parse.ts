@@ -132,6 +132,12 @@ export class FromCloudFormation {
       return new FromCloudFormationResult(value.toString());
     }
 
+    // CloudFormation treats booleans and strings interchangeably;
+    // so, if we get a boolean here, convert it to a string
+    if (typeof value === 'boolean') {
+      return new FromCloudFormationResult(value.toString());
+    }
+
     // in all other cases, just return the input,
     // and let a validator handle it if it's not a string
     return new FromCloudFormationResult(value);
@@ -566,11 +572,19 @@ export class CfnParser {
       case 'Fn::FindInMap': {
         const value = this.parseValue(object[key]);
         // the first argument to FindInMap is the mapping name
-        const mapping = this.finder.findMapping(value[0]);
-        if (!mapping) {
-          throw new Error(`Mapping used in FindInMap expression with name '${value[0]}' was not found in the template`);
+        let mappingName: string;
+        if (Token.isUnresolved(value[0])) {
+          // the first argument can be a dynamic expression like Ref: Param;
+          // if it is, we can't find the mapping in advance
+          mappingName = value[0];
+        } else {
+          const mapping = this.finder.findMapping(value[0]);
+          if (!mapping) {
+            throw new Error(`Mapping used in FindInMap expression with name '${value[0]}' was not found in the template`);
+          }
+          mappingName = mapping.logicalId;
         }
-        return Fn._findInMap(mapping.logicalId, value[1], value[2]);
+        return Fn._findInMap(mappingName, value[1], value[2]);
       }
       case 'Fn::Select': {
         const value = this.parseValue(object[key]);

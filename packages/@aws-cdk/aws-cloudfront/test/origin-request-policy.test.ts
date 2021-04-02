@@ -77,6 +77,18 @@ describe('OriginRequestPolicy', () => {
     expect(() => new OriginRequestPolicy(stack, 'OriginRequestPolicy6', { originRequestPolicyName: 'My_Policy' })).not.toThrow();
   });
 
+  test('throws if prohibited headers are being passed', () => {
+    const errorMessage = /you cannot pass `Authorization` or `Accept-Encoding` as header values/;
+    expect(() => new OriginRequestPolicy(stack, 'OriginRequestPolicy1', { headerBehavior: OriginRequestHeaderBehavior.allowList('Authorization') })).toThrow(errorMessage);
+    expect(() => new OriginRequestPolicy(stack, 'OriginRequestPolicy2', { headerBehavior: OriginRequestHeaderBehavior.allowList('Accept-Encoding') })).toThrow(errorMessage);
+    expect(() => new OriginRequestPolicy(stack, 'OriginRequestPolicy3', { headerBehavior: OriginRequestHeaderBehavior.allowList('authorization') })).toThrow(errorMessage);
+    expect(() => new OriginRequestPolicy(stack, 'OriginRequestPolicy4', { headerBehavior: OriginRequestHeaderBehavior.allowList('accept-encoding') })).toThrow(errorMessage);
+    expect(() => new OriginRequestPolicy(stack, 'OriginRequestPolicy5', { headerBehavior: OriginRequestHeaderBehavior.allowList('Foo', 'Authorization', 'Bar') })).toThrow(errorMessage);
+    expect(() => new OriginRequestPolicy(stack, 'OriginRequestPolicy6', { headerBehavior: OriginRequestHeaderBehavior.allowList('Foo', 'Accept-Encoding', 'Bar') })).toThrow(errorMessage);
+
+    expect(() => new OriginRequestPolicy(stack, 'OriginRequestPolicy7', { headerBehavior: OriginRequestHeaderBehavior.allowList('Foo', 'Bar') })).not.toThrow();
+  });
+
   test('does not throw if originRequestPolicyName is a token', () => {
     expect(() => new OriginRequestPolicy(stack, 'CachePolicy', {
       originRequestPolicyName: Aws.STACK_NAME,

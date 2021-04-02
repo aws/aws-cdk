@@ -29,9 +29,6 @@
         ],
         "distName": "aws-cdk.aws-emrcontainers",
         "module": "aws_cdk.aws_emrcontainers"
-      },
-      "go": {
-        "moduleName": "github.com/aws/aws-cdk-go"
       }
     }
   },

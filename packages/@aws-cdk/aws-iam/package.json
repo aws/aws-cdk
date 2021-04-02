@@ -26,9 +26,6 @@
           "Framework :: AWS CDK",
           "Framework :: AWS CDK :: 1"
         ]
-      },
-      "go": {
-        "moduleName": "github.com/aws/aws-cdk-go"
       }
     },
     "projectReferences": true,
@@ -92,12 +89,12 @@
   "dependencies": {
     "@aws-cdk/core": "0.0.0",
     "@aws-cdk/region-info": "0.0.0",
-    "constructs": "^3.2.0"
+    "constructs": "^3.3.69"
   },
   "peerDependencies": {
     "@aws-cdk/core": "0.0.0",
     "@aws-cdk/region-info": "0.0.0",
-    "constructs": "^3.2.0"
+    "constructs": "^3.3.69"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "engines": {
@@ -108,6 +105,7 @@
       "from-signature:@aws-cdk/aws-iam.Role.fromRoleArn",
       "construct-interface-extends-iconstruct:@aws-cdk/aws-iam.IManagedPolicy",
       "props-physical-name:@aws-cdk/aws-iam.OpenIdConnectProviderProps",
+      "props-physical-name:@aws-cdk/aws-iam.SamlProviderProps",
       "resource-interface-extends-resource:@aws-cdk/aws-iam.IManagedPolicy",
       "docs-public-apis:@aws-cdk/aws-iam.IUser"
     ]

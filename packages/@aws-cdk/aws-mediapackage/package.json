@@ -27,9 +27,6 @@
         ],
         "distName": "aws-cdk.aws-mediapackage",
         "module": "aws_cdk.aws_mediapackage"
-      },
-      "go": {
-        "moduleName": "github.com/aws/aws-cdk-go"
       }
     }
   },

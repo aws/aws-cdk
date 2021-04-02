@@ -113,7 +113,6 @@ export class AwsApi implements events.IRuleTarget {
     };
 
     return {
-      id: '',
       arn: handler.functionArn,
       input: events.RuleTargetInput.fromObject(input),
       targetResource: handler,

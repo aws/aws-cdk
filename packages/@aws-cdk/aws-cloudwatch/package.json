@@ -26,9 +26,6 @@
           "Framework :: AWS CDK",
           "Framework :: AWS CDK :: 1"
         ]
-      },
-      "go": {
-        "moduleName": "github.com/aws/aws-cdk-go"
       }
     },
     "projectReferences": true
@@ -84,19 +81,20 @@
   "dependencies": {
     "@aws-cdk/aws-iam": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "constructs": "^3.2.0"
+    "constructs": "^3.3.69"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
     "@aws-cdk/aws-iam": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "constructs": "^3.2.0"
+    "constructs": "^3.3.69"
   },
   "awslint": {
     "exclude": [
       "duration-prop-type:@aws-cdk/aws-cloudwatch.MetricAlarmConfig.period",
       "duration-prop-type:@aws-cdk/aws-cloudwatch.MetricGraphConfig.period",
       "duration-prop-type:@aws-cdk/aws-cloudwatch.MetricRenderingProperties.period",
+      "no-unused-type:@aws-cdk/aws-cloudwatch.Statistic",
       "props-default-doc:@aws-cdk/aws-cloudwatch.MetricAlarmConfig.dimensions",
       "props-default-doc:@aws-cdk/aws-cloudwatch.MetricAlarmConfig.extendedStatistic",
       "props-default-doc:@aws-cdk/aws-cloudwatch.MetricAlarmConfig.statistic",

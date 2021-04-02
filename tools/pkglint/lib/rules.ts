@@ -625,10 +625,11 @@ export class NoPeerDependenciesMonocdk extends ValidationRule {
  * Note: v1 and v2 use different versions respectively.
  */
 export class ConstructsVersion extends ValidationRule {
-  public readonly name = 'deps/constructs';
-  private readonly expectedRange = cdkMajorVersion() === 2
+  public static readonly VERSION = cdkMajorVersion() === 2
     ? '10.0.0-pre.5'
-    : '^3.2.0';
+    : '^3.3.69';
+
+  public readonly name = 'deps/constructs';
 
   public validate(pkg: PackageJson) {
     const toCheck = new Array<string>();
@@ -644,7 +645,7 @@ export class ConstructsVersion extends ValidationRule {
     }
 
     for (const cfg of toCheck) {
-      expectJSON(this.name, pkg, `${cfg}.constructs`, this.expectedRange);
+      expectJSON(this.name, pkg, `${cfg}.constructs`, ConstructsVersion.VERSION);
     }
   }
 }
@@ -692,20 +693,6 @@ export class JSIIPythonTarget extends ValidationRule {
     expectJSON(this.name, pkg, 'jsii.targets.python.distName', moduleName.python.distName);
     expectJSON(this.name, pkg, 'jsii.targets.python.module', moduleName.python.module);
     expectJSON(this.name, pkg, 'jsii.targets.python.classifiers', ['Framework :: AWS CDK', 'Framework :: AWS CDK :: 1']);
-  }
-}
-
-
-export class JSIIGolangTarget extends ValidationRule {
-  public readonly name = 'jsii/go';
-
-  public validate(pkg: PackageJson): void {
-    if (!isJSII(pkg)) { return; }
-
-    const moduleName = cdkModuleName(pkg.json.name);
-
-    // See: https://aws.github.io/jsii/user-guides/lib-author/configuration/targets/go
-    expectJSON(this.name, pkg, 'jsii.targets.go.moduleName', moduleName.goRepositoryName);
   }
 }
 
@@ -883,7 +870,6 @@ function cdkModuleName(name: string) {
       distName: `aws-cdk.${pythonName}`,
       module: `aws_cdk.${pythonName.replace(/-/g, '_')}`,
     },
-    goRepositoryName: 'github.com/aws/aws-cdk-go',
   };
 }
 
@@ -1422,7 +1408,7 @@ export class ConstructsDependency extends ValidationRule {
   public readonly name = 'constructs/dependency';
 
   public validate(pkg: PackageJson) {
-    const REQUIRED_VERSION = '^3.2.0';
+    const REQUIRED_VERSION = ConstructsVersion.VERSION;;
 
     if (pkg.devDependencies?.constructs && pkg.devDependencies?.constructs !== REQUIRED_VERSION) {
       pkg.report({

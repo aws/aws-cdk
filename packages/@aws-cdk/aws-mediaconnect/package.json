@@ -27,9 +27,6 @@
         ],
         "distName": "aws-cdk.aws-mediaconnect",
         "module": "aws_cdk.aws_mediaconnect"
-      },
-      "go": {
-        "moduleName": "github.com/aws/aws-cdk-go"
       }
     }
   },
