@@ -111,8 +111,8 @@
       "resource-attribute:@aws-cdk/aws-backup.BackupSelection.backupSelectionId"
     ]
   },
-  "stability": "experimental",
-  "maturity": "experimental",
+  "stability": "stable",
+  "maturity": "stable",
   "awscdkio": {
     "announce": false
   },
