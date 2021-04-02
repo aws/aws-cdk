@@ -800,7 +800,7 @@ export enum ResourceRequirementType {
   /**
    * InferenceAccelerator.
    */
-  INFERENCEACCELERATOR = 'InferenceAccelerator'
+  INFERENCE_ACCELERATOR = 'InferenceAccelerator'
 }
 
 function renderResourceRequirements(gpuCount: number = 0, resourceRequirements: ResourceRequirement[] = []):
