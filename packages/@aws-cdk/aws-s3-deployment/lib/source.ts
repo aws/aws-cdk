@@ -6,6 +6,9 @@ import * as s3_assets from '@aws-cdk/aws-s3-assets';
 // eslint-disable-next-line no-duplicate-imports, import/order
 import { Construct } from '@aws-cdk/core';
 
+/**
+ * Source information.
+ */
 export interface SourceConfig {
   /**
    * The source bucket to deploy from.
