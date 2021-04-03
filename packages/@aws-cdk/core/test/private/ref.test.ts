@@ -1,3 +1,4 @@
+import * as cxapi from '@aws-cdk/cx-api';
 import { nodeunitShim, Test } from 'nodeunit-shim';
 import { App, Construct, Stack, StackProps, CfnOutput } from '../../lib';
 import { toCloudFormation } from '../util';
@@ -25,8 +26,9 @@ class StackTwo extends Stack {
 nodeunitShim({
   crossStackRefCreatesParameter: {
     'Cross stack references create Parameters'(test: Test) {
-      const app = new App();
-      // WHEN
+      const app = new App({
+        context: { [cxapi.LOOSE_CROSS_STACK_REF]: true },
+      });
       const stackOne = new StackOne(app, 'MyTestStackOne');
       new StackTwo(app, 'MyTestStackTwo', { otherProp: stackOne.toShare });
       const cfn = toCloudFormation(stackOne);
