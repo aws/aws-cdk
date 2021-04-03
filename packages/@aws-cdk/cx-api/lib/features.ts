@@ -151,7 +151,6 @@ export const FUTURE_FLAGS: { [key: string]: any } = {
   [RDS_LOWERCASE_DB_IDENTIFIER]: true,
   [LOOSE_CROSS_STACK_REF]: true,
 
-
   // We will advertise this flag when the feature is complete
   // [NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: 'true',
 };
