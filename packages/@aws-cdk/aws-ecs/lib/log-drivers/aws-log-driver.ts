@@ -85,7 +85,7 @@ export interface AwsLogDriverProps {
    *
    * @default - AwsLogDriverMode.BLOCKING
    */
-  readonly mode?: string
+  readonly mode?: AwsLogDriverMode;
 }
 
 /**
@@ -130,7 +130,7 @@ export class AwsLogDriver extends LogDriver {
         'awslogs-region': Stack.of(containerDefinition).region,
         'awslogs-datetime-format': this.props.datetimeFormat,
         'awslogs-multiline-pattern': this.props.multilinePattern,
-        'mode': this.props.mode ?? AwsLogDriverMode.BLOCKING,
+        ...(this.props.mode && { mode: this.props.mode }),
       }),
     };
   }
