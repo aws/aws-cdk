@@ -209,7 +209,7 @@ describe('LambdaInvoke', () => {
     }));
   });
 
-  test('Invoke lambda with payloadResponseOnly with payload', () => {
+  test('Invoke lambda with payloadResponseOnly with valid payload', () => {
     // WHEN
     const task = new LambdaInvoke(stack, 'Task', {
       lambdaFunction,
@@ -233,6 +233,18 @@ describe('LambdaInvoke', () => {
         foo: 'bar',
       },
     }));
+  });
+
+  test('Invoke lambda with payloadResponseOnly with invalid payload', () => {
+    // WHEN
+    const payload = sfn.TaskInput.fromText('invalid-payload');
+
+    // THEN
+    expect(() => new LambdaInvoke(stack, 'Task', {
+      lambdaFunction,
+      payloadResponseOnly: true,
+      payload,
+    })).toThrow(`Invalid LambdaInvoke payload value for 'payloadResponseOnly' invocation. Expected 'object' or 'undefined', got '${typeof(payload.value)}'.`);
   });
 
   test('with retryOnServiceExceptions set to false', () => {
