@@ -5,13 +5,27 @@ const dynamodb = new DynamoDB({ apiVersion: '2012-08-10' });
 
 
 export async function disableTimeToLive(event: OnEventRequest) {
-  await dynamodb.updateTimeToLive({
-    TableName: event.ResourceProperties.TableName,
-    TimeToLiveSpecification: {
-      AttributeName: event.OldResourceProperties?.TimeToLiveAttribute,
-      Enabled: false,
-    },
-  }).promise();
+  try {
+    await dynamodb.updateTimeToLive({
+      TableName: event.ResourceProperties.TableName,
+      TimeToLiveSpecification: {
+        AttributeName: event.OldResourceProperties?.TimeToLiveAttribute,
+        Enabled: false,
+      },
+    }).promise();
+  } catch (err) {
+    // Catch exception so we can try disabling again at a later point in time.
+    // This is done to mimic the necessary behavior in the enable functionality.
+    const awsError = err as AWSError;
+    if (
+      awsError.code === 'ValidationException' &&
+      awsError.message === 'Time to live has been modified multiple times within a fixed interval'
+    ) {
+      console.log('Time to live has been modified multiple times within a fixed interval. Try again later.');
+      return;
+    }
+    throw awsError;
+  }
 }
 
 export async function enableTimeToLive(event: OnEventRequest) {
