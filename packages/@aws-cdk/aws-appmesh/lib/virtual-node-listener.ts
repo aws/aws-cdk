@@ -1,7 +1,7 @@
 import * as cdk from '@aws-cdk/core';
 import { CfnVirtualNode } from './appmesh.generated';
 import { validateHealthChecks } from './private/utils';
-import { HealthCheck, Protocol, HttpTimeout, GrpcTimeout, TcpTimeout } from './shared-interfaces';
+import { HealthCheck, Protocol, HttpTimeout, GrpcTimeout, TcpTimeout, OutlierDetection } from './shared-interfaces';
 import { TlsCertificate, TlsCertificateConfig } from './tls-certificate';
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
@@ -42,6 +42,13 @@ interface VirtualNodeListenerCommonOptions {
    * @default - none
    */
   readonly tlsCertificate?: TlsCertificate;
+
+  /**
+   * Represents the configuration for enabling outlier detection
+   *
+   * @default - none
+   */
+  readonly outlierDetection?: OutlierDetection;
 }
 
 /**
@@ -88,28 +95,28 @@ export abstract class VirtualNodeListener {
    * Returns an HTTP Listener for a VirtualNode
    */
   public static http(props: HttpVirtualNodeListenerOptions = {}): VirtualNodeListener {
-    return new VirtualNodeListenerImpl(Protocol.HTTP, props.healthCheck, props.timeout, props.port, props.tlsCertificate);
+    return new VirtualNodeListenerImpl(Protocol.HTTP, props.healthCheck, props.timeout, props.port, props.tlsCertificate, props.outlierDetection);
   }
 
   /**
    * Returns an HTTP2 Listener for a VirtualNode
    */
   public static http2(props: HttpVirtualNodeListenerOptions = {}): VirtualNodeListener {
-    return new VirtualNodeListenerImpl(Protocol.HTTP2, props.healthCheck, props.timeout, props.port, props.tlsCertificate);
+    return new VirtualNodeListenerImpl(Protocol.HTTP2, props.healthCheck, props.timeout, props.port, props.tlsCertificate, props.outlierDetection);
   }
 
   /**
    * Returns an GRPC Listener for a VirtualNode
    */
   public static grpc(props: GrpcVirtualNodeListenerOptions = {}): VirtualNodeListener {
-    return new VirtualNodeListenerImpl(Protocol.GRPC, props.healthCheck, props.timeout, props.port, props.tlsCertificate);
+    return new VirtualNodeListenerImpl(Protocol.GRPC, props.healthCheck, props.timeout, props.port, props.tlsCertificate, props.outlierDetection);
   }
 
   /**
    * Returns an TCP Listener for a VirtualNode
    */
   public static tcp(props: TcpVirtualNodeListenerOptions = {}): VirtualNodeListener {
-    return new VirtualNodeListenerImpl(Protocol.TCP, props.healthCheck, props.timeout, props.port, props.tlsCertificate);
+    return new VirtualNodeListenerImpl(Protocol.TCP, props.healthCheck, props.timeout, props.port, props.tlsCertificate, props.outlierDetection);
   }
 
   /**
@@ -124,7 +131,8 @@ class VirtualNodeListenerImpl extends VirtualNodeListener {
     private readonly healthCheck: HealthCheck | undefined,
     private readonly timeout: HttpTimeout | undefined,
     private readonly port: number = 8080,
-    private readonly tlsCertificate: TlsCertificate | undefined) { super(); }
+    private readonly tlsCertificate: TlsCertificate | undefined,
+    private readonly outlierDetection: OutlierDetection | undefined) { super(); }
 
   public bind(scope: Construct): VirtualNodeListenerConfig {
     const tlsConfig = this.tlsCertificate?.bind(scope);
@@ -137,6 +145,7 @@ class VirtualNodeListenerImpl extends VirtualNodeListener {
         healthCheck: this.healthCheck ? this.renderHealthCheck(this.healthCheck) : undefined,
         timeout: this.timeout ? this.renderTimeout(this.timeout) : undefined,
         tls: tlsConfig ? this.renderTls(tlsConfig) : undefined,
+        outlierDetection: this.outlierDetection ? this.renderOutlierDetection(this.outlierDetection) : undefined,
       },
     };
   }
@@ -190,6 +199,21 @@ class VirtualNodeListenerImpl extends VirtualNodeListener {
         } : undefined,
       },
     });
+  }
+
+  private renderOutlierDetection(outlierDetection: OutlierDetection): CfnVirtualNode.OutlierDetectionProperty {
+    return {
+      baseEjectionDuration: {
+        unit: 'ms',
+        value: outlierDetection.baseEjectionDuration.toMilliseconds(),
+      },
+      interval: {
+        unit: 'ms',
+        value: outlierDetection.interval.toMilliseconds(),
+      },
+      maxEjectionPercent: outlierDetection.maxEjectionPercent,
+      maxServerErrors: outlierDetection.maxServerErrors,
+    };
   }
 }
 
