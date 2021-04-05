@@ -41,7 +41,7 @@ nodeunitShim({
 
     expect(stack).to(haveResource('AWS::RDS::DBSubnetGroup', {
       DBSubnetGroupDescription: 'My Shared Group',
-      DBSubnetGroupName: 'SharedGroup',
+      DBSubnetGroupName: 'sharedgroup',
       SubnetIds: [
         { Ref: 'VPCPrivateSubnet1Subnet8BCA10E0' },
         { Ref: 'VPCPrivateSubnet2SubnetCFCDAA7A' },

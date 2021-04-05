@@ -77,7 +77,10 @@ export class SubnetGroup extends Resource implements ISubnetGroup {
     // Using 'Default' as the resource id for historical reasons (usage from `Instance` and `Cluster`).
     const subnetGroup = new CfnDBSubnetGroup(this, 'Default', {
       dbSubnetGroupDescription: props.description,
-      dbSubnetGroupName: props.subnetGroupName,
+      // names are actually stored by RDS changed to lowercase on the server side,
+      // and not lowercasing them in CloudFormation means things like { Ref }
+      // do not work correctly
+      dbSubnetGroupName: props.subnetGroupName?.toLowerCase(),
       subnetIds,
     });
 
