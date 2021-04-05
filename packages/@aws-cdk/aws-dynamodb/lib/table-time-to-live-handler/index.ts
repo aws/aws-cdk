@@ -31,7 +31,6 @@ export async function onEventHandler(event: OnEventRequest): Promise<OnEventResp
         break;
     }
 
-    console.log('Update table: %j', event.ResourceProperties.TableName);
     return { PhysicalResourceId: event.ResourceProperties.TableName };
   }
 

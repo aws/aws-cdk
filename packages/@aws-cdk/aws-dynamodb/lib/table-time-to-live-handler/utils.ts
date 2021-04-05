@@ -5,6 +5,7 @@ const dynamodb = new DynamoDB({ apiVersion: '2012-08-10' });
 
 
 export async function disableTimeToLive(event: OnEventRequest) {
+  console.log('Trying to disable time to live.');
   try {
     await dynamodb.updateTimeToLive({
       TableName: event.ResourceProperties.TableName,
@@ -29,6 +30,7 @@ export async function disableTimeToLive(event: OnEventRequest) {
 }
 
 export async function enableTimeToLive(event: OnEventRequest) {
+  console.log('Trying to enable time to live.');
   try {
     await dynamodb.updateTimeToLive({
       TableName: event.ResourceProperties.TableName,
@@ -57,6 +59,8 @@ export async function timeToLiveStatus(event: OnEventRequest): Promise<{stable: 
   const currentTtl = await dynamodb.describeTimeToLive({
     TableName: event.ResourceProperties.TableName,
   }).promise();
+
+  console.log('Describe time to live: %j', currentTtl);
 
   return {
     stable: (
