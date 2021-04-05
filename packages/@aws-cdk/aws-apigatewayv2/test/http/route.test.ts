@@ -144,7 +144,7 @@ describe('HttpRoute', () => {
       httpApi,
       integration: new DummyIntegration(),
       routeKey: HttpRouteKey.with('books', HttpMethod.GET),
-    })).toThrowError(/path must always start with a "\/" and not end with a "\/"/);
+    })).toThrowError(/A route path must always start with a "\/" and not end with a "\/"/);
   });
 
   test('throws when path ends with /', () => {
@@ -155,7 +155,7 @@ describe('HttpRoute', () => {
       httpApi,
       integration: new DummyIntegration(),
       routeKey: HttpRouteKey.with('/books/', HttpMethod.GET),
-    })).toThrowError(/path must always start with a "\/" and not end with a "\/"/);
+    })).toThrowError(/A route path must always start with a "\/" and not end with a "\/"/);
   });
 
   test('configures private integration correctly when all props are passed', () => {
