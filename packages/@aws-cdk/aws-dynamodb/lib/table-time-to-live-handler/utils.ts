@@ -40,6 +40,7 @@ export async function enableTimeToLive(event: OnEventRequest) {
   } catch (err) {
     // Catch exception so we can try enabling again at a later point in time.
     // This is necessary if the ttl was just disabled as enabling is not available right away.
+    // Allows the enabled -> disabled -> enabled flow to work.
     const awsError = err as AWSError;
     if (
       awsError.code === 'ValidationException' &&

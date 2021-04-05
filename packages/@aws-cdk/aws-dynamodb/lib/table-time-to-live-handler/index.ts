@@ -44,6 +44,10 @@ export async function isCompleteHandler(event: IsCompleteRequest): Promise<IsCom
   let { stable, correct } = await timeToLiveStatus(event);
 
   if (stable && !correct) {
+    // If the ttl is stable but incorrect, we are in the second step of the enabled -> disabled -> enabled flow.
+    // We therefore call the onEventHandler as the logic is the same as going from disabled to enabled,
+    // which the handler supports. Afterwards we need to get the current ttl status as it should have changed.
+    // This makes it possible to change the ttl attribute from a to b.
     await onEventHandler(event);
     ({ stable, correct } = await timeToLiveStatus(event));
   }
