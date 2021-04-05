@@ -1127,6 +1127,7 @@ export class Table extends TableBase {
       },
       sseSpecification,
       streamSpecification,
+      timeToLiveSpecification: props.timeToLiveAttribute ? { attributeName: props.timeToLiveAttribute, enabled: true } : undefined,
     });
     this.table.applyRemovalPolicy(props.removalPolicy);
 
