@@ -791,7 +791,7 @@ app.synth();
 
 ## Elastic Inference Accelerators
 
-Currently, this feature is only supported for servics with EC2 launch types.
+Currently, this feature is only supported for services with EC2 launch types.
 
 To add elastic inference accelerators to your EC2 instance, first add
 `inferenceAccelerator` field to the EC2TaskDefinition and set the `deviceName`

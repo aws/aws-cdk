@@ -368,7 +368,7 @@ export class TaskDefinition extends TaskDefinitionBase {
       throw new Error(`Fargate-compatible tasks require both CPU (${props.cpu}) and memory (${props.memoryMiB}) specifications`);
     }
 
-    if (props.inferenceAccelerators && props.inferenceAccelerators.length > 0 && this.isFargateCompatible) {
+    if (props.inferenceAccelerators?.length > 0 && this.isFargateCompatible) {
       throw new Error('Cannot use inference accelerators on tasks that run on Fargate');
     }
 
