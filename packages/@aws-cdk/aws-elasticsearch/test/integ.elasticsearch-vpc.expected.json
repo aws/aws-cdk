@@ -1,185 +1,5 @@
 {
   "Resources": {
-    "tshandlerServiceRole8876B8E7": {
-      "Type": "AWS::IAM::Role",
-      "Properties": {
-        "AssumeRolePolicyDocument": {
-          "Statement": [
-            {
-              "Action": "sts:AssumeRole",
-              "Effect": "Allow",
-              "Principal": {
-                "Service": "lambda.amazonaws.com"
-              }
-            }
-          ],
-          "Version": "2012-10-17"
-        },
-        "ManagedPolicyArns": [
-          {
-            "Fn::Join": [
-              "",
-              [
-                "arn:",
-                {
-                  "Ref": "AWS::Partition"
-                },
-                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
-              ]
-            ]
-          }
-        ]
-      }
-    },
-    "tshandler4E1C6929": {
-      "Type": "AWS::Lambda::Function",
-      "Properties": {
-        "Code": {
-          "S3Bucket": {
-            "Ref": "AssetParameterse693e416c0e5591cb0eaa424f7526a449f788de8aa8a89f06f27671feaba8031S3Bucket29060E55"
-          },
-          "S3Key": {
-            "Fn::Join": [
-              "",
-              [
-                {
-                  "Fn::Select": [
-                    0,
-                    {
-                      "Fn::Split": [
-                        "||",
-                        {
-                          "Ref": "AssetParameterse693e416c0e5591cb0eaa424f7526a449f788de8aa8a89f06f27671feaba8031S3VersionKeyE68A6B82"
-                        }
-                      ]
-                    }
-                  ]
-                },
-                {
-                  "Fn::Select": [
-                    1,
-                    {
-                      "Fn::Split": [
-                        "||",
-                        {
-                          "Ref": "AssetParameterse693e416c0e5591cb0eaa424f7526a449f788de8aa8a89f06f27671feaba8031S3VersionKeyE68A6B82"
-                        }
-                      ]
-                    }
-                  ]
-                }
-              ]
-            ]
-          }
-        },
-        "Role": {
-          "Fn::GetAtt": [
-            "tshandlerServiceRole8876B8E7",
-            "Arn"
-          ]
-        },
-        "Environment": {
-          "Variables": {
-            "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1"
-          }
-        },
-        "Handler": "index.handler",
-        "Runtime": "nodejs12.x"
-      },
-      "DependsOn": [
-        "tshandlerServiceRole8876B8E7"
-      ]
-    },
-    "jshandlerServiceRole781AF366": {
-      "Type": "AWS::IAM::Role",
-      "Properties": {
-        "AssumeRolePolicyDocument": {
-          "Statement": [
-            {
-              "Action": "sts:AssumeRole",
-              "Effect": "Allow",
-              "Principal": {
-                "Service": "lambda.amazonaws.com"
-              }
-            }
-          ],
-          "Version": "2012-10-17"
-        },
-        "ManagedPolicyArns": [
-          {
-            "Fn::Join": [
-              "",
-              [
-                "arn:",
-                {
-                  "Ref": "AWS::Partition"
-                },
-                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
-              ]
-            ]
-          }
-        ]
-      }
-    },
-    "jshandlerD8909241": {
-      "Type": "AWS::Lambda::Function",
-      "Properties": {
-        "Code": {
-          "S3Bucket": {
-            "Ref": "AssetParameters8bda5a67feb4905ef8b67b45ee665d3e466be7357e6c361ad2aa773e5867db39S3Bucket4A9B4410"
-          },
-          "S3Key": {
-            "Fn::Join": [
-              "",
-              [
-                {
-                  "Fn::Select": [
-                    0,
-                    {
-                      "Fn::Split": [
-                        "||",
-                        {
-                          "Ref": "AssetParameters8bda5a67feb4905ef8b67b45ee665d3e466be7357e6c361ad2aa773e5867db39S3VersionKeyA27DDFEA"
-                        }
-                      ]
-                    }
-                  ]
-                },
-                {
-                  "Fn::Select": [
-                    1,
-                    {
-                      "Fn::Split": [
-                        "||",
-                        {
-                          "Ref": "AssetParameters8bda5a67feb4905ef8b67b45ee665d3e466be7357e6c361ad2aa773e5867db39S3VersionKeyA27DDFEA"
-                        }
-                      ]
-                    }
-                  ]
-                }
-              ]
-            ]
-          }
-        },
-        "Role": {
-          "Fn::GetAtt": [
-            "jshandlerServiceRole781AF366",
-            "Arn"
-          ]
-        },
-        "Environment": {
-          "Variables": {
-            "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1"
-          }
-        },
-        "Handler": "index.handler",
-        "Runtime": "nodejs12.x"
-      },
-      "DependsOn": [
-        "jshandlerServiceRole781AF366"
-      ]
-    },
     "Vpc8378EB38": {
       "Type": "AWS::EC2::VPC",
       "Properties": {
@@ -190,7 +10,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "cdk-integ-lambda-nodejs/Vpc"
+            "Value": "cdk-integ-elasticsearch-vpc/Vpc"
           }
         ]
       }
@@ -215,7 +35,7 @@
           },
           {
             "Key": "Name",
-            "Value": "cdk-integ-lambda-nodejs/Vpc/PublicSubnet1"
+            "Value": "cdk-integ-elasticsearch-vpc/Vpc/PublicSubnet1"
           }
         ]
       }
@@ -229,7 +49,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "cdk-integ-lambda-nodejs/Vpc/PublicSubnet1"
+            "Value": "cdk-integ-elasticsearch-vpc/Vpc/PublicSubnet1"
           }
         ]
       }
@@ -267,7 +87,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "cdk-integ-lambda-nodejs/Vpc/PublicSubnet1"
+            "Value": "cdk-integ-elasticsearch-vpc/Vpc/PublicSubnet1"
           }
         ]
       }
@@ -287,7 +107,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "cdk-integ-lambda-nodejs/Vpc/PublicSubnet1"
+            "Value": "cdk-integ-elasticsearch-vpc/Vpc/PublicSubnet1"
           }
         ]
       }
@@ -312,7 +132,7 @@
           },
           {
             "Key": "Name",
-            "Value": "cdk-integ-lambda-nodejs/Vpc/PublicSubnet2"
+            "Value": "cdk-integ-elasticsearch-vpc/Vpc/PublicSubnet2"
           }
         ]
       }
@@ -326,7 +146,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "cdk-integ-lambda-nodejs/Vpc/PublicSubnet2"
+            "Value": "cdk-integ-elasticsearch-vpc/Vpc/PublicSubnet2"
           }
         ]
       }
@@ -364,7 +184,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "cdk-integ-lambda-nodejs/Vpc/PublicSubnet2"
+            "Value": "cdk-integ-elasticsearch-vpc/Vpc/PublicSubnet2"
           }
         ]
       }
@@ -384,7 +204,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "cdk-integ-lambda-nodejs/Vpc/PublicSubnet2"
+            "Value": "cdk-integ-elasticsearch-vpc/Vpc/PublicSubnet2"
           }
         ]
       }
@@ -409,7 +229,7 @@
           },
           {
             "Key": "Name",
-            "Value": "cdk-integ-lambda-nodejs/Vpc/PublicSubnet3"
+            "Value": "cdk-integ-elasticsearch-vpc/Vpc/PublicSubnet3"
           }
         ]
       }
@@ -423,7 +243,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "cdk-integ-lambda-nodejs/Vpc/PublicSubnet3"
+            "Value": "cdk-integ-elasticsearch-vpc/Vpc/PublicSubnet3"
           }
         ]
       }
@@ -461,7 +281,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "cdk-integ-lambda-nodejs/Vpc/PublicSubnet3"
+            "Value": "cdk-integ-elasticsearch-vpc/Vpc/PublicSubnet3"
           }
         ]
       }
@@ -481,7 +301,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "cdk-integ-lambda-nodejs/Vpc/PublicSubnet3"
+            "Value": "cdk-integ-elasticsearch-vpc/Vpc/PublicSubnet3"
           }
         ]
       }
@@ -506,7 +326,7 @@
           },
           {
             "Key": "Name",
-            "Value": "cdk-integ-lambda-nodejs/Vpc/PrivateSubnet1"
+            "Value": "cdk-integ-elasticsearch-vpc/Vpc/PrivateSubnet1"
           }
         ]
       }
@@ -520,7 +340,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "cdk-integ-lambda-nodejs/Vpc/PrivateSubnet1"
+            "Value": "cdk-integ-elasticsearch-vpc/Vpc/PrivateSubnet1"
           }
         ]
       }
@@ -568,7 +388,7 @@
           },
           {
             "Key": "Name",
-            "Value": "cdk-integ-lambda-nodejs/Vpc/PrivateSubnet2"
+            "Value": "cdk-integ-elasticsearch-vpc/Vpc/PrivateSubnet2"
           }
         ]
       }
@@ -582,7 +402,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "cdk-integ-lambda-nodejs/Vpc/PrivateSubnet2"
+            "Value": "cdk-integ-elasticsearch-vpc/Vpc/PrivateSubnet2"
           }
         ]
       }
@@ -630,7 +450,7 @@
           },
           {
             "Key": "Name",
-            "Value": "cdk-integ-lambda-nodejs/Vpc/PrivateSubnet3"
+            "Value": "cdk-integ-elasticsearch-vpc/Vpc/PrivateSubnet3"
           }
         ]
       }
@@ -644,7 +464,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "cdk-integ-lambda-nodejs/Vpc/PrivateSubnet3"
+            "Value": "cdk-integ-elasticsearch-vpc/Vpc/PrivateSubnet3"
           }
         ]
       }
@@ -678,7 +498,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "cdk-integ-lambda-nodejs/Vpc"
+            "Value": "cdk-integ-elasticsearch-vpc/Vpc"
           }
         ]
       }
@@ -694,53 +514,10 @@
         }
       }
     },
-    "tshandlervpcServiceRoleF6D326A3": {
-      "Type": "AWS::IAM::Role",
-      "Properties": {
-        "AssumeRolePolicyDocument": {
-          "Statement": [
-            {
-              "Action": "sts:AssumeRole",
-              "Effect": "Allow",
-              "Principal": {
-                "Service": "lambda.amazonaws.com"
-              }
-            }
-          ],
-          "Version": "2012-10-17"
-        },
-        "ManagedPolicyArns": [
-          {
-            "Fn::Join": [
-              "",
-              [
-                "arn:",
-                {
-                  "Ref": "AWS::Partition"
-                },
-                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
-              ]
-            ]
-          },
-          {
-            "Fn::Join": [
-              "",
-              [
-                "arn:",
-                {
-                  "Ref": "AWS::Partition"
-                },
-                ":iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole"
-              ]
-            ]
-          }
-        ]
-      }
-    },
-    "tshandlervpcSecurityGroup587CC215": {
+    "DomainSecurityGroup48AA5FD6": {
       "Type": "AWS::EC2::SecurityGroup",
       "Properties": {
-        "GroupDescription": "Automatic security group for Lambda Function cdkinteglambdanodejstshandlervpcAAE6104A",
+        "GroupDescription": "Security group for domain Domain",
         "SecurityGroupEgress": [
           {
             "CidrIp": "0.0.0.0/0",
@@ -753,65 +530,43 @@
         }
       }
     },
-    "tshandlervpcA502E26A": {
-      "Type": "AWS::Lambda::Function",
+    "Domain66AC69E0": {
+      "Type": "AWS::Elasticsearch::Domain",
       "Properties": {
-        "Code": {
-          "S3Bucket": {
-            "Ref": "AssetParameters9aa4dd3191867438d7cf78d5509ee4ffc26b9f3954f6d9a2977c478b7728736cS3BucketA6D7D091"
+        "CognitoOptions": {
+          "Enabled": false
+        },
+        "DomainEndpointOptions": {
+          "EnforceHTTPS": false,
+          "TLSSecurityPolicy": "Policy-Min-TLS-1-0-2019-07"
+        },
+        "EBSOptions": {
+          "EBSEnabled": true,
+          "VolumeSize": 10,
+          "VolumeType": "gp2"
+        },
+        "ElasticsearchClusterConfig": {
+          "DedicatedMasterEnabled": false,
+          "InstanceCount": 2,
+          "InstanceType": "r5.large.elasticsearch",
+          "ZoneAwarenessConfig": {
+            "AvailabilityZoneCount": 2
           },
-          "S3Key": {
-            "Fn::Join": [
-              "",
-              [
-                {
-                  "Fn::Select": [
-                    0,
-                    {
-                      "Fn::Split": [
-                        "||",
-                        {
-                          "Ref": "AssetParameters9aa4dd3191867438d7cf78d5509ee4ffc26b9f3954f6d9a2977c478b7728736cS3VersionKeyD716694C"
-                        }
-                      ]
-                    }
-                  ]
-                },
-                {
-                  "Fn::Select": [
-                    1,
-                    {
-                      "Fn::Split": [
-                        "||",
-                        {
-                          "Ref": "AssetParameters9aa4dd3191867438d7cf78d5509ee4ffc26b9f3954f6d9a2977c478b7728736cS3VersionKeyD716694C"
-                        }
-                      ]
-                    }
-                  ]
-                }
-              ]
-            ]
-          }
+          "ZoneAwarenessEnabled": true
         },
-        "Role": {
-          "Fn::GetAtt": [
-            "tshandlervpcServiceRoleF6D326A3",
-            "Arn"
-          ]
+        "ElasticsearchVersion": "7.1",
+        "EncryptionAtRestOptions": {
+          "Enabled": false
         },
-        "Environment": {
-          "Variables": {
-            "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1"
-          }
+        "LogPublishingOptions": {},
+        "NodeToNodeEncryptionOptions": {
+          "Enabled": false
         },
-        "Handler": "index.handler",
-        "Runtime": "nodejs12.x",
-        "VpcConfig": {
+        "VPCOptions": {
           "SecurityGroupIds": [
             {
               "Fn::GetAtt": [
-                "tshandlervpcSecurityGroup587CC215",
+                "DomainSecurityGroup48AA5FD6",
                 "GroupId"
               ]
             }
@@ -829,47 +584,8 @@
           ]
         }
       },
-      "DependsOn": [
-        "tshandlervpcServiceRoleF6D326A3"
-      ]
-    }
-  },
-  "Parameters": {
-    "AssetParameterse693e416c0e5591cb0eaa424f7526a449f788de8aa8a89f06f27671feaba8031S3Bucket29060E55": {
-      "Type": "String",
-      "Description": "S3 bucket for asset \"e693e416c0e5591cb0eaa424f7526a449f788de8aa8a89f06f27671feaba8031\""
-    },
-    "AssetParameterse693e416c0e5591cb0eaa424f7526a449f788de8aa8a89f06f27671feaba8031S3VersionKeyE68A6B82": {
-      "Type": "String",
-      "Description": "S3 key for asset version \"e693e416c0e5591cb0eaa424f7526a449f788de8aa8a89f06f27671feaba8031\""
-    },
-    "AssetParameterse693e416c0e5591cb0eaa424f7526a449f788de8aa8a89f06f27671feaba8031ArtifactHash0218547C": {
-      "Type": "String",
-      "Description": "Artifact hash for asset \"e693e416c0e5591cb0eaa424f7526a449f788de8aa8a89f06f27671feaba8031\""
-    },
-    "AssetParameters8bda5a67feb4905ef8b67b45ee665d3e466be7357e6c361ad2aa773e5867db39S3Bucket4A9B4410": {
-      "Type": "String",
-      "Description": "S3 bucket for asset \"8bda5a67feb4905ef8b67b45ee665d3e466be7357e6c361ad2aa773e5867db39\""
-    },
-    "AssetParameters8bda5a67feb4905ef8b67b45ee665d3e466be7357e6c361ad2aa773e5867db39S3VersionKeyA27DDFEA": {
-      "Type": "String",
-      "Description": "S3 key for asset version \"8bda5a67feb4905ef8b67b45ee665d3e466be7357e6c361ad2aa773e5867db39\""
-    },
-    "AssetParameters8bda5a67feb4905ef8b67b45ee665d3e466be7357e6c361ad2aa773e5867db39ArtifactHash13E6F6BF": {
-      "Type": "String",
-      "Description": "Artifact hash for asset \"8bda5a67feb4905ef8b67b45ee665d3e466be7357e6c361ad2aa773e5867db39\""
-    },
-    "AssetParameters9aa4dd3191867438d7cf78d5509ee4ffc26b9f3954f6d9a2977c478b7728736cS3BucketA6D7D091": {
-      "Type": "String",
-      "Description": "S3 bucket for asset \"9aa4dd3191867438d7cf78d5509ee4ffc26b9f3954f6d9a2977c478b7728736c\""
-    },
-    "AssetParameters9aa4dd3191867438d7cf78d5509ee4ffc26b9f3954f6d9a2977c478b7728736cS3VersionKeyD716694C": {
-      "Type": "String",
-      "Description": "S3 key for asset version \"9aa4dd3191867438d7cf78d5509ee4ffc26b9f3954f6d9a2977c478b7728736c\""
-    },
-    "AssetParameters9aa4dd3191867438d7cf78d5509ee4ffc26b9f3954f6d9a2977c478b7728736cArtifactHashF03B1BE8": {
-      "Type": "String",
-      "Description": "Artifact hash for asset \"9aa4dd3191867438d7cf78d5509ee4ffc26b9f3954f6d9a2977c478b7728736c\""
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
     }
   }
 }

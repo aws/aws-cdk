@@ -16,8 +16,5 @@
   },
   "dependencies": {
     "@aws-cdk/core": "%cdk-version%"
-  },
-  "resolutions": {
-    "netmask": "2.0.1"
   }
 }
