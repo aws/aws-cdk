@@ -334,7 +334,7 @@ export class TaskDefinition extends TaskDefinitionBase {
   /**
    * Inference accelerators for task instances
    */
-  public readonly inferenceAccelerators: InferenceAccelerator[] = [];
+  private readonly _inferenceAccelerators: InferenceAccelerator[] = [];
 
   private _executionRole?: iam.IRole;
 
@@ -368,7 +368,7 @@ export class TaskDefinition extends TaskDefinitionBase {
       throw new Error(`Fargate-compatible tasks require both CPU (${props.cpu}) and memory (${props.memoryMiB}) specifications`);
     }
 
-    if (props.inferenceAccelerators?.length > 0 && this.isFargateCompatible) {
+    if (props.inferenceAccelerators && props.inferenceAccelerators.length > 0 && this.isFargateCompatible) {
       throw new Error('Cannot use inference accelerators on tasks that run on Fargate');
     }
 
@@ -377,6 +377,10 @@ export class TaskDefinition extends TaskDefinitionBase {
     this.taskRole = props.taskRole || new iam.Role(this, 'TaskRole', {
       assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
     });
+
+    if (props.inferenceAccelerators) {
+      props.inferenceAccelerators.forEach(ia => this.addInferenceAccelerator(ia));
+    }
 
     const taskDef = new CfnTaskDefinition(this, 'Resource', {
       containerDefinitions: Lazy.any({ produce: () => this.renderContainers() }, { omitEmptyArray: true }),
@@ -408,15 +412,18 @@ export class TaskDefinition extends TaskDefinitionBase {
       props.placementConstraints.forEach(pc => this.addPlacementConstraint(pc));
     }
 
-    if (props.inferenceAccelerators) {
-      props.inferenceAccelerators.forEach(ia => this.addInferenceAccelerator(ia));
-    }
-
     this.taskDefinitionArn = taskDef.ref;
   }
 
   public get executionRole(): iam.IRole | undefined {
     return this._executionRole;
+  }
+
+  /**
+   * Public getter method to access list of inference accelerators attached to the instance.
+   */
+  public get inferenceAccelerators(): InferenceAccelerator[] {
+    return this._inferenceAccelerators;
   }
 
   private renderVolumes(): CfnTaskDefinition.VolumeProperty[] {
@@ -446,10 +453,7 @@ export class TaskDefinition extends TaskDefinitionBase {
   }
 
   private renderInferenceAccelerators(): CfnTaskDefinition.InferenceAcceleratorProperty[] {
-    if (isFargateCompatible(this.compatibility)) {
-      throw new Error('Cannot use inference accelerators on tasks that run on Fargate');
-    }
-    return this.inferenceAccelerators.map(renderInferenceAccelerator);
+    return this._inferenceAccelerators.map(renderInferenceAccelerator);
 
     function renderInferenceAccelerator(inferenceAccelerator: InferenceAccelerator) : CfnTaskDefinition.InferenceAcceleratorProperty {
       return {
@@ -575,7 +579,10 @@ export class TaskDefinition extends TaskDefinitionBase {
    * Adds an inference accelerator to the task definition.
    */
   public addInferenceAccelerator(inferenceAccelerator: InferenceAccelerator) {
-    this.inferenceAccelerators.push(inferenceAccelerator);
+    if (isFargateCompatible(this.compatibility)) {
+      throw new Error('Cannot use inference accelerators on tasks that run on Fargate');
+    }
+    this._inferenceAccelerators.push(inferenceAccelerator);
   }
 
   /**
@@ -732,6 +739,7 @@ export enum PidMode {
 
 /**
  * Elastic Inference Accelerator.
+ * For more information, see [Elastic Inference Basics](https://docs.aws.amazon.com/elastic-inference/latest/developerguide/basics.html)
  */
 export interface InferenceAccelerator {
   /**
@@ -741,7 +749,7 @@ export interface InferenceAccelerator {
   readonly deviceName?: string;
 
   /**
-   * The Elastic Inference accelerator type to use.
+   * The Elastic Inference accelerator type to use. The allowed values are: eia2.medium, eia2.large and eia2.xlarge.
    * @default - empty
    */
   readonly deviceType?: string;

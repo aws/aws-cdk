@@ -998,29 +998,26 @@ describe('container definition', () => {
   });
 
   describe('Given InferenceAccelerator resource requirement', () => {
-    test('correctly adds resource requirements to container definition using props', () => {
+    test('correctly adds resource requirements to container definition using inference accelerator resource property', () => {
       // GIVEN
       const stack = new cdk.Stack();
 
-      const inferenceAccelerator = [{
+      const inferenceAccelerators = [{
         deviceName: 'device1',
         deviceType: 'eia2.medium',
       }];
 
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
-        inferenceAccelerators: inferenceAccelerator,
+        inferenceAccelerators,
       });
 
-      const resourceRequirements = [{
-        type: ecs.ResourceRequirementType.INFERENCEACCELERATOR,
-        value: 'device1',
-      }];
+      const inferenceAcceleratorResources = ['device1'];
 
       // WHEN
       taskDefinition.addContainer('cont', {
         image: ecs.ContainerImage.fromRegistry('test'),
         memoryLimitMiB: 1024,
-        resourceRequirements: resourceRequirements,
+        inferenceAcceleratorResources,
       });
 
       // THEN
@@ -1045,30 +1042,82 @@ describe('container definition', () => {
 
 
     });
+    test('correctly adds inference accelerator resources to container definition using both props and addInferenceAcceleratorResource method', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      const inferenceAccelerators = [{
+        deviceName: 'device1',
+        deviceType: 'eia2.medium',
+      }, {
+        deviceName: 'device2',
+        deviceType: 'eia2.large',
+      }];
+
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
+        inferenceAccelerators,
+      });
+
+      const inferenceAcceleratorResources = ['device1'];
+
+      const container = taskDefinition.addContainer('cont', {
+        image: ecs.ContainerImage.fromRegistry('test'),
+        memoryLimitMiB: 1024,
+        inferenceAcceleratorResources,
+      });
+
+      // WHEN
+      container.addInferenceAcceleratorResource('device2');
+
+      // THEN
+      expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
+        Family: 'Ec2TaskDef',
+        InferenceAccelerators: [{
+          DeviceName: 'device1',
+          DeviceType: 'eia2.medium',
+        }, {
+          DeviceName: 'device2',
+          DeviceType: 'eia2.large',
+        }],
+        ContainerDefinitions: [
+          {
+            Image: 'test',
+            ResourceRequirements: [
+              {
+                Type: 'InferenceAccelerator',
+                Value: 'device1',
+              },
+              {
+                Type: 'InferenceAccelerator',
+                Value: 'device2',
+              },
+            ],
+          },
+        ],
+      });
+
+    });
     test('throws when the value in resource requirement does not match any inference accelerators defined in the Task Definition', () => {
       // GIVEN
       const stack = new cdk.Stack();
 
-      const inferenceAccelerator = [{
+      const inferenceAccelerators = [{
         deviceName: 'device1',
         deviceType: 'eia2.medium',
       }];
 
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
-        inferenceAccelerators: inferenceAccelerator,
+        inferenceAccelerators,
       });
 
-      const resourceRequirements = [{
-        type: ecs.ResourceRequirementType.INFERENCEACCELERATOR,
-        value: 'device2',
-      }];
+      const inferenceAcceleratorResources = ['device2'];
 
       // THEN
       expect(() => {
         taskDefinition.addContainer('cont', {
           image: ecs.ContainerImage.fromRegistry('test'),
           memoryLimitMiB: 1024,
-          resourceRequirements: resourceRequirements,
+          inferenceAcceleratorResources,
         });
       }).toThrow();
     });
