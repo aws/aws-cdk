@@ -88,6 +88,7 @@
     "table": "^6.0.9",
     "uuid": "^8.3.2",
     "wrap-ansi": "^7.0.0",
+    "yaml": "1.10.2",
     "yargs": "^16.2.0"
   },
   "repository": {
