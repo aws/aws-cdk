@@ -176,7 +176,7 @@ function createParameterStoreGet(consumer: Stack, reference: Reference): IResolv
 
   const parameterName = `/cdk/${providerStack.stackName}/${reference.displayName}`;
 
-  new CfnResource(providerStack, 'ref-parameter', {
+  new CfnResource(providerStack, Names.nodeUniqueId(reference.target.node), {
     type: 'AWS::SSM::Parameter',
     properties: {
       description: `Created by ${providerStack.stackName}`,
@@ -186,7 +186,7 @@ function createParameterStoreGet(consumer: Stack, reference: Reference): IResolv
     },
   });
 
-  return new CfnParameter(consumer, 'id', {
+  return new CfnParameter(consumer, Names.nodeUniqueId(reference.target.node), {
     type: 'AWS::SSM::Parameter::Value<String>',
     default: parameterName,
   });

@@ -36,7 +36,7 @@
         "UpdateReplacePolicy": "Delete",
         "DeletionPolicy": "Delete"
       },
-      "refparameter": {
+      "KeyStackMyKey27DD23B5": {
         "Type": "AWS::SSM::Parameter",
         "Properties": {
           "description": "Created by KeyStack",
@@ -59,13 +59,13 @@
         "Properties": {
           "AliasName": "alias/foo",
           "TargetKeyId": {
-            "Ref": "id"
+            "Ref": "KeyStackMyKey27DD23B5"
           }
         }
       }
     },
     "Parameters": {
-      "id": {
+      "KeyStackMyKey27DD23B5": {
         "Type": "AWS::SSM::Parameter::Value<String>",
         "Default": "/cdk/KeyStack/Arn"
       }

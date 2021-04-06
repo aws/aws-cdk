@@ -6,7 +6,7 @@
         "UpdateReplacePolicy": "Delete",
         "DeletionPolicy": "Delete"
       },
-      "refparameter": {
+      "ProducerStackMyBucketBA95DEFF": {
         "Type": "AWS::SSM::Parameter",
         "Properties": {
           "description": "Created by ProducerStack",
@@ -44,14 +44,14 @@
                 "Effect": "Allow",
                 "Resource": [
                   {
-                    "Ref": "id"
+                    "Ref": "ProducerStackMyBucketBA95DEFF"
                   },
                   {
                     "Fn::Join": [
                       "",
                       [
                         {
-                          "Ref": "id"
+                          "Ref": "ProducerStackMyBucketBA95DEFF"
                         },
                         "/*"
                       ]
@@ -72,7 +72,7 @@
       }
     },
     "Parameters": {
-      "id": {
+      "ProducerStackMyBucketBA95DEFF": {
         "Type": "AWS::SSM::Parameter::Value<String>",
         "Default": "/cdk/ProducerStack/Arn"
       }
