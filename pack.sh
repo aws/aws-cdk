@@ -63,19 +63,6 @@ for dir in $(find packages -name dist | grep -v node_modules | grep -v run-wrapp
   rsync -a $dir/ ${distdir}/
 done
 
-# Make sure that none of the NPM tarballs have stray `.ts` files in them.
-# This is necessary because the presence of .ts files without a matching tsconfig will
-# make `ts-node` fail to load the files with a "Cannot use import statement outside a module" error.
-for tarball in ${distdir}/js/*.tgz; do
-    # Ignore init-templates, we purposely ship .ts files in there.
-    ts_files=$(tar tzf ${tarball} | (set +e; grep '\.ts$' | grep -v '\.d\.ts$' | grep -v init-templates))
-    if [[ "$ts_files" != "" ]]; then
-        echo "Found TypeScript source files in $tarball. This will confuse ts-node:" >&2
-        echo "$ts_files" >&2
-        exit 1
-    fi
-done
-
 # Record the dependency order of NPM packages into a file
 # (This file will be opportunistically used during publishing)
 #
