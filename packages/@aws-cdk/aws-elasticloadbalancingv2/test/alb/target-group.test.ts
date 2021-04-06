@@ -166,11 +166,29 @@ describe('tests', () => {
     new elbv2.ApplicationTargetGroup(stack, 'TargetGroup', {
       vpc,
       protocolVersion: elbv2.ApplicationProtocolVersion.GRPC,
+      healthCheck: {
+        enabled: true,
+        healthyGrpcCodes: '0-99',
+        interval: cdk.Duration.seconds(255),
+        timeout: cdk.Duration.seconds(192),
+        healthyThresholdCount: 29,
+        unhealthyThresholdCount: 27,
+        path: '/arbitrary',
+      },
     });
 
     // THEN
     expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::TargetGroup', {
       ProtocolVersion: 'GRPC',
+      HealthCheckEnabled: true,
+      HealthCheckIntervalSeconds: 255,
+      HealthCheckPath: '/arbitrary',
+      HealthCheckTimeoutSeconds: 192,
+      HealthyThresholdCount: 29,
+      Matcher: {
+        GrpcCode: '0-99',
+      },
+      UnhealthyThresholdCount: 27,
     });
   });
 
