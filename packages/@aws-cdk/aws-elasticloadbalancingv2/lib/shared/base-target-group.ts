@@ -1,6 +1,6 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as cdk from '@aws-cdk/core';
-import { Construct, IConstruct } from 'constructs';
+import { Construct, DependencyGroup, IConstruct, IDependable } from 'constructs';
 import { CfnTargetGroup } from '../elasticloadbalancingv2.generated';
 import { Protocol, TargetType } from './enums';
 import { Attributes, renderAttributes } from './util';
@@ -194,7 +194,7 @@ export abstract class TargetGroupBase extends Construct implements ITargetGroup 
   /**
    * Configurable dependable with all resources that lead to load balancer attachment
    */
-  protected readonly loadBalancerAttachedDependencies = new cdk.ConcreteDependable();
+  protected readonly loadBalancerAttachedDependencies = new DependencyGroup();
 
   /**
    * The types of the directly registered members of this target group
@@ -276,7 +276,7 @@ export abstract class TargetGroupBase extends Construct implements ITargetGroup 
   /**
    * List of constructs that need to be depended on to ensure the TargetGroup is associated to a load balancer
    */
-  public get loadBalancerAttached(): cdk.IDependable {
+  public get loadBalancerAttached(): IDependable {
     return this.loadBalancerAttachedDependencies;
   }
 
@@ -376,7 +376,7 @@ export interface ITargetGroup extends IConstruct {
   /**
    * Return an object to depend on the listeners added to this target group
    */
-  readonly loadBalancerAttached: cdk.IDependable;
+  readonly loadBalancerAttached: IDependable;
 }
 
 /**
