@@ -105,6 +105,21 @@ export const S3_GRANT_WRITE_WITHOUT_ACL = '@aws-cdk/aws-s3:grantWriteWithoutAcl'
 export const ECS_REMOVE_DEFAULT_DESIRED_COUNT = '@aws-cdk/aws-ecs-patterns:removeDefaultDesiredCount';
 
 /**
+ * ServerlessCluster.clusterIdentifier currently can has uppercase letters,
+ * and ServerlessCluster pass it through to CfnDBCluster.dbClusterIdentifier.
+ * The identifier is saved as lowercase string in AWS and is resolved as original string in CloudFormation.
+ *
+ * If this flag is not set, original value that one set to ServerlessCluster.clusterIdentifier
+ * is passed to CfnDBCluster.dbClusterIdentifier.
+ * If this flag is true, ServerlessCluster.clusterIdentifier is converted into a string containing
+ * only lowercase characters by the `toLowerCase` function and passed to CfnDBCluster.dbClusterIdentifier.
+ *
+ * This feature flag make correct the ServerlessCluster.clusterArn when
+ * clusterIdentifier contains a Upper case letters.
+ */
+export const RDS_LOWERCASE_DB_IDENTIFIER = '@aws-cdk/aws-rds:lowercaseDbIdentifier';
+
+/**
  * This map includes context keys and values for feature flags that enable
  * capabilities "from the future", which we could not introduce as the default
  * behavior due to backwards compatibility for existing projects.
@@ -126,6 +141,7 @@ export const FUTURE_FLAGS: { [key: string]: any } = {
   [KMS_DEFAULT_KEY_POLICIES]: true,
   [S3_GRANT_WRITE_WITHOUT_ACL]: true,
   [ECS_REMOVE_DEFAULT_DESIRED_COUNT]: true,
+  [RDS_LOWERCASE_DB_IDENTIFIER]: true,
 
   // We will advertise this flag when the feature is complete
   // [NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: 'true',
@@ -152,6 +168,7 @@ const FUTURE_FLAGS_DEFAULTS: { [key: string]: boolean } = {
   [KMS_DEFAULT_KEY_POLICIES]: false,
   [S3_GRANT_WRITE_WITHOUT_ACL]: false,
   [ECS_REMOVE_DEFAULT_DESIRED_COUNT]: false,
+  [RDS_LOWERCASE_DB_IDENTIFIER]: false,
 };
 
 export function futureFlagDefault(flag: string): boolean {
