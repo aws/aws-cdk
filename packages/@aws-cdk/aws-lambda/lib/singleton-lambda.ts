@@ -1,6 +1,6 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
-import { Construct, IConstruct, Node } from 'constructs';
+import { Construct, IConstruct, IDependable, Node } from 'constructs';
 import { Function as LambdaFunction, FunctionProps } from './function';
 import { FunctionBase } from './function-base';
 import { Version } from './lambda-version';
@@ -83,7 +83,7 @@ export class SingletonFunction extends FunctionBase {
    * Using node.addDependency() does not work on this method as the underlying lambda function is modeled
    * as a singleton across the stack. Use this method instead to declare dependencies.
    */
-  public addDependency(...up: cdk.IDependable[]) {
+  public addDependency(...up: IDependable[]) {
     this.lambdaFunction.node.addDependency(...up);
   }
 

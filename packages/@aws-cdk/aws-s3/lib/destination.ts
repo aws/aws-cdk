@@ -1,5 +1,4 @@
-import * as cdk from '@aws-cdk/core';
-import { Construct } from 'constructs';
+import { Construct, IDependable } from 'constructs';
 import { IBucket } from './bucket';
 
 /**
@@ -34,7 +33,7 @@ export interface BucketNotificationDestinationConfig {
    * Any additional dependencies that should be resolved before the bucket notification
    * can be configured (for example, the SNS Topic Policy resource).
    */
-  readonly dependencies?: cdk.IDependable[]
+  readonly dependencies?: IDependable[]
 }
 
 /**
