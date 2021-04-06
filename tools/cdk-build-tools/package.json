@@ -16,8 +16,7 @@
     "cdk-test": "bin/cdk-test",
     "cdk-package": "bin/cdk-package",
     "cdk-awslint": "bin/cdk-awslint",
-    "cdk-lint": "bin/cdk-lint",
-    "cdk-postpack": "bin/cdk-postpack"
+    "cdk-lint": "bin/cdk-lint"
   },
   "scripts": {
     "build": "tsc -b && chmod +x bin/cdk-build && chmod +x bin/cdk-test && chmod +x bin/cdk-watch && chmod +x bin/cdk-awslint && chmod +x bin/cdk-lint && pkglint && eslint . --ext=.ts",
@@ -36,9 +35,7 @@
   "devDependencies": {
     "@types/fs-extra": "^8.1.1",
     "@types/jest": "^26.0.22",
-    "@types/tar-stream": "^2.2.0",
     "@types/yargs": "^15.0.13",
-    "@types/npm-packlist": "^1.1.1",
     "pkglint": "0.0.0"
   },
   "dependencies": {
@@ -58,10 +55,8 @@
     "jsii-pacmak": "^1.27.0",
     "markdownlint-cli": "^0.27.1",
     "nodeunit": "^0.11.3",
-    "npm-packlist": "2.1.5",
     "nyc": "^15.1.0",
     "semver": "^7.3.5",
-    "tar-stream": "^2.2.0",
     "ts-jest": "^26.5.4",
     "typescript": "~3.9.9",
     "yargs": "^16.2.0",
