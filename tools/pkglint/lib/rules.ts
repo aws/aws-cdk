@@ -1008,7 +1008,6 @@ export class MustDependonCdkByPointVersions extends ValidationRule {
       '@aws-cdk/cx-api',
       '@aws-cdk/cloud-assembly-schema',
       '@aws-cdk/region-info',
-      '@aws-cdk/yaml-cfn',
     ];
 
     for (const [depName, depVersion] of Object.entries(pkg.dependencies)) {
@@ -1552,7 +1551,6 @@ export class UbergenPackageVisibility extends ValidationRule {
     '@aws-cdk/cloudformation-diff',
     '@aws-cdk/cx-api',
     '@aws-cdk/region-info',
-    '@aws-cdk/yaml-cfn',
     'aws-cdk-lib',
     'aws-cdk',
     'awslint',

@@ -73,8 +73,6 @@
       "@aws-cdk/core/minimatch/**",
       "@aws-cdk/cx-api/semver",
       "@aws-cdk/cx-api/semver/**",
-      "@aws-cdk/yaml-cfn/yaml",
-      "@aws-cdk/yaml-cfn/yaml/**",
       "aws-cdk-lib/@balena/dockerignore",
       "aws-cdk-lib/@balena/dockerignore/**",
       "aws-cdk-lib/case",

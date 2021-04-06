@@ -295,7 +295,6 @@
     "@aws-cdk/lambda-layer-kubectl": "0.0.0",
     "@aws-cdk/pipelines": "0.0.0",
     "@aws-cdk/region-info": "0.0.0",
-    "@aws-cdk/yaml-cfn": "0.0.0",
     "@types/fs-extra": "^8.1.1",
     "@types/node": "^10.17.56",
     "cdk-build-tools": "0.0.0",
