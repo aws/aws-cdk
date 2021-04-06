@@ -148,8 +148,11 @@ export class EdgeFunction extends Resource implements lambda.IVersion {
 
   /** Create a support stack and function in us-east-1, and a SSM reader in-region */
   private createCrossRegionFunction(id: string, props: EdgeFunctionProps): FunctionConfig {
-    const parameterNamePrefix = 'EdgeFunctionArn';
-    const parameterName = `${parameterNamePrefix}${id}`;
+    const parameterNamePrefix = '/cdk/EdgeFunctionArn';
+    if (Token.isUnresolved(this.env.region)) {
+      throw new Error('stacks which use EdgeFunctions must have an explicitly set region');
+    }
+    const parameterName = `${parameterNamePrefix}/${this.env.region}/${this.node.path}`;
     const functionStack = this.edgeStack(props.stackId);
 
     const edgeFunction = new lambda.Function(functionStack, id, props);
@@ -174,7 +177,8 @@ export class EdgeFunction extends Resource implements lambda.IVersion {
       service: 'ssm',
       region: EdgeFunction.EDGE_REGION,
       resource: 'parameter',
-      resourceName: parameterNamePrefix + '*',
+      resourceName: parameterNamePrefix + '/*',
+      sep: '',
     });
 
     const resourceType = 'Custom::CrossRegionStringParameterReader';
@@ -205,10 +209,6 @@ export class EdgeFunction extends Resource implements lambda.IVersion {
     const stage = Stage.of(this);
     if (!stage) {
       throw new Error('stacks which use EdgeFunctions must be part of a CDK app or stage');
-    }
-    const region = this.env.region;
-    if (Token.isUnresolved(region)) {
-      throw new Error('stacks which use EdgeFunctions must have an explicitly set region');
     }
 
     const edgeStackId = stackId ?? `edge-lambda-stack-${this.stack.node.addr}`;
