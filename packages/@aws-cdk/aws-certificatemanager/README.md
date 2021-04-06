@@ -34,7 +34,7 @@ See https://docs.aws.amazon.com/acm/latest/userguide/acm-limits.html for more in
 
 DNS validation is the preferred method to validate domain ownership, as it has a number of advantages over email validation.
 See also [Validate with DNS](https://docs.aws.amazon.com/acm/latest/userguide/gs-acm-validate-dns.html)
-in the AWS Certificate Manager User Guide.
+in the AWS Certificate Manager User Guide.  All stack tags will be applied to the DNS validated Certificate.
 
 If Amazon Route 53 is your DNS provider for the requested domain, the DNS record can be
 created automatically:
