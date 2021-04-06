@@ -351,7 +351,7 @@ export class ContainerDefinition extends CoreConstruct {
    * stopped. If the essential parameter of a container is marked as false, then its
    * failure does not affect the rest of the containers in a task.
    *
-   * If this parameter isomitted, a container is assumed to be essential.
+   * If this parameter is omitted, a container is assumed to be essential.
    */
   public readonly essential: boolean;
 
