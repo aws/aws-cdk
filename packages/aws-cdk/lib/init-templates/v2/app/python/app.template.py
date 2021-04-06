@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 import os
 
-import aws_cdk_lib as core
+import aws-cdk-lib as core
 
 from %name.PythonModule%.%name.PythonModule%_stack import %name.PascalCased%Stack
 
