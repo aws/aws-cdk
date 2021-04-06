@@ -23,32 +23,6 @@
     "cloudformation",
     "yaml"
   ],
-  "jsii": {
-    "outdir": "dist",
-    "targets": {
-      "java": {
-        "package": "software.amazon.awscdk.yaml.cfn",
-        "maven": {
-          "groupId": "software.amazon.awscdk",
-          "artifactId": "cdk-yaml-cfn"
-        }
-      },
-      "dotnet": {
-        "namespace": "Amazon.CDK.Yaml.Cfn",
-        "packageId": "Amazon.CDK.Yaml.Cfn",
-        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
-      },
-      "python": {
-        "distName": "aws-cdk.yaml-cfn",
-        "module": "aws_cdk.yaml_cfn",
-        "classifiers": [
-          "Framework :: AWS CDK",
-          "Framework :: AWS CDK :: 1"
-        ]
-      }
-    },
-    "projectReferences": true
-  },
   "scripts": {
     "build": "cdk-build",
     "watch": "cdk-watch",

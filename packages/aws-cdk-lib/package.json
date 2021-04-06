@@ -23,7 +23,8 @@
     "build+test+package": "yarn build+test && yarn package",
     "watch": "cdk-watch",
     "compat": "cdk-compat",
-    "rosetta:extract": "yarn --silent jsii-rosetta extract"
+    "rosetta:extract": "yarn --silent jsii-rosetta extract",
+    "postpack": "cdk-postpack"
   },
   "awslint": {
     "exclude": [
@@ -82,6 +83,7 @@
   },
   "license": "Apache-2.0",
   "bundledDependencies": [
+    "@aws-cdk/yaml-cfn",
     "@balena/dockerignore",
     "case",
     "fs-extra",
@@ -93,6 +95,7 @@
     "yaml"
   ],
   "dependencies": {
+    "@aws-cdk/yaml-cfn": "0.0.0",
     "@balena/dockerignore": "^1.0.2",
     "case": "1.6.3",
     "fs-extra": "^9.1.0",
