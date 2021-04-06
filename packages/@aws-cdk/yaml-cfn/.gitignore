@@ -3,6 +3,7 @@
 *.d.ts
 node_modules
 dist
+tsconfig.json
 .jsii
 
 .LAST_BUILD
