@@ -1,7 +1,7 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as kms from '@aws-cdk/aws-kms';
-import { ConcreteDependable, IDependable, IResource, RemovalPolicy, Resource, Size, Tags } from '@aws-cdk/core';
-import { Construct } from 'constructs';
+import { IResource, RemovalPolicy, Resource, Size, Tags } from '@aws-cdk/core';
+import { Construct, DependencyGroup, IDependable } from 'constructs';
 import { AccessPoint, AccessPointOptions } from './access-point';
 import { CfnFileSystem, CfnMountTarget } from './efs.generated';
 
@@ -237,7 +237,7 @@ export class FileSystem extends Resource implements IFileSystem {
 
   public readonly mountTargetsAvailable: IDependable;
 
-  private readonly _mountTargetsAvailable = new ConcreteDependable();
+  private readonly _mountTargetsAvailable = new DependencyGroup();
 
   /**
    * Constructor for creating a new EFS FileSystem.
@@ -327,6 +327,6 @@ class ImportedFileSystem extends Resource implements IFileSystem {
       defaultPort: ec2.Port.tcp(FileSystem.DEFAULT_PORT),
     });
 
-    this.mountTargetsAvailable = new ConcreteDependable();
+    this.mountTargetsAvailable = new DependencyGroup();
   }
 }
