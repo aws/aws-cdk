@@ -5,7 +5,6 @@ export * from './token';
 export * from './resolvable';
 export * from './lazy';
 export * from './tag-manager';
-export * from './dependency';
 export * from './string-fragments';
 export * from './stack-synthesizers';
 

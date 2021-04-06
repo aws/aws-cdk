@@ -1,10 +1,10 @@
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import {
-  Annotations, ConcreteDependable, ContextProvider, DependableTrait,
-  IDependable, IResource, Lazy, Resource, Stack, Token, Tags, Names,
+  Annotations, ContextProvider,
+  IResource, Lazy, Resource, Stack, Token, Tags, Names,
 } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
-import { Construct, IConstruct, Node } from 'constructs';
+import { Construct, Dependable, DependencyGroup, IConstruct, IDependable, Node } from 'constructs';
 import { ClientVpnEndpoint, ClientVpnEndpointOptions } from './client-vpn-endpoint';
 import {
   CfnEIP, CfnInternetGateway, CfnNatGateway, CfnRoute, CfnRouteTable, CfnSubnet,
@@ -1177,7 +1177,7 @@ export class Vpc extends VpcBase {
    */
   private subnetConfiguration: SubnetConfiguration[] = [];
 
-  private readonly _internetConnectivityEstablished = new ConcreteDependable();
+  private readonly _internetConnectivityEstablished = new DependencyGroup();
 
   /**
    * Vpc creates a VPC that spans a whole region.
@@ -1529,7 +1529,7 @@ export class Subnet extends Resource implements ISubnet {
 
   public readonly internetConnectivityEstablished: IDependable;
 
-  private readonly _internetConnectivityEstablished = new ConcreteDependable();
+  private readonly _internetConnectivityEstablished = new DependencyGroup();
 
   private _networkAcl: INetworkAcl;
 
@@ -1809,7 +1809,7 @@ class ImportedVpc extends VpcBase {
   public readonly privateSubnets: ISubnet[];
   public readonly isolatedSubnets: ISubnet[];
   public readonly availabilityZones: string[];
-  public readonly internetConnectivityEstablished: IDependable = new ConcreteDependable();
+  public readonly internetConnectivityEstablished: IDependable = new DependencyGroup();
   private readonly cidr?: string | undefined;
 
   constructor(scope: Construct, id: string, props: VpcAttributes, isIncomplete: boolean) {
@@ -1849,7 +1849,7 @@ class ImportedVpc extends VpcBase {
 
 class LookedUpVpc extends VpcBase {
   public readonly vpcId: string;
-  public readonly internetConnectivityEstablished: IDependable = new ConcreteDependable();
+  public readonly internetConnectivityEstablished: IDependable = new DependencyGroup();
   public readonly availabilityZones: string[];
   public readonly publicSubnets: ISubnet[];
   public readonly privateSubnets: ISubnet[];
@@ -1918,11 +1918,11 @@ class CompositeDependable implements IDependable {
 
   constructor() {
     const self = this;
-    DependableTrait.implement(this, {
+    Dependable.implement(this, {
       get dependencyRoots() {
         const ret = new Array<IConstruct>();
         for (const dep of self.dependables) {
-          ret.push(...DependableTrait.get(dep).dependencyRoots);
+          ret.push(...Dependable.of(dep).dependencyRoots);
         }
         return ret;
       },
@@ -1946,7 +1946,7 @@ function tap<T>(x: T, fn: (x: T) => void): T {
 }
 
 class ImportedSubnet extends Resource implements ISubnet, IPublicSubnet, IPrivateSubnet {
-  public readonly internetConnectivityEstablished: IDependable = new ConcreteDependable();
+  public readonly internetConnectivityEstablished: IDependable = new DependencyGroup();
   public readonly subnetId: string;
   public readonly routeTable: IRouteTable;
   private readonly _availabilityZone?: string;
