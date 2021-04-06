@@ -60,6 +60,22 @@ new route53.TxtRecord(this, 'TXTRecord', {
 });
 ```
 
+To add a NS record to your zone:
+
+```ts
+import * as route53 from '@aws-cdk/aws-route53';
+
+new route53.NsRecord(this, 'NSRecord', {
+  zone: myZone,
+  recordName: 'foo',  
+  values: [            
+    'ns-1.awsdns.co.uk.',
+    'ns-2.awsdns.com.'
+  ],
+  ttl: Duration.minutes(90),       // Optional - default is 30 minutes
+});
+```
+
 To add an A record to your zone:
 
 ```ts

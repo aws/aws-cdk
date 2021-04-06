@@ -485,6 +485,37 @@ nodeunitShim({
     test.done();
   },
 
+  'NS record'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+
+    const zone = new route53.HostedZone(stack, 'HostedZone', {
+      zoneName: 'myzone',
+    });
+
+    // WHEN
+    new route53.NsRecord(stack, 'NS', {
+      zone,
+      recordName: 'www',
+      values: ['ns-1.awsdns.co.uk.', 'ns-2.awsdns.com.'],
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::Route53::RecordSet', {
+      Name: 'www.myzone.',
+      Type: 'NS',
+      HostedZoneId: {
+        Ref: 'HostedZoneDB99F866',
+      },
+      ResourceRecords: [
+        'ns-1.awsdns.co.uk.',
+        'ns-2.awsdns.com.',
+      ],
+      TTL: '1800',
+    }));
+    test.done();
+  },
+
   'Zone delegation record'(test: Test) {
     // GIVEN
     const stack = new Stack();
