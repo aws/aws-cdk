@@ -9,7 +9,7 @@ public class %name.PascalCased%App {
     public static void main(final String[] args) {
         App app = new App();
 
-        %name.PascalCased%Stack.Builder.create(app, "%name.PascalCased%Stack")
+        new %name.PascalCased%Stack(app, "%name.PascalCased%Stack", StackProps.builder()
                 // If you don't specify 'env', this stack will be environment-agnostic.
                 // Account/Region-dependent features and context lookups will not work,
                 // but a single synthesized template can be deployed anywhere.
@@ -31,9 +31,9 @@ public class %name.PascalCased%App {
                         .region("us-east-1")
                         .build())
                 */
-
                 // For more information, see https://docs.aws.amazon.com/cdk/latest/guide/environments.html
-                .build();
+
+                .build());
 
         app.synth();
     }
