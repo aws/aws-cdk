@@ -49,6 +49,7 @@ test('creates CloudFormation Custom Resource', () => {
             'acm:RequestCertificate',
             'acm:DescribeCertificate',
             'acm:DeleteCertificate',
+            'acm:AddTagsToCertificate',
           ],
           Effect: 'Allow',
           Resource: '*',
