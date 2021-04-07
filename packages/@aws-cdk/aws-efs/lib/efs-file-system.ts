@@ -123,7 +123,7 @@ export interface FileSystemProps {
   /**
    * Defines if the data at rest in the file system is encrypted or not.
    *
-   * @default true
+   * @default - if '@aws-cdk/aws-efs:defaultEncryptionAtRest' is enabled, the default is true. Otherwise, the default is false.
    */
   readonly encrypted?: boolean;
 
