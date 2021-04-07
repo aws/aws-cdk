@@ -115,14 +115,8 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
     const call: AwsSdkCall | undefined = event.ResourceProperties[event.RequestType];
 
     if (call) {
-      let awsService;
 
       if (call.assumedRoleArn) {
-
-        const stsService = new (AWS as any).STS({
-          apiVersion: call.apiVersion,
-          region: call.region,
-        });
 
         const timestamp = (new Date()).getTime();
 
@@ -131,26 +125,16 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
           RoleSessionName: `${physicalResourceId}-${timestamp}`,
         };
 
-        const assumeRoleResponse = await stsService.assumeRole(params).promise();
-
-        const creds = new AWS.Credentials({
-          accessKeyId: assumeRoleResponse.Credentials.AccessKeyId,
-          secretAccessKey: assumeRoleResponse.Credentials.SecretAccessKey,
-          sessionToken: assumeRoleResponse.Credentials.SessionToken,
+        AWS.config.credentials = new AWS.ChainableTemporaryCredentials({
+          params: params
         });
 
-        awsService = new AWS[call.service]({
-          apiVersion: call.apiVersion,
-          region: call.region,
-          credentials: creds,
-        });
-
-      } else {
-        awsService = new (AWS as any)[call.service]({
-          apiVersion: call.apiVersion,
-          region: call.region,
-        });
       }
+
+      const awsService = new (AWS as any)[call.service]({
+        apiVersion: call.apiVersion,
+        region: call.region,
+      });
 
       try {
         const response = await awsService[call.action](
