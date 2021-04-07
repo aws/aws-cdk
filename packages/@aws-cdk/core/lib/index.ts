@@ -50,8 +50,6 @@ export * from './assets';
 
 export * from './tree';
 
-export * from './assets/asset-staging';
-export * from './assets/bundling';
 export * from './fs';
 
 export * from './custom-resource';

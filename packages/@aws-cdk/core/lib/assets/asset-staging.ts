@@ -5,13 +5,13 @@ import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
 import * as fs from 'fs-extra';
 import * as minimatch from 'minimatch';
-import { AssetHashType, AssetOptions, FileAssetPackaging } from '../assets';
-import { BundlingOptions, BundlingOutput } from './bundling';
 import { FileSystem, FingerprintOptions } from '../fs/index';
 import { Names } from '../names';
 import { Cache } from '../private/cache';
 import { Stack } from '../stack';
 import { Stage } from '../stage';
+import { BundlingOptions, BundlingOutput } from './bundling';
+import { AssetHashType, AssetOptions, FileAssetPackaging } from './file-asset';
 
 // v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
 // eslint-disable-next-line
