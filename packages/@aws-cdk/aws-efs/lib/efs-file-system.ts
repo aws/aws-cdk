@@ -123,7 +123,8 @@ export interface FileSystemProps {
   /**
    * Defines if the data at rest in the file system is encrypted or not.
    *
-   * @default - if '@aws-cdk/aws-efs:defaultEncryptionAtRest' is enabled, the default is true. Otherwise, the default is false.
+   * @default - If your application has the '@aws-cdk/aws-efs:defaultEncryptionAtRest' feature flag set, the default is true, otherwise, the default is false.
+   * @link https://docs.aws.amazon.com/cdk/latest/guide/featureflags.html
    */
   readonly encrypted?: boolean;
 
@@ -250,7 +251,10 @@ export class FileSystem extends Resource implements IFileSystem {
       throw new Error('Property provisionedThroughputPerSecond is required when throughputMode is PROVISIONED');
     }
 
-    const encrypted = props.encrypted ?? FeatureFlags.of(this).isEnabled(cxapi.EFS_DEFAULT_ENCRYPTION_AT_REST);
+    // we explictly use 'undefined' to represent 'false' to maintain backwards compatibility since
+    // its considered an actual change in CloudFormations eyes, even though they have the same meaning.
+    const encrypted = props.encrypted ?? (FeatureFlags.of(this).isEnabled(
+      cxapi.EFS_DEFAULT_ENCRYPTION_AT_REST) ? true : undefined);
 
     const filesystem = new CfnFileSystem(this, 'Resource', {
       encrypted: encrypted,

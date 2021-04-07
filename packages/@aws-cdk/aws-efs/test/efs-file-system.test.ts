@@ -1,4 +1,4 @@
-import { expect as expectCDK, haveResource, ResourcePart, countResources } from '@aws-cdk/assert-internal';
+import { ABSENT, expect as expectCDK, haveResource, ResourcePart, countResources } from '@aws-cdk/assert-internal';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as kms from '@aws-cdk/aws-kms';
 import { RemovalPolicy, Size, Stack, Tags } from '@aws-cdk/core';
@@ -40,7 +40,7 @@ test(`when ${cxapi.EFS_DEFAULT_ENCRYPTION_AT_REST} is disabled, encryption is di
   });
 
   expectCDK(customStack).to(haveResource('AWS::EFS::FileSystem', {
-    Encrypted: false,
+    Encrypted: ABSENT,
   }));
 
 });
@@ -55,7 +55,7 @@ test(`when ${cxapi.EFS_DEFAULT_ENCRYPTION_AT_REST} is missing, encryption is dis
   });
 
   expectCDK(customStack).to(haveResource('AWS::EFS::FileSystem', {
-    Encrypted: false,
+    Encrypted: ABSENT,
   }));
 
 });
