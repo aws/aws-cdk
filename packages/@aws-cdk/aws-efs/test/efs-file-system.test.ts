@@ -2,6 +2,7 @@ import { expect as expectCDK, haveResource, ResourcePart, countResources } from 
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as kms from '@aws-cdk/aws-kms';
 import { RemovalPolicy, Size, Stack, Tags } from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
 import { FileSystem, LifecyclePolicy, PerformanceMode, ThroughputMode } from '../lib';
 
 let stack = new Stack();
@@ -10,6 +11,53 @@ let vpc = new ec2.Vpc(stack, 'VPC');
 beforeEach(() => {
   stack = new Stack();
   vpc = new ec2.Vpc(stack, 'VPC');
+});
+
+test(`when ${cxapi.EFS_DEFAULT_ENCRYPTION_AT_REST} is enabled, encryption is enabled by default`, () => {
+
+  const customStack = new Stack();
+  customStack.node.setContext(cxapi.EFS_DEFAULT_ENCRYPTION_AT_REST, true);
+
+  const customVpc = new ec2.Vpc(customStack, 'VPC');
+  new FileSystem(customVpc, 'EfsFileSystem', {
+    vpc: customVpc,
+  });
+
+  expectCDK(customStack).to(haveResource('AWS::EFS::FileSystem', {
+    Encrypted: true,
+  }));
+
+});
+
+test(`when ${cxapi.EFS_DEFAULT_ENCRYPTION_AT_REST} is disabled, encryption is disabled by default`, () => {
+
+  const customStack = new Stack();
+  customStack.node.setContext(cxapi.EFS_DEFAULT_ENCRYPTION_AT_REST, false);
+
+  const customVpc = new ec2.Vpc(customStack, 'VPC');
+  new FileSystem(customVpc, 'EfsFileSystem', {
+    vpc: customVpc,
+  });
+
+  expectCDK(customStack).to(haveResource('AWS::EFS::FileSystem', {
+    Encrypted: false,
+  }));
+
+});
+
+test(`when ${cxapi.EFS_DEFAULT_ENCRYPTION_AT_REST} is missing, encryption is disabled by default`, () => {
+
+  const customStack = new Stack();
+
+  const customVpc = new ec2.Vpc(customStack, 'VPC');
+  new FileSystem(customVpc, 'EfsFileSystem', {
+    vpc: customVpc,
+  });
+
+  expectCDK(customStack).to(haveResource('AWS::EFS::FileSystem', {
+    Encrypted: false,
+  }));
+
 });
 
 test('default file system is created correctly', () => {

@@ -1,6 +1,7 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as kms from '@aws-cdk/aws-kms';
-import { ConcreteDependable, IDependable, IResource, RemovalPolicy, Resource, Size, Tags } from '@aws-cdk/core';
+import { FeatureFlags, ConcreteDependable, IDependable, IResource, RemovalPolicy, Resource, Size, Tags } from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
 import { AccessPoint, AccessPointOptions } from './access-point';
 import { CfnFileSystem, CfnMountTarget } from './efs.generated';
@@ -122,7 +123,7 @@ export interface FileSystemProps {
   /**
    * Defines if the data at rest in the file system is encrypted or not.
    *
-   * @default false
+   * @default true
    */
   readonly encrypted?: boolean;
 
@@ -249,8 +250,10 @@ export class FileSystem extends Resource implements IFileSystem {
       throw new Error('Property provisionedThroughputPerSecond is required when throughputMode is PROVISIONED');
     }
 
+    const encrypted = props.encrypted ?? FeatureFlags.of(this).isEnabled(cxapi.EFS_DEFAULT_ENCRYPTION_AT_REST);
+
     const filesystem = new CfnFileSystem(this, 'Resource', {
-      encrypted: props.encrypted,
+      encrypted: encrypted,
       kmsKeyId: props.kmsKey?.keyArn,
       lifecyclePolicies: (props.lifecyclePolicy ? [{ transitionToIa: props.lifecyclePolicy }] : undefined),
       performanceMode: props.performanceMode,
