@@ -161,6 +161,32 @@ test('with http parameters', () => {
   });
 });
 
+test('Throw when the number of wild cards in the path not equal to the number of pathParameterValues', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const restApi = newTestRestApi(stack);
+  const rule = new events.Rule(stack, 'Rule', {
+    schedule: events.Schedule.rate(cdk.Duration.minutes(1)),
+  });
+
+  // WHEN, THEN
+  expect(() => rule.addTarget(new targets.ApiGateway(restApi, {
+    pathParameterValues: ['value1'],
+  }))).toThrow(/The number of wildcards in the path does not match the number of path pathParameterValues/);
+  expect(() => rule.addTarget(new targets.ApiGateway(restApi, {
+    path: '/*',
+  }))).toThrow(/The number of wildcards in the path does not match the number of path pathParameterValues/);
+  expect(() => rule.addTarget(new targets.ApiGateway(restApi, {
+    path: '/*/*',
+    pathParameterValues: ['value1'],
+  }))).toThrow(/The number of wildcards in the path does not match the number of path pathParameterValues/);
+  expect(() => rule.addTarget(new targets.ApiGateway(restApi, {
+    path: '/*/*',
+    pathParameterValues: ['value1', 'value2'],
+  }))).not.toThrow();
+
+});
+
 test('with an explicit event role', () => {
   // GIVEN
   const stack = new cdk.Stack();

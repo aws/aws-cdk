@@ -1,13 +1,12 @@
 import * as api from '@aws-cdk/aws-apigateway';
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
-import * as sqs from '@aws-cdk/aws-sqs';
-import { addToDeadLetterQueueResourcePolicy, singletonEventRole } from './util';
+import { addToDeadLetterQueueResourcePolicy, bindBaseTargetConfig, singletonEventRole, TargetBaseProps } from './util';
 
 /**
  * Customize the API Gateway Event Target
  */
-export interface ApiGatewayProps {
+export interface ApiGatewayProps extends TargetBaseProps {
 
   /**
    * The method for api resource invoked by the rule.
@@ -55,22 +54,11 @@ export interface ApiGatewayProps {
   readonly queryStringParameters?: { [key: string]: (string) };
 
   /**
-   * Message Group ID for messages sent to this queue.
-   *
-   * Required for FIFO queues, leave empty for regular queues.
-   *
-   * @default - no message group ID (regular queue)
-   */
-  readonly messageGroupId?: string;
-
-  /**
-   * The message to send to the queue.
-   *
-   * Must be a valid JSON text passed to the target queue.
+   * This will be the post request body send to the API.
    *
    * @default the entire EventBridge event
    */
-  readonly message?: events.RuleTargetInput;
+  readonly postBody?: events.RuleTargetInput;
 
   /**
    * The role to assume before invoking the target
@@ -79,18 +67,6 @@ export interface ApiGatewayProps {
    * @default - a new role will be created
    */
   readonly eventRole?: iam.IRole;
-
-  /**
-   * The SQS queue to be used as deadLetterQueue.
-   * Check out the [considerations for using a dead-letter queue](https://docs.aws.amazon.com/eventbridge/latest/userguide/rule-dlq.html#dlq-considerations).
-   *
-   * The events not successfully delivered are automatically retried for a specified period of time,
-   * depending on the retry policy of the target.
-   * If an event is not delivered before all retry attempts are exhausted, it will be sent to the dead letter queue.
-   *
-   * @default - no dead-letter queue
-   */
-  readonly deadLetterQueue?: sqs.IQueue;
 }
 
 /**
@@ -112,12 +88,18 @@ export class ApiGateway implements events.IRuleTarget {
       addToDeadLetterQueueResourcePolicy(rule, this.props.deadLetterQueue);
     }
 
+    const wildcardCountsInPath = this.props?.path?.match( /\*/g )?.length ?? 0;
+    if (wildcardCountsInPath !== (this.props?.pathParameterValues || []).length) {
+      throw new Error('The number of wildcards in the path does not match the number of path pathParameterValues.');
+    }
+
     const restApiArn = this.restApi.arnForExecuteApi(
       this.props?.method,
       this.props?.path || '/',
       this.props?.stage || this.restApi.deploymentStage.stageName,
     );
     return {
+      ...(this.props ? bindBaseTargetConfig(this.props) : {}),
       arn: restApiArn,
       role: this.props?.eventRole || singletonEventRole(this.restApi, [new iam.PolicyStatement({
         resources: [restApiArn],
@@ -127,7 +109,7 @@ export class ApiGateway implements events.IRuleTarget {
         ],
       })]),
       deadLetterConfig: this.props?.deadLetterQueue && { arn: this.props.deadLetterQueue?.queueArn },
-      input: this.props?.message,
+      input: this.props?.postBody,
       targetResource: this.restApi,
       httpParameters: {
         headerParameters: this.props?.headerParameters,
