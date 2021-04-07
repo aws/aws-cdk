@@ -1,5 +1,5 @@
 import { IResolveContext, Lazy, Stack } from '@aws-cdk/core';
-import * as yaml_cfn from '@aws-cdk/yaml-cfn';
+import * as yaml_cfn from './private/yaml-cfn';
 
 /**
  * BuildSpec for CodeBuild projects

@@ -71,7 +71,6 @@
     "@aws-cdk/cloudformation-diff": "0.0.0",
     "@aws-cdk/cx-api": "0.0.0",
     "@aws-cdk/region-info": "0.0.0",
-    "@aws-cdk/yaml-cfn": "0.0.0",
     "archiver": "^5.3.0",
     "aws-sdk": "^2.848.0",
     "camelcase": "^6.2.0",
@@ -89,6 +88,7 @@
     "table": "^6.0.9",
     "uuid": "^8.3.2",
     "wrap-ansi": "^7.0.0",
+    "yaml": "1.10.2",
     "yargs": "^16.2.0"
   },
   "repository": {
