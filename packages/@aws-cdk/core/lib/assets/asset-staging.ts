@@ -6,7 +6,7 @@ import { Construct } from 'constructs';
 import * as fs from 'fs-extra';
 import * as minimatch from 'minimatch';
 import { AssetHashType, AssetOptions, FileAssetPackaging } from '../assets';
-import { BundlingOptions, BundlingOutput } from '../bundling';
+import { BundlingOptions, BundlingOutput } from './bundling';
 import { FileSystem, FingerprintOptions } from '../fs/index';
 import { Names } from '../names';
 import { Cache } from '../private/cache';

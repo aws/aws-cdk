@@ -1,4 +1,4 @@
-import { BundlingOptions } from './bundling';
+import { BundlingOptions } from './assets/bundling';
 
 /**
  * Common interface for all assets.
