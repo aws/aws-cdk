@@ -51,6 +51,8 @@
     "nohoist": [
       "**/jszip",
       "**/jszip/**",
+      "@aws-cdk/aws-codebuild/yaml",
+      "@aws-cdk/aws-codebuild/yaml/**",
       "@aws-cdk/aws-codepipeline-actions/case",
       "@aws-cdk/aws-codepipeline-actions/case/**",
       "@aws-cdk/aws-cognito/punycode",
@@ -63,6 +65,8 @@
       "@aws-cdk/cloud-assembly-schema/jsonschema/**",
       "@aws-cdk/cloud-assembly-schema/semver",
       "@aws-cdk/cloud-assembly-schema/semver/**",
+      "@aws-cdk/cloudformation-include/yaml",
+      "@aws-cdk/cloudformation-include/yaml/**",
       "@aws-cdk/core/@balena/dockerignore",
       "@aws-cdk/core/@balena/dockerignore/**",
       "@aws-cdk/core/fs-extra",
