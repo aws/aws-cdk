@@ -212,8 +212,8 @@
     "@aws-cdk/aws-wafv2": "0.0.0",
     "@aws-cdk/aws-workspaces": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "@aws-cdk/yaml-cfn": "0.0.0",
-    "constructs": "^3.2.0"
+    "constructs": "^3.3.69",
+    "yaml": "1.10.2"
   },
   "peerDependencies": {
     "@aws-cdk/alexa-ask": "0.0.0",
@@ -363,19 +363,19 @@
     "@aws-cdk/aws-wafv2": "0.0.0",
     "@aws-cdk/aws-workspaces": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "constructs": "^3.2.0"
+    "constructs": "^3.3.69"
   },
   "devDependencies": {
-    "@aws-cdk/assert": "0.0.0",
-    "@types/jest": "^26.0.21",
+    "@types/jest": "^26.0.22",
     "cdk-build-tools": "0.0.0",
     "cdk-integ-tools": "0.0.0",
     "jest": "^26.6.3",
     "pkglint": "0.0.0",
-    "ts-jest": "^26.5.4"
+    "ts-jest": "^26.5.4",
+    "@aws-cdk/assert-internal": "0.0.0"
   },
   "bundledDependencies": [
-    "@aws-cdk/yaml-cfn"
+    "yaml"
   ],
   "keywords": [
     "aws",
