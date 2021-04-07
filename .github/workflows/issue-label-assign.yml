@@ -176,7 +176,7 @@ jobs:
             {"area":"@aws-cdk/aws-wafregional","keywords":["wafregional","cfnrule","cfnwebacl"],"labels":["@aws-cdk/aws-wafregional"],"assignees":["njlynch"]},
             {"area":"@aws-cdk/aws-wafv2","keywords":["wafv2"],"labels":["@aws-cdk/aws-wafv2"],"assignees":["njlynch"]},
             {"area":"@aws-cdk/aws-workspaces","keywords":["aws-workspaces","workspaces"],"labels":["@aws-cdk/aws-workspaces"],"assignees":["NetaNir"]},
-            {"area":"@aws-cdk/cfnspec","keywords":["cfn-spec"],"labels":["@aws-cdk/cfnspec"],"assignees":["rix0rrr"]},
+            {"area":"@aws-cdk/cfnspec","keywords":["cfn-spec"],"labels":["@aws-cdk/cfnspec"],"assignees":["ngl321"]},
             {"area":"@aws-cdk/cloud-assembly-schema","keywords":["cloud-assembly-schema","manifest"],"labels":["@aws-cdk/cloud-assembly-schema"],"assignees":["rix0rrr"]},
             {"area":"@aws-cdk/cloudformation-diff","keywords":["cloudformation-diff","cfn-diff"],"labels":["@aws-cdk/cloudformation-diff"],"assignees":["NetaNir"]},
             {"area":"@aws-cdk/cloudformation-include","keywords":["cloudformation-include","cfn-include"],"labels":["@aws-cdk/cloudformation-include"],"assignees":["skinny85"]},
