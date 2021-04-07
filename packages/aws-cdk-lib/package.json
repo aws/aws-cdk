@@ -56,7 +56,7 @@
         "versionSuffix": "-devpreview"
       },
       "java": {
-        "package": "software.amazon.awscdk.core",
+        "package": "software.amazon.awscdk",
         "maven": {
           "groupId": "software.amazon.awscdk",
           "artifactId": "aws-cdk-lib",
