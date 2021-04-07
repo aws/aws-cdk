@@ -34,18 +34,14 @@ Access (IA) storage class.
 ```ts
 const fileSystem = new efs.FileSystem(this, 'MyEfsFileSystem', {
   vpc: new ec2.Vpc(this, 'VPC'),
-  encrypted: true,
   lifecyclePolicy: efs.LifecyclePolicy.AFTER_14_DAYS, // files are not transitioned to infrequent access (IA) storage by default
   performanceMode: efs.PerformanceMode.GENERAL_PURPOSE, // default
 });
+
 ```
+
 ⚠️ An Amazon EFS file system's performance mode can't be changed after the file system has been created.
 Updating this property will replace the file system.
-
-#### Encryption
-
-Encryption behavior is controlled via the `@aws-cdk/aws-efs:defaultEncryptionAtRest` context key. When set to `true`, encryption is enabled by default and the `encrypted` property can be omitted.
-Otherwise, explicitly set `encryption: true` to enable encryption.
 
 ### Access Point
 
