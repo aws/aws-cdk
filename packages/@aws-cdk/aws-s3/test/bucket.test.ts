@@ -1,6 +1,6 @@
-import '@aws-cdk/assert/jest';
+import '@aws-cdk/assert-internal/jest';
 import { EOL } from 'os';
-import { ResourcePart, SynthUtils, arrayWith, objectLike } from '@aws-cdk/assert';
+import { ResourcePart, SynthUtils, arrayWith, objectLike } from '@aws-cdk/assert-internal';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as cdk from '@aws-cdk/core';
