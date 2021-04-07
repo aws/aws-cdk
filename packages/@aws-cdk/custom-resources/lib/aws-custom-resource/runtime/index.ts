@@ -126,7 +126,7 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
         };
 
         AWS.config.credentials = new AWS.ChainableTemporaryCredentials({
-          params: params
+          params: params,
         });
 
       }
