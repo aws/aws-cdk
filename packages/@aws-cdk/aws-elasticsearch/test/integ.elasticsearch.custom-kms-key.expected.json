@@ -343,7 +343,7 @@
       "Properties": {
         "Code": {
           "S3Bucket": {
-            "Ref": "AssetParameters2b0c7ae9c9e5bc673d95e4a78b6100be6bd65791021864e0f8b27c69727e4362S3BucketA1F09A53"
+            "Ref": "AssetParametersb965ea3084ec95e24846d4975623e62a02c21883c3ddea9366b2ae42d21cef98S3Bucket4DD075F7"
           },
           "S3Key": {
             "Fn::Join": [
@@ -356,7 +356,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParameters2b0c7ae9c9e5bc673d95e4a78b6100be6bd65791021864e0f8b27c69727e4362S3VersionKey52F45CB1"
+                          "Ref": "AssetParametersb965ea3084ec95e24846d4975623e62a02c21883c3ddea9366b2ae42d21cef98S3VersionKeyBD0E03B7"
                         }
                       ]
                     }
@@ -369,7 +369,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParameters2b0c7ae9c9e5bc673d95e4a78b6100be6bd65791021864e0f8b27c69727e4362S3VersionKey52F45CB1"
+                          "Ref": "AssetParametersb965ea3084ec95e24846d4975623e62a02c21883c3ddea9366b2ae42d21cef98S3VersionKeyBD0E03B7"
                         }
                       ]
                     }
@@ -396,11 +396,11 @@
     }
   },
   "Parameters": {
-    "AssetParameters2b0c7ae9c9e5bc673d95e4a78b6100be6bd65791021864e0f8b27c69727e4362S3BucketA1F09A53": {
+    "AssetParametersb965ea3084ec95e24846d4975623e62a02c21883c3ddea9366b2ae42d21cef98S3Bucket4DD075F7": {
       "Type": "String",
       "Description": "S3 bucket for asset \"2b0c7ae9c9e5bc673d95e4a78b6100be6bd65791021864e0f8b27c69727e4362\""
     },
-    "AssetParameters2b0c7ae9c9e5bc673d95e4a78b6100be6bd65791021864e0f8b27c69727e4362S3VersionKey52F45CB1": {
+    "AssetParametersb965ea3084ec95e24846d4975623e62a02c21883c3ddea9366b2ae42d21cef98S3VersionKeyBD0E03B7": {
       "Type": "String",
       "Description": "S3 key for asset version \"2b0c7ae9c9e5bc673d95e4a78b6100be6bd65791021864e0f8b27c69727e4362\""
     },
