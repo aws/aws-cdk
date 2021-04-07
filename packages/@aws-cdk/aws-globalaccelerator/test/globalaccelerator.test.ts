@@ -1,4 +1,4 @@
-import { expect, haveResourceLike } from '@aws-cdk/assert';
+import { expect, haveResourceLike } from '@aws-cdk/assert-internal';
 import { Duration } from '@aws-cdk/core';
 import * as ga from '../lib';
 import { testFixture } from './util';

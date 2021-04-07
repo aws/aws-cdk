@@ -1,4 +1,4 @@
-import { expect, haveResource, haveResourceLike, not } from '@aws-cdk/assert';
+import { expect, haveResource, haveResourceLike, not } from '@aws-cdk/assert-internal';
 import { App, Intrinsic, Lazy, Stack, Token } from '@aws-cdk/core';
 import { nodeunitShim, Test } from 'nodeunit-shim';
 import { Peer, Port, SecurityGroup, SecurityGroupProps, Vpc } from '../lib';

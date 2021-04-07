@@ -1,4 +1,4 @@
-import '@aws-cdk/assert/jest';
+import '@aws-cdk/assert-internal/jest';
 import * as elbv2 from '../../lib';
 
 describe('tests', () => {

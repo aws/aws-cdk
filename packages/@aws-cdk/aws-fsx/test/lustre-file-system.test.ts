@@ -1,5 +1,5 @@
 import { strictEqual } from 'assert';
-import { expect as expectCDK, haveResource, ResourcePart } from '@aws-cdk/assert';
+import { expect as expectCDK, haveResource, ResourcePart } from '@aws-cdk/assert-internal';
 import { ISubnet, Port, SecurityGroup, Subnet, Vpc } from '@aws-cdk/aws-ec2';
 import { Key } from '@aws-cdk/aws-kms';
 import { Aws, Stack, Token } from '@aws-cdk/core';

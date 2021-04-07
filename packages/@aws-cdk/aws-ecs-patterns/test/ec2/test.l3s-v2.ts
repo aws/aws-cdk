@@ -1,4 +1,4 @@
-import { expect, haveResource, haveResourceLike, SynthUtils } from '@aws-cdk/assert';
+import { expect, haveResource, haveResourceLike, SynthUtils } from '@aws-cdk/assert-internal';
 import { Certificate } from '@aws-cdk/aws-certificatemanager';
 import { InstanceType, Vpc } from '@aws-cdk/aws-ec2';
 import { AwsLogDriver, Cluster, ContainerImage, Ec2TaskDefinition, PropagatedTagSource, Protocol } from '@aws-cdk/aws-ecs';

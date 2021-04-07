@@ -1,5 +1,5 @@
-import '@aws-cdk/assert/jest';
-import { expect as assertExpect, ResourcePart } from '@aws-cdk/assert';
+import '@aws-cdk/assert-internal/jest';
+import { expect as assertExpect, ResourcePart } from '@aws-cdk/assert-internal';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as lambda from '@aws-cdk/aws-lambda';

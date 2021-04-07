@@ -1,4 +1,4 @@
-import { expect, haveResource, SynthUtils } from '@aws-cdk/assert';
+import { expect, haveResource, SynthUtils } from '@aws-cdk/assert-internal';
 import { Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import { Cluster, KubernetesManifest, KubernetesVersion, HelmChart } from '../lib';

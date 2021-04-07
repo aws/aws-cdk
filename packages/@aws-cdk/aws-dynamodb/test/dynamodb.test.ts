@@ -1,5 +1,5 @@
-import { arrayWith, ABSENT, ResourcePart, SynthUtils } from '@aws-cdk/assert';
-import '@aws-cdk/assert/jest';
+import { arrayWith, ABSENT, ResourcePart, SynthUtils } from '@aws-cdk/assert-internal';
+import '@aws-cdk/assert-internal/jest';
 import * as appscaling from '@aws-cdk/aws-applicationautoscaling';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';

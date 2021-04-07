@@ -9,7 +9,7 @@
     "watch": "cdk-watch",
     "lint": "cdk-lint",
     "test": "cdk-test",
-    "pkglint": "pkglint -f",
+    "pkglint": "true",
     "package": "cdk-package",
     "build+test+package": "yarn build+test && yarn package",
     "build+test": "yarn build && yarn test"

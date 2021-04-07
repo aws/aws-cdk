@@ -1,6 +1,6 @@
-import '@aws-cdk/assert/jest';
+import '@aws-cdk/assert-internal/jest';
 import * as path from 'path';
-import { ABSENT, ResourcePart } from '@aws-cdk/assert';
+import { ABSENT, ResourcePart } from '@aws-cdk/assert-internal';
 import * as ecr from '@aws-cdk/aws-ecr';
 import * as cdk from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';

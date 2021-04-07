@@ -4,7 +4,7 @@ import {
   haveResource,
   haveResourceLike,
   stringLike,
-} from '@aws-cdk/assert';
+} from '@aws-cdk/assert-internal';
 import {
   CfnInstanceProfile,
   Role,

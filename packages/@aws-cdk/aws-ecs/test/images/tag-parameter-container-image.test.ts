@@ -1,4 +1,4 @@
-import { SynthUtils } from '@aws-cdk/assert';
+import { SynthUtils } from '@aws-cdk/assert-internal';
 import * as ecr from '@aws-cdk/aws-ecr';
 import * as cdk from '@aws-cdk/core';
 import { nodeunitShim, Test } from 'nodeunit-shim';
