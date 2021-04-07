@@ -251,7 +251,7 @@
       "Type": "String",
       "Description": "S3 key for asset version \"b965ea3084ec95e24846d4975623e62a02c21883c3ddea9366b2ae42d21cef98\""
     },
-    "AssetParametersAssetParametersb965ea3084ec95e24846d4975623e62a02c21883c3ddea9366b2ae42d21cef98ArtifactHash35A756EB": {
+    "AssetParametersb965ea3084ec95e24846d4975623e62a02c21883c3ddea9366b2ae42d21cef98ArtifactHash35A756EB": {
       "Type": "String",
       "Description": "Artifact hash for asset \"b965ea3084ec95e24846d4975623e62a02c21883c3ddea9366b2ae42d21cef98\""
     }
