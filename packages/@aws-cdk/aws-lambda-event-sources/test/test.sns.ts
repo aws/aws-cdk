@@ -59,7 +59,7 @@ export = {
       deadLetterQueue: queue,
       filterPolicy: {
         Field: sns.SubscriptionFilter.stringFilter({
-          whitelist: ['A', 'B'],
+          allowlist: ['A', 'B'],
         }),
       },
     };
