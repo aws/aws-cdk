@@ -56,7 +56,7 @@ test('exhaustive example of props renders correctly', () => {
     enabled: false,
     enableIpv6: false,
     enableLogging: true,
-    geoRestriction: GeoRestriction.blacklist('US', 'GB'),
+    geoRestriction: GeoRestriction.denylist('US', 'GB'),
     httpVersion: HttpVersion.HTTP1_1,
     logFilePrefix: 'logs/',
     logIncludesCookies: true,

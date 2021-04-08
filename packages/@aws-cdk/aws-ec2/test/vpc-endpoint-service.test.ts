@@ -31,7 +31,7 @@ nodeunitShim({
       new VpcEndpointService(stack, 'EndpointService', {
         vpcEndpointServiceLoadBalancers: [lb],
         acceptanceRequired: false,
-        whitelistedPrincipals: [new ArnPrincipal('arn:aws:iam::123456789012:root')],
+        allowedPrincipals: [new ArnPrincipal('arn:aws:iam::123456789012:root')],
       });
       // THEN
       expect(stack).to(haveResource('AWS::EC2::VPCEndpointService', {
@@ -57,7 +57,7 @@ nodeunitShim({
       new VpcEndpointService(stack, 'EndpointService', {
         vpcEndpointServiceLoadBalancers: [lb],
         acceptanceRequired: false,
-        whitelistedPrincipals: [new ArnPrincipal('arn:aws:iam::123456789012:root')],
+        allowedPrincipals: [new ArnPrincipal('arn:aws:iam::123456789012:root')],
       });
 
       // THEN
@@ -85,7 +85,7 @@ nodeunitShim({
       new VpcEndpointService(stack, 'EndpointService', {
         vpcEndpointServiceLoadBalancers: [lb],
         acceptanceRequired: true,
-        whitelistedPrincipals: [new ArnPrincipal('arn:aws:iam::123456789012:root')],
+        allowedPrincipals: [new ArnPrincipal('arn:aws:iam::123456789012:root')],
       });
 
       // THEN

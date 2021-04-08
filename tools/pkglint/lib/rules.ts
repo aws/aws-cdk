@@ -1321,8 +1321,7 @@ export class Cfn2Ts extends ValidationRule {
 
 /**
  * Packages inside JSII packages (typically used for embedding Lambda handles)
- * must only have dev dependencies and their node_modules must have been
- * blacklisted for publishing
+ * must only have dev dependencies and their node_modules must not be published.
  *
  * We might loosen this at some point but we'll have to bundle all runtime dependencies
  * and we don't have good transitive license checks.

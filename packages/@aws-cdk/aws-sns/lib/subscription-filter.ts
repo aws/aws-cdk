@@ -5,16 +5,29 @@ export interface StringConditions {
   /**
    * Match one or more values.
    *
+   * @deprecated use `allowlist`
    * @default - None
    */
   readonly whitelist?: string[];
 
   /**
    * Match any value that doesn't include any of the specified values.
-   *
+   * @deprecated use `denylist`
    * @default - None
    */
   readonly blacklist?: string[];
+
+  /**
+   * Match one or more values.
+   * @default - None
+   */
+  readonly allowlist?: string[];
+
+  /**
+   * Match any value that doesn't include any of the specified values.
+   * @default - None
+   */
+  readonly denylist?: string[];
 
   /**
    * Matches values that begins with the specified prefixes.
@@ -45,10 +58,17 @@ export interface BetweenCondition {
 export interface NumericConditions {
   /**
    * Match one or more values.
-   *
+   * @deprecated use `allowlist`
    * @default - None
    */
   readonly whitelist?: number[];
+
+  /**
+   * Match one or more values.
+   *
+   * @default - None
+   */
+  readonly allowlist?: number[];
 
   /**
    * Match values that are greater than the specified value.
@@ -103,12 +123,21 @@ export class SubscriptionFilter {
   public static stringFilter(stringConditions: StringConditions) {
     const conditions = new Array<any>();
 
-    if (stringConditions.whitelist) {
-      conditions.push(...stringConditions.whitelist);
+    if (stringConditions.whitelist && stringConditions.allowlist) {
+      throw new Error('`whitelist` is deprecated; please use `allowlist` instead');
+    }
+    if (stringConditions.blacklist && stringConditions.denylist) {
+      throw new Error('`blacklist` is deprecated; please use `denylist` instead');
+    }
+    const allowlist = stringConditions.allowlist ?? stringConditions.whitelist;
+    const denylist = stringConditions.denylist ?? stringConditions.blacklist;
+
+    if (allowlist) {
+      conditions.push(...allowlist);
     }
 
-    if (stringConditions.blacklist) {
-      conditions.push({ 'anything-but': stringConditions.blacklist });
+    if (denylist) {
+      conditions.push({ 'anything-but': denylist });
     }
 
     if (stringConditions.matchPrefixes) {
@@ -124,8 +153,13 @@ export class SubscriptionFilter {
   public static numericFilter(numericConditions: NumericConditions) {
     const conditions = new Array<any>();
 
-    if (numericConditions.whitelist) {
-      conditions.push(...numericConditions.whitelist.map(v => ({ numeric: ['=', v] })));
+    if (numericConditions.whitelist && numericConditions.allowlist) {
+      throw new Error('`whitelist` is deprecated; please use `allowlist` instead');
+    }
+    const allowlist = numericConditions.allowlist ?? numericConditions.whitelist;
+
+    if (allowlist) {
+      conditions.push(...allowlist.map(v => ({ numeric: ['=', v] })));
     }
 
     if (numericConditions.greaterThan) {
