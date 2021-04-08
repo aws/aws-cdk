@@ -136,6 +136,12 @@ export const RDS_LOWERCASE_DB_IDENTIFIER = '@aws-cdk/aws-rds:lowercaseDbIdentifi
 export const APIGATEWAY_USAGEPLANKEY_ORDERINSENSITIVE_ID = '@aws-cdk/aws-apigateway:usagePlanKeyOrderInsensitiveId';
 
 /**
+ * Enable this feature flag to have elastic file systems encrypted at rest by default.
+ *
+ * Encryption can also be configured explicitly using the `encrypted` property.
+ */
+export const EFS_DEFAULT_ENCRYPTION_AT_REST = '@aws-cdk/aws-efs:defaultEncryptionAtRest';
+/**
  * This map includes context keys and values for feature flags that enable
  * capabilities "from the future", which we could not introduce as the default
  * behavior due to backwards compatibility for existing projects.
@@ -159,6 +165,7 @@ export const FUTURE_FLAGS: { [key: string]: any } = {
   [S3_GRANT_WRITE_WITHOUT_ACL]: true,
   [ECS_REMOVE_DEFAULT_DESIRED_COUNT]: true,
   [RDS_LOWERCASE_DB_IDENTIFIER]: true,
+  [EFS_DEFAULT_ENCRYPTION_AT_REST]: true,
 
   // We will advertise this flag when the feature is complete
   // [NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: 'true',
@@ -187,6 +194,7 @@ const FUTURE_FLAGS_DEFAULTS: { [key: string]: boolean } = {
   [S3_GRANT_WRITE_WITHOUT_ACL]: false,
   [ECS_REMOVE_DEFAULT_DESIRED_COUNT]: false,
   [RDS_LOWERCASE_DB_IDENTIFIER]: false,
+  [EFS_DEFAULT_ENCRYPTION_AT_REST]: false,
 };
 
 export function futureFlagDefault(flag: string): boolean {
