@@ -699,7 +699,7 @@ describe('grants', () => {
   });
 
   test('"grant" for an imported domain', () => {
-    const domainEndpoint = 'https://test-domain-2w2x2u3tifly-jcjotrt6f7otem4sqcwbch3c4u.testregion.es.amazonaws.com';
+    const domainEndpoint = 'https://search-test-domain-2w2x2u3tifly-jcjotrt6f7otem4sqcwbch3c4u.testregion.es.amazonaws.com';
     const domain = Domain.fromDomainEndpoint(stack, 'Domain', domainEndpoint);
     const user = new iam.User(stack, 'user');
 
@@ -889,7 +889,7 @@ describe('import', () => {
 
   test('static fromDomainEndpoint(endpoint) allows importing an external/existing domain', () => {
     const domainName = 'test-domain-2w2x2u3tifly';
-    const domainEndpoint = `https://${domainName}-jcjotrt6f7otem4sqcwbch3c4u.testregion.es.amazonaws.com`;
+    const domainEndpoint = `https://search-${domainName}-jcjotrt6f7otem4sqcwbch3c4u.testregion.es.amazonaws.com`;
     const imported = Domain.fromDomainEndpoint(stack, 'Domain', domainEndpoint);
 
     expect(imported.domainName).toEqual(domainName);
