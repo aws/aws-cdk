@@ -8,6 +8,7 @@ jest.mock('../lib/version', () => ({
   versionNumber: () => mockMajorVersion,
 }));
 
+import * as cp from 'child_process';
 import * as os from 'os';
 import * as path from 'path';
 import * as cxapi from '@aws-cdk/cx-api';
@@ -122,6 +123,8 @@ describe('constructs version', () => {
 
   cliTest('.NET', async (workDir) => {
     await cliInit('app', 'csharp', false, true, workDir);
+
+    cp.execSync('find .', { cwd: workDir, stdio: 'inherit' });
 
     // convert dir name from aws-cdk-test-xyz to AwsCdkTestXyz
     const slnName = path.basename(workDir).split('-').map(s => `${s[0].toUpperCase()}${s.slice(1)}`).join('');
