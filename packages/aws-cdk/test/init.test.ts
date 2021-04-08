@@ -129,15 +129,8 @@ describe('constructs version', () => {
 
     expect(await fs.pathExists(csprojFile)).toBeTruthy();
     const csproj = (await fs.readFile(csprojFile, 'utf8')).split(/\r?\n/);
-    // return RegExpMatchArray (result of line.match()) for every lines that match re.
-    const matches = csproj.map(line => line.match(/\<PackageReference Include="Constructs" Version="(.*)"/))
-      .filter(l => l);
 
-    expect(matches.length).toEqual(1);
-    matches.forEach(m => {
-      const version = m && m[1];
-      expect(version).toMatch(/\[10\.[\d]+\.[\d]+,11\.0\.0\)/);
-    });
+    expect(csproj).toContainEqual(expect.stringMatching(/\<PackageReference Include="Constructs" Version="\[10\..*,11\..*\)"/));
   });
 
   cliTest('Python', async (workDir) => {
