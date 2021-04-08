@@ -20,4 +20,4 @@ junit.xml
 
 !jest.config.js
 
-!test/whitelisted-image/node_modules
+!test/allow-listed-image/node_modules
