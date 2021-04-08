@@ -356,7 +356,7 @@ const asg = new ec2.AutoScalingGroup(...);
 cluster.connectAutoScalingGroupCapacity(asg);
 ```
 
-In both cases, the [cluster security group](https://docs.aws.amazon.com/eks/latest/userguide/sec-group-reqs.html#cluster-sg) will be autoamtically attached to
+In both cases, the [cluster security group](https://docs.aws.amazon.com/eks/latest/userguide/sec-group-reqs.html#cluster-sg) will be automatically attached to
 the auto-scaling group, allowing for traffic to flow freely between managed and self-managed nodes.
 
 > **Note:** The default `updateType` for auto-scaling groups does not replace existing nodes. Since security groups are determined at launch time, self-managed nodes that were provisioned with version `1.78.0` or lower, will not be updated.
