@@ -130,9 +130,10 @@ describe('constructs version', () => {
     const slnName = path.basename(workDir).split('-').map(s => `${s[0].toUpperCase()}${s.slice(1)}`).join('');
     const csprojFile = path.join(workDir, 'src', slnName, `${slnName}.csproj`);
 
-    expect(await fs.pathExists(csprojFile)).toBeTruthy();
     // eslint-disable-next-line no-console
     console.log('Was expecting to see', slnName, 'in', workDir, 'as', csprojFile);
+
+    expect(await fs.pathExists(csprojFile)).toBeTruthy();
     const csproj = (await fs.readFile(csprojFile, 'utf8')).split(/\r?\n/);
 
     expect(csproj).toContainEqual(expect.stringMatching(/\<PackageReference Include="Constructs" Version="\[10\..*,11\..*\)"/));
