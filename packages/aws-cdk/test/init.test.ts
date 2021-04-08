@@ -128,6 +128,8 @@ describe('constructs version', () => {
 
     // convert dir name from aws-cdk-test-xyz to AwsCdkTestXyz
     const slnName = path.basename(workDir).split('-').map(s => `${s[0].toUpperCase()}${s.slice(1)}`).join('');
+    // eslint-disable-next-line no-console
+    console.log('Was expecting to see', slnName, 'in', workDir);
     const csprojFile = path.join(workDir, 'src', slnName, `${slnName}.csproj`);
 
     expect(await fs.pathExists(csprojFile)).toBeTruthy();
