@@ -27,8 +27,34 @@ export class ReplicaProvider extends NestedStack {
    */
   public static getOrCreate(scope: Construct, props: ReplicaProviderProps = {}) {
     const stack = Stack.of(scope);
-    const uid = '@aws-cdk/aws-dynamodb.ReplicaProvider';
+    const uid = this.getOrCreateUid(stack);
     return stack.node.tryFindChild(uid) as ReplicaProvider ?? new ReplicaProvider(stack, uid, props);
+  }
+
+  public static clearUids() {
+    this.getOrCreateCalls.clear();
+  }
+
+  // Map of getOrCreate() calls per stack
+  private static getOrCreateCalls = new Map<string, number>();
+
+  private static getOrCreateUid(stack: Stack): string {
+    // The custom resource implementation uses IAM managed policies. There's
+    // a limit of 10 managed policies per role in IAM. So we create a new
+    // provider if we reach this limit.
+    const MAX_MANAGED_POLICIES = 10;
+    let uid = '@aws-cdk/aws-dynamodb.ReplicaProvider';
+    let calls = this.getOrCreateCalls.get(stack.stackName);
+    if (!calls) {
+      this.getOrCreateCalls.set(stack.stackName, 1);
+    } else {
+      if (calls >= MAX_MANAGED_POLICIES) {
+        uid = `${uid}-${Math.floor(calls / MAX_MANAGED_POLICIES)}`;
+      }
+      this.getOrCreateCalls.set(stack.stackName, calls + 1);
+    }
+
+    return uid;
   }
 
   /**

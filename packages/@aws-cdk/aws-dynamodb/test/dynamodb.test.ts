@@ -20,6 +20,7 @@ import {
   Operation,
   CfnTable,
 } from '../lib';
+import { ReplicaProvider } from '../lib/replica-provider';
 
 jest.mock('@aws-cdk/custom-resources');
 
@@ -2279,6 +2280,10 @@ describe('import', () => {
 });
 
 describe('global', () => {
+  beforeEach(() => {
+    ReplicaProvider.clearUids();
+  });
+
   test('create replicas', () => {
     // GIVEN
     const stack = new Stack();
@@ -2824,6 +2829,43 @@ describe('global', () => {
     expect(cr.Provider).toHaveBeenCalledWith(expect.anything(), expect.any(String), expect.objectContaining({
       totalTimeout: Duration.hours(1),
     }));
+  });
+
+  test('creates new provider when needed', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    for (let i = 1; i <= 21; i++) {
+      new Table(stack, `Table${i}`, {
+        partitionKey: {
+          name: 'id',
+          type: AttributeType.STRING,
+        },
+        replicationRegions: ['eu-central-1'],
+      });
+    }
+
+    // THEN
+    // four providers = four nested stacks
+    expect(stack).toCountResources('AWS::CloudFormation::Stack', 3);
+
+    // check that we don't exceed the max IAM managed policies per role (10)
+    const policiesPerRole = new Map<string, number>();
+    for (const [_id, resource] of Object.entries<any>(SynthUtils.toCloudFormation(stack).Resources)) {
+      if (resource.Type === 'AWS::IAM::ManagedPolicy') {
+        const role = resource.Properties.Roles[0]['Fn::GetAtt'][1];
+        const count = policiesPerRole.get(role);
+        if (count) {
+          const newCount = count + 1;
+          policiesPerRole.set(role, newCount);
+          expect(newCount).toBeLessThanOrEqual(10);
+        } else {
+          policiesPerRole.set(role, 1);
+        }
+      }
+    }
+    console.log(policiesPerRole);
   });
 });
 
