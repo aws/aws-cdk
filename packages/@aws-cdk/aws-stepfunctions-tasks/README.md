@@ -896,6 +896,8 @@ new tasks.SageMakerCreateTransformJob(this, 'Batch Inference', {
 
 ```
 
+The `instanceType` field can be a parameter. If you set it to `sfn.JsonPath.stringAt('$.InstanceType')`, it will be rendered as `'InstanceType.$': '$.InstanceType'` in the final CloudFormation template.
+
 ### Create Endpoint
 
 You can call the [`CreateEndpoint`](https://docs.aws.amazon.com/sagemaker/latest/APIReference/API_CreateEndpoint.html) API from a `Task` state.
