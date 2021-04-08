@@ -33,8 +33,7 @@
   "cdk-build": {
     "eslint": {
       "disable": true
-    },
-    "stripDeprecated": true
+    }
   },
   "pkglint": {
     "exclude": [
