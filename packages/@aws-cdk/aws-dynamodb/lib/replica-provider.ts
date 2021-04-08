@@ -44,7 +44,7 @@ export class ReplicaProvider extends NestedStack {
     // provider if we reach this limit.
     const MAX_MANAGED_POLICIES = 10;
     let uid = '@aws-cdk/aws-dynamodb.ReplicaProvider';
-    let calls = this.getOrCreateCalls.get(stack.stackName);
+    const calls = this.getOrCreateCalls.get(stack.stackName);
     if (!calls) {
       this.getOrCreateCalls.set(stack.stackName, 1);
     } else {
