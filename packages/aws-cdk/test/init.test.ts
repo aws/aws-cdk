@@ -136,6 +136,7 @@ describe('constructs version', () => {
     const ex = await fs.pathExists(csprojFile);
 
     process.stderr.write(`ex: ${ex}\n`);
+    process.stderr.write(`sync: ${fs.pathExistsSync(csprojFile)}\n`);
     cp.execSync(`find ${workDir}`, { stdio: 'inherit' });
     process.stderr.write('I dontknow anymore\n');
 
