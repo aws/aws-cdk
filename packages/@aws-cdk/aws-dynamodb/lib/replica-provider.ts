@@ -31,7 +31,7 @@ export class ReplicaProvider extends NestedStack {
     return stack.node.tryFindChild(uid) as ReplicaProvider ?? new ReplicaProvider(stack, uid, props);
   }
 
-  public static clearUids() {
+  public static clearGetOrCreateCalls() {
     this.getOrCreateCalls.clear();
   }
 

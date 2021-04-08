@@ -2281,7 +2281,7 @@ describe('import', () => {
 
 describe('global', () => {
   beforeEach(() => {
-    ReplicaProvider.clearUids();
+    ReplicaProvider.clearGetOrCreateCalls();
   });
 
   test('create replicas', () => {
