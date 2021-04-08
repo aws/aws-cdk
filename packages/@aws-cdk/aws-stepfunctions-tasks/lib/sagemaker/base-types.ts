@@ -638,7 +638,7 @@ export interface TransformResources {
   /**
    * ML compute instance type for the transform job.
    */
-  readonly instanceType: ec2.InstanceType;
+  readonly instanceType: ec2.InstanceType | string;
 
   /**
    * AWS KMS key that Amazon SageMaker uses to encrypt data on the storage volume attached to the ML compute instance(s).

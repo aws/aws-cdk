@@ -226,10 +226,11 @@ export class SageMakerCreateTransformJob extends sfn.TaskStateBase {
   }
 
   private renderTransformResources(resources: TransformResources): { [key: string]: any } {
+    let instanceType = resources.instanceType instanceof ec2.InstanceType ? 'ml.' + resources.instanceType : resources.instanceType;
     return {
       TransformResources: {
         InstanceCount: resources.instanceCount,
-        InstanceType: 'ml.' + resources.instanceType,
+        InstanceType: instanceType,
         ...(resources.volumeEncryptionKey ? { VolumeKmsKeyId: resources.volumeEncryptionKey.keyArn } : {}),
       },
     };
