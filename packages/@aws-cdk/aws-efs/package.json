@@ -103,8 +103,8 @@
       "resource-attribute:@aws-cdk/aws-efs.FileSystem.fileSystemArn"
     ]
   },
-  "stability": "experimental",
-  "maturity": "experimental",
+  "stability": "stable",
+  "maturity": "stable",
   "awscdkio": {
     "announce": false
   },
