@@ -3,7 +3,7 @@ import * as cdk from '@aws-cdk/core';
 import * as %name.PascalCased% from '../lib/index';
 
 /*
- * Example test 
+ * Example test
  */
 test('SNS Topic Created', () => {
   const app = new cdk.App();
