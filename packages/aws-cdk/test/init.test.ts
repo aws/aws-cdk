@@ -124,14 +124,20 @@ describe('constructs version', () => {
   cliTest('.NET', async (workDir) => {
     await cliInit('app', 'csharp', false, true, workDir);
 
+    process.stderr.write(`Listing ${workDir}`);
     cp.execSync('find .', { cwd: workDir, stdio: 'inherit' });
+    process.stderr.write('Listing done\n');
 
     // convert dir name from aws-cdk-test-xyz to AwsCdkTestXyz
     const slnName = path.basename(workDir).split('-').map(s => `${s[0].toUpperCase()}${s.slice(1)}`).join('');
     const csprojFile = path.join(workDir, 'src', slnName, `${slnName}.csproj`);
 
-    // eslint-disable-next-line no-console
-    console.log('Was expecting to see', slnName, 'in', workDir, 'as', csprojFile);
+    process.stderr.write(`Was expecting to see ${csprojFile}\n`);
+    const ex = await fs.pathExists(csprojFile);
+
+    process.stderr.write(`ex: ${ex}\n`);
+    cp.execSync('find .', { cwd: workDir, stdio: 'inherit' });
+    process.stderr.write('I dontknow anymore');
 
     expect(await fs.pathExists(csprojFile)).toBeTruthy();
     const csproj = (await fs.readFile(csprojFile, 'utf8')).split(/\r?\n/);
@@ -173,6 +179,7 @@ async function withTempDir(cb: (dir: string) => void | Promise<any>) {
   try {
     await cb(tmpDir);
   } finally {
+    process.stderr.write(`Removing ${tmpDir}`);
     await fs.remove(tmpDir);
   }
 }
