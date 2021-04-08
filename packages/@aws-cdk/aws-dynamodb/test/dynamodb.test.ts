@@ -2865,7 +2865,6 @@ describe('global', () => {
         }
       }
     }
-    console.log(policiesPerRole);
   });
 });
 
