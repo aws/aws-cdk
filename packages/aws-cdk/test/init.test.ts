@@ -124,7 +124,7 @@ describe('constructs version', () => {
   cliTest('.NET', async (workDir) => {
     await cliInit('app', 'csharp', false, true, workDir);
 
-    process.stderr.write(`Listing ${workDir}`);
+    process.stderr.write(`Listing ${workDir}\n`);
     cp.execSync('find .', { cwd: workDir, stdio: 'inherit' });
     process.stderr.write('Listing done\n');
 
@@ -137,7 +137,7 @@ describe('constructs version', () => {
 
     process.stderr.write(`ex: ${ex}\n`);
     cp.execSync('find .', { cwd: workDir, stdio: 'inherit' });
-    process.stderr.write('I dontknow anymore');
+    process.stderr.write('I dontknow anymore\n');
 
     expect(await fs.pathExists(csprojFile)).toBeTruthy();
     const csproj = (await fs.readFile(csprojFile, 'utf8')).split(/\r?\n/);
@@ -179,7 +179,7 @@ async function withTempDir(cb: (dir: string) => void | Promise<any>) {
   try {
     await cb(tmpDir);
   } finally {
-    process.stderr.write(`Removing ${tmpDir}`);
+    process.stderr.write(`Removing ${tmpDir}\n`);
     await fs.remove(tmpDir);
   }
 }
