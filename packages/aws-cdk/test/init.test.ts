@@ -125,7 +125,7 @@ describe('constructs version', () => {
     await cliInit('app', 'csharp', false, true, workDir);
 
     process.stderr.write(`Listing ${workDir}\n`);
-    cp.execSync('find .', { cwd: workDir, stdio: 'inherit' });
+    cp.execSync(`find ${workDir}`, { stdio: 'inherit' });
     process.stderr.write('Listing done\n');
 
     // convert dir name from aws-cdk-test-xyz to AwsCdkTestXyz
@@ -136,7 +136,7 @@ describe('constructs version', () => {
     const ex = await fs.pathExists(csprojFile);
 
     process.stderr.write(`ex: ${ex}\n`);
-    cp.execSync('find .', { cwd: workDir, stdio: 'inherit' });
+    cp.execSync(`find ${workDir}`, { stdio: 'inherit' });
     process.stderr.write('I dontknow anymore\n');
 
     expect(await fs.pathExists(csprojFile)).toBeTruthy();
