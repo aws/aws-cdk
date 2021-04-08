@@ -374,7 +374,7 @@ export namespace EmrCreateCluster {
     TERMINATE_AT_INSTANCE_HOUR = 'TERMINATE_AT_INSTANCE_HOUR',
 
     /**
-     * Indicates that Amazon EMR blacklists and drains tasks from nodes before terminating the Amazon EC2 instances, regardless of the
+     * Indicates that Amazon EMR adds nodes to a deny list and drains tasks from nodes before terminating the Amazon EC2 instances, regardless of the
      * instance-hour boundary.
      */
     TERMINATE_AT_TASK_COMPLETION = 'TERMINATE_AT_TASK_COMPLETION',
