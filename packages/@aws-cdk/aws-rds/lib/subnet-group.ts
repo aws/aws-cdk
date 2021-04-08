@@ -1,5 +1,5 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
-import { IResource, RemovalPolicy, Resource } from '@aws-cdk/core';
+import { IResource, RemovalPolicy, Resource, Token } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnDBSubnetGroup } from './rds.generated';
 
@@ -80,7 +80,9 @@ export class SubnetGroup extends Resource implements ISubnetGroup {
       // names are actually stored by RDS changed to lowercase on the server side,
       // and not lowercasing them in CloudFormation means things like { Ref }
       // do not work correctly
-      dbSubnetGroupName: props.subnetGroupName?.toLowerCase(),
+      dbSubnetGroupName: Token.isUnresolved(props.subnetGroupName)
+        ? props.subnetGroupName
+        : props.subnetGroupName?.toLowerCase(),
       subnetIds,
     });
 
