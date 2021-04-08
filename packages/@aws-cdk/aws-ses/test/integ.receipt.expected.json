@@ -163,7 +163,7 @@
         }
       }
     },
-    "WhiteListBlockAllAE2CDDFF": {
+    "AllowlistBlockAll7E0A7F11": {
       "Type": "AWS::SES::ReceiptFilter",
       "Properties": {
         "Filter": {
@@ -174,7 +174,7 @@
         }
       }
     },
-    "WhiteListAllow1000016F396A7F2": {
+    "AllowlistAllow1000016E9465A18": {
       "Type": "AWS::SES::ReceiptFilter",
       "Properties": {
         "Filter": {

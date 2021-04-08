@@ -205,10 +205,10 @@ describe('image asset', () => {
     testDockerDirectoryIsStagedWithoutFilesSpecifiedInDockerignore(app, IgnoreMode.GLOB);
   });
 
-  testFutureBehavior('docker directory is staged with whitelisted files specified in .dockerignore', flags, App, (app) => {
+  testFutureBehavior('docker directory is staged with allow-listed files specified in .dockerignore', flags, App, (app) => {
     const stack = new Stack(app);
     const image = new DockerImageAsset(stack, 'MyAsset', {
-      directory: path.join(__dirname, 'whitelisted-image'),
+      directory: path.join(__dirname, 'allow-listed-image'),
     });
 
     const session = app.synth();

@@ -2,8 +2,8 @@ import '@aws-cdk/assert-internal/jest';
 import { GeoRestriction } from '../lib';
 
 describe.each([
-  ['whitelist', GeoRestriction.whitelist],
-  ['blacklist', GeoRestriction.blacklist],
+  ['whitelist', GeoRestriction.allowlist],
+  ['blacklist', GeoRestriction.denylist],
 ])('%s', (type, geoFn) => {
 
   test('throws is location is empty', () => {

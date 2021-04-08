@@ -1097,7 +1097,7 @@ nodeunitShim({
 
   'geo restriction': {
     'success': {
-      'whitelist'(test: Test) {
+      'allowlist'(test: Test) {
         const stack = new cdk.Stack();
         const sourceBucket = new s3.Bucket(stack, 'Bucket');
 
@@ -1106,7 +1106,7 @@ nodeunitShim({
             s3OriginSource: { s3BucketSource: sourceBucket },
             behaviors: [{ isDefaultBehavior: true }],
           }],
-          geoRestriction: GeoRestriction.whitelist('US', 'UK'),
+          geoRestriction: GeoRestriction.allowlist('US', 'UK'),
         });
 
         expect(stack).toMatch({
@@ -1173,7 +1173,7 @@ nodeunitShim({
 
         test.done();
       },
-      'blacklist'(test: Test) {
+      'denylist'(test: Test) {
         const stack = new cdk.Stack();
         const sourceBucket = new s3.Bucket(stack, 'Bucket');
 
@@ -1182,7 +1182,7 @@ nodeunitShim({
             s3OriginSource: { s3BucketSource: sourceBucket },
             behaviors: [{ isDefaultBehavior: true }],
           }],
-          geoRestriction: GeoRestriction.blacklist('US'),
+          geoRestriction: GeoRestriction.denylist('US'),
         });
 
         expect(stack).toMatch({
@@ -1253,22 +1253,22 @@ nodeunitShim({
     'error': {
       'throws if locations is empty array'(test: Test) {
         test.throws(() => {
-          GeoRestriction.whitelist();
+          GeoRestriction.allowlist();
         }, /Should provide at least 1 location/);
 
         test.throws(() => {
-          GeoRestriction.blacklist();
+          GeoRestriction.denylist();
         }, /Should provide at least 1 location/);
 
         test.done();
       },
       'throws if locations format is wrong'(test: Test) {
         test.throws(() => {
-          GeoRestriction.whitelist('us');
+          GeoRestriction.allowlist('us');
         }, /Invalid location format for location: us, location should be two-letter and uppercase country ISO 3166-1-alpha-2 code/);
 
         test.throws(() => {
-          GeoRestriction.blacklist('us');
+          GeoRestriction.denylist('us');
         }, /Invalid location format for location: us, location should be two-letter and uppercase country ISO 3166-1-alpha-2 code/);
 
         test.done();
