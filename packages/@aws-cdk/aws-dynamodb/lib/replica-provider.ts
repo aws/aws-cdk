@@ -27,7 +27,7 @@ export class ReplicaProvider extends NestedStack {
    */
   public static getOrCreate(scope: Construct, props: ReplicaProviderProps = {}) {
     const stack = Stack.of(scope);
-    const uid = this.getOrCreateUid(stack);
+    const uid = this.getUid(stack);
     return stack.node.tryFindChild(uid) as ReplicaProvider ?? new ReplicaProvider(stack, uid, props);
   }
 
@@ -38,7 +38,7 @@ export class ReplicaProvider extends NestedStack {
   // Map of getOrCreate() calls per stack
   private static getOrCreateCalls = new Map<string, number>();
 
-  private static getOrCreateUid(stack: Stack): string {
+  private static getUid(stack: Stack): string {
     // The custom resource implementation uses IAM managed policies. There's
     // a limit of 10 managed policies per role in IAM. So we create a new
     // provider if we reach this limit.

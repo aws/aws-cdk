@@ -2847,7 +2847,7 @@ describe('global', () => {
     }
 
     // THEN
-    // four providers = four nested stacks
+    // three providers = three nested stacks
     expect(stack).toCountResources('AWS::CloudFormation::Stack', 3);
 
     // check that we don't exceed the max IAM managed policies per role (10)
