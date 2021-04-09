@@ -56,7 +56,7 @@ docsLinter.add({
     if (CoreTypes.isCfnType(e.ctx.containingType)) { return; }
 
     const property = e.ctx.documentable;
-    e.assert(!property.optional || property.docs.docs.stability !== undefined, e.ctx.errorKey);
+    e.assert(!property.optional || property.docs.docs.default !== undefined, e.ctx.errorKey);
   },
 });
 
@@ -77,11 +77,6 @@ docsLinter.add({
   message: 'The use of @experimental in not allowed (either directly or via parent class)',
   eval: e => {
     const property = e.ctx.documentable;
-    // eslint-disable-next-line no-console
-    if (isCfnType(e.ctx)) {
-      // eslint-disable-next-line no-console
-      console.log('');
-    }
     e.assert(property.docs.docs.stability !== Stability.Experimental, e.ctx.errorKey);
   },
 });
