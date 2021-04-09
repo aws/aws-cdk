@@ -8,7 +8,6 @@ jest.mock('../lib/version', () => ({
   versionNumber: () => mockMajorVersion,
 }));
 
-import * as cp from 'child_process';
 import * as os from 'os';
 import * as path from 'path';
 import * as cxapi from '@aws-cdk/cx-api';
@@ -124,23 +123,9 @@ describe('constructs version', () => {
   cliTest('.NET', async (workDir) => {
     await cliInit('app', 'csharp', false, true, workDir);
 
-    process.stderr.write(`Listing ${workDir}\n`);
-    cp.execSync(`find ${workDir}`, { stdio: 'inherit' });
-    process.stderr.write('Listing done\n');
+    const csprojFile = (await recursiveListFiles(workDir)).filter(f => f.endsWith('.csproj'))[0];
+    expect(csprojFile).toBeDefined();
 
-    // convert dir name from aws-cdk-test-xyz to AwsCdkTestXyz
-    const slnName = path.basename(workDir).split('-').map(s => `${s[0].toUpperCase()}${s.slice(1)}`).join('');
-    const csprojFile = path.join(workDir, 'src', slnName, `${slnName}.csproj`);
-
-    process.stderr.write(`Was expecting to see ${csprojFile}\n`);
-    const ex = await fs.pathExists(csprojFile);
-
-    process.stderr.write(`ex: ${ex}\n`);
-    process.stderr.write(`sync: ${fs.pathExistsSync(csprojFile)}\n`);
-    cp.execSync(`find ${workDir}`, { stdio: 'inherit' });
-    process.stderr.write('I dontknow anymore\n');
-
-    expect(await fs.pathExists(csprojFile)).toBeTruthy();
     const csproj = (await fs.readFile(csprojFile, 'utf8')).split(/\r?\n/);
 
     expect(csproj).toContainEqual(expect.stringMatching(/\<PackageReference Include="Constructs" Version="\[10\..*,11\..*\)"/));
@@ -149,7 +134,6 @@ describe('constructs version', () => {
   cliTest('Python', async (workDir) => {
     await cliInit('app', 'python', false, true, workDir);
 
-    // convert dir name from aws-cdk-test-xyz to AwsCdkTestXyz
     expect(await fs.pathExists(path.join(workDir, 'setup.py'))).toBeTruthy();
     const setupPy = (await fs.readFile(path.join(workDir, 'setup.py'), 'utf8')).split(/\r?\n/);
     // return RegExpMatchArray (result of line.match()) for every lines that match re.
@@ -180,7 +164,26 @@ async function withTempDir(cb: (dir: string) => void | Promise<any>) {
   try {
     await cb(tmpDir);
   } finally {
-    process.stderr.write(`Removing ${tmpDir}\n`);
     await fs.remove(tmpDir);
+  }
+}
+
+/**
+ * List all files underneath dir
+ */
+async function recursiveListFiles(rdir: string): Promise<string[]> {
+  const ret = new Array<string>();
+  await recurse(rdir);
+  return ret;
+
+  async function recurse(dir: string) {
+    for (const name of await fs.readdir(dir)) {
+      const fullPath = path.join(dir, name);
+      if ((await fs.stat(fullPath)).isDirectory()) {
+        await recurse(fullPath);
+      } else {
+        ret.push(fullPath);
+      }
+    }
   }
 }
