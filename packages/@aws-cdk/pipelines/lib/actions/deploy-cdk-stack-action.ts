@@ -217,6 +217,11 @@ export class DeployCdkStackAction implements codepipeline.IAction {
   public readonly stackArtifactId?: string;
 
   /**
+   * Action role
+   */
+  public readonly actionRole: iam.IRole;
+
+  /**
    * Artifact ids of the artifact this stack artifact depends on
    */
   public readonly dependencyStackArtifactIds: string[];
@@ -235,6 +240,7 @@ export class DeployCdkStackAction implements codepipeline.IAction {
     this.prepareRunOrder = props.prepareRunOrder ?? 1;
     this.executeRunOrder = props.executeRunOrder ?? this.prepareRunOrder + 1;
     this.stackName = props.stackName;
+    this.actionRole = props.actionRole;
     const baseActionName = props.baseActionName ?? this.stackName;
     const changeSetName = props.changeSetName ?? 'PipelineChange';
 
