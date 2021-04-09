@@ -1119,7 +1119,40 @@ describe('container definition', () => {
           memoryLimitMiB: 1024,
           inferenceAcceleratorResources,
         });
-      }).toThrow();
+      }).toThrow(/Resource value device2 in container definition doesn't match any inference accelerator device name in the task definition./);
+    });
+    test('throws when both inference accelerator and gpu count are defined in the container definition', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      const inferenceAccelerators = [{
+        deviceName: 'device1',
+        deviceType: 'eia2.medium',
+      }];
+
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
+        inferenceAccelerators,
+      });
+
+      const inferenceAcceleratorResources = ['device1'];
+
+      taskDefinition.addContainer('cont', {
+        image: ecs.ContainerImage.fromRegistry('test'),
+        memoryLimitMiB: 1024,
+        gpuCount: 2,
+        inferenceAcceleratorResources,
+      });
+
+      // THEN
+      expect(() => {
+        expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
+          ContainerDefinitions: [
+            {
+              inferenceAcceleratorResources,
+            },
+          ],
+        });
+      }).toThrow(/Cannot define both inference accelerator and gpu count in the container definition./);
     });
   });
 

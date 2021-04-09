@@ -535,16 +535,13 @@ export class ContainerDefinition extends CoreConstruct {
    * This method adds one or more resources to the container.
    */
   public addInferenceAcceleratorResource(...inferenceAcceleratorResources: string[]) {
-    if (!this.taskDefinition.inferenceAccelerators) {
-      throw new Error('InferenceAccelerator resource(s) defined in container definition without specifying any inference accelerators in task definition.');
-    }
     this.inferenceAcceleratorResources.push(...inferenceAcceleratorResources.map(resource => {
       for (const inferenceAccelerator of this.taskDefinition.inferenceAccelerators) {
         if (resource === inferenceAccelerator.deviceName) {
           return resource;
         }
       }
-      throw new Error(`Resource value (${resource}) doesn't match any inference accelerator device name defined in task definition.`);
+      throw new Error(`Resource value ${resource} in container definition doesn't match any inference accelerator device name in the task definition.`);
     }));
   }
 
