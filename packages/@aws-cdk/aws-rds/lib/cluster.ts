@@ -296,7 +296,6 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
   protected readonly newCfnProps: CfnDBClusterProps;
   protected readonly securityGroups: ec2.ISecurityGroup[];
   protected readonly subnetGroup: ISubnetGroup;
-  protected enableIamAuthentication?: boolean;
 
   constructor(scope: Construct, id: string, props: DatabaseClusterBaseProps) {
     super(scope, id);

@@ -106,13 +106,7 @@ describe('cluster', () => {
     // WHEN
     new DatabaseCluster(stack, 'Database', {
       engine: DatabaseClusterEngine.AURORA,
-      instances: 1,
-      credentials: {
-        username: 'admin',
-        password: cdk.SecretValue.plainText('tooshort'),
-      },
       instanceProps: {
-        instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
         vpc,
       },
       iamAuthentication: true,
