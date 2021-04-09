@@ -1,5 +1,5 @@
-import '@aws-cdk/assert/jest';
-import { ABSENT, ResourcePart, anything } from '@aws-cdk/assert';
+import '@aws-cdk/assert-internal/jest';
+import { ABSENT, ResourcePart, anything } from '@aws-cdk/assert-internal';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as targets from '@aws-cdk/aws-events-targets';
 import { ManagedPolicy, Role, ServicePrincipal, AccountPrincipal } from '@aws-cdk/aws-iam';
@@ -9,7 +9,7 @@ import * as logs from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
-import { testFutureBehavior } from 'cdk-build-tools/lib/feature-flag';
+import { testFutureBehavior, testLegacyBehavior } from 'cdk-build-tools/lib/feature-flag';
 import * as rds from '../lib';
 
 let stack: cdk.Stack;
@@ -1204,8 +1204,44 @@ describe('instance', () => {
       MasterUsername: 'postgres', // username is a string
       MasterUserPassword: '{{resolve:ssm-secure:/dbPassword:1}}', // reference to SSM
     });
+  });
 
+  test('can set custom name to database secret by fromSecret', () => {
+    // WHEN
+    const secretName = 'custom-secret-name';
+    const secret = new rds.DatabaseSecret(stack, 'Secret', {
+      username: 'admin',
+      secretName,
+    } );
+    new rds.DatabaseInstance(stack, 'Instance', {
+      engine: rds.DatabaseInstanceEngine.mysql({
+        version: rds.MysqlEngineVersion.VER_8_0_19,
+      }),
+      credentials: rds.Credentials.fromSecret(secret),
+      vpc,
+    });
 
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::SecretsManager::Secret', {
+      Name: secretName,
+    });
+  });
+
+  test('can set custom name to database secret by fromGeneratedSecret', () => {
+    // WHEN
+    const secretName = 'custom-secret-name';
+    new rds.DatabaseInstance(stack, 'Instance', {
+      engine: rds.DatabaseInstanceEngine.mysql({
+        version: rds.MysqlEngineVersion.VER_8_0_19,
+      }),
+      credentials: rds.Credentials.fromGeneratedSecret('admin', { secretName }),
+      vpc,
+    });
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::SecretsManager::Secret', {
+      Name: secretName,
+    });
   });
 
   test('can set publiclyAccessible to false with public subnets', () => {
@@ -1243,6 +1279,52 @@ describe('instance', () => {
       PubliclyAccessible: true,
     });
   });
+
+  testFutureBehavior(
+    'changes the case of the cluster identifier if the lowercaseDbIdentifier feature flag is enabled',
+    { [cxapi.RDS_LOWERCASE_DB_IDENTIFIER]: true }, cdk.App, (app,
+    ) => {
+      // GIVEN
+      stack = new cdk.Stack( app );
+      vpc = new ec2.Vpc( stack, 'VPC' );
+
+      // WHEN
+      const instanceIdentifier = 'TestInstanceIdentifier';
+      new rds.DatabaseInstance( stack, 'DB', {
+        engine: rds.DatabaseInstanceEngine.mysql({
+          version: rds.MysqlEngineVersion.VER_8_0_19,
+        }),
+        vpc,
+        instanceIdentifier,
+      } );
+
+      // THEN
+      expect(stack).toHaveResource('AWS::RDS::DBInstance', {
+        DBInstanceIdentifier: instanceIdentifier.toLowerCase(),
+      });
+    });
+
+  testLegacyBehavior( 'does not changes the case of the cluster identifier if the lowercaseDbIdentifier feature flag is disabled', cdk.App, (app ) => {
+    // GIVEN
+    stack = new cdk.Stack( app );
+    vpc = new ec2.Vpc( stack, 'VPC' );
+
+    // WHEN
+    const instanceIdentifier = 'TestInstanceIdentifier';
+    new rds.DatabaseInstance( stack, 'DB', {
+      engine: rds.DatabaseInstanceEngine.mysql({
+        version: rds.MysqlEngineVersion.VER_8_0_19,
+      }),
+      vpc,
+      instanceIdentifier,
+    } );
+
+    // THEN
+    expect(stack).toHaveResource('AWS::RDS::DBInstance', {
+      DBInstanceIdentifier: instanceIdentifier,
+    });
+  });
+
 });
 
 test.each([

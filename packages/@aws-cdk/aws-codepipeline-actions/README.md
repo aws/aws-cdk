@@ -168,7 +168,7 @@ the connection has already been created.
 
 ```ts
 const sourceOutput = new codepipeline.Artifact();
-const sourceAction = new codepipeline_actions.BitBucketSourceAction({
+const sourceAction = new codepipeline_actions.CodeStarConnectionsSourceAction({
   actionName: 'BitBucket_Source',
   owner: 'aws',
   repo: 'aws-cdk',
@@ -177,9 +177,8 @@ const sourceAction = new codepipeline_actions.BitBucketSourceAction({
 });
 ```
 
-**Note**: as this feature is still in Beta in CodePipeline,
-the above class `BitBucketSourceAction` is experimental -
-we reserve the right to make breaking changes to it.
+You can also use the `CodeStarConnectionsSourceAction` to connect to GitHub, in the same way
+(you just have to select GitHub as the source when creating the connection in the console).
 
 ### AWS S3 Source
 
@@ -232,7 +231,10 @@ import * as cloudtrail from '@aws-cdk/aws-cloudtrail';
 
 const key = 'some/key.zip';
 const trail = new cloudtrail.Trail(this, 'CloudTrail');
-trail.addS3EventSelector([sourceBucket.arnForObjects(key)], {
+trail.addS3EventSelector([{
+  bucket: sourceBucket,
+  objectPrefix: key,
+}], {
   readWriteType: cloudtrail.ReadWriteType.WRITE_ONLY,
 });
 const sourceAction = new codepipeline_actions.S3SourceAction({

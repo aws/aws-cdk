@@ -14,6 +14,18 @@
     "build+test+package": "yarn build+test && yarn package",
     "build+test": "yarn build && yarn test"
   },
+  "cdk-build": {
+    "jest": true,
+    "pre": [
+      "./clone.sh"
+    ],
+    "eslint": {
+      "disable": true
+    },
+    "pkglint": {
+      "disable": true
+    }
+  },
   "author": {
     "name": "Amazon Web Services",
     "url": "https://aws.amazon.com",
@@ -21,22 +33,24 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@types/jest": "^26.0.21",
+    "aws-cdk-migration": "0.0.0",
+    "@types/jest": "^26.0.22",
     "cdk-build-tools": "0.0.0",
+    "constructs": "^3.3.69",
     "jest": "^26.6.3",
     "pkglint": "0.0.0",
+    "@aws-cdk/assert-internal": "0.0.0",
     "ts-jest": "^26.5.4"
   },
   "dependencies": {
-    "@aws-cdk/cloud-assembly-schema": "0.0.0",
     "@aws-cdk/cloudformation-diff": "0.0.0",
     "@aws-cdk/core": "0.0.0",
     "@aws-cdk/cx-api": "0.0.0",
-    "constructs": "^3.2.0"
+    "constructs": "^3.3.69"
   },
   "peerDependencies": {
     "@aws-cdk/core": "0.0.0",
-    "constructs": "^3.2.0",
+    "constructs": "^3.3.69",
     "jest": "^26.6.3"
   },
   "repository": {
@@ -52,11 +66,11 @@
   "engines": {
     "node": ">= 10.13.0 <13 || >=13.7.0"
   },
-  "stability": "experimental",
-  "maturity": "experimental",
-  "cdk-build": {
-    "jest": true
+  "ubergen": {
+    "exclude": true
   },
+  "stability": "experimental",
+  "maturity": "developer-preview",
   "publishConfig": {
     "tag": "latest"
   }
