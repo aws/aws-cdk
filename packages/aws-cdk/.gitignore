@@ -37,3 +37,6 @@ test/integ/cli/*.d.ts
 .DS_Store
 
 junit.xml
+
+# temp directory where init template tests are run
+**/init-tests-dir

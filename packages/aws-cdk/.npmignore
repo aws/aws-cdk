@@ -33,3 +33,6 @@ tsconfig.json
 # exclude cdk artifacts
 **/cdk.out
 junit.xml
+
+# temp directory where init template tests are run
+**/init-tests-dir

@@ -8,7 +8,6 @@ jest.mock('../lib/version', () => ({
   versionNumber: () => mockMajorVersion,
 }));
 
-import * as os from 'os';
 import * as path from 'path';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as fs from 'fs-extra';
@@ -170,7 +169,12 @@ function cliTest(name: string, handler: (dir: string) => void | Promise<any>): v
 }
 
 async function withTempDir(cb: (dir: string) => void | Promise<any>) {
-  const tmpDir = await fs.mkdtemp(path.join(os.tmpdir(), 'aws-cdk-test'));
+  // Intentionally not using any temp dir as base
+  // For some reason, files created in the tmpdir of superchain creates inconsistent
+  // behaviour around file existence.
+  const baseDir = path.join(__dirname, 'init-tests-dir');
+  await fs.mkdirp(baseDir);
+  const tmpDir = await fs.mkdtemp(path.join(baseDir, 'aws-cdk-test'));
   try {
     await cb(tmpDir);
   } finally {
