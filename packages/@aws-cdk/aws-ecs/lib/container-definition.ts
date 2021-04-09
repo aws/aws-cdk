@@ -544,7 +544,7 @@ export class ContainerDefinition extends CoreConstruct {
           return resource;
         }
       }
-      throw new Error(`Resource value (${resource}) doesn't match any inference accelerator device name.`);
+      throw new Error(`Resource value (${resource}) doesn't match any inference accelerator device name defined in task definition.`);
     }));
   }
 
@@ -777,7 +777,7 @@ function getHealthCheckCommand(hc: HealthCheck): string[] {
 function renderResourceRequirements(gpuCount: number = 0, inferenceAcceleratorResources: string[] = []):
 CfnTaskDefinition.ResourceRequirementProperty[] | undefined {
   if (inferenceAcceleratorResources.length > 0 && gpuCount > 0) {
-    throw new Error('Both inference accelerator and gpu count defined in the container definition.');
+    throw new Error('Cannot define both inference accelerator and gpu count in the container definition.');
   }
   if (inferenceAcceleratorResources.length > 0) {
     const ret = [];

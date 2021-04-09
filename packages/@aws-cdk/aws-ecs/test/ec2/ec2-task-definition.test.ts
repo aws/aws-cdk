@@ -1262,7 +1262,6 @@ describe('ec2 task definition', () => {
           DeviceType: 'eia2.large',
         }],
       });
-
     });
   });
 
