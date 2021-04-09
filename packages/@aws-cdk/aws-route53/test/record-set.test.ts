@@ -68,6 +68,30 @@ nodeunitShim({
     test.done();
   },
 
+  'with ttl of 0'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+
+    const zone = new route53.HostedZone(stack, 'HostedZone', {
+      zoneName: 'myzone',
+    });
+
+    // WHEN
+    new route53.RecordSet(stack, 'Basic', {
+      zone,
+      recordName: 'aa',
+      recordType: route53.RecordType.CNAME,
+      target: route53.RecordTarget.fromValues('bbb'),
+      ttl: Duration.seconds(0),
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::Route53::RecordSet', {
+      TTL: '0',
+    }));
+    test.done();
+  },
+
   'defaults to zone root'(test: Test) {
     // GIVEN
     const stack = new Stack();
