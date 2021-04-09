@@ -1,4 +1,4 @@
-import { expect, haveResource } from '@aws-cdk/assert-internal';
+import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert-internal';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as cdk from '@aws-cdk/core';
 import { nodeunitShim, Test } from 'nodeunit-shim';
@@ -41,11 +41,29 @@ nodeunitShim({
 
     expect(stack).to(haveResource('AWS::RDS::DBSubnetGroup', {
       DBSubnetGroupDescription: 'My Shared Group',
-      DBSubnetGroupName: 'SharedGroup',
+      DBSubnetGroupName: 'sharedgroup',
       SubnetIds: [
         { Ref: 'VPCPrivateSubnet1Subnet8BCA10E0' },
         { Ref: 'VPCPrivateSubnet2SubnetCFCDAA7A' },
       ],
+    }));
+
+    test.done();
+  },
+
+  'correctly creates a subnet group with a deploy-time value for its name'(test: Test) {
+    const parameter = new cdk.CfnParameter(stack, 'Parameter');
+    new rds.SubnetGroup(stack, 'Group', {
+      description: 'My Shared Group',
+      subnetGroupName: parameter.valueAsString,
+      vpc,
+      vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE },
+    });
+
+    expect(stack).to(haveResourceLike('AWS::RDS::DBSubnetGroup', {
+      DBSubnetGroupName: {
+        Ref: 'Parameter',
+      },
     }));
 
     test.done();
