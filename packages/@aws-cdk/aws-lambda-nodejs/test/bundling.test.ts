@@ -169,8 +169,10 @@ test('esbuild bundling with esbuild options', () => {
     footer: '/* comments */',
     forceDockerBundling: true,
     define: {
-      'DEBUG': 'true',
       'process.env.KEY': JSON.stringify('VALUE'),
+      'BOOL': 'true',
+      'NUMBER': '7777',
+      'STRING': JSON.stringify('this is a "test"'),
     },
   });
 
@@ -184,7 +186,7 @@ test('esbuild bundling with esbuild options', () => {
           'npx esbuild --bundle "/asset-input/lib/handler.ts"',
           '--target=es2020 --platform=node --outfile="/asset-output/index.js"',
           '--minify --sourcemap --external:aws-sdk --loader:.png=dataurl',
-          '--define:DEBUG="true" --define:process.env.KEY=\"VALUE\"',
+          '--define:process.env.KEY="\\"VALUE\\"" --define:BOOL="true" --define:NUMBER="7777" --define:STRING="\\"this is a \\\\\\"test\\\\\\"\\""',
           '--log-level=silent --keep-names --tsconfig=/asset-input/lib/custom-tsconfig.ts',
           '--metafile=/asset-output/index.meta.json --banner=\'/* comments */\' --footer=\'/* comments */\'',
         ].join(' '),
