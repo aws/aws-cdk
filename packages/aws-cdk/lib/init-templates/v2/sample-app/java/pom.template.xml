@@ -7,7 +7,7 @@
     <version>0.1</version>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <cdk.version>%cdk-version%.DEVPREVIEW</cdk.version>
+        <cdk.version>%cdk-version%</cdk.version>
         <constructs.version>%constructs-version%</constructs.version>
         <junit.version>5.7.1</junit.version>
     </properties>
