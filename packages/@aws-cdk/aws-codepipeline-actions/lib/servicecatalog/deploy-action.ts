@@ -12,7 +12,6 @@ import { Construct } from '@aws-cdk/core';
  *
  * **Note**: this API is still experimental, and may have breaking changes in the future!
  *
- * @experimental
  */
 export interface ServiceCatalogDeployActionProps extends codepipeline.CommonAwsActionProps {
   /**
@@ -42,7 +41,6 @@ export interface ServiceCatalogDeployActionProps extends codepipeline.CommonAwsA
  *
  * **Note**: this class is still experimental, and may have breaking changes in the future!
  *
- * @experimental
  */
 export class ServiceCatalogDeployAction extends Action {
   private readonly templatePath: string;

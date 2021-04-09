@@ -14,7 +14,6 @@ import { Construct } from '@aws-cdk/core';
  *
  * This class will disappear in a future release and should not be used.
  *
- * @experimental
  */
 export abstract class Action implements codepipeline.IAction {
   public readonly actionProperties: codepipeline.ActionProperties;

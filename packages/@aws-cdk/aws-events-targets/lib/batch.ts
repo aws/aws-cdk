@@ -6,7 +6,6 @@ import { singletonEventRole } from './util';
 
 /**
  * Customize the Batch Job Event Target
- * @experimental
  */
 export interface BatchJobProps {
   /**
@@ -44,7 +43,6 @@ export interface BatchJobProps {
 
 /**
  * Use an AWS Batch Job / Queue as an event rule target.
- * @experimental
  */
 export class BatchJob implements events.IRuleTarget {
   constructor(
