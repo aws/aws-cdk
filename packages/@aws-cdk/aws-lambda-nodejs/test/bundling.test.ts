@@ -197,7 +197,7 @@ test('esbuild bundling with esbuild options', () => {
 
   // Make sure that the define instructions are working as expected with the esbuild CLI
   const bundleProcess = util.exec('bash', ['-c', `npx esbuild --bundle ${`${__dirname}/integ-handlers/define.ts`} ${defineInstructions}`]);
-  expect(bundleProcess.stdout.toLocaleString()).toMatchSnapshot();
+  expect(bundleProcess.stdout.toString()).toMatchSnapshot();
 });
 
 test('Detects yarn.lock', () => {
