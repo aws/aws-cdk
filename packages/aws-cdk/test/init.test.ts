@@ -123,27 +123,17 @@ describe('constructs version', () => {
   cliTest('.NET', async (workDir) => {
     await cliInit('app', 'csharp', false, true, workDir);
 
-    // convert dir name from aws-cdk-test-xyz to AwsCdkTestXyz
-    const slnName = path.basename(workDir).split('-').map(s => `${s[0].toUpperCase()}${s.slice(1)}`).join('');
-    const csprojFile = path.join(workDir, 'src', slnName, `${slnName}.csproj`);
+    const csprojFile = (await recursiveListFiles(workDir)).filter(f => f.endsWith('.csproj'))[0];
+    expect(csprojFile).toBeDefined();
 
-    expect(await fs.pathExists(csprojFile)).toBeTruthy();
     const csproj = (await fs.readFile(csprojFile, 'utf8')).split(/\r?\n/);
-    // return RegExpMatchArray (result of line.match()) for every lines that match re.
-    const matches = csproj.map(line => line.match(/\<PackageReference Include="Constructs" Version="(.*)"/))
-      .filter(l => l);
 
-    expect(matches.length).toEqual(1);
-    matches.forEach(m => {
-      const version = m && m[1];
-      expect(version).toMatch(/\[10\.[\d]+\.[\d]+,11\.0\.0\)/);
-    });
+    expect(csproj).toContainEqual(expect.stringMatching(/\<PackageReference Include="Constructs" Version="\[10\..*,11\..*\)"/));
   });
 
   cliTest('Python', async (workDir) => {
     await cliInit('app', 'python', false, true, workDir);
 
-    // convert dir name from aws-cdk-test-xyz to AwsCdkTestXyz
     expect(await fs.pathExists(path.join(workDir, 'setup.py'))).toBeTruthy();
     const setupPy = (await fs.readFile(path.join(workDir, 'setup.py'), 'utf8')).split(/\r?\n/);
     // return RegExpMatchArray (result of line.match()) for every lines that match re.
@@ -175,5 +165,25 @@ async function withTempDir(cb: (dir: string) => void | Promise<any>) {
     await cb(tmpDir);
   } finally {
     await fs.remove(tmpDir);
+  }
+}
+
+/**
+ * List all files underneath dir
+ */
+async function recursiveListFiles(rdir: string): Promise<string[]> {
+  const ret = new Array<string>();
+  await recurse(rdir);
+  return ret;
+
+  async function recurse(dir: string) {
+    for (const name of await fs.readdir(dir)) {
+      const fullPath = path.join(dir, name);
+      if ((await fs.stat(fullPath)).isDirectory()) {
+        await recurse(fullPath);
+      } else {
+        ret.push(fullPath);
+      }
+    }
   }
 }
