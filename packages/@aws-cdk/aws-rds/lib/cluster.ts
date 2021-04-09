@@ -4,7 +4,7 @@ import * as kms from '@aws-cdk/aws-kms';
 import * as logs from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
-import { Annotations, Duration, FeatureFlags, RemovalPolicy, Resource, Token, Lazy } from '@aws-cdk/core';
+import { Annotations, Duration, FeatureFlags, RemovalPolicy, Resource, Token } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
 import { IClusterEngine } from './cluster-engine';
@@ -87,14 +87,6 @@ interface DatabaseClusterBaseProps {
    * @default - true if ``removalPolicy`` is RETAIN, false otherwise
    */
   readonly deletionProtection?: boolean;
-
-  /**
-   * Whether to enable mapping of AWS Identity and Access Management (IAM) accounts
-   * to database accounts.
-   *
-   * @default false
-   */
-  readonly iamAuthentication?: boolean;
 
   /**
    * A preferred maintenance window day/time range. Should be specified as a range ddd:hh24:mi-ddd:hh24:mi (24H Clock UTC).
@@ -349,7 +341,6 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
     const clusterParameterGroup = props.parameterGroup ?? clusterEngineBindConfig.parameterGroup;
     const clusterParameterGroupConfig = clusterParameterGroup?.bindToCluster({});
     this.engine = props.engine;
-    this.enableIamAuthentication = props.iamAuthentication;
 
     const clusterIdentifier = FeatureFlags.of(this).isEnabled(cxapi.RDS_LOWERCASE_DB_IDENTIFIER)
       ? props.clusterIdentifier?.toLowerCase()
@@ -365,7 +356,6 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
       port: props.port ?? clusterEngineBindConfig.port,
       dbClusterParameterGroupName: clusterParameterGroupConfig?.parameterGroupName,
       associatedRoles: clusterAssociatedRoles.length > 0 ? clusterAssociatedRoles : undefined,
-      enableIamDatabaseAuthentication: Lazy.any({ produce: () => this.enableIamAuthentication }),
       deletionProtection: defaultDeletionProtection(props.deletionProtection, props.removalPolicy),
       // Admin
       backupRetentionPeriod: props.backup?.retention?.toDays(),
@@ -464,6 +454,15 @@ export interface DatabaseClusterProps extends DatabaseClusterBaseProps {
    * @default - if storageEncrypted is true then the default master key, no key otherwise
    */
   readonly storageEncryptionKey?: kms.IKey;
+
+  /**
+   * Whether to enable mapping of AWS Identity and Access Management (IAM) accounts
+   * to database accounts.
+   *
+   * @default false
+   */
+  readonly iamAuthentication?: boolean;
+
 }
 
 /**
@@ -512,6 +511,7 @@ export class DatabaseCluster extends DatabaseClusterNew {
       // Admin
       masterUsername: credentials.username,
       masterUserPassword: credentials.password?.toString(),
+      enableIamDatabaseAuthentication: props.iamAuthentication,
       // Encryption
       kmsKeyId: props.storageEncryptionKey?.keyArn,
       storageEncrypted: props.storageEncryptionKey ? true : props.storageEncrypted,
@@ -592,6 +592,13 @@ export interface DatabaseClusterFromSnapshotProps extends DatabaseClusterBasePro
    * However, you can use only the ARN to specify a DB instance snapshot.
    */
   readonly snapshotIdentifier: string;
+  /**
+   * Whether to enable mapping of AWS Identity and Access Management (IAM) accounts
+   * to database accounts.
+   *
+   * @default false
+   */
+  readonly iamAuthentication?: boolean;
 }
 
 /**
@@ -611,6 +618,7 @@ export class DatabaseClusterFromSnapshot extends DatabaseClusterNew {
     const cluster = new CfnDBCluster(this, 'Resource', {
       ...this.newCfnProps,
       snapshotIdentifier: props.snapshotIdentifier,
+      enableIamDatabaseAuthentication: props.iamAuthentication,
     });
 
     this.clusterIdentifier = cluster.ref;
