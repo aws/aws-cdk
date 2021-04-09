@@ -14,8 +14,9 @@ module.exports = {
   },
   plugins: [
     '@typescript-eslint',
-    'import',
+    'ban',
     'cdk',
+    'import',
     'jest',
   ],
   parser: '@typescript-eslint/parser',
@@ -41,6 +42,10 @@ module.exports = {
   },
   ignorePatterns: ['*.js', '*.d.ts', 'node_modules/', '*.generated.ts'],
   rules: {
+    'ban/ban': [ 'error', {
+      name: ['os', 'tmpdir'], message: 'tmpdir() has inconsistent behaviour when running in superchain. Avoid.'
+    }],
+
     'cdk/construct-import-order': [ 'error' ],
     'cdk/no-core-construct': [ 'error' ],
     'cdk/no-qualified-construct': [ 'error' ],
