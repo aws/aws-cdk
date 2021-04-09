@@ -76,6 +76,12 @@ docsLinter.add({
   code: 'no-experimental-apis',
   message: 'The use of @experimental in not allowed (either directly or via parent class)',
   eval: e => {
+    if (!isPublic(e.ctx)) { return; }
+    // technically we should ban the use of @experimental in the codebase, but since jsii will marks all properties
+    // of experimental modules as experimental we can't.
+    if (isModuleExperimental(e.ctx.assembly)) {
+      return;
+    }
     const property = e.ctx.documentable;
     e.assert(property.docs.docs.stability !== Stability.Experimental, e.ctx.errorKey);
   },
@@ -105,6 +111,13 @@ function isCfnType(ctx: DocsLinterContext) {
     case 'type':
       return CoreTypes.isCfnType(ctx.documentable);
   }
+}
+
+function isModuleExperimental(assembly: reflect.Assembly) {
+  if (assembly.spec.docs?.stability === Stability.Experimental) {
+    return true;
+  }
+  return false;
 }
 
 function flatMap<T, U>(array: readonly T[], callbackfn: (value: T, index: number, array: readonly T[]) => U[]): U[] {
