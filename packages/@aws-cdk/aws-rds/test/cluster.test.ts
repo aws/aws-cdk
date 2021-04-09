@@ -98,7 +98,7 @@ describe('cluster', () => {
   });
 
 
-  test('check exposure of EnableIAMDatabaseAuthentication property in DBCluster', () => {
+  test('allows setting the `iamAuthentication` property for DatabaseCluster', () => {
     // GIVEN
     const stack = testStack();
     const vpc = new ec2.Vpc(stack, 'VPC');
@@ -115,17 +115,12 @@ describe('cluster', () => {
         instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
         vpc,
       },
-      iamAuthentication: false,
+      iamAuthentication: true,
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::RDS::DBCluster', {
-      Engine: 'aurora',
-      DBSubnetGroupName: { Ref: 'DatabaseSubnets56F17B9A' },
-      MasterUsername: 'admin',
-      MasterUserPassword: 'tooshort',
-      EnableIAMDatabaseAuthentication: false,
-      VpcSecurityGroupIds: [{ 'Fn::GetAtt': ['DatabaseSecurityGroup5C91FDCB', 'GroupId'] }],
+    expect(stack).toHaveResourceLike('AWS::RDS::DBCluster', {
+      EnableIAMDatabaseAuthentication: true,
     });
   });
 
@@ -1687,6 +1682,28 @@ describe('cluster', () => {
     }, ResourcePart.CompleteDefinition);
 
     expect(stack).toCountResources('AWS::RDS::DBInstance', 2);
+
+
+  });
+
+  test('allows setting the `iamAuthentication` property for clusterFromSnapshot', () => {
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new DatabaseClusterFromSnapshot(stack, 'Database', {
+      engine: DatabaseClusterEngine.aurora({ version: AuroraEngineVersion.VER_1_22_2 }),
+      instanceProps: {
+        vpc,
+      },
+      snapshotIdentifier: 'mySnapshot',
+      iamAuthentication: true,
+    });
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::RDS::DBCluster', {
+      EnableIAMDatabaseAuthentication: true,
+    });
 
 
   });
