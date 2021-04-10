@@ -289,9 +289,9 @@ async function transformPackage(
       cfnScopes.map(s => (s === 'AWS::Serverless' ? 'AWS::SAM' : s).split('::')[1].toLocaleLowerCase())
         .map(s => `export * from './${s}.generated';`)
         .join('\n'));
-    await copyOrTransformFiles(destination, destination, allLibraries, uberPackageJson, library);
+    await copyOrTransformFiles(destination, destination, allLibraries, uberPackageJson);
   } else {
-    await copyOrTransformFiles(library.root, destination, allLibraries, uberPackageJson, library);
+    await copyOrTransformFiles(library.root, destination, allLibraries, uberPackageJson);
   }
 
   await fs.writeFile(
@@ -354,8 +354,7 @@ function transformTargets(monoConfig: PackageJson['jsii']['targets'], targets: P
   return result;
 }
 
-async function copyOrTransformFiles(from: string, to: string, libraries: readonly LibraryReference[], uberPackageJson: PackageJson,
-  library: LibraryReference) {
+async function copyOrTransformFiles(from: string, to: string, libraries: readonly LibraryReference[], uberPackageJson: PackageJson) {
   const promises = (await fs.readdir(from)).map(async name => {
     if (shouldIgnoreFile(name)) { return; }
 
@@ -365,7 +364,7 @@ async function copyOrTransformFiles(from: string, to: string, libraries: readonl
     const stat = await fs.stat(source);
     if (stat.isDirectory()) {
       await fs.mkdirp(destination);
-      return copyOrTransformFiles(source, destination, libraries, uberPackageJson, library);
+      return copyOrTransformFiles(source, destination, libraries, uberPackageJson);
     }
 
     if (name.endsWith('.d.ts') || name.endsWith('.js')) {
