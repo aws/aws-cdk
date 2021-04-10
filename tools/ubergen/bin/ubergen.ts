@@ -2,7 +2,7 @@ import * as console from 'console';
 import * as os from 'os';
 import * as path from 'path';
 import * as process from 'process';
-
+import cfn2ts from 'cfn2ts';
 import * as fs from 'fs-extra';
 import * as ts from 'typescript';
 
@@ -268,9 +268,7 @@ async function transformPackage(
 ) {
   await fs.mkdirp(destination);
 
-  let source = library.root;
-  const exclude = ['@aws-cdk/aws-s3-assets', '@aws-cdk/aws-ecr-assets'];
-  await copyOrTransformFiles(source, destination, allLibraries, uberPackageJson, library);
+  const exclude = ['@aws-cdk/aws-s3-assets', '@aws-cdk/aws-ecr-assets', '@aws-cdk/aws-batch', '@aws-cdk/aws-msk', '@aws-cdk/aws-apigatewayv2'];
 
   if (uberPackageJson.name === 'aws-cdk-lib' && library.packageJson.stability === 'experimental' && !exclude.includes(library.packageJson.name)) {
     // in aws-cdk-lib we only add the L1s of experimental modules
@@ -283,11 +281,17 @@ async function transformPackage(
     if (typeof cfnScopes === 'string') {
       cfnScopes = [cfnScopes];
     }
-    const fullPath = path.join(destination, 'lib/index.ts');
-    fs.writeFileSync(fullPath,
+    const destinationLib = path.join(destination, 'lib');
+    await fs.mkdirp(destinationLib);
+    await cfn2ts(cfnScopes, destinationLib);
+
+    fs.writeFileSync(path.join(destinationLib, 'index.ts'),
       cfnScopes.map(s => (s === 'AWS::Serverless' ? 'AWS::SAM' : s).split('::')[1].toLocaleLowerCase())
         .map(s => `export * from './${s}.generated';`)
         .join('\n'));
+    await copyOrTransformFiles(destination, destination, allLibraries, uberPackageJson, library);
+  } else {
+    await copyOrTransformFiles(library.root, destination, allLibraries, uberPackageJson, library);
   }
 
   await fs.writeFile(
@@ -362,14 +366,6 @@ async function copyOrTransformFiles(from: string, to: string, libraries: readonl
     if (stat.isDirectory()) {
       await fs.mkdirp(destination);
       return copyOrTransformFiles(source, destination, libraries, uberPackageJson, library);
-    }
-    const exclude = ['@aws-cdk/aws-s3-assets', '@aws-cdk/aws-ecr-assets'];
-
-    if (uberPackageJson.name === 'aws-cdk-lib' && library.packageJson.stability === 'experimental' && !exclude.includes(library.packageJson.name)) {
-      // in aws-cdk-lib we only add the L1s of experimental modules, the lib/index.ts
-      if (!name.endsWith('.generated.ts')) {
-        return;
-      }
     }
 
     if (name.endsWith('.d.ts') || name.endsWith('.js')) {
