@@ -33,7 +33,10 @@
   },
   "dependencies": {
     "fs-extra": "^9.1.0",
-    "typescript": "~3.9.9"
+    "typescript": "~3.9.9",
+    "cfn2ts": "0.0.0",
+    "@aws-cdk/cfnspec": "0.0.0"
+
   },
   "keywords": [
     "aws",

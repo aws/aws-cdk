@@ -2,6 +2,7 @@ import * as console from 'console';
 import * as os from 'os';
 import * as path from 'path';
 import * as process from 'process';
+
 import * as fs from 'fs-extra';
 import * as ts from 'typescript';
 
@@ -59,7 +60,11 @@ interface PackageJson {
   readonly name: string;
   readonly types: string;
   readonly version: string;
+  readonly stability: string;
   readonly [key: string]: unknown;
+  readonly 'cdk-build': {
+    readonly cloudformation: string[] | string;
+  };
   readonly ubergen?: {
     readonly deprecatedPackages?: readonly string[];
   };
@@ -219,8 +224,11 @@ async function prepareSourceFiles(libraries: readonly LibraryReference[], packag
   const indexStatements = new Array<string>();
   for (const library of libraries) {
     const libDir = path.join(LIB_ROOT, library.shortName);
-    await transformPackage(library, packageJson, libDir, libraries);
+    const copied = await transformPackage(library, packageJson, libDir, libraries);
 
+    if (!copied) {
+      continue;
+    }
     if (library.shortName === 'core') {
       indexStatements.push(`export * from './${library.shortName}';`);
     } else {
@@ -260,7 +268,27 @@ async function transformPackage(
 ) {
   await fs.mkdirp(destination);
 
-  await copyOrTransformFiles(library.root, destination, allLibraries, uberPackageJson);
+  let source = library.root;
+  const exclude = ['@aws-cdk/aws-s3-assets', '@aws-cdk/aws-ecr-assets'];
+  await copyOrTransformFiles(source, destination, allLibraries, uberPackageJson, library);
+
+  if (uberPackageJson.name === 'aws-cdk-lib' && library.packageJson.stability === 'experimental' && !exclude.includes(library.packageJson.name)) {
+    // in aws-cdk-lib we only add the L1s of experimental modules
+    let cfnScopes = library.packageJson['cdk-build'].cloudformation;
+
+    if (cfnScopes === undefined) {
+      return false;
+    }
+
+    if (typeof cfnScopes === 'string') {
+      cfnScopes = [cfnScopes];
+    }
+    const fullPath = path.join(destination, 'lib/index.ts');
+    fs.writeFileSync(fullPath,
+      cfnScopes.map(s => (s === 'AWS::Serverless' ? 'AWS::SAM' : s).split('::')[1].toLocaleLowerCase())
+        .map(s => `export * from './${s}.generated';`)
+        .join('\n'));
+  }
 
   await fs.writeFile(
     path.join(destination, 'index.ts'),
@@ -284,6 +312,7 @@ async function transformPackage(
       { encoding: 'utf8' },
     );
   }
+  return true;
 }
 
 function transformTargets(monoConfig: PackageJson['jsii']['targets'], targets: PackageJson['jsii']['targets']): PackageJson['jsii']['targets'] {
@@ -321,9 +350,27 @@ function transformTargets(monoConfig: PackageJson['jsii']['targets'], targets: P
   return result;
 }
 
-async function copyOrTransformFiles(from: string, to: string, libraries: readonly LibraryReference[], uberPackageJson: PackageJson) {
+async function copyOrTransformFiles(from: string, to: string, libraries: readonly LibraryReference[], uberPackageJson: PackageJson,
+  library: LibraryReference) {
   const promises = (await fs.readdir(from)).map(async name => {
     if (shouldIgnoreFile(name)) { return; }
+
+    const source = path.join(from, name);
+    const destination = path.join(to, name);
+
+    const stat = await fs.stat(source);
+    if (stat.isDirectory()) {
+      await fs.mkdirp(destination);
+      return copyOrTransformFiles(source, destination, libraries, uberPackageJson, library);
+    }
+    const exclude = ['@aws-cdk/aws-s3-assets', '@aws-cdk/aws-ecr-assets'];
+
+    if (uberPackageJson.name === 'aws-cdk-lib' && library.packageJson.stability === 'experimental' && !exclude.includes(library.packageJson.name)) {
+      // in aws-cdk-lib we only add the L1s of experimental modules, the lib/index.ts
+      if (!name.endsWith('.generated.ts')) {
+        return;
+      }
+    }
 
     if (name.endsWith('.d.ts') || name.endsWith('.js')) {
       if (await fs.pathExists(path.join(from, name.replace(/\.(d\.ts|js)$/, '.ts')))) {
@@ -332,14 +379,6 @@ async function copyOrTransformFiles(from: string, to: string, libraries: readonl
       }
     }
 
-    const source = path.join(from, name);
-    const destination = path.join(to, name);
-
-    const stat = await fs.stat(source);
-    if (stat.isDirectory()) {
-      await fs.mkdirp(destination);
-      return copyOrTransformFiles(source, destination, libraries, uberPackageJson);
-    }
     if (name.endsWith('.ts')) {
       return fs.writeFile(
         destination,
