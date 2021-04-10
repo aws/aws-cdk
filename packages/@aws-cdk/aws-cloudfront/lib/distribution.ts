@@ -1,7 +1,15 @@
 import * as acm from '@aws-cdk/aws-certificatemanager';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as s3 from '@aws-cdk/aws-s3';
-import { IResource, Lazy, Resource, Stack, Token, Duration, Names } from '@aws-cdk/core';
+import {
+  IResource,
+  Lazy,
+  Resource,
+  Stack,
+  Token,
+  Duration,
+  Names,
+} from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { ICachePolicy } from './cache-policy';
 import { CfnDistribution } from './cloudfront.generated';
@@ -209,13 +217,13 @@ export interface DistributionProps {
   readonly errorResponses?: ErrorResponse[];
 
   /**
-    * The minimum version of the SSL protocol that you want CloudFront to use for HTTPS connections.
-    *
-    * CloudFront serves your objects only to browsers or devices that support at
-    * least the SSL version that you specify.
-    *
-    * @default SecurityPolicyProtocol.TLS_V1_2_2019
-    */
+   * The minimum version of the SSL protocol that you want CloudFront to use for HTTPS connections.
+   *
+   * CloudFront serves your objects only to browsers or devices that support at
+   * least the SSL version that you specify.
+   *
+   * @default SecurityPolicyProtocol.TLS_V1_2_2019
+   */
   readonly minimumProtocolVersion?: SecurityPolicyProtocol;
 }
 
@@ -223,12 +231,15 @@ export interface DistributionProps {
  * A CloudFront distribution with associated origin(s) and caching behavior(s).
  */
 export class Distribution extends Resource implements IDistribution {
-
   /**
    * Creates a Distribution construct that represents an external (imported) distribution.
    */
-  public static fromDistributionAttributes(scope: Construct, id: string, attrs: DistributionAttributes): IDistribution {
-    return new class extends Resource implements IDistribution {
+  public static fromDistributionAttributes(
+    scope: Construct,
+    id: string,
+    attrs: DistributionAttributes,
+  ): IDistribution {
+    return new (class extends Resource implements IDistribution {
       public readonly domainName: string;
       public readonly distributionDomainName: string;
       public readonly distributionId: string;
@@ -239,7 +250,7 @@ export class Distribution extends Resource implements IDistribution {
         this.distributionDomainName = attrs.domainName;
         this.distributionId = attrs.distributionId;
       }
-    }();
+    })();
   }
 
   public readonly domainName: string;
@@ -258,26 +269,50 @@ export class Distribution extends Resource implements IDistribution {
     super(scope, id);
 
     if (props.certificate) {
-      const certificateRegion = Stack.of(this).parseArn(props.certificate.certificateArn).region;
-      if (!Token.isUnresolved(certificateRegion) && certificateRegion !== 'us-east-1') {
-        throw new Error(`Distribution certificates must be in the us-east-1 region and the certificate you provided is in ${certificateRegion}.`);
+      const certificateRegion = Stack.of(this).parseArn(
+        props.certificate.certificateArn,
+      ).region;
+      if (
+        !Token.isUnresolved(certificateRegion) &&
+        certificateRegion !== 'us-east-1'
+      ) {
+        throw new Error(
+          `Distribution certificates must be in the us-east-1 region and the certificate you provided is in ${certificateRegion}.`,
+        );
       }
 
       if ((props.domainNames ?? []).length === 0) {
-        throw new Error('Must specify at least one domain name to use a certificate with a distribution');
+        throw new Error(
+          'Must specify at least one domain name to use a certificate with a distribution',
+        );
       }
     }
 
     const originId = this.addOrigin(props.defaultBehavior.origin);
-    this.defaultBehavior = new CacheBehavior(originId, { pathPattern: '*', ...props.defaultBehavior });
+    this.defaultBehavior = new CacheBehavior(originId, {
+      pathPattern: '*',
+      ...props.defaultBehavior,
+    });
     if (props.additionalBehaviors) {
-      Object.entries(props.additionalBehaviors).forEach(([pathPattern, behaviorOptions]) => {
-        this.addBehavior(pathPattern, behaviorOptions.origin, behaviorOptions);
-      });
+      Object.entries(props.additionalBehaviors).forEach(
+        ([pathPattern, behaviorOptions]) => {
+          this.addBehavior(
+            pathPattern,
+            behaviorOptions.origin,
+            behaviorOptions,
+          );
+        },
+      );
     }
 
     this.certificate = props.certificate;
     this.errorResponses = props.errorResponses ?? [];
+
+    // Comments have an undocumented limit of 128 characters
+    const trimmedComment =
+      props.comment && props.comment.length > 128
+        ? `${props.comment.substr(0, 128 - 3)}...`
+        : props.comment;
 
     const distribution = new CfnDistribution(this, 'Resource', {
       distributionConfig: {
@@ -286,8 +321,10 @@ export class Distribution extends Resource implements IDistribution {
         originGroups: Lazy.any({ produce: () => this.renderOriginGroups() }),
         defaultCacheBehavior: this.defaultBehavior._renderBehavior(),
         aliases: props.domainNames,
-        cacheBehaviors: Lazy.any({ produce: () => this.renderCacheBehaviors() }),
-        comment: props.comment,
+        cacheBehaviors: Lazy.any({
+          produce: () => this.renderCacheBehaviors(),
+        }),
+        comment: trimmedComment,
         customErrorResponses: this.renderErrorResponses(),
         defaultRootObject: props.defaultRootObject,
         httpVersion: props.httpVersion ?? HttpVersion.HTTP2,
@@ -295,7 +332,12 @@ export class Distribution extends Resource implements IDistribution {
         logging: this.renderLogging(props),
         priceClass: props.priceClass ?? undefined,
         restrictions: this.renderRestrictions(props.geoRestriction),
-        viewerCertificate: this.certificate ? this.renderViewerCertificate(this.certificate, props.minimumProtocolVersion) : undefined,
+        viewerCertificate: this.certificate
+          ? this.renderViewerCertificate(
+            this.certificate,
+            props.minimumProtocolVersion,
+          )
+          : undefined,
         webAclId: props.webAclId,
       },
     });
@@ -312,18 +354,31 @@ export class Distribution extends Resource implements IDistribution {
    * @param origin the origin to use for this behavior
    * @param behaviorOptions the options for the behavior at this path.
    */
-  public addBehavior(pathPattern: string, origin: IOrigin, behaviorOptions: AddBehaviorOptions = {}) {
+  public addBehavior(
+    pathPattern: string,
+    origin: IOrigin,
+    behaviorOptions: AddBehaviorOptions = {},
+  ) {
     if (pathPattern === '*') {
-      throw new Error('Only the default behavior can have a path pattern of \'*\'');
+      throw new Error(
+        "Only the default behavior can have a path pattern of '*'",
+      );
     }
     const originId = this.addOrigin(origin);
-    this.additionalBehaviors.push(new CacheBehavior(originId, { pathPattern, ...behaviorOptions }));
+    this.additionalBehaviors.push(
+      new CacheBehavior(originId, { pathPattern, ...behaviorOptions }),
+    );
   }
 
-  private addOrigin(origin: IOrigin, isFailoverOrigin: boolean = false): string {
+  private addOrigin(
+    origin: IOrigin,
+    isFailoverOrigin: boolean = false,
+  ): string {
     const ORIGIN_ID_MAX_LENGTH = 128;
 
-    const existingOrigin = this.boundOrigins.find(boundOrigin => boundOrigin.origin === origin);
+    const existingOrigin = this.boundOrigins.find(
+      (boundOrigin) => boundOrigin.origin === origin,
+    );
     if (existingOrigin) {
       return existingOrigin.originGroupId ?? existingOrigin.originId;
     } else {
@@ -335,21 +390,43 @@ export class Distribution extends Resource implements IDistribution {
         this.boundOrigins.push({ origin, originId, ...originBindConfig });
       } else {
         if (isFailoverOrigin) {
-          throw new Error('An Origin cannot use an Origin with its own failover configuration as its fallback origin!');
+          throw new Error(
+            'An Origin cannot use an Origin with its own failover configuration as its fallback origin!',
+          );
         }
         const groupIndex = this.originGroups.length + 1;
-        const originGroupId = Names.uniqueId(new CoreConstruct(this, `OriginGroup${groupIndex}`)).slice(-ORIGIN_ID_MAX_LENGTH);
-        this.boundOrigins.push({ origin, originId, originGroupId, ...originBindConfig });
+        const originGroupId = Names.uniqueId(
+          new CoreConstruct(this, `OriginGroup${groupIndex}`),
+        ).slice(-ORIGIN_ID_MAX_LENGTH);
+        this.boundOrigins.push({
+          origin,
+          originId,
+          originGroupId,
+          ...originBindConfig,
+        });
 
-        const failoverOriginId = this.addOrigin(originBindConfig.failoverConfig.failoverOrigin, true);
-        this.addOriginGroup(originGroupId, originBindConfig.failoverConfig.statusCodes, originId, failoverOriginId);
+        const failoverOriginId = this.addOrigin(
+          originBindConfig.failoverConfig.failoverOrigin,
+          true,
+        );
+        this.addOriginGroup(
+          originGroupId,
+          originBindConfig.failoverConfig.statusCodes,
+          originId,
+          failoverOriginId,
+        );
         return originGroupId;
       }
       return originId;
     }
   }
 
-  private addOriginGroup(originGroupId: string, statusCodes: number[] | undefined, originId: string, failoverOriginId: string): void {
+  private addOriginGroup(
+    originGroupId: string,
+    statusCodes: number[] | undefined,
+    originId: string,
+    failoverOriginId: string,
+  ): void {
     statusCodes = statusCodes ?? [500, 502, 503, 504];
     if (statusCodes.length === 0) {
       throw new Error('fallbackStatusCodes cannot be empty');
@@ -363,10 +440,7 @@ export class Distribution extends Resource implements IDistribution {
       },
       id: originGroupId,
       members: {
-        items: [
-          { originId },
-          { originId: failoverOriginId },
-        ],
+        items: [{ originId }, { originId: failoverOriginId }],
         quantity: 2,
       },
     });
@@ -374,7 +448,7 @@ export class Distribution extends Resource implements IDistribution {
 
   private renderOrigins(): CfnDistribution.OriginProperty[] {
     const renderedOrigins: CfnDistribution.OriginProperty[] = [];
-    this.boundOrigins.forEach(boundOrigin => {
+    this.boundOrigins.forEach((boundOrigin) => {
       if (boundOrigin.originProperty) {
         renderedOrigins.push(boundOrigin.originProperty);
       }
@@ -382,7 +456,9 @@ export class Distribution extends Resource implements IDistribution {
     return renderedOrigins;
   }
 
-  private renderOriginGroups(): CfnDistribution.OriginGroupsProperty | undefined {
+  private renderOriginGroups():
+  | CfnDistribution.OriginGroupsProperty
+  | undefined {
     return this.originGroups.length === 0
       ? undefined
       : {
@@ -391,17 +467,33 @@ export class Distribution extends Resource implements IDistribution {
       };
   }
 
-  private renderCacheBehaviors(): CfnDistribution.CacheBehaviorProperty[] | undefined {
-    if (this.additionalBehaviors.length === 0) { return undefined; }
-    return this.additionalBehaviors.map(behavior => behavior._renderBehavior());
+  private renderCacheBehaviors():
+  | CfnDistribution.CacheBehaviorProperty[]
+  | undefined {
+    if (this.additionalBehaviors.length === 0) {
+      return undefined;
+    }
+    return this.additionalBehaviors.map((behavior) =>
+      behavior._renderBehavior(),
+    );
   }
 
-  private renderErrorResponses(): CfnDistribution.CustomErrorResponseProperty[] | undefined {
-    if (this.errorResponses.length === 0) { return undefined; }
+  private renderErrorResponses():
+  | CfnDistribution.CustomErrorResponseProperty[]
+  | undefined {
+    if (this.errorResponses.length === 0) {
+      return undefined;
+    }
 
-    return this.errorResponses.map(errorConfig => {
-      if (!errorConfig.responseHttpStatus && !errorConfig.ttl && !errorConfig.responsePagePath) {
-        throw new Error('A custom error response without either a \'responseHttpStatus\', \'ttl\' or \'responsePagePath\' is not valid.');
+    return this.errorResponses.map((errorConfig) => {
+      if (
+        !errorConfig.responseHttpStatus &&
+        !errorConfig.ttl &&
+        !errorConfig.responsePagePath
+      ) {
+        throw new Error(
+          "A custom error response without either a 'responseHttpStatus', 'ttl' or 'responsePagePath' is not valid.",
+        );
       }
 
       return {
@@ -415,10 +507,16 @@ export class Distribution extends Resource implements IDistribution {
     });
   }
 
-  private renderLogging(props: DistributionProps): CfnDistribution.LoggingProperty | undefined {
-    if (!props.enableLogging && !props.logBucket) { return undefined; }
+  private renderLogging(
+    props: DistributionProps,
+  ): CfnDistribution.LoggingProperty | undefined {
+    if (!props.enableLogging && !props.logBucket) {
+      return undefined;
+    }
     if (props.enableLogging === false && props.logBucket) {
-      throw new Error('Explicitly disabled logging but provided a logging bucket.');
+      throw new Error(
+        'Explicitly disabled logging but provided a logging bucket.',
+      );
     }
 
     const bucket = props.logBucket ?? new s3.Bucket(this, 'LoggingBucket');
@@ -430,16 +528,20 @@ export class Distribution extends Resource implements IDistribution {
   }
 
   private renderRestrictions(geoRestriction?: GeoRestriction) {
-    return geoRestriction ? {
-      geoRestriction: {
-        restrictionType: geoRestriction.restrictionType,
-        locations: geoRestriction.locations,
-      },
-    } : undefined;
+    return geoRestriction
+      ? {
+        geoRestriction: {
+          restrictionType: geoRestriction.restrictionType,
+          locations: geoRestriction.locations,
+        },
+      }
+      : undefined;
   }
 
-  private renderViewerCertificate(certificate: acm.ICertificate,
-    minimumProtocolVersion: SecurityPolicyProtocol = SecurityPolicyProtocol.TLS_V1_2_2019) : CfnDistribution.ViewerCertificateProperty {
+  private renderViewerCertificate(
+    certificate: acm.ICertificate,
+    minimumProtocolVersion: SecurityPolicyProtocol = SecurityPolicyProtocol.TLS_V1_2_2019,
+  ): CfnDistribution.ViewerCertificateProperty {
     return {
       acmCertificateArn: certificate.certificateArn,
       sslSupportMethod: SSLMethod.SNI,
@@ -453,7 +555,7 @@ export enum HttpVersion {
   /** HTTP 1.1 */
   HTTP1_1 = 'http1.1',
   /** HTTP 2 */
-  HTTP2 = 'http2'
+  HTTP2 = 'http2',
 }
 
 /**
@@ -466,7 +568,7 @@ export enum PriceClass {
   /** PRICE_CLASS_100 + South Africa, Kenya, Middle East, Japan, Singapore, South Korea, Taiwan, Hong Kong, & Philippines */
   PRICE_CLASS_200 = 'PriceClass_200',
   /** All locations */
-  PRICE_CLASS_ALL = 'PriceClass_All'
+  PRICE_CLASS_ALL = 'PriceClass_All',
 }
 
 /**
@@ -478,7 +580,7 @@ export enum ViewerProtocolPolicy {
   /** Will redirect HTTP requests to HTTPS */
   REDIRECT_TO_HTTPS = 'redirect-to-https',
   /** Both HTTP and HTTPS supported */
-  ALLOW_ALL = 'allow-all'
+  ALLOW_ALL = 'allow-all',
 }
 
 /**
@@ -511,7 +613,7 @@ export enum OriginProtocolPolicy {
  */
 export enum SSLMethod {
   SNI = 'sni-only',
-  VIP = 'vip'
+  VIP = 'vip',
 }
 
 /**
@@ -524,7 +626,7 @@ export enum SecurityPolicyProtocol {
   TLS_V1_2016 = 'TLSv1_2016',
   TLS_V1_1_2016 = 'TLSv1.1_2016',
   TLS_V1_2_2018 = 'TLSv1.2_2018',
-  TLS_V1_2_2019 = 'TLSv1.2_2019'
+  TLS_V1_2_2019 = 'TLSv1.2_2019',
 }
 
 /**
@@ -534,14 +636,28 @@ export class AllowedMethods {
   /** HEAD and GET */
   public static readonly ALLOW_GET_HEAD = new AllowedMethods(['GET', 'HEAD']);
   /** HEAD, GET, and OPTIONS */
-  public static readonly ALLOW_GET_HEAD_OPTIONS = new AllowedMethods(['GET', 'HEAD', 'OPTIONS']);
+  public static readonly ALLOW_GET_HEAD_OPTIONS = new AllowedMethods([
+    'GET',
+    'HEAD',
+    'OPTIONS',
+  ]);
   /** All supported HTTP methods */
-  public static readonly ALLOW_ALL = new AllowedMethods(['GET', 'HEAD', 'OPTIONS', 'PUT', 'PATCH', 'POST', 'DELETE']);
+  public static readonly ALLOW_ALL = new AllowedMethods([
+    'GET',
+    'HEAD',
+    'OPTIONS',
+    'PUT',
+    'PATCH',
+    'POST',
+    'DELETE',
+  ]);
 
   /** HTTP methods supported */
   public readonly methods: string[];
 
-  private constructor(methods: string[]) { this.methods = methods; }
+  private constructor(methods: string[]) {
+    this.methods = methods;
+  }
 }
 
 /**
@@ -551,12 +667,18 @@ export class CachedMethods {
   /** HEAD and GET */
   public static readonly CACHE_GET_HEAD = new CachedMethods(['GET', 'HEAD']);
   /** HEAD, GET, and OPTIONS */
-  public static readonly CACHE_GET_HEAD_OPTIONS = new CachedMethods(['GET', 'HEAD', 'OPTIONS']);
+  public static readonly CACHE_GET_HEAD_OPTIONS = new CachedMethods([
+    'GET',
+    'HEAD',
+    'OPTIONS',
+  ]);
 
   /** HTTP methods supported */
   public readonly methods: string[];
 
-  private constructor(methods: string[]) { this.methods = methods; }
+  private constructor(methods: string[]) {
+    this.methods = methods;
+  }
 }
 
 /**

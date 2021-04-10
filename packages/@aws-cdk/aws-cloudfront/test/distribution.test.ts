@@ -4,7 +4,16 @@ import * as acm from '@aws-cdk/aws-certificatemanager';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as s3 from '@aws-cdk/aws-s3';
 import { App, Duration, Stack } from '@aws-cdk/core';
-import { CfnDistribution, Distribution, GeoRestriction, HttpVersion, IOrigin, LambdaEdgeEventType, PriceClass, SecurityPolicyProtocol } from '../lib';
+import {
+  CfnDistribution,
+  Distribution,
+  GeoRestriction,
+  HttpVersion,
+  IOrigin,
+  LambdaEdgeEventType,
+  PriceClass,
+  SecurityPolicyProtocol,
+} from '../lib';
 import { defaultOrigin, defaultOriginGroup } from './test-origin';
 
 let app: App;
@@ -32,20 +41,26 @@ test('minimal example renders correctly', () => {
       Enabled: true,
       HttpVersion: 'http2',
       IPV6Enabled: true,
-      Origins: [{
-        DomainName: 'www.example.com',
-        Id: 'StackMyDistOrigin1D6D5E535',
-        CustomOriginConfig: {
-          OriginProtocolPolicy: 'https-only',
+      Origins: [
+        {
+          DomainName: 'www.example.com',
+          Id: 'StackMyDistOrigin1D6D5E535',
+          CustomOriginConfig: {
+            OriginProtocolPolicy: 'https-only',
+          },
         },
-      }],
+      ],
     },
   });
 });
 
 test('exhaustive example of props renders correctly', () => {
   const origin = defaultOrigin();
-  const certificate = acm.Certificate.fromCertificateArn(stack, 'Cert', 'arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012');
+  const certificate = acm.Certificate.fromCertificateArn(
+    stack,
+    'Cert',
+    'arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012',
+  );
 
   new Distribution(stack, 'MyDist', {
     defaultBehavior: { origin },
@@ -79,17 +94,21 @@ test('exhaustive example of props renders correctly', () => {
       HttpVersion: 'http1.1',
       IPV6Enabled: false,
       Logging: {
-        Bucket: { 'Fn::GetAtt': ['MyDistLoggingBucket9B8976BC', 'RegionalDomainName'] },
+        Bucket: {
+          'Fn::GetAtt': ['MyDistLoggingBucket9B8976BC', 'RegionalDomainName'],
+        },
         IncludeCookies: true,
         Prefix: 'logs/',
       },
-      Origins: [{
-        DomainName: 'www.example.com',
-        Id: 'StackMyDistOrigin1D6D5E535',
-        CustomOriginConfig: {
-          OriginProtocolPolicy: 'https-only',
+      Origins: [
+        {
+          DomainName: 'www.example.com',
+          Id: 'StackMyDistOrigin1D6D5E535',
+          CustomOriginConfig: {
+            OriginProtocolPolicy: 'https-only',
+          },
         },
-      }],
+      ],
       PriceClass: 'PriceClass_100',
       Restrictions: {
         GeoRestriction: {
@@ -98,7 +117,8 @@ test('exhaustive example of props renders correctly', () => {
         },
       },
       ViewerCertificate: {
-        AcmCertificateArn: 'arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012',
+        AcmCertificateArn:
+          'arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012',
         SslSupportMethod: 'sni-only',
         MinimumProtocolVersion: 'TLSv1.2_2019',
       },
@@ -107,9 +127,42 @@ test('exhaustive example of props renders correctly', () => {
   });
 });
 
-describe('multiple behaviors', () => {
+test('ensure comment prop is not greater than max lenght', () => {
+  const origin = defaultOrigin();
+  new Distribution(stack, 'MyDist', {
+    defaultBehavior: { origin },
+    comment: `Adding a comment longer than 128 characters should be trimmed and added the 
+ellipsis so a user would know there was more to read and everything beyond this point should not show up`,
+  });
 
-  test('a second behavior can\'t be specified with the catch-all path pattern', () => {
+  expect(stack).toHaveResource('AWS::CloudFront::Distribution', {
+    DistributionConfig: {
+      DefaultCacheBehavior: {
+        CachePolicyId: '658327ea-f89d-4fab-a63d-7e88639e58f6',
+        Compress: true,
+        TargetOriginId: 'StackMyDistOrigin1D6D5E535',
+        ViewerProtocolPolicy: 'allow-all',
+      },
+      Comment: `Adding a comment longer than 128 characters should be trimmed and added the 
+ellipsis so a user would know there was more to ...`,
+      Enabled: true,
+      HttpVersion: 'http2',
+      IPV6Enabled: true,
+      Origins: [
+        {
+          DomainName: 'www.example.com',
+          Id: 'StackMyDistOrigin1D6D5E535',
+          CustomOriginConfig: {
+            OriginProtocolPolicy: 'https-only',
+          },
+        },
+      ],
+    },
+  });
+});
+
+describe('multiple behaviors', () => {
+  test("a second behavior can't be specified with the catch-all path pattern", () => {
     const origin = defaultOrigin();
 
     expect(() => {
@@ -139,23 +192,27 @@ describe('multiple behaviors', () => {
           TargetOriginId: 'StackMyDistOrigin1D6D5E535',
           ViewerProtocolPolicy: 'allow-all',
         },
-        CacheBehaviors: [{
-          CachePolicyId: '658327ea-f89d-4fab-a63d-7e88639e58f6',
-          Compress: true,
-          PathPattern: 'api/*',
-          TargetOriginId: 'StackMyDistOrigin1D6D5E535',
-          ViewerProtocolPolicy: 'allow-all',
-        }],
+        CacheBehaviors: [
+          {
+            CachePolicyId: '658327ea-f89d-4fab-a63d-7e88639e58f6',
+            Compress: true,
+            PathPattern: 'api/*',
+            TargetOriginId: 'StackMyDistOrigin1D6D5E535',
+            ViewerProtocolPolicy: 'allow-all',
+          },
+        ],
         Enabled: true,
         HttpVersion: 'http2',
         IPV6Enabled: true,
-        Origins: [{
-          DomainName: 'www.example.com',
-          Id: 'StackMyDistOrigin1D6D5E535',
-          CustomOriginConfig: {
-            OriginProtocolPolicy: 'https-only',
+        Origins: [
+          {
+            DomainName: 'www.example.com',
+            Id: 'StackMyDistOrigin1D6D5E535',
+            CustomOriginConfig: {
+              OriginProtocolPolicy: 'https-only',
+            },
           },
-        }],
+        ],
       },
     });
   });
@@ -178,30 +235,34 @@ describe('multiple behaviors', () => {
           TargetOriginId: 'StackMyDistOrigin1D6D5E535',
           ViewerProtocolPolicy: 'allow-all',
         },
-        CacheBehaviors: [{
-          CachePolicyId: '658327ea-f89d-4fab-a63d-7e88639e58f6',
-          Compress: true,
-          PathPattern: 'api/*',
-          TargetOriginId: 'StackMyDistOrigin20B96F3AD',
-          ViewerProtocolPolicy: 'allow-all',
-        }],
+        CacheBehaviors: [
+          {
+            CachePolicyId: '658327ea-f89d-4fab-a63d-7e88639e58f6',
+            Compress: true,
+            PathPattern: 'api/*',
+            TargetOriginId: 'StackMyDistOrigin20B96F3AD',
+            ViewerProtocolPolicy: 'allow-all',
+          },
+        ],
         Enabled: true,
         HttpVersion: 'http2',
         IPV6Enabled: true,
-        Origins: [{
-          DomainName: 'www.example.com',
-          Id: 'StackMyDistOrigin1D6D5E535',
-          CustomOriginConfig: {
-            OriginProtocolPolicy: 'https-only',
+        Origins: [
+          {
+            DomainName: 'www.example.com',
+            Id: 'StackMyDistOrigin1D6D5E535',
+            CustomOriginConfig: {
+              OriginProtocolPolicy: 'https-only',
+            },
           },
-        },
-        {
-          DomainName: 'origin2.example.com',
-          Id: 'StackMyDistOrigin20B96F3AD',
-          CustomOriginConfig: {
-            OriginProtocolPolicy: 'https-only',
+          {
+            DomainName: 'origin2.example.com',
+            Id: 'StackMyDistOrigin20B96F3AD',
+            CustomOriginConfig: {
+              OriginProtocolPolicy: 'https-only',
+            },
           },
-        }],
+        ],
       },
     });
   });
@@ -225,58 +286,71 @@ describe('multiple behaviors', () => {
           TargetOriginId: 'StackMyDistOrigin1D6D5E535',
           ViewerProtocolPolicy: 'allow-all',
         },
-        CacheBehaviors: [{
-          CachePolicyId: '658327ea-f89d-4fab-a63d-7e88639e58f6',
-          Compress: true,
-          PathPattern: 'api/1*',
-          TargetOriginId: 'StackMyDistOrigin20B96F3AD',
-          ViewerProtocolPolicy: 'allow-all',
-        },
-        {
-          CachePolicyId: '658327ea-f89d-4fab-a63d-7e88639e58f6',
-          Compress: true,
-          PathPattern: 'api/2*',
-          TargetOriginId: 'StackMyDistOrigin1D6D5E535',
-          ViewerProtocolPolicy: 'allow-all',
-        }],
+        CacheBehaviors: [
+          {
+            CachePolicyId: '658327ea-f89d-4fab-a63d-7e88639e58f6',
+            Compress: true,
+            PathPattern: 'api/1*',
+            TargetOriginId: 'StackMyDistOrigin20B96F3AD',
+            ViewerProtocolPolicy: 'allow-all',
+          },
+          {
+            CachePolicyId: '658327ea-f89d-4fab-a63d-7e88639e58f6',
+            Compress: true,
+            PathPattern: 'api/2*',
+            TargetOriginId: 'StackMyDistOrigin1D6D5E535',
+            ViewerProtocolPolicy: 'allow-all',
+          },
+        ],
         Enabled: true,
         HttpVersion: 'http2',
         IPV6Enabled: true,
-        Origins: [{
-          DomainName: 'www.example.com',
-          Id: 'StackMyDistOrigin1D6D5E535',
-          CustomOriginConfig: {
-            OriginProtocolPolicy: 'https-only',
+        Origins: [
+          {
+            DomainName: 'www.example.com',
+            Id: 'StackMyDistOrigin1D6D5E535',
+            CustomOriginConfig: {
+              OriginProtocolPolicy: 'https-only',
+            },
           },
-        },
-        {
-          DomainName: 'origin2.example.com',
-          Id: 'StackMyDistOrigin20B96F3AD',
-          CustomOriginConfig: {
-            OriginProtocolPolicy: 'https-only',
+          {
+            DomainName: 'origin2.example.com',
+            Id: 'StackMyDistOrigin20B96F3AD',
+            CustomOriginConfig: {
+              OriginProtocolPolicy: 'https-only',
+            },
           },
-        }],
+        ],
       },
     });
   });
 });
 
 describe('certificates', () => {
-
   test('should fail if using an imported certificate from outside of us-east-1', () => {
     const origin = defaultOrigin();
-    const certificate = acm.Certificate.fromCertificateArn(stack, 'Cert', 'arn:aws:acm:eu-west-1:123456789012:certificate/12345678-1234-1234-1234-123456789012');
+    const certificate = acm.Certificate.fromCertificateArn(
+      stack,
+      'Cert',
+      'arn:aws:acm:eu-west-1:123456789012:certificate/12345678-1234-1234-1234-123456789012',
+    );
 
     expect(() => {
       new Distribution(stack, 'Dist', {
         defaultBehavior: { origin },
         certificate,
       });
-    }).toThrow(/Distribution certificates must be in the us-east-1 region and the certificate you provided is in eu-west-1./);
+    }).toThrow(
+      /Distribution certificates must be in the us-east-1 region and the certificate you provided is in eu-west-1./,
+    );
   });
 
   test('adding a certificate without a domain name throws', () => {
-    const certificate = acm.Certificate.fromCertificateArn(stack, 'Cert', 'arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012');
+    const certificate = acm.Certificate.fromCertificateArn(
+      stack,
+      'Cert',
+      'arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012',
+    );
 
     expect(() => {
       new Distribution(stack, 'Dist1', {
@@ -295,7 +369,11 @@ describe('certificates', () => {
   });
 
   test('adding a certificate and domain renders the correct ViewerCertificate and Aliases property', () => {
-    const certificate = acm.Certificate.fromCertificateArn(stack, 'Cert', 'arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012');
+    const certificate = acm.Certificate.fromCertificateArn(
+      stack,
+      'Cert',
+      'arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012',
+    );
 
     new Distribution(stack, 'Dist', {
       defaultBehavior: { origin: defaultOrigin() },
@@ -307,7 +385,8 @@ describe('certificates', () => {
       DistributionConfig: {
         Aliases: ['example.com', 'www.example.com'],
         ViewerCertificate: {
-          AcmCertificateArn: 'arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012',
+          AcmCertificateArn:
+            'arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012',
           SslSupportMethod: 'sni-only',
           MinimumProtocolVersion: 'TLSv1.2_2019',
         },
@@ -316,7 +395,11 @@ describe('certificates', () => {
   });
 
   test('adding a certificate with non default security policy protocol', () => {
-    const certificate = acm.Certificate.fromCertificateArn(stack, 'Cert', 'arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012');
+    const certificate = acm.Certificate.fromCertificateArn(
+      stack,
+      'Cert',
+      'arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012',
+    );
     new Distribution(stack, 'Dist', {
       defaultBehavior: { origin: defaultOrigin() },
       domainNames: ['www.example.com'],
@@ -327,18 +410,17 @@ describe('certificates', () => {
     expect(stack).toHaveResourceLike('AWS::CloudFront::Distribution', {
       DistributionConfig: {
         ViewerCertificate: {
-          AcmCertificateArn: 'arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012',
+          AcmCertificateArn:
+            'arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012',
           SslSupportMethod: 'sni-only',
           MinimumProtocolVersion: 'TLSv1_2016',
         },
       },
     });
   });
-
 });
 
 describe('custom error responses', () => {
-
   test('should fail if only the error code is provided', () => {
     const origin = defaultOrigin();
 
@@ -347,29 +429,33 @@ describe('custom error responses', () => {
         defaultBehavior: { origin },
         errorResponses: [{ httpStatus: 404 }],
       });
-    }).toThrow(/A custom error response without either a \'responseHttpStatus\', \'ttl\' or \'responsePagePath\' is not valid./);
+    }).toThrow(
+      /A custom error response without either a \'responseHttpStatus\', \'ttl\' or \'responsePagePath\' is not valid./,
+    );
   });
 
   test('should render the array of error configs if provided', () => {
     const origin = defaultOrigin();
     new Distribution(stack, 'Dist', {
       defaultBehavior: { origin },
-      errorResponses: [{
-        // responseHttpStatus defaults to httpsStatus
-        httpStatus: 404,
-        responsePagePath: '/errors/404.html',
-      },
-      {
-        // without responsePagePath
-        httpStatus: 500,
-        ttl: Duration.seconds(2),
-      },
-      {
-        // with responseHttpStatus different from httpStatus
-        httpStatus: 403,
-        responseHttpStatus: 200,
-        responsePagePath: '/index.html',
-      }],
+      errorResponses: [
+        {
+          // responseHttpStatus defaults to httpsStatus
+          httpStatus: 404,
+          responsePagePath: '/errors/404.html',
+        },
+        {
+          // without responsePagePath
+          httpStatus: 500,
+          ttl: Duration.seconds(2),
+        },
+        {
+          // with responseHttpStatus different from httpStatus
+          httpStatus: 403,
+          responseHttpStatus: 200,
+          responsePagePath: '/index.html',
+        },
+      ],
     });
 
     expect(stack).toHaveResourceLike('AWS::CloudFront::Distribution', {
@@ -393,7 +479,6 @@ describe('custom error responses', () => {
       },
     });
   });
-
 });
 
 describe('logging', () => {
@@ -430,7 +515,9 @@ describe('logging', () => {
     expect(stack).toHaveResourceLike('AWS::CloudFront::Distribution', {
       DistributionConfig: {
         Logging: {
-          Bucket: { 'Fn::GetAtt': ['MyDistLoggingBucket9B8976BC', 'RegionalDomainName'] },
+          Bucket: {
+            'Fn::GetAtt': ['MyDistLoggingBucket9B8976BC', 'RegionalDomainName'],
+          },
         },
       },
     });
@@ -447,7 +534,9 @@ describe('logging', () => {
     expect(stack).toHaveResourceLike('AWS::CloudFront::Distribution', {
       DistributionConfig: {
         Logging: {
-          Bucket: { 'Fn::GetAtt': ['MyLoggingBucket4382CD04', 'RegionalDomainName'] },
+          Bucket: {
+            'Fn::GetAtt': ['MyLoggingBucket4382CD04', 'RegionalDomainName'],
+          },
         },
       },
     });
@@ -465,7 +554,9 @@ describe('logging', () => {
     expect(stack).toHaveResourceLike('AWS::CloudFront::Distribution', {
       DistributionConfig: {
         Logging: {
-          Bucket: { 'Fn::GetAtt': ['MyDistLoggingBucket9B8976BC', 'RegionalDomainName'] },
+          Bucket: {
+            'Fn::GetAtt': ['MyDistLoggingBucket9B8976BC', 'RegionalDomainName'],
+          },
           IncludeCookies: true,
           Prefix: 'logs/',
         },
@@ -510,7 +601,8 @@ describe('with Lambda@Edge functions', () => {
               EventType: 'origin-request',
               IncludeBody: true,
               LambdaFunctionARN: {
-                Ref: 'FunctionCurrentVersion4E2B2261477a5ae8059bbaa7813f752292c0f65e',
+                Ref:
+                  'FunctionCurrentVersion4E2B2261477a5ae8059bbaa7813f752292c0f65e',
               },
             },
           ],
@@ -580,7 +672,8 @@ describe('with Lambda@Edge functions', () => {
               {
                 EventType: 'viewer-request',
                 LambdaFunctionARN: {
-                  Ref: 'FunctionCurrentVersion4E2B2261477a5ae8059bbaa7813f752292c0f65e',
+                  Ref:
+                    'FunctionCurrentVersion4E2B2261477a5ae8059bbaa7813f752292c0f65e',
                 },
               },
             ],
@@ -686,7 +779,8 @@ describe('with Lambda@Edge functions', () => {
             {
               EventType: 'origin-request',
               LambdaFunctionARN: {
-                Ref: 'SingletonLambdasingletonforcloudfrontCurrentVersion0078406348a0962a52448a200cd0dbc0e22edb2a',
+                Ref:
+                  'SingletonLambdasingletonforcloudfrontCurrentVersion0078406348a0962a52448a200cd0dbc0e22edb2a',
               },
             },
           ],
@@ -715,7 +809,10 @@ test('escape hatches are supported', () => {
     defaultBehavior: { origin: defaultOrigin },
   });
   const cfnDist = dist.node.defaultChild as CfnDistribution;
-  cfnDist.addPropertyOverride('DistributionConfig.DefaultCacheBehavior.ForwardedValues.Headers', ['*']);
+  cfnDist.addPropertyOverride(
+    'DistributionConfig.DefaultCacheBehavior.ForwardedValues.Headers',
+    ['*'],
+  );
 
   expect(stack).toHaveResourceLike('AWS::CloudFront::Distribution', {
     DistributionConfig: {
@@ -730,34 +827,54 @@ test('escape hatches are supported', () => {
 
 describe('origin IDs', () => {
   test('origin ID is limited to 128 characters', () => {
-    const nestedStack = new Stack(stack, 'LongNameThatWillEndUpGeneratingAUniqueNodeIdThatIsLongerThanTheOneHundredAndTwentyEightCharacterLimit');
+    const nestedStack = new Stack(
+      stack,
+      'LongNameThatWillEndUpGeneratingAUniqueNodeIdThatIsLongerThanTheOneHundredAndTwentyEightCharacterLimit',
+    );
 
-    new Distribution(nestedStack, 'AReallyAwesomeDistributionWithAMemorableNameThatIWillNeverForget', {
-      defaultBehavior: { origin: defaultOrigin() },
-    });
+    new Distribution(
+      nestedStack,
+      'AReallyAwesomeDistributionWithAMemorableNameThatIWillNeverForget',
+      {
+        defaultBehavior: { origin: defaultOrigin() },
+      },
+    );
 
     expect(nestedStack).toHaveResourceLike('AWS::CloudFront::Distribution', {
       DistributionConfig: {
-        Origins: [objectLike({
-          Id: 'ngerThanTheOneHundredAndTwentyEightCharacterLimitAReallyAwesomeDistributionWithAMemorableNameThatIWillNeverForgetOrigin1D38031F9',
-        })],
+        Origins: [
+          objectLike({
+            Id:
+              'ngerThanTheOneHundredAndTwentyEightCharacterLimitAReallyAwesomeDistributionWithAMemorableNameThatIWillNeverForgetOrigin1D38031F9',
+          }),
+        ],
       },
     });
   });
 
   test('origin group ID is limited to 128 characters', () => {
-    const nestedStack = new Stack(stack, 'LongNameThatWillEndUpGeneratingAUniqueNodeIdThatIsLongerThanTheOneHundredAndTwentyEightCharacterLimit');
+    const nestedStack = new Stack(
+      stack,
+      'LongNameThatWillEndUpGeneratingAUniqueNodeIdThatIsLongerThanTheOneHundredAndTwentyEightCharacterLimit',
+    );
 
-    new Distribution(nestedStack, 'AReallyAwesomeDistributionWithAMemorableNameThatIWillNeverForget', {
-      defaultBehavior: { origin: defaultOriginGroup() },
-    });
+    new Distribution(
+      nestedStack,
+      'AReallyAwesomeDistributionWithAMemorableNameThatIWillNeverForget',
+      {
+        defaultBehavior: { origin: defaultOriginGroup() },
+      },
+    );
 
     expect(nestedStack).toHaveResourceLike('AWS::CloudFront::Distribution', {
       DistributionConfig: {
         OriginGroups: {
-          Items: [objectLike({
-            Id: 'hanTheOneHundredAndTwentyEightCharacterLimitAReallyAwesomeDistributionWithAMemorableNameThatIWillNeverForgetOriginGroup1B5CE3FE6',
-          })],
+          Items: [
+            objectLike({
+              Id:
+                'hanTheOneHundredAndTwentyEightCharacterLimitAReallyAwesomeDistributionWithAMemorableNameThatIWillNeverForgetOriginGroup1B5CE3FE6',
+            }),
+          ],
         },
       },
     });
