@@ -100,7 +100,9 @@ which defines an Amazon S3 bucket. Then it defines a second stack, `stack2`,
 which takes the bucket from stack1 as a constructor property.
 
 ```ts
-const prod = { account: '123456789012', region: 'us-east-1' };
+import { Region } from '@aws-cdk/core'
+
+const prod = { account: '123456789012', region: Region.US_EAST_1 };
 
 const stack1 = new StackThatProvidesABucket(app, 'Stack1' , { env: prod });
 
