@@ -1,4 +1,4 @@
-import '@aws-cdk/assert/jest';
+import '@aws-cdk/assert-internal/jest';
 import * as cdk from '@aws-cdk/core';
 import * as apigw from '../lib';
 
