@@ -3,7 +3,8 @@ import { Credentials, Route53, STS } from 'aws-sdk';
 
 interface ResourceProperties {
   AssumeRoleArn: string,
-  ParentZoneId: string,
+  ParentZoneName?: string,
+  ParentZoneId?: string,
   DelegatedZoneName: string,
   DelegatedZoneNameServers: string[],
   TTL: number,
@@ -22,13 +23,15 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
 }
 
 async function cfnEventHandler(props: ResourceProperties, isDeleteEvent: boolean) {
-  const { AssumeRoleArn, ParentZoneId, DelegatedZoneName, DelegatedZoneNameServers, TTL } = props;
+  const { AssumeRoleArn, ParentZoneId, ParentZoneName, DelegatedZoneName, DelegatedZoneNameServers, TTL } = props;
 
   const credentials = await getCrossAccountCredentials(AssumeRoleArn);
   const route53 = new Route53({ credentials });
 
+  const parentZoneId = ParentZoneId ?? await getHostedZoneIdByName(ParentZoneName!, route53);
+
   await route53.changeResourceRecordSets({
-    HostedZoneId: ParentZoneId,
+    HostedZoneId: parentZoneId,
     ChangeBatch: {
       Changes: [{
         Action: isDeleteEvent ? 'DELETE' : 'UPSERT',
@@ -63,4 +66,15 @@ async function getCrossAccountCredentials(roleArn: string): Promise<Credentials>
     secretAccessKey: assumedCredentials.SecretAccessKey,
     sessionToken: assumedCredentials.SessionToken,
   });
+}
+
+async function getHostedZoneIdByName(name: string, route53: Route53): Promise<string> {
+  const zones = await route53.listHostedZonesByName({ DNSName: name }).promise();
+  const matchedZones = zones.HostedZones.filter(zone => zone.Name === `${name}.`);
+
+  if (matchedZones.length !== 1) {
+    throw Error(`Expected one hosted zone to match the given name but found ${matchedZones.length}`);
+  }
+
+  return matchedZones[0].Id;
 }
