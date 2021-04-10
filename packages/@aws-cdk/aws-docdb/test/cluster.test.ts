@@ -1,4 +1,4 @@
-import { expect as expectCDK, haveResource, ResourcePart } from '@aws-cdk/assert';
+import { expect as expectCDK, haveResource, ResourcePart } from '@aws-cdk/assert-internal';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as kms from '@aws-cdk/aws-kms';
 import * as cdk from '@aws-cdk/core';
@@ -18,10 +18,8 @@ describe('DatabaseCluster', () => {
         username: 'admin',
         password: cdk.SecretValue.plainText('tooshort'),
       },
-      instanceProps: {
-        instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
-        vpc,
-      },
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+      vpc,
     });
 
     // THEN
@@ -30,7 +28,7 @@ describe('DatabaseCluster', () => {
         DBSubnetGroupName: { Ref: 'DatabaseSubnets56F17B9A' },
         MasterUsername: 'admin',
         MasterUserPassword: 'tooshort',
-        VpcSecurityGroupIds: [ {'Fn::GetAtt': ['DatabaseSecurityGroup5C91FDCB', 'GroupId']}],
+        VpcSecurityGroupIds: [{ 'Fn::GetAtt': ['DatabaseSecurityGroup5C91FDCB', 'GroupId'] }],
         StorageEncrypted: true,
       },
       DeletionPolicy: 'Retain',
@@ -63,10 +61,8 @@ describe('DatabaseCluster', () => {
         username: 'admin',
         password: cdk.SecretValue.plainText('tooshort'),
       },
-      instanceProps: {
-        instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
-        vpc,
-      },
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+      vpc,
     });
 
     // THEN
@@ -74,7 +70,7 @@ describe('DatabaseCluster', () => {
       DBSubnetGroupName: { Ref: 'DatabaseSubnets56F17B9A' },
       MasterUsername: 'admin',
       MasterUserPassword: 'tooshort',
-      VpcSecurityGroupIds: [ {'Fn::GetAtt': ['DatabaseSecurityGroup5C91FDCB', 'GroupId']}],
+      VpcSecurityGroupIds: [{ 'Fn::GetAtt': ['DatabaseSecurityGroup5C91FDCB', 'GroupId'] }],
     }));
   });
 
@@ -90,10 +86,8 @@ describe('DatabaseCluster', () => {
         masterUser: {
           username: 'admin',
         },
-        instanceProps: {
-          vpc,
-          instanceType: ec2.InstanceType.of(ec2.InstanceClass.R5, ec2.InstanceSize.LARGE),
-        },
+        vpc,
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.R5, ec2.InstanceSize.LARGE),
       });
     }).toThrowError('At least one instance is required');
   });
@@ -112,12 +106,10 @@ describe('DatabaseCluster', () => {
         masterUser: {
           username: 'admin',
         },
-        instanceProps: {
-          vpc,
-          instanceType: ec2.InstanceType.of(ec2.InstanceClass.R5, ec2.InstanceSize.LARGE),
-          vpcSubnets: {
-            subnetType: ec2.SubnetType.PRIVATE,
-          },
+        vpc,
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.R5, ec2.InstanceSize.LARGE),
+        vpcSubnets: {
+          subnetType: ec2.SubnetType.PRIVATE,
         },
       });
     }).toThrowError('Cluster requires at least 2 subnets, got 1');
@@ -134,10 +126,8 @@ describe('DatabaseCluster', () => {
       masterUser: {
         username: 'admin',
       },
-      instanceProps: {
-        instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
-        vpc,
-      },
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+      vpc,
     });
 
     // THEN
@@ -163,11 +153,9 @@ describe('DatabaseCluster', () => {
         username: 'admin',
         password: cdk.SecretValue.plainText('tooshort'),
       },
-      instanceProps: {
-        instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
-        vpc,
-        securityGroup: sg,
-      },
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+      vpc,
+      securityGroup: sg,
     });
 
     // THEN
@@ -175,7 +163,7 @@ describe('DatabaseCluster', () => {
       DBSubnetGroupName: { Ref: 'DatabaseSubnets56F17B9A' },
       MasterUsername: 'admin',
       MasterUserPassword: 'tooshort',
-      VpcSecurityGroupIds: [ 'SecurityGroupId12345' ],
+      VpcSecurityGroupIds: ['SecurityGroupId12345'],
     }));
   });
 
@@ -197,10 +185,8 @@ describe('DatabaseCluster', () => {
         username: 'admin',
         password: cdk.SecretValue.plainText('tooshort'),
       },
-      instanceProps: {
-        instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
-        vpc,
-      },
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+      vpc,
       parameterGroup: group,
     });
 
@@ -223,10 +209,8 @@ describe('DatabaseCluster', () => {
         username: 'admin',
         password: cdk.SecretValue.plainText('tooshort'),
       },
-      instanceProps: {
-        instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
-        vpc,
-      },
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+      vpc,
       parameterGroup: group,
     });
 
@@ -246,10 +230,8 @@ describe('DatabaseCluster', () => {
       masterUser: {
         username: 'admin',
       },
-      instanceProps: {
-        instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
-        vpc,
-      },
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+      vpc,
     });
 
     // THEN
@@ -300,10 +282,8 @@ describe('DatabaseCluster', () => {
       masterUser: {
         username: 'admin',
       },
-      instanceProps: {
-        instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
-        vpc,
-      },
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+      vpc,
       kmsKey: new kms.Key(stack, 'Key'),
     });
 
@@ -329,10 +309,8 @@ describe('DatabaseCluster', () => {
       masterUser: {
         username: 'admin',
       },
-      instanceProps: {
-        instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
-        vpc,
-      },
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+      vpc,
     });
 
     // THEN
@@ -352,10 +330,8 @@ describe('DatabaseCluster', () => {
         masterUser: {
           username: 'admin',
         },
-        instanceProps: {
-          instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
-          vpc,
-        },
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+        vpc,
         kmsKey: new kms.Key(stack, 'Key'),
         storageEncrypted: false,
       });
@@ -375,10 +351,8 @@ describe('DatabaseCluster', () => {
       masterUser: {
         username: 'admin',
       },
-      instanceProps: {
-        instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
-        vpc,
-      },
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+      vpc,
     });
 
     // THEN
@@ -396,10 +370,8 @@ describe('DatabaseCluster', () => {
       masterUser: {
         username: 'admin',
       },
-      instanceProps: {
-        vpc,
-        instanceType: ec2.InstanceType.of(ec2.InstanceClass.R5, ec2.InstanceSize.SMALL),
-      },
+      vpc,
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.R5, ec2.InstanceSize.SMALL),
       instanceIdentifierBase,
     });
 
@@ -420,10 +392,8 @@ describe('DatabaseCluster', () => {
       masterUser: {
         username: 'admin',
       },
-      instanceProps: {
-        vpc,
-        instanceType: ec2.InstanceType.of(ec2.InstanceClass.R5, ec2.InstanceSize.SMALL),
-      },
+      vpc,
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.R5, ec2.InstanceSize.SMALL),
       dbClusterName: clusterIdentifier,
     });
 
@@ -494,10 +464,8 @@ describe('DatabaseCluster', () => {
       masterUser: {
         username: 'admin',
       },
-      instanceProps: {
-        vpc,
-        instanceType: ec2.InstanceType.of(ec2.InstanceClass.R5, ec2.InstanceSize.SMALL),
-      },
+      vpc,
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.R5, ec2.InstanceSize.SMALL),
       backup: {
         retention: cdk.Duration.days(20),
       },
@@ -519,10 +487,8 @@ describe('DatabaseCluster', () => {
       masterUser: {
         username: 'admin',
       },
-      instanceProps: {
-        vpc,
-        instanceType: ec2.InstanceType.of(ec2.InstanceClass.R5, ec2.InstanceSize.SMALL),
-      },
+      vpc,
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.R5, ec2.InstanceSize.SMALL),
       backup: {
         retention: cdk.Duration.days(20),
         preferredWindow: '07:34-08:04',
@@ -546,10 +512,8 @@ describe('DatabaseCluster', () => {
       masterUser: {
         username: 'admin',
       },
-      instanceProps: {
-        vpc,
-        instanceType: ec2.InstanceType.of(ec2.InstanceClass.R5, ec2.InstanceSize.SMALL),
-      },
+      vpc,
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.R5, ec2.InstanceSize.SMALL),
       preferredMaintenanceWindow: '07:34-08:04',
     });
 
@@ -567,10 +531,8 @@ describe('DatabaseCluster', () => {
       masterUser: {
         username: 'admin',
       },
-      instanceProps: {
-        vpc,
-        instanceType: ec2.InstanceType.of(ec2.InstanceClass.R5, ec2.InstanceSize.SMALL),
-      },
+      vpc,
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.R5, ec2.InstanceSize.SMALL),
     });
 
     // WHEN
@@ -580,7 +542,7 @@ describe('DatabaseCluster', () => {
     expectCDK(stack).to(haveResource('AWS::Serverless::Application', {
       Location: {
         ApplicationId: 'arn:aws:serverlessrepo:us-east-1:297356227824:applications/SecretsManagerMongoDBRotationSingleUser',
-        SemanticVersion: '1.1.3',
+        SemanticVersion: '1.1.60',
       },
       Parameters: {
         endpoint: {
@@ -606,14 +568,14 @@ describe('DatabaseCluster', () => {
           ],
         },
         vpcSecurityGroupIds: {
-          'Fn::GetAtt': [ 'DatabaseRotationSingleUserSecurityGroupAC6E0E73', 'GroupId' ],
+          'Fn::GetAtt': ['DatabaseRotationSingleUserSecurityGroupAC6E0E73', 'GroupId'],
         },
       },
     }));
     expectCDK(stack).to(haveResource('AWS::SecretsManager::RotationSchedule', {
       SecretId: { Ref: 'DatabaseSecretAttachmentE5D1B020' },
       RotationLambdaARN: {
-        'Fn::GetAtt': [ 'DatabaseRotationSingleUser65F55654', 'Outputs.RotationLambdaARN' ],
+        'Fn::GetAtt': ['DatabaseRotationSingleUser65F55654', 'Outputs.RotationLambdaARN'],
       },
       RotationRules: {
         AutomaticallyAfterDays: 5,
@@ -630,10 +592,8 @@ describe('DatabaseCluster', () => {
         username: 'admin',
         password: cdk.SecretValue.plainText('secret'),
       },
-      instanceProps: {
-        vpc,
-        instanceType: ec2.InstanceType.of(ec2.InstanceClass.R5, ec2.InstanceSize.SMALL),
-      },
+      vpc,
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.R5, ec2.InstanceSize.SMALL),
     });
 
     // WHEN
@@ -653,10 +613,8 @@ describe('DatabaseCluster', () => {
       masterUser: {
         username: 'admin',
       },
-      instanceProps: {
-        vpc,
-        instanceType: ec2.InstanceType.of(ec2.InstanceClass.R5, ec2.InstanceSize.SMALL),
-      },
+      vpc,
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.R5, ec2.InstanceSize.SMALL),
     });
 
     // WHEN
@@ -677,10 +635,8 @@ describe('DatabaseCluster', () => {
       masterUser: {
         username: 'admin',
       },
-      instanceProps: {
-        vpc,
-        instanceType: ec2.InstanceType.of(ec2.InstanceClass.R5, ec2.InstanceSize.SMALL),
-      },
+      vpc,
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.R5, ec2.InstanceSize.SMALL),
     });
     const userSecret = new DatabaseSecret(stack, 'UserSecret', {
       username: 'seconduser',
@@ -698,7 +654,7 @@ describe('DatabaseCluster', () => {
     expectCDK(stack).to(haveResource('AWS::Serverless::Application', {
       Location: {
         ApplicationId: 'arn:aws:serverlessrepo:us-east-1:297356227824:applications/SecretsManagerMongoDBRotationMultiUser',
-        SemanticVersion: '1.1.3',
+        SemanticVersion: '1.1.60',
       },
       Parameters: {
         endpoint: {
@@ -724,7 +680,7 @@ describe('DatabaseCluster', () => {
           ],
         },
         vpcSecurityGroupIds: {
-          'Fn::GetAtt': [ 'DatabaseRotationSecurityGroup17736B63', 'GroupId' ],
+          'Fn::GetAtt': ['DatabaseRotationSecurityGroup17736B63', 'GroupId'],
         },
         masterSecretArn: { Ref: 'DatabaseSecretAttachmentE5D1B020' },
       },
@@ -732,7 +688,7 @@ describe('DatabaseCluster', () => {
     expectCDK(stack).to(haveResource('AWS::SecretsManager::RotationSchedule', {
       SecretId: { Ref: 'UserSecret0463E4F5' },
       RotationLambdaARN: {
-        'Fn::GetAtt': [ 'DatabaseRotation6B6E1D86', 'Outputs.RotationLambdaARN' ],
+        'Fn::GetAtt': ['DatabaseRotation6B6E1D86', 'Outputs.RotationLambdaARN'],
       },
       RotationRules: {
         AutomaticallyAfterDays: 5,
@@ -749,10 +705,8 @@ describe('DatabaseCluster', () => {
         username: 'admin',
         password: cdk.SecretValue.plainText('secret'),
       },
-      instanceProps: {
-        vpc,
-        instanceType: ec2.InstanceType.of(ec2.InstanceClass.R5, ec2.InstanceSize.SMALL),
-      },
+      vpc,
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.R5, ec2.InstanceSize.SMALL),
     });
     const userSecret = new DatabaseSecret(stack, 'UserSecret', {
       username: 'seconduser',
@@ -774,7 +728,7 @@ describe('DatabaseCluster', () => {
 });
 
 function testStack() {
-  const stack = new cdk.Stack(undefined, undefined, { env: { account: '12345', region: 'us-test-1' }});
+  const stack = new cdk.Stack(undefined, undefined, { env: { account: '12345', region: 'us-test-1' } });
   stack.node.setContext('availability-zones:12345:us-test-1', ['us-test-1a', 'us-test-1b']);
   return stack;
 }

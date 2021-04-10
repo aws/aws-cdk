@@ -1,6 +1,7 @@
 import * as path from 'path';
-import '@aws-cdk/assert/jest';
+import '@aws-cdk/assert-internal/jest';
 import * as core from '@aws-cdk/core';
+import * as constructs from 'constructs';
 import * as inc from '../lib';
 import * as futils from '../lib/file-utils';
 
@@ -20,6 +21,33 @@ describe('CDK Include', () => {
     expect(stack).toMatchTemplate(
       loadTestFileToJsObject('long-form-vpc.yaml'),
     );
+  });
+
+  test('can ingest a template with year-month-date parsed as string instead of Date', () => {
+    includeTestTemplate(stack, 'year-month-date-as-strings.yaml');
+
+    expect(stack).toMatchTemplate({
+      "AWSTemplateFormatVersion": "2010-09-09",
+      "Resources": {
+        "Role": {
+          "Type": "AWS::IAM::Role",
+          "Properties": {
+            "AssumeRolePolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Effect": "Allow",
+                  "Principal": {
+                    "Service": ["ec2.amazonaws.com"],
+                  },
+                  "Action": ["sts:AssumeRole"],
+                },
+              ],
+            },
+          },
+        },
+      },
+    });
   });
 
   test('can ingest a template with the short form Base64 function', () => {
@@ -140,7 +168,7 @@ describe('CDK Include', () => {
         "Bucket1": {
           "Type": "AWS::S3::Bucket",
           "Properties": {
-            "BucketName": { "Fn::GetAtt": ["Bucket0", "Arn"] },
+            "BucketName": { "Fn::GetAtt": "Bucket0.Arn" },
             "AccessControl": { "Fn::GetAtt": ["ELB", "SourceSecurityGroup.GroupName"] },
           },
         },
@@ -148,7 +176,7 @@ describe('CDK Include', () => {
           "Type": "AWS::S3::Bucket",
           "Properties": {
             "BucketName": { "Fn::GetAtt": ["Bucket1", "Arn"] },
-            "AccessControl": { "Fn::GetAtt": ["ELB", "SourceSecurityGroup.GroupName"] },
+            "AccessControl": { "Fn::GetAtt": "ELB.SourceSecurityGroup.GroupName" },
           },
         },
       },
@@ -254,8 +282,8 @@ describe('CDK Include', () => {
     });
   });
 
-  // Note that this yaml template fails validation. It is unclear how to invoke !Transform.
   test('can ingest a template with the short form !Transform function', () => {
+    // Note that this yaml template fails validation. It is unclear how to invoke !Transform.
     includeTestTemplate(stack, 'invalid/short-form-transform.yaml');
 
     expect(stack).toMatchTemplate({
@@ -316,6 +344,51 @@ describe('CDK Include', () => {
     });
   });
 
+  test('can ingest a template with the short form Conditions', () => {
+    includeTestTemplate(stack, 'short-form-conditions.yaml');
+
+    expect(stack).toMatchTemplate({
+      "Conditions": {
+        "AlwaysTrueCond": {
+          "Fn::Not": [
+            { "Fn::Equals": [{ "Ref": "AWS::Region" }, "completely-made-up-region1"] },
+          ],
+        },
+        "AnotherAlwaysTrueCond": {
+          "Fn::Not": [
+            { "Fn::Equals": [{ "Ref": "AWS::Region" }, "completely-made-up-region2"] },
+          ],
+        },
+        "ThirdAlwaysTrueCond": {
+          "Fn::Not": [
+            { "Fn::Equals": [{ "Ref": "AWS::Region" }, "completely-made-up-region3"] },
+          ],
+        },
+        "CombinedCond": {
+          "Fn::Or": [
+            { "Condition": "AlwaysTrueCond" },
+            { "Condition": "AnotherAlwaysTrueCond" },
+            { "Condition": "ThirdAlwaysTrueCond" },
+          ],
+        },
+      },
+      "Resources": {
+        "Bucket": {
+          "Type": "AWS::S3::Bucket",
+          "Properties": {
+            "BucketName": {
+              "Fn::If": [
+                "CombinedCond",
+                "MyBucketName",
+                { "Ref": "AWS::NoValue" },
+              ],
+            },
+          },
+        },
+      },
+    });
+  });
+
   test('can ingest a yaml with long-form functions and output it unchanged', () => {
     includeTestTemplate(stack, 'long-form-subnet.yaml');
 
@@ -347,7 +420,7 @@ describe('CDK Include', () => {
   });
 });
 
-function includeTestTemplate(scope: core.Construct, testTemplate: string): inc.CfnInclude {
+function includeTestTemplate(scope: constructs.Construct, testTemplate: string): inc.CfnInclude {
   return new inc.CfnInclude(scope, 'MyScope', {
     templateFile: _testTemplateFilePath(testTemplate),
   });

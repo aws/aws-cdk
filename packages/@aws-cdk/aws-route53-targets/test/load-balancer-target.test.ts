@@ -1,4 +1,4 @@
-import '@aws-cdk/assert/jest';
+import '@aws-cdk/assert-internal/jest';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
 import * as route53 from '@aws-cdk/aws-route53';
@@ -28,8 +28,8 @@ test('use ALB as record target', () => {
   // THEN
   expect(stack).toHaveResource('AWS::Route53::RecordSet', {
     AliasTarget: {
-      DNSName: { 'Fn::Join': [ '', [ 'dualstack.', { 'Fn::GetAtt': [ 'LB8A12904C', 'DNSName' ] } ] ] },
-      HostedZoneId: { 'Fn::GetAtt': [ 'LB8A12904C', 'CanonicalHostedZoneID' ] },
+      DNSName: { 'Fn::Join': ['', ['dualstack.', { 'Fn::GetAtt': ['LB8A12904C', 'DNSName'] }]] },
+      HostedZoneId: { 'Fn::GetAtt': ['LB8A12904C', 'CanonicalHostedZoneID'] },
     },
   });
 });

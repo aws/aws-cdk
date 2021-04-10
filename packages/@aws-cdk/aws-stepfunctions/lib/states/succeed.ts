@@ -1,4 +1,4 @@
-import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { INextable } from '../types';
 import { StateType } from './private/state-type';
 import { State } from './state';
@@ -44,7 +44,7 @@ export interface SucceedProps {
 export class Succeed extends State {
   public readonly endStates: INextable[] = [];
 
-  constructor(scope: cdk.Construct, id: string, props: SucceedProps = {}) {
+  constructor(scope: Construct, id: string, props: SucceedProps = {}) {
     super(scope, id, props);
   }
 

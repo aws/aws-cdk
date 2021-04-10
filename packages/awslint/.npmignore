@@ -9,3 +9,4 @@ dist
 tsconfig.json
 .eslintrc.js
 junit.xml
+test/

@@ -1,4 +1,4 @@
-import { expect, haveResource } from '@aws-cdk/assert';
+import { expect, haveResource } from '@aws-cdk/assert-internal';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
@@ -22,7 +22,7 @@ export = {
     // THEN
     expect(stack).to(haveResource('AWS::Logs::Destination', {
       DestinationName: 'MyDestination',
-      RoleArn: { 'Fn::GetAtt': [ 'Role1ABCC5F0', 'Arn' ] },
+      RoleArn: { 'Fn::GetAtt': ['Role1ABCC5F0', 'Arn'] },
       TargetArn: 'arn:bogus',
     }));
 

@@ -1,4 +1,4 @@
-import { expect, haveResource } from '@aws-cdk/assert';
+import { expect, haveResource } from '@aws-cdk/assert-internal';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
@@ -20,7 +20,7 @@ export = {
     // THEN
     expect(stack).to(haveResource('AWS::ApiGateway::Resource', {
       PathPart: 'foo',
-      ParentId: { 'Fn::GetAtt': [ 'MyFuncApiEventSourceA7A86A4FFB3F557C', 'RootResourceId' ] },
+      ParentId: { 'Fn::GetAtt': ['MyFuncApiEventSourceA7A86A4FFB3F557C', 'RootResourceId'] },
     }));
 
     expect(stack).to(haveResource('AWS::ApiGateway::Method', {
@@ -47,12 +47,12 @@ export = {
     // THEN
     expect(stack).to(haveResource('AWS::ApiGateway::Resource', {
       PathPart: 'foo',
-      ParentId: { 'Fn::GetAtt': [ 'MyFuncApiEventSourceA7A86A4FFB3F557C', 'RootResourceId' ] },
+      ParentId: { 'Fn::GetAtt': ['MyFuncApiEventSourceA7A86A4FFB3F557C', 'RootResourceId'] },
     }));
 
     expect(stack).to(haveResource('AWS::ApiGateway::Resource', {
       PathPart: 'bar',
-      ParentId: { 'Fn::GetAtt': [ 'MyFuncApiEventSourceA7A86A4FFB3F557C', 'RootResourceId' ] },
+      ParentId: { 'Fn::GetAtt': ['MyFuncApiEventSourceA7A86A4FFB3F557C', 'RootResourceId'] },
     }));
 
     expect(stack).to(haveResource('AWS::ApiGateway::Method', {
@@ -85,7 +85,7 @@ export = {
     // THEN
     expect(stack).to(haveResource('AWS::ApiGateway::Resource', {
       PathPart: 'foo',
-      ParentId: { 'Fn::GetAtt': [ 'MyFuncApiEventSourceA7A86A4FFB3F557C', 'RootResourceId' ] },
+      ParentId: { 'Fn::GetAtt': ['MyFuncApiEventSourceA7A86A4FFB3F557C', 'RootResourceId'] },
     }));
 
     expect(stack).to(haveResource('AWS::ApiGateway::Resource', {

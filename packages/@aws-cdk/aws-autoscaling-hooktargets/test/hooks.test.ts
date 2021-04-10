@@ -1,11 +1,14 @@
-import '@aws-cdk/assert/jest';
+import '@aws-cdk/assert-internal/jest';
+import { arrayWith } from '@aws-cdk/assert-internal';
 import * as autoscaling from '@aws-cdk/aws-autoscaling';
 import * as ec2 from '@aws-cdk/aws-ec2';
+import * as kms from '@aws-cdk/aws-kms';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as sns from '@aws-cdk/aws-sns';
 import * as sqs from '@aws-cdk/aws-sqs';
 import { Stack } from '@aws-cdk/core';
 import * as hooks from '../lib';
+
 
 describe('given an AutoScalingGroup', () => {
   let stack: Stack;
@@ -33,8 +36,7 @@ describe('given an AutoScalingGroup', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::AutoScaling::LifecycleHook', {
-      NotificationTargetARN: { 'Fn::GetAtt': [ 'Queue4A7E3555', 'Arn' ] } });
+    expect(stack).toHaveResource('AWS::AutoScaling::LifecycleHook', { NotificationTargetARN: { 'Fn::GetAtt': ['Queue4A7E3555', 'Arn'] } });
   });
 
   test('can use topic as hook target', () => {
@@ -74,7 +76,53 @@ describe('given an AutoScalingGroup', () => {
     expect(stack).toHaveResource('AWS::SNS::Subscription', {
       Protocol: 'lambda',
       TopicArn: { Ref: 'ASGLifecycleHookTransTopic9B0D4842' },
-      Endpoint: { 'Fn::GetAtt': [ 'Fn9270CBC0', 'Arn' ] },
+      Endpoint: { 'Fn::GetAtt': ['Fn9270CBC0', 'Arn'] },
     });
   });
+
+  test('can use Lambda function as hook target with encrypted SNS', () => {
+    // GIVEN
+    const key = new kms.Key(stack, 'key');
+    const fn = new lambda.Function(stack, 'Fn', {
+      code: lambda.Code.fromInline('foo'),
+      runtime: lambda.Runtime.NODEJS_10_X,
+      handler: 'index.index',
+    });
+
+    // WHEN
+    asg.addLifecycleHook('Trans', {
+      lifecycleTransition: autoscaling.LifecycleTransition.INSTANCE_LAUNCHING,
+      notificationTarget: new hooks.FunctionHook(fn, key),
+    });
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::SNS::Topic', {
+      KmsMasterKeyId: {
+        'Fn::GetAtt': [
+          'keyFEDD6EC0',
+          'Arn',
+        ],
+      },
+    });
+    expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: arrayWith(
+          {
+            Effect: 'Allow',
+            Action: [
+              'kms:Decrypt',
+              'kms:GenerateDataKey',
+            ],
+            Resource: {
+              'Fn::GetAtt': [
+                'keyFEDD6EC0',
+                'Arn',
+              ],
+            },
+          },
+        ),
+      },
+    });
+  });
+
 });

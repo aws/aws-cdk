@@ -1,4 +1,4 @@
-import { expect, haveResource } from '@aws-cdk/assert';
+import { expect, haveResource } from '@aws-cdk/assert-internal';
 import { Duration } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import * as eks from '../lib';
@@ -79,7 +79,7 @@ export = {
       const { stack, cluster } = testFixtureCluster();
 
       // WHEN
-      new eks.HelmChart(stack, 'MyChart', { cluster, chart: 'chart', createNamespace: false  });
+      new eks.HelmChart(stack, 'MyChart', { cluster, chart: 'chart', createNamespace: false });
 
       // THEN
       expect(stack).notTo(haveResource(eks.HelmChart.RESOURCE_TYPE, { CreateNamespace: true }));

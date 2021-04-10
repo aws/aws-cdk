@@ -27,6 +27,11 @@ export class CloudFormationStackArtifact extends CloudArtifact {
   public readonly parameters: { [id: string]: string };
 
   /**
+   * CloudFormation tags to pass to the stack.
+   */
+  public readonly tags: { [id: string]: string };
+
+  /**
    * The physical name of this stack.
    */
   public readonly stackName: string;
@@ -78,6 +83,13 @@ export class CloudFormationStackArtifact extends CloudArtifact {
   public readonly requiresBootstrapStackVersion?: number;
 
   /**
+   * Name of SSM parameter with bootstrap stack version
+   *
+   * @default - Discover SSM parameter by reading stack
+   */
+  public readonly bootstrapStackVersionSsmParameter?: string;
+
+  /**
    * Whether termination protection is enabled for this stack.
    */
   public readonly terminationProtection?: boolean;
@@ -96,11 +108,16 @@ export class CloudFormationStackArtifact extends CloudArtifact {
     }
     this.environment = EnvironmentUtils.parse(artifact.environment);
     this.templateFile = properties.templateFile;
-    this.parameters = properties.parameters || { };
+    this.parameters = properties.parameters ?? {};
+
+    // We get the tags from 'properties' if available (cloud assembly format >= 6.0.0), otherwise
+    // from the stack metadata
+    this.tags = properties.tags ?? this.tagsFromMetadata();
     this.assumeRoleArn = properties.assumeRoleArn;
     this.cloudFormationExecutionRoleArn = properties.cloudFormationExecutionRoleArn;
     this.stackTemplateAssetObjectUrl = properties.stackTemplateAssetObjectUrl;
     this.requiresBootstrapStackVersion = properties.requiresBootstrapStackVersion;
+    this.bootstrapStackVersionSsmParameter = properties.bootstrapStackVersionSsmParameter;
     this.terminationProtection = properties.terminationProtection;
 
     this.stackName = properties.stackName || artifactId;
@@ -115,12 +132,29 @@ export class CloudFormationStackArtifact extends CloudArtifact {
   }
 
   /**
+   * Full path to the template file
+   */
+  public get templateFullPath() {
+    return path.join(this.assembly.directory, this.templateFile);
+  }
+
+  /**
    * The CloudFormation template for this stack.
    */
   public get template(): any {
     if (this._template === undefined) {
-      this._template = JSON.parse(fs.readFileSync(path.join(this.assembly.directory, this.templateFile), 'utf-8'));
+      this._template = JSON.parse(fs.readFileSync(this.templateFullPath, 'utf-8'));
     }
     return this._template;
+  }
+
+  private tagsFromMetadata() {
+    const ret: Record<string, string> = {};
+    for (const metadataEntry of this.findMetadataByType(cxschema.ArtifactMetadataEntryType.STACK_TAGS)) {
+      for (const tag of (metadataEntry.data ?? []) as cxschema.StackTagsMetadataEntry) {
+        ret[tag.key] = tag.value;
+      }
+    }
+    return ret;
   }
 }

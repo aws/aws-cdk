@@ -1,4 +1,4 @@
-import '@aws-cdk/assert/jest';
+import '@aws-cdk/assert-internal/jest';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as sns from '@aws-cdk/aws-sns';
 import * as cdk from '@aws-cdk/core';
@@ -56,7 +56,7 @@ test('asBucketNotificationDestination adds bucket permissions only once for each
                 Action: 'sns:Publish',
                 Condition: {
                   ArnLike: {
-                    'aws:SourceArn': { 'Fn::GetAtt': ['Bucket25524B414', 'Arn' ]},
+                    'aws:SourceArn': { 'Fn::GetAtt': ['Bucket25524B414', 'Arn'] },
                   },
                 },
                 Effect: 'Allow',

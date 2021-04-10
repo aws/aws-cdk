@@ -1,4 +1,4 @@
-import { expect, haveResourceLike } from '@aws-cdk/assert';
+import { expect, haveResourceLike } from '@aws-cdk/assert-internal';
 import { User } from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
@@ -156,7 +156,7 @@ export = {
         schedule: Schedule.rate(cdk.Duration.minutes(1)),
       });
 
-      const world = cdk.Lazy.stringValue({ produce: () => 'world' });
+      const world = cdk.Lazy.string({ produce: () => 'world' });
 
       // WHEN
       rule.addTarget(new SomeTarget(RuleTargetInput.fromText(`hello ${world}`)));

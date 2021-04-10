@@ -17,20 +17,20 @@
       "dotnet": {
         "namespace": "Amazon.CDK.RegionInfo",
         "packageId": "Amazon.CDK.RegionInfo",
-        "signAssembly": true,
-        "assemblyOriginatorKeyFile": "../../key.snk",
         "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
       },
       "python": {
         "distName": "aws-cdk.region-info",
-        "module": "aws_cdk.region_info"
+        "module": "aws_cdk.region_info",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
       }
-    }
+    },
+    "projectReferences": true
   },
   "cdk-build": {
-    "pre": [
-      "npm run gen"
-    ],
     "jest": true
   },
   "scripts": {
@@ -42,9 +42,10 @@
     "pkglint": "pkglint -f",
     "awslint": "cdk-awslint",
     "package": "cdk-package",
-    "build+test+package": "npm run build+test && npm run package",
-    "build+test": "npm run build && npm test",
-    "compat": "cdk-compat"
+    "build+test+package": "yarn build+test && yarn package",
+    "build+test": "yarn build && yarn test",
+    "compat": "cdk-compat",
+    "rosetta:extract": "yarn --silent jsii-rosetta extract"
   },
   "author": {
     "name": "Amazon Web Services",
@@ -53,9 +54,9 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@types/fs-extra": "^8.1.0",
+    "@types/fs-extra": "^8.1.1",
     "cdk-build-tools": "0.0.0",
-    "fs-extra": "^9.0.1",
+    "fs-extra": "^9.1.0",
     "pkglint": "0.0.0"
   },
   "repository": {
@@ -71,8 +72,8 @@
   "engines": {
     "node": ">= 10.13.0 <13 || >=13.7.0"
   },
-  "stability": "experimental",
-  "maturity": "experimental",
+  "stability": "stable",
+  "maturity": "stable",
   "awslint": {
     "exclude": [
       "docs-public-apis:@aws-cdk/region-info.Fact.regions",
@@ -82,5 +83,8 @@
   },
   "awscdkio": {
     "announce": false
+  },
+  "publishConfig": {
+    "tag": "latest"
   }
 }

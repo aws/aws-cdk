@@ -1,0 +1,110 @@
+{
+  "Resources": {
+    "functionServiceRoleEF216095": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+              ]
+            ]
+          }
+        ]
+      }
+    },
+    "functionF19B1A04": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "AssetParameterse6fadc5eeabdb3ea6ecd571e8ec74e7943cd34cd4ec9d46d0506a200e6163a93S3BucketBA49B914"
+          },
+          "S3Key": {
+            "Fn::Join": [
+              "",
+              [
+                {
+                  "Fn::Select": [
+                    0,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        {
+                          "Ref": "AssetParameterse6fadc5eeabdb3ea6ecd571e8ec74e7943cd34cd4ec9d46d0506a200e6163a93S3VersionKey74688352"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "Fn::Select": [
+                    1,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        {
+                          "Ref": "AssetParameterse6fadc5eeabdb3ea6ecd571e8ec74e7943cd34cd4ec9d46d0506a200e6163a93S3VersionKey74688352"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            ]
+          }
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "functionServiceRoleEF216095",
+            "Arn"
+          ]
+        },
+        "Handler": "index.handler",
+        "Runtime": "python2.7"
+      },
+      "DependsOn": [
+        "functionServiceRoleEF216095"
+      ]
+    }
+  },
+  "Parameters": {
+    "AssetParameterse6fadc5eeabdb3ea6ecd571e8ec74e7943cd34cd4ec9d46d0506a200e6163a93S3BucketBA49B914": {
+      "Type": "String",
+      "Description": "S3 bucket for asset \"e6fadc5eeabdb3ea6ecd571e8ec74e7943cd34cd4ec9d46d0506a200e6163a93\""
+    },
+    "AssetParameterse6fadc5eeabdb3ea6ecd571e8ec74e7943cd34cd4ec9d46d0506a200e6163a93S3VersionKey74688352": {
+      "Type": "String",
+      "Description": "S3 key for asset version \"e6fadc5eeabdb3ea6ecd571e8ec74e7943cd34cd4ec9d46d0506a200e6163a93\""
+    },
+    "AssetParameterse6fadc5eeabdb3ea6ecd571e8ec74e7943cd34cd4ec9d46d0506a200e6163a93ArtifactHash6870D06D": {
+      "Type": "String",
+      "Description": "Artifact hash for asset \"e6fadc5eeabdb3ea6ecd571e8ec74e7943cd34cd4ec9d46d0506a200e6163a93\""
+    }
+  },
+  "Outputs": {
+    "Function": {
+      "Value": {
+        "Ref": "functionF19B1A04"
+      }
+    }
+  }
+}

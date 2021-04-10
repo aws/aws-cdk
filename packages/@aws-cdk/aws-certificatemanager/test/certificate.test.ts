@@ -1,4 +1,4 @@
-import '@aws-cdk/assert/jest';
+import '@aws-cdk/assert-internal/jest';
 import * as route53 from '@aws-cdk/aws-route53';
 import { Lazy, Stack } from '@aws-cdk/core';
 import { Certificate, CertificateValidation, ValidationMethod } from '../lib';
@@ -66,7 +66,7 @@ test('needs validation domain supplied if domain contains a token', () => {
   const stack = new Stack();
 
   expect(() => {
-    const domainName = Lazy.stringValue({ produce: () => 'example.com' });
+    const domainName = Lazy.string({ produce: () => 'example.com' });
     new Certificate(stack, 'Certificate', {
       domainName,
     });
@@ -76,7 +76,7 @@ test('needs validation domain supplied if domain contains a token', () => {
 test('validationdomains can be given for a Token', () => {
   const stack = new Stack();
 
-  const domainName = Lazy.stringValue({ produce: () => 'my.example.com' });
+  const domainName = Lazy.string({ produce: () => 'my.example.com' });
   new Certificate(stack, 'Certificate', {
     domainName,
     validationDomains: {

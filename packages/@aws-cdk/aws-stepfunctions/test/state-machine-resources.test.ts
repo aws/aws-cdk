@@ -1,5 +1,6 @@
-import { arrayWith, objectLike, ResourcePart } from '@aws-cdk/assert';
-import '@aws-cdk/assert/jest';
+import { arrayWith, objectLike, ResourcePart } from '@aws-cdk/assert-internal';
+import '@aws-cdk/assert-internal/jest';
+import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import * as stepfunctions from '../lib';
@@ -104,16 +105,19 @@ describe('State Machine Resources', () => {
     const taskState = task.toStateJson();
 
     // THEN
-    expect(taskState).toStrictEqual({ End: true,
+    expect(taskState).toStrictEqual({
+      End: true,
       Retry: undefined,
       Catch: undefined,
       InputPath: '$',
       Parameters:
-             { 'input.$': '$',
+             {
+               'input.$': '$',
                'stringArgument': 'inital-task',
                'numberArgument': 123,
                'booleanArgument': true,
-               'arrayArgument': [ 'a', 'b', 'c' ] },
+               'arrayArgument': ['a', 'b', 'c'],
+             },
       OutputPath: '$.state',
       Type: 'Task',
       Comment: undefined,
@@ -147,13 +151,16 @@ describe('State Machine Resources', () => {
     const taskState = task.toStateJson();
 
     // THEN
-    expect(taskState).toStrictEqual({ End: true,
+    expect(taskState).toStrictEqual({
+      End: true,
       Retry: undefined,
       Catch: undefined,
       InputPath: '$',
       Parameters:
-             { a: 'aa',
-               b: 'bb' },
+             {
+               a: 'aa',
+               b: 'bb',
+             },
       OutputPath: '$.state',
       Type: 'Task',
       Comment: undefined,
@@ -281,7 +288,8 @@ describe('State Machine Resources', () => {
             Resource: '*',
           },
         ],
-      }},
+      },
+    },
     );
 
   }),
@@ -519,7 +527,8 @@ describe('State Machine Resources', () => {
             Resource: '*',
           },
         ],
-      }},
+      },
+    },
     );
   }),
 
@@ -579,6 +588,31 @@ describe('State Machine Resources', () => {
     });
   }),
 
+  test('Imported state machine can provide metrics', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const stateMachineArn = 'arn:aws:states:us-east-1:123456789012:stateMachine:my-state-machine';
+    const stateMachine = stepfunctions.StateMachine.fromStateMachineArn(stack, 'StateMachine', stateMachineArn);
+    const color = '#00ff00';
+
+    // WHEN
+    const metrics = new Array<cloudwatch.Metric>();
+    metrics.push(stateMachine.metricAborted({ color }));
+    metrics.push(stateMachine.metricFailed({ color }));
+    metrics.push(stateMachine.metricStarted({ color }));
+    metrics.push(stateMachine.metricSucceeded({ color }));
+    metrics.push(stateMachine.metricThrottled({ color }));
+    metrics.push(stateMachine.metricTime({ color }));
+    metrics.push(stateMachine.metricTimedOut({ color }));
+
+    // THEN
+    for (const metric of metrics) {
+      expect(metric.namespace).toEqual('AWS/States');
+      expect(metric.dimensions).toEqual({ StateMachineArn: stateMachineArn });
+      expect(metric.color).toEqual(color);
+    }
+  }),
+
   test('Pass should render InputPath / Parameters / OutputPath correctly', () => {
     // GIVEN
     const stack = new cdk.Stack();
@@ -598,15 +632,18 @@ describe('State Machine Resources', () => {
     const taskState = task.toStateJson();
 
     // THEN
-    expect(taskState).toStrictEqual({ End: true,
+    expect(taskState).toStrictEqual({
+      End: true,
       InputPath: '$',
       OutputPath: '$.state',
       Parameters:
-             { 'input.$': '$',
+             {
+               'input.$': '$',
                'stringArgument': 'inital-task',
                'numberArgument': 123,
                'booleanArgument': true,
-               'arrayArgument': [ 'a', 'b', 'c' ] },
+               'arrayArgument': ['a', 'b', 'c'],
+             },
       Type: 'Pass',
       Comment: undefined,
       Result: undefined,
@@ -627,9 +664,10 @@ describe('State Machine Resources', () => {
     const taskState = task.toStateJson();
 
     // THEN
-    expect(taskState).toEqual({ End: true,
+    expect(taskState).toEqual({
+      End: true,
       Parameters:
-      { 'input.$': '$.myField'},
+      { 'input.$': '$.myField' },
       Type: 'Pass',
     });
   }),

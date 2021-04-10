@@ -44,11 +44,10 @@ describe('State Transition Metrics', () => {
 });
 
 function verifyTransitionMetric(metric: Metric, metricName: string, statistic: string) {
-  expect(metric).toEqual({
-    period: { amount: 5, unit: { label: 'minutes', inMillis: 60000 } },
+  expect(metric).toEqual(expect.objectContaining({
     dimensions: { ServiceMetric: 'StateTransition' },
     namespace: 'AWS/States',
     metricName,
     statistic,
-  });
+  }));
 }

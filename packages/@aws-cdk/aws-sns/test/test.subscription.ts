@@ -1,4 +1,4 @@
-import { expect, haveResource } from '@aws-cdk/assert';
+import { expect, haveResource } from '@aws-cdk/assert-internal';
 import { Queue } from '@aws-cdk/aws-sqs';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
@@ -110,12 +110,12 @@ export = {
       endpoint: 'endpoint',
       filterPolicy: {
         color: sns.SubscriptionFilter.stringFilter({
-          whitelist: ['red', 'green'],
-          blacklist: ['white', 'orange'],
+          allowlist: ['red', 'green'],
+          denylist: ['white', 'orange'],
           matchPrefixes: ['bl', 'ye'],
         }),
         price: sns.SubscriptionFilter.numericFilter({
-          whitelist: [100, 200],
+          allowlist: [100, 200],
           between: { start: 300, stop: 350 },
           greaterThan: 500,
           lessThan: 1000,
@@ -134,9 +134,9 @@ export = {
         color: [
           'red',
           'green',
-          {'anything-but': ['white', 'orange']},
-          { prefix: 'bl'},
-          { prefix: 'ye'},
+          { 'anything-but': ['white', 'orange'] },
+          { prefix: 'bl' },
+          { prefix: 'ye' },
         ],
         price: [
           { numeric: ['=', 100] },

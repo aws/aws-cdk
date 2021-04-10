@@ -5,7 +5,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as yargs from 'yargs';
 
-/* eslint-disable no-shadow */
+/* eslint-disable @typescript-eslint/no-shadow */
 const argv = yargs
   .usage('$0')
   .option('verbose', { alias: 'v', type: 'boolean', desc: 'Turn on verbose logging' })

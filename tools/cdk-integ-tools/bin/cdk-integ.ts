@@ -14,7 +14,7 @@ async function main() {
     .option('dry-run', { type: 'boolean', default: false, desc: 'do not actually deploy the stack. just update the snapshot (not recommended!)' })
     .argv;
 
-  const tests = await new IntegrationTests('test').fromCliArgs(argv._);
+  const tests = await new IntegrationTests('test').fromCliArgs(argv._.map(x => x.toString()));
 
   if (argv.list) {
     process.stdout.write(tests.map(t => t.name).join(' ') + '\n');
@@ -42,7 +42,7 @@ async function main() {
         console.error('Skipping deployment (--dry-run), updating snapshot.');
       } else {
         console.error(`Deploying ${test.name}...`);
-        await test.invokeCli([ ...args, 'deploy', '--require-approval', 'never', ...stackToDeploy ], {
+        await test.invokeCli([...args, 'deploy', '--require-approval', 'never', ...stackToDeploy], {
           verbose: argv.verbose,
           // Note: no "context" and "env", so use default user settings!
         });
@@ -58,7 +58,7 @@ async function main() {
       if (!dryRun) {
         if (argv.clean) {
           console.error('Cleaning up.');
-          await test.invokeCli(['destroy', '--force', ...stackToDeploy ]);
+          await test.invokeCli(['destroy', '--force', ...stackToDeploy]);
         } else {
           console.error('Skipping clean up (--no-clean).');
         }

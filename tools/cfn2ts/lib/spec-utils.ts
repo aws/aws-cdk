@@ -66,7 +66,7 @@ export class PropertyAttributeName extends SpecName {
   }
 
   public get fqn(): string {
-    return joinIf(super.fqn, '.',  this.propAttrName);
+    return joinIf(super.fqn, '.', this.propAttrName);
   }
 }
 
@@ -78,7 +78,7 @@ export function itemTypeNames(spec: schema.CollectionProperty): string[] {
 }
 
 function complexItemTypeNames(spec: schema.CollectionProperty): string[] {
-  if (schema.isComplexListProperty(spec) || schema.isComplexMapProperty(spec)) {
+  if (schema.isComplexListProperty(spec) || schema.isMapOfStructsProperty(spec)) {
     return [spec.ItemType];
   } else if (schema.isUnionProperty(spec)) {
     return spec.ItemTypes || [];
@@ -87,7 +87,9 @@ function complexItemTypeNames(spec: schema.CollectionProperty): string[] {
 }
 
 function primitiveItemTypeNames(spec: schema.CollectionProperty): string[] {
-  if (schema.isPrimitiveListProperty(spec) || schema.isPrimitiveMapProperty(spec)) {
+  if (schema.isMapOfListsOfPrimitivesProperty(spec)) {
+    return [`${spec.PrimitiveItemItemType}[]`]; // <--- read in specTypeToCodeType()
+  } else if (schema.isPrimitiveListProperty(spec) || schema.isPrimitiveMapProperty(spec)) {
     return [spec.PrimitiveItemType];
   } else if (schema.isUnionProperty(spec)) {
     return spec.PrimitiveItemTypes || [];

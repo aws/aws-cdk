@@ -1,4 +1,4 @@
-import { ABSENT, expect, haveResource, haveResourceLike, InspectionFailure, ResourcePart } from '@aws-cdk/assert';
+import { ABSENT, expect, haveResource, haveResourceLike, InspectionFailure, ResourcePart } from '@aws-cdk/assert-internal';
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
@@ -32,7 +32,7 @@ nodeunitShim({
         'MyFleetInstanceSecurityGroup774E8234': {
           'Type': 'AWS::EC2::SecurityGroup',
           'Properties': {
-            'GroupDescription': 'MyFleet/InstanceSecurityGroup',
+            'GroupDescription': 'TestStack/MyFleet/InstanceSecurityGroup',
             'SecurityGroupEgress': [
               {
                 'CidrIp': '0.0.0.0/0',
@@ -43,7 +43,7 @@ nodeunitShim({
             'Tags': [
               {
                 'Key': 'Name',
-                'Value': 'MyFleet',
+                'Value': 'TestStack/MyFleet',
               },
             ],
 
@@ -68,7 +68,7 @@ nodeunitShim({
             'Tags': [
               {
                 'Key': 'Name',
-                'Value': 'MyFleet',
+                'Value': 'TestStack/MyFleet',
               },
             ],
           },
@@ -122,7 +122,7 @@ nodeunitShim({
               {
                 'Key': 'Name',
                 'PropagateAtLaunch': true,
-                'Value': 'MyFleet',
+                'Value': 'TestStack/MyFleet',
               },
             ],
 
@@ -170,9 +170,9 @@ nodeunitShim({
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
       machineImage: new ec2.AmazonLinuxImage(),
       vpc,
-      minCapacity: cdk.Lazy.numberValue({ produce: () => 5 }),
-      maxCapacity: cdk.Lazy.numberValue({ produce: () => 1 }),
-      desiredCapacity: cdk.Lazy.numberValue({ produce: () => 20 }),
+      minCapacity: cdk.Lazy.number({ produce: () => 5 }),
+      maxCapacity: cdk.Lazy.number({ produce: () => 1 }),
+      desiredCapacity: cdk.Lazy.number({ produce: () => 20 }),
     });
 
     // THEN: no exception
@@ -457,7 +457,7 @@ nodeunitShim({
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
       machineImage: new ec2.AmazonLinuxImage(),
       vpc,
-      healthCheck: autoscaling.HealthCheck.elb({grace: cdk.Duration.minutes(15)}),
+      healthCheck: autoscaling.HealthCheck.elb({ grace: cdk.Duration.minutes(15) }),
     });
 
     // THEN
@@ -489,7 +489,8 @@ nodeunitShim({
             'GroupId',
           ],
         },
-        'most-secure'],
+        'most-secure',
+      ],
     }));
     test.done();
   },
@@ -511,8 +512,9 @@ nodeunitShim({
         pauseTime: cdk.Duration.seconds(345),
       },
     });
-    asg.node.applyAspect(new cdk.Tag('superfood', 'acai'));
-    asg.node.applyAspect(new cdk.Tag('notsuper', 'caramel', { applyToLaunchedInstances: false }));
+
+    cdk.Tags.of(asg).add('superfood', 'acai');
+    cdk.Tags.of(asg).add('notsuper', 'caramel', { applyToLaunchedInstances: false });
 
     // THEN
     expect(stack).to(haveResource('AWS::AutoScaling::AutoScalingGroup', {
@@ -520,7 +522,7 @@ nodeunitShim({
         {
           Key: 'Name',
           PropagateAtLaunch: true,
-          Value: 'MyFleet',
+          Value: 'TestStack/MyFleet',
         },
         {
           Key: 'notsuper',
@@ -1140,10 +1142,10 @@ nodeunitShim({
       MetricsCollection: [
         {
           Granularity: '1Minute',
-          Metrics: [ 'GroupMinSize', 'GroupMaxSize', 'GroupDesiredCapacity', 'GroupInServiceInstances' ],
+          Metrics: ['GroupMinSize', 'GroupMaxSize', 'GroupDesiredCapacity', 'GroupInServiceInstances'],
         }, {
           Granularity: '1Minute',
-          Metrics: [ 'GroupPendingInstances', 'GroupStandbyInstances', 'GroupTotalInstances', 'GroupTerminatingInstances' ],
+          Metrics: ['GroupPendingInstances', 'GroupStandbyInstances', 'GroupTotalInstances', 'GroupTerminatingInstances'],
         },
       ],
     }));
@@ -1170,7 +1172,7 @@ nodeunitShim({
       MetricsCollection: [
         {
           Granularity: '1Minute',
-          Metrics: [ 'GroupMinSize', 'GroupMaxSize' ],
+          Metrics: ['GroupMinSize', 'GroupMaxSize'],
         },
       ],
     }));
@@ -1216,7 +1218,8 @@ nodeunitShim({
             'autoscaling:EC2_INSTANCE_TERMINATE',
           ],
         },
-      ]},
+      ],
+    },
     ));
 
     test.done();
@@ -1273,7 +1276,8 @@ nodeunitShim({
             'autoscaling:EC2_INSTANCE_TERMINATE_ERROR',
           ],
         },
-      ]},
+      ],
+    },
     ));
 
     test.done();
@@ -1305,7 +1309,8 @@ nodeunitShim({
             'autoscaling:EC2_INSTANCE_TERMINATE_ERROR',
           ],
         },
-      ]},
+      ],
+    },
     ));
 
     test.done();
@@ -1341,8 +1346,47 @@ test('Can set autoScalingGroupName', () => {
   });
 
   // THEN
-  expect(stack).to(haveResourceLike('AWS::AutoScaling::AutoScalingGroup',  {
+  expect(stack).to(haveResourceLike('AWS::AutoScaling::AutoScalingGroup', {
     AutoScalingGroupName: 'MyAsg',
+  }));
+});
+
+test('can use Vpc imported from unparseable list tokens', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+
+  const vpcId = cdk.Fn.importValue('myVpcId');
+  const availabilityZones = cdk.Fn.split(',', cdk.Fn.importValue('myAvailabilityZones'));
+  const publicSubnetIds = cdk.Fn.split(',', cdk.Fn.importValue('myPublicSubnetIds'));
+  const privateSubnetIds = cdk.Fn.split(',', cdk.Fn.importValue('myPrivateSubnetIds'));
+  const isolatedSubnetIds = cdk.Fn.split(',', cdk.Fn.importValue('myIsolatedSubnetIds'));
+
+  const vpc = ec2.Vpc.fromVpcAttributes(stack, 'importedVpc', {
+    vpcId,
+    availabilityZones,
+    publicSubnetIds,
+    privateSubnetIds,
+    isolatedSubnetIds,
+  });
+
+  // WHEN
+  new autoscaling.AutoScalingGroup(stack, 'ecs-ec2-asg', {
+    instanceType: new ec2.InstanceType('t2.micro'),
+    machineImage: new ec2.AmazonLinuxImage(),
+    minCapacity: 1,
+    maxCapacity: 1,
+    desiredCapacity: 1,
+    vpc,
+    allowAllOutbound: false,
+    associatePublicIpAddress: false,
+    vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE },
+  });
+
+  // THEN
+  expect(stack).to(haveResourceLike('AWS::AutoScaling::AutoScalingGroup', {
+    VPCZoneIdentifier: {
+      'Fn::Split': [',', { 'Fn::ImportValue': 'myPrivateSubnetIds' }],
+    },
   }));
 });
 

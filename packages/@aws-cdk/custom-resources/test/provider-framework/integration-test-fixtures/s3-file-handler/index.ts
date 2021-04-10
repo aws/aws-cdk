@@ -8,10 +8,10 @@ export async function onEvent(event: AWSCDKAsyncCustomResource.OnEventRequest) {
   switch (event.RequestType) {
     case 'Create':
     case 'Update':
-      return await putObject(event);
+      return putObject(event);
 
     case 'Delete':
-      return await deleteObject(event);
+      return deleteObject(event);
   }
 }
 

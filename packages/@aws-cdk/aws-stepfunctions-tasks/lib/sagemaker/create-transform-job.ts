@@ -1,23 +1,25 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
-import { Construct, Size, Stack } from '@aws-cdk/core';
+import { Size, Stack, Token } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
-import { BatchStrategy, S3DataType, TransformInput, TransformOutput, TransformResources } from './base-types';
+import { BatchStrategy, ModelClientOptions, S3DataType, TransformInput, TransformOutput, TransformResources } from './base-types';
+import { renderTags } from './private/utils';
 
 /**
- * Properties for creating an Amazon SageMaker training job task
+ * Properties for creating an Amazon SageMaker transform job task
  *
  *  @experimental
  */
 export interface SageMakerCreateTransformJobProps extends sfn.TaskStateBaseProps {
   /**
-   * Training Job Name.
+   * Transform Job Name.
    */
   readonly transformJobName: string;
 
   /**
-   * Role for the Training Job.
+   * Role for the Transform Job.
    *
    * @default - A role is created with `AmazonSageMakerFullAccess` managed policy
    */
@@ -58,6 +60,13 @@ export interface SageMakerCreateTransformJobProps extends sfn.TaskStateBaseProps
   readonly modelName: string;
 
   /**
+   * Configures the timeout and maximum number of retries for processing a transform job invocation.
+   *
+   * @default - 0 retries and 60 seconds of timeout
+   */
+  readonly modelClientOptions?: ModelClientOptions;
+
+  /**
    * Tags to be applied to the train job.
    *
    * @default - No tags
@@ -83,7 +92,7 @@ export interface SageMakerCreateTransformJobProps extends sfn.TaskStateBaseProps
 }
 
 /**
- * Class representing the SageMaker Create Training Job task.
+ * Class representing the SageMaker Create Transform Job task.
  *
  *  @experimental
  */
@@ -145,7 +154,7 @@ export class SageMakerCreateTransformJob extends sfn.TaskStateBase {
   }
 
   /**
-   * The execution role for the Sagemaker training job.
+   * The execution role for the Sagemaker transform job.
    *
    * Only available after task has been added to a state machine.
    */
@@ -162,12 +171,30 @@ export class SageMakerCreateTransformJob extends sfn.TaskStateBase {
       ...this.renderEnvironment(this.props.environment),
       ...(this.props.maxConcurrentTransforms ? { MaxConcurrentTransforms: this.props.maxConcurrentTransforms } : {}),
       ...(this.props.maxPayload ? { MaxPayloadInMB: this.props.maxPayload.toMebibytes() } : {}),
+      ...this.props.modelClientOptions ? this.renderModelClientOptions(this.props.modelClientOptions) : {},
       ModelName: this.props.modelName,
-      ...this.renderTags(this.props.tags),
+      ...renderTags(this.props.tags),
       ...this.renderTransformInput(this.transformInput),
       TransformJobName: this.props.transformJobName,
       ...this.renderTransformOutput(this.props.transformOutput),
       ...this.renderTransformResources(this.transformResources),
+    };
+  }
+
+  private renderModelClientOptions(options: ModelClientOptions): { [key: string]: any } {
+    const retries = options.invocationsMaxRetries;
+    if (!Token.isUnresolved(retries) && retries? (retries < 0 || retries > 3): false) {
+      throw new Error(`invocationsMaxRetries should be between 0 and 3. Received: ${retries}.`);
+    }
+    const timeout = options.invocationsTimeout?.toSeconds();
+    if (!Token.isUnresolved(timeout) && timeout? (timeout < 1 || timeout > 3600): false) {
+      throw new Error(`invocationsTimeout should be between 1 and 3600 seconds. Received: ${timeout}.`);
+    }
+    return {
+      ModelClientConfig: {
+        InvocationsMaxRetries: retries ?? 0,
+        InvocationsTimeoutInSeconds: timeout ?? 60,
+      },
     };
   }
 
@@ -210,10 +237,6 @@ export class SageMakerCreateTransformJob extends sfn.TaskStateBase {
 
   private renderEnvironment(environment: { [key: string]: any } | undefined): { [key: string]: any } {
     return environment ? { Environment: environment } : {};
-  }
-
-  private renderTags(tags: { [key: string]: any } | undefined): { [key: string]: any } {
-    return tags ? { Tags: Object.keys(tags).map((key) => ({ Key: key, Value: tags[key] })) } : {};
   }
 
   private makePolicyStatements(): iam.PolicyStatement[] {

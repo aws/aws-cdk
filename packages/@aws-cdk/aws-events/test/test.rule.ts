@@ -1,4 +1,4 @@
-import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
+import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert-internal';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
@@ -49,6 +49,39 @@ export = {
     test.done();
   },
 
+  'get rate as token'(test: Test) {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'MyScheduledStack');
+    const lazyDuration = cdk.Duration.minutes(cdk.Lazy.number({ produce: () => 5 }));
+
+    new Rule(stack, 'MyScheduledRule', {
+      ruleName: 'rateInMinutes',
+      schedule: Schedule.rate(lazyDuration),
+    });
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::Events::Rule', {
+      'Name': 'rateInMinutes',
+      'ScheduleExpression': 'rate(5 minutes)',
+    }));
+
+    test.done();
+  },
+
+  'Seconds is not an allowed value for Schedule rate'(test: Test) {
+    const lazyDuration = cdk.Duration.seconds(cdk.Lazy.number({ produce: () => 5 }));
+    test.throws(() => Schedule.rate(lazyDuration), /Allowed units for scheduling/i);
+    test.done();
+  },
+
+  'Millis is not an allowed value for Schedule rate'(test: Test) {
+    const lazyDuration = cdk.Duration.millis(cdk.Lazy.number({ produce: () => 5 }));
+
+    // THEN
+    test.throws(() => Schedule.rate(lazyDuration), /Allowed units for scheduling/i);
+    test.done();
+  },
+
   'rule with physical name'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
@@ -72,17 +105,17 @@ export = {
 
     new Rule(stack, 'MyRule', {
       eventPattern: {
-        account: [ 'account1', 'account2' ],
+        account: ['account1', 'account2'],
         detail: {
-          foo: [ 1, 2 ],
+          foo: [1, 2],
         },
-        detailType: [ 'detailType1' ],
-        id: [ 'id1', 'id2' ],
-        region: [ 'region1', 'region2', 'region3' ],
-        resources: [ 'r1' ],
-        source: [ 'src1', 'src2' ],
-        time: [ 't1' ],
-        version: [ '0' ],
+        detailType: ['detailType1'],
+        id: ['id1', 'id2'],
+        region: ['region1', 'region2', 'region3'],
+        resources: ['r1'],
+        source: ['src1', 'src2'],
+        time: ['t1'],
+        version: ['0'],
       },
     });
 
@@ -92,15 +125,15 @@ export = {
           'Type': 'AWS::Events::Rule',
           'Properties': {
             'EventPattern': {
-              account: [ 'account1', 'account2' ],
-              detail: { foo: [ 1, 2 ] },
-              'detail-type': [ 'detailType1' ],
-              id: [ 'id1', 'id2' ],
-              region: [ 'region1', 'region2', 'region3' ],
-              resources: [ 'r1' ],
-              source: [ 'src1', 'src2' ],
-              time: [ 't1' ],
-              version: [ '0' ],
+              account: ['account1', 'account2'],
+              detail: { foo: [1, 2] },
+              'detail-type': ['detailType1'],
+              id: ['id1', 'id2'],
+              region: ['region1', 'region2', 'region3'],
+              resources: ['r1'],
+              source: ['src1', 'src2'],
+              time: ['t1'],
+              version: ['0'],
             },
             'State': 'ENABLED',
           },
@@ -124,18 +157,18 @@ export = {
 
     const rule = new Rule(stack, 'MyRule');
     rule.addEventPattern({
-      account: [ '12345' ],
+      account: ['12345'],
       detail: {
-        foo: [ 'hello' ],
+        foo: ['hello', 'bar', 'hello'],
       },
     });
 
     rule.addEventPattern({
-      source: [ 'aws.source' ],
+      source: ['aws.source'],
       detail: {
-        foo: [ 'bar' ],
+        foo: ['bar', 'hello'],
         goo: {
-          hello: [ 'world' ],
+          hello: ['world'],
         },
       },
     });
@@ -172,6 +205,37 @@ export = {
     test.done();
   },
 
+  'addEventPattern can de-duplicate filters and keep the order'(test: Test) {
+    const stack = new cdk.Stack();
+
+    const rule = new Rule(stack, 'MyRule');
+    rule.addEventPattern({
+      detailType: ['AWS API Call via CloudTrail', 'AWS API Call via CloudTrail'],
+    });
+
+    rule.addEventPattern({
+      detailType: ['EC2 Instance State-change Notification', 'AWS API Call via CloudTrail'],
+    });
+
+    expect(stack).toMatch({
+      'Resources': {
+        'MyRuleA44AB831': {
+          'Type': 'AWS::Events::Rule',
+          'Properties': {
+            'EventPattern': {
+              'detail-type': [
+                'AWS API Call via CloudTrail',
+                'EC2 Instance State-change Notification',
+              ],
+            },
+            'State': 'ENABLED',
+          },
+        },
+      },
+    });
+    test.done();
+  },
+
   'targets can be added via props or addTarget with input transformer'(test: Test) {
     const stack = new cdk.Stack();
     const t1: IRuleTarget = {
@@ -191,7 +255,7 @@ export = {
     };
 
     const rule = new Rule(stack, 'EventRule', {
-      targets: [ t1 ],
+      targets: [t1],
       schedule: Schedule.rate(cdk.Duration.minutes(5)),
     });
 
@@ -249,8 +313,9 @@ export = {
     rule.addTarget({
       bind: () => ({
         id: '',
-        arn: 'ARN1', kinesisParameters: { partitionKeyPath: 'partitionKeyPath' },
-        input: RuleTargetInput.fromText(cdk.Fn.join('', [ 'a', 'b' ]).toString()),
+        arn: 'ARN1',
+        kinesisParameters: { partitionKeyPath: 'partitionKeyPath' },
+        input: RuleTargetInput.fromText(cdk.Fn.join('', ['a', 'b']).toString()),
       }),
     });
 
@@ -344,7 +409,7 @@ export = {
         {
           'Arn': 'ARN2',
           'Id': 'Target0',
-          'RoleArn': {'Fn::GetAtt': ['SomeRole6DDC54DD', 'Arn']},
+          'RoleArn': { 'Fn::GetAtt': ['SomeRole6DDC54DD', 'Arn'] },
         },
       ],
     }));
@@ -361,7 +426,7 @@ export = {
     const t1: IRuleTarget = {
       bind: (eventRule: IRule) => {
         receivedRuleArn = eventRule.ruleArn;
-        receivedRuleId = eventRule.node.uniqueId;
+        receivedRuleId = cdk.Names.nodeUniqueId(eventRule.node);
 
         return {
           id: '',
@@ -375,7 +440,7 @@ export = {
     rule.addTarget(t1);
 
     test.deepEqual(stack.resolve(receivedRuleArn), stack.resolve(rule.ruleArn));
-    test.deepEqual(receivedRuleId, rule.node.uniqueId);
+    test.deepEqual(receivedRuleId, cdk.Names.uniqueId(rule));
     test.done();
   },
 
@@ -471,7 +536,7 @@ export = {
 
     new Rule(stack, 'EventRule', {
       schedule: Schedule.rate(cdk.Duration.minutes(5)),
-      targets: [ t1 ],
+      targets: [t1],
     });
 
     expect(stack).to(haveResource('AWS::Events::Rule', {
@@ -574,42 +639,6 @@ export = {
       test.throws(() => {
         rule.addTarget(new SomeTarget('T', resource));
       }, /You need to provide a concrete region for the target stack when using cross-account events/);
-
-      test.done();
-    },
-
-    'requires that the source stack be part of an App'(test: Test) {
-      const app = new cdk.App();
-
-      const sourceAccount = '123456789012';
-      const sourceStack = new cdk.Stack(undefined, 'SourceStack', { env: { account: sourceAccount, region: 'us-west-2' } });
-      const rule = new Rule(sourceStack, 'Rule');
-
-      const targetAccount = '234567890123';
-      const targetStack = new cdk.Stack(app, 'TargetStack', { env: { account: targetAccount, region: 'us-west-2' } });
-      const resource = new cdk.Construct(targetStack, 'Resource');
-
-      test.throws(() => {
-        rule.addTarget(new SomeTarget('T', resource));
-      }, /Event stack which uses cross-account targets must be part of a CDK app/);
-
-      test.done();
-    },
-
-    'requires that the target stack be part of an App'(test: Test) {
-      const app = new cdk.App();
-
-      const sourceAccount = '123456789012';
-      const sourceStack = new cdk.Stack(app, 'SourceStack', { env: { account: sourceAccount, region: 'us-west-2' } });
-      const rule = new Rule(sourceStack, 'Rule');
-
-      const targetAccount = '234567890123';
-      const targetStack = new cdk.Stack(undefined, 'TargetStack', { env: { account: targetAccount, region: 'us-west-2' } });
-      const resource = new cdk.Construct(targetStack, 'Resource');
-
-      test.throws(() => {
-        rule.addTarget(new SomeTarget('T', resource));
-      }, /Target stack which uses cross-account event targets must be part of a CDK app/);
 
       test.done();
     },
@@ -772,13 +801,15 @@ export = {
 };
 
 class SomeTarget implements IRuleTarget {
+  // eslint-disable-next-line cdk/no-core-construct
   public constructor(private readonly id?: string, private readonly resource?: cdk.IConstruct) {
   }
 
   public bind(): RuleTargetConfig {
     return {
       id: this.id || '',
-      arn: 'ARN1', kinesisParameters: { partitionKeyPath: 'partitionKeyPath' },
+      arn: 'ARN1',
+      kinesisParameters: { partitionKeyPath: 'partitionKeyPath' },
       targetResource: this.resource,
     };
   }

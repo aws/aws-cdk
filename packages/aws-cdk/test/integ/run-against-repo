@@ -15,6 +15,7 @@ fi
 
 export REPO_ROOT="$repo_root"
 export ORIGINAL_NPM="$(type -p npm)"
+export TEST_RUNNER=repo
 
 export PATH="$cli_dir/bin:$cli_dir/test/integ/run-wrappers/repo:$PATH"
 hash -r

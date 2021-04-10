@@ -1,6 +1,7 @@
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
-import { Construct } from './construct-compat';
+import { Construct, Node } from 'constructs';
+import { Annotations } from './annotations';
 import { Stack } from './stack';
 import { Token } from './token';
 
@@ -94,7 +95,7 @@ export class ContextProvider {
     }
 
     const { key, props } = this.getKey(scope, options);
-    const value = scope.node.tryGetContext(key);
+    const value = Node.of(scope).tryGetContext(key);
     const providerError = extractProviderError(value);
 
     // if context is missing or an error occurred during context retrieval,
@@ -107,8 +108,9 @@ export class ContextProvider {
       });
 
       if (providerError !== undefined) {
-        scope.node.addError(providerError);
+        Annotations.of(scope).addError(providerError);
       }
+
       return { value: options.dummyValue };
     }
 

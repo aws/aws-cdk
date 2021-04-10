@@ -1,4 +1,4 @@
-import { expect, haveResource, haveResourceLike, ResourcePart } from '@aws-cdk/assert';
+import { expect, haveResource, haveResourceLike, ResourcePart } from '@aws-cdk/assert-internal';
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
@@ -101,7 +101,7 @@ export = {
               [
                 'arn:',
                 { Ref: 'AWS::Partition' },
-                ':iam::aws:policy/service-role/AWSCodeDeployRoleForLambda',
+                ':iam::aws:policy/service-role/AWSCodeDeployRoleForLambdaLimited',
               ],
             ],
           },
@@ -160,7 +160,7 @@ export = {
               [
                 'arn:',
                 { Ref: 'AWS::Partition' },
-                ':iam::aws:policy/service-role/AWSCodeDeployRoleForLambda',
+                ':iam::aws:policy/service-role/AWSCodeDeployRoleForLambdaLimited',
               ],
             ],
           },

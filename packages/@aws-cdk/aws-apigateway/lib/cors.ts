@@ -64,7 +64,7 @@ export interface CorsOptions {
    * Access-Control-Allow-Methods and Access-Control-Allow-Headers headers)
    * can be cached.
    *
-   * To disable caching altogther use `disableCache: true`.
+   * To disable caching altogether use `disableCache: true`.
    *
    * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Max-Age
    * @default - browser-specific (see reference)
@@ -104,12 +104,12 @@ export class Cors {
   /**
    * All origins.
    */
-  public static readonly ALL_ORIGINS = [ '*' ];
+  public static readonly ALL_ORIGINS = ['*'];
 
   /**
    * The set of default headers allowed for CORS and useful for API Gateway.
    */
-  public static readonly DEFAULT_HEADERS = [ 'Content-Type', 'X-Amz-Date', 'Authorization', 'X-Api-Key', 'X-Amz-Security-Token', 'X-Amz-User-Agent' ];
+  public static readonly DEFAULT_HEADERS = ['Content-Type', 'X-Amz-Date', 'Authorization', 'X-Api-Key', 'X-Amz-Security-Token', 'X-Amz-User-Agent'];
 
   // utility class
   private constructor() { }

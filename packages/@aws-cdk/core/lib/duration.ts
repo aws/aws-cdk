@@ -1,4 +1,4 @@
-import { Token } from './token';
+import { Token, Tokenization } from './token';
 
 /**
  * Represents a length of time.
@@ -67,7 +67,7 @@ export class Duration {
    * @returns the parsed `Duration`.
    */
   public static parse(duration: string): Duration {
-    const matches = duration.match(/^PT(?:(\d+)D)?(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?$/);
+    const matches = duration.match(/^P(?:(\d+)D)?(?:T(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?)?$/);
     if (!matches) {
       throw new Error(`Not a valid ISO duration: ${duration}`);
     }
@@ -157,31 +157,30 @@ export class Duration {
   /**
    * Return an ISO 8601 representation of this period
    *
-   * @returns a string starting with 'PT' describing the period
+   * @returns a string starting with 'P' describing the period
    * @see https://www.iso.org/fr/standard/70907.html
    */
   public toIsoString(): string {
     if (this.amount === 0) { return 'PT0S'; }
-    switch (this.unit) {
-      case TimeUnit.Milliseconds:
-        return Duration.seconds(this.amount / 1000.0).toIsoString();
-      case TimeUnit.Seconds:
-        return `PT${this.fractionDuration('S', 60, Duration.minutes)}`;
-      case TimeUnit.Minutes:
-        return `PT${this.fractionDuration('M', 60, Duration.hours)}`;
-      case TimeUnit.Hours:
-        return `PT${this.fractionDuration('H', 24, Duration.days)}`;
-      case TimeUnit.Days:
-        return `PT${this.amount}D`;
-      default:
-        throw new Error(`Unexpected time unit: ${this.unit}`);
+
+    const ret = ['P'];
+    let tee = false;
+
+    for (const [amount, unit] of this.components(true)) {
+      if ([TimeUnit.Seconds, TimeUnit.Minutes, TimeUnit.Hours].includes(unit) && !tee) {
+        ret.push('T');
+        tee = true;
+      }
+      ret.push(`${amount}${unit.isoLabel}`);
     }
+
+    return ret.join('');
   }
 
   /**
    * Return an ISO 8601 representation of this period
    *
-   * @returns a string starting with 'PT' describing the period
+   * @returns a string starting with 'P' describing the period
    * @see https://www.iso.org/fr/standard/70907.html
    * @deprecated Use `toIsoString()` instead.
    */
@@ -196,24 +195,11 @@ export class Duration {
     if (this.amount === 0) { return fmtUnit(0, this.unit); }
     if (Token.isUnresolved(this.amount)) { return `<token> ${this.unit.label}`; }
 
-    let millis = convert(this.amount, this.unit, TimeUnit.Milliseconds, { integral: false });
-    const parts = new Array<string>();
-
-    for (const unit of [TimeUnit.Days, TimeUnit.Hours, TimeUnit.Hours, TimeUnit.Minutes, TimeUnit.Seconds]) {
-      const wholeCount = Math.floor(convert(millis, TimeUnit.Milliseconds, unit, { integral: false }));
-      if (wholeCount > 0) {
-        parts.push(fmtUnit(wholeCount, unit));
-        millis -= wholeCount * unit.inMillis;
-      }
-    }
-
-    // Remainder in millis
-    if (millis > 0) {
-      parts.push(fmtUnit(millis, TimeUnit.Milliseconds));
-    }
-
-    // 2 significant parts, that's totally enough for humans
-    return parts.slice(0, 2).join(' ');
+    return this.components(false)
+      // 2 significant parts, that's totally enough for humans
+      .slice(0, 2)
+      .map(([amount, unit]) => fmtUnit(amount, unit))
+      .join(' ');
 
     function fmtUnit(amount: number, unit: TimeUnit) {
       if (amount === 1) {
@@ -238,15 +224,55 @@ export class Duration {
     );
   }
 
-  private fractionDuration(symbol: string, modulus: number, next: (amount: number) => Duration): string {
-    if (this.amount < modulus) {
-      return `${this.amount}${symbol}`;
+  /**
+   * Return the duration in a set of whole numbered time components, ordered from largest to smallest
+   *
+   * Only components != 0 will be returned.
+   *
+   * Can combine millis and seconds together for the benefit of toIsoString,
+   * makes the logic in there simpler.
+   */
+  private components(combineMillisWithSeconds: boolean): Array<[number, TimeUnit]> {
+    const ret = new Array<[number, TimeUnit]>();
+    let millis = convert(this.amount, this.unit, TimeUnit.Milliseconds, { integral: false });
+
+    for (const unit of [TimeUnit.Days, TimeUnit.Hours, TimeUnit.Minutes, TimeUnit.Seconds]) {
+      const count = convert(millis, TimeUnit.Milliseconds, unit, { integral: false });
+      // Round down to a whole number UNLESS we're combining millis and seconds and we got to the seconds
+      const wholeCount = unit === TimeUnit.Seconds && combineMillisWithSeconds ? count : Math.floor(count);
+      if (wholeCount > 0) {
+        ret.push([wholeCount, unit]);
+        millis -= wholeCount * unit.inMillis;
+      }
     }
-    const remainder = this.amount % modulus;
-    const quotient = next((this.amount - remainder) / modulus).toISOString().slice(2);
-    return remainder > 0
-      ? `${quotient}${remainder}${symbol}`
-      : quotient;
+
+    // Remainder in millis
+    if (millis > 0) {
+      ret.push([millis, TimeUnit.Milliseconds]);
+    }
+    return ret;
+  }
+
+  /**
+   * Checks if duration is a token or a resolvable object
+   */
+  public isUnresolved() {
+    return Token.isUnresolved(this.amount);
+  }
+
+  /**
+   * Returns unit of the duration
+   */
+  public unitLabel() {
+    return this.unit.label;
+  }
+
+  /**
+   * Returns stringified number of duration
+   */
+  public formatTokenToNumber(): string {
+    const number = Tokenization.stringifyNumber(this.amount);
+    return `${number} ${this.unit.label}`;
   }
 }
 
@@ -264,13 +290,13 @@ export interface TimeConversionOptions {
 }
 
 class TimeUnit {
-  public static readonly Milliseconds = new TimeUnit('millis', 1);
-  public static readonly Seconds = new TimeUnit('seconds', 1_000);
-  public static readonly Minutes = new TimeUnit('minutes', 60_000);
-  public static readonly Hours = new TimeUnit('hours', 3_600_000);
-  public static readonly Days = new TimeUnit('days', 86_400_000);
+  public static readonly Milliseconds = new TimeUnit('millis', '', 1);
+  public static readonly Seconds = new TimeUnit('seconds', 'S', 1_000);
+  public static readonly Minutes = new TimeUnit('minutes', 'M', 60_000);
+  public static readonly Hours = new TimeUnit('hours', 'H', 3_600_000);
+  public static readonly Days = new TimeUnit('days', 'D', 86_400_000);
 
-  private constructor(public readonly label: string, public readonly inMillis: number) {
+  private constructor(public readonly label: string, public readonly isoLabel: string, public readonly inMillis: number) {
     // MAX_SAFE_INTEGER is 2^53, so by representing our duration in millis (the lowest
     // common unit) the highest duration we can represent is
     // 2^53 / 86*10^6 ~= 104 * 10^6 days (about 100 million days).

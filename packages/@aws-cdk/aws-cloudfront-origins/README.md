@@ -1,13 +1,12 @@
 # CloudFront Origins for the CDK CloudFront Library
-
 <!--BEGIN STABILITY BANNER-->
----
-
-![cdk-constructs: Experimental](https://img.shields.io/badge/cdk--constructs-experimental-important.svg?style=for-the-badge)
-
-> The APIs of higher level constructs in this module are experimental and under active development. They are subject to non-backward compatible changes or removal in any future version. These are not subject to the [Semantic Versioning](https://semver.org/) model and breaking changes will be announced in the release notes. This means that while you may use them, you may need to update your source code when upgrading to a newer version of this package.
 
 ---
+
+![cdk-constructs: Stable](https://img.shields.io/badge/cdk--constructs-stable-success.svg?style=for-the-badge)
+
+---
+
 <!--END STABILITY BANNER-->
 
 This library contains convenience methods for defining origins for a CloudFront distribution. You can use this library to create origins from
@@ -30,9 +29,9 @@ new cloudfront.Distribution(this, 'myDist', {
 
 The above will treat the bucket differently based on if `IBucket.isWebsite` is set or not. If the bucket is configured as a website, the bucket is
 treated as an HTTP origin, and the built-in S3 redirects and error pages can be used. Otherwise, the bucket is handled as a bucket origin and
-CloudFront's redirect and error handling will be used. In the latter case, the Origin wil create an origin access identity and grant it access to the
+CloudFront's redirect and error handling will be used. In the latter case, the Origin will create an origin access identity and grant it access to the
 underlying bucket. This can be used in conjunction with a bucket that is not public to require that your users access your content using CloudFront
-URLs and not S3 URLs directly.
+URLs and not S3 URLs directly. Alternatively, a custom origin access identity can be passed to the S3 origin in the properties.
 
 ## ELBv2 Load Balancer
 
@@ -76,3 +75,24 @@ new cloudfront.Distribution(this, 'myDist', {
 ```
 
 See the documentation of `@aws-cdk/aws-cloudfront` for more information.
+
+## Failover Origins (Origin Groups)
+
+You can set up CloudFront with origin failover for scenarios that require high availability.
+To get started, you create an origin group with two origins: a primary and a secondary.
+If the primary origin is unavailable, or returns specific HTTP response status codes that indicate a failure,
+CloudFront automatically switches to the secondary origin.
+You achieve that behavior in the CDK using the `OriginGroup` class:
+
+```ts
+new cloudfront.Distribution(this, 'myDist', {
+  defaultBehavior: {
+    origin: new origins.OriginGroup({
+      primaryOrigin: new origins.S3Origin(myBucket),
+      fallbackOrigin: new origins.HttpOrigin('www.example.com'),
+      // optional, defaults to: 500, 502, 503 and 504
+      fallbackStatusCodes: [404],
+    }),
+  },
+});
+```

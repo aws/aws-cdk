@@ -119,7 +119,8 @@ export class TemplateDiff implements ITemplateDiff {
       const props = cfnspec.scrutinizablePropertyNames(resourceChange.newResourceType!, scrutinyTypes);
       for (const propertyName of props) {
         ret.push({
-          resourceLogicalId, propertyName,
+          resourceLogicalId,
+          propertyName,
           resourceType: resourceChange.resourceType,
           scrutinyType: cfnspec.propertySpecification(resourceChange.resourceType, propertyName).ScrutinyType!,
           oldValue: resourceChange.oldProperties && resourceChange.oldProperties[propertyName],

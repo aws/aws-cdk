@@ -1,5 +1,5 @@
-import * as fs from 'fs-extra';
 import * as path from 'path';
+import * as fs from 'fs-extra';
 import * as yargs from 'yargs';
 import * as yarnCling from 'yarn-cling';
 import { shell } from '../lib/os';
@@ -45,11 +45,11 @@ async function main() {
     const command = [args['jsii-pacmak'],
       args.verbose ? '-vvv' : '-v',
       ...args.targets ? flatMap(args.targets, (target: string) => ['-t', target]) : [],
-      '-o', outdir ];
+      '-o', outdir];
     await shell(command, { timers });
   } else {
     // just "npm pack" and deploy to "outdir"
-    const tarball = (await shell([ 'npm', 'pack' ], { timers })).trim();
+    const tarball = (await shell(['npm', 'pack'], { timers })).trim();
     const target = path.join(outdir, 'js');
     await fs.remove(target);
     await fs.mkdirp(target);

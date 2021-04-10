@@ -6,18 +6,32 @@ import * as colors from 'colors/safe';
 import { error, logLevel, LogLevel, setLogLevel } from '../../../logging';
 import { RewritableBlock } from '../display';
 
-interface StackActivity {
+export interface StackActivity {
   readonly event: aws.CloudFormation.StackEvent;
   readonly metadata?: ResourceMetadata;
-  flushed: boolean;
 }
 
-interface ResourceMetadata {
+export interface ResourceMetadata {
   entry: cxschema.MetadataEntry;
   constructPath: string;
 }
 
-export interface StackActivityMonitorProps {
+/**
+ * Supported display modes for stack deployment activity
+ */
+export enum StackActivityProgress {
+  /**
+   * Displays a progress bar with only the events for the resource currently being deployed
+   */
+  BAR = 'bar',
+
+  /**
+   * Displays complete history with all CloudFormation stack events
+   */
+  EVENTS = 'events',
+}
+
+export interface WithDefaultPrinterProps {
   /**
    * Total number of resources to update
    *
@@ -35,21 +49,80 @@ export interface StackActivityMonitorProps {
    * @default - Use value from logging.logLevel
    */
   readonly logLevel?: LogLevel;
+
+  /**
+   * Whether to display all stack events or to display only the events for the
+   * resource currently being deployed
+   *
+   * If not set, the stack history with all stack events will be displayed
+   *
+   * @default false
+   */
+  progress?: StackActivityProgress;
+
+  /**
+   * Whether we are on a CI system
+   *
+   * If so, disable the "optimized" stack monitor.
+   *
+   * @default false
+   */
+  readonly ci?: boolean;
+
+  /**
+   * Creation time of the change set
+   *
+   * This will be used to filter events, only showing those from after the change
+   * set creation time.
+   *
+   * It is recommended to use this, otherwise the filtering will be subject
+   * to clock drift between local and cloud machines.
+   *
+   * @default - local machine's current time
+   */
+  readonly changeSetCreationTime?: Date;
 }
 
 export class StackActivityMonitor {
+
+  /**
+   * Create a Stack Activity Monitor using a default printer, based on context clues
+   */
+  public static withDefaultPrinter(
+    cfn: aws.CloudFormation,
+    stackName: string,
+    stackArtifact: cxapi.CloudFormationStackArtifact, options: WithDefaultPrinterProps = {}) {
+    const stream = process.stderr;
+
+    const props: PrinterProps = {
+      resourceTypeColumnWidth: calcMaxResourceTypeLength(stackArtifact.template),
+      resourcesTotal: options.resourcesTotal,
+      stream,
+    };
+
+    const isWindows = process.platform === 'win32';
+    const verbose = options.logLevel ?? logLevel;
+    // On some CI systems (such as CircleCI) output still reports as a TTY so we also
+    // need an individual check for whether we're running on CI.
+    // see: https://discuss.circleci.com/t/circleci-terminal-is-a-tty-but-term-is-not-set/9965
+    const fancyOutputAvailable = !isWindows && stream.isTTY && !options.ci;
+    const progress = options.progress ?? StackActivityProgress.BAR;
+
+    const printer = fancyOutputAvailable && !verbose && (progress === StackActivityProgress.BAR)
+      ? new CurrentActivityPrinter(props)
+      : new HistoryActivityPrinter(props);
+
+    return new StackActivityMonitor(cfn, stackName, printer, stackArtifact, options.changeSetCreationTime);
+  }
+
+
   private active = false;
   private activity: { [eventId: string]: StackActivity } = { };
 
   /**
-   * Number of ms to wait between pagination calls
-   */
-  private readonly pageSleep = 500;
-
-  /**
    * Determines which events not to display
    */
-  private startTime = Date.now();
+  private readonly startTime: number;
 
   /**
    * Current tick timer
@@ -59,31 +132,16 @@ export class StackActivityMonitor {
   /**
    * Set to the activity of reading the current events
    */
-  private readPromise?: Promise<AWS.CloudFormation.StackEvent[]>;
-
-  private readonly printer: ActivityPrinterBase;
+  private readPromise?: Promise<any>;
 
   constructor(
     private readonly cfn: aws.CloudFormation,
     private readonly stackName: string,
-    private readonly stack: cxapi.CloudFormationStackArtifact,
-    options: StackActivityMonitorProps = {}) {
-
-    const stream = process.stderr;
-
-    const props: PrinterProps = {
-      resourceTypeColumnWidth: calcMaxResourceTypeLength(this.stack.template),
-      resourcesTotal: options.resourcesTotal,
-      stream,
-    };
-
-    const isWindows = process.platform === 'win32';
-    const verbose = options.logLevel ?? logLevel;
-    const fancyOutputAvailable = !isWindows && stream.isTTY;
-
-    this.printer = fancyOutputAvailable && !verbose
-      ? new CurrentActivityPrinter(props)
-      : new HistoryActivityPrinter(props);
+    private readonly printer: IActivityPrinter,
+    private readonly stack?: cxapi.CloudFormationStackArtifact,
+    changeSetCreationTime?: Date,
+  ) {
+    this.startTime = changeSetCreationTime?.getTime() ?? Date.now();
   }
 
   public start() {
@@ -100,18 +158,18 @@ export class StackActivityMonitor {
       clearTimeout(this.tickTimer);
     }
 
-    if (this.readPromise) {
-      // We're currently reading events, wait for it to finish and print them before continuing.
-      await this.readPromise;
-      this.flushEvents();
-    }
+    // Do a final poll for all events. This is to handle the situation where DescribeStackStatus
+    // already returned an error, but the monitor hasn't seen all the events yet and we'd end
+    // up not printing the failure reason to users.
+    await this.finalPollToEnd();
   }
 
   private scheduleNextTick() {
     if (!this.active) {
       return;
     }
-    this.tickTimer = setTimeout(() => this.tick().then(), this.printer.updateSleep);
+
+    this.tickTimer = setTimeout(() => void(this.tick()), this.printer.updateSleep);
   }
 
   private async tick() {
@@ -120,39 +178,22 @@ export class StackActivityMonitor {
     }
 
     try {
-      this.readPromise = this.readEvents();
+      this.readPromise = this.readNewEvents();
       await this.readPromise;
       this.readPromise = undefined;
 
       // We might have been stop()ped while the network call was in progress.
       if (!this.active) { return; }
 
-      this.flushEvents();
+      this.printer.print();
     } catch (e) {
       error('Error occurred while monitoring stack: %s', e);
     }
     this.scheduleNextTick();
   }
 
-  /**
-   * Flushes all unflushed events sorted by timestamp.
-   */
-  private flushEvents() {
-    Object.keys(this.activity)
-      .map(a => this.activity[a])
-      .filter(a => a.event.Timestamp.valueOf() > this.startTime)
-      .filter(a => !a.flushed)
-      .sort((lhs, rhs) => lhs.event.Timestamp.valueOf() - rhs.event.Timestamp.valueOf())
-      .forEach(a => {
-        a.flushed = true;
-        this.printer.addActivity(a);
-      });
-
-    this.printer.print();
-  }
-
   private findMetadataFor(logicalId: string | undefined): ResourceMetadata | undefined {
-    const metadata = this.stack.manifest.metadata;
+    const metadata = this.stack?.manifest?.metadata;
     if (!logicalId || !metadata) { return undefined; }
     for (const path of Object.keys(metadata)) {
       const entry = metadata[path]
@@ -168,39 +209,81 @@ export class StackActivityMonitor {
     return undefined;
   }
 
-  private async readEvents(nextToken?: string): Promise<AWS.CloudFormation.StackEvent[]> {
-    const output = await this.cfn.describeStackEvents({ StackName: this.stackName, NextToken: nextToken }).promise()
-      .catch( e => {
-        if (e.code === 'ValidationError' && e.message === `Stack [${this.stackName}] does not exist`) {
-          return undefined;
+  /**
+   * Reads all new events from the stack history
+   *
+   * The events are returned in reverse chronological order; we continue to the next page if we
+   * see a next page and the last event in the page is new to us (and within the time window).
+   * haven't seen the final event
+   */
+  private async readNewEvents(): Promise<void> {
+    const events: StackActivity[] = [];
+
+    try {
+      let nextToken: string | undefined;
+      let finished = false;
+      while (!finished) {
+        const response = await this.cfn.describeStackEvents({ StackName: this.stackName, NextToken: nextToken }).promise();
+        const eventPage = response?.StackEvents ?? [];
+
+        for (const event of eventPage) {
+          // Event from before we were interested in 'em
+          if (event.Timestamp.valueOf() < this.startTime) {
+            finished = true;
+            break;
+          }
+
+          // Already seen this one
+          if (event.EventId in this.activity) {
+            finished = true;
+            break;
+          }
+
+          // Fresh event
+          events.push(this.activity[event.EventId] = {
+            event: event,
+            metadata: this.findMetadataFor(event.LogicalResourceId),
+          });
         }
-        throw e;
-      });
 
-    let events = output && output.StackEvents || [ ];
-    let allNew = true;
-
-    // merge events into the activity and dedup by event id
-    for (const e of events) {
-      if (e.EventId in this.activity) {
-        allNew = false;
-        break;
+        // We're also done if there's nothing left to read
+        nextToken = response?.NextToken;
+        if (nextToken === undefined) {
+          finished = true;
+        }
       }
-
-      this.activity[e.EventId] = {
-        flushed: false,
-        event: e,
-        metadata: this.findMetadataFor(e.LogicalResourceId),
-      };
+    } catch (e) {
+      if (e.code === 'ValidationError' && e.message === `Stack [${this.stackName}] does not exist`) {
+        return;
+      }
+      throw e;
     }
 
-    // only read next page if all the events we read are new events. otherwise, we can rest.
-    if (allNew && output && output.NextToken) {
-      await new Promise(cb => setTimeout(cb, this.pageSleep));
-      events = events.concat(await this.readEvents(output.NextToken));
+    events.reverse();
+    for (const event of events) {
+      this.printer.addActivity(event);
+    }
+  }
+
+  /**
+   * Perform a final poll to the end and flush out all events to the printer
+   *
+   * Finish any poll currently in progress, then do a final one until we've
+   * reached the last page.
+   */
+  private async finalPollToEnd() {
+    // If we were doing a poll, finish that first. It was started before
+    // the moment we were sure we weren't going to get any new events anymore
+    // so we need to do a new one anyway. Need to wait for this one though
+    // because our state is single-threaded.
+    if (this.readPromise) {
+      await this.readPromise;
     }
 
-    return events;
+    await this.readNewEvents();
+
+    // Final print
+    this.printer.print();
   }
 
   private simplifyConstructPath(path: string) {
@@ -255,7 +338,16 @@ interface PrinterProps {
   readonly stream: NodeJS.WriteStream;
 }
 
-abstract class ActivityPrinterBase {
+export interface IActivityPrinter {
+  readonly updateSleep: number;
+
+  addActivity(activity: StackActivity): void;
+  print(): void;
+  start(): void;
+  stop(): void;
+}
+
+abstract class ActivityPrinterBase implements IActivityPrinter {
   /**
    * Fetch new activity every 5 seconds
    */
@@ -308,8 +400,8 @@ abstract class ActivityPrinterBase {
     const status = activity.event.ResourceStatus;
     if (!status || !activity.event.LogicalResourceId) { return; }
 
-    if (status === 'ROLLBACK_IN_PROGRESS') {
-      // Only triggered on the stack once we've strated doing a rollback
+    if (status === 'ROLLBACK_IN_PROGRESS' || status === 'UPDATE_ROLLBACK_IN_PROGRESS') {
+      // Only triggered on the stack once we've started doing a rollback
       this.rollingBack = true;
     }
 
@@ -317,7 +409,7 @@ abstract class ActivityPrinterBase {
       this.resourcesInProgress[activity.event.LogicalResourceId] = activity;
     }
 
-    if (status.endsWith('_FAILED')) {
+    if (hasErrorMessage(status)) {
       const isCancelled = (activity.event.ResourceStatusReason ?? '').indexOf('cancelled') > -1;
 
       // Cancelled is not an interesting failure reason
@@ -430,7 +522,7 @@ export class HistoryActivityPrinter extends ActivityPrinterBase {
   private progress(): string {
     if (this.resourcesTotal == null) {
       // Don't have total, show simple count and hope the human knows
-      return padLeft(3, util.format('%s', this.resourcesDone)); // max 200 resources
+      return padLeft(3, util.format('%s', this.resourcesDone)); // max 500 resources
     }
 
     return util.format('%s/%s',
@@ -564,7 +656,7 @@ export class CurrentActivityPrinter extends ActivityPrinterBase {
   }
 
   private failureReasonOnNextLine(activity: StackActivity) {
-    return (activity.event.ResourceStatus ?? '').endsWith('_FAILED')
+    return hasErrorMessage(activity.event.ResourceStatus ?? '')
       ? `\n${' '.repeat(TIMESTAMP_WIDTH + STATUS_WIDTH + 6)}${colors.red(activity.event.ResourceStatusReason ?? '')}`
       : '';
   }
@@ -575,6 +667,10 @@ const PARTIAL_BLOCK = ['', '▏', '▎', '▍', '▌', '▋', '▊', '▉'];
 const MAX_PROGRESSBAR_WIDTH = 60;
 const MIN_PROGRESSBAR_WIDTH = 10;
 const PROGRESSBAR_EXTRA_SPACE = 2 /* leading spaces */ + 2 /* brackets */ + 4 /* progress number decoration */ + 6 /* 2 progress numbers up to 999 */;
+
+function hasErrorMessage(status: string) {
+  return status.endsWith('_FAILED') || status === 'ROLLBACK_IN_PROGRESS' || status === 'UPDATE_ROLLBACK_IN_PROGRESS';
+}
 
 function colorFromStatusResult(status?: string) {
   if (!status) {
@@ -606,7 +702,8 @@ function colorFromStatusActivity(status?: string) {
   if (status.startsWith('CREATE_') || status.startsWith('UPDATE_')) {
     return colors.green;
   }
-  if (status.startsWith('ROLLBACK_')) {
+  // For stacks, it may also be 'UPDDATE_ROLLBACK_IN_PROGRESS'
+  if (status.indexOf('ROLLBACK_') !== -1) {
     return colors.yellow;
   }
   if (status.startsWith('DELETE_')) {

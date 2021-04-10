@@ -1,4 +1,4 @@
-import { expect, haveResource, isSuperObject } from '@aws-cdk/assert';
+import { expect, haveResource, isSuperObject } from '@aws-cdk/assert-internal';
 import { App, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import { Dashboard, GraphWidget, PeriodOverride, TextWidget } from '../lib';
@@ -82,11 +82,13 @@ export = {
 
     // THEN
     expect(stack).to(haveResource('AWS::CloudWatch::Dashboard', {
-      DashboardBody: { 'Fn::Join': [ '', [
-        '{"widgets":[{"type":"metric","width":1,"height":1,"x":0,"y":0,"properties":{"view":"timeSeries","region":"',
-        { Ref: 'AWS::Region' },
-        '","yAxis":{}}}]}',
-      ]]},
+      DashboardBody: {
+        'Fn::Join': ['', [
+          '{"widgets":[{"type":"metric","width":1,"height":1,"x":0,"y":0,"properties":{"view":"timeSeries","region":"',
+          { Ref: 'AWS::Region' },
+          '","yAxis":{}}}]}',
+        ]],
+      },
     }));
 
     test.done();
@@ -109,12 +111,14 @@ export = {
 
     // THEN
     expect(stack).to(haveResource('AWS::CloudWatch::Dashboard', {
-      DashboardBody: { 'Fn::Join': [ '', [
-        '{"start":"-9H","end":"2018-12-17T06:00:00.000Z","periodOverride":"inherit",\
+      DashboardBody: {
+        'Fn::Join': ['', [
+          '{"start":"-9H","end":"2018-12-17T06:00:00.000Z","periodOverride":"inherit",\
 "widgets":[{"type":"metric","width":1,"height":1,"x":0,"y":0,"properties":{"view":"timeSeries","region":"',
-        { Ref: 'AWS::Region' },
-        '","yAxis":{}}}]}',
-      ]]},
+          { Ref: 'AWS::Region' },
+          '","yAxis":{}}}]}',
+        ]],
+      },
     }));
 
     test.done();

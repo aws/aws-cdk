@@ -18,6 +18,7 @@ taskDefinition.addContainer('web', {
   image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
   secrets: {
     SECRET: ecs.Secret.fromSecretsManager(secret),
+    PASSWORD: ecs.Secret.fromSecretsManager(secret, 'password'),
   },
 });
 

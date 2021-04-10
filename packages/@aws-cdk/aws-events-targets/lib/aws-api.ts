@@ -1,7 +1,7 @@
+import * as path from 'path';
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
-import * as path from 'path';
 import { metadata } from './sdk-api-metadata.generated';
 import { addLambdaPermission } from './util';
 
@@ -110,7 +110,6 @@ export class AwsApi implements events.IRuleTarget {
     };
 
     return {
-      id: '',
       arn: handler.functionArn,
       input: events.RuleTargetInput.fromObject(input),
       targetResource: handler,

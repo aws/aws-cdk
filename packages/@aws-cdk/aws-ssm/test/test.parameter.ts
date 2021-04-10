@@ -1,6 +1,6 @@
 /* eslint-disable max-len */
 
-import { expect, haveResource } from '@aws-cdk/assert';
+import { expect, haveResource } from '@aws-cdk/assert-internal';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as cdk from '@aws-cdk/core';
@@ -69,7 +69,7 @@ export = {
     test.doesNotThrow(() => {
       new ssm.StringParameter(stack, 'Parameter', {
         allowedPattern: '^Bar$',
-        stringValue: cdk.Lazy.stringValue({ produce: () => 'Foo!' }),
+        stringValue: cdk.Lazy.string({ produce: () => 'Foo!' }),
       });
     });
     test.done();
@@ -239,7 +239,7 @@ export = {
     // THEN
     test.doesNotThrow(() => new ssm.StringListParameter(stack, 'Parameter', {
       allowedPattern: '^(Foo|Bar)$',
-      stringListValue: ['Foo', cdk.Lazy.stringValue({ produce: () => 'Baz!' })],
+      stringListValue: ['Foo', cdk.Lazy.string({ produce: () => 'Baz!' })],
     }));
     test.done();
   },
@@ -276,7 +276,7 @@ export = {
     }), /Parameter names must be fully qualified/);
 
     test.throws(() => new ssm.StringListParameter(stack, 'myParam2', {
-      stringListValue: [ 'foo', 'bar' ],
+      stringListValue: ['foo', 'bar'],
       parameterName: 'path/to/parameter2',
     }), /Parameter names must be fully qualified \(if they include \"\/\" they must also begin with a \"\/\"\)\: path\/to\/parameter2/);
 
@@ -299,7 +299,8 @@ export = {
         { Ref: 'AWS::Region' },
         ':',
         { Ref: 'AWS::AccountId' },
-        ':parameter/MyParamName']],
+        ':parameter/MyParamName',
+      ]],
     });
     test.deepEqual(stack.resolve(param.parameterName), 'MyParamName');
     test.deepEqual(stack.resolve(param.parameterType), 'String');
@@ -334,7 +335,8 @@ export = {
         { Ref: 'AWS::Region' },
         ':',
         { Ref: 'AWS::AccountId' },
-        ':parameter/MyParamName']],
+        ':parameter/MyParamName',
+      ]],
     });
     test.deepEqual(stack.resolve(param.parameterName), 'MyParamName');
     test.deepEqual(stack.resolve(param.parameterType), 'String');
@@ -361,7 +363,8 @@ export = {
         { Ref: 'AWS::Region' },
         ':',
         { Ref: 'AWS::AccountId' },
-        ':parameter/MyParamName']],
+        ':parameter/MyParamName',
+      ]],
     });
     test.deepEqual(stack.resolve(param.parameterName), 'MyParamName');
     test.deepEqual(stack.resolve(param.parameterType), 'SecureString');
@@ -508,7 +511,8 @@ export = {
         { Ref: 'AWS::Region' },
         ':',
         { Ref: 'AWS::AccountId' },
-        ':parameter/MyParamName']],
+        ':parameter/MyParamName',
+      ]],
     });
     test.deepEqual(stack.resolve(param.parameterName), 'MyParamName');
     test.deepEqual(stack.resolve(param.parameterType), 'StringList');
@@ -603,9 +607,9 @@ export = {
   'rendering of parameter arns'(test: Test) {
     const stack = new cdk.Stack();
     const param = new cdk.CfnParameter(stack, 'param');
-    const expectedA = { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':ssm:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':parameter/bam'] ] };
-    const expectedB = { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':ssm:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':parameter/', { Ref: 'param' } ] ] };
-    const expectedC = { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':ssm:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':parameter', { Ref: 'param' } ] ] };
+    const expectedA = { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':ssm:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':parameter/bam']] };
+    const expectedB = { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':ssm:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':parameter/', { Ref: 'param' }]] };
+    const expectedC = { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':ssm:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':parameter', { Ref: 'param' }]] };
     let i = 0;
 
     // WHEN
@@ -625,9 +629,9 @@ export = {
     const case11 = new ssm.StringParameter(stack, `p${i++}`, { parameterName: '/foo/bar', stringValue: 'hello' });
     const case12 = new ssm.StringParameter(stack, `p${i++}`, { parameterName: 'simple-name', stringValue: 'hello' });
 
-    const case13 = new ssm.StringListParameter(stack, `p${i++}`, { stringListValue: [ 'hello', 'world' ] });
-    const case14 = new ssm.StringListParameter(stack, `p${i++}`, { parameterName: '/not/simple', stringListValue: [ 'hello', 'world' ] });
-    const case15 = new ssm.StringListParameter(stack, `p${i++}`, { parameterName: 'simple', stringListValue: [ 'hello', 'world' ] });
+    const case13 = new ssm.StringListParameter(stack, `p${i++}`, { stringListValue: ['hello', 'world'] });
+    const case14 = new ssm.StringListParameter(stack, `p${i++}`, { parameterName: '/not/simple', stringListValue: ['hello', 'world'] });
+    const case15 = new ssm.StringListParameter(stack, `p${i++}`, { parameterName: 'simple', stringListValue: ['hello', 'world'] });
 
     // THEN
     test.deepEqual(stack.resolve(case1.parameterArn), expectedA);
@@ -640,12 +644,12 @@ export = {
     test.deepEqual(stack.resolve(case9.parameterArn), expectedC);
 
     // new ssm.Parameters determine if "/" is needed based on the posture of `parameterName`.
-    test.deepEqual(stack.resolve(case10.parameterArn), { 'Fn::Join': [ '', [ 'arn:', { Ref: 'AWS::Partition' }, ':ssm:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':parameter/', { Ref: 'p81BB0F6FE' } ] ] });
-    test.deepEqual(stack.resolve(case11.parameterArn), { 'Fn::Join': [ '', [ 'arn:', { Ref: 'AWS::Partition' }, ':ssm:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':parameter', { Ref: 'p97A508212' } ] ] });
-    test.deepEqual(stack.resolve(case12.parameterArn), { 'Fn::Join': [ '', [ 'arn:', { Ref: 'AWS::Partition' }, ':ssm:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':parameter/', { Ref: 'p107D6B8AB0' } ] ] });
-    test.deepEqual(stack.resolve(case13.parameterArn), { 'Fn::Join': [ '', [ 'arn:', { Ref: 'AWS::Partition' }, ':ssm:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':parameter/', { Ref: 'p118A9CB02C' } ] ] });
-    test.deepEqual(stack.resolve(case14.parameterArn), { 'Fn::Join': [ '', [ 'arn:', { Ref: 'AWS::Partition' }, ':ssm:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':parameter', { Ref: 'p129BE4CE91' } ] ] });
-    test.deepEqual(stack.resolve(case15.parameterArn), { 'Fn::Join': [ '', [ 'arn:', { Ref: 'AWS::Partition' }, ':ssm:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':parameter/', { Ref: 'p1326A2AEC4' } ] ] });
+    test.deepEqual(stack.resolve(case10.parameterArn), { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':ssm:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':parameter/', { Ref: 'p81BB0F6FE' }]] });
+    test.deepEqual(stack.resolve(case11.parameterArn), { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':ssm:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':parameter', { Ref: 'p97A508212' }]] });
+    test.deepEqual(stack.resolve(case12.parameterArn), { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':ssm:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':parameter/', { Ref: 'p107D6B8AB0' }]] });
+    test.deepEqual(stack.resolve(case13.parameterArn), { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':ssm:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':parameter/', { Ref: 'p118A9CB02C' }]] });
+    test.deepEqual(stack.resolve(case14.parameterArn), { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':ssm:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':parameter', { Ref: 'p129BE4CE91' }]] });
+    test.deepEqual(stack.resolve(case15.parameterArn), { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':ssm:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':parameter/', { Ref: 'p1326A2AEC4' }]] });
 
     test.done();
   },
@@ -659,12 +663,12 @@ export = {
     // WHEN
     const p1 = new ssm.StringParameter(stack, `p${i++}`, { parameterName: param.valueAsString, stringValue: 'foo', simpleName: true });
     const p2 = new ssm.StringParameter(stack, `p${i++}`, { parameterName: param.valueAsString, stringValue: 'foo', simpleName: false });
-    const p3 = new ssm.StringListParameter(stack, `p${i++}`, { parameterName: param.valueAsString, stringListValue: [ 'foo' ], simpleName: false });
+    const p3 = new ssm.StringListParameter(stack, `p${i++}`, { parameterName: param.valueAsString, stringListValue: ['foo'], simpleName: false });
 
     // THEN
-    test.deepEqual(stack.resolve(p1.parameterArn), { 'Fn::Join': [ '', [ 'arn:', { Ref: 'AWS::Partition' }, ':ssm:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':parameter/', { Ref: 'p0B02A8F65' } ] ] });
-    test.deepEqual(stack.resolve(p2.parameterArn), { 'Fn::Join': [ '', [ 'arn:', { Ref: 'AWS::Partition' }, ':ssm:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':parameter', { Ref: 'p1E43AD5AC' } ] ] });
-    test.deepEqual(stack.resolve(p3.parameterArn), { 'Fn::Join': [ '', [ 'arn:', { Ref: 'AWS::Partition' }, ':ssm:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':parameter', { Ref: 'p2C1903AEB' } ] ] });
+    test.deepEqual(stack.resolve(p1.parameterArn), { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':ssm:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':parameter/', { Ref: 'p0B02A8F65' }]] });
+    test.deepEqual(stack.resolve(p2.parameterArn), { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':ssm:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':parameter', { Ref: 'p1E43AD5AC' }]] });
+    test.deepEqual(stack.resolve(p3.parameterArn), { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':ssm:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':parameter', { Ref: 'p2C1903AEB' }]] });
 
     test.done();
   },

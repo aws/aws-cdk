@@ -1,14 +1,81 @@
 import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { IEventSourceDlq } from './dlq';
 import { IFunction } from './function-base';
 import { CfnEventSourceMapping } from './lambda.generated';
+
+/**
+ * The type of authentication protocol or the VPC components for your event source's SourceAccessConfiguration
+ * @see https://docs.aws.amazon.com/lambda/latest/dg/API_SourceAccessConfiguration.html#SSS-Type-SourceAccessConfiguration-Type
+ */
+export class SourceAccessConfigurationType {
+
+  /**
+   * (MQ) The Secrets Manager secret that stores your broker credentials.
+   */
+  public static readonly BASIC_AUTH = new SourceAccessConfigurationType('BASIC_AUTH');
+
+  /**
+   * The subnets associated with your VPC. Lambda connects to these subnets to fetch data from your Self-Managed Apache Kafka cluster.
+   */
+  public static readonly VPC_SUBNET = new SourceAccessConfigurationType('VPC_SUBNET');
+
+  /**
+   * The VPC security group used to manage access to your Self-Managed Apache Kafka brokers.
+   */
+  public static readonly VPC_SECURITY_GROUP = new SourceAccessConfigurationType('VPC_SECURITY_GROUP');
+
+  /**
+   * The Secrets Manager ARN of your secret key used for SASL SCRAM-256 authentication of your Self-Managed Apache Kafka brokers.
+   */
+  public static readonly SASL_SCRAM_256_AUTH = new SourceAccessConfigurationType('SASL_SCRAM_256_AUTH');
+
+  /**
+   * The Secrets Manager ARN of your secret key used for SASL SCRAM-512 authentication of your Self-Managed Apache Kafka brokers.
+   */
+  public static readonly SASL_SCRAM_512_AUTH = new SourceAccessConfigurationType('SASL_SCRAM_512_AUTH');
+
+  /** A custom source access configuration property */
+  public static of(name: string): SourceAccessConfigurationType {
+    return new SourceAccessConfigurationType(name);
+  }
+
+  /**
+   * The key to use in `SourceAccessConfigurationProperty.Type` property in CloudFormation
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lambda-eventsourcemapping-sourceaccessconfiguration.html#cfn-lambda-eventsourcemapping-sourceaccessconfiguration-type
+   */
+  public readonly type: string;
+
+  private constructor(type: string) {
+    this.type = type;
+  }
+}
+
+/**
+ * Specific settings like the authentication protocol or the VPC components to secure access to your event source.
+ */
+export interface SourceAccessConfiguration {
+  /**
+   * The type of authentication protocol or the VPC components for your event source. For example: "SASL_SCRAM_512_AUTH".
+   */
+  readonly type: SourceAccessConfigurationType,
+  /**
+   * The value for your chosen configuration in type.
+   * For example: "URI": "arn:aws:secretsmanager:us-east-1:01234567890:secret:MyBrokerSecretName".
+   * The exact string depends on the type.
+   * @see SourceAccessConfigurationType
+   */
+  readonly uri: string
+}
 
 export interface EventSourceMappingOptions {
   /**
    * The Amazon Resource Name (ARN) of the event source. Any record added to
    * this stream can invoke the Lambda function.
+   *
+   * @default - not set if using a self managed Kafka cluster, throws an error otherwise
    */
-  readonly eventSourceArn: string;
+  readonly eventSourceArn?: string;
 
   /**
    * The largest number of records that AWS Lambda will retrieve from your event
@@ -17,7 +84,7 @@ export interface EventSourceMappingOptions {
    *
    * Valid Range: Minimum value of 1. Maximum value of 10000.
    *
-   * @default - Amazon Kinesis and Amazon DynamoDB is 100 records.
+   * @default - Amazon Kinesis, Amazon DynamoDB, and Amazon MSK is 100 records.
    * Both the default and maximum for Amazon SQS are 10 messages.
    */
   readonly batchSize?: number;
@@ -44,12 +111,12 @@ export interface EventSourceMappingOptions {
   readonly enabled?: boolean;
 
   /**
-   * The position in the DynamoDB or Kinesis stream where AWS Lambda should
+   * The position in the DynamoDB, Kinesis or MSK stream where AWS Lambda should
    * start reading.
    *
    * @see https://docs.aws.amazon.com/kinesis/latest/APIReference/API_GetShardIterator.html#Kinesis-GetShardIterator-request-ShardIteratorType
    *
-   * @default - Required for Amazon Kinesis and Amazon DynamoDB Streams sources.
+   * @default - Required for Amazon Kinesis, Amazon DynamoDB, and Amazon MSK Streams sources.
    */
   readonly startingPosition?: StartingPosition;
 
@@ -67,18 +134,20 @@ export interface EventSourceMappingOptions {
    * * Minimum value of 60 seconds
    * * Maximum value of 7 days
    *
-   * @default Duration.days(7)
+   * @default - infinite or until the record expires.
    */
   readonly maxRecordAge?: cdk.Duration;
 
   /**
    * The maximum number of times to retry when the function returns an error.
+   * Set to `undefined` if you want lambda to keep retrying infinitely or until
+   * the record expires.
    *
    * Valid Range:
    * * Minimum value of 0
    * * Maximum value of 10000
    *
-   * @default 10000
+   * @default - infinite or until the record expires.
    */
   readonly retryAttempts?: number;
 
@@ -91,6 +160,41 @@ export interface EventSourceMappingOptions {
    * @default 1
    */
   readonly parallelizationFactor?: number;
+
+  /**
+   * The name of the Kafka topic.
+   *
+   * @default - no topic
+   */
+  readonly kafkaTopic?: string;
+
+  /**
+   * The size of the tumbling windows to group records sent to DynamoDB or Kinesis
+   *
+   * @see https://docs.aws.amazon.com/lambda/latest/dg/with-ddb.html#services-ddb-windows
+   *
+   * Valid Range: 0 - 15 minutes
+   *
+   * @default - None
+   */
+  readonly tumblingWindow?: cdk.Duration;
+
+  /**
+   * A list of host and port pairs that are the addresses of the Kafka brokers in a self managed "bootstrap" Kafka cluster
+   * that a Kafka client connects to initially to bootstrap itself.
+   * They are in the format `abc.example.com:9096`.
+   *
+   * @default - none
+   */
+  readonly kafkaBootstrapServers?: string[]
+
+  /**
+   * Specific settings like the authentication protocol or the VPC components to secure access to your event source.
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lambda-eventsourcemapping-sourceaccessconfiguration.html
+   *
+   * @default - none
+   */
+  readonly sourceAccessConfigurations?: SourceAccessConfiguration[]
 }
 
 /**
@@ -132,7 +236,7 @@ export class EventSourceMapping extends cdk.Resource implements IEventSourceMapp
   /**
    * Import an event source into this stack from its event source id.
    */
-  public static fromEventSourceMappingId(scope: cdk.Construct, id: string, eventSourceMappingId: string): IEventSourceMapping {
+  public static fromEventSourceMappingId(scope: Construct, id: string, eventSourceMappingId: string): IEventSourceMapping {
     class Import extends cdk.Resource implements IEventSourceMapping {
       public readonly eventSourceMappingId = eventSourceMappingId;
     }
@@ -141,14 +245,26 @@ export class EventSourceMapping extends cdk.Resource implements IEventSourceMapp
 
   public readonly eventSourceMappingId: string;
 
-  constructor(scope: cdk.Construct, id: string, props: EventSourceMappingProps) {
+  constructor(scope: Construct, id: string, props: EventSourceMappingProps) {
     super(scope, id);
+
+    if (props.eventSourceArn == undefined && props.kafkaBootstrapServers == undefined) {
+      throw new Error('Either eventSourceArn or kafkaBootstrapServers must be set');
+    }
+
+    if (props.eventSourceArn !== undefined && props.kafkaBootstrapServers !== undefined) {
+      throw new Error('eventSourceArn and kafkaBootstrapServers are mutually exclusive');
+    }
+
+    if (props.kafkaBootstrapServers && (props.kafkaBootstrapServers?.length < 1)) {
+      throw new Error('kafkaBootStrapServers must not be empty if set');
+    }
 
     if (props.maxBatchingWindow && props.maxBatchingWindow.toSeconds() > 300) {
       throw new Error(`maxBatchingWindow cannot be over 300 seconds, got ${props.maxBatchingWindow.toSeconds()}`);
     }
 
-    if (props.maxRecordAge && (props.maxRecordAge.toSeconds() < 60 || props.maxRecordAge.toDays({integral: false}) > 7)) {
+    if (props.maxRecordAge && (props.maxRecordAge.toSeconds() < 60 || props.maxRecordAge.toDays({ integral: false }) > 7)) {
       throw new Error('maxRecordAge must be between 60 seconds and 7 days inclusive');
     }
 
@@ -164,6 +280,10 @@ export class EventSourceMapping extends cdk.Resource implements IEventSourceMapp
       }
     });
 
+    if (props.tumblingWindow && !cdk.Token.isUnresolved(props.tumblingWindow) && props.tumblingWindow.toSeconds() > 900) {
+      throw new Error(`tumblingWindow cannot be over 900 seconds, got ${props.tumblingWindow.toSeconds()}`);
+    }
+
 
     let destinationConfig;
 
@@ -171,6 +291,11 @@ export class EventSourceMapping extends cdk.Resource implements IEventSourceMapp
       destinationConfig = {
         onFailure: props.onFailure.bind(this, props.target),
       };
+    }
+
+    let selfManagedEventSource;
+    if (props.kafkaBootstrapServers) {
+      selfManagedEventSource = { endpoints: { kafkaBootstrapServers: props.kafkaBootstrapServers } };
     }
 
     const cfnEventSourceMapping = new CfnEventSourceMapping(this, 'Resource', {
@@ -185,13 +310,17 @@ export class EventSourceMapping extends cdk.Resource implements IEventSourceMapp
       maximumRecordAgeInSeconds: props.maxRecordAge?.toSeconds(),
       maximumRetryAttempts: props.retryAttempts,
       parallelizationFactor: props.parallelizationFactor,
+      topics: props.kafkaTopic !== undefined ? [props.kafkaTopic] : undefined,
+      tumblingWindowInSeconds: props.tumblingWindow?.toSeconds(),
+      sourceAccessConfigurations: props.sourceAccessConfigurations?.map((o) => {return { type: o.type.type, uri: o.uri };}),
+      selfManagedEventSource,
     });
     this.eventSourceMappingId = cfnEventSourceMapping.ref;
   }
 }
 
 /**
- * The position in the DynamoDB or Kinesis stream where AWS Lambda should start
+ * The position in the DynamoDB, Kinesis or MSK stream where AWS Lambda should start
  * reading.
  */
 export enum StartingPosition {

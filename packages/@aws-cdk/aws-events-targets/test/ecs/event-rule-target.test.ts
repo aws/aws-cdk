@@ -1,7 +1,8 @@
-import '@aws-cdk/assert/jest';
+import '@aws-cdk/assert-internal/jest';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecs from '@aws-cdk/aws-ecs';
 import * as events from '@aws-cdk/aws-events';
+import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import * as targets from '../../lib';
 
@@ -43,6 +44,249 @@ test('Can use EC2 taskdef as EventRule target', () => {
         EcsParameters: {
           TaskCount: 1,
           TaskDefinitionArn: { Ref: 'TaskDef54694570' },
+        },
+        InputTransformer: {
+          InputPathsMap: {
+            'detail-event': '$.detail.event',
+          },
+          InputTemplate: '{"containerOverrides":[{"name":"TheContainer","command":["echo",<detail-event>]}]}',
+        },
+        RoleArn: { 'Fn::GetAtt': ['TaskDefEventsRoleFB3B67B8', 'Arn'] },
+        Id: 'Target0',
+      },
+    ],
+  });
+});
+
+test('Throws error for lacking of taskRole ' +
+    'when importing from an EC2 task definition just from a task definition arn as EventRule target', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 1 });
+  const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+  cluster.addCapacity('DefaultAutoScalingGroup', {
+    instanceType: new ec2.InstanceType('t2.micro'),
+  });
+
+  const taskDefinition = ecs.Ec2TaskDefinition.fromEc2TaskDefinitionArn(stack, 'TaskDef', 'importedTaskDefArn');
+
+  const rule = new events.Rule(stack, 'Rule', {
+    schedule: events.Schedule.expression('rate(1 min)'),
+  });
+
+  // THEN
+  expect(() => {
+    rule.addTarget(new targets.EcsTask({
+      cluster,
+      taskDefinition,
+      taskCount: 1,
+      containerOverrides: [{
+        containerName: 'TheContainer',
+        command: ['echo', events.EventField.fromPath('$.detail.event')],
+      }],
+    }));
+  }).toThrow('This operation requires the taskRole in ImportedTaskDefinition to be defined. ' +
+    'Add the \'taskRole\' in ImportedTaskDefinitionProps to instantiate ImportedTaskDefinition');
+});
+
+test('Can import an EC2 task definition from task definition attributes as EventRule target', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 1 });
+  const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+  cluster.addCapacity('DefaultAutoScalingGroup', {
+    instanceType: new ec2.InstanceType('t2.micro'),
+  });
+
+  const taskDefinition = ecs.Ec2TaskDefinition.fromEc2TaskDefinitionAttributes(stack, 'TaskDef', {
+    taskDefinitionArn: 'importedTaskDefArn',
+    networkMode: ecs.NetworkMode.BRIDGE,
+    taskRole: new iam.Role(stack, 'TaskRole', {
+      assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
+    }),
+  });
+
+  const rule = new events.Rule(stack, 'Rule', {
+    schedule: events.Schedule.expression('rate(1 min)'),
+  });
+
+  // WHEN
+  rule.addTarget(new targets.EcsTask({
+    cluster,
+    taskDefinition,
+    taskCount: 1,
+    containerOverrides: [{
+      containerName: 'TheContainer',
+      command: ['echo', events.EventField.fromPath('$.detail.event')],
+    }],
+  }));
+
+  // THEN
+  expect(stack).toHaveResourceLike('AWS::Events::Rule', {
+    Targets: [
+      {
+        Arn: { 'Fn::GetAtt': ['EcsCluster97242B84', 'Arn'] },
+        EcsParameters: {
+          TaskCount: 1,
+          TaskDefinitionArn: 'importedTaskDefArn',
+        },
+        InputTransformer: {
+          InputPathsMap: {
+            'detail-event': '$.detail.event',
+          },
+          InputTemplate: '{"containerOverrides":[{"name":"TheContainer","command":["echo",<detail-event>]}]}',
+        },
+        RoleArn: { 'Fn::GetAtt': ['TaskDefEventsRoleFB3B67B8', 'Arn'] },
+        Id: 'Target0',
+      },
+    ],
+  });
+});
+
+test('Throws error for lacking of taskRole ' +
+  'when importing from a Fargate task definition just from a task definition arn as EventRule target', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 1 });
+  const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+
+  const taskDefinition = ecs.FargateTaskDefinition.fromFargateTaskDefinitionArn(stack, 'TaskDef', 'ImportedTaskDefArn');
+
+  const rule = new events.Rule(stack, 'Rule', {
+    schedule: events.Schedule.expression('rate(1 min)'),
+  });
+
+  // THEN
+  expect(() => {
+    rule.addTarget(new targets.EcsTask({
+      cluster,
+      taskDefinition,
+      taskCount: 1,
+      containerOverrides: [{
+        containerName: 'TheContainer',
+        command: ['echo', events.EventField.fromPath('$.detail.event')],
+      }],
+    }));
+  }).toThrow('This operation requires the taskRole in ImportedTaskDefinition to be defined. ' +
+    'Add the \'taskRole\' in ImportedTaskDefinitionProps to instantiate ImportedTaskDefinition');
+});
+
+test('Can import a Fargate task definition from task definition attributes as EventRule target', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 1 });
+  const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+
+  const taskDefinition = ecs.FargateTaskDefinition.fromFargateTaskDefinitionAttributes(stack, 'TaskDef', {
+    taskDefinitionArn: 'importedTaskDefArn',
+    networkMode: ecs.NetworkMode.AWS_VPC,
+    taskRole: new iam.Role(stack, 'TaskRole', {
+      assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
+    }),
+  });
+
+  const rule = new events.Rule(stack, 'Rule', {
+    schedule: events.Schedule.expression('rate(1 min)'),
+  });
+
+  // WHEN
+  rule.addTarget(new targets.EcsTask({
+    cluster,
+    taskDefinition,
+    taskCount: 1,
+    containerOverrides: [{
+      containerName: 'TheContainer',
+      command: ['echo', events.EventField.fromPath('$.detail.event')],
+    }],
+  }));
+
+  // THEN
+  expect(stack).toHaveResourceLike('AWS::Events::Rule', {
+    Targets: [
+      {
+        Arn: { 'Fn::GetAtt': ['EcsCluster97242B84', 'Arn'] },
+        EcsParameters: {
+          TaskCount: 1,
+          TaskDefinitionArn: 'importedTaskDefArn',
+        },
+        InputTransformer: {
+          InputPathsMap: {
+            'detail-event': '$.detail.event',
+          },
+          InputTemplate: '{"containerOverrides":[{"name":"TheContainer","command":["echo",<detail-event>]}]}',
+        },
+        RoleArn: { 'Fn::GetAtt': ['TaskDefEventsRoleFB3B67B8', 'Arn'] },
+        Id: 'Target0',
+      },
+    ],
+  });
+});
+
+test('Throws error for lacking of taskRole ' +
+  'when importing from a task definition just from a task definition arn as EventRule target', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 1 });
+  const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+
+  const taskDefinition = ecs.TaskDefinition.fromTaskDefinitionArn(stack, 'TaskDef', 'ImportedTaskDefArn');
+
+  const rule = new events.Rule(stack, 'Rule', {
+    schedule: events.Schedule.expression('rate(1 min)'),
+  });
+
+  // THEN
+  expect(() => {
+    rule.addTarget(new targets.EcsTask({
+      cluster,
+      taskDefinition,
+      taskCount: 1,
+      containerOverrides: [{
+        containerName: 'TheContainer',
+        command: ['echo', events.EventField.fromPath('$.detail.event')],
+      }],
+    }));
+  }).toThrow('This operation requires the taskRole in ImportedTaskDefinition to be defined. ' +
+    'Add the \'taskRole\' in ImportedTaskDefinitionProps to instantiate ImportedTaskDefinition');
+});
+
+test('Can import a Task definition from task definition attributes as EventRule target', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 1 });
+  const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+
+  const taskDefinition = ecs.FargateTaskDefinition.fromFargateTaskDefinitionAttributes(stack, 'TaskDef', {
+    taskDefinitionArn: 'importedTaskDefArn',
+    networkMode: ecs.NetworkMode.AWS_VPC,
+    taskRole: new iam.Role(stack, 'TaskRole', {
+      assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
+    }),
+  });
+
+  const rule = new events.Rule(stack, 'Rule', {
+    schedule: events.Schedule.expression('rate(1 min)'),
+  });
+
+  // WHEN
+  rule.addTarget(new targets.EcsTask({
+    cluster,
+    taskDefinition,
+    taskCount: 1,
+    containerOverrides: [{
+      containerName: 'TheContainer',
+      command: ['echo', events.EventField.fromPath('$.detail.event')],
+    }],
+  }));
+
+  // THEN
+  expect(stack).toHaveResourceLike('AWS::Events::Rule', {
+    Targets: [
+      {
+        Arn: { 'Fn::GetAtt': ['EcsCluster97242B84', 'Arn'] },
+        EcsParameters: {
+          TaskCount: 1,
+          TaskDefinitionArn: 'importedTaskDefArn',
         },
         InputTransformer: {
           InputPathsMap: {
@@ -335,10 +579,10 @@ test('uses multiple security groups', () => {
             AwsVpcConfiguration: {
               AssignPublicIp: 'DISABLED',
               SecurityGroups: [
-                { 'Fn::GetAtt': ['SecurityGroupAED40ADC5', 'GroupId']},
-                {'Fn::GetAtt': ['SecurityGroupB04591F90', 'GroupId']},
+                { 'Fn::GetAtt': ['SecurityGroupAED40ADC5', 'GroupId'] },
+                { 'Fn::GetAtt': ['SecurityGroupB04591F90', 'GroupId'] },
               ],
-              Subnets: [{ Ref: 'VpcPrivateSubnet1Subnet536B997A'}],
+              Subnets: [{ Ref: 'VpcPrivateSubnet1Subnet536B997A' }],
             },
           },
           TaskCount: 1,
@@ -349,6 +593,102 @@ test('uses multiple security groups', () => {
         Id: 'Target0',
         Input: '{"containerOverrides":[{"name":"TheContainer","command":["echo","yay"]}]}',
         RoleArn: { 'Fn::GetAtt': ['TaskDefEventsRoleFB3B67B8', 'Arn'] },
+      },
+    ],
+  });
+});
+
+test('uses existing IAM role', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 1 });
+  const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+  const role = new iam.Role(stack, 'CustomIamRole', {
+    assumedBy: new iam.ServicePrincipal('events.amazonaws.com'),
+  });
+
+  const taskDefinition = new ecs.FargateTaskDefinition(stack, 'TaskDef');
+  taskDefinition.addContainer('TheContainer', {
+    image: ecs.ContainerImage.fromRegistry('henk'),
+  });
+
+  const rule = new events.Rule(stack, 'Rule', {
+    schedule: events.Schedule.expression('rate(1 min)'),
+  });
+
+  // WHEN
+  rule.addTarget(new targets.EcsTask({
+    cluster,
+    taskDefinition,
+    taskCount: 1,
+    containerOverrides: [{
+      containerName: 'TheContainer',
+      command: ['echo', events.EventField.fromPath('$.detail.event')],
+    }],
+    role,
+  }));
+
+  // THEN
+  expect(stack).toHaveResourceLike('AWS::Events::Rule', {
+    Targets: [
+      {
+        Arn: { 'Fn::GetAtt': ['EcsCluster97242B84', 'Arn'] },
+        EcsParameters: {
+          LaunchType: 'FARGATE',
+          TaskCount: 1,
+          TaskDefinitionArn: {
+            Ref: 'TaskDef54694570',
+          },
+        },
+        RoleArn: { 'Fn::GetAtt': ['CustomIamRoleE653F2D1', 'Arn'] },
+        Id: 'Target0',
+      },
+    ],
+  });
+});
+
+test('uses the specific fargate platform version', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 1 });
+  const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+  const platformVersion = ecs.FargatePlatformVersion.VERSION1_4;
+
+  const taskDefinition = new ecs.FargateTaskDefinition(stack, 'TaskDef');
+  taskDefinition.addContainer('TheContainer', {
+    image: ecs.ContainerImage.fromRegistry('henk'),
+  });
+
+  const rule = new events.Rule(stack, 'Rule', {
+    schedule: events.Schedule.expression('rate(1 min)'),
+  });
+
+  // WHEN
+  rule.addTarget(new targets.EcsTask({
+    cluster,
+    taskDefinition,
+    taskCount: 1,
+    containerOverrides: [{
+      containerName: 'TheContainer',
+      command: ['echo', events.EventField.fromPath('$.detail.event')],
+    }],
+    platformVersion,
+  }));
+
+  // THEN
+  expect(stack).toHaveResourceLike('AWS::Events::Rule', {
+    Targets: [
+      {
+        Arn: { 'Fn::GetAtt': ['EcsCluster97242B84', 'Arn'] },
+        EcsParameters: {
+          LaunchType: 'FARGATE',
+          TaskCount: 1,
+          TaskDefinitionArn: {
+            Ref: 'TaskDef54694570',
+          },
+          PlatformVersion: '1.4.0',
+        },
+        Id: 'Target0',
       },
     ],
   });

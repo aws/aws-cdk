@@ -14,6 +14,7 @@ mkdir -p $npmws
 # Install the CLI and put it on the PATH
 (cd $npmws && npm install aws-cdk)
 export PATH=$npmws/node_modules/.bin:$PATH
+export TEST_RUNNER=release
 
 # Run the inner script
 exec "$@"

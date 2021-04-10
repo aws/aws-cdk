@@ -1,6 +1,10 @@
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as events from '@aws-cdk/aws-events';
-import { Construct, Lazy } from '@aws-cdk/core';
+import { Lazy } from '@aws-cdk/core';
+
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct } from '@aws-cdk/core';
 
 /**
  * Low-level class for generic CodePipeline Actions.
@@ -24,19 +28,21 @@ export abstract class Action implements codepipeline.IAction {
 
   protected constructor(actionProperties: codepipeline.ActionProperties) {
     this.customerProvidedNamespace = actionProperties.variablesNamespace;
-    this.namespaceOrToken = Lazy.stringValue({ produce: () => {
+    this.namespaceOrToken = Lazy.string({
+      produce: () => {
       // make sure the action was bound (= added to a pipeline)
-      if (this.actualNamespace !== undefined) {
-        return this.customerProvidedNamespace !== undefined
+        if (this.actualNamespace !== undefined) {
+          return this.customerProvidedNamespace !== undefined
           // if a customer passed a namespace explicitly, always use that
-          ? this.customerProvidedNamespace
+            ? this.customerProvidedNamespace
           // otherwise, only return a namespace if any variable was referenced
-          : (this.variableReferenced ? this.actualNamespace : undefined);
-      } else {
-        throw new Error(`Cannot reference variables of action '${this.actionProperties.actionName}', ` +
+            : (this.variableReferenced ? this.actualNamespace : undefined);
+        } else {
+          throw new Error(`Cannot reference variables of action '${this.actionProperties.actionName}', ` +
           'as that action was never added to a pipeline');
-      }
-    }});
+        }
+      },
+    });
     this.actionProperties = {
       ...actionProperties,
       variablesNamespace: this.namespaceOrToken,
@@ -61,12 +67,12 @@ export abstract class Action implements codepipeline.IAction {
     const rule = new events.Rule(this.scope, name, options);
     rule.addTarget(target);
     rule.addEventPattern({
-      detailType: [ 'CodePipeline Action Execution State Change' ],
-      source: [ 'aws.codepipeline' ],
-      resources: [ this.pipeline.pipelineArn ],
+      detailType: ['CodePipeline Action Execution State Change'],
+      source: ['aws.codepipeline'],
+      resources: [this.pipeline.pipelineArn],
       detail: {
-        stage: [ this.stage.stageName ],
-        action: [ this.actionProperties.actionName ],
+        stage: [this.stage.stageName],
+        action: [this.actionProperties.actionName],
       },
     });
     return rule;

@@ -1,6 +1,7 @@
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
-import { Construct } from '@aws-cdk/core';
+import { IResource } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import * as codepipeline from '../lib';
 
 export interface FakeBuildActionProps extends codepipeline.CommonActionProps {
@@ -19,6 +20,8 @@ export interface FakeBuildActionProps extends codepipeline.CommonActionProps {
   region?: string;
 
   customConfigKey?: string;
+
+  resource?: IResource;
 }
 
 export class FakeBuildAction implements codepipeline.IAction {

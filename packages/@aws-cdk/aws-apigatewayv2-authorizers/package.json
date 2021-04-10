@@ -1,0 +1,104 @@
+{
+  "name": "@aws-cdk/aws-apigatewayv2-authorizers",
+  "version": "0.0.0",
+  "description": "Authorizers for AWS APIGateway V2",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "jsii": {
+    "outdir": "dist",
+    "targets": {
+      "dotnet": {
+        "namespace": "Amazon.CDK.AWS.APIGatewayv2.Authorizers",
+        "packageId": "Amazon.CDK.AWS.APIGatewayv2.Authorizers",
+        "signAssembly": true,
+        "assemblyOriginatorKeyFile": "../../key.snk",
+        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
+      },
+      "java": {
+        "package": "software.amazon.awscdk.services.apigatewayv2.authorizers",
+        "maven": {
+          "groupId": "software.amazon.awscdk",
+          "artifactId": "apigatewayv2-authorizers"
+        }
+      },
+      "python": {
+        "distName": "aws-cdk.aws-apigatewayv2-authorizers",
+        "module": "aws_cdk.aws_apigatewayv2_authorizers",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
+      }
+    },
+    "projectReferences": true
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aws/aws-cdk.git",
+    "directory": "packages/@aws-cdk/aws-apigatewayv2-authorizers"
+  },
+  "homepage": "https://github.com/aws/aws-cdk",
+  "scripts": {
+    "build": "cdk-build",
+    "integ": "cdk-integ",
+    "lint": "cdk-lint",
+    "package": "cdk-package",
+    "awslint": "cdk-awslint",
+    "pkglint": "pkglint -f",
+    "test": "cdk-test",
+    "watch": "cdk-watch",
+    "compat": "cdk-compat",
+    "build+test": "yarn build && yarn test",
+    "build+test+package": "yarn build+test && yarn package",
+    "rosetta:extract": "yarn --silent jsii-rosetta extract"
+  },
+  "cdk-build": {
+    "jest": true,
+    "env": {
+      "AWSLINT_BASE_CONSTRUCT": true
+    }
+  },
+  "keywords": [
+    "aws",
+    "cdk",
+    "constructs",
+    "apigateway"
+  ],
+  "author": {
+    "name": "Amazon Web Services",
+    "url": "https://aws.amazon.com",
+    "organization": true
+  },
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "@aws-cdk/aws-apigatewayv2-integrations": "0.0.0",
+    "@aws-cdk/aws-lambda": "0.0.0",
+    "cdk-build-tools": "0.0.0",
+    "cdk-integ-tools": "0.0.0",
+    "pkglint": "0.0.0",
+    "@aws-cdk/assert-internal": "0.0.0"
+  },
+  "dependencies": {
+    "@aws-cdk/aws-apigatewayv2": "0.0.0",
+    "@aws-cdk/aws-cognito": "0.0.0",
+    "@aws-cdk/core": "0.0.0",
+    "constructs": "^3.3.69"
+  },
+  "peerDependencies": {
+    "@aws-cdk/aws-apigatewayv2": "0.0.0",
+    "@aws-cdk/aws-cognito": "0.0.0",
+    "@aws-cdk/core": "0.0.0",
+    "constructs": "^3.3.69"
+  },
+  "engines": {
+    "node": ">= 10.13.0 <13 || >=13.7.0"
+  },
+  "stability": "experimental",
+  "maturity": "experimental",
+  "awscdkio": {
+    "announce": false
+  },
+  "publishConfig": {
+    "tag": "latest"
+  }
+}

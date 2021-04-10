@@ -1,4 +1,4 @@
-import '@aws-cdk/assert/jest';
+import '@aws-cdk/assert-internal/jest';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import { Stack } from '@aws-cdk/core';
 import { StepFunctionsInvokeActivity } from '../../lib/stepfunctions/invoke-activity';
@@ -30,7 +30,7 @@ test('Activity Task metrics and Activity metrics are the same', () => {
   // GIVEN
   const stack = new Stack();
   const activity = new sfn.Activity(stack, 'Activity');
-  const task = new StepFunctionsInvokeActivity(stack, 'Invoke', {activity });
+  const task = new StepFunctionsInvokeActivity(stack, 'Invoke', { activity });
 
   // WHEN
   const activityMetrics = [

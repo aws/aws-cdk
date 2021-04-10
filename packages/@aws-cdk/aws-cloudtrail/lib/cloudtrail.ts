@@ -5,7 +5,8 @@ import * as lambda from '@aws-cdk/aws-lambda';
 import * as logs from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as sns from '@aws-cdk/aws-sns';
-import { Construct, Resource, Stack } from '@aws-cdk/core';
+import { Resource, Stack } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CfnTrail } from './cloudtrail.generated';
 
 /**
@@ -245,7 +246,7 @@ export class Trail extends Resource {
 
       logsRole = new iam.Role(this, 'LogsRole', { assumedBy: cloudTrailPrincipal });
 
-      logsRole.addToPolicy(new iam.PolicyStatement({
+      logsRole.addToPrincipalPolicy(new iam.PolicyStatement({
         actions: ['logs:PutLogEvents', 'logs:CreateLogStream'],
         resources: [this.logGroup.logGroupArn],
       }));
@@ -361,7 +362,7 @@ export class Trail extends Resource {
    * @default false
    */
   public logAllLambdaDataEvents(options: AddEventSelectorOptions = {}) {
-    return this.addEventSelector(DataResourceType.LAMBDA_FUNCTION, [ `arn:${this.stack.partition}:lambda` ], options);
+    return this.addEventSelector(DataResourceType.LAMBDA_FUNCTION, [`arn:${this.stack.partition}:lambda`], options);
   }
 
   /**
@@ -388,7 +389,7 @@ export class Trail extends Resource {
    * @default false
    */
   public logAllS3DataEvents(options: AddEventSelectorOptions = {}) {
-    return this.addEventSelector(DataResourceType.S3_OBJECT, [ `arn:${this.stack.partition}:s3:::` ], options);
+    return this.addEventSelector(DataResourceType.S3_OBJECT, [`arn:${this.stack.partition}:s3:::`], options);
   }
 
   /**

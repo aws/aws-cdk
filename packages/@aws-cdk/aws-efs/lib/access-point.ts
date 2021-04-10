@@ -1,4 +1,5 @@
-import { Construct, IResource, Resource, Stack } from '@aws-cdk/core';
+import { IResource, Resource, Stack } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { IFileSystem } from './efs-file-system';
 import { CfnAccessPoint } from './efs.generated';
 
@@ -19,11 +20,16 @@ export interface IAccessPoint extends IResource {
    * @attribute
    */
   readonly accessPointArn: string;
+
+  /**
+   * The EFS file system
+   */
+  readonly fileSystem: IFileSystem;
 }
 
 /**
  * Permissions as POSIX ACL
- */
+*/
 export interface Acl {
   /**
    * Specifies the POSIX user ID to apply to the RootDirectory. Accepts values from 0 to 2^32 (4294967295).
@@ -109,22 +115,70 @@ export interface AccessPointProps extends AccessPointOptions {
 }
 
 /**
+ * Attributes that can be specified when importing an AccessPoint
+ */
+export interface AccessPointAttributes {
+  /**
+   * The ID of the AccessPoint
+   * One of this, or {@link accessPointArn} is required
+   *
+   * @default - determined based on accessPointArn
+   */
+  readonly accessPointId?: string;
+
+  /**
+   * The ARN of the AccessPoint
+   * One of this, or {@link accessPointId} is required
+   *
+   * @default - determined based on accessPointId
+   */
+  readonly accessPointArn?: string;
+
+  /**
+   * The EFS file system
+   *
+   * @default - no EFS file system
+   */
+  readonly fileSystem?: IFileSystem;
+}
+
+abstract class AccessPointBase extends Resource implements IAccessPoint {
+  /**
+   * The ARN of the Access Point
+   * @attribute
+   */
+  public abstract readonly accessPointArn: string;
+
+  /**
+   * The ID of the Access Point
+   * @attribute
+   */
+  public abstract readonly accessPointId: string;
+
+  /**
+   * The file system of the access point
+   */
+  public abstract readonly fileSystem: IFileSystem;
+}
+
+/**
  * Represents the AccessPoint
  */
-export class AccessPoint extends Resource implements IAccessPoint {
+export class AccessPoint extends AccessPointBase {
   /**
-   * Import an existing Access Point
+   * Import an existing Access Point by attributes
+   */
+  public static fromAccessPointAttributes(scope: Construct, id: string, attrs: AccessPointAttributes): IAccessPoint {
+    return new ImportedAccessPoint(scope, id, attrs);
+  }
+
+  /**
+   * Import an existing Access Point by id
    */
   public static fromAccessPointId(scope: Construct, id: string, accessPointId: string): IAccessPoint {
-    class Import extends Resource implements IAccessPoint {
-      public readonly accessPointId = accessPointId;
-      public readonly accessPointArn = Stack.of(scope).formatArn({
-        service: 'elasticfilesystem',
-        resource: 'access-point',
-        resourceName: accessPointId,
-      });
-    }
-    return new Import(scope, id);
+    return new ImportedAccessPoint(scope, id, {
+      accessPointId: accessPointId,
+    });
   }
 
   /**
@@ -140,7 +194,7 @@ export class AccessPoint extends Resource implements IAccessPoint {
   public readonly accessPointId: string;
 
   /**
-   * The filesystem of the access point
+   * The file system of the access point
    */
   public readonly fileSystem: IFileSystem;
 
@@ -171,5 +225,51 @@ export class AccessPoint extends Resource implements IAccessPoint {
       resourceName: this.accessPointId,
     });
     this.fileSystem = props.fileSystem;
+  }
+}
+
+class ImportedAccessPoint extends AccessPointBase {
+  public readonly accessPointId: string;
+  public readonly accessPointArn: string;
+  private readonly _fileSystem?: IFileSystem;
+
+  constructor(scope: Construct, id: string, attrs: AccessPointAttributes) {
+    super(scope, id);
+
+    if (!attrs.accessPointId) {
+      if (!attrs.accessPointArn) {
+        throw new Error('One of accessPointId or AccessPointArn is required!');
+      }
+
+      this.accessPointArn = attrs.accessPointArn;
+      let maybeApId = Stack.of(scope).parseArn(attrs.accessPointArn).resourceName;
+
+      if (!maybeApId) {
+        throw new Error('ARN for AccessPoint must provide the resource name.');
+      }
+
+      this.accessPointId = maybeApId;
+    } else {
+      if (attrs.accessPointArn) {
+        throw new Error('Only one of accessPointId or AccessPointArn can be provided!');
+      }
+
+      this.accessPointId = attrs.accessPointId;
+      this.accessPointArn = Stack.of(scope).formatArn({
+        service: 'elasticfilesystem',
+        resource: 'access-point',
+        resourceName: attrs.accessPointId,
+      });
+    }
+
+    this._fileSystem = attrs.fileSystem;
+  }
+
+  public get fileSystem() {
+    if (!this._fileSystem) {
+      throw new Error("fileSystem is not available when 'fromAccessPointId()' is used. Use 'fromAccessPointAttributes()' instead");
+    }
+
+    return this._fileSystem;
   }
 }

@@ -1,4 +1,4 @@
-import '@aws-cdk/assert/jest';
+import '@aws-cdk/assert-internal/jest';
 import { App, CfnOutput, Stack } from '@aws-cdk/core';
 import * as iam from '../lib';
 
@@ -40,7 +40,7 @@ test('use of cross-stack role reference does not lead to URLSuffix being exporte
     },
     Outputs: {
       ExportsOutputFnGetAttRole1ABCC5F0ArnB4C0B73E: {
-        Value: { 'Fn::GetAtt': [ 'Role1ABCC5F0', 'Arn' ] },
+        Value: { 'Fn::GetAtt': ['Role1ABCC5F0', 'Arn'] },
         Export: {
           Name: 'First:ExportsOutputFnGetAttRole1ABCC5F0ArnB4C0B73E',
         },
@@ -127,4 +127,42 @@ test('use OpenID Connect principal from provider', () => {
 
   // THEN
   expect(stack.resolve(principal.federated)).toStrictEqual({ Ref: 'MyProvider730BA1C8' });
+});
+
+test('SAML principal', () => {
+  // GIVEN
+  const stack = new Stack();
+  const provider = new iam.SamlProvider(stack, 'MyProvider', {
+    metadataDocument: iam.SamlMetadataDocument.fromXml('document'),
+  });
+
+  // WHEN
+  const principal = new iam.SamlConsolePrincipal(provider);
+  new iam.Role(stack, 'Role', {
+    assumedBy: principal,
+  });
+
+  // THEN
+  expect(stack.resolve(principal.federated)).toStrictEqual({ Ref: 'MyProvider730BA1C8' });
+  expect(stack).toHaveResource('AWS::IAM::Role', {
+    AssumeRolePolicyDocument: {
+      Statement: [
+        {
+          Action: 'sts:AssumeRoleWithSAML',
+          Condition: {
+            StringEquals: {
+              'SAML:aud': 'https://signin.aws.amazon.com/saml',
+            },
+          },
+          Effect: 'Allow',
+          Principal: {
+            Federated: {
+              Ref: 'MyProvider730BA1C8',
+            },
+          },
+        },
+      ],
+      Version: '2012-10-17',
+    },
+  });
 });

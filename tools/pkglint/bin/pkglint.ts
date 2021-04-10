@@ -3,14 +3,18 @@ import * as path from 'path';
 import * as yargs from 'yargs';
 import { findPackageJsons, ValidationRule } from '../lib';
 
-/* eslint-disable no-shadow */
+/* eslint-disable @typescript-eslint/no-shadow */
 const argv = yargs
   .usage('$0 [directory]')
-  .option('fix', { type: 'boolean', alias: 'f', desc: 'Fix package.json in addition to reporting mistakes'})
+  .option('fix', { type: 'boolean', alias: 'f', desc: 'Fix package.json in addition to reporting mistakes' })
   .argv;
 
 // Our version of yargs doesn't support positional arguments yet
 const directory = argv._[0] || '.';
+
+if (typeof(directory) !== 'string') {
+  throw new Error(`First argument should be a string. Got: ${directory} (${typeof(directory)})`);
+}
 
 argv.directory = path.resolve(directory, process.cwd());
 
@@ -18,7 +22,7 @@ async function main(): Promise<void> {
   const ruleClasses = require('../lib/rules'); // eslint-disable-line @typescript-eslint/no-require-imports
   const rules: ValidationRule[] = Object.keys(ruleClasses).map(key => new ruleClasses[key]()).filter(obj => obj instanceof ValidationRule);
 
-  const pkgs = findPackageJsons(directory);
+  const pkgs = findPackageJsons(argv.directory as string);
 
   rules.forEach(rule => pkgs.filter(pkg => pkg.shouldApply(rule)).forEach(pkg => rule.prepare(pkg)));
   rules.forEach(rule => pkgs.filter(pkg => pkg.shouldApply(rule)).forEach(pkg => rule.validate(pkg)));
@@ -27,7 +31,7 @@ async function main(): Promise<void> {
     pkgs.forEach(pkg => pkg.applyFixes());
   }
 
-  pkgs.forEach(pkg => pkg.displayReports(directory));
+  pkgs.forEach(pkg => pkg.displayReports(argv.directory as string));
 
   if (pkgs.some(p => p.hasReports)) {
     throw new Error('Some package.json files had errors');

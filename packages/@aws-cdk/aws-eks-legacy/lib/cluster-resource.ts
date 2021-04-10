@@ -1,10 +1,13 @@
-import * as cfn from '@aws-cdk/aws-cloudformation';
+import * as path from 'path';
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
-import { Construct, Duration, Token } from '@aws-cdk/core';
-import * as path from 'path';
+import { CustomResource, Duration, Token } from '@aws-cdk/core';
 import { CfnClusterProps } from './eks.generated';
 import { KubectlLayer } from './kubectl-layer';
+
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct } from '@aws-cdk/core';
 
 /**
  * A low-level CFN resource Amazon EKS cluster implemented through a custom
@@ -45,7 +48,7 @@ export class ClusterResource extends Construct {
       handler: 'index.handler',
       timeout: Duration.minutes(15),
       memorySize: 512,
-      layers: [ KubectlLayer.getOrCreate(this) ],
+      layers: [KubectlLayer.getOrCreate(this)],
     });
 
     if (!props.roleArn) {
@@ -54,20 +57,20 @@ export class ClusterResource extends Construct {
 
     // since we don't know the cluster name at this point, we must give this role star resource permissions
     handler.addToRolePolicy(new iam.PolicyStatement({
-      actions: [ 'eks:CreateCluster', 'eks:DescribeCluster', 'eks:DeleteCluster', 'eks:UpdateClusterVersion' ],
-      resources: [ '*' ],
+      actions: ['eks:CreateCluster', 'eks:DescribeCluster', 'eks:DeleteCluster', 'eks:UpdateClusterVersion'],
+      resources: ['*'],
     }));
 
     // the CreateCluster API will allow the cluster to assume this role, so we
     // need to allow the lambda execution role to pass it.
     handler.addToRolePolicy(new iam.PolicyStatement({
-      actions: [ 'iam:PassRole' ],
-      resources: [ props.roleArn ],
+      actions: ['iam:PassRole'],
+      resources: [props.roleArn],
     }));
 
-    const resource = new cfn.CustomResource(this, 'Resource', {
+    const resource = new CustomResource(this, 'Resource', {
       resourceType: ClusterResource.RESOURCE_TYPE,
-      provider: cfn.CustomResourceProvider.lambda(handler),
+      serviceToken: handler.functionArn,
       properties: {
         Config: props,
       },

@@ -75,10 +75,11 @@ def helm(verb, release, chart = None, repo = None, file = None, namespace = None
     if wait:
         cmnd.append('--wait')
     if not timeout is None:
-        cmnd.extend(['--timeout', timeout])  
+        cmnd.extend(['--timeout', timeout])
     cmnd.extend(['--kubeconfig', kubeconfig])
 
-    retry = 3
+    maxAttempts = 3
+    retry = maxAttempts
     while retry > 0:
         try:
             output = subprocess.check_output(cmnd, stderr=subprocess.STDOUT, cwd=outdir)
@@ -87,7 +88,8 @@ def helm(verb, release, chart = None, repo = None, file = None, namespace = None
         except subprocess.CalledProcessError as exc:
             output = exc.output
             if b'Broken pipe' in output:
-                logger.info("Broken pipe, retries left: %s" % retry)
                 retry = retry - 1
+                logger.info("Broken pipe, retries left: %s" % retry)
             else:
                 raise Exception(output)
+    raise Exception(f'Operation failed after {maxAttempts} attempts: {output}')

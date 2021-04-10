@@ -1,4 +1,4 @@
-import { expect, haveResource } from '@aws-cdk/assert';
+import { expect, haveResource } from '@aws-cdk/assert-internal';
 import * as kinesis from '@aws-cdk/aws-kinesis';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
@@ -76,6 +76,38 @@ export = {
     test.done();
   },
 
+  'specific tumblingWindowInSeconds'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new TestFunction(stack, 'Fn');
+    const stream = new kinesis.Stream(stack, 'S');
+
+    // WHEN
+    fn.addEventSource(new sources.KinesisEventSource(stream, {
+      batchSize: 50,
+      startingPosition: lambda.StartingPosition.LATEST,
+      tumblingWindow: cdk.Duration.seconds(60),
+    }));
+
+    // THEN
+    expect(stack).to(haveResource('AWS::Lambda::EventSourceMapping', {
+      'EventSourceArn': {
+        'Fn::GetAtt': [
+          'S509448A1',
+          'Arn',
+        ],
+      },
+      'FunctionName': {
+        'Ref': 'Fn9270CBC0',
+      },
+      'BatchSize': 50,
+      'StartingPosition': 'LATEST',
+      'TumblingWindowInSeconds': 60,
+    }));
+
+    test.done();
+  },
+
   'specific batch size'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
@@ -144,7 +176,7 @@ export = {
 
     // WHEN
     fn.addEventSource(new sources.KinesisEventSource(stream, {
-      batchSize: cdk.Lazy.numberValue({ produce: () => 10 }),
+      batchSize: cdk.Lazy.number({ produce: () => 10 }),
       startingPosition: lambda.StartingPosition.LATEST,
     }));
 
@@ -208,6 +240,26 @@ export = {
 
     // WHEN/THEN
     test.throws(() => eventSource.eventSourceMappingId, /KinesisEventSource is not yet bound to an event source mapping/);
+    test.done();
+  },
+
+  'event source disabled'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new TestFunction(stack, 'Fn');
+    const stream = new kinesis.Stream(stack, 'S');
+    const eventSource = new sources.KinesisEventSource(stream, {
+      startingPosition: lambda.StartingPosition.LATEST,
+      enabled: false,
+    });
+
+    // WHEN
+    fn.addEventSource(eventSource);
+
+    // THEN
+    expect(stack).to(haveResource('AWS::Lambda::EventSourceMapping', {
+      'Enabled': false,
+    }));
     test.done();
   },
 };

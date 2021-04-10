@@ -1,6 +1,6 @@
-import '@aws-cdk/assert/jest';
+import '@aws-cdk/assert-internal/jest';
 import { PublicHostedZone } from '@aws-cdk/aws-route53';
-import { App, Stack } from '@aws-cdk/core';
+import { App, Aws, Stack } from '@aws-cdk/core';
 import { Certificate, DnsValidatedCertificate } from '../lib';
 import { apexDomain, getCertificateRegion, isDnsValidatedCertificate } from '../lib/util';
 
@@ -53,7 +53,7 @@ describe('getCertificateRegion', () => {
   test('from stack', () => {
     // GIVEN
     const app = new App();
-    const stack = new Stack(app, 'RegionStack', {env: {region: 'eu-west-1'}});
+    const stack = new Stack(app, 'RegionStack', { env: { region: 'eu-west-1' } });
 
     const certificate = new Certificate(stack, 'TestCertificate', {
       domainName: 'www.example.com',
@@ -65,7 +65,7 @@ describe('getCertificateRegion', () => {
   test('from DnsValidatedCertificate region', () => {
     // GIVEN
     const app = new App();
-    const stack = new Stack(app, 'RegionStack', {env: {region: 'eu-west-1'}});
+    const stack = new Stack(app, 'RegionStack', { env: { region: 'eu-west-1' } });
     const hostedZone = new PublicHostedZone(stack, 'ExampleDotCom', {
       zoneName: 'example.com',
     });
@@ -82,7 +82,7 @@ describe('getCertificateRegion', () => {
   test('fromCertificateArn', () => {
     // GIVEN
     const app = new App();
-    const stack = new Stack(app, 'RegionStack', {env: {region: 'eu-west-1'}});
+    const stack = new Stack(app, 'RegionStack', { env: { region: 'eu-west-1' } });
 
     const certificate = Certificate.fromCertificateArn(
       stack, 'TestCertificate', 'arn:aws:acm:us-east-2:1111111:certificate/11-3336f1-44483d-adc7-9cd375c5169d',
@@ -99,7 +99,7 @@ describe('getCertificateRegion', () => {
       domainName: 'www.example.com',
     });
 
-    expect(getCertificateRegion(certificate)).toEqual('${Token[AWS::Region.4]}');
+    expect(getCertificateRegion(certificate)).toEqual(Aws.REGION);
   });
 
 });

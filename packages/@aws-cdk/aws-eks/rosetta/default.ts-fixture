@@ -1,0 +1,10 @@
+import * as cdk from '@aws-cdk/core';
+import * as eks from '@aws-cdk/aws-eks';
+
+class Context extends cdk.Construct {
+  constructor(scope: cdk.Construct, id: string) {
+    super(scope, id);
+
+    /// here
+  }
+}

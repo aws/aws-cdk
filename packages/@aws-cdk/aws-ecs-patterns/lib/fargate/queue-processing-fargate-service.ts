@@ -1,5 +1,7 @@
+import * as ec2 from '@aws-cdk/aws-ec2';
 import { FargatePlatformVersion, FargateService, FargateTaskDefinition } from '@aws-cdk/aws-ecs';
-import { Construct } from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
+import { Construct } from 'constructs';
 import { QueueProcessingServiceBase, QueueProcessingServiceBaseProps } from '../base/queue-processing-service-base';
 
 /**
@@ -59,6 +61,36 @@ export interface QueueProcessingFargateServiceProps extends QueueProcessingServi
    * @default Latest
    */
   readonly platformVersion?: FargatePlatformVersion;
+
+  /**
+   * Optional name for the container added
+   *
+   * @default - QueueProcessingContainer
+   */
+  readonly containerName?: string;
+
+  /**
+   * The subnets to associate with the service.
+   *
+   * @default - Public subnets if `assignPublicIp` is set, otherwise the first available one of Private, Isolated, Public, in that order.
+   */
+  readonly taskSubnets?: ec2.SubnetSelection;
+
+  /**
+   * The security groups to associate with the service. If you do not specify a security group, the default security group for the VPC is used.
+   *
+   * @default - A new security group is created.
+   */
+  readonly securityGroups?: ec2.ISecurityGroup[];
+
+  /**
+   * Specifies whether the task's elastic network interface receives a public IP address.
+   *
+   * If true, each task will receive a public IP address.
+   *
+   * @default false
+   */
+  readonly assignPublicIp?: boolean;
 }
 
 /**
@@ -86,7 +118,10 @@ export class QueueProcessingFargateService extends QueueProcessingServiceBase {
       cpu: props.cpu || 256,
       family: props.family,
     });
-    this.taskDefinition.addContainer('QueueProcessingContainer', {
+
+    const containerName = props.containerName ?? 'QueueProcessingContainer';
+
+    this.taskDefinition.addContainer(containerName, {
       image: props.image,
       command: props.command,
       environment: this.environment,
@@ -94,11 +129,14 @@ export class QueueProcessingFargateService extends QueueProcessingServiceBase {
       logging: this.logDriver,
     });
 
+    // The desiredCount should be removed from the fargate service when the feature flag is removed.
+    const desiredCount = this.node.tryGetContext(cxapi.ECS_REMOVE_DEFAULT_DESIRED_COUNT) ? undefined : this.desiredCount;
+
     // Create a Fargate service with the previously defined Task Definition and configure
     // autoscaling based on cpu utilization and number of messages visible in the SQS queue.
     this.service = new FargateService(this, 'QueueProcessingFargateService', {
       cluster: this.cluster,
-      desiredCount: this.desiredCount,
+      desiredCount: desiredCount,
       taskDefinition: this.taskDefinition,
       serviceName: props.serviceName,
       minHealthyPercent: props.minHealthyPercent,
@@ -106,7 +144,13 @@ export class QueueProcessingFargateService extends QueueProcessingServiceBase {
       propagateTags: props.propagateTags,
       enableECSManagedTags: props.enableECSManagedTags,
       platformVersion: props.platformVersion,
+      deploymentController: props.deploymentController,
+      securityGroups: props.securityGroups,
+      vpcSubnets: props.taskSubnets,
+      assignPublicIp: props.assignPublicIp,
+      circuitBreaker: props.circuitBreaker,
     });
+
     this.configureAutoscalingForService(this.service);
     this.grantPermissionsToService(this.service);
   }

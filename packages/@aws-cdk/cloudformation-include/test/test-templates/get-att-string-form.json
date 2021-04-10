@@ -1,0 +1,15 @@
+{
+  "Resources": {
+    "Bucket1": {
+      "Type": "AWS::S3::Bucket"
+    },
+    "Bucket2": {
+      "Type": "AWS::S3::Bucket",
+      "Metadata": {
+        "Bucket1Arn": {
+          "Fn::GetAtt": "Bucket1.Arn"
+        }
+      }
+    }
+  }
+}

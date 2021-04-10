@@ -359,8 +359,8 @@
     "ParameterGroup5E32DECB": {
       "Type": "AWS::RDS::DBParameterGroup",
       "Properties": {
-        "Description": "Parameter group for oracle-se1-11.2",
-        "Family": "oracle-se1-11.2",
+        "Description": "Parameter group for oracle-se2-19",
+        "Family": "oracle-se2-19",
         "Parameters": {
           "open_cursors": "2500"
         }
@@ -394,11 +394,11 @@
     "OptionGroupACA43DC1": {
       "Type": "AWS::RDS::OptionGroup",
       "Properties": {
-        "EngineName": "oracle-se1",
-        "MajorEngineVersion": "11.2",
+        "EngineName": "oracle-se2",
+        "MajorEngineVersion": "19",
         "OptionConfigurations": [
           {
-            "OptionName": "XMLDB"
+            "OptionName": "LOCATOR"
           },
           {
             "OptionName": "OEM",
@@ -413,7 +413,7 @@
             ]
           }
         ],
-        "OptionGroupDescription": "Option group for oracle-se1 11.2"
+        "OptionGroupDescription": "Option group for oracle-se2 19"
       }
     },
     "InstanceSubnetGroupF2CBA54F": {
@@ -549,7 +549,7 @@
           ]
         },
         "GenerateSecretString": {
-          "ExcludeCharacters": "\"@/\\",
+          "ExcludeCharacters": " %+~`#$&*()|[]{}:;<>?!'/@\"\\",
           "GenerateStringKey": "password",
           "PasswordLength": 30,
           "SecretStringTemplate": "{\"username\":\"syscdk\"}"
@@ -636,7 +636,6 @@
         "DBSubnetGroupName": {
           "Ref": "InstanceSubnetGroupF2CBA54F"
         },
-        "DeletionProtection": true,
         "EnableCloudwatchLogsExports": [
           "trace",
           "audit",
@@ -644,7 +643,8 @@
           "listener"
         ],
         "EnablePerformanceInsights": true,
-        "Engine": "oracle-se1",
+        "Engine": "oracle-se2",
+        "EngineVersion": "19.0.0.0.ru-2020-04.rur-2020-04.r1",
         "Iops": 1000,
         "LicenseModel": "bring-your-own-license",
         "MasterUsername": {
@@ -694,7 +694,8 @@
           }
         ]
       },
-      "UpdateReplacePolicy": "Snapshot"
+      "UpdateReplacePolicy": "Snapshot",
+      "DeletionPolicy": "Snapshot"
     },
     "InstanceLogRetentiontrace487771C8": {
       "Type": "Custom::LogRetention",
@@ -813,7 +814,7 @@
       "Properties": {
         "Location": {
           "ApplicationId": "arn:aws:serverlessrepo:us-east-1:297356227824:applications/SecretsManagerRDSOracleRotationSingleUser",
-          "SemanticVersion": "1.1.3"
+          "SemanticVersion": "1.1.60"
         },
         "Parameters": {
           "endpoint": {
@@ -851,7 +852,8 @@
               "InstanceRotationSingleUserSecurityGroupF3FB5C25",
               "GroupId"
             ]
-          }
+          },
+          "excludeCharacters": " %+~`#$&*()|[]{}:;<>?!'/@\"\\"
         }
       }
     },
@@ -905,6 +907,25 @@
             "Id": "Target0"
           }
         ]
+      }
+    },
+    "InstanceAvailabilityAllowEventRuleawscdkrdsinstanceFunctionD515EE1969208105": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "Function76856677",
+            "Arn"
+          ]
+        },
+        "Principal": "events.amazonaws.com",
+        "SourceArn": {
+          "Fn::GetAtt": [
+            "InstanceAvailabilityAD5D452C",
+            "Arn"
+          ]
+        }
       }
     },
     "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB": {
@@ -965,9 +986,11 @@
     "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A": {
       "Type": "AWS::Lambda::Function",
       "Properties": {
+        "Handler": "index.handler",
+        "Runtime": "nodejs12.x",
         "Code": {
           "S3Bucket": {
-            "Ref": "AssetParameters11aa2ce8971716ca7c8d28d472ab5e937131e78e136d0de8f4997fb11c4de847S3Bucket46EF559D"
+            "Ref": "AssetParameters884431e2bc651d2b61bd699a29dc9684b0f66911f06bd3ed0635f854bf18e147S3BucketAE1150B3"
           },
           "S3Key": {
             "Fn::Join": [
@@ -980,7 +1003,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParameters11aa2ce8971716ca7c8d28d472ab5e937131e78e136d0de8f4997fb11c4de847S3VersionKey68B7BF84"
+                          "Ref": "AssetParameters884431e2bc651d2b61bd699a29dc9684b0f66911f06bd3ed0635f854bf18e147S3VersionKeyC76660C1"
                         }
                       ]
                     }
@@ -993,7 +1016,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParameters11aa2ce8971716ca7c8d28d472ab5e937131e78e136d0de8f4997fb11c4de847S3VersionKey68B7BF84"
+                          "Ref": "AssetParameters884431e2bc651d2b61bd699a29dc9684b0f66911f06bd3ed0635f854bf18e147S3VersionKeyC76660C1"
                         }
                       ]
                     }
@@ -1003,14 +1026,12 @@
             ]
           }
         },
-        "Handler": "index.handler",
         "Role": {
           "Fn::GetAtt": [
             "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB",
             "Arn"
           ]
-        },
-        "Runtime": "nodejs10.x"
+        }
       },
       "DependsOn": [
         "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRoleDefaultPolicyADDA7DEB",
@@ -1074,51 +1095,32 @@
         "Code": {
           "ZipFile": "exports.handler = (event) => console.log(event);"
         },
-        "Handler": "index.handler",
         "Role": {
           "Fn::GetAtt": [
             "FunctionServiceRole675BB04A",
             "Arn"
           ]
         },
+        "Handler": "index.handler",
         "Runtime": "nodejs10.x"
       },
       "DependsOn": [
         "FunctionServiceRole675BB04A"
       ]
-    },
-    "FunctionAllowEventRuleawscdkrdsinstanceInstanceAvailabilityCE39A6A71E819C19": {
-      "Type": "AWS::Lambda::Permission",
-      "Properties": {
-        "Action": "lambda:InvokeFunction",
-        "FunctionName": {
-          "Fn::GetAtt": [
-            "Function76856677",
-            "Arn"
-          ]
-        },
-        "Principal": "events.amazonaws.com",
-        "SourceArn": {
-          "Fn::GetAtt": [
-            "InstanceAvailabilityAD5D452C",
-            "Arn"
-          ]
-        }
-      }
     }
   },
   "Parameters": {
-    "AssetParameters11aa2ce8971716ca7c8d28d472ab5e937131e78e136d0de8f4997fb11c4de847S3Bucket46EF559D": {
+    "AssetParameters884431e2bc651d2b61bd699a29dc9684b0f66911f06bd3ed0635f854bf18e147S3BucketAE1150B3": {
       "Type": "String",
-      "Description": "S3 bucket for asset \"11aa2ce8971716ca7c8d28d472ab5e937131e78e136d0de8f4997fb11c4de847\""
+      "Description": "S3 bucket for asset \"884431e2bc651d2b61bd699a29dc9684b0f66911f06bd3ed0635f854bf18e147\""
     },
-    "AssetParameters11aa2ce8971716ca7c8d28d472ab5e937131e78e136d0de8f4997fb11c4de847S3VersionKey68B7BF84": {
+    "AssetParameters884431e2bc651d2b61bd699a29dc9684b0f66911f06bd3ed0635f854bf18e147S3VersionKeyC76660C1": {
       "Type": "String",
-      "Description": "S3 key for asset version \"11aa2ce8971716ca7c8d28d472ab5e937131e78e136d0de8f4997fb11c4de847\""
+      "Description": "S3 key for asset version \"884431e2bc651d2b61bd699a29dc9684b0f66911f06bd3ed0635f854bf18e147\""
     },
-    "AssetParameters11aa2ce8971716ca7c8d28d472ab5e937131e78e136d0de8f4997fb11c4de847ArtifactHash27BA7171": {
+    "AssetParameters884431e2bc651d2b61bd699a29dc9684b0f66911f06bd3ed0635f854bf18e147ArtifactHash717FC602": {
       "Type": "String",
-      "Description": "Artifact hash for asset \"11aa2ce8971716ca7c8d28d472ab5e937131e78e136d0de8f4997fb11c4de847\""
+      "Description": "Artifact hash for asset \"884431e2bc651d2b61bd699a29dc9684b0f66911f06bd3ed0635f854bf18e147\""
     }
   }
 }

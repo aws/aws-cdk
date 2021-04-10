@@ -15,17 +15,17 @@ async function main() {
     .env('AWSLINT')
     .usage('awslint [options] [command]')
     .showHelpOnFail(true)
-    .command('', 'lint the current module (default)')
+    .command('$0', 'lint the current module (default)')
     .command('list', 'list all available rules')
-    .option('include', { alias: 'i', type: 'array', desc: 'evaluate only this rule(s)', default: [ '*' ] })
-    .option('exclude', { alias: 'x', type: 'array', desc: 'do not evaludate these rules (takes priority over --include)', default: [ ] })
+    .option('include', { alias: 'i', type: 'array', desc: 'evaluate only this rule(s)', default: ['*'] })
+    .option('exclude', { alias: 'x', type: 'array', desc: 'do not evaludate these rules (takes priority over --include)', default: [] })
     .option('save', { type: 'boolean', desc: 'updates package.json with "exclude" statements for all failing rules', default: false })
     .option('verbose', { alias: 'v', type: 'boolean', desc: 'verbose output (prints all assertions)', default: false })
-    .option('quiet', { alias: 'q', type: 'boolean', desc: 'quiet mode - shows only errors', default: false })
+    .option('quiet', { alias: 'q', type: 'boolean', desc: 'quiet mode - shows only errors', default: true })
     .option('force', { type: 'boolean', desc: 'succeed silently if this is not a jsii module', default: true })
     .option('config', { type: 'boolean', desc: 'reads options from the "awslint" section in package.json', default: true })
     .option('debug', { type: 'boolean', desc: 'debug output', default: false })
-    .option('compile', { alias: 'c', type: 'boolean',  desc: 'always run the jsii compiler (use "--no-compile" to never run the compiler, even if .jsii doesn\'t exist)' })
+    .option('compile', { alias: 'c', type: 'boolean', desc: 'always run the jsii compiler (use "--no-compile" to never run the compiler, even if .jsii doesn\'t exist)' })
     .group('include', 'Filtering')
     .group('exclude', 'Filtering')
     .group('config', 'Configuration')
@@ -233,7 +233,7 @@ function mergeOptions(dest: any, pkg?: any) {
 
     // if this is an array option, then add values to destination
     if (Array.isArray(value)) {
-      const arr = dest[key] || [ ];
+      const arr = dest[key] || [];
       arr.push(...value);
       dest[key] = arr;
       continue;
@@ -252,7 +252,7 @@ function mergeOptions(dest: any, pkg?: any) {
 }
 
 async function shell(command: string) {
-  const child = child_process.spawn(command, [], { stdio: [ 'inherit', 'inherit', 'inherit' ]});
+  const child = child_process.spawn(command, [], { stdio: ['inherit', 'inherit', 'inherit'] });
   return new Promise((ok, ko) => {
     child.once('exit', (status: any) => {
       if (status === 0) {

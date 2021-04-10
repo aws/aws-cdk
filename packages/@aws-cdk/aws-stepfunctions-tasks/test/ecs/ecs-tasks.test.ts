@@ -1,4 +1,4 @@
-import '@aws-cdk/assert/jest';
+import '@aws-cdk/assert-internal/jest';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecs from '@aws-cdk/aws-ecs';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
@@ -54,19 +54,21 @@ test('Running a Fargate Task', () => {
   });
 
   // WHEN
-  const runTask = new sfn.Task(stack, 'RunFargate', { task: new tasks.RunEcsFargateTask({
-    integrationPattern: sfn.ServiceIntegrationPattern.SYNC,
-    cluster,
-    taskDefinition,
-    containerOverrides: [
-      {
-        containerDefinition,
-        environment: [
-          {name: 'SOME_KEY', value: sfn.JsonPath.stringAt('$.SomeKey')},
-        ],
-      },
-    ],
-  }) });
+  const runTask = new sfn.Task(stack, 'RunFargate', {
+    task: new tasks.RunEcsFargateTask({
+      integrationPattern: sfn.ServiceIntegrationPattern.SYNC,
+      cluster,
+      taskDefinition,
+      containerOverrides: [
+        {
+          containerDefinition,
+          environment: [
+            { name: 'SOME_KEY', value: sfn.JsonPath.stringAt('$.SomeKey') },
+          ],
+        },
+      ],
+    }),
+  });
 
   new sfn.StateMachine(stack, 'SM', {
     definition: runTask,
@@ -165,19 +167,21 @@ test('Running an EC2 Task with bridge network', () => {
   });
 
   // WHEN
-  const runTask = new sfn.Task(stack, 'Run', { task: new tasks.RunEcsEc2Task({
-    integrationPattern: sfn.ServiceIntegrationPattern.SYNC,
-    cluster,
-    taskDefinition,
-    containerOverrides: [
-      {
-        containerDefinition,
-        environment: [
-          {name: 'SOME_KEY', value: sfn.JsonPath.stringAt('$.SomeKey')},
-        ],
-      },
-    ],
-  }) });
+  const runTask = new sfn.Task(stack, 'Run', {
+    task: new tasks.RunEcsEc2Task({
+      integrationPattern: sfn.ServiceIntegrationPattern.SYNC,
+      cluster,
+      taskDefinition,
+      containerOverrides: [
+        {
+          containerDefinition,
+          environment: [
+            { name: 'SOME_KEY', value: sfn.JsonPath.stringAt('$.SomeKey') },
+          ],
+        },
+      ],
+    }),
+  });
 
   new sfn.StateMachine(stack, 'SM', {
     definition: runTask,

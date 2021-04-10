@@ -98,21 +98,14 @@ describe('Task state', () => {
 });
 
 function verifyMetric(metric: Metric, metricName: string, statistic: string) {
-  expect(metric).toEqual({
+  expect(metric).toEqual(expect.objectContaining({
     metricName,
     namespace: 'AWS/States',
-    period: {
-      amount: 5,
-      unit: {
-        inMillis: 60000,
-        label: 'minutes',
-      },
-    },
     statistic,
     dimensions: {
       Arn: 'resource',
     },
-  });
+  }));
 }
 
 class FakeTask implements sfn.IStepFunctionsTask {

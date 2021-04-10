@@ -1,15 +1,63 @@
-import { expect as expectCDK, haveResource, ResourcePart } from '@aws-cdk/assert';
+import { ABSENT, expect as expectCDK, haveResource, ResourcePart, countResources } from '@aws-cdk/assert-internal';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as kms from '@aws-cdk/aws-kms';
-import { RemovalPolicy, Size, Stack, Tag } from '@aws-cdk/core';
+import { RemovalPolicy, Size, Stack, Tags } from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
 import { FileSystem, LifecyclePolicy, PerformanceMode, ThroughputMode } from '../lib';
 
 let stack = new Stack();
 let vpc = new ec2.Vpc(stack, 'VPC');
 
-beforeEach( () => {
+beforeEach(() => {
   stack = new Stack();
   vpc = new ec2.Vpc(stack, 'VPC');
+});
+
+test(`when ${cxapi.EFS_DEFAULT_ENCRYPTION_AT_REST} is enabled, encryption is enabled by default`, () => {
+
+  const customStack = new Stack();
+  customStack.node.setContext(cxapi.EFS_DEFAULT_ENCRYPTION_AT_REST, true);
+
+  const customVpc = new ec2.Vpc(customStack, 'VPC');
+  new FileSystem(customVpc, 'EfsFileSystem', {
+    vpc: customVpc,
+  });
+
+  expectCDK(customStack).to(haveResource('AWS::EFS::FileSystem', {
+    Encrypted: true,
+  }));
+
+});
+
+test(`when ${cxapi.EFS_DEFAULT_ENCRYPTION_AT_REST} is disabled, encryption is disabled by default`, () => {
+
+  const customStack = new Stack();
+  customStack.node.setContext(cxapi.EFS_DEFAULT_ENCRYPTION_AT_REST, false);
+
+  const customVpc = new ec2.Vpc(customStack, 'VPC');
+  new FileSystem(customVpc, 'EfsFileSystem', {
+    vpc: customVpc,
+  });
+
+  expectCDK(customStack).to(haveResource('AWS::EFS::FileSystem', {
+    Encrypted: ABSENT,
+  }));
+
+});
+
+test(`when ${cxapi.EFS_DEFAULT_ENCRYPTION_AT_REST} is missing, encryption is disabled by default`, () => {
+
+  const customStack = new Stack();
+
+  const customVpc = new ec2.Vpc(customStack, 'VPC');
+  new FileSystem(customVpc, 'EfsFileSystem', {
+    vpc: customVpc,
+  });
+
+  expectCDK(customStack).to(haveResource('AWS::EFS::FileSystem', {
+    Encrypted: ABSENT,
+  }));
+
 });
 
 test('default file system is created correctly', () => {
@@ -70,21 +118,24 @@ test('encrypted file system is created correctly with custom KMS', () => {
   expectCDK(stack).to(haveResource('AWS::EFS::FileSystem', {
     Encrypted: true,
     KmsKeyId: {
-      Ref: 'customKeyFSDDB87C6D',
+      'Fn::GetAtt': [
+        'customKeyFSDDB87C6D',
+        'Arn',
+      ],
     },
   }));
 });
 
-test('file system is created correctly with life cycle property', () => {
+test('file system is created correctly with a life cycle property', () => {
   // WHEN
   new FileSystem(stack, 'EfsFileSystem', {
     vpc,
-    lifecyclePolicy: LifecyclePolicy.AFTER_14_DAYS,
+    lifecyclePolicy: LifecyclePolicy.AFTER_7_DAYS,
   });
   // THEN
   expectCDK(stack).to(haveResource('AWS::EFS::FileSystem', {
     LifecyclePolicies: [{
-      TransitionToIA: 'AFTER_14_DAYS',
+      TransitionToIA: 'AFTER_7_DAYS',
     }],
   }));
 });
@@ -176,12 +227,12 @@ test('support tags', () => {
   const fileSystem = new FileSystem(stack, 'EfsFileSystem', {
     vpc,
   });
-  Tag.add(fileSystem, 'Name', 'LookAtMeAndMyFancyTags');
+  Tags.of(fileSystem).add('Name', 'LookAtMeAndMyFancyTags');
 
   // THEN
   expectCDK(stack).to(haveResource('AWS::EFS::FileSystem', {
     FileSystemTags: [
-      {Key: 'Name', Value: 'LookAtMeAndMyFancyTags'},
+      { Key: 'Name', Value: 'LookAtMeAndMyFancyTags' },
     ],
   }));
 });
@@ -196,7 +247,7 @@ test('file system is created correctly when given a name', () => {
   // THEN
   expectCDK(stack).to(haveResource('AWS::EFS::FileSystem', {
     FileSystemTags: [
-      {Key: 'Name', Value: 'MyNameableFileSystem'},
+      { Key: 'Name', Value: 'MyNameableFileSystem' },
     ],
   }));
 });
@@ -210,17 +261,44 @@ test('auto-named if none provided', () => {
   // THEN
   expectCDK(stack).to(haveResource('AWS::EFS::FileSystem', {
     FileSystemTags: [
-      {Key: 'Name', Value: fileSystem.node.path},
+      { Key: 'Name', Value: fileSystem.node.path },
     ],
   }));
 });
 
 test('removalPolicy is DESTROY', () => {
-  new FileSystem(stack, 'EfsFileSystem', {vpc, removalPolicy: RemovalPolicy.DESTROY});
+  // WHEN
+  new FileSystem(stack, 'EfsFileSystem', { vpc, removalPolicy: RemovalPolicy.DESTROY });
 
+  // THEN
   expectCDK(stack).to(haveResource('AWS::EFS::FileSystem', {
     DeletionPolicy: 'Delete',
     UpdateReplacePolicy: 'Delete',
   }, ResourcePart.CompleteDefinition));
+});
 
+test('can specify backup policy', () => {
+  // WHEN
+  new FileSystem(stack, 'EfsFileSystem', { vpc, enableAutomaticBackups: true });
+
+  // THEN
+  expectCDK(stack).to(haveResource('AWS::EFS::FileSystem', {
+    BackupPolicy: {
+      Status: 'ENABLED',
+    },
+  }));
+});
+
+test('can create when using a VPC with multiple subnets per availability zone', () => {
+  // create a vpc with two subnets in the same availability zone.
+  const oneAzVpc = new ec2.Vpc(stack, 'Vpc', {
+    maxAzs: 1,
+    subnetConfiguration: [{ name: 'One', subnetType: ec2.SubnetType.ISOLATED }, { name: 'Two', subnetType: ec2.SubnetType.ISOLATED }],
+    natGateways: 0,
+  });
+  new FileSystem(stack, 'EfsFileSystem', {
+    vpc: oneAzVpc,
+  });
+  // make sure only one mount target is created.
+  expectCDK(stack).to(countResources('AWS::EFS::MountTarget', 1));
 });

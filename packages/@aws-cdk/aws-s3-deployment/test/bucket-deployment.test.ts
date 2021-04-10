@@ -1,13 +1,17 @@
-import { arrayWith } from '@aws-cdk/assert';
-import '@aws-cdk/assert/jest';
+import '@aws-cdk/assert-internal/jest';
+import * as path from 'path';
 import * as cloudfront from '@aws-cdk/aws-cloudfront';
+import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
-import * as path from 'path';
+import * as cxapi from '@aws-cdk/cx-api';
+import { testFutureBehavior } from 'cdk-build-tools/lib/feature-flag';
 import * as s3deploy from '../lib';
 
 /* eslint-disable max-len */
+
+const s3GrantWriteCtx = { [cxapi.S3_GRANT_WRITE_WITHOUT_ACL]: true };
 
 test('deploy from local directory asset', () => {
   // GIVEN
@@ -297,7 +301,7 @@ test('user metadata is correctly transformed', () => {
 
   // THEN
   expect(stack).toHaveResource('Custom::CDKBucketDeployment', {
-    UserMetadata: { 'x-amzn-meta-a': '1', 'x-amzn-meta-b': '2' },
+    UserMetadata: { a: '1', b: '2' },
   });
 });
 
@@ -305,6 +309,7 @@ test('system metadata is correctly transformed', () => {
   // GIVEN
   const stack = new cdk.Stack();
   const bucket = new s3.Bucket(stack, 'Dest');
+  const expiration = cdk.Expiration.after(cdk.Duration.hours(12));
 
   // WHEN
   new s3deploy.BucketDeployment(stack, 'Deploy', {
@@ -319,7 +324,7 @@ test('system metadata is correctly transformed', () => {
     serverSideEncryptionCustomerAlgorithm: 'rot13',
     websiteRedirectLocation: 'example',
     cacheControl: [s3deploy.CacheControl.setPublic(), s3deploy.CacheControl.maxAge(cdk.Duration.hours(1))],
-    expires: s3deploy.Expires.after(cdk.Duration.hours(12)),
+    expires: expiration,
   });
 
   // THEN
@@ -332,7 +337,7 @@ test('system metadata is correctly transformed', () => {
       'sse': 'aws:kms',
       'sse-kms-key-id': 'mykey',
       'cache-control': 'public, max-age=3600',
-      'expires': s3deploy.Expires.after(cdk.Duration.hours(12)).value,
+      'expires': expiration.date.toUTCString(),
       'sse-c-copy-source': 'rot13',
       'website-redirect': 'example',
     },
@@ -340,11 +345,10 @@ test('system metadata is correctly transformed', () => {
 });
 
 test('expires type has correct values', () => {
-  expect(s3deploy.Expires.atDate(new Date('Sun, 26 Jan 2020 00:53:20 GMT')).value).toEqual('Sun, 26 Jan 2020 00:53:20 GMT');
-  expect(s3deploy.Expires.atTimestamp(1580000000000).value).toEqual('Sun, 26 Jan 2020 00:53:20 GMT');
-  expect(Math.abs(new Date(s3deploy.Expires.after(cdk.Duration.minutes(10)).value).getTime() - (Date.now() + 600000)) < 15000).toBeTruthy();
-  expect(s3deploy.Expires.fromString('Tue, 04 Feb 2020 08:45:33 GMT').value).toEqual('Tue, 04 Feb 2020 08:45:33 GMT');
-
+  expect(cdk.Expiration.atDate(new Date('Sun, 26 Jan 2020 00:53:20 GMT')).date.toUTCString()).toEqual('Sun, 26 Jan 2020 00:53:20 GMT');
+  expect(cdk.Expiration.atTimestamp(1580000000000).date.toUTCString()).toEqual('Sun, 26 Jan 2020 00:53:20 GMT');
+  expect(Math.abs(new Date(cdk.Expiration.after(cdk.Duration.minutes(10)).date.toUTCString()).getTime() - (Date.now() + 600000)) < 15000).toBeTruthy();
+  expect(cdk.Expiration.fromString('Tue, 04 Feb 2020 08:45:33 GMT').date.toUTCString()).toEqual('Tue, 04 Feb 2020 08:45:33 GMT');
 });
 
 test('cache control type has correct values', () => {
@@ -449,9 +453,9 @@ test('fails if distribution paths provided but not distribution ID', () => {
 
 });
 
-test('lambda execution role gets permissions to read from the source bucket and read/write in destination', () => {
+testFutureBehavior('lambda execution role gets permissions to read from the source bucket and read/write in destination', s3GrantWriteCtx, cdk.App, (app) => {
   // GIVEN
-  const stack = new cdk.Stack();
+  const stack = new cdk.Stack(app);
   const source = new s3.Bucket(stack, 'Source');
   const bucket = new s3.Bucket(stack, 'Dest');
 
@@ -501,7 +505,7 @@ test('lambda execution role gets permissions to read from the source bucket and 
             's3:GetBucket*',
             's3:List*',
             's3:DeleteObject*',
-            's3:PutObject*',
+            's3:PutObject',
             's3:Abort*',
           ],
           Effect: 'Allow',
@@ -623,28 +627,80 @@ test('deploy without deleting missing files from destination', () => {
   });
 });
 
-test('Deployment role gets KMS permissions when using assets from new style synthesizer', () => {
-  const stack = new cdk.Stack(undefined, undefined, {
-    synthesizer: new cdk.DefaultStackSynthesizer(),
-  });
+test('deployment allows vpc to be implicitly supplied to lambda', () => {
+
+  // GIVEN
+  const stack = new cdk.Stack();
   const bucket = new s3.Bucket(stack, 'Dest');
+  const vpc: ec2.IVpc = new ec2.Vpc(stack, 'SomeVpc1', {});
 
   // WHEN
-  new s3deploy.BucketDeployment(stack, 'Deploy', {
+  new s3deploy.BucketDeployment(stack, 'DeployWithVpc1', {
     sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
     destinationBucket: bucket,
+    vpc,
   });
 
   // THEN
-  expect(stack).toHaveResource('AWS::IAM::Policy', {
-    PolicyDocument: {
-      Version: '2012-10-17',
-      Statement: arrayWith({
-        Action: ['kms:Decrypt', 'kms:DescribeKey'],
-        Effect: 'Allow',
-        Resource: { 'Fn::ImportValue': 'CdkBootstrap-hnb659fds-FileAssetKeyArn' },
-      }),
+  expect(stack).toHaveResource('AWS::Lambda::Function', {
+    VpcConfig: {
+      SecurityGroupIds: [
+        {
+          'Fn::GetAtt': [
+            'CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CSecurityGroup4B1A9777',
+            'GroupId',
+          ],
+        },
+      ],
+      SubnetIds: [
+        {
+          Ref: 'SomeVpc1PrivateSubnet1SubnetCBA5DD76',
+        }, {
+          Ref: 'SomeVpc1PrivateSubnet2SubnetD4B3A566',
+        },
+      ],
+    },
+  });
+});
+
+test('deployment allows vpc and subnets to be implicitly supplied to lambda', () => {
+
+  // GIVEN
+  const stack = new cdk.Stack();
+  const bucket = new s3.Bucket(stack, 'Dest');
+  const vpc: ec2.IVpc = new ec2.Vpc(stack, 'SomeVpc2', {});
+  new ec2.PrivateSubnet(stack, 'SomeSubnet', {
+    vpcId: vpc.vpcId,
+    availabilityZone: vpc.availabilityZones[0],
+    cidrBlock: vpc.vpcCidrBlock,
+  });
+
+  // WHEN
+  new s3deploy.BucketDeployment(stack, 'DeployWithVpc2', {
+    sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
+    destinationBucket: bucket,
+    vpc,
+    vpcSubnets: {
+      availabilityZones: [vpc.availabilityZones[0]],
     },
   });
 
+  // THEN
+  expect(stack).toHaveResource('AWS::Lambda::Function', {
+    VpcConfig: {
+      SecurityGroupIds: [
+        {
+          'Fn::GetAtt': [
+            'CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CSecurityGroup4B1A9777',
+            'GroupId',
+          ],
+        },
+      ],
+      SubnetIds: [
+        {
+          Ref: 'SomeVpc2PrivateSubnet1SubnetB1DC76FF',
+        },
+      ],
+    },
+  });
 });

@@ -1,8 +1,10 @@
 import { InstanceType, ISecurityGroup, SubnetSelection } from '@aws-cdk/aws-ec2';
 import { IRole, ManagedPolicy, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
-import { Construct, IResource, Resource } from '@aws-cdk/core';
-import { Cluster } from './cluster';
+import { IResource, Resource, Annotations } from '@aws-cdk/core';
+import { Construct } from 'constructs';
+import { Cluster, ICluster } from './cluster';
 import { CfnNodegroup } from './eks.generated';
+import { INSTANCE_TYPES } from './instance-types';
 
 /**
  * NodeGroup interface
@@ -22,13 +24,31 @@ export interface INodegroup extends IResource {
  */
 export enum NodegroupAmiType {
   /**
-   * Amazon Linux 2
+   * Amazon Linux 2 (x86-64)
    */
   AL2_X86_64 = 'AL2_x86_64',
   /**
    * Amazon Linux 2 with GPU support
    */
   AL2_X86_64_GPU = 'AL2_x86_64_GPU',
+  /**
+   * Amazon Linux 2 (ARM-64)
+   */
+  AL2_ARM_64 = 'AL2_ARM_64'
+}
+
+/**
+ * Capacity type of the managed node group
+ */
+export enum CapacityType {
+  /**
+   * spot instances
+   */
+  SPOT = 'SPOT',
+  /**
+   * on-demand instances
+   */
+  ON_DEMAND = 'ON_DEMAND'
 }
 
 /**
@@ -49,6 +69,22 @@ export interface NodegroupRemoteAccess {
    * @default - port 22 on the worker nodes is opened to the internet (0.0.0.0/0)
    */
   readonly sourceSecurityGroups?: ISecurityGroup[];
+}
+
+/**
+ * Launch template property specification
+ */
+export interface LaunchTemplateSpec {
+  /**
+   * The Launch template ID
+   */
+  readonly id: string;
+  /**
+   * The launch template version to be used (optional).
+   *
+   * @default - the default version of the launch template
+   */
+  readonly version?: string;
 }
 
 /**
@@ -73,7 +109,7 @@ export interface NodegroupOptions {
   /**
    * The AMI type for your node group.
    *
-   * @default AL2_x86_64
+   * @default - auto-determined from the instanceTypes property.
    */
   readonly amiType?: NodegroupAmiType;
   /**
@@ -116,8 +152,15 @@ export interface NodegroupOptions {
    * `AL2_x86_64_GPU` with the amiType parameter.
    *
    * @default t3.medium
+   * @deprecated Use `instanceTypes` instead.
    */
   readonly instanceType?: InstanceType;
+  /**
+   * The instance types to use for your node group.
+   * @default t3.medium will be used according to the cloudformation document.
+   * @see - https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-eks-nodegroup.html#cfn-eks-nodegroup-instancetypes
+   */
+  readonly instanceTypes?: InstanceType[];
   /**
    * The Kubernetes labels to be applied to the nodes in the node group when they are created.
    *
@@ -155,6 +198,18 @@ export interface NodegroupOptions {
    * @default - None
    */
   readonly tags?: { [name: string]: string };
+  /**
+   * Launch template specification used for the nodegroup
+   * @see - https://docs.aws.amazon.com/eks/latest/userguide/launch-templates.html
+   * @default - no launch template
+   */
+  readonly launchTemplateSpec?: LaunchTemplateSpec;
+  /**
+   * The capacity type of the nodegroup.
+   *
+   * @default - ON_DEMAND
+   */
+  readonly capacityType?: CapacityType;
 }
 
 /**
@@ -163,9 +218,8 @@ export interface NodegroupOptions {
 export interface NodegroupProps extends NodegroupOptions {
   /**
    * Cluster resource
-   * [disable-awslint:ref-via-interface]"
    */
-  readonly cluster: Cluster;
+  readonly cluster: ICluster;
 }
 
 /**
@@ -198,7 +252,7 @@ export class Nodegroup extends Resource implements INodegroup {
    *
    * @attribute ClusterName
    */
-  public readonly cluster: Cluster;
+  public readonly cluster: ICluster;
   /**
    * IAM role of the instance profile for the nodegroup
    */
@@ -226,6 +280,26 @@ export class Nodegroup extends Resource implements INodegroup {
       throw new Error(`Minimum capacity ${this.minSize} can't be greater than desired size ${this.desiredSize}`);
     }
 
+    if (props.instanceType && props.instanceTypes) {
+      throw new Error('"instanceType is deprecated, please use "instanceTypes" only.');
+    }
+
+    if (props.instanceType) {
+      Annotations.of(this).addWarning('"instanceType" is deprecated and will be removed in the next major version. please use "instanceTypes" instead');
+    }
+    const instanceTypes = props.instanceTypes ?? (props.instanceType ? [props.instanceType] : undefined);
+    let expectedAmiType = undefined;
+
+    if (instanceTypes && instanceTypes.length > 0) {
+      // if the user explicitly configured instance types, we can calculate the expected ami type.
+      expectedAmiType = getAmiType(instanceTypes);
+
+      // if the user explicitly configured an ami type, make sure its the same as the expected one.
+      if (props.amiType && props.amiType !== expectedAmiType) {
+        throw new Error(`The specified AMI does not match the instance types architecture, either specify ${expectedAmiType} or dont specify any`);
+      }
+    }
+
     if (!props.nodeRole) {
       const ngRole = new Role(this, 'NodeGroupRole', {
         assumedBy: new ServicePrincipal('ec2.amazonaws.com'),
@@ -244,10 +318,18 @@ export class Nodegroup extends Resource implements INodegroup {
       nodegroupName: props.nodegroupName,
       nodeRole: this.role.roleArn,
       subnets: this.cluster.vpc.selectSubnets(props.subnets).subnetIds,
-      amiType: props.amiType,
+
+      // if a launch template is configured, we cannot apply a default since it
+      // might exist in the launch template as well, causing a deployment failure.
+      amiType: props.launchTemplateSpec !== undefined ? props.amiType : (props.amiType ?? expectedAmiType),
+
+      capacityType: props.capacityType ? props.capacityType.valueOf() : undefined,
       diskSize: props.diskSize,
       forceUpdateEnabled: props.forceUpdate ?? true,
-      instanceTypes: props.instanceType ? [props.instanceType.toString()] : undefined,
+
+      // note that we don't check if a launch template is configured here (even though it might configure instance types as well)
+      // because this doesn't have a default value, meaning the user had to explicitly configure this.
+      instanceTypes: instanceTypes?.map(t => t.toString()),
       labels: props.labels,
       releaseVersion: props.releaseVersion,
       remoteAccess: props.remoteAccess ? {
@@ -263,9 +345,28 @@ export class Nodegroup extends Resource implements INodegroup {
       tags: props.tags,
     });
 
+    if (props.launchTemplateSpec) {
+      if (props.diskSize) {
+        // see - https://docs.aws.amazon.com/eks/latest/userguide/launch-templates.html
+        // and https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-eks-nodegroup.html#cfn-eks-nodegroup-disksize
+        throw new Error('diskSize must be specified within the launch template');
+      }
+      /**
+       * Instance types can be specified either in `instanceType` or launch template but not both. AS we can not check the content of
+       * the provided launch template and the `instanceType` property is preferrable. We allow users to define `instanceType` property here.
+       * see - https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-eks-nodegroup.html#cfn-eks-nodegroup-instancetypes
+       */
+      // TODO: update this when the L1 resource spec is updated.
+      resource.addPropertyOverride('LaunchTemplate', {
+        Id: props.launchTemplateSpec.id,
+        Version: props.launchTemplateSpec.version,
+      });
+    }
+
+
     // managed nodegroups update the `aws-auth` on creation, but we still need to track
     // its state for consistency.
-    if (this.cluster.kubectlEnabled) {
+    if (this.cluster instanceof Cluster) {
       // see https://docs.aws.amazon.com/en_us/eks/latest/userguide/add-user-role.html
       this.cluster.awsAuth.addRoleMapping(this.role, {
         username: 'system:node:{{EC2PrivateDNSName}}',
@@ -283,5 +384,26 @@ export class Nodegroup extends Resource implements INodegroup {
     });
     this.nodegroupName = this.getResourceNameAttribute(resource.ref);
   }
+}
 
+function getAmiTypeForInstanceType(instanceType: InstanceType) {
+  return INSTANCE_TYPES.graviton2.includes(instanceType.toString().substring(0, 3)) ? NodegroupAmiType.AL2_ARM_64 :
+    INSTANCE_TYPES.graviton.includes(instanceType.toString().substring(0, 2)) ? NodegroupAmiType.AL2_ARM_64 :
+      INSTANCE_TYPES.gpu.includes(instanceType.toString().substring(0, 2)) ? NodegroupAmiType.AL2_X86_64_GPU :
+        INSTANCE_TYPES.inferentia.includes(instanceType.toString().substring(0, 4)) ? NodegroupAmiType.AL2_X86_64_GPU :
+          NodegroupAmiType.AL2_X86_64;
+}
+
+// this function examines the CPU architecture of every instance type and determines
+// what ami type is compatible for all of them. it either throws or produces a single value because
+// instance types of different CPU architectures are not supported.
+function getAmiType(instanceTypes: InstanceType[]) {
+  const amiTypes = new Set(instanceTypes.map(i => getAmiTypeForInstanceType(i)));
+  if (amiTypes.size == 0) { // protective code, the current implementation will never result in this.
+    throw new Error(`Cannot determine any ami type comptaible with instance types: ${instanceTypes.map(i => i.toString).join(',')}`);
+  }
+  if (amiTypes.size > 1) {
+    throw new Error('instanceTypes of different CPU architectures is not allowed');
+  }
+  return amiTypes.values().next().value;
 }

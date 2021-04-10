@@ -1,4 +1,4 @@
-import { expect, haveResourceLike } from '@aws-cdk/assert';
+import { expect, haveResourceLike } from '@aws-cdk/assert-internal';
 import { Duration, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import { Alarm, GraphWidget, IWidget, MathExpression, Metric } from '../lib';
@@ -51,7 +51,7 @@ export = {
     test.throws(() => {
       new MathExpression({
         expression: 'a+b',
-        usingMetrics: {a, b},
+        usingMetrics: { a, b },
         period: Duration.seconds(20),
       });
     }, /'period' must be 1, 5, 10, 30, or a multiple of 60 seconds, received 20/);
@@ -85,9 +85,9 @@ export = {
 
       // THEN
       graphMetricsAre(test, graph, [
-        [ { expression: 'a + b', label: 'a + b' } ],
-        [ 'Test', 'ACount', { visible: false, id: 'a' } ],
-        [ 'Test', 'BCount', { visible: false, id: 'b' } ],
+        [{ expression: 'a + b', label: 'a + b' }],
+        ['Test', 'ACount', { visible: false, id: 'a' }],
+        ['Test', 'BCount', { visible: false, id: 'b' }],
       ]);
 
       test.done();
@@ -112,11 +112,11 @@ export = {
 
       // THEN
       graphMetricsAre(test, graph, [
-        [ { label: 'a + e', expression: 'a + e' } ],
-        [ 'Test', 'ACount', { visible: false, id: 'a' } ],
-        [ { expression: 'b + c', visible: false, id: 'e' } ],
-        [ 'Test', 'BCount', { visible: false, id: 'b' } ],
-        [ 'Test', 'CCount', { visible: false, id: 'c' } ],
+        [{ label: 'a + e', expression: 'a + e' }],
+        ['Test', 'ACount', { visible: false, id: 'a' }],
+        [{ expression: 'b + c', visible: false, id: 'e' }],
+        ['Test', 'BCount', { visible: false, id: 'b' }],
+        ['Test', 'CCount', { visible: false, id: 'c' }],
       ]);
 
       test.done();
@@ -139,11 +139,11 @@ export = {
       });
 
       graphMetricsAre(test, graph, [
-        [ { label: 'a + e', expression: 'a + e' } ],
-        [ 'Test', 'ACount', { visible: false, id: 'a' } ],
-        [ { expression: 'b + c', visible: false, id: 'e' } ],
-        [ 'Test', 'ACount', { visible: false, id: 'b' } ],
-        [ 'Test', 'CCount', { visible: false, id: 'c' } ],
+        [{ label: 'a + e', expression: 'a + e' }],
+        ['Test', 'ACount', { visible: false, id: 'a' }],
+        [{ expression: 'b + c', visible: false, id: 'e' }],
+        ['Test', 'ACount', { visible: false, id: 'b' }],
+        ['Test', 'CCount', { visible: false, id: 'c' }],
       ]);
 
       test.done();
@@ -167,10 +167,10 @@ export = {
 
       // THEN
       graphMetricsAre(test, graph, [
-        [ { label: 'a + e', expression: 'a + e' } ],
-        [ 'Test', 'ACount', { visible: false, id: 'a' } ],
-        [ { expression: 'a + c', visible: false, id: 'e' } ],
-        [ 'Test', 'CCount', { visible: false, id: 'c' } ],
+        [{ label: 'a + e', expression: 'a + e' }],
+        ['Test', 'ACount', { visible: false, id: 'a' }],
+        [{ expression: 'a + c', visible: false, id: 'e' }],
+        ['Test', 'CCount', { visible: false, id: 'c' }],
       ]);
 
       test.done();
@@ -189,9 +189,9 @@ export = {
 
       // THEN
       graphMetricsAre(test, graph, [
-        [ 'Test', 'ACount', { id: 'a' } ],
-        [ { label: 'a + b', expression: 'a + b' } ],
-        [ 'Test', 'BCount', { visible: false, id: 'b' } ],
+        ['Test', 'ACount', { id: 'a' }],
+        [{ label: 'a + b', expression: 'a + b' }],
+        ['Test', 'BCount', { visible: false, id: 'b' }],
       ]);
       test.done();
     },
@@ -211,10 +211,32 @@ export = {
 
       // THEN
       graphMetricsAre(test, graph, [
-        [ 'Test', 'ACount', { period: 10 } ],
-        [ { label: 'a + b', expression: 'a + b' } ],
-        [ 'Test', 'ACount', { visible: false, id: 'a' } ],
-        [ 'Test', 'BCount', { visible: false, id: 'b' } ],
+        ['Test', 'ACount', { period: 10 }],
+        [{ label: 'a + b', expression: 'a + b' }],
+        ['Test', 'ACount', { visible: false, id: 'a' }],
+        ['Test', 'BCount', { visible: false, id: 'b' }],
+      ]);
+      test.done();
+    },
+
+    'top level period in a MathExpression is respected in its metrics'(test: Test) {
+      const graph = new GraphWidget({
+        left: [
+          a,
+          new MathExpression({
+            expression: 'a + b',
+            usingMetrics: { a, b },
+            period: Duration.minutes(1),
+          }),
+        ],
+      });
+
+      // THEN
+      graphMetricsAre(test, graph, [
+        ['Test', 'ACount'],
+        [{ label: 'a + b', expression: 'a + b', period: 60 }],
+        ['Test', 'ACount', { visible: false, id: 'a', period: 60 }],
+        ['Test', 'BCount', { visible: false, id: 'b', period: 60 }],
       ]);
       test.done();
     },
@@ -240,10 +262,10 @@ export = {
 
       // THEN
       graphMetricsAre(test, graph, [
-        [ { expression: 'a + e', label: 'a + e' } ],
-        [ 'Test', 'ACount', { visible: false, id: 'a' } ],
-        [ { expression: 'a + b', visible: false, id: 'e' } ],
-        [ 'Test', 'BCount', { visible: false, id: 'b' } ],
+        [{ expression: 'a + e', label: 'a + e' }],
+        ['Test', 'ACount', { visible: false, id: 'a' }],
+        [{ expression: 'a + b', visible: false, id: 'e' }],
+        ['Test', 'BCount', { visible: false, id: 'b' }],
       ]);
       test.done();
     },
@@ -261,9 +283,9 @@ export = {
 
       // THEN
       graphMetricsAre(test, graph, [
-        [ { expression: 'a + b99', label: 'a + b99' } ],
-        [ 'Test', 'ACount', { visible: false, id: 'a' } ],
-        [ 'Test', 'BCount', { visible: false, id: 'b99', stat: 'p99' } ],
+        [{ expression: 'a + b99', label: 'a + b99' }],
+        ['Test', 'ACount', { visible: false, id: 'a' }],
+        ['Test', 'BCount', { visible: false, id: 'b99', stat: 'p99' }],
       ]);
 
       test.done();
@@ -288,9 +310,9 @@ export = {
 
       // THEN
       graphMetricsAre(test, graph, [
-        [ { label: 'a + 1', expression: 'a + 1' } ],
-        [ 'Test', 'ACount', { visible: false, id: 'a' } ],
-        [ { label: 'a + 2', expression: 'a + 2', yAxis: 'right' } ],
+        [{ label: 'a + 1', expression: 'a + 1' }],
+        ['Test', 'ACount', { visible: false, id: 'a' }],
+        [{ label: 'a + 2', expression: 'a + 2', yAxis: 'right' }],
       ]);
 
       test.done();
@@ -326,7 +348,8 @@ export = {
     'MathExpressions can be used for an alarm'(test: Test) {
       // GIVEN
       new Alarm(stack, 'Alarm', {
-        threshold: 1, evaluationPeriods: 1,
+        threshold: 1,
+        evaluationPeriods: 1,
         metric: new MathExpression({
           expression: 'a + b',
           usingMetrics: { a, b },
@@ -372,7 +395,8 @@ export = {
     'can nest MathExpressions in an alarm'(test: Test) {
       // GIVEN
       new Alarm(stack, 'Alarm', {
-        threshold: 1, evaluationPeriods: 1,
+        threshold: 1,
+        evaluationPeriods: 1,
         metric: new MathExpression({
           expression: 'a + e',
           usingMetrics: {
@@ -440,7 +464,8 @@ export = {
     'MathExpression controls period of metrics transitively used in it with alarms'(test: Test) {
       // GIVEN
       new Alarm(stack, 'Alarm', {
-        threshold: 1, evaluationPeriods: 1,
+        threshold: 1,
+        evaluationPeriods: 1,
         metric: new MathExpression({
           expression: 'a + e',
           usingMetrics: {
@@ -510,7 +535,8 @@ export = {
     'MathExpression without inner metrics emits its own period'(test: Test) {
       // WHEN
       new Alarm(stack, 'Alarm', {
-        threshold: 1, evaluationPeriods: 1,
+        threshold: 1,
+        evaluationPeriods: 1,
         metric: new MathExpression({
           expression: 'INSIGHT_RULE_METRIC("SomeId", UniqueContributors)',
           usingMetrics: {},
@@ -532,7 +558,8 @@ export = {
     'annotation for a mathexpression alarm is calculated based upon constituent metrics'(test: Test) {
       // GIVEN
       const alarm = new Alarm(stack, 'Alarm', {
-        threshold: 1, evaluationPeriods: 1,
+        threshold: 1,
+        evaluationPeriods: 1,
         metric: new MathExpression({
           period: Duration.minutes(10),
           expression: 'a + b',
@@ -552,7 +579,8 @@ export = {
     'can use percentiles in expression metrics in alarms'(test: Test) {
       // GIVEN
       new Alarm(stack, 'Alarm', {
-        threshold: 1, evaluationPeriods: 1,
+        threshold: 1,
+        evaluationPeriods: 1,
         metric: new MathExpression({
           expression: 'a + b99',
           usingMetrics: { a, b99 },
@@ -597,15 +625,18 @@ export = {
 };
 
 function graphMetricsAre(test: Test, w: IWidget, metrics: any[]) {
-  test.deepEqual(stack.resolve(w.toJson()), [ {
+  test.deepEqual(stack.resolve(w.toJson()), [{
     type: 'metric',
     width: 6,
     height: 6,
     properties:
-    { view: 'timeSeries',
+    {
+      view: 'timeSeries',
       region: { Ref: 'AWS::Region' },
       metrics,
-      yAxis: {} } }]);
+      yAxis: {},
+    },
+  }]);
 }
 
 function alarmMetricsAre(metrics: any[]) {

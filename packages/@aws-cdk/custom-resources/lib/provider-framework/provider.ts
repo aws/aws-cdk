@@ -1,11 +1,19 @@
 import * as path from 'path';
-import * as cfn from '@aws-cdk/aws-cloudformation';
+import * as ec2 from '@aws-cdk/aws-ec2';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as logs from '@aws-cdk/aws-logs';
-import { Construct, Duration } from '@aws-cdk/core';
+import { Duration } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import * as consts from './runtime/consts';
 import { calculateRetryPolicy } from './util';
 import { WaiterStateMachine } from './waiter-state-machine';
+
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { CustomResourceProviderConfig, ICustomResourceProvider } from '@aws-cdk/aws-cloudformation';
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main",
+// eslint-disable-next-line
+import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 const RUNTIME_HANDLER_PATH = path.join(__dirname, 'runtime');
 const FRAMEWORK_HANDLER_TIMEOUT = Duration.minutes(15); // keep it simple for now
@@ -69,12 +77,40 @@ export interface ProviderProps {
    * @default logs.RetentionDays.INFINITE
    */
   readonly logRetention?: logs.RetentionDays;
+
+  /**
+   * The vpc to provision the lambda functions in.
+   *
+   * @default - functions are not provisioned inside a vpc.
+   */
+  readonly vpc?: ec2.IVpc;
+
+  /**
+   * Which subnets from the VPC to place the lambda functions in.
+   *
+   * Only used if 'vpc' is supplied. Note: internet access for Lambdas
+   * requires a NAT gateway, so picking Public subnets is not allowed.
+   *
+   * @default - the Vpc default strategy if not specified
+   */
+  readonly vpcSubnets?: ec2.SubnetSelection;
+
+  /**
+   * Security groups to attach to the provider functions.
+   *
+   * Only used if 'vpc' is supplied
+   *
+   * @default - If `vpc` is not supplied, no security groups are attached. Otherwise, a dedicated security
+   * group is created for each function.
+   */
+  readonly securityGroups?: ec2.ISecurityGroup[];
+
 }
 
 /**
  * Defines an AWS CloudFormation custom resource provider.
  */
-export class Provider extends Construct implements cfn.ICustomResourceProvider {
+export class Provider extends CoreConstruct implements ICustomResourceProvider {
 
   /**
    * The user-defined AWS Lambda function which is invoked for all resource
@@ -96,6 +132,9 @@ export class Provider extends Construct implements cfn.ICustomResourceProvider {
 
   private readonly entrypoint: lambda.Function;
   private readonly logRetention?: logs.RetentionDays;
+  private readonly vpc?: ec2.IVpc;
+  private readonly vpcSubnets?: ec2.SubnetSelection;
+  private readonly securityGroups?: ec2.ISecurityGroup[];
 
   constructor(scope: Construct, id: string, props: ProviderProps) {
     super(scope, id);
@@ -109,6 +148,9 @@ export class Provider extends Construct implements cfn.ICustomResourceProvider {
     this.isCompleteHandler = props.isCompleteHandler;
 
     this.logRetention = props.logRetention;
+    this.vpc = props.vpc;
+    this.vpcSubnets = props.vpcSubnets;
+    this.securityGroups = props.securityGroups;
 
     const onEventFunction = this.createFunction(consts.FRAMEWORK_ON_EVENT_HANDLER_NAME);
 
@@ -138,7 +180,7 @@ export class Provider extends Construct implements cfn.ICustomResourceProvider {
    * Called by `CustomResource` which uses this provider.
    * @deprecated use `provider.serviceToken` instead
    */
-  public bind(_: Construct): cfn.CustomResourceProviderConfig {
+  public bind(_scope: CoreConstruct): CustomResourceProviderConfig {
     return {
       serviceToken: this.entrypoint.functionArn,
     };
@@ -148,10 +190,13 @@ export class Provider extends Construct implements cfn.ICustomResourceProvider {
     const fn = new lambda.Function(this, `framework-${entrypoint}`, {
       code: lambda.Code.fromAsset(RUNTIME_HANDLER_PATH),
       description: `AWS CDK resource provider framework - ${entrypoint} (${this.node.path})`.slice(0, 256),
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
       handler: `framework.${entrypoint}`,
       timeout: FRAMEWORK_HANDLER_TIMEOUT,
       logRetention: this.logRetention,
+      vpc: this.vpc,
+      vpcSubnets: this.vpcSubnets,
+      securityGroups: this.securityGroups,
     });
 
     fn.addEnvironment(consts.USER_ON_EVENT_FUNCTION_ARN_ENV, this.onEventHandler.functionArn);

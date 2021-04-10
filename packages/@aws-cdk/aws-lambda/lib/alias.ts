@@ -1,9 +1,13 @@
+import * as appscaling from '@aws-cdk/aws-applicationautoscaling';
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
-import { Construct } from '@aws-cdk/core';
+import * as iam from '@aws-cdk/aws-iam';
+import { Construct } from 'constructs';
 import { EventInvokeConfigOptions } from './event-invoke-config';
 import { IFunction, QualifiedFunctionBase } from './function-base';
 import { extractQualifierFromArn, IVersion } from './lambda-version';
 import { CfnAlias } from './lambda.generated';
+import { ScalableFunctionAttribute } from './private/scalable-function-attribute';
+import { AutoScalingOptions, IScalableFunctionAttribute } from './scalable-attribute-api';
 
 export interface IAlias extends IFunction {
   /**
@@ -93,7 +97,7 @@ export class Alias extends QualifiedFunctionBase implements IAlias {
       public readonly grantPrincipal = attrs.aliasVersion.grantPrincipal;
       public readonly role = attrs.aliasVersion.role;
 
-      protected readonly canCreatePermissions = false;
+      protected readonly canCreatePermissions = this._isStackAccount();
       protected readonly qualifier = attrs.aliasName;
     }
     return new Imported(scope, id);
@@ -129,6 +133,9 @@ export class Alias extends QualifiedFunctionBase implements IAlias {
 
   protected readonly canCreatePermissions: boolean = true;
 
+  private scalableAlias?: ScalableFunctionAttribute;
+  private readonly scalingRole: iam.IRole;
+
   constructor(scope: Construct, id: string, props: AliasProps) {
     super(scope, id, {
       physicalName: props.aliasName,
@@ -146,6 +153,15 @@ export class Alias extends QualifiedFunctionBase implements IAlias {
       routingConfig: this.determineRoutingConfig(props),
       provisionedConcurrencyConfig: this.determineProvisionedConcurrency(props),
     });
+
+    // Use a Service Linked Role
+    // https://docs.aws.amazon.com/autoscaling/application/userguide/application-auto-scaling-service-linked-roles.html
+    this.scalingRole = iam.Role.fromRoleArn(this, 'ScalingRole', this.stack.formatArn({
+      service: 'iam',
+      region: '',
+      resource: 'role/aws-service-role/lambda.application-autoscaling.amazonaws.com',
+      resourceName: 'AWSServiceRoleForApplicationAutoScaling_LambdaConcurrency',
+    }));
 
     this.functionArn = this.getResourceArnAttribute(alias.ref, {
       service: 'lambda',
@@ -180,7 +196,7 @@ export class Alias extends QualifiedFunctionBase implements IAlias {
   }
 
   public metric(metricName: string, props: cloudwatch.MetricOptions = {}): cloudwatch.Metric {
-    // Metrics on Aliases need the "bare" function name, and the alias' ARN, this differes from the base behavior.
+    // Metrics on Aliases need the "bare" function name, and the alias' ARN, this differs from the base behavior.
     return super.metric(metricName, {
       dimensions: {
         FunctionName: this.lambda.functionName,
@@ -190,6 +206,26 @@ export class Alias extends QualifiedFunctionBase implements IAlias {
         Resource: `${this.lambda.functionName}:${this.aliasName}`,
       },
       ...props,
+    });
+  }
+
+  /**
+   * Configure provisioned concurrency autoscaling on a function alias. Returns a scalable attribute that can call
+   * `scaleOnUtilization()` and `scaleOnSchedule()`.
+   *
+   * @param options Autoscaling options
+   */
+  public addAutoScaling(options: AutoScalingOptions): IScalableFunctionAttribute {
+    if (this.scalableAlias) {
+      throw new Error('AutoScaling already enabled for this alias');
+    }
+    return this.scalableAlias = new ScalableFunctionAttribute(this, 'AliasScaling', {
+      minCapacity: options.minCapacity ?? 1,
+      maxCapacity: options.maxCapacity,
+      resourceId: `function:${this.functionName}`,
+      dimension: 'lambda:function:ProvisionedConcurrency',
+      serviceNamespace: appscaling.ServiceNamespace.LAMBDA,
+      role: this.scalingRole,
     });
   }
 
@@ -243,7 +279,7 @@ export class Alias extends QualifiedFunctionBase implements IAlias {
       throw new Error('provisionedConcurrentExecutions must have value greater than or equal to 1');
     }
 
-    return {provisionedConcurrentExecutions: props.provisionedConcurrentExecutions};
+    return { provisionedConcurrentExecutions: props.provisionedConcurrentExecutions };
   }
 }
 

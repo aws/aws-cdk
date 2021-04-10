@@ -1,8 +1,9 @@
-import '@aws-cdk/assert/jest';
-import { ABSENT } from '@aws-cdk/assert/lib/assertions/have-resource';
-import { Role } from '@aws-cdk/aws-iam';
+import '@aws-cdk/assert-internal/jest';
+import { ABSENT, ResourcePart } from '@aws-cdk/assert-internal/lib/assertions/have-resource';
+import { Role, ServicePrincipal } from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
-import { CfnParameter, Construct, Duration, Stack, Tag } from '@aws-cdk/core';
+import { CfnParameter, Duration, Stack, Tags } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { AccountRecovery, Mfa, NumberAttribute, StringAttribute, UserPool, UserPoolIdentityProvider, UserPoolOperation, VerificationEmailStyle } from '../lib';
 
 describe('User Pool', () => {
@@ -28,49 +29,13 @@ describe('User Pool', () => {
         EmailSubject: 'Verify your new account',
         SmsMessage: 'The verification code to your new account is {####}',
       },
-      SmsConfiguration: {
-        SnsCallerArn: {
-          'Fn::GetAtt': [ 'PoolsmsRoleC3352CE6', 'Arn' ],
-        },
-        ExternalId: 'Pool',
-      },
+      SmsConfiguration: ABSENT,
       lambdaTriggers: ABSENT,
     });
 
-    expect(stack).toHaveResource('AWS::IAM::Role', {
-      AssumeRolePolicyDocument: {
-        Statement: [
-          {
-            Action: 'sts:AssumeRole',
-            Condition: {
-              StringEquals: {
-                'sts:ExternalId': 'Pool',
-              },
-            },
-            Effect: 'Allow',
-            Principal: {
-              Service: 'cognito-idp.amazonaws.com',
-            },
-          },
-        ],
-        Version: '2012-10-17',
-      },
-      Policies: [
-        {
-          PolicyDocument: {
-            Statement: [
-              {
-                Action: 'sns:Publish',
-                Effect: 'Allow',
-                Resource: '*',
-              },
-            ],
-            Version: '2012-10-17',
-          },
-          PolicyName: 'sns-publish',
-        },
-      ],
-    });
+    expect(stack).toHaveResource('AWS::Cognito::UserPool', {
+      DeletionPolicy: 'Retain',
+    }, ResourcePart.CompleteDefinition);
   });
 
   test('self sign up option is correctly configured', () => {
@@ -246,17 +211,36 @@ describe('User Pool', () => {
     // WHEN
     const pool = UserPool.fromUserPoolArn(stack, 'userpool', userPoolArn);
     expect(pool.userPoolId).toEqual('test-user-pool');
-    expect(stack.resolve(pool.userPoolArn)).toEqual({
-      'Fn::Join': [ '', [
-        'arn:',
-        { Ref: 'AWS::Partition' },
-        ':cognito-idp:',
-        { Ref: 'AWS::Region' },
-        ':',
-        { Ref: 'AWS::AccountId' },
-        ':userpool/test-user-pool',
-      ] ],
+    expect(stack.resolve(pool.userPoolArn)).toEqual('arn:aws:cognito-idp:us-east-1:0123456789012:userpool/test-user-pool');
+  });
+
+  test('import using arn without resourceName fails', () => {
+    // GIVEN
+    const stack = new Stack();
+    const userPoolArn = 'arn:aws:cognito-idp:us-east-1:0123456789012:*';
+
+    // WHEN
+    expect(() => {
+      UserPool.fromUserPoolArn(stack, 'userpool', userPoolArn);
+    }).toThrowError(/invalid user pool ARN/);
+  });
+
+  test('import from different account region using arn', () => {
+    // GIVEN
+    const userPoolArn = 'arn:aws:cognito-idp:us-east-1:0123456789012:userpool/test-user-pool';
+
+    const stack = new Stack(undefined, undefined, {
+      env: {
+        account: '111111111111',
+        region: 'us-east-2',
+      },
     });
+
+    // WHEN
+    const pool = UserPool.fromUserPoolArn(stack, 'userpool', userPoolArn);
+    expect(pool.env.account).toEqual('0123456789012');
+    expect(pool.env.region).toEqual('us-east-1');
+    expect(pool.userPoolArn).toEqual('arn:aws:cognito-idp:us-east-1:0123456789012:userpool/test-user-pool');
   });
 
   test('support tags', () => {
@@ -267,7 +251,7 @@ describe('User Pool', () => {
     const pool = new UserPool(stack, 'Pool', {
       userPoolName: 'myPool',
     });
-    Tag.add(pool, 'PoolTag', 'PoolParty');
+    Tags.of(pool).add('PoolTag', 'PoolParty');
 
     // THEN
     expect(stack).toHaveResourceLike('AWS::Cognito::UserPool', {
@@ -347,9 +331,9 @@ describe('User Pool', () => {
       },
     });
 
-    [ createAuthChallenge, customMessage, defineAuthChallenge, postAuthentication,
+    [createAuthChallenge, customMessage, defineAuthChallenge, postAuthentication,
       postConfirmation, preAuthentication, preSignUp, preTokenGeneration, userMigration,
-      verifyAuthChallengeResponse ].forEach((fn) => {
+      verifyAuthChallengeResponse].forEach((fn) => {
       expect(stack).toHaveResourceLike('AWS::Lambda::Permission', {
         Action: 'lambda:InvokeFunction',
         FunctionName: stack.resolve(fn.functionArn),
@@ -412,7 +396,7 @@ describe('User Pool', () => {
     // THEN
     expect(stack).toHaveResourceLike('AWS::Cognito::UserPool', {
       UsernameAttributes: ABSENT,
-      AliasAttributes: [ 'email' ],
+      AliasAttributes: ['email'],
     });
   });
 
@@ -427,7 +411,7 @@ describe('User Pool', () => {
 
     // THEN
     expect(stack).toHaveResourceLike('AWS::Cognito::UserPool', {
-      UsernameAttributes: [ 'email', 'phone_number' ],
+      UsernameAttributes: ['email', 'phone_number'],
       AliasAttributes: ABSENT,
     });
   });
@@ -449,11 +433,11 @@ describe('User Pool', () => {
     // THEN
     expect(stack).toHaveResourceLike('AWS::Cognito::UserPool', {
       UserPoolName: 'Pool1',
-      AutoVerifiedAttributes: [ 'email' ],
+      AutoVerifiedAttributes: ['email'],
     });
     expect(stack).toHaveResourceLike('AWS::Cognito::UserPool', {
       UserPoolName: 'Pool2',
-      AutoVerifiedAttributes: [ 'email', 'phone_number' ],
+      AutoVerifiedAttributes: ['email', 'phone_number'],
     });
   });
 
@@ -469,7 +453,7 @@ describe('User Pool', () => {
 
     // THEN
     expect(stack).toHaveResourceLike('AWS::Cognito::UserPool', {
-      AutoVerifiedAttributes: [ 'email', 'phone_number' ],
+      AutoVerifiedAttributes: ['email', 'phone_number'],
     });
   });
 
@@ -760,12 +744,12 @@ describe('User Pool', () => {
     expect(stack).toHaveResourceLike('AWS::Cognito::UserPool', {
       UserPoolName: 'Pool1',
       MfaConfiguration: 'OPTIONAL',
-      EnabledMfas: [ 'SMS_MFA' ],
+      EnabledMfas: ['SMS_MFA'],
     });
     expect(stack).toHaveResourceLike('AWS::Cognito::UserPool', {
       UserPoolName: 'Pool2',
       MfaConfiguration: 'ON',
-      EnabledMfas: [ 'SMS_MFA' ],
+      EnabledMfas: ['SMS_MFA'],
     });
   });
 
@@ -784,7 +768,7 @@ describe('User Pool', () => {
 
     // THEN
     expect(stack).toHaveResourceLike('AWS::Cognito::UserPool', {
-      EnabledMfas: [ 'SMS_MFA', 'SOFTWARE_TOKEN_MFA' ],
+      EnabledMfas: ['SMS_MFA', 'SOFTWARE_TOKEN_MFA'],
     });
   });
 
@@ -896,202 +880,479 @@ describe('User Pool', () => {
       },
     });
   });
+
+  test('addClient', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    const userpool = new UserPool(stack, 'Pool');
+    userpool.addClient('UserPoolClient', {
+      userPoolClientName: 'userpoolclient',
+    });
+    const imported = UserPool.fromUserPoolId(stack, 'imported', 'imported-userpool-id');
+    imported.addClient('UserPoolImportedClient', {
+      userPoolClientName: 'userpoolimportedclient',
+    });
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::Cognito::UserPoolClient', {
+      ClientName: 'userpoolclient',
+      UserPoolId: stack.resolve(userpool.userPoolId),
+    });
+    expect(stack).toHaveResourceLike('AWS::Cognito::UserPoolClient', {
+      ClientName: 'userpoolimportedclient',
+      UserPoolId: stack.resolve(imported.userPoolId),
+    });
+  });
+
+  test('addResourceServer', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    const userpool = new UserPool(stack, 'Pool');
+    userpool.addResourceServer('ResourceServer', {
+      identifier: 'users',
+      scopes: [
+        {
+          scopeName: 'read',
+          scopeDescription: 'Read-only access',
+        },
+      ],
+    });
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::Cognito::UserPoolResourceServer', {
+      Identifier: 'users',
+      Name: 'users',
+      UserPoolId: stack.resolve(userpool.userPoolId),
+      Scopes: [
+        {
+          ScopeDescription: 'Read-only access',
+          ScopeName: 'read',
+        },
+      ],
+    });
+  });
+
+  test('addDomain', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    const userpool = new UserPool(stack, 'Pool');
+    userpool.addDomain('UserPoolDomain', {
+      cognitoDomain: {
+        domainPrefix: 'userpooldomain',
+      },
+    });
+    const imported = UserPool.fromUserPoolId(stack, 'imported', 'imported-userpool-id');
+    imported.addDomain('UserPoolImportedDomain', {
+      cognitoDomain: {
+        domainPrefix: 'userpoolimporteddomain',
+      },
+    });
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::Cognito::UserPoolDomain', {
+      Domain: 'userpooldomain',
+      UserPoolId: stack.resolve(userpool.userPoolId),
+    });
+    expect(stack).toHaveResourceLike('AWS::Cognito::UserPoolDomain', {
+      Domain: 'userpoolimporteddomain',
+      UserPoolId: stack.resolve(imported.userPoolId),
+    });
+  });
+
+  test('registered identity providers', () => {
+    // GIVEN
+    const stack = new Stack();
+    const userPool = new UserPool(stack, 'pool');
+    const provider1 = UserPoolIdentityProvider.fromProviderName(stack, 'provider1', 'provider1');
+    const provider2 = UserPoolIdentityProvider.fromProviderName(stack, 'provider2', 'provider2');
+
+    // WHEN
+    userPool.registerIdentityProvider(provider1);
+    userPool.registerIdentityProvider(provider2);
+
+    // THEN
+    expect(userPool.identityProviders).toEqual([provider1, provider2]);
+  });
+
+  describe('AccountRecoverySetting should be configured correctly', () => {
+    test('EMAIL_AND_PHONE_WITHOUT_MFA', () => {
+      // GIVEN
+      const stack = new Stack();
+
+      // WHEN
+      new UserPool(stack, 'pool', { accountRecovery: AccountRecovery.EMAIL_AND_PHONE_WITHOUT_MFA });
+
+      // THEN
+      expect(stack).toHaveResource('AWS::Cognito::UserPool', {
+        AccountRecoverySetting: {
+          RecoveryMechanisms: [
+            { Name: 'verified_email', Priority: 1 },
+            { Name: 'verified_phone_number', Priority: 2 },
+          ],
+        },
+      });
+    });
+
+    test('PHONE_WITHOUT_MFA_AND_EMAIL', () => {
+      // GIVEN
+      const stack = new Stack();
+
+      // WHEN
+      new UserPool(stack, 'pool', { accountRecovery: AccountRecovery.PHONE_WITHOUT_MFA_AND_EMAIL });
+
+      // THEN
+      expect(stack).toHaveResource('AWS::Cognito::UserPool', {
+        AccountRecoverySetting: {
+          RecoveryMechanisms: [
+            { Name: 'verified_phone_number', Priority: 1 },
+            { Name: 'verified_email', Priority: 2 },
+          ],
+        },
+      });
+    });
+
+    test('EMAIL_ONLY', () => {
+      // GIVEN
+      const stack = new Stack();
+
+      // WHEN
+      new UserPool(stack, 'pool', { accountRecovery: AccountRecovery.EMAIL_ONLY });
+
+      // THEN
+      expect(stack).toHaveResource('AWS::Cognito::UserPool', {
+        AccountRecoverySetting: {
+          RecoveryMechanisms: [
+            { Name: 'verified_email', Priority: 1 },
+          ],
+        },
+      });
+    });
+
+    test('PHONE_ONLY_WITHOUT_MFA', () => {
+      // GIVEN
+      const stack = new Stack();
+
+      // WHEN
+      new UserPool(stack, 'pool', { accountRecovery: AccountRecovery.PHONE_ONLY_WITHOUT_MFA });
+
+      // THEN
+      expect(stack).toHaveResource('AWS::Cognito::UserPool', {
+        AccountRecoverySetting: {
+          RecoveryMechanisms: [
+            { Name: 'verified_phone_number', Priority: 1 },
+          ],
+        },
+      });
+    });
+
+    test('NONE', () => {
+      // GIVEN
+      const stack = new Stack();
+
+      // WHEN
+      new UserPool(stack, 'pool', { accountRecovery: AccountRecovery.NONE });
+
+      // THEN
+      expect(stack).toHaveResource('AWS::Cognito::UserPool', {
+        AccountRecoverySetting: {
+          RecoveryMechanisms: [
+            { Name: 'admin_only', Priority: 1 },
+          ],
+        },
+      });
+    });
+
+    test('PHONE_AND_EMAIL', () => {
+      // GIVEN
+      const stack = new Stack();
+
+      // WHEN
+      new UserPool(stack, 'pool', { accountRecovery: AccountRecovery.PHONE_AND_EMAIL });
+
+      // THEN
+      expect(stack).toHaveResource('AWS::Cognito::UserPool', {
+        AccountRecoverySetting: ABSENT,
+      });
+    });
+
+    test('default', () => {
+      // GIVEN
+      const stack = new Stack();
+
+      // WHEN
+      new UserPool(stack, 'pool');
+
+      // THEN
+      expect(stack).toHaveResource('AWS::Cognito::UserPool', {
+        AccountRecoverySetting: {
+          RecoveryMechanisms: [
+            { Name: 'verified_phone_number', Priority: 1 },
+            { Name: 'verified_email', Priority: 2 },
+          ],
+        },
+      });
+    });
+  });
+
+  describe('sms roles', () => {
+    test('default', () => {
+      // GIVEN
+      const stack = new Stack();
+
+      // WHEN
+      new UserPool(stack, 'pool');
+
+      // THEN
+      expect(stack).toHaveResource('AWS::Cognito::UserPool', {
+        SmsConfiguration: ABSENT,
+      });
+    });
+
+    test('smsRole and smsExternalId is set', () => {
+      // GIVEN
+      const stack = new Stack();
+      const smsRole = new Role(stack, 'smsRole', {
+        assumedBy: new ServicePrincipal('service.amazonaws.com'),
+      });
+
+      // WHEN
+      new UserPool(stack, 'pool', {
+        smsRole,
+        smsRoleExternalId: 'role-external-id',
+      });
+
+      // THEN
+      expect(stack).toHaveResource('AWS::Cognito::UserPool', {
+        SmsConfiguration: {
+          ExternalId: 'role-external-id',
+          SnsCallerArn: { 'Fn::GetAtt': ['smsRoleA4587CE8', 'Arn'] },
+        },
+      });
+    });
+
+    test('setting enableSmsRole creates an sms role', () => {
+      // GIVEN
+      const stack = new Stack();
+
+      // WHEN
+      new UserPool(stack, 'pool', {
+        enableSmsRole: true,
+      });
+
+      // THEN
+      expect(stack).toHaveResource('AWS::Cognito::UserPool', {
+        SmsConfiguration: {
+          ExternalId: 'pool',
+          SnsCallerArn: { 'Fn::GetAtt': ['poolsmsRole04048F13', 'Arn'] },
+        },
+      });
+      expect(stack).toHaveResource('AWS::IAM::Role', {
+        AssumeRolePolicyDocument: {
+          Statement: [
+            {
+              Action: 'sts:AssumeRole',
+              Condition: {
+                StringEquals: {
+                  'sts:ExternalId': 'pool',
+                },
+              },
+              Effect: 'Allow',
+              Principal: {
+                Service: 'cognito-idp.amazonaws.com',
+              },
+            },
+          ],
+          Version: '2012-10-17',
+        },
+        Policies: [
+          {
+            PolicyDocument: {
+              Statement: [
+                {
+                  Action: 'sns:Publish',
+                  Effect: 'Allow',
+                  Resource: '*',
+                },
+              ],
+              Version: '2012-10-17',
+            },
+            PolicyName: 'sns-publish',
+          },
+        ],
+      });
+    });
+
+    test('auto sms role is not created when MFA and phoneVerification is off', () => {
+      // GIVEN
+      const stack = new Stack();
+
+      // WHEN
+      new UserPool(stack, 'pool', {
+        mfa: Mfa.OFF,
+        signInAliases: {
+          phone: false,
+        },
+      });
+
+      // THEN
+      expect(stack).toHaveResource('AWS::Cognito::UserPool', {
+        SmsConfiguration: ABSENT,
+      });
+    });
+
+    test('auto sms role is not created when OTP-based MFA is enabled and phoneVerification is off', () => {
+      // GIVEN
+      const stack = new Stack();
+
+      // WHEN
+      new UserPool(stack, 'pool', {
+        mfa: Mfa.REQUIRED,
+        mfaSecondFactor: {
+          otp: true,
+          sms: false,
+        },
+        signInAliases: {
+          phone: false,
+        },
+      });
+
+      // THEN
+      expect(stack).toHaveResource('AWS::Cognito::UserPool', {
+        SmsConfiguration: ABSENT,
+      });
+    });
+
+    test('auto sms role is created when phone verification is turned on', () => {
+      // GIVEN
+      const stack = new Stack();
+
+      // WHEN
+      new UserPool(stack, 'pool', {
+        mfa: Mfa.OFF,
+        signInAliases: { phone: true },
+      });
+
+      // THEN
+      expect(stack).toHaveResource('AWS::Cognito::UserPool', {
+        SmsConfiguration: {
+          ExternalId: 'pool',
+          SnsCallerArn: { 'Fn::GetAtt': ['poolsmsRole04048F13', 'Arn'] },
+        },
+      });
+    });
+
+    test('auto sms role is created when phone auto-verification is set', () => {
+      // GIVEN
+      const stack = new Stack();
+
+      // WHEN
+      new UserPool(stack, 'pool', {
+        mfa: Mfa.OFF,
+        signInAliases: { phone: false },
+        autoVerify: { phone: true },
+      });
+
+      // THEN
+      expect(stack).toHaveResource('AWS::Cognito::UserPool', {
+        SmsConfiguration: {
+          ExternalId: 'pool',
+          SnsCallerArn: { 'Fn::GetAtt': ['poolsmsRole04048F13', 'Arn'] },
+        },
+      });
+    });
+
+    test('auto sms role is created when MFA is turned on', () => {
+      // GIVEN
+      const stack = new Stack();
+
+      // WHEN
+      new UserPool(stack, 'pool', {
+        mfa: Mfa.REQUIRED,
+        mfaSecondFactor: {
+          sms: true,
+          otp: false,
+        },
+        signInAliases: {
+          phone: false,
+        },
+      });
+
+      // THEN
+      expect(stack).toHaveResource('AWS::Cognito::UserPool', {
+        SmsConfiguration: {
+          ExternalId: 'pool',
+          SnsCallerArn: { 'Fn::GetAtt': ['poolsmsRole04048F13', 'Arn'] },
+        },
+      });
+    });
+
+    test('auto sms role is not created when enableSmsRole is unset, even when MFA is configured', () => {
+      // GIVEN
+      const stack = new Stack();
+
+      // WHEN
+      new UserPool(stack, 'pool', {
+        mfa: Mfa.REQUIRED,
+        mfaSecondFactor: {
+          sms: true,
+          otp: false,
+        },
+        enableSmsRole: false,
+      });
+
+      // THEN
+      expect(stack).toHaveResource('AWS::Cognito::UserPool', {
+        SmsConfiguration: ABSENT,
+      });
+    });
+
+    test('throws an error when smsRole is specified but enableSmsRole is unset', () => {
+      const stack = new Stack();
+      const smsRole = new Role(stack, 'smsRole', {
+        assumedBy: new ServicePrincipal('service.amazonaws.com'),
+      });
+
+      expect(() => new UserPool(stack, 'pool', {
+        smsRole,
+        enableSmsRole: false,
+      })).toThrow(/enableSmsRole cannot be disabled/);
+    });
+  });
+
+  test('email transmission with cyrillic characters are encoded', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new UserPool(stack, 'Pool', {
+      emailSettings: {
+        from: 'от@домен.рф',
+        replyTo: 'ответить@домен.рф',
+      },
+    });
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::Cognito::UserPool', {
+      EmailConfiguration: {
+        From: 'от@xn--d1acufc.xn--p1ai',
+        ReplyToEmailAddress: 'ответить@xn--d1acufc.xn--p1ai',
+      },
+    });
+  });
 });
 
-test('addClient', () => {
-  // GIVEN
-  const stack = new Stack();
-
-  // WHEN
-  const userpool = new UserPool(stack, 'Pool');
-  userpool.addClient('UserPoolClient', {
-    userPoolClientName: 'userpoolclient',
-  });
-  const imported = UserPool.fromUserPoolId(stack, 'imported', 'imported-userpool-id');
-  imported.addClient('UserPoolImportedClient', {
-    userPoolClientName: 'userpoolimportedclient',
-  });
-
-  // THEN
-  expect(stack).toHaveResourceLike('AWS::Cognito::UserPoolClient', {
-    ClientName: 'userpoolclient',
-    UserPoolId: stack.resolve(userpool.userPoolId),
-  });
-  expect(stack).toHaveResourceLike('AWS::Cognito::UserPoolClient', {
-    ClientName: 'userpoolimportedclient',
-    UserPoolId: stack.resolve(imported.userPoolId),
-  });
-});
-
-test('addDomain', () => {
-  // GIVEN
-  const stack = new Stack();
-
-  // WHEN
-  const userpool = new UserPool(stack, 'Pool');
-  userpool.addDomain('UserPoolDomain', {
-    cognitoDomain: {
-      domainPrefix: 'userpooldomain',
-    },
-  });
-  const imported = UserPool.fromUserPoolId(stack, 'imported', 'imported-userpool-id');
-  imported.addDomain('UserPoolImportedDomain', {
-    cognitoDomain: {
-      domainPrefix: 'userpoolimporteddomain',
-    },
-  });
-
-  // THEN
-  expect(stack).toHaveResourceLike('AWS::Cognito::UserPoolDomain', {
-    Domain: 'userpooldomain',
-    UserPoolId: stack.resolve(userpool.userPoolId),
-  });
-  expect(stack).toHaveResourceLike('AWS::Cognito::UserPoolDomain', {
-    Domain: 'userpoolimporteddomain',
-    UserPoolId: stack.resolve(imported.userPoolId),
-  });
-});
-
-test('registered identity providers', () => {
-  // GIVEN
-  const stack = new Stack();
-  const userPool = new UserPool(stack, 'pool');
-  const provider1 = UserPoolIdentityProvider.fromProviderName(stack, 'provider1', 'provider1');
-  const provider2 = UserPoolIdentityProvider.fromProviderName(stack, 'provider2', 'provider2');
-
-  // WHEN
-  userPool.registerIdentityProvider(provider1);
-  userPool.registerIdentityProvider(provider2);
-
-  // THEN
-  expect(userPool.identityProviders).toEqual([provider1, provider2]);
-});
 
 function fooFunction(scope: Construct, name: string): lambda.IFunction {
   return new lambda.Function(scope, name, {
     functionName: name,
-    code: lambda.Code.inline('foo'),
+    code: lambda.Code.fromInline('foo'),
     runtime: lambda.Runtime.NODEJS_12_X,
     handler: 'index.handler',
   });
 }
-
-describe('AccountRecoverySetting should be configured correctly', () => {
-  test('EMAIL_AND_PHONE_WITHOUT_MFA', () => {
-    // GIVEN
-    const stack = new Stack();
-
-    // WHEN
-    new UserPool(stack, 'pool', { accountRecovery: AccountRecovery.EMAIL_AND_PHONE_WITHOUT_MFA });
-
-    // THEN
-    expect(stack).toHaveResource('AWS::Cognito::UserPool', {
-      AccountRecoverySetting: {
-        RecoveryMechanisms: [
-          { Name: 'verified_email', Priority: 1 },
-          { Name: 'verified_phone_number', Priority: 2 },
-        ],
-      },
-    });
-  });
-
-  test('PHONE_WITHOUT_MFA_AND_EMAIL', () => {
-    // GIVEN
-    const stack = new Stack();
-
-    // WHEN
-    new UserPool(stack, 'pool', { accountRecovery: AccountRecovery.PHONE_WITHOUT_MFA_AND_EMAIL });
-
-    // THEN
-    expect(stack).toHaveResource('AWS::Cognito::UserPool', {
-      AccountRecoverySetting: {
-        RecoveryMechanisms: [
-          { Name: 'verified_phone_number', Priority: 1 },
-          { Name: 'verified_email', Priority: 2 },
-        ],
-      },
-    });
-  });
-
-  test('EMAIL_ONLY', () => {
-    // GIVEN
-    const stack = new Stack();
-
-    // WHEN
-    new UserPool(stack, 'pool', { accountRecovery: AccountRecovery.EMAIL_ONLY });
-
-    // THEN
-    expect(stack).toHaveResource('AWS::Cognito::UserPool', {
-      AccountRecoverySetting: {
-        RecoveryMechanisms: [
-          { Name: 'verified_email', Priority: 1 },
-        ],
-      },
-    });
-  });
-
-  test('PHONE_ONLY_WITHOUT_MFA', () => {
-    // GIVEN
-    const stack = new Stack();
-
-    // WHEN
-    new UserPool(stack, 'pool', { accountRecovery: AccountRecovery.PHONE_ONLY_WITHOUT_MFA });
-
-    // THEN
-    expect(stack).toHaveResource('AWS::Cognito::UserPool', {
-      AccountRecoverySetting: {
-        RecoveryMechanisms: [
-          { Name: 'verified_phone_number', Priority: 1 },
-        ],
-      },
-    });
-  });
-
-  test('NONE', () => {
-    // GIVEN
-    const stack = new Stack();
-
-    // WHEN
-    new UserPool(stack, 'pool', { accountRecovery: AccountRecovery.NONE });
-
-    // THEN
-    expect(stack).toHaveResource('AWS::Cognito::UserPool', {
-      AccountRecoverySetting: {
-        RecoveryMechanisms: [
-          { Name: 'admin_only', Priority: 1 },
-        ],
-      },
-    });
-  });
-
-  test('PHONE_AND_EMAIL', () => {
-    // GIVEN
-    const stack = new Stack();
-
-    // WHEN
-    new UserPool(stack, 'pool', { accountRecovery: AccountRecovery.PHONE_AND_EMAIL });
-
-    // THEN
-    expect(stack).toHaveResource('AWS::Cognito::UserPool', {
-      AccountRecoverySetting: ABSENT,
-    });
-  });
-
-  test('default', () => {
-    // GIVEN
-    const stack = new Stack();
-
-    // WHEN
-    new UserPool(stack, 'pool');
-
-    // THEN
-    expect(stack).toHaveResource('AWS::Cognito::UserPool', {
-      AccountRecoverySetting: {
-        RecoveryMechanisms: [
-          { Name: 'verified_phone_number', Priority: 1 },
-          { Name: 'verified_email', Priority: 2 },
-        ],
-      },
-    });
-  });
-});

@@ -1,9 +1,15 @@
 /// !cdk-integ *
 import * as sns from '@aws-cdk/aws-sns';
-import { App, Construct, Fn, Stack } from '@aws-cdk/core';
+import { App, Fn, Stack } from '@aws-cdk/core';
 import * as cfn from '../lib';
 
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct } from '@aws-cdk/core';
+
 // references between siblings
+
+/* eslint-disable cdk/no-core-construct */
 
 class ProducerNestedStack extends cfn.NestedStack {
   public readonly topic: sns.Topic;

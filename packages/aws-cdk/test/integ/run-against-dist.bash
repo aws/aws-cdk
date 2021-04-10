@@ -4,6 +4,7 @@ npmws=/tmp/cdk-rundist
 rm -rf $npmws
 mkdir -p $npmws
 
+set -x
 
 # This script must create 1 or 2 traps, and the 'trap' command will replace
 # the previous trap, so get some 'dynamic traps' mechanism in place
@@ -35,66 +36,24 @@ function serve_npm_packages() {
     return 1
   fi
 
-  local_cli_version="$(node -e "console.log(require('${dist_root}/build.json').version)")"
+  #------------------------------------------------------------------------------
+  # Start a mock npm repository from the given tarballs
+  #------------------------------------------------------------------------------
+  header "Starting local NPM Repository (Serving version ${CANDIDATE_VERSION})"
 
   tarballs_glob="$dist_root/js/*.tgz"
 
-  if [ ! -z "${USE_PUBLISHED_FRAMEWORK_VERSION:-}" ]; then
-
-    echo "Testing against latest published versions of the framework"
-
-    header "Installing aws-cdk from local tarballs..."
-    # Need 'npm install --prefix' otherwise it goes to the wrong directory
-    (cd ${npmws} && npx serve-npm-tarballs --glob "${tarballs_glob}" -- npm install --prefix $npmws aws-cdk@${local_cli_version})
-    export PATH=$npmws/node_modules/.bin:$PATH
-
-  else
-
-    echo "Testing against local versions of the framework"
-
-    #------------------------------------------------------------------------------
-    # Start a mock npm repository from the given tarballs
-    #------------------------------------------------------------------------------
-    header "Starting local NPM Repository"
-
-    # When using '--daemon', 'npm install' first so the files are permanent, or
-    # 'npx' will remove them too soon.
-    npm install serve-npm-tarballs
-    eval $(npx serve-npm-tarballs --glob "${tarballs_glob}" --daemon)
-    TRAPS+=("kill $SERVE_NPM_TARBALLS_PID")
-
-    header "Installing aws-cdk from local tarballs..."
-    # Need 'npm install --prefix' otherwise it goes to the wrong directory
-    (cd ${npmws} && npm install --prefix $npmws aws-cdk@${local_cli_version})
-    export PATH=$npmws/node_modules/.bin:$PATH
-
-  fi
-
-  # a bit silly, but it verifies the PATH exports and just makes sure
-  # that we run 'cdk' commands we use the version we just installed.
-  verify_installed_cli_version ${local_cli_version}
-
+  # When using '--daemon', 'npm install' first so the files are permanent, or
+  # 'npx' will remove them too soon.
+  npm install serve-npm-tarballs
+  eval $(npx serve-npm-tarballs --glob "${tarballs_glob}" --daemon)
+  TRAPS+=("kill $SERVE_NPM_TARBALLS_PID")
 }
 
-# Make sure that installed CLI matches the build version
-function verify_installed_cli_version() {
-
-  expected_version=$1
-
-  header "Expected CDK version: ${expected_version}"
-
-  log "Found CDK: $(type -p cdk)"
-
-  # Execute "cdk --version" as a validation that the toolkit is installed
-  local actual_version="$(cdk --version | cut -d" " -f1)"
-
-  if [ "${expected_version}" != "${actual_version}" ]; then
-    log "Mismatched CDK version. Expected: ${expected_version}, actual: ${actual_version}"
-    cdk --version
-    exit 1
-  else
-    log "Verified CDK version is: ${expected_version}"
-  fi
+function install_cli() {
+  echo "Installing CLI aws-cdk@${CANDIDATE_VERSION}"
+  (cd ${npmws} && npm install --prefix $npmws aws-cdk@${CANDIDATE_VERSION})
+  export PATH=$npmws/node_modules/.bin:$PATH
 }
 
 function prepare_java_packages() {

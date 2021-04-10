@@ -1,7 +1,7 @@
-import { expect } from '@aws-cdk/assert';
-import '@aws-cdk/assert/jest';
-import { Stack } from '@aws-cdk/core';
 import { deepEqual, throws } from 'assert';
+import { expect } from '@aws-cdk/assert-internal';
+import '@aws-cdk/assert-internal/jest';
+import { Stack } from '@aws-cdk/core';
 import * as glue from '../lib';
 
 test('default database does not create a bucket', () => {
@@ -66,8 +66,10 @@ test('fromDatabase', () => {
   // THEN
   deepEqual(database.databaseArn, 'arn:aws:glue:us-east-1:123456789012:database/db1');
   deepEqual(database.databaseName, 'db1');
-  deepEqual(stack.resolve(database.catalogArn), { 'Fn::Join': [ '',
-    [ 'arn:', { Ref: 'AWS::Partition' }, ':glue:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':catalog' ] ] });
+  deepEqual(stack.resolve(database.catalogArn), {
+    'Fn::Join': ['',
+      ['arn:', { Ref: 'AWS::Partition' }, ':glue:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':catalog']],
+  });
   deepEqual(stack.resolve(database.catalogId), { Ref: 'AWS::AccountId' });
 });
 

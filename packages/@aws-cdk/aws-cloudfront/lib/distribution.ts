@@ -1,9 +1,19 @@
 import * as acm from '@aws-cdk/aws-certificatemanager';
 import * as lambda from '@aws-cdk/aws-lambda';
-import { Construct, IResource, Lazy, Resource, Stack, Token, Duration } from '@aws-cdk/core';
+import * as s3 from '@aws-cdk/aws-s3';
+import { IResource, Lazy, Resource, Stack, Token, Duration, Names } from '@aws-cdk/core';
+import { Construct } from 'constructs';
+import { ICachePolicy } from './cache-policy';
 import { CfnDistribution } from './cloudfront.generated';
+import { GeoRestriction } from './geo-restriction';
+import { IKeyGroup } from './key-group';
 import { IOrigin, OriginBindConfig, OriginBindOptions } from './origin';
+import { IOriginRequestPolicy } from './origin-request-policy';
 import { CacheBehavior } from './private/cache-behavior';
+
+// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
+// eslint-disable-next-line
+import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 /**
  * Interface for CloudFront distributions
@@ -34,8 +44,6 @@ export interface IDistribution extends IResource {
 
 /**
  * Attributes used to import a Distribution.
- *
- * @experimental
  */
 export interface DistributionAttributes {
   /**
@@ -55,12 +63,11 @@ export interface DistributionAttributes {
 
 interface BoundOrigin extends OriginBindOptions, OriginBindConfig {
   readonly origin: IOrigin;
+  readonly originGroupId?: string;
 }
 
 /**
  * Properties for a Distribution
- *
- * @experimental
  */
 export interface DistributionProps {
   /**
@@ -83,6 +90,94 @@ export interface DistributionProps {
   readonly certificate?: acm.ICertificate;
 
   /**
+   * Any comments you want to include about the distribution.
+   *
+   * @default - no comment
+   */
+  readonly comment?: string;
+
+  /**
+   * The object that you want CloudFront to request from your origin (for example, index.html)
+   * when a viewer requests the root URL for your distribution. If no default object is set, the
+   * request goes to the origin's root (e.g., example.com/).
+   *
+   * @default - no default root object
+   */
+  readonly defaultRootObject?: string;
+
+  /**
+   * Alternative domain names for this distribution.
+   *
+   * If you want to use your own domain name, such as www.example.com, instead of the cloudfront.net domain name,
+   * you can add an alternate domain name to your distribution. If you attach a certificate to the distribution,
+   * you must add (at least one of) the domain names of the certificate to this list.
+   *
+   * @default - The distribution will only support the default generated name (e.g., d111111abcdef8.cloudfront.net)
+   */
+  readonly domainNames?: string[];
+
+  /**
+   * Enable or disable the distribution.
+   *
+   * @default true
+   */
+  readonly enabled?: boolean;
+
+  /**
+   * Whether CloudFront will respond to IPv6 DNS requests with an IPv6 address.
+   *
+   * If you specify false, CloudFront responds to IPv6 DNS requests with the DNS response code NOERROR and with no IP addresses.
+   * This allows viewers to submit a second request, for an IPv4 address for your distribution.
+   *
+   * @default true
+   */
+  readonly enableIpv6?: boolean;
+
+  /**
+   * Enable access logging for the distribution.
+   *
+   * @default - false, unless `logBucket` is specified.
+   */
+  readonly enableLogging?: boolean;
+
+  /**
+   * Controls the countries in which your content is distributed.
+   *
+   * @default - No geographic restrictions
+   */
+  readonly geoRestriction?: GeoRestriction;
+
+  /**
+   * Specify the maximum HTTP version that you want viewers to use to communicate with CloudFront.
+   *
+   * For viewers and CloudFront to use HTTP/2, viewers must support TLS 1.2 or later, and must support server name identification (SNI).
+   *
+   * @default HttpVersion.HTTP2
+   */
+  readonly httpVersion?: HttpVersion;
+
+  /**
+   * The Amazon S3 bucket to store the access logs in.
+   *
+   * @default - A bucket is created if `enableLogging` is true
+   */
+  readonly logBucket?: s3.IBucket;
+
+  /**
+   * Specifies whether you want CloudFront to include cookies in access logs
+   *
+   * @default false
+   */
+  readonly logIncludesCookies?: boolean;
+
+  /**
+   * An optional string that you want CloudFront to prefix to the access log filenames for this distribution.
+   *
+   * @default - no prefix
+   */
+  readonly logFilePrefix?: string;
+
+  /**
    * The price class that corresponds with the maximum price that you want to pay for CloudFront service.
    * If you specify PriceClass_All, CloudFront responds to requests for your objects from all CloudFront edge locations.
    * If you specify a price class other than PriceClass_All, CloudFront serves your objects from the CloudFront edge location
@@ -93,17 +188,39 @@ export interface DistributionProps {
   readonly priceClass?: PriceClass;
 
   /**
+   * Unique identifier that specifies the AWS WAF web ACL to associate with this CloudFront distribution.
+   *
+   * To specify a web ACL created using the latest version of AWS WAF, use the ACL ARN, for example
+   * `arn:aws:wafv2:us-east-1:123456789012:global/webacl/ExampleWebACL/473e64fd-f30b-4765-81a0-62ad96dd167a`.
+   * To specify a web ACL created using AWS WAF Classic, use the ACL ID, for example `473e64fd-f30b-4765-81a0-62ad96dd167a`.
+   *
+   * @see https://docs.aws.amazon.com/waf/latest/developerguide/what-is-aws-waf.html
+   * @see https://docs.aws.amazon.com/cloudfront/latest/APIReference/API_CreateDistribution.html#API_CreateDistribution_RequestParameters.
+   *
+   * @default - No AWS Web Application Firewall web access control list (web ACL).
+   */
+  readonly webAclId?: string;
+
+  /**
    * How CloudFront should handle requests that are not successful (e.g., PageNotFound).
    *
    * @default - No custom error responses.
    */
   readonly errorResponses?: ErrorResponse[];
+
+  /**
+    * The minimum version of the SSL protocol that you want CloudFront to use for HTTPS connections.
+    *
+    * CloudFront serves your objects only to browsers or devices that support at
+    * least the SSL version that you specify.
+    *
+    * @default SecurityPolicyProtocol.TLS_V1_2_2019
+    */
+  readonly minimumProtocolVersion?: SecurityPolicyProtocol;
 }
 
 /**
  * A CloudFront distribution with associated origin(s) and caching behavior(s).
- *
- * @experimental
  */
 export class Distribution extends Resource implements IDistribution {
 
@@ -132,6 +249,7 @@ export class Distribution extends Resource implements IDistribution {
   private readonly defaultBehavior: CacheBehavior;
   private readonly additionalBehaviors: CacheBehavior[] = [];
   private readonly boundOrigins: BoundOrigin[] = [];
+  private readonly originGroups: CfnDistribution.OriginGroupProperty[] = [];
 
   private readonly errorResponses: ErrorResponse[];
   private readonly certificate?: acm.ICertificate;
@@ -143,6 +261,10 @@ export class Distribution extends Resource implements IDistribution {
       const certificateRegion = Stack.of(this).parseArn(props.certificate.certificateArn).region;
       if (!Token.isUnresolved(certificateRegion) && certificateRegion !== 'us-east-1') {
         throw new Error(`Distribution certificates must be in the us-east-1 region and the certificate you provided is in ${certificateRegion}.`);
+      }
+
+      if ((props.domainNames ?? []).length === 0) {
+        throw new Error('Must specify at least one domain name to use a certificate with a distribution');
       }
     }
 
@@ -157,15 +279,26 @@ export class Distribution extends Resource implements IDistribution {
     this.certificate = props.certificate;
     this.errorResponses = props.errorResponses ?? [];
 
-    const distribution = new CfnDistribution(this, 'CFDistribution', { distributionConfig: {
-      enabled: true,
-      origins: Lazy.anyValue({ produce: () => this.renderOrigins() }),
-      defaultCacheBehavior: this.defaultBehavior._renderBehavior(),
-      cacheBehaviors: Lazy.anyValue({ produce: () => this.renderCacheBehaviors() }),
-      viewerCertificate: this.certificate ? this.renderViewerCertificate(this.certificate) : undefined,
-      customErrorResponses: this.renderErrorResponses(),
-      priceClass: props.priceClass ?? undefined,
-    } });
+    const distribution = new CfnDistribution(this, 'Resource', {
+      distributionConfig: {
+        enabled: props.enabled ?? true,
+        origins: Lazy.any({ produce: () => this.renderOrigins() }),
+        originGroups: Lazy.any({ produce: () => this.renderOriginGroups() }),
+        defaultCacheBehavior: this.defaultBehavior._renderBehavior(),
+        aliases: props.domainNames,
+        cacheBehaviors: Lazy.any({ produce: () => this.renderCacheBehaviors() }),
+        comment: props.comment,
+        customErrorResponses: this.renderErrorResponses(),
+        defaultRootObject: props.defaultRootObject,
+        httpVersion: props.httpVersion ?? HttpVersion.HTTP2,
+        ipv6Enabled: props.enableIpv6 ?? true,
+        logging: this.renderLogging(props),
+        priceClass: props.priceClass ?? undefined,
+        restrictions: this.renderRestrictions(props.geoRestriction),
+        viewerCertificate: this.certificate ? this.renderViewerCertificate(this.certificate, props.minimumProtocolVersion) : undefined,
+        webAclId: props.webAclId,
+      },
+    });
 
     this.domainName = distribution.attrDomainName;
     this.distributionDomainName = distribution.attrDomainName;
@@ -187,18 +320,56 @@ export class Distribution extends Resource implements IDistribution {
     this.additionalBehaviors.push(new CacheBehavior(originId, { pathPattern, ...behaviorOptions }));
   }
 
-  private addOrigin(origin: IOrigin): string {
+  private addOrigin(origin: IOrigin, isFailoverOrigin: boolean = false): string {
+    const ORIGIN_ID_MAX_LENGTH = 128;
+
     const existingOrigin = this.boundOrigins.find(boundOrigin => boundOrigin.origin === origin);
     if (existingOrigin) {
-      return existingOrigin.originId;
+      return existingOrigin.originGroupId ?? existingOrigin.originId;
     } else {
       const originIndex = this.boundOrigins.length + 1;
-      const scope = new Construct(this, `Origin${originIndex}`);
-      const originId = scope.node.uniqueId;
+      const scope = new CoreConstruct(this, `Origin${originIndex}`);
+      const originId = Names.uniqueId(scope).slice(-ORIGIN_ID_MAX_LENGTH);
       const originBindConfig = origin.bind(scope, { originId });
-      this.boundOrigins.push({ origin, originId, ...originBindConfig });
+      if (!originBindConfig.failoverConfig) {
+        this.boundOrigins.push({ origin, originId, ...originBindConfig });
+      } else {
+        if (isFailoverOrigin) {
+          throw new Error('An Origin cannot use an Origin with its own failover configuration as its fallback origin!');
+        }
+        const groupIndex = this.originGroups.length + 1;
+        const originGroupId = Names.uniqueId(new CoreConstruct(this, `OriginGroup${groupIndex}`)).slice(-ORIGIN_ID_MAX_LENGTH);
+        this.boundOrigins.push({ origin, originId, originGroupId, ...originBindConfig });
+
+        const failoverOriginId = this.addOrigin(originBindConfig.failoverConfig.failoverOrigin, true);
+        this.addOriginGroup(originGroupId, originBindConfig.failoverConfig.statusCodes, originId, failoverOriginId);
+        return originGroupId;
+      }
       return originId;
     }
+  }
+
+  private addOriginGroup(originGroupId: string, statusCodes: number[] | undefined, originId: string, failoverOriginId: string): void {
+    statusCodes = statusCodes ?? [500, 502, 503, 504];
+    if (statusCodes.length === 0) {
+      throw new Error('fallbackStatusCodes cannot be empty');
+    }
+    this.originGroups.push({
+      failoverCriteria: {
+        statusCodes: {
+          items: statusCodes,
+          quantity: statusCodes.length,
+        },
+      },
+      id: originGroupId,
+      members: {
+        items: [
+          { originId },
+          { originId: failoverOriginId },
+        ],
+        quantity: 2,
+      },
+    });
   }
 
   private renderOrigins(): CfnDistribution.OriginProperty[] {
@@ -211,6 +382,15 @@ export class Distribution extends Resource implements IDistribution {
     return renderedOrigins;
   }
 
+  private renderOriginGroups(): CfnDistribution.OriginGroupsProperty | undefined {
+    return this.originGroups.length === 0
+      ? undefined
+      : {
+        items: this.originGroups,
+        quantity: this.originGroups.length,
+      };
+  }
+
   private renderCacheBehaviors(): CfnDistribution.CacheBehaviorProperty[] | undefined {
     if (this.additionalBehaviors.length === 0) { return undefined; }
     return this.additionalBehaviors.map(behavior => behavior._renderBehavior());
@@ -218,33 +398,62 @@ export class Distribution extends Resource implements IDistribution {
 
   private renderErrorResponses(): CfnDistribution.CustomErrorResponseProperty[] | undefined {
     if (this.errorResponses.length === 0) { return undefined; }
-    function validateCustomErrorResponse(errorResponse: ErrorResponse) {
-      if (errorResponse.responsePagePath && !errorResponse.responseHttpStatus) {
-        throw new Error('\'responseCode\' must be provided if \'responsePagePath\' is defined');
-      }
-      if (!errorResponse.responseHttpStatus && !errorResponse.ttl) {
-        throw new Error('A custom error response without either a \'responseCode\' or \'errorCachingMinTtl\' is not valid.');
-      }
-    }
-    this.errorResponses.forEach(e => validateCustomErrorResponse(e));
 
     return this.errorResponses.map(errorConfig => {
+      if (!errorConfig.responseHttpStatus && !errorConfig.ttl && !errorConfig.responsePagePath) {
+        throw new Error('A custom error response without either a \'responseHttpStatus\', \'ttl\' or \'responsePagePath\' is not valid.');
+      }
+
       return {
         errorCachingMinTtl: errorConfig.ttl?.toSeconds(),
         errorCode: errorConfig.httpStatus,
-        responseCode: errorConfig.responseHttpStatus,
+        responseCode: errorConfig.responsePagePath
+          ? errorConfig.responseHttpStatus ?? errorConfig.httpStatus
+          : errorConfig.responseHttpStatus,
         responsePagePath: errorConfig.responsePagePath,
       };
     });
   }
 
-  private renderViewerCertificate(certificate: acm.ICertificate): CfnDistribution.ViewerCertificateProperty {
+  private renderLogging(props: DistributionProps): CfnDistribution.LoggingProperty | undefined {
+    if (!props.enableLogging && !props.logBucket) { return undefined; }
+    if (props.enableLogging === false && props.logBucket) {
+      throw new Error('Explicitly disabled logging but provided a logging bucket.');
+    }
+
+    const bucket = props.logBucket ?? new s3.Bucket(this, 'LoggingBucket');
+    return {
+      bucket: bucket.bucketRegionalDomainName,
+      includeCookies: props.logIncludesCookies,
+      prefix: props.logFilePrefix,
+    };
+  }
+
+  private renderRestrictions(geoRestriction?: GeoRestriction) {
+    return geoRestriction ? {
+      geoRestriction: {
+        restrictionType: geoRestriction.restrictionType,
+        locations: geoRestriction.locations,
+      },
+    } : undefined;
+  }
+
+  private renderViewerCertificate(certificate: acm.ICertificate,
+    minimumProtocolVersion: SecurityPolicyProtocol = SecurityPolicyProtocol.TLS_V1_2_2019) : CfnDistribution.ViewerCertificateProperty {
     return {
       acmCertificateArn: certificate.certificateArn,
       sslSupportMethod: SSLMethod.SNI,
-      minimumProtocolVersion: SecurityPolicyProtocol.TLS_V1_2_2018,
+      minimumProtocolVersion: minimumProtocolVersion,
     };
   }
+}
+
+/** Maximum HTTP version to support */
+export enum HttpVersion {
+  /** HTTP 1.1 */
+  HTTP1_1 = 'http1.1',
+  /** HTTP 2 */
+  HTTP2 = 'http2'
 }
 
 /**
@@ -314,7 +523,8 @@ export enum SecurityPolicyProtocol {
   TLS_V1 = 'TLSv1',
   TLS_V1_2016 = 'TLSv1_2016',
   TLS_V1_1_2016 = 'TLSv1.1_2016',
-  TLS_V1_2_2018 = 'TLSv1.2_2018'
+  TLS_V1_2_2018 = 'TLSv1.2_2018',
+  TLS_V1_2_2019 = 'TLSv1.2_2019'
 }
 
 /**
@@ -335,9 +545,22 @@ export class AllowedMethods {
 }
 
 /**
+ * The HTTP methods that the Behavior will cache requests on.
+ */
+export class CachedMethods {
+  /** HEAD and GET */
+  public static readonly CACHE_GET_HEAD = new CachedMethods(['GET', 'HEAD']);
+  /** HEAD, GET, and OPTIONS */
+  public static readonly CACHE_GET_HEAD_OPTIONS = new CachedMethods(['GET', 'HEAD', 'OPTIONS']);
+
+  /** HTTP methods supported */
+  public readonly methods: string[];
+
+  private constructor(methods: string[]) { this.methods = methods; }
+}
+
+/**
  * Options for configuring custom error responses.
- *
- * @experimental
  */
 export interface ErrorResponse {
   /**
@@ -355,7 +578,7 @@ export interface ErrorResponse {
    *
    * If you specify a value for `responseHttpStatus`, you must also specify a value for `responsePagePath`.
    *
-   * @default - not set, the error code will be returned as the response code.
+   * @default - the error code will be returned as the response code.
    */
   readonly responseHttpStatus?: number;
   /**
@@ -389,7 +612,7 @@ export enum LambdaEdgeEventType {
   VIEWER_REQUEST = 'viewer-request',
 
   /**
-   * The viewer-response specifies the outgoing reponse
+   * The viewer-response specifies the outgoing response
    */
   VIEWER_RESPONSE = 'viewer-response',
 }
@@ -408,37 +631,74 @@ export interface EdgeLambda {
 
   /** The type of event in response to which should the function be invoked. */
   readonly eventType: LambdaEdgeEventType;
+
+  /**
+   * Allows a Lambda function to have read access to the body content.
+   * Only valid for "request" event types (`ORIGIN_REQUEST` or `VIEWER_REQUEST`).
+   * See https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/lambda-include-body-access.html
+   *
+   * @default false
+   */
+  readonly includeBody?: boolean;
 }
 
 /**
  * Options for adding a new behavior to a Distribution.
- *
- * @experimental
  */
 export interface AddBehaviorOptions {
   /**
    * HTTP methods to allow for this behavior.
    *
-   * @default - GET and HEAD
+   * @default AllowedMethods.ALLOW_GET_HEAD
    */
   readonly allowedMethods?: AllowedMethods;
 
   /**
-   * Whether CloudFront will forward query strings to the origin.
-   * If this is set to true, CloudFront will forward all query parameters to the origin, and cache
-   * based on all parameters. See `forwardQueryStringCacheKeys` for a way to limit the query parameters
-   * CloudFront caches on.
+   * HTTP methods to cache for this behavior.
+   *
+   * @default CachedMethods.CACHE_GET_HEAD
+   */
+  readonly cachedMethods?: CachedMethods;
+
+  /**
+   * The cache policy for this behavior. The cache policy determines what values are included in the cache key,
+   * and the time-to-live (TTL) values for the cache.
+   *
+   * @see https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/controlling-the-cache-key.html.
+   * @default CachePolicy.CACHING_OPTIMIZED
+   */
+  readonly cachePolicy?: ICachePolicy;
+
+  /**
+   * Whether you want CloudFront to automatically compress certain files for this cache behavior.
+   * See https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/ServingCompressedFiles.html#compressed-content-cloudfront-file-types
+   * for file types CloudFront will compress.
+   *
+   * @default true
+   */
+  readonly compress?: boolean;
+
+  /**
+   * The origin request policy for this behavior. The origin request policy determines which values (e.g., headers, cookies)
+   * are included in requests that CloudFront sends to the origin.
+   *
+   * @default - none
+   */
+  readonly originRequestPolicy?: IOriginRequestPolicy;
+
+  /**
+   * Set this to true to indicate you want to distribute media files in the Microsoft Smooth Streaming format using this behavior.
    *
    * @default false
    */
-  readonly forwardQueryString?: boolean;
+  readonly smoothStreaming?: boolean;
 
   /**
-   * A set of query string parameter names to use for caching if `forwardQueryString` is set to true.
+   * The protocol that viewers can use to access the files controlled by this behavior.
    *
-   * @default []
+   * @default ViewerProtocolPolicy.ALLOW_ALL
    */
-  readonly forwardQueryStringCacheKeys?: string[];
+  readonly viewerProtocolPolicy?: ViewerProtocolPolicy;
 
   /**
    * The Lambda@Edge functions to invoke before serving the contents.
@@ -447,12 +707,18 @@ export interface AddBehaviorOptions {
    * @see https://aws.amazon.com/lambda/edge
    */
   readonly edgeLambdas?: EdgeLambda[];
+
+  /**
+   * A list of Key Groups that CloudFront can use to validate signed URLs or signed cookies.
+   *
+   * @default - no KeyGroups are associated with cache behavior
+   * @see https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/PrivateContent.html
+   */
+  readonly trustedKeyGroups?: IKeyGroup[];
 }
 
 /**
  * Options for creating a new behavior.
- *
- * @experimental
  */
 export interface BehaviorOptions extends AddBehaviorOptions {
   /**

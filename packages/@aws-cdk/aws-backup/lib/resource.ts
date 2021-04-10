@@ -2,7 +2,12 @@ import * as dynamodb from '@aws-cdk/aws-dynamodb';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as efs from '@aws-cdk/aws-efs';
 import * as rds from '@aws-cdk/aws-rds';
-import { Construct, Stack } from '@aws-cdk/core';
+import { Stack } from '@aws-cdk/core';
+import { Construct } from 'constructs';
+
+// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
+// eslint-disable-next-line
+import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 /**
  * An operation that is applied to a key-value pair
@@ -129,11 +134,11 @@ export class BackupResource {
   /**
    * A construct
    */
-  public readonly construct?: Construct;
+  public readonly construct?: CoreConstruct;
 
   constructor(resource?: string, tagCondition?: TagCondition, construct?: Construct) {
     this.resource = resource;
     this.tagCondition = tagCondition;
-    this.construct = construct;
+    this.construct = construct as CoreConstruct;
   }
 }

@@ -1,7 +1,7 @@
 {
   "name": "@aws-cdk/aws-cloudtrail",
   "version": "0.0.0",
-  "description": "CDK Constructs for AWS CloudTrail",
+  "description": "The CDK Construct Library for AWS::CloudTrail",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "jsii": {
@@ -17,15 +17,18 @@
       "dotnet": {
         "namespace": "Amazon.CDK.AWS.CloudTrail",
         "packageId": "Amazon.CDK.AWS.CloudTrail",
-        "signAssembly": true,
-        "assemblyOriginatorKeyFile": "../../key.snk",
         "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
       },
       "python": {
         "distName": "aws-cdk.aws-cloudtrail",
-        "module": "aws_cdk.aws_cloudtrail"
+        "module": "aws_cdk.aws_cloudtrail",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
       }
-    }
+    },
+    "projectReferences": true
   },
   "repository": {
     "type": "git",
@@ -42,13 +45,18 @@
     "awslint": "cdk-awslint",
     "cfn2ts": "cfn2ts",
     "integ": "cdk-integ",
-    "build+test+package": "npm run build+test && npm run package",
-    "build+test": "npm run build && npm test",
-    "compat": "cdk-compat"
+    "build+test+package": "yarn build+test && yarn package",
+    "build+test": "yarn build && yarn test",
+    "compat": "cdk-compat",
+    "gen": "cfn2ts",
+    "rosetta:extract": "yarn --silent jsii-rosetta extract"
   },
   "cdk-build": {
     "cloudformation": "AWS::CloudTrail",
-    "jest": true
+    "jest": true,
+    "env": {
+      "AWSLINT_BASE_CONSTRUCT": true
+    }
   },
   "keywords": [
     "aws",
@@ -63,14 +71,14 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "0.0.0",
-    "aws-sdk": "^2.715.0",
+    "aws-sdk": "^2.848.0",
     "cdk-build-tools": "0.0.0",
     "cdk-integ-tools": "0.0.0",
     "cfn2ts": "0.0.0",
     "colors": "^1.4.0",
-    "jest": "^25.5.4",
-    "pkglint": "0.0.0"
+    "jest": "^26.6.3",
+    "pkglint": "0.0.0",
+    "@aws-cdk/assert-internal": "0.0.0"
   },
   "dependencies": {
     "@aws-cdk/aws-events": "0.0.0",
@@ -81,7 +89,7 @@
     "@aws-cdk/aws-s3": "0.0.0",
     "@aws-cdk/aws-sns": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "constructs": "^3.0.2"
+    "constructs": "^3.3.69"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
@@ -93,7 +101,7 @@
     "@aws-cdk/aws-s3": "0.0.0",
     "@aws-cdk/aws-sns": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "constructs": "^3.0.2"
+    "constructs": "^3.3.69"
   },
   "awslint": {
     "exclude": [
@@ -107,5 +115,8 @@
   "maturity": "stable",
   "awscdkio": {
     "announce": false
+  },
+  "publishConfig": {
+    "tag": "latest"
   }
 }

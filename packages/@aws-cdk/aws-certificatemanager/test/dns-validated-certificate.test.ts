@@ -1,5 +1,5 @@
-import '@aws-cdk/assert/jest';
-import { SynthUtils } from '@aws-cdk/assert';
+import '@aws-cdk/assert-internal/jest';
+import { SynthUtils } from '@aws-cdk/assert-internal';
 import * as iam from '@aws-cdk/aws-iam';
 import { HostedZone, PublicHostedZone } from '@aws-cdk/aws-route53';
 import { App, Stack, Token } from '@aws-cdk/core';
@@ -31,7 +31,7 @@ test('creates CloudFormation Custom Resource', () => {
   });
   expect(stack).toHaveResource('AWS::Lambda::Function', {
     Handler: 'index.certificateRequestHandler',
-    Runtime: 'nodejs10.x',
+    Runtime: 'nodejs14.x',
     Timeout: 900,
   });
   expect(stack).toHaveResource('AWS::IAM::Policy', {

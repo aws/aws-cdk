@@ -1,4 +1,4 @@
-import { expect, haveResource } from '@aws-cdk/assert';
+import { expect, haveResource } from '@aws-cdk/assert-internal';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
 import { Stack } from '@aws-cdk/core';
@@ -52,7 +52,7 @@ test('Can create target groups with instance target', () => {
     Port: 80,
     Protocol: 'HTTP',
     Targets: [
-      { Id: {Ref: 'InstanceC1063A87'} },
+      { Id: { Ref: 'InstanceC1063A87' } },
     ],
     TargetType: 'instance',
   }));

@@ -1,4 +1,4 @@
-import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { Chain } from '../chain';
 import { FieldUtils } from '../fields';
 import { StateGraph } from '../state-graph';
@@ -101,7 +101,7 @@ export class Map extends State implements INextable {
   private readonly maxConcurrency: number | undefined;
   private readonly itemsPath?: string;
 
-  constructor(scope: cdk.Construct, id: string, props: MapProps = {}) {
+  constructor(scope: Construct, id: string, props: MapProps = {}) {
     super(scope, id, props);
     this.endStates = [this];
     this.maxConcurrency = props.maxConcurrency;

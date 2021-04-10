@@ -1,0 +1,113 @@
+{
+  "name": "@aws-cdk/lambda-layer-kubectl",
+  "private": false,
+  "version": "0.0.0",
+  "description": "An AWS Lambda layer that contains the `kubectl` and `helm`",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "jsii": {
+    "outdir": "dist",
+    "targets": {
+      "java": {
+        "package": "software.amazon.awscdk.lambdalayer.kubectl",
+        "maven": {
+          "groupId": "software.amazon.awscdk",
+          "artifactId": "cdk-lambda-layer-kubectl"
+        }
+      },
+      "dotnet": {
+        "namespace": "Amazon.CDK.LambdaLayer.Kubectl",
+        "packageId": "Amazon.CDK.LambdaLayer.Kubectl",
+        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
+      },
+      "python": {
+        "distName": "aws-cdk.lambda-layer-kubectl",
+        "module": "aws_cdk.lambda_layer_kubectl",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
+      }
+    },
+    "projectReferences": true
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aws/aws-cdk.git",
+    "directory": "packages/@aws-cdk/lambda-layer-kubectl"
+  },
+  "scripts": {
+    "build": "cdk-build",
+    "watch": "cdk-watch",
+    "lint": "cdk-lint",
+    "test": "cdk-test",
+    "integ": "cdk-integ",
+    "pkglint": "pkglint -f",
+    "package": "cdk-package",
+    "awslint": "cdk-awslint",
+    "build+test": "yarn build && yarn test",
+    "build+test+package": "yarn build+test && yarn package",
+    "compat": "cdk-compat",
+    "rosetta:extract": "yarn --silent jsii-rosetta extract"
+  },
+  "keywords": [
+    "aws",
+    "cdk",
+    "example",
+    "construct",
+    "library"
+  ],
+  "author": {
+    "name": "Amazon Web Services",
+    "url": "https://aws.amazon.com",
+    "organization": true
+  },
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "cdk-build-tools": "0.0.0",
+    "cdk-integ-tools": "0.0.0",
+    "jest": "^26.6.3",
+    "pkglint": "0.0.0",
+    "@aws-cdk/assert-internal": "0.0.0"
+  },
+  "pkglint": {
+    "attribution": [
+      "kubectl",
+      "helm"
+    ]
+  },
+  "dependencies": {
+    "@aws-cdk/aws-lambda": "0.0.0",
+    "@aws-cdk/core": "0.0.0",
+    "constructs": "^3.3.69"
+  },
+  "homepage": "https://github.com/aws/aws-cdk",
+  "peerDependencies": {
+    "@aws-cdk/aws-lambda": "0.0.0",
+    "@aws-cdk/core": "0.0.0",
+    "constructs": "^3.3.69"
+  },
+  "engines": {
+    "node": ">= 10.13.0 <13 || >=13.7.0"
+  },
+  "stability": "stable",
+  "maturity": "stable",
+  "awscdkio": {
+    "announce": false
+  },
+  "cdk-build": {
+    "pre": [
+      "layer/build.sh"
+    ],
+    "jest": true,
+    "env": {
+      "AWSLINT_BASE_CONSTRUCT": true
+    }
+  },
+  "ubergen": {
+    "exclude": false
+  },
+  "publishConfig": {
+    "tag": "latest"
+  }
+}

@@ -1,4 +1,4 @@
-import '@aws-cdk/assert/jest';
+import '@aws-cdk/assert-internal/jest';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as sns from '@aws-cdk/aws-sns';
 import * as sqs from '@aws-cdk/aws-sqs';
@@ -82,6 +82,8 @@ test('url subscription with user provided dlq', () => {
       },
       'DeadLetterQueue9F481546': {
         'Type': 'AWS::SQS::Queue',
+        'DeletionPolicy': 'Delete',
+        'UpdateReplacePolicy': 'Delete',
         'Properties': {
           'MessageRetentionPeriod': 1209600,
           'QueueName': 'MySubscription_DLQ',
@@ -155,7 +157,7 @@ test('url subscription (with raw delivery)', () => {
 
 test('url subscription (unresolved url with protocol)', () => {
   const urlToken = Token.asString({ Ref: 'my-url-1' });
-  topic.addSubscription(new subs.UrlSubscription(urlToken, {protocol: sns.SubscriptionProtocol.HTTPS}));
+  topic.addSubscription(new subs.UrlSubscription(urlToken, { protocol: sns.SubscriptionProtocol.HTTPS }));
 
   expect(stack).toMatchTemplate({
     'Resources': {
@@ -184,8 +186,8 @@ test('url subscription (double unresolved url with protocol)', () => {
   const urlToken1 = Token.asString({ Ref: 'my-url-1' });
   const urlToken2 = Token.asString({ Ref: 'my-url-2' });
 
-  topic.addSubscription(new subs.UrlSubscription(urlToken1, {protocol: sns.SubscriptionProtocol.HTTPS}));
-  topic.addSubscription(new subs.UrlSubscription(urlToken2, {protocol: sns.SubscriptionProtocol.HTTPS}));
+  topic.addSubscription(new subs.UrlSubscription(urlToken1, { protocol: sns.SubscriptionProtocol.HTTPS }));
+  topic.addSubscription(new subs.UrlSubscription(urlToken2, { protocol: sns.SubscriptionProtocol.HTTPS }));
 
   expect(stack).toMatchTemplate({
     'Resources': {
@@ -248,6 +250,8 @@ test('queue subscription', () => {
       },
       'MyQueueE6CA6235': {
         'Type': 'AWS::SQS::Queue',
+        'DeletionPolicy': 'Delete',
+        'UpdateReplacePolicy': 'Delete',
       },
       'MyQueuePolicy6BBEDDAC': {
         'Type': 'AWS::SQS::QueuePolicy',
@@ -325,6 +329,8 @@ test('queue subscription with user provided dlq', () => {
       },
       'MyQueueE6CA6235': {
         'Type': 'AWS::SQS::Queue',
+        'DeletionPolicy': 'Delete',
+        'UpdateReplacePolicy': 'Delete',
       },
       'MyQueuePolicy6BBEDDAC': {
         'Type': 'AWS::SQS::QueuePolicy',
@@ -386,6 +392,8 @@ test('queue subscription with user provided dlq', () => {
       },
       'DeadLetterQueue9F481546': {
         'Type': 'AWS::SQS::Queue',
+        'DeletionPolicy': 'Delete',
+        'UpdateReplacePolicy': 'Delete',
         'Properties': {
           'MessageRetentionPeriod': 1209600,
           'QueueName': 'MySubscription_DLQ',
@@ -612,7 +620,7 @@ test('email and url subscriptions with unresolved', () => {
   const emailToken = Token.asString({ Ref: 'my-email-1' });
   const urlToken = Token.asString({ Ref: 'my-url-1' });
   topic.addSubscription(new subs.EmailSubscription(emailToken));
-  topic.addSubscription(new subs.UrlSubscription(urlToken, {protocol: sns.SubscriptionProtocol.HTTPS}));
+  topic.addSubscription(new subs.UrlSubscription(urlToken, { protocol: sns.SubscriptionProtocol.HTTPS }));
 
   expect(stack).toMatchTemplate({
     'Resources': {
@@ -745,6 +753,8 @@ test('multiple subscriptions', () => {
       },
       'MyQueueE6CA6235': {
         'Type': 'AWS::SQS::Queue',
+        'DeletionPolicy': 'Delete',
+        'UpdateReplacePolicy': 'Delete',
       },
       'MyQueuePolicy6BBEDDAC': {
         'Type': 'AWS::SQS::QueuePolicy',
@@ -887,7 +897,7 @@ test('throws with mutliple subscriptions of the same subscriber', () => {
   topic.addSubscription(new subs.SqsSubscription(queue));
 
   expect(() => topic.addSubscription(new subs.SqsSubscription(queue)))
-    .toThrowError(/A subscription with id \"MyTopic\" already exists under the scope MyQueue/);
+    .toThrowError(/A subscription with id \"MyTopic\" already exists under the scope Default\/MyQueue/);
 });
 
 test('with filter policy', () => {
@@ -900,11 +910,11 @@ test('with filter policy', () => {
   topic.addSubscription(new subs.LambdaSubscription(fction, {
     filterPolicy: {
       color: sns.SubscriptionFilter.stringFilter({
-        whitelist: ['red'],
+        allowlist: ['red'],
         matchPrefixes: ['bl', 'ye'],
       }),
       size: sns.SubscriptionFilter.stringFilter({
-        blacklist: ['small', 'medium'],
+        denylist: ['small', 'medium'],
       }),
       price: sns.SubscriptionFilter.numericFilter({
         between: { start: 100, stop: 200 },
@@ -963,7 +973,7 @@ test('region property on an imported topic as a parameter - sqs', () => {
 
   expect(stack).toHaveResource('AWS::SNS::Subscription', {
     Region: {
-      'Fn::Select': [ 3, { 'Fn::Split': [ ':', { 'Ref': 'topicArn' } ] } ],
+      'Fn::Select': [3, { 'Fn::Split': [':', { 'Ref': 'topicArn' }] }],
     },
   });
 });
@@ -994,7 +1004,7 @@ test('region property on an imported topic as a parameter - lambda', () => {
 
   expect(stack).toHaveResource('AWS::SNS::Subscription', {
     Region: {
-      'Fn::Select': [ 3, { 'Fn::Split': [ ':', { 'Ref': 'topicArn' } ] } ],
+      'Fn::Select': [3, { 'Fn::Split': [':', { 'Ref': 'topicArn' }] }],
     },
   });
 });

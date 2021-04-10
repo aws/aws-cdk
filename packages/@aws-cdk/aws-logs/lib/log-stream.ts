@@ -1,4 +1,5 @@
-import { Construct, IResource, RemovalPolicy, Resource } from '@aws-cdk/core';
+import { IResource, RemovalPolicy, Resource } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { ILogGroup } from './log-group';
 import { CfnLogStream } from './logs.generated';
 

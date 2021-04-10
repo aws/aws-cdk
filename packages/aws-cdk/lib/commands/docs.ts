@@ -2,18 +2,24 @@ import * as childProcess from 'child_process';
 import * as process from 'process';
 import * as colors from 'colors/safe';
 import * as yargs from 'yargs';
-import { debug,  print, warning } from '../../lib/logging';
+import { debug, print, warning } from '../../lib/logging';
 import { CommandOptions } from '../command-api';
 
 export const command = 'docs';
 export const describe = 'Opens the reference documentation in a browser';
 export const aliases = ['doc'];
+
+const defaultBrowserCommand: { [key in NodeJS.Platform]?: string } = {
+  darwin: 'open %u',
+  win32: 'start %u',
+};
+
 export const builder = {
   browser: {
     alias: 'b',
     desc: 'the command to use to open the browser, using %u as a placeholder for the path of the file to open',
     type: 'string',
-    default: process.platform === 'win32' ? 'start %u' : 'open %u',
+    default: process.platform in defaultBrowserCommand ? defaultBrowserCommand[process.platform] : 'xdg-open %u',
   },
 };
 

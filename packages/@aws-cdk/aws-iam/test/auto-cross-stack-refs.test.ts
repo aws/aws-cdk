@@ -1,5 +1,5 @@
-import { SynthUtils } from '@aws-cdk/assert';
-import '@aws-cdk/assert/jest';
+import { SynthUtils } from '@aws-cdk/assert-internal';
+import '@aws-cdk/assert-internal/jest';
 import * as cdk from '@aws-cdk/core';
 import * as iam from '../lib';
 
@@ -30,7 +30,7 @@ describe('automatic cross-stack references', () => {
         User00B015A1: {
           Type: 'AWS::IAM::User',
           Properties: {
-            Groups: [ { 'Fn::ImportValue': 'stack2:ExportsOutputRefGroupC77FDACD8CF7DD5B' } ],
+            Groups: [{ 'Fn::ImportValue': 'stack2:ExportsOutputRefGroupC77FDACD8CF7DD5B' }],
           },
         },
       },

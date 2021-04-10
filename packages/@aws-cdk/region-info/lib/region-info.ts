@@ -13,6 +13,25 @@ export class RegionInfo {
   }
 
   /**
+   * Retrieves a collection of all fact values for all regions that fact is defined in.
+   *
+   * @param factName the name of the fact to retrieve values for.
+   *   For a list of common fact names, see the FactName class
+   * @returns a mapping with AWS region codes as the keys,
+   *   and the fact in the given region as the value for that key
+   */
+  public static regionMap(factName: string): { [region: string]: string } {
+    const ret: { [region: string]: string } = {};
+    for (const regionInfo of RegionInfo.regions) {
+      const fact = Fact.find(regionInfo.name, factName);
+      if (fact) {
+        ret[regionInfo.name] = fact;
+      }
+    }
+    return ret;
+  }
+
+  /**
    * Obtain region info for a given region name.
    *
    * @param name the name of the region (e.g: us-east-1)
@@ -81,5 +100,21 @@ export class RegionInfo {
    */
   public get elbv2Account(): string | undefined {
     return Fact.find(this.name, FactName.ELBV2_ACCOUNT);
+  }
+
+  /**
+   * The ID of the AWS account that owns the public ECR repository containing the
+   * AWS Deep Learning Containers images in this region.
+   */
+  public get dlcRepositoryAccount(): string | undefined {
+    return Fact.find(this.name, FactName.DLC_REPOSITORY_ACCOUNT);
+  }
+
+  /**
+   * The ID of the AWS account that owns the public ECR repository that contains the
+   * AWS App Mesh Envoy Proxy images in a given region.
+   */
+  public get appMeshRepositoryAccount(): string | undefined {
+    return Fact.find(this.name, FactName.APPMESH_ECR_ACCOUNT);
   }
 }

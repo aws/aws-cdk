@@ -1,4 +1,5 @@
-import { Construct, IResource, Lazy, Resource } from '@aws-cdk/core';
+import { IResource, Lazy, Resource } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CfnBackupPlan } from './backup.generated';
 import { BackupPlanRule } from './rule';
 import { BackupSelection, BackupSelectionOptions } from './selection';
@@ -124,7 +125,7 @@ export class BackupPlan extends Resource implements IBackupPlan {
     const plan = new CfnBackupPlan(this, 'Resource', {
       backupPlan: {
         backupPlanName: props.backupPlanName || id,
-        backupPlanRule: Lazy.anyValue({ produce: () => this.rules }, { omitEmptyArray: true }),
+        backupPlanRule: Lazy.any({ produce: () => this.rules }, { omitEmptyArray: true }),
       },
     });
 

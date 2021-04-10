@@ -14,10 +14,12 @@ beforeEach(() => {
 
 test('Send message to queue', () => {
   // WHEN
-  const task = new sfn.Task(stack, 'Send', { task: new tasks.SendToQueue(queue, {
-    messageBody: sfn.TaskInput.fromText('Send this message'),
-    messageDeduplicationId: sfn.JsonPath.stringAt('$.deduping'),
-  }) });
+  const task = new sfn.Task(stack, 'Send', {
+    task: new tasks.SendToQueue(queue, {
+      messageBody: sfn.TaskInput.fromText('Send this message'),
+      messageDeduplicationId: sfn.JsonPath.stringAt('$.deduping'),
+    }),
+  });
 
   // THEN
   expect(stack.resolve(task.toStateJson())).toEqual({
@@ -45,13 +47,15 @@ test('Send message to queue', () => {
 
 test('Send message to SQS queue with task token', () => {
   // WHEN
-  const task = new sfn.Task(stack, 'Send', { task: new tasks.SendToQueue(queue, {
-    integrationPattern: sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN,
-    messageBody: sfn.TaskInput.fromObject({
-      Input: 'Send this message',
-      Token: sfn.JsonPath.taskToken,
+  const task = new sfn.Task(stack, 'Send', {
+    task: new tasks.SendToQueue(queue, {
+      integrationPattern: sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN,
+      messageBody: sfn.TaskInput.fromObject({
+        Input: 'Send this message',
+        Token: sfn.JsonPath.taskToken,
+      }),
     }),
-  }) });
+  });
 
   // THEN
   expect(stack.resolve(task.toStateJson())).toEqual({
@@ -82,10 +86,12 @@ test('Send message to SQS queue with task token', () => {
 test('Task throws if WAIT_FOR_TASK_TOKEN is supplied but task token is not included in messageBody', () => {
   expect(() => {
     // WHEN
-    new sfn.Task(stack, 'Send', { task: new tasks.SendToQueue(queue, {
-      integrationPattern: sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN,
-      messageBody: sfn.TaskInput.fromText('Send this message'),
-    }) });
+    new sfn.Task(stack, 'Send', {
+      task: new tasks.SendToQueue(queue, {
+        integrationPattern: sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN,
+        messageBody: sfn.TaskInput.fromText('Send this message'),
+      }),
+    });
     // THEN
   }).toThrow(/Task Token is missing in messageBody/i);
 });
@@ -195,9 +201,11 @@ test('Message body object can contain references', () => {
 
 test('Task throws if SYNC is supplied as service integration pattern', () => {
   expect(() => {
-    new sfn.Task(stack, 'Send', { task: new tasks.SendToQueue(queue, {
-      integrationPattern: sfn.ServiceIntegrationPattern.SYNC,
-      messageBody: sfn.TaskInput.fromText('Send this message'),
-    }) });
+    new sfn.Task(stack, 'Send', {
+      task: new tasks.SendToQueue(queue, {
+        integrationPattern: sfn.ServiceIntegrationPattern.SYNC,
+        messageBody: sfn.TaskInput.fromText('Send this message'),
+      }),
+    });
   }).toThrow(/Invalid Service Integration Pattern: SYNC is not supported to call SQS./i);
 });

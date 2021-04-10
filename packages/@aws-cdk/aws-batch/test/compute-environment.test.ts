@@ -1,10 +1,10 @@
-import {expect, haveResource, haveResourceLike, ResourcePart} from '@aws-cdk/assert';
-import '@aws-cdk/assert/jest';
+import { throws } from 'assert';
+import { expect, haveResource, haveResourceLike, ResourcePart } from '@aws-cdk/assert-internal';
+import '@aws-cdk/assert-internal/jest';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecs from '@aws-cdk/aws-ecs';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
-import {throws} from 'assert';
 import * as batch from '../lib';
 
 describe('Batch Compute Evironment', () => {
@@ -161,15 +161,15 @@ describe('Batch Compute Evironment', () => {
         computeResources: {
           allocationStrategy: batch.AllocationStrategy.BEST_FIT,
           vpc,
-          computeResourcesTags: new cdk.Tag('foo', 'bar'),
+          computeResourcesTags: {
+            'Name': 'AWS Batch Instance - C4OnDemand',
+            'Tag Other': 'Has other value',
+          },
           desiredvCpus: 1,
           ec2KeyPair: 'my-key-pair',
-          image: new ecs.EcsOptimizedAmi({
-            generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2,
-            hardwareType: ecs.AmiHardwareType.STANDARD,
-          }),
+          image: ecs.EcsOptimizedImage.amazonLinux2(ecs.AmiHardwareType.STANDARD),
           instanceRole: new iam.CfnInstanceProfile(stack, 'Instance-Profile', {
-            roles: [ new iam.Role(stack, 'Ecs-Instance-Role', {
+            roles: [new iam.Role(stack, 'Ecs-Instance-Role', {
               assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
               managedPolicies: [
                 iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonEC2ContainerServiceforEC2Role'),
@@ -181,6 +181,7 @@ describe('Batch Compute Evironment', () => {
           ],
           maxvCpus: 4,
           minvCpus: 1,
+          placementGroup: 'example-cluster-group',
           securityGroups: [
             new ec2.SecurityGroup(stack, 'test-sg', {
               vpc,
@@ -227,6 +228,7 @@ describe('Batch Compute Evironment', () => {
           ],
           MaxvCpus: props.computeResources.maxvCpus,
           MinvCpus: props.computeResources.minvCpus,
+          PlacementGroup: props.computeResources.placementGroup,
           SecurityGroupIds: [
             {
               'Fn::GetAtt': [
@@ -237,17 +239,15 @@ describe('Batch Compute Evironment', () => {
           ],
           Subnets: [
             {
-              Ref: `${vpc.node.uniqueId}PrivateSubnet1Subnet865FB50A`,
+              Ref: `${cdk.Names.uniqueId(vpc)}PrivateSubnet1Subnet865FB50A`,
             },
             {
-              Ref: `${vpc.node.uniqueId}PrivateSubnet2Subnet23D3396F`,
+              Ref: `${cdk.Names.uniqueId(vpc)}PrivateSubnet2Subnet23D3396F`,
             },
           ],
           Tags: {
-            key: 'foo',
-            props: {},
-            defaultPriority: 100,
-            value: 'bar',
+            'Name': 'AWS Batch Instance - C4OnDemand',
+            'Tag Other': 'Has other value',
           },
           Type: 'EC2',
         },
@@ -374,7 +374,7 @@ describe('Batch Compute Evironment', () => {
         // THEN
         expect(stack).to(haveResourceLike('AWS::Batch::ComputeEnvironment', {
           ...expectedManagedDefaultComputeProps({
-            InstanceTypes: [ 'optimal' ],
+            InstanceTypes: ['optimal'],
           }),
         }, ResourcePart.Properties));
       });

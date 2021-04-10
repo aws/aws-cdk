@@ -5,6 +5,10 @@
 
 import * as cdk from '@aws-cdk/core';
 
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct } from '@aws-cdk/core';
+
 /**
  * Properties for defining a `AWS::ApiGatewayV2::Api`
  *
@@ -288,7 +292,7 @@ export class CfnApiV2 extends cdk.CfnResource implements cdk.IInspectable {
    * @param id    - scoped id of the resource
    * @param props - resource properties
    */
-  constructor(scope: cdk.Construct, id: string, props: CfnApiV2Props = {}) {
+  constructor(scope: Construct, id: string, props: CfnApiV2Props = {}) {
     super(scope, id, { type: CfnApiV2.CFN_RESOURCE_TYPE_NAME, properties: props });
 
     this.apiKeySelectionExpression = props.apiKeySelectionExpression;
@@ -321,7 +325,7 @@ export class CfnApiV2 extends cdk.CfnResource implements cdk.IInspectable {
     inspector.addAttribute('aws:cdk:cloudformation:props', this.cfnProperties);
   }
 
-  protected get cfnProperties(): { [key: string]: any }  {
+  protected get cfnProperties(): { [key: string]: any } {
     return {
       apiKeySelectionExpression: this.apiKeySelectionExpression,
       basePath: this.basePath,
@@ -341,7 +345,7 @@ export class CfnApiV2 extends cdk.CfnResource implements cdk.IInspectable {
       version: this.version,
     };
   }
-  protected renderProperties(props: {[key: string]: any}): { [key: string]: any }  {
+  protected renderProperties(props: {[key: string]: any}): { [key: string]: any } {
     return cfnApiV2PropsToCloudFormation(props);
   }
 }
@@ -616,7 +620,7 @@ export class CfnApiMappingV2 extends cdk.CfnResource implements cdk.IInspectable
    * @param id    - scoped id of the resource
    * @param props - resource properties
    */
-  constructor(scope: cdk.Construct, id: string, props: CfnApiMappingV2Props) {
+  constructor(scope: Construct, id: string, props: CfnApiMappingV2Props) {
     super(scope, id, { type: CfnApiMappingV2.CFN_RESOURCE_TYPE_NAME, properties: props });
     cdk.requireProperty(props, 'apiId', this);
     cdk.requireProperty(props, 'domainName', this);
@@ -640,7 +644,7 @@ export class CfnApiMappingV2 extends cdk.CfnResource implements cdk.IInspectable
     inspector.addAttribute('aws:cdk:cloudformation:props', this.cfnProperties);
   }
 
-  protected get cfnProperties(): { [key: string]: any }  {
+  protected get cfnProperties(): { [key: string]: any } {
     return {
       apiId: this.apiId,
       domainName: this.domainName,
@@ -648,7 +652,7 @@ export class CfnApiMappingV2 extends cdk.CfnResource implements cdk.IInspectable
       apiMappingKey: this.apiMappingKey,
     };
   }
-  protected renderProperties(props: {[key: string]: any}): { [key: string]: any }  {
+  protected renderProperties(props: {[key: string]: any}): { [key: string]: any } {
     return cfnApiMappingV2PropsToCloudFormation(props);
   }
 }
@@ -842,7 +846,7 @@ export class CfnAuthorizerV2 extends cdk.CfnResource implements cdk.IInspectable
    * @param id    - scoped id of the resource
    * @param props - resource properties
    */
-  constructor(scope: cdk.Construct, id: string, props: CfnAuthorizerV2Props) {
+  constructor(scope: Construct, id: string, props: CfnAuthorizerV2Props) {
     super(scope, id, { type: CfnAuthorizerV2.CFN_RESOURCE_TYPE_NAME, properties: props });
     cdk.requireProperty(props, 'apiId', this);
     cdk.requireProperty(props, 'authorizerType', this);
@@ -872,7 +876,7 @@ export class CfnAuthorizerV2 extends cdk.CfnResource implements cdk.IInspectable
     inspector.addAttribute('aws:cdk:cloudformation:props', this.cfnProperties);
   }
 
-  protected get cfnProperties(): { [key: string]: any }  {
+  protected get cfnProperties(): { [key: string]: any } {
     return {
       apiId: this.apiId,
       authorizerType: this.authorizerType,
@@ -885,7 +889,7 @@ export class CfnAuthorizerV2 extends cdk.CfnResource implements cdk.IInspectable
       jwtConfiguration: this.jwtConfiguration,
     };
   }
-  protected renderProperties(props: {[key: string]: any}): { [key: string]: any }  {
+  protected renderProperties(props: {[key: string]: any}): { [key: string]: any } {
     return cfnAuthorizerV2PropsToCloudFormation(props);
   }
 }
@@ -1047,7 +1051,7 @@ export class CfnDeploymentV2 extends cdk.CfnResource implements cdk.IInspectable
    * @param id    - scoped id of the resource
    * @param props - resource properties
    */
-  constructor(scope: cdk.Construct, id: string, props: CfnDeploymentV2Props) {
+  constructor(scope: Construct, id: string, props: CfnDeploymentV2Props) {
     super(scope, id, { type: CfnDeploymentV2.CFN_RESOURCE_TYPE_NAME, properties: props });
     cdk.requireProperty(props, 'apiId', this);
 
@@ -1068,14 +1072,14 @@ export class CfnDeploymentV2 extends cdk.CfnResource implements cdk.IInspectable
     inspector.addAttribute('aws:cdk:cloudformation:props', this.cfnProperties);
   }
 
-  protected get cfnProperties(): { [key: string]: any }  {
+  protected get cfnProperties(): { [key: string]: any } {
     return {
       apiId: this.apiId,
       description: this.description,
       stageName: this.stageName,
     };
   }
-  protected renderProperties(props: {[key: string]: any}): { [key: string]: any }  {
+  protected renderProperties(props: {[key: string]: any}): { [key: string]: any } {
     return cfnDeploymentV2PropsToCloudFormation(props);
   }
 }
@@ -1192,7 +1196,7 @@ export class CfnDomainNameV2 extends cdk.CfnResource implements cdk.IInspectable
    * @param id    - scoped id of the resource
    * @param props - resource properties
    */
-  constructor(scope: cdk.Construct, id: string, props: CfnDomainNameV2Props) {
+  constructor(scope: Construct, id: string, props: CfnDomainNameV2Props) {
     super(scope, id, { type: CfnDomainNameV2.CFN_RESOURCE_TYPE_NAME, properties: props });
     cdk.requireProperty(props, 'domainName', this);
     this.attrRegionalDomainName = cdk.Token.asString(this.getAtt('RegionalDomainName'));
@@ -1215,14 +1219,14 @@ export class CfnDomainNameV2 extends cdk.CfnResource implements cdk.IInspectable
     inspector.addAttribute('aws:cdk:cloudformation:props', this.cfnProperties);
   }
 
-  protected get cfnProperties(): { [key: string]: any }  {
+  protected get cfnProperties(): { [key: string]: any } {
     return {
       domainName: this.domainName,
       domainNameConfigurations: this.domainNameConfigurations,
       tags: this.tags.renderTags(),
     };
   }
-  protected renderProperties(props: {[key: string]: any}): { [key: string]: any }  {
+  protected renderProperties(props: {[key: string]: any}): { [key: string]: any } {
     return cfnDomainNameV2PropsToCloudFormation(props);
   }
 }
@@ -1546,7 +1550,7 @@ export class CfnIntegrationV2 extends cdk.CfnResource implements cdk.IInspectabl
    * @param id    - scoped id of the resource
    * @param props - resource properties
    */
-  constructor(scope: cdk.Construct, id: string, props: CfnIntegrationV2Props) {
+  constructor(scope: Construct, id: string, props: CfnIntegrationV2Props) {
     super(scope, id, { type: CfnIntegrationV2.CFN_RESOURCE_TYPE_NAME, properties: props });
     cdk.requireProperty(props, 'apiId', this);
     cdk.requireProperty(props, 'integrationType', this);
@@ -1579,7 +1583,7 @@ export class CfnIntegrationV2 extends cdk.CfnResource implements cdk.IInspectabl
     inspector.addAttribute('aws:cdk:cloudformation:props', this.cfnProperties);
   }
 
-  protected get cfnProperties(): { [key: string]: any }  {
+  protected get cfnProperties(): { [key: string]: any } {
     return {
       apiId: this.apiId,
       integrationType: this.integrationType,
@@ -1597,7 +1601,7 @@ export class CfnIntegrationV2 extends cdk.CfnResource implements cdk.IInspectabl
       timeoutInMillis: this.timeoutInMillis,
     };
   }
-  protected renderProperties(props: {[key: string]: any}): { [key: string]: any }  {
+  protected renderProperties(props: {[key: string]: any}): { [key: string]: any } {
     return cfnIntegrationV2PropsToCloudFormation(props);
   }
 }
@@ -1762,7 +1766,7 @@ export class CfnIntegrationResponseV2 extends cdk.CfnResource implements cdk.IIn
    * @param id    - scoped id of the resource
    * @param props - resource properties
    */
-  constructor(scope: cdk.Construct, id: string, props: CfnIntegrationResponseV2Props) {
+  constructor(scope: Construct, id: string, props: CfnIntegrationResponseV2Props) {
     super(scope, id, { type: CfnIntegrationResponseV2.CFN_RESOURCE_TYPE_NAME, properties: props });
     cdk.requireProperty(props, 'apiId', this);
     cdk.requireProperty(props, 'integrationId', this);
@@ -1789,7 +1793,7 @@ export class CfnIntegrationResponseV2 extends cdk.CfnResource implements cdk.IIn
     inspector.addAttribute('aws:cdk:cloudformation:props', this.cfnProperties);
   }
 
-  protected get cfnProperties(): { [key: string]: any }  {
+  protected get cfnProperties(): { [key: string]: any } {
     return {
       apiId: this.apiId,
       integrationId: this.integrationId,
@@ -1800,7 +1804,7 @@ export class CfnIntegrationResponseV2 extends cdk.CfnResource implements cdk.IIn
       templateSelectionExpression: this.templateSelectionExpression,
     };
   }
-  protected renderProperties(props: {[key: string]: any}): { [key: string]: any }  {
+  protected renderProperties(props: {[key: string]: any}): { [key: string]: any } {
     return cfnIntegrationResponseV2PropsToCloudFormation(props);
   }
 }
@@ -1937,7 +1941,7 @@ export class CfnModelV2 extends cdk.CfnResource implements cdk.IInspectable {
    * @param id    - scoped id of the resource
    * @param props - resource properties
    */
-  constructor(scope: cdk.Construct, id: string, props: CfnModelV2Props) {
+  constructor(scope: Construct, id: string, props: CfnModelV2Props) {
     super(scope, id, { type: CfnModelV2.CFN_RESOURCE_TYPE_NAME, properties: props });
     cdk.requireProperty(props, 'apiId', this);
     cdk.requireProperty(props, 'name', this);
@@ -1962,7 +1966,7 @@ export class CfnModelV2 extends cdk.CfnResource implements cdk.IInspectable {
     inspector.addAttribute('aws:cdk:cloudformation:props', this.cfnProperties);
   }
 
-  protected get cfnProperties(): { [key: string]: any }  {
+  protected get cfnProperties(): { [key: string]: any } {
     return {
       apiId: this.apiId,
       name: this.name,
@@ -1971,7 +1975,7 @@ export class CfnModelV2 extends cdk.CfnResource implements cdk.IInspectable {
       description: this.description,
     };
   }
-  protected renderProperties(props: {[key: string]: any}): { [key: string]: any }  {
+  protected renderProperties(props: {[key: string]: any}): { [key: string]: any } {
     return cfnModelV2PropsToCloudFormation(props);
   }
 }
@@ -2205,7 +2209,7 @@ export class CfnRouteV2 extends cdk.CfnResource implements cdk.IInspectable {
    * @param id    - scoped id of the resource
    * @param props - resource properties
    */
-  constructor(scope: cdk.Construct, id: string, props: CfnRouteV2Props) {
+  constructor(scope: Construct, id: string, props: CfnRouteV2Props) {
     super(scope, id, { type: CfnRouteV2.CFN_RESOURCE_TYPE_NAME, properties: props });
     cdk.requireProperty(props, 'apiId', this);
     cdk.requireProperty(props, 'routeKey', this);
@@ -2236,7 +2240,7 @@ export class CfnRouteV2 extends cdk.CfnResource implements cdk.IInspectable {
     inspector.addAttribute('aws:cdk:cloudformation:props', this.cfnProperties);
   }
 
-  protected get cfnProperties(): { [key: string]: any }  {
+  protected get cfnProperties(): { [key: string]: any } {
     return {
       apiId: this.apiId,
       routeKey: this.routeKey,
@@ -2252,7 +2256,7 @@ export class CfnRouteV2 extends cdk.CfnResource implements cdk.IInspectable {
       target: this.target,
     };
   }
-  protected renderProperties(props: {[key: string]: any}): { [key: string]: any }  {
+  protected renderProperties(props: {[key: string]: any}): { [key: string]: any } {
     return cfnRouteV2PropsToCloudFormation(props);
   }
 }
@@ -2452,7 +2456,7 @@ export class CfnRouteResponseV2 extends cdk.CfnResource implements cdk.IInspecta
    * @param id    - scoped id of the resource
    * @param props - resource properties
    */
-  constructor(scope: cdk.Construct, id: string, props: CfnRouteResponseV2Props) {
+  constructor(scope: Construct, id: string, props: CfnRouteResponseV2Props) {
     super(scope, id, { type: CfnRouteResponseV2.CFN_RESOURCE_TYPE_NAME, properties: props });
     cdk.requireProperty(props, 'apiId', this);
     cdk.requireProperty(props, 'routeId', this);
@@ -2478,7 +2482,7 @@ export class CfnRouteResponseV2 extends cdk.CfnResource implements cdk.IInspecta
     inspector.addAttribute('aws:cdk:cloudformation:props', this.cfnProperties);
   }
 
-  protected get cfnProperties(): { [key: string]: any }  {
+  protected get cfnProperties(): { [key: string]: any } {
     return {
       apiId: this.apiId,
       routeId: this.routeId,
@@ -2488,7 +2492,7 @@ export class CfnRouteResponseV2 extends cdk.CfnResource implements cdk.IInspecta
       responseParameters: this.responseParameters,
     };
   }
-  protected renderProperties(props: {[key: string]: any}): { [key: string]: any }  {
+  protected renderProperties(props: {[key: string]: any}): { [key: string]: any } {
     return cfnRouteResponseV2PropsToCloudFormation(props);
   }
 }
@@ -2757,7 +2761,7 @@ export class CfnStageV2 extends cdk.CfnResource implements cdk.IInspectable {
    * @param id    - scoped id of the resource
    * @param props - resource properties
    */
-  constructor(scope: cdk.Construct, id: string, props: CfnStageV2Props) {
+  constructor(scope: Construct, id: string, props: CfnStageV2Props) {
     super(scope, id, { type: CfnStageV2.CFN_RESOURCE_TYPE_NAME, properties: props });
     cdk.requireProperty(props, 'apiId', this);
     cdk.requireProperty(props, 'stageName', this);
@@ -2787,7 +2791,7 @@ export class CfnStageV2 extends cdk.CfnResource implements cdk.IInspectable {
     inspector.addAttribute('aws:cdk:cloudformation:props', this.cfnProperties);
   }
 
-  protected get cfnProperties(): { [key: string]: any }  {
+  protected get cfnProperties(): { [key: string]: any } {
     return {
       apiId: this.apiId,
       stageName: this.stageName,
@@ -2802,7 +2806,7 @@ export class CfnStageV2 extends cdk.CfnResource implements cdk.IInspectable {
       tags: this.tags.renderTags(),
     };
   }
-  protected renderProperties(props: {[key: string]: any}): { [key: string]: any }  {
+  protected renderProperties(props: {[key: string]: any}): { [key: string]: any } {
     return cfnStageV2PropsToCloudFormation(props);
   }
 }

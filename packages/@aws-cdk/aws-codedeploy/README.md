@@ -1,5 +1,6 @@
-## AWS CodeDeploy Construct Library
+# AWS CodeDeploy Construct Library
 <!--BEGIN STABILITY BANNER-->
+
 ---
 
 ![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)
@@ -7,6 +8,7 @@
 ![cdk-constructs: Stable](https://img.shields.io/badge/cdk--constructs-stable-success.svg?style=for-the-badge)
 
 ---
+
 <!--END STABILITY BANNER-->
 
 AWS CodeDeploy is a deployment service that automates application deployments to
@@ -15,7 +17,7 @@ Amazon ECS services.
 
 The CDK currently supports Amazon EC2, on-premise and AWS Lambda applications.
 
-### EC2/on-premise Applications
+## EC2/on-premise Applications
 
 To create a new CodeDeploy Application that deploys to EC2/on-premise instances:
 
@@ -35,7 +37,7 @@ const application = codedeploy.ServerApplication.fromServerApplicationName(
 );
 ```
 
-### EC2/on-premise Deployment Groups
+## EC2/on-premise Deployment Groups
 
 To create a new CodeDeploy Deployment Group that deploys to EC2/on-premise instances:
 
@@ -96,7 +98,7 @@ const deploymentGroup = codedeploy.ServerDeploymentGroup.fromLambdaDeploymentGro
 });
 ```
 
-#### Load balancers
+### Load balancers
 
 You can [specify a load balancer](https://docs.aws.amazon.com/codedeploy/latest/userguide/integrations-aws-elastic-load-balancing.html)
 with the `loadBalancer` property when creating a Deployment Group.
@@ -142,7 +144,7 @@ const deploymentGroup = new codedeploy.ServerDeploymentGroup(this, 'DeploymentGr
 });
 ```
 
-### Deployment Configurations
+## Deployment Configurations
 
 You can also pass a Deployment Configuration when creating the Deployment Group:
 
@@ -173,7 +175,7 @@ const deploymentConfig = codedeploy.ServerDeploymentConfig.fromServerDeploymentC
 );
 ```
 
-### Lambda Applications
+## Lambda Applications
 
 To create a new CodeDeploy Application that deploys to a Lambda function:
 
@@ -193,7 +195,7 @@ const application = codedeploy.LambdaApplication.fromLambdaApplicationName(
 );
 ```
 
-### Lambda Deployment Groups
+## Lambda Deployment Groups
 
 To enable traffic shifting deployments for Lambda functions, CodeDeploy uses Lambda Aliases, which can balance incoming traffic between two different versions of your function.
 Before deployment, the alias sends 100% of invokes to the version used in production.
@@ -221,11 +223,44 @@ const deploymentGroup = new codedeploy.LambdaDeploymentGroup(stack, 'BlueGreenDe
 ```
 
 In order to deploy a new version of this function:
+
 1. Increment the version, e.g. `const version = func.addVersion('2')`.
 2. Re-deploy the stack (this will trigger a deployment).
 3. Monitor the CodeDeploy deployment as traffic shifts between the versions.
 
-#### Rollbacks and Alarms
+
+### Create a custom Deployment Config
+
+CodeDeploy for Lambda comes with built-in configurations for traffic shifting.
+If you want to specify your own strategy,
+you can do so with the CustomLambdaDeploymentConfig construct,
+letting you specify precisely how fast a new function version is deployed.
+
+```ts
+const config = new codedeploy.CustomLambdaDeploymentConfig(stack, 'CustomConfig', {
+  type: codedeploy.CustomLambdaDeploymentConfigType.CANARY,
+  interval: Duration.minutes(1),
+  percentage: 5,
+});
+const deploymentGroup = new codedeploy.LambdaDeploymentGroup(stack, 'BlueGreenDeployment', {
+  application,
+  alias,
+  deploymentConfig: config,
+});
+```
+
+You can specify a custom name for your deployment config, but if you do you will not be able to update the interval/percentage through CDK.
+
+```ts
+const config = new codedeploy.CustomLambdaDeploymentConfig(stack, 'CustomConfig', {
+  type: codedeploy.CustomLambdaDeploymentConfigType.CANARY,
+  interval: Duration.minutes(1),
+  percentage: 5,
+  deploymentConfigName: 'MyDeploymentConfig',
+});
+```
+
+### Rollbacks and Alarms
 
 CodeDeploy will roll back if the deployment fails. You can optionally trigger a rollback when one or more alarms are in a failed state:
 
@@ -253,7 +288,7 @@ deploymentGroup.addAlarm(new cloudwatch.Alarm(stack, 'BlueGreenErrors', {
 }));
 ```
 
-#### Pre and Post Hooks
+### Pre and Post Hooks
 
 CodeDeploy allows you to run an arbitrary Lambda function before traffic shifting actually starts (PreTraffic Hook) and after it completes (PostTraffic Hook).
 With either hook, you have the opportunity to run logic that determines whether the deployment must succeed or fail.
@@ -274,7 +309,7 @@ const deploymentGroup = new codedeploy.LambdaDeploymentGroup(stack, 'BlueGreenDe
 deploymentGroup.onPostHook(endToEndValidation);
 ```
 
-#### Import an existing Deployment Group
+### Import an existing Deployment Group
 
 To import an already existing Deployment Group:
 

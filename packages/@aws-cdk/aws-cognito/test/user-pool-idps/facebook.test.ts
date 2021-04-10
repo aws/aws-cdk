@@ -1,4 +1,4 @@
-import '@aws-cdk/assert/jest';
+import '@aws-cdk/assert-internal/jest';
 import { Stack } from '@aws-cdk/core';
 import { ProviderAttribute, UserPool, UserPoolIdentityProviderFacebook } from '../../lib';
 
@@ -37,7 +37,7 @@ describe('UserPoolIdentityProvider', () => {
         userPool: pool,
         clientId: 'fb-client-id',
         clientSecret: 'fb-client-secret',
-        scopes: [ 'scope1', 'scope2' ],
+        scopes: ['scope1', 'scope2'],
         apiVersion: 'version1',
       });
 

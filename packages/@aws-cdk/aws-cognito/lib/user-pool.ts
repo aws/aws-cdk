@@ -1,12 +1,15 @@
 import { IRole, PolicyDocument, PolicyStatement, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
-import { Construct, Duration, IResource, Lazy, Resource, Stack, Token } from '@aws-cdk/core';
+import { Duration, IResource, Lazy, Names, RemovalPolicy, Resource, Stack, Token } from '@aws-cdk/core';
+import { Construct } from 'constructs';
+import { toASCII as punycodeEncode } from 'punycode/';
 import { CfnUserPool } from './cognito.generated';
 import { StandardAttributeNames } from './private/attr-names';
 import { ICustomAttribute, StandardAttribute, StandardAttributes } from './user-pool-attr';
 import { UserPoolClient, UserPoolClientOptions } from './user-pool-client';
 import { UserPoolDomain, UserPoolDomainOptions } from './user-pool-domain';
 import { IUserPoolIdentityProvider } from './user-pool-idp';
+import { UserPoolResourceServer, UserPoolResourceServerOptions } from './user-pool-resource-server';
 
 /**
  * The different ways in which users of this pool can sign up or sign in.
@@ -31,7 +34,7 @@ export interface SignInAliases {
   readonly phone?: boolean;
 
   /**
-   * Whether a user is allowed to ign in with a secondary username, that can be set and modified after sign up.
+   * Whether a user is allowed to sign in with a secondary username, that can be set and modified after sign up.
    * Can only be used in conjunction with `USERNAME`.
    * @default false
    */
@@ -472,6 +475,13 @@ export interface UserPoolProps {
   readonly smsRoleExternalId?: string;
 
   /**
+   * Setting this would explicitly enable or disable SMS role creation.
+   * When left unspecified, CDK will determine based on other properties if a role is needed or not.
+   * @default - CDK will determine based on other properties of the user pool if an SMS role should be created or not.
+   */
+  readonly enableSmsRole?: boolean;
+
+  /**
    * Methods in which a user registers or signs in to a user pool.
    * Allows either username with aliases OR sign in with email, phone, or both.
    *
@@ -557,6 +567,13 @@ export interface UserPoolProps {
    * @default AccountRecovery.PHONE_WITHOUT_MFA_AND_EMAIL
    */
   readonly accountRecovery?: AccountRecovery;
+
+  /**
+   * Policy to apply when the user pool is removed from the stack
+   *
+   * @default RemovalPolicy.RETAIN
+   */
+  readonly removalPolicy?: RemovalPolicy;
 }
 
 /**
@@ -593,6 +610,12 @@ export interface IUserPool extends IResource {
   addDomain(id: string, options: UserPoolDomainOptions): UserPoolDomain;
 
   /**
+   * Add a new resource server to this user pool.
+   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-resource-servers.html
+   */
+  addResourceServer(id: string, options: UserPoolResourceServerOptions): UserPoolResourceServer;
+
+  /**
    * Register an identity provider with this user pool.
    */
   registerIdentityProvider(provider: IUserPoolIdentityProvider): void;
@@ -617,6 +640,13 @@ abstract class UserPoolBase extends Resource implements IUserPool {
     });
   }
 
+  public addResourceServer(id: string, options: UserPoolResourceServerOptions): UserPoolResourceServer {
+    return new UserPoolResourceServer(this, id, {
+      userPool: this,
+      ...options,
+    });
+  }
+
   public registerIdentityProvider(provider: IUserPoolIdentityProvider) {
     this.identityProviders.push(provider);
   }
@@ -630,22 +660,39 @@ export class UserPool extends UserPoolBase {
    * Import an existing user pool based on its id.
    */
   public static fromUserPoolId(scope: Construct, id: string, userPoolId: string): IUserPool {
-    class Import extends UserPoolBase {
-      public readonly userPoolId = userPoolId;
-      public readonly userPoolArn = Stack.of(this).formatArn({
-        service: 'cognito-idp',
-        resource: 'userpool',
-        resourceName: userPoolId,
-      });
-    }
-    return new Import(scope, id);
+    let userPoolArn = Stack.of(scope).formatArn({
+      service: 'cognito-idp',
+      resource: 'userpool',
+      resourceName: userPoolId,
+    });
+
+    return UserPool.fromUserPoolArn(scope, id, userPoolArn);
   }
 
   /**
    * Import an existing user pool based on its ARN.
    */
   public static fromUserPoolArn(scope: Construct, id: string, userPoolArn: string): IUserPool {
-    return UserPool.fromUserPoolId(scope, id, Stack.of(scope).parseArn(userPoolArn).resourceName!);
+    const arnParts = Stack.of(scope).parseArn(userPoolArn);
+
+    if (!arnParts.resourceName) {
+      throw new Error('invalid user pool ARN');
+    }
+
+    const userPoolId = arnParts.resourceName;
+
+    class ImportedUserPool extends UserPoolBase {
+      public readonly userPoolArn = userPoolArn;
+      public readonly userPoolId = userPoolId;
+      constructor() {
+        super(scope, id, {
+          account: arnParts.account,
+          region: arnParts.region,
+        });
+      }
+    }
+
+    return new ImportedUserPool();
   }
 
   /**
@@ -700,7 +747,7 @@ export class UserPool extends UserPoolBase {
       emailSubject: props.userInvitation?.emailSubject,
       smsMessage: props.userInvitation?.smsMessage,
     };
-    const selfSignUpEnabled = props.selfSignUpEnabled !== undefined ? props.selfSignUpEnabled : false;
+    const selfSignUpEnabled = props.selfSignUpEnabled ?? false;
     const adminCreateUserConfig: CfnUserPool.AdminCreateUserConfigProperty = {
       allowAdminCreateUserOnly: !selfSignUpEnabled,
       inviteMessageTemplate: props.userInvitation !== undefined ? inviteMessageTemplate : undefined,
@@ -713,7 +760,7 @@ export class UserPool extends UserPoolBase {
       usernameAttributes: signIn.usernameAttrs,
       aliasAttributes: signIn.aliasAttrs,
       autoVerifiedAttributes: signIn.autoVerifyAttrs,
-      lambdaConfig: Lazy.anyValue({ produce: () => undefinedIfNoKeys(this.triggers) }),
+      lambdaConfig: Lazy.any({ produce: () => undefinedIfNoKeys(this.triggers) }),
       smsConfiguration: this.smsConfiguration(props),
       adminCreateUserConfig,
       emailVerificationMessage,
@@ -725,14 +772,15 @@ export class UserPool extends UserPoolBase {
       enabledMfas: this.mfaConfiguration(props),
       policies: passwordPolicy !== undefined ? { passwordPolicy } : undefined,
       emailConfiguration: undefinedIfNoKeys({
-        from: props.emailSettings?.from,
-        replyToEmailAddress: props.emailSettings?.replyTo,
+        from: encodePuny(props.emailSettings?.from),
+        replyToEmailAddress: encodePuny(props.emailSettings?.replyTo),
       }),
       usernameConfiguration: undefinedIfNoKeys({
         caseSensitive: props.signInCaseSensitive,
       }),
       accountRecoverySetting: this.accountRecovery(props),
     });
+    userPool.applyRemovalPolicy(props.removalPolicy);
 
     this.userPoolId = userPool.ref;
     this.userPoolArn = userPool.attrArn;
@@ -835,41 +883,56 @@ export class UserPool extends UserPoolBase {
     return { usernameAttrs, aliasAttrs, autoVerifyAttrs };
   }
 
-  private smsConfiguration(props: UserPoolProps): CfnUserPool.SmsConfigurationProperty {
+  private smsConfiguration(props: UserPoolProps): CfnUserPool.SmsConfigurationProperty | undefined {
+    if (props.enableSmsRole === false && props.smsRole) {
+      throw new Error('enableSmsRole cannot be disabled when smsRole is specified');
+    }
+
     if (props.smsRole) {
       return {
         snsCallerArn: props.smsRole.roleArn,
         externalId: props.smsRoleExternalId,
       };
-    } else {
-      const smsRoleExternalId = this.node.uniqueId.substr(0, 1223); // sts:ExternalId max length of 1224
-      const smsRole = props.smsRole ?? new Role(this, 'smsRole', {
-        assumedBy: new ServicePrincipal('cognito-idp.amazonaws.com', {
-          conditions: {
-            StringEquals: { 'sts:ExternalId': smsRoleExternalId },
-          },
-        }),
-        inlinePolicies: {
-          /*
-           * The UserPool is very particular that it must contain an 'sns:Publish' action as an inline policy.
-           * Ideally, a conditional that restricts this action to 'sms' protocol needs to be attached, but the UserPool deployment fails validation.
-           * Seems like a case of being excessively strict.
-           */
-          'sns-publish': new PolicyDocument({
-            statements: [
-              new PolicyStatement({
-                actions: [ 'sns:Publish' ],
-                resources: [ '*' ],
-              }),
-            ],
-          }),
-        },
-      });
-      return {
-        externalId: smsRoleExternalId,
-        snsCallerArn: smsRole.roleArn,
-      };
     }
+
+    if (props.enableSmsRole === false) {
+      return undefined;
+    }
+
+    const mfaConfiguration = this.mfaConfiguration(props);
+    const phoneVerification = props.signInAliases?.phone === true || props.autoVerify?.phone === true;
+    const roleRequired = mfaConfiguration?.includes('SMS_MFA') || phoneVerification;
+    if (!roleRequired && props.enableSmsRole === undefined) {
+      return undefined;
+    }
+
+    const smsRoleExternalId = Names.uniqueId(this).substr(0, 1223); // sts:ExternalId max length of 1224
+    const smsRole = props.smsRole ?? new Role(this, 'smsRole', {
+      assumedBy: new ServicePrincipal('cognito-idp.amazonaws.com', {
+        conditions: {
+          StringEquals: { 'sts:ExternalId': smsRoleExternalId },
+        },
+      }),
+      inlinePolicies: {
+        /*
+          * The UserPool is very particular that it must contain an 'sns:Publish' action as an inline policy.
+          * Ideally, a conditional that restricts this action to 'sms' protocol needs to be attached, but the UserPool deployment fails validation.
+          * Seems like a case of being excessively strict.
+          */
+        'sns-publish': new PolicyDocument({
+          statements: [
+            new PolicyStatement({
+              actions: ['sns:Publish'],
+              resources: ['*'],
+            }),
+          ],
+        }),
+      },
+    });
+    return {
+      externalId: smsRoleExternalId,
+      snsCallerArn: smsRole.roleArn,
+    };
   }
 
   private mfaConfiguration(props: UserPoolProps): string[] | undefined {
@@ -878,7 +941,7 @@ export class UserPool extends UserPoolBase {
       return undefined;
     } else if (props.mfaSecondFactor === undefined &&
       (props.mfa === Mfa.OPTIONAL || props.mfa === Mfa.REQUIRED)) {
-      return [ 'SMS_MFA' ];
+      return ['SMS_MFA'];
     } else {
       const enabledMfas = [];
       if (props.mfaSecondFactor!.sms) {
@@ -996,6 +1059,9 @@ export class UserPool extends UserPoolBase {
 }
 
 function undefinedIfNoKeys(struct: object): object | undefined {
-  const allUndefined = Object.values(struct).reduce((acc, v) => acc && (v === undefined), true);
+  const allUndefined = Object.values(struct).every(val => val === undefined);
   return allUndefined ? undefined : struct;
+}
+function encodePuny(input: string | undefined): string | undefined {
+  return input !== undefined ? punycodeEncode(input) : input;
 }

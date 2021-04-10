@@ -1,9 +1,9 @@
+import * as path from 'path';
 import * as batch from '@aws-cdk/aws-batch';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecs from '@aws-cdk/aws-ecs';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import * as cdk from '@aws-cdk/core';
-import * as path from 'path';
 import { BatchSubmitJob } from '../../lib';
 
 /*

@@ -49,7 +49,7 @@ export class CloudAssembly {
   constructor(directory: string) {
     this.directory = directory;
 
-    this.manifest = cxschema.Manifest.load(path.join(directory, MANIFEST_FILE));
+    this.manifest = cxschema.Manifest.loadAssemblyManifest(path.join(directory, MANIFEST_FILE));
     this.version = this.manifest.version;
     this.artifacts = this.renderArtifacts();
     this.runtime = this.manifest.runtime || { libraries: { } };
@@ -172,13 +172,22 @@ export class CloudAssembly {
    * @returns all the CloudFormation stack artifacts that are included in this assembly.
    */
   public get stacks(): CloudFormationStackArtifact[] {
-    const result = new Array<CloudFormationStackArtifact>();
-    for (const a of this.artifacts) {
-      if (a instanceof CloudFormationStackArtifact) {
-        result.push(a);
-      }
+    return this.artifacts.filter(isCloudFormationStackArtifact);
+
+    function isCloudFormationStackArtifact(x: any): x is CloudFormationStackArtifact {
+      return x instanceof CloudFormationStackArtifact;
     }
-    return result;
+  }
+
+  /**
+   * The nested assembly artifacts in this assembly
+   */
+  public get nestedAssemblies(): NestedCloudAssemblyArtifact[] {
+    return this.artifacts.filter(isNestedCloudAssemblyArtifact);
+
+    function isNestedCloudAssemblyArtifact(x: any): x is NestedCloudAssemblyArtifact {
+      return x instanceof NestedCloudAssemblyArtifact;
+    }
   }
 
   private validateDeps() {
@@ -189,7 +198,7 @@ export class CloudAssembly {
 
   private renderArtifacts() {
     const result = new Array<CloudArtifact>();
-    for (const [ name, artifact ] of Object.entries(this.manifest.artifacts || { })) {
+    for (const [name, artifact] of Object.entries(this.manifest.artifacts || { })) {
       const cloudartifact = CloudArtifact.fromManifest(this, name, artifact);
       if (cloudartifact) {
         result.push(cloudartifact);
@@ -201,6 +210,25 @@ export class CloudAssembly {
 }
 
 /**
+ * Construction properties for CloudAssemblyBuilder
+ */
+export interface CloudAssemblyBuilderProps {
+  /**
+   * Use the given asset output directory
+   *
+   * @default - Same as the manifest outdir
+   */
+  readonly assetOutdir?: string;
+
+  /**
+   * If this builder is for a nested assembly, the parent assembly builder
+   *
+   * @default - This is a root assembly
+   */
+  readonly parentBuilder?: CloudAssemblyBuilder;
+}
+
+/**
  * Can be used to build a cloud assembly.
  */
 export class CloudAssemblyBuilder {
@@ -209,28 +237,29 @@ export class CloudAssemblyBuilder {
    */
   public readonly outdir: string;
 
+  /**
+   * The directory where assets of this Cloud Assembly should be stored
+   */
+  public readonly assetOutdir: string;
+
   private readonly artifacts: { [id: string]: cxschema.ArtifactManifest } = { };
   private readonly missing = new Array<cxschema.MissingContext>();
+  private readonly parentBuilder?: CloudAssemblyBuilder;
 
   /**
    * Initializes a cloud assembly builder.
    * @param outdir The output directory, uses temporary directory if undefined
    */
-  constructor(outdir?: string) {
+  constructor(outdir?: string, props: CloudAssemblyBuilderProps = {}) {
     this.outdir = determineOutputDirectory(outdir);
+    this.assetOutdir = props.assetOutdir ?? this.outdir;
+    this.parentBuilder = props.parentBuilder;
 
     // we leverage the fact that outdir is long-lived to avoid staging assets into it
     // that were already staged (copying can be expensive). this is achieved by the fact
     // that assets use a source hash as their name. other artifacts, and the manifest itself,
     // will overwrite existing files as needed.
-
-    if (fs.existsSync(this.outdir)) {
-      if (!fs.statSync(this.outdir).isDirectory()) {
-        throw new Error(`${this.outdir} must be a directory`);
-      }
-    } else {
-      fs.mkdirSync(this.outdir, { recursive: true });
-    }
+    ensureDirSync(this.outdir);
   }
 
   /**
@@ -250,6 +279,8 @@ export class CloudAssemblyBuilder {
     if (this.missing.every(m => m.key !== missing.key)) {
       this.missing.push(missing);
     }
+    // Also report in parent
+    this.parentBuilder?.addMissing(missing);
   }
 
   /**
@@ -272,7 +303,7 @@ export class CloudAssemblyBuilder {
     manifest = filterUndefined(manifest);
 
     const manifestFilePath = path.join(this.outdir, MANIFEST_FILE);
-    cxschema.Manifest.save(manifest, manifestFilePath);
+    cxschema.Manifest.saveAssemblyManifest(manifest, manifestFilePath);
 
     // "backwards compatibility": in order for the old CLI to tell the user they
     // need a new version, we'll emit the legacy manifest with only "version".
@@ -297,7 +328,11 @@ export class CloudAssemblyBuilder {
       } as cxschema.NestedCloudAssemblyProperties,
     });
 
-    return new CloudAssemblyBuilder(innerAsmDir);
+    return new CloudAssemblyBuilder(innerAsmDir, {
+      // Reuse the same asset output directory as the current Casm builder
+      assetOutdir: this.assetOutdir,
+      parentBuilder: this,
+    });
   }
 }
 
@@ -360,6 +395,8 @@ export interface AssemblyBuildOptions {
   /**
    * Include the specified runtime information (module versions) in manifest.
    * @default - if this option is not specified, runtime info will not be included
+   * @deprecated All template modifications that should result from this should
+   * have already been inserted into the template.
    */
   readonly runtimeInfo?: RuntimeInfo;
 }
@@ -394,5 +431,15 @@ function ignore(_x: any) {
  * Turn the given optional output directory into a fixed output directory
  */
 function determineOutputDirectory(outdir?: string) {
-  return outdir ?? fs.mkdtempSync(path.join(os.tmpdir(), 'cdk.out'));
+  return outdir ?? fs.mkdtempSync(path.join(fs.realpathSync(os.tmpdir()), 'cdk.out'));
+}
+
+function ensureDirSync(dir: string) {
+  if (fs.existsSync(dir)) {
+    if (!fs.statSync(dir).isDirectory()) {
+      throw new Error(`${dir} must be a directory`);
+    }
+  } else {
+    fs.mkdirSync(dir, { recursive: true });
+  }
 }

@@ -1,0 +1,28 @@
+# The basics
+*.ts
+*.tgz
+*.snk
+!*.d.ts
+!*.js
+test/
+
+# Coverage
+coverage
+.nyc_output
+.nycrc
+
+# Build gear
+build-tools
+dist
+.LAST_BUILD
+.LAST_PACKAGE
+
+tsconfig.json
+*.tsbuildinfo
+
+!.jsii
+.eslintrc.js
+# exclude cdk artifacts
+**/cdk.out
+junit.xml
+rosetta

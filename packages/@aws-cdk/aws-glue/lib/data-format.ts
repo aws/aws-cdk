@@ -138,6 +138,45 @@ export class SerializationLibrary {
 }
 
 /**
+ * Classification string given to tables with this data format.
+ *
+ * @see https://docs.aws.amazon.com/glue/latest/dg/add-classifier.html#classifier-built-in
+ */
+export class ClassificationString {
+  /**
+   * @see https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-format.html#aws-glue-programming-etl-format-avro
+   */
+  public static readonly AVRO = new ClassificationString('avro');
+
+  /**
+   * @see https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-format.html#aws-glue-programming-etl-format-csv
+   */
+  public static readonly CSV = new ClassificationString('csv');
+
+  /**
+   * @see https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-format.html#aws-glue-programming-etl-format-json
+   */
+  public static readonly JSON = new ClassificationString('json');
+
+  /**
+   * @see https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-format.html#aws-glue-programming-etl-format-xml
+   */
+  public static readonly XML = new ClassificationString('xml');
+
+  /**
+   * @see https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-format.html#aws-glue-programming-etl-format-parquet
+   */
+  public static readonly PARQUET = new ClassificationString('parquet');
+
+  /**
+   * @see https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-format.html#aws-glue-programming-etl-format-orc
+   */
+  public static readonly ORC = new ClassificationString('orc');
+
+  constructor(public readonly value: string) {}
+}
+
+/**
  * Properties of a DataFormat instance.
  */
 export interface DataFormatProps {
@@ -155,6 +194,13 @@ export interface DataFormatProps {
    * Serialization library for this data format.
    */
   readonly serializationLibrary: SerializationLibrary;
+
+  /**
+   * Classification string given to tables with this data format.
+   *
+   * @default - No classification is specified.
+   */
+  readonly classificationString?: ClassificationString;
 }
 
 /**
@@ -181,6 +227,7 @@ export class DataFormat {
     inputFormat: InputFormat.AVRO,
     outputFormat: OutputFormat.AVRO,
     serializationLibrary: SerializationLibrary.AVRO,
+    classificationString: ClassificationString.AVRO,
   });
 
   /**
@@ -203,6 +250,7 @@ export class DataFormat {
     inputFormat: InputFormat.TEXT,
     outputFormat: OutputFormat.HIVE_IGNORE_KEY_TEXT,
     serializationLibrary: SerializationLibrary.OPEN_CSV,
+    classificationString: ClassificationString.CSV,
   });
 
   /**
@@ -215,6 +263,7 @@ export class DataFormat {
     inputFormat: InputFormat.TEXT,
     outputFormat: OutputFormat.HIVE_IGNORE_KEY_TEXT,
     serializationLibrary: SerializationLibrary.OPENX_JSON,
+    classificationString: ClassificationString.JSON,
   });
 
   /**
@@ -237,6 +286,7 @@ export class DataFormat {
     inputFormat: InputFormat.ORC,
     outputFormat: OutputFormat.ORC,
     serializationLibrary: SerializationLibrary.ORC,
+    classificationString: ClassificationString.ORC,
   });
 
   /**
@@ -248,6 +298,7 @@ export class DataFormat {
     inputFormat: InputFormat.PARQUET,
     outputFormat: OutputFormat.PARQUET,
     serializationLibrary: SerializationLibrary.PARQUET,
+    classificationString: ClassificationString.PARQUET,
   });
 
   /**
@@ -276,9 +327,15 @@ export class DataFormat {
    */
   public readonly serializationLibrary: SerializationLibrary;
 
+  /**
+   * Classification string given to tables with this data format.
+   */
+  public readonly classificationString?: ClassificationString;
+
   public constructor(props: DataFormatProps) {
     this.inputFormat = props.inputFormat;
     this.outputFormat = props.outputFormat;
     this.serializationLibrary = props.serializationLibrary;
+    this.classificationString = props.classificationString;
   }
 }

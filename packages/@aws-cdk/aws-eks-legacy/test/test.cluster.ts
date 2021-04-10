@@ -1,4 +1,4 @@
-import { expect, haveResource, haveResourceLike, not } from '@aws-cdk/assert';
+import { expect, haveResource, haveResourceLike, not } from '@aws-cdk/assert-internal';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
@@ -147,7 +147,7 @@ export = {
     expect(stack).to(haveResource('AWS::AutoScaling::AutoScalingGroup', {
       Tags: [
         {
-          Key: { 'Fn::Join': [ '', [ 'kubernetes.io/cluster/', { Ref: 'ClusterEB0386A7' } ] ] },
+          Key: { 'Fn::Join': ['', ['kubernetes.io/cluster/', { Ref: 'ClusterEB0386A7' }]] },
           PropagateAtLaunch: true,
           Value: 'owned',
         },
@@ -244,7 +244,7 @@ export = {
 
     // WHEN
     cluster.addResource('manifest1', { foo: 123 });
-    cluster.addResource('manifest2', { bar: 123 }, { boor: [ 1, 2, 3 ] });
+    cluster.addResource('manifest2', { bar: 123 }, { boor: [1, 2, 3] });
 
     // THEN
     expect(stack).to(haveResource(eks.KubernetesResource.RESOURCE_TYPE, {
@@ -333,8 +333,8 @@ export = {
       const assembly = app.synth();
       const template = assembly.getStackByName(stack.stackName).template;
       test.deepEqual(template.Outputs, {
-        ClusterConfigCommand43AAE40F: { Value: { 'Fn::Join': [ '', [ 'aws eks update-kubeconfig --name ', { Ref: 'Cluster9EE0221C' }, ' --region us-east-1' ] ] } },
-        ClusterGetTokenCommand06AE992E: { Value: { 'Fn::Join': [ '', [ 'aws eks get-token --cluster-name ', { Ref: 'Cluster9EE0221C' }, ' --region us-east-1' ] ] } },
+        ClusterConfigCommand43AAE40F: { Value: { 'Fn::Join': ['', ['aws eks update-kubeconfig --name ', { Ref: 'Cluster9EE0221C' }, ' --region us-east-1']] } },
+        ClusterGetTokenCommand06AE992E: { Value: { 'Fn::Join': ['', ['aws eks get-token --cluster-name ', { Ref: 'Cluster9EE0221C' }, ' --region us-east-1']] } },
       });
       test.done();
     },
@@ -351,8 +351,8 @@ export = {
       const assembly = app.synth();
       const template = assembly.getStackByName(stack.stackName).template;
       test.deepEqual(template.Outputs, {
-        ClusterConfigCommand43AAE40F: { Value: { 'Fn::Join': [ '', [ 'aws eks update-kubeconfig --name ', { Ref: 'Cluster9EE0221C' }, ' --region us-east-1 --role-arn ', { 'Fn::GetAtt': [ 'masters0D04F23D', 'Arn' ] } ] ] } },
-        ClusterGetTokenCommand06AE992E: { Value: { 'Fn::Join': [ '', [ 'aws eks get-token --cluster-name ', { Ref: 'Cluster9EE0221C' }, ' --region us-east-1 --role-arn ', { 'Fn::GetAtt': [ 'masters0D04F23D', 'Arn' ] } ] ] } },
+        ClusterConfigCommand43AAE40F: { Value: { 'Fn::Join': ['', ['aws eks update-kubeconfig --name ', { Ref: 'Cluster9EE0221C' }, ' --region us-east-1 --role-arn ', { 'Fn::GetAtt': ['masters0D04F23D', 'Arn'] }]] } },
+        ClusterGetTokenCommand06AE992E: { Value: { 'Fn::Join': ['', ['aws eks get-token --cluster-name ', { Ref: 'Cluster9EE0221C' }, ' --region us-east-1 --role-arn ', { 'Fn::GetAtt': ['masters0D04F23D', 'Arn'] }]] } },
       });
       test.done();
     },
@@ -409,7 +409,7 @@ export = {
       const assembly = app.synth();
       const template = assembly.getStackByName(stack.stackName).template;
       test.deepEqual(template.Outputs, {
-        ClusterMastersRoleArnB15964B1: { Value: { 'Fn::GetAtt': [ 'masters0D04F23D', 'Arn' ] } },
+        ClusterMastersRoleArnB15964B1: { Value: { 'Fn::GetAtt': ['masters0D04F23D', 'Arn'] } },
       });
       test.done();
     },
@@ -429,7 +429,7 @@ export = {
       const template = assembly.getStackByName(stack.stackName).template;
       test.deepEqual(template.Outputs, {
         ClusterDefaultCapacityInstanceRoleARN7DADF219: {
-          Value: { 'Fn::GetAtt': [ 'ClusterDefaultCapacityInstanceRole3E209969', 'Arn' ] },
+          Value: { 'Fn::GetAtt': ['ClusterDefaultCapacityInstanceRole3E209969', 'Arn'] },
         },
       });
       test.done();
@@ -449,7 +449,7 @@ export = {
       // THEN
       const template = app.synth().getStackByName(stack.stackName).template;
       const userData = template.Resources.ClusterMyCapcityLaunchConfig58583345.Properties.UserData;
-      test.deepEqual(userData, { 'Fn::Base64': { 'Fn::Join': [ '', [ '#!/bin/bash\nset -o xtrace\n/etc/eks/bootstrap.sh ', { Ref: 'Cluster9EE0221C' }, ' --kubelet-extra-args "--node-labels lifecycle=OnDemand" --use-max-pods true\n/opt/aws/bin/cfn-signal --exit-code $? --stack Stack --resource ClusterMyCapcityASGD4CD8B97 --region us-east-1' ] ] } });
+      test.deepEqual(userData, { 'Fn::Base64': { 'Fn::Join': ['', ['#!/bin/bash\nset -o xtrace\n/etc/eks/bootstrap.sh ', { Ref: 'Cluster9EE0221C' }, ' --kubelet-extra-args "--node-labels lifecycle=OnDemand" --use-max-pods true\n/opt/aws/bin/cfn-signal --exit-code $? --stack Stack --resource ClusterMyCapcityASGD4CD8B97 --region us-east-1']] } });
       test.done();
     },
 
@@ -488,7 +488,7 @@ export = {
       // THEN
       const template = app.synth().getStackByName(stack.stackName).template;
       const userData = template.Resources.ClusterMyCapcityLaunchConfig58583345.Properties.UserData;
-      test.deepEqual(userData, { 'Fn::Base64': { 'Fn::Join': [ '', [ '#!/bin/bash\nset -o xtrace\n/etc/eks/bootstrap.sh ', { Ref: 'Cluster9EE0221C' }, ' --kubelet-extra-args "--node-labels lifecycle=OnDemand  --node-labels FOO=42" --use-max-pods true\n/opt/aws/bin/cfn-signal --exit-code $? --stack Stack --resource ClusterMyCapcityASGD4CD8B97 --region us-east-1' ] ] } });
+      test.deepEqual(userData, { 'Fn::Base64': { 'Fn::Join': ['', ['#!/bin/bash\nset -o xtrace\n/etc/eks/bootstrap.sh ', { Ref: 'Cluster9EE0221C' }, ' --kubelet-extra-args "--node-labels lifecycle=OnDemand  --node-labels FOO=42" --use-max-pods true\n/opt/aws/bin/cfn-signal --exit-code $? --stack Stack --resource ClusterMyCapcityASGD4CD8B97 --region us-east-1']] } });
       test.done();
     },
 
@@ -508,7 +508,7 @@ export = {
         // THEN
         const template = app.synth().getStackByName(stack.stackName).template;
         const userData = template.Resources.ClusterMyCapcityLaunchConfig58583345.Properties.UserData;
-        test.deepEqual(userData, { 'Fn::Base64': { 'Fn::Join': [ '', [ '#!/bin/bash\nset -o xtrace\n/etc/eks/bootstrap.sh ', { Ref: 'Cluster9EE0221C' }, ' --kubelet-extra-args "--node-labels lifecycle=Ec2Spot --register-with-taints=spotInstance=true:PreferNoSchedule" --use-max-pods true\n/opt/aws/bin/cfn-signal --exit-code $? --stack Stack --resource ClusterMyCapcityASGD4CD8B97 --region us-east-1' ] ] } });
+        test.deepEqual(userData, { 'Fn::Base64': { 'Fn::Join': ['', ['#!/bin/bash\nset -o xtrace\n/etc/eks/bootstrap.sh ', { Ref: 'Cluster9EE0221C' }, ' --kubelet-extra-args "--node-labels lifecycle=Ec2Spot --register-with-taints=spotInstance=true:PreferNoSchedule" --use-max-pods true\n/opt/aws/bin/cfn-signal --exit-code $? --stack Stack --resource ClusterMyCapcityASGD4CD8B97 --region us-east-1']] } });
         test.done();
       },
 

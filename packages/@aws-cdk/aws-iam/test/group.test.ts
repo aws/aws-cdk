@@ -1,4 +1,4 @@
-import '@aws-cdk/assert/jest';
+import '@aws-cdk/assert-internal/jest';
 import { App, Stack } from '@aws-cdk/core';
 import { Group, ManagedPolicy, User } from '../lib';
 
@@ -22,14 +22,22 @@ describe('IAM groups', () => {
     user1.addToGroup(group);
     group.addUser(user2);
 
-    expect(stack).toMatchTemplate({ Resources:
-      { MyGroupCBA54B1B: { Type: 'AWS::IAM::Group' },
+    expect(stack).toMatchTemplate({
+      Resources:
+      {
+        MyGroupCBA54B1B: { Type: 'AWS::IAM::Group' },
         User1E278A736:
-         { Type: 'AWS::IAM::User',
-           Properties: { Groups: [ { Ref: 'MyGroupCBA54B1B' } ] } },
+         {
+           Type: 'AWS::IAM::User',
+           Properties: { Groups: [{ Ref: 'MyGroupCBA54B1B' }] },
+         },
         User21F1486D1:
-         { Type: 'AWS::IAM::User',
-           Properties: { Groups: [ { Ref: 'MyGroupCBA54B1B' } ] } } } });
+         {
+           Type: 'AWS::IAM::User',
+           Properties: { Groups: [{ Ref: 'MyGroupCBA54B1B' }] },
+         },
+      },
+    });
   });
 
   test('create with managed policy', () => {
@@ -44,7 +52,7 @@ describe('IAM groups', () => {
     // THEN
     expect(stack).toHaveResource('AWS::IAM::Group', {
       ManagedPolicyArns: [
-        { 'Fn::Join': [ '', [ 'arn:', { Ref: 'AWS::Partition' }, ':iam::aws:policy/asdf' ] ] },
+        { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::aws:policy/asdf']] },
       ],
     });
   });

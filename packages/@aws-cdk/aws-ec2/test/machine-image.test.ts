@@ -1,3 +1,4 @@
+import { expect as cdkExpect, matchTemplate, MatchStyle } from '@aws-cdk/assert-internal';
 import { App, Stack } from '@aws-cdk/core';
 import * as ec2 from '../lib';
 
@@ -11,6 +12,43 @@ beforeEach(() => {
   });
 });
 
+test('can make and use a Linux image', () => {
+  // WHEN
+  const image = new ec2.GenericLinuxImage({
+    testregion: 'ami-1234',
+  });
+
+  // THEN
+  const details = image.getImage(stack);
+  expect(details.imageId).toEqual('ami-1234');
+  expect(details.osType).toEqual(ec2.OperatingSystemType.LINUX);
+});
+
+test('can make and use a Linux image in agnostic stack', () => {
+  // WHEN
+  app = new App();
+  stack = new Stack(app, 'Stack');
+  const image = new ec2.GenericLinuxImage({
+    testregion: 'ami-1234',
+  });
+
+  // THEN
+  const details = image.getImage(stack);
+  const expected = {
+    Mappings: {
+      AmiMap: {
+        testregion: {
+          ami: 'ami-1234',
+        },
+      },
+    },
+  };
+
+  cdkExpect(stack).to(matchTemplate(expected, MatchStyle.EXACT));
+  expect(stack.resolve(details.imageId)).toEqual({ 'Fn::FindInMap': ['AmiMap', { Ref: 'AWS::Region' }, 'ami'] });
+  expect(details.osType).toEqual(ec2.OperatingSystemType.LINUX);
+});
+
 test('can make and use a Windows image', () => {
   // WHEN
   const image = new ec2.GenericWindowsImage({
@@ -21,6 +59,41 @@ test('can make and use a Windows image', () => {
   const details = image.getImage(stack);
   expect(details.imageId).toEqual('ami-1234');
   expect(details.osType).toEqual(ec2.OperatingSystemType.WINDOWS);
+});
+
+test('can make and use a Windows image in agnostic stack', () => {
+  // WHEN
+  app = new App();
+  stack = new Stack(app, 'Stack');
+  const image = new ec2.GenericWindowsImage({
+    testregion: 'ami-1234',
+  });
+
+  // THEN
+  const details = image.getImage(stack);
+  const expected = {
+    Mappings: {
+      AmiMap: {
+        testregion: {
+          ami: 'ami-1234',
+        },
+      },
+    },
+  };
+
+  cdkExpect(stack).to(matchTemplate(expected, MatchStyle.EXACT));
+  expect(stack.resolve(details.imageId)).toEqual({ 'Fn::FindInMap': ['AmiMap', { Ref: 'AWS::Region' }, 'ami'] });
+  expect(details.osType).toEqual(ec2.OperatingSystemType.WINDOWS);
+});
+
+test('can make and use a Generic SSM image', () => {
+  // WHEN
+  const image = new ec2.GenericSSMParameterImage('testParam', ec2.OperatingSystemType.LINUX);
+
+  // THEN
+  const details = image.getImage(stack);
+  expect(details.imageId).toContain('TOKEN');
+  expect(details.osType).toEqual(ec2.OperatingSystemType.LINUX);
 });
 
 test('WindowsImage retains userdata if given', () => {
@@ -63,11 +136,11 @@ test('LookupMachineImage default search', () => {
       props: {
         account: '1234',
         region: 'testregion',
-        owners: [ 'amazon' ],
+        owners: ['amazon'],
         filters: {
-          'name': [ 'bla*' ],
-          'state': [ 'available' ],
-          'image-type': [ 'machine' ],
+          'name': ['bla*'],
+          'state': ['available'],
+          'image-type': ['machine'],
         },
       },
       provider: 'ami',

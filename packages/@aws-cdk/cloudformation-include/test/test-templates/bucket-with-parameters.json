@@ -15,6 +15,7 @@
       "Description": "the time in seconds that a browser will cache the preflight response",
       "MaxValue": "300",
       "MinValue": "0",
+      "AllowedValues": [1, 2, 3, 10, 100, 300],
       "Type": "Number",
       "NoEcho": "true"
     }

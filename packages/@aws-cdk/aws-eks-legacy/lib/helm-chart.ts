@@ -1,9 +1,12 @@
-import { CustomResource, CustomResourceProvider } from '@aws-cdk/aws-cloudformation';
-import * as lambda from '@aws-cdk/aws-lambda';
-import { Construct, Duration, Stack } from '@aws-cdk/core';
 import * as path from 'path';
+import * as lambda from '@aws-cdk/aws-lambda';
+import { CustomResource, Duration, Names, Stack } from '@aws-cdk/core';
 import { Cluster } from './cluster';
 import { KubectlLayer } from './kubectl-layer';
+
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct } from '@aws-cdk/core';
 
 /**
  * Helm Chart options.
@@ -81,10 +84,10 @@ export class HelmChart extends Construct {
     }
 
     new CustomResource(this, 'Resource', {
-      provider: CustomResourceProvider.lambda(handler),
+      serviceToken: handler.functionArn,
       resourceType: HelmChart.RESOURCE_TYPE,
       properties: {
-        Release: props.release || this.node.uniqueId.slice(-63).toLowerCase(), // Helm has a 63 character limit for the name
+        Release: props.release || Names.uniqueId(this).slice(-63).toLowerCase(), // Helm has a 63 character limit for the name
         Chart: props.chart,
         Version: props.version,
         Values: (props.values ? stack.toJsonString(props.values) : undefined),
@@ -106,7 +109,7 @@ export class HelmChart extends Construct {
         runtime: lambda.Runtime.PYTHON_3_7,
         handler: 'index.handler',
         timeout: Duration.minutes(15),
-        layers: [ KubectlLayer.getOrCreate(this, { version: '2.0.0-beta1' }) ],
+        layers: [KubectlLayer.getOrCreate(this, { version: '2.0.0-beta1' })],
         memorySize: 256,
         environment: {
           CLUSTER_NAME: cluster.clusterName,

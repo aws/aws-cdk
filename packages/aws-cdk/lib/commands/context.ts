@@ -28,8 +28,6 @@ export function handler(args: yargs.Arguments) {
 export async function realHandler(options: CommandOptions): Promise<number> {
   const { configuration, args } = options;
 
-  const contextValues = configuration.context.all;
-
   if (args.clear) {
     configuration.context.clear();
     await configuration.saveContext();
@@ -40,9 +38,10 @@ export async function realHandler(options: CommandOptions): Promise<number> {
   } else {
     // List -- support '--json' flag
     if (args.json) {
+      const contextValues = configuration.context.all;
       process.stdout.write(JSON.stringify(contextValues, undefined, 2));
     } else {
-      listContext(contextValues);
+      listContext(configuration.context);
     }
   }
   await version.displayVersionMessage();
@@ -50,7 +49,7 @@ export async function realHandler(options: CommandOptions): Promise<number> {
   return 0;
 }
 
-function listContext(context: any) {
+function listContext(context: Context) {
   const keys = contextKeys(context);
 
   if (keys.length === 0) {
@@ -66,7 +65,7 @@ function listContext(context: any) {
   // Print config by default
   const data: any[] = [[colors.green('#'), colors.green('Key'), colors.green('Value')]];
   for (const [i, key] of keys) {
-    const jsonWithoutNewlines = JSON.stringify(context[key], undefined, 2).replace(/\s+/g, ' ');
+    const jsonWithoutNewlines = JSON.stringify(context.all[key], undefined, 2).replace(/\s+/g, ' ');
     data.push([i, key, jsonWithoutNewlines]);
   }
 
@@ -81,7 +80,7 @@ function listContext(context: any) {
 function invalidateContext(context: Context, key: string) {
   const i = parseInt(key, 10);
   if (`${i}` === key) {
-    // Twas a number and we fully parsed it.
+    // was a number and we fully parsed it.
     key = keyByNumber(context, i);
   }
 
@@ -94,7 +93,7 @@ function invalidateContext(context: Context, key: string) {
   }
 }
 
-function keyByNumber(context: any, n: number) {
+function keyByNumber(context: Context, n: number) {
   for (const [i, key] of contextKeys(context)) {
     if (n === i) {
       return key;
@@ -106,8 +105,8 @@ function keyByNumber(context: any, n: number) {
 /**
  * Return enumerated keys in a definitive order
  */
-function contextKeys(context: any) {
-  const keys = Object.keys(context);
+function contextKeys(context: Context): [number, string][] {
+  const keys = context.keys;
   keys.sort();
   return enumerate1(keys);
 }

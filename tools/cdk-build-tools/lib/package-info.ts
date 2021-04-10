@@ -81,13 +81,25 @@ export interface CompilerOverrides {
 /**
  * Return the compiler for this package (either tsc or jsii)
  */
-export function packageCompiler(compilers: CompilerOverrides): string[] {
+export function packageCompiler(compilers: CompilerOverrides, options?: CDKBuildOptions): string[] {
   if (isJsii()) {
-    return [compilers.jsii || require.resolve('jsii/bin/jsii'), '--project-references', '--silence-warnings=reserved-word'];
+    const args = ['--silence-warnings=reserved-word'];
+    if (options?.stripDeprecated) {
+      args.push('--strip-deprecated');
+    }
+    return [compilers.jsii || require.resolve('jsii/bin/jsii'), ...args];
   } else {
     return [compilers.tsc || require.resolve('typescript/bin/tsc'), '--build'];
   }
 }
+
+/**
+ * Return the command defined in scripts.gen if exists
+ */
+export function genScript(): string | undefined {
+  return currentPackageJson().scripts?.gen;
+}
+
 
 export interface CDKBuildOptions {
   /**
@@ -135,6 +147,17 @@ export interface CDKBuildOptions {
    * but we want to eventually move all of them to Jest.
    */
   jest?: boolean;
+
+  /**
+   * Environment variables to be passed to 'cdk-build' and all of its child processes.
+   */
+  env?: NodeJS.ProcessEnv;
+
+  /**
+   * Whether deprecated symbols should be stripped from the jsii assembly and typescript declaration files.
+   * @see https://aws.github.io/jsii/user-guides/lib-author/toolchain/jsii/#-strip-deprecated
+   */
+  stripDeprecated?: boolean;
 }
 
 /**

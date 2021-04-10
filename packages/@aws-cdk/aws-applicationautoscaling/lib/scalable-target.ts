@@ -1,5 +1,6 @@
 import * as iam from '@aws-cdk/aws-iam';
-import { Construct, IResource, Lazy, Resource, withResolved } from '@aws-cdk/core';
+import { IResource, Lazy, Resource, withResolved } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CfnScalableTarget } from './applicationautoscaling.generated';
 import { Schedule } from './schedule';
 import { BasicStepScalingPolicyProps, StepScalingPolicy } from './step-scaling-policy';
@@ -124,7 +125,7 @@ export class ScalableTarget extends Resource implements IScalableTarget {
       resourceId: props.resourceId,
       roleArn: this.role.roleArn,
       scalableDimension: props.scalableDimension,
-      scheduledActions: Lazy.anyValue({ produce: () => this.actions}, { omitEmptyArray: true}),
+      scheduledActions: Lazy.any({ produce: () => this.actions }, { omitEmptyArray: true }),
       serviceNamespace: props.serviceNamespace,
     });
 
@@ -135,7 +136,7 @@ export class ScalableTarget extends Resource implements IScalableTarget {
    * Add a policy statement to the role's policy
    */
   public addToRolePolicy(statement: iam.PolicyStatement) {
-    this.role.addToPolicy(statement);
+    this.role.addToPrincipalPolicy(statement);
   }
 
   /**
@@ -273,4 +274,9 @@ export enum ServiceNamespace {
    * Comprehend
    */
   COMPREHEND = 'comprehend',
+
+  /**
+   * Kafka
+   */
+  KAFKA = 'kafka',
 }

@@ -1,0 +1,42 @@
+{
+  "Parameters": {
+    "Env": {
+      "Type": "String"
+    },
+    "Subnets": {
+      "Type": "List<AWS::EC2::Subnet::Id>"
+    }
+  },
+  "Conditions": {
+    "IsProduction": {
+      "Fn::Equals": [
+        { "Ref":  "Env" },
+        "prod"
+      ]
+    }
+  },
+  "Rules": {
+    "TestVpcRule": {
+      "RuleCondition": {
+        "Fn::If": [
+          "IsProduction",
+          true,
+          {
+            "Fn::Contains": [
+              ["test", "pre-prod", "preprod"],
+              { "Ref": "Env" }
+            ]
+          }
+        ]
+      },
+      "Assertions": [
+        {
+          "Fn::EachMemberIn": [
+            { "Fn::ValueOfAll": ["AWS::EC2::Subnet::Id", "VpcId"] },
+            { "Fn::ValueOf": ["Subnets", "VpcId"] }
+          ]
+        }
+      ]
+    }
+  }
+}

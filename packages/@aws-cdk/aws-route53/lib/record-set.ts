@@ -1,8 +1,17 @@
-import { Construct, Duration, IResource, Resource, Token } from '@aws-cdk/core';
+import * as path from 'path';
+import * as iam from '@aws-cdk/aws-iam';
+import { CustomResource, CustomResourceProvider, CustomResourceProviderRuntime, Duration, IResource, Resource, Token } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { IAliasRecordTarget } from './alias-record-target';
 import { IHostedZone } from './hosted-zone-ref';
 import { CfnRecordSet } from './route53.generated';
 import { determineFullyQualifiedDomainName } from './util';
+
+const CROSS_ACCOUNT_ZONE_DELEGATION_RESOURCE_TYPE = 'Custom::CrossAccountZoneDelegation';
+
+// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
+// eslint-disable-next-line
+import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 /**
  * A record set
@@ -171,7 +180,7 @@ export class RecordTarget {
 
   /**
    *
-   * @param values correspond with the chosen record type (e.g. for 'A' Type, specify one ore more IP addresses)
+   * @param values correspond with the chosen record type (e.g. for 'A' Type, specify one or more IP addresses)
    * @param aliasTarget alias for targets such as CloudFront distribution to route traffic to
    */
   protected constructor(public readonly values?: string[], public readonly aliasTarget?: IAliasRecordTarget) {
@@ -203,7 +212,7 @@ export class RecordSet extends Resource implements IRecordSet {
   constructor(scope: Construct, id: string, props: RecordSetProps) {
     super(scope, id);
 
-    const ttl = props.target.aliasTarget ? undefined : ((props.ttl && props.ttl.toSeconds()) || 1800).toString();
+    const ttl = props.target.aliasTarget ? undefined : ((props.ttl && props.ttl.toSeconds()) ?? 1800).toString();
 
     const recordSet = new CfnRecordSet(this, 'Resource', {
       hostedZoneId: props.zone.hostedZoneId,
@@ -322,9 +331,29 @@ export class TxtRecord extends RecordSet {
     super(scope, id, {
       ...props,
       recordType: RecordType.TXT,
-      target: RecordTarget.fromValues(...props.values.map(v => JSON.stringify(v))),
+      target: RecordTarget.fromValues(...props.values.map(v => formatTxt(v))),
     });
   }
+}
+
+/**
+ * Formats a text value for use in a TXT record
+ *
+ * Use `JSON.stringify` to correctly escape and enclose in double quotes ("").
+ *
+ * DNS TXT records can contain up to 255 characters in a single string. TXT
+ * record strings over 255 characters must be split into multiple text strings
+ * within the same record.
+ *
+ * @see https://aws.amazon.com/premiumsupport/knowledge-center/route53-resolve-dkim-text-record-error/
+ */
+function formatTxt(string: string): string {
+  const result = [];
+  let idx = 0;
+  while (idx < string.length) {
+    result.push(string.slice(idx, idx += 255)); // chunks of 255 characters long
+  }
+  return result.map(r => JSON.stringify(r)).join('');
 }
 
 /**
@@ -513,6 +542,31 @@ export class MxRecord extends RecordSet {
 }
 
 /**
+ * Construction properties for a NSRecord.
+ */
+export interface NsRecordProps extends RecordSetOptions {
+  /**
+   * The NS values.
+   */
+  readonly values: string[];
+}
+
+/**
+ * A DNS NS record
+ *
+ * @resource AWS::Route53::RecordSet
+ */
+export class NsRecord extends RecordSet {
+  constructor(scope: Construct, id: string, props: NsRecordProps) {
+    super(scope, id, {
+      ...props,
+      recordType: RecordType.NS,
+      target: RecordTarget.fromValues(...props.values),
+    });
+  }
+}
+
+/**
  * Construction properties for a ZoneDelegationRecord
  */
 export interface ZoneDelegationRecordProps extends RecordSetOptions {
@@ -535,6 +589,60 @@ export class ZoneDelegationRecord extends RecordSet {
         : props.nameServers.map(ns => (Token.isUnresolved(ns) || ns.endsWith('.')) ? ns : `${ns}.`),
       ),
       ttl: props.ttl || Duration.days(2),
+    });
+  }
+}
+
+/**
+ * Construction properties for a CrossAccountZoneDelegationRecord
+ */
+export interface CrossAccountZoneDelegationRecordProps {
+  /**
+   * The zone to be delegated
+   */
+  readonly delegatedZone: IHostedZone;
+
+  /**
+   * The hosted zone id in the parent account
+   */
+  readonly parentHostedZoneId: string;
+
+  /**
+   * The delegation role in the parent account
+   */
+  readonly delegationRole: iam.IRole;
+
+  /**
+   * The resource record cache time to live (TTL).
+   *
+   * @default Duration.days(2)
+   */
+  readonly ttl?: Duration;
+}
+
+/**
+ * A Cross Account Zone Delegation record
+ */
+export class CrossAccountZoneDelegationRecord extends CoreConstruct {
+  constructor(scope: Construct, id: string, props: CrossAccountZoneDelegationRecordProps) {
+    super(scope, id);
+
+    const serviceToken = CustomResourceProvider.getOrCreate(this, CROSS_ACCOUNT_ZONE_DELEGATION_RESOURCE_TYPE, {
+      codeDirectory: path.join(__dirname, 'cross-account-zone-delegation-handler'),
+      runtime: CustomResourceProviderRuntime.NODEJS_12_X,
+      policyStatements: [{ Effect: 'Allow', Action: 'sts:AssumeRole', Resource: props.delegationRole.roleArn }],
+    });
+
+    new CustomResource(this, 'CrossAccountZoneDelegationCustomResource', {
+      resourceType: CROSS_ACCOUNT_ZONE_DELEGATION_RESOURCE_TYPE,
+      serviceToken,
+      properties: {
+        AssumeRoleArn: props.delegationRole.roleArn,
+        ParentZoneId: props.parentHostedZoneId,
+        DelegatedZoneName: props.delegatedZone.zoneName,
+        DelegatedZoneNameServers: props.delegatedZone.hostedZoneNameServers!,
+        TTL: (props.ttl || Duration.days(2)).toSeconds(),
+      },
     });
   }
 }

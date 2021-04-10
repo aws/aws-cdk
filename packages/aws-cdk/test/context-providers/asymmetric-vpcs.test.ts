@@ -96,7 +96,7 @@ test('throws when multiple VPCs are found', async () => {
   // GIVEN
   AWS.mock('EC2', 'describeVpcs', (params: aws.EC2.DescribeVpcsRequest, cb: AwsCallback<aws.EC2.DescribeVpcsResult>) => {
     expect(params.Filters).toEqual([{ Name: 'foo', Values: ['bar'] }]);
-    return cb(null, { Vpcs: [{ VpcId: 'vpc-1' }, { VpcId: 'vpc-2' }]});
+    return cb(null, { Vpcs: [{ VpcId: 'vpc-1' }, { VpcId: 'vpc-2' }] });
   });
 
   // WHEN
@@ -250,9 +250,9 @@ test('works for asymmetric subnets (not spanning the same Availability Zones)', 
   mockVpcLookup({
     subnets: [
       { SubnetId: 'pri-sub-in-1b', AvailabilityZone: 'us-west-1b', MapPublicIpOnLaunch: false, CidrBlock: '1.1.1.1/24' },
-      { SubnetId: 'pub-sub-in-1c', AvailabilityZone: 'us-west-1c', MapPublicIpOnLaunch: true, CidrBlock: '1.1.2.1/24'  },
-      { SubnetId: 'pub-sub-in-1b', AvailabilityZone: 'us-west-1b', MapPublicIpOnLaunch: true, CidrBlock: '1.1.3.1/24'  },
-      { SubnetId: 'pub-sub-in-1a', AvailabilityZone: 'us-west-1a', MapPublicIpOnLaunch: true, CidrBlock: '1.1.4.1/24'  },
+      { SubnetId: 'pub-sub-in-1c', AvailabilityZone: 'us-west-1c', MapPublicIpOnLaunch: true, CidrBlock: '1.1.2.1/24' },
+      { SubnetId: 'pub-sub-in-1b', AvailabilityZone: 'us-west-1b', MapPublicIpOnLaunch: true, CidrBlock: '1.1.3.1/24' },
+      { SubnetId: 'pub-sub-in-1a', AvailabilityZone: 'us-west-1a', MapPublicIpOnLaunch: true, CidrBlock: '1.1.4.1/24' },
     ],
     routeTables: [
       { Associations: [{ Main: true }], RouteTableId: 'rtb-123' },
@@ -328,21 +328,37 @@ test('allows specifying the subnet group name tag', async () => {
   mockVpcLookup({
     subnets: [
       {
-        SubnetId: 'pri-sub-in-1b', AvailabilityZone: 'us-west-1b', MapPublicIpOnLaunch: false, Tags: [
+        SubnetId: 'pri-sub-in-1b',
+        AvailabilityZone: 'us-west-1b',
+        MapPublicIpOnLaunch: false,
+        Tags: [
           { Key: 'Tier', Value: 'restricted' },
-        ] },
+        ],
+      },
       {
-        SubnetId: 'pub-sub-in-1c', AvailabilityZone: 'us-west-1c', MapPublicIpOnLaunch: true, Tags: [
+        SubnetId: 'pub-sub-in-1c',
+        AvailabilityZone: 'us-west-1c',
+        MapPublicIpOnLaunch: true,
+        Tags: [
           { Key: 'Tier', Value: 'connectivity' },
-        ] },
+        ],
+      },
       {
-        SubnetId: 'pub-sub-in-1b', AvailabilityZone: 'us-west-1b', MapPublicIpOnLaunch: true, Tags: [
+        SubnetId: 'pub-sub-in-1b',
+        AvailabilityZone: 'us-west-1b',
+        MapPublicIpOnLaunch: true,
+        Tags: [
           { Key: 'Tier', Value: 'connectivity' },
-        ] },
+        ],
+      },
       {
-        SubnetId: 'pub-sub-in-1a', AvailabilityZone: 'us-west-1a', MapPublicIpOnLaunch: true, Tags: [
+        SubnetId: 'pub-sub-in-1a',
+        AvailabilityZone: 'us-west-1a',
+        MapPublicIpOnLaunch: true,
+        Tags: [
           { Key: 'Tier', Value: 'connectivity' },
-        ] },
+        ],
+      },
     ],
     routeTables: [
       { Associations: [{ Main: true }], RouteTableId: 'rtb-123' },
@@ -438,9 +454,9 @@ function mockVpcLookup(options: VpcLookupOptions) {
 
   AWS.mock('EC2', 'describeVpnGateways', (params: aws.EC2.DescribeVpnGatewaysRequest, cb: AwsCallback<aws.EC2.DescribeVpnGatewaysResult>) => {
     expect(params.Filters).toEqual([
-      { Name: 'attachment.vpc-id', Values: [ VpcId ] },
-      { Name: 'attachment.state', Values: [ 'attached' ] },
-      { Name: 'state', Values: [ 'available' ] },
+      { Name: 'attachment.vpc-id', Values: [VpcId] },
+      { Name: 'attachment.state', Values: ['attached'] },
+      { Name: 'state', Values: ['available'] },
     ]);
     return cb(null, { VpnGateways: options.vpnGateways });
   });

@@ -1,4 +1,4 @@
-import { expect, haveResource } from '@aws-cdk/assert';
+import { expect, haveResource } from '@aws-cdk/assert-internal';
 import * as events from '@aws-cdk/aws-events';
 import * as sns from '@aws-cdk/aws-sns';
 import { Duration, Stack } from '@aws-cdk/core';
@@ -71,6 +71,6 @@ test('multiple uses of a topic as a target results in a single policy statement'
       ],
       Version: '2012-10-17',
     },
-    Topics: [ { Ref: 'MyTopic86869434' } ],
+    Topics: [{ Ref: 'MyTopic86869434' }],
   }));
 });

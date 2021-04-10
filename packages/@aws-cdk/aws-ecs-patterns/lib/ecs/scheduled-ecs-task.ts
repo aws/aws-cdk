@@ -1,5 +1,5 @@
 import { Ec2TaskDefinition } from '@aws-cdk/aws-ecs';
-import { Construct } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { ScheduledTaskBase, ScheduledTaskBaseProps, ScheduledTaskImageProps } from '../base/scheduled-task-base';
 
 /**
@@ -107,7 +107,7 @@ export class ScheduledEc2Task extends ScheduledTaskBase {
         command: taskImageOptions.command,
         environment: taskImageOptions.environment,
         secrets: taskImageOptions.secrets,
-        logging: taskImageOptions.logDriver !== undefined ? taskImageOptions.logDriver : this.createAWSLogDriver(this.node.id),
+        logging: taskImageOptions.logDriver ?? this.createAWSLogDriver(this.node.id),
       });
     } else {
       throw new Error('You must specify a taskDefinition or image');

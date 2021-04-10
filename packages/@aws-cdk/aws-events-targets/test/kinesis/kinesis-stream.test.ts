@@ -1,4 +1,4 @@
-import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
+import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert-internal';
 import * as events from '@aws-cdk/aws-events';
 import * as kinesis from '@aws-cdk/aws-kinesis';
 import { Stack } from '@aws-cdk/core';
@@ -12,7 +12,7 @@ describe('KinesisStream event target', () => {
   beforeEach(() => {
     stack = new Stack();
     stream = new kinesis.Stream(stack, 'MyStream');
-    streamArn = { 'Fn::GetAtt': [ 'MyStream5C050E93', 'Arn' ] };
+    streamArn = { 'Fn::GetAtt': ['MyStream5C050E93', 'Arn'] };
   });
 
   describe('when added to an event rule as a target', () => {
@@ -35,7 +35,7 @@ describe('KinesisStream event target', () => {
             {
               Arn: streamArn,
               Id: 'Target0',
-              RoleArn: { 'Fn::GetAtt': [ 'MyStreamEventsRole5B6CC6AF', 'Arn' ] },
+              RoleArn: { 'Fn::GetAtt': ['MyStreamEventsRole5B6CC6AF', 'Arn'] },
             },
           ],
         }));
@@ -46,7 +46,7 @@ describe('KinesisStream event target', () => {
           PolicyDocument: {
             Statement: [
               {
-                Action: [ 'kinesis:PutRecord', 'kinesis:PutRecords' ],
+                Action: ['kinesis:PutRecord', 'kinesis:PutRecords'],
                 Effect: 'Allow',
                 Resource: streamArn,
               },
@@ -70,7 +70,7 @@ describe('KinesisStream event target', () => {
             {
               Arn: streamArn,
               Id: 'Target0',
-              RoleArn: { 'Fn::GetAtt': [ 'MyStreamEventsRole5B6CC6AF', 'Arn' ] },
+              RoleArn: { 'Fn::GetAtt': ['MyStreamEventsRole5B6CC6AF', 'Arn'] },
               KinesisParameters: {
                 PartitionKeyPath: '$.id',
               },

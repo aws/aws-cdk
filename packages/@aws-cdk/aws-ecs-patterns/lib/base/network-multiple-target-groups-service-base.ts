@@ -1,11 +1,18 @@
 import { IVpc } from '@aws-cdk/aws-ec2';
-import { AwsLogDriver, BaseService, CloudMapOptions, Cluster, ContainerDefinition, ContainerImage, ICluster, LogDriver,
-  PropagatedTagSource, Protocol, Secret } from '@aws-cdk/aws-ecs';
+import {
+  AwsLogDriver, BaseService, CloudMapOptions, Cluster, ContainerDefinition, ContainerImage, ICluster, LogDriver,
+  PropagatedTagSource, Protocol, Secret,
+} from '@aws-cdk/aws-ecs';
 import { NetworkListener, NetworkLoadBalancer, NetworkTargetGroup } from '@aws-cdk/aws-elasticloadbalancingv2';
 import { IRole } from '@aws-cdk/aws-iam';
 import { ARecord, IHostedZone, RecordTarget } from '@aws-cdk/aws-route53';
 import { LoadBalancerTarget } from '@aws-cdk/aws-route53-targets';
-import { CfnOutput, Construct, Duration, Stack } from '@aws-cdk/core';
+import { CfnOutput, Duration, Stack } from '@aws-cdk/core';
+import { Construct } from 'constructs';
+
+// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
+// eslint-disable-next-line
+import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 /**
  * The properties for the base NetworkMultipleTargetGroupsEc2Service or NetworkMultipleTargetGroupsFargateService service.
@@ -38,7 +45,9 @@ export interface NetworkMultipleTargetGroupsServiceBaseProps {
    * The desired number of instantiations of the task definition to keep running on the service.
    * The minimum value is 1
    *
-   * @default 1
+   * @default - If the feature flag, ECS_REMOVE_DEFAULT_DESIRED_COUNT is false, the default is 1;
+   * if true, the default is 1 for all new services and uses the existing services desired count
+   * when updating an existing service.
    */
   readonly desiredCount?: number;
 
@@ -254,11 +263,19 @@ export interface NetworkTargetProps {
 /**
  * The base class for NetworkMultipleTargetGroupsEc2Service and NetworkMultipleTargetGroupsFargateService classes.
  */
-export abstract class NetworkMultipleTargetGroupsServiceBase extends Construct {
+export abstract class NetworkMultipleTargetGroupsServiceBase extends CoreConstruct {
   /**
    * The desired number of instantiations of the task definition to keep running on the service.
+   * @deprecated - Use `internalDesiredCount` instead.
    */
   public readonly desiredCount: number;
+
+  /**
+   * The desired number of instantiations of the task definition to keep running on the service.
+   * The default is 1 for all new services and uses the existing services desired count
+   * when updating an existing service, if one is not provided.
+   */
+  public readonly internalDesiredCount?: number;
 
   /**
    * The Network Load Balancer for the service.
@@ -290,7 +307,10 @@ export abstract class NetworkMultipleTargetGroupsServiceBase extends Construct {
     this.validateInput(props);
 
     this.cluster = props.cluster || this.getDefaultCluster(this, props.vpc);
+
     this.desiredCount = props.desiredCount || 1;
+    this.internalDesiredCount = props.desiredCount;
+
     if (props.taskImageOptions) {
       this.logDriver = this.createLogDriver(props.taskImageOptions.enableLogging, props.taskImageOptions.logDriver);
     }
@@ -377,10 +397,8 @@ export abstract class NetworkMultipleTargetGroupsServiceBase extends Construct {
    * Create log driver if logging is enabled.
    */
   private createLogDriver(enableLoggingProp?: boolean, logDriverProp?: LogDriver): LogDriver | undefined {
-    const enableLogging = enableLoggingProp !== undefined ? enableLoggingProp : true;
-    const logDriver = logDriverProp !== undefined
-      ? logDriverProp : enableLogging
-        ? this.createAWSLogDriver(this.node.id) : undefined;
+    const enableLogging = enableLoggingProp ?? true;
+    const logDriver = logDriverProp ?? (enableLogging ? this.createAWSLogDriver(this.node.id) : undefined);
     return logDriver;
   }
 
@@ -406,7 +424,7 @@ export abstract class NetworkMultipleTargetGroupsServiceBase extends Construct {
   }
 
   private createLoadBalancer(name: string, publicLoadBalancer?: boolean): NetworkLoadBalancer {
-    const internetFacing = publicLoadBalancer !== undefined ? publicLoadBalancer : true;
+    const internetFacing = publicLoadBalancer ?? true;
     const lbProps = {
       vpc: this.cluster.vpc,
       internetFacing,

@@ -1,17 +1,16 @@
 import * as path from 'path';
 import { format } from 'util';
-import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as colors from 'colors/safe';
 import * as fs from 'fs-extra';
 import * as promptly from 'promptly';
 import { environmentsFromDescriptors, globEnvironmentsFromStacks, looksLikeGlob } from '../lib/api/cxapp/environments';
-import { bootstrapEnvironment } from './api';
 import { SdkProvider } from './api/aws-auth';
-import { bootstrapEnvironment2, BootstrappingParameters } from './api/bootstrap';
+import { Bootstrapper, BootstrapEnvironmentOptions } from './api/bootstrap';
 import { CloudFormationDeployments } from './api/cloudformation-deployments';
 import { CloudAssembly, DefaultSelection, ExtendedStackSelection, StackCollection } from './api/cxapp/cloud-assembly';
 import { CloudExecutable } from './api/cxapp/cloud-executable';
+import { StackActivityProgress } from './api/util/cloudformation/stack-activity-monitor';
 import { printSecurityDiff, printStackDiff, RequireApproval } from './diff';
 import { data, error, highlight, print, success, warning } from './logging';
 import { deserializeStructure } from './serialize';
@@ -111,9 +110,9 @@ export class CdkToolkit {
   public async deploy(options: DeployOptions) {
     const stacks = await this.selectStacksForDeploy(options.stackNames, options.exclusively);
 
-    const requireApproval = options.requireApproval !== undefined ? options.requireApproval : RequireApproval.Broadening;
+    const requireApproval = options.requireApproval ?? RequireApproval.Broadening;
 
-    const parameterMap: { [name: string]: { [name: string]: string | undefined } } = {'*': {}};
+    const parameterMap: { [name: string]: { [name: string]: string | undefined } } = { '*': {} };
     for (const key in options.parameters) {
       if (options.parameters.hasOwnProperty(key)) {
         const [stack, parameter] = key.split(':', 2);
@@ -139,7 +138,7 @@ export class CdkToolkit {
       }
 
       if (Object.keys(stack.template.Resources || {}).length === 0) { // The generated stack has no resources
-        if (!await this.props.cloudFormation.stackExists({ stack }))  {
+        if (!await this.props.cloudFormation.stackExists({ stack })) {
           warning('%s: stack has no resources, skipping deployment.', colors.bold(stack.displayName));
         } else {
           warning('%s: stack has no resources, deleting existing stack.', colors.bold(stack.displayName));
@@ -187,9 +186,12 @@ export class CdkToolkit {
           notificationArns: options.notificationArns,
           tags,
           execute: options.execute,
+          changeSetName: options.changeSetName,
           force: options.force,
           parameters: Object.assign({}, parameterMap['*'], parameterMap[stack.stackName]),
           usePreviousParameters: options.usePreviousParameters,
+          progress: options.progress,
+          ci: options.ci,
         });
 
         const message = result.noOp
@@ -204,7 +206,7 @@ export class CdkToolkit {
           stackOutputs[stack.stackName] = result.outputs;
         }
 
-        for (const name of Object.keys(result.outputs)) {
+        for (const name of Object.keys(result.outputs).sort()) {
           const value = result.outputs[name];
           print('%s.%s = %s', colors.cyan(stack.id), colors.cyan(name), colors.underline(colors.cyan(value)));
         }
@@ -294,12 +296,15 @@ export class CdkToolkit {
    * OUTPUT: If more than one stack ends up being selected, an output directory
    * should be supplied, where the templates will be written.
    */
-  public async synth(stackNames: string[], exclusively: boolean): Promise<any> {
+  public async synth(stackNames: string[], exclusively: boolean, quiet: boolean): Promise<any> {
     const stacks = await this.selectStacksForDiff(stackNames, exclusively);
 
     // if we have a single stack, print it to STDOUT
     if (stacks.stackCount === 1) {
-      return stacks.firstStack.template;
+      if (!quiet) {
+        return stacks.firstStack.template;
+      }
+      return undefined;
     }
 
     // This is a slight hack; in integ mode we allow multiple stacks to be synthesized to stdout sequentially.
@@ -329,9 +334,7 @@ export class CdkToolkit {
    *             all stacks are implicitly selected.
    * @param toolkitStackName the name to be used for the CDK Toolkit stack.
    */
-  public async bootstrap(
-    environmentSpecs: string[], toolkitStackName: string | undefined, roleArn: string | undefined,
-    useNewBootstrapping: boolean, force: boolean | undefined, props: BootstrappingParameters): Promise<void> {
+  public async bootstrap(environmentSpecs: string[], bootstrapper: Bootstrapper, options: BootstrapEnvironmentOptions): Promise<void> {
     // If there is an '--app' argument and an environment looks like a glob, we
     // select the environments from the app. Otherwise use what the user said.
 
@@ -356,12 +359,7 @@ export class CdkToolkit {
     await Promise.all(environments.map(async (environment) => {
       success(' ⏳  Bootstrapping environment %s...', colors.blue(environment.name));
       try {
-        const result = await (useNewBootstrapping ? bootstrapEnvironment2 : bootstrapEnvironment)(environment, this.props.sdkProvider, {
-          toolkitStackName,
-          roleArn,
-          force,
-          parameters: props,
-        });
+        const result = await bootstrapper.bootstrapEnvironment(environment, this.props.sdkProvider, options);
         const message = result.noOp
           ? ' ✅  Environment %s bootstrapped (no changes).'
           : ' ✅  Environment %s bootstrapped.';
@@ -558,6 +556,12 @@ export interface DeployOptions {
   execute?: boolean;
 
   /**
+   * Optional name to use for the CloudFormation change set.
+   * If not provided, a name will be generated automatically.
+   */
+  changeSetName?: string;
+
+  /**
    * Always deploy, even if templates are identical.
    * @default false
    */
@@ -579,10 +583,25 @@ export interface DeployOptions {
   usePreviousParameters?: boolean;
 
   /**
+   * Display mode for stack deployment progress.
+   *
+   * @default - StackActivityProgress.Bar - stack events will be displayed for
+   *   the resource currently being deployed.
+   */
+  progress?: StackActivityProgress;
+
+  /**
    * Path to file where stack outputs will be written after a successful deploy as JSON
    * @default - Outputs are not written to any file
    */
   outputsFile?: string;
+
+  /**
+   * Whether we are on a CI system
+   *
+   * @default false
+   */
+  readonly ci?: boolean;
 }
 
 export interface DestroyOptions {
@@ -616,21 +635,7 @@ export interface DestroyOptions {
  * @returns an array with the tags available in the stack metadata.
  */
 function tagsForStack(stack: cxapi.CloudFormationStackArtifact): Tag[] {
-  const tagLists = stack.findMetadataByType(cxschema.ArtifactMetadataEntryType.STACK_TAGS).map(
-    // the tags in the cloud assembly are stored differently
-    // unfortunately.
-    x => toCloudFormationTags(x.data as cxschema.Tag[]));
-  return Array.prototype.concat([], ...tagLists);
-}
-
-/**
- * Transform tags as they are retrieved from the cloud assembly,
- * to the way that CloudFormation expects them. (Different casing).
- */
-function toCloudFormationTags(tags: cxschema.Tag[]): Tag[] {
-  return tags.map(t => {
-    return { Key: t.key, Value: t.value };
-  });
+  return Object.entries(stack.tags).map(([Key, Value]) => ({ Key, Value }));
 }
 
 export interface Tag {

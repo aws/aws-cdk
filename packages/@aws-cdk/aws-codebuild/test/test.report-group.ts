@@ -1,4 +1,4 @@
-import { ABSENT, expect, haveResourceLike, ResourcePart } from '@aws-cdk/assert';
+import { ABSENT, expect, haveResourceLike, ResourcePart } from '@aws-cdk/assert-internal';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as s3 from '@aws-cdk/aws-s3';
@@ -22,6 +22,20 @@ export = {
           "ExportConfigType": "NO_EXPORT",
           "S3Destination": ABSENT,
         },
+      }));
+
+      test.done();
+    },
+
+    'can be created with name'  (test: Test) {
+      const stack = new cdk.Stack();
+
+      new codebuild.ReportGroup(stack, 'ReportGroup', {
+        reportGroupName: 'my-report-group',
+      });
+
+      expect(stack).to(haveResourceLike('AWS::CodeBuild::ReportGroup', {
+        "Name": 'my-report-group',
       }));
 
       test.done();

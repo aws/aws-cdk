@@ -1,23 +1,13 @@
-import { Construct, IResource, Resource } from '@aws-cdk/core';
+import { IResource, RemovalPolicy, Resource } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { Code } from './code';
 import { CfnLayerVersion, CfnLayerVersionPermission } from './lambda.generated';
 import { Runtime } from './runtime';
 
-export interface LayerVersionProps {
-  /**
-   * The runtimes compatible with this Layer.
-   *
-   * @default - All runtimes are supported.
-   */
-  readonly compatibleRuntimes?: Runtime[];
-
-  /**
-   * The content of this Layer.
-   *
-   * Using `Code.fromInline` is not supported.
-   */
-  readonly code: Code;
-
+/**
+ * Non runtime options
+ */
+export interface LayerVersionOptions {
   /**
    * The description the this Lambda Layer.
    *
@@ -38,6 +28,30 @@ export interface LayerVersionProps {
    * @default - A name will be generated.
    */
   readonly layerVersionName?: string;
+
+  /**
+   * Whether to retain this version of the layer when a new version is added
+   * or when the stack is deleted.
+   *
+   * @default RemovalPolicy.DESTROY
+   */
+  readonly removalPolicy?: RemovalPolicy;
+}
+
+export interface LayerVersionProps extends LayerVersionOptions {
+  /**
+   * The runtimes compatible with this Layer.
+   *
+   * @default - All runtimes are supported.
+   */
+  readonly compatibleRuntimes?: Runtime[];
+
+  /**
+   * The content of this Layer.
+   *
+   * Using `Code.fromInline` is not supported.
+   */
+  readonly code: Code;
 }
 
 export interface ILayerVersion extends IResource {
@@ -100,7 +114,7 @@ export interface LayerVersionPermission {
   readonly accountId: string;
 
   /**
-   * The ID of the AWS Organization to hwich the grant is restricted.
+   * The ID of the AWS Organization to which the grant is restricted.
    *
    * Can only be specified if ``accountId`` is ``'*'``
    */
@@ -191,6 +205,10 @@ export class LayerVersion extends LayerVersionBase {
       layerName: this.physicalName,
       licenseInfo: props.license,
     });
+
+    if (props.removalPolicy) {
+      resource.applyRemovalPolicy(props.removalPolicy);
+    }
 
     props.code.bindToResource(resource, {
       resourceProperty: 'Content',

@@ -1,6 +1,8 @@
-import * as iam from '@aws-cdk/aws-iam';
-import { App, CfnOutput, Construct, NestedStack, NestedStackProps, Stack, StackProps } from '@aws-cdk/core';
 import * as path from 'path';
+import * as iam from '@aws-cdk/aws-iam';
+import { App, CfnOutput, NestedStack, NestedStackProps, Stack, StackProps } from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
+import { Construct } from 'constructs';
 import * as ecr_assets from '../lib';
 
 class TheNestedStack extends NestedStack {
@@ -26,6 +28,10 @@ class TheParentStack extends Stack {
   }
 }
 
-const app = new App();
+const app = new App({
+  context: {
+    [cxapi.DOCKER_IGNORE_SUPPORT]: true,
+  },
+});
 new TheParentStack(app, 'nested-stacks-docker');
 app.synth();

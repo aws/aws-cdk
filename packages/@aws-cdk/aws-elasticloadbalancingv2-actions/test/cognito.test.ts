@@ -1,4 +1,4 @@
-import { expect, haveResource } from '@aws-cdk/assert';
+import { expect, haveResource } from '@aws-cdk/assert-internal';
 import * as cognito from '@aws-cdk/aws-cognito';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
@@ -39,7 +39,7 @@ test('Cognito Action', () => {
     DefaultActions: [
       {
         AuthenticateCognitoConfig: {
-          UserPoolArn: { 'Fn::GetAtt': [ 'UserPool6BA7E5F2', 'Arn' ] },
+          UserPoolArn: { 'Fn::GetAtt': ['UserPool6BA7E5F2', 'Arn'] },
           UserPoolClientId: { Ref: 'Client4A7F64DF' },
           UserPoolDomain: { Ref: 'Domain66AC69E0' },
         },

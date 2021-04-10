@@ -1,5 +1,5 @@
-import { arrayWith, objectLike } from '@aws-cdk/assert';
-import '@aws-cdk/assert/jest';
+import { arrayWith, objectLike } from '@aws-cdk/assert-internal';
+import '@aws-cdk/assert-internal/jest';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import * as stepfunctions from '../lib';
@@ -29,7 +29,7 @@ describe('Activity', () => {
     const sharedMetric = {
       period: cdk.Duration.minutes(5),
       namespace: 'AWS/States',
-      dimensions: { ActivityArn: { Ref: 'Activity04690B0A' }},
+      dimensions: { ActivityArn: { Ref: 'Activity04690B0A' } },
     };
     expect((stack.resolve(activity.metricRunTime()))).toEqual({
       ...sharedMetric,

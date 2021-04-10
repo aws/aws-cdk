@@ -1,18 +1,19 @@
 // ----------------------------------------------------
 // CROSS REFERENCES
 // ----------------------------------------------------
+
 import { CfnElement } from '../cfn-element';
 import { CfnOutput } from '../cfn-output';
 import { CfnParameter } from '../cfn-parameter';
-import { Construct, IConstruct } from '../construct-compat';
+import { IConstruct } from '../construct-compat';
+import { Names } from '../names';
 import { Reference } from '../reference';
 import { IResolvable } from '../resolvable';
 import { Stack } from '../stack';
-import { Token } from '../token';
+import { Token, Tokenization } from '../token';
 import { CfnReference } from './cfn-reference';
 import { Intrinsic } from './intrinsic';
 import { findTokens } from './resolve';
-import { makeUniqueId } from './uniqueid';
 
 /**
  * This is called from the App level to resolve all references defined. Each
@@ -131,7 +132,7 @@ function findAllReferences(root: IConstruct) {
           value: token,
         });
       }
-    }  catch (e) {
+    } catch (e) {
       // Note: it might be that the properties of the CFN object aren't valid.
       // This will usually be preventatively caught in a construct's validate()
       // and turned into a nicely descriptive error, but we're running prepare()
@@ -163,47 +164,10 @@ function findAllReferences(root: IConstruct) {
 function createImportValue(reference: Reference): Intrinsic {
   const exportingStack = Stack.of(reference.target);
 
-  // Ensure a singleton "Exports" scoping Construct
-  // This mostly exists to trigger LogicalID munging, which would be
-  // disabled if we parented constructs directly under Stack.
-  // Also it nicely prevents likely construct name clashes
-  const exportsScope = getCreateExportsScope(exportingStack);
+  const importExpr = exportingStack.exportValue(reference);
 
-  // Ensure a singleton CfnOutput for this value
-  const resolved = exportingStack.resolve(reference);
-  const id = 'Output' + JSON.stringify(resolved);
-  const exportName = generateExportName(exportsScope, id);
-
-  if (Token.isUnresolved(exportName)) {
-    throw new Error(`unresolved token in generated export name: ${JSON.stringify(exportingStack.resolve(exportName))}`);
-  }
-
-  const output = exportsScope.node.tryFindChild(id) as CfnOutput;
-  if (!output) {
-    new CfnOutput(exportsScope, id, { value: Token.asString(reference), exportName });
-  }
-
-  // We want to return an actual FnImportValue Token here, but Fn.importValue() returns a 'string',
-  // so construct one in-place.
-  return new Intrinsic({ 'Fn::ImportValue': exportName });
-}
-
-function getCreateExportsScope(stack: Stack) {
-  const exportsName = 'Exports';
-  let stackExports = stack.node.tryFindChild(exportsName) as Construct;
-  if (stackExports === undefined) {
-    stackExports = new Construct(stack, exportsName);
-  }
-
-  return stackExports;
-}
-
-function generateExportName(stackExports: Construct, id: string) {
-  const stack = Stack.of(stackExports);
-  const components = [...stackExports.node.scopes.slice(2).map(c => c.node.id), id];
-  const prefix = stack.stackName ? stack.stackName + ':' : '';
-  const exportName = prefix + makeUniqueId(components);
-  return exportName;
+  // I happen to know this returns a Fn.importValue() which implements Intrinsic.
+  return Tokenization.reverseCompleteString(importExpr) as Intrinsic;
 }
 
 // ------------------------------------------------------------------------------------------------
@@ -216,7 +180,7 @@ function generateExportName(stackExports: Construct, id: string) {
  */
 function createNestedStackParameter(nested: Stack, reference: CfnReference, value: IResolvable) {
   // we call "this.resolve" to ensure that tokens do not creep in (for example, if the reference display name includes tokens)
-  const paramId = nested.resolve(`reference-to-${reference.target.node.uniqueId}.${reference.displayName}`);
+  const paramId = nested.resolve(`reference-to-${ Names.nodeUniqueId(reference.target.node)}.${reference.displayName}`);
   let param = nested.node.tryFindChild(paramId) as CfnParameter;
   if (!param) {
     param = new CfnParameter(nested, paramId, { type: 'String' });
@@ -237,7 +201,7 @@ function createNestedStackParameter(nested: Stack, reference: CfnReference, valu
  * intrinsic that can be used to reference this output in the parent stack.
  */
 function createNestedStackOutput(producer: Stack, reference: Reference): CfnReference {
-  const outputId = `${reference.target.node.uniqueId}${reference.displayName}`;
+  const outputId = `${Names.nodeUniqueId(reference.target.node)}${reference.displayName}`;
   let output = producer.node.tryFindChild(outputId) as CfnOutput;
   if (!output) {
     output = new CfnOutput(producer, outputId, { value: Token.asString(reference) });
@@ -248,6 +212,25 @@ function createNestedStackOutput(producer: Stack, reference: Reference): CfnRefe
   }
 
   return producer.nestedStackResource.getAtt(`Outputs.${output.logicalId}`) as CfnReference;
+}
+
+/**
+ * Translate a Reference into a nested stack into a value in the parent stack
+ *
+ * Will create Outputs along the chain of Nested Stacks, and return the final `{ Fn::GetAtt }`.
+ */
+export function referenceNestedStackValueInParent(reference: Reference, targetStack: Stack) {
+  let currentStack = Stack.of(reference.target);
+  if (currentStack !== targetStack && !isNested(currentStack, targetStack)) {
+    throw new Error(`Referenced resource must be in stack '${targetStack.node.path}', got '${reference.target.node.path}'`);
+  }
+
+  while (currentStack !== targetStack) {
+    reference = createNestedStackOutput(Stack.of(reference.target), reference);
+    currentStack = Stack.of(reference.target);
+  }
+
+  return reference;
 }
 
 /**

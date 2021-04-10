@@ -17,13 +17,23 @@
       "dotnet": {
         "namespace": "Amazon.CDK.CXAPI",
         "packageId": "Amazon.CDK.CXAPI",
-        "signAssembly": true,
-        "assemblyOriginatorKeyFile": "../../key.snk",
         "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
       },
       "python": {
         "distName": "aws-cdk.cx-api",
-        "module": "aws_cdk.cx_api"
+        "module": "aws_cdk.cx_api",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
+      }
+    },
+    "projectReferences": true,
+    "metadata": {
+      "jsii": {
+        "rosetta": {
+          "strict": true
+        }
       }
     }
   },
@@ -35,9 +45,10 @@
     "pkglint": "pkglint -f",
     "package": "cdk-package",
     "awslint": "cdk-awslint",
-    "build+test+package": "npm run build+test && npm run package",
-    "build+test": "npm run build && npm test",
-    "compat": "cdk-compat"
+    "build+test+package": "yarn build+test && yarn package",
+    "build+test": "yarn build && yarn test",
+    "compat": "cdk-compat",
+    "rosetta:extract": "yarn --silent jsii-rosetta extract"
   },
   "author": {
     "name": "Amazon Web Services",
@@ -45,20 +56,20 @@
     "organization": true
   },
   "dependencies": {
-    "semver": "^7.2.2",
-    "@aws-cdk/cloud-assembly-schema": "0.0.0"
+    "@aws-cdk/cloud-assembly-schema": "0.0.0",
+    "semver": "^7.3.5"
   },
   "peerDependencies": {
     "@aws-cdk/cloud-assembly-schema": "0.0.0"
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@types/jest": "^26.0.4",
-    "@types/mock-fs": "^4.10.0",
-    "@types/semver": "^7.3.1",
+    "@types/jest": "^26.0.22",
+    "@types/mock-fs": "^4.13.0",
+    "@types/semver": "^7.3.4",
     "cdk-build-tools": "0.0.0",
-    "jest": "^25.5.4",
-    "mock-fs": "^4.12.0",
+    "jest": "^26.6.3",
+    "mock-fs": "^4.13.0",
     "pkglint": "0.0.0"
   },
   "repository": {
@@ -77,8 +88,8 @@
   "engines": {
     "node": ">= 10.13.0 <13 || >=13.7.0"
   },
-  "stability": "experimental",
-  "maturity": "experimental",
+  "stability": "stable",
+  "maturity": "stable",
   "awslint": {
     "exclude": [
       "props-default-doc:@aws-cdk/cx-api.MetadataEntry.data",
@@ -145,5 +156,8 @@
   },
   "cdk-build": {
     "jest": true
+  },
+  "publishConfig": {
+    "tag": "latest"
   }
 }

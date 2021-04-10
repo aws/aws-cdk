@@ -1,7 +1,7 @@
 import * as cdk from '@aws-cdk/core';
-
+import { Construct } from 'constructs';
 import { CfnVirtualService } from './appmesh.generated';
-import { IMesh } from './mesh';
+import { IMesh, Mesh } from './mesh';
 import { IVirtualNode } from './virtual-node';
 import { IVirtualRouter } from './virtual-router';
 
@@ -22,12 +22,17 @@ export interface IVirtualService extends cdk.IResource {
    * @attribute
    */
   readonly virtualServiceArn: string;
+
+  /**
+   * The Mesh which the VirtualService belongs to
+   */
+  readonly mesh: IMesh;
 }
 
 /**
- * The base properties which all classes in VirtualService will inherit from
+ * The properties applied to the VirtualService being defined
  */
-export interface VirtualServiceBaseProps {
+export interface VirtualServiceProps {
   /**
    * The name of the VirtualService.
    *
@@ -40,28 +45,9 @@ export interface VirtualServiceBaseProps {
   readonly virtualServiceName?: string;
 
   /**
-   * The VirtualRouter which the VirtualService uses as provider
-   *
-   * @default - At most one of virtualRouter and virtualNode is allowed.
+   * The VirtualNode or VirtualRouter which the VirtualService uses as its provider
    */
-  readonly virtualRouter?: IVirtualRouter;
-
-  /**
-   * The VirtualNode attached to the virtual service
-   *
-   * @default - At most one of virtualRouter and virtualNode is allowed.
-   */
-  readonly virtualNode?: IVirtualNode;
-}
-
-/**
- * The properties applied to the VirtualService being define
- */
-export interface VirtualServiceProps extends VirtualServiceBaseProps {
-  /**
-   * The AppMesh mesh name for which the VirtualService belongs to
-   */
-  readonly mesh: IMesh;
+  readonly virtualServiceProvider: VirtualServiceProvider;
 }
 
 /**
@@ -75,20 +61,28 @@ export class VirtualService extends cdk.Resource implements IVirtualService {
   /**
    * Import an existing VirtualService given an ARN
    */
-  public static fromVirtualServiceArn(scope: cdk.Construct, id: string, virtualServiceArn: string): IVirtualService {
-    return new ImportedVirtualService(scope, id,  {
-      virtualServiceArn,
-    });
+  public static fromVirtualServiceArn(scope: Construct, id: string, virtualServiceArn: string): IVirtualService {
+    return new class extends cdk.Resource implements IVirtualService {
+      readonly virtualServiceArn = virtualServiceArn;
+      private readonly parsedArn = cdk.Fn.split('/', cdk.Stack.of(scope).parseArn(virtualServiceArn).resourceName!);
+      readonly virtualServiceName = cdk.Fn.select(2, this.parsedArn);
+      readonly mesh = Mesh.fromMeshName(this, 'Mesh', cdk.Fn.select(0, this.parsedArn));
+    }(scope, id);
   }
 
   /**
-   * Import an existing VirtualService given mesh and service names
+   * Import an existing VirtualService given its attributes
    */
-  public static fromVirtualServiceName(scope: cdk.Construct, id: string, meshName: string, virtualServiceName: string): IVirtualService {
-    return new ImportedVirtualService(scope, id, {
-      meshName,
-      virtualServiceName,
-    });
+  public static fromVirtualServiceAttributes(scope: Construct, id: string, attrs: VirtualServiceAttributes): IVirtualService {
+    return new class extends cdk.Resource implements IVirtualService {
+      readonly virtualServiceName = attrs.virtualServiceName;
+      readonly mesh = attrs.mesh;
+      readonly virtualServiceArn = cdk.Stack.of(this).formatArn({
+        service: 'appmesh',
+        resource: `mesh/${attrs.mesh.meshName}/virtualService`,
+        resourceName: this.virtualServiceName,
+      });
+    }(scope, id);
   }
 
   /**
@@ -101,118 +95,140 @@ export class VirtualService extends cdk.Resource implements IVirtualService {
    */
   public readonly virtualServiceArn: string;
 
-  private readonly virtualServiceProvider?: CfnVirtualService.VirtualServiceProviderProperty;
-  private readonly mesh: IMesh;
+  /**
+   * The Mesh which the VirtualService belongs to
+   */
+  public readonly mesh: IMesh;
 
-  constructor(scope: cdk.Construct, id: string, props: VirtualServiceProps) {
+  constructor(scope: Construct, id: string, props: VirtualServiceProps) {
     super(scope, id, {
-      physicalName: props.virtualServiceName || cdk.Lazy.stringValue({ produce: () => this.node.uniqueId }),
+      physicalName: props.virtualServiceName || cdk.Lazy.string({ produce: () => cdk.Names.uniqueId(this) }),
     });
 
-    if (props.virtualNode && props.virtualRouter) {
-      throw new Error('Must provide only one of virtualNode or virtualRouter for the provider');
-    }
-
-    this.mesh = props.mesh;
-
-    // Check which provider to use node or router (or neither)
-    if (props.virtualRouter) {
-      this.virtualServiceProvider = this.addVirtualRouter(props.virtualRouter.virtualRouterName);
-    }
-    if (props.virtualNode) {
-      this.virtualServiceProvider = this.addVirtualNode(props.virtualNode.virtualNodeName);
-    }
+    const providerConfig = props.virtualServiceProvider.bind(this);
+    this.mesh = providerConfig.mesh;
 
     const svc = new CfnVirtualService(this, 'Resource', {
       meshName: this.mesh.meshName,
       virtualServiceName: this.physicalName,
       spec: {
-        provider: this.virtualServiceProvider,
+        provider: providerConfig.virtualNodeProvider || providerConfig.virtualRouterProvider
+          ? {
+            virtualNode: providerConfig.virtualNodeProvider,
+            virtualRouter: providerConfig.virtualRouterProvider,
+          }
+          : undefined,
       },
     });
 
     this.virtualServiceName = this.getResourceNameAttribute(svc.attrVirtualServiceName);
     this.virtualServiceArn = this.getResourceArnAttribute(svc.ref, {
       service: 'appmesh',
-      resource: `mesh/${props.mesh.meshName}/virtualService`,
+      resource: `mesh/${this.mesh.meshName}/virtualService`,
       resourceName: this.physicalName,
     });
-  }
-
-  private addVirtualRouter(name: string): CfnVirtualService.VirtualServiceProviderProperty {
-    return {
-      virtualRouter: {
-        virtualRouterName: name,
-      },
-    };
-  }
-
-  private addVirtualNode(name: string): CfnVirtualService.VirtualServiceProviderProperty {
-    return {
-      virtualNode: {
-        virtualNodeName: name,
-      },
-    };
   }
 }
 
 /**
  * Interface with properties ncecessary to import a reusable VirtualService
  */
-interface VirtualServiceAttributes {
-  /**
-   * The Amazon Resource Name (ARN) for the virtual service
-   *
-   * @default - Required if virtualServiceName and virtualMeshName are not supplied.
-   */
-  readonly virtualServiceArn?: string;
-
+export interface VirtualServiceAttributes {
   /**
    * The name of the VirtualService, it is recommended this follows the fully-qualified domain name format.
-   *
-   * @default - Required if virtualServiceArn is not supplied.
    */
-  readonly virtualServiceName?: string;
+  readonly virtualServiceName: string;
 
   /**
-   * The name of the service mesh that the virtual service resides in
-   *
-   * Used to derive ARN from mesh name if ARN not provided
-   *
-   * @default - Required if virtualServiceArn is not supplied.
+   * The Mesh which the VirtualService belongs to
    */
-  readonly meshName?: string;
+  readonly mesh: IMesh;
 }
 
 /**
- * Returns properties that allows a VirtualService to be imported
+ * Properties for a VirtualService provider
  */
-class ImportedVirtualService extends cdk.Resource implements IVirtualService {
+export interface VirtualServiceProviderConfig {
   /**
-   * The name of the VirtualService, it is recommended this follows the fully-qualified domain name format.
+   * Virtual Node based provider
+   *
+   * @default - none
    */
-  public readonly virtualServiceName: string;
+  readonly virtualNodeProvider?: CfnVirtualService.VirtualNodeServiceProviderProperty;
 
   /**
-   * The Amazon Resource Name (ARN) for the virtual service
+   * Virtual Router based provider
+   *
+   * @default - none
    */
-  public readonly virtualServiceArn: string;
+  readonly virtualRouterProvider?: CfnVirtualService.VirtualRouterServiceProviderProperty;
 
-  constructor(scope: cdk.Construct, id: string, props: VirtualServiceAttributes) {
-    super(scope, id);
+  /**
+   * Mesh the Provider is using
+   *
+   * @default - none
+   */
+  readonly mesh: IMesh;
+}
 
-    if (props.virtualServiceArn) {
-      this.virtualServiceArn = props.virtualServiceArn;
-      this.virtualServiceName = cdk.Fn.select(2, cdk.Fn.split('/', cdk.Stack.of(scope).parseArn(props.virtualServiceArn).resourceName!));
-    } else if (props.virtualServiceName && props.meshName) {
-      this.virtualServiceName = props.virtualServiceName;
-      this.virtualServiceArn = cdk.Stack.of(this).formatArn({
-        service: 'appmesh',
-        resource: `mesh/${props.meshName}/virtualService`,
-        resourceName: this.virtualServiceName,
-      });
-    } else {
-      throw new Error('Need either arn or both names');
-    }
+/**
+ * Represents the properties needed to define the provider for a VirtualService
+ */
+export abstract class VirtualServiceProvider {
+  /**
+   * Returns a VirtualNode based Provider for a VirtualService
+   */
+  public static virtualNode(virtualNode: IVirtualNode): VirtualServiceProvider {
+    return new VirtualServiceProviderImpl(virtualNode, undefined);
+  }
+
+  /**
+   * Returns a VirtualRouter based Provider for a VirtualService
+   */
+  public static virtualRouter(virtualRouter: IVirtualRouter): VirtualServiceProvider {
+    return new VirtualServiceProviderImpl(undefined, virtualRouter);
+  }
+
+  /**
+   * Returns an Empty Provider for a VirtualService. This provides no routing capabilities
+   * and should only be used as a placeholder
+   */
+  public static none(mesh: IMesh): VirtualServiceProvider {
+    return new VirtualServiceProviderImpl(undefined, undefined, mesh);
+  }
+
+  /**
+   * Enforces mutual exclusivity for VirtualService provider types.
+   */
+  public abstract bind(_construct: Construct): VirtualServiceProviderConfig;
+}
+
+class VirtualServiceProviderImpl extends VirtualServiceProvider {
+  private readonly virtualNode?: IVirtualNode;
+  private readonly virtualRouter?: IVirtualRouter;
+  private readonly mesh: IMesh;
+
+  constructor(virtualNode?: IVirtualNode, virtualRouter?: IVirtualRouter, mesh?: IMesh) {
+    super();
+    this.virtualNode = virtualNode;
+    this.virtualRouter = virtualRouter;
+    const providedMesh = this.virtualNode?.mesh ?? this.virtualRouter?.mesh ?? mesh!;
+    this.mesh = providedMesh;
+  }
+
+  public bind(_construct: Construct): VirtualServiceProviderConfig {
+    return {
+      mesh: this.mesh,
+      virtualNodeProvider: this.virtualNode
+        ? {
+          virtualNodeName: this.virtualNode.virtualNodeName,
+        }
+        : undefined,
+      virtualRouterProvider: this.virtualRouter
+        ? {
+          virtualRouterName: this.virtualRouter.virtualRouterName,
+        }
+        : undefined,
+    };
   }
 }

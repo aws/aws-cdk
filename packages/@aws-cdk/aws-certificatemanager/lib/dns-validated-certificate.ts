@@ -1,8 +1,9 @@
+import * as path from 'path';
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as route53 from '@aws-cdk/aws-route53';
 import * as cdk from '@aws-cdk/core';
-import * as path from 'path';
+import { Construct } from 'constructs';
 import { CertificateProps, ICertificate } from './certificate';
 
 /**
@@ -31,7 +32,7 @@ export interface DnsValidatedCertificateProps extends CertificateProps {
    * aws-cn partition, the default endpoint is not working now, hence the right endpoint
    * need to be specified through this prop.
    *
-   * Route53 is not been offically launched in China, it is only available for AWS
+   * Route53 is not been officially launched in China, it is only available for AWS
    * internal accounts now. To make DnsValidatedCertificate work for internal accounts
    * now, a special endpoint needs to be provided.
    *
@@ -60,7 +61,7 @@ export class DnsValidatedCertificate extends cdk.Resource implements ICertificat
   private hostedZoneId: string;
   private domainName: string;
 
-  constructor(scope: cdk.Construct, id: string, props: DnsValidatedCertificateProps) {
+  constructor(scope: Construct, id: string, props: DnsValidatedCertificateProps) {
     super(scope, id);
 
     this.domainName = props.domainName;
@@ -76,7 +77,7 @@ export class DnsValidatedCertificate extends cdk.Resource implements ICertificat
     const requestorFunction = new lambda.Function(this, 'CertificateRequestorFunction', {
       code: lambda.Code.fromAsset(path.resolve(__dirname, '..', 'lambda-packages', 'dns_validated_certificate_handler', 'lib')),
       handler: 'index.certificateRequestHandler',
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_14_X,
       timeout: cdk.Duration.minutes(15),
       role: props.customResourceRole,
     });
@@ -97,7 +98,7 @@ export class DnsValidatedCertificate extends cdk.Resource implements ICertificat
       serviceToken: requestorFunction.functionArn,
       properties: {
         DomainName: props.domainName,
-        SubjectAlternativeNames: cdk.Lazy.listValue({ produce: () => props.subjectAlternativeNames }, { omitEmpty: true }),
+        SubjectAlternativeNames: cdk.Lazy.list({ produce: () => props.subjectAlternativeNames }, { omitEmpty: true }),
         HostedZoneId: this.hostedZoneId,
         Region: props.region,
         Route53Endpoint: props.route53Endpoint,

@@ -1,9 +1,9 @@
-import {expect as expectCDK, haveResource} from '@aws-cdk/assert';
-import {ISubnet, Port, SecurityGroup, Subnet, Vpc} from '@aws-cdk/aws-ec2';
-import {Key} from '@aws-cdk/aws-kms';
-import {Aws, Stack, Token} from '@aws-cdk/core';
-import {strictEqual} from 'assert';
-import {LustreConfiguration, LustreDeploymentType, LustreFileSystem, LustreMaintenanceTime, Weekday} from '../lib';
+import { strictEqual } from 'assert';
+import { expect as expectCDK, haveResource, ResourcePart } from '@aws-cdk/assert-internal';
+import { ISubnet, Port, SecurityGroup, Subnet, Vpc } from '@aws-cdk/aws-ec2';
+import { Key } from '@aws-cdk/aws-kms';
+import { Aws, Stack, Token } from '@aws-cdk/core';
+import { LustreConfiguration, LustreDeploymentType, LustreFileSystem, LustreMaintenanceTime, Weekday } from '../lib';
 
 describe('FSx for Lustre File System', () => {
   let lustreConfiguration: LustreConfiguration;
@@ -40,6 +40,10 @@ describe('FSx for Lustre File System', () => {
     strictEqual(
       fileSystem.dnsName,
       `${fileSystem.fileSystemId}.fsx.${stack.region}.${Aws.URL_SUFFIX}`);
+
+    expectCDK(stack).to(haveResource('AWS::FSx::FileSystem', {
+      DeletionPolicy: 'Retain',
+    }, ResourcePart.CompleteDefinition));
   });
 
   test('file system is created correctly when security group is provided', () => {
@@ -95,7 +99,8 @@ describe('FSx for Lustre File System', () => {
     const maintenanceTime = new LustreMaintenanceTime({
       day: Weekday.SUNDAY,
       hour: 12,
-      minute: 34});
+      minute: 34,
+    });
     lustreConfiguration = {
       deploymentType: LustreDeploymentType.SCRATCH_2,
       weeklyMaintenanceStartTime: maintenanceTime,
@@ -116,7 +121,8 @@ describe('FSx for Lustre File System', () => {
     expectCDK(stack).to(haveResource('AWS::FSx::FileSystem', {
       LustreConfiguration: {
         DeploymentType: 'SCRATCH_2',
-        WeeklyMaintenanceStartTime: '0:12:34'},
+        WeeklyMaintenanceStartTime: '0:12:34',
+      },
     }));
     expectCDK(stack).to(haveResource('AWS::EC2::SecurityGroup'));
   });

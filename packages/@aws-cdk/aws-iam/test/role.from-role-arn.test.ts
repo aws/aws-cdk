@@ -1,5 +1,5 @@
-import '@aws-cdk/assert/jest';
-import { App, CfnElement, Lazy, Stack } from '@aws-cdk/core';
+import '@aws-cdk/assert-internal/jest';
+import { App, Aws, CfnElement, Lazy, Stack } from '@aws-cdk/core';
 import { AnyPrincipal, ArnPrincipal, IRole, Policy, PolicyStatement, Role } from '../lib';
 
 /* eslint-disable quote-props */
@@ -305,19 +305,16 @@ describe('IAM Role.fromRoleArn', () => {
   });
 
   describe('imported with a dynamic ARN', () => {
-    const dynamicValue = Lazy.stringValue({ produce: () => 'role-arn' });
+    const dynamicValue = Lazy.string({ produce: () => 'role-arn' });
     const roleName: any = {
       'Fn::Select': [1,
         {
           'Fn::Split': ['/',
             {
               'Fn::Select': [5,
-                { 'Fn::Split': [':', 'role-arn'] },
-              ],
-            },
-          ],
-        },
-      ],
+                { 'Fn::Split': [':', 'role-arn'] }],
+            }],
+        }],
     };
 
     describe('into an env-agnostic stack', () => {
@@ -519,6 +516,21 @@ describe('IAM Role.fromRoleArn', () => {
             'codebuild-role',
           ],
         });
+      });
+    });
+  });
+
+  describe('for an incorrect ARN', () => {
+    beforeEach(() => {
+      roleStack = new Stack(app, 'RoleStack');
+    });
+
+    describe("that accidentally skipped the 'region' fragment of the ARN", () => {
+      test('throws an exception, indicating that error', () => {
+        expect(() => {
+          Role.fromRoleArn(roleStack, 'Role',
+            `arn:${Aws.PARTITION}:iam:${Aws.ACCOUNT_ID}:role/AwsCicd-${Aws.REGION}-CodeBuildRole`);
+        }).toThrow(/The `resource` component \(6th component\) of an ARN is required:/);
       });
     });
   });

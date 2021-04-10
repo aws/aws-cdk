@@ -56,7 +56,7 @@ command_arg=""
 
 for arg in "$@"
 do
-  case "$arg" in 
+  case "$arg" in
     -r | --reset) RESET=1               ;;
     -s | --skip)  SKIP=1                ;;
     -u | --up)    DIRECTION="UP"        ;;
@@ -66,7 +66,7 @@ do
   shift
 done
 
-if [[ "$RESET" -eq 1 ]]; then 
+if [[ "$RESET" -eq 1 ]]; then
   reset
 fi
 

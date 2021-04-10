@@ -1,6 +1,7 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
 import {
   ApplicationConfigPropertyToJson,
@@ -170,9 +171,9 @@ export class EmrCreateCluster extends sfn.TaskStateBase {
   private _clusterRole: iam.IRole;
   private _autoScalingRole?: iam.IRole;
 
-  constructor(scope: cdk.Construct, id: string, private readonly props: EmrCreateClusterProps) {
+  constructor(scope: Construct, id: string, private readonly props: EmrCreateClusterProps) {
     super(scope, id, props);
-    this.visibleToAllUsers = this.props.visibleToAllUsers !== undefined ? this.props.visibleToAllUsers : true;
+    this.visibleToAllUsers = this.props.visibleToAllUsers ?? true;
     this.integrationPattern = props.integrationPattern || sfn.IntegrationPattern.RUN_JOB;
     validatePatternSupported(this.integrationPattern, EmrCreateCluster.SUPPORTED_INTEGRATION_PATTERNS);
 
@@ -373,7 +374,7 @@ export namespace EmrCreateCluster {
     TERMINATE_AT_INSTANCE_HOUR = 'TERMINATE_AT_INSTANCE_HOUR',
 
     /**
-     * Indicates that Amazon EMR blacklists and drains tasks from nodes before terminating the Amazon EC2 instances, regardless of the
+     * Indicates that Amazon EMR adds nodes to a deny list and drains tasks from nodes before terminating the Amazon EC2 instances, regardless of the
      * instance-hour boundary.
      */
     TERMINATE_AT_TASK_COMPLETION = 'TERMINATE_AT_TASK_COMPLETION',

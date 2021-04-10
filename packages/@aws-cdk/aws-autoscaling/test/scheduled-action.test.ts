@@ -1,6 +1,7 @@
-import { expect, haveResource, MatchStyle } from '@aws-cdk/assert';
+import { expect, haveResource, MatchStyle } from '@aws-cdk/assert-internal';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as cdk from '@aws-cdk/core';
+import * as constructs from 'constructs';
 import { nodeunitShim, Test } from 'nodeunit-shim';
 import * as autoscaling from '../lib';
 
@@ -33,7 +34,7 @@ nodeunitShim({
     // WHEN
     asg.scaleOnSchedule('ScaleOutInTheMorning', {
       schedule: autoscaling.Schedule.cron({ hour: '8' }),
-      startTime: new Date(Date.UTC(2033, 8, 10, 12, 0, 0)),      // JavaScript's Date is a little silly.
+      startTime: new Date(Date.UTC(2033, 8, 10, 12, 0, 0)), // JavaScript's Date is a little silly.
       minCapacity: 11,
     });
 
@@ -69,7 +70,7 @@ nodeunitShim({
               {
                 Key: 'Name',
                 PropagateAtLaunch: true,
-                Value: 'ASG',
+                Value: 'Default/ASG',
               },
             ],
             VPCZoneIdentifier: [
@@ -107,7 +108,7 @@ nodeunitShim({
   },
 });
 
-function makeAutoScalingGroup(scope: cdk.Construct) {
+function makeAutoScalingGroup(scope: constructs.Construct) {
   const vpc = new ec2.Vpc(scope, 'VPC');
   return new autoscaling.AutoScalingGroup(scope, 'ASG', {
     vpc,

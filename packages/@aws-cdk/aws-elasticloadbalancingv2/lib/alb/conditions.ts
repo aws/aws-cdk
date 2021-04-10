@@ -141,6 +141,9 @@ class HttpRequestMethodListenerCondition extends ListenerCondition {
 class PathPatternListenerCondition extends ListenerCondition {
   constructor(public readonly values: string[]) {
     super();
+    if (values && values.length > 5) {
+      throw new Error("A rule can only have '5' condition values");
+    }
   }
 
   public renderRawCondition(): any {

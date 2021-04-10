@@ -1,8 +1,13 @@
 import { findAlarmThresholds, normalizeIntervals } from '@aws-cdk/aws-autoscaling-common';
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
-import * as cdk from '@aws-cdk/core';
+import { Duration } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { IAutoScalingGroup } from './auto-scaling-group';
 import { AdjustmentType, MetricAggregationType, StepScalingAction } from './step-scaling-action';
+
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 export interface BasicStepScalingPolicyProps {
   /**
@@ -29,14 +34,14 @@ export interface BasicStepScalingPolicyProps {
    *
    * @default Default cooldown period on your AutoScalingGroup
    */
-  readonly cooldown?: cdk.Duration;
+  readonly cooldown?: Duration;
 
   /**
    * Estimated time until a newly launched instance can send metrics to CloudWatch.
    *
    * @default Same as the cooldown
    */
-  readonly estimatedInstanceWarmup?: cdk.Duration;
+  readonly estimatedInstanceWarmup?: Duration;
 
   /**
    * Minimum absolute number to adjust capacity with as result of percentage scaling.
@@ -47,6 +52,25 @@ export interface BasicStepScalingPolicyProps {
    * @default No minimum scaling effect
    */
   readonly minAdjustmentMagnitude?: number;
+
+  /**
+   * How many evaluation periods of the metric to wait before triggering a scaling action
+   *
+   * Raising this value can be used to smooth out the metric, at the expense
+   * of slower response times.
+   *
+   * @default 1
+   */
+  readonly evaluationPeriods?: number;
+
+  /**
+   * Aggregation to apply to all data points over the evaluation periods
+   *
+   * Only has meaning if `evaluationPeriods != 1`.
+   *
+   * @default - The statistic from the metric if applicable (MIN, MAX, AVERAGE), otherwise AVERAGE.
+   */
+  readonly metricAggregationType?: MetricAggregationType;
 }
 
 export interface StepScalingPolicyProps extends BasicStepScalingPolicyProps {
@@ -63,13 +87,13 @@ export interface StepScalingPolicyProps extends BasicStepScalingPolicyProps {
  *
  * Implemented using one or more CloudWatch alarms and Step Scaling Policies.
  */
-export class StepScalingPolicy extends cdk.Construct {
+export class StepScalingPolicy extends CoreConstruct {
   public readonly lowerAlarm?: cloudwatch.Alarm;
   public readonly lowerAction?: StepScalingAction;
   public readonly upperAlarm?: cloudwatch.Alarm;
   public readonly upperAction?: StepScalingAction;
 
-  constructor(scope: cdk.Construct, id: string, props: StepScalingPolicyProps) {
+  constructor(scope: Construct, id: string, props: StepScalingPolicyProps) {
     super(scope, id);
 
     if (props.scalingSteps.length < 2) {
@@ -88,7 +112,7 @@ export class StepScalingPolicy extends cdk.Construct {
       this.lowerAction = new StepScalingAction(this, 'LowerPolicy', {
         adjustmentType: props.adjustmentType,
         cooldown: props.cooldown,
-        metricAggregationType: aggregationTypeFromMetric(props.metric),
+        metricAggregationType: props.metricAggregationType ?? aggregationTypeFromMetric(props.metric),
         minAdjustmentMagnitude: props.minAdjustmentMagnitude,
         autoScalingGroup: props.autoScalingGroup,
       });
@@ -106,7 +130,7 @@ export class StepScalingPolicy extends cdk.Construct {
         metric: props.metric,
         alarmDescription: 'Lower threshold scaling alarm',
         comparisonOperator: cloudwatch.ComparisonOperator.LESS_THAN_OR_EQUAL_TO_THRESHOLD,
-        evaluationPeriods: 1,
+        evaluationPeriods: props.evaluationPeriods ?? 1,
         threshold,
       });
       this.lowerAlarm.addAlarmAction(new StepScalingAlarmAction(this.lowerAction));
@@ -118,7 +142,7 @@ export class StepScalingPolicy extends cdk.Construct {
       this.upperAction = new StepScalingAction(this, 'UpperPolicy', {
         adjustmentType: props.adjustmentType,
         cooldown: props.cooldown,
-        metricAggregationType: aggregationTypeFromMetric(props.metric),
+        metricAggregationType: props.metricAggregationType ?? aggregationTypeFromMetric(props.metric),
         minAdjustmentMagnitude: props.minAdjustmentMagnitude,
         autoScalingGroup: props.autoScalingGroup,
       });
@@ -136,7 +160,7 @@ export class StepScalingPolicy extends cdk.Construct {
         metric: props.metric,
         alarmDescription: 'Upper threshold scaling alarm',
         comparisonOperator: cloudwatch.ComparisonOperator.GREATER_THAN_OR_EQUAL_TO_THRESHOLD,
-        evaluationPeriods: 1,
+        evaluationPeriods: props.evaluationPeriods ?? 1,
         threshold,
       });
       this.upperAlarm.addAlarmAction(new StepScalingAlarmAction(this.upperAction));
@@ -156,7 +180,7 @@ function aggregationTypeFromMetric(metric: cloudwatch.IMetric): MetricAggregatio
     case 'Maximum':
       return MetricAggregationType.MAXIMUM;
     default:
-      throw new Error(`Cannot only scale on 'Minimum', 'Maximum', 'Average' metrics, got ${statistic}`);
+      return MetricAggregationType.AVERAGE;
   }
 }
 
@@ -210,7 +234,7 @@ class StepScalingAlarmAction implements cloudwatch.IAlarmAction {
   constructor(private readonly stepScalingAction: StepScalingAction) {
   }
 
-  public bind(_scope: cdk.Construct, _alarm: cloudwatch.IAlarm): cloudwatch.AlarmActionConfig {
+  public bind(_scope: CoreConstruct, _alarm: cloudwatch.IAlarm): cloudwatch.AlarmActionConfig {
     return { alarmActionArn: this.stepScalingAction.scalingPolicyArn };
   }
 }

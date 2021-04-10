@@ -3,14 +3,20 @@ import * as os from 'os';
 import * as path from 'path';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as AWS from 'aws-sdk';
-import { ConfigurationOptions } from 'aws-sdk/lib/config';
+import type { ConfigurationOptions } from 'aws-sdk/lib/config-base';
 import * as fs from 'fs-extra';
-import { debug } from '../../logging';
+import { debug, warning } from '../../logging';
 import { cached } from '../../util/functions';
 import { CredentialPlugins } from '../aws-auth/credential-plugins';
 import { Mode } from '../aws-auth/credentials';
 import { AwsCliCompatible } from './awscli-compatible';
 import { ISDK, SDK } from './sdk';
+
+
+// Some configuration that can only be achieved by setting
+// environment variables.
+process.env.AWS_STS_REGIONAL_ENDPOINTS = 'regional';
+process.env.AWS_NODEJS_CONNECTION_REUSE_ENABLED = '1';
 
 /**
  * Options for the default SDK provider
@@ -73,16 +79,31 @@ const CACHED_ACCOUNT = Symbol('cached_account');
 const CACHED_DEFAULT_CREDENTIALS = Symbol('cached_default_credentials');
 
 /**
- * Creates instances of the AWS SDK appropriate for a given account/region
+ * Creates instances of the AWS SDK appropriate for a given account/region.
  *
- * If an environment is given and the current credentials are NOT for the indicated
- * account, will also search the set of credential plugin providers.
+ * Behavior is as follows:
  *
- * If no environment is given, the default credentials will always be used.
+ * - First, a set of "base" credentials are established
+ *   - If a target environment is given and the default ("current") SDK credentials are for
+ *     that account, return those; otherwise
+ *   - If a target environment is given, scan all credential provider plugins
+ *     for credentials, and return those if found; otherwise
+ *   - Return default ("current") SDK credentials, noting that they might be wrong.
+ *
+ * - Second, a role may optionally need to be assumed. Use the base credentials
+ *   established in the previous process to assume that role.
+ *   - If assuming the role fails and the base credentials are for the correct
+ *     account, return those. This is a fallback for people who are trying to interact
+ *     with a Default Synthesized stack and already have right credentials setup.
+ *
+ *     Typical cases we see in the wild:
+ *     - Credential plugin setup that, although not recommended, works for them
+ *     - Seeded terminal with `ReadOnly` credentials in order to do `cdk diff`--the `ReadOnly`
+ *       role doesn't have `sts:AssumeRole` and will fail for no real good reason.
  */
 export class SdkProvider {
   /**
-   * Create a new SdkProvider which gets its defaults in a way that haves like the AWS CLI does
+   * Create a new SdkProvider which gets its defaults in a way that behaves like the AWS CLI does
    *
    * The AWS SDK for JS behaves slightly differently from the AWS CLI in a number of ways; see the
    * class `AwsCliCompatible` for the details.
@@ -90,8 +111,16 @@ export class SdkProvider {
   public static async withAwsCliCompatibleDefaults(options: SdkProviderOptions = {}) {
     const sdkOptions = parseHttpOptions(options.httpOptions ?? {});
 
-    const chain = await AwsCliCompatible.credentialChain(options.profile, options.ec2creds, options.containerCreds, sdkOptions.httpOptions);
-    const region = await AwsCliCompatible.region(options.profile);
+    const chain = await AwsCliCompatible.credentialChain({
+      profile: options.profile,
+      ec2instance: options.ec2creds,
+      containerCreds: options.containerCreds,
+      httpOptions: sdkOptions.httpOptions,
+    });
+    const region = await AwsCliCompatible.region({
+      profile: options.profile,
+      ec2instance: options.ec2creds,
+    });
 
     return new SdkProvider(chain, region, sdkOptions);
   }
@@ -112,38 +141,53 @@ export class SdkProvider {
    *
    * The `environment` parameter is resolved first (see `resolveEnvironment()`).
    */
-  public async forEnvironment(environment: cxapi.Environment, mode: Mode): Promise<ISDK> {
+  public async forEnvironment(environment: cxapi.Environment, mode: Mode, options?: CredentialsOptions): Promise<ISDK> {
     const env = await this.resolveEnvironment(environment);
-    const creds = await this.obtainCredentials(env.account, mode);
-    return new SDK(creds, env.region, this.sdkOptions);
+    const baseCreds = await this.obtainBaseCredentials(env.account, mode);
+
+    // At this point, we need at least SOME credentials
+    if (baseCreds.source === 'none') { throw new Error(fmtObtainCredentialsError(env.account, baseCreds)); }
+
+    // Simple case is if we don't need to "assumeRole" here. If so, we must now have credentials for the right
+    // account.
+    if (options?.assumeRoleArn === undefined) {
+      if (baseCreds.source === 'incorrectDefault') { throw new Error(fmtObtainCredentialsError(env.account, baseCreds)); }
+      return new SDK(baseCreds.credentials, env.region, this.sdkOptions);
+    }
+
+    // We will proceed to AssumeRole using whatever we've been given.
+    const sdk = await this.withAssumedRole(baseCreds, options.assumeRoleArn, options.assumeRoleExternalId, env.region);
+
+    // Exercise the AssumeRoleCredentialsProvider we've gotten at least once so
+    // we can determine whether the AssumeRole call succeeds or not.
+    try {
+      await sdk.forceCredentialRetrieval();
+      return sdk;
+    } catch (e) {
+      // AssumeRole failed. Proceed and warn *if and only if* the baseCredentials were already for the right account
+      // or returned from a plugin. This is to cover some current setups for people using plugins or preferring to
+      // feed the CLI credentials which are sufficient by themselves. Prefer to assume the correct role if we can,
+      // but if we can't then let's just try with available credentials anyway.
+      if (baseCreds.source === 'correctDefault' || baseCreds.source === 'plugin') {
+        debug(e.message);
+        warning(`${fmtObtainedCredentials(baseCreds)} could not be used to assume '${options.assumeRoleArn}', but are for the right account. Proceeding anyway.`);
+        return new SDK(baseCreds.credentials, env.region, this.sdkOptions);
+      }
+
+      throw e;
+    }
   }
 
   /**
-   * Return an SDK which uses assumed role credentials
+   * Return the partition that base credentials are for
    *
-   * The base credentials used to retrieve the assumed role credentials will be the
-   * current credentials (no plugin lookup will be done!).
-   *
-   * If `region` is undefined, the default value will be used.
+   * Returns `undefined` if there are no base credentials.
    */
-  public async withAssumedRole(roleArn: string, externalId: string | undefined, region: string | undefined) {
-    debug(`Assuming role '${roleArn}'.`);
-    region = region ?? this.defaultRegion;
-
-    const creds = new AWS.ChainableTemporaryCredentials({
-      params: {
-        RoleArn: roleArn,
-        ...externalId ? { ExternalId: externalId } : {},
-        RoleSessionName: `aws-cdk-${os.userInfo().username}`,
-      },
-      stsConfig: {
-        region,
-        ...this.sdkOptions,
-      },
-      masterCredentials: await this.defaultCredentials(),
-    });
-
-    return new SDK(creds, region, this.sdkOptions);
+  public async baseCredentialsPartition(environment: cxapi.Environment, mode: Mode): Promise<string | undefined> {
+    const env = await this.resolveEnvironment(environment);
+    const baseCreds = await this.obtainBaseCredentials(env.account, mode);
+    if (baseCreds.source === 'none') { return undefined; }
+    return (await new SDK(baseCreds.credentials, env.region, this.sdkOptions).currentAccount()).partition;
   }
 
   /**
@@ -164,7 +208,7 @@ export class SdkProvider {
       throw new Error('Unable to resolve AWS account to use. It must be either configured when you define your CDK or through the environment');
     }
 
-    return  {
+    return {
       region,
       account,
       name: cxapi.EnvironmentUtils.format(account, region),
@@ -194,7 +238,7 @@ export class SdkProvider {
           throw new Error('Unable to resolve AWS credentials (setup with "aws configure")');
         }
 
-        return new SDK(creds, this.defaultRegion, this.sdkOptions).currentAccount();
+        return await new SDK(creds, this.defaultRegion, this.sdkOptions).currentAccount();
       } catch (e) {
         debug('Unable to determine the default AWS account:', e);
         return undefined;
@@ -205,30 +249,40 @@ export class SdkProvider {
   /**
    * Get credentials for the given account ID in the given mode
    *
-   * Use the current credentials if the destination account matches the current credentials' account.
-   * Otherwise try all credential plugins.
+   * 1. Use the default credentials if the destination account matches the
+   *    current credentials' account.
+   * 2. Otherwise try all credential plugins.
+   * 3. Fail if neither of these yield any credentials.
+   * 4. Return a failure if any of them returned credentials
    */
-  protected async obtainCredentials(accountId: string, mode: Mode): Promise<AWS.Credentials> {
+  private async obtainBaseCredentials(accountId: string, mode: Mode): Promise<ObtainBaseCredentialsResult> {
     // First try 'current' credentials
     const defaultAccountId = (await this.defaultAccount())?.accountId;
     if (defaultAccountId === accountId) {
-      return this.defaultCredentials();
+      return { source: 'correctDefault', credentials: await this.defaultCredentials() };
     }
 
     // Then try the plugins
     const pluginCreds = await this.plugins.fetchCredentialsFor(accountId, mode);
     if (pluginCreds) {
-      return pluginCreds;
+      return { source: 'plugin', ...pluginCreds };
     }
 
-    // No luck, format a useful error message
-    const error = [`Need to perform AWS calls for account ${accountId}`];
-    error.push(defaultAccountId ? `but the current credentials are for ${defaultAccountId}` : 'but no credentials have been configured');
-    if (this.plugins.availablePluginNames.length > 0) {
-      error.push(`and none of these plugins found any: ${this.plugins.availablePluginNames.join(', ')}`);
+    // Fall back to default credentials with a note that they're not the right ones yet
+    if (defaultAccountId !== undefined) {
+      return {
+        source: 'incorrectDefault',
+        accountId: defaultAccountId,
+        credentials: await this.defaultCredentials(),
+        unusedPlugins: this.plugins.availablePluginNames,
+      };
     }
 
-    throw new Error(`${error.join(', ')}.`);
+    // Apparently we didn't find any at all
+    return {
+      source: 'none',
+      unusedPlugins: this.plugins.availablePluginNames,
+    };
   }
 
   /**
@@ -238,6 +292,40 @@ export class SdkProvider {
     return cached(this, CACHED_DEFAULT_CREDENTIALS, () => {
       debug('Resolving default credentials');
       return this.defaultChain.resolvePromise();
+    });
+  }
+
+  /**
+   * Return an SDK which uses assumed role credentials
+   *
+   * The base credentials used to retrieve the assumed role credentials will be the
+   * same credentials returned by obtainCredentials if an environment and mode is passed,
+   * otherwise it will be the current credentials.
+   */
+  private async withAssumedRole(
+    masterCredentials: Exclude<ObtainBaseCredentialsResult, { source: 'none' }>,
+    roleArn: string,
+    externalId: string | undefined,
+    region: string | undefined) {
+    debug(`Assuming role '${roleArn}'.`);
+
+    region = region ?? this.defaultRegion;
+
+    const creds = new AWS.ChainableTemporaryCredentials({
+      params: {
+        RoleArn: roleArn,
+        ...externalId ? { ExternalId: externalId } : {},
+        RoleSessionName: `aws-cdk-${safeUsername()}`,
+      },
+      stsConfig: {
+        region,
+        ...this.sdkOptions,
+      },
+      masterCredentials: masterCredentials.credentials,
+    });
+
+    return new SDK(creds, region, this.sdkOptions, {
+      assumeRoleCredentialsSourceDescription: fmtObtainedCredentials(masterCredentials),
     });
   }
 }
@@ -302,6 +390,7 @@ function parseHttpOptions(options: SdkHttpOptions) {
     debug('Using CA bundle path: %s', caBundlePath);
     config.httpOptions.agent = new https.Agent({
       ca: readIfPossible(caBundlePath),
+      keepAlive: true,
     });
   }
 
@@ -346,5 +435,90 @@ function readIfPossible(filename: string): string | undefined {
   } catch (e) {
     debug(e);
     return undefined;
+  }
+}
+
+/**
+ * Return the username with characters invalid for a RoleSessionName removed
+ *
+ * @see https://docs.aws.amazon.com/STS/latest/APIReference/API_AssumeRole.html#API_AssumeRole_RequestParameters
+ */
+function safeUsername() {
+  return os.userInfo().username.replace(/[^\w+=,.@-]/g, '@');
+}
+
+/**
+ * Options for obtaining credentials for an environment
+ */
+export interface CredentialsOptions {
+  /**
+   * The ARN of the role that needs to be assumed, if any
+   */
+  readonly assumeRoleArn?: string;
+
+  /**
+   * External ID required to assume the given role.
+   */
+  readonly assumeRoleExternalId?: string;
+}
+
+/**
+ * Result of obtaining base credentials
+ */
+type ObtainBaseCredentialsResult =
+  { source: 'correctDefault'; credentials: AWS.Credentials }
+  | { source: 'plugin'; pluginName: string, credentials: AWS.Credentials }
+  | { source: 'incorrectDefault'; credentials: AWS.Credentials; accountId: string; unusedPlugins: string[] }
+  | { source: 'none'; unusedPlugins: string[] };
+
+/**
+ * Isolating the code that translates calculation errors into human error messages
+ *
+ * We cover the following cases:
+ *
+ * - No credentials are available at all
+ * - Default credentials are for the wrong account
+ */
+function fmtObtainCredentialsError(targetAccountId: string, obtainResult: ObtainBaseCredentialsResult & { source: 'none' | 'incorrectDefault' }): string {
+  const msg = [`Need to perform AWS calls for account ${targetAccountId}`];
+  switch (obtainResult.source) {
+    case 'incorrectDefault':
+      msg.push(`but the current credentials are for ${obtainResult.accountId}`);
+      break;
+    case 'none':
+      msg.push('but no credentials have been configured');
+  }
+  if (obtainResult.unusedPlugins.length > 0) {
+    msg.push(`and none of these plugins found any: ${obtainResult.unusedPlugins.join(', ')}`);
+  }
+  return msg.join(', ');
+}
+
+/**
+ * Format a message indicating where we got base credentials for the assume role
+ *
+ * We cover the following cases:
+ *
+ * - Default credentials for the right account
+ * - Default credentials for the wrong account
+ * - Credentials returned from a plugin
+ */
+function fmtObtainedCredentials(
+  obtainResult: Exclude<ObtainBaseCredentialsResult, { source: 'none' }>): string {
+  switch (obtainResult.source) {
+    case 'correctDefault':
+      return 'current credentials';
+    case 'plugin':
+      return `credentials returned by plugin '${obtainResult.pluginName}'`;
+    case 'incorrectDefault':
+      const msg = [];
+      msg.push(`current credentials (which are for account ${obtainResult.accountId}`);
+
+      if (obtainResult.unusedPlugins.length > 0) {
+        msg.push(`, and none of the following plugins provided credentials: ${obtainResult.unusedPlugins.join(', ')}`);
+      }
+      msg.push(')');
+
+      return msg.join('');
   }
 }

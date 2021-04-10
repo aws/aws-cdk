@@ -1,6 +1,6 @@
-import '@aws-cdk/assert/jest';
-import { Duration, Stack } from '@aws-cdk/core';
-import { AnyPrincipal, ArnPrincipal, CompositePrincipal, FederatedPrincipal, ManagedPolicy, PolicyStatement, Role, ServicePrincipal, User } from '../lib';
+import '@aws-cdk/assert-internal/jest';
+import { Duration, Stack, App } from '@aws-cdk/core';
+import { AnyPrincipal, ArnPrincipal, CompositePrincipal, FederatedPrincipal, ManagedPolicy, PolicyStatement, Role, ServicePrincipal, User, Policy, PolicyDocument } from '../lib';
 
 describe('IAM role', () => {
   test('default role', () => {
@@ -10,16 +10,28 @@ describe('IAM role', () => {
       assumedBy: new ServicePrincipal('sns.amazonaws.com'),
     });
 
-    expect(stack).toMatchTemplate({ Resources:
-      { MyRoleF48FFE04:
-         { Type: 'AWS::IAM::Role',
+    expect(stack).toMatchTemplate({
+      Resources:
+      {
+        MyRoleF48FFE04:
+         {
+           Type: 'AWS::IAM::Role',
            Properties:
-          { AssumeRolePolicyDocument:
-           { Statement:
-            [ { Action: 'sts:AssumeRole',
+          {
+            AssumeRolePolicyDocument:
+           {
+             Statement:
+            [{
+              Action: 'sts:AssumeRole',
               Effect: 'Allow',
-              Principal: { Service: 'sns.amazonaws.com' } } ],
-           Version: '2012-10-17' } } } } });
+              Principal: { Service: 'sns.amazonaws.com' },
+            }],
+             Version: '2012-10-17',
+           },
+          },
+         },
+      },
+    });
   });
 
   test('a role can grant PassRole permissions', () => {
@@ -38,7 +50,7 @@ describe('IAM role', () => {
           {
             Action: 'iam:PassRole',
             Effect: 'Allow',
-            Resource: { 'Fn::GetAtt': [ 'Role1ABCC5F0', 'Arn' ] },
+            Resource: { 'Fn::GetAtt': ['Role1ABCC5F0', 'Arn'] },
           },
         ],
         Version: '2012-10-17',
@@ -166,21 +178,33 @@ describe('IAM role', () => {
 
     const role = new Role(stack, 'MyRole', {
       assumedBy: new ServicePrincipal('test.service'),
-      managedPolicies: [ { managedPolicyArn: 'managed1' }, { managedPolicyArn: 'managed2' } ],
+      managedPolicies: [{ managedPolicyArn: 'managed1' }, { managedPolicyArn: 'managed2' }],
     });
 
     role.addManagedPolicy({ managedPolicyArn: 'managed3' });
-    expect(stack).toMatchTemplate({ Resources:
-      { MyRoleF48FFE04:
-         { Type: 'AWS::IAM::Role',
+    expect(stack).toMatchTemplate({
+      Resources:
+      {
+        MyRoleF48FFE04:
+         {
+           Type: 'AWS::IAM::Role',
            Properties:
-          { AssumeRolePolicyDocument:
-           { Statement:
-            [ { Action: 'sts:AssumeRole',
+          {
+            AssumeRolePolicyDocument:
+           {
+             Statement:
+            [{
+              Action: 'sts:AssumeRole',
               Effect: 'Allow',
-              Principal: { Service: 'test.service' } } ],
-           Version: '2012-10-17' },
-          ManagedPolicyArns: [ 'managed1', 'managed2', 'managed3' ] } } } });
+              Principal: { Service: 'test.service' },
+            }],
+             Version: '2012-10-17',
+           },
+            ManagedPolicyArns: ['managed1', 'managed2', 'managed3'],
+          },
+         },
+      },
+    });
 
   });
 
@@ -354,17 +378,29 @@ describe('IAM role', () => {
       description: 'This is a role description.',
     });
 
-    expect(stack).toMatchTemplate({ Resources:
-      { MyRoleF48FFE04:
-         { Type: 'AWS::IAM::Role',
+    expect(stack).toMatchTemplate({
+      Resources:
+      {
+        MyRoleF48FFE04:
+         {
+           Type: 'AWS::IAM::Role',
            Properties:
-          { AssumeRolePolicyDocument:
-           { Statement:
-            [ { Action: 'sts:AssumeRole',
+          {
+            AssumeRolePolicyDocument:
+           {
+             Statement:
+            [{
+              Action: 'sts:AssumeRole',
               Effect: 'Allow',
-              Principal: { Service: 'sns.amazonaws.com' } } ],
-           Version: '2012-10-17' },
-          Description: 'This is a role description.' } } } });
+              Principal: { Service: 'sns.amazonaws.com' },
+            }],
+             Version: '2012-10-17',
+           },
+            Description: 'This is a role description.',
+          },
+         },
+      },
+    });
   });
 
   test('should not have an empty description', () => {
@@ -375,16 +411,28 @@ describe('IAM role', () => {
       description: '',
     });
 
-    expect(stack).toMatchTemplate({ Resources:
-      { MyRoleF48FFE04:
-         { Type: 'AWS::IAM::Role',
+    expect(stack).toMatchTemplate({
+      Resources:
+      {
+        MyRoleF48FFE04:
+         {
+           Type: 'AWS::IAM::Role',
            Properties:
-          { AssumeRolePolicyDocument:
-           { Statement:
-            [ { Action: 'sts:AssumeRole',
+          {
+            AssumeRolePolicyDocument:
+           {
+             Statement:
+            [{
+              Action: 'sts:AssumeRole',
               Effect: 'Allow',
-              Principal: { Service: 'sns.amazonaws.com' } } ],
-           Version: '2012-10-17' }} } } });
+              Principal: { Service: 'sns.amazonaws.com' },
+            }],
+             Version: '2012-10-17',
+           },
+          },
+         },
+      },
+    });
   });
 
   test('description can only be 1000 characters long', () => {
@@ -405,5 +453,113 @@ describe('IAM role', () => {
         sem neque sed ipsum.',
       });
     }).toThrow(/Role description must be no longer than 1000 characters./);
+  });
+
+  test('fails if managed policy is invalid', () => {
+    const app = new App();
+    const stack = new Stack(app, 'my-stack');
+    new Role(stack, 'MyRole', {
+      assumedBy: new ServicePrincipal('sns.amazonaws.com'),
+      managedPolicies: [new ManagedPolicy(stack, 'MyManagedPolicy', {
+        statements: [new PolicyStatement({
+          resources: ['*'],
+          actions: ['*'],
+          principals: [new ServicePrincipal('sns.amazonaws.com')],
+        })],
+      })],
+    });
+
+    expect(() => app.synth()).toThrow(/A PolicyStatement used in an identity-based policy cannot specify any IAM principals/);
+  });
+
+  test('fails if default role policy is invalid', () => {
+    const app = new App();
+    const stack = new Stack(app, 'my-stack');
+    const role = new Role(stack, 'MyRole', {
+      assumedBy: new ServicePrincipal('sns.amazonaws.com'),
+    });
+    role.addToPrincipalPolicy(new PolicyStatement({
+      resources: ['*'],
+      actions: ['*'],
+      principals: [new ServicePrincipal('sns.amazonaws.com')],
+    }));
+
+    expect(() => app.synth()).toThrow(/A PolicyStatement used in an identity-based policy cannot specify any IAM principals/);
+  });
+
+  test('fails if inline policy from props is invalid', () => {
+    const app = new App();
+    const stack = new Stack(app, 'my-stack');
+    new Role(stack, 'MyRole', {
+      assumedBy: new ServicePrincipal('sns.amazonaws.com'),
+      inlinePolicies: {
+        testPolicy: new PolicyDocument({
+          statements: [new PolicyStatement({
+            resources: ['*'],
+            actions: ['*'],
+            principals: [new ServicePrincipal('sns.amazonaws.com')],
+          })],
+        }),
+      },
+    });
+
+    expect(() => app.synth()).toThrow(/A PolicyStatement used in an identity-based policy cannot specify any IAM principals/);
+  });
+
+  test('fails if attached inline policy is invalid', () => {
+    const app = new App();
+    const stack = new Stack(app, 'my-stack');
+    const role = new Role(stack, 'MyRole', {
+      assumedBy: new ServicePrincipal('sns.amazonaws.com'),
+    });
+    role.attachInlinePolicy(new Policy(stack, 'MyPolicy', {
+      statements: [new PolicyStatement({
+        resources: ['*'],
+        actions: ['*'],
+        principals: [new ServicePrincipal('sns.amazonaws.com')],
+      })],
+    }));
+
+    expect(() => app.synth()).toThrow(/A PolicyStatement used in an identity-based policy cannot specify any IAM principals/);
+  });
+
+  test('fails if assumeRolePolicy is invalid', () => {
+    const app = new App();
+    const stack = new Stack(app, 'my-stack');
+    const role = new Role(stack, 'MyRole', {
+      assumedBy: new ServicePrincipal('sns.amazonaws.com'),
+      managedPolicies: [new ManagedPolicy(stack, 'MyManagedPolicy')],
+    });
+    role.assumeRolePolicy?.addStatements(new PolicyStatement({ actions: ['*'] }));
+
+    expect(() => app.synth()).toThrow(/A PolicyStatement used in a resource-based policy must specify at least one IAM principal/);
+  });
+});
+
+test('managed policy ARNs are deduplicated', () => {
+  const app = new App();
+  const stack = new Stack(app, 'my-stack');
+  const role = new Role(stack, 'MyRole', {
+    assumedBy: new ServicePrincipal('sns.amazonaws.com'),
+    managedPolicies: [
+      ManagedPolicy.fromAwsManagedPolicyName('SuperDeveloper'),
+      ManagedPolicy.fromAwsManagedPolicyName('SuperDeveloper'),
+    ],
+  });
+  role.addManagedPolicy(ManagedPolicy.fromAwsManagedPolicyName('SuperDeveloper'));
+
+  expect(stack).toHaveResource('AWS::IAM::Role', {
+    ManagedPolicyArns: [
+      {
+        'Fn::Join': [
+          '',
+          [
+            'arn:',
+            { Ref: 'AWS::Partition' },
+            ':iam::aws:policy/SuperDeveloper',
+          ],
+        ],
+      },
+    ],
   });
 });

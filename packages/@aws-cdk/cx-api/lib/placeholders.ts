@@ -46,7 +46,7 @@ export class EnvironmentPlaceholders {
     this.recurse(object, value => {
       if (value.indexOf(EnvironmentPlaceholders.CURRENT_REGION) > 1) { needRegion = true; }
       if (value.indexOf(EnvironmentPlaceholders.CURRENT_ACCOUNT) > 1) { needAccountId = true; }
-      if (value.indexOf(EnvironmentPlaceholders.CURRENT_PARTITION) > 1) {  needPartition = true; }
+      if (value.indexOf(EnvironmentPlaceholders.CURRENT_PARTITION) > 1) { needPartition = true; }
       return value;
     });
 

@@ -1,21 +1,28 @@
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
-import { IProfilingGroup, ProfilingGroup } from '@aws-cdk/aws-codeguruprofiler';
+import { IProfilingGroup, ProfilingGroup, ComputePlatform } from '@aws-cdk/aws-codeguruprofiler';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
+import * as kms from '@aws-cdk/aws-kms';
 import * as logs from '@aws-cdk/aws-logs';
 import * as sqs from '@aws-cdk/aws-sqs';
-import { CfnResource, Construct, Duration, Fn, Lazy, Stack } from '@aws-cdk/core';
+import { Annotations, CfnResource, Duration, Fn, Lazy, Names, Stack } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { Code, CodeConfig } from './code';
+import { ICodeSigningConfig } from './code-signing-config';
 import { EventInvokeConfigOptions } from './event-invoke-config';
 import { IEventSource } from './event-source';
 import { FileSystem } from './filesystem';
 import { FunctionAttributes, FunctionBase, IFunction } from './function-base';
 import { calculateFunctionHash, trimFromStart } from './function-hash';
+import { Handler } from './handler';
 import { Version, VersionOptions } from './lambda-version';
 import { CfnFunction } from './lambda.generated';
 import { ILayerVersion } from './layers';
-import { LogRetention, LogRetentionRetryOptions } from './log-retention';
 import { Runtime } from './runtime';
+
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line
+import { LogRetentionRetryOptions } from './log-retention';
 
 /**
  * X-Ray Tracing Modes (https://docs.aws.amazon.com/lambda/latest/dg/API_TracingConfig.html)
@@ -210,7 +217,7 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
   /**
    * A list of layers to add to the function's execution environment. You can configure your Lambda function to pull in
    * additional code during initialization in the form of layers. Layers are packages of libraries or other dependencies
-   * that can be used by mulitple functions.
+   * that can be used by multiple functions.
    *
    * @default - No layers.
    */
@@ -264,6 +271,36 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
    * @default - default options as described in `VersionOptions`
    */
   readonly currentVersionOptions?: VersionOptions;
+
+  /**
+   * The filesystem configuration for the lambda function
+   *
+   * @default - will not mount any filesystem
+   */
+  readonly filesystem?: FileSystem;
+
+  /**
+   * Lambda Functions in a public subnet can NOT access the internet.
+   * Use this property to acknowledge this limitation and still place the function in a public subnet.
+   * @see https://stackoverflow.com/questions/52992085/why-cant-an-aws-lambda-function-inside-a-public-subnet-in-a-vpc-connect-to-the/52994841#52994841
+   *
+   * @default false
+   */
+  readonly allowPublicSubnet?: boolean;
+
+  /**
+   * The AWS KMS key that's used to encrypt your function's environment variables.
+   *
+   * @default - AWS Lambda creates and uses an AWS managed customer master key (CMK).
+   */
+  readonly environmentEncryption?: kms.IKey;
+
+  /**
+   * Code signing config associated with this function
+   *
+   * @default - Not Sign the Code
+   */
+  readonly codeSigningConfig?: ICodeSigningConfig;
 }
 
 export interface FunctionProps extends FunctionOptions {
@@ -271,6 +308,8 @@ export interface FunctionProps extends FunctionOptions {
    * The runtime environment for the Lambda function that you are uploading.
    * For valid values, see the Runtime property in the AWS Lambda Developer
    * Guide.
+   *
+   * Use `Runtime.FROM_IMAGE` when when defining a function from a Docker image.
    */
   readonly runtime: Runtime;
 
@@ -287,18 +326,13 @@ export interface FunctionProps extends FunctionOptions {
    * namespaces and other qualifiers, depending on the runtime.
    * For more information, see https://docs.aws.amazon.com/lambda/latest/dg/gettingstarted-features.html#gettingstarted-features-programmingmodel.
    *
+   * Use `Handler.FROM_IMAGE` when defining a function from a Docker image.
+   *
    * NOTE: If you specify your source code as inline text by specifying the
    * ZipFile property within the Code property, specify index.function_name as
    * the handler.
    */
   readonly handler: string;
-
-  /**
-   * The filesystem configuration for the lambda function
-   *
-   * @default - will not mount any filesystem
-   */
-  readonly filesystem?: FileSystem;
 }
 
 /**
@@ -332,6 +366,20 @@ export class Function extends FunctionBase {
       ...this.currentVersionOptions,
     });
 
+    // override the version's logical ID with a lazy string which includes the
+    // hash of the function itself, so a new version resource is created when
+    // the function configuration changes.
+    const cfn = this._currentVersion.node.defaultChild as CfnResource;
+    const originalLogicalId = this.stack.resolve(cfn.logicalId) as string;
+
+    cfn.overrideLogicalId(Lazy.uncachedString({
+      produce: () => {
+        const hash = calculateFunctionHash(this);
+        const logicalId = trimFromStart(originalLogicalId, 255 - 32);
+        return `${logicalId}${hash}`;
+      },
+    }));
+
     return this._currentVersion;
   }
 
@@ -359,7 +407,7 @@ export class Function extends FunctionBase {
       public readonly role = role;
       public readonly permissionsNode = this.node;
 
-      protected readonly canCreatePermissions = false;
+      protected readonly canCreatePermissions = attrs.sameEnvironment ?? this._isStackAccount();
 
       constructor(s: Construct, i: string) {
         super(s, i);
@@ -492,7 +540,7 @@ export class Function extends FunctionBase {
   /**
    * Environment variables for this function
    */
-  private readonly environment: { [key: string]: string };
+  private environment: { [key: string]: EnvironmentConfig } = {};
 
   private readonly currentVersionOptions?: VersionOptions;
   private _currentVersion?: Version;
@@ -518,26 +566,26 @@ export class Function extends FunctionBase {
     });
     this.grantPrincipal = this.role;
 
-    // add additonal managed policies when necessary
+    // add additional managed policies when necessary
     if (props.filesystem) {
       const config = props.filesystem.config;
       if (config.policies) {
         config.policies.forEach(p => {
-          this.role?.addToPolicy(p);
+          this.role?.addToPrincipalPolicy(p);
         });
       }
     }
 
     for (const statement of (props.initialPolicy || [])) {
-      this.role.addToPolicy(statement);
+      this.role.addToPrincipalPolicy(statement);
     }
 
     const code = props.code.bind(this);
-    verifyCodeConfig(code, props.runtime);
+    verifyCodeConfig(code, props);
 
-    let profilingGroupEnvironmentVariables = {};
+    let profilingGroupEnvironmentVariables: { [key: string]: string } = {};
     if (props.profilingGroup && props.profiling !== false) {
-      this.validateProfilingEnvironmentVariables(props);
+      this.validateProfiling(props);
       props.profilingGroup.grantPublish(this.role);
       profilingGroupEnvironmentVariables = {
         AWS_CODEGURU_PROFILER_GROUP_ARN: Stack.of(scope).formatArn({
@@ -548,8 +596,10 @@ export class Function extends FunctionBase {
         AWS_CODEGURU_PROFILER_ENABLED: 'TRUE',
       };
     } else if (props.profiling) {
-      this.validateProfilingEnvironmentVariables(props);
-      const profilingGroup = new ProfilingGroup(this, 'ProfilingGroup');
+      this.validateProfiling(props);
+      const profilingGroup = new ProfilingGroup(this, 'ProfilingGroup', {
+        computePlatform: ComputePlatform.AWS_LAMBDA,
+      });
       profilingGroup.grantPublish(this.role);
       profilingGroupEnvironmentVariables = {
         AWS_CODEGURU_PROFILER_GROUP_ARN: profilingGroup.profilingGroupArn,
@@ -557,9 +607,20 @@ export class Function extends FunctionBase {
       };
     }
 
-    this.environment = { ...profilingGroupEnvironmentVariables, ...(props.environment || {}) };
+    const env = { ...profilingGroupEnvironmentVariables, ...props.environment };
+    for (const [key, value] of Object.entries(env)) {
+      this.addEnvironment(key, value);
+    }
 
     this.deadLetterQueue = this.buildDeadLetterQueue(props);
+
+    let fileSystemConfigs: CfnFunction.FileSystemConfigProperty[] | undefined = undefined;
+    if (props.filesystem) {
+      fileSystemConfigs = [{
+        arn: props.filesystem.config.arn,
+        localMountPath: props.filesystem.config.localMountPath,
+      }];
+    }
 
     const resource: CfnFunction = new CfnFunction(this, 'Resource', {
       functionName: this.physicalName,
@@ -569,18 +630,29 @@ export class Function extends FunctionBase {
         s3Key: code.s3Location && code.s3Location.objectKey,
         s3ObjectVersion: code.s3Location && code.s3Location.objectVersion,
         zipFile: code.inlineCode,
+        imageUri: code.image?.imageUri,
       },
-      layers: Lazy.listValue({ produce: () => this.layers.map(layer => layer.layerVersionArn) }, { omitEmpty: true }),
-      handler: props.handler,
+      layers: Lazy.list({ produce: () => this.layers.map(layer => layer.layerVersionArn) }, { omitEmpty: true }),
+      handler: props.handler === Handler.FROM_IMAGE ? undefined : props.handler,
       timeout: props.timeout && props.timeout.toSeconds(),
-      runtime: props.runtime.name,
+      packageType: props.runtime === Runtime.FROM_IMAGE ? 'Image' : undefined,
+      runtime: props.runtime === Runtime.FROM_IMAGE ? undefined : props.runtime.name,
       role: this.role.roleArn,
-      environment: Lazy.anyValue({ produce: () => this.renderEnvironment() }),
+      // Uncached because calling '_checkEdgeCompatibility', which gets called in the resolve of another
+      // Token, actually *modifies* the 'environment' map.
+      environment: Lazy.uncachedAny({ produce: () => this.renderEnvironment() }),
       memorySize: props.memorySize,
       vpcConfig: this.configureVpc(props),
       deadLetterConfig: this.buildDeadLetterConfig(this.deadLetterQueue),
       tracingConfig: this.buildTracingConfig(props),
       reservedConcurrentExecutions: props.reservedConcurrentExecutions,
+      imageConfig: undefinedIfNoKeys({
+        command: code.image?.cmd,
+        entryPoint: code.image?.entrypoint,
+      }),
+      kmsKeyArn: props.environmentEncryption?.keyArn,
+      fileSystemConfigs,
+      codeSigningConfigArn: props.codeSigningConfig?.codeSigningConfigArn,
     });
 
     resource.node.addDependency(this.role);
@@ -605,13 +677,13 @@ export class Function extends FunctionBase {
 
     // Log retention
     if (props.logRetention) {
-      const logretention = new LogRetention(this, 'LogRetention', {
+      const logRetention = new logs.LogRetention(this, 'LogRetention', {
         logGroupName: `/aws/lambda/${this.functionName}`,
         retention: props.logRetention,
         role: props.logRetentionRole,
-        logRetentionRetryOptions: props.logRetentionRetryOptions,
+        logRetentionRetryOptions: props.logRetentionRetryOptions as logs.LogRetentionRetryOptions,
       });
-      this._logGroup = logs.LogGroup.fromLogGroupArn(this, 'LogGroup', logretention.logGroupArn);
+      this._logGroup = logs.LogGroup.fromLogGroupArn(this, 'LogGroup', logRetention.logGroupArn);
     }
 
     props.code.bindToResource(resource);
@@ -633,15 +705,6 @@ export class Function extends FunctionBase {
       if (config.dependency) {
         this.node.addDependency(...config.dependency);
       }
-
-      resource.addPropertyOverride('FileSystemConfigs',
-        [
-          {
-            LocalMountPath: config.localMountPath,
-            Arn: config.arn,
-          },
-        ],
-      );
     }
   }
 
@@ -650,9 +713,10 @@ export class Function extends FunctionBase {
    * If this is a ref to a Lambda function, this operation results in a no-op.
    * @param key The environment variable key.
    * @param value The environment variable's value.
+   * @param options Environment variable options.
    */
-  public addEnvironment(key: string, value: string): this {
-    this.environment[key] = value;
+  public addEnvironment(key: string, value: string, options?: EnvironmentOptions): this {
+    this.environment[key] = { value, ...options };
     return this;
   }
 
@@ -730,30 +794,32 @@ export class Function extends FunctionBase {
    */
   public get logGroup(): logs.ILogGroup {
     if (!this._logGroup) {
-      const logretention = new LogRetention(this, 'LogRetention', {
+      const logRetention = new logs.LogRetention(this, 'LogRetention', {
         logGroupName: `/aws/lambda/${this.functionName}`,
         retention: logs.RetentionDays.INFINITE,
       });
-      this._logGroup = logs.LogGroup.fromLogGroupArn(this, `${this.node.id}-LogGroup`, logretention.logGroupArn);
+      this._logGroup = logs.LogGroup.fromLogGroupArn(this, `${this.node.id}-LogGroup`, logRetention.logGroupArn);
     }
     return this._logGroup;
   }
 
-  protected prepare() {
-    super.prepare();
-
-    // if we have a current version resource, override it's logical id
-    // so that it includes the hash of the function code and it's configuration.
-    if (this._currentVersion) {
-      const stack = Stack.of(this);
-      const cfn = this._currentVersion.node.defaultChild as CfnResource;
-      const originalLogicalId: string = stack.resolve(cfn.logicalId);
-
-      const hash = calculateFunctionHash(this);
-
-      const logicalId = trimFromStart(originalLogicalId, 255 - 32);
-      cfn.overrideLogicalId(`${logicalId}${hash}`);
+  /** @internal */
+  public _checkEdgeCompatibility(): void {
+    // Check env vars
+    const envEntries = Object.entries(this.environment);
+    for (const [key, config] of envEntries) {
+      if (config.removeInEdge) {
+        delete this.environment[key];
+        Annotations.of(this).addInfo(`Removed ${key} environment variable for Lambda@Edge compatibility`);
+      }
     }
+    const envKeys = Object.keys(this.environment);
+    if (envKeys.length !== 0) {
+      throw new Error(`The function ${this.node.path} contains environment variables [${envKeys}] and is not compatible with Lambda@Edge. \
+Environment variables can be marked for removal when used in Lambda@Edge by setting the \'removeInEdge\' property in the \'addEnvironment()\' API.`);
+    }
+
+    return;
   }
 
   private renderEnvironment() {
@@ -761,22 +827,19 @@ export class Function extends FunctionBase {
       return undefined;
     }
 
-    // for backwards compatibility we do not sort environment variables in case
-    // _currentVersion is not defined. otherwise, this would have invalidated
+    const variables: { [key: string]: string } = {};
+    // Sort environment so the hash of the function used to create
+    // `currentVersion` is not affected by key order (this is how lambda does
+    // it). For backwards compatibility we do not sort environment variables in case
+    // _currentVersion is not defined. Otherwise, this would have invalidated
     // the template, and for example, may cause unneeded updates for nested
     // stacks.
-    if (!this._currentVersion) {
-      return {
-        variables: this.environment,
-      };
-    }
+    const keys = this._currentVersion
+      ? Object.keys(this.environment).sort()
+      : Object.keys(this.environment);
 
-    // sort environment so the hash of the function used to create
-    // `currentVersion` is not affected by key order (this is how lambda does
-    // it).
-    const variables: { [key: string]: string } = {};
-    for (const key of Object.keys(this.environment).sort()) {
-      variables[key] = this.environment[key];
+    for (const key of keys) {
+      variables[key] = this.environment[key].value;
     }
 
     return { variables };
@@ -810,7 +873,7 @@ export class Function extends FunctionBase {
     } else {
       const securityGroup = props.securityGroup || new ec2.SecurityGroup(this, 'SecurityGroup', {
         vpc: props.vpc,
-        description: 'Automatic security group for Lambda Function ' + this.node.uniqueId,
+        description: 'Automatic security group for Lambda Function ' + Names.uniqueId(this),
         allowAllOutbound: props.allowAllOutbound,
       });
       securityGroups = [securityGroup];
@@ -824,15 +887,13 @@ export class Function extends FunctionBase {
       }
     }
 
-    // Pick subnets, make sure they're not Public. Routing through an IGW
-    // won't work because the ENIs don't get a Public IP.
-    // Why are we not simply forcing vpcSubnets? Because you might still be choosing
-    // Isolated networks or selecting among 2 sets of Private subnets by name.
+    const allowPublicSubnet = props.allowPublicSubnet ?? false;
     const { subnetIds } = props.vpc.selectSubnets(props.vpcSubnets);
     const publicSubnetIds = new Set(props.vpc.publicSubnets.map(s => s.subnetId));
     for (const subnetId of subnetIds) {
-      if (publicSubnetIds.has(subnetId)) {
-        throw new Error('Not possible to place Lambda Functions in a Public subnet');
+      if (publicSubnetIds.has(subnetId) && !allowPublicSubnet) {
+        throw new Error('Lambda Functions in a public subnet can NOT access the internet. ' +
+          'If you are aware of this limitation and would still like to place the function int a public subnet, set `allowPublicSubnet` to true');
       }
     }
 
@@ -892,11 +953,35 @@ export class Function extends FunctionBase {
     };
   }
 
-  private validateProfilingEnvironmentVariables(props: FunctionProps) {
+  private validateProfiling(props: FunctionProps) {
+    if (!props.runtime.supportsCodeGuruProfiling) {
+      throw new Error(`CodeGuru profiling is not supported by runtime ${props.runtime.name}`);
+    }
     if (props.environment && (props.environment.AWS_CODEGURU_PROFILER_GROUP_ARN || props.environment.AWS_CODEGURU_PROFILER_ENABLED)) {
       throw new Error('AWS_CODEGURU_PROFILER_GROUP_ARN and AWS_CODEGURU_PROFILER_ENABLED must not be set when profiling options enabled');
     }
   }
+}
+
+/**
+ * Environment variables options
+ */
+export interface EnvironmentOptions {
+  /**
+   * When used in Lambda@Edge via edgeArn() API, these environment
+   * variables will be removed. If not set, an error will be thrown.
+   * @see https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/lambda-requirements-limits.html#lambda-requirements-lambda-function-configuration
+   *
+   * @default false - using the function in Lambda@Edge will throw
+   */
+  readonly removeInEdge?: boolean
+}
+
+/**
+ * Configuration for an environment variable
+ */
+interface EnvironmentConfig extends EnvironmentOptions {
+  readonly value: string;
 }
 
 /**
@@ -916,14 +1001,29 @@ function extractNameFromArn(arn: string) {
   return Fn.select(6, Fn.split(':', arn));
 }
 
-export function verifyCodeConfig(code: CodeConfig, runtime: Runtime) {
+export function verifyCodeConfig(code: CodeConfig, props: FunctionProps) {
   // mutually exclusive
-  if ((!code.inlineCode && !code.s3Location) || (code.inlineCode && code.s3Location)) {
-    throw new Error('lambda.Code must specify one of "inlineCode" or "s3Location" but not both');
+  const codeType = [code.inlineCode, code.s3Location, code.image];
+
+  if (codeType.filter(x => !!x).length !== 1) {
+    throw new Error('lambda.Code must specify exactly one of: "inlineCode", "s3Location", or "image"');
+  }
+
+  if (!!code.image === (props.handler !== Handler.FROM_IMAGE)) {
+    throw new Error('handler must be `Handler.FROM_IMAGE` when using image asset for Lambda function');
+  }
+
+  if (!!code.image === (props.runtime !== Runtime.FROM_IMAGE)) {
+    throw new Error('runtime must be `Runtime.FROM_IMAGE` when using image asset for Lambda function');
   }
 
   // if this is inline code, check that the runtime supports
-  if (code.inlineCode && !runtime.supportsInlineCode) {
-    throw new Error(`Inline source not allowed for ${runtime.name}`);
+  if (code.inlineCode && !props.runtime.supportsInlineCode) {
+    throw new Error(`Inline source not allowed for ${props.runtime!.name}`);
   }
+}
+
+function undefinedIfNoKeys<A>(struct: A): A | undefined {
+  const allUndefined = Object.values(struct).every(val => val === undefined);
+  return allUndefined ? undefined : struct;
 }

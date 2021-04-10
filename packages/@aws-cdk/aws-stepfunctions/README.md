@@ -1,5 +1,6 @@
-## AWS Step Functions Construct Library
+# AWS Step Functions Construct Library
 <!--BEGIN STABILITY BANNER-->
+
 ---
 
 ![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)
@@ -7,6 +8,7 @@
 ![cdk-constructs: Stable](https://img.shields.io/badge/cdk--constructs-stable-success.svg?style=for-the-badge)
 
 ---
+
 <!--END STABILITY BANNER-->
 
 The `@aws-cdk/aws-stepfunctions` package contains constructs for building
@@ -17,7 +19,7 @@ to call other AWS services.
 Defining a workflow looks like this (for the [Step Functions Job Poller
 example](https://docs.aws.amazon.com/step-functions/latest/dg/job-status-poller-sample.html)):
 
-### Example
+## Example
 
 ```ts
 import * as sfn from '@aws-cdk/aws-stepfunctions';
@@ -82,9 +84,9 @@ definition. The definition is specified by its start state, and encompasses
 all states reachable from the start state:
 
 ```ts
-const startState = new stepfunctions.Pass(this, 'StartState');
+const startState = new sfn.Pass(this, 'StartState');
 
-new stepfunctions.StateMachine(this, 'StateMachine', {
+new sfn.StateMachine(this, 'StateMachine', {
     definition: startState
 });
 ```
@@ -136,8 +138,8 @@ will be passed as the state's output.
 
 ```ts
 // Makes the current JSON state { ..., "subObject": { "hello": "world" } }
-const pass = new stepfunctions.Pass(this, 'Add Hello World', {
-  result: stepfunctions.Result.fromObject({ hello: 'world' }),
+const pass = new sfn.Pass(this, 'Add Hello World', {
+  result: sfn.Result.fromObject({ hello: 'world' }),
   resultPath: '$.subObject',
 });
 
@@ -152,9 +154,9 @@ The following example filters the `greeting` field from the state input
 and also injects a field called `otherData`.
 
 ```ts
-const pass = new stepfunctions.Pass(this, 'Filter input and inject data', {
+const pass = new sfn.Pass(this, 'Filter input and inject data', {
   parameters: { // input to the pass state
-    input: stepfunctions.JsonPath.stringAt('$.input.greeting')
+    input: sfn.JsonPath.stringAt('$.input.greeting'),
     otherData: 'some-extra-stuff'
   },
 });
@@ -175,8 +177,8 @@ state.
 ```ts
 // Wait until it's the time mentioned in the the state object's "triggerTime"
 // field.
-const wait = new stepfunctions.Wait(this, 'Wait For Trigger Time', {
-    time: stepfunctions.WaitTime.timestampPath('$.triggerTime'),
+const wait = new sfn.Wait(this, 'Wait For Trigger Time', {
+    time: sfn.WaitTime.timestampPath('$.triggerTime'),
 });
 
 // Set the next state
@@ -189,11 +191,11 @@ A `Choice` state can take a different path through the workflow based on the
 values in the execution's JSON state:
 
 ```ts
-const choice = new stepfunctions.Choice(this, 'Did it work?');
+const choice = new sfn.Choice(this, 'Did it work?');
 
 // Add conditions with .when()
-choice.when(stepfunctions.Condition.stringEqual('$.status', 'SUCCESS'), successState);
-choice.when(stepfunctions.Condition.numberGreaterThan('$.attempts', 5), failureState);
+choice.when(sfn.Condition.stringEquals('$.status', 'SUCCESS'), successState);
+choice.when(sfn.Condition.numberGreaterThan('$.attempts', 5), failureState);
 
 // Use .otherwise() to indicate what should be done if none of the conditions match
 choice.otherwise(tryAgainState);
@@ -204,9 +206,9 @@ all branches come together and continuing as one (similar to how an `if ...
 then ... else` works in a programming language), use the `.afterwards()` method:
 
 ```ts
-const choice = new stepfunctions.Choice(this, 'What color is it?');
-choice.when(stepfunctions.Condition.stringEqual('$.color', 'BLUE'), handleBlueItem);
-choice.when(stepfunctions.Condition.stringEqual('$.color', 'RED'), handleRedItem);
+const choice = new sfn.Choice(this, 'What color is it?');
+choice.when(sfn.Condition.stringEquals('$.color', 'BLUE'), handleBlueItem);
+choice.when(sfn.Condition.stringEquals('$.color', 'RED'), handleRedItem);
 choice.otherwise(handleOtherItemColor);
 
 // Use .afterwards() to join all possible paths back together and continue
@@ -217,13 +219,63 @@ If your `Choice` doesn't have an `otherwise()` and none of the conditions match
 the JSON state, a `NoChoiceMatched` error will be thrown. Wrap the state machine
 in a `Parallel` state if you want to catch and recover from this.
 
+#### Available Conditions
+
+see [step function comparison operators](https://docs.aws.amazon.com/step-functions/latest/dg/amazon-states-language-choice-state.html#amazon-states-language-choice-state-rules)
+
+* `Condition.isPresent` - matches if a json path is present
+* `Condition.isNotPresent` - matches if a json path is not present
+* `Condition.isString` - matches if a json path contains a string
+* `Condition.isNotString` - matches if a json path is not a string
+* `Condition.isNumeric` - matches if a json path is numeric
+* `Condition.isNotNumeric` - matches if a json path is not numeric
+* `Condition.isBoolean` - matches if a json path is boolean
+* `Condition.isNotBoolean` - matches if a json path is not boolean
+* `Condition.isTimestamp` - matches if a json path is a timestamp
+* `Condition.isNotTimestamp` - matches if a json path is not a timestamp
+* `Condition.isNotNull` - matches if a json path is not null
+* `Condition.isNull` - matches if a json path is null
+* `Condition.booleanEquals` - matches if a boolean field has a given value
+* `Condition.booleanEqualsJsonPath` - matches if a boolean field equals a value in a given mapping path
+* `Condition.stringEqualsJsonPath` - matches if a string field equals a given mapping path
+* `Condition.stringEquals` - matches if a field equals a string value
+* `Condition.stringLessThan` - matches if a string field sorts before a given value
+* `Condition.stringLessThanJsonPath` - matches if a string field sorts before a value at given mapping path
+* `Condition.stringLessThanEquals` - matches if a string field sorts equal to or before a given value
+* `Condition.stringLessThanEqualsJsonPath` - matches if a string field sorts equal to or before a given mapping
+* `Condition.stringGreaterThan` - matches if a string field sorts after a given value
+* `Condition.stringGreaterThanJsonPath` - matches if a string field sorts after a value at a given mapping path
+* `Condition.stringGreaterThanEqualsJsonPath` - matches if a string field sorts after or equal to value at a given mapping path
+* `Condition.stringGreaterThanEquals` - matches if a string field sorts after or equal to a given value
+* `Condition.numberEquals` - matches if a numeric field has the given value
+* `Condition.numberEqualsJsonPath` - matches if a numeric field has the value in a given mapping path
+* `Condition.numberLessThan` - matches if a numeric field is less than the given value
+* `Condition.numberLessThanJsonPath` - matches if a numeric field is less than the value at the given mapping path
+* `Condition.numberLessThanEquals` - matches if a numeric field is less than or equal to the given value
+* `Condition.numberLessThanEqualsJsonPath` - matches if a numeric field is less than or equal to the numeric value at given mapping path
+* `Condition.numberGreaterThan` - matches if a numeric field is greater than the given value
+* `Condition.numberGreaterThanJsonPath` - matches if a numeric field is greater than the value at a given mapping path
+* `Condition.numberGreaterThanEquals` - matches if a numeric field is greater than or equal to the given value
+* `Condition.numberGreaterThanEqualsJsonPath` - matches if a numeric field is greater than or equal to the value at a given mapping path
+* `Condition.timestampEquals` - matches if a timestamp field is the same time as the given timestamp
+* `Condition.timestampEqualsJsonPath` - matches if a timestamp field is the same time as the timestamp at a given mapping path
+* `Condition.timestampLessThan` - matches if a timestamp field is before the given timestamp
+* `Condition.timestampLessThanJsonPath` - matches if a timestamp field is before the timestamp at a given mapping path
+* `Condition.timestampLessThanEquals` - matches if a timestamp field is before or equal to the given timestamp
+* `Condition.timestampLessThanEqualsJsonPath` - matches if a timestamp field is before or equal to the timestamp at a given mapping path
+* `Condition.timestampGreaterThan` - matches if a timestamp field is after the timestamp at a given mapping path
+* `Condition.timestampGreaterThanJsonPath` - matches if a timestamp field is after the timestamp at a given mapping path
+* `Condition.timestampGreaterThanEquals` - matches if a timestamp field is after or equal to the given timestamp
+* `Condition.timestampGreaterThanEqualsJsonPath` - matches if a timestamp field is after or equal to the timestamp at a given mapping path
+* `Condition.stringMatches` - matches if a field matches a string pattern that can contain a wild card (\*) e.g: log-\*.txt or \*LATEST\*. No other characters other than "\*" have any special meaning - \* can be escaped: \\\\*
+
 ### Parallel
 
 A `Parallel` state executes one or more subworkflows in parallel. It can also
 be used to catch and recover from errors in subworkflows.
 
 ```ts
-const parallel = new stepfunctions.Parallel(this, 'Do the work in parallel');
+const parallel = new sfn.Parallel(this, 'Do the work in parallel');
 
 // Add branches to be executed in parallel
 parallel.branch(shipItem);
@@ -243,10 +295,10 @@ parallel.next(closeOrder);
 ### Succeed
 
 Reaching a `Succeed` state terminates the state machine execution with a
-succesful status.
+successful status.
 
 ```ts
-const success = new stepfunctions.Succeed(this, 'We did it!');
+const success = new sfn.Succeed(this, 'We did it!');
 ```
 
 ### Fail
@@ -256,7 +308,7 @@ failure status. The fail state should report the reason for the failure.
 Failures can be caught by encompassing `Parallel` states.
 
 ```ts
-const success = new stepfunctions.Fail(this, 'Fail', {
+const success = new sfn.Fail(this, 'Fail', {
     error: 'WorkflowFailure',
     cause: "Something went wrong"
 });
@@ -271,11 +323,11 @@ While the `Parallel` state executes multiple branches of steps using the same in
 execute the same steps for multiple entries of an array in the state input.
 
 ```ts
-const map = new stepfunctions.Map(this, 'Map State', {
+const map = new sfn.Map(this, 'Map State', {
     maxConcurrency: 1,
-    itemsPath: stepfunctions.JsonPath.stringAt('$.inputForMap')
+    itemsPath: sfn.JsonPath.stringAt('$.inputForMap')
 });
-map.iterator(new stepfunctions.Pass(this, 'Pass State'));
+map.iterator(new sfn.Pass(this, 'Pass State'));
 ```
 
 ### Custom State
@@ -345,7 +397,7 @@ const sm = new sfn.StateMachine(this, 'StateMachine', {
 });
 
 // don't forget permissions. You need to assign them
-table.grantWriteData(sm.role);
+table.grantWriteData(sm);
 ```
 
 ## Task Chaining
@@ -368,7 +420,7 @@ const definition = step1
         .branch(step9.next(step10)))
     .next(finish);
 
-new stepfunctions.StateMachine(this, 'StateMachine', {
+new sfn.StateMachine(this, 'StateMachine', {
     definition,
 });
 ```
@@ -377,13 +429,12 @@ If you don't like the visual look of starting a chain directly off the first
 step, you can use `Chain.start`:
 
 ```ts
-const definition = stepfunctions.Chain
+const definition = sfn.Chain
     .start(step1)
     .next(step2)
     .next(step3)
     // ...
 ```
-
 
 ## State Machine Fragments
 
@@ -409,16 +460,16 @@ interface MyJobProps {
     jobFlavor: string;
 }
 
-class MyJob extends stepfunctions.StateMachineFragment {
-    public readonly startState: State;
-    public readonly endStates: INextable[];
+class MyJob extends sfn.StateMachineFragment {
+    public readonly startState: sfn.State;
+    public readonly endStates: sfn.INextable[];
 
     constructor(parent: cdk.Construct, id: string, props: MyJobProps) {
         super(parent, id);
 
-        const first = new stepfunctions.Task(this, 'First', { ... });
+        const first = new sfn.Task(this, 'First', { ... });
         // ...
-        const last = new stepfunctions.Task(this, 'Last', { ... });
+        const last = new sfn.Task(this, 'Last', { ... });
 
         this.startState = first;
         this.endStates = [last];
@@ -426,13 +477,14 @@ class MyJob extends stepfunctions.StateMachineFragment {
 }
 
 // Do 3 different variants of MyJob in parallel
-new stepfunctions.Parallel(this, 'All jobs')
+new sfn.Parallel(this, 'All jobs')
     .branch(new MyJob(this, 'Quick', { jobFlavor: 'quick' }).prefixStates())
     .branch(new MyJob(this, 'Medium', { jobFlavor: 'medium' }).prefixStates())
     .branch(new MyJob(this, 'Slow', { jobFlavor: 'slow' }).prefixStates());
 ```
 
 A few utility functions are available to parse state machine fragments.
+
 * `State.findReachableStates`: Retrieve the list of states reachable from a given state.
 * `State.findReachableEndStates`: Retrieve the list of end or terminal states reachable from a given state.
 
@@ -447,7 +499,7 @@ You need the ARN to do so, so if you use Activities be sure to pass the Activity
 ARN into your worker pool:
 
 ```ts
-const activity = new stepfunctions.Activity(this, 'Activity');
+const activity = new sfn.Activity(this, 'Activity');
 
 // Read this CloudFormation Output from your application and use it to poll for work on
 // the activity.
@@ -459,7 +511,7 @@ new cdk.CfnOutput(this, 'ActivityArn', { value: activity.activityArn });
 Granting IAM permissions to an activity can be achieved by calling the `grant(principal, actions)` API:
 
 ```ts
-const activity = new stepfunctions.Activity(this, 'Activity');
+const activity = new sfn.Activity(this, 'Activity');
 
 const role = new iam.Role(stack, 'Role', {
   assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
@@ -511,14 +563,30 @@ destination LogGroup:
 ```ts
 const logGroup = new logs.LogGroup(stack, 'MyLogGroup');
 
-new stepfunctions.StateMachine(stack, 'MyStateMachine', {
-    definition: stepfunctions.Chain.start(new stepfunctions.Pass(stack, 'Pass')),
+new sfn.StateMachine(stack, 'MyStateMachine', {
+    definition: sfn.Chain.start(new sfn.Pass(stack, 'Pass')),
     logs: {
-      destinations: logGroup,
-      level: stepfunctions.LogLevel.ALL,
+      destination: logGroup,
+      level: sfn.LogLevel.ALL,
     }
 });
 ```
+
+## X-Ray tracing
+
+Enable X-Ray tracing for StateMachine:
+
+```ts
+const logGroup = new logs.LogGroup(stack, 'MyLogGroup');
+
+new sfn.StateMachine(stack, 'MyStateMachine', {
+    definition: sfn.Chain.start(new sfn.Pass(stack, 'Pass')),
+    tracingEnabled: true
+});
+```
+
+See [the AWS documentation](https://docs.aws.amazon.com/step-functions/latest/dg/concepts-xray-tracing.html)
+to learn more about AWS Step Functions's X-Ray support.
 
 ## State Machine Permission Grants
 
@@ -526,13 +594,13 @@ IAM roles, users, or groups which need to be able to work with a State Machine s
 
 Any object that implements the `IGrantable` interface (has an associated principal) can be granted permissions by calling:
 
-- `stateMachine.grantStartExecution(principal)` - grants the principal the ability to execute the state machine
-- `stateMachine.grantRead(principal)` - grants the principal read access
-- `stateMachine.grantTaskResponse(principal)` - grants the principal the ability to send task tokens to the state machine
-- `stateMachine.grantExecution(principal, actions)` - grants the principal execution-level permissions for the IAM actions specified 
-- `stateMachine.grant(principal, actions)` - grants the principal state-machine-level permissions for the IAM actions specified
+* `stateMachine.grantStartExecution(principal)` - grants the principal the ability to execute the state machine
+* `stateMachine.grantRead(principal)` - grants the principal read access
+* `stateMachine.grantTaskResponse(principal)` - grants the principal the ability to send task tokens to the state machine
+* `stateMachine.grantExecution(principal, actions)` - grants the principal execution-level permissions for the IAM actions specified
+* `stateMachine.grant(principal, actions)` - grants the principal state-machine-level permissions for the IAM actions specified
 
-### Start Execution Permission 
+### Start Execution Permission
 
 Grant permission to start an execution of a state machine by calling the `grantStartExecution()` API.
 
@@ -551,7 +619,7 @@ stateMachine.grantStartExecution(role);
 
 The following permission is provided to a service principal by the `grantStartExecution()` API:
 
-- `states:StartExecution` - to state machine
+* `states:StartExecution` - to state machine
 
 ### Read Permissions
 
@@ -572,14 +640,14 @@ stateMachine.grantRead(role);
 
 The following read permissions are provided to a service principal by the `grantRead()` API:
 
-- `states:ListExecutions` - to state machine
-- `states:ListStateMachines` - to state machine
-- `states:DescribeExecution` - to executions
-- `states:DescribeStateMachineForExecution` - to executions
-- `states:GetExecutionHistory` - to executions
-- `states:ListActivities` - to `*`
-- `states:DescribeStateMachine` - to `*`
-- `states:DescribeActivity` - to `*`
+* `states:ListExecutions` - to state machine
+* `states:ListStateMachines` - to state machine
+* `states:DescribeExecution` - to executions
+* `states:DescribeStateMachineForExecution` - to executions
+* `states:GetExecutionHistory` - to executions
+* `states:ListActivities` - to `*`
+* `states:DescribeStateMachine` - to `*`
+* `states:DescribeActivity` - to `*`
 
 ### Task Response Permissions
 
@@ -600,9 +668,9 @@ stateMachine.grantTaskResponse(role);
 
 The following read permissions are provided to a service principal by the `grantRead()` API:
 
-- `states:SendTaskSuccess` - to state machine
-- `states:SendTaskFailure` - to state machine
-- `states:SendTaskHeartbeat` - to state machine
+* `states:SendTaskSuccess` - to state machine
+* `states:SendTaskFailure` - to state machine
+* `states:SendTaskHeartbeat` - to state machine
 
 ### Execution-level Permissions
 

@@ -1,4 +1,4 @@
-import '@aws-cdk/assert/jest';
+import '@aws-cdk/assert-internal/jest';
 import * as kinesis from '@aws-cdk/aws-kinesis';
 import * as logs from '@aws-cdk/aws-logs';
 import * as cdk from '@aws-cdk/core';
@@ -19,8 +19,8 @@ test('stream can be subscription destination', () => {
 
   // THEN: subscription target is Stream
   expect(stack).toHaveResource('AWS::Logs::SubscriptionFilter', {
-    DestinationArn: { 'Fn::GetAtt': [ 'MyStream5C050E93', 'Arn' ] },
-    RoleArn: { 'Fn::GetAtt': [ 'SubscriptionCloudWatchLogsCanPutRecords9C1223EC', 'Arn' ] },
+    DestinationArn: { 'Fn::GetAtt': ['MyStream5C050E93', 'Arn'] },
+    RoleArn: { 'Fn::GetAtt': ['SubscriptionCloudWatchLogsCanPutRecords9C1223EC', 'Arn'] },
   });
 
   // THEN: we have a role to write to the Stream
@@ -32,13 +32,12 @@ test('stream can be subscription destination', () => {
         Effect: 'Allow',
         Principal: {
           Service: {
-            'Fn::Join': [ '', [
+            'Fn::Join': ['', [
               'logs.',
               { Ref: 'AWS::Region' },
               '.',
               { Ref: 'AWS::URLSuffix' },
-            ],
-            ],
+            ]],
           },
         },
       }],
@@ -56,12 +55,12 @@ test('stream can be subscription destination', () => {
             'kinesis:PutRecords',
           ],
           Effect: 'Allow',
-          Resource: { 'Fn::GetAtt': [ 'MyStream5C050E93', 'Arn' ] },
+          Resource: { 'Fn::GetAtt': ['MyStream5C050E93', 'Arn'] },
         },
         {
           Action: 'iam:PassRole',
           Effect: 'Allow',
-          Resource: { 'Fn::GetAtt': [ 'SubscriptionCloudWatchLogsCanPutRecords9C1223EC', 'Arn' ] },
+          Resource: { 'Fn::GetAtt': ['SubscriptionCloudWatchLogsCanPutRecords9C1223EC', 'Arn'] },
         },
       ],
     },
@@ -90,8 +89,8 @@ test('stream can be subscription destination twice, without duplicating permissi
 
   // THEN: subscription target is Stream
   expect(stack).toHaveResource('AWS::Logs::SubscriptionFilter', {
-    DestinationArn: { 'Fn::GetAtt': [ 'MyStream5C050E93', 'Arn' ] },
-    RoleArn: { 'Fn::GetAtt': [ 'SubscriptionCloudWatchLogsCanPutRecords9C1223EC', 'Arn' ] },
+    DestinationArn: { 'Fn::GetAtt': ['MyStream5C050E93', 'Arn'] },
+    RoleArn: { 'Fn::GetAtt': ['SubscriptionCloudWatchLogsCanPutRecords9C1223EC', 'Arn'] },
   });
 
   // THEN: we have a role to write to the Stream
@@ -103,13 +102,12 @@ test('stream can be subscription destination twice, without duplicating permissi
         Effect: 'Allow',
         Principal: {
           Service: {
-            'Fn::Join': [ '', [
+            'Fn::Join': ['', [
               'logs.',
               { Ref: 'AWS::Region' },
               '.',
               { Ref: 'AWS::URLSuffix' },
-            ],
-            ],
+            ]],
           },
         },
       }],
@@ -127,12 +125,12 @@ test('stream can be subscription destination twice, without duplicating permissi
             'kinesis:PutRecords',
           ],
           Effect: 'Allow',
-          Resource: { 'Fn::GetAtt': [ 'MyStream5C050E93', 'Arn' ] },
+          Resource: { 'Fn::GetAtt': ['MyStream5C050E93', 'Arn'] },
         },
         {
           Action: 'iam:PassRole',
           Effect: 'Allow',
-          Resource: { 'Fn::GetAtt': [ 'SubscriptionCloudWatchLogsCanPutRecords9C1223EC', 'Arn' ] },
+          Resource: { 'Fn::GetAtt': ['SubscriptionCloudWatchLogsCanPutRecords9C1223EC', 'Arn'] },
         },
       ],
     },

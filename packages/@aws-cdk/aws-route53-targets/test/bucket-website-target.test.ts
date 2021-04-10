@@ -1,4 +1,4 @@
-import '@aws-cdk/assert/jest';
+import '@aws-cdk/assert-internal/jest';
 import * as route53 from '@aws-cdk/aws-route53';
 import * as s3 from '@aws-cdk/aws-s3';
 import { App, Stack } from '@aws-cdk/core';
@@ -10,7 +10,7 @@ const bucketName = [recordName, zoneName].join('.');
 test('use S3 bucket website as record target', () => {
   // GIVEN
   const app = new App();
-  const stack = new Stack(app, 'test', {env: {region: 'us-east-1'}});
+  const stack = new Stack(app, 'test', { env: { region: 'us-east-1' } });
 
   const bucketWebsite = new s3.Bucket(stack, 'Bucket', { bucketName });
 
@@ -34,7 +34,7 @@ test('use S3 bucket website as record target', () => {
 test('use S3 bucket website as record target (fromBucketName)', () => {
   // GIVEN
   const app = new App();
-  const stack = new Stack(app, 'test', {env: {region: 'us-east-1'}});
+  const stack = new Stack(app, 'test', { env: { region: 'us-east-1' } });
 
   const bucketWebsite = s3.Bucket.fromBucketName(stack, 'Bucket', bucketName);
 
@@ -77,7 +77,7 @@ test('throws if region agnostic', () => {
 test('throws if bucket website hosting is unavailable (cn-northwest-1)', () => {
   // GIVEN
   const app = new App();
-  const stack = new Stack(app, 'test', {env: {region: 'cn-northwest-1'}});
+  const stack = new Stack(app, 'test', { env: { region: 'cn-northwest-1' } });
 
   const bucketWebsite = new s3.Bucket(stack, 'Bucket');
 

@@ -1,4 +1,5 @@
 import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { Chain } from '../chain';
 import { IChainable, INextable } from '../types';
 import { StateType } from './private/state-type';
@@ -72,7 +73,7 @@ export class Wait extends State implements INextable {
 
   private readonly time: WaitTime;
 
-  constructor(scope: cdk.Construct, id: string, props: WaitProps) {
+  constructor(scope: Construct, id: string, props: WaitProps) {
     super(scope, id, props);
 
     this.time = props.time;

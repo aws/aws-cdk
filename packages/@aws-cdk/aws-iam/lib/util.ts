@@ -1,13 +1,16 @@
-import { DefaultTokenResolver, IConstruct, Lazy, StringConcat, Tokenization } from '@aws-cdk/core';
+import { captureStackTrace, DefaultTokenResolver, IPostProcessor, IResolvable, IResolveContext, Lazy, StringConcat, Token, Tokenization } from '@aws-cdk/core';
+import { IConstruct } from 'constructs';
 import { IPolicy } from './policy';
 
 const MAX_POLICY_NAME_LEN = 128;
 
 export function undefinedIfEmpty(f: () => string[]): string[] {
-  return Lazy.listValue({ produce: () => {
-    const array = f();
-    return (array && array.length > 0) ? array : undefined;
-  }});
+  return Lazy.list({
+    produce: () => {
+      const array = f();
+      return (array && array.length > 0) ? array : undefined;
+    },
+  });
 }
 
 /**
@@ -71,11 +74,53 @@ export function mergePrincipal(target: { [key: string]: string[] }, source: { [k
 
     let value = source[key];
     if (!Array.isArray(value)) {
-      value = [ value ];
+      value = [value];
     }
 
     target[key].push(...value);
   }
 
   return target;
+}
+
+/**
+ * Lazy string set token that dedupes entries
+ *
+ * Needs to operate post-resolve, because the inputs could be
+ * `[ '${Token[TOKEN.9]}', '${Token[TOKEN.10]}', '${Token[TOKEN.20]}' ]`, which
+ * still all resolve to the same string value.
+ *
+ * Needs to JSON.stringify() results because strings could resolve to literal
+ * strings but could also resolve to `{ Fn::Join: [...] }`.
+ */
+export class UniqueStringSet implements IResolvable, IPostProcessor {
+  public static from(fn: () => string[]) {
+    return Token.asList(new UniqueStringSet(fn));
+  }
+
+  public readonly creationStack: string[];
+
+  private constructor(private readonly fn: () => string[]) {
+    this.creationStack = captureStackTrace();
+  }
+
+  public resolve(context: IResolveContext) {
+    context.registerPostProcessor(this);
+    return this.fn();
+  }
+
+  public postProcess(input: any, _context: IResolveContext) {
+    if (!Array.isArray(input)) { return input; }
+    if (input.length === 0) { return undefined; }
+
+    const uniq: Record<string, any> = {};
+    for (const el of input) {
+      uniq[JSON.stringify(el)] = el;
+    }
+    return Object.values(uniq);
+  }
+
+  public toString(): string {
+    return Token.asString(this);
+  }
 }

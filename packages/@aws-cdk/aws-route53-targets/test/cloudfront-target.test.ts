@@ -1,5 +1,5 @@
-import '@aws-cdk/assert/jest';
-import { SynthUtils } from '@aws-cdk/assert';
+import '@aws-cdk/assert-internal/jest';
+import { SynthUtils } from '@aws-cdk/assert-internal';
 import * as cloudfront from '@aws-cdk/aws-cloudfront';
 import * as route53 from '@aws-cdk/aws-route53';
 import * as s3 from '@aws-cdk/aws-s3';
@@ -67,7 +67,7 @@ test('use CloudFront as record target', () => {
         s3OriginSource: {
           s3BucketSource: sourceBucket,
         },
-        behaviors: [ {isDefaultBehavior: true}],
+        behaviors: [{ isDefaultBehavior: true }],
       },
     ],
   });

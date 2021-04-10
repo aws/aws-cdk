@@ -1,5 +1,6 @@
-import '@aws-cdk/assert/jest';
+import '@aws-cdk/assert-internal/jest';
 import * as cdk from '@aws-cdk/core';
+import * as constructs from 'constructs';
 import * as stepfunctions from '../lib';
 
 describe('States Language', () => {
@@ -362,7 +363,7 @@ describe('States Language', () => {
   test('States can have error branches', () => {
     // GIVEN
     const stack = new cdk.Stack();
-    const task1 = new stepfunctions.Task(stack, 'Task1', { task: new FakeTask()});
+    const task1 = new stepfunctions.Task(stack, 'Task1', { task: new FakeTask() });
     const failure = new stepfunctions.Fail(stack, 'Failed', { error: 'DidNotWork', cause: 'We got stuck' });
 
     // WHEN
@@ -405,8 +406,8 @@ describe('States Language', () => {
         Task1: {
           Type: 'Task',
           Resource: 'resource',
-          Catch: [ { ErrorEquals: ['States.ALL'], Next: 'Failed', ResultPath: '$.some_error' } ],
-          Retry: [ { ErrorEquals: ['HTTPError'], MaxAttempts: 2 } ],
+          Catch: [{ ErrorEquals: ['States.ALL'], Next: 'Failed', ResultPath: '$.some_error' }],
+          Retry: [{ ErrorEquals: ['HTTPError'], MaxAttempts: 2 }],
           Next: 'Failed',
         },
         Failed: {
@@ -506,7 +507,7 @@ describe('States Language', () => {
       .next(task3.addCatch(errorHandler));
 
     // THEN
-    const sharedTaskProps = { Type: 'Task', Resource: 'resource', Catch: [ { ErrorEquals: ['States.ALL'], Next: 'ErrorHandler' } ] };
+    const sharedTaskProps = { Type: 'Task', Resource: 'resource', Catch: [{ ErrorEquals: ['States.ALL'], Next: 'ErrorHandler' }] };
     expect(render(chain)).toStrictEqual({
       StartAt: 'Task1',
       States: {
@@ -692,7 +693,7 @@ describe('States Language', () => {
 class ReusableStateMachine extends stepfunctions.StateMachineFragment {
   public readonly startState: stepfunctions.State;
   public readonly endStates: stepfunctions.INextable[];
-  constructor(scope: cdk.Construct, id: string) {
+  constructor(scope: constructs.Construct, id: string) {
     super(scope, id);
 
     const choice = new stepfunctions.Choice(this, 'Choice')
@@ -709,7 +710,7 @@ class SimpleChain extends stepfunctions.StateMachineFragment {
   public readonly endStates: stepfunctions.INextable[];
 
   private readonly task2: stepfunctions.Task;
-  constructor(scope: cdk.Construct, id: string) {
+  constructor(scope: constructs.Construct, id: string) {
     super(scope, id);
 
     const task1 = new stepfunctions.Task(this, 'Task1', { task: new FakeTask() });

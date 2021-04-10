@@ -1,8 +1,11 @@
+import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import { IVpcEndpoint } from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
-import { CfnOutput, Construct, IResource as IResourceBase, Resource, Stack } from '@aws-cdk/core';
+import { CfnOutput, IResource as IResourceBase, Resource, Stack } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { ApiDefinition } from './api-definition';
 import { ApiKey, ApiKeyOptions, IApiKey } from './api-key';
+import { ApiGatewayMetrics } from './apigateway-canned-metrics.generated';
 import { CfnAccount, CfnRestApi } from './apigateway.generated';
 import { CorsOptions } from './cors';
 import { Deployment } from './deployment';
@@ -159,11 +162,19 @@ export interface RestApiBaseProps {
    * @default - when no export name is given, output will be created without export
    */
   readonly endpointExportName?: string;
+
+  /**
+   * A list of the endpoint types of the API. Use this property when creating
+   * an API.
+   *
+   * @default EndpointType.EDGE
+   */
+  readonly endpointTypes?: EndpointType[];
 }
 
 /**
  * Represents the props that all Rest APIs share.
- * @deprecated - superceded by `RestApiBaseProps`
+ * @deprecated - superseded by `RestApiBaseProps`
  */
 export interface RestApiOptions extends RestApiBaseProps, ResourceOptions {
 }
@@ -218,18 +229,9 @@ export interface RestApiProps extends RestApiOptions {
    * The EndpointConfiguration property type specifies the endpoint types of a REST API
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-apigateway-restapi-endpointconfiguration.html
    *
-   * @default - No endpoint configuration
+   * @default EndpointType.EDGE
    */
   readonly endpointConfiguration?: EndpointConfiguration;
-
-  /**
-   * A list of the endpoint types of the API. Use this property when creating
-   * an API.
-   *
-   * @default - No endpoint types.
-   * @deprecated this property is deprecated, use endpointConfiguration instead
-   */
-  readonly endpointTypes?: EndpointType[];
 }
 
 /**
@@ -248,7 +250,6 @@ export interface SpecRestApiProps extends RestApiBaseProps {
  * Base implementation that are common to various implementations of IRestApi
  */
 export abstract class RestApiBase extends Resource implements IRestApi {
-
   /**
    * Checks if the given object is an instance of RestApiBase.
    * @internal
@@ -300,13 +301,17 @@ export abstract class RestApiBase extends Resource implements IRestApi {
    */
   public deploymentStage!: Stage;
 
+  /**
+   * A human friendly name for this Rest API. Note that this is different from `restApiId`.
+   */
+  public readonly restApiName: string;
+
   private _latestDeployment?: Deployment;
   private _domainName?: DomainName;
 
   constructor(scope: Construct, id: string, props: RestApiBaseProps = { }) {
-    super(scope, id, {
-      physicalName: props.restApiName || id,
-    });
+    super(scope, id);
+    this.restApiName = props.restApiName ?? id;
 
     Object.defineProperty(this, RESTAPI_SYMBOL, { value: true });
   }
@@ -375,6 +380,98 @@ export abstract class RestApiBase extends Resource implements IRestApi {
   }
 
   /**
+   * Add an ApiKey
+   */
+  public addApiKey(id: string, options?: ApiKeyOptions): IApiKey {
+    return new ApiKey(this, id, {
+      resources: [this],
+      ...options,
+    });
+  }
+
+  /**
+   * Returns the given named metric for this API
+   */
+  public metric(metricName: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return new cloudwatch.Metric({
+      namespace: 'AWS/ApiGateway',
+      metricName,
+      dimensions: { ApiName: this.restApiName },
+      ...props,
+    }).attachTo(this);
+  }
+
+  /**
+   * Metric for the number of client-side errors captured in a given period.
+   *
+   * Default: sum over 5 minutes
+   */
+  public metricClientError(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return this.cannedMetric(ApiGatewayMetrics._4XxErrorSum, props);
+  }
+
+  /**
+   * Metric for the number of server-side errors captured in a given period.
+   *
+   * Default: sum over 5 minutes
+   */
+  public metricServerError(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return this.cannedMetric(ApiGatewayMetrics._5XxErrorSum, props);
+  }
+
+  /**
+   * Metric for the number of requests served from the API cache in a given period.
+   *
+   * Default: sum over 5 minutes
+   */
+  public metricCacheHitCount(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return this.cannedMetric(ApiGatewayMetrics.cacheHitCountSum, props);
+  }
+
+  /**
+   * Metric for the number of requests served from the backend in a given period,
+   * when API caching is enabled.
+   *
+   * Default: sum over 5 minutes
+   */
+  public metricCacheMissCount(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return this.cannedMetric(ApiGatewayMetrics.cacheMissCountSum, props);
+  }
+
+  /**
+   * Metric for the total number API requests in a given period.
+   *
+   * Default: sample count over 5 minutes
+   */
+  public metricCount(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return this.cannedMetric(ApiGatewayMetrics.countSum, {
+      statistic: 'SampleCount',
+      ...props,
+    });
+  }
+
+  /**
+   * Metric for the time between when API Gateway relays a request to the backend
+   * and when it receives a response from the backend.
+   *
+   * Default: average over 5 minutes.
+   */
+  public metricIntegrationLatency(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return this.cannedMetric(ApiGatewayMetrics.integrationLatencyAverage, props);
+  }
+
+  /**
+   * The time between when API Gateway receives a request from a client
+   * and when it returns a response to the client.
+   * The latency includes the integration latency and other API Gateway overhead.
+   *
+   * Default: average over 5 minutes.
+   */
+  public metricLatency(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return this.cannedMetric(ApiGatewayMetrics.latencyAverage, props);
+  }
+
+  /**
    * Internal API used by `Method` to keep an inventory of methods at the API
    * level for validation purposes.
    *
@@ -384,7 +481,19 @@ export abstract class RestApiBase extends Resource implements IRestApi {
     ignore(method);
   }
 
-  protected configureCloudWatchRole(apiResource: CfnRestApi) {
+  /**
+   * Associates a Deployment resource with this REST API.
+   *
+   * @internal
+   */
+  public _attachDeployment(deployment: Deployment) {
+    ignore(deployment);
+  }
+
+  /**
+   * @internal
+   */
+  protected _configureCloudWatchRole(apiResource: CfnRestApi) {
     const role = new iam.Role(this, 'CloudWatchRole', {
       assumedBy: new iam.ServicePrincipal('apigateway.amazonaws.com'),
       managedPolicies: [iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonAPIGatewayPushToCloudWatchLogs')],
@@ -397,8 +506,25 @@ export abstract class RestApiBase extends Resource implements IRestApi {
     resource.node.addDependency(apiResource);
   }
 
-  protected configureDeployment(props: RestApiOptions) {
-    const deploy = props.deploy === undefined ? true : props.deploy;
+  /**
+   * @deprecated This method will be made internal. No replacement
+   */
+  protected configureCloudWatchRole(apiResource: CfnRestApi) {
+    this._configureCloudWatchRole(apiResource);
+  }
+
+  /**
+   * @deprecated This method will be made internal. No replacement
+   */
+  protected configureDeployment(props: RestApiBaseProps) {
+    this._configureDeployment(props);
+  }
+
+  /**
+   * @internal
+   */
+  protected _configureDeployment(props: RestApiBaseProps) {
+    const deploy = props.deploy ?? true;
     if (deploy) {
 
       this._latestDeployment = new Deployment(this, 'Deployment', {
@@ -422,6 +548,32 @@ export abstract class RestApiBase extends Resource implements IRestApi {
         throw new Error('Cannot set \'deployOptions\' if \'deploy\' is disabled');
       }
     }
+  }
+
+  /**
+   * @internal
+   */
+  protected _configureEndpoints(props: RestApiProps): CfnRestApi.EndpointConfigurationProperty | undefined {
+    if (props.endpointTypes && props.endpointConfiguration) {
+      throw new Error('Only one of the RestApi props, endpointTypes or endpointConfiguration, is allowed');
+    }
+    if (props.endpointConfiguration) {
+      return {
+        types: props.endpointConfiguration.types,
+        vpcEndpointIds: props.endpointConfiguration?.vpcEndpoints?.map(vpcEndpoint => vpcEndpoint.vpcEndpointId),
+      };
+    }
+    if (props.endpointTypes) {
+      return { types: props.endpointTypes };
+    }
+    return undefined;
+  }
+
+  private cannedMetric(fn: (dims: { ApiName: string }) => cloudwatch.MetricProps, props?: cloudwatch.MetricOptions) {
+    return new cloudwatch.Metric({
+      ...fn({ ApiName: this.restApiName }),
+      ...props,
+    }).attachTo(this);
   }
 }
 
@@ -458,11 +610,12 @@ export class SpecRestApi extends RestApiBase {
     super(scope, id, props);
     const apiDefConfig = props.apiDefinition.bind(this);
     const resource = new CfnRestApi(this, 'Resource', {
-      name: this.physicalName,
+      name: this.restApiName,
       policy: props.policy,
       failOnWarnings: props.failOnWarnings,
-      body: apiDefConfig.inlineDefinition ? apiDefConfig.inlineDefinition : undefined,
+      body: apiDefConfig.inlineDefinition ?? undefined,
       bodyS3Location: apiDefConfig.inlineDefinition ? undefined : apiDefConfig.s3Location,
+      endpointConfiguration: this._configureEndpoints(props),
       parameters: props.parameters,
     });
     this.node.defaultChild = resource;
@@ -470,14 +623,14 @@ export class SpecRestApi extends RestApiBase {
     this.restApiRootResourceId = resource.attrRootResourceId;
     this.root = new RootResource(this, {}, this.restApiRootResourceId);
 
-    this.configureDeployment(props);
+    this._configureDeployment(props);
     if (props.domainName) {
       this.addDomainName('CustomDomain', props.domainName);
     }
 
-    const cloudWatchRole = props.cloudWatchRole !== undefined ? props.cloudWatchRole : true;
+    const cloudWatchRole = props.cloudWatchRole ?? true;
     if (cloudWatchRole) {
-      this.configureCloudWatchRole(resource);
+      this._configureCloudWatchRole(resource);
     }
   }
 }
@@ -550,30 +703,35 @@ export class RestApi extends RestApiBase {
    */
   public readonly methods = new Array<Method>();
 
+  /**
+   * This list of deployments bound to this RestApi
+   */
+  private readonly deployments = new Array<Deployment>();
+
   constructor(scope: Construct, id: string, props: RestApiProps = { }) {
     super(scope, id, props);
 
     const resource = new CfnRestApi(this, 'Resource', {
-      name: this.physicalName,
+      name: this.restApiName,
       description: props.description,
       policy: props.policy,
       failOnWarnings: props.failOnWarnings,
       minimumCompressionSize: props.minimumCompressionSize,
       binaryMediaTypes: props.binaryMediaTypes,
-      endpointConfiguration: this.configureEndpoints(props),
+      endpointConfiguration: this._configureEndpoints(props),
       apiKeySourceType: props.apiKeySourceType,
-      cloneFrom: props.cloneFrom ? props.cloneFrom.restApiId : undefined,
+      cloneFrom: props.cloneFrom?.restApiId,
       parameters: props.parameters,
     });
     this.node.defaultChild = resource;
     this.restApiId = resource.ref;
 
-    const cloudWatchRole = props.cloudWatchRole !== undefined ? props.cloudWatchRole : true;
+    const cloudWatchRole = props.cloudWatchRole ?? true;
     if (cloudWatchRole) {
-      this.configureCloudWatchRole(resource);
+      this._configureCloudWatchRole(resource);
     }
 
-    this.configureDeployment(props);
+    this._configureDeployment(props);
     if (props.domainName) {
       this.addDomainName('CustomDomain', props.domainName);
     }
@@ -587,16 +745,6 @@ export class RestApi extends RestApiBase {
    */
   public get url() {
     return this.urlForPath();
-  }
-
-  /**
-   * Add an ApiKey
-   */
-  public addApiKey(id: string, options?: ApiKeyOptions): IApiKey {
-    return new ApiKey(this, id, {
-      resources: [this],
-      ...options,
-    });
   }
 
   /**
@@ -627,6 +775,29 @@ export class RestApi extends RestApiBase {
    */
   public _attachMethod(method: Method) {
     this.methods.push(method);
+
+    // add this method as a dependency to all deployments defined for this api
+    // when additional deployments are added, _attachDeployment is called and
+    // this method will be added there.
+    for (const dep of this.deployments) {
+      dep._addMethodDependency(method);
+    }
+  }
+
+  /**
+   * Attaches a deployment to this REST API.
+   *
+   * @internal
+   */
+  public _attachDeployment(deployment: Deployment) {
+    this.deployments.push(deployment);
+
+    // add all methods that were already defined as dependencies of this
+    // deployment when additional methods are added, _attachMethod is called and
+    // it will be added as a dependency to this deployment.
+    for (const method of this.methods) {
+      deployment._addMethodDependency(method);
+    }
   }
 
   /**
@@ -634,26 +805,10 @@ export class RestApi extends RestApiBase {
    */
   protected validate() {
     if (this.methods.length === 0) {
-      return [ "The REST API doesn't contain any methods" ];
+      return ["The REST API doesn't contain any methods"];
     }
 
     return [];
-  }
-
-  private configureEndpoints(props: RestApiProps): CfnRestApi.EndpointConfigurationProperty | undefined {
-    if (props.endpointTypes && props.endpointConfiguration) {
-      throw new Error('Only one of the RestApi props, endpointTypes or endpointConfiguration, is allowed');
-    }
-    if (props.endpointConfiguration) {
-      return {
-        types: props.endpointConfiguration.types,
-        vpcEndpointIds: props.endpointConfiguration?.vpcEndpoints?.map(vpcEndpoint => vpcEndpoint.vpcEndpointId),
-      };
-    }
-    if (props.endpointTypes) {
-      return { types: props.endpointTypes };
-    }
-    return undefined;
   }
 }
 
@@ -666,7 +821,7 @@ export interface EndpointConfiguration {
   /**
    * A list of endpoint types of an API or its custom domain name.
    *
-   * @default - no endpoint types.
+   * @default EndpointType.EDGE
    */
   readonly types: EndpointType[];
 

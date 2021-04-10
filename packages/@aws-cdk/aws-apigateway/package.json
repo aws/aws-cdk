@@ -17,15 +17,18 @@
       "dotnet": {
         "namespace": "Amazon.CDK.AWS.APIGateway",
         "packageId": "Amazon.CDK.AWS.APIGateway",
-        "signAssembly": true,
-        "assemblyOriginatorKeyFile": "../../key.snk",
         "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
       },
       "python": {
         "distName": "aws-cdk.aws-apigateway",
-        "module": "aws_cdk.aws_apigateway"
+        "module": "aws_cdk.aws_apigateway",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
       }
-    }
+    },
+    "projectReferences": true
   },
   "repository": {
     "type": "git",
@@ -42,12 +45,18 @@
     "package": "cdk-package",
     "awslint": "cdk-awslint",
     "cfn2ts": "cfn2ts",
-    "build+test+package": "npm run build+test && npm run package",
-    "build+test": "npm run build && npm test",
-    "compat": "cdk-compat"
+    "build+test+package": "yarn build+test && yarn package",
+    "build+test": "yarn build && yarn test",
+    "compat": "cdk-compat",
+    "gen": "cfn2ts",
+    "rosetta:extract": "yarn --silent jsii-rosetta extract"
   },
   "cdk-build": {
-    "cloudformation": "AWS::ApiGateway"
+    "cloudformation": "AWS::ApiGateway",
+    "env": {
+      "AWSLINT_BASE_CONSTRUCT": true
+    },
+    "jest": true
   },
   "keywords": [
     "aws",
@@ -62,17 +71,16 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "0.0.0",
-    "@types/nodeunit": "^0.0.31",
     "cdk-build-tools": "0.0.0",
     "cdk-integ-tools": "0.0.0",
     "cfn2ts": "0.0.0",
-    "nodeunit": "^0.11.3",
-    "pkglint": "0.0.0"
+    "pkglint": "0.0.0",
+    "@aws-cdk/assert-internal": "0.0.0"
   },
   "dependencies": {
-    "@aws-cdk/assets": "0.0.0",
     "@aws-cdk/aws-certificatemanager": "0.0.0",
+    "@aws-cdk/aws-cloudwatch": "0.0.0",
+    "@aws-cdk/aws-cognito": "0.0.0",
     "@aws-cdk/aws-ec2": "0.0.0",
     "@aws-cdk/aws-elasticloadbalancingv2": "0.0.0",
     "@aws-cdk/aws-iam": "0.0.0",
@@ -82,12 +90,13 @@
     "@aws-cdk/aws-s3-assets": "0.0.0",
     "@aws-cdk/core": "0.0.0",
     "@aws-cdk/cx-api": "0.0.0",
-    "constructs": "^3.0.2"
+    "constructs": "^3.3.69"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/assets": "0.0.0",
     "@aws-cdk/aws-certificatemanager": "0.0.0",
+    "@aws-cdk/aws-cloudwatch": "0.0.0",
+    "@aws-cdk/aws-cognito": "0.0.0",
     "@aws-cdk/aws-ec2": "0.0.0",
     "@aws-cdk/aws-elasticloadbalancingv2": "0.0.0",
     "@aws-cdk/aws-iam": "0.0.0",
@@ -97,7 +106,7 @@
     "@aws-cdk/aws-s3-assets": "0.0.0",
     "@aws-cdk/core": "0.0.0",
     "@aws-cdk/cx-api": "0.0.0",
-    "constructs": "^3.0.2"
+    "constructs": "^3.3.69"
   },
   "engines": {
     "node": ">= 10.13.0 <13 || >=13.7.0"
@@ -115,7 +124,6 @@
       "from-method:@aws-cdk/aws-apigateway.Resource",
       "duration-prop-type:@aws-cdk/aws-apigateway.QuotaSettings.period",
       "duration-prop-type:@aws-cdk/aws-apigateway.ResponseType.INTEGRATION_TIMEOUT",
-      "from-method:@aws-cdk/aws-apigateway.ApiKey",
       "ref-via-interface:@aws-cdk/aws-apigateway.ApiKeyProps.resources",
       "props-physical-name:@aws-cdk/aws-apigateway.DeploymentProps",
       "props-physical-name:@aws-cdk/aws-apigateway.MethodProps",
@@ -307,12 +315,20 @@
       "attribute-tag:@aws-cdk/aws-apigateway.LambdaAuthorizer.authorizerArn",
       "attribute-tag:@aws-cdk/aws-apigateway.RequestAuthorizer.authorizerArn",
       "attribute-tag:@aws-cdk/aws-apigateway.TokenAuthorizer.authorizerArn",
-      "from-method:@aws-cdk/aws-apigateway.Stage"
+      "attribute-tag:@aws-cdk/aws-apigateway.RestApi.restApiName",
+      "attribute-tag:@aws-cdk/aws-apigateway.SpecRestApi.restApiName",
+      "attribute-tag:@aws-cdk/aws-apigateway.LambdaRestApi.restApiName",
+      "from-method:@aws-cdk/aws-apigateway.Stage",
+      "resource-attribute:@aws-cdk/aws-apigateway.ApiKey.apiKeyId",
+      "resource-attribute:@aws-cdk/aws-apigateway.RateLimitedApiKey.apiKeyId"
     ]
   },
   "stability": "stable",
   "awscdkio": {
     "announce": false
   },
-  "maturity": "stable"
+  "maturity": "stable",
+  "publishConfig": {
+    "tag": "latest"
+  }
 }

@@ -1,6 +1,23 @@
 import { Grant, IGrantable } from '@aws-cdk/aws-iam';
-import { Construct, IResource, Lazy, Resource, Stack } from '@aws-cdk/core';
+import { IResource, Lazy, Names, Resource, Stack } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CfnProfilingGroup } from './codeguruprofiler.generated';
+
+/**
+ * The compute platform of the profiling group.
+ */
+export enum ComputePlatform {
+  /**
+   * Use AWS_LAMBDA if your application runs on AWS Lambda.
+   */
+  AWS_LAMBDA = 'AWSLambda',
+
+  /**
+   * Use Default if your application runs on a compute platform that is not AWS Lambda,
+   * such an Amazon EC2 instance, an on-premises server, or a different platform.
+   */
+  DEFAULT = 'Default',
+}
 
 /**
  * IResource represents a Profiling Group.
@@ -97,6 +114,13 @@ export interface ProfilingGroupProps {
    */
   readonly profilingGroupName?: string;
 
+  /**
+   * The compute platform of the profiling group.
+   *
+   * @default ComputePlatform.DEFAULT
+   */
+  readonly computePlatform?: ComputePlatform;
+
 }
 
 /**
@@ -153,11 +177,12 @@ export class ProfilingGroup extends ProfilingGroupBase {
 
   constructor(scope: Construct, id: string, props: ProfilingGroupProps = {}) {
     super(scope, id, {
-      physicalName: props.profilingGroupName ?? Lazy.stringValue({ produce: () => this.generateUniqueId() }),
+      physicalName: props.profilingGroupName ?? Lazy.string({ produce: () => this.generateUniqueId() }),
     });
 
     const profilingGroup = new CfnProfilingGroup(this, 'ProfilingGroup', {
       profilingGroupName: this.physicalName,
+      computePlatform: props.computePlatform,
     });
 
     this.profilingGroupName = this.getResourceNameAttribute(profilingGroup.ref);
@@ -170,7 +195,7 @@ export class ProfilingGroup extends ProfilingGroupBase {
   }
 
   private generateUniqueId(): string {
-    const name = this.node.uniqueId;
+    const name = Names.uniqueId(this);
     if (name.length > 240) {
       return name.substring(0, 120) + name.substring(name.length - 120);
     }

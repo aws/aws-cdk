@@ -1,4 +1,4 @@
-import '@aws-cdk/assert/jest';
+import '@aws-cdk/assert-internal/jest';
 import { Certificate } from '@aws-cdk/aws-certificatemanager';
 import { CfnParameter, Stack } from '@aws-cdk/core';
 import { UserPool, UserPoolDomain } from '../lib';
@@ -152,6 +152,18 @@ describe('User Pool Client', () => {
     expect(cfDomainNameSecond).toEqual(cfDomainNameFirst);
   });
 
+  test('import', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    const client = UserPoolDomain.fromDomainName(stack, 'Domain', 'domain-name-1');
+
+    // THEN
+    expect(client.domainName).toEqual('domain-name-1');
+    expect(stack).not.toHaveResource('AWS::Cognito::UserPoolDomain');
+  });
+
   describe('signInUrl', () => {
     test('returns the expected URL', () => {
       // GIVEN
@@ -164,7 +176,7 @@ describe('User Pool Client', () => {
       });
       const client = pool.addClient('Client', {
         oAuth: {
-          callbackUrls: [ 'https://example.com' ],
+          callbackUrls: ['https://example.com'],
         },
       });
 
@@ -200,7 +212,7 @@ describe('User Pool Client', () => {
       });
       const client = pool.addClient('Client', {
         oAuth: {
-          callbackUrls: [ 'https://example.com' ],
+          callbackUrls: ['https://example.com'],
         },
       });
 

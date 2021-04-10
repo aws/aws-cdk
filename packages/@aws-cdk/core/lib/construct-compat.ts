@@ -10,10 +10,10 @@
  * This file, in its entirety, is expected to be removed in v2.0.
  */
 
-import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as constructs from 'constructs';
-import { IAspect } from './aspect';
+import { Annotations } from './annotations';
+import { IAspect, Aspects } from './aspect';
 import { IDependable } from './dependency';
 import { Token } from './token';
 
@@ -64,7 +64,7 @@ export class Construct extends constructs.Construct implements IConstruct {
    */
   public readonly node: ConstructNode;
 
-  constructor(scope: Construct, id: string) {
+  constructor(scope: constructs.Construct, id: string) {
     super(scope, id, {
       nodeFactory: {
         createNode: (h: constructs.Construct, s: constructs.IConstruct, i: string) =>
@@ -267,7 +267,13 @@ export class ConstructNode {
    */
   public readonly _actualNode: constructs.Node;
 
+  /**
+   * The Construct class that hosts this API.
+   */
+  private readonly host: Construct;
+
   constructor(host: Construct, scope: IConstruct, id: string) {
+    this.host = host;
     this._actualNode = new constructs.Node(host, scope, id);
 
     // store a back reference on _actualNode so we can our ConstructNode from it
@@ -302,10 +308,30 @@ export class ConstructNode {
   public get path(): string { return this._actualNode.path; }
 
   /**
-   * A tree-global unique alphanumeric identifier for this construct.
-   * Includes all components of the tree.
+   * A tree-global unique alphanumeric identifier for this construct. Includes
+   * all components of the tree.
+   *
+   * @deprecated use `node.addr` to obtain a consistent 42 character address for
+   * this node (see https://github.com/aws/constructs/pull/314)
    */
   public get uniqueId(): string { return this._actualNode.uniqueId; }
+
+  /**
+   * Returns an opaque tree-unique address for this construct.
+   *
+   * Addresses are 42 characters hexadecimal strings. They begin with "c8"
+   * followed by 40 lowercase hexadecimal characters (0-9a-f).
+   *
+   * Addresses are calculated using a SHA-1 of the components of the construct
+   * path.
+   *
+   * To enable refactorings of construct trees, constructs with the ID `Default`
+   * will be excluded from the calculation. In those cases constructs in the
+   * same tree may have the same addreess.
+   *
+   * @example c83a2846e506bcc5f10682b564084bca2d275709ee
+   */
+  public get addr(): string { return this._actualNode.addr; }
 
   /**
    * Return a direct child by id, or undefined
@@ -377,7 +403,7 @@ export class ConstructNode {
    * Context is usually initialized at the root, but can be overridden at any point in the tree.
    *
    * @param key The context key
-   * @returns The context value or `undefined` if there is no context value for thie key.
+   * @returns The context value or `undefined` if there is no context value for the key.
    */
   public tryGetContext(key: string): any {
     if (Token.isUnresolved(key)) {
@@ -387,10 +413,16 @@ export class ConstructNode {
   }
 
   /**
+   * DEPRECATED
+   * @deprecated use `metadataEntry`
+   */
+  public get metadata() { return this._actualNode.metadata as cxapi.MetadataEntry[]; }
+
+  /**
    * An immutable array of metadata objects associated with this construct.
    * This can be used, for example, to implement support for deprecation notices, source mapping, etc.
    */
-  public get metadata() { return this._actualNode.metadata as cxapi.MetadataEntry[]; }
+  public get metadataEntry() { return this._actualNode.metadata; }
 
   /**
    * Adds a metadata entry to this construct.
@@ -405,37 +437,53 @@ export class ConstructNode {
   public addMetadata(type: string, data: any, fromFunction?: any): void { this._actualNode.addMetadata(type, data, fromFunction); }
 
   /**
-   * Adds a { "info": <message> } metadata entry to this construct.
+   * DEPRECATED: Adds a { "info": <message> } metadata entry to this construct.
    * The toolkit will display the info message when apps are synthesized.
    * @param message The info message.
+   * @deprecated use `Annotations.of(construct).addInfo()`
    */
   public addInfo(message: string): void {
-    this._actualNode.addMetadata(cxschema.ArtifactMetadataEntryType.INFO, message);
+    Annotations.of(this.host).addInfo(message);
   }
 
   /**
-   * Adds a { "warning": <message> } metadata entry to this construct.
+   * DEPRECATED: Adds a { "warning": <message> } metadata entry to this construct.
    * The toolkit will display the warning when an app is synthesized, or fail
    * if run in --strict mode.
    * @param message The warning message.
+   * @deprecated use `Annotations.of(construct).addWarning()`
    */
   public addWarning(message: string): void {
-    this._actualNode.addMetadata(cxschema.ArtifactMetadataEntryType.WARN, message);
+    Annotations.of(this.host).addWarning(message);
   }
 
   /**
-   * Adds an { "error": <message> } metadata entry to this construct.
+   * DEPRECATED: Adds an { "error": <message> } metadata entry to this construct.
    * The toolkit will fail synthesis when errors are reported.
    * @param message The error message.
+   * @deprecated use `Annotations.of(construct).addError()`
    */
   public addError(message: string) {
-    this._actualNode.addMetadata(cxschema.ArtifactMetadataEntryType.ERROR, message);
+    Annotations.of(this.host).addError(message);
   }
 
   /**
-   * Applies the aspect to this Constructs node
+   * DEPRECATED: Applies the aspect to this Constructs node
+   *
+   * @deprecated This API is going to be removed in the next major version of
+   * the AWS CDK. Please use `Aspects.of(scope).add()` instead.
    */
-  public applyAspect(aspect: IAspect): void { this._actualNode.applyAspect(aspect); }
+  public applyAspect(aspect: IAspect): void {
+    Annotations.of(this.host).addDeprecation('@aws-cdk/core.ConstructNode.applyAspect', 'Use "Aspects.of(construct).add(aspect)" instead');
+    Aspects.of(this.host).add(aspect);
+  }
+
+  /**
+   * Add a validator to this construct Node
+   */
+  public addValidation(validation: constructs.IValidation) {
+    this._actualNode.addValidation(validation);
+  }
 
   /**
    * All parent scopes of this construct.

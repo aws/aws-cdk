@@ -1,6 +1,10 @@
-import { AssetStaging, Construct } from '@aws-cdk/core';
+import { AssetStaging } from '@aws-cdk/core';
 import { toSymlinkFollow } from './compat';
 import { FingerprintOptions } from './fs/options';
+
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct } from '@aws-cdk/core';
 
 /**
  * Deprecated
@@ -22,6 +26,7 @@ export class Staging extends AssetStaging {
     super(scope, id, {
       sourcePath: props.sourcePath,
       exclude: props.exclude,
+      ignoreMode: props.ignoreMode,
       extraHash: props.extraHash,
       follow: toSymlinkFollow(props.follow),
     });

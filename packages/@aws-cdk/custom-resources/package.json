@@ -17,15 +17,18 @@
       "dotnet": {
         "namespace": "Amazon.CDK.CustomResources",
         "packageId": "Amazon.CDK.AWS.CustomResources",
-        "signAssembly": true,
-        "assemblyOriginatorKeyFile": "../../key.snk",
         "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
       },
       "python": {
         "distName": "aws-cdk.custom-resources",
-        "module": "aws_cdk.custom_resources"
+        "module": "aws_cdk.custom_resources",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 1"
+        ]
       }
-    }
+    },
+    "projectReferences": true
   },
   "repository": {
     "type": "git",
@@ -41,15 +44,17 @@
     "pkglint": "pkglint -f",
     "package": "cdk-package",
     "awslint": "cdk-awslint",
-    "build+test+package": "npm run build+test && npm run package",
-    "build+test": "npm run build && npm test",
-    "compat": "cdk-compat"
+    "build+test+package": "yarn build+test && yarn package",
+    "build+test": "yarn build && yarn test",
+    "compat": "cdk-compat",
+    "gen": "cp -f $(node -p 'require.resolve(\"aws-sdk/apis/metadata.json\")') lib/aws-custom-resource/sdk-api-metadata.json && rm -rf test/aws-custom-resource/cdk.out",
+    "rosetta:extract": "yarn --silent jsii-rosetta extract"
   },
   "cdk-build": {
-    "pre": [
-      "cp -f $(node -p 'require.resolve(\"aws-sdk/apis/metadata.json\")') lib/aws-custom-resource/sdk-api-metadata.json && rm -rf test/aws-custom-resource/cdk.out"
-    ],
-    "jest": true
+    "jest": true,
+    "env": {
+      "AWSLINT_BASE_CONSTRUCT": true
+    }
   },
   "keywords": [
     "aws",
@@ -66,22 +71,22 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "0.0.0",
     "@aws-cdk/aws-events": "0.0.0",
     "@aws-cdk/aws-s3": "0.0.0",
     "@aws-cdk/aws-ssm": "0.0.0",
-    "@types/aws-lambda": "^8.10.39",
-    "@types/fs-extra": "^8.1.0",
-    "@types/sinon": "^9.0.4",
-    "aws-sdk": "^2.715.0",
+    "@types/aws-lambda": "^8.10.73",
+    "@types/fs-extra": "^8.1.1",
+    "@types/sinon": "^9.0.11",
+    "aws-sdk": "^2.848.0",
     "aws-sdk-mock": "^5.1.0",
     "cdk-build-tools": "0.0.0",
     "cdk-integ-tools": "0.0.0",
     "cfn2ts": "0.0.0",
-    "fs-extra": "^9.0.1",
-    "nock": "^13.0.2",
+    "fs-extra": "^9.1.0",
+    "nock": "^13.0.11",
     "pkglint": "0.0.0",
-    "sinon": "^9.0.2"
+    "sinon": "^9.2.4",
+    "@aws-cdk/assert-internal": "0.0.0"
   },
   "dependencies": {
     "@aws-cdk/aws-cloudformation": "0.0.0",
@@ -89,8 +94,9 @@
     "@aws-cdk/aws-lambda": "0.0.0",
     "@aws-cdk/aws-logs": "0.0.0",
     "@aws-cdk/aws-sns": "0.0.0",
+    "@aws-cdk/aws-ec2": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "constructs": "^3.0.2"
+    "constructs": "^3.3.69"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
@@ -99,8 +105,9 @@
     "@aws-cdk/aws-lambda": "0.0.0",
     "@aws-cdk/aws-logs": "0.0.0",
     "@aws-cdk/aws-sns": "0.0.0",
+    "@aws-cdk/aws-ec2": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "constructs": "^3.0.2"
+    "constructs": "^3.3.69"
   },
   "engines": {
     "node": ">= 10.13.0 <13 || >=13.7.0"
@@ -114,5 +121,8 @@
   "awscdkio": {
     "announce": false
   },
-  "maturity": "stable"
+  "maturity": "stable",
+  "publishConfig": {
+    "tag": "latest"
+  }
 }

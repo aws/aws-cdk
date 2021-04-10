@@ -2,9 +2,15 @@ import * as crypto from 'crypto';
 
 import { AccountRootPrincipal, Grant, IGrantable } from '@aws-cdk/aws-iam';
 import { IKey, ViaServicePrincipal } from '@aws-cdk/aws-kms';
-import { Construct, IResource, Resource, Size, SizeRoundingBehavior, Stack, Tag, Token } from '@aws-cdk/core';
-import { CfnInstance, CfnVolume } from './ec2.generated';
+import { IResource, Resource, Size, SizeRoundingBehavior, Stack, Token, Tags, Names, RemovalPolicy } from '@aws-cdk/core';
+import { Construct } from 'constructs';
+import { CfnVolume } from './ec2.generated';
 import { IInstance } from './instance';
+
+// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
+// eslint-disable-next-line
+import { Construct as CoreConstruct } from '@aws-cdk/core';
+
 
 /**
  * Block device
@@ -159,35 +165,6 @@ export class BlockDeviceVolume {
 }
 
 /**
- * Synthesize an array of block device mappings from a list of block device
- *
- * @param construct the instance/asg construct, used to host any warning
- * @param blockDevices list of block devices
- */
-export function synthesizeBlockDeviceMappings(construct: Construct, blockDevices: BlockDevice[]): CfnInstance.BlockDeviceMappingProperty[] {
-  return blockDevices.map<CfnInstance.BlockDeviceMappingProperty>(({ deviceName, volume, mappingEnabled }) => {
-    const { virtualName, ebsDevice: ebs } = volume;
-
-    if (ebs) {
-      const { iops, volumeType } = ebs;
-
-      if (!iops) {
-        if (volumeType === EbsDeviceVolumeType.IO1) {
-          throw new Error('iops property is required with volumeType: EbsDeviceVolumeType.IO1');
-        }
-      } else if (volumeType !== EbsDeviceVolumeType.IO1) {
-        construct.node.addWarning('iops will be ignored without volumeType: EbsDeviceVolumeType.IO1');
-      }
-    }
-
-    return {
-      deviceName, ebs, virtualName,
-      noDevice: mappingEnabled === false ? {} : undefined,
-    };
-  });
-}
-
-/**
  * Supported EBS volume types for blockDevices
  */
 export enum EbsDeviceVolumeType {
@@ -197,14 +174,24 @@ export enum EbsDeviceVolumeType {
   STANDARD = 'standard',
 
   /**
-   *  Provisioned IOPS SSD
+   *  Provisioned IOPS SSD - IO1
    */
   IO1 = 'io1',
 
   /**
-   * General Purpose SSD
+   *  Provisioned IOPS SSD - IO2
+   */
+  IO2 = 'io2',
+
+  /**
+   * General Purpose SSD - GP2
    */
   GP2 = 'gp2',
+
+  /**
+   * General Purpose SSD - GP3
+   */
+  GP3 = 'gp3',
 
   /**
    * Throughput Optimized HDD
@@ -217,14 +204,24 @@ export enum EbsDeviceVolumeType {
   SC1 = 'sc1',
 
   /**
-   * General purpose SSD volume that balances price and performance for a wide variety of workloads.
+   * General purpose SSD volume (GP2) that balances price and performance for a wide variety of workloads.
    */
   GENERAL_PURPOSE_SSD = GP2,
 
   /**
-   * Highest-performance SSD volume for mission-critical low-latency or high-throughput workloads.
+   * General purpose SSD volume (GP3) that balances price and performance for a wide variety of workloads.
+   */
+  GENERAL_PURPOSE_SSD_GP3 = GP3,
+
+  /**
+   * Highest-performance SSD volume (IO1) for mission-critical low-latency or high-throughput workloads.
    */
   PROVISIONED_IOPS_SSD = IO1,
+
+  /**
+   * Highest-performance SSD volume (IO2) for mission-critical low-latency or high-throughput workloads.
+   */
+  PROVISIONED_IOPS_SSD_IO2 = IO2,
 
   /**
    * Low-cost HDD volume designed for frequently accessed, throughput-intensive workloads.
@@ -290,14 +287,10 @@ export interface IVolume extends IResource {
    * given the ability to AttachVolume if both the Volume and the destination Instance have that
    * tag applied to them.
    *
-   * If you need to call this method multiple times on different sets of constructs, then provide a
-   * unique `tagKeySuffix` for each call; failure to do so will result in an inability to attach this
-   * volume to some of the grants because it will overwrite the tag.
-   *
    * @param grantee    the principal being granted permission.
    * @param constructs The list of constructs that will have the generated resource tag applied to them.
    * @param tagKeySuffix A suffix to use on the generated Tag key in place of the generated hash value.
-   *                     Defaults to a hash calculated from this volume.
+   *                     Defaults to a hash calculated from this volume and list of constructs. (DEPRECATED)
    */
   grantAttachVolumeByResourceTag(grantee: IGrantable, constructs: Construct[], tagKeySuffix?: string): Grant;
 
@@ -324,7 +317,7 @@ export interface IVolume extends IResource {
    * @param grantee    the principal being granted permission.
    * @param constructs The list of constructs that will have the generated resource tag applied to them.
    * @param tagKeySuffix A suffix to use on the generated Tag key in place of the generated hash value.
-   *                     Defaults to a hash calculated from this volume.
+   *                     Defaults to a hash calculated from this volume and list of constructs. (DEPRECATED)
    */
   grantDetachVolumeByResourceTag(grantee: IGrantable, constructs: Construct[], tagKeySuffix?: string): Grant;
 }
@@ -347,7 +340,7 @@ export interface VolumeProps {
 
   /**
    * The size of the volume, in GiBs. You must specify either a snapshot ID or a volume size.
-   * See {@link https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ebs-volume-types.html#ebs-volume-characteristics|Volume Characteristics}
+   * See {@link https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-ebs-volume.html}
    * for details on the allowable size for each type of volume.
    *
    * @default If you're creating the volume from a snapshot and don't specify a volume size, the default is the snapshot size.
@@ -428,15 +421,23 @@ export interface VolumeProps {
   readonly volumeType?: EbsDeviceVolumeType;
 
   /**
-   * The number of I/O operations per second (IOPS) to provision for the volume, with a maximum ratio of 50 IOPS/GiB.
-   * See {@link https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ebs-volume-types.html#EBSVolumeTypes_piops|Provisioned IOPS SSD (io1) volumes}
+   * The number of I/O operations per second (IOPS) to provision for the volume. The maximum ratio is 50 IOPS/GiB for PROVISIONED_IOPS_SSD,
+   * and 500 IOPS/GiB for both PROVISIONED_IOPS_SSD_IO2 and GENERAL_PURPOSE_SSD_GP3.
+   * See {@link https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-ebs-volume.html}
    * for more information.
    *
-   * This parameter is valid only for PROVISIONED_IOPS_SSD volumes.
+   * This parameter is valid only for PROVISIONED_IOPS_SSD, PROVISIONED_IOPS_SSD_IO2 and GENERAL_PURPOSE_SSD_GP3 volumes.
    *
-   * @default None -- Required for {@link EbsDeviceVolumeType.PROVISIONED_IOPS_SSD}
+   * @default None -- Required for io1 and io2 volumes. The default for gp3 volumes is 3,000 IOPS if omitted.
    */
   readonly iops?: number;
+
+  /**
+   * Policy to apply when the volume is removed from the stack
+   *
+   * @default RemovalPolicy.RETAIN
+   */
+  readonly removalPolicy?: RemovalPolicy;
 }
 
 /**
@@ -472,7 +473,7 @@ abstract class VolumeBase extends Resource implements IVolume {
   public grantAttachVolume(grantee: IGrantable, instances?: IInstance[]): Grant {
     const result = Grant.addToPrincipal({
       grantee,
-      actions: [ 'ec2:AttachVolume' ],
+      actions: ['ec2:AttachVolume'],
       resourceArns: this.collectGrantResourceArns(instances),
     });
 
@@ -497,8 +498,8 @@ abstract class VolumeBase extends Resource implements IVolume {
   }
 
   public grantAttachVolumeByResourceTag(grantee: IGrantable, constructs: Construct[], tagKeySuffix?: string): Grant {
-    const tagKey = `VolumeGrantAttach-${tagKeySuffix ?? this.stringHash(this.node.uniqueId)}`;
-    const tagValue = this.calculateResourceTagValue(constructs);
+    const tagValue = this.calculateResourceTagValue([this, ...constructs]);
+    const tagKey = `VolumeGrantAttach-${tagKeySuffix ?? tagValue.slice(0, 10).toUpperCase()}`;
     const grantCondition: { [key: string]: string } = {};
     grantCondition[`ec2:ResourceTag/${tagKey}`] = tagValue;
 
@@ -509,8 +510,8 @@ abstract class VolumeBase extends Resource implements IVolume {
 
     // The ResourceTag condition requires that all resources involved in the operation have
     // the given tag, so we tag this and all constructs given.
-    Tag.add(this, tagKey, tagValue);
-    constructs.forEach(construct => Tag.add(construct, tagKey, tagValue));
+    Tags.of(this).add(tagKey, tagValue);
+    constructs.forEach(construct => Tags.of(construct as CoreConstruct).add(tagKey, tagValue));
 
     return result;
   }
@@ -518,7 +519,7 @@ abstract class VolumeBase extends Resource implements IVolume {
   public grantDetachVolume(grantee: IGrantable, instances?: IInstance[]): Grant {
     const result = Grant.addToPrincipal({
       grantee,
-      actions: [ 'ec2:DetachVolume' ],
+      actions: ['ec2:DetachVolume'],
       resourceArns: this.collectGrantResourceArns(instances),
     });
     // Note: No encryption key permissions are required to detach an encrypted volume.
@@ -526,8 +527,8 @@ abstract class VolumeBase extends Resource implements IVolume {
   }
 
   public grantDetachVolumeByResourceTag(grantee: IGrantable, constructs: Construct[], tagKeySuffix?: string): Grant {
-    const tagKey = `VolumeGrantDetach-${tagKeySuffix ?? this.stringHash(this.node.uniqueId)}`;
-    const tagValue = this.calculateResourceTagValue(constructs);
+    const tagValue = this.calculateResourceTagValue([this, ...constructs]);
+    const tagKey = `VolumeGrantDetach-${tagKeySuffix ?? tagValue.slice(0, 10).toUpperCase()}`;
     const grantCondition: { [key: string]: string } = {};
     grantCondition[`ec2:ResourceTag/${tagKey}`] = tagValue;
 
@@ -538,8 +539,8 @@ abstract class VolumeBase extends Resource implements IVolume {
 
     // The ResourceTag condition requires that all resources involved in the operation have
     // the given tag, so we tag this and all constructs given.
-    Tag.add(this, tagKey, tagValue);
-    constructs.forEach(construct => Tag.add(construct, tagKey, tagValue));
+    Tags.of(this).add(tagKey, tagValue);
+    constructs.forEach(construct => Tags.of(construct as CoreConstruct).add(tagKey, tagValue));
 
     return result;
   }
@@ -558,14 +559,9 @@ abstract class VolumeBase extends Resource implements IVolume {
     return resourceArns;
   }
 
-  private stringHash(value: string): string {
-    const md5 = crypto.createHash('md5').update(value).digest('hex');
-    return md5.slice(0, 8).toUpperCase();
-  }
-
   private calculateResourceTagValue(constructs: Construct[]): string {
     const md5 = crypto.createHash('md5');
-    constructs.forEach(construct => md5.update(construct.node.uniqueId));
+    constructs.forEach(construct => md5.update(Names.uniqueId(construct)));
     return md5.digest('hex');
   }
 }
@@ -612,10 +608,11 @@ export class Volume extends VolumeBase {
       kmsKeyId: props.encryptionKey?.keyArn,
       iops: props.iops,
       multiAttachEnabled: props.enableMultiAttach ?? false,
-      size: props.size?.toGibibytes({rounding: SizeRoundingBehavior.FAIL}),
+      size: props.size?.toGibibytes({ rounding: SizeRoundingBehavior.FAIL }),
       snapshotId: props.snapshotId,
       volumeType: props.volumeType ?? EbsDeviceVolumeType.GENERAL_PURPOSE_SSD,
     });
+    resource.applyRemovalPolicy(props.removalPolicy);
 
     this.volumeId = resource.ref;
     this.availabilityZone = props.availabilityZone;
@@ -654,34 +651,79 @@ export class Volume extends VolumeBase {
       throw new Error('`encrypted` must be true when providing an `encryptionKey`.');
     }
 
+    if (
+      props.volumeType &&
+      [
+        EbsDeviceVolumeType.PROVISIONED_IOPS_SSD,
+        EbsDeviceVolumeType.PROVISIONED_IOPS_SSD_IO2,
+      ].includes(props.volumeType) &&
+      !props.iops
+    ) {
+      throw new Error(
+        '`iops` must be specified if the `volumeType` is `PROVISIONED_IOPS_SSD` or `PROVISIONED_IOPS_SSD_IO2`.',
+      );
+    }
+
     if (props.iops) {
-      if (props.volumeType !== EbsDeviceVolumeType.PROVISIONED_IOPS_SSD) {
-        throw new Error('`iops` may only be specified if the `volumeType` is `PROVISIONED_IOPS_SSD`/`IO1`');
+      const volumeType = props.volumeType ?? EbsDeviceVolumeType.GENERAL_PURPOSE_SSD;
+      if (
+        ![
+          EbsDeviceVolumeType.PROVISIONED_IOPS_SSD,
+          EbsDeviceVolumeType.PROVISIONED_IOPS_SSD_IO2,
+          EbsDeviceVolumeType.GENERAL_PURPOSE_SSD_GP3,
+        ].includes(volumeType)
+      ) {
+        throw new Error(
+          '`iops` may only be specified if the `volumeType` is `PROVISIONED_IOPS_SSD`, `PROVISIONED_IOPS_SSD_IO2` or `GENERAL_PURPOSE_SSD_GP3`.',
+        );
+      }
+      // Enforce minimum & maximum IOPS:
+      // https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-ebs-volume.html
+      const iopsRanges: { [key: string]: { Min: number, Max: number } } = {};
+      iopsRanges[EbsDeviceVolumeType.GENERAL_PURPOSE_SSD_GP3] = { Min: 3000, Max: 16000 };
+      iopsRanges[EbsDeviceVolumeType.PROVISIONED_IOPS_SSD] = { Min: 100, Max: 64000 };
+      iopsRanges[EbsDeviceVolumeType.PROVISIONED_IOPS_SSD_IO2] = { Min: 100, Max: 64000 };
+      const { Min, Max } = iopsRanges[volumeType];
+      if (props.iops < Min || props.iops > Max) {
+        throw new Error(`\`${volumeType}\` volumes iops must be between ${Min} and ${Max}.`);
       }
 
-      if (props.iops < 100 || props.iops > 64000) {
-        throw new Error('`iops` must be in the range 100 to 64,000, inclusive.');
-      }
-
-      if (props.size && (props.iops > 50 * props.size.toGibibytes({rounding: SizeRoundingBehavior.FAIL}))) {
-        throw new Error('`iops` has a maximum ratio of 50 IOPS/GiB.');
+      // Enforce maximum ratio of IOPS/GiB:
+      // https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ebs-volume-types.html
+      const maximumRatios: { [key: string]: number } = {};
+      maximumRatios[EbsDeviceVolumeType.GENERAL_PURPOSE_SSD_GP3] = 500;
+      maximumRatios[EbsDeviceVolumeType.PROVISIONED_IOPS_SSD] = 50;
+      maximumRatios[EbsDeviceVolumeType.PROVISIONED_IOPS_SSD_IO2] = 500;
+      const maximumRatio = maximumRatios[volumeType];
+      if (props.size && (props.iops > maximumRatio * props.size.toGibibytes({ rounding: SizeRoundingBehavior.FAIL }))) {
+        throw new Error(`\`${volumeType}\` volumes iops has a maximum ratio of ${maximumRatio} IOPS/GiB.`);
       }
     }
 
-    if (props.enableMultiAttach && props.volumeType !== EbsDeviceVolumeType.PROVISIONED_IOPS_SSD) {
-      throw new Error('multi-attach is supported exclusively on `PROVISIONED_IOPS_SSD` volumes.');
+    if (props.enableMultiAttach) {
+      const volumeType = props.volumeType ?? EbsDeviceVolumeType.GENERAL_PURPOSE_SSD;
+      if (
+        ![
+          EbsDeviceVolumeType.PROVISIONED_IOPS_SSD,
+          EbsDeviceVolumeType.PROVISIONED_IOPS_SSD_IO2,
+        ].includes(volumeType)
+      ) {
+        throw new Error('multi-attach is supported exclusively on `PROVISIONED_IOPS_SSD` and `PROVISIONED_IOPS_SSD_IO2` volumes.');
+      }
     }
 
     if (props.size) {
-      const size = props.size.toGibibytes({rounding: SizeRoundingBehavior.FAIL});
-      // Enforce maximum volume size:
-      // https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ebs-volume-types.html#ebs-volume-characteristics
+      const size = props.size.toGibibytes({ rounding: SizeRoundingBehavior.FAIL });
+      // Enforce minimum & maximum volume size:
+      // https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-ebs-volume.html
       const sizeRanges: { [key: string]: { Min: number, Max: number } } = {};
-      sizeRanges[EbsDeviceVolumeType.GENERAL_PURPOSE_SSD] = { Min: 1, Max: 16000 };
-      sizeRanges[EbsDeviceVolumeType.PROVISIONED_IOPS_SSD] = { Min: 4, Max: 16000 };
-      sizeRanges[EbsDeviceVolumeType.THROUGHPUT_OPTIMIZED_HDD] = { Min: 500, Max: 16000 };
-      sizeRanges[EbsDeviceVolumeType.COLD_HDD] = { Min: 500, Max: 16000 };
-      sizeRanges[EbsDeviceVolumeType.MAGNETIC] = { Min: 1, Max: 1000 };
+      sizeRanges[EbsDeviceVolumeType.GENERAL_PURPOSE_SSD] = { Min: 1, Max: 16384 };
+      sizeRanges[EbsDeviceVolumeType.GENERAL_PURPOSE_SSD_GP3] = { Min: 1, Max: 16384 };
+      sizeRanges[EbsDeviceVolumeType.PROVISIONED_IOPS_SSD] = { Min: 4, Max: 16384 };
+      sizeRanges[EbsDeviceVolumeType.PROVISIONED_IOPS_SSD_IO2] = { Min: 4, Max: 16384 };
+      sizeRanges[EbsDeviceVolumeType.THROUGHPUT_OPTIMIZED_HDD] = { Min: 125, Max: 16384 };
+      sizeRanges[EbsDeviceVolumeType.COLD_HDD] = { Min: 125, Max: 16384 };
+      sizeRanges[EbsDeviceVolumeType.MAGNETIC] = { Min: 1, Max: 1024 };
       const volumeType = props.volumeType ?? EbsDeviceVolumeType.GENERAL_PURPOSE_SSD;
       const { Min, Max } = sizeRanges[volumeType];
       if (size < Min || size > Max) {

@@ -1,4 +1,4 @@
-import '@aws-cdk/assert/jest';
+import '@aws-cdk/assert-internal/jest';
 import { Result } from '../lib';
 
 describe('Pass State', () => {
@@ -21,7 +21,7 @@ describe('Pass State', () => {
   }),
 
   test('fromObject has proper value', () => {
-    const testValue = {a: 1};
+    const testValue = { a: 1 };
     const result = Result.fromObject(testValue);
     expect(result.value).toStrictEqual(testValue);
   }),

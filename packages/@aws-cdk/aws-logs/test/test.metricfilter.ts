@@ -1,4 +1,4 @@
-import { expect, haveResource } from '@aws-cdk/assert';
+import { expect, haveResource } from '@aws-cdk/assert-internal';
 import { Metric } from '@aws-cdk/aws-cloudwatch';
 import { Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
@@ -73,7 +73,7 @@ export = {
       filterPattern: FilterPattern.exists('$.latency'),
     });
 
-    const metric = mf.metric({statistic: 'maximum'});
+    const metric = mf.metric({ statistic: 'maximum' });
 
     // THEN
     test.deepEqual(metric, new Metric({

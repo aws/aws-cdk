@@ -1,5 +1,5 @@
-import { ABSENT, SynthUtils } from '@aws-cdk/assert';
-import '@aws-cdk/assert/jest';
+import { ABSENT, SynthUtils } from '@aws-cdk/assert-internal';
+import '@aws-cdk/assert-internal/jest';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as lambda from '@aws-cdk/aws-lambda';
@@ -108,7 +108,7 @@ describe('cloudtrail', () => {
       const topic = new sns.Topic(stack, 'Topic');
 
 
-      new Trail(stack, 'Trail', { snsTopic: topic});
+      new Trail(stack, 'Trail', { snsTopic: topic });
 
       expect(stack).toHaveResource('AWS::CloudTrail::Trail');
       expect(stack).not.toHaveResource('AWS::Logs::LogGroup');
@@ -206,13 +206,13 @@ describe('cloudtrail', () => {
       expect(stack).toHaveResource('AWS::CloudTrail::Trail', {
         TrailName: 'EncryptionKeyTrail',
         KMSKeyId: {
-          'Fn::GetAtt': [ 'keyFEDD6EC0', 'Arn' ],
+          'Fn::GetAtt': ['keyFEDD6EC0', 'Arn'],
         },
       });
       expect(stack).toHaveResource('AWS::CloudTrail::Trail', {
         TrailName: 'KmsKeyTrail',
         KMSKeyId: {
-          'Fn::GetAtt': [ 'keyFEDD6EC0', 'Arn' ],
+          'Fn::GetAtt': ['keyFEDD6EC0', 'Arn'],
         },
       });
       expect(stack).toHaveResource('AWS::CloudTrail::Trail', {
@@ -364,7 +364,7 @@ describe('cloudtrail', () => {
                   'Fn::Join': [
                     '',
                     [
-                      { 'Fn::GetAtt': [ 'testBucketDF4D7D1A', 'Arn' ]},
+                      { 'Fn::GetAtt': ['testBucketDF4D7D1A', 'Arn'] },
                       '/',
                     ],
                   ],
@@ -378,7 +378,7 @@ describe('cloudtrail', () => {
                   'Fn::Join': [
                     '',
                     [
-                      { 'Fn::GetAtt': [ 'testBucketDF4D7D1A', 'Arn' ]},
+                      { 'Fn::GetAtt': ['testBucketDF4D7D1A', 'Arn'] },
                       '/prefix-1/prefix-2',
                     ],
                   ],
@@ -463,7 +463,7 @@ describe('cloudtrail', () => {
               DataResources: [{
                 Type: 'AWS::Lambda::Function',
                 Values: [{
-                  'Fn::GetAtt': [ 'LambdaFunctionBF21E41F', 'Arn' ],
+                  'Fn::GetAtt': ['LambdaFunctionBF21E41F', 'Arn'],
                 }],
               }],
             },

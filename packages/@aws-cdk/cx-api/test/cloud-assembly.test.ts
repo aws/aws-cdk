@@ -94,11 +94,11 @@ test('dependencies', () => {
   expect(assembly.stacks).toHaveLength(4);
 
   // expect stacks to be listed in topological order
-  expect(assembly.stacks.map(s => s.id)).toEqual([ 'StackA', 'StackD', 'StackC', 'StackB' ]);
+  expect(assembly.stacks.map(s => s.id)).toEqual(['StackA', 'StackD', 'StackC', 'StackB']);
   expect(assembly.stacks[0].dependencies).toEqual([]);
   expect(assembly.stacks[1].dependencies).toEqual([]);
-  expect(assembly.stacks[2].dependencies.map(x => x.id)).toEqual([ 'StackD' ]);
-  expect(assembly.stacks[3].dependencies.map(x => x.id)).toEqual([ 'StackC', 'StackD' ]);
+  expect(assembly.stacks[2].dependencies.map(x => x.id)).toEqual(['StackD']);
+  expect(assembly.stacks[3].dependencies.map(x => x.id)).toEqual(['StackC', 'StackD']);
 });
 
 test('fails for invalid dependencies', () => {

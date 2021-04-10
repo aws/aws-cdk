@@ -1,4 +1,4 @@
-import { ABSENT, expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
+import { ABSENT, expect, haveResource, haveResourceLike } from '@aws-cdk/assert-internal';
 import * as codecommit from '@aws-cdk/aws-codecommit';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as kms from '@aws-cdk/aws-kms';
@@ -105,6 +105,7 @@ export = {
                       'codebuild:CreateReport',
                       'codebuild:UpdateReport',
                       'codebuild:BatchPutTestCases',
+                      'codebuild:BatchPutCodeCoverages',
                     ],
                     'Effect': 'Allow',
                     'Resource': {
@@ -151,8 +152,10 @@ export = {
                 'Type': 'LINUX_CONTAINER',
                 'PrivilegedMode': false,
                 'Image': 'aws/codebuild/standard:1.0',
+                'ImagePullCredentialsType': 'CODEBUILD',
                 'ComputeType': 'BUILD_GENERAL1_SMALL',
               },
+              'EncryptionKey': 'alias/aws/s3',
             },
           },
         },
@@ -276,6 +279,7 @@ export = {
                       'codebuild:CreateReport',
                       'codebuild:UpdateReport',
                       'codebuild:BatchPutTestCases',
+                      'codebuild:BatchPutCodeCoverages',
                     ],
                     'Effect': 'Allow',
                     'Resource': {
@@ -312,6 +316,7 @@ export = {
               'Environment': {
                 'ComputeType': 'BUILD_GENERAL1_SMALL',
                 'Image': 'aws/codebuild/standard:1.0',
+                'ImagePullCredentialsType': 'CODEBUILD',
                 'PrivilegedMode': false,
                 'Type': 'LINUX_CONTAINER',
               },
@@ -331,6 +336,7 @@ export = {
                 'GitCloneDepth': 2,
                 'Type': 'CODECOMMIT',
               },
+              'EncryptionKey': 'alias/aws/s3',
             },
           },
         },
@@ -473,6 +479,7 @@ export = {
                       'codebuild:CreateReport',
                       'codebuild:UpdateReport',
                       'codebuild:BatchPutTestCases',
+                      'codebuild:BatchPutCodeCoverages',
                     ],
                     'Effect': 'Allow',
                     'Resource': {
@@ -509,6 +516,7 @@ export = {
               'Environment': {
                 'ComputeType': 'BUILD_GENERAL1_MEDIUM',
                 'Image': 'aws/codebuild/windows-base:2.0',
+                'ImagePullCredentialsType': 'CODEBUILD',
                 'PrivilegedMode': false,
                 'Type': 'WINDOWS_CONTAINER',
               },
@@ -532,6 +540,7 @@ export = {
                 },
                 'Type': 'S3',
               },
+              'EncryptionKey': 'alias/aws/s3',
             },
           },
         },
@@ -546,6 +555,7 @@ export = {
           owner: 'testowner',
           repo: 'testrepo',
           cloneDepth: 3,
+          fetchSubmodules: true,
           webhook: true,
           reportBuildStatus: false,
           webhookFilters: [
@@ -561,6 +571,9 @@ export = {
           Location: 'https://github.com/testowner/testrepo.git',
           ReportBuildStatus: false,
           GitCloneDepth: 3,
+          GitSubmodulesConfig: {
+            FetchSubmodules: true,
+          },
         },
       }));
 
@@ -681,6 +694,93 @@ export = {
 
       test.done();
     },
+
+    'with webhookTriggersBatchBuild option'(test: Test) {
+      const stack = new cdk.Stack();
+
+      new codebuild.Project(stack, 'Project', {
+        source: codebuild.Source.gitHub({
+          owner: 'testowner',
+          repo: 'testrepo',
+          webhook: true,
+          webhookTriggersBatchBuild: true,
+        }),
+      });
+
+      expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
+        Triggers: {
+          Webhook: true,
+          BuildType: 'BUILD_BATCH',
+        },
+        BuildBatchConfig: {
+          ServiceRole: {
+            'Fn::GetAtt': [
+              'ProjectBatchServiceRoleF97A1CFB',
+              'Arn',
+            ],
+          },
+        },
+      }));
+
+      expect(stack).to(haveResourceLike('AWS::IAM::Role', {
+        AssumeRolePolicyDocument: {
+          Statement: [
+            {
+              Action: 'sts:AssumeRole',
+              Effect: 'Allow',
+              Principal: {
+                Service: 'codebuild.amazonaws.com',
+              },
+            },
+          ],
+          Version: '2012-10-17',
+        },
+      }));
+
+      expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Statement: [
+            {
+              Action: [
+                'codebuild:StartBuild',
+                'codebuild:StopBuild',
+                'codebuild:RetryBuild',
+              ],
+              Effect: 'Allow',
+              Resource: {
+                'Fn::GetAtt': [
+                  'ProjectC78D97AD',
+                  'Arn',
+                ],
+              },
+            },
+          ],
+          Version: '2012-10-17',
+        },
+      }));
+
+      test.done();
+    },
+
+    'fail creating a Project when webhook false and webhookTriggersBatchBuild option'(test: Test) {
+      [false, undefined].forEach((webhook) => {
+        const stack = new cdk.Stack();
+
+        test.throws(() => {
+          new codebuild.Project(stack, 'Project', {
+            source: codebuild.Source.gitHub({
+              owner: 'testowner',
+              repo: 'testrepo',
+              webhook,
+              webhookTriggersBatchBuild: true,
+            }),
+          });
+        }, /`webhookTriggersBatchBuild` cannot be used when `webhook` is `false`/);
+      });
+
+      test.done();
+    },
+
     'fail creating a Project when no build spec is given'(test: Test) {
       const stack = new cdk.Stack();
 
@@ -792,6 +892,21 @@ export = {
 
       test.throws(() => project.connections,
         /Only VPC-associated Projects have security groups to manage. Supply the "vpc" parameter when creating the Project/);
+
+      test.done();
+    },
+
+    'no KMS Key defaults to default S3 managed key'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      // WHEN
+      new codebuild.PipelineProject(stack, 'MyProject');
+
+      // THEN
+      expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
+        EncryptionKey: 'alias/aws/s3',
+      }));
 
       test.done();
     },
@@ -1032,12 +1147,6 @@ export = {
         buildSpec: codebuild.BuildSpec.fromObject({
           version: '0.2',
         }),
-        fileSystemLocations: [codebuild.FileSystemLocation.efs({
-          identifier: 'myidentifier2',
-          location: 'myclodation.mydnsroot.com:/loc',
-          mountPoint: '/media',
-          mountOptions: 'opts',
-        })],
       });
       project.addFileSystemLocation(codebuild.FileSystemLocation.efs({
         identifier: 'myidentifier3',
@@ -1048,13 +1157,6 @@ export = {
 
       expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
         'FileSystemLocations': [
-          {
-            'Identifier': 'myidentifier2',
-            'MountPoint': '/media',
-            'MountOptions': 'opts',
-            'Location': 'myclodation.mydnsroot.com:/loc',
-            'Type': 'EFS',
-          },
           {
             'Identifier': 'myidentifier3',
             'MountPoint': '/media',
@@ -1193,6 +1295,7 @@ export = {
             'Type': 'LINUX_CONTAINER',
             'PrivilegedMode': false,
             'Image': 'aws/codebuild/standard:1.0',
+            'ImagePullCredentialsType': 'CODEBUILD',
             'ComputeType': 'BUILD_GENERAL1_SMALL',
           },
         }));
@@ -1217,12 +1320,11 @@ export = {
         });
 
         expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
-          'Artifacts':
-            {
-              'Name': ABSENT,
-              'ArtifactIdentifier': 'artifact1',
-              'OverrideArtifactName': true,
-            },
+          'Artifacts': {
+            'Name': ABSENT,
+            'ArtifactIdentifier': 'artifact1',
+            'OverrideArtifactName': true,
+          },
         }));
 
         test.done();
@@ -1244,12 +1346,11 @@ export = {
         });
 
         expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
-          'Artifacts':
-            {
-              'ArtifactIdentifier': 'artifact1',
-              'Name': 'specificname',
-              'OverrideArtifactName': ABSENT,
-            },
+          'Artifacts': {
+            'ArtifactIdentifier': 'artifact1',
+            'Name': 'specificname',
+            'OverrideArtifactName': ABSENT,
+          },
         }));
 
         test.done();
@@ -1266,11 +1367,11 @@ export = {
       }),
     });
 
-    project.onBuildFailed('OnBuildFailed', { target: { bind: () => ({ arn: 'ARN', id: 'ID' }) }});
-    project.onBuildSucceeded('OnBuildSucceeded', { target: { bind: () => ({ arn: 'ARN', id: 'ID' }) }});
-    project.onPhaseChange('OnPhaseChange', { target: { bind: () => ({ arn: 'ARN', id: 'ID' }) }});
-    project.onStateChange('OnStateChange', { target: { bind: () => ({ arn: 'ARN', id: 'ID' }) }});
-    project.onBuildStarted('OnBuildStarted', { target: { bind: () => ({ arn: 'ARN', id: 'ID' }) }});
+    project.onBuildFailed('OnBuildFailed', { target: { bind: () => ({ arn: 'ARN', id: 'ID' }) } });
+    project.onBuildSucceeded('OnBuildSucceeded', { target: { bind: () => ({ arn: 'ARN', id: 'ID' }) } });
+    project.onPhaseChange('OnPhaseChange', { target: { bind: () => ({ arn: 'ARN', id: 'ID' }) } });
+    project.onStateChange('OnStateChange', { target: { bind: () => ({ arn: 'ARN', id: 'ID' }) } });
+    project.onBuildStarted('OnBuildStarted', { target: { bind: () => ({ arn: 'ARN', id: 'ID' }) } });
 
     expect(stack).to(haveResource('AWS::Events::Rule', {
       'EventPattern': {
@@ -1423,7 +1524,7 @@ export = {
                 '',
                 [
                   '111',
-                  { twotwotwo: '222' },
+                  { twotwotwo: '222' },
                 ],
               ],
             },
@@ -1437,6 +1538,7 @@ export = {
         ],
         'PrivilegedMode': false,
         'Image': 'aws/codebuild/standard:1.0',
+        'ImagePullCredentialsType': 'CODEBUILD',
         'ComputeType': 'BUILD_GENERAL1_SMALL',
       },
     }));
@@ -1506,6 +1608,28 @@ export = {
     }));
 
     test.done();
+  },
+
+  'Windows2019 image': {
+    'WIN_SERVER_CORE_2016_BASE': {
+      'has type WINDOWS_SERVER_2019_CONTAINER and default ComputeType MEDIUM'(test: Test) {
+        const stack = new cdk.Stack();
+        new codebuild.PipelineProject(stack, 'Project', {
+          environment: {
+            buildImage: codebuild.WindowsBuildImage.WIN_SERVER_CORE_2019_BASE,
+          },
+        });
+
+        expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
+          'Environment': {
+            'Type': 'WINDOWS_SERVER_2019_CONTAINER',
+            'ComputeType': 'BUILD_GENERAL1_MEDIUM',
+          },
+        }));
+
+        test.done();
+      },
+    },
   },
 
   'ARM image': {
@@ -1631,13 +1755,30 @@ export = {
       test.done();
     },
 
-    'cannot have file path conditions if the Group contains any action other than PUSH'(test: Test) {
-      const filterGroup = codebuild.FilterGroup.inEventOf(codebuild.EventAction.PULL_REQUEST_CREATED,
-        codebuild.EventAction.PUSH);
+    'cannot be used when webhook is false'(test: Test) {
+      const stack = new cdk.Stack();
 
       test.throws(() => {
-        filterGroup.andFilePathIsNot('.*\\.java');
-      }, /A file path condition cannot be added if a Group contains any event action other than PUSH/);
+        new codebuild.Project(stack, 'Project', {
+          source: codebuild.Source.bitBucket({
+            owner: 'owner',
+            repo: 'repo',
+            webhook: false,
+            webhookFilters: [
+              codebuild.FilterGroup.inEventOf(codebuild.EventAction.PUSH),
+            ],
+          }),
+        });
+      }, /`webhookFilters` cannot be used when `webhook` is `false`/);
+
+      test.done();
+    },
+
+    'can have FILE_PATH filters if the Group contains PUSH and PR_CREATED events'(test: Test) {
+      codebuild.FilterGroup.inEventOf(
+        codebuild.EventAction.PULL_REQUEST_CREATED,
+        codebuild.EventAction.PUSH)
+        .andFilePathIsNot('.*\\.java');
 
       test.done();
     },
@@ -1660,21 +1801,172 @@ export = {
       test.done();
     },
 
-    'BitBucket sources do not support file path conditions'(test: Test) {
+    'BitBucket sources support file path conditions'(test: Test) {
       const stack = new cdk.Stack();
       const filterGroup = codebuild.FilterGroup.inEventOf(codebuild.EventAction.PUSH).andFilePathIs('.*');
 
-      test.throws(() => {
-        new codebuild.Project(stack, 'Project', {
-          source: codebuild.Source.bitBucket({
-            owner: 'owner',
-            repo: 'repo',
-            webhookFilters: [filterGroup],
-          }),
-        });
-      }, /BitBucket sources do not support file path conditions for webhook filters/);
+      new codebuild.Project(stack, 'Project', {
+        source: codebuild.Source.bitBucket({
+          owner: 'owner',
+          repo: 'repo',
+          webhookFilters: [filterGroup],
+        }),
+      });
 
       test.done();
     },
+
+    'GitHub Enterprise Server sources do not support FILE_PATH filters on PR events'(test: Test) {
+      const stack = new cdk.Stack();
+      const pullFilterGroup = codebuild.FilterGroup.inEventOf(
+        codebuild.EventAction.PULL_REQUEST_CREATED,
+        codebuild.EventAction.PULL_REQUEST_MERGED,
+        codebuild.EventAction.PULL_REQUEST_REOPENED,
+        codebuild.EventAction.PULL_REQUEST_UPDATED,
+      );
+
+      test.throws(() => {
+        new codebuild.Project(stack, 'MyFilePathProject', {
+          source: codebuild.Source.gitHubEnterprise({
+            httpsCloneUrl: 'https://github.testcompany.com/testowner/testrepo',
+            webhookFilters: [
+              pullFilterGroup.andFilePathIs('ReadMe.md'),
+            ],
+          }),
+        });
+      }, /FILE_PATH filters cannot be used with GitHub Enterprise Server pull request events/);
+      test.done();
+    },
+
+    'COMMIT_MESSAGE Filter': {
+      'GitHub Enterprise Server sources do not support COMMIT_MESSAGE filters on PR events'(test: Test) {
+        const stack = new cdk.Stack();
+        const pullFilterGroup = codebuild.FilterGroup.inEventOf(
+          codebuild.EventAction.PULL_REQUEST_CREATED,
+          codebuild.EventAction.PULL_REQUEST_MERGED,
+          codebuild.EventAction.PULL_REQUEST_REOPENED,
+          codebuild.EventAction.PULL_REQUEST_UPDATED,
+        );
+
+        test.throws(() => {
+          new codebuild.Project(stack, 'MyProject', {
+            source: codebuild.Source.gitHubEnterprise({
+              httpsCloneUrl: 'https://github.testcompany.com/testowner/testrepo',
+              webhookFilters: [
+                pullFilterGroup.andCommitMessageIs('the commit message'),
+              ],
+            }),
+          });
+        }, /COMMIT_MESSAGE filters cannot be used with GitHub Enterprise Server pull request events/);
+        test.done();
+      },
+      'GitHub Enterprise Server sources support COMMIT_MESSAGE filters on PUSH events'(test: Test) {
+        const stack = new cdk.Stack();
+        const pushFilterGroup = codebuild.FilterGroup.inEventOf(codebuild.EventAction.PUSH);
+
+        test.doesNotThrow(() => {
+          new codebuild.Project(stack, 'MyProject', {
+            source: codebuild.Source.gitHubEnterprise({
+              httpsCloneUrl: 'https://github.testcompany.com/testowner/testrepo',
+              webhookFilters: [
+                pushFilterGroup.andCommitMessageIs('the commit message'),
+              ],
+            }),
+          });
+        });
+        test.done();
+      },
+      'BitBucket and GitHub sources support a COMMIT_MESSAGE filter'(test: Test) {
+        const stack = new cdk.Stack();
+        const filterGroup = codebuild
+          .FilterGroup
+          .inEventOf(codebuild.EventAction.PUSH, codebuild.EventAction.PULL_REQUEST_CREATED)
+          .andCommitMessageIs('the commit message');
+
+        test.doesNotThrow(() => {
+          new codebuild.Project(stack, 'BitBucket Project', {
+            source: codebuild.Source.bitBucket({
+              owner: 'owner',
+              repo: 'repo',
+              webhookFilters: [filterGroup],
+            }),
+          });
+          new codebuild.Project(stack, 'GitHub Project', {
+            source: codebuild.Source.gitHub({
+              owner: 'owner',
+              repo: 'repo',
+              webhookFilters: [filterGroup],
+            }),
+          });
+        });
+        test.done();
+      },
+    },
+  },
+
+  'enableBatchBuilds()'(test: Test) {
+    const stack = new cdk.Stack();
+
+    const project = new codebuild.Project(stack, 'Project', {
+      source: codebuild.Source.gitHub({
+        owner: 'testowner',
+        repo: 'testrepo',
+      }),
+    });
+
+    const returnVal = project.enableBatchBuilds();
+    if (!returnVal?.role) {
+      throw new Error('Expecting return value with role');
+    }
+
+    expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
+      BuildBatchConfig: {
+        ServiceRole: {
+          'Fn::GetAtt': [
+            'ProjectBatchServiceRoleF97A1CFB',
+            'Arn',
+          ],
+        },
+      },
+    }));
+
+    expect(stack).to(haveResourceLike('AWS::IAM::Role', {
+      AssumeRolePolicyDocument: {
+        Statement: [
+          {
+            Action: 'sts:AssumeRole',
+            Effect: 'Allow',
+            Principal: {
+              Service: 'codebuild.amazonaws.com',
+            },
+          },
+        ],
+        Version: '2012-10-17',
+      },
+    }));
+
+    expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: [
+              'codebuild:StartBuild',
+              'codebuild:StopBuild',
+              'codebuild:RetryBuild',
+            ],
+            Effect: 'Allow',
+            Resource: {
+              'Fn::GetAtt': [
+                'ProjectC78D97AD',
+                'Arn',
+              ],
+            },
+          },
+        ],
+        Version: '2012-10-17',
+      },
+    }));
+
+    test.done();
   },
 };

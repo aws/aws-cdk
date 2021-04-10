@@ -1,5 +1,6 @@
-## Amazon CloudWatch Construct Library
+# Amazon CloudWatch Construct Library
 <!--BEGIN STABILITY BANNER-->
+
 ---
 
 ![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)
@@ -7,6 +8,7 @@
 ![cdk-constructs: Stable](https://img.shields.io/badge/cdk--constructs-stable-success.svg?style=for-the-badge)
 
 ---
+
 <!--END STABILITY BANNER-->
 
 ## Metric objects
@@ -230,6 +232,7 @@ The following widgets are available:
 - `AlarmWidget` -- shows the graph and alarm line for a single alarm.
 - `SingleValueWidget` -- shows the current value of a set of metrics.
 - `TextWidget` -- shows some static Markdown.
+- `AlarmStatusWidget` -- shows the status of your alarms in a grid view.
 
 ### Graph widget
 
@@ -249,6 +252,8 @@ dashboard.addWidgets(new GraphWidget({
   })]
 }));
 ```
+
+Using the methods `addLeftMetric()` and `addRightMetric()` you can add metrics to a graph widget later on.
 
 Graph widgets can also display annotations attached to the left or the right y-axis.
 
@@ -286,6 +291,17 @@ dashboard.addWidgets(new GraphWidget({
 }));
 ```
 
+The graph view can be changed from default 'timeSeries' to 'bar' or 'pie'.
+
+```ts
+dashboard.addWidgets(new GraphWidget({
+  // ...
+  // ...
+
+  view: GraphWidgetView.BAR,
+}));
+```
+
 ### Alarm widget
 
 An alarm widget shows the graph and the alarm line of a single alarm:
@@ -308,6 +324,17 @@ dashboard.addWidgets(new SingleValueWidget({
 }));
 ```
 
+Show as many digits as can fit, before rounding.
+
+```ts
+dashboard.addWidgets(new SingleValueWidget({
+  // ..
+  // ..
+
+  fullPrecision: true,
+}));
+```
+
 ### Text widget
 
 A text widget shows an arbitrary piece of MarkDown. Use this to add explanations
@@ -319,6 +346,19 @@ dashboard.addWidgets(new TextWidget({
 }));
 ```
 
+### Alarm Status widget
+
+An alarm status widget displays instantly the status of any type of alarms and gives the
+ability to aggregate one or more alarms together in a small surface.
+
+```ts
+dashboard.addWidgets(
+  new AlarmStatusWidget({
+    alarms: [errorAlarm],
+  })
+);
+```
+
 ### Query results widget
 
 A `LogQueryWidget` shows the results of a query from Logs Insights:
@@ -326,6 +366,7 @@ A `LogQueryWidget` shows the results of a query from Logs Insights:
 ```ts
 dashboard.addWidgets(new LogQueryWidget({
   logGroupNames: ['my-log-group'],
+  view: LogQueryVisualizationType.TABLE,
   // The lines will be automatically combined using '\n|'.
   queryLines: [
     'fields @message',

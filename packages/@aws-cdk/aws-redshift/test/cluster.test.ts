@@ -1,17 +1,20 @@
-import { expect as cdkExpect, haveResource, ResourcePart } from '@aws-cdk/assert';
-import '@aws-cdk/assert/jest';
+import { ABSENT, expect as cdkExpect, haveResource, ResourcePart } from '@aws-cdk/assert-internal';
+import '@aws-cdk/assert-internal/jest';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as kms from '@aws-cdk/aws-kms';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
+import { CfnCluster, Cluster, ClusterParameterGroup, ClusterSubnetGroup, ClusterType } from '../lib';
 
-import { Cluster, ClusterParameterGroup, ClusterType, NodeType } from '../lib';
+let stack: cdk.Stack;
+let vpc: ec2.IVpc;
+
+beforeEach(() => {
+  stack = testStack();
+  vpc = new ec2.Vpc(stack, 'VPC');
+});
 
 test('check that instantiation works', () => {
-  // GIVEN
-  const stack = testStack();
-  const vpc = new ec2.Vpc(stack, 'VPC');
-
   // WHEN
   new Cluster(stack, 'Redshift', {
     masterUser: {
@@ -57,8 +60,7 @@ test('check that instantiation works', () => {
 
 test('can create a cluster with imported vpc and security group', () => {
   // GIVEN
-  const stack = testStack();
-  const vpc = ec2.Vpc.fromLookup(stack, 'VPC', {
+  vpc = ec2.Vpc.fromLookup(stack, 'ImportedVPC', {
     vpcId: 'VPC12345',
   });
   const sg = ec2.SecurityGroup.fromSecurityGroupId(stack, 'SG', 'SecurityGroupId12345');
@@ -83,10 +85,6 @@ test('can create a cluster with imported vpc and security group', () => {
 });
 
 test('creates a secret when master credentials are not specified', () => {
-  // GIVEN
-  const stack = testStack();
-  const vpc = new ec2.Vpc(stack, 'VPC');
-
   // WHEN
   new Cluster(stack, 'Redshift', {
     masterUser: {
@@ -133,34 +131,112 @@ test('creates a secret when master credentials are not specified', () => {
   }));
 });
 
-test('SIngle Node CLusters spawn only single node', () => {
-  // GIVEN
-  const stack = testStack();
-  const vpc = new ec2.Vpc(stack, 'VPC');
+describe('node count', () => {
 
-  // WHEN
-  new Cluster(stack, 'Redshift', {
-    masterUser: {
-      masterUsername: 'admin',
-    },
-    vpc,
-    nodeType: NodeType.DC1_8XLARGE,
-    clusterType: ClusterType.SINGLE_NODE,
+  test('Single Node Clusters do not define node count', () => {
+    // WHEN
+    new Cluster(stack, 'Redshift', {
+      masterUser: {
+        masterUsername: 'admin',
+      },
+      vpc,
+      clusterType: ClusterType.SINGLE_NODE,
+    });
+
+    // THEN
+    cdkExpect(stack).to(haveResource('AWS::Redshift::Cluster', {
+      ClusterType: 'single-node',
+      NumberOfNodes: ABSENT,
+    }));
   });
 
-  // THEN
-  cdkExpect(stack).to(haveResource('AWS::Redshift::Cluster', {
-    ClusterType: 'single-node',
-    NodeType: 'dc1.8xlarge',
-    NumberOfNodes: 1,
-  }));
+  test('Single Node Clusters treat 1 node as undefined', () => {
+    // WHEN
+    new Cluster(stack, 'Redshift', {
+      masterUser: {
+        masterUsername: 'admin',
+      },
+      vpc,
+      clusterType: ClusterType.SINGLE_NODE,
+      numberOfNodes: 1,
+    });
+
+    // THEN
+    cdkExpect(stack).to(haveResource('AWS::Redshift::Cluster', {
+      ClusterType: 'single-node',
+      NumberOfNodes: ABSENT,
+    }));
+  });
+
+  test('Single Node Clusters throw if any other node count is specified', () => {
+    expect(() => {
+      new Cluster(stack, 'Redshift', {
+        masterUser: {
+          masterUsername: 'admin',
+        },
+        vpc,
+        clusterType: ClusterType.SINGLE_NODE,
+        numberOfNodes: 2,
+      });
+    }).toThrow(/Number of nodes must be not be supplied or be 1 for cluster type single-node/);
+  });
+
+  test('Multi-Node Clusters default to 2 nodes', () => {
+    // WHEN
+    new Cluster(stack, 'Redshift', {
+      masterUser: {
+        masterUsername: 'admin',
+      },
+      vpc,
+      clusterType: ClusterType.MULTI_NODE,
+    });
+
+    // THEN
+    cdkExpect(stack).to(haveResource('AWS::Redshift::Cluster', {
+      ClusterType: 'multi-node',
+      NumberOfNodes: 2,
+    }));
+  });
+
+  test.each([0, 1, -1, 101])('Multi-Node Clusters throw with %s nodes', (numberOfNodes: number) => {
+    expect(() => {
+      new Cluster(stack, 'Redshift', {
+        masterUser: {
+          masterUsername: 'admin',
+        },
+        vpc,
+        clusterType: ClusterType.MULTI_NODE,
+        numberOfNodes,
+      });
+    }).toThrow(/Number of nodes for cluster type multi-node must be at least 2 and no more than 100/);
+  });
+
+  test('Multi-Node Clusters should allow input parameter for number of nodes', () => {
+    // WHEN
+    const numberOfNodesParam = new cdk.CfnParameter(stack, 'numberOfNodes', {
+      type: 'Number',
+    });
+
+    new Cluster(stack, 'Redshift', {
+      masterUser: {
+        masterUsername: 'admin',
+      },
+      vpc,
+      clusterType: ClusterType.MULTI_NODE,
+      numberOfNodes: numberOfNodesParam.valueAsNumber,
+    });
+
+    // THEN
+    cdkExpect(stack).to(haveResource('AWS::Redshift::Cluster', {
+      ClusterType: 'multi-node',
+      NumberOfNodes: {
+        Ref: 'numberOfNodes',
+      },
+    }));
+  });
 });
 
 test('create an encrypted cluster with custom KMS key', () => {
-  // GIVEN
-  const stack = testStack();
-  const vpc = new ec2.Vpc(stack, 'VPC');
-
   // WHEN
   new Cluster(stack, 'Redshift', {
     masterUser: {
@@ -182,10 +258,6 @@ test('create an encrypted cluster with custom KMS key', () => {
 });
 
 test('cluster with parameter group', () => {
-  // GIVEN
-  const stack = testStack();
-  const vpc = new ec2.Vpc(stack, 'VPC');
-
   // WHEN
   const group = new ClusterParameterGroup(stack, 'Params', {
     description: 'bye',
@@ -209,10 +281,24 @@ test('cluster with parameter group', () => {
 
 });
 
+test('publicly accessible cluster', () => {
+  // WHEN
+  new Cluster(stack, 'Redshift', {
+    masterUser: {
+      masterUsername: 'admin',
+    },
+    vpc,
+    publiclyAccessible: true,
+  });
+
+  // THEN
+  cdkExpect(stack).to(haveResource('AWS::Redshift::Cluster', {
+    PubliclyAccessible: true,
+  }));
+});
+
 test('imported cluster with imported security group honors allowAllOutbound', () => {
   // GIVEN
-  const stack = testStack();
-
   const cluster = Cluster.fromClusterAttributes(stack, 'Database', {
     clusterEndpointAddress: 'addr',
     clusterName: 'identifier',
@@ -235,8 +321,6 @@ test('imported cluster with imported security group honors allowAllOutbound', ()
 
 test('can create a cluster with logging enabled', () => {
   // GIVEN
-  const stack = testStack();
-  const vpc = new ec2.Vpc(stack, 'VPC');
   const bucket = s3.Bucket.fromBucketName(stack, 'bucket', 'logging-bucket');
 
   // WHEN
@@ -259,10 +343,6 @@ test('can create a cluster with logging enabled', () => {
 });
 
 test('throws when trying to add rotation to a cluster without secret', () => {
-  // GIVEN
-  const stack = new cdk.Stack();
-  const vpc = new ec2.Vpc(stack, 'VPC');
-
   // WHEN
   const cluster = new Cluster(stack, 'Redshift', {
     masterUser: {
@@ -281,8 +361,6 @@ test('throws when trying to add rotation to a cluster without secret', () => {
 
 test('throws validation error when trying to set encryptionKey without enabling encryption', () => {
   // GIVEN
-  const stack = new cdk.Stack();
-  const vpc = new ec2.Vpc(stack, 'VPC');
   const key = new kms.Key(stack, 'kms-key');
 
   // WHEN
@@ -304,8 +382,6 @@ test('throws validation error when trying to set encryptionKey without enabling 
 
 test('throws when trying to add single user rotation multiple times', () => {
   // GIVEN
-  const stack = new cdk.Stack();
-  const vpc = new ec2.Vpc(stack, 'VPC');
   const cluster = new Cluster(stack, 'Redshift', {
     masterUser: {
       masterUsername: 'admin',
@@ -322,8 +398,35 @@ test('throws when trying to add single user rotation multiple times', () => {
   }).toThrowError();
 });
 
+test('can use existing cluster subnet group', () => {
+  // GIVEN
+  new Cluster(stack, 'Redshift', {
+    masterUser: {
+      masterUsername: 'admin',
+    },
+    vpc,
+    subnetGroup: ClusterSubnetGroup.fromClusterSubnetGroupName(stack, 'Group', 'my-existing-cluster-subnet-group'),
+  });
+
+  expect(stack).not.toHaveResource('AWS::Redshift::ClusterSubnetGroup');
+  expect(stack).toHaveResourceLike('AWS::Redshift::Cluster', {
+    ClusterSubnetGroupName: 'my-existing-cluster-subnet-group',
+  });
+});
+
+test('default child returns a CfnCluster', () => {
+  const cluster = new Cluster(stack, 'Redshift', {
+    masterUser: {
+      masterUsername: 'admin',
+    },
+    vpc,
+  });
+
+  expect(cluster.node.defaultChild).toBeInstanceOf(CfnCluster);
+});
+
 function testStack() {
-  const stack = new cdk.Stack(undefined, undefined, { env: { account: '12345', region: 'us-test-1' } });
-  stack.node.setContext('availability-zones:12345:us-test-1', ['us-test-1a', 'us-test-1b']);
-  return stack;
+  const newTestStack = new cdk.Stack(undefined, undefined, { env: { account: '12345', region: 'us-test-1' } });
+  newTestStack.node.setContext('availability-zones:12345:us-test-1', ['us-test-1a', 'us-test-1b']);
+  return newTestStack;
 }

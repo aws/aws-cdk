@@ -1,0 +1,1300 @@
+{
+  "Resources": {
+    "vpcA2121C38": {
+      "Type": "AWS::EC2::VPC",
+      "Properties": {
+        "CidrBlock": "10.0.0.0/16",
+        "EnableDnsHostnames": true,
+        "EnableDnsSupport": true,
+        "InstanceTenancy": "default",
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-ecs-integ/vpc"
+          }
+        ]
+      }
+    },
+    "vpcpublicSubnet1SubnetA635257E": {
+      "Type": "AWS::EC2::Subnet",
+      "Properties": {
+        "CidrBlock": "10.0.0.0/24",
+        "VpcId": {
+          "Ref": "vpcA2121C38"
+        },
+        "AvailabilityZone": "test-region-1a",
+        "MapPublicIpOnLaunch": true,
+        "Tags": [
+          {
+            "Key": "aws-cdk:subnet-name",
+            "Value": "public"
+          },
+          {
+            "Key": "aws-cdk:subnet-type",
+            "Value": "Public"
+          },
+          {
+            "Key": "Name",
+            "Value": "aws-ecs-integ/vpc/publicSubnet1"
+          }
+        ]
+      }
+    },
+    "vpcpublicSubnet1RouteTableA38152FE": {
+      "Type": "AWS::EC2::RouteTable",
+      "Properties": {
+        "VpcId": {
+          "Ref": "vpcA2121C38"
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-ecs-integ/vpc/publicSubnet1"
+          }
+        ]
+      }
+    },
+    "vpcpublicSubnet1RouteTableAssociationB46101B8": {
+      "Type": "AWS::EC2::SubnetRouteTableAssociation",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "vpcpublicSubnet1RouteTableA38152FE"
+        },
+        "SubnetId": {
+          "Ref": "vpcpublicSubnet1SubnetA635257E"
+        }
+      }
+    },
+    "vpcpublicSubnet1DefaultRouteF0973989": {
+      "Type": "AWS::EC2::Route",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "vpcpublicSubnet1RouteTableA38152FE"
+        },
+        "DestinationCidrBlock": "0.0.0.0/0",
+        "GatewayId": {
+          "Ref": "vpcIGWE57CBDCA"
+        }
+      },
+      "DependsOn": [
+        "vpcVPCGW7984C166"
+      ]
+    },
+    "vpcpublicSubnet2Subnet027D165B": {
+      "Type": "AWS::EC2::Subnet",
+      "Properties": {
+        "CidrBlock": "10.0.1.0/24",
+        "VpcId": {
+          "Ref": "vpcA2121C38"
+        },
+        "AvailabilityZone": "test-region-1b",
+        "MapPublicIpOnLaunch": true,
+        "Tags": [
+          {
+            "Key": "aws-cdk:subnet-name",
+            "Value": "public"
+          },
+          {
+            "Key": "aws-cdk:subnet-type",
+            "Value": "Public"
+          },
+          {
+            "Key": "Name",
+            "Value": "aws-ecs-integ/vpc/publicSubnet2"
+          }
+        ]
+      }
+    },
+    "vpcpublicSubnet2RouteTableA6135437": {
+      "Type": "AWS::EC2::RouteTable",
+      "Properties": {
+        "VpcId": {
+          "Ref": "vpcA2121C38"
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-ecs-integ/vpc/publicSubnet2"
+          }
+        ]
+      }
+    },
+    "vpcpublicSubnet2RouteTableAssociation73F6478A": {
+      "Type": "AWS::EC2::SubnetRouteTableAssociation",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "vpcpublicSubnet2RouteTableA6135437"
+        },
+        "SubnetId": {
+          "Ref": "vpcpublicSubnet2Subnet027D165B"
+        }
+      }
+    },
+    "vpcpublicSubnet2DefaultRoute13685A07": {
+      "Type": "AWS::EC2::Route",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "vpcpublicSubnet2RouteTableA6135437"
+        },
+        "DestinationCidrBlock": "0.0.0.0/0",
+        "GatewayId": {
+          "Ref": "vpcIGWE57CBDCA"
+        }
+      },
+      "DependsOn": [
+        "vpcVPCGW7984C166"
+      ]
+    },
+    "vpcpublicSubnet3Subnet3B90E684": {
+      "Type": "AWS::EC2::Subnet",
+      "Properties": {
+        "CidrBlock": "10.0.2.0/24",
+        "VpcId": {
+          "Ref": "vpcA2121C38"
+        },
+        "AvailabilityZone": "test-region-1c",
+        "MapPublicIpOnLaunch": true,
+        "Tags": [
+          {
+            "Key": "aws-cdk:subnet-name",
+            "Value": "public"
+          },
+          {
+            "Key": "aws-cdk:subnet-type",
+            "Value": "Public"
+          },
+          {
+            "Key": "Name",
+            "Value": "aws-ecs-integ/vpc/publicSubnet3"
+          }
+        ]
+      }
+    },
+    "vpcpublicSubnet3RouteTable901FAA39": {
+      "Type": "AWS::EC2::RouteTable",
+      "Properties": {
+        "VpcId": {
+          "Ref": "vpcA2121C38"
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-ecs-integ/vpc/publicSubnet3"
+          }
+        ]
+      }
+    },
+    "vpcpublicSubnet3RouteTableAssociationF6210B68": {
+      "Type": "AWS::EC2::SubnetRouteTableAssociation",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "vpcpublicSubnet3RouteTable901FAA39"
+        },
+        "SubnetId": {
+          "Ref": "vpcpublicSubnet3Subnet3B90E684"
+        }
+      }
+    },
+    "vpcpublicSubnet3DefaultRoute02D8E508": {
+      "Type": "AWS::EC2::Route",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "vpcpublicSubnet3RouteTable901FAA39"
+        },
+        "DestinationCidrBlock": "0.0.0.0/0",
+        "GatewayId": {
+          "Ref": "vpcIGWE57CBDCA"
+        }
+      },
+      "DependsOn": [
+        "vpcVPCGW7984C166"
+      ]
+    },
+    "vpcIGWE57CBDCA": {
+      "Type": "AWS::EC2::InternetGateway",
+      "Properties": {
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "aws-ecs-integ/vpc"
+          }
+        ]
+      }
+    },
+    "vpcVPCGW7984C166": {
+      "Type": "AWS::EC2::VPCGatewayAttachment",
+      "Properties": {
+        "VpcId": {
+          "Ref": "vpcA2121C38"
+        },
+        "InternetGatewayId": {
+          "Ref": "vpcIGWE57CBDCA"
+        }
+      }
+    },
+    "zoneEB40FF1E": {
+      "Type": "AWS::Route53::HostedZone",
+      "Properties": {
+        "Name": "myexample.com."
+      }
+    },
+    "laterRecordD393EDE6": {
+      "Type": "AWS::Route53::RecordSet",
+      "Properties": {
+        "Name": "u-record.myexample.com.",
+        "Type": "CNAME",
+        "HostedZoneId": {
+          "Ref": "zoneEB40FF1E"
+        },
+        "ResourceRecords": [
+          "console.aws.amazon.com"
+        ],
+        "TTL": "1800"
+      }
+    },
+    "productionenvironmentclusterC6599D2D": {
+      "Type": "AWS::ECS::Cluster"
+    },
+    "nametaskdefinitionTaskRole50FE844E": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "ecs-tasks.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      },
+      "DependsOn": [
+        "nameserviceTaskRecordManagerCleanupE19F1043",
+        "nameserviceTaskRecordManagerRuleRunningCD85F46F",
+        "nameserviceTaskRecordManagerRuleStopped66D08B70"
+      ]
+    },
+    "nametaskdefinition690762BB": {
+      "Type": "AWS::ECS::TaskDefinition",
+      "Properties": {
+        "ContainerDefinitions": [
+          {
+            "Cpu": 256,
+            "Environment": [
+              {
+                "Name": "PORT",
+                "Value": "80"
+              }
+            ],
+            "Essential": true,
+            "Image": "nathanpeck/name",
+            "Memory": 512,
+            "Name": "app",
+            "PortMappings": [
+              {
+                "ContainerPort": 80,
+                "Protocol": "tcp"
+              }
+            ],
+            "Ulimits": [
+              {
+                "HardLimit": 1024000,
+                "Name": "nofile",
+                "SoftLimit": 1024000
+              }
+            ]
+          }
+        ],
+        "Cpu": "256",
+        "Family": "awsecsintegnametaskdefinition0EA6A1A0",
+        "Memory": "512",
+        "NetworkMode": "awsvpc",
+        "RequiresCompatibilities": [
+          "EC2",
+          "FARGATE"
+        ],
+        "TaskRoleArn": {
+          "Fn::GetAtt": [
+            "nametaskdefinitionTaskRole50FE844E",
+            "Arn"
+          ]
+        }
+      },
+      "DependsOn": [
+        "nameserviceTaskRecordManagerCleanupE19F1043",
+        "nameserviceTaskRecordManagerRuleRunningCD85F46F",
+        "nameserviceTaskRecordManagerRuleStopped66D08B70"
+      ]
+    },
+    "nameserviceService8015C8D6": {
+      "Type": "AWS::ECS::Service",
+      "Properties": {
+        "Cluster": {
+          "Ref": "productionenvironmentclusterC6599D2D"
+        },
+        "DeploymentConfiguration": {
+          "MaximumPercent": 200,
+          "MinimumHealthyPercent": 100
+        },
+        "DesiredCount": 1,
+        "EnableECSManagedTags": false,
+        "LaunchType": "FARGATE",
+        "NetworkConfiguration": {
+          "AwsvpcConfiguration": {
+            "AssignPublicIp": "ENABLED",
+            "SecurityGroups": [
+              {
+                "Fn::GetAtt": [
+                  "nameserviceSecurityGroup33F4662C",
+                  "GroupId"
+                ]
+              }
+            ],
+            "Subnets": [
+              {
+                "Ref": "vpcpublicSubnet1SubnetA635257E"
+              },
+              {
+                "Ref": "vpcpublicSubnet2Subnet027D165B"
+              },
+              {
+                "Ref": "vpcpublicSubnet3Subnet3B90E684"
+              }
+            ]
+          }
+        },
+        "TaskDefinition": {
+          "Ref": "nametaskdefinition690762BB"
+        }
+      }
+    },
+    "nameserviceSecurityGroup33F4662C": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "GroupDescription": "aws-ecs-integ/name-service/SecurityGroup",
+        "SecurityGroupEgress": [
+          {
+            "CidrIp": "0.0.0.0/0",
+            "Description": "Allow all outbound traffic by default",
+            "IpProtocol": "-1"
+          }
+        ],
+        "SecurityGroupIngress": [
+          {
+            "CidrIp": "0.0.0.0/0",
+            "Description": "Accept inbound traffic on traffic port from anywhere",
+            "FromPort": 80,
+            "IpProtocol": "tcp",
+            "ToPort": 80
+          }
+        ],
+        "VpcId": {
+          "Ref": "vpcA2121C38"
+        }
+      }
+    },
+    "nameserviceTaskRecordManagerEventsDLB8F13E1E": {
+      "Type": "AWS::SQS::Queue",
+      "Properties": {
+        "MessageRetentionPeriod": 1209600
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
+    "nameserviceTaskRecordManagerEventsQueueF805A6C1": {
+      "Type": "AWS::SQS::Queue",
+      "Properties": {
+        "RedrivePolicy": {
+          "deadLetterTargetArn": {
+            "Fn::GetAtt": [
+              "nameserviceTaskRecordManagerEventsDLB8F13E1E",
+              "Arn"
+            ]
+          },
+          "maxReceiveCount": 500
+        },
+        "VisibilityTimeout": 30
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
+    "nameserviceTaskRecordManagerEventsQueuePolicy65CC6F9E": {
+      "Type": "AWS::SQS::QueuePolicy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "sqs:SendMessage",
+                "sqs:GetQueueAttributes",
+                "sqs:GetQueueUrl"
+              ],
+              "Condition": {
+                "ArnEquals": {
+                  "aws:SourceArn": {
+                    "Fn::GetAtt": [
+                      "nameserviceTaskRecordManagerRuleRunningCD85F46F",
+                      "Arn"
+                    ]
+                  }
+                }
+              },
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "events.amazonaws.com"
+              },
+              "Resource": {
+                "Fn::GetAtt": [
+                  "nameserviceTaskRecordManagerEventsQueueF805A6C1",
+                  "Arn"
+                ]
+              }
+            },
+            {
+              "Action": [
+                "sqs:SendMessage",
+                "sqs:GetQueueAttributes",
+                "sqs:GetQueueUrl"
+              ],
+              "Condition": {
+                "ArnEquals": {
+                  "aws:SourceArn": {
+                    "Fn::GetAtt": [
+                      "nameserviceTaskRecordManagerRuleStopped66D08B70",
+                      "Arn"
+                    ]
+                  }
+                }
+              },
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "events.amazonaws.com"
+              },
+              "Resource": {
+                "Fn::GetAtt": [
+                  "nameserviceTaskRecordManagerEventsQueueF805A6C1",
+                  "Arn"
+                ]
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "Queues": [
+          {
+            "Ref": "nameserviceTaskRecordManagerEventsQueueF805A6C1"
+          }
+        ]
+      }
+    },
+    "nameserviceTaskRecordManagerRecordsA4648C6E": {
+      "Type": "AWS::DynamoDB::Table",
+      "Properties": {
+        "KeySchema": [
+          {
+            "AttributeName": "cluster_service",
+            "KeyType": "HASH"
+          }
+        ],
+        "AttributeDefinitions": [
+          {
+            "AttributeName": "cluster_service",
+            "AttributeType": "S"
+          }
+        ],
+        "BillingMode": "PAY_PER_REQUEST"
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
+    "nameserviceTaskRecordManagerRuleRunningCD85F46F": {
+      "Type": "AWS::Events::Rule",
+      "Properties": {
+        "EventPattern": {
+          "source": [
+            "aws.ecs"
+          ],
+          "detail-type": [
+            "ECS Task State Change"
+          ],
+          "detail": {
+            "clusterArn": [
+              {
+                "Fn::GetAtt": [
+                  "productionenvironmentclusterC6599D2D",
+                  "Arn"
+                ]
+              }
+            ],
+            "lastStatus": [
+              "RUNNING"
+            ],
+            "desiredStatus": [
+              "RUNNING"
+            ]
+          }
+        },
+        "State": "ENABLED",
+        "Targets": [
+          {
+            "Arn": {
+              "Fn::GetAtt": [
+                "nameserviceTaskRecordManagerEventsQueueF805A6C1",
+                "Arn"
+              ]
+            },
+            "Id": "Target0"
+          }
+        ]
+      }
+    },
+    "nameserviceTaskRecordManagerRuleStopped66D08B70": {
+      "Type": "AWS::Events::Rule",
+      "Properties": {
+        "EventPattern": {
+          "source": [
+            "aws.ecs"
+          ],
+          "detail-type": [
+            "ECS Task State Change"
+          ],
+          "detail": {
+            "clusterArn": [
+              {
+                "Fn::GetAtt": [
+                  "productionenvironmentclusterC6599D2D",
+                  "Arn"
+                ]
+              }
+            ],
+            "lastStatus": [
+              "STOPPED"
+            ],
+            "desiredStatus": [
+              "STOPPED"
+            ]
+          }
+        },
+        "State": "ENABLED",
+        "Targets": [
+          {
+            "Arn": {
+              "Fn::GetAtt": [
+                "nameserviceTaskRecordManagerEventsQueueF805A6C1",
+                "Arn"
+              ]
+            },
+            "Id": "Target0"
+          }
+        ]
+      }
+    },
+    "nameserviceTaskRecordManagerEventHandlerServiceRoleE66EE52A": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+              ]
+            ]
+          }
+        ]
+      }
+    },
+    "nameserviceTaskRecordManagerEventHandlerServiceRoleDefaultPolicy96DD8140": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "ec2:DescribeNetworkInterfaces",
+              "Effect": "Allow",
+              "Resource": "*"
+            },
+            {
+              "Action": [
+                "route53:ChangeResourceRecordSets",
+                "route53:ListResourceRecordSets"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":route53:::hostedzone/",
+                    {
+                      "Ref": "zoneEB40FF1E"
+                    }
+                  ]
+                ]
+              }
+            },
+            {
+              "Action": [
+                "sqs:ReceiveMessage",
+                "sqs:ChangeMessageVisibility",
+                "sqs:GetQueueUrl",
+                "sqs:DeleteMessage",
+                "sqs:GetQueueAttributes"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "nameserviceTaskRecordManagerEventsQueueF805A6C1",
+                  "Arn"
+                ]
+              }
+            },
+            {
+              "Action": [
+                "dynamodb:BatchGetItem",
+                "dynamodb:GetRecords",
+                "dynamodb:GetShardIterator",
+                "dynamodb:Query",
+                "dynamodb:GetItem",
+                "dynamodb:Scan",
+                "dynamodb:ConditionCheckItem",
+                "dynamodb:BatchWriteItem",
+                "dynamodb:PutItem",
+                "dynamodb:UpdateItem",
+                "dynamodb:DeleteItem"
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "nameserviceTaskRecordManagerRecordsA4648C6E",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Ref": "AWS::NoValue"
+                }
+              ]
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "nameserviceTaskRecordManagerEventHandlerServiceRoleDefaultPolicy96DD8140",
+        "Roles": [
+          {
+            "Ref": "nameserviceTaskRecordManagerEventHandlerServiceRoleE66EE52A"
+          }
+        ]
+      }
+    },
+    "nameserviceTaskRecordManagerEventHandler4B8C6905": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "AssetParametersc02a0f4f3094701fe7fc414690fc416909b3a1f04dcba086e366807a15f2b0b4S3Bucket52DB41A7"
+          },
+          "S3Key": {
+            "Fn::Join": [
+              "",
+              [
+                {
+                  "Fn::Select": [
+                    0,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        {
+                          "Ref": "AssetParametersc02a0f4f3094701fe7fc414690fc416909b3a1f04dcba086e366807a15f2b0b4S3VersionKey0F583551"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "Fn::Select": [
+                    1,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        {
+                          "Ref": "AssetParametersc02a0f4f3094701fe7fc414690fc416909b3a1f04dcba086e366807a15f2b0b4S3VersionKey0F583551"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            ]
+          }
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "nameserviceTaskRecordManagerEventHandlerServiceRoleE66EE52A",
+            "Arn"
+          ]
+        },
+        "Environment": {
+          "Variables": {
+            "HOSTED_ZONE_ID": {
+              "Ref": "zoneEB40FF1E"
+            },
+            "RECORD_NAME": "test-record.myexample.com",
+            "RECORDS_TABLE": {
+              "Ref": "nameserviceTaskRecordManagerRecordsA4648C6E"
+            },
+            "CLUSTER_ARN": {
+              "Fn::GetAtt": [
+                "productionenvironmentclusterC6599D2D",
+                "Arn"
+              ]
+            },
+            "SERVICE_NAME": {
+              "Fn::GetAtt": [
+                "nameserviceService8015C8D6",
+                "Name"
+              ]
+            }
+          }
+        },
+        "Handler": "index.queue_handler",
+        "ReservedConcurrentExecutions": 1,
+        "Runtime": "python3.8",
+        "Timeout": 30
+      },
+      "DependsOn": [
+        "nameserviceTaskRecordManagerEventHandlerServiceRoleDefaultPolicy96DD8140",
+        "nameserviceTaskRecordManagerEventHandlerServiceRoleE66EE52A"
+      ]
+    },
+    "nameserviceTaskRecordManagerEventHandlerSqsEventSourceawsecsintegnameserviceTaskRecordManagerEventsQueueC5EE9A869F1EB155": {
+      "Type": "AWS::Lambda::EventSourceMapping",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "nameserviceTaskRecordManagerEventHandler4B8C6905"
+        },
+        "EventSourceArn": {
+          "Fn::GetAtt": [
+            "nameserviceTaskRecordManagerEventsQueueF805A6C1",
+            "Arn"
+          ]
+        }
+      }
+    },
+    "nameserviceTaskRecordManagerCleanupResourceProviderHandlerServiceRoleCCA462F0": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+              ]
+            ]
+          }
+        ]
+      }
+    },
+    "nameserviceTaskRecordManagerCleanupResourceProviderHandlerServiceRoleDefaultPolicy7D095576": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "route53:ChangeResourceRecordSets",
+                "route53:ListResourceRecordSets"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":route53:::hostedzone/",
+                    {
+                      "Ref": "zoneEB40FF1E"
+                    }
+                  ]
+                ]
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "nameserviceTaskRecordManagerCleanupResourceProviderHandlerServiceRoleDefaultPolicy7D095576",
+        "Roles": [
+          {
+            "Ref": "nameserviceTaskRecordManagerCleanupResourceProviderHandlerServiceRoleCCA462F0"
+          }
+        ]
+      }
+    },
+    "nameserviceTaskRecordManagerCleanupResourceProviderHandler08068F99": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "AssetParametersc02a0f4f3094701fe7fc414690fc416909b3a1f04dcba086e366807a15f2b0b4S3Bucket52DB41A7"
+          },
+          "S3Key": {
+            "Fn::Join": [
+              "",
+              [
+                {
+                  "Fn::Select": [
+                    0,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        {
+                          "Ref": "AssetParametersc02a0f4f3094701fe7fc414690fc416909b3a1f04dcba086e366807a15f2b0b4S3VersionKey0F583551"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "Fn::Select": [
+                    1,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        {
+                          "Ref": "AssetParametersc02a0f4f3094701fe7fc414690fc416909b3a1f04dcba086e366807a15f2b0b4S3VersionKey0F583551"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            ]
+          }
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "nameserviceTaskRecordManagerCleanupResourceProviderHandlerServiceRoleCCA462F0",
+            "Arn"
+          ]
+        },
+        "Handler": "index.cleanup_resource_handler",
+        "Runtime": "python3.8",
+        "Timeout": 300
+      },
+      "DependsOn": [
+        "nameserviceTaskRecordManagerCleanupResourceProviderHandlerServiceRoleDefaultPolicy7D095576",
+        "nameserviceTaskRecordManagerCleanupResourceProviderHandlerServiceRoleCCA462F0"
+      ]
+    },
+    "nameserviceTaskRecordManagerCleanupResourceProviderframeworkonEventServiceRoleF0570BD0": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+              ]
+            ]
+          }
+        ]
+      }
+    },
+    "nameserviceTaskRecordManagerCleanupResourceProviderframeworkonEventServiceRoleDefaultPolicy350D6FAC": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "lambda:InvokeFunction",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "nameserviceTaskRecordManagerCleanupResourceProviderHandler08068F99",
+                  "Arn"
+                ]
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "nameserviceTaskRecordManagerCleanupResourceProviderframeworkonEventServiceRoleDefaultPolicy350D6FAC",
+        "Roles": [
+          {
+            "Ref": "nameserviceTaskRecordManagerCleanupResourceProviderframeworkonEventServiceRoleF0570BD0"
+          }
+        ]
+      }
+    },
+    "nameserviceTaskRecordManagerCleanupResourceProviderframeworkonEvent9B27C899": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "AssetParametersdaeb79e3cee39c9b902dc0d5c780223e227ed573ea60976252947adab5fb2be1S3BucketDC4B98B1"
+          },
+          "S3Key": {
+            "Fn::Join": [
+              "",
+              [
+                {
+                  "Fn::Select": [
+                    0,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        {
+                          "Ref": "AssetParametersdaeb79e3cee39c9b902dc0d5c780223e227ed573ea60976252947adab5fb2be1S3VersionKeyA495226F"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "Fn::Select": [
+                    1,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        {
+                          "Ref": "AssetParametersdaeb79e3cee39c9b902dc0d5c780223e227ed573ea60976252947adab5fb2be1S3VersionKeyA495226F"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            ]
+          }
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "nameserviceTaskRecordManagerCleanupResourceProviderframeworkonEventServiceRoleF0570BD0",
+            "Arn"
+          ]
+        },
+        "Description": "AWS CDK resource provider framework - onEvent (aws-ecs-integ/name-service/TaskRecordManager/CleanupResourceProvider)",
+        "Environment": {
+          "Variables": {
+            "USER_ON_EVENT_FUNCTION_ARN": {
+              "Fn::GetAtt": [
+                "nameserviceTaskRecordManagerCleanupResourceProviderHandler08068F99",
+                "Arn"
+              ]
+            }
+          }
+        },
+        "Handler": "framework.onEvent",
+        "Runtime": "nodejs14.x",
+        "Timeout": 900
+      },
+      "DependsOn": [
+        "nameserviceTaskRecordManagerCleanupResourceProviderframeworkonEventServiceRoleDefaultPolicy350D6FAC",
+        "nameserviceTaskRecordManagerCleanupResourceProviderframeworkonEventServiceRoleF0570BD0"
+      ]
+    },
+    "nameserviceTaskRecordManagerCleanupE19F1043": {
+      "Type": "AWS::CloudFormation::CustomResource",
+      "Properties": {
+        "ServiceToken": {
+          "Fn::GetAtt": [
+            "nameserviceTaskRecordManagerCleanupResourceProviderframeworkonEvent9B27C899",
+            "Arn"
+          ]
+        },
+        "HostedZoneId": {
+          "Ref": "zoneEB40FF1E"
+        },
+        "RecordName": "test-record.myexample.com"
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
+    "nameserviceTaskRecordManagerPrimingCallCustomResourcePolicy376F02F0": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sqs:SendMessage",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "nameserviceTaskRecordManagerEventsQueueF805A6C1",
+                  "Arn"
+                ]
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "nameserviceTaskRecordManagerPrimingCallCustomResourcePolicy376F02F0",
+        "Roles": [
+          {
+            "Ref": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
+          }
+        ]
+      },
+      "DependsOn": [
+        "nameserviceTaskRecordManagerEventHandler4B8C6905",
+        "nameserviceTaskRecordManagerEventHandlerServiceRoleDefaultPolicy96DD8140",
+        "nameserviceTaskRecordManagerEventHandlerServiceRoleE66EE52A",
+        "nameserviceTaskRecordManagerEventHandlerSqsEventSourceawsecsintegnameserviceTaskRecordManagerEventsQueueC5EE9A869F1EB155"
+      ]
+    },
+    "nameserviceTaskRecordManagerPrimingCallE6113369": {
+      "Type": "Custom::AWS",
+      "Properties": {
+        "ServiceToken": {
+          "Fn::GetAtt": [
+            "AWS679f53fac002430cb0da5b7982bd22872D164C4C",
+            "Arn"
+          ]
+        },
+        "Create": {
+          "Fn::Join": [
+            "",
+            [
+              "{\"service\":\"SQS\",\"action\":\"sendMessage\",\"parameters\":{\"QueueUrl\":\"",
+              {
+                "Ref": "nameserviceTaskRecordManagerEventsQueueF805A6C1"
+              },
+              "\",\"DelaySeconds\":10,\"MessageBody\":\"{ \\\"prime\\\": true }\",\"MessageAttributes\":{\"HostedZoneId\":{\"DataType\":\"String\",\"StringValue\":\"",
+              {
+                "Ref": "zoneEB40FF1E"
+              },
+              "\"},\"RecordName\":{\"DataType\":\"String\",\"StringValue\":\"test-record\"}}},\"physicalResourceId\":{\"responsePath\":\"MessageId\"}}"
+            ]
+          ]
+        },
+        "Update": {
+          "Fn::Join": [
+            "",
+            [
+              "{\"service\":\"SQS\",\"action\":\"sendMessage\",\"parameters\":{\"QueueUrl\":\"",
+              {
+                "Ref": "nameserviceTaskRecordManagerEventsQueueF805A6C1"
+              },
+              "\",\"DelaySeconds\":10,\"MessageBody\":\"{ \\\"prime\\\": true }\",\"MessageAttributes\":{\"HostedZoneId\":{\"DataType\":\"String\",\"StringValue\":\"",
+              {
+                "Ref": "zoneEB40FF1E"
+              },
+              "\"},\"RecordName\":{\"DataType\":\"String\",\"StringValue\":\"test-record\"}}},\"physicalResourceId\":{\"responsePath\":\"MessageId\"}}"
+            ]
+          ]
+        },
+        "InstallLatestAwsSdk": true
+      },
+      "DependsOn": [
+        "nameserviceTaskRecordManagerEventHandler4B8C6905",
+        "nameserviceTaskRecordManagerEventHandlerServiceRoleDefaultPolicy96DD8140",
+        "nameserviceTaskRecordManagerEventHandlerServiceRoleE66EE52A",
+        "nameserviceTaskRecordManagerEventHandlerSqsEventSourceawsecsintegnameserviceTaskRecordManagerEventsQueueC5EE9A869F1EB155",
+        "nameserviceTaskRecordManagerPrimingCallCustomResourcePolicy376F02F0"
+      ],
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
+    "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+              ]
+            ]
+          }
+        ]
+      }
+    },
+    "AWS679f53fac002430cb0da5b7982bd22872D164C4C": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "AssetParameters0625b1566df06e0ffd948f0f65f97a3d22d48242e66196d3f72b480f5309b343S3Bucket65227904"
+          },
+          "S3Key": {
+            "Fn::Join": [
+              "",
+              [
+                {
+                  "Fn::Select": [
+                    0,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        {
+                          "Ref": "AssetParameters0625b1566df06e0ffd948f0f65f97a3d22d48242e66196d3f72b480f5309b343S3VersionKey3AF0E7DF"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "Fn::Select": [
+                    1,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        {
+                          "Ref": "AssetParameters0625b1566df06e0ffd948f0f65f97a3d22d48242e66196d3f72b480f5309b343S3VersionKey3AF0E7DF"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            ]
+          }
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2",
+            "Arn"
+          ]
+        },
+        "Handler": "index.handler",
+        "Runtime": "nodejs12.x",
+        "Timeout": 120
+      },
+      "DependsOn": [
+        "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
+      ]
+    }
+  },
+  "Parameters": {
+    "AssetParametersc02a0f4f3094701fe7fc414690fc416909b3a1f04dcba086e366807a15f2b0b4S3Bucket52DB41A7": {
+      "Type": "String",
+      "Description": "S3 bucket for asset \"c02a0f4f3094701fe7fc414690fc416909b3a1f04dcba086e366807a15f2b0b4\""
+    },
+    "AssetParametersc02a0f4f3094701fe7fc414690fc416909b3a1f04dcba086e366807a15f2b0b4S3VersionKey0F583551": {
+      "Type": "String",
+      "Description": "S3 key for asset version \"c02a0f4f3094701fe7fc414690fc416909b3a1f04dcba086e366807a15f2b0b4\""
+    },
+    "AssetParametersc02a0f4f3094701fe7fc414690fc416909b3a1f04dcba086e366807a15f2b0b4ArtifactHash85B8E84D": {
+      "Type": "String",
+      "Description": "Artifact hash for asset \"c02a0f4f3094701fe7fc414690fc416909b3a1f04dcba086e366807a15f2b0b4\""
+    },
+    "AssetParametersdaeb79e3cee39c9b902dc0d5c780223e227ed573ea60976252947adab5fb2be1S3BucketDC4B98B1": {
+      "Type": "String",
+      "Description": "S3 bucket for asset \"daeb79e3cee39c9b902dc0d5c780223e227ed573ea60976252947adab5fb2be1\""
+    },
+    "AssetParametersdaeb79e3cee39c9b902dc0d5c780223e227ed573ea60976252947adab5fb2be1S3VersionKeyA495226F": {
+      "Type": "String",
+      "Description": "S3 key for asset version \"daeb79e3cee39c9b902dc0d5c780223e227ed573ea60976252947adab5fb2be1\""
+    },
+    "AssetParametersdaeb79e3cee39c9b902dc0d5c780223e227ed573ea60976252947adab5fb2be1ArtifactHashA521A16F": {
+      "Type": "String",
+      "Description": "Artifact hash for asset \"daeb79e3cee39c9b902dc0d5c780223e227ed573ea60976252947adab5fb2be1\""
+    },
+    "AssetParameters0625b1566df06e0ffd948f0f65f97a3d22d48242e66196d3f72b480f5309b343S3Bucket65227904": {
+      "Type": "String",
+      "Description": "S3 bucket for asset \"0625b1566df06e0ffd948f0f65f97a3d22d48242e66196d3f72b480f5309b343\""
+    },
+    "AssetParameters0625b1566df06e0ffd948f0f65f97a3d22d48242e66196d3f72b480f5309b343S3VersionKey3AF0E7DF": {
+      "Type": "String",
+      "Description": "S3 key for asset version \"0625b1566df06e0ffd948f0f65f97a3d22d48242e66196d3f72b480f5309b343\""
+    },
+    "AssetParameters0625b1566df06e0ffd948f0f65f97a3d22d48242e66196d3f72b480f5309b343ArtifactHash0C561FF5": {
+      "Type": "String",
+      "Description": "Artifact hash for asset \"0625b1566df06e0ffd948f0f65f97a3d22d48242e66196d3f72b480f5309b343\""
+    }
+  },
+  "Outputs": {
+    "DnsName": {
+      "Value": "test-record.myexample.com"
+    },
+    "DnsServer": {
+      "Value": {
+        "Fn::Select": [
+          0,
+          {
+            "Fn::GetAtt": [
+              "zoneEB40FF1E",
+              "NameServers"
+            ]
+          }
+        ]
+      }
+    }
+  }
+}

@@ -1,9 +1,14 @@
-import '@aws-cdk/assert/jest';
+import '@aws-cdk/assert-internal/jest';
 import * as dynamodb from '@aws-cdk/aws-dynamodb';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as efs from '@aws-cdk/aws-efs';
-import { Construct, Stack } from '@aws-cdk/core';
+import { RemovalPolicy, Stack } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { BackupPlan, BackupResource, BackupSelection } from '../lib';
+
+// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
+// eslint-disable-next-line
+import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 let stack: Stack;
 let plan: BackupPlan;
@@ -120,13 +125,14 @@ test('allow restores', () => {
 
 test('fromConstruct', () => {
   // GIVEN
-  class EfsConstruct extends Construct {
+  class EfsConstruct extends CoreConstruct {
     constructor(scope: Construct, id: string) {
       super(scope, id);
-      new efs.CfnFileSystem(this, 'FileSystem');
+      const fs = new efs.CfnFileSystem(this, 'FileSystem');
+      fs.applyRemovalPolicy(RemovalPolicy.DESTROY);
     }
   }
-  class MyConstruct extends Construct {
+  class MyConstruct extends CoreConstruct {
     constructor(scope: Construct, id: string) {
       super(scope, id);
 

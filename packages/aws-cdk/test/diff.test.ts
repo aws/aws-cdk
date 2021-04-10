@@ -1,10 +1,10 @@
 import { Writable } from 'stream';
-import { NodeStringDecoder, StringDecoder  } from 'string_decoder';
+import { NodeStringDecoder, StringDecoder } from 'string_decoder';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { CloudFormationStackArtifact } from '@aws-cdk/cx-api';
 import { CloudFormationDeployments } from '../lib/api/cloudformation-deployments';
 import { CdkToolkit } from '../lib/cdk-toolkit';
-import { classMockOf, MockCloudExecutable } from './util';
+import { instanceMockFrom, MockCloudExecutable } from './util';
 
 let cloudExecutable: MockCloudExecutable;
 let cloudFormation: jest.Mocked<CloudFormationDeployments>;
@@ -23,7 +23,7 @@ beforeEach(() => {
     {
       stackName: 'C',
       depends: ['A'],
-      template: { resource: 'C'},
+      template: { resource: 'C' },
       metadata: {
         '/resource': [
           {
@@ -39,7 +39,7 @@ beforeEach(() => {
     }],
   });
 
-  cloudFormation = classMockOf(CloudFormationDeployments);
+  cloudFormation = instanceMockFrom(CloudFormationDeployments);
 
   toolkit = new CdkToolkit({
     cloudExecutable,
@@ -115,17 +115,10 @@ test('throws an error during diffs on stack with error metadata', async () => {
   const buffer = new StringWritable();
 
   // WHEN
-  try {
-    const exitCode = await toolkit.diff({
-      stackNames: ['C'],
-      stream: buffer,
-    });
-
-    // THEN
-    expect(exitCode).toBe(1);
-  } catch (e) {
-    expect(e.toString()).toContain('Found errors');
-  }
+  await expect(() => toolkit.diff({
+    stackNames: ['C'],
+    stream: buffer,
+  })).rejects.toThrow(/Found errors/);
 });
 
 class StringWritable extends Writable {

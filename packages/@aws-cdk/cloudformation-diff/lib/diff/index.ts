@@ -27,7 +27,7 @@ export function diffParameter(oldValue: types.Parameter, newValue: types.Paramet
 }
 
 export function diffResource(oldValue?: types.Resource, newValue?: types.Resource): types.ResourceDifference {
-  const resourceType =  {
+  const resourceType = {
     oldType: oldValue && oldValue.Type,
     newType: newValue && newValue.Type,
   };

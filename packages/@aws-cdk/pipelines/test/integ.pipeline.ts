@@ -1,14 +1,15 @@
 /// !cdk-integ PipelineStack
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as codepipeline_actions from '@aws-cdk/aws-codepipeline-actions';
-import { App, CfnResource, Construct, SecretValue, Stack, StackProps, Stage, StageProps } from '@aws-cdk/core';
+import { App, CfnResource, SecretValue, Stack, StackProps, Stage, StageProps } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import * as cdkp from '../lib';
 
 class MyStage extends Stage {
   constructor(scope: Construct, id: string, props?: StageProps) {
     super(scope, id, props);
 
-    const stack = new Stack(this, 'Stack');
+    const stack = new Stack(this, 'Stack', props);
     new CfnResource(stack, 'Resource', {
       type: 'AWS::Test::SomeResource',
     });
@@ -55,7 +56,9 @@ class CdkpipelinesDemoPipelineStack extends Stack {
 
     // This is where we add the application stages
     // ...
-    const stage = pipeline.addApplicationStage(new MyStage(this, 'PreProd'));
+    const stage = pipeline.addApplicationStage(new MyStage(this, 'PreProd', {
+      env: { account: process.env.CDK_DEFAULT_ACCOUNT, region: process.env.CDK_DEFAULT_REGION },
+    }));
     stage.addActions(
       new cdkp.ShellScriptAction({
         actionName: 'UseSource',

@@ -1,8 +1,10 @@
-import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
+import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert-internal';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
-import { CfnElement, Construct, Stack } from '@aws-cdk/core';
+import * as sqs from '@aws-cdk/aws-sqs';
+import { CfnElement, Duration, Stack } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import * as targets from '../../lib';
 
 describe('CodePipeline event target', () => {
@@ -21,8 +23,9 @@ describe('CodePipeline event target', () => {
         actionName: 'Hello',
         category: codepipeline.ActionCategory.SOURCE,
         provider: 'x',
-        artifactBounds: { minInputs: 0, maxInputs: 0 , minOutputs: 1, maxOutputs: 1 },
-        outputs: [srcArtifact]})],
+        artifactBounds: { minInputs: 0, maxInputs: 0, minOutputs: 1, maxOutputs: 1 },
+        outputs: [srcArtifact],
+      })],
     });
     pipeline.addStage({
       stageName: 'Build',
@@ -32,10 +35,11 @@ describe('CodePipeline event target', () => {
         provider: 'y',
         inputs: [srcArtifact],
         outputs: [buildArtifact],
-        artifactBounds: { minInputs: 1, maxInputs: 1 , minOutputs: 1, maxOutputs: 1 }})],
+        artifactBounds: { minInputs: 1, maxInputs: 1, minOutputs: 1, maxOutputs: 1 },
+      })],
     });
     pipelineArn = {
-      'Fn::Join': [ '', [
+      'Fn::Join': ['', [
         'arn:',
         { Ref: 'AWS::Partition' },
         ':codepipeline:',
@@ -43,8 +47,8 @@ describe('CodePipeline event target', () => {
         ':',
         { Ref: 'AWS::AccountId' },
         ':',
-        { Ref: 'PipelineC660917D' }],
-      ],
+        { Ref: 'PipelineC660917D' },
+      ]],
     };
   });
 
@@ -68,7 +72,7 @@ describe('CodePipeline event target', () => {
             {
               Arn: pipelineArn,
               Id: 'Target0',
-              RoleArn: { 'Fn::GetAtt': [ 'PipelineEventsRole46BEEA7C', 'Arn' ] },
+              RoleArn: { 'Fn::GetAtt': ['PipelineEventsRole46BEEA7C', 'Arn'] },
             },
           ],
         }));
@@ -86,6 +90,71 @@ describe('CodePipeline event target', () => {
             ],
             Version: '2012-10-17',
           },
+        }));
+      });
+    });
+
+    describe('with retry policy and dead letter queue', () => {
+      test('adds retry attempts and maxEventAge to the target configuration', () => {
+        // WHEN
+        let queue = new sqs.Queue(stack, 'dlq');
+
+        rule.addTarget(new targets.CodePipeline(pipeline, {
+          retryAttempts: 2,
+          maxEventAge: Duration.hours(2),
+          deadLetterQueue: queue,
+        }));
+
+        // THEN
+        expect(stack).to(haveResource('AWS::Events::Rule', {
+          ScheduleExpression: 'rate(1 minute)',
+          State: 'ENABLED',
+          Targets: [
+            {
+              Arn: {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    {
+                      Ref: 'AWS::Partition',
+                    },
+                    ':codepipeline:',
+                    {
+                      Ref: 'AWS::Region',
+                    },
+                    ':',
+                    {
+                      Ref: 'AWS::AccountId',
+                    },
+                    ':',
+                    {
+                      Ref: 'PipelineC660917D',
+                    },
+                  ],
+                ],
+              },
+              DeadLetterConfig: {
+                Arn: {
+                  'Fn::GetAtt': [
+                    'dlq09C78ACC',
+                    'Arn',
+                  ],
+                },
+              },
+              Id: 'Target0',
+              RetryPolicy: {
+                MaximumEventAgeInSeconds: 7200,
+                MaximumRetryAttempts: 2,
+              },
+              RoleArn: {
+                'Fn::GetAtt': [
+                  'PipelineEventsRole46BEEA7C',
+                  'Arn',
+                ],
+              },
+            },
+          ],
         }));
       });
     });

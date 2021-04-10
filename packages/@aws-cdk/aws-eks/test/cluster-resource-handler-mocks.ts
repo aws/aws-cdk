@@ -141,8 +141,8 @@ export const client: EksClient = {
 export const MOCK_PROPS = {
   roleArn: 'arn:of:role',
   resourcesVpcConfig: {
-    subnetIds: [ 'subnet1', 'subnet2' ],
-    securityGroupIds: [ 'sg1', 'sg2', 'sg3' ],
+    subnetIds: ['subnet1', 'subnet2'],
+    securityGroupIds: ['sg1', 'sg2', 'sg3'],
   },
 };
 

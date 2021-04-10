@@ -1,7 +1,10 @@
 import * as ecr from '@aws-cdk/aws-ecr';
-import { Construct } from '@aws-cdk/core';
 import { ContainerDefinition } from '../container-definition';
 import { ContainerImage, ContainerImageConfig } from '../container-image';
+
+// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
+// eslint-disable-next-line
+import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 /**
  * An image from an Amazon ECR repository.
@@ -19,13 +22,17 @@ export class EcrImage extends ContainerImage {
   /**
    * Constructs a new instance of the EcrImage class.
    */
-  constructor(private readonly repository: ecr.IRepository, private readonly tag: string) {
+  constructor(private readonly repository: ecr.IRepository, private readonly tagOrDigest: string) {
     super();
 
-    this.imageName = this.repository.repositoryUriForTag(this.tag);
+    if (tagOrDigest?.startsWith('sha256:')) {
+      this.imageName = this.repository.repositoryUriForDigest(this.tagOrDigest);
+    } else {
+      this.imageName = this.repository.repositoryUriForTag(this.tagOrDigest);
+    }
   }
 
-  public bind(_scope: Construct, containerDefinition: ContainerDefinition): ContainerImageConfig {
+  public bind(_scope: CoreConstruct, containerDefinition: ContainerDefinition): ContainerImageConfig {
     this.repository.grantPull(containerDefinition.taskDefinition.obtainExecutionRole());
 
     return {

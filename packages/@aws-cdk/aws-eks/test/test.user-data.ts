@@ -66,6 +66,20 @@ export = {
     test.done();
   },
 
+  '--dns-cluster-ip'(test: Test) {
+    // GIVEN
+    const { asg, stack } = newFixtures();
+
+    // WHEN
+    const userData = stack.resolve(renderAmazonLinuxUserData('my-cluster-name', asg, {
+      dnsClusterIp: '192.0.2.53',
+    }));
+
+    // THEN
+    test.deepEqual(userData[1], '/etc/eks/bootstrap.sh my-cluster-name --kubelet-extra-args "--node-labels lifecycle=OnDemand" --use-max-pods true --dns-cluster-ip 192.0.2.53');
+    test.done();
+  },
+
   '--docker-config-json'(test: Test) {
     // GIVEN
     const { asg } = newFixtures();
@@ -153,7 +167,7 @@ export = {
 
 function newFixtures(spot = false) {
   const app = new App();
-  const stack = new Stack(app, 'my-stack', { env: { region: 'us-west-33' }});
+  const stack = new Stack(app, 'my-stack', { env: { region: 'us-west-33' } });
   const vpc = new ec2.Vpc(stack, 'vpc');
   const asg = new autoscaling.AutoScalingGroup(stack, 'ASG', {
     instanceType: new ec2.InstanceType('m4.xlarge'),

@@ -14,7 +14,7 @@ import { AssetManifestBuilder } from './util/asset-manifest-builder';
  * pass Asset coordinates.
  */
 // eslint-disable-next-line max-len
-export async function addMetadataAssetsToManifest(stack: cxapi.CloudFormationStackArtifact, assetManifest: AssetManifestBuilder, toolkitInfo?: ToolkitInfo, reuse?: string[]): Promise<Record<string, string>> {
+export async function addMetadataAssetsToManifest(stack: cxapi.CloudFormationStackArtifact, assetManifest: AssetManifestBuilder, toolkitInfo: ToolkitInfo, reuse?: string[]): Promise<Record<string, string>> {
   reuse = reuse || [];
   const assets = stack.assets;
 
@@ -22,7 +22,7 @@ export async function addMetadataAssetsToManifest(stack: cxapi.CloudFormationSta
     return {};
   }
 
-  if (!toolkitInfo) {
+  if (!toolkitInfo.found) {
     // eslint-disable-next-line max-len
     throw new Error(`This stack uses assets, so the toolkit stack must be deployed to the environment (Run "${colors.blue('cdk bootstrap ' + stack.environment!.name)}")`);
   }
@@ -61,7 +61,7 @@ async function prepareAsset(asset: cxschema.AssetMetadataEntry, assetManifest: A
         toolkitInfo,
         asset.packaging === 'zip' ? cxschema.FileAssetPackaging.ZIP_DIRECTORY : cxschema.FileAssetPackaging.FILE);
     case 'container-image':
-      return await prepareDockerImageAsset(asset, assetManifest, toolkitInfo);
+      return prepareDockerImageAsset(asset, assetManifest, toolkitInfo);
     default:
       // eslint-disable-next-line max-len
       throw new Error(`Unsupported packaging type: ${(asset as any).packaging}. You might need to upgrade your aws-cdk toolkit to support this asset type.`);

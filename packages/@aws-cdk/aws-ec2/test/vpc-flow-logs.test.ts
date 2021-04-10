@@ -1,4 +1,4 @@
-import { countResources, expect, haveResource } from '@aws-cdk/assert';
+import { countResources, expect, haveResource } from '@aws-cdk/assert-internal';
 import * as iam from '@aws-cdk/aws-iam';
 import * as logs from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
@@ -69,6 +69,26 @@ nodeunitShim({
         new s3.Bucket(stack, 'TestBucket', {
           bucketName: 'testbucket',
         }),
+      ),
+    });
+
+    expect(stack).notTo(haveResource('AWS::Logs::LogGroup'));
+    expect(stack).notTo(haveResource('AWS::IAM::Role'));
+    expect(stack).to(haveResource('AWS::S3::Bucket', {
+      BucketName: 'testbucket',
+    }));
+    test.done();
+  },
+  'with s3 as the destination, allows use of key prefix'(test: Test) {
+    const stack = getTestStack();
+
+    new FlowLog(stack, 'FlowLogs', {
+      resourceType: FlowLogResourceType.fromNetworkInterfaceId('eni-123456'),
+      destination: FlowLogDestination.toS3(
+        new s3.Bucket(stack, 'TestBucket', {
+          bucketName: 'testbucket',
+        }),
+        'FlowLogs/',
       ),
     });
 

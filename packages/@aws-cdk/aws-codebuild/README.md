@@ -1,5 +1,6 @@
-## AWS CodeBuild Construct Library
+# AWS CodeBuild Construct Library
 <!--BEGIN STABILITY BANNER-->
+
 ---
 
 ![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)
@@ -7,6 +8,7 @@
 ![cdk-constructs: Stable](https://img.shields.io/badge/cdk--constructs-stable-success.svg?style=for-the-badge)
 
 ---
+
 <!--END STABILITY BANNER-->
 
 AWS CodeBuild is a fully managed continuous integration service that compiles
@@ -85,13 +87,17 @@ new codebuild.Project(this, 'MyProject', {
 These source types can be used to build code from a GitHub repository.
 Example:
 
-```typescript
+```ts
 const gitHubSource = codebuild.Source.gitHub({
   owner: 'awslabs',
   repo: 'aws-cdk',
   webhook: true, // optional, default: true if `webhookFilters` were provided, false otherwise
+  webhookTriggersBatchBuild: true, // optional, default is false
   webhookFilters: [
-    codebuild.FilterGroup.inEventOf(codebuild.EventAction.PUSH).andBranchIs('master'),
+    codebuild.FilterGroup
+      .inEventOf(codebuild.EventAction.PUSH)
+      .andBranchIs('master')
+      .andCommitMessageIs('the commit message'),
   ], // optional, by default all pushes and Pull Requests will trigger a build
 });
 ```
@@ -100,7 +106,7 @@ To provide GitHub credentials, please either go to AWS CodeBuild Console to conn
 or call `ImportSourceCredentials` to persist your personal access token.
 Example:
 
-```
+```console
 aws codebuild import-source-credentials --server-type GITHUB --auth-type PERSONAL_ACCESS_TOKEN --token <token_value>
 ```
 
@@ -112,6 +118,18 @@ This source type can be used to build code from a BitBucket repository.
 const bbSource = codebuild.Source.bitBucket({
   owner: 'owner',
   repo: 'repo',
+});
+```
+
+### For all Git sources
+
+For all Git sources, you can fetch submodules while cloing git repo.
+
+```ts
+const gitHubSource = codebuild.Source.gitHub({
+  owner: 'awslabs',
+  repo: 'aws-cdk',
+  fetchSubmodules: true,
 });
 ```
 
@@ -134,6 +152,9 @@ const project = codebuild.Project(stack, 'MyProject', {
 });
 ```
 
+If you'd prefer your buildspec to be rendered as YAML in the template,
+use the `fromObjectToYaml()` method instead of `fromObject()`.
+
 Because we've not set the `name` property, this example will set the
 `overrideArtifactName` parameter, and produce an artifact named as defined in
 the Buildspec file, uploaded to an S3 bucket (`bucket`). The path will be
@@ -148,7 +169,7 @@ It's a simple class that doesn't allow you to specify `sources`,
 as these are handled by setting input and output CodePipeline `Artifact` instances on the Action,
 instead of setting them on the Project.
 
-```typescript
+```ts
 const project = new codebuild.PipelineProject(this, 'Project', {
   // properties as above...
 })
@@ -164,7 +185,7 @@ You can save time when your project builds by using a cache. A cache can store r
 
 With S3 caching, the cache is stored in an S3 bucket which is available from multiple hosts.
 
-```typescript
+```ts
 new codebuild.Project(this, 'Project', {
   source: codebuild.Source.bitBucket({
     owner: 'awslabs',
@@ -184,7 +205,7 @@ guarantee cache hits. For example, when a build starts and caches files locally,
 * `LocalCacheMode.DOCKER_LAYER` caches existing Docker layers.
 * `LocalCacheMode.CUSTOM` caches directories you specify in the buildspec file.
 
-```typescript
+```ts
 new codebuild.Project(this, 'Project', {
   source: codebuild.Source.gitHubEnterprise({
     httpsCloneUrl: 'https://my-github-enterprise.com/owner/repo',
@@ -213,18 +234,36 @@ The CodeBuild library supports both Linux and Windows images via the
 `LinuxBuildImage` and `WindowsBuildImage` classes, respectively.
 
 You can specify one of the predefined Windows/Linux images by using one
-of the constants such as `WindowsBuildImage.WINDOWS_BASE_2_0` or
-`LinuxBuildImage.STANDARD_2_0`.
+of the constants such as `WindowsBuildImage.WIN_SERVER_CORE_2019_BASE`,
+`WindowsBuildImage.WINDOWS_BASE_2_0` or `LinuxBuildImage.STANDARD_2_0`.
 
 Alternatively, you can specify a custom image using one of the static methods on
-`XxxBuildImage`:
+`LinuxBuildImage`:
 
-* Use `.fromDockerRegistry(image[, { secretsManagerCredentials }])` to reference an image in any public or private Docker registry.
-* Use `.fromEcrRepository(repo[, tag])` to reference an image available in an
+* `LinuxBuildImage.fromDockerRegistry(image[, { secretsManagerCredentials }])` to reference an image in any public or private Docker registry.
+* `LinuxBuildImage.fromEcrRepository(repo[, tag])` to reference an image available in an
   ECR repository.
-* Use `.fromAsset(directory)` to use an image created from a
+* `LinuxBuildImage.fromAsset(parent, id, props)` to use an image created from a
   local asset.
-* Use `.fromCodeBuildImageId(id)` to reference a pre-defined, CodeBuild-provided Docker image.
+* `LinuxBuildImage.fromCodeBuildImageId(id)` to reference a pre-defined, CodeBuild-provided Docker image.
+
+or one of the corresponding methods on `WindowsBuildImage`:
+
+* `WindowsBuildImage.fromDockerRegistry(image[, { secretsManagerCredentials }, imageType])`
+* `WindowsBuildImage.fromEcrRepository(repo[, tag, imageType])`
+* `WindowsBuildImage.fromAsset(parent, id, props, [, imageType])`
+
+Note that the `WindowsBuildImage` version of the static methods accepts an optional parameter of type `WindowsImageType`,
+which can be either `WindowsImageType.STANDARD`, the default, or `WindowsImageType.SERVER_2019`:
+
+```ts
+new codebuild.Project(this, 'Project', {
+  environment: {
+    buildImage: codebuild.WindowsBuildImage.fromEcrRepository(ecrRepository, 'v1.0', codebuild.WindowsImageType.SERVER_2019),
+  },
+  ...
+})
+```
 
 The following example shows how to define an image from a Docker asset:
 
@@ -238,12 +277,78 @@ The following example shows how to define an image from a private docker registr
 
 [Docker Registry example](./test/integ.docker-registry.lit.ts)
 
+### GPU images
+
+The class `LinuxGpuBuildImage` contains constants for working with
+[AWS Deep Learning Container images](https://aws.amazon.com/releasenotes/available-deep-learning-containers-images):
+
+
+```ts
+new codebuild.Project(this, 'Project', {
+  environment: {
+    buildImage: codebuild.LinuxGpuBuildImage.DLC_TENSORFLOW_2_1_0_INFERENCE,
+  },
+  ...
+})
+```
+
+One complication is that the repositories for the DLC images are in
+different accounts in different AWS regions.
+In most cases, the CDK will handle providing the correct account for you;
+in rare cases (for example, deploying to new regions)
+where our information might be out of date,
+you can always specify the account
+(along with the repository name and tag)
+explicitly using the `awsDeepLearningContainersImage` method:
+
+```ts
+new codebuild.Project(this, 'Project', {
+  environment: {
+    buildImage: codebuild.LinuxGpuBuildImage.awsDeepLearningContainersImage(
+      'tensorflow-inference', '2.1.0-gpu-py36-cu101-ubuntu18.04', '123456789012'),
+  },
+  ...
+})
+```
+
+## Logs
+
+CodeBuild lets you specify an S3 Bucket, CloudWatch Log Group or both to receive logs from your projects.
+
+By default, logs will go to cloudwatch.
+
+### CloudWatch Logs Example
+
+```ts
+new codebuild.Project(this, 'Project', {
+  logging: {
+    cloudWatch: {
+      logGroup: new cloudwatch.LogGroup(this, `MyLogGroup`),
+    }
+  },
+  ...
+})
+```
+
+### S3 Logs Example
+
+```ts
+new codebuild.Project(this, 'Project', {
+  logging: {
+    s3: {
+      bucket: new s3.Bucket(this, `LogBucket`)
+    }
+  },
+  ...
+})
+```
+
 ## Credentials
 
 CodeBuild allows you to store credentials used when communicating with various sources,
 like GitHub:
 
-```typescript
+```ts
 new codebuild.GitHubSourceCredentials(this, 'CodeBuildGitHubCreds', {
   accessToken: cdk.SecretValue.secretsManager('my-token'),
 });
@@ -253,7 +358,7 @@ new codebuild.GitHubSourceCredentials(this, 'CodeBuildGitHubCreds', {
 
 and BitBucket:
 
-```typescript
+```ts
 new codebuild.BitBucketSourceCredentials(this, 'CodeBuildBitBucketCreds', {
   username: cdk.SecretValue.secretsManager('my-bitbucket-creds', { jsonField: 'username' }),
   password: cdk.SecretValue.secretsManager('my-bitbucket-creds', { jsonField: 'password' }),
@@ -273,7 +378,7 @@ to inspect what credentials are stored in your account.
 
 You can specify a test report in your buildspec:
 
-```typescript
+```ts
 const project = new codebuild.Project(this, 'Project', {
   buildSpec: codebuild.BuildSpec.fromObject({
     // ...
@@ -295,7 +400,7 @@ with names starting with the project's name;
 if you'd rather not have those permissions added,
 you can opt out of it when creating the project:
 
-```typescript
+```ts
 const project = new codebuild.Project(this, 'Project', {
   // ...
   grantReportGroupPermissions: false,
@@ -305,7 +410,7 @@ const project = new codebuild.Project(this, 'Project', {
 Alternatively, you can specify an ARN of an existing resource group,
 instead of a simple name, in your buildspec:
 
-```typescript
+```ts
 // create a new ReportGroup
 const reportGroup = new codebuild.ReportGroup(this, 'ReportGroup');
 
@@ -324,7 +429,7 @@ const project = new codebuild.Project(this, 'Project', {
 
 If you do that, you need to grant the project's role permissions to write reports to that report group:
 
-```typescript
+```ts
 reportGroup.grantWrite(project);
 ```
 
@@ -399,7 +504,7 @@ with their identifier.
 
 So, a buildspec for the above Project could look something like this:
 
-```typescript
+```ts
 const project = new codebuild.Project(this, 'MyProject', {
   // secondary sources and artifacts as above...
   buildSpec: codebuild.BuildSpec.fromObject({
@@ -498,3 +603,48 @@ new codebuild.Project(stack, 'MyProject', {
 Here's a CodeBuild project with a simple example that creates a project mounted on AWS EFS:
 
 [Minimal Example](./test/integ.project-file-system-location.ts)
+
+## Batch builds
+
+To enable batch builds you should call `enableBatchBuilds()` on the project instance.
+
+It returns an object containing the batch service role that was created,
+or `undefined` if batch builds could not be enabled, for example if the project was imported.
+
+```ts
+import * as codebuild from '@aws-cdk/aws-codebuild';
+
+const project = new codebuild.Project(this, 'MyProject', { ... });
+
+if (project.enableBatchBuilds()) {
+  console.log('Batch builds were enabled');
+}
+```
+
+## Timeouts
+
+There are two types of timeouts that can be set when creating your Project.
+The `timeout` property can be used to set an upper limit on how long your Project is able to run without being marked as completed.
+The default is 60 minutes.
+An example of overriding the default follows.
+
+```ts
+import * as codebuild from '@aws-cdk/aws-codebuild';
+
+new codebuild.Project(stack, 'MyProject', {
+  timeout: Duration.minutes(90)
+});
+```
+
+The `queuedTimeout` property can be used to set an upper limit on how your Project remains queued to run.
+There is no default value for this property.
+As an example, to allow your Project to queue for up to thirty (30) minutes before the build fails,
+use the following code.
+
+```ts
+import * as codebuild from '@aws-cdk/aws-codebuild';
+
+new codebuild.Project(stack, 'MyProject', {
+  queuedTimeout: Duration.minutes(30)
+});
+```

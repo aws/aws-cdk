@@ -1,6 +1,6 @@
-import '@aws-cdk/assert/jest';
-// import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
-import {  Certificate } from '@aws-cdk/aws-certificatemanager';
+import '@aws-cdk/assert-internal/jest';
+// import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert-internal';
+import { Certificate } from '@aws-cdk/aws-certificatemanager';
 import { Stack } from '@aws-cdk/core';
 import { DomainName, HttpApi } from '../../lib';
 
@@ -41,13 +41,13 @@ describe('DomainName', () => {
 
     // WHEN
     const imported = DomainName.fromDomainNameAttributes(stack, 'dn', {
-      domainName: dn.domainName,
+      name: dn.name,
       regionalDomainName: dn.regionalDomainName,
       regionalHostedZoneId: dn.regionalHostedZoneId,
     });
 
     // THEN;
-    expect(imported.domainName).toEqual(dn.domainName);
+    expect(imported.name).toEqual(dn.name);
     expect(imported.regionalDomainName).toEqual(dn.regionalDomainName);
     expect(imported.regionalHostedZoneId).toEqual(dn.regionalHostedZoneId);
   });

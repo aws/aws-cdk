@@ -1,13 +1,17 @@
+import * as crypto from 'crypto';
 import * as iam from '@aws-cdk/aws-iam';
 
-import { Construct, Duration, Fn, IResource, Lazy, Resource, Tag } from '@aws-cdk/core';
+import { Annotations, Duration, Fn, IResource, Lazy, Resource, Stack, Tags } from '@aws-cdk/core';
+import { Construct } from 'constructs';
+import { CloudFormationInit } from './cfn-init';
 import { Connections, IConnectable } from './connections';
 import { CfnInstance } from './ec2.generated';
 import { InstanceType } from './instance-types';
 import { IMachineImage, OperatingSystemType } from './machine-image';
+import { instanceBlockDeviceMappings } from './private/ebs-util';
 import { ISecurityGroup, SecurityGroup } from './security-group';
 import { UserData } from './user-data';
-import { BlockDevice, synthesizeBlockDeviceMappings } from './volume';
+import { BlockDevice } from './volume';
 import { IVpc, Subnet, SubnetSelection } from './vpc';
 
 /**
@@ -138,6 +142,26 @@ export interface InstanceProps {
   readonly userData?: UserData;
 
   /**
+   * Changes to the UserData force replacement
+   *
+   * Depending the EC2 instance type, changing UserData either
+   * restarts the instance or replaces the instance.
+   *
+   * - Instance store-backed instances are replaced.
+   * - EBS-backed instances are restarted.
+   *
+   * By default, restarting does not execute the new UserData so you
+   * will need a different mechanism to ensure the instance is restarted.
+   *
+   * Setting this to `true` will make the instance's Logical ID depend on the
+   * UserData, which will cause CloudFormation to replace it if the UserData
+   * changes.
+   *
+   * @default - true iff `initOptions` is specified, false otherwise.
+   */
+  readonly userDataCausesReplacement?: boolean;
+
+  /**
    * An IAM role to associate with the instance profile assigned to this Auto Scaling Group.
    *
    * The role must be assumable by the service principal `ec2.amazonaws.com`:
@@ -190,6 +214,22 @@ export interface InstanceProps {
    * @default - no association
    */
   readonly privateIpAddress?: string
+
+  /**
+   * Apply the given CloudFormation Init configuration to the instance at startup
+   *
+   * @default - no CloudFormation init
+   */
+  readonly init?: CloudFormationInit;
+
+  /**
+   * Use the given options for applying CloudFormation Init
+   *
+   * Describes the configsets to use and the timeout to wait
+   *
+   * @default - default options
+   */
+  readonly initOptions?: ApplyCloudFormationInitOptions;
 }
 
 /**
@@ -257,6 +297,10 @@ export class Instance extends Resource implements IInstance {
   constructor(scope: Construct, id: string, props: InstanceProps) {
     super(scope, id);
 
+    if (props.initOptions && !props.init) {
+      throw new Error('Setting \'initOptions\' requires that \'init\' is also set');
+    }
+
     if (props.securityGroup) {
       this.securityGroup = props.securityGroup;
     } else {
@@ -267,7 +311,7 @@ export class Instance extends Resource implements IInstance {
     }
     this.connections = new Connections({ securityGroups: [this.securityGroup] });
     this.securityGroups.push(this.securityGroup);
-    Tag.add(this, NAME_TAG, props.instanceName || this.node.path);
+    Tags.of(this).add(NAME_TAG, props.instanceName || this.node.path);
 
     this.role = props.role || new iam.Role(this, 'InstanceRole', {
       assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
@@ -281,8 +325,8 @@ export class Instance extends Resource implements IInstance {
     // use delayed evaluation
     const imageConfig = props.machineImage.getImage(this);
     this.userData = props.userData ?? imageConfig.userData;
-    const userDataToken = Lazy.stringValue({ produce: () => Fn.base64(this.userData.render()) });
-    const securityGroupsToken = Lazy.listValue({ produce: () => this.securityGroups.map(sg => sg.securityGroupId) });
+    const userDataToken = Lazy.string({ produce: () => Fn.base64(this.userData.render()) });
+    const securityGroupsToken = Lazy.list({ produce: () => this.securityGroups.map(sg => sg.securityGroupId) });
 
     const { subnets } = props.vpc.selectSubnets(props.vpcSubnets);
     let subnet;
@@ -291,13 +335,13 @@ export class Instance extends Resource implements IInstance {
       if (selected.length === 1) {
         subnet = selected[0];
       } else {
-        this.node.addError(`Need exactly 1 subnet to match AZ '${props.availabilityZone}', found ${selected.length}. Use a different availabilityZone.`);
+        Annotations.of(this).addError(`Need exactly 1 subnet to match AZ '${props.availabilityZone}', found ${selected.length}. Use a different availabilityZone.`);
       }
     } else {
       if (subnets.length > 0) {
         subnet = subnets[0];
       } else {
-        this.node.addError(`Did not find any subnets matching '${JSON.stringify(props.vpcSubnets)}', please use a different selection.`);
+        Annotations.of(this).addError(`Did not find any subnets matching '${JSON.stringify(props.vpcSubnets)}', please use a different selection.`);
       }
     }
     if (!subnet) {
@@ -319,7 +363,7 @@ export class Instance extends Resource implements IInstance {
       subnetId: subnet.subnetId,
       availabilityZone: subnet.availabilityZone,
       sourceDestCheck: props.sourceDestCheck,
-      blockDeviceMappings: props.blockDevices !== undefined ? synthesizeBlockDeviceMappings(this, props.blockDevices) : undefined,
+      blockDeviceMappings: props.blockDevices !== undefined ? instanceBlockDeviceMappings(this, props.blockDevices) : undefined,
       privateIpAddress: props.privateIpAddress,
     });
     this.instance.node.addDependency(this.role);
@@ -334,7 +378,36 @@ export class Instance extends Resource implements IInstance {
     this.instancePublicDnsName = this.instance.attrPublicDnsName;
     this.instancePublicIp = this.instance.attrPublicIp;
 
+    if (props.init) {
+      this.applyCloudFormationInit(props.init, props.initOptions);
+    }
+
     this.applyUpdatePolicies(props);
+
+    // Trigger replacement (via new logical ID) on user data change, if specified or cfn-init is being used.
+    //
+    // This is slightly tricky -- we need to resolve the UserData string (in order to get at actual Asset hashes,
+    // instead of the Token stringifications of them ('${Token[1234]}'). However, in the case of CFN Init usage,
+    // a UserData is going to contain the logicalID of the resource itself, which means infinite recursion if we
+    // try to naively resolve. We need a recursion breaker in this.
+    const originalLogicalId = Stack.of(this).getLogicalId(this.instance);
+    let recursing = false;
+    this.instance.overrideLogicalId(Lazy.uncachedString({
+      produce: (context) => {
+        if (recursing) { return originalLogicalId; }
+        if (!(props.userDataCausesReplacement ?? props.initOptions)) { return originalLogicalId; }
+
+        const md5 = crypto.createHash('md5');
+        recursing = true;
+        try {
+          md5.update(JSON.stringify(context.resolve(this.userData.render())));
+        } finally {
+          recursing = false;
+        }
+        const digest = md5.digest('hex').substr(0, 16);
+        return `${originalLogicalId}${digest}`;
+      },
+    }));
   }
 
   /**
@@ -358,7 +431,50 @@ export class Instance extends Resource implements IInstance {
    * Adds a statement to the IAM role assumed by the instance.
    */
   public addToRolePolicy(statement: iam.PolicyStatement) {
-    this.role.addToPolicy(statement);
+    this.role.addToPrincipalPolicy(statement);
+  }
+
+  /**
+   * Use a CloudFormation Init configuration at instance startup
+   *
+   * This does the following:
+   *
+   * - Attaches the CloudFormation Init metadata to the Instance resource.
+   * - Add commands to the instance UserData to run `cfn-init` and `cfn-signal`.
+   * - Update the instance's CreationPolicy to wait for the `cfn-signal` commands.
+   */
+  private applyCloudFormationInit(init: CloudFormationInit, options: ApplyCloudFormationInitOptions = {}) {
+    init.attach(this.instance, {
+      platform: this.osType,
+      instanceRole: this.role,
+      userData: this.userData,
+      configSets: options.configSets,
+      embedFingerprint: options.embedFingerprint,
+      printLog: options.printLog,
+      ignoreFailures: options.ignoreFailures,
+    });
+    this.waitForResourceSignal(options.timeout ?? Duration.minutes(5));
+  }
+
+  /**
+   * Wait for a single additional resource signal
+   *
+   * Add 1 to the current ResourceSignal Count and add the given timeout to the current timeout.
+   *
+   * Use this to pause the CloudFormation deployment to wait for the instances
+   * in the AutoScalingGroup to report successful startup during
+   * creation and updates. The UserData script needs to invoke `cfn-signal`
+   * with a success or failure code after it is done setting up the instance.
+   */
+  private waitForResourceSignal(timeout: Duration) {
+    const oldResourceSignal = this.instance.cfnOptions.creationPolicy?.resourceSignal;
+    this.instance.cfnOptions.creationPolicy = {
+      ...this.instance.cfnOptions.creationPolicy,
+      resourceSignal: {
+        count: (oldResourceSignal?.count ?? 0) + 1,
+        timeout: (oldResourceSignal?.timeout ? Duration.parse(oldResourceSignal?.timeout).plus(timeout) : timeout).toIsoString(),
+      },
+    };
   }
 
   /**
@@ -369,9 +485,76 @@ export class Instance extends Resource implements IInstance {
       this.instance.cfnOptions.creationPolicy = {
         ...this.instance.cfnOptions.creationPolicy,
         resourceSignal: {
-          timeout: props.resourceSignalTimeout && props.resourceSignalTimeout.toISOString(),
+          timeout: props.resourceSignalTimeout && props.resourceSignalTimeout.toIsoString(),
         },
       };
     }
   }
+}
+
+/**
+ * Options for applying CloudFormation init to an instance or instance group
+ */
+export interface ApplyCloudFormationInitOptions {
+  /**
+   * ConfigSet to activate
+   *
+   * @default ['default']
+   */
+  readonly configSets?: string[];
+
+  /**
+   * Timeout waiting for the configuration to be applied
+   *
+   * @default Duration.minutes(5)
+   */
+  readonly timeout?: Duration;
+
+  /**
+   * Force instance replacement by embedding a config fingerprint
+   *
+   * If `true` (the default), a hash of the config will be embedded into the
+   * UserData, so that if the config changes, the UserData changes.
+   *
+   * - If the EC2 instance is instance-store backed or
+   *   `userDataCausesReplacement` is set, this will cause the instance to be
+   *   replaced and the new configuration to be applied.
+   * - If the instance is EBS-backed and `userDataCausesReplacement` is not
+   *   set, the change of UserData will make the instance restart but not be
+   *   replaced, and the configuration will not be applied automatically.
+   *
+   * If `false`, no hash will be embedded, and if the CloudFormation Init
+   * config changes nothing will happen to the running instance. If a
+   * config update introduces errors, you will not notice until after the
+   * CloudFormation deployment successfully finishes and the next instance
+   * fails to launch.
+   *
+   * @default true
+   */
+  readonly embedFingerprint?: boolean;
+
+  /**
+   * Print the results of running cfn-init to the Instance System Log
+   *
+   * By default, the output of running cfn-init is written to a log file
+   * on the instance. Set this to `true` to print it to the System Log
+   * (visible from the EC2 Console), `false` to not print it.
+   *
+   * (Be aware that the system log is refreshed at certain points in
+   * time of the instance life cycle, and successful execution may
+   * not always show up).
+   *
+   * @default true
+   */
+  readonly printLog?: boolean;
+
+  /**
+   * Don't fail the instance creation when cfn-init fails
+   *
+   * You can use this to prevent CloudFormation from rolling back when
+   * instances fail to start up, to help in debugging.
+   *
+   * @default false
+   */
+  readonly ignoreFailures?: boolean;
 }

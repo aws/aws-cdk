@@ -1,10 +1,15 @@
-import { expect, haveResource, ResourcePart } from '@aws-cdk/assert';
+import { expect, haveResource, ResourcePart } from '@aws-cdk/assert-internal';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as sns from '@aws-cdk/aws-sns';
 import * as cdk from '@aws-cdk/core';
 import { Test, testCase } from 'nodeunit';
 import { CustomResource, CustomResourceProvider } from '../lib';
 
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct } from '@aws-cdk/core';
+
+/* eslint-disable cdk/no-core-construct */
 /* eslint-disable quote-props */
 
 export = testCase({
@@ -45,7 +50,7 @@ export = testCase({
       const stack = new cdk.Stack(app, 'Test');
 
       // WHEN
-      new TestCustomResource(stack, 'Custom', {  removalPolicy: cdk.RemovalPolicy.RETAIN });
+      new TestCustomResource(stack, 'Custom', { removalPolicy: cdk.RemovalPolicy.RETAIN });
 
       // THEN
       expect(stack).to(haveResource('AWS::CloudFormation::CustomResource', {
@@ -85,8 +90,11 @@ export = testCase({
               'Version': '2012-10-17',
             },
             'ManagedPolicyArns': [
-              { 'Fn::Join': [ '', [
-                'arn:', { 'Ref': 'AWS::Partition' }, ':iam::aws:policy/service-role/AWSLambdaBasicExecutionRole' ] ]},
+              {
+                'Fn::Join': ['', [
+                  'arn:', { 'Ref': 'AWS::Partition' }, ':iam::aws:policy/service-role/AWSLambdaBasicExecutionRole',
+                ]],
+              },
             ],
           },
         },
@@ -208,10 +216,10 @@ export = testCase({
   },
 });
 
-class TestCustomResource extends cdk.Construct {
+class TestCustomResource extends Construct {
   public readonly resource: CustomResource;
 
-  constructor(scope: cdk.Construct, id: string, opts: { removalPolicy?: cdk.RemovalPolicy } = {}) {
+  constructor(scope: Construct, id: string, opts: { removalPolicy?: cdk.RemovalPolicy } = {}) {
     super(scope, id);
 
     const singletonLambda = new lambda.SingletonFunction(this, 'Lambda', {

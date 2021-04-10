@@ -1,5 +1,25 @@
-import { Construct, Duration, Token } from '@aws-cdk/core';
+import { Duration, Token } from '@aws-cdk/core';
 import { CfnDistribution } from './cloudfront.generated';
+
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct } from '@aws-cdk/core';
+
+/**
+ * The failover configuration used for Origin Groups,
+ * returned in {@link OriginBindConfig.failoverConfig}.
+ */
+export interface OriginFailoverConfig {
+  /** The origin to use as the fallback origin. */
+  readonly failoverOrigin: IOrigin;
+
+  /**
+   * The HTTP status codes of the response that trigger querying the failover Origin.
+   *
+   * @default - 500, 502, 503 and 504
+   */
+  readonly statusCodes?: number[];
+}
 
 /** The struct returned from {@link IOrigin.bind}. */
 export interface OriginBindConfig {
@@ -9,6 +29,13 @@ export interface OriginBindConfig {
    * @default - nothing is returned
    */
   readonly originProperty?: CfnDistribution.OriginProperty;
+
+  /**
+   * The failover configuration for this Origin.
+   *
+   * @default - nothing is returned
+   */
+  readonly failoverConfig?: OriginFailoverConfig;
 }
 
 /**
@@ -25,8 +52,6 @@ export interface IOrigin {
 
 /**
  * Properties to define an Origin.
- *
- * @experimental
  */
 export interface OriginProps {
   /**
@@ -62,8 +87,6 @@ export interface OriginProps {
 
 /**
  * Options passed to Origin.bind().
- *
- * @experimental
  */
 export interface OriginBindOptions {
   /**
@@ -76,8 +99,6 @@ export interface OriginBindOptions {
 /**
  * Represents a distribution origin, that describes the Amazon S3 bucket, HTTP server (for example, a web server),
  * Amazon MediaStore, or other server from which CloudFront gets your files.
- *
- * @experimental
  */
 export abstract class OriginBase implements IOrigin {
   private readonly domainName: string;
@@ -108,16 +129,18 @@ export abstract class OriginBase implements IOrigin {
       throw new Error('Subclass must override and provide either s3OriginConfig or customOriginConfig');
     }
 
-    return { originProperty: {
-      domainName: this.domainName,
-      id: options.originId,
-      originPath: this.originPath,
-      connectionAttempts: this.connectionAttempts,
-      connectionTimeout: this.connectionTimeout?.toSeconds(),
-      originCustomHeaders: this.renderCustomHeaders(),
-      s3OriginConfig,
-      customOriginConfig,
-    }};
+    return {
+      originProperty: {
+        domainName: this.domainName,
+        id: options.originId,
+        originPath: this.originPath,
+        connectionAttempts: this.connectionAttempts,
+        connectionTimeout: this.connectionTimeout?.toSeconds(),
+        originCustomHeaders: this.renderCustomHeaders(),
+        s3OriginConfig,
+        customOriginConfig,
+      },
+    };
   }
 
   // Overridden by sub-classes to provide S3 origin config.
