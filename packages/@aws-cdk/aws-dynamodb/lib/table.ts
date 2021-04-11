@@ -1554,7 +1554,7 @@ export class Table extends TableBase {
     // Permissions
     const permissions = ['dynamodb:DescribeTable', 'dynamodb:DescribeTimeToLive', 'dynamodb:UpdateTimeToLive'];
     this.grant(provider.onEventHandler, ...permissions);
-    this.grant( provider.isCompleteHandler, ...permissions);
+    this.grant(provider.isCompleteHandler, ...permissions);
 
     new CustomResource(this, 'TimeToLive', {
       serviceToken: provider.provider.serviceToken,
