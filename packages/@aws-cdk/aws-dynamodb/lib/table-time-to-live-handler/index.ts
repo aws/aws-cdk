@@ -20,6 +20,9 @@ export async function onEventHandler(event: OnEventRequest): Promise<OnEventResp
       case 'DISABLING':
         throw new Error('Can not change time to live while it is being disabled.');
       case 'ENABLED':
+        // If the current TTL is different from the requested TTL the first step is always to disable the TTL.
+        // Should the TTL not be undefined it will be enabled with the new attribute as this function will be
+        // called again and the 'DISABLED' case will enable it.
         if (event.ResourceProperties.TimeToLiveAttribute !== currentTtl.TimeToLiveDescription.AttributeName) {
           await disableTimeToLive(event);
         }
