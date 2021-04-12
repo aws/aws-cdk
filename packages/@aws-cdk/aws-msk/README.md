@@ -29,15 +29,13 @@ The following example creates an MSK Cluster.
 import * as msk from '@aws-cdk/aws-msk';
 
 const cluster = new Cluster(this, 'Cluster', {
-  brokerNodeGroupProps: {
-    vpc,
-  },
+  vpc,
 });
 ```
 
 ## Allowing Connections
 
-To control who can access the Cluster, use the `.connections` attribute. ZooKeeper can be accessed on port `2181`, and the broker nodes on either port `9094` when using TLS or `9092` without TLS.
+To control who can access the Cluster, use the `.connections` attribute. For a list of ports used by MSK, refer to the [MSK documentation](https://docs.aws.amazon.com/msk/latest/developerguide/client-access.html#port-info).
 
 ```typescript
 import * as msk from "@aws-cdk/aws-msk"
@@ -57,12 +55,14 @@ cluster.connections.allowFrom(
 
 ## Cluster Endpoints
 
-To get a list of the Kafka broker or ZooKeeper endpoints you can use the attributes `.bootstrapBrokers`, `.bootstrapBrokersTls`, and `.zookeeperConnectionString`.
+You can use the following attributes to get a list of the Kafka broker or ZooKeeper node endpoints
 
 ```typescript
-const zookeeper = cluster.zookeeperConnectionString
-const bootstrapBrokers = cluster.bootstrapBrokers
-const bootsrapBrokersTls = cluster.bootstrapBrokersTls
+new cdk.CfnOutput(this, 'BootstrapBrokers', { value: cluster.bootstrapBrokers });
+new cdk.CfnOutput(this, 'BootstrapBrokersTls', { value: cluster.bootstrapBrokersTls });
+new cdk.CfnOutput(this, 'BootstrapBrokersSaslScram', { value: cluster.bootstrapBrokersSaslScram });
+new cdk.CfnOutput(this, 'ZookeeperConnection', { value: cluster.zookeeperConnectionString });
+new cdk.CfnOutput(this, 'ZookeeperConnectionTls', { value: cluster.zookeeperConnectionStringTls });
 ```
 
 ## Importing an existing Cluster
@@ -70,23 +70,46 @@ const bootsrapBrokersTls = cluster.bootstrapBrokersTls
 To import an existing MSK cluster into your CDK app use the `.fromClusterArn()` method.
 
 ```typescript
-const cluster = msk.Cluster.fromClusterArn(this, 'Cluster', 'rn:aws:kafka:us-west-2:1234567890:cluster/a-cluster/11111111-1111-1111-1111-111111111111-1')
+const cluster = msk.Cluster.fromClusterArn(this, 'Cluster', 'arn:aws:kafka:us-west-2:1234567890:cluster/a-cluster/11111111-1111-1111-1111-111111111111-1')
 ```
 
 ## Client Authentication
+
+### TLS
 
 To enable client authentication with TLS set the `certificateAuthorityArns` property to reference your ACM Private CA. [More info on Private CAs.](https://docs.aws.amazon.com/msk/latest/developerguide/msk-authentication.html)
 
 ```typescript
 import * as msk from "@aws-cdk/aws-msk"
 
-const cluster = new msk.Cluster(this, "Cluster", {
+const cluster = new msk.Cluster(this, 'Cluster', {
+    ...
+    encryptionInTransit: {
+      clientBroker: msk.ClientBrokerEncryption.TLS,
+    },
+    clientAuthentication: msk.ClientAuthentication.tls({
+      certificateAuthorityArns: [
+        'arn:aws:acm-pca:us-west-2:1234567890:certificate-authority/11111111-1111-1111-1111-111111111111',
+      ],
+    }),
+  });
+});
+```
+
+### SASL/SCRAM
+
+Enable client authentication with SASL/SCRAM:
+
+```typescript
+import * as msk from "@aws-cdk/aws-msk"
+
+const cluster = new msk.cluster(this, "cluster", {
   ...
-  encryptionInTransitConfig: {
+  encryptionInTransit: {
     clientBroker: msk.ClientBrokerEncryption.TLS,
-    certificateAuthorityArns: [
-      'arn:aws:acm-pca:us-west-2:1234567890:certificate-authority/11111111-1111-1111-1111-111111111111',
-    ],
   },
+  clientAuthentication: msk.ClientAuthentication.sasl({
+    scram: true,
+  }),
 })
 ```
