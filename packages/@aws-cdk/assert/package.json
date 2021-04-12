@@ -34,23 +34,18 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "aws-cdk-migration": "0.0.0",
+    "@aws-cdk/assert-internal": "0.0.0",
     "@types/jest": "^26.0.22",
+    "aws-cdk-lib": "0.0.0",
+    "aws-cdk-migration": "0.0.0",
     "cdk-build-tools": "0.0.0",
     "constructs": "^10.0.0",
     "jest": "^26.6.3",
     "pkglint": "0.0.0",
-    "@aws-cdk/assert-internal": "0.0.0",
     "ts-jest": "^26.5.4"
   },
-  "dependencies": {
-    "@aws-cdk/cloudformation-diff": "0.0.0",
-    "@aws-cdk/core": "0.0.0",
-    "@aws-cdk/cx-api": "0.0.0",
-    "constructs": "^10.0.0"
-  },
   "peerDependencies": {
-    "@aws-cdk/core": "0.0.0",
+    "aws-cdk-lib": "0.0.0",
     "constructs": "^10.0.0",
     "jest": "^26.6.3"
   },
