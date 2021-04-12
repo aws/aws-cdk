@@ -121,7 +121,7 @@ describe('FSx for Lustre File System', () => {
     expectCDK(stack).to(haveResource('AWS::FSx::FileSystem', {
       LustreConfiguration: {
         DeploymentType: 'SCRATCH_2',
-        WeeklyMaintenanceStartTime: '0:12:34',
+        WeeklyMaintenanceStartTime: '7:12:34',
       },
     }));
     expectCDK(stack).to(haveResource('AWS::EC2::SecurityGroup'));
