@@ -1,7 +1,8 @@
 /* eslint-disable no-console */
 import type { OnEventRequest } from '@aws-cdk/custom-resources/lib/provider-framework/types';
-import { AWSError, DynamoDB } from 'aws-sdk'; // eslint-disable-line import/no-extraneous-dependencies
+import { AWSError, CloudFormation, DynamoDB } from 'aws-sdk'; // eslint-disable-line import/no-extraneous-dependencies
 const dynamodb = new DynamoDB({ apiVersion: '2012-08-10' });
+const cloudFormation = new CloudFormation({ apiVersion: '2010-05-15' });
 
 
 export async function disableTimeToLive(event: OnEventRequest) {
@@ -72,4 +73,24 @@ export async function timeToLiveStatus(event: OnEventRequest): Promise<{stable: 
       event.ResourceProperties.TimeToLiveAttribute
     ),
   };
+}
+
+export async function tableWillBeRemoved(event: OnEventRequest): Promise<boolean> {
+  const stacks = (await cloudFormation.describeStacks({ StackName: event.StackId }).promise()).Stacks;
+
+  return stacks?.map(async (stack): Promise<boolean> => {
+    if ( stack.ChangeSetId === undefined ) {
+      throw new Error('Can not describe changeset without id');
+    }
+
+    const changeset = await cloudFormation.describeChangeSet({ ChangeSetName: stack.ChangeSetId, StackName: event.StackId }).promise();
+
+    return changeset.Changes?.map((change): boolean => {
+      return change.Type === 'Resource'
+        && change.ResourceChange?.ResourceType === 'AWS::DynamoDB::Table'
+        && change.ResourceChange.PhysicalResourceId === event.PhysicalResourceId
+        && change.ResourceChange.Action === 'Remove';
+    }).reduce( (previousValue, currentValue) => previousValue || currentValue ) ?? false;
+
+  }).reduce( (previousValue, currentValue) => previousValue || currentValue ) ?? false;
 }

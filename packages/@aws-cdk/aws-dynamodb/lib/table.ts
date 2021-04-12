@@ -197,14 +197,7 @@ export interface TableOptions {
    * If a value is passed a custom resource is created. The custom resource does add support
    * for changes to the TTL attribute later.
    *
-   * If the TTL should be removed from the table, you should pass an empty string (e.g., '').
-   *
-   * If you wish to remove the custom resource, you can leave the default (undefined). However,
-   * note that this will leave the table in the current state. A new table will not have a disabled
-   * TTL, while an enabled TTL will remain in place if you defined one before.
-   *
-   * A 'Time to live has been modified multiple times within a fixed interval' error can occur if
-   * you recently changed the ttl. In this case wait some time and try again.
+   * If you wish to remove the custom resource and disable the TTL, you can leave the default (undefined).
    * @default - TTL is disabled
    */
   readonly timeToLiveAttribute?: string;
@@ -1561,7 +1554,7 @@ export class Table extends TableBase {
       resourceType: 'Custom::DynamoDBTimeToLive',
       properties: {
         TableName: this.tableName,
-        TimeToLiveAttribute: timeToLiveAttribute !== '' ? timeToLiveAttribute : undefined,
+        TimeToLiveAttribute: timeToLiveAttribute,
       },
     });
   }
