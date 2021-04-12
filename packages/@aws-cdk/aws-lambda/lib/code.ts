@@ -1,3 +1,4 @@
+import * as assets from '@aws-cdk/assets';
 import * as ecr from '@aws-cdk/aws-ecr';
 import * as ecr_assets from '@aws-cdk/aws-ecr-assets';
 import * as iam from '@aws-cdk/aws-iam';
@@ -468,7 +469,7 @@ export class EcrImageCode extends Code {
 /**
  * Properties to initialize a new AssetImage
  */
-export interface AssetImageCodeProps extends ecr_assets.DockerImageAssetOptions {
+export interface AssetImageCodeProps extends ecr_assets.DockerImageAssetOptions, cdk.ImageAssetOptions {
   /**
    * Specify or override the CMD on the specified Docker image or Dockerfile.
    * This needs to be in the 'exec form', viz., `[ 'executable', 'param1', 'param2' ]`.
@@ -498,12 +499,14 @@ export class AssetImageCode extends Code {
   }
 
   public bind(scope: Construct): CodeConfig {
-    const asset = new ecr_assets.DockerImageAsset(scope, 'AssetImage', {
+    const asset = new cdk.ImageAsset(scope, 'AssetImage', {
       directory: this.directory,
+      followSymlinks: this.props.followSymlinks ?? toSymlinkFollow(this.props.follow),
       ...this.props,
     });
 
-    asset.repository.grantPull(new iam.ServicePrincipal('lambda.amazonaws.com'));
+    const assetRepo = ecr.Repository.fromRepositoryName(asset, 'AssetImageEcrRepository', asset.repositoryName);
+    assetRepo.grantPull(new iam.ServicePrincipal('lambda.amazonaws.com'));
 
     return {
       image: {
@@ -534,4 +537,14 @@ export interface DockerBuildAssetOptions extends cdk.DockerBuildOptions {
    * @default - a unique temporary directory in the system temp directory
    */
   readonly outputPath?: string;
+}
+
+function toSymlinkFollow(follow?: assets.FollowMode): cdk.SymlinkFollowMode | undefined {
+  switch (follow) {
+    case undefined: return undefined;
+    case assets.FollowMode.NEVER: return cdk.SymlinkFollowMode.NEVER;
+    case assets.FollowMode.ALWAYS: return cdk.SymlinkFollowMode.ALWAYS;
+    case assets.FollowMode.BLOCK_EXTERNAL: return cdk.SymlinkFollowMode.BLOCK_EXTERNAL;
+    case assets.FollowMode.EXTERNAL: return cdk.SymlinkFollowMode.EXTERNAL;
+  }
 }
