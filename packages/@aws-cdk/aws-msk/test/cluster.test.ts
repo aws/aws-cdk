@@ -41,7 +41,7 @@ describe('MSK Cluster', () => {
       },
     });
     expect(stack).toHaveResourceLike('AWS::MSK::Cluster', {
-      NumberOfBrokerNodes: 1,
+      NumberOfBrokerNodes: 2,
     });
     expect(stack).toHaveResourceLike('AWS::MSK::Cluster', {
       BrokerNodeGroupInfo: {
@@ -136,9 +136,9 @@ describe('MSK Cluster', () => {
         });
       });
 
-      test('with alias msk/sasl/scram', () => {
+      test('with alias msk/${clusterName}/sasl/scram', () => {
         expect(stack).toHaveResourceLike('AWS::KMS::Alias', {
-          AliasName: 'alias/msk/sasl/scram',
+          AliasName: 'alias/msk/cluster/sasl/scram',
         });
       });
 
