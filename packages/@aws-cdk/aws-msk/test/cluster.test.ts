@@ -18,66 +18,45 @@ describe('MSK Cluster', () => {
     vpc = new ec2.Vpc(stack, 'Vpc');
   });
 
-  describe('created with default properties', () => {
-    beforeEach(() => {
-      new msk.Cluster(stack, 'Cluster', {
-        clusterName: 'cluster',
-        vpc,
-      });
+  test('created with default properties', () => {
+    new msk.Cluster(stack, 'Cluster', {
+      clusterName: 'cluster',
+      vpc,
     });
 
-    describe('creates a MSK Cluster resource', () => {
-      test('with retention policy = Retain', () => {
-        expect(stack).toHaveResourceLike(
-          'AWS::MSK::Cluster',
+    expect(stack).toHaveResourceLike(
+      'AWS::MSK::Cluster',
+      {
+        DeletionPolicy: 'Retain',
+        UpdateReplacePolicy: 'Retain',
+      },
+      ResourcePart.CompleteDefinition,
+    );
+    expect(stack).toHaveResourceLike('AWS::MSK::Cluster', {
+      KafkaVersion: '2.2.1',
+    });
+    expect(stack).toHaveResourceLike('AWS::MSK::Cluster', {
+      EncryptionInfo: {
+        EncryptionInTransit: { ClientBroker: 'TLS', InCluster: true },
+      },
+    });
+    expect(stack).toHaveResourceLike('AWS::MSK::Cluster', {
+      NumberOfBrokerNodes: 1,
+    });
+    expect(stack).toHaveResourceLike('AWS::MSK::Cluster', {
+      BrokerNodeGroupInfo: {
+        StorageInfo: { EBSStorageInfo: { VolumeSize: 1000 } },
+      },
+    });
+    expect(stack).toHaveResource('AWS::EC2::SecurityGroup');
+    expect(stack).toHaveResourceLike('AWS::MSK::Cluster', {
+      BrokerNodeGroupInfo: {
+        SecurityGroups: [
           {
-            DeletionPolicy: 'Retain',
-            UpdateReplacePolicy: 'Retain',
+            'Fn::GetAtt': ['ClusterSecurityGroup0921994B', 'GroupId'],
           },
-          ResourcePart.CompleteDefinition,
-        );
-      });
-
-      test('with kafka version = 2.2.1', () => {
-        expect(stack).toHaveResourceLike('AWS::MSK::Cluster', {
-          KafkaVersion: '2.2.1',
-        });
-      });
-
-      test('with TLS enabled', () => {
-        expect(stack).toHaveResourceLike('AWS::MSK::Cluster', {
-          EncryptionInfo: {
-            EncryptionInTransit: { ClientBroker: 'TLS', InCluster: true },
-          },
-        });
-      });
-
-      test('with 1 broker per availability zone', () => {
-        expect(stack).toHaveResourceLike('AWS::MSK::Cluster', {
-          NumberOfBrokerNodes: 1,
-        });
-      });
-
-      test('with a 1000GiB EBS volume', () => {
-        expect(stack).toHaveResourceLike('AWS::MSK::Cluster', {
-          BrokerNodeGroupInfo: {
-            StorageInfo: { EBSStorageInfo: { VolumeSize: 1000 } },
-          },
-        });
-      });
-    });
-
-    test('creates a new security group', () => {
-      expect(stack).toHaveResource('AWS::EC2::SecurityGroup');
-      expect(stack).toHaveResourceLike('AWS::MSK::Cluster', {
-        BrokerNodeGroupInfo: {
-          SecurityGroups: [
-            {
-              'Fn::GetAtt': ['ClusterSecurityGroup0921994B', 'GroupId'],
-            },
-          ],
-        },
-      });
+        ],
+      },
     });
   });
 
