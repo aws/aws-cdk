@@ -413,10 +413,16 @@ export class ConstructNode {
   }
 
   /**
+   * DEPRECATED
+   * @deprecated use `metadataEntry`
+   */
+  public get metadata() { return this._actualNode.metadata as cxapi.MetadataEntry[]; }
+
+  /**
    * An immutable array of metadata objects associated with this construct.
    * This can be used, for example, to implement support for deprecation notices, source mapping, etc.
    */
-  public get metadata() { return this._actualNode.metadata as cxapi.MetadataEntry[]; }
+  public get metadataEntry() { return this._actualNode.metadata; }
 
   /**
    * Adds a metadata entry to this construct.
@@ -470,6 +476,13 @@ export class ConstructNode {
   public applyAspect(aspect: IAspect): void {
     Annotations.of(this.host).addDeprecation('@aws-cdk/core.ConstructNode.applyAspect', 'Use "Aspects.of(construct).add(aspect)" instead');
     Aspects.of(this.host).add(aspect);
+  }
+
+  /**
+   * Add a validator to this construct Node
+   */
+  public addValidation(validation: constructs.IValidation) {
+    this._actualNode.addValidation(validation);
   }
 
   /**

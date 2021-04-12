@@ -608,7 +608,7 @@
         "ProtocolType": "HTTP"
       }
     },
-    "HttpProxyPrivateApiDefaultRouteDefaultRouteIntegration0AE210B0": {
+    "HttpProxyPrivateApiDefaultRouteHttpIntegration1a580b19954e4317026ffbce1f7d5ade7A32685B": {
       "Type": "AWS::ApiGatewayV2::Integration",
       "Properties": {
         "ApiId": {
@@ -639,7 +639,7 @@
             [
               "integrations/",
               {
-                "Ref": "HttpProxyPrivateApiDefaultRouteDefaultRouteIntegration0AE210B0"
+                "Ref": "HttpProxyPrivateApiDefaultRouteHttpIntegration1a580b19954e4317026ffbce1f7d5ade7A32685B"
               }
             ]
           ]

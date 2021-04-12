@@ -1,4 +1,4 @@
-import '@aws-cdk/assert/jest';
+import '@aws-cdk/assert-internal/jest';
 import * as cloudfront from '@aws-cdk/aws-cloudfront';
 import * as s3 from '@aws-cdk/aws-s3';
 import { App, Stack } from '@aws-cdk/core';
@@ -87,8 +87,12 @@ describe('With bucket', () => {
     expect(stack).toHaveResourceLike('AWS::S3::BucketPolicy', {
       PolicyDocument: {
         Statement: [{
+          Action: 's3:GetObject',
           Principal: {
             CanonicalUser: { 'Fn::GetAtt': ['DistOrigin1S3Origin87D64058', 'S3CanonicalUserId'] },
+          },
+          Resource: {
+            'Fn::Join': ['', [{ 'Fn::GetAtt': ['Bucket83908E77', 'Arn'] }, '/*']],
           },
         }],
       },

@@ -210,6 +210,47 @@ nodeunitShim({
 
       test.done();
     },
+    'subnets in imported VPC has all expected attributes'(test: Test) {
+      const previous = mockVpcContextProviderWith(test, {
+        vpcId: 'vpc-1234',
+        subnetGroups: [
+          {
+            name: 'Public',
+            type: cxapi.VpcSubnetGroupType.PUBLIC,
+            subnets: [
+              {
+                subnetId: 'pub-sub-in-us-east-1a',
+                availabilityZone: 'us-east-1a',
+                routeTableId: 'rt-123',
+                cidr: '10.100.0.0/24',
+              },
+            ],
+          },
+        ],
+      }, options => {
+        test.deepEqual(options.filter, {
+          isDefault: 'true',
+        });
+
+        test.equal(options.subnetGroupNameTag, undefined);
+      });
+
+      const stack = new Stack();
+      const vpc = Vpc.fromLookup(stack, 'Vpc', {
+        isDefault: true,
+      });
+
+      let subnet = vpc.publicSubnets[0];
+
+      test.equal(subnet.availabilityZone, 'us-east-1a');
+      test.equal(subnet.subnetId, 'pub-sub-in-us-east-1a');
+      test.equal(subnet.routeTable.routeTableId, 'rt-123');
+      test.equal(subnet.ipv4CidrBlock, '10.100.0.0/24');
+
+
+      restoreContextProvider(previous);
+      test.done();
+    },
   },
 });
 

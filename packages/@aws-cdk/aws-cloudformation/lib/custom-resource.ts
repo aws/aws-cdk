@@ -8,11 +8,15 @@ import { Construct } from '@aws-cdk/core';
 
 /**
  * Collection of arbitrary properties
+ *
+ * @deprecated this type has been deprecated in favor of using a key-value type directly
  */
 export type Properties = {[key: string]: any};
 
 /**
  * Configuration options for custom resource providers.
+ *
+ * @deprecated used in {@link ICustomResourceProvider} which is now deprecated
  */
 export interface CustomResourceProviderConfig {
   /**
@@ -37,6 +41,8 @@ export interface ICustomResourceProvider {
 
 /**
  * Represents a provider for an AWS CloudFormation custom resources.
+ *
+ * @deprecated use core.CustomResource instead
  */
 export class CustomResourceProvider implements ICustomResourceProvider {
   /**

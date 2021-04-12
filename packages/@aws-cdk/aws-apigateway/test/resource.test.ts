@@ -1,4 +1,4 @@
-import '@aws-cdk/assert/jest';
+import '@aws-cdk/assert-internal/jest';
 import { Stack } from '@aws-cdk/core';
 import * as apigw from '../lib';
 
@@ -234,6 +234,27 @@ describe('resource', () => {
       ],
     });
 
+  });
+
+  test('fromResourceAttributes()', () => {
+    // GIVEN
+    const stack = new Stack();
+    const resourceId = 'resource-id';
+    const api = new apigw.RestApi(stack, 'MyRestApi');
+
+    // WHEN
+    const imported = apigw.Resource.fromResourceAttributes(stack, 'imported-resource', {
+      resourceId,
+      restApi: api,
+      path: 'some-path',
+    });
+    imported.addMethod('GET');
+
+    // THEN
+    expect(stack).toHaveResource('AWS::ApiGateway::Method', {
+      HttpMethod: 'GET',
+      ResourceId: resourceId,
+    });
   });
 
   describe('getResource', () => {

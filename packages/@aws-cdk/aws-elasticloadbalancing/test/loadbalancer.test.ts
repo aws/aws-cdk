@@ -1,4 +1,4 @@
-import { expect, haveResource } from '@aws-cdk/assert';
+import { expect, haveResource } from '@aws-cdk/assert-internal';
 import { Connections, Peer, SubnetType, Vpc } from '@aws-cdk/aws-ec2';
 import { Duration, Stack } from '@aws-cdk/core';
 import { ILoadBalancerTarget, LoadBalancer, LoadBalancingProtocol } from '../lib';
@@ -165,14 +165,14 @@ describe('tests', () => {
     new LoadBalancer(stack, 'LB', {
       vpc,
       subnetSelection: {
-        subnetName: 'private1',
+        subnetGroupName: 'private1',
       },
     });
 
     // THEN
     expect(stack).to(haveResource('AWS::ElasticLoadBalancing::LoadBalancer', {
       Subnets: vpc.selectSubnets({
-        subnetName: 'private1',
+        subnetGroupName: 'private1',
       }).subnetIds.map((subnetId: string) => stack.resolve(subnetId)),
     }));
   });

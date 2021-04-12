@@ -38,7 +38,7 @@ const amplifyApp = new amplify.App(this, 'MyApp', {
     repository: '<repo>',
     oauthToken: cdk.SecretValue.secretsManager('my-github-token')
   }),
-  buildSpec: codebuild.BuildSpec.fromObject({ // Alternatively add a `amplify.yml` to the repo
+  buildSpec: codebuild.BuildSpec.fromObjectToYaml({ // Alternatively add a `amplify.yml` to the repo
     version: '1.0',
     frontend: {
       phases: {
@@ -122,7 +122,10 @@ mySinglePageApp.addCustomRule(amplify.CustomRule.SINGLE_PAGE_APPLICATION_REDIREC
 Add a domain and map sub domains to branches:
 
 ```ts
-const domain = amplifyApp.addDomain('example.com');
+const domain = amplifyApp.addDomain('example.com', {
+  enableAutoSubdomain: true, // in case subdomains should be auto registered for branches
+  autoSubdomainCreationPatterns: ['*', 'pr*'], // regex for branches that should auto register subdomains
+});
 domain.mapRoot(master); // map master branch to domain root
 domain.mapSubDomain(master, 'www');
 domain.mapSubDomain(dev); // sub domain prefix defaults to branch name

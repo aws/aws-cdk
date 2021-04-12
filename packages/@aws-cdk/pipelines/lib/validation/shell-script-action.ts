@@ -4,8 +4,12 @@ import * as codepipeline_actions from '@aws-cdk/aws-codepipeline-actions';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
-import { Construct } from '@aws-cdk/core';
+
 import { StackOutput } from '../stage';
+
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct } from '@aws-cdk/core';
 
 /**
  * Properties for ShellScriptAction
@@ -60,6 +64,13 @@ export interface ShellScriptActionProps {
    * @default LinuxBuildImage.STANDARD_4_0
    */
   readonly environment?: codebuild.BuildEnvironment
+
+  /**
+   * Environment variables to send into build
+   *
+   * @default - No additional environment variables
+   */
+  readonly environmentVariables?: Record<string, codebuild.BuildEnvironmentVariable>;
 
   /**
    * RunOrder for this action
@@ -210,6 +221,7 @@ export class ShellScriptAction implements codepipeline.IAction, iam.IGrantable {
       extraInputs: inputs.slice(1),
       runOrder: this.props.runOrder ?? 100,
       project: this._project,
+      environmentVariables: this.props.environmentVariables,
     });
     // Replace the placeholder actionProperties at the last minute
     this._actionProperties = this._action.actionProperties;

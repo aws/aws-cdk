@@ -92,6 +92,65 @@ nested stack and referenced using `Fn::GetAtt "Outputs.Xxx"` from the parent.
 
 Nested stacks also support the use of Docker image and file assets.
 
+## Accessing resources in a different stack
+
+You can access resources in a different stack, as long as they are in the
+same account and AWS Region. The following example defines the stack `stack1`,
+which defines an Amazon S3 bucket. Then it defines a second stack, `stack2`,
+which takes the bucket from stack1 as a constructor property.
+
+```ts
+const prod = { account: '123456789012', region: 'us-east-1' };
+
+const stack1 = new StackThatProvidesABucket(app, 'Stack1' , { env: prod });
+
+// stack2 will take a property { bucket: IBucket }
+const stack2 = new StackThatExpectsABucket(app, 'Stack2', {
+  bucket: stack1.bucket,
+  env: prod
+});
+```
+
+If the AWS CDK determines that the resource is in the same account and
+Region, but in a different stack, it automatically synthesizes AWS
+CloudFormation
+[Exports](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-stack-exports.html)
+in the producing stack and an
+[Fn::ImportValue](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference-importvalue.html)
+in the consuming stack to transfer that information from one stack to the
+other.
+
+### Removing automatic cross-stack references
+
+The automatic references created by CDK when you use resources across stacks
+are convenient, but may block your deployments if you want to remove the
+resources that are referenced in this way. You will see an error like:
+
+```text
+Export Stack1:ExportsOutputFnGetAtt-****** cannot be deleted as it is in use by Stack1
+```
+
+Let's say there is a Bucket in the `stack1`, and the `stack2` references its
+`bucket.bucketName`. You now want to remove the bucket and run into the error above.
+
+It's not safe to remove `stack1.bucket` while `stack2` is still using it, so
+unblocking yourself from this is a two-step process. This is how it works:
+
+DEPLOYMENT 1: break the relationship
+
+- Make sure `stack2` no longer references `bucket.bucketName` (maybe the consumer
+  stack now uses its own bucket, or it writes to an AWS DynamoDB table, or maybe you just
+  remove the Lambda Function altogether).
+- In the `stack1` class, call `this.exportValue(this.bucket.bucketName)`. This
+  will make sure the CloudFormation Export continues to exist while the relationship
+  between the two stacks is being broken.
+- Deploy (this will effectively only change the `stack2`, but it's safe to deploy both).
+
+DEPLOYMENT 2: remove the resource
+
+- You are now free to remove the `bucket` resource from `stack1`.
+- Don't forget to remove the `exportValue()` call as well.
+- Deploy again (this time only the `stack1` will be changed -- the bucket will be deleted).
 
 ## Durations
 
@@ -368,7 +427,8 @@ stack-unique identifier and returns the service token:
 ```ts
 const serviceToken = CustomResourceProvider.getOrCreate(this, 'Custom::MyCustomResourceType', {
   codeDirectory: `${__dirname}/my-handler`,
-  runtime: CustomResourceProviderRuntime.NODEJS_12, // currently the only supported runtime
+  runtime: CustomResourceProviderRuntime.NODEJS_12_X,
+  description: "Lambda function created by the custom resource provider",
 });
 
 new CustomResource(this, 'MyResource', {
@@ -462,7 +522,7 @@ export class Sum extends Construct {
     const resourceType = 'Custom::Sum';
     const serviceToken = CustomResourceProvider.getOrCreate(this, resourceType, {
       codeDirectory: `${__dirname}/sum-handler`,
-      runtime: CustomResourceProviderRuntime.NODEJS_12,
+      runtime: CustomResourceProviderRuntime.NODEJS_12_X,
     });
 
     const resource = new CustomResource(this, 'Resource', {
@@ -492,7 +552,7 @@ built-in singleton method:
 ```ts
 const provider = CustomResourceProvider.getOrCreateProvider(this, 'Custom::MyCustomResourceType', {
   codeDirectory: `${__dirname}/my-handler`,
-  runtime: CustomResourceProviderRuntime.NODEJS_12, // currently the only supported runtime
+  runtime: CustomResourceProviderRuntime.NODEJS_12_X,
 });
 
 const roleArn = provider.roleArn;

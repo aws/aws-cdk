@@ -17,8 +17,6 @@
       "dotnet": {
         "namespace": "Amazon.CDK.AWS.EKS",
         "packageId": "Amazon.CDK.AWS.EKS",
-        "signAssembly": true,
-        "assemblyOriginatorKeyFile": "../../key.snk",
         "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
       },
       "python": {
@@ -72,18 +70,18 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "0.0.0",
     "@types/nodeunit": "^0.0.31",
     "@types/yaml": "1.9.6",
-    "aws-sdk": "^2.828.0",
+    "aws-sdk": "^2.848.0",
     "cdk-build-tools": "0.0.0",
     "cdk-integ-tools": "0.0.0",
     "cfn2ts": "0.0.0",
     "nodeunit": "^0.11.3",
     "pkglint": "0.0.0",
-    "sinon": "^9.2.1",
+    "sinon": "^9.2.4",
     "cdk8s-plus": "^0.33.0",
-    "cdk8s": "^0.33.0"
+    "cdk8s": "^0.33.0",
+    "@aws-cdk/assert-internal": "0.0.0"
   },
   "dependencies": {
     "@aws-cdk/aws-autoscaling": "0.0.0",
@@ -96,8 +94,8 @@
     "@aws-cdk/custom-resources": "0.0.0",
     "@aws-cdk/lambda-layer-awscli": "0.0.0",
     "@aws-cdk/lambda-layer-kubectl": "0.0.0",
-    "constructs": "^3.2.0",
-    "yaml": "1.10.0"
+    "constructs": "^3.3.69",
+    "yaml": "1.10.2"
   },
   "bundledDependencies": [
     "yaml"
@@ -112,7 +110,7 @@
     "@aws-cdk/aws-ssm": "0.0.0",
     "@aws-cdk/core": "0.0.0",
     "@aws-cdk/custom-resources": "0.0.0",
-    "constructs": "^3.2.0",
+    "constructs": "^3.3.69",
     "@aws-cdk/lambda-layer-awscli": "0.0.0",
     "@aws-cdk/lambda-layer-kubectl": "0.0.0"
   },
@@ -125,9 +123,12 @@
       "props-physical-name:@aws-cdk/aws-eks.OpenIdConnectProviderProps"
     ]
   },
-  "stability": "experimental",
-  "maturity": "developer-preview",
+  "stability": "stable",
+  "maturity": "stable",
   "awscdkio": {
     "announce": false
+  },
+  "publishConfig": {
+    "tag": "latest"
   }
 }

@@ -7,14 +7,18 @@ import * as ts from 'typescript';
 
 const LIB_ROOT = path.resolve(process.cwd(), 'lib');
 const ROOT_PATH = findWorkspacePath();
+const UBER_PACKAGE_JSON_PATH = path.resolve(process.cwd(), 'package.json');
 
 async function main() {
   console.log(`🌴  workspace root path is: ${ROOT_PATH}`);
-  const libraries = await findLibrariesToPackage();
-  const packageJson = await verifyDependencies(libraries);
-  await prepareSourceFiles(libraries, packageJson);
-}
 
+  const uberPackageJson = await fs.readJson(UBER_PACKAGE_JSON_PATH);
+
+  const libraries = await findLibrariesToPackage(uberPackageJson);
+  await verifyDependencies(uberPackageJson, libraries);
+  await prepareSourceFiles(libraries, uberPackageJson);
+  await combineRosettaFixtures(libraries);
+}
 
 main().then(
   () => process.exit(0),
@@ -56,6 +60,9 @@ interface PackageJson {
   readonly types: string;
   readonly version: string;
   readonly [key: string]: unknown;
+  readonly ubergen?: {
+    readonly deprecatedPackages?: readonly string[];
+  };
 }
 
 /**
@@ -78,9 +85,10 @@ function findWorkspacePath(): string {
   }
 }
 
-async function findLibrariesToPackage(): Promise<readonly LibraryReference[]> {
+async function findLibrariesToPackage(uberPackageJson: PackageJson): Promise<readonly LibraryReference[]> {
   console.log('🔍 Discovering libraries that need packaging...');
 
+  const deprecatedPackages = uberPackageJson.ubergen?.deprecatedPackages;
   const result = new Array<LibraryReference>();
   const librariesRoot = path.resolve(ROOT_PATH, 'packages', '@aws-cdk');
 
@@ -88,13 +96,18 @@ async function findLibrariesToPackage(): Promise<readonly LibraryReference[]> {
     const packageJson = await fs.readJson(path.resolve(librariesRoot, dir, 'package.json'));
 
     if (packageJson.ubergen?.exclude) {
-      console.log(`\t⚠️ Skipping (ubergen excluded): ${packageJson.name}`);
-      continue;
-    } else if (packageJson.deprecated) {
-      console.log(`\t⚠️ Skipping (deprecated):       ${packageJson.name}`);
+      console.log(`\t⚠️ Skipping (ubergen excluded):   ${packageJson.name}`);
       continue;
     } else if (packageJson.jsii == null ) {
-      console.log(`\t⚠️ Skipping (not jsii-enabled): ${packageJson.name}`);
+      console.log(`\t⚠️ Skipping (not jsii-enabled):   ${packageJson.name}`);
+      continue;
+    } else if (deprecatedPackages) {
+      if (deprecatedPackages.some(packageName => packageName === packageJson.name)) {
+        console.log(`\t⚠️ Skipping (ubergen deprecated): ${packageJson.name}`);
+        continue;
+      }
+    } else if (packageJson.deprecated) {
+      console.log(`\t⚠️ Skipping (deprecated):         ${packageJson.name}`);
       continue;
     }
     result.push({
@@ -109,10 +122,8 @@ async function findLibrariesToPackage(): Promise<readonly LibraryReference[]> {
   return result;
 }
 
-async function verifyDependencies(libraries: readonly LibraryReference[]): Promise<PackageJson> {
+async function verifyDependencies(packageJson: any, libraries: readonly LibraryReference[]): Promise<void> {
   console.log('🧐 Verifying dependencies are complete...');
-  const packageJsonPath = path.resolve(process.cwd(), 'package.json');
-  const packageJson = await fs.readJson(packageJsonPath);
 
   let changed = false;
   const toBundle: Record<string, string> = {};
@@ -193,12 +204,11 @@ async function verifyDependencies(libraries: readonly LibraryReference[]): Promi
   }
 
   if (changed) {
-    await fs.writeFile(packageJsonPath, JSON.stringify(packageJson, null, 2) + '\n', { encoding: 'utf8' });
+    await fs.writeFile(UBER_PACKAGE_JSON_PATH, JSON.stringify(packageJson, null, 2) + '\n', { encoding: 'utf8' });
 
     throw new Error('Fixed dependency inconsistencies. Commit the updated package.json file.');
   }
   console.log('\t✅ Dependencies are correct!');
-  return packageJson;
 }
 
 async function prepareSourceFiles(libraries: readonly LibraryReference[], packageJson: PackageJson) {
@@ -219,6 +229,25 @@ async function prepareSourceFiles(libraries: readonly LibraryReference[], packag
   }
 
   await fs.writeFile(path.join(LIB_ROOT, 'index.ts'), indexStatements.join('\n'), { encoding: 'utf8' });
+
+  console.log('\t🍺 Success!');
+}
+
+async function combineRosettaFixtures(libraries: readonly LibraryReference[]) {
+  console.log('📝 Combining Rosetta fixtures...');
+
+  const uberRosettaDir = path.resolve(LIB_ROOT, '..', 'rosetta');
+  await fs.remove(uberRosettaDir);
+
+  for (const library of libraries) {
+    const packageRosettaDir = path.join(library.root, 'rosetta');
+    if (await fs.pathExists(packageRosettaDir)) {
+      await fs.copy(packageRosettaDir, uberRosettaDir, {
+        overwrite: true,
+        recursive: true,
+      });
+    }
+  }
 
   console.log('\t🍺 Success!');
 }
@@ -324,8 +353,11 @@ async function copyOrTransformFiles(from: string, to: string, libraries: readonl
       const cfnTypes2Classes: { [key: string]: string } = await fs.readJson(source);
       for (const cfnType of Object.keys(cfnTypes2Classes)) {
         const fqn = cfnTypes2Classes[cfnType];
-        // replace @aws-cdk/aws-<service> with <uber-package-name>/aws-<service>
-        cfnTypes2Classes[cfnType] = fqn.replace('@aws-cdk', uberPackageJson.name);
+        // replace @aws-cdk/aws-<service> with <uber-package-name>/aws-<service>,
+        // except for @aws-cdk/core, which maps just to the name of the uberpackage
+        cfnTypes2Classes[cfnType] = fqn.startsWith('@aws-cdk/core.')
+          ? fqn.replace('@aws-cdk/core', uberPackageJson.name)
+          : fqn.replace('@aws-cdk', uberPackageJson.name);
       }
       await fs.writeJson(destination, cfnTypes2Classes, { spaces: 2 });
     } else {

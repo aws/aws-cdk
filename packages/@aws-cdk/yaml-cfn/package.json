@@ -1,5 +1,6 @@
 {
   "name": "@aws-cdk/yaml-cfn",
+  "deprecated": "This module is no longer supported and will be removed in a future release.",
   "version": "0.0.0",
   "description": "Utilities for handling CloudFormation-flavored YAML",
   "main": "lib/index.js",
@@ -36,8 +37,6 @@
       "dotnet": {
         "namespace": "Amazon.CDK.Yaml.Cfn",
         "packageId": "Amazon.CDK.Yaml.Cfn",
-        "signAssembly": true,
-        "assemblyOriginatorKeyFile": "../../key.snk",
         "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
       },
       "python": {
@@ -65,15 +64,15 @@
     "rosetta:extract": "yarn --silent jsii-rosetta extract"
   },
   "dependencies": {
-    "yaml": "1.10.0"
+    "yaml": "1.10.2"
   },
   "devDependencies": {
-    "@aws-cdk/assert": "0.0.0",
-    "@types/jest": "^26.0.15",
+    "@types/jest": "^26.0.22",
     "@types/yaml": "^1.9.7",
     "cdk-build-tools": "0.0.0",
     "jest": "^26.6.3",
-    "pkglint": "0.0.0"
+    "pkglint": "0.0.0",
+    "@aws-cdk/assert-internal": "0.0.0"
   },
   "bundledDependencies": [
     "yaml"
@@ -84,9 +83,12 @@
   "engines": {
     "node": ">= 10.13.0 <13 || >=13.7.0"
   },
-  "stability": "experimental",
-  "maturity": "experimental",
+  "stability": "deprecated",
+  "maturity": "deprecated",
   "awscdkio": {
     "announce": false
+  },
+  "publishConfig": {
+    "tag": "latest"
   }
 }

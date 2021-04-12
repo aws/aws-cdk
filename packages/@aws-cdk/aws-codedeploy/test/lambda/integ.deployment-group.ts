@@ -13,7 +13,7 @@ const handler = new lambda.Function(stack, 'Handler', {
   handler: 'index.handler',
   runtime: lambda.Runtime.NODEJS_10_X,
 });
-const version = handler.addVersion('1');
+const version = handler.currentVersion;
 const blueGreenAlias = new lambda.Alias(stack, 'Alias', {
   aliasName: 'alias',
   version,

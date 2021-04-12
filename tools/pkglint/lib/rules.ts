@@ -47,8 +47,37 @@ export class DescriptionIsRequired extends ValidationRule {
 }
 
 /**
+ * Verify that all packages have a publishConfig with a publish tag set.
+ */
+export class PublishConfigTagIsRequired extends ValidationRule {
+  public readonly name = 'package-info/publish-config-tag';
+
+  public validate(pkg: PackageJson): void {
+    if (pkg.json.private) { return; }
+
+    // While v2 is still under development, we publish all v2 packages with the 'next'
+    // distribution tag, while still tagging all v1 packages as 'latest'.
+    // The one exception is 'aws-cdk-lib', since it's a new package for v2.
+    const newV2Packages = ['aws-cdk-lib'];
+    const defaultPublishTag = (cdkMajorVersion() === 2 && !newV2Packages.includes(pkg.json.name)) ? 'next' : 'latest';
+
+    if (pkg.json.publishConfig?.tag !== defaultPublishTag) {
+      pkg.report({
+        ruleName: this.name,
+        message: `publishConfig.tag must be ${defaultPublishTag}`,
+        fix: (() => {
+          const publishConfig = pkg.json.publishConfig ?? {};
+          publishConfig.tag = defaultPublishTag;
+          pkg.json.publishConfig = publishConfig;
+        }),
+      });
+    }
+  }
+}
+
+/**
  * Verify cdk.out directory is included in npmignore since we should not be
- * publihsing it.
+ * publishing it.
  */
 export class CdkOutMustBeNpmIgnored extends ValidationRule {
 
@@ -589,6 +618,39 @@ export class NoPeerDependenciesMonocdk extends ValidationRule {
 }
 
 /**
+ * Validates that the same version of `constructs` is used wherever a dependency
+ * is specified, so that they must all be udpated at the same time (through an
+ * update to this rule).
+ *
+ * Note: v1 and v2 use different versions respectively.
+ */
+export class ConstructsVersion extends ValidationRule {
+  public static readonly VERSION = cdkMajorVersion() === 2
+    ? '10.0.0-pre.5'
+    : '^3.3.69';
+
+  public readonly name = 'deps/constructs';
+
+  public validate(pkg: PackageJson) {
+    const toCheck = new Array<string>();
+
+    if ('constructs' in pkg.dependencies) {
+      toCheck.push('dependencies');
+    }
+    if ('constructs' in pkg.devDependencies) {
+      toCheck.push('devDependencies');
+    }
+    if ('constructs' in pkg.peerDependencies) {
+      toCheck.push('peerDependencies');
+    }
+
+    for (const cfg of toCheck) {
+      expectJSON(this.name, pkg, `${cfg}.constructs`, ConstructsVersion.VERSION);
+    }
+  }
+}
+
+/**
  * JSII Java package is required and must look sane
  */
 export class JSIIJavaPackageIsRequired extends ValidationRule {
@@ -857,41 +919,6 @@ export class JSIIDotNetIconUrlIsRequired extends ValidationRule {
 }
 
 /**
- * Strong-naming all .NET assemblies is required.
- */
-export class JSIIDotNetStrongNameIsRequired extends ValidationRule {
-  public readonly name = 'jsii/dotnet/strong-name';
-
-  public validate(pkg: PackageJson): void {
-    if (!isJSII(pkg)) { return; }
-
-    // skip the legacy @aws-cdk/cdk because we actually did not rename
-    // the .NET module, so we are not publishing the deprecated one
-    if (pkg.packageName === '@aws-cdk/cdk') { return; }
-
-    const signAssembly = deepGet(pkg.json, ['jsii', 'targets', 'dotnet', 'signAssembly']) as boolean | undefined;
-    const signAssemblyExpected = true;
-    if (signAssembly !== signAssemblyExpected) {
-      pkg.report({
-        ruleName: this.name,
-        message: '.NET packages must have strong-name signing enabled.',
-        fix: () => deepSet(pkg.json, ['jsii', 'targets', 'dotnet', 'signAssembly'], signAssemblyExpected),
-      });
-    }
-
-    const assemblyOriginatorKeyFile = deepGet(pkg.json, ['jsii', 'targets', 'dotnet', 'assemblyOriginatorKeyFile']) as string | undefined;
-    const assemblyOriginatorKeyFileExpected = '../../key.snk';
-    if (assemblyOriginatorKeyFile !== assemblyOriginatorKeyFileExpected) {
-      pkg.report({
-        ruleName: this.name,
-        message: '.NET packages must use the strong name key fetched by fetch-dotnet-snk.sh',
-        fix: () => deepSet(pkg.json, ['jsii', 'targets', 'dotnet', 'assemblyOriginatorKeyFile'], assemblyOriginatorKeyFileExpected),
-      });
-    }
-  }
-}
-
-/**
  * The package must depend on cdk-build-tools
  */
 export class MustDependOnBuildTools extends ValidationRule {
@@ -981,7 +1008,6 @@ export class MustDependonCdkByPointVersions extends ValidationRule {
       '@aws-cdk/cx-api',
       '@aws-cdk/cloud-assembly-schema',
       '@aws-cdk/region-info',
-      '@aws-cdk/yaml-cfn',
     ];
 
     for (const [depName, depVersion] of Object.entries(pkg.dependencies)) {
@@ -1105,11 +1131,7 @@ export class MustHaveNodeEnginesDeclaration extends ValidationRule {
   public readonly name = 'package-info/engines';
 
   public validate(pkg: PackageJson): void {
-    if (cdkMajorVersion() === 2) {
-      expectJSON(this.name, pkg, 'engines.node', '>= 14.15.0');
-    } else {
-      expectJSON(this.name, pkg, 'engines.node', '>= 10.13.0 <13 || >=13.7.0');
-    }
+    expectJSON(this.name, pkg, 'engines.node', '>= 10.13.0 <13 || >=13.7.0');
   }
 }
 
@@ -1299,8 +1321,7 @@ export class Cfn2Ts extends ValidationRule {
 
 /**
  * Packages inside JSII packages (typically used for embedding Lambda handles)
- * must only have dev dependencies and their node_modules must have been
- * blacklisted for publishing
+ * must only have dev dependencies and their node_modules must not be published.
  *
  * We might loosen this at some point but we'll have to bundle all runtime dependencies
  * and we don't have good transitive license checks.
@@ -1317,7 +1338,7 @@ export class PackageInJsiiPackageNoRuntimeDeps extends ValidationRule {
       if (Object.keys(innerPkg.dependencies).length > 0) {
         pkg.report({
           ruleName: `${this.name}:1`,
-          message: `NPM Package '${innerPkg.packageName}' inside jsii package can only have devDepencencies`,
+          message: `NPM Package '${innerPkg.packageName}' inside jsii package can only have devDependencies`,
         });
       }
 
@@ -1385,7 +1406,7 @@ export class ConstructsDependency extends ValidationRule {
   public readonly name = 'constructs/dependency';
 
   public validate(pkg: PackageJson) {
-    const REQUIRED_VERSION = '^3.2.0';
+    const REQUIRED_VERSION = ConstructsVersion.VERSION;;
 
     if (pkg.devDependencies?.constructs && pkg.devDependencies?.constructs !== REQUIRED_VERSION) {
       pkg.report({
@@ -1415,6 +1436,28 @@ export class ConstructsDependency extends ValidationRule {
           },
         });
       }
+    }
+  }
+}
+
+/**
+ * Packages must depend on 'assert-internal', not on '@aws-cdk/assert'
+ */
+export class AssertDependency extends ValidationRule {
+  public readonly name = 'assert/assert-dependency';
+
+  public validate(pkg: PackageJson) {
+    const devDeps = pkg.json.devDependencies ?? {};
+
+    if ('@aws-cdk/assert' in devDeps) {
+      pkg.report({
+        ruleName: this.name,
+        message: 'Package should depend on \'@aws-cdk/assert-internal\', not on \'@aws-cdk/assert\'',
+        fix: () => {
+          pkg.json.devDependencies['@aws-cdk/assert-internal'] = pkg.json.devDependencies['@aws-cdk/assert'];
+          delete pkg.json.devDependencies['@aws-cdk/assert'];
+        },
+      });
     }
   }
 }
@@ -1529,7 +1572,6 @@ export class UbergenPackageVisibility extends ValidationRule {
     '@aws-cdk/cloudformation-diff',
     '@aws-cdk/cx-api',
     '@aws-cdk/region-info',
-    '@aws-cdk/yaml-cfn',
     'aws-cdk-lib',
     'aws-cdk',
     'awslint',

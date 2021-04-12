@@ -1,14 +1,19 @@
-// v2 - leave this as a separate section so it reduces merge conflicts when compat is removed
-// eslint-disable-next-line import/order
-import { IConstruct, Construct as CoreConstruct } from './construct-compat';
-
-import { Construct } from 'constructs';
 import { ArnComponents } from './arn';
-import { Lazy } from './lazy';
+import { CfnResource } from './cfn-resource';
+import { IConstruct, Construct as CoreConstruct } from './construct-compat';
+import { IStringProducer, Lazy } from './lazy';
 import { generatePhysicalName, isGeneratedWhenNeededMarker } from './private/physical-name-generator';
+import { Reference } from './reference';
+import { RemovalPolicy } from './removal-policy';
 import { IResolveContext } from './resolvable';
 import { Stack } from './stack';
-import { Token } from './token';
+import { Token, Tokenization } from './token';
+
+// v2 - leave this as a separate section so it reduces merge conflicts when compat is removed
+// eslint-disable-next-line import/order
+import { Construct } from 'constructs';
+
+const RESOURCE_SYMBOL = Symbol.for('@aws-cdk/core.Resource');
 
 /**
  * Represents the environment a given resource lives in.
@@ -85,12 +90,31 @@ export interface ResourceProps {
    * @default - the resource is in the same region as the stack it belongs to
    */
   readonly region?: string;
+
+  /**
+   * ARN to deduce region and account from
+   *
+   * The ARN is parsed and the account and region are taken from the ARN.
+   * This should be used for imported resources.
+   *
+   * Cannot be supplied together with either `account` or `region`.
+   *
+   * @default - take environment from `account`, `region` parameters, or use Stack environment.
+   */
+  readonly environmentFromArn?: string;
 }
 
 /**
  * A construct which represents an AWS resource.
  */
 export abstract class Resource extends CoreConstruct implements IResource {
+  /**
+   * Check whether the given construct is a Resource
+   */
+  public static isResource(construct: IConstruct): construct is CfnResource {
+    return construct !== null && typeof(construct) === 'object' && RESOURCE_SYMBOL in construct;
+  }
+
   public readonly stack: Stack;
   public readonly env: ResourceEnvironment;
 
@@ -114,10 +138,18 @@ export abstract class Resource extends CoreConstruct implements IResource {
   constructor(scope: Construct, id: string, props: ResourceProps = {}) {
     super(scope, id);
 
+    if ((props.account !== undefined || props.region !== undefined) && props.environmentFromArn !== undefined) {
+      throw new Error(`Supply at most one of 'account'/'region' (${props.account}/${props.region}) and 'environmentFromArn' (${props.environmentFromArn})`);
+    }
+
+    Object.defineProperty(this, RESOURCE_SYMBOL, { value: true });
+
     this.stack = Stack.of(this);
+
+    const parsedArn = props.environmentFromArn ? this.stack.parseArn(props.environmentFromArn) : undefined;
     this.env = {
-      account: props.account ?? this.stack.account,
-      region: props.region ?? this.stack.region,
+      account: props.account ?? parsedArn?.account ?? this.stack.account,
+      region: props.region ?? parsedArn?.region ?? this.stack.region,
     };
 
     let physicalName = props.physicalName;
@@ -164,6 +196,25 @@ export abstract class Resource extends CoreConstruct implements IResource {
     }
   }
 
+  /**
+   * Apply the given removal policy to this resource
+   *
+   * The Removal Policy controls what happens to this resource when it stops
+   * being managed by CloudFormation, either because you've removed it from the
+   * CDK application or because you've made a change that requires the resource
+   * to be replaced.
+   *
+   * The resource can be deleted (`RemovalPolicy.DELETE`), or left in your AWS
+   * account for data recovery and cleanup later (`RemovalPolicy.RETAIN`).
+   */
+  public applyRemovalPolicy(policy: RemovalPolicy) {
+    const child = this.node.defaultChild;
+    if (!child || !CfnResource.isCfnResource(child)) {
+      throw new Error('Cannot apply RemovalPolicy: no child or not a CfnResource. Apply the removal policy on the CfnResource directly.');
+    }
+    child.applyRemovalPolicy(policy);
+  }
+
   protected generatePhysicalName(): string {
     return generatePhysicalName(this);
   }
@@ -181,7 +232,7 @@ export abstract class Resource extends CoreConstruct implements IResource {
    * @experimental
    */
   protected getResourceNameAttribute(nameAttr: string) {
-    return Lazy.uncachedString({
+    return mimicReference(nameAttr, {
       produce: (context: IResolveContext) => {
         const consumingStack = Stack.of(context.scope);
 
@@ -214,8 +265,8 @@ export abstract class Resource extends CoreConstruct implements IResource {
    * @experimental
    */
   protected getResourceArnAttribute(arnAttr: string, arnComponents: ArnComponents) {
-    return Token.asString({
-      resolve: (context: IResolveContext) => {
+    return mimicReference(arnAttr, {
+      produce: (context: IResolveContext) => {
         const consumingStack = Stack.of(context.scope);
         if (this.stack.environment !== consumingStack.environment) {
           this._enableCrossEnvironment();
@@ -226,4 +277,29 @@ export abstract class Resource extends CoreConstruct implements IResource {
       },
     });
   }
+}
+
+/**
+ * Produce a Lazy that is also a Reference (if the base value is a Reference).
+ *
+ * If the given value is a Reference (or resolves to a Reference), return a new
+ * Reference that mimics the same target and display name, but resolves using
+ * the logic of the passed lazy.
+ *
+ * If the given value is NOT a Reference, just return a simple Lazy.
+ */
+function mimicReference(refSource: any, producer: IStringProducer): string {
+  const reference = Tokenization.reverse(refSource, {
+    // If this is an ARN concatenation, just fail to extract a reference.
+    failConcat: false,
+  });
+  if (!Reference.isReference(reference)) {
+    return Lazy.uncachedString(producer);
+  }
+
+  return Token.asString(new class extends Reference {
+    resolve(context: IResolveContext) {
+      return producer.produce(context);
+    }
+  }(reference, reference.target, reference.displayName));
 }

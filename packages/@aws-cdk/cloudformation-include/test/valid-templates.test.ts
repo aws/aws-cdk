@@ -1,6 +1,6 @@
 import * as path from 'path';
-import { ResourcePart } from '@aws-cdk/assert';
-import '@aws-cdk/assert/jest';
+import { ResourcePart } from '@aws-cdk/assert-internal';
+import '@aws-cdk/assert-internal/jest';
 import * as iam from '@aws-cdk/aws-iam';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as ssm from '@aws-cdk/aws-ssm';
@@ -113,6 +113,14 @@ describe('CDK Include', () => {
 
     expect(stack).toMatchTemplate(
       loadTestFileToJsObject('number-for-string.json'),
+    );
+  });
+
+  test('accepts booleans for properties with type string', () => {
+    includeTestTemplate(stack, 'boolean-for-string.json');
+
+    expect(stack).toMatchTemplate(
+      loadTestFileToJsObject('boolean-for-string.json'),
     );
   });
 
@@ -744,6 +752,14 @@ describe('CDK Include', () => {
     expect(() => {
       cfnTemplate.getMapping('NonExistentMapping');
     }).toThrow(/Mapping with name 'NonExistentMapping' was not found in the template/);
+  });
+
+  test('can ingest a template that uses Fn::FindInMap with the first argument being a dynamic reference', () => {
+    includeTestTemplate(stack, 'find-in-map-with-dynamic-mapping.json');
+
+    expect(stack).toMatchTemplate(
+      loadTestFileToJsObject('find-in-map-with-dynamic-mapping.json'),
+    );
   });
 
   test('handles renaming Mapping references', () => {

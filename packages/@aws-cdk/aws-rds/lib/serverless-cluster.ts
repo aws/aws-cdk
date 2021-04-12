@@ -2,13 +2,14 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
-import { Resource, Duration, Token, Annotations, RemovalPolicy, IResource, Stack, Lazy } from '@aws-cdk/core';
+import { Resource, Duration, Token, Annotations, RemovalPolicy, IResource, Stack, Lazy, FeatureFlags } from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
 import { IClusterEngine } from './cluster-engine';
 import { Endpoint } from './endpoint';
 import { IParameterGroup } from './parameter-group';
 import { DATA_API_ACTIONS } from './perms';
-import { applyRemovalPolicy, defaultDeletionProtection, DEFAULT_PASSWORD_EXCLUDE_CHARS, renderCredentials } from './private/util';
+import { defaultDeletionProtection, DEFAULT_PASSWORD_EXCLUDE_CHARS, renderCredentials } from './private/util';
 import { Credentials, RotationMultiUserOptions, RotationSingleUserOptions } from './props';
 import { CfnDBCluster } from './rds.generated';
 import { ISubnetGroup, SubnetGroup } from './subnet-group';
@@ -438,10 +439,14 @@ export class ServerlessCluster extends ServerlessClusterBase {
       }),
     ];
 
+    const clusterIdentifier = FeatureFlags.of(this).isEnabled(cxapi.RDS_LOWERCASE_DB_IDENTIFIER)
+      ? props.clusterIdentifier?.toLowerCase()
+      : props.clusterIdentifier;
+
     const cluster = new CfnDBCluster(this, 'Resource', {
       backupRetentionPeriod: props.backupRetention?.toDays(),
       databaseName: props.defaultDatabaseName,
-      dbClusterIdentifier: props.clusterIdentifier,
+      dbClusterIdentifier: clusterIdentifier,
       dbClusterParameterGroupName: clusterParameterGroupConfig?.parameterGroupName,
       dbSubnetGroupName: this.subnetGroup.subnetGroupName,
       deletionProtection: defaultDeletionProtection(props.deletionProtection, props.removalPolicy),
@@ -468,7 +473,7 @@ export class ServerlessCluster extends ServerlessClusterBase {
       defaultPort: ec2.Port.tcp(this.clusterEndpoint.port),
     });
 
-    applyRemovalPolicy(cluster, props.removalPolicy);
+    cluster.applyRemovalPolicy(props.removalPolicy ?? RemovalPolicy.SNAPSHOT);
 
     if (secret) {
       this.secret = secret.attach(this);

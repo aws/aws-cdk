@@ -1,4 +1,4 @@
-import { expect, haveResource } from '@aws-cdk/assert';
+import { expect, haveResource } from '@aws-cdk/assert-internal';
 import { Role, ServicePrincipal } from '@aws-cdk/aws-iam';
 import { Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
@@ -103,6 +103,9 @@ export = {
       });
 
       test.deepEqual(stack.resolve(repo.repositoryCloneUrlGrc), 'codecommit::us-west-2://my-repo');
+
+      test.deepEqual(repo.env.account, '585695036304');
+      test.deepEqual(repo.env.region, 'us-west-2');
 
       test.done();
     },

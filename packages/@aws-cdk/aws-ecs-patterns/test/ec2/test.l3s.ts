@@ -1,4 +1,4 @@
-import { arrayWith, expect, haveResource, haveResourceLike, objectLike } from '@aws-cdk/assert';
+import { ABSENT, arrayWith, expect, haveResource, haveResourceLike, objectLike } from '@aws-cdk/assert-internal';
 import { Certificate } from '@aws-cdk/aws-certificatemanager';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecs from '@aws-cdk/aws-ecs';
@@ -6,6 +6,7 @@ import { ApplicationLoadBalancer, ApplicationProtocol, NetworkLoadBalancer } fro
 import { PublicHostedZone } from '@aws-cdk/aws-route53';
 import * as cloudmap from '@aws-cdk/aws-servicediscovery';
 import * as cdk from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
 import { Test } from 'nodeunit';
 import * as ecsPatterns from '../../lib';
 
@@ -55,6 +56,102 @@ export = {
           Memory: 1024,
         },
       ],
+    }));
+
+    test.done();
+  },
+
+  'ApplicationLoadBalancedEc2Service desiredCount can be undefined when feature flag is set'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    stack.node.setContext(cxapi.ECS_REMOVE_DEFAULT_DESIRED_COUNT, true);
+
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+    cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+
+    // WHEN
+    new ecsPatterns.ApplicationLoadBalancedEc2Service(stack, 'Service', {
+      cluster,
+      memoryLimitMiB: 1024,
+      taskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry('test'),
+      },
+    });
+
+    expect(stack).to(haveResource('AWS::ECS::Service', {
+      DesiredCount: ABSENT,
+    }));
+
+    test.done();
+  },
+
+  'ApplicationLoadBalancedFargateService desiredCount can be undefined when feature flag is set'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    stack.node.setContext(cxapi.ECS_REMOVE_DEFAULT_DESIRED_COUNT, true);
+
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+
+    // WHEN
+    new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'Service', {
+      cluster,
+      taskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry('test'),
+      },
+    });
+
+    expect(stack).to(haveResource('AWS::ECS::Service', {
+      DesiredCount: ABSENT,
+    }));
+
+    test.done();
+  },
+
+  'NetworkLoadBalancedEc2Service desiredCount can be undefined when feature flag is set'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    stack.node.setContext(cxapi.ECS_REMOVE_DEFAULT_DESIRED_COUNT, true);
+
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+    cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+
+    // WHEN
+    new ecsPatterns.NetworkLoadBalancedEc2Service(stack, 'Service', {
+      cluster,
+      memoryLimitMiB: 1024,
+      taskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry('test'),
+      },
+    });
+
+    expect(stack).to(haveResource('AWS::ECS::Service', {
+      DesiredCount: ABSENT,
+    }));
+
+    test.done();
+  },
+
+  'NetworkLoadBalancedFargateService desiredCount can be undefined when feature flag is set'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    stack.node.setContext(cxapi.ECS_REMOVE_DEFAULT_DESIRED_COUNT, true);
+
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+
+    // WHEN
+    new ecsPatterns.NetworkLoadBalancedFargateService(stack, 'Service', {
+      cluster,
+      taskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry('test'),
+      },
+    });
+
+    expect(stack).to(haveResource('AWS::ECS::Service', {
+      DesiredCount: ABSENT,
     }));
 
     test.done();
@@ -1001,6 +1098,72 @@ export = {
     test.done();
   },
 
+  'ALB with circuit breaker'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+    cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+
+    // WHEN
+    new ecsPatterns.ApplicationLoadBalancedEc2Service(stack, 'Service', {
+      cluster,
+      memoryLimitMiB: 1024,
+      taskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+      },
+      circuitBreaker: { rollback: true },
+    });
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::ECS::Service', {
+      DeploymentConfiguration: {
+        DeploymentCircuitBreaker: {
+          Enable: true,
+          Rollback: true,
+        },
+      },
+      DeploymentController: {
+        Type: 'ECS',
+      },
+    }));
+
+    test.done();
+  },
+
+  'NLB with circuit breaker'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+    cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+
+    // WHEN
+    new ecsPatterns.NetworkLoadBalancedEc2Service(stack, 'Service', {
+      cluster,
+      memoryLimitMiB: 1024,
+      taskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+      },
+      circuitBreaker: { rollback: true },
+    });
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::ECS::Service', {
+      DeploymentConfiguration: {
+        DeploymentCircuitBreaker: {
+          Enable: true,
+          Rollback: true,
+        },
+      },
+      DeploymentController: {
+        Type: 'ECS',
+      },
+    }));
+
+    test.done();
+  },
+
   'NetworkLoadbalancedEC2Service accepts previously created load balancer'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
@@ -1035,7 +1198,7 @@ export = {
   'NetworkLoadBalancedEC2Service accepts imported load balancer'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
-    const nlbArn = 'arn:aws:elasticloadbalancing::000000000000::dummyloadbalancer';
+    const nlbArn = 'arn:aws:elasticloadbalancing:us-west-2:123456789012:loadbalancer/app/my-load-balancer/50dc6c495c0c9188';
     const vpc = new ec2.Vpc(stack, 'Vpc');
     const cluster = new ecs.Cluster(stack, 'Cluster', { vpc, clusterName: 'MyCluster' });
     cluster.addCapacity('Capacity', { instanceType: new ec2.InstanceType('t2.micro') });
@@ -1111,7 +1274,7 @@ export = {
   'ApplicationLoadBalancedEC2Service accepts imported load balancer'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
-    const albArn = 'arn:aws:elasticloadbalancing::000000000000::dummyloadbalancer';
+    const albArn = 'arn:aws:elasticloadbalancing:us-west-2:123456789012:loadbalancer/app/my-load-balancer/50dc6c495c0c9188';
     const vpc = new ec2.Vpc(stack, 'Vpc');
     const cluster = new ecs.Cluster(stack, 'Cluster', { vpc, clusterName: 'MyCluster' });
     cluster.addCapacity('Capacity', { instanceType: new ec2.InstanceType('t2.micro') });

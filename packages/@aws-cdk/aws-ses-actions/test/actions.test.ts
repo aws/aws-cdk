@@ -1,5 +1,5 @@
-import { ResourcePart } from '@aws-cdk/assert';
-import '@aws-cdk/assert/jest';
+import { arrayWith, ResourcePart } from '@aws-cdk/assert-internal';
+import '@aws-cdk/assert-internal/jest';
 import * as kms from '@aws-cdk/aws-kms';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as s3 from '@aws-cdk/aws-s3';
@@ -223,72 +223,30 @@ test('add s3 action', () => {
     },
   });
 
-  expect(stack).toHaveResource('AWS::KMS::Key', {
+  expect(stack).toHaveResourceLike('AWS::KMS::Key', {
     KeyPolicy: {
-      Statement: [
-        {
-          Action: [
-            'kms:Create*',
-            'kms:Describe*',
-            'kms:Enable*',
-            'kms:List*',
-            'kms:Put*',
-            'kms:Update*',
-            'kms:Revoke*',
-            'kms:Disable*',
-            'kms:Get*',
-            'kms:Delete*',
-            'kms:ScheduleKeyDeletion',
-            'kms:CancelKeyDeletion',
-            'kms:GenerateDataKey',
-            'kms:TagResource',
-            'kms:UntagResource',
-          ],
-          Effect: 'Allow',
-          Principal: {
-            AWS: {
-              'Fn::Join': [
-                '',
-                [
-                  'arn:',
-                  {
-                    Ref: 'AWS::Partition',
-                  },
-                  ':iam::',
-                  {
-                    Ref: 'AWS::AccountId',
-                  },
-                  ':root',
-                ],
-              ],
+      Statement: arrayWith({
+        Action: [
+          'kms:Encrypt',
+          'kms:GenerateDataKey',
+        ],
+        Condition: {
+          Null: {
+            'kms:EncryptionContext:aws:ses:rule-name': 'false',
+            'kms:EncryptionContext:aws:ses:message-id': 'false',
+          },
+          StringEquals: {
+            'kms:EncryptionContext:aws:ses:source-account': {
+              Ref: 'AWS::AccountId',
             },
           },
-          Resource: '*',
         },
-        {
-          Action: [
-            'kms:Encrypt',
-            'kms:GenerateDataKey',
-          ],
-          Condition: {
-            Null: {
-              'kms:EncryptionContext:aws:ses:rule-name': 'false',
-              'kms:EncryptionContext:aws:ses:message-id': 'false',
-            },
-            StringEquals: {
-              'kms:EncryptionContext:aws:ses:source-account': {
-                Ref: 'AWS::AccountId',
-              },
-            },
-          },
-          Effect: 'Allow',
-          Principal: {
-            Service: 'ses.amazonaws.com',
-          },
-          Resource: '*',
+        Effect: 'Allow',
+        Principal: {
+          Service: 'ses.amazonaws.com',
         },
-      ],
-      Version: '2012-10-17',
+        Resource: '*',
+      }),
     },
   });
 });
