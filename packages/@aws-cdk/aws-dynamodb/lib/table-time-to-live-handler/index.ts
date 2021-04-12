@@ -58,13 +58,6 @@ export async function isCompleteHandler(event: IsCompleteRequest): Promise<IsCom
     ({ stable, correct } = await timeToLiveStatus(event));
   }
 
-  const data = await dynamodb.describeTable({
-    TableName: event.ResourceProperties.TableName,
-  }).promise();
-  console.log('Describe table: %j', data);
-
-  const tableActive = (data.Table?.TableStatus === 'ACTIVE');
-
   switch (event.RequestType) {
     case 'Create':
     case 'Update':
@@ -74,6 +67,6 @@ export async function isCompleteHandler(event: IsCompleteRequest): Promise<IsCom
         return { IsComplete: true };
       }
       // Complete when time to live is fully functional
-      return { IsComplete: tableActive && stable && correct };
+      return { IsComplete: stable && correct };
   }
 }
