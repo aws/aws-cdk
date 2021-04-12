@@ -4,7 +4,7 @@ import { nodeunitShim, Test } from 'nodeunit-shim';
 import {
   App, App as Root, CfnCondition,
   CfnDeletionPolicy, CfnResource,
-  Fn, RemovalPolicy, Stack,
+  Fn, RemovalPolicy, Resource, Stack,
 } from '../lib';
 import { synthesize } from '../lib/private/synthesis';
 import { toCloudFormation } from './util';
