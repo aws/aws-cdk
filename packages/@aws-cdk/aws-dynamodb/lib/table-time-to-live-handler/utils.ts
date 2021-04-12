@@ -6,8 +6,9 @@ const cloudFormation = new CloudFormation({ apiVersion: '2010-05-15' });
 
 
 export async function disableTimeToLive(event: OnEventRequest) {
-  console.log('Trying to disable time to live.');
-  try {
+  await catchAwsError(async () => {
+    console.log('Trying to disable time to live.');
+
     await dynamodb.updateTimeToLive({
       TableName: event.ResourceProperties.TableName,
       TimeToLiveSpecification: {
@@ -15,24 +16,13 @@ export async function disableTimeToLive(event: OnEventRequest) {
         Enabled: false,
       },
     }).promise();
-  } catch (err) {
-    // Catch exception so we can try disabling again at a later point in time.
-    // This is done to mimic the necessary behavior in the enable functionality.
-    const awsError = err as AWSError;
-    if (
-      awsError.code === 'ValidationException' &&
-      awsError.message === 'Time to live has been modified multiple times within a fixed interval'
-    ) {
-      console.log('Time to live has been modified multiple times within a fixed interval. Try again later.');
-      return;
-    }
-    throw awsError;
-  }
+  });
 }
 
 export async function enableTimeToLive(event: OnEventRequest) {
-  console.log('Trying to enable time to live.');
-  try {
+  await catchAwsError(async () => {
+    console.log('Trying to enable time to live.');
+
     await dynamodb.updateTimeToLive({
       TableName: event.ResourceProperties.TableName,
       TimeToLiveSpecification: {
@@ -40,6 +30,12 @@ export async function enableTimeToLive(event: OnEventRequest) {
         Enabled: true,
       },
     }).promise();
+  });
+}
+
+async function catchAwsError(func: () => Promise<void>) {
+  try {
+    await func();
   } catch (err) {
     // Catch exception so we can try enabling again at a later point in time.
     // This is necessary if the ttl was just disabled as enabling is not available right away.
