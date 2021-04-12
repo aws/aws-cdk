@@ -4,7 +4,7 @@ import {
   haveResource,
   haveResourceLike,
   ResourcePart,
-} from '@aws-cdk/assert';
+} from '@aws-cdk/assert-internal';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as kms from '@aws-cdk/aws-kms';
 import * as cloudmap from '@aws-cdk/aws-servicediscovery';

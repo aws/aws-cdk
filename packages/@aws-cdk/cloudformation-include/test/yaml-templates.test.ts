@@ -1,5 +1,5 @@
 import * as path from 'path';
-import '@aws-cdk/assert/jest';
+import '@aws-cdk/assert-internal/jest';
 import * as core from '@aws-cdk/core';
 import * as constructs from 'constructs';
 import * as inc from '../lib';
