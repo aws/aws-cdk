@@ -1,9 +1,10 @@
 import * as cxapi from '@aws-cdk/cx-api';
+import { Construct } from 'constructs';
 import { nodeunitShim, Test } from 'nodeunit-shim';
 import {
   App, App as Root, CfnCondition,
-  CfnDeletionPolicy, CfnResource, Construct,
-  Fn, RemovalPolicy, Resource, Stack,
+  CfnDeletionPolicy, CfnResource,
+  Fn, RemovalPolicy, Stack,
 } from '../lib';
 import { synthesize } from '../lib/private/synthesis';
 import { toCloudFormation } from './util';
