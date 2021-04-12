@@ -10,11 +10,11 @@ const vpc = new ec2.Vpc(stack, 'VPC', { maxAzs: 2 });
 const cluster = new msk.Cluster(stack, 'Cluster', {
   clusterName: 'integ-test',
   vpc,
+  removalPolicy: cdk.RemovalPolicy.DESTROY,
 });
 
-cluster.connections.allowToAnyIpv4(
-  ec2.Port.tcp(9094),
-  'Brokers open to the world',
-);
+// Test lazy instance of the AwsCustomResource
+new cdk.CfnOutput(stack, 'BootstrapBrokers', { value: cluster.bootstrapBrokersTls });
+new cdk.CfnOutput(stack, 'BootstrapBrokers2', { value: cluster.bootstrapBrokersTls });
 
 app.synth();
