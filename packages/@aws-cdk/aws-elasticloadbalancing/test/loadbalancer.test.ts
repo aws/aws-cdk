@@ -1,4 +1,4 @@
-import '@aws-cdk/assert/jest';
+import '@aws-cdk/assert-internal/jest';
 import { Connections, Peer, SubnetType, Vpc } from '@aws-cdk/aws-ec2';
 import { Duration, Stack } from '@aws-cdk/core';
 import { ILoadBalancerTarget, LoadBalancer, LoadBalancingProtocol } from '../lib';
