@@ -2,6 +2,28 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.98.0](https://github.com/aws/aws-cdk/compare/v1.97.0...v1.98.0) (2021-04-12)
+
+
+### Features
+
+* **codepipeline-actions:** introduce the CodeStarConnectionsSourceAction ([#13781](https://github.com/aws/aws-cdk/issues/13781)) ([8782e67](https://github.com/aws/aws-cdk/commit/8782e672d6a8f8bbe201f2572c4b0fca7589168d)), closes [#10632](https://github.com/aws/aws-cdk/issues/10632)
+* **efs:** graduate to stable 🚀 ([#14033](https://github.com/aws/aws-cdk/issues/14033)) ([3c03d87](https://github.com/aws/aws-cdk/commit/3c03d878dd81454628545b1529691ac083862247))
+* **elasticloadbalancingv2:** add grpc code matcher for alb ([#13948](https://github.com/aws/aws-cdk/issues/13948)) ([a37f178](https://github.com/aws/aws-cdk/commit/a37f178b52a91d43b237013d7cb42c44c1774307)), closes [#13570](https://github.com/aws/aws-cdk/issues/13570) [#13947](https://github.com/aws/aws-cdk/issues/13947)
+* **region-info:** graduate to stable 🚀  ([#14013](https://github.com/aws/aws-cdk/issues/14013)) ([0d2755b](https://github.com/aws/aws-cdk/commit/0d2755b97486e4222d1f3b020b8126fefeda20d0))
+* **route-53:** add ability to create NS Records ([#13895](https://github.com/aws/aws-cdk/issues/13895)) ([02c7c1d](https://github.com/aws/aws-cdk/commit/02c7c1d9aab6ed8f806052d3102a037e112b8786)), closes [#13816](https://github.com/aws/aws-cdk/issues/13816)
+
+
+### Bug Fixes
+
+* **apigateway:** cannot remove first api key from usage plan ([#13817](https://github.com/aws/aws-cdk/issues/13817)) ([036d869](https://github.com/aws/aws-cdk/commit/036d869dc1382d3fb2d8541f5adf534ea3424667)), closes [#11876](https://github.com/aws/aws-cdk/issues/11876)
+* **cloudfront:** cannot use same EdgeFunction in multiple stacks ([#13790](https://github.com/aws/aws-cdk/issues/13790)) ([8e2325c](https://github.com/aws/aws-cdk/commit/8e2325cfb7dc5377755b561532b6c81caebc688f))
+* **lambda-nodejs:** esbuild define parameters are incorrectly encoded ([#14065](https://github.com/aws/aws-cdk/issues/14065)) ([5378a77](https://github.com/aws/aws-cdk/commit/5378a7770d5897737ecf4da25d47747c2bbddd94)), closes [#13842](https://github.com/aws/aws-cdk/issues/13842)
+* **rds:** deploy fails with "SubnetGroup not found" ([#13986](https://github.com/aws/aws-cdk/issues/13986)) ([ad326da](https://github.com/aws/aws-cdk/commit/ad326da3ae392b78dcfc349f246acdf3a389f283)), closes [#13976](https://github.com/aws/aws-cdk/issues/13976)
+* **route53:** cannot set TTL to 0 ([#14060](https://github.com/aws/aws-cdk/issues/14060)) ([ecc9bf3](https://github.com/aws/aws-cdk/commit/ecc9bf386ca088ca82a332c649f13613b9793628)), closes [#14039](https://github.com/aws/aws-cdk/issues/14039)
+* **s3:** SSL enforcement doesn't apply on top level bucket requests ([#13961](https://github.com/aws/aws-cdk/issues/13961)) ([d0e831a](https://github.com/aws/aws-cdk/commit/d0e831a2f2b60eae021d10a77d1d636615b0cf04)), closes [#13760](https://github.com/aws/aws-cdk/issues/13760)
+* **stepfunctions:** state machine name validation fails when tokens are used. ([#13970](https://github.com/aws/aws-cdk/issues/13970)) ([58de0de](https://github.com/aws/aws-cdk/commit/58de0de5a54b9d8fb4658566e85ef408c8861088)), closes [#13946](https://github.com/aws/aws-cdk/issues/13946) [#13912](https://github.com/aws/aws-cdk/issues/13912)
+
 ## [1.97.0](https://github.com/aws/aws-cdk/compare/v1.96.0...v1.97.0) (2021-04-06)
 
 
