@@ -2,10 +2,10 @@ import { strictEqual } from 'assert';
 import { LustreMaintenanceTime, Weekday } from '../lib';
 
 test.each([
-  [Weekday.SUNDAY, 0, 0, '0:00:00'],
+  [Weekday.SUNDAY, 0, 0, '7:00:00'],
   [Weekday.SATURDAY, 0, 0, '6:00:00'],
-  [Weekday.SUNDAY, 24, 0, '0:24:00'],
-  [Weekday.SUNDAY, 0, 59, '0:00:59'],
+  [Weekday.SUNDAY, 24, 0, '7:24:00'],
+  [Weekday.SUNDAY, 0, 59, '7:00:59'],
 ])('valid maintenance time %s:%d:%d returns %s', (day: Weekday, hour: number, minute: number, expected: string) => {
   strictEqual(
     new LustreMaintenanceTime({ day, hour, minute }).toTimestamp(),
