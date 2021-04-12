@@ -738,6 +738,8 @@ export class RestApi extends RestApiBase {
 
     this.root = new RootResource(this, props, resource.attrRootResourceId);
     this.restApiRootResourceId = resource.attrRootResourceId;
+
+    this.node.addValidation({ validate: () => this.validateRestApi() });
   }
 
   /**
@@ -803,7 +805,7 @@ export class RestApi extends RestApiBase {
   /**
    * Performs validation of the REST API.
    */
-  protected validate() {
+  private validateRestApi() {
     if (this.methods.length === 0) {
       return ["The REST API doesn't contain any methods"];
     }
