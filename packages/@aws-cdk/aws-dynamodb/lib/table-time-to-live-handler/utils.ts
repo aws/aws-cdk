@@ -74,7 +74,7 @@ export async function timeToLiveStatus(event: OnEventRequest): Promise<{stable: 
 export async function tableWillBeRemoved(event: OnEventRequest): Promise<boolean> {
   const stacks = (await cloudFormation.describeStacks({ StackName: event.StackId }).promise()).Stacks;
 
-  return stacks?.map(async (stack): Promise<boolean> => {
+  const tableRemoval = stacks?.map(async (stack): Promise<boolean> => {
     if ( stack.ChangeSetId === undefined ) {
       throw new Error('Can not describe changeset without id');
     }
@@ -89,4 +89,7 @@ export async function tableWillBeRemoved(event: OnEventRequest): Promise<boolean
     }).reduce( (previousValue, currentValue) => previousValue || currentValue ) ?? false;
 
   }).reduce( (previousValue, currentValue) => previousValue || currentValue ) ?? false;
+
+  console.log('Table will also be removed: %j', tableRemoval);
+  return tableRemoval;
 }
