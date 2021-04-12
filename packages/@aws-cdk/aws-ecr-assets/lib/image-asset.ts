@@ -131,12 +131,12 @@ export class DockerImageAsset extends CoreConstruct implements IAsset {
         ...dockerIgnorePatterns,
         ...exclude,
 
-        // Ensure .dockerignore is whitelisted no matter what.
+        // Ensure .dockerignore is included no matter what.
         '!.dockerignore',
       ];
     }
 
-    // Ensure the Dockerfile is whitelisted no matter what.
+    // Ensure the Dockerfile is included no matter what.
     exclude.push('!' + path.basename(file));
 
     if (props.repositoryName) {

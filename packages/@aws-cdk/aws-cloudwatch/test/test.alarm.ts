@@ -1,4 +1,4 @@
-import { ABSENT, expect, haveResource } from '@aws-cdk/assert';
+import { ABSENT, expect, haveResource } from '@aws-cdk/assert-internal';
 import { Duration, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { Test } from 'nodeunit';

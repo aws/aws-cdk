@@ -1,9 +1,8 @@
 {
     "compilerOptions": {
-        "target":"es2018",
-        "lib": ["es2016", "es2017.object", "es2017.string"],
-        "module": "commonjs",
-        "composite": true,
+        "target":"ES2018",
+        "lib": ["es2018"],
+        "module": "CommonJS",
         "declaration": true,
         "strict": true,
         "noImplicitAny": true,
@@ -17,14 +16,13 @@
         "inlineSourceMap": true,
         "inlineSources": true,
         "strictPropertyInitialization": false,
-        "experimentalDecorators": true
+        "experimentalDecorators": true,
+        "composite": true,
+        "incremental": true
     },
     "include": ["**/*.ts" ],
     "exclude": ["node_modules"],
     "references": [
-        { "path": "../core" },
-        { "path": "../cx-api" },
-        { "path": "../cfnspec" },
-        { "path": "../cloudformation-diff" }
+        { "path": "../../@aws-cdk/cloudformation-diff" }
     ]
 }

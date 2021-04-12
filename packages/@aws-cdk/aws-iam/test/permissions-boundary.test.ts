@@ -1,5 +1,5 @@
-import { ABSENT } from '@aws-cdk/assert';
-import '@aws-cdk/assert/jest';
+import { ABSENT } from '@aws-cdk/assert-internal';
+import '@aws-cdk/assert-internal/jest';
 import { App, Stack } from '@aws-cdk/core';
 import * as iam from '../lib';
 

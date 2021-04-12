@@ -148,7 +148,7 @@ export class Bundling implements cdk.BundlingOptions {
       ...this.props.sourceMap ? ['--sourcemap'] : [],
       ...this.externals.map(external => `--external:${external}`),
       ...loaders.map(([ext, name]) => `--loader:${ext}=${name}`),
-      ...defines.map(([key, value]) => `--define:${key}=${value}`),
+      ...defines.map(([key, value]) => `--define:${key}=${JSON.stringify(value)}`),
       ...this.props.logLevel ? [`--log-level=${this.props.logLevel}`] : [],
       ...this.props.keepNames ? ['--keep-names'] : [],
       ...this.relativeTsconfigPath ? [`--tsconfig=${pathJoin(inputDir, this.relativeTsconfigPath)}`] : [],

@@ -1,4 +1,4 @@
-import { ABSENT, expect, haveResourceLike, ResourcePart } from '@aws-cdk/assert';
+import { ABSENT, expect, haveResourceLike, ResourcePart } from '@aws-cdk/assert-internal';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as s3 from '@aws-cdk/aws-s3';

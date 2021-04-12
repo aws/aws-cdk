@@ -1,4 +1,4 @@
-import { expect as expectStack, haveResource } from '@aws-cdk/assert';
+import { expect as expectStack, haveResource } from '@aws-cdk/assert-internal';
 import * as apigwv2 from '@aws-cdk/aws-apigatewayv2';
 import * as acm from '@aws-cdk/aws-certificatemanager';
 import * as route53 from '@aws-cdk/aws-route53';

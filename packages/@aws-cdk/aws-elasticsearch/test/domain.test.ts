@@ -1,6 +1,6 @@
 /* eslint-disable jest/expect-expect */
-import '@aws-cdk/assert/jest';
-import * as assert from '@aws-cdk/assert';
+import '@aws-cdk/assert-internal/jest';
+import * as assert from '@aws-cdk/assert-internal';
 import * as acm from '@aws-cdk/aws-certificatemanager';
 import { Metric, Statistic } from '@aws-cdk/aws-cloudwatch';
 import { Vpc, EbsDeviceVolumeType, SecurityGroup } from '@aws-cdk/aws-ec2';

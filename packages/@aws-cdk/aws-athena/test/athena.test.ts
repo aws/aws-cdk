@@ -1,5 +1,5 @@
-import '@aws-cdk/assert/jest';
-import { expect, haveResource } from '@aws-cdk/assert';
+import '@aws-cdk/assert-internal/jest';
+import { expect, haveResource } from '@aws-cdk/assert-internal';
 import * as cdk from '@aws-cdk/core';
 import { CfnWorkGroup } from '../lib';
 

@@ -1,5 +1,5 @@
-import * as yaml_cfn from '@aws-cdk/yaml-cfn';
 import * as fs from 'fs-extra';
+import * as yaml_cfn from './util/yaml-cfn';
 
 /**
  * Stringify to YAML

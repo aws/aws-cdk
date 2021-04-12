@@ -672,13 +672,13 @@ Alternatively, existing security groups can be used by specifying the `securityG
 
 ### VPC endpoint services
 
-A VPC endpoint service enables you to expose a Network Load Balancer(s) as a provider service to consumers, who connect to your service over a VPC endpoint. You can restrict access to your service via whitelisted principals (anything that extends ArnPrincipal), and require that new connections be manually accepted.
+A VPC endpoint service enables you to expose a Network Load Balancer(s) as a provider service to consumers, who connect to your service over a VPC endpoint. You can restrict access to your service via allowed principals (anything that extends ArnPrincipal), and require that new connections be manually accepted.
 
 ```ts
 new VpcEndpointService(this, 'EndpointService', {
   vpcEndpointServiceLoadBalancers: [networkLoadBalancer1, networkLoadBalancer2],
   acceptanceRequired: true,
-  whitelistedPrincipals: [new ArnPrincipal('arn:aws:iam::123456789012:root')]
+  allowedPrincipals: [new ArnPrincipal('arn:aws:iam::123456789012:root')]
 });
 ```
 
@@ -1108,7 +1108,7 @@ new ec2.LaunchTemplate(stack, '', {
 });
 ```
 
-For more information see 
+For more information see
 [Specifying Multiple User Data Blocks Using a MIME Multi Part Archive](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/bootstrap_container_instance.html#multi-part_user_data)
 
 
