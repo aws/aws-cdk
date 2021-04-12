@@ -391,6 +391,7 @@ export class Cluster extends ClusterBase {
 
   public readonly clusterArn: string;
   public readonly clusterName: string;
+  /** Key used to encrypt SASL/SCRAM users */
   public readonly saslScramAuthenticationKey?: kms.IKey;
 
   constructor(scope: constructs.Construct, id: string, props: ClusterProps) {

@@ -35,7 +35,8 @@ const cluster = new Cluster(this, 'Cluster', {
 });
 ```
 
-#### Allowing Connections
+## Allowing Connections
+
 To control who can access the Cluster, use the `.connections` attribute. ZooKeeper can be accessed on port `2181`, and the broker nodes on either port `9094` when using TLS or `9092` without TLS.
 
 ```typescript
@@ -54,22 +55,28 @@ cluster.connections.allowFrom(
 )
 ```
 
-#### Cluster Endpoints
+## Cluster Endpoints
+
 To get a list of the Kafka broker or ZooKeeper endpoints you can use the attributes `.bootstrapBrokers`, `.bootstrapBrokersTls`, and `.zookeeperConnectionString`.
+
 ```typescript
 const zookeeper = cluster.zookeeperConnectionString
 const bootstrapBrokers = cluster.bootstrapBrokers
 const bootsrapBrokersTls = cluster.bootstrapBrokersTls
 ```
 
-#### Importing an existing Cluster
+## Importing an existing Cluster
+
 To import an existing MSK cluster into your CDK app use the `.fromClusterArn()` method.
+
 ```typescript
 const cluster = msk.Cluster.fromClusterArn(this, 'Cluster', 'rn:aws:kafka:us-west-2:1234567890:cluster/a-cluster/11111111-1111-1111-1111-111111111111-1')
 ```
 
-#### Client Authentication
+## Client Authentication
+
 To enable client authentication with TLS set the `certificateAuthorityArns` property to reference your ACM Private CA. [More info on Private CAs.](https://docs.aws.amazon.com/msk/latest/developerguide/msk-authentication.html)
+
 ```typescript
 import * as msk from "@aws-cdk/aws-msk"
 
