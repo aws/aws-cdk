@@ -444,5 +444,39 @@ describe('MSK Cluster', () => {
     // THEN
     expect(SynthUtils.toCloudFormation(stack)).toMatchSnapshot();
   });
+
+  describe('when creating sasl/scram users', () => {
+    test('fails if sasl/scram not enabled', () => {
+      const cluster = new msk.Cluster(stack, 'Cluster', {
+        clusterName: 'cluster',
+        vpc,
+      });
+
+      cluster.addUser('my-user');
+
+      const synthedStack = SynthUtils.synthesize(stack);
+      const meta = synthedStack.findMetadataByType('aws:cdk:error');
+      expect(meta[0].data).toEqual(
+        'Cannot create users if an authentication KMS key has not been created/provided.',
+      );
+    });
+
+    test('creates a secret with the secret name prefixed with AmazonMSK_', () => {
+      const cluster = new msk.Cluster(stack, 'Cluster', {
+        clusterName: 'cluster',
+        vpc,
+        clientAuthentication: msk.ClientAuthentication.sasl({
+          scram: true,
+        }),
+      });
+
+      const username = 'my-user';
+      cluster.addUser(username);
+
+      expect(stack).toHaveResourceLike('AWS::SecretsManager::Secret', {
+        'Name': `AmazonMSK_${username}`,
+      });
+    });
+  });
 });
 
