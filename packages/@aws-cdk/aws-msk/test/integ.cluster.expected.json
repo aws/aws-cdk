@@ -400,7 +400,7 @@
         },
         "ClusterName": "integ-test",
         "KafkaVersion": "2.2.1",
-        "NumberOfBrokerNodes": 1,
+        "NumberOfBrokerNodes": 2,
         "EncryptionInfo": {
           "EncryptionInTransit": {
             "ClientBroker": "TLS",

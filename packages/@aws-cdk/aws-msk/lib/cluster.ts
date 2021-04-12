@@ -573,7 +573,7 @@ export class Cluster extends ClusterBase {
       kafkaVersion:
         props.kafkaVersion?.version ?? KafkaVersion.V2_2_1.version,
       numberOfBrokerNodes:
-        props.numberOfBrokerNodes !== undefined ? props.numberOfBrokerNodes : 1,
+        props.numberOfBrokerNodes !== undefined ? subnetSelection.availabilityZones.length * props.numberOfBrokerNodes : subnetSelection.availabilityZones.length,
       brokerNodeGroupInfo: {
         instanceType,
         clientSubnets: subnetSelection.subnetIds,
