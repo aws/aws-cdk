@@ -62,7 +62,7 @@ export async function isCompleteHandler(event: IsCompleteRequest): Promise<IsCom
     case 'Create':
     case 'Update':
     case 'Delete':
-      if (await tableWillBeRemoved(event)) {
+      if (event.RequestType === 'Delete' && await tableWillBeRemoved(event)) {
         // There is nothing to delete, as time to live is connected to the table
         return { IsComplete: true };
       }
