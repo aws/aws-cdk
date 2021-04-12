@@ -393,6 +393,8 @@ export class Cluster extends ClusterBase {
   public readonly clusterName: string;
   /** Key used to encrypt SASL/SCRAM users */
   public readonly saslScramAuthenticationKey?: kms.IKey;
+  private _clusterDescription?: cr.AwsCustomResource;
+  private _clusterBootstrapBrokers?: cr.AwsCustomResource;
 
   constructor(scope: constructs.Construct, id: string, props: ClusterProps) {
     super(scope, id, {
@@ -618,24 +620,24 @@ export class Cluster extends ClusterBase {
    * @returns - The connection string to use to connect to the Apache ZooKeeper cluster.
    */
   private _zookeeperConnectionString(responseField: string): string {
-    return core.Lazy.stringValue({
-      produce: () =>
-        new cr.AwsCustomResource(this, `ZookeeperConnect${responseField}`, {
-          onUpdate: {
-            service: 'Kafka',
-            action: 'describeCluster',
-            parameters: {
-              ClusterArn: this.clusterArn,
-            },
-            physicalResourceId: cr.PhysicalResourceId.of(
-              'ZooKeeperConnectionString',
-            ),
+    if (!this._clusterDescription) {
+      this._clusterDescription = new cr.AwsCustomResource(this, 'ZookeeperConnect', {
+        onUpdate: {
+          service: 'Kafka',
+          action: 'describeCluster',
+          parameters: {
+            ClusterArn: this.clusterArn,
           },
-          policy: cr.AwsCustomResourcePolicy.fromSdkCalls({
-            resources: [this.clusterArn],
-          }),
-        }).getResponseField(`ClusterInfo.${responseField}`),
-    });
+          physicalResourceId: cr.PhysicalResourceId.of(
+            'ZooKeeperConnectionString',
+          ),
+        },
+        policy: cr.AwsCustomResourcePolicy.fromSdkCalls({
+          resources: [this.clusterArn],
+        }),
+      });
+    }
+    return this._clusterDescription.getResponseField(`ClusterInfo.${responseField}`);
   }
 
   /**
@@ -669,22 +671,23 @@ export class Cluster extends ClusterBase {
    * @returns - A string containing one or more hostname:port pairs.
    */
   private _bootstrapBrokers(responseField: string): string {
-    return core.Lazy.stringValue({
-      produce: () =>
-        new cr.AwsCustomResource(this, `BootstrapBrokers${responseField}`, {
-          onUpdate: {
-            service: 'Kafka',
-            action: 'getBootstrapBrokers',
-            parameters: {
-              ClusterArn: this.clusterArn,
-            },
-            physicalResourceId: cr.PhysicalResourceId.of('BootstrapBrokers'),
+    if (!this._clusterBootstrapBrokers) {
+      this._clusterBootstrapBrokers = new cr.AwsCustomResource(this, `BootstrapBrokers${responseField}`, {
+        onUpdate: {
+          service: 'Kafka',
+          action: 'getBootstrapBrokers',
+          parameters: {
+            ClusterArn: this.clusterArn,
           },
-          policy: cr.AwsCustomResourcePolicy.fromSdkCalls({
-            resources: [this.clusterArn],
-          }),
-        }).getResponseField(responseField),
-    });
+          physicalResourceId: cr.PhysicalResourceId.of('BootstrapBrokers'),
+        },
+        policy: cr.AwsCustomResourcePolicy.fromSdkCalls({
+          resources: [this.clusterArn],
+        }),
+      });
+    }
+    return this._clusterBootstrapBrokers.getResponseField(responseField);
+
   }
   /**
    * Get the list of brokers that a client application can use to bootstrap
