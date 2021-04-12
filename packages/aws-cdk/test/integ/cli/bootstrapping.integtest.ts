@@ -30,7 +30,11 @@ integTest('upgrade legacy bootstrap stack to new bootstrap stack while in use', 
   // Legacy bootstrap
   await fixture.cdk(['bootstrap',
     '--toolkit-stack-name', bootstrapStackName,
-    '--bootstrap-bucket-name', legacyBootstrapBucketName]);
+    '--bootstrap-bucket-name', legacyBootstrapBucketName], {
+    modEnv: {
+      CDK_LEGACY_BOOTSTRAP: '1',
+    },
+  });
 
   // Deploy stack that uses file assets
   await fixture.cdkDeploy('lambda', {
