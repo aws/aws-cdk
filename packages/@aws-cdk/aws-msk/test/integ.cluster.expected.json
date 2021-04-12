@@ -399,7 +399,7 @@
           }
         },
         "ClusterName": "integ-test",
-        "KafkaVersion": "2.2.1",
+        "KafkaVersion": "2.6.1",
         "NumberOfBrokerNodes": 2,
         "EncryptionInfo": {
           "EncryptionInTransit": {

@@ -33,7 +33,7 @@ describe('MSK Cluster', () => {
       ResourcePart.CompleteDefinition,
     );
     expect(stack).toHaveResourceLike('AWS::MSK::Cluster', {
-      KafkaVersion: '2.2.1',
+      KafkaVersion: '2.6.1',
     });
     expect(stack).toHaveResourceLike('AWS::MSK::Cluster', {
       EncryptionInfo: {

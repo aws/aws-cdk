@@ -58,7 +58,7 @@ export interface ClusterProps {
   /**
    * The version of Apache Kafka.
    *
-   * @default - 2.2.1
+   * @default - 2.6.1
    */
   readonly kafkaVersion?: KafkaVersion;
   /**
@@ -571,7 +571,7 @@ export class Cluster extends ClusterBase {
     const resource = new CfnCluster(this, 'Resource', {
       clusterName: props.clusterName,
       kafkaVersion:
-        props.kafkaVersion?.version ?? KafkaVersion.V2_2_1.version,
+        props.kafkaVersion?.version ?? KafkaVersion.V2_6_1.version,
       numberOfBrokerNodes:
         props.numberOfBrokerNodes !== undefined ? subnetSelection.availabilityZones.length * props.numberOfBrokerNodes : subnetSelection.availabilityZones.length,
       brokerNodeGroupInfo: {
