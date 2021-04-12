@@ -1545,9 +1545,17 @@ export class Table extends TableBase {
     const provider = TimeToLiveProvider.getOrCreate(this);
 
     // Permissions
-    const permissions = ['dynamodb:DescribeTable', 'dynamodb:DescribeTimeToLive', 'dynamodb:UpdateTimeToLive'];
-    this.grant(provider.onEventHandler, ...permissions);
-    this.grant(provider.isCompleteHandler, ...permissions);
+    const tablePermissions = ['dynamodb:DescribeTable', 'dynamodb:DescribeTimeToLive', 'dynamodb:UpdateTimeToLive'];
+    const cloudFormationPermissions = ['cloudformation:DescribeStacks', 'cloudformation:DescribeChangeSet'];
+
+    [provider.onEventHandler, provider.isCompleteHandler].forEach((handler) => {
+      this.grant(handler, ...tablePermissions);
+      iam.Grant.addToPrincipal({
+        grantee: handler,
+        actions: cloudFormationPermissions,
+        resourceArns: [Stack.of(this).stackId],
+      });
+    });
 
     new CustomResource(this, 'TimeToLive', {
       serviceToken: provider.provider.serviceToken,
