@@ -1,4 +1,4 @@
-import { expect, haveResourceLike, SynthUtils } from '@aws-cdk/assert';
+import { expect, haveResourceLike, SynthUtils } from '@aws-cdk/assert-internal';
 import * as cdk from '@aws-cdk/core';
 import { nodeunitShim, Test } from 'nodeunit-shim';
 import * as codepipeline from '../lib';

@@ -10,7 +10,7 @@
     "watch": "cdk-watch",
     "lint": "cdk-lint",
     "test": "cdk-test",
-    "pkglint": "pkglint -f",
+    "pkglint": "true",
     "package": "cdk-package",
     "build+test+package": "yarn build+test && yarn package",
     "build+test": "yarn build && yarn test"
@@ -38,8 +38,8 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@monocdk-experiment/rewrite-imports": "0.0.0",
-    "@types/jest": "^26.0.21",
-    "@types/node": "^10.17.55",
+    "@types/jest": "^26.0.22",
+    "@types/node": "^10.17.56",
     "cdk-build-tools": "0.0.0",
     "constructs": "^10.0.0",
     "jest": "^26.6.3",

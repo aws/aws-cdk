@@ -11,7 +11,7 @@ import { toSymlinkFollow } from './compat';
 // eslint-disable-next-line no-duplicate-imports, import/order
 import { CopyOptions } from '@aws-cdk/assets';
 
-export interface AssetOptions extends CopyOptions, cdk.AssetOptions {
+export interface AssetOptions extends CopyOptions, cdk.FileCopyOptions, cdk.AssetOptions {
   /**
    * A list of principals that should be able to read this asset from S3.
    * You can use `asset.grantRead(principal)` to grant read permissions later.
@@ -124,7 +124,7 @@ export class Asset extends Construct implements cdk.IAsset {
     const staging = new cdk.AssetStaging(this, 'Stage', {
       ...props,
       sourcePath: path.resolve(props.path),
-      follow: toSymlinkFollow(props.follow),
+      follow: props.followSymlinks ?? toSymlinkFollow(props.follow),
       assetHash: props.assetHash ?? props.sourceHash,
     });
 

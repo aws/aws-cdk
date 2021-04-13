@@ -63,13 +63,13 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "0.0.0",
     "@aws-cdk/aws-ec2": "0.0.0",
     "cdk-build-tools": "0.0.0",
     "cdk-integ-tools": "0.0.0",
     "delay": "5.0.0",
-    "esbuild": "^0.9.6",
-    "pkglint": "0.0.0"
+    "esbuild": "^0.11.6",
+    "pkglint": "0.0.0",
+    "@aws-cdk/assert-internal": "0.0.0"
   },
   "dependencies": {
     "@aws-cdk/aws-lambda": "0.0.0",
@@ -85,8 +85,8 @@
   "engines": {
     "node": ">= 10.13.0 <13 || >=13.7.0"
   },
-  "stability": "experimental",
-  "maturity": "experimental",
+  "stability": "stable",
+  "maturity": "stable",
   "awscdkio": {
     "announce": false
   },

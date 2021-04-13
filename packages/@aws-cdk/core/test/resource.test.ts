@@ -4,7 +4,7 @@ import { nodeunitShim, Test } from 'nodeunit-shim';
 import {
   App, App as Root, CfnCondition,
   CfnDeletionPolicy, CfnResource,
-  Fn, RemovalPolicy, Stack,
+  Fn, RemovalPolicy, Resource, Stack,
 } from '../lib';
 import { synthesize } from '../lib/private/synthesis';
 import { toCloudFormation } from './util';
@@ -819,6 +819,19 @@ nodeunitShim({
   },
 });
 
+test('Resource can get account and Region from ARN', () => {
+  const stack = new Stack();
+
+  // WHEN
+  const resource = new TestResource(stack, 'Resource', {
+    environmentFromArn: 'arn:partition:service:region:account:relative-id',
+  });
+
+  // THEN
+  expect(resource.env.account).toEqual('account');
+  expect(resource.env.region).toEqual('region');
+});
+
 interface CounterProps {
   Count: number;
 }
@@ -888,3 +901,8 @@ class CustomizableResource extends CfnResource {
     return cleanProps;
   }
 }
+
+/**
+ * Because Resource is abstract
+ */
+class TestResource extends Resource {}
