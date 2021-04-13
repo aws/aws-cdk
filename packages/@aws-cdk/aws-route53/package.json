@@ -71,7 +71,6 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "0.0.0",
     "@types/nodeunit": "^0.0.31",
     "aws-sdk": "^2.848.0",
     "cdk-build-tools": "0.0.0",
@@ -79,7 +78,8 @@
     "cfn2ts": "0.0.0",
     "jest": "^26.6.3",
     "nodeunit-shim": "0.0.0",
-    "pkglint": "0.0.0"
+    "pkglint": "0.0.0",
+    "@aws-cdk/assert-internal": "0.0.0"
   },
   "dependencies": {
     "@aws-cdk/aws-ec2": "0.0.0",
@@ -112,6 +112,7 @@
       "props-physical-name:@aws-cdk/aws-route53.CnameRecordProps",
       "props-physical-name:@aws-cdk/aws-route53.HostedZoneProps",
       "props-physical-name:@aws-cdk/aws-route53.MxRecordProps",
+      "props-physical-name:@aws-cdk/aws-route53.NsRecordProps",
       "props-physical-name:@aws-cdk/aws-route53.PrivateHostedZoneProps",
       "props-physical-name:@aws-cdk/aws-route53.PublicHostedZoneProps",
       "props-physical-name:@aws-cdk/aws-route53.RecordSetProps",

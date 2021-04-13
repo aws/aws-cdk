@@ -2,6 +2,54 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.98.0](https://github.com/aws/aws-cdk/compare/v1.97.0...v1.98.0) (2021-04-12)
+
+
+### Features
+
+* **codepipeline-actions:** introduce the CodeStarConnectionsSourceAction ([#13781](https://github.com/aws/aws-cdk/issues/13781)) ([8782e67](https://github.com/aws/aws-cdk/commit/8782e672d6a8f8bbe201f2572c4b0fca7589168d)), closes [#10632](https://github.com/aws/aws-cdk/issues/10632)
+* **efs:** graduate to stable 🚀 ([#14033](https://github.com/aws/aws-cdk/issues/14033)) ([3c03d87](https://github.com/aws/aws-cdk/commit/3c03d878dd81454628545b1529691ac083862247))
+* **elasticloadbalancingv2:** add grpc code matcher for alb ([#13948](https://github.com/aws/aws-cdk/issues/13948)) ([a37f178](https://github.com/aws/aws-cdk/commit/a37f178b52a91d43b237013d7cb42c44c1774307)), closes [#13570](https://github.com/aws/aws-cdk/issues/13570) [#13947](https://github.com/aws/aws-cdk/issues/13947)
+* **region-info:** graduate to stable 🚀  ([#14013](https://github.com/aws/aws-cdk/issues/14013)) ([0d2755b](https://github.com/aws/aws-cdk/commit/0d2755b97486e4222d1f3b020b8126fefeda20d0))
+* **route-53:** add ability to create NS Records ([#13895](https://github.com/aws/aws-cdk/issues/13895)) ([02c7c1d](https://github.com/aws/aws-cdk/commit/02c7c1d9aab6ed8f806052d3102a037e112b8786)), closes [#13816](https://github.com/aws/aws-cdk/issues/13816)
+
+
+### Bug Fixes
+
+* **apigateway:** cannot remove first api key from usage plan ([#13817](https://github.com/aws/aws-cdk/issues/13817)) ([036d869](https://github.com/aws/aws-cdk/commit/036d869dc1382d3fb2d8541f5adf534ea3424667)), closes [#11876](https://github.com/aws/aws-cdk/issues/11876)
+* **cloudfront:** cannot use same EdgeFunction in multiple stacks ([#13790](https://github.com/aws/aws-cdk/issues/13790)) ([8e2325c](https://github.com/aws/aws-cdk/commit/8e2325cfb7dc5377755b561532b6c81caebc688f))
+* **lambda-nodejs:** esbuild define parameters are incorrectly encoded ([#14065](https://github.com/aws/aws-cdk/issues/14065)) ([5378a77](https://github.com/aws/aws-cdk/commit/5378a7770d5897737ecf4da25d47747c2bbddd94)), closes [#13842](https://github.com/aws/aws-cdk/issues/13842)
+* **rds:** deploy fails with "SubnetGroup not found" ([#13986](https://github.com/aws/aws-cdk/issues/13986)) ([ad326da](https://github.com/aws/aws-cdk/commit/ad326da3ae392b78dcfc349f246acdf3a389f283)), closes [#13976](https://github.com/aws/aws-cdk/issues/13976)
+* **route53:** cannot set TTL to 0 ([#14060](https://github.com/aws/aws-cdk/issues/14060)) ([ecc9bf3](https://github.com/aws/aws-cdk/commit/ecc9bf386ca088ca82a332c649f13613b9793628)), closes [#14039](https://github.com/aws/aws-cdk/issues/14039)
+* **s3:** SSL enforcement doesn't apply on top level bucket requests ([#13961](https://github.com/aws/aws-cdk/issues/13961)) ([d0e831a](https://github.com/aws/aws-cdk/commit/d0e831a2f2b60eae021d10a77d1d636615b0cf04)), closes [#13760](https://github.com/aws/aws-cdk/issues/13760)
+* **stepfunctions:** state machine name validation fails when tokens are used. ([#13970](https://github.com/aws/aws-cdk/issues/13970)) ([58de0de](https://github.com/aws/aws-cdk/commit/58de0de5a54b9d8fb4658566e85ef408c8861088)), closes [#13946](https://github.com/aws/aws-cdk/issues/13946) [#13912](https://github.com/aws/aws-cdk/issues/13912)
+
+## [1.97.0](https://github.com/aws/aws-cdk/compare/v1.96.0...v1.97.0) (2021-04-06)
+
+
+### ⚠ BREAKING CHANGES TO EXPERIMENTAL FEATURES
+
+* **elasticsearch:** `vpcOptions` was removed. Use `vpc`, `vpcSubnets` and `securityGroups` instead.
+
+### Features
+
+* **appmesh:** Implement Outlier Detection for Virtual Nodes ([#13952](https://github.com/aws/aws-cdk/issues/13952)) ([965f130](https://github.com/aws/aws-cdk/commit/965f130dbfc4e1943d384b9fbf5acdf3b547fd57))
+* **cx-api:** graduate to stable 🚀  ([#13859](https://github.com/aws/aws-cdk/issues/13859)) ([d99e13d](https://github.com/aws/aws-cdk/commit/d99e13d523ddacf9e13f6b5169d86d5a20569475))
+* **eks:** Support `secretsEncryptionKey` in FargateCluster ([#13866](https://github.com/aws/aws-cdk/issues/13866)) ([56c6f98](https://github.com/aws/aws-cdk/commit/56c6f98dbcfc98740446f699a8985d7d6b44c503))
+* **eks:** Support bootstrap.sh --dns-cluster-ip arg ([#13890](https://github.com/aws/aws-cdk/issues/13890)) ([56cd863](https://github.com/aws/aws-cdk/commit/56cd8635f77d6a5aefb32c6e1224e1f0a6ca3540))
+* **elasticsearch:** graduate to stable 🚀 ([#13900](https://github.com/aws/aws-cdk/issues/13900)) ([767cd31](https://github.com/aws/aws-cdk/commit/767cd31c2b66b48b3b8fed7cd8d408a6846cf1e1))
+* **s3-deployment:** graduate to stable 🚀 ([#13906](https://github.com/aws/aws-cdk/issues/13906)) ([567d64d](https://github.com/aws/aws-cdk/commit/567d64d70f92adbba9ff9981184d88b46fb95652))
+* **ses:** graduate to stable 🚀 ([#13913](https://github.com/aws/aws-cdk/issues/13913)) ([4f9a715](https://github.com/aws/aws-cdk/commit/4f9a7151b99e8455eeb8b0cd364dfd29624da8c5))
+* **ses-actions:** graduate to stable 🚀  ([#13864](https://github.com/aws/aws-cdk/issues/13864)) ([24f8307](https://github.com/aws/aws-cdk/commit/24f8307b7f9013c5ba909cab8c4a3a3bcdf0041c))
+
+
+### Bug Fixes
+
+* **aws-rds:** ServerlessCluster.clusterArn is not correct when clusterIdentifier includes upper cases string. ([#13710](https://github.com/aws/aws-cdk/issues/13710)) ([a8f5b6c](https://github.com/aws/aws-cdk/commit/a8f5b6c54371fe966172a9fb36135bfdc4a01b11)), closes [#12795](https://github.com/aws/aws-cdk/issues/12795)
+* **cli:** broken java init template ([#13988](https://github.com/aws/aws-cdk/issues/13988)) ([c6ca2ab](https://github.com/aws/aws-cdk/commit/c6ca2aba915ea4f89e3044b7f388acda231e295d)), closes [#13964](https://github.com/aws/aws-cdk/issues/13964)
+* **cloudfront:** Cache Policy headers enforce soft limit of 10 ([#13904](https://github.com/aws/aws-cdk/issues/13904)) ([8a66244](https://github.com/aws/aws-cdk/commit/8a6624477854af17f5ad163fac9be1fd6168cfc4)), closes [#13425](https://github.com/aws/aws-cdk/issues/13425) [#13903](https://github.com/aws/aws-cdk/issues/13903)
+* **codepipeline-actions:** EcrSourceAction triggers on a push to every tag ([#13822](https://github.com/aws/aws-cdk/issues/13822)) ([c5a2add](https://github.com/aws/aws-cdk/commit/c5a2addcd87ebb810dcac54c659fa60786f9d345)), closes [#13818](https://github.com/aws/aws-cdk/issues/13818)
+
 ## [1.96.0](https://github.com/aws/aws-cdk/compare/v1.95.2...v1.96.0) (2021-04-01)
 
 
