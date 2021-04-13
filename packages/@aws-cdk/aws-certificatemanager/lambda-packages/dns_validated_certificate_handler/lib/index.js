@@ -100,8 +100,7 @@ const requestCertificate = async function (requestId, domainName, subjectAlterna
 
 
   if (!!tags) {
-    const map = new Map(Object.entries(tags));
-    const result = Array.from(map).map(([Key, Value]) => ({ Key, Value }))
+    const result = Array.from(Object.entries(tags)).map(([Key, Value]) => ({ Key, Value }))
 
     await acm.addTagsToCertificate({
       CertificateArn: reqCertResponse.CertificateArn,

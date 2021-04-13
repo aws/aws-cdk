@@ -527,6 +527,89 @@ describe('DNS Validated Certificate Handler', () => {
       });
   });
 
+  test('Create operation succeeds with no tags passed', () => {
+    const requestCertificateFake = sinon.fake.resolves({
+      CertificateArn: testCertificateArn,
+    });
+
+    const describeCertificateFake = sinon.stub();
+    describeCertificateFake.onFirstCall().resolves({
+      Certificate: {
+        CertificateArn: testCertificateArn
+      }
+    });
+    describeCertificateFake.resolves({
+      Certificate: {
+        CertificateArn: testCertificateArn,
+        DomainValidationOptions: [{
+          ValidationStatus: 'SUCCESS',
+          ResourceRecord: {
+            Name: testRRName,
+            Type: 'CNAME',
+            Value: testRRValue
+          }
+        }]
+      }
+    });
+
+    const changeResourceRecordSetsFake = sinon.fake.resolves({
+      ChangeInfo: {
+        Id: 'bogus'
+      }
+    });
+
+    const addTagsToCertificateFake = sinon.fake.resolves({
+      Certificate: testCertificateArn,
+    });
+
+    AWS.mock('ACM', 'requestCertificate', requestCertificateFake);
+    AWS.mock('ACM', 'describeCertificate', describeCertificateFake);
+    AWS.mock('Route53', 'changeResourceRecordSets', changeResourceRecordSetsFake);
+    AWS.mock('ACM', 'addTagsToCertificate', addTagsToCertificateFake);
+
+    const request = nock(ResponseURL).put('/', body => {
+      return body.Status === 'SUCCESS';
+    }).reply(200);
+
+    return LambdaTester(handler.certificateRequestHandler)
+      .event({
+        RequestType: 'Create',
+        RequestId: testRequestId,
+        ResourceProperties: {
+          DomainName: testDomainName,
+          HostedZoneId: testHostedZoneId,
+          Region: 'us-east-1'
+        }
+      })
+      .expectResolve(() => {
+        sinon.assert.calledWith(requestCertificateFake, sinon.match({
+          DomainName: testDomainName,
+          ValidationMethod: 'DNS'
+        }));
+        sinon.assert.calledWith(changeResourceRecordSetsFake, sinon.match({
+          ChangeBatch: {
+            Changes: [{
+              Action: 'UPSERT',
+              ResourceRecordSet: {
+                Name: testRRName,
+                Type: 'CNAME',
+                TTL: 60,
+                ResourceRecords: [{
+                  Value: testRRValue
+                }]
+              }
+            }]
+          },
+          HostedZoneId: testHostedZoneId
+        }));
+        sinon.assert.neverCalledWith(addTagsToCertificateFake, sinon.match({
+          "CertificateArn": testCertificateArn,
+          "Tags": testTagsValue,
+        }));
+        expect(request.isDone()).toBe(true);
+      });
+  });
+
   test('Delete operation deletes the certificate', () => {
     const describeCertificateFake = sinon.fake.resolves({
       Certificate: {

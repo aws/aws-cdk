@@ -47,7 +47,6 @@ export interface DnsValidatedCertificateProps extends CertificateProps {
    */
   readonly customResourceRole?: iam.IRole;
 
-
 }
 
 /**
@@ -61,9 +60,9 @@ export class DnsValidatedCertificate extends cdk.Resource implements ICertificat
   public readonly certificateArn: string;
 
   /**
- * Resource Tags.
- * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-certificatemanager-certificate.html#cfn-certificatemanager-certificate-tags
- */
+  * Resource Tags.
+  * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-certificatemanager-certificate.html#cfn-certificatemanager-certificate-tags
+  */
 
   public readonly tags: cdk.TagManager;
   private normalizedZoneName: string;
