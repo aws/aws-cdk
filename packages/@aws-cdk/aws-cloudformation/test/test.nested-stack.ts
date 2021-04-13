@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { expect, haveResource, matchTemplate, SynthUtils } from '@aws-cdk/assert';
+import { expect, haveResource, matchTemplate, SynthUtils } from '@aws-cdk/assert-internal';
 import * as s3_assets from '@aws-cdk/aws-s3-assets';
 import * as sns from '@aws-cdk/aws-sns';
 import { App, CfnParameter, CfnResource, ContextProvider, LegacyStackSynthesizer, Names, Stack } from '@aws-cdk/core';

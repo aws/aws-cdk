@@ -32,8 +32,7 @@
   "cdk-build": {
     "eslint": {
       "disable": true
-    },
-    "stripDeprecated": true
+    }
   },
   "pkglint": {
     "exclude": [
@@ -188,6 +187,7 @@
     "@aws-cdk/aws-fsx": "0.0.0",
     "@aws-cdk/aws-gamelift": "0.0.0",
     "@aws-cdk/aws-globalaccelerator": "0.0.0",
+    "@aws-cdk/aws-globalaccelerator-endpoints": "0.0.0",
     "@aws-cdk/aws-glue": "0.0.0",
     "@aws-cdk/aws-greengrass": "0.0.0",
     "@aws-cdk/aws-greengrassv2": "0.0.0",
@@ -286,9 +286,8 @@
     "@aws-cdk/lambda-layer-kubectl": "0.0.0",
     "@aws-cdk/pipelines": "0.0.0",
     "@aws-cdk/region-info": "0.0.0",
-    "@aws-cdk/yaml-cfn": "0.0.0",
     "@types/fs-extra": "^8.1.1",
-    "@types/node": "^10.17.55",
+    "@types/node": "^10.17.56",
     "cdk-build-tools": "0.0.0",
     "constructs": "^10.0.0",
     "fs-extra": "^9.1.0",

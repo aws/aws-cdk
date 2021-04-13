@@ -1,4 +1,4 @@
-import '@aws-cdk/assert/jest';
+import '@aws-cdk/assert-internal/jest';
 import { UserPool, UserPoolDomain } from '@aws-cdk/aws-cognito';
 import { ARecord, PublicHostedZone, RecordTarget } from '@aws-cdk/aws-route53';
 import { Stack } from '@aws-cdk/core';

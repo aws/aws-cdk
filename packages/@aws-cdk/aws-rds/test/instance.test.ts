@@ -1,5 +1,5 @@
-import '@aws-cdk/assert/jest';
-import { ABSENT, ResourcePart, anything } from '@aws-cdk/assert';
+import '@aws-cdk/assert-internal/jest';
+import { ABSENT, ResourcePart, anything } from '@aws-cdk/assert-internal';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as targets from '@aws-cdk/aws-events-targets';
 import { ManagedPolicy, Role, ServicePrincipal, AccountPrincipal } from '@aws-cdk/aws-iam';
@@ -1279,6 +1279,52 @@ describe('instance', () => {
       PubliclyAccessible: true,
     });
   });
+
+  test('changes the case of the cluster identifier if the lowercaseDbIdentifier feature flag is enabled', () => {
+    // GIVEN
+    const app = new cdk.App({
+      context: { [cxapi.RDS_LOWERCASE_DB_IDENTIFIER]: true },
+    });
+    stack = new cdk.Stack( app );
+    vpc = new ec2.Vpc( stack, 'VPC' );
+
+    // WHEN
+    const instanceIdentifier = 'TestInstanceIdentifier';
+    new rds.DatabaseInstance( stack, 'DB', {
+      engine: rds.DatabaseInstanceEngine.mysql({
+        version: rds.MysqlEngineVersion.VER_8_0_19,
+      }),
+      vpc,
+      instanceIdentifier,
+    } );
+
+    // THEN
+    expect(stack).toHaveResource('AWS::RDS::DBInstance', {
+      DBInstanceIdentifier: instanceIdentifier.toLowerCase(),
+    });
+  });
+
+  test( 'does not changes the case of the cluster identifier if the lowercaseDbIdentifier feature flag is disabled', () => {
+    // GIVEN
+    stack = new cdk.Stack();
+    vpc = new ec2.Vpc( stack, 'VPC' );
+
+    // WHEN
+    const instanceIdentifier = 'TestInstanceIdentifier';
+    new rds.DatabaseInstance( stack, 'DB', {
+      engine: rds.DatabaseInstanceEngine.mysql({
+        version: rds.MysqlEngineVersion.VER_8_0_19,
+      }),
+      vpc,
+      instanceIdentifier,
+    } );
+
+    // THEN
+    expect(stack).toHaveResource('AWS::RDS::DBInstance', {
+      DBInstanceIdentifier: instanceIdentifier,
+    });
+  });
+
 });
 
 test.each([

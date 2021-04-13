@@ -1,4 +1,4 @@
-import { ABSENT, arrayWith, expect, haveResource, haveResourceLike, objectLike } from '@aws-cdk/assert';
+import { ABSENT, arrayWith, expect, haveResource, haveResourceLike, objectLike } from '@aws-cdk/assert-internal';
 import { Certificate } from '@aws-cdk/aws-certificatemanager';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecs from '@aws-cdk/aws-ecs';
@@ -1198,7 +1198,7 @@ export = {
   'NetworkLoadBalancedEC2Service accepts imported load balancer'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
-    const nlbArn = 'arn:aws:elasticloadbalancing::000000000000::dummyloadbalancer';
+    const nlbArn = 'arn:aws:elasticloadbalancing:us-west-2:123456789012:loadbalancer/app/my-load-balancer/50dc6c495c0c9188';
     const vpc = new ec2.Vpc(stack, 'Vpc');
     const cluster = new ecs.Cluster(stack, 'Cluster', { vpc, clusterName: 'MyCluster' });
     cluster.addCapacity('Capacity', { instanceType: new ec2.InstanceType('t2.micro') });
@@ -1274,7 +1274,7 @@ export = {
   'ApplicationLoadBalancedEC2Service accepts imported load balancer'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
-    const albArn = 'arn:aws:elasticloadbalancing::000000000000::dummyloadbalancer';
+    const albArn = 'arn:aws:elasticloadbalancing:us-west-2:123456789012:loadbalancer/app/my-load-balancer/50dc6c495c0c9188';
     const vpc = new ec2.Vpc(stack, 'Vpc');
     const cluster = new ecs.Cluster(stack, 'Cluster', { vpc, clusterName: 'MyCluster' });
     cluster.addCapacity('Capacity', { instanceType: new ec2.InstanceType('t2.micro') });

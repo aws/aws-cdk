@@ -72,7 +72,6 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "0.0.0",
     "@aws-cdk/aws-events-targets": "0.0.0",
     "@aws-cdk/aws-lambda": "0.0.0",
     "@aws-cdk/cx-api": "0.0.0",
@@ -80,7 +79,8 @@
     "cdk-integ-tools": "0.0.0",
     "cfn2ts": "0.0.0",
     "pkglint": "0.0.0",
-    "nodeunit-shim": "0.0.0"
+    "nodeunit-shim": "0.0.0",
+    "@aws-cdk/assert-internal": "0.0.0"
   },
   "dependencies": {
     "@aws-cdk/aws-cloudwatch": "0.0.0",
@@ -92,6 +92,7 @@
     "@aws-cdk/aws-s3": "0.0.0",
     "@aws-cdk/aws-secretsmanager": "0.0.0",
     "@aws-cdk/core": "0.0.0",
+    "@aws-cdk/cx-api": "0.0.0",
     "constructs": "^10.0.0"
   },
   "homepage": "https://github.com/aws/aws-cdk",
@@ -105,6 +106,7 @@
     "@aws-cdk/aws-secretsmanager": "0.0.0",
     "@aws-cdk/core": "0.0.0",
     "@aws-cdk/aws-s3": "0.0.0",
+    "@aws-cdk/cx-api": "0.0.0",
     "constructs": "^10.0.0"
   },
   "engines": {

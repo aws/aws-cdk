@@ -1,4 +1,4 @@
-import { expect, haveResourceLike } from '@aws-cdk/assert';
+import { expect, haveResourceLike } from '@aws-cdk/assert-internal';
 import * as acmpca from '@aws-cdk/aws-acmpca';
 import * as acm from '@aws-cdk/aws-certificatemanager';
 import * as cdk from '@aws-cdk/core';
@@ -247,6 +247,61 @@ export = {
                       Value: 10000,
                     },
                   },
+                },
+              },
+            ],
+          },
+        }));
+
+        test.done();
+      },
+    },
+
+    'when a listener is added with outlier detection with user defined props': {
+      'should add a listener  outlier detection to the resource'(test: Test) {
+        // GIVEN
+        const stack = new cdk.Stack();
+
+        // WHEN
+        const mesh = new appmesh.Mesh(stack, 'mesh', {
+          meshName: 'test-mesh',
+        });
+
+        const node = new appmesh.VirtualNode(stack, 'test-node', {
+          mesh,
+          serviceDiscovery: appmesh.ServiceDiscovery.dns('test'),
+        });
+
+        node.addListener(appmesh.VirtualNodeListener.tcp({
+          port: 80,
+          outlierDetection: {
+            baseEjectionDuration: cdk.Duration.seconds(10),
+            interval: cdk.Duration.seconds(30),
+            maxEjectionPercent: 50,
+            maxServerErrors: 5,
+          },
+        }));
+
+        // THEN
+        expect(stack).to(haveResourceLike('AWS::AppMesh::VirtualNode', {
+          Spec: {
+            Listeners: [
+              {
+                OutlierDetection: {
+                  BaseEjectionDuration: {
+                    Unit: 'ms',
+                    Value: 10000,
+                  },
+                  Interval: {
+                    Unit: 'ms',
+                    Value: 30000,
+                  },
+                  MaxEjectionPercent: 50,
+                  MaxServerErrors: 5,
+                },
+                PortMapping: {
+                  Port: 80,
+                  Protocol: 'tcp',
                 },
               },
             ],

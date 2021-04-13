@@ -1,6 +1,6 @@
-import '@aws-cdk/assert/jest';
+import '@aws-cdk/assert-internal/jest';
 import { EOL } from 'os';
-import { ResourcePart, SynthUtils, arrayWith, objectLike } from '@aws-cdk/assert';
+import { ResourcePart, SynthUtils, arrayWith, objectLike } from '@aws-cdk/assert-internal';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as cdk from '@aws-cdk/core';
@@ -307,20 +307,28 @@ describe('bucket', () => {
                   },
                   'Effect': 'Deny',
                   'Principal': '*',
-                  'Resource': {
-                    'Fn::Join': [
-                      '',
-                      [
-                        {
-                          'Fn::GetAtt': [
-                            'MyBucketF68F3FF0',
-                            'Arn',
-                          ],
-                        },
-                        '/*',
+                  'Resource': [
+                    {
+                      'Fn::GetAtt': [
+                        'MyBucketF68F3FF0',
+                        'Arn',
                       ],
-                    ],
-                  },
+                    },
+                    {
+                      'Fn::Join': [
+                        '',
+                        [
+                          {
+                            'Fn::GetAtt': [
+                              'MyBucketF68F3FF0',
+                              'Arn',
+                            ],
+                          },
+                          '/*',
+                        ],
+                      ],
+                    },
+                  ],
                 },
               ],
               'Version': '2012-10-17',

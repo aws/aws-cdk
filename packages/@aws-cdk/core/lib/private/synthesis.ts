@@ -129,7 +129,7 @@ function injectMetadataResources(root: IConstruct) {
   visit(root, 'post', construct => {
     if (!Stack.isStack(construct) || !construct._versionReportingEnabled) { return; }
 
-    // Because of https://github.com/aws/aws-cdk/blob/master/packages/@aws-cdk/assert/lib/synth-utils.ts#L74
+    // Because of https://github.com/aws/aws-cdk/blob/master/packages/assert-internal/lib/synth-utils.ts#L74
     // synthesize() may be called more than once on a stack in unit tests, and the below would break
     // if we execute it a second time. Guard against the constructs already existing.
     const CDKMetadata = 'CDKMetadata';

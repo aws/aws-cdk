@@ -1,4 +1,4 @@
-import '@aws-cdk/assert/jest';
+import '@aws-cdk/assert-internal/jest';
 import { App, Aws, Stack } from '@aws-cdk/core';
 import { OriginRequestPolicy, OriginRequestCookieBehavior, OriginRequestHeaderBehavior, OriginRequestQueryStringBehavior } from '../lib';
 
@@ -87,17 +87,6 @@ describe('OriginRequestPolicy', () => {
     expect(() => new OriginRequestPolicy(stack, 'OriginRequestPolicy6', { headerBehavior: OriginRequestHeaderBehavior.allowList('Foo', 'Accept-Encoding', 'Bar') })).toThrow(errorMessage);
 
     expect(() => new OriginRequestPolicy(stack, 'OriginRequestPolicy7', { headerBehavior: OriginRequestHeaderBehavior.allowList('Foo', 'Bar') })).not.toThrow();
-  });
-
-  test('throws if more than 10 OriginRequestHeaderBehavior headers are being passed', () => {
-    const errorMessage = /Maximum allowed headers in Origin Request Policy is 10; got (.*?)/;
-    expect(() => new OriginRequestPolicy(stack, 'OriginRequestPolicy1', {
-      headerBehavior: OriginRequestHeaderBehavior.allowList('Lorem', 'ipsum', 'dolor', 'sit', 'amet', 'consectetur', 'adipiscing', 'elit', 'sed', 'do', 'eiusmod'),
-    })).toThrow(errorMessage);
-
-    expect(() => new OriginRequestPolicy(stack, 'OriginRequestPolicy2', {
-      headerBehavior: OriginRequestHeaderBehavior.allowList('Lorem', 'ipsum', 'dolor', 'sit', 'amet', 'consectetur', 'adipiscing', 'elit', 'sed', 'do'),
-    })).not.toThrow();
   });
 
   test('does not throw if originRequestPolicyName is a token', () => {

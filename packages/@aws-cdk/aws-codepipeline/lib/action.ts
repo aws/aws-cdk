@@ -122,10 +122,30 @@ export interface ActionConfig {
  * A Pipeline Action
  */
 export interface IAction {
+  /**
+   * The simple properties of the Action,
+   * like its Owner, name, etc.
+   * Note that this accessor will be called before the {@link bind} callback.
+   */
   readonly actionProperties: ActionProperties;
 
+  /**
+   * The callback invoked when this Action is added to a Pipeline.
+   *
+   * @param scope the Construct tree scope the Action can use if it needs to create any resources
+   * @param stage the {@link IStage} this Action is being added to
+   * @param options additional options the Action can use,
+   *   like the artifact Bucket of the pipeline it's being added to
+   */
   bind(scope: Construct, stage: IStage, options: ActionBindOptions): ActionConfig;
 
+  /**
+   * Creates an Event that will be triggered whenever the state of this Action changes.
+   *
+   * @param name the name to use for the new Event
+   * @param target the optional target for the Event
+   * @param options additional options that can be used to customize the created Event
+   */
   onStateChange(name: string, target?: events.IRuleTarget, options?: events.RuleProps): events.Rule;
 }
 

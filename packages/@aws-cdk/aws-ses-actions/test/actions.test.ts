@@ -1,5 +1,5 @@
-import { arrayWith, ResourcePart } from '@aws-cdk/assert';
-import '@aws-cdk/assert/jest';
+import { arrayWith, ResourcePart } from '@aws-cdk/assert-internal';
+import '@aws-cdk/assert-internal/jest';
 import * as kms from '@aws-cdk/aws-kms';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as s3 from '@aws-cdk/aws-s3';

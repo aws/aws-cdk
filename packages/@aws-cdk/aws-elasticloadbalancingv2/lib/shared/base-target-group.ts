@@ -133,6 +133,16 @@ export interface HealthCheck {
   readonly unhealthyThresholdCount?: number;
 
   /**
+   * GRPC code to use when checking for a successful response from a target.
+   *
+   * You can specify values between 0 and 99. You can specify multiple values
+   * (for example, "0,1") or a range of values (for example, "0-5").
+   *
+   * @default - 12
+   */
+  readonly healthyGrpcCodes?: string;
+
+  /**
    * HTTP code to use when checking for a successful response from a target.
    *
    * For Application Load Balancers, you can specify values between 200 and
@@ -255,7 +265,8 @@ export abstract class TargetGroupBase extends Construct implements ITargetGroup 
       healthyThresholdCount: cdk.Lazy.number({ produce: () => this.healthCheck?.healthyThresholdCount }),
       unhealthyThresholdCount: cdk.Lazy.number({ produce: () => this.healthCheck?.unhealthyThresholdCount }),
       matcher: cdk.Lazy.any({
-        produce: () => this.healthCheck?.healthyHttpCodes !== undefined ? {
+        produce: () => this.healthCheck?.healthyHttpCodes !== undefined || this.healthCheck?.healthyGrpcCodes !== undefined ? {
+          grpcCode: this.healthCheck.healthyGrpcCodes,
           httpCode: this.healthCheck.healthyHttpCodes,
         } : undefined,
       }),

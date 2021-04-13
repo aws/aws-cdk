@@ -1,4 +1,4 @@
-import '@aws-cdk/assert/jest';
+import '@aws-cdk/assert-internal/jest';
 import { App, SecretValue, Stack } from '@aws-cdk/core';
 import { ManagedPolicy, Policy, PolicyStatement, User } from '../lib';
 

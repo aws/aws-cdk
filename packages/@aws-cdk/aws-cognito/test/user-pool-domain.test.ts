@@ -1,4 +1,4 @@
-import '@aws-cdk/assert/jest';
+import '@aws-cdk/assert-internal/jest';
 import { Certificate } from '@aws-cdk/aws-certificatemanager';
 import { CfnParameter, Stack } from '@aws-cdk/core';
 import { UserPool, UserPoolDomain } from '../lib';

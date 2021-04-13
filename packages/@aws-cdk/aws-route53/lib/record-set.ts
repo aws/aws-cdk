@@ -208,7 +208,7 @@ export class RecordSet extends Resource implements IRecordSet {
   constructor(scope: Construct, id: string, props: RecordSetProps) {
     super(scope, id);
 
-    const ttl = props.target.aliasTarget ? undefined : ((props.ttl && props.ttl.toSeconds()) || 1800).toString();
+    const ttl = props.target.aliasTarget ? undefined : ((props.ttl && props.ttl.toSeconds()) ?? 1800).toString();
 
     const recordSet = new CfnRecordSet(this, 'Resource', {
       hostedZoneId: props.zone.hostedZoneId,
@@ -533,6 +533,31 @@ export class MxRecord extends RecordSet {
       ...props,
       recordType: RecordType.MX,
       target: RecordTarget.fromValues(...props.values.map(v => `${v.priority} ${v.hostName}`)),
+    });
+  }
+}
+
+/**
+ * Construction properties for a NSRecord.
+ */
+export interface NsRecordProps extends RecordSetOptions {
+  /**
+   * The NS values.
+   */
+  readonly values: string[];
+}
+
+/**
+ * A DNS NS record
+ *
+ * @resource AWS::Route53::RecordSet
+ */
+export class NsRecord extends RecordSet {
+  constructor(scope: Construct, id: string, props: NsRecordProps) {
+    super(scope, id, {
+      ...props,
+      recordType: RecordType.NS,
+      target: RecordTarget.fromValues(...props.values),
     });
   }
 }

@@ -1,5 +1,5 @@
-import { ABSENT, objectLike } from '@aws-cdk/assert';
-import '@aws-cdk/assert/jest';
+import { ABSENT, objectLike } from '@aws-cdk/assert-internal';
+import '@aws-cdk/assert-internal/jest';
 import * as acm from '@aws-cdk/aws-certificatemanager';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as s3 from '@aws-cdk/aws-s3';
@@ -56,7 +56,7 @@ test('exhaustive example of props renders correctly', () => {
     enabled: false,
     enableIpv6: false,
     enableLogging: true,
-    geoRestriction: GeoRestriction.blacklist('US', 'GB'),
+    geoRestriction: GeoRestriction.denylist('US', 'GB'),
     httpVersion: HttpVersion.HTTP1_1,
     logFilePrefix: 'logs/',
     logIncludesCookies: true,

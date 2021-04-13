@@ -5,7 +5,17 @@ import * as kms from '@aws-cdk/aws-kms';
 import * as logs from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
-import { Duration, IResource, Lazy, RemovalPolicy, Resource, Stack, Token } from '@aws-cdk/core';
+import {
+  Duration,
+  FeatureFlags,
+  IResource,
+  Lazy,
+  RemovalPolicy,
+  Resource,
+  Stack,
+  Token,
+} from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
 import { DatabaseSecret } from './database-secret';
 import { Endpoint } from './endpoint';
@@ -687,13 +697,17 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
       });
     }
 
+    const instanceIdentifier = FeatureFlags.of(this).isEnabled(cxapi.RDS_LOWERCASE_DB_IDENTIFIER)
+      ? props.instanceIdentifier?.toLowerCase()
+      : props.instanceIdentifier;
+
     this.newCfnProps = {
       autoMinorVersionUpgrade: props.autoMinorVersionUpgrade,
       availabilityZone: props.multiAz ? undefined : props.availabilityZone,
       backupRetentionPeriod: props.backupRetention?.toDays(),
       copyTagsToSnapshot: props.copyTagsToSnapshot ?? true,
       dbInstanceClass: Lazy.string({ produce: () => `db.${this.instanceType}` }),
-      dbInstanceIdentifier: props.instanceIdentifier,
+      dbInstanceIdentifier: instanceIdentifier,
       dbSubnetGroupName: subnetGroup.subnetGroupName,
       deleteAutomatedBackups: props.deleteAutomatedBackups,
       deletionProtection: defaultDeletionProtection(props.deletionProtection, props.removalPolicy),

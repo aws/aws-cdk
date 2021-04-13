@@ -122,6 +122,32 @@ export interface HealthCheck {
 }
 
 /**
+ * Represents the outlier detection for a listener.
+ */
+export interface OutlierDetection {
+  /**
+   * The base amount of time for which a host is ejected.
+   */
+  readonly baseEjectionDuration: cdk.Duration;
+
+  /**
+   * The time interval between ejection sweep analysis.
+   */
+  readonly interval: cdk.Duration;
+
+  /**
+   * Maximum percentage of hosts in load balancing pool for upstream service that can be ejected. Will eject at
+   * least one host regardless of the value.
+   */
+  readonly maxEjectionPercent: number;
+
+  /**
+   * Number of consecutive 5xx errors required for ejection.
+   */
+  readonly maxServerErrors: number;
+}
+
+/**
  * All Properties for Envoy Access logs for mesh endpoints
  */
 export interface AccessLogConfig {

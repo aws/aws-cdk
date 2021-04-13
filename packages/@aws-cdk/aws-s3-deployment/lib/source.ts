@@ -3,6 +3,9 @@ import * as s3 from '@aws-cdk/aws-s3';
 import * as s3_assets from '@aws-cdk/aws-s3-assets';
 import { Construct } from 'constructs';
 
+/**
+ * Source information.
+ */
 export interface SourceConfig {
   /**
    * The source bucket to deploy from.

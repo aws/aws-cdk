@@ -112,7 +112,7 @@ export interface ScheduledEc2TaskProps {
 The `ScheduledEc2Task` construct will use the following existing constructs:
 
 * Ec2TaskDefinition - To create a Task Definition for the container to start
-* Ec2EventRuleTarget - The target of the aws event
+* Ec2EventRuleTarget - The target of the AWS event
 * EventRule - To describe the event trigger (in this case, a scheduled run)
 
 An example use case to create a task that is scheduled to run every minute:
