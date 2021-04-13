@@ -360,6 +360,13 @@ async function copyOrTransformFiles(from: string, to: string, libraries: readonl
   const promises = (await fs.readdir(from)).map(async name => {
     if (shouldIgnoreFile(name)) { return; }
 
+    if (name.endsWith('.d.ts') || name.endsWith('.js')) {
+      if (await fs.pathExists(path.join(from, name.replace(/\.(d\.ts|js)$/, '.ts')))) {
+        // We won't copy .d.ts and .js files with a corresponding .ts file
+        return;
+      }
+    }
+
     const source = path.join(from, name);
     const destination = path.join(to, name);
 
@@ -367,13 +374,6 @@ async function copyOrTransformFiles(from: string, to: string, libraries: readonl
     if (stat.isDirectory()) {
       await fs.mkdirp(destination);
       return copyOrTransformFiles(source, destination, libraries, uberPackageJson);
-    }
-
-    if (name.endsWith('.d.ts') || name.endsWith('.js')) {
-      if (await fs.pathExists(path.join(from, name.replace(/\.(d\.ts|js)$/, '.ts')))) {
-        // We won't copy .d.ts and .js files with a corresponding .ts file
-        return;
-      }
     }
 
     if (name.endsWith('.ts')) {
