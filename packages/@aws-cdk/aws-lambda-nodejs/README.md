@@ -61,7 +61,7 @@ used by your function. Otherwise bundling will fail.
 ## Local bundling
 
 If `esbuild` is available it will be used to bundle your code in your environment. Otherwise,
-bundling will happen in a [Lambda compatible Docker container](https://hub.docker.com/r/amazon/aws-sam-cli-build-image-nodejs12.x).
+bundling will happen in a [Lambda compatible Docker container](https://gallery.ecr.aws/sam/build-nodejs12.x).
 
 For macOS the recommendend approach is to install `esbuild` as Docker volume performance is really poor.
 
@@ -139,6 +139,8 @@ new lambda.NodejsFunction(this, 'my-handler', {
     },
     define: { // Replace strings during build time
       'process.env.API_KEY': JSON.stringify('xxx-xxxx-xxx'),
+      'process.env.PRODUCTION': JSON.stringify(true),
+      'process.env.NUMBER': JSON.stringify(123),
     },
     logLevel: LogLevel.SILENT, // defaults to LogLevel.WARNING
     keepNames: true, // defaults to false
