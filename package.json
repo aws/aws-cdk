@@ -27,6 +27,7 @@
   },
   "tap-mocha-reporter-resolutions-comment": "should be removed or reviewed when nodeunit dependency is dropped or adjusted",
   "resolutions": {
+    "@lerna/package-graph": "./vendor/lerna-package-graph-4.0.0-hacked.tgz",
     "tap-mocha-reporter": "^5.0.1"
   },
   "repository": {

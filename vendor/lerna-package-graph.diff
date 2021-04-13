@@ -1,0 +1,114 @@
+diff --git a/core/package-graph/index.js b/core/package-graph/index.js
+index 804aae06..dc1684f7 100644
+--- a/core/package-graph/index.js
++++ b/core/package-graph/index.js
+@@ -209,61 +209,57 @@ class PackageGraph extends Map {
+     /** @type {string[]} */
+     const cyclePaths = [];
+ 
+-    /** @type {Map<PackageGraphNode, CyclicPackageGraphNode>} */
+-    const nodeToCycle = new Map();
++    function checkForCycles(baseNode) {
++      const seen = new Set();
+ 
+-    /** @type {Set<CyclicPackageGraphNode>} */
+-    const cycles = new Set();
++      recurse(baseNode, [], new Map());
+ 
+-    /** @type {(PackageGraphNode | CyclicPackageGraphNode)[]} */
+-    const walkStack = [];
++      function recurse(node, path, accumulator) {
++        if (path.includes(node.name)) {
++          // Only include the part of the path that actually introduces the cycle
++          cyclePaths.push([...path.slice(path.indexOf(node.name)), node.name]);
++          return;
++        }
+ 
+-    function visits(baseNode, dependentNode) {
+-      if (nodeToCycle.has(baseNode)) {
+-        return;
+-      }
++        if (seen.has(node.name)) { return; }
++        seen.add(node.name);
++        path.push(node.name); // Mutable because it's faster than copying
++        node.localDependents.forEach(dep => recurse(dep, path));
++        path.pop();
+ 
+-      let topLevelDependent = dependentNode;
+-      while (nodeToCycle.has(topLevelDependent)) {
+-        topLevelDependent = nodeToCycle.get(topLevelDependent);
+       }
++    }
+ 
+-      if (
+-        topLevelDependent === baseNode ||
+-        (topLevelDependent.isCycle && topLevelDependent.has(baseNode.name))
+-      ) {
+-        const cycle = new CyclicPackageGraphNode();
+-
+-        walkStack.forEach((nodeInCycle) => {
+-          nodeToCycle.set(nodeInCycle, cycle);
+-          cycle.insert(nodeInCycle);
+-          cycles.delete(nodeInCycle);
+-        });
+-
+-        cycles.add(cycle);
+-        cyclePaths.push(cycle.toString());
++    this.forEach(checkForCycles);
++
++    // Now try to reduce the set of reported cycles (by removing cycles that are subsets of each other from the list)
++    let i = 0;
++    while (i < cyclePaths.length) {
++      let j = i + 1;
++      let removedI = false;
++      while (j < cyclePaths.length) {
++        if (isSubsetOf(cyclePaths[j], cyclePaths[i])) {
++          // Remove j
++          cyclePaths.splice(j, 1);
++          continue;
++        }
+ 
+-        return;
+-      }
++        if (isSubsetOf(cyclePaths[i], cyclePaths[j])) {
++          // Remove i and stop this iteration
++          cyclePaths.splice(i, 1);
++          removedI = true;
++          break;
++        }
+ 
+-      if (walkStack.indexOf(topLevelDependent) === -1) {
+-        // eslint-disable-next-line no-use-before-define
+-        visitWithStack(baseNode, topLevelDependent);
++        j++;
+       }
+-    }
+ 
+-    function visitWithStack(baseNode, currentNode = baseNode) {
+-      walkStack.push(currentNode);
+-      currentNode.localDependents.forEach(visits.bind(null, baseNode));
+-      walkStack.pop();
++      if (!removedI) { i++; }
+     }
+ 
+-    this.forEach((currentNode) => visitWithStack(currentNode));
+-    cycles.forEach((collapsedNode) => visitWithStack(collapsedNode));
+-
+     reportCycles(cyclePaths, rejectCycles);
+ 
+-    return cycles;
++    return cyclePaths;
+   }
+ 
+   /**
+@@ -307,4 +303,10 @@ class PackageGraph extends Map {
+   }
+ }
+ 
++function isSubsetOf(xs, ys) {
++  if (xs.length > ys.length) { return false; }
++
++  return xs.every(x => ys.includes(x));
++}
++
+ module.exports.PackageGraph = PackageGraph;
