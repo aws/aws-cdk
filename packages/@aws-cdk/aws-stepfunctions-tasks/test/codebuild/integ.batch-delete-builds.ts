@@ -14,7 +14,7 @@ import { CodeBuildStopBuild, CodeBuildStartBuild, CodeBuildBatchDeleteBuilds } f
  * * aws codebuild batch-get-builds --ids <build id returned by list-builds-for-project> --query 'builds[0].buildStatus': wait until the status is 'SUCCEEDED'
  * * aws stepfunctions describe-execution --execution-arn <exection-arn generated before> --query 'status': should return status as SUCCEEDED
  */
-class StartBuildStack extends cdk.Stack {
+class BatchDeleteBuildsStack extends cdk.Stack {
   constructor(scope: cdk.App, id: string, props: cdk.StackProps = {}) {
     super(scope, id, props);
 
@@ -63,5 +63,5 @@ class StartBuildStack extends cdk.Stack {
 }
 
 const app = new cdk.App();
-new StartBuildStack(app, 'aws-stepfunctions-tasks-codebuild-batch-delete-builds-integ');
+new BatchDeleteBuildsStack(app, 'aws-stepfunctions-tasks-codebuild-batch-delete-builds-integ');
 app.synth();

@@ -2,6 +2,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import { Construct } from 'constructs';
 import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
+import { generatePolicyResource } from './private/utils';
 
 /**
  * Properties for CodeBuildBatchGetReports
@@ -36,11 +37,12 @@ export class CodeBuildBatchGetReports extends sfn.TaskStateBase {
 
     this.taskPolicies = [
       new iam.PolicyStatement({
-        resources: ['*'],
+        resources: generatePolicyResource(scope, this.props.reportArns, 'codebuild', 'report-group'),
         actions: ['codebuild:BatchGetReports'],
       }),
     ];
   }
+
   /**
    * Provides the CodeBuild BatchGetReports service integration task configuration
    * @internal

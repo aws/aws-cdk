@@ -2,6 +2,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import { Construct } from 'constructs';
 import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
+import { generateSinglePolicyResource } from './private/utils';
 
 /**
  * Properties for CodeBuildStopBuild
@@ -36,11 +37,12 @@ export class CodeBuildStopBuild extends sfn.TaskStateBase {
 
     this.taskPolicies = [
       new iam.PolicyStatement({
-        resources: ['*'],
+        resources: generateSinglePolicyResource(scope, this.props.buildId, 'codebuild', 'project'),
         actions: ['codebuild:StopBuild'],
       }),
     ];
   }
+
   /**
    * Provides the CodeBuild StopBuild service integration task configuration
    * @internal

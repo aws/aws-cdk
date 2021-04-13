@@ -8,7 +8,7 @@ let buildId: string;
 beforeEach(() => {
   //GIVEN
   stack = new Stack();
-  buildId = 'CodeBuildId';
+  buildId = 'arn:aws:codebuild:us-east-1:123456789012:build/myProject1:buildId';
 });
 
 test('stopBuild with request response pattern', () => {
@@ -39,20 +39,46 @@ test('stopBuild with request response pattern', () => {
   });
 });
 
-test('Task throws if RUN_JOB is supplied as service integration pattern', () => {
+test('stopBuild with request response pattern with path as buildId input', () => {
+  // WHEN
+  const task = new CodeBuildStopBuild(stack, 'Stop Build', {
+    buildId: sfn.JsonPath.stringAt('$.Build.Arn'),
+  });
+
+  // THEN
+  expect(stack.resolve(task.toStateJson())).toEqual({
+    Type: 'Task',
+    Resource: {
+      'Fn::Join': [
+        '',
+        [
+          'arn:',
+          {
+            Ref: 'AWS::Partition',
+          },
+          ':states:::codebuild:stopBuild',
+        ],
+      ],
+    },
+    End: true,
+    Parameters: {
+      'Id.$': '$.Build.Arn',
+    },
+  });
+});
+
+test('Task throws if RUN_JOB/WAIT_FOR_TASK_TOKEN is supplied as service integration pattern', () => {
   expect(() => {
-    new CodeBuildStopBuild(stack, 'Stop Build', {
+    new CodeBuildStopBuild(stack, 'Stop Build RUN_JOB', {
       buildId: buildId,
       integrationPattern: sfn.IntegrationPattern.RUN_JOB,
     });
   }).toThrow(
     /Unsupported service integration pattern. Supported Patterns: REQUEST_RESPONSE. Received: RUN_JOB/,
   );
-});
 
-test('Task throws if WAIT_FOR_TASK_TOKEN is supplied as service integration pattern', () => {
   expect(() => {
-    new CodeBuildStopBuild(stack, 'Stop Build', {
+    new CodeBuildStopBuild(stack, 'Stop Build WAIT_FOR_TASK_TOKEN', {
       buildId: buildId,
       integrationPattern: sfn.IntegrationPattern.WAIT_FOR_TASK_TOKEN,
     });
