@@ -2,7 +2,7 @@ import * as path from 'path';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
 import { CfnResource } from '../cfn-resource';
-import { CopyOptions } from '../fs';
+import { FileCopyOptions } from '../fs';
 import { Stack } from '../stack';
 import { AssetStaging } from './asset-staging';
 import { BundlingOptions } from './bundling';
@@ -14,15 +14,8 @@ import { Construct as CoreConstruct } from '../construct-compat';
 
 /**
  * Asset hash options
- *
- * @deprecated see `FileAssetOptions`
  */
-export interface AssetOptions extends FileAssetOptions {}
-
-/**
- * Options for a file asset.
- */
-export interface FileAssetOptions {
+export interface AssetOptions {
   /**
    * Specify a custom hash for this asset. If `assetHashType` is set it must
    * be set to `AssetHashType.CUSTOM`. For consistency, this custom hash will
@@ -66,9 +59,15 @@ export interface FileAssetOptions {
 }
 
 /**
+ * Options for a file asset.
+ */
+export interface FileAssetOptions extends AssetOptions, FileCopyOptions {
+}
+
+/**
  * Properties for `FileAsset`.
  */
-export interface FileAssetProps extends FileAssetOptions, CopyOptions {
+export interface FileAssetProps extends FileAssetOptions {
   /**
    * The disk location of the asset.
    *
@@ -135,7 +134,7 @@ export class FileAsset extends CoreConstruct implements IAsset {
     const staging = new AssetStaging(this, 'Stage', {
       ...props,
       sourcePath: path.resolve(props.path),
-      follow: props.follow,
+      follow: props.followSymlinks,
       assetHash: props.assetHash,
     });
 
