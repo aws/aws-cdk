@@ -74,7 +74,7 @@
     "@aws-cdk/aws-events": "0.0.0",
     "@aws-cdk/aws-s3": "0.0.0",
     "@aws-cdk/aws-ssm": "0.0.0",
-    "@types/aws-lambda": "^8.10.73",
+    "@types/aws-lambda": "^8.10.75",
     "@types/fs-extra": "^8.1.1",
     "@types/sinon": "^9.0.11",
     "aws-sdk": "^2.848.0",
