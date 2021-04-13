@@ -273,6 +273,14 @@ describe('CDK Include', () => {
     );
   });
 
+  test('preserves an empty map passed to Fn::Sub', () => {
+    includeTestTemplate(stack, 'fn-sub-map-empty.json');
+
+    expect(stack).toMatchTemplate(
+      loadTestFileToJsObject('fn-sub-map-empty.json'),
+    );
+  });
+
   test('can ingest a template with Fn::Sub shadowing a logical ID from the template and output it unchanged', () => {
     includeTestTemplate(stack, 'fn-sub-shadow.json');
 
@@ -324,6 +332,44 @@ describe('CDK Include', () => {
     expect(stack).toMatchTemplate(
       loadTestFileToJsObject('fn-sub-brace-edges.json'),
     );
+  });
+
+  test('when a parameter in an Fn::Sub expression is substituted with a deploy-time value, it adds a new key to the Fn::Sub map', () => {
+    const parameter = new core.CfnParameter(stack, 'AnotherParam');
+    includeTestTemplate(stack, 'fn-sub-parameters.json', {
+      parameters: {
+        'MyParam': `it's_a_${parameter.valueAsString}_concatenation`,
+      },
+    });
+
+    expect(stack).toMatchTemplate({
+      "Parameters": {
+        "AnotherParam": {
+          "Type": "String",
+        },
+      },
+      "Resources": {
+        "Bucket": {
+          "Type": "AWS::S3::Bucket",
+          "Properties": {
+            "BucketName": {
+              "Fn::Sub": [
+                "${MyParam}",
+                {
+                  "MyParam": {
+                    "Fn::Join": ["", [
+                      "it's_a_",
+                      { "Ref": "AnotherParam" },
+                      "_concatenation",
+                    ]],
+                  },
+                },
+              ],
+            },
+          },
+        },
+      },
+    });
   });
 
   test('can ingest a template with a Ref expression for an array value, and output it unchanged', () => {
