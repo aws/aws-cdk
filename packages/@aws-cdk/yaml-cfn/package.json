@@ -90,5 +90,6 @@
   },
   "publishConfig": {
     "tag": "next"
-  }
+  },
+  "private": true
 }
