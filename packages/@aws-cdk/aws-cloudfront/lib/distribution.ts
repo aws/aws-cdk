@@ -5,6 +5,7 @@ import { IResource, Lazy, Resource, Stack, Token, Duration, Names } from '@aws-c
 import { Construct } from 'constructs';
 import { ICachePolicy } from './cache-policy';
 import { CfnDistribution } from './cloudfront.generated';
+import { IFunction } from './function';
 import { GeoRestriction } from './geo-restriction';
 import { IKeyGroup } from './key-group';
 import { IOrigin, OriginBindConfig, OriginBindOptions } from './origin';
@@ -642,6 +643,37 @@ export interface EdgeLambda {
   readonly includeBody?: boolean;
 }
 
+
+/**
+ * The type of events that a CloudFront function can be invoked in response to.
+ */
+export enum FunctionEventType {
+
+  /**
+   * The viewer-request specifies the incoming request
+   */
+  VIEWER_REQUEST = 'viewer-request',
+
+  /**
+   * The viewer-response specifies the outgoing response
+   */
+  VIEWER_RESPONSE = 'viewer-response',
+}
+
+/**
+ * Represents a CloudFront function and event type when using CF Functions.
+ * The type of the {@link AddBehaviorOptions.functionAssociations} property.
+ */
+export interface FunctionAssociation {
+  /**
+   * The CloudFront function that will be invoked.
+   */
+  readonly function: IFunction;
+
+  /** The type of event in response to which should the function be invoked. */
+  readonly eventType: FunctionEventType;
+}
+
 /**
  * Options for adding a new behavior to a Distribution.
  */
@@ -699,6 +731,13 @@ export interface AddBehaviorOptions {
    * @default ViewerProtocolPolicy.ALLOW_ALL
    */
   readonly viewerProtocolPolicy?: ViewerProtocolPolicy;
+
+  /**
+   * The CloudFront functions to invoke before serving the contents.
+   *
+   * @default - no functions will be invoked
+   */
+  readonly functionAssociations?: FunctionAssociation[];
 
   /**
    * The Lambda@Edge functions to invoke before serving the contents.
