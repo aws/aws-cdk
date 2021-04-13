@@ -139,10 +139,7 @@ test('test root certificate', () => {
 
 test('test tags are passed to customresource', () => {
   const stack = new Stack();
-  let tags = [
-    { key: 'Key1', value: 'Value1' },
-  ];
-  tags.map(({ key, value }) => Tags.of(stack).add(key, value));
+  Tags.of(stack).add('Key1', 'Value1');
 
   const exampleDotComZone = new PublicHostedZone(stack, 'ExampleDotCom', {
     zoneName: 'example.com',
@@ -164,10 +161,9 @@ test('test tags are passed to customresource', () => {
     HostedZoneId: {
       Ref: 'ExampleDotCom4D1B83AA',
     },
-    Tags:
-      {
-        Key1: 'Value1',
-      },
+    Tags: {
+      Key1: 'Value1',
+    },
   });
 });
 
