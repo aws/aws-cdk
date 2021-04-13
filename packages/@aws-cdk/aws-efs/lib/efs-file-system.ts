@@ -1,10 +1,7 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as kms from '@aws-cdk/aws-kms';
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports
-import { FeatureFlags } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
-import { IResource, RemovalPolicy, Resource, Size, Tags } from '@aws-cdk/core';
+import { FeatureFlags, IResource, RemovalPolicy, Resource, Size, Tags } from '@aws-cdk/core';
 import { Construct, DependencyGroup, IDependable } from 'constructs';
 import { AccessPoint, AccessPointOptions } from './access-point';
 import { CfnFileSystem, CfnMountTarget } from './efs.generated';
