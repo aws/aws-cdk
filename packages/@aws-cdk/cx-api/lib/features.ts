@@ -176,6 +176,7 @@ export const FUTURE_FLAGS: { [key: string]: any } = {
  * and block usages of old feature flags in the new major version of CDK.
  */
 export const FUTURE_FLAGS_EXPIRED: string[] = [
+  APIGATEWAY_USAGEPLANKEY_ORDERINSENSITIVE_ID,
   DOCKER_IGNORE_SUPPORT,
   ENABLE_DIFF_NO_FAIL_CONTEXT,
   ENABLE_STACK_NAME_DUPLICATES_CONTEXT,
