@@ -18,17 +18,15 @@
     "fs-extra": "^9.1.0",
     "graceful-fs": "^4.2.6",
     "jest-junit": "^12.0.0",
-    "jsii-diff": "^1.26.0",
-    "jsii-pacmak": "^1.26.0",
-    "jsii-rosetta": "^1.26.0",
+    "jsii-diff": "^1.28.0",
+    "jsii-pacmak": "^1.28.0",
+    "jsii-rosetta": "^1.28.0",
     "lerna": "^4.0.0",
-    "standard-version": "^9.1.1",
+    "standard-version": "^9.2.0",
     "typescript": "~3.9.9"
   },
-  "netmask-resolutions-comment": "transitive dep from proxy-agent@4.0.1. review when dependencies upgrade",
   "tap-mocha-reporter-resolutions-comment": "should be removed or reviewed when nodeunit dependency is dropped or adjusted",
   "resolutions": {
-    "netmask": "2.0.1",
     "tap-mocha-reporter": "^5.0.1"
   },
   "repository": {
@@ -53,6 +51,8 @@
     "nohoist": [
       "**/jszip",
       "**/jszip/**",
+      "@aws-cdk/aws-codebuild/yaml",
+      "@aws-cdk/aws-codebuild/yaml/**",
       "@aws-cdk/aws-codepipeline-actions/case",
       "@aws-cdk/aws-codepipeline-actions/case/**",
       "@aws-cdk/aws-cognito/punycode",
@@ -65,6 +65,8 @@
       "@aws-cdk/cloud-assembly-schema/jsonschema/**",
       "@aws-cdk/cloud-assembly-schema/semver",
       "@aws-cdk/cloud-assembly-schema/semver/**",
+      "@aws-cdk/cloudformation-include/yaml",
+      "@aws-cdk/cloudformation-include/yaml/**",
       "@aws-cdk/core/@balena/dockerignore",
       "@aws-cdk/core/@balena/dockerignore/**",
       "@aws-cdk/core/fs-extra",
