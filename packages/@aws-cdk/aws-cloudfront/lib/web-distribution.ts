@@ -769,8 +769,14 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
   constructor(scope: Construct, id: string, props: CloudFrontWebDistributionProps) {
     super(scope, id);
 
+    // Comments have an undocumented limit of 128 characters
+    const trimmedComment =
+    props.comment && props.comment.length > 128
+      ? `${props.comment.substr(0, 128 - 3)}...`
+      : props.comment;
+
     let distributionConfig: CfnDistribution.DistributionConfigProperty = {
-      comment: props.comment,
+      comment: trimmedComment,
       enabled: true,
       defaultRootObject: props.defaultRootObject ?? 'index.html',
       httpVersion: props.httpVersion || HttpVersion.HTTP2,
