@@ -1,7 +1,7 @@
-import * as cdkassert from '@aws-cdk/assert';
+import * as cdkassert from '@aws-cdk/assert-internal';
 import * as kms from '@aws-cdk/aws-kms';
 import * as cdk from '@aws-cdk/core';
-import '@aws-cdk/assert/jest';
+import '@aws-cdk/assert-internal/jest';
 import * as glue from '../lib';
 
 test('throws when a security configuration has no encryption config', () => {

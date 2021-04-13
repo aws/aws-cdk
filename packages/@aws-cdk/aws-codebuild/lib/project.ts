@@ -635,14 +635,19 @@ export interface BindToCodePipelineOptions {
 export class Project extends ProjectBase {
 
   public static fromProjectArn(scope: Construct, id: string, projectArn: string): IProject {
+    const parsedArn = Stack.of(scope).parseArn(projectArn);
+
     class Import extends ProjectBase {
       public readonly grantPrincipal: iam.IPrincipal;
       public readonly projectArn = projectArn;
-      public readonly projectName = Stack.of(scope).parseArn(projectArn).resourceName!;
+      public readonly projectName = parsedArn.resourceName!;
       public readonly role?: iam.Role = undefined;
 
       constructor(s: Construct, i: string) {
-        super(s, i);
+        super(s, i, {
+          account: parsedArn.account,
+          region: parsedArn.region,
+        });
         this.grantPrincipal = new iam.UnknownPrincipal({ resource: this });
       }
     }
