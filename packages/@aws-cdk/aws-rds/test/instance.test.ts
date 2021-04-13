@@ -9,7 +9,7 @@ import * as logs from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
-import { testFutureBehavior, testLegacyBehavior } from 'cdk-build-tools/lib/feature-flag';
+import { testFutureBehavior } from 'cdk-build-tools/lib/feature-flag';
 import * as rds from '../lib';
 
 let stack: cdk.Stack;
@@ -1280,33 +1280,33 @@ describe('instance', () => {
     });
   });
 
-  testFutureBehavior(
-    'changes the case of the cluster identifier if the lowercaseDbIdentifier feature flag is enabled',
-    { [cxapi.RDS_LOWERCASE_DB_IDENTIFIER]: true }, cdk.App, (app,
-    ) => {
-      // GIVEN
-      stack = new cdk.Stack( app );
-      vpc = new ec2.Vpc( stack, 'VPC' );
-
-      // WHEN
-      const instanceIdentifier = 'TestInstanceIdentifier';
-      new rds.DatabaseInstance( stack, 'DB', {
-        engine: rds.DatabaseInstanceEngine.mysql({
-          version: rds.MysqlEngineVersion.VER_8_0_19,
-        }),
-        vpc,
-        instanceIdentifier,
-      } );
-
-      // THEN
-      expect(stack).toHaveResource('AWS::RDS::DBInstance', {
-        DBInstanceIdentifier: instanceIdentifier.toLowerCase(),
-      });
-    });
-
-  testLegacyBehavior( 'does not changes the case of the cluster identifier if the lowercaseDbIdentifier feature flag is disabled', cdk.App, (app ) => {
+  test('changes the case of the cluster identifier if the lowercaseDbIdentifier feature flag is enabled', () => {
     // GIVEN
+    const app = new cdk.App({
+      context: { [cxapi.RDS_LOWERCASE_DB_IDENTIFIER]: true },
+    });
     stack = new cdk.Stack( app );
+    vpc = new ec2.Vpc( stack, 'VPC' );
+
+    // WHEN
+    const instanceIdentifier = 'TestInstanceIdentifier';
+    new rds.DatabaseInstance( stack, 'DB', {
+      engine: rds.DatabaseInstanceEngine.mysql({
+        version: rds.MysqlEngineVersion.VER_8_0_19,
+      }),
+      vpc,
+      instanceIdentifier,
+    } );
+
+    // THEN
+    expect(stack).toHaveResource('AWS::RDS::DBInstance', {
+      DBInstanceIdentifier: instanceIdentifier.toLowerCase(),
+    });
+  });
+
+  test( 'does not changes the case of the cluster identifier if the lowercaseDbIdentifier feature flag is disabled', () => {
+    // GIVEN
+    stack = new cdk.Stack();
     vpc = new ec2.Vpc( stack, 'VPC' );
 
     // WHEN
