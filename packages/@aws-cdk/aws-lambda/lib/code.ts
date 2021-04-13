@@ -53,9 +53,20 @@ export abstract class Code {
    * Loads the function code from a local disk path.
    *
    * @param path Either a directory with the Lambda code bundle or a .zip file
+   *
+   * @deprecated use fromFileAsset instead
    */
   public static fromAsset(path: string, options?: s3_assets.AssetOptions): AssetCode {
     return new AssetCode(path, options);
+  }
+
+  /**
+   * Loads the function code from a local disk path.
+   *
+   * @param path Either a directory with the Lambda code bundle or a .zip file
+   */
+  public static fromFileAsset(path: string, options?: cdk.FileAssetOptions): Code {
+    return new FileAssetCode(path, options);
   }
 
   /**
@@ -260,10 +271,12 @@ export class InlineCode extends Code {
 
 /**
  * Lambda code from a local directory.
+ *
+ * @deprecated use Code.fromFileAsset instead
  */
 export class AssetCode extends Code {
   public readonly isInline = false;
-  private asset?: s3_assets.Asset;
+  private asset?: cdk.FileAsset;
 
   /**
    * @param path The path to the asset file or directory.
@@ -275,7 +288,52 @@ export class AssetCode extends Code {
   public bind(scope: Construct): CodeConfig {
     // If the same AssetCode is used multiple times, retain only the first instantiation.
     if (!this.asset) {
-      this.asset = new s3_assets.Asset(scope, 'Code', {
+      this.asset = new cdk.FileAsset(scope, 'Code', {
+        path: this.path,
+        ...this.options,
+        followSymlinks: this.options.followSymlinks ?? toSymlinkFollow(this.options.follow),
+      });
+    } else if (cdk.Stack.of(this.asset) !== cdk.Stack.of(scope)) {
+      throw new Error(`Asset is already associated with another stack '${cdk.Stack.of(this.asset).stackName}'. ` +
+        'Create a new Code instance for every stack.');
+    }
+
+    if (!this.asset.isZipArchive) {
+      throw new Error(`Asset must be a .zip file or a directory (${this.path})`);
+    }
+
+    return {
+      s3Location: {
+        bucketName: this.asset.s3BucketName,
+        objectKey: this.asset.s3ObjectKey,
+      },
+    };
+  }
+
+  public bindToResource(resource: cdk.CfnResource, options: ResourceBindOptions = { }) {
+    if (!this.asset) {
+      throw new Error('bindToResource() must be called after bind()');
+    }
+
+    const resourceProperty = options.resourceProperty || 'Code';
+
+    // https://github.com/aws/aws-cdk/issues/1432
+    this.asset.addResourceMetadata(resource, resourceProperty);
+  }
+}
+
+class FileAssetCode extends Code {
+  public readonly isInline = false;
+  private asset?: cdk.FileAsset;
+
+  constructor(public readonly path: string, private readonly options: cdk.FileAssetOptions = { }) {
+    super();
+  }
+
+  public bind(scope: Construct): CodeConfig {
+    // If the same AssetCode is used multiple times, retain only the first instantiation.
+    if (!this.asset) {
+      this.asset = new cdk.FileAsset(scope, 'Code', {
         path: this.path,
         ...this.options,
       });
