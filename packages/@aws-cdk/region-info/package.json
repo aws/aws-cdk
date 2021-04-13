@@ -72,8 +72,8 @@
   "engines": {
     "node": ">= 10.13.0 <13 || >=13.7.0"
   },
-  "stability": "experimental",
-  "maturity": "experimental",
+  "stability": "stable",
+  "maturity": "stable",
   "awslint": {
     "exclude": [
       "docs-public-apis:@aws-cdk/region-info.Fact.regions",
