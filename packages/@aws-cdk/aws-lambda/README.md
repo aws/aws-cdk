@@ -451,7 +451,7 @@ Example with Python:
 new lambda.Function(this, 'Function', {
   code: lambda.Code.fromAsset(path.join(__dirname, 'my-python-handler'), {
     bundling: {
-      image: lambda.Runtime.PYTHON_3_6.bundlingDockerImage,
+      image: lambda.Runtime.PYTHON_3_6.bundlingImage,
       command: [
         'bash', '-c',
         'pip install -r requirements.txt -t /asset-output && cp -au . /asset-output'
@@ -463,7 +463,7 @@ new lambda.Function(this, 'Function', {
 });
 ```
 
-Runtimes expose a `bundlingDockerImage` property that points to the [AWS SAM](https://github.com/awslabs/aws-sam-cli) build image.
+Runtimes expose a `bundlingImage` property that points to the [AWS SAM](https://github.com/awslabs/aws-sam-cli) build image.
 
 Use `cdk.DockerImage.fromRegistry(image)` to use an existing image or
 `cdk.DockerImage.fromBuild(path)` to build a specific image:
