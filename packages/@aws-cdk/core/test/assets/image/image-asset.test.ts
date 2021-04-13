@@ -154,7 +154,7 @@ describe('image asset', () => {
   testFutureBehavior('docker directory is staged with allow-listed files specified in .dockerignore', flags, App, (app) => {
     const stack = new Stack(app);
     const image = new ImageAsset(stack, 'MyAsset', {
-      directory: path.join(__dirname, 'whitelisted-image'),
+      directory: path.join(__dirname, 'allow-listed-image'),
     });
 
     const session = app.synth();
