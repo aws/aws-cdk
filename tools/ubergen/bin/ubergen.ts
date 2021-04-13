@@ -267,11 +267,12 @@ async function transformPackage(
   allLibraries: readonly LibraryReference[],
 ) {
   await fs.mkdirp(destination);
+  // only temporary until we get these removed
+  const allowedExperimental = ['@aws-cdk/aws-s3-assets', '@aws-cdk/aws-ecr-assets', '@aws-cdk/aws-batch', '@aws-cdk/aws-msk', '@aws-cdk/aws-apigatewayv2'];
 
-  const exclude = ['@aws-cdk/aws-s3-assets', '@aws-cdk/aws-ecr-assets', '@aws-cdk/aws-batch', '@aws-cdk/aws-msk', '@aws-cdk/aws-apigatewayv2'];
-
-  if (uberPackageJson.name === 'aws-cdk-lib' && library.packageJson.stability === 'experimental' && !exclude.includes(library.packageJson.name)) {
-    // in aws-cdk-lib we only add the L1s of experimental modules
+  if (uberPackageJson.name === 'aws-cdk-lib' && library.packageJson.stability === 'experimental' && !allowedExperimental.includes(library.packageJson.name)) {
+    // in aws-cdk-lib we only allow the L1s of experimental modules. The code below is similar to the code used to create a new cfn module, it execute cfn2ts,
+    // and generate the index.ts file.
     let cfnScopes = library.packageJson['cdk-build'].cloudformation;
 
     if (cfnScopes === undefined) {
@@ -286,6 +287,7 @@ async function transformPackage(
     await cfn2ts(cfnScopes, destinationLib);
 
     fs.writeFileSync(path.join(destinationLib, 'index.ts'),
+    /// copy pasta from `create-missing-libraries.ts`
       cfnScopes.map(s => (s === 'AWS::Serverless' ? 'AWS::SAM' : s).split('::')[1].toLocaleLowerCase())
         .map(s => `export * from './${s}.generated';`)
         .join('\n'));
