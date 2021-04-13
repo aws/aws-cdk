@@ -1,11 +1,8 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as kms from '@aws-cdk/aws-kms';
-import { ConcreteDependable, IDependable, IResource, RemovalPolicy, Resource, Size, Tags } from '@aws-cdk/core';
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports
-import { FeatureFlags } from '@aws-cdk/core';
+import { FeatureFlags, IResource, RemovalPolicy, Resource, Size, Tags } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
-import { Construct } from 'constructs';
+import { Construct, DependencyGroup, IDependable } from 'constructs';
 import { AccessPoint, AccessPointOptions } from './access-point';
 import { CfnFileSystem, CfnMountTarget } from './efs.generated';
 
@@ -242,7 +239,7 @@ export class FileSystem extends Resource implements IFileSystem {
 
   public readonly mountTargetsAvailable: IDependable;
 
-  private readonly _mountTargetsAvailable = new ConcreteDependable();
+  private readonly _mountTargetsAvailable = new DependencyGroup();
 
   /**
    * Constructor for creating a new EFS FileSystem.
@@ -337,6 +334,6 @@ class ImportedFileSystem extends Resource implements IFileSystem {
       defaultPort: ec2.Port.tcp(FileSystem.DEFAULT_PORT),
     });
 
-    this.mountTargetsAvailable = new ConcreteDependable();
+    this.mountTargetsAvailable = new DependencyGroup();
   }
 }

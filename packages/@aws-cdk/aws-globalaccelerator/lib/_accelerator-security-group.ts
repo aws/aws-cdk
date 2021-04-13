@@ -1,10 +1,11 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
-
 import { CfnResource } from '@aws-cdk/core';
 import { AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId } from '@aws-cdk/custom-resources';
-import { Construct } from 'constructs';
 import { EndpointGroup } from '../lib';
 
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct } from 'constructs';
 /**
  * The security group used by a Global Accelerator to send traffic to resources in a VPC.
  */
