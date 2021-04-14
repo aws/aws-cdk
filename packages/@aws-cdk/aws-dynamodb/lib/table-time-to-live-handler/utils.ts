@@ -43,7 +43,8 @@ async function catchAwsError(func: () => Promise<void>) {
     const awsError = err as AWSError;
     if (
       awsError.code === 'ValidationException' &&
-      awsError.message === 'Time to live has been modified multiple times within a fixed interval'
+      awsError.message.includes('Time to live') &&
+      awsError.message.includes('interval')
     ) {
       console.log('Time to live has been modified multiple times within a fixed interval. Try again later.');
       return;
