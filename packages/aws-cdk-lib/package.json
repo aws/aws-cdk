@@ -16,7 +16,7 @@
     "build": "cdk-build",
     "lint": "cdk-lint",
     "test": "echo done",
-    "package": "cdk-package",
+    "package": "cdk-package && node ./verify-stripped-exp.js",
     "pkglint": "pkglint -f",
     "build+test": "yarn build && yarn test",
     "build+test+package": "yarn build+test && yarn package",
