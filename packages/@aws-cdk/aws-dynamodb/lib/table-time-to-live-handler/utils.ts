@@ -12,7 +12,9 @@ export async function disableTimeToLive(event: OnEventRequest) {
     await dynamodb.updateTimeToLive({
       TableName: event.ResourceProperties.TableName,
       TimeToLiveSpecification: {
-        AttributeName: event.OldResourceProperties?.TimeToLiveAttribute,
+        AttributeName:
+          event.OldResourceProperties?.TimeToLiveAttribute
+          ?? event.ResourceProperties.TimeToLiveAttribute,
         Enabled: false,
       },
     }).promise();
