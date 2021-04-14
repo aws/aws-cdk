@@ -775,13 +775,11 @@ function getHealthCheckCommand(hc: HealthCheck): string[] {
 function renderResourceRequirements(gpuCount: number = 0, inferenceAcceleratorResources: string[] = []):
 CfnTaskDefinition.ResourceRequirementProperty[] | undefined {
   const ret = [];
-  if (inferenceAcceleratorResources.length > 0) {
-    for (const resource of inferenceAcceleratorResources) {
-      ret.push({
-        type: 'InferenceAccelerator',
-        value: resource,
-      });
-    }
+  for (const resource of inferenceAcceleratorResources) {
+    ret.push({
+      type: 'InferenceAccelerator',
+      value: resource,
+    });
   }
   if (gpuCount > 0) {
     ret.push({

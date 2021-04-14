@@ -1146,20 +1146,24 @@ describe('container definition', () => {
     });
 
     // THEN
-    expect(() => {
-      expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
-        ContainerDefinitions: [
-          {
-            reourceRequirements: [{
-              type: 'InferenceAccelerator',
-              value: 'device1',
-            }, {
-              type: 'GPU',
-              value: '2',
-            }],
-          },
-        ],
-      });
+    expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
+      Family: 'Ec2TaskDef',
+      InferenceAccelerators: [{
+        DeviceName: 'device1',
+        DeviceType: 'eia2.medium',
+      }],
+      ContainerDefinitions: [
+        {
+          Image: 'test',
+          ResourceRequirements: [{
+            Type: 'InferenceAccelerator',
+            Value: 'device1',
+          }, {
+            Type: 'GPU',
+            Value: '2',
+          }],
+        },
+      ],
     });
   });
 
