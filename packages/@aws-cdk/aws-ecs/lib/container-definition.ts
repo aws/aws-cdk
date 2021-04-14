@@ -660,7 +660,8 @@ export class ContainerDefinition extends CoreConstruct {
       healthCheck: this.props.healthCheck && renderHealthCheck(this.props.healthCheck),
       links: cdk.Lazy.list({ produce: () => this.links }, { omitEmpty: true }),
       linuxParameters: this.linuxParameters && this.linuxParameters.renderLinuxParameters(),
-      resourceRequirements: renderResourceRequirements(this.props.gpuCount, this.inferenceAcceleratorResources),
+      resourceRequirements: (!this.props.gpuCount && this.inferenceAcceleratorResources.length == 0 ) ? undefined :
+        renderResourceRequirements(this.props.gpuCount, this.inferenceAcceleratorResources),
     };
   }
 }
@@ -773,27 +774,22 @@ function getHealthCheckCommand(hc: HealthCheck): string[] {
 
 function renderResourceRequirements(gpuCount: number = 0, inferenceAcceleratorResources: string[] = []):
 CfnTaskDefinition.ResourceRequirementProperty[] | undefined {
-  if (inferenceAcceleratorResources.length > 0 && gpuCount > 0) {
-    throw new Error('Cannot define both inference accelerator and gpu count in the container definition.');
-  }
+  const ret = [];
   if (inferenceAcceleratorResources.length > 0) {
-    const ret = [];
-
     for (const resource of inferenceAcceleratorResources) {
       ret.push({
         type: 'InferenceAccelerator',
         value: resource,
       });
     }
-    return ret;
   }
   if (gpuCount > 0) {
-    return [{
+    ret.push({
       type: 'GPU',
       value: gpuCount.toString(),
-    }];
+    });
   }
-  return undefined;
+  return ret;
 }
 
 /**

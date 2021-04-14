@@ -997,7 +997,7 @@ describe('container definition', () => {
     });
   });
 
-  describe('Given InferenceAccelerator resource requirement', () => {
+  describe('Given InferenceAccelerator resource parameter', () => {
     test('correctly adds resource requirements to container definition using inference accelerator resource property', () => {
       // GIVEN
       const stack = new cdk.Stack();
@@ -1042,7 +1042,7 @@ describe('container definition', () => {
 
 
     });
-    test('correctly adds inference accelerator resources to container definition using both props and addInferenceAcceleratorResource method', () => {
+    test('correctly adds resource requirements to container definition using both props and addInferenceAcceleratorResource method', () => {
       // GIVEN
       const stack = new cdk.Stack();
 
@@ -1097,7 +1097,7 @@ describe('container definition', () => {
       });
 
     });
-    test('throws when the value in resource requirement does not match any inference accelerators defined in the Task Definition', () => {
+    test('throws when the value of inference accelerator resource does not match any inference accelerators defined in the Task Definition', () => {
       // GIVEN
       const stack = new cdk.Stack();
 
@@ -1121,38 +1121,45 @@ describe('container definition', () => {
         });
       }).toThrow(/Resource value device2 in container definition doesn't match any inference accelerator device name in the task definition./);
     });
-    test('throws when both inference accelerator and gpu count are defined in the container definition', () => {
-      // GIVEN
-      const stack = new cdk.Stack();
+  });
 
-      const inferenceAccelerators = [{
-        deviceName: 'device1',
-        deviceType: 'eia2.medium',
-      }];
+  test('adds resource requirements when both inference accelerator and gpu count are defined in the container definition', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
 
-      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
-        inferenceAccelerators,
+    const inferenceAccelerators = [{
+      deviceName: 'device1',
+      deviceType: 'eia2.medium',
+    }];
+
+    const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
+      inferenceAccelerators,
+    });
+
+    const inferenceAcceleratorResources = ['device1'];
+
+    taskDefinition.addContainer('cont', {
+      image: ecs.ContainerImage.fromRegistry('test'),
+      memoryLimitMiB: 1024,
+      gpuCount: 2,
+      inferenceAcceleratorResources,
+    });
+
+    // THEN
+    expect(() => {
+      expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
+        ContainerDefinitions: [
+          {
+            reourceRequirements: [{
+              type: 'InferenceAccelerator',
+              value: 'device1',
+            }, {
+              type: 'GPU',
+              value: '2',
+            }],
+          },
+        ],
       });
-
-      const inferenceAcceleratorResources = ['device1'];
-
-      taskDefinition.addContainer('cont', {
-        image: ecs.ContainerImage.fromRegistry('test'),
-        memoryLimitMiB: 1024,
-        gpuCount: 2,
-        inferenceAcceleratorResources,
-      });
-
-      // THEN
-      expect(() => {
-        expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
-          ContainerDefinitions: [
-            {
-              inferenceAcceleratorResources,
-            },
-          ],
-        });
-      }).toThrow(/Cannot define both inference accelerator and gpu count in the container definition./);
     });
   });
 
