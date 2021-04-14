@@ -1686,6 +1686,6 @@ function readBannerFile(file: string): string {
 
 function cdkMajorVersion() {
   // eslint-disable-next-line @typescript-eslint/no-require-imports
-  const releaseJson = require(`${__dirname}/../../../release.json`);
+  const releaseJson = require(`${__dirname}/../release.json`);
   return releaseJson.majorVersion as number;
 }

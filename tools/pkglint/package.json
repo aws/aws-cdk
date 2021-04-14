@@ -16,7 +16,7 @@
     "pkglint": "bin/pkglint"
   },
   "scripts": {
-    "build": "tsc -b && eslint . --ext=.ts && chmod +x bin/pkglint",
+    "build": "tsc -b && eslint . --ext=.ts && cp ../../release.json . && chmod +x bin/pkglint",
     "test": "jest",
     "build+test": "npm run build && npm test",
     "build+test+package": "npm run build && npm test",
