@@ -1,5 +1,4 @@
 import * as console from 'console';
-import * as os from 'os';
 import * as path from 'path';
 import * as process from 'process';
 import cfn2ts from 'cfn2ts';
@@ -79,7 +78,7 @@ function findWorkspacePath(): string {
   return _findRootPath(process.cwd());
 
   function _findRootPath(part: string): string {
-    if (process.cwd() === os.homedir()) {
+    if (part === path.resolve(part, '..')) {
       throw new Error('couldn\'t find a \'lerna.json\' file when walking up the directory tree, are you in a aws-cdk project?');
     }
 
