@@ -134,34 +134,6 @@ export function withMonolithicCfnIncludeCdkApp<A extends TestContext>(block: (co
   };
 }
 
-export function withAwsCdkLib<A extends TestContext>(block: (context: BaseTestFixture) => Promise<void>) {
-  return async (context: A) => {
-    const randy = randomString();
-    const integTestDir = path.join(os.tmpdir(), `aws-cdk-lib-integ-${randy}`);
-
-    context.output.write(` Test directory: ${integTestDir}\n`);
-    const fixture = new BaseTestFixture(integTestDir, context.output);
-    await shell(['mkdir', '-p', fixture.integTestDir]);
-
-    let success = true;
-    try {
-      await installNpmPackages(fixture, {
-        'aws-cdk-lib': FRAMEWORK_VERSION ?? '*',
-      });
-
-      await block(fixture);
-    } catch (e) {
-      success = false;
-      throw e;
-    } finally {
-      if (process.env.INTEG_NO_CLEAN) {
-        process.stderr.write(`Left test directory in '${integTestDir}' ($INTEG_NO_CLEAN)\n`);
-      } else {
-        await fixture.dispose(success);
-      }
-    }
-  };
-}
 /**
  * Default test fixture for most (all?) integ tests
  *
@@ -217,12 +189,15 @@ export async function cloneDirectory(source: string, target: string, output?: No
   await shell(['cp', '-R', source + '/*', target], { output });
 }
 
-export class BaseTestFixture {
+export class TestFixture {
   public readonly qualifier = randomString().substr(0, 10);
+  private readonly bucketsToDelete = new Array<string>();
 
   constructor(
     public readonly integTestDir: string,
-    public readonly output: NodeJS.WritableStream) {
+    public readonly stackNamePrefix: string,
+    public readonly output: NodeJS.WritableStream,
+    public readonly aws: AwsClients) {
   }
 
   public log(s: string) {
@@ -235,26 +210,6 @@ export class BaseTestFixture {
       cwd: this.integTestDir,
       ...options,
     });
-  }
-
-  public async dispose(success: boolean) {
-    // If the tests completed successfully, happily delete the fixture
-    // (otherwise leave it for humans to inspect)
-    if (success) {
-      rimraf(this.integTestDir);
-    }
-  }
-}
-
-export class TestFixture extends BaseTestFixture {
-  private readonly bucketsToDelete = new Array<string>();
-
-  constructor(
-    public readonly integTestDir: string,
-    public readonly stackNamePrefix: string,
-    public readonly output: NodeJS.WritableStream,
-    public readonly aws: AwsClients) {
-    super(integTestDir, output);
   }
 
   public async cdkDeploy(stackNames: string | string[], options: CdkCliOptions = {}) {
@@ -342,7 +297,11 @@ export class TestFixture extends BaseTestFixture {
       await this.aws.deleteBucket(bucket);
     }
 
-    await super.dispose(success);
+    // If the tests completed successfully, happily delete the fixture
+    // (otherwise leave it for humans to inspect)
+    if (success) {
+      rimraf(this.integTestDir);
+    }
   }
 
   /**
@@ -511,7 +470,7 @@ export function randomString() {
  * symlinked from the TARGET directory's `node_modules` directory (which is sufficient
  * for Node's dependency lookup mechanism).
  */
-async function installNpmPackages(fixture: BaseTestFixture, packages: Record<string, string>) {
+async function installNpmPackages(fixture: TestFixture, packages: Record<string, string>) {
   if (process.env.REPO_ROOT) {
     const monoRepo = await findYarnPackages(process.env.REPO_ROOT);
 
