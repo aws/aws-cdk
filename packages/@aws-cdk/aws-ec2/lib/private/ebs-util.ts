@@ -26,7 +26,7 @@ function synthesizeBlockDeviceMappings<RT, NDT>(construct: Construct, blockDevic
     let cfnEbs: CfnInstance.EbsProperty | undefined;
 
     if (ebs) {
-      const { iops, volumeType, kmsKey } = ebs;
+      const { iops, volumeType } = ebs;
 
       if (!iops) {
         if (volumeType === EbsDeviceVolumeType.IO1) {
@@ -37,8 +37,13 @@ function synthesizeBlockDeviceMappings<RT, NDT>(construct: Construct, blockDevic
       }
 
       cfnEbs = {
-        ...ebs,
-        kmsKeyId: kmsKey?.keyArn,
+        deleteOnTermination: ebs.deleteOnTermination,
+        encrypted: ebs.encrypted,
+        iops: iops,
+        kmsKeyId: ebs.kmsKey?.keyArn,
+        snapshotId: ebs.snapshotId,
+        volumeSize: ebs.volumeSize,
+        volumeType: volumeType,
       };
     }
 

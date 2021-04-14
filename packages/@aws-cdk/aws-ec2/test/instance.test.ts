@@ -263,7 +263,7 @@ nodeunitShim({
               DeleteOnTermination: true,
               Encrypted: true,
               Iops: 5000,
-              KmsKey: {
+              KmsKeyId: {
                 'Fn::GetAtt': [
                   'CustomKey1E6D0D07',
                   'Arn',
@@ -334,7 +334,7 @@ nodeunitShim({
               DeleteOnTermination: true,
               Encrypted: true,
               Iops: 5000,
-              KmsKey: {
+              KmsKeyId: {
                 'Fn::GetAtt': [
                   'CustomKey1E6D0D07',
                   'Arn',
