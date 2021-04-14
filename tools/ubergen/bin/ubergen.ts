@@ -373,7 +373,6 @@ async function copyOrTransformFiles(from: string, to: string, libraries: readonl
       await fs.mkdirp(destination);
       return copyOrTransformFiles(source, destination, libraries, uberPackageJson);
     }
-
     if (name.endsWith('.ts')) {
       return fs.writeFile(
         destination,
