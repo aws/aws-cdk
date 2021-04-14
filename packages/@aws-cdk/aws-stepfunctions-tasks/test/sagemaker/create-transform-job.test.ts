@@ -122,7 +122,7 @@ test('create complex transform job', () => {
     },
     transformResources: {
       instanceCount: 1,
-      instanceType: ec2.InstanceType.of(ec2.InstanceClass.P3, ec2.InstanceSize.XLARGE2),
+      instanceType: tasks.InstanceType.fromEc2InstanceType(ec2.InstanceType.of(ec2.InstanceClass.P3, ec2.InstanceSize.XLARGE2)),
       volumeEncryptionKey: kmsKey,
     },
     tags: {
@@ -208,7 +208,7 @@ test('pass param to transform job', () => {
     },
     transformResources: {
       instanceCount: 1,
-      instanceType: ec2.InstanceType.of(ec2.InstanceClass.P3, ec2.InstanceSize.XLARGE2),
+      instanceType: tasks.InstanceType.fromEc2InstanceType(ec2.InstanceType.of(ec2.InstanceClass.P3, ec2.InstanceSize.XLARGE2)),
     },
   });
 
@@ -267,7 +267,7 @@ test('create transform job with instance type as a parameter', () => {
     },
     transformResources: {
       instanceCount: 1,
-      instanceType: sfn.JsonPath.stringAt('$.InstanceType'),
+      instanceType: tasks.InstanceType.fromString(sfn.JsonPath.stringAt('$.InstanceType')),
     },
   });
 
