@@ -34,7 +34,7 @@ In addition, the library also supports defining Kubernetes resource manifests wi
   * [Kubernetes Manifests](#kubernetes-manifests)
   * [Helm Charts](#helm-charts)
   * [CDK8s Charts](#cdk8s-charts)
-* [Patching Kuberentes Resources](#patching-kubernetes-resources)
+* [Patching Kubernetes Resources](#patching-kubernetes-resources)
 * [Querying Kubernetes Resources](#querying-kubernetes-resources)
 * [Using existing clusters](#using-existing-clusters)
 * [Known Issues and Limitations](#known-issues-and-limitations)
@@ -356,7 +356,7 @@ const asg = new ec2.AutoScalingGroup(...);
 cluster.connectAutoScalingGroupCapacity(asg);
 ```
 
-In both cases, the [cluster security group](https://docs.aws.amazon.com/eks/latest/userguide/sec-group-reqs.html#cluster-sg) will be autoamtically attached to
+In both cases, the [cluster security group](https://docs.aws.amazon.com/eks/latest/userguide/sec-group-reqs.html#cluster-sg) will be automatically attached to
 the auto-scaling group, allowing for traffic to flow freely between managed and self-managed nodes.
 
 > **Note:** The default `updateType` for auto-scaling groups does not replace existing nodes. Since security groups are determined at launch time, self-managed nodes that were provisioned with version `1.78.0` or lower, will not be updated.
@@ -651,6 +651,15 @@ const secretsKey = new kms.Key(this, 'SecretsKey');
 const cluster = new eks.Cluster(this, 'MyCluster', {
   secretsEncryptionKey: secretsKey,
   // ...
+});
+```
+
+You can also use a similiar configuration for running a cluster built using the FargateCluster construct.
+
+```ts
+const secretsKey = new kms.Key(this, 'SecretsKey');
+const cluster = new eks.FargateCluster(this, 'MyFargateCluster', {
+  secretsEncryptionKey: secretsKey
 });
 ```
 
