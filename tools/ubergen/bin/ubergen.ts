@@ -283,7 +283,7 @@ async function transformPackage(
     const destinationLib = path.join(destination, 'lib');
     await fs.mkdirp(destinationLib);
     await cfn2ts(cfnScopes, destinationLib);
-    // create the lib/index.ts which only exports the generated files
+    // create a lib/index.ts which only exports the generated files
     fs.writeFileSync(path.join(destinationLib, 'index.ts'),
       /// logic copied from `create-missing-libraries.ts`
       cfnScopes.map(s => (s === 'AWS::Serverless' ? 'AWS::SAM' : s).split('::')[1].toLocaleLowerCase())
