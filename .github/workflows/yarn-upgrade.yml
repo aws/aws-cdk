@@ -51,7 +51,7 @@ jobs:
           # Upgrade dependencies at repository root
           ncu --upgrade --filter=@types/node,@types/fs-extra --target=minor
           ncu --upgrade --filter=typescript --target=patch
-          ncu --upgrade --reject=@types/node,@types/fs-extra,constructs,typescript --target=minor
+          ncu --upgrade --reject=@types/node,@types/fs-extra,constructs,typescript,lerna --target=minor
           # Upgrade all the packages
           lerna exec --parallel ncu -- --upgrade --filter=@types/node,@types/fs-extra --target=minor
           lerna exec --parallel ncu -- --upgrade --filter=typescript --target=patch
