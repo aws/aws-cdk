@@ -212,7 +212,7 @@ async function verifyDependencies(packageJson: any, libraries: readonly LibraryR
   if (changed) {
     await fs.writeFile(UBER_PACKAGE_JSON_PATH, JSON.stringify(packageJson, null, 2) + '\n', { encoding: 'utf8' });
 
-    throw new Error('  dependency inconsistencies. Commit the updated package.json file.');
+    throw new Error('Fixed dependency inconsistencies. Commit the updated package.json file.');
   }
   console.log('\t✅ Dependencies are correct!');
 }
@@ -268,13 +268,9 @@ async function transformPackage(
   allLibraries: readonly LibraryReference[],
 ) {
   await fs.mkdirp(destination);
-  // only temporary until we get these removed
-  const allowedExperimental = ['@aws-cdk/aws-s3-assets', '@aws-cdk/aws-ecr-assets', '@aws-cdk/aws-batch', '@aws-cdk/aws-msk', '@aws-cdk/aws-apigatewayv2'];
 
-  if (uberPackageJson.ubergen?.stripExperimental && library.packageJson.stability === 'experimental' && !allowedExperimental.includes(library.packageJson.name)) {
-
-    // in aws-cdk-lib we only allow the L1s of experimental modules. The code below is similar to the code used to create a new cfn module, it execute cfn2ts,
-    // and generate the index.ts file.
+  if (uberPackageJson.ubergen?.stripExperimental && library.packageJson.stability === 'experimental') {
+    // in stripExperimental is on want to only add the L1s of experimental modules.
     let cfnScopes = library.packageJson['cdk-build'].cloudformation;
 
     if (cfnScopes === undefined) {
@@ -289,7 +285,7 @@ async function transformPackage(
     await cfn2ts(cfnScopes, destinationLib);
     // create the lib/index.ts which only exports the generated files
     fs.writeFileSync(path.join(destinationLib, 'index.ts'),
-      /// copied from `create-missing-libraries.ts`
+      /// logic copied from `create-missing-libraries.ts`
       cfnScopes.map(s => (s === 'AWS::Serverless' ? 'AWS::SAM' : s).split('::')[1].toLocaleLowerCase())
         .map(s => `export * from './${s}.generated';`)
         .join('\n'));

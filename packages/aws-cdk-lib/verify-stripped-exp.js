@@ -9,28 +9,27 @@ const path = require('path');
 
 
 const JS_DIST_LIB = 'dist/js/';
-const allowedExperimental = ['aws-s3-assets', 'aws-ecr-assets', 'aws-batch', 'aws-msk', 'aws-apigatewayv2'];
-
 
 async function main(tempDir) {
   const cwd = process.cwd();
-  const awsCdkModulesPath = path.join(findWorkspacePath(),'packages', '@aws-cdk');
+  const awsCdkModulesRepoPath = path.join(findWorkspacePath(),'packages', '@aws-cdk');
   process.chdir(tempDir);
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
   const version = require('./package.json').version;
   const tarFullPath = path.join(cwd, JS_DIST_LIB, `aws-cdk-lib-${version}.tgz`);
+
+  // install the tarball in a temp directory
   exec('npm', ['init', '-y']);
   exec('npm', ['install', tarFullPath]);
-  const installedAwsCdkLib = path.join('node_modules', 'aws-cdk-lib', 'lib');
+  const installedAwsCdkLibPath = path.join('node_modules', 'aws-cdk-lib', 'lib');
 
-  for (const module of fs.readdirSync(awsCdkModulesPath)) {
-    const pkgJson = require(path.join(awsCdkModulesPath, module, 'package.json'));
-    if (pkgJson['stability'] !== 'experimental' || allowedExperimental.includes(module)) {
+  for (const module of fs.readdirSync(awsCdkModulesRepoPath)) {
+    const pkgJson = require(path.join(awsCdkModulesRepoPath, module, 'package.json'));
+    if (pkgJson['stability'] !== 'experimental') {
       continue;
     }
     if (pkgJson['cdk-build'].cloudformation) {
       // if a cfn module, verify only the allowed files exists
-      const files = await getAllFiles(path.join(installedAwsCdkLib, module));
+      const files = await getAllFiles(path.join(installedAwsCdkLibPath, module));
       files.forEach(file => {
         if (!isAllowedFile(file)) {
           throw `only L1 auto generated files are allowed in experimental modules included in aws-cdk-lib, the file ${file} exists in ${module}`;
@@ -38,7 +37,7 @@ async function main(tempDir) {
       });
     } else {
       // not a cfn module, verify it was entirely removed
-      if (fs.existsSync(path.join(installedAwsCdkLib, module))) {
+      if (fs.existsSync(path.join(installedAwsCdkLibPath, module))) {
         throw `only L1s of experimental modules are allowed in aws-cdk-lib. The higher level module ${module} was included`;
       }
     }
