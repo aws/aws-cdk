@@ -1,9 +1,9 @@
-import * as assets from '@aws-cdk/assets';
 import * as ecr from '@aws-cdk/aws-ecr';
 import * as ecr_assets from '@aws-cdk/aws-ecr-assets';
-import { ImageAsset, ImageAssetOptions, SymlinkFollowMode } from '@aws-cdk/core';
+import { ImageAsset, ImageAssetOptions } from '@aws-cdk/core';
 import { ContainerDefinition } from '../container-definition';
 import { ContainerImage, ContainerImageConfig } from '../container-image';
+import { toSymlinkFollow } from '../private/follow';
 
 // v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
 // eslint-disable-next-line
@@ -41,15 +41,5 @@ export class AssetImage extends ContainerImage {
     return {
       imageName: asset.imageUri,
     };
-  }
-}
-
-function toSymlinkFollow(follow?: assets.FollowMode): SymlinkFollowMode | undefined {
-  switch (follow) {
-    case undefined: return undefined;
-    case assets.FollowMode.NEVER: return SymlinkFollowMode.NEVER;
-    case assets.FollowMode.ALWAYS: return SymlinkFollowMode.ALWAYS;
-    case assets.FollowMode.BLOCK_EXTERNAL: return SymlinkFollowMode.BLOCK_EXTERNAL;
-    case assets.FollowMode.EXTERNAL: return SymlinkFollowMode.EXTERNAL;
   }
 }
