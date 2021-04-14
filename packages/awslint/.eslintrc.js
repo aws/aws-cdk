@@ -1,12 +1,5 @@
-/**
- * JavaScript and generic rules:
- *
- *     https://eslint.org/docs/rules/
- *
- * TypeScript-specific rules (including migrations from TSlint), see here:
- *
- *     https://github.com/typescript-eslint/typescript-eslint/blob/master/packages/eslint-plugin/ROADMAP.md
- */
+// This cannot reference the build rules from cdk-build-tools as this
+// package is itself used by cdk-build-tools.
 module.exports = {
   env: {
     jest: true,
