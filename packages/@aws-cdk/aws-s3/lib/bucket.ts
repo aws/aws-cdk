@@ -1502,7 +1502,10 @@ export class Bucket extends BucketBase {
         Bool: { 'aws:SecureTransport': 'false' },
       },
       effect: iam.Effect.DENY,
-      resources: [this.arnForObjects('*')],
+      resources: [
+        this.bucketArn,
+        this.arnForObjects('*'),
+      ],
       principals: [new iam.AnyPrincipal()],
     });
     this.addToResourcePolicy(statement);

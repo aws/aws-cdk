@@ -1,4 +1,4 @@
-import { expect, haveResource } from '@aws-cdk/assert';
+import { expect, haveResource } from '@aws-cdk/assert-internal';
 import * as sns from '@aws-cdk/aws-sns';
 import * as sqs from '@aws-cdk/aws-sqs';
 import * as cdk from '@aws-cdk/core';
@@ -59,7 +59,7 @@ export = {
       deadLetterQueue: queue,
       filterPolicy: {
         Field: sns.SubscriptionFilter.stringFilter({
-          whitelist: ['A', 'B'],
+          allowlist: ['A', 'B'],
         }),
       },
     };

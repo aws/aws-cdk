@@ -1,4 +1,4 @@
-import '@aws-cdk/assert/jest';
+import '@aws-cdk/assert-internal/jest';
 import * as cognito from '@aws-cdk/aws-cognito';
 import * as cdk from '@aws-cdk/core';
 import * as appsync from '../lib';

@@ -1,4 +1,4 @@
-import { arrayWith, expect, haveResource } from '@aws-cdk/assert';
+import { arrayWith, expect, haveResource } from '@aws-cdk/assert-internal';
 import { SecurityGroup, SubnetType, Vpc } from '@aws-cdk/aws-ec2';
 import * as lambda from '@aws-cdk/aws-lambda';
 import { Secret } from '@aws-cdk/aws-secretsmanager';
