@@ -110,12 +110,12 @@ export = {
       endpoint: 'endpoint',
       filterPolicy: {
         color: sns.SubscriptionFilter.stringFilter({
-          whitelist: ['red', 'green'],
-          blacklist: ['white', 'orange'],
+          allowlist: ['red', 'green'],
+          denylist: ['white', 'orange'],
           matchPrefixes: ['bl', 'ye'],
         }),
         price: sns.SubscriptionFilter.numericFilter({
-          whitelist: [100, 200],
+          allowlist: [100, 200],
           between: { start: 300, stop: 350 },
           greaterThan: 500,
           lessThan: 1000,
