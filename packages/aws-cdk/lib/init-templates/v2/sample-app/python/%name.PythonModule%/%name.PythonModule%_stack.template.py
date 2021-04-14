@@ -1,5 +1,5 @@
 from constructs import Construct
-from aws-cdk-lib import (
+from aws_cdk import (
     Duration,
     Stack,
     aws_iam as iam,
