@@ -2,6 +2,7 @@ package com.myorg;
 
 import software.amazon.awscdk.App;
 import software.amazon.awscdk.Environment;
+import software.amazon.awscdk.StackProps;
 
 import java.util.Arrays;
 
