@@ -256,24 +256,7 @@ async function initCommandLine() {
         });
 
       case 'bootstrap':
-        // Use new bootstrapping if it's requested via environment variable, or if
-        // new style stack synthesis has been configured in `cdk.json`.
-        //
-        // In code it's optimistically called "default" bootstrapping but that is in
-        // anticipation of flipping the switch, in user messaging we still call it
-        // "new" bootstrapping.
-        let source: BootstrapSource = { source: 'legacy' };
-        const newStyleStackSynthesis = isFeatureEnabled(configuration, cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT);
-        if (args.template) {
-          print(`Using bootstrapping template from ${args.template}`);
-          source = { source: 'custom', templateFile: args.template };
-        } else if (process.env.CDK_NEW_BOOTSTRAP) {
-          print('CDK_NEW_BOOTSTRAP set, using new-style bootstrapping');
-          source = { source: 'default' };
-        } else if (newStyleStackSynthesis) {
-          print(`'${cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT}' context set, using new-style bootstrapping`);
-          source = { source: 'default' };
-        }
+        const source: BootstrapSource = determineBootsrapVersion(args, configuration);
 
         const bootstrapper = new Bootstrapper(source);
 
@@ -359,6 +342,48 @@ async function initCommandLine() {
   function toJsonOrYaml(object: any): string {
     return serializeStructure(object, argv.json);
   }
+}
+
+/**
+ * Determine which version of bootstrapping
+ * (legacy, or "new") should be used.
+ */
+function determineBootsrapVersion(args: { template?: string }, configuration: Configuration): BootstrapSource {
+  const isV1 = version.DISPLAY_VERSION.startsWith('1.');
+  return isV1 ? determineV1BootstrapSource(args, configuration) : determineV2BootstrapSource(args);
+}
+
+function determineV1BootstrapSource(args: { template?: string }, configuration: Configuration): BootstrapSource {
+  let source: BootstrapSource;
+  if (args.template) {
+    print(`Using bootstrapping template from ${args.template}`);
+    source = { source: 'custom', templateFile: args.template };
+  } else if (process.env.CDK_NEW_BOOTSTRAP) {
+    print('CDK_NEW_BOOTSTRAP set, using new-style bootstrapping');
+    source = { source: 'default' };
+  } else if (isFeatureEnabled(configuration, cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT)) {
+    print(`'${cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT}' context set, using new-style bootstrapping`);
+    source = { source: 'default' };
+  } else {
+    // in V1, the "legacy" bootstrapping is the default
+    source = { source: 'legacy' };
+  }
+  return source;
+}
+
+function determineV2BootstrapSource(args: { template?: string }): BootstrapSource {
+  let source: BootstrapSource;
+  if (args.template) {
+    print(`Using bootstrapping template from ${args.template}`);
+    source = { source: 'custom', templateFile: args.template };
+  } else if (process.env.CDK_LEGACY_BOOTSTRAP) {
+    print('CDK_LEGACY_BOOTSTRAP set, using legacy-style bootstrapping');
+    source = { source: 'legacy' };
+  } else {
+    // in V2, the "new" bootstrapping is the default
+    source = { source: 'default' };
+  }
+  return source;
 }
 
 function isFeatureEnabled(configuration: Configuration, featureFlag: string) {
