@@ -1,0 +1,23 @@
+diff --git a/node_modules/@lerna/package-graph/index.js b/node_modules/@lerna/package-graph/index.js
+index 804aae0..72c22b9 100644
+--- a/node_modules/@lerna/package-graph/index.js
++++ b/node_modules/@lerna/package-graph/index.js
+@@ -218,6 +218,8 @@ class PackageGraph extends Map {
+     /** @type {(PackageGraphNode | CyclicPackageGraphNode)[]} */
+     const walkStack = [];
+ 
++    const seen = new Set();
++
+     function visits(baseNode, dependentNode) {
+       if (nodeToCycle.has(baseNode)) {
+         return;
+@@ -228,6 +230,9 @@ class PackageGraph extends Map {
+         topLevelDependent = nodeToCycle.get(topLevelDependent);
+       }
+ 
++      if (seen.has(topLevelDependent)) { return; }
++      seen.add(topLevelDependent);
++
+       if (
+         topLevelDependent === baseNode ||
+         (topLevelDependent.isCycle && topLevelDependent.has(baseNode.name))
