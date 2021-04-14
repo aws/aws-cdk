@@ -1,6 +1,5 @@
 {
   "name": "aws-cdk-lib",
-  "private": "true",
   "version": "0.0.0",
   "description": "The AWS Cloud Development Kit library",
   "main": "lib/index.js",
@@ -66,10 +65,6 @@
       "python": {
         "distName": "aws-cdk-lib",
         "module": "aws_cdk"
-      },
-      "go": {
-        "moduleName": "github.com/aws/aws-cdk-go",
-        "packageName": "awscdk"
       }
     },
     "projectReferences": false
@@ -314,6 +309,7 @@
     "announce": false
   },
   "ubergen": {
-    "exclude": true
+    "exclude": true,
+    "stripExperimental": true
   }
 }
