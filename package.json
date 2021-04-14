@@ -12,7 +12,7 @@
     "compat": "./scripts/check-api-compatibility.sh",
     "bump": "./bump.sh",
     "build-all": "tsc -b",
-    "postinstall": "patch-package"
+    "postinstall": "patch-package --error-on-fail"
   },
   "devDependencies": {
     "conventional-changelog-cli": "^2.1.1",
