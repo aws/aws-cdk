@@ -1,4 +1,4 @@
-open Amazon.CDK.Lib
+open Amazon.CDK
 open %name.PascalCased%
 
 [<EntryPoint>]
