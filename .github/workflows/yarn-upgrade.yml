@@ -46,11 +46,12 @@ jobs:
         # We special-case aws-sdk because of breaking changes with TS interface exports in recent minor versions - https://github.com/aws/aws-sdk-js/issues/3453
         # We special-case typescript because it's not semantically versionned
         # We special-case constructs because we want to stay in control of the minimum compatible version
+        # We special-case lerna because we have a patch on it that stops applying if Lerna upgrades. Remove this once https://github.com/lerna/lerna/pull/2874 releases.
         run: |-
           # Upgrade dependencies at repository root
           ncu --upgrade --filter=@types/node,@types/fs-extra --target=minor
           ncu --upgrade --filter=typescript --target=patch
-          ncu --upgrade --reject=@types/node,@types/fs-extra,constructs,typescript --target=minor
+          ncu --upgrade --reject=@types/node,@types/fs-extra,constructs,typescript,lerna --target=minor
           # Upgrade all the packages
           lerna exec --parallel ncu -- --upgrade --filter=@types/node,@types/fs-extra --target=minor
           lerna exec --parallel ncu -- --upgrade --filter=typescript --target=patch
