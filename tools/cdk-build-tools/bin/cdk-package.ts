@@ -3,8 +3,8 @@ import * as fs from 'fs-extra';
 import * as yargs from 'yargs';
 import * as yarnCling from 'yarn-cling';
 import { shell } from '../lib/os';
+import { cdkPackageOptions, isJsii, isPrivate } from '../lib/package-info';
 import { Timers } from '../lib/timer';
-import {cdkPackageOptions, currentPackageJson, isJsii, isPrivate } from '../lib/package-info';
 
 const timers = new Timers();
 const buildTimer = timers.start('Total time');
