@@ -66,7 +66,7 @@ interface PackageJson {
   };
   readonly ubergen?: {
     readonly deprecatedPackages?: readonly string[];
-    readonly stripExperimental?: boolean;
+    readonly excludeExperimentalL2?: boolean;
   };
 }
 
@@ -219,6 +219,10 @@ async function verifyDependencies(packageJson: any, libraries: readonly LibraryR
 async function prepareSourceFiles(libraries: readonly LibraryReference[], packageJson: PackageJson) {
   console.log('📝 Preparing source files...');
 
+  if (packageJson.ubergen?.excludeExperimentalL2) {
+    console.log('\t 👩🏻‍🔬 \'excludeExperimentalL2\' is on, regenerating all experimental modules as L1s using cfn2ts');
+  }
+
   await fs.remove(LIB_ROOT);
 
   const indexStatements = new Array<string>();
@@ -268,7 +272,7 @@ async function transformPackage(
 ) {
   await fs.mkdirp(destination);
 
-  if (uberPackageJson.ubergen?.stripExperimental && library.packageJson.stability === 'experimental') {
+  if (uberPackageJson.ubergen?.excludeExperimentalL2 && library.packageJson.stability === 'experimental') {
     // in stripExperimental is on, we only want to add the L1s of experimental modules.
     let cfnScopes = library.packageJson['cdk-build'].cloudformation;
 
