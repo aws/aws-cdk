@@ -20,13 +20,15 @@ describe('DNS Validated Certificate Handler', () => {
   const testRRValue = '_x2.acm-validations.aws';
   const testAltRRName = '_3639ac514e785e898d2646601fa951d5.foo.example.com';
   const testAltRRValue = '_x3.acm-validations.aws';
-  const spySleep = sinon.spy(function(ms) {
+  const testTags = { Tag1: 'Test1', Tag2: 'Test2' };
+  const testTagsValue = [{ Key: 'Tag1', Value: 'Test1' }, { Key: 'Tag2', Value: 'Test2' }];
+  const spySleep = sinon.spy(function (ms) {
     return Promise.resolve();
   });
 
   beforeEach(() => {
     handler.withDefaultResponseURL(ResponseURL);
-    handler.withWaiter(function() {
+    handler.withWaiter(function () {
       // Mock waiter is merely a self-fulfilling promise
       return {
         promise: () => {
@@ -37,7 +39,7 @@ describe('DNS Validated Certificate Handler', () => {
       };
     });
     handler.withSleep(spySleep);
-    console.log = function() { };
+    console.log = function () { };
   });
   afterEach(() => {
     // Restore waiters and logger
@@ -99,6 +101,8 @@ describe('DNS Validated Certificate Handler', () => {
       }
     });
 
+    const addTagsToCertificateFake = sinon.fake.resolves({});
+
     const changeResourceRecordSetsFake = sinon.fake.resolves({
       ChangeInfo: {
         Id: 'bogus'
@@ -108,6 +112,7 @@ describe('DNS Validated Certificate Handler', () => {
     AWS.mock('ACM', 'requestCertificate', requestCertificateFake);
     AWS.mock('ACM', 'describeCertificate', describeCertificateFake);
     AWS.mock('Route53', 'changeResourceRecordSets', changeResourceRecordSetsFake);
+    AWS.mock('ACM', 'addTagsToCertificate', addTagsToCertificateFake);
 
     const request = nock(ResponseURL).put('/', body => {
       return body.Status === 'SUCCESS';
@@ -121,6 +126,7 @@ describe('DNS Validated Certificate Handler', () => {
           DomainName: testDomainName,
           HostedZoneId: testHostedZoneId,
           Region: 'us-east-1',
+          Tags: testTags
         }
       })
       .expectResolve(() => {
@@ -143,6 +149,10 @@ describe('DNS Validated Certificate Handler', () => {
             }]
           },
           HostedZoneId: testHostedZoneId
+        }));
+        sinon.assert.calledWith(addTagsToCertificateFake, sinon.match({
+          "CertificateArn": testCertificateArn,
+          "Tags": testTagsValue,
         }));
         expect(request.isDone()).toBe(true);
       });
@@ -182,14 +192,21 @@ describe('DNS Validated Certificate Handler', () => {
       }
     });
 
+    const addTagsToCertificateFake = sinon.fake.resolves({
+      Certificate: testCertificateArn,
+      Tags: testTags,
+    });
+
     const changeResourceRecordSetsFake = sinon.fake.resolves({
       ChangeInfo: {
         Id: 'bogus'
       }
     });
 
+
     AWS.mock('ACM', 'requestCertificate', requestCertificateFake);
     AWS.mock('ACM', 'describeCertificate', describeCertificateFake);
+    AWS.mock('ACM', 'addTagsToCertificate', addTagsToCertificateFake);
     AWS.mock('Route53', 'changeResourceRecordSets', changeResourceRecordSetsFake);
 
     const request = nock(ResponseURL).put('/', body => {
@@ -205,6 +222,7 @@ describe('DNS Validated Certificate Handler', () => {
           SubjectAlternativeNames: [testSubjectAlternativeName],
           HostedZoneId: testHostedZoneId,
           Region: 'us-east-1',
+          Tags: testTags,
         }
       })
       .expectResolve(() => {
@@ -240,6 +258,10 @@ describe('DNS Validated Certificate Handler', () => {
             ]
           },
           HostedZoneId: testHostedZoneId
+        }));
+        sinon.assert.calledWith(addTagsToCertificateFake, sinon.match({
+          "CertificateArn": testCertificateArn,
+          "Tags": testTagsValue,
         }));
         expect(request.isDone()).toBe(true);
       });
@@ -286,6 +308,11 @@ describe('DNS Validated Certificate Handler', () => {
       }
     });
 
+    const addTagsToCertificateFake = sinon.fake.resolves({
+      Certificate: testCertificateArn,
+      Tags: testTags,
+    });
+
     const changeResourceRecordSetsFake = sinon.fake.resolves({
       ChangeInfo: {
         Id: 'bogus'
@@ -294,6 +321,7 @@ describe('DNS Validated Certificate Handler', () => {
 
     AWS.mock('ACM', 'requestCertificate', requestCertificateFake);
     AWS.mock('ACM', 'describeCertificate', describeCertificateFake);
+    AWS.mock('ACM', 'addTagsToCertificate', addTagsToCertificateFake);
     AWS.mock('Route53', 'changeResourceRecordSets', changeResourceRecordSetsFake);
 
     const request = nock(ResponseURL).put('/', body => {
@@ -308,6 +336,7 @@ describe('DNS Validated Certificate Handler', () => {
           DomainName: testDomainName,
           HostedZoneId: testHostedZoneId,
           Region: 'us-east-1',
+          Tags: testTags,
         }
       })
       .expectResolve(() => {
@@ -342,6 +371,10 @@ describe('DNS Validated Certificate Handler', () => {
             ]
           },
           HostedZoneId: testHostedZoneId
+        }));
+        sinon.assert.calledWith(addTagsToCertificateFake, sinon.match({
+          "CertificateArn": testCertificateArn,
+          "Tags": testTagsValue,
         }));
         expect(request.isDone()).toBe(true);
       });
@@ -453,6 +486,12 @@ describe('DNS Validated Certificate Handler', () => {
     });
     AWS.mock('ACM', 'describeCertificate', describeCertificateFake);
 
+    const addTagsToCertificateFake = sinon.fake.resolves({
+      Certificate: testCertificateArn,
+      Tags: testTags,
+    });
+    AWS.mock('ACM', 'addTagsToCertificate', addTagsToCertificateFake);
+
     const changeResourceRecordSetsFake = sinon.fake.resolves({
       ChangeInfo: {
         Id: 'bogus'
@@ -472,12 +511,100 @@ describe('DNS Validated Certificate Handler', () => {
           DomainName: testDomainName,
           HostedZoneId: testHostedZoneId,
           Region: 'us-east-1',
+          Tags: testTags,
         }
       })
       .expectResolve(() => {
         sinon.assert.calledOnce(describeCertificateFake);
         sinon.assert.calledWith(describeCertificateFake, sinon.match({
           CertificateArn: testCertificateArn,
+        }));
+        sinon.assert.calledWith(addTagsToCertificateFake, sinon.match({
+          "CertificateArn": testCertificateArn,
+          "Tags": testTagsValue,
+        }));
+        expect(request.isDone()).toBe(true);
+      });
+  });
+
+  test('Create operation succeeds with no tags passed', () => {
+    const requestCertificateFake = sinon.fake.resolves({
+      CertificateArn: testCertificateArn,
+    });
+
+    const describeCertificateFake = sinon.stub();
+    describeCertificateFake.onFirstCall().resolves({
+      Certificate: {
+        CertificateArn: testCertificateArn
+      }
+    });
+    describeCertificateFake.resolves({
+      Certificate: {
+        CertificateArn: testCertificateArn,
+        DomainValidationOptions: [{
+          ValidationStatus: 'SUCCESS',
+          ResourceRecord: {
+            Name: testRRName,
+            Type: 'CNAME',
+            Value: testRRValue
+          }
+        }]
+      }
+    });
+
+    const changeResourceRecordSetsFake = sinon.fake.resolves({
+      ChangeInfo: {
+        Id: 'bogus'
+      }
+    });
+
+    const addTagsToCertificateFake = sinon.fake.resolves({
+      Certificate: testCertificateArn,
+    });
+
+    AWS.mock('ACM', 'requestCertificate', requestCertificateFake);
+    AWS.mock('ACM', 'describeCertificate', describeCertificateFake);
+    AWS.mock('Route53', 'changeResourceRecordSets', changeResourceRecordSetsFake);
+    AWS.mock('ACM', 'addTagsToCertificate', addTagsToCertificateFake);
+
+    const request = nock(ResponseURL).put('/', body => {
+      return body.Status === 'SUCCESS';
+    }).reply(200);
+
+    return LambdaTester(handler.certificateRequestHandler)
+      .event({
+        RequestType: 'Create',
+        RequestId: testRequestId,
+        ResourceProperties: {
+          DomainName: testDomainName,
+          HostedZoneId: testHostedZoneId,
+          Region: 'us-east-1'
+        }
+      })
+      .expectResolve(() => {
+        sinon.assert.calledWith(requestCertificateFake, sinon.match({
+          DomainName: testDomainName,
+          ValidationMethod: 'DNS'
+        }));
+        sinon.assert.calledWith(changeResourceRecordSetsFake, sinon.match({
+          ChangeBatch: {
+            Changes: [{
+              Action: 'UPSERT',
+              ResourceRecordSet: {
+                Name: testRRName,
+                Type: 'CNAME',
+                TTL: 60,
+                ResourceRecords: [{
+                  Value: testRRValue
+                }]
+              }
+            }]
+          },
+          HostedZoneId: testHostedZoneId
+        }));
+        sinon.assert.neverCalledWith(addTagsToCertificateFake, sinon.match({
+          "CertificateArn": testCertificateArn,
+          "Tags": testTagsValue,
         }));
         expect(request.isDone()).toBe(true);
       });
