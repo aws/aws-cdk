@@ -233,7 +233,15 @@ function tokenAwareStringify(root: any, space: number, ctx: IResolveContext) {
         //
         // Therefore, if we encounter lists we need to defer to a custom resource to handle
         // them properly at deploy time.
-        pushIntrinsic(CfnUtils.stringify(Stack.of(ctx.scope), `CdkJsonStringify${stringifyCounter++}`, intrinsic));
+        const stack = Stack.of(ctx.scope);
+
+        // Because this will be called twice (once during `prepare`, once during `resolve`),
+        // we need to make sure to be idempotent, so use a cache.
+        const stringifyResponse = stringifyCache.obtain(stack, JSON.stringify(intrinsic), () =>
+          CfnUtils.stringify(stack, `CdkJsonStringify${stringifyCounter++}`, intrinsic),
+        );
+
+        pushIntrinsic(stringifyResponse);
         return;
 
       case ResolutionTypeHint.NUMBER:
@@ -419,3 +427,27 @@ function quoteString(s: string) {
 }
 
 let stringifyCounter = 1;
+
+/**
+ * A cache scoped to object instances, that's maintained externally to the object instances
+ */
+class ScopedCache<O extends object, K, V> {
+  private cache = new WeakMap<O, Map<K, V>>();
+
+  public obtain(object: O, key: K, init: () => V): V {
+    let kvMap = this.cache.get(object);
+    if (!kvMap) {
+      kvMap = new Map();
+      this.cache.set(object, kvMap);
+    }
+
+    let ret = kvMap.get(key);
+    if (ret === undefined) {
+      ret = init();
+      kvMap.set(key, ret);
+    }
+    return ret;
+  }
+}
+
+const stringifyCache = new ScopedCache<Stack, string, string>();
