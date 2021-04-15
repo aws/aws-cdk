@@ -1,6 +1,7 @@
 {
   "name": "aws-cdk-lib",
   "version": "0.0.0",
+  "private": true,
   "description": "The AWS Cloud Development Kit library",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -16,7 +17,7 @@
     "build": "cdk-build",
     "lint": "cdk-lint",
     "test": "echo done",
-    "package": "cdk-package && node ./scripts/verify-stripped-exp.js",
+    "package": "cdk-package",
     "pkglint": "pkglint -f",
     "build+test": "yarn build && yarn test",
     "build+test+package": "yarn build+test && yarn package",
@@ -33,6 +34,9 @@
     "eslint": {
       "disable": true
     }
+  },
+  "cdk-package": {
+    "post": "node ./scripts/verify-stripped-exp.js"
   },
   "pkglint": {
     "exclude": [

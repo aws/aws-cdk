@@ -269,16 +269,14 @@ async function transformPackage(
   await fs.mkdirp(destination);
 
   if (uberPackageJson.ubergen?.stripExperimental && library.packageJson.stability === 'experimental') {
-    // in stripExperimental is on want to only add the L1s of experimental modules.
+    // in stripExperimental is on, we only want to add the L1s of experimental modules.
     let cfnScopes = library.packageJson['cdk-build'].cloudformation;
 
     if (cfnScopes === undefined) {
       return false;
     }
+    cfnScopes = Array.isArray(cfnScopes) ? cfnScopes : [cfnScopes];
 
-    if (typeof cfnScopes === 'string') {
-      cfnScopes = [cfnScopes];
-    }
     const destinationLib = path.join(destination, 'lib');
     await fs.mkdirp(destinationLib);
     await cfn2ts(cfnScopes, destinationLib);
