@@ -1,7 +1,7 @@
 {
   "name": "aws-cdk-lib",
+  "private": "true",
   "version": "0.0.0",
-  "private": true,
   "description": "The AWS Cloud Development Kit library",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
