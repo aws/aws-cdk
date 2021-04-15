@@ -1568,8 +1568,10 @@ export class JestSetup extends ValidationRule {
 export class UbergenPackageVisibility extends ValidationRule {
   public readonly name = 'ubergen/package-visibility';
 
+  // The ONLY packages that should be published for v2.
   // These include dependencies of the CDK CLI (aws-cdk).
-  private readonly publicPackages = [
+  private readonly v2PublicPackages = [
+    '@aws-cdk/assert',
     '@aws-cdk/cfnspec',
     '@aws-cdk/cloud-assembly-schema',
     '@aws-cdk/cloudformation-diff',
@@ -1585,7 +1587,7 @@ export class UbergenPackageVisibility extends ValidationRule {
   public validate(pkg: PackageJson): void {
     if (cdkMajorVersion() === 2) {
       // Only packages in the publicPackages list should be "public". Everything else should be private.
-      if (this.publicPackages.includes(pkg.json.name) && pkg.json.private === true) {
+      if (this.v2PublicPackages.includes(pkg.json.name) && pkg.json.private === true) {
         pkg.report({
           ruleName: this.name,
           message: 'Package must be public',
@@ -1593,7 +1595,7 @@ export class UbergenPackageVisibility extends ValidationRule {
             delete pkg.json.private;
           },
         });
-      } else if (!this.publicPackages.includes(pkg.json.name) && pkg.json.private !== true) {
+      } else if (!this.v2PublicPackages.includes(pkg.json.name) && pkg.json.private !== true) {
         pkg.report({
           ruleName: this.name,
           message: 'Package must not be public',
