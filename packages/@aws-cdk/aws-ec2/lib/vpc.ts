@@ -970,7 +970,7 @@ export interface SubnetConfiguration {
    *
    * @default true in Subnet.Public, false in Subnet.Private or Subnet.Isolated.
    */
-   readonly mapPublicIpOnLaunch?: boolean;
+  readonly mapPublicIpOnLaunch?: boolean;
 }
 
 /**
