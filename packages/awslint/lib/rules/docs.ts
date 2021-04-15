@@ -77,7 +77,7 @@ docsLinter.add({
   message: 'The use of @experimental in not allowed (either directly or via parent class)',
   eval: e => {
     if (!isPublic(e.ctx)) { return; }
-    // technically we should ban the use of @experimental in the codebase, but since jsii will marks all properties
+    // technically we should ban the use of @experimental in the codebase. Since jsii marks all symbols
     // of experimental modules as experimental we can't.
     if (isModuleExperimental(e.ctx.assembly)) {
       return;
