@@ -202,7 +202,7 @@ cluster.addNodegroupCapacity('custom-node-group', {
 #### Spot Instances Support
 
 Use `capacityType` to create managed node groups comprised of spot instances. To maximize the availability of your applications while using
-Spot Instances, we recommend that you configure a Spot managed node group to use multiple instance types with the `instanceTypes` property. 
+Spot Instances, we recommend that you configure a Spot managed node group to use multiple instance types with the `instanceTypes` property.
 
 > For more details visit [Managed node group capacity types](https://docs.aws.amazon.com/eks/latest/userguide/managed-node-groups.html#managed-node-group-capacity-types).
 
@@ -395,7 +395,7 @@ const asg = new ec2.AutoScalingGroup(...)
 cluster.connectAutoScalingGroupCapacity(asg);
 ```
 
-This will add the necessary user-data and configure all connections, roles, and tags needed for the instances in the auto-scaling group to properly join the cluster.
+This will add the necessary user-data to access the apiserver and configure all connections, roles, and tags needed for the instances in the auto-scaling group to properly join the cluster.
 
 #### Spot Instances
 

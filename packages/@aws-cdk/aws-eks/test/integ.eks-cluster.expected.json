@@ -1682,7 +1682,21 @@
                 {
                   "Ref": "Cluster9EE0221C"
                 },
-                " --kubelet-extra-args \"--node-labels lifecycle=OnDemand\" --use-max-pods true\n/opt/aws/bin/cfn-signal --exit-code $? --stack aws-cdk-eks-cluster-test --resource ClusterNodesASGF172BD19 --region test-region"
+                " --kubelet-extra-args \"--node-labels lifecycle=OnDemand\" --apiserver-endpoint '",
+                {
+                  "Fn::GetAtt": [
+                    "Cluster9EE0221C",
+                    "Endpoint"
+                  ]
+                },
+                "' --b64-cluster-ca '",
+                {
+                  "Fn::GetAtt": [
+                    "Cluster9EE0221C",
+                    "CertificateAuthorityData"
+                  ]
+                },
+                "' --use-max-pods true\n/opt/aws/bin/cfn-signal --exit-code $? --stack aws-cdk-eks-cluster-test --resource ClusterNodesASGF172BD19 --region test-region"
               ]
             ]
           }
@@ -1993,7 +2007,21 @@
                 {
                   "Ref": "Cluster9EE0221C"
                 },
-                " --kubelet-extra-args \"--node-labels lifecycle=OnDemand\" --use-max-pods true\n/opt/aws/bin/cfn-signal --exit-code $? --stack aws-cdk-eks-cluster-test --resource ClusterNodesArmASG40A593D0 --region test-region"
+                " --kubelet-extra-args \"--node-labels lifecycle=OnDemand\" --apiserver-endpoint '",
+                {
+                  "Fn::GetAtt": [
+                    "Cluster9EE0221C",
+                    "Endpoint"
+                  ]
+                },
+                "' --b64-cluster-ca '",
+                {
+                  "Fn::GetAtt": [
+                    "Cluster9EE0221C",
+                    "CertificateAuthorityData"
+                  ]
+                },
+                "' --use-max-pods true\n/opt/aws/bin/cfn-signal --exit-code $? --stack aws-cdk-eks-cluster-test --resource ClusterNodesArmASG40A593D0 --region test-region"
               ]
             ]
           }
@@ -2630,7 +2658,21 @@
                 {
                   "Ref": "Cluster9EE0221C"
                 },
-                " --kubelet-extra-args \"--node-labels lifecycle=Ec2Spot --register-with-taints=spotInstance=true:PreferNoSchedule --node-labels foo=bar,goo=far\" --use-max-pods true --aws-api-retry-attempts 5\n/opt/aws/bin/cfn-signal --exit-code $? --stack aws-cdk-eks-cluster-test --resource ClusterspotASG857494B6 --region test-region"
+                " --kubelet-extra-args \"--node-labels lifecycle=Ec2Spot --register-with-taints=spotInstance=true:PreferNoSchedule --node-labels foo=bar,goo=far\" --apiserver-endpoint '",
+                {
+                  "Fn::GetAtt": [
+                    "Cluster9EE0221C",
+                    "Endpoint"
+                  ]
+                },
+                "' --b64-cluster-ca '",
+                {
+                  "Fn::GetAtt": [
+                    "Cluster9EE0221C",
+                    "CertificateAuthorityData"
+                  ]
+                },
+                "' --use-max-pods true --aws-api-retry-attempts 5\n/opt/aws/bin/cfn-signal --exit-code $? --stack aws-cdk-eks-cluster-test --resource ClusterspotASG857494B6 --region test-region"
               ]
             ]
           }
@@ -2973,7 +3015,21 @@
                 {
                   "Ref": "Cluster9EE0221C"
                 },
-                " --kubelet-extra-args \"--node-labels lifecycle=OnDemand\" --use-max-pods true\n/opt/aws/bin/cfn-signal --exit-code $? --stack aws-cdk-eks-cluster-test --resource ClusterInferenceInstancesASGE90717C7 --region test-region"
+                " --kubelet-extra-args \"--node-labels lifecycle=OnDemand\" --apiserver-endpoint '",
+                {
+                  "Fn::GetAtt": [
+                    "Cluster9EE0221C",
+                    "Endpoint"
+                  ]
+                },
+                "' --b64-cluster-ca '",
+                {
+                  "Fn::GetAtt": [
+                    "Cluster9EE0221C",
+                    "CertificateAuthorityData"
+                  ]
+                },
+                "' --use-max-pods true\n/opt/aws/bin/cfn-signal --exit-code $? --stack aws-cdk-eks-cluster-test --resource ClusterInferenceInstancesASGE90717C7 --region test-region"
               ]
             ]
           }
@@ -4146,7 +4202,7 @@
       "Properties": {
         "Code": {
           "S3Bucket": {
-            "Ref": "AssetParameters952bd1c03e8201c4c1c67d6de0f3fdaaf88fda05f89a1232c3f6364343cd5344S3Bucket055DC235"
+            "Ref": "AssetParameters6afd8be511f58dbedd46c8a09c07db8b7340d99fd3527b6d3dfb729208060fc3S3BucketB7E1A9C0"
           },
           "S3Key": {
             "Fn::Join": [
@@ -4159,7 +4215,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParameters952bd1c03e8201c4c1c67d6de0f3fdaaf88fda05f89a1232c3f6364343cd5344S3VersionKey2FFFA299"
+                          "Ref": "AssetParameters6afd8be511f58dbedd46c8a09c07db8b7340d99fd3527b6d3dfb729208060fc3S3VersionKey542FDEBD"
                         }
                       ]
                     }
@@ -4172,7 +4228,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParameters952bd1c03e8201c4c1c67d6de0f3fdaaf88fda05f89a1232c3f6364343cd5344S3VersionKey2FFFA299"
+                          "Ref": "AssetParameters6afd8be511f58dbedd46c8a09c07db8b7340d99fd3527b6d3dfb729208060fc3S3VersionKey542FDEBD"
                         }
                       ]
                     }
@@ -4674,17 +4730,17 @@
       "Type": "String",
       "Description": "Artifact hash for asset \"b7d38dc0eeb2c5d024919020e09d2590b68559eab4a5264c3b1aa7a429d1edd4\""
     },
-    "AssetParameters952bd1c03e8201c4c1c67d6de0f3fdaaf88fda05f89a1232c3f6364343cd5344S3Bucket055DC235": {
+    "AssetParameters6afd8be511f58dbedd46c8a09c07db8b7340d99fd3527b6d3dfb729208060fc3S3BucketB7E1A9C0": {
       "Type": "String",
-      "Description": "S3 bucket for asset \"952bd1c03e8201c4c1c67d6de0f3fdaaf88fda05f89a1232c3f6364343cd5344\""
+      "Description": "S3 bucket for asset \"6afd8be511f58dbedd46c8a09c07db8b7340d99fd3527b6d3dfb729208060fc3\""
     },
-    "AssetParameters952bd1c03e8201c4c1c67d6de0f3fdaaf88fda05f89a1232c3f6364343cd5344S3VersionKey2FFFA299": {
+    "AssetParameters6afd8be511f58dbedd46c8a09c07db8b7340d99fd3527b6d3dfb729208060fc3S3VersionKey542FDEBD": {
       "Type": "String",
-      "Description": "S3 key for asset version \"952bd1c03e8201c4c1c67d6de0f3fdaaf88fda05f89a1232c3f6364343cd5344\""
+      "Description": "S3 key for asset version \"6afd8be511f58dbedd46c8a09c07db8b7340d99fd3527b6d3dfb729208060fc3\""
     },
-    "AssetParameters952bd1c03e8201c4c1c67d6de0f3fdaaf88fda05f89a1232c3f6364343cd5344ArtifactHash1AB042BC": {
+    "AssetParameters6afd8be511f58dbedd46c8a09c07db8b7340d99fd3527b6d3dfb729208060fc3ArtifactHash5E61FCA5": {
       "Type": "String",
-      "Description": "Artifact hash for asset \"952bd1c03e8201c4c1c67d6de0f3fdaaf88fda05f89a1232c3f6364343cd5344\""
+      "Description": "Artifact hash for asset \"6afd8be511f58dbedd46c8a09c07db8b7340d99fd3527b6d3dfb729208060fc3\""
     },
     "AssetParameters5f49893093e1ad14831626016699156d48da5f0890f19eb930bc3c46cf5f636dS3BucketA6642550": {
       "Type": "String",
