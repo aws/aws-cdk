@@ -82,7 +82,7 @@ docsLinter.add({
     if (isModuleExperimental(e.ctx.assembly)) {
       return;
     }
-    const property = e.ctx.documentable;
+    const sym = e.ctx.documentable;
     e.assert(property.docs.docs.stability !== Stability.Experimental, e.ctx.errorKey);
   },
 });
