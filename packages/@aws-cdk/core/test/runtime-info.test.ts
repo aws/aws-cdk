@@ -84,6 +84,16 @@ describeTscSafe('constructInfoForStack', () => {
     expect(jsiiInfo?.version).toMatch(/node.js/);
   });
 
+  test('sanitizes jsii runtime info to remove unwanted characters', () => {
+    process.env.JSII_AGENT = 'DotNet/5.0.3/.NETCore^App,Version=v3.1!/1.0.0_0';
+    const constructInfos = constructInfoFromStack(stack);
+    const jsiiInfo = constructInfos.find(i => i.fqn === 'jsii-runtime.Runtime');
+
+    expect(jsiiInfo?.version).toEqual('DotNet/5.0.3/.NETCore-App-Version=v3.1-/1.0.0_0');
+
+    delete process.env.JSII_AGENT;
+  });
+
   test('returns info for constructs added to the stack', () => {
     new TestConstruct(stack, 'TestConstruct');
 
