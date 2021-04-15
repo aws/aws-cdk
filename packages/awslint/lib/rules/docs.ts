@@ -74,7 +74,7 @@ docsLinter.add({
 
 docsLinter.add({
   code: 'no-experimental-apis',
-  message: 'The use of @experimental in not allowed (either directly or via parent class)',
+  message: 'The use of @experimental in not allowed',
   eval: e => {
     if (!isPublic(e.ctx)) { return; }
     // technically we should ban the use of @experimental in the codebase. Since jsii marks all symbols
@@ -83,7 +83,7 @@ docsLinter.add({
       return;
     }
     const sym = e.ctx.documentable;
-    e.assert(property.docs.docs.stability !== Stability.Experimental, e.ctx.errorKey);
+    e.assert(sym.docs.docs.stability !== Stability.Experimental, e.ctx.errorKey);
   },
 });
 
