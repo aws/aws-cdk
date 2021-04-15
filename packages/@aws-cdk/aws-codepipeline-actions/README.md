@@ -828,24 +828,16 @@ new codepipeline_actions.AlexaSkillDeployAction({
 
 ### AWS Service Catalog
 
-You can deploy a CloudFormation template to an existing Service Catalog product with the following action:
+You can deploy a CloudFormation template to an existing Service Catalog product with the following Action:
 
 ```ts
-new codepipeline.Pipeline(this, 'Pipeline', {
-      stages: [
-          {
-            stageName: 'ServiceCatalogDeploy',
-            actions: [
-            new codepipeline_actions.ServiceCatalogDeployAction({
-                actionName: 'ServiceCatalogDeploy',
-                templatePath: cdkBuildOutput.atPath("Sample.template.json"),
-                productVersionName: "Version - " + Date.now.toString,
-                productType: "CLOUD_FORMATION_TEMPLATE",
-                productVersionDescription: "This is a version from the pipeline with a new description.",
-                productId: "prod-XXXXXXXX",
-            }),
-          },
-        ],
+const serviceCatalogDeployAction = new codepipeline_actions.ServiceCatalogDeployActionBeta1({
+  actionName: 'ServiceCatalogDeploy',
+  templatePath: cdkBuildOutput.atPath("Sample.template.json"),
+  productVersionName: "Version - " + Date.now.toString,
+  productType: "CLOUD_FORMATION_TEMPLATE",
+  productVersionDescription: "This is a version from the pipeline with a new description.",
+  productId: "prod-XXXXXXXX",
 });
 ```
 
