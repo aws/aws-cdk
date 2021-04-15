@@ -17,7 +17,7 @@ export interface IVpcEndpointServiceLoadBalancer {
 
 /**
  * A VPC endpoint service.
- * 
+ *
  */
 export interface IVpcEndpointService extends IResource {
   /**
@@ -40,7 +40,7 @@ export interface IVpcEndpointService extends IResource {
 /**
  * A VPC endpoint service
  * @resource AWS::EC2::VPCEndpointService
- * 
+ *
  */
 export class VpcEndpointService extends Resource implements IVpcEndpointService {
 
@@ -52,7 +52,7 @@ export class VpcEndpointService extends Resource implements IVpcEndpointService 
 
   /**
    * Whether to require manual acceptance of new connections to the service.
-   * 
+   *
    */
   public readonly acceptanceRequired: boolean;
 
@@ -64,7 +64,7 @@ export class VpcEndpointService extends Resource implements IVpcEndpointService 
 
   /**
    * One or more Principal ARNs to allow inbound connections to.
-   * 
+   *
    */
   public readonly allowedPrincipals: ArnPrincipal[];
 
@@ -124,7 +124,7 @@ export class VpcEndpointService extends Resource implements IVpcEndpointService 
 
 /**
  * Construction properties for a VpcEndpointService.
- * 
+ *
  */
 export interface VpcEndpointServiceProps {
 
@@ -137,7 +137,7 @@ export interface VpcEndpointServiceProps {
 
   /**
    * One or more load balancers to host the VPC Endpoint Service.
-   * 
+   *
    */
   readonly vpcEndpointServiceLoadBalancers: IVpcEndpointServiceLoadBalancer[];
 
@@ -145,7 +145,7 @@ export interface VpcEndpointServiceProps {
    * Whether requests from service consumers to connect to the service through
    * an endpoint must be accepted.
    * @default true
-   * 
+   *
    */
   readonly acceptanceRequired?: boolean;
 
@@ -163,7 +163,7 @@ export interface VpcEndpointServiceProps {
    * These principals can connect to your service using VPC endpoints. Takes a
    * list of one or more ArnPrincipal.
    * @default - no principals
-   * 
+   *
    */
   readonly allowedPrincipals?: ArnPrincipal[];
 }

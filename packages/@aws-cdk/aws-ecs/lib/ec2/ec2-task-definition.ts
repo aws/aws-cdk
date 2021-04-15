@@ -1,4 +1,5 @@
 import { Construct } from 'constructs';
+import { ImportedTaskDefinition } from '../base/_imported-task-definition';
 import {
   CommonTaskDefinitionAttributes,
   CommonTaskDefinitionProps,
@@ -10,7 +11,6 @@ import {
   TaskDefinition,
 } from '../base/task-definition';
 import { PlacementConstraint } from '../placement';
-import { ImportedTaskDefinition } from '../base/_imported-task-definition';
 
 /**
  * The properties for a task definition run on an EC2 cluster.

@@ -49,7 +49,7 @@ export interface GatewayConfig {
  * Determines what type of NAT provider to create, either NAT gateways or NAT
  * instance.
  *
- * 
+ *
  */
 export abstract class NatProvider {
   /**
@@ -101,7 +101,7 @@ export abstract class NatProvider {
 /**
  * Options passed by the VPC when NAT needs to be configured
  *
- * 
+ *
  */
 export interface ConfigureNatOptions {
   /**
@@ -125,7 +125,7 @@ export interface ConfigureNatOptions {
 /**
  * Properties for a NAT instance
  *
- * 
+ *
  */
 export interface NatInstanceProps {
   /**
@@ -359,7 +359,7 @@ class PrefSet<A> {
 /**
  * Machine image representing the latest NAT instance image
  *
- * 
+ *
  */
 export class NatInstanceImage extends LookupMachineImage {
   constructor() {
