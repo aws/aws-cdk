@@ -11,17 +11,19 @@
     "pack": "./pack.sh",
     "compat": "./scripts/check-api-compatibility.sh",
     "bump": "./bump.sh",
-    "build-all": "tsc -b"
+    "build-all": "tsc -b",
+    "postinstall": "patch-package --error-on-fail"
   },
   "devDependencies": {
     "conventional-changelog-cli": "^2.1.1",
     "fs-extra": "^9.1.0",
     "graceful-fs": "^4.2.6",
     "jest-junit": "^12.0.0",
-    "jsii-diff": "^1.27.0",
-    "jsii-pacmak": "^1.27.0",
-    "jsii-rosetta": "^1.27.0",
+    "jsii-diff": "^1.28.0",
+    "jsii-pacmak": "^1.28.0",
+    "jsii-rosetta": "^1.28.0",
     "lerna": "^4.0.0",
+    "patch-package": "^6.4.7",
     "standard-version": "^9.2.0",
     "typescript": "~3.9.9"
   },
