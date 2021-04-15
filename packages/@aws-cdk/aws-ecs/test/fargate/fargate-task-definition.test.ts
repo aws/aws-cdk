@@ -113,6 +113,24 @@ nodeunitShim({
 
       test.done();
     },
+
+    'throws when adding inference accelerators'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
+
+      const inferenceAccelerator = {
+        deviceName: 'device1',
+        deviceType: 'eia2.medium',
+      };
+
+      // THEN
+      test.throws(() => {
+        taskDefinition.addInferenceAccelerator(inferenceAccelerator);
+      }, /Cannot use inference accelerators on tasks that run on Fargate/);
+
+      test.done();
+    },
   },
 
   'When importing from an existing Fargate TaskDefinition': {
