@@ -148,7 +148,6 @@
       "props-default-doc:@aws-cdk/aws-codepipeline-actions.CloudFormationCreateUpdateStackActionProps.extraInputs",
       "props-default-doc:@aws-cdk/aws-codepipeline-actions.CloudFormationDeleteStackActionProps.extraInputs",
       "props-default-doc:@aws-cdk/aws-codepipeline-actions.CodeBuildActionProps.extraInputs",
-      "docs-public-apis:@aws-cdk/aws-codepipeline-actions.Action.bind",
       "docs-public-apis:@aws-cdk/aws-codepipeline-actions.CodeCommitSourceActionProps.branch",
       "docs-public-apis:@aws-cdk/aws-codepipeline-actions.EcrSourceActionProps.output",
       "docs-public-apis:@aws-cdk/aws-codepipeline-actions.GitHubSourceActionProps.output",

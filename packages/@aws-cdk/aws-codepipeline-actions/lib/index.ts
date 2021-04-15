@@ -17,4 +17,4 @@ export * from './s3/deploy-action';
 export * from './s3/source-action';
 export * from './stepfunctions/invoke-action';
 export * from './servicecatalog/deploy-action';
-export * from './action'; // for some reason, JSII fails building the module without exporting this class
+export * from './action';
