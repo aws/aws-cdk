@@ -1260,7 +1260,7 @@ export class Cluster extends ClusterBase {
     if (bootstrapEnabled) {
       const userData = options.machineImageType === MachineImageType.BOTTLEROCKET ?
         renderBottlerocketUserData(this) :
-        renderAmazonLinuxUserData(this.clusterName, autoScalingGroup, options.bootstrapOptions);
+        renderAmazonLinuxUserData(this, autoScalingGroup, options.bootstrapOptions);
       autoScalingGroup.addUserData(...userData);
     }
 

@@ -86,7 +86,7 @@
     "proxy-agent": "^4.0.1",
     "semver": "^7.3.5",
     "source-map-support": "^0.5.19",
-    "table": "^6.0.9",
+    "table": "^6.1.0",
     "uuid": "^8.3.2",
     "wrap-ansi": "^7.0.0",
     "yaml": "1.10.2",
