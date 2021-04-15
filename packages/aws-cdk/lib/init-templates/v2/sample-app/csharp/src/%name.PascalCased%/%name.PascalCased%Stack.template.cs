@@ -1,7 +1,8 @@
-using Amazon.CDK.Lib;
+using Amazon.CDK;
 using Amazon.CDK.AWS.SNS;
 using Amazon.CDK.AWS.SNS.Subscriptions;
 using Amazon.CDK.AWS.SQS;
+using Constructs;
 
 namespace %name.PascalCased%
 {

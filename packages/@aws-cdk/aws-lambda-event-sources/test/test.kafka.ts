@@ -1,7 +1,6 @@
 import { arrayWith, expect, haveResource } from '@aws-cdk/assert-internal';
 import { SecurityGroup, SubnetType, Vpc } from '@aws-cdk/aws-ec2';
 import * as lambda from '@aws-cdk/aws-lambda';
-import * as msk from '@aws-cdk/aws-msk';
 import { Secret } from '@aws-cdk/aws-secretsmanager';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
@@ -14,14 +13,14 @@ export = {
       // GIVEN
       const stack = new cdk.Stack();
       const fn = new TestFunction(stack, 'Fn');
-      const cluster = msk.Cluster.fromClusterArn(stack, 'Cluster', 'some-arn');
+      const clusterArn = 'some-arn';
       const kafkaTopic = 'some-topic';
       const secret = new Secret(stack, 'Secret', { secretName: 'AmazonMSK_KafkaSecret' });
 
       // WHEN
       fn.addEventSource(new sources.ManagedKafkaEventSource(
         {
-          cluster: cluster,
+          clusterArn: clusterArn,
           topic: kafkaTopic,
           secret: secret,
           startingPosition: lambda.StartingPosition.TRIM_HORIZON,
@@ -48,7 +47,7 @@ export = {
                 'kafka:ListScramSecrets',
               ],
               Effect: 'Allow',
-              Resource: cluster.clusterArn,
+              Resource: clusterArn,
             },
           ],
           Version: '2012-10-17',
@@ -62,7 +61,7 @@ export = {
       }));
 
       expect(stack).to(haveResource('AWS::Lambda::EventSourceMapping', {
-        EventSourceArn: cluster.clusterArn,
+        EventSourceArn: clusterArn,
         FunctionName: {
           Ref: 'Fn9270CBC0',
         },
