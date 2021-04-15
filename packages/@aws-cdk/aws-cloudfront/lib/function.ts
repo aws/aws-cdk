@@ -101,8 +101,8 @@ export class Function extends Resource implements IFunction {
 
   private generateName(): string {
     const name = Names.uniqueId(this);
-    if (name.length > 80) {
-      return name.substring(0, 40) + name.substring(name.length - 40);
+    if (name.length > 64) {
+      return name.substring(0, 32) + name.substring(name.length - 32);
     }
     return name;
   }
