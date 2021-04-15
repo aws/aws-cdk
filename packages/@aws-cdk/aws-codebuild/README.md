@@ -648,3 +648,17 @@ new codebuild.Project(stack, 'MyProject', {
   queuedTimeout: Duration.minutes(30)
 });
 ```
+
+## Limiting concurrency
+
+By default if a new build is triggered it will be run even if there is a previous build already in progress.
+It is possible to limit the maximum concurrent builds to value between 1 and the account specific maximum limit.
+By default there is no explicit limit.
+
+```ts
+import * as codebuild from '@aws-cdk/aws-codebuild';
+
+new codebuild.Project(stack, 'MyProject', {
+  concurrentBuildLimit: 1
+});
+```

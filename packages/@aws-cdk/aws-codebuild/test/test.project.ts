@@ -1409,6 +1409,29 @@ export = {
     },
   },
 
+  'Maximum concurrency': {
+    'can limit maximum concurrency'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      // WHEN
+      new codebuild.Project(stack, 'Project', {
+        source: codebuild.Source.s3({
+          bucket: new s3.Bucket(stack, 'Bucket'),
+          path: 'path',
+        }),
+        concurrentBuildLimit: 1,
+      });
+
+      // THEN
+      expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
+        ConcurrentBuildLimit: 1,
+      }));
+
+      test.done();
+    },
+  },
+
   'can be imported': {
     'by ARN'(test: Test) {
       const stack = new cdk.Stack();

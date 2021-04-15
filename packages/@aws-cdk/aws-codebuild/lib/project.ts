@@ -584,6 +584,13 @@ export interface CommonProjectProps {
    * @default - no queue timeout is set
    */
   readonly queuedTimeout?: Duration
+
+  /**
+   * Maximum number of concurrent builds. Minimum value is 1 and maximum is account build limit.
+   *
+   * @default - no explicit limit is set
+   */
+  readonly concurrentBuildLimit?: number
 }
 
 export interface ProjectProps extends CommonProjectProps {
@@ -917,6 +924,7 @@ export class Project extends ProjectBase {
       name: this.physicalName,
       timeoutInMinutes: props.timeout && props.timeout.toMinutes(),
       queuedTimeoutInMinutes: props.queuedTimeout && props.queuedTimeout.toMinutes(),
+      concurrentBuildLimit: props.concurrentBuildLimit,
       secondarySources: Lazy.any({ produce: () => this.renderSecondarySources() }),
       secondarySourceVersions: Lazy.any({ produce: () => this.renderSecondarySourceVersions() }),
       secondaryArtifacts: Lazy.any({ produce: () => this.renderSecondaryArtifacts() }),
