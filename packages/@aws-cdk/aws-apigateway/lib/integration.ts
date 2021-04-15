@@ -82,8 +82,9 @@ export interface IntegrationOptions {
 
   /**
    * The maximum amount of time an integration will run before it returns without a response.
-   * Must be between 50 and 29,000 milliseconds.
-   * @default 29,000 milliseconds or 29 seconds.
+   * Must be between 50 milliseconds and 29 seconds.
+   *
+   * @default Duration.seconds(29)
    */
   readonly timeout?: Duration;
 
@@ -201,8 +202,8 @@ export class Integration {
       throw new Error('cannot set \'vpcLink\' where \'connectionType\' is INTERNET');
     }
 
-    if (options.timeout && (options.timeout.toMilliseconds() < 50 || options.timeout.toMilliseconds() > 29000)) {
-      throw new Error('Integration timeout must be between 50 and 29000 milliseconds.');
+    if (options.timeout && !options.timeout.isUnresolved() && (options.timeout.toMilliseconds() < 50 || options.timeout.toMilliseconds() > 29000)) {
+      throw new Error('Integration timeout must be between 50 milliseconds and 29 seconds.');
     }
   }
 
