@@ -114,10 +114,7 @@ function isCfnType(ctx: DocsLinterContext) {
 }
 
 function isModuleExperimental(assembly: reflect.Assembly) {
-  if (assembly.spec.docs?.stability === Stability.Experimental) {
-    return true;
-  }
-  return false;
+  return assembly.spec.docs?.stability === Stability.Experimental;
 }
 
 function flatMap<T, U>(array: readonly T[], callbackfn: (value: T, index: number, array: readonly T[]) => U[]): U[] {
