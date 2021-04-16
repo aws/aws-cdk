@@ -1,6 +1,9 @@
 import { ScalingInterval } from '@aws-cdk/aws-applicationautoscaling';
 import { IVpc } from '@aws-cdk/aws-ec2';
-import { AwsLogDriver, BaseService, Cluster, ContainerImage, DeploymentController, ICluster, LogDriver, PropagatedTagSource, Secret } from '@aws-cdk/aws-ecs';
+import {
+  AwsLogDriver, BaseService, Cluster, ContainerImage, DeploymentController, DeploymentCircuitBreaker,
+  ICluster, LogDriver, PropagatedTagSource, Secret,
+} from '@aws-cdk/aws-ecs';
 import { IQueue, Queue } from '@aws-cdk/aws-sqs';
 import { CfnOutput, Duration, Stack } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
@@ -189,6 +192,13 @@ export interface QueueProcessingServiceBaseProps {
    * @default - Rolling update (ECS)
    */
   readonly deploymentController?: DeploymentController;
+
+  /**
+   * Whether to enable the deployment circuit breaker. If this property is defined, circuit breaker will be implicitly
+   * enabled.
+   * @default - disabled
+   */
+  readonly circuitBreaker?: DeploymentCircuitBreaker;
 }
 
 /**

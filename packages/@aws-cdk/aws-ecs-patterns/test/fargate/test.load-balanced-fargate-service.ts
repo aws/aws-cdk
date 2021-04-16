@@ -1,4 +1,5 @@
-import { expect, haveResource, haveResourceLike, SynthUtils } from '@aws-cdk/assert';
+import { expect, haveResource, haveResourceLike, SynthUtils } from '@aws-cdk/assert-internal';
+import { DnsValidatedCertificate } from '@aws-cdk/aws-certificatemanager';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecs from '@aws-cdk/aws-ecs';
 import { ApplicationLoadBalancer, ApplicationProtocol, NetworkLoadBalancer } from '@aws-cdk/aws-elasticloadbalancingv2';
@@ -427,6 +428,58 @@ export = {
     test.done();
   },
 
+  'setting ALB circuitBreaker works'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'Service', {
+      taskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
+      },
+      circuitBreaker: { rollback: true },
+    });
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::ECS::Service', {
+      DeploymentConfiguration: {
+        DeploymentCircuitBreaker: {
+          Enable: true,
+          Rollback: true,
+        },
+      },
+      DeploymentController: {
+        Type: 'ECS',
+      },
+    }));
+    test.done();
+  },
+
+  'setting NLB circuitBreaker works'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new ecsPatterns.NetworkLoadBalancedFargateService(stack, 'Service', {
+      taskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
+      },
+      circuitBreaker: { rollback: true },
+    });
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::ECS::Service', {
+      DeploymentConfiguration: {
+        DeploymentCircuitBreaker: {
+          Enable: true,
+          Rollback: true,
+        },
+      },
+      DeploymentController: {
+        Type: 'ECS',
+      },
+    }));
+    test.done();
+  },
+
   'setting NLB special listener port to create the listener'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
@@ -758,7 +811,7 @@ export = {
     const stack1 = new cdk.Stack(app, 'MyStack');
     const vpc1 = new ec2.Vpc(stack1, 'VPC');
     const cluster1 = new ecs.Cluster(stack1, 'Cluster', { vpc: vpc1 });
-    const nlbArn = 'arn:aws:elasticloadbalancing::000000000000::dummyloadbalancer';
+    const nlbArn = 'arn:aws:elasticloadbalancing:us-west-2:123456789012:loadbalancer/app/my-load-balancer/50dc6c495c0c9188';
     const stack2 = new cdk.Stack(stack1, 'Stack2');
     const cluster2 = ecs.Cluster.fromClusterAttributes(stack2, 'ImportedCluster', {
       vpc: vpc1,
@@ -835,7 +888,7 @@ export = {
   'passing in imported application load balancer and resources to ALB Fargate Service'(test: Test) {
     // GIVEN
     const stack1 = new cdk.Stack();
-    const albArn = 'arn:aws:elasticloadbalancing::000000000000::dummyloadbalancer';
+    const albArn = 'arn:aws:elasticloadbalancing:us-west-2:123456789012:loadbalancer/app/my-load-balancer/50dc6c495c0c9188';
     const vpc = new ec2.Vpc(stack1, 'Vpc');
     const cluster = new ecs.Cluster(stack1, 'Cluster', { vpc, clusterName: 'MyClusterName' });
     const sg = new ec2.SecurityGroup(stack1, 'SecurityGroup', { vpc });
@@ -923,6 +976,40 @@ export = {
       },
     }));
     test.done();
+  },
+
+  'domainName and domainZone not required for HTTPS listener with provided cert'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+    const exampleDotComZone = new route53.PublicHostedZone(stack, 'ExampleDotCom', {
+      zoneName: 'example.com',
+    });
+    const certificate = new DnsValidatedCertificate(stack, 'Certificate', {
+      domainName: 'test.example.com',
+      hostedZone: exampleDotComZone,
+    });
+
+    // WHEN
+    new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'FargateAlbService', {
+      cluster,
+      protocol: ApplicationProtocol.HTTPS,
+
+      taskImageOptions: {
+        containerPort: 2015,
+        image: ecs.ContainerImage.fromRegistry('abiosoft/caddy'),
+      },
+      certificate: certificate,
+    });
+
+    // THEN
+    expect(stack).notTo(haveResourceLike('AWS::Route53::RecordSet', {
+      Name: 'test.domain.com.',
+    }));
+
+    test.done();
+
   },
 
 };

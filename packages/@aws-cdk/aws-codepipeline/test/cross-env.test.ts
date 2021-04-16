@@ -1,4 +1,4 @@
-import '@aws-cdk/assert/jest';
+import '@aws-cdk/assert-internal/jest';
 import * as iam from '@aws-cdk/aws-iam';
 import * as s3 from '@aws-cdk/aws-s3';
 import { Stack, App } from '@aws-cdk/core';
@@ -115,7 +115,7 @@ describe.each(['legacy', 'modern'])('with %s synthesis', (synthesisStyle: string
 
         // THEN
         const asm = app.synth();
-        const supportStack = asm.getStack(`${stack.stackName}-support-eu-west-1`);
+        const supportStack = asm.getStackByName(`${stack.stackName}-support-eu-west-1`);
 
         // THEN
         expect(supportStack).not.toHaveResource('AWS::KMS::Key');

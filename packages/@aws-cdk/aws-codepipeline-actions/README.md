@@ -168,7 +168,7 @@ the connection has already been created.
 
 ```ts
 const sourceOutput = new codepipeline.Artifact();
-const sourceAction = new codepipeline_actions.BitBucketSourceAction({
+const sourceAction = new codepipeline_actions.CodeStarConnectionsSourceAction({
   actionName: 'BitBucket_Source',
   owner: 'aws',
   repo: 'aws-cdk',
@@ -177,9 +177,8 @@ const sourceAction = new codepipeline_actions.BitBucketSourceAction({
 });
 ```
 
-**Note**: as this feature is still in Beta in CodePipeline,
-the above class `BitBucketSourceAction` is experimental -
-we reserve the right to make breaking changes to it.
+You can also use the `CodeStarConnectionsSourceAction` to connect to GitHub, in the same way
+(you just have to select GitHub as the source when creating the connection in the console).
 
 ### AWS S3 Source
 
@@ -232,7 +231,10 @@ import * as cloudtrail from '@aws-cdk/aws-cloudtrail';
 
 const key = 'some/key.zip';
 const trail = new cloudtrail.Trail(this, 'CloudTrail');
-trail.addS3EventSelector([sourceBucket.arnForObjects(key)], {
+trail.addS3EventSelector([{
+  bucket: sourceBucket,
+  objectPrefix: key,
+}], {
   readWriteType: cloudtrail.ReadWriteType.WRITE_ONLY,
 });
 const sourceAction = new codepipeline_actions.S3SourceAction({
@@ -680,7 +682,7 @@ const deployStage = pipeline.addStage({
 #### Deploying ECS applications stored in a separate source code repository
 
 The idiomatic CDK way of deploying an ECS application is to have your Dockerfiles and your CDK code in the same source code repository,
-leveraging [Docker Assets])(https://docs.aws.amazon.com/cdk/latest/guide/assets.html#assets_types_docker),
+leveraging [Docker Assets](https://docs.aws.amazon.com/cdk/latest/guide/assets.html#assets_types_docker),
 and use the [CDK Pipelines module](https://docs.aws.amazon.com/cdk/api/latest/docs/pipelines-readme.html).
 
 However, if you want to deploy a Docker application whose source code is kept in a separate version control repository than the CDK code,
@@ -826,24 +828,16 @@ new codepipeline_actions.AlexaSkillDeployAction({
 
 ### AWS Service Catalog
 
-You can deploy a CloudFormation template to an existing Service Catalog product with the following action:
+You can deploy a CloudFormation template to an existing Service Catalog product with the following Action:
 
 ```ts
-new codepipeline.Pipeline(this, 'Pipeline', {
-      stages: [
-          {
-            stageName: 'ServiceCatalogDeploy',
-            actions: [
-            new codepipeline_actions.ServiceCatalogDeployAction({
-                actionName: 'ServiceCatalogDeploy',
-                templatePath: cdkBuildOutput.atPath("Sample.template.json"),
-                productVersionName: "Version - " + Date.now.toString,
-                productType: "CLOUD_FORMATION_TEMPLATE",
-                productVersionDescription: "This is a version from the pipeline with a new description.",
-                productId: "prod-XXXXXXXX",
-            }),
-          },
-        ],
+const serviceCatalogDeployAction = new codepipeline_actions.ServiceCatalogDeployActionBeta1({
+  actionName: 'ServiceCatalogDeploy',
+  templatePath: cdkBuildOutput.atPath("Sample.template.json"),
+  productVersionName: "Version - " + Date.now.toString,
+  productType: "CLOUD_FORMATION_TEMPLATE",
+  productVersionDescription: "This is a version from the pipeline with a new description.",
+  productId: "prod-XXXXXXXX",
 });
 ```
 

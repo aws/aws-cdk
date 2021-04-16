@@ -1,4 +1,4 @@
-import '@aws-cdk/assert/jest';
+import '@aws-cdk/assert-internal/jest';
 import { App, CfnOutput, Stack } from '@aws-cdk/core';
 import * as iam from '../lib';
 

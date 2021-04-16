@@ -46,11 +46,12 @@ jobs:
         # We special-case aws-sdk because of breaking changes with TS interface exports in recent minor versions - https://github.com/aws/aws-sdk-js/issues/3453
         # We special-case typescript because it's not semantically versionned
         # We special-case constructs because we want to stay in control of the minimum compatible version
+        # We special-case lerna because we have a patch on it that stops applying if Lerna upgrades. Remove this once https://github.com/lerna/lerna/pull/2874 releases.
         run: |-
           # Upgrade dependencies at repository root
           ncu --upgrade --filter=@types/node,@types/fs-extra --target=minor
           ncu --upgrade --filter=typescript --target=patch
-          ncu --upgrade --reject=@types/node,@types/fs-extra,constructs,typescript --target=minor
+          ncu --upgrade --reject=@types/node,@types/fs-extra,constructs,typescript,lerna --target=minor
           # Upgrade all the packages
           lerna exec --parallel ncu -- --upgrade --filter=@types/node,@types/fs-extra --target=minor
           lerna exec --parallel ncu -- --upgrade --filter=typescript --target=patch
@@ -60,7 +61,12 @@ jobs:
         run: yarn install
 
       - name: Run "yarn upgrade"
-        run: yarn upgrade
+        # jsdom breaks us starting from 16.5.1. Caused by https://github.com/feross/queue-microtask/issues/17
+        # in combination with https://github.com/jsdom/jsdom/commit/31eb938fdaa5d446e194c9ec4f0d6b46b4354954
+        # pinning this for now since its only used in tests (by jest-enviroment-jsdom).
+        # we are not even using this because our environment is 'node' - just the mere fact this module is loaded is what breaks.
+        # also - jest-enviroment-jsdom doesnt actually require 16.5.1 (https://github.com/facebook/jest/blob/master/packages/jest-environment-jsdom/package.json#L23)
+        run: yarn upgrade --pattern '!(jsdom)'
 
       - name: Make Pull Request
         uses: peter-evans/create-pull-request@v3
