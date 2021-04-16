@@ -4,8 +4,6 @@ npmws=/tmp/cdk-rundist
 rm -rf $npmws
 mkdir -p $npmws
 
-set -x
-
 # This script must create 1 or 2 traps, and the 'trap' command will replace
 # the previous trap, so get some 'dynamic traps' mechanism in place
 TRAPS=()
@@ -42,6 +40,11 @@ function serve_npm_packages() {
   header "Starting local NPM Repository (Serving version ${CANDIDATE_VERSION})"
 
   tarballs_glob="$dist_root/js/*.tgz"
+
+  if [[ -f package.json ]]; then
+    echo "Do not run this script in a directory with a package.json! It will most likely break!" >&2
+    # Cowardly not running 'exit 1' because I'm not sure I won't mess up the build/canaries by doing so
+  fi
 
   # When using '--daemon', 'npm install' first so the files are permanent, or
   # 'npx' will remove them too soon.
