@@ -721,6 +721,7 @@ export class Project extends ProjectBase {
     const ret = new Array<CfnProject.EnvironmentVariableProperty>();
     const ssmIamResources = new Array<string>();
     const secretsManagerIamResources = new Array<string>();
+    const kmsIamResources = new Array<string>();
 
     for (const [name, envVariable] of Object.entries(environmentVariables)) {
       const envVariableValue = envVariable.value?.toString();
@@ -790,7 +791,7 @@ export class Project extends ProjectBase {
               // If we were given just a name, it must be partial, as CodeBuild doesn't support providing full names.
               // In this case, we need to accommodate for the generated suffix in the IAM resource name
               : `${secretName}-??????`;
-            secretsManagerIamResources.push(Stack.of(principal).formatArn({
+            secretsManagerIamResources.push(stack.formatArn({
               service: 'secretsmanager',
               resource: 'secret',
               resourceName: secretIamResourceName,
@@ -800,6 +801,20 @@ export class Project extends ProjectBase {
               account: parsedArn?.account,
               region: parsedArn?.region,
             }));
+            // if secret comes from another account, SecretsManager will need to access
+            // KMS on the other account as well to be able to get the secret
+            if (parsedArn?.account !== stack.account) {
+              kmsIamResources.push(stack.formatArn({
+                service: 'kms',
+                resource: 'key',
+                resourceName: '*',
+                sep: '/',
+                // if we were given an ARN, we need to use the provided partition/account/region
+                partition: parsedArn?.partition,
+                account: parsedArn?.account,
+                region: parsedArn?.region,
+              }));
+            }
           }
         }
       }
@@ -815,6 +830,12 @@ export class Project extends ProjectBase {
       principal?.grantPrincipal.addToPrincipalPolicy(new iam.PolicyStatement({
         actions: ['secretsmanager:GetSecretValue'],
         resources: secretsManagerIamResources,
+      }));
+    }
+    if (kmsIamResources.length !== 0) {
+      principal?.grantPrincipal.addToPrincipalPolicy(new iam.PolicyStatement({
+        actions: ['kms:Decrypt'],
+        resources: kmsIamResources,
       }));
     }
 

@@ -1021,7 +1021,10 @@ export = {
 
       'can be provided as a verbatim full secret ARN followed by a JSON key'(test: Test) {
         // GIVEN
-        const stack = new cdk.Stack();
+        const app = new cdk.App();
+        const stack = new cdk.Stack(app, 'ProjectStack', {
+          env: { account: '123456789012' },
+        });
 
         // WHEN
         new codebuild.PipelineProject(stack, 'Project', {
@@ -1057,12 +1060,26 @@ export = {
           },
         }));
 
+        // THEN
+        expect(stack).to(not(haveResourceLike('AWS::IAM::Policy', {
+          'PolicyDocument': {
+            'Statement': arrayWith({
+              'Action': 'kms:Decrypt',
+              'Effect': 'Allow',
+              'Resource': 'arn:aws:kms:us-west-2:123456789012:key/*',
+            }),
+          },
+        })));
+
         test.done();
       },
 
       'can be provided as a verbatim partial secret ARN'(test: Test) {
         // GIVEN
-        const stack = new cdk.Stack();
+        const app = new cdk.App();
+        const stack = new cdk.Stack(app, 'ProjectStack', {
+          env: { account: '123456789012' },
+        });
 
         // WHEN
         new codebuild.PipelineProject(stack, 'Project', {
@@ -1094,6 +1111,72 @@ export = {
               'Action': 'secretsmanager:GetSecretValue',
               'Effect': 'Allow',
               'Resource': 'arn:aws:secretsmanager:us-west-2:123456789012:secret:mysecret*',
+            }),
+          },
+        }));
+
+        // THEN
+        expect(stack).to(not(haveResourceLike('AWS::IAM::Policy', {
+          'PolicyDocument': {
+            'Statement': arrayWith({
+              'Action': 'kms:Decrypt',
+              'Effect': 'Allow',
+              'Resource': 'arn:aws:kms:us-west-2:123456789012:key/*',
+            }),
+          },
+        })));
+
+        test.done();
+      },
+
+      'can be provided as a verbatim partial secret ARN from another account'(test: Test) {
+        // GIVEN
+        const app = new cdk.App();
+        const stack = new cdk.Stack(app, 'ProjectStack', {
+          env: { account: '123456789012' },
+        });
+
+        // WHEN
+        new codebuild.PipelineProject(stack, 'Project', {
+          environmentVariables: {
+            'ENV_VAR1': {
+              type: codebuild.BuildEnvironmentVariableType.SECRETS_MANAGER,
+              value: 'arn:aws:secretsmanager:us-west-2:901234567890:secret:mysecret',
+            },
+          },
+        });
+
+        // THEN
+        expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
+          'Environment': {
+            'EnvironmentVariables': [
+              {
+                'Name': 'ENV_VAR1',
+                'Type': 'SECRETS_MANAGER',
+                'Value': 'arn:aws:secretsmanager:us-west-2:901234567890:secret:mysecret',
+              },
+            ],
+          },
+        }));
+
+        // THEN
+        expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
+          'PolicyDocument': {
+            'Statement': arrayWith({
+              'Action': 'secretsmanager:GetSecretValue',
+              'Effect': 'Allow',
+              'Resource': 'arn:aws:secretsmanager:us-west-2:901234567890:secret:mysecret*',
+            }),
+          },
+        }));
+
+        // THEN
+        expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
+          'PolicyDocument': {
+            'Statement': arrayWith({
+              'Action': 'kms:Decrypt',
+              'Effect': 'Allow',
+              'Resource': 'arn:aws:kms:us-west-2:901234567890:key/*',
             }),
           },
         }));
