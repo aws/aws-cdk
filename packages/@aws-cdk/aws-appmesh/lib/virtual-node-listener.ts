@@ -54,16 +54,19 @@ interface VirtualNodeListenerCommonOptions {
   readonly outlierDetection?: OutlierDetection;
 }
 
-/**
- * Represent the HTTP Node Listener prorperty
- */
-export interface HttpVirtualNodeListenerOptions extends VirtualNodeListenerCommonOptions {
+interface CommonHttpVirtualNodeListenerOptions extends VirtualNodeListenerCommonOptions {
   /**
    * Timeout for HTTP protocol
    *
    * @default - None
    */
   readonly timeout?: HttpTimeout;
+}
+
+/**
+ * Represent the HTTP Node Listener prorperty
+ */
+export interface HttpVirtualNodeListenerOptions extends CommonHttpVirtualNodeListenerOptions {
 
   /**
    * Connection pool for http listeners
@@ -76,14 +79,7 @@ export interface HttpVirtualNodeListenerOptions extends VirtualNodeListenerCommo
 /**
  * Represent the HTTP2 Node Listener prorperty
  */
-export interface Http2VirtualNodeListenerOptions extends VirtualNodeListenerCommonOptions {
-  /**
-   * Timeout for HTTP protocol
-   *
-   * @default - None
-   */
-  readonly timeout?: HttpTimeout;
-
+export interface Http2VirtualNodeListenerOptions extends CommonHttpVirtualNodeListenerOptions {
   /**
    * Connection pool for http2 listeners
    *
@@ -170,7 +166,6 @@ export abstract class VirtualNodeListener {
    * Binds the current object when adding Listener to a VirtualNode
    */
   public abstract bind(scope: Construct): VirtualNodeListenerConfig;
-
 }
 
 class VirtualNodeListenerImpl extends VirtualNodeListener {
