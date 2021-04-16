@@ -1,5 +1,7 @@
-import aws_cdk_lib as core
-from aws_cdk_lib import (
+from constructs import Construct
+from aws_cdk import (
+    Duration,
+    Stack,
     aws_iam as iam,
     aws_sqs as sqs,
     aws_sns as sns,

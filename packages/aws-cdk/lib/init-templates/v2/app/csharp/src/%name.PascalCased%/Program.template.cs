@@ -1,4 +1,4 @@
-﻿using Amazon.CDK.Lib;
+﻿using Amazon.CDK;
 using System;
 using System.Collections.Generic;
 using System.Linq;
