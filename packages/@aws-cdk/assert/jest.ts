@@ -1,5 +1,5 @@
-import * as core from '@aws-cdk/core';
-import * as cxapi from '@aws-cdk/cx-api';
+import * as core from 'aws-cdk-lib';
+import * as cxapi from 'aws-cdk-lib/cx-api';
 import { countResources } from './lib';
 import { JestFriendlyAssertion } from './lib/assertion';
 import { haveOutput, HaveOutputProperties } from './lib/assertions/have-output';
