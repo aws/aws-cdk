@@ -16,5 +16,11 @@ for file in ${files}; do
 done
 
 if [[ "$majorversion" = "2" ]]; then
+  echo "Rewriting TS files..."
   npx rewrite-imports-v2 "**/*.ts"
+
+  # This forces a recompile even if this file already exists
+  rm -f tsconfig.tsbuildinfo
+
+  echo "Done."
 fi
