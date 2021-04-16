@@ -144,7 +144,7 @@ Use the `bundling.dockerImage` prop to use a custom bundling image:
 new lambda.GolangFunction(this, 'handler', {
   entry: 'app/cmd/api',
   bundling: {
-    dockerImage: dk.BundlingDockerImage.fromAsset('/path/to/Dockerfile'),
+    dockerImage: cdk.DockerImage.fromBuild('/path/to/Dockerfile'),
   },
 });
 ```

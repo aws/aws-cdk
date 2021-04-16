@@ -1,6 +1,6 @@
 module aws-lambda-golang
 
-go 1.13
+go 1.15
 
 require (
 	github.com/aws/aws-lambda-go v1.19.1
