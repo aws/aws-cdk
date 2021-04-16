@@ -318,6 +318,6 @@
   },
   "ubergen": {
     "exclude": true,
-    "excludeExperimentalL2": true
+    "excludeExperimentalModules": true
   }
 }
