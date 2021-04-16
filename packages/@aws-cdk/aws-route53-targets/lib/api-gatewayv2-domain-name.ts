@@ -17,7 +17,7 @@ export class ApiGatewayv2Domain implements route53.IAliasRecordTarget {
 /**
  * Represents an APIGatewayV2 DomainName
  */
-export interface ApiGateWayDomainName {
+export interface ApiGatewayDomainName {
   /**
     * The region-specific Amazon Route 53 Hosted Zone ID of the regional endpoint.
     */
