@@ -24,3 +24,4 @@ junit.xml
 ./lib
 ./test
 README.md
+jest.ts
