@@ -1,4 +1,4 @@
-import { countResources, expect, haveResource, haveResourceLike, objectLike, not, ResourcePart, arrayWith } from '@aws-cdk/assert';
+import { countResources, expect, haveResource, haveResourceLike, objectLike, not, ResourcePart, arrayWith } from '@aws-cdk/assert-internal';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as logs from '@aws-cdk/aws-logs';
@@ -1403,6 +1403,29 @@ export = {
       // THEN
       expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
         TimeoutInMinutes: 30,
+      }));
+
+      test.done();
+    },
+  },
+
+  'Maximum concurrency': {
+    'can limit maximum concurrency'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      // WHEN
+      new codebuild.Project(stack, 'Project', {
+        source: codebuild.Source.s3({
+          bucket: new s3.Bucket(stack, 'Bucket'),
+          path: 'path',
+        }),
+        concurrentBuildLimit: 1,
+      });
+
+      // THEN
+      expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
+        ConcurrentBuildLimit: 1,
       }));
 
       test.done();

@@ -279,6 +279,33 @@ const gateway = new appmesh.VirtualGateway(this, 'gateway', {
 });
 ```
 
+## Adding outlier detection to a Virtual Node listener
+
+The `outlierDetection` property can be added to a Virtual Node listener to add outlier detection. The 4 parameters 
+(`baseEjectionDuration`, `interval`, `maxEjectionPercent`, `maxServerErrors`) are required.
+
+```typescript
+// Cloud Map service discovery is currently required for host ejection by outlier detection
+const vpc = new ec2.Vpc(stack, 'vpc');
+const namespace = new servicediscovery.PrivateDnsNamespace(this, 'test-namespace', {
+    vpc,
+    name: 'domain.local',
+});
+const service = namespace.createService('Svc');
+
+const node = mesh.addVirtualNode('virtual-node', {
+  serviceDiscovery: appmesh.ServiceDiscovery.cloudMap({
+    service: service,
+  }),
+  outlierDetection: {
+    baseEjectionDuration: cdk.Duration.seconds(10),
+    interval: cdk.Duration.seconds(30),
+    maxEjectionPercent: 50,
+    maxServerErrors: 5,
+  },
+});
+```
+
 ## Adding a connection pool to a listener
 
 The `connectionPool` property can be added to a Virtual Node listener or Virtual Gateway listener to add a request connection pool. There are different 

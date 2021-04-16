@@ -1,4 +1,4 @@
-import { expect, haveResourceLike } from '@aws-cdk/assert';
+import { expect, haveResourceLike } from '@aws-cdk/assert-internal';
 import * as codecommit from '@aws-cdk/aws-codecommit';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import { Stack } from '@aws-cdk/core';
@@ -12,7 +12,7 @@ nodeunitShim({
     // GIVEN
     const stack = new TestFixture();
     // WHEN
-    stack.deployStage.addAction(new cpactions.ServiceCatalogDeployAction({
+    stack.deployStage.addAction(new cpactions.ServiceCatalogDeployActionBeta1({
       actionName: 'ServiceCatalogTest',
       templatePath: stack.sourceOutput.atPath('template.yaml'),
       productVersionDescription: 'This is a description of the version.',
@@ -58,7 +58,7 @@ nodeunitShim({
     // GIVEN
     const stack = new TestFixture();
     // WHEN
-    stack.deployStage.addAction(new cpactions.ServiceCatalogDeployAction({
+    stack.deployStage.addAction(new cpactions.ServiceCatalogDeployActionBeta1({
       actionName: 'ServiceCatalogTest',
       templatePath: stack.sourceOutput.atPath('template.yaml'),
       productVersionName: 'VersionName',

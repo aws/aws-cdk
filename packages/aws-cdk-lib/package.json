@@ -53,15 +53,13 @@
       "dotnet": {
         "namespace": "Amazon.CDK",
         "packageId": "Amazon.CDK.Lib",
-        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png",
-        "versionSuffix": "-devpreview"
+        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
       },
       "java": {
-        "package": "software.amazon.awscdk.core",
+        "package": "software.amazon.awscdk",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "aws-cdk-lib",
-          "versionSuffix": ".DEVPREVIEW"
+          "artifactId": "aws-cdk-lib"
         }
       },
       "python": {
@@ -290,7 +288,6 @@
     "@aws-cdk/lambda-layer-kubectl": "0.0.0",
     "@aws-cdk/pipelines": "0.0.0",
     "@aws-cdk/region-info": "0.0.0",
-    "@aws-cdk/yaml-cfn": "0.0.0",
     "@types/fs-extra": "^8.1.1",
     "@types/node": "^10.17.56",
     "cdk-build-tools": "0.0.0",

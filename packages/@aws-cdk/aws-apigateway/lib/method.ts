@@ -289,6 +289,7 @@ export class Method extends Resource {
       connectionType: options.connectionType,
       connectionId: options.vpcLink ? options.vpcLink.vpcLinkId : undefined,
       credentials,
+      timeoutInMillis: options.timeout?.toMilliseconds(),
     };
   }
 
