@@ -1,10 +1,19 @@
-import * as apigatewayv2 from '@aws-cdk/aws-apigatewayv2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import * as cdk from '@aws-cdk/core';
-import { Construct } from 'constructs';
+import { Construct, IConstruct } from 'constructs';
 import { CallApiGatewayEndpointBase } from './base';
 import { CallApiGatewayEndpointBaseProps } from './base-types';
+
+/**
+ * An APIGateWayV2 Http API resource representation
+ */
+export interface IApiGatewayV2HttpApi extends IConstruct {
+  /**
+   * The identifier of this API Gateway HTTP API.
+   */
+  readonly apiId: string;
+}
 
 /**
  * Properties for calling an HTTP API Endpoint
@@ -13,7 +22,7 @@ export interface CallApiGatewayHttpApiEndpointProps extends CallApiGatewayEndpoi
   /**
    * API to call
    */
-  readonly api: apigatewayv2.IHttpApi;
+  readonly api: IApiGatewayV2HttpApi;
 
   /**
    * Name of the stage where the API is deployed to in API Gateway
