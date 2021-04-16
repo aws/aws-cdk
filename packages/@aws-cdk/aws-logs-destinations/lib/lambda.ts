@@ -7,19 +7,20 @@ import { Construct } from '@aws-cdk/core';
  * Use a Lamda Function as the destination for a log subscription
  */
 export class LambdaDestination implements logs.ILogSubscriptionDestination {
-  constructor(private readonly fn: lambda.IFunction) {
+  constructor(private readonly fn: lambda.IFunction, private readonly addPermissions: boolean=true) {
   }
 
   public bind(scope: Construct, logGroup: logs.ILogGroup): logs.LogSubscriptionDestinationConfig {
     const arn = logGroup.logGroupArn;
-
-    this.fn.addPermission('CanInvokeLambda', {
-      principal: new iam.ServicePrincipal('logs.amazonaws.com'),
-      sourceArn: arn,
-      // Using SubScription Filter as scope is okay, since every Subscription Filter has only
-      // one destination.
-      scope,
-    });
+    if (this.addPermissions === true) {
+      this.fn.addPermission('CanInvokeLambda', {
+        principal: new iam.ServicePrincipal('logs.amazonaws.com'),
+        sourceArn: arn,
+        // Using SubScription Filter as scope is okay, since every Subscription Filter has only
+        // one destination.
+        scope,
+      });
+    }
     return { arn: this.fn.functionArn };
   }
 }
