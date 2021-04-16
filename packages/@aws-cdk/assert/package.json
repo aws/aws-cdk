@@ -43,10 +43,14 @@
     "ts-jest": "^26.5.4"
   },
   "dependencies": {
+<<<<<<< HEAD
     "@aws-cdk/cloudformation-diff": "0.0.0",
     "@aws-cdk/core": "0.0.0",
     "@aws-cdk/cx-api": "0.0.0",
     "constructs": "^3.3.69"
+=======
+    "@aws-cdk/cloudformation-diff": "0.0.0"
+>>>>>>> 8e88a6aeda... chore(v2): re-enable the assert transform for v2 (#14207)
   },
   "peerDependencies": {
     "@aws-cdk/core": "0.0.0",

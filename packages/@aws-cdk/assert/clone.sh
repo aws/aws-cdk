@@ -4,6 +4,9 @@ scriptdir=$(cd $(dirname $0) && pwd)
 cd $scriptdir
 set -euo pipefail
 src="../assert-internal"
+
+# Don't copy .d.ts and .js files -- otherwise tsc might not recreate
+# those files after we have rewritten the .ts files (probably due to timestamps)
 rsync -av $src/lib/ lib/
 rsync -av $src/test/ test/
 
@@ -16,5 +19,15 @@ for file in ${files}; do
 done
 
 if [[ "$majorversion" = "2" ]]; then
+<<<<<<< HEAD
   npx rewrite-imports-v2 "**/*.ts"
+=======
+  echo "Rewriting TS files..."
+  npx rewrite-imports-v2 "**/*.ts"
+
+  # This forces a recompile even if this file already exists
+  rm -f tsconfig.tsbuildinfo
+
+  echo "Done."
+>>>>>>> 8e88a6aeda... chore(v2): re-enable the assert transform for v2 (#14207)
 fi
