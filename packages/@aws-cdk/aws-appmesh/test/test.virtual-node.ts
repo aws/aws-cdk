@@ -1,4 +1,4 @@
-import { expect, haveResourceLike } from '@aws-cdk/assert';
+import { expect, haveResourceLike } from '@aws-cdk/assert-internal';
 import * as acmpca from '@aws-cdk/aws-acmpca';
 import * as acm from '@aws-cdk/aws-certificatemanager';
 import * as cdk from '@aws-cdk/core';
@@ -29,10 +29,10 @@ export = {
         const node = new appmesh.VirtualNode(stack, 'test-node', {
           mesh,
           serviceDiscovery: appmesh.ServiceDiscovery.dns('test'),
-          backends: [service1],
+          backends: [appmesh.Backend.virtualService(service1)],
         });
 
-        node.addBackend(service2);
+        node.addBackend(appmesh.Backend.virtualService(service2));
 
         // THEN
         expect(stack).to(haveResourceLike('AWS::AppMesh::VirtualNode', {
@@ -257,6 +257,61 @@ export = {
       },
     },
 
+    'when a listener is added with outlier detection with user defined props': {
+      'should add a listener  outlier detection to the resource'(test: Test) {
+        // GIVEN
+        const stack = new cdk.Stack();
+
+        // WHEN
+        const mesh = new appmesh.Mesh(stack, 'mesh', {
+          meshName: 'test-mesh',
+        });
+
+        const node = new appmesh.VirtualNode(stack, 'test-node', {
+          mesh,
+          serviceDiscovery: appmesh.ServiceDiscovery.dns('test'),
+        });
+
+        node.addListener(appmesh.VirtualNodeListener.tcp({
+          port: 80,
+          outlierDetection: {
+            baseEjectionDuration: cdk.Duration.seconds(10),
+            interval: cdk.Duration.seconds(30),
+            maxEjectionPercent: 50,
+            maxServerErrors: 5,
+          },
+        }));
+
+        // THEN
+        expect(stack).to(haveResourceLike('AWS::AppMesh::VirtualNode', {
+          Spec: {
+            Listeners: [
+              {
+                OutlierDetection: {
+                  BaseEjectionDuration: {
+                    Unit: 'ms',
+                    Value: 10000,
+                  },
+                  Interval: {
+                    Unit: 'ms',
+                    Value: 30000,
+                  },
+                  MaxEjectionPercent: 50,
+                  MaxServerErrors: 5,
+                },
+                PortMapping: {
+                  Port: 80,
+                  Protocol: 'tcp',
+                },
+              },
+            ],
+          },
+        }));
+
+        test.done();
+      },
+    },
+
     'when a default backend is added': {
       'should add a backend default to the resource'(test: Test) {
         // GIVEN
@@ -272,10 +327,12 @@ export = {
         new appmesh.VirtualNode(stack, 'test-node', {
           mesh,
           serviceDiscovery: appmesh.ServiceDiscovery.dns('test'),
-          backendsDefaultClientPolicy: appmesh.ClientPolicy.acmTrust({
-            certificateAuthorities: [acmpca.CertificateAuthority.fromCertificateAuthorityArn(stack, 'certificate', certificateAuthorityArn)],
-            ports: [8080, 8081],
-          }),
+          backendDefaults: {
+            clientPolicy: appmesh.ClientPolicy.acmTrust({
+              certificateAuthorities: [acmpca.CertificateAuthority.fromCertificateAuthorityArn(stack, 'certificate', certificateAuthorityArn)],
+              ports: [8080, 8081],
+            }),
+          },
         });
 
         // THEN
@@ -320,13 +377,14 @@ export = {
         const service1 = new appmesh.VirtualService(stack, 'service-1', {
           virtualServiceName: 'service1.domain.local',
           virtualServiceProvider: appmesh.VirtualServiceProvider.none(mesh),
+        });
+
+        node.addBackend(appmesh.Backend.virtualService(service1, {
           clientPolicy: appmesh.ClientPolicy.fileTrust({
             certificateChain: 'path-to-certificate',
             ports: [8080, 8081],
           }),
-        });
-
-        node.addBackend(service1);
+        }));
 
         // THEN
         expect(stack).to(haveResourceLike('AWS::AppMesh::VirtualNode', {

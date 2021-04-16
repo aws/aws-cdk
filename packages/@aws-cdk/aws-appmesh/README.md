@@ -186,9 +186,11 @@ const node = new VirtualNode(this, 'node', {
       idle: cdk.Duration.seconds(5),
     },
   })],
-  backendsDefaultClientPolicy: appmesh.ClientPolicy.fileTrust({
-    certificateChain: '/keys/local_cert_chain.pem',
-  }),
+  backendDefaults: {
+    clientPolicy: appmesh.ClientPolicy.fileTrust({
+      certificateChain: '/keys/local_cert_chain.pem',
+    }),
+  },
   accessLog: appmesh.AccessLog.fromFilePath('/dev/stdout'),
 });
 
@@ -230,14 +232,14 @@ const virtualService = new appmesh.VirtualService(stack, 'service-1', {
   }),
 });
 
-node.addBackend(virtualService);
+node.addBackend(appmesh.Backend.virtualService(virtualService));
 ```
 
 The `listeners` property can be left blank and added later with the `node.addListener()` method. The `healthcheck` and `timeout` properties are optional but if specifying a listener, the `port` must be added.
 
 The `backends` property can be added with `node.addBackend()`. We define a virtual service and add it to the virtual node to allow egress traffic to other node.
 
-The `backendsDefaultClientPolicy` property are added to the node while creating the virtual node. These are virtual node's service backends client policy defaults.
+The `backendDefaults` property are added to the node while creating the virtual node. These are virtual node's default settings for all backends.
 
 ## Adding TLS to a listener
 
@@ -277,6 +279,33 @@ const gateway = new appmesh.VirtualGateway(this, 'gateway', {
 });
 ```
 
+## Adding outlier detection to a Virtual Node listener
+
+The `outlierDetection` property can be added to a Virtual Node listener to add outlier detection. The 4 parameters 
+(`baseEjectionDuration`, `interval`, `maxEjectionPercent`, `maxServerErrors`) are required.
+
+```typescript
+// Cloud Map service discovery is currently required for host ejection by outlier detection
+const vpc = new ec2.Vpc(stack, 'vpc');
+const namespace = new servicediscovery.PrivateDnsNamespace(this, 'test-namespace', {
+    vpc,
+    name: 'domain.local',
+});
+const service = namespace.createService('Svc');
+
+const node = mesh.addVirtualNode('virtual-node', {
+  serviceDiscovery: appmesh.ServiceDiscovery.cloudMap({
+    service: service,
+  }),
+  outlierDetection: {
+    baseEjectionDuration: cdk.Duration.seconds(10),
+    interval: cdk.Duration.seconds(30),
+    maxEjectionPercent: 50,
+    maxServerErrors: 5,
+  },
+});
+```
+
 ## Adding a Route
 
 A `route` is associated with a virtual router, and it's used to match requests for a virtual router and distribute traffic accordingly to its associated virtual nodes.
@@ -293,6 +322,30 @@ router.addRoute('route-http', {
     ],
     match: {
       prefixPath: '/path-to-app',
+    },
+  }),
+});
+```
+
+Add an HTTP2 route that matches based on method, scheme and header:
+
+```ts
+router.addRoute('route-http2', {
+  routeSpec: appmesh.RouteSpec.http2({
+    weightedTargets: [
+      {
+        virtualNode: node,
+      },
+    ],
+    match: {
+      prefixPath: '/',
+      method: appmesh.HttpRouteMatchMethod.POST,
+      protocol: appmesh.HttpRouteProtocol.HTTPS,
+      headers: [
+        // All specified headers must match for the route to match.
+        appmesh.HttpHeaderMatch.valueIs('Content-Type', 'application/json'),
+        appmesh.HttpHeaderMatch.valueIsNot('Content-Type', 'application/json'),
+      ]
     },
   }),
 });
@@ -315,6 +368,50 @@ router.addRoute('route-http', {
     ],
     match: {
       prefixPath: '/path-to-app',
+    },
+  }),
+});
+```
+
+Add an http2 route with retries:
+
+```ts
+router.addRoute('route-http2-retry', {
+  routeSpec: appmesh.RouteSpec.http2({
+    weightedTargets: [{ virtualNode: node }],
+    retryPolicy: {
+      // Retry if the connection failed
+      tcpRetryEvents: [appmesh.TcpRetryEvent.CONNECTION_ERROR],
+      // Retry if HTTP responds with a gateway error (502, 503, 504)
+      httpRetryEvents: [appmesh.HttpRetryEvent.GATEWAY_ERROR],
+      // Retry five times
+      retryAttempts: 5,
+      // Use a 1 second timeout per retry
+      retryTimeout: cdk.Duration.seconds(1),
+    },
+  }),
+});
+```
+
+Add a gRPC route with retries:
+
+```ts
+router.addRoute('route-grpc-retry', {
+  routeSpec: appmesh.RouteSpec.grpc({
+    weightedTargets: [{ virtualNode: node }],
+    match: { serviceName: 'servicename' },
+    retryPolicy: {
+      tcpRetryEvents: [appmesh.TcpRetryEvent.CONNECTION_ERROR],
+      httpRetryEvents: [appmesh.HttpRetryEvent.GATEWAY_ERROR],
+      // Retry if gRPC responds that the request was cancelled, a resource
+      // was exhausted, or if the service is unavailable
+      grpcRetryEvents: [
+        appmesh.GrpcRetryEvent.CANCELLED,
+        appmesh.GrpcRetryEvent.RESOURCE_EXHAUSTED,
+        appmesh.GrpcRetryEvent.UNAVAILABLE,
+      ],
+      retryAttempts: 5,
+      retryTimeout: cdk.Duration.seconds(1),
     },
   }),
 });
@@ -369,10 +466,12 @@ const gateway = new appmesh.VirtualGateway(stack, 'gateway', {
       interval: cdk.Duration.seconds(10),
     },
   })],
-  backendsDefaultClientPolicy: appmesh.ClientPolicy.acmTrust({
-    certificateAuthorities: [acmpca.CertificateAuthority.fromCertificateAuthorityArn(stack, 'certificate', certificateAuthorityArn)],
-    ports: [8080, 8081],
-  }),
+  backendDefaults: {
+    clientPolicy: appmesh.ClientPolicy.acmTrust({
+      certificateAuthorities: [acmpca.CertificateAuthority.fromCertificateAuthorityArn(stack, 'certificate', certificateAuthorityArn)],
+      ports: [8080, 8081],
+    }),
+  },
   accessLog: appmesh.AccessLog.fromFilePath('/dev/stdout'),
   virtualGatewayName: 'virtualGateway',
 });
@@ -396,7 +495,7 @@ const gateway = mesh.addVirtualGateway('gateway', {
 The listeners field can be omitted which will default to an HTTP Listener on port 8080.
 A gateway route can be added using the `gateway.addGatewayRoute()` method.
 
-The `backendsDefaultClientPolicy` property are added to the node while creating the virtual gateway. These are virtual gateway's service backends client policy defaults.
+The `backendDefaults` property is added to the node while creating the virtual gateway. These are virtual gateway's default settings for all backends.
 
 ## Adding a Gateway Route
 

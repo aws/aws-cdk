@@ -1,5 +1,5 @@
-import { MatchStyle } from '@aws-cdk/assert';
-import '@aws-cdk/assert/jest';
+import { MatchStyle } from '@aws-cdk/assert-internal';
+import '@aws-cdk/assert-internal/jest';
 import { Metric } from '@aws-cdk/aws-cloudwatch';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as cdk from '@aws-cdk/core';
@@ -162,7 +162,7 @@ describe('tests', () => {
       ],
     });
 
-    expect(listener.node.tryFindChild('DefaultCertificates')).toBeDefined();
+    expect(listener.node.tryFindChild('DefaultCertificates1')).toBeDefined();
     expect(listener.node.tryFindChild('DefaultCertificates2')).toBeDefined();
     expect(listener.node.tryFindChild('DefaultCertificates3')).not.toBeDefined();
 

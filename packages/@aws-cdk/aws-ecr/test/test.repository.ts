@@ -1,4 +1,4 @@
-import { expect, haveResource, haveResourceLike, ResourcePart } from '@aws-cdk/assert';
+import { expect, haveResource, haveResourceLike, ResourcePart } from '@aws-cdk/assert-internal';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
@@ -58,6 +58,20 @@ export = {
         // eslint-disable-next-line max-len
         LifecyclePolicyText: '{"rules":[{"rulePriority":1,"selection":{"tagStatus":"tagged","tagPrefixList":["abc"],"countType":"imageCountMoreThan","countNumber":1},"action":{"type":"expire"}}]}',
       },
+    }));
+
+    test.done();
+  },
+
+
+  'image tag mutability can be set'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    new ecr.Repository(stack, 'Repo', { imageTagMutability: ecr.TagMutability.IMMUTABLE });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ECR::Repository', {
+      ImageTagMutability: 'IMMUTABLE',
     }));
 
     test.done();
