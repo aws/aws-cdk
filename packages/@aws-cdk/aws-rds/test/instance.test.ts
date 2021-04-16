@@ -1306,7 +1306,8 @@ describe('instance', () => {
 
   test( 'does not changes the case of the cluster identifier if the lowercaseDbIdentifier feature flag is disabled', () => {
     // GIVEN
-    stack = new cdk.Stack();
+    const app = new cdk.App({ context: { '@aws-cdk/aws-rds:lowercaseDbIdentifier': false } });
+    stack = new cdk.Stack(app);
     vpc = new ec2.Vpc( stack, 'VPC' );
 
     // WHEN
