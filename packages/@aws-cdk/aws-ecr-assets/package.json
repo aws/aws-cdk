@@ -103,8 +103,8 @@
   "bundledDependencies": [
     "minimatch"
   ],
-  "stability": "experimental",
-  "maturity": "experimental",
+  "stability": "stable",
+  "maturity": "stable",
   "awscdkio": {
     "announce": false
   },
