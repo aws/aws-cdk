@@ -15,7 +15,6 @@ for file in ${files}; do
   cp $src/$file .
 done
 
-# TEMPORARILY DISABLED TO FIX FORWARD MERGE
-# if [[ "$majorversion" = "2" ]]; then
-#   npx rewrite-imports-v2 "**/*.ts"
-# fi
+if [[ "$majorversion" = "2" ]]; then
+  npx rewrite-imports-v2 "**/*.ts"
+fi
