@@ -1,3 +1,4 @@
+import { ISecurityGroup } from '@aws-cdk/aws-ec2';
 import { FargateTaskDefinition, FargatePlatformVersion } from '@aws-cdk/aws-ecs';
 import { EcsTask } from '@aws-cdk/aws-events-targets';
 import { Construct } from 'constructs';
@@ -33,6 +34,13 @@ export interface ScheduledFargateTaskProps extends ScheduledTaskBaseProps {
    * @default Latest
    */
   readonly platformVersion?: FargatePlatformVersion;
+
+  /**
+   * Existing security groups to use for your service.
+   *   *
+   * @default 'A new security group is created'
+   */
+  readonly securityGroups?: ISecurityGroup[]
 }
 
 /**
@@ -128,6 +136,7 @@ export class ScheduledFargateTask extends ScheduledTaskBase {
       taskCount: this.desiredTaskCount,
       subnetSelection: this.subnetSelection,
       platformVersion: props.platformVersion,
+      securityGroups: props.securityGroups,
     });
 
     this.addTaskAsTarget(eventRuleTarget);
