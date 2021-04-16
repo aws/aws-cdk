@@ -29,7 +29,7 @@ export = {
     });
 
     // THEN
-    test.deepEqual(stack.resolve(ref.stringValue), '{{resolve:ssm:/some/key:}}');
+    test.deepEqual(stack.resolve(ref.stringValue), '{{resolve:ssm:/some/key}}');
 
     test.done();
   },

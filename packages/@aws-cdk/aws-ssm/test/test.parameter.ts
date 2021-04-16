@@ -304,7 +304,7 @@ export = {
     });
     test.deepEqual(stack.resolve(param.parameterName), 'MyParamName');
     test.deepEqual(stack.resolve(param.parameterType), 'String');
-    test.deepEqual(stack.resolve(param.stringValue), '{{resolve:ssm:MyParamName:}}');
+    test.deepEqual(stack.resolve(param.stringValue), '{{resolve:ssm:MyParamName}}');
     test.done();
   },
 
@@ -546,7 +546,7 @@ export = {
       const value = ssm.StringParameter.valueForStringParameter(stack, 'my-param-name');
 
       // THEN
-      test.deepEqual(stack.resolve(value), '{{resolve:ssm:my-param-name:}}');
+      test.deepEqual(stack.resolve(value), '{{resolve:ssm:my-param-name}}');
       test.done();
     },
 
