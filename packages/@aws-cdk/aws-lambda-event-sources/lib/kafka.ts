@@ -2,14 +2,23 @@ import * as crypto from 'crypto';
 import { ISecurityGroup, IVpc, SubnetSelection } from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
-import * as msk from '@aws-cdk/aws-msk';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
-import { Stack } from '@aws-cdk/core';
+import { Stack, IResource } from '@aws-cdk/core';
 import { StreamEventSource, StreamEventSourceProps } from './stream';
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
 // eslint-disable-next-line no-duplicate-imports, import/order
 import { Construct } from '@aws-cdk/core';
+
+/**
+ * Represents an MSK cluster
+ */
+export interface ICluster extends IResource {
+  /**
+   * the ARN of the MSK cluster
+   */
+  readonly clusterArn: string;
+}
 
 /**
  * Properties for a Kafka event source
@@ -32,7 +41,7 @@ export interface ManagedKafkaEventSourceProps extends KafkaEventSourceProps {
   /**
    * an MSK cluster construct
    */
-  readonly cluster: msk.ICluster
+  readonly cluster: ICluster
 }
 
 /**
