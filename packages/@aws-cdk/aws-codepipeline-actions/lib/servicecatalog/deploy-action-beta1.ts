@@ -7,13 +7,9 @@ import { Action } from '../action';
 import { Construct } from 'constructs';
 
 /**
- * Construction properties of the {@link ServiceCatalogDeployAction ServiceCatalog deploy CodePipeline Action}.
- *
- * **Note**: this API is still experimental, and may have breaking changes in the future!
- *
- * @experimental
+ * Construction properties of the {@link ServiceCatalogDeployActionBeta1 ServiceCatalog deploy CodePipeline Action}.
  */
-export interface ServiceCatalogDeployActionProps extends codepipeline.CommonAwsActionProps {
+export interface ServiceCatalogDeployActionBeta1Props extends codepipeline.CommonAwsActionProps {
   /**
    * The path to the cloudformation artifact.
    */
@@ -38,19 +34,15 @@ export interface ServiceCatalogDeployActionProps extends codepipeline.CommonAwsA
 
 /**
  * CodePipeline action to connect to an existing ServiceCatalog product.
- *
- * **Note**: this class is still experimental, and may have breaking changes in the future!
- *
- * @experimental
  */
-export class ServiceCatalogDeployAction extends Action {
+export class ServiceCatalogDeployActionBeta1 extends Action {
   private readonly templatePath: string;
   private readonly productVersionName: string;
   private readonly productVersionDescription?: string;
   private readonly productId: string;
   private readonly productType: string;
 
-  constructor(props: ServiceCatalogDeployActionProps) {
+  constructor(props: ServiceCatalogDeployActionBeta1Props) {
     super({
       ...props,
       provider: 'ServiceCatalog',

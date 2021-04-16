@@ -12,7 +12,7 @@ nodeunitShim({
     // GIVEN
     const stack = new TestFixture();
     // WHEN
-    stack.deployStage.addAction(new cpactions.ServiceCatalogDeployAction({
+    stack.deployStage.addAction(new cpactions.ServiceCatalogDeployActionBeta1({
       actionName: 'ServiceCatalogTest',
       templatePath: stack.sourceOutput.atPath('template.yaml'),
       productVersionDescription: 'This is a description of the version.',
@@ -58,7 +58,7 @@ nodeunitShim({
     // GIVEN
     const stack = new TestFixture();
     // WHEN
-    stack.deployStage.addAction(new cpactions.ServiceCatalogDeployAction({
+    stack.deployStage.addAction(new cpactions.ServiceCatalogDeployActionBeta1({
       actionName: 'ServiceCatalogTest',
       templatePath: stack.sourceOutput.atPath('template.yaml'),
       productVersionName: 'VersionName',
