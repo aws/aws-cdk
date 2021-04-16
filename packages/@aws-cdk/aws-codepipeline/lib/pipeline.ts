@@ -664,22 +664,27 @@ export class Pipeline extends PipelineBase {
   private getOtherStackIfActionIsCrossAccount(action: IAction): Stack | undefined {
     const pipelineStack = Stack.of(this);
 
+    let actionAccount = undefined;
     if (action.actionProperties.resource) {
+      actionAccount = action.actionProperties.resource.env.account;
       const resourceStack = Stack.of(action.actionProperties.resource);
-      // check if resource is from a different account
-      if (pipelineStack.account === resourceStack.account) {
-        return undefined;
-      } else {
-        this._crossAccountSupport[resourceStack.account] = resourceStack;
-        return resourceStack;
+      if (actionAccount === resourceStack.account) {
+        // check if resource is from a different account
+        if (pipelineStack.account === resourceStack.account) {
+          return undefined;
+        } else {
+          this._crossAccountSupport[resourceStack.account] = resourceStack;
+          return resourceStack;
+        }
       }
     }
 
-    if (!action.actionProperties.account) {
+    actionAccount = actionAccount ?? action.actionProperties.account;
+    if (!actionAccount) {
       return undefined;
     }
 
-    const targetAccount = action.actionProperties.account;
+    const targetAccount = actionAccount;
     // check whether the account is a static string
     if (Token.isUnresolved(targetAccount)) {
       throw new Error(`The 'account' property must be a concrete value (action: '${action.actionProperties.actionName}')`);
