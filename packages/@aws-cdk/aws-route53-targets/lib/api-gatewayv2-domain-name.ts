@@ -1,4 +1,3 @@
-import * as apigv2 from '@aws-cdk/aws-apigatewayv2';
 import * as route53 from '@aws-cdk/aws-route53';
 
 /**

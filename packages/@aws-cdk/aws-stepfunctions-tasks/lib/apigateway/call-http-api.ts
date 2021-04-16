@@ -1,4 +1,3 @@
-import * as apigatewayv2 from '@aws-cdk/aws-apigatewayv2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import * as cdk from '@aws-cdk/core';
