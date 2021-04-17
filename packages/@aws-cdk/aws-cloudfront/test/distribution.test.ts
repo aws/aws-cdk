@@ -107,6 +107,40 @@ test('exhaustive example of props renders correctly', () => {
   });
 });
 
+test('ensure comment prop is not greater than max lenght', () => {
+  const origin = defaultOrigin();
+  new Distribution(stack, 'MyDist', {
+    defaultBehavior: { origin },
+    comment: `Adding a comment longer than 128 characters should be trimmed and added the 
+ellipsis so a user would know there was more to read and everything beyond this point should not show up`,
+  });
+
+  expect(stack).toHaveResource('AWS::CloudFront::Distribution', {
+    DistributionConfig: {
+      DefaultCacheBehavior: {
+        CachePolicyId: '658327ea-f89d-4fab-a63d-7e88639e58f6',
+        Compress: true,
+        TargetOriginId: 'StackMyDistOrigin1D6D5E535',
+        ViewerProtocolPolicy: 'allow-all',
+      },
+      Comment: `Adding a comment longer than 128 characters should be trimmed and added the 
+ellipsis so a user would know there was more to ...`,
+      Enabled: true,
+      HttpVersion: 'http2',
+      IPV6Enabled: true,
+      Origins: [
+        {
+          DomainName: 'www.example.com',
+          Id: 'StackMyDistOrigin1D6D5E535',
+          CustomOriginConfig: {
+            OriginProtocolPolicy: 'https-only',
+          },
+        },
+      ],
+    },
+  });
+});
+
 describe('multiple behaviors', () => {
 
   test('a second behavior can\'t be specified with the catch-all path pattern', () => {
