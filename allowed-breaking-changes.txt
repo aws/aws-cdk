@@ -61,3 +61,7 @@ weakened:@aws-cdk/cloud-assembly-schema.FileSource
 # These are fine, since they shouldn't be widely used.
 weakened:@aws-cdk/core.FileAssetLocation
 weakened:@aws-cdk/aws-events.RuleTargetConfig
+
+# Move the interface to the integration package to break dependencies between stable and experimental
+strengthened:@aws-cdk/aws-stepfunctions-tasks.CallApiGatewayHttpApiEndpointProps
+incompatible-argument:@aws-cdk/aws-route53-targets.ApiGatewayv2Domain.<initializer>
