@@ -62,15 +62,21 @@ export async function timeToLiveStatus(event: OnEventRequest): Promise<{stable: 
 
   console.log('Describe time to live: %j', currentTtl);
 
+  const stable =
+    currentTtl.TimeToLiveDescription?.TimeToLiveStatus === 'ENABLED'
+    || currentTtl.TimeToLiveDescription?.TimeToLiveStatus === 'DISABLED';
+
+  let correct =
+    currentTtl.TimeToLiveDescription?.AttributeName ===
+    event.ResourceProperties.TimeToLiveAttribute;
+
+  if ( event.RequestType === 'Delete' ) {
+    correct = currentTtl.TimeToLiveDescription?.TimeToLiveStatus === 'DISABLED';
+  }
+
   return {
-    stable: (
-      currentTtl.TimeToLiveDescription?.TimeToLiveStatus === 'ENABLED'
-      || currentTtl.TimeToLiveDescription?.TimeToLiveStatus === 'DISABLED'
-    ),
-    correct: (
-      currentTtl.TimeToLiveDescription?.AttributeName ===
-      event.ResourceProperties.TimeToLiveAttribute
-    ),
+    stable,
+    correct,
   };
 }
 
