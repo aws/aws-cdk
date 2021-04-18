@@ -62,6 +62,13 @@ weakened:@aws-cdk/cloud-assembly-schema.FileSource
 weakened:@aws-cdk/core.FileAssetLocation
 weakened:@aws-cdk/aws-events.RuleTargetConfig
 
-# Move the interface to the integration package to break dependencies between stable and experimental
+# replace interface with untyped properties to order to break stable to experimental dependencies
+removed:@aws-cdk/aws-stepfunctions-tasks.CallApiGatewayHttpApiEndpointProps.api
 strengthened:@aws-cdk/aws-stepfunctions-tasks.CallApiGatewayHttpApiEndpointProps
-incompatible-argument:@aws-cdk/aws-route53-targets.ApiGatewayv2Domain.<initializer>
+removed:@aws-cdk/aws-route53-targets.ApiGatewayv2Domain.<initializer>
+removed:@aws-cdk/aws-stepfunctions-tasks.RunBatchJobProps.jobDefinition
+removed:@aws-cdk/aws-stepfunctions-tasks.RunBatchJobProps.jobDefinition
+removed:@aws-cdk/aws-stepfunctions-tasks.RunBatchJobProps.jobQueue
+removed:@aws-cdk/aws-stepfunctions-tasks.BatchSubmitJobProps.jobQueue
+removed:@aws-cdk/aws-stepfunctions-tasks.BatchSubmitJobProps.jobDefinition
+strengthened:@aws-cdk/aws-stepfunctions-tasks.BatchSubmitJobProps

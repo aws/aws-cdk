@@ -1,7 +1,6 @@
-import * as batch from '@aws-cdk/aws-batch';
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
-import { Names } from '@aws-cdk/core';
+import { Names, Stack } from '@aws-cdk/core';
 import { singletonEventRole } from './util';
 
 /**
@@ -48,8 +47,9 @@ export interface BatchJobProps {
  */
 export class BatchJob implements events.IRuleTarget {
   constructor(
-    private readonly jobQueue: batch.IJobQueue,
-    private readonly jobDefinition: batch.IJobDefinition,
+    private readonly jobQueueArn: string,
+    private readonly jobDefinitionArn: string,
+    private readonly jobStack: Stack,
     private readonly props: BatchJobProps = {},
   ) { }
 
@@ -59,27 +59,27 @@ export class BatchJob implements events.IRuleTarget {
    */
   public bind(rule: events.IRule, _id?: string): events.RuleTargetConfig {
     const batchParameters: events.CfnRule.BatchParametersProperty = {
-      jobDefinition: this.jobDefinition.jobDefinitionArn,
+      jobDefinition: this.jobDefinitionArn,
       jobName: this.props.jobName ?? Names.nodeUniqueId(rule.node),
       arrayProperties: this.props.size ? { size: this.props.size } : undefined,
       retryStrategy: this.props.attempts ? { attempts: this.props.attempts } : undefined,
     };
 
     return {
-      arn: this.jobQueue.jobQueueArn,
+      arn: this.jobQueueArn,
       // When scoping resource-level access for job submission, you must provide both job queue and job definition resource types.
       // https://docs.aws.amazon.com/batch/latest/userguide/ExamplePolicies_BATCH.html#iam-example-restrict-job-def
-      role: singletonEventRole(this.jobDefinition, [
+      role: singletonEventRole(this.jobStack, [
         new iam.PolicyStatement({
           actions: ['batch:SubmitJob'],
           resources: [
-            this.jobDefinition.jobDefinitionArn,
-            this.jobQueue.jobQueueArn,
+            this.jobDefinitionArn,
+            this.jobQueueArn,
           ],
         }),
       ]),
       input: this.props.event,
-      targetResource: this.jobQueue,
+      targetResource: this.jobStack,
       batchParameters,
     };
   }

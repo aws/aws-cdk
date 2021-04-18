@@ -1,7 +1,7 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import * as cdk from '@aws-cdk/core';
-import { Construct, IConstruct } from 'constructs';
+import { Construct } from 'constructs';
 import { CallApiGatewayEndpointBase } from './base';
 import { CallApiGatewayEndpointBaseProps } from './base-types';
 
@@ -10,25 +10,20 @@ import { CallApiGatewayEndpointBaseProps } from './base-types';
  */
 export interface CallApiGatewayHttpApiEndpointProps extends CallApiGatewayEndpointBaseProps {
   /**
-   * API to call
+   * The Id of the API to call
    */
-  readonly api: IApiGatewayV2HttpApi;
+  readonly apiId: string;
+
+  /**
+   * The Stack in which the API is defined
+   */
+  readonly apiStack: cdk.Stack;
 
   /**
    * Name of the stage where the API is deployed to in API Gateway
    * @default '$default'
    */
   readonly stageName?: string;
-}
-
-/**
- * An APIGateWayV2 Http API resource representation
- */
-export interface IApiGatewayV2HttpApi extends IConstruct {
-  /**
-   * The identifier of this API Gateway HTTP API.
-   */
-  readonly apiId: string;
 }
 
 /**
@@ -54,16 +49,16 @@ export class CallApiGatewayHttpApiEndpoint extends CallApiGatewayEndpointBase {
   }
 
   private getApiEndpoint(): string {
-    const apiStack = cdk.Stack.of(this.props.api);
-    return `${this.props.api.apiId}.execute-api.${apiStack.region}.${apiStack.urlSuffix}`;
+    const apiStack = cdk.Stack.of(this.props.apiStack);
+    return `${this.props.apiId}.execute-api.${apiStack.region}.${apiStack.urlSuffix}`;
   }
 
   private getArnForExecuteApi(): string {
-    const { api, stageName, method, apiPath } = this.props;
+    const { apiId, stageName, method, apiPath } = this.props;
 
-    return cdk.Stack.of(api).formatArn({
+    return this.props.apiStack.formatArn({
       service: 'execute-api',
-      resource: api.apiId,
+      resource: apiId,
       sep: '/',
       resourceName: `${stageName}/${method}${apiPath}`,
     });
