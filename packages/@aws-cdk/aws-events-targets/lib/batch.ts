@@ -1,7 +1,6 @@
-import * as batch from '@aws-cdk/aws-batch';
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
-import { Names } from '@aws-cdk/core';
+import { Names, IConstruct } from '@aws-cdk/core';
 import { singletonEventRole } from './util';
 
 /**
@@ -43,13 +42,33 @@ export interface BatchJobProps {
 }
 
 /**
+ * Represents a batch job definition.
+ */
+export interface BatchJobDefinition extends IConstruct {
+  /**
+   * ARN of the job definition.
+   */
+  readonly jobDefinitionArn: string;
+}
+
+/**
+ * Represents a batch job queue.
+ */
+export interface BatchJobQueue extends IConstruct {
+  /**
+   * ARN of the job queue.
+   */
+  readonly jobQueueArn: string;
+}
+
+/**
  * Use an AWS Batch Job / Queue as an event rule target.
  * @experimental
  */
 export class BatchJob implements events.IRuleTarget {
   constructor(
-    private readonly jobQueue: batch.IJobQueue,
-    private readonly jobDefinition: batch.IJobDefinition,
+    private readonly jobQueue: BatchJobQueue,
+    private readonly jobDefinition: BatchJobDefinition,
     private readonly props: BatchJobProps = {},
   ) { }
 
