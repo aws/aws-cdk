@@ -3,7 +3,7 @@ import { ISecurityGroup, IVpc, SubnetSelection } from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
-import { Stack } from '@aws-cdk/core';
+import { IResource, Stack } from '@aws-cdk/core';
 import { StreamEventSource, StreamEventSourceProps } from './stream';
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
@@ -13,7 +13,7 @@ import { Construct } from '@aws-cdk/core';
 /**
  * Represents an MSK cluster that can be used as a lambda event source.
  */
-export interface ManagedKafkaCluster {
+export interface IManagedKafkaCluster extends IResource {
   /**
    * the ARN of the MSK cluster
    */
@@ -41,7 +41,7 @@ export interface ManagedKafkaEventSourceProps extends KafkaEventSourceProps {
   /**
    * an MSK cluster construct
    */
-  readonly cluster: ManagedKafkaCluster
+  readonly cluster: IManagedKafkaCluster
 }
 
 /**
