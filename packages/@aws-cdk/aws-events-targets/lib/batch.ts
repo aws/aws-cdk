@@ -1,6 +1,6 @@
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
-import { Names, IConstruct } from '@aws-cdk/core';
+import { Names, IResource } from '@aws-cdk/core';
 import { singletonEventRole } from './util';
 
 /**
@@ -44,7 +44,7 @@ export interface BatchJobProps {
 /**
  * Represents a batch job definition.
  */
-export interface BatchJobDefinition extends IConstruct {
+export interface IBatchJobDefinition extends IResource {
   /**
    * ARN of the job definition.
    */
@@ -54,7 +54,7 @@ export interface BatchJobDefinition extends IConstruct {
 /**
  * Represents a batch job queue.
  */
-export interface BatchJobQueue extends IConstruct {
+export interface IBatchJobQueue extends IResource {
   /**
    * ARN of the job queue.
    */
@@ -67,8 +67,8 @@ export interface BatchJobQueue extends IConstruct {
  */
 export class BatchJob implements events.IRuleTarget {
   constructor(
-    private readonly jobQueue: BatchJobQueue,
-    private readonly jobDefinition: BatchJobDefinition,
+    private readonly jobQueue: IBatchJobQueue,
+    private readonly jobDefinition: IBatchJobDefinition,
     private readonly props: BatchJobProps = {},
   ) { }
 
