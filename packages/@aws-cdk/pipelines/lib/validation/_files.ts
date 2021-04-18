@@ -1,7 +1,7 @@
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import { IGrantable } from '@aws-cdk/aws-iam';
 import * as s3assets from '@aws-cdk/aws-s3-assets';
-import { Construct } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 
 /**
  * Additional files to use in a shell script
