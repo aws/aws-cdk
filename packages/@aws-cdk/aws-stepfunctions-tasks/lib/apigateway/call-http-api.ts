@@ -49,7 +49,7 @@ export class CallApiGatewayHttpApiEndpoint extends CallApiGatewayEndpointBase {
   }
 
   private getApiEndpoint(): string {
-    const apiStack = cdk.Stack.of(this.props.apiStack);
+    const apiStack = this.props.apiStack;
     return `${this.props.apiId}.execute-api.${apiStack.region}.${apiStack.urlSuffix}`;
   }
 
