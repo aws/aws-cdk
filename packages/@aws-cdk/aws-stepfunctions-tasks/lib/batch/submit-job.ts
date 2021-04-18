@@ -1,7 +1,7 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
-import { Size, Stack, withResolved } from '@aws-cdk/core';
+import { Size, Stack, withResolved, IResource } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
 
@@ -83,7 +83,7 @@ export interface BatchJobDependency {
 /**
  * Represents a batch job definition.
  */
-export interface BatchJobDefinition {
+export interface IBatchJobDefinition extends IResource {
   /**
    * ARN of the job definition.
    */
@@ -93,7 +93,7 @@ export interface BatchJobDefinition {
 /**
  * Represents a batch job queue.
  */
-export interface BatchJobQueue {
+export interface IBatchJobQueue extends IResource {
   /**
    * ARN of the job queue.
    */
@@ -108,7 +108,7 @@ export interface BatchSubmitJobProps extends sfn.TaskStateBaseProps {
   /**
    * The job definition used by this job.
    */
-  readonly jobDefinition: BatchJobDefinition;
+  readonly jobDefinition: IBatchJobDefinition;
 
   /**
    * The name of the job.
@@ -120,7 +120,7 @@ export interface BatchSubmitJobProps extends sfn.TaskStateBaseProps {
   /**
    * The job queue into which the job is submitted.
    */
-  readonly jobQueue: BatchJobQueue;
+  readonly jobQueue: IBatchJobQueue;
 
   /**
    * The array size can be between 2 and 10,000.

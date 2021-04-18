@@ -3,6 +3,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import { Duration, Stack, withResolved } from '@aws-cdk/core';
 import { getResourceArn } from '../resource-arn-suffix';
+import { IBatchJobDefinition, IBatchJobQueue } from './submit-job';
 
 /**
  * The overrides that should be sent to a container.
@@ -81,25 +82,6 @@ export interface JobDependency {
 }
 
 /**
- * Represents a batch job definition.
- */
-export interface BatchJobDefinition {
-  /**
-   * ARN of the job definition.
-   */
-  readonly jobDefinitionArn: string;
-}
-
-/**
- * Represents a batch job queue.
- */
-export interface BatchJobQueue {
-  /**
-   * ARN of the job queue.
-   */
-  readonly jobQueueArn: string;
-}
-/**
  * Properties for RunBatchJob
  *
  * @deprecated use `BatchSubmitJob`
@@ -108,7 +90,7 @@ export interface RunBatchJobProps {
   /**
    * The job definition used by this job.
    */
-  readonly jobDefinition: BatchJobDefinition;
+  readonly jobDefinition: IBatchJobDefinition;
 
   /**
    * The name of the job.
@@ -120,7 +102,7 @@ export interface RunBatchJobProps {
   /**
    * The job queue into which the job is submitted.
    */
-  readonly jobQueue: BatchJobQueue;
+  readonly jobQueue: IBatchJobQueue;
 
   /**
    * The array size can be between 2 and 10,000.

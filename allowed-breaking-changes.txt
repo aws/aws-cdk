@@ -61,3 +61,6 @@ weakened:@aws-cdk/cloud-assembly-schema.FileSource
 # These are fine, since they shouldn't be widely used.
 weakened:@aws-cdk/core.FileAssetLocation
 weakened:@aws-cdk/aws-events.RuleTargetConfig
+
+strengthened:@aws-cdk/aws-stepfunctions-tasks.RunBatchJobProps
+strengthened:@aws-cdk/aws-stepfunctions-tasks.BatchSubmitJobProps
