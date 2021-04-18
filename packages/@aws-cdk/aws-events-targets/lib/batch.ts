@@ -49,7 +49,8 @@ export class BatchJob implements events.IRuleTarget {
   constructor(
     private readonly jobQueueArn: string,
     private readonly jobDefinitionArn: string,
-    private readonly jobStack: Stack,
+    private readonly jobDefinitionStack: Stack,
+    private readonly jobQueueStack: Stack,
     private readonly props: BatchJobProps = {},
   ) { }
 
@@ -69,7 +70,7 @@ export class BatchJob implements events.IRuleTarget {
       arn: this.jobQueueArn,
       // When scoping resource-level access for job submission, you must provide both job queue and job definition resource types.
       // https://docs.aws.amazon.com/batch/latest/userguide/ExamplePolicies_BATCH.html#iam-example-restrict-job-def
-      role: singletonEventRole(this.jobStack, [
+      role: singletonEventRole(this.jobDefinitionStack, [
         new iam.PolicyStatement({
           actions: ['batch:SubmitJob'],
           resources: [
@@ -79,7 +80,7 @@ export class BatchJob implements events.IRuleTarget {
         }),
       ]),
       input: this.props.event,
-      targetResource: this.jobStack,
+      targetResource: this.jobQueueStack,
       batchParameters,
     };
   }

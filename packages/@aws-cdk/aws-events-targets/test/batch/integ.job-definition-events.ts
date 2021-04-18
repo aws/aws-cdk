@@ -27,11 +27,11 @@ const job = new batch.JobDefinition(stack, 'MyJob', {
 const timer = new events.Rule(stack, 'Timer', {
   schedule: events.Schedule.rate(cdk.Duration.minutes(1)),
 });
-timer.addTarget(new targets.BatchJob(queue.jobQueueArn, job.jobDefinitionArn, cdk.Stack.of(job)));
+timer.addTarget(new targets.BatchJob(queue.jobQueueArn, job.jobDefinitionArn, cdk.Stack.of(job), cdk.Stack.of(queue)));
 
 const timer2 = new events.Rule(stack, 'Timer2', {
   schedule: events.Schedule.rate(cdk.Duration.minutes(2)),
 });
-timer2.addTarget(new targets.BatchJob(queue.jobQueueArn, job.jobDefinitionArn, cdk.Stack.of(job)));
+timer2.addTarget(new targets.BatchJob(queue.jobQueueArn, job.jobDefinitionArn, cdk.Stack.of(job), cdk.Stack.of(queue)));
 
 app.synth();

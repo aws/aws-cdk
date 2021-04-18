@@ -28,7 +28,7 @@ test('use aws batch job as an eventrule target', () => {
   });
 
   // WHEN
-  rule.addTarget(new targets.BatchJob(jobQueue.jobQueueArn, jobDefinition.jobDefinitionArn, Stack.of(jobDefinition)));
+  rule.addTarget(new targets.BatchJob(jobQueue.jobQueueArn, jobDefinition.jobDefinitionArn, Stack.of(jobDefinition), Stack.of(jobQueue)));
 
   // THEN
   expect(stack).to(haveResource('AWS::Events::Rule', {
