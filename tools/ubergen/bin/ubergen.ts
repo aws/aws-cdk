@@ -273,7 +273,7 @@ async function transformPackage(
   await fs.mkdirp(destination);
 
   if (uberPackageJson.ubergen?.excludeExperimentalModules && library.packageJson.stability === 'experimental') {
-    // in stripExperimental is on, we only want to add the L1s of experimental modules.
+    // when stripExperimental is enabled, we only want to add the L1s of experimental modules.
     let cfnScopes = library.packageJson['cdk-build'].cloudformation;
 
     if (cfnScopes === undefined) {
