@@ -57,7 +57,7 @@ export class BatchJob implements events.IRuleTarget {
     private readonly jobQueueArn: string,
 
     /**
-     * The JobQueue Construct
+     * The JobQueue Resource
      */
     private readonly jobQueueScope: IConstruct,
 
@@ -67,7 +67,7 @@ export class BatchJob implements events.IRuleTarget {
     private readonly jobDefinitionArn: string,
 
     /**
-     * The JobQueue Construct
+     * The JobQueue Resource
      */
     private readonly jobDefinitionScope: IConstruct,
     private readonly props: BatchJobProps = {},
