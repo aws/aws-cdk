@@ -64,6 +64,6 @@
     "ostools": ["chmod", "npm"]
   },
   "publishConfig": {
-    "tag": "latest"
+    "tag": "next"
   }
 }
