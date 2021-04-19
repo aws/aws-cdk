@@ -49,8 +49,8 @@ export class BatchJob implements events.IRuleTarget {
   constructor(
     private readonly jobQueueArn: string,
     private readonly jobDefinitionArn: string,
-    private readonly jobDefinitionStack: Stack,
     private readonly jobQueueStack: Stack,
+    private readonly jobDefinitionStack: Stack,
     private readonly props: BatchJobProps = {},
   ) { }
 
