@@ -1,7 +1,7 @@
 import * as console from 'console';
-import * as os from 'os';
 import * as path from 'path';
 import * as process from 'process';
+import cfn2ts from 'cfn2ts';
 import * as fs from 'fs-extra';
 import * as ts from 'typescript';
 
@@ -17,6 +17,7 @@ async function main() {
   const libraries = await findLibrariesToPackage(uberPackageJson);
   await verifyDependencies(uberPackageJson, libraries);
   await prepareSourceFiles(libraries, uberPackageJson);
+  await combineRosettaFixtures(libraries);
 }
 
 main().then(
@@ -58,9 +59,14 @@ interface PackageJson {
   readonly name: string;
   readonly types: string;
   readonly version: string;
+  readonly stability: string;
   readonly [key: string]: unknown;
+  readonly 'cdk-build': {
+    readonly cloudformation: string[] | string;
+  };
   readonly ubergen?: {
     readonly deprecatedPackages?: readonly string[];
+    readonly excludeExperimentalModules?: boolean;
   };
 }
 
@@ -72,7 +78,7 @@ function findWorkspacePath(): string {
   return _findRootPath(process.cwd());
 
   function _findRootPath(part: string): string {
-    if (process.cwd() === os.homedir()) {
+    if (part === path.resolve(part, '..')) {
       throw new Error('couldn\'t find a \'lerna.json\' file when walking up the directory tree, are you in a aws-cdk project?');
     }
 
@@ -213,13 +219,20 @@ async function verifyDependencies(packageJson: any, libraries: readonly LibraryR
 async function prepareSourceFiles(libraries: readonly LibraryReference[], packageJson: PackageJson) {
   console.log('📝 Preparing source files...');
 
+  if (packageJson.ubergen?.excludeExperimentalModules) {
+    console.log('\t 👩🏻‍🔬 \'excludeExperimentalModules\' enabled. Regenerating all experimental modules as L1s using cfn2ts...');
+  }
+
   await fs.remove(LIB_ROOT);
 
   const indexStatements = new Array<string>();
   for (const library of libraries) {
     const libDir = path.join(LIB_ROOT, library.shortName);
-    await transformPackage(library, packageJson, libDir, libraries);
+    const copied = await transformPackage(library, packageJson, libDir, libraries);
 
+    if (!copied) {
+      continue;
+    }
     if (library.shortName === 'core') {
       indexStatements.push(`export * from './${library.shortName}';`);
     } else {
@@ -232,6 +245,25 @@ async function prepareSourceFiles(libraries: readonly LibraryReference[], packag
   console.log('\t🍺 Success!');
 }
 
+async function combineRosettaFixtures(libraries: readonly LibraryReference[]) {
+  console.log('📝 Combining Rosetta fixtures...');
+
+  const uberRosettaDir = path.resolve(LIB_ROOT, '..', 'rosetta');
+  await fs.remove(uberRosettaDir);
+
+  for (const library of libraries) {
+    const packageRosettaDir = path.join(library.root, 'rosetta');
+    if (await fs.pathExists(packageRosettaDir)) {
+      await fs.copy(packageRosettaDir, uberRosettaDir, {
+        overwrite: true,
+        recursive: true,
+      });
+    }
+  }
+
+  console.log('\t🍺 Success!');
+}
+
 async function transformPackage(
   library: LibraryReference,
   uberPackageJson: PackageJson,
@@ -240,7 +272,28 @@ async function transformPackage(
 ) {
   await fs.mkdirp(destination);
 
-  await copyOrTransformFiles(library.root, destination, allLibraries, uberPackageJson);
+  if (uberPackageJson.ubergen?.excludeExperimentalModules && library.packageJson.stability === 'experimental') {
+    // when stripExperimental is enabled, we only want to add the L1s of experimental modules.
+    let cfnScopes = library.packageJson['cdk-build'].cloudformation;
+
+    if (cfnScopes === undefined) {
+      return false;
+    }
+    cfnScopes = Array.isArray(cfnScopes) ? cfnScopes : [cfnScopes];
+
+    const destinationLib = path.join(destination, 'lib');
+    await fs.mkdirp(destinationLib);
+    await cfn2ts(cfnScopes, destinationLib);
+    // create a lib/index.ts which only exports the generated files
+    fs.writeFileSync(path.join(destinationLib, 'index.ts'),
+      /// logic copied from `create-missing-libraries.ts`
+      cfnScopes.map(s => (s === 'AWS::Serverless' ? 'AWS::SAM' : s).split('::')[1].toLocaleLowerCase())
+        .map(s => `export * from './${s}.generated';`)
+        .join('\n'));
+    await copyOrTransformFiles(destination, destination, allLibraries, uberPackageJson);
+  } else {
+    await copyOrTransformFiles(library.root, destination, allLibraries, uberPackageJson);
+  }
 
   await fs.writeFile(
     path.join(destination, 'index.ts'),
@@ -264,6 +317,7 @@ async function transformPackage(
       { encoding: 'utf8' },
     );
   }
+  return true;
 }
 
 function transformTargets(monoConfig: PackageJson['jsii']['targets'], targets: PackageJson['jsii']['targets']): PackageJson['jsii']['targets'] {

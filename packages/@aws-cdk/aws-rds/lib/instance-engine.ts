@@ -217,6 +217,11 @@ export class MariaDbEngineVersion {
   /** Version "10.4.13". */
   public static readonly VER_10_4_13 = MariaDbEngineVersion.of('10.4.13', '10.4');
 
+  /** Version "10.5" (only a major version, without a specific minor version). */
+  public static readonly VER_10_5 = MariaDbEngineVersion.of('10.5', '10.5');
+  /** Version "10.5.8". */
+  public static readonly VER_10_5_8 = MariaDbEngineVersion.of('10.5.8', '10.5');
+
   /**
    * Create a new MariaDbEngineVersion with an arbitrary version.
    *
@@ -658,6 +663,11 @@ export class PostgresEngineVersion {
   public static readonly VER_12_4 = PostgresEngineVersion.of('12.4', '12', { s3Import: true });
   /** Version "12.5". */
   public static readonly VER_12_5 = PostgresEngineVersion.of('12.5', '12', { s3Import: true });
+
+  /** Version "13" (only a major version, without a specific minor version). */
+  public static readonly VER_13 = PostgresEngineVersion.of('13', '13', { s3Import: true });
+  /** Version "13.1". */
+  public static readonly VER_13_1 = PostgresEngineVersion.of('13.1', '13', { s3Import: true });
 
   /**
    * Create a new PostgresEngineVersion with an arbitrary version.

@@ -1,5 +1,5 @@
-import { ABSENT, arrayWith } from '@aws-cdk/assert';
-import '@aws-cdk/assert/jest';
+import { ABSENT, arrayWith } from '@aws-cdk/assert-internal';
+import '@aws-cdk/assert-internal/jest';
 import { Stack, Duration } from '@aws-cdk/core';
 import { OAuthScope, ResourceServerScope, UserPool, UserPoolClient, UserPoolClientIdentityProvider, UserPoolIdentityProvider, ClientAttributes } from '../lib';
 
@@ -487,13 +487,14 @@ describe('User Pool Client', () => {
         UserPoolClientIdentityProvider.FACEBOOK,
         UserPoolClientIdentityProvider.AMAZON,
         UserPoolClientIdentityProvider.GOOGLE,
+        UserPoolClientIdentityProvider.APPLE,
       ],
     });
 
     // THEN
     expect(stack).toHaveResource('AWS::Cognito::UserPoolClient', {
       ClientName: 'AllEnabled',
-      SupportedIdentityProviders: ['COGNITO', 'Facebook', 'LoginWithAmazon', 'Google'],
+      SupportedIdentityProviders: ['COGNITO', 'Facebook', 'LoginWithAmazon', 'Google', 'SignInWithApple'],
     });
   });
 
