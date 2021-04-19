@@ -65,7 +65,7 @@ weakened:@aws-cdk/aws-events.RuleTargetConfig
 # replace interface with untyped properties to order to break stable to experimental dependencies
 removed:@aws-cdk/aws-stepfunctions-tasks.CallApiGatewayHttpApiEndpointProps.api
 strengthened:@aws-cdk/aws-stepfunctions-tasks.CallApiGatewayHttpApiEndpointProps
-removed:@aws-cdk/aws-route53-targets.ApiGatewayv2Domain.<initializer>
+removed:@aws-cdk/aws-route53-targets.ApiGatewayv2Domain
 removed:@aws-cdk/aws-stepfunctions-tasks.RunBatchJobProps.jobDefinition
 removed:@aws-cdk/aws-stepfunctions-tasks.RunBatchJobProps.jobDefinition
 removed:@aws-cdk/aws-stepfunctions-tasks.RunBatchJobProps.jobQueue
