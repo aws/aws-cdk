@@ -220,7 +220,7 @@ async function prepareSourceFiles(libraries: readonly LibraryReference[], packag
   console.log('📝 Preparing source files...');
 
   if (packageJson.ubergen?.excludeExperimentalModules) {
-    console.log('\t 👩🏻‍🔬 \'excludeExperimentalModules\' is on, regenerating all experimental modules as L1s using cfn2ts');
+    console.log('\t 👩🏻‍🔬 \'excludeExperimentalModules\' enabled. Regenerating all experimental modules as L1s using cfn2ts...');
   }
 
   await fs.remove(LIB_ROOT);
