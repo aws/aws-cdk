@@ -1,6 +1,6 @@
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
-import { Names, Stack } from '@aws-cdk/core';
+import { Names, IConstruct } from '@aws-cdk/core';
 import { singletonEventRole } from './util';
 
 /**
@@ -43,14 +43,33 @@ export interface BatchJobProps {
 
 /**
  * Use an AWS Batch Job / Queue as an event rule target.
+ * Most likely the code will look something like this:
+ * `new BatchJob(jobQueue.jobQueueArn, jobQueue, jobDefinition.jobDefinitionArn, jobDefinition)`
+ *
+ * In the future this API will be improved to be fully typed
  * @experimental
  */
 export class BatchJob implements events.IRuleTarget {
   constructor(
+    /**
+     * The JobQueue arn
+     */
     private readonly jobQueueArn: string,
+
+    /**
+     * The JobQueue Construct
+     */
+    private readonly jobQueueScope: IConstruct,
+
+    /**
+     * The jobDefinition arn
+     */
     private readonly jobDefinitionArn: string,
-    private readonly jobQueueStack: Stack,
-    private readonly jobDefinitionStack: Stack,
+
+    /**
+     * The JobQueue Construct
+     */
+    private readonly jobDefinitionScope: IConstruct,
     private readonly props: BatchJobProps = {},
   ) { }
 
@@ -70,7 +89,7 @@ export class BatchJob implements events.IRuleTarget {
       arn: this.jobQueueArn,
       // When scoping resource-level access for job submission, you must provide both job queue and job definition resource types.
       // https://docs.aws.amazon.com/batch/latest/userguide/ExamplePolicies_BATCH.html#iam-example-restrict-job-def
-      role: singletonEventRole(this.jobDefinitionStack, [
+      role: singletonEventRole(this.jobDefinitionScope, [
         new iam.PolicyStatement({
           actions: ['batch:SubmitJob'],
           resources: [
@@ -80,7 +99,7 @@ export class BatchJob implements events.IRuleTarget {
         }),
       ]),
       input: this.props.event,
-      targetResource: this.jobQueueStack,
+      targetResource: this.jobQueueScope,
       batchParameters,
     };
   }
