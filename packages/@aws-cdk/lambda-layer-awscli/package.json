@@ -102,6 +102,9 @@
   "ubergen": {
     "exclude": false
   },
+  "nozem": {
+    "ostools": ["dirname", "cd", "docker"]
+  },
   "publishConfig": {
     "tag": "latest"
   }

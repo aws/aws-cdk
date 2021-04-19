@@ -180,6 +180,9 @@
   "awscdkio": {
     "announce": false
   },
+  "nozem": {
+    "ostools": ["docker"]
+  },
   "maturity": "stable",
   "publishConfig": {
     "tag": "latest"
