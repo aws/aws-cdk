@@ -85,7 +85,7 @@ test.each([['npm'], ['yarn']])('%s build automatically determines artifact base-
     Source: {
       BuildSpec: encodedJson(deepObjectLike({
         artifacts: {
-          'base-directory': 'testcdk.out',
+          'base-directory': 'cdk.out',
         },
       })),
     },
@@ -117,7 +117,7 @@ test.each([['npm'], ['yarn']])('%s build respects subdirectory', (npmYarn) => {
           },
         },
         artifacts: {
-          'base-directory': 'subdir/testcdk.out',
+          'base-directory': 'subdir/cdk.out',
         },
       })),
     },
@@ -301,7 +301,7 @@ test('Standard (NPM) synth can output additional artifacts', () => {
         artifacts: {
           'secondary-artifacts': {
             CloudAsm: {
-              'base-directory': 'testcdk.out',
+              'base-directory': 'cdk.out',
               'files': '**/*',
             },
             IntegTest: {
