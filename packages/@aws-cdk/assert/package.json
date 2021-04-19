@@ -69,9 +69,7 @@
   "ubergen": {
     "exclude": true
   },
-  "nozem": {
-    "ostools": ["dirname", "rsync"]
-  },
+  "nozem": false,
   "stability": "experimental",
   "maturity": "developer-preview",
   "publishConfig": {

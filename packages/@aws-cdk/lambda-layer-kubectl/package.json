@@ -105,6 +105,9 @@
       "AWSLINT_BASE_CONSTRUCT": true
     }
   },
+  "nozem": {
+    "ostools": ["dirname", "cd", "docker"]
+  },
   "ubergen": {
     "exclude": false
   },

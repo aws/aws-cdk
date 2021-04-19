@@ -98,7 +98,7 @@
     "announce": false
   },
   "nozem": {
-    "ostools": ["rm", "tar"]
+    "ostools": ["rm", "tar", "gzip"]
   },
   "publishConfig": {
     "tag": "latest"
