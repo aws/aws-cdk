@@ -417,11 +417,11 @@ async function rewriteReadmeImports(fromFile: string): Promise<string> {
   const readmeOriginal = await fs.readFile(fromFile, { encoding: 'utf8' });
   return readmeOriginal
     // import * as s3 from '@aws-cdk/aws-s3'
-    .replace(/^(\s*)import \* as (.*) from '@aws-cdk\/(.*)';(\s*)$/gm, rewriteCdkImports)
+    .replace(/^(\s*)import \* as (.*) from (?:'|")@aws-cdk\/(.*)(?:'|");(\s*)$/gm, rewriteCdkImports)
     // import s3 = require('@aws-cdk/aws-s3')
-    .replace(/^(\s*)import (.*) = require\('@aws-cdk\/(.*)'\);(\s*)$/gm, rewriteCdkImports)
+    .replace(/^(\s*)import (.*) = require\((?:'|")@aws-cdk\/(.*)(?:'|")\);(\s*)$/gm, rewriteCdkImports)
     // import { Bucket } from '@aws-cdk/aws-s3'
-    .replace(/^(\s*)import ({.*}) from '@aws-cdk\/(.*)';(\s*)$/gm, rewriteCdkTypeImports);
+    .replace(/^(\s*)import ({.*}) from (?:'|")@aws-cdk\/(.*)(?:'|");(\s*)$/gm, rewriteCdkTypeImports);
 
   function rewriteCdkImports(_match: string, prefix: string, alias: string, module: string, suffix: string): string {
     if (module === 'core') {
