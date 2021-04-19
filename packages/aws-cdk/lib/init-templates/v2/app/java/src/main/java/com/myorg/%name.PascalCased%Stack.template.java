@@ -1,8 +1,8 @@
 package com.myorg;
 
-import software.amazon.awscdk.lib.Construct;
-import software.amazon.awscdk.lib.Stack;
-import software.amazon.awscdk.lib.StackProps;
+import software.constructs.Construct;
+import software.amazon.awscdk.Stack;
+import software.amazon.awscdk.StackProps;
 
 public class %name.PascalCased%Stack extends Stack {
     public %name.PascalCased%Stack(final Construct scope, final String id) {

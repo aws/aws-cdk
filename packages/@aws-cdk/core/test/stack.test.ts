@@ -1,9 +1,10 @@
 import * as cxapi from '@aws-cdk/cx-api';
 import { testFutureBehavior, testLegacyBehavior } from 'cdk-build-tools/lib/feature-flag';
+import { Construct } from 'constructs';
 import {
   App, CfnCondition, CfnInclude, CfnOutput, CfnParameter,
-  CfnResource, Construct, Lazy, ScopedAws, Stack, validateString,
-  ISynthesisSession, Tags, LegacyStackSynthesizer, DefaultStackSynthesizer,
+  CfnResource, Lazy, ScopedAws, Stack, validateString,
+  Tags, LegacyStackSynthesizer, DefaultStackSynthesizer,
   NestedStack,
 } from '../lib';
 import { Intrinsic } from '../lib/private/intrinsic';
@@ -489,7 +490,7 @@ describe('stack', () => {
 
   test('cross stack references and dependencies work within child stacks (non-nested)', () => {
     // GIVEN
-    const app = new App();
+    const app = new App({ context: { '@aws-cdk/core:stackRelativeExports': true } });
     const parent = new Stack(app, 'Parent');
     const child1 = new Stack(parent, 'Child1');
     const child2 = new Stack(parent, 'Child2');
@@ -520,7 +521,7 @@ describe('stack', () => {
       Outputs: {
         ExportsOutputRefResourceA461B4EF9: {
           Value: { Ref: 'ResourceA' },
-          Export: { Name: 'ParentChild18FAEF419:Child1ExportsOutputRefResourceA7BF20B37' },
+          Export: { Name: 'ParentChild18FAEF419:ExportsOutputRefResourceA461B4EF9' },
         },
       },
     });
@@ -529,7 +530,7 @@ describe('stack', () => {
         Resource1: {
           Type: 'R2',
           Properties: {
-            RefToResource1: { 'Fn::ImportValue': 'ParentChild18FAEF419:Child1ExportsOutputRefResourceA7BF20B37' },
+            RefToResource1: { 'Fn::ImportValue': 'ParentChild18FAEF419:ExportsOutputRefResourceA461B4EF9' },
           },
         },
       },
@@ -541,7 +542,7 @@ describe('stack', () => {
 
   test('automatic cross-stack references and manual exports look the same', () => {
     // GIVEN: automatic
-    const appA = new App();
+    const appA = new App({ context: { '@aws-cdk/core:stackRelativeExports': true } });
     const producerA = new Stack(appA, 'Producer');
     const consumerA = new Stack(appA, 'Consumer');
     const resourceA = new CfnResource(producerA, 'Resource', { type: 'AWS::Resource' });
@@ -724,7 +725,7 @@ describe('stack', () => {
         MyParentResource: {
           Type: 'Resource::Parent',
           Properties: {
-            ParentProp: { 'Fn::ImportValue': 'parentchild13F9359B:childExportsOutputFnGetAttMyChildResourceAttributeOfChildResource420052FC' },
+            ParentProp: { 'Fn::ImportValue': 'parentchild13F9359B:ExportsOutputFnGetAttMyChildResourceAttributeOfChildResource52813264' },
           },
         },
       },
@@ -735,7 +736,7 @@ describe('stack', () => {
       Outputs: {
         ExportsOutputFnGetAttMyChildResourceAttributeOfChildResource52813264: {
           Value: { 'Fn::GetAtt': ['MyChildResource', 'AttributeOfChildResource'] },
-          Export: { Name: 'parentchild13F9359B:childExportsOutputFnGetAttMyChildResourceAttributeOfChildResource420052FC' },
+          Export: { Name: 'parentchild13F9359B:ExportsOutputFnGetAttMyChildResourceAttributeOfChildResource52813264' },
         },
       },
     });
@@ -1102,25 +1103,6 @@ describe('stack', () => {
 
     expect(artifact.terminationProtection).toEqual(true);
 
-
-  });
-
-  test('users can (still) override "synthesize()" in stack', () => {
-    let called = false;
-
-    class MyStack extends Stack {
-      synthesize(session: ISynthesisSession) {
-        called = true;
-        expect(session.outdir).toBeDefined();
-        expect(session.assembly.outdir).toEqual(session.outdir);
-      }
-    }
-
-    const app = new App();
-    new MyStack(app, 'my-stack');
-
-    app.synth();
-    expect(called).toEqual(true);
 
   });
 
