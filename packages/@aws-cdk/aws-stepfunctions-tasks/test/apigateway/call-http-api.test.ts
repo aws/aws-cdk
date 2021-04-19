@@ -11,7 +11,8 @@ describe('CallApiGatewayHttpApiEndpoint', () => {
 
     // WHEN
     const task = new CallApiGatewayHttpApiEndpoint(stack, 'Call', {
-      api: httpApi,
+      apiId: httpApi.apiId,
+      apiStack: cdk.Stack.of(httpApi),
       method: HttpMethod.GET,
     });
 
@@ -63,7 +64,8 @@ describe('CallApiGatewayHttpApiEndpoint', () => {
 
     // WHEN
     const task = new CallApiGatewayHttpApiEndpoint(stack, 'Call', {
-      api: httpApi,
+      apiId: httpApi.apiId,
+      apiStack: cdk.Stack.of(httpApi),
       method: HttpMethod.GET,
       integrationPattern: sfn.IntegrationPattern.WAIT_FOR_TASK_TOKEN,
       headers: sfn.TaskInput.fromObject({ TaskToken: sfn.JsonPath.taskToken }),
@@ -121,7 +123,8 @@ describe('CallApiGatewayHttpApiEndpoint', () => {
     // THEN
     expect(() => {
       new CallApiGatewayHttpApiEndpoint(stack, 'Call', {
-        api: httpApi,
+        apiId: httpApi.apiId,
+        apiStack: cdk.Stack.of(httpApi),
         method: HttpMethod.GET,
         integrationPattern: sfn.IntegrationPattern.WAIT_FOR_TASK_TOKEN,
       });
@@ -136,7 +139,8 @@ describe('CallApiGatewayHttpApiEndpoint', () => {
     // THEN
     expect(() => {
       new CallApiGatewayHttpApiEndpoint(stack, 'Call', {
-        api: httpApi,
+        apiId: httpApi.apiId,
+        apiStack: cdk.Stack.of(httpApi),
         method: HttpMethod.GET,
         integrationPattern: sfn.IntegrationPattern.RUN_JOB,
       });

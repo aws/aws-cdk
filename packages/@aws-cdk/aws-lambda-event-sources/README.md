@@ -225,9 +225,8 @@ import * as msk from '@aws-cdk/aws-lambda';
 import { Secret } from '@aws-cdk/aws-secretmanager';
 import { ManagedKafkaEventSource } from '@aws-cdk/aws-lambda-event-sources';
 
-// Your MSK cluster
-const cluster = msk.Cluster.fromClusterArn(this, 'Cluster',
-        'arn:aws:kafka:us-east-1:0123456789019:cluster/SalesCluster/abcd1234-abcd-cafe-abab-9876543210ab-4');
+// Your MSK cluster arn
+const cluster = 'arn:aws:kafka:us-east-1:0123456789019:cluster/SalesCluster/abcd1234-abcd-cafe-abab-9876543210ab-4';
 
 // The Kafka topic you want to subscribe to
 const topic = 'some-cool-topic'
@@ -237,7 +236,7 @@ const topic = 'some-cool-topic'
 const secret = new Secret(this, 'Secret', { secretName: 'AmazonMSK_KafkaSecret' });
 
 myFunction.addEventSource(new ManagedKafkaEventSource({
-  cluster: cluster,
+  clusterArn,
   topic: topic,
   secret: secret,
   batchSize: 100, // default

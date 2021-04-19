@@ -24,9 +24,10 @@ This library contains Route53 Alias Record targets for:
 * API Gateway V2 custom domains
 
   ```ts
+
   new route53.ARecord(this, 'AliasRecord', {
     zone,
-    target: route53.RecordTarget.fromAlias(new alias.ApiGatewayv2Domain(domainName)),
+    target: route53.RecordTarget.fromAlias(new alias.ApiGatewayv2DomainProperties(domainName.regionalDomainName, domainName.regionalHostedZoneId)),
   });
   ```
 
