@@ -115,18 +115,6 @@ abstract class MeshBase extends cdk.Resource implements IMesh {
     return this.grant(identity,
       'appmesh:DescribeMesh',
       'appmesh:ListMeshes',
-      'appmesh:DescribeVirtualService',
-      'appmesh:ListVirtualServices',
-      'appmesh:DescribeVirtualRouter',
-      'appmesh:ListVirtualRouter',
-      'appmesh:DescribeRoute',
-      'appmesh:ListRoutes',
-      'appmesh:DescribeVirtualNode',
-      'appmesh:ListVirtualNodes',
-      'appmesh:DescribeVirtualGateway',
-      'appmesh:ListVirtualGateways',
-      'appmesh:DescribeGatewayRoute',
-      'appmesh:ListGatewayRoutes',
     );
   }
 
@@ -135,24 +123,6 @@ abstract class MeshBase extends cdk.Resource implements IMesh {
       'appmesh:CreateMesh',
       'appmesh:UpdateMesh',
       'appmesh:DeleteMesh',
-      'appmesh:CreateVirtualNode',
-      'appmesh:UpdateVirtualNode',
-      'appmesh:DeleteVirtualNode',
-      'appmesh:CreateVirtualRouter',
-      'appmesh:UpdateVirtualRouter',
-      'appmesh:DeleteVirtualRouter',
-      'appmesh:CreateRoute',
-      'appmesh:UpdateRoute',
-      'appmesh:DeleteRoute',
-      'appmesh:CreateVirtualGateway',
-      'appmesh:UpdateVirtualGateway',
-      'appmesh:DeleteVirtualGateway',
-      'appmesh:CreateGatewayRoute',
-      'appmesh:UpdateGatewayRoute',
-      'appmesh:DeleteGatewayRoute',
-      'appmesh:CreateVirtualService',
-      'appmesh:UpdateVirtualService',
-      'appmesh:DeleteVirtualService',
       'appmesh:TagResource',
       'appmesh:UntagResource',
     );
@@ -162,15 +132,7 @@ abstract class MeshBase extends cdk.Resource implements IMesh {
     return iam.Grant.addToPrincipal({
       grantee,
       actions,
-      resourceArns: [
-        this.meshArn,
-        this.meshArn + '/virtualNode/*',
-        this.meshArn + '/virtualRouter/*',
-        this.meshArn + '/virtualRouter/*/route/*',
-        this.meshArn + '/virtualGateway/*',
-        this.meshArn + '/virtualGateway/*/gatewayRoute/*',
-        this.meshArn + '/virtualService/*',
-      ],
+      resourceArns: [this.meshArn],
     });
   }
 }

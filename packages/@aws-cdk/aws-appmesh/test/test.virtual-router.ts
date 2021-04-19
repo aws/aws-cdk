@@ -1,4 +1,4 @@
-import { expect, haveResourceLike } from '@aws-cdk/assert';
+import { expect, haveResourceLike } from '@aws-cdk/assert-internal';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
@@ -434,26 +434,11 @@ export = {
             Action: [
               'appmesh:DescribeVirtualRouter',
               'appmesh:ListVirtualRouter',
-              'appmesh:DescribeRoute',
-              'appmesh:ListRoute',
             ],
             Effect: 'Allow',
-            Resource: [
-              {
-                Ref: 'meshhttprouterlistener0FB34F60',
-              },
-              {
-                'Fn::Join': [
-                  '',
-                  [
-                    {
-                      Ref: 'meshhttprouterlistener0FB34F60',
-                    },
-                    '/route/*',
-                  ],
-                ],
-              },
-            ],
+            Resource: {
+              Ref: 'meshhttprouterlistener0FB34F60',
+            },
           },
         ],
       },
@@ -483,29 +468,13 @@ export = {
               'appmesh:CreateVirtualRouter',
               'appmesh:UpdateVirtualRouter',
               'appmesh:DeleteVirtualRouter',
-              'appmesh:CreateRoute',
-              'appmesh:UpdateRoute',
-              'appmesh:Route',
               'appmesh:TagResource',
               'appmesh:UntagResource',
             ],
             Effect: 'Allow',
-            Resource: [
-              {
-                Ref: 'meshhttprouterlistener0FB34F60',
-              },
-              {
-                'Fn::Join': [
-                  '',
-                  [
-                    {
-                      Ref: 'meshhttprouterlistener0FB34F60',
-                    },
-                    '/route/*',
-                  ],
-                ],
-              },
-            ],
+            Resource: {
+              Ref: 'meshhttprouterlistener0FB34F60',
+            },
           },
         ],
       },

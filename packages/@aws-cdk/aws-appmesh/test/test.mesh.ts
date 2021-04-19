@@ -335,61 +335,11 @@ export = {
             Action: [
               'appmesh:DescribeMesh',
               'appmesh:ListMeshes',
-              'appmesh:DescribeVirtualService',
-              'appmesh:ListVirtualServices',
-              'appmesh:DescribeVirtualRouter',
-              'appmesh:ListVirtualRouter',
-              'appmesh:DescribeRoute',
-              'appmesh:ListRoutes',
-              'appmesh:DescribeVirtualNode',
-              'appmesh:ListVirtualNodes',
-              'appmesh:DescribeVirtualGateway',
-              'appmesh:ListVirtualGateways',
-              'appmesh:DescribeGatewayRoute',
-              'appmesh:ListGatewayRoutes',
             ],
             Effect: 'Allow',
-            Resource: [
-              {
-                Ref: 'meshACDFE68E',
-              },
-              {
-                'Fn::Join': ['', [
-                  { Ref: 'meshACDFE68E' },
-                  '/virtualNode/*',
-                ]],
-              },
-              {
-                'Fn::Join': ['', [
-                  { Ref: 'meshACDFE68E' },
-                  '/virtualRouter/*',
-                ]],
-              },
-              {
-                'Fn::Join': ['', [
-                  { Ref: 'meshACDFE68E' },
-                  '/virtualRouter/*/route/*',
-                ]],
-              },
-              {
-                'Fn::Join': ['', [
-                  { Ref: 'meshACDFE68E' },
-                  '/virtualGateway/*',
-                ]],
-              },
-              {
-                'Fn::Join': ['', [
-                  { Ref: 'meshACDFE68E' },
-                  '/virtualGateway/*/gatewayRoute/*',
-                ]],
-              },
-              {
-                'Fn::Join': ['', [
-                  { Ref: 'meshACDFE68E' },
-                  '/virtualService/*',
-                ]],
-              },
-            ],
+            Resource: {
+              Ref: 'meshACDFE68E',
+            },
           },
         ],
       },
@@ -417,69 +367,13 @@ export = {
               'appmesh:CreateMesh',
               'appmesh:UpdateMesh',
               'appmesh:DeleteMesh',
-              'appmesh:CreateVirtualNode',
-              'appmesh:UpdateVirtualNode',
-              'appmesh:DeleteVirtualNode',
-              'appmesh:CreateVirtualRouter',
-              'appmesh:UpdateVirtualRouter',
-              'appmesh:DeleteVirtualRouter',
-              'appmesh:CreateRoute',
-              'appmesh:UpdateRoute',
-              'appmesh:DeleteRoute',
-              'appmesh:CreateVirtualGateway',
-              'appmesh:UpdateVirtualGateway',
-              'appmesh:DeleteVirtualGateway',
-              'appmesh:CreateGatewayRoute',
-              'appmesh:UpdateGatewayRoute',
-              'appmesh:DeleteGatewayRoute',
-              'appmesh:CreateVirtualService',
-              'appmesh:UpdateVirtualService',
-              'appmesh:DeleteVirtualService',
               'appmesh:TagResource',
               'appmesh:UntagResource',
             ],
             Effect: 'Allow',
-            Resource: [
-              {
-                Ref: 'meshACDFE68E',
-              },
-              {
-                'Fn::Join': ['', [
-                  { Ref: 'meshACDFE68E' },
-                  '/virtualNode/*',
-                ]],
-              },
-              {
-                'Fn::Join': ['', [
-                  { Ref: 'meshACDFE68E' },
-                  '/virtualRouter/*',
-                ]],
-              },
-              {
-                'Fn::Join': ['', [
-                  { Ref: 'meshACDFE68E' },
-                  '/virtualRouter/*/route/*',
-                ]],
-              },
-              {
-                'Fn::Join': ['', [
-                  { Ref: 'meshACDFE68E' },
-                  '/virtualGateway/*',
-                ]],
-              },
-              {
-                'Fn::Join': ['', [
-                  { Ref: 'meshACDFE68E' },
-                  '/virtualGateway/*/gatewayRoute/*',
-                ]],
-              },
-              {
-                'Fn::Join': ['', [
-                  { Ref: 'meshACDFE68E' },
-                  '/virtualService/*',
-                ]],
-              },
-            ],
+            Resource: {
+              Ref: 'meshACDFE68E',
+            },
           },
         ],
       },

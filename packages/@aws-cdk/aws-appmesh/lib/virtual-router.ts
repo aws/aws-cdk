@@ -101,8 +101,6 @@ abstract class VirtualRouterBase extends cdk.Resource implements IVirtualRouter 
     return this.grant(identity,
       'appmesh:DescribeVirtualRouter',
       'appmesh:ListVirtualRouter',
-      'appmesh:DescribeRoute',
-      'appmesh:ListRoute',
     );
   }
 
@@ -114,9 +112,6 @@ abstract class VirtualRouterBase extends cdk.Resource implements IVirtualRouter 
       'appmesh:CreateVirtualRouter',
       'appmesh:UpdateVirtualRouter',
       'appmesh:DeleteVirtualRouter',
-      'appmesh:CreateRoute',
-      'appmesh:UpdateRoute',
-      'appmesh:Route',
       'appmesh:TagResource',
       'appmesh:UntagResource',
     );
@@ -129,7 +124,7 @@ abstract class VirtualRouterBase extends cdk.Resource implements IVirtualRouter 
     return iam.Grant.addToPrincipal({
       grantee,
       actions,
-      resourceArns: [this.virtualRouterArn, this.virtualRouterArn + '/route/*'],
+      resourceArns: [this.virtualRouterArn],
     });
   }
 }

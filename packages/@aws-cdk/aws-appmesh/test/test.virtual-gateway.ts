@@ -611,26 +611,11 @@ export = {
             Action: [
               'appmesh:DescribeVirtualGateway',
               'appmesh:ListVirtualGateway',
-              'appmesh:DescribeGatewayRoute',
-              'appmesh:ListGatewayRoute',
             ],
             Effect: 'Allow',
-            Resource: [
-              {
-                Ref: 'testGatewayF09EC349',
-              },
-              {
-                'Fn::Join': [
-                  '',
-                  [
-                    {
-                      Ref: 'testGatewayF09EC349',
-                    },
-                    '/gatewayRoute/*',
-                  ],
-                ],
-              },
-            ],
+            Resource: {
+              Ref: 'testGatewayF09EC349',
+            },
           },
         ],
       },
@@ -662,29 +647,13 @@ export = {
               'appmesh:CreateVirtualGateway',
               'appmesh:UpdateVirtualGateway',
               'appmesh:DeleteVirtualGateway',
-              'appmesh:CreateGatewayRoute',
-              'appmesh:UpdateGatewayRoute',
-              'appmesh:DeleteGatewayRoute',
               'appmesh:TagResource',
               'appmesh:UntagResource',
             ],
             Effect: 'Allow',
-            Resource: [
-              {
-                Ref: 'testGatewayF09EC349',
-              },
-              {
-                'Fn::Join': [
-                  '',
-                  [
-                    {
-                      Ref: 'testGatewayF09EC349',
-                    },
-                    '/gatewayRoute/*',
-                  ],
-                ],
-              },
-            ],
+            Resource: {
+              Ref: 'testGatewayF09EC349',
+            },
           },
         ],
       },

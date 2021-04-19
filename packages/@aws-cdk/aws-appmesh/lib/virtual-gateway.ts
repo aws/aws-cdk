@@ -127,8 +127,6 @@ abstract class VirtualGatewayBase extends cdk.Resource implements IVirtualGatewa
     return this.grant(identity,
       'appmesh:DescribeVirtualGateway',
       'appmesh:ListVirtualGateway',
-      'appmesh:DescribeGatewayRoute',
-      'appmesh:ListGatewayRoute',
     );
   }
 
@@ -140,9 +138,6 @@ abstract class VirtualGatewayBase extends cdk.Resource implements IVirtualGatewa
       'appmesh:CreateVirtualGateway',
       'appmesh:UpdateVirtualGateway',
       'appmesh:DeleteVirtualGateway',
-      'appmesh:CreateGatewayRoute',
-      'appmesh:UpdateGatewayRoute',
-      'appmesh:DeleteGatewayRoute',
       'appmesh:TagResource',
       'appmesh:UntagResource',
     );
@@ -166,7 +161,7 @@ abstract class VirtualGatewayBase extends cdk.Resource implements IVirtualGatewa
     return iam.Grant.addToPrincipal({
       grantee,
       actions,
-      resourceArns: [this.virtualGatewayArn, this.virtualGatewayArn + '/gatewayRoute/*'],
+      resourceArns: [this.virtualGatewayArn],
     });
   }
 }
