@@ -2,7 +2,6 @@ import * as crypto from 'crypto';
 import { ISecurityGroup, IVpc, SubnetSelection } from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
-import * as msk from '@aws-cdk/aws-msk';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import { Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
@@ -29,7 +28,7 @@ export interface ManagedKafkaEventSourceProps extends KafkaEventSourceProps {
   /**
    * an MSK cluster construct
    */
-  readonly cluster: msk.ICluster
+  readonly clusterArn: string;
 }
 
 /**
@@ -100,9 +99,9 @@ export class ManagedKafkaEventSource extends StreamEventSource {
 
   public bind(target: lambda.IFunction) {
     target.addEventSourceMapping(
-      `KafkaEventSource:${this.innerProps.cluster.clusterArn}${this.innerProps.topic}`,
+      `KafkaEventSource:${this.innerProps.clusterArn}${this.innerProps.topic}`,
       this.enrichMappingOptions({
-        eventSourceArn: this.innerProps.cluster.clusterArn,
+        eventSourceArn: this.innerProps.clusterArn,
         startingPosition: this.innerProps.startingPosition,
         // From https://docs.aws.amazon.com/msk/latest/developerguide/msk-password.html#msk-password-limitations, "Amazon MSK only supports SCRAM-SHA-512 authentication."
         sourceAccessConfigurations: [{ type: lambda.SourceAccessConfigurationType.SASL_SCRAM_512_AUTH, uri: this.innerProps.secret.secretArn }],
@@ -115,7 +114,7 @@ export class ManagedKafkaEventSource extends StreamEventSource {
     target.addToRolePolicy(new iam.PolicyStatement(
       {
         actions: ['kafka:DescribeCluster', 'kafka:GetBootstrapBrokers', 'kafka:ListScramSecrets'],
-        resources: [this.innerProps.cluster.clusterArn],
+        resources: [this.innerProps.clusterArn],
       },
     ));
 
