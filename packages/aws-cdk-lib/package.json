@@ -36,6 +36,9 @@
     },
     "stripDeprecated": true
   },
+  "cdk-package": {
+    "post": "node ./scripts/verify-stripped-exp.js"
+  },
   "pkglint": {
     "exclude": [
       "package-info/maturity",
@@ -313,6 +316,7 @@
     "announce": false
   },
   "ubergen": {
-    "exclude": true
+    "exclude": true,
+    "excludeExperimentalModules": true
   }
 }
