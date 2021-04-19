@@ -3,6 +3,7 @@ import * as fs from 'fs-extra';
 import * as yargs from 'yargs';
 import * as yarnCling from 'yarn-cling';
 import { shell } from '../lib/os';
+import { cdkPackageOptions, isJsii, isPrivate } from '../lib/package-info';
 import { Timers } from '../lib/timer';
 
 const timers = new Timers();
@@ -22,26 +23,26 @@ async function main() {
     })
     .argv;
 
-  // if this is a jsii package, use jsii-packmak
+  const options = cdkPackageOptions();
+
   const outdir = 'dist';
-  const pkg = await fs.readJson('package.json');
 
   // if this is a private module, don't package
-  if (pkg.private) {
+  if (isPrivate()) {
     process.stdout.write('No packaging for private modules.\n');
     return;
   }
 
   // If we need to shrinkwrap this, do so now.
-  const packageOptions = pkg['cdk-package'] ?? {};
-  if (packageOptions.shrinkWrap) {
+  if (options.shrinkWrap) {
     await yarnCling.generateShrinkwrap({
       packageJsonFile: 'package.json',
       outputFile: 'npm-shrinkwrap.json',
     });
   }
 
-  if (pkg.jsii) {
+  // if this is a jsii package, use jsii-packmak
+  if (isJsii()) {
     const command = [args['jsii-pacmak'],
       args.verbose ? '-vvv' : '-v',
       ...args.targets ? flatMap(args.targets, (target: string) => ['-t', target]) : [],
@@ -55,7 +56,12 @@ async function main() {
     await fs.mkdirp(target);
     await fs.move(tarball, path.join(target, path.basename(tarball)));
   }
+
+  if (options.post) {
+    await shell(options.post, { timers });
+  }
 }
+
 
 main().then(() => {
   buildTimer.end();
