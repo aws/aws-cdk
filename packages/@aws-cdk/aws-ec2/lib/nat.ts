@@ -1,4 +1,5 @@
 import * as iam from '@aws-cdk/aws-iam';
+import { Fn, Token } from '@aws-cdk/core';
 import { Connections, IConnectable } from './connections';
 import { Instance } from './instance';
 import { InstanceType } from './instance-types';
@@ -59,8 +60,8 @@ export abstract class NatProvider {
    *
    * @see https://docs.aws.amazon.com/vpc/latest/userguide/vpc-nat-gateway.html
    */
-  public static gateway(): NatProvider {
-    return new NatGatewayProvider();
+  public static gateway(props: NatGatewayProps = {}): NatProvider {
+    return new NatGatewayProvider(props);
   }
 
   /**
@@ -120,6 +121,20 @@ export interface ConfigureNatOptions {
    * There may be more private subnets than public subnets with NAT providers.
    */
   readonly privateSubnets: PrivateSubnet[];
+}
+
+/**
+ * Properties for a NAT gateway
+ *
+ * @experimental
+ */
+export interface NatGatewayProps {
+  /**
+   * EIP allocation IDs for the NAT gateways
+   *
+   * @default - No fixed EIPs allocated for the NAT gateways
+   */
+  readonly eipAllocationIds?: string[];
 }
 
 /**
@@ -203,11 +218,20 @@ export interface NatInstanceProps {
 class NatGatewayProvider extends NatProvider {
   private gateways: PrefSet<string> = new PrefSet<string>();
 
+  constructor(private readonly props: NatGatewayProps = {}) {
+    super();
+  }
+
   public configureNat(options: ConfigureNatOptions) {
     // Create the NAT gateways
+    let i = 0;
     for (const sub of options.natSubnets) {
       const gateway = sub.addNatGateway();
+      if (this.props.eipAllocationIds) {
+        gateway.allocationId = pickN(i, this.props.eipAllocationIds);
+      }
       this.gateways.add(sub.availabilityZone, gateway.ref);
+      i++;
     }
 
     // Add routes to them in the private subnets
@@ -377,4 +401,17 @@ function isOutboundAllowed(direction: NatTrafficDirection) {
 
 function isInboundAllowed(direction: NatTrafficDirection) {
   return direction === NatTrafficDirection.INBOUND_AND_OUTBOUND;
+}
+
+/**
+ * Token-aware pick index function
+ */
+function pickN(i: number, xs: string[]) {
+  if (Token.isUnresolved(xs)) { return Fn.select(i, xs); }
+
+  if (i >= xs.length) {
+    throw new Error(`Cannot get element ${i} from ${xs}`);
+  }
+
+  return xs[i];
 }
