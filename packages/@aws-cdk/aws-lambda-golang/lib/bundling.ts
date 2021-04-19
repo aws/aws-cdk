@@ -33,6 +33,7 @@ export class Bundling implements cdk.BundlingOptions {
   public static bundle(options: BundlingProps): AssetCode {
     return Code.fromAsset(path.dirname(options.modFilePath), {
       assetHashType: options.assetHashType ?? cdk.AssetHashType.OUTPUT,
+      assetHash: options.assetHash,
       bundling: new Bundling(options),
     });
   }
@@ -78,7 +79,7 @@ export class Bundling implements cdk.BundlingOptions {
           IMAGE: Runtime.GO_1_X.bundlingImage.image, // always use the GO_1_X build image
         },
       })
-      : cdk.BundlingDockerImage.fromRegistry('dummy'); // Do not build if we don't need to
+      : cdk.DockerImage.fromRegistry('dummy'); // Do not build if we don't need to
 
     const bundlingCommand = this.createBundlingCommand(cdk.AssetStaging.BUNDLING_INPUT_DIR, cdk.AssetStaging.BUNDLING_OUTPUT_DIR);
     this.command = ['bash', '-c', bundlingCommand];

@@ -1,4 +1,4 @@
-import { AssetHashType, BundlingDockerImage } from '@aws-cdk/core';
+import { AssetHashType, DockerImage } from '@aws-cdk/core';
 
 /**
  * Bundling options
@@ -24,7 +24,7 @@ export interface BundlingOptions {
    *
    * @default - use the Docker image provided by @aws-cdk/aws-lambda-golang
    */
-  readonly dockerImage?: BundlingDockerImage;
+  readonly dockerImage?: DockerImage;
 
   /**
    * List of additional flags to use while building.
@@ -48,7 +48,23 @@ export interface BundlingOptions {
    *
    * @default - AssetHashType.SOURCE
    */
-  readonly assetHashType?: AssetHashType
+  readonly assetHashType?: AssetHashType;
+
+  /**
+   * Specify a custom hash for this asset. If `assetHashType` is set it must
+   * be set to `AssetHashType.CUSTOM`. For consistency, this custom hash will
+   * be SHA256 hashed and encoded as hex. The resulting hash will be the asset
+   * hash.
+   *
+   * NOTE: the hash is used in order to identify a specific revision of the asset, and
+   * used for optimizing and caching deployment activities related to this asset such as
+   * packaging, uploading to Amazon S3, etc. If you chose to customize the hash, you will
+   * need to make sure it is updated every time the asset changes, or otherwise it is
+   * possible that some deployments will not be invalidated.
+   *
+   * @default - based on `assetHashType`
+   */
+  readonly assetHash?: string;
 
   /**
    * Command hooks
