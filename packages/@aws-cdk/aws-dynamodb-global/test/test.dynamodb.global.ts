@@ -62,7 +62,7 @@ export = {
   },
 
   'GlobalTable generated stacks inherit their account from the parent stack'(test: Test) {
-    const app = new App();
+    const app = new App({ context: { '@aws-cdk/core:stackRelativeExports': true } });
     const stack = new Stack(app, 'GlobalTableStack', { env: { account: '123456789012', region: 'us-east-1' } });
 
     const globalTable = new GlobalTable(stack, CONSTRUCT_NAME, {
@@ -81,7 +81,7 @@ export = {
       'Outputs': {
         'DynamoDbOutput': {
           'Value': {
-            'Fn::ImportValue': 'GlobalTableStackawscdkdynamodbglobalawscdkdynamodbglobaluseast19C1C8A14:awscdkdynamodbglobalawscdkdynamodbglobaluseast1ExportsOutputFnGetAttawscdkdynamodbglobalGlobalTableuseast1FC03DD69StreamArn28E90DB8',
+            'Fn::ImportValue': 'GlobalTableStackawscdkdynamodbglobalawscdkdynamodbglobaluseast19C1C8A14:ExportsOutputFnGetAttawscdkdynamodbglobalGlobalTableuseast1FC03DD69StreamArn9CE585ED',
           },
         },
       },
