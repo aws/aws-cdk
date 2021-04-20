@@ -40,7 +40,6 @@ export class Bootstrapper {
   /**
    * Deploy legacy bootstrap stack
    *
-   * @experimental
    */
   private async legacyBootstrap(environment: cxapi.Environment, sdkProvider: SdkProvider, options: BootstrapEnvironmentOptions = {}): Promise<DeployStackResult> {
     const params = options.parameters ?? {};
@@ -68,7 +67,6 @@ export class Bootstrapper {
   /**
    * Deploy CI/CD-ready bootstrap stack from template
    *
-   * @experimental
    */
   private async modernBootstrap(
     environment: cxapi.Environment,

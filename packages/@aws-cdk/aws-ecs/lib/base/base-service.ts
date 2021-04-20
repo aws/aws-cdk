@@ -8,8 +8,8 @@ import * as cloudmap from '@aws-cdk/aws-servicediscovery';
 import { Annotations, Duration, IResolvable, IResource, Lazy, Resource, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { LoadBalancerTargetOptions, NetworkMode, TaskDefinition } from '../base/task-definition';
-import { ContainerDefinition, Protocol } from '../container-definition';
 import { ICluster, CapacityProviderStrategy } from '../cluster';
+import { ContainerDefinition, Protocol } from '../container-definition';
 import { CfnService } from '../ecs.generated';
 import { ScalableTaskCount } from './scalable-task-count';
 
