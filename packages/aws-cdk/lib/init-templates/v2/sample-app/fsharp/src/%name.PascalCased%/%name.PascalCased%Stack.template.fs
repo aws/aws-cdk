@@ -1,6 +1,6 @@
 namespace %name.PascalCased%
 
-open Amazon.CDK.Lib
+open Amazon.CDK
 open Amazon.CDK.AWS.SNS
 open Amazon.CDK.AWS.SNS.Subscriptions
 open Amazon.CDK.AWS.SQS

@@ -20,7 +20,7 @@ export interface CodeStarConnectionsSourceActionProps extends codepipeline.Commo
 
   /**
    * The ARN of the CodeStar Connection created in the AWS console
-   * that has permissions to access this BitBucket repository.
+   * that has permissions to access this GitHub or BitBucket repository.
    *
    * @example 'arn:aws:codestar-connections:us-east-1:123456789012:connection/12345678-abcd-12ab-34cdef5678gh'
    * @see https://docs.aws.amazon.com/codepipeline/latest/userguide/connections-create.html

@@ -25,10 +25,24 @@ export function cdkBuildOptions(): CDKBuildOptions {
 }
 
 /**
+ * Return the cdk-package options
+ */
+export function cdkPackageOptions(): CDKPackageOptions {
+  return currentPackageJson()['cdk-package'] || {};
+}
+
+/**
  * Whether this is a jsii package
  */
 export function isJsii(): boolean {
   return currentPackageJson().jsii !== undefined;
+}
+
+/**
+ * Whether this is a private package
+ */
+export function isPrivate(): boolean {
+  return currentPackageJson().private !== undefined;
 }
 
 export interface File {
@@ -158,6 +172,18 @@ export interface CDKBuildOptions {
    * @see https://aws.github.io/jsii/user-guides/lib-author/toolchain/jsii/#-strip-deprecated
    */
   stripDeprecated?: boolean;
+}
+
+export interface CDKPackageOptions {
+  /**
+   *  Should this package be shrinkwrap
+   */
+  shrinkWrap?: boolean;
+
+  /*
+   * An optional command (formatted as a list of strings) to run after packaging
+  */
+  post?: string[];
 }
 
 /**

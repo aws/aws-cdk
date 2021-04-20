@@ -1,9 +1,9 @@
 import * as autoscaling from '@aws-cdk/aws-autoscaling';
 import { Stack } from '@aws-cdk/core';
-import { BootstrapOptions, ICluster } from './cluster';
+import { BootstrapOptions, ICluster, Cluster } from './cluster';
 
 // eslint-disable-next-line max-len
-export function renderAmazonLinuxUserData(clusterName: string, autoScalingGroup: autoscaling.AutoScalingGroup, options: BootstrapOptions = {}): string[] {
+export function renderAmazonLinuxUserData(cluster: Cluster, autoScalingGroup: autoscaling.AutoScalingGroup, options: BootstrapOptions = {}): string[] {
 
   const stack = Stack.of(autoScalingGroup);
 
@@ -12,6 +12,9 @@ export function renderAmazonLinuxUserData(clusterName: string, autoScalingGroup:
   const asgLogicalId = cfn.logicalId;
 
   const extraArgs = new Array<string>();
+
+  extraArgs.push(`--apiserver-endpoint '${cluster.clusterEndpoint}'`);
+  extraArgs.push(`--b64-cluster-ca '${cluster.clusterCertificateAuthorityData}'`);
 
   extraArgs.push(`--use-max-pods ${options.useMaxPods ?? true}`);
 
@@ -45,7 +48,7 @@ export function renderAmazonLinuxUserData(clusterName: string, autoScalingGroup:
 
   return [
     'set -o xtrace',
-    `/etc/eks/bootstrap.sh ${clusterName} --kubelet-extra-args "${kubeletExtraArgs}" ${commandLineSuffix}`.trim(),
+    `/etc/eks/bootstrap.sh ${cluster.clusterName} --kubelet-extra-args "${kubeletExtraArgs}" ${commandLineSuffix}`.trim(),
     `/opt/aws/bin/cfn-signal --exit-code $? --stack ${stack.stackName} --resource ${asgLogicalId} --region ${stack.region}`,
   ];
 }

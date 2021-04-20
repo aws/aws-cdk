@@ -42,9 +42,9 @@ class RunBatchStack extends cdk.Stack {
 
     const submitJob = new sfn.Task(this, 'Submit Job', {
       task: new tasks.RunBatchJob({
-        jobDefinition: batchJobDefinition,
+        jobDefinitionArn: batchJobDefinition.jobDefinitionArn,
         jobName: 'MyJob',
-        jobQueue: batchQueue,
+        jobQueueArn: batchQueue.jobQueueArn,
         containerOverrides: {
           environment: { key: 'value' },
           memory: 256,

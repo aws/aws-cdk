@@ -664,6 +664,11 @@ export class PostgresEngineVersion {
   /** Version "12.5". */
   public static readonly VER_12_5 = PostgresEngineVersion.of('12.5', '12', { s3Import: true });
 
+  /** Version "13" (only a major version, without a specific minor version). */
+  public static readonly VER_13 = PostgresEngineVersion.of('13', '13', { s3Import: true });
+  /** Version "13.1". */
+  public static readonly VER_13_1 = PostgresEngineVersion.of('13.1', '13', { s3Import: true });
+
   /**
    * Create a new PostgresEngineVersion with an arbitrary version.
    *
