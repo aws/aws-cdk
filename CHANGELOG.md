@@ -15,8 +15,8 @@ All notable changes to this project will be documented in this file. See [standa
 * **lambda-event-sources:** `cluster` was removed from `ManagedKafkaEventSourceProps` and replaced with `clusterArn`
 * **route53-targets:** `ApiGatewayv2Domain` was replaced with `ApiGatewayv2DomainProperties` which accepts `regionalDomainName` and `regionalHostedZoneId`
 * **stepfunctions-tasks:** `CallApiGatewayHttpApiEndpoint` API now requires the `apiId` and it's containing `Stack`
-* **stepfunctions-tasks:** `BatchSubmitJob` now accept `jobDefinitionArn` and `jobQueueArn`
-* **stepfunctions-tasks:** `RunBatchJob` now accept `jobDefinitionArn` and `jobQueueArn`
+* **stepfunctions-tasks:** `BatchSubmitJob` now accept `jobDefinitionArn`, `jobQueueArn` and their respective `Resource`
+* **stepfunctions-tasks:** `RunBatchJob` now accept `jobDefinitionArn`, `jobQueueArn` and their respective `Resource`
 
 ### Features
 
