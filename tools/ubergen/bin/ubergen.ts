@@ -394,12 +394,49 @@ async function copyOrTransformFiles(from: string, to: string, libraries: readonl
           : fqn.replace('@aws-cdk', uberPackageJson.name);
       }
       await fs.writeJson(destination, cfnTypes2Classes, { spaces: 2 });
+    } else if (name === 'README.md') {
+      return fs.writeFile(
+        destination,
+        await rewriteReadmeImports(source),
+        { encoding: 'utf8' },
+      );
     } else {
       return fs.copyFile(source, destination);
     }
   });
 
   await Promise.all(promises);
+}
+
+/**
+ * Rewrites the imports in README.md from v1 ('@aws-cdk/...') to v2 ('aws-cdk-lib').
+ * Uses the module imports (import { aws_foo as foo } from 'aws-cdk-lib') for module imports,
+ * and "barrel" imports for types (import { Bucket } from 'aws-cdk-lib/aws-s3').
+ */
+async function rewriteReadmeImports(fromFile: string): Promise<string> {
+  const readmeOriginal = await fs.readFile(fromFile, { encoding: 'utf8' });
+  return readmeOriginal
+    // import * as s3 from '@aws-cdk/aws-s3'
+    .replace(/^(\s*)import \* as (.*) from (?:'|")@aws-cdk\/(.*)(?:'|");(\s*)$/gm, rewriteCdkImports)
+    // import s3 = require('@aws-cdk/aws-s3')
+    .replace(/^(\s*)import (.*) = require\((?:'|")@aws-cdk\/(.*)(?:'|")\);(\s*)$/gm, rewriteCdkImports)
+    // import { Bucket } from '@aws-cdk/aws-s3'
+    .replace(/^(\s*)import ({.*}) from (?:'|")@aws-cdk\/(.*)(?:'|");(\s*)$/gm, rewriteCdkTypeImports);
+
+  function rewriteCdkImports(_match: string, prefix: string, alias: string, module: string, suffix: string): string {
+    if (module === 'core') {
+      return `${prefix}import * as ${alias} from 'aws-cdk-lib';${suffix}`;
+    } else {
+      return `${prefix}import { ${module.replace(/-/g, '_')} as ${alias} } from 'aws-cdk-lib';${suffix}`;
+    }
+  }
+  function rewriteCdkTypeImports(_match: string, prefix: string, types: string, module: string, suffix: string): string {
+    if (module === 'core') {
+      return `${prefix}import ${types} from 'aws-cdk-lib';${suffix}`;
+    } else {
+      return `${prefix}import ${types} from 'aws-cdk-lib/${module}';${suffix}`;
+    }
+  }
 }
 
 async function rewriteImports(fromFile: string, targetDir: string, libraries: readonly LibraryReference[]): Promise<string> {
