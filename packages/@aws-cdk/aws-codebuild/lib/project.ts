@@ -7,7 +7,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
-import { ArnComponents, Aws, Duration, IResource, Lazy, Names, PhysicalName, Resource, SecretValue, Stack, Token, Tokenization } from '@aws-cdk/core';
+import { ArnComponents, Aws, Duration, IResource, Lazy, Names, PhysicalName, Resource, SecretValue, Stack, Token, TokenComparison, Tokenization } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { IArtifacts } from './artifacts';
 import { BuildSpec } from './build-spec';
@@ -803,16 +803,18 @@ export class Project extends ProjectBase {
             }));
             // if secret comes from another account, SecretsManager will need to access
             // KMS on the other account as well to be able to get the secret
-            if (parsedArn?.account !== stack.account) {
+            if (parsedArn && parsedArn.account && Token.compareStrings(parsedArn.account, stack.account) === TokenComparison.DIFFERENT) {
               kmsIamResources.push(stack.formatArn({
                 service: 'kms',
                 resource: 'key',
+                // We do not know the ID of the key, but since this is a cross-account access,
+                // the key policies have to allow this access, so a wildcard is safe here
                 resourceName: '*',
                 sep: '/',
                 // if we were given an ARN, we need to use the provided partition/account/region
-                partition: parsedArn?.partition,
-                account: parsedArn?.account,
-                region: parsedArn?.region,
+                partition: parsedArn.partition,
+                account: parsedArn.account,
+                region: parsedArn.region,
               }));
             }
           }

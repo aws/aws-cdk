@@ -1021,10 +1021,7 @@ export = {
 
       'can be provided as a verbatim full secret ARN followed by a JSON key'(test: Test) {
         // GIVEN
-        const app = new cdk.App();
-        const stack = new cdk.Stack(app, 'ProjectStack', {
-          env: { account: '123456789012' },
-        });
+        const stack = new cdk.Stack();
 
         // WHEN
         new codebuild.PipelineProject(stack, 'Project', {
@@ -1076,10 +1073,7 @@ export = {
 
       'can be provided as a verbatim partial secret ARN'(test: Test) {
         // GIVEN
-        const app = new cdk.App();
-        const stack = new cdk.Stack(app, 'ProjectStack', {
-          env: { account: '123456789012' },
-        });
+        const stack = new cdk.Stack();
 
         // WHEN
         new codebuild.PipelineProject(stack, 'Project', {
@@ -1129,7 +1123,7 @@ export = {
         test.done();
       },
 
-      'can be provided as a verbatim partial secret ARN from another account'(test: Test) {
+      "when provided as a verbatim partial secret ARN from another account, adds permission to decrypt keys in the Secret's account"(test: Test) {
         // GIVEN
         const app = new cdk.App();
         const stack = new cdk.Stack(app, 'ProjectStack', {
@@ -1145,30 +1139,6 @@ export = {
             },
           },
         });
-
-        // THEN
-        expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
-          'Environment': {
-            'EnvironmentVariables': [
-              {
-                'Name': 'ENV_VAR1',
-                'Type': 'SECRETS_MANAGER',
-                'Value': 'arn:aws:secretsmanager:us-west-2:901234567890:secret:mysecret',
-              },
-            ],
-          },
-        }));
-
-        // THEN
-        expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
-          'PolicyDocument': {
-            'Statement': arrayWith({
-              'Action': 'secretsmanager:GetSecretValue',
-              'Effect': 'Allow',
-              'Resource': 'arn:aws:secretsmanager:us-west-2:901234567890:secret:mysecret*',
-            }),
-          },
-        }));
 
         // THEN
         expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
