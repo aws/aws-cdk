@@ -44,7 +44,7 @@ export = {
     }));
 
     // also make sure a dependency on the barrier is added to the patch construct.
-    test.deepEqual(patch.node.dependencies.map(d => Names.nodeUniqueId(d.target.node)), ['MyClusterKubectlReadyBarrier7547948A']);
+    test.deepEqual(patch.node.dependencies.map(d => Names.nodeUniqueId(d.node)), ['MyClusterKubectlReadyBarrier7547948A']);
 
     test.done();
   },
