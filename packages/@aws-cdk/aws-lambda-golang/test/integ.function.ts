@@ -17,7 +17,7 @@ class TestStack extends Stack {
       bundling: {
         dockerImage: DockerImage.fromBuild(path.join(__dirname, '../lib'), {
           buildArgs: {
-            IMAGE: 'public.ecr.aws/bitnami/golang:1.15',
+            IMAGE: 'public.ecr.aws/bitnami/golang:1.16.3-debian-10-r16',
           },
         }),
         forcedDockerBundling: true,
