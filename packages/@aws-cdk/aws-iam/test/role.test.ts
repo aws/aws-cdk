@@ -571,11 +571,11 @@ test('cross-env role ARNs include path', () => {
   const role = new Role(roleStack, 'Role', {
     assumedBy: new ServicePrincipal('sns.amazonaws.com'),
     path: '/sample/path/',
-    roleName: 'sample-name'
+    roleName: 'sample-name',
   });
   new CfnResource(referencerStack, 'Referencer', {
     type: 'Custom::RoleReferencer',
-    properties: { RoleArn: role.roleArn }
+    properties: { RoleArn: role.roleArn },
   });
 
   expect(referencerStack).toHaveResourceLike('Custom::RoleReferencer', {

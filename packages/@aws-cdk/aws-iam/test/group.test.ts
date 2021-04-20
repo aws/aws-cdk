@@ -64,11 +64,11 @@ test('cross-env group ARNs include path', () => {
   const referencerStack = new Stack(app, 'referencer-stack', { env: { region: 'us-east-2' } });
   const group = new Group(groupStack, 'Group', {
     path: '/sample/path/',
-    groupName: 'sample-name'
+    groupName: 'sample-name',
   });
   new CfnResource(referencerStack, 'Referencer', {
     type: 'Custom::GroupReferencer',
-    properties: { GroupArn: group.groupArn }
+    properties: { GroupArn: group.groupArn },
   });
 
   expect(referencerStack).toHaveResourceLike('Custom::GroupReferencer', {
