@@ -11,12 +11,12 @@ All notable changes to this project will be documented in this file. See [standa
 * **appmesh**: HTTP2 `VirtualGatewayListener`s must be now created with `Http2VirtualGatewayListenerOptions`
 * **codepipeline-actions:** the Action `ServiceCatalogDeployAction` has been renamed to `ServiceCatalogDeployActionBeta1`
 * **codepipeline-actions**: the type `ServiceCatalogDeployActionProps` has been renamed to `ServiceCatalogDeployActionBeta1Props`
+* **events-targets:** The `BatchJob` integration now requires the arn and the Resource for the `jobQueue` and the `jobDefinition`
+* **lambda-event-sources:** `cluster` was removed from `ManagedKafkaEventSourceProps` and replaced with `clusterArn`
+* **route53-targets:** `ApiGatewayv2Domain` was replaced with `ApiGatewayv2DomainProperties` which accepts `regionalDomainName` and `regionalHostedZoneId`
 * **stepfunctions-tasks:** `CallApiGatewayHttpApiEndpoint` API now requires the `apiId` and it's containing `Stack`
 * **stepfunctions-tasks:** `BatchSubmitJob` now accept `jobDefinitionArn` and `jobQueueArn`
 * **stepfunctions-tasks:** `RunBatchJob` now accept `jobDefinitionArn` and `jobQueueArn`
-* **route53-targets:** `ApiGatewayv2Domain` was replaced with `ApiGatewayv2DomainProperties` which accepts `regionalDomainName` and `regionalHostedZoneId`
-* **lambda-event-sources:** `cluster` was removed from `ManagedKafkaEventSourceProps` and replaced with `clusterArn`
-* **events-targets:** The `BatchJob` integration now requires the arn and the Resource for the `jobQueue` and the `jobDefinition`
 
 ### Features
 
