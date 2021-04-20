@@ -1,13 +1,9 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecs from '@aws-cdk/aws-ecs';
-import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { IEnvironment } from './environment';
 import { EnvironmentCapacityType, ServiceBuild } from './extensions/extension-interfaces';
 import { ServiceDescription } from './service-description';
-
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct } from '@aws-cdk/core';
 
 /**
  * The settings for an ECS Service
@@ -76,7 +72,7 @@ export class Service extends Construct {
    */
   private urls: Record<string, string> = {};
 
-  private readonly scope: cdk.Construct;
+  private readonly scope: Construct;
 
   constructor(scope: Construct, id: string, props: ServiceProps) {
     super(scope, id);
