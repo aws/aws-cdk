@@ -31,10 +31,17 @@ export interface BundlingProps extends BundlingOptions {
 export class Bundling implements cdk.BundlingOptions {
 
   public static bundle(options: BundlingProps): AssetCode {
+    const bundling = new Bundling(options);
+
     return Code.fromAsset(path.dirname(options.modFilePath), {
       assetHashType: options.assetHashType ?? cdk.AssetHashType.OUTPUT,
       assetHash: options.assetHash,
-      bundling: new Bundling(options),
+      bundling: {
+        image: bundling.image,
+        command: bundling.command,
+        environment: bundling.environment,
+        local: bundling.local,
+      },
     });
   }
 
