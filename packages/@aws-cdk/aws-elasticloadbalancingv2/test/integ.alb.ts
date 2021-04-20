@@ -32,6 +32,7 @@ const group2 = listener.addTargets('ConditionalTarget', {
   targets: [new elbv2.IpTarget('10.0.128.5')],
   stickinessCookieDuration: cdk.Duration.minutes(5),
   stickinessCookieName: 'MyDeliciousCookie',
+  slowStart: cdk.Duration.minutes(1),
 });
 
 group1.metricTargetResponseTime().createAlarm(stack, 'ResponseTimeHigh1', {

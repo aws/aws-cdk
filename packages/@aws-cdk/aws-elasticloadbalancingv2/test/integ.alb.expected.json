@@ -470,6 +470,10 @@
         "Protocol": "HTTP",
         "TargetGroupAttributes": [
           {
+            "Key": "slow_start.duration_seconds",
+            "Value": "60"
+          },
+          {
             "Key": "stickiness.enabled",
             "Value": "true"
           },

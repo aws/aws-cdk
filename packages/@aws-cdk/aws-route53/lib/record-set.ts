@@ -212,7 +212,7 @@ export class RecordSet extends Resource implements IRecordSet {
   constructor(scope: Construct, id: string, props: RecordSetProps) {
     super(scope, id);
 
-    const ttl = props.target.aliasTarget ? undefined : ((props.ttl && props.ttl.toSeconds()) || 1800).toString();
+    const ttl = props.target.aliasTarget ? undefined : ((props.ttl && props.ttl.toSeconds()) ?? 1800).toString();
 
     const recordSet = new CfnRecordSet(this, 'Resource', {
       hostedZoneId: props.zone.hostedZoneId,
@@ -542,6 +542,31 @@ export class MxRecord extends RecordSet {
 }
 
 /**
+ * Construction properties for a NSRecord.
+ */
+export interface NsRecordProps extends RecordSetOptions {
+  /**
+   * The NS values.
+   */
+  readonly values: string[];
+}
+
+/**
+ * A DNS NS record
+ *
+ * @resource AWS::Route53::RecordSet
+ */
+export class NsRecord extends RecordSet {
+  constructor(scope: Construct, id: string, props: NsRecordProps) {
+    super(scope, id, {
+      ...props,
+      recordType: RecordType.NS,
+      target: RecordTarget.fromValues(...props.values),
+    });
+  }
+}
+
+/**
  * Construction properties for a ZoneDelegationRecord
  */
 export interface ZoneDelegationRecordProps extends RecordSetOptions {
@@ -604,7 +629,7 @@ export class CrossAccountZoneDelegationRecord extends CoreConstruct {
 
     const serviceToken = CustomResourceProvider.getOrCreate(this, CROSS_ACCOUNT_ZONE_DELEGATION_RESOURCE_TYPE, {
       codeDirectory: path.join(__dirname, 'cross-account-zone-delegation-handler'),
-      runtime: CustomResourceProviderRuntime.NODEJS_12,
+      runtime: CustomResourceProviderRuntime.NODEJS_12_X,
       policyStatements: [{ Effect: 'Allow', Action: 'sts:AssumeRole', Resource: props.delegationRole.roleArn }],
     });
 

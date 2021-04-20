@@ -12,8 +12,9 @@ import { EndpointType, IRestApi } from './restapi';
 export enum SecurityPolicy {
   /** Cipher suite TLS 1.0 */
   TLS_1_0 = 'TLS_1_0',
+
   /** Cipher suite TLS 1.2 */
-  TLS_1_2 = 'TLS_1_2'
+  TLS_1_2 = 'TLS_1_2',
 }
 
 export interface DomainNameOptions {
@@ -40,13 +41,13 @@ export interface DomainNameOptions {
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-apigateway-domainname.html
    * @default SecurityPolicy.TLS_1_0
    */
-  readonly securityPolicy?: SecurityPolicy
+  readonly securityPolicy?: SecurityPolicy;
 
   /**
    * The mutual TLS authentication configuration for a custom domain name.
    * @default - mTLS is not configured.
    */
-  readonly mtls?: MTLSConfig
+  readonly mtls?: MTLSConfig;
 }
 
 export interface DomainNameProps extends DomainNameOptions {
@@ -83,7 +84,6 @@ export interface IDomainName extends IResource {
    * @attribute DistributionHostedZoneId,RegionalHostedZoneId
    */
   readonly domainNameAliasHostedZoneId: string;
-
 }
 
 export class DomainName extends Resource implements IDomainName {
@@ -112,9 +112,9 @@ export class DomainName extends Resource implements IDomainName {
     const edge = endpointType === EndpointType.EDGE;
 
     if (!Token.isUnresolved(props.domainName) && /[A-Z]/.test(props.domainName)) {
-      throw new Error('domainName does not support uppercase letters. ' +
-        `got: '${props.domainName}'`);
+      throw new Error(`Domain name does not support uppercase letters. Got: ${props.domainName}`);
     }
+
     const mtlsConfig = this.configureMTLS(props.mtls);
     const resource = new CfnDomainName(this, 'Resource', {
       domainName: props.domainName,
@@ -176,10 +176,9 @@ export interface DomainNameAttributes {
   readonly domainNameAliasTarget: string;
 
   /**
-   * Thje Route53 hosted zone ID to use in order to connect a record set to this domain through an alias.
+   * The Route53 hosted zone ID to use in order to connect a record set to this domain through an alias.
    */
   readonly domainNameAliasHostedZoneId: string;
-
 }
 
 /**
@@ -190,8 +189,9 @@ export interface MTLSConfig {
    * The bucket that the trust store is hosted in.
    */
   readonly bucket: IBucket;
+
   /**
-   * The key in S3 to look at for the trust store
+   * The key in S3 to look at for the trust store.
    */
   readonly key: string;
 

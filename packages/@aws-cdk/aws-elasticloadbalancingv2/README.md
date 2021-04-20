@@ -182,6 +182,9 @@ lb.addRedirect({
 
 If you do not provide any options for this method, it redirects HTTP port 80 to HTTPS port 443.
 
+By default all ingress traffic will be allowed on the source port. If you want to be more selective with your
+ingress rules then set `open: false` and use the listener's `connections` object to selectively grant access to the listener.
+
 ## Defining a Network Load Balancer
 
 Network Load Balancers are defined in a similar way to Application Load
@@ -269,6 +272,24 @@ const tg2 = new elbv2.ApplicationTargetGroup(stack, 'TG2', {
 ```
 
 For more information see: https://docs.aws.amazon.com/elasticloadbalancing/latest/application/sticky-sessions.html#application-based-stickiness
+
+### Setting the target group protocol version
+
+By default, Application Load Balancers send requests to targets using HTTP/1.1. You can use the [protocol version](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-target-groups.html#target-group-protocol-version) to send requests to targets using HTTP/2 or gRPC.
+
+```ts
+const tg = new elbv2.ApplicationTargetGroup(stack, 'TG', {
+  targetType: elbv2.TargetType.IP,
+  port: 50051,
+  protocol: elbv2.ApplicationProtocol.HTTP,
+  protocolVersion: elbv2.ApplicationProtocolVersion.GRPC,
+  healthCheck: {
+    enabled: true,
+    healthyGrpcCodes: '0-99',
+  },
+  vpc,
+});
+```
 
 ## Using Lambda Targets
 

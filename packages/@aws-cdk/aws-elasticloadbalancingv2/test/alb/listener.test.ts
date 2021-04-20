@@ -1,5 +1,5 @@
-import { MatchStyle } from '@aws-cdk/assert';
-import '@aws-cdk/assert/jest';
+import { MatchStyle } from '@aws-cdk/assert-internal';
+import '@aws-cdk/assert-internal/jest';
 import { Metric } from '@aws-cdk/aws-cloudwatch';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as cdk from '@aws-cdk/core';
@@ -140,6 +140,43 @@ describe('tests', () => {
       Certificates: [
         { CertificateArn: 'cert' },
       ],
+    });
+  });
+
+  test('HTTPS listener can add more than two certificates', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Stack');
+    const lb = new elbv2.ApplicationLoadBalancer(stack, 'LB', { vpc });
+
+    // WHEN
+    const listener = lb.addListener('Listener', {
+      port: 443,
+      defaultTargetGroups: [
+        new elbv2.ApplicationTargetGroup(stack, 'Group', { vpc, port: 80 }),
+      ],
+      certificates: [
+        elbv2.ListenerCertificate.fromArn('cert1'),
+        elbv2.ListenerCertificate.fromArn('cert2'),
+        elbv2.ListenerCertificate.fromArn('cert3'),
+      ],
+    });
+
+    expect(listener.node.tryFindChild('DefaultCertificates1')).toBeDefined();
+    expect(listener.node.tryFindChild('DefaultCertificates2')).toBeDefined();
+    expect(listener.node.tryFindChild('DefaultCertificates3')).not.toBeDefined();
+
+    // THEN
+    expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::Listener', {
+      Certificates: [{ CertificateArn: 'cert1' }],
+    });
+
+    expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::ListenerCertificate', {
+      Certificates: [{ CertificateArn: 'cert2' }],
+    });
+
+    expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::ListenerCertificate', {
+      Certificates: [{ CertificateArn: 'cert3' }],
     });
   });
 
@@ -725,6 +762,31 @@ describe('tests', () => {
         },
       ],
     });
+  });
+
+  test('Can supress default ingress rules on a simple redirect response', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Stack');
+
+    const loadBalancer = new elbv2.ApplicationLoadBalancer(stack, 'LB', {
+      vpc,
+    });
+
+    // WHEN
+    loadBalancer.addRedirect({ open: false });
+
+    // THEN
+    expect(stack).not.toHaveResourceLike('AWS::EC2::SecurityGroup', {
+      SecurityGroupIngress: [
+        {
+          CidrIp: '0.0.0.0/0',
+          Description: 'Allow from anyone on port 80',
+          IpProtocol: 'tcp',
+        },
+      ],
+    });
+
   });
 
   test('Can add simple redirect responses with custom values', () => {

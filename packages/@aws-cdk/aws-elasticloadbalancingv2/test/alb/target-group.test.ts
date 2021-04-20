@@ -1,4 +1,4 @@
-import '@aws-cdk/assert/jest';
+import '@aws-cdk/assert-internal/jest';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as cdk from '@aws-cdk/core';
 import * as elbv2 from '../../lib';
@@ -156,6 +156,42 @@ describe('tests', () => {
     });
   });
 
+  test('Can set a protocol version', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'Stack');
+    const vpc = new ec2.Vpc(stack, 'VPC', {});
+
+    // WHEN
+    new elbv2.ApplicationTargetGroup(stack, 'TargetGroup', {
+      vpc,
+      protocolVersion: elbv2.ApplicationProtocolVersion.GRPC,
+      healthCheck: {
+        enabled: true,
+        healthyGrpcCodes: '0-99',
+        interval: cdk.Duration.seconds(255),
+        timeout: cdk.Duration.seconds(192),
+        healthyThresholdCount: 29,
+        unhealthyThresholdCount: 27,
+        path: '/arbitrary',
+      },
+    });
+
+    // THEN
+    expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::TargetGroup', {
+      ProtocolVersion: 'GRPC',
+      HealthCheckEnabled: true,
+      HealthCheckIntervalSeconds: 255,
+      HealthCheckPath: '/arbitrary',
+      HealthCheckTimeoutSeconds: 192,
+      HealthyThresholdCount: 29,
+      Matcher: {
+        GrpcCode: '0-99',
+      },
+      UnhealthyThresholdCount: 27,
+    });
+  });
+
   test('Bad stickiness cookie names', () => {
     // GIVEN
     const app = new cdk.App();
@@ -204,5 +240,22 @@ describe('tests', () => {
         vpc,
       });
     }).toThrow(/Stickiness cookie duration value must be between 1 second and 7 days \(604800 seconds\)./);
+  });
+
+  test('Bad slow start duration value', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'Stack');
+    const vpc = new ec2.Vpc(stack, 'VPC', {});
+
+    // THEN
+    [cdk.Duration.minutes(16), cdk.Duration.seconds(29)].forEach((badDuration, i) => {
+      expect(() => {
+        new elbv2.ApplicationTargetGroup(stack, `TargetGroup${i}`, {
+          slowStart: badDuration,
+          vpc,
+        });
+      }).toThrow(/Slow start duration value must be between 30 and 900 seconds./);
+    });
   });
 });

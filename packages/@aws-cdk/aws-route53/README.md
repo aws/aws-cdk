@@ -60,6 +60,22 @@ new route53.TxtRecord(this, 'TXTRecord', {
 });
 ```
 
+To add a NS record to your zone:
+
+```ts
+import * as route53 from '@aws-cdk/aws-route53';
+
+new route53.NsRecord(this, 'NSRecord', {
+  zone: myZone,
+  recordName: 'foo',  
+  values: [            
+    'ns-1.awsdns.co.uk.',
+    'ns-2.awsdns.com.'
+  ],
+  ttl: Duration.minutes(90),       // Optional - default is 30 minutes
+});
+```
+
 To add an A record to your zone:
 
 ```ts
@@ -191,7 +207,7 @@ This DNS name can also be guaranteed to match up with the backend certificate.
 
 Before consumers can use the private DNS name, you must verify that you have control of the domain/subdomain.
 
-Assuming your account has ownership of the particlar domain/subdomain,
+Assuming your account has ownership of the particular domain/subdomain,
 this construct sets up the private DNS configuration on the endpoint service,
 creates all the necessary Route53 entries, and verifies domain ownership.
 

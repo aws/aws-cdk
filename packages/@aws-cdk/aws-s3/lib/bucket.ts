@@ -183,7 +183,7 @@ export interface IBucket extends IResource {
   grantPutAcl(identity: iam.IGrantable, objectsKeyPattern?: string): iam.Grant;
 
   /**
-   * Grants s3:DeleteObject* permission to an IAM pricipal for objects
+   * Grants s3:DeleteObject* permission to an IAM principal for objects
    * in this bucket.
    *
    * @param identity The principal
@@ -628,7 +628,7 @@ abstract class BucketBase extends Resource implements IBucket {
   }
 
   /**
-   * Grants s3:DeleteObject* permission to an IAM pricipal for objects
+   * Grants s3:DeleteObject* permission to an IAM principal for objects
    * in this bucket.
    *
    * @param identity The principal
@@ -683,7 +683,7 @@ abstract class BucketBase extends Resource implements IBucket {
     return iam.Grant.addToPrincipalOrResource({
       actions: allowedActions,
       resourceArns: [this.arnForObjects(keyPrefix)],
-      grantee: new iam.Anyone(),
+      grantee: new iam.AnyPrincipal(),
       resource: this,
     });
   }
@@ -1502,7 +1502,10 @@ export class Bucket extends BucketBase {
         Bool: { 'aws:SecureTransport': 'false' },
       },
       effect: iam.Effect.DENY,
-      resources: [this.arnForObjects('*')],
+      resources: [
+        this.bucketArn,
+        this.arnForObjects('*'),
+      ],
       principals: [new iam.AnyPrincipal()],
     });
     this.addToResourcePolicy(statement);
@@ -1620,7 +1623,7 @@ export class Bucket extends BucketBase {
   }
 
   /**
-   * Parse the lifecycle configuration out of the uucket props
+   * Parse the lifecycle configuration out of the bucket props
    * @param props Par
    */
   private parseLifecycleConfiguration(): CfnBucket.LifecycleConfigurationProperty | undefined {
@@ -1829,7 +1832,8 @@ export class Bucket extends BucketBase {
   private enableAutoDeleteObjects() {
     const provider = CustomResourceProvider.getOrCreateProvider(this, AUTO_DELETE_OBJECTS_RESOURCE_TYPE, {
       codeDirectory: path.join(__dirname, 'auto-delete-objects-handler'),
-      runtime: CustomResourceProviderRuntime.NODEJS_12,
+      runtime: CustomResourceProviderRuntime.NODEJS_12_X,
+      description: `Lambda function for auto-deleting objects in ${this.bucketName} S3 bucket.`,
     });
 
     // Use a bucket policy to allow the custom resource to delete
