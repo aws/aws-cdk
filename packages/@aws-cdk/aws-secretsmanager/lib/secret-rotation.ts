@@ -5,10 +5,6 @@ import { Duration, Names, Stack, Token } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { ISecret } from './secret';
 
-// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
-// eslint-disable-next-line
-import { Construct as CoreConstruct } from '@aws-cdk/core';
-
 /**
  * Options for a SecretRotationApplication
  */
@@ -211,7 +207,7 @@ export interface SecretRotationProps {
 /**
  * Secret rotation for a service or database
  */
-export class SecretRotation extends CoreConstruct {
+export class SecretRotation extends Construct {
   constructor(scope: Construct, id: string, props: SecretRotationProps) {
     super(scope, id);
 
