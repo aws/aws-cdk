@@ -573,7 +573,7 @@ test('cross-env role ARNs include path', () => {
     path: '/sample/path/',
     roleName: 'sample-name'
   });
-  const referencer = new CfnResource(referencerStack, 'Referencer', {
+  new CfnResource(referencerStack, 'Referencer', {
     type: 'Custom::RoleReferencer',
     properties: { RoleArn: role.roleArn }
   });

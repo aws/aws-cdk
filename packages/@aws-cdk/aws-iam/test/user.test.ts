@@ -187,7 +187,7 @@ test('cross-env user ARNs include path', () => {
     path: '/sample/path/',
     userName: 'sample-name'
   });
-  const referencer = new CfnResource(referencerStack, 'Referencer', {
+  new CfnResource(referencerStack, 'Referencer', {
     type: 'Custom::UserReferencer',
     properties: { UserArn: user.userArn }
   });

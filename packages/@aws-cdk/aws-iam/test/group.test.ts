@@ -66,7 +66,7 @@ test('cross-env group ARNs include path', () => {
     path: '/sample/path/',
     groupName: 'sample-name'
   });
-  const referencer = new CfnResource(referencerStack, 'Referencer', {
+  new CfnResource(referencerStack, 'Referencer', {
     type: 'Custom::GroupReferencer',
     properties: { GroupArn: group.groupArn }
   });
