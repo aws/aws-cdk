@@ -44,9 +44,24 @@ export interface BundlingOptions {
   readonly buildArgs?: { [key:string] : string };
 
   /**
-   * Set the asset hash type of the function
+   * Determines how the asset hash is calculated. Assets will
+   * get rebuilt and uploaded only if their hash has changed.
    *
-   * @default - AssetHashType.SOURCE
+   * If the asset hash is set to `OUTPUT` (default), the hash is calculated
+   * after bundling. This means that any change in the output will cause
+   * the asset to be invalidated and uploaded. Bear in mind that the
+   * go binary that is output can be different depending on the environment
+   * that it was compiled in. If you want to control when the output is changed
+   * it is recommended that you use immutable build images such as
+   * `public.ecr.aws/bitnami/golang:1.16.3-debian-10-r16`.
+   *
+   * If the asset hash is set to `SOURCE`, then only changes to the source
+   * directory will cause the asset to rebuild. If your go project has multiple
+   * Lambda functions this means that an update to any one function could cause
+   * all the functions to be rebuilt and uploaded.
+   *
+   * @default - AssetHashType.OUTPUT. If `assetHash` is also specified,
+   * the default is `CUSTOM`.
    */
   readonly assetHashType?: AssetHashType;
 
