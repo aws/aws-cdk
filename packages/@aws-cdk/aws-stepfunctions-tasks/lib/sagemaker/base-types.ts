@@ -10,13 +10,11 @@ import { Construct } from 'constructs';
 
 /**
  * Task to train a machine learning model using Amazon SageMaker
- * @experimental
  */
 export interface ISageMakerTask extends iam.IGrantable {}
 
 /**
  * Specify the training algorithm and algorithm-specific metadata
- * @experimental
  */
 export interface AlgorithmSpecification {
 
@@ -54,7 +52,6 @@ export interface AlgorithmSpecification {
 /**
  *  Describes the training, validation or test dataset and the Amazon S3 location where it is stored.
  *
- * @experimental
  */
 export interface Channel {
 
@@ -109,7 +106,6 @@ export interface Channel {
 /**
  * Configuration for a shuffle option for input data in a channel.
  *
- * @experimental
  */
 export interface ShuffleConfig {
   /**
@@ -121,7 +117,6 @@ export interface ShuffleConfig {
 /**
  * Location of the channel data.
  *
- * @experimental
  */
 export interface DataSource {
   /**
@@ -135,7 +130,6 @@ export interface DataSource {
  *
  * @see https://docs.aws.amazon.com/sagemaker/latest/APIReference/API_S3DataSource.html
  *
- * @experimental
  */
 export interface S3DataSource {
   /**
@@ -167,7 +161,6 @@ export interface S3DataSource {
 
 /**
  * Configures the S3 bucket where SageMaker will save the result of model training
- * @experimental
  */
 export interface OutputDataConfig {
   /**
@@ -187,7 +180,6 @@ export interface OutputDataConfig {
  * Specifies a limit to how long a model training job can run.
  * When the job reaches the time limit, Amazon SageMaker ends the training job.
  *
- * @experimental
  */
 export interface StoppingCondition {
   /**
@@ -201,7 +193,6 @@ export interface StoppingCondition {
 /**
  * Specifies the resources, ML compute instances, and ML storage volumes to deploy for model training.
  *
- * @experimental
  */
 export interface ResourceConfig {
 
@@ -237,7 +228,6 @@ export interface ResourceConfig {
 /**
  * Specifies the VPC that you want your Amazon SageMaker training job to connect to.
  *
- * @experimental
  */
 export interface VpcConfig {
   /**
@@ -256,7 +246,6 @@ export interface VpcConfig {
 /**
  * Specifies the metric name and regular expressions used to parse algorithm logs.
  *
- * @experimental
  */
 export interface MetricDefinition {
 
@@ -274,7 +263,6 @@ export interface MetricDefinition {
 /**
  * Stores information about the location of an object in Amazon S3
  *
- * @experimental
  */
 export interface S3LocationConfig {
 
@@ -287,7 +275,6 @@ export interface S3LocationConfig {
 /**
  * Constructs `IS3Location` objects.
  *
- * @experimental
  */
 export abstract class S3Location {
   /**
@@ -321,7 +308,6 @@ export abstract class S3Location {
 /**
  * Options for binding an S3 Location.
  *
- * @experimental
  */
 export interface S3LocationBindOptions {
   /**
@@ -342,7 +328,6 @@ export interface S3LocationBindOptions {
 /**
  * Configuration for a using Docker image.
  *
- * @experimental
  */
 export interface DockerImageConfig {
   /**
@@ -354,7 +339,6 @@ export interface DockerImageConfig {
 /**
  * Creates `IDockerImage` instances.
  *
- * @experimental
  */
 export abstract class DockerImage {
   /**
@@ -409,7 +393,6 @@ export abstract class DockerImage {
 /**
  * S3 Data Type.
  *
- * @experimental
  */
 export enum S3DataType {
   /**
@@ -431,7 +414,6 @@ export enum S3DataType {
 /**
  * S3 Data Distribution Type.
  *
- * @experimental
  */
 export enum S3DataDistributionType {
   /**
@@ -448,7 +430,6 @@ export enum S3DataDistributionType {
 /**
  * Define the format of the input data.
  *
- * @experimental
  */
 export enum RecordWrapperType {
   /**
@@ -465,7 +446,6 @@ export enum RecordWrapperType {
 /**
  *  Input mode that the algorithm supports.
  *
- * @experimental
  */
 export enum InputMode {
   /**
@@ -482,7 +462,6 @@ export enum InputMode {
 /**
  * Compression type of the data.
  *
- * @experimental
  */
 export enum CompressionType {
   /**
@@ -503,7 +482,6 @@ export enum CompressionType {
 /**
  * Configures the timeout and maximum number of retries for processing a transform job invocation.
  *
- *  @experimental
  */
 export interface ModelClientOptions {
 
@@ -525,7 +503,6 @@ export interface ModelClientOptions {
 /**
  *  Dataset to be transformed and the Amazon S3 location where it is stored.
  *
- *  @experimental
  */
 export interface TransformInput {
 
@@ -559,7 +536,6 @@ export interface TransformInput {
 /**
  * S3 location of the input data that the model can consume.
  *
- *  @experimental
  */
 export interface TransformDataSource {
 
@@ -572,7 +548,6 @@ export interface TransformDataSource {
 /**
  * Location of the channel data.
  *
- *  @experimental
  */
 export interface TransformS3DataSource {
 
@@ -592,7 +567,6 @@ export interface TransformS3DataSource {
 /**
  * S3 location where you want Amazon SageMaker to save the results from the transform job.
  *
- *  @experimental
  */
 export interface TransformOutput {
 
@@ -626,7 +600,6 @@ export interface TransformOutput {
 /**
  * ML compute instances for the transform job.
  *
- *  @experimental
  */
 export interface TransformResources {
 
@@ -652,7 +625,6 @@ export interface TransformResources {
  * Properties to define a ContainerDefinition
  *
  * @see https://docs.aws.amazon.com/sagemaker/latest/APIReference/API_ContainerDefinition.html
- * @experimental
  */
 export interface ContainerDefinitionOptions {
   /**
@@ -701,7 +673,6 @@ export interface ContainerDefinitionOptions {
  * Describes the container, as part of model definition.
  *
  * @see https://docs.aws.amazon.com/sagemaker/latest/APIReference/API_ContainerDefinition.html
- * @experimental
  */
 export class ContainerDefinition implements IContainerDefinition {
 
@@ -728,7 +699,6 @@ export class ContainerDefinition implements IContainerDefinition {
  * Configuration of the container used to host the model
  *
  * @see https://docs.aws.amazon.com/sagemaker/latest/APIReference/API_ContainerDefinition.html
- * @experimental
  */
 export interface IContainerDefinition {
   /**
@@ -752,7 +722,6 @@ export interface ContainerDefinitionConfig {
 /**
  * Specifies how many models the container hosts
  *
- * @experimental
  */
 export enum Mode {
   /**
@@ -771,7 +740,6 @@ export enum Mode {
  * Identifies a model that you want to host and the resources to deploy for hosting it.
  *
  * @see  https://docs.aws.amazon.com/sagemaker/latest/APIReference/API_ProductionVariant.html
- * @experimental
  */
 export interface ProductionVariant {
   /**
@@ -810,7 +778,6 @@ export interface ProductionVariant {
  * The generation of Elastic Inference (EI) instance
  *
  * @see https://docs.aws.amazon.com/sagemaker/latest/dg/ei.html
- * @experimental
  */
 export class AcceleratorClass {
   /**
@@ -837,7 +804,6 @@ export class AcceleratorClass {
  * EI instances provide on-demand GPU computing for inference
  *
  * @see https://docs.aws.amazon.com/sagemaker/latest/dg/ei.html
- * @experimental
  */
 export class AcceleratorType {
   /**
@@ -863,7 +829,6 @@ export class AcceleratorType {
 /**
  * Specifies the number of records to include in a mini-batch for an HTTP inference request.
  *
- * @experimental
  */
 export enum BatchStrategy {
 
@@ -881,7 +846,6 @@ export enum BatchStrategy {
 /**
  * Method to use to split the transform job's data files into smaller batches.
  *
- * @experimental
  */
 export enum SplitType {
 
@@ -909,7 +873,6 @@ export enum SplitType {
 /**
  * How to assemble the results of the transform job as a single S3 object.
  *
- * @experimental
  */
 export enum AssembleWith {
 

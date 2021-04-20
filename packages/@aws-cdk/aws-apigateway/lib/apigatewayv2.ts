@@ -318,7 +318,6 @@ export class CfnApiV2 extends cdk.CfnResource implements cdk.IInspectable {
    *
    * @param inspector - tree inspector to collect and process attributes
    *
-   * @stability experimental
    */
   public inspect(inspector: cdk.TreeInspector) {
     inspector.addAttribute('aws:cdk:cloudformation:type', CfnApiV2.CFN_RESOURCE_TYPE_NAME);
@@ -637,7 +636,6 @@ export class CfnApiMappingV2 extends cdk.CfnResource implements cdk.IInspectable
    *
    * @param inspector - tree inspector to collect and process attributes
    *
-   * @stability experimental
    */
   public inspect(inspector: cdk.TreeInspector) {
     inspector.addAttribute('aws:cdk:cloudformation:type', CfnApiMappingV2.CFN_RESOURCE_TYPE_NAME);
@@ -869,7 +867,6 @@ export class CfnAuthorizerV2 extends cdk.CfnResource implements cdk.IInspectable
    *
    * @param inspector - tree inspector to collect and process attributes
    *
-   * @stability experimental
    */
   public inspect(inspector: cdk.TreeInspector) {
     inspector.addAttribute('aws:cdk:cloudformation:type', CfnAuthorizerV2.CFN_RESOURCE_TYPE_NAME);
@@ -1065,7 +1062,6 @@ export class CfnDeploymentV2 extends cdk.CfnResource implements cdk.IInspectable
    *
    * @param inspector - tree inspector to collect and process attributes
    *
-   * @stability experimental
    */
   public inspect(inspector: cdk.TreeInspector) {
     inspector.addAttribute('aws:cdk:cloudformation:type', CfnDeploymentV2.CFN_RESOURCE_TYPE_NAME);
@@ -1212,7 +1208,6 @@ export class CfnDomainNameV2 extends cdk.CfnResource implements cdk.IInspectable
    *
    * @param inspector - tree inspector to collect and process attributes
    *
-   * @stability experimental
    */
   public inspect(inspector: cdk.TreeInspector) {
     inspector.addAttribute('aws:cdk:cloudformation:type', CfnDomainNameV2.CFN_RESOURCE_TYPE_NAME);
@@ -1576,7 +1571,6 @@ export class CfnIntegrationV2 extends cdk.CfnResource implements cdk.IInspectabl
    *
    * @param inspector - tree inspector to collect and process attributes
    *
-   * @stability experimental
    */
   public inspect(inspector: cdk.TreeInspector) {
     inspector.addAttribute('aws:cdk:cloudformation:type', CfnIntegrationV2.CFN_RESOURCE_TYPE_NAME);
@@ -1786,7 +1780,6 @@ export class CfnIntegrationResponseV2 extends cdk.CfnResource implements cdk.IIn
    *
    * @param inspector - tree inspector to collect and process attributes
    *
-   * @stability experimental
    */
   public inspect(inspector: cdk.TreeInspector) {
     inspector.addAttribute('aws:cdk:cloudformation:type', CfnIntegrationResponseV2.CFN_RESOURCE_TYPE_NAME);
@@ -1959,7 +1952,6 @@ export class CfnModelV2 extends cdk.CfnResource implements cdk.IInspectable {
    *
    * @param inspector - tree inspector to collect and process attributes
    *
-   * @stability experimental
    */
   public inspect(inspector: cdk.TreeInspector) {
     inspector.addAttribute('aws:cdk:cloudformation:type', CfnModelV2.CFN_RESOURCE_TYPE_NAME);
@@ -2233,7 +2225,6 @@ export class CfnRouteV2 extends cdk.CfnResource implements cdk.IInspectable {
    *
    * @param inspector - tree inspector to collect and process attributes
    *
-   * @stability experimental
    */
   public inspect(inspector: cdk.TreeInspector) {
     inspector.addAttribute('aws:cdk:cloudformation:type', CfnRouteV2.CFN_RESOURCE_TYPE_NAME);
@@ -2475,7 +2466,6 @@ export class CfnRouteResponseV2 extends cdk.CfnResource implements cdk.IInspecta
    *
    * @param inspector - tree inspector to collect and process attributes
    *
-   * @stability experimental
    */
   public inspect(inspector: cdk.TreeInspector) {
     inspector.addAttribute('aws:cdk:cloudformation:type', CfnRouteResponseV2.CFN_RESOURCE_TYPE_NAME);
@@ -2784,7 +2774,6 @@ export class CfnStageV2 extends cdk.CfnResource implements cdk.IInspectable {
    *
    * @param inspector - tree inspector to collect and process attributes
    *
-   * @stability experimental
    */
   public inspect(inspector: cdk.TreeInspector) {
     inspector.addAttribute('aws:cdk:cloudformation:type', CfnStageV2.CFN_RESOURCE_TYPE_NAME);

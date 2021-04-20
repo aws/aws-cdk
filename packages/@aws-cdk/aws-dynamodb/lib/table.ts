@@ -215,7 +215,6 @@ export interface TableOptions {
    * Regions where replica tables will be created
    *
    * @default - no replica tables are created
-   * @experimental
    */
   readonly replicationRegions?: string[];
 

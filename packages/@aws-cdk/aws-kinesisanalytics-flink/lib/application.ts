@@ -210,7 +210,6 @@ class Import extends ApplicationBase {
  *
  * @resource AWS::KinesisAnalyticsV2::Application
  *
- * @experimental
  */
 export class Application extends ApplicationBase {
   /**

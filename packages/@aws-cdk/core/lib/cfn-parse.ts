@@ -79,7 +79,6 @@ export class FromCloudFormationPropertyObject<T extends Record<string, any>> ext
  * (to not make it part of the public API),
  * it is directly referenced in the generated L1 code.
  *
- * @experimental
  */
 export class FromCloudFormation {
   // nothing to for any but return it
@@ -340,7 +339,6 @@ export interface ParseCfnOptions {
  * it is directly referenced in the generated L1 code,
  * so any renames of it need to be reflected in cfn2ts/codegen.ts as well.
  *
- * @experimental
  */
 export class CfnParser {
   private readonly options: ParseCfnOptions;

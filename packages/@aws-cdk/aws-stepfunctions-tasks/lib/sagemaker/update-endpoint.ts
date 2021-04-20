@@ -8,7 +8,6 @@ import { integrationResourceArn, validatePatternSupported } from '../private/tas
  * Properties for updating Amazon SageMaker endpoint
  *
  * @see https://docs.aws.amazon.com/step-functions/latest/dg/connect-sagemaker.html
- * @experimental
  */
 export interface SageMakerUpdateEndpointProps extends sfn.TaskStateBaseProps {
   /**
@@ -25,7 +24,6 @@ export interface SageMakerUpdateEndpointProps extends sfn.TaskStateBaseProps {
  * A Step Functions Task to update a SageMaker endpoint
  *
  * @see https://docs.aws.amazon.com/step-functions/latest/dg/connect-sagemaker.html
- * @experimental
  */
 export class SageMakerUpdateEndpoint extends sfn.TaskStateBase {
   private static readonly SUPPORTED_INTEGRATION_PATTERNS: sfn.IntegrationPattern[] = [

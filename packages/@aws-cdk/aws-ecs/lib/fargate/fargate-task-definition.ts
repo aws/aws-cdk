@@ -1,5 +1,6 @@
 import { Tokenization } from '@aws-cdk/core';
 import { Construct } from 'constructs';
+import { ImportedTaskDefinition } from '../base/_imported-task-definition';
 import {
   CommonTaskDefinitionAttributes,
   CommonTaskDefinitionProps,
@@ -8,7 +9,6 @@ import {
   NetworkMode,
   TaskDefinition,
 } from '../base/task-definition';
-import { ImportedTaskDefinition } from '../base/_imported-task-definition';
 
 /**
  * The properties for a task definition.

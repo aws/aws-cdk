@@ -205,7 +205,6 @@ function visit(root: IConstruct, order: 'pre' | 'post', cb: (x: IProtectedConstr
 /**
  * Interface which provides access to special methods of Construct
  *
- * @experimental
  */
 interface IProtectedConstructMethods extends IConstruct {
   /**

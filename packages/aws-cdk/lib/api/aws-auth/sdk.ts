@@ -5,7 +5,6 @@ import { cached } from '../../util/functions';
 import { AccountAccessKeyCache } from './account-cache';
 import { Account } from './sdk-provider';
 
-/** @experimental */
 export interface ISDK {
   /**
    * The region this SDK has been instantiated for

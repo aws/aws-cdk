@@ -15,7 +15,6 @@ import { Construct } from 'constructs';
 
 /**
  * Properties for creating a Lambda@Edge function
- * @experimental
  */
 export interface EdgeFunctionProps extends lambda.FunctionProps {
   /**
@@ -36,7 +35,6 @@ export interface EdgeFunctionProps extends lambda.FunctionProps {
  * See https://docs.aws.amazon.com/cdk/latest/guide/bootstrapping.html or 'cdk bootstrap --help' for options.
  *
  * @resource AWS::Lambda::Function
- * @experimental
  */
 export class EdgeFunction extends Resource implements lambda.IVersion {
 

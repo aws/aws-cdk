@@ -7,7 +7,6 @@ import { integrationResourceArn } from '../private/task-utils';
 /**
  * Properties for EmrCancelStep
  *
- * @experimental
  */
 export interface EmrCancelStepProps extends sfn.TaskStateBaseProps {
   /**
@@ -24,7 +23,6 @@ export interface EmrCancelStepProps extends sfn.TaskStateBaseProps {
 /**
  * A Step Functions Task to to cancel a Step on an EMR Cluster.
  *
- * @experimental
  */
 export class EmrCancelStep extends sfn.TaskStateBase {
 

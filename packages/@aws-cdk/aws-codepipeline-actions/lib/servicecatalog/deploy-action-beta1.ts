@@ -35,6 +35,12 @@ export interface ServiceCatalogDeployActionBeta1Props extends codepipeline.Commo
 
 /**
  * CodePipeline action to connect to an existing ServiceCatalog product.
+<<<<<<< HEAD:packages/@aws-cdk/aws-codepipeline-actions/lib/servicecatalog/deploy-action.ts
+ *
+ * **Note**: this class is still experimental, and may have breaking changes in the future!
+ *
+=======
+>>>>>>> master:packages/@aws-cdk/aws-codepipeline-actions/lib/servicecatalog/deploy-action-beta1.ts
  */
 export class ServiceCatalogDeployActionBeta1 extends Action {
   private readonly templatePath: string;
