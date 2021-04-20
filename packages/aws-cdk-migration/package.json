@@ -49,7 +49,6 @@
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "stability": "experimental",
-  "maturity": "developer-preview",
   "engines": {
     "node": ">= 10.13.0 <13 || >=13.7.0"
   },
