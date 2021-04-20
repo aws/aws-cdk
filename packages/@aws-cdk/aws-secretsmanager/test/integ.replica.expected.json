@@ -1,0 +1,15 @@
+{
+  "Resources": {
+    "SecretA720EF05": {
+      "Type": "AWS::SecretsManager::Secret",
+      "Properties": {
+        "GenerateSecretString": {},
+        "ReplicaRegions": [
+          {
+            "Region": "eu-central-1"
+          }
+        ]
+      }
+    }
+  }
+}
