@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "description": "Enforces the AWS Construct Library guidelines",
   "scripts": {
-    "build": "tsc -b && npm run lint && chmod +x bin/awslint",
+    "build": "tsc -b && eslint . --ext=.ts && pkglint && chmod +x bin/awslint",
     "lint": "eslint . --ext=.ts && pkglint",
     "test": "echo ok",
     "watch": "tsc -b -w",
@@ -16,18 +16,28 @@
     "awslint": "bin/awslint"
   },
   "dependencies": {
-    "@jsii/spec": "^1.27.1",
+    "@jsii/spec": "^1.28.0",
     "camelcase": "^6.2.0",
     "colors": "^1.4.0",
     "fs-extra": "^9.1.0",
-    "jsii-reflect": "^1.27.1",
+    "jsii-reflect": "^1.28.0",
     "yargs": "^16.2.0"
   },
   "devDependencies": {
     "@types/fs-extra": "^8.1.1",
+    "@types/jest": "^26.0.22",
     "@types/yargs": "^15.0.13",
     "pkglint": "0.0.0",
-    "typescript": "~3.9.9"
+    "typescript": "~3.9.9",
+    "@typescript-eslint/eslint-plugin": "^4.21.0",
+    "@typescript-eslint/parser": "^4.21.0",
+    "eslint": "^7.23.0",
+    "eslint-import-resolver-node": "^0.3.4",
+    "eslint-import-resolver-typescript": "^2.4.0",
+    "eslint-plugin-cdk": "0.0.0",
+    "eslint-plugin-import": "^2.22.1",
+    "eslint-plugin-jest": "^24.3.4",
+    "jest": "^26.6.3"
   },
   "repository": {
     "type": "git",
@@ -49,6 +59,9 @@
   "stability": "experimental",
   "engines": {
     "node": ">= 10.13.0 <13 || >=13.7.0"
+  },
+  "nozem": {
+    "ostools": ["chmod", "npm"]
   },
   "publishConfig": {
     "tag": "latest"
