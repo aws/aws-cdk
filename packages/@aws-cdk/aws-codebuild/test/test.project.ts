@@ -1154,6 +1154,41 @@ export = {
         test.done();
       },
 
+      'when two secrets from another account are provided as verbatim partial secret ARNs, adds only one permission for decrypting'(test: Test) {
+        // GIVEN
+        const app = new cdk.App();
+        const stack = new cdk.Stack(app, 'ProjectStack', {
+          env: { account: '123456789012' },
+        });
+
+        // WHEN
+        new codebuild.PipelineProject(stack, 'Project', {
+          environmentVariables: {
+            'ENV_VAR1': {
+              type: codebuild.BuildEnvironmentVariableType.SECRETS_MANAGER,
+              value: 'arn:aws:secretsmanager:us-west-2:901234567890:secret:mysecret',
+            },
+            'ENV_VAR2': {
+              type: codebuild.BuildEnvironmentVariableType.SECRETS_MANAGER,
+              value: 'arn:aws:secretsmanager:us-west-2:901234567890:secret:other-secret',
+            },
+          },
+        });
+
+        // THEN
+        expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
+          'PolicyDocument': {
+            'Statement': arrayWith({
+              'Action': 'kms:Decrypt',
+              'Effect': 'Allow',
+              'Resource': 'arn:aws:kms:us-west-2:901234567890:key/*',
+            }),
+          },
+        }));
+
+        test.done();
+      },
+
       'can be provided as the ARN attribute of a new Secret'(test: Test) {
         // GIVEN
         const stack = new cdk.Stack();

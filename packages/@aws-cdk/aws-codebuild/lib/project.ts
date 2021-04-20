@@ -721,7 +721,7 @@ export class Project extends ProjectBase {
     const ret = new Array<CfnProject.EnvironmentVariableProperty>();
     const ssmIamResources = new Array<string>();
     const secretsManagerIamResources = new Array<string>();
-    const kmsIamResources = new Array<string>();
+    const kmsIamResources = new Set<string>();
 
     for (const [name, envVariable] of Object.entries(environmentVariables)) {
       const envVariableValue = envVariable.value?.toString();
@@ -804,7 +804,7 @@ export class Project extends ProjectBase {
             // if secret comes from another account, SecretsManager will need to access
             // KMS on the other account as well to be able to get the secret
             if (parsedArn && parsedArn.account && Token.compareStrings(parsedArn.account, stack.account) === TokenComparison.DIFFERENT) {
-              kmsIamResources.push(stack.formatArn({
+              kmsIamResources.add(stack.formatArn({
                 service: 'kms',
                 resource: 'key',
                 // We do not know the ID of the key, but since this is a cross-account access,
@@ -834,10 +834,10 @@ export class Project extends ProjectBase {
         resources: secretsManagerIamResources,
       }));
     }
-    if (kmsIamResources.length !== 0) {
+    if (kmsIamResources.size !== 0) {
       principal?.grantPrincipal.addToPrincipalPolicy(new iam.PolicyStatement({
         actions: ['kms:Decrypt'],
-        resources: kmsIamResources,
+        resources: Array.from(kmsIamResources),
       }));
     }
 
