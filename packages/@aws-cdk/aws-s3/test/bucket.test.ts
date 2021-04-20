@@ -307,20 +307,28 @@ describe('bucket', () => {
                   },
                   'Effect': 'Deny',
                   'Principal': '*',
-                  'Resource': {
-                    'Fn::Join': [
-                      '',
-                      [
-                        {
-                          'Fn::GetAtt': [
-                            'MyBucketF68F3FF0',
-                            'Arn',
-                          ],
-                        },
-                        '/*',
+                  'Resource': [
+                    {
+                      'Fn::GetAtt': [
+                        'MyBucketF68F3FF0',
+                        'Arn',
                       ],
-                    ],
-                  },
+                    },
+                    {
+                      'Fn::Join': [
+                        '',
+                        [
+                          {
+                            'Fn::GetAtt': [
+                              'MyBucketF68F3FF0',
+                              'Arn',
+                            ],
+                          },
+                          '/*',
+                        ],
+                      ],
+                    },
+                  ],
                 },
               ],
               'Version': '2012-10-17',
