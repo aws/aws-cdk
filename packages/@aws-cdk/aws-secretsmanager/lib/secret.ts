@@ -432,7 +432,7 @@ export class Secret extends SecretBase {
   public readonly secretArn: string;
   public readonly secretName: string;
 
-  private replicationRegions: secretsmanager.CfnSecret.ReplicaRegionProperty[] = [];
+  private replicaRegions: secretsmanager.CfnSecret.ReplicaRegionProperty[] = [];
 
   protected readonly autoCreatePolicy = true;
 
@@ -452,7 +452,7 @@ export class Secret extends SecretBase {
       kmsKeyId: props.encryptionKey && props.encryptionKey.keyArn,
       generateSecretString: props.generateSecretString || {},
       name: this.physicalName,
-      replicaRegions: Lazy.any({ produce: () => this.replicationRegions }, { omitEmptyArray: true }),
+      replicaRegions: Lazy.any({ produce: () => this.replicaRegions }, { omitEmptyArray: true }),
     });
 
     if (props.removalPolicy) {
@@ -478,8 +478,8 @@ export class Secret extends SecretBase {
     this.encryptionKey?.grantEncryptDecrypt(principal);
     this.encryptionKey?.grant(principal, 'kms:CreateGrant', 'kms:DescribeKey');
 
-    for (const replication of props.replicaRegions ?? []) {
-      this.addReplicaRegion(replication.region, replication.encryptionKey);
+    for (const replica of props.replicaRegions ?? []) {
+      this.addReplicaRegion(replica.region, replica.encryptionKey);
     }
   }
 
@@ -498,7 +498,7 @@ export class Secret extends SecretBase {
   }
 
   /**
-   * Adds a replication region for the secret
+   * Adds a replica region for the secret
    *
    * @param region The name of the region
    * @param encryptionKey The customer-managed encryption key to use for encrypting the secret value.
@@ -506,10 +506,10 @@ export class Secret extends SecretBase {
   public addReplicaRegion(region: string, encryptionKey?: kms.IKey): void {
     const stack = Stack.of(this);
     if (!Token.isUnresolved(stack.region) && !Token.isUnresolved(region) && region === stack.region) {
-      throw new Error('Cannot add the region where this stack is deployed as a replication region.');
+      throw new Error('Cannot add the region where this stack is deployed as a replica region.');
     }
 
-    this.replicationRegions.push({
+    this.replicaRegions.push({
       region,
       kmsKeyId: encryptionKey?.keyArn,
     });
