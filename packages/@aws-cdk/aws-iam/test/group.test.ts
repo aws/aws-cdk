@@ -71,7 +71,18 @@ test('cross-env group ARNs include path', () => {
     properties: { GroupArn: group.groupArn },
   });
 
-  expect(referencerStack).toHaveResourceLike('Custom::GroupReferencer', {
-    GroupArn: 'arn:aws:iam::123456789012:group/sample/path/sample-name',
+  expect(referencerStack).toHaveResource('Custom::GroupReferencer', {
+    GroupArn: {
+      "Fn::Join": [
+        "",
+        [
+          "arn:",
+          {
+            "Ref": "AWS::Partition"
+          },
+          ":iam::123456789012:group/sample/path/sample-name"
+        ]
+      ]
+    },
   });
 });

@@ -578,7 +578,18 @@ test('cross-env role ARNs include path', () => {
     properties: { RoleArn: role.roleArn },
   });
 
-  expect(referencerStack).toHaveResourceLike('Custom::RoleReferencer', {
-    RoleArn: 'arn:aws:iam::123456789012:role/sample/path/sample-name',
+  expect(referencerStack).toHaveResource('Custom::RoleReferencer', {
+    RoleArn: {
+      "Fn::Join": [
+        "",
+        [
+          "arn:",
+          {
+            "Ref": "AWS::Partition"
+          },
+          ":iam::123456789012:role/sample/path/sample-name"
+        ]
+      ]
+    },
   });
 });

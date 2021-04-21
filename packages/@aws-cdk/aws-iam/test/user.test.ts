@@ -192,7 +192,18 @@ test('cross-env user ARNs include path', () => {
     properties: { UserArn: user.userArn },
   });
 
-  expect(referencerStack).toHaveResourceLike('Custom::UserReferencer', {
-    UserArn: 'arn:aws:iam::123456789012:user/sample/path/sample-name',
+  expect(referencerStack).toHaveResource('Custom::UserReferencer', {
+    UserArn: {
+      "Fn::Join": [
+        "",
+        [
+          "arn:",
+          {
+            "Ref": "AWS::Partition"
+          },
+          ":iam::123456789012:user/sample/path/sample-name"
+        ]
+      ]
+    },
   });
 });
