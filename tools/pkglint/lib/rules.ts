@@ -1640,15 +1640,13 @@ export class AwsCdkLibReadmeMatchesCore extends ValidationRule {
         ruleName: this.name,
         message: missingSectionMsg,
       });
-    }
-    else if (!awsCdkLibMatch) {
+    } else if (!awsCdkLibMatch) {
       pkg.report({
         ruleName: this.name,
         message: missingSectionMsg,
         fix: () => fs.writeFileSync(readmeFile, [awsCdkLibReadme, awsCoreMatch[0]].join('\n')),
       });
-    }
-    else if (awsCoreMatch[0] !== awsCdkLibMatch[0]) {
+    } else if (awsCoreMatch[0] !== awsCdkLibMatch[0]) {
       pkg.report({
         ruleName: this.name,
         message: 'aws-cdk-lib README does not include a core documentation section that matches @aws-cdk/core',
