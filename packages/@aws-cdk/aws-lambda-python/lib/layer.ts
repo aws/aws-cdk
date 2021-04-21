@@ -23,7 +23,6 @@ export interface PythonLayerVersionProps extends lambda.LayerVersionOptions {
 /**
  * A lambda layer version.
  *
- * @experimental
  */
 export class PythonLayerVersion extends lambda.LayerVersion {
   constructor(scope: Construct, id: string, props: PythonLayerVersionProps) {
