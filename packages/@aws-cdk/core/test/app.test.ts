@@ -10,6 +10,10 @@ function withApp(props: AppProps, block: (app: App) => void): cxapi.CloudAssembl
   const app = new App({
     stackTraces: false,
     ...props,
+    context: {
+      [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false,
+      ...props.context,
+    },
   });
 
   block(app);
