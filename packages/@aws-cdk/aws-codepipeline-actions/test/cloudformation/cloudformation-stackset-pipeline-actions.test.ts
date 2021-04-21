@@ -17,7 +17,7 @@ nodeunitShim({
         description: 'desc',
         stackSetName: 'MyStack',
         templatePath: stack.sourceOutput.atPath('template.yaml'),
-        parametersPath: stack.sourceOutput.atPath('parameters.json'),
+        parameters: cpactions.StackSetParameters.fromArtifactPath(stack.sourceOutput.atPath('parameters.json')),
         cfnCapabilities: [
           cdk.CfnCapabilities.NAMED_IAM,
         ],
@@ -171,7 +171,7 @@ nodeunitShim({
         description: 'desc',
         stackSetName: 'MyStack',
         templatePath: stack.sourceOutput.atPath('template.yaml'),
-        parametersPath: stack.sourceOutput.atPath('parameters.json'),
+        parameters: cpactions.StackSetParameters.fromArtifactPath(stack.sourceOutput.atPath('parameters.json')),
         cfnCapabilities: [
           cdk.CfnCapabilities.NAMED_IAM,
         ],
@@ -311,7 +311,7 @@ nodeunitShim({
         description: 'desc',
         stackSetName: 'MyStack',
         templatePath: stack.sourceOutput.atPath('template.yaml'),
-        parametersPath: stack.sourceOutput.atPath('parameters.json'),
+        parameters: cpactions.StackSetParameters.fromArtifactPath(stack.sourceOutput.atPath('parameters.json')),
         administrationRole: adminRole,
         cfnCapabilities: [
           cdk.CfnCapabilities.NAMED_IAM,
@@ -461,7 +461,7 @@ nodeunitShim({
         description: 'desc',
         stackSetName: 'MyStack',
         templatePath: stack.sourceOutput.atPath('template.yaml'),
-        parametersPath: stack.sourceOutput.atPath('parameters.json'),
+        parameters: cpactions.StackSetParameters.fromArtifactPath(stack.sourceOutput.atPath('parameters.json')),
         administrationRole: adminRole,
         cfnCapabilities: [
           cdk.CfnCapabilities.NAMED_IAM,
@@ -515,20 +515,12 @@ nodeunitShim({
         description: 'desc',
         stackSetName: 'MyStack',
         templatePath: stack.sourceOutput.atPath('template.yaml'),
-        parameters: [
-          {
-            parameterKey: 'key0',
-            parameterValue: 'val0',
-          },
-          {
-            parameterKey: 'key1',
-            parameterValue: 'val1',
-          },
-          {
-            parameterKey: 'key2',
-            usePreviousValue: true,
-          },
-        ],
+        parameters: cpactions.StackSetParameters.fromLiteral({
+          key0: 'val0',
+          key1: 'val1',
+          key2: null,
+          key3: undefined,
+        }),
         administrationRole: adminRole,
         cfnCapabilities: [
           cdk.CfnCapabilities.NAMED_IAM,
@@ -551,7 +543,7 @@ nodeunitShim({
                   'StackSetName': 'MyStack',
                   'Description': 'desc',
                   'TemplatePath': 'SourceArtifact::template.yaml',
-                  'Parameters': 'ParameterKey=key0,ParameterValue=val0 ParameterKey=key1,ParameterValue=val1 ParameterKey=key2,UsePreviousValue=true',
+                  'Parameters': 'ParameterKey=key0,ParameterValue=val0 ParameterKey=key1,ParameterValue=val1 ParameterKey=key2,UsePreviousValue=true ParameterKey=key3,UsePreviousValue=true',
                   'Capabilities': 'CAPABILITY_NAMED_IAM',
                   'DeploymentTargets': 'SourceArtifact::accounts.json',
                   'FailureTolerancePercentage': 50,

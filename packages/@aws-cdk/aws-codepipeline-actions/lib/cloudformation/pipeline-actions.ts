@@ -554,6 +554,103 @@ export enum StackSetOrganizationsAutoDeployment {
 }
 
 /**
+ * Literal StackSet parameter type. null/undefined will translate to UsePreviousValue. Other values will be used as-is.
+ */
+export interface StackSetLiteralParameters {
+  [parameterName: string]: string | null | undefined
+}
+
+/**
+ * StackSet parameters container.
+ */
+export class StackSetParameters {
+  /**
+   * A list of template parameters for your stack set that update during a deployment.
+   * You can provide parameters as a dictionary:
+   *
+   * The following example shows a parameter named BucketName with the value my-bucket.
+   *
+   * {
+   *     BucketName: "my-bucket"
+   * }
+   *
+   * The following example shows an entry with multiple parameters:
+   *
+   * {
+   *     BucketName: "my-bucket",
+   *     Asset1: "true",
+   *     Asset2: "true"
+   * }
+   *
+   */
+  public static fromLiteral(parameters: StackSetLiteralParameters): StackSetParameters {
+    return new StackSetParameters(parameters);
+  }
+
+  /**
+   * Parameters from a CodePipeline artifact path.
+   *
+   * The following example shows the file contents for parameters.txt `sourceArtifact.atPath("parameters.txt")`, where sourceArtifact is a
+   * CodePipeline Artifact.
+   *
+   * [
+   *     {
+   *         "ParameterKey": "KeyName",
+   *         "ParameterValue": "true"
+   *     },
+   *     {
+   *         "ParameterKey": "KeyName",
+   *         "ParameterValue": "true"
+   *     }
+   * ]
+   *
+   * @default No parameters will be used (unless parameters is used)
+   */
+  public static fromArtifactPath(artifactPath: codepipeline.ArtifactPath): StackSetParameters {
+    return new StackSetParameters(undefined, artifactPath);
+  }
+
+  private constructor(
+    private readonly parameters?: StackSetLiteralParameters,
+    private readonly artifactPath?: codepipeline.ArtifactPath,
+  ) {
+  }
+
+  /**
+   * An array of artifacts associated with these parameters.
+   */
+  public get artifacts(): codepipeline.Artifact[] {
+    if (this.artifactPath !== undefined) {
+      return [this.artifactPath.artifact];
+    }
+
+    return [];
+  }
+
+  /**
+   * Converts Parameters to a string.
+   */
+  public toString(): string {
+    if (this.artifactPath !== undefined) {
+      return this.artifactPath.location;
+    }
+
+    const parameters = this.parameters || {};
+    return Object.keys(parameters).map((key) => {
+      const value = parameters[ key ];
+
+      let ret = 'ParameterKey=' + key;
+      if (value !== undefined && value !== null) {
+        ret += ',ParameterValue=' + value;
+      } else {
+        ret += ',UsePreviousValue=true';
+      }
+
+      return ret;
+    }).join(' ');
+  }
+}
+/**
  * Properties for the CloudFormationStackSetAction
  */
 export interface CloudFormationStackSetActionProps extends codepipeline.CommonAwsActionProps {
@@ -591,51 +688,11 @@ export interface CloudFormationStackSetActionProps extends codepipeline.CommonAw
   readonly templatePath: codepipeline.ArtifactPath;
 
   /**
-   * A list of template parameters for your stack set that update during a deployment.
-   * You can provide parameters as a dictionary or a file path:
+   * The template parameters for your stack set that update during a deployment.
    *
-   * The following example shows a parameter named BucketName with the value my-bucket.
-   *
-   * [ { ParameterKey: "BucketName", ParameterValue: "my-bucket" } ]
-   *
-   * The following example shows an entry with multiple parameters:
-   *
-   * {
-   *     BucketName: "my-bucket",
-   *     Asset1: "true",
-   *     Asset2: "true"
-   * }
-   *
-   * This cannot be used in conjunction with parametersPath.
-   *
-   * @default No parameters will be used (unless parametersPath is used)
+   * @default No parameters will be used.
    */
-  readonly parameters?: { [key: string]: string | null | undefined };
-
-  /**
-   * A list of template parameters for your stack set that update during a deployment.
-   *
-   * You can enter the location of the file containing a list of template parameter overrides by using an ArtifactPath object.
-   *
-   * The following example shows the file contents for parameters.txt `sourceArtifact.atPath("parameters.txt")`, where sourceArtifact is a
-   * CodePipeline Artifact.
-   *
-   * [
-   *     {
-   *         "ParameterKey": "KeyName",
-   *         "ParameterValue": "true"
-   *     },
-   *     {
-   *         "ParameterKey": "KeyName",
-   *         "ParameterValue": "true"
-   *     }
-   * ]
-   *
-   * This cannot be used in conjunction with parameters.
-   *
-   * @default No parameters will be used (unless parameters is used)
-   */
-  readonly parametersPath?: codepipeline.ArtifactPath;
+  readonly parameters?: StackSetParameters;
 
   /**
    * Indicates that the template can create and update resources, depending on the types of resources in the template.
@@ -739,7 +796,7 @@ export interface CloudFormationStackSetActionProps extends codepipeline.CommonAw
    *
    * @default No deployment target. This or deploymentTargetsPath is required.
    */
-  readonly deploymentTargets?: string | Array<string>;
+  readonly deploymentTargets?: Array<string>;
 
   /**
    * Note
@@ -795,7 +852,7 @@ export interface CloudFormationStackSetActionProps extends codepipeline.CommonAw
    *
    * [ "us-west-2", "us-east-1" ]
    */
-  readonly regions: string | Array<string>;
+  readonly regions: Array<string>;
 
   /**
    * The percentage of accounts per Region for which this stack operation can fail before AWS CloudFormation stops the operation in that Region. If
@@ -831,8 +888,8 @@ export class CloudFormationStackSetAction extends Action {
   private static getArtifacts(props: CloudFormationStackSetActionProps) {
     const artifacts: codepipeline.Artifact[] = [props.templatePath.artifact];
 
-    if (props.parametersPath !== undefined) {
-      artifacts.push(props.parametersPath.artifact);
+    if (props.parameters !== undefined) {
+      artifacts.push(...props.parameters.artifacts);
     }
     if (props.deploymentTargetsPath !== undefined) {
       artifacts.push(props.deploymentTargetsPath.artifact);
@@ -881,9 +938,9 @@ export class CloudFormationStackSetAction extends Action {
 
     const templatePath = this.props.templatePath.location;
 
-    const parameters = this.parameters;
+    const parameters = this.props.parameters;
 
-    const regions = !Array.isArray(this.props.regions) ? this.props.regions : this.props.regions.join(',');
+    const regions = this.props.regions.join(',');
 
     const deploymentTargets = this.deploymentTargets;
 
@@ -894,7 +951,7 @@ export class CloudFormationStackSetAction extends Action {
         StackSetName: this.props.stackSetName,
         Description: this.props.description,
         TemplatePath: templatePath,
-        Parameters: parameters,
+        Parameters: parameters !== undefined ? parameters.toString() : undefined,
         Capabilities: parseCapabilities(this.props.cfnCapabilities),
         PermissionModel: this.props.permissionModel,
         AdministrationRoleArn: adminRoleArn,
@@ -906,36 +963,6 @@ export class CloudFormationStackSetAction extends Action {
         Regions: regions,
       },
     };
-  }
-
-  private get parameters(): string | undefined {
-    const parameters = this.props.parameters;
-    const parametersPath = this.props.parametersPath;
-
-    if (parameters !== undefined && parametersPath !== undefined) {
-      throw new Error('Cannot use both parameters and parametersPath.');
-    }
-    if (parametersPath !== undefined) {
-      return parametersPath.location;
-    }
-
-    if (parameters === undefined) {
-      return undefined;
-    }
-
-    return Object.keys(parameters).map((key) => {
-      const value = parameters[ key ];
-
-      let ret = 'ParameterKey=' + key;
-      if (value !== undefined && value !== null) {
-        ret += ',ParameterValue=' + value;
-      }
-      else {
-        ret += ',UsePreviousValue=true';
-      }
-
-      return ret;
-    }).join(' ');
   }
 
   private get deploymentTargets(): string {
@@ -954,12 +981,7 @@ export class CloudFormationStackSetAction extends Action {
       return deploymentTargetsPath.location;
     }
 
-    if (Array.isArray(deploymentTargets)) {
-      return deploymentTargets.join(',');
-    }
-
-    // cannot be undefined at this point.
-    return deploymentTargets!;
+    return (deploymentTargets || []).join(',');
   }
 }
 
