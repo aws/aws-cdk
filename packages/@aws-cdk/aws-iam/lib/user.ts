@@ -263,7 +263,7 @@ export class User extends Resource implements IIdentity, IUser {
       service: 'iam',
       resource: 'user',
       // Removes leading slash from path
-      resourceName: `${props.path ? props.path.substr(1) : ''}${this.physicalName}`
+      resourceName: `${props.path ? props.path.substr(props.path.charAt(0) === '/' ? 1 : 0) : ''}${this.physicalName}`,
     });
 
     this.policyFragment = new ArnPrincipal(this.userArn).policyFragment;

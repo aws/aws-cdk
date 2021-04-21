@@ -180,7 +180,7 @@ export class Group extends GroupBase {
       service: 'iam',
       resource: 'group',
       // Removes leading slash from path
-      resourceName: `${props.path ? props.path.substr(1) : ''}${this.physicalName}`
+      resourceName: `${props.path ? props.path.substr(props.path.charAt(0) === '/' ? 1 : 0) : ''}${this.physicalName}`,
     });
   }
 

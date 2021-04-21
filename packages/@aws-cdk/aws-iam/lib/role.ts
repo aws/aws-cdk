@@ -340,7 +340,7 @@ export class Role extends Resource implements IRole {
       service: 'iam',
       resource: 'role',
       // Removes leading slash from path
-      resourceName: `${props.path ? props.path.substr(1) : ''}${this.physicalName}`
+      resourceName: `${props.path ? props.path.substr(props.path.charAt(0) === '/' ? 1 : 0) : ''}${this.physicalName}`,
     });
     this.roleName = this.getResourceNameAttribute(role.ref);
     this.policyFragment = new ArnPrincipal(this.roleArn).policyFragment;
