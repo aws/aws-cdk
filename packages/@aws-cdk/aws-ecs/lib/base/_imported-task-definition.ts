@@ -1,9 +1,9 @@
 import { IRole } from '@aws-cdk/aws-iam';
+import { Resource } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { IEc2TaskDefinition } from '../ec2/ec2-task-definition';
 import { IFargateTaskDefinition } from '../fargate/fargate-task-definition';
 import { Compatibility, NetworkMode, isEc2Compatible, isFargateCompatible } from './task-definition';
-import { Resource } from '@aws-cdk/core';
 
 /**
  * The properties of ImportedTaskDefinition
