@@ -5,7 +5,7 @@ import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
 import { BaseListener, BaseListenerLookupOptions } from '../shared/base-listener';
 import { HealthCheck } from '../shared/base-target-group';
-import { ApplicationProtocol, IpAddressType, SslPolicy } from '../shared/enums';
+import { ApplicationProtocol, ApplicationProtocolVersion, IpAddressType, SslPolicy } from '../shared/enums';
 import { IListenerCertificate, ListenerCertificate } from '../shared/listener-certificate';
 import { determineProtocolAndPort } from '../shared/util';
 import { ListenerAction } from './application-listener-action';
@@ -363,6 +363,7 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
       healthCheck: props.healthCheck,
       port: props.port,
       protocol: props.protocol,
+      protocolVersion: props.protocolVersion,
       slowStart: props.slowStart,
       stickinessCookieDuration: props.stickinessCookieDuration,
       stickinessCookieName: props.stickinessCookieName,
@@ -801,6 +802,13 @@ export interface AddApplicationTargetsProps extends AddRuleProps {
    * @default Determined from port if known
    */
   readonly protocol?: ApplicationProtocol;
+
+  /**
+   * The protocol version to use
+   *
+   * @default ApplicationProtocolVersion.HTTP1
+   */
+  readonly protocolVersion?: ApplicationProtocolVersion;
 
   /**
    * The port on which the listener listens for requests.
