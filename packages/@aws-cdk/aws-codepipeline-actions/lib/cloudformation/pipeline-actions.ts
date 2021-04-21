@@ -514,67 +514,43 @@ export class CloudFormationDeleteStackAction extends CloudFormationDeployAction 
 }
 
 /**
- * Determines how IAM roles are created and managed
+ * Determines how IAM roles are created and managed.
  */
 export enum StackSetPermissionModel {
   /**
-   * You must create administrator and execution roles to deploy to target accounts
+   * You must create administrator and execution roles to deploy to target accounts.
    */
   SELF_MANAGED = 'SELF_MANAGED',
 
   /**
-   * AWS CloudFormation StackSets automatically creates the IAM roles required to deploy to accounts managed by AWS Organizations. This requires an
-   * account to be a member of an Organization
+   * AWS CloudFormation StackSets automatically creates the IAM roles required to deploy to accounts managed by AWS Organizations.
+   * This requires an account to be a member of an Organization.
    */
   SERVICE_MANAGED = 'SERVICE_MANAGED'
 }
 
 /**
  * Describes whether AWS CloudFormation StackSets automatically deploys to AWS Organizations accounts that are added to a target organization or
- * organizational unit (OU)
+ * organizational unit (OU).
  */
 export enum StackSetOrganizationsAutoDeployment {
   /**
    * StackSets automatically deploys additional stack instances to AWS Organizations accounts that are added to a target organization or
    * organizational unit (OU) in the specified Regions. If an account is removed from a target organization or OU, AWS CloudFormation StackSets
-   * deletes stack instances from the account in the specified Regions
+   * deletes stack instances from the account in the specified Regions.
    */
   ENABLED = 'Enabled',
 
   /**
    * StackSets does not automatically deploy additional stack instances to AWS Organizations accounts that are added to a target organization or
-   * organizational unit (OU) in the specified Regions
+   * organizational unit (OU) in the specified Regions.
    */
   DISABLED = 'Disabled',
 
   /**
-   * Stack resources are retained when an account is removed from a target organization or OU
+   * Stack resources are retained when an account is removed from a target organization or OU.
    */
   ENABLED_WITH_STACK_RETENTION = 'EnabledWithStackRetention'
-}
-
-/**
- * A StackSet parameter
- */
-export interface StackSetParameter {
-  /**
-   * The name of the parameter
-   */
-  readonly parameterKey: string
-
-  /**
-   * The parameter value.
-   *
-   * @default No default value
-   */
-  readonly parameterValue?: string
-
-  /**
-   * Use previous value? If this is specified, parameterValue needn't be specified for a StackSet update
-   *
-   * @default false
-   */
-  readonly usePreviousValue?: boolean
 }
 
 /**
@@ -607,7 +583,8 @@ export interface CloudFormationStackSetActionProps extends codepipeline.CommonAw
   readonly description?: string;
 
   /**
-   * The location of the template that defines the resources in the stack set. This must point to a template with a maximum size of 460,800 bytes.
+   * The location of the template that defines the resources in the stack set.
+   * This must point to a template with a maximum size of 460,800 bytes.
    *
    * Enter the path to the source artifact name and template file.
    */
@@ -623,26 +600,17 @@ export interface CloudFormationStackSetActionProps extends codepipeline.CommonAw
    *
    * The following example shows an entry with multiple parameters:
    *
-   * [
-   *     {
-   *         ParameterKey: "BucketName",
-   *         ParameterValue: "my-bucket"
-   *     },
-   *     {
-   *         ParameterKey: "Asset1",
-   *         ParameterValue: "true"
-   *     },
-   *     {
-   *         ParameterKey: "Asset2",
-   *         ParameterValue: "true"
-   *     }
-   * ]
+   * {
+   *     BucketName: "my-bucket",
+   *     Asset1: "true",
+   *     Asset2: "true"
+   * }
    *
    * This cannot be used in conjunction with parametersPath.
    *
    * @default No parameters will be used (unless parametersPath is used)
    */
-  readonly parameters?: StackSetParameter[];
+  readonly parameters?: { [key: string]: string | null | undefined };
 
   /**
    * A list of template parameters for your stack set that update during a deployment.
@@ -679,8 +647,8 @@ export interface CloudFormationStackSetActionProps extends codepipeline.CommonAw
   readonly cfnCapabilities?: Array<cdk.CfnCapabilities>;
 
   /**
-   * Determines how IAM roles are created and managed. If the field is not specified, the default is used. For information, see Permissions models for
-   * stack set operations.
+   * Determines how IAM roles are created and managed.
+   * If the field is not specified, the default is used. For information, see Permissions models for stack set operations.
    *
    * Note
    * This parameter can only be changed when no stack instances exist in the stack set.
@@ -699,8 +667,8 @@ export interface CloudFormationStackSetActionProps extends codepipeline.CommonAw
    *
    * The IAM role in the administrator account used to perform stack set operations.
    *
-   * If you do not specify the role, it is set to AWSCloudFormationStackSetAdministrationRole. If
-   * you specify ServiceManaged, you must not define a role name.
+   * If you do not specify the role, it is set to AWSCloudFormationStackSetAdministrationRole.
+   * If you specify ServiceManaged, you must not define a role name.
    *
    * @default AWSCloudFormationStackSetAdministrationRole
    */
@@ -908,13 +876,15 @@ export class CloudFormationStackSetAction extends Action {
       return undefined;
     }
 
-    return parameters.map((parameter) => {
-      let ret = 'ParameterKey=' + parameter.parameterKey;
-      if (parameter.parameterValue !== undefined) {
-        ret += ',ParameterValue=' + parameter.parameterValue;
+    return Object.keys(parameters).map((key) => {
+      const value = parameters[ key ];
+
+      let ret = 'ParameterKey=' + key;
+      if (value !== undefined && value !== null) {
+        ret += ',ParameterValue=' + value;
       }
-      if (parameter.usePreviousValue !== undefined) {
-        ret += ',UsePreviousValue=' + parameter.usePreviousValue;
+      else {
+        ret += ',UsePreviousValue=true';
       }
 
       return ret;
