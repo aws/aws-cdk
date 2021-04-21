@@ -659,35 +659,51 @@ export class Pipeline extends PipelineBase {
    * @param action the Action to return the Stack for
    */
   private getOtherStackIfActionIsCrossAccount(action: IAction): Stack | undefined {
-    const pipelineStack = Stack.of(this);
+    const targetAccount = action.actionProperties.resource
+      ? action.actionProperties.resource.env.account
+      : action.actionProperties.account;
 
-    if (action.actionProperties.resource) {
-      const resourceStack = Stack.of(action.actionProperties.resource);
-      // check if resource is from a different account
-      if (pipelineStack.account === resourceStack.account) {
+    if (targetAccount === undefined) {
+      // if the account of the Action is not specified,
+      // then it defaults to the same account the pipeline itself is in
+      return undefined;
+    }
+
+    // check whether the action's account is a static string
+    if (Token.isUnresolved(targetAccount)) {
+      if (Token.isUnresolved(this.env.account)) {
+        // the pipeline is also env-agnostic, so that's fine
         return undefined;
       } else {
-        this._crossAccountSupport[resourceStack.account] = resourceStack;
-        return resourceStack;
+        throw new Error(`The 'account' property must be a concrete value (action: '${action.actionProperties.actionName}')`);
       }
     }
 
-    if (!action.actionProperties.account) {
-      return undefined;
-    }
-
-    const targetAccount = action.actionProperties.account;
-    // check whether the account is a static string
-    if (Token.isUnresolved(targetAccount)) {
-      throw new Error(`The 'account' property must be a concrete value (action: '${action.actionProperties.actionName}')`);
-    }
-    // check whether the pipeline account is a static string
-    if (Token.isUnresolved(pipelineStack.account)) {
+    // At this point, we know that the action's account is a static string.
+    // In this case, the pipeline's account must also be a static string.
+    if (Token.isUnresolved(this.env.account)) {
       throw new Error('Pipeline stack which uses cross-environment actions must have an explicitly set account');
     }
 
-    if (pipelineStack.account === targetAccount) {
+    // at this point, we know that both the Pipeline's account,
+    // and the action-backing resource's account are static strings
+
+    // if they are identical - nothing to do (the action is not cross-account)
+    if (this.env.account === targetAccount) {
       return undefined;
+    }
+
+    // at this point, we know that the action is certainly cross-account,
+    // so we need to return a Stack in its account to create the helper Role in
+
+    const candidateActionResourceStack = action.actionProperties.resource
+      ? Stack.of(action.actionProperties.resource)
+      : undefined;
+    if (candidateActionResourceStack?.account === targetAccount) {
+      // we always use the "latest" action-backing resource's Stack for this account,
+      // even if a different one was used earlier
+      this._crossAccountSupport[targetAccount] = candidateActionResourceStack;
+      return candidateActionResourceStack;
     }
 
     let targetAccountStack: Stack | undefined = this._crossAccountSupport[targetAccount];
@@ -696,11 +712,15 @@ export class Pipeline extends PipelineBase {
       const app = this.requireApp();
       targetAccountStack = app.node.tryFindChild(stackId) as Stack;
       if (!targetAccountStack) {
+        const actionRegion = action.actionProperties.resource
+          ? action.actionProperties.resource.env.region
+          : action.actionProperties.region;
+        const pipelineStack = Stack.of(this);
         targetAccountStack = new Stack(app, stackId, {
           stackName: `${pipelineStack.stackName}-support-${targetAccount}`,
           env: {
             account: targetAccount,
-            region: action.actionProperties.region ? action.actionProperties.region : pipelineStack.region,
+            region: actionRegion ?? pipelineStack.region,
           },
         });
       }
