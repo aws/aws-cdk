@@ -144,7 +144,6 @@ export interface FromRoleArnOptions {
    *
    * @default true
    *
-   * @experimental
    */
   readonly mutable?: boolean;
 }

@@ -71,7 +71,6 @@ export class Stage extends Construct {
    * Return the stage this construct is contained with, if available. If called
    * on a nested stage, returns its parent.
    *
-   * @experimental
    */
   public static of(construct: IConstruct): Stage | undefined {
     return Node.of(construct).scopes.reverse().slice(1).find(Stage.isStage);
@@ -80,7 +79,6 @@ export class Stage extends Construct {
   /**
    * Test whether the given construct is a stage.
    *
-   * @experimental
    */
   public static isStage(x: any ): x is Stage {
     return x !== null && typeof(x) === 'object' && STAGE_SYMBOL in x;
@@ -89,21 +87,18 @@ export class Stage extends Construct {
   /**
    * The default region for all resources defined within this stage.
    *
-   * @experimental
    */
   public readonly region?: string;
 
   /**
    * The default account for all resources defined within this stage.
    *
-   * @experimental
    */
   public readonly account?: string;
 
   /**
    * The cloud assembly builder that is being used for this App
    *
-   * @experimental
    * @internal
    */
   public readonly _assemblyBuilder: cxapi.CloudAssemblyBuilder;
@@ -112,14 +107,12 @@ export class Stage extends Construct {
    * The name of the stage. Based on names of the parent stages separated by
    * hypens.
    *
-   * @experimental
    */
   public readonly stageName: string;
 
   /**
    * The parent stage or `undefined` if this is the app.
    * *
-   * @experimental
    */
   public readonly parentStage?: Stage;
 
@@ -166,7 +159,6 @@ export class Stage extends Construct {
    *
    * Derived from the construct path.
    *
-   * @experimental
    */
   public get artifactId() {
     if (!this.node.path) { return ''; }

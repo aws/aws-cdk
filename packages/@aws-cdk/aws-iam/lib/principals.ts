@@ -76,7 +76,6 @@ export interface AddToPrincipalPolicyResult {
   /**
    * Whether the statement was added to the identity's policies.
    *
-   * @experimental
    */
   readonly statementAdded: boolean;
 
@@ -84,7 +83,6 @@ export interface AddToPrincipalPolicyResult {
    * Dependable which allows depending on the policy change being applied
    *
    * @default - Required if `statementAdded` is true.
-   * @experimental
    */
   readonly policyDependable?: IDependable;
 }

@@ -3,7 +3,9 @@ import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as codecommit from '@aws-cdk/aws-codecommit';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as iam from '@aws-cdk/aws-iam';
-import { Stack, Lazy } from '@aws-cdk/core';
+import * as kms from '@aws-cdk/aws-kms';
+import * as s3 from '@aws-cdk/aws-s3';
+import { Stack, Lazy, App } from '@aws-cdk/core';
 import { nodeunitShim, Test } from 'nodeunit-shim';
 import * as cpactions from '../../lib';
 
@@ -425,6 +427,60 @@ nodeunitShim({
             RoleArn: stack.resolve(triggerEventTestRole.roleArn),
           },
         ],
+      }));
+
+      test.done();
+    },
+
+    'grants explicit s3:PutObjectAcl permissions when the Actions is cross-account'(test: Test) {
+      const app = new App();
+
+      const repoStack = new Stack(app, 'RepoStack', {
+        env: { account: '123', region: 'us-east-1' },
+      });
+      const repoFomAnotherAccount = codecommit.Repository.fromRepositoryName(repoStack, 'Repo', 'my-repo');
+
+      const pipelineStack = new Stack(app, 'PipelineStack', {
+        env: { account: '456', region: 'us-east-1' },
+      });
+      new codepipeline.Pipeline(pipelineStack, 'Pipeline', {
+        artifactBucket: s3.Bucket.fromBucketAttributes(pipelineStack, 'PipelineBucket', {
+          bucketName: 'pipeline-bucket',
+          encryptionKey: kms.Key.fromKeyArn(pipelineStack, 'PipelineKey',
+            'arn:aws:kms:us-east-1:456:key/my-key'),
+        }),
+        stages: [
+          {
+            stageName: 'Source',
+            actions: [new cpactions.CodeCommitSourceAction({
+              actionName: 'Source',
+              output: new codepipeline.Artifact(),
+              repository: repoFomAnotherAccount,
+            })],
+          },
+          {
+            stageName: 'Approve',
+            actions: [new cpactions.ManualApprovalAction({
+              actionName: 'Approve',
+            })],
+          },
+        ],
+      });
+
+      expect(repoStack).to(haveResourceLike('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Statement: arrayWith({
+            'Action': 's3:PutObjectAcl',
+            'Effect': 'Allow',
+            'Resource': {
+              'Fn::Join': ['', [
+                'arn:',
+                { 'Ref': 'AWS::Partition' },
+                ':s3:::pipeline-bucket/*',
+              ]],
+            },
+          }),
+        },
       }));
 
       test.done();

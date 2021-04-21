@@ -268,7 +268,6 @@ export class Stack extends Construct implements ITaggable {
    * If this is a nested stack, this represents its `AWS::CloudFormation::Stack`
    * resource. `undefined` for top-level (non-nested) stacks.
    *
-   * @experimental
    */
   public readonly nestedStackResource?: CfnResource;
 
@@ -288,7 +287,6 @@ export class Stack extends Construct implements ITaggable {
   /**
    * Synthesis method for this stack
    *
-   * @experimental
    */
   public readonly synthesizer: IStackSynthesizer;
 

@@ -9,7 +9,7 @@ import { ISubnet, IVpc } from './vpc';
 /**
  * A FlowLog
  *
- * @experimental
+ *
  */
 export interface IFlowLog extends IResource {
   /**
@@ -23,7 +23,7 @@ export interface IFlowLog extends IResource {
 /**
  * The type of VPC traffic to log
  *
- * @experimental
+ *
  */
 export enum FlowLogTrafficType {
   /**
@@ -44,7 +44,7 @@ export enum FlowLogTrafficType {
 
 /**
  * The available destination types for Flow Logs
- * @experimental
+ *
  */
 export enum FlowLogDestinationType {
   /**
@@ -61,7 +61,7 @@ export enum FlowLogDestinationType {
 /**
  * The type of resource to create the flow log for
  *
- * @experimental
+ *
  */
 export abstract class FlowLogResourceType {
   /**
@@ -108,7 +108,7 @@ export abstract class FlowLogResourceType {
 /**
  * The destination type for the flow log
  *
- * @experimental
+ *
  */
 export abstract class FlowLogDestination {
   /**
@@ -142,7 +142,7 @@ export abstract class FlowLogDestination {
 /**
  * Flow Log Destination configuration
  *
- * @experimental
+ *
  */
 export interface FlowLogDestinationConfig {
   /**
@@ -182,7 +182,7 @@ export interface FlowLogDestinationConfig {
 }
 
 /**
- * @experimental
+ *
  */
 class S3Destination extends FlowLogDestination {
   constructor(private readonly props: FlowLogDestinationConfig) {
@@ -208,7 +208,7 @@ class S3Destination extends FlowLogDestination {
 }
 
 /**
- * @experimental
+ *
  */
 class CloudWatchLogsDestination extends FlowLogDestination {
   constructor(private readonly props: FlowLogDestinationConfig) {
@@ -264,7 +264,7 @@ class CloudWatchLogsDestination extends FlowLogDestination {
 /**
  * Options to add a flow log to a VPC
  *
- * @experimental
+ *
  */
 export interface FlowLogOptions {
   /**
@@ -286,7 +286,7 @@ export interface FlowLogOptions {
 /**
  * Properties of a VPC Flow Log
  *
- * @experimental
+ *
  */
 export interface FlowLogProps extends FlowLogOptions {
   /**
@@ -308,7 +308,7 @@ export interface FlowLogProps extends FlowLogOptions {
 /**
  * The base class for a Flow Log
  *
- * @experimental
+ *
  */
 abstract class FlowLogBase extends Resource implements IFlowLog {
   /**
@@ -323,7 +323,7 @@ abstract class FlowLogBase extends Resource implements IFlowLog {
  * A VPC flow log.
  * @resource AWS::EC2::FlowLog
  *
- * @experimental
+ *
  */
 export class FlowLog extends FlowLogBase {
   /**

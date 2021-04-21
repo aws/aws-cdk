@@ -5,7 +5,6 @@ import { integrationResourceArn, validatePatternSupported } from '../private/tas
 
 /**
  * Properties for getting a Query Results
- * @experimental
  */
 export interface AthenaGetQueryResultsProps extends sfn.TaskStateBaseProps {
   /**
@@ -34,7 +33,6 @@ export interface AthenaGetQueryResultsProps extends sfn.TaskStateBaseProps {
  * Get an Athena Query Results as a Task
  *
  * @see https://docs.aws.amazon.com/step-functions/latest/dg/connect-athena.html
- * @experimental
  */
 export class AthenaGetQueryResults extends sfn.TaskStateBase {
 

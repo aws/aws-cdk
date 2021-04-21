@@ -127,7 +127,6 @@ export abstract class Resource extends Construct implements IResource {
    * - a concrete name generated automatically during synthesis, in
    *   cross-environment scenarios.
    *
-   * @experimental
    */
   protected readonly physicalName: string;
 
@@ -228,7 +227,6 @@ export abstract class Resource extends Construct implements IResource {
    *
    * @param nameAttr The CFN attribute which resolves to the resource's name.
    * Commonly this is the resource's `ref`.
-   * @experimental
    */
   protected getResourceNameAttribute(nameAttr: string) {
     return mimicReference(nameAttr, {
@@ -261,7 +259,6 @@ export abstract class Resource extends Construct implements IResource {
    * reference `this.physicalName` somewhere within the ARN in order for
    * cross-environment references to work.
    *
-   * @experimental
    */
   protected getResourceArnAttribute(arnAttr: string, arnComponents: ArnComponents) {
     return mimicReference(arnAttr, {

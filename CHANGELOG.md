@@ -2,6 +2,56 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.100.0](https://github.com/aws/aws-cdk/compare/v1.99.0...v1.100.0) (2021-04-20)
+
+
+### ⚠ BREAKING CHANGES TO EXPERIMENTAL FEATURES
+
+* **appmesh:** HTTP2 `VirtualNodeListener`s must be now created with `Http2VirtualNodeListenerOptions`
+* **appmesh**: HTTP2 `VirtualGatewayListener`s must be now created with `Http2VirtualGatewayListenerOptions`
+* **codepipeline-actions:** the Action `ServiceCatalogDeployAction` has been renamed to `ServiceCatalogDeployActionBeta1`
+* **codepipeline-actions**: the type `ServiceCatalogDeployActionProps` has been renamed to `ServiceCatalogDeployActionBeta1Props`
+* **events-targets:** The `BatchJob` integration now requires the arn and the Resource for the `jobQueue` and the `jobDefinition`
+* **lambda-event-sources:** `cluster` was removed from `ManagedKafkaEventSourceProps` and replaced with `clusterArn`
+* **route53-targets:** `ApiGatewayv2Domain` was replaced with `ApiGatewayv2DomainProperties` which accepts `regionalDomainName` and `regionalHostedZoneId`
+* **stepfunctions-tasks:** `CallApiGatewayHttpApiEndpoint` API now requires the `apiId` and it's containing `Stack`
+* **stepfunctions-tasks:** `BatchSubmitJob` now accept `jobDefinitionArn`, `jobQueueArn` and their respective `Resource`
+* **stepfunctions-tasks:** `RunBatchJob` now accept `jobDefinitionArn`, `jobQueueArn` and their respective `Resource`
+
+### Features
+
+* **apigateway:** integration timeout ([#14154](https://github.com/aws/aws-cdk/issues/14154)) ([d02770e](https://github.com/aws/aws-cdk/commit/d02770ead89d87e55d36490f5d1fa2a4b8a591f2)), closes [#14123](https://github.com/aws/aws-cdk/issues/14123)
+* **appmesh:** add Connection Pools for VirtualNode and VirtualGateway ([#13917](https://github.com/aws/aws-cdk/issues/13917)) ([8a949dc](https://github.com/aws/aws-cdk/commit/8a949dc24b13f8b7da17c102501050bac7323bf7)), closes [#11647](https://github.com/aws/aws-cdk/issues/11647)
+* **certificatemanager:** allow tagging DnsValidatedCertificate ([#13990](https://github.com/aws/aws-cdk/issues/13990)) ([8360feb](https://github.com/aws/aws-cdk/commit/8360feb58fdc7b1150eca87767e3b71a5e30f50d)), closes [#12382](https://github.com/aws/aws-cdk/issues/12382) [#12382](https://github.com/aws/aws-cdk/issues/12382)
+* **codebuild:** allow setting concurrent build limit ([#14185](https://github.com/aws/aws-cdk/issues/14185)) ([3107d03](https://github.com/aws/aws-cdk/commit/3107d03ed2de331ba0eae8ca028aa9a7dbf5a881))
+* **codepipeline:** introduce the Action abstract class ([#14009](https://github.com/aws/aws-cdk/issues/14009)) ([4b6a6cc](https://github.com/aws/aws-cdk/commit/4b6a6cc0e11fd2057b9e23105791098b47c5ca35))
+* **ecs:** add support for elastic inference accelerators in ECS task defintions ([#13950](https://github.com/aws/aws-cdk/issues/13950)) ([23986d7](https://github.com/aws/aws-cdk/commit/23986d70c5cd69ce212b5ffdc1bcf059f438f15b)), closes [#12460](https://github.com/aws/aws-cdk/issues/12460)
+* **eks:** Pass bootstrap.sh args to avoid DescribeCluster call and make nodes join the cluster faster ([#12659](https://github.com/aws/aws-cdk/issues/12659)) ([f5616cc](https://github.com/aws/aws-cdk/commit/f5616cc4692975b22db5db4625562dfd0d641045))
+* **secretsmanager:** replicate secrets to multiple regions ([#14266](https://github.com/aws/aws-cdk/issues/14266)) ([b3c288d](https://github.com/aws/aws-cdk/commit/b3c288d7c5781ecb5de90c962a2b68191ed072e1)), closes [#14061](https://github.com/aws/aws-cdk/issues/14061)
+
+
+### Bug Fixes
+
+* **codepipeline:** incorrect determination of the Action's account when using an imported resource ([#14224](https://github.com/aws/aws-cdk/issues/14224)) ([d88e915](https://github.com/aws/aws-cdk/commit/d88e915c45378cac6a1c7eb31b015391e74f6503)), closes [#14165](https://github.com/aws/aws-cdk/issues/14165)
+* **core:** `toJsonString()` does not deal correctly with list tokens ([#14138](https://github.com/aws/aws-cdk/issues/14138)) ([1a6d39f](https://github.com/aws/aws-cdk/commit/1a6d39fc3f22e2fc36949226e8a07f59a92a0bbf)), closes [#14088](https://github.com/aws/aws-cdk/issues/14088)
+* **pipelines:** incorrect BuildSpec in synth step if synthesized with `--output` ([#14211](https://github.com/aws/aws-cdk/issues/14211)) ([0f5c74f](https://github.com/aws/aws-cdk/commit/0f5c74f76ad023b163777b8b95f8dbc357994087)), closes [#13303](https://github.com/aws/aws-cdk/issues/13303)
+* **rds:** database instances cannot be to be referenced in a different region ([#13865](https://github.com/aws/aws-cdk/issues/13865)) ([74c7fff](https://github.com/aws/aws-cdk/commit/74c7ffffb48fe5578a405b319cc0df973ceb9989)), closes [#13832](https://github.com/aws/aws-cdk/issues/13832)
+
+## [1.99.0](https://github.com/aws/aws-cdk/compare/v1.98.0...v1.99.0) (2021-04-13)
+
+
+### Features
+
+* **elasticloadbalancing:** rename 'sslCertificateId' property of LB listener to 'sslCertificateArn'; deprecate sslCertificateId  property ([#13766](https://github.com/aws/aws-cdk/issues/13766)) ([1a30272](https://github.com/aws/aws-cdk/commit/1a30272c8bd99a919bde695b5b1b1f5cb458cb64)), closes [#9303](https://github.com/aws/aws-cdk/issues/9303) [#9303](https://github.com/aws/aws-cdk/issues/9303)
+
+
+### Bug Fixes
+
+* **aws-cloudfront:** distribution comment length not validated ([#14020](https://github.com/aws/aws-cdk/issues/14020)) ([#14094](https://github.com/aws/aws-cdk/issues/14094)) ([54fddc6](https://github.com/aws/aws-cdk/commit/54fddc64c7b541f9192fb904fa9a3b44b8aacf90))
+* **aws-ecs-patterns:** fixes [#11123](https://github.com/aws/aws-cdk/issues/11123) allow for https listeners to use non Route 53 DNS if a certificate is provided ([#14004](https://github.com/aws/aws-cdk/issues/14004)) ([e6c85e4](https://github.com/aws/aws-cdk/commit/e6c85e4167cdb38ed056eda17b869e179a6dd1c5))
+* **cfn-include:** allow deploy-time values in Parameter substitutions in Fn::Sub expressions ([#14068](https://github.com/aws/aws-cdk/issues/14068)) ([111d26a](https://github.com/aws/aws-cdk/commit/111d26a30d220a319bbb7b1b1696aafac865e009)), closes [#14047](https://github.com/aws/aws-cdk/issues/14047)
+* **fsx:** Weekday.SUNDAY incorrectly evaluates to 0 (should be 7) ([#14081](https://github.com/aws/aws-cdk/issues/14081)) ([708f23e](https://github.com/aws/aws-cdk/commit/708f23e78fb0eff2aa17593c530500eb0b94067a)), closes [#14080](https://github.com/aws/aws-cdk/issues/14080)
+
 ## [1.98.0](https://github.com/aws/aws-cdk/compare/v1.97.0...v1.98.0) (2021-04-12)
 
 

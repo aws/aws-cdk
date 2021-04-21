@@ -6,7 +6,6 @@ import { singletonEventRole } from './util';
 
 /**
  * Customize the Batch Job Event Target
- * @experimental
  */
 export interface BatchJobProps {
   /**
@@ -48,7 +47,6 @@ export interface BatchJobProps {
  * `new BatchJob(jobQueue.jobQueueArn, jobQueue, jobDefinition.jobDefinitionArn, jobDefinition)`
  *
  * In the future this API will be improved to be fully typed
- * @experimental
  */
 export class BatchJob implements events.IRuleTarget {
   constructor(

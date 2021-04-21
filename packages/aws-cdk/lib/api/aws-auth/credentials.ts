@@ -6,7 +6,6 @@ export enum Mode {
 }
 
 /**
- * @experimental
  */
 export interface CredentialProviderSource {
   name: string;

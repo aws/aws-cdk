@@ -18,7 +18,6 @@ import {
  *
  * @see https://docs.aws.amazon.com/emr/latest/APIReference/API_RunJobFlow.html
  *
- * @experimental
  */
 export interface EmrCreateClusterProps extends sfn.TaskStateBaseProps {
   /**
@@ -153,7 +152,6 @@ export interface EmrCreateClusterProps extends sfn.TaskStateBaseProps {
  *
  * OUTPUT: the ClusterId.
  *
- * @experimental
  */
 export class EmrCreateCluster extends sfn.TaskStateBase {
   private static readonly SUPPORTED_INTEGRATION_PATTERNS: sfn.IntegrationPattern[] = [
@@ -364,7 +362,6 @@ export namespace EmrCreateCluster {
   /**
    * Valid valus for the Cluster ScaleDownBehavior
    *
-   * @experimental
    */
   export enum EmrClusterScaleDownBehavior {
     /**
@@ -383,7 +380,6 @@ export namespace EmrCreateCluster {
   /**
    * Instance Role Types
    *
-   * @experimental
    */
   export enum InstanceRoleType {
     /**
@@ -403,7 +399,6 @@ export namespace EmrCreateCluster {
   /**
    * EBS Volume Types
    *
-   * @experimental
    */
   export enum EbsBlockDeviceVolumeType {
     /**
@@ -426,7 +421,6 @@ export namespace EmrCreateCluster {
    *
    * @see https://docs.aws.amazon.com/emr/latest/APIReference/API_VolumeSpecification.html
    *
-   * @experimental
    */
   export interface VolumeSpecificationProperty {
     /**
@@ -454,7 +448,6 @@ export namespace EmrCreateCluster {
    *
    * @see https://docs.aws.amazon.com/emr/latest/APIReference/API_EbsBlockDeviceConfig.html
    *
-   * @experimental
    */
   export interface EbsBlockDeviceConfigProperty {
     /**
@@ -476,7 +469,6 @@ export namespace EmrCreateCluster {
    *
    * @see https://docs.aws.amazon.com/emr/latest/APIReference/API_EbsConfiguration.html
    *
-   * @experimental
    */
   export interface EbsConfigurationProperty {
     /**
@@ -500,7 +492,6 @@ export namespace EmrCreateCluster {
    *
    * @see https://docs.aws.amazon.com/emr/latest/APIReference/API_InstanceTypeConfig.html
    *
-   * @experimental
    */
   export interface InstanceTypeConfigProperty {
     /**
@@ -549,7 +540,6 @@ export namespace EmrCreateCluster {
   /**
    * Spot Timeout Actions
    *
-   * @experimental
    */
   export enum SpotTimeoutAction {
     /**\
@@ -567,7 +557,6 @@ export namespace EmrCreateCluster {
    *
    * @see https://docs.aws.amazon.com/emr/latest/APIReference/API_SpotProvisioningSpecification.html
    *
-   * @experimental
    */
   export interface SpotProvisioningSpecificationProperty {
     /**
@@ -593,7 +582,6 @@ export namespace EmrCreateCluster {
    *
    * @see https://docs.aws.amazon.com/emr/latest/APIReference/API_InstanceFleetProvisioningSpecifications.html
    *
-   * @experimental
    */
   export interface InstanceFleetProvisioningSpecificationsProperty {
     /**
@@ -607,7 +595,6 @@ export namespace EmrCreateCluster {
    *
    * @see https://docs.aws.amazon.com/emr/latest/APIReference/API_InstanceFleetConfig.html
    *
-   * @experimental
    */
   export interface InstanceFleetConfigProperty {
     /**
@@ -654,7 +641,6 @@ export namespace EmrCreateCluster {
   /**
    * CloudWatch Alarm Comparison Operators
    *
-   * @experimental
    */
   export enum CloudWatchAlarmComparisonOperator {
     /**
@@ -678,7 +664,6 @@ export namespace EmrCreateCluster {
   /**
    * CloudWatch Alarm Statistics
    *
-   * @experimental
    */
   export enum CloudWatchAlarmStatistic {
     /**
@@ -706,7 +691,6 @@ export namespace EmrCreateCluster {
   /**
    * CloudWatch Alarm Units
    *
-   * @experimental
    */
   export enum CloudWatchAlarmUnit {
     /**
@@ -826,7 +810,6 @@ export namespace EmrCreateCluster {
    *
    * @see https://docs.aws.amazon.com/emr/latest/APIReference/API_MetricDimension.html
    *
-   * @experimental
    */
   export interface MetricDimensionProperty {
     /**
@@ -846,7 +829,6 @@ export namespace EmrCreateCluster {
    *
    * @see https://docs.aws.amazon.com/emr/latest/APIReference/API_CloudWatchAlarmDefinition.html
    *
-   * @experimental
    */
   export interface CloudWatchAlarmDefinitionProperty {
     /**
@@ -916,7 +898,6 @@ export namespace EmrCreateCluster {
    *
    * @see https://docs.aws.amazon.com/emr/latest/APIReference/API_ScalingTrigger.html
    *
-   * @experimental
    */
   export interface ScalingTriggerProperty {
     /**
@@ -929,7 +910,6 @@ export namespace EmrCreateCluster {
   /**
    * EC2 Instance Market
    *
-   * @experimental
    */
   export enum InstanceMarket {
     /**
@@ -945,7 +925,6 @@ export namespace EmrCreateCluster {
   /**
    * AutoScaling Adjustment Type
    *
-   * @experimental
    */
   export enum ScalingAdjustmentType {
     /**
@@ -968,7 +947,6 @@ export namespace EmrCreateCluster {
    *
    * @see https://docs.aws.amazon.com/emr/latest/APIReference/API_SimpleScalingPolicyConfiguration.html
    *
-   * @experimental
    */
   export interface SimpleScalingPolicyConfigurationProperty {
     /**
@@ -1001,7 +979,6 @@ export namespace EmrCreateCluster {
    *
    * @see https://docs.aws.amazon.com/emr/latest/APIReference/API_ScalingAction.html
    *
-   * @experimental
    */
   export interface ScalingActionProperty {
     /**
@@ -1023,7 +1000,6 @@ export namespace EmrCreateCluster {
    *
    * @see https://docs.aws.amazon.com/emr/latest/APIReference/API_ScalingRule.html
    *
-   * @experimental
    */
   export interface ScalingRuleProperty {
     /**
@@ -1055,7 +1031,6 @@ export namespace EmrCreateCluster {
    *
    * @see https://docs.aws.amazon.com/emr/latest/APIReference/API_ScalingConstraints.html
    *
-   * @experimental
    */
   export interface ScalingConstraintsProperty {
     /**
@@ -1076,7 +1051,6 @@ export namespace EmrCreateCluster {
    *
    * @see https://docs.aws.amazon.com/emr/latest/APIReference/API_AutoScalingPolicy.html
    *
-   * @experimental
    */
   export interface AutoScalingPolicyProperty {
     /**
@@ -1096,7 +1070,6 @@ export namespace EmrCreateCluster {
    *
    * @see https://docs.aws.amazon.com/emr/latest/APIReference/API_InstanceGroupConfig.html
    *
-   * @experimental
    */
   export interface InstanceGroupConfigProperty {
     /**
@@ -1162,7 +1135,6 @@ export namespace EmrCreateCluster {
    *
    * @see https://docs.aws.amazon.com/emr/latest/APIReference/API_PlacementType.html
    *
-   * @experimental
    */
   export interface PlacementTypeProperty {
     /**
@@ -1189,7 +1161,6 @@ export namespace EmrCreateCluster {
    *
    * @see https://docs.aws.amazon.com/emr/latest/APIReference/API_JobFlowInstancesConfig.html
    *
-   * @experimental
    */
   export interface InstancesConfigProperty {
     /**
@@ -1319,7 +1290,6 @@ export namespace EmrCreateCluster {
    *
    * @see https://docs.aws.amazon.com/emr/latest/APIReference/API_Application.html
    *
-   * @experimental
    */
   export interface ApplicationConfigProperty {
     /**
@@ -1355,7 +1325,6 @@ export namespace EmrCreateCluster {
    *
    * @see https://docs.aws.amazon.com/emr/latest/APIReference/API_ScriptBootstrapActionConfig.html
    *
-   * @experimental
    */
   export interface ScriptBootstrapActionConfigProperty {
     /**
@@ -1378,7 +1347,6 @@ export namespace EmrCreateCluster {
    *
    * @see https://docs.aws.amazon.com/emr/latest/APIReference/API_BootstrapActionConfig.html
    *
-   * @experimental
    */
   export interface BootstrapActionConfigProperty {
     /**
@@ -1400,7 +1368,6 @@ export namespace EmrCreateCluster {
    *
    * @see https://docs.aws.amazon.com/emr/latest/APIReference/API_Configuration.html
    *
-   * @experimental
    */
   export interface ConfigurationProperty {
     /**
@@ -1432,7 +1399,6 @@ export namespace EmrCreateCluster {
    *
    * @see https://docs.aws.amazon.com/emr/latest/APIReference/API_KerberosAttributes.html
    *
-   * @experimental
    */
   export interface KerberosAttributesProperty {
     /**

@@ -15,7 +15,6 @@ const ENTRYPOINT_NODEJS_SOURCE = path.join(__dirname, 'nodejs-entrypoint.js');
 /**
  * Initialization properties for `CustomResourceProvider`.
  *
- * @experimental
  */
 export interface CustomResourceProviderProps {
   /**
@@ -75,7 +74,6 @@ export interface CustomResourceProviderProps {
 /**
  * The lambda runtime to use for the resource provider. This also indicates
  * which language is used for the handler.
- * @experimental
  */
 export enum CustomResourceProviderRuntime {
   /**
@@ -99,7 +97,6 @@ export enum CustomResourceProviderRuntime {
 /**
  * An AWS-Lambda backed custom resource provider.
  *
- * @experimental
  */
 export class CustomResourceProvider extends Construct {
   /**
