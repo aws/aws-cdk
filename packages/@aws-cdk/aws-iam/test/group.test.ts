@@ -78,11 +78,11 @@ test('cross-env group ARNs include path', () => {
         [
           'arn:',
           {
-            Ref: 'AWS::Partition'
+            Ref: 'AWS::Partition',
           },
-          ':iam::123456789012:group/sample/path/sample-name'
-        ]
-      ]
+          ':iam::123456789012:group/sample/path/sample-name',
+        ],
+      ],
     },
   });
 });

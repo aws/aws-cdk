@@ -199,11 +199,11 @@ test('cross-env user ARNs include path', () => {
         [
           'arn:',
           {
-            Ref: 'AWS::Partition'
+            Ref: 'AWS::Partition',
           },
-          ':iam::123456789012:user/sample/path/sample-name'
-        ]
-      ]
+          ':iam::123456789012:user/sample/path/sample-name',
+        ],
+      ],
     },
   });
 });
