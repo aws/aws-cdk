@@ -547,6 +547,8 @@ This package contains the following CloudFormation actions:
   to manually verify the changes that are being staged, or if you want to separate the people (or system) preparing the
   changes from the people (or system) applying the changes.
 * **CloudFormationExecuteChangeSetAction** - Execute a change set prepared previously.
+* **CloudFormationStackSetAction** - Deploy a CloudFormation StackSet directly from the pipeline. The indicated StackSet is created,
+  or updated if it already exists.
 
 #### Lambda deployed through CodePipeline
 
@@ -996,32 +998,4 @@ pipeline.addStage({
 ```
 
 See [the AWS documentation](https://docs.aws.amazon.com/codepipeline/latest/userguide/action-reference-StepFunctions.html)
-for information on Action structure reference.
-
-### AWS Stack Sets
-
-This module contains an Action that allows you to create/update a StackSet in a Pipeline:
-
-```ts
-const pipeline = new codepipeline.Pipeline(this, 'MyPipeline');
-const inputArtifact = new codepipeline.Artifact();
-const stepFunctionAction = new codepipeline_actions.CloudFormationStackSetAction({
-  actionName: 'UpdateStackSet',
-  stackSetName: 'MyStackSet',
-  deploymentTargets: ['111111111111', '2222222222'],
-  regions: ['us-east-1', 'us-west-1'],
-  templatePath: inputArtifact.atPath('container.yaml'),
-  parametersPath: inputArtifact.atPath('parameters.json'),
-  cfnCapabilities: [
-    cdk.CfnCapabilities.NAMED_IAM,
-    cdk.CfnCapabilities.AUTO_EXPAND,
-  ],
-});
-pipeline.addStage({
-  stageName: 'Deploy',
-  actions: [stepFunctionAction],
-});
-```
-
-See [the AWS documentation](https://docs.aws.amazon.com/codepipeline/latest/userguide/action-reference-StackSets.html)
 for information on Action structure reference.
