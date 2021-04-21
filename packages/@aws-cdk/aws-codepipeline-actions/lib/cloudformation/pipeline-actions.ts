@@ -838,8 +838,7 @@ export class CloudFormationStackSetAction extends Action {
       artifacts.push(props.deploymentTargetsPath.artifact);
     }
 
-    // de-dupe
-    return artifacts.filter((artifact, index, self) => self.indexOf(artifact) === index);
+    return artifacts;
   }
 
   private readonly props: CloudFormationStackSetActionProps;
