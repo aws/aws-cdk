@@ -811,7 +811,7 @@ export interface VpcProps {
    * may not be available in all AWS regions.
    *
    * @default NatProvider.gateway()
-   * @experimental
+   *
    */
   readonly natGatewayProvider?: NatProvider;
 

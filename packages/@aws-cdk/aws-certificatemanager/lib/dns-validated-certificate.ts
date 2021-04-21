@@ -9,7 +9,6 @@ import { CertificateProps, ICertificate } from './certificate';
 /**
  * Properties to create a DNS validated certificate managed by AWS Certificate Manager
  *
- * @experimental
  */
 export interface DnsValidatedCertificateProps extends CertificateProps {
   /**
@@ -54,7 +53,6 @@ export interface DnsValidatedCertificateProps extends CertificateProps {
  * validated using DNS validation against the specified Route 53 hosted zone.
  *
  * @resource AWS::CertificateManager::Certificate
- * @experimental
  */
 export class DnsValidatedCertificate extends cdk.Resource implements ICertificate, cdk.ITaggable {
   public readonly certificateArn: string;
