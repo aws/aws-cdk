@@ -855,6 +855,24 @@ nodeunitShim({
 
       test.done();
     },
+
+    'NAT gateway provider with EIP allocations'(test: Test) {
+      const stack = new Stack();
+      const natGatewayProvider = NatProvider.gateway({
+        eipAllocationIds: ['a', 'b', 'c', 'd'],
+      });
+      new Vpc(stack, 'VpcNetwork', { natGatewayProvider });
+
+      cdkExpect(stack).to(haveResource('AWS::EC2::NatGateway', {
+        AllocationId: 'a',
+      }));
+      cdkExpect(stack).to(haveResource('AWS::EC2::NatGateway', {
+        AllocationId: 'b',
+      }));
+
+      test.done();
+    },
+
     'Can add an IPv6 route'(test: Test) {
       // GIVEN
       const stack = getTestStack();
