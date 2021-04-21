@@ -5,7 +5,7 @@ import {
   ICluster, LogDriver, PropagatedTagSource, Secret,
 } from '@aws-cdk/aws-ecs';
 import {
-  ApplicationListener, ApplicationLoadBalancer, ApplicationProtocol, ApplicationTargetGroup,
+  ApplicationListener, ApplicationLoadBalancer, ApplicationProtocol, ApplicationProtocolVersion, ApplicationTargetGroup,
   IApplicationLoadBalancer, ListenerCertificate, ListenerAction, AddApplicationTargetsProps,
 } from '@aws-cdk/aws-elasticloadbalancingv2';
 import { IRole } from '@aws-cdk/aws-iam';
@@ -116,6 +116,13 @@ export interface ApplicationLoadBalancedServiceBaseProps {
    * set by default to HTTPS.
    */
   readonly protocol?: ApplicationProtocol;
+
+  /**
+   * The protocol version to use
+   *
+   * @default ApplicationProtocolVersion.HTTP1
+   */
+  readonly protocolVersion?: ApplicationProtocolVersion;
 
   /**
    * The domain name for the service, e.g. "api.example.com."
@@ -412,6 +419,7 @@ export abstract class ApplicationLoadBalancedServiceBase extends CoreConstruct {
 
     const targetProps: AddApplicationTargetsProps = {
       protocol: props.targetProtocol ?? ApplicationProtocol.HTTP,
+      protocolVersion: props.protocolVersion,
     };
 
     this.listener = loadBalancer.addListener('PublicListener', {
