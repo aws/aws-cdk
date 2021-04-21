@@ -1071,3 +1071,28 @@ test('fails if secret policy has no IAM principals', () => {
   // THEN
   expect(() => app.synth()).toThrow(/A PolicyStatement used in a resource-based policy must specify at least one IAM principal/);
 });
+
+test('with replication regions', () => {
+  // WHEN
+  const secret = new secretsmanager.Secret(stack, 'Secret', {
+    replicaRegions: [
+      {
+        region: 'eu-west-1',
+      },
+    ],
+  });
+  secret.addReplicaRegion('eu-central-1', kms.Key.fromKeyArn(stack, 'Key', 'arn:aws:kms:eu-central-1:123456789012:key/my-key-id'));
+
+  // THEN
+  expect(stack).toHaveResource('AWS::SecretsManager::Secret', {
+    ReplicaRegions: [
+      {
+        Region: 'eu-west-1',
+      },
+      {
+        KmsKeyId: 'arn:aws:kms:eu-central-1:123456789012:key/my-key-id',
+        Region: 'eu-central-1',
+      },
+    ],
+  });
+});
