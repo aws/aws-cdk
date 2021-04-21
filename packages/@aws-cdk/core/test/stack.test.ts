@@ -705,7 +705,7 @@ describe('stack', () => {
 
   test('cross-stack reference (parent stack references substack)', () => {
     // GIVEN
-    const app = new App();
+    const app = new App({ context: { '@aws-cdk/core:stackRelativeExports': true } });
     const parentStack = new Stack(app, 'parent');
     const childStack = new Stack(parentStack, 'child');
 
