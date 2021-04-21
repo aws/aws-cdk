@@ -1,14 +1,9 @@
 import { Tag } from '../../cdk-toolkit';
 
-/** @experimental */
 export const BUCKET_NAME_OUTPUT = 'BucketName';
-/** @experimental */
 export const REPOSITORY_NAME_OUTPUT = 'RepositoryName';
-/** @experimental */
 export const BUCKET_DOMAIN_NAME_OUTPUT = 'BucketDomainName';
-/** @experimental */
 export const BOOTSTRAP_VERSION_OUTPUT = 'BootstrapVersion';
-/** @experimental */
 export const BOOTSTRAP_VERSION_RESOURCE = 'CdkBootstrapVersion';
 
 /**
