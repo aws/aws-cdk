@@ -360,6 +360,23 @@ new autoscaling.AutoScalingGroup(stack, 'ASG', {
 });
 ```
 
+## Protecting new instances from being terminated on scale-in
+
+By default, Auto Scaling can terminate an instance at any time after launch when
+scaling in an Auto Scaling Group, subject to the group's [termination
+policy](https://docs.aws.amazon.com/autoscaling/ec2/userguide/as-instance-termination.html).
+
+However, you may wish to protect newly-launched instances from being scaled in
+if they are going to run critical applications that should not be prematurely
+terminated. This protection can be removed after launch.
+
+```ts
+new autoscaling.AutoScalingGroup(stack, 'ASG', {
+  newInstancesProtectedFromScaleIn: true,
+  // ...
+});
+```
+
 ## Future work
 
 * [ ] CloudWatch Events (impossible to add currently as the AutoScalingGroup ARN is
