@@ -74,7 +74,7 @@ test('lambda permissions are not added when addPermissions is false', () => {
   // WHEN
   new logs.SubscriptionFilter(stack, 'Subscription', {
     logGroup,
-    destination: new dests.LambdaDestination(fn, false),
+    destination: new dests.LambdaDestination(fn, { addPermissions: false }),
     filterPattern: logs.FilterPattern.allEvents(),
   });
 
