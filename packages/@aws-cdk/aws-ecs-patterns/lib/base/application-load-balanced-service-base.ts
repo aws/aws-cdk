@@ -430,13 +430,14 @@ export abstract class ApplicationLoadBalancedServiceBase extends CoreConstruct {
     this.targetGroup = this.listener.addTargets('ECS', targetProps);
 
     if (protocol === ApplicationProtocol.HTTPS) {
-      if (typeof props.domainName === 'undefined' || typeof props.domainZone === 'undefined') {
-        throw new Error('A domain name and zone is required when using the HTTPS protocol');
-      }
 
       if (props.certificate !== undefined) {
         this.certificate = props.certificate;
       } else {
+        if (typeof props.domainName === 'undefined' || typeof props.domainZone === 'undefined') {
+          throw new Error('A domain name and zone is required when using the HTTPS protocol');
+        }
+
         this.certificate = new Certificate(this, 'Certificate', {
           domainName: props.domainName,
           validation: CertificateValidation.fromDns(props.domainZone),
