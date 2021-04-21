@@ -860,36 +860,6 @@ export class CloudFormationStackSetAction extends Action {
     this.props = props;
   }
 
-  private get parameters(): string | undefined {
-    const parameters = this.props.parameters;
-    const parametersPath = this.props.parametersPath;
-
-    if (parameters !== undefined && parametersPath !== undefined) {
-      throw new Error('Cannot use both parameters and parametersPath.');
-    }
-    if (parametersPath !== undefined) {
-      return parametersPath.location;
-    }
-
-    if (parameters === undefined) {
-      return undefined;
-    }
-
-    return Object.keys(parameters).map((key) => {
-      const value = parameters[ key ];
-
-      let ret = 'ParameterKey=' + key;
-      if (value !== undefined && value !== null) {
-        ret += ',ParameterValue=' + value;
-      }
-      else {
-        ret += ',UsePreviousValue=true';
-      }
-
-      return ret;
-    }).join(' ');
-  }
-
   protected bound(scope: Construct, _stage: codepipeline.IStage, options: codepipeline.ActionBindOptions): codepipeline.ActionConfig {
     const singletonPolicy = SingletonPolicy.forRole(options.role);
     singletonPolicy.grantCreateUpdateStackSet(this.props);
@@ -936,6 +906,36 @@ export class CloudFormationStackSetAction extends Action {
         Regions: regions,
       },
     };
+  }
+
+  private get parameters(): string | undefined {
+    const parameters = this.props.parameters;
+    const parametersPath = this.props.parametersPath;
+
+    if (parameters !== undefined && parametersPath !== undefined) {
+      throw new Error('Cannot use both parameters and parametersPath.');
+    }
+    if (parametersPath !== undefined) {
+      return parametersPath.location;
+    }
+
+    if (parameters === undefined) {
+      return undefined;
+    }
+
+    return Object.keys(parameters).map((key) => {
+      const value = parameters[ key ];
+
+      let ret = 'ParameterKey=' + key;
+      if (value !== undefined && value !== null) {
+        ret += ',ParameterValue=' + value;
+      }
+      else {
+        ret += ',UsePreviousValue=true';
+      }
+
+      return ret;
+    }).join(' ');
   }
 
   private get deploymentTargets(): string {
