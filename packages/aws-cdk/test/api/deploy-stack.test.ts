@@ -23,6 +23,17 @@ const FAKE_STACK_TERMINATION_PROTECTION = testStack({
   terminationProtection: true,
 });
 
+const FAKE_STACK_SSM = testStack({
+  stackName: 'ssm',
+  template: {
+    Outputs: {
+      MyOutput: {
+        Value: '{{resolve:ssm:/my/ssm/param}}',
+      },
+    },
+  },
+});
+
 let sdk: MockSdk;
 let sdkProvider: MockSdkProvider;
 let cfnMocks: MockedObject<SyncHandlerSubsetOf<AWS.CloudFormation>>;
@@ -633,6 +644,21 @@ test('updateTerminationProtection called when termination protection is undefine
   expect(cfnMocks.updateTerminationProtection).toHaveBeenCalledWith(expect.objectContaining({
     EnableTerminationProtection: false,
   }));
+});
+
+test('deploy not skipped if template retrieves latest version of SSM parameters', async () => {
+  // GIVEN
+  givenStackExists();
+  givenTemplateIs(FAKE_STACK_SSM.template);
+
+  // WHEN
+  await deployStack({
+    ...standardDeployStackArguments(),
+    stack: FAKE_STACK_SSM,
+  });
+
+  // THEN
+  expect(cfnMocks.executeChangeSet).toHaveBeenCalled();
 });
 
 /**
