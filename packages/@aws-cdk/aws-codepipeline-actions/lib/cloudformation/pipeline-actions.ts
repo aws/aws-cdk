@@ -701,7 +701,7 @@ export interface CloudFormationStackSetActionProps extends codepipeline.CommonAw
    *
    * @default The StackSet will have no IAM capabilities.
    */
-  readonly cfnCapabilities?: Array<cdk.CfnCapabilities>;
+  readonly cfnCapabilities?: cdk.CfnCapabilities[];
 
   /**
    * Determines how IAM roles are created and managed.
@@ -796,7 +796,7 @@ export interface CloudFormationStackSetActionProps extends codepipeline.CommonAw
    *
    * @default No deployment target. This or deploymentTargetsPath is required.
    */
-  readonly deploymentTargets?: Array<string>;
+  readonly deploymentTargets?: string[];
 
   /**
    * Note
@@ -852,7 +852,7 @@ export interface CloudFormationStackSetActionProps extends codepipeline.CommonAw
    *
    * [ "us-west-2", "us-east-1" ]
    */
-  readonly regions: Array<string>;
+  readonly regions: string[];
 
   /**
    * The percentage of accounts per Region for which this stack operation can fail before AWS CloudFormation stops the operation in that Region. If
