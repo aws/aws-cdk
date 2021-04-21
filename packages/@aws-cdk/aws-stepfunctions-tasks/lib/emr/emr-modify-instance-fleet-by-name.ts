@@ -7,7 +7,6 @@ import { integrationResourceArn } from '../private/task-utils';
 /**
  * Properties for EmrModifyInstanceFleetByName
  *
- * @experimental
  */
 export interface EmrModifyInstanceFleetByNameProps extends sfn.TaskStateBaseProps {
   /**
@@ -42,7 +41,6 @@ export interface EmrModifyInstanceFleetByNameProps extends sfn.TaskStateBaseProp
 /**
  * A Step Functions Task to to modify an InstanceFleet on an EMR Cluster.
  *
- * @experimental
  */
 export class EmrModifyInstanceFleetByName extends sfn.TaskStateBase {
 
