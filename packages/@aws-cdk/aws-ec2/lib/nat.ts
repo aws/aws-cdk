@@ -126,7 +126,6 @@ export interface ConfigureNatOptions {
 /**
  * Properties for a NAT gateway
  *
- * @experimental
  */
 export interface NatGatewayProps {
   /**
