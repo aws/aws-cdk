@@ -57,7 +57,7 @@
     "nodeunit": "^0.11.3",
     "nyc": "^15.1.0",
     "semver": "^7.3.5",
-    "ts-jest": "^26.5.4",
+    "ts-jest": "^26.5.5",
     "typescript": "~3.9.9",
     "yargs": "^16.2.0",
     "yarn-cling": "0.0.0"
