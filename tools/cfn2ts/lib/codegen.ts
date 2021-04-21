@@ -439,7 +439,6 @@ export default class CodeGenerator {
     this.code.line(' *');
     this.code.line(' * @param inspector - tree inspector to collect and process attributes');
     this.code.line(' *');
-    this.code.line(' * @stability experimental');
     this.code.line(' */');
     this.code.openBlock(`public inspect(inspector: ${CORE}.TreeInspector)`);
     this.code.line(`inspector.addAttribute("${TreeAttributes.CFN_TYPE}", ${resource.className}.CFN_RESOURCE_TYPE_NAME);`);
