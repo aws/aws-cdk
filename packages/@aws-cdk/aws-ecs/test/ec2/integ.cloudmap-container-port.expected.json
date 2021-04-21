@@ -305,9 +305,7 @@
     "FargateClustercapacityLaunchConfig9B95CCB7": {
       "Type": "AWS::AutoScaling::LaunchConfiguration",
       "Properties": {
-        "ImageId": {
-          "Ref": "SsmParameterValueawsserviceecsoptimizedamiamazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
-        },
+        "ImageId": "{{resolve:ssm:/aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id}}",
         "InstanceType": "t3.micro",
         "IamInstanceProfile": {
           "Ref": "FargateClustercapacityInstanceProfile8294296C"
@@ -797,12 +795,6 @@
           ]
         }
       }
-    }
-  },
-  "Parameters": {
-    "SsmParameterValueawsserviceecsoptimizedamiamazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter": {
-      "Type": "AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>",
-      "Default": "/aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id"
     }
   }
 }

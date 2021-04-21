@@ -461,6 +461,12 @@ async function canSkipDeploy(
     return false;
   }
 
+  // Stack retrieves latest version of SSM parameters with dynamic reference
+  if (/{{resolve:ssm:[a-zA-Z0-9_.-/]+}}/.test(JSON.stringify(deployStackOptions.stack.template))) {
+    debug(`${deployName}: stack retrieves latest version of SSM parameters with dynamic reference`);
+    return false;
+  }
+
   // We can skip deploy
   return true;
 }

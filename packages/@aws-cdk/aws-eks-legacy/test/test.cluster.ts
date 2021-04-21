@@ -564,7 +564,7 @@ export = {
 
   'EKS-Optimized AMI with GPU support'(test: Test) {
     // GIVEN
-    const { app, stack } = testFixtureNoVpc();
+    const { stack } = testFixtureNoVpc();
 
     // WHEN
     new eks.Cluster(stack, 'cluster', {
@@ -573,11 +573,9 @@ export = {
     });
 
     // THEN
-    const assembly = app.synth();
-    const parameters = assembly.getStackByName(stack.stackName).template.Parameters;
-    test.ok(Object.entries(parameters).some(
-      ([k, v]) => k.startsWith('SsmParameterValueawsserviceeksoptimizedami') && (v as any).Default.includes('amazon-linux2-gpu'),
-    ), 'EKS AMI with GPU should be in ssm parameters');
+    expect(stack).to(haveResource('AWS::AutoScaling::LaunchConfiguration', {
+      ImageId: '{{resolve:ssm:/aws/service/eks/optimized-ami/1.14/amazon-linux2-gpu/recommended/image_id}}',
+    }));
     test.done();
   },
 };
