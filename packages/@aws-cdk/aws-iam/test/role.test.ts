@@ -580,14 +580,14 @@ test('cross-env role ARNs include path', () => {
 
   expect(referencerStack).toHaveResource('Custom::RoleReferencer', {
     RoleArn: {
-      "Fn::Join": [
-        "",
+      'Fn::Join': [
+        '',
         [
-          "arn:",
+          'arn:',
           {
-            "Ref": "AWS::Partition"
+            Ref: 'AWS::Partition'
           },
-          ":iam::123456789012:role/sample/path/sample-name"
+          ':iam::123456789012:role/sample/path/sample-name'
         ]
       ]
     },
