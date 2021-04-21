@@ -89,6 +89,7 @@
     "announce": false
   },
   "publishConfig": {
-    "tag": "latest"
-  }
+    "tag": "next"
+  },
+  "private": true
 }
