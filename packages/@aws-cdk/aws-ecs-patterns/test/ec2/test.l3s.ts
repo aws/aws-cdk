@@ -2,7 +2,7 @@ import { ABSENT, arrayWith, expect, haveResource, haveResourceLike, objectLike }
 import { Certificate } from '@aws-cdk/aws-certificatemanager';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecs from '@aws-cdk/aws-ecs';
-import { ApplicationLoadBalancer, ApplicationProtocol, NetworkLoadBalancer } from '@aws-cdk/aws-elasticloadbalancingv2';
+import { ApplicationLoadBalancer, ApplicationProtocol, ApplicationProtocolVersion, NetworkLoadBalancer } from '@aws-cdk/aws-elasticloadbalancingv2';
 import { PublicHostedZone } from '@aws-cdk/aws-route53';
 import * as cloudmap from '@aws-cdk/aws-servicediscovery';
 import * as cdk from '@aws-cdk/core';
@@ -1005,6 +1005,36 @@ export = {
         MinimumHealthyPercent: 100,
         MaximumPercent: 200,
       },
+    }));
+
+    test.done();
+  },
+
+  'ALB - includes provided protocol version properties'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+    cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+    const zone = new PublicHostedZone(stack, 'HostedZone', { zoneName: 'example.com' });
+
+    // WHEN
+    new ecsPatterns.ApplicationLoadBalancedEc2Service(stack, 'Service', {
+      cluster,
+      memoryLimitMiB: 1024,
+      taskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+      },
+      desiredCount: 1,
+      domainName: 'api.example.com',
+      domainZone: zone,
+      protocol: ApplicationProtocol.HTTPS,
+      protocolVersion: ApplicationProtocolVersion.GRPC,
+    });
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::ElasticLoadBalancingV2::TargetGroup', {
+      ProtocolVersion: 'GRPC',
     }));
 
     test.done();
