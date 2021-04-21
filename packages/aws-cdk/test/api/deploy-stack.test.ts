@@ -1,4 +1,4 @@
-import { deployStack, ToolkitInfo } from '../../lib';
+import { deployStack, ToolkitInfo } from '../../lib/api';
 import { DEFAULT_FAKE_TEMPLATE, testStack } from '../util';
 import { MockedObject, mockResolvedEnvironment, MockSdk, MockSdkProvider, SyncHandlerSubsetOf } from '../util/mock-sdk';
 
