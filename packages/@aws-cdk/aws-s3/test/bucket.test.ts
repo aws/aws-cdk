@@ -1599,10 +1599,15 @@ describe('bucket', () => {
   test('urlForObject returns a token with the S3 URL of the token', () => {
     const stack = new cdk.Stack();
     const bucket = new s3.Bucket(stack, 'MyBucket');
+    const bucketWithRegion = s3.Bucket.fromBucketAttributes(stack, 'RegionalBucket', {
+      bucketArn: 'arn:aws:s3:::explicit-region-bucket',
+      region: 'us-west-2',
+    });
 
     new cdk.CfnOutput(stack, 'BucketURL', { value: bucket.urlForObject() });
     new cdk.CfnOutput(stack, 'MyFileURL', { value: bucket.urlForObject('my/file.txt') });
     new cdk.CfnOutput(stack, 'YourFileURL', { value: bucket.urlForObject('/your/file.txt') }); // "/" is optional
+    new cdk.CfnOutput(stack, 'RegionBucketURL', { value: bucketWithRegion.urlForObject() });
 
     expect(stack).toMatchTemplate({
       'Resources': {
@@ -1674,6 +1679,20 @@ describe('bucket', () => {
                   'Ref': 'MyBucketF68F3FF0',
                 },
                 '/your/file.txt',
+              ],
+            ],
+          },
+        },
+        'RegionBucketURL': {
+          'Value': {
+            'Fn::Join': [
+              '',
+              [
+                'https://s3.us-west-2.',
+                {
+                  'Ref': 'AWS::URLSuffix',
+                },
+                '/explicit-region-bucket',
               ],
             ],
           },
