@@ -66,7 +66,7 @@ async function main() {
       if (e.code !== 'ENOENT') { return; }
     }
 
-    await fs.ensureSymlink(configFilePath('nyc.config.js'), nycConfig);
+    await fs.copyFile(configFilePath('nyc.config.js'), nycConfig);
     testCommand.push(...[args.nyc, '--clean']);
 
     testCommand.push(args.nodeunit);

@@ -92,6 +92,9 @@
   "cdk-build": {
     "jest": true
   },
+  "nozem": {
+    "ostools": ["docker"]
+  },
   "publishConfig": {
     "tag": "latest"
   }

@@ -90,6 +90,7 @@
   "awscdkio": {
     "announce": false
   },
+  "nozem": false,
   "cdk-build": {
     "jest": true
   },
