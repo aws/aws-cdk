@@ -4,7 +4,7 @@
 # later read by bundle-beta.sh.
 set -eu
 export PATH=$PWD/node_modules/.bin:$PATH
-export NODE_OPTIONS="--max-old-space-size=4096 ${NODE_OPTIONS:-}"
+export NODE_OPTIONS="--max-old-space-size=8192 ${NODE_OPTIONS:-}"
 root=$PWD
 
 # Get version and changelog file name (these require that .versionrc.json would have been generated)
