@@ -152,6 +152,9 @@ const project = codebuild.Project(stack, 'MyProject', {
 });
 ```
 
+If you'd prefer your buildspec to be rendered as YAML in the template,
+use the `fromObjectToYaml()` method instead of `fromObject()`.
+
 Because we've not set the `name` property, this example will set the
 `overrideArtifactName` parameter, and produce an artifact named as defined in
 the Buildspec file, uploaded to an S3 bucket (`bucket`). The path will be
@@ -643,5 +646,19 @@ import * as codebuild from '@aws-cdk/aws-codebuild';
 
 new codebuild.Project(stack, 'MyProject', {
   queuedTimeout: Duration.minutes(30)
+});
+```
+
+## Limiting concurrency
+
+By default if a new build is triggered it will be run even if there is a previous build already in progress.
+It is possible to limit the maximum concurrent builds to value between 1 and the account specific maximum limit.
+By default there is no explicit limit.
+
+```ts
+import * as codebuild from '@aws-cdk/aws-codebuild';
+
+new codebuild.Project(stack, 'MyProject', {
+  concurrentBuildLimit: 1
 });
 ```

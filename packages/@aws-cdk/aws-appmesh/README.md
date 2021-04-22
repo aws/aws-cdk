@@ -186,9 +186,11 @@ const node = new VirtualNode(this, 'node', {
       idle: cdk.Duration.seconds(5),
     },
   })],
-  backendsDefaultClientPolicy: appmesh.ClientPolicy.fileTrust({
-    certificateChain: '/keys/local_cert_chain.pem',
-  }),
+  backendDefaults: {
+    clientPolicy: appmesh.ClientPolicy.fileTrust({
+      certificateChain: '/keys/local_cert_chain.pem',
+    }),
+  },
   accessLog: appmesh.AccessLog.fromFilePath('/dev/stdout'),
 });
 
@@ -230,14 +232,14 @@ const virtualService = new appmesh.VirtualService(stack, 'service-1', {
   }),
 });
 
-node.addBackend(virtualService);
+node.addBackend(appmesh.Backend.virtualService(virtualService));
 ```
 
 The `listeners` property can be left blank and added later with the `node.addListener()` method. The `healthcheck` and `timeout` properties are optional but if specifying a listener, the `port` must be added.
 
 The `backends` property can be added with `node.addBackend()`. We define a virtual service and add it to the virtual node to allow egress traffic to other node.
 
-The `backendsDefaultClientPolicy` property are added to the node while creating the virtual node. These are virtual node's service backends client policy defaults.
+The `backendDefaults` property are added to the node while creating the virtual node. These are virtual node's default settings for all backends.
 
 ## Adding TLS to a listener
 
@@ -277,6 +279,65 @@ const gateway = new appmesh.VirtualGateway(this, 'gateway', {
 });
 ```
 
+## Adding outlier detection to a Virtual Node listener
+
+The `outlierDetection` property can be added to a Virtual Node listener to add outlier detection. The 4 parameters 
+(`baseEjectionDuration`, `interval`, `maxEjectionPercent`, `maxServerErrors`) are required.
+
+```typescript
+// Cloud Map service discovery is currently required for host ejection by outlier detection
+const vpc = new ec2.Vpc(stack, 'vpc');
+const namespace = new servicediscovery.PrivateDnsNamespace(this, 'test-namespace', {
+    vpc,
+    name: 'domain.local',
+});
+const service = namespace.createService('Svc');
+
+const node = mesh.addVirtualNode('virtual-node', {
+  serviceDiscovery: appmesh.ServiceDiscovery.cloudMap({
+    service: service,
+  }),
+  outlierDetection: {
+    baseEjectionDuration: cdk.Duration.seconds(10),
+    interval: cdk.Duration.seconds(30),
+    maxEjectionPercent: 50,
+    maxServerErrors: 5,
+  },
+});
+```
+
+## Adding a connection pool to a listener
+
+The `connectionPool` property can be added to a Virtual Node listener or Virtual Gateway listener to add a request connection pool. There are different 
+connection pool properties per listener protocol types.
+
+```typescript
+// A Virtual Node with a gRPC listener with a connection pool set
+const node = new appmesh.VirtualNode(stack, 'node', {
+  mesh,
+  dnsHostName: 'node',
+  listeners: [appmesh.VirtualNodeListener.http({
+    port: 80,
+    connectionPool: {
+      maxConnections: 100,
+      maxPendingRequests: 10,
+    },
+  })],
+});
+
+// A Virtual Gateway with a gRPC listener with a connection pool set
+const gateway = new appmesh.VirtualGateway(this, 'gateway', {
+  mesh: mesh,
+  listeners: [appmesh.VirtualGatewayListener.grpc({
+    port: 8080,
+    connectionPool: {
+      maxRequests: 10,
+    },
+  })],
+  virtualGatewayName: 'gateway',
+});
+```
+
 ## Adding a Route
 
 A `route` is associated with a virtual router, and it's used to match requests for a virtual router and distribute traffic accordingly to its associated virtual nodes.
@@ -293,6 +354,30 @@ router.addRoute('route-http', {
     ],
     match: {
       prefixPath: '/path-to-app',
+    },
+  }),
+});
+```
+
+Add an HTTP2 route that matches based on method, scheme and header:
+
+```ts
+router.addRoute('route-http2', {
+  routeSpec: appmesh.RouteSpec.http2({
+    weightedTargets: [
+      {
+        virtualNode: node,
+      },
+    ],
+    match: {
+      prefixPath: '/',
+      method: appmesh.HttpRouteMatchMethod.POST,
+      protocol: appmesh.HttpRouteProtocol.HTTPS,
+      headers: [
+        // All specified headers must match for the route to match.
+        appmesh.HttpHeaderMatch.valueIs('Content-Type', 'application/json'),
+        appmesh.HttpHeaderMatch.valueIsNot('Content-Type', 'application/json'),
+      ]
     },
   }),
 });
@@ -413,10 +498,12 @@ const gateway = new appmesh.VirtualGateway(stack, 'gateway', {
       interval: cdk.Duration.seconds(10),
     },
   })],
-  backendsDefaultClientPolicy: appmesh.ClientPolicy.acmTrust({
-    certificateAuthorities: [acmpca.CertificateAuthority.fromCertificateAuthorityArn(stack, 'certificate', certificateAuthorityArn)],
-    ports: [8080, 8081],
-  }),
+  backendDefaults: {
+    clientPolicy: appmesh.ClientPolicy.acmTrust({
+      certificateAuthorities: [acmpca.CertificateAuthority.fromCertificateAuthorityArn(stack, 'certificate', certificateAuthorityArn)],
+      ports: [8080, 8081],
+    }),
+  },
   accessLog: appmesh.AccessLog.fromFilePath('/dev/stdout'),
   virtualGatewayName: 'virtualGateway',
 });
@@ -440,7 +527,7 @@ const gateway = mesh.addVirtualGateway('gateway', {
 The listeners field can be omitted which will default to an HTTP Listener on port 8080.
 A gateway route can be added using the `gateway.addGatewayRoute()` method.
 
-The `backendsDefaultClientPolicy` property are added to the node while creating the virtual gateway. These are virtual gateway's service backends client policy defaults.
+The `backendDefaults` property is added to the node while creating the virtual gateway. These are virtual gateway's default settings for all backends.
 
 ## Adding a Gateway Route
 

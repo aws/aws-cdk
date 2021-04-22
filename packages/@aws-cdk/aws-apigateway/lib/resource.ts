@@ -282,12 +282,12 @@ export abstract class ResourceBase extends ResourceConstruct implements IResourc
     // prepare responseParams
 
     const integrationResponseParams: { [p: string]: string } = { };
-    const methodReponseParams: { [p: string]: boolean } = { };
+    const methodResponseParams: { [p: string]: boolean } = { };
 
     for (const [name, value] of Object.entries(headers)) {
       const key = `method.response.header.${name}`;
       integrationResponseParams[key] = value;
-      methodReponseParams[key] = true;
+      methodResponseParams[key] = true;
     }
 
     return this.addMethod('OPTIONS', new MockIntegration({
@@ -297,7 +297,7 @@ export abstract class ResourceBase extends ResourceConstruct implements IResourc
       ],
     }), {
       methodResponses: [
-        { statusCode: `${statusCode}`, responseParameters: methodReponseParams },
+        { statusCode: `${statusCode}`, responseParameters: methodResponseParams },
       ],
     });
 

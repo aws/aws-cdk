@@ -60,7 +60,7 @@ export abstract class Code {
   /**
    * Loads the function code from an asset created by a Docker build.
    *
-   * By defaut, the asset is expected to be located at `/asset` in the
+   * By default, the asset is expected to be located at `/asset` in the
    * image.
    *
    * @param path The path to the directory containing the Docker file

@@ -5,17 +5,7 @@
 
 ![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)
 
-> All classes with the `Cfn` prefix in this module ([CFN Resources]) are always stable and safe to use.
->
-> [CFN Resources]: https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib
-
-![cdk-constructs: Experimental](https://img.shields.io/badge/cdk--constructs-experimental-important.svg?style=for-the-badge)
-
-> The APIs of higher level constructs in this module are experimental and under active development.
-> They are subject to non-backward compatible changes or removal in any future version. These are
-> not subject to the [Semantic Versioning](https://semver.org/) model and breaking changes will be
-> announced in the release notes. This means that while you may use them, you may need to update
-> your source code when upgrading to a newer version of this package.
+![cdk-constructs: Stable](https://img.shields.io/badge/cdk--constructs-stable-success.svg?style=for-the-badge)
 
 ---
 
@@ -44,10 +34,10 @@ Access (IA) storage class.
 ```ts
 const fileSystem = new efs.FileSystem(this, 'MyEfsFileSystem', {
   vpc: new ec2.Vpc(this, 'VPC'),
-  encrypted: true, // file system is not encrypted by default
   lifecyclePolicy: efs.LifecyclePolicy.AFTER_14_DAYS, // files are not transitioned to infrequent access (IA) storage by default
   performanceMode: efs.PerformanceMode.GENERAL_PURPOSE, // default
 });
+
 ```
 
 ⚠️ An Amazon EFS file system's performance mode can't be changed after the file system has been created.
@@ -90,9 +80,9 @@ efs.AccessPoint.fromAccessPointAttributes(this, 'ap', {
 ⚠️ Notice: When importing an Access Point using `fromAccessPointAttributes()`, you must make sure
 the mount targets are deployed and their lifecycle state is `available`. Otherwise, you may encounter
 the following error when deploying:
-> EFS file system <ARN of efs> referenced by access point <ARN of access point of EFS> has
+> EFS file system &lt;ARN of efs&gt; referenced by access point &lt;ARN of access point of EFS&gt; has
 > mount targets created in all availability zones the function will execute in, but not all
->are in the available life cycle state yet. Please wait for them to become available and
+> are in the available life cycle state yet. Please wait for them to become available and
 > try the request again.
 
 ### Connecting

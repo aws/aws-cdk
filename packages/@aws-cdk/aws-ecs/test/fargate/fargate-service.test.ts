@@ -1,4 +1,4 @@
-import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
+import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert-internal';
 import * as appscaling from '@aws-cdk/aws-applicationautoscaling';
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as ec2 from '@aws-cdk/aws-ec2';
@@ -389,7 +389,7 @@ nodeunitShim({
         maxHealthyPercent: 150,
         minHealthyPercent: 55,
         deploymentController: {
-          type: ecs.DeploymentControllerType.CODE_DEPLOY,
+          type: ecs.DeploymentControllerType.ECS,
         },
         circuitBreaker: { rollback: true },
         securityGroup: new ec2.SecurityGroup(stack, 'SecurityGroup1', {
@@ -421,7 +421,7 @@ nodeunitShim({
           },
         },
         DeploymentController: {
-          Type: ecs.DeploymentControllerType.CODE_DEPLOY,
+          Type: ecs.DeploymentControllerType.ECS,
         },
         DesiredCount: 2,
         HealthCheckGracePeriodSeconds: 60,
@@ -2072,6 +2072,9 @@ nodeunitShim({
             Enable: true,
             Rollback: true,
           },
+        },
+        DeploymentController: {
+          Type: ecs.DeploymentControllerType.ECS,
         },
       }));
 

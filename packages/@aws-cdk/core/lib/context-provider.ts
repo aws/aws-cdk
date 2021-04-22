@@ -6,7 +6,6 @@ import { Stack } from './stack';
 import { Token } from './token';
 
 /**
- * @experimental
  */
 export interface GetContextKeyOptions {
   /**
@@ -21,7 +20,6 @@ export interface GetContextKeyOptions {
 }
 
 /**
- * @experimental
  */
 export interface GetContextValueOptions extends GetContextKeyOptions {
   /**
@@ -33,7 +31,6 @@ export interface GetContextValueOptions extends GetContextKeyOptions {
 }
 
 /**
- * @experimental
  */
 export interface GetContextKeyResult {
   readonly key: string;
@@ -41,7 +38,6 @@ export interface GetContextKeyResult {
 }
 
 /**
- * @experimental
  */
 export interface GetContextValueResult {
   readonly value?: any;
@@ -56,7 +52,6 @@ export interface GetContextValueResult {
  *
  * ContextProvider needs access to a Construct to hook into the context mechanism.
  *
- * @experimental
  */
 export class ContextProvider {
   /**
