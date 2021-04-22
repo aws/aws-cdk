@@ -1,5 +1,5 @@
-import '@aws-cdk/assert/jest';
-import { ABSENT, ResourcePart, SynthUtils } from '@aws-cdk/assert';
+import '@aws-cdk/assert-internal/jest';
+import { ABSENT, ResourcePart, SynthUtils } from '@aws-cdk/assert-internal';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import { ManagedPolicy, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
@@ -1859,6 +1859,48 @@ describe('cluster', () => {
     });
 
 
+  });
+
+  test('changes the case of the cluster identifier if the lowercaseDbIdentifier feature flag is enabled', () => {
+    // GIVEN
+    const app = new cdk.App({
+      context: { [cxapi.RDS_LOWERCASE_DB_IDENTIFIER]: true },
+    });
+    const stack = testStack(app);
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    const clusterIdentifier = 'TestClusterIdentifier';
+    new DatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.AURORA,
+      instanceProps: { vpc },
+      clusterIdentifier,
+    });
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::RDS::DBCluster', {
+      DBClusterIdentifier: clusterIdentifier.toLowerCase(),
+    });
+  });
+
+  test('does not changes the case of the cluster identifier if the lowercaseDbIdentifier feature flag is disabled', () => {
+    // GIVEN
+    const app = new cdk.App({ context: { '@aws-cdk/aws-rds:lowercaseDbIdentifier': false } });
+    const stack = testStack(app);
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    const clusterIdentifier = 'TestClusterIdentifier';
+    new DatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.AURORA,
+      instanceProps: { vpc },
+      clusterIdentifier,
+    });
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::RDS::DBCluster', {
+      DBClusterIdentifier: clusterIdentifier,
+    });
   });
 });
 
