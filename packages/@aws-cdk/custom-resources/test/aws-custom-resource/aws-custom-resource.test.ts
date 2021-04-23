@@ -712,3 +712,34 @@ test('tokens can be used as dictionary keys', () => {
     },
   });
 });
+
+test('assumedRoleArn adds statement for sts:assumeRole', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+
+  // WHEN
+  new AwsCustomResource(stack, 'AwsSdk', {
+    onCreate: {
+      assumedRoleArn: 'roleArn',
+      service: 'service',
+      action: 'action',
+      physicalResourceId: PhysicalResourceId.of('id'),
+    },
+    policy: AwsCustomResourcePolicy.fromSdkCalls({ resources: AwsCustomResourcePolicy.ANY_RESOURCE }),
+  });
+
+  // THEN
+
+  expect(stack).toHaveResource('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Statement: [
+        {
+          Action: 'sts:AssumeRole',
+          Effect: 'Allow',
+          Resource: 'roleArn',
+        },
+      ],
+      Version: '2012-10-17',
+    },
+  });
+});
