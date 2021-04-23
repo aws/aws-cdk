@@ -53,7 +53,7 @@ export interface AssetOptions {
    * @default - uploaded as-is to S3 if the asset is a regular file or a .zip file,
    * archived into a .zip file and uploaded to S3 otherwise
    *
-   * @experimental
+   *
    */
   readonly bundling?: BundlingOptions;
 }

@@ -242,7 +242,6 @@ export interface GraphqlApiProps {
    *
    * @default - schema will be generated code-first (i.e. addType, addObjectType, etc.)
    *
-   * @experimental
    */
   readonly schema?: Schema;
   /**
@@ -583,7 +582,6 @@ export class GraphqlApi extends GraphqlApiBase {
    * @param delimiter the delimiter between schema and addition
    * @default - ''
    *
-   * @experimental
    */
   public addToSchema(addition: string, delimiter?: string): void {
     this.schema.addToSchema(addition, delimiter);
@@ -594,7 +592,6 @@ export class GraphqlApi extends GraphqlApiBase {
    *
    * @param type the intermediate type to add to the schema
    *
-   * @experimental
    */
   public addType(type: IIntermediateType): IIntermediateType {
     return this.schema.addType(type);
