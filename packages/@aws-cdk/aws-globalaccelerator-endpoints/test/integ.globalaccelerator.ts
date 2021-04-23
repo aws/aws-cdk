@@ -1,3 +1,4 @@
+/// !cdk-integ pragma:ignore-assets
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
 import * as ga from '@aws-cdk/aws-globalaccelerator';

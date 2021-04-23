@@ -3,7 +3,7 @@ module.exports = {
         "js",
     ],
     testMatch: [
-        "**/?(*.)+(test).js",
+        "<rootDir>/test/**/?(*.)+(test).js",
     ],
     testEnvironment: "node",
     coverageThreshold: {
