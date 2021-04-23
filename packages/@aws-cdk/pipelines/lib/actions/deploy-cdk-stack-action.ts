@@ -4,7 +4,7 @@ import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as cpactions from '@aws-cdk/aws-codepipeline-actions';
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
-import { Aws, CfnCapabilities, Stack } from '@aws-cdk/core';
+import { Arn, Aws, CfnCapabilities, Stack } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Construct, Node } from 'constructs';
 import { appOf, assemblyBuilderOf } from '../private/construct-internals';
@@ -217,9 +217,9 @@ export class DeployCdkStackAction implements codepipeline.IAction {
   public readonly stackArtifactId?: string;
 
   /**
-   * Action role
+   * Account the action is running in
    */
-  public readonly actionRole: iam.IRole;
+  public readonly account: string;
 
   /**
    * Artifact ids of the artifact this stack artifact depends on
@@ -240,7 +240,9 @@ export class DeployCdkStackAction implements codepipeline.IAction {
     this.prepareRunOrder = props.prepareRunOrder ?? 1;
     this.executeRunOrder = props.executeRunOrder ?? this.prepareRunOrder + 1;
     this.stackName = props.stackName;
-    this.actionRole = props.actionRole;
+    const account = Arn.parse(props.actionRole.roleArn).account;
+    if (!account) throw new Error('Expecting actionRole to have an account')
+    this.account = account
     const baseActionName = props.baseActionName ?? this.stackName;
     const changeSetName = props.changeSetName ?? 'PipelineChange';
 
