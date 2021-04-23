@@ -19,6 +19,8 @@ Guide](https://docs.aws.amazon.com/cdk/latest/guide/home.html) for
 information of most of the capabilities of this library. The rest of this
 README will only cover topics not already covered in the Developer Guide.
 
+<!--BEGIN CORE DOCUMENTATION-->
+
 ## Stacks and Stages
 
 A `Stack` is the smallest physical unit of deployment, and maps directly onto
@@ -141,7 +143,7 @@ DEPLOYMENT 1: break the relationship
 - Make sure `stack2` no longer references `bucket.bucketName` (maybe the consumer
   stack now uses its own bucket, or it writes to an AWS DynamoDB table, or maybe you just
   remove the Lambda Function altogether).
-- In the `stack1` class, call `this.exportAttribute(this.bucket.bucketName)`. This
+- In the `stack1` class, call `this.exportValue(this.bucket.bucketName)`. This
   will make sure the CloudFormation Export continues to exist while the relationship
   between the two stacks is being broken.
 - Deploy (this will effectively only change the `stack2`, but it's safe to deploy both).
@@ -149,7 +151,7 @@ DEPLOYMENT 1: break the relationship
 DEPLOYMENT 2: remove the resource
 
 - You are now free to remove the `bucket` resource from `stack1`.
-- Don't forget to remove the `exportAttribute()` call as well.
+- Don't forget to remove the `exportValue()` call as well.
 - Deploy again (this time only the `stack1` will be changed -- the bucket will be deleted).
 
 ## Durations
@@ -427,7 +429,8 @@ stack-unique identifier and returns the service token:
 ```ts
 const serviceToken = CustomResourceProvider.getOrCreate(this, 'Custom::MyCustomResourceType', {
   codeDirectory: `${__dirname}/my-handler`,
-  runtime: CustomResourceProviderRuntime.NODEJS_12, // currently the only supported runtime
+  runtime: CustomResourceProviderRuntime.NODEJS_12_X,
+  description: "Lambda function created by the custom resource provider",
 });
 
 new CustomResource(this, 'MyResource', {
@@ -521,7 +524,7 @@ export class Sum extends Construct {
     const resourceType = 'Custom::Sum';
     const serviceToken = CustomResourceProvider.getOrCreate(this, resourceType, {
       codeDirectory: `${__dirname}/sum-handler`,
-      runtime: CustomResourceProviderRuntime.NODEJS_12,
+      runtime: CustomResourceProviderRuntime.NODEJS_12_X,
     });
 
     const resource = new CustomResource(this, 'Resource', {
@@ -551,7 +554,7 @@ built-in singleton method:
 ```ts
 const provider = CustomResourceProvider.getOrCreateProvider(this, 'Custom::MyCustomResourceType', {
   codeDirectory: `${__dirname}/my-handler`,
-  runtime: CustomResourceProviderRuntime.NODEJS_12, // currently the only supported runtime
+  runtime: CustomResourceProviderRuntime.NODEJS_12_X,
 });
 
 const roleArn = provider.roleArn;
@@ -910,3 +913,5 @@ When deploying to AWS CloudFormation, it needs to keep in check the amount of re
 It's possible to synthesize the project with more Resources than the allowed (or even reduce the number of Resources).
 
 Set the context key `@aws-cdk/core:stackResourceLimit` with the proper value, being 0 for disable the limit of resources.
+
+<!--END CORE DOCUMENTATION-->

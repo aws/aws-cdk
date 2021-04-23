@@ -2,7 +2,7 @@ import * as crypto from 'crypto';
 
 import { AccountRootPrincipal, Grant, IGrantable } from '@aws-cdk/aws-iam';
 import { IKey, ViaServicePrincipal } from '@aws-cdk/aws-kms';
-import { IResource, Resource, Size, SizeRoundingBehavior, Stack, Token, Tags, Names } from '@aws-cdk/core';
+import { IResource, Resource, Size, SizeRoundingBehavior, Stack, Token, Tags, Names, RemovalPolicy } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnVolume } from './ec2.generated';
 import { IInstance } from './instance';
@@ -431,6 +431,13 @@ export interface VolumeProps {
    * @default None -- Required for io1 and io2 volumes. The default for gp3 volumes is 3,000 IOPS if omitted.
    */
   readonly iops?: number;
+
+  /**
+   * Policy to apply when the volume is removed from the stack
+   *
+   * @default RemovalPolicy.RETAIN
+   */
+  readonly removalPolicy?: RemovalPolicy;
 }
 
 /**
@@ -605,6 +612,7 @@ export class Volume extends VolumeBase {
       snapshotId: props.snapshotId,
       volumeType: props.volumeType ?? EbsDeviceVolumeType.GENERAL_PURPOSE_SSD,
     });
+    resource.applyRemovalPolicy(props.removalPolicy);
 
     this.volumeId = resource.ref;
     this.availabilityZone = props.availabilityZone;

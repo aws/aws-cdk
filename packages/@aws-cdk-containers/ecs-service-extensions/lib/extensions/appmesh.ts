@@ -165,6 +165,7 @@ export class AppMeshExtension extends ServiceExtension {
 
         'me-south-1': this.accountIdForRegion('me-south-1'),
         'ap-east-1': this.accountIdForRegion('ap-east-1'),
+        'af-south-1': this.accountIdForRegion('af-south-1'),
       },
     });
 
@@ -346,7 +347,7 @@ export class AppMeshExtension extends ServiceExtension {
     // Next update the app mesh config so that the local Envoy
     // proxy on this service knows how to route traffic to
     // nodes from the other service.
-    this.virtualNode.addBackend(otherAppMesh.virtualService);
+    this.virtualNode.addBackend(appmesh.Backend.virtualService(otherAppMesh.virtualService));
   }
 
   private routeSpec(weightedTargets: appmesh.WeightedTarget[], serviceName: string): appmesh.RouteSpec {

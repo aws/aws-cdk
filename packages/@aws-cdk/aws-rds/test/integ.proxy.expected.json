@@ -495,7 +495,8 @@
           }
         ]
       },
-      "UpdateReplacePolicy": "Snapshot"
+      "UpdateReplacePolicy": "Snapshot",
+      "DeletionPolicy": "Snapshot"
     },
     "dbProxyIAMRole662F3AB8": {
       "Type": "AWS::IAM::Role",

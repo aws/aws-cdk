@@ -322,8 +322,14 @@ export interface IDatabaseProxy extends cdk.IResource {
 
   /**
    * Grant the given identity connection access to the proxy.
+   *
+   * @param grantee the Principal to grant the permissions to
+   * @param dbUser the name of the database user to allow connecting as to the proxy
+   *
+   * @default - if the Proxy had been provided a single Secret value,
+   *   the user will be taken from that Secret
    */
-  grantConnect(grantee: iam.IGrantable): iam.Grant;
+  grantConnect(grantee: iam.IGrantable, dbUser?: string): iam.Grant;
 }
 
 /**
@@ -335,11 +341,22 @@ abstract class DatabaseProxyBase extends cdk.Resource implements IDatabaseProxy 
   public abstract readonly dbProxyArn: string;
   public abstract readonly endpoint: string;
 
-  public grantConnect(grantee: iam.IGrantable): iam.Grant {
+  public grantConnect(grantee: iam.IGrantable, dbUser?: string): iam.Grant {
+    if (!dbUser) {
+      throw new Error('For imported Database Proxies, the dbUser is required in grantConnect()');
+    }
+    const scopeStack = cdk.Stack.of(this);
+    const proxyGeneratedId = scopeStack.parseArn(this.dbProxyArn, ':').resourceName;
+    const userArn = scopeStack.formatArn({
+      service: 'rds-db',
+      resource: 'dbuser',
+      resourceName: `${proxyGeneratedId}/${dbUser}`,
+      sep: ':',
+    });
     return iam.Grant.addToPrincipal({
       grantee,
       actions: ['rds-db:connect'],
-      resourceArns: [this.dbProxyArn],
+      resourceArns: [userArn],
     });
   }
 }
@@ -393,6 +410,7 @@ export class DatabaseProxy extends DatabaseProxyBase
    */
   public readonly connections: ec2.Connections;
 
+  private readonly secrets: secretsmanager.ISecret[];
   private readonly resource: CfnDBProxy;
 
   constructor(scope: Construct, id: string, props: DatabaseProxyProps) {
@@ -419,6 +437,7 @@ export class DatabaseProxy extends DatabaseProxyBase
     if (props.secrets.length < 1) {
       throw new Error('One or more secrets are required.');
     }
+    this.secrets = props.secrets;
 
     this.resource = new CfnDBProxy(this, 'Resource', {
       auth: props.secrets.map(_ => {
@@ -476,6 +495,18 @@ export class DatabaseProxy extends DatabaseProxyBase
       targetId: this.dbProxyName,
       targetType: secretsmanager.AttachmentTargetType.RDS_DB_PROXY,
     };
+  }
+
+  public grantConnect(grantee: iam.IGrantable, dbUser?: string): iam.Grant {
+    if (!dbUser) {
+      if (this.secrets.length > 1) {
+        throw new Error('When the Proxy contains multiple Secrets, you must pass a dbUser explicitly to grantConnect()');
+      }
+      // 'username' is the field RDS uses here,
+      // see https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/rds-proxy.html#rds-proxy-secrets-arns
+      dbUser = this.secrets[0].secretValueFromJson('username').toString();
+    }
+    return super.grantConnect(grantee, dbUser);
   }
 }
 

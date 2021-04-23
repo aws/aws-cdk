@@ -1,8 +1,9 @@
-import '@aws-cdk/assert/jest';
-import { arrayWith } from '@aws-cdk/assert';
+import '@aws-cdk/assert-internal/jest';
+import { arrayWith } from '@aws-cdk/assert-internal';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import { App, Duration, Stack, CfnParameter } from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
 import { testFutureBehavior, testLegacyBehavior } from 'cdk-build-tools/lib/feature-flag';
 import { Stream, StreamEncryption } from '../lib';
 
@@ -1255,7 +1256,7 @@ describe('Kinesis data streams', () => {
     }).toThrow(/'stack.' depends on 'stack.'/);
   });
 
-  testFutureBehavior('cross stack permissions - with encryption', { '@aws-cdk/aws-kms:defaultKeyPolicies': true }, App, (app) => {
+  testFutureBehavior('cross stack permissions - with encryption', { [cxapi.KMS_DEFAULT_KEY_POLICIES]: true }, App, (app) => {
     const stackA = new Stack(app, 'stackA');
     const streamFromStackA = new Stream(stackA, 'MyStream', {
       encryption: StreamEncryption.KMS,

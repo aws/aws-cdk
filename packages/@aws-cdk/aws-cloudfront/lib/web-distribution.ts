@@ -52,6 +52,7 @@ export enum FailoverStatusCode {
  * "cloudfront.net" domain. To use this feature you must provide the list of
  * additional domains, and the ACM Certificate that CloudFront should use for
  * these additional domains.
+ * @deprecated see {@link CloudFrontWebDistributionProps#viewerCertificate} with {@link ViewerCertificate#acmCertificate}
  */
 export interface AliasConfiguration {
   /**
@@ -768,8 +769,14 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
   constructor(scope: Construct, id: string, props: CloudFrontWebDistributionProps) {
     super(scope, id);
 
+    // Comments have an undocumented limit of 128 characters
+    const trimmedComment =
+    props.comment && props.comment.length > 128
+      ? `${props.comment.substr(0, 128 - 3)}...`
+      : props.comment;
+
     let distributionConfig: CfnDistribution.DistributionConfigProperty = {
-      comment: props.comment,
+      comment: trimmedComment,
       enabled: true,
       defaultRootObject: props.defaultRootObject ?? 'index.html',
       httpVersion: props.httpVersion || HttpVersion.HTTP2,
@@ -1027,9 +1034,15 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
       // first case for backwards compatibility
       if (originConfig.s3OriginSource.originAccessIdentity) {
         // grant CloudFront OriginAccessIdentity read access to S3 bucket
-        originConfig.s3OriginSource.s3BucketSource.grantRead(
-          originConfig.s3OriginSource.originAccessIdentity,
-        );
+        // Used rather than `grantRead` because `grantRead` will grant overly-permissive policies.
+        // Only GetObject is needed to retrieve objects for the distribution.
+        // This also excludes KMS permissions; currently, OAI only supports SSE-S3 for buckets.
+        // Source: https://aws.amazon.com/blogs/networking-and-content-delivery/serving-sse-kms-encrypted-content-from-s3-using-cloudfront/
+        originConfig.s3OriginSource.s3BucketSource.addToResourcePolicy(new iam.PolicyStatement({
+          resources: [originConfig.s3OriginSource.s3BucketSource.arnForObjects('*')],
+          actions: ['s3:GetObject'],
+          principals: [originConfig.s3OriginSource.originAccessIdentity.grantPrincipal],
+        }));
 
         s3OriginConfig = {
           originAccessIdentity: `origin-access-identity/cloudfront/${originConfig.s3OriginSource.originAccessIdentity.originAccessIdentityName}`,

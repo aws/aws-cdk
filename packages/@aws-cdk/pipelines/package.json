@@ -30,17 +30,18 @@
     "organization": true
   },
   "devDependencies": {
-    "@aws-cdk/assert": "0.0.0",
+    "@types/jest": "^26.0.22",
     "cdk-build-tools": "0.0.0",
     "cdk-integ-tools": "0.0.0",
     "cfn2ts": "0.0.0",
     "pkglint": "0.0.0",
     "@aws-cdk/aws-s3": "0.0.0",
     "@aws-cdk/aws-ecr": "0.0.0",
-    "@aws-cdk/aws-ecr-assets": "0.0.0"
+    "@aws-cdk/aws-ecr-assets": "0.0.0",
+    "@aws-cdk/assert-internal": "0.0.0"
   },
   "peerDependencies": {
-    "constructs": "^3.2.0",
+    "constructs": "^3.3.69",
     "@aws-cdk/core": "0.0.0",
     "@aws-cdk/aws-codebuild": "0.0.0",
     "@aws-cdk/aws-codepipeline": "0.0.0",
@@ -53,7 +54,7 @@
     "@aws-cdk/cx-api": "0.0.0"
   },
   "dependencies": {
-    "constructs": "^3.2.0",
+    "constructs": "^3.3.69",
     "@aws-cdk/core": "0.0.0",
     "@aws-cdk/aws-codebuild": "0.0.0",
     "@aws-cdk/aws-codepipeline": "0.0.0",
@@ -124,5 +125,8 @@
       "events-method-signature:@aws-cdk/pipelines.UpdatePipelineAction.onStateChange"
     ]
   },
-  "homepage": "https://github.com/aws/aws-cdk"
+  "homepage": "https://github.com/aws/aws-cdk",
+  "publishConfig": {
+    "tag": "latest"
+  }
 }

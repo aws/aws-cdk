@@ -11,7 +11,7 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-      - uses: Naturalclar/issue-action@f229cda
+      - uses: Naturalclar/issue-action@v2.0.2
         with:
           github-token: "${{ secrets.GITHUB_TOKEN }}"
           title-or-body: 'title'
@@ -90,7 +90,7 @@ jobs:
            {"keywords":["(@aws-cdk/aws-elasticloadbalancingv2-targets)","(aws-elasticloadbalancingv2-targets)","(elasticloadbalancingv2-targets)","(elasticloadbalancingv2 targets)","(elbv2 targets)"],"labels":["@aws-cdk/aws-elasticloadbalancingv2-targets"],"assignees":["njlynch"]},
            {"keywords":["(@aws-cdk/aws-elasticsearch)","(aws-elasticsearch)","(elasticsearch)","(elastic search)","(elastic-search)"],"labels":["@aws-cdk/aws-elasticsearch"],"assignees":["iliapolo"]},
            {"keywords":["(@aws-cdk/aws-emr)","(aws-emr)","(emr)"],"labels":["@aws-cdk/aws-emr"],"assignees":["iliapolo"]},
-           {"keywords":["(@aws-cdk/aws-events)","(aws-events)","(events)","(eventbridge)","event-bridge)"],"labels":["@aws-cdk/aws-events"],"assignees":["rix0rrr"]},
+           {"keywords":["(@aws-cdk/aws-events)","(aws-events)","(events)","(eventbridge)","(event-bridge)"],"labels":["@aws-cdk/aws-events"],"assignees":["rix0rrr"]},
            {"keywords":["(@aws-cdk/aws-events-targets)","(aws-events-targets)","(events-targets)","(events targets)"],"labels":["@aws-cdk/aws-events-targets"],"assignees":["rix0rrr"]},
            {"keywords":["(@aws-cdk/aws-eventschemas)","(aws-eventschemas)","(eventschemas)","(event schemas)"],"labels":["@aws-cdk/aws-eventschemas"],"assignees":["skinny85"]},
            {"keywords":["(@aws-cdk/aws-fms)","(aws-fms)","(fms)"],"labels":["@aws-cdk/aws-fms"],"assignees":["rix0rrr"]},
@@ -159,6 +159,7 @@ jobs:
            {"keywords":["(@aws-cdk/aws-servicediscovery)","(aws-servicediscovery)","(servicediscovery)","(service discovery)","(service-discovery)"],"labels":["@aws-cdk/aws-servicediscovery"],"assignees":["MrArnoldPalmer"]},
            {"keywords":["(@aws-cdk/aws-ses)","(aws-ses)","(ses)"],"labels":["@aws-cdk/aws-ses"],"assignees":["iliapolo"]},
            {"keywords":["(@aws-cdk/aws-ses-actions)","(aws-ses-actions)","(ses-actions)","(ses actions)"],"labels":["@aws-cdk/aws-ses-actions"],"assignees":["iliapolo"]},
+           {"keywords":["(@aws-cdk/aws-signer)","(aws-signer)","(signer)"],"labels":["@aws-cdk/aws-signer"],"assignees":["nija-at"]},
            {"keywords":["(@aws-cdk/aws-sns)","(aws-sns)","(sns)"],"labels":["@aws-cdk/aws-sns"],"assignees":["MrArnoldPalmer"]},
            {"keywords":["(@aws-cdk/aws-sns-subscriptions)","(aws-sns-subscriptions)","(sns-subscriptions)","(sns subscriptions)"],"labels":["@aws-cdk/aws-sns-subscriptions"],"assignees":["MrArnoldPalmer"]},
            {"keywords":["(@aws-cdk/aws-sqs)","(aws-sqs)","(sqs)"],"labels":["@aws-cdk/aws-sqs"],"assignees":["MrArnoldPalmer"]},

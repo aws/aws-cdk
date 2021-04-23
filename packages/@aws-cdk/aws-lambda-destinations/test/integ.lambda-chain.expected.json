@@ -39,7 +39,26 @@
             {
               "Action": "events:PutEvents",
               "Effect": "Allow",
-              "Resource": "*"
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":events:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":event-bus/default"
+                  ]
+                ]
+              }
             }
           ],
           "Version": "2012-10-17"
@@ -58,13 +77,13 @@
         "Code": {
           "ZipFile": "exports.handler = async (event) => {\n        console.log('Event: %j', event);\n        if (event === 'error') throw new Error('UnkownError');\n        return event;\n      };"
         },
-        "Handler": "index.handler",
         "Role": {
           "Fn::GetAtt": [
             "FirstServiceRole097DB3A5",
             "Arn"
           ]
         },
+        "Handler": "index.handler",
         "Runtime": "nodejs10.x"
       },
       "DependsOn": [
@@ -114,7 +133,7 @@
         ]
       }
     },
-    "FirstEventInvokeConfigFailureAllowEventRuleawscdklambdachainFirstEventInvokeConfigFailure7180F42FA8F1F1F0": {
+    "FirstEventInvokeConfigFailureAllowEventRuleawscdklambdachainErrorC073CD8DCAD68018": {
       "Type": "AWS::Lambda::Permission",
       "Properties": {
         "Action": "lambda:InvokeFunction",
@@ -175,7 +194,7 @@
         ]
       }
     },
-    "FirstEventInvokeConfigSuccessAllowEventRuleawscdklambdachainFirstEventInvokeConfigSuccess2DCAE39FC2495AB7": {
+    "FirstEventInvokeConfigSuccessAllowEventRuleawscdklambdachainSecond178F48F8A8DE2790": {
       "Type": "AWS::Lambda::Permission",
       "Properties": {
         "Action": "lambda:InvokeFunction",
@@ -289,7 +308,26 @@
             {
               "Action": "events:PutEvents",
               "Effect": "Allow",
-              "Resource": "*"
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":events:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":event-bus/default"
+                  ]
+                ]
+              }
             }
           ],
           "Version": "2012-10-17"
@@ -308,13 +346,13 @@
         "Code": {
           "ZipFile": "exports.handler = async (event) => {\n        console.log('Event: %j', event);\n        if (event === 'error') throw new Error('UnkownError');\n        return event;\n      };"
         },
-        "Handler": "index.handler",
         "Role": {
           "Fn::GetAtt": [
             "SecondServiceRole55940A31",
             "Arn"
           ]
         },
+        "Handler": "index.handler",
         "Runtime": "nodejs10.x"
       },
       "DependsOn": [
@@ -364,7 +402,7 @@
         ]
       }
     },
-    "SecondEventInvokeConfigSuccessAllowEventRuleawscdklambdachainSecondEventInvokeConfigSuccess2078CDC9C7FB9F61": {
+    "SecondEventInvokeConfigSuccessAllowEventRuleawscdklambdachainThird031C7FF6ABA1C15A": {
       "Type": "AWS::Lambda::Permission",
       "Properties": {
         "Action": "lambda:InvokeFunction",
@@ -453,13 +491,13 @@
         "Code": {
           "ZipFile": "exports.handler = async (event) => {\n        console.log('Event: %j', event);\n        if (event === 'error') throw new Error('UnkownError');\n        return event;\n      };"
         },
-        "Handler": "index.handler",
         "Role": {
           "Fn::GetAtt": [
             "ThirdServiceRole42701801",
             "Arn"
           ]
         },
+        "Handler": "index.handler",
         "Runtime": "nodejs10.x"
       },
       "DependsOn": [
@@ -503,13 +541,13 @@
         "Code": {
           "ZipFile": "exports.handler = async (event) => {\n        console.log('Event: %j', event);\n        if (event === 'error') throw new Error('UnkownError');\n        return event;\n      };"
         },
-        "Handler": "index.handler",
         "Role": {
           "Fn::GetAtt": [
             "ErrorServiceRoleCE484966",
             "Arn"
           ]
         },
+        "Handler": "index.handler",
         "Runtime": "nodejs10.x"
       },
       "DependsOn": [

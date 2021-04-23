@@ -32,15 +32,3 @@ jobs:
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
           commit_message: 'automatic pkglint fixes'
-
-  # Approve automated PRs
-  # Only approve! mergify takes care of the actual merge.
-  auto-approve:
-    if: >
-      github.event.pull_request.user.login == 'aws-cdk-automation'
-      && contains(github.event.pull_request.labels.*.name, 'pr/auto-approve')
-    runs-on: ubuntu-latest
-    steps:
-    - uses: hmarr/auto-approve-action@v2.0.0
-      with:
-        github-token: "${{ secrets.GITHUB_TOKEN }}"

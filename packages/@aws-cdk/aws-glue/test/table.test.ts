@@ -1,11 +1,15 @@
 import { deepEqual, doesNotThrow, equal, notEqual, ok } from 'assert';
-import { expect as cdkExpect, haveResource, ResourcePart } from '@aws-cdk/assert';
-import '@aws-cdk/assert/jest';
+import { expect as cdkExpect, haveResource, ResourcePart } from '@aws-cdk/assert-internal';
+import '@aws-cdk/assert-internal/jest';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
+import { testFutureBehavior } from 'cdk-build-tools/lib/feature-flag';
 import * as glue from '../lib';
+
+const s3GrantWriteCtx = { [cxapi.S3_GRANT_WRITE_WITHOUT_ACL]: true };
 
 test('unpartitioned JSON table', () => {
   const app = new cdk.App();
@@ -1048,8 +1052,8 @@ test('grants: read only', () => {
 
 });
 
-test('grants: write only', () => {
-  const stack = new cdk.Stack();
+testFutureBehavior('grants: write only', s3GrantWriteCtx, cdk.App, (app) => {
+  const stack = new cdk.Stack(app);
   const user = new iam.User(stack, 'User');
   const database = new glue.Database(stack, 'Database', {
     databaseName: 'database',
@@ -1111,7 +1115,7 @@ test('grants: write only', () => {
         {
           Action: [
             's3:DeleteObject*',
-            's3:PutObject*',
+            's3:PutObject',
             's3:Abort*',
           ],
           Effect: 'Allow',
@@ -1151,8 +1155,8 @@ test('grants: write only', () => {
 
 });
 
-test('grants: read and write', () => {
-  const stack = new cdk.Stack();
+testFutureBehavior('grants: read and write', s3GrantWriteCtx, cdk.App, (app) => {
+  const stack = new cdk.Stack(app);
   const user = new iam.User(stack, 'User');
   const database = new glue.Database(stack, 'Database', {
     databaseName: 'database',
@@ -1225,7 +1229,7 @@ test('grants: read and write', () => {
             's3:GetBucket*',
             's3:List*',
             's3:DeleteObject*',
-            's3:PutObject*',
+            's3:PutObject',
             's3:Abort*',
           ],
           Effect: 'Allow',

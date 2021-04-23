@@ -1,6 +1,6 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as s3 from '@aws-cdk/aws-s3';
-import { CfnDeletionPolicy, CfnResource, RemovalPolicy } from '@aws-cdk/core';
+import { RemovalPolicy } from '@aws-cdk/core';
 import { DatabaseSecret } from '../database-secret';
 import { IEngine } from '../engine';
 import { Credentials } from '../props';
@@ -76,17 +76,6 @@ export function engineDescription(engine: IEngine) {
   return engine.engineType + (engine.engineVersion?.fullVersion ? `-${engine.engineVersion.fullVersion}` : '');
 }
 
-export function applyRemovalPolicy(cfnDatabase: CfnResource, removalPolicy?: RemovalPolicy): void {
-  if (!removalPolicy) {
-    // the default DeletionPolicy is 'Snapshot', which is fine,
-    // but we should also make it 'Snapshot' for UpdateReplace policy
-    cfnDatabase.cfnOptions.updateReplacePolicy = CfnDeletionPolicy.SNAPSHOT;
-  } else {
-    // just apply whatever removal policy the customer explicitly provided
-    cfnDatabase.applyRemovalPolicy(removalPolicy);
-  }
-}
-
 /**
  * By default, deletion protection is disabled.
  * Enable if explicitly provided or if the RemovalPolicy has been set to RETAIN
@@ -105,6 +94,7 @@ export function renderCredentials(scope: Construct, engine: IEngine, credentials
     renderedCredentials = Credentials.fromSecret(
       new DatabaseSecret(scope, 'Secret', {
         username: renderedCredentials.username,
+        secretName: renderedCredentials.secretName,
         encryptionKey: renderedCredentials.encryptionKey,
         excludeCharacters: renderedCredentials.excludeCharacters,
         // if username must be referenced as a string we can safely replace the
@@ -117,4 +107,29 @@ export function renderCredentials(scope: Construct, engine: IEngine, credentials
   }
 
   return renderedCredentials;
+}
+
+/**
+ * The RemovalPolicy that should be applied to a "helper" resource, if the base resource has the given removal policy
+ *
+ * - For Clusters, this determines the RemovalPolicy for Instances/SubnetGroups.
+ * - For Instances, this determines the RemovalPolicy for SubnetGroups.
+ *
+ * If the basePolicy is:
+ *
+ *  DESTROY or SNAPSHOT -> DESTROY (snapshot is good enough to recreate)
+ *  RETAIN              -> RETAIN  (anything else will lose data or fail to deploy)
+ *  (undefined)         -> DESTROY (base policy is assumed to be SNAPSHOT)
+ */
+export function helperRemovalPolicy(basePolicy?: RemovalPolicy): RemovalPolicy {
+  return basePolicy === RemovalPolicy.RETAIN
+    ? RemovalPolicy.RETAIN
+    : RemovalPolicy.DESTROY;
+}
+
+/**
+ * Return a given value unless it's the same as another value
+ */
+export function renderUnless<A>(value: A, suppressValue: A): A | undefined {
+  return value === suppressValue ? undefined : value;
 }

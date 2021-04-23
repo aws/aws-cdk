@@ -31,12 +31,17 @@
     "ChildDAB30558": {
       "Type": "AWS::StepFunctions::StateMachine",
       "Properties": {
-        "DefinitionString": "{\"StartAt\":\"Pass\",\"States\":{\"Pass\":{\"Type\":\"Pass\",\"End\":true}}}",
         "RoleArn": {
-          "Fn::GetAtt": ["ChildRole1E3E0EF5", "Arn"]
-        }
+          "Fn::GetAtt": [
+            "ChildRole1E3E0EF5",
+            "Arn"
+          ]
+        },
+        "DefinitionString": "{\"StartAt\":\"Pass\",\"States\":{\"Pass\":{\"Type\":\"Pass\",\"End\":true}}}"
       },
-      "DependsOn": ["ChildRole1E3E0EF5"]
+      "DependsOn": [
+        "ChildRole1E3E0EF5"
+      ]
     },
     "ParentRole5F0C366C": {
       "Type": "AWS::IAM::Role",
@@ -79,7 +84,10 @@
               }
             },
             {
-              "Action": ["states:DescribeExecution", "states:StopExecution"],
+              "Action": [
+                "states:DescribeExecution",
+                "states:StopExecution"
+              ],
               "Effect": "Allow",
               "Resource": {
                 "Fn::Join": [
@@ -117,7 +125,11 @@
               }
             },
             {
-              "Action": ["events:PutTargets", "events:PutRule", "events:DescribeRule"],
+              "Action": [
+                "events:PutTargets",
+                "events:PutRule",
+                "events:DescribeRule"
+              ],
               "Effect": "Allow",
               "Resource": {
                 "Fn::Join": [
@@ -154,6 +166,12 @@
     "Parent8B210403": {
       "Type": "AWS::StepFunctions::StateMachine",
       "Properties": {
+        "RoleArn": {
+          "Fn::GetAtt": [
+            "ParentRole5F0C366C",
+            "Arn"
+          ]
+        },
         "DefinitionString": {
           "Fn::Join": [
             "",
@@ -169,12 +187,12 @@
               "\"}}}}"
             ]
           ]
-        },
-        "RoleArn": {
-          "Fn::GetAtt": ["ParentRole5F0C366C", "Arn"]
         }
       },
-      "DependsOn": ["ParentRoleDefaultPolicy9BDC56DC", "ParentRole5F0C366C"]
+      "DependsOn": [
+        "ParentRoleDefaultPolicy9BDC56DC",
+        "ParentRole5F0C366C"
+      ]
     }
   },
   "Outputs": {

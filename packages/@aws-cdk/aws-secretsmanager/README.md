@@ -180,3 +180,28 @@ const mySecretFromAttrs = secretsmanager.Secret.fromSecretAttributes(stack, 'Sec
   encryptionKey,
 });
 ```
+
+## Replicating secrets
+
+Secrets can be replicated to multiple regions by specifying `replicaRegions`:
+
+```ts
+new secretsmanager.Secret(this, 'Secret', {
+  replicaRegions: [
+    {
+      region: 'eu-west-1',
+    },
+    {
+      region: 'eu-central-1',
+      encryptionKey: myKey,
+    }
+  ]
+});
+```
+
+Alternatively, use `addReplicaRegion()`:
+
+```ts
+const secret = new secretsmanager.Secret(this, 'Secret');
+secret.addReplicaRegion('eu-west-1');
+```

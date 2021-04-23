@@ -1,6 +1,4 @@
-import * as fs from 'fs';
 import * as path from 'path';
-import * as assets from '@aws-cdk/assets';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as s3 from '@aws-cdk/aws-s3';
@@ -11,11 +9,12 @@ import { toSymlinkFollow } from './compat';
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
 // eslint-disable-next-line no-duplicate-imports, import/order
+import { CopyOptions } from '@aws-cdk/assets';
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
 import { Construct as CoreConstruct } from '@aws-cdk/core';
 
-const ARCHIVE_EXTENSIONS = ['.zip', '.jar'];
-
-export interface AssetOptions extends assets.CopyOptions, cdk.AssetOptions {
+export interface AssetOptions extends CopyOptions, cdk.FileCopyOptions, cdk.AssetOptions {
   /**
    * A list of principals that should be able to read this asset from S3.
    * You can use `asset.grantRead(principal)` to grant read permissions later.
@@ -128,7 +127,7 @@ export class Asset extends CoreConstruct implements cdk.IAsset {
     const staging = new cdk.AssetStaging(this, 'Stage', {
       ...props,
       sourcePath: path.resolve(props.path),
-      follow: toSymlinkFollow(props.follow),
+      follow: props.followSymlinks ?? toSymlinkFollow(props.follow),
       assetHash: props.assetHash ?? props.sourceHash,
     });
 
@@ -139,17 +138,12 @@ export class Asset extends CoreConstruct implements cdk.IAsset {
 
     this.assetPath = staging.relativeStagedPath(stack);
 
-    const packaging = determinePackaging(staging.sourcePath);
+    this.isFile = staging.packaging === cdk.FileAssetPackaging.FILE;
 
-    this.isFile = packaging === cdk.FileAssetPackaging.FILE;
-
-    // sets isZipArchive based on the type of packaging and file extension
-    this.isZipArchive = packaging === cdk.FileAssetPackaging.ZIP_DIRECTORY
-      ? true
-      : ARCHIVE_EXTENSIONS.some(ext => staging.sourcePath.toLowerCase().endsWith(ext));
+    this.isZipArchive = staging.isArchive;
 
     const location = stack.synthesizer.addFileAsset({
-      packaging,
+      packaging: staging.packaging,
       sourceHash: this.sourceHash,
       fileName: this.assetPath,
     });
@@ -209,20 +203,4 @@ export class Asset extends CoreConstruct implements cdk.IAsset {
     // version (for example, when using Lambda traffic shifting).
     this.bucket.grantRead(grantee);
   }
-}
-
-function determinePackaging(assetPath: string): cdk.FileAssetPackaging {
-  if (!fs.existsSync(assetPath)) {
-    throw new Error(`Cannot find asset at ${assetPath}`);
-  }
-
-  if (fs.statSync(assetPath).isDirectory()) {
-    return cdk.FileAssetPackaging.ZIP_DIRECTORY;
-  }
-
-  if (fs.statSync(assetPath).isFile()) {
-    return cdk.FileAssetPackaging.FILE;
-  }
-
-  throw new Error(`Asset ${assetPath} is expected to be either a directory or a regular file`);
 }

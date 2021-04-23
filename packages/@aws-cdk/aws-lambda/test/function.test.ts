@@ -1,6 +1,6 @@
-import '@aws-cdk/assert/jest';
+import '@aws-cdk/assert-internal/jest';
 import * as path from 'path';
-import { ABSENT, ResourcePart, SynthUtils } from '@aws-cdk/assert';
+import { ABSENT, ResourcePart, SynthUtils } from '@aws-cdk/assert-internal';
 import { ProfilingGroup } from '@aws-cdk/aws-codeguruprofiler';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as efs from '@aws-cdk/aws-efs';
@@ -8,6 +8,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as logs from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
+import * as signer from '@aws-cdk/aws-signer';
 import * as sqs from '@aws-cdk/aws-sqs';
 import * as cdk from '@aws-cdk/core';
 import * as constructs from 'constructs';
@@ -1999,6 +2000,36 @@ describe('function', () => {
         ImageConfig: {
           Command: ['cmd', 'param1'],
           EntryPoint: ['entrypoint', 'param2'],
+        },
+      });
+    });
+  });
+
+  describe('code signing config', () => {
+    test('default', () => {
+      const stack = new cdk.Stack();
+
+      const signingProfile = new signer.SigningProfile(stack, 'SigningProfile', {
+        platform: signer.Platform.AWS_LAMBDA_SHA384_ECDSA,
+      });
+
+      const codeSigningConfig = new lambda.CodeSigningConfig(stack, 'CodeSigningConfig', {
+        signingProfiles: [signingProfile],
+      });
+
+      new lambda.Function(stack, 'MyLambda', {
+        code: new lambda.InlineCode('foo'),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.NODEJS_10_X,
+        codeSigningConfig,
+      });
+
+      expect(stack).toHaveResource('AWS::Lambda::Function', {
+        CodeSigningConfigArn: {
+          'Fn::GetAtt': [
+            'CodeSigningConfigD8D41C10',
+            'CodeSigningConfigArn',
+          ],
         },
       });
     });

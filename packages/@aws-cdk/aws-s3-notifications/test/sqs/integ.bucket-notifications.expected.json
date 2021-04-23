@@ -53,7 +53,9 @@
       ]
     },
     "MyQueueE6CA6235": {
-      "Type": "AWS::SQS::Queue"
+      "Type": "AWS::SQS::Queue",
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
     },
     "MyQueuePolicy6BBEDDAC": {
       "Type": "AWS::SQS::QueuePolicy",
@@ -190,7 +192,7 @@
             "Arn"
           ]
         },
-        "Runtime": "nodejs10.x",
+        "Runtime": "nodejs12.x",
         "Timeout": 300
       },
       "DependsOn": [
@@ -252,23 +254,7 @@
         "KeyPolicy": {
           "Statement": [
             {
-              "Action": [
-                "kms:Create*",
-                "kms:Describe*",
-                "kms:Enable*",
-                "kms:List*",
-                "kms:Put*",
-                "kms:Update*",
-                "kms:Revoke*",
-                "kms:Disable*",
-                "kms:Get*",
-                "kms:Delete*",
-                "kms:ScheduleKeyDeletion",
-                "kms:CancelKeyDeletion",
-                "kms:GenerateDataKey",
-                "kms:TagResource",
-                "kms:UntagResource"
-              ],
+              "Action": "kms:*",
               "Effect": "Allow",
               "Principal": {
                 "AWS": {
@@ -341,7 +327,9 @@
             "Arn"
           ]
         }
-      }
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
     },
     "EncryptedQueuePolicy8AEB1708": {
       "Type": "AWS::SQS::QueuePolicy",

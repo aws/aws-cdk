@@ -44,13 +44,13 @@ interface Eq<T> {
 /**
  * Whether a collection contains some element (by value)
  */
-function contains<T extends Eq<T>>(element: T, xs: T[]) {
+function contains<T extends Eq<T>>(element: T, xs: T[]): boolean {
   return xs.some(x => x.equal(element));
 }
 
 /**
  * Return collection except for elements
  */
-function difference<T extends Eq<T>>(collection: T[], elements: T[]) {
+function difference<T extends Eq<T>>(collection: T[], elements: T[]): T[] {
   return collection.filter(x => !contains(x, elements));
 }

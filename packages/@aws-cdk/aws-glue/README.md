@@ -23,6 +23,24 @@
 
 This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.
 
+## Connection
+
+A `Connection` allows Glue jobs, crawlers and development endpoints to access certain types of data stores. For example, to create a network connection to connect to a data source within a VPC:
+
+```ts
+new glue.Connection(stack, 'MyConnection', {
+  connectionType: glue.ConnectionTypes.NETWORK,
+  // The security groups granting AWS Glue inbound access to the data source within the VPC
+  securityGroups: [securityGroup],
+  // The VPC subnet which contains the data source
+  subnet,
+});
+```
+
+If you need to use a connection type that doesn't exist as a static member on `ConnectionType`, you can instantiate a `ConnectionType` object, e.g: `new glue.ConnectionType('NEW_TYPE')`.
+
+See [Adding a Connection to Your Data Store](https://docs.aws.amazon.com/glue/latest/dg/populate-add-connection.html) and [Connection Structure](https://docs.aws.amazon.com/glue/latest/dg/aws-glue-api-catalog-connections.html#aws-glue-api-catalog-connections-Connection) documentation for more information on the supported data stores and their configurations.
+
 ## Database
 
 A `Database` is a logical grouping of `Tables` in the Glue Catalog.

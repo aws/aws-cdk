@@ -39,17 +39,17 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@aws-cdk/core": "0.0.0",
-    "@octokit/rest": "^18.1.1",
+    "@octokit/rest": "^18.5.2",
     "@types/archiver": "^5.1.0",
     "@types/fs-extra": "^8.1.1",
     "@types/glob": "^7.1.3",
-    "@types/jest": "^26.0.20",
-    "@types/minimatch": "^3.0.3",
+    "@types/jest": "^26.0.22",
+    "@types/minimatch": "^3.0.4",
     "@types/mockery": "^1.4.29",
-    "@types/node": "^10.17.52",
+    "@types/node": "^10.17.56",
     "@types/promptly": "^3.0.1",
     "@types/semver": "^7.3.4",
-    "@types/sinon": "^9.0.10",
+    "@types/sinon": "^9.0.11",
     "@types/table": "^6.0.0",
     "@types/uuid": "^8.3.0",
     "@types/wrap-ansi": "^3.0.0",
@@ -59,10 +59,10 @@
     "jest": "^26.6.3",
     "make-runnable": "^1.3.8",
     "mockery": "^2.1.0",
-    "nock": "^13.0.7",
+    "nock": "^13.0.11",
     "pkglint": "0.0.0",
     "sinon": "^9.2.4",
-    "ts-jest": "^26.5.1",
+    "ts-jest": "^26.5.4",
     "ts-mock-imports": "^1.3.3",
     "xml-js": "^1.6.11"
   },
@@ -71,9 +71,8 @@
     "@aws-cdk/cloudformation-diff": "0.0.0",
     "@aws-cdk/cx-api": "0.0.0",
     "@aws-cdk/region-info": "0.0.0",
-    "@aws-cdk/yaml-cfn": "0.0.0",
-    "archiver": "^5.2.0",
-    "aws-sdk": "^2.842.0",
+    "archiver": "^5.3.0",
+    "aws-sdk": "^2.848.0",
     "camelcase": "^6.2.0",
     "cdk-assets": "0.0.0",
     "colors": "^1.4.0",
@@ -84,11 +83,12 @@
     "minimatch": ">=3.0",
     "promptly": "^3.2.0",
     "proxy-agent": "^4.0.1",
-    "semver": "^7.3.4",
+    "semver": "^7.3.5",
     "source-map-support": "^0.5.19",
-    "table": "^6.0.7",
+    "table": "^6.1.0",
     "uuid": "^8.3.2",
     "wrap-ansi": "^7.0.0",
+    "yaml": "1.10.2",
     "yargs": "^16.2.0"
   },
   "repository": {
@@ -104,6 +104,15 @@
   "engines": {
     "node": ">= 10.13.0 <13 || >=13.7.0"
   },
+  "nozem": {
+    "ostools": ["git", "date", "cat", "dotnet", "mvn", "npm"],
+    "env": {
+      "CODEBUILD_RESOLVED_SOURCE_VERSION": "|nzm-build"
+    }
+  },
   "stability": "stable",
-  "maturity": "stable"
+  "maturity": "stable",
+  "publishConfig": {
+    "tag": "latest"
+  }
 }

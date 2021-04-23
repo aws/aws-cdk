@@ -1,10 +1,12 @@
-import { arrayWith, ABSENT, ResourcePart, SynthUtils } from '@aws-cdk/assert';
-import '@aws-cdk/assert/jest';
+import { arrayWith, ABSENT, ResourcePart, SynthUtils } from '@aws-cdk/assert-internal';
+import '@aws-cdk/assert-internal/jest';
 import * as appscaling from '@aws-cdk/aws-applicationautoscaling';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
-import { App, Aws, CfnDeletionPolicy, ConstructNode, Duration, PhysicalName, RemovalPolicy, Stack, Tags } from '@aws-cdk/core';
+import { App, Aws, CfnDeletionPolicy, ConstructNode, Duration, PhysicalName, RemovalPolicy, Resource, Stack, Tags } from '@aws-cdk/core';
+import * as cr from '@aws-cdk/custom-resources';
 import { testLegacyBehavior } from 'cdk-build-tools/lib/feature-flag';
+import { Construct } from 'constructs';
 import {
   Attribute,
   AttributeType,
@@ -16,7 +18,10 @@ import {
   Table,
   TableEncryption,
   Operation,
+  CfnTable,
 } from '../lib';
+
+jest.mock('@aws-cdk/custom-resources');
 
 /* eslint-disable quote-props */
 
@@ -2293,12 +2298,6 @@ describe('global', () => {
     // THEN
     expect(stack).toHaveResource('Custom::DynamoDBReplica', {
       Properties: {
-        ServiceToken: {
-          'Fn::GetAtt': [
-            'awscdkawsdynamodbReplicaProviderNestedStackawscdkawsdynamodbReplicaProviderNestedStackResource18E3F12D',
-            'Outputs.awscdkawsdynamodbReplicaProviderframeworkonEventF9504691Arn',
-          ],
-        },
         TableName: {
           Ref: 'TableCD117FA1',
         },
@@ -2309,12 +2308,6 @@ describe('global', () => {
 
     expect(stack).toHaveResource('Custom::DynamoDBReplica', {
       Properties: {
-        ServiceToken: {
-          'Fn::GetAtt': [
-            'awscdkawsdynamodbReplicaProviderNestedStackawscdkawsdynamodbReplicaProviderNestedStackResource18E3F12D',
-            'Outputs.awscdkawsdynamodbReplicaProviderframeworkonEventF9504691Arn',
-          ],
-        },
         TableName: {
           Ref: 'TableCD117FA1',
         },
@@ -2812,6 +2805,49 @@ describe('global', () => {
     // THEN
     expect(SynthUtils.toCloudFormation(stack).Conditions).toBeUndefined();
   });
+
+  test('can configure timeout', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new Table(stack, 'Table', {
+      partitionKey: {
+        name: 'id',
+        type: AttributeType.STRING,
+      },
+      replicationRegions: ['eu-central-1'],
+      replicationTimeout: Duration.hours(1),
+    });
+
+    // THEN
+    expect(cr.Provider).toHaveBeenCalledWith(expect.anything(), expect.any(String), expect.objectContaining({
+      totalTimeout: Duration.hours(1),
+    }));
+  });
+});
+
+test('L1 inside L2 expects removalpolicy to have been set', () => {
+  // Check that the "stateful L1 validation generation" works. Do it here
+  // because we know DDB tables are stateful.
+  const app = new App();
+  const stack = new Stack(app, 'Stack');
+
+  class FakeTableL2 extends Resource {
+    constructor(scope: Construct, id: string) {
+      super(scope, id);
+
+      new CfnTable(this, 'Resource', {
+        keySchema: [{ attributeName: 'hash', keyType: 'S' }],
+      });
+    }
+  }
+
+  new FakeTableL2(stack, 'Table');
+
+  expect(() => {
+    SynthUtils.toCloudFormation(stack);
+  }).toThrow(/is a stateful resource type/);
 });
 
 function testGrant(expectedActions: string[], invocation: (user: iam.IPrincipal, table: Table) => void) {
