@@ -116,6 +116,9 @@
   "awscdkio": {
     "announce": false
   },
+  "nozem": {
+    "ostools": ["dirname", "cd", "mktemp", "mkdir", "cp", "docker"]
+  },
   "publishConfig": {
     "tag": "latest"
   }

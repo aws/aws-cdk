@@ -17,7 +17,6 @@ nyc.config.js
 
 !test/integ/run-wrappers/dist
 !test/integ/cli/**/*
-.*
 assets.json
 npm-shrinkwrap.json
 !.eslintrc.js

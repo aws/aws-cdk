@@ -16,6 +16,8 @@ import {
 
 const AWS_SERVICE_NAMES = require('./aws-service-official-names.json'); // eslint-disable-line @typescript-eslint/no-require-imports
 
+const PKGLINT_VERSION = require('../package.json').version; // eslint-disable-line @typescript-eslint/no-require-imports
+
 /**
  * Verify that the package name matches the directory name
  */
@@ -927,10 +929,13 @@ export class MustDependOnBuildTools extends ValidationRule {
   public validate(pkg: PackageJson): void {
     if (!shouldUseCDKBuildTools(pkg)) { return; }
 
+    // We can't ACTUALLY require cdk-build-tools/package.json here,
+    // because WE don't depend on cdk-build-tools and we don't know if
+    // the package does.
     expectDevDependency(this.name,
       pkg,
       'cdk-build-tools',
-      `${require('../../cdk-build-tools/package.json').version}`); // eslint-disable-line @typescript-eslint/no-require-imports
+      `${PKGLINT_VERSION}`); // eslint-disable-line @typescript-eslint/no-require-imports
   }
 }
 
@@ -1001,7 +1006,7 @@ export class MustDependonCdkByPointVersions extends ValidationRule {
     // across the repo: in local builds, this should be 0.0.0 and in CI builds
     // this would be the actual version of the repo after it's been aligned
     // using scripts/align-version.sh
-    const expectedVersion = require('../../../package.json').version; // eslint-disable-line @typescript-eslint/no-require-imports
+    const expectedVersion = require(path.join(monoRepoRoot(), 'package.json')).version; // eslint-disable-line @typescript-eslint/no-require-imports
     const ignore = [
       '@aws-cdk/cloudformation-diff',
       '@aws-cdk/cfnspec',
@@ -1147,10 +1152,14 @@ export class MustHaveIntegCommand extends ValidationRule {
     if (!hasIntegTests(pkg)) { return; }
 
     expectJSON(this.name, pkg, 'scripts.integ', 'cdk-integ');
+
+    // We can't ACTUALLY require cdk-build-tools/package.json here,
+    // because WE don't depend on cdk-build-tools and we don't know if
+    // the package does.
     expectDevDependency(this.name,
       pkg,
       'cdk-integ-tools',
-      `${require('../../cdk-integ-tools/package.json').version}`); // eslint-disable-line @typescript-eslint/no-require-imports
+      `${PKGLINT_VERSION}`); // eslint-disable-line @typescript-eslint/no-require-imports
   }
 }
 
@@ -1173,7 +1182,7 @@ export class PkgLintAsScript extends ValidationRule {
   public validate(pkg: PackageJson): void {
     const script = 'pkglint -f';
 
-    expectDevDependency(this.name, pkg, 'pkglint', `${require('../package.json').version}`); // eslint-disable-line @typescript-eslint/no-require-imports
+    expectDevDependency(this.name, pkg, 'pkglint', `${PKGLINT_VERSION}`); // eslint-disable-line @typescript-eslint/no-require-imports
 
     if (!pkg.npmScript('pkglint')) {
       pkg.report({
@@ -1376,7 +1385,7 @@ export class YarnNohoistBundledDependencies extends ValidationRule {
     const bundled: string[] = pkg.json.bundleDependencies || pkg.json.bundledDependencies || [];
     if (bundled.length === 0) { return; }
 
-    const repoPackageJson = path.resolve(__dirname, '../../../package.json');
+    const repoPackageJson = path.resolve(monoRepoRoot(), 'package.json');
 
     const nohoist: string[] = require(repoPackageJson).workspaces.nohoist; // eslint-disable-line @typescript-eslint/no-require-imports
 
@@ -1727,6 +1736,6 @@ function readBannerFile(file: string): string {
 
 function cdkMajorVersion() {
   // eslint-disable-next-line @typescript-eslint/no-require-imports
-  const releaseJson = require(`${__dirname}/../../../release.json`);
+  const releaseJson = require(`${monoRepoRoot()}/release.json`);
   return releaseJson.majorVersion as number;
 }

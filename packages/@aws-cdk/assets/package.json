@@ -97,6 +97,9 @@
   "awscdkio": {
     "announce": false
   },
+  "nozem": {
+    "ostools": ["rm", "tar", "gzip"]
+  },
   "publishConfig": {
     "tag": "latest"
   }
