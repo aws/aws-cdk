@@ -198,6 +198,78 @@ nodeunitShim({
     test.done();
   },
 
+  'ensure long comments will not break the distribution'(test: Test) {
+    const stack = new cdk.Stack();
+    const sourceBucket = new s3.Bucket(stack, 'Bucket');
+
+    new CloudFrontWebDistribution(stack, 'AnAmazingWebsiteProbably', {
+      comment: `Adding a comment longer than 128 characters should be trimmed and 
+added the ellipsis so a user would know there was more to read and everything beyond this point should not show up`,
+      originConfigs: [
+        {
+          s3OriginSource: {
+            s3BucketSource: sourceBucket,
+          },
+          behaviors: [
+            {
+              isDefaultBehavior: true,
+            },
+          ],
+        },
+      ],
+    });
+
+    expect(stack).toMatch({
+      Resources: {
+        Bucket83908E77: {
+          Type: 'AWS::S3::Bucket',
+          DeletionPolicy: 'Retain',
+          UpdateReplacePolicy: 'Retain',
+        },
+        AnAmazingWebsiteProbablyCFDistribution47E3983B: {
+          Type: 'AWS::CloudFront::Distribution',
+          Properties: {
+            DistributionConfig: {
+              DefaultRootObject: 'index.html',
+              Origins: [
+                {
+                  ConnectionAttempts: 3,
+                  ConnectionTimeout: 10,
+                  DomainName: {
+                    'Fn::GetAtt': ['Bucket83908E77', 'RegionalDomainName'],
+                  },
+                  Id: 'origin1',
+                  S3OriginConfig: {},
+                },
+              ],
+              ViewerCertificate: {
+                CloudFrontDefaultCertificate: true,
+              },
+              PriceClass: 'PriceClass_100',
+              DefaultCacheBehavior: {
+                AllowedMethods: ['GET', 'HEAD'],
+                CachedMethods: ['GET', 'HEAD'],
+                TargetOriginId: 'origin1',
+                ViewerProtocolPolicy: 'redirect-to-https',
+                ForwardedValues: {
+                  QueryString: false,
+                  Cookies: { Forward: 'none' },
+                },
+                Compress: true,
+              },
+              Comment: `Adding a comment longer than 128 characters should be trimmed and 
+added the ellipsis so a user would know there was more to ...`,
+              Enabled: true,
+              IPV6Enabled: true,
+              HttpVersion: 'http2',
+            },
+          },
+        },
+      },
+    });
+    test.done();
+  },
+
   'distribution with bucket and OAI'(test: Test) {
     const stack = new cdk.Stack();
     const s3BucketSource = new s3.Bucket(stack, 'Bucket');
@@ -1097,7 +1169,7 @@ nodeunitShim({
 
   'geo restriction': {
     'success': {
-      'whitelist'(test: Test) {
+      'allowlist'(test: Test) {
         const stack = new cdk.Stack();
         const sourceBucket = new s3.Bucket(stack, 'Bucket');
 
@@ -1106,7 +1178,7 @@ nodeunitShim({
             s3OriginSource: { s3BucketSource: sourceBucket },
             behaviors: [{ isDefaultBehavior: true }],
           }],
-          geoRestriction: GeoRestriction.whitelist('US', 'UK'),
+          geoRestriction: GeoRestriction.allowlist('US', 'UK'),
         });
 
         expect(stack).toMatch({
@@ -1173,7 +1245,7 @@ nodeunitShim({
 
         test.done();
       },
-      'blacklist'(test: Test) {
+      'denylist'(test: Test) {
         const stack = new cdk.Stack();
         const sourceBucket = new s3.Bucket(stack, 'Bucket');
 
@@ -1182,7 +1254,7 @@ nodeunitShim({
             s3OriginSource: { s3BucketSource: sourceBucket },
             behaviors: [{ isDefaultBehavior: true }],
           }],
-          geoRestriction: GeoRestriction.blacklist('US'),
+          geoRestriction: GeoRestriction.denylist('US'),
         });
 
         expect(stack).toMatch({
@@ -1253,22 +1325,22 @@ nodeunitShim({
     'error': {
       'throws if locations is empty array'(test: Test) {
         test.throws(() => {
-          GeoRestriction.whitelist();
+          GeoRestriction.allowlist();
         }, /Should provide at least 1 location/);
 
         test.throws(() => {
-          GeoRestriction.blacklist();
+          GeoRestriction.denylist();
         }, /Should provide at least 1 location/);
 
         test.done();
       },
       'throws if locations format is wrong'(test: Test) {
         test.throws(() => {
-          GeoRestriction.whitelist('us');
+          GeoRestriction.allowlist('us');
         }, /Invalid location format for location: us, location should be two-letter and uppercase country ISO 3166-1-alpha-2 code/);
 
         test.throws(() => {
-          GeoRestriction.blacklist('us');
+          GeoRestriction.denylist('us');
         }, /Invalid location format for location: us, location should be two-letter and uppercase country ISO 3166-1-alpha-2 code/);
 
         test.done();

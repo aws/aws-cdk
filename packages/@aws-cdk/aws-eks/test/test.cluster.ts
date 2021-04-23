@@ -1294,7 +1294,7 @@ export = {
         // THEN
         const template = app.synth().getStackByName(stack.stackName).template;
         const userData = template.Resources.ClusterMyCapcityLaunchConfig58583345.Properties.UserData;
-        test.deepEqual(userData, { 'Fn::Base64': { 'Fn::Join': ['', ['#!/bin/bash\nset -o xtrace\n/etc/eks/bootstrap.sh ', { Ref: 'Cluster9EE0221C' }, ' --kubelet-extra-args "--node-labels lifecycle=OnDemand" --use-max-pods true\n/opt/aws/bin/cfn-signal --exit-code $? --stack Stack --resource ClusterMyCapcityASGD4CD8B97 --region us-east-1']] } });
+        test.deepEqual(userData, { 'Fn::Base64': { 'Fn::Join': ['', ['#!/bin/bash\nset -o xtrace\n/etc/eks/bootstrap.sh ', { Ref: 'Cluster9EE0221C' }, ' --kubelet-extra-args "--node-labels lifecycle=OnDemand" --apiserver-endpoint \'', { 'Fn::GetAtt': ['Cluster9EE0221C', 'Endpoint'] }, '\' --b64-cluster-ca \'', { 'Fn::GetAtt': ['Cluster9EE0221C', 'CertificateAuthorityData'] }, '\' --use-max-pods true\n/opt/aws/bin/cfn-signal --exit-code $? --stack Stack --resource ClusterMyCapcityASGD4CD8B97 --region us-east-1']] } });
         test.done();
       },
 
@@ -1333,7 +1333,7 @@ export = {
         // THEN
         const template = app.synth().getStackByName(stack.stackName).template;
         const userData = template.Resources.ClusterMyCapcityLaunchConfig58583345.Properties.UserData;
-        test.deepEqual(userData, { 'Fn::Base64': { 'Fn::Join': ['', ['#!/bin/bash\nset -o xtrace\n/etc/eks/bootstrap.sh ', { Ref: 'Cluster9EE0221C' }, ' --kubelet-extra-args "--node-labels lifecycle=OnDemand  --node-labels FOO=42" --use-max-pods true\n/opt/aws/bin/cfn-signal --exit-code $? --stack Stack --resource ClusterMyCapcityASGD4CD8B97 --region us-east-1']] } });
+        test.deepEqual(userData, { 'Fn::Base64': { 'Fn::Join': ['', ['#!/bin/bash\nset -o xtrace\n/etc/eks/bootstrap.sh ', { Ref: 'Cluster9EE0221C' }, ' --kubelet-extra-args "--node-labels lifecycle=OnDemand  --node-labels FOO=42" --apiserver-endpoint \'', { 'Fn::GetAtt': ['Cluster9EE0221C', 'Endpoint'] }, '\' --b64-cluster-ca \'', { 'Fn::GetAtt': ['Cluster9EE0221C', 'CertificateAuthorityData'] }, '\' --use-max-pods true\n/opt/aws/bin/cfn-signal --exit-code $? --stack Stack --resource ClusterMyCapcityASGD4CD8B97 --region us-east-1']] } });
         test.done();
       },
 
@@ -1353,7 +1353,7 @@ export = {
           // THEN
           const template = app.synth().getStackByName(stack.stackName).template;
           const userData = template.Resources.ClusterMyCapcityLaunchConfig58583345.Properties.UserData;
-          test.deepEqual(userData, { 'Fn::Base64': { 'Fn::Join': ['', ['#!/bin/bash\nset -o xtrace\n/etc/eks/bootstrap.sh ', { Ref: 'Cluster9EE0221C' }, ' --kubelet-extra-args "--node-labels lifecycle=Ec2Spot --register-with-taints=spotInstance=true:PreferNoSchedule" --use-max-pods true\n/opt/aws/bin/cfn-signal --exit-code $? --stack Stack --resource ClusterMyCapcityASGD4CD8B97 --region us-east-1']] } });
+          test.deepEqual(userData, { 'Fn::Base64': { 'Fn::Join': ['', ['#!/bin/bash\nset -o xtrace\n/etc/eks/bootstrap.sh ', { Ref: 'Cluster9EE0221C' }, ' --kubelet-extra-args "--node-labels lifecycle=Ec2Spot --register-with-taints=spotInstance=true:PreferNoSchedule" --apiserver-endpoint \'', { 'Fn::GetAtt': ['Cluster9EE0221C', 'Endpoint'] }, '\' --b64-cluster-ca \'', { 'Fn::GetAtt': ['Cluster9EE0221C', 'CertificateAuthorityData'] }, '\' --use-max-pods true\n/opt/aws/bin/cfn-signal --exit-code $? --stack Stack --resource ClusterMyCapcityASGD4CD8B97 --region us-east-1']] } });
           test.done();
         },
 
@@ -1437,44 +1437,26 @@ export = {
 
     'EksOptimizedImage() with no nodeType always uses STANDARD with LATEST_KUBERNETES_VERSION'(test: Test) {
       // GIVEN
-      const { app, stack } = testFixtureNoVpc();
+      const { stack } = testFixtureNoVpc();
       const LATEST_KUBERNETES_VERSION = '1.14';
 
       // WHEN
-      new eks.EksOptimizedImage().getImage(stack);
+      const machineImageConfig = new eks.EksOptimizedImage().getImage(stack);
 
       // THEN
-      const assembly = app.synth();
-      const parameters = assembly.getStackByName(stack.stackName).template.Parameters;
-      test.ok(Object.entries(parameters).some(
-        ([k, v]) => k.startsWith('SsmParameterValueawsserviceeksoptimizedami') &&
-          (v as any).Default.includes('/amazon-linux-2/'),
-      ), 'EKS STANDARD AMI should be in ssm parameters');
-      test.ok(Object.entries(parameters).some(
-        ([k, v]) => k.startsWith('SsmParameterValueawsserviceeksoptimizedami') &&
-          (v as any).Default.includes(LATEST_KUBERNETES_VERSION),
-      ), 'LATEST_KUBERNETES_VERSION should be in ssm parameters');
+      test.equal(stack.resolve(machineImageConfig.imageId), `{{resolve:ssm:/aws/service/eks/optimized-ami/${LATEST_KUBERNETES_VERSION}/amazon-linux-2/recommended/image_id}}`);
       test.done();
     },
 
     'EksOptimizedImage() with specific kubernetesVersion return correct AMI'(test: Test) {
       // GIVEN
-      const { app, stack } = testFixtureNoVpc();
+      const { stack } = testFixtureNoVpc();
 
       // WHEN
-      new eks.EksOptimizedImage({ kubernetesVersion: '1.19' }).getImage(stack);
+      const machineImageConfig = new eks.EksOptimizedImage({ kubernetesVersion: '1.19' }).getImage(stack);
 
       // THEN
-      const assembly = app.synth();
-      const parameters = assembly.getStackByName(stack.stackName).template.Parameters;
-      test.ok(Object.entries(parameters).some(
-        ([k, v]) => k.startsWith('SsmParameterValueawsserviceeksoptimizedami') &&
-          (v as any).Default.includes('/amazon-linux-2/'),
-      ), 'EKS STANDARD AMI should be in ssm parameters');
-      test.ok(Object.entries(parameters).some(
-        ([k, v]) => k.startsWith('SsmParameterValueawsserviceeksoptimizedami') &&
-          (v as any).Default.includes('/1.19/'),
-      ), 'kubernetesVersion should be in ssm parameters');
+      test.equal(stack.resolve(machineImageConfig.imageId), '{{resolve:ssm:/aws/service/eks/optimized-ami/1.19/amazon-linux-2/recommended/image_id}}');
       test.done();
     },
 
@@ -1541,7 +1523,7 @@ export = {
 
     'addAutoScalingGroupCapacity with T4g instance type comes with nodegroup with correct AmiType'(test: Test) {
       // GIVEN
-      const { app, stack } = testFixtureNoVpc();
+      const { stack } = testFixtureNoVpc();
 
       // WHEN
       new eks.Cluster(stack, 'cluster', {
@@ -1553,18 +1535,15 @@ export = {
       });
 
       // THEN
-      const assembly = app.synth();
-      const parameters = assembly.getStackByName(stack.stackName).template.Parameters;
-      test.ok(Object.entries(parameters).some(
-        ([k, v]) => k.startsWith('SsmParameterValueawsserviceeksoptimizedami') &&
-          (v as any).Default.includes('amazon-linux-2-arm64/'),
-      ), 'Amazon Linux 2 AMI for ARM64 should be in ssm parameters');
+      expect(stack).to(haveResource('AWS::AutoScaling::LaunchConfiguration', {
+        ImageId: '{{resolve:ssm:/aws/service/eks/optimized-ami/1.19/amazon-linux-2-arm64/recommended/image_id}}',
+      }));
       test.done();
     },
 
     'EKS-Optimized AMI with GPU support when addAutoScalingGroupCapacity'(test: Test) {
       // GIVEN
-      const { app, stack } = testFixtureNoVpc();
+      const { stack } = testFixtureNoVpc();
 
       // WHEN
       new eks.Cluster(stack, 'cluster', {
@@ -1576,17 +1555,15 @@ export = {
       });
 
       // THEN
-      const assembly = app.synth();
-      const parameters = assembly.getStackByName(stack.stackName).template.Parameters;
-      test.ok(Object.entries(parameters).some(
-        ([k, v]) => k.startsWith('SsmParameterValueawsserviceeksoptimizedami') && (v as any).Default.includes('amazon-linux-2-gpu'),
-      ), 'EKS AMI with GPU should be in ssm parameters');
+      expect(stack).to(haveResource('AWS::AutoScaling::LaunchConfiguration', {
+        ImageId: '{{resolve:ssm:/aws/service/eks/optimized-ami/1.19/amazon-linux-2-gpu/recommended/image_id}}',
+      }));
       test.done();
     },
 
     'EKS-Optimized AMI with ARM64 when addAutoScalingGroupCapacity'(test: Test) {
       // GIVEN
-      const { app, stack } = testFixtureNoVpc();
+      const { stack } = testFixtureNoVpc();
 
       // WHEN
       new eks.Cluster(stack, 'cluster', {
@@ -1598,32 +1575,21 @@ export = {
       });
 
       // THEN
-      const assembly = app.synth();
-      const parameters = assembly.getStackByName(stack.stackName).template.Parameters;
-      test.ok(Object.entries(parameters).some(
-        ([k, v]) => k.startsWith('SsmParameterValueawsserviceeksoptimizedami') && (v as any).Default.includes('/amazon-linux-2-arm64/'),
-      ), 'EKS AMI with GPU should be in ssm parameters');
+      expect(stack).to(haveResource('AWS::AutoScaling::LaunchConfiguration', {
+        ImageId: '{{resolve:ssm:/aws/service/eks/optimized-ami/1.19/amazon-linux-2-arm64/recommended/image_id}}',
+      }));
       test.done();
     },
 
     'BottleRocketImage() with specific kubernetesVersion return correct AMI'(test: Test) {
       // GIVEN
-      const { app, stack } = testFixtureNoVpc();
+      const { stack } = testFixtureNoVpc();
 
       // WHEN
-      new BottleRocketImage({ kubernetesVersion: '1.19' }).getImage(stack);
+      const machineImageConfig = new BottleRocketImage({ kubernetesVersion: '1.19' }).getImage(stack);
 
       // THEN
-      const assembly = app.synth();
-      const parameters = assembly.getStackByName(stack.stackName).template.Parameters;
-      test.ok(Object.entries(parameters).some(
-        ([k, v]) => k.startsWith('SsmParameterValueawsservicebottlerocketaws') &&
-          (v as any).Default.includes('/bottlerocket/'),
-      ), 'BottleRocket AMI should be in ssm parameters');
-      test.ok(Object.entries(parameters).some(
-        ([k, v]) => k.startsWith('SsmParameterValueawsservicebottlerocketaws') &&
-          (v as any).Default.includes('/aws-k8s-1.19/'),
-      ), 'kubernetesVersion should be in ssm parameters');
+      test.equal(stack.resolve(machineImageConfig).imageId, '{{resolve:ssm:/aws/service/bottlerocket/aws-k8s-1.19/x86_64/latest/image_id}}');
       test.done();
     },
 

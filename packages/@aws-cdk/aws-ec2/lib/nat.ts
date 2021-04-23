@@ -1,4 +1,5 @@
 import * as iam from '@aws-cdk/aws-iam';
+import { Fn, Token } from '@aws-cdk/core';
 import { Connections, IConnectable } from './connections';
 import { Instance } from './instance';
 import { InstanceType } from './instance-types';
@@ -49,7 +50,7 @@ export interface GatewayConfig {
  * Determines what type of NAT provider to create, either NAT gateways or NAT
  * instance.
  *
- * @experimental
+ *
  */
 export abstract class NatProvider {
   /**
@@ -59,8 +60,8 @@ export abstract class NatProvider {
    *
    * @see https://docs.aws.amazon.com/vpc/latest/userguide/vpc-nat-gateway.html
    */
-  public static gateway(): NatProvider {
-    return new NatGatewayProvider();
+  public static gateway(props: NatGatewayProps = {}): NatProvider {
+    return new NatGatewayProvider(props);
   }
 
   /**
@@ -101,7 +102,7 @@ export abstract class NatProvider {
 /**
  * Options passed by the VPC when NAT needs to be configured
  *
- * @experimental
+ *
  */
 export interface ConfigureNatOptions {
   /**
@@ -123,9 +124,22 @@ export interface ConfigureNatOptions {
 }
 
 /**
+ * Properties for a NAT gateway
+ *
+ */
+export interface NatGatewayProps {
+  /**
+   * EIP allocation IDs for the NAT gateways
+   *
+   * @default - No fixed EIPs allocated for the NAT gateways
+   */
+  readonly eipAllocationIds?: string[];
+}
+
+/**
  * Properties for a NAT instance
  *
- * @experimental
+ *
  */
 export interface NatInstanceProps {
   /**
@@ -203,11 +217,20 @@ export interface NatInstanceProps {
 class NatGatewayProvider extends NatProvider {
   private gateways: PrefSet<string> = new PrefSet<string>();
 
+  constructor(private readonly props: NatGatewayProps = {}) {
+    super();
+  }
+
   public configureNat(options: ConfigureNatOptions) {
     // Create the NAT gateways
+    let i = 0;
     for (const sub of options.natSubnets) {
       const gateway = sub.addNatGateway();
+      if (this.props.eipAllocationIds) {
+        gateway.allocationId = pickN(i, this.props.eipAllocationIds);
+      }
       this.gateways.add(sub.availabilityZone, gateway.ref);
+      i++;
     }
 
     // Add routes to them in the private subnets
@@ -359,7 +382,7 @@ class PrefSet<A> {
 /**
  * Machine image representing the latest NAT instance image
  *
- * @experimental
+ *
  */
 export class NatInstanceImage extends LookupMachineImage {
   constructor() {
@@ -377,4 +400,17 @@ function isOutboundAllowed(direction: NatTrafficDirection) {
 
 function isInboundAllowed(direction: NatTrafficDirection) {
   return direction === NatTrafficDirection.INBOUND_AND_OUTBOUND;
+}
+
+/**
+ * Token-aware pick index function
+ */
+function pickN(i: number, xs: string[]) {
+  if (Token.isUnresolved(xs)) { return Fn.select(i, xs); }
+
+  if (i >= xs.length) {
+    throw new Error(`Cannot get element ${i} from ${xs}`);
+  }
+
+  return xs[i];
 }
