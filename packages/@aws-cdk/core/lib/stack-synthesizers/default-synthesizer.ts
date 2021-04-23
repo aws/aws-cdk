@@ -398,7 +398,7 @@ export class DefaultStackSynthesizer extends StackSynthesizer {
   /**
    * Returns the qualifier.
    */
-   public get qualifier(): string {
+  public get qualifier(): string {
     if (!this._qualifier) {
       throw new Error('qualifier getter can only be called after the synthesizer has been bound to a Stack');
     }
