@@ -436,12 +436,14 @@ export interface MultipartUserDataOptions {
  *
  */
 export class MultipartUserData extends UserData {
-  private static readonly USE_PART_ERROR = 'MultipartUserData does not support this operation. Please add part using addPart.';
+  private static readonly USE_PART_ERROR = 'MultipartUserData does not support this operation. Please use addUserDataPartForCommands().';
   private static readonly BOUNDRY_PATTERN = '[^a-zA-Z0-9()+,-./:=?]';
 
   private parts: MultipartBody[] = [];
 
   private opts: MultipartUserDataOptions;
+
+  private defaultUserData?: UserData;
 
   constructor(opts?: MultipartUserDataOptions) {
     super();
@@ -484,6 +486,16 @@ export class MultipartUserData extends UserData {
     this.addPart(MultipartBody.fromUserData(userData, contentType));
   }
 
+  /**
+   * Adds a multipart part based on a UserData object. This UserData is always added
+   * as a shell script. The UserData added by this method will also be the target
+   * of calls to the `add*Command` methods on this MultipartUserData object.
+   */
+  public addUserDataPartForCommands(userData: UserData) {
+    this.addUserDataPart(userData, MultipartBody.SHELL_SCRIPT);
+    this.defaultUserData = userData;
+  }
+
   public render(): string {
     const boundary = this.opts.partsSeparator;
     // Now build final MIME archive - there are few changes from MIME message which are accepted by cloud-init:
@@ -510,23 +522,43 @@ export class MultipartUserData extends UserData {
     return resultArchive.join('\n');
   }
 
-  public addS3DownloadCommand(_params: S3DownloadOptions): string {
-    throw new Error(MultipartUserData.USE_PART_ERROR);
+  public addS3DownloadCommand(params: S3DownloadOptions): string {
+    if (this.defaultUserData) {
+      return this.defaultUserData.addS3DownloadCommand(params);
+    } else {
+      throw new Error(MultipartUserData.USE_PART_ERROR);
+    }
   }
 
-  public addExecuteFileCommand(_params: ExecuteFileOptions): void {
-    throw new Error(MultipartUserData.USE_PART_ERROR);
+  public addExecuteFileCommand(params: ExecuteFileOptions): void {
+    if (this.defaultUserData) {
+      this.defaultUserData.addExecuteFileCommand(params);
+    } else {
+      throw new Error(MultipartUserData.USE_PART_ERROR);
+    }
   }
 
-  public addSignalOnExitCommand(_resource: Resource): void {
-    throw new Error(MultipartUserData.USE_PART_ERROR);
+  public addSignalOnExitCommand(resource: Resource): void {
+    if (this.defaultUserData) {
+      this.defaultUserData.addSignalOnExitCommand(resource);
+    } else {
+      throw new Error(MultipartUserData.USE_PART_ERROR);
+    }
   }
 
-  public addCommands(..._commands: string[]): void {
-    throw new Error(MultipartUserData.USE_PART_ERROR);
+  public addCommands(...commands: string[]): void {
+    if (this.defaultUserData) {
+      this.defaultUserData.addCommands(...commands);
+    } else {
+      throw new Error(MultipartUserData.USE_PART_ERROR);
+    }
   }
 
-  public addOnExitCommands(..._commands: string[]): void {
-    throw new Error(MultipartUserData.USE_PART_ERROR);
+  public addOnExitCommands(...commands: string[]): void {
+    if (this.defaultUserData) {
+      this.defaultUserData.addOnExitCommands(...commands);
+    } else {
+      throw new Error(MultipartUserData.USE_PART_ERROR);
+    }
   }
 }
