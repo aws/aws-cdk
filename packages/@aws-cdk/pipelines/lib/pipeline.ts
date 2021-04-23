@@ -277,7 +277,6 @@ export class CdkPipeline extends CoreConstruct {
       },
     });
     this._stages.push(stage);
-    this.updateArtifactBucketTags();
     return stage;
   }
 
@@ -296,6 +295,11 @@ export class CdkPipeline extends CoreConstruct {
     }
 
     return new StackOutput(this._outputArtifacts[stack.artifactId].atPath('outputs.json'), cfnOutput.logicalId);
+  }
+
+  protected prepare(): void {
+    // TODO doesn't work. Happens too early
+    this.updateArtifactBucketTags();
   }
 
   /**
