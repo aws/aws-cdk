@@ -161,7 +161,7 @@ nodeunitShim({
 
   'Automatic dependencies inside a stage are available immediately after synth'(test: Test) {
     // GIVEN
-    const app = new App();
+    const app = new App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
     const stage = new Stage(app, 'MyStage');
     const stack1 = new Stack(stage, 'Stack1');
     const stack2 = new Stack(stage, 'Stack2');

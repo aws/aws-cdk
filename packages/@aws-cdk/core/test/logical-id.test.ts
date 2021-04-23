@@ -1,7 +1,8 @@
 import { Construct } from 'constructs';
 import { nodeunitShim, Test } from 'nodeunit-shim';
-import { CfnElement, CfnResource, Stack } from '../lib';
+import { App, CfnElement, CfnResource, Stack } from '../lib';
 import { toCloudFormation } from './util';
+import * as cxapi from '@aws-cdk/cx-api';
 
 /**
  * These tests are executed once (for specific ID schemes)
@@ -236,7 +237,12 @@ nodeunitShim({
       }
     }
 
-    const stack = new MyStack();
+    const app = new App({
+      context: {
+        [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false,
+      },
+    });
+    const stack = new MyStack(app);
     new CfnResource(stack, 'A', { type: 'Type::Of::A' });
     const group = new Construct(stack, 'Group');
     new CfnResource(group, 'B', { type: 'Type::Of::B' });

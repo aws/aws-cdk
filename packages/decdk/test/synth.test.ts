@@ -1,4 +1,5 @@
 import * as cdk from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
 import * as fs from 'fs';
 import * as reflect from 'jsii-reflect';
 import * as path from 'path';
@@ -39,6 +40,7 @@ for (const templateFile of fs.readdirSync(dir)) {
     const app = new cdk.App({
       context: {
         ...futureFlags,
+        [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false,
       }
     });
     const stackName = stackNameFromFileName(templateFile);
