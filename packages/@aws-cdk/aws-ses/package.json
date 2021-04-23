@@ -70,6 +70,7 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
+    "@types/aws-lambda": "^8.10.75",
     "@types/nodeunit": "^0.0.31",
     "cdk-build-tools": "0.0.0",
     "cdk-integ-tools": "0.0.0",
