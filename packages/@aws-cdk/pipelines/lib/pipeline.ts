@@ -2,7 +2,7 @@ import * as path from 'path';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
-import { Annotations, App, Aws, CfnOutput, DefaultStackSynthesizer, PhysicalName, Stack, Stage, Tags } from '@aws-cdk/core';
+import { Annotations, App, Aws, CfnOutput, DefaultStackSynthesizer, PhysicalName, Stack, Stage } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { AssetType, DeployCdkStackAction, PublishAssetsAction, UpdatePipelineAction } from './actions';
 import { appOf, assemblyBuilderOf } from './private/construct-internals';
@@ -298,7 +298,6 @@ export class CdkPipeline extends CoreConstruct {
   }
 
   protected prepare(): void {
-    // TODO doesn't work. Happens too early
     this.updateArtifactBucketTags();
   }
 
@@ -331,11 +330,16 @@ export class CdkPipeline extends CoreConstruct {
 
     const buckets = [
       this._pipeline.artifactBucket,
-      ...Object.keys(this._pipeline.crossRegionSupport).map((key) => this._pipeline.crossRegionSupport[key].replicationBucket)
+      ...Object.keys(this._pipeline.crossRegionSupport).map((key) => this._pipeline.crossRegionSupport[key].replicationBucket),
     ];
 
+    // TODO can the tags be added to the replication buckets in another stack?
     buckets.forEach((bucket) => {
-      Tags.of(bucket).add(`aws-cdk:${this._stackSynthesizer.qualifier}:read-from-account`, `,${accounts.join(',')},`);
+      // TODO hack
+      (bucket.node.defaultChild as any).addOverride('Properties.Tags.0.Key', `aws-cdk:${this._stackSynthesizer.qualifier}:read-from-account`);
+      (bucket.node.defaultChild as any).addOverride('Properties.Tags.0.Value', `,${accounts.join(',')},`);
+      // TODO why does this not work?
+      // Tags.of(bucket).add(`aws-cdk:${this._stackSynthesizer.qualifier}:read-from-account`, `,${accounts.join(',')},`);
     });
   }
 
@@ -357,7 +361,7 @@ export class CdkPipeline extends CoreConstruct {
     }
   }
 
-  private* validateRequestedOutputs(): IterableIterator<string> {
+  private * validateRequestedOutputs(): IterableIterator<string> {
     const artifactIds = this.stackActions.map(s => s.stackArtifactId);
 
     for (const artifactId of Object.keys(this._outputArtifacts)) {

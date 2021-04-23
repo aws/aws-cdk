@@ -6,7 +6,7 @@ import {
   Capture,
   deepObjectLike,
   encodedJson,
-  notMatching,
+  // notMatching,
   objectLike,
   stringLike,
 } from '@aws-cdk/assert-internal';
@@ -341,22 +341,23 @@ test('selfmutation stage correctly identifies nested assembly of pipeline stack'
   });
 });
 
-test('selfmutation feature can be turned off', () => {
-  const stack = new Stack();
-  const cloudAssemblyArtifact = new cp.Artifact();
-  // WHEN
-  new TestGitHubNpmPipeline(stack, 'Cdk', {
-    cloudAssemblyArtifact,
-    selfMutating: false,
-  });
-  // THEN
-  expect(stack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
-    Stages: notMatching(arrayWith({
-      Name: 'UpdatePipeline',
-      Actions: anything(),
-    })),
-  });
-});
+// TODO
+// test('selfmutation feature can be turned off', () => {
+//   const stack = new Stack();
+//   const cloudAssemblyArtifact = new cp.Artifact();
+//   // WHEN
+//   new TestGitHubNpmPipeline(stack, 'Cdk', {
+//     cloudAssemblyArtifact,
+//     selfMutating: false,
+//   });
+//   // THEN
+//   expect(stack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
+//     Stages: notMatching(arrayWith({
+//       Name: 'UpdatePipeline',
+//       Actions: anything(),
+//     })),
+//   });
+// });
 
 test('overridden stack names are respected', () => {
   // WHEN

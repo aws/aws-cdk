@@ -241,8 +241,8 @@ export class DeployCdkStackAction implements codepipeline.IAction {
     this.executeRunOrder = props.executeRunOrder ?? this.prepareRunOrder + 1;
     this.stackName = props.stackName;
     const account = Arn.parse(props.actionRole.roleArn).account;
-    if (!account) throw new Error('Expecting actionRole to have an account')
-    this.account = account
+    if (!account) throw new Error('Expecting actionRole to have an account');
+    this.account = account;
     const baseActionName = props.baseActionName ?? this.stackName;
     const changeSetName = props.changeSetName ?? 'PipelineChange';
 
