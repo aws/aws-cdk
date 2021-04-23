@@ -331,7 +331,6 @@ export class CdkPipeline extends CoreConstruct {
     ];
 
     buckets.forEach((bucket) => {
-      // TODO qualifier template won't work
       Tags.of(bucket).add(`aws-cdk:${this._stackSynthesizer.qualifier}:read-from-account`, `,${accounts.join(',')},`);
     });
   }
