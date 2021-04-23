@@ -151,7 +151,7 @@ describe('basic pipeline', () => {
     // THEN
     expect(pipelineStack).toHaveResourceLike('AWS::CodeBuild::Project', {
       Environment: {
-        Image: 'aws/codebuild/standard:4.0',
+        Image: 'aws/codebuild/standard:5.0',
       },
       Source: {
         BuildSpec: encodedJson(deepObjectLike({
@@ -219,7 +219,7 @@ describe('basic pipeline', () => {
       },
       Environment: objectLike({
         PrivilegedMode: false,
-        Image: 'aws/codebuild/standard:4.0',
+        Image: 'aws/codebuild/standard:5.0',
       }),
     });
 
@@ -250,7 +250,7 @@ describe('basic pipeline', () => {
         })),
       },
       Environment: objectLike({
-        Image: 'aws/codebuild/standard:4.0',
+        Image: 'aws/codebuild/standard:5.0',
         PrivilegedMode: true,
       }),
     });
@@ -276,7 +276,7 @@ describe('basic pipeline', () => {
     // THEN
     expect(stack2).toHaveResourceLike('AWS::CodeBuild::Project', {
       Environment: {
-        Image: 'aws/codebuild/standard:4.0',
+        Image: 'aws/codebuild/standard:5.0',
       },
       Source: {
         BuildSpec: encodedJson(deepObjectLike({
