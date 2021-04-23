@@ -219,24 +219,20 @@ nodeunitShim({
 
     const assembly = app.synth();
 
-    test.deepEqual(assembly.getStackByName(parentStack.stackName).template, {
-      Resources: {
-        ParentResource: {
-          Type: 'Parent::Resource',
-          Properties: {
-            RefToChildResource: 'parentstackchildstack83c5ackchildresource852877eeb919bda2008e',
-          },
+    test.deepEqual(assembly.getStackByName(parentStack.stackName).template?.Resources, {
+      ParentResource: {
+        Type: 'Parent::Resource',
+        Properties: {
+          RefToChildResource: 'parentstackchildstack83c5ackchildresource852877eeb919bda2008e',
         },
       },
     });
 
-    test.deepEqual(assembly.getStackByName(childStack.stackName).template, {
-      Resources: {
-        ChildResource8C37244D: {
-          Type: 'My::Resource',
-          Properties: {
-            resourceName: 'parentstackchildstack83c5ackchildresource852877eeb919bda2008e',
-          },
+    test.deepEqual(assembly.getStackByName(childStack.stackName).template?.Resources, {
+      ChildResource8C37244D: {
+        Type: 'My::Resource',
+        Properties: {
+          resourceName: 'parentstackchildstack83c5ackchildresource852877eeb919bda2008e',
         },
       },
     });
