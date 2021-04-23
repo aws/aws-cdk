@@ -135,7 +135,7 @@ export interface DefaultStackSynthesizerProps {
    * Qualifier to disambiguate multiple environments in the same account
    *
    * You can use this and leave the other naming properties empty if you have deployed
-   * the bootstrap environment with standard names but only differnet qualifiers.
+   * the bootstrap environment with standard names but only different qualifiers.
    *
    * @default - Value of context key '@aws-cdk/core:bootstrapQualifier' if set, otherwise `DefaultStackSynthesizer.DEFAULT_QUALIFIER`
    */
@@ -222,7 +222,7 @@ export class DefaultStackSynthesizer extends StackSynthesizer {
   private _cloudFormationExecutionRoleArn?: string;
   private fileAssetPublishingRoleArn?: string;
   private imageAssetPublishingRoleArn?: string;
-  private qualifier?: string;
+  private _qualifier?: string;
   private bucketPrefix?: string
 
   private readonly files: NonNullable<cxschema.AssetManifest['files']> = {};
@@ -258,7 +258,7 @@ export class DefaultStackSynthesizer extends StackSynthesizer {
     this._stack = stack;
 
     const qualifier = this.props.qualifier ?? stack.node.tryGetContext(BOOTSTRAP_QUALIFIER_CONTEXT) ?? DefaultStackSynthesizer.DEFAULT_QUALIFIER;
-    this.qualifier = qualifier;
+    this._qualifier = qualifier;
 
     // Function to replace placeholders in the input string as much as possible
     //
@@ -367,7 +367,7 @@ export class DefaultStackSynthesizer extends StackSynthesizer {
    */
   public synthesize(session: ISynthesisSession): void {
     assertBound(this.stack);
-    assertBound(this.qualifier);
+    assertBound(this._qualifier);
 
     // Must be done here -- if it's done in bind() (called in the Stack's constructor)
     // then it will become impossible to set context after that.
@@ -375,7 +375,7 @@ export class DefaultStackSynthesizer extends StackSynthesizer {
     // If it's done AFTER _synthesizeTemplate(), then the template won't contain the
     // right constructs.
     if (this.props.generateBootstrapVersionRule ?? true) {
-      addBootstrapVersionRule(this.stack, MIN_BOOTSTRAP_STACK_VERSION, this.qualifier);
+      addBootstrapVersionRule(this.stack, MIN_BOOTSTRAP_STACK_VERSION, this._qualifier);
     }
 
     this.synthesizeStackTemplate(this.stack, session);
@@ -390,9 +390,19 @@ export class DefaultStackSynthesizer extends StackSynthesizer {
       cloudFormationExecutionRoleArn: this._cloudFormationExecutionRoleArn,
       stackTemplateAssetObjectUrl: templateManifestUrl,
       requiresBootstrapStackVersion: MIN_BOOTSTRAP_STACK_VERSION,
-      bootstrapStackVersionSsmParameter: `/cdk-bootstrap/${this.qualifier}/version`,
+      bootstrapStackVersionSsmParameter: `/cdk-bootstrap/${this._qualifier}/version`,
       additionalDependencies: [artifactId],
     });
+  }
+
+  /**
+   * Returns the qualifier.
+   */
+   public get qualifier(): string {
+    if (!this._qualifier) {
+      throw new Error('qualifier getter can only be called after the synthesizer has been bound to a Stack');
+    }
+    return this._qualifier;
   }
 
   /**
@@ -479,7 +489,7 @@ export class DefaultStackSynthesizer extends StackSynthesizer {
       properties: {
         file: manifestFile,
         requiresBootstrapStackVersion: MIN_BOOTSTRAP_STACK_VERSION,
-        bootstrapStackVersionSsmParameter: `/cdk-bootstrap/${this.qualifier}/version`,
+        bootstrapStackVersionSsmParameter: `/cdk-bootstrap/${this._qualifier}/version`,
       },
     });
 
