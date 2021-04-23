@@ -84,6 +84,8 @@
     "@aws-cdk/assert-internal": "0.0.0"
   },
   "dependencies": {
+    "@aws-cdk/aws-apigateway": "0.0.0",
+    "@aws-cdk/aws-batch": "0.0.0",
     "@aws-cdk/aws-codebuild": "0.0.0",
     "@aws-cdk/aws-codepipeline": "0.0.0",
     "@aws-cdk/aws-ec2": "0.0.0",
@@ -104,6 +106,8 @@
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
+    "@aws-cdk/aws-apigateway": "0.0.0",
+    "@aws-cdk/aws-batch": "0.0.0",
     "@aws-cdk/aws-codebuild": "0.0.0",
     "@aws-cdk/aws-codepipeline": "0.0.0",
     "@aws-cdk/aws-ec2": "0.0.0",
@@ -132,6 +136,7 @@
       "docs-public-apis:@aws-cdk/aws-events-targets.SfnStateMachine.machine",
       "docs-public-apis:@aws-cdk/aws-events-targets.SnsTopic.topic",
       "docs-public-apis:@aws-cdk/aws-events-targets.SqsQueue.queue",
+      "docs-public-apis:@aws-cdk/aws-events-targets.ApiGateway.restApi",
       "docs-public-apis:@aws-cdk/aws-events-targets.ContainerOverride",
       "props-default-doc:@aws-cdk/aws-events-targets.ContainerOverride.environment",
       "props-default-doc:@aws-cdk/aws-events-targets.EcsTaskProps.containerOverrides"
