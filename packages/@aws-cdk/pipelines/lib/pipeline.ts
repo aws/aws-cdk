@@ -2,7 +2,7 @@ import * as path from 'path';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
-import { Annotations, App, Aws, CfnOutput, PhysicalName, Stack, Stage, Tags } from '@aws-cdk/core';
+import { Annotations, App, Aws, CfnOutput, DefaultStackSynthesizer, PhysicalName, Stack, Stage, Tags } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { AssetType, DeployCdkStackAction, PublishAssetsAction, UpdatePipelineAction } from './actions';
 import { appOf, assemblyBuilderOf } from './private/construct-internals';
@@ -139,6 +139,7 @@ export class CdkPipeline extends CoreConstruct {
   private readonly _stages: CdkStage[] = [];
   private readonly _outputArtifacts: Record<string, codepipeline.Artifact> = {};
   private readonly _cloudAssemblyArtifact: codepipeline.Artifact;
+  private readonly _stackSynthesizer: DefaultStackSynthesizer;
 
   constructor(scope: Construct, id: string, props: CdkPipelineProps) {
     super(scope, id);
@@ -149,6 +150,10 @@ export class CdkPipeline extends CoreConstruct {
 
     this._cloudAssemblyArtifact = props.cloudAssemblyArtifact;
     const pipelineStack = Stack.of(this);
+    if (!(pipelineStack.synthesizer instanceof DefaultStackSynthesizer)) {
+      throw new Error('`DefaultStackSynthesizer` must be used with a CdkPipeline. use the \'DefaultStackSynthesizer\' synthesizer, or set the \'@aws-cdk/core:newStyleStackSynthesis\' context key.');
+    }
+    this._stackSynthesizer = pipelineStack.synthesizer;
 
     if (props.codePipeline) {
       if (props.pipelineName) {
@@ -327,7 +332,7 @@ export class CdkPipeline extends CoreConstruct {
 
     buckets.forEach((bucket) => {
       // TODO qualifier template won't work
-      Tags.of(bucket).add('aws-cdk:${Qualifier}:read-from-account', `,${accounts.join(',')},`);
+      Tags.of(bucket).add(`aws-cdk:${this._stackSynthesizer.qualifier}:read-from-account`, `,${accounts.join(',')},`);
     });
   }
 
