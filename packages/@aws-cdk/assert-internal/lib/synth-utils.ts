@@ -10,7 +10,7 @@ export class SynthUtils {
   public static synthesize(stack: core.Stack, options: core.StageSynthesisOptions = { }): cxapi.CloudFormationStackArtifact {
     // always synthesize against the root (be it an App or whatever) so all artifacts will be included
     const assembly = synthesizeApp(stack, options);
-    return assembly.getStackArtifact(stack.artifactId);
+    return stripNewStyleSynthCfnElements(assembly.getStackArtifact(stack.artifactId));
   }
 
   /**
@@ -57,14 +57,14 @@ export class SynthUtils {
       return JSON.parse(fs.readFileSync(path.join(assembly.directory, stack.templateFile)).toString('utf-8'));
     }
 
-    return assembly.getStackArtifact(stack.artifactId);
+    return stripNewStyleSynthCfnElements(assembly.getStackArtifact(stack.artifactId));
   }
 }
 
 /**
  * Synthesizes the app in which a stack resides and returns the cloud assembly object.
  */
-function synthesizeApp(stack: core.Stack, options: core.StageSynthesisOptions) {
+function synthesizeApp(stack: core.Stack, options: core.StageSynthesisOptions): cxapi.CloudAssembly {
   const root = stack.node.root;
   if (!core.Stage.isStage(root)) {
     throw new Error('unexpected: all stacks must be part of a Stage or an App');
@@ -77,6 +77,23 @@ function synthesizeApp(stack: core.Stack, options: core.StageSynthesisOptions) {
     force,
     ...options,
   });
+}
+
+function stripNewStyleSynthCfnElements(stackArtifact: cxapi.CloudFormationStackArtifact): cxapi.CloudFormationStackArtifact {
+  const synthesizedTemplate = stackArtifact.template;
+
+  // if new-style synthesis is not explicitly set, remove the extra generated Rule and Parameter from the synthesized template,
+  // to avoid changing many tests that rely on the template being exactly what it is
+  delete synthesizedTemplate?.Rules?.CheckBootstrapVersion;
+  if (Object.keys(synthesizedTemplate?.Rules ?? {}).length === 0) {
+    delete synthesizedTemplate?.Rules;
+  }
+  delete synthesizedTemplate?.Parameters?.BootstrapVersion;
+  if (Object.keys(synthesizedTemplate?.Parameters ?? {}).length === 0) {
+    delete synthesizedTemplate?.Parameters;
+  }
+
+  return stackArtifact;
 }
 
 export interface SubsetOptions {

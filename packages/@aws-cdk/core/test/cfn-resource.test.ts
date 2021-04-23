@@ -15,11 +15,9 @@ nodeunitShim({
         test.notEqual(val, null);
       };
 
-      test.deepEqual(app.synth().getStackByName(stack.stackName).template, {
-        Resources: {
-          DefaultResource: {
-            Type: 'Test::Resource::Fake',
-          },
+      test.deepEqual(app.synth().getStackByName(stack.stackName).template?.Resources, {
+        DefaultResource: {
+          Type: 'Test::Resource::Fake',
         },
       });
       test.ok(called, 'renderProperties must be called called');
@@ -37,13 +35,11 @@ nodeunitShim({
         },
       });
 
-      test.deepEqual(app.synth().getStackByName(stack.stackName).template, {
-        Resources: {
-          Resource: {
-            Type: 'Test::Resource::Fake',
-            Properties: {
-              FakeProperty: false,
-            },
+      test.deepEqual(app.synth().getStackByName(stack.stackName).template?.Resources, {
+        Resource: {
+          Type: 'Test::Resource::Fake',
+          Properties: {
+            FakeProperty: false,
           },
         },
       });
@@ -62,13 +58,11 @@ nodeunitShim({
     resource.applyRemovalPolicy(core.RemovalPolicy.RETAIN);
 
     // THEN
-    test.deepEqual(app.synth().getStackByName(stack.stackName).template, {
-      Resources: {
-        DefaultResource: {
-          Type: 'Test::Resource::Fake',
-          DeletionPolicy: 'Retain',
-          UpdateReplacePolicy: 'Retain',
-        },
+    test.deepEqual(app.synth().getStackByName(stack.stackName).template?.Resources, {
+      DefaultResource: {
+        Type: 'Test::Resource::Fake',
+        DeletionPolicy: 'Retain',
+        UpdateReplacePolicy: 'Retain',
       },
     });
 
@@ -87,12 +81,10 @@ nodeunitShim({
     });
 
     // THEN
-    test.deepEqual(app.synth().getStackByName(stack.stackName).template, {
-      Resources: {
-        DefaultResource: {
-          Type: 'Test::Resource::Fake',
-          DeletionPolicy: 'Retain',
-        },
+    test.deepEqual(app.synth().getStackByName(stack.stackName).template?.Resources, {
+      DefaultResource: {
+        Type: 'Test::Resource::Fake',
+        DeletionPolicy: 'Retain',
       },
     });
 
@@ -109,13 +101,11 @@ nodeunitShim({
     resource.addMetadata('Beep', 'Boop');
 
     // THEN
-    test.deepEqual(app.synth().getStackByName(stack.stackName).template, {
-      Resources: {
-        DefaultResource: {
-          Type: 'Test::Resource::Fake',
-          Metadata: {
-            Beep: 'Boop',
-          },
+    test.deepEqual(app.synth().getStackByName(stack.stackName).template?.Resources, {
+      DefaultResource: {
+        Type: 'Test::Resource::Fake',
+        Metadata: {
+          Beep: 'Boop',
         },
       },
     });
@@ -156,10 +146,11 @@ nodeunitShim({
     r2.node.addDependency(subtree);
 
     // THEN - only R2 is synthesized
-    test.deepEqual(app.synth().getStackByName(stack.stackName).template, {
-      Resources: { R2: { Type: 'Foo::R2' } },
-
-      // No DependsOn!
+    test.deepEqual(app.synth().getStackByName(stack.stackName).template?.Resources, {
+      R2: {
+        Type: 'Foo::R2',
+        // No DependsOn!
+      },
     });
 
     test.done();

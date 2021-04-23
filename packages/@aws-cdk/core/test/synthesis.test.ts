@@ -67,8 +67,9 @@ nodeunitShim({
 
     class SynthesizeMe extends cdk.Stack {
       constructor() {
-        super(undefined as any, 'id');
-
+        super(undefined as any, 'id', {
+          synthesizer: new cdk.LegacyStackSynthesizer(),
+        });
         this.node.addValidation({
           validate: () => {
             calls.push('validate');

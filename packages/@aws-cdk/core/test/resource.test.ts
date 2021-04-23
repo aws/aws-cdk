@@ -783,13 +783,9 @@ nodeunitShim({
     const assembly = app.synth();
     const templateB = assembly.getStackByName(stackB.stackName).template;
 
-    test.deepEqual(templateB, {
-      Resources: {
-        Resource: {
-          Type: 'R',
-          // Notice absence of 'DependsOn'
-        },
-      },
+    test.deepEqual(templateB?.Resources?.Resource, {
+      Type: 'R',
+      // Notice absence of 'DependsOn'
     });
     test.deepEqual(stackB.dependencies.map(s => s.node.id), ['StackA']);
 
