@@ -1,4 +1,4 @@
-import { countResources, expect as cdkExpect, haveResource, SynthUtils } from '@aws-cdk/assert/internal';
+import { countResources, expect as cdkExpect, haveResource, SynthUtils } from '@aws-cdk/assert-internal';
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
 import { Stack } from '@aws-cdk/core';
