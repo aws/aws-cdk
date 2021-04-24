@@ -279,6 +279,27 @@ export interface IBucket extends IResource {
    * @param options Options for adding the rule
    */
   onCloudTrailWriteObject(id: string, options?: OnCloudTrailBucketEventOptions): events.Rule;
+
+  /**
+   * Adds a bucket notification event destination.
+   * @param event The event to trigger the notification
+   * @param dest The notification destination (Lambda, SNS Topic or SQS Queue)
+   *
+   * @param filters S3 object key filter rules to determine which objects
+   * trigger this event. Each filter must include a `prefix` and/or `suffix`
+   * that will be matched against the s3 object key. Refer to the S3 Developer Guide
+   * for details about allowed filter rules.
+   *
+   * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/NotificationHowTo.html#notification-how-to-filtering
+   *
+   * @example
+   *
+   *    bucket.addEventNotification(EventType.OnObjectCreated, myLambda, 'home/myusername/*')
+   *
+   * @see
+   * https://docs.aws.amazon.com/AmazonS3/latest/dev/NotificationHowTo.html
+   */
+   addEventNotification(event: EventType, dest: IBucketNotificationDestination, ...filters: NotificationKeyFilter[]);
 }
 
 /**

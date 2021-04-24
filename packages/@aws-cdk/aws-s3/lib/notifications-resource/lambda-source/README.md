@@ -2,7 +2,7 @@
 
 ```shell
 pip3 install -U pip pipenv
-pipenv install
+pipenv install --dev
 ```
 
 ## Running unit tests

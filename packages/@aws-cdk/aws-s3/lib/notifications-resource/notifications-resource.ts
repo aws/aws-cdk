@@ -1,6 +1,6 @@
 import * as crypto from 'crypto';
 import * as cdk from '@aws-cdk/core';
-import { BucketBase, EventType, NotificationKeyFilter } from '../bucket';
+import { IBucket, EventType, NotificationKeyFilter } from '../bucket';
 import { BucketNotificationDestinationType, IBucketNotificationDestination } from '../destination';
 import { NotificationsResourceHandler } from './notifications-resource-handler';
 
@@ -11,11 +11,8 @@ import { Construct } from '@aws-cdk/core';
 interface NotificationsProps {
   /**
    * The bucket to manage notifications for.
-   *
-   * This cannot be an `IBucket` because the bucket maintains the 1:1
-   * relationship with this resource.
    */
-  bucket: BucketBase;
+  bucket: IBucket;
 }
 
 /**
@@ -38,7 +35,7 @@ export class BucketNotifications extends Construct {
   private readonly queueNotifications = new Array<QueueConfiguration>();
   private readonly topicNotifications = new Array<TopicConfiguration>();
   private resource?: cdk.CfnResource;
-  private readonly bucket: BucketBase;
+  private readonly bucket: IBucket;
 
   constructor(scope: Construct, id: string, props: NotificationsProps) {
     super(scope, id);
@@ -59,7 +56,10 @@ export class BucketNotifications extends Construct {
     // resolve target. this also provides an opportunity for the target to e.g. update
     // policies to allow this notification to happen.
     const targetProps = target.bind(this, this.bucket);
-    const hashOfTarget = crypto.createHash('md5').update(targetProps.arn).digest('hex');
+    const hashOfTarget = crypto.createHash('md5').update(JSON.stringify({
+      event,
+      target: cdk.Stack.of(resource).resolve(targetProps.arn),
+    })).digest('hex');
     const commonConfig: CommonConfiguration = {
       Id: hashOfTarget,
       Events: [event],

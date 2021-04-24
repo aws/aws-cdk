@@ -16,10 +16,12 @@ def handler(event: dict, context):
             config = merge_in_config(config, in_config)
         s3.put_bucket_notification_configuration(Bucket=bucket, NotificationConfiguration=config)
         response_status = "SUCCESS"
+        error_message = ""
     except Exception as e:
         print("Failed to put bucket notification configuration:", e)
         response_status = "FAILED"
-    submit_response(event, context, response_status)
+        error_message = f"Error: {str(e)}. "
+    submit_response(event, context, response_status, error_message)
 
 
 def prepare_config(config: dict, in_config: dict, old_config: Optional[dict]) -> dict:
@@ -43,20 +45,16 @@ def ids(configs: list) -> List[str]:
 
 
 def merge_in_config(config: dict, in_config: dict) -> dict:
-    for i in CONFIG_TYPES:
-        extend_config(config, i, in_config)
+    for config_type in CONFIG_TYPES:
+        config[config_type].extend(in_config[config_type])
     return config
 
 
-def extend_config(config: dict, config_type: str, in_config: dict):
-    config[config_type].extend(in_config[config_type])
-
-
-def submit_response(event: dict, context, response_status: str):
+def submit_response(event: dict, context, response_status: str, error_message: str = ""):
     response_body = json.dumps(
         {
             "Status": response_status,
-            "Reason": f"See the details in CloudWatch Log Stream: {context.log_stream_name}",
+            "Reason": f"{error_message}See the details in CloudWatch Log Stream: {context.log_stream_name}",
             "PhysicalResourceId": event.get("PhysicalResourceId") or event["LogicalResourceId"],
             "StackId": event["StackId"],
             "RequestId": event["RequestId"],
