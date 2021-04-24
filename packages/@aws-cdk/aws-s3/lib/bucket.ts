@@ -299,7 +299,7 @@ export interface IBucket extends IResource {
    * @see
    * https://docs.aws.amazon.com/AmazonS3/latest/dev/NotificationHowTo.html
    */
-   addEventNotification(event: EventType, dest: IBucketNotificationDestination, ...filters: NotificationKeyFilter[]): void;
+  addEventNotification(event: EventType, dest: IBucketNotificationDestination, ...filters: NotificationKeyFilter[]): void;
 }
 
 /**
