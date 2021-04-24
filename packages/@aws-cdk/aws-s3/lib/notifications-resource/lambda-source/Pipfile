@@ -6,9 +6,11 @@ name = "pypi"
 [packages]
 
 [dev-packages]
-boto3 = "*"
+# Pinned version is the same bundled with the Python 3.8 lambda runtime
+boto3 = "1.17.42"
 moto = "*"
 coverage = "*"
+mypy = "*"
 
 [requires]
 python_version = "3.8"

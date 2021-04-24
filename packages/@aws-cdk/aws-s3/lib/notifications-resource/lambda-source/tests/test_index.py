@@ -3,8 +3,8 @@ import unittest
 from urllib.request import Request
 import uuid
 from unittest.mock import patch, MagicMock
-import boto3
-from moto.s3 import mock_s3
+import boto3  # type: ignore
+from moto.s3 import mock_s3  # type: ignore
 
 bucket_name = "fake_bucket"
 create_event = {
@@ -160,9 +160,9 @@ class LambdaTest(unittest.TestCase):
         self.assertEqual(["x"], ids)
 
     def test_merge_in_config(self):
-        # GIVEN an empty in_config and an empty config
+        # GIVEN an empty in_config and an empty current_config
         from src import index
-        config = {
+        current_config = {
             "TopicConfigurations": [],
             "QueueConfigurations": [],
             "LambdaFunctionConfigurations": [],
@@ -172,9 +172,10 @@ class LambdaTest(unittest.TestCase):
             "QueueConfigurations": [],
             "LambdaFunctionConfigurations": [],
         }
+        old_config = {}
 
         # WHEN merging
-        index.merge_in_config(config, in_config)
+        config = index.prepare_config(current_config, in_config, old_config, True)
 
         # THEN config and in_config should be equal
         self.assertIsNot(config, in_config)
@@ -186,7 +187,7 @@ class LambdaTest(unittest.TestCase):
     def test_merge_in_extend(self):
         # GIVEN an "QueueConfigurations" entry in_config and an empty config
         from src import index
-        config = {
+        current_config = {
             "TopicConfigurations": [],
             "QueueConfigurations": [],
             "LambdaFunctionConfigurations": [],
@@ -196,9 +197,10 @@ class LambdaTest(unittest.TestCase):
             "QueueConfigurations": ["new_entry"],
             "LambdaFunctionConfigurations": [],
         }
+        old_config = {}
 
         # WHEN merging
-        index.merge_in_config(config, in_config)
+        config = index.prepare_config(current_config, in_config, old_config, True)
 
         # THEN config and in_config should be equal
         # AND QueueConfigurations should be extended
@@ -214,7 +216,7 @@ class LambdaTest(unittest.TestCase):
         # get_bucket_notification_configuration call
         from src import index
         current_config = {"ResponseMetadata": "foo"}
-        config = index.prepare_config(current_config, {}, {})
+        config = index.prepare_config(current_config, {}, {}, False)
         self.assertIsNone(config.get("ResponseMetadata"))
 
     def test_prepare_config_set_defaults(self):
@@ -224,7 +226,7 @@ class LambdaTest(unittest.TestCase):
         in_config = {}
 
         # WHEN calling prepare_config
-        config = index.prepare_config(current_config, in_config, {})
+        config = index.prepare_config(current_config, in_config, {}, False)
 
         # THEN set defaults as [] for all the config types
         expected_config = {"TopicConfigurations": [], "QueueConfigurations": [], "LambdaFunctionConfigurations": []}
@@ -260,6 +262,7 @@ class LambdaTest(unittest.TestCase):
         mock_call.assert_called()
         request: Request = mock_call.call_args[0][0]
         self.assertIsInstance(request, Request)
+        assert request.data is not None
         data = json.loads(request.data.decode())
         self.assertEqual("FAILED", data["Status"])
 
@@ -274,6 +277,7 @@ class LambdaTest(unittest.TestCase):
         mock_call.assert_called()
         request: Request = mock_call.call_args[0][0]
         self.assertIsInstance(request, Request)
+        assert request.data is not None
         data = json.loads(request.data.decode())
         self.assertEqual("SUCCESS", data["Status"])
         self.assertEqual(create_event["ResponseURL"], request.full_url)
