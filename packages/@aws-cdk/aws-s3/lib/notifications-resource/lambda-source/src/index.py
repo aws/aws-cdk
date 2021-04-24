@@ -1,4 +1,4 @@
-import json, urllib.request, boto3
+import copy, json, urllib.request, boto3  # type: ignore
 from typing import List
 
 s3 = boto3.client("s3")
@@ -24,12 +24,13 @@ def handler(event: dict, context):
     submit_response(event, context, response_status, error_message)
 
 
-def prepare_config(config: dict, in_config: dict, old_config: dict) -> dict:
+def prepare_config(current_config: dict, in_config: dict, old_config: dict) -> dict:
+    config = copy.deepcopy(current_config)
     if "ResponseMetadata" in config:
         del config["ResponseMetadata"]
     for config_type in CONFIG_TYPES:
-        in_config.setdefault(config_type, [])
         config.setdefault(config_type, [])
+        in_config.setdefault(config_type, [])
         filter_config(config, config_type, in_config, old_config)
     return config
 
@@ -49,7 +50,7 @@ def merge_in_config(config: dict, in_config: dict):
         config[config_type].extend(in_config[config_type])
 
 
-def submit_response(event: dict, context, response_status: str, error_message: str = ""):
+def submit_response(event: dict, context, response_status: str, error_message: str):
     response_body = json.dumps(
         {
             "Status": response_status,

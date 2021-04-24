@@ -154,7 +154,7 @@ class LambdaTest(unittest.TestCase):
         ids = index.ids([{}])
         self.assertEqual([], ids)
 
-    def test_empty_extract_ids(self):
+    def test_extract_ids_as_list(self):
         from src import index
         ids = index.ids([{"Id": "x"}, {}])
         self.assertEqual(["x"], ids)
@@ -213,18 +213,18 @@ class LambdaTest(unittest.TestCase):
         # Test to ensure we remove the "ResponseMetadata" returned by the
         # get_bucket_notification_configuration call
         from src import index
-        config = {"ResponseMetadata": "foo"}
-        index.prepare_config(config, {}, {})
+        current_config = {"ResponseMetadata": "foo"}
+        config = index.prepare_config(current_config, {}, {})
         self.assertIsNone(config.get("ResponseMetadata"))
 
     def test_prepare_config_set_defaults(self):
         # GIVEN both loaded configuration and new configuration have no default set
         from src import index
-        config = {}
+        current_config = {}
         in_config = {}
 
         # WHEN calling prepare_config
-        index.prepare_config(config, in_config, {})
+        config = index.prepare_config(current_config, in_config, {})
 
         # THEN set defaults as [] for all the config types
         expected_config = {"TopicConfigurations": [], "QueueConfigurations": [], "LambdaFunctionConfigurations": []}
@@ -240,10 +240,10 @@ class LambdaTest(unittest.TestCase):
         from src import index
 
         # WHEN calling submit_response
-        index.submit_response(create_event, MockContext(), "status")
+        index.submit_response(create_event, MockContext(), "SUCCESS", "")
 
         # THEN handle the error
-        # print error mesage to the console for debugging
+        # AND print error message to the console for debugging
         mock_print.assert_called_with(f"send(..) failed executing request.urlopen(..): {exception_message}")
 
     @mock_s3
@@ -343,6 +343,23 @@ class LambdaTest(unittest.TestCase):
         self.assertIsNotNone(queue_configuration_list)
         self.assertEqual(1, len(queue_configuration_list))
         self.assertEqual("my-function-hash", queue_configuration_list[0]["Id"])
+
+    @patch("urllib.request.urlopen")
+    def test_submit_response(self, mock_call: MagicMock):
+        # GIVEN we have an error doing the S3 update
+        expected_status = "FAILED"
+        error_message = "Some s3 error. "
+        context = MockContext()
+        expected_message = f"{error_message}See the details in CloudWatch Log Stream: {context.log_stream_name}"
+        from src import index
+
+        # WHEN calling submit_response
+        index.submit_response(create_event, context, expected_status, error_message)
+
+        # THEN include the status and reason in the payload to CFN
+        payload = json.loads(mock_call.mock_calls[0].args[0].data.decode())
+        self.assertEqual(expected_status, payload["Status"])
+        self.assertEqual(expected_message, payload["Reason"])
 
 
 if __name__ == "__main__":
