@@ -20,6 +20,7 @@
         "NotificationConfiguration": {
           "QueueConfigurations": [
             {
+              "Id": "50b43823cb4e648f98c3f1bc828e775f",
               "Events": [
                 "s3:ObjectCreated:*"
               ],
@@ -31,6 +32,7 @@
               }
             },
             {
+              "Id": "19d8b312b9b6443e8d54574dc78fc822",
               "Events": [
                 "s3:ObjectRemoved:*"
               ],
@@ -163,7 +165,10 @@
         "PolicyDocument": {
           "Statement": [
             {
-              "Action": "s3:PutBucketNotification",
+              "Action": [
+                "s3:PutBucketNotification",
+                "s3:GetBucketNotification"
+              ],
               "Effect": "Allow",
               "Resource": "*"
             }
@@ -220,6 +225,7 @@
         "NotificationConfiguration": {
           "QueueConfigurations": [
             {
+              "Id": "50b43823cb4e648f98c3f1bc828e775f",
               "Events": [
                 "s3:ObjectCreated:*"
               ],
