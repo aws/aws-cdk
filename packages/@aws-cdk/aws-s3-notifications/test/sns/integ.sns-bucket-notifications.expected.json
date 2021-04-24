@@ -98,6 +98,7 @@
         "NotificationConfiguration": {
           "TopicConfigurations": [
             {
+              "Id": "d734bdf93cfa3754e417ee0ac5c50c78",
               "Events": [
                 "s3:ObjectCreated:*"
               ],
@@ -106,6 +107,7 @@
               }
             },
             {
+              "Id": "762fd392ed3e84132fe83fe692773aa4",
               "Events": [
                 "s3:ObjectRemoved:*"
               ],
@@ -174,7 +176,10 @@
         "PolicyDocument": {
           "Statement": [
             {
-              "Action": "s3:PutBucketNotification",
+              "Action": [
+                "s3:PutBucketNotification",
+                "s3:GetBucketNotification"
+              ],
               "Effect": "Allow",
               "Resource": "*"
             }
@@ -203,7 +208,7 @@
             "Arn"
           ]
         },
-        "Runtime": "nodejs12.x",
+        "Runtime": "python3.8",
         "Timeout": 300
       },
       "DependsOn": [

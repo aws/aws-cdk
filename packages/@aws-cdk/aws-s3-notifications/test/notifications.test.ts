@@ -214,13 +214,14 @@ test('multiple subscriptions of the same type', () => {
     'NotificationConfiguration': {
       'QueueConfigurations': [
         {
-          'Id': '9ad49efe8af9afefb74eba1d9d3060be',
+          'Id': 'fb8322e14d119620ff92783f10bcc6a7',
           'Events': [
             's3:ObjectRemoved:Delete',
           ],
           'QueueArn': 'arn:aws:sqs:...:queue1',
         },
         {
+          'Id': '987d67417522189e37ff2ad2ff9618f4',
           'Events': [
             's3:ObjectRemoved:Delete',
           ],
@@ -256,6 +257,7 @@ test('prefix/suffix filters', () => {
     'NotificationConfiguration': {
       'QueueConfigurations': [
         {
+          'Id': '9ad49efe8af9afefb74eba1d9d3060be',
           'Events': [
             's3:ObjectRemoved:Delete',
           ],

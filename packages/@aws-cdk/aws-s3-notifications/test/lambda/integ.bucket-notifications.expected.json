@@ -20,6 +20,7 @@
         "NotificationConfiguration": {
           "LambdaFunctionConfigurations": [
             {
+              "Id": "8e5a74e3b15fcc14660265865ccba9db",
               "Events": [
                 "s3:ObjectCreated:*"
               ],
@@ -139,6 +140,7 @@
         "NotificationConfiguration": {
           "LambdaFunctionConfigurations": [
             {
+              "Id": "83acc700dfd2209b81f823f676ed7b32",
               "Events": [
                 "s3:ObjectRemoved:*"
               ],
@@ -215,7 +217,10 @@
         "PolicyDocument": {
           "Statement": [
             {
-              "Action": "s3:PutBucketNotification",
+              "Action": [
+                "s3:PutBucketNotification",
+                "s3:GetBucketNotification"
+              ],
               "Effect": "Allow",
               "Resource": "*"
             }
@@ -244,7 +249,7 @@
             "Arn"
           ]
         },
-        "Runtime": "nodejs12.x",
+        "Runtime": "python3.8",
         "Timeout": 300
       },
       "DependsOn": [
