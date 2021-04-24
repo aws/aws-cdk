@@ -1,5 +1,5 @@
 import json, urllib.request, boto3
-from typing import List, Optional
+from typing import List
 
 s3 = boto3.client("s3")
 CONFIG_TYPES = ["TopicConfigurations", "QueueConfigurations", "LambdaFunctionConfigurations"]
@@ -10,7 +10,7 @@ def handler(event: dict, context):
         props = event["ResourceProperties"]
         bucket = props["BucketName"]
         in_config = props["NotificationConfiguration"]
-        old_config = event.get("OldResourceProperties", {}).get("NotificationConfiguration")
+        old_config = event.get("OldResourceProperties", {}).get("NotificationConfiguration", {})
         config = prepare_config(s3.get_bucket_notification_configuration(Bucket=bucket), in_config, old_config)
         if event["RequestType"] != "Delete":
             config = merge_in_config(config, in_config)
@@ -24,7 +24,7 @@ def handler(event: dict, context):
     submit_response(event, context, response_status, error_message)
 
 
-def prepare_config(config: dict, in_config: dict, old_config: Optional[dict]) -> dict:
+def prepare_config(config: dict, in_config: dict, old_config: dict) -> dict:
     if "ResponseMetadata" in config:
         del config["ResponseMetadata"]
     for config_type in CONFIG_TYPES:
@@ -34,7 +34,7 @@ def prepare_config(config: dict, in_config: dict, old_config: Optional[dict]) ->
     return config
 
 
-def filter_config(config: dict, config_type: str, in_config: dict, old_config: Optional[dict]):
+def filter_config(config: dict, config_type: str, in_config: dict, old_config: dict):
     configs, in_ids = config[config_type], ids(in_config[config_type])
     in_ids.extend(ids(old_config.get(config_type, []) if old_config else []))
     config[config_type] = [item for item in configs if item["Id"] not in in_ids]
