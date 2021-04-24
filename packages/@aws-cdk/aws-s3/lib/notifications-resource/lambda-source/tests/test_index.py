@@ -174,10 +174,9 @@ class LambdaTest(unittest.TestCase):
         }
 
         # WHEN merging
-        final_config = index.merge_in_config(config, in_config)
+        index.merge_in_config(config, in_config)
 
         # THEN config and in_config should be equal
-        self.assertIs(config, final_config)
         self.assertIsNot(config, in_config)
         self.assertEqual(config, in_config)
         self.assertTrue(len(config["TopicConfigurations"]) == 0)
@@ -199,11 +198,10 @@ class LambdaTest(unittest.TestCase):
         }
 
         # WHEN merging
-        final_config = index.merge_in_config(config, in_config)
+        index.merge_in_config(config, in_config)
 
         # THEN config and in_config should be equal
         # AND QueueConfigurations should be extended
-        self.assertIs(config, final_config)
         self.assertIsNot(config, in_config)
         self.assertEqual(config, in_config)
         self.assertTrue(len(config["TopicConfigurations"]) == 0)
@@ -216,7 +214,7 @@ class LambdaTest(unittest.TestCase):
         # get_bucket_notification_configuration call
         from src import index
         config = {"ResponseMetadata": "foo"}
-        index.prepare_config(config, {}, None)
+        index.prepare_config(config, {}, {})
         self.assertIsNone(config.get("ResponseMetadata"))
 
     def test_prepare_config_set_defaults(self):
@@ -226,7 +224,7 @@ class LambdaTest(unittest.TestCase):
         in_config = {}
 
         # WHEN calling prepare_config
-        index.prepare_config(config, in_config, None)
+        index.prepare_config(config, in_config, {})
 
         # THEN set defaults as [] for all the config types
         expected_config = {"TopicConfigurations": [], "QueueConfigurations": [], "LambdaFunctionConfigurations": []}

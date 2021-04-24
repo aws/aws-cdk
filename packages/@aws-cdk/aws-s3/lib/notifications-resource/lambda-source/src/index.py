@@ -13,7 +13,7 @@ def handler(event: dict, context):
         old_config = event.get("OldResourceProperties", {}).get("NotificationConfiguration", {})
         config = prepare_config(s3.get_bucket_notification_configuration(Bucket=bucket), in_config, old_config)
         if event["RequestType"] != "Delete":
-            config = merge_in_config(config, in_config)
+            merge_in_config(config, in_config)
         s3.put_bucket_notification_configuration(Bucket=bucket, NotificationConfiguration=config)
         response_status = "SUCCESS"
         error_message = ""
@@ -44,10 +44,9 @@ def ids(configs: list) -> List[str]:
     return [item["Id"] for item in configs if "Id" in item]
 
 
-def merge_in_config(config: dict, in_config: dict) -> dict:
+def merge_in_config(config: dict, in_config: dict):
     for config_type in CONFIG_TYPES:
         config[config_type].extend(in_config[config_type])
-    return config
 
 
 def submit_response(event: dict, context, response_status: str, error_message: str = ""):
@@ -62,7 +61,7 @@ def submit_response(event: dict, context, response_status: str, error_message: s
             "NoEcho": False,
         }
     ).encode("utf-8")
-    headers = {"content-type": "", "content-length": len(response_body)}
+    headers = {"content-type": "", "content-length": str(len(response_body))}
     try:
         req = urllib.request.Request(url=event["ResponseURL"], headers=headers, data=response_body, method="PUT")
         with urllib.request.urlopen(req) as response:
