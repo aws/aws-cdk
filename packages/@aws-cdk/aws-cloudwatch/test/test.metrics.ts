@@ -1,3 +1,4 @@
+import { EOL } from 'os';
 import { expect, haveResource } from '@aws-cdk/assert';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
@@ -48,6 +49,77 @@ export = {
     test.equals(m.with({ period: cdk.Duration.minutes(10) }), m);
 
     test.notEqual(m.with({ period: cdk.Duration.minutes(5) }), m);
+
+    test.done();
+  },
+
+  'cannot use null or undefined dimension values'(test: Test) {
+    const expectedErrors = [
+      'Invalid dimension properties:',
+      'Dimension value of \'undefined\' is invalid',
+      'Dimension value of \'null\' is invalid',
+    ].join(EOL);
+
+    test.throws(() => {
+      new Metric({
+        namespace: 'Test',
+        metricName: 'ACount',
+        period: cdk.Duration.minutes(10),
+        dimensions: {
+          DimensionWithUndefined: undefined,
+          DimensionWithNull: null,
+        },
+      });
+    }, expectedErrors);
+
+    test.done();
+  },
+
+  'cannot use long dimension values'(test: Test) {
+    const invalidDimensionValue = 'SomeLongValueSomeLongValueSomeLongValueSomeLongValueSomeLongValueSomeLongValue\
+        SomeLongValueSomeLongValueSomeLongValueSomeLongValueSomeLongValueSomeLongValueSomeLongValueSomeLongValue\
+        SomeLongValueSomeLongValueSomeLongValueSomeLongValueSomeLongValueSomeLongValueSomeLongValueSomeLongValue\
+        SomeLongValueSomeLongValueSomeLongValueSomeLongValueSomeLongValueSomeLongValueSomeLongValueSomeLongValue\
+        SomeLongValueSomeLongValueSomeLongValueSomeLongValueSomeLongValueSomeLongValueSomeLongValueSomeLongValue\
+        SomeLongValueSomeLongValueSomeLongValueSomeLongValueSomeLongValueSomeLongValueSomeLongValueSomeLongValue';
+
+    test.throws(() => {
+      new Metric({
+        namespace: 'Test',
+        metricName: 'ACount',
+        period: cdk.Duration.minutes(10),
+        dimensions: {
+          DimensionWithUndefined: undefined,
+          DimensionWithNull: null,
+          DimensionWithLongValue: invalidDimensionValue,
+        },
+      });
+    }, `Dimension value must be at least 1 and no more than 255 characters; received ${invalidDimensionValue}`);
+
+    test.done();
+  },
+
+  'throws error when there are more than 10 dimensions'(test: Test) {
+    test.throws(() => {
+      new Metric({
+        namespace: 'Test',
+        metricName: 'ACount',
+        period: cdk.Duration.minutes(10),
+        dimensions: {
+          dimensionA: 'value1',
+          dimensionB: 'value2',
+          dimensionC: 'value3',
+          dimensionD: 'value4',
+          dimensionE: 'value5',
+          dimensionF: 'value6',
+          dimensionG: 'value7',
+          dimensionH: 'value8',
+          dimensionI: 'value9',
+          dimensionJ: 'value10',
+          dimensionK: 'value11',
+        },
+      } );
+    }, /The maximum number of dimensions is 10/);
 
     test.done();
   },

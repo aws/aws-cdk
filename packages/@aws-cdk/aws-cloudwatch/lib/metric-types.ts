@@ -12,14 +12,14 @@ export interface IMetric {
   /**
    * Turn this metric object into an alarm configuration
    *
-   * @deprecated Use `toMetricsConfig()` instead.
+   * @deprecated Use `toMetricConfig()` instead.
    */
   toAlarmConfig(): MetricAlarmConfig;
 
   /**
    * Turn this metric object into a graph configuration
    *
-   * @deprecated Use `toMetricsConfig()` instead.
+   * @deprecated Use `toMetricConfig()` instead.
    */
   toGraphConfig(): MetricGraphConfig;
 }
