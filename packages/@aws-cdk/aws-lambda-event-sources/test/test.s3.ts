@@ -28,6 +28,7 @@ export = {
       'NotificationConfiguration': {
         'LambdaFunctionConfigurations': [
           {
+            'Id': 'e23b77fe33da31d11e0d16d3bd6a47b7',
             'Events': [
               's3:ObjectCreated:*',
             ],
@@ -53,6 +54,7 @@ export = {
             },
           },
           {
+            'Id': '634b1d40e4e4a095f693755fec7b2eeb',
             'Events': [
               's3:ObjectRemoved:*',
             ],
