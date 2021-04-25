@@ -1,4 +1,3 @@
-import { EOL } from 'os';
 import { expect, haveResource } from '@aws-cdk/assert';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
@@ -53,13 +52,22 @@ export = {
     test.done();
   },
 
-  'cannot use null or undefined dimension values'(test: Test) {
-    const expectedErrors = [
-      'Invalid dimension properties:',
-      'Dimension value of \'undefined\' is invalid',
-      'Dimension value of \'null\' is invalid',
-    ].join(EOL);
+  'cannot use null dimension value'(test: Test) {
+    test.throws(() => {
+      new Metric({
+        namespace: 'Test',
+        metricName: 'ACount',
+        period: cdk.Duration.minutes(10),
+        dimensions: {
+          DimensionWithNull: null,
+        },
+      });
+    }, /Dimension value of 'null' is invalid/);
 
+    test.done();
+  },
+
+  'cannot use undefined dimension value'(test: Test) {
     test.throws(() => {
       new Metric({
         namespace: 'Test',
@@ -67,10 +75,9 @@ export = {
         period: cdk.Duration.minutes(10),
         dimensions: {
           DimensionWithUndefined: undefined,
-          DimensionWithNull: null,
         },
       });
-    }, expectedErrors);
+    }, /Dimension value of 'undeffined' is invalid/);
 
     test.done();
   },

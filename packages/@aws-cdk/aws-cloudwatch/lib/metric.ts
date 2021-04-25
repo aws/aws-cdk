@@ -1,4 +1,3 @@
-import { EOL } from 'os';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import * as constructs from 'constructs';
@@ -404,23 +403,18 @@ export class Metric implements IMetric {
     if (Object.keys(dims)?.length > 10) {
       throw new Error('The maximum number of dimensions is 10');
     }
-    const errors: string[] = [];
 
     Object.keys(dims).sort().map(key => {
       if (dims[key] === undefined || dims[key] === null) {
-        errors.push(`Dimension value of '${dims[key]}' is invalid`);
+        throw new Error(`Dimension value of '${dims[key]}' is invalid`);
       };
       if (key.length < 1 || key.length > 255) {
-        errors.push(`Dimension name must be at least 1 and no more than 255 characters; received ${key}`);
+        throw new Error(`Dimension name must be at least 1 and no more than 255 characters; received ${key}`);
       };
 
       if (dims[key].length < 1 || dims[key].length > 255) {
-        errors.push(`Dimension value must be at least 1 and no more than 255 characters; received ${dims[key]}`);
+        throw new Error(`Dimension value must be at least 1 and no more than 255 characters; received ${dims[key]}`);
       };
-
-      if (errors.length > 0) {
-        throw new Error(`Invalid dimension properties: ${EOL}${errors.join(EOL)}`);
-      }
     });
   }
 }
