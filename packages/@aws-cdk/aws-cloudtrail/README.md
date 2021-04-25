@@ -71,6 +71,13 @@ The following code enables sending CloudWatch logs and specifies a particular re
 ```ts
 const trail = new cloudtrail.Trail(this, 'CloudTrail', {
   sendToCloudWatchLogs: true,
+});
+```
+
+The following code enables sending CloudWatch logs and specifies a particular retention period for the created Log Group.
+
+```ts
+const trail = new cloudtrail.Trail(this, 'CloudTrail', {
   cloudWatchLogsRetention: logs.RetentionDays.FOUR_MONTHS, 
 });
 ```

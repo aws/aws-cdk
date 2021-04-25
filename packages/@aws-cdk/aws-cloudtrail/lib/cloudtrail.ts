@@ -61,7 +61,7 @@ export interface TrailProps {
    * If CloudTrail pushes logs to CloudWatch Logs in addition to S3.
    * Disabled for cost out of the box.
    *
-   * @default false
+   * @default - true if `cloudWatchLogsRetention` or `cloudWatchLogGroup` or `cloudWatchLogsRole` is set, false otherwise.
    */
   readonly sendToCloudWatchLogs?: boolean;
 
@@ -74,7 +74,7 @@ export interface TrailProps {
   readonly cloudWatchLogsRetention?: logs.RetentionDays;
 
   /**
-   * Log Group to which CloudTrail to push logs to. Ignored if sendToCloudWatchLogs is set to false.
+   * Log Group to which CloudTrail to push logs to. Ignored if sendToCloudWatchLogs is false.
    * @default - a new log group is created and used.
    */
   readonly cloudWatchLogGroup?: logs.ILogGroup;
@@ -239,9 +239,13 @@ export class Trail extends Resource {
       this.topic.grantPublish(cloudTrailPrincipal);
     }
 
+    const sendToCloudWatchLogs = props.sendToCloudWatchLogs
+      ?? (props.cloudWatchLogsRetention !== undefined
+         || props.cloudWatchLogGroup !== undefined
+         || props.cloudWatchLogsRole !== undefined) ? true : undefined;
     let logsRole: iam.IRole | undefined;
 
-    if (props.sendToCloudWatchLogs) {
+    if (sendToCloudWatchLogs) {
       if (props.cloudWatchLogGroup) {
         this.logGroup = props.cloudWatchLogGroup;
       } else {

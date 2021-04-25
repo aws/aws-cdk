@@ -255,7 +255,6 @@ describe('cloudtrail', () => {
       test('enabled and custom retention', () => {
         const stack = getTestStack();
         new Trail(stack, 'MyAmazingCloudTrail', {
-          sendToCloudWatchLogs: true,
           cloudWatchLogsRetention: RetentionDays.ONE_WEEK,
         });
 
@@ -277,7 +276,6 @@ describe('cloudtrail', () => {
           retention: RetentionDays.FIVE_DAYS,
         });
         new Trail(stack, 'MyAmazingCloudTrail', {
-          sendToCloudWatchLogs: true,
           cloudWatchLogsRetention: RetentionDays.ONE_WEEK,
           cloudWatchLogGroup,
         });
@@ -306,7 +304,6 @@ describe('cloudtrail', () => {
         const logsRole = new iam.Role(stack, 'TestRole', { assumedBy: cloudTrailPrincipal });
 
         new Trail(stack, 'MyAmazingCloudTrail', {
-          sendToCloudWatchLogs: true,
           cloudWatchLogsRole: logsRole,
         });
 
