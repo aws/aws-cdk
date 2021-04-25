@@ -248,9 +248,7 @@ class LambdaTest(unittest.TestCase):
 
     @patch("urllib.request.urlopen")
     @patch("builtins.print")
-    def test_submit_response_io_failure(
-        self, mock_print: MagicMock, mock_call: MagicMock
-    ):
+    def test_submit_response_io_failure(self, mock_print: MagicMock, mock_call: MagicMock):
         # GIVEN an http error when notifying CFN
         exception_message = "Failed to put"
         mock_call.side_effect = Exception(exception_message)
@@ -261,9 +259,7 @@ class LambdaTest(unittest.TestCase):
 
         # THEN handle the error
         # AND print error message to the console for debugging
-        mock_print.assert_called_with(
-            f"send(..) failed executing request.urlopen(..): {exception_message}"
-        )
+        mock_print.assert_called_with(f"send(..) failed executing request.urlopen(..): {exception_message}")
 
     @mock_s3
     @patch("urllib.request.urlopen")
