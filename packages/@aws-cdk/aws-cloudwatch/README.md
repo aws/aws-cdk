@@ -58,6 +58,10 @@ const metric = new Metric({
   }
 });
 ```
+### Metric dimensions
+
+The maximum number of dimensions a Metric can have is 10. The length of a dimension name and value must be 
+between 1-255 characters in length.
 
 ### Metric Math
 
