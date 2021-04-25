@@ -77,7 +77,7 @@ export = {
           DimensionWithUndefined: undefined,
         },
       });
-    }, /Dimension value of 'undeffined' is invalid/);
+    }, /Dimension value of 'undefined' is invalid/);
 
     test.done();
   },
@@ -96,8 +96,6 @@ export = {
         metricName: 'ACount',
         period: cdk.Duration.minutes(10),
         dimensions: {
-          DimensionWithUndefined: undefined,
-          DimensionWithNull: null,
           DimensionWithLongValue: invalidDimensionValue,
         },
       });
