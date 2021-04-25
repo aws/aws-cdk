@@ -31,8 +31,7 @@ def handler(event: dict, context):
 
 def prepare_config(current_config: dict, in_config: dict, old_config: dict, merge: bool) -> dict:
     config = copy.deepcopy(current_config)
-    if "ResponseMetadata" in config:
-        del config["ResponseMetadata"]
+    config.pop("ResponseMetadata", None)
     for config_type in CONFIG_TYPES:
         config.setdefault(config_type, [])
         in_config.setdefault(config_type, [])
