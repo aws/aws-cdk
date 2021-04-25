@@ -6,12 +6,14 @@ from unittest.mock import patch, MagicMock
 import boto3  # type: ignore
 from moto.s3 import mock_s3  # type: ignore
 
+response_url = "https://dummy.com/"
 bucket_name = "fake_bucket"
+s3_created = "s3:ObjectCreated:*"
 create_event = {
     "StackId": "StackId",
     "RequestId": "RequestId",
     "LogicalResourceId": "LogicalResourceId",
-    "ResponseURL": "https://dummy.com/",
+    "ResponseURL": response_url,
     "RequestType": "Create",
     "ResourceProperties": {
         "BucketName": bucket_name,
@@ -19,7 +21,7 @@ create_event = {
             "QueueConfigurations": [
                 {
                     "Id": "my-function-hash",
-                    "Events": ["s3:ObjectCreated:*"],
+                    "Events": [s3_created],
                     "QueueArn": "arn:aws:sqs:us-east-1:444455556666:new-queue",
                 }
             ]
@@ -30,7 +32,7 @@ update_event = {
     "StackId": "StackId",
     "RequestId": "RequestId",
     "LogicalResourceId": "LogicalResourceId",
-    "ResponseURL": "https://dummy.com/",
+    "ResponseURL": response_url,
     "RequestType": "Update",
     "OldResourceProperties": {
         "BucketName": bucket_name,
@@ -38,7 +40,7 @@ update_event = {
             "LambdaFunctionConfigurations": [
                 {
                     "Id": "old-function-hash",
-                    "Events": ["s3:ObjectCreated:*"],
+                    "Events": [s3_created],
                     "LambdaFunctionArn": "arn:aws:lambda:us-east-1:35667example:function:CreateThumbnail",
                 }
             ]
@@ -50,7 +52,7 @@ update_event = {
             "LambdaFunctionConfigurations": [
                 {
                     "Id": "new-function-hash",
-                    "Events": ["s3:ObjectCreated:*"],
+                    "Events": [s3_created],
                     "LambdaFunctionArn": "arn:aws:lambda:us-east-1:35667example:function:NewCreateThumbnail",
                 }
             ]
@@ -61,7 +63,7 @@ delete_event = {
     "StackId": "StackId",
     "RequestId": "RequestId",
     "LogicalResourceId": "LogicalResourceId",
-    "ResponseURL": "https://dummy.com/",
+    "ResponseURL": response_url,
     "RequestType": "Delete",
     "ResourceProperties": {
         "BucketName": bucket_name,
@@ -69,7 +71,7 @@ delete_event = {
             "QueueConfigurations": [
                 {
                     "Id": "created-by-cdk",
-                    "Events": ["s3:ObjectCreated:*"],
+                    "Events": [s3_created],
                     "QueueArn": "arn:aws:sqs:us-east-1:444455556666:old-queue",
                 }
             ]
@@ -100,9 +102,7 @@ def setup_s3_bucket(no_bucket_config: bool = False):
                 {
                     "Id": "string",
                     "TopicArn": "arn:aws:sns:us-east-1:123456789012:MyTopic",
-                    "Events": [
-                        "s3:ObjectCreated:*",
-                    ],
+                    "Events": [s3_created],
                     "Filter": {
                         "Key": {
                             "FilterRules": [
@@ -151,17 +151,23 @@ def setup_s3_bucket(no_bucket_config: bool = False):
 class LambdaTest(unittest.TestCase):
     def test_empty_ids(self):
         from src import index
+
+        # GIVEN an empty list
+        # WHEN calling ids
         ids = index.ids([{}])
+        # THEN return an empty list
         self.assertEqual([], ids)
 
     def test_extract_ids_as_list(self):
         from src import index
+
         ids = index.ids([{"Id": "x"}, {}])
         self.assertEqual(["x"], ids)
 
     def test_merge_in_config(self):
-        # GIVEN an empty in_config and an empty current_config
         from src import index
+
+        # GIVEN an empty current_config and an empty in_config
         current_config = {
             "TopicConfigurations": [],
             "QueueConfigurations": [],
@@ -174,19 +180,20 @@ class LambdaTest(unittest.TestCase):
         }
         old_config = {}
 
-        # WHEN merging
+        # WHEN merging in prepare_config
         config = index.prepare_config(current_config, in_config, old_config, True)
 
-        # THEN config and in_config should be equal
-        self.assertIsNot(config, in_config)
+        # THEN returns a config equal to in_config
         self.assertEqual(config, in_config)
+        self.assertIsNot(config, in_config)
         self.assertTrue(len(config["TopicConfigurations"]) == 0)
         self.assertTrue(len(config["QueueConfigurations"]) == 0)
         self.assertTrue(len(config["LambdaFunctionConfigurations"]) == 0)
 
     def test_merge_in_extend(self):
-        # GIVEN an "QueueConfigurations" entry in_config and an empty config
+        # GIVEN an "QueueConfigurations" entry in_config and an empty current_config
         from src import index
+
         current_config = {
             "TopicConfigurations": [],
             "QueueConfigurations": [],
@@ -199,13 +206,13 @@ class LambdaTest(unittest.TestCase):
         }
         old_config = {}
 
-        # WHEN merging
+        # WHEN merging in prepare_config
         config = index.prepare_config(current_config, in_config, old_config, True)
 
-        # THEN config and in_config should be equal
+        # THEN the returned config and in_config should be equal
         # AND QueueConfigurations should be extended
-        self.assertIsNot(config, in_config)
         self.assertEqual(config, in_config)
+        self.assertIsNot(config, in_config)
         self.assertTrue(len(config["TopicConfigurations"]) == 0)
         self.assertTrue(len(config["QueueConfigurations"]) == 1)
         self.assertEqual("new_entry", config["QueueConfigurations"][0])
@@ -215,13 +222,15 @@ class LambdaTest(unittest.TestCase):
         # Test to ensure we remove the "ResponseMetadata" returned by the
         # get_bucket_notification_configuration call
         from src import index
+
         current_config = {"ResponseMetadata": "foo"}
         config = index.prepare_config(current_config, {}, {}, False)
-        self.assertIsNone(config.get("ResponseMetadata"))
+        self.assertNotIn("ResponseMetadata", config)
 
     def test_prepare_config_set_defaults(self):
         # GIVEN both loaded configuration and new configuration have no default set
         from src import index
+
         current_config = {}
         in_config = {}
 
@@ -229,13 +238,19 @@ class LambdaTest(unittest.TestCase):
         config = index.prepare_config(current_config, in_config, {}, False)
 
         # THEN set defaults as [] for all the config types
-        expected_config = {"TopicConfigurations": [], "QueueConfigurations": [], "LambdaFunctionConfigurations": []}
+        expected_config = {
+            "TopicConfigurations": [],
+            "QueueConfigurations": [],
+            "LambdaFunctionConfigurations": [],
+        }
         self.assertEqual(expected_config, config)
         self.assertEqual(config, in_config)
 
     @patch("urllib.request.urlopen")
     @patch("builtins.print")
-    def test_submit_response_io_failure(self, mock_print: MagicMock, mock_call: MagicMock):
+    def test_submit_response_io_failure(
+        self, mock_print: MagicMock, mock_call: MagicMock
+    ):
         # GIVEN an http error when notifying CFN
         exception_message = "Failed to put"
         mock_call.side_effect = Exception(exception_message)
@@ -246,7 +261,9 @@ class LambdaTest(unittest.TestCase):
 
         # THEN handle the error
         # AND print error message to the console for debugging
-        mock_print.assert_called_with(f"send(..) failed executing request.urlopen(..): {exception_message}")
+        mock_print.assert_called_with(
+            f"send(..) failed executing request.urlopen(..): {exception_message}"
+        )
 
     @mock_s3
     @patch("urllib.request.urlopen")
@@ -269,42 +286,56 @@ class LambdaTest(unittest.TestCase):
     @mock_s3
     @patch("urllib.request.urlopen")
     def test_append_to_existing(self, mock_call: MagicMock):
+        # GIVEN a "NotificationConfiguration" for an existing bucket
+        # AND the existing bucket has an existing "NotificationConfiguration"
         setup_s3_bucket()
         from src import index
 
+        # WHEN calling handler
         index.handler(create_event, MockContext())
 
+        # THEN update the bucket "NotificationConfiguration"
+        s3_client = boto3.client("s3", region_name="us-east-1")
+        config = s3_client.get_bucket_notification_configuration(Bucket=bucket_name)
+        self.assertIn("LambdaFunctionConfigurations", config)
+        self.assertIn("TopicConfigurations", config)
+        self.assertIn("QueueConfigurations", config)
+        # AND the new "QueueConfigurations" should be added
+        queue_configuration_list = config["QueueConfigurations"]
+        self.assertIsNotNone(queue_configuration_list)
+        self.assertEqual(2, len(queue_configuration_list))
+        self.assertEqual("my-function-hash", queue_configuration_list[1]["Id"])
+        # AND the existing "TopicConfigurations" should be untouched
+        topic_configuration_list = config["TopicConfigurations"]
+        self.assertEqual(1, len(topic_configuration_list))
+        topic_configuration = topic_configuration_list[0]
+        self.assertEqual(s3_created, topic_configuration["Events"][0])
+        # AND notify CFN of its success
         mock_call.assert_called()
         request: Request = mock_call.call_args[0][0]
         self.assertIsInstance(request, Request)
         assert request.data is not None
         data = json.loads(request.data.decode())
         self.assertEqual("SUCCESS", data["Status"])
-        self.assertEqual(create_event["ResponseURL"], request.full_url)
-
-        s3_client = boto3.client("s3", region_name="us-east-1")
-        config = s3_client.get_bucket_notification_configuration(Bucket=bucket_name)
-        self.assertIsNotNone(config["LambdaFunctionConfigurations"])
-        self.assertIsNotNone(config["TopicConfigurations"])
-
-        queue_configuration_list = config["QueueConfigurations"]
-        self.assertIsNotNone(queue_configuration_list)
-        self.assertEqual(2, len(queue_configuration_list))
-        self.assertEqual("my-function-hash", queue_configuration_list[1]["Id"])
+        self.assertEqual(response_url, request.full_url)
 
     @mock_s3
     @patch("urllib.request.urlopen")
     def test_remove_from_existing(self, _):
+        # GIVEN a delete_event with a matching id for a "QueueConfigurations" in a S3 bucket
         setup_s3_bucket()
         from src import index
 
+        # WHEN calling the handler
         index.handler(delete_event, MockContext())
 
+        # THEN the "QueueConfigurations" should be empty
+        # AND keep the other configurations untouched
         s3_client = boto3.client("s3", region_name="us-east-1")
         config = s3_client.get_bucket_notification_configuration(Bucket=bucket_name)
-        self.assertIsNotNone(config["TopicConfigurations"])
-        self.assertIsNone(config.get("QueueConfigurations"))
-        self.assertIsNotNone(config["LambdaFunctionConfigurations"])
+        self.assertNotIn("QueueConfigurations", config)
+        self.assertIn("TopicConfigurations", config)
+        self.assertIn("LambdaFunctionConfigurations", config)
 
     @mock_s3
     @patch("urllib.request.urlopen")
@@ -332,21 +363,26 @@ class LambdaTest(unittest.TestCase):
     @mock_s3
     @patch("urllib.request.urlopen")
     def test_add_to_new_bucket(self, mock_call: MagicMock):
+        # GIVEN a "NotificationConfiguration" for a newly create bucket
         setup_s3_bucket(no_bucket_config=True)
         from src import index
 
+        # WHEN calling the handler
         index.handler(create_event, MockContext())
 
+        # THEN set the "NotificationConfiguration" for this bucket
+        # AND notify CFN of its success
         mock_call.assert_called()
         s3_client = boto3.client("s3", region_name="us-east-1")
         config = s3_client.get_bucket_notification_configuration(Bucket=bucket_name)
-        self.assertIsNone(config.get("LambdaFunctionConfigurations"))
-        self.assertIsNone(config.get("TopicConfigurations"))
-
         queue_configuration_list = config.get("QueueConfigurations")
         self.assertIsNotNone(queue_configuration_list)
         self.assertEqual(1, len(queue_configuration_list))
-        self.assertEqual("my-function-hash", queue_configuration_list[0]["Id"])
+        queue_configuration = queue_configuration_list[0]
+        self.assertEqual("my-function-hash", queue_configuration["Id"])
+        self.assertEqual(s3_created, queue_configuration["Events"][0])
+        self.assertNotIn("LambdaFunctionConfigurations", config)
+        self.assertNotIn("LambdaFunctionConfigurations", config)
 
     @patch("urllib.request.urlopen")
     def test_submit_response(self, mock_call: MagicMock):
