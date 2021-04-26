@@ -2,7 +2,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import {
-  CfnDynamicReference, CfnDynamicReferenceService, CfnParameter,
+  CfnDynamicReference, CfnDynamicReferenceService,
   ContextProvider, Fn, IResource, Resource, Stack, Token,
 } from '@aws-cdk/core';
 import { Construct } from 'constructs';
@@ -323,9 +323,8 @@ export class StringParameter extends ParameterBase implements IStringParameter {
 
     const type = attrs.type || ParameterType.STRING;
 
-    const stringValue = attrs.version
-      ? new CfnDynamicReference(CfnDynamicReferenceService.SSM, `${attrs.parameterName}:${attrs.version}`).toString()
-      : new CfnParameter(scope, `${id}.Parameter`, { type: `AWS::SSM::Parameter::Value<${type}>`, default: attrs.parameterName }).valueAsString;
+    const version = attrs.version ? `:${attrs.version}` : '';
+    const stringValue = new CfnDynamicReference(CfnDynamicReferenceService.SSM, `${attrs.parameterName}${version}`).toString();
 
     class Import extends ParameterBase {
       public readonly parameterName = attrs.parameterName;
