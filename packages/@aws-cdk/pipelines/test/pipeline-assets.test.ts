@@ -1,6 +1,6 @@
 import * as path from 'path';
-import { arrayWith, deepObjectLike, encodedJson, notMatching, objectLike, stringLike } from '@aws-cdk/assert';
-import '@aws-cdk/assert/jest';
+import { arrayWith, deepObjectLike, encodedJson, notMatching, objectLike, stringLike } from '@aws-cdk/assert-internal';
+import '@aws-cdk/assert-internal/jest';
 import * as cp from '@aws-cdk/aws-codepipeline';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecr_assets from '@aws-cdk/aws-ecr-assets';
@@ -100,7 +100,7 @@ describe('basic pipeline', () => {
     // THEN
     expect(pipelineStack).toHaveResourceLike('AWS::CodeBuild::Project', {
       Environment: {
-        Image: 'aws/codebuild/standard:4.0',
+        Image: 'aws/codebuild/standard:5.0',
       },
       Source: {
         BuildSpec: encodedJson(deepObjectLike({
@@ -152,7 +152,7 @@ describe('basic pipeline', () => {
       },
       Environment: objectLike({
         PrivilegedMode: false,
-        Image: 'aws/codebuild/standard:4.0',
+        Image: 'aws/codebuild/standard:5.0',
       }),
     });
 
@@ -183,7 +183,7 @@ describe('basic pipeline', () => {
         })),
       },
       Environment: objectLike({
-        Image: 'aws/codebuild/standard:4.0',
+        Image: 'aws/codebuild/standard:5.0',
         PrivilegedMode: true,
       }),
     });
@@ -209,7 +209,7 @@ describe('basic pipeline', () => {
     // THEN
     expect(stack2).toHaveResourceLike('AWS::CodeBuild::Project', {
       Environment: {
-        Image: 'aws/codebuild/standard:4.0',
+        Image: 'aws/codebuild/standard:5.0',
       },
       Source: {
         BuildSpec: encodedJson(deepObjectLike({

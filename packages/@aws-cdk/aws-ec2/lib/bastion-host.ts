@@ -14,7 +14,7 @@ import { IVpc, SubnetSelection } from './vpc';
 /**
  * Properties of the bastion host
  *
- * @experimental
+ *
  */
 export interface BastionHostLinuxProps {
 
@@ -90,7 +90,7 @@ export interface BastionHostLinuxProps {
  *
  * You can also configure this bastion host to allow connections via SSH
  *
- * @experimental
+ *
  * @resource AWS::EC2::Instance
  */
 export class BastionHostLinux extends Resource implements IInstance {

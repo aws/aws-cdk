@@ -33,7 +33,12 @@
   "cdk-build": {
     "eslint": {
       "disable": true
-    }
+    },
+    "stripDeprecated": true,
+    "post": ["node ./scripts/verify-readme-import-rewrites.js"]
+  },
+  "cdk-package": {
+    "post": "node ./scripts/verify-stripped-exp.js"
   },
   "pkglint": {
     "exclude": [
@@ -52,15 +57,13 @@
       "dotnet": {
         "namespace": "Amazon.CDK",
         "packageId": "Amazon.CDK.Lib",
-        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png",
-        "versionSuffix": "-devpreview"
+        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
       },
       "java": {
-        "package": "software.amazon.awscdk.core",
+        "package": "software.amazon.awscdk",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "aws-cdk-lib",
-          "versionSuffix": ".DEVPREVIEW"
+          "artifactId": "aws-cdk-lib"
         }
       },
       "python": {
@@ -81,7 +84,6 @@
   },
   "license": "Apache-2.0",
   "bundledDependencies": [
-    "@aws-cdk/yaml-cfn",
     "@balena/dockerignore",
     "case",
     "fs-extra",
@@ -93,7 +95,6 @@
     "yaml"
   ],
   "dependencies": {
-    "@aws-cdk/yaml-cfn": "0.0.0",
     "@balena/dockerignore": "^1.0.2",
     "case": "1.6.3",
     "fs-extra": "^9.1.0",
@@ -192,6 +193,7 @@
     "@aws-cdk/aws-fsx": "0.0.0",
     "@aws-cdk/aws-gamelift": "0.0.0",
     "@aws-cdk/aws-globalaccelerator": "0.0.0",
+    "@aws-cdk/aws-globalaccelerator-endpoints": "0.0.0",
     "@aws-cdk/aws-glue": "0.0.0",
     "@aws-cdk/aws-greengrass": "0.0.0",
     "@aws-cdk/aws-greengrassv2": "0.0.0",
@@ -290,9 +292,8 @@
     "@aws-cdk/lambda-layer-kubectl": "0.0.0",
     "@aws-cdk/pipelines": "0.0.0",
     "@aws-cdk/region-info": "0.0.0",
-    "@aws-cdk/yaml-cfn": "0.0.0",
     "@types/fs-extra": "^8.1.1",
-    "@types/node": "^10.17.55",
+    "@types/node": "^10.17.56",
     "cdk-build-tools": "0.0.0",
     "constructs": "^3.3.69",
     "fs-extra": "^9.1.0",
@@ -312,10 +313,12 @@
     "aws",
     "cdk"
   ],
+  "nozem": false,
   "awscdkio": {
     "announce": false
   },
   "ubergen": {
-    "exclude": true
+    "exclude": true,
+    "excludeExperimentalModules": true
   }
 }

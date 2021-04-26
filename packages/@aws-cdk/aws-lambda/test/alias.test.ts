@@ -1,5 +1,5 @@
-import '@aws-cdk/assert/jest';
-import { arrayWith, objectLike } from '@aws-cdk/assert';
+import '@aws-cdk/assert-internal/jest';
+import { arrayWith, objectLike } from '@aws-cdk/assert-internal';
 import * as appscaling from '@aws-cdk/aws-applicationautoscaling';
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import { Lazy, Stack } from '@aws-cdk/core';

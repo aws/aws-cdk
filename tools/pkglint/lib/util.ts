@@ -164,7 +164,7 @@ export function findUpward(dir: string, pred: (x: string) => boolean): string | 
 }
 
 export function monoRepoRoot() {
-  const ret = findUpward(process.cwd(), d => fs.existsSync(path.join(d, 'lerna.json')));
+  const ret = findUpward(process.cwd(), d => fs.existsSync(path.join(d, 'lerna.json')) || fs.existsSync(path.join(d, '.nzmroot')));
   if (!ret) {
     throw new Error('Could not find lerna.json');
   }
@@ -189,40 +189,4 @@ export function* findInnerPackages(dir: string): IterableIterator<string> {
 
     yield* findInnerPackages(path.join(dir, fname));
   }
-}
-
-/**
- * Find package directory
- *
- * Do this by walking upwards in the directory tree until we find
- * `<dir>/node_modules/<package>/package.json`.
- *
- * -------
- *
- * Things that we tried but don't work:
- *
- * 1.    require.resolve(`${depName}/package.json`, { paths: [rootDir] });
- *
- * Breaks with ES Modules if `package.json` has not been exported, which is
- * being enforced starting Node12.
- *
- * 2.    findPackageJsonUpwardFrom(require.resolve(depName, { paths: [rootDir] }))
- *
- * Breaks if a built-in NodeJS package name conflicts with an NPM package name
- * (in Node15 `string_decoder` is introduced...)
- */
-export async function findPackageDir(depName: string, rootDir: string) {
-  let prevDir;
-  let dir = rootDir;
-  while (dir !== prevDir) {
-    const candidateDir = path.join(dir, 'node_modules', depName);
-    if (await new Promise(ok => fs.exists(path.join(candidateDir, 'package.json'), ok))) {
-      return new Promise<string>((ok, ko) => fs.realpath(candidateDir, (err, result) => err ? ko(err) : ok(result)));
-    }
-
-    prevDir = dir;
-    dir = path.dirname(dir); // dirname('/') -> '/', dirname('c:\\') -> 'c:\\'
-  }
-
-  throw new Error(`Did not find '${depName}' upwards of '${rootDir}'`);
 }
