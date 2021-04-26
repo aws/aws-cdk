@@ -115,13 +115,13 @@ export interface CrossRegionSupportStackProps {
    * @default true
    */
   readonly createKmsKey?: boolean;
-  
+
   /**
- * Whether to enable KMS key rotation for cross-account keys
- *
- * @default false
- */
-   readonly crossAccountKeyRotationEnabled?: boolean;
+   * Whether to enable KMS key rotation for cross-account keys
+   *
+   * @default false
+   */
+  readonly crossAccountKeyRotationEnabled?: boolean;
 }
 
 /**
