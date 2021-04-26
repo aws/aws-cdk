@@ -88,6 +88,17 @@ export interface CdkPipelineProps {
    *
    * @default - Latest version
    */
+
+  /**
+   * Enables KMS key rotation for cross-account keys
+   *
+   * By default kms key rotation is disabled, but will add an additional $1/month
+   * for each year the key exists when enabled.
+   *
+   * @default false
+   */
+  readonly crossAccountKeyRotationEnabled?: boolean;
+
   readonly cdkCliVersion?: string;
 
   /**
@@ -157,6 +168,9 @@ export class CdkPipeline extends CoreConstruct {
       if (props.crossAccountKeys !== undefined) {
         throw new Error('Cannot set \'crossAccountKeys\' if an existing CodePipeline is given using \'codePipeline\'');
       }
+      if (props.crossAccountKeyRotationEnabled !== undefined) {
+        throw new Error('Cannot set \'crossAccountKeyRotationEnabled\' if an existing CodePipeline is given using \'codePipeline\'');
+      }
 
       this._pipeline = props.codePipeline;
     } else {
@@ -164,6 +178,7 @@ export class CdkPipeline extends CoreConstruct {
         pipelineName: props.pipelineName,
         crossAccountKeys: props.crossAccountKeys,
         restartExecutionOnUpdate: true,
+        crossAccountKeyRotationEnabled: props.crossAccountKeyRotationEnabled,
       });
     }
 
@@ -314,7 +329,7 @@ export class CdkPipeline extends CoreConstruct {
     return flatMap(this._pipeline.stages, s => s.actions.filter(isDeployAction));
   }
 
-  private* validateDeployOrder(): IterableIterator<string> {
+  private * validateDeployOrder(): IterableIterator<string> {
     const stackActions = this.stackActions;
     for (const stackAction of stackActions) {
       // For every dependency, it must be executed in an action before this one is prepared.
@@ -332,7 +347,7 @@ export class CdkPipeline extends CoreConstruct {
     }
   }
 
-  private* validateRequestedOutputs(): IterableIterator<string> {
+  private * validateRequestedOutputs(): IterableIterator<string> {
     const artifactIds = this.stackActions.map(s => s.stackArtifactId);
 
     for (const artifactId of Object.keys(this._outputArtifacts)) {

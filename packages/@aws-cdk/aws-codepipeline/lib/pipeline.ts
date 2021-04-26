@@ -125,6 +125,16 @@ export interface PipelineProps {
    * @default true
    */
   readonly crossAccountKeys?: boolean;
+
+  /**
+   * Enables KMS key rotation for cross-account keys
+   *
+   * By default kms key rotation is disabled, but will add an additional $1/month
+   * for each year the key exists when enabled.
+   *
+   * @default false
+   */
+  readonly crossAccountKeyRotationEnabled?: boolean;
 }
 
 abstract class PipelineBase extends Resource implements IPipeline {
@@ -233,6 +243,7 @@ export class Pipeline extends PipelineBase {
   private readonly _crossRegionSupport: { [region: string]: CrossRegionSupport } = {};
   private readonly _crossAccountSupport: { [account: string]: Stack } = {};
   private readonly crossAccountKeys: boolean;
+  private readonly crossAccountKeyRotationEnabled: boolean;
 
   constructor(scope: Construct, id: string, props: PipelineProps = {}) {
     super(scope, id, {
@@ -250,6 +261,8 @@ export class Pipeline extends PipelineBase {
     // @deprecated(v2): switch to default false
     this.crossAccountKeys = props.crossAccountKeys ?? true;
 
+    this.crossAccountKeyRotationEnabled = props.crossAccountKeyRotationEnabled ?? false;
+
     // If a bucket has been provided, use it - otherwise, create a bucket.
     let propsBucket = this.getArtifactBucketFromProps(props);
 
@@ -261,6 +274,7 @@ export class Pipeline extends PipelineBase {
           // remove the key - there is a grace period of a few days before it's gone for good,
           // that should be enough for any emergency access to the bucket artifacts
           removalPolicy: RemovalPolicy.DESTROY,
+          enableKeyRotation: this.crossAccountKeyRotationEnabled,
         });
         // add an alias to make finding the key in the console easier
         new kms.Alias(this, 'ArtifactsBucketEncryptionKeyAlias', {
@@ -499,6 +513,7 @@ export class Pipeline extends PipelineBase {
       if (!crossRegionSupportConstruct) {
         crossRegionSupportConstruct = new CrossRegionSupportConstruct(otherStack, id, {
           createKmsKey: this.crossAccountKeys,
+          crossAccountKeyRotationEnabled: this.crossAccountKeyRotationEnabled,
         });
       }
 
@@ -525,6 +540,7 @@ export class Pipeline extends PipelineBase {
         account: pipelineAccount,
         synthesizer: this.getCrossRegionSupportSynthesizer(),
         createKmsKey: this.crossAccountKeys,
+        crossAccountKeyRotationEnabled: this.crossAccountKeyRotationEnabled,
       });
     }
 
