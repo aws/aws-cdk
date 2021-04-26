@@ -124,7 +124,10 @@
     "announce": false
   },
   "nozem": {
-    "ostools": ["rm", "cp"]
+    "ostools": [
+      "rm",
+      "cp"
+    ]
   },
   "maturity": "stable",
   "publishConfig": {
