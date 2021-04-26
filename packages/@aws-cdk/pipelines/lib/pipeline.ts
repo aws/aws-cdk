@@ -119,6 +119,13 @@ export interface CdkPipelineProps {
    * @default true
    */
   readonly selfMutating?: boolean;
+
+  /**
+   * Whether this pipeline creates one asset upload action per asset type or one asset upload per asset
+   *
+   * @default false
+   */
+  readonly singlePublisherPerType?: boolean;
 }
 
 /**
@@ -211,6 +218,7 @@ export class CdkPipeline extends CoreConstruct {
       projectName: maybeSuffix(props.pipelineName, '-publish'),
       vpc: props.vpc,
       subnetSelection: props.subnetSelection,
+      singlePublisherPerType: props.singlePublisherPerType,
     });
   }
 
@@ -358,12 +366,15 @@ interface AssetPublishingProps {
   readonly projectName?: string;
   readonly vpc?: ec2.IVpc;
   readonly subnetSelection?: ec2.SubnetSelection;
+  readonly singlePublisherPerType?: boolean;
 }
 
 /**
  * Add appropriate publishing actions to the asset publishing stage
  */
 class AssetPublishing extends CoreConstruct {
+  // CodePipelines has a hard limit of 50 actions per stage. See https://github.com/aws/aws-cdk/issues/9353
+  private readonly MAX_PUBLISHERS_PER_STAGE = 50;
 
   private readonly publishers: Record<string, PublishAssetsAction> = {};
   private readonly assetRoles: Record<string, iam.IRole> = {};
@@ -372,6 +383,9 @@ class AssetPublishing extends CoreConstruct {
   private readonly lastStageBeforePublishing?: codepipeline.IStage;
   private readonly stages: codepipeline.IStage[] = [];
   private readonly pipeline: codepipeline.Pipeline;
+
+  private _fileAssetCtr = 0;
+  private _dockerAssetCtr = 0;
 
   constructor(scope: Construct, id: string, private readonly props: AssetPublishingProps) {
     super(scope, id);
@@ -407,17 +421,37 @@ class AssetPublishing extends CoreConstruct {
       this.generateAssetRole(command.assetType);
     }
 
-    let action = this.publishers[command.assetType.toString()];
+    let action = this.publishers[this.props.singlePublisherPerType ? command.assetType.toString() : command.assetId];
     if (!action) {
-      if (this.stages.length == 0) {
+      // Dynamically create new stages as needed, with `MAX_PUBLISHERS_PER_STAGE` assets per stage.
+      const stageIndex = this.props.singlePublisherPerType ? 0 : Math.floor((this._fileAssetCtr + this._dockerAssetCtr) / this.MAX_PUBLISHERS_PER_STAGE);
+      if (!this.props.singlePublisherPerType && stageIndex >= this.stages.length) {
+        const previousStage = this.stages.slice(-1)[0] ?? this.lastStageBeforePublishing;
+        this.stages.push(this.pipeline.addStage({
+          stageName: `Assets${stageIndex > 0 ? stageIndex + 1 : ''}`,
+          placement: { justAfter: previousStage },
+        }));
+      } else if (this.props.singlePublisherPerType && this.stages.length == 0) {
         this.stages.push(this.pipeline.addStage({
           stageName: 'Assets',
           placement: { justAfter: this.lastStageBeforePublishing },
         }));
       }
-      const id = command.assetType === AssetType.FILE ? 'FileAsset' : 'DockerAsset';
 
-      action = this.publishers[command.assetType.toString()] = new PublishAssetsAction(this, id, {
+      // The asset ID would be a logical candidate for the construct path and project names, but if the asset
+      // changes it leads to recreation of a number of Role/Policy/Project resources which is slower than
+      // necessary. Number sequentially instead.
+      //
+      // FIXME: The ultimate best solution is probably to generate a single Project per asset type
+      // and reuse that for all assets.
+      const id = this.props.singlePublisherPerType ?
+        command.assetType === AssetType.FILE ? 'FileAsset' : 'DockerAsset' :
+        command.assetType === AssetType.FILE ? `FileAsset${++this._fileAssetCtr}` : `DockerAsset${++this._dockerAssetCtr}`;
+
+      // NOTE: It's important that asset changes don't force a pipeline self-mutation.
+      // This can cause an infinite loop of updates (see https://github.com/aws/aws-cdk/issues/9080).
+      // For that reason, we use the id as the actionName below, rather than the asset hash.
+      action = this.publishers[this.props.singlePublisherPerType ? command.assetType.toString() : command.assetId] = new PublishAssetsAction(this, id, {
         actionName: id,
         cloudAssemblyInput: this.props.cloudAssemblyInput,
         cdkCliVersion: this.props.cdkCliVersion,
@@ -426,7 +460,7 @@ class AssetPublishing extends CoreConstruct {
         vpc: this.props.vpc,
         subnetSelection: this.props.subnetSelection,
       });
-      this.stages[0].addAction(action);
+      this.stages[stageIndex].addAction(action);
     }
 
     action.addPublishCommand(relativePath, command.assetSelector);
