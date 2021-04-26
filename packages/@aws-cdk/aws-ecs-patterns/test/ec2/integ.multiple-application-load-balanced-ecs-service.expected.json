@@ -1126,6 +1126,7 @@
           "MaximumPercent": 200,
           "MinimumHealthyPercent": 50
         },
+        "DesiredCount": 1,
         "EnableECSManagedTags": false,
         "HealthCheckGracePeriodSeconds": 60,
         "LaunchType": "EC2",
