@@ -496,6 +496,29 @@ const getParameter = new AwsCustomResource(this, 'GetParameter', {
 getParameter.getResponseField('Parameter.Value')
 ```
 
+#### Associate a PrivateHostedZone with VPC shared from another account
+
+```ts
+const getParameter = new AwsCustomResource(this, 'AssociateVPCWithHostedZone', {
+  onCreate: {
+    assumedRoleArn: 'arn:aws:iam::OTHERACCOUNT:role/CrossAccount/ManageHostedZoneConnections',
+    service: 'Route53',
+    action: 'associateVPCWithHostedZone',
+    parameters: {
+      HostedZoneId: 'hz-123',
+      VPC: {
+		VPCId: 'vpc-123',
+		VPCRegion: 'region-for-vpc'
+      }
+    },
+    physicalResourceId: PhysicalResourceId.of('${vpcStack.SharedVpc.VpcId}-${vpcStack.Region}-${PrivateHostedZone.HostedZoneId}')
+  },
+  //Will ignore any resource and use the assumedRoleArn as resource and 'sts:AssumeRole' for service:action
+  policy: AwsCustomResourcePolicy.fromSdkCalls({resources: AwsCustomResourcePolicy.ANY_RESOURCE}) 
+});
+
+```
+
 ---
 
 This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.
