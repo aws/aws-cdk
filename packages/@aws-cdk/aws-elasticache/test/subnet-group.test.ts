@@ -57,7 +57,7 @@ describe('subnet selection', () => {
 });
 
 test('import group by name', () => {
-  const subnetGroup = SubnetGroup.fromCacheSubnetGroupName(stack, 'Group', 'my-subnet-group');
+  const subnetGroup = SubnetGroup.fromSubnetGroupName(stack, 'Group', 'my-subnet-group');
 
-  expect(subnetGroup.cacheSubnetGroupName).toBe('my-subnet-group');
+  expect(subnetGroup.subnetGroupName).toBe('my-subnet-group');
 });
