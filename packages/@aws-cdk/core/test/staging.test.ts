@@ -152,7 +152,7 @@ nodeunitShim({
 
   'files are copied to the output directory during synth'(test: Test) {
     // GIVEN
-    const app = new App();
+    const app = new App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
     const stack = new Stack(app, 'stack');
 
     // WHEN
@@ -216,7 +216,7 @@ nodeunitShim({
 
   'with bundling'(test: Test) {
     // GIVEN
-    const app = new App();
+    const app = new App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
     const stack = new Stack(app, 'stack');
     const directory = path.join(__dirname, 'fs', 'fixtures', 'test1');
     const processStdErrWriteSpy = sinon.spy(process.stderr, 'write');
@@ -252,7 +252,7 @@ nodeunitShim({
 
   'bundled resources have absolute path when staging is disabled'(test: Test) {
     // GIVEN
-    const app = new App();
+    const app = new App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
     const stack = new Stack(app, 'stack');
     stack.node.setContext(cxapi.DISABLE_ASSET_STAGING_CONTEXT, true);
     const directory = path.join(__dirname, 'fs', 'fixtures', 'test1');
@@ -290,7 +290,7 @@ nodeunitShim({
 
   'bundler reuses its output when it can'(test: Test) {
     // GIVEN
-    const app = new App();
+    const app = new App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
     const stack = new Stack(app, 'stack');
     const directory = path.join(__dirname, 'fs', 'fixtures', 'test1');
 
@@ -333,7 +333,7 @@ nodeunitShim({
 
   'uses asset hash cache with AssetHashType.OUTPUT'(test: Test) {
     // GIVEN
-    const app = new App();
+    const app = new App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
     const stack = new Stack(app, 'stack');
     const directory = path.join(__dirname, 'fs', 'fixtures', 'test1');
     const fingerPrintSpy = sinon.spy(FileSystem, 'fingerprint');
@@ -383,7 +383,7 @@ nodeunitShim({
 
   'bundler considers its options when reusing bundle output'(test: Test) {
     // GIVEN
-    const app = new App();
+    const app = new App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
     const stack = new Stack(app, 'stack');
     const directory = path.join(__dirname, 'fs', 'fixtures', 'test1');
 
@@ -432,7 +432,7 @@ nodeunitShim({
 
   'bundler outputs to intermediate dir and renames to asset'(test: Test) {
     // GIVEN
-    const app = new App();
+    const app = new App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
     const stack = new Stack(app, 'stack');
     const directory = path.join(__dirname, 'fs', 'fixtures', 'test1');
     const ensureDirSync = sinon.spy(fs, 'ensureDirSync');
@@ -498,7 +498,7 @@ nodeunitShim({
       fs.removeSync(TEST_OUTDIR);
     }
 
-    const app = new App({ outdir: TEST_OUTDIR });
+    const app = new App({ outdir: TEST_OUTDIR, context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
     const stack = new Stack(app, 'stack');
     const directory = path.join(__dirname, 'fs', 'fixtures', 'test1');
 
@@ -516,7 +516,7 @@ nodeunitShim({
     AssetStaging.clearAssetHashCache();
 
     // GIVEN
-    const app2 = new App({ outdir: TEST_OUTDIR });
+    const app2 = new App({ outdir: TEST_OUTDIR, context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
     const stack2 = new Stack(app2, 'stack');
 
     // WHEN
@@ -871,7 +871,7 @@ nodeunitShim({
 
   'bundling that produces a single archive file is autodiscovered'(test: Test) {
     // GIVEN
-    const app = new App();
+    const app = new App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
     const stack = new Stack(app, 'stack');
     const directory = path.join(__dirname, 'fs', 'fixtures', 'test1');
 
@@ -903,7 +903,7 @@ nodeunitShim({
 
   'bundling that produces a single archive file with NOT_ARCHIVED'(test: Test) {
     // GIVEN
-    const app = new App();
+    const app = new App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
     const stack = new Stack(app, 'stack');
     const directory = path.join(__dirname, 'fs', 'fixtures', 'test1');
 

@@ -12,7 +12,7 @@ export = {
 
     'between two resources in a top-level stack'(test: Test) {
       // GIVEN
-      const app = new App();
+      const app = new App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
       const stack = new Stack(app, 'Stack');
       const r1 = new CfnResource(stack, 'r1', { type: 'r1' });
       const r2 = new CfnResource(stack, 'r2', { type: 'r2' });
@@ -103,7 +103,7 @@ export = {
 
     'resource in sibling stack depends on a resource in nested stack': matrixForResourceDependencyTest((test, addDep) => {
       // GIVEN
-      const app = new App();
+      const app = new App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
       const stack1 = new Stack(app, 'Stack1');
       const nested1 = new NestedStack(stack1, 'Nested1');
       const resourceInNested1 = new CfnResource(nested1, 'ResourceInNested', { type: 'NESTED' });
@@ -125,7 +125,7 @@ export = {
 
     'resource in nested stack depends on a resource in sibling stack': matrixForResourceDependencyTest((test, addDep) => {
       // GIVEN
-      const app = new App();
+      const app = new App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
       const stack1 = new Stack(app, 'Stack1');
       const nested1 = new NestedStack(stack1, 'Nested1');
       const resourceInNested1 = new CfnResource(nested1, 'ResourceInNested', { type: 'NESTED' });
@@ -175,7 +175,7 @@ export = {
 
     'top level stack depends on itself'(test: Test) {
       // GIVEN
-      const app = new App();
+      const app = new App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
       const stack = new Stack(app, 'Stack');
 
       // WHEN
@@ -282,7 +282,7 @@ export = {
 
     'top-level stack depends on a nested stack within a sibling'(test: Test) {
       // GIVEN
-      const app = new App();
+      const app = new App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
       const stack1 = new Stack(app, 'Stack1');
       const nested1 = new NestedStack(stack1, 'Nested1');
       const stack2 = new Stack(app, 'Stack2');
@@ -302,7 +302,7 @@ export = {
 
     'nested stack within a sibling depends on top-level stack'(test: Test) {
       // GIVEN
-      const app = new App();
+      const app = new App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
       const stack1 = new Stack(app, 'Stack1');
       const nested1 = new NestedStack(stack1, 'Nested1');
       const stack2 = new Stack(app, 'Stack2');
