@@ -105,7 +105,11 @@
     }
   },
   "nozem": {
-    "ostools": ["dirname", "cd", "docker"]
+    "ostools": [
+      "dirname",
+      "cd",
+      "docker"
+    ]
   },
   "ubergen": {
     "exclude": false

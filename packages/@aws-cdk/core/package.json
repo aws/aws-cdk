@@ -222,7 +222,18 @@
     "announce": false
   },
   "nozem": {
-    "ostools": ["rm", "tar", "grep", "xargs", "head", "cut", "touch", "diff", "echo", "gzip"]
+    "ostools": [
+      "rm",
+      "tar",
+      "grep",
+      "xargs",
+      "head",
+      "cut",
+      "touch",
+      "diff",
+      "echo",
+      "gzip"
+    ]
   },
   "maturity": "stable",
   "publishConfig": {

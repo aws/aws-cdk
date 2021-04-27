@@ -104,7 +104,14 @@
     "node": ">= 10.13.0 <13 || >=13.7.0"
   },
   "nozem": {
-    "ostools": ["git", "date", "cat", "dotnet", "mvn", "npm"],
+    "ostools": [
+      "git",
+      "date",
+      "cat",
+      "dotnet",
+      "mvn",
+      "npm"
+    ],
     "env": {
       "CODEBUILD_RESOLVED_SOURCE_VERSION": "|nzm-build"
     }
