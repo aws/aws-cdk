@@ -26,3 +26,14 @@ test('create a cache parameter group', () => {
     }),
   );
 });
+
+test('import cache parameter group', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+
+  // WHEN
+  const pg = ParameterGroup.fromParameterGroupName(stack, 'Params', 'group-name');
+
+  // THEN
+  expect(pg.parameterGroupName).toBe('group-name');
+});

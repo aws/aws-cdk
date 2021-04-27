@@ -6,14 +6,41 @@ import { CfnParameterGroup } from './elasticache.generated';
  * The cache parameter group family that this cache parameter group is compatible with.
  */
 export enum CacheParameterGroupFamily {
+  /**
+   * Memcached Version 1.4
+   */
   MEMCACHED_1_4 = 'memcached1.4',
+  /**
+   * Memcached Version 1.5
+   */
   MEMCACHED_1_5 = 'memcached1.5',
+  /**
+   * Memcached Version 1.6
+   */
   MEMCACHED_1_6 = 'memcached1.6',
+  /**
+   * Redis Version 2.6
+   */
   REDIS_2_6 = 'redis2.6',
+  /**
+   * Redis Version 2.8
+   */
   REDIS_2_8 = 'redis2.8',
+  /**
+   * Redis Version 3.2
+   */
   REDIS_3_2 = 'redis3.2',
+  /**
+   * Redis Version 4.0
+   */
   REDIS_4_0 = 'redis4.0',
+  /**
+   * Redis Version 5.0
+   */
   REDIS_5_0 = 'redis5.0',
+  /**
+   * Redis Version 6.x
+   */
   REDIS_6_X = 'redis6.x',
 }
 /**
@@ -41,6 +68,8 @@ export interface ParameterGroupProps {
 
   /**
    * The properties in this parameter group
+   *
+   * @default undefined - no properties will be defined
    */
   readonly properties?: { [name: string]: string };
 
@@ -59,9 +88,9 @@ export class ParameterGroup extends Resource implements IParameterGroup {
   /**
    * Imports a parameter group
    */
-  public static fromParameterGroupName(scope: Construct, id: string, clusterParameterGroupName: string): IParameterGroup {
+  public static fromParameterGroupName(scope: Construct, id: string, parameterGroupName: string): IParameterGroup {
     class Import extends Resource implements IParameterGroup {
-      public readonly parameterGroupName = clusterParameterGroupName;
+      public readonly parameterGroupName = parameterGroupName;
     }
     return new Import(scope, id);
   }
