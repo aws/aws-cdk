@@ -76,6 +76,7 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
+    "@types/jest": "^26.0.22",
     "@types/aws-lambda": "^8.10.75",
     "@types/lodash": "^4.14.168",
     "cdk-build-tools": "0.0.0",
@@ -179,6 +180,11 @@
   "stability": "stable",
   "awscdkio": {
     "announce": false
+  },
+  "nozem": {
+    "ostools": [
+      "docker"
+    ]
   },
   "maturity": "stable",
   "publishConfig": {
