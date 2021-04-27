@@ -42,23 +42,6 @@ const cluster = new neptune.DatabaseCluster(this, 'Database', {
 
 By default only writer instance is provisioned with this construct.
 
-## Create instance type from non built-in instance type or CloudFormation parameter
-
-```ts
-const instanceType = new cdk.CfnParameter(stack, 'NeptuneInstaneType', {
-  type: 'String',
-  allowedValues: [
-    'db.r5.xlarge',
-    'db.r5.2xlarge',
-    'db.r5.4xlarge',
-    'db.r5.8xlarge',
-    'db.r5.12xlarge',
-  ],
-  default: 'db.r5.8xlarge',
-});
-const instanceType = neptune.InstanceType.of(instanceType.valueAsString);
-```
-
 ## Connecting
 
 To control who can access the cluster, use the `.connections` attribute. Neptune databases have a default port, so

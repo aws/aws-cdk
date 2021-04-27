@@ -137,8 +137,8 @@ describe('DatabaseInstance', () => {
     }));
   });
 
-  test('create instance type from literal without staring with db', () => {
-    expect(() => { InstanceType.of('r5.xlarge');}).toThrowError();
+  test('instance type from string throws if missing db prefix', () => {
+    expect(() => { InstanceType.of('r5.xlarge');}).toThrowError(/instance type must start with 'db.'/);
   });
 });
 

@@ -93,7 +93,7 @@ export class InstanceType {
     if (cdk.Token.isUnresolved(instanceType) || instanceType.startsWith('db.')) {
       this._instanceType = instanceType;
     } else {
-      throw new Error('The instance type should start with \'db.\'.');
+      throw new Error(`instance type must start with 'db.'; (got ${instanceType})`);
     }
   }
 }
