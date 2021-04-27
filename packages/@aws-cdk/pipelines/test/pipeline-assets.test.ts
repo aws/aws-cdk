@@ -91,6 +91,57 @@ describe('basic pipeline', () => {
         ],
       });
     });
+
+    test('up to 50 assets fit in a single stage', () => {
+      // WHEN
+      pipeline.addApplicationStage(new MegaAssetsApp(app, 'App', { numAssets: 50 }));
+
+      // THEN
+      expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
+        Stages: [
+          objectLike({ Name: 'Source' }),
+          objectLike({ Name: 'Build' }),
+          objectLike({ Name: 'UpdatePipeline' }),
+          objectLike({ Name: 'Assets' }),
+          objectLike({ Name: 'App' }),
+        ],
+      });
+    });
+
+    test('51 assets triggers a second stage', () => {
+      // WHEN
+      pipeline.addApplicationStage(new MegaAssetsApp(app, 'App', { numAssets: 51 }));
+
+      // THEN
+      expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
+        Stages: [
+          objectLike({ Name: 'Source' }),
+          objectLike({ Name: 'Build' }),
+          objectLike({ Name: 'UpdatePipeline' }),
+          objectLike({ Name: 'Assets' }),
+          objectLike({ Name: 'Assets2' }),
+          objectLike({ Name: 'App' }),
+        ],
+      });
+    });
+
+    test('101 assets triggers a third stage', () => {
+      // WHEN
+      pipeline.addApplicationStage(new MegaAssetsApp(app, 'App', { numAssets: 101 }));
+
+      // THEN
+      expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
+        Stages: [
+          objectLike({ Name: 'Source' }),
+          objectLike({ Name: 'Build' }),
+          objectLike({ Name: 'UpdatePipeline' }),
+          objectLike({ Name: 'Assets' }),
+          objectLike({ Name: 'Assets2' }),
+          objectLike({ Name: 'Assets3' }),
+          objectLike({ Name: 'App' }),
+        ],
+      });
+    });
   });
 
   test('command line properly locates assets in subassembly', () => {
@@ -114,6 +165,22 @@ describe('basic pipeline', () => {
     });
   });
 
+  test('multiple assets are published in parallel', () => {
+    // WHEN
+    pipeline.addApplicationStage(new TwoFileAssetsApp(app, 'FileAssetApp'));
+
+    // THEN
+    expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
+      Stages: arrayWith({
+        Name: 'Assets',
+        Actions: [
+          objectLike({ RunOrder: 1 }),
+          objectLike({ RunOrder: 1 }),
+        ],
+      }),
+    });
+  });
+
   test('assets are also published when using the lower-level addStackArtifactDeployment', () => {
     // GIVEN
     const asm = new FileAssetApp(app, 'FileAssetApp').synth();
@@ -127,7 +194,7 @@ describe('basic pipeline', () => {
         Name: 'Assets',
         Actions: [
           objectLike({
-            Name: 'FileAsset',
+            Name: 'FileAsset1',
             RunOrder: 1,
           }),
         ],
@@ -305,7 +372,7 @@ describe('pipeline with VPC', () => {
     expect(pipelineStack).toHaveResourceLike('AWS::CodeBuild::Project', {
       VpcConfig: objectLike({
         SecurityGroupIds: [
-          { 'Fn::GetAtt': ['CdkAssetsDockerAssetSecurityGroup59B832C3', 'GroupId'] },
+          { 'Fn::GetAtt': ['CdkAssetsDockerAsset1SecurityGroup078F5C66', 'GroupId'] },
         ],
         Subnets: [
           { Ref: 'VpcPrivateSubnet1Subnet536B997A' },
@@ -356,6 +423,18 @@ class FileAssetApp extends Stage {
   }
 }
 
+class TwoFileAssetsApp extends Stage {
+  constructor(scope: Construct, id: string, props?: StageProps) {
+    super(scope, id, props);
+    const stack = new Stack(this, 'Stack');
+    new s3_assets.Asset(stack, 'Asset1', {
+      path: path.join(__dirname, 'test-file-asset.txt'),
+    });
+    new s3_assets.Asset(stack, 'Asset2', {
+      path: path.join(__dirname, 'test-file-asset-two.txt'),
+    });
+  }
+}
 class DockerAssetApp extends Stage {
   constructor(scope: Construct, id: string, props?: StageProps) {
     super(scope, id, props);
@@ -365,8 +444,30 @@ class DockerAssetApp extends Stage {
     });
   }
 }
-
+interface MegaAssetsAppProps extends StageProps {
+  readonly numAssets: number;
+}
 // Creates a mix of file and image assets, up to a specified count
+class MegaAssetsApp extends Stage {
+  constructor(scope: Construct, id: string, props: MegaAssetsAppProps) {
+    super(scope, id, props);
+    const stack = new Stack(this, 'Stack');
+
+    let assetCount = 0;
+    for (; assetCount < props.numAssets / 2; assetCount++) {
+      new s3_assets.Asset(stack, `Asset${assetCount}`, {
+        path: path.join(__dirname, 'test-file-asset.txt'),
+        assetHash: `FileAsset${assetCount}`,
+      });
+    }
+    for (; assetCount < props.numAssets; assetCount++) {
+      new ecr_assets.DockerImageAsset(stack, `Asset${assetCount}`, {
+        directory: path.join(__dirname, 'test-docker-asset'),
+        extraHash: `FileAsset${assetCount}`,
+      });
+    }
+  }
+}
 
 function expectedAssetRolePolicy(assumeRolePattern: string, attachedRole: string) {
   return {

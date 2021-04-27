@@ -421,10 +421,14 @@ class AssetPublishing extends CoreConstruct {
       this.generateAssetRole(command.assetType);
     }
 
-    let action = this.publishers[this.props.singlePublisherPerType ? command.assetType.toString() : command.assetId];
+    const publisherKey = this.props.singlePublisherPerType ? command.assetType.toString() : command.assetId;
+
+    let action = this.publishers[publisherKey];
     if (!action) {
       // Dynamically create new stages as needed, with `MAX_PUBLISHERS_PER_STAGE` assets per stage.
-      const stageIndex = this.props.singlePublisherPerType ? 0 : Math.floor((this._fileAssetCtr + this._dockerAssetCtr) / this.MAX_PUBLISHERS_PER_STAGE);
+      const stageIndex = this.props.singlePublisherPerType ? 0 :
+        Math.floor((this._fileAssetCtr + this._dockerAssetCtr) / this.MAX_PUBLISHERS_PER_STAGE);
+
       if (!this.props.singlePublisherPerType && stageIndex >= this.stages.length) {
         const previousStage = this.stages.slice(-1)[0] ?? this.lastStageBeforePublishing;
         this.stages.push(this.pipeline.addStage({
@@ -451,7 +455,7 @@ class AssetPublishing extends CoreConstruct {
       // NOTE: It's important that asset changes don't force a pipeline self-mutation.
       // This can cause an infinite loop of updates (see https://github.com/aws/aws-cdk/issues/9080).
       // For that reason, we use the id as the actionName below, rather than the asset hash.
-      action = this.publishers[this.props.singlePublisherPerType ? command.assetType.toString() : command.assetId] = new PublishAssetsAction(this, id, {
+      action = this.publishers[publisherKey] = new PublishAssetsAction(this, id, {
         actionName: id,
         cloudAssemblyInput: this.props.cloudAssemblyInput,
         cdkCliVersion: this.props.cdkCliVersion,
