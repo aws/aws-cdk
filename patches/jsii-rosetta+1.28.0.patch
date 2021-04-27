@@ -1,0 +1,14 @@
+diff --git a/node_modules/jsii-rosetta/lib/commands/extract.js b/node_modules/jsii-rosetta/lib/commands/extract.js
+index e695ea9..539038e 100644
+--- a/node_modules/jsii-rosetta/lib/commands/extract.js
++++ b/node_modules/jsii-rosetta/lib/commands/extract.js
+@@ -104,7 +104,8 @@ exports.singleThreadedTranslateAll = singleThreadedTranslateAll;
+ async function workerBasedTranslateAll(worker, snippets, includeCompilerDiagnostics) {
+     // Use about half the advertised cores because hyperthreading doesn't seem to help that
+     // much (on my machine, using more than half the cores actually makes it slower).
+-    const N = Math.max(1, Math.ceil(os.cpus().length / 2));
++    // Cap to a reasonable top-level limit to prevent thrash on machines with many, many cores.
++    const N = Math.min(16, Math.max(1, Math.ceil(os.cpus().length / 2)));
+     const snippetArr = Array.from(snippets);
+     const groups = util_1.divideEvenly(N, snippetArr);
+     logging.info(`Translating ${snippetArr.length} snippets using ${groups.length} workers`);
