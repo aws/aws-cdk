@@ -134,7 +134,7 @@ export interface PipelineProps {
    *
    * @default false
    */
-  readonly crossAccountKeyRotationEnabled?: boolean;
+  readonly enableKeyRotation?: boolean;
 }
 
 abstract class PipelineBase extends Resource implements IPipeline {
@@ -243,7 +243,7 @@ export class Pipeline extends PipelineBase {
   private readonly _crossRegionSupport: { [region: string]: CrossRegionSupport } = {};
   private readonly _crossAccountSupport: { [account: string]: Stack } = {};
   private readonly crossAccountKeys: boolean;
-  private readonly crossAccountKeyRotationEnabled: boolean;
+  private readonly enableKeyRotation: boolean;
 
   constructor(scope: Construct, id: string, props: PipelineProps = {}) {
     super(scope, id, {
@@ -257,11 +257,16 @@ export class Pipeline extends PipelineBase {
       throw new Error('Only one of artifactBucket and crossRegionReplicationBuckets can be specified!');
     }
 
+    // Cross account keys must be set for key rotation to be enabled
+    if (props.enableKeyRotation && !props.crossAccountKeys) {
+      throw new Error('When setting \'enableKeyRotation\' you must also set \'crossAccountKeys\'');
+    }
+
 
     // @deprecated(v2): switch to default false
     this.crossAccountKeys = props.crossAccountKeys ?? true;
 
-    this.crossAccountKeyRotationEnabled = props.crossAccountKeyRotationEnabled ?? false;
+    this.enableKeyRotation = props.enableKeyRotation ?? false;
 
     // If a bucket has been provided, use it - otherwise, create a bucket.
     let propsBucket = this.getArtifactBucketFromProps(props);
@@ -274,7 +279,7 @@ export class Pipeline extends PipelineBase {
           // remove the key - there is a grace period of a few days before it's gone for good,
           // that should be enough for any emergency access to the bucket artifacts
           removalPolicy: RemovalPolicy.DESTROY,
-          enableKeyRotation: this.crossAccountKeyRotationEnabled,
+          enableKeyRotation: this.enableKeyRotation,
         });
         // add an alias to make finding the key in the console easier
         new kms.Alias(this, 'ArtifactsBucketEncryptionKeyAlias', {
@@ -513,7 +518,7 @@ export class Pipeline extends PipelineBase {
       if (!crossRegionSupportConstruct) {
         crossRegionSupportConstruct = new CrossRegionSupportConstruct(otherStack, id, {
           createKmsKey: this.crossAccountKeys,
-          crossAccountKeyRotationEnabled: this.crossAccountKeyRotationEnabled,
+          enableKeyRotation: this.enableKeyRotation,
         });
       }
 
@@ -540,7 +545,7 @@ export class Pipeline extends PipelineBase {
         account: pipelineAccount,
         synthesizer: this.getCrossRegionSupportSynthesizer(),
         createKmsKey: this.crossAccountKeys,
-        crossAccountKeyRotationEnabled: this.crossAccountKeyRotationEnabled,
+        enableKeyRotation: this.enableKeyRotation,
       });
     }
 

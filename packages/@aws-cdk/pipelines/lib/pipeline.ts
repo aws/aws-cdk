@@ -97,7 +97,7 @@ export interface CdkPipelineProps {
    *
    * @default false
    */
-  readonly crossAccountKeyRotationEnabled?: boolean;
+  readonly enableKeyRotation?: boolean;
 
   readonly cdkCliVersion?: string;
 
@@ -168,8 +168,11 @@ export class CdkPipeline extends CoreConstruct {
       if (props.crossAccountKeys !== undefined) {
         throw new Error('Cannot set \'crossAccountKeys\' if an existing CodePipeline is given using \'codePipeline\'');
       }
-      if (props.crossAccountKeyRotationEnabled !== undefined) {
-        throw new Error('Cannot set \'crossAccountKeyRotationEnabled\' if an existing CodePipeline is given using \'codePipeline\'');
+      if (props.enableKeyRotation !== undefined) {
+        throw new Error('Cannot set \'enableKeyRotation\' if an existing CodePipeline is given using \'codePipeline\'');
+      }
+      if (props.enableKeyRotation && !props.crossAccountKeys) {
+        throw new Error('When setting \'enableKeyRotation\' you must also set \'crossAccountKeys\'');
       }
 
       this._pipeline = props.codePipeline;
@@ -178,7 +181,7 @@ export class CdkPipeline extends CoreConstruct {
         pipelineName: props.pipelineName,
         crossAccountKeys: props.crossAccountKeys,
         restartExecutionOnUpdate: true,
-        crossAccountKeyRotationEnabled: props.crossAccountKeyRotationEnabled,
+        enableKeyRotation: props.enableKeyRotation,
       });
     }
 
