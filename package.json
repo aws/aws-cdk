@@ -42,6 +42,19 @@
     "name": "Amazon Web Services",
     "url": "https://aws.amazon.com"
   },
+  "nozem": {
+    "$comment": [
+      "these files are read by pkglint and cdk-build-tools tests for almost every package.",
+      "Rather than add them to each package.json individually, do it globally here."
+    ],
+    "globalNonPackageFiles": [
+      "package.json",
+      "release.json",
+      "scripts/resolve-version.js",
+      "scripts/resolve-version-lib.js",
+      "version.v1.json"
+    ]
+  },
   "workspaces": {
     "packages": [
       "packages/*",

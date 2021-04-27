@@ -52,7 +52,7 @@
     "typescript": "~3.9.9"
   },
   "nozem": {
-     "ostools": ["chmod"]
+     "ostools": ["chmod", "cp"]
   },
   "dependencies": {
     "case": "^1.6.3",

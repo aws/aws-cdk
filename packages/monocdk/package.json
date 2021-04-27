@@ -318,6 +318,7 @@
     "aws",
     "cdk"
   ],
+  "nozem": false,
   "awscdkio": {
     "announce": false
   },

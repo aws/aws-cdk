@@ -101,7 +101,7 @@ export class PublishAssetsAction extends Construct implements codepipeline.IActi
     const project = new codebuild.PipelineProject(this, 'Default', {
       projectName: this.props.projectName,
       environment: {
-        buildImage: codebuild.LinuxBuildImage.STANDARD_4_0,
+        buildImage: codebuild.LinuxBuildImage.STANDARD_5_0,
         privileged: (props.assetType === AssetType.DOCKER_IMAGE) ? true : undefined,
       },
       vpc: props.vpc,

@@ -10,59 +10,92 @@ import { IParameterGroup } from './parameter-group';
  * Possible Instances Types to use in Neptune cluster
  * used for defining {@link DatabaseInstanceProps.instanceType}.
  */
-export enum InstanceType {
+export class InstanceType {
+
   /**
    * db.r5.large
    */
-  R5_LARGE = 'db.r5.large',
+  public static readonly R5_LARGE = InstanceType.of('db.r5.large');
+
   /**
    * db.r5.xlarge
    */
-  R5_XLARGE = 'db.r5.xlarge',
+  public static readonly R5_XLARGE = InstanceType.of('db.r5.xlarge');
+
   /**
    * db.r5.2xlarge
    */
-  R5_2XLARGE = 'db.r5.2xlarge',
+  public static readonly R5_2XLARGE = InstanceType.of('db.r5.2xlarge');
+
   /**
    * db.r5.4xlarge
    */
-  R5_4XLARGE = 'db.r5.4xlarge',
+  public static readonly R5_4XLARGE = InstanceType.of('db.r5.4xlarge');
+
   /**
    * db.r5.8xlarge
    */
-  R5_8XLARGE = 'db.r5.8xlarge',
+  public static readonly R5_8XLARGE = InstanceType.of('db.r5.8xlarge');
+
   /**
    * db.r5.12xlarge
    */
-  R5_12XLARGE = 'db.r5.12xlarge',
+  public static readonly R5_12XLARGE = InstanceType.of('db.r5.12xlarge');
+
   /**
    * db.r5.24xlarge
    */
-  R5_24XLARGE = 'db.r5.24xlarge',
+  public static readonly R5_24XLARGE = InstanceType.of('db.r5.24xlarge');
+
   /**
    * db.r4.large
    */
-  R4_LARGE = 'db.r4.large',
+  public static readonly R4_LARGE = InstanceType.of('db.r4.large');
+
   /**
    * db.r4.xlarge
    */
-  R4_XLARGE = 'db.r4.xlarge',
+  public static readonly R4_XLARGE = InstanceType.of('db.r4.xlarge');
+
   /**
    * db.r4.2xlarge
    */
-  R4_2XLARGE = 'db.r4.2xlarge',
+  public static readonly R4_2XLARGE = InstanceType.of('db.r4.2xlarge');
+
   /**
    * db.r4.4xlarge
    */
-  R4_4XLARGE = 'db.r4.4xlarge',
+  public static readonly R4_4XLARGE = InstanceType.of('db.r4.4xlarge');
+
   /**
    * db.r4.8xlarge
    */
-  R4_8XLARGE = 'db.r4.8xlarge',
+  public static readonly R4_8XLARGE = InstanceType.of('db.r4.8xlarge');
+
   /**
    * db.t3.medium
    */
-  T3_MEDIUM = 'db.t3.medium'
+  public static readonly T3_MEDIUM = InstanceType.of('db.t3.medium');
+
+  /**
+   * Build an InstanceType from given string or token, such as CfnParameter.
+   */
+  public static of(instanceType: string): InstanceType {
+    return new InstanceType(instanceType);
+  }
+
+  /**
+   * @internal
+   */
+  readonly _instanceType: string;
+
+  private constructor(instanceType: string) {
+    if (cdk.Token.isUnresolved(instanceType) || instanceType.startsWith('db.')) {
+      this._instanceType = instanceType;
+    } else {
+      throw new Error(`instance type must start with 'db.'; (got ${instanceType})`);
+    }
+  }
 }
 
 /**
@@ -212,7 +245,7 @@ export class DatabaseInstance extends cdk.Resource implements IDatabaseInstance 
 
     const instance = new CfnDBInstance(this, 'Resource', {
       dbClusterIdentifier: props.cluster.clusterIdentifier,
-      dbInstanceClass: props.instanceType,
+      dbInstanceClass: props.instanceType._instanceType,
       availabilityZone: props.availabilityZone,
       dbInstanceIdentifier: props.dbInstanceName,
       dbParameterGroupName: props.parameterGroup?.parameterGroupName,

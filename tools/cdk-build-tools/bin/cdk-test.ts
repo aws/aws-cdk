@@ -56,7 +56,7 @@ async function main() {
     // that can only be a filename relative to '--cwd', but if we set '--cwd'
     // nyc doesn't find the source files anymore.
     //
-    // We end up symlinking nyc.config.js into the package.
+    // We end up copying nyc.config.js into the package.
     const nycConfig = 'nyc.config.js';
 
     // Delete file if it exists
@@ -66,7 +66,7 @@ async function main() {
       if (e.code !== 'ENOENT') { return; }
     }
 
-    await fs.ensureSymlink(configFilePath('nyc.config.js'), nycConfig);
+    await fs.copyFile(configFilePath('nyc.config.js'), nycConfig);
     testCommand.push(...[args.nyc, '--clean']);
 
     testCommand.push(args.nodeunit);

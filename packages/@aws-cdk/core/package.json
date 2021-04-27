@@ -175,6 +175,9 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
+    "@types/aws-lambda": "^8.10.62",
+    "@types/fs-extra": "^8.1.1",
+    "@types/jest": "^26.0.14",
     "@types/lodash": "^4.14.168",
     "@types/minimatch": "^3.0.4",
     "@types/node": "^10.17.56",
@@ -217,6 +220,20 @@
   "stability": "stable",
   "awscdkio": {
     "announce": false
+  },
+  "nozem": {
+    "ostools": [
+      "rm",
+      "tar",
+      "grep",
+      "xargs",
+      "head",
+      "cut",
+      "touch",
+      "diff",
+      "echo",
+      "gzip"
+    ]
   },
   "maturity": "stable",
   "publishConfig": {

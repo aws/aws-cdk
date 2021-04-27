@@ -63,6 +63,7 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
+    "@types/jest": "^26.0.22",
     "cdk-build-tools": "0.0.0",
     "cdk-integ-tools": "0.0.0",
     "jest": "^26.6.3",
@@ -99,6 +100,13 @@
   },
   "ubergen": {
     "exclude": false
+  },
+  "nozem": {
+    "ostools": [
+      "dirname",
+      "cd",
+      "docker"
+    ]
   },
   "publishConfig": {
     "tag": "latest"

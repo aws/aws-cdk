@@ -55,6 +55,7 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@types/fs-extra": "^8.1.1",
+    "@types/jest": "^26.0.14",
     "cdk-build-tools": "0.0.0",
     "fs-extra": "^9.1.0",
     "pkglint": "0.0.0"
@@ -79,6 +80,11 @@
       "docs-public-apis:@aws-cdk/region-info.Fact.regions",
       "docs-public-apis:@aws-cdk/region-info.RegionInfo.regions",
       "docs-public-apis:@aws-cdk/region-info.RegionInfo.name"
+    ]
+  },
+  "nozem": {
+    "ostools": [
+      "bash"
     ]
   },
   "awscdkio": {
