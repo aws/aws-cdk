@@ -38,7 +38,7 @@ export async function generateShrinkwrap(options: ShrinkwrapOptions): Promise<Pa
   const lock = await generateLockFile(pkgJson, yarnLock, packageJsonDir);
 
   if (options.hoist ?? true) {
-    hoistDependencies(lock.dependencies || {});
+    hoistDependencies({ version: '*', dependencies: lock.dependencies });
   }
 
   if (options.outputFile) {
