@@ -163,7 +163,7 @@ const delegationRole = iam.Role.fromRoleArn(this, 'DelegationRole', delegationRo
 new route53.CrossAccountZoneDelegationRecord(this, 'delegate', {
   delegatedZone: subZone,
   parentHostedZoneName: 'someexample.com', // or you can use parentHostedZoneId
-  delegationRole: delegationRole
+  delegationRole,
 });
 ```
 

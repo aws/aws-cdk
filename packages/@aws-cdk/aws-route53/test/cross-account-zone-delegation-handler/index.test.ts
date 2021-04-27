@@ -21,10 +21,22 @@ jest.mock('aws-sdk', () => {
 beforeEach(() => {
   mockStsClient.assumeRole.mockReturnThis();
   mockRoute53Client.changeResourceRecordSets.mockReturnThis();
+  mockRoute53Client.listHostedZonesByName.mockReturnThis();
 });
 
 afterEach(() => {
   jest.clearAllMocks();
+});
+
+test('throws error if both ParentZoneId and ParentZoneName are not provided', async () => {
+  // WHEN
+  const event = getCfnEvent({}, {
+    ParentZoneId: undefined,
+    ParentZoneName: undefined,
+  });
+
+  // THEN
+  await expect(invokeHandler(event)).rejects.toThrow(/One of ParentZoneId or ParentZoneName must be specified/);
 });
 
 test('throws error if getting credentials fails', async () => {
@@ -44,7 +56,7 @@ test('throws error if getting credentials fails', async () => {
   });
 });
 
-test('calls create resouce record set with Upsert for Create event', async () => {
+test('calls create resource record set with Upsert for Create event', async () => {
   // GIVEN
   mockStsClient.promise.mockResolvedValueOnce({ Credentials: { AccessKeyId: 'K', SecretAccessKey: 'S', SessionToken: 'T' } });
   mockRoute53Client.promise.mockResolvedValueOnce({});
@@ -71,7 +83,7 @@ test('calls create resouce record set with Upsert for Create event', async () =>
   });
 });
 
-test('calls create resouce record set with DELETE for Delete event', async () => {
+test('calls create resource record set with DELETE for Delete event', async () => {
   // GIVEN
   mockStsClient.promise.mockResolvedValueOnce({ Credentials: { AccessKeyId: 'K', SecretAccessKey: 'S', SessionToken: 'T' } });
   mockRoute53Client.promise.mockResolvedValueOnce({});

@@ -25,6 +25,10 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
 async function cfnEventHandler(props: ResourceProperties, isDeleteEvent: boolean) {
   const { AssumeRoleArn, ParentZoneId, ParentZoneName, DelegatedZoneName, DelegatedZoneNameServers, TTL } = props;
 
+  if (!ParentZoneId && !ParentZoneName) {
+    throw Error('One of ParentZoneId or ParentZoneName must be specified');
+  }
+
   const credentials = await getCrossAccountCredentials(AssumeRoleArn);
   const route53 = new Route53({ credentials });
 
