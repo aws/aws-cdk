@@ -81,6 +81,16 @@ export interface CdkPipelineProps {
   // @deprecated(v2): switch to default false
 
   /**
+   * Enables KMS key rotation for cross-account keys
+   *
+   * By default kms key rotation is disabled, when enabled it will add an additional $1/month
+   * for each year the key exists.
+   *
+   * @default false
+   */
+  readonly enableKeyRotation?: boolean;
+
+  /**
    * CDK CLI version to use in pipeline
    *
    * Some Actions in the pipeline will download and run a version of the CDK
@@ -88,17 +98,6 @@ export interface CdkPipelineProps {
    *
    * @default - Latest version
    */
-
-  /**
-   * Enables KMS key rotation for cross-account keys
-   *
-   * By default kms key rotation is disabled, but will add an additional $1/month
-   * for each year the key exists when enabled.
-   *
-   * @default false
-   */
-  readonly enableKeyRotation?: boolean;
-
   readonly cdkCliVersion?: string;
 
   /**
