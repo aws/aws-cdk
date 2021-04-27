@@ -111,7 +111,9 @@
     "announce": false
   },
   "nozem": {
-    "ostools": ["docker"]
+    "ostools": [
+      "docker"
+    ]
   },
   "publishConfig": {
     "tag": "latest"
