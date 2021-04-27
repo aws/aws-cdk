@@ -14,16 +14,13 @@
 This package contains constructs for working with **Amazon Elastic Container
 Service** (Amazon ECS).
 
-Amazon ECS is a highly scalable, fast, container management service
-that makes it easy to run, stop,
-and manage Docker containers on a cluster of Amazon EC2 instances.
+Amazon Elastic Container Service (Amazon ECS) is a fully managed container orchestration service.
 
 For further information on Amazon ECS,
 see the [Amazon ECS documentation](https://docs.aws.amazon.com/ecs)
 
-The following example creates an Amazon ECS cluster,
-adds capacity to it,
-and instantiates the Amazon ECS Service with an automatic load balancer.
+The following example creates an Amazon ECS cluster, adds capacity to it, and
+runs a service on it:
 
 ```ts
 import * as ecs from '@aws-cdk/aws-ecs';
@@ -496,37 +493,38 @@ scaling.scaleOnRequestCount('RequestScaling', {
 Task auto-scaling is powered by *Application Auto-Scaling*.
 See that section for details.
 
-## Instance Auto-Scaling
+## Managed Scaling for Amazon EC2 Capacity
 
-If you're running on AWS Fargate, AWS manages the physical machines that your
-containers are running on for you. If you're running an Amazon ECS cluster however,
-your Amazon EC2 instances might fill up as your number of Tasks goes up.
-
-To avoid placement errors, configure auto-scaling for your
-Amazon EC2 instance group so that your instance count scales with demand. To keep
-your Amazon EC2 instances halfway loaded, scaling up to a maximum of 30 instances
-if required:
+Amazon ECS can manage EC2 capacity on which you can place your tasks. You can
+enable this by using an EC2 Capacity Provider and associating it with you ECS
+tasks and services. If enabled, ECS will scale out the Auto Scaling Group(s) as
+necessary to fit your tasks.
 
 ```ts
-const autoScalingGroup = cluster.addCapacity('DefaultAutoScalingGroup', {
-  instanceType: new ec2.InstanceType("t2.xlarge"),
-  minCapacity: 3,
-  maxCapacity: 30,
-  desiredCapacity: 3,
-
-  // Give instances 5 minutes to drain running tasks when an instance is
-  // terminated. This is the default, turn this off by specifying 0 or
-  // change the timeout up to 900 seconds.
-  taskDrainTime: Duration.seconds(300)
+const autoScalingGroup = new autoscaling.AutoScalingGroup(this, 'Compute', {
+  vpc,
+  instanceType: new ec2.InstanceType('t2.xlarge'),
+  minCapacity: 0,
+  maxCapacity: 100
 });
+const capacity = new ecs.CapacityProvider(this, 'EC2Capacity', {
+  autoScalingGroup
+});
+cluster.addCapacityProvider(capacity);
 
-autoScalingGroup.scaleOnCpuUtilization('KeepCpuHalfwayLoaded', {
-  targetUtilizationPercent: 50
+const service = new ecs.Ec2Service(this, 'Service', {
+  cluster,
+  taskDefinition,
+  desiredCount: 10,
+  capacityProviderStrategies: [
+    {
+      base: 0,
+      weight: 1,
+      capacityProvider: capacity.capacityProviderName
+    }
+  ]
 });
 ```
-
-See the `@aws-cdk/aws-autoscaling` library for more autoscaling options
-you can configure on your instances.
 
 ## Integration with CloudWatch Events
 
