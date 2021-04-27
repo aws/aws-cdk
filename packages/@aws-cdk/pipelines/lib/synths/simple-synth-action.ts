@@ -63,7 +63,7 @@ export interface SimpleSynthOptions {
   /**
    * Build environment to use for CodeBuild job
    *
-   * @default BuildEnvironment.LinuxBuildImage.STANDARD_4_0
+   * @default BuildEnvironment.LinuxBuildImage.STANDARD_5_0
    */
   readonly environment?: codebuild.BuildEnvironment;
 
@@ -321,7 +321,7 @@ export class SimpleSynthAction implements codepipeline.IAction, iam.IGrantable {
       artifacts: renderArtifacts(this),
     });
 
-    const environment = { buildImage: codebuild.LinuxBuildImage.STANDARD_4_0, ...this.props.environment };
+    const environment = { buildImage: codebuild.LinuxBuildImage.STANDARD_5_0, ...this.props.environment };
 
     const environmentVariables = {
       ...copyEnvironmentVariables(...this.props.copyEnvironmentVariables || []),

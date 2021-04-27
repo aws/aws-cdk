@@ -72,6 +72,7 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
+    "@types/jest": "^26.0.22",
     "@aws-cdk/aws-events-targets": "0.0.0",
     "@aws-cdk/aws-lambda": "0.0.0",
     "@aws-cdk/cx-api": "0.0.0",

@@ -54,7 +54,7 @@ export class UpdatePipelineAction extends Construct implements codepipeline.IAct
 
     const selfMutationProject = new codebuild.PipelineProject(this, 'SelfMutation', {
       projectName: props.projectName,
-      environment: { buildImage: codebuild.LinuxBuildImage.STANDARD_4_0 },
+      environment: { buildImage: codebuild.LinuxBuildImage.STANDARD_5_0 },
       buildSpec: codebuild.BuildSpec.fromObject({
         version: '0.2',
         phases: {
