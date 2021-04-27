@@ -83,7 +83,9 @@
     ]
   },
   "nozem": {
-      "ostools": ["bash"]
+    "ostools": [
+      "bash"
+    ]
   },
   "awscdkio": {
     "announce": false

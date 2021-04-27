@@ -34,7 +34,9 @@
       "disable": true
     },
     "stripDeprecated": true,
-    "post": ["node ./scripts/verify-readme-import-rewrites.js"]
+    "post": [
+      "node ./scripts/verify-readme-import-rewrites.js"
+    ]
   },
   "cdk-package": {
     "post": "node ./scripts/verify-stripped-exp.js"

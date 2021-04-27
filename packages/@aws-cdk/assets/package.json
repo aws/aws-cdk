@@ -99,7 +99,11 @@
     "announce": false
   },
   "nozem": {
-    "ostools": ["rm", "tar", "gzip"]
+    "ostools": [
+      "rm",
+      "tar",
+      "gzip"
+    ]
   },
   "publishConfig": {
     "tag": "latest"

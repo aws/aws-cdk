@@ -94,7 +94,9 @@
     "jest": true
   },
   "nozem": {
-    "ostools": ["docker"]
+    "ostools": [
+      "docker"
+    ]
   },
   "publishConfig": {
     "tag": "latest"
