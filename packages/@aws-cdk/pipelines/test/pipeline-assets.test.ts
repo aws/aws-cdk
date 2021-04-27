@@ -435,6 +435,7 @@ class TwoFileAssetsApp extends Stage {
     });
   }
 }
+
 class DockerAssetApp extends Stage {
   constructor(scope: Construct, id: string, props?: StageProps) {
     super(scope, id, props);
@@ -444,9 +445,11 @@ class DockerAssetApp extends Stage {
     });
   }
 }
+
 interface MegaAssetsAppProps extends StageProps {
   readonly numAssets: number;
 }
+
 // Creates a mix of file and image assets, up to a specified count
 class MegaAssetsApp extends Stage {
   constructor(scope: Construct, id: string, props: MegaAssetsAppProps) {
