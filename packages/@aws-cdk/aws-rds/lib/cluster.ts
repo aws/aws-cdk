@@ -290,8 +290,6 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
    * Never undefined.
    */
   public readonly engine?: IClusterEngine;
-  public readonly instanceIdentifiers: string[] = [];
-  public readonly instanceEndpoints: Endpoint[] = [];
 
   protected readonly newCfnProps: CfnDBClusterProps;
   protected readonly securityGroups: ec2.ISecurityGroup[];
@@ -484,6 +482,9 @@ export class DatabaseCluster extends DatabaseClusterNew {
   private readonly singleUserRotationApplication: secretsmanager.SecretRotationApplication;
   private readonly multiUserRotationApplication: secretsmanager.SecretRotationApplication;
 
+  public readonly instanceIdentifiers: string[] = [];
+  public readonly instanceEndpoints: Endpoint[] = [];
+
   constructor(scope: Construct, id: string, props: DatabaseClusterProps) {
     super(scope, id, props);
 
@@ -524,7 +525,9 @@ export class DatabaseCluster extends DatabaseClusterNew {
     }
 
     setLogRetention(this, props);
-    createInstances(this, props, this.subnetGroup);
+    const { instanceIdentifiers, instanceEndpoints } = createInstances(this, props, this.subnetGroup);
+    this.instanceIdentifiers = instanceIdentifiers;
+    this.instanceEndpoints = instanceEndpoints;
   }
 
   /**
@@ -594,6 +597,9 @@ export class DatabaseClusterFromSnapshot extends DatabaseClusterNew {
   public readonly clusterReadEndpoint: Endpoint;
   public readonly connections: ec2.Connections;
 
+  public readonly instanceIdentifiers: string[] = [];
+  public readonly instanceEndpoints: Endpoint[] = [];
+
   constructor(scope: Construct, id: string, props: DatabaseClusterFromSnapshotProps) {
     super(scope, id, props);
 
@@ -616,7 +622,9 @@ export class DatabaseClusterFromSnapshot extends DatabaseClusterNew {
     cluster.applyRemovalPolicy(props.removalPolicy ?? RemovalPolicy.SNAPSHOT);
 
     setLogRetention(this, props);
-    createInstances(this, props, this.subnetGroup);
+    const { instanceIdentifiers, instanceEndpoints } = createInstances(this, props, this.subnetGroup);
+    this.instanceIdentifiers = instanceIdentifiers;
+    this.instanceEndpoints = instanceEndpoints;
   }
 }
 
