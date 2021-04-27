@@ -22,3 +22,20 @@
 <!--END STABILITY BANNER-->
 
 This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.
+
+```ts
+import * as ec from '@aws-cdk/aws-elasticache'
+```
+
+## Parameter Groups
+
+Creating a parameter group to control parameters of a cache cluster:
+
+```ts
+new ParameterGroup(stack, 'Params', {
+    cacheParameterGroupFamily: CacheParameterGroupFamily.REDIS_6_X,
+    properties: {
+        'cluster-allow-reads-when-down': 'yes',
+    },
+});
+```
