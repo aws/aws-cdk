@@ -599,9 +599,18 @@ export interface CrossAccountZoneDelegationRecordProps {
   readonly delegatedZone: IHostedZone;
 
   /**
-   * The hosted zone id in the parent account
+   * The hosted zone name in the parent account
+   *
+   * @default - no zone name
    */
-  readonly parentHostedZoneId: string;
+  readonly parentHostedZoneName?: string;
+
+  /**
+   * The hosted zone id in the parent account
+   *
+   * @default - no zone id
+   */
+  readonly parentHostedZoneId?: string;
 
   /**
    * The delegation role in the parent account
@@ -623,6 +632,14 @@ export class CrossAccountZoneDelegationRecord extends Construct {
   constructor(scope: Construct, id: string, props: CrossAccountZoneDelegationRecordProps) {
     super(scope, id);
 
+    if (!props.parentHostedZoneName && !props.parentHostedZoneId) {
+      throw Error('At least one of parentHostedZoneName or parentHostedZoneId is required');
+    }
+
+    if (props.parentHostedZoneName && props.parentHostedZoneId) {
+      throw Error('Only one of parentHostedZoneName and parentHostedZoneId is supported');
+    }
+
     const serviceToken = CustomResourceProvider.getOrCreate(this, CROSS_ACCOUNT_ZONE_DELEGATION_RESOURCE_TYPE, {
       codeDirectory: path.join(__dirname, 'cross-account-zone-delegation-handler'),
       runtime: CustomResourceProviderRuntime.NODEJS_12_X,
@@ -634,6 +651,7 @@ export class CrossAccountZoneDelegationRecord extends Construct {
       serviceToken,
       properties: {
         AssumeRoleArn: props.delegationRole.roleArn,
+        ParentZoneName: props.parentHostedZoneName,
         ParentZoneId: props.parentHostedZoneId,
         DelegatedZoneName: props.delegatedZone.zoneName,
         DelegatedZoneNameServers: props.delegatedZone.hostedZoneNameServers!,
