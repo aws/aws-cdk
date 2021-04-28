@@ -155,7 +155,7 @@ jobs:
            {"keywords":["(@aws-cdk/aws-sdb)","(aws-sdb)","(sdb)"],"labels":["@aws-cdk/aws-sdb"],"assignees":["njlynch"]},
            {"keywords":["(@aws-cdk/aws-secretsmanager)","(aws-secretsmanager)","(secretsmanager)","(secrets manager)","(secrets-manager)"],"labels":["@aws-cdk/aws-secretsmanager"],"assignees":["njlynch"]},
            {"keywords":["(@aws-cdk/aws-securityhub)","(aws-securityhub)","(securityhub)","(security hub)","(security-hub)"],"labels":["@aws-cdk/aws-securityhub"],"assignees":["skinny85"]},
-           {"keywords":["(@aws-cdk/aws-servicecatalog)","(aws-servicecatalog)","(servicecatalog)","(service catalog)","(service-catalog)"],"labels":["@aws-cdk/aws-servicecatalog"],"assignees":["MrArnoldPalmer"]},
+           {"keywords":["(@aws-cdk/aws-servicecatalog)","(aws-servicecatalog)","(servicecatalog)","(service catalog)","(service-catalog)"],"labels":["@aws-cdk/aws-servicecatalog"],"assignees":["skinny85"]},
            {"keywords":["(@aws-cdk/aws-servicediscovery)","(aws-servicediscovery)","(servicediscovery)","(service discovery)","(service-discovery)"],"labels":["@aws-cdk/aws-servicediscovery"],"assignees":["MrArnoldPalmer"]},
            {"keywords":["(@aws-cdk/aws-ses)","(aws-ses)","(ses)"],"labels":["@aws-cdk/aws-ses"],"assignees":["iliapolo"]},
            {"keywords":["(@aws-cdk/aws-ses-actions)","(aws-ses-actions)","(ses-actions)","(ses actions)"],"labels":["@aws-cdk/aws-ses-actions"],"assignees":["iliapolo"]},
