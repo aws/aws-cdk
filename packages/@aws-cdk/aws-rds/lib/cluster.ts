@@ -525,9 +525,9 @@ export class DatabaseCluster extends DatabaseClusterNew {
     }
 
     setLogRetention(this, props);
-    const { instanceIdentifiers, instanceEndpoints } = createInstances(this, props, this.subnetGroup);
-    this.instanceIdentifiers = instanceIdentifiers;
-    this.instanceEndpoints = instanceEndpoints;
+    const createdInstances = createInstances(this, props, this.subnetGroup);
+    this.instanceIdentifiers = createdInstances.instanceIdentifiers;
+    this.instanceEndpoints = createdInstances.instanceEndpoints;
   }
 
   /**
@@ -622,9 +622,9 @@ export class DatabaseClusterFromSnapshot extends DatabaseClusterNew {
     cluster.applyRemovalPolicy(props.removalPolicy ?? RemovalPolicy.SNAPSHOT);
 
     setLogRetention(this, props);
-    const { instanceIdentifiers, instanceEndpoints } = createInstances(this, props, this.subnetGroup);
-    this.instanceIdentifiers = instanceIdentifiers;
-    this.instanceEndpoints = instanceEndpoints;
+    const createdInstances = createInstances(this, props, this.subnetGroup);
+    this.instanceIdentifiers = createdInstances.instanceIdentifiers;
+    this.instanceEndpoints = createdInstances.instanceEndpoints;
   }
 }
 
