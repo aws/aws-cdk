@@ -298,7 +298,7 @@ export interface CommonAutoScalingGroupProps {
    * when scaling in an Auto Scaling Group, subject to the group's termination
    * policy. However, you may wish to protect newly-launched instances from
    * being scaled in if they are going to run critical applications that should
-   * not beß prematurely terminated.
+   * not be prematurely terminated.
    *
    * This flag must be enabled if the Auto Scaling Group will be associated with
    * an ECS Capacity Provider with managed termination protection.
@@ -918,10 +918,14 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
   private readonly groupMetrics: GroupMetrics[] = [];
   private readonly notifications: NotificationConfiguration[] = [];
 
+  protected newInstancesProtectedFromScaleIn?: boolean;
+
   constructor(scope: Construct, id: string, props: AutoScalingGroupProps) {
     super(scope, id, {
       physicalName: props.autoScalingGroupName,
     });
+
+    this.newInstancesProtectedFromScaleIn = props.newInstancesProtectedFromScaleIn;
 
     if (props.initOptions && !props.init) {
       throw new Error('Setting \'initOptions\' requires that \'init\' is also set');
@@ -1038,7 +1042,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
       healthCheckType: props.healthCheck && props.healthCheck.type,
       healthCheckGracePeriod: props.healthCheck && props.healthCheck.gracePeriod && props.healthCheck.gracePeriod.toSeconds(),
       maxInstanceLifetime: this.maxInstanceLifetime ? this.maxInstanceLifetime.toSeconds() : undefined,
-      newInstancesProtectedFromScaleIn: props.newInstancesProtectedFromScaleIn,
+      newInstancesProtectedFromScaleIn: Lazy.any({ produce: () => this.newInstancesProtectedFromScaleIn }),
     };
 
     if (!hasPublic && props.associatePublicIpAddress) {
@@ -1142,6 +1146,20 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
       printLog: options.printLog,
       ignoreFailures: options.ignoreFailures,
     });
+  }
+
+  /**
+   * Ensures newly-launched instances are protected from scale-in.
+   */
+  public protectNewInstancesFromScaleIn() {
+    this.newInstancesProtectedFromScaleIn = true;
+  }
+
+  /**
+   * Returns `true` if newly-launched instances are protected from scale-in.
+   */
+  public areNewInstancesProtectedFromScaleIn(): boolean {
+    return this.newInstancesProtectedFromScaleIn === true;
   }
 
   /**

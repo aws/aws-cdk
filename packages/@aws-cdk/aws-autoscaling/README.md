@@ -368,7 +368,8 @@ policy](https://docs.aws.amazon.com/autoscaling/ec2/userguide/as-instance-termin
 
 However, you may wish to protect newly-launched instances from being scaled in
 if they are going to run critical applications that should not be prematurely
-terminated. This protection can be removed after launch.
+terminated. EC2 Capacity Providers for Amazon ECS requires this attribute be
+set to `true`.
 
 ```ts
 new autoscaling.AutoScalingGroup(stack, 'ASG', {
