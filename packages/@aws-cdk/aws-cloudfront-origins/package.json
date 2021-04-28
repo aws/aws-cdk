@@ -69,12 +69,13 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "0.0.0",
+    "@types/jest": "^26.0.22",
     "@aws-cdk/aws-ec2": "0.0.0",
     "aws-sdk": "^2.848.0",
     "cdk-build-tools": "0.0.0",
     "cdk-integ-tools": "0.0.0",
-    "pkglint": "0.0.0"
+    "pkglint": "0.0.0",
+    "@aws-cdk/assert-internal": "0.0.0"
   },
   "dependencies": {
     "@aws-cdk/aws-cloudfront": "0.0.0",
@@ -82,12 +83,12 @@
     "@aws-cdk/aws-iam": "0.0.0",
     "@aws-cdk/aws-s3": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "constructs": "^3.2.0"
+    "constructs": "^3.3.69"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
     "@aws-cdk/core": "0.0.0",
-    "constructs": "^3.2.0",
+    "constructs": "^3.3.69",
     "@aws-cdk/aws-cloudfront": "0.0.0",
     "@aws-cdk/aws-elasticloadbalancingv2": "0.0.0",
     "@aws-cdk/aws-iam": "0.0.0",

@@ -2,7 +2,7 @@ import * as child_process from 'child_process';
 import * as os from 'os';
 import * as path from 'path';
 import { Code, Runtime } from '@aws-cdk/aws-lambda';
-import { AssetHashType, BundlingDockerImage } from '@aws-cdk/core';
+import { AssetHashType, DockerImage } from '@aws-cdk/core';
 import { version as delayVersion } from 'delay/package.json';
 import { Bundling } from '../lib/bundling';
 import { LogLevel } from '../lib/types';
@@ -11,7 +11,7 @@ import * as util from '../lib/util';
 jest.mock('@aws-cdk/aws-lambda');
 
 // Mock BundlingDockerImage.fromAsset() to avoid building the image
-let fromAssetMock = jest.spyOn(BundlingDockerImage, 'fromAsset');
+let fromAssetMock = jest.spyOn(DockerImage, 'fromBuild');
 let getEsBuildVersionMock = jest.spyOn(util, 'getEsBuildVersion');
 beforeEach(() => {
   jest.clearAllMocks();
@@ -20,7 +20,7 @@ beforeEach(() => {
   getEsBuildVersionMock.mockReturnValue('0.8.8');
   fromAssetMock.mockReturnValue({
     image: 'built-image',
-    cp: () => {},
+    cp: () => 'dest-path',
     run: () => {},
     toJSON: () => 'built-image',
   });
@@ -53,7 +53,7 @@ test('esbuild bundling in Docker', () => {
       },
       command: [
         'bash', '-c',
-        'npx esbuild --bundle /asset-input/lib/handler.ts --target=node12 --platform=node --outfile=/asset-output/index.js --external:aws-sdk --loader:.png=dataurl',
+        'npx esbuild --bundle "/asset-input/lib/handler.ts" --target=node12 --platform=node --outfile="/asset-output/index.js" --external:aws-sdk --loader:.png=dataurl',
       ],
       workingDirectory: '/',
     }),
@@ -74,7 +74,7 @@ test('esbuild bundling with handler named index.ts', () => {
     bundling: expect.objectContaining({
       command: [
         'bash', '-c',
-        'npx esbuild --bundle /asset-input/lib/index.ts --target=node12 --platform=node --outfile=/asset-output/index.js --external:aws-sdk',
+        'npx esbuild --bundle "/asset-input/lib/index.ts" --target=node12 --platform=node --outfile="/asset-output/index.js" --external:aws-sdk',
       ],
     }),
   });
@@ -94,7 +94,7 @@ test('esbuild bundling with tsx handler', () => {
     bundling: expect.objectContaining({
       command: [
         'bash', '-c',
-        'npx esbuild --bundle /asset-input/lib/handler.tsx --target=node12 --platform=node --outfile=/asset-output/index.js --external:aws-sdk',
+        'npx esbuild --bundle "/asset-input/lib/handler.tsx" --target=node12 --platform=node --outfile="/asset-output/index.js" --external:aws-sdk',
       ],
     }),
   });
@@ -139,7 +139,7 @@ test('esbuild bundling with externals and dependencies', () => {
       command: [
         'bash', '-c',
         [
-          'npx esbuild --bundle /asset-input/test/bundling.test.js --target=node12 --platform=node --outfile=/asset-output/index.js --external:abc --external:delay',
+          'npx esbuild --bundle "/asset-input/test/bundling.test.js" --target=node12 --platform=node --outfile="/asset-output/index.js" --external:abc --external:delay',
           `echo \'{\"dependencies\":{\"delay\":\"${delayVersion}\"}}\' > /asset-output/package.json`,
           'cp /asset-input/package-lock.json /asset-output/package-lock.json',
           'cd /asset-output',
@@ -169,28 +169,35 @@ test('esbuild bundling with esbuild options', () => {
     footer: '/* comments */',
     forceDockerBundling: true,
     define: {
-      'DEBUG': 'true',
       'process.env.KEY': JSON.stringify('VALUE'),
+      'process.env.BOOL': 'true',
+      'process.env.NUMBER': '7777',
+      'process.env.STRING': JSON.stringify('this is a "test"'),
     },
   });
 
   // Correctly bundles with esbuild
+  const defineInstructions = '--define:process.env.KEY="\\"VALUE\\"" --define:process.env.BOOL="true" --define:process.env.NUMBER="7777" --define:process.env.STRING="\\"this is a \\\\\\"test\\\\\\"\\""';
   expect(Code.fromAsset).toHaveBeenCalledWith(path.dirname(depsLockFilePath), {
     assetHashType: AssetHashType.OUTPUT,
     bundling: expect.objectContaining({
       command: [
         'bash', '-c',
         [
-          'npx esbuild --bundle /asset-input/lib/handler.ts',
-          '--target=es2020 --platform=node --outfile=/asset-output/index.js',
+          'npx esbuild --bundle "/asset-input/lib/handler.ts"',
+          '--target=es2020 --platform=node --outfile="/asset-output/index.js"',
           '--minify --sourcemap --external:aws-sdk --loader:.png=dataurl',
-          '--define:DEBUG=true --define:process.env.KEY="VALUE"',
+          defineInstructions,
           '--log-level=silent --keep-names --tsconfig=/asset-input/lib/custom-tsconfig.ts',
           '--metafile=/asset-output/index.meta.json --banner=\'/* comments */\' --footer=\'/* comments */\'',
         ].join(' '),
       ],
     }),
   });
+
+  // Make sure that the define instructions are working as expected with the esbuild CLI
+  const bundleProcess = util.exec('bash', ['-c', `npx esbuild --bundle ${`${__dirname}/integ-handlers/define.ts`} ${defineInstructions}`]);
+  expect(bundleProcess.stdout.toString()).toMatchSnapshot();
 });
 
 test('Detects yarn.lock', () => {
@@ -290,7 +297,7 @@ test('Custom bundling docker image', () => {
     entry,
     depsLockFilePath,
     runtime: Runtime.NODEJS_12_X,
-    dockerImage: BundlingDockerImage.fromRegistry('my-custom-image'),
+    dockerImage: DockerImage.fromRegistry('my-custom-image'),
     forceDockerBundling: true,
   });
 
@@ -330,26 +337,6 @@ test('with command hooks', () => {
       command: [
         'bash', '-c',
         expect.stringMatching(/^echo hello > \/asset-input\/a.txt && cp \/asset-input\/a.txt \/asset-output && .+ && cp \/asset-input\/b.txt \/asset-output\/txt$/),
-      ],
-    }),
-  });
-});
-
-test('escapes spaces in path', () => {
-  Bundling.bundle({
-    entry: '/project/lib/my cool lambda/handler.ts',
-    depsLockFilePath,
-    runtime: Runtime.NODEJS_12_X,
-    forceDockerBundling: true,
-  });
-
-  // Correctly bundles with esbuild
-  expect(Code.fromAsset).toHaveBeenCalledWith(path.dirname(depsLockFilePath), {
-    assetHashType: AssetHashType.OUTPUT,
-    bundling: expect.objectContaining({
-      command: [
-        'bash', '-c',
-        expect.stringContaining('lib/my\\ cool\\ lambda/handler.ts'),
       ],
     }),
   });

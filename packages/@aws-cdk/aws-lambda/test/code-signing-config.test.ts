@@ -1,4 +1,4 @@
-import '@aws-cdk/assert/jest';
+import '@aws-cdk/assert-internal/jest';
 import * as signer from '@aws-cdk/aws-signer';
 import * as cdk from '@aws-cdk/core';
 import * as lambda from '../lib';
@@ -28,7 +28,7 @@ describe('code signing config', () => {
         }],
       },
       CodeSigningPolicies: {
-        UntrustedArtifactOnDeployment: lambda.UntrustedArtifactOnDeployment.WARN,
+        UntrustedArtifactOnDeployment: 'Warn',
       },
     });
   });
@@ -78,7 +78,7 @@ describe('code signing config', () => {
 
     expect(stack).toHaveResource('AWS::Lambda::CodeSigningConfig', {
       CodeSigningPolicies: {
-        UntrustedArtifactOnDeployment: lambda.UntrustedArtifactOnDeployment.ENFORCE,
+        UntrustedArtifactOnDeployment: 'Enforce',
       },
       Description: 'test description',
     });

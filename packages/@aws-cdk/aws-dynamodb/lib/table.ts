@@ -3,8 +3,8 @@ import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import {
-  Aws, CfnCondition, CfnCustomResource, CustomResource, Fn,
-  IResource, Lazy, Names, RemovalPolicy, Resource, Stack, Token,
+  Aws, CfnCondition, CfnCustomResource, CfnResource, CustomResource, Duration,
+  Fn, IResource, Lazy, Names, RemovalPolicy, Resource, Stack, Token,
 } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { DynamoDBMetrics } from './dynamodb-canned-metrics.generated';
@@ -215,9 +215,15 @@ export interface TableOptions {
    * Regions where replica tables will be created
    *
    * @default - no replica tables are created
-   * @experimental
    */
   readonly replicationRegions?: string[];
+
+  /**
+   * The timeout for a table replication operation in a single region.
+   *
+   * @default Duration.minutes(30)
+   */
+  readonly replicationTimeout?: Duration;
 }
 
 /**
@@ -1135,7 +1141,7 @@ export class Table extends TableBase {
     }
 
     if (props.replicationRegions && props.replicationRegions.length > 0) {
-      this.createReplicaTables(props.replicationRegions);
+      this.createReplicaTables(props.replicationRegions, props.replicationTimeout);
     }
   }
 
@@ -1451,14 +1457,14 @@ export class Table extends TableBase {
    *
    * @param regions regions where to create tables
    */
-  private createReplicaTables(regions: string[]) {
+  private createReplicaTables(regions: string[], timeout?: Duration) {
     const stack = Stack.of(this);
 
     if (!Token.isUnresolved(stack.region) && regions.includes(stack.region)) {
       throw new Error('`replicationRegions` cannot include the region where this stack is deployed.');
     }
 
-    const provider = ReplicaProvider.getOrCreate(this);
+    const provider = ReplicaProvider.getOrCreate(this, { timeout });
 
     // Documentation at https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/V2gt_IAM.html
     // is currently incorrect. AWS Support recommends `dynamodb:*` in both source and destination regions
@@ -1470,7 +1476,8 @@ export class Table extends TableBase {
     this.grant(onEventHandlerPolicy, 'dynamodb:*');
     this.grant(isCompleteHandlerPolicy, 'dynamodb:DescribeTable');
 
-    let previousRegion;
+    let previousRegion: CustomResource | undefined;
+    let previousRegionCondition: CfnCondition | undefined;
     for (const region of new Set(regions)) { // Remove duplicates
       // Use multiple custom resources because multiple create/delete
       // updates cannot be combined in a single API call.
@@ -1491,8 +1498,9 @@ export class Table extends TableBase {
       // Deploy time check to prevent from creating a replica in the region
       // where this stack is deployed. Only needed for environment agnostic
       // stacks.
+      let createReplica: CfnCondition | undefined;
       if (Token.isUnresolved(stack.region)) {
-        const createReplica = new CfnCondition(this, `StackRegionNotEquals${region}`, {
+        createReplica = new CfnCondition(this, `StackRegionNotEquals${region}`, {
           expression: Fn.conditionNot(Fn.conditionEquals(region, Aws.REGION)),
         });
         const cfnCustomResource = currentRegion.node.defaultChild as CfnCustomResource;
@@ -1511,14 +1519,27 @@ export class Table extends TableBase {
       // have multiple table updates at the same time. The `isCompleteHandler`
       // of the provider waits until the replica is in an ACTIVE state.
       if (previousRegion) {
-        currentRegion.node.addDependency(previousRegion);
+        if (previousRegionCondition) {
+          // we can't simply use a Dependency,
+          // because the previousRegion is protected by the "different region" Condition,
+          // and you can't have Fn::If in DependsOn.
+          // Instead, rely on Ref adding a dependency implicitly!
+          const previousRegionCfnResource = previousRegion.node.defaultChild as CfnResource;
+          const currentRegionCfnResource = currentRegion.node.defaultChild as CfnResource;
+          currentRegionCfnResource.addMetadata('DynamoDbReplicationDependency',
+            Fn.conditionIf(previousRegionCondition.logicalId, previousRegionCfnResource.ref, Aws.NO_VALUE));
+        } else {
+          currentRegion.node.addDependency(previousRegion);
+        }
       }
+
       previousRegion = currentRegion;
+      previousRegionCondition = createReplica;
     }
 
     // Permissions in the destination regions (outside of the loop to
     // minimize statements in the policy)
-    onEventHandlerPolicy.grantPrincipal.addToPolicy(new iam.PolicyStatement({
+    onEventHandlerPolicy.grantPrincipal.addToPrincipalPolicy(new iam.PolicyStatement({
       actions: ['dynamodb:*'],
       resources: this.regionalArns,
     }));
@@ -1548,7 +1569,7 @@ export class Table extends TableBase {
 
     if (encryptionType === undefined) {
       encryptionType = props.encryptionKey != null
-        // If there is a configured encyptionKey, the encryption is implicitly CUSTOMER_MANAGED
+        // If there is a configured encryptionKey, the encryption is implicitly CUSTOMER_MANAGED
         ? TableEncryption.CUSTOMER_MANAGED
         // Otherwise, if severSideEncryption is enabled, it's AWS_MANAGED; else undefined (do not set anything)
         : props.serverSideEncryption ? TableEncryption.AWS_MANAGED : undefined;
@@ -1606,7 +1627,7 @@ export enum AttributeType {
 }
 
 /**
- * DyanmoDB's Read/Write capacity modes.
+ * DynamoDB's Read/Write capacity modes.
  */
 export enum BillingMode {
   /**
@@ -1670,12 +1691,19 @@ interface ScalableAttributePair {
  */
 class SourceTableAttachedPolicy extends CoreConstruct implements iam.IGrantable {
   public readonly grantPrincipal: iam.IPrincipal;
-  public readonly policy: iam.IPolicy;
+  public readonly policy: iam.IManagedPolicy;
 
   public constructor(sourceTable: Table, role: iam.IRole) {
-    super(sourceTable, `SourceTableAttachedPolicy-${Names.nodeUniqueId(role.node)}`);
+    super(sourceTable, `SourceTableAttachedManagedPolicy-${Names.nodeUniqueId(role.node)}`);
 
-    const policy = new iam.Policy(this, 'Resource', { roles: [role] });
+    const policy = new iam.ManagedPolicy(this, 'Resource', {
+      // A CF update of the description property of a managed policy requires
+      // a replacement. Use the table name in the description to force a managed
+      // policy replacement when the table name changes. This way we preserve permissions
+      // to delete old replicas in case of a table replacement.
+      description: `DynamoDB replication managed policy for table ${sourceTable.tableName}`,
+      roles: [role],
+    });
     this.policy = policy;
     this.grantPrincipal = new SourceTableAttachedPrincipal(role, policy);
   }
@@ -1686,7 +1714,7 @@ class SourceTableAttachedPolicy extends CoreConstruct implements iam.IGrantable 
  * `SourceTableAttachedPolicy` class so it can act as an `IGrantable`.
  */
 class SourceTableAttachedPrincipal extends iam.PrincipalBase {
-  public constructor(private readonly role: iam.IRole, private readonly policy: iam.Policy) {
+  public constructor(private readonly role: iam.IRole, private readonly policy: iam.ManagedPolicy) {
     super();
   }
 

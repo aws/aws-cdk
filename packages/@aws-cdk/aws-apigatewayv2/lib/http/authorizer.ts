@@ -15,6 +15,9 @@ export enum HttpAuthorizerType {
 
   /** Lambda Authorizer */
   LAMBDA = 'REQUEST',
+
+  /** No authorizer */
+  NONE = 'NONE'
 }
 
 /**
@@ -112,7 +115,7 @@ export class HttpAuthorizer extends Resource implements IHttpAuthorizer {
 
     const resource = new CfnAuthorizer(this, 'Resource', {
       name: props.authorizerName ?? id,
-      apiId: props.httpApi.httpApiId,
+      apiId: props.httpApi.apiId,
       authorizerType: props.type,
       identitySource: props.identitySource,
       jwtConfiguration: undefinedIfNoKeys({
@@ -145,8 +148,10 @@ export interface HttpRouteAuthorizerBindOptions {
 export interface HttpRouteAuthorizerConfig {
   /**
    * The authorizer id
+   *
+   * @default - No authorizer id (useful for AWS_IAM route authorizer)
    */
-  readonly authorizerId: string;
+  readonly authorizerId?: string;
   /**
    * The type of authorization
    */
@@ -171,4 +176,15 @@ export interface IHttpRouteAuthorizer {
 function undefinedIfNoKeys<A>(obj: A): A | undefined {
   const allUndefined = Object.values(obj).every(val => val === undefined);
   return allUndefined ? undefined : obj;
+}
+
+/**
+ * Explicitly configure no authorizers on specific HTTP API routes.
+ */
+export class HttpNoneAuthorizer implements IHttpRouteAuthorizer {
+  public bind(_: HttpRouteAuthorizerBindOptions): HttpRouteAuthorizerConfig {
+    return {
+      authorizationType: HttpAuthorizerType.NONE,
+    };
+  }
 }

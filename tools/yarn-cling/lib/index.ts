@@ -1,6 +1,7 @@
-import * as lockfile from '@yarnpkg/lockfile';
-import { promises as fs } from 'fs';
+import { promises as fs, exists } from 'fs';
 import * as path from 'path';
+import * as lockfile from '@yarnpkg/lockfile';
+import * as semver from 'semver';
 import { hoistDependencies } from './hoisting';
 import { PackageJson, PackageLock, PackageLockEntry, PackageLockPackage, YarnLock } from './types';
 
@@ -42,20 +43,24 @@ export async function generateShrinkwrap(options: ShrinkwrapOptions): Promise<Pa
 
   if (options.outputFile) {
     // Write the shrinkwrap file
-    await fs.writeFile(options.outputFile, JSON.stringify(lock, undefined, 2), { encoding: 'utf8'} );
+    await fs.writeFile(options.outputFile, JSON.stringify(lock, undefined, 2), { encoding: 'utf8' });
   }
 
   return lock;
 }
 
 async function generateLockFile(pkgJson: PackageJson, yarnLock: YarnLock, rootDir: string): Promise<PackageLock> {
-  return {
+  const lockFile = {
     name: pkgJson.name,
     version: pkgJson.version,
     lockfileVersion: 1,
     requires: true,
     dependencies: await dependenciesFor(pkgJson.dependencies || {}, yarnLock, rootDir),
   };
+
+  checkRequiredVersions(lockFile);
+
+  return lockFile;
 }
 
 // eslint-disable-next-line max-len
@@ -66,9 +71,9 @@ async function dependenciesFor(deps: Record<string, string>, yarnLock: YarnLock,
   rootDir = await fs.realpath(rootDir);
 
   for (const [depName, versionRange] of Object.entries(deps)) {
-    const depPkgJsonFile = require.resolve(`${depName}/package.json`, { paths: [rootDir] });
+    const depDir = await findPackageDir(depName, rootDir);
+    const depPkgJsonFile = path.join(depDir, 'package.json');
     const depPkgJson = await loadPackageJson(depPkgJsonFile);
-    const depDir = path.dirname(depPkgJsonFile);
     const yarnKey = `${depName}@${versionRange}`;
 
     // Sanity check
@@ -149,5 +154,114 @@ export function formatPackageLock(entry: PackageLockEntry) {
     for (const [depName, depEntry] of Object.entries(thisEntry.dependencies || {})) {
       recurse([...names, depName], depEntry);
     }
+  }
+}
+
+/**
+ * Find package directory
+ *
+ * Do this by walking upwards in the directory tree until we find
+ * `<dir>/node_modules/<package>/package.json`.
+ *
+ * -------
+ *
+ * Things that we tried but don't work:
+ *
+ * 1.    require.resolve(`${depName}/package.json`, { paths: [rootDir] });
+ *
+ * Breaks with ES Modules if `package.json` has not been exported, which is
+ * being enforced starting Node12.
+ *
+ * 2.    findPackageJsonUpwardFrom(require.resolve(depName, { paths: [rootDir] }))
+ *
+ * Breaks if a built-in NodeJS package name conflicts with an NPM package name
+ * (in Node15 `string_decoder` is introduced...)
+ */
+async function findPackageDir(depName: string, rootDir: string) {
+  let prevDir;
+  let dir = rootDir;
+  while (dir !== prevDir) {
+    const candidateDir = path.join(dir, 'node_modules', depName);
+    if (await new Promise(ok => exists(path.join(candidateDir, 'package.json'), ok))) {
+      return candidateDir;
+    }
+
+    prevDir = dir;
+    dir = path.dirname(dir); // dirname('/') -> '/', dirname('c:\\') -> 'c:\\'
+  }
+
+  throw new Error(`Did not find '${depName}' upwards of '${rootDir}'`);
+}
+
+/**
+ * We may sometimes try to adjust a package version to a version that's incompatible with the declared requirement.
+ *
+ * For example, this recently happened for 'netmask', where the package we
+ * depend on has `{ requires: { netmask: '^1.0.6', } }`, but we need to force-substitute in version `2.0.1`.
+ *
+ * If NPM processes the shrinkwrap and encounters the following situation:
+ *
+ * ```
+ * {
+ *   netmask: { version: '2.0.1' },
+ *   resolver: {
+ *     requires: {
+ *       netmask: '^1.0.6'
+ *     }
+ *   }
+ * }
+ * ```
+ *
+ * NPM is going to disregard the swhinkrwap and still give `resolver` its own private
+ * copy of netmask `^1.0.6`.
+ *
+ * We tried overriding the `requires` version, and that works for `npm install` (yay)
+ * but if anyone runs `npm ls` afterwards, `npm ls` is going to check the actual source
+ * `package.jsons` against the actual `node_modules` file tree, and complain that the
+ * versions don't match.
+ *
+ * We run `npm ls` in our tests to make sure our dependency tree is sane, and our customers
+ * might too, so this is not a great solution.
+ *
+ * To cut any discussion short in the future, we're going to detect this situation and
+ * tell our future selves that is cannot and will not work, and we should find another
+ * solution.
+ */
+export function checkRequiredVersions(root: PackageLock | PackageLockPackage) {
+  recurse(root, []);
+
+  function recurse(entry: PackageLock | PackageLockPackage, parentChain: PackageLockEntry[]) {
+    // On the root, 'requires' is the value 'true', for God knows what reason. Don't care about those.
+    if (typeof entry.requires === 'object') {
+
+      // For every 'requires' dependency, find the version it actually got resolved to and compare.
+      for (const [name, range] of Object.entries(entry.requires)) {
+        const resolvedPackage = findResolved(name, [entry, ...parentChain]);
+        if (!resolvedPackage) { continue; }
+
+        if (!semver.satisfies(resolvedPackage.version, range)) {
+          // Ruh-roh.
+          throw new Error(`Looks like we're trying to force '${name}' to version '${resolvedPackage.version}', but the dependency `
+            + `is specified as '${range}'. This can never properly work via shrinkwrapping. Try vendoring a patched `
+            + 'version of the intermediary dependencies instead.');
+        }
+      }
+    }
+
+    for (const dep of Object.values(entry.dependencies ?? {})) {
+      recurse(dep, [entry, ...parentChain]);
+    }
+  }
+
+  /**
+   * Find a package name in a package lock tree.
+   */
+  function findResolved(name: string, chain: PackageLockEntry[]) {
+    for (const level of chain) {
+      if (level.dependencies?.[name]) {
+        return level.dependencies?.[name];
+      }
+    }
+    return undefined;
   }
 }

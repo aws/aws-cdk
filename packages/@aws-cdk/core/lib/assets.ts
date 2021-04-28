@@ -53,7 +53,7 @@ export interface AssetOptions {
    * @default - uploaded as-is to S3 if the asset is a regular file or a .zip file,
    * archived into a .zip file and uploaded to S3 otherwise
    *
-   * @experimental
+   *
    */
   readonly bundling?: BundlingOptions;
 }
@@ -238,9 +238,10 @@ export interface FileAssetLocation {
 
   /**
    * The HTTP URL of this asset on Amazon S3.
+   * @default - value specified in `httpUrl` is used.
    * @deprecated use `httpUrl`
    */
-  readonly s3Url: string;
+  readonly s3Url?: string;
 
   /**
    * The HTTP URL of this asset on Amazon S3.

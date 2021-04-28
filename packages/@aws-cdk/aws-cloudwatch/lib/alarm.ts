@@ -1,5 +1,6 @@
 import { Lazy, Stack, Token } from '@aws-cdk/core';
 import { Construct } from 'constructs';
+import { IAlarmAction } from './alarm-action';
 import { AlarmBase, IAlarm } from './alarm-base';
 import { CfnAlarm, CfnAlarmProps } from './cloudwatch.generated';
 import { HorizontalAnnotation } from './graph';
@@ -224,21 +225,69 @@ export class Alarm extends AlarmBase {
     return this.annotation;
   }
 
+  /**
+   * Trigger this action if the alarm fires
+   *
+   * Typically the ARN of an SNS topic or ARN of an AutoScaling policy.
+   */
+  public addAlarmAction(...actions: IAlarmAction[]) {
+    if (this.alarmActionArns === undefined) {
+      this.alarmActionArns = [];
+    }
+
+    this.alarmActionArns.push(...actions.map(a =>
+      this.validateActionArn(a.bind(this, this).alarmActionArn),
+    ));
+  }
+
+  private validateActionArn(actionArn: string): string {
+    const ec2ActionsRegexp: RegExp = /arn:aws:automate:[a-z|\d|-]+:ec2:[a-z]+/;
+    if (ec2ActionsRegexp.test(actionArn)) {
+      // Check per-instance metric
+      const metricConfig = this.metric.toMetricConfig();
+      if (metricConfig.metricStat?.dimensions?.length != 1 || metricConfig.metricStat?.dimensions![0].name != 'InstanceId') {
+        throw new Error(`EC2 alarm actions requires an EC2 Per-Instance Metric. (${JSON.stringify(metricConfig)} does not have an 'InstanceId' dimension)`);
+      }
+    }
+    return actionArn;
+  }
+
   private renderMetric(metric: IMetric) {
     const self = this;
     return dispatchMetric(metric, {
-      withStat(st) {
-        self.validateMetricStat(st, metric);
+      withStat(stat, conf) {
+        self.validateMetricStat(stat, metric);
+        if (conf.renderingProperties?.label == undefined) {
+          return dropUndefined({
+            dimensions: stat.dimensions,
+            namespace: stat.namespace,
+            metricName: stat.metricName,
+            period: stat.period?.toSeconds(),
+            statistic: renderIfSimpleStatistic(stat.statistic),
+            extendedStatistic: renderIfExtendedStatistic(stat.statistic),
+            unit: stat.unitFilter,
+          });
+        }
 
-        return dropUndefined({
-          dimensions: st.dimensions,
-          namespace: st.namespace,
-          metricName: st.metricName,
-          period: st.period?.toSeconds(),
-          statistic: renderIfSimpleStatistic(st.statistic),
-          extendedStatistic: renderIfExtendedStatistic(st.statistic),
-          unit: st.unitFilter,
-        });
+        return {
+          metrics: [
+            {
+              metricStat: {
+                metric: {
+                  metricName: stat.metricName,
+                  namespace: stat.namespace,
+                  dimensions: stat.dimensions,
+                },
+                period: stat.period.toSeconds(),
+                stat: stat.statistic,
+                unit: stat.unitFilter,
+              },
+              id: 'm1',
+              label: conf.renderingProperties?.label,
+              returnData: true,
+            } as CfnAlarm.MetricDataQueryProperty,
+          ],
+        };
       },
 
       withExpression() {
