@@ -705,6 +705,23 @@ export class Function extends FunctionBase {
       if (config.dependency) {
         this.node.addDependency(...config.dependency);
       }
+      // There could be a race if the Lambda is used in a CustomResource. It is possible for the Lambda to
+      // fail to attach to a given FileSystem if we do not have a dependency on the SecurityGroup ingress/egress
+      // rules that were created between this Lambda's SG & the Filesystem SG.
+      this.connections.securityGroups.forEach(sg => {
+        sg.node.findAll().forEach(child => {
+          if (child instanceof CfnResource && child.cfnResourceType === 'AWS::EC2::SecurityGroupEgress') {
+            resource.node.addDependency(child);
+          }
+        });
+      });
+      config.connections?.securityGroups.forEach(sg => {
+        sg.node.findAll().forEach(child => {
+          if (child instanceof CfnResource && child.cfnResourceType === 'AWS::EC2::SecurityGroupIngress') {
+            resource.node.addDependency(child);
+          }
+        });
+      });
     }
   }
 
@@ -854,6 +871,10 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
   private configureVpc(props: FunctionProps): CfnFunction.VpcConfigProperty | undefined {
     if ((props.securityGroup || props.allowAllOutbound !== undefined) && !props.vpc) {
       throw new Error('Cannot configure \'securityGroup\' or \'allowAllOutbound\' without configuring a VPC');
+    }
+
+    if (!props.vpc && props.filesystem) {
+      throw new Error('Cannot configurea \'filesystem\' without configuring a VPC.');
     }
 
     if (!props.vpc) { return undefined; }
