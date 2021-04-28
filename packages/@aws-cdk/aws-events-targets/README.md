@@ -19,6 +19,7 @@ Currently supported are:
 * [Start a CodePipeline pipeline](#start-a-codepipeline-pipeline)
 * Run an ECS task
 * [Invoke a Lambda function](#invoke-a-lambda-function)
+* [Invoke a API Gateway REST API](#invoke-a-api-gateway-rest-api)
 * Publish a message to an SNS topic
 * Send a message to an SQS queue
 * [Start a StepFunctions state machine](#start-a-stepfunctions-state-machine)
@@ -184,4 +185,47 @@ rule.addTarget(new targets.SfnStateMachine(stateMachine, {
   input: events.RuleTargetInput.fromObject({ SomeParam: 'SomeValue' }),
   deadLetterQueue: dlq,
 }));
+```
+
+## Invoke a API Gateway REST API
+
+Use the `ApiGateway` target to trigger a REST API.
+
+The code snippet below creates a Api Gateway REST API that is invoked every hour.
+
+```typescript
+import * as iam from '@aws-sdk/aws-iam';
+import * as sqs from '@aws-sdk/aws-sqs';
+import * as api from '@aws-cdk/aws-apigateway';
+import * as targets from "@aws-cdk/aws-events-targets";
+
+const rule = new events.Rule(stack, 'Rule', {
+  schedule: events.Schedule.rate(cdk.Duration.minutes(1)),
+});
+
+const fn = new lambda.Function( this, 'MyFunc', {
+  handler: 'index.handler',
+  runtime: lambda.Runtime.NODEJS_12_X,
+  code: lambda.Code.fromInline( 'exports.handler = e => {}' ),
+} );
+
+const restApi = new api.LambdaRestApi( this, 'MyRestAPI', { handler: fn } );
+
+const dlq = new sqs.Queue(stack, 'DeadLetterQueue');
+
+rule.addTarget(
+  new targets.ApiGateway( restApi, {
+    path: '/*/test',
+    mehod: 'GET',
+    stage:  'prod',
+    pathParameterValues: ['path-value'],
+    headerParameters: {
+      Header1: 'header1',
+    },
+    queryStringParameters: {
+      QueryParam1: 'query-param-1',
+    },
+    deadLetterQueue: queue
+  } ),
+)
 ```

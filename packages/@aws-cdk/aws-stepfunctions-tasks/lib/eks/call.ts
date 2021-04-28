@@ -6,7 +6,6 @@ import { integrationResourceArn, validatePatternSupported } from '../private/tas
 
 /**
  * Properties for calling a EKS endpoint with EksCall
- * @experimental
  */
 export interface EksCallProps extends sfn.TaskStateBaseProps {
 
@@ -43,7 +42,6 @@ export interface EksCallProps extends sfn.TaskStateBaseProps {
  * Call a EKS endpoint as a Task
  *
  * @see https://docs.aws.amazon.com/step-functions/latest/dg/connect-eks.html
- * @experimental
  */
 export class EksCall extends sfn.TaskStateBase {
 

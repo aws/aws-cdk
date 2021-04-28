@@ -433,6 +433,18 @@ const user = User.fromUserAttributes(stack, 'MyImportedUserByAttributes', {
 });
 ```
 
+To add a user to a group (both for a new and imported user/group):
+
+```ts
+const user = new User(this, 'MyUser'); // or User.fromUserName(stack, 'User', 'johnsmith');
+const group = new Group(this, 'MyGroup'); // or Group.fromGroupArn(stack, 'Group', 'arn:aws:iam::account-id:group/group-name');
+
+user.addToGroup(group);
+// or
+group.addUser(user);
+```
+
+
 ## Features
 
  * Policy name uniqueness is enforced. If two policies by the same name are attached to the same
