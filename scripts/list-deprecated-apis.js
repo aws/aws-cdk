@@ -34,7 +34,7 @@ async function main() {
 function printIfDeprecated(mod, fqn, el) {
   try {
     if (el.docs.deprecated) {
-      process.stdout.write(`| ${mod} | ${fqn} | ${el.docs.deprecationReason.replace(/^-/, '').trim()} |\n`);
+      process.stdout.write(`| ${mod} | ${fqn} | ${el.docs.deprecationReason.replace(/^-/, '').replace(/\n/g, ' ').trim()} |\n`);
     }
   } catch (e) {
     console.error(`While processing ${fqn}:`, e);

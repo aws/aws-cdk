@@ -18,21 +18,18 @@
 | @aws-cdk/core | CfnIncludeProps | use the CfnInclude class from the cloudformation-include module instead |
 | @aws-cdk/core | @aws-cdk/core.CfnIncludeProps.template | use the CfnInclude class from the cloudformation-include module instead |
 | @aws-cdk/core | @aws-cdk/core.ConstructNode.metadata | use `metadataEntry` |
-| @aws-cdk/core | @aws-cdk/core.ConstructNode.uniqueId | use `node.addr` to obtain a consistent 42 character address for
-this node (see https://github.com/aws/constructs/pull/314) |
+| @aws-cdk/core | @aws-cdk/core.ConstructNode.uniqueId | use `node.addr` to obtain a consistent 42 character address for this node (see https://github.com/aws/constructs/pull/314) |
 | @aws-cdk/core | @aws-cdk/core.ConstructNode.prepare() | Use `app.synth()` instead |
 | @aws-cdk/core | @aws-cdk/core.ConstructNode.synth() | Use `app.synth()` or `stage.synth()` instead |
 | @aws-cdk/core | @aws-cdk/core.ConstructNode.addError() | use `Annotations.of(construct).addError()` |
 | @aws-cdk/core | @aws-cdk/core.ConstructNode.addInfo() | use `Annotations.of(construct).addInfo()` |
 | @aws-cdk/core | @aws-cdk/core.ConstructNode.addWarning() | use `Annotations.of(construct).addWarning()` |
-| @aws-cdk/core | @aws-cdk/core.ConstructNode.applyAspect() | This API is going to be removed in the next major version of
-the AWS CDK. Please use `Aspects.of(scope).add()` instead. |
+| @aws-cdk/core | @aws-cdk/core.ConstructNode.applyAspect() | This API is going to be removed in the next major version of the AWS CDK. Please use `Aspects.of(scope).add()` instead. |
 | @aws-cdk/core | CustomResourceProviderRuntime.NODEJS_12 | Use {@link NODEJS_12_X} |
 | @aws-cdk/core | @aws-cdk/core.DefaultStackSynthesizerProps.fileAssetKeyArnExportName | This property is not used anymore |
 | @aws-cdk/core | @aws-cdk/core.DockerImageAssetSource.repositoryName | repository name should be specified at the environment-level and not at the image level |
 | @aws-cdk/core | @aws-cdk/core.Duration.toISOString() | Use `toIsoString()` instead. |
-| @aws-cdk/core | @aws-cdk/core.FileAssetLocation.kmsKeyArn | Since bootstrap bucket v4, the key policy properly allows use of the
-key via the bucket and no additional parameters have to be granted anymore. |
+| @aws-cdk/core | @aws-cdk/core.FileAssetLocation.kmsKeyArn | Since bootstrap bucket v4, the key policy properly allows use of the key via the bucket and no additional parameters have to be granted anymore. |
 | @aws-cdk/core | @aws-cdk/core.FileAssetLocation.s3Url | use `httpUrl` |
 | @aws-cdk/core | @aws-cdk/core.ITemplateOptions.transform | use `transforms` instead. |
 | @aws-cdk/core | @aws-cdk/core.Lazy.anyValue() | Use `Lazy.any()` or `Lazy.uncachedAny()` instead. |
@@ -41,10 +38,8 @@ key via the bucket and no additional parameters have to be granted anymore. |
 | @aws-cdk/core | @aws-cdk/core.Lazy.stringValue() | Use `Lazy.string()` or `Lazy.uncachedString()` instead. |
 | @aws-cdk/core | @aws-cdk/core.Size.pebibyte() | use `pebibytes` instead |
 | @aws-cdk/core | @aws-cdk/core.Stack.parentStack | use `nestedStackParent` |
-| @aws-cdk/core | @aws-cdk/core.Stack.addDockerImageAsset() | Use `stack.synthesizer.addDockerImageAsset()` if you are calling,
-and a different `IStackSynthesizer` class if you are implementing. |
-| @aws-cdk/core | @aws-cdk/core.Stack.addFileAsset() | Use `stack.synthesizer.addFileAsset()` if you are calling,
-and a different IStackSynthesizer class if you are implementing. |
+| @aws-cdk/core | @aws-cdk/core.Stack.addDockerImageAsset() | Use `stack.synthesizer.addDockerImageAsset()` if you are calling, and a different `IStackSynthesizer` class if you are implementing. |
+| @aws-cdk/core | @aws-cdk/core.Stack.addFileAsset() | Use `stack.synthesizer.addFileAsset()` if you are calling, and a different IStackSynthesizer class if you are implementing. |
 | @aws-cdk/core | @aws-cdk/core.Stack.prepareCrossReference() | cross reference handling has been moved to `App.prepare()`. |
 | @aws-cdk/core | @aws-cdk/core.Stack.reportMissingContext() | use `reportMissingContextKey()` |
 | @aws-cdk/core | SynthesisOptions | use `app.synth()` or `stage.synth()` instead |
@@ -52,12 +47,10 @@ and a different IStackSynthesizer class if you are implementing. |
 | @aws-cdk/core | @aws-cdk/core.SynthesisOptions.skipValidation | use `app.synth()` or `stage.synth()` instead |
 | @aws-cdk/core | @aws-cdk/core.Tag.add() | use `Tags.of(scope).add()` |
 | @aws-cdk/core | @aws-cdk/core.Tag.remove() | use `Tags.of(scope).remove()` |
-| @aws-cdk/cloud-assembly-schema | @aws-cdk/cloud-assembly-schema.ContainerImageAssetMetadataEntry.imageNameParameter | specify `repositoryName` and `imageTag` instead, and then you
-know where the image will go. |
+| @aws-cdk/cloud-assembly-schema | @aws-cdk/cloud-assembly-schema.ContainerImageAssetMetadataEntry.imageNameParameter | specify `repositoryName` and `imageTag` instead, and then you know where the image will go. |
 | @aws-cdk/cloud-assembly-schema | @aws-cdk/cloud-assembly-schema.Manifest.load() | use `loadAssemblyManifest()` |
 | @aws-cdk/cloud-assembly-schema | @aws-cdk/cloud-assembly-schema.Manifest.save() | use `saveAssemblyManifest()` |
-| @aws-cdk/cx-api | @aws-cdk/cx-api.AssemblyBuildOptions.runtimeInfo | All template modifications that should result from this should
-have already been inserted into the template. |
+| @aws-cdk/cx-api | @aws-cdk/cx-api.AssemblyBuildOptions.runtimeInfo | All template modifications that should result from this should have already been inserted into the template. |
 | @aws-cdk/cx-api | @aws-cdk/cx-api.CloudAssembly.getStack() | renamed to `getStackByName` (or `getStackArtifact(id)`) |
 | @aws-cdk/cx-api | @aws-cdk/cx-api.CloudFormationStackArtifact.name | renamed to `stackName` |
 | @aws-cdk/cx-api | MetadataEntry | moved to package 'cloud-assembly-schema' |
@@ -66,11 +59,8 @@ have already been inserted into the template. |
 | @aws-cdk/cx-api | @aws-cdk/cx-api.MissingContext.props | moved to package 'cloud-assembly-schema' |
 | @aws-cdk/cx-api | @aws-cdk/cx-api.MissingContext.provider | moved to package 'cloud-assembly-schema' |
 | @aws-cdk/cx-api | RuntimeInfo | moved to package 'cloud-assembly-schema' |
-| constructs | constructs.Construct.onValidate() | use `Node.addValidation()` to subscribe validation functions on this construct
-instead of overriding this method. |
-| constructs | constructs.Node.uniqueId | please avoid using this property and use `uid` instead. This
-algorithm uses MD5, which is not FIPS-complient and also excludes the
-identity of the root construct from the calculation. |
+| constructs | constructs.Construct.onValidate() | use `Node.addValidation()` to subscribe validation functions on this construct instead of overriding this method. |
+| constructs | constructs.Node.uniqueId | please avoid using this property and use `uid` instead. This algorithm uses MD5, which is not FIPS-complient and also excludes the identity of the root construct from the calculation. |
 | @aws-cdk/assets | CopyOptions | see `core.CopyOptions` |
 | @aws-cdk/assets | @aws-cdk/assets.CopyOptions.exclude | see `core.CopyOptions` |
 | @aws-cdk/assets | @aws-cdk/assets.CopyOptions.follow | use `followSymlinks` instead |
@@ -182,9 +172,7 @@ identity of the root construct from the calculation. |
 | @aws-cdk/aws-s3-assets | @aws-cdk/aws-s3-assets.Asset.sourceHash | see `assetHash` |
 | @aws-cdk/aws-s3-assets | @aws-cdk/aws-s3-assets.AssetOptions.sourceHash | see `assetHash` and `assetHashType` |
 | @aws-cdk/aws-ecr-assets | @aws-cdk/aws-ecr-assets.DockerImageAsset.sourceHash | use assetHash |
-| @aws-cdk/aws-ecr-assets | @aws-cdk/aws-ecr-assets.DockerImageAssetOptions.repositoryName | to control the location of docker image assets, please override
-`Stack.addDockerImageAsset`. this feature will be removed in future
-releases. |
+| @aws-cdk/aws-ecr-assets | @aws-cdk/aws-ecr-assets.DockerImageAssetOptions.repositoryName | to control the location of docker image assets, please override `Stack.addDockerImageAsset`. this feature will be removed in future releases. |
 | @aws-cdk/aws-secretsmanager | AttachedSecretOptions | use `secret.attach()` instead |
 | @aws-cdk/aws-secretsmanager | @aws-cdk/aws-secretsmanager.AttachedSecretOptions.target | use `secret.attach()` instead |
 | @aws-cdk/aws-secretsmanager | AttachmentTargetType.INSTANCE | use RDS_DB_INSTANCE instead |
@@ -193,17 +181,12 @@ releases. |
 | @aws-cdk/aws-secretsmanager | @aws-cdk/aws-secretsmanager.Secret.fromSecretName() | use `fromSecretNameV2` |
 | @aws-cdk/aws-secretsmanager | @aws-cdk/aws-secretsmanager.Secret.addTargetAttachment() | use `attach()` instead |
 | @aws-cdk/aws-secretsmanager | @aws-cdk/aws-secretsmanager.SecretAttributes.secretArn | use `secretCompleteArn` or `secretPartialArn` instead. |
-| @aws-cdk/aws-lambda | @aws-cdk/aws-lambda.Code.isInline | this value is ignored since inline is now determined based on the
-the `inlineCode` field of `CodeConfig` returned from `bind()`. |
+| @aws-cdk/aws-lambda | @aws-cdk/aws-lambda.Code.isInline | this value is ignored since inline is now determined based on the the `inlineCode` field of `CodeConfig` returned from `bind()`. |
 | @aws-cdk/aws-lambda | @aws-cdk/aws-lambda.Code.asset() | use `fromAsset` |
 | @aws-cdk/aws-lambda | @aws-cdk/aws-lambda.Code.bucket() | use `fromBucket` |
 | @aws-cdk/aws-lambda | @aws-cdk/aws-lambda.Code.cfnParameters() | use `fromCfnParameters` |
 | @aws-cdk/aws-lambda | @aws-cdk/aws-lambda.Code.inline() | use `fromInline` |
-| @aws-cdk/aws-lambda | @aws-cdk/aws-lambda.Function.addVersion() | This method will create an AWS::Lambda::Version resource which
-snapshots the AWS Lambda function *at the time of its creation* and it
-won't get updated when the function changes. Instead, use
-`this.currentVersion` to obtain a reference to a version resource that gets
-automatically recreated when the function configuration (or code) changes. |
+| @aws-cdk/aws-lambda | @aws-cdk/aws-lambda.Function.addVersion() | This method will create an AWS::Lambda::Version resource which snapshots the AWS Lambda function *at the time of its creation* and it won't get updated when the function changes. Instead, use `this.currentVersion` to obtain a reference to a version resource that gets automatically recreated when the function configuration (or code) changes. |
 | @aws-cdk/aws-lambda | @aws-cdk/aws-lambda.FunctionAttributes.securityGroupId | use `securityGroup` instead |
 | @aws-cdk/aws-lambda | @aws-cdk/aws-lambda.FunctionOptions.securityGroup | This property is deprecated, use securityGroups instead |
 | @aws-cdk/aws-lambda | LogRetention | use `LogRetention` from ' |
@@ -494,9 +477,7 @@ automatically recreated when the function configuration (or code) changes. |
 | @aws-cdk/aws-apigateway | ErrorModel | You should use |
 | @aws-cdk/aws-apigateway | @aws-cdk/aws-apigateway.ErrorModel.modelId | You should use |
 | @aws-cdk/aws-apigateway | @aws-cdk/aws-apigateway.IResource.restApi | Throws an error if this Resource is not associated with an instance of `RestApi`. Use `api` instead. |
-| @aws-cdk/aws-apigateway | @aws-cdk/aws-apigateway.LambdaRestApiProps.options | the `LambdaRestApiProps` now extends `RestApiProps`, so all
-options are just available here. Note that the options specified in
-`options` will be overridden by any props specified at the root level. |
+| @aws-cdk/aws-apigateway | @aws-cdk/aws-apigateway.LambdaRestApiProps.options | the `LambdaRestApiProps` now extends `RestApiProps`, so all options are just available here. Note that the options specified in `options` will be overridden by any props specified at the root level. |
 | @aws-cdk/aws-apigateway | @aws-cdk/aws-apigateway.Method.restApi | Throws an error if this Resource is not associated with an instance of `RestApi`. Use `api` instead. |
 | @aws-cdk/aws-apigateway | @aws-cdk/aws-apigateway.Resource.restApi | Throws an error if this Resource is not associated with an instance of `RestApi`. Use `api` instead. |
 | @aws-cdk/aws-apigateway | @aws-cdk/aws-apigateway.ResourceBase.restApi | Throws an error if this Resource is not associated with an instance of `RestApi`. Use `api` instead. |
@@ -595,33 +576,21 @@ options are just available here. Note that the options specified in
 | @aws-cdk/aws-dynamodb | @aws-cdk/aws-dynamodb.ITable.metricSystemErrors() | use `metricSystemErrorsForOperations` |
 | @aws-cdk/aws-dynamodb | @aws-cdk/aws-dynamodb.Table.grantListStreams() | Use {@link #grantTableListStreams} for more granular permission |
 | @aws-cdk/aws-dynamodb | @aws-cdk/aws-dynamodb.Table.metricSystemErrors() | use `metricSystemErrorsForOperations`. |
-| @aws-cdk/aws-dynamodb | @aws-cdk/aws-dynamodb.TableOptions.serverSideEncryption | This property is deprecated. In order to obtain the same behavior as
-enabling this, set the `encryption` property to `TableEncryption.AWS_MANAGED` instead. |
-| @aws-cdk/aws-rds | @aws-cdk/aws-rds.Credentials.fromUsername() | use `fromGeneratedSecret()` or `fromPassword()` for new Clusters and Instances.
-Note that switching from `fromUsername()` to `fromGeneratedSecret()` or `fromPassword()` for already deployed
-Clusters or Instances will result in their replacement! |
+| @aws-cdk/aws-dynamodb | @aws-cdk/aws-dynamodb.TableOptions.serverSideEncryption | This property is deprecated. In order to obtain the same behavior as enabling this, set the `encryption` property to `TableEncryption.AWS_MANAGED` instead. |
+| @aws-cdk/aws-rds | @aws-cdk/aws-rds.Credentials.fromUsername() | use `fromGeneratedSecret()` or `fromPassword()` for new Clusters and Instances. Note that switching from `fromUsername()` to `fromGeneratedSecret()` or `fromPassword()` for already deployed Clusters or Instances will result in their replacement! |
 | @aws-cdk/aws-rds | CredentialsFromUsernameOptions | supporting API `fromUsername()` has been deprecated. See deprecation notice of the API. |
 | @aws-cdk/aws-rds | @aws-cdk/aws-rds.CredentialsFromUsernameOptions.password | supporting API `fromUsername()` has been deprecated. See deprecation notice of the API. |
-| @aws-cdk/aws-rds | @aws-cdk/aws-rds.DatabaseInstanceEngine.MARIADB | using unversioned engines is an availability risk.
-We recommend using versioned engines created using the {@link mariaDb()} method |
-| @aws-cdk/aws-rds | @aws-cdk/aws-rds.DatabaseInstanceEngine.MYSQL | using unversioned engines is an availability risk.
-We recommend using versioned engines created using the {@link mysql()} method |
-| @aws-cdk/aws-rds | @aws-cdk/aws-rds.DatabaseInstanceEngine.ORACLE_EE | using unversioned engines is an availability risk.
-We recommend using versioned engines created using the {@link oracleEe()} method |
+| @aws-cdk/aws-rds | @aws-cdk/aws-rds.DatabaseInstanceEngine.MARIADB | using unversioned engines is an availability risk. We recommend using versioned engines created using the {@link mariaDb()} method |
+| @aws-cdk/aws-rds | @aws-cdk/aws-rds.DatabaseInstanceEngine.MYSQL | using unversioned engines is an availability risk. We recommend using versioned engines created using the {@link mysql()} method |
+| @aws-cdk/aws-rds | @aws-cdk/aws-rds.DatabaseInstanceEngine.ORACLE_EE | using unversioned engines is an availability risk. We recommend using versioned engines created using the {@link oracleEe()} method |
 | @aws-cdk/aws-rds | @aws-cdk/aws-rds.DatabaseInstanceEngine.ORACLE_SE | instances can no longer be created with this engine. See https://forums.aws.amazon.com/ann.jspa?annID=7341 |
 | @aws-cdk/aws-rds | @aws-cdk/aws-rds.DatabaseInstanceEngine.ORACLE_SE1 | instances can no longer be created with this engine. See https://forums.aws.amazon.com/ann.jspa?annID=7341 |
-| @aws-cdk/aws-rds | @aws-cdk/aws-rds.DatabaseInstanceEngine.ORACLE_SE2 | using unversioned engines is an availability risk.
-We recommend using versioned engines created using the {@link oracleSe2()} method |
-| @aws-cdk/aws-rds | @aws-cdk/aws-rds.DatabaseInstanceEngine.POSTGRES | using unversioned engines is an availability risk.
-We recommend using versioned engines created using the {@link postgres()} method |
-| @aws-cdk/aws-rds | @aws-cdk/aws-rds.DatabaseInstanceEngine.SQL_SERVER_EE | using unversioned engines is an availability risk.
-We recommend using versioned engines created using the {@link sqlServerEe()} method |
-| @aws-cdk/aws-rds | @aws-cdk/aws-rds.DatabaseInstanceEngine.SQL_SERVER_EX | using unversioned engines is an availability risk.
-We recommend using versioned engines created using the {@link sqlServerEx()} method |
-| @aws-cdk/aws-rds | @aws-cdk/aws-rds.DatabaseInstanceEngine.SQL_SERVER_SE | using unversioned engines is an availability risk.
-We recommend using versioned engines created using the {@link sqlServerSe()} method |
-| @aws-cdk/aws-rds | @aws-cdk/aws-rds.DatabaseInstanceEngine.SQL_SERVER_WEB | using unversioned engines is an availability risk.
-We recommend using versioned engines created using the {@link sqlServerWeb()} method |
+| @aws-cdk/aws-rds | @aws-cdk/aws-rds.DatabaseInstanceEngine.ORACLE_SE2 | using unversioned engines is an availability risk. We recommend using versioned engines created using the {@link oracleSe2()} method |
+| @aws-cdk/aws-rds | @aws-cdk/aws-rds.DatabaseInstanceEngine.POSTGRES | using unversioned engines is an availability risk. We recommend using versioned engines created using the {@link postgres()} method |
+| @aws-cdk/aws-rds | @aws-cdk/aws-rds.DatabaseInstanceEngine.SQL_SERVER_EE | using unversioned engines is an availability risk. We recommend using versioned engines created using the {@link sqlServerEe()} method |
+| @aws-cdk/aws-rds | @aws-cdk/aws-rds.DatabaseInstanceEngine.SQL_SERVER_EX | using unversioned engines is an availability risk. We recommend using versioned engines created using the {@link sqlServerEx()} method |
+| @aws-cdk/aws-rds | @aws-cdk/aws-rds.DatabaseInstanceEngine.SQL_SERVER_SE | using unversioned engines is an availability risk. We recommend using versioned engines created using the {@link sqlServerSe()} method |
+| @aws-cdk/aws-rds | @aws-cdk/aws-rds.DatabaseInstanceEngine.SQL_SERVER_WEB | using unversioned engines is an availability risk. We recommend using versioned engines created using the {@link sqlServerWeb()} method |
 | @aws-cdk/aws-rds | @aws-cdk/aws-rds.DatabaseInstanceEngine.oracleSe() | instances can no longer be created with this engine. See https://forums.aws.amazon.com/ann.jspa?annID=7341 |
 | @aws-cdk/aws-rds | @aws-cdk/aws-rds.DatabaseInstanceEngine.oracleSe1() | instances can no longer be created with this engine. See https://forums.aws.amazon.com/ann.jspa?annID=7341 |
 | @aws-cdk/aws-rds | @aws-cdk/aws-rds.DatabaseInstanceNewProps.vpcPlacement | use `vpcSubnets` |
@@ -693,9 +662,7 @@ We recommend using versioned engines created using the {@link sqlServerWeb()} me
 | @aws-cdk/aws-rds | @aws-cdk/aws-rds.PostgresEngineVersion.VER_9_6_6 | PostgreSQL 9.6 will reach end of life in November 2021 |
 | @aws-cdk/aws-rds | @aws-cdk/aws-rds.PostgresEngineVersion.VER_9_6_8 | PostgreSQL 9.6 will reach end of life in November 2021 |
 | @aws-cdk/aws-rds | @aws-cdk/aws-rds.PostgresEngineVersion.VER_9_6_9 | PostgreSQL 9.6 will reach end of life in November 2021 |
-| @aws-cdk/aws-rds | @aws-cdk/aws-rds.SnapshotCredentials.fromGeneratedPassword() | use `fromGeneratedSecret()` for new Clusters and Instances.
-Note that switching from `fromGeneratedPassword()` to `fromGeneratedSecret()` for already deployed
-Clusters or Instances will update their master password. |
+| @aws-cdk/aws-rds | @aws-cdk/aws-rds.SnapshotCredentials.fromGeneratedPassword() | use `fromGeneratedSecret()` for new Clusters and Instances. Note that switching from `fromGeneratedPassword()` to `fromGeneratedSecret()` for already deployed Clusters or Instances will update their master password. |
 | @aws-cdk/aws-autoscaling | @aws-cdk/aws-autoscaling.BlockDevice.mappingEnabled | use `BlockDeviceVolume.noDevice()` as the volume to supress a mapping. |
 | @aws-cdk/aws-autoscaling | @aws-cdk/aws-autoscaling.CommonAutoScalingGroupProps.notificationsTopic | use `notifications` |
 | @aws-cdk/aws-autoscaling | @aws-cdk/aws-autoscaling.CommonAutoScalingGroupProps.replacingUpdateMinSuccessfulInstancesPercent | Use `signals` instead |
