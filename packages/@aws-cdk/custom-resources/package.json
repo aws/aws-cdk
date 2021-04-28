@@ -71,6 +71,7 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
+    "@types/jest": "^26.0.22",
     "@aws-cdk/aws-events": "0.0.0",
     "@aws-cdk/aws-s3": "0.0.0",
     "@aws-cdk/aws-ssm": "0.0.0",
@@ -120,6 +121,9 @@
   },
   "awscdkio": {
     "announce": false
+  },
+  "nozem": {
+    "ostools": ["rm", "cp"]
   },
   "maturity": "stable",
   "publishConfig": {
