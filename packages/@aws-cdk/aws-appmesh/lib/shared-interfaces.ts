@@ -1,6 +1,7 @@
 import * as cdk from '@aws-cdk/core';
 import { CfnVirtualGateway, CfnVirtualNode } from './appmesh.generated';
 import { ClientPolicy } from './client-policy';
+import { Protocol } from './private/utils';
 import { IVirtualService } from './virtual-service';
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
@@ -58,70 +59,160 @@ export interface TcpTimeout {
 }
 
 /**
- * Enum of supported AppMesh protocols
+ * Properties used to define healthchecks.
  */
-export enum Protocol {
-  HTTP = 'http',
-  TCP = 'tcp',
-  HTTP2 = 'http2',
-  GRPC = 'grpc',
-}
-
-/**
- * Properties used to define healthchecks when creating virtual nodes.
- * All values have a default if only specified as {} when creating.
- * If property not set, then no healthchecks will be defined.
- */
-export interface HealthCheck {
+export interface HealthCheckCommonOptions {
   /**
-   * Number of successful attempts before considering the node UP
+   * The number of consecutive successful health checks that must occur before declaring listener healthy.
    *
-   * @default 2
+   * @default 5
    */
   readonly healthyThreshold?: number;
 
   /**
-   * Interval in milliseconds to re-check
+   * The time period in milliseconds between each health check execution.
    *
-   * @default 5 seconds
+   * @default Duration.seconds(30)
    */
   readonly interval?: cdk.Duration;
 
   /**
-   * The path where the application expects any health-checks, this can also be the application path.
+   * The amount of time to wait when receiving a response from the health check, in milliseconds.
    *
-   * @default /
-   */
-  readonly path?: string;
-
-  /**
-   * The TCP port number for the healthcheck
-   *
-   * @default - same as corresponding port mapping
-   */
-  readonly port?: number;
-
-  /**
-   * The protocol to use for the healthcheck, for convinience a const enum has been defined.
-   * Protocol.HTTP or Protocol.TCP
-   *
-   * @default - same as corresponding port mapping
-   */
-  readonly protocol?: Protocol;
-
-  /**
-   * Timeout in milli-seconds for the healthcheck to be considered a fail.
-   *
-   * @default 2 seconds
+   * @default Duration.seconds(5)
    */
   readonly timeout?: cdk.Duration;
 
   /**
-   * Number of failed attempts before considering the node DOWN.
+   * The number of consecutive failed health checks that must occur before declaring a listener unhealthy.
    *
-   * @default 2
+   * @default - 2
    */
   readonly unhealthyThreshold?: number;
+}
+
+/**
+ * Properties used to define healthchecks.
+ */
+export interface HttpHealthCheckOptions extends HealthCheckCommonOptions {
+  /**
+   * The destination path for the health check request.
+   *
+   * @default /
+   */
+  readonly path?: string;
+}
+
+/**
+ * All Properties for Health Checks for mesh endpoints
+ */
+export interface HealthCheckConfig {
+  /**
+   * VirtualNode CFN configuration for Health Checks
+   *
+   * @default - no health checks
+   */
+  readonly virtualNodeHealthCheck?: CfnVirtualNode.HealthCheckProperty;
+
+  /**
+   * VirtualGateway CFN configuration for Health Checks
+   *
+   * @default - no health checks
+   */
+  readonly virtualGatewayHealthCheck?: CfnVirtualGateway.VirtualGatewayHealthCheckPolicyProperty;
+}
+
+/**
+ * Contains static factory methods for creating health checks for different protocols
+ */
+export abstract class HealthCheck {
+  /**
+   * Construct a HTTP health check
+   */
+  public static http(options: HttpHealthCheckOptions = {}): HealthCheck {
+    return new HealthCheckImpl(Protocol.HTTP, options.healthyThreshold, options.unhealthyThreshold, options.interval, options.timeout, options.path);
+  }
+
+  /**
+   * Construct a HTTP2 health check
+   */
+  public static http2(options: HttpHealthCheckOptions = {}): HealthCheck {
+    return new HealthCheckImpl(Protocol.HTTP2, options.healthyThreshold, options.unhealthyThreshold, options.interval, options.timeout, options.path);
+  }
+
+  /**
+   * Construct a GRPC health check
+   */
+  public static grpc(options: HealthCheckCommonOptions= {}): HealthCheck {
+    return new HealthCheckImpl(Protocol.GRPC, options.healthyThreshold, options.unhealthyThreshold, options.interval, options.timeout);
+  }
+
+  /**
+   * Construct a TCP health check
+   */
+  public static tcp(options: HealthCheckCommonOptions = {}): HealthCheck {
+    return new HealthCheckImpl(Protocol.TCP, options.healthyThreshold, options.unhealthyThreshold, options.interval, options.timeout);
+  }
+
+  /**
+   * Called when the AccessLog type is initialized. Can be used to enforce
+   * mutual exclusivity with future properties
+   */
+  public abstract bind(scope: Construct): HealthCheckConfig;
+}
+
+class HealthCheckImpl extends HealthCheck {
+  constructor(
+    private readonly protocol: Protocol,
+    private readonly healthyThreshold: number = 5,
+    private readonly unhealthyThreshold: number = 2,
+    private readonly interval: cdk.Duration = cdk.Duration.seconds(30),
+    private readonly timeout: cdk.Duration = cdk.Duration.seconds(5),
+    private readonly path?: string) {
+    super();
+    if (healthyThreshold < 2 || healthyThreshold > 10) {
+      throw new Error('healthyThreshold must be between 2 and 10');
+    }
+
+    if (unhealthyThreshold < 2 || unhealthyThreshold > 10) {
+      throw new Error('unhealthyThreshold must be between 2 and 10');
+    }
+
+    if (interval.toMilliseconds() < 5000 || interval.toMilliseconds() > 300_000) {
+      throw new Error('interval must be more than 5 seconds and less than 300 seconds');
+    }
+
+    if (timeout.toMilliseconds() < 2000 || timeout.toMilliseconds() > 60_000) {
+      throw new Error('timeout must be more than 2 seconds and less than 60 seconds');
+    }
+
+    // Default to / for HTTP Health Checks
+    if (path === undefined && (protocol === Protocol.HTTP || protocol === Protocol.HTTP2)) {
+      this.path = '/';
+    }
+  }
+
+  public bind(_scope: Construct): HealthCheckConfig {
+    return {
+      virtualNodeHealthCheck: {
+        protocol: this.protocol,
+        healthyThreshold: this.healthyThreshold,
+        unhealthyThreshold: this.unhealthyThreshold,
+        intervalMillis: this.interval.toMilliseconds(),
+        timeoutMillis: this.timeout.toMilliseconds(),
+        path: this.path,
+      },
+      virtualGatewayHealthCheck: {
+        protocol: this.protocol,
+        healthyThreshold: this.healthyThreshold,
+        unhealthyThreshold: this.unhealthyThreshold,
+        intervalMillis: this.interval.toMilliseconds(),
+        timeoutMillis: this.timeout.toMilliseconds(),
+        path: this.path,
+      },
+    };
+  }
+
 }
 
 /**

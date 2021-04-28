@@ -1,5 +1,5 @@
 import { CfnVirtualRouter } from './appmesh.generated';
-import { Protocol } from './shared-interfaces';
+import { Protocol } from './private/utils';
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
 // eslint-disable-next-line no-duplicate-imports, import/order

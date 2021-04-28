@@ -923,11 +923,10 @@
             {
               "HealthCheck": {
                 "HealthyThreshold": 3,
-                "IntervalMillis": 5000,
+                "IntervalMillis": 30000,
                 "Path": "/check-path",
-                "Port": 8080,
                 "Protocol": "http",
-                "TimeoutMillis": 2000,
+                "TimeoutMillis": 5000,
                 "UnhealthyThreshold": 2
               },
               "PortMapping": {
@@ -986,7 +985,6 @@
                 "HealthyThreshold": 3,
                 "IntervalMillis": 5000,
                 "Path": "/check-path2",
-                "Port": 8080,
                 "Protocol": "http",
                 "TimeoutMillis": 2000,
                 "UnhealthyThreshold": 2
@@ -1035,7 +1033,6 @@
                 "HealthyThreshold": 3,
                 "IntervalMillis": 5000,
                 "Path": "/check-path3",
-                "Port": 8080,
                 "Protocol": "http",
                 "TimeoutMillis": 2000,
                 "UnhealthyThreshold": 2
@@ -1270,12 +1267,11 @@
           "Listeners": [
             {
               "HealthCheck": {
-                "HealthyThreshold": 2,
+                "HealthyThreshold": 5,
                 "IntervalMillis": 10000,
                 "Path": "/",
-                "Port": 443,
                 "Protocol": "http",
-                "TimeoutMillis": 2000,
+                "TimeoutMillis": 5000,
                 "UnhealthyThreshold": 2
               },
               "PortMapping": {

@@ -213,13 +213,13 @@ export = {
           serviceDiscovery: appmesh.ServiceDiscovery.dns('test.domain.local'),
           listeners: [appmesh.VirtualNodeListener.http({
             port: 8080,
-            healthCheck: {
+            healthCheck: appmesh.HealthCheck.http({
               healthyThreshold: 3,
               path: '/',
               interval: cdk.Duration.seconds(5), // min
               timeout: cdk.Duration.seconds(2), // min
               unhealthyThreshold: 2,
-            },
+            }),
           })],
         });
 
@@ -236,7 +236,6 @@ export = {
                     HealthyThreshold: 3,
                     IntervalMillis: 5000,
                     Path: '/',
-                    Port: 8080,
                     Protocol: 'http',
                     TimeoutMillis: 2000,
                     UnhealthyThreshold: 2,

@@ -1,12 +1,10 @@
-import * as cdk from '@aws-cdk/core';
 import { CfnVirtualGateway } from './appmesh.generated';
-import { validateHealthChecks, ConnectionPoolConfig } from './private/utils';
+import { ConnectionPoolConfig, Protocol } from './private/utils';
 import {
   GrpcConnectionPool,
   HealthCheck,
   Http2ConnectionPool,
   HttpConnectionPool,
-  Protocol,
 } from './shared-interfaces';
 import { TlsCertificate, TlsCertificateConfig } from './tls-certificate';
 
@@ -143,7 +141,7 @@ class VirtualGatewayListenerImpl extends VirtualGatewayListener {
           port: this.port,
           protocol: this.protocol,
         },
-        healthCheck: this.healthCheck ? renderHealthCheck(this.healthCheck, this.protocol, this.port): undefined,
+        healthCheck: this.healthCheck ? this.healthCheck.bind(scope).virtualGatewayHealthCheck: undefined,
         tls: tlsConfig ? renderTls(tlsConfig) : undefined,
         connectionPool: this.connectionPool ? renderConnectionPool(this.connectionPool, this.protocol) : undefined,
       },
@@ -160,34 +158,6 @@ function renderTls(tlsCertificateConfig: TlsCertificateConfig): CfnVirtualGatewa
     certificate: tlsCertificateConfig.tlsCertificate,
     mode: tlsCertificateConfig.tlsMode.toString(),
   };
-}
-
-function renderHealthCheck(hc: HealthCheck, listenerProtocol: Protocol,
-  listenerPort: number): CfnVirtualGateway.VirtualGatewayHealthCheckPolicyProperty {
-
-  if (hc.protocol === Protocol.TCP) {
-    throw new Error('TCP health checks are not permitted for gateway listeners');
-  }
-
-  if (hc.protocol === Protocol.GRPC && hc.path) {
-    throw new Error('The path property cannot be set with Protocol.GRPC');
-  }
-
-  const protocol = hc.protocol? hc.protocol : listenerProtocol;
-
-  const healthCheck: CfnVirtualGateway.VirtualGatewayHealthCheckPolicyProperty = {
-    healthyThreshold: hc.healthyThreshold || 2,
-    intervalMillis: (hc.interval || cdk.Duration.seconds(5)).toMilliseconds(), // min
-    path: hc.path || ((protocol === Protocol.HTTP || protocol === Protocol.HTTP2) ? '/' : undefined),
-    port: hc.port || listenerPort,
-    protocol: hc.protocol || listenerProtocol,
-    timeoutMillis: (hc.timeout || cdk.Duration.seconds(2)).toMilliseconds(),
-    unhealthyThreshold: hc.unhealthyThreshold || 2,
-  };
-
-  validateHealthChecks(healthCheck);
-
-  return healthCheck;
 }
 
 function renderConnectionPool(connectionPool: ConnectionPoolConfig, listenerProtocol: Protocol):

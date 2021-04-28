@@ -3,6 +3,7 @@ import * as acm from '@aws-cdk/aws-certificatemanager';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import * as appmesh from '../lib';
+import { Protocol } from '../lib/private/utils';
 
 export = {
   'When creating a VirtualGateway': {
@@ -23,9 +24,9 @@ export = {
         mesh: mesh,
         listeners: [appmesh.VirtualGatewayListener.http({
           port: 443,
-          healthCheck: {
+          healthCheck: appmesh.HealthCheck.http({
             interval: cdk.Duration.seconds(10),
-          },
+          }),
         })],
       });
 
@@ -33,9 +34,7 @@ export = {
         mesh: mesh,
         listeners: [appmesh.VirtualGatewayListener.http2({
           port: 443,
-          healthCheck: {
-            interval: cdk.Duration.seconds(10),
-          },
+          healthCheck: appmesh.HealthCheck.http2({ interval: cdk.Duration.seconds(10) }),
         })],
       });
 
@@ -46,7 +45,7 @@ export = {
             {
               PortMapping: {
                 Port: 8080,
-                Protocol: appmesh.Protocol.HTTP,
+                Protocol: Protocol.HTTP,
               },
             },
           ],
@@ -59,17 +58,16 @@ export = {
           Listeners: [
             {
               HealthCheck: {
-                HealthyThreshold: 2,
-                IntervalMillis: 10000,
-                Port: 443,
-                Protocol: appmesh.Protocol.HTTP,
-                TimeoutMillis: 2000,
+                HealthyThreshold: 5,
+                IntervalMillis: 10_000,
+                Protocol: Protocol.HTTP,
+                TimeoutMillis: 5000,
                 UnhealthyThreshold: 2,
                 Path: '/',
               },
               PortMapping: {
                 Port: 443,
-                Protocol: appmesh.Protocol.HTTP,
+                Protocol: Protocol.HTTP,
               },
             },
           ],
@@ -82,17 +80,16 @@ export = {
           Listeners: [
             {
               HealthCheck: {
-                HealthyThreshold: 2,
-                IntervalMillis: 10000,
-                Port: 443,
-                Protocol: appmesh.Protocol.HTTP2,
-                TimeoutMillis: 2000,
+                HealthyThreshold: 5,
+                IntervalMillis: 10_000,
+                Protocol: Protocol.HTTP2,
+                TimeoutMillis: 5000,
                 UnhealthyThreshold: 2,
                 Path: '/',
               },
               PortMapping: {
                 Port: 443,
-                Protocol: appmesh.Protocol.HTTP2,
+                Protocol: Protocol.HTTP2,
               },
             },
           ],
@@ -115,8 +112,7 @@ export = {
         virtualGatewayName: 'test-gateway',
         listeners: [appmesh.VirtualGatewayListener.grpc({
           port: 80,
-          healthCheck: {
-          },
+          healthCheck: appmesh.HealthCheck.grpc(),
         })],
         mesh: mesh,
         accessLog: appmesh.AccessLog.fromFilePath('/dev/stdout'),
@@ -128,16 +124,15 @@ export = {
           Listeners: [
             {
               HealthCheck: {
-                HealthyThreshold: 2,
-                IntervalMillis: 5000,
-                Port: 80,
-                Protocol: appmesh.Protocol.GRPC,
-                TimeoutMillis: 2000,
+                HealthyThreshold: 5,
+                IntervalMillis: 30_000,
+                Protocol: Protocol.GRPC,
+                TimeoutMillis: 5000,
                 UnhealthyThreshold: 2,
               },
               PortMapping: {
                 Port: 80,
-                Protocol: appmesh.Protocol.GRPC,
+                Protocol: Protocol.GRPC,
               },
             },
           ],
