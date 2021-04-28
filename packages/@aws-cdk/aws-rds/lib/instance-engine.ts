@@ -369,7 +369,7 @@ export class MysqlEngineVersion {
   public static readonly VER_8_0_20 = MysqlEngineVersion.of('8.0.20', '8.0');
   /** Version "8.0.21 ". */
   public static readonly VER_8_0_21 = MysqlEngineVersion.of('8.0.21', '8.0');
-  /** Version "8.0.21 ". */
+  /** Version "8.0.23 ". */
   public static readonly VER_8_0_23 = MysqlEngineVersion.of('8.0.23', '8.0');
 
   /**
