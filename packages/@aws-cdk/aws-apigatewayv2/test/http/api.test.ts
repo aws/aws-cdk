@@ -427,6 +427,7 @@ describe('HttpApi', () => {
 
       expect(stack).toHaveResource('AWS::ApiGatewayV2::Route', {
         RouteKey: 'GET /chickens',
+        AuthorizationType: 'NONE',
         AuthorizerId: ABSENT,
       });
     });
