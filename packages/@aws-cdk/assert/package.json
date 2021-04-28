@@ -69,6 +69,7 @@
   "ubergen": {
     "exclude": true
   },
+  "nozem": false,
   "stability": "experimental",
   "maturity": "developer-preview",
   "publishConfig": {

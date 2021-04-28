@@ -17,7 +17,6 @@ import { ISubnetGroup, SubnetGroup } from './subnet-group';
 /**
   * Interface representing a serverless database cluster.
   *
-  * @experimental
  */
 export interface IServerlessCluster extends IResource, ec2.IConnectable, secretsmanager.ISecretAttachmentTarget {
   /**
@@ -52,7 +51,6 @@ export interface IServerlessCluster extends IResource, ec2.IConnectable, secrets
 /**
  *  Properties to configure an Aurora Serverless Cluster
  *
- * @experimental
  */
 export interface ServerlessClusterProps {
   /**
@@ -167,7 +165,6 @@ export interface ServerlessClusterProps {
 /**
  * Properties that describe an existing cluster instance
  *
- * @experimental
  */
 export interface ServerlessClusterAttributes {
   /**
@@ -218,7 +215,6 @@ export interface ServerlessClusterAttributes {
  * @see https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverless.setting-capacity.html
  * @see https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverless.how-it-works.html#aurora-serverless.architecture
  *
- * @experimental
  */
 export enum AuroraCapacityUnit {
   /** 1 Aurora Capacity Unit */
@@ -248,7 +244,6 @@ export enum AuroraCapacityUnit {
 /**
  * Options for configuring scaling on an Aurora Serverless cluster
  *
- * @experimental
  */
 export interface ServerlessScalingOptions {
   /**
@@ -361,7 +356,6 @@ abstract class ServerlessClusterBase extends Resource implements IServerlessClus
  *
  * @resource AWS::RDS::DBCluster
  *
- * @experimental
  */
 export class ServerlessCluster extends ServerlessClusterBase {
 
