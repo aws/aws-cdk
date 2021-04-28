@@ -596,7 +596,6 @@ export class DatabaseClusterFromSnapshot extends DatabaseClusterNew {
   public readonly clusterEndpoint: Endpoint;
   public readonly clusterReadEndpoint: Endpoint;
   public readonly connections: ec2.Connections;
-
   public readonly instanceIdentifiers: string[];
   public readonly instanceEndpoints: Endpoint[];
 
