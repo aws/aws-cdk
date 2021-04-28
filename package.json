@@ -7,22 +7,26 @@
   },
   "scripts": {
     "pkglint": "lerna --scope pkglint run build && lerna run pkglint",
+    "prebuild": "node ./scripts/check-yarn-lock.js",
     "build": "./build.sh",
     "pack": "./pack.sh",
     "compat": "./scripts/check-api-compatibility.sh",
     "bump": "./bump.sh",
-    "build-all": "tsc -b"
+    "build-all": "tsc -b",
+    "postinstall": "patch-package --error-on-fail"
   },
   "devDependencies": {
+    "@yarnpkg/lockfile": "^1.1.0",
     "conventional-changelog-cli": "^2.1.1",
     "fs-extra": "^9.1.0",
     "graceful-fs": "^4.2.6",
     "jest-junit": "^12.0.0",
-    "jsii-diff": "^1.26.0",
-    "jsii-pacmak": "^1.26.0",
-    "jsii-rosetta": "^1.26.0",
+    "jsii-diff": "^1.28.0",
+    "jsii-pacmak": "^1.28.0",
+    "jsii-rosetta": "^1.28.0",
     "lerna": "^4.0.0",
-    "standard-version": "^9.1.1",
+    "patch-package": "^6.4.7",
+    "standard-version": "^9.2.0",
     "typescript": "~3.9.9"
   },
   "tap-mocha-reporter-resolutions-comment": "should be removed or reviewed when nodeunit dependency is dropped or adjusted",
@@ -38,6 +42,19 @@
     "name": "Amazon Web Services",
     "url": "https://aws.amazon.com"
   },
+  "nozem": {
+    "$comment": [
+      "these files are read by pkglint and cdk-build-tools tests for almost every package.",
+      "Rather than add them to each package.json individually, do it globally here."
+    ],
+    "globalNonPackageFiles": [
+      "package.json",
+      "release.json",
+      "scripts/resolve-version.js",
+      "scripts/resolve-version-lib.js",
+      "version.v1.json"
+    ]
+  },
   "workspaces": {
     "packages": [
       "packages/*",
@@ -51,6 +68,8 @@
     "nohoist": [
       "**/jszip",
       "**/jszip/**",
+      "@aws-cdk/aws-codebuild/yaml",
+      "@aws-cdk/aws-codebuild/yaml/**",
       "@aws-cdk/aws-codepipeline-actions/case",
       "@aws-cdk/aws-codepipeline-actions/case/**",
       "@aws-cdk/aws-cognito/punycode",
@@ -63,6 +82,8 @@
       "@aws-cdk/cloud-assembly-schema/jsonschema/**",
       "@aws-cdk/cloud-assembly-schema/semver",
       "@aws-cdk/cloud-assembly-schema/semver/**",
+      "@aws-cdk/cloudformation-include/yaml",
+      "@aws-cdk/cloudformation-include/yaml/**",
       "@aws-cdk/core/@balena/dockerignore",
       "@aws-cdk/core/@balena/dockerignore/**",
       "@aws-cdk/core/fs-extra",

@@ -1,4 +1,4 @@
-import { expect as expectCDK, haveOutput, haveResource, ResourcePart } from '@aws-cdk/assert';
+import { expect as expectCDK, haveOutput, haveResource, ResourcePart } from '@aws-cdk/assert-internal';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as cdk from '@aws-cdk/core';
 import * as constructs from 'constructs';
@@ -105,6 +105,40 @@ describe('DatabaseInstance', () => {
     expectCDK(stack).to(haveResource('AWS::Neptune::DBInstance', {
       DBParameterGroupName: { Ref: 'ParamsA8366201' },
     }));
+  });
+
+  test('instance type from CfnParameter', () => {
+    // GIVEN
+    const stack = testStack();
+
+    const instanceType = new cdk.CfnParameter(stack, 'NeptuneInstaneType', {
+      description: 'Instance type of graph database Neptune',
+      type: 'String',
+      allowedValues: [
+        'db.r5.xlarge',
+        'db.r5.2xlarge',
+        'db.r5.4xlarge',
+        'db.r5.8xlarge',
+        'db.r5.12xlarge',
+      ],
+      default: 'db.r5.8xlarge',
+    });
+    // WHEN
+    new DatabaseInstance(stack, 'Instance', {
+      cluster: stack.cluster,
+      instanceType: InstanceType.of(instanceType.valueAsString),
+    });
+
+    // THEN
+    expectCDK(stack).to(haveResource('AWS::Neptune::DBInstance', {
+      DBInstanceClass: {
+        Ref: 'NeptuneInstaneType',
+      },
+    }));
+  });
+
+  test('instance type from string throws if missing db prefix', () => {
+    expect(() => { InstanceType.of('r5.xlarge');}).toThrowError(/instance type must start with 'db.'/);
   });
 });
 

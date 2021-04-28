@@ -125,6 +125,32 @@ export interface HealthCheck {
 }
 
 /**
+ * Represents the outlier detection for a listener.
+ */
+export interface OutlierDetection {
+  /**
+   * The base amount of time for which a host is ejected.
+   */
+  readonly baseEjectionDuration: cdk.Duration;
+
+  /**
+   * The time interval between ejection sweep analysis.
+   */
+  readonly interval: cdk.Duration;
+
+  /**
+   * Maximum percentage of hosts in load balancing pool for upstream service that can be ejected. Will eject at
+   * least one host regardless of the value.
+   */
+  readonly maxEjectionPercent: number;
+
+  /**
+   * Number of consecutive 5xx errors required for ejection.
+   */
+  readonly maxServerErrors: number;
+}
+
+/**
  * All Properties for Envoy Access logs for mesh endpoints
  */
 export interface AccessLogConfig {
@@ -272,4 +298,59 @@ class VirtualServiceBackend extends Backend {
       },
     };
   }
+}
+
+/**
+ * Connection pool properties for HTTP listeners
+ */
+export interface HttpConnectionPool {
+  /**
+   * The maximum connections in the pool
+   *
+   * @default - none
+   */
+  readonly maxConnections: number;
+
+  /**
+   * The maximum pending requests in the pool
+   *
+   * @default - none
+   */
+  readonly maxPendingRequests: number;
+}
+
+/**
+ * Connection pool properties for TCP listeners
+ */
+export interface TcpConnectionPool {
+  /**
+   * The maximum connections in the pool
+   *
+   * @default - none
+   */
+  readonly maxConnections: number;
+}
+
+/**
+ * Connection pool properties for gRPC listeners
+ */
+export interface GrpcConnectionPool {
+  /**
+   * The maximum requests in the pool
+   *
+   * @default - none
+   */
+  readonly maxRequests: number;
+}
+
+/**
+ * Connection pool properties for HTTP2 listeners
+ */
+export interface Http2ConnectionPool {
+  /**
+   * The maximum requests in the pool
+   *
+   * @default - none
+   */
+  readonly maxRequests: number;
 }
