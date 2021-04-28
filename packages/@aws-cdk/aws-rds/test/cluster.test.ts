@@ -74,7 +74,7 @@ describe('cluster', () => {
     const vpc = new ec2.Vpc(stack, 'VPC');
 
     // WHEN
-    new DatabaseCluster(stack, 'Database', {
+    const cluster = new DatabaseCluster(stack, 'Database', {
       engine: DatabaseClusterEngine.AURORA,
       instances: 1,
       credentials: {
@@ -94,6 +94,35 @@ describe('cluster', () => {
       MasterUsername: 'admin',
       MasterUserPassword: 'tooshort',
       VpcSecurityGroupIds: [{ 'Fn::GetAtt': ['DatabaseSecurityGroup5C91FDCB', 'GroupId'] }],
+    });
+
+    expect(cluster.instanceIdentifiers).toHaveLength(1);
+    expect(stack.resolve(cluster.instanceIdentifiers[0])).toEqual({
+      Ref: 'DatabaseInstance1844F58FD',
+    });
+
+    expect(cluster.instanceEndpoints).toHaveLength(1);
+    expect(stack.resolve(cluster.instanceEndpoints[0])).toEqual({
+      hostname: {
+        'Fn::GetAtt': ['DatabaseInstance1844F58FD', 'Endpoint.Address'],
+      },
+      port: {
+        'Fn::GetAtt': ['DatabaseB269D8BB', 'Endpoint.Port'],
+      },
+      socketAddress: {
+        'Fn::Join': [
+          '',
+          [
+            {
+              'Fn::GetAtt': ['DatabaseInstance1844F58FD', 'Endpoint.Address'],
+            },
+            ':',
+            {
+              'Fn::GetAtt': ['DatabaseB269D8BB', 'Endpoint.Port'],
+            },
+          ],
+        ],
+      },
     });
   });
 
@@ -1900,77 +1929,6 @@ describe('cluster', () => {
     // THEN
     expect(stack).toHaveResourceLike('AWS::RDS::DBCluster', {
       DBClusterIdentifier: clusterIdentifier,
-    });
-  });
-
-  test('allows accessing instanceIdentifiers', () => {
-    // GIVEN
-    const stack = testStack();
-    const vpc = new ec2.Vpc(stack, 'VPC');
-
-    // WHEN
-    const cluster = new DatabaseCluster(stack, 'Database', {
-      engine: DatabaseClusterEngine.aurora({
-        version: AuroraEngineVersion.VER_1_22_2,
-      }),
-      credentials: {
-        username: 'admin',
-      },
-      instanceProps: {
-        vpc,
-      },
-      instances: 1,
-    });
-
-    // THEN
-    expect(cluster.instanceIdentifiers).toHaveLength(1);
-    expect(stack.resolve(cluster.instanceIdentifiers[0])).toEqual({
-      Ref: 'DatabaseInstance1844F58FD',
-    });
-  });
-
-  test('allows accessing instanceEndpoints', () => {
-    // GIVEN
-    const stack = testStack();
-    const vpc = new ec2.Vpc(stack, 'VPC');
-
-    // WHEN
-    const cluster = new DatabaseCluster(stack, 'Database', {
-      engine: DatabaseClusterEngine.aurora({
-        version: AuroraEngineVersion.VER_1_22_2,
-      }),
-      credentials: {
-        username: 'admin',
-      },
-      instanceProps: {
-        vpc,
-      },
-      instances: 1,
-    });
-
-    // THEN
-    expect(cluster.instanceEndpoints).toHaveLength(1);
-    expect(stack.resolve(cluster.instanceEndpoints[0])).toEqual({
-      hostname: {
-        'Fn::GetAtt': ['DatabaseInstance1844F58FD', 'Endpoint.Address'],
-      },
-      port: {
-        'Fn::GetAtt': ['DatabaseB269D8BB', 'Endpoint.Port'],
-      },
-      socketAddress: {
-        'Fn::Join': [
-          '',
-          [
-            {
-              'Fn::GetAtt': ['DatabaseInstance1844F58FD', 'Endpoint.Address'],
-            },
-            ':',
-            {
-              'Fn::GetAtt': ['DatabaseB269D8BB', 'Endpoint.Port'],
-            },
-          ],
-        ],
-      },
     });
   });
 });
