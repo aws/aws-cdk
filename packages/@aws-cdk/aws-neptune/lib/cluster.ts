@@ -503,7 +503,7 @@ export class DatabaseCluster extends DatabaseClusterBase implements IDatabaseClu
         dbClusterIdentifier: cluster.ref,
         dbInstanceIdentifier: instanceIdentifier,
         // Instance properties
-        dbInstanceClass: props.instanceType,
+        dbInstanceClass: props.instanceType._instanceType,
         dbParameterGroupName: props.parameterGroup?.parameterGroupName,
       });
 
