@@ -198,6 +198,13 @@ export interface PublicHostedZoneProps extends CommonHostedZoneProps {
    * @default - No delegation configuration
    */
   readonly crossAccountZoneDelegationPrincipal?: iam.IPrincipal;
+
+  /**
+   * The name of the role created for cross account delegation
+   *
+   * @default - A role name is generated automatically
+   */
+  readonly crossAccountZoneDelegationRoleName?: string;
 }
 
 /**
@@ -244,8 +251,13 @@ export class PublicHostedZone extends HostedZone implements IPublicHostedZone {
       });
     }
 
+    if (!props.crossAccountZoneDelegationPrincipal && props.crossAccountZoneDelegationRoleName) {
+      throw Error('crossAccountZoneDelegationRoleName property is not supported without crossAccountZoneDelegationPrincipal');
+    }
+
     if (props.crossAccountZoneDelegationPrincipal) {
       this.crossAccountZoneDelegationRole = new iam.Role(this, 'CrossAccountZoneDelegationRole', {
+        roleName: props.crossAccountZoneDelegationRoleName,
         assumedBy: props.crossAccountZoneDelegationPrincipal,
         inlinePolicies: {
           delegation: new iam.PolicyDocument({
@@ -253,6 +265,10 @@ export class PublicHostedZone extends HostedZone implements IPublicHostedZone {
               new iam.PolicyStatement({
                 actions: ['route53:ChangeResourceRecordSets'],
                 resources: [this.hostedZoneArn],
+              }),
+              new iam.PolicyStatement({
+                actions: ['route53:ListHostedZonesByName'],
+                resources: ['*'],
               }),
             ],
           }),
