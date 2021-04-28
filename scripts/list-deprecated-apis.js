@@ -21,10 +21,10 @@ async function main() {
         type.members.forEach(e => printIfDeprecated(assembly.fqn, `${type.name}.${e.name}`, e));
       }
       if (type.isInterfaceType() || type.isClassType() || type.isDataType()) {
-        type.ownProperties.forEach(p => printIfDeprecated(assembly.fqn, `${type.fqn}.${p.name}`, p));
+        type.ownProperties.forEach(p => printIfDeprecated(assembly.fqn, `${type.name}.${p.name}`, p));
         type.ownMethods.forEach(method => {
-          printIfDeprecated(assembly.fqn, `${type.fqn}.${method.name}()`, method);
-          method.parameters.forEach(p => printIfDeprecated(assembly.fqn, `${type.fqn}.${method.name}(): ${p.name}`, p));
+          printIfDeprecated(assembly.fqn, `${type.name}.${method.name}()`, method);
+          method.parameters.forEach(p => printIfDeprecated(assembly.fqn, `${type.name}.${method.name}(): ${p.name}`, p));
         });
       }
     }
