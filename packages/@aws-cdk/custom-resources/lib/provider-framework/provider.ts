@@ -11,9 +11,6 @@ import { WaiterStateMachine } from './waiter-state-machine';
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
 // eslint-disable-next-line no-duplicate-imports, import/order
 import { CustomResourceProviderConfig, ICustomResourceProvider } from '@aws-cdk/aws-cloudformation';
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main",
-// eslint-disable-next-line
-import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 const RUNTIME_HANDLER_PATH = path.join(__dirname, 'runtime');
 const FRAMEWORK_HANDLER_TIMEOUT = Duration.minutes(15); // keep it simple for now
@@ -110,7 +107,7 @@ export interface ProviderProps {
 /**
  * Defines an AWS CloudFormation custom resource provider.
  */
-export class Provider extends CoreConstruct implements ICustomResourceProvider {
+export class Provider extends Construct implements ICustomResourceProvider {
 
   /**
    * The user-defined AWS Lambda function which is invoked for all resource
@@ -180,7 +177,7 @@ export class Provider extends CoreConstruct implements ICustomResourceProvider {
    * Called by `CustomResource` which uses this provider.
    * @deprecated use `provider.serviceToken` instead
    */
-  public bind(_scope: CoreConstruct): CustomResourceProviderConfig {
+  public bind(_scope: Construct): CustomResourceProviderConfig {
     return {
       serviceToken: this.entrypoint.functionArn,
     };
