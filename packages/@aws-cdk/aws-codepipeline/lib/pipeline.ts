@@ -97,7 +97,6 @@ export interface PipelineProps {
    * the construct will automatically create a Stack containing an S3 Bucket in that region.
    *
    * @default - None.
-   * @experimental
    */
   readonly crossRegionReplicationBuckets?: { [region: string]: s3.IBucket };
 
@@ -386,7 +385,6 @@ export class Pipeline extends PipelineBase {
    * Returns all of the {@link CrossRegionSupportStack}s that were generated automatically
    * when dealing with Actions that reside in a different region than the Pipeline itself.
    *
-   * @experimental
    */
   public get crossRegionSupport(): { [region: string]: CrossRegionSupport } {
     const ret: { [region: string]: CrossRegionSupport } = {};
@@ -936,7 +934,6 @@ export class Pipeline extends PipelineBase {
  * the cross-region capabilities of CodePipeline.
  * You get instances of this interface from the {@link Pipeline#crossRegionSupport} property.
  *
- * @experimental
  */
 export interface CrossRegionSupport {
   /**

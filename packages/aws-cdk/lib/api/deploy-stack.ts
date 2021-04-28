@@ -32,7 +32,6 @@ type TemplateBodyParameter = {
   TemplateURL?: string
 };
 
-/** @experimental */
 export interface DeployStackResult {
   readonly noOp: boolean;
   readonly outputs: { [name: string]: string };
@@ -40,7 +39,6 @@ export interface DeployStackResult {
   readonly stackArtifact: cxapi.CloudFormationStackArtifact;
 }
 
-/** @experimental */
 export interface DeployStackOptions {
   /**
    * The stack to be deployed
@@ -181,7 +179,6 @@ export interface DeployStackOptions {
 
 const LARGE_TEMPLATE_SIZE_KB = 50;
 
-/** @experimental */
 export async function deployStack(options: DeployStackOptions): Promise<DeployStackResult> {
   const stackArtifact = options.stack;
 
@@ -366,7 +363,6 @@ async function makeBodyParameter(
   return { TemplateURL: templateURL };
 }
 
-/** @experimental */
 export interface DestroyStackOptions {
   /**
    * The stack to be destroyed
@@ -379,7 +375,6 @@ export interface DestroyStackOptions {
   quiet?: boolean;
 }
 
-/** @experimental */
 export async function destroyStack(options: DestroyStackOptions) {
   const deployName = options.deployName || options.stack.stackName;
   const cfn = options.sdk.cloudFormation();
@@ -463,6 +458,12 @@ async function canSkipDeploy(
   // Existing stack is in a failed state
   if (cloudFormationStack.stackStatus.isFailure) {
     debug(`${deployName}: stack is in a failure state`);
+    return false;
+  }
+
+  // Stack retrieves latest version of SSM parameters with dynamic reference
+  if (/{{resolve:ssm:[a-zA-Z0-9_.-/]+}}/.test(JSON.stringify(deployStackOptions.stack.template))) {
+    debug(`${deployName}: stack retrieves latest version of SSM parameters with dynamic reference`);
     return false;
   }
 

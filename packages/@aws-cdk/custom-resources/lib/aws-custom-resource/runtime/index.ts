@@ -115,6 +115,22 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
     const call: AwsSdkCall | undefined = event.ResourceProperties[event.RequestType];
 
     if (call) {
+
+      if (call.assumedRoleArn) {
+
+        const timestamp = (new Date()).getTime();
+
+        const params = {
+          RoleArn: call.assumedRoleArn,
+          RoleSessionName: `${physicalResourceId}-${timestamp}`,
+        };
+
+        AWS.config.credentials = new AWS.ChainableTemporaryCredentials({
+          params: params,
+        });
+
+      }
+
       const awsService = new (AWS as any)[call.service]({
         apiVersion: call.apiVersion,
         region: call.region,

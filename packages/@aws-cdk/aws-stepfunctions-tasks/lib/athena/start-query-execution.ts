@@ -8,7 +8,6 @@ import { integrationResourceArn, validatePatternSupported } from '../private/tas
 
 /**
  * Properties for starting a Query Execution
- * @experimental
  */
 export interface AthenaStartQueryExecutionProps extends sfn.TaskStateBaseProps {
   /**
@@ -49,7 +48,6 @@ export interface AthenaStartQueryExecutionProps extends sfn.TaskStateBaseProps {
  * Start an Athena Query as a Task
  *
  * @see https://docs.aws.amazon.com/step-functions/latest/dg/connect-athena.html
- * @experimental
  */
 export class AthenaStartQueryExecution extends sfn.TaskStateBase {
 
@@ -226,7 +224,6 @@ export class AthenaStartQueryExecution extends sfn.TaskStateBase {
  * Location of query result along with S3 bucket configuration
  *
  * @see https://docs.aws.amazon.com/athena/latest/APIReference/API_ResultConfiguration.html
- * @experimental
  */
 export interface ResultConfiguration {
 
@@ -250,7 +247,6 @@ export interface ResultConfiguration {
  * Encryption Configuration of the S3 bucket
  *
  * @see https://docs.aws.amazon.com/athena/latest/APIReference/API_EncryptionConfiguration.html
- * @experimental
  */
 export interface EncryptionConfiguration {
 
@@ -273,7 +269,6 @@ export interface EncryptionConfiguration {
  * Encryption Options of the S3 bucket
  *
  * @see https://docs.aws.amazon.com/athena/latest/APIReference/API_EncryptionConfiguration.html#athena-Type-EncryptionConfiguration-EncryptionOption
- * @experimental
  */
 export enum EncryptionOption {
   /**
@@ -302,7 +297,6 @@ export enum EncryptionOption {
  * Database and data catalog context in which the query execution occurs
  *
  * @see https://docs.aws.amazon.com/athena/latest/APIReference/API_QueryExecutionContext.html
- * @experimental
  */
 export interface QueryExecutionContext {
 
