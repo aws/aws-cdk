@@ -484,7 +484,6 @@ export class DatabaseCluster extends DatabaseClusterNew {
   private readonly singleUserRotationApplication: secretsmanager.SecretRotationApplication;
   private readonly multiUserRotationApplication: secretsmanager.SecretRotationApplication;
 
-
   constructor(scope: Construct, id: string, props: DatabaseClusterProps) {
     super(scope, id, props);
 
