@@ -71,6 +71,13 @@ export interface StreamEventSourceProps {
   readonly startingPosition: lambda.StartingPosition;
 
   /**
+   * A list of current response types applied to the event source mapping.
+   *
+   * @default - None
+   */
+  readonly functionResponseTypes?: lambda.FunctionResponseType[];
+
+  /**
    * The maximum amount of time to gather records before invoking the function.
    * Maximum of Duration.minutes(5)
    *
@@ -109,6 +116,7 @@ export abstract class StreamEventSource implements lambda.IEventSource {
       batchSize: this.props.batchSize || 100,
       bisectBatchOnError: this.props.bisectBatchOnError,
       startingPosition: this.props.startingPosition,
+      functionResponseTypes: this.props.functionResponseTypes,
       maxBatchingWindow: this.props.maxBatchingWindow,
       maxRecordAge: this.props.maxRecordAge,
       retryAttempts: this.props.retryAttempts,
