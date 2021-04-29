@@ -77,6 +77,10 @@
                             "$ref": "#/definitions/NestedCloudAssemblyProperties"
                         }
                     ]
+                },
+                "displayName": {
+                    "description": "A string that represents this artifact. Should only be used in user interfaces. (Default - no display name)",
+                    "type": "string"
                 }
             },
             "required": [
