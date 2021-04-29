@@ -1679,7 +1679,7 @@ describe('cluster', () => {
     expect(stack).toCountResources('AWS::RDS::DBInstance', 2);
 
     expect(cluster.instanceIdentifiers).toHaveLength(2);
-    expect(stack.resolve(cluster.instanceIdentifiers[0])).toContain({
+    expect(stack.resolve(cluster.instanceIdentifiers[0])).toEqual({
       Ref: 'DatabaseInstance1844F58FD',
     });
 
