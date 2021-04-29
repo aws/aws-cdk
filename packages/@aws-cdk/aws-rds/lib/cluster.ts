@@ -470,6 +470,8 @@ export class DatabaseCluster extends DatabaseClusterNew {
   public readonly clusterEndpoint: Endpoint;
   public readonly clusterReadEndpoint: Endpoint;
   public readonly connections: ec2.Connections;
+  public readonly instanceIdentifiers: string[];
+  public readonly instanceEndpoints: Endpoint[];
 
   /**
    * The secret attached to this cluster
@@ -482,8 +484,6 @@ export class DatabaseCluster extends DatabaseClusterNew {
   private readonly singleUserRotationApplication: secretsmanager.SecretRotationApplication;
   private readonly multiUserRotationApplication: secretsmanager.SecretRotationApplication;
 
-  public readonly instanceIdentifiers: string[];
-  public readonly instanceEndpoints: Endpoint[];
 
   constructor(scope: Construct, id: string, props: DatabaseClusterProps) {
     super(scope, id, props);
