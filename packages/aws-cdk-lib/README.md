@@ -30,10 +30,10 @@ According to the kind of project you are developing:
 You can use a classic import to get access to each service namespaces:
 
 ```ts
-import { core, aws_s3 as s3 } from 'aws-cdk-lib';
+import { Stack, App, aws_s3 as s3 } from 'aws-cdk-lib';
 
-const app = new core.App();
-const stack = new core.Stack(app, 'TestStack');
+const app = new App();
+const stack = new Stack(app, 'TestStack');
 
 new s3.Bucket(stack, 'TestBucket');
 ```
