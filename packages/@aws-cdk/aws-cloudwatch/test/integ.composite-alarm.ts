@@ -35,12 +35,20 @@ class CompositeAlarmIntegrationTest extends Stack {
       evaluationPeriods: 3,
     });
 
+    const alarm5 = new Alarm(this, 'Alarm5', {
+      alarmName: 'Alarm with space in name',
+      metric: testMetric,
+      threshold: 100000,
+      evaluationPeriods: 3,
+    });
+
     const alarmRule = AlarmRule.anyOf(
       AlarmRule.allOf(
         AlarmRule.anyOf(
           alarm1,
           AlarmRule.fromAlarm(alarm2, AlarmState.OK),
           alarm3,
+          alarm5,
         ),
         AlarmRule.not(AlarmRule.fromAlarm(alarm4, AlarmState.INSUFFICIENT_DATA)),
       ),
