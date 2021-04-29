@@ -110,18 +110,11 @@ describe('cluster', () => {
         'Fn::GetAtt': ['DatabaseB269D8BB', 'Endpoint.Port'],
       },
       socketAddress: {
-        'Fn::Join': [
-          '',
-          [
-            {
-              'Fn::GetAtt': ['DatabaseInstance1844F58FD', 'Endpoint.Address'],
-            },
-            ':',
-            {
-              'Fn::GetAtt': ['DatabaseB269D8BB', 'Endpoint.Port'],
-            },
-          ],
-        ],
+        'Fn::Join': ['', [
+          { 'Fn::GetAtt': ['DatabaseInstance1844F58FD', 'Endpoint.Address'] },
+          ':',
+          { 'Fn::GetAtt': ['DatabaseB269D8BB', 'Endpoint.Port'] },
+        ]],
       },
     });
   });
