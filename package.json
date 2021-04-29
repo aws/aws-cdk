@@ -54,7 +54,9 @@
       "scripts/resolve-version.js",
       "scripts/resolve-version-lib.js",
       "version.v1.json"
-    ]
+    ],
+    "cacheBucket": "nozem-artifacts-eu",
+    "cacheBucketRegion": "eu-west-1"
   },
   "workspaces": {
     "packages": [
