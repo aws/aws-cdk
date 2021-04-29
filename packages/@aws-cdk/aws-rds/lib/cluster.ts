@@ -222,6 +222,14 @@ interface DatabaseClusterBaseProps {
    * @default - a new subnet group will be created.
    */
   readonly subnetGroup?: ISubnetGroup;
+
+  /**
+   * Whether to enable mapping of AWS Identity and Access Management (IAM) accounts
+   * to database accounts.
+   *
+   * @default false
+   */
+  readonly iamAuthentication?: boolean;
 }
 
 /**
@@ -354,6 +362,7 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
       dbClusterParameterGroupName: clusterParameterGroupConfig?.parameterGroupName,
       associatedRoles: clusterAssociatedRoles.length > 0 ? clusterAssociatedRoles : undefined,
       deletionProtection: defaultDeletionProtection(props.deletionProtection, props.removalPolicy),
+      enableIamDatabaseAuthentication: props.iamAuthentication,
       // Admin
       backupRetentionPeriod: props.backup?.retention?.toDays(),
       preferredBackupWindow: props.backup?.preferredWindow,
