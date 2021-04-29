@@ -31,13 +31,20 @@ async function main() {
   }
 }
 
-function printIfDeprecated(mod, fqn, el) {
+function printIfDeprecated(mod, name, el) {
   try {
     if (el.docs.deprecated) {
-      process.stdout.write(`| ${mod} | ${fqn} | ${el.docs.deprecationReason.replace(/^-/, '').replace(/\n/g, ' ').trim()} |\n`);
+      // Add zero-width spaces after . and _ to allow for line breaking long identifiers
+      // (WindowsVersion.WINDOWS_SERVER_2012_RTM_CHINESE_TRADITIONAL_HONG_KONG_SAR_64BIT_BASE is a fun one...)
+      const apiName = name.replace(/(\.|_)/g, '$1\u200B');
+
+      // Some deprecation reasons start with '- ' for misguided reasons. Get rid of it, and also get rid of newlines.
+      const reason = el.docs.deprecationReason.replace(/^-/, '').replace(/\n/g, ' ').trim();
+
+      process.stdout.write(`| ${mod} | ${apiName} | ${reason} |\n`);
     }
   } catch (e) {
-    console.error(`While processing ${fqn}:`, e);
+    console.error(`While processing ${mod}.${name}:`, e);
   }
 }
 
