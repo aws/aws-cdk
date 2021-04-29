@@ -108,7 +108,8 @@ export class CloudAssembly {
    * @returns a `CloudFormationStackArtifact` object.
    */
   public getStackArtifact(artifactId: string): CloudFormationStackArtifact {
-    const artifact = this.tryGetArtifact(artifactId);
+    const artifact = this.tryGetArtifactRecursively(artifactId);
+
     if (!artifact) {
       throw new Error(`Unable to find artifact with id "${artifactId}"`);
     }
@@ -118,6 +119,27 @@ export class CloudAssembly {
     }
 
     return artifact;
+  }
+
+  private tryGetArtifactRecursively(artifactId: string): CloudArtifact | undefined {
+    return this.stacksRecursively.find(a => a.id === artifactId);
+  }
+
+  /**
+   * Returns all the stacks, including the ones in nested assemblies
+   */
+  public get stacksRecursively(): CloudFormationStackArtifact[] {
+    function search(stackArtifacts: CloudFormationStackArtifact[], assemblies: CloudAssembly[]): CloudFormationStackArtifact[] {
+      if (assemblies.length === 0) {
+        return stackArtifacts;
+      }
+
+      const [head, ...tail] = assemblies;
+      const nestedAssemblies = head.nestedAssemblies.map(asm => asm.nestedAssembly);
+      return search(stackArtifacts.concat(head.stacks), tail.concat(nestedAssemblies));
+    };
+
+    return search([], [this]);
   }
 
   /**
