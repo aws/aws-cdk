@@ -19,10 +19,10 @@ public class %name.PascalCased%Test {
         App app = new App();
         %name.PascalCased%Stack stack = new %name.PascalCased%Stack(app, "test");
 
-        // synthesize the stack to a CloudFormation template and compare against
-        // a checked-in JSON file.
+        // synthesize the stack to a CloudFormation template
         JsonNode actual = JSON.valueToTree(app.synth().getStackArtifact(stack.getArtifactId()).getTemplate());
 
-        assertThat(new ObjectMapper().createObjectNode()).isEqualTo(actual);
+        // Update once resources have been added to the stack
+        assertThat(actual.get("Resources")).isNull();
     }
 }
