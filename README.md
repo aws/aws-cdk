@@ -133,7 +133,7 @@ You may also find help on these community resources:
 * Ask a question on [Stack Overflow](https://stackoverflow.com/questions/tagged/aws-cdk)
   and tag it with `aws-cdk`
 
-### Roadmap
+## Roadmap
 
 The [AWS CDK Roadmap project board](https://github.com/orgs/aws/projects/7) lets developers know about our upcoming features and priorities to help them plan how to best leverage the CDK and identify opportunities to contribute to the project. See [ROADMAP.md](https://github.com/aws/aws-cdk/blob/master/ROADMAP.md) for more information and FAQs.
 
@@ -142,6 +142,12 @@ The [AWS CDK Roadmap project board](https://github.com/orgs/aws/projects/7) lets
 We welcome community contributions and pull requests. See
 [CONTRIBUTING.md](./CONTRIBUTING.md) for information on how to set up a development
 environment and submit code.
+
+## Metrics collection
+This solution collects anonymous operational metrics to help AWS improve the
+quality and features of the CDK. For more information, including how to disable
+this capability, please see the 
+[developer guide](https://docs.aws.amazon.com/cdk/latest/guide/cli.html#version_reporting).
 
 ## More Resources
 * [CDK Workshop](https://cdkworkshop.com/)

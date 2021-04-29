@@ -1,4 +1,4 @@
-import { expect } from '@aws-cdk/assert';
+import { expect } from '@aws-cdk/assert-internal';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import { nodeunitShim, Test } from 'nodeunit-shim';
@@ -73,6 +73,7 @@ nodeunitShim({
     new PublicHostedZone(stack, 'HostedZone', {
       zoneName: 'testZone',
       crossAccountZoneDelegationPrincipal: new iam.AccountPrincipal('223456789012'),
+      crossAccountZoneDelegationRoleName: 'myrole',
     });
 
     // THEN
@@ -87,6 +88,7 @@ nodeunitShim({
         HostedZoneCrossAccountZoneDelegationRole685DF755: {
           Type: 'AWS::IAM::Role',
           Properties: {
+            RoleName: 'myrole',
             AssumeRolePolicyDocument: {
               Statement: [
                 {
@@ -133,6 +135,11 @@ nodeunitShim({
                         ],
                       },
                     },
+                    {
+                      Action: 'route53:ListHostedZonesByName',
+                      Effect: 'Allow',
+                      Resource: '*',
+                    },
                   ],
                   Version: '2012-10-17',
                 },
@@ -143,6 +150,23 @@ nodeunitShim({
         },
       },
     });
+
+    test.done();
+  },
+
+  'with crossAccountZoneDelegationPrincipal, throws if name provided without principal'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack(undefined, 'TestStack', {
+      env: { account: '123456789012', region: 'us-east-1' },
+    });
+
+    // THEN
+    test.throws(() => {
+      new PublicHostedZone(stack, 'HostedZone', {
+        zoneName: 'testZone',
+        crossAccountZoneDelegationRoleName: 'myrole',
+      });
+    }, /crossAccountZoneDelegationRoleName property is not supported without crossAccountZoneDelegationPrincipal/);
 
     test.done();
   },

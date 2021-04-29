@@ -1,4 +1,4 @@
-import { expect, haveResource, haveResourceLike, ResourcePart, SynthUtils } from '@aws-cdk/assert';
+import { expect, haveResource, haveResourceLike, ResourcePart, SynthUtils } from '@aws-cdk/assert-internal';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
@@ -846,7 +846,7 @@ nodeunitShim({
 
   'does not change the case of the cluster identifier if the lowercaseDbIdentifier feature flag is disabled'(test: Test) {
     // GIVEN
-    const app = new cdk.App();
+    const app = new cdk.App({ context: { '@aws-cdk/aws-rds:lowercaseDbIdentifier': false } });
     const stack = testStack(app);
     const clusterIdentifier = 'TestClusterIdentifier';
     const vpc = ec2.Vpc.fromLookup(stack, 'VPC', { isDefault: true });
