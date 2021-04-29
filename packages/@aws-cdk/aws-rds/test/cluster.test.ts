@@ -30,6 +30,7 @@ describe('cluster', () => {
         instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
         vpc,
       },
+      iamAuthentication: true,
     });
 
     // THEN
@@ -40,6 +41,7 @@ describe('cluster', () => {
         MasterUsername: 'admin',
         MasterUserPassword: 'tooshort',
         VpcSecurityGroupIds: [{ 'Fn::GetAtt': ['DatabaseSecurityGroup5C91FDCB', 'GroupId'] }],
+        EnableIAMDatabaseAuthentication: true,
       },
       DeletionPolicy: 'Snapshot',
       UpdateReplacePolicy: 'Snapshot',
@@ -1639,6 +1641,7 @@ describe('cluster', () => {
         vpc,
       },
       snapshotIdentifier: 'mySnapshot',
+      iamAuthentication: true,
     });
 
     // THEN
@@ -1649,14 +1652,13 @@ describe('cluster', () => {
         DBSubnetGroupName: { Ref: 'DatabaseSubnets56F17B9A' },
         VpcSecurityGroupIds: [{ 'Fn::GetAtt': ['DatabaseSecurityGroup5C91FDCB', 'GroupId'] }],
         SnapshotIdentifier: 'mySnapshot',
+        EnableIAMDatabaseAuthentication: true,
       },
       DeletionPolicy: 'Snapshot',
       UpdateReplacePolicy: 'Snapshot',
     }, ResourcePart.CompleteDefinition);
 
     expect(stack).toCountResources('AWS::RDS::DBInstance', 2);
-
-
   });
 
   test('reuse an existing subnet group', () => {
