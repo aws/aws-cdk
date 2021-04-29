@@ -1,4 +1,4 @@
-import '@aws-cdk/assert/jest';
+import '@aws-cdk/assert-internal/jest';
 import * as path from 'path';
 import { Protocol } from '@aws-cdk/aws-ec2';
 import { Repository } from '@aws-cdk/aws-ecr';
@@ -1196,6 +1196,72 @@ describe('ec2 task definition', () => {
       });
 
 
+    });
+  });
+
+  describe('setting inferenceAccelerators', () => {
+    test('correctly sets inferenceAccelerators using props', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const inferenceAccelerators = [{
+        deviceName: 'device1',
+        deviceType: 'eia2.medium',
+      }];
+
+      // WHEN
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
+        inferenceAccelerators,
+      });
+
+      taskDefinition.addContainer('web', {
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+        memoryLimitMiB: 512,
+      });
+
+      // THEN
+      expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
+        Family: 'Ec2TaskDef',
+        InferenceAccelerators: [{
+          DeviceName: 'device1',
+          DeviceType: 'eia2.medium',
+        }],
+      });
+
+    });
+    test('correctly sets inferenceAccelerators using props and addInferenceAccelerator method', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const inferenceAccelerators = [{
+        deviceName: 'device1',
+        deviceType: 'eia2.medium',
+      }];
+
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
+        inferenceAccelerators,
+      });
+
+      // WHEN
+      taskDefinition.addInferenceAccelerator({
+        deviceName: 'device2',
+        deviceType: 'eia2.large',
+      });
+
+      taskDefinition.addContainer('web', {
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+        memoryLimitMiB: 512,
+      });
+
+      // THEN
+      expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
+        Family: 'Ec2TaskDef',
+        InferenceAccelerators: [{
+          DeviceName: 'device1',
+          DeviceType: 'eia2.medium',
+        }, {
+          DeviceName: 'device2',
+          DeviceType: 'eia2.large',
+        }],
+      });
     });
   });
 

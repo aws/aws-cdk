@@ -1,4 +1,4 @@
-import { deployStack, ToolkitInfo } from '../../lib';
+import { deployStack, ToolkitInfo } from '../../lib/api';
 import { DEFAULT_FAKE_TEMPLATE, testStack } from '../util';
 import { MockedObject, mockResolvedEnvironment, MockSdk, MockSdkProvider, SyncHandlerSubsetOf } from '../util/mock-sdk';
 
@@ -21,6 +21,17 @@ const FAKE_STACK_TERMINATION_PROTECTION = testStack({
   stackName: 'termination-protection',
   template: DEFAULT_FAKE_TEMPLATE,
   terminationProtection: true,
+});
+
+const FAKE_STACK_SSM = testStack({
+  stackName: 'ssm',
+  template: {
+    Outputs: {
+      MyOutput: {
+        Value: '{{resolve:ssm:/my/ssm/param}}',
+      },
+    },
+  },
 });
 
 let sdk: MockSdk;
@@ -633,6 +644,21 @@ test('updateTerminationProtection called when termination protection is undefine
   expect(cfnMocks.updateTerminationProtection).toHaveBeenCalledWith(expect.objectContaining({
     EnableTerminationProtection: false,
   }));
+});
+
+test('deploy not skipped if template retrieves latest version of SSM parameters', async () => {
+  // GIVEN
+  givenStackExists();
+  givenTemplateIs(FAKE_STACK_SSM.template);
+
+  // WHEN
+  await deployStack({
+    ...standardDeployStackArguments(),
+    stack: FAKE_STACK_SSM,
+  });
+
+  // THEN
+  expect(cfnMocks.executeChangeSet).toHaveBeenCalled();
 });
 
 /**

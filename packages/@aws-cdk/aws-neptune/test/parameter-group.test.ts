@@ -1,4 +1,4 @@
-import { expect, haveResource } from '@aws-cdk/assert';
+import { expect, haveResource } from '@aws-cdk/assert-internal';
 import { Stack } from '@aws-cdk/core';
 import { ClusterParameterGroup, ParameterGroup } from '../lib';
 
@@ -39,7 +39,7 @@ describe('ClusterParameterGroup', () => {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::Neptune::DBClusterParameterGroup', {
+    expect(stack).to(haveResource('AWS::Neptune::DBParameterGroup', {
       Description: 'desc',
       Parameters: {
         key: 'value',

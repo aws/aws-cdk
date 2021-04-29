@@ -1,3 +1,4 @@
+/// !cdk-integ pragma:ignore-assets
 import { App, RemovalPolicy, Stack, StackProps } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import * as es from '../lib';

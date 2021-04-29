@@ -1,6 +1,6 @@
 import { IResource, Resource } from '@aws-cdk/core';
 import { Construct } from 'constructs';
-import { CfnDBClusterParameterGroup } from './neptune.generated';
+import { CfnDBClusterParameterGroup, CfnDBParameterGroup } from './neptune.generated';
 
 /**
  * Properties for a parameter group
@@ -123,7 +123,7 @@ export class ParameterGroup extends Resource implements IParameterGroup {
   constructor(scope: Construct, id: string, props: ParameterGroupProps) {
     super(scope, id);
 
-    const resource = new CfnDBClusterParameterGroup(this, 'Resource', {
+    const resource = new CfnDBParameterGroup(this, 'Resource', {
       name: props.parameterGroupName,
       description: props.description || 'Instance parameter group for neptune db instances',
       family: 'neptune1',

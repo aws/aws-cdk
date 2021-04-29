@@ -7,7 +7,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
-import { ArnComponents, Aws, Duration, IResource, Lazy, Names, PhysicalName, Resource, SecretValue, Stack, Token, Tokenization } from '@aws-cdk/core';
+import { ArnComponents, Aws, Duration, IResource, Lazy, Names, PhysicalName, Resource, SecretValue, Stack, Token, TokenComparison, Tokenization } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { IArtifacts } from './artifacts';
 import { BuildSpec } from './build-spec';
@@ -584,6 +584,13 @@ export interface CommonProjectProps {
    * @default - no queue timeout is set
    */
   readonly queuedTimeout?: Duration
+
+  /**
+   * Maximum number of concurrent builds. Minimum value is 1 and maximum is account build limit.
+   *
+   * @default - no explicit limit is set
+   */
+  readonly concurrentBuildLimit?: number
 }
 
 export interface ProjectProps extends CommonProjectProps {
@@ -639,14 +646,19 @@ export interface BindToCodePipelineOptions {
 export class Project extends ProjectBase {
 
   public static fromProjectArn(scope: Construct, id: string, projectArn: string): IProject {
+    const parsedArn = Stack.of(scope).parseArn(projectArn);
+
     class Import extends ProjectBase {
       public readonly grantPrincipal: iam.IPrincipal;
       public readonly projectArn = projectArn;
-      public readonly projectName = Stack.of(scope).parseArn(projectArn).resourceName!;
+      public readonly projectName = parsedArn.resourceName!;
       public readonly role?: iam.Role = undefined;
 
       constructor(s: Construct, i: string) {
-        super(s, i);
+        super(s, i, {
+          account: parsedArn.account,
+          region: parsedArn.region,
+        });
         this.grantPrincipal = new iam.UnknownPrincipal({ resource: this });
       }
     }
@@ -709,6 +721,7 @@ export class Project extends ProjectBase {
     const ret = new Array<CfnProject.EnvironmentVariableProperty>();
     const ssmIamResources = new Array<string>();
     const secretsManagerIamResources = new Array<string>();
+    const kmsIamResources = new Set<string>();
 
     for (const [name, envVariable] of Object.entries(environmentVariables)) {
       const envVariableValue = envVariable.value?.toString();
@@ -778,7 +791,7 @@ export class Project extends ProjectBase {
               // If we were given just a name, it must be partial, as CodeBuild doesn't support providing full names.
               // In this case, we need to accommodate for the generated suffix in the IAM resource name
               : `${secretName}-??????`;
-            secretsManagerIamResources.push(Stack.of(principal).formatArn({
+            secretsManagerIamResources.push(stack.formatArn({
               service: 'secretsmanager',
               resource: 'secret',
               resourceName: secretIamResourceName,
@@ -788,6 +801,22 @@ export class Project extends ProjectBase {
               account: parsedArn?.account,
               region: parsedArn?.region,
             }));
+            // if secret comes from another account, SecretsManager will need to access
+            // KMS on the other account as well to be able to get the secret
+            if (parsedArn && parsedArn.account && Token.compareStrings(parsedArn.account, stack.account) === TokenComparison.DIFFERENT) {
+              kmsIamResources.add(stack.formatArn({
+                service: 'kms',
+                resource: 'key',
+                // We do not know the ID of the key, but since this is a cross-account access,
+                // the key policies have to allow this access, so a wildcard is safe here
+                resourceName: '*',
+                sep: '/',
+                // if we were given an ARN, we need to use the provided partition/account/region
+                partition: parsedArn.partition,
+                account: parsedArn.account,
+                region: parsedArn.region,
+              }));
+            }
           }
         }
       }
@@ -803,6 +832,12 @@ export class Project extends ProjectBase {
       principal?.grantPrincipal.addToPrincipalPolicy(new iam.PolicyStatement({
         actions: ['secretsmanager:GetSecretValue'],
         resources: secretsManagerIamResources,
+      }));
+    }
+    if (kmsIamResources.size !== 0) {
+      principal?.grantPrincipal.addToPrincipalPolicy(new iam.PolicyStatement({
+        actions: ['kms:Decrypt'],
+        resources: Array.from(kmsIamResources),
       }));
     }
 
@@ -912,6 +947,7 @@ export class Project extends ProjectBase {
       name: this.physicalName,
       timeoutInMinutes: props.timeout && props.timeout.toMinutes(),
       queuedTimeoutInMinutes: props.queuedTimeout && props.queuedTimeout.toMinutes(),
+      concurrentBuildLimit: props.concurrentBuildLimit,
       secondarySources: Lazy.any({ produce: () => this.renderSecondarySources() }),
       secondarySourceVersions: Lazy.any({ produce: () => this.renderSecondarySourceVersions() }),
       secondaryArtifacts: Lazy.any({ produce: () => this.renderSecondaryArtifacts() }),

@@ -141,12 +141,12 @@ export enum InstanceClass {
   /**
    * Memory optimized instances based on AMD EPYC with local NVME drive, 5th generation
    */
-  MEMORY5_AMD_NVME_DRIVE = 'r5a',
+  MEMORY5_AMD_NVME_DRIVE = 'r5ad',
 
   /**
    * Memory optimized instances based on AMD EPYC with local NVME drive, 5th generation
    */
-  R5AD = 'r5a',
+  R5AD = 'r5ad',
 
   /**
    * Memory optimized instances that are also EBS-optimized, 5th generation

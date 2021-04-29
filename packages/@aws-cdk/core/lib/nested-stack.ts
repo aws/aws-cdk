@@ -23,7 +23,6 @@ const NESTED_STACK_SYMBOL = Symbol.for('@aws-cdk/core.NestedStack');
 /**
  * Initialization props for the `NestedStack` construct.
  *
- * @experimental
  */
 export interface NestedStackProps {
   /**
@@ -90,7 +89,6 @@ export interface NestedStackProps {
  * nested stack will automatically be translated to stack parameters and
  * outputs.
  *
- * @experimental
  */
 export class NestedStack extends Stack {
 

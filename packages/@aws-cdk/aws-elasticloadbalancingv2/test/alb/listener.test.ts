@@ -1,5 +1,5 @@
-import { MatchStyle } from '@aws-cdk/assert';
-import '@aws-cdk/assert/jest';
+import { MatchStyle } from '@aws-cdk/assert-internal';
+import '@aws-cdk/assert-internal/jest';
 import { Metric } from '@aws-cdk/aws-cloudwatch';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as cdk from '@aws-cdk/core';
@@ -475,6 +475,26 @@ describe('tests', () => {
     // THEN
     const validationErrors: string[] = (group as any).validate();
     expect(validationErrors).toEqual(["Health check protocol 'TCP' is not supported. Must be one of [HTTP, HTTPS]"]);
+  });
+
+  test('adding targets passes in provided protocol version', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Stack');
+    const lb = new elbv2.ApplicationLoadBalancer(stack, 'LB', { vpc });
+    const listener = lb.addListener('Listener', { port: 443, certificateArns: ['arn:someCert'] });
+
+    // WHEN
+    listener.addTargets('Group', {
+      port: 443,
+      protocolVersion: elbv2.ApplicationProtocolVersion.GRPC,
+      targets: [new FakeSelfRegisteringTarget(stack, 'Target', vpc)],
+    });
+
+    // THEN
+    expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::TargetGroup', {
+      ProtocolVersion: 'GRPC',
+    });
   });
 
   test('Can call addTargetGroups on imported listener', () => {

@@ -1,4 +1,4 @@
-import { expect, haveResourceLike } from '@aws-cdk/assert';
+import { expect, haveResourceLike } from '@aws-cdk/assert-internal';
 import { AccountRootPrincipal, Role } from '@aws-cdk/aws-iam';
 import { Stack } from '@aws-cdk/core';
 import { ProfilingGroup, ComputePlatform } from '../lib';

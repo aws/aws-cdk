@@ -1,4 +1,4 @@
-import { expect, haveResource } from '@aws-cdk/assert';
+import { expect, haveResource } from '@aws-cdk/assert-internal';
 import { Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import { Alarm, AlarmRule, AlarmState, CompositeAlarm, Metric } from '../lib';
@@ -36,12 +36,20 @@ export = {
       evaluationPeriods: 3,
     });
 
+    const alarm5 = new Alarm(stack, 'Alarm5', {
+      alarmName: 'Alarm with space in name',
+      metric: testMetric,
+      threshold: 100000,
+      evaluationPeriods: 3,
+    });
+
     const alarmRule = AlarmRule.anyOf(
       AlarmRule.allOf(
         AlarmRule.anyOf(
           alarm1,
           AlarmRule.fromAlarm(alarm2, AlarmState.OK),
           alarm3,
+          alarm5,
         ),
         AlarmRule.not(AlarmRule.fromAlarm(alarm4, AlarmState.INSUFFICIENT_DATA)),
       ),
@@ -58,35 +66,42 @@ export = {
         'Fn::Join': [
           '',
           [
-            '(((ALARM(',
+            '(((ALARM("',
             {
               'Fn::GetAtt': [
                 'Alarm1F9009D71',
                 'Arn',
               ],
             },
-            ') OR OK(',
+            '") OR OK("',
             {
               'Fn::GetAtt': [
                 'Alarm2A7122E13',
                 'Arn',
               ],
             },
-            ') OR ALARM(',
+            '") OR ALARM("',
             {
               'Fn::GetAtt': [
                 'Alarm32341D8D9',
                 'Arn',
               ],
             },
-            ')) AND (NOT (INSUFFICIENT_DATA(',
+            '") OR ALARM("',
+            {
+              'Fn::GetAtt': [
+                'Alarm548383B2F',
+                'Arn',
+              ],
+            },
+            '")) AND (NOT (INSUFFICIENT_DATA("',
             {
               'Fn::GetAtt': [
                 'Alarm4671832C8',
                 'Arn',
               ],
             },
-            ')))) OR FALSE)',
+            '")))) OR FALSE)',
           ],
         ],
       },

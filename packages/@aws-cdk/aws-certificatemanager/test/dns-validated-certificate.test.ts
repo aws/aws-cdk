@@ -1,8 +1,8 @@
-import '@aws-cdk/assert/jest';
-import { SynthUtils } from '@aws-cdk/assert';
+import '@aws-cdk/assert-internal/jest';
+import { SynthUtils } from '@aws-cdk/assert-internal';
 import * as iam from '@aws-cdk/aws-iam';
 import { HostedZone, PublicHostedZone } from '@aws-cdk/aws-route53';
-import { App, Stack, Token } from '@aws-cdk/core';
+import { App, Stack, Token, Tags } from '@aws-cdk/core';
 import { DnsValidatedCertificate } from '../lib/dns-validated-certificate';
 
 test('creates CloudFormation Custom Resource', () => {
@@ -49,6 +49,7 @@ test('creates CloudFormation Custom Resource', () => {
             'acm:RequestCertificate',
             'acm:DescribeCertificate',
             'acm:DeleteCertificate',
+            'acm:AddTagsToCertificate',
           ],
           Effect: 'Allow',
           Resource: '*',
@@ -132,6 +133,36 @@ test('test root certificate', () => {
     DomainName: 'example.com',
     HostedZoneId: {
       Ref: 'ExampleDotCom4D1B83AA',
+    },
+  });
+});
+
+test('test tags are passed to customresource', () => {
+  const stack = new Stack();
+  Tags.of(stack).add('Key1', 'Value1');
+
+  const exampleDotComZone = new PublicHostedZone(stack, 'ExampleDotCom', {
+    zoneName: 'example.com',
+  });
+
+  new DnsValidatedCertificate(stack, 'Cert', {
+    domainName: 'example.com',
+    hostedZone: exampleDotComZone,
+  });
+
+  expect(stack).toHaveResource('AWS::CloudFormation::CustomResource', {
+    ServiceToken: {
+      'Fn::GetAtt': [
+        'CertCertificateRequestorFunction98FDF273',
+        'Arn',
+      ],
+    },
+    DomainName: 'example.com',
+    HostedZoneId: {
+      Ref: 'ExampleDotCom4D1B83AA',
+    },
+    Tags: {
+      Key1: 'Value1',
     },
   });
 });

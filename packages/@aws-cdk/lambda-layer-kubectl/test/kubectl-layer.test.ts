@@ -1,6 +1,6 @@
 import { Stack } from '@aws-cdk/core';
 import { KubectlLayer } from '../lib';
-import '@aws-cdk/assert/jest';
+import '@aws-cdk/assert-internal/jest';
 
 test('synthesized to a layer version', () => {
   //GIVEN

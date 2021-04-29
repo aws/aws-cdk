@@ -4,7 +4,7 @@ import {
   haveResource,
   haveResourceLike,
   ResourcePart,
-} from '@aws-cdk/assert';
+} from '@aws-cdk/assert-internal';
 import {
   AccountRootPrincipal,
   Role,

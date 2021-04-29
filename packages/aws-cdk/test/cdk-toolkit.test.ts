@@ -18,6 +18,9 @@ beforeEach(() => {
       MockStack.MOCK_STACK_A,
       MockStack.MOCK_STACK_B,
     ],
+    nestedAssemblies: [{
+      stacks: [MockStack.MOCK_STACK_C],
+    }],
   });
 
 });
@@ -30,6 +33,7 @@ function defaultToolkitSetup() {
     cloudFormation: new FakeCloudFormation({
       'Test-Stack-A': { Foo: 'Bar' },
       'Test-Stack-B': { Baz: 'Zinga!' },
+      'Test-Stack-C': { Baz: 'Zinga!' },
     }),
   });
 }
@@ -43,6 +47,15 @@ describe('deploy', () => {
       // WHEN
       await toolkit.deploy({ stackNames: ['Test-Stack-A', 'Test-Stack-B'] });
     });
+
+    test('with stacks all stacks specified as double wildcard', async () => {
+      // GIVEN
+      const toolkit = defaultToolkitSetup();
+
+      // WHEN
+      await toolkit.deploy({ stackNames: ['**'] });
+    });
+
 
     test('with one stack specified', async () => {
       // GIVEN
@@ -179,6 +192,22 @@ class MockStack {
       ],
     },
   };
+  public static readonly MOCK_STACK_C: TestStackArtifact = {
+    stackName: 'Test-Stack-C',
+    template: { Resources: { TempalteName: 'Test-Stack-C' } },
+    env: 'aws://123456789012/bermuda-triangle-1',
+    metadata: {
+      '/Test-Stack-C': [
+        {
+          type: cxschema.ArtifactMetadataEntryType.STACK_TAGS,
+          data: [
+            { key: 'Baz', value: 'Zinga!' },
+          ],
+        },
+      ],
+    },
+    displayName: 'Test-Stack-A/Test-Stack-C',
+  };
 }
 
 class FakeCloudFormation extends CloudFormationDeployments {
@@ -202,7 +231,7 @@ class FakeCloudFormation extends CloudFormationDeployments {
   }
 
   public deployStack(options: DeployStackOptions): Promise<DeployStackResult> {
-    expect([MockStack.MOCK_STACK_A.stackName, MockStack.MOCK_STACK_B.stackName])
+    expect([MockStack.MOCK_STACK_A.stackName, MockStack.MOCK_STACK_B.stackName, MockStack.MOCK_STACK_C.stackName])
       .toContain(options.stack.stackName);
     expect(options.tags).toEqual(this.expectedTags[options.stack.stackName]);
     expect(options.notificationArns).toEqual(this.expectedNotificationArns);
@@ -219,6 +248,8 @@ class FakeCloudFormation extends CloudFormationDeployments {
       case MockStack.MOCK_STACK_A.stackName:
         return Promise.resolve({});
       case MockStack.MOCK_STACK_B.stackName:
+        return Promise.resolve({});
+      case MockStack.MOCK_STACK_C.stackName:
         return Promise.resolve({});
       default:
         return Promise.reject(`Not an expected mock stack: ${stack.stackName}`);

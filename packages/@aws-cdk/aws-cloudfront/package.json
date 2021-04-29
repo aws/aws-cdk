@@ -71,13 +71,14 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "0.0.0",
+    "@types/jest": "^26.0.22",
     "aws-sdk": "^2.848.0",
     "cdk-build-tools": "0.0.0",
     "cdk-integ-tools": "0.0.0",
     "cfn2ts": "0.0.0",
     "nodeunit-shim": "0.0.0",
-    "pkglint": "0.0.0"
+    "pkglint": "0.0.0",
+    "@aws-cdk/assert-internal": "0.0.0"
   },
   "dependencies": {
     "@aws-cdk/aws-certificatemanager": "0.0.0",
@@ -155,7 +156,8 @@
       "resource-interface-extends-resource:@aws-cdk/aws-cloudfront.IOriginRequestPolicy",
       "resource-attribute:@aws-cdk/aws-cloudfront.OriginRequestPolicy.originRequestPolicyLastModifiedTime",
       "resource-attribute:@aws-cdk/aws-cloudfront.KeyGroup.keyGroupLastModifiedTime",
-      "resource-attribute:@aws-cdk/aws-cloudfront.PublicKey.publicKeyCreatedTime"
+      "resource-attribute:@aws-cdk/aws-cloudfront.PublicKey.publicKeyCreatedTime",
+      "resource-attribute:@aws-cdk/aws-cloudfront.OriginAccessIdentity.cloudFrontOriginAccessIdentityId"
     ]
   },
   "awscdkio": {

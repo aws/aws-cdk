@@ -1,6 +1,6 @@
 import * as path from 'path';
-import { arrayWith, expect as cdkExpect, haveResource, ResourcePart, stringLike, SynthUtils } from '@aws-cdk/assert';
-import '@aws-cdk/assert/jest';
+import { arrayWith, expect as cdkExpect, haveResource, ResourcePart, stringLike, SynthUtils } from '@aws-cdk/assert-internal';
+import '@aws-cdk/assert-internal/jest';
 import { Asset } from '@aws-cdk/aws-s3-assets';
 import { StringParameter } from '@aws-cdk/aws-ssm';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
@@ -134,6 +134,39 @@ nodeunitShim({
 
       // THEN
       expect(instanceType.architecture).toBe(InstanceArchitecture.X86_64);
+    }
+
+    test.done();
+  },
+  'instances with local NVME drive are correctly named'(test: Test) {
+    // GIVEN
+    const sampleInstanceClassKeys = [{
+      key: 'R5D',
+      value: 'r5d',
+    }, {
+      key: 'MEMORY5_NVME_DRIVE',
+      value: 'r5d',
+    }, {
+      key: 'R5AD',
+      value: 'r5ad',
+    }, {
+      key: 'MEMORY5_AMD_NVME_DRIVE',
+      value: 'r5ad',
+    }, {
+      key: 'M5AD',
+      value: 'm5ad',
+    }, {
+      key: 'STANDARD5_AMD_NVME_DRIVE',
+      value: 'm5ad',
+    }]; // A sample of instances with NVME drives
+
+    for (const instanceClass of sampleInstanceClassKeys) {
+      // WHEN
+      const key = instanceClass.key as keyof(typeof InstanceClass);
+      const instanceType = InstanceClass[key];
+
+      // THEN
+      expect(instanceType).toBe(instanceClass.value);
     }
 
     test.done();

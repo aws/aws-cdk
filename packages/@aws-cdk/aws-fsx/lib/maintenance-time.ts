@@ -3,10 +3,6 @@
  */
 export enum Weekday {
   /**
-   * Sunday
-   */
-  SUNDAY = '0',
-  /**
    * Monday
    */
   MONDAY = '1',
@@ -29,7 +25,11 @@ export enum Weekday {
   /**
    * Saturday
    */
-  SATURDAY = '6'
+  SATURDAY = '6',
+  /**
+   * Sunday
+   */
+  SUNDAY = '7'
 }
 
 /**

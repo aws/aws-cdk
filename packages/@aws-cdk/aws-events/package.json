@@ -72,12 +72,12 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "0.0.0",
     "@types/nodeunit": "^0.0.31",
     "cdk-build-tools": "0.0.0",
     "cfn2ts": "0.0.0",
     "nodeunit": "^0.11.3",
-    "pkglint": "0.0.0"
+    "pkglint": "0.0.0",
+    "@aws-cdk/assert-internal": "0.0.0"
   },
   "dependencies": {
     "@aws-cdk/aws-iam": "0.0.0",
@@ -101,7 +101,8 @@
       "props-default-doc:@aws-cdk/aws-events.RuleTargetConfig.kinesisParameters",
       "props-default-doc:@aws-cdk/aws-events.RuleTargetConfig.role",
       "props-default-doc:@aws-cdk/aws-events.RuleTargetConfig.runCommandParameters",
-      "props-default-doc:@aws-cdk/aws-events.RuleTargetConfig.sqsParameters"
+      "props-default-doc:@aws-cdk/aws-events.RuleTargetConfig.sqsParameters",
+      "props-default-doc:@aws-cdk/aws-events.RuleTargetConfig.httpParameters"
     ]
   },
   "stability": "stable",

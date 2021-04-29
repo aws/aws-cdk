@@ -7,7 +7,6 @@ import { Construct } from 'constructs';
 /**
  * Properties for EvaluateExpression
  *
- * @experimental
  */
 export interface EvaluateExpressionProps extends sfn.TaskStateBaseProps {
   /**
@@ -47,7 +46,6 @@ export interface Event {
  *
  * OUTPUT: the output of this task is the evaluated expression.
  *
- * @experimental
  */
 export class EvaluateExpression extends sfn.TaskStateBase {
   protected readonly taskMetrics?: sfn.TaskMetricsConfig;

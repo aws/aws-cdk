@@ -1,5 +1,5 @@
-import '@aws-cdk/assert/jest';
-import { expect as expectStack } from '@aws-cdk/assert';
+import '@aws-cdk/assert-internal/jest';
+import { expect as expectStack } from '@aws-cdk/assert-internal';
 import { App, Stack } from '@aws-cdk/core';
 import { KeyGroup, PublicKey } from '../lib';
 

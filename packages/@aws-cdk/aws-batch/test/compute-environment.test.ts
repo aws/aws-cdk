@@ -1,6 +1,6 @@
 import { throws } from 'assert';
-import { expect, haveResource, haveResourceLike, ResourcePart } from '@aws-cdk/assert';
-import '@aws-cdk/assert/jest';
+import { expect, haveResource, haveResourceLike, ResourcePart } from '@aws-cdk/assert-internal';
+import '@aws-cdk/assert-internal/jest';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecs from '@aws-cdk/aws-ecs';
 import * as iam from '@aws-cdk/aws-iam';
@@ -214,9 +214,7 @@ describe('Batch Compute Evironment', () => {
           AllocationStrategy: batch.AllocationStrategy.BEST_FIT,
           DesiredvCpus: props.computeResources.desiredvCpus,
           Ec2KeyPair: props.computeResources.ec2KeyPair,
-          ImageId: {
-            Ref: 'SsmParameterValueawsserviceecsoptimizedamiamazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter',
-          },
+          ImageId: '{{resolve:ssm:/aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id}}',
           InstanceRole: {
             'Fn::GetAtt': [
               props.computeResources.instanceRole ? 'InstanceProfile' : '',

@@ -1,6 +1,6 @@
-import '@aws-cdk/assert/jest';
+import '@aws-cdk/assert-internal/jest';
 import * as path from 'path';
-import { ABSENT, ResourcePart, SynthUtils } from '@aws-cdk/assert';
+import { ABSENT, ResourcePart, SynthUtils } from '@aws-cdk/assert-internal';
 import { ProfilingGroup } from '@aws-cdk/aws-codeguruprofiler';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as efs from '@aws-cdk/aws-efs';
@@ -8,8 +8,8 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as logs from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
-import * as sqs from '@aws-cdk/aws-sqs';
 import * as signer from '@aws-cdk/aws-signer';
+import * as sqs from '@aws-cdk/aws-sqs';
 import * as cdk from '@aws-cdk/core';
 import * as constructs from 'constructs';
 import * as _ from 'lodash';

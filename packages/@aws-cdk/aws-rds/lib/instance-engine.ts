@@ -317,6 +317,10 @@ export class MysqlEngineVersion {
   public static readonly VER_5_6_46 = MysqlEngineVersion.of('5.6.46', '5.6');
   /** Version "5.6.48". */
   public static readonly VER_5_6_48 = MysqlEngineVersion.of('5.6.48', '5.6');
+  /** Version "5.6.49". */
+  public static readonly VER_5_6_49 = MysqlEngineVersion.of('5.6.49', '5.6');
+  /** Version "5.6.51". */
+  public static readonly VER_5_6_51 = MysqlEngineVersion.of('5.6.51', '5.6');
 
   /** Version "5.7" (only a major version, without a specific minor version). */
   public static readonly VER_5_7 = MysqlEngineVersion.of('5.7', '5.7');
@@ -344,6 +348,8 @@ export class MysqlEngineVersion {
   public static readonly VER_5_7_30 = MysqlEngineVersion.of('5.7.30', '5.7');
   /** Version "5.7.31". */
   public static readonly VER_5_7_31 = MysqlEngineVersion.of('5.7.31', '5.7');
+  /** Version "5.7.33". */
+  public static readonly VER_5_7_33 = MysqlEngineVersion.of('5.7.33', '5.7');
 
   /** Version "8.0" (only a major version, without a specific minor version). */
   public static readonly VER_8_0 = MysqlEngineVersion.of('8.0', '8.0');
@@ -363,6 +369,8 @@ export class MysqlEngineVersion {
   public static readonly VER_8_0_20 = MysqlEngineVersion.of('8.0.20', '8.0');
   /** Version "8.0.21 ". */
   public static readonly VER_8_0_21 = MysqlEngineVersion.of('8.0.21', '8.0');
+  /** Version "8.0.23". */
+  public static readonly VER_8_0_23 = MysqlEngineVersion.of('8.0.23', '8.0');
 
   /**
    * Create a new MysqlEngineVersion with an arbitrary version.
@@ -663,6 +671,11 @@ export class PostgresEngineVersion {
   public static readonly VER_12_4 = PostgresEngineVersion.of('12.4', '12', { s3Import: true });
   /** Version "12.5". */
   public static readonly VER_12_5 = PostgresEngineVersion.of('12.5', '12', { s3Import: true });
+
+  /** Version "13" (only a major version, without a specific minor version). */
+  public static readonly VER_13 = PostgresEngineVersion.of('13', '13', { s3Import: true });
+  /** Version "13.1". */
+  public static readonly VER_13_1 = PostgresEngineVersion.of('13.1', '13', { s3Import: true });
 
   /**
    * Create a new PostgresEngineVersion with an arbitrary version.

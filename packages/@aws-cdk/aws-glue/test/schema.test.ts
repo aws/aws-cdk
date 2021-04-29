@@ -1,4 +1,4 @@
-import '@aws-cdk/assert/jest';
+import '@aws-cdk/assert-internal/jest';
 import { doesNotThrow, equal, throws } from 'assert';
 import { Schema } from '../lib';
 

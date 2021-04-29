@@ -1,4 +1,5 @@
-import aws_cdk_lib as core
+from aws_cdk import Stack
+from constructs import Construct
 
 
 class %name.PascalCased%Stack(core.Stack):

@@ -142,6 +142,15 @@ export class CloudArtifact {
 
     return messages;
   }
+
+  /**
+   * An identifier that shows where this artifact is located in the tree
+   * of nested assemblies, based on their manifests. Defaults to the normal
+   * id. Should only be used in user interfaces.
+   */
+  public get hierarchicalId(): string {
+    return this.manifest.displayName ?? this.id;
+  }
 }
 
 // needs to be defined at the end to avoid a cyclic dependency

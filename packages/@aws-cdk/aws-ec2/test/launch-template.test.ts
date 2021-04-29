@@ -3,8 +3,7 @@ import {
   expect as expectCDK,
   haveResource,
   haveResourceLike,
-  stringLike,
-} from '@aws-cdk/assert';
+} from '@aws-cdk/assert-internal';
 import {
   CfnInstanceProfile,
   Role,
@@ -158,9 +157,7 @@ describe('LaunchTemplate', () => {
     // THEN
     expectCDK(stack).to(haveResourceLike('AWS::EC2::LaunchTemplate', {
       LaunchTemplateData: {
-        ImageId: {
-          Ref: stringLike('SsmParameterValueawsserviceamiamazonlinuxlatestamznami*Parameter'),
-        },
+        ImageId: '{{resolve:ssm:/aws/service/ami-amazon-linux-latest/amzn-ami-hvm-x86_64-gp2}}',
       },
     }));
     expect(template.osType).toBe(OperatingSystemType.LINUX);
@@ -176,9 +173,7 @@ describe('LaunchTemplate', () => {
     // THEN
     expectCDK(stack).to(haveResourceLike('AWS::EC2::LaunchTemplate', {
       LaunchTemplateData: {
-        ImageId: {
-          Ref: stringLike('SsmParameterValueawsserviceamiwindowslatestWindowsServer2019EnglishFullBase*Parameter'),
-        },
+        ImageId: '{{resolve:ssm:/aws/service/ami-windows-latest/Windows_Server-2019-English-Full-Base}}',
       },
     }));
     expect(template.osType).toBe(OperatingSystemType.WINDOWS);

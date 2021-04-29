@@ -9,8 +9,8 @@ import {
   notMatching,
   objectLike,
   stringLike,
-} from '@aws-cdk/assert';
-import '@aws-cdk/assert/jest';
+} from '@aws-cdk/assert-internal';
+import '@aws-cdk/assert-internal/jest';
 import * as cp from '@aws-cdk/aws-codepipeline';
 import * as cpa from '@aws-cdk/aws-codepipeline-actions';
 import { Stack, Stage, StageProps, SecretValue, Tags } from '@aws-cdk/core';
@@ -301,7 +301,7 @@ test('pipeline has self-mutation stage', () => {
 
   expect(pipelineStack).toHaveResourceLike('AWS::CodeBuild::Project', {
     Environment: {
-      Image: 'aws/codebuild/standard:4.0',
+      Image: 'aws/codebuild/standard:5.0',
     },
     Source: {
       BuildSpec: encodedJson(deepObjectLike({
@@ -327,7 +327,7 @@ test('selfmutation stage correctly identifies nested assembly of pipeline stack'
   // THEN
   expect(stackTemplate(nestedPipelineStack)).toHaveResourceLike('AWS::CodeBuild::Project', {
     Environment: {
-      Image: 'aws/codebuild/standard:4.0',
+      Image: 'aws/codebuild/standard:5.0',
     },
     Source: {
       BuildSpec: encodedJson(deepObjectLike({

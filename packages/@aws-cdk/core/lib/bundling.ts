@@ -6,7 +6,6 @@ import { FileSystem } from './fs';
 /**
  * Bundling options
  *
- * @experimental
  */
 export interface BundlingOptions {
   /**
@@ -77,7 +76,6 @@ export interface BundlingOptions {
    *
    * @default - bundling will only be performed in a Docker container
    *
-   * @experimental
    */
   readonly local?: ILocalBundling;
 
@@ -86,7 +84,6 @@ export interface BundlingOptions {
    *
    * @default BundlingOutput.AUTO_DISCOVER
    *
-   * @experimental
    */
   readonly outputType?: BundlingOutput;
 }
@@ -94,7 +91,6 @@ export interface BundlingOptions {
 /**
  * The type of output that a bundling operation is producing.
  *
- * @experimental
  */
 export enum BundlingOutput {
   /**
@@ -120,7 +116,6 @@ export enum BundlingOutput {
 /**
  * Local bundling
  *
- * @experimental
  */
 export interface ILocalBundling {
   /**
@@ -157,8 +152,8 @@ export class BundlingDockerImage {
    *
    * @deprecated use DockerImage.fromBuild()
    */
-  public static fromAsset(path: string, options: DockerBuildOptions = {}) {
-    DockerImage.fromBuild(path, options) as BundlingDockerImage;
+  public static fromAsset(path: string, options: DockerBuildOptions = {}): BundlingDockerImage {
+    return DockerImage.fromBuild(path, options);
   }
 
   /** @param image The Docker image */

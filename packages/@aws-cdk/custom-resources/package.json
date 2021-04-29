@@ -71,11 +71,11 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "0.0.0",
+    "@types/jest": "^26.0.22",
     "@aws-cdk/aws-events": "0.0.0",
     "@aws-cdk/aws-s3": "0.0.0",
     "@aws-cdk/aws-ssm": "0.0.0",
-    "@types/aws-lambda": "^8.10.72",
+    "@types/aws-lambda": "^8.10.75",
     "@types/fs-extra": "^8.1.1",
     "@types/sinon": "^9.0.11",
     "aws-sdk": "^2.848.0",
@@ -86,7 +86,8 @@
     "fs-extra": "^9.1.0",
     "nock": "^13.0.11",
     "pkglint": "0.0.0",
-    "sinon": "^9.2.4"
+    "sinon": "^9.2.4",
+    "@aws-cdk/assert-internal": "0.0.0"
   },
   "dependencies": {
     "@aws-cdk/aws-cloudformation": "0.0.0",
@@ -120,6 +121,9 @@
   },
   "awscdkio": {
     "announce": false
+  },
+  "nozem": {
+    "ostools": ["rm", "cp"]
   },
   "maturity": "stable",
   "publishConfig": {

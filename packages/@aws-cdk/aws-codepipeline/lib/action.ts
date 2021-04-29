@@ -1,7 +1,7 @@
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
 import * as s3 from '@aws-cdk/aws-s3';
-import { IResource } from '@aws-cdk/core';
+import { IResource, Lazy } from '@aws-cdk/core';
 import { Artifact } from './artifact';
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
@@ -119,13 +119,36 @@ export interface ActionConfig {
 }
 
 /**
- * A Pipeline Action
+ * A Pipeline Action.
+ * If you want to implement this interface,
+ * consider extending the {@link Action} class,
+ * which contains some common logic.
  */
 export interface IAction {
+  /**
+   * The simple properties of the Action,
+   * like its Owner, name, etc.
+   * Note that this accessor will be called before the {@link bind} callback.
+   */
   readonly actionProperties: ActionProperties;
 
+  /**
+   * The callback invoked when this Action is added to a Pipeline.
+   *
+   * @param scope the Construct tree scope the Action can use if it needs to create any resources
+   * @param stage the {@link IStage} this Action is being added to
+   * @param options additional options the Action can use,
+   *   like the artifact Bucket of the pipeline it's being added to
+   */
   bind(scope: Construct, stage: IStage, options: ActionBindOptions): ActionConfig;
 
+  /**
+   * Creates an Event that will be triggered whenever the state of this Action changes.
+   *
+   * @param name the name to use for the new Event
+   * @param target the optional target for the Event
+   * @param options additional options that can be used to customize the created Event
+   */
   onStateChange(name: string, target?: events.IRuleTarget, options?: events.RuleProps): events.Rule;
 }
 
@@ -233,4 +256,126 @@ export interface CommonAwsActionProps extends CommonActionProps {
    * @default a new Role will be generated
    */
   readonly role?: iam.IRole;
+}
+
+/**
+ * Low-level class for generic CodePipeline Actions implementing the {@link IAction} interface.
+ * Contains some common logic that can be re-used by all {@link IAction} implementations.
+ * If you're writing your own Action class,
+ * feel free to extend this class.
+ */
+export abstract class Action implements IAction {
+  /**
+   * This is a renamed version of the {@link IAction.actionProperties} property.
+   */
+  protected abstract readonly providedActionProperties: ActionProperties;
+
+  private __actionProperties?: ActionProperties;
+  private __pipeline?: IPipeline;
+  private __stage?: IStage;
+  private __scope?: Construct;
+  private readonly _namespaceToken: string;
+  private _customerProvidedNamespace?: string;
+  private _actualNamespace?: string;
+
+  private _variableReferenced = false;
+
+  protected constructor() {
+    this._namespaceToken = Lazy.string({
+      produce: () => {
+        // make sure the action was bound (= added to a pipeline)
+        if (this._actualNamespace === undefined) {
+          throw new Error(`Cannot reference variables of action '${this.actionProperties.actionName}', ` +
+            'as that action was never added to a pipeline');
+        } else {
+          return this._customerProvidedNamespace !== undefined
+            // if a customer passed a namespace explicitly, always use that
+            ? this._customerProvidedNamespace
+            // otherwise, only return a namespace if any variable was referenced
+            : (this._variableReferenced ? this._actualNamespace : undefined);
+        }
+      },
+    });
+  }
+
+  public get actionProperties(): ActionProperties {
+    if (this.__actionProperties === undefined) {
+      const actionProperties = this.providedActionProperties;
+      this._customerProvidedNamespace = actionProperties.variablesNamespace;
+      this.__actionProperties = {
+        ...actionProperties,
+        variablesNamespace: this._customerProvidedNamespace === undefined
+          ? this._namespaceToken
+          : this._customerProvidedNamespace,
+      };
+    }
+    return this.__actionProperties;
+  }
+
+  public bind(scope: Construct, stage: IStage, options: ActionBindOptions): ActionConfig {
+    this.__pipeline = stage.pipeline;
+    this.__stage = stage;
+    this.__scope = scope;
+
+    this._actualNamespace = this._customerProvidedNamespace === undefined
+      // default a namespace name, based on the stage and action names
+      ? `${stage.stageName}_${this.actionProperties.actionName}_NS`
+      : this._customerProvidedNamespace;
+
+    return this.bound(scope, stage, options);
+  }
+
+  public onStateChange(name: string, target?: events.IRuleTarget, options?: events.RuleProps) {
+    const rule = new events.Rule(this._scope, name, options);
+    rule.addTarget(target);
+    rule.addEventPattern({
+      detailType: ['CodePipeline Action Execution State Change'],
+      source: ['aws.codepipeline'],
+      resources: [this._pipeline.pipelineArn],
+      detail: {
+        stage: [this._stage.stageName],
+        action: [this.actionProperties.actionName],
+      },
+    });
+    return rule;
+  }
+
+  protected variableExpression(variableName: string): string {
+    this._variableReferenced = true;
+    return `#{${this._namespaceToken}.${variableName}}`;
+  }
+
+  /**
+   * This is a renamed version of the {@link IAction.bind} method.
+   */
+  protected abstract bound(scope: Construct, stage: IStage, options: ActionBindOptions): ActionConfig;
+
+  private get _pipeline(): IPipeline {
+    if (this.__pipeline) {
+      return this.__pipeline;
+    } else {
+      throw new Error('Action must be added to a stage that is part of a pipeline before using onStateChange');
+    }
+  }
+
+  private get _stage(): IStage {
+    if (this.__stage) {
+      return this.__stage;
+    } else {
+      throw new Error('Action must be added to a stage that is part of a pipeline before using onStateChange');
+    }
+  }
+
+  /**
+   * Retrieves the Construct scope of this Action.
+   * Only available after the Action has been added to a Stage,
+   * and that Stage to a Pipeline.
+   */
+  private get _scope(): Construct {
+    if (this.__scope) {
+      return this.__scope;
+    } else {
+      throw new Error('Action must be added to a stage that is part of a pipeline first');
+    }
+  }
 }

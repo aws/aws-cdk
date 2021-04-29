@@ -1,7 +1,7 @@
 import { Arn, Aws, Lazy, Resource, SecretValue, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { IGroup } from './group';
-import { CfnUser } from './iam.generated';
+import { CfnUser, CfnUserToGroupAddition } from './iam.generated';
 import { IIdentity } from './identity-base';
 import { IManagedPolicy } from './managed-policy';
 import { Policy } from './policy';
@@ -181,6 +181,7 @@ export class User extends Resource implements IIdentity, IUser {
       public readonly policyFragment: PrincipalPolicyFragment = new ArnPrincipal(attrs.userArn).policyFragment;
       private readonly attachedPolicies = new AttachedPolicies();
       private defaultPolicy?: Policy;
+      private groupId = 0;
 
       public addToPolicy(statement: PolicyStatement): boolean {
         return this.addToPrincipalPolicy(statement).statementAdded;
@@ -195,8 +196,12 @@ export class User extends Resource implements IIdentity, IUser {
         return { statementAdded: true, policyDependable: this.defaultPolicy };
       }
 
-      public addToGroup(_group: IGroup): void {
-        throw new Error('Cannot add imported User to Group');
+      public addToGroup(group: IGroup): void {
+        new CfnUserToGroupAddition(Stack.of(group), `${this.userName}Group${this.groupId}`, {
+          groupName: group.groupName,
+          users: [this.userName],
+        });
+        this.groupId += 1;
       }
 
       public attachInlinePolicy(policy: Policy): void {
@@ -229,7 +234,7 @@ export class User extends Resource implements IIdentity, IUser {
   public readonly userArn: string;
 
   /**
-   * Returns the permissions boundary attached to this user
+   * Returns the permissions boundary attached  to this user
    */
   public readonly permissionsBoundary?: IManagedPolicy;
 

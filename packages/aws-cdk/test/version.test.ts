@@ -6,6 +6,8 @@ import * as sinon from 'sinon';
 import * as logging from '../lib/logging';
 import { latestVersionIfHigher, VersionCheckTTL, displayVersionMessage } from '../lib/version';
 
+jest.setTimeout(10_000);
+
 const setTimeout = promisify(_setTimeout);
 
 function tmpfile(): string {

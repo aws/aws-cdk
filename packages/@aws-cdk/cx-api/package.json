@@ -64,7 +64,7 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@types/jest": "^26.0.21",
+    "@types/jest": "^26.0.22",
     "@types/mock-fs": "^4.13.0",
     "@types/semver": "^7.3.4",
     "cdk-build-tools": "0.0.0",
@@ -88,8 +88,8 @@
   "engines": {
     "node": ">= 10.13.0 <13 || >=13.7.0"
   },
-  "stability": "experimental",
-  "maturity": "experimental",
+  "stability": "stable",
+  "maturity": "stable",
   "awslint": {
     "exclude": [
       "props-default-doc:@aws-cdk/cx-api.MetadataEntry.data",

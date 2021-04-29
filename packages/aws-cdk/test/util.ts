@@ -17,11 +17,13 @@ export interface TestStackArtifact {
   assets?: cxschema.AssetMetadataEntry[];
   properties?: Partial<cxschema.AwsCloudFormationStackProperties>;
   terminationProtection?: boolean;
+  displayName?: string;
 }
 
 export interface TestAssembly {
   stacks: TestStackArtifact[];
   missing?: cxschema.MissingContext[];
+  nestedAssemblies?: TestAssembly[];
 }
 
 export class MockCloudExecutable extends CloudExecutable {
@@ -47,9 +49,7 @@ function clone(obj: any) {
   return JSON.parse(JSON.stringify(obj));
 }
 
-export function testAssembly(assembly: TestAssembly): cxapi.CloudAssembly {
-  const builder = new cxapi.CloudAssemblyBuilder();
-
+function addAttributes(assembly: TestAssembly, builder: cxapi.CloudAssemblyBuilder) {
   for (const stack of assembly.stacks) {
     const templateFile = `${stack.stackName}.template.json`;
     const template = stack.template ?? DEFAULT_FAKE_TEMPLATE;
@@ -79,6 +79,20 @@ export function testAssembly(assembly: TestAssembly): cxapi.CloudAssembly {
         templateFile,
         terminationProtection: stack.terminationProtection,
       },
+      displayName: stack.displayName,
+    });
+  }
+}
+
+export function testAssembly(assembly: TestAssembly): cxapi.CloudAssembly {
+  const builder = new cxapi.CloudAssemblyBuilder();
+  addAttributes(assembly, builder);
+
+  if (assembly.nestedAssemblies != null && assembly.nestedAssemblies.length > 0) {
+    assembly.nestedAssemblies?.forEach((nestedAssembly: TestAssembly, i: number) => {
+      const nestedAssemblyBuilder = builder.createNestedAssembly(`nested${i}`, `nested${i}`);
+      addAttributes(nestedAssembly, nestedAssemblyBuilder);
+      nestedAssemblyBuilder.buildAssembly();
     });
   }
 

@@ -1,5 +1,5 @@
 import * as path from 'path';
-import '@aws-cdk/assert/jest';
+import '@aws-cdk/assert-internal/jest';
 import * as core from '@aws-cdk/core';
 import * as constructs from 'constructs';
 import * as inc from '../lib';
@@ -21,6 +21,33 @@ describe('CDK Include', () => {
     expect(stack).toMatchTemplate(
       loadTestFileToJsObject('long-form-vpc.yaml'),
     );
+  });
+
+  test('can ingest a template with year-month-date parsed as string instead of Date', () => {
+    includeTestTemplate(stack, 'year-month-date-as-strings.yaml');
+
+    expect(stack).toMatchTemplate({
+      "AWSTemplateFormatVersion": "2010-09-09",
+      "Resources": {
+        "Role": {
+          "Type": "AWS::IAM::Role",
+          "Properties": {
+            "AssumeRolePolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Effect": "Allow",
+                  "Principal": {
+                    "Service": ["ec2.amazonaws.com"],
+                  },
+                  "Action": ["sts:AssumeRole"],
+                },
+              ],
+            },
+          },
+        },
+      },
+    });
   });
 
   test('can ingest a template with the short form Base64 function', () => {
