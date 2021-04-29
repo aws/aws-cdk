@@ -1655,7 +1655,7 @@ describe('cluster', () => {
     const vpc = new ec2.Vpc(stack, 'VPC');
 
     // WHEN
-    new DatabaseClusterFromSnapshot(stack, 'Database', {
+    const cluster = new DatabaseClusterFromSnapshot(stack, 'Database', {
       engine: DatabaseClusterEngine.aurora({ version: AuroraEngineVersion.VER_1_22_2 }),
       instanceProps: {
         vpc,
@@ -1678,7 +1678,27 @@ describe('cluster', () => {
 
     expect(stack).toCountResources('AWS::RDS::DBInstance', 2);
 
+    expect(cluster.instanceIdentifiers).toHaveLength(2);
+    expect(stack.resolve(cluster.instanceIdentifiers[0])).toContain({
+      Ref: 'DatabaseInstance1844F58FD',
+    });
 
+    expect(cluster.instanceEndpoints).toHaveLength(2);
+    expect(stack.resolve(cluster.instanceEndpoints[0])).toEqual({
+      hostname: {
+        'Fn::GetAtt': ['DatabaseInstance1844F58FD', 'Endpoint.Address'],
+      },
+      port: {
+        'Fn::GetAtt': ['DatabaseB269D8BB', 'Endpoint.Port'],
+      },
+      socketAddress: {
+        'Fn::Join': ['', [
+          { 'Fn::GetAtt': ['DatabaseInstance1844F58FD', 'Endpoint.Address'] },
+          ':',
+          { 'Fn::GetAtt': ['DatabaseB269D8BB', 'Endpoint.Port'] },
+        ]],
+      },
+    });
   });
 
   test('reuse an existing subnet group', () => {
