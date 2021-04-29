@@ -30,6 +30,7 @@ describe('cluster', () => {
         instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
         vpc,
       },
+      iamAuthentication: true,
     });
 
     // THEN
@@ -40,6 +41,7 @@ describe('cluster', () => {
         MasterUsername: 'admin',
         MasterUserPassword: 'tooshort',
         VpcSecurityGroupIds: [{ 'Fn::GetAtt': ['DatabaseSecurityGroup5C91FDCB', 'GroupId'] }],
+        EnableIAMDatabaseAuthentication: true,
       },
       DeletionPolicy: 'Snapshot',
       UpdateReplacePolicy: 'Snapshot',
@@ -94,27 +96,6 @@ describe('cluster', () => {
       MasterUsername: 'admin',
       MasterUserPassword: 'tooshort',
       VpcSecurityGroupIds: [{ 'Fn::GetAtt': ['DatabaseSecurityGroup5C91FDCB', 'GroupId'] }],
-    });
-  });
-
-
-  test('allows setting the `iamAuthentication` property for DatabaseCluster', () => {
-    // GIVEN
-    const stack = testStack();
-    const vpc = new ec2.Vpc(stack, 'VPC');
-
-    // WHEN
-    new DatabaseCluster(stack, 'Database', {
-      engine: DatabaseClusterEngine.AURORA,
-      instanceProps: {
-        vpc,
-      },
-      iamAuthentication: true,
-    });
-
-    // THEN
-    expect(stack).toHaveResourceLike('AWS::RDS::DBCluster', {
-      EnableIAMDatabaseAuthentication: true,
     });
   });
 
@@ -1660,6 +1641,7 @@ describe('cluster', () => {
         vpc,
       },
       snapshotIdentifier: 'mySnapshot',
+      iamAuthentication: true,
     });
 
     // THEN
@@ -1670,36 +1652,13 @@ describe('cluster', () => {
         DBSubnetGroupName: { Ref: 'DatabaseSubnets56F17B9A' },
         VpcSecurityGroupIds: [{ 'Fn::GetAtt': ['DatabaseSecurityGroup5C91FDCB', 'GroupId'] }],
         SnapshotIdentifier: 'mySnapshot',
+        EnableIAMDatabaseAuthentication: true,
       },
       DeletionPolicy: 'Snapshot',
       UpdateReplacePolicy: 'Snapshot',
     }, ResourcePart.CompleteDefinition);
 
     expect(stack).toCountResources('AWS::RDS::DBInstance', 2);
-
-
-  });
-
-  test('allows setting the `iamAuthentication` property for clusterFromSnapshot', () => {
-    const stack = testStack();
-    const vpc = new ec2.Vpc(stack, 'VPC');
-
-    // WHEN
-    new DatabaseClusterFromSnapshot(stack, 'Database', {
-      engine: DatabaseClusterEngine.aurora({ version: AuroraEngineVersion.VER_1_22_2 }),
-      instanceProps: {
-        vpc,
-      },
-      snapshotIdentifier: 'mySnapshot',
-      iamAuthentication: true,
-    });
-
-    // THEN
-    expect(stack).toHaveResourceLike('AWS::RDS::DBCluster', {
-      EnableIAMDatabaseAuthentication: true,
-    });
-
-
   });
 
   test('reuse an existing subnet group', () => {

@@ -222,6 +222,14 @@ interface DatabaseClusterBaseProps {
    * @default - a new subnet group will be created.
    */
   readonly subnetGroup?: ISubnetGroup;
+
+  /**
+   * Whether to enable mapping of AWS Identity and Access Management (IAM) accounts
+   * to database accounts.
+   *
+   * @default false
+   */
+  readonly iamAuthentication?: boolean;
 }
 
 /**
@@ -356,6 +364,7 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
       dbClusterParameterGroupName: clusterParameterGroupConfig?.parameterGroupName,
       associatedRoles: clusterAssociatedRoles.length > 0 ? clusterAssociatedRoles : undefined,
       deletionProtection: defaultDeletionProtection(props.deletionProtection, props.removalPolicy),
+      enableIamDatabaseAuthentication: props.iamAuthentication,
       // Admin
       backupRetentionPeriod: props.backup?.retention?.toDays(),
       preferredBackupWindow: props.backup?.preferredWindow,
@@ -453,15 +462,6 @@ export interface DatabaseClusterProps extends DatabaseClusterBaseProps {
    * @default - if storageEncrypted is true then the default master key, no key otherwise
    */
   readonly storageEncryptionKey?: kms.IKey;
-
-  /**
-   * Whether to enable mapping of AWS Identity and Access Management (IAM) accounts
-   * to database accounts.
-   *
-   * @default false
-   */
-  readonly iamAuthentication?: boolean;
-
 }
 
 /**
@@ -510,7 +510,6 @@ export class DatabaseCluster extends DatabaseClusterNew {
       // Admin
       masterUsername: credentials.username,
       masterUserPassword: credentials.password?.toString(),
-      enableIamDatabaseAuthentication: props.iamAuthentication,
       // Encryption
       kmsKeyId: props.storageEncryptionKey?.keyArn,
       storageEncrypted: props.storageEncryptionKey ? true : props.storageEncrypted,
@@ -591,13 +590,6 @@ export interface DatabaseClusterFromSnapshotProps extends DatabaseClusterBasePro
    * However, you can use only the ARN to specify a DB instance snapshot.
    */
   readonly snapshotIdentifier: string;
-  /**
-   * Whether to enable mapping of AWS Identity and Access Management (IAM) accounts
-   * to database accounts.
-   *
-   * @default false
-   */
-  readonly iamAuthentication?: boolean;
 }
 
 /**
@@ -617,7 +609,6 @@ export class DatabaseClusterFromSnapshot extends DatabaseClusterNew {
     const cluster = new CfnDBCluster(this, 'Resource', {
       ...this.newCfnProps,
       snapshotIdentifier: props.snapshotIdentifier,
-      enableIamDatabaseAuthentication: props.iamAuthentication,
     });
 
     this.clusterIdentifier = cluster.ref;
