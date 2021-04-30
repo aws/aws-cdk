@@ -1,8 +1,8 @@
 import { CfnVirtualNode } from './appmesh.generated';
-import { ConnectionPoolConfig, Protocol } from './private/utils';
+import { ConnectionPoolConfig } from './private/utils';
 import {
   GrpcConnectionPool, GrpcTimeout, HealthCheck, Http2ConnectionPool, HttpConnectionPool,
-  HttpTimeout, OutlierDetection, TcpConnectionPool, TcpTimeout,
+  HttpTimeout, OutlierDetection, Protocol, TcpConnectionPool, TcpTimeout,
 } from './shared-interfaces';
 import { TlsCertificate, TlsCertificateConfig } from './tls-certificate';
 

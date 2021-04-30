@@ -1,7 +1,6 @@
 import * as cdk from '@aws-cdk/core';
 import { CfnVirtualGateway, CfnVirtualNode } from './appmesh.generated';
 import { ClientPolicy } from './client-policy';
-import { Protocol } from './private/utils';
 import { IVirtualService } from './virtual-service';
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
@@ -56,6 +55,18 @@ export interface TcpTimeout {
    * @default - none
    */
   readonly idle?: cdk.Duration;
+}
+
+/**
+ * Enum of supported AppMesh protocols
+ *
+ * @deprecated not for use outside package
+ */
+export enum Protocol {
+  HTTP = 'http',
+  TCP = 'tcp',
+  HTTP2 = 'http2',
+  GRPC = 'grpc',
 }
 
 /**

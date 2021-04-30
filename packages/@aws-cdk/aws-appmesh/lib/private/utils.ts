@@ -23,13 +23,3 @@ export interface ConnectionPoolConfig {
    */
   readonly maxRequests?: number;
 }
-
-/**
- * Enum of supported AppMesh protocols
- */
-export enum Protocol {
-  HTTP = 'http',
-  TCP = 'tcp',
-  HTTP2 = 'http2',
-  GRPC = 'grpc',
-}

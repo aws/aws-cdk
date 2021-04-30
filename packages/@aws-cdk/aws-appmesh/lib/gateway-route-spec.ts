@@ -1,5 +1,5 @@
 import { CfnGatewayRoute } from './appmesh.generated';
-import { Protocol } from './private/utils';
+import { Protocol } from './shared-interfaces';
 import { IVirtualService } from './virtual-service';
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main

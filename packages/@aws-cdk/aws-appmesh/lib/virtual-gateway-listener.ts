@@ -1,10 +1,11 @@
 import { CfnVirtualGateway } from './appmesh.generated';
-import { ConnectionPoolConfig, Protocol } from './private/utils';
+import { ConnectionPoolConfig } from './private/utils';
 import {
   GrpcConnectionPool,
   HealthCheck,
   Http2ConnectionPool,
   HttpConnectionPool,
+  Protocol,
 } from './shared-interfaces';
 import { TlsCertificate, TlsCertificateConfig } from './tls-certificate';
 

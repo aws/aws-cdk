@@ -1,7 +1,6 @@
 import * as cdk from '@aws-cdk/core';
 import { CfnRoute } from './appmesh.generated';
-import { Protocol } from './private/utils';
-import { HttpTimeout, GrpcTimeout, TcpTimeout } from './shared-interfaces';
+import { HttpTimeout, GrpcTimeout, Protocol, TcpTimeout } from './shared-interfaces';
 import { IVirtualNode } from './virtual-node';
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main

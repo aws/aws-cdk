@@ -3,7 +3,6 @@ import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 
 import * as appmesh from '../lib';
-import { Protocol } from '../lib/private/utils';
 
 export = {
   'When creating a VirtualRouter': {
@@ -23,7 +22,7 @@ export = {
             {
               PortMapping: {
                 Port: 8080,
-                Protocol: Protocol.HTTP,
+                Protocol: appmesh.Protocol.HTTP,
               },
             },
           ],
@@ -67,7 +66,7 @@ export = {
       });
 
       // THEN
-      const expectedPorts = [Protocol.HTTP, Protocol.HTTP2, Protocol.GRPC, Protocol.TCP];
+      const expectedPorts = [appmesh.Protocol.HTTP, appmesh.Protocol.HTTP2, appmesh.Protocol.GRPC, appmesh.Protocol.TCP];
       expectedPorts.forEach(protocol => {
         expect(stack).to(haveResourceLike('AWS::AppMesh::VirtualRouter', {
           VirtualRouterName: `${protocol}-router-listener`,
