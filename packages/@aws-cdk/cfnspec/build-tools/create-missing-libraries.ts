@@ -176,6 +176,7 @@ async function main() {
       },
       license: 'Apache-2.0',
       devDependencies: {
+        '@types/jest': '^26.0.22',
         '@aws-cdk/assert-internal': version,
         'cdk-build-tools': version,
         'cfn2ts': version,
