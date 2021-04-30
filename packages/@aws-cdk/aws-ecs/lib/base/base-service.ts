@@ -189,6 +189,14 @@ export interface BaseServiceOptions {
    *
    */
   readonly capacityProviderStrategies?: CapacityProviderStrategy[];
+
+
+  /**
+   * Whether to enable ability to exec into a container
+   *
+   *  @default - undefined
+   */
+  readonly enableExecuteCommand?: boolean;
 }
 
 /**
@@ -391,6 +399,7 @@ export abstract class BaseService extends Resource
         type: DeploymentControllerType.ECS,
       } : props.deploymentController,
       launchType: launchType,
+      enableExecuteCommand: props.enableExecuteCommand,
       capacityProviderStrategy: props.capacityProviderStrategies,
       healthCheckGracePeriodSeconds: this.evaluateHealthGracePeriod(props.healthCheckGracePeriod),
       /* role: never specified, supplanted by Service Linked Role */
