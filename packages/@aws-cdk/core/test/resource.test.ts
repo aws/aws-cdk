@@ -1,8 +1,9 @@
 import * as cxapi from '@aws-cdk/cx-api';
+import { Construct } from 'constructs';
 import { nodeunitShim, Test } from 'nodeunit-shim';
 import {
   App, App as Root, CfnCondition,
-  CfnDeletionPolicy, CfnResource, Construct,
+  CfnDeletionPolicy, CfnResource,
   Fn, RemovalPolicy, Resource, Stack,
 } from '../lib';
 import { synthesize } from '../lib/private/synthesis';
@@ -782,13 +783,9 @@ nodeunitShim({
     const assembly = app.synth();
     const templateB = assembly.getStackByName(stackB.stackName).template;
 
-    test.deepEqual(templateB, {
-      Resources: {
-        Resource: {
-          Type: 'R',
-          // Notice absence of 'DependsOn'
-        },
-      },
+    test.deepEqual(templateB?.Resources?.Resource, {
+      Type: 'R',
+      // Notice absence of 'DependsOn'
     });
     test.deepEqual(stackB.dependencies.map(s => s.node.id), ['StackA']);
 
