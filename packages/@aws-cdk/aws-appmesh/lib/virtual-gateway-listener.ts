@@ -141,7 +141,7 @@ class VirtualGatewayListenerImpl extends VirtualGatewayListener {
           port: this.port,
           protocol: this.protocol,
         },
-        healthCheck: this.healthCheck ? this.healthCheck.bind(scope).virtualGatewayHealthCheck: undefined,
+        healthCheck: this.healthCheck?.bind(scope).virtualGatewayHealthCheck,
         tls: tlsConfig ? renderTls(tlsConfig) : undefined,
         connectionPool: this.connectionPool ? renderConnectionPool(this.connectionPool, this.protocol) : undefined,
       },
