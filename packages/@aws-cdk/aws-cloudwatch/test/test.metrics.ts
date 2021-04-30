@@ -124,7 +124,7 @@ export = {
           dimensionK: 'value11',
         },
       } );
-    }, /The maximum number of dimensions is 10/);
+    }, /The maximum number of dimensions is 10, received 11/);
 
     test.done();
   },

@@ -27,6 +27,8 @@ export interface IMetric {
 /**
  * Metric dimension
  *
+ * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cw-dimension.html
+ *
  */
 export interface Dimension {
   /**

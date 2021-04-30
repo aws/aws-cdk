@@ -400,11 +400,12 @@ export class Metric implements IMetric {
 
   //rules from here: https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cw-dimension.html
   private validateDimensions(dims: DimensionHash): void {
-    if (Object.keys(dims)?.length > 10) {
-      throw new Error('The maximum number of dimensions is 10');
+    var dimsArray = Object.keys(dims);
+    if (dimsArray?.length > 10) {
+      throw new Error(`The maximum number of dimensions is 10, received ${dimsArray.length}`);
     }
 
-    Object.keys(dims).sort().map(key => {
+    dimsArray.map(key => {
       if (dims[key] === undefined || dims[key] === null) {
         throw new Error(`Dimension value of '${dims[key]}' is invalid`);
       };
