@@ -7,6 +7,9 @@ import { nodeunitShim, Test } from 'nodeunit-shim';
 import {
   CfnDistribution,
   CloudFrontWebDistribution,
+  Function,
+  FunctionCode,
+  FunctionEventType,
   GeoRestriction,
   KeyGroup,
   LambdaEdgeEventType,
@@ -594,6 +597,49 @@ added the ellipsis so a user would know there was more to ...`,
         },
       },
     });
+    test.done();
+  },
+
+  'distribution with CloudFront function-association'(test: Test) {
+    const stack = new cdk.Stack();
+    const sourceBucket = new s3.Bucket(stack, 'Bucket');
+
+    new CloudFrontWebDistribution(stack, 'AnAmazingWebsiteProbably', {
+      originConfigs: [
+        {
+          s3OriginSource: {
+            s3BucketSource: sourceBucket,
+          },
+          behaviors: [
+            {
+              isDefaultBehavior: true,
+              functionAssociations: [{
+                eventType: FunctionEventType.VIEWER_REQUEST,
+                function: new Function(stack, 'TestFunction', {
+                  code: FunctionCode.fromInline('foo'),
+                }),
+              }],
+            },
+          ],
+        },
+      ],
+    });
+
+    expect(stack).to(haveResourceLike('AWS::CloudFront::Distribution', {
+      'DistributionConfig': {
+        'DefaultCacheBehavior': {
+          'FunctionAssociations': [
+            {
+              'EventType': 'viewer-request',
+              'FunctionARN': {
+                'Ref': 'XXXXX',
+              },
+            },
+          ],
+        },
+      },
+    }));
+
     test.done();
   },
 

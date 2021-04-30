@@ -1,4 +1,4 @@
-import { IResource, Names, Resource, Fn } from '@aws-cdk/core';
+import { IResource, Names, Resource } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnFunction } from './cloudfront.generated';
 
@@ -17,8 +17,8 @@ export abstract class FunctionCode {
   }
 
   /**
-    * renders the function code
-    */
+   * renders the function code
+   */
   public abstract render(): string;
 }
 
@@ -34,7 +34,7 @@ export class InlineCode extends FunctionCode {
 }
 
 /**
- * Represents a ClouFront Function
+ * Represents a CloudFront Function
  */
 export interface IFunction extends IResource {
   /**
@@ -88,7 +88,7 @@ export class Function extends Resource implements IFunction {
 
     const resource = new CfnFunction(this, 'Resource', {
       autoPublish: true,
-      functionCode: Fn.base64(props.code.render()),
+      functionCode: props.code.render(),
       functionConfig: {
         comment: props.comment,
         runtime: 'cloudfront-js-1.0',
