@@ -12,12 +12,6 @@
     }
   },
   {
-    "Parameters": {
-      "MyValueParameter": {
-        "Type": "AWS::SSM::Parameter::Value<String>",
-        "Default": "/My/Public/Parameter"
-      }
-    },
     "Resources": {
       "Dummy": {
         "Type": "AWS::SNS::Topic"
@@ -25,9 +19,7 @@
     },
     "Outputs": {
       "TheValue": {
-        "Value": {
-          "Ref": "MyValueParameter"
-        }
+        "Value": "{{resolve:ssm:/My/Public/Parameter}}"
       }
     }
   }

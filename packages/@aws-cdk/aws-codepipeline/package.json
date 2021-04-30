@@ -76,6 +76,7 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
+    "@types/jest": "^26.0.22",
     "@aws-cdk/cx-api": "0.0.0",
     "@types/nodeunit": "^0.0.31",
     "cdk-build-tools": "0.0.0",
@@ -154,9 +155,6 @@
       "props-default-doc:@aws-cdk/aws-codepipeline.ActionProperties.runOrder",
       "docs-public-apis:@aws-cdk/aws-codepipeline.ActionProperties.version",
       "props-default-doc:@aws-cdk/aws-codepipeline.ActionProperties.version",
-      "docs-public-apis:@aws-cdk/aws-codepipeline.IAction.actionProperties",
-      "docs-public-apis:@aws-cdk/aws-codepipeline.IAction.bind",
-      "docs-public-apis:@aws-cdk/aws-codepipeline.IAction.onStateChange",
       "docs-public-apis:@aws-cdk/aws-codepipeline.IStage.pipeline",
       "docs-public-apis:@aws-cdk/aws-codepipeline.IStage.addAction",
       "docs-public-apis:@aws-cdk/aws-codepipeline.IStage.onStateChange",

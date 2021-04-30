@@ -98,7 +98,6 @@ export class Schema {
    * @param delimiter the delimiter between schema and addition
    * @default - ''
    *
-   * @experimental
    */
   public addToSchema(addition: string, delimiter?: string): void {
     if (this.mode !== SchemaMode.CODE) {
@@ -186,7 +185,6 @@ export class Schema {
    *
    * @param type the intermediate type to add to the schema
    *
-   * @experimental
    */
   public addType(type: IIntermediateType): IIntermediateType {
     if (this.mode !== SchemaMode.CODE) {
