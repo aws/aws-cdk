@@ -504,6 +504,10 @@ export class Key extends KeyBase {
       throw new Error(`key spec '${keySpec}' is not valid with usage '${keyUsage}'`);
     }
 
+    if (keySpec !== KeySpec.SYMMETRIC_DEFAULT && props.enableKeyRotation) {
+      throw new Error('key rotation cannot be enabled on asymmetric keys');
+    }
+
     const defaultKeyPoliciesFeatureEnabled = FeatureFlags.of(this).isEnabled(cxapi.KMS_DEFAULT_KEY_POLICIES);
 
     this.policy = props.policy ?? new iam.PolicyDocument();

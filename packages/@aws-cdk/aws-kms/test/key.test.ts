@@ -886,4 +886,11 @@ describe('key specs and key usages', () => {
     expect(() => new kms.Key(stack, 'Key4', { keyUsage: kms.KeyUsage.SIGN_VERIFY }))
       .toThrow('key spec \'SYMMETRIC_DEFAULT\' is not valid with usage \'SIGN_VERIFY\'');
   });
+
+  testFutureBehavior('fails if key rotation enabled on asymmetric key', flags, cdk.App, (app) => {
+    const stack = new cdk.Stack(app);
+
+    expect(() => new kms.Key(stack, 'Key', { enableKeyRotation: true, keySpec: kms.KeySpec.RSA_3072 }))
+      .toThrow('key rotation cannot be enabled on asymmetric keys');
+  });
 });
