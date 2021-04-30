@@ -9,6 +9,7 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import * as kms from '@aws-cdk/aws-kms';
 import * as cloudmap from '@aws-cdk/aws-servicediscovery';
 import * as cdk from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
 import { nodeunitShim, Test } from 'nodeunit-shim';
 import * as ecs from '../lib';
 
@@ -805,7 +806,7 @@ nodeunitShim({
    */
   'allows specifying special HW AMI Type'(test: Test) {
     // GIVEN
-    const app = new cdk.App();
+    const app = new cdk.App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
     const stack = new cdk.Stack(app, 'test');
     const vpc = new ec2.Vpc(stack, 'MyVpc', {});
 
@@ -848,7 +849,8 @@ nodeunitShim({
 
   'allows specifying windows image'(test: Test) {
     // GIVEN
-    const stack = new cdk.Stack();
+    const app = new cdk.App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
+    const stack = new cdk.Stack(app, 'test');
     const vpc = new ec2.Vpc(stack, 'MyVpc', {});
 
     const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
@@ -981,7 +983,8 @@ nodeunitShim({
 
   'allows specifying special HW AMI Type v2'(test: Test) {
     // GIVEN
-    const stack = new cdk.Stack();
+    const app = new cdk.App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
+    const stack = new cdk.Stack(app, 'test');
     const vpc = new ec2.Vpc(stack, 'MyVpc', {});
 
     const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
@@ -1000,7 +1003,8 @@ nodeunitShim({
 
   'allows specifying Amazon Linux v1 AMI'(test: Test) {
     // GIVEN
-    const stack = new cdk.Stack();
+    const app = new cdk.App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
+    const stack = new cdk.Stack(app, 'test');
     const vpc = new ec2.Vpc(stack, 'MyVpc', {});
 
     const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
@@ -1019,7 +1023,8 @@ nodeunitShim({
 
   'allows specifying windows image v2'(test: Test) {
     // GIVEN
-    const stack = new cdk.Stack();
+    const app = new cdk.App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
+    const stack = new cdk.Stack(app, 'test');
     const vpc = new ec2.Vpc(stack, 'MyVpc', {});
 
     const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
