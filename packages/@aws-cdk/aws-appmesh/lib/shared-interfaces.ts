@@ -72,7 +72,7 @@ export enum Protocol {
 /**
  * Properties used to define healthchecks.
  */
-export interface HealthCheckCommonOptions {
+interface HealthCheckCommonOptions {
   /**
    * The number of consecutive successful health checks that must occur before declaring listener healthy.
    *
@@ -81,14 +81,14 @@ export interface HealthCheckCommonOptions {
   readonly healthyThreshold?: number;
 
   /**
-   * The time period in milliseconds between each health check execution.
+   * The time period between each health check execution.
    *
    * @default Duration.seconds(30)
    */
   readonly interval?: cdk.Duration;
 
   /**
-   * The amount of time to wait when receiving a response from the health check, in milliseconds.
+   * The amount of time to wait when receiving a response from the health check.
    *
    * @default Duration.seconds(5)
    */
@@ -103,7 +103,7 @@ export interface HealthCheckCommonOptions {
 }
 
 /**
- * Properties used to define healthchecks.
+ * Properties used to define HTTP Based healthchecks.
  */
 export interface HttpHealthCheckOptions extends HealthCheckCommonOptions {
   /**
@@ -113,6 +113,16 @@ export interface HttpHealthCheckOptions extends HealthCheckCommonOptions {
    */
   readonly path?: string;
 }
+
+/**
+ * Properties used to define GRPC Based healthchecks.
+ */
+export interface GrpcHealthCheckOptions extends HealthCheckCommonOptions { }
+
+/**
+ * Properties used to define TCP Based healthchecks.
+ */
+export interface TcpHealthCheckOptions extends HealthCheckCommonOptions { }
 
 /**
  * All Properties for Health Checks for mesh endpoints
@@ -154,14 +164,14 @@ export abstract class HealthCheck {
   /**
    * Construct a GRPC health check
    */
-  public static grpc(options: HealthCheckCommonOptions= {}): HealthCheck {
+  public static grpc(options: GrpcHealthCheckOptions = {}): HealthCheck {
     return new HealthCheckImpl(Protocol.GRPC, options.healthyThreshold, options.unhealthyThreshold, options.interval, options.timeout);
   }
 
   /**
    * Construct a TCP health check
    */
-  public static tcp(options: HealthCheckCommonOptions = {}): HealthCheck {
+  public static tcp(options: TcpHealthCheckOptions = {}): HealthCheck {
     return new HealthCheckImpl(Protocol.TCP, options.healthyThreshold, options.unhealthyThreshold, options.interval, options.timeout);
   }
 
@@ -190,11 +200,11 @@ class HealthCheckImpl extends HealthCheck {
     }
 
     if (interval.toMilliseconds() < 5000 || interval.toMilliseconds() > 300_000) {
-      throw new Error('interval must be more than 5 seconds and less than 300 seconds');
+      throw new Error('interval must be between 5 seconds and 300 seconds');
     }
 
     if (timeout.toMilliseconds() < 2000 || timeout.toMilliseconds() > 60_000) {
-      throw new Error('timeout must be more than 2 seconds and less than 60 seconds');
+      throw new Error('timeout must be between 2 seconds and 60 seconds');
     }
 
     // Default to / for HTTP Health Checks

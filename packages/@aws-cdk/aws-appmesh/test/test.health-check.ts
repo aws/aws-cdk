@@ -28,8 +28,8 @@ export = {
     // THEN
     test.doesNotThrow(() => toThrow(min));
     test.doesNotThrow(() => toThrow(max));
-    test.throws(() => toThrow(min - 1), /interval must be more than 5 seconds and less than 300 seconds/);
-    test.throws(() => toThrow(max + 1), /interval must be more than 5 seconds and less than 300 seconds/);
+    test.throws(() => toThrow(min - 1), /interval must be between 5 seconds and 300 seconds/);
+    test.throws(() => toThrow(max + 1), /interval must be between 5 seconds and 300 seconds/);
 
     test.done();
   },
@@ -47,8 +47,8 @@ export = {
     // THEN
     test.doesNotThrow(() => toThrow(min));
     test.doesNotThrow(() => toThrow(max));
-    test.throws(() => toThrow(min - 1), /timeout must be more than 2 seconds and less than 60 seconds/);
-    test.throws(() => toThrow(max + 1), /timeout must be more than 2 seconds and less than 60 seconds/);
+    test.throws(() => toThrow(min - 1), /timeout must be between 2 seconds and 60 seconds/);
+    test.throws(() => toThrow(max + 1), /timeout must be between 2 seconds and 60 seconds/);
 
     test.done();
   },
