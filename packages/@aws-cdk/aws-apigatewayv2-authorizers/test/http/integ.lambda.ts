@@ -9,6 +9,7 @@ import { HttpLambdaAuthorizer, HttpLambdaResponseType } from '../../lib';
  * Stack verification steps:
  * * `curl --request --header 'X-API-Key: 123' GET <url>` should return 200
  * * `curl --request GET <url>` should return 401
+ * * `curl --request --header 'X-API-Key: 1234' GET <url>` should return 403
  */
 
 const app = new App();
@@ -25,6 +26,7 @@ const authHandler = new lambda.Function(stack, 'auth-function', {
 
 const authorizer = new HttpLambdaAuthorizer({
   authorizerName: 'my-simple-authorizer',
+  identitySource: ['$request.header.X-API-Key'],
   handler: authHandler,
   responseTypes: [HttpLambdaResponseType.SIMPLE],
 });
