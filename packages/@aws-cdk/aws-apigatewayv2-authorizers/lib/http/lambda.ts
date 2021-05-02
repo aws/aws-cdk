@@ -9,7 +9,7 @@ import {
   IHttpApi,
 } from '@aws-cdk/aws-apigatewayv2';
 import { IFunction } from '@aws-cdk/aws-lambda';
-import { Duration } from '@aws-cdk/core';
+import { Stack, Duration } from '@aws-cdk/core';
 
 /**
  * Specifies the type responses the lambda returns
@@ -96,7 +96,7 @@ export class HttpLambdaAuthorizer implements IHttpRouteAuthorizer {
         authorizerName: this.props.authorizerName,
         enableSimpleResponses,
         payloadFormatVersion: enableSimpleResponses ? AuthorizerPayloadVersion.VERSION_2_0 : AuthorizerPayloadVersion.VERSION_1_0,
-        authorizerUri: this.props.handler.invocationUri,
+        authorizerUri: lambdaAuthorizerArn(this.props.handler),
         resultsCacheTtl: this.props.resultsCacheTtl ?? Duration.minutes(5),
       });
     }
@@ -108,3 +108,9 @@ export class HttpLambdaAuthorizer implements IHttpRouteAuthorizer {
   }
 }
 
+/**
+ * constructs the authorizerURIArn.
+ */
+function lambdaAuthorizerArn(handler: IFunction) {
+  return `arn:${Stack.of(handler).partition}:apigateway:${Stack.of(handler).region}:lambda:path/2015-03-31/functions/${handler.functionArn}/invocations`;
+}

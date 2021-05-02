@@ -1,7 +1,7 @@
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
-import { ConstructNode, IResource, Resource, Stack, Token } from '@aws-cdk/core';
+import { ConstructNode, IResource, Resource, Token } from '@aws-cdk/core';
 import { AliasOptions } from './alias';
 import { EventInvokeConfig, EventInvokeConfigOptions } from './event-invoke-config';
 import { IEventSource } from './event-source';
@@ -55,11 +55,6 @@ export interface IFunction extends IResource, ec2.IConnectable, iam.IGrantable {
    * The construct node where permissions are attached.
    */
   readonly permissionsNode: ConstructNode;
-
-  /**
-   * The properly formatted uri of an API gateway invocation for this function.
-   */
-  readonly invocationUri: string;
 
   /**
    * Adds an event source that maps to this AWS Lambda function.
@@ -435,13 +430,6 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
 
     throw new Error(`Invalid principal type for Lambda permission statement: ${principal.constructor.name}. ` +
       'Supported: AccountPrincipal, ArnPrincipal, ServicePrincipal');
-  }
-
-  /**
-   * The properly formatted uri of an API gateway invocation for this function.
-   */
-  public get invocationUri(): string {
-    return `arn:${Stack.of(this).partition}:apigateway:${Stack.of(this).region}:lambda:path/2015-03-31/functions/${this.functionArn}/invocations`;
   }
 }
 
