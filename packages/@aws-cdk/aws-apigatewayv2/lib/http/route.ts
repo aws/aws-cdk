@@ -6,6 +6,10 @@ import { IHttpApi } from './api';
 import { HttpRouteAuthorizerType, IHttpRouteAuthorizer } from './authorizer';
 import { IHttpRouteIntegration } from './integration';
 
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct as CoreConstruct } from '@aws-cdk/core';
+
 /**
  * Represents a Route for an HTTP API.
  */
@@ -144,7 +148,7 @@ export class HttpRoute extends Resource implements IHttpRoute {
 
     const authBindResult = props.authorizer ? props.authorizer.bind({
       route: this,
-      scope: this.httpApi instanceof Construct ? this.httpApi : this, // scope under the API if it's not imported
+      scope: this.httpApi instanceof CoreConstruct ? this.httpApi : this, // scope under the API if it's not imported
     }) : undefined;
 
     let authorizationScopes = authBindResult?.authorizationScopes;

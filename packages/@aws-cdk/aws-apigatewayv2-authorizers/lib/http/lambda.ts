@@ -8,8 +8,9 @@ import {
   AuthorizerPayloadVersion,
   IHttpApi,
 } from '@aws-cdk/aws-apigatewayv2';
+import { ServicePrincipal } from '@aws-cdk/aws-iam';
 import { IFunction } from '@aws-cdk/aws-lambda';
-import { Stack, Duration } from '@aws-cdk/core';
+import { Stack, Duration, Names } from '@aws-cdk/core';
 
 /**
  * Specifies the type responses the lambda returns
@@ -98,6 +99,16 @@ export class HttpLambdaAuthorizer implements IHttpRouteAuthorizer {
         payloadFormatVersion: enableSimpleResponses ? AuthorizerPayloadVersion.VERSION_2_0 : AuthorizerPayloadVersion.VERSION_1_0,
         authorizerUri: lambdaAuthorizerArn(this.props.handler),
         resultsCacheTtl: this.props.resultsCacheTtl ?? Duration.minutes(5),
+      });
+
+      this.props.handler.addPermission(`${Names.nodeUniqueId(this.authorizer.node)}-Permission`, {
+        scope: options.scope,
+        principal: new ServicePrincipal('apigateway.amazonaws.com'),
+        sourceArn: Stack.of(options.route).formatArn({
+          service: 'execute-api',
+          resource: options.route.httpApi.apiId,
+          resourceName: `authorizers/${this.authorizer.authorizerId}`,
+        }),
       });
     }
 
