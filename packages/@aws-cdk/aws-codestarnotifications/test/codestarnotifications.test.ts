@@ -1,5 +1,4 @@
 import '@aws-cdk/assert-internal/jest';
-import {} from '../lib';
 import * as cdk from '@aws-cdk/core';
 import * as notifications from '../lib';
 import {
