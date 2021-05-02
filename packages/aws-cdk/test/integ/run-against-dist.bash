@@ -41,6 +41,11 @@ function serve_npm_packages() {
 
   tarballs_glob="$dist_root/js/*.tgz"
 
+  if [[ -f package.json ]]; then
+    echo "Do not run this script in a directory with a package.json! It will most likely break!" >&2
+    # Cowardly not running 'exit 1' because I'm not sure I won't mess up the build/canaries by doing so
+  fi
+
   # When using '--daemon', 'npm install' first so the files are permanent, or
   # 'npx' will remove them too soon.
   npm install serve-npm-tarballs

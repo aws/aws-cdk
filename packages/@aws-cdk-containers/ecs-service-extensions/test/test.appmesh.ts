@@ -1,4 +1,4 @@
-import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
+import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert-internal';
 import * as appmesh from '@aws-cdk/aws-appmesh';
 import * as ecs from '@aws-cdk/aws-ecs';
 import * as cdk from '@aws-cdk/core';
@@ -132,7 +132,7 @@ export = {
                 {
                   Ref: 'AWS::URLSuffix',
                 },
-                '/aws-appmesh-envoy:v1.15.0.0-prod',
+                '/aws-appmesh-envoy:v1.15.1.0-prod',
               ],
             ],
           },

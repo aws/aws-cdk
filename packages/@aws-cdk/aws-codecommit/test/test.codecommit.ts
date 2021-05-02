@@ -1,4 +1,4 @@
-import { expect, haveResource } from '@aws-cdk/assert';
+import { expect, haveResource } from '@aws-cdk/assert-internal';
 import { Role, ServicePrincipal } from '@aws-cdk/aws-iam';
 import { Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
@@ -102,6 +102,11 @@ export = {
         ],
       });
 
+      test.deepEqual(stack.resolve(repo.repositoryCloneUrlGrc), 'codecommit::us-west-2://my-repo');
+
+      test.deepEqual(repo.env.account, '585695036304');
+      test.deepEqual(repo.env.region, 'us-west-2');
+
       test.done();
     },
 
@@ -136,6 +141,17 @@ export = {
             '.',
             { Ref: 'AWS::URLSuffix' },
             '/v1/repos/my-repo',
+          ],
+        ],
+      });
+
+      test.deepEqual(stack.resolve(repo.repositoryCloneUrlGrc), {
+        'Fn::Join': [
+          '',
+          [
+            'codecommit::',
+            { Ref: 'AWS::Region' },
+            '://my-repo',
           ],
         ],
       });
@@ -184,6 +200,28 @@ export = {
           Version: '2012-10-17',
         },
       }));
+
+      test.done();
+    },
+
+    'HTTPS (GRC) clone URL'(test: Test) {
+      const stack = new Stack();
+
+      const repository = new Repository(stack, 'Repository', {
+        repositoryName: 'my-repo',
+      });
+
+      test.deepEqual(stack.resolve(repository.repositoryCloneUrlGrc), {
+        'Fn::Join': [
+          '',
+          [
+            'codecommit::',
+            { Ref: 'AWS::Region' },
+            '://',
+            { 'Fn::GetAtt': ['Repository22E53BBD', 'Name'] },
+          ],
+        ],
+      });
 
       test.done();
     },

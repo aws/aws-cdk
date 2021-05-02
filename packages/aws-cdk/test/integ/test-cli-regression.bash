@@ -29,11 +29,6 @@ function run_regression_against_framework_version() {
     exit 1
   fi
 
-  if [[ ! "${CANDIDATE_VERSION}" =~ "rc" ]]; then
-    echo "Unexpected CANDIDATE_VERSION: ${CANDIDATE_VERSION}. Must be set to a pre-release version. Did you forget to run './bump-candiate.sh' before packing?"
-    exit 1
-  fi
-
   SUPPORTED_FRAMEWORK_VERSION_IDENTIFIERS=("CANDIDATE_VERSION PREVIOUS_VERSION")
   FRAMEWORK_VERSION_IDENTIFIER=$1
   if [[ ! " ${SUPPORTED_FRAMEWORK_VERSION_IDENTIFIERS[@]} " =~ " ${FRAMEWORK_VERSION_IDENTIFIER} " ]]; then

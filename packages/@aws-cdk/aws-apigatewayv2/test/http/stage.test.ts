@@ -1,6 +1,8 @@
-import '@aws-cdk/assert/jest';
+import '@aws-cdk/assert-internal/jest';
+import { Metric } from '@aws-cdk/aws-cloudwatch';
 import { Stack } from '@aws-cdk/core';
 import { HttpApi, HttpStage } from '../../lib';
+
 
 describe('HttpStage', () => {
   test('default', () => {
@@ -14,7 +16,7 @@ describe('HttpStage', () => {
     });
 
     expect(stack).toHaveResource('AWS::ApiGatewayV2::Stage', {
-      ApiId: stack.resolve(api.httpApiId),
+      ApiId: stack.resolve(api.apiId),
       StageName: '$default',
     });
   });
@@ -29,7 +31,10 @@ describe('HttpStage', () => {
       httpApi: api,
     });
 
-    const imported = HttpStage.fromStageName(stack, 'Import', stage.stageName );
+    const imported = HttpStage.fromHttpStageAttributes(stack, 'Import', {
+      stageName: stage.stageName,
+      api,
+    });
 
     expect(imported.stageName).toEqual(stage.stageName);
   });
@@ -51,5 +56,62 @@ describe('HttpStage', () => {
 
     expect(defaultStage.url.endsWith('/')).toBe(true);
     expect(betaStage.url.endsWith('/')).toBe(false);
+  });
+
+  test('get metric', () => {
+    // GIVEN
+    const stack = new Stack();
+    const api = new HttpApi(stack, 'test-api', {
+      createDefaultStage: false,
+    });
+    const stage = new HttpStage(stack, 'Stage', {
+      httpApi: api,
+    });
+    const metricName = '4xxError';
+    const statistic = 'Sum';
+    const apiId = api.apiId;
+
+    // WHEN
+    const countMetric = stage.metric(metricName, { statistic });
+
+    // THEN
+    expect(countMetric.namespace).toEqual('AWS/ApiGateway');
+    expect(countMetric.metricName).toEqual(metricName);
+    expect(countMetric.dimensions).toEqual({
+      ApiId: apiId,
+      Stage: '$default',
+    });
+    expect(countMetric.statistic).toEqual(statistic);
+  });
+
+  test('Exercise metrics', () => {
+    // GIVEN
+    const stack = new Stack();
+    const api = new HttpApi(stack, 'test-api', {
+      createDefaultStage: false,
+    });
+    const stage = new HttpStage(stack, 'Stage', {
+      httpApi: api,
+    });
+    const color = '#00ff00';
+    const apiId = api.apiId;
+
+    // WHEN
+    const metrics = new Array<Metric>();
+    metrics.push(stage.metricClientError({ color }));
+    metrics.push(stage.metricServerError({ color }));
+    metrics.push(stage.metricDataProcessed({ color }));
+    metrics.push(stage.metricLatency({ color }));
+    metrics.push(stage.metricIntegrationLatency({ color }));
+    metrics.push(stage.metricCount({ color }));
+    // THEN
+    for (const metric of metrics) {
+      expect(metric.namespace).toEqual('AWS/ApiGateway');
+      expect(metric.dimensions).toEqual({
+        ApiId: apiId,
+        Stage: '$default',
+      });
+      expect(metric.color).toEqual(color);
+    }
   });
 });

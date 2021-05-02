@@ -113,7 +113,7 @@ nodeunitShim({
   isGeneratedWhenNeededMarker: {
     'correctly response for other tokens'(test: Test) {
       test.ok(!isGeneratedWhenNeededMarker('this is not even a token!'));
-      test.ok(!isGeneratedWhenNeededMarker(Lazy.stringValue({ produce: () => 'Bazinga!' })));
+      test.ok(!isGeneratedWhenNeededMarker(Lazy.string({ produce: () => 'Bazinga!' })));
 
       test.done();
     },

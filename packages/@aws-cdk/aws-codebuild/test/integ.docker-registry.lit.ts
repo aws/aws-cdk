@@ -6,7 +6,7 @@ class TestStack extends cdk.Stack {
   constructor(scope: cdk.App, id: string) {
     super(scope, id);
 
-    const secrets = secretsmanager.Secret.fromSecretArn(this, 'MySecrets',
+    const secrets = secretsmanager.Secret.fromSecretCompleteArn(this, 'MySecrets',
       `arn:aws:secretsmanager:${this.region}:${this.account}:secret:my-secrets-123456`);
 
     new codebuild.Project(this, 'MyProject', {

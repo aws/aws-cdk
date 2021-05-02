@@ -1,8 +1,9 @@
-import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
+import { ABSENT, expect, haveResource, haveResourceLike } from '@aws-cdk/assert-internal';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecs from '@aws-cdk/aws-ecs';
 import * as sqs from '@aws-cdk/aws-sqs';
 import * as cdk from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
 import { Test } from 'nodeunit';
 import * as ecsPatterns from '../../lib';
 
@@ -75,6 +76,31 @@ export = {
         },
       ],
       Family: 'ServiceQueueProcessingTaskDef83DB34F1',
+    }));
+
+    test.done();
+  },
+
+  'test ECS queue worker service construct - with remove default desiredCount feature flag'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    stack.node.setContext(cxapi.ECS_REMOVE_DEFAULT_DESIRED_COUNT, true);
+
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+    cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+
+    // WHEN
+    new ecsPatterns.QueueProcessingEc2Service(stack, 'Service', {
+      cluster,
+      memoryLimitMiB: 512,
+      image: ecs.ContainerImage.fromRegistry('test'),
+    });
+
+    // THEN - QueueWorker is of EC2 launch type, and desiredCount is not defined on the Ec2Service.
+    expect(stack).to(haveResource('AWS::ECS::Service', {
+      DesiredCount: ABSENT,
+      LaunchType: 'EC2',
     }));
 
     test.done();
@@ -183,6 +209,7 @@ export = {
       maxHealthyPercent: 150,
       serviceName: 'ecs-test-service',
       family: 'ecs-task-family',
+      circuitBreaker: { rollback: true },
     });
 
     // THEN - QueueWorker is of EC2 launch type, an SQS queue is created and all optional properties are set.
@@ -191,9 +218,16 @@ export = {
       DeploymentConfiguration: {
         MinimumHealthyPercent: 60,
         MaximumPercent: 150,
+        DeploymentCircuitBreaker: {
+          Enable: true,
+          Rollback: true,
+        },
       },
       LaunchType: 'EC2',
       ServiceName: 'ecs-test-service',
+      DeploymentController: {
+        Type: 'ECS',
+      },
     }));
 
     expect(stack).to(haveResource('AWS::SQS::Queue', {
@@ -278,6 +312,33 @@ export = {
         image: ecs.ContainerImage.fromRegistry('test'),
       })
     , /maxScalingCapacity must be set and greater than 0 if desiredCount is 0/);
+
+    test.done();
+  },
+
+  'can set custom containerName'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+    cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+
+    // WHEN
+    new ecsPatterns.QueueProcessingEc2Service(stack, 'Service', {
+      cluster,
+      memoryLimitMiB: 512,
+      image: ecs.ContainerImage.fromRegistry('test'),
+      containerName: 'my-container',
+    });
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
+      ContainerDefinitions: [
+        {
+          Name: 'my-container',
+        },
+      ],
+    }));
 
     test.done();
   },

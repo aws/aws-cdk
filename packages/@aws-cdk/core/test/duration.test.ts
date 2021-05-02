@@ -145,7 +145,7 @@ nodeunitShim({
 
   'to human string'(test: Test) {
     test.equal(Duration.minutes(0).toHumanString(), '0 minutes');
-    test.equal(Duration.minutes(Lazy.numberValue({ produce: () => 5 })).toHumanString(), '<token> minutes');
+    test.equal(Duration.minutes(Lazy.number({ produce: () => 5 })).toHumanString(), '<token> minutes');
 
     test.equal(Duration.minutes(10).toHumanString(), '10 minutes');
     test.equal(Duration.minutes(1).toHumanString(), '1 minute');
@@ -166,6 +166,32 @@ nodeunitShim({
     test.equal(Duration.minutes(1).plus(Duration.seconds(30)).toSeconds(), Duration.seconds(90).toSeconds());
     test.equal(Duration.minutes(1).plus(Duration.seconds(30)).toMinutes({ integral: false }), Duration.seconds(90).toMinutes({ integral: false }));
 
+    test.done();
+  },
+
+  'get unit label from duration'(test: Test) {
+    test.equal(Duration.minutes(Lazy.number({ produce: () => 10 })).unitLabel(), 'minutes');
+    test.equal(Duration.minutes(62).unitLabel(), 'minutes');
+    test.equal(Duration.seconds(10).unitLabel(), 'seconds');
+    test.equal(Duration.millis(1).unitLabel(), 'millis');
+    test.equal(Duration.hours(1000).unitLabel(), 'hours');
+    test.equal(Duration.days(2).unitLabel(), 'days');
+    test.done();
+  },
+
+  'format number token to number'(test: Test) {
+    const stack = new Stack();
+    const lazyDuration = Duration.minutes(Lazy.number({ produce: () => 10 }));
+    test.equal(stack.resolve(lazyDuration.formatTokenToNumber()), '10 minutes');
+    test.equal(Duration.hours(10).formatTokenToNumber(), '10 hours');
+    test.equal(Duration.days(5).formatTokenToNumber(), '5 days');
+    test.done();
+  },
+
+  'duration is unresolved'(test: Test) {
+    const lazyDuration = Duration.minutes(Lazy.number({ produce: () => 10 }));
+    test.equal(lazyDuration.isUnresolved(), true);
+    test.equal(Duration.hours(10).isUnresolved(), false);
     test.done();
   },
 });

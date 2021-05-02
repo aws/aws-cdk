@@ -221,7 +221,7 @@ export class Version extends QualifiedFunctionBase implements IVersion {
   }
 
   public metric(metricName: string, props: cloudwatch.MetricOptions = {}): cloudwatch.Metric {
-    // Metrics on Aliases need the "bare" function name, and the alias' ARN, this differes from the base behavior.
+    // Metrics on Aliases need the "bare" function name, and the alias' ARN, this differs from the base behavior.
     return super.metric(metricName, {
       dimensions: {
         FunctionName: this.lambda.functionName,
@@ -251,7 +251,7 @@ export class Version extends QualifiedFunctionBase implements IVersion {
 
     // Check compatibility at synthesis. It could be that the version was associated
     // with a CloudFront distribution first and made incompatible afterwards.
-    return Lazy.stringValue({
+    return Lazy.string({
       produce: () => {
         // Validate that the underlying function can be used for Lambda@Edge
         if (this.lambda instanceof Function) {

@@ -72,7 +72,7 @@ export class S3 implements ses.IReceiptRuleAction {
     // See https://docs.aws.amazon.com/ses/latest/DeveloperGuide/receiving-email-permissions.html#receiving-email-permissions-kms
     if (this.props.kmsKey && !/alias\/aws\/ses$/.test(this.props.kmsKey.keyArn)) {
       const kmsStatement = new iam.PolicyStatement({
-        actions: ['km:Encrypt', 'kms:GenerateDataKey'],
+        actions: ['kms:Encrypt', 'kms:GenerateDataKey'],
         principals: [new iam.ServicePrincipal('ses.amazonaws.com')],
         resources: ['*'],
         conditions: {
@@ -92,9 +92,9 @@ export class S3 implements ses.IReceiptRuleAction {
     return {
       s3Action: {
         bucketName: this.props.bucket.bucketName,
-        kmsKeyArn: this.props.kmsKey ? this.props.kmsKey.keyArn : undefined,
+        kmsKeyArn: this.props.kmsKey?.keyArn,
         objectKeyPrefix: this.props.objectKeyPrefix,
-        topicArn: this.props.topic ? this.props.topic.topicArn : undefined,
+        topicArn: this.props.topic?.topicArn,
       },
     };
   }

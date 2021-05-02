@@ -64,6 +64,26 @@ export enum ApplicationProtocol {
 }
 
 /**
+ * Load balancing protocol version for application load balancers
+ */
+export enum ApplicationProtocolVersion {
+  /**
+   * GRPC
+   */
+  GRPC = 'GRPC',
+
+  /**
+   * HTTP1
+   */
+  HTTP1 = 'HTTP1',
+
+  /**
+   * HTTP2
+   */
+  HTTP2 = 'HTTP2',
+}
+
+/**
  * Elastic Load Balancing provides the following security policies for Application Load Balancers
  *
  * We recommend the Recommended policy for general use. You can
@@ -81,6 +101,12 @@ export enum SslPolicy {
    * The recommended security policy
    */
   RECOMMENDED = 'ELBSecurityPolicy-2016-08',
+
+  /**
+   * Strong foward secrecy ciphers and TLV1.2 only (2020 edition).
+   * Same as FORWARD_SECRECY_TLS12_RES, but only supports GCM versions of the TLS ciphers
+   */
+  FORWARD_SECRECY_TLS12_RES_GCM = 'ELBSecurityPolicy-FS-1-2-Res-2020-10',
 
   /**
    * Strong forward secrecy ciphers and TLS1.2 only

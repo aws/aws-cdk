@@ -1,4 +1,5 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
+import * as iam from '@aws-cdk/aws-iam';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { ContextProvider, Duration, Lazy, Resource, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
@@ -157,7 +158,7 @@ export class HostedZone extends Resource implements IHostedZone {
       name: props.zoneName + '.',
       hostedZoneConfig: props.comment ? { comment: props.comment } : undefined,
       queryLoggingConfig: props.queryLogsLogGroupArn ? { cloudWatchLogsLogGroupArn: props.queryLogsLogGroupArn } : undefined,
-      vpcs: Lazy.anyValue({ produce: () => this.vpcs.length === 0 ? undefined : this.vpcs }),
+      vpcs: Lazy.any({ produce: () => this.vpcs.length === 0 ? undefined : this.vpcs }),
     });
 
     this.hostedZoneId = resource.ref;
@@ -190,6 +191,20 @@ export interface PublicHostedZoneProps extends CommonHostedZoneProps {
    * @default false
    */
   readonly caaAmazon?: boolean;
+
+  /**
+   * A principal which is trusted to assume a role for zone delegation
+   *
+   * @default - No delegation configuration
+   */
+  readonly crossAccountZoneDelegationPrincipal?: iam.IPrincipal;
+
+  /**
+   * The name of the role created for cross account delegation
+   *
+   * @default - A role name is generated automatically
+   */
+  readonly crossAccountZoneDelegationRoleName?: string;
 }
 
 /**
@@ -222,12 +237,42 @@ export class PublicHostedZone extends HostedZone implements IPublicHostedZone {
     return new Import(scope, id);
   }
 
+  /**
+   * Role for cross account zone delegation
+   */
+  public readonly crossAccountZoneDelegationRole?: iam.Role;
+
   constructor(scope: Construct, id: string, props: PublicHostedZoneProps) {
     super(scope, id, props);
 
     if (props.caaAmazon) {
       new CaaAmazonRecord(this, 'CaaAmazon', {
         zone: this,
+      });
+    }
+
+    if (!props.crossAccountZoneDelegationPrincipal && props.crossAccountZoneDelegationRoleName) {
+      throw Error('crossAccountZoneDelegationRoleName property is not supported without crossAccountZoneDelegationPrincipal');
+    }
+
+    if (props.crossAccountZoneDelegationPrincipal) {
+      this.crossAccountZoneDelegationRole = new iam.Role(this, 'CrossAccountZoneDelegationRole', {
+        roleName: props.crossAccountZoneDelegationRoleName,
+        assumedBy: props.crossAccountZoneDelegationPrincipal,
+        inlinePolicies: {
+          delegation: new iam.PolicyDocument({
+            statements: [
+              new iam.PolicyStatement({
+                actions: ['route53:ChangeResourceRecordSets'],
+                resources: [this.hostedZoneArn],
+              }),
+              new iam.PolicyStatement({
+                actions: ['route53:ListHostedZonesByName'],
+                resources: ['*'],
+              }),
+            ],
+          }),
+        },
       });
     }
   }

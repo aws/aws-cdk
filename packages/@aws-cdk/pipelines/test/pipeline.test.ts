@@ -1,7 +1,16 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { anything, arrayWith, Capture, deepObjectLike, encodedJson, objectLike, stringLike } from '@aws-cdk/assert';
-import '@aws-cdk/assert/jest';
+import {
+  anything,
+  arrayWith,
+  Capture,
+  deepObjectLike,
+  encodedJson,
+  notMatching,
+  objectLike,
+  stringLike,
+} from '@aws-cdk/assert-internal';
+import '@aws-cdk/assert-internal/jest';
 import * as cp from '@aws-cdk/aws-codepipeline';
 import * as cpa from '@aws-cdk/aws-codepipeline-actions';
 import { Stack, Stage, StageProps, SecretValue, Tags } from '@aws-cdk/core';
@@ -292,7 +301,7 @@ test('pipeline has self-mutation stage', () => {
 
   expect(pipelineStack).toHaveResourceLike('AWS::CodeBuild::Project', {
     Environment: {
-      Image: 'aws/codebuild/standard:4.0',
+      Image: 'aws/codebuild/standard:5.0',
     },
     Source: {
       BuildSpec: encodedJson(deepObjectLike({
@@ -318,7 +327,7 @@ test('selfmutation stage correctly identifies nested assembly of pipeline stack'
   // THEN
   expect(stackTemplate(nestedPipelineStack)).toHaveResourceLike('AWS::CodeBuild::Project', {
     Environment: {
-      Image: 'aws/codebuild/standard:4.0',
+      Image: 'aws/codebuild/standard:5.0',
     },
     Source: {
       BuildSpec: encodedJson(deepObjectLike({
@@ -329,6 +338,23 @@ test('selfmutation stage correctly identifies nested assembly of pipeline stack'
         },
       })),
     },
+  });
+});
+
+test('selfmutation feature can be turned off', () => {
+  const stack = new Stack();
+  const cloudAssemblyArtifact = new cp.Artifact();
+  // WHEN
+  new TestGitHubNpmPipeline(stack, 'Cdk', {
+    cloudAssemblyArtifact,
+    selfMutating: false,
+  });
+  // THEN
+  expect(stack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
+    Stages: notMatching(arrayWith({
+      Name: 'UpdatePipeline',
+      Actions: anything(),
+    })),
   });
 });
 

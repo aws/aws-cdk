@@ -80,8 +80,8 @@ export class Schema {
       this.schema = new CfnGraphQLSchema(api, 'Schema', {
         apiId: api.apiId,
         definition: this.mode === SchemaMode.CODE ?
-          Lazy.stringValue({
-            produce: () => this.types.reduce((acc, type) => { return `${acc}${type._bindToGraphqlApi(api).toString()}\n`; },
+          Lazy.string({
+            produce: () => this.types.reduce((acc, type) => `${acc}${type._bindToGraphqlApi(api).toString()}\n`,
               `${this.declareSchema()}${this.definition}`),
           })
           : this.definition,
@@ -98,7 +98,6 @@ export class Schema {
    * @param delimiter the delimiter between schema and addition
    * @default - ''
    *
-   * @experimental
    */
   public addToSchema(addition: string, delimiter?: string): void {
     if (this.mode !== SchemaMode.CODE) {
@@ -186,7 +185,6 @@ export class Schema {
    *
    * @param type the intermediate type to add to the schema
    *
-   * @experimental
    */
   public addType(type: IIntermediateType): IIntermediateType {
     if (this.mode !== SchemaMode.CODE) {

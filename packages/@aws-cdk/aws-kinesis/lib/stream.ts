@@ -263,8 +263,8 @@ export class Stream extends StreamBase {
     const shardCount = props.shardCount || 1;
     const retentionPeriodHours = props.retentionPeriod?.toHours() ?? 24;
     if (!Token.isUnresolved(retentionPeriodHours)) {
-      if (retentionPeriodHours < 24 || retentionPeriodHours > 168) {
-        throw new Error(`retentionPeriod must be between 24 and 168 hours. Received ${retentionPeriodHours}`);
+      if (retentionPeriodHours < 24 || retentionPeriodHours > 8760) {
+        throw new Error(`retentionPeriod must be between 24 and 8760 hours. Received ${retentionPeriodHours}`);
       }
     }
 

@@ -1,4 +1,4 @@
-import { countResources, expect, haveResource } from '@aws-cdk/assert';
+import { countResources, expect, haveResource } from '@aws-cdk/assert-internal';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecs from '@aws-cdk/aws-ecs';
 import * as cdk from '@aws-cdk/core';
@@ -217,4 +217,28 @@ export = {
     test.done();
   },
 
+  'should be able to create an environment from attributes'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+    cluster.addCapacity('DefaultAutoScalingGroup', {
+      instanceType: new ec2.InstanceType('t2.micro'),
+    });
+
+    // WHEN
+    const environment = Environment.fromEnvironmentAttributes(stack, 'Environment', {
+      capacityType: EnvironmentCapacityType.EC2,
+      cluster: cluster,
+    });
+
+    // THEN
+    test.equal(environment.capacityType, EnvironmentCapacityType.EC2);
+    test.equal(environment.cluster, cluster);
+    test.equal(environment.vpc, vpc);
+    test.equal(environment.id, 'Environment');
+
+    test.done();
+  },
 };

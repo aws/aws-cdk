@@ -45,8 +45,8 @@ export abstract class MappingTemplate {
    *
    * @param cond the key condition for the query
    */
-  public static dynamoDbQuery(cond: KeyCondition): MappingTemplate {
-    return this.fromString(`{"version" : "2017-02-28", "operation" : "Query", ${cond.renderTemplate()}}`);
+  public static dynamoDbQuery(cond: KeyCondition, indexName?: string): MappingTemplate {
+    return this.fromString(`{"version" : "2017-02-28", "operation" : "Query", ${indexName ? `"index" : "${indexName}", ` : ''}${cond.renderTemplate()}}`);
   }
 
   /**

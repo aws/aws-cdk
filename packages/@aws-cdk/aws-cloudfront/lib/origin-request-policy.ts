@@ -1,10 +1,9 @@
-import { Resource, Token } from '@aws-cdk/core';
+import { Names, Resource, Token } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnOriginRequestPolicy } from './cloudfront.generated';
 
 /**
  * Represents a Origin Request Policy
- * @experimental
  */
 export interface IOriginRequestPolicy {
   /**
@@ -16,7 +15,6 @@ export interface IOriginRequestPolicy {
 
 /**
  * Properties for creating a Origin Request Policy
- * @experimental
  */
 export interface OriginRequestPolicyProps {
   /**
@@ -55,7 +53,6 @@ export interface OriginRequestPolicyProps {
  * A Origin Request Policy configuration.
  *
  * @resource AWS::CloudFront::OriginRequestPolicy
- * @experimental
  */
 export class OriginRequestPolicy extends Resource implements IOriginRequestPolicy {
 
@@ -91,7 +88,7 @@ export class OriginRequestPolicy extends Resource implements IOriginRequestPolic
       physicalName: props.originRequestPolicyName,
     });
 
-    const originRequestPolicyName = props.originRequestPolicyName ?? this.node.uniqueId;
+    const originRequestPolicyName = props.originRequestPolicyName ?? Names.uniqueId(this);
     if (!Token.isUnresolved(originRequestPolicyName) && !originRequestPolicyName.match(/^[\w-]+$/i)) {
       throw new Error(`'originRequestPolicyName' can only include '-', '_', and alphanumeric characters, got: '${props.originRequestPolicyName}'`);
     }
@@ -124,9 +121,8 @@ export class OriginRequestPolicy extends Resource implements IOriginRequestPolic
 }
 
 /**
- * Ddetermines whether any cookies in viewer requests (and if so, which cookies)
+ * Determines whether any cookies in viewer requests (and if so, which cookies)
  * are included in requests that CloudFront sends to the origin.
- * @experimental
  */
 export class OriginRequestCookieBehavior {
   /**
@@ -159,7 +155,6 @@ export class OriginRequestCookieBehavior {
 
 /**
  * Determines whether any HTTP headers (and if so, which headers) are included in requests that CloudFront sends to the origin.
- * @experimental
  */
 export class OriginRequestHeaderBehavior {
   /**
@@ -189,6 +184,9 @@ export class OriginRequestHeaderBehavior {
     if (headers.length === 0) {
       throw new Error('At least one header to allow must be provided');
     }
+    if (/Authorization/i.test(headers.join('|')) || /Accept-Encoding/i.test(headers.join('|'))) {
+      throw new Error('you cannot pass `Authorization` or `Accept-Encoding` as header values; use a CachePolicy to forward these headers instead');
+    }
     return new OriginRequestHeaderBehavior('whitelist', headers);
   }
 
@@ -206,7 +204,6 @@ export class OriginRequestHeaderBehavior {
 /**
  * Determines whether any URL query strings in viewer requests (and if so, which query strings)
  * are included in requests that CloudFront sends to the origin.
- * @experimental
  */
 export class OriginRequestQueryStringBehavior {
   /**

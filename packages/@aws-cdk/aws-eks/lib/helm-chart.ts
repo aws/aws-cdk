@@ -1,4 +1,4 @@
-import { CustomResource, Duration, Stack } from '@aws-cdk/core';
+import { CustomResource, Duration, Names, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { ICluster } from './cluster';
 import { KubectlProvider } from './kubectl-provider';
@@ -113,7 +113,7 @@ export class HelmChart extends CoreConstruct {
       properties: {
         ClusterName: props.cluster.clusterName,
         RoleArn: provider.roleArn, // TODO: bake into the provider's environment
-        Release: props.release ?? this.node.uniqueId.slice(-53).toLowerCase(), // Helm has a 53 character limit for the name
+        Release: props.release ?? Names.uniqueId(this).slice(-53).toLowerCase(), // Helm has a 53 character limit for the name
         Chart: props.chart,
         Version: props.version,
         Wait: wait || undefined, // props are stringified so we encode “false” as undefined

@@ -2,7 +2,7 @@ import { Resource, Token } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnBasePathMapping } from './apigateway.generated';
 import { IDomainName } from './domain-name';
-import { IRestApi, RestApi } from './restapi';
+import { IRestApi, RestApiBase } from './restapi';
 import { Stage } from './stage';
 
 export interface BasePathMappingOptions {
@@ -48,14 +48,14 @@ export class BasePathMapping extends Resource {
     super(scope, id);
 
     if (props.basePath && !Token.isUnresolved(props.basePath)) {
-      if (!props.basePath.match(/^[a-z0-9$_.+!*'()-]+$/)) {
+      if (!props.basePath.match(/^[a-zA-Z0-9$_.+!*'()-]+$/)) {
         throw new Error(`A base path may only contain letters, numbers, and one of "$-_.+!*'()", received: ${props.basePath}`);
       }
     }
 
     // if restApi is an owned API and it has a deployment stage, map all requests
     // to that stage. otherwise, the stage will have to be specified in the URL.
-    const stage = props.stage ?? (props.restApi instanceof RestApi
+    const stage = props.stage ?? (props.restApi instanceof RestApiBase
       ? props.restApi.deploymentStage
       : undefined);
 

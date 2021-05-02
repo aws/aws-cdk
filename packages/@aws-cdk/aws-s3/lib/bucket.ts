@@ -1,8 +1,13 @@
 import { EOL } from 'os';
+import * as path from 'path';
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
-import { Fn, IResource, Lazy, RemovalPolicy, Resource, Stack, Token } from '@aws-cdk/core';
+import {
+  Fn, IResource, Lazy, RemovalPolicy, Resource, Stack, Token,
+  CustomResource, CustomResourceProvider, CustomResourceProviderRuntime, FeatureFlags,
+} from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
 import { BucketPolicy } from './bucket-policy';
 import { IBucketNotificationDestination } from './destination';
@@ -11,6 +16,8 @@ import * as perms from './perms';
 import { LifecycleRule } from './rule';
 import { CfnBucket } from './s3.generated';
 import { parseBucketArn, parseBucketName } from './util';
+
+const AUTO_DELETE_OBJECTS_RESOURCE_TYPE = 'Custom::S3AutoDeleteObjects';
 
 export interface IBucket extends IResource {
   /**
@@ -140,6 +147,14 @@ export interface IBucket extends IResource {
    * If encryption is used, permission to use the key to encrypt the contents
    * of written files will also be granted to the same principal.
    *
+   * Before CDK version 1.85.0, this method granted the `s3:PutObject*` permission that included `s3:PutObjectAcl`,
+   * which could be used to grant read/write object access to IAM principals in other accounts.
+   * If you want to get rid of that behavior, update your CDK version to 1.85.0 or later,
+   * and make sure the `@aws-cdk/aws-s3:grantWriteWithoutAcl` feature flag is set to `true`
+   * in the `context` key of your cdk.json file.
+   * If you've already updated, but still need the principal to have permissions to modify the ACLs,
+   * use the {@link grantPutAcl} method.
+   *
    * @param identity The principal
    * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*')
    */
@@ -156,7 +171,19 @@ export interface IBucket extends IResource {
   grantPut(identity: iam.IGrantable, objectsKeyPattern?: any): iam.Grant;
 
   /**
-   * Grants s3:DeleteObject* permission to an IAM pricipal for objects
+   * Grant the given IAM identity permissions to modify the ACLs of objects in the given Bucket.
+   *
+   * If your application has the '@aws-cdk/aws-s3:grantWriteWithoutAcl' feature flag set,
+   * calling {@link grantWrite} or {@link grantReadWrite} no longer grants permissions to modify the ACLs of the objects;
+   * in this case, if you need to modify object ACLs, call this method explicitly.
+   *
+   * @param identity The principal
+   * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*')
+   */
+  grantPutAcl(identity: iam.IGrantable, objectsKeyPattern?: string): iam.Grant;
+
+  /**
+   * Grants s3:DeleteObject* permission to an IAM principal for objects
    * in this bucket.
    *
    * @param identity The principal
@@ -170,6 +197,14 @@ export interface IBucket extends IResource {
    *
    * If an encryption key is used, permission to use the key for
    * encrypt/decrypt will also be granted.
+   *
+   * Before CDK version 1.85.0, this method granted the `s3:PutObject*` permission that included `s3:PutObjectAcl`,
+   * which could be used to grant read/write object access to IAM principals in other accounts.
+   * If you want to get rid of that behavior, update your CDK version to 1.85.0 or later,
+   * and make sure the `@aws-cdk/aws-s3:grantWriteWithoutAcl` feature flag is set to `true`
+   * in the `context` key of your cdk.json file.
+   * If you've already updated, but still need the principal to have permissions to modify the ACLs,
+   * use the {@link grantPutAcl} method.
    *
    * @param identity The principal
    * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*')
@@ -394,7 +429,7 @@ abstract class BucketBase extends Resource implements IBucket {
       detailType: ['AWS API Call via CloudTrail'],
       detail: {
         resources: {
-          ARN: options.paths ? options.paths.map(p => this.arnForObjects(p)) : [this.bucketArn],
+          ARN: options.paths?.map(p => this.arnForObjects(p)) ?? [this.bucketArn],
         },
       },
     });
@@ -568,17 +603,8 @@ abstract class BucketBase extends Resource implements IBucket {
       this.arnForObjects(objectsKeyPattern));
   }
 
-  /**
-   * Grant write permissions to this bucket to an IAM principal.
-   *
-   * If encryption is used, permission to use the key to encrypt the contents
-   * of written files will also be granted to the same principal.
-   *
-   * @param identity The principal
-   * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*')
-   */
   public grantWrite(identity: iam.IGrantable, objectsKeyPattern: any = '*') {
-    return this.grant(identity, perms.BUCKET_WRITE_ACTIONS, perms.KEY_WRITE_ACTIONS,
+    return this.grant(identity, this.writeActions, perms.KEY_WRITE_ACTIONS,
       this.bucketArn,
       this.arnForObjects(objectsKeyPattern));
   }
@@ -592,12 +618,17 @@ abstract class BucketBase extends Resource implements IBucket {
    * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*')
    */
   public grantPut(identity: iam.IGrantable, objectsKeyPattern: any = '*') {
-    return this.grant(identity, perms.BUCKET_PUT_ACTIONS, perms.KEY_WRITE_ACTIONS,
+    return this.grant(identity, this.putActions, perms.KEY_WRITE_ACTIONS,
+      this.arnForObjects(objectsKeyPattern));
+  }
+
+  public grantPutAcl(identity: iam.IGrantable, objectsKeyPattern: string = '*') {
+    return this.grant(identity, perms.BUCKET_PUT_ACL_ACTIONS, [],
       this.arnForObjects(objectsKeyPattern));
   }
 
   /**
-   * Grants s3:DeleteObject* permission to an IAM pricipal for objects
+   * Grants s3:DeleteObject* permission to an IAM principal for objects
    * in this bucket.
    *
    * @param identity The principal
@@ -608,18 +639,8 @@ abstract class BucketBase extends Resource implements IBucket {
       this.arnForObjects(objectsKeyPattern));
   }
 
-  /**
-   * Grants read/write permissions for this bucket and it's contents to an IAM
-   * principal (Role/Group/User).
-   *
-   * If an encryption key is used, permission to use the key for
-   * encrypt/decrypt will also be granted.
-   *
-   * @param identity The principal
-   * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*')
-   */
   public grantReadWrite(identity: iam.IGrantable, objectsKeyPattern: any = '*') {
-    const bucketActions = perms.BUCKET_READ_ACTIONS.concat(perms.BUCKET_WRITE_ACTIONS);
+    const bucketActions = perms.BUCKET_READ_ACTIONS.concat(this.writeActions);
     // we need unique permissions because some permissions are common between read and write key actions
     const keyActions = [...new Set([...perms.KEY_READ_ACTIONS, ...perms.KEY_WRITE_ACTIONS])];
 
@@ -662,9 +683,22 @@ abstract class BucketBase extends Resource implements IBucket {
     return iam.Grant.addToPrincipalOrResource({
       actions: allowedActions,
       resourceArns: [this.arnForObjects(keyPrefix)],
-      grantee: new iam.Anyone(),
+      grantee: new iam.AnyPrincipal(),
       resource: this,
     });
+  }
+
+  private get writeActions(): string[] {
+    return [
+      ...perms.BUCKET_DELETE_ACTIONS,
+      ...this.putActions,
+    ];
+  }
+
+  private get putActions(): string[] {
+    return FeatureFlags.of(this).isEnabled(cxapi.S3_GRANT_WRITE_WITHOUT_ACL)
+      ? perms.BUCKET_PUT_ACTIONS
+      : perms.LEGACY_BUCKET_PUT_ACTIONS;
   }
 
   private urlJoin(...components: string[]): string {
@@ -988,7 +1022,22 @@ export interface Inventory {
    */
   readonly optionalFields?: string[];
 }
-
+/**
+   * The ObjectOwnership of the bucket.
+   *
+   * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/about-object-ownership.html
+   *
+   */
+export enum ObjectOwnership {
+  /**
+   * Objects uploaded to the bucket change ownership to the bucket owner .
+   */
+  BUCKET_OWNER_PREFERRED = 'BucketOwnerPreferred',
+  /**
+   * The uploading account will own the object.
+   */
+  OBJECT_WRITER = 'ObjectWriter',
+}
 export interface BucketProps {
   /**
    * The kind of server-side encryption to apply to this bucket.
@@ -1013,6 +1062,24 @@ export interface BucketProps {
   readonly encryptionKey?: kms.IKey;
 
   /**
+  * Enforces SSL for requests. S3.5 of the AWS Foundational Security Best Practices Regarding S3.
+  * @see https://docs.aws.amazon.com/config/latest/developerguide/s3-bucket-ssl-requests-only.html
+  *
+  * @default false
+  */
+  readonly enforceSSL?: boolean;
+
+  /**
+   * Specifies whether Amazon S3 should use an S3 Bucket Key with server-side
+   * encryption using KMS (SSE-KMS) for new objects in the bucket.
+   *
+   * Only relevant, when Encryption is set to {@link BucketEncryption.KMS}
+   *
+   * @default - false
+   */
+  readonly bucketKeyEnabled?: boolean;
+
+  /**
    * Physical name of this bucket.
    *
    * @default - Assigned by CloudFormation (recommended).
@@ -1025,6 +1092,16 @@ export interface BucketProps {
    * @default - The bucket will be orphaned.
    */
   readonly removalPolicy?: RemovalPolicy;
+
+  /**
+   * Whether all objects should be automatically deleted when the bucket is
+   * removed from the stack or when the stack is deleted.
+   *
+   * Requires the `removalPolicy` to be set to `RemovalPolicy.DESTROY`.
+   *
+   * @default false
+   */
+  readonly autoDeleteObjects?: boolean;
 
   /**
    * Whether this bucket should have versioning turned on or not.
@@ -1092,8 +1169,8 @@ export interface BucketProps {
    *
    * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/access-control-block-public-access.html
    *
-   * @default false New buckets and objects don't allow public access, but users can modify bucket
-   * policies or object permissions to allow public access.
+   *
+   * @default - CloudFormation defaults will apply. New buckets and objects don't allow public access, but users can modify bucket policies or object permissions to allow public access
    */
   readonly blockPublicAccess?: BlockPublicAccess;
 
@@ -1136,6 +1213,15 @@ export interface BucketProps {
    * @default - No inventory configuration
    */
   readonly inventories?: Inventory[];
+  /**
+   * The objectOwnership of the bucket.
+   *
+   * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/about-object-ownership.html
+   *
+   * @default - No ObjectOwnership configuration, uploading account will own the object.
+   *
+   */
+  readonly objectOwnership?: ObjectOwnership;
 }
 
 /**
@@ -1246,14 +1332,15 @@ export class Bucket extends BucketBase {
       bucketName: this.physicalName,
       bucketEncryption,
       versioningConfiguration: props.versioned ? { status: 'Enabled' } : undefined,
-      lifecycleConfiguration: Lazy.anyValue({ produce: () => this.parseLifecycleConfiguration() }),
+      lifecycleConfiguration: Lazy.any({ produce: () => this.parseLifecycleConfiguration() }),
       websiteConfiguration,
       publicAccessBlockConfiguration: props.blockPublicAccess,
-      metricsConfigurations: Lazy.anyValue({ produce: () => this.parseMetricConfiguration() }),
-      corsConfiguration: Lazy.anyValue({ produce: () => this.parseCorsConfiguration() }),
-      accessControl: Lazy.stringValue({ produce: () => this.accessControl }),
+      metricsConfigurations: Lazy.any({ produce: () => this.parseMetricConfiguration() }),
+      corsConfiguration: Lazy.any({ produce: () => this.parseCorsConfiguration() }),
+      accessControl: Lazy.string({ produce: () => this.accessControl }),
       loggingConfiguration: this.parseServerAccessLogs(props),
-      inventoryConfigurations: Lazy.anyValue({ produce: () => this.parseInventoryConfiguration() }),
+      inventoryConfigurations: Lazy.any({ produce: () => this.parseInventoryConfiguration() }),
+      ownershipControls: this.parseOwnershipControls(props),
     });
 
     resource.applyRemovalPolicy(props.removalPolicy);
@@ -1278,6 +1365,11 @@ export class Bucket extends BucketBase {
     this.disallowPublicAccess = props.blockPublicAccess && props.blockPublicAccess.blockPublicPolicy;
     this.accessControl = props.accessControl;
 
+    // Enforce AWS Foundational Security Best Practice
+    if (props.enforceSSL) {
+      this.enforceSSLStatement();
+    }
+
     if (props.serverAccessLogsBucket instanceof Bucket) {
       props.serverAccessLogsBucket.allowLogDelivery();
     }
@@ -1300,6 +1392,14 @@ export class Bucket extends BucketBase {
 
     if (props.publicReadAccess) {
       this.grantPublicAccess();
+    }
+
+    if (props.autoDeleteObjects) {
+      if (props.removalPolicy !== RemovalPolicy.DESTROY) {
+        throw new Error('Cannot use \'autoDeleteObjects\' property on a bucket without setting removal policy to \'DESTROY\'.');
+      }
+
+      this.enableAutoDeleteObjects();
     }
   }
 
@@ -1392,6 +1492,25 @@ export class Bucket extends BucketBase {
     this.inventories.push(inventory);
   }
 
+  /**
+   * Adds an iam statement to enforce SSL requests only.
+   */
+  private enforceSSLStatement() {
+    const statement = new iam.PolicyStatement({
+      actions: ['s3:*'],
+      conditions: {
+        Bool: { 'aws:SecureTransport': 'false' },
+      },
+      effect: iam.Effect.DENY,
+      resources: [
+        this.bucketArn,
+        this.arnForObjects('*'),
+      ],
+      principals: [new iam.AnyPrincipal()],
+    });
+    this.addToResourcePolicy(statement);
+  }
+
   private validateBucketName(physicalName: string): void {
     const bucketName = physicalName;
     if (!bucketName || Token.isUnresolved(bucketName)) {
@@ -1453,6 +1572,11 @@ export class Bucket extends BucketBase {
       throw new Error(`encryptionKey is specified, so 'encryption' must be set to KMS (value: ${encryptionType})`);
     }
 
+    // if bucketKeyEnabled is set, encryption must be set to KMS.
+    if (props.bucketKeyEnabled && encryptionType !== BucketEncryption.KMS) {
+      throw new Error(`bucketKeyEnabled is specified, so 'encryption' must be set to KMS (value: ${encryptionType})`);
+    }
+
     if (encryptionType === BucketEncryption.UNENCRYPTED) {
       return { bucketEncryption: undefined, encryptionKey: undefined };
     }
@@ -1465,6 +1589,7 @@ export class Bucket extends BucketBase {
       const bucketEncryption = {
         serverSideEncryptionConfiguration: [
           {
+            bucketKeyEnabled: props.bucketKeyEnabled,
             serverSideEncryptionByDefault: {
               sseAlgorithm: 'aws:kms',
               kmsMasterKeyId: encryptionKey.keyArn,
@@ -1498,7 +1623,7 @@ export class Bucket extends BucketBase {
   }
 
   /**
-   * Parse the lifecycle configuration out of the uucket props
+   * Parse the lifecycle configuration out of the bucket props
    * @param props Par
    */
   private parseLifecycleConfiguration(): CfnBucket.LifecycleConfigurationProperty | undefined {
@@ -1511,13 +1636,13 @@ export class Bucket extends BucketBase {
     return { rules: this.lifecycleRules.map(parseLifecycleRule) };
 
     function parseLifecycleRule(rule: LifecycleRule): CfnBucket.RuleProperty {
-      const enabled = rule.enabled !== undefined ? rule.enabled : true;
+      const enabled = rule.enabled ?? true;
 
       const x: CfnBucket.RuleProperty = {
         // eslint-disable-next-line max-len
         abortIncompleteMultipartUpload: rule.abortIncompleteMultipartUploadAfter !== undefined ? { daysAfterInitiation: rule.abortIncompleteMultipartUploadAfter.toDays() } : undefined,
         expirationDate: rule.expirationDate,
-        expirationInDays: rule.expiration && rule.expiration.toDays(),
+        expirationInDays: rule.expiration?.toDays(),
         id: rule.id,
         noncurrentVersionExpirationInDays: rule.noncurrentVersionExpiration && rule.noncurrentVersionExpiration.toDays(),
         noncurrentVersionTransitions: mapOrUndefined(rule.noncurrentVersionTransitions, t => ({
@@ -1595,6 +1720,17 @@ export class Bucket extends BucketBase {
       key: tag,
       value: tagFilters[tag],
     }));
+  }
+
+  private parseOwnershipControls({ objectOwnership }: BucketProps): CfnBucket.OwnershipControlsProperty | undefined {
+    if (!objectOwnership) {
+      return undefined;
+    }
+    return {
+      rules: [{
+        objectOwnership,
+      }],
+    };
   }
 
   private renderWebsiteConfiguration(props: BucketProps): CfnBucket.WebsiteConfigurationProperty | undefined {
@@ -1691,6 +1827,43 @@ export class Bucket extends BucketBase {
         prefix: inventory.objectsPrefix,
       };
     });
+  }
+
+  private enableAutoDeleteObjects() {
+    const provider = CustomResourceProvider.getOrCreateProvider(this, AUTO_DELETE_OBJECTS_RESOURCE_TYPE, {
+      codeDirectory: path.join(__dirname, 'auto-delete-objects-handler'),
+      runtime: CustomResourceProviderRuntime.NODEJS_12_X,
+      description: `Lambda function for auto-deleting objects in ${this.bucketName} S3 bucket.`,
+    });
+
+    // Use a bucket policy to allow the custom resource to delete
+    // objects in the bucket
+    this.addToResourcePolicy(new iam.PolicyStatement({
+      actions: [
+        ...perms.BUCKET_READ_ACTIONS, // list objects
+        ...perms.BUCKET_DELETE_ACTIONS, // and then delete them
+      ],
+      resources: [
+        this.bucketArn,
+        this.arnForObjects('*'),
+      ],
+      principals: [new iam.ArnPrincipal(provider.roleArn)],
+    }));
+
+    const customResource = new CustomResource(this, 'AutoDeleteObjectsCustomResource', {
+      resourceType: AUTO_DELETE_OBJECTS_RESOURCE_TYPE,
+      serviceToken: provider.serviceToken,
+      properties: {
+        BucketName: this.bucketName,
+      },
+    });
+
+    // Ensure bucket policy is deleted AFTER the custom resource otherwise
+    // we don't have permissions to list and delete in the bucket.
+    // (add a `if` to make TS happy)
+    if (this.policy) {
+      customResource.node.addDependency(this.policy);
+    }
   }
 }
 

@@ -125,7 +125,7 @@ export class BackupPlan extends Resource implements IBackupPlan {
     const plan = new CfnBackupPlan(this, 'Resource', {
       backupPlan: {
         backupPlanName: props.backupPlanName || id,
-        backupPlanRule: Lazy.anyValue({ produce: () => this.rules }, { omitEmptyArray: true }),
+        backupPlanRule: Lazy.any({ produce: () => this.rules }, { omitEmptyArray: true }),
       },
     });
 

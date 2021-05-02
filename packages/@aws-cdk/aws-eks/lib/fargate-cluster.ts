@@ -27,7 +27,6 @@ export class FargateCluster extends Cluster {
     super(scope, id, {
       ...props,
       defaultCapacity: 0,
-      kubectlEnabled: true,
       coreDnsComputeType: props.coreDnsComputeType ?? CoreDnsComputeType.FARGATE,
       version: props.version,
     });

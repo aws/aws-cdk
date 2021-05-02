@@ -1,4 +1,4 @@
-import '@aws-cdk/assert/jest';
+import '@aws-cdk/assert-internal/jest';
 import { FieldUtils, JsonPath } from '../lib';
 
 describe('Fields', () => {
@@ -129,5 +129,27 @@ describe('Fields', () => {
     expect(() => FieldUtils.renderObject({
       field: `contains ${JsonPath.stringAt('$.hello')}`,
     })).toThrowError(/Field references must be the entire string/);
+  });
+  test('infinitely recursive object graphs do not break referenced path finding', () => {
+    const deepObject = {
+      field: JsonPath.stringAt('$.stringField'),
+      deepField: JsonPath.numberAt('$.numField'),
+      recursiveField: undefined as any,
+    };
+    const paths = {
+      bool: false,
+      literal: 'literal',
+      field: JsonPath.stringAt('$.stringField'),
+      listField: JsonPath.listAt('$.listField'),
+      recursiveField: undefined as any,
+      deep: [
+        'literal',
+        deepObject,
+      ],
+    };
+    paths.recursiveField = paths;
+    deepObject.recursiveField = paths;
+    expect(FieldUtils.findReferencedPaths(paths))
+      .toStrictEqual(['$.listField', '$.numField', '$.stringField']);
   });
 });

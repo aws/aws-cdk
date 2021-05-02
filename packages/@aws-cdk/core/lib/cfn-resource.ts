@@ -152,8 +152,8 @@ export class CfnResource extends CfnRefElement {
    *
    * For example,
    * ```typescript
-   * addOverride('Properties.GlobalSecondaryIndexes.0.Projection.NonKeyAttributes', ['myattribute'])
-   * addOverride('Properties.GlobalSecondaryIndexes.1.ProjectionType', 'INCLUDE')
+   * cfnResource.addOverride('Properties.GlobalSecondaryIndexes.0.Projection.NonKeyAttributes', ['myattribute']);
+   * cfnResource.addOverride('Properties.GlobalSecondaryIndexes.1.ProjectionType', 'INCLUDE');
    * ```
    * would add the overrides
    * ```json
@@ -262,6 +262,18 @@ export class CfnResource extends CfnRefElement {
   }
 
   /**
+   * Retrieve a value value from the CloudFormation Resource Metadata
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/metadata-section-structure.html
+   *
+   * Note that this is a different set of metadata from CDK node metadata; this
+   * metadata ends up in the stack template under the resource, whereas CDK
+   * node metadata ends up in the Cloud Assembly.
+   */
+  public getMetadata(key: string): any {
+    return this.cfnOptions.metadata?.[key];
+  }
+
+  /**
    * @returns a string representation of this resource
    */
   public toString() {
@@ -308,13 +320,13 @@ export class CfnResource extends CfnRefElement {
             Description: this.cfnOptions.description,
             Metadata: ignoreEmpty(this.cfnOptions.metadata),
             Condition: this.cfnOptions.condition && this.cfnOptions.condition.logicalId,
-          }, props => {
-            const renderedProps = this.renderProperties(props.Properties || {});
+          }, resourceDef => {
+            const renderedProps = this.renderProperties(resourceDef.Properties || {});
             if (renderedProps) {
               const hasDefined = Object.values(renderedProps).find(v => v !== undefined);
-              props.Properties = hasDefined !== undefined ? renderedProps : undefined;
+              resourceDef.Properties = hasDefined !== undefined ? renderedProps : undefined;
             }
-            return deepMerge(props, this.rawOverrides);
+            return deepMerge(resourceDef, this.rawOverrides);
           }),
         },
       };

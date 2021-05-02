@@ -1,8 +1,8 @@
 // Helper functions for integration tests
 import { spawnSync } from 'child_process';
 import * as path from 'path';
+import { AVAILABILITY_ZONE_FALLBACK_CONTEXT_KEY, FUTURE_FLAGS } from '@aws-cdk/cx-api';
 import * as fs from 'fs-extra';
-import { AVAILABILITY_ZONE_FALLBACK_CONTEXT_KEY } from '../../../packages/@aws-cdk/cx-api/lib';
 
 const CDK_OUTDIR = 'cdk-integ.out';
 
@@ -337,6 +337,8 @@ export const DEFAULT_SYNTH_OPTIONS = {
         },
       ],
     },
+    // Enable feature flags for all integ tests
+    ...FUTURE_FLAGS,
   },
   env: {
     CDK_INTEG_ACCOUNT: '12345678',

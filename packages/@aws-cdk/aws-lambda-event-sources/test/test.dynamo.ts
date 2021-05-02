@@ -1,4 +1,4 @@
-import { expect, haveResource } from '@aws-cdk/assert';
+import { expect, haveResource } from '@aws-cdk/assert-internal';
 import * as dynamodb from '@aws-cdk/aws-dynamodb';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as sqs from '@aws-cdk/aws-sqs';
@@ -34,7 +34,7 @@ export = {
           {
             'Action': 'dynamodb:ListStreams',
             'Effect': 'Allow',
-            'Resource': { 'Fn::Join': ['', [{ 'Fn::GetAtt': ['TD925BC7E', 'Arn'] }, '/stream/*']] },
+            'Resource': '*',
           },
           {
             'Action': [
@@ -71,6 +71,33 @@ export = {
       },
       'BatchSize': 100,
       'StartingPosition': 'TRIM_HORIZON',
+    }));
+
+    test.done();
+  },
+
+  'specific tumblingWindow'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new TestFunction(stack, 'Fn');
+    const table = new dynamodb.Table(stack, 'T', {
+      partitionKey: {
+        name: 'id',
+        type: dynamodb.AttributeType.STRING,
+      },
+      stream: dynamodb.StreamViewType.NEW_IMAGE,
+    });
+
+    // WHEN
+    fn.addEventSource(new sources.DynamoEventSource(table, {
+      batchSize: 50,
+      startingPosition: lambda.StartingPosition.LATEST,
+      tumblingWindow: cdk.Duration.seconds(60),
+    }));
+
+    // THEN
+    expect(stack).to(haveResource('AWS::Lambda::EventSourceMapping', {
+      TumblingWindowInSeconds: 60,
     }));
 
     test.done();
@@ -592,6 +619,32 @@ export = {
         },
       },
       'StartingPosition': 'LATEST',
+    }));
+
+    test.done();
+  },
+
+  'event source disabled'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new TestFunction(stack, 'Fn');
+    const table = new dynamodb.Table(stack, 'T', {
+      partitionKey: {
+        name: 'id',
+        type: dynamodb.AttributeType.STRING,
+      },
+      stream: dynamodb.StreamViewType.NEW_IMAGE,
+    });
+
+    // WHEN
+    fn.addEventSource(new sources.DynamoEventSource(table, {
+      startingPosition: lambda.StartingPosition.LATEST,
+      enabled: false,
+    }));
+
+    //THEN
+    expect(stack).to(haveResource('AWS::Lambda::EventSourceMapping', {
+      'Enabled': false,
     }));
 
     test.done();

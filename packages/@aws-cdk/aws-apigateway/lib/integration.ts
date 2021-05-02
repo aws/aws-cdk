@@ -1,5 +1,5 @@
 import * as iam from '@aws-cdk/aws-iam';
-import { Lazy } from '@aws-cdk/core';
+import { Lazy, Duration } from '@aws-cdk/core';
 import { Method } from './method';
 import { IVpcLink, VpcLink } from './vpc-link';
 
@@ -79,6 +79,14 @@ export interface IntegrationOptions {
    * @see http://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-mapping-template-reference.html
    */
   readonly requestTemplates?: { [contentType: string]: string };
+
+  /**
+   * The maximum amount of time an integration will run before it returns without a response.
+   * Must be between 50 milliseconds and 29 seconds.
+   *
+   * @default Duration.seconds(29)
+   */
+  readonly timeout?: Duration;
 
   /**
    * The response that API Gateway provides after a method's backend completes
@@ -193,6 +201,10 @@ export class Integration {
     if (options.connectionType === ConnectionType.INTERNET && options.vpcLink !== undefined) {
       throw new Error('cannot set \'vpcLink\' where \'connectionType\' is INTERNET');
     }
+
+    if (options.timeout && !options.timeout.isUnresolved() && (options.timeout.toMilliseconds() < 50 || options.timeout.toMilliseconds() > 29000)) {
+      throw new Error('Integration timeout must be between 50 milliseconds and 29 seconds.');
+    }
   }
 
   /**
@@ -204,7 +216,7 @@ export class Integration {
     const options = this.props.options;
 
     if (options?.connectionType === ConnectionType.VPC_LINK && uri === undefined) {
-      uri = Lazy.stringValue({
+      uri = Lazy.string({
         // needs to be a lazy since the targets can be added to the VpcLink construct after initialization.
         produce: () => {
           const vpcLink = options.vpcLink;

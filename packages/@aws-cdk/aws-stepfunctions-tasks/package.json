@@ -17,8 +17,6 @@
       "dotnet": {
         "namespace": "Amazon.CDK.AWS.StepFunctions.Tasks",
         "packageId": "Amazon.CDK.AWS.StepFunctions.Tasks",
-        "signAssembly": true,
-        "assemblyOriginatorKeyFile": "../../key.snk",
         "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
       },
       "python": {
@@ -46,9 +44,16 @@
     "pkglint": "pkglint -f",
     "package": "cdk-package",
     "awslint": "cdk-awslint",
-    "build+test+package": "npm run build+test && npm run package",
-    "build+test": "npm run build && npm test",
-    "compat": "cdk-compat"
+    "build+test+package": "yarn build+test && yarn package",
+    "build+test": "yarn build && yarn test",
+    "compat": "cdk-compat",
+    "rosetta:extract": "yarn --silent jsii-rosetta extract"
+  },
+  "awslint": {
+    "exclude": [
+      "props-no-arn-refs:@aws-cdk/aws-stepfunctions-tasks.BatchSubmitJobProps.jobDefinitionArn",
+      "props-no-arn-refs:@aws-cdk/aws-stepfunctions-tasks.BatchSubmitJobProps.jobQueueArn"
+    ]
   },
   "keywords": [
     "aws",
@@ -64,17 +69,22 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "0.0.0",
+    "@types/jest": "^26.0.22",
     "@aws-cdk/aws-s3-assets": "0.0.0",
     "@aws-cdk/aws-sns-subscriptions": "0.0.0",
+    "@aws-cdk/aws-glue": "0.0.0",
     "cdk-build-tools": "0.0.0",
     "cdk-integ-tools": "0.0.0",
-    "jest": "^26.4.2",
-    "pkglint": "0.0.0"
+    "@aws-cdk/aws-apigatewayv2": "0.0.0",
+    "@aws-cdk/aws-apigatewayv2-integrations": "0.0.0",
+    "@aws-cdk/aws-batch": "0.0.0",
+    "@aws-cdk/aws-databrew": "0.0.0",
+    "jest": "^26.6.3",
+    "pkglint": "0.0.0",
+    "@aws-cdk/assert-internal": "0.0.0"
   },
   "dependencies": {
-    "@aws-cdk/assets": "0.0.0",
-    "@aws-cdk/aws-batch": "0.0.0",
+    "@aws-cdk/aws-apigateway": "0.0.0",
     "@aws-cdk/aws-cloudwatch": "0.0.0",
     "@aws-cdk/aws-codebuild": "0.0.0",
     "@aws-cdk/aws-dynamodb": "0.0.0",
@@ -82,7 +92,7 @@
     "@aws-cdk/aws-ecr": "0.0.0",
     "@aws-cdk/aws-ecr-assets": "0.0.0",
     "@aws-cdk/aws-ecs": "0.0.0",
-    "@aws-cdk/aws-glue": "0.0.0",
+    "@aws-cdk/aws-eks": "0.0.0",
     "@aws-cdk/aws-iam": "0.0.0",
     "@aws-cdk/aws-kms": "0.0.0",
     "@aws-cdk/aws-lambda": "0.0.0",
@@ -91,12 +101,11 @@
     "@aws-cdk/aws-sqs": "0.0.0",
     "@aws-cdk/aws-stepfunctions": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "constructs": "^3.0.4"
+    "constructs": "^3.3.69"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/assets": "0.0.0",
-    "@aws-cdk/aws-batch": "0.0.0",
+    "@aws-cdk/aws-apigateway": "0.0.0",
     "@aws-cdk/aws-cloudwatch": "0.0.0",
     "@aws-cdk/aws-codebuild": "0.0.0",
     "@aws-cdk/aws-dynamodb": "0.0.0",
@@ -104,7 +113,7 @@
     "@aws-cdk/aws-ecr": "0.0.0",
     "@aws-cdk/aws-ecr-assets": "0.0.0",
     "@aws-cdk/aws-ecs": "0.0.0",
-    "@aws-cdk/aws-glue": "0.0.0",
+    "@aws-cdk/aws-eks": "0.0.0",
     "@aws-cdk/aws-iam": "0.0.0",
     "@aws-cdk/aws-kms": "0.0.0",
     "@aws-cdk/aws-lambda": "0.0.0",
@@ -113,7 +122,7 @@
     "@aws-cdk/aws-sqs": "0.0.0",
     "@aws-cdk/aws-stepfunctions": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "constructs": "^3.0.4"
+    "constructs": "^3.3.69"
   },
   "engines": {
     "node": ">= 10.13.0 <13 || >=13.7.0"
@@ -128,5 +137,8 @@
     "env": {
       "AWSLINT_BASE_CONSTRUCT": true
     }
+  },
+  "publishConfig": {
+    "tag": "latest"
   }
 }

@@ -1,7 +1,7 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as serverless from '@aws-cdk/aws-sam';
-import { Duration, Stack, Token } from '@aws-cdk/core';
+import { Duration, Names, Stack, Token } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { ISecret } from './secret';
 
@@ -136,6 +136,7 @@ export class SecretRotationApplication {
 export interface SecretRotationProps {
   /**
    * The secret to rotate. It must be a JSON string with the following format:
+   *
    * ```
    * {
    *   "engine": <required: database engine>,
@@ -148,8 +149,8 @@ export interface SecretRotationProps {
    * }
    * ```
    *
-   * This is typically the case for a secret referenced from an
-   * AWS::SecretsManager::SecretTargetAttachment or an `ISecret` returned by the `attach()` method of `Secret`.
+   * This is typically the case for a secret referenced from an `AWS::SecretsManager::SecretTargetAttachment`
+   * or an `ISecret` returned by the `attach()` method of `Secret`.
    *
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-secretsmanager-secrettargetattachment.html
    */
@@ -223,7 +224,7 @@ export class SecretRotation extends CoreConstruct {
     }
 
     // Max length of 64 chars, get the last 64 chars
-    const uniqueId = this.node.uniqueId;
+    const uniqueId = Names.uniqueId(this);
     const rotationFunctionName = uniqueId.substring(Math.max(uniqueId.length - 64, 0), uniqueId.length);
 
     const securityGroup = props.securityGroup || new ec2.SecurityGroup(this, 'SecurityGroup', {
@@ -270,8 +271,7 @@ export class SecretRotation extends CoreConstruct {
       automaticallyAfter: props.automaticallyAfter,
     });
 
-    // Prevent secrets deletions when rotation is in place
-    props.secret.denyAccountRootDelete();
+    // Prevent master secret deletion when rotation is in place
     if (props.masterSecret) {
       props.masterSecret.denyAccountRootDelete();
     }

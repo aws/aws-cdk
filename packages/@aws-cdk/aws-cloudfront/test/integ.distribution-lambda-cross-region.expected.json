@@ -1,0 +1,395 @@
+[
+  {
+    "Resources": {
+      "LambdaArnReaderAB4FC772": {
+        "Type": "Custom::CrossRegionStringParameterReader",
+        "Properties": {
+          "ServiceToken": {
+            "Fn::GetAtt": [
+              "CustomCrossRegionStringParameterReaderCustomResourceProviderHandler65B5F33A",
+              "Arn"
+            ]
+          },
+          "Region": "us-east-1",
+          "ParameterName": "/cdk/EdgeFunctionArn/eu-west-1/integ-distribution-lambda-cross-region/Lambda",
+          "RefreshToken": "4412ddb0ae449da20173ca211c51fddc"
+        },
+        "UpdateReplacePolicy": "Delete",
+        "DeletionPolicy": "Delete"
+      },
+      "CustomCrossRegionStringParameterReaderCustomResourceProviderRole71CD6825": {
+        "Type": "AWS::IAM::Role",
+        "Properties": {
+          "AssumeRolePolicyDocument": {
+            "Version": "2012-10-17",
+            "Statement": [
+              {
+                "Action": "sts:AssumeRole",
+                "Effect": "Allow",
+                "Principal": {
+                  "Service": "lambda.amazonaws.com"
+                }
+              }
+            ]
+          },
+          "ManagedPolicyArns": [
+            {
+              "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+            }
+          ],
+          "Policies": [
+            {
+              "PolicyName": "Inline",
+              "PolicyDocument": {
+                "Version": "2012-10-17",
+                "Statement": [
+                  {
+                    "Effect": "Allow",
+                    "Resource": {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "arn:",
+                          {
+                            "Ref": "AWS::Partition"
+                          },
+                          ":ssm:us-east-1:",
+                          {
+                            "Ref": "AWS::AccountId"
+                          },
+                          ":parameter/cdk/EdgeFunctionArn/*"
+                        ]
+                      ]
+                    },
+                    "Action": [
+                      "ssm:GetParameter"
+                    ]
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      },
+      "CustomCrossRegionStringParameterReaderCustomResourceProviderHandler65B5F33A": {
+        "Type": "AWS::Lambda::Function",
+        "Properties": {
+          "Code": {
+            "S3Bucket": {
+              "Ref": "AssetParameters45b7ed524ce2b119dd4f2b8642ae8bfaf0df45bc6bd705072ae4ee6d1a999241S3BucketF1BC72A7"
+            },
+            "S3Key": {
+              "Fn::Join": [
+                "",
+                [
+                  {
+                    "Fn::Select": [
+                      0,
+                      {
+                        "Fn::Split": [
+                          "||",
+                          {
+                            "Ref": "AssetParameters45b7ed524ce2b119dd4f2b8642ae8bfaf0df45bc6bd705072ae4ee6d1a999241S3VersionKey7AD83AC7"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "Fn::Select": [
+                      1,
+                      {
+                        "Fn::Split": [
+                          "||",
+                          {
+                            "Ref": "AssetParameters45b7ed524ce2b119dd4f2b8642ae8bfaf0df45bc6bd705072ae4ee6d1a999241S3VersionKey7AD83AC7"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              ]
+            }
+          },
+          "Timeout": 900,
+          "MemorySize": 128,
+          "Handler": "__entrypoint__.handler",
+          "Role": {
+            "Fn::GetAtt": [
+              "CustomCrossRegionStringParameterReaderCustomResourceProviderRole71CD6825",
+              "Arn"
+            ]
+          },
+          "Runtime": "nodejs12.x"
+        },
+        "DependsOn": [
+          "CustomCrossRegionStringParameterReaderCustomResourceProviderRole71CD6825"
+        ]
+      },
+      "Lambda2ArnReader5ACFBE1F": {
+        "Type": "Custom::CrossRegionStringParameterReader",
+        "Properties": {
+          "ServiceToken": {
+            "Fn::GetAtt": [
+              "CustomCrossRegionStringParameterReaderCustomResourceProviderHandler65B5F33A",
+              "Arn"
+            ]
+          },
+          "Region": "us-east-1",
+          "ParameterName": "/cdk/EdgeFunctionArn/eu-west-1/integ-distribution-lambda-cross-region/Lambda2",
+          "RefreshToken": "8f81ceb404ac454f09648e62822d9ca9"
+        },
+        "UpdateReplacePolicy": "Delete",
+        "DeletionPolicy": "Delete"
+      },
+      "DistB3B78991": {
+        "Type": "AWS::CloudFront::Distribution",
+        "Properties": {
+          "DistributionConfig": {
+            "DefaultCacheBehavior": {
+              "CachePolicyId": "4135ea2d-6df8-44a3-9df3-4b5a84be39ad",
+              "Compress": true,
+              "LambdaFunctionAssociations": [
+                {
+                  "EventType": "origin-request",
+                  "LambdaFunctionARN": {
+                    "Fn::GetAtt": [
+                      "LambdaArnReaderAB4FC772",
+                      "FunctionArn"
+                    ]
+                  }
+                },
+                {
+                  "EventType": "origin-response",
+                  "LambdaFunctionARN": {
+                    "Fn::GetAtt": [
+                      "Lambda2ArnReader5ACFBE1F",
+                      "FunctionArn"
+                    ]
+                  }
+                }
+              ],
+              "TargetOriginId": "integdistributionlambdacrossregionDistOrigin167A054D5",
+              "ViewerProtocolPolicy": "allow-all"
+            },
+            "Enabled": true,
+            "HttpVersion": "http2",
+            "IPV6Enabled": true,
+            "Origins": [
+              {
+                "CustomOriginConfig": {
+                  "OriginProtocolPolicy": "https-only"
+                },
+                "DomainName": "www.example.com",
+                "Id": "integdistributionlambdacrossregionDistOrigin167A054D5"
+              }
+            ]
+          }
+        }
+      }
+    },
+    "Parameters": {
+      "AssetParameters45b7ed524ce2b119dd4f2b8642ae8bfaf0df45bc6bd705072ae4ee6d1a999241S3BucketF1BC72A7": {
+        "Type": "String",
+        "Description": "S3 bucket for asset \"45b7ed524ce2b119dd4f2b8642ae8bfaf0df45bc6bd705072ae4ee6d1a999241\""
+      },
+      "AssetParameters45b7ed524ce2b119dd4f2b8642ae8bfaf0df45bc6bd705072ae4ee6d1a999241S3VersionKey7AD83AC7": {
+        "Type": "String",
+        "Description": "S3 key for asset version \"45b7ed524ce2b119dd4f2b8642ae8bfaf0df45bc6bd705072ae4ee6d1a999241\""
+      },
+      "AssetParameters45b7ed524ce2b119dd4f2b8642ae8bfaf0df45bc6bd705072ae4ee6d1a999241ArtifactHash1B3D1B80": {
+        "Type": "String",
+        "Description": "Artifact hash for asset \"45b7ed524ce2b119dd4f2b8642ae8bfaf0df45bc6bd705072ae4ee6d1a999241\""
+      }
+    }
+  },
+  {
+    "Resources": {
+      "LambdaServiceRoleA8ED4D3B": {
+        "Type": "AWS::IAM::Role",
+        "Properties": {
+          "AssumeRolePolicyDocument": {
+            "Statement": [
+              {
+                "Action": "sts:AssumeRole",
+                "Effect": "Allow",
+                "Principal": {
+                  "Service": "lambda.amazonaws.com"
+                }
+              },
+              {
+                "Action": "sts:AssumeRole",
+                "Effect": "Allow",
+                "Principal": {
+                  "Service": "edgelambda.amazonaws.com"
+                }
+              }
+            ],
+            "Version": "2012-10-17"
+          },
+          "ManagedPolicyArns": [
+            {
+              "Fn::Join": [
+                "",
+                [
+                  "arn:",
+                  {
+                    "Ref": "AWS::Partition"
+                  },
+                  ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                ]
+              ]
+            }
+          ]
+        }
+      },
+      "LambdaD247545B": {
+        "Type": "AWS::Lambda::Function",
+        "Properties": {
+          "Code": {
+            "ZipFile": "foo"
+          },
+          "Role": {
+            "Fn::GetAtt": [
+              "LambdaServiceRoleA8ED4D3B",
+              "Arn"
+            ]
+          },
+          "Handler": "index.handler",
+          "Runtime": "nodejs10.x"
+        },
+        "DependsOn": [
+          "LambdaServiceRoleA8ED4D3B"
+        ]
+      },
+      "LambdaCurrentVersionDF706F6A97fb843e9bd06fcd2bb15eeace80e13e": {
+        "Type": "AWS::Lambda::Version",
+        "Properties": {
+          "FunctionName": {
+            "Ref": "LambdaD247545B"
+          }
+        }
+      },
+      "LambdaParameterCDCFFB68": {
+        "Type": "AWS::SSM::Parameter",
+        "Properties": {
+          "Type": "String",
+          "Value": {
+            "Ref": "LambdaCurrentVersionDF706F6A97fb843e9bd06fcd2bb15eeace80e13e"
+          },
+          "Name": "/cdk/EdgeFunctionArn/eu-west-1/integ-distribution-lambda-cross-region/Lambda"
+        }
+      },
+      "LambdaAliaslive79C8A712": {
+        "Type": "AWS::Lambda::Alias",
+        "Properties": {
+          "FunctionName": {
+            "Ref": "LambdaD247545B"
+          },
+          "FunctionVersion": {
+            "Fn::GetAtt": [
+              "LambdaCurrentVersionDF706F6A97fb843e9bd06fcd2bb15eeace80e13e",
+              "Version"
+            ]
+          },
+          "Name": "live"
+        }
+      }
+    }
+  },
+  {
+    "Resources": {
+      "Lambda2ServiceRole31A072E1": {
+        "Type": "AWS::IAM::Role",
+        "Properties": {
+          "AssumeRolePolicyDocument": {
+            "Statement": [
+              {
+                "Action": "sts:AssumeRole",
+                "Effect": "Allow",
+                "Principal": {
+                  "Service": "lambda.amazonaws.com"
+                }
+              },
+              {
+                "Action": "sts:AssumeRole",
+                "Effect": "Allow",
+                "Principal": {
+                  "Service": "edgelambda.amazonaws.com"
+                }
+              }
+            ],
+            "Version": "2012-10-17"
+          },
+          "ManagedPolicyArns": [
+            {
+              "Fn::Join": [
+                "",
+                [
+                  "arn:",
+                  {
+                    "Ref": "AWS::Partition"
+                  },
+                  ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                ]
+              ]
+            }
+          ]
+        }
+      },
+      "Lambda217CFB423": {
+        "Type": "AWS::Lambda::Function",
+        "Properties": {
+          "Code": {
+            "ZipFile": "foo"
+          },
+          "Role": {
+            "Fn::GetAtt": [
+              "Lambda2ServiceRole31A072E1",
+              "Arn"
+            ]
+          },
+          "Handler": "index.handler",
+          "Runtime": "nodejs10.x"
+        },
+        "DependsOn": [
+          "Lambda2ServiceRole31A072E1"
+        ]
+      },
+      "Lambda2CurrentVersion72012B74b9eef8becb98501bc795baca3c6169c4": {
+        "Type": "AWS::Lambda::Version",
+        "Properties": {
+          "FunctionName": {
+            "Ref": "Lambda217CFB423"
+          }
+        }
+      },
+      "Lambda2Parameter3444E17A": {
+        "Type": "AWS::SSM::Parameter",
+        "Properties": {
+          "Type": "String",
+          "Value": {
+            "Ref": "Lambda2CurrentVersion72012B74b9eef8becb98501bc795baca3c6169c4"
+          },
+          "Name": "/cdk/EdgeFunctionArn/eu-west-1/integ-distribution-lambda-cross-region/Lambda2"
+        }
+      },
+      "Lambda2Aliaslive77F6085F": {
+        "Type": "AWS::Lambda::Alias",
+        "Properties": {
+          "FunctionName": {
+            "Ref": "Lambda217CFB423"
+          },
+          "FunctionVersion": {
+            "Fn::GetAtt": [
+              "Lambda2CurrentVersion72012B74b9eef8becb98501bc795baca3c6169c4",
+              "Version"
+            ]
+          },
+          "Name": "live"
+        }
+      }
+    }
+  }
+]

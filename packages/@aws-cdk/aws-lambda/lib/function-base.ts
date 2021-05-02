@@ -106,6 +106,17 @@ export interface IFunction extends IResource, ec2.IConnectable, iam.IGrantable {
    */
   metricThrottles(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 
+  /**
+   * Adds an event source to this function.
+   *
+   * Event sources are implemented in the @aws-cdk/aws-lambda-event-sources module.
+   *
+   * The following example adds an SQS Queue as an event source:
+   * ```
+   * import { SqsEventSource } from '@aws-cdk/aws-lambda-event-sources';
+   * myFunction.addEventSource(new SqsEventSource(myQueue));
+   * ```
+   */
   addEventSource(source: IEventSource): void;
 
   /**
@@ -149,9 +160,22 @@ export interface FunctionAttributes {
    * to this Lambda.
    */
   readonly securityGroup?: ec2.ISecurityGroup;
+
+  /**
+   * Setting this property informs the CDK that the imported function is in the same environment as the stack.
+   * This affects certain behaviours such as, whether this function's permission can be modified.
+   * When not configured, the CDK attempts to auto-determine this. For environment agnostic stacks, i.e., stacks
+   * where the account is not specified with the `env` property, this is determined to be false.
+   *
+   * Set this to property *ONLY IF* the imported function is in the same account as the stack
+   * it's imported in.
+   * @default - depends: true, if the Stack is configured with an explicit `env` (account and region) and the account is the same as this function.
+   * For environment-agnostic stacks this will default to `false`.
+   */
+  readonly sameEnvironment?: boolean;
 }
 
-export abstract class FunctionBase extends Resource implements IFunction {
+export abstract class FunctionBase extends Resource implements IFunction, ec2.IClientVpnConnectionHandler {
   /**
    * The principal this Lambda Function is running as
    */
@@ -236,7 +260,7 @@ export abstract class FunctionBase extends Resource implements IFunction {
       return;
     }
 
-    this.role.addToPolicy(statement);
+    this.role.addToPrincipalPolicy(statement);
   }
 
   /**
@@ -301,7 +325,8 @@ export abstract class FunctionBase extends Resource implements IFunction {
 
             const permissionNode = this._functionNode().tryFindChild(identifier);
             if (!permissionNode) {
-              throw new Error('Cannot modify permission to lambda function. Function is either imported or $LATEST version.');
+              throw new Error('Cannot modify permission to lambda function. Function is either imported or $LATEST version. '
+                + 'If the function is imported from the same account use `fromFunctionAttributes()` API with the `sameEnvironment` flag.');
             }
             return { statementAdded: true, policyDependable: permissionNode };
           },
@@ -315,18 +340,6 @@ export abstract class FunctionBase extends Resource implements IFunction {
     return grant;
   }
 
-  /**
-   * Adds an event source to this function.
-   *
-   * Event sources are implemented in the @aws-cdk/aws-lambda-event-sources module.
-   *
-   * The following example adds an SQS Queue as an event source:
-   *
-   *     import { SqsEventSource } from '@aws-cdk/aws-lambda-event-sources';
-   *     myFunction.addEventSource(new SqsEventSource(myQueue));
-   *
-   * @param source The event source to bind to this function
-   */
   public addEventSource(source: IEventSource) {
     source.bind(this);
   }
@@ -361,13 +374,13 @@ export abstract class FunctionBase extends Resource implements IFunction {
    * ..which means that in order to extract the `account-id` component from the ARN, we can
    * split the ARN using ":" and select the component in index 4.
    *
-   * @returns true if account id of function matches this account, or the accounts are unresolved.
+   * @returns true if account id of function matches the account specified on the stack, false otherwise.
    *
    * @internal
    */
   protected _isStackAccount(): boolean {
     if (Token.isUnresolved(this.stack.account) || Token.isUnresolved(this.functionArn)) {
-      return true;
+      return false;
     }
     return this.stack.parseArn(this.functionArn).account === this.stack.account;
   }

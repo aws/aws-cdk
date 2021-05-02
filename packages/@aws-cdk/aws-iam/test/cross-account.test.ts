@@ -1,4 +1,4 @@
-import '@aws-cdk/assert/jest';
+import '@aws-cdk/assert-internal/jest';
 import * as cdk from '@aws-cdk/core';
 import * as constructs from 'constructs';
 import * as iam from '../lib';
@@ -170,7 +170,7 @@ class FakeResource extends cdk.Resource implements iam.IResourceWithPolicy {
     new cdk.CfnResource(this, 'Default', {
       type: 'Test::Fake::Resource',
       properties: {
-        ResourcePolicy: cdk.Lazy.anyValue({ produce: () => this.policy }),
+        ResourcePolicy: cdk.Lazy.any({ produce: () => this.policy }),
       },
     });
   }

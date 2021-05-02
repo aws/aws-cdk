@@ -36,7 +36,7 @@
       "Properties": {
         "Code": {
           "S3Bucket": {
-            "Ref": "AssetParameters58da14e3fe62df26811cb369b51aa83cab6a27ea3e638e5952ed6439b9cd2f2fS3Bucket3D9CB240"
+            "Ref": "AssetParameters29cd01a5fe529da311cdec40c163fb1c04b1b3dc8caadff0ea696fb6e63610feS3Bucket38F00249"
           },
           "S3Key": {
             "Fn::Join": [
@@ -49,7 +49,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParameters58da14e3fe62df26811cb369b51aa83cab6a27ea3e638e5952ed6439b9cd2f2fS3VersionKeyA12EF729"
+                          "Ref": "AssetParameters29cd01a5fe529da311cdec40c163fb1c04b1b3dc8caadff0ea696fb6e63610feS3VersionKey60957E7E"
                         }
                       ]
                     }
@@ -62,7 +62,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParameters58da14e3fe62df26811cb369b51aa83cab6a27ea3e638e5952ed6439b9cd2f2fS3VersionKeyA12EF729"
+                          "Ref": "AssetParameters29cd01a5fe529da311cdec40c163fb1c04b1b3dc8caadff0ea696fb6e63610feS3VersionKey60957E7E"
                         }
                       ]
                     }
@@ -72,13 +72,13 @@
             ]
           }
         },
-        "Handler": "index.handler",
         "Role": {
           "Fn::GetAtt": [
             "myhandlerServiceRole77891068",
             "Arn"
           ]
         },
+        "Handler": "index.handler",
         "Runtime": "python3.8"
       },
       "DependsOn": [
@@ -87,17 +87,17 @@
     }
   },
   "Parameters": {
-    "AssetParameters58da14e3fe62df26811cb369b51aa83cab6a27ea3e638e5952ed6439b9cd2f2fS3Bucket3D9CB240": {
+    "AssetParameters29cd01a5fe529da311cdec40c163fb1c04b1b3dc8caadff0ea696fb6e63610feS3Bucket38F00249": {
       "Type": "String",
-      "Description": "S3 bucket for asset \"58da14e3fe62df26811cb369b51aa83cab6a27ea3e638e5952ed6439b9cd2f2f\""
+      "Description": "S3 bucket for asset \"29cd01a5fe529da311cdec40c163fb1c04b1b3dc8caadff0ea696fb6e63610fe\""
     },
-    "AssetParameters58da14e3fe62df26811cb369b51aa83cab6a27ea3e638e5952ed6439b9cd2f2fS3VersionKeyA12EF729": {
+    "AssetParameters29cd01a5fe529da311cdec40c163fb1c04b1b3dc8caadff0ea696fb6e63610feS3VersionKey60957E7E": {
       "Type": "String",
-      "Description": "S3 key for asset version \"58da14e3fe62df26811cb369b51aa83cab6a27ea3e638e5952ed6439b9cd2f2f\""
+      "Description": "S3 key for asset version \"29cd01a5fe529da311cdec40c163fb1c04b1b3dc8caadff0ea696fb6e63610fe\""
     },
-    "AssetParameters58da14e3fe62df26811cb369b51aa83cab6a27ea3e638e5952ed6439b9cd2f2fArtifactHash3C7CD7C2": {
+    "AssetParameters29cd01a5fe529da311cdec40c163fb1c04b1b3dc8caadff0ea696fb6e63610feArtifactHash29C18922": {
       "Type": "String",
-      "Description": "Artifact hash for asset \"58da14e3fe62df26811cb369b51aa83cab6a27ea3e638e5952ed6439b9cd2f2f\""
+      "Description": "Artifact hash for asset \"29cd01a5fe529da311cdec40c163fb1c04b1b3dc8caadff0ea696fb6e63610fe\""
     }
   },
   "Outputs": {

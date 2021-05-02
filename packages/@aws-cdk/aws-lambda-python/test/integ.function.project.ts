@@ -1,3 +1,4 @@
+/// !cdk-integ pragma:ignore-assets
 import * as path from 'path';
 import { Runtime } from '@aws-cdk/aws-lambda';
 import { App, CfnOutput, Stack, StackProps } from '@aws-cdk/core';

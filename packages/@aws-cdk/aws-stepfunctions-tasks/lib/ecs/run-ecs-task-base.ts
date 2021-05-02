@@ -45,6 +45,7 @@ export interface CommonEcsRunTaskProps {
 
 /**
  * Construction properties for the BaseRunTaskProps
+ * @deprecated No replacement
  */
 export interface EcsRunTaskBaseProps extends CommonEcsRunTaskProps {
   /**
@@ -57,6 +58,7 @@ export interface EcsRunTaskBaseProps extends CommonEcsRunTaskProps {
 
 /**
  * A StepFunctions Task to run a Task on ECS or Fargate
+ * @deprecated No replacement
  */
 export class EcsRunTaskBase implements ec2.IConnectable, sfn.IStepFunctionsTask {
   /**
@@ -136,7 +138,7 @@ export class EcsRunTaskBase implements ec2.IConnectable, sfn.IStepFunctionsTask 
       AwsvpcConfiguration: {
         AssignPublicIp: assignPublicIp !== undefined ? (assignPublicIp ? 'ENABLED' : 'DISABLED') : undefined,
         Subnets: vpc.selectSubnets(subnetSelection).subnetIds,
-        SecurityGroups: cdk.Lazy.listValue({ produce: () => [this.securityGroup!.securityGroupId] }),
+        SecurityGroups: cdk.Lazy.list({ produce: () => [this.securityGroup!.securityGroupId] }),
       },
     };
   }
@@ -156,7 +158,7 @@ export class EcsRunTaskBase implements ec2.IConnectable, sfn.IStepFunctionsTask 
       }),
       new iam.PolicyStatement({
         actions: ['iam:PassRole'],
-        resources: cdk.Lazy.listValue({ produce: () => this.taskExecutionRoles().map(r => r.roleArn) }),
+        resources: cdk.Lazy.list({ produce: () => this.taskExecutionRoles().map(r => r.roleArn) }),
       }),
     ];
 

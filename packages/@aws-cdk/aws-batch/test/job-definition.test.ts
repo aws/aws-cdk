@@ -1,9 +1,11 @@
-import '@aws-cdk/assert/jest';
-import { ResourcePart } from '@aws-cdk/assert/lib/assertions/have-resource';
+import '@aws-cdk/assert-internal/jest';
+import { ResourcePart } from '@aws-cdk/assert-internal/lib/assertions/have-resource';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecr from '@aws-cdk/aws-ecr';
 import * as ecs from '@aws-cdk/aws-ecs';
 import * as iam from '@aws-cdk/aws-iam';
+import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
+import * as ssm from '@aws-cdk/aws-ssm';
 import * as cdk from '@aws-cdk/core';
 import * as batch from '../lib';
 
@@ -23,6 +25,11 @@ describe('Batch Job Definition', () => {
       sharedMemorySize: 1,
     });
 
+    const logConfiguration: batch.LogConfiguration = {
+      logDriver: batch.LogDriver.AWSLOGS,
+      options: { 'awslogs-region': 'us-east-1' },
+    };
+
     jobDefProps = {
       jobDefinitionName: 'test-job',
       container: {
@@ -35,6 +42,7 @@ describe('Batch Job Definition', () => {
         image: ecs.EcrImage.fromRegistry('docker/whalesay'),
         instanceType: ec2.InstanceType.of(ec2.InstanceClass.T2, ec2.InstanceSize.MICRO),
         linuxParams,
+        logConfiguration,
         memoryLimitMiB: 1,
         mountPoints: new Array<ecs.MountPoint>(),
         privileged: true,
@@ -74,6 +82,12 @@ describe('Batch Job Definition', () => {
         ],
         InstanceType: jobDefProps.container.instanceType ? jobDefProps.container.instanceType.toString() : '',
         LinuxParameters: {},
+        LogConfiguration: {
+          LogDriver: 'awslogs',
+          Options: {
+            'awslogs-region': 'us-east-1',
+          },
+        },
         Memory: jobDefProps.container.memoryLimitMiB,
         MountPoints: [],
         Privileged: jobDefProps.container.privileged,
@@ -208,6 +222,69 @@ describe('Batch Job Definition', () => {
     // THEN
     expect(importedJob.jobDefinitionName).toEqual('job-def-name');
     expect(importedJob.jobDefinitionArn)
-      .toEqual('arn:${Token[AWS.Partition.3]}:batch:${Token[AWS.Region.4]}:${Token[AWS.AccountId.0]}:job-definition/job-def-name');
+      .toEqual(`arn:${cdk.Aws.PARTITION}:batch:${cdk.Aws.REGION}:${cdk.Aws.ACCOUNT_ID}:job-definition/job-def-name`);
+  });
+
+  test('can configure log configuration secrets properly', () => {
+    // GIVEN
+    const secretArn = 'arn:aws:secretsmanager:eu-west-1:111111111111:secret:MySecret-f3gDy9';
+
+    const logConfiguration: batch.LogConfiguration = {
+      logDriver: batch.LogDriver.AWSLOGS,
+      options: { 'awslogs-region': 'us-east-1' },
+      secretOptions: [
+        batch.ExposedSecret.fromSecretsManager('abc', secretsmanager.Secret.fromSecretCompleteArn(stack, 'secret', secretArn)),
+        batch.ExposedSecret.fromParametersStore('xyz', ssm.StringParameter.fromStringParameterName(stack, 'parameter', 'xyz')),
+      ],
+    };
+
+    // WHEN
+    new batch.JobDefinition(stack, 'job-def', {
+      container: {
+        image: ecs.EcrImage.fromRegistry('docker/whalesay'),
+        logConfiguration,
+      },
+    });
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::Batch::JobDefinition', {
+      ContainerProperties: {
+        LogConfiguration: {
+          LogDriver: 'awslogs',
+          Options: {
+            'awslogs-region': 'us-east-1',
+          },
+          SecretOptions: [
+            {
+              Name: 'abc',
+              ValueFrom: secretArn,
+            },
+            {
+              Name: 'xyz',
+              ValueFrom: {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    {
+                      Ref: 'AWS::Partition',
+                    },
+                    ':ssm:',
+                    {
+                      Ref: 'AWS::Region',
+                    },
+                    ':',
+                    {
+                      Ref: 'AWS::AccountId',
+                    },
+                    ':parameter/xyz',
+                  ],
+                ],
+              },
+            },
+          ],
+        },
+      },
+    }, ResourcePart.Properties);
   });
 });

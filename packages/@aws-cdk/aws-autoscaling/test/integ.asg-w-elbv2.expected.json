@@ -444,9 +444,7 @@
     "FleetLaunchConfig59F79D36": {
       "Type": "AWS::AutoScaling::LaunchConfiguration",
       "Properties": {
-        "ImageId": {
-          "Ref": "SsmParameterValueawsserviceamiamazonlinuxlatestamznamihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter"
-        },
+        "ImageId": "{{resolve:ssm:/aws/service/ami-amazon-linux-latest/amzn-ami-hvm-x86_64-gp2}}",
         "InstanceType": "t2.micro",
         "IamInstanceProfile": {
           "Ref": "FleetInstanceProfileC6192A66"
@@ -568,7 +566,7 @@
               ]
             }
           },
-          "TargetValue": 1
+          "TargetValue": 60
         }
       },
       "DependsOn": [
@@ -676,12 +674,6 @@
           "Ref": "VPCB9E5F0B4"
         }
       }
-    }
-  },
-  "Parameters": {
-    "SsmParameterValueawsserviceamiamazonlinuxlatestamznamihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter": {
-      "Type": "AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>",
-      "Default": "/aws/service/ami-amazon-linux-latest/amzn-ami-hvm-x86_64-gp2"
     }
   }
 }

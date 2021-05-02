@@ -1,10 +1,12 @@
 # AWS CDK Custom Resources
 <!--BEGIN STABILITY BANNER-->
+
 ---
 
 ![cdk-constructs: Stable](https://img.shields.io/badge/cdk--constructs-stable-success.svg?style=for-the-badge)
 
 ---
+
 <!--END STABILITY BANNER-->
 
 ## Provider Framework
@@ -195,7 +197,7 @@ must return this name in `PhysicalResourceId` and make sure to handle
 replacement properly. The `S3File` example demonstrates this
 through the `objectKey` property.
 
-### Error Handling
+### Handling Provider Framework Error
 
 As mentioned above, if any of the user handlers fail (i.e. throws an exception)
 or times out (due to their AWS Lambda timing out), the framework will trap these
@@ -211,15 +213,15 @@ When AWS CloudFormation receives a "FAILED" response, it will attempt to roll
 back the stack to it's last state. This has different meanings for different
 lifecycle events:
 
-- If a `Create` event fails, the resource provider framework will automatically
+* If a `Create` event fails, the resource provider framework will automatically
   ignore the subsequent `Delete` operation issued by AWS CloudFormation. The
   framework currently does not support customizing this behavior (see
   https://github.com/aws/aws-cdk/issues/5524).
-- If an `Update` event fails, CloudFormation will issue an additional `Update`
+* If an `Update` event fails, CloudFormation will issue an additional `Update`
   with the previous properties.
-- If a `Delete` event fails, CloudFormation will abandon this resource.
+* If a `Delete` event fails, CloudFormation will abandon this resource.
 
-### Execution Policy
+### Provider Framework Execution Policy
 
 Similarly to any AWS Lambda function, if the user-defined handlers require
 access to AWS resources, you will have to define these permissions
@@ -254,7 +256,7 @@ implement an [asynchronous provider](#asynchronous-providers-iscomplete), and
 then configure the timeouts for the asynchronous retries through the
 `queryInterval` and the `totalTimeout` options.
 
-### Examples
+### Provider Framework Examples
 
 This module includes a few examples for custom resource implementations:
 
@@ -280,12 +282,12 @@ new S3File(this, 'MyFile', {
 
 This sample demonstrates the following concepts:
 
-- Synchronous implementation (`isComplete` is not defined)
-- Automatically generates the physical name if `objectKey` is not defined
-- Handles physical name changes
-- Returns resource attributes
-- Handles deletions
-- Implemented in TypeScript
+* Synchronous implementation (`isComplete` is not defined)
+* Automatically generates the physical name if `objectKey` is not defined
+* Handles physical name changes
+* Returns resource attributes
+* Handles deletions
+* Implemented in TypeScript
 
 #### S3Assert
 
@@ -304,9 +306,9 @@ new S3Assert(this, 'AssertMyFile', {
 
 This sample demonstrates the following concepts:
 
-- Asynchronous implementation
-- Non-intrinsic physical IDs
-- Implemented in Python
+* Asynchronous implementation
+* Non-intrinsic physical IDs
+* Implemented in Python
 
 ## Custom Resources for AWS APIs
 
@@ -332,14 +334,14 @@ in the Lambda function implementing the custom resource. The installation takes 
 seconds. If you prefer to optimize for speed, you can disable the installation by setting
 the `installLatestAwsSdk` prop to `false`.
 
-### Execution Policy
+### Custom Resource Execution Policy
 
 You must provide the `policy` property defining the IAM Policy that will be applied to the API calls.
 The library provides two factory methods to quickly configure this:
 
-- **`AwsCustomResourcePolicy.fromSdkCalls`** - Use this to auto-generate IAM Policy statements based on the configured SDK calls.
+* **`AwsCustomResourcePolicy.fromSdkCalls`** - Use this to auto-generate IAM Policy statements based on the configured SDK calls.
 Note that you will have to either provide specific ARN's, or explicitly use `AwsCustomResourcePolicy.ANY_RESOURCE` to allow access to any resource.
-- **`AwsCustomResourcePolicy.fromStatements`** - Use this to specify your own custom statements.
+* **`AwsCustomResourcePolicy.fromStatements`** - Use this to specify your own custom statements.
 
 The custom resource also implements `iam.IGrantable`, making it possible to use the `grantXxx()` methods.
 
@@ -348,6 +350,7 @@ that the function's role will eventually accumulate the permissions/grants from 
 resources.
 
 Chained API calls can be achieved by creating dependencies:
+
 ```ts
 const awsCustom1 = new AwsCustomResource(this, 'API1', {
   onCreate: {
@@ -372,9 +375,10 @@ const awsCustom2 = new AwsCustomResource(this, 'API2', {
 ```
 
 ### Physical Resource Id Parameter
+
 Some AWS APIs may require passing the physical resource id in as a parameter for doing updates and deletes. You can pass it by using `PhysicalResourceIdReference`.
 
-```
+```ts
 const awsCustom = new AwsCustomResource(this, '...', {
   onCreate: {
     service: '...',
@@ -396,7 +400,7 @@ const awsCustom = new AwsCustomResource(this, '...', {
 })
 ```
 
-### Error Handling
+### Handling Custom Resource Errors
 
 Every error produced by the API call is treated as is and will cause a "FAILED" response to be submitted to CloudFormation.
 You can ignore some errors by specifying the `ignoreErrorCodesMatching` property, which accepts a regular expression that is
@@ -404,12 +408,13 @@ tested against the `code` property of the response. If matched, a "SUCCESS" resp
 Note that in such a case, the call response data and the `Data` key submitted to CloudFormation would both be an empty JSON object.
 Since a successful resource provisioning might or might not produce outputs, this presents us with some limitations:
 
-- `PhysicalResourceId.fromResponse` - Since the call response data might be empty, we cannot use it to extract the physical id.
-- `getResponseField` and `getResponseFieldReference` - Since the `Data` key is empty, the resource will not have any attributes, and therefore, invoking these functions will result in an error.
+* `PhysicalResourceId.fromResponse` - Since the call response data might be empty, we cannot use it to extract the physical id.
+* `getResponseField` and `getResponseFieldReference` - Since the `Data` key is empty, the resource will not have any attributes, and therefore, invoking these functions will result in an error.
 
 In both the cases, you will get a synth time error if you attempt to use it in conjunction with `ignoreErrorCodesMatching`.
 
 ### Customizing the Lambda function implementing the custom resource
+
 Use the `role`, `timeout`, `logRetention` and `functionName` properties to customize
 the Lambda function implementing the custom resource:
 
@@ -423,7 +428,7 @@ new AwsCustomResource(this, 'Customized', {
 })
 ```
 
-### Examples
+### Custom Resource Examples
 
 #### Verify a domain with SES
 
@@ -467,9 +472,29 @@ const getParameter = new AwsCustomResource(this, 'GetParameter', {
 getParameter.getResponseField('Parameter.Value')
 ```
 
+#### Associate a PrivateHostedZone with VPC shared from another account
 
+```ts
+const getParameter = new AwsCustomResource(this, 'AssociateVPCWithHostedZone', {
+  onCreate: {
+    assumedRoleArn: 'arn:aws:iam::OTHERACCOUNT:role/CrossAccount/ManageHostedZoneConnections',
+    service: 'Route53',
+    action: 'associateVPCWithHostedZone',
+    parameters: {
+      HostedZoneId: 'hz-123',
+      VPC: {
+		VPCId: 'vpc-123',
+		VPCRegion: 'region-for-vpc'
+      }
+    },
+    physicalResourceId: PhysicalResourceId.of('${vpcStack.SharedVpc.VpcId}-${vpcStack.Region}-${PrivateHostedZone.HostedZoneId}')
+  },
+  //Will ignore any resource and use the assumedRoleArn as resource and 'sts:AssumeRole' for service:action
+  policy: AwsCustomResourcePolicy.fromSdkCalls({resources: AwsCustomResourcePolicy.ANY_RESOURCE}) 
+});
+
+```
 
 ---
 
 This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.
-

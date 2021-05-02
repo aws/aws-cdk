@@ -1,4 +1,4 @@
-import '@aws-cdk/assert/jest';
+import '@aws-cdk/assert-internal/jest';
 import { App, Aws, Duration, Stack } from '@aws-cdk/core';
 import { CachePolicy, CacheCookieBehavior, CacheHeaderBehavior, CacheQueryStringBehavior } from '../lib';
 
@@ -24,7 +24,7 @@ describe('CachePolicy', () => {
 
     expect(stack).toHaveResource('AWS::CloudFront::CachePolicy', {
       CachePolicyConfig: {
-        Name: 'StackCachePolicy0D6FCBC0',
+        Name: 'StackCachePolicy0D6FCBC0-testregion',
         MinTTL: 0,
         DefaultTTL: 86400,
         MaxTTL: 31536000,
@@ -33,6 +33,7 @@ describe('CachePolicy', () => {
             CookieBehavior: 'none',
           },
           EnableAcceptEncodingGzip: false,
+          EnableAcceptEncodingBrotli: false,
           HeadersConfig: {
             HeaderBehavior: 'none',
           },
@@ -55,6 +56,7 @@ describe('CachePolicy', () => {
       headerBehavior: CacheHeaderBehavior.allowList('X-CustomHeader'),
       queryStringBehavior: CacheQueryStringBehavior.denyList('username'),
       enableAcceptEncodingGzip: true,
+      enableAcceptEncodingBrotli: true,
     });
 
     expect(stack).toHaveResource('AWS::CloudFront::CachePolicy', {
@@ -77,6 +79,7 @@ describe('CachePolicy', () => {
             QueryStrings: ['username'],
           },
           EnableAcceptEncodingGzip: true,
+          EnableAcceptEncodingBrotli: true,
         },
       },
     });

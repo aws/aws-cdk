@@ -1,5 +1,5 @@
 import { IUserPool } from '@aws-cdk/aws-cognito';
-import { ManagedPolicy, Role, ServicePrincipal, Grant, IGrantable } from '@aws-cdk/aws-iam';
+import { ManagedPolicy, Role, IRole, ServicePrincipal, Grant, IGrantable } from '@aws-cdk/aws-iam';
 import { CfnResource, Duration, Expiration, IResolvable, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnApiKey, CfnGraphQLApi, CfnGraphQLSchema } from './appsync.generated';
@@ -203,6 +203,13 @@ export interface LogConfig {
    * @default - Use AppSync default
    */
   readonly fieldLogLevel?: FieldLogLevel;
+
+  /**
+   * The role for CloudWatch Logs
+   *
+   * @default - None
+   */
+  readonly role?: IRole;
 }
 
 /**
@@ -235,7 +242,6 @@ export interface GraphqlApiProps {
    *
    * @default - schema will be generated code-first (i.e. addType, addObjectType, etc.)
    *
-   * @experimental
    */
   readonly schema?: Schema;
   /**
@@ -512,15 +518,14 @@ export class GraphqlApi extends GraphqlApiBase {
 
   private setupLogConfig(config?: LogConfig) {
     if (!config) return undefined;
-    const role = new Role(this, 'ApiLogsRole', {
+    const logsRoleArn: string = config.role?.roleArn ?? new Role(this, 'ApiLogsRole', {
       assumedBy: new ServicePrincipal('appsync.amazonaws.com'),
       managedPolicies: [
-        ManagedPolicy.fromAwsManagedPolicyName(
-          'service-role/AWSAppSyncPushToCloudWatchLogs'),
+        ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSAppSyncPushToCloudWatchLogs'),
       ],
-    });
+    }).roleArn;
     return {
-      cloudWatchLogsRoleArn: role.roleArn,
+      cloudWatchLogsRoleArn: logsRoleArn,
       excludeVerboseContent: config.excludeVerboseContent,
       fieldLogLevel: config.fieldLogLevel,
     };
@@ -577,7 +582,6 @@ export class GraphqlApi extends GraphqlApiBase {
    * @param delimiter the delimiter between schema and addition
    * @default - ''
    *
-   * @experimental
    */
   public addToSchema(addition: string, delimiter?: string): void {
     this.schema.addToSchema(addition, delimiter);
@@ -588,7 +592,6 @@ export class GraphqlApi extends GraphqlApiBase {
    *
    * @param type the intermediate type to add to the schema
    *
-   * @experimental
    */
   public addType(type: IIntermediateType): IIntermediateType {
     return this.schema.addType(type);

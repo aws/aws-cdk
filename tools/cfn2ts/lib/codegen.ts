@@ -1,4 +1,4 @@
-import { schema } from '@aws-cdk/cfnspec';
+import { schema, cfnLintAnnotations } from '@aws-cdk/cfnspec';
 import { CodeMaker } from 'codemaker';
 import * as genspec from './genspec';
 import { itemTypeNames, PropertyAttributeName, scalarTypeNames, SpecName } from './spec-utils';
@@ -125,7 +125,7 @@ export default class CodeGenerator {
     this.code.closeBlock();
 
     this.code.line();
-    this.emitValidator(resourceContext, name, spec.Properties, conversionTable);
+    this.emitPropertiesValidator(resourceContext, name, spec.Properties, conversionTable);
     this.code.line();
     this.emitCloudFormationMapper(resourceContext, name, spec.Properties, conversionTable);
     this.emitFromCfnFactoryFunction(resourceContext, name, spec.Properties, conversionTable, false);
@@ -241,9 +241,13 @@ export default class CodeGenerator {
       // translate the template properties to CDK objects
       this.code.line('const resourceProperties = options.parser.parseValue(resourceAttributes.Properties);');
       // translate to props, using a (module-private) factory function
-      this.code.line(`const props = ${genspec.fromCfnFactoryName(propsType).fqn}(resourceProperties);`);
+      this.code.line(`const propsResult = ${genspec.fromCfnFactoryName(propsType).fqn}(resourceProperties);`);
       // finally, instantiate the resource class
-      this.code.line(`const ret = new ${resourceName.className}(scope, id, props);`);
+      this.code.line(`const ret = new ${resourceName.className}(scope, id, propsResult.value);`);
+      // save all keys from extraProperties in the resource using property overrides
+      this.code.openBlock('for (const [propKey, propVal] of Object.entries(propsResult.extraProperties)) ');
+      this.code.line('ret.addPropertyOverride(propKey, propVal);');
+      this.code.closeBlock();
     } else {
       // no props type - we simply instantiate the construct without the third argument
       this.code.line(`const ret = new ${resourceName.className}(scope, id);`);
@@ -339,6 +343,13 @@ export default class CodeGenerator {
         }
       }
     }
+
+    //
+    //  Validator
+    //
+    this.emitConstructValidator(resourceName);
+
+    // End constructor
     this.code.closeBlock();
 
     this.code.line();
@@ -373,9 +384,43 @@ export default class CodeGenerator {
     }
     this.code.unindent('};');
     this.code.closeBlock();
+
+    this.code.line();
+
     this.code.openBlock('protected renderProperties(props: {[key: string]: any}): { [key: string]: any } ');
     this.code.line(`return ${genspec.cfnMapperName(propsType).fqn}(props);`);
     this.code.closeBlock();
+  }
+
+  /**
+   * Add validations for the given construct
+   *
+   * The generated code looks like this:
+   *
+   * ```
+   * this.node.addValidation({ validate: () => /* validation code * / });
+   * }
+   * ```
+   */
+  private emitConstructValidator(resourceType: genspec.CodeName) {
+    const cfnLint = cfnLintAnnotations(resourceType.specName?.fqn ?? '');
+
+    if (cfnLint.stateful) {
+      // Do a statefulness check. A deletionPolicy is required (and in normal operation an UpdateReplacePolicy
+      // would also be set if a user doesn't do complicated shenanigans, in which case they probably know what
+      // they're doing.
+      //
+      // Only do this for L1s embedded in L2s (to force L2 authors to add a way to set this policy). If we did it for all L1s:
+      //
+      // - users working at the L1 level would start getting synthesis failures when we add this feature
+      // - the `cloudformation-include` library that loads CFN templates to L1s would start failing when it loads
+      //   templates that don't have DeletionPolicy set.
+      this.code.openBlock(`if (this.node.scope && ${CORE}.Resource.isResource(this.node.scope))`);
+      this.code.line('this.node.addValidation({ validate: () => this.cfnOptions.deletionPolicy === undefined');
+      this.code.line(`  ? [\'\\\'${resourceType.specName?.fqn}\\\' is a stateful resource type, and you must specify a Removal Policy for it. Call \\\'resource.applyRemovalPolicy()\\\'.\']`);
+      this.code.line('  : [] });');
+      this.code.closeBlock();
+    }
   }
 
   /**
@@ -394,7 +439,6 @@ export default class CodeGenerator {
     this.code.line(' *');
     this.code.line(' * @param inspector - tree inspector to collect and process attributes');
     this.code.line(' *');
-    this.code.line(' * @stability experimental');
     this.code.line(' */');
     this.code.openBlock(`public inspect(inspector: ${CORE}.TreeInspector)`);
     this.code.line(`inspector.addAttribute("${TreeAttributes.CFN_TYPE}", ${resource.className}.CFN_RESOURCE_TYPE_NAME);`);
@@ -447,7 +491,7 @@ export default class CodeGenerator {
     this.code.line(`${validatorName.fqn}(properties).assertSuccess();`);
 
     // Generate the return object
-    this.code.line('return {');
+    this.code.indent('return {');
 
     const self = this;
     Object.keys(nameConversionTable).forEach(cfnName => {
@@ -500,9 +544,9 @@ export default class CodeGenerator {
         },
       });
 
-      self.code.line(`  ${cfnName}: ${mapperExpression}(properties.${propName}),`);
+      self.code.line(`${cfnName}: ${mapperExpression}(properties.${propName}),`);
     });
-    this.code.line('};');
+    this.code.unindent('};');
     this.code.closeBlock();
   }
 
@@ -530,20 +574,21 @@ export default class CodeGenerator {
     // but never used as types of properties,
     // and in those cases this function will never be called.
     this.code.line('// @ts-ignore TS6133');
-    this.code.openBlock(`function ${factoryName.functionName}(properties: any): ${typeName.fqn}` +
-      (allowReturningIResolvable ? ` | ${CORE}.IResolvable` : ''));
+
+    const returnType = `${typeName.fqn}${allowReturningIResolvable ? ' | ' + CORE + '.IResolvable' : ''}`;
+    this.code.openBlock(`function ${factoryName.functionName}(properties: any): ` +
+      `${CFN_PARSE}.FromCloudFormationResult<${returnType}>`);
 
     if (allowReturningIResolvable) {
       this.code.openBlock(`if (${CORE}.isResolvableObject(properties))`);
-      this.code.line('return properties;');
+      this.code.line(`return new ${CFN_PARSE}.FromCloudFormationResult(properties);`);
       this.code.closeBlock();
     }
 
     this.code.line('properties = properties || {};');
-    // Generate the return object
-    this.code.indent('return {');
-    const self = this;
+    this.code.line(`const ret = new ${CFN_PARSE}.FromCloudFormationPropertyObject<${typeName.fqn}>();`);
 
+    const self = this;
     // class used for the visitor
     class FromCloudFormationFactoryVisitor implements genspec.PropertyVisitor<string> {
       public visitAtom(type: genspec.CodeName): string {
@@ -618,17 +663,16 @@ export default class CodeGenerator {
       }
     }
 
-    Object.keys(nameConversionTable).forEach(cfnName => {
-      const propName = nameConversionTable[cfnName];
-      const propSpec = propSpecs[cfnName];
+    for (const [cfnPropName, cdkPropName] of Object.entries(nameConversionTable)) {
+      const propSpec = propSpecs[cfnPropName];
+      const simpleCfnPropAccessExpr = `properties.${cfnPropName}`;
+      const deserializedExpression = genspec.typeDispatch<string>(resource, propSpec, new FromCloudFormationFactoryVisitor()) +
+        `(${simpleCfnPropAccessExpr})`;
 
-      const simpleCfnPropAccessExpr = `properties.${cfnName}`;
-
-      const deserializer = genspec.typeDispatch<string>(resource, propSpec, new FromCloudFormationFactoryVisitor());
-      const deserialized = `${deserializer}(${simpleCfnPropAccessExpr})`;
-      let valueExpression = propSpec.Required ? deserialized : `${simpleCfnPropAccessExpr} != null ? ${deserialized} : undefined`;
-
-      if (schema.isTagPropertyName(cfnName)) {
+      let valueExpression = propSpec.Required
+        ? deserializedExpression
+        : `${simpleCfnPropAccessExpr} != null ? ${deserializedExpression} : undefined`;
+      if (schema.isTagPropertyName(cfnPropName)) {
         // Properties that have names considered to denote tags
         // have their type generated without a union with IResolvable.
         // However, we can't possibly know that when generating the factory
@@ -640,10 +684,14 @@ export default class CodeGenerator {
         valueExpression += ' as any';
       }
 
-      self.code.line(`${propName}: ${valueExpression},`);
-    });
-    // close the return object brace
-    this.code.unindent('};');
+      self.code.line(`ret.addPropertyResult('${cdkPropName}', '${cfnPropName}', ${valueExpression});`);
+    }
+
+    // save any extra properties we find on this level
+    this.code.line('ret.addUnrecognizedPropertiesAsExtra(properties);');
+
+    // return the result object
+    this.code.line('return ret;');
 
     // close the function brace
     this.code.closeBlock();
@@ -654,7 +702,7 @@ export default class CodeGenerator {
    *
    * Generated as a top-level function outside any namespace so we can hide it from library consumers.
    */
-  private emitValidator(
+  private emitPropertiesValidator(
     resource: genspec.CodeName,
     typeName: genspec.CodeName,
     propSpecs: { [name: string]: schema.Property },
@@ -672,6 +720,15 @@ export default class CodeGenerator {
     this.code.line(`if (!${CORE}.canInspect(properties)) { return ${CORE}.VALIDATION_SUCCESS; }`);
 
     this.code.line(`const errors = new ${CORE}.ValidationResults();`);
+
+    // check that the argument is an object
+    // normally, we would have to explicitly check for null here,
+    // as typeof null is 'object' in JavaScript,
+    // but validators are never called with null
+    // (as evidenced by the code below accessing properties of the argument without checking for null)
+    this.code.openBlock("if (typeof properties !== 'object')");
+    this.code.line(`errors.collect(new ${CORE}.ValidationResult('Expected an object, but received: ' + JSON.stringify(properties)));`);
+    this.code.closeBlock();
 
     Object.keys(propSpecs).forEach(cfnPropName => {
       const propSpec = propSpecs[cfnPropName];
@@ -808,7 +865,7 @@ export default class CodeGenerator {
     this.endNamespace(typeName);
 
     this.code.line();
-    this.emitValidator(resourceContext, typeName, propTypeSpec.Properties, conversionTable);
+    this.emitPropertiesValidator(resourceContext, typeName, propTypeSpec.Properties, conversionTable);
     this.code.line();
     this.emitCloudFormationMapper(resourceContext, typeName, propTypeSpec.Properties, conversionTable);
     this.emitFromCfnFactoryFunction(resourceContext, typeName, propTypeSpec.Properties, conversionTable, true);
@@ -887,7 +944,7 @@ export default class CodeGenerator {
     this.code.line('/**');
     before.forEach(line => this.code.line(` * ${line}`.trimRight()));
     if (link) {
-      this.code.line(` * @see ${link}`);
+      this.code.line(` * @link ${link}`);
     }
     this.code.line(' */');
     return;

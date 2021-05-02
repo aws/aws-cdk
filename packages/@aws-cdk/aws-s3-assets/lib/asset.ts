@@ -1,6 +1,4 @@
-import * as fs from 'fs';
 import * as path from 'path';
-import * as assets from '@aws-cdk/assets';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as s3 from '@aws-cdk/aws-s3';
@@ -9,9 +7,14 @@ import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
 import { toSymlinkFollow } from './compat';
 
-const ARCHIVE_EXTENSIONS = ['.zip', '.jar'];
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { CopyOptions } from '@aws-cdk/assets';
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct as CoreConstruct } from '@aws-cdk/core';
 
-export interface AssetOptions extends assets.CopyOptions, cdk.AssetOptions {
+export interface AssetOptions extends CopyOptions, cdk.FileCopyOptions, cdk.AssetOptions {
   /**
    * A list of principals that should be able to read this asset from S3.
    * You can use `asset.grantRead(principal)` to grant read permissions later.
@@ -54,7 +57,7 @@ export interface AssetProps extends AssetOptions {
  * An asset represents a local file or directory, which is automatically uploaded to S3
  * and then can be referenced within a CDK application.
  */
-export class Asset extends cdk.Construct implements cdk.IAsset {
+export class Asset extends CoreConstruct implements cdk.IAsset {
   /**
    * Attribute that represents the name of the bucket this asset exists in.
    */
@@ -84,7 +87,7 @@ export class Asset extends cdk.Construct implements cdk.IAsset {
   public readonly s3ObjectUrl: string;
 
   /**
-   * The path to the asset (stringinfied token).
+   * The path to the asset, relative to the current Cloud Assembly
    *
    * If asset staging is disabled, this will just be the original path.
    * If asset staging is enabled it will be the staged path.
@@ -95,6 +98,12 @@ export class Asset extends cdk.Construct implements cdk.IAsset {
    * The S3 bucket in which this asset resides.
    */
   public readonly bucket: s3.IBucket;
+
+  /**
+   * Indicates if this asset is a single file. Allows constructs to ensure that the
+   * correct file type was used.
+   */
+  public readonly isFile: boolean;
 
   /**
    * Indicates if this asset is a zip archive. Allows constructs to ensure that the
@@ -118,28 +127,25 @@ export class Asset extends cdk.Construct implements cdk.IAsset {
     const staging = new cdk.AssetStaging(this, 'Stage', {
       ...props,
       sourcePath: path.resolve(props.path),
-      follow: toSymlinkFollow(props.follow),
+      follow: props.followSymlinks ?? toSymlinkFollow(props.follow),
       assetHash: props.assetHash ?? props.sourceHash,
     });
 
     this.assetHash = staging.assetHash;
     this.sourceHash = this.assetHash;
 
-    this.assetPath = staging.stagedPath;
-
-    const packaging = determinePackaging(staging.sourcePath);
-
-    // sets isZipArchive based on the type of packaging and file extension
-    this.isZipArchive = packaging === cdk.FileAssetPackaging.ZIP_DIRECTORY
-      ? true
-      : ARCHIVE_EXTENSIONS.some(ext => staging.sourcePath.toLowerCase().endsWith(ext));
-
     const stack = cdk.Stack.of(this);
 
+    this.assetPath = staging.relativeStagedPath(stack);
+
+    this.isFile = staging.packaging === cdk.FileAssetPackaging.FILE;
+
+    this.isZipArchive = staging.isArchive;
+
     const location = stack.synthesizer.addFileAsset({
-      packaging,
+      packaging: staging.packaging,
       sourceHash: this.sourceHash,
-      fileName: staging.stagedPath,
+      fileName: this.assetPath,
     });
 
     this.s3BucketName = location.bucketName;
@@ -197,20 +203,4 @@ export class Asset extends cdk.Construct implements cdk.IAsset {
     // version (for example, when using Lambda traffic shifting).
     this.bucket.grantRead(grantee);
   }
-}
-
-function determinePackaging(assetPath: string): cdk.FileAssetPackaging {
-  if (!fs.existsSync(assetPath)) {
-    throw new Error(`Cannot find asset at ${assetPath}`);
-  }
-
-  if (fs.statSync(assetPath).isDirectory()) {
-    return cdk.FileAssetPackaging.ZIP_DIRECTORY;
-  }
-
-  if (fs.statSync(assetPath).isFile()) {
-    return cdk.FileAssetPackaging.FILE;
-  }
-
-  throw new Error(`Asset ${assetPath} is expected to be either a directory or a regular file`);
 }

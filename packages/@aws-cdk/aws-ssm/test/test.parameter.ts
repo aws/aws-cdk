@@ -1,6 +1,6 @@
 /* eslint-disable max-len */
 
-import { expect, haveResource } from '@aws-cdk/assert';
+import { expect, haveResource } from '@aws-cdk/assert-internal';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as cdk from '@aws-cdk/core';
@@ -69,7 +69,7 @@ export = {
     test.doesNotThrow(() => {
       new ssm.StringParameter(stack, 'Parameter', {
         allowedPattern: '^Bar$',
-        stringValue: cdk.Lazy.stringValue({ produce: () => 'Foo!' }),
+        stringValue: cdk.Lazy.string({ produce: () => 'Foo!' }),
       });
     });
     test.done();
@@ -239,7 +239,7 @@ export = {
     // THEN
     test.doesNotThrow(() => new ssm.StringListParameter(stack, 'Parameter', {
       allowedPattern: '^(Foo|Bar)$',
-      stringListValue: ['Foo', cdk.Lazy.stringValue({ produce: () => 'Baz!' })],
+      stringListValue: ['Foo', cdk.Lazy.string({ produce: () => 'Baz!' })],
     }));
     test.done();
   },
@@ -304,15 +304,7 @@ export = {
     });
     test.deepEqual(stack.resolve(param.parameterName), 'MyParamName');
     test.deepEqual(stack.resolve(param.parameterType), 'String');
-    test.deepEqual(stack.resolve(param.stringValue), { Ref: 'MyParamNameParameter' });
-    expect(stack).toMatch({
-      Parameters: {
-        MyParamNameParameter: {
-          Type: 'AWS::SSM::Parameter::Value<String>',
-          Default: 'MyParamName',
-        },
-      },
-    });
+    test.deepEqual(stack.resolve(param.stringValue), '{{resolve:ssm:MyParamName}}');
     test.done();
   },
 
@@ -554,41 +546,7 @@ export = {
       const value = ssm.StringParameter.valueForStringParameter(stack, 'my-param-name');
 
       // THEN
-      expect(stack).toMatch({
-        Parameters: {
-          SsmParameterValuemyparamnameC96584B6F00A464EAD1953AFF4B05118Parameter: {
-            Type: 'AWS::SSM::Parameter::Value<String>',
-            Default: 'my-param-name',
-          },
-        },
-      });
-      test.deepEqual(stack.resolve(value), { Ref: 'SsmParameterValuemyparamnameC96584B6F00A464EAD1953AFF4B05118Parameter' });
-      test.done();
-    },
-
-    'de-dup based on parameter name'(test: Test) {
-      // GIVEN
-      const stack = new cdk.Stack();
-
-      // WHEN
-      ssm.StringParameter.valueForStringParameter(stack, 'my-param-name');
-      ssm.StringParameter.valueForStringParameter(stack, 'my-param-name');
-      ssm.StringParameter.valueForStringParameter(stack, 'my-param-name-2');
-      ssm.StringParameter.valueForStringParameter(stack, 'my-param-name');
-
-      // THEN
-      expect(stack).toMatch({
-        Parameters: {
-          SsmParameterValuemyparamnameC96584B6F00A464EAD1953AFF4B05118Parameter: {
-            Type: 'AWS::SSM::Parameter::Value<String>',
-            Default: 'my-param-name',
-          },
-          SsmParameterValuemyparamname2C96584B6F00A464EAD1953AFF4B05118Parameter: {
-            Type: 'AWS::SSM::Parameter::Value<String>',
-            Default: 'my-param-name-2',
-          },
-        },
-      });
+      test.deepEqual(stack.resolve(value), '{{resolve:ssm:my-param-name}}');
       test.done();
     },
 

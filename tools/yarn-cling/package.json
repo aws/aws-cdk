@@ -17,8 +17,8 @@
     "watch": "tsc -w",
     "pkglint": "pkglint -f",
     "test": "ln -sf ../../package2 test/test-fixture/package1/node_modules/ && jest",
-    "build+test+package": "npm run build+test",
-    "build+test": "npm run build && npm test"
+    "build+test+package": "yarn build+test",
+    "build+test": "yarn build && yarn test"
   },
   "cdk-build": {
     "jest": true
@@ -38,15 +38,17 @@
     ]
   },
   "devDependencies": {
-    "@types/jest": "^26.0.14",
-    "@types/node": "^10.17.35",
+    "@types/jest": "^26.0.22",
+    "@types/node": "^10.17.56",
     "@types/yarnpkg__lockfile": "^1.1.4",
-    "jest": "^26.4.2",
+    "@types/semver": "^7.3.4",
+    "jest": "^26.6.3",
     "pkglint": "0.0.0",
-    "typescript": "~3.9.7"
+    "typescript": "~3.9.9"
   },
   "dependencies": {
-    "@yarnpkg/lockfile": "^1.1.0"
+    "@yarnpkg/lockfile": "^1.1.0",
+    "semver": "^7.3.5"
   },
   "keywords": [
     "aws",
@@ -55,5 +57,11 @@
   "homepage": "https://github.com/aws/aws-cdk",
   "engines": {
     "node": ">= 10.13.0 <13 || >=13.7.0"
+  },
+  "nozem": {
+    "ostools": ["ln"]
+  },
+  "ubergen": {
+    "exclude": true
   }
 }

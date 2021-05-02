@@ -1,7 +1,7 @@
-import { expect, haveResource } from '@aws-cdk/assert';
+import { expect, haveResource } from '@aws-cdk/assert-internal';
 import { Stack } from '@aws-cdk/core';
 import { nodeunitShim, Test } from 'nodeunit-shim';
-import { BastionHostLinux, BlockDeviceVolume, SubnetType, Vpc } from '../lib';
+import { BastionHostLinux, BlockDeviceVolume, InstanceClass, InstanceSize, InstanceType, SubnetType, Vpc } from '../lib';
 
 nodeunitShim({
   'default instance is created in basic'(test: Test) {
@@ -81,6 +81,41 @@ nodeunitShim({
           },
         },
       ],
+    }));
+
+    test.done();
+  },
+  'x86-64 instances use x86-64 image by default'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    const vpc = new Vpc(stack, 'VPC');
+
+    // WHEN
+    new BastionHostLinux(stack, 'Bastion', {
+      vpc,
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::EC2::Instance', {
+      ImageId: '{{resolve:ssm:/aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2}}',
+    }));
+
+    test.done();
+  },
+  'arm instances use arm image by default'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    const vpc = new Vpc(stack, 'VPC');
+
+    // WHEN
+    new BastionHostLinux(stack, 'Bastion', {
+      vpc,
+      instanceType: InstanceType.of(InstanceClass.T4G, InstanceSize.NANO),
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::EC2::Instance', {
+      ImageId: '{{resolve:ssm:/aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-arm64-gp2}}',
     }));
 
     test.done();

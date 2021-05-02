@@ -2,6 +2,8 @@ export * from './alias';
 export * from './dlq';
 export * from './function-base';
 export * from './function';
+export * from './handler';
+export * from './image-function';
 export * from './layers';
 export * from './permission';
 export * from './runtime';
@@ -14,6 +16,7 @@ export * from './event-source-mapping';
 export * from './destination';
 export * from './event-invoke-config';
 export * from './scalable-attribute-api';
+export * from './code-signing-config';
 
 export * from './log-retention';
 

@@ -1,9 +1,9 @@
 import * as crypto from 'crypto';
 import { DnsValidatedCertificate, ICertificate } from '@aws-cdk/aws-certificatemanager';
-import { CloudFrontWebDistribution, OriginProtocolPolicy, PriceClass, ViewerProtocolPolicy } from '@aws-cdk/aws-cloudfront';
+import { CloudFrontWebDistribution, OriginProtocolPolicy, PriceClass, ViewerCertificate, ViewerProtocolPolicy } from '@aws-cdk/aws-cloudfront';
 import { ARecord, AaaaRecord, IHostedZone, RecordTarget } from '@aws-cdk/aws-route53';
 import { CloudFrontTarget } from '@aws-cdk/aws-route53-targets';
-import { Bucket, RedirectProtocol } from '@aws-cdk/aws-s3';
+import { BlockPublicAccess, Bucket, RedirectProtocol } from '@aws-cdk/aws-s3';
 import { RemovalPolicy, Stack, Token } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 
@@ -68,12 +68,12 @@ export class HttpsRedirect extends CoreConstruct {
       }
     }
 
-    const redirectCertArn = props.certificate ? props.certificate.certificateArn : new DnsValidatedCertificate(this, 'RedirectCertificate', {
+    const redirectCert = props.certificate ?? new DnsValidatedCertificate(this, 'RedirectCertificate', {
       domainName: domainNames[0],
       subjectAlternativeNames: domainNames,
       hostedZone: props.zone,
       region: 'us-east-1',
-    }).certificateArn;
+    });
 
     const redirectBucket = new Bucket(this, 'RedirectBucket', {
       websiteRedirect: {
@@ -81,6 +81,7 @@ export class HttpsRedirect extends CoreConstruct {
         protocol: RedirectProtocol.HTTPS,
       },
       removalPolicy: RemovalPolicy.DESTROY,
+      blockPublicAccess: BlockPublicAccess.BLOCK_ALL,
     });
     const redirectDist = new CloudFrontWebDistribution(this, 'RedirectDistribution', {
       defaultRootObject: '',
@@ -91,10 +92,9 @@ export class HttpsRedirect extends CoreConstruct {
           originProtocolPolicy: OriginProtocolPolicy.HTTP_ONLY,
         },
       }],
-      aliasConfiguration: {
-        acmCertRef: redirectCertArn,
-        names: domainNames,
-      },
+      viewerCertificate: ViewerCertificate.fromAcmCertificate(redirectCert, {
+        aliases: domainNames,
+      }),
       comment: `Redirect to ${props.targetDomain} from ${domainNames.join(', ')}`,
       priceClass: PriceClass.PRICE_CLASS_ALL,
       viewerProtocolPolicy: ViewerProtocolPolicy.REDIRECT_TO_HTTPS,

@@ -1,4 +1,4 @@
-import '@aws-cdk/assert/jest';
+import '@aws-cdk/assert-internal/jest';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import { Duration, Stack } from '@aws-cdk/core';
 import * as tasks from '../../lib';
@@ -164,10 +164,9 @@ test('permitted role actions include start, get, and stop job run if service int
 
 test('Task throws if WAIT_FOR_TASK_TOKEN is supplied as service integration pattern', () => {
   expect(() => {
-    new sfn.Task(stack, 'Task', {
-      task: new tasks.RunGlueJobTask(glueJobName, {
-        integrationPattern: sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN,
-      }),
+    new tasks.GlueStartJobRun(stack, 'GlueJob', {
+      glueJobName,
+      integrationPattern: sfn.IntegrationPattern.WAIT_FOR_TASK_TOKEN,
     });
-  }).toThrow(/Invalid Service Integration Pattern: WAIT_FOR_TASK_TOKEN is not supported to call Glue./i);
+  }).toThrow(/unsupported service integration pattern/i);
 });

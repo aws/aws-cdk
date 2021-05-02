@@ -5,14 +5,15 @@ import * as kms from '@aws-cdk/aws-kms';
 import * as logs from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
-import { Duration, IResource, Lazy, RemovalPolicy, Resource, Stack, Token } from '@aws-cdk/core';
+import { ArnComponents, Duration, FeatureFlags, IResource, Lazy, RemovalPolicy, Resource, Stack, Token } from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
 import { DatabaseSecret } from './database-secret';
 import { Endpoint } from './endpoint';
 import { IInstanceEngine } from './instance-engine';
 import { IOptionGroup } from './option-group';
 import { IParameterGroup } from './parameter-group';
-import { applyRemovalPolicy, DEFAULT_PASSWORD_EXCLUDE_CHARS, defaultDeletionProtection, engineDescription, setupS3ImportExport } from './private/util';
+import { DEFAULT_PASSWORD_EXCLUDE_CHARS, defaultDeletionProtection, engineDescription, renderCredentials, setupS3ImportExport, helperRemovalPolicy, renderUnless } from './private/util';
 import { Credentials, PerformanceInsightRetention, RotationMultiUserOptions, RotationSingleUserOptions, SnapshotCredentials } from './props';
 import { DatabaseProxy, DatabaseProxyOptions, ProxyTarget } from './proxy';
 import { CfnDBInstance, CfnDBInstanceProps } from './rds.generated';
@@ -186,11 +187,18 @@ export abstract class DatabaseInstanceBase extends Resource implements IDatabase
    * The instance arn.
    */
   public get instanceArn(): string {
-    return Stack.of(this).formatArn({
+    const commonAnComponents: ArnComponents = {
       service: 'rds',
       resource: 'db',
       sep: ':',
+    };
+    const localArn = Stack.of(this).formatArn({
+      ...commonAnComponents,
       resourceName: this.instanceIdentifier,
+    });
+    return this.getResourceArnAttribute(localArn, {
+      ...commonAnComponents,
+      resourceName: this.physicalName,
     });
   }
 
@@ -283,7 +291,9 @@ export interface DatabaseInstanceNewProps {
   readonly availabilityZone?: string;
 
   /**
-   * The storage type.
+   * The storage type. Storage types supported are gp2, io1, standard.
+   *
+   * @see https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_Storage.html#Concepts.Storage.GeneralSSD
    *
    * @default GP2
    */
@@ -593,6 +603,13 @@ export interface DatabaseInstanceNewProps {
    * @default - None
    */
   readonly s3ExportBuckets?: s3.IBucket[];
+
+  /**
+   * Indicates whether the DB instance is an internet-facing instance.
+   *
+   * @default - `true` if `vpcSubnets` is `subnetType: SubnetType.PUBLIC`, `false` otherwise
+   */
+  readonly publiclyAccessible?: boolean;
 }
 
 /**
@@ -621,7 +638,15 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
   protected enableIamAuthentication?: boolean;
 
   constructor(scope: Construct, id: string, props: DatabaseInstanceNewProps) {
-    super(scope, id);
+    // RDS always lower-cases the ID of the database, so use that for the physical name
+    // (which is the name used for cross-environment access, so it needs to be correct,
+    // regardless of the feature flag that changes it in the template for the L1)
+    const instancePhysicalName = Token.isUnresolved(props.instanceIdentifier)
+      ? props.instanceIdentifier
+      : props.instanceIdentifier?.toLowerCase();
+    super(scope, id, {
+      physicalName: instancePhysicalName,
+    });
 
     this.vpc = props.vpc;
     if (props.vpcSubnets && props.vpcPlacement) {
@@ -633,7 +658,7 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
       description: `Subnet group for ${this.node.id} database`,
       vpc: this.vpc,
       vpcSubnets: this.vpcPlacement,
-      removalPolicy: props.removalPolicy === RemovalPolicy.RETAIN ? props.removalPolicy : undefined,
+      removalPolicy: renderUnless(helperRemovalPolicy(props.removalPolicy), RemovalPolicy.DESTROY),
     });
 
     const securityGroups = props.securityGroups || [new ec2.SecurityGroup(this, 'SecurityGroup', {
@@ -643,7 +668,7 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
 
     this.connections = new ec2.Connections({
       securityGroups,
-      defaultPort: ec2.Port.tcp(Lazy.numberValue({ produce: () => this.instanceEndpoint.port })),
+      defaultPort: ec2.Port.tcp(Lazy.number({ produce: () => this.instanceEndpoint.port })),
     });
 
     let monitoringRole;
@@ -678,33 +703,43 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
       });
     }
 
+    const maybeLowercasedInstanceId = FeatureFlags.of(this).isEnabled(cxapi.RDS_LOWERCASE_DB_IDENTIFIER)
+      ? props.instanceIdentifier?.toLowerCase()
+      : props.instanceIdentifier;
+
     this.newCfnProps = {
       autoMinorVersionUpgrade: props.autoMinorVersionUpgrade,
       availabilityZone: props.multiAz ? undefined : props.availabilityZone,
-      backupRetentionPeriod: props.backupRetention ? props.backupRetention.toDays() : undefined,
-      copyTagsToSnapshot: props.copyTagsToSnapshot !== undefined ? props.copyTagsToSnapshot : true,
-      dbInstanceClass: Lazy.stringValue({ produce: () => `db.${this.instanceType}` }),
-      dbInstanceIdentifier: props.instanceIdentifier,
+      backupRetentionPeriod: props.backupRetention?.toDays(),
+      copyTagsToSnapshot: props.copyTagsToSnapshot ?? true,
+      dbInstanceClass: Lazy.string({ produce: () => `db.${this.instanceType}` }),
+      dbInstanceIdentifier: Token.isUnresolved(props.instanceIdentifier)
+        // if the passed identifier is a Token,
+        // we need to use the physicalName of the database
+        // (we cannot change its case anyway),
+        // as it might be used in a cross-environment fashion
+        ? this.physicalName
+        : maybeLowercasedInstanceId,
       dbSubnetGroupName: subnetGroup.subnetGroupName,
       deleteAutomatedBackups: props.deleteAutomatedBackups,
       deletionProtection: defaultDeletionProtection(props.deletionProtection, props.removalPolicy),
       enableCloudwatchLogsExports: this.cloudwatchLogsExports,
-      enableIamDatabaseAuthentication: Lazy.anyValue({ produce: () => this.enableIamAuthentication }),
+      enableIamDatabaseAuthentication: Lazy.any({ produce: () => this.enableIamAuthentication }),
       enablePerformanceInsights: enablePerformanceInsights || props.enablePerformanceInsights, // fall back to undefined if not set,
       iops,
-      monitoringInterval: props.monitoringInterval && props.monitoringInterval.toSeconds(),
-      monitoringRoleArn: monitoringRole && monitoringRole.roleArn,
+      monitoringInterval: props.monitoringInterval?.toSeconds(),
+      monitoringRoleArn: monitoringRole?.roleArn,
       multiAz: props.multiAz,
       optionGroupName: props.optionGroup?.optionGroupName,
       performanceInsightsKmsKeyId: props.performanceInsightEncryptionKey?.keyArn,
       performanceInsightsRetentionPeriod: enablePerformanceInsights
         ? (props.performanceInsightRetention || PerformanceInsightRetention.DEFAULT)
         : undefined,
-      port: props.port ? props.port.toString() : undefined,
+      port: props.port?.toString(),
       preferredBackupWindow: props.preferredBackupWindow,
       preferredMaintenanceWindow: props.preferredMaintenanceWindow,
       processorFeatures: props.processorFeatures && renderProcessorFeatures(props.processorFeatures),
-      publiclyAccessible: this.vpcPlacement && this.vpcPlacement.subnetType === ec2.SubnetType.PUBLIC,
+      publiclyAccessible: props.publiclyAccessible ?? (this.vpcPlacement && this.vpcPlacement.subnetType === ec2.SubnetType.PUBLIC),
       storageType,
       vpcSecurityGroups: securityGroups.map(s => s.securityGroupId),
       maxAllocatedStorage: props.maxAllocatedStorage,
@@ -840,7 +875,7 @@ abstract class DatabaseInstanceSource extends DatabaseInstanceNew implements IDa
       ...this.newCfnProps,
       associatedRoles: instanceAssociatedRoles.length > 0 ? instanceAssociatedRoles : undefined,
       optionGroupName: engineConfig.optionGroup?.optionGroupName,
-      allocatedStorage: props.allocatedStorage ? props.allocatedStorage.toString() : '100',
+      allocatedStorage: props.allocatedStorage?.toString() ?? '100',
       allowMajorVersionUpgrade: props.allowMajorVersionUpgrade,
       dbName: props.databaseName,
       dbParameterGroupName: instanceParameterGroupConfig?.parameterGroupName,
@@ -947,14 +982,7 @@ export class DatabaseInstance extends DatabaseInstanceSource implements IDatabas
   constructor(scope: Construct, id: string, props: DatabaseInstanceProps) {
     super(scope, id, props);
 
-    let credentials = props.credentials ?? Credentials.fromUsername(props.engine.defaultUsername ?? 'admin');
-    if (!credentials.secret && !credentials.password) {
-      credentials = Credentials.fromSecret(new DatabaseSecret(this, 'Secret', {
-        username: credentials.username,
-        encryptionKey: credentials.encryptionKey,
-        excludeCharacters: credentials.excludeCharacters,
-      }));
-    }
+    const credentials = renderCredentials(this, props.engine, props.credentials);
     const secret = credentials.secret;
 
     const instance = new CfnDBInstance(this, 'Resource', {
@@ -966,7 +994,7 @@ export class DatabaseInstance extends DatabaseInstanceSource implements IDatabas
       storageEncrypted: props.storageEncryptionKey ? true : props.storageEncrypted,
     });
 
-    this.instanceIdentifier = instance.ref;
+    this.instanceIdentifier = this.getResourceNameAttribute(instance.ref);
     this.dbInstanceEndpointAddress = instance.attrEndpointAddress;
     this.dbInstanceEndpointPort = instance.attrEndpointPort;
 
@@ -974,7 +1002,7 @@ export class DatabaseInstance extends DatabaseInstanceSource implements IDatabas
     const portAttribute = Token.asNumber(instance.attrEndpointPort);
     this.instanceEndpoint = new Endpoint(instance.attrEndpointAddress, portAttribute);
 
-    applyRemovalPolicy(instance, props.removalPolicy);
+    instance.applyRemovalPolicy(props.removalPolicy ?? RemovalPolicy.SNAPSHOT);
 
     if (secret) {
       this.secret = secret.attach(this);
@@ -1032,15 +1060,14 @@ export class DatabaseInstanceFromSnapshot extends DatabaseInstanceSource impleme
         username: credentials.username,
         encryptionKey: credentials.encryptionKey,
         excludeCharacters: credentials.excludeCharacters,
+        replaceOnPasswordCriteriaChanges: credentials.replaceOnPasswordCriteriaChanges,
       });
     }
 
     const instance = new CfnDBInstance(this, 'Resource', {
       ...this.sourceCfnProps,
       dbSnapshotIdentifier: props.snapshotIdentifier,
-      masterUserPassword: secret
-        ? secret.secretValueFromJson('password').toString()
-        : credentials?.password?.toString(),
+      masterUserPassword: secret?.secretValueFromJson('password')?.toString() ?? credentials?.password?.toString(),
     });
 
     this.instanceIdentifier = instance.ref;
@@ -1051,7 +1078,7 @@ export class DatabaseInstanceFromSnapshot extends DatabaseInstanceSource impleme
     const portAttribute = Token.asNumber(instance.attrEndpointPort);
     this.instanceEndpoint = new Endpoint(instance.attrEndpointAddress, portAttribute);
 
-    applyRemovalPolicy(instance, props.removalPolicy);
+    instance.applyRemovalPolicy(props.removalPolicy ?? RemovalPolicy.SNAPSHOT);
 
     if (secret) {
       this.secret = secret.attach(this);
@@ -1114,7 +1141,7 @@ export class DatabaseInstanceReadReplica extends DatabaseInstanceNew implements 
       ...this.newCfnProps,
       // this must be ARN, not ID, because of https://github.com/terraform-providers/terraform-provider-aws/issues/528#issuecomment-391169012
       sourceDbInstanceIdentifier: props.sourceDatabaseInstance.instanceArn,
-      kmsKeyId: props.storageEncryptionKey && props.storageEncryptionKey.keyArn,
+      kmsKeyId: props.storageEncryptionKey?.keyArn,
       storageEncrypted: props.storageEncryptionKey ? true : props.storageEncrypted,
     });
 
@@ -1127,7 +1154,7 @@ export class DatabaseInstanceReadReplica extends DatabaseInstanceNew implements 
     const portAttribute = Token.asNumber(instance.attrEndpointPort);
     this.instanceEndpoint = new Endpoint(instance.attrEndpointAddress, portAttribute);
 
-    applyRemovalPolicy(instance, props.removalPolicy);
+    instance.applyRemovalPolicy(props.removalPolicy ?? RemovalPolicy.SNAPSHOT);
 
     this.setLogRetention();
   }

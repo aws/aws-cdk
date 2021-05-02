@@ -10,7 +10,6 @@ import { renderTags } from './private/utils';
 /**
  * Properties for creating an Amazon SageMaker training job
  *
- * @experimental
  */
 export interface SageMakerCreateTrainingJobProps extends sfn.TaskStateBaseProps {
   /**
@@ -84,7 +83,6 @@ export interface SageMakerCreateTrainingJobProps extends sfn.TaskStateBaseProps 
 /**
  * Class representing the SageMaker Create Training Job task.
  *
- * @experimental
  */
 export class SageMakerCreateTrainingJob extends sfn.TaskStateBase implements iam.IGrantable, ec2.IConnectable {
   private static readonly SUPPORTED_INTEGRATION_PATTERNS: sfn.IntegrationPattern[] = [
@@ -302,7 +300,7 @@ export class SageMakerCreateTrainingJob extends sfn.TaskStateBase implements iam
     return config
       ? {
         VpcConfig: {
-          SecurityGroupIds: Lazy.listValue({ produce: () => this.securityGroups.map((sg) => sg.securityGroupId) }),
+          SecurityGroupIds: Lazy.list({ produce: () => this.securityGroups.map((sg) => sg.securityGroupId) }),
           Subnets: this.subnets,
         },
       }

@@ -1,0 +1,42 @@
+{
+  "Resources": {
+    "Domain66AC69E0": {
+      "Type": "AWS::Elasticsearch::Domain",
+      "Properties": {
+        "CognitoOptions": {
+          "Enabled": false
+        },
+        "DomainEndpointOptions": {
+          "EnforceHTTPS": false,
+          "TLSSecurityPolicy": "Policy-Min-TLS-1-0-2019-07"
+        },
+        "EBSOptions": {
+          "EBSEnabled": true,
+          "VolumeSize": 10,
+          "VolumeType": "gp2"
+        },
+        "ElasticsearchClusterConfig": {
+          "DedicatedMasterCount": 2,
+          "DedicatedMasterEnabled": true,
+          "DedicatedMasterType": "r5.large.elasticsearch",
+          "InstanceCount": 1,
+          "InstanceType": "r5.large.elasticsearch",
+          "WarmCount": 2,
+          "WarmEnabled": true,
+          "WarmType": "ultrawarm1.medium.elasticsearch",
+          "ZoneAwarenessEnabled": false
+        },
+        "ElasticsearchVersion": "7.1",
+        "EncryptionAtRestOptions": {
+          "Enabled": false
+        },
+        "LogPublishingOptions": {},
+        "NodeToNodeEncryptionOptions": {
+          "Enabled": false
+        }
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    }
+  }
+}

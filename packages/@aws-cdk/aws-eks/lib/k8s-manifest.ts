@@ -1,5 +1,5 @@
 import { CustomResource, Stack } from '@aws-cdk/core';
-import { Construct } from 'constructs';
+import { Construct, Node } from 'constructs';
 import { ICluster } from './cluster';
 import { KubectlProvider } from './kubectl-provider';
 
@@ -7,10 +7,49 @@ import { KubectlProvider } from './kubectl-provider';
 // eslint-disable-next-line
 import { Construct as CoreConstruct } from '@aws-cdk/core';
 
+const PRUNE_LABEL_PREFIX = 'aws.cdk.eks/prune-';
+
+/**
+ * Options for `KubernetesManifest`.
+ */
+export interface KubernetesManifestOptions {
+  /**
+   * When a resource is removed from a Kubernetes manifest, it no longer appears
+   * in the manifest, and there is no way to know that this resource needs to be
+   * deleted. To address this, `kubectl apply` has a `--prune` option which will
+   * query the cluster for all resources with a specific label and will remove
+   * all the labeld resources that are not part of the applied manifest. If this
+   * option is disabled and a resource is removed, it will become "orphaned" and
+   * will not be deleted from the cluster.
+   *
+   * When this option is enabled (default), the construct will inject a label to
+   * all Kubernetes resources included in this manifest which will be used to
+   * prune resources when the manifest changes via `kubectl apply --prune`.
+   *
+   * The label name will be `aws.cdk.eks/prune-<ADDR>` where `<ADDR>` is the
+   * 42-char unique address of this construct in the construct tree. Value is
+   * empty.
+   *
+   * @see
+   * https://kubernetes.io/docs/tasks/manage-kubernetes-objects/declarative-config/#alternative-kubectl-apply-f-directory-prune-l-your-label
+   *
+   * @default - based on the prune option of the cluster, which is `true` unless
+   * otherwise specified.
+   */
+  readonly prune?: boolean;
+
+  /**
+   * A flag to signify if the manifest validation should be skipped
+   *
+   * @default false
+   */
+  readonly skipValidation?: boolean;
+}
+
 /**
  * Properties for KubernetesManifest
  */
-export interface KubernetesManifestProps {
+export interface KubernetesManifestProps extends KubernetesManifestOptions {
   /**
    * The EKS cluster to apply this manifest to.
    *
@@ -39,7 +78,18 @@ export interface KubernetesManifestProps {
    * }]
    *
    */
-  readonly manifest: any[];
+  readonly manifest: Record<string, any>[];
+
+  /**
+   * Overwrite any existing resources.
+   *
+   * If this is set, we will use `kubectl apply` instead of `kubectl create`
+   * when the resource is created. Otherwise, if there is already a resource
+   * in the cluster with the same name, the operation will fail.
+   *
+   * @default false
+   */
+  readonly overwrite?: boolean;
 }
 
 /**
@@ -62,6 +112,11 @@ export class KubernetesManifest extends CoreConstruct {
     const stack = Stack.of(this);
     const provider = KubectlProvider.getOrCreate(this, props.cluster);
 
+    const prune = props.prune ?? props.cluster.prune;
+    const pruneLabel = prune
+      ? this.injectPruneLabel(props.manifest)
+      : undefined;
+
     new CustomResource(this, 'Resource', {
       serviceToken: provider.serviceToken,
       resourceType: KubernetesManifest.RESOURCE_TYPE,
@@ -72,7 +127,44 @@ export class KubernetesManifest extends CoreConstruct {
         Manifest: stack.toJsonString(props.manifest),
         ClusterName: props.cluster.clusterName,
         RoleArn: provider.roleArn, // TODO: bake into provider's environment
+        PruneLabel: pruneLabel,
+        Overwrite: props.overwrite,
+        SkipValidation: props.skipValidation,
       },
     });
+  }
+
+  /**
+   * Injects a generated prune label to all resources in this manifest. The
+   * label name will be `awscdk.eks/manifest-ADDR` where `ADDR` is the address
+   * of the construct in the construct tree.
+   *
+   * @returns the label name
+   */
+  private injectPruneLabel(manifest: Record<string, any>[]): string {
+    // max label name is 64 chars and addrs is always 42.
+    const pruneLabel = PRUNE_LABEL_PREFIX + Node.of(this).addr;
+
+    for (const resource of manifest) {
+      // skip resource if it's not an object or if it does not have a "kind"
+      if (typeof(resource) !== 'object' || !resource.kind) {
+        continue;
+      }
+
+      if (!resource.metadata) {
+        resource.metadata = {};
+      }
+
+      if (!resource.metadata.labels) {
+        resource.metadata.labels = {};
+      }
+
+      resource.metadata.labels = {
+        [pruneLabel]: '',
+        ...resource.metadata.labels,
+      };
+    }
+
+    return pruneLabel;
   }
 }

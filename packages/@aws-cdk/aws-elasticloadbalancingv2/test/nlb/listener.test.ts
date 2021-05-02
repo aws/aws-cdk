@@ -1,5 +1,5 @@
-import { MatchStyle } from '@aws-cdk/assert';
-import '@aws-cdk/assert/jest';
+import { MatchStyle } from '@aws-cdk/assert-internal';
+import '@aws-cdk/assert-internal/jest';
 import * as acm from '@aws-cdk/aws-certificatemanager';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as cdk from '@aws-cdk/core';
@@ -387,6 +387,28 @@ describe('tests', () => {
         defaultAction: elbv2.NetworkListenerAction.forward([group]),
       });
     }).toThrow(/Specify at most one/);
+  });
+
+  test('Can look up an NetworkListener', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'stack', {
+      env: {
+        account: '123456789012',
+        region: 'us-west-2',
+      },
+    });
+
+    // WHEN
+    const listener = elbv2.NetworkListener.fromLookup(stack, 'a', {
+      loadBalancerTags: {
+        some: 'tag',
+      },
+    });
+
+    // THEN
+    expect(stack).not.toHaveResource('AWS::ElasticLoadBalancingV2::Listener');
+    expect(listener.listenerArn).toEqual('arn:aws:elasticloadbalancing:us-west-2:123456789012:listener/network/my-load-balancer/50dc6c495c0c9188/f2f7dc8efc522ab2');
   });
 });
 

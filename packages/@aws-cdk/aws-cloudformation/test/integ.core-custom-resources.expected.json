@@ -72,7 +72,8 @@
             "Arn"
           ]
         },
-        "Runtime": "nodejs12.x"
+        "Runtime": "nodejs12.x",
+        "Description": "veni vidi vici"
       },
       "DependsOn": [
         "CustomReflectCustomResourceProviderRoleB4B29AEC"

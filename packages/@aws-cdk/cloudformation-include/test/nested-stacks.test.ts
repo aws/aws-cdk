@@ -1,6 +1,6 @@
 import * as path from 'path';
-import { ABSENT, ResourcePart } from '@aws-cdk/assert';
-import '@aws-cdk/assert/jest';
+import { ABSENT, ResourcePart } from '@aws-cdk/assert-internal';
+import '@aws-cdk/assert-internal/jest';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as core from '@aws-cdk/core';
 import * as inc from '../lib';
@@ -444,6 +444,9 @@ describe('CDK Include for nested stacks', () => {
     let child: inc.IncludedNestedStack;
     let grandChild: inc.IncludedNestedStack;
 
+    let hash1: string;
+    let hash2: string;
+
     let parentBucketParam: string;
     let parentKeyParam: string;
     let grandChildBucketParam: string;
@@ -471,13 +474,16 @@ describe('CDK Include for nested stacks', () => {
       child = parentTemplate.getNestedStack('ChildStack');
       grandChild = child.includedTemplate.getNestedStack('GrandChildStack');
 
-      parentBucketParam = 'AssetParameters5dc7d4a99cfe2979687dc74f2db9fd75f253b5505a1912b5ceecf70c9aefba50S3BucketEAA24F0C';
-      parentKeyParam = 'AssetParameters5dc7d4a99cfe2979687dc74f2db9fd75f253b5505a1912b5ceecf70c9aefba50S3VersionKey1194CAB2';
-      grandChildBucketParam = 'referencetoAssetParameters5dc7d4a99cfe2979687dc74f2db9fd75f253b5505a1912b5ceecf70c9aefba50S3BucketEAA24F0CRef';
-      grandChildKeyParam = 'referencetoAssetParameters5dc7d4a99cfe2979687dc74f2db9fd75f253b5505a1912b5ceecf70c9aefba50S3VersionKey1194CAB2Ref';
+      hash1 = '5dc7d4a99cfe2979687dc74f2db9fd75f253b5505a1912b5ceecf70c9aefba50';
+      hash2 = '7775730164edb5faae717ac1d2e90d9c0d0fdbeafe48763e5c1b7fb5e39e00a5';
 
-      childBucketParam = 'AssetParameters891fd3ec75dc881b0fe40dc9fd1b433672637585c015265a5f0dab6bf79818d5S3Bucket23278F13';
-      childKeyParam = 'AssetParameters891fd3ec75dc881b0fe40dc9fd1b433672637585c015265a5f0dab6bf79818d5S3VersionKey7316205A';
+      parentBucketParam = `AssetParameters${hash1}S3BucketEAA24F0C`;
+      parentKeyParam = `AssetParameters${hash1}S3VersionKey1194CAB2`;
+      grandChildBucketParam = `referencetoAssetParameters${hash1}S3BucketEAA24F0CRef`;
+      grandChildKeyParam = `referencetoAssetParameters${hash1}S3VersionKey1194CAB2Ref`;
+
+      childBucketParam = `AssetParameters${hash2}S3BucketDEB194C6`;
+      childKeyParam = `AssetParameters${hash2}S3VersionKey8B342ED1`;
     });
 
     test('correctly creates parameters in the parent stack, and passes them to the child stack', () => {
@@ -485,27 +491,27 @@ describe('CDK Include for nested stacks', () => {
         "Parameters": {
           [parentBucketParam]: {
             "Type": "String",
-            "Description": "S3 bucket for asset \"5dc7d4a99cfe2979687dc74f2db9fd75f253b5505a1912b5ceecf70c9aefba50\"",
+            "Description": `S3 bucket for asset \"${hash1}\"`,
           },
           [parentKeyParam]: {
             "Type": "String",
-            "Description": "S3 key for asset version \"5dc7d4a99cfe2979687dc74f2db9fd75f253b5505a1912b5ceecf70c9aefba50\"",
+            "Description": `S3 key for asset version \"${hash1}\"`,
           },
-          "AssetParameters5dc7d4a99cfe2979687dc74f2db9fd75f253b5505a1912b5ceecf70c9aefba50ArtifactHash9C417847": {
+          [`AssetParameters${hash1}ArtifactHash9C417847`]: {
             "Type": "String",
-            "Description": "Artifact hash for asset \"5dc7d4a99cfe2979687dc74f2db9fd75f253b5505a1912b5ceecf70c9aefba50\"",
+            "Description": `Artifact hash for asset \"${hash1}\"`,
           },
           [childBucketParam]: {
             "Type": "String",
-            "Description": "S3 bucket for asset \"891fd3ec75dc881b0fe40dc9fd1b433672637585c015265a5f0dab6bf79818d5\"",
+            "Description": `S3 bucket for asset \"${hash2}\"`,
           },
           [childKeyParam]: {
             "Type": "String",
-            "Description": "S3 key for asset version \"891fd3ec75dc881b0fe40dc9fd1b433672637585c015265a5f0dab6bf79818d5\"",
+            "Description": `S3 key for asset version \"${hash2}\"`,
           },
-          "AssetParameters891fd3ec75dc881b0fe40dc9fd1b433672637585c015265a5f0dab6bf79818d5ArtifactHashA1DE5198": {
+          [`AssetParameters${hash2}ArtifactHashAA82D4CC`]: {
             "Type": "String",
-            "Description": "Artifact hash for asset \"891fd3ec75dc881b0fe40dc9fd1b433672637585c015265a5f0dab6bf79818d5\"",
+            "Description": `Artifact hash for asset \"${hash2}\"`,
           },
         },
         "Resources": {

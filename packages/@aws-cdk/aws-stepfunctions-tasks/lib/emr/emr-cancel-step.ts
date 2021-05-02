@@ -1,13 +1,12 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
-import { Aws } from '@aws-cdk/core';
+import { Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { integrationResourceArn } from '../private/task-utils';
 
 /**
  * Properties for EmrCancelStep
  *
- * @experimental
  */
 export interface EmrCancelStepProps extends sfn.TaskStateBaseProps {
   /**
@@ -24,7 +23,6 @@ export interface EmrCancelStepProps extends sfn.TaskStateBaseProps {
 /**
  * A Step Functions Task to to cancel a Step on an EMR Cluster.
  *
- * @experimental
  */
 export class EmrCancelStep extends sfn.TaskStateBase {
 
@@ -36,7 +34,13 @@ export class EmrCancelStep extends sfn.TaskStateBase {
     this.taskPolicies = [
       new iam.PolicyStatement({
         actions: ['elasticmapreduce:CancelSteps'],
-        resources: [`arn:aws:elasticmapreduce:${Aws.REGION}:${Aws.ACCOUNT_ID}:cluster/*`],
+        resources: [
+          Stack.of(this).formatArn({
+            service: 'elasticmapreduce',
+            resource: 'cluster',
+            resourceName: '*',
+          }),
+        ],
       }),
     ];
   }

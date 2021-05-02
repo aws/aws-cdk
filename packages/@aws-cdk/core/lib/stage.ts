@@ -7,6 +7,8 @@ import { synthesize } from './private/synthesis';
 // eslint-disable-next-line
 import { Construct as CoreConstruct } from './construct-compat';
 
+const STAGE_SYMBOL = Symbol.for('@aws-cdk/core.Stage');
+
 /**
  * Initialization props for a stage.
  */
@@ -30,12 +32,12 @@ export interface StageProps {
    * @example
    *
    * // Use a concrete account and region to deploy this Stage to
-   * new MyStage(app, 'Stage1', {
+   * new Stage(app, 'Stage1', {
    *   env: { account: '123456789012', region: 'us-east-1' },
    * });
    *
    * // Use the CLI's current credentials to determine the target environment
-   * new MyStage(app, 'Stage2', {
+   * new Stage(app, 'Stage2', {
    *   env: { account: process.env.CDK_DEFAULT_ACCOUNT, region: process.env.CDK_DEFAULT_REGION },
    * });
    *
@@ -73,7 +75,6 @@ export class Stage extends CoreConstruct {
    * Return the stage this construct is contained with, if available. If called
    * on a nested stage, returns its parent.
    *
-   * @experimental
    */
   public static of(construct: IConstruct): Stage | undefined {
     return Node.of(construct).scopes.reverse().slice(1).find(Stage.isStage);
@@ -82,30 +83,26 @@ export class Stage extends CoreConstruct {
   /**
    * Test whether the given construct is a stage.
    *
-   * @experimental
    */
   public static isStage(x: any ): x is Stage {
-    return x !== null && x instanceof Stage;
+    return x !== null && typeof(x) === 'object' && STAGE_SYMBOL in x;
   }
 
   /**
    * The default region for all resources defined within this stage.
    *
-   * @experimental
    */
   public readonly region?: string;
 
   /**
    * The default account for all resources defined within this stage.
    *
-   * @experimental
    */
   public readonly account?: string;
 
   /**
    * The cloud assembly builder that is being used for this App
    *
-   * @experimental
    * @internal
    */
   public readonly _assemblyBuilder: cxapi.CloudAssemblyBuilder;
@@ -114,14 +111,12 @@ export class Stage extends CoreConstruct {
    * The name of the stage. Based on names of the parent stages separated by
    * hypens.
    *
-   * @experimental
    */
   public readonly stageName: string;
 
   /**
    * The parent stage or `undefined` if this is the app.
    * *
-   * @experimental
    */
   public readonly parentStage?: Stage;
 
@@ -136,6 +131,8 @@ export class Stage extends CoreConstruct {
     if (id !== '' && !/^[a-z][a-z0-9\-\_\.]+$/i.test(id)) {
       throw new Error(`invalid stage name "${id}". Stage name must start with a letter and contain only alphanumeric characters, hypens ('-'), underscores ('_') and periods ('.')`);
     }
+
+    Object.defineProperty(this, STAGE_SYMBOL, { value: true });
 
     this.parentStage = Stage.of(this);
 
@@ -154,12 +151,18 @@ export class Stage extends CoreConstruct {
   }
 
   /**
+   * The cloud assembly asset output directory.
+   */
+  public get assetOutdir() {
+    return this._assemblyBuilder.assetOutdir;
+  }
+
+  /**
    * Artifact ID of the assembly if it is a nested stage. The root stage (app)
    * will return an empty string.
    *
    * Derived from the construct path.
    *
-   * @experimental
    */
   public get artifactId() {
     if (!this.node.path) { return ''; }

@@ -727,7 +727,7 @@
                   {
                     "Ref": "AWS::URLSuffix"
                   },
-                  "/aws-appmesh-envoy:v1.15.0.0-prod"
+                  "/aws-appmesh-envoy:v1.15.1.0-prod"
                 ]
               ]
             },
@@ -765,9 +765,7 @@
             "FirelensConfiguration": {
               "Type": "fluentbit"
             },
-            "Image": {
-              "Ref": "SsmParameterValueawsserviceawsforfluentbitlatestC96584B6F00A464EAD1953AFF4B05118Parameter"
-            },
+            "Image": "{{resolve:ssm:/aws/service/aws-for-fluent-bit/latest}}",
             "LogConfiguration": {
               "LogDriver": "awslogs",
               "Options": {
@@ -1349,7 +1347,6 @@
             "MeshName"
           ]
         },
-        "RouteName": "name-route",
         "Spec": {
           "HttpRoute": {
             "Action": {
@@ -1375,7 +1372,8 @@
             "namevirtualrouterC00E1ACE",
             "VirtualRouterName"
           ]
-        }
+        },
+        "RouteName": "name-route"
       }
     },
     "namevirtualservice3DDDDF1E": {
@@ -1596,7 +1594,7 @@
                   {
                     "Ref": "AWS::URLSuffix"
                   },
-                  "/aws-appmesh-envoy:v1.15.0.0-prod"
+                  "/aws-appmesh-envoy:v1.15.1.0-prod"
                 ]
               ]
             },
@@ -1634,9 +1632,7 @@
             "FirelensConfiguration": {
               "Type": "fluentbit"
             },
-            "Image": {
-              "Ref": "SsmParameterValueawsserviceawsforfluentbitlatestC96584B6F00A464EAD1953AFF4B05118Parameter"
-            },
+            "Image": "{{resolve:ssm:/aws/service/aws-for-fluent-bit/latest}}",
             "LogConfiguration": {
               "LogDriver": "awslogs",
               "Options": {
@@ -2218,7 +2214,6 @@
             "MeshName"
           ]
         },
-        "RouteName": "greeting-route",
         "Spec": {
           "HttpRoute": {
             "Action": {
@@ -2244,7 +2239,8 @@
             "greetingvirtualrouter0F898D1A",
             "VirtualRouterName"
           ]
-        }
+        },
+        "RouteName": "greeting-route"
       }
     },
     "greetingvirtualservice60AD3AD9": {
@@ -2584,7 +2580,7 @@
                   {
                     "Ref": "AWS::URLSuffix"
                   },
-                  "/aws-appmesh-envoy:v1.15.0.0-prod"
+                  "/aws-appmesh-envoy:v1.15.1.0-prod"
                 ]
               ]
             },
@@ -2622,9 +2618,7 @@
             "FirelensConfiguration": {
               "Type": "fluentbit"
             },
-            "Image": {
-              "Ref": "SsmParameterValueawsserviceawsforfluentbitlatestC96584B6F00A464EAD1953AFF4B05118Parameter"
-            },
+            "Image": "{{resolve:ssm:/aws/service/aws-for-fluent-bit/latest}}",
             "LogConfiguration": {
               "LogDriver": "awslogs",
               "Options": {
@@ -3242,7 +3236,6 @@
             "MeshName"
           ]
         },
-        "RouteName": "greeter-route",
         "Spec": {
           "HttpRoute": {
             "Action": {
@@ -3268,7 +3261,8 @@
             "greetervirtualrouter193840BB",
             "VirtualRouterName"
           ]
-        }
+        },
+        "RouteName": "greeter-route"
       }
     },
     "greetervirtualservice6559950C": {
@@ -3323,7 +3317,7 @@
         "ecrRepo": "840364872350"
       },
       "eu-south-1": {
-        "ecrRepo": "840364872350"
+        "ecrRepo": "422531588944"
       },
       "eu-west-1": {
         "ecrRepo": "840364872350"
@@ -3354,6 +3348,9 @@
       },
       "ap-east-1": {
         "ecrRepo": "856666278305"
+      },
+      "af-south-1": {
+        "ecrRepo": "924023996002"
       }
     },
     "greetingenvoyimageaccountmapping": {
@@ -3382,7 +3379,7 @@
         "ecrRepo": "840364872350"
       },
       "eu-south-1": {
-        "ecrRepo": "840364872350"
+        "ecrRepo": "422531588944"
       },
       "eu-west-1": {
         "ecrRepo": "840364872350"
@@ -3413,6 +3410,9 @@
       },
       "ap-east-1": {
         "ecrRepo": "856666278305"
+      },
+      "af-south-1": {
+        "ecrRepo": "924023996002"
       }
     },
     "greeterenvoyimageaccountmapping": {
@@ -3441,7 +3441,7 @@
         "ecrRepo": "840364872350"
       },
       "eu-south-1": {
-        "ecrRepo": "840364872350"
+        "ecrRepo": "422531588944"
       },
       "eu-west-1": {
         "ecrRepo": "840364872350"
@@ -3472,13 +3472,10 @@
       },
       "ap-east-1": {
         "ecrRepo": "856666278305"
+      },
+      "af-south-1": {
+        "ecrRepo": "924023996002"
       }
-    }
-  },
-  "Parameters": {
-    "SsmParameterValueawsserviceawsforfluentbitlatestC96584B6F00A464EAD1953AFF4B05118Parameter": {
-      "Type": "AWS::SSM::Parameter::Value<String>",
-      "Default": "/aws/service/aws-for-fluent-bit/latest"
     }
   },
   "Outputs": {

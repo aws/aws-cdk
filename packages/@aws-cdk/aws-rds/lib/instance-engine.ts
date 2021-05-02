@@ -1,9 +1,12 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
-import * as core from '@aws-cdk/core';
 import { IEngine } from './engine';
 import { EngineVersion } from './engine-version';
 import { IOptionGroup, OptionGroup } from './option-group';
+
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct } from '@aws-cdk/core';
 
 /**
  * The options passed to {@link IInstanceEngine.bind}.
@@ -100,7 +103,7 @@ export interface IInstanceEngine extends IEngine {
   /**
    * Method called when the engine is used to create a new instance.
    */
-  bindToInstance(scope: core.Construct, options: InstanceEngineBindOptions): InstanceEngineConfig;
+  bindToInstance(scope: Construct, options: InstanceEngineBindOptions): InstanceEngineConfig;
 }
 
 interface InstanceEngineBaseProps {
@@ -134,7 +137,7 @@ abstract class InstanceEngineBase implements IInstanceEngine {
     this.engineFamily = props.engineFamily;
   }
 
-  public bindToInstance(_scope: core.Construct, options: InstanceEngineBindOptions): InstanceEngineConfig {
+  public bindToInstance(_scope: Construct, options: InstanceEngineBindOptions): InstanceEngineConfig {
     if (options.timezone && !this.supportsTimezone) {
       throw new Error(`timezone property can not be configured for ${this.engineType}`);
     }
@@ -214,6 +217,11 @@ export class MariaDbEngineVersion {
   /** Version "10.4.13". */
   public static readonly VER_10_4_13 = MariaDbEngineVersion.of('10.4.13', '10.4');
 
+  /** Version "10.5" (only a major version, without a specific minor version). */
+  public static readonly VER_10_5 = MariaDbEngineVersion.of('10.5', '10.5');
+  /** Version "10.5.8". */
+  public static readonly VER_10_5_8 = MariaDbEngineVersion.of('10.5.8', '10.5');
+
   /**
    * Create a new MariaDbEngineVersion with an arbitrary version.
    *
@@ -261,7 +269,7 @@ class MariaDbInstanceEngine extends InstanceEngineBase {
     });
   }
 
-  public bindToInstance(scope: core.Construct, options: InstanceEngineBindOptions): InstanceEngineConfig {
+  public bindToInstance(scope: Construct, options: InstanceEngineBindOptions): InstanceEngineConfig {
     if (options.domain) {
       throw new Error(`domain property cannot be configured for ${this.engineType}`);
     }
@@ -309,6 +317,10 @@ export class MysqlEngineVersion {
   public static readonly VER_5_6_46 = MysqlEngineVersion.of('5.6.46', '5.6');
   /** Version "5.6.48". */
   public static readonly VER_5_6_48 = MysqlEngineVersion.of('5.6.48', '5.6');
+  /** Version "5.6.49". */
+  public static readonly VER_5_6_49 = MysqlEngineVersion.of('5.6.49', '5.6');
+  /** Version "5.6.51". */
+  public static readonly VER_5_6_51 = MysqlEngineVersion.of('5.6.51', '5.6');
 
   /** Version "5.7" (only a major version, without a specific minor version). */
   public static readonly VER_5_7 = MysqlEngineVersion.of('5.7', '5.7');
@@ -334,6 +346,10 @@ export class MysqlEngineVersion {
   public static readonly VER_5_7_28 = MysqlEngineVersion.of('5.7.28', '5.7');
   /** Version "5.7.30". */
   public static readonly VER_5_7_30 = MysqlEngineVersion.of('5.7.30', '5.7');
+  /** Version "5.7.31". */
+  public static readonly VER_5_7_31 = MysqlEngineVersion.of('5.7.31', '5.7');
+  /** Version "5.7.33". */
+  public static readonly VER_5_7_33 = MysqlEngineVersion.of('5.7.33', '5.7');
 
   /** Version "8.0" (only a major version, without a specific minor version). */
   public static readonly VER_8_0 = MysqlEngineVersion.of('8.0', '8.0');
@@ -351,6 +367,10 @@ export class MysqlEngineVersion {
   public static readonly VER_8_0_19 = MysqlEngineVersion.of('8.0.19', '8.0');
   /** Version "8.0.20 ". */
   public static readonly VER_8_0_20 = MysqlEngineVersion.of('8.0.20', '8.0');
+  /** Version "8.0.21 ". */
+  public static readonly VER_8_0_21 = MysqlEngineVersion.of('8.0.21', '8.0');
+  /** Version "8.0.23". */
+  public static readonly VER_8_0_23 = MysqlEngineVersion.of('8.0.23', '8.0');
 
   /**
    * Create a new MysqlEngineVersion with an arbitrary version.
@@ -418,73 +438,182 @@ export interface PostgresEngineFeatures {
  * (those returned by {@link DatabaseInstanceEngine.postgres}).
  */
 export class PostgresEngineVersion {
-  /** Version "9.5" (only a major version, without a specific minor version). */
+  /**
+   * Version "9.5" (only a major version, without a specific minor version).
+   * @deprecated PostgreSQL 9.5 will reach end of life on February 16, 2021
+  */
   public static readonly VER_9_5 = PostgresEngineVersion.of('9.5', '9.5');
-  /** Version "9.5.2". */
+  /**
+   * Version "9.5.2".
+   * @deprecated PostgreSQL 9.5 will reach end of life on February 16, 2021
+  */
   public static readonly VER_9_5_2 = PostgresEngineVersion.of('9.5.2', '9.5');
-  /** Version "9.5.4". */
+  /**
+   * Version "9.5.4".
+   * @deprecated PostgreSQL 9.5 will reach end of life on February 16, 2021
+  */
   public static readonly VER_9_5_4 = PostgresEngineVersion.of('9.5.4', '9.5');
-  /** Version "9.5.6". */
+  /**
+   * Version "9.5.6".
+   * @deprecated PostgreSQL 9.5 will reach end of life on February 16, 2021
+  */
   public static readonly VER_9_5_6 = PostgresEngineVersion.of('9.5.6', '9.5');
-  /** Version "9.5.7". */
+  /**
+   * Version "9.5.7".
+   * @deprecated PostgreSQL 9.5 will reach end of life on February 16, 2021
+  */
   public static readonly VER_9_5_7 = PostgresEngineVersion.of('9.5.7', '9.5');
-  /** Version "9.5.9". */
+  /**
+   * Version "9.5.9".
+   * @deprecated PostgreSQL 9.5 will reach end of life on February 16, 2021
+  */
   public static readonly VER_9_5_9 = PostgresEngineVersion.of('9.5.9', '9.5');
-  /** Version "9.5.10". */
+  /**
+   * Version "9.5.10".
+   * @deprecated PostgreSQL 9.5 will reach end of life on February 16, 2021
+  */
   public static readonly VER_9_5_10 = PostgresEngineVersion.of('9.5.10', '9.5');
-  /** Version "9.5.12". */
+  /**
+   * Version "9.5.12".
+   * @deprecated PostgreSQL 9.5 will reach end of life on February 16, 2021
+  */
   public static readonly VER_9_5_12 = PostgresEngineVersion.of('9.5.12', '9.5');
-  /** Version "9.5.13". */
+  /**
+   * Version "9.5.13".
+   * @deprecated PostgreSQL 9.5 will reach end of life on February 16, 2021
+  */
   public static readonly VER_9_5_13 = PostgresEngineVersion.of('9.5.13', '9.5');
-  /** Version "9.5.14". */
+  /**
+   * Version "9.5.14".
+   * @deprecated PostgreSQL 9.5 will reach end of life on February 16, 2021
+  */
   public static readonly VER_9_5_14 = PostgresEngineVersion.of('9.5.14', '9.5');
-  /** Version "9.5.15". */
+  /**
+   * Version "9.5.15".
+   * @deprecated PostgreSQL 9.5 will reach end of life on February 16, 2021
+  */
   public static readonly VER_9_5_15 = PostgresEngineVersion.of('9.5.15', '9.5');
-  /** Version "9.5.16". */
+  /**
+   * Version "9.5.16".
+   * @deprecated PostgreSQL 9.5 will reach end of life on February 16, 2021
+  */
   public static readonly VER_9_5_16 = PostgresEngineVersion.of('9.5.16', '9.5');
-  /** Version "9.5.18". */
+  /**
+   * Version "9.5.18".
+   * @deprecated PostgreSQL 9.5 will reach end of life on February 16, 2021
+  */
   public static readonly VER_9_5_18 = PostgresEngineVersion.of('9.5.18', '9.5');
-  /** Version "9.5.19". */
+  /**
+   * Version "9.5.19".
+   * @deprecated PostgreSQL 9.5 will reach end of life on February 16, 2021
+  */
   public static readonly VER_9_5_19 = PostgresEngineVersion.of('9.5.19', '9.5');
-  /** Version "9.5.20". */
+  /**
+   * Version "9.5.20".
+   * @deprecated PostgreSQL 9.5 will reach end of life on February 16, 2021
+  */
   public static readonly VER_9_5_20 = PostgresEngineVersion.of('9.5.20', '9.5');
-  /** Version "9.5.21". */
+  /**
+   * Version "9.5.21".
+   * @deprecated PostgreSQL 9.5 will reach end of life on February 16, 2021
+  */
   public static readonly VER_9_5_21 = PostgresEngineVersion.of('9.5.21', '9.5');
-  /** Version "9.5.22". */
+  /**
+   * Version "9.5.22".
+   * @deprecated PostgreSQL 9.5 will reach end of life on February 16, 2021
+  */
   public static readonly VER_9_5_22 = PostgresEngineVersion.of('9.5.22', '9.5');
+  /**
+   * Version "9.5.23".
+   * @deprecated PostgreSQL 9.5 will reach end of life on February 16, 2021
+  */
+  public static readonly VER_9_5_23 = PostgresEngineVersion.of('9.5.23', '9.5');
 
-  /** Version "9.6" (only a major version, without a specific minor version). */
+  /**
+   * Version "9.6" (only a major version, without a specific minor version).
+   * @deprecated PostgreSQL 9.6 will reach end of life in November 2021
+  */
   public static readonly VER_9_6 = PostgresEngineVersion.of('9.6', '9.6');
-  /** Version "9.6.1". */
+  /**
+   * Version "9.6.1".
+   * @deprecated PostgreSQL 9.6 will reach end of life in November 2021
+  */
   public static readonly VER_9_6_1 = PostgresEngineVersion.of('9.6.1', '9.6');
-  /** Version "9.6.2". */
+  /**
+   * Version "9.6.2".
+   * @deprecated PostgreSQL 9.6 will reach end of life in November 2021
+  */
   public static readonly VER_9_6_2 = PostgresEngineVersion.of('9.6.2', '9.6');
-  /** Version "9.6.3". */
+  /**
+   * Version "9.6.3".
+   * @deprecated PostgreSQL 9.6 will reach end of life in November 2021
+  */
   public static readonly VER_9_6_3 = PostgresEngineVersion.of('9.6.3', '9.6');
-  /** Version "9.6.5". */
+  /**
+   * Version "9.6.5".
+   * @deprecated PostgreSQL 9.6 will reach end of life in November 2021
+  */
   public static readonly VER_9_6_5 = PostgresEngineVersion.of('9.6.5', '9.6');
-  /** Version "9.6.6". */
+  /**
+   * Version "9.6.6".
+   * @deprecated PostgreSQL 9.6 will reach end of life in November 2021
+  */
   public static readonly VER_9_6_6 = PostgresEngineVersion.of('9.6.6', '9.6');
-  /** Version "9.6.8". */
+  /**
+   * Version "9.6.8".
+   * @deprecated PostgreSQL 9.6 will reach end of life in November 2021
+  */
   public static readonly VER_9_6_8 = PostgresEngineVersion.of('9.6.8', '9.6');
-  /** Version "9.6.9". */
+  /**
+   * Version "9.6.9".
+   * @deprecated PostgreSQL 9.6 will reach end of life in November 2021
+  */
   public static readonly VER_9_6_9 = PostgresEngineVersion.of('9.6.9', '9.6');
-  /** Version "9.6.10". */
+  /**
+   * Version "9.6.10".
+   * @deprecated PostgreSQL 9.6 will reach end of life in November 2021
+  */
   public static readonly VER_9_6_10 = PostgresEngineVersion.of('9.6.10', '9.6');
-  /** Version "9.6.11". */
+  /**
+   * Version "9.6.11".
+   * @deprecated PostgreSQL 9.6 will reach end of life in November 2021
+  */
   public static readonly VER_9_6_11 = PostgresEngineVersion.of('9.6.11', '9.6');
-  /** Version "9.6.12". */
+  /**
+   * Version "9.6.12".
+   * @deprecated PostgreSQL 9.6 will reach end of life in November 2021
+  */
   public static readonly VER_9_6_12 = PostgresEngineVersion.of('9.6.12', '9.6');
-  /** Version "9.6.14". */
+  /**
+   * Version "9.6.14".
+   * @deprecated PostgreSQL 9.6 will reach end of life in November 2021
+  */
   public static readonly VER_9_6_14 = PostgresEngineVersion.of('9.6.14', '9.6');
-  /** Version "9.6.15". */
+  /**
+   * Version "9.6.15".
+   * @deprecated PostgreSQL 9.6 will reach end of life in November 2021
+  */
   public static readonly VER_9_6_15 = PostgresEngineVersion.of('9.6.15', '9.6');
-  /** Version "9.6.16". */
+  /**
+   * Version "9.6.16".
+   * @deprecated PostgreSQL 9.6 will reach end of life in November 2021
+  */
   public static readonly VER_9_6_16 = PostgresEngineVersion.of('9.6.16', '9.6');
-  /** Version "9.6.17". */
+  /**
+   * Version "9.6.17".
+   * @deprecated PostgreSQL 9.6 will reach end of life in November 2021
+  */
   public static readonly VER_9_6_17 = PostgresEngineVersion.of('9.6.17', '9.6');
-  /** Version "9.6.18". */
+  /**
+   * Version "9.6.18".
+   * @deprecated PostgreSQL 9.6 will reach end of life in November 2021
+  */
   public static readonly VER_9_6_18 = PostgresEngineVersion.of('9.6.18', '9.6');
+  /**
+   * Version "9.6.19".
+   * @deprecated PostgreSQL 9.6 will reach end of life in November 2021
+  */
+  public static readonly VER_9_6_19 = PostgresEngineVersion.of('9.6.19', '9.6');
 
   /** Version "10" (only a major version, without a specific minor version). */
   public static readonly VER_10 = PostgresEngineVersion.of('10', '10');
@@ -510,6 +639,8 @@ export class PostgresEngineVersion {
   public static readonly VER_10_12 = PostgresEngineVersion.of('10.12', '10', { s3Import: true });
   /** Version "10.13". */
   public static readonly VER_10_13 = PostgresEngineVersion.of('10.13', '10', { s3Import: true });
+  /** Version "10.14". */
+  public static readonly VER_10_14 = PostgresEngineVersion.of('10.14', '10', { s3Import: true });
 
   /** Version "11" (only a major version, without a specific minor version). */
   public static readonly VER_11 = PostgresEngineVersion.of('11', '11', { s3Import: true });
@@ -527,6 +658,8 @@ export class PostgresEngineVersion {
   public static readonly VER_11_7 = PostgresEngineVersion.of('11.7', '11', { s3Import: true });
   /** Version "11.8". */
   public static readonly VER_11_8 = PostgresEngineVersion.of('11.8', '11', { s3Import: true });
+  /** Version "11.9". */
+  public static readonly VER_11_9 = PostgresEngineVersion.of('11.9', '11', { s3Import: true });
 
   /** Version "12" (only a major version, without a specific minor version). */
   public static readonly VER_12 = PostgresEngineVersion.of('12', '12', { s3Import: true });
@@ -534,6 +667,15 @@ export class PostgresEngineVersion {
   public static readonly VER_12_2 = PostgresEngineVersion.of('12.2', '12', { s3Import: true });
   /** Version "12.3". */
   public static readonly VER_12_3 = PostgresEngineVersion.of('12.3', '12', { s3Import: true });
+  /** Version "12.4". */
+  public static readonly VER_12_4 = PostgresEngineVersion.of('12.4', '12', { s3Import: true });
+  /** Version "12.5". */
+  public static readonly VER_12_5 = PostgresEngineVersion.of('12.5', '12', { s3Import: true });
+
+  /** Version "13" (only a major version, without a specific minor version). */
+  public static readonly VER_13 = PostgresEngineVersion.of('13', '13', { s3Import: true });
+  /** Version "13.1". */
+  public static readonly VER_13_1 = PostgresEngineVersion.of('13.1', '13', { s3Import: true });
 
   /**
    * Create a new PostgresEngineVersion with an arbitrary version.
@@ -658,6 +800,8 @@ export class OracleLegacyEngineVersion {
   public static readonly VER_11_2_0_4_V23 = OracleLegacyEngineVersion.of('11.2.0.4.v23', '11.2');
   /** Version "11.2.0.4.v24". */
   public static readonly VER_11_2_0_4_V24 = OracleLegacyEngineVersion.of('11.2.0.4.v24', '11.2');
+  /** Version "11.2.0.4.v25". */
+  public static readonly VER_11_2_0_4_V25 = OracleLegacyEngineVersion.of('11.2.0.4.v25', '11.2');
 
   private static of(oracleLegacyFullVersion: string, oracleLegacyMajorVersion: string): OracleLegacyEngineVersion {
     return new OracleLegacyEngineVersion(oracleLegacyFullVersion, oracleLegacyMajorVersion);
@@ -722,6 +866,8 @@ export class OracleEngineVersion {
   public static readonly VER_12_1_0_2_V19 = OracleEngineVersion.of('12.1.0.2.v19', '12.1');
   /** Version "12.1.0.2.v20". */
   public static readonly VER_12_1_0_2_V20 = OracleEngineVersion.of('12.1.0.2.v20', '12.1');
+  /** Version "12.1.0.2.v21". */
+  public static readonly VER_12_1_0_2_V21 = OracleEngineVersion.of('12.1.0.2.v21', '12.1');
 
   /** Version "12.2" (only a major version, without a specific minor version). */
   public static readonly VER_12_2 = OracleEngineVersion.of('12.2', '12.2');
@@ -739,6 +885,8 @@ export class OracleEngineVersion {
   public static readonly VER_12_2_0_1_2020_01_R1 = OracleEngineVersion.of('12.2.0.1.ru-2020-01.rur-2020-01.r1', '12.2');
   /** Version "12.2.0.1.ru-2020-04.rur-2020-04.r1". */
   public static readonly VER_12_2_0_1_2020_04_R1 = OracleEngineVersion.of('12.2.0.1.ru-2020-04.rur-2020-04.r1', '12.2');
+  /** Version "12.2.0.1.ru-2020-07.rur-2020-07.r1". */
+  public static readonly VER_12_2_0_1_2020_07_R1 = OracleEngineVersion.of('12.2.0.1.ru-2020-07.rur-2020-07.r1', '12.2');
 
   /** Version "18" (only a major version, without a specific minor version). */
   public static readonly VER_18 = OracleEngineVersion.of('18', '18');
@@ -750,6 +898,8 @@ export class OracleEngineVersion {
   public static readonly VER_18_0_0_0_2020_01_R1 = OracleEngineVersion.of('18.0.0.0.ru-2020-01.rur-2020-01.r1', '18');
   /** Version "18.0.0.0.ru-2020-04.rur-2020-04.r1". */
   public static readonly VER_18_0_0_0_2020_04_R1 = OracleEngineVersion.of('18.0.0.0.ru-2020-04.rur-2020-04.r1', '18');
+  /** Version "18.0.0.0.ru-2020-07.rur-2020-07.r1". */
+  public static readonly VER_18_0_0_0_2020_07_R1 = OracleEngineVersion.of('18.0.0.0.ru-2020-07.rur-2020-07.r1', '18');
 
   /** Version "19" (only a major version, without a specific minor version). */
   public static readonly VER_19 = OracleEngineVersion.of('19', '19');
@@ -761,6 +911,8 @@ export class OracleEngineVersion {
   public static readonly VER_19_0_0_0_2020_01_R1 = OracleEngineVersion.of('19.0.0.0.ru-2020-01.rur-2020-01.r1', '19');
   /** Version "19.0.0.0.ru-2020-04.rur-2020-04.r1". */
   public static readonly VER_19_0_0_0_2020_04_R1 = OracleEngineVersion.of('19.0.0.0.ru-2020-04.rur-2020-04.r1', '19');
+  /** Version "19.0.0.0.ru-2020-07.rur-2020-07.r1". */
+  public static readonly VER_19_0_0_0_2020_07_R1 = OracleEngineVersion.of('19.0.0.0.ru-2020-07.rur-2020-07.r1', '19');
 
   /**
    * Creates a new OracleEngineVersion with an arbitrary version.
@@ -804,7 +956,7 @@ abstract class OracleInstanceEngineBase extends InstanceEngineBase {
     });
   }
 
-  public bindToInstance(scope: core.Construct, options: InstanceEngineBindOptions): InstanceEngineConfig {
+  public bindToInstance(scope: Construct, options: InstanceEngineBindOptions): InstanceEngineConfig {
     const config = super.bindToInstance(scope, options);
 
     let optionGroup = options.optionGroup;
@@ -987,6 +1139,8 @@ export class SqlServerEngineVersion {
   public static readonly VER_13_00_5426_0_V1 = SqlServerEngineVersion.of('13.00.5426.0.v1', '13.00');
   /** Version "13.00.5598.27.v1". */
   public static readonly VER_13_00_5598_27_V1 = SqlServerEngineVersion.of('13.00.5598.27.v1', '13.00');
+  /** Version "13.00.5820.21.v1". */
+  public static readonly VER_13_00_5820_21_V1 = SqlServerEngineVersion.of('13.00.5820.21.v1', '13.00');
 
   /** Version "14.00" (only a major version, without a specific minor version). */
   public static readonly VER_14 = SqlServerEngineVersion.of('14.00', '14.00');
@@ -1000,6 +1154,12 @@ export class SqlServerEngineVersion {
   public static readonly VER_14_00_3049_1_V1 = SqlServerEngineVersion.of('14.00.3049.1.v1', '14.00');
   /** Version "14.00.3192.2.v1". */
   public static readonly VER_14_00_3192_2_V1 = SqlServerEngineVersion.of('14.00.3192.2.v1', '14.00');
+  /** Version "14.00.3223.3.v1". */
+  public static readonly VER_14_00_3223_3_V1 = SqlServerEngineVersion.of('14.00.3223.3.v1', '14.00');
+  /** Version "14.00.3281.6.v1". */
+  public static readonly VER_14_00_3281_6_V1 = SqlServerEngineVersion.of('14.00.3281.6.v1', '14.00');
+  /** Version "14.00.3294.2.v1". */
+  public static readonly VER_14_00_3294_2_V1 = SqlServerEngineVersion.of('14.00.3294.2.v1', '14.00');
 
   /** Version "15.00" (only a major version, without a specific minor version). */
   public static readonly VER_15 = SqlServerEngineVersion.of('15.00', '15.00');
@@ -1065,7 +1225,7 @@ abstract class SqlServerInstanceEngineBase extends InstanceEngineBase {
     });
   }
 
-  public bindToInstance(scope: core.Construct, options: InstanceEngineBindOptions): InstanceEngineConfig {
+  public bindToInstance(scope: Construct, options: InstanceEngineBindOptions): InstanceEngineConfig {
     const config = super.bindToInstance(scope, options);
 
     let optionGroup = options.optionGroup;

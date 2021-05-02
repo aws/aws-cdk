@@ -308,10 +308,30 @@ export class ConstructNode {
   public get path(): string { return this._actualNode.path; }
 
   /**
-   * A tree-global unique alphanumeric identifier for this construct.
-   * Includes all components of the tree.
+   * A tree-global unique alphanumeric identifier for this construct. Includes
+   * all components of the tree.
+   *
+   * @deprecated use `node.addr` to obtain a consistent 42 character address for
+   * this node (see https://github.com/aws/constructs/pull/314)
    */
   public get uniqueId(): string { return this._actualNode.uniqueId; }
+
+  /**
+   * Returns an opaque tree-unique address for this construct.
+   *
+   * Addresses are 42 characters hexadecimal strings. They begin with "c8"
+   * followed by 40 lowercase hexadecimal characters (0-9a-f).
+   *
+   * Addresses are calculated using a SHA-1 of the components of the construct
+   * path.
+   *
+   * To enable refactorings of construct trees, constructs with the ID `Default`
+   * will be excluded from the calculation. In those cases constructs in the
+   * same tree may have the same addreess.
+   *
+   * @example c83a2846e506bcc5f10682b564084bca2d275709ee
+   */
+  public get addr(): string { return this._actualNode.addr; }
 
   /**
    * Return a direct child by id, or undefined
@@ -393,10 +413,16 @@ export class ConstructNode {
   }
 
   /**
+   * DEPRECATED
+   * @deprecated use `metadataEntry`
+   */
+  public get metadata() { return this._actualNode.metadata as cxapi.MetadataEntry[]; }
+
+  /**
    * An immutable array of metadata objects associated with this construct.
    * This can be used, for example, to implement support for deprecation notices, source mapping, etc.
    */
-  public get metadata() { return this._actualNode.metadata as cxapi.MetadataEntry[]; }
+  public get metadataEntry() { return this._actualNode.metadata; }
 
   /**
    * Adds a metadata entry to this construct.
@@ -453,6 +479,13 @@ export class ConstructNode {
   }
 
   /**
+   * Add a validator to this construct Node
+   */
+  public addValidation(validation: constructs.IValidation) {
+    this._actualNode.addValidation(validation);
+  }
+
+  /**
    * All parent scopes of this construct.
    *
    * @returns a list of parent scopes. The last element in the list will always
@@ -489,7 +522,6 @@ export class ConstructNode {
    * Remove the child with the given name, if present.
    *
    * @returns Whether a child with the given name was deleted.
-   * @experimental
    */
   public tryRemoveChild(childName: string): boolean { return this._actualNode.tryRemoveChild(childName); }
 }

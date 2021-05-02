@@ -149,9 +149,11 @@ async function main() {
         package: 'cdk-package',
         awslint: 'cdk-awslint',
         cfn2ts: 'cfn2ts',
-        'build+test+package': 'npm run build+test && npm run package',
-        'build+test': 'npm run build && npm test',
+        'build+test': 'yarn build && yarn test',
+        'build+test+package': 'yarn build+test && yarn package',
         compat: 'cdk-compat',
+        gen: 'cfn2ts',
+        'rosetta:extract': 'yarn --silent jsii-rosetta extract',
       },
       'cdk-build': {
         cloudformation: namespace,
@@ -174,7 +176,8 @@ async function main() {
       },
       license: 'Apache-2.0',
       devDependencies: {
-        '@aws-cdk/assert': version,
+        '@types/jest': '^26.0.22',
+        '@aws-cdk/assert-internal': version,
         'cdk-build-tools': version,
         'cfn2ts': version,
         'pkglint': version,
@@ -192,6 +195,9 @@ async function main() {
       maturity: 'cfn-only',
       awscdkio: {
         announce: false,
+      },
+      publishConfig: {
+        tag: 'latest',
       },
     });
 
@@ -241,7 +247,11 @@ async function main() {
       '',
       '.eslintrc.js',
       'jest.config.js',
+      '',
+      '# exclude cdk artifacts',
+      '**/cdk.out',
       'junit.xml',
+      'test/',
     ]);
 
     await write('lib/index.ts', [
@@ -250,7 +260,7 @@ async function main() {
     ]);
 
     await write(`test/${lowcaseModuleName}.test.ts`, [
-      "import '@aws-cdk/assert/jest';",
+      "import '@aws-cdk/assert-internal/jest';",
       "import {} from '../lib';",
       '',
       "test('No tests are specified for this package', () => {",
@@ -259,15 +269,19 @@ async function main() {
     ]);
 
     await write('README.md', [
-      `## ${namespace} Construct Library`,
+      `# ${namespace} Construct Library`,
       '<!--BEGIN STABILITY BANNER-->',
+      '',
       '---',
       '',
       '![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)',
       '',
-      '> All classes with the `Cfn` prefix in this module ([CFN Resources](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) are always stable and safe to use.',
+      '> All classes with the `Cfn` prefix in this module ([CFN Resources]) are always stable and safe to use.',
+      '>',
+      '> [CFN Resources]: https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib',
       '',
       '---',
+      '',
       '<!--END STABILITY BANNER-->',
       '',
       'This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.',
@@ -293,19 +307,31 @@ async function main() {
       await fs.copy(path.join(templateDir, file), path.join(packagePath, file));
     }
 
-    // update decdk
-    const decdkPkgJsonPath = path.join(__dirname, '..', '..', '..', 'decdk', 'package.json');
-    const decdkPkg = JSON.parse(await fs.readFile(decdkPkgJsonPath, 'utf8'));
+    await addDependencyToMegaPackage(path.join('@aws-cdk', 'cloudformation-include'), packageName, version, ['dependencies', 'peerDependencies']);
+    await addDependencyToMegaPackage('aws-cdk-lib', packageName, version, ['devDependencies']);
+    await addDependencyToMegaPackage('monocdk', packageName, version, ['devDependencies']);
+    await addDependencyToMegaPackage('decdk', packageName, version, ['dependencies']);
+  }
+}
+
+/**
+ * A few of our packages (e.g., decdk, aws-cdk-lib) require a dependency on every service package.
+ * This automates adding the dependency (and peer dependency) to the package.json.
+ */
+async function addDependencyToMegaPackage(megaPackageName: string, packageName: string, version: string, dependencyTypes: string[]) {
+  const packageJsonPath = path.join(__dirname, '..', '..', '..', megaPackageName, 'package.json');
+  const packageJson = JSON.parse(await fs.readFile(packageJsonPath, 'utf8'));
+  dependencyTypes.forEach(dependencyType => {
     const unorderedDeps = {
-      ...decdkPkg.dependencies,
+      ...packageJson[dependencyType],
       [packageName]: version,
     };
-    decdkPkg.dependencies = {};
+    packageJson[dependencyType] = {};
     Object.keys(unorderedDeps).sort().forEach(k => {
-      decdkPkg.dependencies[k] = unorderedDeps[k];
+      packageJson[dependencyType][k] = unorderedDeps[k];
     });
-    await fs.writeFile(decdkPkgJsonPath, JSON.stringify(decdkPkg, null, 2) + '\n');
-  }
+  });
+  await fs.writeFile(packageJsonPath, JSON.stringify(packageJson, null, 2) + '\n');
 }
 
 main().catch(e => {
