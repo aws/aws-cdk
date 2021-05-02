@@ -1,5 +1,5 @@
-import { ResourcePart, SynthUtils } from '@aws-cdk/assert';
-import '@aws-cdk/assert/jest';
+import { ResourcePart, SynthUtils } from '@aws-cdk/assert-internal';
+import '@aws-cdk/assert-internal/jest';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cdk from '@aws-cdk/core';
