@@ -9,6 +9,7 @@ import {
   NetworkMode,
   PidMode,
   TaskDefinition,
+  InferenceAccelerator,
 } from '../base/task-definition';
 import { PlacementConstraint } from '../placement';
 
@@ -51,6 +52,15 @@ export interface Ec2TaskDefinitionProps extends CommonTaskDefinitionProps {
    * @default - PidMode used by the task is not specified
    */
   readonly pidMode?: PidMode;
+
+  /**
+   * The inference accelerators to use for the containers in the task.
+   *
+   * Not supported in Fargate.
+   *
+   * @default - No inference accelerators.
+   */
+  readonly inferenceAccelerators?: InferenceAccelerator[];
 }
 
 /**
@@ -109,6 +119,7 @@ export class Ec2TaskDefinition extends TaskDefinition implements IEc2TaskDefinit
       placementConstraints: props.placementConstraints,
       ipcMode: props.ipcMode,
       pidMode: props.pidMode,
+      inferenceAccelerators: props.inferenceAccelerators,
     });
   }
 }
