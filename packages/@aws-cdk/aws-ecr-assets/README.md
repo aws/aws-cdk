@@ -95,7 +95,7 @@ new ecrdeploy.ECRDeployment(this, 'DeployDockerImage', {
 });
 ```
 
-⚠️ Please note in mind that this is a 3rd-party construct library and is not officially supported by AWS.
+⚠️ Please note that this is a 3rd-party construct library and is not officially supported by AWS.
 You are welcome to +1 [this GitHub issue](https://github.com/aws/aws-cdk/issues/12597) if you would like to see
 native support for this use-case in the AWS CDK.
 
