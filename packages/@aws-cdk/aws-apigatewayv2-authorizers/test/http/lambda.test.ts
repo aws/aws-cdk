@@ -1,5 +1,5 @@
-import '@aws-cdk/assert/jest';
-import { ABSENT } from '@aws-cdk/assert';
+import '@aws-cdk/assert-internal/jest';
+import { ABSENT } from '@aws-cdk/assert-internal';
 import { HttpApi, HttpIntegrationType, HttpRouteIntegrationBindOptions, IHttpRouteIntegration, PayloadFormatVersion } from '@aws-cdk/aws-apigatewayv2';
 import { Code, Function, Runtime } from '@aws-cdk/aws-lambda';
 import { Duration, Stack } from '@aws-cdk/core';
