@@ -300,6 +300,26 @@ export interface IBucket extends IResource {
    * https://docs.aws.amazon.com/AmazonS3/latest/dev/NotificationHowTo.html
    */
   addEventNotification(event: EventType, dest: IBucketNotificationDestination, ...filters: NotificationKeyFilter[]): void;
+
+  /**
+   * Subscribes a destination to receive notifications when an object is
+   * created in the bucket. This is identical to calling
+   * `onEvent(EventType.ObjectCreated)`.
+   *
+   * @param dest The notification destination (see onEvent)
+   * @param filters Filters (see onEvent)
+   */
+  addObjectCreatedNotification(dest: IBucketNotificationDestination, ...filters: NotificationKeyFilter[]): void
+
+  /**
+   * Subscribes a destination to receive notifications when an object is
+   * removed from the bucket. This is identical to calling
+   * `onEvent(EventType.ObjectRemoved)`.
+   *
+   * @param dest The notification destination (see onEvent)
+   * @param filters Filters (see onEvent)
+   */
+  addObjectRemovedNotification(dest: IBucketNotificationDestination, ...filters: NotificationKeyFilter[]): void;
 }
 
 /**
