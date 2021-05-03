@@ -1,4 +1,6 @@
-## Installing dependencies
+# Set up for local development
+
+## Installing development dependencies
 
 ```shell
 make dev
