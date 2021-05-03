@@ -1,5 +1,4 @@
 import boto3  # type: ignore
-import copy
 import json
 import urllib.request
 from typing import List
@@ -30,20 +29,19 @@ def handler(event: dict, context):
 
 
 def prepare_config(current_config: dict, in_config: dict, old_config: dict, merge: bool) -> dict:
-    config = copy.deepcopy(current_config)
-    config.pop("ResponseMetadata", None)
+    config = {k: v for (k, v) in current_config.items() if k in CONFIG_TYPES}
     for config_type in CONFIG_TYPES:
         config.setdefault(config_type, [])
         in_config.setdefault(config_type, [])
-        filter_config(config, config_type, in_config, old_config)
+        config[config_type] = find_unmanaged_notifications(config, config_type, in_config, old_config)
         if merge:
             config[config_type].extend(in_config[config_type])
     return config
 
 
-def filter_config(config: dict, config_type: str, in_config: dict, old_config: dict):
+def find_unmanaged_notifications(config: dict, config_type: str, in_config: dict, old_config: dict) -> List:
     remove_ids = ids(in_config[config_type] + old_config.get(config_type, []))
-    config[config_type] = [item for item in config[config_type] if item["Id"] not in remove_ids]
+    return [item for item in config[config_type] if item["Id"] not in remove_ids]
 
 
 def ids(configs: list) -> List[str]:
