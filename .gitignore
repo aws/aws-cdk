@@ -42,5 +42,6 @@ yarn-error.log
 
 # Cloud9
 .c9
+.nzm-*
 
 /.versionrc.json

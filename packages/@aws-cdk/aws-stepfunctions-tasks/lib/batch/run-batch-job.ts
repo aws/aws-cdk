@@ -1,4 +1,3 @@
-import * as batch from '@aws-cdk/aws-batch';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
@@ -88,9 +87,9 @@ export interface JobDependency {
  */
 export interface RunBatchJobProps {
   /**
-   * The job definition used by this job.
+   * The arn of the job definition used by this job.
    */
-  readonly jobDefinition: batch.IJobDefinition;
+  readonly jobDefinitionArn: string;
 
   /**
    * The name of the job.
@@ -100,9 +99,9 @@ export interface RunBatchJobProps {
   readonly jobName: string;
 
   /**
-   * The job queue into which the job is submitted.
+   * The arn of the job queue into which the job is submitted.
    */
-  readonly jobQueue: batch.IJobQueue;
+  readonly jobQueueArn: string;
 
   /**
    * The array size can be between 2 and 10,000.
@@ -242,9 +241,9 @@ export class RunBatchJob implements sfn.IStepFunctionsTask {
       ),
       policyStatements: this.configurePolicyStatements(_task),
       parameters: {
-        JobDefinition: this.props.jobDefinition.jobDefinitionArn,
+        JobDefinition: this.props.jobDefinitionArn,
         JobName: this.props.jobName,
-        JobQueue: this.props.jobQueue.jobQueueArn,
+        JobQueue: this.props.jobQueueArn,
         Parameters: this.props.payload,
 
         ArrayProperties:
@@ -287,7 +286,7 @@ export class RunBatchJob implements sfn.IStepFunctionsTask {
             resource: 'job-definition',
             resourceName: '*',
           }),
-          this.props.jobQueue.jobQueueArn,
+          this.props.jobQueueArn,
         ],
         actions: ['batch:SubmitJob'],
       }),
