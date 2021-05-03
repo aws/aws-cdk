@@ -31,6 +31,13 @@ export interface ApplicationLoadBalancerProps extends BaseLoadBalancerProps {
   readonly ipAddressType?: IpAddressType;
 
   /**
+   * Whether or not to drop invalid http headers.
+   *
+   * @default true
+   */
+  readonly dropInvalidHeaders?: boolean;
+
+  /**
    * Indicates whether HTTP/2 is enabled.
    *
    * @default true
@@ -96,6 +103,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
     })];
     this.connections = new ec2.Connections({ securityGroups });
 
+    this.setAttribute('routing.http.drop_invalid_header_fields.enabled', props.dropInvalidHeaders === false ? 'false' : 'true');
     if (props.http2Enabled === false) { this.setAttribute('routing.http2.enabled', 'false'); }
     if (props.idleTimeout !== undefined) { this.setAttribute('idle_timeout.timeout_seconds', props.idleTimeout.toSeconds().toString()); }
   }

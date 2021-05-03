@@ -93,6 +93,10 @@ describe('tests', () => {
           Value: 'true',
         },
         {
+          Key: 'routing.http.drop_invalid_header_fields.enabled',
+          Value: 'true',
+        },
+        {
           Key: 'routing.http2.enabled',
           Value: 'false',
         },
@@ -120,6 +124,28 @@ describe('tests', () => {
       LoadBalancerAttributes: arrayWith(
         {
           Key: 'deletion_protection.enabled',
+          Value: 'false',
+        },
+      ),
+    });
+  });
+
+  test('Drop invalid headers false', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Stack');
+
+    // WHEN
+    new elbv2.ApplicationLoadBalancer(stack, 'LB', {
+      vpc,
+      dropInvalidHeaders: false,
+    });
+
+    // THEN
+    expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+      LoadBalancerAttributes: arrayWith(
+        {
+          Key: 'routing.http.drop_invalid_header_fields.enabled',
           Value: 'false',
         },
       ),
