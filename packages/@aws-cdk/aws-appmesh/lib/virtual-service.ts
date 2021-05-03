@@ -88,6 +88,7 @@ abstract class VirtualServiceBase extends cdk.Resource implements IVirtualServic
     return this.grant(identity,
       'appmesh:DescribeVirtualService',
       'appmesh:ListVirtualService',
+      'appmesh:ListTagsForResource',
     );
   }
 

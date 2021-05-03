@@ -101,6 +101,7 @@ abstract class VirtualRouterBase extends cdk.Resource implements IVirtualRouter 
     return this.grant(identity,
       'appmesh:DescribeVirtualRouter',
       'appmesh:ListVirtualRouter',
+      'appmesh:ListTagsForResource',
     );
   }
 

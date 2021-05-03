@@ -783,6 +783,7 @@ export = {
             Action: [
               'appmesh:DescribeVirtualNode',
               'appmesh:ListVirtualNode',
+              'appmesh:ListTagsForResource',
             ],
             Effect: 'Allow',
             Resource: {

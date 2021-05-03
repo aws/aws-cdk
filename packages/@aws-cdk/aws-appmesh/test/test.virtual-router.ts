@@ -434,6 +434,7 @@ export = {
             Action: [
               'appmesh:DescribeVirtualRouter',
               'appmesh:ListVirtualRouter',
+              'appmesh:ListTagsForResource',
             ],
             Effect: 'Allow',
             Resource: {

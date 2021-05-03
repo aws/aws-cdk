@@ -131,6 +131,7 @@ abstract class VirtualNodeBase extends cdk.Resource implements IVirtualNode {
     return this.grant(identity,
       'appmesh:DescribeVirtualNode',
       'appmesh:ListVirtualNode',
+      'appmesh:ListTagsForResource',
     );
   }
 

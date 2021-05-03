@@ -100,6 +100,7 @@ abstract class RouteBase extends cdk.Resource implements IRoute {
     return this.grant(identity,
       'appmesh:DescribeRoute',
       'appmesh:ListRoute',
+      'appmesh:ListTagsForResource',
     );
   }
 

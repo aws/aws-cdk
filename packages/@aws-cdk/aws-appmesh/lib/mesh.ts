@@ -115,6 +115,7 @@ abstract class MeshBase extends cdk.Resource implements IMesh {
     return this.grant(identity,
       'appmesh:DescribeMesh',
       'appmesh:ListMeshes',
+      'appmesh:ListTagsForResource',
     );
   }
 

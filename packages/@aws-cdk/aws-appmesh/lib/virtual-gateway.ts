@@ -127,6 +127,7 @@ abstract class VirtualGatewayBase extends cdk.Resource implements IVirtualGatewa
     return this.grant(identity,
       'appmesh:DescribeVirtualGateway',
       'appmesh:ListVirtualGateway',
+      'appmesh:ListTagsForResource',
     );
   }
 

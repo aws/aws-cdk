@@ -159,6 +159,7 @@ export = {
             Action: [
               'appmesh:DescribeVirtualService',
               'appmesh:ListVirtualService',
+              'appmesh:ListTagsForResource',
             ],
             Effect: 'Allow',
             Resource: {

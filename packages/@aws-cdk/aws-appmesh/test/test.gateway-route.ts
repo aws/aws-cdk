@@ -214,6 +214,7 @@ export = {
             Action: [
               'appmesh:DescribeGatewayRoute',
               'appmesh:ListGatewayRoute',
+              'appmesh:ListTagsForResource',
             ],
             Effect: 'Allow',
             Resource: {

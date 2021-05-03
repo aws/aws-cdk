@@ -611,6 +611,7 @@ export = {
             Action: [
               'appmesh:DescribeVirtualGateway',
               'appmesh:ListVirtualGateway',
+              'appmesh:ListTagsForResource',
             ],
             Effect: 'Allow',
             Resource: {

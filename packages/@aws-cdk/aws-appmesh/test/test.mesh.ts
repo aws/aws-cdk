@@ -335,6 +335,7 @@ export = {
             Action: [
               'appmesh:DescribeMesh',
               'appmesh:ListMeshes',
+              'appmesh:ListTagsForResource',
             ],
             Effect: 'Allow',
             Resource: {

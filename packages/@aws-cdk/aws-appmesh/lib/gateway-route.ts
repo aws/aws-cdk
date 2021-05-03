@@ -66,6 +66,7 @@ abstract class GatewayRouteBase extends cdk.Resource implements IGatewayRoute {
     return this.grant(identity,
       'appmesh:DescribeGatewayRoute',
       'appmesh:ListGatewayRoute',
+      'appmesh:ListTagsForResource',
     );
   }
 
