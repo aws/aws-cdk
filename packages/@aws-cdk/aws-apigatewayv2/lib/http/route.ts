@@ -3,7 +3,7 @@ import { Construct } from 'constructs';
 import { CfnRoute, CfnRouteProps } from '../apigatewayv2.generated';
 import { IRoute } from '../common';
 import { IHttpApi } from './api';
-import { HttpRouteAuthorizerType, IHttpRouteAuthorizer } from './authorizer';
+import { HttpRouteAuthorizationType, IHttpRouteAuthorizer } from './authorizer';
 import { IHttpRouteIntegration } from './integration';
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
@@ -160,7 +160,7 @@ export class HttpRoute extends Resource implements IHttpRoute {
       ]));
     }
 
-    const authorizationType = authBindResult?.authorizationType === HttpRouteAuthorizerType.NONE ? undefined : authBindResult?.authorizationType;
+    const authorizationType = authBindResult?.authorizationType === HttpRouteAuthorizationType.NONE ? undefined : authBindResult?.authorizationType;
 
     if (authorizationScopes?.length === 0) {
       authorizationScopes = undefined;

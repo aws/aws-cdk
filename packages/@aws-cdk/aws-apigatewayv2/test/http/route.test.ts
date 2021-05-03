@@ -3,7 +3,7 @@ import { Stack, App } from '@aws-cdk/core';
 import {
   HttpApi, HttpAuthorizer, HttpAuthorizerType, HttpConnectionType, HttpIntegrationType, HttpMethod, HttpRoute, HttpRouteAuthorizerBindOptions,
   HttpRouteAuthorizerConfig, HttpRouteIntegrationConfig, HttpRouteKey, IHttpRouteAuthorizer, IHttpRouteIntegration, PayloadFormatVersion,
-  HttpRouteAuthorizerType,
+  HttpRouteAuthorizationType,
 } from '../../lib';
 
 describe('HttpRoute', () => {
@@ -272,7 +272,7 @@ class DummyAuthorizer implements IHttpRouteAuthorizer {
 
     return {
       authorizerId: this.authorizer.authorizerId,
-      authorizationType: HttpRouteAuthorizerType.JWT,
+      authorizationType: HttpRouteAuthorizationType.JWT,
     };
   }
 }

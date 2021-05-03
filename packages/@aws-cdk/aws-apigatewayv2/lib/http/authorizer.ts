@@ -24,7 +24,7 @@ export enum HttpAuthorizerType {
 /**
  * Supported Route Authorizer types
  */
-export enum HttpRouteAuthorizerType {
+export enum HttpRouteAuthorizationType {
   /** JSON Web Tokens */
   JWT = 'JWT',
 
@@ -137,7 +137,7 @@ export interface HttpAuthorizerAttributes {
   /**
    * Type of authorizer
    */
-  readonly authorizerType: HttpRouteAuthorizerType
+  readonly authorizerType: HttpRouteAuthorizationType
 }
 
 /**
@@ -232,7 +232,7 @@ export interface HttpRouteAuthorizerConfig {
   /**
    * The type of authorization
    */
-  readonly authorizationType: HttpRouteAuthorizerType;
+  readonly authorizationType: HttpRouteAuthorizationType;
 
   /**
    * The list of OIDC scopes to include in the authorization.
@@ -262,7 +262,7 @@ function undefinedIfNoKeys<A>(obj: A): A | undefined {
 export class HttpNoneAuthorizer implements IHttpRouteAuthorizer {
   public bind(_: HttpRouteAuthorizerBindOptions): HttpRouteAuthorizerConfig {
     return {
-      authorizationType: HttpRouteAuthorizerType.NONE,
+      authorizationType: HttpRouteAuthorizationType.NONE,
     };
   }
 }

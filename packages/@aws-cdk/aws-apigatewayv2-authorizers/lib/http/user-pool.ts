@@ -1,4 +1,4 @@
-import { HttpAuthorizer, HttpAuthorizerType, HttpRouteAuthorizerBindOptions, HttpRouteAuthorizerConfig, HttpRouteAuthorizerType, IHttpRouteAuthorizer } from '@aws-cdk/aws-apigatewayv2';
+import { HttpAuthorizer, HttpAuthorizerType, HttpRouteAuthorizerBindOptions, HttpRouteAuthorizerConfig, HttpRouteAuthorizationType, IHttpRouteAuthorizer } from '@aws-cdk/aws-apigatewayv2';
 import { IUserPool, IUserPoolClient } from '@aws-cdk/aws-cognito';
 import { Stack, Token } from '@aws-cdk/core';
 
@@ -63,7 +63,7 @@ export class HttpUserPoolAuthorizer implements IHttpRouteAuthorizer {
 
     return {
       authorizerId: this.authorizer.authorizerId,
-      authorizationType: HttpRouteAuthorizerType.JWT,
+      authorizationType: HttpRouteAuthorizationType.JWT,
     };
   }
 }
