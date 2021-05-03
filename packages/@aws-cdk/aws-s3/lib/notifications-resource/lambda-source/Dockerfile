@@ -1,12 +1,11 @@
-FROM public.ecr.aws/lambda/python:latest
+FROM public.ecr.aws/lambda/python:3.8
+
+RUN yum install -y make
 
 ADD . /opt/lambda
 
 WORKDIR /opt/lambda
-# install required deps
-RUN pip3 install -U pip pipenv
-RUN pipenv install --dev
-# run tests
-RUN pipenv run python -m unittest discover
+RUN make dev
+RUN make test
 
 ENTRYPOINT [ "/bin/bash" ]
