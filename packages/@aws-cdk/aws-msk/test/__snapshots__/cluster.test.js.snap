@@ -435,7 +435,7 @@ Object {
               "LogGroup": "a-log-group",
             },
             "Firehose": Object {
-              "DeliveryStream": "arn:aws:firehose:us-west-2:123456790:deliverystream/a-delivery-stream",
+              "DeliveryStream": "a-delivery-stream",
               "Enabled": true,
             },
             "S3": Object {

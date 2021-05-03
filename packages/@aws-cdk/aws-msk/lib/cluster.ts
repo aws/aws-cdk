@@ -233,7 +233,7 @@ export interface BrokerLogging {
    *
    * @default - disabled
    */
-  readonly firehoseDeliveryStreamArn?: string;
+  readonly firehoseDeliveryStreamName?: string;
   /**
    * The CloudWatch Logs group that is the destination for broker logs.
    *
@@ -502,10 +502,10 @@ export class Cluster extends ClusterBase {
         },
         firehose: {
           enabled:
-            props.logging?.firehoseDeliveryStreamArn !==
+            props.logging?.firehoseDeliveryStreamName !==
             undefined,
           deliveryStream:
-            props.logging?.firehoseDeliveryStreamArn,
+            props.logging?.firehoseDeliveryStreamName,
         },
         s3: {
           enabled: props.logging?.s3?.bucket !== undefined,

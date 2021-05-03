@@ -308,8 +308,7 @@ describe('MSK Cluster', () => {
         clusterName: 'cluster',
         vpc,
         logging: {
-          firehoseDeliveryStreamArn:
-            'arn:aws:firehose:us-west-2:111111111111:deliverystream/a-stream',
+          firehoseDeliveryStreamName: 'a-stream',
         },
       });
 
@@ -317,8 +316,7 @@ describe('MSK Cluster', () => {
         LoggingInfo: {
           BrokerLogs: {
             Firehose: {
-              DeliveryStream:
-                'arn:aws:firehose:us-west-2:111111111111:deliverystream/a-stream',
+              DeliveryStream: 'a-stream',
               Enabled: true,
             },
           },
@@ -431,8 +429,7 @@ describe('MSK Cluster', () => {
           'LogGroup',
           'a-log-group',
         ),
-        firehoseDeliveryStreamArn:
-          'arn:aws:firehose:us-west-2:123456790:deliverystream/a-delivery-stream',
+        firehoseDeliveryStreamName: 'a-delivery-stream',
       },
     });
 
