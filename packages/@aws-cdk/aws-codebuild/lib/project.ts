@@ -720,7 +720,7 @@ export class Project extends ProjectBase {
 
     const ret = new Array<CfnProject.EnvironmentVariableProperty>();
     const ssmIamResources = new Array<string>();
-    const secretsManagerIamResources = new Array<string>();
+    const secretsManagerIamResources = new Set<string>();
     const kmsIamResources = new Set<string>();
 
     for (const [name, envVariable] of Object.entries(environmentVariables)) {
@@ -771,7 +771,7 @@ export class Project extends ProjectBase {
 
             // if we are passed a Token, we should assume it's the ARN of the Secret
             // (as the name would not work anyway, because it would be the full name, which CodeBuild does not support)
-            secretsManagerIamResources.push(secretArn);
+            secretsManagerIamResources.add(secretArn);
           } else {
             // check if the provided value is a full ARN of the Secret
             let parsedArn: ArnComponents | undefined;
@@ -791,7 +791,7 @@ export class Project extends ProjectBase {
               // If we were given just a name, it must be partial, as CodeBuild doesn't support providing full names.
               // In this case, we need to accommodate for the generated suffix in the IAM resource name
               : `${secretName}-??????`;
-            secretsManagerIamResources.push(stack.formatArn({
+            secretsManagerIamResources.add(stack.formatArn({
               service: 'secretsmanager',
               resource: 'secret',
               resourceName: secretIamResourceName,
@@ -828,10 +828,10 @@ export class Project extends ProjectBase {
         resources: ssmIamResources,
       }));
     }
-    if (secretsManagerIamResources.length !== 0) {
+    if (secretsManagerIamResources.size !== 0) {
       principal?.grantPrincipal.addToPrincipalPolicy(new iam.PolicyStatement({
         actions: ['secretsmanager:GetSecretValue'],
-        resources: secretsManagerIamResources,
+        resources: Array.from(secretsManagerIamResources),
       }));
     }
     if (kmsIamResources.size !== 0) {
