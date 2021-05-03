@@ -240,7 +240,7 @@ export class CdkToolkit {
 
     if (!options.force) {
       // eslint-disable-next-line max-len
-      const confirmed = await promptly.confirm(`Are you sure you want to delete: ${colors.blue(stacks.stackArtifacts.map(s => s.id).join(', '))} (y/n)?`);
+      const confirmed = await promptly.confirm(`Are you sure you want to delete: ${colors.blue(stacks.stackArtifacts.map(s => s.hierarchicalId).join(', '))} (y/n)?`);
       if (!confirmed) {
         return;
       }
@@ -281,7 +281,7 @@ export class CdkToolkit {
 
     // just print stack IDs
     for (const stack of stacks.stackArtifacts) {
-      data(stack.id);
+      data(stack.hierarchicalId);
     }
 
     return 0; // exit-code
@@ -396,7 +396,7 @@ export class CdkToolkit {
     const assembly = await this.assembly();
     const stacks = await assembly.selectStacks(stackNames, {
       extend: exclusively ? ExtendedStackSelection.None : ExtendedStackSelection.Upstream,
-      defaultBehavior: DefaultSelection.AllStacks,
+      defaultBehavior: DefaultSelection.MainAssembly,
     });
 
     await this.validateStacks(stacks);

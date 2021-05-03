@@ -39,7 +39,7 @@ describe('ClusterParameterGroup', () => {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::Neptune::DBClusterParameterGroup', {
+    expect(stack).to(haveResource('AWS::Neptune::DBParameterGroup', {
       Description: 'desc',
       Parameters: {
         key: 'value',
