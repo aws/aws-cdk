@@ -57,10 +57,10 @@ export = {
           Listeners: [
             {
               HealthCheck: {
-                HealthyThreshold: 5,
+                HealthyThreshold: 2,
                 IntervalMillis: 10_000,
                 Protocol: appmesh.Protocol.HTTP,
-                TimeoutMillis: 5000,
+                TimeoutMillis: 2000,
                 UnhealthyThreshold: 2,
                 Path: '/',
               },
@@ -79,10 +79,10 @@ export = {
           Listeners: [
             {
               HealthCheck: {
-                HealthyThreshold: 5,
+                HealthyThreshold: 2,
                 IntervalMillis: 10_000,
                 Protocol: appmesh.Protocol.HTTP2,
-                TimeoutMillis: 5000,
+                TimeoutMillis: 2000,
                 UnhealthyThreshold: 2,
                 Path: '/',
               },
@@ -123,10 +123,10 @@ export = {
           Listeners: [
             {
               HealthCheck: {
-                HealthyThreshold: 5,
-                IntervalMillis: 30_000,
+                HealthyThreshold: 2,
+                IntervalMillis: 5000,
                 Protocol: appmesh.Protocol.GRPC,
-                TimeoutMillis: 5000,
+                TimeoutMillis: 2000,
                 UnhealthyThreshold: 2,
               },
               PortMapping: {

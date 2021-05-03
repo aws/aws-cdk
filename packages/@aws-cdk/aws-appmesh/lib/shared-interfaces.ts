@@ -76,21 +76,21 @@ interface HealthCheckCommonOptions {
   /**
    * The number of consecutive successful health checks that must occur before declaring listener healthy.
    *
-   * @default 5
+   * @default 2
    */
   readonly healthyThreshold?: number;
 
   /**
    * The time period between each health check execution.
    *
-   * @default Duration.seconds(30)
+   * @default Duration.seconds(5)
    */
   readonly interval?: cdk.Duration;
 
   /**
    * The amount of time to wait when receiving a response from the health check.
    *
-   * @default Duration.seconds(5)
+   * @default Duration.seconds(2)
    */
   readonly timeout?: cdk.Duration;
 
@@ -185,10 +185,10 @@ export abstract class HealthCheck {
 class HealthCheckImpl extends HealthCheck {
   constructor(
     private readonly protocol: Protocol,
-    private readonly healthyThreshold: number = 5,
+    private readonly healthyThreshold: number = 2,
     private readonly unhealthyThreshold: number = 2,
-    private readonly interval: cdk.Duration = cdk.Duration.seconds(30),
-    private readonly timeout: cdk.Duration = cdk.Duration.seconds(5),
+    private readonly interval: cdk.Duration = cdk.Duration.seconds(5),
+    private readonly timeout: cdk.Duration = cdk.Duration.seconds(2),
     private readonly path?: string) {
     super();
     if (healthyThreshold < 2 || healthyThreshold > 10) {

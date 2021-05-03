@@ -923,10 +923,10 @@
             {
               "HealthCheck": {
                 "HealthyThreshold": 3,
-                "IntervalMillis": 30000,
+                "IntervalMillis": 5000,
                 "Path": "/check-path",
                 "Protocol": "http",
-                "TimeoutMillis": 5000,
+                "TimeoutMillis": 2000,
                 "UnhealthyThreshold": 2
               },
               "PortMapping": {
@@ -1267,11 +1267,11 @@
           "Listeners": [
             {
               "HealthCheck": {
-                "HealthyThreshold": 5,
+                "HealthyThreshold": 2,
                 "IntervalMillis": 10000,
                 "Path": "/",
                 "Protocol": "http",
-                "TimeoutMillis": 5000,
+                "TimeoutMillis": 2000,
                 "UnhealthyThreshold": 2
               },
               "PortMapping": {

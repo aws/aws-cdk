@@ -174,10 +174,10 @@ export = {
             Listeners: [
               {
                 HealthCheck: {
-                  HealthyThreshold: 5,
-                  IntervalMillis: 30_000,
+                  HealthyThreshold: 2,
+                  IntervalMillis: 5000,
                   Protocol: 'http2',
-                  TimeoutMillis: 5000,
+                  TimeoutMillis: 2000,
                   UnhealthyThreshold: 2,
                 },
                 PortMapping: {
@@ -230,8 +230,8 @@ export = {
             Listeners: [
               {
                 HealthCheck: {
-                  HealthyThreshold: 5,
-                  IntervalMillis: 30_000,
+                  HealthyThreshold: 2,
+                  IntervalMillis: 5000,
                   Protocol: 'tcp',
                   TimeoutMillis: 3000,
                   UnhealthyThreshold: 2,
