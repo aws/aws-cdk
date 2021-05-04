@@ -69,6 +69,38 @@ const asset = new DockerImageAsset(this, 'MyBuildImage', {
 })
 ```
 
+## Publishing images to ECR repositories
+
+`DockerImageAsset` is designed for seamless build & consumption of image assets by CDK code deployed to multiple environments
+through the CDK CLI or through CI/CD workflows. To that end, the ECR repository behind this construct is controlled by the AWS CDK.
+The mechanics of where these images are published and how are intentionally kept as an implementation detail, and the construct
+does not support customizations such as specifying the ECR repository name or tags.
+
+If you are looking for a way to _publish_ image assets to an ECR repository in your control, you should consider using
+[wchaws/cdk-ecr-deployment], which is able to replicate an image asset from the CDK-controlled ECR repository to a repository of
+your choice.
+
+Here an example from the [wchaws/cdk-ecr-deployment] project:
+
+```ts
+import * as ecrdeploy from 'cdk-ecr-deployment';
+
+const image = new DockerImageAsset(this, 'CDKDockerImage', {
+  directory: path.join(__dirname, 'docker'),
+});
+
+new ecrdeploy.ECRDeployment(this, 'DeployDockerImage', {
+  src: new ecrdeploy.DockerImageName(image.imageUri),
+  dest: new ecrdeploy.DockerImageName(`${cdk.Aws.ACCOUNT_ID}.dkr.ecr.us-west-2.amazonaws.com/test:nginx`),
+});
+```
+
+⚠️ Please note that this is a 3rd-party construct library and is not officially supported by AWS.
+You are welcome to +1 [this GitHub issue](https://github.com/aws/aws-cdk/issues/12597) if you would like to see
+native support for this use-case in the AWS CDK.
+
+[wchaws/cdk-ecr-deployment]: https://github.com/wchaws/cdk-ecr-deployment
+
 ## Pull Permissions
 
 Depending on the consumer of your image asset, you will need to make sure
