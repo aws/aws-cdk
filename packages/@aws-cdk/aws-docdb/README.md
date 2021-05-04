@@ -50,7 +50,7 @@ attributes:
 const writeAddress = cluster.clusterEndpoint.socketAddress;   // "HOSTNAME:PORT"
 ```
 
-If you have existing security groups you would like to add to the cluster, use the `addSecurityGroup` method. Security
+If you have existing security groups you would like to add to the cluster, use the `addSecurityGroups` method. Security
 groups added in this way will not be managed by the `Connections` object of the cluster.
 
 ```ts
