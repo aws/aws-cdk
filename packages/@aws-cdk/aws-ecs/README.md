@@ -67,7 +67,7 @@ one to run tasks on AWS Fargate.
 Here are the main differences:
 
 - **Amazon EC2**: instances are under your control. Complete control of task to host
-  allocation. Required to specify at least a memory reseration or limit for
+  allocation. Required to specify at least a memory reservation or limit for
   every container. Can use Host, Bridge and AwsVpc networking modes. Can attach
   Classic Load Balancer. Can share volumes between container and host.
 - **AWS Fargate**: tasks run on AWS-managed instances, AWS manages task to host
@@ -175,7 +175,7 @@ cluster.addCapacity('AsgSpot', {
 When the `ecs.AddCapacityOptions` that you provide has a non-zero `taskDrainTime` (the default) then an SNS topic and Lambda are created to ensure that the
 cluster's instances have been properly drained of tasks before terminating. The SNS Topic is sent the instance-terminating lifecycle event from the AutoScalingGroup,
 and the Lambda acts on that event. If you wish to engage [server-side encryption](https://docs.aws.amazon.com/sns/latest/dg/sns-data-encryption.html) for this SNS Topic
-then you may do so by providing a KMS key for the `topicEncryptionKey` propery of `ecs.AddCapacityOptions`.
+then you may do so by providing a KMS key for the `topicEncryptionKey` property of `ecs.AddCapacityOptions`.
 
 ```ts
 // Given
@@ -190,7 +190,7 @@ cluster.addCapacity('ASGEncryptedSNS', {
 
 ## Task definitions
 
-A task Definition describes what a single copy of a **task** should look like.
+A task definition describes what a single copy of a **task** should look like.
 A task definition has one or more containers; typically, it has one
 main container (the *default container* is the first one that's added
 to the task definition, and it is marked *essential*) and optionally
@@ -299,6 +299,8 @@ obtained from either DockerHub or from ECR repositories, or built directly from 
   image directly from a `Dockerfile` in your source directory.
 - `ecs.ContainerImage.fromDockerImageAsset(asset)`: uses an existing
   `@aws-cdk/aws-ecr-assets.DockerImageAsset` as a container image.
+- `new ecs.TagParameterContainerImage(repository)`: use the given ECR repository as the image 
+  but a CloudFormation parameter as the tag.
 
 ### Environment variables
 
@@ -447,10 +449,10 @@ const service = new ecs.Ec2Service(this, 'Service', { /* ... */ });
 
 const lb = new elb.LoadBalancer(stack, 'LB', { vpc });
 lb.addListener({ externalPort: 80 });
-lb.addTarget(service.loadBalancerTarget{
+lb.addTarget(service.loadBalancerTarget({
   containerName: 'MyContainer',
   containerPort: 80
-});
+}));
 ```
 
 There are two higher-level constructs available which include a load balancer for you that can be found in the aws-ecs-patterns module:
@@ -523,7 +525,7 @@ const taskDefinition = new ecs.Ec2TaskDefinition(this, 'TaskDef');
 taskDefinition.addContainer('TheContainer', {
   image: ecs.ContainerImage.fromAsset(path.resolve(__dirname, '..', 'eventhandler-image')),
   memoryLimitMiB: 256,
-  logging: new ecs.AwsLogDriver({ streamPrefix: 'EventDemo' })
+  logging: new ecs.AwsLogDriver({ streamPrefix: 'EventDemo', mode: AwsLogDriverMode.NON_BLOCKING })
 });
 
 // An Rule that describes the event trigger (in this case a scheduled run)
@@ -683,6 +685,63 @@ taskDefinition.addContainer('TheContainer', {
 });
 ```
 
+## CloudMap Service Discovery
+
+To register your ECS service with a CloudMap Service Registry, you may add the
+`cloudMapOptions` property to your service:
+
+```ts
+const service = new ecs.Ec2Service(stack, 'Service', {
+  cluster,
+  taskDefinition,
+  cloudMapOptions: {
+    // Create A records - useful for AWSVPC network mode.
+    dnsRecordType: cloudmap.DnsRecordType.A,
+  },
+});
+```
+
+With `bridge` or `host` network modes, only `SRV` DNS record types are supported. 
+By default, `SRV` DNS record types will target the default container and default
+port. However, you may target a different container and port on the same ECS task:
+
+```ts
+// Add a container to the task definition
+const specificContainer = taskDefinition.addContainer(...);
+
+// Add a port mapping
+specificContainer.addPortMappings({
+  containerPort: 7600,
+  protocol: ecs.Protocol.TCP,
+});
+
+new ecs.Ec2Service(stack, 'Service', {
+  cluster,
+  taskDefinition,
+  cloudMapOptions: {
+    // Create SRV records - useful for bridge networking
+    dnsRecordType: cloudmap.DnsRecordType.SRV,
+    // Targets port TCP port 7600 `specificContainer`
+    container: specificContainer,
+    containerPort: 7600,
+  },
+});
+```
+
+### Associate With a Specific CloudMap Service
+
+You may associate an ECS service with a specific CloudMap service. To do
+this, use the service's `associateCloudMapService` method:
+
+```ts
+const cloudMapService = new cloudmap.Service(...);
+const ecsService = new ecs.FargateService(...);
+
+ecsService.associateCloudMapService({
+  service: cloudMapService,
+});
+```
+
 ## Capacity Providers
 
 Currently, only `FARGATE` and `FARGATE_SPOT` capacity providers are supported.
@@ -728,4 +787,37 @@ new ecs.FargateService(stack, 'FargateService', {
 });
 
 app.synth();
+```
+
+## Elastic Inference Accelerators
+
+Currently, this feature is only supported for services with EC2 launch types.
+
+To add elastic inference accelerators to your EC2 instance, first add
+`inferenceAccelerators` field to the EC2TaskDefinition and set the `deviceName`
+and `deviceType` properties.
+
+```ts
+const inferenceAccelerators = [{
+  deviceName: 'device1',
+  deviceType: 'eia2.medium',
+}];
+
+const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
+  inferenceAccelerators,
+});
+```
+
+To enable using the inference accelerators in the containers, add `inferenceAcceleratorResources`
+field and set it to a list of device names used for the inference accelerators. Each value in the
+list should match a `DeviceName` for an `InferenceAccelerator` specified in the task definition. 
+
+```ts
+const inferenceAcceleratorResources = ['device1'];
+
+taskDefinition.addContainer('cont', {
+  image: ecs.ContainerImage.fromRegistry('test'),
+  memoryLimitMiB: 1024,
+  inferenceAcceleratorResources,
+});
 ```

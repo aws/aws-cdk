@@ -34,14 +34,12 @@ const BOOTSTRAP_TEMPLATE_VERSION_INTRODUCING_GETPARAMETER = 5;
  *
  * Called "ToolkitInfo" for historical reasons.
  *
- * @experimental
  */
 export abstract class ToolkitInfo {
   public static determineName(overrideName?: string) {
     return overrideName ?? DEFAULT_TOOLKIT_STACK_NAME;
   }
 
-  /** @experimental */
   public static async lookup(environment: cxapi.Environment, sdk: ISDK, stackName: string | undefined): Promise<ToolkitInfo> {
     const cfn = sdk.cloudFormation();
     const stack = await stabilizeStack(cfn, stackName ?? DEFAULT_TOOLKIT_STACK_NAME);
@@ -185,7 +183,6 @@ class ExistingToolkitInfo extends ToolkitInfo {
   /**
    * Prepare an ECR repository for uploading to using Docker
    *
-   * @experimental
    */
   public async prepareEcrRepository(repositoryName: string): Promise<EcrRepositoryInfo> {
     if (!this.sdk) {
@@ -292,12 +289,10 @@ class BootstrapStackNotFoundInfo extends ToolkitInfo {
   }
 }
 
-/** @experimental */
 export interface EcrRepositoryInfo {
   repositoryUri: string;
 }
 
-/** @experimental */
 export interface EcrCredentials {
   username: string;
   password: string;

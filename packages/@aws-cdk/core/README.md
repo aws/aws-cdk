@@ -19,6 +19,8 @@ Guide](https://docs.aws.amazon.com/cdk/latest/guide/home.html) for
 information of most of the capabilities of this library. The rest of this
 README will only cover topics not already covered in the Developer Guide.
 
+<!--BEGIN CORE DOCUMENTATION-->
+
 ## Stacks and Stages
 
 A `Stack` is the smallest physical unit of deployment, and maps directly onto
@@ -427,7 +429,7 @@ stack-unique identifier and returns the service token:
 ```ts
 const serviceToken = CustomResourceProvider.getOrCreate(this, 'Custom::MyCustomResourceType', {
   codeDirectory: `${__dirname}/my-handler`,
-  runtime: CustomResourceProviderRuntime.NODEJS_12, // currently the only supported runtime
+  runtime: CustomResourceProviderRuntime.NODEJS_12_X,
   description: "Lambda function created by the custom resource provider",
 });
 
@@ -522,7 +524,7 @@ export class Sum extends Construct {
     const resourceType = 'Custom::Sum';
     const serviceToken = CustomResourceProvider.getOrCreate(this, resourceType, {
       codeDirectory: `${__dirname}/sum-handler`,
-      runtime: CustomResourceProviderRuntime.NODEJS_12,
+      runtime: CustomResourceProviderRuntime.NODEJS_12_X,
     });
 
     const resource = new CustomResource(this, 'Resource', {
@@ -552,7 +554,7 @@ built-in singleton method:
 ```ts
 const provider = CustomResourceProvider.getOrCreateProvider(this, 'Custom::MyCustomResourceType', {
   codeDirectory: `${__dirname}/my-handler`,
-  runtime: CustomResourceProviderRuntime.NODEJS_12, // currently the only supported runtime
+  runtime: CustomResourceProviderRuntime.NODEJS_12_X,
 });
 
 const roleArn = provider.roleArn;
@@ -911,3 +913,5 @@ When deploying to AWS CloudFormation, it needs to keep in check the amount of re
 It's possible to synthesize the project with more Resources than the allowed (or even reduce the number of Resources).
 
 Set the context key `@aws-cdk/core:stackResourceLimit` with the proper value, being 0 for disable the limit of resources.
+
+<!--END CORE DOCUMENTATION-->

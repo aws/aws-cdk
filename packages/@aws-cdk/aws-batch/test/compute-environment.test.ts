@@ -1,6 +1,6 @@
 import { throws } from 'assert';
-import { expect, haveResource, haveResourceLike, ResourcePart } from '@aws-cdk/assert';
-import '@aws-cdk/assert/jest';
+import { expect, haveResource, haveResourceLike, ResourcePart } from '@aws-cdk/assert-internal';
+import '@aws-cdk/assert-internal/jest';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecs from '@aws-cdk/aws-ecs';
 import * as iam from '@aws-cdk/aws-iam';
@@ -167,10 +167,7 @@ describe('Batch Compute Evironment', () => {
           },
           desiredvCpus: 1,
           ec2KeyPair: 'my-key-pair',
-          image: new ecs.EcsOptimizedAmi({
-            generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2,
-            hardwareType: ecs.AmiHardwareType.STANDARD,
-          }),
+          image: ecs.EcsOptimizedImage.amazonLinux2(ecs.AmiHardwareType.STANDARD),
           instanceRole: new iam.CfnInstanceProfile(stack, 'Instance-Profile', {
             roles: [new iam.Role(stack, 'Ecs-Instance-Role', {
               assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),

@@ -1,4 +1,4 @@
-import '@aws-cdk/assert/jest';
+import '@aws-cdk/assert-internal/jest';
 import { Stack, App } from '@aws-cdk/core';
 import {
   HttpApi, HttpAuthorizer, HttpAuthorizerType, HttpConnectionType, HttpIntegrationType, HttpMethod, HttpRoute, HttpRouteAuthorizerBindOptions,
@@ -17,7 +17,7 @@ describe('HttpRoute', () => {
     });
 
     expect(stack).toHaveResource('AWS::ApiGatewayV2::Route', {
-      ApiId: stack.resolve(httpApi.httpApiId),
+      ApiId: stack.resolve(httpApi.apiId),
       RouteKey: 'GET /books',
       Target: {
         'Fn::Join': [
@@ -33,7 +33,7 @@ describe('HttpRoute', () => {
     });
 
     expect(stack).toHaveResource('AWS::ApiGatewayV2::Integration', {
-      ApiId: stack.resolve(httpApi.httpApiId),
+      ApiId: stack.resolve(httpApi.apiId),
     });
   });
 
@@ -48,7 +48,7 @@ describe('HttpRoute', () => {
     });
 
     expect(stack).toHaveResource('AWS::ApiGatewayV2::Integration', {
-      ApiId: stack.resolve(httpApi.httpApiId),
+      ApiId: stack.resolve(httpApi.apiId),
       IntegrationType: 'HTTP_PROXY',
       PayloadFormatVersion: '2.0',
       IntegrationUri: 'some-uri',
@@ -209,7 +209,7 @@ describe('HttpRoute', () => {
     });
 
     expect(stack).toHaveResource('AWS::ApiGatewayV2::Integration', {
-      ApiId: stack.resolve(httpApi.httpApiId),
+      ApiId: stack.resolve(httpApi.apiId),
       IntegrationType: 'HTTP_PROXY',
       PayloadFormatVersion: '2.0',
       IntegrationUri: 'some-uri',

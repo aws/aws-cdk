@@ -1,8 +1,11 @@
 import { Certificate, CertificateValidation, ICertificate } from '@aws-cdk/aws-certificatemanager';
 import { IVpc } from '@aws-cdk/aws-ec2';
-import { AwsLogDriver, BaseService, CloudMapOptions, Cluster, ContainerImage, DeploymentController, ICluster, LogDriver, PropagatedTagSource, Secret } from '@aws-cdk/aws-ecs';
 import {
-  ApplicationListener, ApplicationLoadBalancer, ApplicationProtocol, ApplicationTargetGroup,
+  AwsLogDriver, BaseService, CloudMapOptions, Cluster, ContainerImage, DeploymentController, DeploymentCircuitBreaker,
+  ICluster, LogDriver, PropagatedTagSource, Secret,
+} from '@aws-cdk/aws-ecs';
+import {
+  ApplicationListener, ApplicationLoadBalancer, ApplicationProtocol, ApplicationProtocolVersion, ApplicationTargetGroup,
   IApplicationLoadBalancer, ListenerCertificate, ListenerAction, AddApplicationTargetsProps,
 } from '@aws-cdk/aws-elasticloadbalancingv2';
 import { IRole } from '@aws-cdk/aws-iam';
@@ -113,6 +116,13 @@ export interface ApplicationLoadBalancedServiceBaseProps {
    * set by default to HTTPS.
    */
   readonly protocol?: ApplicationProtocol;
+
+  /**
+   * The protocol version to use
+   *
+   * @default ApplicationProtocolVersion.HTTP1
+   */
+  readonly protocolVersion?: ApplicationProtocolVersion;
 
   /**
    * The domain name for the service, e.g. "api.example.com."
@@ -226,6 +236,14 @@ export interface ApplicationLoadBalancedServiceBaseProps {
    * @default - Rolling update (ECS)
    */
   readonly deploymentController?: DeploymentController;
+
+  /**
+   * Whether to enable the deployment circuit breaker. If this property is defined, circuit breaker will be implicitly
+   * enabled.
+   * @default - disabled
+   */
+  readonly circuitBreaker?: DeploymentCircuitBreaker;
+
 }
 
 export interface ApplicationLoadBalancedTaskImageOptions {
@@ -401,6 +419,7 @@ export abstract class ApplicationLoadBalancedServiceBase extends CoreConstruct {
 
     const targetProps: AddApplicationTargetsProps = {
       protocol: props.targetProtocol ?? ApplicationProtocol.HTTP,
+      protocolVersion: props.protocolVersion,
     };
 
     this.listener = loadBalancer.addListener('PublicListener', {
@@ -411,13 +430,14 @@ export abstract class ApplicationLoadBalancedServiceBase extends CoreConstruct {
     this.targetGroup = this.listener.addTargets('ECS', targetProps);
 
     if (protocol === ApplicationProtocol.HTTPS) {
-      if (typeof props.domainName === 'undefined' || typeof props.domainZone === 'undefined') {
-        throw new Error('A domain name and zone is required when using the HTTPS protocol');
-      }
 
       if (props.certificate !== undefined) {
         this.certificate = props.certificate;
       } else {
+        if (typeof props.domainName === 'undefined' || typeof props.domainZone === 'undefined') {
+          throw new Error('A domain name and zone is required when using the HTTPS protocol');
+        }
+
         this.certificate = new Certificate(this, 'Certificate', {
           domainName: props.domainName,
           validation: CertificateValidation.fromDns(props.domainZone),

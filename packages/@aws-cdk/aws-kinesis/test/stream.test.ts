@@ -1,5 +1,5 @@
-import '@aws-cdk/assert/jest';
-import { arrayWith } from '@aws-cdk/assert';
+import '@aws-cdk/assert-internal/jest';
+import { arrayWith } from '@aws-cdk/assert-internal';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import { App, Duration, Stack, CfnParameter } from '@aws-cdk/core';
