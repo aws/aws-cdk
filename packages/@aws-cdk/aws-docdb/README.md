@@ -57,7 +57,7 @@ groups added in this way will not be managed by the `Connections` object of the 
 const securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup', {
   vpc,
 });
-cluster.addSecurityGroup(securityGroup);
+cluster.addSecurityGroups(securityGroup);
 ```
 
 ## Rotating credentials

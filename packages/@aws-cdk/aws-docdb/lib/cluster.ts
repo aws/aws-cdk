@@ -477,7 +477,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
    * Adds security groups to this cluster.
    * @param securityGroups The security groups to add.
    */
-  public addSecurityGroup(...securityGroups: ec2.ISecurityGroup[]): void {
+  public addSecurityGroups(...securityGroups: ec2.ISecurityGroup[]): void {
     if (this.cluster.vpcSecurityGroupIds === undefined) {
       this.cluster.vpcSecurityGroupIds = [];
     }

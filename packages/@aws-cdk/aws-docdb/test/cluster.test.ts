@@ -741,7 +741,7 @@ describe('DatabaseCluster', () => {
     });
 
     // WHEN
-    cluster.addSecurityGroup(securityGroup);
+    cluster.addSecurityGroups(securityGroup);
 
     // THEN
     expectCDK(stack).to(haveResource('AWS::DocDB::DBCluster', {
