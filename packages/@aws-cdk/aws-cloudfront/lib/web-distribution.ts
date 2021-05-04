@@ -465,7 +465,7 @@ export interface FunctionAssociation {
    */
   readonly function: IFunction;
 
-  /** The type of event in response to which should the function be invoked. */
+  /** The type of event which should invoke the function. */
   readonly eventType: FunctionEventType;
 }
 
