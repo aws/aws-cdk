@@ -61,6 +61,10 @@ export class SingletonFunction extends FunctionBase {
     this.grantPrincipal = this.lambdaFunction.grantPrincipal;
 
     this.canCreatePermissions = true; // Doesn't matter, addPermission is overriden anyway
+
+    if (this.lambdaFunction.isBoundToVpc) {
+      this._connections = this.lambdaFunction.connections;
+    }
   }
 
   /**
@@ -115,7 +119,6 @@ export class SingletonFunction extends FunctionBase {
       // Just assume this is true
       return existing as LambdaFunction;
     }
-
     return new LambdaFunction(cdk.Stack.of(this), constructName, props);
   }
 }
