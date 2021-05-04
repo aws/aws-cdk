@@ -525,7 +525,7 @@ const taskDefinition = new ecs.Ec2TaskDefinition(this, 'TaskDef');
 taskDefinition.addContainer('TheContainer', {
   image: ecs.ContainerImage.fromAsset(path.resolve(__dirname, '..', 'eventhandler-image')),
   memoryLimitMiB: 256,
-  logging: new ecs.AwsLogDriver({ streamPrefix: 'EventDemo' })
+  logging: new ecs.AwsLogDriver({ streamPrefix: 'EventDemo', mode: AwsLogDriverMode.NON_BLOCKING })
 });
 
 // An Rule that describes the event trigger (in this case a scheduled run)
