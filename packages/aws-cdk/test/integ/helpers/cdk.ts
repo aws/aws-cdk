@@ -382,6 +382,10 @@ export class TestFixture {
     });
   }
 
+  public get bootstrapStackName() {
+    return this.fullStackName('bootstrap-stack');
+  }
+
   public fullStackName(stackName: string): string;
   public fullStackName(stackNames: string[]): string[];
   public fullStackName(stackNames: string | string[]): string | string[] {
@@ -407,6 +411,8 @@ export class TestFixture {
    */
   public async dispose(success: boolean) {
     const stacksToDelete = await this.deleteableStacks(this.stackNamePrefix);
+
+    this.sortBootstrapStacksToTheEnd(stacksToDelete);
 
     // Bootstrap stacks have buckets that need to be cleaned
     const bucketNames = stacksToDelete.map(stack => outputFromStack('BucketName', stack)).filter(defined);
@@ -457,6 +463,18 @@ export class TestFixture {
       .filter(s => s.StackName.startsWith(prefix))
       .filter(s => statusFilter.includes(s.StackStatus))
       .filter(s => s.RootId === undefined); // Only delete parent stacks. Nested stacks are deleted in the process
+  }
+
+  private sortBootstrapStacksToTheEnd(stacks: AWS.CloudFormation.Stack[]) {
+    stacks.sort((a, b) => {
+      const aBs = a.StackName.startsWith(this.bootstrapStackName);
+      const bBs = b.StackName.startsWith(this.bootstrapStackName);
+
+      return aBs != bBs
+        // '+' converts a boolean to 0 or 1
+        ? (+aBs) - (+bBs)
+        : a.StackName.localeCompare(b.StackName);
+    });
   }
 }
 
