@@ -71,7 +71,7 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@types/jest": "^26.0.22",
+    "@types/jest": "^26.0.23",
     "@aws-cdk/aws-s3-deployment": "0.0.0",
     "@aws-cdk/cx-api": "0.0.0",
     "@types/nodeunit": "^0.0.31",
