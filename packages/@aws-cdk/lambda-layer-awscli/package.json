@@ -103,7 +103,7 @@
     "exclude": false
   },
   "nozem": {
-    "ostools": ["dirname", "cd", "docker"]
+    "ostools": ["dirname", "docker"]
   },
   "publishConfig": {
     "tag": "latest"
