@@ -8,6 +8,7 @@ from moto.s3 import mock_s3  # type: ignore
 
 response_url = "https://dummy.com/"
 bucket_name = "fake_bucket"
+lambda_arn = "arn:aws:lambda:us-east-1:35667example:function:CreateThumbnail"
 s3_created = "s3:ObjectCreated:*"
 create_event = {
     "StackId": "StackId",
@@ -41,7 +42,7 @@ update_event = {
                 {
                     "Id": "old-function-hash",
                     "Events": [s3_created],
-                    "LambdaFunctionArn": "arn:aws:lambda:us-east-1:35667example:function:CreateThumbnail",
+                    "LambdaFunctionArn": lambda_arn,
                 }
             ]
         },
@@ -73,6 +74,36 @@ delete_event = {
                     "Id": "created-by-cdk",
                     "Events": [s3_created],
                     "QueueArn": "arn:aws:sqs:us-east-1:444455556666:old-queue",
+                }
+            ]
+        },
+    },
+}
+update_from_old_event = {
+    "StackId": "StackId",
+    "RequestId": "RequestId",
+    "LogicalResourceId": "LogicalResourceId",
+    "ResponseURL": response_url,
+    "RequestType": "Update",
+    "OldResourceProperties": {
+        "BucketName": bucket_name,
+        "NotificationConfiguration": {
+            "LambdaFunctionConfigurations": [
+                {
+                    "Events": [s3_created],
+                    "LambdaFunctionArn": lambda_arn,
+                }
+            ]
+        },
+    },
+    "ResourceProperties": {
+        "BucketName": bucket_name,
+        "NotificationConfiguration": {
+            "LambdaFunctionConfigurations": [
+                {
+                    "Id": "new-function-hash",
+                    "Events": [s3_created],
+                    "LambdaFunctionArn": lambda_arn,
                 }
             ]
         },
@@ -131,10 +162,8 @@ def setup_s3_bucket(no_bucket_config: bool = False):
             "LambdaFunctionConfigurations": [
                 {
                     "Id": "old-function-hash",
-                    "LambdaFunctionArn": "arn:aws:lambda:us-east-1:35667example:function:CreateThumbnail",
-                    "Events": [
-                        "s3:ObjectRemoved:*",
-                    ],
+                    "LambdaFunctionArn": lambda_arn,
+                    "Events": [s3_created],
                     "Filter": {
                         "Key": {
                             "FilterRules": [
@@ -181,7 +210,7 @@ class LambdaTest(unittest.TestCase):
         old_config = {}
 
         # WHEN merging in prepare_config
-        config = index.prepare_config(current_config, in_config, old_config, True)
+        config = index.prepare_config(current_config, in_config, old_config, "Update")
 
         # THEN returns a config equal to in_config
         self.assertEqual(config, in_config)
@@ -207,7 +236,7 @@ class LambdaTest(unittest.TestCase):
         old_config = {}
 
         # WHEN merging in prepare_config
-        config = index.prepare_config(current_config, in_config, old_config, True)
+        config = index.prepare_config(current_config, in_config, old_config, "Update")
 
         # THEN the returned config and in_config should be equal
         # AND QueueConfigurations should be extended
@@ -224,7 +253,7 @@ class LambdaTest(unittest.TestCase):
         from src import index
 
         current_config = {"ResponseMetadata": "foo"}
-        config = index.prepare_config(current_config, {}, {}, False)
+        config = index.prepare_config(current_config, {}, {}, "Delete")
         self.assertNotIn("ResponseMetadata", config)
 
     def test_prepare_config_set_defaults(self):
@@ -233,9 +262,10 @@ class LambdaTest(unittest.TestCase):
 
         current_config = {}
         in_config = {}
+        old_config = {}
 
         # WHEN calling prepare_config
-        config = index.prepare_config(current_config, in_config, {}, False)
+        config = index.prepare_config(current_config, in_config, old_config, "Delete")
 
         # THEN set defaults as [] for all the config types
         expected_config = {
@@ -244,7 +274,9 @@ class LambdaTest(unittest.TestCase):
             "LambdaFunctionConfigurations": [],
         }
         self.assertEqual(expected_config, config)
-        self.assertEqual(config, in_config)
+        self.assertEqual({}, current_config)
+        self.assertEqual({}, in_config)
+        self.assertEqual({}, old_config)
 
     @patch("urllib.request.urlopen")
     @patch("builtins.print")
@@ -396,6 +428,30 @@ class LambdaTest(unittest.TestCase):
         payload = json.loads(mock_call.mock_calls[0].args[0].data.decode())
         self.assertEqual(expected_status, payload["Status"])
         self.assertEqual(expected_message, payload["Reason"])
+
+    @mock_s3
+    @patch("urllib.request.urlopen")
+    def test_update_from_old_cdk_config(self, _):
+        # GIVEN A bucket with an existing configuration with Id "old-function-hash"
+        # AND an Update event with a "OldResourceProperties" that matches the target
+        # and events of the "ResourceProperties"
+        setup_s3_bucket()
+        from src import index
+
+        # WHEN calling the handler
+        index.handler(update_from_old_event, MockContext())
+
+        # THEN keep the "old-function-hash" as it might been created by the older version of CDK
+        # AND keep the other configurations untouched
+        s3_client = boto3.client("s3", region_name="us-east-1")
+        config = s3_client.get_bucket_notification_configuration(Bucket=bucket_name)
+        self.assertIsNotNone(config.get("TopicConfigurations"))
+        self.assertIsNotNone(config.get("QueueConfigurations"))
+        lambda_configs = config.get("LambdaFunctionConfigurations")
+        self.assertIsNotNone(lambda_configs)
+        self.assertEqual(1, len(lambda_configs))
+        lambda_config = lambda_configs[0]
+        self.assertEqual("old-function-hash", lambda_config.get("Id"))
 
 
 if __name__ == "__main__":
