@@ -687,17 +687,23 @@ export class CfnParser {
 
     function go(value: string): string {
       const leftBrace = value.indexOf('${');
-      const rightBrace = value.indexOf('}') + 1;
-      // don't include left and right braces when searching for the target of the reference
-      if (leftBrace === -1 || leftBrace >= rightBrace) {
+      if (leftBrace === -1) {
+        return value;
+      }
+      // search for the closing brace to the right of the opening '${'
+      // (in theory, there could be other braces in the string,
+      // for example if it represents a JSON object)
+      const rightBrace = value.indexOf('}', leftBrace);
+      if (rightBrace === -1) {
         return value;
       }
 
       const leftHalf = value.substring(0, leftBrace);
-      const rightHalf = value.substring(rightBrace);
-      const refTarget = value.substring(leftBrace + 2, rightBrace - 1).trim();
+      const rightHalf = value.substring(rightBrace + 1);
+      // don't include left and right braces when searching for the target of the reference
+      const refTarget = value.substring(leftBrace + 2, rightBrace).trim();
       if (refTarget[0] === '!') {
-        return value.substring(0, rightBrace) + go(rightHalf);
+        return value.substring(0, rightBrace + 1) + go(rightHalf);
       }
 
       // lookup in map
