@@ -107,7 +107,6 @@
   "nozem": {
     "ostools": [
       "dirname",
-      "cd",
       "docker"
     ]
   },
