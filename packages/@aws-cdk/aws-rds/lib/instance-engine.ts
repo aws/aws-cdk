@@ -641,6 +641,8 @@ export class PostgresEngineVersion {
   public static readonly VER_10_13 = PostgresEngineVersion.of('10.13', '10', { s3Import: true });
   /** Version "10.14". */
   public static readonly VER_10_14 = PostgresEngineVersion.of('10.14', '10', { s3Import: true });
+  /** Version "10.15". */
+  public static readonly VER_10_15 = PostgresEngineVersion.of('10.15', '10', { s3Import: true });
 
   /** Version "11" (only a major version, without a specific minor version). */
   public static readonly VER_11 = PostgresEngineVersion.of('11', '11', { s3Import: true });
