@@ -3,7 +3,7 @@ import * as kms from '@aws-cdk/aws-kms';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import {
   CfnDynamicReference, CfnDynamicReferenceService,
-  Construct as CompatConstruct, ContextProvider, Fn, IResource, Resource, Stack, Token,
+  ContextProvider, Fn, IResource, Resource, Stack, Token,
 } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import * as ssm from './ssm.generated';
@@ -360,7 +360,7 @@ export class StringParameter extends ParameterBase implements IStringParameter {
    * Requires that the stack this scope is defined in will have explicit
    * account/region information. Otherwise, it will fail during synthesis.
    */
-  public static valueFromLookup(scope: CompatConstruct, parameterName: string): string {
+  public static valueFromLookup(scope: Construct, parameterName: string): string {
     const value = ContextProvider.getValue(scope, {
       provider: cxschema.ContextProvider.SSM_PARAMETER_PROVIDER,
       props: { parameterName },

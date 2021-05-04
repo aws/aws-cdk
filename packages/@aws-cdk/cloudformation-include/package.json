@@ -1,6 +1,7 @@
 {
   "name": "@aws-cdk/cloudformation-include",
   "version": "0.0.0",
+  "private": true,
   "description": "A package that facilitates working with existing CloudFormation templates in the CDK",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -216,7 +217,8 @@
     "@aws-cdk/aws-wafv2": "0.0.0",
     "@aws-cdk/aws-workspaces": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "constructs": "^3.3.69",
+    "@aws-cdk/cx-api": "0.0.0",
+    "constructs": "^10.0.0",
     "yaml": "1.10.2"
   },
   "peerDependencies": {
@@ -371,7 +373,8 @@
     "@aws-cdk/aws-wafv2": "0.0.0",
     "@aws-cdk/aws-workspaces": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "constructs": "^3.3.69"
+    "@aws-cdk/cx-api": "0.0.0",
+    "constructs": "^10.0.0"
   },
   "devDependencies": {
     "@types/jest": "^26.0.22",
