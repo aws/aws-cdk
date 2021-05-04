@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { countResources, expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
+import { countResources, expect, haveResource, haveResourceLike } from '@aws-cdk/assert-internal';
 import * as asg from '@aws-cdk/aws-autoscaling';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
@@ -17,7 +17,7 @@ import { testFixture, testFixtureNoVpc } from './util';
 
 /* eslint-disable max-len */
 
-const CLUSTER_VERSION = eks.KubernetesVersion.V1_18;
+const CLUSTER_VERSION = eks.KubernetesVersion.V1_19;
 
 export = {
 
@@ -40,7 +40,6 @@ export = {
   },
 
   'throws when trying to place cluster handlers in a vpc with no private subnets'(test: Test) {
-
     const { stack } = testFixture();
 
     const vpc = new ec2.Vpc(stack, 'Vpc');
@@ -56,6 +55,69 @@ export = {
 
     test.done();
   },
+
+  'imported Vpc from unparseable list tokens': (() => {
+    let stack: cdk.Stack;
+    let vpc: ec2.IVpc;
+
+    return {
+      'setUp'(cb: () => void) {
+        stack = new cdk.Stack();
+        const vpcId = cdk.Fn.importValue('myVpcId');
+        const availabilityZones = cdk.Fn.split(',', cdk.Fn.importValue('myAvailabilityZones'));
+        const publicSubnetIds = cdk.Fn.split(',', cdk.Fn.importValue('myPublicSubnetIds'));
+        const privateSubnetIds = cdk.Fn.split(',', cdk.Fn.importValue('myPrivateSubnetIds'));
+        const isolatedSubnetIds = cdk.Fn.split(',', cdk.Fn.importValue('myIsolatedSubnetIds'));
+
+        vpc = ec2.Vpc.fromVpcAttributes(stack, 'importedVpc', {
+          vpcId,
+          availabilityZones,
+          publicSubnetIds,
+          privateSubnetIds,
+          isolatedSubnetIds,
+        });
+
+        cb();
+      },
+
+      'throws if selecting more than one subnet group'(test: Test) {
+        test.throws(() => new eks.Cluster(stack, 'Cluster', {
+          vpc: vpc,
+          vpcSubnets: [{ subnetType: ec2.SubnetType.PUBLIC }, { subnetType: ec2.SubnetType.PRIVATE }],
+          defaultCapacity: 0,
+          version: eks.KubernetesVersion.V1_19,
+        }), /cannot select multiple subnet groups/);
+
+        test.done();
+      },
+
+      'synthesis works if only one subnet group is selected'(test: Test) {
+        // WHEN
+        new eks.Cluster(stack, 'Cluster', {
+          vpc: vpc,
+          vpcSubnets: [{ subnetType: ec2.SubnetType.PUBLIC }],
+          defaultCapacity: 0,
+          version: eks.KubernetesVersion.V1_19,
+        });
+
+        // THEN
+        expect(stack).to(haveResourceLike('Custom::AWSCDK-EKS-Cluster', {
+          Config: {
+            resourcesVpcConfig: {
+              subnetIds: {
+                'Fn::Split': [
+                  ',',
+                  { 'Fn::ImportValue': 'myPublicSubnetIds' },
+                ],
+              },
+            },
+          },
+        }));
+
+        test.done();
+      },
+    };
+  })(),
 
   'throws when accessing cluster security group for imported cluster without cluster security group id'(test: Test) {
 
@@ -567,7 +629,7 @@ export = {
     expect(stack).to(haveResourceLike('Custom::AWSCDK-EKS-Cluster', {
       Config: {
         roleArn: { 'Fn::GetAtt': ['ClusterRoleFA261979', 'Arn'] },
-        version: '1.18',
+        version: '1.19',
         resourcesVpcConfig: {
           securityGroupIds: [{ 'Fn::GetAtt': ['ClusterControlPlaneSecurityGroupD274242C', 'GroupId'] }],
           subnetIds: [
@@ -1232,7 +1294,7 @@ export = {
         // THEN
         const template = app.synth().getStackByName(stack.stackName).template;
         const userData = template.Resources.ClusterMyCapcityLaunchConfig58583345.Properties.UserData;
-        test.deepEqual(userData, { 'Fn::Base64': { 'Fn::Join': ['', ['#!/bin/bash\nset -o xtrace\n/etc/eks/bootstrap.sh ', { Ref: 'Cluster9EE0221C' }, ' --kubelet-extra-args "--node-labels lifecycle=OnDemand" --use-max-pods true\n/opt/aws/bin/cfn-signal --exit-code $? --stack Stack --resource ClusterMyCapcityASGD4CD8B97 --region us-east-1']] } });
+        test.deepEqual(userData, { 'Fn::Base64': { 'Fn::Join': ['', ['#!/bin/bash\nset -o xtrace\n/etc/eks/bootstrap.sh ', { Ref: 'Cluster9EE0221C' }, ' --kubelet-extra-args "--node-labels lifecycle=OnDemand" --apiserver-endpoint \'', { 'Fn::GetAtt': ['Cluster9EE0221C', 'Endpoint'] }, '\' --b64-cluster-ca \'', { 'Fn::GetAtt': ['Cluster9EE0221C', 'CertificateAuthorityData'] }, '\' --use-max-pods true\n/opt/aws/bin/cfn-signal --exit-code $? --stack Stack --resource ClusterMyCapcityASGD4CD8B97 --region us-east-1']] } });
         test.done();
       },
 
@@ -1271,7 +1333,7 @@ export = {
         // THEN
         const template = app.synth().getStackByName(stack.stackName).template;
         const userData = template.Resources.ClusterMyCapcityLaunchConfig58583345.Properties.UserData;
-        test.deepEqual(userData, { 'Fn::Base64': { 'Fn::Join': ['', ['#!/bin/bash\nset -o xtrace\n/etc/eks/bootstrap.sh ', { Ref: 'Cluster9EE0221C' }, ' --kubelet-extra-args "--node-labels lifecycle=OnDemand  --node-labels FOO=42" --use-max-pods true\n/opt/aws/bin/cfn-signal --exit-code $? --stack Stack --resource ClusterMyCapcityASGD4CD8B97 --region us-east-1']] } });
+        test.deepEqual(userData, { 'Fn::Base64': { 'Fn::Join': ['', ['#!/bin/bash\nset -o xtrace\n/etc/eks/bootstrap.sh ', { Ref: 'Cluster9EE0221C' }, ' --kubelet-extra-args "--node-labels lifecycle=OnDemand  --node-labels FOO=42" --apiserver-endpoint \'', { 'Fn::GetAtt': ['Cluster9EE0221C', 'Endpoint'] }, '\' --b64-cluster-ca \'', { 'Fn::GetAtt': ['Cluster9EE0221C', 'CertificateAuthorityData'] }, '\' --use-max-pods true\n/opt/aws/bin/cfn-signal --exit-code $? --stack Stack --resource ClusterMyCapcityASGD4CD8B97 --region us-east-1']] } });
         test.done();
       },
 
@@ -1291,7 +1353,7 @@ export = {
           // THEN
           const template = app.synth().getStackByName(stack.stackName).template;
           const userData = template.Resources.ClusterMyCapcityLaunchConfig58583345.Properties.UserData;
-          test.deepEqual(userData, { 'Fn::Base64': { 'Fn::Join': ['', ['#!/bin/bash\nset -o xtrace\n/etc/eks/bootstrap.sh ', { Ref: 'Cluster9EE0221C' }, ' --kubelet-extra-args "--node-labels lifecycle=Ec2Spot --register-with-taints=spotInstance=true:PreferNoSchedule" --use-max-pods true\n/opt/aws/bin/cfn-signal --exit-code $? --stack Stack --resource ClusterMyCapcityASGD4CD8B97 --region us-east-1']] } });
+          test.deepEqual(userData, { 'Fn::Base64': { 'Fn::Join': ['', ['#!/bin/bash\nset -o xtrace\n/etc/eks/bootstrap.sh ', { Ref: 'Cluster9EE0221C' }, ' --kubelet-extra-args "--node-labels lifecycle=Ec2Spot --register-with-taints=spotInstance=true:PreferNoSchedule" --apiserver-endpoint \'', { 'Fn::GetAtt': ['Cluster9EE0221C', 'Endpoint'] }, '\' --b64-cluster-ca \'', { 'Fn::GetAtt': ['Cluster9EE0221C', 'CertificateAuthorityData'] }, '\' --use-max-pods true\n/opt/aws/bin/cfn-signal --exit-code $? --stack Stack --resource ClusterMyCapcityASGD4CD8B97 --region us-east-1']] } });
           test.done();
         },
 
@@ -1400,7 +1462,7 @@ export = {
       const { app, stack } = testFixtureNoVpc();
 
       // WHEN
-      new eks.EksOptimizedImage({ kubernetesVersion: '1.18' }).getImage(stack);
+      new eks.EksOptimizedImage({ kubernetesVersion: '1.19' }).getImage(stack);
 
       // THEN
       const assembly = app.synth();
@@ -1411,7 +1473,7 @@ export = {
       ), 'EKS STANDARD AMI should be in ssm parameters');
       test.ok(Object.entries(parameters).some(
         ([k, v]) => k.startsWith('SsmParameterValueawsserviceeksoptimizedami') &&
-          (v as any).Default.includes('/1.18/'),
+          (v as any).Default.includes('/1.19/'),
       ), 'kubernetesVersion should be in ssm parameters');
       test.done();
     },
@@ -1549,7 +1611,7 @@ export = {
       const { app, stack } = testFixtureNoVpc();
 
       // WHEN
-      new BottleRocketImage({ kubernetesVersion: '1.18' }).getImage(stack);
+      new BottleRocketImage({ kubernetesVersion: '1.19' }).getImage(stack);
 
       // THEN
       const assembly = app.synth();
@@ -1560,7 +1622,7 @@ export = {
       ), 'BottleRocket AMI should be in ssm parameters');
       test.ok(Object.entries(parameters).some(
         ([k, v]) => k.startsWith('SsmParameterValueawsservicebottlerocketaws') &&
-          (v as any).Default.includes('/aws-k8s-1.18/'),
+          (v as any).Default.includes('/aws-k8s-1.19/'),
       ), 'kubernetesVersion should be in ssm parameters');
       test.done();
     },
@@ -1581,7 +1643,7 @@ export = {
         Config: {
           name: 'my-cluster-name',
           roleArn: { 'Fn::GetAtt': ['MyClusterRoleBA20FE72', 'Arn'] },
-          version: '1.18',
+          version: '1.19',
           resourcesVpcConfig: {
             securityGroupIds: [
               { 'Fn::GetAtt': ['MyClusterControlPlaneSecurityGroup6B658F79', 'GroupId'] },
@@ -1632,14 +1694,6 @@ export = {
                   'Arn',
                 ],
               },
-            },
-            {
-              Action: [
-                'ec2:DescribeSubnets',
-                'ec2:DescribeRouteTables',
-              ],
-              Effect: 'Allow',
-              Resource: '*',
             },
             {
               Action: [
@@ -1720,27 +1774,17 @@ export = {
               Resource: '*',
             },
             {
-              Action: 'ec2:DescribeVpcs',
+              Action: [
+                'ec2:DescribeInstances',
+                'ec2:DescribeNetworkInterfaces',
+                'ec2:DescribeSecurityGroups',
+                'ec2:DescribeSubnets',
+                'ec2:DescribeRouteTables',
+                'ec2:DescribeDhcpOptions',
+                'ec2:DescribeVpcs',
+              ],
               Effect: 'Allow',
-              Resource: {
-                'Fn::Join': [
-                  '',
-                  [
-                    'arn:',
-                    {
-                      Ref: 'AWS::Partition',
-                    },
-                    ':ec2:us-east-1:',
-                    {
-                      Ref: 'AWS::AccountId',
-                    },
-                    ':vpc/',
-                    {
-                      Ref: 'MyClusterDefaultVpc76C24A38',
-                    },
-                  ],
-                ],
-              },
+              Resource: '*',
             },
           ],
           Version: '2012-10-17',
@@ -1769,14 +1813,6 @@ export = {
                   'Arn',
                 ],
               },
-            },
-            {
-              Action: [
-                'ec2:DescribeSubnets',
-                'ec2:DescribeRouteTables',
-              ],
-              Effect: 'Allow',
-              Resource: '*',
             },
             {
               Action: [
@@ -1812,27 +1848,17 @@ export = {
               Resource: '*',
             },
             {
-              Action: 'ec2:DescribeVpcs',
+              Action: [
+                'ec2:DescribeInstances',
+                'ec2:DescribeNetworkInterfaces',
+                'ec2:DescribeSecurityGroups',
+                'ec2:DescribeSubnets',
+                'ec2:DescribeRouteTables',
+                'ec2:DescribeDhcpOptions',
+                'ec2:DescribeVpcs',
+              ],
               Effect: 'Allow',
-              Resource: {
-                'Fn::Join': [
-                  '',
-                  [
-                    'arn:',
-                    {
-                      Ref: 'AWS::Partition',
-                    },
-                    ':ec2:us-east-1:',
-                    {
-                      Ref: 'AWS::AccountId',
-                    },
-                    ':vpc/',
-                    {
-                      Ref: 'MyClusterDefaultVpc76C24A38',
-                    },
-                  ],
-                ],
-              },
+              Resource: '*',
             },
           ],
           Version: '2012-10-17',
@@ -2055,6 +2081,27 @@ export = {
       test.done();
     },
 
+  },
+
+  'kubectl provider passes security group to provider'(test: Test) {
+
+    const { stack } = testFixture();
+
+    new eks.Cluster(stack, 'Cluster1', {
+      version: CLUSTER_VERSION,
+      prune: false,
+      endpointAccess: eks.EndpointAccess.PRIVATE,
+      kubectlEnvironment: {
+        Foo: 'Bar',
+      },
+    });
+
+    // the kubectl provider is inside a nested stack.
+    const nested = stack.node.tryFindChild('@aws-cdk/aws-eks.KubectlProvider') as cdk.NestedStack;
+    test.deepEqual(expect(nested).value.Resources.ProviderframeworkonEvent83C1D0A7.Properties.VpcConfig.SecurityGroupIds,
+      [{ Ref: 'referencetoStackCluster18DFEAC17ClusterSecurityGroupId' }]);
+
+    test.done();
   },
 
   'kubectl provider passes environment to lambda'(test: Test) {

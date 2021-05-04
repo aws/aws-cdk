@@ -6,23 +6,7 @@
         "KeyPolicy": {
           "Statement": [
             {
-              "Action": [
-                "kms:Create*",
-                "kms:Describe*",
-                "kms:Enable*",
-                "kms:List*",
-                "kms:Put*",
-                "kms:Update*",
-                "kms:Revoke*",
-                "kms:Disable*",
-                "kms:Get*",
-                "kms:Delete*",
-                "kms:ScheduleKeyDeletion",
-                "kms:CancelKeyDeletion",
-                "kms:GenerateDataKey",
-                "kms:TagResource",
-                "kms:UntagResource"
-              ],
+              "Action": "kms:*",
               "Effect": "Allow",
               "Principal": {
                 "AWS": {
@@ -103,77 +87,50 @@
           ]
         },
         "Create": {
-          "service": "CloudWatchLogs",
-          "action": "putResourcePolicy",
-          "parameters": {
-            "policyName": "ESLogPolicyc82ca7bfe2f2589b859ebab89e88da2efd284adfad",
-            "policyDocument": {
-              "Fn::Join": [
-                "",
-                [
-                  "{\"Statement\":[{\"Action\":[\"logs:PutLogEvents\",\"logs:CreateLogStream\"],\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"es.amazonaws.com\"},\"Resource\":[\"",
-                  {
-                    "Fn::GetAtt": [
-                      "DomainSlowSearchLogs5B35A97A",
-                      "Arn"
-                    ]
-                  },
-                  "\",\"",
-                  {
-                    "Fn::GetAtt": [
-                      "DomainAppLogs21698C1B",
-                      "Arn"
-                    ]
-                  },
-                  "\"]}],\"Version\":\"2012-10-17\"}"
+          "Fn::Join": [
+            "",
+            [
+              "{\"service\":\"CloudWatchLogs\",\"action\":\"putResourcePolicy\",\"parameters\":{\"policyName\":\"ESLogPolicyc82ca7bfe2f2589b859ebab89e88da2efd284adfad\",\"policyDocument\":\"{\\\"Statement\\\":[{\\\"Action\\\":[\\\"logs:PutLogEvents\\\",\\\"logs:CreateLogStream\\\"],\\\"Effect\\\":\\\"Allow\\\",\\\"Principal\\\":{\\\"Service\\\":\\\"es.amazonaws.com\\\"},\\\"Resource\\\":[\\\"",
+              {
+                "Fn::GetAtt": [
+                  "DomainSlowSearchLogs5B35A97A",
+                  "Arn"
                 ]
-              ]
-            }
-          },
-          "physicalResourceId": {
-            "id": "ESLogGroupPolicyc82ca7bfe2f2589b859ebab89e88da2efd284adfad"
-          }
+              },
+              "\\\",\\\"",
+              {
+                "Fn::GetAtt": [
+                  "DomainAppLogs21698C1B",
+                  "Arn"
+                ]
+              },
+              "\\\"]}],\\\"Version\\\":\\\"2012-10-17\\\"}\"},\"physicalResourceId\":{\"id\":\"ESLogGroupPolicyc82ca7bfe2f2589b859ebab89e88da2efd284adfad\"}}"
+            ]
+          ]
         },
         "Update": {
-          "service": "CloudWatchLogs",
-          "action": "putResourcePolicy",
-          "parameters": {
-            "policyName": "ESLogPolicyc82ca7bfe2f2589b859ebab89e88da2efd284adfad",
-            "policyDocument": {
-              "Fn::Join": [
-                "",
-                [
-                  "{\"Statement\":[{\"Action\":[\"logs:PutLogEvents\",\"logs:CreateLogStream\"],\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"es.amazonaws.com\"},\"Resource\":[\"",
-                  {
-                    "Fn::GetAtt": [
-                      "DomainSlowSearchLogs5B35A97A",
-                      "Arn"
-                    ]
-                  },
-                  "\",\"",
-                  {
-                    "Fn::GetAtt": [
-                      "DomainAppLogs21698C1B",
-                      "Arn"
-                    ]
-                  },
-                  "\"]}],\"Version\":\"2012-10-17\"}"
+          "Fn::Join": [
+            "",
+            [
+              "{\"service\":\"CloudWatchLogs\",\"action\":\"putResourcePolicy\",\"parameters\":{\"policyName\":\"ESLogPolicyc82ca7bfe2f2589b859ebab89e88da2efd284adfad\",\"policyDocument\":\"{\\\"Statement\\\":[{\\\"Action\\\":[\\\"logs:PutLogEvents\\\",\\\"logs:CreateLogStream\\\"],\\\"Effect\\\":\\\"Allow\\\",\\\"Principal\\\":{\\\"Service\\\":\\\"es.amazonaws.com\\\"},\\\"Resource\\\":[\\\"",
+              {
+                "Fn::GetAtt": [
+                  "DomainSlowSearchLogs5B35A97A",
+                  "Arn"
                 ]
-              ]
-            }
-          },
-          "physicalResourceId": {
-            "id": "ESLogGroupPolicyc82ca7bfe2f2589b859ebab89e88da2efd284adfad"
-          }
+              },
+              "\\\",\\\"",
+              {
+                "Fn::GetAtt": [
+                  "DomainAppLogs21698C1B",
+                  "Arn"
+                ]
+              },
+              "\\\"]}],\\\"Version\\\":\\\"2012-10-17\\\"}\"},\"physicalResourceId\":{\"id\":\"ESLogGroupPolicyc82ca7bfe2f2589b859ebab89e88da2efd284adfad\"}}"
+            ]
+          ]
         },
-        "Delete": {
-          "service": "CloudWatchLogs",
-          "action": "deleteResourcePolicy",
-          "parameters": {
-            "policyName": "ESLogPolicyc82ca7bfe2f2589b859ebab89e88da2efd284adfad"
-          },
-          "ignoreErrorCodesMatching": "400"
-        },
+        "Delete": "{\"service\":\"CloudWatchLogs\",\"action\":\"deleteResourcePolicy\",\"parameters\":{\"policyName\":\"ESLogPolicyc82ca7bfe2f2589b859ebab89e88da2efd284adfad\"},\"ignoreErrorCodesMatching\":\"400\"}",
         "InstallLatestAwsSdk": true
       },
       "DependsOn": [
@@ -237,7 +194,9 @@
       "DependsOn": [
         "DomainESLogGroupPolicyc82ca7bfe2f2589b859ebab89e88da2efd284adfadCustomResourcePolicy0B41F6DF",
         "DomainESLogGroupPolicyc82ca7bfe2f2589b859ebab89e88da2efd284adfadA70E756D"
-      ]
+      ],
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
     },
     "DomainESAccessPolicyCustomResourcePolicy9747FC42": {
       "Type": "AWS::IAM::Policy",
@@ -278,52 +237,36 @@
           ]
         },
         "Create": {
-          "action": "updateElasticsearchDomainConfig",
-          "service": "ES",
-          "parameters": {
-            "DomainName": {
-              "Ref": "Domain66AC69E0"
-            },
-            "AccessPolicies": "{\"Statement\":[{\"Action\":\"es:ESHttp*\",\"Effect\":\"Allow\",\"Principal\":\"*\",\"Resource\":\"*\"}],\"Version\":\"2012-10-17\"}"
-          },
-          "outputPath": "DomainConfig.ElasticsearchClusterConfig.AccessPolicies",
-          "physicalResourceId": {
-            "id": {
-              "Fn::Join": [
-                "",
-                [
-                  {
-                    "Ref": "Domain66AC69E0"
-                  },
-                  "AccessPolicy"
-                ]
-              ]
-            }
-          }
+          "Fn::Join": [
+            "",
+            [
+              "{\"action\":\"updateElasticsearchDomainConfig\",\"service\":\"ES\",\"parameters\":{\"DomainName\":\"",
+              {
+                "Ref": "Domain66AC69E0"
+              },
+              "\",\"AccessPolicies\":\"{\\\"Statement\\\":[{\\\"Action\\\":\\\"es:ESHttp*\\\",\\\"Effect\\\":\\\"Allow\\\",\\\"Principal\\\":\\\"*\\\",\\\"Resource\\\":\\\"*\\\"}],\\\"Version\\\":\\\"2012-10-17\\\"}\"},\"outputPath\":\"DomainConfig.ElasticsearchClusterConfig.AccessPolicies\",\"physicalResourceId\":{\"id\":\"",
+              {
+                "Ref": "Domain66AC69E0"
+              },
+              "AccessPolicy\"}}"
+            ]
+          ]
         },
         "Update": {
-          "action": "updateElasticsearchDomainConfig",
-          "service": "ES",
-          "parameters": {
-            "DomainName": {
-              "Ref": "Domain66AC69E0"
-            },
-            "AccessPolicies": "{\"Statement\":[{\"Action\":\"es:ESHttp*\",\"Effect\":\"Allow\",\"Principal\":\"*\",\"Resource\":\"*\"}],\"Version\":\"2012-10-17\"}"
-          },
-          "outputPath": "DomainConfig.ElasticsearchClusterConfig.AccessPolicies",
-          "physicalResourceId": {
-            "id": {
-              "Fn::Join": [
-                "",
-                [
-                  {
-                    "Ref": "Domain66AC69E0"
-                  },
-                  "AccessPolicy"
-                ]
-              ]
-            }
-          }
+          "Fn::Join": [
+            "",
+            [
+              "{\"action\":\"updateElasticsearchDomainConfig\",\"service\":\"ES\",\"parameters\":{\"DomainName\":\"",
+              {
+                "Ref": "Domain66AC69E0"
+              },
+              "\",\"AccessPolicies\":\"{\\\"Statement\\\":[{\\\"Action\\\":\\\"es:ESHttp*\\\",\\\"Effect\\\":\\\"Allow\\\",\\\"Principal\\\":\\\"*\\\",\\\"Resource\\\":\\\"*\\\"}],\\\"Version\\\":\\\"2012-10-17\\\"}\"},\"outputPath\":\"DomainConfig.ElasticsearchClusterConfig.AccessPolicies\",\"physicalResourceId\":{\"id\":\"",
+              {
+                "Ref": "Domain66AC69E0"
+              },
+              "AccessPolicy\"}}"
+            ]
+          ]
         },
         "InstallLatestAwsSdk": true
       },
@@ -400,7 +343,7 @@
       "Properties": {
         "Code": {
           "S3Bucket": {
-            "Ref": "AssetParametersb64b129569a5ac7a9abf88a18ac0b504d1fb1208872460476ed3fd435830eb94S3Bucket38F1BB8E"
+            "Ref": "AssetParametersb965ea3084ec95e24846d4975623e62a02c21883c3ddea9366b2ae42d21cef98S3Bucket4DD075F7"
           },
           "S3Key": {
             "Fn::Join": [
@@ -413,7 +356,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParametersb64b129569a5ac7a9abf88a18ac0b504d1fb1208872460476ed3fd435830eb94S3VersionKeyCCDC67C0"
+                          "Ref": "AssetParametersb965ea3084ec95e24846d4975623e62a02c21883c3ddea9366b2ae42d21cef98S3VersionKeyBD0E03B7"
                         }
                       ]
                     }
@@ -426,7 +369,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParametersb64b129569a5ac7a9abf88a18ac0b504d1fb1208872460476ed3fd435830eb94S3VersionKeyCCDC67C0"
+                          "Ref": "AssetParametersb965ea3084ec95e24846d4975623e62a02c21883c3ddea9366b2ae42d21cef98S3VersionKeyBD0E03B7"
                         }
                       ]
                     }
@@ -453,17 +396,17 @@
     }
   },
   "Parameters": {
-    "AssetParametersb64b129569a5ac7a9abf88a18ac0b504d1fb1208872460476ed3fd435830eb94S3Bucket38F1BB8E": {
+    "AssetParametersb965ea3084ec95e24846d4975623e62a02c21883c3ddea9366b2ae42d21cef98S3Bucket4DD075F7": {
       "Type": "String",
-      "Description": "S3 bucket for asset \"b64b129569a5ac7a9abf88a18ac0b504d1fb1208872460476ed3fd435830eb94\""
+      "Description": "S3 bucket for asset \"b965ea3084ec95e24846d4975623e62a02c21883c3ddea9366b2ae42d21cef98\""
     },
-    "AssetParametersb64b129569a5ac7a9abf88a18ac0b504d1fb1208872460476ed3fd435830eb94S3VersionKeyCCDC67C0": {
+    "AssetParametersb965ea3084ec95e24846d4975623e62a02c21883c3ddea9366b2ae42d21cef98S3VersionKeyBD0E03B7": {
       "Type": "String",
-      "Description": "S3 key for asset version \"b64b129569a5ac7a9abf88a18ac0b504d1fb1208872460476ed3fd435830eb94\""
+      "Description": "S3 key for asset version \"b965ea3084ec95e24846d4975623e62a02c21883c3ddea9366b2ae42d21cef98\""
     },
-    "AssetParametersb64b129569a5ac7a9abf88a18ac0b504d1fb1208872460476ed3fd435830eb94ArtifactHash782948FC": {
+    "AssetParametersb965ea3084ec95e24846d4975623e62a02c21883c3ddea9366b2ae42d21cef98ArtifactHash35A756EB": {
       "Type": "String",
-      "Description": "Artifact hash for asset \"b64b129569a5ac7a9abf88a18ac0b504d1fb1208872460476ed3fd435830eb94\""
+      "Description": "Artifact hash for asset \"b965ea3084ec95e24846d4975623e62a02c21883c3ddea9366b2ae42d21cef98\""
     }
   }
 }

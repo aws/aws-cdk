@@ -218,9 +218,9 @@ export class App extends Resource implements IApp, iam.IGrantable {
         basicAuthConfig: props.autoBranchCreation.basicAuth && props.autoBranchCreation.basicAuth.bind(this, 'BranchBasicAuth'),
         buildSpec: props.autoBranchCreation.buildSpec && props.autoBranchCreation.buildSpec.toBuildSpec(),
         enableAutoBranchCreation: true,
-        enableAutoBuild: props.autoBranchCreation.autoBuild === undefined ? true : props.autoBranchCreation.autoBuild,
+        enableAutoBuild: props.autoBranchCreation.autoBuild ?? true,
         environmentVariables: Lazy.any({ produce: () => renderEnvironmentVariables(this.autoBranchEnvironmentVariables ) }, { omitEmptyArray: true }), // eslint-disable-line max-len
-        enablePullRequestPreview: props.autoBranchCreation.pullRequestPreview === undefined ? true : props.autoBranchCreation.pullRequestPreview,
+        enablePullRequestPreview: props.autoBranchCreation.pullRequestPreview ?? true,
         pullRequestEnvironmentName: props.autoBranchCreation.pullRequestEnvironmentName,
         stage: props.autoBranchCreation.stage,
       },
@@ -289,6 +289,7 @@ export class App extends Resource implements IApp, iam.IGrantable {
     return new Domain(this, id, {
       ...options,
       app: this,
+      autoSubDomainIamRole: this.grantPrincipal as iam.IRole,
     });
   }
 }

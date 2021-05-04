@@ -55,22 +55,69 @@ export class Fn {
   }
 
   /**
-   * To split a string into a list of string values so that you can select an element from the
-   * resulting string list, use the ``Fn::Split`` intrinsic function. Specify the location of splits
-   * with a delimiter, such as , (a comma). After you split a string, use the ``Fn::Select`` function
-   * to pick a specific element.
+   * Split a string token into a token list of string values.
+   *
+   * Specify the location of splits with a delimiter such as ',' (a comma).
+   * Renders to the `Fn::Split` intrinsic function.
+   *
+   * Lists with unknown lengths (default)
+   * -------------------------------------
+   *
+   * Since this function is used to work with deploy-time values, if `assumedLength`
+   * is not given the CDK cannot know the length of the resulting list at synthesis time.
+   * This brings the following restrictions:
+   *
+   * - You must use `Fn.select(i, list)` to pick elements out of the list (you must not use
+   *   `list[i]`).
+   * - You cannot add elements to the list, remove elements from the list,
+   *   combine two such lists together, or take a slice of the list.
+   * - You cannot pass the list to constructs that do any of the above.
+   *
+   * The only valid operation with such a tokenized list is to pass it unmodified to a
+   * CloudFormation Resource construct.
+   *
+   * Lists with assumed lengths
+   * --------------------------
+   *
+   * Pass `assumedLength` if you know the length of the list that will be
+   * produced by splitting. The actual list length at deploy time may be
+   * *longer* than the number you pass, but not *shorter*.
+   *
+   * The returned list will look like:
+   *
+   * ```
+   * [Fn.select(0, split), Fn.select(1, split), Fn.select(2, split), ...]
+   * ```
+   *
+   * The restrictions from the section "Lists with unknown lengths" will now be lifted,
+   * at the expense of having to know and fix the length of the list.
+   *
    * @param delimiter A string value that determines where the source string is divided.
    * @param source The string value that you want to split.
+   * @param assumedLength The length of the list that will be produced by splitting
    * @returns a token represented as a string array
    */
-  public static split(delimiter: string, source: string): string[] {
-
+  public static split(delimiter: string, source: string, assumedLength?: number): string[] {
     // short-circut if source is not a token
     if (!Token.isUnresolved(source)) {
       return source.split(delimiter);
     }
 
-    return Token.asList(new FnSplit(delimiter, source));
+    if (Token.isUnresolved(delimiter)) {
+      // Limitation of CloudFormation
+      throw new Error('Fn.split: \'delimiter\' may not be a token value');
+    }
+
+    const split = Token.asList(new FnSplit(delimiter, source));
+    if (assumedLength === undefined) {
+      return split;
+    }
+
+    if (Token.isUnresolved(assumedLength)) {
+      throw new Error('Fn.split: \'assumedLength\' may not be a token value');
+    }
+
+    return range(assumedLength).map(i => Fn.select(i, split));
   }
 
   /**
@@ -165,6 +212,21 @@ export class Fn {
    */
   public static importValue(sharedValueToImport: string): string {
     return new FnImportValue(sharedValueToImport).toString();
+  }
+
+  /**
+   * Like `Fn.importValue`, but import a list with a known length
+   *
+   * If you explicitly want a list with an unknown length, call `Fn.split(',',
+   * Fn.importValue(exportName))`. See the documentation of `Fn.split` to read
+   * more about the limitations of using lists of unknown length.
+   *
+   * `Fn.importListValue(exportName, assumedLength)` is the same as
+   * `Fn.split(',', Fn.importValue(exportName), assumedLength)`,
+   * but easier to read and impossible to forget to pass `assumedLength`.
+   */
+  public static importListValue(sharedValueToImport: string, assumedLength: number, delimiter = ','): string[] {
+    return Fn.split(delimiter, Fn.importValue(sharedValueToImport), assumedLength);
   }
 
   /**
@@ -772,4 +834,12 @@ function _inGroupsOf<T>(array: T[], maxGroup: number): T[][] {
     result.push(array.slice(i, i + maxGroup));
   }
   return result;
+}
+
+function range(n: number): number[] {
+  const ret = [];
+  for (let i = 0; i < n; i++) {
+    ret.push(i);
+  }
+  return ret;
 }

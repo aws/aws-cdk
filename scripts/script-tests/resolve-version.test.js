@@ -67,7 +67,7 @@ happy({
 
 happy({
   name: 'to support BUMP_CANDIDATE stable branches can be bumped towards a pre-release',
-  inputs: { 
+  inputs: {
     'release.json': { majorVersion: 2, releaseType: 'stable' },
     'version.v2.json': { version: '2.0.0-rc.0' }
   },
@@ -112,7 +112,7 @@ failure({
 
 failure({
   name: 'actual version not the right major',
-  inputs: { 
+  inputs: {
     'release.json': { majorVersion: 1, releaseType: 'stable' },
     'version.v1.json': { version: '2.0.0' }
   },
@@ -121,7 +121,7 @@ failure({
 
 failure({
   name: 'actual version not the right pre-release',
-  inputs: { 
+  inputs: {
     'release.json': { majorVersion: 2, releaseType: 'alpha' },
     'version.v2.json': { version: '2.0.0-rc.0' }
   },

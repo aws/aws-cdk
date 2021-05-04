@@ -62,7 +62,6 @@ export class SqsQueue implements events.IRuleTarget {
     );
 
     return {
-      id: '',
       arn: this.queue.queueArn,
       input: this.props.message,
       targetResource: this.queue,

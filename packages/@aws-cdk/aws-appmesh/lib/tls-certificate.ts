@@ -1,6 +1,9 @@
 import * as acm from '@aws-cdk/aws-certificatemanager';
-import * as cdk from '@aws-cdk/core';
 import { CfnVirtualNode } from './appmesh.generated';
+
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct } from '@aws-cdk/core';
 
 /**
  * Enum of supported TLS modes
@@ -93,7 +96,7 @@ export abstract class TlsCertificate {
   /**
    * Returns TLS certificate based provider.
    */
-  public abstract bind(_scope: cdk.Construct): TlsCertificateConfig;
+  public abstract bind(_scope: Construct): TlsCertificateConfig;
 
 }
 
@@ -119,7 +122,7 @@ class AcmTlsCertificate extends TlsCertificate {
     this.acmCertificate = props.certificate;
   }
 
-  bind(_scope: cdk.Construct): TlsCertificateConfig {
+  bind(_scope: Construct): TlsCertificateConfig {
     return {
       tlsCertificate: {
         acm: {
@@ -159,7 +162,7 @@ class FileTlsCertificate extends TlsCertificate {
     this.privateKey = props.privateKeyPath;
   }
 
-  bind(_scope: cdk.Construct): TlsCertificateConfig {
+  bind(_scope: Construct): TlsCertificateConfig {
     return {
       tlsCertificate: {
         file: {

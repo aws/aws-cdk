@@ -84,9 +84,9 @@ definition. The definition is specified by its start state, and encompasses
 all states reachable from the start state:
 
 ```ts
-const startState = new stepfunctions.Pass(this, 'StartState');
+const startState = new sfn.Pass(this, 'StartState');
 
-new stepfunctions.StateMachine(this, 'StateMachine', {
+new sfn.StateMachine(this, 'StateMachine', {
     definition: startState
 });
 ```
@@ -138,8 +138,8 @@ will be passed as the state's output.
 
 ```ts
 // Makes the current JSON state { ..., "subObject": { "hello": "world" } }
-const pass = new stepfunctions.Pass(this, 'Add Hello World', {
-  result: stepfunctions.Result.fromObject({ hello: 'world' }),
+const pass = new sfn.Pass(this, 'Add Hello World', {
+  result: sfn.Result.fromObject({ hello: 'world' }),
   resultPath: '$.subObject',
 });
 
@@ -154,9 +154,9 @@ The following example filters the `greeting` field from the state input
 and also injects a field called `otherData`.
 
 ```ts
-const pass = new stepfunctions.Pass(this, 'Filter input and inject data', {
+const pass = new sfn.Pass(this, 'Filter input and inject data', {
   parameters: { // input to the pass state
-    input: stepfunctions.JsonPath.stringAt('$.input.greeting'),
+    input: sfn.JsonPath.stringAt('$.input.greeting'),
     otherData: 'some-extra-stuff'
   },
 });
@@ -177,8 +177,8 @@ state.
 ```ts
 // Wait until it's the time mentioned in the the state object's "triggerTime"
 // field.
-const wait = new stepfunctions.Wait(this, 'Wait For Trigger Time', {
-    time: stepfunctions.WaitTime.timestampPath('$.triggerTime'),
+const wait = new sfn.Wait(this, 'Wait For Trigger Time', {
+    time: sfn.WaitTime.timestampPath('$.triggerTime'),
 });
 
 // Set the next state
@@ -191,11 +191,11 @@ A `Choice` state can take a different path through the workflow based on the
 values in the execution's JSON state:
 
 ```ts
-const choice = new stepfunctions.Choice(this, 'Did it work?');
+const choice = new sfn.Choice(this, 'Did it work?');
 
 // Add conditions with .when()
-choice.when(stepfunctions.Condition.stringEqual('$.status', 'SUCCESS'), successState);
-choice.when(stepfunctions.Condition.numberGreaterThan('$.attempts', 5), failureState);
+choice.when(sfn.Condition.stringEquals('$.status', 'SUCCESS'), successState);
+choice.when(sfn.Condition.numberGreaterThan('$.attempts', 5), failureState);
 
 // Use .otherwise() to indicate what should be done if none of the conditions match
 choice.otherwise(tryAgainState);
@@ -206,9 +206,9 @@ all branches come together and continuing as one (similar to how an `if ...
 then ... else` works in a programming language), use the `.afterwards()` method:
 
 ```ts
-const choice = new stepfunctions.Choice(this, 'What color is it?');
-choice.when(stepfunctions.Condition.stringEqual('$.color', 'BLUE'), handleBlueItem);
-choice.when(stepfunctions.Condition.stringEqual('$.color', 'RED'), handleRedItem);
+const choice = new sfn.Choice(this, 'What color is it?');
+choice.when(sfn.Condition.stringEquals('$.color', 'BLUE'), handleBlueItem);
+choice.when(sfn.Condition.stringEquals('$.color', 'RED'), handleRedItem);
 choice.otherwise(handleOtherItemColor);
 
 // Use .afterwards() to join all possible paths back together and continue
@@ -275,7 +275,7 @@ A `Parallel` state executes one or more subworkflows in parallel. It can also
 be used to catch and recover from errors in subworkflows.
 
 ```ts
-const parallel = new stepfunctions.Parallel(this, 'Do the work in parallel');
+const parallel = new sfn.Parallel(this, 'Do the work in parallel');
 
 // Add branches to be executed in parallel
 parallel.branch(shipItem);
@@ -295,10 +295,10 @@ parallel.next(closeOrder);
 ### Succeed
 
 Reaching a `Succeed` state terminates the state machine execution with a
-succesful status.
+successful status.
 
 ```ts
-const success = new stepfunctions.Succeed(this, 'We did it!');
+const success = new sfn.Succeed(this, 'We did it!');
 ```
 
 ### Fail
@@ -308,7 +308,7 @@ failure status. The fail state should report the reason for the failure.
 Failures can be caught by encompassing `Parallel` states.
 
 ```ts
-const success = new stepfunctions.Fail(this, 'Fail', {
+const success = new sfn.Fail(this, 'Fail', {
     error: 'WorkflowFailure',
     cause: "Something went wrong"
 });
@@ -323,11 +323,11 @@ While the `Parallel` state executes multiple branches of steps using the same in
 execute the same steps for multiple entries of an array in the state input.
 
 ```ts
-const map = new stepfunctions.Map(this, 'Map State', {
+const map = new sfn.Map(this, 'Map State', {
     maxConcurrency: 1,
-    itemsPath: stepfunctions.JsonPath.stringAt('$.inputForMap')
+    itemsPath: sfn.JsonPath.stringAt('$.inputForMap')
 });
-map.iterator(new stepfunctions.Pass(this, 'Pass State'));
+map.iterator(new sfn.Pass(this, 'Pass State'));
 ```
 
 ### Custom State
@@ -397,7 +397,7 @@ const sm = new sfn.StateMachine(this, 'StateMachine', {
 });
 
 // don't forget permissions. You need to assign them
-table.grantWriteData(sm.role);
+table.grantWriteData(sm);
 ```
 
 ## Task Chaining
@@ -420,7 +420,7 @@ const definition = step1
         .branch(step9.next(step10)))
     .next(finish);
 
-new stepfunctions.StateMachine(this, 'StateMachine', {
+new sfn.StateMachine(this, 'StateMachine', {
     definition,
 });
 ```
@@ -429,13 +429,12 @@ If you don't like the visual look of starting a chain directly off the first
 step, you can use `Chain.start`:
 
 ```ts
-const definition = stepfunctions.Chain
+const definition = sfn.Chain
     .start(step1)
     .next(step2)
     .next(step3)
     // ...
 ```
-
 
 ## State Machine Fragments
 
@@ -461,16 +460,16 @@ interface MyJobProps {
     jobFlavor: string;
 }
 
-class MyJob extends stepfunctions.StateMachineFragment {
-    public readonly startState: State;
-    public readonly endStates: INextable[];
+class MyJob extends sfn.StateMachineFragment {
+    public readonly startState: sfn.State;
+    public readonly endStates: sfn.INextable[];
 
     constructor(parent: cdk.Construct, id: string, props: MyJobProps) {
         super(parent, id);
 
-        const first = new stepfunctions.Task(this, 'First', { ... });
+        const first = new sfn.Task(this, 'First', { ... });
         // ...
-        const last = new stepfunctions.Task(this, 'Last', { ... });
+        const last = new sfn.Task(this, 'Last', { ... });
 
         this.startState = first;
         this.endStates = [last];
@@ -478,7 +477,7 @@ class MyJob extends stepfunctions.StateMachineFragment {
 }
 
 // Do 3 different variants of MyJob in parallel
-new stepfunctions.Parallel(this, 'All jobs')
+new sfn.Parallel(this, 'All jobs')
     .branch(new MyJob(this, 'Quick', { jobFlavor: 'quick' }).prefixStates())
     .branch(new MyJob(this, 'Medium', { jobFlavor: 'medium' }).prefixStates())
     .branch(new MyJob(this, 'Slow', { jobFlavor: 'slow' }).prefixStates());
@@ -500,7 +499,7 @@ You need the ARN to do so, so if you use Activities be sure to pass the Activity
 ARN into your worker pool:
 
 ```ts
-const activity = new stepfunctions.Activity(this, 'Activity');
+const activity = new sfn.Activity(this, 'Activity');
 
 // Read this CloudFormation Output from your application and use it to poll for work on
 // the activity.
@@ -512,7 +511,7 @@ new cdk.CfnOutput(this, 'ActivityArn', { value: activity.activityArn });
 Granting IAM permissions to an activity can be achieved by calling the `grant(principal, actions)` API:
 
 ```ts
-const activity = new stepfunctions.Activity(this, 'Activity');
+const activity = new sfn.Activity(this, 'Activity');
 
 const role = new iam.Role(stack, 'Role', {
   assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
@@ -564,11 +563,11 @@ destination LogGroup:
 ```ts
 const logGroup = new logs.LogGroup(stack, 'MyLogGroup');
 
-new stepfunctions.StateMachine(stack, 'MyStateMachine', {
-    definition: stepfunctions.Chain.start(new stepfunctions.Pass(stack, 'Pass')),
+new sfn.StateMachine(stack, 'MyStateMachine', {
+    definition: sfn.Chain.start(new sfn.Pass(stack, 'Pass')),
     logs: {
       destination: logGroup,
-      level: stepfunctions.LogLevel.ALL,
+      level: sfn.LogLevel.ALL,
     }
 });
 ```
@@ -580,8 +579,8 @@ Enable X-Ray tracing for StateMachine:
 ```ts
 const logGroup = new logs.LogGroup(stack, 'MyLogGroup');
 
-new stepfunctions.StateMachine(stack, 'MyStateMachine', {
-    definition: stepfunctions.Chain.start(new stepfunctions.Pass(stack, 'Pass')),
+new sfn.StateMachine(stack, 'MyStateMachine', {
+    definition: sfn.Chain.start(new sfn.Pass(stack, 'Pass')),
     tracingEnabled: true
 });
 ```

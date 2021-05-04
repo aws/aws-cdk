@@ -6,6 +6,10 @@ import { Dimension, IMetric, MetricAlarmConfig, MetricConfig, MetricGraphConfig,
 import { dispatchMetric, metricKey } from './private/metric-util';
 import { normalizeStatistic, parseStatistic } from './private/statistic';
 
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct } from '@aws-cdk/core';
+
 export type DimensionHash = {[dim: string]: any};
 
 /**
@@ -302,6 +306,7 @@ export class Metric implements IMetric {
     };
   }
 
+  /** @deprecated use toMetricConfig() */
   public toAlarmConfig(): MetricAlarmConfig {
     const metricConfig = this.toMetricConfig();
     if (metricConfig.metricStat === undefined) {
@@ -320,6 +325,9 @@ export class Metric implements IMetric {
     };
   }
 
+  /**
+   * @deprecated use toMetricConfig()
+   */
   public toGraphConfig(): MetricGraphConfig {
     const metricConfig = this.toMetricConfig();
     if (metricConfig.metricStat === undefined) {
@@ -351,7 +359,7 @@ export class Metric implements IMetric {
    * Combines both properties that may adjust the metric (aggregation) as well
    * as alarm properties.
    */
-  public createAlarm(scope: cdk.Construct, id: string, props: CreateAlarmOptions): Alarm {
+  public createAlarm(scope: Construct, id: string, props: CreateAlarmOptions): Alarm {
     return new Alarm(scope, id, {
       metric: this.with({
         statistic: props.statistic,
@@ -475,10 +483,16 @@ export class MathExpression implements IMetric {
     });
   }
 
+  /**
+   * @deprecated use toMetricConfig()
+   */
   public toAlarmConfig(): MetricAlarmConfig {
     throw new Error('Using a math expression is not supported here. Pass a \'Metric\' object instead');
   }
 
+  /**
+   * @deprecated use toMetricConfig()
+   */
   public toGraphConfig(): MetricGraphConfig {
     throw new Error('Using a math expression is not supported here. Pass a \'Metric\' object instead');
   }
@@ -503,7 +517,7 @@ export class MathExpression implements IMetric {
    * Combines both properties that may adjust the metric (aggregation) as well
    * as alarm properties.
    */
-  public createAlarm(scope: cdk.Construct, id: string, props: CreateAlarmOptions): Alarm {
+  public createAlarm(scope: Construct, id: string, props: CreateAlarmOptions): Alarm {
     return new Alarm(scope, id, {
       metric: this.with({
         period: props.period,

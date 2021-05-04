@@ -4,16 +4,18 @@ jest.mock('../../lib/api/deploy-stack', () => ({
   deployStack: mockDeployStack,
 }));
 
-let mockTheToolkitInfo: any;
-
 import { Bootstrapper, DeployStackOptions, ToolkitInfo } from '../../lib/api';
-import { MockSdkProvider, mockToolkitInfo } from '../util/mock-sdk';
+import { mockBootstrapStack, MockSdk, MockSdkProvider } from '../util/mock-sdk';
 
 let bootstrapper: Bootstrapper;
 beforeEach(() => {
-  (ToolkitInfo as any).lookup = jest.fn().mockImplementation(() => Promise.resolve(mockTheToolkitInfo));
   bootstrapper = new Bootstrapper({ source: 'default' });
 });
+
+function mockTheToolkitInfo(stackProps: Partial<AWS.CloudFormation.Stack>) {
+  const sdk = new MockSdk();
+  (ToolkitInfo as any).lookup = jest.fn().mockResolvedValue(ToolkitInfo.fromStack(mockBootstrapStack(sdk, stackProps), sdk));
+}
 
 describe('Bootstrapping v2', () => {
   const env = {
@@ -25,7 +27,8 @@ describe('Bootstrapping v2', () => {
   let sdk: MockSdkProvider;
   beforeEach(() => {
     sdk = new MockSdkProvider({ realSdk: false });
-    mockTheToolkitInfo = undefined;
+    // By default, we'll return a non-found toolkit info
+    (ToolkitInfo as any).lookup = jest.fn().mockResolvedValue(ToolkitInfo.bootstraplessDeploymentsOnly(sdk.sdk));
   });
 
   afterEach(() => {
@@ -90,11 +93,14 @@ describe('Bootstrapping v2', () => {
   });
 
   test('passing trusted accounts without CFN managed policies on the existing stack results in an error', async () => {
-    mockTheToolkitInfo = {
-      parameters: {
-        CloudFormationExecutionPolicies: '',
-      },
-    };
+    mockTheToolkitInfo({
+      Parameters: [
+        {
+          ParameterKey: 'CloudFormationExecutionPolicies',
+          ParameterValue: '',
+        },
+      ],
+    });
 
     await expect(bootstrapper.bootstrapEnvironment(env, sdk, {
       parameters: {
@@ -119,11 +125,14 @@ describe('Bootstrapping v2', () => {
 
   test('allow adding trusted account if there was already a policy on the stack', async () => {
     // GIVEN
-    mockTheToolkitInfo = {
-      parameters: {
-        CloudFormationExecutionPolicies: 'arn:aws:something',
-      },
-    };
+    mockTheToolkitInfo({
+      Parameters: [
+        {
+          ParameterKey: 'CloudFormationExecutionPolicies',
+          ParameterValue: 'arn:aws:something',
+        },
+      ],
+    });
 
     await bootstrapper.bootstrapEnvironment(env, sdk, {
       parameters: {
@@ -135,9 +144,14 @@ describe('Bootstrapping v2', () => {
 
   test('Do not allow downgrading bootstrap stack version', async () => {
     // GIVEN
-    mockTheToolkitInfo = {
-      version: 999,
-    };
+    mockTheToolkitInfo({
+      Outputs: [
+        {
+          OutputKey: 'BootstrapVersion',
+          OutputValue: '999',
+        },
+      ],
+    });
 
     await expect(bootstrapper.bootstrapEnvironment(env, sdk, {
       parameters: {
@@ -200,7 +214,7 @@ describe('Bootstrapping v2', () => {
     });
 
     test('termination protection is left alone when option is not given', async () => {
-      mockTheToolkitInfo = mockToolkitInfo({
+      mockTheToolkitInfo({
         EnableTerminationProtection: true,
       });
 
@@ -218,7 +232,7 @@ describe('Bootstrapping v2', () => {
     });
 
     test('termination protection can be switched off', async () => {
-      mockTheToolkitInfo = mockToolkitInfo({
+      mockTheToolkitInfo({
         EnableTerminationProtection: true,
       });
 
@@ -275,8 +289,13 @@ describe('Bootstrapping v2', () => {
       ['AWS_MANAGED_KEY', true, ''],
     ])('(upgrading) current param %p, createCustomerMasterKey=%p => parameter becomes %p ', async (currentKeyId, createCustomerMasterKey, paramKeyId) => {
       // GIVEN
-      mockTheToolkitInfo = mockToolkitInfo({
-        Parameters: currentKeyId ? [{ ParameterKey: 'FileAssetsBucketKmsKeyId', ParameterValue: currentKeyId }] : undefined,
+      mockTheToolkitInfo({
+        Parameters: currentKeyId ? [
+          {
+            ParameterKey: 'FileAssetsBucketKmsKeyId',
+            ParameterValue: currentKeyId,
+          },
+        ] : undefined,
       });
 
       // WHEN
