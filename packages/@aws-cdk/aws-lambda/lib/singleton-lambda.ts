@@ -119,6 +119,7 @@ export class SingletonFunction extends FunctionBase {
       // Just assume this is true
       return existing as LambdaFunction;
     }
+
     return new LambdaFunction(cdk.Stack.of(this), constructName, props);
   }
 }
