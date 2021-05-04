@@ -120,7 +120,6 @@
   "nozem": {
     "ostools": [
       "dirname",
-      "cd",
       "mktemp",
       "mkdir",
       "cp",
