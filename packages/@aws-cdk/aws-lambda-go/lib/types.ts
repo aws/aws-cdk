@@ -22,7 +22,7 @@ export interface BundlingOptions {
   /**
    * A custom bundling Docker image.
    *
-   * @default - use the Docker image provided by @aws-cdk/aws-lambda-golang
+   * @default - use the Docker image provided by @aws-cdk/aws-lambda-go
    */
   readonly dockerImage?: DockerImage;
 

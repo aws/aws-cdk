@@ -23,21 +23,21 @@ beforeEach(() => {
   });
 });
 
-const modFilePath = '/project/go.mod';
+const moduleDir = '/project/go.mod';
 const entry = '/project/cmd/api';
 
 test('bundling', () => {
   Bundling.bundle({
     entry,
     runtime: Runtime.GO_1_X,
-    modFilePath,
+    moduleDir,
     forcedDockerBundling: true,
     environment: {
       KEY: 'value',
     },
   });
 
-  expect(Code.fromAsset).toHaveBeenCalledWith(path.dirname(modFilePath), {
+  expect(Code.fromAsset).toHaveBeenCalledWith(path.dirname(moduleDir), {
     assetHashType: AssetHashType.OUTPUT,
     bundling: expect.objectContaining({
       environment: {
@@ -61,7 +61,7 @@ test('bundling with file as entry', () => {
   Bundling.bundle({
     entry: '/project/main.go',
     runtime: Runtime.GO_1_X,
-    modFilePath,
+    moduleDir,
   });
 
   expect(Code.fromAsset).toHaveBeenCalledWith('/project', {
@@ -81,7 +81,7 @@ test('bundling with file in subdirectory as entry', () => {
   Bundling.bundle({
     entry: '/project/cmd/api/main.go',
     runtime: Runtime.GO_1_X,
-    modFilePath,
+    moduleDir,
   });
 
   expect(Code.fromAsset).toHaveBeenCalledWith('/project', {
@@ -97,12 +97,32 @@ test('bundling with file in subdirectory as entry', () => {
   });
 });
 
+test('bundling with file other than main.go in subdirectory as entry', () => {
+  Bundling.bundle({
+    entry: '/project/cmd/api/api.go',
+    runtime: Runtime.GO_1_X,
+    moduleDir,
+  });
+
+  expect(Code.fromAsset).toHaveBeenCalledWith('/project', {
+    assetHashType: AssetHashType.OUTPUT,
+    bundling: expect.objectContaining({
+      command: [
+        'bash', '-c',
+        [
+          'go build -o /asset-output/bootstrap ./cmd/api/api.go',
+        ].join(' && '),
+      ],
+    }),
+  });
+});
+
 test('go with Windows paths', () => {
   const osPlatformMock = jest.spyOn(os, 'platform').mockReturnValue('win32');
   Bundling.bundle({
     entry: 'C:\\my-project\\cmd\\api',
     runtime: Runtime.GO_1_X,
-    modFilePath: 'C:\\my-project\\go.mod',
+    moduleDir: 'C:\\my-project\\go.mod',
     forcedDockerBundling: true,
   });
 
@@ -121,7 +141,7 @@ test('with Docker build args', () => {
   Bundling.bundle({
     entry,
     runtime: Runtime.GO_1_X,
-    modFilePath,
+    moduleDir,
     forcedDockerBundling: true,
     buildArgs: {
       HELLO: 'WORLD',
@@ -145,7 +165,7 @@ test('Local bundling', () => {
   });
 
   const bundler = new Bundling({
-    modFilePath,
+    moduleDir,
     entry,
     environment: {
       KEY: 'value',
@@ -176,7 +196,7 @@ test('Incorrect go version', () => {
 
   const bundler = new Bundling({
     entry,
-    modFilePath,
+    moduleDir,
     runtime: Runtime.PROVIDED_AL2,
   });
 
@@ -189,7 +209,7 @@ test('Incorrect go version', () => {
 test('Custom bundling docker image', () => {
   Bundling.bundle({
     entry,
-    modFilePath,
+    moduleDir,
     runtime: Runtime.GO_1_X,
     forcedDockerBundling: true,
     dockerImage: DockerImage.fromRegistry('my-custom-image'),
@@ -207,7 +227,7 @@ test('Go build flags can be passed', () => {
   Bundling.bundle({
     entry,
     runtime: Runtime.GO_1_X,
-    modFilePath,
+    moduleDir,
     environment: {
       KEY: 'value',
     },
@@ -238,7 +258,7 @@ test('AssetHashType can be specified', () => {
   Bundling.bundle({
     entry,
     runtime: Runtime.GO_1_X,
-    modFilePath,
+    moduleDir,
     environment: {
       KEY: 'value',
     },
@@ -269,7 +289,7 @@ test('AssetHashType can be specified', () => {
 test('with command hooks', () => {
   Bundling.bundle({
     entry,
-    modFilePath,
+    moduleDir,
     runtime: Runtime.PROVIDED_AL2,
     commandHooks: {
       beforeBundling(inputDir: string, outputDir: string): string[] {
@@ -284,7 +304,7 @@ test('with command hooks', () => {
     },
   });
 
-  expect(Code.fromAsset).toHaveBeenCalledWith(path.dirname(modFilePath), {
+  expect(Code.fromAsset).toHaveBeenCalledWith(path.dirname(moduleDir), {
     assetHashType: AssetHashType.OUTPUT,
     bundling: expect.objectContaining({
       command: [

@@ -10,12 +10,44 @@ import { exec, findUp, getGoBuildVersion } from './util';
  */
 export interface BundlingProps extends BundlingOptions {
   /**
-   * Path to go.mod file
+   * Directory containing your go.mod file
+   *
+   * This will accept either a directory path containing a `go.mod` file
+   * or a filepath to your `go.mod` file (i.e. `path/to/go.mod`).
+   *
+   * This will be used as the source of the volume mounted in the Docker
+   * container and will be the directory where it will run `go build` from.
+   *
+   * @default - the path is found by walking up parent directories searching for
+   *  a `go.mod` file from the location of `entry`
    */
-  readonly modFilePath: string;
+  readonly moduleDir: string;
 
   /**
-   * Entry path
+   * The path to the folder or file that contains the main application entry point files for the project.
+   *
+   * This accepts either a path to a directory or file.
+   *
+   * If a directory path is provided then it will assume there is a Go entry file (i.e. `main.go`) and
+   * will construct the build command using the directory path.
+   *
+   * For example, if you provide the entry as:
+   *
+   *     entry: 'my-lambda-app/cmd/api'
+   *
+   * Then the `go build` command would be:
+   *
+   *     `go build ./cmd/api`
+   *
+   * If a path to a file is provided then it will use the filepath in the build command.
+   *
+   * For example, if you provide the entry as:
+   *
+   *     entry: 'my-lambda-app/cmd/api/main.go'
+   *
+   * Then the `go build` command would be:
+   *
+   *     `go build ./cmd/api/main.go`
    */
   readonly entry: string;
 
@@ -33,7 +65,7 @@ export class Bundling implements cdk.BundlingOptions {
   public static bundle(options: BundlingProps): AssetCode {
     const bundling = new Bundling(options);
 
-    return Code.fromAsset(path.dirname(options.modFilePath), {
+    return Code.fromAsset(path.dirname(options.moduleDir), {
       assetHashType: options.assetHashType ?? cdk.AssetHashType.OUTPUT,
       assetHash: options.assetHash,
       bundling: {
@@ -64,7 +96,7 @@ export class Bundling implements cdk.BundlingOptions {
       ?? getGoBuildVersion()
       ?? false;
 
-    const projectRoot = path.dirname(props.modFilePath);
+    const projectRoot = path.dirname(props.moduleDir);
     this.relativeEntryPath = `./${path.relative(projectRoot, path.resolve(props.entry))}`;
 
     const cgoEnabled = props.cgoEnabled ? '1' : '0';
@@ -119,7 +151,7 @@ export class Bundling implements cdk.BundlingOptions {
                 process.stderr, // redirect stdout to stderr
                 'inherit', // inherit stderr
               ],
-              cwd: path.dirname(props.modFilePath),
+              cwd: path.dirname(props.moduleDir),
               windowsVerbatimArguments: osPlatform === 'win32',
             },
           );

@@ -17,22 +17,23 @@
 
 This library provides constructs for Golang Lambda functions.
 
-To use this module you will need to have Docker installed.
+To use this module you will either need to have `Go` installed (`go1.11` or later) or `Docker` installed.
+See [Local Bundling](#local-bundling)/[Docker Bundling](#docker-bundling) for more information.
 
 This module also requires that your Golang application is
 using a Go version >= 1.11 and is using [Go modules](https://golang.org/ref/mod).
 
-## Golang Function
+## Go Function
 
-Define a `GolangFunction`:
+Define a `GoFunction`:
 
 ```ts
-new lambda.GolangFunction(this, 'handler', {
+new lambda.GoFunction(this, 'handler', {
   entry: 'app/cmd/api'
 });
 ```
 
-By default, if a folder path is provided as the `entry`, the construct will assume there is a go entry file (i.e. `main.go`).
+By default, if `entry` points to a directory, then the construct will assume there is a Go entry file (i.e. `main.go`).
 Let's look at an example Go project:
 
 ```bash
@@ -62,22 +63,22 @@ next section.
 
 ### mod file path
 
-The `GolangFunction` tries to automatically determine your project root, that is
+The `GoFunction` tries to automatically determine your project root, that is
 the root of your golang project. This is usually where the top level `go.mod` file or
 `vendor` folder of your project is located. When bundling in a Docker container, the
-`modFilePath` is used as the source (`/asset-input`) for the volume mounted in
+`moduleDir` is used as the source (`/asset-input`) for the volume mounted in
 the container.
 
 The CDK will walk up parent folders starting from
 the current working directory until it finds a folder containing a `go.mod` file.
 
-Alternatively, you can specify the `modFilePath` prop manually. In this case you
+Alternatively, you can specify the `moduleDir` prop manually. In this case you
 need to ensure that this path includes `entry` and any module/dependencies used
 by your function. Otherwise bundling will fail.
 
 ## Runtime
 
-The `GolangFunction` can be used with either the `GO_1_X` runtime or the provided runtimes (`PROVIDED`/`PROVIDED_AL2`).
+The `GoFunction` can be used with either the `GO_1_X` runtime or the provided runtimes (`PROVIDED`/`PROVIDED_AL2`).
 By default it will use the `PROVIDED_AL2` runtime. The `GO_1_X` runtime does not support things like
 [Lambda Extensions](https://docs.aws.amazon.com/lambda/latest/dg/using-extensions.html), whereas the provided runtimes do.
 The [aws-lambda-go](https://github.com/aws/aws-lambda-go) library has built in support for the provided runtime as long as
@@ -111,7 +112,7 @@ By default the following environment variables are set for you:
 Use the `environment` prop to define additional environment variables when go runs:
 
 ```ts
-new lambda.GolangFunction(this, 'handler', {
+new lambda.GoFunction(this, 'handler', {
   entry: 'app/cmd/api',
   bundling: {
     environment: {
@@ -121,14 +122,23 @@ new lambda.GolangFunction(this, 'handler', {
 });
 ```
 
+## Local Bundling
+
+If `Go` is installed locally and the version is >= `go1.11` then it will be used to bundle your code in your environment. Otherwise, bundling will happen in a [Lambda compatible Docker container](https://hub.docker.com/layers/lambci/lambda/build-go1.x/images/sha256-e14dab718ed0bb06b2243825c5993e494a6969de7c01754ad7e80dacfce9b0cf?context=explore). 
+
+For macOS the recommended approach is to install `Go` as Docker volume performance is really poor.
+
+`Go` can be installed by following the [installation docs](https://golang.org/doc/install).
+
+
 ## Docker
 
-To force bundling in a docker container, set the `forceDockerBundling` prop to `true`. This
+To force bundling in a docker container even if `Go` is available in your environment, set the `forceDockerBundling` prop to `true`. This is useful if you want to make sure that your function is built in a consistent Lambda compatible environment.
 
 Use the `buildArgs` prop to pass build arguments when building the bundling image:
 
 ```ts
-new lambda.GolangFunction(this, 'handler', {
+new lambda.GoFunction(this, 'handler', {
   entry: 'app/cmd/api',
   bundling: {
     buildArgs: {
@@ -141,7 +151,7 @@ new lambda.GolangFunction(this, 'handler', {
 Use the `bundling.dockerImage` prop to use a custom bundling image:
 
 ```ts
-new lambda.GolangFunction(this, 'handler', {
+new lambda.GoFunction(this, 'handler', {
   entry: 'app/cmd/api',
   bundling: {
     dockerImage: cdk.DockerImage.fromBuild('/path/to/Dockerfile'),
@@ -152,7 +162,7 @@ new lambda.GolangFunction(this, 'handler', {
 Use the `bundling.goBuildFlags` prop to pass additional build flags to `go build`:
 
 ```ts
-new lambda.GolangFunction(this, 'handler', {
+new lambda.GoFunction(this, 'handler', {
   entry: 'app/cmd/api',
   bundling: {
     goBuildFlags: ['-ldflags "-s -w"'],
@@ -165,7 +175,7 @@ new lambda.GolangFunction(this, 'handler', {
 It is  possible to run additional commands by specifying the `commandHooks` prop:
 
 ```ts
-new lambda.GolangFunction(this, 'handler', {
+new lambda.GoFunction(this, 'handler', {
   bundling: {
     commandHooks: {
       // run tests

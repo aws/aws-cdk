@@ -12,7 +12,7 @@ class TestStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
-    new lambda.GolangFunction(this, 'go-handler-docker', {
+    new lambda.GoFunction(this, 'go-handler-docker', {
       entry: path.join(__dirname, 'lambda-handler-vendor/cmd/api'),
       bundling: {
         dockerImage: DockerImage.fromBuild(path.join(__dirname, '../lib'), {

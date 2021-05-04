@@ -10,7 +10,7 @@ beforeEach(() => {
 
 describe('findUp', () => {
   test('Starting at process.cwd()', () => {
-    expect(findUp('README.md')).toMatch(/aws-lambda-golang\/README.md$/);
+    expect(findUp('README.md')).toMatch(/aws-lambda-go\/README.md$/);
   });
 
   test('Non existing file', () => {
@@ -18,7 +18,7 @@ describe('findUp', () => {
   });
 
   test('Starting at a specific path', () => {
-    expect(findUp('util.test.ts', path.join(__dirname, 'integ-handlers'))).toMatch(/aws-lambda-golang\/test\/util.test.ts$/);
+    expect(findUp('util.test.ts', path.join(__dirname, 'integ-handlers'))).toMatch(/aws-lambda-go\/test\/util.test.ts$/);
   });
 
   test('Non existing file starting at a non existing relative path', () => {
@@ -26,7 +26,7 @@ describe('findUp', () => {
   });
 
   test('Starting at a relative path', () => {
-    expect(findUp('util.test.ts', 'test/integ-handlers')).toMatch(/aws-lambda-golang\/test\/util.test.ts$/);
+    expect(findUp('util.test.ts', 'test/integ-handlers')).toMatch(/aws-lambda-go\/test\/util.test.ts$/);
   });
 });
 
