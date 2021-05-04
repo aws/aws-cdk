@@ -981,7 +981,7 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
     }
     if (input.functionAssociations) {
       toReturn = Object.assign(toReturn, {
-        lambdaFunctionAssociations: input.functionAssociations.map(association => ({
+        functionAssociations: input.functionAssociations.map(association => ({
           functionArn: association.function.functionArn,
           eventType: association.eventType.toString(),
         })),
