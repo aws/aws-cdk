@@ -291,7 +291,8 @@ export class DefaultStackSynthesizer extends StackSynthesizer {
     assertBound(this.bucketName);
     validateFileAssetSource(asset);
 
-    const objectKey = this.bucketPrefix + asset.sourceHash + (asset.packaging === FileAssetPackaging.ZIP_DIRECTORY ? '.zip' : '');
+    const extension = asset.fileName != undefined ? path.extname(asset.fileName) : '';
+    const objectKey = this.bucketPrefix + asset.sourceHash + (asset.packaging === FileAssetPackaging.ZIP_DIRECTORY ? '.zip' : extension);
 
     // Add to manifest
     this.files[asset.sourceHash] = {
@@ -448,7 +449,12 @@ export class DefaultStackSynthesizer extends StackSynthesizer {
     //
     // Instead, we'll have a protocol with the CLI that we put an 's3://.../...' URL here, and the CLI
     // is going to resolve it to the correct 'https://.../' URL before it gives it to CloudFormation.
-    return `s3://${this.bucketName}/${this.bucketPrefix}${sourceHash}`;
+    //
+    // ALSO: it would be great to reuse the return value of `addFileAsset()` here, except those contain
+    // CloudFormation REFERENCES to locations, not actual locations (can contain `{ Ref: AWS::Region }` and
+    // `{ Ref: SomeParameter }` etc). We therefore have to duplicate some logic here :(.
+    const extension = path.extname(this.stack.templateFile);
+    return `s3://${this.bucketName}/${this.bucketPrefix}${sourceHash}${extension}`;
   }
 
   /**
@@ -541,7 +547,7 @@ function stackLocationOrInstrinsics(stack: Stack) {
  * so we encode this rule into the template in a way that CloudFormation will check it.
  */
 function addBootstrapVersionRule(stack: Stack, requiredVersion: number, qualifier: string) {
-  // Because of https://github.com/aws/aws-cdk/blob/master/packages/@aws-cdk/assert/lib/synth-utils.ts#L74
+  // Because of https://github.com/aws/aws-cdk/blob/master/packages/assert-internal/lib/synth-utils.ts#L74
   // synthesize() may be called more than once on a stack in unit tests, and the below would break
   // if we execute it a second time. Guard against the constructs already existing.
   if (stack.node.tryFindChild('BootstrapVersion')) { return; }

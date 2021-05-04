@@ -3,6 +3,7 @@ import { Construct } from 'constructs';
 import { CfnRoute, CfnRouteProps } from '../apigatewayv2.generated';
 import { IRoute } from '../common';
 import { IHttpApi } from './api';
+import { HttpAuthorizerType, IHttpRouteAuthorizer } from './authorizer';
 import { IHttpRouteIntegration } from './integration';
 
 /**
@@ -60,7 +61,7 @@ export class HttpRouteKey {
     if (path !== '/' && (!path.startsWith('/') || path.endsWith('/'))) {
       throw new Error('path must always start with a "/" and not end with a "/"');
     }
-    return new HttpRouteKey(`${method ?? 'ANY'} ${path}`, path);
+    return new HttpRouteKey(`${method ?? HttpMethod.ANY} ${path}`, path);
   }
 
   /**
@@ -103,6 +104,20 @@ export interface HttpRouteProps extends BatchHttpRouteOptions {
    * The key to this route. This is a combination of an HTTP method and an HTTP path.
    */
   readonly routeKey: HttpRouteKey;
+
+  /**
+   * Authorizer for a WebSocket API or an HTTP API.
+   * @default - No authorizer
+   */
+  readonly authorizer?: IHttpRouteAuthorizer;
+
+  /**
+   * The list of OIDC scopes to include in the authorization.
+   *
+   * These scopes will be merged with the scopes from the attached authorizer
+   * @default - no additional authorization scopes
+   */
+  readonly authorizationScopes?: string[];
 }
 
 /**
@@ -125,12 +140,35 @@ export class HttpRoute extends Resource implements IHttpRoute {
       scope: this,
     });
 
-    const integration = props.httpApi._addIntegration(config);
+    const integration = props.httpApi._addIntegration(this, config);
+
+    const authBindResult = props.authorizer ? props.authorizer.bind({
+      route: this,
+      scope: this.httpApi instanceof Construct ? this.httpApi : this, // scope under the API if it's not imported
+    }) : undefined;
+
+    let authorizationScopes = authBindResult?.authorizationScopes;
+
+    if (authBindResult && props.authorizationScopes) {
+      authorizationScopes = Array.from(new Set([
+        ...authorizationScopes ?? [],
+        ...props.authorizationScopes,
+      ]));
+    }
+
+    const authorizationType = authBindResult?.authorizationType === HttpAuthorizerType.NONE ? undefined : authBindResult?.authorizationType;
+
+    if (authorizationScopes?.length === 0) {
+      authorizationScopes = undefined;
+    }
 
     const routeProps: CfnRouteProps = {
-      apiId: props.httpApi.httpApiId,
+      apiId: props.httpApi.apiId,
       routeKey: props.routeKey.key,
       target: `integrations/${integration.integrationId}`,
+      authorizerId: authBindResult?.authorizerId,
+      authorizationType,
+      authorizationScopes,
     };
 
     const route = new CfnRoute(this, 'Resource', routeProps);

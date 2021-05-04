@@ -21,7 +21,7 @@ class SecretsManagerStack extends cdk.Stack {
     const resourceType = 'Custom::IntegVerificationSecretNameMatches';
     const serviceToken = cdk.CustomResourceProvider.getOrCreate(this, resourceType, {
       codeDirectory: path.join(__dirname, 'integ.secret-name-parsed.handler'),
-      runtime: cdk.CustomResourceProviderRuntime.NODEJS_12,
+      runtime: cdk.CustomResourceProviderRuntime.NODEJS_12_X,
       policyStatements: [{
         Effect: 'Allow',
         Resource: secrets.map(s => s.secretArn),
@@ -39,9 +39,6 @@ class SecretsManagerStack extends cdk.Stack {
 }
 
 const app = new cdk.App({
-  context: {
-    '@aws-cdk/aws-secretsmanager:parseOwnedSecretName': 'true',
-  },
 });
 new SecretsManagerStack(app, 'Integ-SecretsManager-ParsedSecretName');
 app.synth();

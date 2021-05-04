@@ -132,7 +132,7 @@ export class CustomActionRegistration extends Construct {
         entityUrlTemplate: props.entityUrl,
         executionUrlTemplate: props.executionUrl,
       },
-      configurationProperties: props.actionProperties === undefined ? undefined : props.actionProperties.map((ap) => {
+      configurationProperties: props.actionProperties?.map((ap) => {
         return {
           key: ap.key || false,
           secret: ap.secret || false,

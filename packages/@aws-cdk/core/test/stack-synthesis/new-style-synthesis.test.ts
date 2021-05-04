@@ -36,9 +36,9 @@ nodeunitShim({
     // THEN -- the S3 url is advertised on the stack artifact
     const stackArtifact = asm.getStackArtifact('Stack');
 
-    const templateHash = last(stackArtifact.stackTemplateAssetObjectUrl?.split('/'));
+    const templateObjectKey = last(stackArtifact.stackTemplateAssetObjectUrl?.split('/'));
 
-    test.equals(stackArtifact.stackTemplateAssetObjectUrl, `s3://cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}/${templateHash}`);
+    test.equals(stackArtifact.stackTemplateAssetObjectUrl, `s3://cdk-hnb659fds-assets-\${AWS::AccountId}-\${AWS::Region}/${templateObjectKey}`);
 
     // THEN - the template is in the asset manifest
     const manifestArtifact = asm.artifacts.filter(isAssetManifest)[0];
@@ -52,7 +52,7 @@ nodeunitShim({
       destinations: {
         'current_account-current_region': {
           bucketName: 'cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}',
-          objectKey: templateHash,
+          objectKey: templateObjectKey,
           assumeRoleArn: 'arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}',
         },
       },
@@ -111,7 +111,7 @@ nodeunitShim({
 
     // THEN - we have a fixed asset location with region placeholders
     test.equals(evalCFN(location.bucketName), 'cdk-hnb659fds-assets-the_account-the_region');
-    test.equals(evalCFN(location.s3Url), 'https://s3.the_region.domain.aws/cdk-hnb659fds-assets-the_account-the_region/abcdef');
+    test.equals(evalCFN(location.s3Url), 'https://s3.the_region.domain.aws/cdk-hnb659fds-assets-the_account-the_region/abcdef.js');
 
     // THEN - object key contains source hash somewhere
     test.ok(location.objectKey.indexOf('abcdef') > -1);
@@ -208,7 +208,7 @@ nodeunitShim({
 
     test.deepEqual(manifest.files?.['file-asset-hash']?.destinations?.['current_account-current_region'], {
       bucketName: 'file-asset-bucket',
-      objectKey: 'file-asset-hash',
+      objectKey: 'file-asset-hash.js',
       assumeRoleArn: 'file:role:arn',
       assumeRoleExternalId: 'file-external-id',
     });
@@ -256,7 +256,7 @@ nodeunitShim({
     // THEN
     test.deepEqual(manifest.files?.['file-asset-hash-with-prefix']?.destinations?.['current_account-current_region'], {
       bucketName: 'file-asset-bucket',
-      objectKey: '000000000000/file-asset-hash-with-prefix',
+      objectKey: '000000000000/file-asset-hash-with-prefix.js',
       assumeRoleArn: 'file:role:arn',
       assumeRoleExternalId: 'file-external-id',
     });

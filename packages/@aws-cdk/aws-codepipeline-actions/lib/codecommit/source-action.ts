@@ -2,9 +2,13 @@ import * as codecommit from '@aws-cdk/aws-codecommit';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as targets from '@aws-cdk/aws-events-targets';
 import * as iam from '@aws-cdk/aws-iam';
-import { Construct, Names, Token } from '@aws-cdk/core';
+import { Names, Stack, Token, TokenComparison } from '@aws-cdk/core';
 import { Action } from '../action';
 import { sourceArtifactBounds } from '../common';
+
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct } from '@aws-cdk/core';
 
 /**
  * How should the CodeCommit Action detect changes.
@@ -167,6 +171,11 @@ export class CodeCommitSourceAction extends Action {
     // the Action will write the contents of the Git repository to the Bucket,
     // so its Role needs write permissions to the Pipeline Bucket
     options.bucket.grantReadWrite(options.role);
+    // when this action is cross-account,
+    // the Role needs the s3:PutObjectAcl permission for some not yet fully understood reason
+    if (Token.compareStrings(this.props.repository.env.account, Stack.of(stage.pipeline).account) === TokenComparison.DIFFERENT) {
+      options.bucket.grantPutAcl(options.role);
+    }
 
     // https://docs.aws.amazon.com/codecommit/latest/userguide/auth-and-access-control-permissions-reference.html#aa-acp
     options.role.addToPrincipalPolicy(new iam.PolicyStatement({

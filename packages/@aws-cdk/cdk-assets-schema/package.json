@@ -50,7 +50,7 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@types/jest": "^26.0.15",
+    "@types/jest": "^26.0.23",
     "cdk-build-tools": "0.0.0",
     "jest": "^26.6.3",
     "pkglint": "0.0.0"
@@ -76,5 +76,8 @@
   "maturity": "deprecated",
   "cdk-build": {
     "jest": true
+  },
+  "publishConfig": {
+    "tag": "latest"
   }
 }

@@ -1,4 +1,4 @@
-import '@aws-cdk/assert/jest';
+import '@aws-cdk/assert-internal/jest';
 import * as appscaling from '@aws-cdk/aws-applicationautoscaling';
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import { Stack } from '@aws-cdk/core';

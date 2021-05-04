@@ -1,4 +1,4 @@
-import { deployStack, ToolkitInfo } from '../../lib';
+import { deployStack, ToolkitInfo } from '../../lib/api';
 import { DEFAULT_FAKE_TEMPLATE, testStack } from '../util';
 import { MockedObject, mockResolvedEnvironment, MockSdk, MockSdkProvider, SyncHandlerSubsetOf } from '../util/mock-sdk';
 
@@ -457,6 +457,53 @@ test('not executed and no error if --no-execute is given', async () => {
 
   // THEN
   expect(cfnMocks.executeChangeSet).not.toHaveBeenCalled();
+});
+
+test('empty change set is deleted if --execute is given', async () => {
+  cfnMocks.describeChangeSet?.mockImplementation(() => ({
+    Status: 'FAILED',
+    StatusReason: 'No updates are to be performed.',
+  }));
+
+  // GIVEN
+  givenStackExists();
+
+  // WHEN
+  await deployStack({
+    ...standardDeployStackArguments(),
+    execute: true,
+    force: true, // Necessary to bypass "skip deploy"
+  });
+
+  // THEN
+  expect(cfnMocks.createChangeSet).toHaveBeenCalled();
+  expect(cfnMocks.executeChangeSet).not.toHaveBeenCalled();
+
+  //the first deletion is for any existing cdk change sets, the second is for the deleting the new empty change set
+  expect(cfnMocks.deleteChangeSet).toHaveBeenCalledTimes(2);
+});
+
+test('empty change set is not deleted if --no-execute is given', async () => {
+  cfnMocks.describeChangeSet?.mockImplementation(() => ({
+    Status: 'FAILED',
+    StatusReason: 'No updates are to be performed.',
+  }));
+
+  // GIVEN
+  givenStackExists();
+
+  // WHEN
+  await deployStack({
+    ...standardDeployStackArguments(),
+    execute: false,
+  });
+
+  // THEN
+  expect(cfnMocks.createChangeSet).toHaveBeenCalled();
+  expect(cfnMocks.executeChangeSet).not.toHaveBeenCalled();
+
+  //the first deletion is for any existing cdk change sets
+  expect(cfnMocks.deleteChangeSet).toHaveBeenCalledTimes(1);
 });
 
 test('use S3 url for stack deployment if present in Stack Artifact', async () => {

@@ -15,6 +15,9 @@ import { ISource, SourceConfig } from './source';
 // eslint-disable-next-line no-duplicate-imports, import/order
 import { Construct as CoreConstruct } from '@aws-cdk/core';
 
+/**
+ * Properties for `BucketDeployment`.
+ */
 export interface BucketDeploymentProps {
   /**
    * The sources from which to deploy the contents of this bucket.
@@ -47,11 +50,10 @@ export interface BucketDeploymentProps {
    * If this is set to "false", the destination files will be deleted when the
    * resource is deleted or the destination is updated.
    *
-   * NOTICE: if this is set to "false" and destination bucket/prefix is updated,
-   * all files in the previous destination will first be deleted and then
-   * uploaded to the new destination location. This could have availablity
-   * implications on your users.
+   * NOTICE: Configuring this to "false" might have operational implications. Please
+   * visit to the package documentation referred below to make sure you fully understand those implications.
    *
+   * @see https://github.com/aws/aws-cdk/tree/master/packages/%40aws-cdk/aws-s3-deployment#retain-on-delete
    * @default true - when resource is deleted/updated, files are retained
    */
   readonly retainOnDelete?: boolean;
@@ -188,6 +190,10 @@ export interface BucketDeploymentProps {
   readonly vpcSubnets?: ec2.SubnetSelection;
 }
 
+/**
+ * `BucketDeployment` populates an S3 bucket with the contents of .zip files from
+ * other S3 buckets or from local disk
+ */
 export class BucketDeployment extends CoreConstruct {
   constructor(scope: Construct, id: string, props: BucketDeploymentProps) {
     super(scope, id);
@@ -265,7 +271,7 @@ export class BucketDeployment extends CoreConstruct {
         Prune: props.prune ?? true,
         UserMetadata: props.metadata ? mapUserMetadata(props.metadata) : undefined,
         SystemMetadata: mapSystemMetadata(props),
-        DistributionId: props.distribution ? props.distribution.distributionId : undefined,
+        DistributionId: props.distribution?.distributionId,
         DistributionPaths: props.distributionPaths,
       },
     });
@@ -323,17 +329,58 @@ function mapSystemMetadata(metadata: BucketDeploymentProps) {
  * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingMetadata.html#SysMetadata
  */
 export class CacheControl {
+
+  /**
+   * Sets 'must-revalidate'.
+   */
   public static mustRevalidate() { return new CacheControl('must-revalidate'); }
+
+  /**
+   * Sets 'no-cache'.
+   */
   public static noCache() { return new CacheControl('no-cache'); }
+
+  /**
+   * Sets 'no-transform'.
+   */
   public static noTransform() { return new CacheControl('no-transform'); }
+
+  /**
+   * Sets 'public'.
+   */
   public static setPublic() { return new CacheControl('public'); }
+
+  /**
+   * Sets 'private'.
+   */
   public static setPrivate() { return new CacheControl('private'); }
+
+  /**
+   * Sets 'proxy-revalidate'.
+   */
   public static proxyRevalidate() { return new CacheControl('proxy-revalidate'); }
+
+  /**
+   * Sets 'max-age=<duration-in-seconds>'.
+   */
   public static maxAge(t: cdk.Duration) { return new CacheControl(`max-age=${t.toSeconds()}`); }
+
+  /**
+   * Sets 's-maxage=<duration-in-seconds>'.
+   */
   public static sMaxAge(t: cdk.Duration) { return new CacheControl(`s-maxage=${t.toSeconds()}`); }
+
+  /**
+   * Constructs a custom cache control key from the literal value.
+   */
   public static fromString(s: string) { return new CacheControl(s); }
 
-  private constructor(public readonly value: any) {}
+  private constructor(
+    /**
+     * The raw cache control setting.
+     */
+    public readonly value: any,
+  ) {}
 }
 
 /**
@@ -342,7 +389,15 @@ export class CacheControl {
  * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingMetadata.html#SysMetadata
  */
 export enum ServerSideEncryption {
+
+  /**
+   * 'AES256'
+   */
   AES_256 = 'AES256',
+
+  /**
+   * 'aws:kms'
+   */
   AWS_KMS = 'aws:kms'
 }
 
@@ -351,12 +406,40 @@ export enum ServerSideEncryption {
  * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingMetadata.html#SysMetadata
  */
 export enum StorageClass {
+
+  /**
+   * 'STANDARD'
+   */
   STANDARD = 'STANDARD',
+
+  /**
+   * 'REDUCED_REDUNDANCY'
+   */
   REDUCED_REDUNDANCY = 'REDUCED_REDUNDANCY',
+
+  /**
+   * 'STANDARD_IA'
+   */
   STANDARD_IA = 'STANDARD_IA',
+
+  /**
+   * 'ONEZONE_IA'
+   */
   ONEZONE_IA = 'ONEZONE_IA',
+
+  /**
+   * 'INTELLIGENT_TIERING'
+   */
   INTELLIGENT_TIERING = 'INTELLIGENT_TIERING',
+
+  /**
+   * 'GLACIER'
+   */
   GLACIER = 'GLACIER',
+
+  /**
+   * 'DEEP_ARCHIVE'
+   */
   DEEP_ARCHIVE = 'DEEP_ARCHIVE'
 }
 
@@ -385,11 +468,22 @@ export class Expires {
    */
   public static after(t: cdk.Duration) { return Expires.atDate(new Date(Date.now() + t.toMilliseconds())); }
 
+  /**
+   * Create an expiration date from a raw date string.
+   */
   public static fromString(s: string) { return new Expires(s); }
 
-  private constructor(public readonly value: any) {}
+  private constructor(
+    /**
+     * The raw expiration date expression.
+     */
+    public readonly value: any,
+  ) {}
 }
 
+/**
+ * Custom user defined metadata.
+ */
 export interface UserDefinedObjectMetadata {
   /**
    * Arbitrary metadata key-values

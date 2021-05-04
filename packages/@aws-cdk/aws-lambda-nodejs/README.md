@@ -3,21 +3,13 @@
 
 ---
 
-![cdk-constructs: Experimental](https://img.shields.io/badge/cdk--constructs-experimental-important.svg?style=for-the-badge)
-
-> The APIs of higher level constructs in this module are experimental and under active development.
-> They are subject to non-backward compatible changes or removal in any future version. These are
-> not subject to the [Semantic Versioning](https://semver.org/) model and breaking changes will be
-> announced in the release notes. This means that while you may use them, you may need to update
-> your source code when upgrading to a newer version of this package.
+![cdk-constructs: Stable](https://img.shields.io/badge/cdk--constructs-stable-success.svg?style=for-the-badge)
 
 ---
 
 <!--END STABILITY BANNER-->
 
 This library provides constructs for Node.js Lambda functions.
-
-To use this module, you will need to have Docker installed.
 
 ## Node.js Function
 
@@ -67,7 +59,7 @@ used by your function. Otherwise bundling will fail.
 ## Local bundling
 
 If `esbuild` is available it will be used to bundle your code in your environment. Otherwise,
-bundling will happen in a [Lambda compatible Docker container](https://hub.docker.com/r/amazon/aws-sam-cli-build-image-nodejs12.x).
+bundling will happen in a [Lambda compatible Docker container](https://gallery.ecr.aws/sam/build-nodejs12.x).
 
 For macOS the recommendend approach is to install `esbuild` as Docker volume performance is really poor.
 
@@ -145,10 +137,12 @@ new lambda.NodejsFunction(this, 'my-handler', {
     },
     define: { // Replace strings during build time
       'process.env.API_KEY': JSON.stringify('xxx-xxxx-xxx'),
+      'process.env.PRODUCTION': JSON.stringify(true),
+      'process.env.NUMBER': JSON.stringify(123),
     },
     logLevel: LogLevel.SILENT, // defaults to LogLevel.WARNING
     keepNames: true, // defaults to false
-    tsconfig: 'custom-tsconfig.json' // use custom-tsconfig.json instead of default, 
+    tsconfig: 'custom-tsconfig.json' // use custom-tsconfig.json instead of default,
     metafile: true, // include meta file, defaults to false
     banner : '/* comments */', // by default no comments are passed
     footer : '/* comments */', // by default no comments are passed
@@ -162,13 +156,17 @@ It is possible to run additional commands by specifying the `commandHooks` prop:
 
 ```ts
 new lambda.NodejsFunction(this, 'my-handler-with-commands', {
-  commandHooks: {
-    // Copy a file so that it will be included in the bundled asset
-    afterBundling(inputDir: string, outputDir: string): string[] {
-      return [`cp ${inputDir}/my-binary.node ${outputDir}`];
+  bundling: {
+    commandHooks: {
+      // Copy a file so that it will be included in the bundled asset
+      afterBundling(inputDir: string, outputDir: string): string[] {
+        return [`cp ${inputDir}/my-binary.node ${outputDir}`];
+      }
+      // ...
     }
     // ...
   }
+  
 });
 ```
 
@@ -216,7 +214,7 @@ Use `bundling.dockerImage` to use a custom Docker bundling image:
 ```ts
 new lambda.NodejsFunction(this, 'my-handler', {
   bundling: {
-    dockerImage: cdk.BundlingDockerImage.fromAsset('/path/to/Dockerfile'),
+    dockerImage: cdk.DockerImage.fromBuild('/path/to/Dockerfile'),
   },
 });
 ```

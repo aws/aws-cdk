@@ -71,17 +71,20 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "0.0.0",
+    "@types/jest": "^26.0.23",
     "@aws-cdk/aws-codecommit": "0.0.0",
     "@aws-cdk/aws-s3": "0.0.0",
-    "aws-sdk": "^2.830.0",
+    "@aws-cdk/aws-batch": "0.0.0",
+    "aws-sdk": "^2.848.0",
     "aws-sdk-mock": "^5.1.0",
     "cdk-build-tools": "0.0.0",
     "cdk-integ-tools": "0.0.0",
     "jest": "^26.6.3",
-    "pkglint": "0.0.0"
+    "pkglint": "0.0.0",
+    "@aws-cdk/assert-internal": "0.0.0"
   },
   "dependencies": {
+    "@aws-cdk/aws-apigateway": "0.0.0",
     "@aws-cdk/aws-batch": "0.0.0",
     "@aws-cdk/aws-codebuild": "0.0.0",
     "@aws-cdk/aws-codepipeline": "0.0.0",
@@ -99,10 +102,11 @@
     "@aws-cdk/aws-stepfunctions": "0.0.0",
     "@aws-cdk/core": "0.0.0",
     "@aws-cdk/custom-resources": "0.0.0",
-    "constructs": "^3.2.0"
+    "constructs": "^3.3.69"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
+    "@aws-cdk/aws-apigateway": "0.0.0",
     "@aws-cdk/aws-batch": "0.0.0",
     "@aws-cdk/aws-codebuild": "0.0.0",
     "@aws-cdk/aws-codepipeline": "0.0.0",
@@ -120,7 +124,7 @@
     "@aws-cdk/aws-stepfunctions": "0.0.0",
     "@aws-cdk/core": "0.0.0",
     "@aws-cdk/custom-resources": "0.0.0",
-    "constructs": "^3.2.0"
+    "constructs": "^3.3.69"
   },
   "engines": {
     "node": ">= 10.13.0 <13 || >=13.7.0"
@@ -132,6 +136,7 @@
       "docs-public-apis:@aws-cdk/aws-events-targets.SfnStateMachine.machine",
       "docs-public-apis:@aws-cdk/aws-events-targets.SnsTopic.topic",
       "docs-public-apis:@aws-cdk/aws-events-targets.SqsQueue.queue",
+      "docs-public-apis:@aws-cdk/aws-events-targets.ApiGateway.restApi",
       "docs-public-apis:@aws-cdk/aws-events-targets.ContainerOverride",
       "props-default-doc:@aws-cdk/aws-events-targets.ContainerOverride.environment",
       "props-default-doc:@aws-cdk/aws-events-targets.EcsTaskProps.containerOverrides"
@@ -140,5 +145,8 @@
   "awscdkio": {
     "announce": false
   },
-  "maturity": "stable"
+  "maturity": "stable",
+  "publishConfig": {
+    "tag": "latest"
+  }
 }

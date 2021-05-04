@@ -58,7 +58,7 @@ export abstract class BaseScalableAttribute extends CoreConstruct {
       scalableDimension: this.props.dimension,
       resourceId: this.props.resourceId,
       role: this.props.role,
-      minCapacity: props.minCapacity !== undefined ? props.minCapacity : 1,
+      minCapacity: props.minCapacity ?? 1,
       maxCapacity: props.maxCapacity,
     });
   }

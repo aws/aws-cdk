@@ -1,4 +1,4 @@
-import { App, CfnOutput, Stack } from '@aws-cdk/core';
+import { App, CfnOutput, RemovalPolicy, Stack } from '@aws-cdk/core';
 import { UserPool, UserPoolClient, VerificationEmailStyle } from '../lib';
 
 /*
@@ -15,6 +15,7 @@ const app = new App();
 const stack = new Stack(app, 'integ-user-pool-signup-code');
 
 const userpool = new UserPool(stack, 'myuserpool', {
+  removalPolicy: RemovalPolicy.DESTROY,
   userPoolName: 'MyUserPool',
   autoVerify: {
     email: true,

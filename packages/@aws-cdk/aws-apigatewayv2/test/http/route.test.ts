@@ -1,8 +1,8 @@
-import '@aws-cdk/assert/jest';
-import { Stack } from '@aws-cdk/core';
+import '@aws-cdk/assert-internal/jest';
+import { Stack, App } from '@aws-cdk/core';
 import {
-  HttpApi, HttpConnectionType, HttpIntegrationType, HttpMethod, HttpRoute, HttpRouteIntegrationConfig, HttpRouteKey, IHttpRouteIntegration,
-  PayloadFormatVersion,
+  HttpApi, HttpAuthorizer, HttpAuthorizerType, HttpConnectionType, HttpIntegrationType, HttpMethod, HttpRoute, HttpRouteAuthorizerBindOptions,
+  HttpRouteAuthorizerConfig, HttpRouteIntegrationConfig, HttpRouteKey, IHttpRouteAuthorizer, IHttpRouteIntegration, PayloadFormatVersion,
 } from '../../lib';
 
 describe('HttpRoute', () => {
@@ -17,7 +17,7 @@ describe('HttpRoute', () => {
     });
 
     expect(stack).toHaveResource('AWS::ApiGatewayV2::Route', {
-      ApiId: stack.resolve(httpApi.httpApiId),
+      ApiId: stack.resolve(httpApi.apiId),
       RouteKey: 'GET /books',
       Target: {
         'Fn::Join': [
@@ -25,7 +25,7 @@ describe('HttpRoute', () => {
           [
             'integrations/',
             {
-              Ref: 'HttpApiHttpIntegrationcff2618c192d3bd8581dd2a4093464f6CDB667B8',
+              Ref: 'HttpRouteHttpIntegrationcff2618c192d3bd8581dd2a4093464f6FB1097D0',
             },
           ],
         ],
@@ -33,7 +33,7 @@ describe('HttpRoute', () => {
     });
 
     expect(stack).toHaveResource('AWS::ApiGatewayV2::Integration', {
-      ApiId: stack.resolve(httpApi.httpApiId),
+      ApiId: stack.resolve(httpApi.apiId),
     });
   });
 
@@ -48,7 +48,7 @@ describe('HttpRoute', () => {
     });
 
     expect(stack).toHaveResource('AWS::ApiGatewayV2::Integration', {
-      ApiId: stack.resolve(httpApi.httpApiId),
+      ApiId: stack.resolve(httpApi.apiId),
       IntegrationType: 'HTTP_PROXY',
       PayloadFormatVersion: '2.0',
       IntegrationUri: 'some-uri',
@@ -115,6 +115,27 @@ describe('HttpRoute', () => {
     expect(stack2).toCountResources('AWS::ApiGatewayV2::Integration', 1);
   });
 
+  test('route defined in a separate stack does not create cycles', () => {
+    // GIVEN
+    const integration = new DummyIntegration();
+
+    // WHEN
+    const app = new App();
+    const stack1 = new Stack(app, 'ApiStack');
+    const httpApi = new HttpApi(stack1, 'HttpApi');
+
+    const stack2 = new Stack(app, 'RouteStack');
+    new HttpRoute(stack2, 'HttpRoute1', {
+      httpApi,
+      integration,
+      routeKey: HttpRouteKey.with('/books', HttpMethod.GET),
+    });
+
+    // THEN
+    expect(stack1).toCountResources('AWS::ApiGatewayV2::Integration', 0);
+    expect(stack2).toCountResources('AWS::ApiGatewayV2::Integration', 1);
+  });
+
   test('throws when path not start with /', () => {
     const stack = new Stack();
     const httpApi = new HttpApi(stack, 'HttpApi');
@@ -173,6 +194,53 @@ describe('HttpRoute', () => {
     });
     expect(stack).not.toHaveResource('AWS::ApiGatewayV2::VpcLink');
   });
+
+  test('can create route with an authorizer attached', () => {
+    const stack = new Stack();
+    const httpApi = new HttpApi(stack, 'HttpApi');
+
+    const authorizer = new DummyAuthorizer();
+
+    const route = new HttpRoute(stack, 'HttpRoute', {
+      httpApi,
+      integration: new DummyIntegration(),
+      routeKey: HttpRouteKey.with('/books', HttpMethod.GET),
+      authorizer,
+    });
+
+    expect(stack).toHaveResource('AWS::ApiGatewayV2::Integration', {
+      ApiId: stack.resolve(httpApi.apiId),
+      IntegrationType: 'HTTP_PROXY',
+      PayloadFormatVersion: '2.0',
+      IntegrationUri: 'some-uri',
+    });
+
+    expect(stack).toHaveResource('AWS::ApiGatewayV2::Authorizer');
+
+    expect(stack).toHaveResource('AWS::ApiGatewayV2::Route', {
+      AuthorizerId: stack.resolve(authorizer.bind({ scope: stack, route: route }).authorizerId),
+      AuthorizationType: 'JWT',
+    });
+  });
+
+  test('can attach additional scopes to a route with an authorizer attached', () => {
+    const stack = new Stack();
+    const httpApi = new HttpApi(stack, 'HttpApi');
+
+    const authorizer = new DummyAuthorizer();
+
+    new HttpRoute(stack, 'HttpRoute', {
+      httpApi,
+      integration: new DummyIntegration(),
+      routeKey: HttpRouteKey.with('/books', HttpMethod.GET),
+      authorizer,
+      authorizationScopes: ['read:books'],
+    });
+
+    expect(stack).toHaveResource('AWS::ApiGatewayV2::Route', {
+      AuthorizationScopes: ['read:books'],
+    });
+  });
 });
 
 class DummyIntegration implements IHttpRouteIntegration {
@@ -182,6 +250,28 @@ class DummyIntegration implements IHttpRouteIntegration {
       payloadFormatVersion: PayloadFormatVersion.VERSION_2_0,
       uri: 'some-uri',
       method: HttpMethod.DELETE,
+    };
+  }
+}
+
+class DummyAuthorizer implements IHttpRouteAuthorizer {
+  private authorizer?: HttpAuthorizer;
+
+  public bind(options: HttpRouteAuthorizerBindOptions): HttpRouteAuthorizerConfig {
+    if (!this.authorizer) {
+
+      this.authorizer = new HttpAuthorizer(options.scope, 'auth-1234', {
+        httpApi: options.route.httpApi,
+        identitySource: ['identitysource.1', 'identitysource.2'],
+        type: HttpAuthorizerType.JWT,
+        jwtAudience: ['audience.1', 'audience.2'],
+        jwtIssuer: 'issuer',
+      });
+    }
+
+    return {
+      authorizerId: this.authorizer.authorizerId,
+      authorizationType: HttpAuthorizerType.JWT,
     };
   }
 }

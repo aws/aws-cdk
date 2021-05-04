@@ -1,4 +1,5 @@
 import * as cloudfront from '@aws-cdk/aws-cloudfront';
+import * as iam from '@aws-cdk/aws-iam';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
 import { HttpOrigin } from './http-origin';
@@ -68,7 +69,7 @@ class S3BucketOrigin extends cloudfront.OriginBase {
   public bind(scope: Construct, options: cloudfront.OriginBindOptions): cloudfront.OriginBindConfig {
     if (!this.originAccessIdentity) {
       // Using a bucket from another stack creates a cyclic reference with
-      // the bucket taking a dependency on the generated S3CanonicalUserId when `grantRead` is called,
+      // the bucket taking a dependency on the generated S3CanonicalUserId for the grant principal,
       // and the distribution having a dependency on the bucket's domain name.
       // Fix this by parenting the OAI in the bucket's stack when cross-stack usage is detected.
       const bucketStack = cdk.Stack.of(this.bucket);
@@ -79,7 +80,16 @@ class S3BucketOrigin extends cloudfront.OriginBase {
       this.originAccessIdentity = new cloudfront.OriginAccessIdentity(oaiScope, oaiId, {
         comment: `Identity for ${options.originId}`,
       });
-      this.bucket.grantRead(this.originAccessIdentity);
+
+      // Used rather than `grantRead` because `grantRead` will grant overly-permissive policies.
+      // Only GetObject is needed to retrieve objects for the distribution.
+      // This also excludes KMS permissions; currently, OAI only supports SSE-S3 for buckets.
+      // Source: https://aws.amazon.com/blogs/networking-and-content-delivery/serving-sse-kms-encrypted-content-from-s3-using-cloudfront/
+      this.bucket.addToResourcePolicy(new iam.PolicyStatement({
+        resources: [this.bucket.arnForObjects('*')],
+        actions: ['s3:GetObject'],
+        principals: [this.originAccessIdentity.grantPrincipal],
+      }));
     }
     return super.bind(scope, options);
   }

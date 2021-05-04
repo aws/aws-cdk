@@ -1,4 +1,4 @@
-import { expect, haveResourceLike } from '@aws-cdk/assert';
+import { expect, haveResourceLike } from '@aws-cdk/assert-internal';
 import { Duration, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import { Alarm, GraphWidget, IWidget, MathExpression, Metric } from '../lib';
@@ -215,6 +215,28 @@ export = {
         [{ label: 'a + b', expression: 'a + b' }],
         ['Test', 'ACount', { visible: false, id: 'a' }],
         ['Test', 'BCount', { visible: false, id: 'b' }],
+      ]);
+      test.done();
+    },
+
+    'top level period in a MathExpression is respected in its metrics'(test: Test) {
+      const graph = new GraphWidget({
+        left: [
+          a,
+          new MathExpression({
+            expression: 'a + b',
+            usingMetrics: { a, b },
+            period: Duration.minutes(1),
+          }),
+        ],
+      });
+
+      // THEN
+      graphMetricsAre(test, graph, [
+        ['Test', 'ACount'],
+        [{ label: 'a + b', expression: 'a + b', period: 60 }],
+        ['Test', 'ACount', { visible: false, id: 'a', period: 60 }],
+        ['Test', 'BCount', { visible: false, id: 'b', period: 60 }],
       ]);
       test.done();
     },
