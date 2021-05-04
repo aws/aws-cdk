@@ -478,7 +478,9 @@
     "EcsClusterbottlerocketasgLaunchConfig644AD24C": {
       "Type": "AWS::AutoScaling::LaunchConfiguration",
       "Properties": {
-        "ImageId": "{{resolve:ssm:/aws/service/bottlerocket/aws-ecs-1/x86_64/latest/image_id}}",
+        "ImageId": {
+          "Ref": "SsmParameterValueawsservicebottlerocketawsecs1x8664latestimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
+        },
         "InstanceType": "c5.large",
         "IamInstanceProfile": {
           "Ref": "EcsClusterbottlerocketasgInstanceProfile22A89B9D"
@@ -829,6 +831,12 @@
         "EcsClusterbottlerocketasgLifecycleHookDrainHookRoleDefaultPolicy95E06EDB",
         "EcsClusterbottlerocketasgLifecycleHookDrainHookRoleDE4D94EB"
       ]
+    }
+  },
+  "Parameters": {
+    "SsmParameterValueawsservicebottlerocketawsecs1x8664latestimageidC96584B6F00A464EAD1953AFF4B05118Parameter": {
+      "Type": "AWS::SSM::Parameter::Value<String>",
+      "Default": "/aws/service/bottlerocket/aws-ecs-1/x86_64/latest/image_id"
     }
   }
 }
