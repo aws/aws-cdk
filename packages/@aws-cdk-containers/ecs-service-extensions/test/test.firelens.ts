@@ -80,7 +80,9 @@ export = {
           FirelensConfiguration: {
             Type: 'fluentbit',
           },
-          Image: '{{resolve:ssm:/aws/service/aws-for-fluent-bit/latest}}',
+          Image: {
+            Ref: 'SsmParameterValueawsserviceawsforfluentbitlatestC96584B6F00A464EAD1953AFF4B05118Parameter',
+          },
           LogConfiguration: {
             LogDriver: 'awslogs',
             Options: {

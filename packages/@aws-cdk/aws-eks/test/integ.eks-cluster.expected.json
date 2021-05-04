@@ -1652,7 +1652,9 @@
     "ClusterNodesLaunchConfig7C420A27": {
       "Type": "AWS::AutoScaling::LaunchConfiguration",
       "Properties": {
-        "ImageId": "{{resolve:ssm:/aws/service/eks/optimized-ami/1.19/amazon-linux-2/recommended/image_id}}",
+        "ImageId": {
+          "Ref": "SsmParameterValueawsserviceeksoptimizedami119amazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
+        },
         "InstanceType": "t2.medium",
         "IamInstanceProfile": {
           "Ref": "ClusterNodesInstanceProfileF2DD0E21"
@@ -1975,7 +1977,9 @@
     "ClusterNodesArmLaunchConfigAAF61344": {
       "Type": "AWS::AutoScaling::LaunchConfiguration",
       "Properties": {
-        "ImageId": "{{resolve:ssm:/aws/service/eks/optimized-ami/1.19/amazon-linux-2-arm64/recommended/image_id}}",
+        "ImageId": {
+          "Ref": "SsmParameterValueawsserviceeksoptimizedami119amazonlinux2arm64recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
+        },
         "InstanceType": "m6g.medium",
         "IamInstanceProfile": {
           "Ref": "ClusterNodesArmInstanceProfile158C5C9F"
@@ -2298,7 +2302,9 @@
     "ClusterBottlerocketNodesLaunchConfig76D7BEBE": {
       "Type": "AWS::AutoScaling::LaunchConfiguration",
       "Properties": {
-        "ImageId": "{{resolve:ssm:/aws/service/bottlerocket/aws-k8s-1.19/x86_64/latest/image_id}}",
+        "ImageId": {
+          "Ref": "SsmParameterValueawsservicebottlerocketawsk8s119x8664latestimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
+        },
         "InstanceType": "t3.small",
         "IamInstanceProfile": {
           "Ref": "ClusterBottlerocketNodesInstanceProfileB6E2F25A"
@@ -2621,7 +2627,9 @@
     "ClusterspotLaunchConfigCC19F2E6": {
       "Type": "AWS::AutoScaling::LaunchConfiguration",
       "Properties": {
-        "ImageId": "{{resolve:ssm:/aws/service/eks/optimized-ami/1.19/amazon-linux-2/recommended/image_id}}",
+        "ImageId": {
+          "Ref": "SsmParameterValueawsserviceeksoptimizedami119amazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
+        },
         "InstanceType": "t3.large",
         "IamInstanceProfile": {
           "Ref": "ClusterspotInstanceProfileAB88D077"
@@ -2977,7 +2985,9 @@
     "ClusterInferenceInstancesLaunchConfig03BF48FE": {
       "Type": "AWS::AutoScaling::LaunchConfiguration",
       "Properties": {
-        "ImageId": "{{resolve:ssm:/aws/service/eks/optimized-ami/1.19/amazon-linux-2-gpu/recommended/image_id}}",
+        "ImageId": {
+          "Ref": "SsmParameterValueawsserviceeksoptimizedami119amazonlinux2gpurecommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
+        },
         "InstanceType": "inf1.2xlarge",
         "IamInstanceProfile": {
           "Ref": "ClusterInferenceInstancesInstanceProfile5A1209B4"
@@ -4018,7 +4028,9 @@
       "Type": "AWS::EC2::LaunchTemplate",
       "Properties": {
         "LaunchTemplateData": {
-          "ImageId": "{{resolve:ssm:/aws/service/eks/optimized-ami/1.19/amazon-linux-2/recommended/image_id}}",
+          "ImageId": {
+            "Ref": "SsmParameterValueawsserviceeksoptimizedami119amazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
+          },
           "InstanceType": "t3.small",
           "UserData": {
             "Fn::Base64": {
@@ -4765,6 +4777,22 @@
     "AssetParameterse334ff007b5126b62d66d4baac94004f4281dc2b0b0c4685ec93e330cb59e921ArtifactHash31BE978F": {
       "Type": "String",
       "Description": "Artifact hash for asset \"e334ff007b5126b62d66d4baac94004f4281dc2b0b0c4685ec93e330cb59e921\""
+    },
+    "SsmParameterValueawsserviceeksoptimizedami119amazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter": {
+      "Type": "AWS::SSM::Parameter::Value<String>",
+      "Default": "/aws/service/eks/optimized-ami/1.19/amazon-linux-2/recommended/image_id"
+    },
+    "SsmParameterValueawsserviceeksoptimizedami119amazonlinux2arm64recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter": {
+      "Type": "AWS::SSM::Parameter::Value<String>",
+      "Default": "/aws/service/eks/optimized-ami/1.19/amazon-linux-2-arm64/recommended/image_id"
+    },
+    "SsmParameterValueawsservicebottlerocketawsk8s119x8664latestimageidC96584B6F00A464EAD1953AFF4B05118Parameter": {
+      "Type": "AWS::SSM::Parameter::Value<String>",
+      "Default": "/aws/service/bottlerocket/aws-k8s-1.19/x86_64/latest/image_id"
+    },
+    "SsmParameterValueawsserviceeksoptimizedami119amazonlinux2gpurecommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter": {
+      "Type": "AWS::SSM::Parameter::Value<String>",
+      "Default": "/aws/service/eks/optimized-ami/1.19/amazon-linux-2-gpu/recommended/image_id"
     }
   }
 }
