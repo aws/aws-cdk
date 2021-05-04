@@ -646,7 +646,7 @@ export abstract class BaseService extends Resource
   }
 
   /**
-   * This method returns the CloudWatch metric for this services CPU utilization.
+   * This method returns the CloudWatch metric for this service's CPU utilization.
    *
    * @default average over 5 minutes
    */
