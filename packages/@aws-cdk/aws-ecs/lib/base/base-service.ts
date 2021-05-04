@@ -637,7 +637,7 @@ export abstract class BaseService extends Resource
   }
 
   /**
-   * This method returns the CloudWatch metric for this clusters memory utilization.
+   * This method returns the CloudWatch metric for this service's memory utilization.
    *
    * @default average over 5 minutes
    */
@@ -646,7 +646,7 @@ export abstract class BaseService extends Resource
   }
 
   /**
-   * This method returns the CloudWatch metric for this clusters CPU utilization.
+   * This method returns the CloudWatch metric for this service's CPU utilization.
    *
    * @default average over 5 minutes
    */
