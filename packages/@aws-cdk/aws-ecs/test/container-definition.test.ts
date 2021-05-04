@@ -48,6 +48,7 @@ describe('container definition', () => {
         taskDefinition,
         memoryLimitMiB: 1024,
         memoryReservationMiB: 512,
+        containerName: 'Example Container',
         command: ['CMD-SHELL'],
         cpu: 128,
         disableNetworking: true,
@@ -198,7 +199,7 @@ describe('container definition', () => {
             },
             Memory: 1024,
             MemoryReservation: 512,
-            Name: 'Container',
+            Name: 'Example Container',
             Privileged: true,
             ReadonlyRootFilesystem: true,
             ResourceRequirements: [

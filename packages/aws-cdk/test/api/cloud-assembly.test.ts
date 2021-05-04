@@ -73,6 +73,50 @@ test('select behavior: repeat', async () => {
   expect(x.stackCount).toBe(1);
 });
 
+test('select behavior with nested assemblies: all', async () => {
+  // GIVEN
+  const cxasm = await testNestedCloudAssembly();
+
+  // WHEN
+  const x = await cxasm.selectStacks([], { defaultBehavior: DefaultSelection.AllStacks });
+
+  // THEN
+  expect(x.stackCount).toBe(3);
+});
+
+test('select behavior with nested assemblies: none', async () => {
+  // GIVEN
+  const cxasm = await testNestedCloudAssembly();
+
+  // WHEN
+  const x = await cxasm.selectStacks([], { defaultBehavior: DefaultSelection.None });
+
+  // THEN
+  expect(x.stackCount).toBe(0);
+});
+
+test('select behavior with nested assemblies: single', async () => {
+  // GIVEN
+  const cxasm = await testNestedCloudAssembly();
+
+  // WHEN
+  await expect(cxasm.selectStacks([], { defaultBehavior: DefaultSelection.OnlySingle }))
+    .rejects.toThrow('Since this app includes more than a single stack, specify which stacks to use (wildcards are supported) or specify `--all`');
+});
+
+test('select behavior with nested assemblies: repeat', async() => {
+  // GIVEN
+  const cxasm = await testNestedCloudAssembly();
+
+  // WHEN
+  const x = await cxasm.selectStacks(['withouterrors', 'withouterrors', 'nested'], {
+    defaultBehavior: DefaultSelection.AllStacks,
+  });
+
+  // THEN
+  expect(x.stackCount).toBe(2);
+});
+
 async function testCloudAssembly({ env }: { env?: string, versionReporting?: boolean } = {}) {
   const cloudExec = new MockCloudExecutable({
     stacks: [{
@@ -92,6 +136,46 @@ async function testCloudAssembly({ env }: { env?: string, versionReporting?: boo
           },
         ],
       },
+    }],
+  });
+
+  return cloudExec.synthesize();
+}
+
+async function testNestedCloudAssembly({ env }: { env?: string, versionReporting?: boolean } = {}) {
+  const cloudExec = new MockCloudExecutable({
+    stacks: [{
+      stackName: 'withouterrors',
+      env,
+      template: { resource: 'noerrorresource' },
+    },
+    {
+      stackName: 'witherrors',
+      env,
+      template: { resource: 'errorresource' },
+      metadata: {
+        '/resource': [
+          {
+            type: cxschema.ArtifactMetadataEntryType.ERROR,
+            data: 'this is an error',
+          },
+        ],
+      },
+    }],
+    nestedAssemblies: [{
+      stacks: [{
+        stackName: 'nested',
+        env,
+        template: { resource: 'nestederror' },
+        metadata: {
+          '/resource': [
+            {
+              type: cxschema.ArtifactMetadataEntryType.ERROR,
+              data: 'this is another error',
+            },
+          ],
+        },
+      }],
     }],
   });
 
