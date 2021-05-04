@@ -118,7 +118,13 @@
     "announce": false
   },
   "nozem": {
-    "ostools": ["dirname", "mktemp", "mkdir", "cp", "docker"]
+    "ostools": [
+      "dirname",
+      "mktemp",
+      "mkdir",
+      "cp",
+      "docker"
+    ]
   },
   "publishConfig": {
     "tag": "latest"
