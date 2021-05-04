@@ -45,6 +45,8 @@ export class AwsClients {
   public async deleteStacks(...stackNames: string[]) {
     if (stackNames.length === 0) { return; }
 
+    // We purposely do all stacks serially, because they've been ordered
+    // to do the bootstrap stack last.
     for (const stackName of stackNames) {
       await this.cloudFormation('updateTerminationProtection', {
         EnableTerminationProtection: false,
@@ -53,10 +55,8 @@ export class AwsClients {
       await this.cloudFormation('deleteStack', {
         StackName: stackName,
       });
-    }
 
-    await retry(this.output, `Deleting ${stackNames}`, retry.forSeconds(600), async () => {
-      for (const stackName of stackNames) {
+      await retry(this.output, `Deleting ${stackName}`, retry.forSeconds(600), async () => {
         const status = await this.stackStatus(stackName);
         if (status !== undefined && status.endsWith('_FAILED')) {
           throw retry.abort(new Error(`'${stackName}' is in state '${status}'`));
@@ -64,8 +64,8 @@ export class AwsClients {
         if (status !== undefined) {
           throw new Error(`Delete of '${stackName}' not complete yet`);
         }
-      }
-    });
+      });
+    }
   }
 
   public async stackStatus(stackName: string): Promise<string | undefined> {
