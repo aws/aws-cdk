@@ -83,12 +83,19 @@ function hasLabel(issue, labelName) {
  * to be said note, but got misspelled as "BREAKING CHANGES:" or
  * "BREAKING CHANGES(module):"
  */
-function validateBreakingChangeFormat(body) {
+function validateBreakingChangeFormat(title, body) {
     const re = /^BREAKING.*$/m;
     const m = re.exec(body);
     if (m) {
         if (!m[0].startsWith('BREAKING CHANGE: ')) {
             throw new LinterError(`Breaking changes should be indicated by starting a line with 'BREAKING CHANGE: ', variations are not allowed. (found: '${m[0]}')`);
+        }
+        if (m[0].substr('BREAKING CHANGE:'.length).trim().length === 0) {
+            throw new LinterError("The description of the first breaking change should immediately follow the 'BREAKING CHANGE: ' clause")
+        }
+        const titleRe = /^[a-z]+\([0-9a-z-_]+\)/;
+        if (!titleRe.exec(title)) {
+            throw new LinterError("The title of this PR must specify the module name that the first breaking change should be associated to");
         }
     }
 }
@@ -125,7 +132,7 @@ async function validatePr(number) {
         fixContainsTest(issue, files);
     }
 
-    validateBreakingChangeFormat(issue.body);
+    validateBreakingChangeFormat(issue.title, issue.body);
 
     console.log("✅  Success")
 

@@ -1,5 +1,5 @@
-import '@aws-cdk/assert/jest';
-import { ABSENT, ResourcePart } from '@aws-cdk/assert/lib/assertions/have-resource';
+import '@aws-cdk/assert-internal/jest';
+import { ABSENT, ResourcePart } from '@aws-cdk/assert-internal/lib/assertions/have-resource';
 import { Role, ServicePrincipal } from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import { CfnParameter, Duration, Stack, Tags } from '@aws-cdk/core';
@@ -211,17 +211,36 @@ describe('User Pool', () => {
     // WHEN
     const pool = UserPool.fromUserPoolArn(stack, 'userpool', userPoolArn);
     expect(pool.userPoolId).toEqual('test-user-pool');
-    expect(stack.resolve(pool.userPoolArn)).toEqual({
-      'Fn::Join': ['', [
-        'arn:',
-        { Ref: 'AWS::Partition' },
-        ':cognito-idp:',
-        { Ref: 'AWS::Region' },
-        ':',
-        { Ref: 'AWS::AccountId' },
-        ':userpool/test-user-pool',
-      ]],
+    expect(stack.resolve(pool.userPoolArn)).toEqual('arn:aws:cognito-idp:us-east-1:0123456789012:userpool/test-user-pool');
+  });
+
+  test('import using arn without resourceName fails', () => {
+    // GIVEN
+    const stack = new Stack();
+    const userPoolArn = 'arn:aws:cognito-idp:us-east-1:0123456789012:*';
+
+    // WHEN
+    expect(() => {
+      UserPool.fromUserPoolArn(stack, 'userpool', userPoolArn);
+    }).toThrowError(/invalid user pool ARN/);
+  });
+
+  test('import from different account region using arn', () => {
+    // GIVEN
+    const userPoolArn = 'arn:aws:cognito-idp:us-east-1:0123456789012:userpool/test-user-pool';
+
+    const stack = new Stack(undefined, undefined, {
+      env: {
+        account: '111111111111',
+        region: 'us-east-2',
+      },
     });
+
+    // WHEN
+    const pool = UserPool.fromUserPoolArn(stack, 'userpool', userPoolArn);
+    expect(pool.env.account).toEqual('0123456789012');
+    expect(pool.env.region).toEqual('us-east-1');
+    expect(pool.userPoolArn).toEqual('arn:aws:cognito-idp:us-east-1:0123456789012:userpool/test-user-pool');
   });
 
   test('support tags', () => {

@@ -530,7 +530,7 @@ abstract class BucketBase extends Resource implements IBucket {
    */
   public urlForObject(key?: string): string {
     const stack = Stack.of(this);
-    const prefix = `https://s3.${stack.region}.${stack.urlSuffix}/`;
+    const prefix = `https://s3.${this.env.region}.${stack.urlSuffix}/`;
     if (typeof key !== 'string') {
       return this.urlJoin(prefix, this.bucketName);
     }
@@ -1502,7 +1502,10 @@ export class Bucket extends BucketBase {
         Bool: { 'aws:SecureTransport': 'false' },
       },
       effect: iam.Effect.DENY,
-      resources: [this.arnForObjects('*')],
+      resources: [
+        this.bucketArn,
+        this.arnForObjects('*'),
+      ],
       principals: [new iam.AnyPrincipal()],
     });
     this.addToResourcePolicy(statement);
@@ -1829,7 +1832,7 @@ export class Bucket extends BucketBase {
   private enableAutoDeleteObjects() {
     const provider = CustomResourceProvider.getOrCreateProvider(this, AUTO_DELETE_OBJECTS_RESOURCE_TYPE, {
       codeDirectory: path.join(__dirname, 'auto-delete-objects-handler'),
-      runtime: CustomResourceProviderRuntime.NODEJS_12,
+      runtime: CustomResourceProviderRuntime.NODEJS_12_X,
       description: `Lambda function for auto-deleting objects in ${this.bucketName} S3 bucket.`,
     });
 

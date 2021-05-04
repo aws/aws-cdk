@@ -57,6 +57,7 @@ export function addStackArtifactToAssembly(
     properties,
     dependencies: deps.length > 0 ? deps : undefined,
     metadata: Object.keys(meta).length > 0 ? meta : undefined,
+    displayName: stack.node.path,
   });
 }
 

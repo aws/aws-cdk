@@ -1,5 +1,5 @@
-import { arrayWith, deepObjectLike } from '@aws-cdk/assert';
-import '@aws-cdk/assert/jest';
+import { arrayWith, deepObjectLike } from '@aws-cdk/assert-internal';
+import '@aws-cdk/assert-internal/jest';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import { PolicyStatement } from '@aws-cdk/aws-iam';
 import { Stack } from '@aws-cdk/core';
