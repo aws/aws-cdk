@@ -11,8 +11,6 @@
 
 This library provides constructs for Node.js Lambda functions.
 
-To use this module, you will need to have Docker installed.
-
 ## Node.js Function
 
 Define a `NodejsFunction`:
