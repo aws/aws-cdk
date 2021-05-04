@@ -1,3 +1,37 @@
+# CloudFormation Resource Specification v35.1.0
+
+## New Resource Types
+
+* AWS::IoTFleetHub::Application
+* AWS::IoTWireless::PartnerAccount
+* AWS::IoTWireless::TaskDefinition
+* AWS::NimbleStudio::LaunchProfile
+* AWS::NimbleStudio::StreamingImage
+* AWS::NimbleStudio::Studio
+* AWS::NimbleStudio::StudioComponent
+* AWS::SES::ContactList
+
+## Attribute Changes
+
+* AWS::EKS::Cluster OpenIdConnectIssuerUrl (__added__)
+
+## Property Changes
+
+* AWS::AppIntegrations::EventIntegration EventFilter.PrimitiveType (__deleted__)
+* AWS::Detective::Graph Tags (__added__)
+* AWS::ResourceGroups::Group Configuration (__added__)
+* AWS::ResourceGroups::Group Resources (__added__)
+
+## Property Type Changes
+
+* AWS::ResourceGroups::Group.ConfigurationItem (__added__)
+* AWS::ResourceGroups::Group.ConfigurationParameter (__added__)
+* AWS::GroundStation::Config.DecodeConfig UnvalidatedJson (__deleted__)
+* AWS::GroundStation::Config.DecodeConfig UnvalidatedJSON (__added__)
+* AWS::GroundStation::Config.DemodulationConfig UnvalidatedJson (__deleted__)
+* AWS::GroundStation::Config.DemodulationConfig UnvalidatedJSON (__added__)
+
+
 # CloudFormation Resource Specification v35.0.0
 
 ## New Resource Types
