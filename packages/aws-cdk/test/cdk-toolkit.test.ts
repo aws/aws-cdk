@@ -159,6 +159,40 @@ describe('synth', () => {
     // THEN
     await expect(toolkit.synth(['Test-Stack-A'], false, true)).resolves.toBeUndefined();
   });
+
+  describe('post-synth validation', () => {
+    beforeEach(() => {
+      cloudExecutable = new MockCloudExecutable({
+        stacks: [
+          MockStack.MOCK_STACK_A,
+          MockStack.MOCK_STACK_B,
+        ],
+        nestedAssemblies: [{
+          stacks: [MockStack.MOCK_STACK_WITH_ERROR],
+        }],
+      });
+    });
+  });
+
+  afterEach(() => {
+    process.env.STACKS_TO_VALIDATE = undefined;
+  });
+
+  test('with STACKS_TO_VALIDATE containing a failed stack', async() => {
+    process.env.STACKS_TO_VALIDATE = 'Test-Stack-A;Test-Stack-A/witherrors';
+
+    const toolkit = defaultToolkitSetup();
+
+    await expect(toolkit.synth(['Test-Stack-A'], false, true)).rejects.toBeDefined();
+  });
+
+  test('with STACKS_TO_VALIDATE not containing a failed stack', async() => {
+    process.env.STACKS_TO_VALIDATE = 'Test-Stack-A';
+
+    const toolkit = defaultToolkitSetup();
+
+    await toolkit.synth(['Test-Stack-A'], false, true);
+  });
 });
 
 class MockStack {
@@ -208,6 +242,20 @@ class MockStack {
     },
     displayName: 'Test-Stack-A/Test-Stack-C',
   };
+  public static readonly MOCK_STACK_WITH_ERROR: TestStackArtifact = {
+    stackName: 'witherrors',
+    env: 'aws://123456789012/bermuda-triangle-1',
+    template: { resource: 'errorresource' },
+    metadata: {
+      '/resource': [
+        {
+          type: cxschema.ArtifactMetadataEntryType.ERROR,
+          data: 'this is an error',
+        },
+      ],
+    },
+    displayName: 'Test-Stack-A/witherrors',
+  }
 }
 
 class FakeCloudFormation extends CloudFormationDeployments {
