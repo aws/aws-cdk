@@ -4,7 +4,7 @@ import * as acm from '@aws-cdk/aws-certificatemanager';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as s3 from '@aws-cdk/aws-s3';
 import { App, Duration, Stack } from '@aws-cdk/core';
-import { CfnDistribution, Distribution, GeoRestriction, HttpVersion, IOrigin, LambdaEdgeEventType, PriceClass, SecurityPolicyProtocol } from '../lib';
+import { CfnDistribution, Distribution, Function, FunctionCode, FunctionEventType, GeoRestriction, HttpVersion, IOrigin, LambdaEdgeEventType, PriceClass, SecurityPolicyProtocol } from '../lib';
 import { defaultOrigin, defaultOriginGroup } from './test-origin';
 
 let app: App;
@@ -728,6 +728,41 @@ describe('with Lambda@Edge functions', () => {
       },
     });
   });
+});
+
+describe('with CloudFront functions', () => {
+
+  test('can add a CloudFront function to the default behavior', () => {
+    new Distribution(stack, 'MyDist', {
+      defaultBehavior: {
+        origin: defaultOrigin(),
+        functionAssociations: [
+          {
+            eventType: FunctionEventType.VIEWER_REQUEST,
+            function: new Function(stack, 'TestFunction', {
+              code: FunctionCode.fromInline('foo'),
+            }),
+          },
+        ],
+      },
+    });
+
+    expect(stack).toHaveResourceLike('AWS::CloudFront::Distribution', {
+      DistributionConfig: {
+        DefaultCacheBehavior: {
+          FunctionAssociations: [
+            {
+              EventType: 'viewer-request',
+              FunctionARN: {
+                Ref: 'XXXXX',
+              },
+            },
+          ],
+        },
+      },
+    });
+  });
+
 });
 
 test('price class is included if provided', () => {
