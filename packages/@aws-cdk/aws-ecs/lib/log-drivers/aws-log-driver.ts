@@ -130,7 +130,7 @@ export class AwsLogDriver extends LogDriver {
         'awslogs-region': Stack.of(containerDefinition).region,
         'awslogs-datetime-format': this.props.datetimeFormat,
         'awslogs-multiline-pattern': this.props.multilinePattern,
-        ...(this.props.mode && { mode: this.props.mode }),
+        'mode': this.props.mode,
       }),
     };
   }
