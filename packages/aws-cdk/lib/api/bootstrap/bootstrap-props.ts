@@ -94,4 +94,11 @@ export interface BootstrappingParameters {
    */
   readonly publicAccessBlockConfiguration?: boolean;
 
+  /**
+   * The ARN of the IAM Policy being used as a permission boundary for role creation.
+   * This permission boundary will be applied to all roles created by the modern
+   * bootstrapping template.
+   */
+  readonly permissionBoundaryPolicyArn?: string
+
 }

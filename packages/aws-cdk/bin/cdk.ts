@@ -76,6 +76,7 @@ async function parseCommandLineArguments() {
       .option('bootstrap-customer-key', { type: 'boolean', desc: 'Create a Customer Master Key (CMK) for the bootstrap bucket (you will be charged but can customize permissions, modern bootstrapping only)', default: undefined, conflicts: 'bootstrap-kms-key-id' })
       .option('qualifier', { type: 'string', desc: 'Unique string to distinguish multiple bootstrap stacks', default: undefined })
       .option('public-access-block-configuration', { type: 'boolean', desc: 'Block public access configuration on CDK toolkit bucket (enabled by default) ', default: undefined })
+      .option('permissionBoundaryPolicyArn', { type: 'string', desc: 'The ARN of the IAM Policy being used as a permission boundary for role creation.' })
       .option('tags', { type: 'array', alias: 't', desc: 'Tags to add for the stack (KEY=VALUE)', nargs: 1, requiresArg: true, default: [] })
       .option('execute', { type: 'boolean', desc: 'Whether to execute ChangeSet (--no-execute will NOT execute the ChangeSet)', default: true })
       .option('trust', { type: 'array', desc: 'The AWS account IDs that should be trusted to perform deployments into this environment (may be repeated, modern bootstrapping only)', default: [], nargs: 1, requiresArg: true })
@@ -280,6 +281,7 @@ async function initCommandLine() {
             publicAccessBlockConfiguration: args.publicAccessBlockConfiguration,
             trustedAccounts: arrayFromYargs(args.trust),
             cloudFormationExecutionPolicies: arrayFromYargs(args.cloudformationExecutionPolicies),
+            permissionBoundaryPolicyArn: args.permissionBoundaryPolicyArn,
           },
         });
 

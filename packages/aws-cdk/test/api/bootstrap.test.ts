@@ -297,3 +297,14 @@ test('stack is termination protected when set', async () => {
   expect(executed).toBeTruthy();
   expect(protectedTermination).toBeTruthy();
 });
+
+test('passing permission boundary policy arn to the old boostrapping restults in an error', async () => {
+  await expect(bootstrapper.bootstrapEnvironment(env, sdk, {
+    toolkitStackName: 'mockStack',
+    parameters: {
+      permissionBoundaryPolicyArn: 'arn:aws:iam::aws:policy/AdministratorAccess',
+    },
+  }))
+    .rejects
+    .toThrow('--permission-boundary-policy-arn can only be passed for the modern bootstrap experience.');
+});

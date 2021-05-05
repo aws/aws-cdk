@@ -314,4 +314,22 @@ describe('Bootstrapping v2', () => {
       }));
     });
   });
+
+  describe('permission boundaries', () => {
+    test('passes permission boundary policy arn as a CFN parameter', async () => {
+      const permissionBoundaryPolicyArn = 'arn:aws:iam::111111111111:policy/Boundary';
+
+      await bootstrapper.bootstrapEnvironment(env, sdk, {
+        parameters: {
+          permissionBoundaryPolicyArn: permissionBoundaryPolicyArn,
+        },
+      });
+
+      expect(mockDeployStack).toHaveBeenCalledWith(expect.objectContaining({
+        parameters: expect.objectContaining({
+          PermissionBoundaryPolicyArn: permissionBoundaryPolicyArn,
+        }),
+      }));
+    });
+  });
 });

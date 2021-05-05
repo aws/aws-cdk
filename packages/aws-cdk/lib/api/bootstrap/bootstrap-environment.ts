@@ -56,6 +56,9 @@ export class Bootstrapper {
     if (params.qualifier) {
       throw new Error('--qualifier can only be passed for the modern bootstrap experience.');
     }
+    if (params.permissionBoundaryPolicyArn) {
+      throw new Error('--permission-boundary-policy-arn can only be passed for the modern bootstrap experience.');
+    }
 
     const current = await BootstrapStack.lookup(sdkProvider, environment, options.toolkitStackName);
     return current.update(await this.loadTemplate(params), {}, {
@@ -140,6 +143,7 @@ export class Bootstrapper {
         CloudFormationExecutionPolicies: cloudFormationExecutionPolicies.join(','),
         Qualifier: params.qualifier,
         PublicAccessBlockConfiguration: params.publicAccessBlockConfiguration || params.publicAccessBlockConfiguration === undefined ? 'true' : 'false',
+        PermissionBoundaryPolicyArn: params.permissionBoundaryPolicyArn,
       }, {
         ...options,
         terminationProtection: options.terminationProtection ?? current.terminationProtection,

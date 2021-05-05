@@ -37,6 +37,11 @@ Parameters:
     Default: 'true'
     Type: 'String'
     AllowedValues: ['true', 'false']
+  PermissionBoundaryPolicyArn:
+    Description: The ARN of the IAM Policy being used as a permission boundary for all IAM Roles created
+      in the Bootstrap.
+    Default: ''
+    Type: String
 Conditions:
   HasTrustedAccounts:
     Fn::Not:
@@ -74,6 +79,11 @@ Conditions:
     Fn::Equals:
       - 'true'
       - Ref: PublicAccessBlockConfiguration
+  HasPermissionBoundaryPolicyArn:
+    Fn::Not:
+      - Fn::Equals:
+          - ''
+          - Ref: PermissionBoundaryPolicyArn
 Resources:
   FileAssetsBucketEncryptionKey:
     Type: AWS::KMS::Key
@@ -213,6 +223,7 @@ Resources:
               - Ref: AWS::NoValue
       RoleName:
         Fn::Sub: cdk-${Qualifier}-file-publishing-role-${AWS::AccountId}-${AWS::Region}
+      PermissionsBoundary: !If [HasPermissionBoundaryPolicyArn, !Ref PermissionBoundaryPolicyArn, !Ref AWS::NoValue]
   ImagePublishingRole:
     Type: AWS::IAM::Role
     Properties:
@@ -233,6 +244,7 @@ Resources:
               - Ref: AWS::NoValue
       RoleName:
         Fn::Sub: cdk-${Qualifier}-image-publishing-role-${AWS::AccountId}-${AWS::Region}
+      PermissionsBoundary: !If [HasPermissionBoundaryPolicyArn, !Ref PermissionBoundaryPolicyArn, !Ref AWS::NoValue]
   FilePublishingRoleDefaultPolicy:
     Type: AWS::IAM::Policy
     Properties:
@@ -363,6 +375,7 @@ Resources:
           PolicyName: default
       RoleName:
         Fn::Sub: cdk-${Qualifier}-deploy-role-${AWS::AccountId}-${AWS::Region}
+      PermissionsBoundary: !If [HasPermissionBoundaryPolicyArn, !Ref PermissionBoundaryPolicyArn, !Ref AWS::NoValue]
   CloudFormationExecutionRole:
     Type: AWS::IAM::Role
     Properties:
@@ -385,6 +398,7 @@ Resources:
             - - Fn::Sub: "arn:${AWS::Partition}:iam::aws:policy/AdministratorAccess"
       RoleName:
         Fn::Sub: cdk-${Qualifier}-cfn-exec-role-${AWS::AccountId}-${AWS::Region}
+      PermissionsBoundary: !If [HasPermissionBoundaryPolicyArn, !Ref PermissionBoundaryPolicyArn, !Ref AWS::NoValue]
   # The SSM parameter is used in pipeline-deployed templates to verify the version
   # of the bootstrap resources.
   CdkBootstrapVersion:
