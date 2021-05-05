@@ -43,7 +43,7 @@ test('SimpleSynthAction takes arrays of commands', () => {
   // THEN
   expect(pipelineStack).toHaveResourceLike('AWS::CodeBuild::Project', {
     Environment: {
-      Image: 'aws/codebuild/standard:4.0',
+      Image: 'aws/codebuild/standard:5.0',
     },
     Source: {
       BuildSpec: encodedJson(deepObjectLike({
@@ -80,12 +80,12 @@ test.each([['npm'], ['yarn']])('%s build automatically determines artifact base-
   // THEN
   expect(pipelineStack).toHaveResourceLike('AWS::CodeBuild::Project', {
     Environment: {
-      Image: 'aws/codebuild/standard:4.0',
+      Image: 'aws/codebuild/standard:5.0',
     },
     Source: {
       BuildSpec: encodedJson(deepObjectLike({
         artifacts: {
-          'base-directory': 'testcdk.out',
+          'base-directory': 'cdk.out',
         },
       })),
     },
@@ -107,7 +107,7 @@ test.each([['npm'], ['yarn']])('%s build respects subdirectory', (npmYarn) => {
   // THEN
   expect(pipelineStack).toHaveResourceLike('AWS::CodeBuild::Project', {
     Environment: {
-      Image: 'aws/codebuild/standard:4.0',
+      Image: 'aws/codebuild/standard:5.0',
     },
     Source: {
       BuildSpec: encodedJson(deepObjectLike({
@@ -117,7 +117,7 @@ test.each([['npm'], ['yarn']])('%s build respects subdirectory', (npmYarn) => {
           },
         },
         artifacts: {
-          'base-directory': 'subdir/testcdk.out',
+          'base-directory': 'subdir/cdk.out',
         },
       })),
     },
@@ -135,7 +135,7 @@ test.each([['npm'], ['yarn']])('%s assumes no build step by default', (npmYarn) 
   // THEN
   expect(pipelineStack).toHaveResourceLike('AWS::CodeBuild::Project', {
     Environment: {
-      Image: 'aws/codebuild/standard:4.0',
+      Image: 'aws/codebuild/standard:5.0',
     },
     Source: {
       BuildSpec: encodedJson(deepObjectLike({
@@ -259,7 +259,7 @@ test.each([['npm'], ['yarn']])('%s can have its install command overridden', (np
   // THEN
   expect(pipelineStack).toHaveResourceLike('AWS::CodeBuild::Project', {
     Environment: {
-      Image: 'aws/codebuild/standard:4.0',
+      Image: 'aws/codebuild/standard:5.0',
     },
     Source: {
       BuildSpec: encodedJson(deepObjectLike({
@@ -294,14 +294,14 @@ test('Standard (NPM) synth can output additional artifacts', () => {
   // THEN
   expect(pipelineStack).toHaveResourceLike('AWS::CodeBuild::Project', {
     Environment: {
-      Image: 'aws/codebuild/standard:4.0',
+      Image: 'aws/codebuild/standard:5.0',
     },
     Source: {
       BuildSpec: encodedJson(deepObjectLike({
         artifacts: {
           'secondary-artifacts': {
             CloudAsm: {
-              'base-directory': 'testcdk.out',
+              'base-directory': 'cdk.out',
               'files': '**/*',
             },
             IntegTest: {

@@ -7,9 +7,10 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
 import { Stack } from '@aws-cdk/core';
-import { cloudAssemblyBuildSpecDir } from '../private/construct-internals';
 import { toPosixPath } from '../private/fs';
 import { copyEnvironmentVariables, filterEmpty } from './_util';
+
+const DEFAULT_OUTPUT_DIR = 'cdk.out';
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
 // eslint-disable-next-line no-duplicate-imports, import/order
@@ -62,7 +63,7 @@ export interface SimpleSynthOptions {
   /**
    * Build environment to use for CodeBuild job
    *
-   * @default BuildEnvironment.LinuxBuildImage.STANDARD_4_0
+   * @default BuildEnvironment.LinuxBuildImage.STANDARD_5_0
    */
   readonly environment?: codebuild.BuildEnvironment;
 
@@ -320,7 +321,7 @@ export class SimpleSynthAction implements codepipeline.IAction, iam.IGrantable {
       artifacts: renderArtifacts(this),
     });
 
-    const environment = { buildImage: codebuild.LinuxBuildImage.STANDARD_4_0, ...this.props.environment };
+    const environment = { buildImage: codebuild.LinuxBuildImage.STANDARD_5_0, ...this.props.environment };
 
     const environmentVariables = {
       ...copyEnvironmentVariables(...this.props.copyEnvironmentVariables || []),
@@ -378,7 +379,7 @@ export class SimpleSynthAction implements codepipeline.IAction, iam.IGrantable {
       // using secondary artifacts or not.
 
       const cloudAsmArtifactSpec = {
-        'base-directory': toPosixPath(path.join(self.props.subdirectory ?? '.', cloudAssemblyBuildSpecDir(scope))),
+        'base-directory': toPosixPath(path.join(self.props.subdirectory ?? '.', DEFAULT_OUTPUT_DIR)),
         'files': '**/*',
       };
 
