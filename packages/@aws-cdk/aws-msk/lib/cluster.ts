@@ -377,11 +377,7 @@ export class Cluster extends ClusterBase {
   ): ICluster {
     class Import extends ClusterBase {
       public readonly clusterArn = clusterArn;
-      public readonly clusterName = clusterArn.split('/')[1]; // ['arn:partition:kafka:region:account-id', clusterName, clusterId]
-    }
-
-    if (core.Token.isUnresolved(clusterArn)) {
-      throw new Error('Cannot use a token when importing a cluster using an ARN.');
+      public readonly clusterName = core.Fn.select(1, core.Fn.split('/', clusterArn)); // ['arn:partition:kafka:region:account-id', clusterName, clusterId]
     }
 
     return new Import(scope, id);
