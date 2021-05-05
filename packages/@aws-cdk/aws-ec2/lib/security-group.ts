@@ -260,7 +260,7 @@ export interface SecurityGroupImportOptions {
    * group. Be aware, this would undo any potential "all outbound traffic"
    * default.
    *
-   * @experimental
+   *
    * @default true
    */
   readonly allowAllOutbound?: boolean;
@@ -271,7 +271,7 @@ export interface SecurityGroupImportOptions {
    * Beware that making a SecurityGroup immutable might lead to issue
    * due to missing ingress/egress rules for new resources.
    *
-   * @experimental
+   *
    * @default true
    */
   readonly mutable?: boolean;
