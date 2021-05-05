@@ -728,7 +728,7 @@ export class Project extends ProjectBase {
       const cfnEnvVariable: CfnProject.EnvironmentVariableProperty = {
         name,
         type: envVariable.type || BuildEnvironmentVariableType.PLAINTEXT,
-        value: envVariableValue,
+        value: envVariable.value instanceof Object ? (envVariable.value as secretsmanager.Secret).secretArn : envVariableValue,
       };
       ret.push(cfnEnvVariable);
 
@@ -764,7 +764,27 @@ export class Project extends ProjectBase {
 
         // save SecretsManager env variables
         if (envVariable.type === BuildEnvironmentVariableType.SECRETS_MANAGER) {
-          if (Token.isUnresolved(envVariableValue)) {
+          if (envVariable.value instanceof Object) {
+            const secretArn = (envVariable.value as secretsmanager.Secret).secretArn;
+            const parsedSecretArn = stack.parseArn(secretArn);
+
+            secretsManagerIamResources.add(`${secretArn}*`);
+            if (parsedSecretArn && parsedSecretArn.account &&
+              Token.compareStrings(stack.account, parsedSecretArn.account) === TokenComparison.DIFFERENT) {
+              kmsIamResources.add(stack.formatArn({
+                service: 'kms',
+                resource: 'key',
+                // We do not know the ID of the key, but since this is a cross-account access,
+                // the key policies have to allow this access, so a wildcard is safe here
+                resourceName: '*',
+                sep: '/',
+                // if we were given an ARN, we need to use the provided partition/account/region
+                partition: parsedSecretArn.partition,
+                account: parsedSecretArn.account,
+                region: parsedSecretArn.region,
+              }));
+            }
+          } else if (Token.isUnresolved(envVariableValue)) {
             // the value of the property can be a complex string, separated by ':';
             // see https://docs.aws.amazon.com/codebuild/latest/userguide/build-spec-ref.html#build-spec.env.secrets-manager
             const secretArn = envVariableValue.split(':')[0];
