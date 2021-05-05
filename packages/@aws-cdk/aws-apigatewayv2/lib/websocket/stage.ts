@@ -1,8 +1,7 @@
 import { Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnStage } from '../apigatewayv2.generated';
-import { StageOptions, IApi, IStage, StageAttributes } from '../common';
-import { StageBase } from '../common/base';
+import { StageOptions, StageBase, IApi, IStage, StageAttributes } from '../common';
 import { IWebSocketApi } from './api';
 
 /**

@@ -1,7 +1,6 @@
 import { Construct } from 'constructs';
 import { CfnApi } from '../apigatewayv2.generated';
-import { IApi } from '../common/api';
-import { ApiBase } from '../common/base';
+import { ApiBase, IApi } from '../common';
 import { WebSocketRouteIntegrationConfig, WebSocketIntegration } from './integration';
 import { WebSocketRoute, WebSocketRouteOptions } from './route';
 
