@@ -74,7 +74,6 @@
     "@types/jest": "^26.0.23",
     "@aws-cdk/aws-codecommit": "0.0.0",
     "@aws-cdk/aws-s3": "0.0.0",
-    "@aws-cdk/aws-batch": "0.0.0",
     "aws-sdk": "^2.848.0",
     "aws-sdk-mock": "^5.1.0",
     "cdk-build-tools": "0.0.0",
@@ -85,7 +84,6 @@
   },
   "dependencies": {
     "@aws-cdk/aws-apigateway": "0.0.0",
-    "@aws-cdk/aws-batch": "0.0.0",
     "@aws-cdk/aws-codebuild": "0.0.0",
     "@aws-cdk/aws-codepipeline": "0.0.0",
     "@aws-cdk/aws-ec2": "0.0.0",
