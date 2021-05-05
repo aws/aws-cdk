@@ -1654,9 +1654,8 @@ export class NoExperimentalDependents extends ValidationRule {
         return;
       }
 
-      const shortName = dep.split('/')[1];
       // eslint-disable-next-line @typescript-eslint/no-require-imports
-      const stability = require(path.resolve('../', shortName, 'package.json')).stability;
+      const stability = require(`${dep}/package.json`).stability;
       if (stability === 'experimental') {
         if (this.excludedDependencies.get(pkg.packageName)?.includes(dep)) {
           return;
