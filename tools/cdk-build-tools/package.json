@@ -40,8 +40,8 @@
     "pkglint": "0.0.0"
   },
   "dependencies": {
-    "@typescript-eslint/eslint-plugin": "^4.22.0",
-    "@typescript-eslint/parser": "^4.22.0",
+    "@typescript-eslint/eslint-plugin": "^4.22.1",
+    "@typescript-eslint/parser": "^4.22.1",
     "awslint": "0.0.0",
     "colors": "^1.4.0",
     "eslint": "^7.25.0",
