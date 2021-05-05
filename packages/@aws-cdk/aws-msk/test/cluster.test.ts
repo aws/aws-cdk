@@ -466,7 +466,28 @@ describe('MSK Cluster', () => {
       cluster.addUser(username);
 
       expect(stack).toHaveResourceLike('AWS::SecretsManager::Secret', {
-        'Name': `AmazonMSK_${username}`,
+        'Name': {
+          'Fn::Join': [
+            '',
+            [
+              'AmazonMSK_',
+              {
+                'Fn::Select': [
+                  1,
+                  {
+                    'Fn::Split': [
+                      '/',
+                      {
+                        'Ref': 'ClusterEB0386A7',
+                      },
+                    ],
+                  },
+                ],
+              },
+              '_my-user',
+            ],
+          ],
+        },
       });
     });
   });

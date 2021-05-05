@@ -730,7 +730,7 @@ export class Cluster extends ClusterBase {
       const secrets = usernames.map(
         (username) =>
           new secretsmanager.Secret(this, `KafkaUser${username}`, {
-            secretName: `${MSK_SECRET_PREFIX}${username}`,
+            secretName: `${MSK_SECRET_PREFIX}${this.clusterName}_${username}`,
             generateSecretString: {
               secretStringTemplate: JSON.stringify({ username }),
               generateStringKey: 'password',
