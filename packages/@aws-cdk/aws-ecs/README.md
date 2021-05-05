@@ -153,6 +153,22 @@ cluster.addCapacity('bottlerocket-asg', {
 });
 ```
 
+### ARM64 (Graviton) Instances
+
+To launch instances with ARM64 hardware, you can use the Amazon ECS-optimized
+Amazon Linux 2 (arm64) AMI. Based on Amazon Linux 2, this AMI is recommended
+for use when launching your EC2 instances that are powered by Arm-based AWS
+Graviton Processors.
+
+```ts
+cluster.addCapacity('graviton-cluster', {
+  minCapacity: 2,
+  instanceType: new ec2.InstanceType('c6g.large'),
+  machineImage: ecs.EcsOptimizedImage.amazonLinux2(ecs.AmiHardwareType.ARM),
+});
+
+```
+
 ### Spot Instances
 
 To add spot instances into the cluster, you must specify the `spotPrice` in the `ecs.AddCapacityOptions` and optionally enable the `spotInstanceDraining` property.
