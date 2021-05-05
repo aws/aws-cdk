@@ -9,6 +9,7 @@ const vpc = new ec2.Vpc(stack, 'VPC', { maxAzs: 2 });
 
 const cluster = new msk.Cluster(stack, 'Cluster', {
   clusterName: 'integ-test',
+  kafkaVersion: msk.KafkaVersion.V2_6_1,
   vpc,
   removalPolicy: cdk.RemovalPolicy.DESTROY,
 });

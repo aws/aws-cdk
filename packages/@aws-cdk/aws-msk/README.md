@@ -29,6 +29,7 @@ The following example creates an MSK Cluster.
 import * as msk from '@aws-cdk/aws-msk';
 
 const cluster = new Cluster(this, 'Cluster', {
+  kafkaVersion: msk.KafkaVersion.V2_6_1,
   vpc,
 });
 ```

@@ -427,7 +427,7 @@ Object {
           },
         },
         "EnhancedMonitoring": "PER_TOPIC_PER_BROKER",
-        "KafkaVersion": "2.4.1",
+        "KafkaVersion": "2.6.1",
         "LoggingInfo": Object {
           "BrokerLogs": Object {
             "CloudWatchLogs": Object {

@@ -21,6 +21,7 @@ describe('MSK Cluster', () => {
   test('created with default properties', () => {
     new msk.Cluster(stack, 'Cluster', {
       clusterName: 'cluster',
+      kafkaVersion: msk.KafkaVersion.V2_6_1,
       vpc,
     });
 
@@ -65,6 +66,7 @@ describe('MSK Cluster', () => {
       test('fails if client broker encryption is set to plaintext', () => {
         new msk.Cluster(stack, 'Cluster', {
           clusterName: 'cluster',
+          kafkaVersion: msk.KafkaVersion.V2_6_1,
           vpc,
           encryptionInTransit: {
             clientBroker: msk.ClientBrokerEncryption.PLAINTEXT,
@@ -88,6 +90,7 @@ describe('MSK Cluster', () => {
       test('fails if tls encryption is set to plaintext', () => {
         new msk.Cluster(stack, 'Cluster', {
           clusterName: 'cluster',
+          kafkaVersion: msk.KafkaVersion.V2_6_1,
           vpc,
           encryptionInTransit: {
             clientBroker: msk.ClientBrokerEncryption.PLAINTEXT,
@@ -106,6 +109,7 @@ describe('MSK Cluster', () => {
       test('fails if tls encryption is set to tls and plaintext', () => {
         new msk.Cluster(stack, 'Cluster', {
           clusterName: 'cluster',
+          kafkaVersion: msk.KafkaVersion.V2_6_1,
           vpc,
           encryptionInTransit: {
             clientBroker: msk.ClientBrokerEncryption.TLS_PLAINTEXT,
@@ -126,6 +130,7 @@ describe('MSK Cluster', () => {
       beforeEach(() => {
         new msk.Cluster(stack, 'Cluster', {
           clusterName: 'cluster',
+          kafkaVersion: msk.KafkaVersion.V2_6_1,
           vpc,
           encryptionInTransit: {
             clientBroker: msk.ClientBrokerEncryption.TLS,
@@ -228,6 +233,7 @@ describe('MSK Cluster', () => {
     test('prefixes instance type with "kafka"', () => {
       new msk.Cluster(stack, 'Cluster', {
         clusterName: 'cluster',
+        kafkaVersion: msk.KafkaVersion.V2_6_1,
         vpc,
         instanceType: ec2.InstanceType.of(
           ec2.InstanceClass.M5,
@@ -244,6 +250,7 @@ describe('MSK Cluster', () => {
   test('prefixes instance type with "kafka"', () => {
     new msk.Cluster(stack, 'Cluster', {
       clusterName: 'cluster',
+      kafkaVersion: msk.KafkaVersion.V2_6_1,
       vpc,
       instanceType: ec2.InstanceType.of(
         ec2.InstanceClass.M5,
@@ -260,6 +267,7 @@ describe('MSK Cluster', () => {
     test('log group is set', () => {
       new msk.Cluster(stack, 'Cluster', {
         clusterName: 'cluster',
+        kafkaVersion: msk.KafkaVersion.V2_6_1,
         vpc,
         logging: {
           cloudwatchLogGroup: new logs.LogGroup(stack, 'LogGroup'),
@@ -283,6 +291,7 @@ describe('MSK Cluster', () => {
     test('s3 bucket is set', () => {
       new msk.Cluster(stack, 'Cluster', {
         clusterName: 'cluster',
+        kafkaVersion: msk.KafkaVersion.V2_6_1,
         vpc,
         logging: {
           s3: { bucket: new s3.Bucket(stack, 'Bucket') },
@@ -306,6 +315,7 @@ describe('MSK Cluster', () => {
     test('firehose delivery stream is set', () => {
       new msk.Cluster(stack, 'Cluster', {
         clusterName: 'cluster',
+        kafkaVersion: msk.KafkaVersion.V2_6_1,
         vpc,
         logging: {
           firehoseDeliveryStreamName: 'a-stream',
@@ -329,6 +339,7 @@ describe('MSK Cluster', () => {
     test('exceeds max', () => {
       new msk.Cluster(stack, 'Cluster', {
         clusterName: 'cluster',
+        kafkaVersion: msk.KafkaVersion.V2_6_1,
         vpc,
         ebsStorageInfo: { volumeSize: 16385 },
       });
@@ -343,6 +354,7 @@ describe('MSK Cluster', () => {
     test('below minimum', () => {
       new msk.Cluster(stack, 'Cluster', {
         clusterName: 'cluster',
+        kafkaVersion: msk.KafkaVersion.V2_6_1,
         vpc,
         ebsStorageInfo: { volumeSize: 0 },
       });
@@ -358,6 +370,7 @@ describe('MSK Cluster', () => {
   test('create an encrypted cluster with a custom KMS key', () => {
     new msk.Cluster(stack, 'Cluster', {
       clusterName: 'cluster',
+      kafkaVersion: msk.KafkaVersion.V2_6_1,
       vpc,
       ebsStorageInfo: { encryptionKey: new kms.Key(stack, 'Key') },
     });
@@ -393,7 +406,7 @@ describe('MSK Cluster', () => {
   test('Snapshot test with all values set', () => {
     const cluster = new msk.Cluster(stack, 'kafka', {
       clusterName: 'test-cluster',
-      kafkaVersion: msk.KafkaVersion.of('2.4.1'),
+      kafkaVersion: msk.KafkaVersion.V2_6_1,
       vpc,
       securityGroups: [
         ec2.SecurityGroup.fromSecurityGroupId(stack, 'sg1', 'sg-123'),
@@ -446,6 +459,7 @@ describe('MSK Cluster', () => {
     test('fails if sasl/scram not enabled', () => {
       const cluster = new msk.Cluster(stack, 'Cluster', {
         clusterName: 'cluster',
+        kafkaVersion: msk.KafkaVersion.V2_6_1,
         vpc,
       });
 
@@ -461,6 +475,7 @@ describe('MSK Cluster', () => {
     test('creates a secret with the secret name prefixed with AmazonMSK_', () => {
       const cluster = new msk.Cluster(stack, 'Cluster', {
         clusterName: 'cluster',
+        kafkaVersion: msk.KafkaVersion.V2_6_1,
         vpc,
         clientAuthentication: msk.ClientAuthentication.sasl({
           scram: true,
