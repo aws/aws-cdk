@@ -66,6 +66,7 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
+    "@types/jest": "^26.0.23",
     "@aws-cdk/aws-cloudtrail": "0.0.0",
     "@aws-cdk/cx-api": "0.0.0",
     "@types/lodash": "^4.14.168",
@@ -88,6 +89,7 @@
     "@aws-cdk/aws-events": "0.0.0",
     "@aws-cdk/aws-events-targets": "0.0.0",
     "@aws-cdk/aws-iam": "0.0.0",
+    "@aws-cdk/aws-kms": "0.0.0",
     "@aws-cdk/aws-lambda": "0.0.0",
     "@aws-cdk/aws-s3": "0.0.0",
     "@aws-cdk/aws-sns": "0.0.0",
@@ -110,6 +112,7 @@
     "@aws-cdk/aws-events": "0.0.0",
     "@aws-cdk/aws-events-targets": "0.0.0",
     "@aws-cdk/aws-iam": "0.0.0",
+    "@aws-cdk/aws-kms": "0.0.0",
     "@aws-cdk/aws-lambda": "0.0.0",
     "@aws-cdk/aws-s3": "0.0.0",
     "@aws-cdk/aws-sns": "0.0.0",

@@ -525,7 +525,7 @@ const taskDefinition = new ecs.Ec2TaskDefinition(this, 'TaskDef');
 taskDefinition.addContainer('TheContainer', {
   image: ecs.ContainerImage.fromAsset(path.resolve(__dirname, '..', 'eventhandler-image')),
   memoryLimitMiB: 256,
-  logging: new ecs.AwsLogDriver({ streamPrefix: 'EventDemo' })
+  logging: new ecs.AwsLogDriver({ streamPrefix: 'EventDemo', mode: AwsLogDriverMode.NON_BLOCKING })
 });
 
 // An Rule that describes the event trigger (in this case a scheduled run)
@@ -794,7 +794,7 @@ app.synth();
 Currently, this feature is only supported for services with EC2 launch types.
 
 To add elastic inference accelerators to your EC2 instance, first add
-`inferenceAccelerator` field to the EC2TaskDefinition and set the `deviceName`
+`inferenceAccelerators` field to the EC2TaskDefinition and set the `deviceName`
 and `deviceType` properties.
 
 ```ts
@@ -808,19 +808,16 @@ const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
 });
 ```
 
-To enable using the inference accelerator in the containers, set the
-`type` and `value` properties accordingly. The `value` should match the
-`DeviceName` for an `InferenceAccelerator` specified in a task definition. 
+To enable using the inference accelerators in the containers, add `inferenceAcceleratorResources`
+field and set it to a list of device names used for the inference accelerators. Each value in the
+list should match a `DeviceName` for an `InferenceAccelerator` specified in the task definition. 
 
 ```ts
-const resourceRequirements = [{
-  type: ecs.ResourceRequirementType.INFERENCEACCELERATOR,
-  value: 'device1',
-}];
+const inferenceAcceleratorResources = ['device1'];
 
 taskDefinition.addContainer('cont', {
   image: ecs.ContainerImage.fromRegistry('test'),
   memoryLimitMiB: 1024,
-  resourceRequirements,
+  inferenceAcceleratorResources,
 });
 ```
