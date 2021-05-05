@@ -11,12 +11,23 @@ const parentZone = new PublicHostedZone(stack, 'ParentHostedZone', {
   crossAccountZoneDelegationPrincipal: new iam.AccountPrincipal(cdk.Aws.ACCOUNT_ID),
 });
 
-const childZone = new PublicHostedZone(stack, 'ChildHostedZone', {
+// with zoneId
+const childZoneWithZoneId = new PublicHostedZone(stack, 'ChildHostedZoneWithZoneId', {
   zoneName: 'sub.myzone.com',
 });
-new CrossAccountZoneDelegationRecord(stack, 'Delegation', {
-  delegatedZone: childZone,
+new CrossAccountZoneDelegationRecord(stack, 'DelegationWithZoneId', {
+  delegatedZone: childZoneWithZoneId,
   parentHostedZoneId: parentZone.hostedZoneId,
+  delegationRole: parentZone.crossAccountZoneDelegationRole!,
+});
+
+// with zoneName
+const childZoneWithZoneName = new PublicHostedZone(stack, 'ChildHostedZoneWithZoneName', {
+  zoneName: 'anothersub.myzone.com',
+});
+new CrossAccountZoneDelegationRecord(stack, 'DelegationWithZoneName', {
+  delegatedZone: childZoneWithZoneName,
+  parentHostedZoneName: 'myzone.com',
   delegationRole: parentZone.crossAccountZoneDelegationRole!,
 });
 

@@ -11,8 +11,6 @@
 
 This library provides constructs for Node.js Lambda functions.
 
-To use this module, you will need to have Docker installed.
-
 ## Node.js Function
 
 Define a `NodejsFunction`:
@@ -139,6 +137,8 @@ new lambda.NodejsFunction(this, 'my-handler', {
     },
     define: { // Replace strings during build time
       'process.env.API_KEY': JSON.stringify('xxx-xxxx-xxx'),
+      'process.env.PRODUCTION': JSON.stringify(true),
+      'process.env.NUMBER': JSON.stringify(123),
     },
     logLevel: LogLevel.SILENT, // defaults to LogLevel.WARNING
     keepNames: true, // defaults to false

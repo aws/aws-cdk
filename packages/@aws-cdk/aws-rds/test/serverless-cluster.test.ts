@@ -846,7 +846,7 @@ nodeunitShim({
 
   'does not change the case of the cluster identifier if the lowercaseDbIdentifier feature flag is disabled'(test: Test) {
     // GIVEN
-    const app = new cdk.App();
+    const app = new cdk.App({ context: { '@aws-cdk/aws-rds:lowercaseDbIdentifier': false } });
     const stack = testStack(app);
     const clusterIdentifier = 'TestClusterIdentifier';
     const vpc = ec2.Vpc.fromLookup(stack, 'VPC', { isDefault: true });
