@@ -148,7 +148,7 @@ describe('HttpApi', () => {
       const api = new HttpApi(stack, 'test-api', {
         createDefaultStage: false,
       });
-      const metricName = '4xxError';
+      const metricName = '4xx';
       const statistic = 'Sum';
       const apiId = api.apiId;
 
@@ -185,6 +185,8 @@ describe('HttpApi', () => {
         expect(metric.dimensions).toEqual({ ApiId: apiId });
         expect(metric.color).toEqual(color);
       }
+      const metricNames = metrics.map(m => m.metricName);
+      expect(metricNames).toEqual(['4xx', '5xx', 'DataProcessed', 'Latency', 'IntegrationLatency', 'Count']);
     });
 
     test('Metrics from imported resource', () => {
@@ -192,7 +194,7 @@ describe('HttpApi', () => {
       const stack = new Stack();
       const apiId = 'importedId';
       const api = HttpApi.fromHttpApiAttributes(stack, 'test-api', { httpApiId: apiId });
-      const metricName = '4xxError';
+      const metricName = '4xx';
       const statistic = 'Sum';
 
       // WHEN
