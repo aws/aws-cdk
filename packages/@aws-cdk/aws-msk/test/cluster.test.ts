@@ -64,7 +64,8 @@ describe('MSK Cluster', () => {
   describe('created with authentication enabled', () => {
     describe('with tls auth', () => {
       test('fails if client broker encryption is set to plaintext', () => {
-        new msk.Cluster(stack, 'Cluster', {
+
+        expect(() => new msk.Cluster(stack, 'Cluster', {
           clusterName: 'cluster',
           kafkaVersion: msk.KafkaVersion.V2_6_1,
           vpc,
@@ -76,11 +77,7 @@ describe('MSK Cluster', () => {
               'arn:aws:acm-pca:us-west-2:1234567890:certificate-authority/11111111-1111-1111-1111-111111111111',
             ],
           }),
-        });
-
-        const synthedStack = SynthUtils.synthesize(stack);
-        const meta = synthedStack.findMetadataByType('aws:cdk:error');
-        expect(meta[0].data).toEqual(
+        })).toThrow(
           'To enable client authentication, you must enabled TLS-encrypted traffic between clients and brokers.',
         );
       });
@@ -88,7 +85,7 @@ describe('MSK Cluster', () => {
 
     describe('with sasl/scram auth', () => {
       test('fails if tls encryption is set to plaintext', () => {
-        new msk.Cluster(stack, 'Cluster', {
+        expect(() => new msk.Cluster(stack, 'Cluster', {
           clusterName: 'cluster',
           kafkaVersion: msk.KafkaVersion.V2_6_1,
           vpc,
@@ -98,16 +95,14 @@ describe('MSK Cluster', () => {
           clientAuthentication: msk.ClientAuthentication.sasl({
             scram: true,
           }),
-        });
-        const synthedStack = SynthUtils.synthesize(stack);
-        const meta = synthedStack.findMetadataByType('aws:cdk:error');
-        expect(meta[0].data).toEqual(
+        }),
+        ).toThrow(
           'To enable client authentication, you must enabled TLS-encrypted traffic between clients and brokers.',
         );
       });
 
       test('fails if tls encryption is set to tls and plaintext', () => {
-        new msk.Cluster(stack, 'Cluster', {
+        expect(() => new msk.Cluster(stack, 'Cluster', {
           clusterName: 'cluster',
           kafkaVersion: msk.KafkaVersion.V2_6_1,
           vpc,
@@ -117,10 +112,7 @@ describe('MSK Cluster', () => {
           clientAuthentication: msk.ClientAuthentication.sasl({
             scram: true,
           }),
-        });
-        const synthedStack = SynthUtils.synthesize(stack);
-        const meta = synthedStack.findMetadataByType('aws:cdk:error');
-        expect(meta[0].data).toEqual(
+        })).toThrow(
           'To enable SASL/SCRAM authentication, you must only allow TLS-encrypted traffic between clients and brokers.',
         );
       });
@@ -337,31 +329,23 @@ describe('MSK Cluster', () => {
 
   describe('ebs volume size is within bounds', () => {
     test('exceeds max', () => {
-      new msk.Cluster(stack, 'Cluster', {
+      expect(() => new msk.Cluster(stack, 'Cluster', {
         clusterName: 'cluster',
         kafkaVersion: msk.KafkaVersion.V2_6_1,
         vpc,
         ebsStorageInfo: { volumeSize: 16385 },
-      });
-
-      const synthedStack = SynthUtils.synthesize(stack);
-      const meta = synthedStack.findMetadataByType('aws:cdk:error');
-      expect(meta[0].data).toEqual(
+      })).toThrow(
         'EBS volume size should be in the range 1-16384',
       );
     });
 
     test('below minimum', () => {
-      new msk.Cluster(stack, 'Cluster', {
+      expect(() => new msk.Cluster(stack, 'Cluster', {
         clusterName: 'cluster',
         kafkaVersion: msk.KafkaVersion.V2_6_1,
         vpc,
         ebsStorageInfo: { volumeSize: 0 },
-      });
-
-      const synthedStack = SynthUtils.synthesize(stack);
-      const meta = synthedStack.findMetadataByType('aws:cdk:error');
-      expect(meta[0].data).toEqual(
+      })).toThrow(
         'EBS volume size should be in the range 1-16384',
       );
     });
@@ -463,11 +447,7 @@ describe('MSK Cluster', () => {
         vpc,
       });
 
-      cluster.addUser('my-user');
-
-      const synthedStack = SynthUtils.synthesize(stack);
-      const meta = synthedStack.findMetadataByType('aws:cdk:error');
-      expect(meta[0].data).toEqual(
+      expect(() => cluster.addUser('my-user')).toThrow(
         'Cannot create users if an authentication KMS key has not been created/provided.',
       );
     });

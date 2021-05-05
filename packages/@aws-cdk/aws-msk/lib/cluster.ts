@@ -407,7 +407,7 @@ export class Cluster extends ClusterBase {
     });
 
     if (subnetSelection.subnets.length < 2) {
-      core.Annotations.of(this).addError(
+      throw Error(
         `Cluster requires at least 2 subnets, got ${subnetSelection.subnets.length}`,
       );
     }
@@ -417,7 +417,7 @@ export class Cluster extends ClusterBase {
       !/^[a-zA-Z0-9]+$/.test(props.clusterName) &&
       props.clusterName.length > 64
     ) {
-      core.Annotations.of(this).addError(
+      throw Error(
         'The cluster name must only contain alphanumeric characters and have a maximum length of 64 characters.' +
           `got: '${props.clusterName}. length: ${props.clusterName.length}'`,
       );
@@ -428,7 +428,7 @@ export class Cluster extends ClusterBase {
         ClientBrokerEncryption.PLAINTEXT &&
       props.clientAuthentication
     ) {
-      core.Annotations.of(this).addError(
+      throw Error(
         'To enable client authentication, you must enabled TLS-encrypted traffic between clients and brokers.',
       );
     } else if (
@@ -436,7 +436,7 @@ export class Cluster extends ClusterBase {
         ClientBrokerEncryption.TLS_PLAINTEXT &&
       props.clientAuthentication?.saslProps?.scram
     ) {
-      core.Annotations.of(this).addError(
+      throw Error(
         'To enable SASL/SCRAM authentication, you must only allow TLS-encrypted traffic between clients and brokers.',
       );
     }
@@ -445,7 +445,7 @@ export class Cluster extends ClusterBase {
       props.ebsStorageInfo?.volumeSize ?? 1000;
     // Minimum: 1 GiB, maximum: 16384 GiB
     if (volumeSize < 1 || volumeSize > 16384) {
-      core.Annotations.of(this).addError(
+      throw Error(
         'EBS volume size should be in the range 1-16384',
       );
     }
@@ -761,7 +761,7 @@ export class Cluster extends ClusterBase {
         ]),
       });
     } else {
-      core.Annotations.of(this).addError(
+      throw Error(
         'Cannot create users if an authentication KMS key has not been created/provided.',
       );
     }
