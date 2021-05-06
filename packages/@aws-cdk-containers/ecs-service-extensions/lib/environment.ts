@@ -1,11 +1,7 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecs from '@aws-cdk/aws-ecs';
-import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { EnvironmentCapacityType } from './extensions/extension-interfaces';
-
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct } from '@aws-cdk/core';
 
 /**
  * Settings for the environment you want to deploy.
@@ -96,7 +92,7 @@ export class Environment extends Construct implements IEnvironment {
    */
   public readonly capacityType: EnvironmentCapacityType;
 
-  private readonly scope: cdk.Construct;
+  private readonly scope: Construct;
 
   constructor(scope: Construct, id: string, props?: EnvironmentProps) {
     super(scope, id);
