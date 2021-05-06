@@ -266,6 +266,18 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
   readonly logRetentionRetryOptions?: LogRetentionRetryOptions;
 
   /**
+   * The KMS key that is used to encrypt CloudWatch LogGroup associated with
+   * this function.
+   *
+   * The KMS key must grants Cloudwatch service account the required
+   * permissions to encrypt LogGroups.
+   *
+   * @default - undefined
+   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/encrypt-log-data-kms.html#cmk-permissions
+   */
+  readonly logEncryptionKey?: kms.IKey;
+
+  /**
    * Options for the `lambda.Version` resource automatically created by the
    * `fn.currentVersion` method.
    * @default - default options as described in `VersionOptions`
@@ -535,6 +547,8 @@ export class Function extends FunctionBase {
 
   private readonly layers: ILayerVersion[] = [];
 
+  private readonly logEncryptionKey?: kms.IKey;
+
   private _logGroup?: logs.ILogGroup;
 
   /**
@@ -675,15 +689,22 @@ export class Function extends FunctionBase {
       this.addEventSource(event);
     }
 
+    // LogGroup encryption
+    this.logEncryptionKey = props.logEncryptionKey;
+
     // Log retention
     if (props.logRetention) {
-      const logRetention = new logs.LogRetention(this, 'LogRetention', {
-        logGroupName: `/aws/lambda/${this.functionName}`,
+      const logGroupName = `/aws/lambda/${this.functionName}`;
+      this._logGroup = new logs.LogGroup(this, 'LogGroup', {
+        logGroupName,
+        encryptionKey: this.logEncryptionKey,
+      });
+      new logs.LogRetention(this, 'LogRetention', {
+        logGroupName,
         retention: props.logRetention,
         role: props.logRetentionRole,
         logRetentionRetryOptions: props.logRetentionRetryOptions as logs.LogRetentionRetryOptions,
       });
-      this._logGroup = logs.LogGroup.fromLogGroupArn(this, 'LogGroup', logRetention.logGroupArn);
     }
 
     props.code.bindToResource(resource);
@@ -794,11 +815,15 @@ export class Function extends FunctionBase {
    */
   public get logGroup(): logs.ILogGroup {
     if (!this._logGroup) {
-      const logRetention = new logs.LogRetention(this, 'LogRetention', {
-        logGroupName: `/aws/lambda/${this.functionName}`,
+      const logGroupName = `/aws/lambda/${this.functionName}`;
+      this._logGroup = new logs.LogGroup(this, 'LogGroup', {
+        logGroupName,
+        encryptionKey: this.logEncryptionKey,
+      });
+      new logs.LogRetention(this, 'LogRetention', {
+        logGroupName,
         retention: logs.RetentionDays.INFINITE,
       });
-      this._logGroup = logs.LogGroup.fromLogGroupArn(this, `${this.node.id}-LogGroup`, logRetention.logGroupArn);
     }
     return this._logGroup;
   }

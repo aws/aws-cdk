@@ -1232,6 +1232,91 @@ describe('function', () => {
     });
   });
 
+  test('encrypt LogGroup with log retention', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const key: kms.IKey = new kms.Key(stack, 'LogEncryptKey', {
+      description: 'sample key',
+    });
+
+    // WHEN
+    new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS,
+      logRetention: logs.RetentionDays.ONE_MONTH,
+      logEncryptionKey: key,
+    });
+
+    // THEN
+    expect(stack).toHaveResource('AWS::Logs::LogGroup', {
+      LogGroupName: {
+        'Fn::Join': [
+          '',
+          [
+            '/aws/lambda/',
+            {
+              Ref: 'MyLambdaCCE802FB',
+            },
+          ],
+        ],
+      },
+      KmsKeyId: {
+        'Fn::GetAtt': ['LogEncryptKey84D0EF32', 'Arn'],
+      },
+    });
+    expect(stack).toHaveResource('Custom::LogRetention', {
+      LogGroupName: {
+        'Fn::Join': [
+          '',
+          [
+            '/aws/lambda/',
+            {
+              Ref: 'MyLambdaCCE802FB',
+            },
+          ],
+        ],
+      },
+      RetentionInDays: 30,
+    });
+  });
+
+  test('encrypt LogGroup', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const key: kms.IKey = new kms.Key(stack, 'LogEncryptKey', {
+      description: 'sample key',
+    });
+
+    // WHEN
+    const f = new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS,
+      logRetention: logs.RetentionDays.ONE_MONTH,
+      logEncryptionKey: key,
+    });
+    f.logGroup;
+
+    // THEN
+    expect(stack).toHaveResource('AWS::Logs::LogGroup', {
+      LogGroupName: {
+        'Fn::Join': [
+          '',
+          [
+            '/aws/lambda/',
+            {
+              Ref: 'MyLambdaCCE802FB',
+            },
+          ],
+        ],
+      },
+      KmsKeyId: {
+        'Fn::GetAtt': ['LogEncryptKey84D0EF32', 'Arn'],
+      },
+    });
+  });
+
   test('imported lambda with imported security group and allowAllOutbound set to false', () => {
     // GIVEN
     const stack = new cdk.Stack();
