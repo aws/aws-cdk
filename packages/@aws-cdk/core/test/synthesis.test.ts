@@ -2,6 +2,7 @@ import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
+import { Construct } from 'constructs';
 import { nodeunitShim, Test } from 'nodeunit-shim';
 import * as cdk from '../lib';
 import { synthesize } from '../lib/private/synthesis';
@@ -62,13 +63,12 @@ nodeunitShim({
     test.done();
   },
 
-<<<<<<< HEAD
   'some random construct implements "synthesize"'(test: Test) {
     // GIVEN
     const app = createModernApp();
     const stack = new cdk.Stack(app, 'one-stack');
 
-    class MyConstruct extends cdk.Construct {
+    class MyConstruct extends Construct {
       protected synthesize(s: cdk.ISynthesisSession) {
         writeJson(s.assembly.outdir, 'foo.json', { bar: 123 });
         s.assembly.addArtifact('my-random-construct', {
@@ -114,8 +114,6 @@ nodeunitShim({
     test.done();
   },
 
-=======
->>>>>>> v2-main
   'it should be possible to synthesize without an app'(test: Test) {
     const calls = new Array<string>();
 
