@@ -1,11 +1,10 @@
-import { expect, haveResourceLike } from '@aws-cdk/assert-internal';
+import { expect as expectCDK, haveResourceLike } from '@aws-cdk/assert-internal';
 import * as iam from '@aws-cdk/aws-iam';
 import { Stack } from '@aws-cdk/core';
-import { Test } from 'nodeunit';
 import { AuthorizationToken, PublicGalleryAuthorizationToken } from '../lib';
 
-export = {
-  'AuthorizationToken.grantRead()'(test: Test) {
+describe('auth-token', () => {
+  test('AuthorizationToken.grantRead()', () => {
     // GIVEN
     const stack = new Stack();
     const user = new iam.User(stack, 'User');
@@ -14,7 +13,7 @@ export = {
     AuthorizationToken.grantRead(user);
 
     // THEN
-    expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
+    expectCDK(stack).to(haveResourceLike('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
@@ -25,11 +24,9 @@ export = {
         ],
       },
     }));
+  });
 
-    test.done();
-  },
-
-  'PublicGalleryAuthorizationToken.grantRead()'(test: Test) {
+  test('PublicGalleryAuthorizationToken.grantRead()', () => {
     // GIVEN
     const stack = new Stack();
     const user = new iam.User(stack, 'User');
@@ -38,7 +35,7 @@ export = {
     PublicGalleryAuthorizationToken.grantRead(user);
 
     // THEN
-    expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
+    expectCDK(stack).to(haveResourceLike('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
@@ -52,8 +49,5 @@ export = {
         ],
       },
     }));
-
-    test.done();
-  },
-
-};
+  });
+});
