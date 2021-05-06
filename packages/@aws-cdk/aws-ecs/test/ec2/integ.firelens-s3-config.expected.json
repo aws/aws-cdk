@@ -484,7 +484,9 @@
     "EcsClusterDefaultAutoScalingGroupLaunchConfigB7E376C1": {
       "Type": "AWS::AutoScaling::LaunchConfiguration",
       "Properties": {
-        "ImageId": "{{resolve:ssm:/aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id}}",
+        "ImageId": {
+          "Ref": "SsmParameterValueawsserviceecsoptimizedamiamazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
+        },
         "InstanceType": "t2.micro",
         "IamInstanceProfile": {
           "Ref": "EcsClusterDefaultAutoScalingGroupInstanceProfile2CE606B3"
@@ -908,7 +910,9 @@
               },
               "Type": "fluentbit"
             },
-            "Image": "{{resolve:ssm:/aws/service/aws-for-fluent-bit/2.1.0}}",
+            "Image": {
+              "Ref": "SsmParameterValueawsserviceawsforfluentbit210C96584B6F00A464EAD1953AFF4B05118Parameter"
+            },
             "LogConfiguration": {
               "LogDriver": "awslogs",
               "Options": {
@@ -1160,6 +1164,10 @@
     }
   },
   "Parameters": {
+    "SsmParameterValueawsserviceecsoptimizedamiamazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter": {
+      "Type": "AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>",
+      "Default": "/aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id"
+    },
     "AssetParameters2ca891b3a73a4a36630bba20580e3390a104d2ac9ff1f22a6bcadf575f8a5a61S3Bucket4E939944": {
       "Type": "String",
       "Description": "S3 bucket for asset \"2ca891b3a73a4a36630bba20580e3390a104d2ac9ff1f22a6bcadf575f8a5a61\""
@@ -1171,6 +1179,10 @@
     "AssetParameters2ca891b3a73a4a36630bba20580e3390a104d2ac9ff1f22a6bcadf575f8a5a61ArtifactHashB4EEDAF3": {
       "Type": "String",
       "Description": "Artifact hash for asset \"2ca891b3a73a4a36630bba20580e3390a104d2ac9ff1f22a6bcadf575f8a5a61\""
+    },
+    "SsmParameterValueawsserviceawsforfluentbit210C96584B6F00A464EAD1953AFF4B05118Parameter": {
+      "Type": "AWS::SSM::Parameter::Value<String>",
+      "Default": "/aws/service/aws-for-fluent-bit/2.1.0"
     }
   }
 }
