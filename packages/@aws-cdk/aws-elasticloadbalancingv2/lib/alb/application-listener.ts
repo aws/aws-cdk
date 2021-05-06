@@ -5,7 +5,7 @@ import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
 import { BaseListener, BaseListenerLookupOptions } from '../shared/base-listener';
 import { HealthCheck } from '../shared/base-target-group';
-import { ApplicationProtocol, IpAddressType, SslPolicy } from '../shared/enums';
+import { ApplicationProtocol, ApplicationProtocolVersion, IpAddressType, SslPolicy } from '../shared/enums';
 import { IListenerCertificate, ListenerCertificate } from '../shared/listener-certificate';
 import { determineProtocolAndPort } from '../shared/util';
 import { ListenerAction } from './application-listener-action';
@@ -363,6 +363,7 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
       healthCheck: props.healthCheck,
       port: props.port,
       protocol: props.protocol,
+      protocolVersion: props.protocolVersion,
       slowStart: props.slowStart,
       stickinessCookieDuration: props.stickinessCookieDuration,
       stickinessCookieName: props.stickinessCookieName,
@@ -492,8 +493,14 @@ export interface IApplicationListener extends IResource, ec2.IConnectable {
 
   /**
    * Add one or more certificates to this listener.
+   * @deprecated use `addCertificates()`
    */
   addCertificateArns(id: string, arns: string[]): void;
+
+  /**
+   * Add one or more certificates to this listener.
+   */
+  addCertificates(id: string, certificates: IListenerCertificate[]): void;
 
   /**
    * Load balance incoming requests to the given target groups.
@@ -589,8 +596,17 @@ abstract class ExternalApplicationListener extends Resource implements IApplicat
 
   /**
    * Add one or more certificates to this listener.
+   * @deprecated use `addCertificates()`
    */
   public addCertificateArns(id: string, arns: string[]): void {
+    this.addCertificates(id, arns.map(ListenerCertificate.fromArn));
+  }
+
+  /**
+   * Add one or more certificates to this listener.
+   */
+  public addCertificates(id: string, certificates: IListenerCertificate[]): void {
+    const arns = certificates.map(c => c.certificateArn);
     new ApplicationListenerCertificate(this, id, {
       listener: this,
       certificateArns: arns,
@@ -786,6 +802,13 @@ export interface AddApplicationTargetsProps extends AddRuleProps {
    * @default Determined from port if known
    */
   readonly protocol?: ApplicationProtocol;
+
+  /**
+   * The protocol version to use
+   *
+   * @default ApplicationProtocolVersion.HTTP1
+   */
+  readonly protocolVersion?: ApplicationProtocolVersion;
 
   /**
    * The port on which the listener listens for requests.

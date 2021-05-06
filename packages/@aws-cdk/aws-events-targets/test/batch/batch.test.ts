@@ -1,4 +1,4 @@
-import { expect, haveResource } from '@aws-cdk/assert';
+import { expect, haveResource } from '@aws-cdk/assert-internal';
 import * as batch from '@aws-cdk/aws-batch';
 import { ContainerImage } from '@aws-cdk/aws-ecs';
 import * as events from '@aws-cdk/aws-events';
@@ -28,7 +28,7 @@ test('use aws batch job as an eventrule target', () => {
   });
 
   // WHEN
-  rule.addTarget(new targets.BatchJob(jobQueue, jobDefinition));
+  rule.addTarget(new targets.BatchJob(jobQueue.jobQueueArn, jobQueue, jobDefinition.jobDefinitionArn, jobDefinition));
 
   // THEN
   expect(stack).to(haveResource('AWS::Events::Rule', {

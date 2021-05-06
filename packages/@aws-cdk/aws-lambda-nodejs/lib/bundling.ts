@@ -48,7 +48,7 @@ export class Bundling implements cdk.BundlingOptions {
   private static runsLocally?: boolean;
 
   // Core bundling options
-  public readonly image: cdk.BundlingDockerImage;
+  public readonly image: cdk.DockerImage;
   public readonly command: string[];
   public readonly environment?: { [key: string]: string };
   public readonly workingDirectory: string;
@@ -78,14 +78,14 @@ export class Bundling implements cdk.BundlingOptions {
     // Docker bundling
     const shouldBuildImage = props.forceDockerBundling || !Bundling.runsLocally;
     this.image = shouldBuildImage
-      ? props.dockerImage ?? cdk.BundlingDockerImage.fromAsset(path.join(__dirname, '../lib'), {
+      ? props.dockerImage ?? cdk.DockerImage.fromBuild(path.join(__dirname, '../lib'), {
         buildArgs: {
           ...props.buildArgs ?? {},
           IMAGE: props.runtime.bundlingDockerImage.image,
           ESBUILD_VERSION: props.esbuildVersion ?? ESBUILD_VERSION,
         },
       })
-      : cdk.BundlingDockerImage.fromRegistry('dummy'); // Do not build if we don't need to
+      : cdk.DockerImage.fromRegistry('dummy'); // Do not build if we don't need to
 
     const bundlingCommand = this.createBundlingCommand(cdk.AssetStaging.BUNDLING_INPUT_DIR, cdk.AssetStaging.BUNDLING_OUTPUT_DIR);
     this.command = ['bash', '-c', bundlingCommand];
@@ -148,7 +148,7 @@ export class Bundling implements cdk.BundlingOptions {
       ...this.props.sourceMap ? ['--sourcemap'] : [],
       ...this.externals.map(external => `--external:${external}`),
       ...loaders.map(([ext, name]) => `--loader:${ext}=${name}`),
-      ...defines.map(([key, value]) => `--define:${key}=${value}`),
+      ...defines.map(([key, value]) => `--define:${key}=${JSON.stringify(value)}`),
       ...this.props.logLevel ? [`--log-level=${this.props.logLevel}`] : [],
       ...this.props.keepNames ? ['--keep-names'] : [],
       ...this.relativeTsconfigPath ? [`--tsconfig=${pathJoin(inputDir, this.relativeTsconfigPath)}`] : [],

@@ -9,7 +9,7 @@
     "watch": "cdk-watch",
     "lint": "cdk-lint",
     "test": "cdk-test",
-    "pkglint": "pkglint -f",
+    "pkglint": "true",
     "package": "cdk-package",
     "build+test+package": "yarn build+test && yarn package",
     "build+test": "yarn build && yarn test"
@@ -34,20 +34,20 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@monocdk-experiment/rewrite-imports": "0.0.0",
-    "@types/jest": "^26.0.20",
-    "@types/node": "^10.17.54",
+    "@types/jest": "^26.0.23",
+    "@types/node": "^10.17.59",
     "cdk-build-tools": "0.0.0",
-    "constructs": "^3.2.0",
+    "constructs": "^3.3.69",
     "jest": "^26.6.3",
     "monocdk": "0.0.0",
     "pkglint": "0.0.0",
-    "ts-jest": "^26.5.3"
+    "ts-jest": "^26.5.5"
   },
   "dependencies": {
     "@aws-cdk/cloudformation-diff": "0.0.0"
   },
   "peerDependencies": {
-    "constructs": "^3.2.0",
+    "constructs": "^3.3.69",
     "jest": "^26.6.3",
     "monocdk": "^0.0.0"
   },

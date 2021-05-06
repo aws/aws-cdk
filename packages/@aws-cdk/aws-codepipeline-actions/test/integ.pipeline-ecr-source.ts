@@ -15,7 +15,9 @@ const pipeline = new codepipeline.Pipeline(stack, 'MyPipeline', {
   artifactBucket: bucket,
 });
 
-const repository = new ecr.Repository(stack, 'MyEcrRepo');
+const repository = new ecr.Repository(stack, 'MyEcrRepo', {
+  removalPolicy: cdk.RemovalPolicy.DESTROY,
+});
 const sourceStage = pipeline.addStage({ stageName: 'Source' });
 sourceStage.addAction(new cpactions.EcrSourceAction({
   actionName: 'ECR_Source',

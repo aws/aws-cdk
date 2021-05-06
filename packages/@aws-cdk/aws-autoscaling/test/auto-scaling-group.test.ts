@@ -1,4 +1,4 @@
-import { ABSENT, expect, haveResource, haveResourceLike, InspectionFailure, ResourcePart } from '@aws-cdk/assert';
+import { ABSENT, expect, haveResource, haveResourceLike, InspectionFailure, ResourcePart } from '@aws-cdk/assert-internal';
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
@@ -1318,6 +1318,50 @@ nodeunitShim({
 
   'NotificationTypes.ALL includes all non test NotificationType'(test: Test) {
     test.deepEqual(Object.values(autoscaling.ScalingEvent).length - 1, autoscaling.ScalingEvents.ALL._types.length);
+    test.done();
+  },
+
+  'Can protect new instances from scale-in via constructor property'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = mockVpc(stack);
+
+    // WHEN
+    const asg = new autoscaling.AutoScalingGroup(stack, 'MyASG', {
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
+      machineImage: new ec2.AmazonLinuxImage(),
+      vpc,
+      newInstancesProtectedFromScaleIn: true,
+    });
+
+    // THEN
+    test.strictEqual(asg.areNewInstancesProtectedFromScaleIn(), true);
+    expect(stack).to(haveResourceLike('AWS::AutoScaling::AutoScalingGroup', {
+      NewInstancesProtectedFromScaleIn: true,
+    }));
+
+    test.done();
+  },
+
+  'Can protect new instances from scale-in via setter'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = mockVpc(stack);
+
+    // WHEN
+    const asg = new autoscaling.AutoScalingGroup(stack, 'MyASG', {
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
+      machineImage: new ec2.AmazonLinuxImage(),
+      vpc,
+    });
+    asg.protectNewInstancesFromScaleIn();
+
+    // THEN
+    test.strictEqual(asg.areNewInstancesProtectedFromScaleIn(), true);
+    expect(stack).to(haveResourceLike('AWS::AutoScaling::AutoScalingGroup', {
+      NewInstancesProtectedFromScaleIn: true,
+    }));
+
     test.done();
   },
 });
