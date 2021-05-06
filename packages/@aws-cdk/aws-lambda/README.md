@@ -370,6 +370,8 @@ log data set to never expire.
 
 The `logRetention` property can be used to set a different expiration period.
 
+the `logEncrytionKey` property can be used to set a KMS key that is used to encrypt the `LogGroup` of this function. 
+
 It is possible to obtain the function's log group as a `logs.ILogGroup` by calling the `logGroup` property of the
 `Function` construct.
 
