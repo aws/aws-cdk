@@ -4,12 +4,13 @@ import { expect, haveResource, matchTemplate, SynthUtils } from '@aws-cdk/assert
 import * as s3_assets from '@aws-cdk/aws-s3-assets';
 import * as sns from '@aws-cdk/aws-sns';
 import { App, CfnParameter, CfnResource, ContextProvider, LegacyStackSynthesizer, Names, Stack } from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
 import { Test } from 'nodeunit';
 import { NestedStack } from '../lib/nested-stack';
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
 // eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 
 /* eslint-disable cdk/no-core-construct */
 /* eslint-disable max-len */
@@ -44,7 +45,7 @@ export = {
 
   'nested stack is not synthesized as a stack artifact into the assembly'(test: Test) {
     // GIVEN
-    const app = new App();
+    const app = new App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
     const parentStack = new Stack(app, 'parent-stack');
     new NestedStack(parentStack, 'nested-stack');
 
@@ -80,7 +81,7 @@ export = {
 
   'file asset metadata is associated with the parent stack'(test: Test) {
     // GIVEN
-    const app = new App();
+    const app = new App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
     const parent = new Stack(app, 'parent-stack');
     const nested = new NestedStack(parent, 'nested-stack');
     new CfnResource(nested, 'ResourceInNestedStack', { type: 'AWS::Resource::Nested' });
@@ -103,7 +104,7 @@ export = {
 
   'aws::cloudformation::stack is synthesized in the parent scope'(test: Test) {
     // GIVEN
-    const app = new App();
+    const app = new App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
     const parent = new Stack(app, 'parent-stack');
 
     // WHEN
@@ -235,7 +236,7 @@ export = {
       }
     }
 
-    const app = new App();
+    const app = new App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
     const parent = new Stack(app, 'parent');
 
     new MyNestedStack(parent, 'nested');
@@ -380,7 +381,7 @@ export = {
 
   'nested stack references a resource from another non-nested stack (not the parent)'(test: Test) {
     // GIVEN
-    const app = new App();
+    const app = new App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
     const stack1 = new Stack(app, 'Stack1');
     const stack2 = new Stack(app, 'Stack2');
     const nestedUnderStack1 = new NestedStack(stack1, 'NestedUnderStack1');
@@ -435,7 +436,7 @@ export = {
 
   'nested stack within a nested stack references a resource in a sibling top-level stack'(test: Test) {
     // GIVEN
-    const app = new App();
+    const app = new App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
     const consumerTopLevel = new Stack(app, 'ConsumerTopLevel');
     const consumerNested1 = new NestedStack(consumerTopLevel, 'ConsumerNested1');
     const consumerNested2 = new NestedStack(consumerNested1, 'ConsumerNested2');
@@ -459,7 +460,7 @@ export = {
 
   'another non-nested stack takes a reference on a resource within the nested stack (the parent exports)'(test: Test) {
     // GIVEN
-    const app = new App();
+    const app = new App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
     const stack1 = new Stack(app, 'Stack1');
     const stack2 = new Stack(app, 'Stack2');
     const nestedUnderStack1 = new NestedStack(stack1, 'NestedUnderStack1');
@@ -700,7 +701,7 @@ export = {
 
   'double-nested stack'(test: Test) {
     // GIVEN
-    const app = new App();
+    const app = new App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
     const parent = new Stack(app, 'stack');
 
     // WHEN
@@ -760,7 +761,7 @@ export = {
 
   'assets within nested stacks are proxied from the parent'(test: Test) {
     // GIVEN
-    const app = new App();
+    const app = new App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
     const parent = new Stack(app, 'ParentStack');
     const nested = new NestedStack(parent, 'NestedStack');
 
@@ -806,7 +807,7 @@ export = {
 
   'docker image assets are wired through the top-level stack'(test: Test) {
     // GIVEN
-    const app = new App();
+    const app = new App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
     const parent = new Stack(app, 'my-stack');
     const nested = new NestedStack(parent, 'nested-stack');
 
@@ -979,7 +980,7 @@ export = {
 
   'references to a resource from a deeply nested stack'(test: Test) {
     // GIVEN
-    const app = new App();
+    const app = new App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
     const top = new Stack(app, 'stack');
     const topLevel = new CfnResource(top, 'toplevel', { type: 'TopLevel' });
     const nested1 = new NestedStack(top, 'nested1');
@@ -1036,7 +1037,7 @@ export = {
 
   'bottom nested stack consumes value from a top-level stack through a parameter in a middle nested stack'(test: Test) {
     // GIVEN
-    const app = new App();
+    const app = new App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
     const top = new Stack(app, 'Grandparent');
     const middle = new NestedStack(top, 'Parent');
     const bottom = new NestedStack(middle, 'Child');
