@@ -24,6 +24,7 @@ intake and aggregation.
     - [Read Permissions](#read-permissions)
     - [Write Permissions](#write-permissions)
     - [Custom Permissions](#custom-permissions)
+  - [Metrics](#metrics)
 
 ## Streams
 
@@ -192,3 +193,21 @@ const stream = new Stream(stack, 'MyStream');
 // give my user permissions to list shards
 stream.grant(user, 'kinesis:ListShards');
 ```
+
+### Metrics
+
+You can use common metrics from your stream to create alarms and/or dashboards. The `stream.metric('MetricName')` method creates a metric with the stream namespace and dimension. You can also use pre-define methods like `stream.metricGetRecordsSuccess()`. To find out more about Kinesis metrics check [Monitoring the Amazon Kinesis Data Streams Service with Amazon CloudWatch](https://docs.aws.amazon.com/streams/latest/dev/monitoring-with-cloudwatch.html).
+
+```ts
+const stream = new Stream(stack, 'MyStream');
+
+// Using base metric method passing the metric name
+stream.metric('GetRecords.Success');
+
+// using pre-defined metric method
+stream.metricGetRecordsSuccess();
+
+// using pre-defined and overriding the statistic
+stream.metricGetRecordsSuccess({ statistic: 'Maximum' });
+```
+

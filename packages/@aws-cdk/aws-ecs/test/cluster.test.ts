@@ -40,7 +40,9 @@ nodeunitShim({
       }));
 
       expect(stack).to(haveResource('AWS::AutoScaling::LaunchConfiguration', {
-        ImageId: '{{resolve:ssm:/aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id}}',
+        ImageId: {
+          Ref: 'SsmParameterValueawsserviceecsoptimizedamiamazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter',
+        },
         InstanceType: 't2.micro',
         IamInstanceProfile: {
           Ref: 'EcsClusterDefaultAutoScalingGroupInstanceProfile2CE606B3',
@@ -209,7 +211,9 @@ nodeunitShim({
       }));
 
       expect(stack).to(haveResource('AWS::AutoScaling::LaunchConfiguration', {
-        ImageId: '{{resolve:ssm:/aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id}}',
+        ImageId: {
+          Ref: 'SsmParameterValueawsserviceecsoptimizedamiamazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter',
+        },
         InstanceType: 't2.micro',
         IamInstanceProfile: {
           Ref: 'EcsClusterDefaultAutoScalingGroupInstanceProfile2CE606B3',
@@ -571,7 +575,9 @@ nodeunitShim({
       }));
 
       expect(stack).to(haveResource('AWS::AutoScaling::LaunchConfiguration', {
-        ImageId: '{{resolve:ssm:/aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id}}',
+        ImageId: {
+          Ref: 'SsmParameterValueawsserviceecsoptimizedamiamazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter',
+        },
         InstanceType: 't2.micro',
         IamInstanceProfile: {
           Ref: 'EcsClusterDefaultAutoScalingGroupInstanceProfile2CE606B3',
@@ -765,7 +771,9 @@ nodeunitShim({
 
     // THEN
     expect(stack).to(haveResource('AWS::AutoScaling::LaunchConfiguration', {
-      ImageId: '{{resolve:ssm:/aws/service/ecs/optimized-ami/windows_server/2019/english/full/recommended/image_id}}',
+      ImageId: {
+        Ref: 'SsmParameterValueawsserviceecsoptimizedamiwindowsserver2019englishfullrecommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter',
+      },
       InstanceType: 't2.micro',
       IamInstanceProfile: {
         Ref: 'EcsClusterWindowsAutoScalingGroupInstanceProfile65DFA6BB',
@@ -819,9 +827,20 @@ nodeunitShim({
     });
 
     // THEN
+    const assembly = app.synth();
+    const template = assembly.getStackByName(stack.stackName).template;
     expect(stack).to(haveResource('AWS::AutoScaling::LaunchConfiguration', {
-      ImageId: '{{resolve:ssm:/aws/service/ecs/optimized-ami/amazon-linux-2/gpu/recommended/image_id}}',
+      ImageId: {
+        Ref: 'SsmParameterValueawsserviceecsoptimizedamiamazonlinux2gpurecommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter',
+      },
     }));
+
+    test.deepEqual(template.Parameters, {
+      SsmParameterValueawsserviceecsoptimizedamiamazonlinux2gpurecommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter: {
+        Type: 'AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>',
+        Default: '/aws/service/ecs/optimized-ami/amazon-linux-2/gpu/recommended/image_id',
+      },
+    });
 
     test.done();
   },
@@ -862,9 +881,14 @@ nodeunitShim({
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::AutoScaling::LaunchConfiguration', {
-      ImageId: '{{resolve:ssm:/aws/service/ecs/optimized-ami/windows_server/2019/english/full/recommended/image_id}}',
-    }));
+    const assembly = app.synth();
+    const template = assembly.getStackByName(stack.stackName).template;
+    test.deepEqual(template.Parameters, {
+      SsmParameterValueawsserviceecsoptimizedamiwindowsserver2019englishfullrecommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter: {
+        Type: 'AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>',
+        Default: '/aws/service/ecs/optimized-ami/windows_server/2019/english/full/recommended/image_id',
+      },
+    });
 
     test.done();
   },
@@ -967,6 +991,17 @@ nodeunitShim({
     test.done();
   },
 
+  'allows returning the correct image for linux 2 for EcsOptimizedImage with ARM hardware'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    test.equal(ecs.EcsOptimizedImage.amazonLinux2(ecs.AmiHardwareType.ARM).getImage(stack).osType,
+      ec2.OperatingSystemType.LINUX);
+
+    test.done();
+  },
+
+
   'allows returning the correct image for windows for EcsOptimizedImage'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
@@ -994,9 +1029,20 @@ nodeunitShim({
     });
 
     // THEN
+    const assembly = app.synth();
+    const template = assembly.getStackByName(stack.stackName).template;
     expect(stack).to(haveResource('AWS::AutoScaling::LaunchConfiguration', {
-      ImageId: '{{resolve:ssm:/aws/service/ecs/optimized-ami/amazon-linux-2/gpu/recommended/image_id}}',
+      ImageId: {
+        Ref: 'SsmParameterValueawsserviceecsoptimizedamiamazonlinux2gpurecommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter',
+      },
     }));
+
+    test.deepEqual(template.Parameters, {
+      SsmParameterValueawsserviceecsoptimizedamiamazonlinux2gpurecommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter: {
+        Type: 'AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>',
+        Default: '/aws/service/ecs/optimized-ami/amazon-linux-2/gpu/recommended/image_id',
+      },
+    });
 
     test.done();
   },
@@ -1014,9 +1060,20 @@ nodeunitShim({
     });
 
     // THEN
+    const assembly = app.synth();
+    const template = assembly.getStackByName(stack.stackName).template;
     expect(stack).to(haveResource('AWS::AutoScaling::LaunchConfiguration', {
-      ImageId: '{{resolve:ssm:/aws/service/ecs/optimized-ami/amazon-linux/recommended/image_id}}',
+      ImageId: {
+        Ref: 'SsmParameterValueawsserviceecsoptimizedamiamazonlinuxrecommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter',
+      },
     }));
+
+    test.deepEqual(template.Parameters, {
+      SsmParameterValueawsserviceecsoptimizedamiamazonlinuxrecommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter: {
+        Type: 'AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>',
+        Default: '/aws/service/ecs/optimized-ami/amazon-linux/recommended/image_id',
+      },
+    });
 
     test.done();
   },
@@ -1034,9 +1091,14 @@ nodeunitShim({
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::AutoScaling::LaunchConfiguration', {
-      ImageId: '{{resolve:ssm:/aws/service/ecs/optimized-ami/windows_server/2019/english/full/recommended/image_id}}',
-    }));
+    const assembly = app.synth();
+    const template = assembly.getStackByName(stack.stackName).template;
+    test.deepEqual(template.Parameters, {
+      SsmParameterValueawsserviceecsoptimizedamiwindowsserver2019englishfullrecommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter: {
+        Type: 'AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>',
+        Default: '/aws/service/ecs/optimized-ami/windows_server/2019/english/full/recommended/image_id',
+      },
+    });
 
     test.done();
   },
@@ -1360,7 +1422,9 @@ nodeunitShim({
     }));
 
     expect(stack).to(haveResource('AWS::AutoScaling::LaunchConfiguration', {
-      ImageId: '{{resolve:ssm:/aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id}}',
+      ImageId: {
+        Ref: 'SsmParameterValueawsserviceecsoptimizedamiamazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter',
+      },
       InstanceType: 't2.micro',
       AssociatePublicIpAddress: true,
       IamInstanceProfile: {
@@ -1502,19 +1566,30 @@ nodeunitShim({
 
   'BottleRocketImage() returns correct AMI'(test: Test) {
     // GIVEN
-    const stack = new cdk.Stack();
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'test');
 
     // WHEN
-    const machineImageConfig = new ecs.BottleRocketImage().getImage(stack);
+    new ecs.BottleRocketImage().getImage(stack);
 
     // THEN
-    test.equal(stack.resolve(machineImageConfig.imageId), '{{resolve:ssm:/aws/service/bottlerocket/aws-ecs-1/x86_64/latest/image_id}}');
+    const assembly = app.synth();
+    const parameters = assembly.getStackByName(stack.stackName).template.Parameters;
+    test.ok(Object.entries(parameters).some(
+      ([k, v]) => k.startsWith('SsmParameterValueawsservicebottlerocketawsecs') &&
+        (v as any).Default.includes('/bottlerocket/'),
+    ), 'Bottlerocket AMI should be in ssm parameters');
+    test.ok(Object.entries(parameters).some(
+      ([k, v]) => k.startsWith('SsmParameterValueawsservicebottlerocketawsecs') &&
+        (v as any).Default.includes('/aws-ecs-1/'),
+    ), 'ecs variant should be in ssm parameters');
     test.done();
   },
 
   'cluster capacity with bottlerocket AMI'(test: Test) {
     // GIVEN
-    const stack = new cdk.Stack();
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'test');
 
     const cluster = new ecs.Cluster(stack, 'EcsCluster');
     cluster.addCapacity('bottlerocket-asg', {
@@ -1526,7 +1601,9 @@ nodeunitShim({
     expect(stack).to(haveResource('AWS::ECS::Cluster'));
     expect(stack).to(haveResource('AWS::AutoScaling::AutoScalingGroup'));
     expect(stack).to(haveResource('AWS::AutoScaling::LaunchConfiguration', {
-      ImageId: '{{resolve:ssm:/aws/service/bottlerocket/aws-ecs-1/x86_64/latest/image_id}}',
+      ImageId: {
+        Ref: 'SsmParameterValueawsservicebottlerocketawsecs1x8664latestimageidC96584B6F00A464EAD1953AFF4B05118Parameter',
+      },
       UserData: {
         'Fn::Base64': {
           'Fn::Join': [
@@ -1594,7 +1671,7 @@ nodeunitShim({
       Tags: [
         {
           Key: 'Name',
-          Value: 'Default/EcsCluster/bottlerocket-asg',
+          Value: 'test/EcsCluster/bottlerocket-asg',
         },
       ],
     }),

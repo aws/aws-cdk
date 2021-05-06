@@ -2,7 +2,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import {
-  CfnDynamicReference, CfnDynamicReferenceService,
+  CfnDynamicReference, CfnDynamicReferenceService, CfnParameter,
   ContextProvider, Fn, IResource, Resource, Stack, Token,
 } from '@aws-cdk/core';
 import { Construct } from 'constructs';
@@ -79,14 +79,14 @@ export interface ParameterOptions {
    * A regular expression used to validate the parameter value. For example, for String types with values restricted to
    * numbers, you can specify the following: ``^\d+$``
    *
-   * @default - no validation is performed
+   * @default no validation is performed
    */
   readonly allowedPattern?: string;
 
   /**
    * Information about the parameter that you want to add to the system.
    *
-   * @default - none
+   * @default none
    */
   readonly description?: string;
 
@@ -270,7 +270,7 @@ export interface StringParameterAttributes extends CommonStringParameterAttribut
   /**
    * The version number of the value you wish to retrieve.
    *
-   * @default - The latest version will be retrieved.
+   * @default The latest version will be retrieved.
    */
   readonly version?: number;
 
@@ -323,8 +323,9 @@ export class StringParameter extends ParameterBase implements IStringParameter {
 
     const type = attrs.type || ParameterType.STRING;
 
-    const version = attrs.version ? `:${attrs.version}` : '';
-    const stringValue = new CfnDynamicReference(CfnDynamicReferenceService.SSM, `${attrs.parameterName}${version}`).toString();
+    const stringValue = attrs.version
+      ? new CfnDynamicReference(CfnDynamicReferenceService.SSM, `${attrs.parameterName}:${attrs.version}`).toString()
+      : new CfnParameter(scope, `${id}.Parameter`, { type: `AWS::SSM::Parameter::Value<${type}>`, default: attrs.parameterName }).valueAsString;
 
     class Import extends ParameterBase {
       public readonly parameterName = attrs.parameterName;

@@ -4,7 +4,7 @@ import * as lambda from '@aws-cdk/aws-lambda';
 import { Construct } from 'constructs';
 import { Bundling } from './bundling';
 import { BundlingOptions } from './types';
-import { callsites, findUp, LockFile, nodeMajorVersion } from './util';
+import { callsites, findUp, LockFile } from './util';
 
 /**
  * Properties for a NodejsFunction
@@ -31,8 +31,7 @@ export interface NodejsFunctionProps extends lambda.FunctionOptions {
    * The runtime environment. Only runtimes of the Node.js family are
    * supported.
    *
-   * @default - `NODEJS_14_X` if `process.versions.node` >= '14.0.0',
-   * `NODEJS_12_X` otherwise.
+   * @default Runtime.NODEJS_14_X
    */
   readonly runtime?: lambda.Runtime;
 
@@ -102,10 +101,7 @@ export class NodejsFunction extends lambda.Function {
     // Entry and defaults
     const entry = path.resolve(findEntry(id, props.entry));
     const handler = props.handler ?? 'handler';
-    const defaultRunTime = nodeMajorVersion() >= 14
-      ? lambda.Runtime.NODEJS_14_X
-      : lambda.Runtime.NODEJS_12_X;
-    const runtime = props.runtime ?? defaultRunTime;
+    const runtime = props.runtime ?? lambda.Runtime.NODEJS_14_X;
 
     super(scope, id, {
       ...props,
