@@ -21,7 +21,29 @@ describe('LambdaWebSocketIntegration', () => {
     // THEN
     expect(stack).toHaveResource('AWS::ApiGatewayV2::Integration', {
       IntegrationType: 'AWS_PROXY',
-      IntegrationUri: stack.resolve(fooFn.functionArn),
+      IntegrationUri: {
+        'Fn::Join': [
+          '',
+          [
+            'arn:',
+            {
+              Ref: 'AWS::Partition',
+            },
+            ':apigateway:',
+            {
+              Ref: 'AWS::Region',
+            },
+            ':lambda:path/2015-03-31/functions/',
+            {
+              'Fn::GetAtt': [
+                'Fn9270CBC0',
+                'Arn',
+              ],
+            },
+            '/invocations',
+          ],
+        ],
+      },
     });
   });
 });
