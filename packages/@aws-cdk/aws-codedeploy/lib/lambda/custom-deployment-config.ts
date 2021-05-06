@@ -99,9 +99,8 @@ export class CustomLambdaDeploymentConfig extends Resource implements ILambdaDep
     // Generates the name of the deployment config. It's also what you'll see in the AWS console
     // The name of the config is <construct unique id>.Lambda<deployment type><percentage>Percent<interval>Minutes
     // Unless the user provides an explicit name
-    this.deploymentConfigName = props.deploymentConfigName !== undefined
-      ? props.deploymentConfigName
-      : `${Names.uniqueId(this)}.Lambda${props.type}${props.percentage}Percent${props.type === CustomLambdaDeploymentConfigType.LINEAR
+    this.deploymentConfigName = props.deploymentConfigName
+      ?? `${Names.uniqueId(this)}.Lambda${props.type}${props.percentage}Percent${props.type === CustomLambdaDeploymentConfigType.LINEAR
         ? 'Every'
         : ''}${props.interval.toMinutes()}Minutes`;
     this.deploymentConfigArn = arnForDeploymentConfig(this.deploymentConfigName);

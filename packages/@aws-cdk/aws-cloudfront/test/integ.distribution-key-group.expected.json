@@ -1,0 +1,57 @@
+{
+  "Resources": {
+    "MyPublicKey78071F3D": {
+      "Type": "AWS::CloudFront::PublicKey",
+      "Properties": {
+        "PublicKeyConfig": {
+          "CallerReference": "c8752fac3fe06fc93f3fbd12d7e0282d8967409e4d",
+          "EncodedKey": "-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAudf8/iNkQgdvjEdm6xYS\nJAyxd/kGTbJfQNg9YhInb7TSm0dGu0yx8yZ3fnpmxuRPqJIlaVr+fT4YRl71gEYa\ndlhHmnVegyPNjP9dNqZ7zwNqMEPOPnS/NOHbJj1KYKpn1f8pPNycQ5MQCntKGnSj\n6fc+nbcC0joDvGz80xuy1W4hLV9oC9c3GT26xfZb2jy9MVtA3cppNuTwqrFi3t6e\n0iGpraxZlT5wewjZLpQkngqYr6s3aucPAZVsGTEYPo4nD5mswmtZOm+tgcOrivtD\n/3sD/qZLQ6c5siqyS8aTraD6y+VXugujfarTU65IeZ6QAUbLMsWuZOIi5Jn8zAwx\nNQIDAQAB\n-----END PUBLIC KEY-----",
+          "Name": "integdistributionkeygroupMyPublicKeyC0F3B115"
+        }
+      }
+    },
+    "MyKeyGroupAF22FD35": {
+      "Type": "AWS::CloudFront::KeyGroup",
+      "Properties": {
+        "KeyGroupConfig": {
+          "Items": [
+            {
+              "Ref": "MyPublicKey78071F3D"
+            }
+          ],
+          "Name": "integdistributionkeygroupMyKeyGroupF179E01A"
+        }
+      }
+    },
+    "DistB3B78991": {
+      "Type": "AWS::CloudFront::Distribution",
+      "Properties": {
+        "DistributionConfig": {
+          "DefaultCacheBehavior": {
+            "CachePolicyId": "658327ea-f89d-4fab-a63d-7e88639e58f6",
+            "Compress": true,
+            "TargetOriginId": "integdistributionkeygroupDistOrigin1B9677703",
+            "TrustedKeyGroups": [
+              {
+                "Ref": "MyKeyGroupAF22FD35"
+              }
+            ],
+            "ViewerProtocolPolicy": "allow-all"
+          },
+          "Enabled": true,
+          "HttpVersion": "http2",
+          "IPV6Enabled": true,
+          "Origins": [
+            {
+              "CustomOriginConfig": {
+                "OriginProtocolPolicy": "https-only"
+              },
+              "DomainName": "www.example.com",
+              "Id": "integdistributionkeygroupDistOrigin1B9677703"
+            }
+          ]
+        }
+      }
+    }
+  }
+}

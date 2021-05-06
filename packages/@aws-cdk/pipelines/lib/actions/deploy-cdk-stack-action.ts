@@ -1,11 +1,10 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import * as cfn from '@aws-cdk/aws-cloudformation';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as cpactions from '@aws-cdk/aws-codepipeline-actions';
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
-import { Aws, Stack } from '@aws-cdk/core';
+import { Aws, CfnCapabilities, Stack } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Construct, Node } from 'constructs';
 import { appOf, assemblyBuilderOf } from '../private/construct-internals';
@@ -249,7 +248,7 @@ export class DeployCdkStackAction implements codepipeline.IAction {
       role: props.actionRole,
       deploymentRole: props.cloudFormationExecutionRole,
       region: props.region,
-      capabilities: [cfn.CloudFormationCapabilities.NAMED_IAM, cfn.CloudFormationCapabilities.AUTO_EXPAND],
+      cfnCapabilities: [CfnCapabilities.NAMED_IAM, CfnCapabilities.AUTO_EXPAND],
       templateConfiguration: props.templateConfigurationPath ? props.cloudAssemblyInput.atPath(props.templateConfigurationPath) : undefined,
     });
     this.executeChangeSetAction = new cpactions.CloudFormationExecuteChangeSetAction({

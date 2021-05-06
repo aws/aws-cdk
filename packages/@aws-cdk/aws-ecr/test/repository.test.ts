@@ -1,5 +1,4 @@
-import '@aws-cdk/assert/jest';
-import { expect as expectCDK, haveResource, haveResourceLike, ResourcePart } from '@aws-cdk/assert';
+import { expect as expectCDK, haveResource, haveResourceLike, ResourcePart } from '@aws-cdk/assert-internal';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import * as ecr from '../lib';
@@ -36,7 +35,7 @@ describe('repository', () => {
     // THEN
     expectCDK(stack).to(haveResource('AWS::ECR::Repository', {
       ImageScanningConfiguration: {
-        scanOnPush: true,
+        ScanOnPush: true,
       },
     }));
   });
@@ -55,6 +54,17 @@ describe('repository', () => {
         // eslint-disable-next-line max-len
         LifecyclePolicyText: '{"rules":[{"rulePriority":1,"selection":{"tagStatus":"tagged","tagPrefixList":["abc"],"countType":"imageCountMoreThan","countNumber":1},"action":{"type":"expire"}}]}',
       },
+    }));
+  });
+
+  test('image tag mutability can be set', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    new ecr.Repository(stack, 'Repo', { imageTagMutability: ecr.TagMutability.IMMUTABLE });
+
+    // THEN
+    expectCDK(stack).to(haveResource('AWS::ECR::Repository', {
+      ImageTagMutability: 'IMMUTABLE',
     }));
   });
 
@@ -190,6 +200,8 @@ describe('repository', () => {
   test('fails if importing with token arn and no name', () => {
     // GIVEN
     const stack = new cdk.Stack();
+
+    // WHEN/THEN
     expect(() => {
       ecr.Repository.fromRepositoryArn(stack, 'arn', cdk.Fn.getAtt('Boom', 'Boom').toString());
     }).toThrow(/\"repositoryArn\" is a late-bound value, and therefore \"repositoryName\" is required\. Use \`fromRepositoryAttributes\` instead/);
@@ -206,12 +218,8 @@ describe('repository', () => {
     });
 
     // THEN
-    expectCDK(stack.resolve(repo.repositoryArn)).toMatch({
-      'Fn::GetAtt': ['Boom', 'Arn'],
-    });
-    expectCDK(stack.resolve(repo.repositoryName)).toMatch({
-      'Fn::GetAtt': ['Boom', 'Name'],
-    });
+    expectCDK(stack.resolve(repo.repositoryArn)).toMatch({ 'Fn::GetAtt': ['Boom', 'Arn'] });
+    expectCDK(stack.resolve(repo.repositoryName)).toMatch({ 'Fn::GetAtt': ['Boom', 'Name'] });
   });
 
   test('import only with a repository name (arn is deduced)', () => {
@@ -248,9 +256,7 @@ describe('repository', () => {
     });
 
     // THEN
-    expectCDK(stack.resolve(repo.repositoryName)).toMatch({
-      'Fn::GetAtt': ['Boom', 'Name'],
-    });
+    expectCDK(stack.resolve(repo.repositoryName)).toMatch({ 'Fn::GetAtt': ['Boom', 'Name'] });
     expectCDK(stack.resolve(repo.repositoryArn)).toMatch({
       'Fn::Join': ['', [
         'arn:',
@@ -304,9 +310,7 @@ describe('repository', () => {
     }));
 
     // THEN
-    expect(() => {
-      app.synth();
-    }).toThrow(/A PolicyStatement must specify at least one \'action\' or \'notAction\'/);
+    expect(() => app.synth()).toThrow(/A PolicyStatement must specify at least one \'action\' or \'notAction\'/);
   });
 
   test('fails if repository policy has no IAM principals', () => {
@@ -322,9 +326,7 @@ describe('repository', () => {
     }));
 
     // THEN
-    expect(() => {
-      app.synth();
-    }).toThrow(/A PolicyStatement used in a resource-based policy must specify at least one IAM principal/);
+    expect(() => app.synth()).toThrow(/A PolicyStatement used in a resource-based policy must specify at least one IAM principal/);
   });
 
   describe('events', () => {
@@ -459,62 +461,62 @@ describe('repository', () => {
         'State': 'ENABLED',
       }));
     });
-  });
 
-  test('removal policy is "Retain" by default', () => {
-    // GIVEN
-    const stack = new cdk.Stack();
+    test('removal policy is "Retain" by default', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
 
-    // WHEN
-    new ecr.Repository(stack, 'Repo');
+      // WHEN
+      new ecr.Repository(stack, 'Repo');
 
-    // THEN
-    expectCDK(stack).to(haveResource('AWS::ECR::Repository', {
-      'Type': 'AWS::ECR::Repository',
-      'DeletionPolicy': 'Retain',
-    }, ResourcePart.CompleteDefinition));
-  });
-
-  test('"Delete" removal policy can be set explicitly', () => {
-    // GIVEN
-    const stack = new cdk.Stack();
-
-    // WHEN
-    new ecr.Repository(stack, 'Repo', {
-      removalPolicy: cdk.RemovalPolicy.DESTROY,
+      // THEN
+      expectCDK(stack).to(haveResource('AWS::ECR::Repository', {
+        'Type': 'AWS::ECR::Repository',
+        'DeletionPolicy': 'Retain',
+      }, ResourcePart.CompleteDefinition));
     });
 
-    // THEN
-    expectCDK(stack).to(haveResource('AWS::ECR::Repository', {
-      'Type': 'AWS::ECR::Repository',
-      'DeletionPolicy': 'Delete',
-    }, ResourcePart.CompleteDefinition));
-  });
+    test('"Delete" removal policy can be set explicitly', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
 
-  test('grant adds appropriate resource-*', () => {
-    // GIVEN
-    const stack = new cdk.Stack();
-    const repo = new ecr.Repository(stack, 'TestHarnessRepo');
+      // WHEN
+      new ecr.Repository(stack, 'Repo', {
+        removalPolicy: cdk.RemovalPolicy.DESTROY,
+      });
 
-    // WHEN
-    repo.grantPull(new iam.AnyPrincipal());
+      // THEN
+      expectCDK(stack).to(haveResource('AWS::ECR::Repository', {
+        'Type': 'AWS::ECR::Repository',
+        'DeletionPolicy': 'Delete',
+      }, ResourcePart.CompleteDefinition));
+    });
 
-    // THEN
-    expectCDK(stack).to(haveResource('AWS::ECR::Repository', {
-      'RepositoryPolicyText': {
-        'Statement': [
-          {
-            'Action': [
-              'ecr:BatchCheckLayerAvailability',
-              'ecr:GetDownloadUrlForLayer',
-              'ecr:BatchGetImage',
-            ],
-            'Effect': 'Allow',
-            'Principal': '*',
-          },
-        ],
-        'Version': '2012-10-17',
-      },
-    }));
+    test('grant adds appropriate resource-*', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const repo = new ecr.Repository(stack, 'TestHarnessRepo');
+
+      // WHEN
+      repo.grantPull(new iam.AnyPrincipal());
+
+      // THEN
+      expectCDK(stack).to(haveResource('AWS::ECR::Repository', {
+        'RepositoryPolicyText': {
+          'Statement': [
+            {
+              'Action': [
+                'ecr:BatchCheckLayerAvailability',
+                'ecr:GetDownloadUrlForLayer',
+                'ecr:BatchGetImage',
+              ],
+              'Effect': 'Allow',
+              'Principal': '*',
+            },
+          ],
+          'Version': '2012-10-17',
+        },
+      }));
+    });
   });
 });

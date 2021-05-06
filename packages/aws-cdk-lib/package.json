@@ -33,7 +33,14 @@
   "cdk-build": {
     "eslint": {
       "disable": true
-    }
+    },
+    "stripDeprecated": true,
+    "post": [
+      "node ./scripts/verify-readme-import-rewrites.js"
+    ]
+  },
+  "cdk-package": {
+    "post": "node ./scripts/verify-stripped-exp.js"
   },
   "pkglint": {
     "exclude": [
@@ -50,24 +57,24 @@
     "outdir": "dist",
     "targets": {
       "dotnet": {
-        "namespace": "Amazon.CDK.Lib",
+        "namespace": "Amazon.CDK",
         "packageId": "Amazon.CDK.Lib",
-        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png",
-        "versionSuffix": "-devpreview",
-        "signAssembly": true,
-        "assemblyOriginatorKeyFile": "../../key.snk"
+        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
       },
       "java": {
-        "package": "software.amazon.awscdk.lib",
+        "package": "software.amazon.awscdk",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "lib",
-          "versionSuffix": ".DEVPREVIEW"
+          "artifactId": "aws-cdk-lib"
         }
       },
       "python": {
-        "distName": "aws-cdk.lib",
-        "module": "aws_cdk.lib"
+        "distName": "aws-cdk-lib",
+        "module": "aws_cdk"
+      },
+      "go": {
+        "moduleName": "github.com/aws/aws-cdk-go",
+        "packageName": "awscdk"
       }
     },
     "projectReferences": false
@@ -92,13 +99,13 @@
   "dependencies": {
     "@balena/dockerignore": "^1.0.2",
     "case": "1.6.3",
-    "fs-extra": "^9.0.1",
+    "fs-extra": "^9.1.0",
     "ignore": "^5.1.8",
     "jsonschema": "^1.4.0",
     "minimatch": "^3.0.4",
     "punycode": "^2.1.1",
-    "semver": "^7.3.2",
-    "yaml": "1.10.0"
+    "semver": "^7.3.5",
+    "yaml": "1.10.2"
   },
   "devDependencies": {
     "@aws-cdk/alexa-ask": "0.0.0",
@@ -110,9 +117,11 @@
     "@aws-cdk/aws-amplify": "0.0.0",
     "@aws-cdk/aws-apigateway": "0.0.0",
     "@aws-cdk/aws-apigatewayv2": "0.0.0",
+    "@aws-cdk/aws-apigatewayv2-authorizers": "0.0.0",
     "@aws-cdk/aws-apigatewayv2-integrations": "0.0.0",
     "@aws-cdk/aws-appconfig": "0.0.0",
     "@aws-cdk/aws-appflow": "0.0.0",
+    "@aws-cdk/aws-appintegrations": "0.0.0",
     "@aws-cdk/aws-applicationautoscaling": "0.0.0",
     "@aws-cdk/aws-applicationinsights": "0.0.0",
     "@aws-cdk/aws-appmesh": "0.0.0",
@@ -151,6 +160,7 @@
     "@aws-cdk/aws-codestarnotifications": "0.0.0",
     "@aws-cdk/aws-cognito": "0.0.0",
     "@aws-cdk/aws-config": "0.0.0",
+    "@aws-cdk/aws-customerprofiles": "0.0.0",
     "@aws-cdk/aws-databrew": "0.0.0",
     "@aws-cdk/aws-datapipeline": "0.0.0",
     "@aws-cdk/aws-datasync": "0.0.0",
@@ -182,13 +192,16 @@
     "@aws-cdk/aws-events": "0.0.0",
     "@aws-cdk/aws-events-targets": "0.0.0",
     "@aws-cdk/aws-eventschemas": "0.0.0",
+    "@aws-cdk/aws-fis": "0.0.0",
     "@aws-cdk/aws-fms": "0.0.0",
     "@aws-cdk/aws-fsx": "0.0.0",
     "@aws-cdk/aws-gamelift": "0.0.0",
     "@aws-cdk/aws-globalaccelerator": "0.0.0",
+    "@aws-cdk/aws-globalaccelerator-endpoints": "0.0.0",
     "@aws-cdk/aws-glue": "0.0.0",
     "@aws-cdk/aws-greengrass": "0.0.0",
     "@aws-cdk/aws-greengrassv2": "0.0.0",
+    "@aws-cdk/aws-groundstation": "0.0.0",
     "@aws-cdk/aws-guardduty": "0.0.0",
     "@aws-cdk/aws-iam": "0.0.0",
     "@aws-cdk/aws-imagebuilder": "0.0.0",
@@ -197,6 +210,7 @@
     "@aws-cdk/aws-iot1click": "0.0.0",
     "@aws-cdk/aws-iotanalytics": "0.0.0",
     "@aws-cdk/aws-iotevents": "0.0.0",
+    "@aws-cdk/aws-iotfleethub": "0.0.0",
     "@aws-cdk/aws-iotsitewise": "0.0.0",
     "@aws-cdk/aws-iotthingsgraph": "0.0.0",
     "@aws-cdk/aws-iotwireless": "0.0.0",
@@ -204,6 +218,7 @@
     "@aws-cdk/aws-kendra": "0.0.0",
     "@aws-cdk/aws-kinesis": "0.0.0",
     "@aws-cdk/aws-kinesisanalytics": "0.0.0",
+    "@aws-cdk/aws-kinesisanalytics-flink": "0.0.0",
     "@aws-cdk/aws-kinesisfirehose": "0.0.0",
     "@aws-cdk/aws-kms": "0.0.0",
     "@aws-cdk/aws-lakeformation": "0.0.0",
@@ -211,10 +226,13 @@
     "@aws-cdk/aws-lambda-destinations": "0.0.0",
     "@aws-cdk/aws-lambda-event-sources": "0.0.0",
     "@aws-cdk/aws-lambda-nodejs": "0.0.0",
+    "@aws-cdk/aws-lambda-go": "0.0.0",
     "@aws-cdk/aws-lambda-python": "0.0.0",
     "@aws-cdk/aws-licensemanager": "0.0.0",
     "@aws-cdk/aws-logs": "0.0.0",
     "@aws-cdk/aws-logs-destinations": "0.0.0",
+    "@aws-cdk/aws-lookoutmetrics": "0.0.0",
+    "@aws-cdk/aws-lookoutvision": "0.0.0",
     "@aws-cdk/aws-macie": "0.0.0",
     "@aws-cdk/aws-managedblockchain": "0.0.0",
     "@aws-cdk/aws-mediaconnect": "0.0.0",
@@ -227,6 +245,7 @@
     "@aws-cdk/aws-neptune": "0.0.0",
     "@aws-cdk/aws-networkfirewall": "0.0.0",
     "@aws-cdk/aws-networkmanager": "0.0.0",
+    "@aws-cdk/aws-nimblestudio": "0.0.0",
     "@aws-cdk/aws-opsworks": "0.0.0",
     "@aws-cdk/aws-opsworkscm": "0.0.0",
     "@aws-cdk/aws-pinpoint": "0.0.0",
@@ -246,6 +265,8 @@
     "@aws-cdk/aws-s3-assets": "0.0.0",
     "@aws-cdk/aws-s3-deployment": "0.0.0",
     "@aws-cdk/aws-s3-notifications": "0.0.0",
+    "@aws-cdk/aws-s3objectlambda": "0.0.0",
+    "@aws-cdk/aws-s3outposts": "0.0.0",
     "@aws-cdk/aws-sagemaker": "0.0.0",
     "@aws-cdk/aws-sam": "0.0.0",
     "@aws-cdk/aws-sdb": "0.0.0",
@@ -280,19 +301,18 @@
     "@aws-cdk/lambda-layer-kubectl": "0.0.0",
     "@aws-cdk/pipelines": "0.0.0",
     "@aws-cdk/region-info": "0.0.0",
-    "@aws-cdk/yaml-cfn": "0.0.0",
     "@types/fs-extra": "^8.1.1",
-    "@types/node": "^10.17.51",
+    "@types/node": "^10.17.59",
     "cdk-build-tools": "0.0.0",
-    "constructs": "^3.2.0",
-    "fs-extra": "^9.0.1",
+    "constructs": "^3.3.69",
+    "fs-extra": "^9.1.0",
     "pkglint": "0.0.0",
-    "ts-node": "^9.1.0",
+    "ts-node": "^9.1.1",
     "typescript": "~3.8.3",
     "ubergen": "0.0.0"
   },
   "peerDependencies": {
-    "constructs": "^3.0.4"
+    "constructs": "^3.3.69"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "engines": {
@@ -302,10 +322,12 @@
     "aws",
     "cdk"
   ],
+  "nozem": false,
   "awscdkio": {
     "announce": false
   },
   "ubergen": {
-    "exclude": true
+    "exclude": true,
+    "excludeExperimentalModules": true
   }
 }

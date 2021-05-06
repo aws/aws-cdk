@@ -8,6 +8,7 @@ import * as sqs from '@aws-cdk/aws-sqs';
 import { Annotations, CfnResource, Duration, Fn, Lazy, Names, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { Code, CodeConfig } from './code';
+import { ICodeSigningConfig } from './code-signing-config';
 import { EventInvokeConfigOptions } from './event-invoke-config';
 import { IEventSource } from './event-source';
 import { FileSystem } from './filesystem';
@@ -17,8 +18,11 @@ import { Handler } from './handler';
 import { Version, VersionOptions } from './lambda-version';
 import { CfnFunction } from './lambda.generated';
 import { ILayerVersion } from './layers';
-import { LogRetentionRetryOptions } from './log-retention';
 import { Runtime } from './runtime';
+
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line
+import { LogRetentionRetryOptions } from './log-retention';
 
 /**
  * X-Ray Tracing Modes (https://docs.aws.amazon.com/lambda/latest/dg/API_TracingConfig.html)
@@ -213,7 +217,7 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
   /**
    * A list of layers to add to the function's execution environment. You can configure your Lambda function to pull in
    * additional code during initialization in the form of layers. Layers are packages of libraries or other dependencies
-   * that can be used by mulitple functions.
+   * that can be used by multiple functions.
    *
    * @default - No layers.
    */
@@ -290,6 +294,13 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
    * @default - AWS Lambda creates and uses an AWS managed customer master key (CMK).
    */
   readonly environmentEncryption?: kms.IKey;
+
+  /**
+   * Code signing config associated with this function
+   *
+   * @default - Not Sign the Code
+   */
+  readonly codeSigningConfig?: ICodeSigningConfig;
 }
 
 export interface FunctionProps extends FunctionOptions {
@@ -555,18 +566,18 @@ export class Function extends FunctionBase {
     });
     this.grantPrincipal = this.role;
 
-    // add additonal managed policies when necessary
+    // add additional managed policies when necessary
     if (props.filesystem) {
       const config = props.filesystem.config;
       if (config.policies) {
         config.policies.forEach(p => {
-          this.role?.addToPolicy(p);
+          this.role?.addToPrincipalPolicy(p);
         });
       }
     }
 
     for (const statement of (props.initialPolicy || [])) {
-      this.role.addToPolicy(statement);
+      this.role.addToPrincipalPolicy(statement);
     }
 
     const code = props.code.bind(this);
@@ -574,7 +585,7 @@ export class Function extends FunctionBase {
 
     let profilingGroupEnvironmentVariables: { [key: string]: string } = {};
     if (props.profilingGroup && props.profiling !== false) {
-      this.validateProfilingEnvironmentVariables(props);
+      this.validateProfiling(props);
       props.profilingGroup.grantPublish(this.role);
       profilingGroupEnvironmentVariables = {
         AWS_CODEGURU_PROFILER_GROUP_ARN: Stack.of(scope).formatArn({
@@ -585,7 +596,7 @@ export class Function extends FunctionBase {
         AWS_CODEGURU_PROFILER_ENABLED: 'TRUE',
       };
     } else if (props.profiling) {
-      this.validateProfilingEnvironmentVariables(props);
+      this.validateProfiling(props);
       const profilingGroup = new ProfilingGroup(this, 'ProfilingGroup', {
         computePlatform: ComputePlatform.AWS_LAMBDA,
       });
@@ -641,6 +652,7 @@ export class Function extends FunctionBase {
       }),
       kmsKeyArn: props.environmentEncryption?.keyArn,
       fileSystemConfigs,
+      codeSigningConfigArn: props.codeSigningConfig?.codeSigningConfigArn,
     });
 
     resource.node.addDependency(this.role);
@@ -941,7 +953,10 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
     };
   }
 
-  private validateProfilingEnvironmentVariables(props: FunctionProps) {
+  private validateProfiling(props: FunctionProps) {
+    if (!props.runtime.supportsCodeGuruProfiling) {
+      throw new Error(`CodeGuru profiling is not supported by runtime ${props.runtime.name}`);
+    }
     if (props.environment && (props.environment.AWS_CODEGURU_PROFILER_GROUP_ARN || props.environment.AWS_CODEGURU_PROFILER_ENABLED)) {
       throw new Error('AWS_CODEGURU_PROFILER_GROUP_ARN and AWS_CODEGURU_PROFILER_ENABLED must not be set when profiling options enabled');
     }

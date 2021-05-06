@@ -24,7 +24,9 @@
       "DeletionPolicy": "Delete"
     },
     "FileSystem": {
-      "Type": "AWS::EFS::FileSystem"
+      "Type": "AWS::EFS::FileSystem",
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
     },
     "Vault23237E5B": {
       "Type": "AWS::Backup::BackupVault",

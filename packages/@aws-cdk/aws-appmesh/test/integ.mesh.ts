@@ -1,5 +1,3 @@
-import * as acmpca from '@aws-cdk/aws-acmpca';
-import * as acm from '@aws-cdk/aws-certificatemanager';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as cloudmap from '@aws-cdk/aws-servicediscovery';
 import * as cdk from '@aws-cdk/core';
@@ -25,13 +23,9 @@ const router = mesh.addVirtualRouter('router', {
   ],
 });
 
-const virtualService = mesh.addVirtualService('service', {
-  virtualRouter: router,
+const virtualService = new appmesh.VirtualService(stack, 'service', {
+  virtualServiceProvider: appmesh.VirtualServiceProvider.virtualRouter(router),
   virtualServiceName: 'service1.domain.local',
-});
-
-const cert = new acm.Certificate(stack, 'cert', {
-  domainName: `node1.${namespace.namespaceName}`,
 });
 
 const node = mesh.addVirtualNode('node', {
@@ -41,21 +35,16 @@ const node = mesh.addVirtualNode('node', {
       healthyThreshold: 3,
       path: '/check-path',
     },
-    tlsCertificate: appmesh.TlsCertificate.acm({
-      certificate: cert,
-      tlsMode: appmesh.TlsMode.STRICT,
-    }),
   })],
-  backends: [
-    virtualService,
-  ],
+  backends: [appmesh.Backend.virtualService(virtualService)],
 });
 
-node.addBackend(new appmesh.VirtualService(stack, 'service-2', {
-  virtualServiceName: 'service2.domain.local',
-  mesh,
-}),
-);
+node.addBackend(appmesh.Backend.virtualService(
+  new appmesh.VirtualService(stack, 'service-2', {
+    virtualServiceName: 'service2.domain.local',
+    virtualServiceProvider: appmesh.VirtualServiceProvider.none(mesh),
+  }),
+));
 
 router.addRoute('route-1', {
   routeSpec: appmesh.RouteSpec.http({
@@ -75,8 +64,6 @@ router.addRoute('route-1', {
   }),
 });
 
-const certificateAuthorityArn = 'arn:aws:acm-pca:us-east-1:123456789012:certificate-authority/12345678-1234-1234-1234-123456789012';
-
 const node2 = mesh.addVirtualNode('node2', {
   serviceDiscovery: appmesh.ServiceDiscovery.dns(`node2.${namespace.namespaceName}`),
   listeners: [appmesh.VirtualNodeListener.http({
@@ -90,15 +77,17 @@ const node2 = mesh.addVirtualNode('node2', {
       unhealthyThreshold: 2,
     },
   })],
-  backendsDefaultClientPolicy: appmesh.ClientPolicy.acmTrust({
-    certificateAuthorities: [acmpca.CertificateAuthority.fromCertificateAuthorityArn(stack, 'certificate', certificateAuthorityArn)],
-  }),
-  backends: [
+  backendDefaults: {
+    clientPolicy: appmesh.ClientPolicy.fileTrust({
+      certificateChain: 'path/to/cert',
+    }),
+  },
+  backends: [appmesh.Backend.virtualService(
     new appmesh.VirtualService(stack, 'service-3', {
       virtualServiceName: 'service3.domain.local',
-      mesh,
+      virtualServiceProvider: appmesh.VirtualServiceProvider.none(mesh),
     }),
-  ],
+  )],
 });
 
 const node3 = mesh.addVirtualNode('node3', {
@@ -114,9 +103,11 @@ const node3 = mesh.addVirtualNode('node3', {
       unhealthyThreshold: 2,
     },
   })],
-  backendsDefaultClientPolicy: appmesh.ClientPolicy.fileTrust({
-    certificateChain: 'path-to-certificate',
-  }),
+  backendDefaults: {
+    clientPolicy: appmesh.ClientPolicy.fileTrust({
+      certificateChain: 'path-to-certificate',
+    }),
+  },
   accessLog: appmesh.AccessLog.fromFilePath('/dev/stdout'),
 });
 
@@ -148,6 +139,62 @@ router.addRoute('route-3', {
     ],
     timeout: {
       idle: cdk.Duration.seconds(12),
+    },
+  }),
+});
+
+router.addRoute('route-matching', {
+  routeSpec: appmesh.RouteSpec.http2({
+    weightedTargets: [{ virtualNode: node3 }],
+    match: {
+      prefixPath: '/',
+      method: appmesh.HttpRouteMatchMethod.POST,
+      protocol: appmesh.HttpRouteProtocol.HTTPS,
+      headers: [
+        appmesh.HttpHeaderMatch.valueIs('Content-Type', 'application/json'),
+        appmesh.HttpHeaderMatch.valueStartsWith('Content-Type', 'application/json'),
+        appmesh.HttpHeaderMatch.valueEndsWith('Content-Type', 'application/json'),
+        appmesh.HttpHeaderMatch.valueMatchesRegex('Content-Type', 'application/.*'),
+        appmesh.HttpHeaderMatch.valuesIsInRange('Content-Type', 1, 5),
+        appmesh.HttpHeaderMatch.valueIsNot('Content-Type', 'application/json'),
+        appmesh.HttpHeaderMatch.valueDoesNotStartWith('Content-Type', 'application/json'),
+        appmesh.HttpHeaderMatch.valueDoesNotEndWith('Content-Type', 'application/json'),
+        appmesh.HttpHeaderMatch.valueDoesNotMatchRegex('Content-Type', 'application/.*'),
+        appmesh.HttpHeaderMatch.valuesIsNotInRange('Content-Type', 1, 5),
+      ],
+    },
+  }),
+});
+
+router.addRoute('route-http2-retry', {
+  routeSpec: appmesh.RouteSpec.http2({
+    weightedTargets: [{ virtualNode: node3 }],
+    retryPolicy: {
+      httpRetryEvents: [appmesh.HttpRetryEvent.CLIENT_ERROR],
+      tcpRetryEvents: [appmesh.TcpRetryEvent.CONNECTION_ERROR],
+      retryAttempts: 5,
+      retryTimeout: cdk.Duration.seconds(1),
+    },
+  }),
+});
+
+router.addRoute('route-5', {
+  routeSpec: appmesh.RouteSpec.http2({
+    priority: 10,
+    weightedTargets: [{ virtualNode: node2 }],
+  }),
+});
+
+router.addRoute('route-grpc-retry', {
+  routeSpec: appmesh.RouteSpec.grpc({
+    weightedTargets: [{ virtualNode: node3 }],
+    match: { serviceName: 'servicename' },
+    retryPolicy: {
+      grpcRetryEvents: [appmesh.GrpcRetryEvent.DEADLINE_EXCEEDED],
+      httpRetryEvents: [appmesh.HttpRetryEvent.CLIENT_ERROR],
+      tcpRetryEvents: [appmesh.TcpRetryEvent.CONNECTION_ERROR],
+      retryAttempts: 5,
+      retryTimeout: cdk.Duration.seconds(1),
     },
   }),
 });

@@ -17,8 +17,6 @@
       "dotnet": {
         "namespace": "Amazon.CDK.RegionInfo",
         "packageId": "Amazon.CDK.RegionInfo",
-        "signAssembly": true,
-        "assemblyOriginatorKeyFile": "../../key.snk",
         "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
       },
       "python": {
@@ -57,8 +55,9 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@types/fs-extra": "^8.1.1",
+    "@types/jest": "^26.0.23",
     "cdk-build-tools": "0.0.0",
-    "fs-extra": "^9.0.1",
+    "fs-extra": "^9.1.0",
     "pkglint": "0.0.0"
   },
   "repository": {
@@ -74,8 +73,8 @@
   "engines": {
     "node": ">= 10.13.0 <13 || >=13.7.0"
   },
-  "stability": "experimental",
-  "maturity": "experimental",
+  "stability": "stable",
+  "maturity": "stable",
   "awslint": {
     "exclude": [
       "docs-public-apis:@aws-cdk/region-info.Fact.regions",
@@ -83,7 +82,13 @@
       "docs-public-apis:@aws-cdk/region-info.RegionInfo.name"
     ]
   },
+  "nozem": {
+      "ostools": ["bash"]
+  },
   "awscdkio": {
     "announce": false
+  },
+  "publishConfig": {
+    "tag": "latest"
   }
 }

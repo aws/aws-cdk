@@ -14,7 +14,7 @@ export = {
     // WHEN
     const staging = new Staging(stack, 's1', { sourcePath });
 
-    test.deepEqual(staging.sourceHash, '2f37f937c51e2c191af66acf9b09f548926008ec68c575bd2ee54b6e997c0e00');
+    test.deepEqual(staging.assetHash, '2f37f937c51e2c191af66acf9b09f548926008ec68c575bd2ee54b6e997c0e00');
     test.deepEqual(staging.sourcePath, sourcePath);
     test.deepEqual(staging.relativeStagedPath(stack), 'asset.2f37f937c51e2c191af66acf9b09f548926008ec68c575bd2ee54b6e997c0e00');
     test.done();
@@ -29,9 +29,9 @@ export = {
     // WHEN
     const staging = new Staging(stack, 's1', { sourcePath });
 
-    test.deepEqual(staging.sourceHash, '2f37f937c51e2c191af66acf9b09f548926008ec68c575bd2ee54b6e997c0e00');
+    test.deepEqual(staging.assetHash, '2f37f937c51e2c191af66acf9b09f548926008ec68c575bd2ee54b6e997c0e00');
     test.deepEqual(staging.sourcePath, sourcePath);
-    test.deepEqual(staging.stagedPath, sourcePath);
+    test.deepEqual(staging.absoluteStagedPath, sourcePath);
     test.done();
   },
 
@@ -70,9 +70,9 @@ export = {
     const withExtra = new Staging(stack, 'withExtra', { sourcePath: directory, extraHash: 'boom' });
 
     // THEN
-    test.notEqual(withoutExtra.sourceHash, withExtra.sourceHash);
-    test.deepEqual(withoutExtra.sourceHash, '2f37f937c51e2c191af66acf9b09f548926008ec68c575bd2ee54b6e997c0e00');
-    test.deepEqual(withExtra.sourceHash, 'c95c915a5722bb9019e2c725d11868e5a619b55f36172f76bcbcaa8bb2d10c5f');
+    test.notEqual(withoutExtra.assetHash, withExtra.assetHash);
+    test.deepEqual(withoutExtra.assetHash, '2f37f937c51e2c191af66acf9b09f548926008ec68c575bd2ee54b6e997c0e00');
+    test.deepEqual(withExtra.assetHash, 'c95c915a5722bb9019e2c725d11868e5a619b55f36172f76bcbcaa8bb2d10c5f');
     test.done();
   },
 };

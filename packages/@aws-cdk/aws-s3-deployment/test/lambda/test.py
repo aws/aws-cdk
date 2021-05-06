@@ -122,7 +122,7 @@ class TestHandler(unittest.TestCase):
 
         self.assertAwsCommands(
             ["s3", "cp", "s3://<source-bucket>/<source-object-key>", "archive.zip"],
-            ["s3", "sync", "--delete", "contents.zip", "s3://<dest-bucket-name>/<dest-key-prefix>", "--content-type", "text/html", "--content-language", "en", "--metadata", "{\"x-amz-meta-best\":\"game\"}", "--metadata-directive", "REPLACE"]
+            ["s3", "sync", "--delete", "contents.zip", "s3://<dest-bucket-name>/<dest-key-prefix>", "--content-type", "text/html", "--content-language", "en", "--metadata", "{\"best\":\"game\"}", "--metadata-directive", "REPLACE"]
         )
 
     def test_delete_no_retain(self):
