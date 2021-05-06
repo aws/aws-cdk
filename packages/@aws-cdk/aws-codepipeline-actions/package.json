@@ -66,7 +66,7 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "0.0.0",
+    "@types/jest": "^26.0.23",
     "@aws-cdk/aws-cloudtrail": "0.0.0",
     "@aws-cdk/cx-api": "0.0.0",
     "@types/lodash": "^4.14.168",
@@ -74,7 +74,8 @@
     "cdk-integ-tools": "0.0.0",
     "lodash": "^4.17.21",
     "nodeunit-shim": "0.0.0",
-    "pkglint": "0.0.0"
+    "pkglint": "0.0.0",
+    "@aws-cdk/assert-internal": "0.0.0"
   },
   "dependencies": {
     "@aws-cdk/aws-cloudformation": "0.0.0",
@@ -88,9 +89,9 @@
     "@aws-cdk/aws-events": "0.0.0",
     "@aws-cdk/aws-events-targets": "0.0.0",
     "@aws-cdk/aws-iam": "0.0.0",
+    "@aws-cdk/aws-kms": "0.0.0",
     "@aws-cdk/aws-lambda": "0.0.0",
     "@aws-cdk/aws-s3": "0.0.0",
-    "@aws-cdk/aws-servicecatalog": "0.0.0",
     "@aws-cdk/aws-sns": "0.0.0",
     "@aws-cdk/aws-sns-subscriptions": "0.0.0",
     "@aws-cdk/aws-stepfunctions": "0.0.0",
@@ -111,9 +112,9 @@
     "@aws-cdk/aws-events": "0.0.0",
     "@aws-cdk/aws-events-targets": "0.0.0",
     "@aws-cdk/aws-iam": "0.0.0",
+    "@aws-cdk/aws-kms": "0.0.0",
     "@aws-cdk/aws-lambda": "0.0.0",
     "@aws-cdk/aws-s3": "0.0.0",
-    "@aws-cdk/aws-servicecatalog": "0.0.0",
     "@aws-cdk/aws-sns": "0.0.0",
     "@aws-cdk/aws-sns-subscriptions": "0.0.0",
     "@aws-cdk/aws-stepfunctions": "0.0.0",
@@ -148,7 +149,6 @@
       "props-default-doc:@aws-cdk/aws-codepipeline-actions.CloudFormationCreateUpdateStackActionProps.extraInputs",
       "props-default-doc:@aws-cdk/aws-codepipeline-actions.CloudFormationDeleteStackActionProps.extraInputs",
       "props-default-doc:@aws-cdk/aws-codepipeline-actions.CodeBuildActionProps.extraInputs",
-      "docs-public-apis:@aws-cdk/aws-codepipeline-actions.Action.bind",
       "docs-public-apis:@aws-cdk/aws-codepipeline-actions.CodeCommitSourceActionProps.branch",
       "docs-public-apis:@aws-cdk/aws-codepipeline-actions.EcrSourceActionProps.output",
       "docs-public-apis:@aws-cdk/aws-codepipeline-actions.GitHubSourceActionProps.output",

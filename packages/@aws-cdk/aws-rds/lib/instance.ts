@@ -5,7 +5,8 @@ import * as kms from '@aws-cdk/aws-kms';
 import * as logs from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
-import { Duration, IResource, Lazy, RemovalPolicy, Resource, Stack, Token } from '@aws-cdk/core';
+import { ArnComponents, Duration, FeatureFlags, IResource, Lazy, RemovalPolicy, Resource, Stack, Token } from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
 import { DatabaseSecret } from './database-secret';
 import { Endpoint } from './endpoint';
@@ -186,11 +187,18 @@ export abstract class DatabaseInstanceBase extends Resource implements IDatabase
    * The instance arn.
    */
   public get instanceArn(): string {
-    return Stack.of(this).formatArn({
+    const commonAnComponents: ArnComponents = {
       service: 'rds',
       resource: 'db',
       sep: ':',
+    };
+    const localArn = Stack.of(this).formatArn({
+      ...commonAnComponents,
       resourceName: this.instanceIdentifier,
+    });
+    return this.getResourceArnAttribute(localArn, {
+      ...commonAnComponents,
+      resourceName: this.physicalName,
     });
   }
 
@@ -630,7 +638,15 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
   protected enableIamAuthentication?: boolean;
 
   constructor(scope: Construct, id: string, props: DatabaseInstanceNewProps) {
-    super(scope, id);
+    // RDS always lower-cases the ID of the database, so use that for the physical name
+    // (which is the name used for cross-environment access, so it needs to be correct,
+    // regardless of the feature flag that changes it in the template for the L1)
+    const instancePhysicalName = Token.isUnresolved(props.instanceIdentifier)
+      ? props.instanceIdentifier
+      : props.instanceIdentifier?.toLowerCase();
+    super(scope, id, {
+      physicalName: instancePhysicalName,
+    });
 
     this.vpc = props.vpc;
     if (props.vpcSubnets && props.vpcPlacement) {
@@ -687,13 +703,23 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
       });
     }
 
+    const maybeLowercasedInstanceId = FeatureFlags.of(this).isEnabled(cxapi.RDS_LOWERCASE_DB_IDENTIFIER)
+      ? props.instanceIdentifier?.toLowerCase()
+      : props.instanceIdentifier;
+
     this.newCfnProps = {
       autoMinorVersionUpgrade: props.autoMinorVersionUpgrade,
       availabilityZone: props.multiAz ? undefined : props.availabilityZone,
       backupRetentionPeriod: props.backupRetention?.toDays(),
       copyTagsToSnapshot: props.copyTagsToSnapshot ?? true,
       dbInstanceClass: Lazy.string({ produce: () => `db.${this.instanceType}` }),
-      dbInstanceIdentifier: props.instanceIdentifier,
+      dbInstanceIdentifier: Token.isUnresolved(props.instanceIdentifier)
+        // if the passed identifier is a Token,
+        // we need to use the physicalName of the database
+        // (we cannot change its case anyway),
+        // as it might be used in a cross-environment fashion
+        ? this.physicalName
+        : maybeLowercasedInstanceId,
       dbSubnetGroupName: subnetGroup.subnetGroupName,
       deleteAutomatedBackups: props.deleteAutomatedBackups,
       deletionProtection: defaultDeletionProtection(props.deletionProtection, props.removalPolicy),
@@ -968,7 +994,7 @@ export class DatabaseInstance extends DatabaseInstanceSource implements IDatabas
       storageEncrypted: props.storageEncryptionKey ? true : props.storageEncrypted,
     });
 
-    this.instanceIdentifier = instance.ref;
+    this.instanceIdentifier = this.getResourceNameAttribute(instance.ref);
     this.dbInstanceEndpointAddress = instance.attrEndpointAddress;
     this.dbInstanceEndpointPort = instance.attrEndpointPort;
 
