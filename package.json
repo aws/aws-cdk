@@ -53,7 +53,7 @@
       "release.json",
       "scripts/resolve-version.js",
       "scripts/resolve-version-lib.js",
-      "version.v1.json"
+      "version.v2.json"
     ],
     "cacheBucket": "nozem-artifacts-eu",
     "cacheBucketRegion": "eu-west-1"
