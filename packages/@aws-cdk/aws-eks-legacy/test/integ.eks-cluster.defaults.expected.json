@@ -775,13 +775,14 @@
             ]
           }
         },
+        "Handler": "index.handler",
         "Role": {
           "Fn::GetAtt": [
             "ClusterResourceHandlerServiceRole7FB16465",
             "Arn"
           ]
         },
-        "Handler": "index.handler",
+        "Runtime": "python3.7",
         "Layers": [
           {
             "Fn::GetAtt": [
@@ -791,7 +792,6 @@
           }
         ],
         "MemorySize": 512,
-        "Runtime": "python3.7",
         "Timeout": 900
       },
       "DependsOn": [
@@ -891,12 +891,14 @@
             ]
           }
         },
+        "Handler": "index.handler",
         "Role": {
           "Fn::GetAtt": [
             "ClusterResourceHandlerServiceRole7FB16465",
             "Arn"
           ]
         },
+        "Runtime": "python3.7",
         "Environment": {
           "Variables": {
             "CLUSTER_NAME": {
@@ -904,7 +906,6 @@
             }
           }
         },
-        "Handler": "index.handler",
         "Layers": [
           {
             "Fn::GetAtt": [
@@ -914,7 +915,6 @@
           }
         ],
         "MemorySize": 256,
-        "Runtime": "python3.7",
         "Timeout": 900
       },
       "DependsOn": [
@@ -1117,7 +1117,9 @@
     "ClusterDefaultCapacityLaunchConfig72790CF7": {
       "Type": "AWS::AutoScaling::LaunchConfiguration",
       "Properties": {
-        "ImageId": "{{resolve:ssm:/aws/service/eks/optimized-ami/1.14/amazon-linux-2/recommended/image_id}}",
+        "ImageId": {
+          "Ref": "SsmParameterValueawsserviceeksoptimizedami114amazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
+        },
         "InstanceType": "m5.large",
         "IamInstanceProfile": {
           "Ref": "ClusterDefaultCapacityInstanceProfile70387741"
@@ -1304,6 +1306,10 @@
     "AssetParameters640847533c8a00b3133aeb128edcac41fb7b60349c9e18764fcf7ea4af14d444ArtifactHash606C8127": {
       "Type": "String",
       "Description": "Artifact hash for asset \"640847533c8a00b3133aeb128edcac41fb7b60349c9e18764fcf7ea4af14d444\""
+    },
+    "SsmParameterValueawsserviceeksoptimizedami114amazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter": {
+      "Type": "AWS::SSM::Parameter::Value<String>",
+      "Default": "/aws/service/eks/optimized-ami/1.14/amazon-linux-2/recommended/image_id"
     }
   }
 }
