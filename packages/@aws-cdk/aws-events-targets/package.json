@@ -72,7 +72,7 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@types/jest": "^26.0.22",
+    "@types/jest": "^26.0.23",
     "@aws-cdk/aws-codecommit": "0.0.0",
     "@aws-cdk/aws-s3": "0.0.0",
     "@aws-cdk/aws-batch": "0.0.0",
@@ -86,7 +86,6 @@
   },
   "dependencies": {
     "@aws-cdk/aws-apigateway": "0.0.0",
-    "@aws-cdk/aws-batch": "0.0.0",
     "@aws-cdk/aws-codebuild": "0.0.0",
     "@aws-cdk/aws-codepipeline": "0.0.0",
     "@aws-cdk/aws-ec2": "0.0.0",
@@ -108,7 +107,6 @@
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
     "@aws-cdk/aws-apigateway": "0.0.0",
-    "@aws-cdk/aws-batch": "0.0.0",
     "@aws-cdk/aws-codebuild": "0.0.0",
     "@aws-cdk/aws-codepipeline": "0.0.0",
     "@aws-cdk/aws-ec2": "0.0.0",
