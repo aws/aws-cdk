@@ -79,7 +79,8 @@ export class CloudAssembly {
     selectors = selectors.filter(s => s != null); // filter null/undefined
     selectors = [...new Set(selectors)]; // make them unique
 
-    const stacks = this.assembly.stacksRecursively;
+    const asm = this.assembly;
+    const stacks = semver.major(asm.version) < 10 ? asm.stacks : asm.stacksRecursively;
     if (stacks.length === 0) {
       throw new Error('This app contains no stacks');
     }
