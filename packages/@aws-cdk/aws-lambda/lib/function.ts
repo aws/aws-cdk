@@ -874,7 +874,7 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
     }
 
     if (!props.vpc && props.filesystem) {
-      throw new Error('Cannot configurea \'filesystem\' without configuring a VPC.');
+      throw new Error('Cannot configure \'filesystem\' without configuring a VPC.');
     }
 
     if (!props.vpc) { return undefined; }
