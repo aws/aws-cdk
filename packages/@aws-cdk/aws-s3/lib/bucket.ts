@@ -1840,7 +1840,9 @@ export class Bucket extends BucketBase {
     // objects in the bucket
     this.addToResourcePolicy(new iam.PolicyStatement({
       actions: [
-        ...perms.BUCKET_READ_ACTIONS, // list objects
+        // list objects
+        's3:GetBucket*',
+	's3:List*',
         ...perms.BUCKET_DELETE_ACTIONS, // and then delete them
       ],
       resources: [
