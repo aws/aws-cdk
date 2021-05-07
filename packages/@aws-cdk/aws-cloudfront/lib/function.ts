@@ -1,4 +1,4 @@
-import { IResource, Names, Resource } from '@aws-cdk/core';
+import { IResource, Names, Resource, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnFunction } from './cloudfront.generated';
 
@@ -100,7 +100,7 @@ export class Function extends Resource implements IFunction {
   }
 
   private generateName(): string {
-    const name = Names.uniqueId(this);
+    const name = Stack.of(this).region + Names.uniqueId(this);
     if (name.length > 64) {
       return name.substring(0, 32) + name.substring(name.length - 32);
     }
