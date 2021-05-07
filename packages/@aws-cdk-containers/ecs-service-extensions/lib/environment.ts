@@ -4,18 +4,19 @@ import { Construct } from 'constructs';
 import { EnvironmentCapacityType } from './extensions/extension-interfaces';
 
 /**
- * Settings for the environment you want to deploy.
- * services within.
+ * Settings for the environment where you want to deploy your services.
  */
 export interface EnvironmentProps {
   /**
-   * The VPC used by the service for networking
+   * The VPC used by the service for networking.
+   *
    * @default - Create a new VPC
    */
   readonly vpc?: ec2.IVpc,
 
   /**
    * The ECS cluster which provides compute capacity to this service.
+   *
    * [disable-awslint:ref-via-interface]
    * @default - Create a new cluster
    */
@@ -23,6 +24,7 @@ export interface EnvironmentProps {
 
   /**
    * The type of capacity to use for this environment.
+   *
    * @default - EnvironmentCapacityType.FARGATE
    */
   readonly capacityType?: EnvironmentCapacityType
@@ -60,8 +62,8 @@ export interface IEnvironment {
 
 /**
  * An environment into which to deploy a service. This environment
- * can either be instantiated with a preexisting AWS VPC and ECS cluster,
- * or it can create it's own VPC and cluster. By default it will create
+ * can either be instantiated with a pre-existing AWS VPC and ECS cluster,
+ * or it can create its own VPC and cluster. By default, it will create
  * a cluster with Fargate capacity.
  */
 export class Environment extends Construct implements IEnvironment {
@@ -78,7 +80,7 @@ export class Environment extends Construct implements IEnvironment {
   public readonly id: string;
 
   /**
-   * The VPC into which environment services should be placed.
+   * The VPC where environment services should be placed.
    */
   public readonly vpc: ec2.IVpc;
 
@@ -155,7 +157,7 @@ export class ImportedEnvironment extends Construct implements IEnvironment {
   }
 
   /**
-   * Refuses to add a default cloudmap namespace to the cluster as we don't
+   * Adding a default cloudmap namespace to the cluster will throw an error, as we don't
    * own it.
    */
   addDefaultCloudMapNamespace(_options: ecs.CloudMapNamespaceOptions) {

@@ -8,7 +8,7 @@ import { ServiceExtension } from './extension-interfaces';
 const XRAY_DAEMON_IMAGE = 'amazon/aws-xray-daemon:latest';
 
 /**
- * This extension adds an X-Ray daemon inside the task definition, for
+ * This extension adds an X-Ray daemon inside the task definition for
  * capturing application trace spans and submitting them to the AWS
  * X-Ray service.
  */
