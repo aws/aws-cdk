@@ -37,34 +37,29 @@ def prepare_config(current_config: dict, in_config: dict, old_config: dict, requ
     for config_pair in TYPES:
         config_type, target = config_pair
         in_configs = in_config.get(config_type, [])
-        old_configs = old_config.get(config_type, [])
-        config[config_type] = find_unmanaged_notifications(current_config, config_type, in_configs, old_configs)
-        if request_type == "Create":
-            config[config_type].extend(in_configs)
-        elif request_type == "Update":
-            config[config_type].extend(find_new_notifications(target, in_configs, old_configs))
+        managed_ids = ids(in_configs + old_config.get(config_type, []))
+        unmanaged_configs = [item for item in current_config.get(config_type, []) if item["Id"] not in managed_ids]
+        if request_type in ["Create", "Update"]:
+            unmanaged_configs.extend(find_difference(in_configs, unmanaged_configs, target))
+            config[config_type] = unmanaged_configs
+        elif request_type == "Delete":
+            config[config_type] = find_difference(unmanaged_configs, in_configs, target)
     return config
-
-
-def find_unmanaged_notifications(config: dict, config_type: str, in_configs: List, old_configs: List) -> List:
-    remove_ids = ids(in_configs + old_configs)
-    return [item for item in config.get(config_type, []) if item["Id"] not in remove_ids]
-
-
-def find_new_notifications(target: str, in_configs: List, old_configs: List) -> List:
-    items = []
-    for in_item in in_configs:
-        if any(
-            old_item.get("Events") == in_item.get("Events") and old_item.get(target) == in_item.get(target)
-            for old_item in old_configs
-        ):
-            continue
-        items.append(in_item)
-    return items
 
 
 def ids(configs: List) -> List[str]:
     return [item["Id"] for item in configs if "Id" in item]
+
+
+def find_difference(destination: List, source: List, target: str) -> List:
+    return [
+        item
+        for item in destination
+        if not any(
+            item.get("Events") == current_item.get("Events") and item.get(target) == current_item.get(target)
+            for current_item in source
+        )
+    ]
 
 
 def submit_response(event: dict, context, response_status: str, error_message: str):

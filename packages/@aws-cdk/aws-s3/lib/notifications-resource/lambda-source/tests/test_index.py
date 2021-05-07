@@ -6,104 +6,25 @@ from unittest.mock import patch, MagicMock
 import boto3  # type: ignore
 from moto.s3 import mock_s3  # type: ignore
 
-response_url = "https://dummy.com/"
-bucket_name = "fake_bucket"
-lambda_arn = "arn:aws:lambda:us-east-1:35667example:function:CreateThumbnail"
-s3_created = "s3:ObjectCreated:*"
+RESPONSE_URL = "https://dummy.com/"
+BUCKET_NAME = "fake_bucket"
+LAMBDA_ARN = "arn:aws:lambda:us-east-1:35667example:function:CreateThumbnail"
+S3_CREATED = "s3:ObjectCreated:*"
+ID_CREATE_BY_CDK = "created-by-cdk"
 create_event = {
     "StackId": "StackId",
     "RequestId": "RequestId",
     "LogicalResourceId": "LogicalResourceId",
-    "ResponseURL": response_url,
+    "ResponseURL": RESPONSE_URL,
     "RequestType": "Create",
     "ResourceProperties": {
-        "BucketName": bucket_name,
+        "BucketName": BUCKET_NAME,
         "NotificationConfiguration": {
             "QueueConfigurations": [
                 {
                     "Id": "my-function-hash",
-                    "Events": [s3_created],
+                    "Events": [S3_CREATED],
                     "QueueArn": "arn:aws:sqs:us-east-1:444455556666:new-queue",
-                }
-            ]
-        },
-    },
-}
-update_event = {
-    "StackId": "StackId",
-    "RequestId": "RequestId",
-    "LogicalResourceId": "LogicalResourceId",
-    "ResponseURL": response_url,
-    "RequestType": "Update",
-    "OldResourceProperties": {
-        "BucketName": bucket_name,
-        "NotificationConfiguration": {
-            "LambdaFunctionConfigurations": [
-                {
-                    "Id": "old-function-hash",
-                    "Events": [s3_created],
-                    "LambdaFunctionArn": lambda_arn,
-                }
-            ]
-        },
-    },
-    "ResourceProperties": {
-        "BucketName": bucket_name,
-        "NotificationConfiguration": {
-            "LambdaFunctionConfigurations": [
-                {
-                    "Id": "new-function-hash",
-                    "Events": [s3_created],
-                    "LambdaFunctionArn": "arn:aws:lambda:us-east-1:35667example:function:NewCreateThumbnail",
-                }
-            ]
-        },
-    },
-}
-update_event_cdk_upgrade = {
-    "StackId": "StackId",
-    "RequestId": "RequestId",
-    "LogicalResourceId": "LogicalResourceId",
-    "ResponseURL": response_url,
-    "RequestType": "Update",
-    "OldResourceProperties": {
-        "BucketName": bucket_name,
-        "NotificationConfiguration": {
-            "LambdaFunctionConfigurations": [
-                {
-                    "Events": [s3_created],
-                    "LambdaFunctionArn": lambda_arn,
-                }
-            ]
-        },
-    },
-    "ResourceProperties": {
-        "BucketName": bucket_name,
-        "NotificationConfiguration": {
-            "LambdaFunctionConfigurations": [
-                {
-                    "Id": "new-function-hash",
-                    "Events": [s3_created],
-                    "LambdaFunctionArn": lambda_arn,
-                }
-            ]
-        },
-    },
-}
-delete_event = {
-    "StackId": "StackId",
-    "RequestId": "RequestId",
-    "LogicalResourceId": "LogicalResourceId",
-    "ResponseURL": response_url,
-    "RequestType": "Delete",
-    "ResourceProperties": {
-        "BucketName": bucket_name,
-        "NotificationConfiguration": {
-            "QueueConfigurations": [
-                {
-                    "Id": "created-by-cdk",
-                    "Events": [s3_created],
-                    "QueueArn": "arn:aws:sqs:us-east-1:444455556666:old-queue",
                 }
             ]
         },
@@ -128,19 +49,19 @@ def setup_s3_bucket(no_bucket_config: bool = False):
         Flag to simulate that this is a brand new S3 bucket with no existing notifications
     """
     s3_client = boto3.client("s3", region_name="us-east-1")
-    s3_client.create_bucket(Bucket=bucket_name)
+    s3_client.create_bucket(Bucket=BUCKET_NAME)
 
     if no_bucket_config:
         return
 
     s3_client.put_bucket_notification_configuration(
-        Bucket=bucket_name,
+        Bucket=BUCKET_NAME,
         NotificationConfiguration={
             "TopicConfigurations": [
                 {
                     "Id": "existing-notification",
                     "TopicArn": "arn:aws:sns:us-east-1:123456789012:MyTopic",
-                    "Events": [s3_created],
+                    "Events": [S3_CREATED],
                     "Filter": {
                         "Key": {
                             "FilterRules": [
@@ -152,7 +73,7 @@ def setup_s3_bucket(no_bucket_config: bool = False):
             ],
             "QueueConfigurations": [
                 {
-                    "Id": "created-by-cdk",
+                    "Id": ID_CREATE_BY_CDK,
                     "QueueArn": "arn:aws:sqs:us-east-1:444455556666:old-queue",
                     "Events": [
                         "s3:ObjectCreated:Post",
@@ -169,8 +90,8 @@ def setup_s3_bucket(no_bucket_config: bool = False):
             "LambdaFunctionConfigurations": [
                 {
                     "Id": "old-function-hash",
-                    "LambdaFunctionArn": lambda_arn,
-                    "Events": [s3_created],
+                    "LambdaFunctionArn": LAMBDA_ARN,
+                    "Events": [S3_CREATED],
                     "Filter": {
                         "Key": {
                             "FilterRules": [
@@ -349,13 +270,13 @@ class LambdaTest(unittest.TestCase):
 
         # THEN set the "NotificationConfiguration" for this bucket
         s3_client = boto3.client("s3", region_name="us-east-1")
-        config = s3_client.get_bucket_notification_configuration(Bucket=bucket_name)
+        config = s3_client.get_bucket_notification_configuration(Bucket=BUCKET_NAME)
         queue_configuration_list = config.get("QueueConfigurations")
         self.assertIsNotNone(queue_configuration_list)
         self.assertEqual(1, len(queue_configuration_list))
         queue_configuration = queue_configuration_list[0]
         self.assertEqual("my-function-hash", queue_configuration["Id"])
-        self.assertEqual(s3_created, queue_configuration["Events"][0])
+        self.assertEqual(S3_CREATED, queue_configuration["Events"][0])
         self.assertNotIn("LambdaFunctionConfigurations", config)
         self.assertNotIn("LambdaFunctionConfigurations", config)
         # AND notify CFN of its success
@@ -375,7 +296,7 @@ class LambdaTest(unittest.TestCase):
 
         # THEN update the bucket "NotificationConfiguration"
         s3_client = boto3.client("s3", region_name="us-east-1")
-        config = s3_client.get_bucket_notification_configuration(Bucket=bucket_name)
+        config = s3_client.get_bucket_notification_configuration(Bucket=BUCKET_NAME)
         self.assertIn("LambdaFunctionConfigurations", config)
         self.assertIn("TopicConfigurations", config)
         self.assertIn("QueueConfigurations", config)
@@ -388,7 +309,7 @@ class LambdaTest(unittest.TestCase):
         topic_configuration_list = config["TopicConfigurations"]
         self.assertEqual(1, len(topic_configuration_list))
         topic_configuration = topic_configuration_list[0]
-        self.assertEqual(s3_created, topic_configuration["Events"][0])
+        self.assertEqual(S3_CREATED, topic_configuration["Events"][0])
         # AND notify CFN of its success
         mock_call.assert_called()
         request: Request = mock_call.call_args[0][0]
@@ -396,13 +317,32 @@ class LambdaTest(unittest.TestCase):
         assert request.data is not None
         data = json.loads(request.data.decode())
         self.assertEqual("SUCCESS", data["Status"])
-        self.assertEqual(response_url, request.full_url)
+        self.assertEqual(RESPONSE_URL, request.full_url)
 
     @mock_s3
     @patch("urllib.request.urlopen")
     def test_remove_from_existing(self, mock_call: MagicMock):
         # SCENARIO We want to delete notifications our CDK stack created on an existing S3 bucket
         # GIVEN a delete_event with a matching id "created-by-cdk" for a "QueueConfigurations" on a S3 bucket
+        delete_event = {
+            "StackId": "StackId",
+            "RequestId": "RequestId",
+            "LogicalResourceId": "LogicalResourceId",
+            "ResponseURL": RESPONSE_URL,
+            "RequestType": "Delete",
+            "ResourceProperties": {
+                "BucketName": BUCKET_NAME,
+                "NotificationConfiguration": {
+                    "QueueConfigurations": [
+                        {
+                            "Id": ID_CREATE_BY_CDK,
+                            "Events": [S3_CREATED],
+                            "QueueArn": "arn:aws:sqs:us-east-1:444455556666:old-queue",
+                        }
+                    ]
+                },
+            },
+        }
         setup_s3_bucket()
         from src import index
 
@@ -410,12 +350,14 @@ class LambdaTest(unittest.TestCase):
         index.handler(delete_event, MockContext())
 
         # THEN the "QueueConfigurations" should be empty
-        # AND keep the other configurations untouched
         s3_client = boto3.client("s3", region_name="us-east-1")
-        config = s3_client.get_bucket_notification_configuration(Bucket=bucket_name)
+        config = s3_client.get_bucket_notification_configuration(Bucket=BUCKET_NAME)
         self.assertNotIn("QueueConfigurations", config)
+        # AND keep the other configurations untouched
         self.assertIn("TopicConfigurations", config)
+        self.assertEqual(1, len(config["TopicConfigurations"]))
         self.assertIn("LambdaFunctionConfigurations", config)
+        self.assertEqual(1, len(config["LambdaFunctionConfigurations"]))
         # AND notify CFN of its success
         mock_call.assert_called()
 
@@ -425,6 +367,33 @@ class LambdaTest(unittest.TestCase):
         # SCENARIO We want to update notifications of a S3 bucket managed by our CDK stack
         # GIVEN A bucket with an existing configuration with Id "old-function-hash"
         # AND an Update event with the new incoming configuration with Id "new-function-hash"
+        update_event = {
+            "StackId": "StackId",
+            "RequestId": "RequestId",
+            "LogicalResourceId": "LogicalResourceId",
+            "ResponseURL": RESPONSE_URL,
+            "RequestType": "Update",
+            "OldResourceProperties": {
+                "BucketName": BUCKET_NAME,
+                "NotificationConfiguration": {
+                    "LambdaFunctionConfigurations": [
+                        {"Id": "old-function-hash", "Events": [S3_CREATED], "LambdaFunctionArn": LAMBDA_ARN}
+                    ]
+                },
+            },
+            "ResourceProperties": {
+                "BucketName": BUCKET_NAME,
+                "NotificationConfiguration": {
+                    "LambdaFunctionConfigurations": [
+                        {
+                            "Id": "new-function-hash",
+                            "Events": [S3_CREATED],
+                            "LambdaFunctionArn": "arn:aws:lambda:us-east-1:35667example:function:NewCreateThumbnail",
+                        }
+                    ]
+                },
+            },
+        }
         setup_s3_bucket()
         from src import index
 
@@ -434,7 +403,7 @@ class LambdaTest(unittest.TestCase):
         # THEN replace Id "old-function-hash" config with new config of "new-function-hash"
         # AND keep the other configurations untouched
         s3_client = boto3.client("s3", region_name="us-east-1")
-        config = s3_client.get_bucket_notification_configuration(Bucket=bucket_name)
+        config = s3_client.get_bucket_notification_configuration(Bucket=BUCKET_NAME)
         self.assertIsNotNone(config.get("TopicConfigurations"))
         self.assertIsNotNone(config.get("QueueConfigurations"))
         lambda_configs = config.get("LambdaFunctionConfigurations")
@@ -452,6 +421,27 @@ class LambdaTest(unittest.TestCase):
         # GIVEN A bucket with an existing configuration with Id "old-function-hash"
         # AND an Update event with a "OldResourceProperties" that matches the target
         # and events of the "ResourceProperties"
+        update_event_cdk_upgrade = {
+            "StackId": "StackId",
+            "RequestId": "RequestId",
+            "LogicalResourceId": "LogicalResourceId",
+            "ResponseURL": RESPONSE_URL,
+            "RequestType": "Update",
+            "OldResourceProperties": {
+                "BucketName": BUCKET_NAME,
+                "NotificationConfiguration": {
+                    "LambdaFunctionConfigurations": [{"Events": [S3_CREATED], "LambdaFunctionArn": LAMBDA_ARN}]
+                },
+            },
+            "ResourceProperties": {
+                "BucketName": BUCKET_NAME,
+                "NotificationConfiguration": {
+                    "LambdaFunctionConfigurations": [
+                        {"Id": "new-function-hash", "Events": [S3_CREATED], "LambdaFunctionArn": LAMBDA_ARN}
+                    ]
+                },
+            },
+        }
         setup_s3_bucket()
         from src import index
 
@@ -461,7 +451,7 @@ class LambdaTest(unittest.TestCase):
         # THEN keep the "old-function-hash" as it might been created by the older version of CDK
         # AND keep the other configurations untouched
         s3_client = boto3.client("s3", region_name="us-east-1")
-        config = s3_client.get_bucket_notification_configuration(Bucket=bucket_name)
+        config = s3_client.get_bucket_notification_configuration(Bucket=BUCKET_NAME)
         self.assertIsNotNone(config.get("TopicConfigurations"))
         self.assertIsNotNone(config.get("QueueConfigurations"))
         lambda_configs = config.get("LambdaFunctionConfigurations")
