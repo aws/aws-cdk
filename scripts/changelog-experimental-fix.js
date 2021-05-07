@@ -75,4 +75,4 @@ function repoRoot() {
 }
 
 const defaultChangelogPath = path.join(repoRoot(), 'CHANGELOG.v2.md');
-rewriteChangelog(process.argv[2] ?? defaultChangelogPath);
+rewriteChangelog(process.argv[2] || defaultChangelogPath);
