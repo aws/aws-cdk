@@ -728,7 +728,7 @@ export class Project extends ProjectBase {
       const cfnEnvVariable: CfnProject.EnvironmentVariableProperty = {
         name,
         type: envVariable.type || BuildEnvironmentVariableType.PLAINTEXT,
-        value: envVariable.value instanceof Object ? (envVariable.value as secretsmanager.Secret).secretArn : envVariableValue,
+        value: secretsmanager.Secret.isSecret(envVariable.value) ? (envVariable.value as secretsmanager.Secret).secretArn : envVariableValue,
       };
       ret.push(cfnEnvVariable);
 
@@ -764,7 +764,7 @@ export class Project extends ProjectBase {
 
         // save SecretsManager env variables
         if (envVariable.type === BuildEnvironmentVariableType.SECRETS_MANAGER) {
-          if (envVariable.value instanceof Object) {
+          if (secretsmanager.Secret.isSecret(envVariable.value)) {
             const secretArn = (envVariable.value as secretsmanager.Secret).secretArn;
             const parsedSecretArn = stack.parseArn(secretArn);
 
