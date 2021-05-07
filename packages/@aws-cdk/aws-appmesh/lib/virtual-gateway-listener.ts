@@ -1,8 +1,8 @@
 import { CfnVirtualGateway } from './appmesh.generated';
+import { HealthCheck } from './health-checks';
 import { ConnectionPoolConfig } from './private/utils';
 import {
   GrpcConnectionPool,
-  HealthCheck,
   Http2ConnectionPool,
   HttpConnectionPool,
   Protocol,
