@@ -176,6 +176,7 @@ export = {
                 HealthCheck: {
                   HealthyThreshold: 2,
                   IntervalMillis: 5000,
+                  Port: 80,
                   Protocol: 'http2',
                   TimeoutMillis: 2000,
                   UnhealthyThreshold: 2,
