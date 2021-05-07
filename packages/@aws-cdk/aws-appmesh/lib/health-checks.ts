@@ -86,8 +86,10 @@ export interface HealthCheckConfig {
 export interface HealthCheckBindOptions {
   /**
    * Port for Health Check interface
+   *
+   * @default - no default port is provided
    */
-  readonly defaultPort: number;
+  readonly defaultPort?: number;
 }
 
 
