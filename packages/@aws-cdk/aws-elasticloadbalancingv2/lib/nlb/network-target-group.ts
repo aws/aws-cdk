@@ -30,6 +30,14 @@ export interface NetworkTargetGroupProps extends BaseTargetGroupProps {
   readonly proxyProtocolV2?: boolean;
 
   /**
+   * Indicates whether client IP preservation is enabled.
+   *
+   * @default false if the target group type is IP address and the
+   * target group protocol is TCP or TLS. Otherwise, true.
+   */
+  readonly preserveClientIp?: boolean;
+
+  /**
    * The targets to add to this target group.
    *
    * Can be `Instance`, `IPAddress`, or any self-registering load balancing
@@ -76,6 +84,10 @@ export class NetworkTargetGroup extends TargetGroupBase implements INetworkTarge
 
     if (props.proxyProtocolV2 != null) {
       this.setAttribute('proxy_protocol_v2.enabled', props.proxyProtocolV2 ? 'true' : 'false');
+    }
+
+    if (props.preserveClientIp != null) {
+      this.setAttribute('preserve_client_ip.enabled', props.preserveClientIp ? 'true' : 'false');
     }
 
     this.addTarget(...(props.targets || []));

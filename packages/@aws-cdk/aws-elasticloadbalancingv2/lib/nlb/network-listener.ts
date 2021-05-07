@@ -278,6 +278,14 @@ export interface AddNetworkTargetsProps {
   readonly proxyProtocolV2?: boolean;
 
   /**
+   * Indicates whether client IP preservation is enabled.
+   *
+   * @default false if the target group type is IP address and the
+   * target group protocol is TCP or TLS. Otherwise, true.
+   */
+   readonly preserveClientIp?: boolean;
+
+  /**
    * Health check configuration
    *
    * @default No health check

@@ -30,6 +30,31 @@ export = {
     test.done();
   },
 
+  'Enable preserve_client_ip attribute for target group'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+
+    // WHEN
+    new elbv2.NetworkTargetGroup(stack, 'Group', {
+      vpc,
+      port: 80,
+      preserveClientIp: true,
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::TargetGroup', {
+      TargetGroupAttributes: [
+        {
+          Key: 'preserve_client_ip.enabled',
+          Value: 'true',
+        },
+      ],
+    }));
+
+    test.done();
+  },
+
   'Disable proxy protocol v2 for attribute target group'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
@@ -47,6 +72,31 @@ export = {
       TargetGroupAttributes: [
         {
           Key: 'proxy_protocol_v2.enabled',
+          Value: 'false',
+        },
+      ],
+    }));
+
+    test.done();
+  },
+
+  'Disable preserve_client_ip for attribute target group'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+
+    // WHEN
+    new elbv2.NetworkTargetGroup(stack, 'Group', {
+      vpc,
+      port: 80,
+      preserveClientIp: false,
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::TargetGroup', {
+      TargetGroupAttributes: [
+        {
+          Key: 'preserve_client_ip.enabled',
           Value: 'false',
         },
       ],
