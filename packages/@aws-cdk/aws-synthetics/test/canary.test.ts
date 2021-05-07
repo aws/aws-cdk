@@ -1,5 +1,5 @@
-import '@aws-cdk/assert/jest';
-import { objectLike } from '@aws-cdk/assert';
+import '@aws-cdk/assert-internal/jest';
+import { objectLike } from '@aws-cdk/assert-internal';
 import * as iam from '@aws-cdk/aws-iam';
 import * as s3 from '@aws-cdk/aws-s3';
 import { App, Duration, Lazy, Stack } from '@aws-cdk/core';
@@ -44,7 +44,7 @@ test('Canary can have generated name', () => {
       handler: 'index.handler',
       code: synthetics.Code.fromInline('/* Synthetics handler code */'),
     }),
-    runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_0,
+    runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_1,
   });
 
   // THEN

@@ -1,8 +1,8 @@
-import { expect, haveResource } from '@aws-cdk/assert';
+import { expect, haveResource } from '@aws-cdk/assert-internal';
+import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import { nodeunitShim, Test } from 'nodeunit-shim';
 import * as ecs from '../lib';
-import * as iam from '@aws-cdk/aws-iam';
 
 nodeunitShim({
   'When creating a new TaskDefinition': {

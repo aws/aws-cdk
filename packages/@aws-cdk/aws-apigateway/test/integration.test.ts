@@ -1,5 +1,5 @@
-import '@aws-cdk/assert/jest';
-import { ABSENT } from '@aws-cdk/assert';
+import '@aws-cdk/assert-internal/jest';
+import { ABSENT } from '@aws-cdk/assert-internal';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
 import * as iam from '@aws-cdk/aws-iam';
@@ -184,4 +184,50 @@ describe('integration', () => {
       },
     });
   });
+
+  test('validates timeout is valid', () => {
+
+    expect(() => new apigw.Integration({
+      type: apigw.IntegrationType.HTTP_PROXY,
+      integrationHttpMethod: 'ANY',
+      options: {
+        timeout: cdk.Duration.millis(2),
+      },
+    })).toThrow(/Integration timeout must be between 50 milliseconds and 29 seconds/);
+
+    expect(() => new apigw.Integration({
+      type: apigw.IntegrationType.HTTP_PROXY,
+      integrationHttpMethod: 'ANY',
+      options: {
+        timeout: cdk.Duration.seconds(50),
+      },
+    })).toThrow(/Integration timeout must be between 50 milliseconds and 29 seconds/);
+  });
+
+  test('sets timeout', () => {
+
+    // GIVEN
+    const stack = new cdk.Stack();
+    const api = new apigw.RestApi(stack, 'restapi');
+
+    // WHEN
+    const integration = new apigw.Integration({
+      type: apigw.IntegrationType.HTTP_PROXY,
+      integrationHttpMethod: 'ANY',
+      options: {
+        timeout: cdk.Duration.seconds(1),
+      },
+    });
+    api.root.addMethod('ANY', integration);
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::ApiGateway::Method', {
+      HttpMethod: 'ANY',
+      Integration: {
+        TimeoutInMillis: 1000,
+      },
+    });
+
+  });
+
 });

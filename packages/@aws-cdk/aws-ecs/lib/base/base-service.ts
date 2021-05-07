@@ -8,8 +8,8 @@ import * as cloudmap from '@aws-cdk/aws-servicediscovery';
 import { Annotations, Duration, IResolvable, IResource, Lazy, Resource, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { LoadBalancerTargetOptions, NetworkMode, TaskDefinition } from '../base/task-definition';
-import { ContainerDefinition, Protocol } from '../container-definition';
 import { ICluster, CapacityProviderStrategy } from '../cluster';
+import { ContainerDefinition, Protocol } from '../container-definition';
 import { CfnService } from '../ecs.generated';
 import { ScalableTaskCount } from './scalable-task-count';
 
@@ -637,7 +637,7 @@ export abstract class BaseService extends Resource
   }
 
   /**
-   * This method returns the CloudWatch metric for this clusters memory utilization.
+   * This method returns the CloudWatch metric for this service's memory utilization.
    *
    * @default average over 5 minutes
    */
@@ -646,7 +646,7 @@ export abstract class BaseService extends Resource
   }
 
   /**
-   * This method returns the CloudWatch metric for this clusters CPU utilization.
+   * This method returns the CloudWatch metric for this service's CPU utilization.
    *
    * @default average over 5 minutes
    */

@@ -1,20 +1,24 @@
-import '@aws-cdk/assert/jest';
+import '@aws-cdk/assert-internal/jest';
 import * as fs from 'fs';
 import * as path from 'path';
-import { ABSENT } from '@aws-cdk/assert';
+import { ABSENT } from '@aws-cdk/assert-internal';
 import { Vpc } from '@aws-cdk/aws-ec2';
-import { Runtime } from '@aws-cdk/aws-lambda';
+import { CodeConfig, Runtime } from '@aws-cdk/aws-lambda';
 import { Stack } from '@aws-cdk/core';
 import { NodejsFunction } from '../lib';
 import { Bundling } from '../lib/bundling';
-import { nodeMajorVersion } from '../lib/util';
 
 jest.mock('../lib/bundling', () => {
   return {
     Bundling: {
       bundle: jest.fn().mockReturnValue({
-        bind: () => {
-          return { inlineCode: 'code' };
+        bind: (): CodeConfig => {
+          return {
+            s3Location: {
+              bucketName: 'my-bucket',
+              objectKey: 'my-key',
+            },
+          };
         },
         bindToResource: () => { return; },
       }),
@@ -36,13 +40,9 @@ test('NodejsFunction with .ts handler', () => {
     entry: expect.stringContaining('function.test.handler1.ts'), // Automatically finds .ts handler file
   }));
 
-  const runtime = nodeMajorVersion() >= 14
-    ? Runtime.NODEJS_14_X
-    : Runtime.NODEJS_12_X;
-
   expect(stack).toHaveResource('AWS::Lambda::Function', {
     Handler: 'index.handler',
-    Runtime: runtime.name,
+    Runtime: 'nodejs14.x',
   });
 });
 

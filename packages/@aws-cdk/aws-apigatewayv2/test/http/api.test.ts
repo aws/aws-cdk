@@ -1,9 +1,10 @@
-import '@aws-cdk/assert/jest';
-import { ABSENT } from '@aws-cdk/assert';
+import '@aws-cdk/assert-internal/jest';
+import { ABSENT } from '@aws-cdk/assert-internal';
 import { Metric } from '@aws-cdk/aws-cloudwatch';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import { Duration, Stack } from '@aws-cdk/core';
 import {
+  CorsHttpMethod,
   HttpApi, HttpAuthorizer, HttpAuthorizerType, HttpIntegrationType, HttpMethod, HttpRouteAuthorizerBindOptions, HttpRouteAuthorizerConfig,
   HttpRouteIntegrationBindOptions, HttpRouteIntegrationConfig, IHttpRouteAuthorizer, IHttpRouteIntegration, HttpNoneAuthorizer, PayloadFormatVersion,
 } from '../../lib';
@@ -106,7 +107,7 @@ describe('HttpApi', () => {
       new HttpApi(stack, 'HttpApi', {
         corsPreflight: {
           allowHeaders: ['Authorization'],
-          allowMethods: [HttpMethod.GET, HttpMethod.HEAD, HttpMethod.OPTIONS, HttpMethod.POST],
+          allowMethods: [CorsHttpMethod.GET, CorsHttpMethod.HEAD, CorsHttpMethod.OPTIONS, CorsHttpMethod.POST, CorsHttpMethod.ANY],
           allowOrigins: ['*'],
           maxAge: Duration.seconds(36400),
         },
@@ -115,7 +116,7 @@ describe('HttpApi', () => {
       expect(stack).toHaveResource('AWS::ApiGatewayV2::Api', {
         CorsConfiguration: {
           AllowHeaders: ['Authorization'],
-          AllowMethods: ['GET', 'HEAD', 'OPTIONS', 'POST'],
+          AllowMethods: ['GET', 'HEAD', 'OPTIONS', 'POST', '*'],
           AllowOrigins: ['*'],
           MaxAge: 36400,
         },
@@ -147,7 +148,7 @@ describe('HttpApi', () => {
       const api = new HttpApi(stack, 'test-api', {
         createDefaultStage: false,
       });
-      const metricName = '4xxError';
+      const metricName = '4xx';
       const statistic = 'Sum';
       const apiId = api.apiId;
 
@@ -184,6 +185,8 @@ describe('HttpApi', () => {
         expect(metric.dimensions).toEqual({ ApiId: apiId });
         expect(metric.color).toEqual(color);
       }
+      const metricNames = metrics.map(m => m.metricName);
+      expect(metricNames).toEqual(['4xx', '5xx', 'DataProcessed', 'Latency', 'IntegrationLatency', 'Count']);
     });
 
     test('Metrics from imported resource', () => {
@@ -191,7 +194,7 @@ describe('HttpApi', () => {
       const stack = new Stack();
       const apiId = 'importedId';
       const api = HttpApi.fromHttpApiAttributes(stack, 'test-api', { httpApiId: apiId });
-      const metricName = '4xxError';
+      const metricName = '4xx';
       const statistic = 'Sum';
 
       // WHEN
