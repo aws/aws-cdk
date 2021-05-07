@@ -312,8 +312,25 @@ $ cdk destroy --app='node bin/main.js' MyStackName
 
 Deploys a `CDKToolkit` CloudFormation stack into the specified environment(s), that provides an S3 bucket that
 `cdk deploy` will use to store synthesized templates and the related assets, before triggering a CloudFormation stack
-update. The name of the deployed stack can be configured using the `--toolkit-stack-name` argument. The S3 Bucket
-Public Access Block Configuration can be configured using the `--public-access-block-configuration` argument.
+update. This command supports several optional arguments to customize the bootstrapping process which are outlined below:
+
+Note: Some of these options are only supported with modern boostrapping.
+
+- `--toolkit-stack-name` can be used to specify the name of the CloudFormation Stack created from bootstrapping.
+- `--public-access-block-configuration` will apply block public access configuration to the CDK Staging bucket.
+- `--permission-boundary-policy-arn` adds a permission boundary to roles created in modern bootstrapping.
+- `--bootstrap-bucket-name` overrides the name of the Amazon S3 bucket. May require changes to your CDK app
+- `--bootstrap-kms-key-id` overrides the AWS KMS key used to encrypt the S3 bucket.
+- `--tags` adds one or more AWS CloudFormation tags to the bootstrap stack.
+- `--termination-protection` prevents the bootstrap stack from being deleted (see Protecting a stack from being deleted in the AWS CloudFormation User Guide)
+- `--cloudformation-execution-policies` specifies the ARNs of managed policies that should be attached to the deployment role assumed by AWS CloudFormation during deployment of your stacks. At least one policy is required; otherwise, AWS CloudFormation will attempt to deploy without permissions and deployments will fail.
+- `--trust` lists the AWS accounts that may deploy into the environment being bootstrapped. Use this flag when bootstrapping an environment that a CDK Pipeline in another environment will deploy into. The account doing the bootstrapping is always trusted.
+- `--qualifier` a string that is added to the names of all resources in the bootstrap stack. A qualifier lets you avoid name clashes when you provision two bootstrap stacks in the same environment. The default is hnb659fds (this value has no significance). Changing the qualifier will require changes to your AWS CDK app
+- `--bootstrap-customer-key` Create a Customer Master Key (CMK) for the bootstrap bucket (you will be charged but can customize permissions, modern bootstrapping only)
+- `--template` Use the template from the given file instead of the built-in one (use --show-template to obtain an example)
+- `--show-template` Instead of actual bootstrapping, print the current CLI\'s bootstrapping template to stdout for customization
+- `--force` Always bootstrap even if it would downgrade template version
+- `--execute` Whether to execute ChangeSet (--no-execute will NOT execute the ChangeSet)
 
 ```console
 $ # Deploys to all environments
@@ -322,9 +339,6 @@ $ cdk bootstrap --app='node bin/main.js'
 $ # Deploys only to environments foo and bar
 $ cdk bootstrap --app='node bin/main.js' foo bar
 ```
-
-By default, bootstrap stack will be protected from stack termination. This can be disabled using
-`--termination-protection` argument.
 
 If you have specific needs, policies, or requirements not met by the default template, you can customize it
 to fit your own situation, by exporting the default one to a file and either deploying it yourself
