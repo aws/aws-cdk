@@ -1,6 +1,6 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
-import { FeatureFlags, Fn, IResource, Lazy, RemovalPolicy, Resource, SecretValue, Stack, Token } from '@aws-cdk/core';
+import { FeatureFlags, Fn, IResource, Lazy, RemovalPolicy, Resource, ResourceProps, SecretValue, Stack, Token } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import { IConstruct, Construct } from 'constructs';
 import { ResourcePolicy } from './policy';
@@ -190,6 +190,8 @@ export interface SecretAttributes {
   readonly secretPartialArn?: string;
 }
 
+const SECRET_SYMBOL = Symbol.for('@aws-cdk/aws-secretsmanager.Secret');
+
 /**
  * The common behavior of Secrets. Users should not use this class directly, and instead use ``Secret``.
  */
@@ -201,6 +203,12 @@ abstract class SecretBase extends Resource implements ISecret {
   protected abstract readonly autoCreatePolicy: boolean;
 
   private policy?: ResourcePolicy;
+
+  constructor(scope: Construct, id: string, props: ResourceProps = {}) {
+    super(scope, id, props);
+
+    Object.defineProperty(this, SECRET_SYMBOL, { value: true });
+  }
 
   public get secretFullArn(): string | undefined { return this.secretArn; }
 
@@ -325,6 +333,10 @@ abstract class SecretBase extends Resource implements ISecret {
  * Creates a new secret in AWS SecretsManager.
  */
 export class Secret extends SecretBase {
+
+  public static isSecret(x: any): x is ISecret {
+    return x !== null && typeof (x) === 'object' && SECRET_SYMBOL in x;
+  }
 
   /** @deprecated use `fromSecretCompleteArn` or `fromSecretPartialArn` */
   public static fromSecretArn(scope: Construct, id: string, secretArn: string): ISecret {

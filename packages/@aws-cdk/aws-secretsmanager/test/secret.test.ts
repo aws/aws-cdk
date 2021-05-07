@@ -1096,3 +1096,13 @@ test('with replication regions', () => {
     ],
   });
 });
+
+test('isSecret correctly detects an instance of type ISecret', () => {
+  // WHEN
+  const result = secretsmanager.Secret.isSecret(
+    secretsmanager.Secret.fromSecretCompleteArn(stack, 'Secret', 'arn:aws:secretsmanager:us-west-2:123456789012:secret:mysecret-123456'),
+  );
+
+  // THEN
+  expect(result).toBeTruthy();
+});
