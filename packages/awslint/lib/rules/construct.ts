@@ -270,22 +270,6 @@ constructLinter.add({
   },
 });
 
-constructLinter.add({
-  code: 'props-no-any',
-  message: 'props must not use Typescript "any" type',
-  eval: e => {
-    if (!e.ctx.propsType) { return; }
-    if (!e.ctx.hasPropsArgument) { return; }
-
-    // this rule does not apply to L1 constructs
-    if (CoreTypes.isCfnResource(e.ctx.classType)) { return; }
-
-    for (const property of e.ctx.propsType.ownProperties) {
-      e.assert(!property.type.isAny, `${e.ctx.propsFqn}.${property.name}`);
-    }
-  },
-});
-
 function baseConstructAddendum(): string {
   if (!process.env.AWSLINT_BASE_CONSTRUCT) {
     return 'If the construct is using the "constructs" module, set the environment variable "AWSLINT_BASE_CONSTRUCT" and re-run';
