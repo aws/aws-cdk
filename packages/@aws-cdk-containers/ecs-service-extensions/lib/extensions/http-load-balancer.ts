@@ -7,7 +7,7 @@ import { ServiceExtension, ServiceBuild } from './extension-interfaces';
 
 /**
  * This extension add a public facing load balancer for sending traffic
- * to one or more replicas of the application container
+ * to one or more replicas of the application container.
  */
 export class HttpLoadBalancerExtension extends ServiceExtension {
   private loadBalancer!: alb.IApplicationLoadBalancer;
@@ -17,7 +17,7 @@ export class HttpLoadBalancerExtension extends ServiceExtension {
     super('load-balancer');
   }
 
-  // Before the service is created go ahead and create the load balancer itself.
+  // Before the service is created, go ahead and create the load balancer itself.
   public prehook(service: Service, scope: Construct) {
     this.parentService = service;
 
