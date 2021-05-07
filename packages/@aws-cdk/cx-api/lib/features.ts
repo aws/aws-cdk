@@ -142,7 +142,16 @@ export const APIGATEWAY_USAGEPLANKEY_ORDERINSENSITIVE_ID = '@aws-cdk/aws-apigate
  */
 export const EFS_DEFAULT_ENCRYPTION_AT_REST = '@aws-cdk/aws-efs:defaultEncryptionAtRest';
 
-export const LAMBDA_RECOGNIZE_VERSION_PROPS = '@aws-cdk/aws-lambda:functionHashCorrected';
+/**
+ * Enable this feature flag to opt in to the updated logical id calculation for Lambda Version created using the
+ * `fn.currentVersion`.
+ *
+ * The previous calculation incorrectly considered properties of the `AWS::Lambda::Function` resource that did
+ * not constitute creating a new Version.
+ *
+ * See 'currentVersion' section in the aws-lambda module's README for more details.
+ */
+export const LAMBDA_RECOGNIZE_VERSION_PROPS = '@aws-cdk/aws-lambda:recognizeVersionProps';
 
 /**
  * This map includes context keys and values for feature flags that enable
