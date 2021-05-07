@@ -9,7 +9,12 @@ export function calculateFunctionHash(fn: LambdaFunction) {
 
   // render the cloudformation resource from this function
   const config = stack.resolve((functionResource as any)._toCloudFormation());
-  sortProperties(config);
+  // config is of the shape: { Resources: { LogicalId: { Type: 'Function', Properties: { ... } }}}
+  const resources = config.Resources;
+  const logicalId = Object.keys(resources)[0];
+  const properties = resources[logicalId].Properties;
+  const sorted = sortProperties(properties);
+  config.Resources[logicalId].Properties = sorted;
   const stringifiedConfig = JSON.stringify(config);
 
   const hash = crypto.createHash('md5');
@@ -23,11 +28,7 @@ export function trimFromStart(s: string, maxLength: number) {
   return s.substring(newStart);
 }
 
-function sortProperties(templateObject: any): void {
-  // templateObject is of the shape: { Resources: { LogicalId: { Type: 'Function', Properties: { ... } }}}
-  const resources = templateObject.Resources;
-  const logicalId = Object.keys(resources)[0];
-  const properties = resources[logicalId].Properties;
+function sortProperties(properties: any) {
   const ret: any = {};
   // We take all required properties in the order that they were historically,
   // to make sure the hash we calculate is stable.
@@ -44,5 +45,5 @@ function sortProperties(templateObject: any): void {
       ret[property] = properties[property];
     }
   }
-  templateObject.Resources[logicalId].Properties = ret;
+  return ret;
 }
