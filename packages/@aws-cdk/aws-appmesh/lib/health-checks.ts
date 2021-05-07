@@ -81,6 +81,17 @@ export interface HealthCheckConfig {
 }
 
 /**
+ * Options used for creating the Health Check object
+ */
+export interface HealthCheckBindOptions {
+  /**
+   * Port for Health Check interface
+   */
+  readonly defaultPort: number;
+}
+
+
+/**
  * Contains static factory methods for creating health checks for different protocols
  */
 export abstract class HealthCheck {
@@ -116,7 +127,7 @@ export abstract class HealthCheck {
    * Called when the AccessLog type is initialized. Can be used to enforce
    * mutual exclusivity with future properties
    */
-  public abstract bind(scope: Construct): HealthCheckConfig;
+  public abstract bind(scope: Construct, options: HealthCheckBindOptions): HealthCheckConfig;
 }
 
 class HealthCheckImpl extends HealthCheck {
@@ -150,7 +161,7 @@ class HealthCheckImpl extends HealthCheck {
     }
   }
 
-  public bind(_scope: Construct): HealthCheckConfig {
+  public bind(_scope: Construct, options: HealthCheckBindOptions): HealthCheckConfig {
     return {
       virtualNodeHealthCheck: {
         protocol: this.protocol,
@@ -159,6 +170,7 @@ class HealthCheckImpl extends HealthCheck {
         intervalMillis: this.interval.toMilliseconds(),
         timeoutMillis: this.timeout.toMilliseconds(),
         path: this.path,
+        port: options.defaultPort,
       },
       virtualGatewayHealthCheck: {
         protocol: this.protocol,
@@ -167,6 +179,7 @@ class HealthCheckImpl extends HealthCheck {
         intervalMillis: this.interval.toMilliseconds(),
         timeoutMillis: this.timeout.toMilliseconds(),
         path: this.path,
+        port: options.defaultPort,
       },
     };
   }

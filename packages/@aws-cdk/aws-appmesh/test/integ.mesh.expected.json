@@ -925,6 +925,7 @@
                 "HealthyThreshold": 3,
                 "IntervalMillis": 5000,
                 "Path": "/check-path",
+                "Port": 8080,
                 "Protocol": "http",
                 "TimeoutMillis": 2000,
                 "UnhealthyThreshold": 2
@@ -985,6 +986,7 @@
                 "HealthyThreshold": 3,
                 "IntervalMillis": 5000,
                 "Path": "/check-path2",
+                "Port": 8080,
                 "Protocol": "http",
                 "TimeoutMillis": 2000,
                 "UnhealthyThreshold": 2
@@ -1033,6 +1035,7 @@
                 "HealthyThreshold": 3,
                 "IntervalMillis": 5000,
                 "Path": "/check-path3",
+                "Port": 8080,
                 "Protocol": "http",
                 "TimeoutMillis": 2000,
                 "UnhealthyThreshold": 2
@@ -1270,6 +1273,7 @@
                 "HealthyThreshold": 2,
                 "IntervalMillis": 10000,
                 "Path": "/",
+                "Port": 443,
                 "Protocol": "http",
                 "TimeoutMillis": 2000,
                 "UnhealthyThreshold": 2

@@ -236,6 +236,7 @@ export = {
                     HealthyThreshold: 3,
                     IntervalMillis: 5000,
                     Path: '/',
+                    Port: 8080,
                     Protocol: 'http',
                     TimeoutMillis: 2000,
                     UnhealthyThreshold: 2,

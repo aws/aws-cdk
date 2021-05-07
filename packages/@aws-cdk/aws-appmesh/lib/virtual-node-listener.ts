@@ -185,7 +185,7 @@ class VirtualNodeListenerImpl extends VirtualNodeListener {
           port: this.port,
           protocol: this.protocol,
         },
-        healthCheck: this.healthCheck?.bind(scope).virtualNodeHealthCheck,
+        healthCheck: this.healthCheck?.bind(scope, { defaultPort: this.port }).virtualNodeHealthCheck,
         timeout: this.timeout ? this.renderTimeout(this.timeout) : undefined,
         tls: tlsConfig ? this.renderTls(tlsConfig) : undefined,
         outlierDetection: this.outlierDetection ? this.renderOutlierDetection(this.outlierDetection) : undefined,

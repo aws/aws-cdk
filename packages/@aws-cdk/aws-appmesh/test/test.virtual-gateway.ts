@@ -58,7 +58,8 @@ export = {
             {
               HealthCheck: {
                 HealthyThreshold: 2,
-                IntervalMillis: 10_000,
+                IntervalMillis: 10000,
+                Port: 443,
                 Protocol: appmesh.Protocol.HTTP,
                 TimeoutMillis: 2000,
                 UnhealthyThreshold: 2,
@@ -80,7 +81,8 @@ export = {
             {
               HealthCheck: {
                 HealthyThreshold: 2,
-                IntervalMillis: 10_000,
+                IntervalMillis: 10000,
+                Port: 443,
                 Protocol: appmesh.Protocol.HTTP2,
                 TimeoutMillis: 2000,
                 UnhealthyThreshold: 2,
