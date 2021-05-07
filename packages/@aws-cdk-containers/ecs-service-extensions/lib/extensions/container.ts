@@ -4,32 +4,33 @@ import { Service } from '../service';
 import { ServiceExtension } from './extension-interfaces';
 
 /**
- * Setting for the main application container of a service
+ * Setting for the main application container of a service.
  */
 export interface ContainerExtensionProps {
   /**
-   * How much CPU the container requires
+   * How much CPU the container requires.
    */
   readonly cpu: number,
 
   /**
-   * How much memory in megabytes the container requires
+   * How much memory in megabytes the container requires.
    */
   readonly memoryMiB: number,
 
   /**
-   * The image to run
+   * The image to run.
    */
   readonly image: ecs.ContainerImage,
 
   /**
-   * What port the image listen for traffic on
+   * What port the image listen for traffic on.
    */
   readonly trafficPort: number,
 
   /**
-   * Environment variables to pass into the container
-   * @default - No environment variables
+   * Environment variables to pass into the container.
+   *
+   * @default - No environment variables.
    */
   readonly environment?: {
     [key: string]: string,
@@ -48,7 +49,7 @@ export class Container extends ServiceExtension {
   public readonly trafficPort: number;
 
   /**
-   * The settings for the container
+   * The settings for the container.
    */
   private props: ContainerExtensionProps;
 

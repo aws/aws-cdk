@@ -8,7 +8,7 @@ const CLOUDWATCH_AGENT_IMAGE = 'amazon/cloudwatch-agent:latest';
 
 /**
  * This extension adds a CloudWatch agent to the task definition and
- * configures the task to be able to publish metrics to CloudWatch
+ * configures the task to be able to publish metrics to CloudWatch.
  */
 export class CloudwatchAgentExtension extends ServiceExtension {
   private CW_CONFIG_CONTENT = {
