@@ -15,7 +15,7 @@ export interface CfnOutputProps {
    * The value of an output can include literals, parameter references, pseudo-parameters,
    * a mapping value, or intrinsic functions.
    */
-  readonly value: string;
+  readonly value: any;
 
   /**
    * The name used to export the value of this output across stacks.
