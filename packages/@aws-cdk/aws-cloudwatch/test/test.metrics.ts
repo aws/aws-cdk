@@ -83,12 +83,8 @@ export = {
   },
 
   'cannot use long dimension values'(test: Test) {
-    const invalidDimensionValue = 'SomeLongValueSomeLongValueSomeLongValueSomeLongValueSomeLongValueSomeLongValue\
-        SomeLongValueSomeLongValueSomeLongValueSomeLongValueSomeLongValueSomeLongValueSomeLongValueSomeLongValue\
-        SomeLongValueSomeLongValueSomeLongValueSomeLongValueSomeLongValueSomeLongValueSomeLongValueSomeLongValue\
-        SomeLongValueSomeLongValueSomeLongValueSomeLongValueSomeLongValueSomeLongValueSomeLongValueSomeLongValue\
-        SomeLongValueSomeLongValueSomeLongValueSomeLongValueSomeLongValueSomeLongValueSomeLongValueSomeLongValue\
-        SomeLongValueSomeLongValueSomeLongValueSomeLongValueSomeLongValueSomeLongValueSomeLongValueSomeLongValue';
+    const arr = new Array(256);
+    const invalidDimensionValue = arr.fill('A', 0).join('');
 
     test.throws(() => {
       new Metric({

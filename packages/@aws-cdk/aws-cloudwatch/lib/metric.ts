@@ -398,7 +398,6 @@ export class Metric implements IMetric {
     return list;
   }
 
-  //rules from here: https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cw-dimension.html
   private validateDimensions(dims: DimensionHash): void {
     var dimsArray = Object.keys(dims);
     if (dimsArray?.length > 10) {
