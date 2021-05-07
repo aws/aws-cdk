@@ -73,6 +73,10 @@ beforeEach(() => {
       ],
     },
   });
+
+  [api_apiKey, api_iam, api_oidc, api_auth, api_cognito].map((api) =>
+    api.addQuery('filler', new appsync.ResolvableField({ returnType: t.string })),
+  );
 });
 
 const testObjectType = (IApi: appsync.GraphqlApi, directives: appsync.Directive[], tag: string): any => {

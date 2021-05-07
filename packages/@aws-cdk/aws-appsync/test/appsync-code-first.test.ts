@@ -9,6 +9,8 @@ beforeEach(() => {
   stack = new cdk.Stack();
 });
 
+const filler = 'schema {\n  query: Query\n}\ntype Query {\n  filler: String\n}\n';
+
 describe('code-first implementation through GraphQL Api functions`', () => {
   let api: appsync.GraphqlApi;
   beforeEach(() => {
@@ -16,6 +18,10 @@ describe('code-first implementation through GraphQL Api functions`', () => {
     api = new appsync.GraphqlApi(stack, 'api', {
       name: 'api',
     });
+
+    api.addQuery('filler', new appsync.ResolvableField({
+      returnType: t.string,
+    }));
   });
 
   test('testing addType w/ Interface Type for schema definition mode `code`', () => {
@@ -35,7 +41,7 @@ describe('code-first implementation through GraphQL Api functions`', () => {
 
     // THEN
     expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
-      Definition: `${out}`,
+      Definition: `${filler}${out}`,
     });
   });
 
@@ -56,7 +62,7 @@ describe('code-first implementation through GraphQL Api functions`', () => {
 
     // THEN
     expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
-      Definition: `${out}`,
+      Definition: `${filler}${out}`,
     });
   });
 
@@ -76,7 +82,7 @@ describe('code-first implementation through GraphQL Api functions`', () => {
 
     // THEN
     expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
-      Definition: `${out}`,
+      Definition: `${filler}${out}`,
     });
   });
 
@@ -97,7 +103,7 @@ describe('code-first implementation through GraphQL Api functions`', () => {
 
     // THEN
     expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
-      Definition: `${out}`,
+      Definition: `${filler}${out}`,
     });
   });
 
@@ -117,7 +123,7 @@ describe('code-first implementation through GraphQL Api functions`', () => {
 
     // THEN
     expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
-      Definition: `${out}`,
+      Definition: `${filler}${out}`,
     });
   });
 
@@ -138,7 +144,7 @@ describe('code-first implementation through GraphQL Api functions`', () => {
 
     // THEN
     expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
-      Definition: `${out}`,
+      Definition: `${filler}${out}`,
     });
   });
 });
@@ -148,6 +154,9 @@ describe('code-first implementation through Schema functions`', () => {
   beforeEach(() => {
     // GIVEN
     schema = new appsync.Schema();
+    schema.addQuery('filler', new appsync.ResolvableField({
+      returnType: t.string,
+    }));
   });
 
   test('testing addType w/ Interface Type for schema definition mode `code`', () => {
@@ -172,7 +181,7 @@ describe('code-first implementation through Schema functions`', () => {
 
     // THEN
     expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
-      Definition: `${out}`,
+      Definition: `${filler}${out}`,
     });
   });
 
@@ -198,7 +207,7 @@ describe('code-first implementation through Schema functions`', () => {
 
     // THEN
     expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
-      Definition: `${out}`,
+      Definition: `${filler}${out}`,
     });
   });
 
@@ -224,7 +233,7 @@ describe('code-first implementation through Schema functions`', () => {
 
     // THEN
     expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
-      Definition: `${out}`,
+      Definition: `${filler}${out}`,
     });
   });
 
@@ -249,7 +258,7 @@ describe('code-first implementation through Schema functions`', () => {
 
     // THEN
     expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
-      Definition: `${out}`,
+      Definition: `${filler}${out}`,
     });
   });
 
@@ -273,7 +282,7 @@ describe('code-first implementation through Schema functions`', () => {
 
     // THEN
     expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
-      Definition: `${out}`,
+      Definition: `${filler}${out}`,
     });
   });
 
@@ -298,7 +307,7 @@ describe('code-first implementation through Schema functions`', () => {
 
     // THEN
     expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
-      Definition: `${out}`,
+      Definition: `${filler}${out}`,
     });
   });
 });

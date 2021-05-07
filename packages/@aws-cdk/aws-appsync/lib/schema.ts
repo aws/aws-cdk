@@ -1,5 +1,6 @@
 import { readFileSync } from 'fs';
 import { Lazy } from '@aws-cdk/core';
+import { validateSchema, GraphQLError, buildASTSchema, parse } from 'graphql';
 import { CfnGraphQLSchema } from './appsync.generated';
 import { GraphqlApi } from './graphqlapi';
 import { SchemaMode, shapeAddition } from './private';
@@ -81,8 +82,19 @@ export class Schema {
         apiId: api.apiId,
         definition: this.mode === SchemaMode.CODE ?
           Lazy.string({
-            produce: () => this.types.reduce((acc, type) => `${acc}${type._bindToGraphqlApi(api).toString()}\n`,
-              `${this.declareSchema()}${this.definition}`),
+            produce: () => {
+              const schema = this.types.reduce((acc, type) =>`${acc}${type._bindToGraphqlApi(api).toString()}\n`,
+                `${this.declareSchema()}${this.definition}`);
+              const _ast = buildASTSchema(parse(schema.trim()));
+              const errors = validateSchema(_ast);
+              if (errors.length > 0) {
+                /* eslint-disable-next-line no-console */
+                console.log(schema);
+              }
+              errors.map((error: GraphQLError) => { throw new Error(error.message); });
+
+              return schema;
+            },
           })
           : this.definition,
       });

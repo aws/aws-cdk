@@ -2,6 +2,7 @@ import { IUserPool } from '@aws-cdk/aws-cognito';
 import { ManagedPolicy, Role, IRole, ServicePrincipal, Grant, IGrantable } from '@aws-cdk/aws-iam';
 import { CfnResource, Duration, Expiration, IResolvable, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
+// import { validateSchema, GraphQLError, buildASTSchema, parse } from 'graphql';
 import { CfnApiKey, CfnGraphQLApi, CfnGraphQLSchema } from './appsync.generated';
 import { IGraphqlApi, GraphqlApiBase } from './graphqlapi-base';
 import { Schema } from './schema';
@@ -437,6 +438,18 @@ export class GraphqlApi extends GraphqlApiBase {
       this.apiKeyResource.addDependsOn(this.schemaResource);
       this.apiKey = this.apiKeyResource.attrApiKey;
     }
+
+    // this.node.addValidation({
+    //   validate: () => {
+    //     /* eslint-disable-next-line no-console */
+    //     console.log(this.schema.definition);
+
+    //     const _ast = buildASTSchema(parse(this.schema.definition.trim()));
+    //     const errors = validateSchema(_ast);
+
+    //     return errors.map((error: GraphQLError) => error.message);
+    //   },
+    // });
   }
 
   /**
