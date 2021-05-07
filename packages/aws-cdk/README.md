@@ -333,11 +333,11 @@ Note: Some of these options are only supported with modern boostrapping.
 - `--execute` Whether to execute ChangeSet (--no-execute will NOT execute the ChangeSet)
 
 ```console
-$ # Deploys to all environments
-$ cdk bootstrap --app='node bin/main.js'
-
-$ # Deploys only to environments foo and bar
-$ cdk bootstrap --app='node bin/main.js' foo bar
+$ # Bootstrap a a given account and region
+$ cdk bootstrap aws://123456789012/us-east-1
+$
+$ # Bootstrap multple regions in an account
+$ cdk bootstrap 123456789012/us-east-1 123456789012/us-west-1
 ```
 
 If you have specific needs, policies, or requirements not met by the default template, you can customize it
