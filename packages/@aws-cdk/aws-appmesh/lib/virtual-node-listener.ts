@@ -1,8 +1,8 @@
-import * as cdk from '@aws-cdk/core';
 import { CfnVirtualNode } from './appmesh.generated';
-import { validateHealthChecks, ConnectionPoolConfig } from './private/utils';
+import { HealthCheck } from './health-checks';
+import { ConnectionPoolConfig } from './private/utils';
 import {
-  GrpcConnectionPool, GrpcTimeout, HealthCheck, Http2ConnectionPool, HttpConnectionPool,
+  GrpcConnectionPool, GrpcTimeout, Http2ConnectionPool, HttpConnectionPool,
   HttpTimeout, OutlierDetection, Protocol, TcpConnectionPool, TcpTimeout,
 } from './shared-interfaces';
 import { TlsCertificate, TlsCertificateConfig } from './tls-certificate';
@@ -185,7 +185,7 @@ class VirtualNodeListenerImpl extends VirtualNodeListener {
           port: this.port,
           protocol: this.protocol,
         },
-        healthCheck: this.healthCheck ? this.renderHealthCheck(this.healthCheck) : undefined,
+        healthCheck: this.healthCheck?.bind(scope, { defaultPort: this.port }).virtualNodeHealthCheck,
         timeout: this.timeout ? this.renderTimeout(this.timeout) : undefined,
         tls: tlsConfig ? this.renderTls(tlsConfig) : undefined,
         outlierDetection: this.outlierDetection ? this.renderOutlierDetection(this.outlierDetection) : undefined,
@@ -202,32 +202,6 @@ class VirtualNodeListenerImpl extends VirtualNodeListener {
       certificate: tlsCertificateConfig.tlsCertificate,
       mode: tlsCertificateConfig.tlsMode.toString(),
     };
-  }
-
-  private renderHealthCheck(hc: HealthCheck): CfnVirtualNode.HealthCheckProperty | undefined {
-    if (hc === undefined) { return undefined; }
-
-    if (hc.protocol === Protocol.TCP && hc.path) {
-      throw new Error('The path property cannot be set with Protocol.TCP');
-    }
-
-    if (hc.protocol === Protocol.GRPC && hc.path) {
-      throw new Error('The path property cannot be set with Protocol.GRPC');
-    }
-
-    const healthCheck: CfnVirtualNode.HealthCheckProperty = {
-      healthyThreshold: hc.healthyThreshold || 2,
-      intervalMillis: (hc.interval || cdk.Duration.seconds(5)).toMilliseconds(), // min
-      path: hc.path || (hc.protocol === Protocol.HTTP ? '/' : undefined),
-      port: hc.port || this.port,
-      protocol: hc.protocol || this.protocol,
-      timeoutMillis: (hc.timeout || cdk.Duration.seconds(2)).toMilliseconds(),
-      unhealthyThreshold: hc.unhealthyThreshold || 2,
-    };
-
-    validateHealthChecks(healthCheck);
-
-    return healthCheck;
   }
 
   private renderTimeout(timeout: HttpTimeout): CfnVirtualNode.ListenerTimeoutProperty {
@@ -270,4 +244,3 @@ class VirtualNodeListenerImpl extends VirtualNodeListener {
     });
   }
 }
-

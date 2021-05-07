@@ -16,3 +16,4 @@ export * from './virtual-gateway-listener';
 export * from './gateway-route';
 export * from './gateway-route-spec';
 export * from './client-policy';
+export * from './health-checks';
