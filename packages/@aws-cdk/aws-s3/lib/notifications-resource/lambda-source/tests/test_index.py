@@ -1,5 +1,7 @@
+import copy
 import json
 import unittest
+from typing import Optional, Dict, Any
 from urllib.request import Request
 import uuid
 from unittest.mock import patch, MagicMock
@@ -30,6 +32,52 @@ create_event = {
         },
     },
 }
+NOTIFICATION_CONFIGURATION: Dict[str, Any] = {
+    "TopicConfigurations": [
+        {
+            "Id": "existing-notification",
+            "TopicArn": "arn:aws:sns:us-east-1:123456789012:MyTopic",
+            "Events": [S3_CREATED],
+            "Filter": {
+                "Key": {
+                    "FilterRules": [
+                        {"Name": "suffix", "Value": "string"},
+                    ]
+                }
+            },
+        },
+    ],
+    "QueueConfigurations": [
+        {
+            "Id": ID_CREATE_BY_CDK,
+            "QueueArn": "arn:aws:sqs:us-east-1:444455556666:old-queue",
+            "Events": [
+                "s3:ObjectCreated:Post",
+            ],
+            "Filter": {
+                "Key": {
+                    "FilterRules": [
+                        {"Name": "suffix", "Value": "string"},
+                    ]
+                }
+            },
+        },
+    ],
+    "LambdaFunctionConfigurations": [
+        {
+            "Id": "old-function-hash",
+            "LambdaFunctionArn": LAMBDA_ARN,
+            "Events": [S3_CREATED],
+            "Filter": {
+                "Key": {
+                    "FilterRules": [
+                        {"Name": "prefix", "Value": "string"},
+                    ]
+                }
+            },
+        },
+    ],
+}
 
 
 class MockContext(object):
@@ -40,72 +88,32 @@ class MockContext(object):
     log_stream_name = "log_stream_name"
 
 
-def setup_s3_bucket(no_bucket_config: bool = False):
+def setup_s3_bucket(notification_configuration: Optional[Dict]):
     """Using moto to help setup a mock S3 bucket
 
     Parameters
     ----------
-    no_bucket_config : bool
-        Flag to simulate that this is a brand new S3 bucket with no existing notifications
+    notification_configuration : Dict, None
+        Optional notification configuration
     """
     s3_client = boto3.client("s3", region_name="us-east-1")
     s3_client.create_bucket(Bucket=BUCKET_NAME)
-
-    if no_bucket_config:
-        return
-
-    s3_client.put_bucket_notification_configuration(
-        Bucket=BUCKET_NAME,
-        NotificationConfiguration={
-            "TopicConfigurations": [
-                {
-                    "Id": "existing-notification",
-                    "TopicArn": "arn:aws:sns:us-east-1:123456789012:MyTopic",
-                    "Events": [S3_CREATED],
-                    "Filter": {
-                        "Key": {
-                            "FilterRules": [
-                                {"Name": "suffix", "Value": "string"},
-                            ]
-                        }
-                    },
-                },
-            ],
-            "QueueConfigurations": [
-                {
-                    "Id": ID_CREATE_BY_CDK,
-                    "QueueArn": "arn:aws:sqs:us-east-1:444455556666:old-queue",
-                    "Events": [
-                        "s3:ObjectCreated:Post",
-                    ],
-                    "Filter": {
-                        "Key": {
-                            "FilterRules": [
-                                {"Name": "suffix", "Value": "string"},
-                            ]
-                        }
-                    },
-                },
-            ],
-            "LambdaFunctionConfigurations": [
-                {
-                    "Id": "old-function-hash",
-                    "LambdaFunctionArn": LAMBDA_ARN,
-                    "Events": [S3_CREATED],
-                    "Filter": {
-                        "Key": {
-                            "FilterRules": [
-                                {"Name": "prefix", "Value": "string"},
-                            ]
-                        }
-                    },
-                },
-            ],
-        },
-    )
+    if notification_configuration:
+        s3_client.put_bucket_notification_configuration(
+            Bucket=BUCKET_NAME, NotificationConfiguration=copy.deepcopy(notification_configuration)
+        )
 
 
 class LambdaTest(unittest.TestCase):
+    def assert_notify_cfn_success(self, mock_call):
+        mock_call.assert_called()
+        request: Request = mock_call.call_args[0][0]
+        self.assertIsInstance(request, Request)
+        assert request.data is not None
+        data = json.loads(request.data.decode())
+        self.assertEqual("SUCCESS", data["Status"])
+        self.assertEqual(RESPONSE_URL, request.full_url)
+
     def test_empty_ids(self):
         from src import index
 
@@ -262,7 +270,7 @@ class LambdaTest(unittest.TestCase):
     def test_add_to_new_bucket(self, mock_call: MagicMock):
         # SCENARIO We want to add notifications to a new S3 bucket managed by our CDK stack
         # GIVEN a "NotificationConfiguration" for a newly create bucket
-        setup_s3_bucket(no_bucket_config=True)
+        setup_s3_bucket(notification_configuration=None)
         from src import index
 
         # WHEN calling the handler
@@ -280,7 +288,7 @@ class LambdaTest(unittest.TestCase):
         self.assertNotIn("LambdaFunctionConfigurations", config)
         self.assertNotIn("LambdaFunctionConfigurations", config)
         # AND notify CFN of its success
-        mock_call.assert_called()
+        self.assert_notify_cfn_success(mock_call)
 
     @mock_s3
     @patch("urllib.request.urlopen")
@@ -288,7 +296,7 @@ class LambdaTest(unittest.TestCase):
         # SCENARIO We want to add new notifications to an existing S3 bucket not created by our CDK stack
         # GIVEN a "NotificationConfiguration" for an existing bucket
         # AND the existing bucket has an existing "NotificationConfiguration"
-        setup_s3_bucket()
+        setup_s3_bucket(notification_configuration=NOTIFICATION_CONFIGURATION)
         from src import index
 
         # WHEN calling handler
@@ -311,19 +319,15 @@ class LambdaTest(unittest.TestCase):
         topic_configuration = topic_configuration_list[0]
         self.assertEqual(S3_CREATED, topic_configuration["Events"][0])
         # AND notify CFN of its success
-        mock_call.assert_called()
-        request: Request = mock_call.call_args[0][0]
-        self.assertIsInstance(request, Request)
-        assert request.data is not None
-        data = json.loads(request.data.decode())
-        self.assertEqual("SUCCESS", data["Status"])
-        self.assertEqual(RESPONSE_URL, request.full_url)
+        self.assert_notify_cfn_success(mock_call)
 
     @mock_s3
     @patch("urllib.request.urlopen")
     def test_remove_from_existing(self, mock_call: MagicMock):
         # SCENARIO We want to delete notifications our CDK stack created on an existing S3 bucket
-        # GIVEN a delete_event with a matching id "created-by-cdk" for a "QueueConfigurations" on a S3 bucket
+        # GIVEN A bucket with an existing configuration with Id "created-by-cdk" for a "QueueConfigurations"
+        setup_s3_bucket(notification_configuration=NOTIFICATION_CONFIGURATION)
+        # AND a "Delete" RequestType with a matching id "created-by-cdk"
         delete_event = {
             "StackId": "StackId",
             "RequestId": "RequestId",
@@ -343,7 +347,6 @@ class LambdaTest(unittest.TestCase):
                 },
             },
         }
-        setup_s3_bucket()
         from src import index
 
         # WHEN calling the handler
@@ -359,13 +362,14 @@ class LambdaTest(unittest.TestCase):
         self.assertIn("LambdaFunctionConfigurations", config)
         self.assertEqual(1, len(config["LambdaFunctionConfigurations"]))
         # AND notify CFN of its success
-        mock_call.assert_called()
+        self.assert_notify_cfn_success(mock_call)
 
     @mock_s3
     @patch("urllib.request.urlopen")
     def test_update_config_for_managed_s3_bucket(self, mock_call: MagicMock):
         # SCENARIO We want to update notifications of a S3 bucket managed by our CDK stack
         # GIVEN A bucket with an existing configuration with Id "old-function-hash"
+        setup_s3_bucket(notification_configuration=NOTIFICATION_CONFIGURATION)
         # AND an Update event with the new incoming configuration with Id "new-function-hash"
         update_event = {
             "StackId": "StackId",
@@ -394,7 +398,6 @@ class LambdaTest(unittest.TestCase):
                 },
             },
         }
-        setup_s3_bucket()
         from src import index
 
         # WHEN calling the handler
@@ -412,15 +415,16 @@ class LambdaTest(unittest.TestCase):
         lambda_config = lambda_configs[0]
         self.assertEqual("new-function-hash", lambda_config.get("Id"))
         # AND notify CFN of its success
-        mock_call.assert_called()
+        self.assert_notify_cfn_success(mock_call)
 
     @mock_s3
     @patch("urllib.request.urlopen")
     def test_update_from_older_cdk_version(self, mock_call: MagicMock):
         # SCENARIO We have upgraded to a newer version of CDK, where some of existing managed notification
         # GIVEN A bucket with an existing configuration with Id "old-function-hash"
-        # AND an Update event with a "OldResourceProperties" that matches the target
-        # and events of the "ResourceProperties"
+        setup_s3_bucket(notification_configuration=NOTIFICATION_CONFIGURATION)
+        # AND an Update event with a "OldResourceProperties" that matches the target and events of the
+        # "ResourceProperties"
         update_event_cdk_upgrade = {
             "StackId": "StackId",
             "RequestId": "RequestId",
@@ -442,7 +446,6 @@ class LambdaTest(unittest.TestCase):
                 },
             },
         }
-        setup_s3_bucket()
         from src import index
 
         # WHEN calling the handler
@@ -460,7 +463,7 @@ class LambdaTest(unittest.TestCase):
         lambda_config = lambda_configs[0]
         self.assertEqual("old-function-hash", lambda_config.get("Id"))
         # AND notify CFN of its success
-        mock_call.assert_called()
+        self.assert_notify_cfn_success(mock_call)
 
 
 if __name__ == "__main__":
