@@ -364,14 +364,20 @@ export interface KeyProps {
   /**
    * The cryptographic configuration of the key. The valid value depends on usage of the key.
    *
-   * @default - KeySpec.SYMMETRIC_DEFAULT
+   * IMPORTANT: If you change this property of an existing key, the existing key is scheduled for deletion
+   * and a new key is created with the specified value.
+   *
+   * @default KeySpec.SYMMETRIC_DEFAULT
    */
   readonly keySpec?: KeySpec;
 
   /**
    * The cryptographic operations for which the key can be used.
    *
-   * @default - KeyUsage.ENCRYPT_DECRYPT
+   * IMPORTANT: If you change this property of an existing key, the existing key is scheduled for deletion
+   * and a new key is created with the specified value.
+   *
+   * @default KeyUsage.ENCRYPT_DECRYPT
    */
   readonly keyUsage?: KeyUsage;
 
