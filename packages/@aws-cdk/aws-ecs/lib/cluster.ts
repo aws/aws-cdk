@@ -342,7 +342,7 @@ export class Cluster extends Resource implements ICluster {
   }
 
   /**
-   * addCapacityProvider adds the name of a capacityProvider to the list of supproted capacityProviders for a cluster.
+   * addCapacityProvider adds the name of a capacityProvider to the list of supported capacityProviders for a cluster.
    *
    * @param provider the capacity provider to add to this cluster.
    */
