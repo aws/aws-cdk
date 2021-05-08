@@ -13,25 +13,6 @@ BUCKET_NAME = "fake_bucket"
 LAMBDA_ARN = "arn:aws:lambda:us-east-1:35667example:function:CreateThumbnail"
 S3_CREATED = "s3:ObjectCreated:*"
 ID_CREATE_BY_CDK = "created-by-cdk"
-create_event = {
-    "StackId": "StackId",
-    "RequestId": "RequestId",
-    "LogicalResourceId": "LogicalResourceId",
-    "ResponseURL": RESPONSE_URL,
-    "RequestType": "Create",
-    "ResourceProperties": {
-        "BucketName": BUCKET_NAME,
-        "NotificationConfiguration": {
-            "QueueConfigurations": [
-                {
-                    "Id": "my-function-hash",
-                    "Events": [S3_CREATED],
-                    "QueueArn": "arn:aws:sqs:us-east-1:444455556666:new-queue",
-                }
-            ]
-        },
-    },
-}
 NOTIFICATION_CONFIGURATION: Dict[str, Any] = {
     "TopicConfigurations": [
         {
@@ -78,6 +59,25 @@ NOTIFICATION_CONFIGURATION: Dict[str, Any] = {
         },
     ],
 }
+create_event = {
+    "StackId": "StackId",
+    "RequestId": "RequestId",
+    "LogicalResourceId": "LogicalResourceId",
+    "ResponseURL": RESPONSE_URL,
+    "RequestType": "Create",
+    "ResourceProperties": {
+        "BucketName": BUCKET_NAME,
+        "NotificationConfiguration": {
+            "QueueConfigurations": [
+                {
+                    "Id": "my-function-hash",
+                    "Events": [S3_CREATED],
+                    "QueueArn": "arn:aws:sqs:us-east-1:444455556666:new-queue",
+                }
+            ]
+        },
+    },
+}
 
 
 class MockContext(object):
@@ -105,14 +105,20 @@ def setup_s3_bucket(notification_configuration: Optional[Dict]):
 
 
 class LambdaTest(unittest.TestCase):
-    def assert_notify_cfn_success(self, mock_call):
+    def assert_notify_cfn(self, mock_call, status: str):
         mock_call.assert_called()
         request: Request = mock_call.call_args[0][0]
         self.assertIsInstance(request, Request)
         assert request.data is not None
         data = json.loads(request.data.decode())
-        self.assertEqual("SUCCESS", data["Status"])
+        self.assertEqual(status, data["Status"])
         self.assertEqual(RESPONSE_URL, request.full_url)
+
+    def assert_notify_cfn_of_failure(self, mock_call):
+        self.assert_notify_cfn(mock_call, "FAILED")
+
+    def assert_notify_cfn_of_success(self, mock_call):
+        self.assert_notify_cfn(mock_call, "SUCCESS")
 
     def test_empty_ids(self):
         from src import index
@@ -184,7 +190,7 @@ class LambdaTest(unittest.TestCase):
         self.assertTrue(len(config["LambdaFunctionConfigurations"]) == 0)
 
     def test_prepare_config_removes_response_metadata(self):
-        # Test to ensure we remove the "ResponseMetadata" returned by the
+        # SCENARIO Ensure we remove the "ResponseMetadata" returned by the
         # get_bucket_notification_configuration call
         from src import index
 
@@ -194,11 +200,10 @@ class LambdaTest(unittest.TestCase):
 
     def test_prepare_config_set_defaults(self):
         # GIVEN both loaded configuration and new configuration have no default set
-        from src import index
-
         current_config = {}
         in_config = {}
         old_config = {}
+        from src import index
 
         # WHEN calling prepare_config
         config = index.prepare_config(current_config, in_config, old_config, "Delete")
@@ -217,7 +222,8 @@ class LambdaTest(unittest.TestCase):
     @patch("urllib.request.urlopen")
     @patch("builtins.print")
     def test_submit_response_io_failure(self, mock_print: MagicMock, mock_call: MagicMock):
-        # GIVEN an http error when notifying CFN
+        # SCENARIO There is some kind of error notifying CFN "ResponseURL"
+        # GIVEN the "ResponseURL" endpoint is down
         exception_message = "Failed to put"
         mock_call.side_effect = Exception(exception_message)
         from src import index
@@ -225,25 +231,26 @@ class LambdaTest(unittest.TestCase):
         # WHEN calling submit_response
         index.submit_response(create_event, MockContext(), "SUCCESS", "")
 
-        # THEN handle the error
+        # THEN handle the http error
         # AND print error message to the console for debugging
         mock_print.assert_called_with(f"send(..) failed executing request.urlopen(..): {exception_message}")
 
     @patch("urllib.request.urlopen")
     def test_submit_response(self, mock_call: MagicMock):
+        # SCENARIO Sometimes updates to S3 might fail so we want to notify CFN of the error and cause
         # GIVEN we have an error doing the S3 update
         expected_status = "FAILED"
         error_message = "Some s3 error. "
         context = MockContext()
-        expected_message = f"{error_message}See the details in CloudWatch Log Stream: {context.log_stream_name}"
         from src import index
 
         # WHEN calling submit_response
         index.submit_response(create_event, context, expected_status, error_message)
 
-        # THEN include the status and reason in the payload to CFN
+        # THEN include the "Status" of FAILED and "Reason" in the payload to CFN
         payload = json.loads(mock_call.mock_calls[0].args[0].data.decode())
         self.assertEqual(expected_status, payload["Status"])
+        expected_message = f"{error_message}See the details in CloudWatch Log Stream: {context.log_stream_name}"
         self.assertEqual(expected_message, payload["Reason"])
 
     @mock_s3
@@ -258,12 +265,7 @@ class LambdaTest(unittest.TestCase):
         index.handler(create_event, MockContext())
 
         # THEN submit a failed to the callback url
-        mock_call.assert_called()
-        request: Request = mock_call.call_args[0][0]
-        self.assertIsInstance(request, Request)
-        assert request.data is not None
-        data = json.loads(request.data.decode())
-        self.assertEqual("FAILED", data["Status"])
+        self.assert_notify_cfn_of_failure(mock_call)
 
     @mock_s3
     @patch("urllib.request.urlopen")
@@ -288,7 +290,7 @@ class LambdaTest(unittest.TestCase):
         self.assertNotIn("LambdaFunctionConfigurations", config)
         self.assertNotIn("LambdaFunctionConfigurations", config)
         # AND notify CFN of its success
-        self.assert_notify_cfn_success(mock_call)
+        self.assert_notify_cfn_of_success(mock_call)
 
     @mock_s3
     @patch("urllib.request.urlopen")
@@ -319,7 +321,7 @@ class LambdaTest(unittest.TestCase):
         topic_configuration = topic_configuration_list[0]
         self.assertEqual(S3_CREATED, topic_configuration["Events"][0])
         # AND notify CFN of its success
-        self.assert_notify_cfn_success(mock_call)
+        self.assert_notify_cfn_of_success(mock_call)
 
     @mock_s3
     @patch("urllib.request.urlopen")
@@ -362,7 +364,7 @@ class LambdaTest(unittest.TestCase):
         self.assertIn("LambdaFunctionConfigurations", config)
         self.assertEqual(1, len(config["LambdaFunctionConfigurations"]))
         # AND notify CFN of its success
-        self.assert_notify_cfn_success(mock_call)
+        self.assert_notify_cfn_of_success(mock_call)
 
     @mock_s3
     @patch("urllib.request.urlopen")
@@ -415,7 +417,7 @@ class LambdaTest(unittest.TestCase):
         lambda_config = lambda_configs[0]
         self.assertEqual("new-function-hash", lambda_config.get("Id"))
         # AND notify CFN of its success
-        self.assert_notify_cfn_success(mock_call)
+        self.assert_notify_cfn_of_success(mock_call)
 
     @mock_s3
     @patch("urllib.request.urlopen")
@@ -463,7 +465,7 @@ class LambdaTest(unittest.TestCase):
         lambda_config = lambda_configs[0]
         self.assertEqual("old-function-hash", lambda_config.get("Id"))
         # AND notify CFN of its success
-        self.assert_notify_cfn_success(mock_call)
+        self.assert_notify_cfn_of_success(mock_call)
 
 
 if __name__ == "__main__":
