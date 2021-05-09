@@ -71,8 +71,7 @@ export class NotificationsResourceHandler extends Construct {
       public readonly tags: cdk.TagManager = new cdk.TagManager(cdk.TagType.STANDARD, resourceType);
 
       protected renderProperties(properties: any): { [key: string]: any } {
-        properties.Tags = cdk.listMapper(
-          cdk.cfnTagToCloudFormation)(this.tags.renderTags());
+        properties.Tags = cdk.listMapper(cdk.cfnTagToCloudFormation)(this.tags.renderTags());
         delete properties.tags;
         return properties;
       }
@@ -88,7 +87,6 @@ export class NotificationsResourceHandler extends Construct {
         Timeout: 300,
       },
     });
-
     resource.node.addDependency(role);
 
     this.functionArn = resource.getAtt('Arn').toString();

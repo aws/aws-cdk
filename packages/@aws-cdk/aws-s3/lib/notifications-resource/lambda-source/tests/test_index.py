@@ -6,6 +6,7 @@ from urllib.request import Request
 import uuid
 from unittest.mock import patch, MagicMock
 import boto3  # type: ignore
+from botocore import stub
 from moto.s3 import mock_s3  # type: ignore
 
 RESPONSE_URL = "https://dummy.com/"
@@ -59,25 +60,6 @@ NOTIFICATION_CONFIGURATION: Dict[str, Any] = {
         },
     ],
 }
-create_event = {
-    "StackId": "StackId",
-    "RequestId": "RequestId",
-    "LogicalResourceId": "LogicalResourceId",
-    "ResponseURL": RESPONSE_URL,
-    "RequestType": "Create",
-    "ResourceProperties": {
-        "BucketName": BUCKET_NAME,
-        "NotificationConfiguration": {
-            "QueueConfigurations": [
-                {
-                    "Id": "my-function-hash",
-                    "Events": [S3_CREATED],
-                    "QueueArn": "arn:aws:sqs:us-east-1:444455556666:new-queue",
-                }
-            ]
-        },
-    },
-}
 
 
 class MockContext(object):
@@ -104,40 +86,82 @@ def setup_s3_bucket(notification_configuration: Optional[Dict]):
         )
 
 
+def make_event(
+    request_type: str,
+    notification_configuration: Dict,
+    old_notification_configuration: Dict = None,
+) -> Dict[str, Any]:
+    event = {
+        "StackId": "StackId",
+        "RequestId": "RequestId",
+        "LogicalResourceId": "LogicalResourceId",
+        "ResponseURL": RESPONSE_URL,
+        "RequestType": request_type,
+        "ResourceProperties": {"BucketName": BUCKET_NAME, "NotificationConfiguration": notification_configuration},
+    }
+
+    if old_notification_configuration:
+        event["OldResourceProperties"] = {
+            "BucketName": BUCKET_NAME,
+            "NotificationConfiguration": old_notification_configuration,
+        }
+
+    return event
+
+
+create_event = make_event(
+    request_type="Create",
+    notification_configuration={
+        "QueueConfigurations": [
+            {
+                "Id": "my-function-hash",
+                "Events": [S3_CREATED],
+                "QueueArn": "arn:aws:sqs:us-east-1:444455556666:new-queue",
+            }
+        ]
+    },
+)
+
+
+def assert_notify_cfn(test_case: unittest.TestCase, mock_call, status: str):
+    mock_call.assert_called()
+    request: Request = mock_call.call_args[0][0]
+    test_case.assertIsInstance(request, Request)
+    assert request.data is not None
+    data = json.loads(request.data.decode())
+    test_case.assertEqual(status, data["Status"])
+    test_case.assertEqual(RESPONSE_URL, request.full_url)
+
+
+def assert_notify_cfn_of_failure(test_case: unittest.TestCase, mock_call):
+    assert_notify_cfn(test_case, mock_call, "FAILED")
+
+
+def assert_notify_cfn_of_success(test_case: unittest.TestCase, mock_call):
+    assert_notify_cfn(test_case, mock_call, "SUCCESS")
+
+
 class LambdaTest(unittest.TestCase):
-    def assert_notify_cfn(self, mock_call, status: str):
-        mock_call.assert_called()
-        request: Request = mock_call.call_args[0][0]
-        self.assertIsInstance(request, Request)
-        assert request.data is not None
-        data = json.loads(request.data.decode())
-        self.assertEqual(status, data["Status"])
-        self.assertEqual(RESPONSE_URL, request.full_url)
-
-    def assert_notify_cfn_of_failure(self, mock_call):
-        self.assert_notify_cfn(mock_call, "FAILED")
-
-    def assert_notify_cfn_of_success(self, mock_call):
-        self.assert_notify_cfn(mock_call, "SUCCESS")
-
     def test_empty_ids(self):
+        # GIVEN an empty list
+        configs = [{}]
         from src import index
 
-        # GIVEN an empty list
         # WHEN calling ids
-        ids = index.ids([{}])
+        ids = index.ids(configs)
+
         # THEN return an empty list
         self.assertEqual([], ids)
 
     def test_extract_ids_as_list(self):
+        configs = [{"Id": "x"}, {}]
         from src import index
 
-        ids = index.ids([{"Id": "x"}, {}])
+        ids = index.ids(configs)
+
         self.assertEqual(["x"], ids)
 
     def test_merge_in_config(self):
-        from src import index
-
         # GIVEN an empty current_config and an empty in_config
         current_config = {
             "TopicConfigurations": [],
@@ -150,6 +174,7 @@ class LambdaTest(unittest.TestCase):
             "LambdaFunctionConfigurations": [],
         }
         old_config = {}
+        from src import index
 
         # WHEN merging in prepare_config
         config = index.prepare_config(current_config, in_config, old_config, "Update")
@@ -163,8 +188,6 @@ class LambdaTest(unittest.TestCase):
 
     def test_merge_in_extend(self):
         # GIVEN an "QueueConfigurations" entry in_config and an empty current_config
-        from src import index
-
         current_config = {
             "TopicConfigurations": [],
             "QueueConfigurations": [],
@@ -176,6 +199,7 @@ class LambdaTest(unittest.TestCase):
             "LambdaFunctionConfigurations": [],
         }
         old_config = {}
+        from src import index
 
         # WHEN merging in prepare_config
         config = index.prepare_config(current_config, in_config, old_config, "Update")
@@ -192,10 +216,11 @@ class LambdaTest(unittest.TestCase):
     def test_prepare_config_removes_response_metadata(self):
         # SCENARIO Ensure we remove the "ResponseMetadata" returned by the
         # get_bucket_notification_configuration call
+        current_config = {"ResponseMetadata": "foo"}
         from src import index
 
-        current_config = {"ResponseMetadata": "foo"}
         config = index.prepare_config(current_config, {}, {}, "Delete")
+
         self.assertNotIn("ResponseMetadata", config)
 
     def test_prepare_config_set_defaults(self):
@@ -265,7 +290,7 @@ class LambdaTest(unittest.TestCase):
         index.handler(create_event, MockContext())
 
         # THEN submit a failed to the callback url
-        self.assert_notify_cfn_of_failure(mock_call)
+        assert_notify_cfn_of_failure(self, mock_call)
 
     @mock_s3
     @patch("urllib.request.urlopen")
@@ -290,7 +315,7 @@ class LambdaTest(unittest.TestCase):
         self.assertNotIn("LambdaFunctionConfigurations", config)
         self.assertNotIn("LambdaFunctionConfigurations", config)
         # AND notify CFN of its success
-        self.assert_notify_cfn_of_success(mock_call)
+        assert_notify_cfn_of_success(self, mock_call)
 
     @mock_s3
     @patch("urllib.request.urlopen")
@@ -321,7 +346,7 @@ class LambdaTest(unittest.TestCase):
         topic_configuration = topic_configuration_list[0]
         self.assertEqual(S3_CREATED, topic_configuration["Events"][0])
         # AND notify CFN of its success
-        self.assert_notify_cfn_of_success(mock_call)
+        assert_notify_cfn_of_success(self, mock_call)
 
     @mock_s3
     @patch("urllib.request.urlopen")
@@ -330,25 +355,18 @@ class LambdaTest(unittest.TestCase):
         # GIVEN A bucket with an existing configuration with Id "created-by-cdk" for a "QueueConfigurations"
         setup_s3_bucket(notification_configuration=NOTIFICATION_CONFIGURATION)
         # AND a "Delete" RequestType with a matching id "created-by-cdk"
-        delete_event = {
-            "StackId": "StackId",
-            "RequestId": "RequestId",
-            "LogicalResourceId": "LogicalResourceId",
-            "ResponseURL": RESPONSE_URL,
-            "RequestType": "Delete",
-            "ResourceProperties": {
-                "BucketName": BUCKET_NAME,
-                "NotificationConfiguration": {
-                    "QueueConfigurations": [
-                        {
-                            "Id": ID_CREATE_BY_CDK,
-                            "Events": [S3_CREATED],
-                            "QueueArn": "arn:aws:sqs:us-east-1:444455556666:old-queue",
-                        }
-                    ]
-                },
+        delete_event = make_event(
+            request_type="Delete",
+            notification_configuration={
+                "QueueConfigurations": [
+                    {
+                        "Id": ID_CREATE_BY_CDK,
+                        "Events": [S3_CREATED],
+                        "QueueArn": "arn:aws:sqs:us-east-1:444455556666:old-queue",
+                    }
+                ]
             },
-        }
+        )
         from src import index
 
         # WHEN calling the handler
@@ -364,7 +382,7 @@ class LambdaTest(unittest.TestCase):
         self.assertIn("LambdaFunctionConfigurations", config)
         self.assertEqual(1, len(config["LambdaFunctionConfigurations"]))
         # AND notify CFN of its success
-        self.assert_notify_cfn_of_success(mock_call)
+        assert_notify_cfn_of_success(self, mock_call)
 
     @mock_s3
     @patch("urllib.request.urlopen")
@@ -373,33 +391,27 @@ class LambdaTest(unittest.TestCase):
         # GIVEN A bucket with an existing configuration with Id "old-function-hash"
         setup_s3_bucket(notification_configuration=NOTIFICATION_CONFIGURATION)
         # AND an Update event with the new incoming configuration with Id "new-function-hash"
-        update_event = {
-            "StackId": "StackId",
-            "RequestId": "RequestId",
-            "LogicalResourceId": "LogicalResourceId",
-            "ResponseURL": RESPONSE_URL,
-            "RequestType": "Update",
-            "OldResourceProperties": {
-                "BucketName": BUCKET_NAME,
-                "NotificationConfiguration": {
-                    "LambdaFunctionConfigurations": [
-                        {"Id": "old-function-hash", "Events": [S3_CREATED], "LambdaFunctionArn": LAMBDA_ARN}
-                    ]
-                },
+        update_event = make_event(
+            request_type="Update",
+            old_notification_configuration={
+                "LambdaFunctionConfigurations": [
+                    {
+                        "Id": "old-function-hash",
+                        "Events": [S3_CREATED],
+                        "LambdaFunctionArn": LAMBDA_ARN,
+                    }
+                ]
             },
-            "ResourceProperties": {
-                "BucketName": BUCKET_NAME,
-                "NotificationConfiguration": {
-                    "LambdaFunctionConfigurations": [
-                        {
-                            "Id": "new-function-hash",
-                            "Events": [S3_CREATED],
-                            "LambdaFunctionArn": "arn:aws:lambda:us-east-1:35667example:function:NewCreateThumbnail",
-                        }
-                    ]
-                },
+            notification_configuration={
+                "LambdaFunctionConfigurations": [
+                    {
+                        "Id": "new-function-hash",
+                        "Events": [S3_CREATED],
+                        "LambdaFunctionArn": "arn:aws:lambda:us-east-1:35667example:function:NewCreateThumbnail",
+                    }
+                ]
             },
-        }
+        )
         from src import index
 
         # WHEN calling the handler
@@ -417,7 +429,7 @@ class LambdaTest(unittest.TestCase):
         lambda_config = lambda_configs[0]
         self.assertEqual("new-function-hash", lambda_config.get("Id"))
         # AND notify CFN of its success
-        self.assert_notify_cfn_of_success(mock_call)
+        assert_notify_cfn_of_success(self, mock_call)
 
     @mock_s3
     @patch("urllib.request.urlopen")
@@ -427,31 +439,21 @@ class LambdaTest(unittest.TestCase):
         setup_s3_bucket(notification_configuration=NOTIFICATION_CONFIGURATION)
         # AND an Update event with a "OldResourceProperties" that matches the target and events of the
         # "ResourceProperties"
-        update_event_cdk_upgrade = {
-            "StackId": "StackId",
-            "RequestId": "RequestId",
-            "LogicalResourceId": "LogicalResourceId",
-            "ResponseURL": RESPONSE_URL,
-            "RequestType": "Update",
-            "OldResourceProperties": {
-                "BucketName": BUCKET_NAME,
-                "NotificationConfiguration": {
-                    "LambdaFunctionConfigurations": [{"Events": [S3_CREATED], "LambdaFunctionArn": LAMBDA_ARN}]
-                },
+        update_event = make_event(
+            request_type="Update",
+            old_notification_configuration={
+                "LambdaFunctionConfigurations": [{"Events": [S3_CREATED], "LambdaFunctionArn": LAMBDA_ARN}]
             },
-            "ResourceProperties": {
-                "BucketName": BUCKET_NAME,
-                "NotificationConfiguration": {
-                    "LambdaFunctionConfigurations": [
-                        {"Id": "new-function-hash", "Events": [S3_CREATED], "LambdaFunctionArn": LAMBDA_ARN}
-                    ]
-                },
+            notification_configuration={
+                "LambdaFunctionConfigurations": [
+                    {"Id": "new-function-hash", "Events": [S3_CREATED], "LambdaFunctionArn": LAMBDA_ARN}
+                ]
             },
-        }
+        )
         from src import index
 
         # WHEN calling the handler
-        index.handler(update_event_cdk_upgrade, MockContext())
+        index.handler(update_event, MockContext())
 
         # THEN keep the "old-function-hash" as it might been created by the older version of CDK
         # AND keep the other configurations untouched
@@ -465,7 +467,93 @@ class LambdaTest(unittest.TestCase):
         lambda_config = lambda_configs[0]
         self.assertEqual("old-function-hash", lambda_config.get("Id"))
         # AND notify CFN of its success
-        self.assert_notify_cfn_of_success(mock_call)
+        assert_notify_cfn_of_success(self, mock_call)
+
+
+class ScenarioTest(unittest.TestCase):
+    @patch("urllib.request.urlopen")
+    def test_current_empty_request_type_create_or_update(self, mock_call: MagicMock):
+        from src import index
+
+        for request_type in ["Create", "Update"]:
+            # Current Config is empty
+            current_notification_configuration: Dict = {}
+            s3 = boto3.client("s3")
+            stubber = stub.Stubber(s3)
+            stubber.add_response(
+                "get_bucket_notification_configuration", current_notification_configuration, {"Bucket": BUCKET_NAME}
+            )
+
+            # RequestType is Create or Update
+            configs = [{"Id": "new-function-hash", "Events": [S3_CREATED], "LambdaFunctionArn": LAMBDA_ARN}]
+            old_notification_configuration = (
+                {"LambdaFunctionConfigurations": configs} if request_type == "Update" else None
+            )
+            event = make_event(
+                request_type=request_type,
+                old_notification_configuration=old_notification_configuration,
+                notification_configuration={"LambdaFunctionConfigurations": configs},
+            )
+
+            # Put is equal to "New Configuration"
+            stubber.add_response(
+                "put_bucket_notification_configuration",
+                {},
+                {
+                    "Bucket": BUCKET_NAME,
+                    "NotificationConfiguration": {
+                        "LambdaFunctionConfigurations": configs,
+                        "QueueConfigurations": [],
+                        "TopicConfigurations": [],
+                    },
+                },
+            )
+
+            stubber.activate()
+
+            index.s3 = s3
+            index.handler(event, MockContext())
+            assert_notify_cfn_of_success(self, mock_call)
+
+    @patch("urllib.request.urlopen")
+    def test_current_empty_request_type_delete(self, mock_call: MagicMock):
+        from src import index
+
+        # Current Config is empty
+        current_notification_configuration: Dict = {}
+        s3 = boto3.client("s3")
+        stubber = stub.Stubber(s3)
+        stubber.add_response(
+            "get_bucket_notification_configuration", current_notification_configuration, {"Bucket": BUCKET_NAME}
+        )
+
+        # RequestType is Create or Update
+        configs = [{"Id": "new-function-hash", "Events": [S3_CREATED], "LambdaFunctionArn": LAMBDA_ARN}]
+        event = make_event(
+            request_type="Delete",
+            old_notification_configuration={"LambdaFunctionConfigurations": configs},
+            notification_configuration={"LambdaFunctionConfigurations": configs},
+        )
+
+        # Put is equal to empty
+        stubber.add_response(
+            "put_bucket_notification_configuration",
+            {},
+            {
+                "Bucket": BUCKET_NAME,
+                "NotificationConfiguration": {
+                    "LambdaFunctionConfigurations": [],
+                    "QueueConfigurations": [],
+                    "TopicConfigurations": [],
+                },
+            },
+        )
+
+        stubber.activate()
+
+        index.s3 = s3
+        index.handler(event, MockContext())
+        assert_notify_cfn_of_success(self, mock_call)
 
 
 if __name__ == "__main__":
