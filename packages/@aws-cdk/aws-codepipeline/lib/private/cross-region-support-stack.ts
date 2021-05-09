@@ -60,13 +60,12 @@ export class CrossRegionSupportConstruct extends Construct {
     super(scope, id);
 
     const createKmsKey = props.createKmsKey ?? true;
-    const enableKeyRotation = props.enableKeyRotation ?? false;
 
     let encryptionAlias;
     if (createKmsKey) {
       const encryptionKey = new kms.Key(this, 'CrossRegionCodePipelineReplicationBucketEncryptionKey', {
         removalPolicy: cdk.RemovalPolicy.DESTROY,
-        enableKeyRotation: enableKeyRotation,
+        enableKeyRotation: props.enableKeyRotation === true ? true : undefined,
       });
       encryptionAlias = new AliasWithShorterGeneratedName(this, 'CrossRegionCodePipelineReplicationBucketEncryptionAlias', {
         targetKey: encryptionKey,

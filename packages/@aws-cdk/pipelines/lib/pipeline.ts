@@ -170,17 +170,14 @@ export class CdkPipeline extends CoreConstruct {
       if (props.enableKeyRotation !== undefined) {
         throw new Error('Cannot set \'enableKeyRotation\' if an existing CodePipeline is given using \'codePipeline\'');
       }
-      if (props.enableKeyRotation && !props.crossAccountKeys) {
-        throw new Error('When setting \'enableKeyRotation\' you must also set \'crossAccountKeys\'');
-      }
 
       this._pipeline = props.codePipeline;
     } else {
       this._pipeline = new codepipeline.Pipeline(this, 'Pipeline', {
         pipelineName: props.pipelineName,
         crossAccountKeys: props.crossAccountKeys,
-        restartExecutionOnUpdate: true,
         enableKeyRotation: props.enableKeyRotation,
+        restartExecutionOnUpdate: true,
       });
     }
 

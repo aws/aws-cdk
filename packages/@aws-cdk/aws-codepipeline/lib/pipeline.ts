@@ -257,16 +257,15 @@ export class Pipeline extends PipelineBase {
       throw new Error('Only one of artifactBucket and crossRegionReplicationBuckets can be specified!');
     }
 
-    // Cross account keys must be set for key rotation to be enabled
-    if (props.enableKeyRotation && !props.crossAccountKeys) {
-      throw new Error('When setting \'enableKeyRotation\' you must also set \'crossAccountKeys\'');
-    }
-
-
     // @deprecated(v2): switch to default false
     this.crossAccountKeys = props.crossAccountKeys ?? true;
 
     this.enableKeyRotation = props.enableKeyRotation ?? false;
+
+    // Cross account keys must be set for key rotation to be enabled
+    if (props.enableKeyRotation && !props.crossAccountKeys) {
+      throw new Error('When setting \'enableKeyRotation\' you must also set \'crossAccountKeys\'');
+    }
 
     // If a bucket has been provided, use it - otherwise, create a bucket.
     let propsBucket = this.getArtifactBucketFromProps(props);
@@ -279,7 +278,7 @@ export class Pipeline extends PipelineBase {
           // remove the key - there is a grace period of a few days before it's gone for good,
           // that should be enough for any emergency access to the bucket artifacts
           removalPolicy: RemovalPolicy.DESTROY,
-          enableKeyRotation: this.enableKeyRotation,
+          enableKeyRotation: props.enableKeyRotation,
         });
         // add an alias to make finding the key in the console easier
         new kms.Alias(this, 'ArtifactsBucketEncryptionKeyAlias', {
@@ -508,8 +507,7 @@ export class Pipeline extends PipelineBase {
     return crossRegionSupport;
   }
 
-  private createSupportResourcesForRegion(otherStack: Stack | undefined, actionRegion: string):
-  CrossRegionSupport {
+  private createSupportResourcesForRegion(otherStack: Stack | undefined, actionRegion: string): CrossRegionSupport {
     // if we have a stack from the resource passed - use that!
     if (otherStack) {
       // check if the stack doesn't have this magic construct already
