@@ -149,15 +149,13 @@ const node = mesh.addVirtualNode('virtual-node', {
   }),
   listeners: [appmesh.VirtualNodeListener.httpNodeListener({
     port: 8081,
-    healthCheck: {
+    healthCheck: appmesh.HealthCheck.http({
       healthyThreshold: 3,
       interval: Duration.seconds(5), // minimum
       path: `/health-check-path`,
-      port: 8080,
-      protocol: Protocol.HTTP,
       timeout: Duration.seconds(2), // minimum
       unhealthyThreshold: 2,
-    },
+    }),
   })],
   accessLog: appmesh.AccessLog.fromFilePath('/dev/stdout'),
 });
@@ -173,15 +171,13 @@ const node = new VirtualNode(this, 'node', {
   }),
   listeners: [appmesh.VirtualNodeListener.httpNodeListener({
     port: 8080,
-    healthCheck: {
+    healthCheck: appmesh.HealthCheck.http({
       healthyThreshold: 3,
       interval: Duration.seconds(5), // min
       path: '/ping',
-      port: 8080,
-      protocol: Protocol.HTTP,
       timeout: Duration.seconds(2), // min
       unhealthyThreshold: 2,
-    },
+    }),
     timeout: {
       idle: cdk.Duration.seconds(5),
     },
@@ -207,15 +203,13 @@ const node = new VirtualNode(this, 'node', {
   }),
   listeners: [appmesh.VirtualNodeListener.httpNodeListener({
     port: 8080,
-    healthCheck: {
+    healthCheck: appmesh.HealthCheck.http({
       healthyThreshold: 3,
       interval: Duration.seconds(5), // min
       path: '/ping',
-      port: 8080,
-      protocol: Protocol.HTTP,
       timeout: Duration.seconds(2), // min
       unhealthyThreshold: 2,
-    },
+    }),
     timeout: {
       idle: cdk.Duration.seconds(5),
     },
@@ -303,6 +297,38 @@ const node = mesh.addVirtualNode('virtual-node', {
     maxEjectionPercent: 50,
     maxServerErrors: 5,
   },
+});
+```
+
+## Adding a connection pool to a listener
+
+The `connectionPool` property can be added to a Virtual Node listener or Virtual Gateway listener to add a request connection pool. There are different 
+connection pool properties per listener protocol types.
+
+```typescript
+// A Virtual Node with a gRPC listener with a connection pool set
+const node = new appmesh.VirtualNode(stack, 'node', {
+  mesh,
+  dnsHostName: 'node',
+  listeners: [appmesh.VirtualNodeListener.http({
+    port: 80,
+    connectionPool: {
+      maxConnections: 100,
+      maxPendingRequests: 10,
+    },
+  })],
+});
+
+// A Virtual Gateway with a gRPC listener with a connection pool set
+const gateway = new appmesh.VirtualGateway(this, 'gateway', {
+  mesh: mesh,
+  listeners: [appmesh.VirtualGatewayListener.grpc({
+    port: 8080,
+    connectionPool: {
+      maxRequests: 10,
+    },
+  })],
+  virtualGatewayName: 'gateway',
 });
 ```
 
@@ -462,9 +488,9 @@ const gateway = new appmesh.VirtualGateway(stack, 'gateway', {
   mesh: mesh,
   listeners: [appmesh.VirtualGatewayListener.http({
     port: 443,
-    healthCheck: {
+    healthCheck: appmesh.HealthCheck.http({
       interval: cdk.Duration.seconds(10),
-    },
+    }),
   })],
   backendDefaults: {
     clientPolicy: appmesh.ClientPolicy.acmTrust({
@@ -485,9 +511,9 @@ const gateway = mesh.addVirtualGateway('gateway', {
   virtualGatewayName: 'virtualGateway',
     listeners: [appmesh.VirtualGatewayListener.http({
       port: 443,
-      healthCheck: {
+      healthCheck: appmesh.HealthCheck.http({
         interval: cdk.Duration.seconds(10),
-      },
+      }),
   })],
 });
 ```

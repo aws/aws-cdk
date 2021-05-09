@@ -153,6 +153,22 @@ cluster.addCapacity('bottlerocket-asg', {
 });
 ```
 
+### ARM64 (Graviton) Instances
+
+To launch instances with ARM64 hardware, you can use the Amazon ECS-optimized
+Amazon Linux 2 (arm64) AMI. Based on Amazon Linux 2, this AMI is recommended
+for use when launching your EC2 instances that are powered by Arm-based AWS
+Graviton Processors.
+
+```ts
+cluster.addCapacity('graviton-cluster', {
+  minCapacity: 2,
+  instanceType: new ec2.InstanceType('c6g.large'),
+  machineImage: ecs.EcsOptimizedImage.amazonLinux2(ecs.AmiHardwareType.ARM),
+});
+
+```
+
 ### Spot Instances
 
 To add spot instances into the cluster, you must specify the `spotPrice` in the `ecs.AddCapacityOptions` and optionally enable the `spotInstanceDraining` property.
@@ -525,7 +541,7 @@ const taskDefinition = new ecs.Ec2TaskDefinition(this, 'TaskDef');
 taskDefinition.addContainer('TheContainer', {
   image: ecs.ContainerImage.fromAsset(path.resolve(__dirname, '..', 'eventhandler-image')),
   memoryLimitMiB: 256,
-  logging: new ecs.AwsLogDriver({ streamPrefix: 'EventDemo' })
+  logging: new ecs.AwsLogDriver({ streamPrefix: 'EventDemo', mode: AwsLogDriverMode.NON_BLOCKING })
 });
 
 // An Rule that describes the event trigger (in this case a scheduled run)
@@ -787,4 +803,37 @@ new ecs.FargateService(stack, 'FargateService', {
 });
 
 app.synth();
+```
+
+## Elastic Inference Accelerators
+
+Currently, this feature is only supported for services with EC2 launch types.
+
+To add elastic inference accelerators to your EC2 instance, first add
+`inferenceAccelerators` field to the EC2TaskDefinition and set the `deviceName`
+and `deviceType` properties.
+
+```ts
+const inferenceAccelerators = [{
+  deviceName: 'device1',
+  deviceType: 'eia2.medium',
+}];
+
+const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
+  inferenceAccelerators,
+});
+```
+
+To enable using the inference accelerators in the containers, add `inferenceAcceleratorResources`
+field and set it to a list of device names used for the inference accelerators. Each value in the
+list should match a `DeviceName` for an `InferenceAccelerator` specified in the task definition. 
+
+```ts
+const inferenceAcceleratorResources = ['device1'];
+
+taskDefinition.addContainer('cont', {
+  image: ecs.ContainerImage.fromRegistry('test'),
+  memoryLimitMiB: 1024,
+  inferenceAcceleratorResources,
+});
 ```
