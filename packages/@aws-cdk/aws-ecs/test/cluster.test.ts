@@ -1712,7 +1712,7 @@ nodeunitShim({
     test.done();
   },
 
-  'allows specifying capacityProviders'(test: Test) {
+  'allows specifying Fargate capacityProviders'(test: Test) {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'test');

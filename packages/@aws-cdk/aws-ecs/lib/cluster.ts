@@ -1051,7 +1051,7 @@ enum ContainerInsights {
  */
 export interface CapacityProviderStrategy {
   /**
-   * The capacity provider
+   * The name of the capacity provider
    */
   readonly capacityProvider: string;
 

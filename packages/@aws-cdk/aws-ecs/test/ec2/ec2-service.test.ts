@@ -237,7 +237,7 @@ nodeunitShim({
       test.done();
     },
 
-    'with capacity provider'(test: Test) {
+    'with autoscaling group capacity provider'(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'Vpc');
