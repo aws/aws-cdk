@@ -45,7 +45,7 @@ export interface ISynthesisSession {
   assembly: cxapi.CloudAssemblyBuilder;
 
   /**
-   * Add DOC
+   * Whether the stack should be validated after synthesis to check for error metadata
    *
    * @default - false
    */
@@ -212,7 +212,7 @@ export interface SynthesisOptions extends cxapi.AssemblyBuildOptions {
   readonly skipValidation?: boolean;
 
   /**
-   * TODO Add doc
+   * Whether the stack should be validated after synthesis to check for error metadata
    *
    * @default - false
    */

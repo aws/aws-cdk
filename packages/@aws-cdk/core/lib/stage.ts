@@ -212,7 +212,8 @@ export interface StageSynthesisOptions {
   readonly skipValidation?: boolean;
 
   /**
-   * TODO Add doc
+   * Whether the stack should be validated after synthesis to check for error metadata
+   *
    * @default - false
    */
   readonly validateOnSynthesis?: boolean;
