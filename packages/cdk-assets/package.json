@@ -48,7 +48,7 @@
     "@aws-cdk/cx-api": "0.0.0",
     "archiver": "^5.3.0",
     "aws-sdk": "^2.848.0",
-    "glob": "^7.1.6",
+    "glob": "^7.1.7",
     "yargs": "^16.2.0"
   },
   "repository": {
