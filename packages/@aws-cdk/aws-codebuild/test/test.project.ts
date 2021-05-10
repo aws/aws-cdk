@@ -1467,7 +1467,7 @@ export = {
         test.done();
       },
 
-      'can be provided as a Secret'(test: Test) {
+      'can be provided as a Secret from complete secret Arn'(test: Test) {
         // GIVEN
         const stack = new cdk.Stack();
 
@@ -1517,6 +1517,74 @@ export = {
             }),
           },
         })));
+
+        test.done();
+      },
+
+      'can be provided as a Secret from secret name'(test: Test) {
+        // GIVEN
+        const stack = new cdk.Stack();
+
+        // WHEN
+        const secret = secretsmanager.Secret.fromSecretNameV2(stack, 'Secret', 'mysecret');
+        new codebuild.PipelineProject(stack, 'Project', {
+          environmentVariables: {
+            'ENV_VAR1': {
+              type: codebuild.BuildEnvironmentVariableType.SECRETS_MANAGER,
+              value: secret,
+            },
+          },
+        });
+
+        // THEN
+        expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
+          'Environment': {
+            'EnvironmentVariables': [
+              {
+                'Name': 'ENV_VAR1',
+                'Type': 'SECRETS_MANAGER',
+                'Value': {
+                  'Fn::Join': [
+                    '',
+                    [
+                      'arn:',
+                      { 'Ref': 'AWS::Partition' },
+                      ':secretsmanager:',
+                      { 'Ref': 'AWS::Region' },
+                      ':',
+                      { 'Ref': 'AWS::AccountId' },
+                      ':secret:mysecret',
+                    ],
+                  ],
+                },
+              },
+            ],
+          },
+        }));
+
+        // THEN
+        expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
+          'PolicyDocument': {
+            'Statement': arrayWith({
+              'Action': 'secretsmanager:GetSecretValue',
+              'Effect': 'Allow',
+              'Resource': {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    { 'Ref': 'AWS::Partition' },
+                    ':secretsmanager:',
+                    { 'Ref': 'AWS::Region' },
+                    ':',
+                    { 'Ref': 'AWS::AccountId' },
+                    ':secret:mysecret*',
+                  ],
+                ],
+              },
+            }),
+          },
+        }));
 
         test.done();
       },

@@ -7,7 +7,24 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
-import { ArnComponents, Aws, Duration, IResource, Lazy, Names, PhysicalName, Resource, SecretValue, Stack, Token, TokenComparison, Tokenization } from '@aws-cdk/core';
+// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
+// eslint-disable-next-line
+import {
+  ArnComponents,
+  Aws,
+  Construct as CoreConstruct,
+  Duration,
+  IResource,
+  Lazy,
+  Names,
+  PhysicalName,
+  Resource,
+  SecretValue,
+  Stack,
+  Token,
+  TokenComparison,
+  Tokenization,
+} from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { IArtifacts } from './artifacts';
 import { BuildSpec } from './build-spec';
@@ -23,10 +40,6 @@ import { LoggingOptions } from './project-logs';
 import { renderReportGroupArn } from './report-group-utils';
 import { ISource } from './source';
 import { CODEPIPELINE_SOURCE_ARTIFACTS_TYPE, NO_SOURCE_TYPE } from './source-types';
-
-// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
-// eslint-disable-next-line
-import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 /**
  * The type returned from {@link IProject#enableBatchBuilds}.
@@ -778,7 +791,6 @@ export class Project extends ProjectBase {
                 // the key policies have to allow this access, so a wildcard is safe here
                 resourceName: '*',
                 sep: '/',
-                // if we were given an ARN, we need to use the provided partition/account/region
                 partition: parsedSecretArn.partition,
                 account: parsedSecretArn.account,
                 region: parsedSecretArn.region,
