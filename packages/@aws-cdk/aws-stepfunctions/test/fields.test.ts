@@ -18,6 +18,15 @@ describe('Fields', () => {
             deepField: JsonPath.numberAt('$.numField'),
           },
         ],
+        deepList: [
+          [
+            [
+              [
+                'literal',
+              ],
+            ],
+          ],
+        ],
       }),
     ).toStrictEqual({
       'bool': true,
@@ -29,6 +38,15 @@ describe('Fields', () => {
         {
           'deepField.$': '$.numField',
         },
+      ],
+      'deepList': [
+        [
+          [
+            [
+              'literal',
+            ],
+          ],
+        ],
       ],
     });
   }),
