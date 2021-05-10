@@ -189,6 +189,10 @@ export class StackCollection {
     return new StackCollection(this.assembly, arts);
   }
 
+  public filter(predicate: (art: cxapi.CloudFormationStackArtifact) => boolean): StackCollection {
+    return new StackCollection(this.assembly, this.stackArtifacts.filter(predicate));
+  }
+
   /**
    * Extracts 'aws:cdk:warning|info|error' metadata entries from the stack synthesis
    */

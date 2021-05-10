@@ -43,6 +43,13 @@ export interface ISynthesisSession {
    * Cloud assembly builder.
    */
   assembly: cxapi.CloudAssemblyBuilder;
+
+  /**
+   * Add DOC
+   *
+   * @default - false
+   */
+  validateOnSynth?: boolean;
 }
 
 /**
@@ -203,6 +210,13 @@ export interface SynthesisOptions extends cxapi.AssemblyBuildOptions {
    * @default false
    */
   readonly skipValidation?: boolean;
+
+  /**
+   * TODO Add doc
+   *
+   * @default - false
+   */
+  readonly validateOnSynthesis?: boolean;
 }
 
 /**

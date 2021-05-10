@@ -179,6 +179,7 @@ export class Stage extends CoreConstruct {
     if (!this.assembly || options.force) {
       this.assembly = synthesize(this, {
         skipValidation: options.skipValidation,
+        validateOnSynthesis: options.validateOnSynthesis,
       });
     }
 
@@ -209,6 +210,12 @@ export interface StageSynthesisOptions {
    * @default - false
    */
   readonly skipValidation?: boolean;
+
+  /**
+   * TODO Add doc
+   * @default - false
+   */
+  readonly validateOnSynthesis?: boolean;
 
   /**
    * Force a re-synth, even if the stage has already been synthesized.
