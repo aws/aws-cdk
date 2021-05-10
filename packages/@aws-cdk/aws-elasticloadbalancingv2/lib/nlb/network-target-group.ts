@@ -90,7 +90,7 @@ export class NetworkTargetGroup extends TargetGroupBase implements INetworkTarge
       this.setAttribute('proxy_protocol_v2.enabled', props.proxyProtocolV2 ? 'true' : 'false');
     }
 
-    if (props.preserveClientIp != null) {
+    if (props.preserveClientIp !== undefined) {
       this.setAttribute('preserve_client_ip.enabled', props.preserveClientIp ? 'true' : 'false');
     }
 
