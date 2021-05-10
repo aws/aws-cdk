@@ -40,6 +40,18 @@ key.addAlias('alias/foo');
 key.addAlias('alias/bar');
 ```
 
+
+Define a key with specific key spec and key usage:
+
+Valid `keySpec` values depends on `keyUsage` value.
+
+```ts
+const key = new kms.Key(this, 'MyKey', {
+  keySpec: kms.KeySpec.ECC_SECG_P256K1, // Default to SYMMETRIC_DEFAULT
+  keyUsage: kms.KeyUsage.SIGN_VERIFY    // and ENCRYPT_DECRYPT
+});
+```
+
 ## Sharing keys between stacks
 
 To use a KMS key in a different stack in the same CDK application,
