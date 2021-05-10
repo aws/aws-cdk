@@ -77,6 +77,13 @@ export interface AwsCloudFormationStackProperties {
    * @default - Bootstrap stack version number looked up
    */
   readonly bootstrapStackVersionSsmParameter?: string;
+
+  /**
+   * Whether this stack should be validated by the CLI after synthesis
+   *
+   * @default - false
+   */
+  readonly validateOnSynth?: boolean;
 }
 
 /**
