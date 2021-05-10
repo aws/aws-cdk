@@ -1,7 +1,7 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as serverless from '@aws-cdk/aws-sam';
-import { Duration, Names, Stack, Token } from '@aws-cdk/core';
+import { Duration, Names, Stack, Token, CfnMapping, Aws } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { ISecret } from './secret';
 
@@ -19,6 +19,15 @@ export interface SecretRotationApplicationOptions {
    * @default false
    */
   readonly isMultiUser?: boolean;
+
+  /**
+   * The semantic version of the rotation application
+   *
+   * NOTE: explicitly specifying version might break when building an application crossing multiple partitions
+   *
+   * @default use '1.1.60' for partition 'aws', '1.1.37' for partition 'aws-cn'
+   */
+  readonly semanticVersion?: string;
 }
 /**
  * A secret rotation serverless application.
@@ -110,11 +119,15 @@ export class SecretRotationApplication {
 
   /**
    * The application identifier of the rotation application
+   *
+   * @depercated the application identifier(ARN) is only valid when deploying to partition 'aws'
    */
   public readonly applicationId: string;
 
   /**
    * The semantic version of the rotation application
+   *
+   * @deprecated use SecretRotationApplicationOptions.semanticVersion instead
    */
   public readonly semanticVersion: string;
 
@@ -123,8 +136,20 @@ export class SecretRotationApplication {
    */
   public readonly isMultiUser?: boolean;
 
+  /**
+   * The application name of the rotation application
+   */
+  public readonly applicationName: string;
+
+  /**
+   * @internal
+   */
+  readonly _semanticVersion?: string;
+
   constructor(applicationId: string, semanticVersion: string, options?: SecretRotationApplicationOptions) {
     this.applicationId = `arn:aws:serverlessrepo:us-east-1:297356227824:applications/${applicationId}`;
+    this.applicationName = applicationId;
+    this._semanticVersion = options?.semanticVersion;
     this.semanticVersion = semanticVersion;
     this.isMultiUser = options && options.isMultiUser;
   }
@@ -255,8 +280,25 @@ export class SecretRotation extends CoreConstruct {
       }
     }
 
+    const sarMapping = new CfnMapping(this, 'SARMapping', {
+      mapping: {
+        'aws': {
+          account: '297356227824',
+          region: 'us-east-1',
+          semanticVersion: '1.1.60',
+        },
+        'aws-cn': {
+          account: '193023089310',
+          region: 'cn-north-1',
+          semanticVersion: '1.1.37',
+        },
+      },
+    });
     const application = new serverless.CfnApplication(this, 'Resource', {
-      location: props.application,
+      location: {
+        applicationId: `arn:${Aws.PARTITION}:serverlessrepo:${sarMapping.findInMap(Aws.PARTITION, 'region')}:${sarMapping.findInMap(Aws.PARTITION, 'account')}:applications/${props.application.applicationName}`,
+        semanticVersion: props.application._semanticVersion ?? sarMapping.findInMap(Aws.PARTITION, 'semanticVersion'),
+      },
       parameters,
     });
 
