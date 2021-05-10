@@ -6,7 +6,7 @@ from urllib.request import Request
 import uuid
 from unittest.mock import patch, MagicMock
 import boto3  # type: ignore
-from botocore import stub
+from botocore import stub  # type: ignore
 from moto.s3 import mock_s3  # type: ignore
 
 RESPONSE_URL = "https://dummy.com/"
