@@ -424,6 +424,10 @@ export abstract class BaseService extends Resource
     if (props.cloudMapOptions) {
       this.enableCloudMap(props.cloudMapOptions);
     }
+
+    if (props.enableExecuteCommand) {
+      this.enableExecuteCommand();
+    }
   }
 
   /**
@@ -796,6 +800,18 @@ export abstract class BaseService extends Resource
     return Lazy.any({
       produce: () => providedHealthCheckGracePeriod?.toSeconds() ?? (this.loadBalancers.length > 0 ? 60 : undefined),
     });
+  }
+
+  private enableExecuteCommand() {
+    this.taskDefinition.addToTaskRolePolicy(new iam.PolicyStatement({
+      actions: [
+        'ssmmessages:CreateControlChannel',
+        'ssmmessages:CreateDataChannel',
+        'ssmmessages:OpenControlChannel',
+        'ssmmessages:OpenDataChannel',
+      ],
+      resources: ['*'],
+    }));
   }
 }
 
