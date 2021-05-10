@@ -248,6 +248,85 @@ abstract class KeyBase extends Resource implements IKey {
 }
 
 /**
+ * The key spec, represents the cryptographic configuration of keys.
+ */
+export enum KeySpec {
+  /**
+   * The default key spec.
+   *
+   * Valid usage: ENCRYPT_DECRYPT
+   */
+  SYMMETRIC_DEFAULT = 'SYMMETRIC_DEFAULT',
+
+  /**
+   * RSA with 2048 bits of key.
+   *
+   * Valid usage: ENCRYPT_DECRYPT and SIGN_VERIFY
+   */
+  RSA_2048 = 'RSA_2048',
+
+  /**
+   * RSA with 3072 bits of key.
+   *
+   * Valid usage: ENCRYPT_DECRYPT and SIGN_VERIFY
+   */
+  RSA_3072 = 'RSA_3072',
+
+  /**
+   * RSA with 4096 bits of key.
+   *
+   * Valid usage: ENCRYPT_DECRYPT and SIGN_VERIFY
+   */
+  RSA_4096 = 'RSA_4096',
+
+  /**
+   * NIST FIPS 186-4, Section 6.4, ECDSA signature using the curve specified by the key and
+   * SHA-256 for the message digest.
+   *
+   * Valid usage: SIGN_VERIFY
+   */
+  ECC_NIST_P256 = 'ECC_NIST_P256',
+
+  /**
+   * NIST FIPS 186-4, Section 6.4, ECDSA signature using the curve specified by the key and
+   * SHA-384 for the message digest.
+   *
+   * Valid usage: SIGN_VERIFY
+   */
+  ECC_NIST_P384 = 'ECC_NIST_P384',
+
+  /**
+   * NIST FIPS 186-4, Section 6.4, ECDSA signature using the curve specified by the key and
+   * SHA-512 for the message digest.
+   *
+   * Valid usage: SIGN_VERIFY
+   */
+  ECC_NIST_P521 = 'ECC_NIST_P521',
+
+  /**
+   * Standards for Efficient Cryptography 2, Section 2.4.1, ECDSA signature on the Koblitz curve.
+   *
+   * Valid usage: SIGN_VERIFY
+   */
+  ECC_SECG_P256K1 = 'ECC_SECG_P256K1',
+}
+
+/**
+ * The key usage, represents the cryptographic operations of keys.
+ */
+export enum KeyUsage {
+  /**
+   * Encryption and decryption.
+   */
+  ENCRYPT_DECRYPT = 'ENCRYPT_DECRYPT',
+
+  /**
+   * Signing and verification
+   */
+  SIGN_VERIFY = 'SIGN_VERIFY',
+}
+
+/**
  * Construction properties for a KMS Key object
  */
 export interface KeyProps {
@@ -281,6 +360,26 @@ export interface KeyProps {
    * @default - Key is enabled.
    */
   readonly enabled?: boolean;
+
+  /**
+   * The cryptographic configuration of the key. The valid value depends on usage of the key.
+   *
+   * IMPORTANT: If you change this property of an existing key, the existing key is scheduled for deletion
+   * and a new key is created with the specified value.
+   *
+   * @default KeySpec.SYMMETRIC_DEFAULT
+   */
+  readonly keySpec?: KeySpec;
+
+  /**
+   * The cryptographic operations for which the key can be used.
+   *
+   * IMPORTANT: If you change this property of an existing key, the existing key is scheduled for deletion
+   * and a new key is created with the specified value.
+   *
+   * @default KeyUsage.ENCRYPT_DECRYPT
+   */
+  readonly keyUsage?: KeyUsage;
 
   /**
    * Custom policy document to attach to the KMS key.
@@ -394,6 +493,27 @@ export class Key extends KeyBase {
   constructor(scope: Construct, id: string, props: KeyProps = {}) {
     super(scope, id);
 
+    const denyLists = {
+      [KeyUsage.ENCRYPT_DECRYPT]: [
+        KeySpec.ECC_NIST_P256,
+        KeySpec.ECC_NIST_P384,
+        KeySpec.ECC_NIST_P521,
+        KeySpec.ECC_SECG_P256K1,
+      ],
+      [KeyUsage.SIGN_VERIFY]: [
+        KeySpec.SYMMETRIC_DEFAULT,
+      ],
+    };
+    const keySpec = props.keySpec ?? KeySpec.SYMMETRIC_DEFAULT;
+    const keyUsage = props.keyUsage ?? KeyUsage.ENCRYPT_DECRYPT;
+    if (denyLists[keyUsage].includes(keySpec)) {
+      throw new Error(`key spec '${keySpec}' is not valid with usage '${keyUsage}'`);
+    }
+
+    if (keySpec !== KeySpec.SYMMETRIC_DEFAULT && props.enableKeyRotation) {
+      throw new Error('key rotation cannot be enabled on asymmetric keys');
+    }
+
     const defaultKeyPoliciesFeatureEnabled = FeatureFlags.of(this).isEnabled(cxapi.KMS_DEFAULT_KEY_POLICIES);
 
     this.policy = props.policy ?? new iam.PolicyDocument();
@@ -428,6 +548,8 @@ export class Key extends KeyBase {
       description: props.description,
       enableKeyRotation: props.enableKeyRotation,
       enabled: props.enabled,
+      keySpec: props.keySpec,
+      keyUsage: props.keyUsage,
       keyPolicy: this.policy,
       pendingWindowInDays: pendingWindowInDays,
     });
