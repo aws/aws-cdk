@@ -23,6 +23,9 @@ describe('Fields', () => {
             [
               [
                 'literal',
+                {
+                  deepField: JsonPath.numberAt('$.numField'),
+                },
               ],
             ],
           ],
@@ -44,6 +47,9 @@ describe('Fields', () => {
           [
             [
               'literal',
+              {
+                'deepField.$': '$.numField',
+              },
             ],
           ],
         ],
