@@ -334,6 +334,7 @@ abstract class SecretBase extends Resource implements ISecret {
  */
 export class Secret extends SecretBase {
 
+  /** Return whether the indicated object is a secret */
   public static isSecret(x: any): x is ISecret {
     return x !== null && typeof (x) === 'object' && SECRET_SYMBOL in x;
   }
