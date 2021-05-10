@@ -1,4 +1,3 @@
-import * as crypto from 'crypto';
 import * as cdk from '@aws-cdk/core';
 import { IBucket, EventType, NotificationKeyFilter } from '../bucket';
 import { BucketNotificationDestinationType, IBucketNotificationDestination } from '../destination';
@@ -56,12 +55,7 @@ export class BucketNotifications extends Construct {
     // resolve target. this also provides an opportunity for the target to e.g. update
     // policies to allow this notification to happen.
     const targetProps = target.bind(this, this.bucket);
-    const hashOfTarget = crypto.createHash('md5').update(JSON.stringify({
-      event,
-      target: cdk.Stack.of(resource).resolve(targetProps.arn),
-    })).digest('hex');
     const commonConfig: CommonConfiguration = {
-      Id: hashOfTarget,
       Events: [event],
       Filter: renderFilters(filters),
     };
