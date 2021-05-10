@@ -424,7 +424,7 @@ nodeunitShim({
     const userData = new ec2.MultipartUserData();
 
     // WHEN
-    userData.addUserDataPartForCommands(innerUserData);
+    userData.addUserDataPart(innerUserData, ec2.MultipartBody.SHELL_SCRIPT, true);
     userData.addCommands('command1', 'command2');
 
     // THEN
@@ -462,7 +462,7 @@ nodeunitShim({
     const userData = new ec2.MultipartUserData();
 
     // WHEN
-    userData.addUserDataPartForCommands(innerUserData);
+    userData.addUserDataPart(innerUserData, ec2.MultipartBody.SHELL_SCRIPT, true);
     userData.addCommands('command1', 'command2');
     userData.addOnExitCommands('onexit1', 'onexit2');
 
@@ -510,7 +510,7 @@ nodeunitShim({
     const userData = new ec2.MultipartUserData();
 
     // WHEN
-    userData.addUserDataPartForCommands(innerUserData);
+    userData.addUserDataPart(innerUserData, ec2.MultipartBody.SHELL_SCRIPT, true);
     userData.addCommands('command1');
     userData.addSignalOnExitCommand( resource );
 
@@ -557,7 +557,7 @@ nodeunitShim({
     const bucket2 = Bucket.fromBucketName( stack, 'testBucket2', 'test2' );
 
     // WHEN
-    userData.addUserDataPartForCommands(innerUserData);
+    userData.addUserDataPart(innerUserData, ec2.MultipartBody.SHELL_SCRIPT, true);
     userData.addS3DownloadCommand({
       bucket,
       bucketKey: 'filename.sh',
@@ -607,7 +607,7 @@ nodeunitShim({
     const userData = new ec2.MultipartUserData();
 
     // WHEN
-    userData.addUserDataPartForCommands(innerUserData);
+    userData.addUserDataPart(innerUserData, ec2.MultipartBody.SHELL_SCRIPT, true);
     userData.addExecuteFileCommand({
       filePath: '/tmp/filename.sh',
     } );

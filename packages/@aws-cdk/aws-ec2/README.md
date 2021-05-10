@@ -1118,13 +1118,13 @@ For more information see
 #### Using add*Command on MultipartUserData
 
 To use the `add*Command` methods, that are inherited from the `UserData` interface, on `MultipartUserData` you must add a part
-to the `MultipartUserData` and designate it as the reciever for these methods. This is accomplished by using the `addUserDataPartForCommands()`
-method on `MultipartUserData`:
+to the `MultipartUserData` and designate it as the reciever for these methods. This is accomplished by using the `addUserDataPart()`
+method on `MultipartUserData` with the `makeDefault` argument set to `true`:
 
 ```ts
 const multipartUserData = new ec2.MultipartUserData();
 const commandsUserData = ec2.UserData.forLinux();
-multipartUserData.addUserDataPartForCommands(commandsUserData);
+multipartUserData.addUserDataPart(commandsUserData, MultipartBody.SHELL_SCRIPT, true);
 
 // Adding commands to the multipartUserData adds them to commandsUserData, and vice-versa.
 multipartUserData.addCommands('touch /root/multi.txt');

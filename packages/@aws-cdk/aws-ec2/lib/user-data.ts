@@ -436,7 +436,7 @@ export interface MultipartUserDataOptions {
  *
  */
 export class MultipartUserData extends UserData {
-  private static readonly USE_PART_ERROR = 'MultipartUserData does not support this operation. Please use addUserDataPartForCommands().';
+  private static readonly USE_PART_ERROR = 'MultipartUserData only supports this operation if it has a default UserData. Call addUserDataPart with makeDefault=true.';
   private static readonly BOUNDRY_PATTERN = '[^a-zA-Z0-9()+,-./:=?]';
 
   private parts: MultipartBody[] = [];
@@ -474,26 +474,28 @@ export class MultipartUserData extends UserData {
   }
 
   /**
-   * Adds a multipart part based on a UserData object
+   * Adds a multipart part based on a UserData object.
    *
-   * This is the same as calling:
+   * If `makeDefault` is true, then the UserData added by this method
+   * will also be the target of calls to the `add*Command` methods on
+   * this MultipartUserData object.
+   *
+   * If `makeDefault` is false, then this is the same as calling:
    *
    * ```ts
    * multiPart.addPart(MultipartBody.fromUserData(userData, contentType));
    * ```
+   *
+   * An undefined `makeDefault` defaults to either:
+   * - `true` if no default UserData has been set yet; or
+   * - `false` if there is no default UserData set.
    */
-  public addUserDataPart(userData: UserData, contentType?: string) {
+  public addUserDataPart(userData: UserData, contentType?: string, makeDefault?: boolean) {
     this.addPart(MultipartBody.fromUserData(userData, contentType));
-  }
-
-  /**
-   * Adds a multipart part based on a UserData object. This UserData is always added
-   * as a shell script. The UserData added by this method will also be the target
-   * of calls to the `add*Command` methods on this MultipartUserData object.
-   */
-  public addUserDataPartForCommands(userData: UserData) {
-    this.addUserDataPart(userData, MultipartBody.SHELL_SCRIPT);
-    this.defaultUserData = userData;
+    makeDefault = makeDefault ?? (this.defaultUserData === undefined ? true : false);
+    if (makeDefault) {
+      this.defaultUserData = userData;
+    }
   }
 
   public render(): string {
