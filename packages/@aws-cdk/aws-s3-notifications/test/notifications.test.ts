@@ -143,7 +143,6 @@ test('subscription types', () => {
     'NotificationConfiguration': {
       'LambdaFunctionConfigurations': [
         {
-          'Id': '6ee6d056024473702e928e19f0e5543d',
           'Events': [
             's3:ObjectCreated:*',
           ],
@@ -152,7 +151,6 @@ test('subscription types', () => {
       ],
       'QueueConfigurations': [
         {
-          'Id': '5a88c0f28e16f2a49b63e051b2572578',
           'Events': [
             's3:ObjectCreated:*',
           ],
@@ -161,7 +159,6 @@ test('subscription types', () => {
       ],
       'TopicConfigurations': [
         {
-          'Id': '986fefdc2b5a9657d59aa8cf44d0b2d2',
           'Events': [
             's3:ObjectRemoved:*',
           ],
@@ -214,14 +211,12 @@ test('multiple subscriptions of the same type', () => {
     'NotificationConfiguration': {
       'QueueConfigurations': [
         {
-          'Id': 'fb8322e14d119620ff92783f10bcc6a7',
           'Events': [
             's3:ObjectRemoved:Delete',
           ],
           'QueueArn': 'arn:aws:sqs:...:queue1',
         },
         {
-          'Id': '987d67417522189e37ff2ad2ff9618f4',
           'Events': [
             's3:ObjectRemoved:Delete',
           ],
@@ -257,7 +252,6 @@ test('prefix/suffix filters', () => {
     'NotificationConfiguration': {
       'QueueConfigurations': [
         {
-          'Id': '9ad49efe8af9afefb74eba1d9d3060be',
           'Events': [
             's3:ObjectRemoved:Delete',
           ],
@@ -302,7 +296,7 @@ test('a notification destination can specify a set of dependencies that must be 
     Properties: {
       ServiceToken: { 'Fn::GetAtt': ['BucketNotificationsHandler050a0587b7544547bf325f094a3db8347ECC3691', 'Arn'] },
       BucketName: { Ref: 'Bucket83908E77' },
-      NotificationConfiguration: { QueueConfigurations: [{ Id: 'f65812e47a0367d8a7b99bc1068dae6f', Events: ['s3:ObjectCreated:*'], QueueArn: 'arn' }] },
+      NotificationConfiguration: { QueueConfigurations: [{ Events: ['s3:ObjectCreated:*'], QueueArn: 'arn' }] },
     },
     DependsOn: ['Dependent'],
   });

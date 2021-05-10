@@ -20,7 +20,6 @@
         "NotificationConfiguration": {
           "TopicConfigurations": [
             {
-              "Id": "92fc8e3fb6cdc5a04936e47ace9e8a3e",
               "Events": [
                 "s3:ObjectCreated:Put"
               ],
@@ -29,7 +28,6 @@
               }
             },
             {
-              "Id": "d60ee148d1d575ef248a74d490904105",
               "Events": [
                 "s3:ObjectRemoved:*"
               ],
@@ -253,7 +251,6 @@
         "NotificationConfiguration": {
           "TopicConfigurations": [
             {
-              "Id": "d60ee148d1d575ef248a74d490904105",
               "Events": [
                 "s3:ObjectRemoved:*"
               ],

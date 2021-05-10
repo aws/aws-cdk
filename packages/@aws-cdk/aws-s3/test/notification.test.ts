@@ -21,7 +21,6 @@ nodeunitShim({
       NotificationConfiguration: {
         TopicConfigurations: [
           {
-            Id: 'f37a06c283a631119a8b68fe3f7164f4',
             Events: [
               's3:ObjectCreated:*',
             ],
@@ -50,7 +49,6 @@ nodeunitShim({
       NotificationConfiguration: {
         TopicConfigurations: [
           {
-            Id: 'f37a06c283a631119a8b68fe3f7164f4',
             Events: [
               's3:ObjectCreated:*',
             ],

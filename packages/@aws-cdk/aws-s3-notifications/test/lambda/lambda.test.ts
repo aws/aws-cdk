@@ -144,7 +144,6 @@ test('lambda as notification target', () => {
     NotificationConfiguration: {
       LambdaFunctionConfigurations: [
         {
-          Id: '8e5a74e3b15fcc14660265865ccba9db',
           Events: ['s3:ObjectCreated:*'],
           Filter: {
             Key: {
@@ -172,7 +171,6 @@ test('lambda as notification target specified by function arn', () => {
     NotificationConfiguration: {
       LambdaFunctionConfigurations: [
         {
-          Id: '40e8c8bc18fedc4b17930d2c77b3653a',
           Events: ['s3:ObjectCreated:*'],
           Filter: {
             Key: {

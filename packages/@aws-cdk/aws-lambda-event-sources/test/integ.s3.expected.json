@@ -70,7 +70,6 @@
         "NotificationConfiguration": {
           "LambdaFunctionConfigurations": [
             {
-              "Id": "690754e2722f8cf7e47f45f632205454",
               "Events": [
                 "s3:ObjectCreated:*"
               ],

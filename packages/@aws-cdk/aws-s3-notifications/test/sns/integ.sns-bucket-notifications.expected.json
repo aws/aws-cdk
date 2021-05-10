@@ -98,7 +98,6 @@
         "NotificationConfiguration": {
           "TopicConfigurations": [
             {
-              "Id": "d734bdf93cfa3754e417ee0ac5c50c78",
               "Events": [
                 "s3:ObjectCreated:*"
               ],

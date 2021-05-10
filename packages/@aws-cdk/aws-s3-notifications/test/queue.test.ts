@@ -51,7 +51,6 @@ test('queues can be used as destinations', () => {
     NotificationConfiguration: {
       QueueConfigurations: [
         {
-          Id: '9a6779c8dbe753da63d5ed3319dde01f',
           Events: [
             's3:ObjectRemoved:*',
           ],

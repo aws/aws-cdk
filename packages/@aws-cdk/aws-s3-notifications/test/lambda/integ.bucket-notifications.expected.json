@@ -20,7 +20,6 @@
         "NotificationConfiguration": {
           "LambdaFunctionConfigurations": [
             {
-              "Id": "8e5a74e3b15fcc14660265865ccba9db",
               "Events": [
                 "s3:ObjectCreated:*"
               ],
@@ -140,7 +139,6 @@
         "NotificationConfiguration": {
           "LambdaFunctionConfigurations": [
             {
-              "Id": "83acc700dfd2209b81f823f676ed7b32",
               "Events": [
                 "s3:ObjectRemoved:*"
               ],
