@@ -1,7 +1,9 @@
+import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import { Aws, CfnCondition, Duration, Fn, IResolvable, IResource, Resource, Stack, Token } from '@aws-cdk/core';
 import { Construct } from 'constructs';
+import { KinesisMetrics } from './kinesis-fixed-canned-metrics';
 import { CfnStream } from './kinesis.generated';
 
 const READ_OPERATIONS = [
@@ -72,6 +74,217 @@ export interface IStream extends IResource {
    * Grant the indicated permissions on this stream to the provided IAM principal.
    */
   grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant;
+
+  /**
+   * Return stream metric based from its metric name
+   *
+   * @param metricName name of the stream metric
+   * @param props properties of the metric
+   */
+  metric(metricName: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+
+  /**
+   * The number of bytes retrieved from the Kinesis stream, measured over the specified time period. Minimum, Maximum,
+   * and Average statistics represent the bytes in a single GetRecords operation for the stream in the specified time
+   * period.
+   *
+   * The metric defaults to average over 5 minutes, it can be changed by passing `statistic` and `period` properties.
+   *
+   * @param props properties of the metric
+   */
+  metricGetRecordsBytes(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+
+  /**
+   * The age of the last record in all GetRecords calls made against a Kinesis stream, measured over the specified time
+   * period. Age is the difference between the current time and when the last record of the GetRecords call was written
+   * to the stream. The Minimum and Maximum statistics can be used to track the progress of Kinesis consumer
+   * applications. A value of zero indicates that the records being read are completely caught up with the stream.
+   *
+   * The metric defaults to maximum over 5 minutes, it can be changed by passing `statistic` and `period` properties.
+   *
+   * @param props properties of the metric
+   */
+  metricGetRecordsIteratorAgeMilliseconds(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+
+  /**
+   * The time taken per GetRecords operation, measured over the specified time period.
+   *
+   * The metric defaults to average over 5 minutes, it can be changed by passing `statistic` and `period` properties.
+   *
+   * @param props properties of the metric
+   */
+  metricGetRecordsLatency(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+
+  /**
+   * The number of records retrieved from the shard, measured over the specified time period. Minimum, Maximum, and
+   * Average statistics represent the records in a single GetRecords operation for the stream in the specified time
+   * period.
+   *
+   * The metric defaults to average over 5 minutes, it can be changed by passing `statistic` and `period` properties.
+   *
+   * @param props properties of the metric
+   */
+  metricGetRecords(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+
+  /**
+   * The number of successful GetRecords operations per stream, measured over the specified time period.
+   *
+   * The metric defaults to average over 5 minutes, it can be changed by passing `statistic` and `period` properties.
+   *
+   * @param props properties of the metric
+   */
+  metricGetRecordsSuccess(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+
+  /**
+   * The number of bytes successfully put to the Kinesis stream over the specified time period. This metric includes
+   * bytes from PutRecord and PutRecords operations. Minimum, Maximum, and Average statistics represent the bytes in a
+   * single put operation for the stream in the specified time period.
+   *
+   * The metric defaults to average over 5 minutes, it can be changed by passing `statistic` and `period` properties.
+   *
+   * @param props properties of the metric
+   */
+  metricIncomingBytes(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+
+  /**
+   * The number of records successfully put to the Kinesis stream over the specified time period. This metric includes
+   * record counts from PutRecord and PutRecords operations. Minimum, Maximum, and Average statistics represent the
+   * records in a single put operation for the stream in the specified time period.
+   *
+   * The metric defaults to average over 5 minutes, it can be changed by passing `statistic` and `period` properties.
+   *
+   * @param props properties of the metric
+   */
+  metricIncomingRecords(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+
+  /**
+   * The number of bytes put to the Kinesis stream using the PutRecord operation over the specified time period.
+   *
+   * The metric defaults to average over 5 minutes, it can be changed by passing `statistic` and `period` properties.
+   *
+   * @param props properties of the metric
+   */
+  metricPutRecordBytes(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+
+  /**
+   * The time taken per PutRecord operation, measured over the specified time period.
+   *
+   * The metric defaults to average over 5 minutes, it can be changed by passing `statistic` and `period` properties.
+   *
+   * @param props properties of the metric
+   */
+  metricPutRecordLatency(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+
+  /**
+   * The number of successful PutRecord operations per Kinesis stream, measured over the specified time period. Average
+   * reflects the percentage of successful writes to a stream.
+   *
+   * The metric defaults to average over 5 minutes, it can be changed by passing `statistic` and `period` properties.
+   *
+   * @param props properties of the metric
+   */
+  metricPutRecordSuccess(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+
+  /**
+   * The number of bytes put to the Kinesis stream using the PutRecords operation over the specified time period.
+   *
+   * The metric defaults to average over 5 minutes, it can be changed by passing `statistic` and `period` properties.
+   *
+   * @param props properties of the metric
+   */
+  metricPutRecordsBytes(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+
+  /**
+   * The time taken per PutRecords operation, measured over the specified time period.
+   *
+   * The metric defaults to average over 5 minutes, it can be changed by passing `statistic` and `period` properties.
+   *
+   * @param props properties of the metric
+   */
+  metricPutRecordsLatency(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+
+  /**
+   *  The number of PutRecords operations where at least one record succeeded, per Kinesis stream, measured over the
+   *  specified time period.
+   *
+   * The metric defaults to average over 5 minutes, it can be changed by passing `statistic` and `period` properties.
+   *
+   * @param props properties of the metric
+   */
+  metricPutRecordsSuccess(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+
+  /**
+   * The total number of records sent in a PutRecords operation per Kinesis data stream, measured over the specified
+   * time period.
+   *
+   * The metric defaults to average over 5 minutes, it can be changed by passing `statistic` and `period` properties.
+   *
+   * @param props properties of the metric
+   */
+  metricPutRecordsTotalRecords(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+
+  /**
+   * The number of successful records in a PutRecords operation per Kinesis data stream, measured over the specified
+   * time period.
+   *
+   * The metric defaults to average over 5 minutes, it can be changed by passing `statistic` and `period` properties.
+   *
+   * @param props properties of the metric
+   */
+  metricPutRecordsSuccessfulRecords(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+
+  /**
+   * The number of records rejected due to internal failures in a PutRecords operation per Kinesis data stream,
+   * measured over the specified time period. Occasional internal failures are to be expected and should be retried.
+   *
+   * The metric defaults to average over 5 minutes, it can be changed by passing `statistic` and `period` properties.
+   *
+   * @param props properties of the metric
+   */
+  metricPutRecordsFailedRecords(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+
+  /**
+   * The number of records rejected due to throttling in a PutRecords operation per Kinesis data stream, measured over
+   * the specified time period.
+   *
+   * The metric defaults to average over 5 minutes, it can be changed by passing `statistic` and `period` properties.
+   *
+   * @param props properties of the metric
+   */
+  metricPutRecordsThrottledRecords(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+
+  /**
+   * The number of GetRecords calls throttled for the stream over the specified time period. The most commonly used
+   * statistic for this metric is Average.
+   *
+   * When the Minimum statistic has a value of 1, all records were throttled for the stream during the specified time
+   * period.
+   *
+   * When the Maximum statistic has a value of 0 (zero), no records were throttled for the stream during the specified
+   * time period.
+   *
+   * The metric defaults to average over 5 minutes, it can be changed by passing `statistic` and `period` properties
+   *
+   * @param props properties of the metric
+   *
+   */
+  metricReadProvisionedThroughputExceeded(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+
+  /**
+   * The number of records rejected due to throttling for the stream over the specified time period. This metric
+   * includes throttling from PutRecord and PutRecords operations.
+   *
+   * When the Minimum statistic has a non-zero value, records were being throttled for the stream during the specified
+   * time period.
+   *
+   * When the Maximum statistic has a value of 0 (zero), no records were being throttled for the stream during the
+   * specified time period.
+   *
+   * The metric defaults to average over 5 minutes, it can be changed by passing `statistic` and `period` properties.
+   *
+   * @param props properties of the metric
+   */
+  metricWriteProvisionedThroughputExceeded(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 }
 
 /**
@@ -168,6 +381,276 @@ abstract class StreamBase extends Resource implements IStream {
       scope: this,
     });
   }
+
+  /**
+   * Return stream metric based from its metric name
+   *
+   * @param metricName name of the stream metric
+   * @param props properties of the metric
+   */
+  public metric(metricName: string, props?: cloudwatch.MetricOptions) {
+    return new cloudwatch.Metric({
+      namespace: 'AWS/Kinesis',
+      metricName,
+      dimensions: {
+        StreamName: this.streamName,
+      },
+      ...props,
+    }).attachTo(this);
+  }
+
+  /**
+   * The number of bytes retrieved from the Kinesis stream, measured over the specified time period. Minimum, Maximum,
+   * and Average statistics represent the bytes in a single GetRecords operation for the stream in the specified time
+   * period.
+   *
+   * The metric defaults to average over 5 minutes, it can be changed by passing `statistic` and `period` properties.
+   *
+   * @param props properties of the metric
+   */
+  public metricGetRecordsBytes(props?: cloudwatch.MetricOptions) {
+    return this.metricFromCannedFunction(KinesisMetrics.getRecordsBytesAverage, props);
+  }
+
+  /**
+   * The age of the last record in all GetRecords calls made against a Kinesis stream, measured over the specified time
+   * period. Age is the difference between the current time and when the last record of the GetRecords call was written
+   * to the stream. The Minimum and Maximum statistics can be used to track the progress of Kinesis consumer
+   * applications. A value of zero indicates that the records being read are completely caught up with the stream.
+   *
+   * The metric defaults to maximum over 5 minutes, it can be changed by passing `statistic` and `period` properties.
+   *
+   * @param props properties of the metric
+   */
+  public metricGetRecordsIteratorAgeMilliseconds(props?: cloudwatch.MetricOptions) {
+    return this.metricFromCannedFunction(KinesisMetrics.getRecordsIteratorAgeMillisecondsMaximum, props);
+  }
+
+  /**
+   * The number of successful GetRecords operations per stream, measured over the specified time period.
+   *
+   * The metric defaults to average over 5 minutes, it can be changed by passing `statistic` and `period` properties.
+   *
+   * @param props properties of the metric
+   */
+  public metricGetRecordsSuccess(props?: cloudwatch.MetricOptions) {
+    return this.metricFromCannedFunction(KinesisMetrics.getRecordsSuccessAverage, props);
+  }
+
+  /**
+   * The number of records retrieved from the shard, measured over the specified time period. Minimum, Maximum, and
+   * Average statistics represent the records in a single GetRecords operation for the stream in the specified time
+   * period.
+   *
+   * average
+   * The metric defaults to average over 5 minutes, it can be changed by passing `statistic` and `period` properties.
+   *
+   * @param props properties of the metric
+   */
+  public metricGetRecords(props?: cloudwatch.MetricOptions) {
+    return this.metricFromCannedFunction(KinesisMetrics.getRecordsRecordsAverage, props);
+  }
+
+  /**
+   * The number of successful GetRecords operations per stream, measured over the specified time period.
+   *
+   * The metric defaults to average over 5 minutes, it can be changed by passing `statistic` and `period` properties.
+   *
+   * @param props properties of the metric
+   */
+  public metricGetRecordsLatency(props?: cloudwatch.MetricOptions) {
+    return this.metricFromCannedFunction(KinesisMetrics.getRecordsLatencyAverage, props);
+  }
+
+  /**
+   * The number of bytes put to the Kinesis stream using the PutRecord operation over the specified time period.
+   *
+   * The metric defaults to average over 5 minutes, it can be changed by passing `statistic` and `period` properties.
+   *
+   * @param props properties of the metric
+   */
+  public metricPutRecordBytes(props?: cloudwatch.MetricOptions) {
+    return this.metricFromCannedFunction(KinesisMetrics.putRecordBytesAverage, props);
+  }
+
+  /**
+   * The time taken per PutRecord operation, measured over the specified time period.
+   *
+   * The metric defaults to average over 5 minutes, it can be changed by passing `statistic` and `period` properties.
+   *
+   * @param props properties of the metric
+   */
+  metricPutRecordLatency(props?: cloudwatch.MetricOptions) {
+    return this.metricFromCannedFunction(KinesisMetrics.putRecordLatencyAverage, props);
+  }
+
+  /**
+   * The number of successful PutRecord operations per Kinesis stream, measured over the specified time period. Average
+   * reflects the percentage of successful writes to a stream.
+   *
+   * The metric defaults to average over 5 minutes, it can be changed by passing `statistic` and `period` properties.
+   *
+   * @param props properties of the metric
+   */
+  public metricPutRecordSuccess(props?: cloudwatch.MetricOptions) {
+    return this.metricFromCannedFunction(KinesisMetrics.putRecordSuccessAverage, props);
+  }
+
+  /**
+   * The number of bytes put to the Kinesis stream using the PutRecords operation over the specified time period.
+   *
+   * The metric defaults to average over 5 minutes, it can be changed by passing `statistic` and `period` properties.
+   *
+   * @param props properties of the metric
+   */
+  public metricPutRecordsBytes(props?: cloudwatch.MetricOptions) {
+    return this.metricFromCannedFunction(KinesisMetrics.putRecordsBytesAverage, props);
+  }
+
+  /**
+   * The time taken per PutRecords operation, measured over the specified time period.
+   *
+   * The metric defaults to average over 5 minutes, it can be changed by passing `statistic` and `period` properties.
+   *
+   * @param props properties of the metric
+   */
+  public metricPutRecordsLatency(props?: cloudwatch.MetricOptions) {
+    return this.metricFromCannedFunction(KinesisMetrics.putRecordsLatencyAverage, props);
+  }
+
+  /**
+   *  The number of PutRecords operations where at least one record succeeded, per Kinesis stream, measured over the
+   *  specified time period.
+   *
+   * The metric defaults to average over 5 minutes, it can be changed by passing `statistic` and `period` properties.
+   *
+   * @param props properties of the metric
+   */
+  public metricPutRecordsSuccess(props?: cloudwatch.MetricOptions) {
+    return this.metricFromCannedFunction(KinesisMetrics.putRecordsSuccessAverage, props);
+  }
+
+  /**
+   * The total number of records sent in a PutRecords operation per Kinesis data stream, measured over the specified
+   * time period.
+   *
+   * The metric defaults to average over 5 minutes, it can be changed by passing `statistic` and `period` properties.
+   *
+   * @param props properties of the metric
+   */
+  public metricPutRecordsTotalRecords(props?: cloudwatch.MetricOptions) {
+    return this.metricFromCannedFunction(KinesisMetrics.putRecordsTotalRecordsAverage, props);
+  }
+
+  /**
+   * The number of successful records in a PutRecords operation per Kinesis data stream, measured over the specified
+   * time period.
+   *
+   * The metric defaults to average over 5 minutes, it can be changed by passing `statistic` and `period` properties.
+   *
+   * @param props properties of the metric
+   */
+  public metricPutRecordsSuccessfulRecords(props?: cloudwatch.MetricOptions) {
+    return this.metricFromCannedFunction(KinesisMetrics.putRecordsSuccessfulRecordsAverage, props);
+  }
+
+  /**
+   * The number of records rejected due to internal failures in a PutRecords operation per Kinesis data stream,
+   * measured over the specified time period. Occasional internal failures are to be expected and should be retried.
+   *
+   * The metric defaults to average over 5 minutes, it can be changed by passing `statistic` and `period` properties.
+   *
+   * @param props properties of the metric
+   */
+  public metricPutRecordsFailedRecords(props?: cloudwatch.MetricOptions) {
+    return this.metricFromCannedFunction(KinesisMetrics.putRecordsFailedRecordsAverage, props);
+  }
+
+  /**
+   * The number of records rejected due to throttling in a PutRecords operation per Kinesis data stream, measured over
+   * the specified time period.
+   *
+   * The metric defaults to average over 5 minutes, it can be changed by passing `statistic` and `period` properties.
+   *
+   * @param props properties of the metric
+   */
+  public metricPutRecordsThrottledRecords(props?: cloudwatch.MetricOptions) {
+    return this.metricFromCannedFunction(KinesisMetrics.putRecordsThrottledRecordsAverage, props);
+  }
+
+  /**
+   * The number of bytes successfully put to the Kinesis stream over the specified time period. This metric includes
+   * bytes from PutRecord and PutRecords operations. Minimum, Maximum, and Average statistics represent the bytes in a
+   * single put operation for the stream in the specified time period.
+   *
+   * The metric defaults to average over 5 minutes, it can be changed by passing `statistic` and `period` properties.
+   *
+   * @param props properties of the metric
+   */
+  public metricIncomingBytes(props?: cloudwatch.MetricOptions) {
+    return this.metricFromCannedFunction(KinesisMetrics.incomingBytesAverage, props);
+  }
+
+  /**
+   * The number of records successfully put to the Kinesis stream over the specified time period. This metric includes
+   * record counts from PutRecord and PutRecords operations. Minimum, Maximum, and Average statistics represent the
+   * records in a single put operation for the stream in the specified time period.
+   *
+   * The metric defaults to average over 5 minutes, it can be changed by passing `statistic` and `period` properties.
+   *
+   * @param props properties of the metric
+   */
+  public metricIncomingRecords(props?: cloudwatch.MetricOptions) {
+    return this.metricFromCannedFunction(KinesisMetrics.incomingRecordsAverage, props);
+  }
+
+  /**
+   * The number of GetRecords calls throttled for the stream over the specified time period. The most commonly used
+   * statistic for this metric is Average.
+   *
+   * When the Minimum statistic has a value of 1, all records were throttled for the stream during the specified time
+   * period.
+   *
+   * When the Maximum statistic has a value of 0 (zero), no records were throttled for the stream during the specified
+   * time period.
+   *
+   * The metric defaults to average over 5 minutes, it can be changed by passing `statistic` and `period` properties
+   *
+   * @param props properties of the metric
+   *
+   */
+  public metricReadProvisionedThroughputExceeded(props?: cloudwatch.MetricOptions) {
+    return this.metricFromCannedFunction(KinesisMetrics.readProvisionedThroughputExceededAverage, props);
+  }
+
+  /**
+   * The number of records rejected due to throttling for the stream over the specified time period. This metric
+   * includes throttling from PutRecord and PutRecords operations.
+   *
+   * When the Minimum statistic has a non-zero value, records were being throttled for the stream during the specified
+   * time period.
+   *
+   * When the Maximum statistic has a value of 0 (zero), no records were being throttled for the stream during the
+   * specified time period.
+   *
+   * The metric defaults to average over 5 minutes, it can be changed by passing `statistic` and `period` properties.
+   *
+   * @param props properties of the metric
+   */
+  public metricWriteProvisionedThroughputExceeded(props?: cloudwatch.MetricOptions) {
+    return this.metricFromCannedFunction(KinesisMetrics.writeProvisionedThroughputExceededAverage, props);
+  }
+
+  // create metrics based on generated KinesisMetrics static methods
+  private metricFromCannedFunction(
+    createCannedProps: (dimensions: { StreamName: string }) => cloudwatch.MetricProps,
+    props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return new cloudwatch.Metric({
+      ...createCannedProps({ StreamName: this.streamName }),
+      ...props,
+    }).attachTo(this);
+  }
+
 }
 
 /**

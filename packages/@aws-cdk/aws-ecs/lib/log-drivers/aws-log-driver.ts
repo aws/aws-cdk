@@ -9,6 +9,23 @@ import { removeEmpty } from './utils';
 import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 /**
+ * awslogs provides two modes for delivering messages from the container to the log driver
+ */
+export enum AwsLogDriverMode {
+
+  /**
+   * (default) direct, blocking delivery from container to driver.
+   */
+  BLOCKING = 'blocking',
+
+  /**
+   * The non-blocking message delivery mode prevents applications from blocking due to logging back pressure.
+   * Applications are likely to fail in unexpected ways when STDERR or STDOUT streams block.
+   */
+  NON_BLOCKING = 'non-blocking'
+}
+
+/**
  * Specifies the awslogs log driver configuration options.
  */
 export interface AwsLogDriverProps {
@@ -62,6 +79,13 @@ export interface AwsLogDriverProps {
    * @default - No multiline matching.
    */
   readonly multilinePattern?: string;
+
+  /**
+   * The delivery mode of log messages from the container to awslogs.
+   *
+   * @default - AwsLogDriverMode.BLOCKING
+   */
+  readonly mode?: AwsLogDriverMode;
 }
 
 /**
@@ -106,6 +130,7 @@ export class AwsLogDriver extends LogDriver {
         'awslogs-region': Stack.of(containerDefinition).region,
         'awslogs-datetime-format': this.props.datetimeFormat,
         'awslogs-multiline-pattern': this.props.multilinePattern,
+        'mode': this.props.mode,
       }),
     };
   }

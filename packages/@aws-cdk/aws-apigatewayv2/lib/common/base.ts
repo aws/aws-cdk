@@ -25,30 +25,6 @@ export abstract class ApiBase extends Resource implements IApi {
       ...props,
     }).attachTo(this);
   }
-
-  public metricClientError(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.metric('4XXError', { statistic: 'Sum', ...props });
-  }
-
-  public metricServerError(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.metric('5XXError', { statistic: 'Sum', ...props });
-  }
-
-  public metricDataProcessed(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.metric('DataProcessed', { statistic: 'Sum', ...props });
-  }
-
-  public metricCount(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.metric('Count', { statistic: 'SampleCount', ...props });
-  }
-
-  public metricIntegrationLatency(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.metric('IntegrationLatency', props);
-  }
-
-  public metricLatency(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.metric('Latency', props);
-  }
 }
 
 
@@ -83,29 +59,5 @@ export abstract class StageBase extends Resource implements IStage {
     return this.baseApi.metric(metricName, props).with({
       dimensions: { ApiId: this.baseApi.apiId, Stage: this.stageName },
     }).attachTo(this);
-  }
-
-  public metricClientError(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.metric('4XXError', { statistic: 'Sum', ...props });
-  }
-
-  public metricServerError(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.metric('5XXError', { statistic: 'Sum', ...props });
-  }
-
-  public metricDataProcessed(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.metric('DataProcessed', { statistic: 'Sum', ...props });
-  }
-
-  public metricCount(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.metric('Count', { statistic: 'SampleCount', ...props });
-  }
-
-  public metricIntegrationLatency(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.metric('IntegrationLatency', props);
-  }
-
-  public metricLatency(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.metric('Latency', props);
   }
 }
