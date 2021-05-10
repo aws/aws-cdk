@@ -101,6 +101,33 @@ nodeunitShim({
     test.done();
   },
 
+  'customize version parameter'(test: Test) {
+    // GIVEN
+    const myapp = new App();
+
+    // WHEN
+    const mystack = new Stack(myapp, 'mystack', {
+      synthesizer: new DefaultStackSynthesizer({
+        bootstrapStackVersionSsmParameter: 'stack-version-parameter',
+      }),
+    });
+
+    mystack.synthesizer.addFileAsset({
+      fileName: __filename,
+      packaging: FileAssetPackaging.FILE,
+      sourceHash: 'file-asset-hash',
+    });
+
+    // THEN
+    const asm = myapp.synth();
+    const manifestArtifact = getAssetManifest(asm);
+
+    // THEN - the asset manifest has an SSM parameter entry
+    expect(manifestArtifact.bootstrapStackVersionSsmParameter).toEqual('stack-version-parameter');
+
+    test.done();
+  },
+
   'add file asset'(test: Test) {
     // WHEN
     const location = stack.synthesizer.addFileAsset({
@@ -222,7 +249,6 @@ nodeunitShim({
 
     test.done();
   },
-
 
   'synthesis with bucketPrefix'(test: Test) {
     // GIVEN

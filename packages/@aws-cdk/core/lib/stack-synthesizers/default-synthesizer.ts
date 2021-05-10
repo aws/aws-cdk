@@ -166,7 +166,7 @@ export interface DefaultStackSynthesizerProps {
    *
    * @default DefaultStackSynthesizer.DEFAULT_BOOTSTRAP_STACK_VERSION_SSM_PARAMETER
    */
-   readonly bootstrapStackVersionSsmParameter?: string;
+  readonly bootstrapStackVersionSsmParameter?: string;
 }
 
 /**
@@ -301,7 +301,7 @@ export class DefaultStackSynthesizer extends StackSynthesizer {
     this.bootstrapStackVersionSsmParameter = replaceAll(
       this.props.bootstrapStackVersionSsmParameter ?? DefaultStackSynthesizer.DEFAULT_BOOTSTRAP_STACK_VERSION_SSM_PARAMETER,
       '${Qualifier}',
-      qualifier
+      qualifier,
     );
     /* eslint-enable max-len */
   }
@@ -395,7 +395,7 @@ export class DefaultStackSynthesizer extends StackSynthesizer {
     // If it's done AFTER _synthesizeTemplate(), then the template won't contain the
     // right constructs.
     if (this.props.generateBootstrapVersionRule ?? true) {
-      addBootstrapVersionRule(this.stack, MIN_BOOTSTRAP_STACK_VERSION, this.bootstrapStackVersionSsmParameter);
+      addBootstrapVersionRule(this.stack, MIN_BOOTSTRAP_STACK_VERSION, <string> this.bootstrapStackVersionSsmParameter);
     }
 
     this.synthesizeStackTemplate(this.stack, session);
