@@ -1521,6 +1521,50 @@ export = {
         test.done();
       },
 
+      'can be provided as a Secret from complete secret Arn with a qualifier'(test: Test) {
+        // GIVEN
+        const stack = new cdk.Stack();
+
+        // WHEN
+        const secret = secretsmanager.Secret.fromSecretCompleteArn(stack, 'Secret',
+          'arn:aws:secretsmanager:us-west-2:123456789012:secret:mysecret-123456');
+        new codebuild.PipelineProject(stack, 'Project', {
+          environmentVariables: {
+            'ENV_VAR1': {
+              type: codebuild.BuildEnvironmentVariableType.SECRETS_MANAGER,
+              value: secret,
+              qualifier: 'json-key',
+            },
+          },
+        });
+
+        // THEN
+        expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
+          'Environment': {
+            'EnvironmentVariables': [
+              {
+                'Name': 'ENV_VAR1',
+                'Type': 'SECRETS_MANAGER',
+                'Value': 'arn:aws:secretsmanager:us-west-2:123456789012:secret:mysecret-123456:json-key',
+              },
+            ],
+          },
+        }));
+
+        // THEN
+        expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
+          'PolicyDocument': {
+            'Statement': arrayWith({
+              'Action': 'secretsmanager:GetSecretValue',
+              'Effect': 'Allow',
+              'Resource': 'arn:aws:secretsmanager:us-west-2:123456789012:secret:mysecret-123456*',
+            }),
+          },
+        }));
+
+        test.done();
+      },
+
       'can be provided as a Secret from secret name'(test: Test) {
         // GIVEN
         const stack = new cdk.Stack();

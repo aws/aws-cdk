@@ -737,11 +737,17 @@ export class Project extends ProjectBase {
     const kmsIamResources = new Set<string>();
 
     for (const [name, envVariable] of Object.entries(environmentVariables)) {
-      const envVariableValue = envVariable.value?.toString();
+      let envVariableValue;
+      if (secretsmanager.Secret.isSecret(envVariable.value)) {
+        const secretArn = (envVariable.value as secretsmanager.Secret).secretArn;
+        envVariableValue = envVariable.qualifier ? `${secretArn}:${envVariable.qualifier}` : secretArn;
+      } else {
+        envVariableValue = envVariable.value?.toString();
+      }
       const cfnEnvVariable: CfnProject.EnvironmentVariableProperty = {
         name,
         type: envVariable.type || BuildEnvironmentVariableType.PLAINTEXT,
-        value: secretsmanager.Secret.isSecret(envVariable.value) ? (envVariable.value as secretsmanager.Secret).secretArn : envVariableValue,
+        value: envVariableValue,
       };
       ret.push(cfnEnvVariable);
 
@@ -1932,12 +1938,16 @@ export interface BuildEnvironmentVariable {
    * The value of the environment variable.
    * For plain-text variables (the default), this is the literal value of variable.
    * For SSM parameter variables, pass the name of the parameter here (`parameterName` property of `IParameter`).
-   * For SecretsManager variables secrets, pass either the secret name (`secretName` property of `ISecret`)
-   * or the secret ARN (`secretArn` property of `ISecret`) here,
-   * along with optional SecretsManager qualifiers separated by ':', like the JSON key, or the version or stage
-   * (see https://docs.aws.amazon.com/codebuild/latest/userguide/build-spec-ref.html#build-spec.env.secrets-manager for details).
+   * For SecretsManager variables secrets, pass either the secret name (`secretName` property of `ISecret`),
+   * the secret ARN (`secretArn` property of `ISecret`) or the secret itself (type of ISecret) here.
    */
   readonly value: any;
+
+  /**
+   * Optional SecretsManager qualifiers separated by ':',like the JSON key, or the version or stage,
+   * (see https://docs.aws.amazon.com/codebuild/latest/userguide/build-spec-ref.html#build-spec.env.secrets-manager for details).
+   */
+  readonly qualifier?: string
 }
 
 export enum BuildEnvironmentVariableType {
