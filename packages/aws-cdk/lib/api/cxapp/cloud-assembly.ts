@@ -194,6 +194,10 @@ export class StackCollection {
     return new StackCollection(this.assembly, this.stackArtifacts.filter(predicate));
   }
 
+  public concat(other: StackCollection): StackCollection {
+    return new StackCollection(this.assembly, this.stackArtifacts.concat(other.stackArtifacts));
+  }
+
   /**
    * Extracts 'aws:cdk:warning|info|error' metadata entries from the stack synthesis
    */
