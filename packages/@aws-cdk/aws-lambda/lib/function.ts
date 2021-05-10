@@ -701,6 +701,9 @@ export class Function extends FunctionBase {
     this.currentVersionOptions = props.currentVersionOptions;
 
     if (props.filesystem) {
+      if (!props.vpc) {
+        throw new Error('Cannot configure \'filesystem\' without configuring a VPC.');
+      }
       const config = props.filesystem.config;
       if (config.dependency) {
         this.node.addDependency(...config.dependency);
@@ -871,10 +874,6 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
   private configureVpc(props: FunctionProps): CfnFunction.VpcConfigProperty | undefined {
     if ((props.securityGroup || props.allowAllOutbound !== undefined) && !props.vpc) {
       throw new Error('Cannot configure \'securityGroup\' or \'allowAllOutbound\' without configuring a VPC');
-    }
-
-    if (!props.vpc && props.filesystem) {
-      throw new Error('Cannot configure \'filesystem\' without configuring a VPC.');
     }
 
     if (!props.vpc) { return undefined; }
