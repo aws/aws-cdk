@@ -1568,6 +1568,15 @@ export class JestSetup extends ValidationRule {
     }
     fileShouldContain(this.name, pkg, '.gitignore', '!jest.config.js');
     fileShouldContain(this.name, pkg, '.npmignore', 'jest.config.js');
+
+    if (!(pkg.json.devDependencies ?? {})['@types/jest']) {
+      pkg.report({
+        ruleName: `${this.name}.types`,
+        message: 'There must be a devDependency on \'@types/jest\' if you use jest testing',
+      });
+    }
+
+
   }
 }
 
