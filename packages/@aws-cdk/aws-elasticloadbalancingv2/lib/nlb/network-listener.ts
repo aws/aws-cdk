@@ -239,6 +239,7 @@ export class NetworkListener extends BaseListener implements INetworkListener {
       port: props.port,
       protocol: props.protocol ?? this.protocol,
       proxyProtocolV2: props.proxyProtocolV2,
+      preserveClientIp: props.preserveClientIp,
       targetGroupName: props.targetGroupName,
       targets: props.targets,
       vpc: this.loadBalancer.vpc,
@@ -332,6 +333,14 @@ export interface AddNetworkTargetsProps {
    * @default false
    */
   readonly proxyProtocolV2?: boolean;
+
+  /**
+   * Indicates whether client IP preservation is enabled.
+   *
+   * @default false if the target group type is IP address and the
+   * target group protocol is TCP or TLS. Otherwise, true.
+   */
+  readonly preserveClientIp?: boolean;
 
   /**
    * Health check configuration
