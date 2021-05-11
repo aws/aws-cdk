@@ -7,9 +7,9 @@ import { HttpLambdaAuthorizer, HttpLambdaResponseType } from '../../lib';
 
 /*
  * Stack verification steps:
- * * `curl --request --header 'X-API-Key: 123' GET <url>` should return 200
- * * `curl --request GET <url>` should return 401
- * * `curl --request --header 'X-API-Key: 1234' GET <url>` should return 403
+ * * `curl -H 'X-API-Key: 123' <url>` should return 200
+ * * `curl <url>` should return 401
+ * * `curl -H 'X-API-Key: 1234' <url>` should return 403
  */
 
 const app = new App();
