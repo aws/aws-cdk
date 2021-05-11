@@ -1361,8 +1361,31 @@ describe('auto scaling group', () => {
     expect(stack).toHaveResourceLike('AWS::AutoScaling::AutoScalingGroup', {
       NewInstancesProtectedFromScaleIn: true,
     });
+  });
 
+  test('can configure metadataOptions', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = mockVpc(stack);
+    new autoscaling.AutoScalingGroup(stack, 'MyStack', {
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
+      machineImage: new ec2.AmazonLinuxImage(),
+      vpc,
+      metadataOptions: {
+        httpPutResponseHopLimit: 2,
+        httpTokens: 'required',
+        httpEndpoint: 'enabled',
+      },
+    });
 
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::AutoScaling::LaunchConfiguration', {
+      MetadataOptions: {
+        HttpPutResponseHopLimit: 2,
+        HttpTokens: 'required',
+        HttpEndpoint: 'enabled',
+      },
+    });
   });
 });
 
