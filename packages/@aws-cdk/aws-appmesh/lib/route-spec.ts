@@ -1,7 +1,7 @@
 import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnRoute } from './appmesh.generated';
-import { Protocol, HttpTimeout, GrpcTimeout, TcpTimeout } from './shared-interfaces';
+import { HttpTimeout, GrpcTimeout, Protocol, TcpTimeout } from './shared-interfaces';
 import { IVirtualNode } from './virtual-node';
 
 /**
