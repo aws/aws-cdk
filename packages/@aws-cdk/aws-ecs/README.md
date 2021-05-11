@@ -733,7 +733,7 @@ Scaling Group](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/asg-c
 To enable Fargate capacity providers, you can either set
 `enableFargateCapacityProviders` to `true` when creating your cluster, or by
 invoking the `enableFargateCapacityProviders()` method after creating your
-cluster.
+cluster. This will add both `FARGATE` and `FARGATE_SPOT` as available capacity providers on your cluster.
 
 ```ts
 const cluster = new ecs.Cluster(stack, 'FargateCPCluster', {
