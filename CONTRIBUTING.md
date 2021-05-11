@@ -56,6 +56,8 @@ The following tools need to be installed on your system prior to installing the 
 - [Yarn >= 1.19.1, < 2](https://yarnpkg.com/lang/en/docs/install)
 - [.NET Core SDK 3.1.x](https://www.microsoft.com/net/download)
 - [Python >= 3.6.5, < 4.0](https://www.python.org/downloads/release/python-365/)
+- [Docker >= 19.03](https://docs.docker.com/get-docker/)
+  - the Docker daemon must also be running
 
 First fork the repository, and then run the following commands to clone the repository locally.
 
@@ -113,8 +115,9 @@ However, if you wish to build the the entire repository, the following command w
 
 ```console
 cd <root of the CDK repo>
-yarn build
+scripts/foreach.sh yarn build
 ```
+Note: The `foreach` command is resumable by default; you must supply `-r` or `--reset` to start a new session.
 
 You are now ready to start contributing to the CDK. See the [Pull Requests](#pull-requests) section on how to make your
 changes and submit it as a pull request.
