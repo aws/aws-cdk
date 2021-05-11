@@ -1841,6 +1841,7 @@ describe('function', () => {
       const accessPoint = fs.addAccessPoint('AccessPoint');
       // WHEN
       new lambda.Function(stack, 'MyFunction', {
+        vpc,
         handler: 'foo',
         runtime: lambda.Runtime.NODEJS_12_X,
         code: lambda.Code.fromAsset(path.join(__dirname, 'handler.zip')),
@@ -1878,6 +1879,69 @@ describe('function', () => {
           },
         ],
       });
+    });
+
+    test('throw error mounting efs with no vpc', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'Vpc', {
+        maxAzs: 3,
+        natGateways: 1,
+      });
+
+      const fs = new efs.FileSystem(stack, 'Efs', {
+        vpc,
+      });
+      const accessPoint = fs.addAccessPoint('AccessPoint');
+
+      // THEN
+      expect(() => {
+        new lambda.Function(stack, 'MyFunction', {
+          handler: 'foo',
+          runtime: lambda.Runtime.NODEJS_12_X,
+          code: lambda.Code.fromAsset(path.join(__dirname, 'handler.zip')),
+          filesystem: lambda.FileSystem.fromEfsAccessPoint(accessPoint, '/mnt/msg'),
+        });
+      }).toThrow();
+    });
+
+    test('verify deps when mounting efs', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'Vpc', {
+        maxAzs: 3,
+        natGateways: 1,
+      });
+      const securityGroup = new ec2.SecurityGroup(stack, 'LambdaSG', {
+        vpc,
+        allowAllOutbound: false,
+      });
+
+      const fs = new efs.FileSystem(stack, 'Efs', {
+        vpc,
+      });
+      const accessPoint = fs.addAccessPoint('AccessPoint');
+      // WHEN
+      new lambda.Function(stack, 'MyFunction', {
+        vpc,
+        handler: 'foo',
+        securityGroups: [securityGroup],
+        runtime: lambda.Runtime.NODEJS_12_X,
+        code: lambda.Code.fromAsset(path.join(__dirname, 'handler.zip')),
+        filesystem: lambda.FileSystem.fromEfsAccessPoint(accessPoint, '/mnt/msg'),
+      });
+
+      // THEN
+      expect(stack).toHaveResource('AWS::Lambda::Function', {
+        DependsOn: [
+          'EfsEfsMountTarget195B2DD2E',
+          'EfsEfsMountTarget2315C927F',
+          'EfsEfsSecurityGroupfromLambdaSG20491B2F751D',
+          'LambdaSGtoEfsEfsSecurityGroupFCE2954020499719694A',
+          'MyFunctionServiceRoleDefaultPolicyB705ABD4',
+          'MyFunctionServiceRole3C357FF2',
+        ],
+      }, ResourcePart.CompleteDefinition);
     });
   });
 
