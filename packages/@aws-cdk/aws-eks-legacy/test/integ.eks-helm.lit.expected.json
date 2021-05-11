@@ -639,13 +639,14 @@
               ]
             }
           },
+          "Handler": "index.handler",
           "Role": {
             "Fn::GetAtt": [
               "cluster22ResourceHandlerServiceRoleC2E4F327",
               "Arn"
             ]
           },
-          "Handler": "index.handler",
+          "Runtime": "python3.7",
           "Layers": [
             {
               "Fn::GetAtt": [
@@ -655,7 +656,6 @@
             }
           ],
           "MemorySize": 512,
-          "Runtime": "python3.7",
           "Timeout": 900
         },
         "DependsOn": [
@@ -749,12 +749,14 @@
               ]
             }
           },
+          "Handler": "index.handler",
           "Role": {
             "Fn::GetAtt": [
               "cluster22ResourceHandlerServiceRoleC2E4F327",
               "Arn"
             ]
           },
+          "Runtime": "python3.7",
           "Environment": {
             "Variables": {
               "CLUSTER_NAME": {
@@ -762,7 +764,6 @@
               }
             }
           },
-          "Handler": "index.handler",
           "Layers": [
             {
               "Fn::GetAtt": [
@@ -772,7 +773,6 @@
             }
           ],
           "MemorySize": 256,
-          "Runtime": "python3.7",
           "Timeout": 900
         },
         "DependsOn": [
@@ -1010,7 +1010,9 @@
       "cluster22NodesLaunchConfig184BF3BA": {
         "Type": "AWS::AutoScaling::LaunchConfiguration",
         "Properties": {
-          "ImageId": "{{resolve:ssm:/aws/service/eks/optimized-ami/1.14/amazon-linux-2/recommended/image_id}}",
+          "ImageId": {
+            "Ref": "SsmParameterValueawsserviceeksoptimizedami114amazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
+          },
           "InstanceType": "t2.medium",
           "IamInstanceProfile": {
             "Ref": "cluster22NodesInstanceProfile3D4963ED"
@@ -1157,12 +1159,14 @@
               ]
             }
           },
+          "Handler": "index.handler",
           "Role": {
             "Fn::GetAtt": [
               "cluster22ResourceHandlerServiceRoleC2E4F327",
               "Arn"
             ]
           },
+          "Runtime": "python3.7",
           "Environment": {
             "Variables": {
               "CLUSTER_NAME": {
@@ -1170,7 +1174,6 @@
               }
             }
           },
-          "Handler": "index.handler",
           "Layers": [
             {
               "Fn::GetAtt": [
@@ -1180,7 +1183,6 @@
             }
           ],
           "MemorySize": 256,
-          "Runtime": "python3.7",
           "Timeout": 900
         },
         "DependsOn": [
@@ -1324,6 +1326,10 @@
       "AssetParameters8e2989bd32b411eba804b201a0f3984c984893c7fe6daa0b572fdd59c63e3653ArtifactHash77099D9F": {
         "Type": "String",
         "Description": "Artifact hash for asset \"8e2989bd32b411eba804b201a0f3984c984893c7fe6daa0b572fdd59c63e3653\""
+      },
+      "SsmParameterValueawsserviceeksoptimizedami114amazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter": {
+        "Type": "AWS::SSM::Parameter::Value<String>",
+        "Default": "/aws/service/eks/optimized-ami/1.14/amazon-linux-2/recommended/image_id"
       }
     }
   }
