@@ -17,19 +17,7 @@ export enum HttpAuthorizerType {
   LAMBDA = 'REQUEST',
 }
 
-/**
- * Supported Route Authorizer types
- */
-export enum HttpRouteAuthorizationType {
-  /** JSON Web Tokens */
-  JWT = 'JWT',
-
-  /** Lambda Authorizer */
-  LAMBDA = 'CUSTOM',
-
-  /** No authorizer */
-  NONE = 'NONE'
-}
+type HttpRouteAuthorizationType = 'JWT' | 'CUSTOM' | 'NONE'
 
 /**
  * Payload format version for lambda authorizers
@@ -258,7 +246,7 @@ function undefinedIfNoKeys<A>(obj: A): A | undefined {
 export class HttpNoneAuthorizer implements IHttpRouteAuthorizer {
   public bind(_: HttpRouteAuthorizerBindOptions): HttpRouteAuthorizerConfig {
     return {
-      authorizationType: HttpRouteAuthorizationType.NONE,
+      authorizationType: 'NONE',
     };
   }
 }

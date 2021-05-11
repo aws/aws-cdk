@@ -1,7 +1,6 @@
 import {
   HttpAuthorizer,
   HttpAuthorizerType,
-  HttpRouteAuthorizationType,
   HttpRouteAuthorizerBindOptions,
   HttpRouteAuthorizerConfig,
   IHttpRouteAuthorizer,
@@ -118,7 +117,7 @@ export class HttpLambdaAuthorizer implements IHttpRouteAuthorizer {
 
     return {
       authorizerId: this.authorizer.authorizerId,
-      authorizationType: HttpRouteAuthorizationType.LAMBDA,
+      authorizationType: 'CUSTOM',
     };
   }
 }

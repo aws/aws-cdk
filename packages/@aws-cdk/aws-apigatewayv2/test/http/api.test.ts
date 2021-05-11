@@ -7,7 +7,6 @@ import {
   CorsHttpMethod,
   HttpApi, HttpAuthorizer, HttpIntegrationType, HttpMethod, HttpRouteAuthorizerBindOptions, HttpRouteAuthorizerConfig,
   HttpRouteIntegrationBindOptions, HttpRouteIntegrationConfig, IHttpRouteAuthorizer, IHttpRouteIntegration, HttpNoneAuthorizer, PayloadFormatVersion,
-  HttpRouteAuthorizationType,
 } from '../../lib';
 
 describe('HttpApi', () => {
@@ -309,7 +308,7 @@ describe('HttpApi', () => {
 
     const authorizer = HttpAuthorizer.fromHttpAuthorizerAttributes(stack, 'auth', {
       authorizerId: '12345',
-      authorizerType: HttpRouteAuthorizationType.JWT,
+      authorizerType: 'JWT',
     });
 
     // WHEN
@@ -504,7 +503,7 @@ class DummyAuthorizer implements IHttpRouteAuthorizer {
   public bind(_: HttpRouteAuthorizerBindOptions): HttpRouteAuthorizerConfig {
     return {
       authorizerId: 'auth-1234',
-      authorizationType: HttpRouteAuthorizationType.JWT,
+      authorizationType: 'JWT',
     };
   }
 }

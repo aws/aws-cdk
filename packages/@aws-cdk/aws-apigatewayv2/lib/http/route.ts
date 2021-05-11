@@ -3,7 +3,7 @@ import { Construct } from 'constructs';
 import { CfnRoute, CfnRouteProps } from '../apigatewayv2.generated';
 import { IRoute } from '../common';
 import { IHttpApi } from './api';
-import { HttpRouteAuthorizationType, IHttpRouteAuthorizer } from './authorizer';
+import { IHttpRouteAuthorizer } from './authorizer';
 import { IHttpRouteIntegration } from './integration';
 
 /**
@@ -19,6 +19,21 @@ export interface IHttpRoute extends IRoute {
    * Returns the path component of this HTTP route, `undefined` if the path is the catch-all route.
    */
   readonly path?: string;
+}
+
+
+/**
+ * Supported Route Authorizer types
+ */
+enum HttpRouteAuthorizationType {
+  /** JSON Web Tokens */
+  JWT = 'JWT',
+
+  /** Lambda Authorizer */
+  LAMBDA = 'CUSTOM',
+
+  /** No authorizer */
+  NONE = 'NONE'
 }
 
 /**
