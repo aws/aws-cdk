@@ -21,21 +21,6 @@ export interface IHttpRoute extends IRoute {
   readonly path?: string;
 }
 
-
-/**
- * Supported Route Authorizer types
- */
-enum HttpRouteAuthorizationType {
-  /** JSON Web Tokens */
-  JWT = 'JWT',
-
-  /** Lambda Authorizer */
-  LAMBDA = 'CUSTOM',
-
-  /** No authorizer */
-  NONE = 'NONE'
-}
-
 /**
  * Supported HTTP methods
  */
@@ -171,7 +156,7 @@ export class HttpRoute extends Resource implements IHttpRoute {
       ]));
     }
 
-    const authorizationType = authBindResult?.authorizationType === HttpRouteAuthorizationType.NONE ? undefined : authBindResult?.authorizationType;
+    const authorizationType = authBindResult?.authorizationType === 'NONE' ? undefined : authBindResult?.authorizationType;
 
     if (authorizationScopes?.length === 0) {
       authorizationScopes = undefined;
