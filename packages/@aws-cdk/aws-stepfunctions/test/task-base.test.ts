@@ -25,6 +25,10 @@ describe('Task base', () => {
       comment: 'my exciting task',
       heartbeat: cdk.Duration.seconds(10),
       timeout: cdk.Duration.minutes(10),
+      resultSelector: {
+        buz: 'buz',
+        baz: sfn.JsonPath.stringAt('$.baz'),
+      },
     });
 
     // THEN
@@ -39,6 +43,10 @@ describe('Task base', () => {
           HeartbeatSeconds: 10,
           Resource: 'my-resource',
           Parameters: { MyParameter: 'myParameter' },
+          ResultSelector: {
+            'buz': 'buz',
+            'baz.$': '$.baz',
+          },
         },
       },
     });

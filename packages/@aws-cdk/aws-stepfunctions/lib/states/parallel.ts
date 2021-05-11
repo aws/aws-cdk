@@ -45,6 +45,16 @@ export interface ParallelProps {
    * @default $
    */
   readonly resultPath?: string;
+
+  /**
+   * The JSON that you want to override the raw result of the state before ResultPath is applied.
+   *
+   * @see
+   * https://docs.aws.amazon.com/step-functions/latest/dg/input-output-inputpath-params.html#input-output-resultselector
+   *
+   * @default $
+   */
+  readonly resultSelector?: { [key: string]: any };
 }
 
 /**
@@ -117,6 +127,7 @@ export class Parallel extends State implements INextable {
       ...this.renderInputOutput(),
       ...this.renderRetryCatch(),
       ...this.renderBranches(),
+      ...this.renderResultSelector(),
     };
   }
 

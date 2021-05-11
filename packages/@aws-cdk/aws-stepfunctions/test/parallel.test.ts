@@ -8,7 +8,12 @@ describe('Parallel State', () => {
     const stack = new cdk.Stack();
 
     // WHEN
-    const parallel = new stepfunctions.Parallel(stack, 'Parallel State');
+    const parallel = new stepfunctions.Parallel(stack, 'Parallel State', {
+      resultSelector: {
+        buz: 'buz',
+        baz: stepfunctions.JsonPath.stringAt('$.baz'),
+      },
+    });
     parallel.branch(new stepfunctions.Pass(stack, 'Branch 1'));
     parallel.branch(new stepfunctions.Pass(stack, 'Branch 2'));
 
@@ -23,6 +28,10 @@ describe('Parallel State', () => {
             { StartAt: 'Branch 1', States: { 'Branch 1': { Type: 'Pass', End: true } } },
             { StartAt: 'Branch 2', States: { 'Branch 2': { Type: 'Pass', End: true } } },
           ],
+          ResultSelector: {
+            'buz': 'buz',
+            'baz.$': '$.baz',
+          },
         },
       },
     });

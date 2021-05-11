@@ -52,6 +52,16 @@ export interface TaskStateBaseProps {
   readonly resultPath?: string;
 
   /**
+   * The JSON that you want to override the raw result of the state before ResultPath is applied.
+   *
+   * @see
+   * https://docs.aws.amazon.com/step-functions/latest/dg/input-output-inputpath-params.html#input-output-resultselector
+   *
+   * @default $
+   */
+  readonly resultSelector?: { [key: string]: any };
+
+  /**
    * Timeout for the state machine
    *
    * @default - None
@@ -269,6 +279,7 @@ export abstract class TaskStateBase extends State implements INextable {
       InputPath: renderJsonPath(this.inputPath),
       OutputPath: renderJsonPath(this.outputPath),
       ResultPath: renderJsonPath(this.resultPath),
+      ...this.renderResultSelector(),
     };
   }
 }

@@ -62,6 +62,16 @@ export interface MapProps {
   readonly parameters?: { [key: string]: any };
 
   /**
+   * The JSON that you want to override the raw result of the state before ResultPath is applied.
+   *
+   * @see
+   * https://docs.aws.amazon.com/step-functions/latest/dg/input-output-inputpath-params.html#input-output-resultselector
+   *
+   * @default $
+   */
+  readonly resultSelector?: { [key: string]: any };
+
+  /**
    * MaxConcurrency
    *
    * An upper bound on the number of iterations you want running at once.
@@ -158,6 +168,7 @@ export class Map extends State implements INextable {
       ...this.renderNextEnd(),
       ...this.renderInputOutput(),
       ...this.renderParameters(),
+      ...this.renderResultSelector(),
       ...this.renderRetryCatch(),
       ...this.renderIterator(),
       ...this.renderItemsPath(),

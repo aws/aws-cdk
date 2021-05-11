@@ -15,6 +15,10 @@ describe('Map State', () => {
         foo: 'foo',
         bar: stepfunctions.JsonPath.stringAt('$.bar'),
       },
+      resultSelector: {
+        buz: 'buz',
+        baz: stepfunctions.JsonPath.stringAt('$.baz'),
+      },
     });
     map.iterator(new stepfunctions.Pass(stack, 'Pass State'));
 
@@ -40,6 +44,10 @@ describe('Map State', () => {
           },
           ItemsPath: '$.inputForMap',
           MaxConcurrency: 1,
+          ResultSelector: {
+            'buz': 'buz',
+            'baz.$': '$.baz',
+          },
         },
       },
     });
