@@ -103,11 +103,11 @@ else
 fi
 
 # [Python >= 3.6.5, < 4.0]
-app="python"
+app="python3"
 app_min="3.6.5"
 check_which $app $app_min
 app_v=$(${app} --version)
-echo -e "Checking python version... \c"
+echo -e "Checking python3 version... \c"
 if [ $(echo $app_v | grep -c -E "3\.[6-9]+\.[0-9]+") -eq 1 ]
 then
     echo "Ok"
