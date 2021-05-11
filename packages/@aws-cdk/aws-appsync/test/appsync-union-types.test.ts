@@ -1,9 +1,9 @@
 import '@aws-cdk/assert-internal/jest';
 import * as cdk from '@aws-cdk/core';
 import * as appsync from '../lib';
+import { GraphqlApiTest } from '../lib/private';
 import * as t from './scalar-type-defintions';
 
-const filler = 'schema {\n  query: Query\n}\ntype Query {\n  filler: String\n}\n';
 const out = 'type Test1 {\n  test1: String\n}\ntype Test2 {\n  test2: String\n}\nunion UnionTest = Test1 | Test2\n';
 const test1 = new appsync.ObjectType('Test1', {
   definition: { test1: t.string },
@@ -12,16 +12,13 @@ const test2 = new appsync.ObjectType('Test2', {
   definition: { test2: t.string },
 });
 let stack: cdk.Stack;
-let api: appsync.GraphqlApi;
+let api: GraphqlApiTest;
 beforeEach(() => {
   // GIVEN
   stack = new cdk.Stack();
-  api = new appsync.GraphqlApi(stack, 'api', {
+  api = new GraphqlApiTest(stack, 'api', {
     name: 'api',
   });
-  api.addQuery('filler', new appsync.ResolvableField({
-    returnType: t.string,
-  }));
   api.addType(test1);
   api.addType(test2);
 });
@@ -35,9 +32,11 @@ describe('testing Union Type properties', () => {
     api.addType(union);
     // THEN
     expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
-      Definition: `${filler}${out}`,
+      Definition: api.expectedSchema(out),
     });
-    expect(stack).not.toHaveResource('AWS::AppSync::Resolver');
+    expect(stack).not.toHaveResourceLike('AWS::AppSync::Resolver', {
+      TypeName: 'UnionTest',
+    });
   });
 
   test('UnionType can addField', () => {
@@ -50,7 +49,7 @@ describe('testing Union Type properties', () => {
 
     // THEN
     expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
-      Definition: `${filler}${out}`,
+      Definition: api.expectedSchema(out),
     });
   });
 
@@ -87,15 +86,15 @@ describe('testing Union Type properties', () => {
     });
     api.addType(union);
 
-    api.addType(new appsync.ObjectType('Test2', {
+    api.addType(new appsync.ObjectType('Test3', {
       definition: { union: union.attribute() },
     }));
 
-    const obj = 'type Test2 {\n  union: UnionTest\n}\n';
+    const obj = 'type Test3 {\n  union: UnionTest\n}\n';
 
     // THEN
     expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
-      Definition: `${out}${obj}`,
+      Definition: api.expectedSchema(`${out}${obj}`),
     });
   });
 

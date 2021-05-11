@@ -221,7 +221,7 @@ export class Schema {
     return shapeAddition({
       prefix: 'schema',
       fields: list.map((key: root) => this[key] ? `${key}: ${this[key]?.name}` : '')
-        .filter((field) => field != ''),
+        .filter((field) => field !== ''),
     }) + '\n';
   }
 }

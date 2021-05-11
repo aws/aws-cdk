@@ -1,22 +1,18 @@
 import '@aws-cdk/assert-internal/jest';
 import * as cdk from '@aws-cdk/core';
 import * as appsync from '../lib';
+import { GraphqlApiTest } from '../lib/private';
 import * as t from './scalar-type-defintions';
 
-const filler = 'schema {\n  query: Query\n}\ntype Query {\n  filler: String\n}\n';
 const out = 'enum Test {\n  test1\n  test2\n  test3\n}\n';
 let stack: cdk.Stack;
-let api: appsync.GraphqlApi;
+let api: GraphqlApiTest;
 beforeEach(() => {
   // GIVEN
   stack = new cdk.Stack();
-  api = new appsync.GraphqlApi(stack, 'api', {
+  api = new GraphqlApiTest(stack, 'api', {
     name: 'api',
   });
-
-  api.addQuery('filler', new appsync.ResolvableField({
-    returnType: t.string,
-  }));
 });
 
 describe('testing Enum Type properties', () => {
@@ -29,9 +25,11 @@ describe('testing Enum Type properties', () => {
 
     // THEN
     expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
-      Definition: `${filler}${out}`,
+      Definition: api.expectedSchema(out),
     });
-    expect(stack).not.toHaveResource('AWS::AppSync::Resolver');
+    expect(stack).not.toHaveResourceLike('AWS::AppSync::Resolver', {
+      TypeName: 'Test',
+    });
   });
 
   test('EnumType can addField', () => {
@@ -44,7 +42,7 @@ describe('testing Enum Type properties', () => {
 
     // THEN
     expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
-      Definition: `${filler}${out}`,
+      Definition: api.expectedSchema(out),
     });
   });
 
@@ -63,7 +61,7 @@ describe('testing Enum Type properties', () => {
 
     // THEN
     expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
-      Definition: `${out}${obj}`,
+      Definition: api.expectedSchema(`${out}${obj}`),
     });
   });
 

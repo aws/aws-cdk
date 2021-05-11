@@ -2,6 +2,7 @@ import { join } from 'path';
 import '@aws-cdk/assert-internal/jest';
 import * as cdk from '@aws-cdk/core';
 import * as appsync from '../lib';
+import { GraphqlApiTest } from '../lib/private';
 import * as t from './scalar-type-defintions';
 
 // Schema Definitions
@@ -83,83 +84,73 @@ describe('basic testing schema definition mode `code`', () => {
 
   test('definition mode `code` allows for api to addMutation', () => {
     // WHEN
-    const api = new appsync.GraphqlApi(stack, 'API', {
+    const api = new GraphqlApiTest(stack, 'API', {
       name: 'demo',
     });
-    api.addQuery('filler', new appsync.ResolvableField({
-      returnType: t.string,
-    }));
     api.addMutation('test', new appsync.ResolvableField({
       returnType: t.string,
     }));
 
     // THEN
     expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
-      Definition: 'schema {\n  query: Query\n  mutation: Mutation\n}\ntype Query {\n  filler: String\n}\ntype Mutation {\n  test: String\n}\n',
+      Definition: api.expectedSchema('type Mutation {\n  test: String\n}\n', 'mutation: Mutation'),
     });
   });
 
   test('definition mode `code` allows for schema to addMutation', () => {
     // WHEN
     const schema = new appsync.Schema();
-    new appsync.GraphqlApi(stack, 'API', {
-      name: 'demo',
-      schema,
-    });
-    schema.addQuery('filler', new appsync.ResolvableField({
-      returnType: t.string,
-    }));
+
     schema.addMutation('test', new appsync.ResolvableField({
       returnType: t.string,
     }));
 
+    const api = new GraphqlApiTest(stack, 'API', {
+      name: 'demo',
+      schema,
+    });
+
     // THEN
     expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
-      Definition: 'schema {\n  query: Query\n  mutation: Mutation\n}\ntype Query {\n  filler: String\n}\ntype Mutation {\n  test: String\n}\n',
+      Definition: api.expectedSchema('type Mutation {\n  test: String\n}\n', 'mutation: Mutation'),
     });
   });
 
   test('definition mode `code` allows for api to addSubscription', () => {
     // WHEN
-    const api = new appsync.GraphqlApi(stack, 'API', {
+    const api = new GraphqlApiTest(stack, 'API', {
       name: 'demo',
     });
-    api.addQuery('filler', new appsync.ResolvableField({
-      returnType: t.string,
-    }));
     api.addSubscription('test', new appsync.ResolvableField({
       returnType: t.string,
     }));
 
-    const schema_def = 'schema {\n  query: Query\n  subscription: Subscription\n}\ntype Query {\n  filler: String\n}\n';
     const out = 'type Subscription {\n  test: String\n}\n';
 
     // THEN
     expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
-      Definition: `${schema_def}${out}`,
+      Definition: api.expectedSchema(out, 'subscription: Subscription'),
     });
   });
 
   test('definition mode `code` allows for schema to addSubscription', () => {
     // WHEN
     const schema = new appsync.Schema();
-    new appsync.GraphqlApi(stack, 'API', {
-      name: 'demo',
-      schema,
-    });
-    schema.addQuery('filler', new appsync.ResolvableField({
-      returnType: t.string,
-    }));
+
     schema.addSubscription('test', new appsync.ResolvableField({
       returnType: t.string,
     }));
 
-    const schema_def = 'schema {\n  query: Query\n  subscription: Subscription\n}\ntype Query {\n  filler: String\n}\n';
+    const api = new GraphqlApiTest(stack, 'API', {
+      name: 'demo',
+      schema,
+    });
+
     const out = 'type Subscription {\n  test: String\n}\n';
 
     // THEN
     expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
-      Definition: `${schema_def}${out}`,
+      Definition: api.expectedSchema(out, 'subscription: Subscription'),
     });
   });
 

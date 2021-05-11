@@ -1,21 +1,17 @@
 import '@aws-cdk/assert-internal/jest';
 import * as cdk from '@aws-cdk/core';
 import * as appsync from '../lib';
+import { GraphqlApiTest } from '../lib/private';
 import * as t from './scalar-type-defintions';
 
 let stack: cdk.Stack;
-let api: appsync.GraphqlApi;
-const filler = 'schema {\n  query: Query\n}\ntype Query {\n  filler: String\n}\n';
+let api: GraphqlApiTest;
 beforeEach(() => {
   // GIVEN
   stack = new cdk.Stack();
-  api = new appsync.GraphqlApi(stack, 'api', {
+  api = new GraphqlApiTest(stack, 'api', {
     name: 'api',
   });
-
-  api.addQuery('filler', new appsync.ResolvableField({
-    returnType: t.string,
-  }));
 });
 
 describe('testing InterfaceType properties', () => {
@@ -34,7 +30,7 @@ describe('testing InterfaceType properties', () => {
 
     // THEN
     expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
-      Definition: `${filler}${out}`,
+      Definition: api.expectedSchema(out),
     });
   });
 
@@ -52,7 +48,7 @@ describe('testing InterfaceType properties', () => {
 
     // THEN
     expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
-      Definition: `${filler}${out}`,
+      Definition: api.expectedSchema(out),
     });
   });
 
@@ -71,7 +67,7 @@ describe('testing InterfaceType properties', () => {
 
     // THEN
     expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
-      Definition: `${filler}${out}`,
+      Definition: api.expectedSchema(out),
     });
     expect(stack).not.toHaveResourceLike('AWS::AppSync::Resolver', {
       FieldName: 'test',
@@ -93,7 +89,7 @@ describe('testing InterfaceType properties', () => {
 
     // THEN
     expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
-      Definition: `${filler}${out}`,
+      Definition: api.expectedSchema(out),
     });
   });
 
@@ -117,7 +113,7 @@ describe('testing InterfaceType properties', () => {
 
     // THEN
     expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
-      Definition: `${filler}${out}`,
+      Definition: api.expectedSchema(out),
     });
   });
 
@@ -142,7 +138,7 @@ describe('testing InterfaceType properties', () => {
 
     // THEN
     expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
-      Definition: `${filler}${out}`,
+      Definition: api.expectedSchema(out),
     });
     expect(stack).not.toHaveResourceLike('AWS::AppSync::Resolver', {
       FieldName: 'resolve',

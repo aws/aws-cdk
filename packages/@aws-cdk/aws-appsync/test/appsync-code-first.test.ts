@@ -1,6 +1,7 @@
 import '@aws-cdk/assert-internal/jest';
 import * as cdk from '@aws-cdk/core';
 import * as appsync from '../lib';
+import { GraphqlApiTest } from '../lib/private';
 import * as t from './scalar-type-defintions';
 
 let stack: cdk.Stack;
@@ -9,19 +10,13 @@ beforeEach(() => {
   stack = new cdk.Stack();
 });
 
-const filler = 'schema {\n  query: Query\n}\ntype Query {\n  filler: String\n}\n';
-
 describe('code-first implementation through GraphQL Api functions`', () => {
-  let api: appsync.GraphqlApi;
+  let api: GraphqlApiTest;
   beforeEach(() => {
     // GIVEN
-    api = new appsync.GraphqlApi(stack, 'api', {
+    api = new GraphqlApiTest(stack, 'api', {
       name: 'api',
     });
-
-    api.addQuery('filler', new appsync.ResolvableField({
-      returnType: t.string,
-    }));
   });
 
   test('testing addType w/ Interface Type for schema definition mode `code`', () => {
@@ -41,7 +36,7 @@ describe('code-first implementation through GraphQL Api functions`', () => {
 
     // THEN
     expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
-      Definition: `${filler}${out}`,
+      Definition: api.expectedSchema(out),
     });
   });
 
@@ -62,7 +57,7 @@ describe('code-first implementation through GraphQL Api functions`', () => {
 
     // THEN
     expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
-      Definition: `${filler}${out}`,
+      Definition: api.expectedSchema(out),
     });
   });
 
@@ -82,7 +77,7 @@ describe('code-first implementation through GraphQL Api functions`', () => {
 
     // THEN
     expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
-      Definition: `${filler}${out}`,
+      Definition: api.expectedSchema(out),
     });
   });
 
@@ -103,7 +98,7 @@ describe('code-first implementation through GraphQL Api functions`', () => {
 
     // THEN
     expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
-      Definition: `${filler}${out}`,
+      Definition: api.expectedSchema(out),
     });
   });
 
@@ -123,7 +118,7 @@ describe('code-first implementation through GraphQL Api functions`', () => {
 
     // THEN
     expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
-      Definition: `${filler}${out}`,
+      Definition: api.expectedSchema(out),
     });
   });
 
@@ -144,7 +139,7 @@ describe('code-first implementation through GraphQL Api functions`', () => {
 
     // THEN
     expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
-      Definition: `${filler}${out}`,
+      Definition: api.expectedSchema(out),
     });
   });
 });
@@ -154,9 +149,6 @@ describe('code-first implementation through Schema functions`', () => {
   beforeEach(() => {
     // GIVEN
     schema = new appsync.Schema();
-    schema.addQuery('filler', new appsync.ResolvableField({
-      returnType: t.string,
-    }));
   });
 
   test('testing addType w/ Interface Type for schema definition mode `code`', () => {
@@ -173,7 +165,7 @@ describe('code-first implementation through Schema functions`', () => {
     schema.addType(test);
     test.addField({ fieldName: 'dupid', field: t.dup_id });
 
-    new appsync.GraphqlApi(stack, 'api', {
+    const api = new GraphqlApiTest(stack, 'api', {
       name: 'api',
       schema,
     });
@@ -181,7 +173,7 @@ describe('code-first implementation through Schema functions`', () => {
 
     // THEN
     expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
-      Definition: `${filler}${out}`,
+      Definition: api.expectedSchema(out),
     });
   });
 
@@ -199,7 +191,7 @@ describe('code-first implementation through Schema functions`', () => {
     schema.addType(test);
     test.addField({ fieldName: 'dupid', field: t.dup_id });
 
-    new appsync.GraphqlApi(stack, 'api', {
+    const api = new GraphqlApiTest(stack, 'api', {
       name: 'api',
       schema,
     });
@@ -207,7 +199,7 @@ describe('code-first implementation through Schema functions`', () => {
 
     // THEN
     expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
-      Definition: `${filler}${out}`,
+      Definition: api.expectedSchema(out),
     });
   });
 
@@ -224,7 +216,7 @@ describe('code-first implementation through Schema functions`', () => {
       },
     }));
 
-    new appsync.GraphqlApi(stack, 'api', {
+    const api = new GraphqlApiTest(stack, 'api', {
       name: 'api',
       schema,
     });
@@ -233,7 +225,7 @@ describe('code-first implementation through Schema functions`', () => {
 
     // THEN
     expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
-      Definition: `${filler}${out}`,
+      Definition: api.expectedSchema(out),
     });
   });
 
@@ -250,7 +242,7 @@ describe('code-first implementation through Schema functions`', () => {
     }));
 
     test.addField({ fieldName: 'dupid', field: t.dup_id });
-    new appsync.GraphqlApi(stack, 'api', {
+    const api = new GraphqlApiTest(stack, 'api', {
       name: 'api',
       schema,
     });
@@ -258,7 +250,7 @@ describe('code-first implementation through Schema functions`', () => {
 
     // THEN
     expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
-      Definition: `${filler}${out}`,
+      Definition: api.expectedSchema(out),
     });
   });
 
@@ -274,7 +266,7 @@ describe('code-first implementation through Schema functions`', () => {
         dupid: t.dup_id,
       },
     }));
-    new appsync.GraphqlApi(stack, 'api', {
+    const api = new GraphqlApiTest(stack, 'api', {
       name: 'api',
       schema,
     });
@@ -282,7 +274,7 @@ describe('code-first implementation through Schema functions`', () => {
 
     // THEN
     expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
-      Definition: `${filler}${out}`,
+      Definition: api.expectedSchema(out),
     });
   });
 
@@ -299,7 +291,7 @@ describe('code-first implementation through Schema functions`', () => {
     }));
 
     test.addField({ fieldName: 'dupid', field: t.dup_id });
-    new appsync.GraphqlApi(stack, 'api', {
+    const api = new GraphqlApiTest(stack, 'api', {
       name: 'api',
       schema,
     });
@@ -307,7 +299,7 @@ describe('code-first implementation through Schema functions`', () => {
 
     // THEN
     expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
-      Definition: `${filler}${out}`,
+      Definition: api.expectedSchema(out),
     });
   });
 });
