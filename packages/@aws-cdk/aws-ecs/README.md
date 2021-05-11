@@ -725,8 +725,8 @@ ecsService.associateCloudMapService({
 
 ## Capacity Providers
 
-There are two major families of Capacity Providers: Fargate and EC2 (via Auto
-Scaling Groups. Both are supported.
+There are two major families of Capacity Providers: [AWS Fargate](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/fargate-capacity-providers.html) (including Fargate Spot) and EC2 [Auto
+Scaling Group](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/asg-capacity-providers.html) Capacity Providers. Both are supported.
 
 ### Fargate Capacity Providers
 
