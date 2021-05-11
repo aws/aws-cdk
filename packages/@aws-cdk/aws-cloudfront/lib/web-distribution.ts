@@ -5,8 +5,8 @@ import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnDistribution } from './cloudfront.generated';
-import { HttpVersion, IDistribution, LambdaEdgeEventType, OriginProtocolPolicy, PriceClass, ViewerProtocolPolicy, SSLMethod, SecurityPolicyProtocol, FunctionEventType } from './distribution';
-import { IFunction } from './function';
+import { HttpVersion, IDistribution, LambdaEdgeEventType, OriginProtocolPolicy, PriceClass, ViewerProtocolPolicy, SSLMethod, SecurityPolicyProtocol } from './distribution';
+import { FunctionAssociation } from './function';
 import { GeoRestriction } from './geo-restriction';
 import { IKeyGroup } from './key-group';
 import { IOriginAccessIdentity } from './origin-access-identity';
@@ -453,20 +453,6 @@ export interface LambdaFunctionAssociation {
    * @default false
    */
   readonly includeBody?: boolean;
-}
-
-/**
- * Represents a CloudFront function and event type when using CF Functions.
- * The type of the {@link AddBehaviorOptions.functionAssociations} property.
- */
-export interface FunctionAssociation {
-  /**
-   * The CloudFront function that will be invoked.
-   */
-  readonly function: IFunction;
-
-  /** The type of event which should invoke the function. */
-  readonly eventType: FunctionEventType;
 }
 
 export interface ViewerCertificateOptions {

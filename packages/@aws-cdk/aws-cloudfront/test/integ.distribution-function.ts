@@ -3,7 +3,7 @@ import * as cloudfront from '../lib';
 import { TestOrigin } from './test-origin';
 
 const app = new cdk.App();
-const stack = new cdk.Stack(app, 'integ-distribution-function', { env: { region: 'us-west-2' } });
+const stack = new cdk.Stack(app, 'integ-distribution-function', { env: { region: 'us-east-1' } });
 
 const cfFunction = new cloudfront.Function(stack, 'Function', {
   code: cloudfront.FunctionCode.fromInline('function handler(event) { return event.request }'),

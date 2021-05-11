@@ -754,7 +754,7 @@ describe('with CloudFront functions', () => {
             {
               EventType: 'viewer-request',
               FunctionARN: {
-                Ref: 'XXXXX',
+                Ref: 'TestFunction22AD90FC',
               },
             },
           ],

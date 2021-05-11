@@ -16,11 +16,16 @@ describe('CloudFront Function', () => {
 
     expectStack(stack).toMatch({
       Resources: {
-        CF278071F3D: {
+        CF2D7241DD7: {
           Type: 'AWS::CloudFront::Function',
           Properties: {
-            Code: '',
-            Name: '',
+            Name: 'testregionStackCF2CE3F783F',
+            AutoPublish: true,
+            FunctionCode: 'code',
+            FunctionConfig: {
+              Comment: 'testregionStackCF2CE3F783F',
+              Runtime: 'cloudfront-js-1.0',
+            },
           },
         },
       },
@@ -36,11 +41,36 @@ describe('CloudFront Function', () => {
 
     expectStack(stack).toMatch({
       Resources: {
-        CF278071F3D: {
+        CF2D7241DD7: {
           Type: 'AWS::CloudFront::Function',
           Properties: {
-            Code: '',
-            Name: '',
+            Name: {
+              'Fn::Join': [
+                '',
+                [
+                  {
+                    Ref: 'AWS::Region',
+                  },
+                  'StackCF2CE3F783F',
+                ],
+              ],
+            },
+            AutoPublish: true,
+            FunctionCode: 'code',
+            FunctionConfig: {
+              Comment: {
+                'Fn::Join': [
+                  '',
+                  [
+                    {
+                      Ref: 'AWS::Region',
+                    },
+                    'StackCF2CE3F783F',
+                  ],
+                ],
+              },
+              Runtime: 'cloudfront-js-1.0',
+            },
           },
         },
       },
@@ -55,16 +85,21 @@ describe('CloudFront Function', () => {
     new Function(stack, 'CF2', {
       code: FunctionCode.fromInline('code'),
       comment: 'My super comment',
-      name: 'FunctionName',
+      functionName: 'FunctionName',
     });
 
     expectStack(stack).toMatch({
       Resources: {
-        CF278071F3D: {
+        CF2D7241DD7: {
           Type: 'AWS::CloudFront::Function',
           Properties: {
-            Code: '',
             Name: 'FunctionName',
+            AutoPublish: true,
+            FunctionCode: 'code',
+            FunctionConfig: {
+              Comment: 'My super comment',
+              Runtime: 'cloudfront-js-1.0',
+            },
           },
         },
       },

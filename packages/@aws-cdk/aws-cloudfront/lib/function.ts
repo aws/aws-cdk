@@ -22,6 +22,9 @@ export abstract class FunctionCode {
   public abstract render(): string;
 }
 
+/**
+ * Represents the function's source code as inline code
+ */
 export class InlineCode extends FunctionCode {
 
   constructor(private code: string) {
@@ -42,9 +45,25 @@ export interface IFunction extends IResource {
    * @attribute
    */
   readonly functionName: string;
+
   /**
    * The ARN of the function.
    * @attribute
+   */
+  readonly functionArn: string;
+}
+
+/**
+ * Attributes of an existing CloudFront Function to import it
+ */
+export interface FunctionAttributes {
+  /**
+   * The name of the function.
+   */
+  readonly functionName: string;
+
+  /**
+   * The ARN of the function.
    */
   readonly functionArn: string;
 }
@@ -57,7 +76,7 @@ export interface FunctionProps {
    * A name to identify the function.
    * @default - generated from the `id`
    */
-  readonly name?: string;
+  readonly functionName?: string;
 
   /**
    * A comment to describe the function.
@@ -78,25 +97,47 @@ export interface FunctionProps {
  */
 export class Function extends Resource implements IFunction {
 
+  /** Imports a function by its name and ARN */
+  public static fromFunctionAttributes(scope: Construct, id: string, attrs: FunctionAttributes): IFunction {
+    return new class extends Resource implements IFunction {
+      public readonly functionName = attrs.functionName;
+      public readonly functionArn = attrs.functionArn;
+    }(scope, id);
+  }
+
+  /**
+   * the name of the CloudFront function
+   * @attribute
+   */
   public readonly functionName: string;
+  /**
+   * the ARN of the CloudFront function
+   * @attribute
+   */
   public readonly functionArn: string;
+  /**
+   * the deployment stage of the CloudFront function
+   * @attribute
+   */
+  public readonly functionStage: string;
 
   constructor(scope: Construct, id: string, props: FunctionProps) {
     super(scope, id);
 
-    this.functionName = props.name ?? this.generateName();
+    this.functionName = props.functionName ?? this.generateName();
 
     const resource = new CfnFunction(this, 'Resource', {
       autoPublish: true,
       functionCode: props.code.render(),
       functionConfig: {
-        comment: props.comment,
+        comment: props.comment ?? this.functionName,
         runtime: 'cloudfront-js-1.0',
       },
       name: this.functionName,
     });
 
     this.functionArn = resource.ref;
+    this.functionStage = resource.attrStage;
   }
 
   private generateName(): string {
@@ -106,4 +147,34 @@ export class Function extends Resource implements IFunction {
     }
     return name;
   }
+}
+
+/**
+ * The type of events that a CloudFront function can be invoked in response to.
+ */
+export enum FunctionEventType {
+
+  /**
+   * The viewer-request specifies the incoming request
+   */
+  VIEWER_REQUEST = 'viewer-request',
+
+  /**
+   * The viewer-response specifies the outgoing response
+   */
+  VIEWER_RESPONSE = 'viewer-response',
+}
+
+/**
+ * Represents a CloudFront function and event type when using CF Functions.
+ * The type of the {@link AddBehaviorOptions.functionAssociations} property.
+ */
+export interface FunctionAssociation {
+  /**
+   * The CloudFront function that will be invoked.
+   */
+  readonly function: IFunction;
+
+  /** The type of event which should invoke the function. */
+  readonly eventType: FunctionEventType;
 }

@@ -5,7 +5,7 @@ import { IResource, Lazy, Resource, Stack, Token, Duration, Names } from '@aws-c
 import { Construct } from 'constructs';
 import { ICachePolicy } from './cache-policy';
 import { CfnDistribution } from './cloudfront.generated';
-import { IFunction } from './function';
+import { FunctionAssociation } from './function';
 import { GeoRestriction } from './geo-restriction';
 import { IKeyGroup } from './key-group';
 import { IOrigin, OriginBindConfig, OriginBindOptions } from './origin';
@@ -446,7 +446,7 @@ export class Distribution extends Resource implements IDistribution {
   }
 
   private renderViewerCertificate(certificate: acm.ICertificate,
-    minimumProtocolVersion: SecurityPolicyProtocol = SecurityPolicyProtocol.TLS_V1_2_2019) : CfnDistribution.ViewerCertificateProperty {
+    minimumProtocolVersion: SecurityPolicyProtocol = SecurityPolicyProtocol.TLS_V1_2_2019): CfnDistribution.ViewerCertificateProperty {
     return {
       acmCertificateArn: certificate.certificateArn,
       sslSupportMethod: SSLMethod.SNI,
@@ -647,37 +647,6 @@ export interface EdgeLambda {
    * @default false
    */
   readonly includeBody?: boolean;
-}
-
-
-/**
- * The type of events that a CloudFront function can be invoked in response to.
- */
-export enum FunctionEventType {
-
-  /**
-   * The viewer-request specifies the incoming request
-   */
-  VIEWER_REQUEST = 'viewer-request',
-
-  /**
-   * The viewer-response specifies the outgoing response
-   */
-  VIEWER_RESPONSE = 'viewer-response',
-}
-
-/**
- * Represents a CloudFront function and event type when using CF Functions.
- * The type of the {@link AddBehaviorOptions.functionAssociations} property.
- */
-export interface FunctionAssociation {
-  /**
-   * The CloudFront function that will be invoked.
-   */
-  readonly function: IFunction;
-
-  /** The type of event which should invoke the function. */
-  readonly eventType: FunctionEventType;
 }
 
 /**
