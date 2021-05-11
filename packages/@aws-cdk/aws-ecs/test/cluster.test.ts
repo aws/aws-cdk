@@ -4,6 +4,7 @@ import {
   haveResource,
   haveResourceLike,
   ResourcePart,
+  ABSENT,
 } from '@aws-cdk/assert-internal';
 import * as autoscaling from '@aws-cdk/aws-autoscaling';
 import * as ec2 from '@aws-cdk/aws-ec2';
@@ -1809,7 +1810,7 @@ nodeunitShim({
     });
 
     // WHEN
-    new ecs.EC2CapacityProvider(stack, 'provider', {
+    new ecs.AsgCapacityProvider(stack, 'provider', {
       autoScalingGroup,
     });
 
@@ -1829,7 +1830,7 @@ nodeunitShim({
     test.done();
   },
 
-  'can disable managed scaling for EC2 capacity provider'(test: Test) {
+  'can disable managed scaling for ASG capacity provider'(test: Test) {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'test');
@@ -1841,7 +1842,7 @@ nodeunitShim({
     });
 
     // WHEN
-    new ecs.EC2CapacityProvider(stack, 'provider', {
+    new ecs.AsgCapacityProvider(stack, 'provider', {
       autoScalingGroup,
       enableManagedScaling: false,
     });
@@ -1852,10 +1853,7 @@ nodeunitShim({
         AutoScalingGroupArn: {
           Ref: 'asgASG4D014670',
         },
-        ManagedScaling: {
-          Status: 'DISABLED',
-          TargetCapacity: 100,
-        },
+        ManagedScaling: ABSENT,
         ManagedTerminationProtection: 'ENABLED',
       },
     }));
@@ -1874,7 +1872,7 @@ nodeunitShim({
     });
 
     // WHEN
-    new ecs.EC2CapacityProvider(stack, 'provider', {
+    new ecs.AsgCapacityProvider(stack, 'provider', {
       autoScalingGroup,
     });
 
@@ -1897,7 +1895,7 @@ nodeunitShim({
     });
 
     // WHEN
-    new ecs.EC2CapacityProvider(stack, 'provider', {
+    new ecs.AsgCapacityProvider(stack, 'provider', {
       autoScalingGroup,
       enableManagedTerminationProtection: false,
     });
@@ -1909,7 +1907,7 @@ nodeunitShim({
     test.done();
   },
 
-  'can add EC2 capacity via Capacity Provider'(test: Test) {
+  'can add ASG capacity via Capacity Provider'(test: Test) {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'test');
@@ -1923,7 +1921,7 @@ nodeunitShim({
     });
 
     // WHEN
-    const capacityProvider = new ecs.EC2CapacityProvider(stack, 'provider', {
+    const capacityProvider = new ecs.AsgCapacityProvider(stack, 'provider', {
       autoScalingGroup,
       enableManagedTerminationProtection: false,
     });
@@ -1932,8 +1930,8 @@ nodeunitShim({
     cluster.enableFargateCapacityProviders();
 
     // Ensure not added twice
-    cluster.addEC2CapacityProvider(capacityProvider);
-    cluster.addEC2CapacityProvider(capacityProvider);
+    cluster.addAsgCapacityProvider(capacityProvider);
+    cluster.addAsgCapacityProvider(capacityProvider);
 
     // THEN
     expect(stack).to(haveResource('AWS::ECS::ClusterCapacityProviderAssociations', {

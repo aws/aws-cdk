@@ -725,15 +725,19 @@ ecsService.associateCloudMapService({
 
 ## Capacity Providers
 
-There are two major families of Capacity Providers: [AWS Fargate](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/fargate-capacity-providers.html) (including Fargate Spot) and EC2 [Auto
-Scaling Group](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/asg-capacity-providers.html) Capacity Providers. Both are supported.
+There are two major families of Capacity Providers: [AWS
+Fargate](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/fargate-capacity-providers.html)
+(including Fargate Spot) and EC2 [Auto Scaling
+Group](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/asg-capacity-providers.html)
+Capacity Providers. Both are supported.
 
 ### Fargate Capacity Providers
 
 To enable Fargate capacity providers, you can either set
 `enableFargateCapacityProviders` to `true` when creating your cluster, or by
 invoking the `enableFargateCapacityProviders()` method after creating your
-cluster. This will add both `FARGATE` and `FARGATE_SPOT` as available capacity providers on your cluster.
+cluster. This will add both `FARGATE` and `FARGATE_SPOT` as available capacity
+providers on your cluster.
 
 ```ts
 const cluster = new ecs.Cluster(stack, 'FargateCPCluster', {
@@ -765,17 +769,17 @@ new ecs.FargateService(stack, 'FargateService', {
 
 ### Auto Scaling Group Capacity Providers
 
-To add an Auto Scaling Group Capacity Provider, first create an EC2 Auto Scaling Group. Then,
-create an `AsgCapacityProvider` and pass the Auto Scaling Group to it in the
-constructor. Then add the Capacity Provider to the cluster. Finally, you can
-refer to the Provider by its name in your service's or task's Capacity Provider
-strategy.
+To add an Auto Scaling Group Capacity Provider, first create an EC2 Auto Scaling
+Group. Then, create an `AsgCapacityProvider` and pass the Auto Scaling Group to
+it in the constructor. Then add the Capacity Provider to the cluster. Finally,
+you can refer to the Provider by its name in your service's or task's Capacity
+Provider strategy.
 
-By default, an Auto Scaling Group Capacity Provider will manage the Auto Scaling Group's size
-for you. It will also enable managed termination protection, in order to prevent
-EC2 Auto Scaling from terminating EC2 instances that have tasks running on
-them. If you want to disable this behavior, set both `enableManagedScaling` to
-and `enableManagedTerminationProtection` to `false`.
+By default, an Auto Scaling Group Capacity Provider will manage the Auto Scaling
+Group's size for you. It will also enable managed termination protection, in
+order to prevent EC2 Auto Scaling from terminating EC2 instances that have tasks
+running on them. If you want to disable this behavior, set both
+`enableManagedScaling` to and `enableManagedTerminationProtection` to `false`.
 
 ```ts
 const cluster = new ecs.Cluster(stack, 'Cluster', {
@@ -790,15 +794,16 @@ const autoScalingGroup = new autoscaling.AutoScalingGroup(stack, 'ASG', {
   maxCapacity: 100,
 });
 
-const capacityProvider = new ecs.EC2CapacityProvider(stack, 'EC2CapacityProvider', {
+const capacityProvider = new ecs.AsgCapacityProvider(stack, 'AsgCapacityProvider', {
   autoScalingGroup,
 });
-cluster.addEC2CapacityProvider(capacityProvider);
+cluster.addAsgCapacityProvider(capacityProvider);
 
-const taskDefinition = new ecs.EC2TaskDefinition(stack, 'TaskDef');
+const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
 
 taskDefinition.addContainer('web', {
-  image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),    memoryReservationMiB: 256,
+  image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample',
+  memoryReservationMiB: 256,
 });
 
 new ecs.Ec2Service(stack, 'EC2Service', {
@@ -818,7 +823,7 @@ new ecs.Ec2Service(stack, 'EC2Service', {
 Currently, this feature is only supported for services with EC2 launch types.
 
 To add elastic inference accelerators to your EC2 instance, first add
-`inferenceAccelerators` field to the EC2TaskDefinition and set the `deviceName`
+`inferenceAccelerators` field to the Ec2TaskDefinition and set the `deviceName`
 and `deviceType` properties.
 
 ```ts

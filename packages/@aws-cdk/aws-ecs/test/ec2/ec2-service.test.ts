@@ -250,11 +250,11 @@ nodeunitShim({
       });
 
       // WHEN
-      const capacityProvider = new ecs.EC2CapacityProvider(stack, 'provider', {
+      const capacityProvider = new ecs.AsgCapacityProvider(stack, 'provider', {
         autoScalingGroup,
         enableManagedTerminationProtection: false,
       });
-      cluster.addEC2CapacityProvider(capacityProvider);
+      cluster.addAsgCapacityProvider(capacityProvider);
 
       const taskDefinition = new ecs.TaskDefinition(stack, 'ServerTask', {
         compatibility: ecs.Compatibility.EC2,

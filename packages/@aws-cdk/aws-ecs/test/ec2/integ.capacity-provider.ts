@@ -25,11 +25,11 @@ const autoScalingGroup = new autoscaling.AutoScalingGroup(stack, 'ASG', {
   machineImage: ecs.EcsOptimizedImage.amazonLinux2(),
 });
 
-const cp = new ecs.EC2CapacityProvider(stack, 'EC2CapacityProvider', {
+const cp = new ecs.AsgCapacityProvider(stack, 'EC2CapacityProvider', {
   autoScalingGroup,
 });
 
-cluster.addEC2CapacityProvider(cp);
+cluster.addAsgCapacityProvider(cp);
 
 new ecs.Ec2Service(stack, 'EC2Service', {
   cluster,

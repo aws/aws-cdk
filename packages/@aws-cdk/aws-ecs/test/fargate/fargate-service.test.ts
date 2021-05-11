@@ -1,4 +1,4 @@
-import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert-internal';
+import { expect, haveResource, haveResourceLike, ABSENT } from '@aws-cdk/assert-internal';
 import * as appscaling from '@aws-cdk/aws-applicationautoscaling';
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as ec2 from '@aws-cdk/aws-ec2';
@@ -244,6 +244,7 @@ nodeunitShim({
           MinimumHealthyPercent: 50,
         },
         // no launch type
+        LaunchType: ABSENT,
         CapacityProviderStrategy: [
           {
             CapacityProvider: 'FARGATE_SPOT',
