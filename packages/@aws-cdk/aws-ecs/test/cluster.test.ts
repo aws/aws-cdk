@@ -990,6 +990,17 @@ nodeunitShim({
     test.done();
   },
 
+  'allows returning the correct image for linux 2 for EcsOptimizedImage with ARM hardware'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    test.equal(ecs.EcsOptimizedImage.amazonLinux2(ecs.AmiHardwareType.ARM).getImage(stack).osType,
+      ec2.OperatingSystemType.LINUX);
+
+    test.done();
+  },
+
+
   'allows returning the correct image for windows for EcsOptimizedImage'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();
