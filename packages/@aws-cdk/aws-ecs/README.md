@@ -765,13 +765,13 @@ new ecs.FargateService(stack, 'FargateService', {
 
 ### Auto Scaling Group Capacity Providers
 
-To add an EC2 Capacity Provider, first create an EC2 Auto Scaling Group. Then,
-create an `EC2CapacityProvider` and pass the Auto Scaling Group to it in the
+To add an Auto Scaling Group Capacity Provider, first create an EC2 Auto Scaling Group. Then,
+create an `AsgCapacityProvider` and pass the Auto Scaling Group to it in the
 constructor. Then add the Capacity Provider to the cluster. Finally, you can
 refer to the Provider by its name in your service's or task's Capacity Provider
 strategy.
 
-By default, an EC2 Capacity Provider will manage the Auto Scaling Group's size
+By default, an Auto Scaling Group Capacity Provider will manage the Auto Scaling Group's size
 for you. It will also enable managed termination protection, in order to prevent
 EC2 Auto Scaling from terminating EC2 instances that have tasks running on
 them. If you want to disable this behavior, set both `enableManagedScaling` to
