@@ -6,10 +6,6 @@ import { IAuthorizer } from '../common';
 import { IHttpApi } from './api';
 import { IHttpRoute } from './route';
 
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct as CoreConstruct } from '@aws-cdk/core';
-
 /**
  * Supported Authorizer types
  */
@@ -216,7 +212,7 @@ export interface HttpRouteAuthorizerBindOptions {
   /**
    * The scope for any constructs created as part of the bind.
    */
-  readonly scope: CoreConstruct;
+  readonly scope: Construct;
 }
 
 /**

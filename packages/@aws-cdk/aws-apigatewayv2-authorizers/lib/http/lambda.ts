@@ -12,6 +12,10 @@ import { ServicePrincipal } from '@aws-cdk/aws-iam';
 import { IFunction } from '@aws-cdk/aws-lambda';
 import { Stack, Duration, Names } from '@aws-cdk/core';
 
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct as CoreConstruct } from '@aws-cdk/core';
+
 /**
  * Specifies the type responses the lambda returns
  */
@@ -102,7 +106,7 @@ export class HttpLambdaAuthorizer implements IHttpRouteAuthorizer {
       });
 
       this.props.handler.addPermission(`${Names.nodeUniqueId(this.authorizer.node)}-Permission`, {
-        scope: options.scope,
+        scope: options.scope as CoreConstruct,
         principal: new ServicePrincipal('apigateway.amazonaws.com'),
         sourceArn: Stack.of(options.route).formatArn({
           service: 'execute-api',
