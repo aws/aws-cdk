@@ -1797,7 +1797,7 @@ nodeunitShim({
     test.done();
   },
 
-  'creates capacity providers with expected defaults'(test: Test) {
+  'creates ASG capacity providers with expected defaults'(test: Test) {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'test');
