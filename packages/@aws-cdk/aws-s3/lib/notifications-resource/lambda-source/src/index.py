@@ -3,11 +3,6 @@ import json
 import urllib.request
 from typing import List
 
-TYPES = [
-    ["TopicConfigurations", "TopicArn"],
-    ["QueueConfigurations", "QueueArn"],
-    ["LambdaFunctionConfigurations", "LambdaFunctionArn"],
-]
 s3 = boto3.client("s3")
 
 
@@ -17,13 +12,15 @@ def handler(event: dict, context):
     try:
         props = event["ResourceProperties"]
         bucket = props["BucketName"]
-        config = prepare_config(
-            current_config=s3.get_bucket_notification_configuration(Bucket=bucket),
-            in_config=props["NotificationConfiguration"],
-            old_config=event.get("OldResourceProperties", {}).get("NotificationConfiguration", {}),
-            request_type=event["RequestType"],
+        s3.put_bucket_notification_configuration(
+            Bucket=bucket,
+            NotificationConfiguration=get_config(
+                current_config=s3.get_bucket_notification_configuration(Bucket=bucket),
+                new_config=props["NotificationConfiguration"],
+                old_config=event.get("OldResourceProperties", {}).get("NotificationConfiguration", {}),
+                request_type=event["RequestType"],
+            ),
         )
-        s3.put_bucket_notification_configuration(Bucket=bucket, NotificationConfiguration=config)
     except Exception as e:
         print("Failed to put bucket notification configuration:", e)
         response_status = "FAILED"
@@ -32,23 +29,26 @@ def handler(event: dict, context):
         submit_response(event, context, response_status, error_message)
 
 
-def prepare_config(current_config: dict, in_config: dict, old_config: dict, request_type: str) -> dict:
+def get_config(current_config: dict, new_config: dict, old_config: dict, request_type: str) -> dict:
     config: dict = {}
-    for config_pair in TYPES:
-        config_type, target = config_pair
-        in_configs = in_config.get(config_type, [])
-        managed_ids = ids(in_configs + old_config.get(config_type, []))
-        unmanaged_configs = [item for item in current_config.get(config_type, []) if item["Id"] not in managed_ids]
-        if request_type in ["Create", "Update"]:
-            unmanaged_configs.extend(find_difference(in_configs, unmanaged_configs, target))
-            config[config_type] = unmanaged_configs
+    types = (
+        ("TopicConfigurations", "TopicArn"),
+        ("QueueConfigurations", "QueueArn"),
+        ("LambdaFunctionConfigurations", "LambdaFunctionArn"),
+    )
+    for config_type, target in types:
+        configs = current_config.get(config_type, [])
+        in_configs = new_config.get(config_type, [])
+        if request_type == "Create":
+            configs.extend(in_configs)
+            config[config_type] = configs
+        elif request_type == "Update":
+            configs = find_difference(configs, old_config.get(config_type, []), target)
+            configs.extend(find_difference(in_configs, configs, target))
+            config[config_type] = configs
         elif request_type == "Delete":
-            config[config_type] = find_difference(unmanaged_configs, in_configs, target)
+            config[config_type] = find_difference(configs, in_configs, target)
     return config
-
-
-def ids(configs: List) -> List[str]:
-    return [item["Id"] for item in configs if "Id" in item]
 
 
 def find_difference(destination: List, source: List, target: str) -> List:

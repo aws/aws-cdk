@@ -123,7 +123,7 @@ create_event = make_event(
 )
 
 
-def assert_notify_cfn(test_case: unittest.TestCase, mock_call, status: str):
+def assert_notify_cfn(test_case: unittest.TestCase, mock_call, status: str) -> Dict:
     mock_call.assert_called()
     request: Request = mock_call.call_args[0][0]
     test_case.assertIsInstance(request, Request)
@@ -131,36 +131,18 @@ def assert_notify_cfn(test_case: unittest.TestCase, mock_call, status: str):
     data = json.loads(request.data.decode())
     test_case.assertEqual(status, data["Status"])
     test_case.assertEqual(RESPONSE_URL, request.full_url)
+    return data
 
 
-def assert_notify_cfn_of_failure(test_case: unittest.TestCase, mock_call):
-    assert_notify_cfn(test_case, mock_call, "FAILED")
+def assert_notify_cfn_of_failure(test_case: unittest.TestCase, mock_call) -> Dict:
+    return assert_notify_cfn(test_case, mock_call, "FAILED")
 
 
-def assert_notify_cfn_of_success(test_case: unittest.TestCase, mock_call):
-    assert_notify_cfn(test_case, mock_call, "SUCCESS")
+def assert_notify_cfn_of_success(test_case: unittest.TestCase, mock_call) -> Dict:
+    return assert_notify_cfn(test_case, mock_call, "SUCCESS")
 
 
 class LambdaTest(unittest.TestCase):
-    def test_empty_ids(self):
-        # GIVEN an empty list
-        configs = [{}]
-        from src import index
-
-        # WHEN calling ids
-        ids = index.ids(configs)
-
-        # THEN return an empty list
-        self.assertEqual([], ids)
-
-    def test_extract_ids_as_list(self):
-        configs = [{"Id": "x"}, {}]
-        from src import index
-
-        ids = index.ids(configs)
-
-        self.assertEqual(["x"], ids)
-
     def test_merge_in_config(self):
         # GIVEN an empty current_config and an empty in_config
         current_config = {
@@ -177,7 +159,7 @@ class LambdaTest(unittest.TestCase):
         from src import index
 
         # WHEN merging in prepare_config
-        config = index.prepare_config(current_config, in_config, old_config, "Update")
+        config = index.get_config(current_config, in_config, old_config, "Update")
 
         # THEN returns a config equal to in_config
         self.assertEqual(config, in_config)
@@ -202,7 +184,7 @@ class LambdaTest(unittest.TestCase):
         from src import index
 
         # WHEN merging in prepare_config
-        config = index.prepare_config(current_config, in_config, old_config, "Update")
+        config = index.get_config(current_config, in_config, old_config, "Update")
 
         # THEN the returned config and in_config should be equal
         # AND QueueConfigurations should be extended
@@ -219,7 +201,7 @@ class LambdaTest(unittest.TestCase):
         current_config = {"ResponseMetadata": "foo"}
         from src import index
 
-        config = index.prepare_config(current_config, {}, {}, "Delete")
+        config = index.get_config(current_config, {}, {}, "Delete")
 
         self.assertNotIn("ResponseMetadata", config)
 
@@ -231,7 +213,7 @@ class LambdaTest(unittest.TestCase):
         from src import index
 
         # WHEN calling prepare_config
-        config = index.prepare_config(current_config, in_config, old_config, "Delete")
+        config = index.get_config(current_config, in_config, old_config, "Delete")
 
         # THEN set defaults as [] for all the config types
         expected_config = {
@@ -360,8 +342,7 @@ class LambdaTest(unittest.TestCase):
             notification_configuration={
                 "QueueConfigurations": [
                     {
-                        "Id": ID_CREATE_BY_CDK,
-                        "Events": [S3_CREATED],
+                        "Events": ["s3:ObjectCreated:Post"],
                         "QueueArn": "arn:aws:sqs:us-east-1:444455556666:old-queue",
                     }
                 ]
@@ -393,21 +374,21 @@ class LambdaTest(unittest.TestCase):
         # AND an Update event with the new incoming configuration with Id "new-function-hash"
         update_event = make_event(
             request_type="Update",
-            old_notification_configuration={
-                "LambdaFunctionConfigurations": [
-                    {
-                        "Id": "old-function-hash",
-                        "Events": [S3_CREATED],
-                        "LambdaFunctionArn": LAMBDA_ARN,
-                    }
-                ]
-            },
             notification_configuration={
                 "LambdaFunctionConfigurations": [
                     {
                         "Id": "new-function-hash",
-                        "Events": [S3_CREATED],
                         "LambdaFunctionArn": "arn:aws:lambda:us-east-1:35667example:function:NewCreateThumbnail",
+                        "Events": [S3_CREATED],
+                    }
+                ]
+            },
+            old_notification_configuration={
+                "LambdaFunctionConfigurations": [
+                    {
+                        "Id": "old-function-hash",
+                        "LambdaFunctionArn": LAMBDA_ARN,
+                        "Events": [S3_CREATED],
                     }
                 ]
             },
@@ -441,13 +422,13 @@ class LambdaTest(unittest.TestCase):
         # "ResourceProperties"
         update_event = make_event(
             request_type="Update",
-            old_notification_configuration={
-                "LambdaFunctionConfigurations": [{"Events": [S3_CREATED], "LambdaFunctionArn": LAMBDA_ARN}]
-            },
             notification_configuration={
                 "LambdaFunctionConfigurations": [
                     {"Id": "new-function-hash", "Events": [S3_CREATED], "LambdaFunctionArn": LAMBDA_ARN}
                 ]
+            },
+            old_notification_configuration={
+                "LambdaFunctionConfigurations": [{"Events": [S3_CREATED], "LambdaFunctionArn": LAMBDA_ARN}]
             },
         )
         from src import index
@@ -465,7 +446,7 @@ class LambdaTest(unittest.TestCase):
         self.assertIsNotNone(lambda_configs)
         self.assertEqual(1, len(lambda_configs))
         lambda_config = lambda_configs[0]
-        self.assertEqual("old-function-hash", lambda_config.get("Id"))
+        self.assertEqual("new-function-hash", lambda_config.get("Id"))
         # AND notify CFN of its success
         assert_notify_cfn_of_success(self, mock_call)
 
@@ -527,7 +508,7 @@ class ScenarioTest(unittest.TestCase):
             "get_bucket_notification_configuration", current_notification_configuration, {"Bucket": BUCKET_NAME}
         )
 
-        # RequestType is Create or Update
+        # RequestType is Delete
         configs = [{"Id": "new-function-hash", "Events": [S3_CREATED], "LambdaFunctionArn": LAMBDA_ARN}]
         event = make_event(
             request_type="Delete",
@@ -554,6 +535,52 @@ class ScenarioTest(unittest.TestCase):
         index.s3 = s3
         index.handler(event, MockContext())
         assert_notify_cfn_of_success(self, mock_call)
+
+    @patch("urllib.request.urlopen")
+    def test_create_duplicate_error(self, mock_call: MagicMock):
+        from src import index
+
+        # Current Config is the same as the Create event
+        current_configs = [{"Id": "existing-function-hash", "Events": [S3_CREATED], "LambdaFunctionArn": LAMBDA_ARN}]
+        current_notification_configuration: Dict = {"LambdaFunctionConfigurations": current_configs}
+        s3 = boto3.client("s3")
+        stubber = stub.Stubber(s3)
+        stubber.add_response(
+            "get_bucket_notification_configuration", current_notification_configuration, {"Bucket": BUCKET_NAME}
+        )
+
+        # RequestType is Create
+        in_config = [{"Events": [S3_CREATED], "LambdaFunctionArn": LAMBDA_ARN}]
+        event = make_event(
+            request_type="Create",
+            notification_configuration={"LambdaFunctionConfigurations": in_config},
+        )
+
+        # Put will have a duplicate entry
+        stubber.add_client_error(
+            "put_bucket_notification_configuration",
+            "400",
+            "Duplicate error",
+            400,
+            {},
+            {
+                "Bucket": BUCKET_NAME,
+                "NotificationConfiguration": {
+                    "LambdaFunctionConfigurations": [current_configs[0], in_config[0]],
+                    "QueueConfigurations": [],
+                    "TopicConfigurations": [],
+                },
+            },
+            {},
+        )
+        stubber.activate()
+
+        index.s3 = s3
+        index.handler(event, MockContext())
+
+        # CFN will be notified of the error
+        data = assert_notify_cfn_of_failure(self, mock_call)
+        self.assertIn("PutBucketNotificationConfiguration operation: Duplicate error.", data["Reason"])
 
 
 if __name__ == "__main__":
