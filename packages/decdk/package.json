@@ -109,8 +109,10 @@
     "@aws-cdk/aws-events": "0.0.0",
     "@aws-cdk/aws-events-targets": "0.0.0",
     "@aws-cdk/aws-eventschemas": "0.0.0",
+    "@aws-cdk/aws-finspace": "0.0.0",
     "@aws-cdk/aws-fis": "0.0.0",
     "@aws-cdk/aws-fms": "0.0.0",
+    "@aws-cdk/aws-frauddetector": "0.0.0",
     "@aws-cdk/aws-fsx": "0.0.0",
     "@aws-cdk/aws-gamelift": "0.0.0",
     "@aws-cdk/aws-globalaccelerator": "0.0.0",
@@ -142,6 +144,7 @@
     "@aws-cdk/aws-lambda": "0.0.0",
     "@aws-cdk/aws-lambda-destinations": "0.0.0",
     "@aws-cdk/aws-lambda-event-sources": "0.0.0",
+    "@aws-cdk/aws-lambda-go": "0.0.0",
     "@aws-cdk/aws-lambda-nodejs": "0.0.0",
     "@aws-cdk/aws-lambda-python": "0.0.0",
     "@aws-cdk/aws-licensemanager": "0.0.0",
@@ -208,6 +211,7 @@
     "@aws-cdk/aws-wafregional": "0.0.0",
     "@aws-cdk/aws-wafv2": "0.0.0",
     "@aws-cdk/aws-workspaces": "0.0.0",
+    "@aws-cdk/aws-xray": "0.0.0",
     "@aws-cdk/cfnspec": "0.0.0",
     "@aws-cdk/cloud-assembly-schema": "0.0.0",
     "@aws-cdk/core": "0.0.0",
@@ -219,18 +223,18 @@
     "@aws-cdk/region-info": "0.0.0",
     "constructs": "^3.3.69",
     "fs-extra": "^9.1.0",
-    "jsii-reflect": "^1.28.0",
+    "jsii-reflect": "^1.29.0",
     "jsonschema": "^1.4.0",
     "yaml": "1.10.2",
     "yargs": "^16.2.0"
   },
   "devDependencies": {
     "@types/fs-extra": "^8.1.1",
-    "@types/jest": "^26.0.22",
+    "@types/jest": "^26.0.23",
     "@types/yaml": "1.9.7",
     "@types/yargs": "^15.0.13",
     "jest": "^26.6.3",
-    "jsii": "^1.28.0"
+    "jsii": "^1.29.0"
   },
   "keywords": [
     "aws",
