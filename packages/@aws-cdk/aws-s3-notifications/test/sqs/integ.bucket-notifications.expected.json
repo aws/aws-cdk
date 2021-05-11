@@ -223,7 +223,6 @@
         "NotificationConfiguration": {
           "QueueConfigurations": [
             {
-              "Id": "50b43823cb4e648f98c3f1bc828e775f",
               "Events": [
                 "s3:ObjectCreated:*"
               ],

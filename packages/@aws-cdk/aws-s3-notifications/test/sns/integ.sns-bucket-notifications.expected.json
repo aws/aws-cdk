@@ -106,7 +106,6 @@
               }
             },
             {
-              "Id": "762fd392ed3e84132fe83fe692773aa4",
               "Events": [
                 "s3:ObjectRemoved:*"
               ],
