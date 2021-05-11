@@ -763,7 +763,7 @@ new ecs.FargateService(stack, 'FargateService', {
 });
 ```
 
-### EC2 Capacity Providers
+### Auto Scaling Group Capacity Providers
 
 To add an EC2 Capacity Provider, first create an EC2 Auto Scaling Group. Then,
 create an `EC2CapacityProvider` and pass the Auto Scaling Group to it in the
