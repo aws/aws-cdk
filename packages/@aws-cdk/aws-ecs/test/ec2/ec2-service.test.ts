@@ -254,7 +254,7 @@ nodeunitShim({
         autoScalingGroup,
         enableManagedTerminationProtection: false,
       });
-      cluster.addCapacityProvider(capacityProvider);
+      cluster.addEC2CapacityProvider(capacityProvider);
 
       const taskDefinition = new ecs.TaskDefinition(stack, 'ServerTask', {
         compatibility: ecs.Compatibility.EC2,

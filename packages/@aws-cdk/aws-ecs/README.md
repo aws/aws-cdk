@@ -493,39 +493,6 @@ scaling.scaleOnRequestCount('RequestScaling', {
 Task auto-scaling is powered by *Application Auto-Scaling*.
 See that section for details.
 
-## Managed Scaling for Amazon EC2 Capacity
-
-Amazon ECS can manage EC2 capacity on which you can place your tasks. You can
-enable this by using an EC2 Capacity Provider and associating it with you ECS
-tasks and services. If enabled, ECS will scale out the Auto Scaling Group(s) as
-necessary to fit your tasks.
-
-```ts
-const autoScalingGroup = new autoscaling.AutoScalingGroup(this, 'Compute', {
-  vpc,
-  instanceType: new ec2.InstanceType('t2.xlarge'),
-  minCapacity: 0,
-  maxCapacity: 100
-});
-const capacity = new ecs.CapacityProvider(this, 'EC2Capacity', {
-  autoScalingGroup
-});
-cluster.addCapacityProvider(capacity);
-
-const service = new ecs.Ec2Service(this, 'Service', {
-  cluster,
-  taskDefinition,
-  desiredCount: 10,
-  capacityProviderStrategies: [
-    {
-      base: 0,
-      weight: 1,
-      capacityProvider: capacity.capacityProviderName
-    }
-  ]
-});
-```
-
 ## Integration with CloudWatch Events
 
 To start an Amazon ECS task on an Amazon EC2-backed Cluster, instantiate an
@@ -758,25 +725,20 @@ ecsService.associateCloudMapService({
 
 ## Capacity Providers
 
-Currently, only `FARGATE` and `FARGATE_SPOT` capacity providers are supported.
+There are two major families of Capacity Providers: Fargate and EC2 (via Auto
+Scaling Groups. Both are supported.
 
-To enable capacity providers on your cluster, set the `capacityProviders` field
-to [`FARGATE`, `FARGATE_SPOT`]. Then, specify capacity provider strategies on
-the `capacityProviderStrategies` field for your Fargate Service.
+### Fargate Capacity Providers
+
+To enable Fargate capacity providers, you can either set
+`enableFargateCapacityProviders` to `true` when creating your cluster, or by
+invoking the `enableFargateCapacityProviders()` method after creating your
+cluster.
 
 ```ts
-import * as cdk from '@aws-cdk/core';
-import * as ec2 from '@aws-cdk/aws-ec2';
-import * as ecs from '../../lib';
-
-const app = new cdk.App();
-const stack = new cdk.Stack(app, 'aws-ecs-integ-capacity-provider');
-
-const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 2 });
-
 const cluster = new ecs.Cluster(stack, 'FargateCPCluster', {
   vpc,
-  capacityProviders: ['FARGATE', 'FARGATE_SPOT'],
+  enableFargateCapacityProviders: true,
 });
 
 const taskDefinition = new ecs.FargateTaskDefinition(stack, 'TaskDef');
@@ -799,8 +761,56 @@ new ecs.FargateService(stack, 'FargateService', {
     }
   ],
 });
+```
 
-app.synth();
+### EC2 Capacity Providers
+
+To add an EC2 Capacity Provider, first create an EC2 Auto Scaling Group. Then,
+create an `EC2CapacityProvider` and pass the Auto Scaling Group to it in the
+constructor. Then add the Capacity Provider to the cluster. Finally, you can
+refer to the Provider by its name in your service's or task's Capacity Provider
+strategy.
+
+By default, an EC2 Capacity Provider will manage the Auto Scaling Group's size
+for you. It will also enable managed termination protection, in order to prevent
+EC2 Auto Scaling from terminating EC2 instances that have tasks running on
+them. If you want to disable this behavior, set both `enableManagedScaling` to
+and `enableManagedTerminationProtection` to `false`.
+
+```ts
+const cluster = new ecs.Cluster(stack, 'Cluster', {
+  vpc,
+});
+
+const autoScalingGroup = new autoscaling.AutoScalingGroup(stack, 'ASG', {
+  vpc,
+  instanceType: new ec2.InstanceType('t2.micro'),
+  machineImage: ecs.EcsOptimizedImage.amazonLinux2(),
+  minCapacity: 0,
+  maxCapacity: 100,
+});
+
+const capacityProvider = new ecs.EC2CapacityProvider(stack, 'EC2CapacityProvider', {
+  autoScalingGroup,
+});
+cluster.addEC2CapacityProvider(capacityProvider);
+
+const taskDefinition = new ecs.EC2TaskDefinition(stack, 'TaskDef');
+
+taskDefinition.addContainer('web', {
+  image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),    memoryReservationMiB: 256,
+});
+
+new ecs.Ec2Service(stack, 'EC2Service', {
+  cluster,
+  taskDefinition,
+  capacityProviderStrategies: [
+    {
+      capacityProvider: capacityProvider.capacityProviderName,
+      weight: 1,
+    }
+  ],
+});
 ```
 
 ## Elastic Inference Accelerators

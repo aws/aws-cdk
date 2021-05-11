@@ -1719,12 +1719,12 @@ nodeunitShim({
 
     // WHEN
     new ecs.Cluster(stack, 'EcsCluster', {
-      enableFargateSpotCapacityProvider: true,
+      enableFargateCapacityProviders: true,
     });
 
     // THEN
     expect(stack).to(haveResource('AWS::ECS::Cluster', {
-      CapacityProviders: ['FARGATE_SPOT'],
+      CapacityProviders: ['FARGATE', 'FARGATE_SPOT'],
     }));
 
     test.done();
@@ -1737,8 +1737,7 @@ nodeunitShim({
 
     // WHEN
     const cluster = new ecs.Cluster(stack, 'EcsCluster');
-    cluster.enableFargateCapacityProvider();
-    cluster.enableFargateSpotCapacityProvider();
+    cluster.enableFargateCapacityProviders();
 
     // THEN
     expect(stack).to(haveResource('AWS::ECS::Cluster', {
@@ -1755,8 +1754,8 @@ nodeunitShim({
     const cluster = new ecs.Cluster(stack, 'EcsCluster');
 
     // WHEN
-    cluster.addCapacityProvider(ecs.FargateCapacityProvider);
-    cluster.addCapacityProvider(ecs.FargateCapacityProvider); // does not add twice
+    cluster.addCapacityProvider('FARGATE');
+    cluster.addCapacityProvider('FARGATE'); // does not add twice
 
     // THEN
     expect(stack).to(haveResource('AWS::ECS::Cluster', {
@@ -1830,7 +1829,7 @@ nodeunitShim({
     test.done();
   },
 
-  'capacity provider enables ASG new instance scale-in protection'(test: Test) {
+  'can disable managed scaling for EC2 capacity provider'(test: Test) {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'test');
@@ -1844,7 +1843,39 @@ nodeunitShim({
     // WHEN
     new ecs.EC2CapacityProvider(stack, 'provider', {
       autoScalingGroup,
-      enableManagedTerminationProtection: true,
+      enableManagedScaling: false,
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ECS::CapacityProvider', {
+      AutoScalingGroupProvider: {
+        AutoScalingGroupArn: {
+          Ref: 'asgASG4D014670',
+        },
+        ManagedScaling: {
+          Status: 'DISABLED',
+          TargetCapacity: 100,
+        },
+        ManagedTerminationProtection: 'ENABLED',
+      },
+    }));
+    test.done();
+  },
+
+  'capacity provider enables ASG new instance scale-in protection by default'(test: Test) {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'test');
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+    const autoScalingGroup = new autoscaling.AutoScalingGroup(stack, 'asg', {
+      vpc,
+      instanceType: new ec2.InstanceType('bogus'),
+      machineImage: ecs.EcsOptimizedImage.amazonLinux2(),
+    });
+
+    // WHEN
+    new ecs.EC2CapacityProvider(stack, 'provider', {
+      autoScalingGroup,
     });
 
     // THEN
@@ -1898,12 +1929,11 @@ nodeunitShim({
     });
 
     // These should not be added at the association level
-    cluster.enableFargateCapacityProvider();
-    cluster.enableFargateSpotCapacityProvider();
+    cluster.enableFargateCapacityProviders();
 
     // Ensure not added twice
-    cluster.addCapacityProvider(capacityProvider);
-    cluster.addCapacityProvider(capacityProvider);
+    cluster.addEC2CapacityProvider(capacityProvider);
+    cluster.addEC2CapacityProvider(capacityProvider);
 
     // THEN
     expect(stack).to(haveResource('AWS::ECS::ClusterCapacityProviderAssociations', {

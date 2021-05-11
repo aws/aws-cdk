@@ -52,23 +52,16 @@ export interface ClusterProps {
    * The capacity providers to add to the cluster
    *
    * @default - None. Currently only FARGATE and FARGATE_SPOT are supported.
-   * @deprecated Use {@link ClusterProps.enableFargateCapacityProvider} and {@link ClusterProps.enableFargateSpotCapacityProvider} instead.
+   * @deprecated Use {@link ClusterProps.enableFargateCapacityProviders} instead.
    */
   readonly capacityProviders?: string[];
 
   /**
-   * Whether to enable Fargate Capacity Provider
+   * Whether to enable Fargate Capacity Providers
    *
    * @default false
    */
-  readonly enableFargateCapacityProvider?: boolean;
-
-  /**
-   * Whether to enable Fargate Spot Capacity Provider
-   *
-   * @default false
-   */
-  readonly enableFargateSpotCapacityProvider?: boolean;
+  readonly enableFargateCapacityProviders?: boolean;
 
   /**
    * If true CloudWatch Container Insights will be enabled for the cluster
@@ -124,9 +117,14 @@ export class Cluster extends Resource implements ICluster {
   public readonly clusterName: string;
 
   /**
-   * The capacity providers associated with the cluster.
+   * The cluster-level (FARGATE, FARGATE_SPOT) capacity providers.
    */
-  private _capacityProviders: ICapacityProvider[] = [];
+  private _clusterCapacityProviders: string[] = [];
+
+  /**
+   * The EC2 Auto Scaling Group capacity providers associated with the cluster.
+   */
+  private _ec2CapacityProviders: EC2CapacityProvider[] = [];
 
   /**
    * The AWS Cloud Map namespace to associate with the cluster.
@@ -161,22 +159,15 @@ export class Cluster extends Resource implements ICluster {
       clusterSettings = [{ name: 'containerInsights', value: props.containerInsights ? ContainerInsights.ENABLED : ContainerInsights.DISABLED }];
     }
 
-    if (props.enableFargateCapacityProvider || props.capacityProviders?.includes('FARGATE')) {
-      this.enableFargateCapacityProvider();
-    }
-    if (props.enableFargateSpotCapacityProvider || props.capacityProviders?.includes('FARGATE_SPOT')) {
-      this.enableFargateSpotCapacityProvider();
+    this._clusterCapacityProviders = props.capacityProviders ?? [];
+    if (props.enableFargateCapacityProviders) {
+      this.enableFargateCapacityProviders();
     }
 
     const cluster = new CfnCluster(this, 'Resource', {
       clusterName: this.physicalName,
       clusterSettings,
-      capacityProviders: Lazy.list(
-        {
-          produce: () => this._capacityProviders.map(p => p.capacityProviderName).filter(p => p === 'FARGATE' || p === 'FARGATE_SPOT'),
-        },
-        { omitEmpty: true },
-      ),
+      capacityProviders: Lazy.list({ produce: () => this._clusterCapacityProviders }, { omitEmpty: true }),
     });
 
     this.clusterArn = this.getResourceArnAttribute(cluster.attrArn, {
@@ -202,24 +193,17 @@ export class Cluster extends Resource implements ICluster {
     // since it's harmless, but we'd prefer not to add unexpected new
     // resources to the stack which could surprise users working with
     // brown-field CDK apps and stacks.
-    Aspects.of(this).add(new MaybeCreateCapacityProviderAssociations(this, id, this._capacityProviders));
+    Aspects.of(this).add(new MaybeCreateCapacityProviderAssociations(this, id, this._ec2CapacityProviders));
   }
 
   /**
-   * Enable the Fargate capacity provider for this cluster.
+   * Enable the Fargate capacity providers for this cluster.
    */
-  public enableFargateCapacityProvider() {
-    if (!this._capacityProviders.includes(FargateCapacityProvider)) {
-      this._capacityProviders.push(FargateCapacityProvider);
-    }
-  }
-
-  /**
-   * Enable the Fargate Spot capacity provider for this cluster.
-   */
-  public enableFargateSpotCapacityProvider() {
-    if (!this._capacityProviders.includes(FargateSpotCapacityProvider)) {
-      this._capacityProviders.push(FargateSpotCapacityProvider);
+  public enableFargateCapacityProviders() {
+    for (const provider of ['FARGATE', 'FARGATE_SPOT']) {
+      if (!this._clusterCapacityProviders.includes(provider)) {
+        this._clusterCapacityProviders.push(provider);
+      }
     }
   }
 
@@ -293,35 +277,36 @@ export class Cluster extends Resource implements ICluster {
    *
    * @param provider the capacity provider to add to this cluster.
    */
-  public addCapacityProvider(provider: ICapacityProvider | string, options: AddAutoScalingGroupCapacityOptions = {}) {
-    // Backward compatibility
-    if (typeof(provider) === 'string') {
-      switch (provider) {
-        case 'FARGATE':
-          this.addCapacityProvider(FargateCapacityProvider);
-          return;
-        case 'FARGATE_SPOT':
-          this.addCapacityProvider(FargateSpotCapacityProvider);
-          return;
-        default:
-          throw new Error('CapacityProvider not supported');
-      }
+  public addCapacityProvider(provider: string) {
+    if (!(provider === 'FARGATE' || provider === 'FARGATE_SPOT')) {
+      throw new Error('CapacityProvider not supported');
     }
-    // Don't add the same provider twice
-    if (this._capacityProviders.includes(provider)) {
+
+    if (!this._clusterCapacityProviders.includes(provider)) {
+      this._clusterCapacityProviders.push(provider);
+    }
+  }
+
+  /**
+   * This method adds an Auto Scaling Group Capacity Provider to a cluster using
+   * the specified EC2 Capacity Provider.
+   *
+   * @param provider the capacity provider to add to this cluster.
+   */
+  public addEC2CapacityProvider(provider: EC2CapacityProvider, options: AddAutoScalingGroupCapacityOptions = {}) {
+    // Don't add the same capacity provider more than once.
+    if (this._ec2CapacityProviders.includes(provider)) {
       return;
     }
 
-    if (provider instanceof EC2CapacityProvider) {
-      this._hasEc2Capacity = true;
-      this.configureAutoScalingGroup(provider.autoScalingGroup, {
-        ...options,
-        // Don't enable the instance-draining lifecycle hook if managed termination protection is enabled
-        taskDrainTime: provider.enableManagedTerminationProtection ? Duration.seconds(0) : options.taskDrainTime,
-      });
-    }
+    this._hasEc2Capacity = true;
+    this.configureAutoScalingGroup(provider.autoScalingGroup, {
+      ...options,
+      // Don't enable the instance-draining lifecycle hook if managed termination protection is enabled
+      taskDrainTime: provider.enableManagedTerminationProtection ? Duration.seconds(0) : options.taskDrainTime,
+    });
 
-    this._capacityProviders.push(provider);
+    this._ec2CapacityProviders.push(provider);
   }
 
   /**
@@ -1075,38 +1060,6 @@ capacity provider. The weight value is taken into consideration after the base v
 }
 
 /**
- * An ECS Capacity Provider
- */
-export interface ICapacityProvider {
-  /**
-   * The name for the capacity provider.
-   *
-   * @default CloudFormation-generated name
-   */
-  readonly capacityProviderName: string;
-}
-
-/**
- * A class used solely for generating the singleton objects that follow
- */
-class NamedCapacityProvider implements ICapacityProvider {
-  public capacityProviderName: string;
-  constructor(name: string) {
-    this.capacityProviderName = name;
-  }
-}
-
-/**
- * Fargate capacity provider
- */
-export const FargateCapacityProvider = new NamedCapacityProvider('FARGATE');
-
-/**
- * Fargate Spot capacity provider
- */
-export const FargateSpotCapacityProvider = new NamedCapacityProvider('FARGATE_SPOT');
-
-/**
  * The options for creating an EC2 Capacity Provider.
  */
 export interface EC2CapacityProviderProps extends AddAutoScalingGroupCapacityOptions {
@@ -1119,10 +1072,8 @@ export interface EC2CapacityProviderProps extends AddAutoScalingGroupCapacityOpt
 
   /**
    * The autoscaling group to add as a Capacity Provider.
-   * [disable-awslint:ref-via-interface] is needed to enable managed termination
-   * protection.
    */
-  readonly autoScalingGroup: autoscaling.AutoScalingGroup;
+  readonly autoScalingGroup: autoscaling.IAutoScalingGroup;
 
   /**
    * Whether to enable managed scaling
@@ -1166,10 +1117,8 @@ export interface EC2CapacityProviderProps extends AddAutoScalingGroupCapacityOpt
  * ECS can manage the number of instances in the ASG to fit the tasks, and can
  * ensure that instances are not prematurely terminated while there are still tasks
  * running on them.
- * [disable-awslint:ref-via-interface] is needed to enable managed termination
- * protection.
  */
-export class EC2CapacityProvider extends CoreConstruct implements ICapacityProvider {
+export class EC2CapacityProvider extends CoreConstruct {
   /**
    * Capacity provider name
    * @default Chosen by CloudFormation
@@ -1189,8 +1138,10 @@ export class EC2CapacityProvider extends CoreConstruct implements ICapacityProvi
   constructor(scope: Construct, id: string, props: EC2CapacityProviderProps) {
     super(scope, id);
 
-    this.autoScalingGroup = props.autoScalingGroup;
-    this.enableManagedTerminationProtection = props.enableManagedTerminationProtection;
+    this.autoScalingGroup = props.autoScalingGroup as autoscaling.AutoScalingGroup;
+
+    this.enableManagedTerminationProtection =
+      props.enableManagedTerminationProtection === undefined ? true : props.enableManagedTerminationProtection;
 
     if (this.enableManagedTerminationProtection) {
       this.autoScalingGroup.protectNewInstancesFromScaleIn();
@@ -1201,12 +1152,12 @@ export class EC2CapacityProvider extends CoreConstruct implements ICapacityProvi
       autoScalingGroupProvider: {
         autoScalingGroupArn: this.autoScalingGroup.autoScalingGroupName,
         managedScaling: {
-          status: (props.enableManagedScaling === undefined || props.enableManagedScaling) ? 'ENABLED' : 'DISABLED',
+          status: props.enableManagedScaling === false ? 'DISABLED' : 'ENABLED',
           targetCapacity: props.targetCapacityPercent || 100,
           maximumScalingStepSize: props.maximumScalingStepSize,
           minimumScalingStepSize: props.minimumScalingStepSize,
         },
-        managedTerminationProtection: (props.enableManagedTerminationProtection === undefined || props.enableManagedTerminationProtection) ? 'ENABLED' : 'DISABLED',
+        managedTerminationProtection: this.enableManagedTerminationProtection ? 'ENABLED' : 'DISABLED',
       },
     });
 
@@ -1221,9 +1172,9 @@ export class EC2CapacityProvider extends CoreConstruct implements ICapacityProvi
 class MaybeCreateCapacityProviderAssociations implements IAspect {
   private scope: CoreConstruct;
   private id: string;
-  private capacityProviders: ICapacityProvider[]
+  private capacityProviders: EC2CapacityProvider[]
 
-  constructor(scope: CoreConstruct, id: string, capacityProviders: ICapacityProvider[]) {
+  constructor(scope: CoreConstruct, id: string, capacityProviders: EC2CapacityProvider[]) {
     this.scope = scope;
     this.id = id;
     this.capacityProviders = capacityProviders;

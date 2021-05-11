@@ -202,8 +202,7 @@ nodeunitShim({
       const cluster = new ecs.Cluster(stack, 'EcsCluster', {
         vpc,
       });
-      cluster.enableFargateCapacityProvider();
-      cluster.enableFargateSpotCapacityProvider();
+      cluster.enableFargateCapacityProviders();
 
       const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
 
