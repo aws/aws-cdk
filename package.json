@@ -6,7 +6,7 @@
     "include": "dependencies/node-version"
   },
   "scripts": {
-    "pkglint": "lerna --scope pkglint run build && lerna run pkglint",
+    "pkglint": "lerna run build --scope pkglint --include-dependencies && lerna run pkglint",
     "prebuild": "node ./scripts/check-yarn-lock.js",
     "build": "./build.sh",
     "pack": "./pack.sh",
@@ -53,7 +53,7 @@
       "release.json",
       "scripts/resolve-version.js",
       "scripts/resolve-version-lib.js",
-      "version.v1.json"
+      "version.v2.json"
     ],
     "cacheBucket": "nozem-artifacts-eu",
     "cacheBucketRegion": "eu-west-1"
