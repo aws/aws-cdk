@@ -3,7 +3,7 @@ import { Lazy } from '@aws-cdk/core';
 import { validateSchema, GraphQLError, buildASTSchema, parse } from 'graphql';
 import { CfnGraphQLSchema } from './appsync.generated';
 import { GraphqlApi } from './graphqlapi';
-import { SchemaMode, shapeAddition } from './private';
+import { CustomGraphqlDefinition, SchemaMode, shapeAddition } from './private';
 import { IIntermediateType } from './schema-base';
 import { ResolvableField } from './schema-field';
 import { ObjectType } from './schema-intermediate';
@@ -85,12 +85,8 @@ export class Schema {
             produce: () => {
               const schema = this.types.reduce((acc, type) =>`${acc}${type._bindToGraphqlApi(api).toString()}\n`,
                 `${this.declareSchema()}${this.definition}`);
-              const _ast = buildASTSchema(parse(schema.trim()));
+              const _ast = buildASTSchema(parse(`${CustomGraphqlDefinition}${schema}`));
               const errors = validateSchema(_ast);
-              if (errors.length > 0) {
-                /* eslint-disable-next-line no-console */
-                console.log(schema);
-              }
               errors.map((error: GraphQLError) => { throw new Error(error.message); });
 
               return schema;

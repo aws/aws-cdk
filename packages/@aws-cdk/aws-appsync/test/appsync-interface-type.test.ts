@@ -5,12 +5,17 @@ import * as t from './scalar-type-defintions';
 
 let stack: cdk.Stack;
 let api: appsync.GraphqlApi;
+const filler = 'schema {\n  query: Query\n}\ntype Query {\n  filler: String\n}\n';
 beforeEach(() => {
   // GIVEN
   stack = new cdk.Stack();
   api = new appsync.GraphqlApi(stack, 'api', {
     name: 'api',
   });
+
+  api.addQuery('filler', new appsync.ResolvableField({
+    returnType: t.string,
+  }));
 });
 
 describe('testing InterfaceType properties', () => {
@@ -24,12 +29,12 @@ describe('testing InterfaceType properties', () => {
   });
   test('basic InterfaceType produces correct schema', () => {
     // WHEN
-    api.addToSchema(baseTest.toString());
+    api.addType(baseTest);
     const out = 'interface baseTest {\n  id: ID\n}\n';
 
     // THEN
     expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
-      Definition: `${out}`,
+      Definition: `${filler}${out}`,
     });
   });
 
@@ -42,12 +47,12 @@ describe('testing InterfaceType properties', () => {
         args: { success: t.int },
       }),
     });
-    api.addToSchema(baseTest.toString());
+    api.addType(baseTest);
     const out = 'interface baseTest {\n  id: ID\n  test(success: Int): String\n}\n';
 
     // THEN
     expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
-      Definition: `${out}`,
+      Definition: `${filler}${out}`,
     });
   });
 
@@ -61,14 +66,16 @@ describe('testing InterfaceType properties', () => {
         dataSource: api.addNoneDataSource('none'),
       }),
     });
-    api.addToSchema(baseTest.toString());
+    api.addType(baseTest);
     const out = 'interface baseTest {\n  id: ID\n  test(success: Int): String\n}\n';
 
     // THEN
     expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
-      Definition: `${out}`,
+      Definition: `${filler}${out}`,
     });
-    expect(stack).not.toHaveResource('AWS::AppSync::Resolver');
+    expect(stack).not.toHaveResourceLike('AWS::AppSync::Resolver', {
+      FieldName: 'test',
+    });
   });
 
   test('Interface Type can be a Graphql Type', () => {
@@ -80,12 +87,13 @@ describe('testing InterfaceType properties', () => {
         test: graphqlType,
       },
     });
-    api.addToSchema(test.toString());
-    const out = 'type Test {\n  test: baseTest\n}\n';
+    api.addType(baseTest);
+    api.addType(test);
+    const out = 'interface baseTest {\n  id: ID\n}\ntype Test {\n  test: baseTest\n}\n';
 
     // THEN
     expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
-      Definition: `${out}`,
+      Definition: `${filler}${out}`,
     });
   });
 
@@ -109,7 +117,7 @@ describe('testing InterfaceType properties', () => {
 
     // THEN
     expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
-      Definition: `${out}`,
+      Definition: `${filler}${out}`,
     });
   });
 
@@ -134,9 +142,11 @@ describe('testing InterfaceType properties', () => {
 
     // THEN
     expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
-      Definition: `${out}`,
+      Definition: `${filler}${out}`,
     });
-    expect(stack).not.toHaveResource('AWS::AppSync::Resolver');
+    expect(stack).not.toHaveResourceLike('AWS::AppSync::Resolver', {
+      FieldName: 'resolve',
+    });
   });
 
   test('appsync fails addField with InterfaceType missing fieldName', () => {

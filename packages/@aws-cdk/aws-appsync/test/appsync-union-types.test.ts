@@ -3,6 +3,7 @@ import * as cdk from '@aws-cdk/core';
 import * as appsync from '../lib';
 import * as t from './scalar-type-defintions';
 
+const filler = 'schema {\n  query: Query\n}\ntype Query {\n  filler: String\n}\n';
 const out = 'type Test1 {\n  test1: String\n}\ntype Test2 {\n  test2: String\n}\nunion UnionTest = Test1 | Test2\n';
 const test1 = new appsync.ObjectType('Test1', {
   definition: { test1: t.string },
@@ -18,6 +19,9 @@ beforeEach(() => {
   api = new appsync.GraphqlApi(stack, 'api', {
     name: 'api',
   });
+  api.addQuery('filler', new appsync.ResolvableField({
+    returnType: t.string,
+  }));
   api.addType(test1);
   api.addType(test2);
 });
@@ -31,7 +35,7 @@ describe('testing Union Type properties', () => {
     api.addType(union);
     // THEN
     expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
-      Definition: `${out}`,
+      Definition: `${filler}${out}`,
     });
     expect(stack).not.toHaveResource('AWS::AppSync::Resolver');
   });
@@ -46,7 +50,7 @@ describe('testing Union Type properties', () => {
 
     // THEN
     expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
-      Definition: `${out}`,
+      Definition: `${filler}${out}`,
     });
   });
 

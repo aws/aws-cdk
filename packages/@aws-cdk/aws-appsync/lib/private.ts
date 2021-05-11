@@ -2,6 +2,31 @@ import { AuthorizationType } from './graphqlapi';
 import { Directive } from './schema-base';
 import { InterfaceType } from './schema-intermediate';
 
+const AWSTypes = [
+  'AWSDate',
+  'AWSTime',
+  'AWSDateTime',
+  'AWSTimestamp',
+  'AWSEmail',
+  'AWSJSON',
+  'AWSURL',
+  'AWSPhone',
+  'AWSIPAddress',
+];
+
+const AWSDirectives = [
+  '@aws_api_key',
+  '@aws_cognito_user_pools',
+  '@aws_auth',
+  '@aws_oidc',
+  '@aws_iam',
+];
+
+export const CustomGraphqlDefinition =
+  AWSDirectives.reduce((acc, directive) =>`${acc}directive ${directive} on OBJECT | INTERFACE | FIELD_DEFINITION\n`, '') +
+  'directive @aws_subscribe(mutations: [String]) on FIELD_DEFINITION\n' +
+  AWSTypes.reduce((acc, type) =>`${acc}scalar ${type}\n`, '');
+
 /**
  * Utility enum for Schema class
  */

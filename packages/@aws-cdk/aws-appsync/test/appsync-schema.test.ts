@@ -34,18 +34,6 @@ beforeEach(() => {
 
 describe('basic testing schema definition mode `code`', () => {
 
-  test('definition mode `code` produces empty schema definition', () => {
-    // WHEN
-    new appsync.GraphqlApi(stack, 'API', {
-      name: 'demo',
-    });
-
-    // THEN
-    expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
-      Definition: '',
-    });
-  });
-
   test('definition mode `code` generates correct schema with addToSchema', () => {
     // WHEN
     const api = new appsync.GraphqlApi(stack, 'API', {
@@ -98,13 +86,16 @@ describe('basic testing schema definition mode `code`', () => {
     const api = new appsync.GraphqlApi(stack, 'API', {
       name: 'demo',
     });
+    api.addQuery('filler', new appsync.ResolvableField({
+      returnType: t.string,
+    }));
     api.addMutation('test', new appsync.ResolvableField({
       returnType: t.string,
     }));
 
     // THEN
     expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
-      Definition: 'schema {\n  mutation: Mutation\n}\ntype Mutation {\n  test: String\n}\n',
+      Definition: 'schema {\n  query: Query\n  mutation: Mutation\n}\ntype Query {\n  filler: String\n}\ntype Mutation {\n  test: String\n}\n',
     });
   });
 
@@ -115,13 +106,16 @@ describe('basic testing schema definition mode `code`', () => {
       name: 'demo',
       schema,
     });
+    schema.addQuery('filler', new appsync.ResolvableField({
+      returnType: t.string,
+    }));
     schema.addMutation('test', new appsync.ResolvableField({
       returnType: t.string,
     }));
 
     // THEN
     expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
-      Definition: 'schema {\n  mutation: Mutation\n}\ntype Mutation {\n  test: String\n}\n',
+      Definition: 'schema {\n  query: Query\n  mutation: Mutation\n}\ntype Query {\n  filler: String\n}\ntype Mutation {\n  test: String\n}\n',
     });
   });
 
@@ -130,13 +124,19 @@ describe('basic testing schema definition mode `code`', () => {
     const api = new appsync.GraphqlApi(stack, 'API', {
       name: 'demo',
     });
+    api.addQuery('filler', new appsync.ResolvableField({
+      returnType: t.string,
+    }));
     api.addSubscription('test', new appsync.ResolvableField({
       returnType: t.string,
     }));
 
+    const schema_def = 'schema {\n  query: Query\n  subscription: Subscription\n}\ntype Query {\n  filler: String\n}\n';
+    const out = 'type Subscription {\n  test: String\n}\n';
+
     // THEN
     expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
-      Definition: 'schema {\n  subscription: Subscription\n}\ntype Subscription {\n  test: String\n}\n',
+      Definition: `${schema_def}${out}`,
     });
   });
 
@@ -147,13 +147,19 @@ describe('basic testing schema definition mode `code`', () => {
       name: 'demo',
       schema,
     });
+    schema.addQuery('filler', new appsync.ResolvableField({
+      returnType: t.string,
+    }));
     schema.addSubscription('test', new appsync.ResolvableField({
       returnType: t.string,
     }));
 
+    const schema_def = 'schema {\n  query: Query\n  subscription: Subscription\n}\ntype Query {\n  filler: String\n}\n';
+    const out = 'type Subscription {\n  test: String\n}\n';
+
     // THEN
     expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
-      Definition: 'schema {\n  subscription: Subscription\n}\ntype Subscription {\n  test: String\n}\n',
+      Definition: `${schema_def}${out}`,
     });
   });
 
@@ -162,16 +168,20 @@ describe('basic testing schema definition mode `code`', () => {
     const api = new appsync.GraphqlApi(stack, 'API', {
       name: 'demo',
     });
+    api.addQuery('filler', new appsync.ResolvableField({
+      returnType: t.string,
+    }));
     api.addSubscription('test', new appsync.ResolvableField({
       returnType: t.string,
       directives: [appsync.Directive.subscribe('test1')],
     }));
 
-    const out = 'schema {\n  subscription: Subscription\n}\ntype Subscription {\n  test: String\n  @aws_subscribe(mutations: ["test1"])\n}\n';
+    const schema = 'schema {\n  query: Query\n  subscription: Subscription\n}\ntype Query {\n  filler: String\n}\n';
+    const out = 'type Subscription {\n  test: String\n  @aws_subscribe(mutations: ["test1"])\n}\n';
 
     // THEN
     expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
-      Definition: out,
+      Definition: `${schema}${out}`,
     });
   });
 });
