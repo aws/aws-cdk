@@ -41,7 +41,7 @@ export interface StreamEventSourceProps {
    * * Minimum value of 60 seconds
    * * Maximum value of 7 days
    *
-   * @default - the record is available for processing until it expires
+   * @default - the retention period configured on the stream
    */
   readonly maxRecordAge?: Duration;
 
