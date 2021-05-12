@@ -302,6 +302,7 @@ test('pipeline has self-mutation stage', () => {
   expect(pipelineStack).toHaveResourceLike('AWS::CodeBuild::Project', {
     Environment: {
       Image: 'aws/codebuild/standard:5.0',
+      PrivilegedMode: false,
     },
     Source: {
       BuildSpec: encodedJson(deepObjectLike({
@@ -355,6 +356,21 @@ test('selfmutation feature can be turned off', () => {
       Name: 'UpdatePipeline',
       Actions: anything(),
     })),
+  });
+});
+
+test('generates CodeBuild project in privileged mode', () => {
+  // WHEN
+  const stack = new Stack(app, 'PrivilegedPipelineStack', { env: PIPELINE_ENV });
+  new TestGitHubNpmPipeline(stack, 'PrivilegedPipeline', {
+    privilegedMode: true,
+  });
+
+  // THEN
+  expect(stack).toHaveResourceLike('AWS::CodeBuild::Project', {
+    Environment: {
+      PrivilegedMode: true,
+    },
   });
 });
 

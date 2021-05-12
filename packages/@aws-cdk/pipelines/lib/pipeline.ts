@@ -119,6 +119,14 @@ export interface CdkPipelineProps {
    * @default true
    */
   readonly selfMutating?: boolean;
+
+  /**
+   * Whether the build step in the UpdatePipeline stage should run in privileged mode.
+   * This only applies if selfMutating is true.
+   *
+   * @default - false
+   */
+  readonly privilegedMode?: boolean;
 }
 
 /**
@@ -200,6 +208,7 @@ export class CdkPipeline extends CoreConstruct {
           pipelineStackName: pipelineStack.stackName,
           cdkCliVersion: props.cdkCliVersion,
           projectName: maybeSuffix(props.pipelineName, '-selfupdate'),
+          privileged: props.privilegedMode,
         })],
       });
     }
