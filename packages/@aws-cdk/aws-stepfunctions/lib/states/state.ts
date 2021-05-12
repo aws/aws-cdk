@@ -65,7 +65,7 @@ export interface StateProps {
    * @see
    * https://docs.aws.amazon.com/step-functions/latest/dg/input-output-inputpath-params.html#input-output-resultselector
    *
-   * @default $
+   * @default No resultSelector
    */
   readonly resultSelector?: { [key: string]: any };
 }
