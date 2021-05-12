@@ -2,6 +2,40 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.0.0-rc.3](https://github.com/aws/aws-cdk/compare/v2.0.0-rc.1...v2.0.0-rc.3) (2021-05-12)
+
+### ⚠ BREAKING CHANGES TO EXPERIMENTAL FEATURES
+
+`IApi` interface. The existing ones are moved into `IHttpApi` and new
+ones will be added to `IWebsocketApi`.
+the `IStage` interface. The existing ones are moved into `IHttpStage`
+and new ones will be added to the `IWebsocketStage`.
+* **lambda-nodejs:** the default runtime version for `NodejsFunction` is now always `NODEJS_14_X` (previously the version was derived from the local NodeJS runtime and could be either 12.x or 14.x).
+
+### Features
+
+* **aws-ecs:** Expose logdriver "mode" property ([#13965](https://github.com/aws/aws-cdk/issues/13965)) ([28fce22](https://github.com/aws/aws-cdk/commit/28fce2264448820495d921ed08ae0d3084442876)), closes [#13845](https://github.com/aws/aws-cdk/issues/13845)
+* **cfnspec:** cloudformation spec v35.0.0 ([#14411](https://github.com/aws/aws-cdk/issues/14411)) ([49e49e7](https://github.com/aws/aws-cdk/commit/49e49e7ef50ee008be66b1887e4e15e51a4ae576))
+* **cfnspec:** cloudformation spec v35.1.0 ([#14518](https://github.com/aws/aws-cdk/issues/14518)) ([bcdff3d](https://github.com/aws/aws-cdk/commit/bcdff3dcd4ecc624e8c1121a12e23683804a9aaf))
+* **cli:** directly deploy stacks in nested assemblies ([#14379](https://github.com/aws/aws-cdk/issues/14379)) ([5a6fa7f](https://github.com/aws/aws-cdk/commit/5a6fa7fa17a5dce5e429eed4ebfe2dbbac3d6d07))
+* **docdb:** Support multiple security groups to DatabaseCluster ([#13290](https://github.com/aws/aws-cdk/issues/13290)) ([1a97b66](https://github.com/aws/aws-cdk/commit/1a97b6664f9124ec21a6db39be600cee0411ab8c))
+* **elasticsearch:** Support version 7.10 ([#14320](https://github.com/aws/aws-cdk/issues/14320)) ([f3a830c](https://github.com/aws/aws-cdk/commit/f3a830cb0d5b68e8f402791c3aaa5d1bcf2df673))
+* **kinesis:** Basic stream level metrics ([#12556](https://github.com/aws/aws-cdk/issues/12556)) ([5f1b576](https://github.com/aws/aws-cdk/commit/5f1b57603330e707bc68f56c267a9e45faa29e55)), closes [#12555](https://github.com/aws/aws-cdk/issues/12555)
+* **rds:** allow turning on IAM authentication for Clusters ([#13958](https://github.com/aws/aws-cdk/issues/13958)) ([0e59708](https://github.com/aws/aws-cdk/commit/0e597087bb375a02ac1ce3134d52cf3ee03bb54e)), closes [#13722](https://github.com/aws/aws-cdk/issues/13722)
+
+### Bug Fixes
+
+* **aws-cloudwatch:** fix for space in alarm name in alarms for compos… ([#13963](https://github.com/aws/aws-cdk/issues/13963)) ([7cdd541](https://github.com/aws/aws-cdk/commit/7cdd5412e9fed7f9bf877c448196b42725b8edbf))
+* **cfn-include:** correctly parse Fn::Sub expressions containing serialized JSON ([#14512](https://github.com/aws/aws-cdk/issues/14512)) ([fd6d6d0](https://github.com/aws/aws-cdk/commit/fd6d6d0a563816ace616dfe48b3a03f4559636f7)), closes [#14095](https://github.com/aws/aws-cdk/issues/14095)
+* `assert` matches more than the template on multiple CDK copies ([#14544](https://github.com/aws/aws-cdk/issues/14544)) ([f8abdbf](https://github.com/aws/aws-cdk/commit/f8abdbfb37ba9efd9e24414f5b64d90f4cf3f7cb)), closes [#14468](https://github.com/aws/aws-cdk/issues/14468)
+* **cli:** 'cdk deploy *' should not deploy stacks in nested assemblies ([#14542](https://github.com/aws/aws-cdk/issues/14542)) ([93a3549](https://github.com/aws/aws-cdk/commit/93a3549e7a9791b5074dc95909f3289970800c10))
+* **cli:** 'cdk synth' not able to fail if stacks have errors ([#14475](https://github.com/aws/aws-cdk/issues/14475)) ([963d1c7](https://github.com/aws/aws-cdk/commit/963d1c7755e23ea819481724d7e8c78e31d82294))
+* **CodeBuild:** add resource only once per secret ([#14510](https://github.com/aws/aws-cdk/issues/14510)) ([affaaad](https://github.com/aws/aws-cdk/commit/affaaad4d65e6d4e42a7af465ed990954a0c122a))
+* **lambda-nodejs:** non-deterministic runtime version ([#14538](https://github.com/aws/aws-cdk/issues/14538)) ([527f662](https://github.com/aws/aws-cdk/commit/527f6622146f007035ca669c33ad73861afe608a)), closes [#13893](https://github.com/aws/aws-cdk/issues/13893)
+* **rds:** instance identifiers and endpoints of a Cluster are blank ([#14394](https://github.com/aws/aws-cdk/issues/14394)) ([9597d97](https://github.com/aws/aws-cdk/commit/9597d974bc710afd506606dcc7dd11e32b86cff5)), closes [#14377](https://github.com/aws/aws-cdk/issues/14377)
+* **s3:** urlForObject does not consider explicit bucket region ([#14315](https://github.com/aws/aws-cdk/issues/14315)) ([e11d537](https://github.com/aws/aws-cdk/commit/e11d5378c33bea609ed09c998b305fdfd28999a9))
+* **ssm:** dynamic SSM parameter reference breaks with lists ([#14527](https://github.com/aws/aws-cdk/issues/14527)) ([3d1baac](https://github.com/aws/aws-cdk/commit/3d1baaca015443d7ee0eecdec9e81dd61e8920ad)), closes [#14205](https://github.com/aws/aws-cdk/issues/14205) [#14476](https://github.com/aws/aws-cdk/issues/14476)
+
 ## [2.0.0-rc.2](https://github.com/aws/aws-cdk/compare/v2.0.0-rc.1...v2.0.0-rc.2) (2021-05-11)
 
 ### ⚠ BREAKING CHANGES TO EXPERIMENTAL FEATURES
