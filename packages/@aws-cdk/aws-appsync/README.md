@@ -240,6 +240,47 @@ httpDs.createResolver({
 });
 ```
 
+### Elasticsearch
+
+AppSync has builtin support for Elasticsearch from domains that are provisioned
+through your AWS account. You can use AppSync resolvers to perform GraphQL operations
+such as queries, mutations, and subscriptions.
+
+```ts
+const user = new User(stack, 'User');
+const domain = new es.Domain(stack, 'Domain', {
+  version: es.ElasticsearchVersion.V7_1,
+  removalPolicy: cdk.RemovalPolicy.DESTROY,
+  fineGrainedAccessControl: { masterUserArn: user.userArn },
+  encryptionAtRest: { enabled: true },
+  nodeToNodeEncryption: true,
+  enforceHttps: true,
+});
+
+const ds = api.addElasticsearchDataSource('ds', domain);
+
+ds.createResolver({
+  typeName: 'Query',
+  fieldName: 'getTests',
+  requestMappingTemplate: appsync.MappingTemplate.fromString(JSON.stringify({
+    version: '2017-02-28',
+    operation: 'GET',
+    path: '/id/post/_search',
+    params: {
+      headers: {},
+      queryString: {},
+      body: { from: 0, size: 50 },
+    },
+  })),
+  responseMappingTemplate: appsync.MappingTemplate.fromString(`[
+    #foreach($entry in $context.result.hits.hits)
+    #if( $velocityCount > 1 ) , #end
+    $utils.toJson($entry.get("_source"))
+    #end
+  ]`),
+});
+```
+
 ## Schema
 
 Every GraphQL Api needs a schema to define the Api. CDK offers `appsync.Schema`
