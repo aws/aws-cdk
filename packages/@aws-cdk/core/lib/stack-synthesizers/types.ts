@@ -46,4 +46,11 @@ export interface ISynthesisSession {
    * Cloud assembly builder.
    */
   assembly: CloudAssemblyBuilder;
+
+  /**
+  * Whether the stack should be validated after synthesis to check for error metadata
+  *
+  * @default - false
+  */
+  validateOnSynth?: boolean;
 }

@@ -152,7 +152,7 @@ function findEntry(id: string, entry?: string): string {
     return jsHandlerFile;
   }
 
-  throw new Error('Cannot find entry file.');
+  throw new Error(`Cannot find handler file ${tsHandlerFile} or ${jsHandlerFile}`);
 }
 
 /**

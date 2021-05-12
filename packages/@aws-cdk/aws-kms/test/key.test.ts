@@ -844,3 +844,53 @@ describe('when the defaultKeyPolicies feature flag is disabled', () => {
     });
   });
 });
+
+describe('key specs and key usages', () => {
+  testFutureBehavior('both usage and spec are specified', flags, cdk.App, (app) => {
+    const stack = new cdk.Stack(app);
+    new kms.Key(stack, 'Key', { keySpec: kms.KeySpec.ECC_SECG_P256K1, keyUsage: kms.KeyUsage.SIGN_VERIFY });
+
+    expect(stack).toHaveResourceLike('AWS::KMS::Key', {
+      KeySpec: 'ECC_SECG_P256K1',
+      KeyUsage: 'SIGN_VERIFY',
+    });
+  });
+
+  testFutureBehavior('only key usage is specified', flags, cdk.App, (app) => {
+    const stack = new cdk.Stack(app);
+    new kms.Key(stack, 'Key', { keyUsage: kms.KeyUsage.ENCRYPT_DECRYPT });
+
+    expect(stack).toHaveResourceLike('AWS::KMS::Key', {
+      KeyUsage: 'ENCRYPT_DECRYPT',
+    });
+  });
+
+  testFutureBehavior('only key spec is specified', flags, cdk.App, (app) => {
+    const stack = new cdk.Stack(app);
+    new kms.Key(stack, 'Key', { keySpec: kms.KeySpec.RSA_4096 });
+
+    expect(stack).toHaveResourceLike('AWS::KMS::Key', {
+      KeySpec: 'RSA_4096',
+    });
+  });
+
+  testFutureBehavior('invalid combinations of key specs and key usages', flags, cdk.App, (app) => {
+    const stack = new cdk.Stack(app);
+
+    expect(() => new kms.Key(stack, 'Key1', { keySpec: kms.KeySpec.ECC_NIST_P256 }))
+      .toThrow('key spec \'ECC_NIST_P256\' is not valid with usage \'ENCRYPT_DECRYPT\'');
+    expect(() => new kms.Key(stack, 'Key2', { keySpec: kms.KeySpec.ECC_SECG_P256K1, keyUsage: kms.KeyUsage.ENCRYPT_DECRYPT }))
+      .toThrow('key spec \'ECC_SECG_P256K1\' is not valid with usage \'ENCRYPT_DECRYPT\'');
+    expect(() => new kms.Key(stack, 'Key3', { keySpec: kms.KeySpec.SYMMETRIC_DEFAULT, keyUsage: kms.KeyUsage.SIGN_VERIFY }))
+      .toThrow('key spec \'SYMMETRIC_DEFAULT\' is not valid with usage \'SIGN_VERIFY\'');
+    expect(() => new kms.Key(stack, 'Key4', { keyUsage: kms.KeyUsage.SIGN_VERIFY }))
+      .toThrow('key spec \'SYMMETRIC_DEFAULT\' is not valid with usage \'SIGN_VERIFY\'');
+  });
+
+  testFutureBehavior('fails if key rotation enabled on asymmetric key', flags, cdk.App, (app) => {
+    const stack = new cdk.Stack(app);
+
+    expect(() => new kms.Key(stack, 'Key', { enableKeyRotation: true, keySpec: kms.KeySpec.RSA_3072 }))
+      .toThrow('key rotation cannot be enabled on asymmetric keys');
+  });
+});

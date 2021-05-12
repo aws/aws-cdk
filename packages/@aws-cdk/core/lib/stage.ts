@@ -175,6 +175,7 @@ export class Stage extends Construct {
     if (!this.assembly || options.force) {
       this.assembly = synthesize(this, {
         skipValidation: options.skipValidation,
+        validateOnSynthesis: options.validateOnSynthesis,
       });
     }
 
@@ -205,6 +206,13 @@ export interface StageSynthesisOptions {
    * @default - false
    */
   readonly skipValidation?: boolean;
+
+  /**
+   * Whether the stack should be validated after synthesis to check for error metadata
+   *
+   * @default - false
+   */
+  readonly validateOnSynthesis?: boolean;
 
   /**
    * Force a re-synth, even if the stage has already been synthesized.
