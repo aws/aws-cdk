@@ -42,7 +42,7 @@ app_v=$(node --version)
 # Check for version 10.*.* - 29.*.*
 echo -e "Checking node version... \c"
 if [ $(echo $app_v | grep -c -E "v[12][0-9]\.[0-9]+\.[0-9]+") -eq 1 ]
-then    
+then
     # Check for version 13.0 to 13.6
     if [ $(echo $app_v | grep -c -E "v13\.[0-6]\.[0-9]+") -eq 1 ]
     then
@@ -50,7 +50,7 @@ then
     else
         # Check for version < 10.13
         if [ $(echo $app_v | grep -c -E "v10\.([0-9]|1[0-2])\.[0-9]+") -eq 1 ]
-        then   
+        then
             wrong_version
         else
             echo "Ok"
@@ -68,7 +68,7 @@ check_which $app $app_min
 app_v=$(${app} --version)
 echo -e "Checking yarn version... \c"
 if [ $(echo $app_v | grep -c -E "1\.(19|2[0-9])\.[0-9]+") -eq 1 ]
-then   
+then
     echo "Ok"
 else
     wrong_version
@@ -83,9 +83,34 @@ check_which $app $app_min
 echo -e "Checking if docker is running... \c"
 docker_running=$(docker ps)
 if [ $? -eq 0 ]
-then    
+then
     echo "Ok"
 else
     die "Docker is not running"
 fi
 
+# [.NET == 3.1.x]
+app="dotnet"
+app_min="3.1.0"
+check_which $app $app_min
+app_v=$(${app} --version)
+echo -e "Checking dotnet version... \c"
+if [ $(echo $app_v | grep -c -E "3\.1\.[0-9]+") -eq 1 ]
+then
+    echo "Ok"
+else
+    wrong_version
+fi
+
+# [Python >= 3.6.5, < 4.0]
+app="python3"
+app_min="3.6.5"
+check_which $app $app_min
+app_v=$(${app} --version)
+echo -e "Checking python3 version... \c"
+if [ $(echo $app_v | grep -c -E "3\.[6-9]+\.[0-9]+") -eq 1 ]
+then
+    echo "Ok"
+else
+    wrong_version
+fi
