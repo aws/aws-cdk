@@ -189,6 +189,14 @@ export interface BaseServiceOptions {
    *
    */
   readonly capacityProviderStrategies?: CapacityProviderStrategy[];
+
+  /**
+   * Whether to enable Amazon ECS Exec for this service.
+   *
+   * @see https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-exec.html
+   * @default false
+   */
+  readonly enableExecuteCommand?: boolean;
 }
 
 /**
@@ -396,6 +404,7 @@ export abstract class BaseService extends Resource
       /* role: never specified, supplanted by Service Linked Role */
       networkConfiguration: Lazy.any({ produce: () => this.networkConfiguration }, { omitEmptyArray: true }),
       serviceRegistries: Lazy.any({ produce: () => this.serviceRegistries }, { omitEmptyArray: true }),
+      enableExecuteCommand: props.enableExecuteCommand,
       ...additionalProps,
     });
 

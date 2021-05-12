@@ -2168,6 +2168,31 @@ nodeunitShim({
       test.done();
     },
 
+    'with ECS Exec enabled'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const cluster = new ecs.Cluster(stack, 'EcsCluster');
+      const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
+
+      taskDefinition.addContainer('Container', {
+        image: ecs.ContainerImage.fromRegistry('hello'),
+      });
+
+      // WHEN
+      new ecs.FargateService(stack, 'EcsService', {
+        cluster,
+        taskDefinition,
+        enableExecuteCommand: true,
+      });
+
+      // THEN
+      expect(stack).to(haveResource('AWS::ECS::Service', {
+        EnableExecuteCommand: true,
+      }));
+
+      test.done();
+    },
+
     'throws an exception if both serviceArn and serviceName were provided for fromEc2ServiceAttributes'(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();

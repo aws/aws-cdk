@@ -165,6 +165,7 @@ nodeunitShim({
         }),
         serviceName: 'bonjour',
         vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
+        enableExecuteCommand: true,
       });
 
       service.addPlacementConstraints(PlacementConstraint.memberOf('attribute:ecs.instance-type =~ t2.*'));
@@ -186,6 +187,7 @@ nodeunitShim({
           Type: ecs.DeploymentControllerType.CODE_DEPLOY,
         },
         DesiredCount: 2,
+        EnableExecuteCommand: true,
         LaunchType: LaunchType.EC2,
         NetworkConfiguration: {
           AwsvpcConfiguration: {
