@@ -149,10 +149,10 @@ it with some static values.
 new tasks.LambdaInvoke(this, 'Invoke Handler', {
   lambdaFunction: fn,
   resultSelector: {
-    lambdaOutput: sfn.JsonPath.stringAt('$.output.Payload'),
-    invokeRequestId: sfn.JsonPath.stringAt('$.output.SdkResponseMetadata.RequestId')
-    staticValue: 'foo'
-  }
+    lambdaOutput: sfn.JsonPath.stringAt('$.Payload'),
+    invokeRequestId: sfn.JsonPath.stringAt('$.SdkResponseMetadata.RequestId'),
+    staticValue: 'foo',
+  },
 })
 ```
 

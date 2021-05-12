@@ -77,6 +77,9 @@ describe('LambdaInvoke', () => {
       invocationType: LambdaInvocationType.REQUEST_RESPONSE,
       clientContext: 'eyJoZWxsbyI6IndvcmxkIn0=',
       qualifier: '1',
+      resultSelector: {
+        Result: sfn.JsonPath.stringAt('$.output.Payload'),
+      },
     });
 
     // THEN
@@ -108,6 +111,9 @@ describe('LambdaInvoke', () => {
         InvocationType: 'RequestResponse',
         ClientContext: 'eyJoZWxsbyI6IndvcmxkIn0=',
         Qualifier: '1',
+      },
+      ResultSelector: {
+        'Result.$': '$.output.Payload',
       },
     }));
   });
