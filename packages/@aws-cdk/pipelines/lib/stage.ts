@@ -71,7 +71,7 @@ export class CdkStage extends Construct {
    * publishing stage.
    */
   public addApplication(appStage: Stage, options: AddStageOptions = {}) {
-    const asm = appStage.synth();
+    const asm = appStage.synth({ validateOnSynthesis: true });
     const extraRunOrderSpace = options.extraRunOrderSpace ?? 0;
 
     if (asm.stacks.length === 0) {
