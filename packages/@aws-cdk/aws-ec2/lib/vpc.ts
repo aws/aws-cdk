@@ -967,6 +967,9 @@ export interface SubnetConfiguration {
 
   /**
    * Controls if a public IP is associated to an instance at launch
+   * 
+   * This will only work if subnetType == PUBLIC
+   * This will not work if subnetType != PUBLIC and default to false
    *
    * @default true in Subnet.Public, false in Subnet.Private or Subnet.Isolated.
    */
