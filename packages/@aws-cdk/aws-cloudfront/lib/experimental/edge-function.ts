@@ -8,6 +8,7 @@ import {
   CfnResource, CustomResource, CustomResourceProvider, CustomResourceProviderRuntime,
   Lazy, Resource, Stack, Stage, Token,
 } from '@aws-cdk/core';
+
 import { Construct, Node } from 'constructs';
 
 /**
