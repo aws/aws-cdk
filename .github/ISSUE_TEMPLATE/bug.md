@@ -15,7 +15,10 @@ description of the bug:
 ### Reproduction Steps
 
 <!--
-minimal amount of code that causes the bug (if possible) or a reference:
+minimal amount of code that causes the bug (if possible) or a reference.
+
+The code sample should be an SSCCE. See http://sscce.org/ for details.
+In short, provide a code sample that we can copy/paste, run and reproduce.
 -->
 
 ### What did you expect to happen?

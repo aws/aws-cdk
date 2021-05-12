@@ -23,9 +23,9 @@ export = {
         mesh: mesh,
         listeners: [appmesh.VirtualGatewayListener.http({
           port: 443,
-          healthCheck: {
+          healthCheck: appmesh.HealthCheck.http({
             interval: cdk.Duration.seconds(10),
-          },
+          }),
         })],
       });
 
@@ -33,9 +33,7 @@ export = {
         mesh: mesh,
         listeners: [appmesh.VirtualGatewayListener.http2({
           port: 443,
-          healthCheck: {
-            interval: cdk.Duration.seconds(10),
-          },
+          healthCheck: appmesh.HealthCheck.http2({ interval: cdk.Duration.seconds(10) }),
         })],
       });
 
@@ -115,8 +113,7 @@ export = {
         virtualGatewayName: 'test-gateway',
         listeners: [appmesh.VirtualGatewayListener.grpc({
           port: 80,
-          healthCheck: {
-          },
+          healthCheck: appmesh.HealthCheck.grpc(),
         })],
         mesh: mesh,
         accessLog: appmesh.AccessLog.fromFilePath('/dev/stdout'),
