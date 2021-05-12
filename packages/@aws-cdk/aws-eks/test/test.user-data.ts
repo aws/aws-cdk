@@ -45,7 +45,6 @@ export = {
     const { asg, stack, cluster } = newFixtures();
 
     const importedCluster = Cluster.fromClusterAttributes(stack, 'ImportedCluster', {
-      vpc: cluster.vpc,
       clusterName: cluster.clusterName,
       openIdConnectProvider: cluster.openIdConnectProvider,
       clusterCertificateAuthorityData: cluster.clusterCertificateAuthorityData,
@@ -78,7 +77,6 @@ export = {
     const { asg, stack, cluster } = newFixtures();
 
     const importedCluster = Cluster.fromClusterAttributes(stack, 'ImportedCluster', {
-      vpc: cluster.vpc,
       clusterName: cluster.clusterName,
       openIdConnectProvider: cluster.openIdConnectProvider,
       clusterEndpoint: cluster.clusterEndpoint,
