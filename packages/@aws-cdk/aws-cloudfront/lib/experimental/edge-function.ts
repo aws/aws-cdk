@@ -5,11 +5,11 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as ssm from '@aws-cdk/aws-ssm';
 import {
-  CfnResource, ConstructNode,
-  CustomResource, CustomResourceProvider, CustomResourceProviderRuntime,
+  CfnResource, CustomResource, CustomResourceProvider, CustomResourceProviderRuntime,
   Lazy, Resource, Stack, Stage, Token,
 } from '@aws-cdk/core';
-import { Construct } from 'constructs';
+
+import { Construct, Node } from 'constructs';
 
 /**
  * Properties for creating a Lambda@Edge function
@@ -43,7 +43,7 @@ export class EdgeFunction extends Resource implements lambda.IVersion {
   public readonly functionArn: string;
   public readonly grantPrincipal: iam.IPrincipal;
   public readonly isBoundToVpc = false;
-  public readonly permissionsNode: ConstructNode;
+  public readonly permissionsNode: Node;
   public readonly role?: iam.IRole;
   public readonly version: string;
 
