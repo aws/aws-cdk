@@ -53,17 +53,14 @@ export class SqsQueue implements events.IRuleTarget {
    */
   public bind(rule: events.IRule, _id?: string): events.RuleTargetConfig {
     // Only add the rule as a condition if the queue is not encrypted, to avoid circular dependency. See issue #11158.
-    var servicePrincipalOpts:iam.ServicePrincipalOpts = {};
-    if (this.queue.encryptionMasterKey == null) {
-      servicePrincipalOpts = {
-        conditions: {
-          ArnEquals: { 'aws:SourceArn': rule.ruleArn },
-        },
-      };
-    }
+    const principalOpts = this.queue.encryptionMasterKey ? {} : {
+      conditions: {
+        ArnEquals: { 'aws:SourceArn': rule.ruleArn },
+      },
+    };
 
     // deduplicated automatically
-    this.queue.grantSendMessages(new iam.ServicePrincipal('events.amazonaws.com', servicePrincipalOpts));
+    this.queue.grantSendMessages(new iam.ServicePrincipal('events.amazonaws.com', principalOpts));
 
     return {
       arn: this.queue.queueArn,
