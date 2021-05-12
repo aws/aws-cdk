@@ -13,6 +13,7 @@ RESPONSE_URL = "https://dummy.com/"
 BUCKET_NAME = "fake_bucket"
 LAMBDA_ARN = "arn:aws:lambda:us-east-1:35667example:function:CreateThumbnail"
 S3_CREATED = "s3:ObjectCreated:*"
+S3_CREATED_PUT = "s3:ObjectCreated:Put"
 ID_CREATE_BY_CDK = "created-by-cdk"
 NOTIFICATION_CONFIGURATION: Dict[str, Any] = {
     "TopicConfigurations": [
@@ -143,77 +144,82 @@ def assert_notify_cfn_of_success(test_case: unittest.TestCase, mock_call) -> Dic
 
 
 class LambdaTest(unittest.TestCase):
-    def test_merge_in_config(self):
-        # GIVEN an empty current_config and an empty in_config
+    def test_merge_new_config(self):
+        # SCENARIO a s3 bucket with no configured notifications
+        # AND the new configuration has no configured notifications
+        from src import index
+
+        # GIVEN an empty current_config and an empty new_config
         current_config = {
             "TopicConfigurations": [],
             "QueueConfigurations": [],
             "LambdaFunctionConfigurations": [],
         }
-        in_config = {
-            "TopicConfigurations": [],
-            "QueueConfigurations": [],
-            "LambdaFunctionConfigurations": [],
-        }
-        old_config = {}
-        from src import index
+        new_config = current_config.copy()
+        old_config = current_config.copy()
 
-        # WHEN merging in prepare_config
-        config = index.get_config(current_config, in_config, old_config, "Update")
+        # WHEN merging in get_config
+        config = index.get_config(current_config, new_config, old_config, "Update")
 
-        # THEN returns a config equal to in_config
-        self.assertEqual(config, in_config)
-        self.assertIsNot(config, in_config)
+        # THEN returns a config equal to new_config
+        self.assertEqual(config, new_config)
         self.assertTrue(len(config["TopicConfigurations"]) == 0)
         self.assertTrue(len(config["QueueConfigurations"]) == 0)
         self.assertTrue(len(config["LambdaFunctionConfigurations"]) == 0)
+        # AND config is not new_config
+        self.assertIsNot(config, new_config)
 
     def test_merge_in_extend(self):
-        # GIVEN an "QueueConfigurations" entry in_config and an empty current_config
+        from src import index
+
+        # GIVEN an "QueueConfigurations" entry new_config and an empty current_config
         current_config = {
             "TopicConfigurations": [],
             "QueueConfigurations": [],
             "LambdaFunctionConfigurations": [],
         }
-        in_config = {
+        new_config = {
             "TopicConfigurations": [],
             "QueueConfigurations": ["new_entry"],
             "LambdaFunctionConfigurations": [],
         }
         old_config = {}
-        from src import index
 
         # WHEN merging in prepare_config
-        config = index.get_config(current_config, in_config, old_config, "Update")
+        config = index.get_config(current_config, new_config, old_config, "Update")
 
-        # THEN the returned config and in_config should be equal
+        # THEN the returned config and new_config should be equal
         # AND QueueConfigurations should be extended
-        self.assertEqual(config, in_config)
-        self.assertIsNot(config, in_config)
+        self.assertEqual(config, new_config)
+        self.assertIsNot(config, new_config)
         self.assertTrue(len(config["TopicConfigurations"]) == 0)
         self.assertTrue(len(config["QueueConfigurations"]) == 1)
         self.assertEqual("new_entry", config["QueueConfigurations"][0])
         self.assertTrue(len(config["LambdaFunctionConfigurations"]) == 0)
 
     def test_prepare_config_removes_response_metadata(self):
-        # SCENARIO Ensure we remove the "ResponseMetadata" returned by the
-        # get_bucket_notification_configuration call
-        current_config = {"ResponseMetadata": "foo"}
+        # SCENARIO Ensure we remove the "ResponseMetadata" returned by the "get_config" call
         from src import index
 
+        # GIVEN the get_bucket_notification_configuration call
+        current_config = {"ResponseMetadata": "foo"}
+
+        # WHEN calling get_config
         config = index.get_config(current_config, {}, {}, "Delete")
 
+        # THEN don't include "ResponseMetadata"
         self.assertNotIn("ResponseMetadata", config)
 
     def test_prepare_config_set_defaults(self):
-        # GIVEN both loaded configuration and new configuration have no default set
-        current_config = {}
-        in_config = {}
-        old_config = {}
         from src import index
 
+        # GIVEN both loaded configuration and new configuration have no default set
+        current_config = {}
+        new_config = {}
+        old_config = {}
+
         # WHEN calling prepare_config
-        config = index.get_config(current_config, in_config, old_config, "Delete")
+        config = index.get_config(current_config, new_config, old_config, "Delete")
 
         # THEN set defaults as [] for all the config types
         expected_config = {
@@ -223,17 +229,18 @@ class LambdaTest(unittest.TestCase):
         }
         self.assertEqual(expected_config, config)
         self.assertEqual({}, current_config)
-        self.assertEqual({}, in_config)
+        self.assertEqual({}, new_config)
         self.assertEqual({}, old_config)
 
     @patch("urllib.request.urlopen")
     @patch("builtins.print")
     def test_submit_response_io_failure(self, mock_print: MagicMock, mock_call: MagicMock):
         # SCENARIO There is some kind of error notifying CFN "ResponseURL"
+        from src import index
+
         # GIVEN the "ResponseURL" endpoint is down
         exception_message = "Failed to put"
         mock_call.side_effect = Exception(exception_message)
-        from src import index
 
         # WHEN calling submit_response
         index.submit_response(create_event, MockContext(), "SUCCESS", "")
@@ -245,11 +252,12 @@ class LambdaTest(unittest.TestCase):
     @patch("urllib.request.urlopen")
     def test_submit_response(self, mock_call: MagicMock):
         # SCENARIO Sometimes updates to S3 might fail so we want to notify CFN of the error and cause
+        from src import index
+
         # GIVEN we have an error doing the S3 update
         expected_status = "FAILED"
         error_message = "Some s3 error. "
         context = MockContext()
-        from src import index
 
         # WHEN calling submit_response
         index.submit_response(create_event, context, expected_status, error_message)
@@ -264,9 +272,10 @@ class LambdaTest(unittest.TestCase):
     @patch("urllib.request.urlopen")
     def test_no_bucket_found(self, mock_call: MagicMock):
         # SCENARIO We are trying to add a notification to a S3 bucket that does not exist
+        from src import index
+
         # GIVEN a create event bucket notification configuration event
         # for a bucket that does not exist
-        from src import index
 
         # WHEN calling handler
         index.handler(create_event, MockContext())
@@ -278,9 +287,10 @@ class LambdaTest(unittest.TestCase):
     @patch("urllib.request.urlopen")
     def test_add_to_new_bucket(self, mock_call: MagicMock):
         # SCENARIO We want to add notifications to a new S3 bucket managed by our CDK stack
+        from src import index
+
         # GIVEN a "NotificationConfiguration" for a newly create bucket
         setup_s3_bucket(notification_configuration=None)
-        from src import index
 
         # WHEN calling the handler
         index.handler(create_event, MockContext())
@@ -303,10 +313,11 @@ class LambdaTest(unittest.TestCase):
     @patch("urllib.request.urlopen")
     def test_append_to_existing(self, mock_call: MagicMock):
         # SCENARIO We want to add new notifications to an existing S3 bucket not created by our CDK stack
+        from src import index
+
         # GIVEN a "NotificationConfiguration" for an existing bucket
         # AND the existing bucket has an existing "NotificationConfiguration"
         setup_s3_bucket(notification_configuration=NOTIFICATION_CONFIGURATION)
-        from src import index
 
         # WHEN calling handler
         index.handler(create_event, MockContext())
@@ -334,6 +345,8 @@ class LambdaTest(unittest.TestCase):
     @patch("urllib.request.urlopen")
     def test_remove_from_existing(self, mock_call: MagicMock):
         # SCENARIO We want to delete notifications our CDK stack created on an existing S3 bucket
+        from src import index
+
         # GIVEN A bucket with an existing configuration with Id "created-by-cdk" for a "QueueConfigurations"
         setup_s3_bucket(notification_configuration=NOTIFICATION_CONFIGURATION)
         # AND a "Delete" RequestType with a matching id "created-by-cdk"
@@ -348,7 +361,6 @@ class LambdaTest(unittest.TestCase):
                 ]
             },
         )
-        from src import index
 
         # WHEN calling the handler
         index.handler(delete_event, MockContext())
@@ -369,6 +381,8 @@ class LambdaTest(unittest.TestCase):
     @patch("urllib.request.urlopen")
     def test_update_config_for_managed_s3_bucket(self, mock_call: MagicMock):
         # SCENARIO We want to update notifications of a S3 bucket managed by our CDK stack
+        from src import index
+
         # GIVEN A bucket with an existing configuration with Id "old-function-hash"
         setup_s3_bucket(notification_configuration=NOTIFICATION_CONFIGURATION)
         # AND an Update event with the new incoming configuration with Id "new-function-hash"
@@ -393,7 +407,6 @@ class LambdaTest(unittest.TestCase):
                 ]
             },
         )
-        from src import index
 
         # WHEN calling the handler
         index.handler(update_event, MockContext())
@@ -416,6 +429,8 @@ class LambdaTest(unittest.TestCase):
     @patch("urllib.request.urlopen")
     def test_update_from_older_cdk_version(self, mock_call: MagicMock):
         # SCENARIO We have upgraded to a newer version of CDK, where some of existing managed notification
+        from src import index
+
         # GIVEN A bucket with an existing configuration with Id "old-function-hash"
         setup_s3_bucket(notification_configuration=NOTIFICATION_CONFIGURATION)
         # AND an Update event with a "OldResourceProperties" that matches the target and events of the
@@ -431,7 +446,6 @@ class LambdaTest(unittest.TestCase):
                 "LambdaFunctionConfigurations": [{"Events": [S3_CREATED], "LambdaFunctionArn": LAMBDA_ARN}]
             },
         )
-        from src import index
 
         # WHEN calling the handler
         index.handler(update_event, MockContext())
@@ -581,6 +595,50 @@ class ScenarioTest(unittest.TestCase):
         # CFN will be notified of the error
         data = assert_notify_cfn_of_failure(self, mock_call)
         self.assertIn("PutBucketNotificationConfiguration operation: Duplicate error.", data["Reason"])
+
+    @patch("urllib.request.urlopen")
+    def test_update_remove_entry(self, mock_call: MagicMock):
+        from src import index
+
+        # Current Config has an "is-managed-by-cdk-arn"
+        current_configs = [
+            {"Events": [S3_CREATED_PUT], "QueueArn": "not-managed-by-cdk-arn"},
+            {"Events": [S3_CREATED_PUT], "QueueArn": "is-managed-by-cdk-arn"},
+        ]
+        current_notification_configuration: Dict = {"QueueConfigurations": current_configs}
+        s3 = boto3.client("s3")
+        stubber = stub.Stubber(s3)
+        stubber.add_response(
+            "get_bucket_notification_configuration", current_notification_configuration, {"Bucket": BUCKET_NAME}
+        )
+
+        # RequestType is Update
+        event = make_event(
+            request_type="Update",
+            notification_configuration={"QueueConfigurations": []},
+            old_notification_configuration={
+                "QueueConfigurations": [{"Events": [S3_CREATED_PUT], "QueueArn": "is-managed-by-cdk-arn"}]
+            },
+        )
+
+        # Put will exclude "is-managed-by-cdk-arn"
+        stubber.add_response(
+            "put_bucket_notification_configuration",
+            {},
+            {
+                "Bucket": BUCKET_NAME,
+                "NotificationConfiguration": {
+                    "LambdaFunctionConfigurations": [],
+                    "QueueConfigurations": [current_configs[0]],
+                    "TopicConfigurations": [],
+                },
+            },
+        )
+        stubber.activate()
+
+        index.s3 = s3
+        index.handler(event, MockContext())
+        assert_notify_cfn_of_success(self, mock_call)
 
 
 if __name__ == "__main__":
