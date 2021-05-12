@@ -51,7 +51,7 @@ describe('Elasticsearch Data Source Configuration', () => {
     });
   });
 
-  test('', () => {
+  test('Elastic search configuration contains fully qualified url', () => {
     // WHEN
     api.addElasticsearchDataSource('ds', domain);
 
