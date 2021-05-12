@@ -466,7 +466,7 @@ export enum WindowsOptimizedVersion {
 /*
  * TODO:v2.0.0
  *  * remove `export` keyword
- *  * remove @depracted
+ *  * remove @deprecated
  */
 /**
  * The properties that define which ECS-optimized AMI is used.

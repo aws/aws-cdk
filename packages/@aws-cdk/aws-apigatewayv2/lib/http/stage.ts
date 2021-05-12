@@ -1,3 +1,4 @@
+import { Metric, MetricOptions } from '@aws-cdk/aws-cloudwatch';
 import { Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnStage } from '../apigatewayv2.generated';
@@ -16,6 +17,51 @@ export interface IHttpStage extends IStage {
    * The API this stage is associated to.
    */
   readonly api: IHttpApi;
+
+  /**
+   * Metric for the number of client-side errors captured in a given period.
+   *
+   * @default - sum over 5 minutes
+   */
+  metricClientError(props?: MetricOptions): Metric
+
+  /**
+   * Metric for the number of server-side errors captured in a given period.
+   *
+   * @default - sum over 5 minutes
+   */
+  metricServerError(props?: MetricOptions): Metric
+
+  /**
+   * Metric for the amount of data processed in bytes.
+   *
+   * @default - sum over 5 minutes
+   */
+  metricDataProcessed(props?: MetricOptions): Metric
+
+  /**
+   * Metric for the total number API requests in a given period.
+   *
+   * @default - SampleCount over 5 minutes
+   */
+  metricCount(props?: MetricOptions): Metric
+
+  /**
+   * Metric for the time between when API Gateway relays a request to the backend
+   * and when it receives a response from the backend.
+   *
+   * @default - no statistic
+   */
+  metricIntegrationLatency(props?: MetricOptions): Metric
+
+  /**
+   * The time between when API Gateway receives a request from a client
+   * and when it returns a response to the client.
+   * The latency includes the integration latency and other API Gateway overhead.
+   *
+   * @default - no statistic
+   */
+  metricLatency(props?: MetricOptions): Metric
 }
 
 /**
@@ -49,16 +95,44 @@ export interface HttpStageAttributes extends StageAttributes {
   readonly api: IHttpApi;
 }
 
+abstract class HttpStageBase extends StageBase implements IHttpStage {
+  public abstract readonly api: IHttpApi;
+
+  public metricClientError(props?: MetricOptions): Metric {
+    return this.metric('4xx', { statistic: 'Sum', ...props });
+  }
+
+  public metricServerError(props?: MetricOptions): Metric {
+    return this.metric('5xx', { statistic: 'Sum', ...props });
+  }
+
+  public metricDataProcessed(props?: MetricOptions): Metric {
+    return this.metric('DataProcessed', { statistic: 'Sum', ...props });
+  }
+
+  public metricCount(props?: MetricOptions): Metric {
+    return this.metric('Count', { statistic: 'SampleCount', ...props });
+  }
+
+  public metricIntegrationLatency(props?: MetricOptions): Metric {
+    return this.metric('IntegrationLatency', props);
+  }
+
+  public metricLatency(props?: MetricOptions): Metric {
+    return this.metric('Latency', props);
+  }
+}
+
 /**
  * Represents a stage where an instance of the API is deployed.
  * @resource AWS::ApiGatewayV2::Stage
  */
-export class HttpStage extends StageBase implements IHttpStage {
+export class HttpStage extends HttpStageBase {
   /**
    * Import an existing stage into this CDK app.
    */
   public static fromHttpStageAttributes(scope: Construct, id: string, attrs: HttpStageAttributes): IHttpStage {
-    class Import extends StageBase implements IHttpStage {
+    class Import extends HttpStageBase {
       protected readonly baseApi = attrs.api;
       public readonly stageName = attrs.stageName;
       public readonly api = attrs.api;
