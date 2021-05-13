@@ -404,7 +404,7 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
         principal: returnPrincipal,
         sourceAccount: sourceAccount,
         sourceArn: sourceArn,
-      }
+      };
     };
 
     // Try some specific common classes first.
@@ -422,9 +422,9 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
       const conditionKeysAreSupported = conditionKeys.every(key => supportedConditions.includes(key));
 
       if (conditionOperatorsAreSupported && conditionKeysAreSupported) {
-        sourceAccount = conditions['ArnEquals']['aws:SourceAccount'];
-        sourceArn = conditions['ArnEquals']['aws:SourceArn'];
-        principal = principal['principal'];
+        sourceAccount = conditions.ArnEquals['aws:SourceAccount'];
+        sourceArn = conditions.ArnEquals['aws:SourceArn'];
+        principal = principal.principal;
       } else {
         throw new Error(`PrincipalWithConditions had unsupported conditions for Lambda permission statement: ${conditions}. ` +
           'Supported operators: [ArnEquals]; supported conditions: [aws:SourceArn, aws:SourceAccount]');

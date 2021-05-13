@@ -230,14 +230,14 @@ describe('function', () => {
             'aws:SourceAccount': 'source-account',
             'aws:SourceArn': 'source-arn',
           },
-        })
+        }),
       })).toThrow(/PrincipalWithConditions had unsupported conditions for Lambda permission statement/);
       expect(() => fn.addPermission('F2', {
         principal: new iam.PrincipalWithConditions(new iam.ServicePrincipal('my-service'), {
           ArnEquals: {
             's3:DataAccessPointArn': 'data-access-point-arn',
           },
-        })
+        }),
       })).toThrow(/PrincipalWithConditions had unsupported conditions for Lambda permission statement/);
     });
 
