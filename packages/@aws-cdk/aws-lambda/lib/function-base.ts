@@ -65,7 +65,7 @@ export interface IFunction extends IResource, ec2.IConnectable, iam.IGrantable {
 
   /**
    * Adds a permission to the Lambda resource policy.
-   * @param id The id ƒor the permission construct
+   * @param id The id for the permission construct
    * @param permission The permission to grant to this Lambda function. @see Permission for details.
    */
   addPermission(id: string, permission: Permission): void;
@@ -229,7 +229,7 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
 
   /**
    * Adds a permission to the Lambda resource policy.
-   * @param id The id ƒor the permission construct
+   * @param id The id for the permission construct
    * @param permission The permission to grant to this Lambda function. @see Permission for details.
    */
   public addPermission(id: string, permission: Permission) {
@@ -238,17 +238,17 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
       return;
     }
 
-    const principal = this.parsePermissionPrincipal(permission.principal);
-    const action = permission.action || 'lambda:InvokeFunction';
-    const scope = permission.scope || this;
+    const { principal, sourceAccount, sourceArn } = this.parsePermissionPrincipal(permission.principal);
+    const action = permission.action ?? 'lambda:InvokeFunction';
+    const scope = permission.scope ?? this;
 
     new CfnPermission(scope, id, {
       action,
       principal,
       functionName: this.functionArn,
       eventSourceToken: permission.eventSourceToken,
-      sourceAccount: permission.sourceAccount,
-      sourceArn: permission.sourceArn,
+      sourceAccount: permission.sourceAccount ?? sourceAccount,
+      sourceArn: permission.sourceArn ?? sourceArn,
     });
   }
 
@@ -395,25 +395,54 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
    * Try to recognize some specific Principal classes first, then try a generic
    * fallback.
    */
-  private parsePermissionPrincipal(principal?: iam.IPrincipal) {
-    if (!principal) {
-      return undefined;
-    }
+  private parsePermissionPrincipal(principal: iam.IPrincipal) {
+    let sourceAccount: string;
+    let sourceArn: string;
+
+    const returnForPrincipal = (returnPrincipal: string) => {
+      return {
+        principal: returnPrincipal,
+        sourceAccount: sourceAccount,
+        sourceArn: sourceArn,
+      }
+    };
 
     // Try some specific common classes first.
     // use duck-typing, not instance of
     // @deprecated: after v2, we can change these to 'instanceof'
+    if ('conditions' in principal) {
+      const conditions = (principal as iam.PrincipalWithConditions).policyFragment.conditions;
+      const conditionOperators = Array.from(Object.keys(conditions));
+      const conditionKeys: string[] = Array.from(
+        Object.values(conditions).reduce((keys, condition) => keys.concat(Object.keys(condition)), []),
+      );
+      const supportedOperators = ['ArnEquals'];
+      const supportedConditions = ['aws:SourceArn', 'aws:SourceAccount'];
+      const conditionOperatorsAreSupported = conditionOperators.every(operator => supportedOperators.includes(operator));
+      const conditionKeysAreSupported = conditionKeys.every(key => supportedConditions.includes(key));
+
+      if (conditionOperatorsAreSupported && conditionKeysAreSupported) {
+        sourceAccount = conditions['ArnEquals']['aws:SourceAccount'];
+        sourceArn = conditions['ArnEquals']['aws:SourceArn'];
+        principal = principal['principal'];
+      } else {
+        throw new Error(`PrincipalWithConditions had unsupported conditions for Lambda permission statement: ${conditions}. ` +
+          'Supported operators: [ArnEquals]; supported conditions: [aws:SourceArn, aws:SourceAccount]');
+      }
+    }
+
     if ('accountId' in principal) {
-      return (principal as iam.AccountPrincipal).accountId;
+      return returnForPrincipal((principal as iam.AccountPrincipal).accountId);
     }
 
     if ('service' in principal) {
-      return (principal as iam.ServicePrincipal).service;
+      return returnForPrincipal((principal as iam.ServicePrincipal).service);
     }
 
     if ('arn' in principal) {
-      return (principal as iam.ArnPrincipal).arn;
+      return returnForPrincipal((principal as iam.ArnPrincipal).arn);
     }
+
 
     // Try a best-effort approach to support simple principals that are not any of the predefined
     // classes, but are simple enough that they will fit into the Permission model. Main target
@@ -422,9 +451,9 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
     // The principal cannot have conditions and must have a single { AWS: [arn] } entry.
     const json = principal.policyFragment.principalJson;
     if (Object.keys(principal.policyFragment.conditions).length === 0 && json.AWS) {
-      if (typeof json.AWS === 'string') { return json.AWS; }
+      if (typeof json.AWS === 'string') { return returnForPrincipal(json.AWS); }
       if (Array.isArray(json.AWS) && json.AWS.length === 1 && typeof json.AWS[0] === 'string') {
-        return json.AWS[0];
+        return returnForPrincipal(json.AWS[0]);
       }
     }
 

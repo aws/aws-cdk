@@ -191,6 +191,56 @@ describe('function', () => {
       fn.addPermission('S3', { principal: new iam.ArnPrincipal('my:arn') });
     });
 
+    test('applies source account/ARN conditions if the principal has conditions', () => {
+      const stack = new cdk.Stack();
+      const fn = newTestLambda(stack);
+      const sourceAccount = 'some-account';
+      const sourceArn = 'some-arn';
+      const service = 'my-service';
+      const principal = new iam.PrincipalWithConditions(new iam.ServicePrincipal(service), {
+        ArnEquals: {
+          'aws:SourceAccount': sourceAccount,
+          'aws:SourceArn': sourceArn,
+        },
+      });
+
+      fn.addPermission('S1', { principal: principal });
+
+      expect(stack).toHaveResource('AWS::Lambda::Permission', {
+        Action: 'lambda:InvokeFunction',
+        FunctionName: {
+          'Fn::GetAtt': [
+            'MyLambdaCCE802FB',
+            'Arn',
+          ],
+        },
+        Principal: service,
+        SourceAccount: sourceAccount,
+        SourceArn: sourceArn,
+      });
+    });
+
+    test('fails if the principal has conditions that are not supported', () => {
+      const stack = new cdk.Stack();
+      const fn = newTestLambda(stack);
+
+      expect(() => fn.addPermission('F1', {
+        principal: new iam.PrincipalWithConditions(new iam.ServicePrincipal('my-service'), {
+          ArnNotEquals: {
+            'aws:SourceAccount': 'source-account',
+            'aws:SourceArn': 'source-arn',
+          },
+        })
+      })).toThrow(/PrincipalWithConditions had unsupported conditions for Lambda permission statement/);
+      expect(() => fn.addPermission('F2', {
+        principal: new iam.PrincipalWithConditions(new iam.ServicePrincipal('my-service'), {
+          ArnEquals: {
+            's3:DataAccessPointArn': 'data-access-point-arn',
+          },
+        })
+      })).toThrow(/PrincipalWithConditions had unsupported conditions for Lambda permission statement/);
+    });
+
     test('BYORole', () => {
       // GIVEN
       const stack = new cdk.Stack();
