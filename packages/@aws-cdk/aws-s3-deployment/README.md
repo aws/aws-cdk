@@ -77,7 +77,7 @@ Configuring this has a few implications you should be aware of:
 - **Destination Changes**
 
   When the destination bucket or prefix is changed, all files in the previous destination will **first** be
-  deleted and then uploaded to the new destination location. This could have availablity implications
+  deleted and then uploaded to the new destination location. This could have availability implications
   on your users.
 
 ### General Recommendations
