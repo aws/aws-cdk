@@ -471,7 +471,7 @@ class ScenarioTest(unittest.TestCase):
         from src import index
 
         for request_type in ["Create", "Update"]:
-            # Current Config is empty
+            # GIVEN Current Config is empty
             current_notification_configuration: Dict = {}
             s3 = boto3.client("s3")
             stubber = stub.Stubber(s3)
@@ -479,18 +479,18 @@ class ScenarioTest(unittest.TestCase):
                 "get_bucket_notification_configuration", current_notification_configuration, {"Bucket": BUCKET_NAME}
             )
 
-            # RequestType is Create or Update
+            # WHEN RequestType is Create or Update
             configs = [{"Id": "new-function-hash", "Events": [S3_CREATED], "LambdaFunctionArn": LAMBDA_ARN}]
             old_notification_configuration = (
                 {"LambdaFunctionConfigurations": configs} if request_type == "Update" else None
             )
             event = make_event(
                 request_type=request_type,
-                old_notification_configuration=old_notification_configuration,
                 notification_configuration={"LambdaFunctionConfigurations": configs},
+                old_notification_configuration=old_notification_configuration,
             )
 
-            # Put is equal to "New Configuration"
+            # THEN Put is equal to "New Configuration"
             stubber.add_response(
                 "put_bucket_notification_configuration",
                 {},
@@ -503,7 +503,6 @@ class ScenarioTest(unittest.TestCase):
                     },
                 },
             )
-
             stubber.activate()
 
             index.s3 = s3
@@ -600,7 +599,7 @@ class ScenarioTest(unittest.TestCase):
     def test_update_remove_entry(self, mock_call: MagicMock):
         from src import index
 
-        # Current Config has an "is-managed-by-cdk-arn"
+        # GIVEN Current Config has an "is-managed-by-cdk-arn"
         current_configs = [
             {"Events": [S3_CREATED_PUT], "QueueArn": "not-managed-by-cdk-arn"},
             {"Events": [S3_CREATED_PUT], "QueueArn": "is-managed-by-cdk-arn"},
@@ -612,7 +611,7 @@ class ScenarioTest(unittest.TestCase):
             "get_bucket_notification_configuration", current_notification_configuration, {"Bucket": BUCKET_NAME}
         )
 
-        # RequestType is Update
+        # WHEN RequestType is Update
         event = make_event(
             request_type="Update",
             notification_configuration={"QueueConfigurations": []},
@@ -621,7 +620,7 @@ class ScenarioTest(unittest.TestCase):
             },
         )
 
-        # Put will exclude "is-managed-by-cdk-arn"
+        # THEN Put will exclude "is-managed-by-cdk-arn"
         stubber.add_response(
             "put_bucket_notification_configuration",
             {},
@@ -630,6 +629,103 @@ class ScenarioTest(unittest.TestCase):
                 "NotificationConfiguration": {
                     "LambdaFunctionConfigurations": [],
                     "QueueConfigurations": [current_configs[0]],
+                    "TopicConfigurations": [],
+                },
+            },
+        )
+        stubber.activate()
+
+        index.s3 = s3
+        index.handler(event, MockContext())
+        assert_notify_cfn_of_success(self, mock_call)
+
+    @patch("urllib.request.urlopen")
+    def test_update_no_change(self, mock_call: MagicMock):
+        # Source: https://github.com/aws/aws-cdk/pull/11773#issuecomment-835807369
+        from src import index
+
+        # GIVEN Existing bucket notifications
+        # These were deployed by the CDK application.
+        s3 = boto3.client("s3")
+        stubber = stub.Stubber(s3)
+        config_entry = {"Events": [S3_CREATED_PUT], "QueueArn": "queue1-arn"}
+        stubber.add_response(
+            "get_bucket_notification_configuration",
+            {"QueueConfigurations": [config_entry]},
+            {"Bucket": BUCKET_NAME},
+        )
+
+        # WHEN RequestType is Update
+        # Incoming CFN notifications config
+        # Since the application hasn't changed, this is the same.
+        # AND
+        # Previous CFN notifications config
+        # Since the existing configuration was deployed by CFN, the old config is the same as the existing
+        # configuration.
+        event = make_event(
+            request_type="Update",
+            notification_configuration={"QueueConfigurations": [config_entry]},
+            old_notification_configuration={"QueueConfigurations": [config_entry]},
+        )
+
+        # THEN Expected notifications config
+        # Since the application hasn't changed, the end result should be the same as the existing one.
+        stubber.add_response(
+            "put_bucket_notification_configuration",
+            {},
+            {
+                "Bucket": BUCKET_NAME,
+                "NotificationConfiguration": {
+                    "LambdaFunctionConfigurations": [],
+                    "QueueConfigurations": [config_entry],
+                    "TopicConfigurations": [],
+                },
+            },
+        )
+        stubber.activate()
+
+        index.s3 = s3
+        index.handler(event, MockContext())
+        assert_notify_cfn_of_success(self, mock_call)
+
+    @patch("urllib.request.urlopen")
+    def test_delete_to_empty(self, mock_call: MagicMock):
+        # Source: https://github.com/aws/aws-cdk/pull/11773#issuecomment-835807369
+        from src import index
+
+        # GIVEN Existing bucket notifications
+        # These were deployed by the CDK application.
+        s3 = boto3.client("s3")
+        stubber = stub.Stubber(s3)
+        config_entry = {"Events": [S3_CREATED_PUT], "QueueArn": "queue1-arn"}
+        stubber.add_response(
+            "get_bucket_notification_configuration",
+            {"QueueConfigurations": [config_entry]},
+            {"Bucket": BUCKET_NAME},
+        )
+
+        # WHEN RequestType is Delete
+        # Incoming CFN notifications config
+        # Since the application hasn't changed, this is the same.
+        # AND
+        # Previous CFN notifications config
+        # Since the existing configuration was deployed by CFN, the old config is the same as the existing
+        # configuration.
+        event = make_event(
+            request_type="Delete",
+            notification_configuration={"QueueConfigurations": [config_entry]},
+            old_notification_configuration={"QueueConfigurations": [config_entry]},
+        )
+
+        # THEN Expected notifications config should result in an empty configuration
+        stubber.add_response(
+            "put_bucket_notification_configuration",
+            {},
+            {
+                "Bucket": BUCKET_NAME,
+                "NotificationConfiguration": {
+                    "LambdaFunctionConfigurations": [],
+                    "QueueConfigurations": [],
                     "TopicConfigurations": [],
                 },
             },
