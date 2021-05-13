@@ -1,4 +1,5 @@
 import { ITable } from '@aws-cdk/aws-dynamodb';
+import { IDomain } from '@aws-cdk/aws-elasticsearch';
 import { Grant, IGrantable, IPrincipal, IRole, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
 import { IFunction } from '@aws-cdk/aws-lambda';
 import { IServerlessCluster } from '@aws-cdk/aws-rds';
@@ -364,5 +365,32 @@ export class RdsDataSource extends BackedDataSource {
       resourceArns: [clusterArn, `${clusterArn}:*`],
       scope: this,
     });
+  }
+}
+
+/**
+ * Properities for the Elasticsearch Data Source
+ */
+export interface ElasticsearchDataSourceProps extends BackedDataSourceProps {
+  /**
+   * The elasticsearch domain containing the endpoint for the data source
+   */
+  readonly domain: IDomain;
+}
+
+/**
+ * An Appsync datasource backed by Elasticsearch
+ */
+export class ElasticsearchDataSource extends BackedDataSource {
+  constructor(scope: Construct, id: string, props: ElasticsearchDataSourceProps) {
+    super(scope, id, props, {
+      type: 'AMAZON_ELASTICSEARCH',
+      elasticsearchConfig: {
+        awsRegion: props.domain.stack.region,
+        endpoint: `https://${props.domain.domainEndpoint}`,
+      },
+    });
+
+    props.domain.grantReadWrite(this);
   }
 }
