@@ -660,4 +660,32 @@ export = {
 
     test.done();
   },
+
+  'add setPeriodToTimeRange to GraphWidget'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    const widget = new GraphWidget({
+      left: [new Metric({ namespace: 'CDK', metricName: 'Test' })],
+      view: GraphWidgetView.PIE,
+      setPeriodToTimeRange: true,
+    });
+
+    // THEN
+    test.deepEqual(stack.resolve(widget.toJson()), [{
+      type: 'metric',
+      width: 6,
+      height: 6,
+      properties: {
+        view: 'pie',
+        region: { Ref: 'AWS::Region' },
+        metrics: [
+          ['CDK', 'Test'],
+        ],
+        yAxis: {},
+        setPeriodToTimeRange: true,
+      },
+    }]);
+
+    test.done();
+  },
 };
