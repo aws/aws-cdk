@@ -424,7 +424,7 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
       if (conditionOperatorsAreSupported && conditionKeysAreSupported) {
         sourceAccount = conditions.ArnEquals['aws:SourceAccount'];
         sourceArn = conditions.ArnEquals['aws:SourceArn'];
-        principal = principal.principal;
+        principal = (principal as iam.PrincipalWithConditions).principal;
       } else {
         throw new Error(`PrincipalWithConditions had unsupported conditions for Lambda permission statement: ${conditions}. ` +
           'Supported operators: [ArnEquals]; supported conditions: [aws:SourceArn, aws:SourceAccount]');
