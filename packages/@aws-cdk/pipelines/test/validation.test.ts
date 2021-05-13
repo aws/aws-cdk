@@ -1,4 +1,4 @@
-import { anything, arrayWith, deepObjectLike, encodedJson, objectLike } from '@aws-cdk/assert-internal';
+import { anything, arrayWith, deepObjectLike, encodedJson, objectLike, stringIsNoLongerThan } from '@aws-cdk/assert-internal';
 import '@aws-cdk/assert-internal/jest';
 import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
@@ -37,6 +37,44 @@ beforeEach(() => {
 
 afterEach(() => {
   app.cleanup();
+});
+
+test('asdasdasdas', () => {
+  const stage = new AppWithStackOutput(app, 'APreposterouslyLongAndComplicatedNameMadeUpJustToMakeItExceedTheLimitDefinedByCodeBuild');
+  const pipeStage = pipeline.addApplicationStage(stage);
+  pipeStage.addActions(new cdkp.ShellScriptAction({
+    actionName: 'TestOutput',
+    useOutputs: {
+      BUCKET_NAME: pipeline.stackOutput(stage.output),
+    },
+    commands: ['echo $BUCKET_NAME'],
+  }));
+
+  // THEN
+  expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
+    Stages: arrayWith({
+      Name: 'APreposterouslyLongAndComplicatedNameMadeUpJustToMakeItExceedTheLimitDefinedByCodeBuild',
+      Actions: arrayWith(
+        deepObjectLike({
+          Name: 'Stack.Deploy',
+          OutputArtifacts: [{ Name: stringIsNoLongerThan(100) }],
+          Configuration: {
+            OutputFileName: 'outputs.json',
+          },
+        }),
+        deepObjectLike({
+          ActionTypeId: {
+            Provider: 'CodeBuild',
+          },
+          Configuration: {
+            ProjectName: anything(),
+          },
+          InputArtifacts: [{ Name: stringIsNoLongerThan(100) }],
+          Name: 'TestOutput',
+        }),
+      ),
+    }),
+  });
 });
 
 test('can use stack outputs as validation inputs', () => {

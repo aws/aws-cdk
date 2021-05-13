@@ -260,6 +260,22 @@ export function stringLike(pattern: string): PropertyMatcher {
   });
 }
 
+export function stringIsNoLongerThan(length: number): PropertyMatcher {
+  return annotateMatcher({ $stringIsNoLongerThan: length }, (value: any, failure: InspectionFailure) => {
+    if (typeof value !== 'string') {
+      failure.failureReason = `Expected a string, but got '${typeof value}'`;
+      return false;
+    }
+
+    if (value.length > length) {
+      failure.failureReason = `String is ${value.length} characters long. Expected at most ${length} characters`;
+      return false;
+    }
+
+    return true;
+  });
+}
+
 /**
  * Matches any value
  */
