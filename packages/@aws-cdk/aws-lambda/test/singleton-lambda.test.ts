@@ -176,10 +176,13 @@ describe('singleton lambda', () => {
     });
   });
 
-  test('can bind to vpc', () => {
+  test('bind to vpc and access connections', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'VPC', { maxAzs: 2 });
+    const securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup', {
+      vpc: vpc,
+    });
 
     // WHEN
     const singleton = new lambda.SingletonFunction(stack, 'Singleton', {
@@ -187,11 +190,12 @@ describe('singleton lambda', () => {
       code: new lambda.InlineCode('foo'),
       runtime: lambda.Runtime.NODEJS_12_X,
       handler: 'index.handler',
+      securityGroups: [securityGroup],
       vpc: vpc,
     });
 
     // THEN
     expect(singleton.isBoundToVpc).toBeTruthy();
-    expect(singleton.connections).not.toBeUndefined();
+    expect(singleton.connections).toEqual(new ec2.Connections({ securityGroups: [securityGroup] }));
   });
 });
