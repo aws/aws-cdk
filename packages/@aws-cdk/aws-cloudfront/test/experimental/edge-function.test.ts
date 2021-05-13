@@ -1,5 +1,5 @@
 import * as path from 'path';
-import '@aws-cdk/assert/jest';
+import '@aws-cdk/assert-internal/jest';
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
@@ -39,7 +39,7 @@ describe('stacks', () => {
           Statement: [{
             Effect: 'Allow',
             Resource: {
-              'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':ssm:us-east-1:111111111111:parameter/EdgeFunctionArn*']],
+              'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':ssm:us-east-1:111111111111:parameter/cdk/EdgeFunctionArn/*']],
             },
             Action: ['ssm:GetParameter'],
           }],
@@ -57,7 +57,7 @@ describe('stacks', () => {
         'Fn::GetAtt': ['CustomCrossRegionStringParameterReaderCustomResourceProviderHandler65B5F33A', 'Arn'],
       },
       Region: 'us-east-1',
-      ParameterName: 'EdgeFunctionArnMyFn',
+      ParameterName: '/cdk/EdgeFunctionArn/testregion/Stack/MyFn',
     });
   });
 
@@ -98,7 +98,7 @@ describe('stacks', () => {
     expect(fnStack).toHaveResource('AWS::SSM::Parameter', {
       Type: 'String',
       Value: { Ref: 'MyFnCurrentVersion309B29FC29686ce94039b6e08d1645be854b3ac9' },
-      Name: 'EdgeFunctionArnMyFn',
+      Name: '/cdk/EdgeFunctionArn/testregion/Stack/MyFn',
     });
   });
 
@@ -201,7 +201,30 @@ describe('stacks', () => {
         'Fn::GetAtt': ['CustomCrossRegionStringParameterReaderCustomResourceProviderHandler65B5F33A', 'Arn'],
       },
       Region: 'us-east-1',
-      ParameterName: 'EdgeFunctionArnMyFn',
+      ParameterName: '/cdk/EdgeFunctionArn/testregion/Stage/Stack/MyFn',
+    });
+  });
+
+  test('a single EdgeFunction used in multiple stacks creates mutiple stacks in us-east-1', () => {
+    const firstStack = new cdk.Stack(app, 'FirstStack', {
+      env: { account: '111111111111', region: 'testregion' },
+    });
+    const secondStack = new cdk.Stack(app, 'SecondStack', {
+      env: { account: '111111111111', region: 'testregion' },
+    });
+    new cloudfront.experimental.EdgeFunction(firstStack, 'MyFn', defaultEdgeFunctionProps());
+    new cloudfront.experimental.EdgeFunction(secondStack, 'MyFn', defaultEdgeFunctionProps());
+
+    // Two stacks in us-east-1
+    const firstFnStack = app.node.findChild(`edge-lambda-stack-${firstStack.node.addr}`) as cdk.Stack;
+    const secondFnStack = app.node.findChild(`edge-lambda-stack-${secondStack.node.addr}`) as cdk.Stack;
+
+    // Two SSM parameters
+    expect(firstFnStack).toHaveResourceLike('AWS::SSM::Parameter', {
+      Name: '/cdk/EdgeFunctionArn/testregion/FirstStack/MyFn',
+    });
+    expect(secondFnStack).toHaveResourceLike('AWS::SSM::Parameter', {
+      Name: '/cdk/EdgeFunctionArn/testregion/SecondStack/MyFn',
     });
   });
 });

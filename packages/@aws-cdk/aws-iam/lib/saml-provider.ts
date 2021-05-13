@@ -91,7 +91,7 @@ export class SamlProvider extends Resource implements ISamlProvider {
     }
 
     const samlProvider = new CfnSAMLProvider(this, 'Resource', {
-      name: this.physicalName,
+      name: props.name,
       samlMetadataDocument: props.metadataDocument.xml,
     });
 

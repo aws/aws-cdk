@@ -1,4 +1,4 @@
-import '@aws-cdk/assert/jest';
+import '@aws-cdk/assert-internal/jest';
 import { Stack, App } from '@aws-cdk/core';
 import {
   HttpApi, HttpAuthorizer, HttpAuthorizerType, HttpConnectionType, HttpIntegrationType, HttpMethod, HttpRoute, HttpRouteAuthorizerBindOptions,
@@ -30,6 +30,7 @@ describe('HttpRoute', () => {
           ],
         ],
       },
+      AuthorizationType: 'NONE',
     });
 
     expect(stack).toHaveResource('AWS::ApiGatewayV2::Integration', {

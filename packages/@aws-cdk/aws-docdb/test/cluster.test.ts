@@ -1,4 +1,4 @@
-import { expect as expectCDK, haveResource, ResourcePart } from '@aws-cdk/assert';
+import { expect as expectCDK, haveResource, ResourcePart, arrayWith } from '@aws-cdk/assert-internal';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as kms from '@aws-cdk/aws-kms';
 import * as cdk from '@aws-cdk/core';
@@ -725,6 +725,29 @@ describe('DatabaseCluster', () => {
     expect(addMultiUserRotation).toThrow();
   });
 
+  test('adds security groups', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const cluster = new DatabaseCluster(stack, 'Database', {
+      vpc,
+      masterUser: {
+        username: 'admin',
+      },
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.R5, ec2.InstanceSize.SMALL),
+    });
+    const securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup', {
+      vpc,
+    });
+
+    // WHEN
+    cluster.addSecurityGroups(securityGroup);
+
+    // THEN
+    expectCDK(stack).to(haveResource('AWS::DocDB::DBCluster', {
+      VpcSecurityGroupIds: arrayWith(stack.resolve(securityGroup.securityGroupId)),
+    }));
+  });
 });
 
 function testStack() {

@@ -1,4 +1,4 @@
-import { expect, haveResourceLike } from '@aws-cdk/assert';
+import { expect, haveResourceLike } from '@aws-cdk/assert-internal';
 import * as cdk from '@aws-cdk/core';
 import { nodeunitShim, Test } from 'nodeunit-shim';
 import * as ecs from '../lib';
@@ -95,37 +95,6 @@ nodeunitShim({
               'splunk-token': '{{resolve:secretsmanager:my-splunk-token:SecretString:::}}',
               'splunk-url': 'my-splunk-url',
               'splunk-sourcetype': 'my-source-type',
-            },
-          },
-        },
-      ],
-    }));
-
-    test.done();
-  },
-
-  'create a splunk log driver using splunk-tag property when tag is defined'(test: Test) {
-    // WHEN
-    td.addContainer('Container', {
-      image,
-      logging: ecs.LogDrivers.splunk({
-        token: cdk.SecretValue.secretsManager('my-splunk-token'),
-        url: 'my-splunk-url',
-        tag: 'abc',
-      }),
-      memoryLimitMiB: 128,
-    });
-
-    // THEN
-    expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
-      ContainerDefinitions: [
-        {
-          LogConfiguration: {
-            LogDriver: 'splunk',
-            Options: {
-              'splunk-token': '{{resolve:secretsmanager:my-splunk-token:SecretString:::}}',
-              'splunk-url': 'my-splunk-url',
-              'splunk-tag': 'abc',
             },
           },
         },

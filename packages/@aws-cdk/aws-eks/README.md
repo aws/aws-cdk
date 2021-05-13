@@ -202,7 +202,7 @@ cluster.addNodegroupCapacity('custom-node-group', {
 #### Spot Instances Support
 
 Use `capacityType` to create managed node groups comprised of spot instances. To maximize the availability of your applications while using
-Spot Instances, we recommend that you configure a Spot managed node group to use multiple instance types with the `instanceTypes` property. 
+Spot Instances, we recommend that you configure a Spot managed node group to use multiple instance types with the `instanceTypes` property.
 
 > For more details visit [Managed node group capacity types](https://docs.aws.amazon.com/eks/latest/userguide/managed-node-groups.html#managed-node-group-capacity-types).
 
@@ -356,7 +356,7 @@ const asg = new ec2.AutoScalingGroup(...);
 cluster.connectAutoScalingGroupCapacity(asg);
 ```
 
-In both cases, the [cluster security group](https://docs.aws.amazon.com/eks/latest/userguide/sec-group-reqs.html#cluster-sg) will be autoamtically attached to
+In both cases, the [cluster security group](https://docs.aws.amazon.com/eks/latest/userguide/sec-group-reqs.html#cluster-sg) will be automatically attached to
 the auto-scaling group, allowing for traffic to flow freely between managed and self-managed nodes.
 
 > **Note:** The default `updateType` for auto-scaling groups does not replace existing nodes. Since security groups are determined at launch time, self-managed nodes that were provisioned with version `1.78.0` or lower, will not be updated.
@@ -395,7 +395,7 @@ const asg = new ec2.AutoScalingGroup(...)
 cluster.connectAutoScalingGroupCapacity(asg);
 ```
 
-This will add the necessary user-data and configure all connections, roles, and tags needed for the instances in the auto-scaling group to properly join the cluster.
+This will add the necessary user-data to access the apiserver and configure all connections, roles, and tags needed for the instances in the auto-scaling group to properly join the cluster.
 
 #### Spot Instances
 
@@ -651,6 +651,15 @@ const secretsKey = new kms.Key(this, 'SecretsKey');
 const cluster = new eks.Cluster(this, 'MyCluster', {
   secretsEncryptionKey: secretsKey,
   // ...
+});
+```
+
+You can also use a similar configuration for running a cluster built using the FargateCluster construct.
+
+```ts
+const secretsKey = new kms.Key(this, 'SecretsKey');
+const cluster = new eks.FargateCluster(this, 'MyFargateCluster', {
+  secretsEncryptionKey: secretsKey
 });
 ```
 

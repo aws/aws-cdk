@@ -3,13 +3,7 @@
 
 ---
 
-![cdk-constructs: Experimental](https://img.shields.io/badge/cdk--constructs-experimental-important.svg?style=for-the-badge)
-
-> The APIs of higher level constructs in this module are experimental and under active development.
-> They are subject to non-backward compatible changes or removal in any future version. These are
-> not subject to the [Semantic Versioning](https://semver.org/) model and breaking changes will be
-> announced in the release notes. This means that while you may use them, you may need to update
-> your source code when upgrading to a newer version of this package.
+![cdk-constructs: Stable](https://img.shields.io/badge/cdk--constructs-stable-success.svg?style=for-the-badge)
 
 ---
 
@@ -69,6 +63,37 @@ By default, the contents of the destination bucket will **not** be deleted when 
 `BucketDeployment` resource is removed from the stack or when the destination is
 changed. You can use the option `retainOnDelete: false` to disable this behavior,
 in which case the contents will be deleted.
+
+Configuring this has a few implications you should be aware of:
+
+- **Logical ID Changes**
+
+  Changing the logical ID of the `BucketDeployment` construct, without changing the destination
+  (for example due to refactoring, or intentional ID change) **will result in the deletion of the objects**.
+  This is because CloudFormation will first create the new resource, which will have no affect,
+  followed by a deletion of the old resource, which will cause a deletion of the objects,
+  since the destination hasn't changed, and `retainOnDelete` is `false`.
+
+- **Destination Changes**
+
+  When the destination bucket or prefix is changed, all files in the previous destination will **first** be
+  deleted and then uploaded to the new destination location. This could have availability implications
+  on your users.
+
+### General Recommendations
+
+#### Shared Bucket
+
+If the destination bucket **is not** dedicated to the specific `BucketDeployment` construct (i.e shared by other entities),
+we recommend to always configure the `destinationKeyPrefix` property. This will prevent the deployment from
+accidentally deleting data that wasn't uploaded by it.
+
+#### Dedicated Bucket
+
+If the destination bucket **is** dedicated, it might be reasonable to skip the prefix configuration,
+in which case, we recommend to remove `retainOnDelete: false`, and instead, configure the
+[`autoDeleteObjects`](https://docs.aws.amazon.com/cdk/api/latest/docs/aws-s3-readme.html#bucket-deletion)
+property on the destination bucket. This will avoid the logical ID problem mentioned above.
 
 ## Prune
 
