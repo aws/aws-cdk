@@ -1,4 +1,4 @@
-import { Stack } from '@aws-cdk/core';
+import { Duration, Stack } from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 import { Alarm, AlarmWidget, Color, GraphWidget, GraphWidgetView, LegendPosition, LogQueryWidget, Metric, Shading, SingleValueWidget, LogQueryVisualizationType } from '../lib';
 
@@ -683,6 +683,35 @@ export = {
         ],
         yAxis: {},
         setPeriodToTimeRange: true,
+      },
+    }]);
+
+    test.done();
+  },
+
+  'GraphWidget supports stat and period'(test: Test) {
+    // GIVEN
+    const stack = new Stack();
+    const widget = new GraphWidget({
+      left: [new Metric({ namespace: 'CDK', metricName: 'Test' })],
+      statistic: 'Average',
+      period: Duration.days(2),
+    });
+
+    // THEN
+    test.deepEqual(stack.resolve(widget.toJson()), [{
+      type: 'metric',
+      width: 6,
+      height: 6,
+      properties: {
+        view: 'timeSeries',
+        region: { Ref: 'AWS::Region' },
+        metrics: [
+          ['CDK', 'Test'],
+        ],
+        yAxis: {},
+        stat: 'Average',
+        period: 172800,
       },
     }]);
 
