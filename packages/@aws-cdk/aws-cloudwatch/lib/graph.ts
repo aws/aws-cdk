@@ -224,7 +224,7 @@ export interface GraphWidgetProps extends MetricWidgetProps {
   readonly setPeriodToTimeRange?: boolean;
 
   /**
-   * The default period, in seconds, for all metrics in this widget.
+   * The default period for all metrics in this widget.
    * The period is the length of time represented by one data point on the graph.
    * This default can be overridden within each metric definition.
    *
