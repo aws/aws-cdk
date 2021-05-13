@@ -80,11 +80,11 @@ const fn = new lambda.Function(this, 'Function', ...);
 topic.addSubscription(new subs.LambdaSubscription(fn, {
     filterPolicy: {
         color: sns.SubscriptionFilter.stringFilter({
-            whitelist: ['red', 'orange'],
+            allowlist: ['red', 'orange'],
             matchPrefixes: ['bl']
         }),
         size: sns.SubscriptionFilter.stringFilter({
-            blacklist: ['small', 'medium'],
+            denylist: ['small', 'medium'],
         }),
         price: sns.SubscriptionFilter.numericFilter({
             between: { start: 100, stop: 200 },
@@ -161,7 +161,7 @@ const policyDocument = new iam.PolicyDocument({
     new iam.PolicyStatement({
       actions: ["sns:Subscribe"],
       principals: [new iam.AnyPrincipal()],
-      resources: [topic.topicArn] 
+      resources: [topic.topicArn]
     }),
   ],
 });

@@ -1,6 +1,6 @@
 /* eslint-disable jest/expect-expect */
-import '@aws-cdk/assert/jest';
-import * as assert from '@aws-cdk/assert';
+import '@aws-cdk/assert-internal/jest';
+import * as assert from '@aws-cdk/assert-internal';
 import * as acm from '@aws-cdk/aws-certificatemanager';
 import { Metric, Statistic } from '@aws-cdk/aws-cloudwatch';
 import { Vpc, EbsDeviceVolumeType, SecurityGroup } from '@aws-cdk/aws-ec2';
@@ -46,7 +46,7 @@ test('subnets and security groups can be provided when vpc is used', () => {
     vpc,
   });
   const domain = new Domain(stack, 'Domain', {
-    version: ElasticsearchVersion.V7_9,
+    version: ElasticsearchVersion.V7_10,
     vpc,
     vpcSubnets: [{ subnets: [vpc.privateSubnets[0]] }],
     securityGroups: [securityGroup],
@@ -77,7 +77,7 @@ test('default subnets and security group when vpc is used', () => {
 
   const vpc = new Vpc(stack, 'Vpc');
   const domain = new Domain(stack, 'Domain', {
-    version: ElasticsearchVersion.V7_9,
+    version: ElasticsearchVersion.V7_10,
     vpc,
   });
 

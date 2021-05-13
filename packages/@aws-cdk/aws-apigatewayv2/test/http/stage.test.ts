@@ -1,4 +1,4 @@
-import '@aws-cdk/assert/jest';
+import '@aws-cdk/assert-internal/jest';
 import { Metric } from '@aws-cdk/aws-cloudwatch';
 import { Stack } from '@aws-cdk/core';
 import { HttpApi, HttpStage } from '../../lib';
@@ -67,7 +67,7 @@ describe('HttpStage', () => {
     const stage = new HttpStage(stack, 'Stage', {
       httpApi: api,
     });
-    const metricName = '4xxError';
+    const metricName = '4xx';
     const statistic = 'Sum';
     const apiId = api.apiId;
 
@@ -113,5 +113,7 @@ describe('HttpStage', () => {
       });
       expect(metric.color).toEqual(color);
     }
+    const metricNames = metrics.map(m => m.metricName);
+    expect(metricNames).toEqual(['4xx', '5xx', 'DataProcessed', 'Latency', 'IntegrationLatency', 'Count']);
   });
 });
