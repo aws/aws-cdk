@@ -1,10 +1,10 @@
 import * as zlib from 'zlib';
 import { App, Stack } from '../lib';
 import { formatAnalytics } from '../lib/private/metadata-resource';
+import { ConstructInfo } from '../lib/private/runtime-info';
 
 // eslint-disable-next-line no-duplicate-imports, import/order
 import { Construct } from '../lib';
-import { ConstructInfo } from '../lib/private/runtime-info';
 
 describe('MetadataResource', () => {
   let app: App;
@@ -63,7 +63,7 @@ describe('MetadataResource', () => {
   test('includes constructs added to the stack', () => {
     new TestConstruct(stack, 'Test');
 
-    expect(stackAnalytics()).toContain('1.2.3!@amzn/core.TestConstruct');
+    expect(stackAnalytics()).toContain('FakeVersion.2.3!@amzn/core.TestConstruct');
   });
 
   test('only includes constructs in the allow list', () => {
@@ -141,11 +141,10 @@ const JSII_RUNTIME_SYMBOL = Symbol.for('jsii.rtti');
 
 class TestConstruct extends Construct {
   // @ts-ignore
-  private static readonly [JSII_RUNTIME_SYMBOL] = { fqn: '@amzn/core.TestConstruct', version: '1.2.3' }
+  private static readonly [JSII_RUNTIME_SYMBOL] = { fqn: '@amzn/core.TestConstruct', version: 'FakeVersion.2.3' }
 }
 
 class TestThirdPartyConstruct extends Construct {
   // @ts-ignore
   private static readonly [JSII_RUNTIME_SYMBOL] = { fqn: 'mycoolthing.TestConstruct', version: '1.2.3' }
 }
-

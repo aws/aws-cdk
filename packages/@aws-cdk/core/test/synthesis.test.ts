@@ -104,7 +104,11 @@ nodeunitShim({
         'one-stack': {
           type: 'aws:cloudformation:stack',
           environment: 'aws://unknown-account/unknown-region',
-          properties: { templateFile: 'one-stack.template.json' },
+          properties: {
+            templateFile: 'one-stack.template.json',
+            validateOnSynth: false,
+          },
+          displayName: 'one-stack',
         },
       },
     });

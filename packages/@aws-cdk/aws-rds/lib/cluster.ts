@@ -4,7 +4,8 @@ import * as kms from '@aws-cdk/aws-kms';
 import * as logs from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
-import { Annotations, Duration, RemovalPolicy, Resource, Token } from '@aws-cdk/core';
+import { Annotations, Duration, FeatureFlags, RemovalPolicy, Resource, Token } from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
 import { IClusterEngine } from './cluster-engine';
 import { DatabaseClusterAttributes, IDatabaseCluster } from './cluster-ref';
@@ -221,6 +222,14 @@ interface DatabaseClusterBaseProps {
    * @default - a new subnet group will be created.
    */
   readonly subnetGroup?: ISubnetGroup;
+
+  /**
+   * Whether to enable mapping of AWS Identity and Access Management (IAM) accounts
+   * to database accounts.
+   *
+   * @default false
+   */
+  readonly iamAuthentication?: boolean;
 }
 
 /**
@@ -289,8 +298,6 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
    * Never undefined.
    */
   public readonly engine?: IClusterEngine;
-  public readonly instanceIdentifiers: string[] = [];
-  public readonly instanceEndpoints: Endpoint[] = [];
 
   protected readonly newCfnProps: CfnDBClusterProps;
   protected readonly securityGroups: ec2.ISecurityGroup[];
@@ -340,17 +347,22 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
     const clusterParameterGroupConfig = clusterParameterGroup?.bindToCluster({});
     this.engine = props.engine;
 
+    const clusterIdentifier = FeatureFlags.of(this).isEnabled(cxapi.RDS_LOWERCASE_DB_IDENTIFIER)
+      ? props.clusterIdentifier?.toLowerCase()
+      : props.clusterIdentifier;
+
     this.newCfnProps = {
       // Basic
       engine: props.engine.engineType,
       engineVersion: props.engine.engineVersion?.fullVersion,
-      dbClusterIdentifier: props.clusterIdentifier,
+      dbClusterIdentifier: clusterIdentifier,
       dbSubnetGroupName: this.subnetGroup.subnetGroupName,
       vpcSecurityGroupIds: this.securityGroups.map(sg => sg.securityGroupId),
       port: props.port ?? clusterEngineBindConfig.port,
       dbClusterParameterGroupName: clusterParameterGroupConfig?.parameterGroupName,
       associatedRoles: clusterAssociatedRoles.length > 0 ? clusterAssociatedRoles : undefined,
       deletionProtection: defaultDeletionProtection(props.deletionProtection, props.removalPolicy),
+      enableIamDatabaseAuthentication: props.iamAuthentication,
       // Admin
       backupRetentionPeriod: props.backup?.retention?.toDays(),
       preferredBackupWindow: props.backup?.preferredWindow,
@@ -467,6 +479,8 @@ export class DatabaseCluster extends DatabaseClusterNew {
   public readonly clusterEndpoint: Endpoint;
   public readonly clusterReadEndpoint: Endpoint;
   public readonly connections: ec2.Connections;
+  public readonly instanceIdentifiers: string[];
+  public readonly instanceEndpoints: Endpoint[];
 
   /**
    * The secret attached to this cluster
@@ -519,7 +533,9 @@ export class DatabaseCluster extends DatabaseClusterNew {
     }
 
     setLogRetention(this, props);
-    createInstances(this, props, this.subnetGroup);
+    const createdInstances = createInstances(this, props, this.subnetGroup);
+    this.instanceIdentifiers = createdInstances.instanceIdentifiers;
+    this.instanceEndpoints = createdInstances.instanceEndpoints;
   }
 
   /**
@@ -588,6 +604,8 @@ export class DatabaseClusterFromSnapshot extends DatabaseClusterNew {
   public readonly clusterEndpoint: Endpoint;
   public readonly clusterReadEndpoint: Endpoint;
   public readonly connections: ec2.Connections;
+  public readonly instanceIdentifiers: string[];
+  public readonly instanceEndpoints: Endpoint[];
 
   constructor(scope: Construct, id: string, props: DatabaseClusterFromSnapshotProps) {
     super(scope, id, props);
@@ -611,7 +629,9 @@ export class DatabaseClusterFromSnapshot extends DatabaseClusterNew {
     cluster.applyRemovalPolicy(props.removalPolicy ?? RemovalPolicy.SNAPSHOT);
 
     setLogRetention(this, props);
-    createInstances(this, props, this.subnetGroup);
+    const createdInstances = createInstances(this, props, this.subnetGroup);
+    this.instanceIdentifiers = createdInstances.instanceIdentifiers;
+    this.instanceEndpoints = createdInstances.instanceEndpoints;
   }
 }
 
@@ -651,6 +671,9 @@ interface InstanceConfig {
  */
 function createInstances(cluster: DatabaseClusterNew, props: DatabaseClusterBaseProps, subnetGroup: ISubnetGroup): InstanceConfig {
   const instanceCount = props.instances != null ? props.instances : 2;
+  if (Token.isUnresolved(instanceCount)) {
+    throw new Error('The number of instances an RDS Cluster consists of cannot be provided as a deploy-time only value!');
+  }
   if (instanceCount < 1) {
     throw new Error('At least one instance is required');
   }

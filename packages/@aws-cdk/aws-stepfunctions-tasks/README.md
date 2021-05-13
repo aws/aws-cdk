@@ -21,56 +21,61 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
 
 ## Table Of Contents
 
-- [Task](#task)
-- [Paths](#paths)
-  - [InputPath](#inputpath)
-  - [OutputPath](#outputpath)
-  - [ResultPath](#resultpath)
-- [Parameters](#task-parameters-from-the-state-json)
-- [Evaluate Expression](#evaluate-expression)
-- [Athena](#athena)
-  - [StartQueryExecution](#startQueryExecution)
-  - [GetQueryExecution](#getQueryExecution)
-  - [GetQueryResults](#getQueryResults)
-  - [StopQueryExecution](#stopQueryExecution)
-- [Batch](#batch)
-  - [SubmitJob](#submitjob)
-- [CodeBuild](#codebuild)
-  - [StartBuild](#startbuild)
-- [DynamoDB](#dynamodb)
-  - [GetItem](#getitem)
-  - [PutItem](#putitem)
-  - [DeleteItem](#deleteitem)
-  - [UpdateItem](#updateitem)
-- [ECS](#ecs)
-  - [RunTask](#runtask)
-    - [EC2](#ec2)
-    - [Fargate](#fargate)
-- [EMR](#emr)
-  - [Create Cluster](#create-cluster)
-  - [Termination Protection](#termination-protection)
-  - [Terminate Cluster](#terminate-cluster)
-  - [Add Step](#add-step)
-  - [Cancel Step](#cancel-step)
-  - [Modify Instance Fleet](#modify-instance-fleet)
-  - [Modify Instance Group](#modify-instance-group)
-- [EKS](#eks)
-  - [Call](#call)
-- [Glue](#glue)
-- [Glue DataBrew](#glue-databrew)
-- [Lambda](#lambda)
-- [SageMaker](#sagemaker)
-  - [Create Training Job](#create-training-job)
-  - [Create Transform Job](#create-transform-job)
-  - [Create Endpoint](#create-endpoint)
-  - [Create Endpoint Config](#create-endpoint-config)
-  - [Create Model](#create-model)
-  - [Update Endpoint](#update-endpoint)
-- [SNS](#sns)
-- [Step Functions](#step-functions)
-  - [Start Execution](#start-execution)
-  - [Invoke Activity Worker](#invoke-activity)
-- [SQS](#sqs)
+- [Tasks for AWS Step Functions](#tasks-for-aws-step-functions)
+  - [Table Of Contents](#table-of-contents)
+  - [Task](#task)
+  - [Paths](#paths)
+    - [InputPath](#inputpath)
+    - [OutputPath](#outputpath)
+    - [ResultPath](#resultpath)
+  - [Task parameters from the state JSON](#task-parameters-from-the-state-json)
+  - [Evaluate Expression](#evaluate-expression)
+  - [API Gateway](#api-gateway)
+    - [Call REST API Endpoint](#call-rest-api-endpoint)
+    - [Call HTTP API Endpoint](#call-http-api-endpoint)
+  - [Athena](#athena)
+    - [StartQueryExecution](#startqueryexecution)
+    - [GetQueryExecution](#getqueryexecution)
+    - [GetQueryResults](#getqueryresults)
+    - [StopQueryExecution](#stopqueryexecution)
+  - [Batch](#batch)
+    - [SubmitJob](#submitjob)
+  - [CodeBuild](#codebuild)
+    - [StartBuild](#startbuild)
+  - [DynamoDB](#dynamodb)
+    - [GetItem](#getitem)
+    - [PutItem](#putitem)
+    - [DeleteItem](#deleteitem)
+    - [UpdateItem](#updateitem)
+  - [ECS](#ecs)
+    - [RunTask](#runtask)
+      - [EC2](#ec2)
+      - [Fargate](#fargate)
+  - [EMR](#emr)
+    - [Create Cluster](#create-cluster)
+    - [Termination Protection](#termination-protection)
+    - [Terminate Cluster](#terminate-cluster)
+    - [Add Step](#add-step)
+    - [Cancel Step](#cancel-step)
+    - [Modify Instance Fleet](#modify-instance-fleet)
+    - [Modify Instance Group](#modify-instance-group)
+  - [EKS](#eks)
+    - [Call](#call)
+  - [Glue](#glue)
+  - [Glue DataBrew](#glue-databrew)
+  - [Lambda](#lambda)
+  - [SageMaker](#sagemaker)
+    - [Create Training Job](#create-training-job)
+    - [Create Transform Job](#create-transform-job)
+    - [Create Endpoint](#create-endpoint)
+    - [Create Endpoint Config](#create-endpoint-config)
+    - [Create Model](#create-model)
+    - [Update Endpoint](#update-endpoint)
+  - [SNS](#sns)
+  - [Step Functions](#step-functions)
+    - [Start Execution](#start-execution)
+    - [Invoke Activity](#invoke-activity)
+  - [SQS](#sqs)
 
 ## Task
 
@@ -217,6 +222,48 @@ The `EvaluateExpression` supports a `runtime` prop to specify the Lambda
 runtime to use to evaluate the expression. Currently, only runtimes
 of the Node.js family are supported.
 
+## API Gateway
+
+Step Functions supports [API Gateway](https://docs.aws.amazon.com/step-functions/latest/dg/connect-api-gateway.html) through the service integration pattern.
+
+HTTP APIs are designed for low-latency, cost-effective integrations with AWS services, including AWS Lambda, and HTTP endpoints. 
+HTTP APIs support OIDC and OAuth 2.0 authorization, and come with built-in support for CORS and automatic deployments. 
+Previous-generation REST APIs currently offer more features. More details can be found [here](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-vs-rest.html).
+
+### Call REST API Endpoint
+
+The `CallApiGatewayRestApiEndpoint` calls the REST API endpoint.
+
+```ts
+import * as sfn from '@aws-cdk/aws-stepfunctions';
+import * as tasks from `@aws-cdk/aws-stepfunctions-tasks`;
+
+const restApi = new apigateway.RestApi(stack, 'MyRestApi');
+
+const invokeTask = new tasks.CallApiGatewayRestApiEndpoint(stack, 'Call REST API', {
+  api: restApi,
+  stageName: 'prod',
+  method: HttpMethod.GET,
+});
+```
+
+### Call HTTP API Endpoint
+
+The `CallApiGatewayHttpApiEndpoint` calls the HTTP API endpoint.
+
+```ts
+import * as sfn from '@aws-cdk/aws-stepfunctions';
+import * as tasks from `@aws-cdk/aws-stepfunctions-tasks`;
+
+const httpApi = new apigatewayv2.HttpApi(stack, 'MyHttpApi');
+
+const invokeTask = new tasks.CallApiGatewayHttpApiEndpoint(stack, 'Call HTTP API', {
+  apiId: httpApi.apiId,
+  apiStack: cdk.Stack.of(httpApi),
+  method: HttpMethod.GET,
+});
+```
+
 ## Athena
 
 Step Functions supports [Athena](https://docs.aws.amazon.com/step-functions/latest/dg/connect-athena.html) through the service integration pattern.
@@ -283,9 +330,9 @@ The [SubmitJob](https://docs.aws.amazon.com/batch/latest/APIReference/API_Submit
 
 ```ts fixture=with-batch-job
 const task = new tasks.BatchSubmitJob(this, 'Submit Job', {
-  jobDefinition: batchJobDefinition,
+  jobDefinitionArn: batchJobDefinitionArn,
   jobName: 'MyJob',
-  jobQueue: batchQueue,
+  jobQueueArn: batchQueueArn,
 });
 ```
 

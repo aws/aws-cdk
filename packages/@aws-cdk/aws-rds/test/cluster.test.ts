@@ -1,5 +1,5 @@
-import '@aws-cdk/assert/jest';
-import { ABSENT, ResourcePart, SynthUtils } from '@aws-cdk/assert';
+import '@aws-cdk/assert-internal/jest';
+import { ABSENT, ResourcePart, SynthUtils } from '@aws-cdk/assert-internal';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import { ManagedPolicy, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
@@ -10,7 +10,7 @@ import * as cxapi from '@aws-cdk/cx-api';
 import { testFutureBehavior } from 'cdk-build-tools/lib/feature-flag';
 import {
   AuroraEngineVersion, AuroraMysqlEngineVersion, AuroraPostgresEngineVersion, CfnDBCluster, Credentials, DatabaseCluster,
-  DatabaseClusterEngine, DatabaseClusterFromSnapshot, ParameterGroup, PerformanceInsightRetention, SubnetGroup,
+  DatabaseClusterEngine, DatabaseClusterFromSnapshot, ParameterGroup, PerformanceInsightRetention, SubnetGroup, DatabaseSecret,
 } from '../lib';
 
 describe('cluster', () => {
@@ -30,6 +30,7 @@ describe('cluster', () => {
         instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
         vpc,
       },
+      iamAuthentication: true,
     });
 
     // THEN
@@ -40,6 +41,7 @@ describe('cluster', () => {
         MasterUsername: 'admin',
         MasterUserPassword: 'tooshort',
         VpcSecurityGroupIds: [{ 'Fn::GetAtt': ['DatabaseSecurityGroup5C91FDCB', 'GroupId'] }],
+        EnableIAMDatabaseAuthentication: true,
       },
       DeletionPolicy: 'Snapshot',
       UpdateReplacePolicy: 'Snapshot',
@@ -50,8 +52,22 @@ describe('cluster', () => {
       DeletionPolicy: 'Delete',
       UpdateReplacePolicy: 'Delete',
     }, ResourcePart.CompleteDefinition);
+  });
 
+  test('validates that the number of instances is not a deploy-time value', () => {
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const parameter = new cdk.CfnParameter(stack, 'Param', { type: 'Number' });
 
+    expect(() => {
+      new DatabaseCluster(stack, 'Database', {
+        instances: parameter.valueAsNumber,
+        engine: DatabaseClusterEngine.AURORA,
+        instanceProps: {
+          vpc,
+        },
+      });
+    }).toThrow('The number of instances an RDS Cluster consists of cannot be provided as a deploy-time only value!');
   });
 
   test('can create a cluster with a single instance', () => {
@@ -60,7 +76,7 @@ describe('cluster', () => {
     const vpc = new ec2.Vpc(stack, 'VPC');
 
     // WHEN
-    new DatabaseCluster(stack, 'Database', {
+    const cluster = new DatabaseCluster(stack, 'Database', {
       engine: DatabaseClusterEngine.AURORA,
       instances: 1,
       credentials: {
@@ -82,7 +98,27 @@ describe('cluster', () => {
       VpcSecurityGroupIds: [{ 'Fn::GetAtt': ['DatabaseSecurityGroup5C91FDCB', 'GroupId'] }],
     });
 
+    expect(cluster.instanceIdentifiers).toHaveLength(1);
+    expect(stack.resolve(cluster.instanceIdentifiers[0])).toEqual({
+      Ref: 'DatabaseInstance1844F58FD',
+    });
 
+    expect(cluster.instanceEndpoints).toHaveLength(1);
+    expect(stack.resolve(cluster.instanceEndpoints[0])).toEqual({
+      hostname: {
+        'Fn::GetAtt': ['DatabaseInstance1844F58FD', 'Endpoint.Address'],
+      },
+      port: {
+        'Fn::GetAtt': ['DatabaseB269D8BB', 'Endpoint.Port'],
+      },
+      socketAddress: {
+        'Fn::Join': ['', [
+          { 'Fn::GetAtt': ['DatabaseInstance1844F58FD', 'Endpoint.Address'] },
+          ':',
+          { 'Fn::GetAtt': ['DatabaseB269D8BB', 'Endpoint.Port'] },
+        ]],
+      },
+    });
   });
 
   test('can create a cluster with imported vpc and security group', () => {
@@ -116,8 +152,6 @@ describe('cluster', () => {
       MasterUserPassword: 'tooshort',
       VpcSecurityGroupIds: ['SecurityGroupId12345'],
     });
-
-
   });
 
   test('cluster with parameter group', () => {
@@ -150,8 +184,6 @@ describe('cluster', () => {
     expect(stack).toHaveResource('AWS::RDS::DBCluster', {
       DBClusterParameterGroupName: { Ref: 'ParamsA8366201' },
     });
-
-
   });
 
   test("sets the retention policy of the SubnetGroup to 'Retain' if the Cluster is created with 'Retain'", () => {
@@ -172,8 +204,6 @@ describe('cluster', () => {
       DeletionPolicy: 'Retain',
       UpdateReplacePolicy: 'Retain',
     }, ResourcePart.CompleteDefinition);
-
-
   });
 
   test('creates a secret when master credentials are not specified', () => {
@@ -230,8 +260,6 @@ describe('cluster', () => {
         SecretStringTemplate: '{"username":"admin"}',
       },
     });
-
-
   });
 
   test('create an encrypted cluster with custom KMS key', () => {
@@ -261,8 +289,6 @@ describe('cluster', () => {
         ],
       },
     });
-
-
   });
 
   test('cluster with instance parameter group', () => {
@@ -294,8 +320,6 @@ describe('cluster', () => {
         Ref: 'ParameterGroup5E32DECB',
       },
     });
-
-
   });
 
   describe('performance insights', () => {
@@ -323,8 +347,6 @@ describe('cluster', () => {
         PerformanceInsightsRetentionPeriod: 731,
         PerformanceInsightsKMSKeyId: { 'Fn::GetAtt': ['Key961B73FD', 'Arn'] },
       });
-
-
     });
 
     test('setting performance insights fields enables performance insights', () => {
@@ -348,8 +370,6 @@ describe('cluster', () => {
         EnablePerformanceInsights: true,
         PerformanceInsightsRetentionPeriod: 731,
       });
-
-
     });
 
     test('throws if performance insights fields are set but performance insights is disabled', () => {
@@ -370,8 +390,6 @@ describe('cluster', () => {
           },
         });
       }).toThrow(/`enablePerformanceInsights` disabled, but `performanceInsightRetention` or `performanceInsightEncryptionKey` was set/);
-
-
     });
   });
 
@@ -392,8 +410,6 @@ describe('cluster', () => {
     expect(stack).toHaveResource('AWS::RDS::DBInstance', {
       AutoMinorVersionUpgrade: false,
     });
-
-
   });
 
   test('cluster with allow upgrade of major version', () => {
@@ -413,8 +429,6 @@ describe('cluster', () => {
     expect(stack).toHaveResourceLike('AWS::RDS::DBInstance', {
       AllowMajorVersionUpgrade: true,
     });
-
-
   });
 
   test('cluster with disallow remove backups', () => {
@@ -434,8 +448,6 @@ describe('cluster', () => {
     expect(stack).toHaveResourceLike('AWS::RDS::DBInstance', {
       DeleteAutomatedBackups: false,
     });
-
-
   });
 
   test('create a cluster using a specific version of MySQL', () => {
@@ -462,8 +474,6 @@ describe('cluster', () => {
       Engine: 'aurora-mysql',
       EngineVersion: '5.7.mysql_aurora.2.04.4',
     });
-
-
   });
 
   test('create a cluster using a specific version of Postgresql', () => {
@@ -513,8 +523,6 @@ describe('cluster', () => {
 
     // THEN
     expect(stack.resolve(cluster.clusterEndpoint)).not.toEqual(stack.resolve(cluster.clusterReadEndpoint));
-
-
   });
 
   test('imported cluster with imported security group honors allowAllOutbound', () => {
@@ -540,8 +548,6 @@ describe('cluster', () => {
     expect(stack).toHaveResource('AWS::EC2::SecurityGroupEgress', {
       GroupId: 'sg-123456789',
     });
-
-
   });
 
   test('can import a cluster with minimal attributes', () => {
@@ -567,8 +573,6 @@ describe('cluster', () => {
     expect(() => cluster.clusterReadEndpoint).toThrow(/Cannot access `clusterReadEndpoint` of an imported cluster/);
     expect(() => cluster.instanceIdentifiers).toThrow(/Cannot access `instanceIdentifiers` of an imported cluster/);
     expect(() => cluster.instanceEndpoints).toThrow(/Cannot access `instanceEndpoints` of an imported cluster/);
-
-
   });
 
   test('imported cluster can access properties if attributes are provided', () => {
@@ -590,8 +594,6 @@ describe('cluster', () => {
     expect(cluster.clusterReadEndpoint.socketAddress).toEqual('reader-address:3306');
     expect(cluster.instanceIdentifiers).toEqual(['identifier']);
     expect(cluster.instanceEndpoints.map(endpoint => endpoint.socketAddress)).toEqual(['instance-addr:3306']);
-
-
   });
 
   test('cluster supports metrics', () => {
@@ -1655,12 +1657,13 @@ describe('cluster', () => {
     const vpc = new ec2.Vpc(stack, 'VPC');
 
     // WHEN
-    new DatabaseClusterFromSnapshot(stack, 'Database', {
+    const cluster = new DatabaseClusterFromSnapshot(stack, 'Database', {
       engine: DatabaseClusterEngine.aurora({ version: AuroraEngineVersion.VER_1_22_2 }),
       instanceProps: {
         vpc,
       },
       snapshotIdentifier: 'mySnapshot',
+      iamAuthentication: true,
     });
 
     // THEN
@@ -1671,6 +1674,7 @@ describe('cluster', () => {
         DBSubnetGroupName: { Ref: 'DatabaseSubnets56F17B9A' },
         VpcSecurityGroupIds: [{ 'Fn::GetAtt': ['DatabaseSecurityGroup5C91FDCB', 'GroupId'] }],
         SnapshotIdentifier: 'mySnapshot',
+        EnableIAMDatabaseAuthentication: true,
       },
       DeletionPolicy: 'Snapshot',
       UpdateReplacePolicy: 'Snapshot',
@@ -1678,7 +1682,27 @@ describe('cluster', () => {
 
     expect(stack).toCountResources('AWS::RDS::DBInstance', 2);
 
+    expect(cluster.instanceIdentifiers).toHaveLength(2);
+    expect(stack.resolve(cluster.instanceIdentifiers[0])).toEqual({
+      Ref: 'DatabaseInstance1844F58FD',
+    });
 
+    expect(cluster.instanceEndpoints).toHaveLength(2);
+    expect(stack.resolve(cluster.instanceEndpoints[0])).toEqual({
+      hostname: {
+        'Fn::GetAtt': ['DatabaseInstance1844F58FD', 'Endpoint.Address'],
+      },
+      port: {
+        'Fn::GetAtt': ['DatabaseB269D8BB', 'Endpoint.Port'],
+      },
+      socketAddress: {
+        'Fn::Join': ['', [
+          { 'Fn::GetAtt': ['DatabaseInstance1844F58FD', 'Endpoint.Address'] },
+          ':',
+          { 'Fn::GetAtt': ['DatabaseB269D8BB', 'Endpoint.Port'] },
+        ]],
+      },
+    });
   });
 
   test('reuse an existing subnet group', () => {
@@ -1763,6 +1787,52 @@ describe('cluster', () => {
 
   });
 
+  test('can set custom name to database secret by fromSecret', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const secretName = 'custom-secret-name';
+    const secret = new DatabaseSecret(stack, 'Secret', {
+      username: 'admin',
+      secretName,
+    } );
+
+    // WHEN
+    new DatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.aurora({ version: AuroraEngineVersion.VER_1_22_2 }),
+      credentials: Credentials.fromSecret(secret),
+      instanceProps: {
+        vpc,
+      },
+    });
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::SecretsManager::Secret', {
+      Name: secretName,
+    });
+  });
+
+  test('can set custom name to database secret by fromGeneratedSecret', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const secretName = 'custom-secret-name';
+
+    // WHEN
+    new DatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.aurora({ version: AuroraEngineVersion.VER_1_22_2 }),
+      credentials: Credentials.fromGeneratedSecret('admin', { secretName }),
+      instanceProps: {
+        vpc,
+      },
+    });
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::SecretsManager::Secret', {
+      Name: secretName,
+    });
+  });
+
   test('can set public accessibility for database cluster with instances in private subnet', () => {
     // GIVEN
     const stack = testStack();
@@ -1835,6 +1905,48 @@ describe('cluster', () => {
     });
 
 
+  });
+
+  test('changes the case of the cluster identifier if the lowercaseDbIdentifier feature flag is enabled', () => {
+    // GIVEN
+    const app = new cdk.App({
+      context: { [cxapi.RDS_LOWERCASE_DB_IDENTIFIER]: true },
+    });
+    const stack = testStack(app);
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    const clusterIdentifier = 'TestClusterIdentifier';
+    new DatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.AURORA,
+      instanceProps: { vpc },
+      clusterIdentifier,
+    });
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::RDS::DBCluster', {
+      DBClusterIdentifier: clusterIdentifier.toLowerCase(),
+    });
+  });
+
+  test('does not changes the case of the cluster identifier if the lowercaseDbIdentifier feature flag is disabled', () => {
+    // GIVEN
+    const app = new cdk.App({ context: { '@aws-cdk/aws-rds:lowercaseDbIdentifier': false } });
+    const stack = testStack(app);
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    const clusterIdentifier = 'TestClusterIdentifier';
+    new DatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.AURORA,
+      instanceProps: { vpc },
+      clusterIdentifier,
+    });
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::RDS::DBCluster', {
+      DBClusterIdentifier: clusterIdentifier,
+    });
   });
 });
 

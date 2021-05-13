@@ -1,4 +1,4 @@
-import { expect, haveResourceLike } from '@aws-cdk/assert';
+import { expect, haveResourceLike } from '@aws-cdk/assert-internal';
 import * as acm from '@aws-cdk/aws-certificatemanager';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
@@ -23,9 +23,9 @@ export = {
         mesh: mesh,
         listeners: [appmesh.VirtualGatewayListener.http({
           port: 443,
-          healthCheck: {
+          healthCheck: appmesh.HealthCheck.http({
             interval: cdk.Duration.seconds(10),
-          },
+          }),
         })],
       });
 
@@ -33,9 +33,7 @@ export = {
         mesh: mesh,
         listeners: [appmesh.VirtualGatewayListener.http2({
           port: 443,
-          healthCheck: {
-            interval: cdk.Duration.seconds(10),
-          },
+          healthCheck: appmesh.HealthCheck.http2({ interval: cdk.Duration.seconds(10) }),
         })],
       });
 
@@ -115,8 +113,7 @@ export = {
         virtualGatewayName: 'test-gateway',
         listeners: [appmesh.VirtualGatewayListener.grpc({
           port: 80,
-          healthCheck: {
-          },
+          healthCheck: appmesh.HealthCheck.grpc(),
         })],
         mesh: mesh,
         accessLog: appmesh.AccessLog.fromFilePath('/dev/stdout'),
@@ -392,9 +389,11 @@ export = {
       new appmesh.VirtualGateway(stack, 'virtual-gateway', {
         virtualGatewayName: 'virtual-gateway',
         mesh: mesh,
-        backendsDefaultClientPolicy: appmesh.ClientPolicy.fileTrust({
-          certificateChain: 'path-to-certificate',
-        }),
+        backendDefaults: {
+          clientPolicy: appmesh.ClientPolicy.fileTrust({
+            certificateChain: 'path-to-certificate',
+          }),
+        },
       });
 
       // THEN
@@ -419,6 +418,131 @@ export = {
 
       test.done();
     },
+  },
+
+  'Can add an http connection pool to listener'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const mesh = new appmesh.Mesh(stack, 'mesh', {
+      meshName: 'test-mesh',
+    });
+
+    new appmesh.VirtualGateway(stack, 'virtual-gateway', {
+      virtualGatewayName: 'virtual-gateway',
+      mesh: mesh,
+      listeners: [
+        appmesh.VirtualGatewayListener.http({
+          port: 80,
+          connectionPool: {
+            maxConnections: 100,
+            maxPendingRequests: 10,
+          },
+        }),
+      ],
+    });
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::AppMesh::VirtualGateway', {
+      VirtualGatewayName: 'virtual-gateway',
+      Spec: {
+        Listeners: [
+          {
+            ConnectionPool: {
+              HTTP: {
+                MaxConnections: 100,
+                MaxPendingRequests: 10,
+              },
+            },
+          },
+        ],
+      },
+    }));
+
+    test.done();
+  },
+
+  'Can add an grpc connection pool to listener'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const mesh = new appmesh.Mesh(stack, 'mesh', {
+      meshName: 'test-mesh',
+    });
+
+    new appmesh.VirtualGateway(stack, 'virtual-gateway', {
+      virtualGatewayName: 'virtual-gateway',
+      mesh: mesh,
+      listeners: [
+        appmesh.VirtualGatewayListener.grpc({
+          port: 80,
+          connectionPool: {
+            maxRequests: 10,
+          },
+        }),
+      ],
+    });
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::AppMesh::VirtualGateway', {
+      VirtualGatewayName: 'virtual-gateway',
+      Spec: {
+        Listeners: [
+          {
+            ConnectionPool: {
+              GRPC: {
+                MaxRequests: 10,
+              },
+            },
+          },
+        ],
+      },
+    }));
+
+    test.done();
+  },
+
+  'Can add an http2 connection pool to listener'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const mesh = new appmesh.Mesh(stack, 'mesh', {
+      meshName: 'test-mesh',
+    });
+
+    new appmesh.VirtualGateway(stack, 'virtual-gateway', {
+      virtualGatewayName: 'virtual-gateway',
+      mesh: mesh,
+      listeners: [
+        appmesh.VirtualGatewayListener.http2({
+          port: 80,
+          connectionPool: {
+            maxRequests: 10,
+          },
+        }),
+      ],
+    });
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::AppMesh::VirtualGateway', {
+      VirtualGatewayName: 'virtual-gateway',
+      Spec: {
+        Listeners: [
+          {
+            ConnectionPool: {
+              HTTP2: {
+                MaxRequests: 10,
+              },
+            },
+          },
+        ],
+      },
+    }));
+
+    test.done();
   },
 
   'Can import VirtualGateways using an ARN'(test: Test) {

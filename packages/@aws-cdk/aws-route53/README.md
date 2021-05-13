@@ -60,6 +60,22 @@ new route53.TxtRecord(this, 'TXTRecord', {
 });
 ```
 
+To add a NS record to your zone:
+
+```ts
+import * as route53 from '@aws-cdk/aws-route53';
+
+new route53.NsRecord(this, 'NSRecord', {
+  zone: myZone,
+  recordName: 'foo',  
+  values: [            
+    'ns-1.awsdns.co.uk.',
+    'ns-2.awsdns.com.'
+  ],
+  ttl: Duration.minutes(90),       // Optional - default is 30 minutes
+});
+```
+
 To add an A record to your zone:
 
 ```ts
@@ -109,26 +125,45 @@ Constructs are available for A, AAAA, CAA, CNAME, MX, NS, SRV and TXT records.
 Use the `CaaAmazonRecord` construct to easily restrict certificate authorities
 allowed to issue certificates for a domain to Amazon only.
 
-To add a NS record to a HostedZone in different account
+To add a NS record to a HostedZone in different account you can do the following:
+
+In the account containing the parent hosted zone:
 
 ```ts
 import * as route53 from '@aws-cdk/aws-route53';
 
-// In the account containing the HostedZone
 const parentZone = new route53.PublicHostedZone(this, 'HostedZone', {
   zoneName: 'someexample.com',
-  crossAccountZoneDelegationPrincipal: new iam.AccountPrincipal('12345678901')
+  crossAccountZoneDelegationPrincipal: new iam.AccountPrincipal('12345678901'),
+  crossAccountZoneDelegationRoleName: 'MyDelegationRole',
 });
+```
 
-// In this account
+In the account containing the child zone to be delegated:
+
+```ts
+import * as iam from '@aws-cdk/aws-iam';
+import * as route53 from '@aws-cdk/aws-route53';
+
 const subZone = new route53.PublicHostedZone(this, 'SubZone', {
   zoneName: 'sub.someexample.com'
 });
 
+// import the delegation role by constructing the roleArn
+const delegationRoleArn = Stack.of(this).formatArn({
+  region: '', // IAM is global in each partition
+  service: 'iam',
+  account: 'parent-account-id',
+  resource: 'role',
+  resourceName: 'MyDelegationRole',
+});
+const delegationRole = iam.Role.fromRoleArn(this, 'DelegationRole', delegationRoleArn);
+
+// create the record
 new route53.CrossAccountZoneDelegationRecord(this, 'delegate', {
   delegatedZone: subZone,
-  parentHostedZoneId: parentZone.hostedZoneId,
-  delegationRole: parentZone.crossAccountDelegationRole
+  parentHostedZoneName: 'someexample.com', // or you can use parentHostedZoneId
+  delegationRole,
 });
 ```
 
@@ -191,7 +226,7 @@ This DNS name can also be guaranteed to match up with the backend certificate.
 
 Before consumers can use the private DNS name, you must verify that you have control of the domain/subdomain.
 
-Assuming your account has ownership of the particlar domain/subdomain,
+Assuming your account has ownership of the particular domain/subdomain,
 this construct sets up the private DNS configuration on the endpoint service,
 creates all the necessary Route53 entries, and verifies domain ownership.
 
