@@ -8,7 +8,7 @@ import * as cloudmap from '@aws-cdk/aws-servicediscovery';
 import { Annotations, Duration, IResolvable, IResource, Lazy, Resource, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { LoadBalancerTargetOptions, NetworkMode, TaskDefinition } from '../base/task-definition';
-import { ICluster, CapacityProviderStrategy } from '../cluster';
+import { ICluster, CapacityProviderStrategy, EcsOptimizedAmi, ExecuteCommandLogging, ExecuteCommandLogConfiguration } from '../cluster';
 import { ContainerDefinition, Protocol } from '../container-definition';
 import { CfnService } from '../ecs.generated';
 import { ScalableTaskCount } from './scalable-task-count';
@@ -427,14 +427,75 @@ export abstract class BaseService extends Resource
 
     if (props.enableExecuteCommand) {
       this.enableExecuteCommand();
-    }
+
+      const logging = this.cluster.executeCommandConfiguration?.logging || ExecuteCommandLogging.DEFAULT;
+      if (logging === ExecuteCommandLogging.OVERRIDE) {
+        this.executeCommandLogConfiguration(logging, this.cluster.executeCommandConfiguration?.logConfiguration);
+      } if (logging === ExecuteCommandLogging.DEFAULT) {
+        this.executeCommandLogConfiguration(logging);
+      }
+
+      if (this.cluster.executeCommandConfiguration?.kmsKeyID) {
+        this.taskDefinition.addToTaskRolePolicy(new iam.PolicyStatement({
+          actions: [
+            'kms:Decrypt',
+          ],
+          resources: [`arn:aws:kms:${this.stack.region}:${this.stack.account}:key/${this.cluster.executeCommandConfiguration.kmsKeyID}`],
+        }));
+      }
   }
+}
 
   /**
    * The CloudMap service created for this service, if any.
    */
   public get cloudMapService(): cloudmap.IService | undefined {
     return this.cloudmapService;
+  }
+
+  private executeCommandLogConfiguration(logging?: ExecuteCommandLogging, logConfiguration?: ExecuteCommandLogConfiguration) {
+    this.taskDefinition.addToTaskRolePolicy(new iam.PolicyStatement({
+      actions: [
+        'logs:DescribeLogGroups',
+      ],
+      resources: ['*'],
+    }));
+
+    if (logConfiguration?.cloudWatchLogGroupName) {
+      this.taskDefinition.addToTaskRolePolicy(new iam.PolicyStatement({
+        actions: [
+          'logs:CreateLogStream',
+          'logs:DescribeLogStreams',
+          'logs:PutLogEvents',
+        ],
+        resources: [`arn:aws:logs:${this.stack.region}:${this.stack.account}:log-group:${logConfiguration.cloudWatchLogGroupName}:*`],
+      }));
+    } else {
+      this.taskDefinition.addToTaskRolePolicy(new iam.PolicyStatement({
+        actions: [
+          'logs:CreateLogStream',
+          'logs:DescribeLogStreams',
+          'logs:PutLogEvents',
+        ],
+        resources: ['*'],
+      }));
+    }
+
+    if (logConfiguration?.s3BucketName) {
+      this.taskDefinition.addToTaskRolePolicy(new iam.PolicyStatement({
+        actions: [
+          's3:GetBucketLocation',
+        ],
+        resources: ['*'],
+      }));
+      this.taskDefinition.addToTaskRolePolicy(new iam.PolicyStatement({
+        actions: [
+          's3:GetEncryptionConfiguration',
+          's3:PutObject',
+        ],
+        resources: [`arn:aws:s3:::${logConfiguration.s3BucketName}/*`],
+      }));
+    }
   }
 
   /**

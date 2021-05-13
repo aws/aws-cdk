@@ -61,6 +61,13 @@ export interface ClusterProps {
    * @default - Container Insights will be disabled for this cluser.
    */
   readonly containerInsights?: boolean;
+
+  /**
+   * The execute command configuration for the cluster
+   *
+   * @default - no configuration will be provided.
+   */
+  readonly executeCommandConfiguration?: ExecuteCommandConfiguration;
 }
 
 /**
@@ -131,6 +138,11 @@ export class Cluster extends Resource implements ICluster {
   private _autoscalingGroup?: autoscaling.IAutoScalingGroup;
 
   /**
+   * The execute command configuration for the cluster
+   */
+  private _executeCommandConfiguration?: ExecuteCommandConfiguration;
+
+  /**
    * Constructs a new instance of the Cluster class.
    */
   constructor(scope: Construct, id: string, props: ClusterProps = {}) {
@@ -154,6 +166,7 @@ export class Cluster extends Resource implements ICluster {
       clusterName: this.physicalName,
       clusterSettings,
       capacityProviders: Lazy.list({ produce: () => this._capacityProviders }, { omitEmpty: true }),
+      configuration: props.executeCommandConfiguration ? this.renderConfiguration(props.executeCommandConfiguration) : undefined,
     });
 
     this.clusterArn = this.getResourceArnAttribute(cluster.attrArn, {
@@ -173,6 +186,36 @@ export class Cluster extends Resource implements ICluster {
     this._autoscalingGroup = props.capacity !== undefined
       ? this.addCapacity('DefaultAutoScalingGroup', props.capacity)
       : undefined;
+
+    this._executeCommandConfiguration = props.executeCommandConfiguration;
+  }
+
+  private renderConfiguration(executeCommandConfig: ExecuteCommandConfiguration) : CfnCluster.ClusterConfigurationProperty {
+    return {
+      executeCommandConfiguration: this.renderExecuteCommandConfiguration(executeCommandConfig),
+    };
+  }
+
+  private renderExecuteCommandConfiguration(executeCommandConfig: ExecuteCommandConfiguration): CfnCluster.ExecuteCommandConfigurationProperty {
+    return {
+      kmsKeyId: executeCommandConfig.kmsKeyID || undefined,
+      logConfiguration: this.renderExecuteCommandLogConfiguration(executeCommandConfig.logConfiguration),
+      logging: executeCommandConfig.logging || undefined,
+    };
+  }
+
+  private renderExecuteCommandLogConfiguration(logConfiguration: ExecuteCommandLogConfiguration | undefined):
+  CfnCluster.ExecuteCommandLogConfigurationProperty | undefined {
+    if (!logConfiguration) {
+      return undefined;
+    }
+    return {
+      cloudWatchEncryptionEnabled: logConfiguration?.cloudWatchEncryptionEnabled,
+      cloudWatchLogGroupName: logConfiguration?.cloudWatchLogGroupName,
+      s3BucketName: logConfiguration?.s3BucketName,
+      s3EncryptionEnabled: logConfiguration?.s3EncryptionEnabled,
+      s3KeyPrefix: logConfiguration?.s3KeyPrefix,
+    };
   }
 
   /**
@@ -395,6 +438,13 @@ export class Cluster extends Resource implements ICluster {
    */
   public get hasEc2Capacity(): boolean {
     return this._hasEc2Capacity;
+  }
+
+  /**
+   * Getter for execute command configuration associated with the cluster
+   */
+  public get executeCommandConfiguration(): ExecuteCommandConfiguration | undefined {
+    return this._executeCommandConfiguration;
   }
 
   /**
@@ -729,6 +779,11 @@ export interface ICluster extends IResource {
    * The autoscaling group added to the cluster if capacity is associated to the cluster
    */
   readonly autoscalingGroup?: autoscaling.IAutoScalingGroup;
+
+  /**
+   * The execute command configuration for the cluster
+   */
+  readonly executeCommandConfiguration?: ExecuteCommandConfiguration;
 }
 
 /**
@@ -777,6 +832,13 @@ export interface ClusterAttributes {
    * @default - No default autoscaling group
    */
   readonly autoscalingGroup?: autoscaling.IAutoScalingGroup;
+
+  /**
+   * The execute command configuration for the cluster
+   *
+   * @default - no configuration will be provided.
+   */
+  readonly executeCommandConfiguration?: ExecuteCommandConfiguration;
 }
 
 /**
@@ -996,4 +1058,93 @@ capacity provider. The weight value is taken into consideration after the base v
    * @default - 0
    */
   readonly weight?: number;
+}
+
+/**
+ * The details of the execute command configuration. For more information, see
+ * [ExecuteCommandConfiguration] https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ecs-cluster-executecommandconfiguration.html
+ */
+export interface ExecuteCommandConfiguration {
+  /**
+   * The AWS Key Management Service key ID to encrypt the data between the local client and the container.
+   *
+   * @default - none
+   */
+  readonly kmsKeyID?: string,
+
+  /**
+   * The log configuration for the results of the execute command actions. The logs can be sent to CloudWatch Logs or an Amazon S3 bucket.
+   *
+   * @default - No logs provided
+   */
+  readonly logConfiguration?: ExecuteCommandLogConfiguration,
+
+  /**
+   * The log setting to use for redirecting logs for the execute command results.
+   *
+   * @default - 'DEFAULT'
+   */
+  readonly logging?: ExecuteCommandLogging,
+}
+
+/**
+ * The log setting to use for redirecting logs for the execute command results. For more information, see
+ * [Logging] https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ecs-cluster-executecommandconfiguration.html#cfn-ecs-cluster-executecommandconfiguration-logging
+ */
+export enum ExecuteCommandLogging {
+  /**
+   * The execute command session is not logged.
+   */
+  NONE = 'NONE',
+
+  /**
+   * The awslogs configuration in the task definition is used. If no logging parameter is specified, it defaults to this value. If no awslogs log driver is configured in the task definition, the output won't be logged.
+   */
+  DEFAULT = 'DEFAULT',
+
+  /**
+   * Specify the logging details as a part of logConfiguration.
+   */
+  OVERRIDE = 'OVERRIDE',
+}
+
+/**
+ * The log configuration for the results of the execute command actions. The logs can be sent to CloudWatch Logs and/ or an Amazon S3 bucket.
+ * For more information, see [ExecuteCommandLogConfiguration] https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ecs-cluster-executecommandlogconfiguration.html
+ */
+export interface ExecuteCommandLogConfiguration {
+  /**
+   * Whether or not to enable encryption on the CloudWatch logs.
+   *
+   * @default - encryption will be disabled.
+   */
+  readonly cloudWatchEncryptionEnabled?: boolean,
+
+  /**
+   * The name of the CloudWatch log group to send logs to.
+   *
+   * @default - none
+   */
+  readonly cloudWatchLogGroupName?: string,
+
+  /**
+   * The name of the S3 bucket to send logs to.
+   *
+   * @default - none
+   */
+  readonly s3BucketName?: string,
+
+  /**
+   * Whether or not to enable encryption on the CloudWatch logs.
+   *
+   * @default - encryption will be disabled.
+   */
+  readonly s3EncryptionEnabled?: boolean,
+
+  /**
+   * An optional folder in the S3 bucket to place logs in.
+   *
+   * @default - none
+   */
+  readonly s3KeyPrefix?: string
 }
