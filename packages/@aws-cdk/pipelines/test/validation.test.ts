@@ -39,7 +39,7 @@ afterEach(() => {
   app.cleanup();
 });
 
-test('asdasdasdas', () => {
+test('stackOutput generates names limited to 100 characters', () => {
   const stage = new AppWithStackOutput(app, 'APreposterouslyLongAndComplicatedNameMadeUpJustToMakeItExceedTheLimitDefinedByCodeBuild');
   const pipeStage = pipeline.addApplicationStage(stage);
   pipeStage.addActions(new cdkp.ShellScriptAction({
