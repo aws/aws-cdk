@@ -91,7 +91,9 @@
     "announce": false
   },
   "nozem": {
-    "ostools": ["docker"]
+    "ostools": [
+      "docker"
+    ]
   },
   "cdk-build": {
     "jest": true
