@@ -83,12 +83,14 @@
     ]
   },
   "nozem": {
-      "ostools": ["bash"]
+    "ostools": [
+      "bash"
+    ]
   },
   "awscdkio": {
     "announce": false
   },
   "publishConfig": {
-    "tag": "latest"
+    "tag": "next"
   }
 }
