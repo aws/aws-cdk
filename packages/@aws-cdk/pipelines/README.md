@@ -596,7 +596,7 @@ to create it in. If you are deploying your application to different environments
 also have to bootstrap those and be sure to add a *trust* relationship.
 
 > This library requires a newer version of the bootstrapping stack which has
-> been updated specifically to support cross-account continous delivery. In the future,
+> been updated specifically to support cross-account continuous delivery. In the future,
 > this new bootstrapping stack will become the default, but for now it is still
 > opt-in.
 >

@@ -759,7 +759,7 @@ You can create Object Types in three ways:
       name: 'demo',
     });
     const demo = new appsync.ObjectType('Demo', {
-      defintion: {
+      definition: {
         id: appsync.GraphqlType.string({ isRequired: true }),
         version: appsync.GraphqlType.string({ isRequired: true }),
       },
@@ -782,7 +782,7 @@ You can create Object Types in three ways:
     ```ts
     import { required_string } from './scalar-types';
     export const demo = new appsync.ObjectType('Demo', {
-      defintion: {
+      definition: {
         id: required_string,
         version: required_string,
       },
@@ -806,7 +806,7 @@ You can create Object Types in three ways:
     });
     const demo = new appsync.ObjectType('Demo', {
       interfaceTypes: [ node ],
-      defintion: {
+      definition: {
         version: appsync.GraphqlType.string({ isRequired: true }),
       },
     });
