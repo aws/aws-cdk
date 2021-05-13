@@ -349,12 +349,14 @@ export class RdsDataSource extends BackedDataSource {
     props.secretStore.grantRead(this);
 
     // Change to grant with RDS grant becomes implemented
+
+    props.serverlessCluster.grantDataApiAccess(this);
+
     Grant.addToPrincipal({
       grantee: this,
       actions: [
         'rds-data:DeleteItems',
         'rds-data:ExecuteSql',
-        'rds-data:ExecuteStatement',
         'rds-data:GetItems',
         'rds-data:InsertItems',
         'rds-data:UpdateItems',
