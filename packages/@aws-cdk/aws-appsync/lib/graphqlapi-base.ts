@@ -1,9 +1,10 @@
 import { ITable } from '@aws-cdk/aws-dynamodb';
+import { IDomain } from '@aws-cdk/aws-elasticsearch';
 import { IFunction } from '@aws-cdk/aws-lambda';
 import { IServerlessCluster } from '@aws-cdk/aws-rds';
 import { ISecret } from '@aws-cdk/aws-secretsmanager';
 import { CfnResource, IResource, Resource } from '@aws-cdk/core';
-import { DynamoDbDataSource, HttpDataSource, LambdaDataSource, NoneDataSource, RdsDataSource, AwsIamConfig } from './data-source';
+import { DynamoDbDataSource, HttpDataSource, LambdaDataSource, NoneDataSource, RdsDataSource, AwsIamConfig, ElasticsearchDataSource } from './data-source';
 import { Resolver, ExtendedResolverProps } from './resolver';
 
 /**
@@ -109,6 +110,15 @@ export interface IGraphqlApi extends IResource {
     databaseName?: string,
     options?: DataSourceOptions
   ): RdsDataSource;
+
+  /**
+   * add a new elasticsearch data source to this API
+   *
+   * @param id The data source's id
+   * @param domain The elasticsearch domain for this data source
+   * @param options The optional configuration for this data source
+   */
+  addElasticsearchDataSource(id: string, domain: IDomain, options?: DataSourceOptions): ElasticsearchDataSource;
 
   /**
    * creates a new resolver for this datasource and API using the given properties
@@ -225,6 +235,22 @@ export abstract class GraphqlApiBase extends Resource implements IGraphqlApi {
       serverlessCluster,
       secretStore,
       databaseName,
+    });
+  }
+
+  /**
+   * add a new elasticsearch data source to this API
+   *
+   * @param id The data source's id
+   * @param domain The elasticsearch domain for this data source
+   * @param options The optional configuration for this data source
+   */
+  public addElasticsearchDataSource(id: string, domain: IDomain, options?: DataSourceOptions): ElasticsearchDataSource {
+    return new ElasticsearchDataSource(this, id, {
+      api: this,
+      name: options?.name,
+      description: options?.description,
+      domain,
     });
   }
 
