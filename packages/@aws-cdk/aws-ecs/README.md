@@ -14,16 +14,13 @@
 This package contains constructs for working with **Amazon Elastic Container
 Service** (Amazon ECS).
 
-Amazon ECS is a highly scalable, fast, container management service
-that makes it easy to run, stop,
-and manage Docker containers on a cluster of Amazon EC2 instances.
+Amazon Elastic Container Service (Amazon ECS) is a fully managed container orchestration service.
 
 For further information on Amazon ECS,
 see the [Amazon ECS documentation](https://docs.aws.amazon.com/ecs)
 
-The following example creates an Amazon ECS cluster,
-adds capacity to it,
-and instantiates the Amazon ECS Service with an automatic load balancer.
+The following example creates an Amazon ECS cluster, adds capacity to it, and
+runs a service on it:
 
 ```ts
 import * as ecs from '@aws-cdk/aws-ecs';
@@ -151,6 +148,22 @@ cluster.addCapacity('bottlerocket-asg', {
   instanceType: new ec2.InstanceType('c5.large'),
   machineImageType: ecs.MachineImageType.BOTTLEROCKET,
 });
+```
+
+### ARM64 (Graviton) Instances
+
+To launch instances with ARM64 hardware, you can use the Amazon ECS-optimized
+Amazon Linux 2 (arm64) AMI. Based on Amazon Linux 2, this AMI is recommended
+for use when launching your EC2 instances that are powered by Arm-based AWS
+Graviton Processors.
+
+```ts
+cluster.addCapacity('graviton-cluster', {
+  minCapacity: 2,
+  instanceType: new ec2.InstanceType('c6g.large'),
+  machineImage: ecs.EcsOptimizedImage.amazonLinux2(ecs.AmiHardwareType.ARM),
+});
+
 ```
 
 ### Spot Instances
@@ -480,38 +493,6 @@ scaling.scaleOnRequestCount('RequestScaling', {
 Task auto-scaling is powered by *Application Auto-Scaling*.
 See that section for details.
 
-## Instance Auto-Scaling
-
-If you're running on AWS Fargate, AWS manages the physical machines that your
-containers are running on for you. If you're running an Amazon ECS cluster however,
-your Amazon EC2 instances might fill up as your number of Tasks goes up.
-
-To avoid placement errors, configure auto-scaling for your
-Amazon EC2 instance group so that your instance count scales with demand. To keep
-your Amazon EC2 instances halfway loaded, scaling up to a maximum of 30 instances
-if required:
-
-```ts
-const autoScalingGroup = cluster.addCapacity('DefaultAutoScalingGroup', {
-  instanceType: new ec2.InstanceType("t2.xlarge"),
-  minCapacity: 3,
-  maxCapacity: 30,
-  desiredCapacity: 3,
-
-  // Give instances 5 minutes to drain running tasks when an instance is
-  // terminated. This is the default, turn this off by specifying 0 or
-  // change the timeout up to 900 seconds.
-  taskDrainTime: Duration.seconds(300)
-});
-
-autoScalingGroup.scaleOnCpuUtilization('KeepCpuHalfwayLoaded', {
-  targetUtilizationPercent: 50
-});
-```
-
-See the `@aws-cdk/aws-autoscaling` library for more autoscaling options
-you can configure on your instances.
-
 ## Integration with CloudWatch Events
 
 To start an Amazon ECS task on an Amazon EC2-backed Cluster, instantiate an
@@ -525,7 +506,7 @@ const taskDefinition = new ecs.Ec2TaskDefinition(this, 'TaskDef');
 taskDefinition.addContainer('TheContainer', {
   image: ecs.ContainerImage.fromAsset(path.resolve(__dirname, '..', 'eventhandler-image')),
   memoryLimitMiB: 256,
-  logging: new ecs.AwsLogDriver({ streamPrefix: 'EventDemo' })
+  logging: new ecs.AwsLogDriver({ streamPrefix: 'EventDemo', mode: AwsLogDriverMode.NON_BLOCKING })
 });
 
 // An Rule that describes the event trigger (in this case a scheduled run)
@@ -744,25 +725,24 @@ ecsService.associateCloudMapService({
 
 ## Capacity Providers
 
-Currently, only `FARGATE` and `FARGATE_SPOT` capacity providers are supported.
+There are two major families of Capacity Providers: [AWS
+Fargate](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/fargate-capacity-providers.html)
+(including Fargate Spot) and EC2 [Auto Scaling
+Group](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/asg-capacity-providers.html)
+Capacity Providers. Both are supported.
 
-To enable capacity providers on your cluster, set the `capacityProviders` field
-to [`FARGATE`, `FARGATE_SPOT`]. Then, specify capacity provider strategies on
-the `capacityProviderStrategies` field for your Fargate Service.
+### Fargate Capacity Providers
+
+To enable Fargate capacity providers, you can either set
+`enableFargateCapacityProviders` to `true` when creating your cluster, or by
+invoking the `enableFargateCapacityProviders()` method after creating your
+cluster. This will add both `FARGATE` and `FARGATE_SPOT` as available capacity
+providers on your cluster.
 
 ```ts
-import * as cdk from '@aws-cdk/core';
-import * as ec2 from '@aws-cdk/aws-ec2';
-import * as ecs from '../../lib';
-
-const app = new cdk.App();
-const stack = new cdk.Stack(app, 'aws-ecs-integ-capacity-provider');
-
-const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 2 });
-
 const cluster = new ecs.Cluster(stack, 'FargateCPCluster', {
   vpc,
-  capacityProviders: ['FARGATE', 'FARGATE_SPOT'],
+  enableFargateCapacityProviders: true,
 });
 
 const taskDefinition = new ecs.FargateTaskDefinition(stack, 'TaskDef');
@@ -785,8 +765,57 @@ new ecs.FargateService(stack, 'FargateService', {
     }
   ],
 });
+```
 
-app.synth();
+### Auto Scaling Group Capacity Providers
+
+To add an Auto Scaling Group Capacity Provider, first create an EC2 Auto Scaling
+Group. Then, create an `AsgCapacityProvider` and pass the Auto Scaling Group to
+it in the constructor. Then add the Capacity Provider to the cluster. Finally,
+you can refer to the Provider by its name in your service's or task's Capacity
+Provider strategy.
+
+By default, an Auto Scaling Group Capacity Provider will manage the Auto Scaling
+Group's size for you. It will also enable managed termination protection, in
+order to prevent EC2 Auto Scaling from terminating EC2 instances that have tasks
+running on them. If you want to disable this behavior, set both
+`enableManagedScaling` to and `enableManagedTerminationProtection` to `false`.
+
+```ts
+const cluster = new ecs.Cluster(stack, 'Cluster', {
+  vpc,
+});
+
+const autoScalingGroup = new autoscaling.AutoScalingGroup(stack, 'ASG', {
+  vpc,
+  instanceType: new ec2.InstanceType('t2.micro'),
+  machineImage: ecs.EcsOptimizedImage.amazonLinux2(),
+  minCapacity: 0,
+  maxCapacity: 100,
+});
+
+const capacityProvider = new ecs.AsgCapacityProvider(stack, 'AsgCapacityProvider', {
+  autoScalingGroup,
+});
+cluster.addAsgCapacityProvider(capacityProvider);
+
+const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
+
+taskDefinition.addContainer('web', {
+  image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample',
+  memoryReservationMiB: 256,
+});
+
+new ecs.Ec2Service(stack, 'EC2Service', {
+  cluster,
+  taskDefinition,
+  capacityProviderStrategies: [
+    {
+      capacityProvider: capacityProvider.capacityProviderName,
+      weight: 1,
+    }
+  ],
+});
 ```
 
 ## Elastic Inference Accelerators
@@ -794,7 +823,7 @@ app.synth();
 Currently, this feature is only supported for services with EC2 launch types.
 
 To add elastic inference accelerators to your EC2 instance, first add
-`inferenceAccelerators` field to the EC2TaskDefinition and set the `deviceName`
+`inferenceAccelerators` field to the Ec2TaskDefinition and set the `deviceName`
 and `deviceType` properties.
 
 ```ts

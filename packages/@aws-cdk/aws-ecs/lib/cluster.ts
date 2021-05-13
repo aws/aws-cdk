@@ -5,11 +5,11 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as cloudmap from '@aws-cdk/aws-servicediscovery';
 import * as ssm from '@aws-cdk/aws-ssm';
-import { Duration, Lazy, IResource, Resource, Stack } from '@aws-cdk/core';
+import { Duration, Lazy, IResource, Resource, Stack, Aspects, IAspect, IConstruct } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { InstanceDrainHook } from './drain-hook/instance-drain-hook';
 import { ECSMetrics } from './ecs-canned-metrics.generated';
-import { CfnCluster } from './ecs.generated';
+import { CfnCluster, CfnCapacityProvider, CfnClusterCapacityProviderAssociations } from './ecs.generated';
 
 // v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
 // eslint-disable-next-line
@@ -52,8 +52,16 @@ export interface ClusterProps {
    * The capacity providers to add to the cluster
    *
    * @default - None. Currently only FARGATE and FARGATE_SPOT are supported.
+   * @deprecated Use {@link ClusterProps.enableFargateCapacityProviders} instead.
    */
   readonly capacityProviders?: string[];
+
+  /**
+   * Whether to enable Fargate Capacity Providers
+   *
+   * @default false
+   */
+  readonly enableFargateCapacityProviders?: boolean;
 
   /**
    * If true CloudWatch Container Insights will be enabled for the cluster
@@ -116,11 +124,14 @@ export class Cluster extends Resource implements ICluster {
   public readonly clusterName: string;
 
   /**
-   * The capacity providers associated with the cluster.
-   *
-   * Currently only FARGATE and FARGATE_SPOT are supported.
+   * The cluster-level (FARGATE, FARGATE_SPOT) capacity providers.
    */
-  private _capacityProviders: string[] = [];
+  private _fargateCapacityProviders: string[] = [];
+
+  /**
+   * The EC2 Auto Scaling Group capacity providers associated with the cluster.
+   */
+  private _asgCapacityProviders: AsgCapacityProvider[] = [];
 
   /**
    * The AWS Cloud Map namespace to associate with the cluster.
@@ -160,7 +171,10 @@ export class Cluster extends Resource implements ICluster {
       clusterSettings = [{ name: 'containerInsights', value: props.containerInsights ? ContainerInsights.ENABLED : ContainerInsights.DISABLED }];
     }
 
-    this._capacityProviders = props.capacityProviders ?? [];
+    this._fargateCapacityProviders = props.capacityProviders ?? [];
+    if (props.enableFargateCapacityProviders) {
+      this.enableFargateCapacityProviders();
+    }
 
     const cluster = new CfnCluster(this, 'Resource', {
       clusterName: this.physicalName,
@@ -188,8 +202,26 @@ export class Cluster extends Resource implements ICluster {
       : undefined;
 
     this._executeCommandConfiguration = props.executeCommandConfiguration;
+    
+    // Only create cluster capacity provider associations if there are any EC2
+    // capacity providers. Ordinarily we'd just add the construct to the tree
+    // since it's harmless, but we'd prefer not to add unexpected new
+    // resources to the stack which could surprise users working with
+    // brown-field CDK apps and stacks.
+    Aspects.of(this).add(new MaybeCreateCapacityProviderAssociations(this, id, this._asgCapacityProviders));
   }
 
+  /**
+   * Enable the Fargate capacity providers for this cluster.
+   */
+  public enableFargateCapacityProviders() {
+    for (const provider of ['FARGATE', 'FARGATE_SPOT']) {
+      if (!this._fargateCapacityProviders.includes(provider)) {
+        this._fargateCapacityProviders.push(provider);
+      }
+    }
+  }
+  
   private renderConfiguration(executeCommandConfig: ExecuteCommandConfiguration) : CfnCluster.ClusterConfigurationProperty {
     return {
       executeCommandConfiguration: this.renderExecuteCommandConfiguration(executeCommandConfig),
@@ -257,6 +289,8 @@ export class Cluster extends Resource implements ICluster {
    * This method adds compute capacity to a cluster by creating an AutoScalingGroup with the specified options.
    *
    * Returns the AutoScalingGroup so you can add autoscaling settings to it.
+   *
+   * @deprecated Use {@link Cluster.addAsgCapacityProvider} instead.
    */
   public addCapacity(id: string, options: AddCapacityOptions): autoscaling.AutoScalingGroup {
     if (options.machineImage && options.machineImageType) {
@@ -282,8 +316,30 @@ export class Cluster extends Resource implements ICluster {
   }
 
   /**
+   * This method adds an Auto Scaling Group Capacity Provider to a cluster.
+   *
+   * @param provider the capacity provider to add to this cluster.
+   */
+  public addAsgCapacityProvider(provider: AsgCapacityProvider, options: AddAutoScalingGroupCapacityOptions = {}) {
+    // Don't add the same capacity provider more than once.
+    if (this._asgCapacityProviders.includes(provider)) {
+      return;
+    }
+
+    this._hasEc2Capacity = true;
+    this.configureAutoScalingGroup(provider.autoScalingGroup, {
+      ...options,
+      // Don't enable the instance-draining lifecycle hook if managed termination protection is enabled
+      taskDrainTime: provider.enableManagedTerminationProtection ? Duration.seconds(0) : options.taskDrainTime,
+    });
+
+    this._asgCapacityProviders.push(provider);
+  }
+
+  /**
    * This method adds compute capacity to a cluster using the specified AutoScalingGroup.
    *
+   * @deprecated Use {@link Cluster.addAsgCapacityProvider} instead.
    * @param autoScalingGroup the ASG to add to this cluster.
    * [disable-awslint:ref-via-interface] is needed in order to install the ECS
    * agent by updating the ASGs user data.
@@ -291,8 +347,11 @@ export class Cluster extends Resource implements ICluster {
   public addAutoScalingGroup(autoScalingGroup: autoscaling.AutoScalingGroup, options: AddAutoScalingGroupCapacityOptions = {}) {
     this._hasEc2Capacity = true;
     this.connections.connections.addSecurityGroup(...autoScalingGroup.connections.securityGroups);
+    this.configureAutoScalingGroup(autoScalingGroup, options);
+  }
 
-    if ( autoScalingGroup.osType === ec2.OperatingSystemType.WINDOWS ) {
+  private configureAutoScalingGroup(autoScalingGroup: autoscaling.AutoScalingGroup, options: AddAutoScalingGroupCapacityOptions = {}) {
+    if (autoScalingGroup.osType === ec2.OperatingSystemType.WINDOWS) {
       this.configureWindowsAutoScalingGroup(autoScalingGroup, options);
     } else {
       // Tie instances to cluster
@@ -385,17 +444,19 @@ export class Cluster extends Resource implements ICluster {
   }
 
   /**
-   * addCapacityProvider adds the name of a capacityProvider to the list of supproted capacityProviders for a cluster.
+   * This method enables the Fargate or Fargate Spot capacity providers on the cluster.
    *
    * @param provider the capacity provider to add to this cluster.
+   * @deprecated Use {@link enableFargateCapacityProviders} instead.
+   * @see {@link addAsgCapacityProvider} to add an Auto Scaling Group capacity provider to the cluster.
    */
   public addCapacityProvider(provider: string) {
     if (!(provider === 'FARGATE' || provider === 'FARGATE_SPOT')) {
       throw new Error('CapacityProvider not supported');
     }
 
-    if (!this._capacityProviders.includes(provider)) {
-      this._capacityProviders.push(provider);
+    if (!this._fargateCapacityProviders.includes(provider)) {
+      this._fargateCapacityProviders.push(provider);
     }
   }
 
@@ -516,7 +577,7 @@ export enum WindowsOptimizedVersion {
 /*
  * TODO:v2.0.0
  *  * remove `export` keyword
- *  * remove @depracted
+ *  * remove @deprecated
  */
 /**
  * The properties that define which ECS-optimized AMI is used.
@@ -921,6 +982,7 @@ export interface AddAutoScalingGroupCapacityOptions {
    *
    * Set to 0 to disable task draining.
    *
+   * @deprecated The lifecycle draining hook is not configured if using the EC2 Capacity Provider. Enable managed termination protection instead.
    * @default Duration.minutes(5)
    */
   readonly taskDrainTime?: Duration;
@@ -1037,7 +1099,7 @@ enum ContainerInsights {
  */
 export interface CapacityProviderStrategy {
   /**
-   * The name of the Capacity Provider. Currently only FARGATE and FARGATE_SPOT are supported.
+   * The name of the capacity provider.
    */
   readonly capacityProvider: string;
 
@@ -1147,4 +1209,137 @@ export interface ExecuteCommandLogConfiguration {
    * @default - none
    */
   readonly s3KeyPrefix?: string
+}
+
+ * The options for creating an Auto Scaling Group Capacity Provider.
+ */
+export interface AsgCapacityProviderProps extends AddAutoScalingGroupCapacityOptions {
+  /**
+   * The name for the capacity provider.
+   *
+   * @default CloudFormation-generated name
+   */
+  readonly capacityProviderName?: string;
+
+  /**
+   * The autoscaling group to add as a Capacity Provider.
+   */
+  readonly autoScalingGroup: autoscaling.IAutoScalingGroup;
+
+  /**
+   * Whether to enable managed scaling
+   *
+   * @default true
+   */
+  readonly enableManagedScaling?: boolean;
+
+  /**
+   * Whether to enable managed termination protection
+   *
+   * @default true
+   */
+  readonly enableManagedTerminationProtection?: boolean;
+
+  /**
+   * Maximum scaling step size. In most cases this should be left alone.
+   *
+   * @default 1000
+   */
+  readonly maximumScalingStepSize?: number;
+
+  /**
+   * Minimum scaling step size. In most cases this should be left alone.
+   *
+   * @default 1
+   */
+  readonly minimumScalingStepSize?: number;
+
+  /**
+   * Target capacity percent. In most cases this should be left alone.
+   *
+   * @default 100
+   */
+  readonly targetCapacityPercent?: number;
+}
+
+/**
+ * An Auto Scaling Group Capacity Provider. This allows an ECS cluster to target
+ * a specific EC2 Auto Scaling Group for the placement of tasks. Optionally (and
+ * recommended), ECS can manage the number of instances in the ASG to fit the
+ * tasks, and can ensure that instances are not prematurely terminated while
+ * there are still tasks running on them.
+ */
+export class AsgCapacityProvider extends CoreConstruct {
+  /**
+   * Capacity provider name
+   * @default Chosen by CloudFormation
+   */
+  readonly capacityProviderName: string;
+
+  /**
+   * Auto Scaling Group
+   */
+  readonly autoScalingGroup: autoscaling.AutoScalingGroup;
+
+  /**
+   * Whether managed termination protection is enabled
+   */
+  readonly enableManagedTerminationProtection?: boolean;
+
+  constructor(scope: Construct, id: string, props: AsgCapacityProviderProps) {
+    super(scope, id);
+
+    this.autoScalingGroup = props.autoScalingGroup as autoscaling.AutoScalingGroup;
+
+    this.enableManagedTerminationProtection =
+      props.enableManagedTerminationProtection === undefined ? true : props.enableManagedTerminationProtection;
+
+    if (this.enableManagedTerminationProtection) {
+      this.autoScalingGroup.protectNewInstancesFromScaleIn();
+    }
+
+    const capacityProvider = new CfnCapacityProvider(this, id, {
+      name: props.capacityProviderName,
+      autoScalingGroupProvider: {
+        autoScalingGroupArn: this.autoScalingGroup.autoScalingGroupName,
+        managedScaling: props.enableManagedScaling === false ? undefined : {
+          status: 'ENABLED',
+          targetCapacity: props.targetCapacityPercent || 100,
+          maximumScalingStepSize: props.maximumScalingStepSize,
+          minimumScalingStepSize: props.minimumScalingStepSize,
+        },
+        managedTerminationProtection: this.enableManagedTerminationProtection ? 'ENABLED' : 'DISABLED',
+      },
+    });
+
+    this.capacityProviderName = capacityProvider.ref;
+  }
+}
+
+/**
+ * A visitor that adds a capacity provider association to a Cluster only if
+ * the caller created any EC2 Capacity Providers.
+ */
+class MaybeCreateCapacityProviderAssociations implements IAspect {
+  private scope: CoreConstruct;
+  private id: string;
+  private capacityProviders: AsgCapacityProvider[]
+
+  constructor(scope: CoreConstruct, id: string, capacityProviders: AsgCapacityProvider[]) {
+    this.scope = scope;
+    this.id = id;
+    this.capacityProviders = capacityProviders;
+  }
+  public visit(node: IConstruct): void {
+    if (node instanceof Cluster) {
+      const providers = this.capacityProviders.map(p => p.capacityProviderName).filter(p => p !== 'FARGATE' && p !== 'FARGATE_SPOT');
+      if (providers.length > 0) {
+        new CfnClusterCapacityProviderAssociations(this.scope, this.id, {
+          cluster: node.clusterName,
+          defaultCapacityProviderStrategy: [],
+          capacityProviders: Lazy.list({ produce: () => providers }),
+        });
+      }
+    }
+  }
 }
