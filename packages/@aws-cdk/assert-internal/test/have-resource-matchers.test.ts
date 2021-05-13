@@ -1,11 +1,5 @@
 import { InspectionFailure, stringIsNoLongerThan } from '../lib';
 
-//(props: any, inspection: InspectionFailure) => boolean;
-// export interface InspectionFailure {
-//   resource: any;
-//   failureReason: string;
-// }
-
 describe('stringIsNoLongerThan', function () {
   test('string is shorter than limit', () => {
     const matcher = stringIsNoLongerThan(10);
