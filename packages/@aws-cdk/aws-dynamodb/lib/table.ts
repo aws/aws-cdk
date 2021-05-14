@@ -203,6 +203,13 @@ export interface TableOptions {
   readonly timeToLiveAttribute?: string;
 
   /**
+   * Whether a custom resource is created to manage the time to live attribute value.
+   *
+   * @default - true
+   */
+  readonly timeToLiveCustomResource?: boolean;
+
+  /**
    * When an item in the table is modified, StreamViewType determines what information
    * is written to the stream for this table.
    *
@@ -1150,7 +1157,7 @@ export class Table extends TableBase {
       this.createReplicaTables(props.replicationRegions, props.replicationTimeout);
     }
 
-    if (props.timeToLiveAttribute !== undefined) {
+    if (props.timeToLiveAttribute !== undefined && ( props.timeToLiveCustomResource ?? true ) ) {
       this.createTimeToLiveCustomResource(props.timeToLiveAttribute);
     }
   }

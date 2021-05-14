@@ -92,25 +92,47 @@ export async function getTimeToLiveStatus(event: OnEventRequest): Promise<TimeTo
   }
 }
 
-export async function tableWillBeRemoved(event: OnEventRequest): Promise<boolean> {
+export async function keepTTL(event: OnEventRequest): Promise<boolean> {
   const stacks = (await cloudFormation.describeStacks({ StackName: event.StackId }).promise()).Stacks;
-
-  const tableRemoval = await stacks?.map(async (stack): Promise<boolean> => {
+  const changeSets = await Promise.all(( stacks ?? [] ).map(async (stack): Promise<CloudFormation.DescribeChangeSetOutput> => {
     if ( stack.ChangeSetId === undefined ) {
       throw new Error('Can not describe changeset without id');
     }
+    return cloudFormation.describeChangeSet({ ChangeSetName: stack.ChangeSetId, StackName: event.StackId }).promise();
+  }));
 
-    const changeset = await cloudFormation.describeChangeSet({ ChangeSetName: stack.ChangeSetId, StackName: event.StackId }).promise();
+  const tableRemoval = tableWillBeRemoved(changeSets, event.PhysicalResourceId);
+  const tableAttributeModified = tableTimeToLiveModified(changeSets, event.PhysicalResourceId);
+  return tableRemoval || !tableAttributeModified;
+}
 
+function tableWillBeRemoved(changeSets: CloudFormation.DescribeChangeSetOutput[], tablePhysicalResourceId?: string): boolean {
+  const tableRemoval = changeSets?.map((changeset): boolean => {
     return changeset.Changes?.map((change): boolean => {
       return change.Type === 'Resource'
         && change.ResourceChange?.ResourceType === 'AWS::DynamoDB::Table'
-        && change.ResourceChange.PhysicalResourceId === event.PhysicalResourceId
+        && change.ResourceChange.PhysicalResourceId === tablePhysicalResourceId
         && change.ResourceChange.Action === 'Remove';
     }).reduce( (previousValue, currentValue) => previousValue || currentValue ) ?? false;
-
   }).reduce( (previousValue, currentValue) => previousValue || currentValue ) ?? false;
 
   console.log('Table will also be removed: %j', tableRemoval);
   return tableRemoval;
+}
+
+function tableTimeToLiveModified(changeSets: CloudFormation.DescribeChangeSetOutput[], tablePhysicalResourceId?: string): boolean {
+  const tableAttributeModified = changeSets?.map((changeset): boolean => {
+    return changeset.Changes?.map((change): boolean => {
+      return change.Type === 'Resource'
+        && change.ResourceChange?.ResourceType === 'AWS::DynamoDB::Table'
+        && change.ResourceChange.PhysicalResourceId === tablePhysicalResourceId
+        && change.ResourceChange.Action === 'Modify'
+        && ( change.ResourceChange.Details ?? [] )
+          .map( (detail): boolean => detail.Target?.Attribute === 'TimeToLiveSpecification')
+          .some(ttlAttribute => ttlAttribute === true);
+    }).reduce( (previousValue, currentValue) => previousValue || currentValue ) ?? false;
+  }).reduce( (previousValue, currentValue) => previousValue || currentValue ) ?? false;
+
+  console.log('Table TTL is modified: %j', tableAttributeModified);
+  return tableAttributeModified;
 }
