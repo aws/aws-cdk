@@ -179,7 +179,7 @@ export class Cluster extends Resource implements ICluster {
     const cluster = new CfnCluster(this, 'Resource', {
       clusterName: this.physicalName,
       clusterSettings,
-      capacityProviders: Lazy.list({ produce: () => this._capacityProviders }, { omitEmpty: true }),
+      capacityProviders: Lazy.list({ produce: () => this._fargateCapacityProviders }, { omitEmpty: true }),
       configuration: props.executeCommandConfiguration ? this.renderConfiguration(props.executeCommandConfiguration) : undefined,
     });
 
@@ -1211,6 +1211,7 @@ export interface ExecuteCommandLogConfiguration {
   readonly s3KeyPrefix?: string
 }
 
+/**
  * The options for creating an Auto Scaling Group Capacity Provider.
  */
 export interface AsgCapacityProviderProps extends AddAutoScalingGroupCapacityOptions {

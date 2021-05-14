@@ -8,7 +8,7 @@ import * as cloudmap from '@aws-cdk/aws-servicediscovery';
 import { Annotations, Duration, IResolvable, IResource, Lazy, Resource, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { LoadBalancerTargetOptions, NetworkMode, TaskDefinition } from '../base/task-definition';
-import { ICluster, CapacityProviderStrategy, EcsOptimizedAmi, ExecuteCommandLogging, ExecuteCommandLogConfiguration } from '../cluster';
+import { ICluster, CapacityProviderStrategy, ExecuteCommandLogging, ExecuteCommandLogConfiguration } from '../cluster';
 import { ContainerDefinition, Protocol } from '../container-definition';
 import { CfnService } from '../ecs.generated';
 import { ScalableTaskCount } from './scalable-task-count';
@@ -430,9 +430,9 @@ export abstract class BaseService extends Resource
 
       const logging = this.cluster.executeCommandConfiguration?.logging || ExecuteCommandLogging.DEFAULT;
       if (logging === ExecuteCommandLogging.OVERRIDE) {
-        this.executeCommandLogConfiguration(logging, this.cluster.executeCommandConfiguration?.logConfiguration);
+        this.executeCommandLogConfiguration(this.cluster.executeCommandConfiguration?.logConfiguration);
       } if (logging === ExecuteCommandLogging.DEFAULT) {
-        this.executeCommandLogConfiguration(logging);
+        this.executeCommandLogConfiguration();
       }
 
       if (this.cluster.executeCommandConfiguration?.kmsKeyID) {
@@ -453,7 +453,7 @@ export abstract class BaseService extends Resource
     return this.cloudmapService;
   }
 
-  private executeCommandLogConfiguration(logging?: ExecuteCommandLogging, logConfiguration?: ExecuteCommandLogConfiguration) {
+  private executeCommandLogConfiguration(logConfiguration?: ExecuteCommandLogConfiguration) {
     this.taskDefinition.addToTaskRolePolicy(new iam.PolicyStatement({
       actions: [
         'logs:DescribeLogGroups',
