@@ -167,7 +167,7 @@ export class HttpRoute extends Resource implements IHttpRoute {
       routeKey: props.routeKey.key,
       target: `integrations/${integration.integrationId}`,
       authorizerId: authBindResult?.authorizerId,
-      authorizationType,
+      authorizationType: authBindResult?.authorizationType ?? HttpAuthorizerType.NONE, // must be explicitly NONE (not undefined) for stack updates to work correctly
       authorizationScopes,
     };
 
