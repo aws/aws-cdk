@@ -136,14 +136,14 @@ const submitJob = new tasks.LambdaInvoke(this, 'Invoke Handler', {
 ### ResultSelector
 
 You can use [`ResultSelector`](https://docs.aws.amazon.com/step-functions/latest/dg/input-output-inputpath-params.html#input-output-resultselector)
-to reshape the raw result of a Task, Map or Parallel state before it is passed
-to [`ResultPath`](###ResultPath). For service integrations, the raw result contains
-metadata in addition to the response payload. You can use ResultSelector to pick
-fields from the raw result and combine them with static values or fields from the
-context object.
+to manipulate the raw result of a Task, Map or Parallel state before it is
+passed to [`ResultPath`](###ResultPath). For service integrations, the raw
+result contains metadata in addition to the response payload. You can use
+ResultSelector to construct a JSON payload that becomes the effective result
+using static values or references to the raw result or context object.
 
 The following example extracts the output payload of a Lambda function Task and combines
-it with some static values.
+it with some static values and the state name from the context object.
 
 ```ts
 new tasks.LambdaInvoke(this, 'Invoke Handler', {
@@ -151,7 +151,10 @@ new tasks.LambdaInvoke(this, 'Invoke Handler', {
   resultSelector: {
     lambdaOutput: sfn.JsonPath.stringAt('$.Payload'),
     invokeRequestId: sfn.JsonPath.stringAt('$.SdkResponseMetadata.RequestId'),
-    staticValue: 'foo',
+    staticValue: {
+      foo: 'bar',
+    },
+    stateName: sfn.JsonPath.stringAt('$$.State.Name'),
   },
 })
 ```

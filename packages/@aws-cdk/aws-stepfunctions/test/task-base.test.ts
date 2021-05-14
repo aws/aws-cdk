@@ -25,6 +25,28 @@ describe('Task base', () => {
       comment: 'my exciting task',
       heartbeat: cdk.Duration.seconds(10),
       timeout: cdk.Duration.minutes(10),
+    });
+
+    // THEN
+    expect(render(task)).toEqual({
+      StartAt: 'my-exciting-task',
+      States: {
+        'my-exciting-task': {
+          End: true,
+          Type: 'Task',
+          Comment: 'my exciting task',
+          TimeoutSeconds: 600,
+          HeartbeatSeconds: 10,
+          Resource: 'my-resource',
+          Parameters: { MyParameter: 'myParameter' },
+        },
+      },
+    });
+  });
+
+  test('instantiate a concrete implementation with resultSelector', () => {
+    // WHEN
+    task = new FakeTask(stack, 'my-exciting-task', {
       resultSelector: {
         buz: 'buz',
         baz: sfn.JsonPath.stringAt('$.baz'),
@@ -38,9 +60,6 @@ describe('Task base', () => {
         'my-exciting-task': {
           End: true,
           Type: 'Task',
-          Comment: 'my exciting task',
-          TimeoutSeconds: 600,
-          HeartbeatSeconds: 10,
           Resource: 'my-resource',
           Parameters: { MyParameter: 'myParameter' },
           ResultSelector: {
