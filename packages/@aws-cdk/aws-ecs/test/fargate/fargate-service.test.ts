@@ -23,7 +23,7 @@ nodeunitShim({
         image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
       });
 
-      new ecs.FargateService(stack, 'FargateService', {
+      const service = new ecs.FargateService(stack, 'FargateService', {
         cluster,
         taskDefinition,
       });
@@ -78,6 +78,8 @@ nodeunitShim({
           Ref: 'MyVpcF9F0CA6F',
         },
       }));
+
+      test.notEqual(service.node.defaultChild, undefined);
 
       test.done();
     },
