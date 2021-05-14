@@ -202,7 +202,7 @@ export class Cluster extends Resource implements ICluster {
       : undefined;
 
     this._executeCommandConfiguration = props.executeCommandConfiguration;
-    
+
     // Only create cluster capacity provider associations if there are any EC2
     // capacity providers. Ordinarily we'd just add the construct to the tree
     // since it's harmless, but we'd prefer not to add unexpected new
@@ -221,7 +221,7 @@ export class Cluster extends Resource implements ICluster {
       }
     }
   }
-  
+
   private renderConfiguration(executeCommandConfig: ExecuteCommandConfiguration) : CfnCluster.ClusterConfigurationProperty {
     return {
       executeCommandConfiguration: this.renderExecuteCommandConfiguration(executeCommandConfig),

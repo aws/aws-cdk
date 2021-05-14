@@ -278,7 +278,7 @@ nodeunitShim({
           },
         },
       }));
- 
+
       test.done();
     },
 
@@ -2197,7 +2197,7 @@ nodeunitShim({
 
       test.done();
     },
-    
+
     'allows setting enable execute command'(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();

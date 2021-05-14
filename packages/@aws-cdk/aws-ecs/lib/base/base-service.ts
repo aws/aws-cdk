@@ -443,8 +443,8 @@ export abstract class BaseService extends Resource
           resources: [`arn:aws:kms:${this.stack.region}:${this.stack.account}:key/${this.cluster.executeCommandConfiguration.kmsKeyID}`],
         }));
       }
+    }
   }
-}
 
   /**
    * The CloudMap service created for this service, if any.
