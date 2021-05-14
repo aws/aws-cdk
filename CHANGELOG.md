@@ -21,7 +21,7 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### Bug Fixes
 
-* **apigatewayv2:** authorizer is not removed when HttpNoneAuthorizer is used ([#14424](https://github.com/aws/aws-cdk/issues/14424)) ([3698a91](https://github.com/aws/aws-cdk/commit/3698a91ac81a31f763c55487f200458d5b5eaf0f)), closes [40aws-cdk/aws-apigatewayv2/lib/http/route.ts#L159](https://github.com/40aws-cdk/aws-apigatewayv2/lib/http/route.ts/issues/L159)
+* **apigatewayv2:** authorizer is not removed when HttpNoneAuthorizer is used ([#14424](https://github.com/aws/aws-cdk/issues/14424)) ([3698a91](https://github.com/aws/aws-cdk/commit/3698a91ac81a31f763c55487f200458d5b5eaf0f))
 * **ecs:** Classes FargateService and Ec2Service have no defaultChild ([#14691](https://github.com/aws/aws-cdk/issues/14691)) ([348e11e](https://github.com/aws/aws-cdk/commit/348e11e26edc0ff90b623b7cec778f4935e61e6d)), closes [#14665](https://github.com/aws/aws-cdk/issues/14665)
 * **events-targets:** circular dependency when adding a KMS-encrypted SQS queue  ([#14638](https://github.com/aws/aws-cdk/issues/14638)) ([3063818](https://github.com/aws/aws-cdk/commit/3063818aa7c3c3ff56cf55254b0f6561db190a3e)), closes [#11158](https://github.com/aws/aws-cdk/issues/11158)
 * **lambda:** custom resource fails to connect to efs filesystem ([#14431](https://github.com/aws/aws-cdk/issues/14431)) ([10a633c](https://github.com/aws/aws-cdk/commit/10a633c8cda9f21b85c82f911d88641f3a362c4d))
