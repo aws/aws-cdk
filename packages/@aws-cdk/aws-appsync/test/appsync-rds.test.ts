@@ -60,9 +60,27 @@ describe('Rds Data Source configuration', () => {
         },
         {
           Action: [
+            'rds-data:BatchExecuteStatement',
+            'rds-data:BeginTransaction',
+            'rds-data:CommitTransaction',
+            'rds-data:ExecuteStatement',
+            'rds-data:RollbackTransaction',
+          ],
+          Effect: 'Allow',
+          Resource: '*',
+        },
+        {
+          Action: [
+            'secretsmanager:GetSecretValue',
+            'secretsmanager:DescribeSecret',
+          ],
+          Effect: 'Allow',
+          Resource: { Ref: 'AuroraClusterSecretAttachmentDB8032DA' },
+        },
+        {
+          Action: [
             'rds-data:DeleteItems',
             'rds-data:ExecuteSql',
-            'rds-data:ExecuteStatement',
             'rds-data:GetItems',
             'rds-data:InsertItems',
             'rds-data:UpdateItems',

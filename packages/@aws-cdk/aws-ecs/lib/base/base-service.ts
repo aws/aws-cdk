@@ -415,6 +415,8 @@ export abstract class BaseService extends Resource
     if (props.cloudMapOptions) {
       this.enableCloudMap(props.cloudMapOptions);
     }
+
+    this.node.defaultChild = this.resource;
   }
 
   /**

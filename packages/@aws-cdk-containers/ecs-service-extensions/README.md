@@ -61,19 +61,19 @@ const nameService = new Service(stack, 'name', {
 ## Creating an `Environment`
 
 An `Environment` is a place to deploy your services. You can have multiple environments
-on a single AWS account. For example you could create a `test` environment as well
-as a `production` environment so you have a place to verify that you application
+on a single AWS account. For example, you could create a `test` environment as well
+as a `production` environment so you have a place to verify that your application
 works as intended before you deploy it to a live environment.
 
-Each environment is isolated from other environments. In specific
-by default when you create an environment the construct supplies its own VPC,
+Each environment is isolated from other environments. In other words,
+when you create an environment, by default the construct supplies its own VPC,
 ECS Cluster, and any other required resources for the environment:
 
 ```ts
 const environment = new Environment(stack, 'production');
 ```
 
-However, you can also choose to build an environment out of a pre-existing VPC,
+However, you can also choose to build an environment out of a pre-existing VPC
 or ECS Cluster:
 
 ```ts
@@ -89,7 +89,7 @@ const environment = new Environment(stack, 'production', {
 ## Defining your `ServiceDescription`
 
 The `ServiceDescription` defines what application you want the service to run and
-what optional extensions you want to add to the service. The most basic form of a `ServiceExtension` looks like this:
+what optional extensions you want to add to the service. The most basic form of a `ServiceDescription` looks like this:
 
 ```ts
 const nameDescription = new ServiceDescription();
@@ -105,9 +105,9 @@ nameDescription.add(new Container({
 ```
 
 Every `ServiceDescription` requires at minimum that you add a `Container` extension
-which defines the main application container to run for the service.
+which defines the main application (essential) container to run for the service.
 
-After that you can optionally enable additional features for the service using the `ServiceDescription.add()` method:
+After that, you can optionally enable additional features for the service using the `ServiceDescription.add()` method:
 
 ```ts
 nameDescription.add(new AppMeshExtension({ mesh }));
@@ -238,7 +238,7 @@ frontend.connectTo(backend);
 
 The address that a service will use to talk to another service depends on the
 type of ingress that has been created by the extension that did the connecting.
-For example if an App Mesh extension has been used then the service is accessible
+For example, if an App Mesh extension has been used, then the service is accessible
 at a DNS address of `<service name>.<environment name>`. For example:
 
 ```ts
@@ -280,7 +280,7 @@ const backend = new Service(stack, 'backend', {
 frontend.connectTo(backend);
 ```
 
-The above code uses the well known service discovery name for each
+The above code uses the well-known service discovery name for each
 service, and passes it as an environment variable to the container so
 that the container knows what address to use when communicating to
 the other service.

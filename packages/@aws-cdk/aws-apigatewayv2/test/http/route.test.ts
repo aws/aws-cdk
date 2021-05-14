@@ -30,6 +30,7 @@ describe('HttpRoute', () => {
           ],
         ],
       },
+      AuthorizationType: 'NONE',
     });
 
     expect(stack).toHaveResource('AWS::ApiGatewayV2::Integration', {
