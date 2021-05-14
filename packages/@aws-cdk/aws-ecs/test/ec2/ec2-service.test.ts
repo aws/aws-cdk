@@ -25,7 +25,7 @@ nodeunitShim({
         memoryLimitMiB: 512,
       });
 
-      new ecs.Ec2Service(stack, 'Ec2Service', {
+      const service = new ecs.Ec2Service(stack, 'Ec2Service', {
         cluster,
         taskDefinition,
       });
@@ -46,6 +46,8 @@ nodeunitShim({
         SchedulingStrategy: 'REPLICA',
         EnableECSManagedTags: false,
       }));
+
+      test.notEqual(service.node.defaultChild, undefined);
 
       test.done();
     },
