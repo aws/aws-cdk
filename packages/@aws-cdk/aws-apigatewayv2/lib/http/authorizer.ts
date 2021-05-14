@@ -17,8 +17,6 @@ export enum HttpAuthorizerType {
   LAMBDA = 'REQUEST',
 }
 
-type HttpRouteAuthorizationType = 'JWT' | 'CUSTOM' | 'NONE'
-
 /**
  * Payload format version for lambda authorizers
  * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-lambda-authorizer.html
@@ -120,8 +118,13 @@ export interface HttpAuthorizerAttributes {
 
   /**
    * Type of authorizer
+   *
+   * Possible values are:
+   * - JWT - JSON Web Token Authorizer
+   * - CUSTOM - Lambda Authorizer
+   * - NONE - No Authorization
    */
-  readonly authorizerType: HttpRouteAuthorizationType
+  readonly authorizerType: string
 }
 
 /**
@@ -213,10 +216,16 @@ export interface HttpRouteAuthorizerConfig {
    * @default - No authorizer id (useful for AWS_IAM route authorizer)
    */
   readonly authorizerId?: string;
+
   /**
    * The type of authorization
+   *
+   * Possible values are:
+   * - JWT - JSON Web Token Authorizer
+   * - CUSTOM - Lambda Authorizer
+   * - NONE - No Authorization
    */
-  readonly authorizationType: HttpRouteAuthorizationType;
+  readonly authorizationType: string;
 
   /**
    * The list of OIDC scopes to include in the authorization.

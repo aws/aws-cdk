@@ -121,6 +121,20 @@ export interface HttpRouteProps extends BatchHttpRouteOptions {
 }
 
 /**
+ * Supported Route Authorizer types
+ */
+enum HttpRouteAuthorizationType {
+  /** JSON Web Tokens */
+  JWT = 'JWT',
+
+  /** Lambda Authorizer */
+  CUSTOM = 'CUSTOM',
+
+  /** No authorizer */
+  NONE = 'NONE'
+}
+
+/**
  * Route class that creates the Route for API Gateway HTTP API
  * @resource AWS::ApiGatewayV2::Route
  */
@@ -146,6 +160,10 @@ export class HttpRoute extends Resource implements IHttpRoute {
       route: this,
       scope: this.httpApi instanceof Construct ? this.httpApi : this, // scope under the API if it's not imported
     }) : undefined;
+
+    if (authBindResult && !(authBindResult.authorizationType in HttpRouteAuthorizationType)) {
+      throw new Error('authorizationType should either be JWT, CUSTOM, or NONE');
+    }
 
     let authorizationScopes = authBindResult?.authorizationScopes;
 
