@@ -5,6 +5,13 @@ const dynamodb = new DynamoDB({ apiVersion: '2012-08-10' });
 const cloudFormation = new CloudFormation({ apiVersion: '2010-05-15' });
 
 
+export enum TimeToLiveStatus {
+  STABLE_AND_CORRECT,
+  STABLE_AND_INCORRECT,
+  INSTABLE_AND_CORRECT,
+  INSTABLE_AND_INCORRECT
+}
+
 export async function disableTimeToLive(event: OnEventRequest) {
   await catchAwsError(async () => {
     console.log('Trying to disable time to live.');
@@ -55,7 +62,7 @@ async function catchAwsError(func: () => Promise<void>) {
   }
 }
 
-export async function timeToLiveStatus(event: OnEventRequest): Promise<{stable: boolean, correct: boolean}> {
+export async function getTimeToLiveStatus(event: OnEventRequest): Promise<TimeToLiveStatus> {
   const currentTtl = await dynamodb.describeTimeToLive({
     TableName: event.ResourceProperties.TableName,
   }).promise();
@@ -74,10 +81,15 @@ export async function timeToLiveStatus(event: OnEventRequest): Promise<{stable: 
     correct = currentTtl.TimeToLiveDescription?.TimeToLiveStatus === 'DISABLED';
   }
 
-  return {
-    stable,
-    correct,
-  };
+  if ( stable && correct ) {
+    return TimeToLiveStatus.STABLE_AND_CORRECT;
+  } else if ( stable && !correct ) {
+    return TimeToLiveStatus.STABLE_AND_INCORRECT;
+  } else if ( !stable && correct ) {
+    return TimeToLiveStatus.INSTABLE_AND_CORRECT;
+  } else {
+    return TimeToLiveStatus.INSTABLE_AND_INCORRECT;
+  }
 }
 
 export async function tableWillBeRemoved(event: OnEventRequest): Promise<boolean> {

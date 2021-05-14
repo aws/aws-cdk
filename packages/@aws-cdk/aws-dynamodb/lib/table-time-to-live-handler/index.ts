@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 import type { IsCompleteRequest, IsCompleteResponse, OnEventRequest, OnEventResponse } from '@aws-cdk/custom-resources/lib/provider-framework/types';
 import { DynamoDB } from 'aws-sdk'; // eslint-disable-line import/no-extraneous-dependencies
-import { disableTimeToLive, enableTimeToLive, tableWillBeRemoved, timeToLiveStatus } from './utils';
+import { disableTimeToLive, enableTimeToLive, tableWillBeRemoved, getTimeToLiveStatus, TimeToLiveStatus } from './utils';
 
 const dynamodb = new DynamoDB({ apiVersion: '2012-08-10' });
 
@@ -47,15 +47,15 @@ export async function onEventHandler(event: OnEventRequest): Promise<OnEventResp
 export async function isCompleteHandler(event: IsCompleteRequest): Promise<IsCompleteResponse> {
   console.log('Event: %j', event);
 
-  let { stable, correct } = await timeToLiveStatus(event);
+  let timeToLiveStatus = await getTimeToLiveStatus(event);
 
-  if (stable && !correct) {
+  if (timeToLiveStatus === TimeToLiveStatus.STABLE_AND_INCORRECT) {
     // If the ttl is stable but incorrect, we are in the second step of the enabled -> disabled -> enabled flow.
     // We therefore call the onEventHandler as the logic is the same as going from disabled to enabled,
     // which the handler supports. Afterwards we need to get the current ttl status as it should have changed.
     // This makes it possible to change the ttl attribute from a to b.
     await onEventHandler(event);
-    ({ stable, correct } = await timeToLiveStatus(event));
+    timeToLiveStatus = await getTimeToLiveStatus(event);
   }
 
   switch (event.RequestType) {
@@ -67,6 +67,6 @@ export async function isCompleteHandler(event: IsCompleteRequest): Promise<IsCom
         return { IsComplete: true };
       }
       // Complete when time to live is fully functional
-      return { IsComplete: stable && correct };
+      return { IsComplete: timeToLiveStatus === TimeToLiveStatus.STABLE_AND_CORRECT };
   }
 }
