@@ -4,7 +4,6 @@ import { AWSError, CloudFormation, DynamoDB } from 'aws-sdk'; // eslint-disable-
 const dynamodb = new DynamoDB({ apiVersion: '2012-08-10' });
 const cloudFormation = new CloudFormation({ apiVersion: '2010-05-15' });
 
-
 export enum TimeToLiveStatus {
   STABLE_AND_CORRECT,
   STABLE_AND_INCORRECT,
