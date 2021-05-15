@@ -52,7 +52,7 @@ export class PolicyDocument implements cdk.IResolvable {
   }
 
   public resolve(context: cdk.IResolveContext): any {
-    context.registerPostProcessor(new RemoveDuplicateStatements(this.autoAssignSids));
+    context.registerPostProcessor(new OptimizeStatements(this.autoAssignSids));
     return this.render();
   }
 
@@ -155,21 +155,70 @@ export class PolicyDocument implements cdk.IResolvable {
 }
 
 /**
- * Removes duplicate statements and assign Sids if necessary
+ * Optimizes, removes duplicate statements and assigns Sids if necessary
  */
-class RemoveDuplicateStatements implements cdk.IPostProcessor {
-  constructor(private readonly autoAssignSids: boolean) {
-  }
+class OptimizeStatements implements cdk.IPostProcessor {
+  constructor(private readonly autoAssignSids: boolean) {}
 
-  public postProcess(input: any, _context: cdk.IResolveContext): any {
-    if (!input || !input.Statement) {
-      return input;
+  /**
+   * Consolidates multiple statements with the same actions but different resources into
+   * just the same statement with the same actions and an array or resources
+   */
+  private consolidateStatements(
+    statements: Array<{
+      Action?: string | string[];
+      NotAction?: string | string[];
+      Resource?: string | string[];
+      NotResource?: string | string[];
+    }>,
+  ) {
+    const uniqueActions = new Map<string, typeof statements[number]>();
+
+    function concatResources(
+      previous: string | string[] | undefined,
+      current: string | string[] | undefined,
+    ) {
+      const result = new Set<string>();
+
+      for (let array of [previous, current]) {
+        if (array && Array.isArray(array)) {
+          array.forEach((p) => result.add(p));
+        } else if (array) {
+          result.add(array);
+        }
+      }
+
+      if (result.size === 0) return undefined;
+
+      return result.size === 1 ? [...result][0] : [...result];
     }
 
+    for (const statement of statements) {
+      const { Action, NotAction, Resource, NotResource, ...rest } = statement;
+
+      const jsonAction = JSON.stringify({ Action, NotAction, ...rest });
+      const existing = uniqueActions.get(jsonAction);
+
+      const consolidatedResources = concatResources(existing?.Resource, Resource);
+      const consolidatedNotResources = concatResources(existing?.NotResource, NotResource);
+
+      uniqueActions.set(jsonAction, {
+        ...(Action && { Action }),
+        ...(NotAction && { NotAction }),
+        ...(consolidatedResources && { Resource: consolidatedResources }),
+        ...(consolidatedNotResources && { NotResource: consolidatedNotResources }),
+        ...rest,
+      });
+    }
+
+    return [...uniqueActions.values()];
+  }
+
+  private removeDuplicates(statements: any[]) {
     const jsonStatements = new Set<string>();
     const uniqueStatements: any[] = [];
 
-    for (const statement of input.Statement) {
+    for (const statement of statements) {
       const jsonStatement = JSON.stringify(statement);
       if (!jsonStatements.has(jsonStatement)) {
         uniqueStatements.push(statement);
@@ -178,13 +227,24 @@ class RemoveDuplicateStatements implements cdk.IPostProcessor {
     }
 
     // assign unique SIDs (the statement index) if `autoAssignSids` is enabled
-    const statements = uniqueStatements.map((s, i) => {
+    const result = uniqueStatements.map((s, i) => {
       if (this.autoAssignSids && !s.Sid) {
         s.Sid = i.toString();
       }
 
       return s;
     });
+    return result;
+  }
+
+  public postProcess(input: any, _context: cdk.IResolveContext): any {
+    if (!input || !input.Statement) {
+      return input;
+    }
+
+    const statements = this.removeDuplicates(
+      this.consolidateStatements(input.Statement),
+    );
 
     return {
       ...input,

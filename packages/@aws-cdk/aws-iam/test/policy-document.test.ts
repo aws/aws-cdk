@@ -622,6 +622,90 @@ describe('IAM policy document', () => {
     });
   });
 
+  describe('optimizing statements', () => {
+    function consolidateTest(type: 'actions' | 'notActions') {
+      // GIVEN
+      const stack = new Stack();
+      const p = new PolicyDocument();
+
+      // WHEN
+      p.addStatements(
+        new PolicyStatement({ resources: ['a'], [type]: ['service:action1'] }),
+      );
+      p.addStatements(
+        new PolicyStatement({
+          resources: ['b', 'c'],
+          [type]: ['service:action1'],
+        }),
+      );
+      p.addStatements(
+        new PolicyStatement({ resources: ['d'], [type]: ['service:action1'] }),
+      );
+      p.addStatements(
+        new PolicyStatement({
+          resources: ['d2'],
+          [type]: ['service:action1'],
+          principals: [new CanonicalUserPrincipal('abc')],
+        }),
+      );
+      p.addStatements(
+        new PolicyStatement({
+          resources: ['e'],
+          [type]: ['service:action1', 'service:action2'],
+        }),
+      );
+      p.addStatements(
+        new PolicyStatement({
+          effect: Effect.DENY,
+          resources: ['f', 'g'],
+          [type]: ['service:action1'],
+        }),
+      );
+      p.addStatements(
+        new PolicyStatement({
+          effect: Effect.DENY,
+          resources: ['h'],
+          [type]: ['service:action1'],
+        }),
+      );
+
+      const fieldName = type === 'actions' ? 'Action' : 'NotAction';
+
+      // THEN
+      expect(stack.resolve(p).Statement).toEqual([
+        {
+          [fieldName]: 'service:action1',
+          Resource: ['a', 'b', 'c', 'd'],
+          Effect: 'Allow',
+        },
+        {
+          [fieldName]: 'service:action1',
+          Resource: 'd2',
+          Principal: { CanonicalUser: 'abc' },
+          Effect: 'Allow',
+        },
+        {
+          [fieldName]: ['service:action1', 'service:action2'],
+          Resource: 'e',
+          Effect: 'Allow',
+        },
+        {
+          [fieldName]: 'service:action1',
+          Resource: ['f', 'g', 'h'],
+          Effect: 'Deny',
+        },
+      ]);
+    }
+
+    test('consolidates resources for same actions', () => {
+      consolidateTest('actions');
+    });
+
+    test('consolidates resources for same notActions', () => {
+      consolidateTest('notActions');
+    });
+  });
+
   describe('duplicate statements', () => {
 
     test('without tokens', () => {
