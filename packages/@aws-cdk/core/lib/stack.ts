@@ -1280,14 +1280,15 @@ export interface ExportValueOptions {
 }
 
 // These imports have to be at the end to prevent circular imports
-import { CfnOutput } from './cfn-output';
-import { addDependency } from './deps';
-import { FileSystem } from './fs';
-import { Names } from './names';
+import { CfnOutput } from './cfn-output'; // eslint-disable-line import/order
+import { addDependency } from './deps'; // eslint-disable-line import/order
+import { FileSystem } from './fs'; // eslint-disable-line import/order
+import { Names } from './names'; // eslint-disable-line import/order
 import { Reference } from './reference';
 import { IResolvable } from './resolvable';
 import { DefaultStackSynthesizer, IStackSynthesizer, LegacyStackSynthesizer } from './stack-synthesizers';
 import { Stage } from './stage';
 import { ITaggable, TagManager } from './tag-manager';
 import { Token, Tokenization } from './token';
+// eslint-disable-next-line import/order
 import { referenceNestedStackValueInParent } from './private/refs';
