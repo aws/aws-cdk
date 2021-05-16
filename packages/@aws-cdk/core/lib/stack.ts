@@ -267,7 +267,7 @@ export class Stack extends CoreConstruct implements ITaggable {
   /**
    * Whether termination protection is enabled for this stack.
    */
-  public readonly terminationProtection?: boolean;
+  private _terminationProtection: boolean;
 
   /**
    * If this is a nested stack, this represents its `AWS::CloudFormation::Stack`
@@ -358,7 +358,7 @@ export class Stack extends CoreConstruct implements ITaggable {
     this.account = account;
     this.region = region;
     this.environment = environment;
-    this.terminationProtection = props.terminationProtection;
+    this._terminationProtection = !!props.terminationProtection;
 
     if (props.description !== undefined) {
       // Max length 1024 bytes
@@ -687,6 +687,25 @@ export class Stack extends CoreConstruct implements ITaggable {
    */
   public get parentStack() {
     return this.nestedStackParent;
+  }
+
+  /**
+   * Whether termination protection is enabled for this stack.
+   *
+   * @returns The current termination protection value for this stack.
+   */
+  public get terminationProtection(): boolean {
+    return this._terminationProtection;
+  }
+
+  /**
+   * Enables or disables termination protection for this stack.
+   *
+   * @param enableTerminationProtection The new termination protection value
+   * for this stack.
+   */
+  public set terminationProtection(enableTerminationProtection: boolean) {
+    this._terminationProtection = enableTerminationProtection;
   }
 
   /**
