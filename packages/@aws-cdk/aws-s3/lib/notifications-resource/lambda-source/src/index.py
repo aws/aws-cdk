@@ -4,6 +4,7 @@ import urllib.request
 from typing import List
 
 s3 = boto3.client("s3")
+cf = boto3.client("cloudformation")
 
 
 def handler(event: dict, context):
@@ -12,6 +13,8 @@ def handler(event: dict, context):
     try:
         props = event["ResourceProperties"]
         bucket = props["BucketName"]
+        if is_rollback_in_progress(event):
+            return
         s3.put_bucket_notification_configuration(
             Bucket=bucket,
             NotificationConfiguration=get_config(
@@ -27,6 +30,13 @@ def handler(event: dict, context):
         error_message = f"Error: {str(e)}. "
     finally:
         submit_response(event, context, response_status, error_message)
+
+
+def is_rollback_in_progress(event: dict) -> bool:
+    if event["RequestType"] != "Delete":
+        return False
+    result: List = cf.describe_stacks(StackName=event["StackId"]).get("Stacks", [])
+    return len(result) == 1 and result[0]["StackStatus"] == "ROLLBACK_IN_PROGRESS"
 
 
 def get_config(current_config: dict, new_config: dict, old_config: dict, request_type: str) -> dict:

@@ -7,6 +7,7 @@ import uuid
 from unittest.mock import patch, MagicMock
 import boto3  # type: ignore
 from botocore import stub  # type: ignore
+from botocore.stub import Stubber
 from moto.s3 import mock_s3  # type: ignore
 
 RESPONSE_URL = "https://dummy.com/"
@@ -141,6 +142,26 @@ def assert_notify_cfn_of_failure(test_case: unittest.TestCase, mock_call) -> Dic
 
 def assert_notify_cfn_of_success(test_case: unittest.TestCase, mock_call) -> Dict:
     return assert_notify_cfn(test_case, mock_call, "SUCCESS")
+
+
+def setup_cfn_stubbed_client(stack_status: str):
+    stubbed_client = boto3.client("cloudformation")
+    stubber = Stubber(stubbed_client)
+    stubber.add_response(
+        "describe_stacks",
+        expected_params={"StackName": "StackId"},
+        service_response={
+            "Stacks": [
+                {
+                    "StackStatus": stack_status,
+                    "StackName": "foo",
+                    "CreationTime": "1",
+                }
+            ]
+        },
+    )
+    stubber.activate()
+    return stubbed_client
 
 
 class LambdaTest(unittest.TestCase):
@@ -343,12 +364,13 @@ class LambdaTest(unittest.TestCase):
 
     @mock_s3
     @patch("urllib.request.urlopen")
-    def test_remove_from_existing(self, mock_call: MagicMock):
+    def test_delete_remove_from_existing(self, mock_call: MagicMock):
         # SCENARIO We want to delete notifications our CDK stack created on an existing S3 bucket
         from src import index
 
         # GIVEN A bucket with an existing configuration with Id "created-by-cdk" for a "QueueConfigurations"
         setup_s3_bucket(notification_configuration=NOTIFICATION_CONFIGURATION)
+        index.cf = setup_cfn_stubbed_client("UPDATE_IN_PROGRESS")
         # AND a "Delete" RequestType with a matching id "created-by-cdk"
         delete_event = make_event(
             request_type="Delete",
@@ -379,29 +401,58 @@ class LambdaTest(unittest.TestCase):
 
     @mock_s3
     @patch("urllib.request.urlopen")
+    def test_delete_when_rollback_in_progress(self, mock_call: MagicMock):
+        # SCENARIO Stack is performing a rollback we should not modify the notification when RequestType is "Delete"
+        from src import index
+
+        # GIVEN A bucket with an existing configuration
+        # AND the stack status is "rollback in progress"
+        index.cf = setup_cfn_stubbed_client("ROLLBACK_IN_PROGRESS")
+        # AND a "Delete" RequestType
+        delete_event = make_event(
+            request_type="Delete",
+            notification_configuration={
+                "QueueConfigurations": [
+                    {
+                        "Events": ["s3:ObjectCreated:Post"],
+                        "QueueArn": "arn:aws:sqs:us-east-1:444455556666:queue",
+                    }
+                ]
+            },
+        )
+
+        # WHEN calling the handler
+        index.handler(delete_event, MockContext())
+
+        # THEN the "QueueConfigurations" should be left as is (so we don't need any mocks)
+        # AND notify CFN of its success
+        assert_notify_cfn_of_success(self, mock_call)
+
+    @mock_s3
+    @patch("urllib.request.urlopen")
     def test_update_config_for_managed_s3_bucket(self, mock_call: MagicMock):
         # SCENARIO We want to update notifications of a S3 bucket managed by our CDK stack
         from src import index
 
-        # GIVEN A bucket with an existing configuration with Id "old-function-hash"
+        # GIVEN A bucket with an existing configuration that matches the old notifications ("old-function-hash")
         setup_s3_bucket(notification_configuration=NOTIFICATION_CONFIGURATION)
         # AND an Update event with the new incoming configuration with Id "new-function-hash"
         update_event = make_event(
             request_type="Update",
-            notification_configuration={
-                "LambdaFunctionConfigurations": [
-                    {
-                        "Id": "new-function-hash",
-                        "LambdaFunctionArn": "arn:aws:lambda:us-east-1:35667example:function:NewCreateThumbnail",
-                        "Events": [S3_CREATED],
-                    }
-                ]
-            },
             old_notification_configuration={
                 "LambdaFunctionConfigurations": [
                     {
                         "Id": "old-function-hash",
                         "LambdaFunctionArn": LAMBDA_ARN,
+                        "Events": [S3_CREATED],
+                    }
+                ]
+            },
+            notification_configuration={
+                "LambdaFunctionConfigurations": [
+                    {
+                        "Id": "new-function-hash",
+                        "LambdaFunctionArn": "arn:aws:lambda:us-east-1:35667example:function:NewCreateThumbnail",
                         "Events": [S3_CREATED],
                     }
                 ]
@@ -437,13 +488,13 @@ class LambdaTest(unittest.TestCase):
         # "ResourceProperties"
         update_event = make_event(
             request_type="Update",
+            old_notification_configuration={
+                "LambdaFunctionConfigurations": [{"Events": [S3_CREATED], "LambdaFunctionArn": LAMBDA_ARN}]
+            },
             notification_configuration={
                 "LambdaFunctionConfigurations": [
                     {"Id": "new-function-hash", "Events": [S3_CREATED], "LambdaFunctionArn": LAMBDA_ARN}
                 ]
-            },
-            old_notification_configuration={
-                "LambdaFunctionConfigurations": [{"Events": [S3_CREATED], "LambdaFunctionArn": LAMBDA_ARN}]
             },
         )
 
@@ -486,8 +537,8 @@ class ScenarioTest(unittest.TestCase):
             )
             event = make_event(
                 request_type=request_type,
-                notification_configuration={"LambdaFunctionConfigurations": configs},
                 old_notification_configuration=old_notification_configuration,
+                notification_configuration={"LambdaFunctionConfigurations": configs},
             )
 
             # THEN Put is equal to "New Configuration"
@@ -520,6 +571,7 @@ class ScenarioTest(unittest.TestCase):
         stubber.add_response(
             "get_bucket_notification_configuration", current_notification_configuration, {"Bucket": BUCKET_NAME}
         )
+        index.cf = setup_cfn_stubbed_client("UPDATE_IN_PROGRESS")
 
         # RequestType is Delete
         configs = [{"Id": "new-function-hash", "Events": [S3_CREATED], "LambdaFunctionArn": LAMBDA_ARN}]
@@ -614,10 +666,10 @@ class ScenarioTest(unittest.TestCase):
         # WHEN RequestType is Update
         event = make_event(
             request_type="Update",
-            notification_configuration={"QueueConfigurations": []},
             old_notification_configuration={
                 "QueueConfigurations": [{"Events": [S3_CREATED_PUT], "QueueArn": "is-managed-by-cdk-arn"}]
             },
+            notification_configuration={"QueueConfigurations": []},
         )
 
         # THEN Put will exclude "is-managed-by-cdk-arn"
@@ -664,8 +716,8 @@ class ScenarioTest(unittest.TestCase):
         # configuration.
         event = make_event(
             request_type="Update",
-            notification_configuration={"QueueConfigurations": [config_entry]},
             old_notification_configuration={"QueueConfigurations": [config_entry]},
+            notification_configuration={"QueueConfigurations": [config_entry]},
         )
 
         # THEN Expected notifications config
@@ -703,6 +755,7 @@ class ScenarioTest(unittest.TestCase):
             {"QueueConfigurations": [config_entry]},
             {"Bucket": BUCKET_NAME},
         )
+        index.cf = setup_cfn_stubbed_client("DELETE_IN_PROGRESS")
 
         # WHEN RequestType is Delete
         # Incoming CFN notifications config
@@ -713,8 +766,8 @@ class ScenarioTest(unittest.TestCase):
         # configuration.
         event = make_event(
             request_type="Delete",
-            notification_configuration={"QueueConfigurations": [config_entry]},
             old_notification_configuration={"QueueConfigurations": [config_entry]},
+            notification_configuration={"QueueConfigurations": [config_entry]},
         )
 
         # THEN Expected notifications config should result in an empty configuration
