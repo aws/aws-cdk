@@ -114,6 +114,7 @@ export class Rule extends Resource implements IRule {
   private readonly scheduleExpression?: string;
   private readonly description?: string;
   private readonly accountEventBusTargets: { [account: string]: boolean } = {};
+  private readonly regionEventBusTargets: { [account: string]: boolean } = {};
 
   constructor(scope: Construct, id: string, props: RuleProps = { }) {
     super(scope, id, {
@@ -178,32 +179,30 @@ export class Rule extends Resource implements IRule {
       const sourceAccount = sourceStack.account;
       const sourceRegion = sourceStack.region;
 
-      if (targetRegion !== sourceRegion) {
-        throw new Error('Rule and target must be in the same region');
-      }
-
-      if (targetAccount !== sourceAccount) {
-        // cross-account event - strap in, this works differently than regular events!
+      if (targetAccount !== sourceAccount || targetRegion !== sourceRegion) {
+        // cross-account and/or cross-region event - strap in, this works differently than regular events!
         // based on:
-        // https://docs.aws.amazon.com/eventbridge/latest/userguide/eventbridge-cross-account-event-delivery.html
+        // https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-cross-account.html
 
-        // for cross-account events, we require concrete accounts
+        // for cross-account or cross-region events, we require concrete accounts
         if (Token.isUnresolved(targetAccount)) {
-          throw new Error('You need to provide a concrete account for the target stack when using cross-account events');
+          throw new Error('You need to provide a concrete account for the source stack when using cross-account or cross-region events');
         }
         if (Token.isUnresolved(sourceAccount)) {
-          throw new Error('You need to provide a concrete account for the source stack when using cross-account events');
+          throw new Error('You need to provide a concrete account for the source stack when using cross-account or cross-region events');
         }
         // and the target region has to be concrete as well
         if (Token.isUnresolved(targetRegion)) {
-          throw new Error('You need to provide a concrete region for the target stack when using cross-account events');
+          throw new Error('You need to provide a concrete region for the target stack when using cross-account or cross-region events');
         }
 
         // the _actual_ target is just the event bus of the target's account
-        // make sure we only add it once per account
-        const exists = this.accountEventBusTargets[targetAccount];
-        if (!exists) {
+        // make sure we only add it once per account per region
+        const accountExists = this.accountEventBusTargets[targetAccount];
+        const regionExists = this.regionEventBusTargets[targetRegion];
+        if (!accountExists || !regionExists) {
           this.accountEventBusTargets[targetAccount] = true;
+          this.regionEventBusTargets[targetRegion] = true;
           this.targets.push({
             id,
             arn: targetStack.formatArn({
@@ -216,7 +215,7 @@ export class Rule extends Resource implements IRule {
           });
         }
 
-        // Grant the source account permissions to publish events to the event bus of the target account.
+        // Grant the source account in the source region permissions to publish events to the event bus of the target account in the target region.
         // Do it in a separate stack instead of the target stack (which seems like the obvious place to put it),
         // because it needs to be deployed before the rule containing the above event-bus target in the source stack
         // (EventBridge verifies whether you have permissions to the targets on rule creation),
@@ -224,11 +223,11 @@ export class Rule extends Resource implements IRule {
         // (that's the case with CodePipeline, for example)
         const sourceApp = this.node.root;
         if (!sourceApp || !App.isApp(sourceApp)) {
-          throw new Error('Event stack which uses cross-account targets must be part of a CDK app');
+          throw new Error('Event stack which uses cross-account or cross-region targets must be part of a CDK app');
         }
         const targetApp = Node.of(targetProps.targetResource).root;
         if (!targetApp || !App.isApp(targetApp)) {
-          throw new Error('Target stack which uses cross-account event targets must be part of a CDK app');
+          throw new Error('Target stack which uses cross-account or cross-region event targets must be part of a CDK app');
         }
         if (sourceApp !== targetApp) {
           throw new Error('Event stack and target stack must belong to the same CDK app');

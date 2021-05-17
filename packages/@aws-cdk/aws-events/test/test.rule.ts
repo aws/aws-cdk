@@ -508,22 +508,6 @@ export = {
     test.done();
   },
 
-  'rule and target must be in the same region'(test: Test) {
-    const app = new cdk.App();
-
-    const sourceStack = new cdk.Stack(app, 'SourceStack');
-    const rule = new Rule(sourceStack, 'Rule');
-
-    const targetStack = new cdk.Stack(app, 'TargetStack', { env: { region: 'us-west-2' } });
-    const resource = new cdk.Construct(targetStack, 'Resource');
-
-    test.throws(() => {
-      rule.addTarget(new SomeTarget('T', resource));
-    }, /Rule and target must be in the same region/);
-
-    test.done();
-  },
-
   'sqsParameters are generated when they are specified in target props'(test: Test) {
     const stack = new cdk.Stack();
     const t1: IRuleTarget = {
@@ -590,7 +574,7 @@ export = {
     test.done();
   },
 
-  'for cross-account targets': {
+  'for cross-account and/or cross-region targets': {
     'requires that the source stack specify a concrete account'(test: Test) {
       const app = new cdk.App();
 
@@ -603,7 +587,7 @@ export = {
 
       test.throws(() => {
         rule.addTarget(new SomeTarget('T', resource));
-      }, /You need to provide a concrete account for the source stack when using cross-account events/);
+      }, /You need to provide a concrete account for the source stack when using cross-account or cross-region events/);
 
       test.done();
     },
@@ -620,7 +604,7 @@ export = {
 
       test.throws(() => {
         rule.addTarget(new SomeTarget('T', resource));
-      }, /You need to provide a concrete account for the target stack when using cross-account events/);
+      }, /You need to provide a concrete account for the source stack when using cross-account or cross-region events/);
 
       test.done();
     },
@@ -638,7 +622,7 @@ export = {
 
       test.throws(() => {
         rule.addTarget(new SomeTarget('T', resource));
-      }, /You need to provide a concrete region for the target stack when using cross-account events/);
+      }, /You need to provide a concrete region for the target stack when using cross-account or cross-region events/);
 
       test.done();
     },
