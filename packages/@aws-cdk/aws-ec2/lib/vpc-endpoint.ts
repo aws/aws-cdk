@@ -362,7 +362,7 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
     const region = Lazy.uncachedString({
       produce: (context) => Stack.of(context.scope).region,
     });
-    const defaultPrefix = RegionInfo(region).partition == 'aws-cn' && CN_OVERRIDES.includes(name) ? 'cn.com.amazonaws' : 'com.amazonaws'
+    const defaultPrefix = RegionInfo.get(region).partition == 'aws-cn' && CN_OVERRIDES.includes(name) ? 'cn.com.amazonaws' : 'com.amazonaws';
     this.name = `${prefix || defaultPrefix }.${region}.${name}`;
     this.port = port || 443;
   }
