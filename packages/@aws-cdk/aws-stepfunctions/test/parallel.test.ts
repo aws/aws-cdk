@@ -27,6 +27,38 @@ describe('Parallel State', () => {
       },
     });
   });
+
+  test('State Machine With Parallel State and ResultSelector', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const parallel = new stepfunctions.Parallel(stack, 'Parallel State', {
+      resultSelector: {
+        buz: 'buz',
+        baz: stepfunctions.JsonPath.stringAt('$.baz'),
+      },
+    });
+    parallel.branch(new stepfunctions.Pass(stack, 'Branch 1'));
+
+    // THEN
+    expect(render(parallel)).toStrictEqual({
+      StartAt: 'Parallel State',
+      States: {
+        'Parallel State': {
+          Type: 'Parallel',
+          End: true,
+          Branches: [
+            { StartAt: 'Branch 1', States: { 'Branch 1': { Type: 'Pass', End: true } } },
+          ],
+          ResultSelector: {
+            'buz': 'buz',
+            'baz.$': '$.baz',
+          },
+        },
+      },
+    });
+  });
 });
 
 function render(sm: stepfunctions.IChainable) {
