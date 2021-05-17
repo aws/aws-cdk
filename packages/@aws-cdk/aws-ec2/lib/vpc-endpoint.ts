@@ -253,10 +253,6 @@ export class InterfaceVpcEndpointService implements IInterfaceVpcEndpointService
   }
 }
 
-/**
- * An AWS service for an interface VPC endpoint.
- */
-
 // The following services need to have their interface endpoints prefixed with 'cn' (before com.amazonaws.{REGION}) for china regions
 const CN_OVERRIDES = ['application-autoscaling',
   'autoscaling',
@@ -293,6 +289,9 @@ const CN_OVERRIDES = ['application-autoscaling',
   'sts',
   'synthetics'];
 
+/**
+ * An AWS service for an interface VPC endpoint.
+ */
 export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointService {
   public static readonly SAGEMAKER_NOTEBOOK = new InterfaceVpcEndpointAwsService('notebook', 'aws.sagemaker');
   public static readonly ATHENA = new InterfaceVpcEndpointAwsService('athena');
