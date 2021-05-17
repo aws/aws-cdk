@@ -718,10 +718,30 @@ export class Function extends FunctionBase {
     this.currentVersionOptions = props.currentVersionOptions;
 
     if (props.filesystem) {
+      if (!props.vpc) {
+        throw new Error('Cannot configure \'filesystem\' without configuring a VPC.');
+      }
       const config = props.filesystem.config;
       if (config.dependency) {
         this.node.addDependency(...config.dependency);
       }
+      // There could be a race if the Lambda is used in a CustomResource. It is possible for the Lambda to
+      // fail to attach to a given FileSystem if we do not have a dependency on the SecurityGroup ingress/egress
+      // rules that were created between this Lambda's SG & the Filesystem SG.
+      this.connections.securityGroups.forEach(sg => {
+        sg.node.findAll().forEach(child => {
+          if (child instanceof CfnResource && child.cfnResourceType === 'AWS::EC2::SecurityGroupEgress') {
+            resource.node.addDependency(child);
+          }
+        });
+      });
+      config.connections?.securityGroups.forEach(sg => {
+        sg.node.findAll().forEach(child => {
+          if (child instanceof CfnResource && child.cfnResourceType === 'AWS::EC2::SecurityGroupIngress') {
+            resource.node.addDependency(child);
+          }
+        });
+      });
     }
   }
 
