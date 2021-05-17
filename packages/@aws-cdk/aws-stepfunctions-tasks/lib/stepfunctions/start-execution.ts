@@ -35,7 +35,7 @@ export interface StepFunctionsStartExecutionProps extends sfn.TaskStateBaseProps
 /**
  * A Step Functions Task to call StartExecution on another state machine.
  *
- * It supports three service integration patterns: FIRE_AND_FORGET, SYNC and WAIT_FOR_TASK_TOKEN.
+ * It supports three service integration patterns: REQUEST_RESPONSE, RUN_JOB, and WAIT_FOR_TASK_TOKEN.
  */
 export class StepFunctionsStartExecution extends sfn.TaskStateBase {
   private static readonly SUPPORTED_INTEGRATION_PATTERNS = [
