@@ -230,9 +230,9 @@ export class Cluster extends Resource implements ICluster {
 
   private renderExecuteCommandConfiguration(executeCommandConfig: ExecuteCommandConfiguration): CfnCluster.ExecuteCommandConfigurationProperty {
     return {
-      kmsKeyId: executeCommandConfig.kmsKeyID || undefined,
+      kmsKeyId: executeCommandConfig.kmsKey ? executeCommandConfig.kmsKey.keyArn : undefined,
       logConfiguration: this.renderExecuteCommandLogConfiguration(executeCommandConfig.logConfiguration),
-      logging: executeCommandConfig.logging || undefined,
+      logging: executeCommandConfig.logging ? executeCommandConfig.logging : undefined,
     };
   }
 
@@ -937,6 +937,11 @@ class ImportedCluster extends Resource implements ICluster {
   private _defaultCloudMapNamespace?: cloudmap.INamespace;
 
   /**
+   * The execute command configuration for the cluster
+   */
+  private _executeCommandConfiguration?: ExecuteCommandConfiguration;
+
+  /**
    * Constructs a new instance of the ImportedCluster class.
    */
   constructor(scope: Construct, id: string, props: ClusterAttributes) {
@@ -945,6 +950,7 @@ class ImportedCluster extends Resource implements ICluster {
     this.vpc = props.vpc;
     this.hasEc2Capacity = props.hasEc2Capacity !== false;
     this._defaultCloudMapNamespace = props.defaultCloudMapNamespace;
+    this._executeCommandConfiguration = props.executeCommandConfiguration;
 
     this.clusterArn = props.clusterArn ?? Stack.of(this).formatArn({
       service: 'ecs',
@@ -959,6 +965,10 @@ class ImportedCluster extends Resource implements ICluster {
 
   public get defaultCloudMapNamespace(): cloudmap.INamespace | undefined {
     return this._defaultCloudMapNamespace;
+  }
+
+  public get executeCommandConfiguration(): ExecuteCommandConfiguration | undefined {
+    return this._executeCommandConfiguration;
   }
 }
 
@@ -1132,7 +1142,7 @@ export interface ExecuteCommandConfiguration {
    *
    * @default - none
    */
-  readonly kmsKeyID?: string,
+  readonly kmsKey?: kms.IKey,
 
   /**
    * The log configuration for the results of the execute command actions. The logs can be sent to CloudWatch Logs or an Amazon S3 bucket.

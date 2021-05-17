@@ -2266,6 +2266,20 @@ nodeunitShim({
               Effect: 'Allow',
               Resource: '*',
             },
+            {
+              Action: 'logs:DescribeLogGroups',
+              Effect: 'Allow',
+              Resource: '*',
+            },
+            {
+              Action: [
+                'logs:CreateLogStream',
+                'logs:DescribeLogStream',
+                'logs:PutLogEvents',
+              ],
+              Effect: 'Allow',
+              Resource: '*',
+            },
           ],
           Version: '2012-10-17',
         },

@@ -435,12 +435,13 @@ export abstract class BaseService extends Resource
         this.executeCommandLogConfiguration();
       }
 
-      if (this.cluster.executeCommandConfiguration?.kmsKeyID) {
+      if (this.cluster.executeCommandConfiguration?.kmsKey) {
         this.taskDefinition.addToTaskRolePolicy(new iam.PolicyStatement({
           actions: [
             'kms:Decrypt',
+            'kms:GenerateDataKey',
           ],
-          resources: [`arn:aws:kms:${this.stack.region}:${this.stack.account}:key/${this.cluster.executeCommandConfiguration.kmsKeyID}`],
+          resources: [`${this.cluster.executeCommandConfiguration.kmsKey.keyArn}`],
         }));
       }
     }
@@ -461,25 +462,15 @@ export abstract class BaseService extends Resource
       resources: ['*'],
     }));
 
-    if (logConfiguration?.cloudWatchLogGroupName) {
-      this.taskDefinition.addToTaskRolePolicy(new iam.PolicyStatement({
-        actions: [
-          'logs:CreateLogStream',
-          'logs:DescribeLogStreams',
-          'logs:PutLogEvents',
-        ],
-        resources: [`arn:aws:logs:${this.stack.region}:${this.stack.account}:log-group:${logConfiguration.cloudWatchLogGroupName}:*`],
-      }));
-    } else {
-      this.taskDefinition.addToTaskRolePolicy(new iam.PolicyStatement({
-        actions: [
-          'logs:CreateLogStream',
-          'logs:DescribeLogStreams',
-          'logs:PutLogEvents',
-        ],
-        resources: ['*'],
-      }));
-    }
+    const logGroupArn = logConfiguration?.cloudWatchLogGroupName ? `arn:aws:logs:${this.stack.region}:${this.stack.account}:log-group:${logConfiguration.cloudWatchLogGroupName}:*` : '*';
+    this.taskDefinition.addToTaskRolePolicy(new iam.PolicyStatement({
+      actions: [
+        'logs:CreateLogStream',
+        'logs:DescribeLogStream',
+        'logs:PutLogEvents',
+      ],
+      resources: [logGroupArn],
+    }));
 
     if (logConfiguration?.s3BucketName) {
       this.taskDefinition.addToTaskRolePolicy(new iam.PolicyStatement({
@@ -491,6 +482,11 @@ export abstract class BaseService extends Resource
       this.taskDefinition.addToTaskRolePolicy(new iam.PolicyStatement({
         actions: [
           's3:GetEncryptionConfiguration',
+        ],
+        resources: [`arn:aws:s3:::${logConfiguration.s3BucketName}`],
+      }));
+      this.taskDefinition.addToTaskRolePolicy(new iam.PolicyStatement({
+        actions: [
           's3:PutObject',
         ],
         resources: [`arn:aws:s3:::${logConfiguration.s3BucketName}/*`],
@@ -873,6 +869,7 @@ export abstract class BaseService extends Resource
       ],
       resources: ['*'],
     }));
+    this.taskDefinition.obtainExecutionRole().addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonECSTaskExecutionRolePolicy'));
   }
 }
 
