@@ -198,9 +198,11 @@ describe('function', () => {
       const sourceArn = 'some-arn';
       const service = 'my-service';
       const principal = new iam.PrincipalWithConditions(new iam.ServicePrincipal(service), {
-        ArnEquals: {
-          'aws:SourceAccount': sourceAccount,
+        ArnLike: {
           'aws:SourceArn': sourceArn,
+        },
+        StringEquals: {
+          'aws:SourceAccount': sourceAccount,
         },
       });
 
@@ -226,15 +228,21 @@ describe('function', () => {
 
       expect(() => fn.addPermission('F1', {
         principal: new iam.PrincipalWithConditions(new iam.ServicePrincipal('my-service'), {
-          ArnNotEquals: {
-            'aws:SourceAccount': 'source-account',
+          ArnEquals: {
             'aws:SourceArn': 'source-arn',
           },
         }),
       })).toThrow(/PrincipalWithConditions had unsupported conditions for Lambda permission statement/);
       expect(() => fn.addPermission('F2', {
         principal: new iam.PrincipalWithConditions(new iam.ServicePrincipal('my-service'), {
-          ArnEquals: {
+          StringLike: {
+            'aws:SourceAccount': 'source-account',
+          },
+        }),
+      })).toThrow(/PrincipalWithConditions had unsupported conditions for Lambda permission statement/);
+      expect(() => fn.addPermission('F3', {
+        principal: new iam.PrincipalWithConditions(new iam.ServicePrincipal('my-service'), {
+          ArnLike: {
             's3:DataAccessPointArn': 'data-access-point-arn',
           },
         }),

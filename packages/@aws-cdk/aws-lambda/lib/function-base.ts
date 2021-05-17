@@ -8,7 +8,7 @@ import { IEventSource } from './event-source';
 import { EventSourceMapping, EventSourceMappingOptions } from './event-source-mapping';
 import { IVersion } from './lambda-version';
 import { CfnPermission } from './lambda.generated';
-import { Permission } from './permission';
+import { Permission, PERMISSION_SUPPORTED_PRINCIPAL_CONDITIONS } from './permission';
 import { addAlias } from './util';
 
 export interface IFunction extends IResource, ec2.IConnectable, iam.IGrantable {
@@ -238,7 +238,8 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
       return;
     }
 
-    const { principal, sourceAccount, sourceArn } = this.parsePermissionPrincipal(permission.principal);
+    const principal = this.parsePermissionPrincipal(permission.principal);
+    const { sourceAccount, sourceArn } = this.parsePermissionPrincipalConditions(permission.principal) ?? {};
     const action = permission.action ?? 'lambda:InvokeFunction';
     const scope = permission.scope ?? this;
 
@@ -396,52 +397,24 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
    * fallback.
    */
   private parsePermissionPrincipal(principal: iam.IPrincipal) {
-    let sourceAccount: string;
-    let sourceArn: string;
-
-    const returnForPrincipal = (returnPrincipal: string) => {
-      return {
-        principal: returnPrincipal,
-        sourceAccount: sourceAccount,
-        sourceArn: sourceArn,
-      };
-    };
-
     // Try some specific common classes first.
     // use duck-typing, not instance of
     // @deprecated: after v2, we can change these to 'instanceof'
     if ('conditions' in principal) {
-      const conditions = (principal as iam.PrincipalWithConditions).policyFragment.conditions;
-      const conditionOperators = Array.from(Object.keys(conditions));
-      const conditionKeys: string[] = Array.from(
-        Object.values(conditions).reduce((keys, condition) => keys.concat(Object.keys(condition)), []),
-      );
-      const supportedOperators = ['ArnEquals'];
-      const supportedConditions = ['aws:SourceArn', 'aws:SourceAccount'];
-      const conditionOperatorsAreSupported = conditionOperators.every(operator => supportedOperators.includes(operator));
-      const conditionKeysAreSupported = conditionKeys.every(key => supportedConditions.includes(key));
-
-      if (conditionOperatorsAreSupported && conditionKeysAreSupported) {
-        sourceAccount = conditions.ArnEquals['aws:SourceAccount'];
-        sourceArn = conditions.ArnEquals['aws:SourceArn'];
-        // eslint-disable-next-line dot-notation
-        principal = principal['principal'];
-      } else {
-        throw new Error(`PrincipalWithConditions had unsupported conditions for Lambda permission statement: ${conditions}. ` +
-          'Supported operators: [ArnEquals]; supported conditions: [aws:SourceArn, aws:SourceAccount]');
-      }
+      // eslint-disable-next-line dot-notation
+      principal = principal['principal'];
     }
 
     if ('accountId' in principal) {
-      return returnForPrincipal((principal as iam.AccountPrincipal).accountId);
+      return (principal as iam.AccountPrincipal).accountId;
     }
 
     if ('service' in principal) {
-      return returnForPrincipal((principal as iam.ServicePrincipal).service);
+      return (principal as iam.ServicePrincipal).service;
     }
 
     if ('arn' in principal) {
-      return returnForPrincipal((principal as iam.ArnPrincipal).arn);
+      return (principal as iam.ArnPrincipal).arn;
     }
 
 
@@ -452,14 +425,43 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
     // The principal cannot have conditions and must have a single { AWS: [arn] } entry.
     const json = principal.policyFragment.principalJson;
     if (Object.keys(principal.policyFragment.conditions).length === 0 && json.AWS) {
-      if (typeof json.AWS === 'string') { return returnForPrincipal(json.AWS); }
+      if (typeof json.AWS === 'string') { return json.AWS; }
       if (Array.isArray(json.AWS) && json.AWS.length === 1 && typeof json.AWS[0] === 'string') {
-        return returnForPrincipal(json.AWS[0]);
+        return json.AWS[0];
       }
     }
 
     throw new Error(`Invalid principal type for Lambda permission statement: ${principal.constructor.name}. ` +
       'Supported: AccountPrincipal, ArnPrincipal, ServicePrincipal');
+  }
+
+  private parsePermissionPrincipalConditions(principal: iam.IPrincipal): { sourceAccount: string, sourceArn: string } | null {
+    if ('conditions' in principal) {
+      const conditions: iam.Conditions = (principal as iam.PrincipalWithConditions).policyFragment.conditions;
+      const conditionPairs = Object.entries(conditions)
+        .reduce(
+          (accumulator, [operator, conditionObjs]) =>
+            accumulator.concat(Object.keys(conditionObjs as object).map(key => { return { operator, key }; })),
+          ([] as {operator: string, key: string}[]),
+        );
+      const conditionsAreSupported = conditionPairs.every(
+        (condition) => PERMISSION_SUPPORTED_PRINCIPAL_CONDITIONS.some(
+          (supportedCondition) => supportedCondition.operator === condition.operator && supportedCondition.key === condition.key,
+        ),
+      );
+
+      if (conditionsAreSupported) {
+        return {
+          sourceAccount: conditions.StringEquals['aws:SourceAccount'],
+          sourceArn: conditions.ArnLike['aws:SourceArn'],
+        };
+      } else {
+        throw new Error(`PrincipalWithConditions had unsupported conditions for Lambda permission statement: ${JSON.stringify(conditions)}. ` +
+          `Supported operator/condition pairs: ${JSON.stringify(PERMISSION_SUPPORTED_PRINCIPAL_CONDITIONS)}`);
+      }
+    } else {
+      return null;
+    }
   }
 }
 

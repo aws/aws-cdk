@@ -65,3 +65,5 @@ export interface Permission {
    */
   readonly sourceArn?: string;
 }
+
+export const PERMISSION_SUPPORTED_PRINCIPAL_CONDITIONS = [{ operator: 'ArnLike', key: 'aws:SourceArn' }, { operator: 'StringEquals', key: 'aws:SourceAccount' }];
