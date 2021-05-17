@@ -64,4 +64,24 @@ describe('HttpAuthorizer', () => {
       });
     });
   });
+
+  describe('lambda', () => {
+    it('default', () => {
+      const stack = new Stack();
+      const httpApi = new HttpApi(stack, 'HttpApi');
+
+      new HttpAuthorizer(stack, 'HttpAuthorizer', {
+        httpApi,
+        identitySource: ['identitysource.1', 'identitysource.2'],
+        type: HttpAuthorizerType.LAMBDA,
+        authorizerUri: 'arn:cool-lambda-arn',
+      });
+
+      expect(stack).toHaveResource('AWS::ApiGatewayV2::Authorizer', {
+        AuthorizerType: 'REQUEST',
+        AuthorizerPayloadFormatVersion: '2.0',
+        AuthorizerUri: 'arn:cool-lambda-arn',
+      });
+    });
+  });
 });
