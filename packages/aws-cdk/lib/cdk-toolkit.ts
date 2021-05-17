@@ -395,14 +395,17 @@ export class CdkToolkit {
   private async selectStacksForDiff(stackNames: string[], exclusively?: boolean) {
     const assembly = await this.assembly();
 
-    const idsToValidate = process.env.STACKS_TO_VALIDATE ? process.env.STACKS_TO_VALIDATE.split(';') : stackNames;
-    const stacksToValidate = await this.selectStacksForList(idsToValidate);
-    await this.validateStacks(stacksToValidate);
-
-    return assembly.selectStacks(stackNames, {
+    const selectedForDiff = await assembly.selectStacks(stackNames, {
       extend: exclusively ? ExtendedStackSelection.None : ExtendedStackSelection.Upstream,
       defaultBehavior: DefaultSelection.MainAssembly,
     });
+
+    const allStacks = await this.selectStacksForList([]);
+    const flaggedStacks = allStacks.filter(art => art.validateOnSynth ?? false);
+
+    await this.validateStacks(selectedForDiff.concat(flaggedStacks));
+
+    return selectedForDiff;
   }
 
   private async selectStacksForDestroy(stackNames: string[], exclusively?: boolean) {
