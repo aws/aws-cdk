@@ -2831,12 +2831,10 @@ describe('global', () => {
     }));
   });
 
-  test('creates new provider when needed', () => {
+  test('throws when reaching the maximum table with replication limit', () => {
     // GIVEN
     const stack = new Stack();
-
-    // WHEN
-    for (let i = 1; i <= 21; i++) {
+    for (let i = 1; i <= 10; i++) {
       new Table(stack, `Table${i}`, {
         partitionKey: {
           name: 'id',
@@ -2847,24 +2845,13 @@ describe('global', () => {
     }
 
     // THEN
-    // three providers = three nested stacks
-    expect(stack).toCountResources('AWS::CloudFormation::Stack', 3);
-
-    // check that we don't exceed the max IAM managed policies per role (10)
-    const policiesPerRole = new Map<string, number>();
-    for (const [_id, resource] of Object.entries<any>(SynthUtils.toCloudFormation(stack).Resources)) {
-      if (resource.Type === 'AWS::IAM::ManagedPolicy') {
-        const role = resource.Properties.Roles[0]['Fn::GetAtt'][1];
-        const count = policiesPerRole.get(role);
-        if (count) {
-          const newCount = count + 1;
-          policiesPerRole.set(role, newCount);
-          expect(newCount).toBeLessThanOrEqual(10);
-        } else {
-          policiesPerRole.set(role, 1);
-        }
-      }
-    }
+    expect(() => new Table(stack, 'OverLimit', {
+      partitionKey: {
+        name: 'id',
+        type: AttributeType.STRING,
+      },
+      replicationRegions: ['eu-central-1'],
+    })).toThrow(/The maximum of 10 tables with replication per stack has been reached/);
   });
 });
 
