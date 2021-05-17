@@ -60,6 +60,13 @@ export enum RecordType {
   CNAME = 'CNAME',
 
   /**
+   * A delegation signer (DS) record refers a zone key for a delegated subdomain zone.
+   *
+   * @see https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/ResourceRecordTypes.html#DSFormat
+   */
+  DS = 'DS',
+
+  /**
    * An MX record specifies the names of your mail servers and, if you have two or more mail servers,
    * the priority order.
    *
@@ -561,6 +568,31 @@ export class NsRecord extends RecordSet {
     super(scope, id, {
       ...props,
       recordType: RecordType.NS,
+      target: RecordTarget.fromValues(...props.values),
+    });
+  }
+}
+
+/**
+ * Construction properties for a DSRecord.
+ */
+export interface DsRecordProps extends RecordSetOptions {
+  /**
+   * The DS values.
+   */
+  readonly values: string[];
+}
+
+/**
+ * A DNS DS record
+ *
+ * @resource AWS::Route53::RecordSet
+ */
+export class DsRecord extends RecordSet {
+  constructor(scope: Construct, id: string, props: DsRecordProps) {
+    super(scope, id, {
+      ...props,
+      recordType: RecordType.DS,
       target: RecordTarget.fromValues(...props.values),
     });
   }
