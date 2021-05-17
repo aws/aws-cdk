@@ -154,11 +154,8 @@ export class PrincipalWithConditions implements IPrincipal {
   public readonly assumeRoleAction: string = this.principal.assumeRoleAction;
   private additionalConditions: Conditions;
 
-  /**
-   * @param principal The underlying principal to which conditions will be attached.
-   */
   constructor(
-    public readonly principal: IPrincipal,
+    private readonly principal: IPrincipal,
     conditions: Conditions,
   ) {
     this.additionalConditions = conditions;
