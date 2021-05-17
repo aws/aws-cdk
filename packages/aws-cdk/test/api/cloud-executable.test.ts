@@ -57,7 +57,7 @@ test('stop executing if context providers are not making progress', async () => 
 
   const cloudExecutable = new MockCloudExecutable({
     stacks: [{
-      stackName: 'thestack',
+      id: 'thestack',
       template: { resource: 'noerrorresource' },
     }],
     // Always return the same missing keys, synthesis should still finish.
@@ -77,7 +77,7 @@ test('fails if lookups are disabled and missing context is synthesized', async (
   // GIVEN
   const cloudExecutable = new MockCloudExecutable({
     stacks: [{
-      stackName: 'thestack',
+      id: 'thestack',
       template: { resource: 'noerrorresource' },
     }],
     // Always return the same missing keys, synthesis should still finish.
@@ -95,12 +95,12 @@ test('fails if lookups are disabled and missing context is synthesized', async (
 async function testCloudExecutable({ env, versionReporting = true }: { env?: string, versionReporting?: boolean } = {}) {
   const cloudExec = new MockCloudExecutable({
     stacks: [{
-      stackName: 'withouterrors',
+      id: 'withouterrors',
       env,
       template: { resource: 'noerrorresource' },
     },
     {
-      stackName: 'witherrors',
+      id: 'witherrors',
       env,
       template: { resource: 'errorresource' },
       metadata: {

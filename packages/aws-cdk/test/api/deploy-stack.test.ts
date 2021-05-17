@@ -3,11 +3,11 @@ import { DEFAULT_FAKE_TEMPLATE, testStack } from '../util';
 import { MockedObject, mockResolvedEnvironment, MockSdk, MockSdkProvider, SyncHandlerSubsetOf } from '../util/mock-sdk';
 
 const FAKE_STACK = testStack({
-  stackName: 'withouterrors',
+  id: 'withouterrors',
 });
 
 const FAKE_STACK_WITH_PARAMETERS = testStack({
-  stackName: 'withparameters',
+  id: 'withparameters',
   template: {
     Parameters: {
       HasValue: { Type: 'String' },
@@ -18,7 +18,7 @@ const FAKE_STACK_WITH_PARAMETERS = testStack({
 });
 
 const FAKE_STACK_TERMINATION_PROTECTION = testStack({
-  stackName: 'termination-protection',
+  id: 'termination-protection',
   template: DEFAULT_FAKE_TEMPLATE,
   terminationProtection: true,
 });
@@ -511,7 +511,7 @@ test('use S3 url for stack deployment if present in Stack Artifact', async () =>
   await deployStack({
     ...standardDeployStackArguments(),
     stack: testStack({
-      stackName: 'withouterrors',
+      id: 'withouterrors',
       properties: {
         stackTemplateAssetObjectUrl: 'https://use-me-use-me/',
       },
@@ -530,7 +530,7 @@ test('use REST API S3 url with substituted placeholders if manifest url starts w
   await deployStack({
     ...standardDeployStackArguments(),
     stack: testStack({
-      stackName: 'withouterrors',
+      id: 'withouterrors',
       properties: {
         stackTemplateAssetObjectUrl: 's3://use-me-use-me-${AWS::AccountId}/object',
       },

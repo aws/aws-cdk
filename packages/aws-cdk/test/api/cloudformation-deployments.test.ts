@@ -37,7 +37,7 @@ function mockSuccessfulBootstrapStackLookup(props?: Record<string, any>) {
 test('placeholders are substituted in CloudFormation execution role', async () => {
   await deployments.deployStack({
     stack: testStack({
-      stackName: 'boop',
+      id: 'boop',
       properties: {
         cloudFormationExecutionRoleArn: 'bloop:${AWS::Region}:${AWS::AccountId}',
       },
@@ -55,7 +55,7 @@ test('role with placeholders is assumed if assumerole is given', async () => {
 
   await deployments.deployStack({
     stack: testStack({
-      stackName: 'boop',
+      id: 'boop',
       properties: {
         assumeRoleArn: 'bloop:${AWS::Region}:${AWS::AccountId}',
       },
@@ -70,7 +70,7 @@ test('role with placeholders is assumed if assumerole is given', async () => {
 test('deployment fails if bootstrap stack is missing', async () => {
   await expect(deployments.deployStack({
     stack: testStack({
-      stackName: 'boop',
+      id: 'boop',
       properties: {
         assumeRoleArn: 'bloop:${AWS::Region}:${AWS::AccountId}',
         requiresBootstrapStackVersion: 99,
@@ -86,7 +86,7 @@ test('deployment fails if bootstrap stack is too old', async () => {
 
   await expect(deployments.deployStack({
     stack: testStack({
-      stackName: 'boop',
+      id: 'boop',
       properties: {
         assumeRoleArn: 'bloop:${AWS::Region}:${AWS::AccountId}',
         requiresBootstrapStackVersion: 99,
@@ -116,7 +116,7 @@ test('if toolkit stack cannot be found but SSM parameter name is present deploym
 
   await deployments.deployStack({
     stack: testStack({
-      stackName: 'boop',
+      id: 'boop',
       properties: {
         assumeRoleArn: 'bloop:${AWS::Region}:${AWS::AccountId}',
         requiresBootstrapStackVersion: 99,

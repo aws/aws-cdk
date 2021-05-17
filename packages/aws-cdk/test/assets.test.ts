@@ -214,7 +214,7 @@ describe('docker assets', () => {
 
 function stackWithAssets(assetEntries: AssetMetadataEntry[]) {
   return testStack({
-    stackName: 'SomeStack',
+    id: 'SomeStack',
     assets: assetEntries,
     template: {
       Resources: {

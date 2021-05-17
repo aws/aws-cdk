@@ -9,7 +9,8 @@ import { MockSdkProvider } from './util/mock-sdk';
 export const DEFAULT_FAKE_TEMPLATE = { No: 'Resources' };
 
 export interface TestStackArtifact {
-  stackName: string;
+  id: string;
+  stackName?: string;
   template?: any;
   env?: string,
   depends?: string[];
@@ -51,7 +52,7 @@ function clone(obj: any) {
 
 function addAttributes(assembly: TestAssembly, builder: cxapi.CloudAssemblyBuilder) {
   for (const stack of assembly.stacks) {
-    const templateFile = `${stack.stackName}.template.json`;
+    const templateFile = `${stack.id}.template.json`;
     const template = stack.template ?? DEFAULT_FAKE_TEMPLATE;
     fs.writeFileSync(path.join(builder.outdir, templateFile), JSON.stringify(template, undefined, 2));
 
@@ -68,7 +69,7 @@ function addAttributes(assembly: TestAssembly, builder: cxapi.CloudAssemblyBuild
       builder.addMissing(missing);
     }
 
-    builder.addArtifact(stack.stackName, {
+    builder.addArtifact(stack.id, {
       type: cxschema.ArtifactType.AWS_CLOUDFORMATION_STACK,
       environment: stack.env || 'aws://123456789012/here',
 
@@ -77,6 +78,7 @@ function addAttributes(assembly: TestAssembly, builder: cxapi.CloudAssemblyBuild
       properties: {
         ...stack.properties,
         templateFile,
+        stackName: stack.stackName,
         terminationProtection: stack.terminationProtection,
       },
       displayName: stack.displayName,
@@ -127,7 +129,7 @@ function patchStackTags(metadata: { [path: string]: cxschema.MetadataEntry[] }):
 
 export function testStack(stack: TestStackArtifact) {
   const assembly = testAssembly({ stacks: [stack] });
-  return assembly.getStackByName(stack.stackName);
+  return assembly.getStackByName(stack.id);
 }
 
 /**
