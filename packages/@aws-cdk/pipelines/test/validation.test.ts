@@ -1,4 +1,4 @@
-import { anything, arrayWith, deepObjectLike, encodedJson, objectLike, stringIsNoLongerThan } from '@aws-cdk/assert-internal';
+import { anything, arrayWith, deepObjectLike, encodedJson, objectLike } from '@aws-cdk/assert-internal';
 import '@aws-cdk/assert-internal/jest';
 import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
@@ -9,7 +9,7 @@ import { CfnOutput, Stack, Stage, StageProps } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import * as cdkp from '../lib';
 import { } from './testmatchers';
-import { BucketStack, PIPELINE_ENV, TestApp, TestGitHubNpmPipeline } from './testutil';
+import { BucketStack, PIPELINE_ENV, stringNoLongerThan, TestApp, TestGitHubNpmPipeline } from './testutil';
 
 let app: TestApp;
 let pipelineStack: Stack;
@@ -57,7 +57,7 @@ test('stackOutput generates names limited to 100 characters', () => {
       Actions: arrayWith(
         deepObjectLike({
           Name: 'Stack.Deploy',
-          OutputArtifacts: [{ Name: stringIsNoLongerThan(100) }],
+          OutputArtifacts: [{ Name: stringNoLongerThan(100) }],
           Configuration: {
             OutputFileName: 'outputs.json',
           },
@@ -69,7 +69,7 @@ test('stackOutput generates names limited to 100 characters', () => {
           Configuration: {
             ProjectName: anything(),
           },
-          InputArtifacts: [{ Name: stringIsNoLongerThan(100) }],
+          InputArtifacts: [{ Name: stringNoLongerThan(100) }],
           Name: 'TestOutput',
         }),
       ),
