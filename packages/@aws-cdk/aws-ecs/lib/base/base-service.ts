@@ -445,6 +445,7 @@ export abstract class BaseService extends Resource
         }));
       }
     }
+    this.node.defaultChild = this.resource;
   }
 
   /**
