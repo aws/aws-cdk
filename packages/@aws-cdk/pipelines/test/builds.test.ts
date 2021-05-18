@@ -124,6 +124,31 @@ test.each([['npm'], ['yarn']])('%s build respects subdirectory', (npmYarn) => {
   });
 });
 
+test.each([['npm'], ['yarn']])('%s build sets UNSAFE_PERM=true', (npmYarn) => {
+  // WHEN
+  new TestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+    sourceArtifact,
+    cloudAssemblyArtifact,
+    synthAction: npmYarnBuild(npmYarn)({
+      sourceArtifact,
+      cloudAssemblyArtifact,
+    }),
+  });
+
+  // THEN
+  expect(pipelineStack).toHaveResourceLike('AWS::CodeBuild::Project', {
+    Environment: {
+      EnvironmentVariables: [
+        {
+          Name: 'NPM_CONFIG_UNSAFE_PERM',
+          Type: 'PLAINTEXT',
+          Value: 'true',
+        },
+      ],
+    },
+  });
+});
+
 test.each([['npm'], ['yarn']])('%s assumes no build step by default', (npmYarn) => {
   // WHEN
   new TestGitHubNpmPipeline(pipelineStack, 'Cdk', {
