@@ -5,7 +5,7 @@ import * as lambda from '@aws-cdk/aws-lambda';
 import { Construct } from 'constructs';
 
 /**
- * An AWS Lambda layer that includes the AWS CLI.
+ * An AWS Lambda layer that includes the AWS CLI V1.
  */
 export class AwsCliLayer extends lambda.LayerVersion {
   constructor(scope: Construct, id: string) {
@@ -13,6 +13,21 @@ export class AwsCliLayer extends lambda.LayerVersion {
       code: lambda.Code.fromAsset(path.join(__dirname, 'layer.zip'), {
         // we hash the Dockerfile (it contains the tools versions) because hashing the zip is non-deterministic
         assetHash: hashFile(path.join(__dirname, '..', 'layer', 'Dockerfile')),
+      }),
+      description: '/opt/awscli/aws',
+    });
+  }
+}
+
+/**
+ * An AWS Lambda layer that includes the AWS CLI V2.
+ */
+export class AwsCliV2Layer extends lambda.LayerVersion {
+  constructor(scope: Construct, id: string) {
+    super(scope, id, {
+      code: lambda.Code.fromAsset(path.join(__dirname, 'layer_v2.zip'), {
+        // we hash the Dockerfile (it contains the tools versions) because hashing the zip is non-deterministic
+        assetHash: hashFile(path.join(__dirname, '..', 'layer', 'v2.Dockerfile')),
       }),
       description: '/opt/awscli/aws',
     });
