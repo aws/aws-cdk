@@ -1,15 +1,18 @@
 import copy
 import json
+import os
 import unittest
-from typing import Optional, Dict, Any
-from urllib.request import Request
 import uuid
+from typing import Optional, Dict, Any
 from unittest.mock import patch, MagicMock
+from urllib.request import Request
+
 import boto3  # type: ignore
 from botocore import stub  # type: ignore
 from botocore.stub import Stubber
 from moto.s3 import mock_s3  # type: ignore
 
+os.environ["AWS_DEFAULT_REGION"] = "us-east-1"
 RESPONSE_URL = "https://dummy.com/"
 BUCKET_NAME = "fake_bucket"
 LAMBDA_ARN = "arn:aws:lambda:us-east-1:35667example:function:CreateThumbnail"
