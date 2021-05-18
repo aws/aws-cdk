@@ -65,7 +65,7 @@ export class Bundling implements cdk.BundlingOptions {
     this.packageManager = PackageManager.fromLockFile(props.depsLockFilePath);
 
     Bundling.esbuildInstallation = Bundling.esbuildInstallation ?? EsbuildInstallation.detect();
-    const runsLocally = !!Bundling.esbuildInstallation?.version.startsWith(ESBUILD_VERSION);
+    const mustRunInDocker = !Bundling.esbuildInstallation?.version.startsWith(ESBUILD_VERSION);
 
     const projectRoot = path.dirname(props.depsLockFilePath);
     this.relativeEntryPath = path.relative(projectRoot, path.resolve(props.entry));
@@ -80,7 +80,7 @@ export class Bundling implements cdk.BundlingOptions {
     ];
 
     // Docker bundling
-    const shouldBuildImage = props.forceDockerBundling || !runsLocally;
+    const shouldBuildImage = props.forceDockerBundling || mustRunInDocker;
     this.image = shouldBuildImage
       ? props.dockerImage ?? cdk.DockerImage.fromBuild(path.join(__dirname, '../lib'), {
         buildArgs: {
@@ -115,7 +115,7 @@ export class Bundling implements cdk.BundlingOptions {
 
       this.local = {
         tryBundle(outputDir: string) {
-          if (!Bundling.esbuildInstallation || !runsLocally) {
+          if (!Bundling.esbuildInstallation || mustRunInDocker) {
             process.stderr.write('esbuild cannot run locally. Switching to Docker bundling.\n');
             return false;
           }

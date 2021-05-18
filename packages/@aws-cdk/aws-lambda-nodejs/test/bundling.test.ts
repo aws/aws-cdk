@@ -12,7 +12,7 @@ import * as util from '../lib/util';
 jest.mock('@aws-cdk/aws-lambda');
 
 // Mock DockerImage.fromAsset() to avoid building the image
-let fromAssetMock: jest.SpyInstance<DockerImage>;
+let fromBuildMock: jest.SpyInstance<DockerImage>;
 let detectEsbuildMock: jest.SpyInstance<EsbuildInstallation | undefined>;
 beforeEach(() => {
   jest.clearAllMocks();
@@ -25,7 +25,7 @@ beforeEach(() => {
     version: '0.8.8',
   });
 
-  fromAssetMock = jest.spyOn(DockerImage, 'fromAsset').mockReturnValue({
+  fromBuildMock = jest.spyOn(DockerImage, 'fromBuild').mockReturnValue({
     image: 'built-image',
     cp: () => 'dest-path',
     run: () => {},
@@ -242,7 +242,7 @@ test('with Docker build args', () => {
     forceDockerBundling: true,
   });
 
-  expect(fromAssetMock).toHaveBeenCalledWith(expect.stringMatching(/lib$/), expect.objectContaining({
+  expect(fromBuildMock).toHaveBeenCalledWith(expect.stringMatching(/lib$/), expect.objectContaining({
     buildArgs: expect.objectContaining({
       HELLO: 'WORLD',
     }),
@@ -283,7 +283,7 @@ test('Local bundling', () => {
   );
 
   // Docker image is not built
-  expect(fromAssetMock).not.toHaveBeenCalled();
+  expect(fromBuildMock).not.toHaveBeenCalled();
 
   spawnSyncMock.mockRestore();
 });
