@@ -159,6 +159,78 @@ describe('synth', () => {
     // THEN
     await expect(toolkit.synth(['Test-Stack-A'], false, true)).resolves.toBeUndefined();
   });
+
+  describe('post-synth validation', () => {
+    beforeEach(() => {
+      cloudExecutable = new MockCloudExecutable({
+        stacks: [
+          MockStack.MOCK_STACK_A,
+          MockStack.MOCK_STACK_B,
+        ],
+        nestedAssemblies: [{
+          stacks: [MockStack.MOCK_STACK_WITH_ERROR],
+        }],
+      });
+    });
+  });
+
+  afterEach(() => {
+    process.env.STACKS_TO_VALIDATE = undefined;
+  });
+
+  test('stack has error and is flagged for validation', async() => {
+    cloudExecutable = new MockCloudExecutable({
+      stacks: [
+        MockStack.MOCK_STACK_A,
+        MockStack.MOCK_STACK_B,
+      ],
+      nestedAssemblies: [{
+        stacks: [
+          { properties: { validateOnSynth: true }, ...MockStack.MOCK_STACK_WITH_ERROR },
+        ],
+      }],
+    });
+
+    const toolkit = defaultToolkitSetup();
+
+    await expect(toolkit.synth([], false, true)).rejects.toBeDefined();
+  });
+
+  test('stack has error and was explicitly selected', async() => {
+    cloudExecutable = new MockCloudExecutable({
+      stacks: [
+        MockStack.MOCK_STACK_A,
+        MockStack.MOCK_STACK_B,
+      ],
+      nestedAssemblies: [{
+        stacks: [
+          { properties: { validateOnSynth: false }, ...MockStack.MOCK_STACK_WITH_ERROR },
+        ],
+      }],
+    });
+
+    const toolkit = defaultToolkitSetup();
+
+    await expect(toolkit.synth(['witherrors'], false, true)).rejects.toBeDefined();
+  });
+
+  test('stack has error, is not flagged for validation and was not explicitly selected', async () => {
+    cloudExecutable = new MockCloudExecutable({
+      stacks: [
+        MockStack.MOCK_STACK_A,
+        MockStack.MOCK_STACK_B,
+      ],
+      nestedAssemblies: [{
+        stacks: [
+          { properties: { validateOnSynth: false }, ...MockStack.MOCK_STACK_WITH_ERROR },
+        ],
+      }],
+    });
+
+    const toolkit = defaultToolkitSetup();
+
+    await toolkit.synth([], false, true);
+  });
 });
 
 class MockStack {
@@ -208,6 +280,20 @@ class MockStack {
     },
     displayName: 'Test-Stack-A/Test-Stack-C',
   };
+  public static readonly MOCK_STACK_WITH_ERROR: TestStackArtifact = {
+    stackName: 'witherrors',
+    env: 'aws://123456789012/bermuda-triangle-1',
+    template: { resource: 'errorresource' },
+    metadata: {
+      '/resource': [
+        {
+          type: cxschema.ArtifactMetadataEntryType.ERROR,
+          data: 'this is an error',
+        },
+      ],
+    },
+    displayName: 'Test-Stack-A/witherrors',
+  }
 }
 
 class FakeCloudFormation extends CloudFormationDeployments {

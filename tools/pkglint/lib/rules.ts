@@ -1326,7 +1326,7 @@ export class PackageInJsiiPackageNoRuntimeDeps extends ValidationRule {
       if (Object.keys(innerPkg.dependencies).length > 0) {
         pkg.report({
           ruleName: `${this.name}:1`,
-          message: `NPM Package '${innerPkg.packageName}' inside jsii package can only have devDependencies`,
+          message: `NPM Package '${innerPkg.packageName}' inside jsii package '${pkg.packageName}', can only have devDependencies`,
         });
       }
 
@@ -1547,6 +1547,15 @@ export class JestSetup extends ValidationRule {
     }
     fileShouldContain(this.name, pkg, '.gitignore', '!jest.config.js');
     fileShouldContain(this.name, pkg, '.npmignore', 'jest.config.js');
+
+    if (!(pkg.json.devDependencies ?? {})['@types/jest']) {
+      pkg.report({
+        ruleName: `${this.name}.types`,
+        message: 'There must be a devDependency on \'@types/jest\' if you use jest testing',
+      });
+    }
+
+
   }
 }
 
@@ -1605,6 +1614,60 @@ export class UbergenPackageVisibility extends ValidationRule {
 }
 
 /**
+ * No experimental dependencies.
+ * In v2 all experimental modules will be released separately from aws-cdk-lib. This means that:
+ * 1. Stable modules can't depend on experimental modules as it will creates a cyclic dependency.
+ * 2. Experimental modules shouldn't depend on experimental modules as it will create a coupling between their graduation (cause of 1).
+ * 2 specify "shouldn't" as in some cases we might allow it (using the `excludedDependencies` map), but the default is to not allow it.
+ */
+export class NoExperimentalDependents extends ValidationRule {
+  public name = 'no-experimental-dependencies';
+
+  // experimental -> experimental dependencies that are allowed for now.
+  private readonly excludedDependencies = new Map([
+    ['@aws-cdk/aws-secretsmanager', ['@aws-cdk/aws-sam']],
+    ['@aws-cdk/aws-kinesisanalytics-flink', ['@aws-cdk/aws-kinesisanalytics']],
+    ['@aws-cdk/aws-apigatewayv2-integrations', ['@aws-cdk/aws-apigatewayv2']],
+    ['@aws-cdk/aws-apigatewayv2-authorizers', ['@aws-cdk/aws-apigatewayv2']],
+    ['@aws-cdk/aws-events-targets', ['@aws-cdk/aws-kinesisfirehose']],
+  ]);
+
+  private readonly excludedModules = ['@aws-cdk/cloudformation-include'];
+
+  public validate(pkg: PackageJson): void {
+    if (this.excludedModules.includes(pkg.packageName)) {
+      return;
+    }
+    if (!isCdkModuleName(pkg.packageName)) {
+      return;
+    }
+
+    if (!isIncludedInMonolith(pkg)) {
+      return;
+    }
+
+    Object.keys(pkg.dependencies).forEach(dep => {
+      if (!isCdkModuleName(dep)) {
+        return;
+      }
+
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      const stability = require(`${dep}/package.json`).stability;
+      if (stability === 'experimental') {
+        if (this.excludedDependencies.get(pkg.packageName)?.includes(dep)) {
+          return;
+        }
+        pkg.report({
+          ruleName: this.name,
+          message: `It is not allowed to depend on experimental modules. ${pkg.packageName} added a dependency on experimental module ${dep}`,
+        });
+      }
+    });
+  }
+
+}
+
+/*
  * Enforces that the aws-cdk-lib README contains all of the core documentation from the @aws-cdk/core README
  * so users of CDKv2 see all of the core documentation when viewing the aws-cdk-lib docs.
  */
@@ -1651,7 +1714,7 @@ export class AwsCdkLibReadmeMatchesCore extends ValidationRule {
  * A package is a JSII package if there is 'jsii' section in the package.json
  */
 function isJSII(pkg: PackageJson): boolean {
-  return pkg.json.jsii;
+  return (pkg.json.jsii !== undefined);
 }
 
 /**
@@ -1717,4 +1780,18 @@ function cdkMajorVersion() {
   // eslint-disable-next-line @typescript-eslint/no-require-imports
   const releaseJson = require(`${monoRepoRoot()}/release.json`);
   return releaseJson.majorVersion as number;
+}
+
+/**
+ * Should this package be included in the monolithic package.
+ */
+function isIncludedInMonolith(pkg: PackageJson): boolean {
+  if (pkg.json.ubergen?.exclude) {
+    return false;
+  } else if (!isJSII(pkg)) {
+    return false;
+  } else if (pkg.json.deprecated) {
+    return false;
+  }
+  return true;
 }
