@@ -1,5 +1,11 @@
 /* eslint-disable no-console */
 import { execSync } from 'child_process';
+// import the AWSLambda package explicitly,
+// which is globally available in the Lambda runtime,
+// as otherwise linking this repository with link-all.sh
+// fails in the CDK app executed with ts-node
+/* eslint-disable-next-line import/no-extraneous-dependencies,import/no-unresolved */
+import * as AWSLambda from 'aws-lambda';
 import { AwsSdkCall } from '../aws-custom-resource';
 
 /**
