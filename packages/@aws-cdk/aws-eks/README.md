@@ -654,7 +654,7 @@ const cluster = new eks.Cluster(this, 'MyCluster', {
 });
 ```
 
-You can also use a similiar configuration for running a cluster built using the FargateCluster construct.
+You can also use a similar configuration for running a cluster built using the FargateCluster construct.
 
 ```ts
 const secretsKey = new kms.Key(this, 'SecretsKey');
