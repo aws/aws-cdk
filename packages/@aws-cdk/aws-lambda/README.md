@@ -126,6 +126,7 @@ that accesses the function or layer).
 ```ts
 import * as iam from '@aws-cdk/aws-iam';
 const principal = new iam.ServicePrincipal('my-service');
+
 fn.grantInvoke(principal);
 
 // Equivalent to:
@@ -144,6 +145,30 @@ principals, service principals, and principals in other accounts) to a call to
 principal in question has conditions limiting the source account or ARN of the
 operation (see above), these conditions will be automatically added to the
 resource policy.
+
+```ts
+import * as iam from '@aws-cdk/aws-iam';
+const servicePrincipal = new iam.ServicePrincipal('my-service');
+const sourceArn = 'arn:aws:s3:::my-bucket';
+const sourceAccount = '111122223333';
+const servicePrincipalWithConditions = servicePrincipal.withConditions({
+  ArnLike: {
+    'aws:SourceArn': sourceArn,
+  },
+  StringEquals: {
+    'aws:SourceAccount': sourceAccount,
+  },
+});
+
+fn.grantInvoke(servicePrincipalWithConditions);
+
+// Equivalent to:
+fn.addPermission('my-service Invocation', {
+  principal: servicePrincipal,
+  sourceArn: sourceArn,
+  sourceAccount: sourceAccount,
+});
+```
 
 ## Versions and Aliases
 
