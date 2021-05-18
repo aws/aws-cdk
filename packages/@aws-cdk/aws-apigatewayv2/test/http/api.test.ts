@@ -5,7 +5,7 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import { Duration, Stack } from '@aws-cdk/core';
 import {
   CorsHttpMethod,
-  HttpApi, HttpAuthorizer, HttpAuthorizerType, HttpIntegrationType, HttpMethod, HttpRouteAuthorizerBindOptions, HttpRouteAuthorizerConfig,
+  HttpApi, HttpAuthorizer, HttpIntegrationType, HttpMethod, HttpRouteAuthorizerBindOptions, HttpRouteAuthorizerConfig,
   HttpRouteIntegrationBindOptions, HttpRouteIntegrationConfig, IHttpRouteAuthorizer, IHttpRouteIntegration, HttpNoneAuthorizer, PayloadFormatVersion,
 } from '../../lib';
 
@@ -310,7 +310,7 @@ describe('HttpApi', () => {
 
     const authorizer = HttpAuthorizer.fromHttpAuthorizerAttributes(stack, 'auth', {
       authorizerId: '12345',
-      authorizerType: HttpAuthorizerType.JWT,
+      authorizerType: 'JWT',
     });
 
     // WHEN
@@ -429,6 +429,7 @@ describe('HttpApi', () => {
 
       expect(stack).toHaveResource('AWS::ApiGatewayV2::Route', {
         RouteKey: 'GET /chickens',
+        AuthorizationType: 'NONE',
         AuthorizerId: ABSENT,
       });
     });
@@ -505,7 +506,7 @@ class DummyAuthorizer implements IHttpRouteAuthorizer {
   public bind(_: HttpRouteAuthorizerBindOptions): HttpRouteAuthorizerConfig {
     return {
       authorizerId: 'auth-1234',
-      authorizationType: HttpAuthorizerType.JWT,
+      authorizationType: 'JWT',
     };
   }
 }
