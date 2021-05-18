@@ -1,36 +1,4 @@
 {
-  "Parameters": {
-    "BootstrapVersion": {
-      "Type": "AWS::SSM::Parameter::Value<String>",
-      "Default": "/cdk-bootstrap/hnb659fds/version",
-      "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store."
-    }
-  },
-  "Rules": {
-    "CheckBootstrapVersion": {
-      "Assertions": [
-        {
-          "Assert": {
-            "Fn::Not": [
-              {
-                "Fn::Contains": [
-                  [
-                    "1",
-                    "2",
-                    "3"
-                  ],
-                  {
-                    "Ref": "BootstrapVersion"
-                  }
-                ]
-              }
-            ]
-          },
-          "AssertDescription": "CDK bootstrap stack version 4 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
-        }
-      ]
-    }
-  },
   "Resources": {
     "PipelineArtifactsBucketEncryptionKeyF5BF0670": {
       "Type": "AWS::KMS::Key",
@@ -63,6 +31,20 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete"
     },
+    "PipelineArtifactsBucketEncryptionKeyAlias94A07392": {
+      "Type": "AWS::KMS::Alias",
+      "Properties": {
+        "AliasName": "alias/codepipeline-pipelinestackpipelinee95eedaa",
+        "TargetKeyId": {
+          "Fn::GetAtt": [
+            "PipelineArtifactsBucketEncryptionKeyF5BF0670",
+            "Arn"
+          ]
+        }
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
     "PipelineArtifactsBucketAEA9A052": {
       "Type": "AWS::S3::Bucket",
       "Properties": {
@@ -90,20 +72,6 @@
       },
       "UpdateReplacePolicy": "Retain",
       "DeletionPolicy": "Retain"
-    },
-    "PipelineArtifactsBucketEncryptionKeyAlias94A07392": {
-      "Type": "AWS::KMS::Alias",
-      "Properties": {
-        "AliasName": "alias/codepipeline-pipelinestackpipelinee95eedaa",
-        "TargetKeyId": {
-          "Fn::GetAtt": [
-            "PipelineArtifactsBucketEncryptionKeyF5BF0670",
-            "Arn"
-          ]
-        }
-      },
-      "UpdateReplacePolicy": "Delete",
-      "DeletionPolicy": "Delete"
     },
     "PipelineRoleB27FAA37": {
       "Type": "AWS::IAM::Role",
@@ -293,7 +261,7 @@
                   "ProjectName": {
                     "Ref": "PipelineBuildSynthCdkBuildProject6BEFA8E6"
                   },
-                  "EnvironmentVariables": "[{\"name\":\"_PROJECT_CONFIG_HASH\",\"type\":\"PLAINTEXT\",\"value\":\"a0d828d64c88aa603631eb7a08bc4748769f45d4b84d1b550cc85f41e49dc87e\"}]"
+                  "EnvironmentVariables": "[{\"name\":\"_PROJECT_CONFIG_HASH\",\"type\":\"PLAINTEXT\",\"value\":\"da8c1ee6d645a5802d25355fec94a3f22a961102b74ac3846898d6b14e3a2c30\"}]"
                 },
                 "InputArtifacts": [
                   {
@@ -765,6 +733,13 @@
         },
         "Environment": {
           "ComputeType": "BUILD_GENERAL1_SMALL",
+          "EnvironmentVariables": [
+            {
+              "Name": "NPM_CONFIG_UNSAFE_PERM",
+              "Type": "PLAINTEXT",
+              "Value": "true"
+            }
+          ],
           "Image": "aws/codebuild/standard:5.0",
           "ImagePullCredentialsType": "CODEBUILD",
           "PrivilegedMode": false,
@@ -1506,6 +1481,38 @@
           ]
         }
       }
+    }
+  },
+  "Parameters": {
+    "BootstrapVersion": {
+      "Type": "AWS::SSM::Parameter::Value<String>",
+      "Default": "/cdk-bootstrap/hnb659fds/version",
+      "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store."
+    }
+  },
+  "Rules": {
+    "CheckBootstrapVersion": {
+      "Assertions": [
+        {
+          "Assert": {
+            "Fn::Not": [
+              {
+                "Fn::Contains": [
+                  [
+                    "1",
+                    "2",
+                    "3"
+                  ],
+                  {
+                    "Ref": "BootstrapVersion"
+                  }
+                ]
+              }
+            ]
+          },
+          "AssertDescription": "CDK bootstrap stack version 4 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+        }
+      ]
     }
   }
 }
