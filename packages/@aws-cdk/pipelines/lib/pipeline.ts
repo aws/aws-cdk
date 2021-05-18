@@ -12,6 +12,7 @@ import { AddStageOptions, AssetPublishingCommand, CdkStage, StackOutput } from '
 // eslint-disable-next-line
 import { Construct as CoreConstruct } from '@aws-cdk/core';
 
+const CODE_BUILD_LENGTH_LIMIT = 100;
 /**
  * Properties for a CdkPipeline
  */
@@ -286,7 +287,9 @@ export class CdkPipeline extends CoreConstruct {
     if (!this._outputArtifacts[stack.artifactId]) {
       // We should have stored the ArtifactPath in the map, but its Artifact
       // property isn't publicly readable...
-      this._outputArtifacts[stack.artifactId] = new codepipeline.Artifact(`Artifact_${stack.artifactId}_Outputs`);
+      const artifactName = `${stack.artifactId}_Outputs`;
+      const compactName = artifactName.slice(artifactName.length - Math.min(artifactName.length, CODE_BUILD_LENGTH_LIMIT));
+      this._outputArtifacts[stack.artifactId] = new codepipeline.Artifact(compactName);
     }
 
     return new StackOutput(this._outputArtifacts[stack.artifactId].atPath('outputs.json'), cfnOutput.logicalId);
