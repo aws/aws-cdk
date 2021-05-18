@@ -4,7 +4,7 @@ import * as lambda from '@aws-cdk/aws-lambda';
 import { Bundling } from './bundling';
 import { PackageManager } from './package-manager';
 import { BundlingOptions } from './types';
-import { callsites, findUp, nodeMajorVersion } from './util';
+import { callsites, findUp } from './util';
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
 // eslint-disable-next-line no-duplicate-imports, import/order
@@ -35,8 +35,7 @@ export interface NodejsFunctionProps extends lambda.FunctionOptions {
    * The runtime environment. Only runtimes of the Node.js family are
    * supported.
    *
-   * @default - `NODEJS_12_X` if `process.versions.node` >= '12.0.0',
-   * `NODEJS_10_X` otherwise.
+   * @default Runtime.NODEJS_14_X
    */
   readonly runtime?: lambda.Runtime;
 
@@ -106,10 +105,7 @@ export class NodejsFunction extends lambda.Function {
     // Entry and defaults
     const entry = path.resolve(findEntry(id, props.entry));
     const handler = props.handler ?? 'handler';
-    const defaultRunTime = nodeMajorVersion() >= 12
-      ? lambda.Runtime.NODEJS_12_X
-      : lambda.Runtime.NODEJS_10_X;
-    const runtime = props.runtime ?? defaultRunTime;
+    const runtime = props.runtime ?? lambda.Runtime.NODEJS_14_X;
 
     super(scope, id, {
       ...props,
@@ -160,7 +156,7 @@ function findEntry(id: string, entry?: string): string {
     return jsHandlerFile;
   }
 
-  throw new Error('Cannot find entry file.');
+  throw new Error(`Cannot find handler file ${tsHandlerFile} or ${jsHandlerFile}`);
 }
 
 /**

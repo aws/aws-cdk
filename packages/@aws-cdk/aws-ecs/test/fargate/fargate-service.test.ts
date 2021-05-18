@@ -1,4 +1,4 @@
-import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
+import { expect, haveResource, haveResourceLike, ABSENT } from '@aws-cdk/assert-internal';
 import * as appscaling from '@aws-cdk/aws-applicationautoscaling';
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as ec2 from '@aws-cdk/aws-ec2';
@@ -23,7 +23,7 @@ nodeunitShim({
         image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
       });
 
-      new ecs.FargateService(stack, 'FargateService', {
+      const service = new ecs.FargateService(stack, 'FargateService', {
         cluster,
         taskDefinition,
       });
@@ -79,6 +79,8 @@ nodeunitShim({
         },
       }));
 
+      test.notEqual(service.node.defaultChild, undefined);
+
       test.done();
     },
 
@@ -110,7 +112,7 @@ nodeunitShim({
       test.done();
     },
 
-    'does not set launchType when capacity provider strategies specified'(test: Test) {
+    'does not set launchType when capacity provider strategies specified (deprecated)'(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -158,6 +160,93 @@ nodeunitShim({
           MinimumHealthyPercent: 50,
         },
         // no launch type
+        CapacityProviderStrategy: [
+          {
+            CapacityProvider: 'FARGATE_SPOT',
+            Weight: 2,
+          },
+          {
+            CapacityProvider: 'FARGATE',
+            Weight: 1,
+          },
+        ],
+        EnableECSManagedTags: false,
+        NetworkConfiguration: {
+          AwsvpcConfiguration: {
+            AssignPublicIp: 'DISABLED',
+            SecurityGroups: [
+              {
+                'Fn::GetAtt': [
+                  'FargateServiceSecurityGroup0A0E79CB',
+                  'GroupId',
+                ],
+              },
+            ],
+            Subnets: [
+              {
+                Ref: 'MyVpcPrivateSubnet1Subnet5057CF7E',
+              },
+              {
+                Ref: 'MyVpcPrivateSubnet2Subnet0040C983',
+              },
+            ],
+          },
+        },
+      }));
+
+      test.done();
+    },
+
+    'does not set launchType when capacity provider strategies specified'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', {
+        vpc,
+      });
+      cluster.enableFargateCapacityProviders();
+
+      const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
+
+      const container = taskDefinition.addContainer('web', {
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+        memoryLimitMiB: 512,
+      });
+      container.addPortMappings({ containerPort: 8000 });
+
+      new ecs.FargateService(stack, 'FargateService', {
+        cluster,
+        taskDefinition,
+        capacityProviderStrategies: [
+          {
+            capacityProvider: 'FARGATE_SPOT',
+            weight: 2,
+          },
+          {
+            capacityProvider: 'FARGATE',
+            weight: 1,
+          },
+        ],
+      });
+
+      // THEN
+      expect(stack).to(haveResource('AWS::ECS::Cluster', {
+        CapacityProviders: ['FARGATE', 'FARGATE_SPOT'],
+      }));
+
+      expect(stack).to(haveResource('AWS::ECS::Service', {
+        TaskDefinition: {
+          Ref: 'FargateTaskDefC6FB60B4',
+        },
+        Cluster: {
+          Ref: 'EcsCluster97242B84',
+        },
+        DeploymentConfiguration: {
+          MaximumPercent: 200,
+          MinimumHealthyPercent: 50,
+        },
+        // no launch type
+        LaunchType: ABSENT,
         CapacityProviderStrategy: [
           {
             CapacityProvider: 'FARGATE_SPOT',
@@ -262,6 +351,101 @@ nodeunitShim({
       test.done();
     },
 
+    'with user-provided cloudmap service'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
+
+      const container = taskDefinition.addContainer('web', {
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+        memoryLimitMiB: 512,
+      });
+      container.addPortMappings({ containerPort: 8000 });
+
+      const cloudMapNamespace = new cloudmap.PrivateDnsNamespace(stack, 'TestCloudMapNamespace', {
+        name: 'scorekeep.com',
+        vpc,
+      });
+
+      const cloudMapService = new cloudmap.Service(stack, 'Service', {
+        name: 'service-name',
+        namespace: cloudMapNamespace,
+        dnsRecordType: cloudmap.DnsRecordType.SRV,
+      });
+
+      const ecsService = new ecs.FargateService(stack, 'FargateService', {
+        cluster,
+        taskDefinition,
+      });
+
+      // WHEN
+      ecsService.associateCloudMapService({
+        service: cloudMapService,
+        container: container,
+        containerPort: 8000,
+      });
+
+      // THEN
+      expect(stack).to(haveResource('AWS::ECS::Service', {
+        ServiceRegistries: [
+          {
+            ContainerName: 'web',
+            ContainerPort: 8000,
+            RegistryArn: { 'Fn::GetAtt': ['ServiceDBC79909', 'Arn'] },
+          },
+        ],
+      }));
+
+      test.done();
+    },
+
+    'errors when more than one service registry used'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
+
+      const container = taskDefinition.addContainer('web', {
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+        memoryLimitMiB: 512,
+      });
+      container.addPortMappings({ containerPort: 8000 });
+
+      const cloudMapNamespace = new cloudmap.PrivateDnsNamespace(stack, 'TestCloudMapNamespace', {
+        name: 'scorekeep.com',
+        vpc,
+      });
+
+      const ecsService = new ecs.FargateService(stack, 'FargateService', {
+        cluster,
+        taskDefinition,
+      });
+
+      ecsService.enableCloudMap({
+        cloudMapNamespace,
+      });
+
+      const cloudMapService = new cloudmap.Service(stack, 'Service', {
+        name: 'service-name',
+        namespace: cloudMapNamespace,
+        dnsRecordType: cloudmap.DnsRecordType.SRV,
+      });
+
+      // WHEN / THEN
+      test.throws(() => {
+        ecsService.associateCloudMapService({
+          service: cloudMapService,
+          container: container,
+          containerPort: 8000,
+        });
+      }, /at most one service registry/i);
+
+      test.done();
+    },
+
     'with all properties set'(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();
@@ -294,7 +478,7 @@ nodeunitShim({
         maxHealthyPercent: 150,
         minHealthyPercent: 55,
         deploymentController: {
-          type: ecs.DeploymentControllerType.CODE_DEPLOY,
+          type: ecs.DeploymentControllerType.ECS,
         },
         circuitBreaker: { rollback: true },
         securityGroup: new ec2.SecurityGroup(stack, 'SecurityGroup1', {
@@ -326,7 +510,7 @@ nodeunitShim({
           },
         },
         DeploymentController: {
-          Type: ecs.DeploymentControllerType.CODE_DEPLOY,
+          Type: ecs.DeploymentControllerType.ECS,
         },
         DesiredCount: 2,
         HealthCheckGracePeriodSeconds: 60,
@@ -1834,6 +2018,52 @@ nodeunitShim({
 
       test.done();
     },
+
+    'user can select any container and port'(test: Test) {
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+
+      cluster.addDefaultCloudMapNamespace({
+        name: 'foo.com',
+        type: cloudmap.NamespaceType.DNS_PRIVATE,
+      });
+
+      const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
+      const mainContainer = taskDefinition.addContainer('MainContainer', {
+        image: ecs.ContainerImage.fromRegistry('hello'),
+        memoryLimitMiB: 512,
+      });
+      mainContainer.addPortMappings({ containerPort: 8000 });
+
+      const otherContainer = taskDefinition.addContainer('OtherContainer', {
+        image: ecs.ContainerImage.fromRegistry('hello'),
+        memoryLimitMiB: 512,
+      });
+      otherContainer.addPortMappings({ containerPort: 8001 });
+
+      new ecs.FargateService(stack, 'Service', {
+        cluster,
+        taskDefinition,
+        cloudMapOptions: {
+          dnsRecordType: cloudmap.DnsRecordType.SRV,
+          container: otherContainer,
+          containerPort: 8001,
+        },
+      });
+
+      expect(stack).to(haveResourceLike('AWS::ECS::Service', {
+        ServiceRegistries: [
+          {
+            RegistryArn: { 'Fn::GetAtt': ['ServiceCloudmapService046058A4', 'Arn'] },
+            ContainerName: 'OtherContainer',
+            ContainerPort: 8001,
+          },
+        ],
+      }));
+
+      test.done();
+    },
   },
 
   'Metric'(test: Test) {
@@ -1931,6 +2161,9 @@ nodeunitShim({
             Enable: true,
             Rollback: true,
           },
+        },
+        DeploymentController: {
+          Type: ecs.DeploymentControllerType.ECS,
         },
       }));
 

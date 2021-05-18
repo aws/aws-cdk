@@ -32,13 +32,6 @@ export function callsites(): CallSite[] {
 }
 
 /**
- * Returns the major version of node installation
- */
-export function nodeMajorVersion(): number {
-  return parseInt(process.versions.node.split('.')[0], 10);
-}
-
-/**
  * Find a file by walking up parent directories
  */
 export function findUp(name: string, directory: string = process.cwd()): string | undefined {

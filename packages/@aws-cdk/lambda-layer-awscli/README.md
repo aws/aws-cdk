@@ -3,26 +3,20 @@
 
 ---
 
-![cdk-constructs: Experimental](https://img.shields.io/badge/cdk--constructs-experimental-important.svg?style=for-the-badge)
-
-> The APIs of higher level constructs in this module are experimental and under active development.
-> They are subject to non-backward compatible changes or removal in any future version. These are
-> not subject to the [Semantic Versioning](https://semver.org/) model and breaking changes will be
-> announced in the release notes. This means that while you may use them, you may need to update
-> your source code when upgrading to a newer version of this package.
+![cdk-constructs: Stable](https://img.shields.io/badge/cdk--constructs-stable-success.svg?style=for-the-badge)
 
 ---
 
 <!--END STABILITY BANNER-->
 
 
-This module exports a single class called `AwsCliLayer` which is a `lambda.Layer` that bundles the AWS CLI.
+This module exports two classes called `AwsCliLayer` & `AwsCliV2Layer` which is a `lambda.Layer` that bundles the AWS CLI.
 
 Usage:
 
 ```ts
 const fn = new lambda.Function(...);
-fn.addLayers(new AwsCliLayer(stack, 'AwsCliLayer'));
+fn.addLayers(new AwsCliV2Layer(stack, 'AwsCliV2Layer'));
 ```
 
 The CLI will be installed under `/opt/awscli/aws`.

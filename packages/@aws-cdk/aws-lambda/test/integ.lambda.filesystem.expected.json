@@ -453,6 +453,7 @@
     "Efs9E8BF36B": {
       "Type": "AWS::EFS::FileSystem",
       "Properties": {
+        "Encrypted": true,
         "FileSystemTags": [
           {
             "Key": "Name",
@@ -738,17 +739,14 @@
         "Code": {
           "ZipFile": "\nimport json\nimport os\nimport string\nimport random\nimport datetime\n\nMSG_FILE_PATH = '/mnt/msg/content'\n\ndef randomString(stringLength=10):\n  letters = string.ascii_lowercase\n  return ''.join(random.choice(letters) for i in range(stringLength))\n\ndef lambda_handler(event, context):\n  with open(MSG_FILE_PATH, 'a') as f:\n      f.write(f\"{datetime.datetime.utcnow():%Y-%m-%d-%H:%M:%S} \" + randomString(5) + ' ')\n\n  file = open(MSG_FILE_PATH, \"r\")\n  file_content = file.read()\n  file.close()\n\n  return {\n    'statusCode': 200,\n    'body': str(file_content)\n  }\n"
         },
-        "Handler": "index.lambda_handler",
         "Role": {
           "Fn::GetAtt": [
             "MyLambdaServiceRole4539ECB6",
             "Arn"
           ]
         },
-        "Runtime": "python3.7",
         "FileSystemConfigs": [
           {
-            "LocalMountPath": "/mnt/msg",
             "Arn": {
               "Fn::Join": [
                 "",
@@ -771,9 +769,12 @@
                   }
                 ]
               ]
-            }
+            },
+            "LocalMountPath": "/mnt/msg"
           }
         ],
+        "Handler": "index.lambda_handler",
+        "Runtime": "python3.7",
         "VpcConfig": {
           "SecurityGroupIds": [
             {
@@ -800,6 +801,7 @@
         "EfsEfsMountTarget195B2DD2E",
         "EfsEfsMountTarget2315C927F",
         "EfsEfsMountTarget36646B9A0",
+        "EfsEfsSecurityGroupfromawscdklambda1MyLambdaSecurityGroup86B085EE20490D9864A8",
         "MyLambdaServiceRoleDefaultPolicy5BBC6F68",
         "MyLambdaServiceRole4539ECB6"
       ]
@@ -983,17 +985,14 @@
         "Code": {
           "ZipFile": "\nimport json\nimport os\nimport string\nimport random\nimport datetime\n\nMSG_FILE_PATH = '/mnt/msg/content'\n\ndef randomString(stringLength=10):\n  letters = string.ascii_lowercase\n  return ''.join(random.choice(letters) for i in range(stringLength))\n\ndef lambda_handler(event, context):\n  with open(MSG_FILE_PATH, 'a') as f:\n      f.write(f\"{datetime.datetime.utcnow():%Y-%m-%d-%H:%M:%S} \" + randomString(5) + ' ')\n\n  file = open(MSG_FILE_PATH, \"r\")\n  file_content = file.read()\n  file.close()\n\n  return {\n    'statusCode': 200,\n    'body': str(file_content)\n  }\n"
         },
-        "Handler": "index.lambda_handler",
         "Role": {
           "Fn::GetAtt": [
             "MyLambda2ServiceRoleD09B370C",
             "Arn"
           ]
         },
-        "Runtime": "python3.7",
         "FileSystemConfigs": [
           {
-            "LocalMountPath": "/mnt/msg",
             "Arn": {
               "Fn::Join": [
                 "",
@@ -1016,9 +1015,12 @@
                   }
                 ]
               ]
-            }
+            },
+            "LocalMountPath": "/mnt/msg"
           }
         ],
+        "Handler": "index.lambda_handler",
+        "Runtime": "python3.7",
         "VpcConfig": {
           "SecurityGroupIds": [
             {
@@ -1047,7 +1049,8 @@
         "MyLambdaServiceRoleDefaultPolicy5BBC6F68",
         "MyLambdaServiceRole4539ECB6",
         "MyLambda2ServiceRoleDefaultPolicy2BECE79D",
-        "MyLambda2ServiceRoleD09B370C"
+        "MyLambda2ServiceRoleD09B370C",
+        "securityGroupfromawscdklambda1MyLambda2SecurityGroup7492F70D20498301D9D2"
       ]
     }
   }

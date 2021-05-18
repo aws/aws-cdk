@@ -11,8 +11,8 @@
             ]
           },
           "Region": "us-east-1",
-          "ParameterName": "EdgeFunctionArnLambda",
-          "RefreshToken": "4412ddb0ae449da20173ca211c51fddc"
+          "ParameterName": "/cdk/EdgeFunctionArn/eu-west-1/integ-distribution-lambda-cross-region/Lambda",
+          "RefreshToken": "LambdaCurrentVersionDF706F6A97fb843e9bd06fcd2bb15eeace80e13e"
         },
         "UpdateReplacePolicy": "Delete",
         "DeletionPolicy": "Delete"
@@ -57,7 +57,7 @@
                           {
                             "Ref": "AWS::AccountId"
                           },
-                          ":parameter/EdgeFunctionArn*"
+                          ":parameter/cdk/EdgeFunctionArn/*"
                         ]
                       ]
                     },
@@ -137,8 +137,8 @@
             ]
           },
           "Region": "us-east-1",
-          "ParameterName": "EdgeFunctionArnLambda2",
-          "RefreshToken": "8f81ceb404ac454f09648e62822d9ca9"
+          "ParameterName": "/cdk/EdgeFunctionArn/eu-west-1/integ-distribution-lambda-cross-region/Lambda2",
+          "RefreshToken": "Lambda2CurrentVersion72012B74b9eef8becb98501bc795baca3c6169c4"
         },
         "UpdateReplacePolicy": "Delete",
         "DeletionPolicy": "Delete"
@@ -159,6 +159,15 @@
                       "FunctionArn"
                     ]
                   }
+                },
+                {
+                  "EventType": "origin-response",
+                  "LambdaFunctionARN": {
+                    "Fn::GetAtt": [
+                      "Lambda2ArnReader5ACFBE1F",
+                      "FunctionArn"
+                    ]
+                  }
                 }
               ],
               "TargetOriginId": "integdistributionlambdacrossregionDistOrigin167A054D5",
@@ -174,42 +183,6 @@
                 },
                 "DomainName": "www.example.com",
                 "Id": "integdistributionlambdacrossregionDistOrigin167A054D5"
-              }
-            ]
-          }
-        }
-      },
-      "Dist286EC08DF": {
-        "Type": "AWS::CloudFront::Distribution",
-        "Properties": {
-          "DistributionConfig": {
-            "DefaultCacheBehavior": {
-              "CachePolicyId": "4135ea2d-6df8-44a3-9df3-4b5a84be39ad",
-              "Compress": true,
-              "LambdaFunctionAssociations": [
-                {
-                  "EventType": "origin-request",
-                  "LambdaFunctionARN": {
-                    "Fn::GetAtt": [
-                      "Lambda2ArnReader5ACFBE1F",
-                      "FunctionArn"
-                    ]
-                  }
-                }
-              ],
-              "TargetOriginId": "integdistributionlambdacrossregionDist2Origin14F08376D",
-              "ViewerProtocolPolicy": "allow-all"
-            },
-            "Enabled": true,
-            "HttpVersion": "http2",
-            "IPV6Enabled": true,
-            "Origins": [
-              {
-                "CustomOriginConfig": {
-                  "OriginProtocolPolicy": "https-only"
-                },
-                "DomainName": "www.example2.com",
-                "Id": "integdistributionlambdacrossregionDist2Origin14F08376D"
               }
             ]
           }
@@ -277,13 +250,13 @@
           "Code": {
             "ZipFile": "foo"
           },
-          "Handler": "index.handler",
           "Role": {
             "Fn::GetAtt": [
               "LambdaServiceRoleA8ED4D3B",
               "Arn"
             ]
           },
+          "Handler": "index.handler",
           "Runtime": "nodejs10.x"
         },
         "DependsOn": [
@@ -305,7 +278,22 @@
           "Value": {
             "Ref": "LambdaCurrentVersionDF706F6A97fb843e9bd06fcd2bb15eeace80e13e"
           },
-          "Name": "EdgeFunctionArnLambda"
+          "Name": "/cdk/EdgeFunctionArn/eu-west-1/integ-distribution-lambda-cross-region/Lambda"
+        }
+      },
+      "LambdaAliaslive79C8A712": {
+        "Type": "AWS::Lambda::Alias",
+        "Properties": {
+          "FunctionName": {
+            "Ref": "LambdaD247545B"
+          },
+          "FunctionVersion": {
+            "Fn::GetAtt": [
+              "LambdaCurrentVersionDF706F6A97fb843e9bd06fcd2bb15eeace80e13e",
+              "Version"
+            ]
+          },
+          "Name": "live"
         }
       }
     }
@@ -356,13 +344,13 @@
           "Code": {
             "ZipFile": "foo"
           },
-          "Handler": "index.handler",
           "Role": {
             "Fn::GetAtt": [
               "Lambda2ServiceRole31A072E1",
               "Arn"
             ]
           },
+          "Handler": "index.handler",
           "Runtime": "nodejs10.x"
         },
         "DependsOn": [
@@ -384,7 +372,22 @@
           "Value": {
             "Ref": "Lambda2CurrentVersion72012B74b9eef8becb98501bc795baca3c6169c4"
           },
-          "Name": "EdgeFunctionArnLambda2"
+          "Name": "/cdk/EdgeFunctionArn/eu-west-1/integ-distribution-lambda-cross-region/Lambda2"
+        }
+      },
+      "Lambda2Aliaslive77F6085F": {
+        "Type": "AWS::Lambda::Alias",
+        "Properties": {
+          "FunctionName": {
+            "Ref": "Lambda217CFB423"
+          },
+          "FunctionVersion": {
+            "Fn::GetAtt": [
+              "Lambda2CurrentVersion72012B74b9eef8becb98501bc795baca3c6169c4",
+              "Version"
+            ]
+          },
+          "Name": "live"
         }
       }
     }

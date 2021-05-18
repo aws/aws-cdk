@@ -1,4 +1,4 @@
-import '@aws-cdk/assert/jest';
+import '@aws-cdk/assert-internal/jest';
 import * as path from 'path';
 import { Protocol } from '@aws-cdk/aws-ec2';
 import { Repository } from '@aws-cdk/aws-ecr';
@@ -1199,6 +1199,151 @@ describe('ec2 task definition', () => {
     });
   });
 
+  describe('setting inferenceAccelerators', () => {
+    test('correctly sets inferenceAccelerators using props', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const inferenceAccelerators = [{
+        deviceName: 'device1',
+        deviceType: 'eia2.medium',
+      }];
+
+      // WHEN
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
+        inferenceAccelerators,
+      });
+
+      taskDefinition.addContainer('web', {
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+        memoryLimitMiB: 512,
+      });
+
+      // THEN
+      expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
+        Family: 'Ec2TaskDef',
+        InferenceAccelerators: [{
+          DeviceName: 'device1',
+          DeviceType: 'eia2.medium',
+        }],
+      });
+
+    });
+    test('correctly sets inferenceAccelerators using props and addInferenceAccelerator method', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const inferenceAccelerators = [{
+        deviceName: 'device1',
+        deviceType: 'eia2.medium',
+      }];
+
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
+        inferenceAccelerators,
+      });
+
+      // WHEN
+      taskDefinition.addInferenceAccelerator({
+        deviceName: 'device2',
+        deviceType: 'eia2.large',
+      });
+
+      taskDefinition.addContainer('web', {
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+        memoryLimitMiB: 512,
+      });
+
+      // THEN
+      expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
+        Family: 'Ec2TaskDef',
+        InferenceAccelerators: [{
+          DeviceName: 'device1',
+          DeviceType: 'eia2.medium',
+        }, {
+          DeviceName: 'device2',
+          DeviceType: 'eia2.large',
+        }],
+      });
+    });
+  });
+
+  describe('When importing from an existing Ec2 TaskDefinition', () => {
+    test('can succeed using TaskDefinition Arn', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const expectTaskDefinitionArn = 'TD_ARN';
+
+      // WHEN
+      const taskDefinition = ecs.Ec2TaskDefinition.fromEc2TaskDefinitionArn(stack, 'EC2_TD_ID', expectTaskDefinitionArn);
+
+      // THEN
+      expect(taskDefinition.taskDefinitionArn).toBe(expectTaskDefinitionArn);
+    });
+  });
+
+  describe('When importing from an existing Ec2 TaskDefinition using attributes', () => {
+    test('can set the imported task attribuets successfully', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const expectTaskDefinitionArn = 'TD_ARN';
+      const expectNetworkMode = ecs.NetworkMode.AWS_VPC;
+      const expectTaskRole = new iam.Role(stack, 'TaskRole', {
+        assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
+      });
+
+      // WHEN
+      const taskDefinition = ecs.Ec2TaskDefinition.fromEc2TaskDefinitionAttributes(stack, 'TD_ID', {
+        taskDefinitionArn: expectTaskDefinitionArn,
+        networkMode: expectNetworkMode,
+        taskRole: expectTaskRole,
+      });
+
+      // THEN
+      expect(taskDefinition.taskDefinitionArn).toBe(expectTaskDefinitionArn);
+      expect(taskDefinition.compatibility).toBe(ecs.Compatibility.EC2);
+      expect(taskDefinition.isEc2Compatible).toBeTruthy();
+      expect(taskDefinition.isFargateCompatible).toBeFalsy();
+      expect(taskDefinition.networkMode).toBe(expectNetworkMode);
+      expect(taskDefinition.taskRole).toBe(expectTaskRole);
+    });
+
+    test('returns an Ec2 TaskDefinition that will throw an error when trying to access its yet to defined networkMode', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const expectTaskDefinitionArn = 'TD_ARN';
+      const expectTaskRole = new iam.Role(stack, 'TaskRole', {
+        assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
+      });
+
+      // WHEN
+      const taskDefinition = ecs.Ec2TaskDefinition.fromEc2TaskDefinitionAttributes(stack, 'TD_ID', {
+        taskDefinitionArn: expectTaskDefinitionArn,
+        taskRole: expectTaskRole,
+      });
+
+      // THEN
+      expect(() => taskDefinition.networkMode).toThrow(
+        'This operation requires the networkMode in ImportedTaskDefinition to be defined. ' +
+        'Add the \'networkMode\' in ImportedTaskDefinitionProps to instantiate ImportedTaskDefinition');
+    });
+
+    test('returns an Ec2 TaskDefinition that will throw an error when trying to access its yet to defined taskRole', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const expectTaskDefinitionArn = 'TD_ARN';
+      const expectNetworkMode = ecs.NetworkMode.AWS_VPC;
+
+      // WHEN
+      const taskDefinition = ecs.Ec2TaskDefinition.fromEc2TaskDefinitionAttributes(stack, 'TD_ID', {
+        taskDefinitionArn: expectTaskDefinitionArn,
+        networkMode: expectNetworkMode,
+      });
+
+      // THEN
+      expect(() => { taskDefinition.taskRole; }).toThrow(
+        'This operation requires the taskRole in ImportedTaskDefinition to be defined. ' +
+        'Add the \'taskRole\' in ImportedTaskDefinitionProps to instantiate ImportedTaskDefinition');
+    });
+  });
+
   test('throws when setting proxyConfiguration without networkMode AWS_VPC', () => {
     // GIVEN
     const stack = new cdk.Stack();
@@ -1218,7 +1363,5 @@ describe('ec2 task definition', () => {
     expect(() => {
       new ecs.Ec2TaskDefinition(stack, 'TaskDef', { networkMode: ecs.NetworkMode.BRIDGE, proxyConfiguration });
     }).toThrow(/ProxyConfiguration can only be used with AwsVpc network mode, got: bridge/);
-
-
   });
 });

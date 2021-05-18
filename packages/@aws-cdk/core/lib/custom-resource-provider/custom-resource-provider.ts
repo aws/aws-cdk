@@ -19,7 +19,6 @@ import { Construct as CoreConstruct } from '../construct-compat';
 /**
  * Initialization properties for `CustomResourceProvider`.
  *
- * @experimental
  */
 export interface CustomResourceProviderProps {
   /**
@@ -79,19 +78,29 @@ export interface CustomResourceProviderProps {
 /**
  * The lambda runtime to use for the resource provider. This also indicates
  * which language is used for the handler.
- * @experimental
  */
 export enum CustomResourceProviderRuntime {
   /**
    * Node.js 12.x
+   *
+   * @deprecated Use {@link NODEJS_12_X}
    */
-  NODEJS_12 = 'nodejs12.x'
+  NODEJS_12 = 'nodejs12.x',
+
+  /**
+   * Node.js 12.x
+   */
+  NODEJS_12_X = 'nodejs12.x',
+
+  /**
+   * Node.js 14.x
+   */
+  NODEJS_14_X = 'nodejs14.x',
 }
 
 /**
  * An AWS-Lambda backed custom resource provider.
  *
- * @experimental
  */
 export class CustomResourceProvider extends CoreConstruct {
   /**

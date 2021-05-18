@@ -79,7 +79,6 @@ export class FromCloudFormationPropertyObject<T extends Record<string, any>> ext
  * (to not make it part of the public API),
  * it is directly referenced in the generated L1 code.
  *
- * @experimental
  */
 export class FromCloudFormation {
   // nothing to for any but return it
@@ -129,6 +128,12 @@ export class FromCloudFormation {
     // CloudFormation treats numbers and strings interchangeably;
     // so, if we get a number here, convert it to a string
     if (typeof value === 'number') {
+      return new FromCloudFormationResult(value.toString());
+    }
+
+    // CloudFormation treats booleans and strings interchangeably;
+    // so, if we get a boolean here, convert it to a string
+    if (typeof value === 'boolean') {
       return new FromCloudFormationResult(value.toString());
     }
 
@@ -334,7 +339,6 @@ export interface ParseCfnOptions {
  * it is directly referenced in the generated L1 code,
  * so any renames of it need to be reflected in cfn2ts/codegen.ts as well.
  *
- * @experimental
  */
 export class CfnParser {
   private readonly options: ParseCfnOptions;
@@ -566,11 +570,19 @@ export class CfnParser {
       case 'Fn::FindInMap': {
         const value = this.parseValue(object[key]);
         // the first argument to FindInMap is the mapping name
-        const mapping = this.finder.findMapping(value[0]);
-        if (!mapping) {
-          throw new Error(`Mapping used in FindInMap expression with name '${value[0]}' was not found in the template`);
+        let mappingName: string;
+        if (Token.isUnresolved(value[0])) {
+          // the first argument can be a dynamic expression like Ref: Param;
+          // if it is, we can't find the mapping in advance
+          mappingName = value[0];
+        } else {
+          const mapping = this.finder.findMapping(value[0]);
+          if (!mapping) {
+            throw new Error(`Mapping used in FindInMap expression with name '${value[0]}' was not found in the template`);
+          }
+          mappingName = mapping.logicalId;
         }
-        return Fn._findInMap(mapping.logicalId, value[1], value[2]);
+        return Fn._findInMap(mappingName, value[1], value[2]);
       }
       case 'Fn::Select': {
         const value = this.parseValue(object[key]);
@@ -634,7 +646,7 @@ export class CfnParser {
           map = value[1];
         }
 
-        return Fn.sub(this.parseFnSubString(fnSubString, map), map);
+        return this.parseFnSubString(fnSubString, map);
       }
       case 'Condition': {
         // a reference to a Condition from another Condition
@@ -668,48 +680,78 @@ export class CfnParser {
       : undefined;
   }
 
-  private parseFnSubString(value: string, map: { [key: string]: any } = {}): string {
-    const leftBrace = value.indexOf('${');
-    const rightBrace = value.indexOf('}') + 1;
-    // don't include left and right braces when searching for the target of the reference
-    if (leftBrace === -1 || leftBrace >= rightBrace) {
-      return value;
-    }
+  private parseFnSubString(templateString: string, expressionMap: { [key: string]: any } | undefined): string {
+    const map = expressionMap ?? {};
+    const self = this;
+    return Fn.sub(go(templateString), Object.keys(map).length === 0 ? expressionMap : map);
 
-    const leftHalf = value.substring(0, leftBrace);
-    const rightHalf = value.substring(rightBrace);
-    const refTarget = value.substring(leftBrace + 2, rightBrace - 1).trim();
-    if (refTarget[0] === '!') {
-      return value.substring(0, rightBrace) + this.parseFnSubString(rightHalf, map);
-    }
-
-    // lookup in map
-    if (refTarget in map) {
-      return leftHalf + '${' + refTarget + '}' + this.parseFnSubString(rightHalf, map);
-    }
-
-    // since it's not in the map, check if it's a pseudo parameter
-    const specialRef = this.specialCaseSubRefs(refTarget);
-    if (specialRef !== undefined) {
-      return leftHalf + specialRef + this.parseFnSubString(rightHalf, map);
-    }
-
-    const dotIndex = refTarget.indexOf('.');
-    const isRef = dotIndex === -1;
-    if (isRef) {
-      const refElement = this.finder.findRefTarget(refTarget);
-      if (!refElement) {
-        throw new Error(`Element referenced in Fn::Sub expression with logical ID: '${refTarget}' was not found in the template`);
+    function go(value: string): string {
+      const leftBrace = value.indexOf('${');
+      if (leftBrace === -1) {
+        return value;
       }
-      return leftHalf + CfnReference.for(refElement, 'Ref', ReferenceRendering.FN_SUB).toString() + this.parseFnSubString(rightHalf, map);
-    } else {
-      const targetId = refTarget.substring(0, dotIndex);
-      const refResource = this.finder.findResource(targetId);
-      if (!refResource) {
-        throw new Error(`Resource referenced in Fn::Sub expression with logical ID: '${targetId}' was not found in the template`);
+      // search for the closing brace to the right of the opening '${'
+      // (in theory, there could be other braces in the string,
+      // for example if it represents a JSON object)
+      const rightBrace = value.indexOf('}', leftBrace);
+      if (rightBrace === -1) {
+        return value;
       }
-      const attribute = refTarget.substring(dotIndex + 1);
-      return leftHalf + CfnReference.for(refResource, attribute, ReferenceRendering.FN_SUB).toString() + this.parseFnSubString(rightHalf, map);
+
+      const leftHalf = value.substring(0, leftBrace);
+      const rightHalf = value.substring(rightBrace + 1);
+      // don't include left and right braces when searching for the target of the reference
+      const refTarget = value.substring(leftBrace + 2, rightBrace).trim();
+      if (refTarget[0] === '!') {
+        return value.substring(0, rightBrace + 1) + go(rightHalf);
+      }
+
+      // lookup in map
+      if (refTarget in map) {
+        return leftHalf + '${' + refTarget + '}' + go(rightHalf);
+      }
+
+      // since it's not in the map, check if it's a pseudo-parameter
+      // (or a value to be substituted for a Parameter, provided by the customer)
+      const specialRef = self.specialCaseSubRefs(refTarget);
+      if (specialRef !== undefined) {
+        if (Token.isUnresolved(specialRef)) {
+          // specialRef can only be a Token if the value passed by the customer
+          // for substituting a Parameter was a Token.
+          // This is actually bad here,
+          // because the Token can potentially be something that doesn't render
+          // well inside an Fn::Sub template string, like a { Ref } object.
+          // To handle this case,
+          // instead of substituting the Parameter directly with the token in the template string,
+          // add a new entry to the Fn::Sub map,
+          // with key refTarget, and the token as the value.
+          // This is safe, because this sort of shadowing is legal in CloudFormation,
+          // and also because we're certain the Fn::Sub map doesn't contain an entry for refTarget
+          // (as we check that condition in the code right above this).
+          map[refTarget] = specialRef;
+          return leftHalf + '${' + refTarget + '}' + go(rightHalf);
+        } else {
+          return leftHalf + specialRef + go(rightHalf);
+        }
+      }
+
+      const dotIndex = refTarget.indexOf('.');
+      const isRef = dotIndex === -1;
+      if (isRef) {
+        const refElement = self.finder.findRefTarget(refTarget);
+        if (!refElement) {
+          throw new Error(`Element referenced in Fn::Sub expression with logical ID: '${refTarget}' was not found in the template`);
+        }
+        return leftHalf + CfnReference.for(refElement, 'Ref', ReferenceRendering.FN_SUB).toString() + go(rightHalf);
+      } else {
+        const targetId = refTarget.substring(0, dotIndex);
+        const refResource = self.finder.findResource(targetId);
+        if (!refResource) {
+          throw new Error(`Resource referenced in Fn::Sub expression with logical ID: '${targetId}' was not found in the template`);
+        }
+        const attribute = refTarget.substring(dotIndex + 1);
+        return leftHalf + CfnReference.for(refResource, attribute, ReferenceRendering.FN_SUB).toString() + go(rightHalf);
+      }
     }
   }
 

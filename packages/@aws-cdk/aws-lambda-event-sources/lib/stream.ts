@@ -3,7 +3,7 @@ import { Duration } from '@aws-cdk/core';
 
 /**
  * The set of properties for event sources that follow the streaming model,
- * such as, Dynamo and Kinesis.
+ * such as, Dynamo, Kinesis and Kafka.
  */
 export interface StreamEventSourceProps {
   /**
@@ -41,7 +41,7 @@ export interface StreamEventSourceProps {
    * * Minimum value of 60 seconds
    * * Maximum value of 7 days
    *
-   * @default Duration.days(7)
+   * @default - the retention period configured on the stream
    */
   readonly maxRecordAge?: Duration;
 
@@ -51,7 +51,7 @@ export interface StreamEventSourceProps {
    * * Minimum value of 0
    * * Maximum value of 10000
    *
-   * @default 10000
+   * @default - retry until the record expires
    */
   readonly retryAttempts?: number;
 
@@ -77,6 +77,14 @@ export interface StreamEventSourceProps {
    * @default Duration.seconds(0)
    */
   readonly maxBatchingWindow?: Duration;
+
+  /**
+   * The size of the tumbling windows to group records sent to DynamoDB or Kinesis
+   * Valid Range: 0 - 15 minutes
+   *
+   * @default - None
+   */
+  readonly tumblingWindow?: Duration;
 
   /**
    * If the stream event source mapping should be enabled.
@@ -106,6 +114,7 @@ export abstract class StreamEventSource implements lambda.IEventSource {
       retryAttempts: this.props.retryAttempts,
       parallelizationFactor: this.props.parallelizationFactor,
       onFailure: this.props.onFailure,
+      tumblingWindow: this.props.tumblingWindow,
       enabled: this.props.enabled,
     };
   }

@@ -1,4 +1,4 @@
-import '@aws-cdk/assert/jest';
+import '@aws-cdk/assert-internal/jest';
 import { Stack, App } from '@aws-cdk/core';
 import {
   HttpApi, HttpAuthorizer, HttpAuthorizerType, HttpConnectionType, HttpIntegrationType, HttpMethod, HttpRoute, HttpRouteAuthorizerBindOptions,
@@ -17,7 +17,7 @@ describe('HttpRoute', () => {
     });
 
     expect(stack).toHaveResource('AWS::ApiGatewayV2::Route', {
-      ApiId: stack.resolve(httpApi.httpApiId),
+      ApiId: stack.resolve(httpApi.apiId),
       RouteKey: 'GET /books',
       Target: {
         'Fn::Join': [
@@ -30,10 +30,11 @@ describe('HttpRoute', () => {
           ],
         ],
       },
+      AuthorizationType: 'NONE',
     });
 
     expect(stack).toHaveResource('AWS::ApiGatewayV2::Integration', {
-      ApiId: stack.resolve(httpApi.httpApiId),
+      ApiId: stack.resolve(httpApi.apiId),
     });
   });
 
@@ -48,7 +49,7 @@ describe('HttpRoute', () => {
     });
 
     expect(stack).toHaveResource('AWS::ApiGatewayV2::Integration', {
-      ApiId: stack.resolve(httpApi.httpApiId),
+      ApiId: stack.resolve(httpApi.apiId),
       IntegrationType: 'HTTP_PROXY',
       PayloadFormatVersion: '2.0',
       IntegrationUri: 'some-uri',
@@ -209,7 +210,7 @@ describe('HttpRoute', () => {
     });
 
     expect(stack).toHaveResource('AWS::ApiGatewayV2::Integration', {
-      ApiId: stack.resolve(httpApi.httpApiId),
+      ApiId: stack.resolve(httpApi.apiId),
       IntegrationType: 'HTTP_PROXY',
       PayloadFormatVersion: '2.0',
       IntegrationUri: 'some-uri',
@@ -241,6 +242,20 @@ describe('HttpRoute', () => {
       AuthorizationScopes: ['read:books'],
     });
   });
+
+  test('should fail when unsupported authorization type is used', () => {
+    const stack = new Stack();
+    const httpApi = new HttpApi(stack, 'HttpApi');
+
+    const authorizer = new InvalidTypeAuthorizer();
+
+    expect(() => new HttpRoute(stack, 'HttpRoute', {
+      httpApi,
+      integration: new DummyIntegration(),
+      routeKey: HttpRouteKey.with('/books', HttpMethod.GET),
+      authorizer,
+    })).toThrowError('authorizationType should either be JWT, CUSTOM, or NONE');
+  });
 });
 
 class DummyIntegration implements IHttpRouteIntegration {
@@ -271,7 +286,29 @@ class DummyAuthorizer implements IHttpRouteAuthorizer {
 
     return {
       authorizerId: this.authorizer.authorizerId,
-      authorizationType: HttpAuthorizerType.JWT,
+      authorizationType: 'JWT',
+    };
+  }
+}
+
+class InvalidTypeAuthorizer implements IHttpRouteAuthorizer {
+  private authorizer?: HttpAuthorizer;
+
+  public bind(options: HttpRouteAuthorizerBindOptions): HttpRouteAuthorizerConfig {
+    if (!this.authorizer) {
+
+      this.authorizer = new HttpAuthorizer(options.scope, 'auth-1234', {
+        httpApi: options.route.httpApi,
+        identitySource: ['identitysource.1', 'identitysource.2'],
+        type: HttpAuthorizerType.JWT,
+        jwtAudience: ['audience.1', 'audience.2'],
+        jwtIssuer: 'issuer',
+      });
+    }
+
+    return {
+      authorizerId: this.authorizer.authorizerId,
+      authorizationType: 'Random',
     };
   }
 }

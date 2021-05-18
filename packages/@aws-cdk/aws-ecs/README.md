@@ -14,16 +14,13 @@
 This package contains constructs for working with **Amazon Elastic Container
 Service** (Amazon ECS).
 
-Amazon ECS is a highly scalable, fast, container management service
-that makes it easy to run, stop,
-and manage Docker containers on a cluster of Amazon EC2 instances.
+Amazon Elastic Container Service (Amazon ECS) is a fully managed container orchestration service.
 
 For further information on Amazon ECS,
 see the [Amazon ECS documentation](https://docs.aws.amazon.com/ecs)
 
-The following example creates an Amazon ECS cluster,
-adds capacity to it,
-and instantiates the Amazon ECS Service with an automatic load balancer.
+The following example creates an Amazon ECS cluster, adds capacity to it, and
+runs a service on it:
 
 ```ts
 import * as ecs from '@aws-cdk/aws-ecs';
@@ -67,7 +64,7 @@ one to run tasks on AWS Fargate.
 Here are the main differences:
 
 - **Amazon EC2**: instances are under your control. Complete control of task to host
-  allocation. Required to specify at least a memory reseration or limit for
+  allocation. Required to specify at least a memory reservation or limit for
   every container. Can use Host, Bridge and AwsVpc networking modes. Can attach
   Classic Load Balancer. Can share volumes between container and host.
 - **AWS Fargate**: tasks run on AWS-managed instances, AWS manages task to host
@@ -153,6 +150,22 @@ cluster.addCapacity('bottlerocket-asg', {
 });
 ```
 
+### ARM64 (Graviton) Instances
+
+To launch instances with ARM64 hardware, you can use the Amazon ECS-optimized
+Amazon Linux 2 (arm64) AMI. Based on Amazon Linux 2, this AMI is recommended
+for use when launching your EC2 instances that are powered by Arm-based AWS
+Graviton Processors.
+
+```ts
+cluster.addCapacity('graviton-cluster', {
+  minCapacity: 2,
+  instanceType: new ec2.InstanceType('c6g.large'),
+  machineImage: ecs.EcsOptimizedImage.amazonLinux2(ecs.AmiHardwareType.ARM),
+});
+
+```
+
 ### Spot Instances
 
 To add spot instances into the cluster, you must specify the `spotPrice` in the `ecs.AddCapacityOptions` and optionally enable the `spotInstanceDraining` property.
@@ -175,7 +188,7 @@ cluster.addCapacity('AsgSpot', {
 When the `ecs.AddCapacityOptions` that you provide has a non-zero `taskDrainTime` (the default) then an SNS topic and Lambda are created to ensure that the
 cluster's instances have been properly drained of tasks before terminating. The SNS Topic is sent the instance-terminating lifecycle event from the AutoScalingGroup,
 and the Lambda acts on that event. If you wish to engage [server-side encryption](https://docs.aws.amazon.com/sns/latest/dg/sns-data-encryption.html) for this SNS Topic
-then you may do so by providing a KMS key for the `topicEncryptionKey` propery of `ecs.AddCapacityOptions`.
+then you may do so by providing a KMS key for the `topicEncryptionKey` property of `ecs.AddCapacityOptions`.
 
 ```ts
 // Given
@@ -190,7 +203,7 @@ cluster.addCapacity('ASGEncryptedSNS', {
 
 ## Task definitions
 
-A task Definition describes what a single copy of a **task** should look like.
+A task definition describes what a single copy of a **task** should look like.
 A task definition has one or more containers; typically, it has one
 main container (the *default container* is the first one that's added
 to the task definition, and it is marked *essential*) and optionally
@@ -299,6 +312,8 @@ obtained from either DockerHub or from ECR repositories, or built directly from 
   image directly from a `Dockerfile` in your source directory.
 - `ecs.ContainerImage.fromDockerImageAsset(asset)`: uses an existing
   `@aws-cdk/aws-ecr-assets.DockerImageAsset` as a container image.
+- `new ecs.TagParameterContainerImage(repository)`: use the given ECR repository as the image 
+  but a CloudFormation parameter as the tag.
 
 ### Environment variables
 
@@ -447,10 +462,10 @@ const service = new ecs.Ec2Service(this, 'Service', { /* ... */ });
 
 const lb = new elb.LoadBalancer(stack, 'LB', { vpc });
 lb.addListener({ externalPort: 80 });
-lb.addTarget(service.loadBalancerTarget{
+lb.addTarget(service.loadBalancerTarget({
   containerName: 'MyContainer',
   containerPort: 80
-});
+}));
 ```
 
 There are two higher-level constructs available which include a load balancer for you that can be found in the aws-ecs-patterns module:
@@ -478,38 +493,6 @@ scaling.scaleOnRequestCount('RequestScaling', {
 Task auto-scaling is powered by *Application Auto-Scaling*.
 See that section for details.
 
-## Instance Auto-Scaling
-
-If you're running on AWS Fargate, AWS manages the physical machines that your
-containers are running on for you. If you're running an Amazon ECS cluster however,
-your Amazon EC2 instances might fill up as your number of Tasks goes up.
-
-To avoid placement errors, configure auto-scaling for your
-Amazon EC2 instance group so that your instance count scales with demand. To keep
-your Amazon EC2 instances halfway loaded, scaling up to a maximum of 30 instances
-if required:
-
-```ts
-const autoScalingGroup = cluster.addCapacity('DefaultAutoScalingGroup', {
-  instanceType: new ec2.InstanceType("t2.xlarge"),
-  minCapacity: 3,
-  maxCapacity: 30,
-  desiredCapacity: 3,
-
-  // Give instances 5 minutes to drain running tasks when an instance is
-  // terminated. This is the default, turn this off by specifying 0 or
-  // change the timeout up to 900 seconds.
-  taskDrainTime: Duration.seconds(300)
-});
-
-autoScalingGroup.scaleOnCpuUtilization('KeepCpuHalfwayLoaded', {
-  targetUtilizationPercent: 50
-});
-```
-
-See the `@aws-cdk/aws-autoscaling` library for more autoscaling options
-you can configure on your instances.
-
 ## Integration with CloudWatch Events
 
 To start an Amazon ECS task on an Amazon EC2-backed Cluster, instantiate an
@@ -523,7 +506,7 @@ const taskDefinition = new ecs.Ec2TaskDefinition(this, 'TaskDef');
 taskDefinition.addContainer('TheContainer', {
   image: ecs.ContainerImage.fromAsset(path.resolve(__dirname, '..', 'eventhandler-image')),
   memoryLimitMiB: 256,
-  logging: new ecs.AwsLogDriver({ streamPrefix: 'EventDemo' })
+  logging: new ecs.AwsLogDriver({ streamPrefix: 'EventDemo', mode: AwsLogDriverMode.NON_BLOCKING })
 });
 
 // An Rule that describes the event trigger (in this case a scheduled run)
@@ -683,27 +666,83 @@ taskDefinition.addContainer('TheContainer', {
 });
 ```
 
-## Capacity Providers
+## CloudMap Service Discovery
 
-Currently, only `FARGATE` and `FARGATE_SPOT` capacity providers are supported.
-
-To enable capacity providers on your cluster, set the `capacityProviders` field
-to [`FARGATE`, `FARGATE_SPOT`]. Then, specify capacity provider strategies on
-the `capacityProviderStrategies` field for your Fargate Service.
+To register your ECS service with a CloudMap Service Registry, you may add the
+`cloudMapOptions` property to your service:
 
 ```ts
-import * as cdk from '@aws-cdk/core';
-import * as ec2 from '@aws-cdk/aws-ec2';
-import * as ecs from '../../lib';
+const service = new ecs.Ec2Service(stack, 'Service', {
+  cluster,
+  taskDefinition,
+  cloudMapOptions: {
+    // Create A records - useful for AWSVPC network mode.
+    dnsRecordType: cloudmap.DnsRecordType.A,
+  },
+});
+```
 
-const app = new cdk.App();
-const stack = new cdk.Stack(app, 'aws-ecs-integ-capacity-provider');
+With `bridge` or `host` network modes, only `SRV` DNS record types are supported. 
+By default, `SRV` DNS record types will target the default container and default
+port. However, you may target a different container and port on the same ECS task:
 
-const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 2 });
+```ts
+// Add a container to the task definition
+const specificContainer = taskDefinition.addContainer(...);
 
+// Add a port mapping
+specificContainer.addPortMappings({
+  containerPort: 7600,
+  protocol: ecs.Protocol.TCP,
+});
+
+new ecs.Ec2Service(stack, 'Service', {
+  cluster,
+  taskDefinition,
+  cloudMapOptions: {
+    // Create SRV records - useful for bridge networking
+    dnsRecordType: cloudmap.DnsRecordType.SRV,
+    // Targets port TCP port 7600 `specificContainer`
+    container: specificContainer,
+    containerPort: 7600,
+  },
+});
+```
+
+### Associate With a Specific CloudMap Service
+
+You may associate an ECS service with a specific CloudMap service. To do
+this, use the service's `associateCloudMapService` method:
+
+```ts
+const cloudMapService = new cloudmap.Service(...);
+const ecsService = new ecs.FargateService(...);
+
+ecsService.associateCloudMapService({
+  service: cloudMapService,
+});
+```
+
+## Capacity Providers
+
+There are two major families of Capacity Providers: [AWS
+Fargate](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/fargate-capacity-providers.html)
+(including Fargate Spot) and EC2 [Auto Scaling
+Group](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/asg-capacity-providers.html)
+Capacity Providers. Both are supported.
+
+### Fargate Capacity Providers
+
+To enable Fargate capacity providers, you can either set
+`enableFargateCapacityProviders` to `true` when creating your cluster, or by
+invoking the `enableFargateCapacityProviders()` method after creating your
+cluster. This will add both `FARGATE` and `FARGATE_SPOT` as available capacity
+providers on your cluster.
+
+```ts
 const cluster = new ecs.Cluster(stack, 'FargateCPCluster', {
   vpc,
-  capacityProviders: ['FARGATE', 'FARGATE_SPOT'],
+  enableFargateCapacityProviders: true,
 });
 
 const taskDefinition = new ecs.FargateTaskDefinition(stack, 'TaskDef');
@@ -726,6 +765,88 @@ new ecs.FargateService(stack, 'FargateService', {
     }
   ],
 });
+```
 
-app.synth();
+### Auto Scaling Group Capacity Providers
+
+To add an Auto Scaling Group Capacity Provider, first create an EC2 Auto Scaling
+Group. Then, create an `AsgCapacityProvider` and pass the Auto Scaling Group to
+it in the constructor. Then add the Capacity Provider to the cluster. Finally,
+you can refer to the Provider by its name in your service's or task's Capacity
+Provider strategy.
+
+By default, an Auto Scaling Group Capacity Provider will manage the Auto Scaling
+Group's size for you. It will also enable managed termination protection, in
+order to prevent EC2 Auto Scaling from terminating EC2 instances that have tasks
+running on them. If you want to disable this behavior, set both
+`enableManagedScaling` to and `enableManagedTerminationProtection` to `false`.
+
+```ts
+const cluster = new ecs.Cluster(stack, 'Cluster', {
+  vpc,
+});
+
+const autoScalingGroup = new autoscaling.AutoScalingGroup(stack, 'ASG', {
+  vpc,
+  instanceType: new ec2.InstanceType('t2.micro'),
+  machineImage: ecs.EcsOptimizedImage.amazonLinux2(),
+  minCapacity: 0,
+  maxCapacity: 100,
+});
+
+const capacityProvider = new ecs.AsgCapacityProvider(stack, 'AsgCapacityProvider', {
+  autoScalingGroup,
+});
+cluster.addAsgCapacityProvider(capacityProvider);
+
+const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
+
+taskDefinition.addContainer('web', {
+  image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample',
+  memoryReservationMiB: 256,
+});
+
+new ecs.Ec2Service(stack, 'EC2Service', {
+  cluster,
+  taskDefinition,
+  capacityProviderStrategies: [
+    {
+      capacityProvider: capacityProvider.capacityProviderName,
+      weight: 1,
+    }
+  ],
+});
+```
+
+## Elastic Inference Accelerators
+
+Currently, this feature is only supported for services with EC2 launch types.
+
+To add elastic inference accelerators to your EC2 instance, first add
+`inferenceAccelerators` field to the Ec2TaskDefinition and set the `deviceName`
+and `deviceType` properties.
+
+```ts
+const inferenceAccelerators = [{
+  deviceName: 'device1',
+  deviceType: 'eia2.medium',
+}];
+
+const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
+  inferenceAccelerators,
+});
+```
+
+To enable using the inference accelerators in the containers, add `inferenceAcceleratorResources`
+field and set it to a list of device names used for the inference accelerators. Each value in the
+list should match a `DeviceName` for an `InferenceAccelerator` specified in the task definition. 
+
+```ts
+const inferenceAcceleratorResources = ['device1'];
+
+taskDefinition.addContainer('cont', {
+  image: ecs.ContainerImage.fromRegistry('test'),
+  memoryLimitMiB: 1024,
+  inferenceAcceleratorResources,
+});
 ```

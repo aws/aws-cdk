@@ -354,6 +354,13 @@ export interface RepositoryProps {
    *  @default false
    */
   readonly imageScanOnPush?: boolean;
+
+  /**
+   * The tag mutability setting for the repository. If this parameter is omitted, the default setting of MUTABLE will be used which will allow image tags to be overwritten.
+   *
+   *  @default TagMutability.MUTABLE
+   */
+  readonly imageTagMutability?: TagMutability;
 }
 
 export interface RepositoryAttributes {
@@ -450,8 +457,9 @@ export class Repository extends RepositoryBase {
       repositoryPolicyText: Lazy.any({ produce: () => this.policyDocument }),
       lifecyclePolicy: Lazy.any({ produce: () => this.renderLifecyclePolicy() }),
       imageScanningConfiguration: !props.imageScanOnPush ? undefined : {
-        scanOnPush: true,
+        ScanOnPush: true,
       },
+      imageTagMutability: props.imageTagMutability || undefined,
     });
 
     resource.applyRemovalPolicy(props.removalPolicy);
@@ -609,4 +617,20 @@ const enum CountType {
    * Set an age limit on the images in your repository
    */
   SINCE_IMAGE_PUSHED = 'sinceImagePushed',
+}
+
+/**
+ * The tag mutability setting for your repository.
+ */
+export enum TagMutability {
+  /**
+   * allow image tags to be overwritten.
+   */
+  MUTABLE = 'MUTABLE',
+
+  /**
+   * all image tags within the repository will be immutable which will prevent them from being overwritten.
+   */
+  IMMUTABLE = 'IMMUTABLE',
+
 }

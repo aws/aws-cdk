@@ -1,4 +1,4 @@
-import { countResources, expect, haveResource } from '@aws-cdk/assert';
+import { countResources, expect, haveResource } from '@aws-cdk/assert-internal';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecs from '@aws-cdk/aws-ecs';
 import * as cdk from '@aws-cdk/core';

@@ -46,6 +46,7 @@ export function addStackArtifactToAssembly(
     templateFile: stack.templateFile,
     terminationProtection: stack.terminationProtection,
     tags: nonEmptyDict(stack.tags.tagValues()),
+    validateOnSynth: session.validateOnSynth,
     ...stackProps,
     ...stackNameProperty,
   };
@@ -57,6 +58,7 @@ export function addStackArtifactToAssembly(
     properties,
     dependencies: deps.length > 0 ? deps : undefined,
     metadata: Object.keys(meta).length > 0 ? meta : undefined,
+    displayName: stack.node.path,
   });
 }
 

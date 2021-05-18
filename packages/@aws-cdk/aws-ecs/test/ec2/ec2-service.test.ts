@@ -1,4 +1,5 @@
-import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
+import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert-internal';
+import * as autoscaling from '@aws-cdk/aws-autoscaling';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as elb from '@aws-cdk/aws-elasticloadbalancing';
 import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
@@ -24,7 +25,7 @@ nodeunitShim({
         memoryLimitMiB: 512,
       });
 
-      new ecs.Ec2Service(stack, 'Ec2Service', {
+      const service = new ecs.Ec2Service(stack, 'Ec2Service', {
         cluster,
         taskDefinition,
       });
@@ -45,6 +46,8 @@ nodeunitShim({
         SchedulingStrategy: 'REPLICA',
         EnableECSManagedTags: false,
       }));
+
+      test.notEqual(service.node.defaultChild, undefined);
 
       test.done();
     },
@@ -233,6 +236,58 @@ nodeunitShim({
         ],
       }));
 
+      test.done();
+    },
+
+    'with autoscaling group capacity provider'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'Vpc');
+      const cluster = new ecs.Cluster(stack, 'EcsCluster');
+
+      const autoScalingGroup = new autoscaling.AutoScalingGroup(stack, 'asg', {
+        vpc,
+        instanceType: new ec2.InstanceType('bogus'),
+        machineImage: ecs.EcsOptimizedImage.amazonLinux2(),
+      });
+
+      // WHEN
+      const capacityProvider = new ecs.AsgCapacityProvider(stack, 'provider', {
+        autoScalingGroup,
+        enableManagedTerminationProtection: false,
+      });
+      cluster.addAsgCapacityProvider(capacityProvider);
+
+      const taskDefinition = new ecs.TaskDefinition(stack, 'ServerTask', {
+        compatibility: ecs.Compatibility.EC2,
+      });
+      taskDefinition.addContainer('app', {
+        image: new ecs.RepositoryImage('bogus'),
+        cpu: 1024,
+        memoryReservationMiB: 900,
+        portMappings: [{
+          containerPort: 80,
+        }],
+      });
+      new ecs.Ec2Service(stack, 'Service', {
+        cluster,
+        taskDefinition,
+        desiredCount: 0,
+        capacityProviderStrategies: [{
+          capacityProvider: capacityProvider.capacityProviderName,
+        }],
+      });
+
+      // THEN
+      expect(stack).to(haveResource('AWS::ECS::Service', {
+        CapacityProviderStrategy: [
+          {
+            CapacityProvider: {
+              Ref: 'providerD3FF4D3A',
+            },
+          },
+        ],
+      }));
       test.done();
     },
 
@@ -2187,6 +2242,268 @@ nodeunitShim({
           ],
         },
       }));
+
+      test.done();
+    },
+
+    'user can select any container and port'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+      cluster.addDefaultCloudMapNamespace({
+        name: 'foo.com',
+        type: cloudmap.NamespaceType.DNS_PRIVATE,
+      });
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'FargateTaskDef', {
+        networkMode: ecs.NetworkMode.BRIDGE,
+      });
+
+      const mainContainer = taskDefinition.addContainer('MainContainer', {
+        image: ecs.ContainerImage.fromRegistry('hello'),
+        memoryLimitMiB: 512,
+      });
+      mainContainer.addPortMappings({ containerPort: 8000 });
+
+      const otherContainer = taskDefinition.addContainer('OtherContainer', {
+        image: ecs.ContainerImage.fromRegistry('hello'),
+        memoryLimitMiB: 512,
+      });
+      otherContainer.addPortMappings({ containerPort: 8001 });
+
+      // WHEN
+      new ecs.Ec2Service(stack, 'Service', {
+        cluster,
+        taskDefinition,
+        cloudMapOptions: {
+          dnsRecordType: cloudmap.DnsRecordType.SRV,
+          container: otherContainer,
+          containerPort: 8001,
+        },
+      });
+
+      // THEN
+      expect(stack).to(haveResourceLike('AWS::ECS::Service', {
+        ServiceRegistries: [
+          {
+            RegistryArn: { 'Fn::GetAtt': ['ServiceCloudmapService046058A4', 'Arn'] },
+            ContainerName: 'OtherContainer',
+            ContainerPort: 8001,
+          },
+        ],
+      }));
+
+      test.done();
+    },
+
+    'By default, the container name is the default'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+      cluster.addDefaultCloudMapNamespace({
+        name: 'foo.com',
+        type: cloudmap.NamespaceType.DNS_PRIVATE,
+      });
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Task', {
+        networkMode: ecs.NetworkMode.BRIDGE,
+      });
+
+      taskDefinition.addContainer('main', {
+        image: ecs.ContainerImage.fromRegistry('some'),
+        memoryLimitMiB: 512,
+      }).addPortMappings({ containerPort: 1234 });
+
+      taskDefinition.addContainer('second', {
+        image: ecs.ContainerImage.fromRegistry('some'),
+        memoryLimitMiB: 512,
+      }).addPortMappings({ containerPort: 4321 });
+
+      // WHEN
+      new ecs.Ec2Service(stack, 'Service', {
+        cluster,
+        taskDefinition,
+        cloudMapOptions: {},
+      });
+
+      // THEN
+      expect(stack).to(haveResourceLike('AWS::ECS::Service', {
+        ServiceRegistries: [{
+          ContainerName: 'main',
+          ContainerPort: undefined,
+        }],
+      }));
+
+      test.done();
+    },
+
+    'For SRV, by default, container name is default container and port is the default container port'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+      cluster.addDefaultCloudMapNamespace({
+        name: 'foo.com',
+        type: cloudmap.NamespaceType.DNS_PRIVATE,
+      });
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Task', {
+        networkMode: ecs.NetworkMode.BRIDGE,
+      });
+
+      taskDefinition.addContainer('main', {
+        image: ecs.ContainerImage.fromRegistry('some'),
+        memoryLimitMiB: 512,
+      }).addPortMappings({ containerPort: 1234 });
+
+      taskDefinition.addContainer('second', {
+        image: ecs.ContainerImage.fromRegistry('some'),
+        memoryLimitMiB: 512,
+      }).addPortMappings({ containerPort: 4321 });
+
+      // WHEN
+      new ecs.Ec2Service(stack, 'Service', {
+        cluster,
+        taskDefinition,
+        cloudMapOptions: {
+          dnsRecordType: cloudmap.DnsRecordType.SRV,
+        },
+      });
+
+      // THEN
+      expect(stack).to(haveResourceLike('AWS::ECS::Service', {
+        ServiceRegistries: [{
+          ContainerName: 'main',
+          ContainerPort: 1234,
+        }],
+      }));
+
+      test.done();
+    },
+
+    'allows SRV service discovery to select the container and port'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+      cluster.addDefaultCloudMapNamespace({
+        name: 'foo.com',
+        type: cloudmap.NamespaceType.DNS_PRIVATE,
+      });
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Task', {
+        networkMode: ecs.NetworkMode.BRIDGE,
+      });
+
+      taskDefinition.addContainer('main', {
+        image: ecs.ContainerImage.fromRegistry('some'),
+        memoryLimitMiB: 512,
+      }).addPortMappings({ containerPort: 1234 });
+
+      const secondContainer = taskDefinition.addContainer('second', {
+        image: ecs.ContainerImage.fromRegistry('some'),
+        memoryLimitMiB: 512,
+      });
+      secondContainer.addPortMappings({ containerPort: 4321 });
+
+      // WHEN
+      new ecs.Ec2Service(stack, 'Service', {
+        cluster,
+        taskDefinition,
+        cloudMapOptions: {
+          dnsRecordType: cloudmap.DnsRecordType.SRV,
+          container: secondContainer,
+          containerPort: 4321,
+        },
+      });
+
+      // THEN
+      expect(stack).to(haveResourceLike('AWS::ECS::Service', {
+        ServiceRegistries: [{
+          ContainerName: 'second',
+          ContainerPort: 4321,
+        }],
+      }));
+
+      test.done();
+    },
+
+    'throws if SRV and container is not part of task definition'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+      cluster.addDefaultCloudMapNamespace({
+        name: 'foo.com',
+        type: cloudmap.NamespaceType.DNS_PRIVATE,
+      });
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Task', {
+        networkMode: ecs.NetworkMode.BRIDGE,
+      });
+
+      // The right container
+      taskDefinition.addContainer('MainContainer', {
+        image: ecs.ContainerImage.fromRegistry('hello'),
+        memoryLimitMiB: 512,
+      });
+
+      const wrongTaskDefinition = new ecs.Ec2TaskDefinition(stack, 'WrongTaskDef');
+      // The wrong container
+      const wrongContainer = wrongTaskDefinition.addContainer('MainContainer', {
+        image: ecs.ContainerImage.fromRegistry('hello'),
+        memoryLimitMiB: 512,
+      });
+
+      // WHEN
+      test.throws(() => {
+        new ecs.Ec2Service(stack, 'Service', {
+          cluster,
+          taskDefinition,
+          cloudMapOptions: {
+            dnsRecordType: cloudmap.DnsRecordType.SRV,
+            container: wrongContainer,
+            containerPort: 4321,
+          },
+        });
+      }, /another task definition/i);
+
+      test.done();
+    },
+
+    'throws if SRV and the container port is not mapped'(test: Test) {
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+      cluster.addDefaultCloudMapNamespace({
+        name: 'foo.com',
+        type: cloudmap.NamespaceType.DNS_PRIVATE,
+      });
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Task', {
+        networkMode: ecs.NetworkMode.BRIDGE,
+      });
+
+      const container = taskDefinition.addContainer('MainContainer', {
+        image: ecs.ContainerImage.fromRegistry('hello'),
+        memoryLimitMiB: 512,
+      });
+
+      container.addPortMappings({ containerPort: 8000 });
+
+      test.throws(() => {
+        new ecs.Ec2Service(stack, 'Service', {
+          cluster,
+          taskDefinition,
+          cloudMapOptions: {
+            dnsRecordType: cloudmap.DnsRecordType.SRV,
+            container: container,
+            containerPort: 4321,
+          },
+        });
+      }, /container port.*not.*mapped/i);
 
       test.done();
     },
