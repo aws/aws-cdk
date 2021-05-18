@@ -3,7 +3,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import { Duration, Stack, NestedStack, Names } from '@aws-cdk/core';
 import * as cr from '@aws-cdk/custom-resources';
-import { AwsCliLayer } from '@aws-cdk/lambda-layer-awscli';
+import { AwsCliV2Layer } from '@aws-cdk/lambda-layer-awscli';
 import { KubectlLayer } from '@aws-cdk/lambda-layer-kubectl';
 import { Construct } from 'constructs';
 import { ICluster, Cluster } from './cluster';
@@ -86,7 +86,7 @@ export class KubectlProvider extends NestedStack {
 
     // allow user to customize the layer
     if (!props.cluster.kubectlLayer) {
-      handler.addLayers(new AwsCliLayer(this, 'AwsCliLayer'));
+      handler.addLayers(new AwsCliV2Layer(this, 'AwsCliV2Layer'));
       handler.addLayers(new KubectlLayer(this, 'KubectlLayer'));
     } else {
       handler.addLayers(props.cluster.kubectlLayer);
