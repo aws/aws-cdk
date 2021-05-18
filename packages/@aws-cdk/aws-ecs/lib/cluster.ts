@@ -5,8 +5,8 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as cloudmap from '@aws-cdk/aws-servicediscovery';
 import * as ssm from '@aws-cdk/aws-ssm';
-import { Duration, Lazy, IResource, Resource, Stack, Aspects, IAspect, IConstruct } from '@aws-cdk/core';
-import { Construct } from 'constructs';
+import { Duration, Lazy, IResource, Resource, Stack, Aspects, IAspect } from '@aws-cdk/core';
+import { Construct, IConstruct } from 'constructs';
 import { InstanceDrainHook } from './drain-hook/instance-drain-hook';
 import { ECSMetrics } from './ecs-canned-metrics.generated';
 import { CfnCluster, CfnCapacityProvider, CfnClusterCapacityProviderAssociations } from './ecs.generated';
@@ -1115,7 +1115,7 @@ export interface AsgCapacityProviderProps extends AddAutoScalingGroupCapacityOpt
  * tasks, and can ensure that instances are not prematurely terminated while
  * there are still tasks running on them.
  */
-export class AsgCapacityProvider extends CoreConstruct {
+export class AsgCapacityProvider extends Construct {
   /**
    * Capacity provider name
    * @default Chosen by CloudFormation
@@ -1167,11 +1167,11 @@ export class AsgCapacityProvider extends CoreConstruct {
  * the caller created any EC2 Capacity Providers.
  */
 class MaybeCreateCapacityProviderAssociations implements IAspect {
-  private scope: CoreConstruct;
+  private scope: Construct;
   private id: string;
   private capacityProviders: AsgCapacityProvider[]
 
-  constructor(scope: CoreConstruct, id: string, capacityProviders: AsgCapacityProvider[]) {
+  constructor(scope: Construct, id: string, capacityProviders: AsgCapacityProvider[]) {
     this.scope = scope;
     this.id = id;
     this.capacityProviders = capacityProviders;
