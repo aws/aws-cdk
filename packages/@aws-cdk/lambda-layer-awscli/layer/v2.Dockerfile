@@ -1,4 +1,4 @@
-FROM public.ecr.aws/lambda/provided:latest AS base
+FROM public.ecr.aws/lambda/provided:latest
 
 ARG AWSCLI_V2_VERSION=2.2.5
 USER root

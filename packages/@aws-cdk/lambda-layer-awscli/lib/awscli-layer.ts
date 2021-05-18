@@ -10,9 +10,9 @@ import { Construct } from 'constructs';
 export class AwsCliLayer extends lambda.LayerVersion {
   constructor(scope: Construct, id: string) {
     super(scope, id, {
-      code: lambda.Code.fromAsset(path.join(__dirname, 'layer_v1.zip'), {
+      code: lambda.Code.fromAsset(path.join(__dirname, 'layer.zip'), {
         // we hash the Dockerfile (it contains the tools versions) because hashing the zip is non-deterministic
-        assetHash: hashFile(path.join(__dirname, '..', 'layer', 'v1.Dockerfile')),
+        assetHash: hashFile(path.join(__dirname, '..', 'layer', 'Dockerfile')),
       }),
       description: '/opt/awscli/aws',
     });
