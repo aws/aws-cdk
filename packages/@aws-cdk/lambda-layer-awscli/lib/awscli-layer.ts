@@ -12,7 +12,7 @@ export class AwsCliLayer extends lambda.LayerVersion {
     super(scope, id, {
       code: lambda.Code.fromAsset(path.join(__dirname, 'layer_v1.zip'), {
         // we hash the Dockerfile (it contains the tools versions) because hashing the zip is non-deterministic
-        assetHash: hashFile(path.join(__dirname, '..', 'layer', 'Dockerfile')),
+        assetHash: hashFile(path.join(__dirname, '..', 'layer', 'v1.Dockerfile')),
       }),
       description: '/opt/awscli/aws',
     });
@@ -27,7 +27,7 @@ export class AwsCliV2Layer extends lambda.LayerVersion {
     super(scope, id, {
       code: lambda.Code.fromAsset(path.join(__dirname, 'layer_v2.zip'), {
         // we hash the Dockerfile (it contains the tools versions) because hashing the zip is non-deterministic
-        assetHash: hashFile(path.join(__dirname, '..', 'layer', 'Dockerfile')),
+        assetHash: hashFile(path.join(__dirname, '..', 'layer', 'v2.Dockerfile')),
       }),
       description: '/opt/awscli/aws',
     });
