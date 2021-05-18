@@ -417,7 +417,6 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
       return (principal as iam.ArnPrincipal).arn;
     }
 
-
     // Try a best-effort approach to support simple principals that are not any of the predefined
     // classes, but are simple enough that they will fit into the Permission model. Main target
     // here: imported Roles, Users, Groups.
