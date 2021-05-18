@@ -119,7 +119,7 @@ myRole.addManagedPolicy(ManagedPolicy.fromAwsManagedPolicyName("service-role/AWS
 AWS Lambda supports resource-based policies for controlling access to Lambda
 functions and layers on a per-resource basis. In particular, this allows you to
 give permission to AWS services and other AWS accounts to modify and invoke your
-resources. You can also restrict permissions given to AWS services by providing
+functions. You can also restrict permissions given to AWS services by providing
 a source account or ARN (representing the account and identifier of the resource
 that accesses the function or layer).
 

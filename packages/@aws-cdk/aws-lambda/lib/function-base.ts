@@ -8,8 +8,10 @@ import { IEventSource } from './event-source';
 import { EventSourceMapping, EventSourceMappingOptions } from './event-source-mapping';
 import { IVersion } from './lambda-version';
 import { CfnPermission } from './lambda.generated';
-import { Permission, PERMISSION_SUPPORTED_PRINCIPAL_CONDITIONS } from './permission';
+import { Permission } from './permission';
 import { addAlias } from './util';
+
+const PERMISSION_SUPPORTED_PRINCIPAL_CONDITIONS = [{ operator: 'ArnLike', key: 'aws:SourceArn' }, { operator: 'StringEquals', key: 'aws:SourceAccount' }];
 
 export interface IFunction extends IResource, ec2.IConnectable, iam.IGrantable {
 
@@ -239,7 +241,7 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
     }
 
     const principal = this.parsePermissionPrincipal(permission.principal);
-    const { sourceAccount, sourceArn } = this.parsePermissionPrincipalConditions(permission.principal) ?? {};
+    const { sourceAccount, sourceArn } = this.parseConditions(permission.principal) ?? {};
     const action = permission.action ?? 'lambda:InvokeFunction';
     const scope = permission.scope ?? this;
 
@@ -434,7 +436,7 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
       'Supported: AccountPrincipal, ArnPrincipal, ServicePrincipal');
   }
 
-  private parsePermissionPrincipalConditions(principal: iam.IPrincipal): { sourceAccount: string, sourceArn: string } | null {
+  private parseConditions(principal: iam.IPrincipal): { sourceAccount: string, sourceArn: string } | null {
     if ('conditions' in principal) {
       const conditions: iam.Conditions = (principal as iam.PrincipalWithConditions).policyFragment.conditions;
       const conditionPairs = Object.entries(conditions)
