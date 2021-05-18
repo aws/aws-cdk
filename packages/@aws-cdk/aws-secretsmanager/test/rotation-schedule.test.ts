@@ -1,4 +1,4 @@
-import '@aws-cdk/assert/jest';
+import '@aws-cdk/assert-internal/jest';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
@@ -38,6 +38,75 @@ test('create a rotation schedule with a rotation Lambda', () => {
     RotationRules: {
       AutomaticallyAfterDays: 30,
     },
+  });
+});
+
+test('assign permissions for rotation schedule with a rotation Lambda', () => {
+  // GIVEN
+  const secret = new secretsmanager.Secret(stack, 'Secret');
+  const rotationLambda = new lambda.Function(stack, 'Lambda', {
+    runtime: lambda.Runtime.NODEJS_10_X,
+    code: lambda.Code.fromInline('export.handler = event => event;'),
+    handler: 'index.handler',
+  });
+
+  // WHEN
+  new secretsmanager.RotationSchedule(stack, 'RotationSchedule', {
+    secret,
+    rotationLambda,
+  });
+
+  // THEN
+  expect(stack).toHaveResource('AWS::Lambda::Permission', {
+    Action: 'lambda:InvokeFunction',
+    FunctionName: {
+      'Fn::GetAtt': [
+        'LambdaD247545B',
+        'Arn',
+      ],
+    },
+    Principal: 'secretsmanager.amazonaws.com',
+  });
+
+  expect(stack).toHaveResource('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Statement: [
+        {
+          Action: [
+            'secretsmanager:DescribeSecret',
+            'secretsmanager:GetSecretValue',
+            'secretsmanager:PutSecretValue',
+            'secretsmanager:UpdateSecretVersionStage',
+          ],
+          Effect: 'Allow',
+          Resource: {
+            Ref: 'SecretA720EF05',
+          },
+          Condition: {
+            StringEquals: {
+              'secretsmanager:resource/AllowRotationLambdaArn': {
+                'Fn::GetAtt': [
+                  'LambdaD247545B',
+                  'Arn',
+                ],
+              },
+            },
+          },
+        },
+        {
+          Action: 'secretsmanager:GetRandomPassword',
+          Effect: 'Allow',
+          Resource: '*',
+        },
+      ],
+      Version: '2012-10-17',
+    },
+    PolicyName: 'LambdaServiceRoleDefaultPolicyDAE46E21',
+    Roles: [
+      {
+        Ref: 'LambdaServiceRoleA8ED4D3B',
+      },
+    ],
   });
 });
 

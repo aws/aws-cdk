@@ -90,7 +90,7 @@ export class EventInvokeConfig extends Resource {
         : undefined,
       functionName: props.function.functionName,
       maximumEventAgeInSeconds: props.maxEventAge && props.maxEventAge.toSeconds(),
-      maximumRetryAttempts: props.retryAttempts !== undefined ? props.retryAttempts : undefined,
+      maximumRetryAttempts: props.retryAttempts ?? undefined,
       qualifier: props.qualifier || '$LATEST',
     });
   }

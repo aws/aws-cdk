@@ -75,7 +75,6 @@ export class Stage extends CoreConstruct {
    * Return the stage this construct is contained with, if available. If called
    * on a nested stage, returns its parent.
    *
-   * @experimental
    */
   public static of(construct: IConstruct): Stage | undefined {
     return Node.of(construct).scopes.reverse().slice(1).find(Stage.isStage);
@@ -84,7 +83,6 @@ export class Stage extends CoreConstruct {
   /**
    * Test whether the given construct is a stage.
    *
-   * @experimental
    */
   public static isStage(x: any ): x is Stage {
     return x !== null && typeof(x) === 'object' && STAGE_SYMBOL in x;
@@ -93,21 +91,18 @@ export class Stage extends CoreConstruct {
   /**
    * The default region for all resources defined within this stage.
    *
-   * @experimental
    */
   public readonly region?: string;
 
   /**
    * The default account for all resources defined within this stage.
    *
-   * @experimental
    */
   public readonly account?: string;
 
   /**
    * The cloud assembly builder that is being used for this App
    *
-   * @experimental
    * @internal
    */
   public readonly _assemblyBuilder: cxapi.CloudAssemblyBuilder;
@@ -116,14 +111,12 @@ export class Stage extends CoreConstruct {
    * The name of the stage. Based on names of the parent stages separated by
    * hypens.
    *
-   * @experimental
    */
   public readonly stageName: string;
 
   /**
    * The parent stage or `undefined` if this is the app.
    * *
-   * @experimental
    */
   public readonly parentStage?: Stage;
 
@@ -170,7 +163,6 @@ export class Stage extends CoreConstruct {
    *
    * Derived from the construct path.
    *
-   * @experimental
    */
   public get artifactId() {
     if (!this.node.path) { return ''; }
@@ -187,6 +179,7 @@ export class Stage extends CoreConstruct {
     if (!this.assembly || options.force) {
       this.assembly = synthesize(this, {
         skipValidation: options.skipValidation,
+        validateOnSynthesis: options.validateOnSynthesis,
       });
     }
 
@@ -217,6 +210,13 @@ export interface StageSynthesisOptions {
    * @default - false
    */
   readonly skipValidation?: boolean;
+
+  /**
+   * Whether the stack should be validated after synthesis to check for error metadata
+   *
+   * @default - false
+   */
+  readonly validateOnSynthesis?: boolean;
 
   /**
    * Force a re-synth, even if the stage has already been synthesized.

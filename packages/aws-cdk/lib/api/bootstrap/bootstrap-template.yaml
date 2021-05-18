@@ -353,6 +353,12 @@ Resources:
                   - sts:GetCallerIdentity
                 Resource: "*"
                 Effect: Allow
+              - Sid: ReadVersion
+                Effect: Allow
+                Action:
+                  - ssm:GetParameter
+                Resource:
+                  - Fn::Sub: "arn:${AWS::Partition}:ssm:${AWS::Region}:${AWS::AccountId}:parameter${CdkBootstrapVersion}"
             Version: '2012-10-17'
           PolicyName: default
       RoleName:
@@ -387,7 +393,7 @@ Resources:
       Type: String
       Name:
         Fn::Sub: '/cdk-bootstrap/${Qualifier}/version'
-      Value: '4'
+      Value: '5'
 Outputs:
   BucketName:
     Description: The name of the S3 bucket owned by the CDK toolkit stack

@@ -1,5 +1,8 @@
 {
   "Resources": {
+    "NoopHandle": {
+      "Type": "AWS::CloudFormation::WaitConditionHandle"
+    },
     "Bucket": {
       "Type": "AWS::S3::Bucket",
       "Properties": {

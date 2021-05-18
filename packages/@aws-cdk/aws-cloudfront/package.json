@@ -17,8 +17,6 @@
       "dotnet": {
         "namespace": "Amazon.CDK.AWS.CloudFront",
         "packageId": "Amazon.CDK.AWS.CloudFront",
-        "signAssembly": true,
-        "assemblyOriginatorKeyFile": "../../key.snk",
         "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
       },
       "python": {
@@ -73,13 +71,14 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "0.0.0",
-    "aws-sdk": "^2.828.0",
+    "@types/jest": "^26.0.23",
+    "aws-sdk": "^2.848.0",
     "cdk-build-tools": "0.0.0",
     "cdk-integ-tools": "0.0.0",
     "cfn2ts": "0.0.0",
     "nodeunit-shim": "0.0.0",
-    "pkglint": "0.0.0"
+    "pkglint": "0.0.0",
+    "@aws-cdk/assert-internal": "0.0.0"
   },
   "dependencies": {
     "@aws-cdk/aws-certificatemanager": "0.0.0",
@@ -91,7 +90,7 @@
     "@aws-cdk/aws-s3": "0.0.0",
     "@aws-cdk/aws-ssm": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "constructs": "^3.2.0"
+    "constructs": "^3.3.69"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
@@ -104,7 +103,7 @@
     "@aws-cdk/aws-s3": "0.0.0",
     "@aws-cdk/aws-ssm": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "constructs": "^3.2.0"
+    "constructs": "^3.3.69"
   },
   "engines": {
     "node": ">= 10.13.0 <13 || >=13.7.0"
@@ -155,10 +154,16 @@
       "resource-attribute:@aws-cdk/aws-cloudfront.CachePolicy.cachePolicyLastModifiedTime",
       "construct-interface-extends-iconstruct:@aws-cdk/aws-cloudfront.IOriginRequestPolicy",
       "resource-interface-extends-resource:@aws-cdk/aws-cloudfront.IOriginRequestPolicy",
-      "resource-attribute:@aws-cdk/aws-cloudfront.OriginRequestPolicy.originRequestPolicyLastModifiedTime"
+      "resource-attribute:@aws-cdk/aws-cloudfront.OriginRequestPolicy.originRequestPolicyLastModifiedTime",
+      "resource-attribute:@aws-cdk/aws-cloudfront.KeyGroup.keyGroupLastModifiedTime",
+      "resource-attribute:@aws-cdk/aws-cloudfront.PublicKey.publicKeyCreatedTime",
+      "resource-attribute:@aws-cdk/aws-cloudfront.OriginAccessIdentity.cloudFrontOriginAccessIdentityId"
     ]
   },
   "awscdkio": {
     "announce": false
+  },
+  "publishConfig": {
+    "tag": "latest"
   }
 }

@@ -5,7 +5,6 @@ import { integrationResourceArn, validatePatternSupported } from '../private/tas
 
 /**
  * Properties for stoping a Query Execution
- * @experimental
  */
 export interface AthenaStopQueryExecutionProps extends sfn.TaskStateBaseProps {
   /**
@@ -18,7 +17,6 @@ export interface AthenaStopQueryExecutionProps extends sfn.TaskStateBaseProps {
  * Stop an Athena Query Execution as a Task
  *
  * @see https://docs.aws.amazon.com/step-functions/latest/dg/connect-athena.html
- * @experimental
  */
 export class AthenaStopQueryExecution extends sfn.TaskStateBase {
 

@@ -187,9 +187,17 @@ export interface LoadBalancerListener {
   readonly policyNames?: string[];
 
   /**
-   * ID of SSL certificate
+   * the ARN of the SSL certificate
+   * @deprecated - use sslCertificateArn instead
    */
   readonly sslCertificateId?: string;
+
+  /**
+   * the ARN of the SSL certificate
+   *
+   * @default - none
+   */
+  readonly sslCertificateArn?: string;
 
   /**
    * Allow connections to the load balancer from the given set of connection peers
@@ -248,7 +256,7 @@ export class LoadBalancer extends Resource implements IConnectable {
       listeners: Lazy.any({ produce: () => this.listeners }),
       scheme: props.internetFacing ? 'internet-facing' : 'internal',
       healthCheck: props.healthCheck && healthCheckToJSON(props.healthCheck),
-      crossZone: (props.crossZone === undefined || props.crossZone) ? true : false,
+      crossZone: props.crossZone ?? true,
     });
     if (props.internetFacing) {
       this.elb.node.addDependency(selectedSubnets.internetConnectivityEstablished);
@@ -264,8 +272,12 @@ export class LoadBalancer extends Resource implements IConnectable {
    * @returns A ListenerPort object that controls connections to the listener port
    */
   public addListener(listener: LoadBalancerListener): ListenerPort {
+    if (listener.sslCertificateArn && listener.sslCertificateId) {
+      throw new Error('"sslCertificateId" is deprecated, please use "sslCertificateArn" only.');
+    }
     const protocol = ifUndefinedLazy(listener.externalProtocol, () => wellKnownProtocol(listener.externalPort));
     const instancePort = listener.internalPort || listener.externalPort;
+    const sslCertificateArn = listener.sslCertificateArn || listener.sslCertificateId;
     const instanceProtocol = ifUndefined(listener.internalProtocol,
       ifUndefined(tryWellKnownProtocol(instancePort),
         isHttpProtocol(protocol) ? LoadBalancingProtocol.HTTP : LoadBalancingProtocol.TCP));
@@ -275,7 +287,7 @@ export class LoadBalancer extends Resource implements IConnectable {
       protocol,
       instancePort: instancePort.toString(),
       instanceProtocol,
-      sslCertificateId: listener.sslCertificateId,
+      sslCertificateId: sslCertificateArn,
       policyNames: listener.policyNames,
     });
 

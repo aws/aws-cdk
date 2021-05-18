@@ -141,12 +141,12 @@ export enum InstanceClass {
   /**
    * Memory optimized instances based on AMD EPYC with local NVME drive, 5th generation
    */
-  MEMORY5_AMD_NVME_DRIVE = 'r5a',
+  MEMORY5_AMD_NVME_DRIVE = 'r5ad',
 
   /**
    * Memory optimized instances based on AMD EPYC with local NVME drive, 5th generation
    */
-  R5AD = 'r5a',
+  R5AD = 'r5ad',
 
   /**
    * Memory optimized instances that are also EBS-optimized, 5th generation
@@ -474,6 +474,21 @@ export enum InstanceClass {
 }
 
 /**
+ * Identifies an instance's CPU architecture
+ */
+export enum InstanceArchitecture {
+  /**
+   * ARM64 architecture
+   */
+  ARM_64 = 'arm64',
+
+  /**
+   * x86-64 architecture
+   */
+  X86_64 = 'x86_64',
+}
+
+/**
  * What size of instance to use
  */
 export enum InstanceSize {
@@ -596,5 +611,27 @@ export class InstanceType {
    */
   public toString(): string {
     return this.instanceTypeIdentifier;
+  }
+
+  /**
+   * The instance's CPU architecture
+   */
+  public get architecture(): InstanceArchitecture {
+    // capture the family, generation, capabilities, and size portions of the instance type id
+    const instanceTypeComponents = this.instanceTypeIdentifier.match(/^([a-z]+)(\d{1,2})([a-z]*)\.([a-z0-9]+)$/);
+    if (instanceTypeComponents == null) {
+      throw new Error('Malformed instance type identifier');
+    }
+
+    const family = instanceTypeComponents[1];
+    const capabilities = instanceTypeComponents[3];
+
+    // Instance family `a` are first-gen Graviton instances
+    // Capability `g` indicates the instance is Graviton2 powered
+    if (family === 'a' || capabilities.includes('g')) {
+      return InstanceArchitecture.ARM_64;
+    }
+
+    return InstanceArchitecture.X86_64;
   }
 }

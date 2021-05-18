@@ -1,4 +1,4 @@
-import '@aws-cdk/assert/jest';
+import '@aws-cdk/assert-internal/jest';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as cdk from '@aws-cdk/core';
 import * as elbv2 from '../../lib';
@@ -272,7 +272,7 @@ class TestFixture {
     });
     this.lb = new elbv2.ApplicationLoadBalancer(this.stack, 'LB', { vpc: this.vpc });
 
-    createListener = createListener === undefined ? true : createListener;
+    createListener = createListener ?? true;
     if (createListener) {
       this._listener = this.lb.addListener('Listener', { port: 80, open: false });
     }

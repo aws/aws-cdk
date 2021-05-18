@@ -6,6 +6,7 @@ import { Construct } from 'constructs';
 import { ICachePolicy } from './cache-policy';
 import { CfnDistribution } from './cloudfront.generated';
 import { GeoRestriction } from './geo-restriction';
+import { IKeyGroup } from './key-group';
 import { IOrigin, OriginBindConfig, OriginBindOptions } from './origin';
 import { IOriginRequestPolicy } from './origin-request-policy';
 import { CacheBehavior } from './private/cache-behavior';
@@ -278,6 +279,12 @@ export class Distribution extends Resource implements IDistribution {
     this.certificate = props.certificate;
     this.errorResponses = props.errorResponses ?? [];
 
+    // Comments have an undocumented limit of 128 characters
+    const trimmedComment =
+      props.comment && props.comment.length > 128
+        ? `${props.comment.substr(0, 128 - 3)}...`
+        : props.comment;
+
     const distribution = new CfnDistribution(this, 'Resource', {
       distributionConfig: {
         enabled: props.enabled ?? true,
@@ -286,7 +293,7 @@ export class Distribution extends Resource implements IDistribution {
         defaultCacheBehavior: this.defaultBehavior._renderBehavior(),
         aliases: props.domainNames,
         cacheBehaviors: Lazy.any({ produce: () => this.renderCacheBehaviors() }),
-        comment: props.comment,
+        comment: trimmedComment,
         customErrorResponses: this.renderErrorResponses(),
         defaultRootObject: props.defaultRootObject,
         httpVersion: props.httpVersion ?? HttpVersion.HTTP2,
@@ -706,6 +713,14 @@ export interface AddBehaviorOptions {
    * @see https://aws.amazon.com/lambda/edge
    */
   readonly edgeLambdas?: EdgeLambda[];
+
+  /**
+   * A list of Key Groups that CloudFront can use to validate signed URLs or signed cookies.
+   *
+   * @default - no KeyGroups are associated with cache behavior
+   * @see https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/PrivateContent.html
+   */
+  readonly trustedKeyGroups?: IKeyGroup[];
 }
 
 /**

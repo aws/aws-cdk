@@ -17,8 +17,6 @@
       "dotnet": {
         "namespace": "Amazon.CDK.AWS.CodePipeline.Actions",
         "packageId": "Amazon.CDK.AWS.CodePipeline.Actions",
-        "signAssembly": true,
-        "assemblyOriginatorKeyFile": "../../key.snk",
         "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
       },
       "python": {
@@ -68,15 +66,16 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assert": "0.0.0",
+    "@types/jest": "^26.0.23",
     "@aws-cdk/aws-cloudtrail": "0.0.0",
-    "@types/lodash": "^4.14.168",
-    "@types/nodeunit": "^0.0.31",
+    "@aws-cdk/cx-api": "0.0.0",
+    "@types/lodash": "^4.14.169",
     "cdk-build-tools": "0.0.0",
     "cdk-integ-tools": "0.0.0",
-    "lodash": "^4.17.20",
-    "nodeunit": "^0.11.3",
-    "pkglint": "0.0.0"
+    "lodash": "^4.17.21",
+    "nodeunit-shim": "0.0.0",
+    "pkglint": "0.0.0",
+    "@aws-cdk/assert-internal": "0.0.0"
   },
   "dependencies": {
     "@aws-cdk/aws-cloudformation": "0.0.0",
@@ -90,15 +89,15 @@
     "@aws-cdk/aws-events": "0.0.0",
     "@aws-cdk/aws-events-targets": "0.0.0",
     "@aws-cdk/aws-iam": "0.0.0",
+    "@aws-cdk/aws-kms": "0.0.0",
     "@aws-cdk/aws-lambda": "0.0.0",
     "@aws-cdk/aws-s3": "0.0.0",
-    "@aws-cdk/aws-servicecatalog": "0.0.0",
     "@aws-cdk/aws-sns": "0.0.0",
     "@aws-cdk/aws-sns-subscriptions": "0.0.0",
     "@aws-cdk/aws-stepfunctions": "0.0.0",
     "@aws-cdk/core": "0.0.0",
     "case": "1.6.3",
-    "constructs": "^3.2.0"
+    "constructs": "^3.3.69"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
@@ -113,14 +112,14 @@
     "@aws-cdk/aws-events": "0.0.0",
     "@aws-cdk/aws-events-targets": "0.0.0",
     "@aws-cdk/aws-iam": "0.0.0",
+    "@aws-cdk/aws-kms": "0.0.0",
     "@aws-cdk/aws-lambda": "0.0.0",
     "@aws-cdk/aws-s3": "0.0.0",
-    "@aws-cdk/aws-servicecatalog": "0.0.0",
     "@aws-cdk/aws-sns": "0.0.0",
     "@aws-cdk/aws-sns-subscriptions": "0.0.0",
     "@aws-cdk/aws-stepfunctions": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "constructs": "^3.2.0"
+    "constructs": "^3.3.69"
   },
   "bundledDependencies": [
     "case"
@@ -150,7 +149,6 @@
       "props-default-doc:@aws-cdk/aws-codepipeline-actions.CloudFormationCreateUpdateStackActionProps.extraInputs",
       "props-default-doc:@aws-cdk/aws-codepipeline-actions.CloudFormationDeleteStackActionProps.extraInputs",
       "props-default-doc:@aws-cdk/aws-codepipeline-actions.CodeBuildActionProps.extraInputs",
-      "docs-public-apis:@aws-cdk/aws-codepipeline-actions.Action.bind",
       "docs-public-apis:@aws-cdk/aws-codepipeline-actions.CodeCommitSourceActionProps.branch",
       "docs-public-apis:@aws-cdk/aws-codepipeline-actions.EcrSourceActionProps.output",
       "docs-public-apis:@aws-cdk/aws-codepipeline-actions.GitHubSourceActionProps.output",
@@ -179,8 +177,12 @@
   },
   "maturity": "stable",
   "cdk-build": {
+    "jest": true,
     "env": {
       "AWSLINT_BASE_CONSTRUCT": true
     }
+  },
+  "publishConfig": {
+    "tag": "latest"
   }
 }

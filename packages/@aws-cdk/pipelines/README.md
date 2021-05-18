@@ -173,7 +173,7 @@ class MyPipelineStack extends Stack {
 }
 
 const app = new App();
-new MyPipelineStack(this, 'PipelineStack', {
+new MyPipelineStack(app, 'PipelineStack', {
   env: {
     account: '111111111111',
     region: 'eu-west-1',
@@ -198,7 +198,8 @@ const codePipeline = new cp.Pipeline(pipelineStack, 'CodePipeline', {
   ],
 });
 
-const cdkPipeline = new CdkPipeline(this, 'CdkPipeline', {
+const app = new App();
+const cdkPipeline = new CdkPipeline(app, 'CdkPipeline', {
   codePipeline,
   cloudAssemblyArtifact,
 });
@@ -431,7 +432,7 @@ the `additionalArtifacts` property.
 Here are some typical examples for how you might want to bring in additional
 files from several sources:
 
-* Directoy from the source repository
+* Directory from the source repository
 * Additional compiled artifacts from the synth step
 
 ### Controlling IAM permissions
@@ -522,7 +523,7 @@ const validationAction = new ShellScriptAction({
 });
 ```
 
-#### Add Additional permissions to the CodeBuild Project Role for building and synthing
+#### Add Additional permissions to the CodeBuild Project Role for building and synthesizing
 
 You can customize the role permissions used by the CodeBuild project so it has access to
 the needed resources. eg: Adding CodeArtifact repo permissions so we pull npm packages
@@ -595,7 +596,7 @@ to create it in. If you are deploying your application to different environments
 also have to bootstrap those and be sure to add a *trust* relationship.
 
 > This library requires a newer version of the bootstrapping stack which has
-> been updated specifically to support cross-account continous delivery. In the future,
+> been updated specifically to support cross-account continuous delivery. In the future,
 > this new bootstrapping stack will become the default, but for now it is still
 > opt-in.
 >
@@ -655,6 +656,12 @@ These command lines explained:
 > Make sure you trust all the code and dependencies that make up your CDK app.
 > Check with the appropriate department within your organization to decide on the
 > proper policy to use.
+>
+> If your policy includes permissions to create on attach permission to a role, 
+> developers can escalate their privilege with more permissive permission. 
+> Thus, we recommend implementing [permissions boundary](https://aws.amazon.com/premiumsupport/knowledge-center/iam-permission-boundaries/) 
+> in the CDK Execution role. To do this, you can bootstrap with the `--template` option with 
+> [a customized template](https://github.com/aws-samples/aws-bootstrap-kit-examples/blob/ba28a97d289128281bc9483bcba12c1793f2c27a/source/1-SDLC-organization/lib/cdk-bootstrap-template.yml#L395) that contains a permission boundary.
 
 ### Migrating from old bootstrap stack
 
@@ -670,7 +677,7 @@ contains:
   assets in these storage locations *without* the use of CloudFormation template
   parameters.
 * A set of roles with permissions to access these asset locations and to execute
-  CloudFormation, assumeable from whatever accounts you specify under `--trust`.
+  CloudFormation, assumable from whatever accounts you specify under `--trust`.
 
 It is possible and safe to migrate from the old bootstrap stack to the new
 bootstrap stack. This will create a new S3 file asset bucket in your account
@@ -741,6 +748,18 @@ ID: ...)
 
 The stack failed its previous deployment, and is in a non-retryable state.
 Go into the CloudFormation console, delete the stack, and retry the deployment.
+
+### Cannot find module 'xxxx' or its corresponding type declarations
+
+You may see this if you are using TypeScript or other NPM-based languages,
+when using NPM 7 on your workstation (where you generate `package-lock.json`)
+and NPM 6 on the CodeBuild image used for synthesizing.
+
+It looks like NPM 7 has started writing less information to `package-lock.json`,
+leading NPM 6 reading that same file to not install all required packages anymore.
+
+Make sure you are using the same NPM version everywhere, either downgrade your
+workstation's version or upgrade the CodeBuild version.
 
 ## Current Limitations
 

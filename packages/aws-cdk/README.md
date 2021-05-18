@@ -158,9 +158,9 @@ and always deploy the stack.
 
 You can have multiple stacks in a cdk app. An example can be found in [how to create multiple stacks](https://docs.aws.amazon.com/cdk/latest/guide/stack_how_to_create_multiple_stacks.html).
 
-In order to deploy them, you can list the stacks you want to deploy.
+In order to deploy them, you can list the stacks you want to deploy. If your application contains pipeline stacks, the `cdk list` command will show stack names as paths, showing where they are in the pipeline hierarchy (e.g., `PipelineStack`, `PipelineStack/Prod`, `PipelineStack/Prod/MyService` etc).
 
-If you want to deploy all of them, you can use the flag `--all` or the wildcard `*` to deploy all stacks in an app.
+If you want to deploy all of them, you can use the flag `--all` or the wildcard `*` to deploy all stacks in an app. Please note that, if you have a hierarchy of stacks as described above, `--all` and `*` will only match the stacks on the top level. If you want to match all the stacks in the hierarchy, use `**`. You can also combine these patterns. For example, if you want to deploy all stacks in the `Prod` stage, you can use `cdk deploy PipelineStack/Prod/**`.
 
 #### Parameters
 
@@ -207,7 +207,7 @@ Usage of output in a CDK stack
 const fn = new lambda.Function(this, "fn", {
   handler: "index.handler",
   code: lambda.Code.fromInline(`exports.handler = \${handler.toString()}`),
-  runtime: lambda.Runtime.NODEJS_10_X
+  runtime: lambda.Runtime.NODEJS_12_X
 });
 
 new cdk.CfnOutput(this, 'FunctionArn', {
@@ -284,6 +284,19 @@ When `cdk deploy` is executed, deployment events will include the complete histo
 ```
 
 The `progress` key can also be specified as a user setting (`~/.cdk.json`)
+
+#### Externally Executable CloudFormation Change Sets
+
+For more control over when stack changes are deployed, the CDK can generate a
+CloudFormation change set but not execute it. The default name of the generated
+change set is *cdk-deploy-change-set*, and a previous change set with that
+name will be overwritten. The change set will always be created, even if it
+is empty. A name can also be given to the change set to make it easier to later 
+execute.
+
+```console
+$ cdk deploy --no-execute --change-set-name MyChangeSetName
+```
 
 ### `cdk destroy`
 

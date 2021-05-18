@@ -8,6 +8,11 @@ import {
 } from './fact-tables';
 
 async function main(): Promise<void> {
+  checkRegions(APPMESH_ECR_ACCOUNTS);
+  checkRegions(DLC_REPOSITORY_ACCOUNTS);
+  checkRegions(ELBV2_ACCOUNTS);
+  checkRegions(ROUTE_53_BUCKET_WEBSITE_ZONE_IDS);
+
   const lines = [
     "import { Fact, FactName } from './fact';",
     '',
@@ -73,6 +78,19 @@ async function main(): Promise<void> {
   function registerFact(region: string, name: string | string[], value: string) {
     const factName = typeof name === 'string' ? name : `${name[0]}(${name.slice(1).map(s => JSON.stringify(s)).join(', ')})`;
     lines.push(`    Fact.register({ region: ${JSON.stringify(region)}, name: FactName.${factName}, value: ${JSON.stringify(value)} });`);
+  }
+}
+
+/**
+ * Verifies that the provided map of region to fact does not contain an entry
+ * for a region that was not registered in `AWS_REGIONS`.
+ */
+function checkRegions(map: Record<string, unknown>) {
+  const allRegions = new Set(AWS_REGIONS);
+  for (const region of Object.keys(map)) {
+    if (!allRegions.has(region)) {
+      throw new Error(`Un-registered region fact found: ${region}. Add to AWS_REGIONS list!`);
+    }
   }
 }
 

@@ -51,9 +51,35 @@ grants an IAM user access to call this API.
 
 ```ts
 import * as iam from '@aws-cdk/aws-iam';
+import * as ecr from '@aws-cdk/aws-ecr';
 
 const user = new iam.User(this, 'User', { ... });
-iam.AuthorizationToken.grantRead(user);
+ecr.AuthorizationToken.grantRead(user);
+```
+
+If you access images in the [Public ECR Gallery](https://gallery.ecr.aws/) as well, it is recommended you authenticate to the registry to benefit from
+higher rate and bandwidth limits.
+
+> See `Pricing` in https://aws.amazon.com/blogs/aws/amazon-ecr-public-a-new-public-container-registry/ and [Service quotas](https://docs.aws.amazon.com/AmazonECR/latest/public/public-service-quotas.html).
+
+The following code snippet grants an IAM user access to retrieve an authorization token for the public gallery.
+
+```ts
+import * as iam from '@aws-cdk/aws-iam';
+import * as ecr from '@aws-cdk/aws-ecr';
+
+const user = new iam.User(this, 'User', { ... });
+ecr.PublicGalleryAuthorizationToken.grantRead(user);
+```
+
+This user can then proceed to login to the registry using one of the [authentication methods](https://docs.aws.amazon.com/AmazonECR/latest/public/public-registries.html#public-registry-auth).
+
+### Image tag immutability
+
+You can set tag immutability on images in our repository using the `imageTagMutability` construct prop.
+
+```ts
+new ecr.Repository(stack, 'Repo', { imageTagMutability: ecr.TagMutability.IMMUTABLE });
 ```
 
 ## Automatically clean up repositories

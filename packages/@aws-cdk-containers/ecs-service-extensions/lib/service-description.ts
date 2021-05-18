@@ -1,11 +1,10 @@
 import { ServiceExtension } from './extensions/extension-interfaces';
 
 /**
- * A description of a service to construct. This construct collects
- * all of the extensions that a user wants to add to their Service.
- * It is used as a shared collection of all the extensions, allowing
- * extensions to query the full list of extensions to determine
- * information about how to self configure.
+ * A ServiceDescription is a wrapper for all of the extensions that a user wants
+ * to add to an ECS Service. It collects all of the extensions that are added
+ * to a service, allowing each extension to query the full list of extensions
+ * added to a service to determine information about how to self-configure.
  */
 export class ServiceDescription {
   /**
@@ -16,7 +15,8 @@ export class ServiceDescription {
 
   /**
    * Adds a new extension to the service. The extensions mutate a service
-   * to add resources or features to the service
+   * to add resources to or configure properties for the service.
+   *
    * @param extension - The extension that you wish to add
    */
   public add(extension: ServiceExtension) {
@@ -30,8 +30,9 @@ export class ServiceDescription {
   }
 
   /**
-   * Get the extension with a specific name. This is generally used for
-   * extensions to discover each other's existence.
+   * Get the extension with a specific name. This is generally used by
+   * extensions in order to discover each other.
+   *
    * @param name
    */
   public get(name: string) {

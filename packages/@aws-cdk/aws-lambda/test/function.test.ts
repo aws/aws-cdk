@@ -1,6 +1,6 @@
-import '@aws-cdk/assert/jest';
+import '@aws-cdk/assert-internal/jest';
 import * as path from 'path';
-import { ABSENT, ResourcePart, SynthUtils } from '@aws-cdk/assert';
+import { ABSENT, ResourcePart, SynthUtils } from '@aws-cdk/assert-internal';
 import { ProfilingGroup } from '@aws-cdk/aws-codeguruprofiler';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as efs from '@aws-cdk/aws-efs';
@@ -8,6 +8,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as logs from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
+import * as signer from '@aws-cdk/aws-signer';
 import * as sqs from '@aws-cdk/aws-sqs';
 import * as cdk from '@aws-cdk/core';
 import * as constructs from 'constructs';
@@ -1611,7 +1612,7 @@ describe('function', () => {
       new lambda.Function(stack, 'MyLambda', {
         code: new lambda.InlineCode('foo'),
         handler: 'index.handler',
-        runtime: lambda.Runtime.NODEJS_10_X,
+        runtime: lambda.Runtime.PYTHON_3_6,
         profiling: true,
       });
 
@@ -1660,7 +1661,7 @@ describe('function', () => {
       new lambda.Function(stack, 'MyLambda', {
         code: new lambda.InlineCode('foo'),
         handler: 'index.handler',
-        runtime: lambda.Runtime.NODEJS_10_X,
+        runtime: lambda.Runtime.PYTHON_3_6,
         profilingGroup: new ProfilingGroup(stack, 'ProfilingGroup'),
       });
 
@@ -1712,7 +1713,7 @@ describe('function', () => {
       new lambda.Function(stack, 'MyLambda', {
         code: new lambda.InlineCode('foo'),
         handler: 'index.handler',
-        runtime: lambda.Runtime.NODEJS_10_X,
+        runtime: lambda.Runtime.PYTHON_3_6,
         profiling: false,
         profilingGroup: new ProfilingGroup(stack, 'ProfilingGroup'),
       });
@@ -1743,7 +1744,7 @@ describe('function', () => {
       expect(() => new lambda.Function(stack, 'MyLambda', {
         code: new lambda.InlineCode('foo'),
         handler: 'index.handler',
-        runtime: lambda.Runtime.NODEJS_10_X,
+        runtime: lambda.Runtime.PYTHON_3_6,
         profiling: true,
         environment: {
           AWS_CODEGURU_PROFILER_GROUP_ARN: 'profiler_group_arn',
@@ -1758,13 +1759,27 @@ describe('function', () => {
       expect(() => new lambda.Function(stack, 'MyLambda', {
         code: new lambda.InlineCode('foo'),
         handler: 'index.handler',
-        runtime: lambda.Runtime.NODEJS_10_X,
+        runtime: lambda.Runtime.PYTHON_3_6,
         profilingGroup: new ProfilingGroup(stack, 'ProfilingGroup'),
         environment: {
           AWS_CODEGURU_PROFILER_GROUP_ARN: 'profiler_group_arn',
           AWS_CODEGURU_PROFILER_ENABLED: 'yes',
         },
       })).toThrow(/AWS_CODEGURU_PROFILER_GROUP_ARN and AWS_CODEGURU_PROFILER_ENABLED must not be set when profiling options enabled/);
+    });
+
+    test('throws an error when used with an unsupported runtime', () => {
+      const stack = new cdk.Stack();
+      expect(() => new lambda.Function(stack, 'MyLambda', {
+        code: new lambda.InlineCode('foo'),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.NODEJS_10_X,
+        profilingGroup: new ProfilingGroup(stack, 'ProfilingGroup'),
+        environment: {
+          AWS_CODEGURU_PROFILER_GROUP_ARN: 'profiler_group_arn',
+          AWS_CODEGURU_PROFILER_ENABLED: 'yes',
+        },
+      })).toThrow(/not supported by runtime/);
     });
   });
 
@@ -1826,6 +1841,7 @@ describe('function', () => {
       const accessPoint = fs.addAccessPoint('AccessPoint');
       // WHEN
       new lambda.Function(stack, 'MyFunction', {
+        vpc,
         handler: 'foo',
         runtime: lambda.Runtime.NODEJS_12_X,
         code: lambda.Code.fromAsset(path.join(__dirname, 'handler.zip')),
@@ -1863,6 +1879,69 @@ describe('function', () => {
           },
         ],
       });
+    });
+
+    test('throw error mounting efs with no vpc', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'Vpc', {
+        maxAzs: 3,
+        natGateways: 1,
+      });
+
+      const fs = new efs.FileSystem(stack, 'Efs', {
+        vpc,
+      });
+      const accessPoint = fs.addAccessPoint('AccessPoint');
+
+      // THEN
+      expect(() => {
+        new lambda.Function(stack, 'MyFunction', {
+          handler: 'foo',
+          runtime: lambda.Runtime.NODEJS_12_X,
+          code: lambda.Code.fromAsset(path.join(__dirname, 'handler.zip')),
+          filesystem: lambda.FileSystem.fromEfsAccessPoint(accessPoint, '/mnt/msg'),
+        });
+      }).toThrow();
+    });
+
+    test('verify deps when mounting efs', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'Vpc', {
+        maxAzs: 3,
+        natGateways: 1,
+      });
+      const securityGroup = new ec2.SecurityGroup(stack, 'LambdaSG', {
+        vpc,
+        allowAllOutbound: false,
+      });
+
+      const fs = new efs.FileSystem(stack, 'Efs', {
+        vpc,
+      });
+      const accessPoint = fs.addAccessPoint('AccessPoint');
+      // WHEN
+      new lambda.Function(stack, 'MyFunction', {
+        vpc,
+        handler: 'foo',
+        securityGroups: [securityGroup],
+        runtime: lambda.Runtime.NODEJS_12_X,
+        code: lambda.Code.fromAsset(path.join(__dirname, 'handler.zip')),
+        filesystem: lambda.FileSystem.fromEfsAccessPoint(accessPoint, '/mnt/msg'),
+      });
+
+      // THEN
+      expect(stack).toHaveResource('AWS::Lambda::Function', {
+        DependsOn: [
+          'EfsEfsMountTarget195B2DD2E',
+          'EfsEfsMountTarget2315C927F',
+          'EfsEfsSecurityGroupfromLambdaSG20491B2F751D',
+          'LambdaSGtoEfsEfsSecurityGroupFCE2954020499719694A',
+          'MyFunctionServiceRoleDefaultPolicyB705ABD4',
+          'MyFunctionServiceRole3C357FF2',
+        ],
+      }, ResourcePart.CompleteDefinition);
     });
   });
 
@@ -1985,6 +2064,36 @@ describe('function', () => {
         ImageConfig: {
           Command: ['cmd', 'param1'],
           EntryPoint: ['entrypoint', 'param2'],
+        },
+      });
+    });
+  });
+
+  describe('code signing config', () => {
+    test('default', () => {
+      const stack = new cdk.Stack();
+
+      const signingProfile = new signer.SigningProfile(stack, 'SigningProfile', {
+        platform: signer.Platform.AWS_LAMBDA_SHA384_ECDSA,
+      });
+
+      const codeSigningConfig = new lambda.CodeSigningConfig(stack, 'CodeSigningConfig', {
+        signingProfiles: [signingProfile],
+      });
+
+      new lambda.Function(stack, 'MyLambda', {
+        code: new lambda.InlineCode('foo'),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.NODEJS_10_X,
+        codeSigningConfig,
+      });
+
+      expect(stack).toHaveResource('AWS::Lambda::Function', {
+        CodeSigningConfigArn: {
+          'Fn::GetAtt': [
+            'CodeSigningConfigD8D41C10',
+            'CodeSigningConfigArn',
+          ],
         },
       });
     });

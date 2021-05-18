@@ -1,5 +1,5 @@
 import * as path from 'path';
-import '@aws-cdk/assert/jest';
+import '@aws-cdk/assert-internal/jest';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import * as appsync from '../lib';
@@ -55,8 +55,7 @@ test('appsync should error when creating pipeline resolver with data source', ()
 
   // THEN
   expect(() => {
-    api.createResolver({
-      dataSource: ds,
+    ds.createResolver({
       typeName: 'test',
       fieldName: 'test2',
       pipelineConfig: [test1, test2],

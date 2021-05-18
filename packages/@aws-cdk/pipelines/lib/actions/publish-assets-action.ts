@@ -10,6 +10,7 @@ import { Construct } from 'constructs';
 // v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
 // eslint-disable-next-line
 import { Construct as CoreConstruct } from '@aws-cdk/core';
+import { toPosixPath } from '../private/fs';
 
 /**
  * Type of the asset that is being published
@@ -104,7 +105,7 @@ export class PublishAssetsAction extends CoreConstruct implements codepipeline.I
     const project = new codebuild.PipelineProject(this, 'Default', {
       projectName: this.props.projectName,
       environment: {
-        buildImage: codebuild.LinuxBuildImage.STANDARD_4_0,
+        buildImage: codebuild.LinuxBuildImage.STANDARD_5_0,
         privileged: (props.assetType === AssetType.DOCKER_IMAGE) ? true : undefined,
       },
       vpc: props.vpc,
@@ -150,7 +151,7 @@ export class PublishAssetsAction extends CoreConstruct implements codepipeline.I
    * Manifest path should be relative to the root Cloud Assembly.
    */
   public addPublishCommand(relativeManifestPath: string, assetSelector: string) {
-    const command = `cdk-assets --path "${relativeManifestPath}" --verbose publish "${assetSelector}"`;
+    const command = `cdk-assets --path "${toPosixPath(relativeManifestPath)}" --verbose publish "${assetSelector}"`;
     if (!this.commands.includes(command)) {
       this.commands.push(command);
     }
