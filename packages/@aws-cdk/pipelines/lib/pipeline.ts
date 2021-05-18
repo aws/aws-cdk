@@ -120,6 +120,22 @@ export interface CdkPipelineProps {
    * @default true
    */
   readonly selfMutating?: boolean;
+
+  /**
+   * Whether the pipeline needs to build Docker images in the UpdatePipeline stage.
+   *
+   * If the UpdatePipeline stage tries to build a Docker image and this flag is not
+   * set to `true`, the build step will run in non-privileged mode and consequently
+   * will fail with a message like:
+   *
+   * > Cannot connect to the Docker daemon at unix:///var/run/docker.sock.
+   * > Is the docker daemon running?
+   *
+   * This flag has an effect only if `selfMutating` is also `true`.
+   *
+   * @default - false
+   */
+  readonly supportDockerAssets?: boolean;
 }
 
 /**
@@ -201,6 +217,7 @@ export class CdkPipeline extends CoreConstruct {
           pipelineStackName: pipelineStack.stackName,
           cdkCliVersion: props.cdkCliVersion,
           projectName: maybeSuffix(props.pipelineName, '-selfupdate'),
+          privileged: props.supportDockerAssets,
         })],
       });
     }
