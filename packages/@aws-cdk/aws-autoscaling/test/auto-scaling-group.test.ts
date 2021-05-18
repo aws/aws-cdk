@@ -22,6 +22,12 @@ nodeunitShim({
     });
 
     expect(stack).toMatch({
+      'Parameters': {
+        'SsmParameterValueawsserviceamiamazonlinuxlatestamznamihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter': {
+          'Type': 'AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>',
+          'Default': '/aws/service/ami-amazon-linux-latest/amzn-ami-hvm-x86_64-gp2',
+        },
+      },
       'Resources': {
         'MyFleetInstanceSecurityGroup774E8234': {
           'Type': 'AWS::EC2::SecurityGroup',
@@ -83,7 +89,7 @@ nodeunitShim({
             'IamInstanceProfile': {
               'Ref': 'MyFleetInstanceProfile70A58496',
             },
-            'ImageId': '{{resolve:ssm:/aws/service/ami-amazon-linux-latest/amzn-ami-hvm-x86_64-gp2}}',
+            'ImageId': { 'Ref': 'SsmParameterValueawsserviceamiamazonlinuxlatestamznamihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter' },
             'InstanceType': 'm4.micro',
             'SecurityGroups': [
               {
@@ -1314,6 +1320,50 @@ nodeunitShim({
     test.deepEqual(Object.values(autoscaling.ScalingEvent).length - 1, autoscaling.ScalingEvents.ALL._types.length);
     test.done();
   },
+
+  'Can protect new instances from scale-in via constructor property'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = mockVpc(stack);
+
+    // WHEN
+    const asg = new autoscaling.AutoScalingGroup(stack, 'MyASG', {
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
+      machineImage: new ec2.AmazonLinuxImage(),
+      vpc,
+      newInstancesProtectedFromScaleIn: true,
+    });
+
+    // THEN
+    test.strictEqual(asg.areNewInstancesProtectedFromScaleIn(), true);
+    expect(stack).to(haveResourceLike('AWS::AutoScaling::AutoScalingGroup', {
+      NewInstancesProtectedFromScaleIn: true,
+    }));
+
+    test.done();
+  },
+
+  'Can protect new instances from scale-in via setter'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = mockVpc(stack);
+
+    // WHEN
+    const asg = new autoscaling.AutoScalingGroup(stack, 'MyASG', {
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
+      machineImage: new ec2.AmazonLinuxImage(),
+      vpc,
+    });
+    asg.protectNewInstancesFromScaleIn();
+
+    // THEN
+    test.strictEqual(asg.areNewInstancesProtectedFromScaleIn(), true);
+    expect(stack).to(haveResourceLike('AWS::AutoScaling::AutoScalingGroup', {
+      NewInstancesProtectedFromScaleIn: true,
+    }));
+
+    test.done();
+  },
 });
 
 function mockVpc(stack: cdk.Stack) {
@@ -1342,25 +1392,6 @@ test('Can set autoScalingGroupName', () => {
   // THEN
   expect(stack).to(haveResourceLike('AWS::AutoScaling::AutoScalingGroup', {
     AutoScalingGroupName: 'MyAsg',
-  }));
-});
-
-test('Can protect new instances from scale-in', () => {
-  // GIVEN
-  const stack = new cdk.Stack();
-  const vpc = mockVpc(stack);
-
-  // WHEN
-  new autoscaling.AutoScalingGroup(stack, 'MyASG', {
-    instanceType: ec2.InstanceType.of(ec2.InstanceClass.M4, ec2.InstanceSize.MICRO),
-    machineImage: new ec2.AmazonLinuxImage(),
-    vpc,
-    newInstancesProtectedFromScaleIn: true,
-  });
-
-  // THEN
-  expect(stack).to(haveResourceLike('AWS::AutoScaling::AutoScalingGroup', {
-    NewInstancesProtectedFromScaleIn: true,
   }));
 });
 
