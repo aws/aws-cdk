@@ -183,7 +183,7 @@ def create_metadata_args(raw_user_metadata, raw_system_metadata):
 #---------------------------------------------------------------------------------------------------
 # executes an "aws" cli command
 def aws_command(*args):
-    aws="/opt/awscli/aws" # from AwsCliV2Layer
+    aws="/opt/awscli/aws" # from AwsCliLayer
     logger.info("| aws %s" % ' '.join(args))
     subprocess.check_call([aws] + list(args))
 
