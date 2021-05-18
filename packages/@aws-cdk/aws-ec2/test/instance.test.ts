@@ -26,11 +26,11 @@ nodeunitShim({
       instanceClass: InstanceClass.BURSTABLE4_GRAVITON,
       instanceSize: InstanceSize.LARGE,
       instanceType: 't4g.large',
-    },{
+    }, {
       instanceClass: InstanceClass.HIGH_COMPUTE_MEMORY1,
       instanceSize: InstanceSize.XLARGE3,
       instanceType: 'z1d.3xlarge',
-    }]
+    }];
 
     for (const sampleInstance of sampleInstances) {
       // WHEN
