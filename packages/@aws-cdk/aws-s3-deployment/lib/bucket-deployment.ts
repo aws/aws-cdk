@@ -5,7 +5,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
-import { AwsCliLayer } from '@aws-cdk/lambda-layer-awscli';
+import { AwsCliV2Layer } from '@aws-cdk/lambda-layer-awscli';
 import { Construct } from 'constructs';
 import { ISource, SourceConfig } from './source';
 
@@ -196,7 +196,7 @@ export class BucketDeployment extends CoreConstruct {
     const handler = new lambda.SingletonFunction(this, 'CustomResourceHandler', {
       uuid: this.renderSingletonUuid(props.memoryLimit),
       code: lambda.Code.fromAsset(path.join(__dirname, 'lambda')),
-      layers: [new AwsCliLayer(this, 'AwsCliLayer')],
+      layers: [new AwsCliV2Layer(this, 'AwsCliV2Layer')],
       runtime: lambda.Runtime.PYTHON_3_6,
       handler: 'index.handler',
       lambdaPurpose: 'Custom::CDKBucketDeployment',
