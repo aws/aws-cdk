@@ -1,3 +1,4 @@
+import { EOL } from 'os';
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
 import { IResource, Lazy, RemovalPolicy, Resource, Stack, Token } from '@aws-cdk/core';
@@ -440,6 +441,31 @@ export class Repository extends RepositoryBase {
     });
   }
 
+
+  private static validateRepositoryName(physicalName: string) {
+    const repositoryName = physicalName;
+    if (!repositoryName || Token.isUnresolved(repositoryName)) {
+      // the name is a late-bound value, not a defined string,
+      // so skip validation
+      return;
+    }
+
+    const errors: string[] = [];
+
+    // Rules codified from https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ecr-repository.html
+    if (repositoryName.length < 2 || repositoryName.length > 256) {
+      errors.push('Repository name must be at least 2 and no more than 256 characters');
+    }
+    const isPatternMatch = /^(?:[a-z0-9]+(?:[._-][a-z0-9]+)*\/)*[a-z0-9]+(?:[._-][a-z0-9]+)*$/.test(repositoryName);
+    if (!isPatternMatch) {
+      errors.push('Repository name must follow the specified pattern: (?:[a-z0-9]+(?:[._-][a-z0-9]+)*/)*[a-z0-9]+(?:[._-][a-z0-9]+)*');
+    }
+
+    if (errors.length > 0) {
+      throw new Error(`Invalid ECR repository name (value: ${repositoryName})${EOL}${errors.join(EOL)}`);
+    }
+  }
+
   public readonly repositoryName: string;
   public readonly repositoryArn: string;
   private readonly lifecycleRules = new Array<LifecycleRule>();
@@ -450,6 +476,8 @@ export class Repository extends RepositoryBase {
     super(scope, id, {
       physicalName: props.repositoryName,
     });
+
+    Repository.validateRepositoryName(this.physicalName);
 
     const resource = new CfnRepository(this, 'Resource', {
       repositoryName: this.physicalName,
