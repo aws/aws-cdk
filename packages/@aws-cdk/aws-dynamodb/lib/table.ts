@@ -224,6 +224,13 @@ export interface TableOptions {
    * @default Duration.minutes(30)
    */
   readonly replicationTimeout?: Duration;
+
+  /**
+   * Whether CloudWatch contributor insights is enabled.
+   *
+   * @default - contributor-insights is disabled
+   */
+  readonly contributorInsights?: boolean;
 }
 
 /**
@@ -1114,6 +1121,7 @@ export class Table extends TableBase {
       sseSpecification,
       streamSpecification,
       timeToLiveSpecification: props.timeToLiveAttribute ? { attributeName: props.timeToLiveAttribute, enabled: true } : undefined,
+      contributorInsightsSpecification: props.contributorInsights ? { enabled: props.contributorInsights } : undefined,
     });
     this.table.applyRemovalPolicy(props.removalPolicy);
 

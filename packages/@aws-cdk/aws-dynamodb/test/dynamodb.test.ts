@@ -159,6 +159,50 @@ describe('default properties', () => {
     );
   });
 
+  test('contributor insights is not enabled', () => {
+    new Table(stack, CONSTRUCT_NAME, {
+      partitionKey: TABLE_PARTITION_KEY,
+      sortKey: TABLE_SORT_KEY,
+    });
+
+    expect(stack).toHaveResource('AWS::DynamoDB::Table',
+      {
+        AttributeDefinitions: [
+          { AttributeName: 'hashKey', AttributeType: 'S' },
+          { AttributeName: 'sortKey', AttributeType: 'N' },
+        ],
+        KeySchema: [
+          { AttributeName: 'hashKey', KeyType: 'HASH' },
+          { AttributeName: 'sortKey', KeyType: 'RANGE' },
+        ],
+        ProvisionedThroughput: { ReadCapacityUnits: 5, WriteCapacityUnits: 5 },
+      },
+    );
+  });
+
+  test('contributor insights is enabled', () => {
+    new Table(stack, CONSTRUCT_NAME, {
+      partitionKey: TABLE_PARTITION_KEY,
+      sortKey: TABLE_SORT_KEY,
+      contributorInsights: true,
+    });
+
+    expect(stack).toHaveResource('AWS::DynamoDB::Table',
+      {
+        AttributeDefinitions: [
+          { AttributeName: 'hashKey', AttributeType: 'S' },
+          { AttributeName: 'sortKey', AttributeType: 'N' },
+        ],
+        KeySchema: [
+          { AttributeName: 'hashKey', KeyType: 'HASH' },
+          { AttributeName: 'sortKey', KeyType: 'RANGE' },
+        ],
+        ProvisionedThroughput: { ReadCapacityUnits: 5, WriteCapacityUnits: 5 },
+        ContributorInsightsSpecification: { Enabled: true },
+      },
+    );
+  });
+
   test('server-side encryption is not enabled', () => {
     new Table(stack, CONSTRUCT_NAME, {
       partitionKey: TABLE_PARTITION_KEY,
@@ -330,6 +374,7 @@ test('when specifying every property', () => {
     timeToLiveAttribute: 'timeToLive',
     partitionKey: TABLE_PARTITION_KEY,
     sortKey: TABLE_SORT_KEY,
+    contributorInsights: true,
   });
   Tags.of(table).add('Environment', 'Production');
 
@@ -353,6 +398,7 @@ test('when specifying every property', () => {
       TableName: 'MyTable',
       Tags: [{ Key: 'Environment', Value: 'Production' }],
       TimeToLiveSpecification: { AttributeName: 'timeToLive', Enabled: true },
+      ContributorInsightsSpecification: { Enabled: true },
     },
   );
 });
