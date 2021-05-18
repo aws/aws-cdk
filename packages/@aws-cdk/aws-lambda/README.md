@@ -112,7 +112,33 @@ const fn = new lambda.Function(this, 'MyFunction', {
 
 myRole.addManagedPolicy(ManagedPolicy.fromAwsManagedPolicyName("service-role/AWSLambdaBasicExecutionRole"));
 myRole.addManagedPolicy(ManagedPolicy.fromAwsManagedPolicyName("service-role/AWSLambdaVPCAccessExecutionRole")); // only required if your function lives in a VPC
+## Resource-based Policies
+
+AWS Lambda supports resource-based policies for controlling access to Lambda
+functions and layers on a per-resource basis. In particular, this allows you to give permission to AWS services and other AWS accounts to modify and invoke your resources. You can also restrict permissions given to AWS services by providing a source account or ARN (representing the account and identifier of the resource that accesses the function or layer).
+
+```ts
+import * as iam from '@aws-cdk/aws-iam';
+const principal = new iam.ServicePrincipal('my-service');
+fn.grantInvoke(principal);
+
+// Equivalent to:
+fn.addPermission('my-service Invocation', {
+  principal: principal,
+});
 ```
+
+For more information, see
+[Resource-based
+policies](https://docs.aws.amazon.com/lambda/latest/dg/access-control-resource-based.html)
+in the AWS Lambda Developer Guide.
+
+Providing an unowned principal (such as account principals, generic ARN
+principals, service principals, and principals in other accounts) to a call to
+`fn.grantInvoke` will result in a resource-based policy being created. If
+the principal in question has conditions limiting the source account or ARN of
+the operation (see above), these conditions will be automatically added to the
+resource policy.
 
 ## Versions and Aliases
 
