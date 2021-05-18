@@ -443,6 +443,29 @@ export abstract class BaseService extends Resource
           ],
           resources: [`${this.cluster.executeCommandConfiguration.kmsKey.keyArn}`],
         }));
+
+        this.cluster.executeCommandConfiguration.kmsKey.addToResourcePolicy(new iam.PolicyStatement({
+          actions: [
+            'kms:*',
+          ],
+          resources: ['*'],
+          principals: [new iam.ArnPrincipal(`arn:aws:iam::${this.stack.account}:root`)],
+        }));
+
+        this.cluster.executeCommandConfiguration.kmsKey.addToResourcePolicy(new iam.PolicyStatement({
+          actions: [
+            'kms:Encrypt*',
+            'kms:Decrypt*',
+            'kms:ReEncrypt*',
+            'kms:GenerateDataKey*',
+            'kms:Describe*',
+          ],
+          resources: ['*'],
+          principals: [new iam.ServicePrincipal(`logs.${this.stack.region}.amazonaws.com`)],
+          conditions: {
+            ArnLike: { 'kms:EncryptionContext:aws:logs:arn': `arn:aws:logs:${this.stack.region}:${this.stack.account}:*` },
+          },
+        }));
       }
     }
     this.node.defaultChild = this.resource;
@@ -467,7 +490,7 @@ export abstract class BaseService extends Resource
     this.taskDefinition.addToTaskRolePolicy(new iam.PolicyStatement({
       actions: [
         'logs:CreateLogStream',
-        'logs:DescribeLogStream',
+        'logs:DescribeLogStreams',
         'logs:PutLogEvents',
       ],
       resources: [logGroupArn],
