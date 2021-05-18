@@ -165,10 +165,10 @@ export class Bundling implements cdk.BundlingOptions {
       ...this.props.logLevel ? [`--log-level=${this.props.logLevel}`] : [],
       ...this.props.keepNames ? ['--keep-names'] : [],
       ...this.relativeTsconfigPath ? [`--tsconfig=${pathJoin(options.inputDir, this.relativeTsconfigPath)}`] : [],
-      ...this.props.metafile ? [`--metafile=${pathJoin(options.outputDir, 'index.meta.json')}`] : [],
-      ...this.props.banner ? [`--banner='${this.props.banner}'`] : [],
-      ...this.props.footer ? [`--footer='${this.props.footer}'`] : [],
-    ];
+      ...this.props.metafile ? [`--metafile=${pathJoin(outputDir, 'index.meta.json')}`] : [],
+      ...this.props.banner ? [`--banner:js=${JSON.stringify(this.props.banner)}`] : [],
+      ...this.props.footer ? [`--footer:js=${JSON.stringify(this.props.footer)}`] : [],
+    ].join(' ');
 
     let depsCommand = '';
     if (this.props.nodeModules) {
@@ -186,7 +186,8 @@ export class Bundling implements cdk.BundlingOptions {
       // Create dummy package.json, copy lock file if any and then install
       depsCommand = chain([
         osCommand.writeJson(pathJoin(options.outputDir, 'package.json'), { dependencies }),
-        osCommand.copy(pathJoin(options.inputDir, this.packageManager.lockFile), pathJoin(options.outputDir, this.packageManager.lockFile)),
+        osCommand.copy(pathJoin(options.
+, this.packageManager.lockFile), pathJoin(options.outputDir, this.packageManager.lockFile)),
         osCommand.changeDirectory(options.outputDir),
         this.packageManager.installCommand.join(' '),
       ]);
