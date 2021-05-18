@@ -1,4 +1,4 @@
-import { countResources, expect as cdkExpect, haveResource, haveResourceLike, isSuperObject, MatchStyle, SynthUtils } from '@aws-cdk/assert';
+import { countResources, expect as cdkExpect, haveResource, haveResourceLike, isSuperObject, MatchStyle, SynthUtils } from '@aws-cdk/assert-internal';
 import { CfnOutput, CfnResource, Fn, Lazy, Stack, Tags } from '@aws-cdk/core';
 import { nodeunitShim, Test } from 'nodeunit-shim';
 import {
@@ -855,6 +855,24 @@ nodeunitShim({
 
       test.done();
     },
+
+    'NAT gateway provider with EIP allocations'(test: Test) {
+      const stack = new Stack();
+      const natGatewayProvider = NatProvider.gateway({
+        eipAllocationIds: ['a', 'b', 'c', 'd'],
+      });
+      new Vpc(stack, 'VpcNetwork', { natGatewayProvider });
+
+      cdkExpect(stack).to(haveResource('AWS::EC2::NatGateway', {
+        AllocationId: 'a',
+      }));
+      cdkExpect(stack).to(haveResource('AWS::EC2::NatGateway', {
+        AllocationId: 'b',
+      }));
+
+      test.done();
+    },
+
     'Can add an IPv6 route'(test: Test) {
       // GIVEN
       const stack = getTestStack();

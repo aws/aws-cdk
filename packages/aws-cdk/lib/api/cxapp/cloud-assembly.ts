@@ -1,7 +1,9 @@
 import * as cxapi from '@aws-cdk/cx-api';
 import * as colors from 'colors/safe';
 import * as minimatch from 'minimatch';
+import * as semver from 'semver';
 import { error, print, warning } from '../../logging';
+import { versionNumber } from '../../version';
 
 export enum DefaultSelection {
   /**
@@ -16,7 +18,13 @@ export enum DefaultSelection {
   OnlySingle = 'single',
 
   /**
-   * If no selectors are provided, returns all stacks in the app.
+   * Returns all stacks in the main (top level) assembly only.
+   */
+  MainAssembly = 'main',
+
+  /**
+   * If no selectors are provided, returns all stacks in the app,
+   * including stacks inside nested assemblies.
    */
   AllStacks = 'all',
 }
@@ -71,20 +79,24 @@ export class CloudAssembly {
     selectors = selectors.filter(s => s != null); // filter null/undefined
     selectors = [...new Set(selectors)]; // make them unique
 
-    const stacks = this.assembly.stacks;
+    const asm = this.assembly;
+    const stacks = semver.major(asm.version) < 10 ? asm.stacks : asm.stacksRecursively;
     if (stacks.length === 0) {
       throw new Error('This app contains no stacks');
     }
 
     if (selectors.length === 0) {
+      const topLevelStacks = this.assembly.stacks;
       switch (options.defaultBehavior) {
+        case DefaultSelection.MainAssembly:
+          return new StackCollection(this, topLevelStacks);
         case DefaultSelection.AllStacks:
           return new StackCollection(this, stacks);
         case DefaultSelection.None:
           return new StackCollection(this, []);
         case DefaultSelection.OnlySingle:
-          if (stacks.length === 1) {
-            return new StackCollection(this, stacks);
+          if (topLevelStacks.length === 1) {
+            return new StackCollection(this, topLevelStacks);
           } else {
             throw new Error('Since this app includes more than a single stack, specify which stacks to use (wildcards are supported) or specify `--all`\n' +
               `Stacks: ${stacks.map(x => x.id).join(' ')}`);
@@ -96,7 +108,7 @@ export class CloudAssembly {
 
     const allStacks = new Map<string, cxapi.CloudFormationStackArtifact>();
     for (const stack of stacks) {
-      allStacks.set(stack.id, stack);
+      allStacks.set(stack.hierarchicalId, stack);
     }
 
     // For every selector argument, pick stacks from the list.
@@ -105,8 +117,14 @@ export class CloudAssembly {
       let found = false;
 
       for (const stack of stacks) {
-        if (minimatch(stack.id, pattern) && !selectedStacks.has(stack.id)) {
-          selectedStacks.set(stack.id, stack);
+        const hierarchicalId = stack.hierarchicalId;
+        if (minimatch(hierarchicalId, pattern) && !selectedStacks.has(hierarchicalId)) {
+          selectedStacks.set(hierarchicalId, stack);
+          found = true;
+        } else if (minimatch(stack.id, pattern) && !selectedStacks.has(hierarchicalId) && semver.major(versionNumber()) < 2) {
+          warning('Selecting stack by identifier "%s". This identifier is deprecated and will be removed in v2. Please use "%s" instead.', colors.bold(stack.id), colors.bold(stack.hierarchicalId));
+          warning('Run "cdk ls" to see a list of all stack identifiers');
+          selectedStacks.set(hierarchicalId, stack);
           found = true;
         }
       }
@@ -127,7 +145,7 @@ export class CloudAssembly {
     }
 
     // Filter original array because it is in the right order
-    const selectedList = stacks.filter(s => selectedStacks.has(s.id));
+    const selectedList = stacks.filter(s => selectedStacks.has(s.hierarchicalId));
 
     return new StackCollection(this, selectedList);
   }
@@ -170,6 +188,14 @@ export class StackCollection {
     const arts = [...this.stackArtifacts];
     arts.reverse();
     return new StackCollection(this.assembly, arts);
+  }
+
+  public filter(predicate: (art: cxapi.CloudFormationStackArtifact) => boolean): StackCollection {
+    return new StackCollection(this.assembly, this.stackArtifacts.filter(predicate));
+  }
+
+  public concat(other: StackCollection): StackCollection {
+    return new StackCollection(this.assembly, this.stackArtifacts.concat(other.stackArtifacts));
   }
 
   /**
@@ -282,7 +308,7 @@ function includeUpstreamStacks(
 
     for (const stack of selectedStacks.values()) {
       // Select an additional stack if it's not selected yet and a dependency of a selected stack (and exists, obviously)
-      for (const dependencyId of stack.dependencies.map(x => x.id)) {
+      for (const dependencyId of stack.dependencies.map(x => x.manifest.displayName ?? x.id)) {
         if (!selectedStacks.has(dependencyId) && allStacks.has(dependencyId)) {
           added.push(dependencyId);
           selectedStacks.set(dependencyId, allStacks.get(dependencyId)!);

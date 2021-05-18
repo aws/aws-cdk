@@ -1,4 +1,4 @@
-import { expect, haveResourceLike } from '@aws-cdk/assert';
+import { expect, haveResourceLike } from '@aws-cdk/assert-internal';
 import * as acmpca from '@aws-cdk/aws-acmpca';
 import * as acm from '@aws-cdk/aws-certificatemanager';
 import * as cdk from '@aws-cdk/core';
@@ -163,7 +163,7 @@ export = {
           serviceDiscovery: appmesh.ServiceDiscovery.dns('test'),
           listeners: [appmesh.VirtualNodeListener.http2({
             port: 80,
-            healthCheck: {},
+            healthCheck: appmesh.HealthCheck.http2(),
             timeout: { idle: cdk.Duration.seconds(10) },
           })],
         });
@@ -219,7 +219,9 @@ export = {
 
         node.addListener(appmesh.VirtualNodeListener.tcp({
           port: 80,
-          healthCheck: { timeout: cdk.Duration.seconds(3) },
+          healthCheck: appmesh.HealthCheck.tcp({
+            timeout: cdk.Duration.seconds(3),
+          }),
           timeout: { idle: cdk.Duration.seconds(10) },
         }));
 
@@ -247,6 +249,61 @@ export = {
                       Value: 10000,
                     },
                   },
+                },
+              },
+            ],
+          },
+        }));
+
+        test.done();
+      },
+    },
+
+    'when a listener is added with outlier detection with user defined props': {
+      'should add a listener  outlier detection to the resource'(test: Test) {
+        // GIVEN
+        const stack = new cdk.Stack();
+
+        // WHEN
+        const mesh = new appmesh.Mesh(stack, 'mesh', {
+          meshName: 'test-mesh',
+        });
+
+        const node = new appmesh.VirtualNode(stack, 'test-node', {
+          mesh,
+          serviceDiscovery: appmesh.ServiceDiscovery.dns('test'),
+        });
+
+        node.addListener(appmesh.VirtualNodeListener.tcp({
+          port: 80,
+          outlierDetection: {
+            baseEjectionDuration: cdk.Duration.seconds(10),
+            interval: cdk.Duration.seconds(30),
+            maxEjectionPercent: 50,
+            maxServerErrors: 5,
+          },
+        }));
+
+        // THEN
+        expect(stack).to(haveResourceLike('AWS::AppMesh::VirtualNode', {
+          Spec: {
+            Listeners: [
+              {
+                OutlierDetection: {
+                  BaseEjectionDuration: {
+                    Unit: 'ms',
+                    Value: 10000,
+                  },
+                  Interval: {
+                    Unit: 'ms',
+                    Value: 30000,
+                  },
+                  MaxEjectionPercent: 50,
+                  MaxServerErrors: 5,
+                },
+                PortMapping: {
+                  Port: 80,
+                  Protocol: 'tcp',
                 },
               },
             ],
@@ -501,6 +558,164 @@ export = {
 
         test.done();
       },
+    },
+
+    'Can add an http connection pool to listener'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      // WHEN
+      const mesh = new appmesh.Mesh(stack, 'mesh', {
+        meshName: 'test-mesh',
+      });
+
+      new appmesh.VirtualNode(stack, 'test-node', {
+        mesh,
+        listeners: [
+          appmesh.VirtualNodeListener.http({
+            port: 80,
+            connectionPool: {
+              maxConnections: 100,
+              maxPendingRequests: 10,
+            },
+          }),
+        ],
+      });
+
+      // THEN
+      expect(stack).to(haveResourceLike('AWS::AppMesh::VirtualNode', {
+        Spec: {
+          Listeners: [
+            {
+              ConnectionPool: {
+                HTTP: {
+                  MaxConnections: 100,
+                  MaxPendingRequests: 10,
+                },
+              },
+            },
+          ],
+        },
+      }));
+
+      test.done();
+    },
+
+    'Can add an tcp connection pool to listener'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      // WHEN
+      const mesh = new appmesh.Mesh(stack, 'mesh', {
+        meshName: 'test-mesh',
+      });
+
+      new appmesh.VirtualNode(stack, 'test-node', {
+        mesh,
+        listeners: [
+          appmesh.VirtualNodeListener.tcp({
+            port: 80,
+            connectionPool: {
+              maxConnections: 100,
+            },
+          }),
+        ],
+      });
+
+      // THEN
+      expect(stack).to(haveResourceLike('AWS::AppMesh::VirtualNode', {
+        Spec: {
+          Listeners: [
+            {
+              ConnectionPool: {
+                TCP: {
+                  MaxConnections: 100,
+                },
+              },
+            },
+          ],
+        },
+      }));
+
+      test.done();
+    },
+
+    'Can add an grpc connection pool to listener'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      // WHEN
+      const mesh = new appmesh.Mesh(stack, 'mesh', {
+        meshName: 'test-mesh',
+      });
+
+      new appmesh.VirtualNode(stack, 'test-node', {
+        mesh,
+        listeners: [
+          appmesh.VirtualNodeListener.grpc({
+            port: 80,
+            connectionPool: {
+              maxRequests: 10,
+            },
+          }),
+        ],
+      });
+
+      // THEN
+      expect(stack).to(haveResourceLike('AWS::AppMesh::VirtualNode', {
+        Spec: {
+          Listeners: [
+            {
+              ConnectionPool: {
+                GRPC: {
+                  MaxRequests: 10,
+                },
+              },
+            },
+          ],
+        },
+      }));
+
+      test.done();
+    },
+
+    'Can add an http2 connection pool to listener'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      // WHEN
+      const mesh = new appmesh.Mesh(stack, 'mesh', {
+        meshName: 'test-mesh',
+      });
+
+      new appmesh.VirtualNode(stack, 'test-node', {
+        mesh,
+        listeners: [
+          appmesh.VirtualNodeListener.http2({
+            port: 80,
+            connectionPool: {
+              maxRequests: 10,
+            },
+          }),
+        ],
+      });
+
+      // THEN
+      expect(stack).to(haveResourceLike('AWS::AppMesh::VirtualNode', {
+        Spec: {
+          Listeners: [
+            {
+              ConnectionPool: {
+                HTTP2: {
+                  MaxRequests: 10,
+                },
+              },
+            },
+          ],
+        },
+      }));
+
+      test.done();
     },
   },
 
