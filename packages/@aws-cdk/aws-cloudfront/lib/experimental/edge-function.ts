@@ -5,7 +5,8 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as ssm from '@aws-cdk/aws-ssm';
 import {
-  CfnResource, CustomResource, CustomResourceProvider, CustomResourceProviderRuntime,
+  CfnResource,
+  CustomResource, CustomResourceProvider, CustomResourceProviderRuntime,
   Lazy, Resource, Stack, Stage, Token,
 } from '@aws-cdk/core';
 
