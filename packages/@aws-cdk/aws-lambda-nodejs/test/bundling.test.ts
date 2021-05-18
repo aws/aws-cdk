@@ -199,7 +199,7 @@ test('esbuild bundling with esbuild options', () => {
           '--minify --sourcemap --external:aws-sdk --loader:.png=dataurl',
           defineInstructions,
           '--log-level=silent --keep-names --tsconfig=/asset-input/lib/custom-tsconfig.ts',
-          '--metafile=/asset-output/index.meta.json --banner=\'/* comments */\' --footer=\'/* comments */\'',
+          '--metafile=/asset-output/index.meta.json --banner:js="/* comments */" --footer:js="/* comments */"',
         ].join(' '),
       ],
     }),
