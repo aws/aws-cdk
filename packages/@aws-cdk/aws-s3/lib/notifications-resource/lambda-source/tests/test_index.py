@@ -792,6 +792,122 @@ class ScenarioTest(unittest.TestCase):
         index.handler(event, MockContext())
         assert_notify_cfn_of_success(self, mock_call)
 
+    @patch("urllib.request.urlopen")
+    def test_update_should_fail(self, mock_call: MagicMock):
+        # Scenario: Adding a notification that matches the original existing imported notification should fail.
+        # Source: https://github.com/aws/aws-cdk/pull/11773#discussion_r633691212
+        from src import index
+
+        # 0. Create a bucket with 1 notification
+        # 1. Import that bucket in a different stack.
+        s3 = boto3.client("s3")
+        stubber = stub.Stubber(s3)
+        original_config = {"Events": [S3_CREATED_PUT], "QueueArn": "created-elsewhere-arn"}
+        stubber.add_response(
+            "get_bucket_notification_configuration",
+            {"QueueConfigurations": [original_config]},
+            {"Bucket": BUCKET_NAME},
+        )
+
+        # 2. Add a new notification.
+        add_to_config = {"Events": [S3_CREATED], "QueueArn": "add-to-queue-arn"}
+        event = make_event(
+            request_type="Create",
+            notification_configuration={"QueueConfigurations": [add_to_config]},
+        )
+        updated_config = [original_config, add_to_config]
+        stubber.add_response(
+            "put_bucket_notification_configuration",
+            {},
+            {
+                "Bucket": BUCKET_NAME,
+                "NotificationConfiguration": {
+                    "LambdaFunctionConfigurations": [],
+                    "QueueConfigurations": updated_config,
+                    "TopicConfigurations": [],
+                },
+            },
+        )
+        stubber.activate()
+
+        # 3. Deploy
+        index.s3 = s3
+        index.handler(event, MockContext())
+        assert_notify_cfn_of_success(self, mock_call)
+        stubber.deactivate()
+        mock_call.reset_mock()
+
+        # 4. Add a notification that matches the original existing notification.
+        matches_original_config = {"Events": [S3_CREATED_PUT], "QueueArn": "created-elsewhere-arn"}
+        event = make_event(
+            request_type="Update",
+            notification_configuration={"QueueConfigurations": [add_to_config, matches_original_config]},
+            old_notification_configuration={"QueueConfigurations": [add_to_config]},
+        )
+        s3 = boto3.client("s3")
+        stubber = stub.Stubber(s3)
+        stubber.add_response(
+            "get_bucket_notification_configuration",
+            {"QueueConfigurations": updated_config},
+            {"Bucket": BUCKET_NAME},
+        )
+        stubber.add_client_error(
+            "put_bucket_notification_configuration",
+            "error_code",
+            "Update should fail due to a duplicate configuration",
+            503,
+            {},
+            {
+                "Bucket": BUCKET_NAME,
+                "NotificationConfiguration": {
+                    "LambdaFunctionConfigurations": [],
+                    "QueueConfigurations": [original_config, add_to_config, matches_original_config],
+                    "TopicConfigurations": [],
+                },
+            },
+            {},
+        )
+        stubber.activate()
+        index.s3 = s3
+
+        # 5. Deploy - this should fail
+        index.handler(event, MockContext())
+        assert_notify_cfn_of_failure(self, mock_call)
+        stubber.deactivate()
+        mock_call.reset_mock()
+
+        # 6. Destroy - one should remain.
+        event = make_event(
+            request_type="Delete",
+            notification_configuration={"QueueConfigurations": [add_to_config]},
+        )
+        s3 = boto3.client("s3")
+        stubber = stub.Stubber(s3)
+        stubber.add_response(
+            "get_bucket_notification_configuration",
+            {"QueueConfigurations": updated_config},
+            {"Bucket": BUCKET_NAME},
+        )
+        stubber.add_response(
+            "put_bucket_notification_configuration",
+            {},
+            {
+                "Bucket": BUCKET_NAME,
+                "NotificationConfiguration": {
+                    "LambdaFunctionConfigurations": [],
+                    "QueueConfigurations": [original_config],
+                    "TopicConfigurations": [],
+                },
+            },
+        )
+        stubber.activate()
+        index.cf = setup_cfn_stubbed_client("DELETE_IN_PROGRESS")
+        index.s3 = s3
+        index.handler(event, MockContext())
+        assert_notify_cfn_of_success(self, mock_call)
+        stubber.deactivate()
+        mock_call.reset_mock()
+
 
 if __name__ == "__main__":
     unittest.main()

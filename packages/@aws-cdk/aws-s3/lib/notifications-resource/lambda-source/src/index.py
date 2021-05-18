@@ -54,7 +54,7 @@ def get_config(current_config: dict, new_config: dict, old_config: dict, request
             config[config_type] = configs
         elif request_type == "Update":
             configs = find_difference(configs, old_config.get(config_type, []), target)
-            configs.extend(find_difference(in_configs, configs, target))
+            configs.extend(in_configs)
             config[config_type] = configs
         elif request_type == "Delete":
             config[config_type] = find_difference(configs, in_configs, target)
