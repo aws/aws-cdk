@@ -363,7 +363,7 @@ test('generates CodeBuild project in privileged mode', () => {
   // WHEN
   const stack = new Stack(app, 'PrivilegedPipelineStack', { env: PIPELINE_ENV });
   new TestGitHubNpmPipeline(stack, 'PrivilegedPipeline', {
-    privilegedMode: true,
+    supportDockerAssets: true,
   });
 
   // THEN
