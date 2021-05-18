@@ -1,4 +1,4 @@
-import '@aws-cdk/assert/jest';
+import '@aws-cdk/assert-internal/jest';
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as sns from '@aws-cdk/aws-sns';
 import { Stack } from '@aws-cdk/core';

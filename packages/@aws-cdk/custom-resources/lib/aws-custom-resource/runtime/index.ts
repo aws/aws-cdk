@@ -1,5 +1,11 @@
 /* eslint-disable no-console */
 import { execSync } from 'child_process';
+// import the AWSLambda package explicitly,
+// which is globally available in the Lambda runtime,
+// as otherwise linking this repository with link-all.sh
+// fails in the CDK app executed with ts-node
+/* eslint-disable-next-line import/no-extraneous-dependencies,import/no-unresolved */
+import * as AWSLambda from 'aws-lambda';
 import { AwsSdkCall } from '../aws-custom-resource';
 
 /**
@@ -115,6 +121,22 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
     const call: AwsSdkCall | undefined = event.ResourceProperties[event.RequestType];
 
     if (call) {
+
+      if (call.assumedRoleArn) {
+
+        const timestamp = (new Date()).getTime();
+
+        const params = {
+          RoleArn: call.assumedRoleArn,
+          RoleSessionName: `${physicalResourceId}-${timestamp}`,
+        };
+
+        AWS.config.credentials = new AWS.ChainableTemporaryCredentials({
+          params: params,
+        });
+
+      }
+
       const awsService = new (AWS as any)[call.service]({
         apiVersion: call.apiVersion,
         region: call.region,

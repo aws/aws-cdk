@@ -1,4 +1,5 @@
-import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert';
+import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert-internal';
+import * as autoscaling from '@aws-cdk/aws-autoscaling';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as elb from '@aws-cdk/aws-elasticloadbalancing';
 import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
@@ -24,7 +25,7 @@ nodeunitShim({
         memoryLimitMiB: 512,
       });
 
-      new ecs.Ec2Service(stack, 'Ec2Service', {
+      const service = new ecs.Ec2Service(stack, 'Ec2Service', {
         cluster,
         taskDefinition,
       });
@@ -45,6 +46,8 @@ nodeunitShim({
         SchedulingStrategy: 'REPLICA',
         EnableECSManagedTags: false,
       }));
+
+      test.notEqual(service.node.defaultChild, undefined);
 
       test.done();
     },
@@ -233,6 +236,58 @@ nodeunitShim({
         ],
       }));
 
+      test.done();
+    },
+
+    'with autoscaling group capacity provider'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'Vpc');
+      const cluster = new ecs.Cluster(stack, 'EcsCluster');
+
+      const autoScalingGroup = new autoscaling.AutoScalingGroup(stack, 'asg', {
+        vpc,
+        instanceType: new ec2.InstanceType('bogus'),
+        machineImage: ecs.EcsOptimizedImage.amazonLinux2(),
+      });
+
+      // WHEN
+      const capacityProvider = new ecs.AsgCapacityProvider(stack, 'provider', {
+        autoScalingGroup,
+        enableManagedTerminationProtection: false,
+      });
+      cluster.addAsgCapacityProvider(capacityProvider);
+
+      const taskDefinition = new ecs.TaskDefinition(stack, 'ServerTask', {
+        compatibility: ecs.Compatibility.EC2,
+      });
+      taskDefinition.addContainer('app', {
+        image: new ecs.RepositoryImage('bogus'),
+        cpu: 1024,
+        memoryReservationMiB: 900,
+        portMappings: [{
+          containerPort: 80,
+        }],
+      });
+      new ecs.Ec2Service(stack, 'Service', {
+        cluster,
+        taskDefinition,
+        desiredCount: 0,
+        capacityProviderStrategies: [{
+          capacityProvider: capacityProvider.capacityProviderName,
+        }],
+      });
+
+      // THEN
+      expect(stack).to(haveResource('AWS::ECS::Service', {
+        CapacityProviderStrategy: [
+          {
+            CapacityProvider: {
+              Ref: 'providerD3FF4D3A',
+            },
+          },
+        ],
+      }));
       test.done();
     },
 

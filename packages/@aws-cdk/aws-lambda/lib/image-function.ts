@@ -25,7 +25,6 @@ export abstract class DockerImageCode {
    * Use an existing ECR image as the Lambda code.
    * @param repository the ECR repository that the image is in
    * @param props properties to further configure the selected image
-   * @experimental
    */
   public static fromEcr(repository: ecr.IRepository, props?: EcrImageCodeProps): DockerImageCode {
     return {
@@ -39,7 +38,6 @@ export abstract class DockerImageCode {
    * Create an ECR image from the specified asset and bind it as the Lambda code.
    * @param directory the directory from which the asset must be created
    * @param props properties to further configure the selected image
-   * @experimental
    */
   public static fromImageAsset(directory: string, props: AssetImageCodeProps = {}): DockerImageCode {
     return {

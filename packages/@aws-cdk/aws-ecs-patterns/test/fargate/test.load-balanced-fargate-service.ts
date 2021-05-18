@@ -1,4 +1,5 @@
-import { expect, haveResource, haveResourceLike, SynthUtils } from '@aws-cdk/assert';
+import { expect, haveResource, haveResourceLike, SynthUtils } from '@aws-cdk/assert-internal';
+import { DnsValidatedCertificate } from '@aws-cdk/aws-certificatemanager';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecs from '@aws-cdk/aws-ecs';
 import { ApplicationLoadBalancer, ApplicationProtocol, NetworkLoadBalancer } from '@aws-cdk/aws-elasticloadbalancingv2';
@@ -975,6 +976,40 @@ export = {
       },
     }));
     test.done();
+  },
+
+  'domainName and domainZone not required for HTTPS listener with provided cert'(test: Test) {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+    const exampleDotComZone = new route53.PublicHostedZone(stack, 'ExampleDotCom', {
+      zoneName: 'example.com',
+    });
+    const certificate = new DnsValidatedCertificate(stack, 'Certificate', {
+      domainName: 'test.example.com',
+      hostedZone: exampleDotComZone,
+    });
+
+    // WHEN
+    new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'FargateAlbService', {
+      cluster,
+      protocol: ApplicationProtocol.HTTPS,
+
+      taskImageOptions: {
+        containerPort: 2015,
+        image: ecs.ContainerImage.fromRegistry('abiosoft/caddy'),
+      },
+      certificate: certificate,
+    });
+
+    // THEN
+    expect(stack).notTo(haveResourceLike('AWS::Route53::RecordSet', {
+      Name: 'test.domain.com.',
+    }));
+
+    test.done();
+
   },
 
 };
