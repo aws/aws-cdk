@@ -32,9 +32,9 @@ nodeunitShim({
       instanceType: 'z1d.3xlarge',
     }];
 
-    for (const sampleInstance of sampleInstances) {
+    for (const [i, sampleInstance] of sampleInstances.entries()) {
       // WHEN
-      new Instance(stack, 'Instance', {
+      new Instance(stack, `Instance${i}`, {
         vpc,
         machineImage: new AmazonLinuxImage(),
         instanceType: InstanceType.of(sampleInstance.instanceClass, sampleInstance.instanceSize),
