@@ -12,16 +12,16 @@ let toolkit: CdkToolkit;
 beforeEach(() => {
   cloudExecutable = new MockCloudExecutable({
     stacks: [{
-      id: 'A',
+      stackName: 'A',
       template: { resource: 'A' },
     },
     {
-      id: 'B',
+      stackName: 'B',
       depends: ['A'],
       template: { resource: 'B' },
     },
     {
-      id: 'C',
+      stackName: 'C',
       depends: ['A'],
       template: { resource: 'C' },
       metadata: {
@@ -34,7 +34,7 @@ beforeEach(() => {
       },
     },
     {
-      id: 'D',
+      stackName: 'D',
       template: { resource: 'D' },
     }],
   });

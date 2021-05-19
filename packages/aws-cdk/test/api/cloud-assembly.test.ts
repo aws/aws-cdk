@@ -16,20 +16,6 @@ test('do not throw when selecting stack without errors', async () => {
   expect(selected.firstStack.template.resource).toBe('noerrorresource');
 });
 
-it('select stacks by name', async () => {
-  // GIVEN
-  const cxasm = await testCloudAssembly();
-
-  // WHEN
-  const selected = await cxasm.selectStacks(['StackWithoutErrors'], {
-    defaultBehavior: DefaultSelection.AllStacks,
-  });
-  selected.processMetadataMessages();
-
-  // THEN
-  expect(selected.firstStack.template.resource).toBe('noerrorresource');
-});
-
 test('do throw when selecting stack with errors', async () => {
   // GIVEN
   const cxasm = await testCloudAssembly();
@@ -134,14 +120,12 @@ test('select behavior with nested assemblies: repeat', async() => {
 async function testCloudAssembly({ env }: { env?: string, versionReporting?: boolean } = {}) {
   const cloudExec = new MockCloudExecutable({
     stacks: [{
-      id: 'withouterrors',
-      stackName: 'StackWithoutErrors',
+      stackName: 'withouterrors',
       env,
       template: { resource: 'noerrorresource' },
     },
     {
-      id: 'witherrors',
-      stackName: 'StackWithErrors',
+      stackName: 'witherrors',
       env,
       template: { resource: 'errorresource' },
       metadata: {
@@ -161,13 +145,12 @@ async function testCloudAssembly({ env }: { env?: string, versionReporting?: boo
 async function testNestedCloudAssembly({ env }: { env?: string, versionReporting?: boolean } = {}) {
   const cloudExec = new MockCloudExecutable({
     stacks: [{
-      id: 'withouterrors',
-      stackName: 'StackWithoutErrors',
+      stackName: 'withouterrors',
       env,
       template: { resource: 'noerrorresource' },
     },
     {
-      id: 'witherrors',
+      stackName: 'witherrors',
       env,
       template: { resource: 'errorresource' },
       metadata: {
@@ -181,7 +164,7 @@ async function testNestedCloudAssembly({ env }: { env?: string, versionReporting
     }],
     nestedAssemblies: [{
       stacks: [{
-        id: 'nested',
+        stackName: 'nested',
         env,
         template: { resource: 'nestederror' },
         metadata: {

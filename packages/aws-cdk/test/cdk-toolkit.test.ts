@@ -235,7 +235,7 @@ describe('synth', () => {
 
 class MockStack {
   public static readonly MOCK_STACK_A: TestStackArtifact = {
-    id: 'Test-Stack-A',
+    stackName: 'Test-Stack-A',
     template: { Resources: { TempalteName: 'Test-Stack-A' } },
     env: 'aws://123456789012/bermuda-triangle-1',
     metadata: {
@@ -250,7 +250,7 @@ class MockStack {
     },
   };
   public static readonly MOCK_STACK_B: TestStackArtifact = {
-    id: 'Test-Stack-B',
+    stackName: 'Test-Stack-B',
     template: { Resources: { TempalteName: 'Test-Stack-B' } },
     env: 'aws://123456789012/bermuda-triangle-1',
     metadata: {
@@ -265,7 +265,7 @@ class MockStack {
     },
   };
   public static readonly MOCK_STACK_C: TestStackArtifact = {
-    id: 'Test-Stack-C',
+    stackName: 'Test-Stack-C',
     template: { Resources: { TempalteName: 'Test-Stack-C' } },
     env: 'aws://123456789012/bermuda-triangle-1',
     metadata: {
@@ -281,7 +281,7 @@ class MockStack {
     displayName: 'Test-Stack-A/Test-Stack-C',
   };
   public static readonly MOCK_STACK_WITH_ERROR: TestStackArtifact = {
-    id: 'witherrors',
+    stackName: 'witherrors',
     env: 'aws://123456789012/bermuda-triangle-1',
     template: { resource: 'errorresource' },
     metadata: {
@@ -317,8 +317,8 @@ class FakeCloudFormation extends CloudFormationDeployments {
   }
 
   public deployStack(options: DeployStackOptions): Promise<DeployStackResult> {
-    expect([MockStack.MOCK_STACK_A.id, MockStack.MOCK_STACK_B.id, MockStack.MOCK_STACK_C.id])
-      .toContain(options.stack.id);
+    expect([MockStack.MOCK_STACK_A.stackName, MockStack.MOCK_STACK_B.stackName, MockStack.MOCK_STACK_C.stackName])
+      .toContain(options.stack.stackName);
     expect(options.tags).toEqual(this.expectedTags[options.stack.stackName]);
     expect(options.notificationArns).toEqual(this.expectedNotificationArns);
     return Promise.resolve({
@@ -330,15 +330,15 @@ class FakeCloudFormation extends CloudFormationDeployments {
   }
 
   public readCurrentTemplate(stack: cxapi.CloudFormationStackArtifact): Promise<Template> {
-    switch (stack.id) {
-      case MockStack.MOCK_STACK_A.id:
+    switch (stack.stackName) {
+      case MockStack.MOCK_STACK_A.stackName:
         return Promise.resolve({});
-      case MockStack.MOCK_STACK_B.id:
+      case MockStack.MOCK_STACK_B.stackName:
         return Promise.resolve({});
-      case MockStack.MOCK_STACK_C.id:
+      case MockStack.MOCK_STACK_C.stackName:
         return Promise.resolve({});
       default:
-        return Promise.reject(`Not an expected mock stack: ${stack.id}`);
+        return Promise.reject(`Not an expected mock stack: ${stack.stackName}`);
     }
   }
 }
