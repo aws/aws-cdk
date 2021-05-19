@@ -628,7 +628,7 @@ export class NoPeerDependenciesMonocdk extends ValidationRule {
  */
 export class ConstructsVersion extends ValidationRule {
   public static readonly VERSION = cdkMajorVersion() === 2
-    ? '10.0.0-pre.5'
+    ? '^10.0.0'
     : '^3.3.69';
 
   public readonly name = 'deps/constructs';
@@ -1396,7 +1396,9 @@ export class ConstructsDependency extends ValidationRule {
   public validate(pkg: PackageJson) {
     const REQUIRED_VERSION = ConstructsVersion.VERSION;;
 
-    if (pkg.devDependencies?.constructs && pkg.devDependencies?.constructs !== REQUIRED_VERSION) {
+    // require a "constructs" dependency if there's a @aws-cdk/core dependency
+    const requiredDev = pkg.getDevDependency('@aws-cdk/core') && !pkg.getDevDependency('constructs');
+    if (requiredDev || (pkg.devDependencies?.constructs && pkg.devDependencies?.constructs !== REQUIRED_VERSION)) {
       pkg.report({
         ruleName: this.name,
         message: `"constructs" must have a version requirement ${REQUIRED_VERSION}`,
@@ -1406,7 +1408,8 @@ export class ConstructsDependency extends ValidationRule {
       });
     }
 
-    if (pkg.dependencies.constructs && pkg.dependencies.constructs !== REQUIRED_VERSION) {
+    const requiredDep = pkg.dependencies?.['@aws-cdk/core'] && !pkg.dependencies?.constructs;
+    if (requiredDep || (pkg.dependencies.constructs && pkg.dependencies.constructs !== REQUIRED_VERSION)) {
       pkg.report({
         ruleName: this.name,
         message: `"constructs" must have a version requirement ${REQUIRED_VERSION}`,
@@ -1562,8 +1565,10 @@ export class JestSetup extends ValidationRule {
 export class UbergenPackageVisibility extends ValidationRule {
   public readonly name = 'ubergen/package-visibility';
 
+  // The ONLY packages that should be published for v2.
   // These include dependencies of the CDK CLI (aws-cdk).
-  private readonly publicPackages = [
+  private readonly v2PublicPackages = [
+    '@aws-cdk/assert',
     '@aws-cdk/cfnspec',
     '@aws-cdk/cloud-assembly-schema',
     '@aws-cdk/cloudformation-diff',
@@ -1579,7 +1584,7 @@ export class UbergenPackageVisibility extends ValidationRule {
   public validate(pkg: PackageJson): void {
     if (cdkMajorVersion() === 2) {
       // Only packages in the publicPackages list should be "public". Everything else should be private.
-      if (this.publicPackages.includes(pkg.json.name) && pkg.json.private === true) {
+      if (this.v2PublicPackages.includes(pkg.json.name) && pkg.json.private === true) {
         pkg.report({
           ruleName: this.name,
           message: 'Package must be public',
@@ -1587,7 +1592,7 @@ export class UbergenPackageVisibility extends ValidationRule {
             delete pkg.json.private;
           },
         });
-      } else if (!this.publicPackages.includes(pkg.json.name) && pkg.json.private !== true) {
+      } else if (!this.v2PublicPackages.includes(pkg.json.name) && pkg.json.private !== true) {
         pkg.report({
           ruleName: this.name,
           message: 'Package must not be public',
