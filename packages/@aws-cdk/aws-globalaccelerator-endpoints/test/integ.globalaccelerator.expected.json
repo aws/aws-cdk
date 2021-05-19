@@ -656,7 +656,9 @@
         "IamInstanceProfile": {
           "Ref": "Instance0InstanceProfile3A61DE71"
         },
-        "ImageId": "{{resolve:ssm:/aws/service/ami-amazon-linux-latest/amzn-ami-hvm-x86_64-gp2}}",
+        "ImageId": {
+          "Ref": "SsmParameterValueawsserviceamiamazonlinuxlatestamznamihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter"
+        },
         "InstanceType": "t3.small",
         "SecurityGroupIds": [
           {
@@ -755,7 +757,9 @@
         "IamInstanceProfile": {
           "Ref": "Instance1InstanceProfileC04770B7"
         },
-        "ImageId": "{{resolve:ssm:/aws/service/ami-amazon-linux-latest/amzn-ami-hvm-x86_64-gp2}}",
+        "ImageId": {
+          "Ref": "SsmParameterValueawsserviceamiamazonlinuxlatestamznamihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter"
+        },
         "InstanceType": "t3.small",
         "SecurityGroupIds": [
           {
@@ -916,7 +920,7 @@
       "Properties": {
         "Code": {
           "S3Bucket": {
-            "Ref": "AssetParametersb965ea3084ec95e24846d4975623e62a02c21883c3ddea9366b2ae42d21cef98S3Bucket4DD075F7"
+            "Ref": "AssetParameters4600faecd25ab407ff0a9d16f935c93062aaea5d415e97046bb8befe6c8ec02cS3BucketD609D0D9"
           },
           "S3Key": {
             "Fn::Join": [
@@ -929,7 +933,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParametersb965ea3084ec95e24846d4975623e62a02c21883c3ddea9366b2ae42d21cef98S3VersionKeyBD0E03B7"
+                          "Ref": "AssetParameters4600faecd25ab407ff0a9d16f935c93062aaea5d415e97046bb8befe6c8ec02cS3VersionKey77CF589B"
                         }
                       ]
                     }
@@ -942,7 +946,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParametersb965ea3084ec95e24846d4975623e62a02c21883c3ddea9366b2ae42d21cef98S3VersionKeyBD0E03B7"
+                          "Ref": "AssetParameters4600faecd25ab407ff0a9d16f935c93062aaea5d415e97046bb8befe6c8ec02cS3VersionKey77CF589B"
                         }
                       ]
                     }
@@ -968,17 +972,21 @@
     }
   },
   "Parameters": {
-    "AssetParametersb965ea3084ec95e24846d4975623e62a02c21883c3ddea9366b2ae42d21cef98S3Bucket4DD075F7": {
-      "Type": "String",
-      "Description": "S3 bucket for asset \"b965ea3084ec95e24846d4975623e62a02c21883c3ddea9366b2ae42d21cef98\""
+    "SsmParameterValueawsserviceamiamazonlinuxlatestamznamihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter": {
+      "Type": "AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>",
+      "Default": "/aws/service/ami-amazon-linux-latest/amzn-ami-hvm-x86_64-gp2"
     },
-    "AssetParametersb965ea3084ec95e24846d4975623e62a02c21883c3ddea9366b2ae42d21cef98S3VersionKeyBD0E03B7": {
+    "AssetParameters4600faecd25ab407ff0a9d16f935c93062aaea5d415e97046bb8befe6c8ec02cS3BucketD609D0D9": {
       "Type": "String",
-      "Description": "S3 key for asset version \"b965ea3084ec95e24846d4975623e62a02c21883c3ddea9366b2ae42d21cef98\""
+      "Description": "S3 bucket for asset \"4600faecd25ab407ff0a9d16f935c93062aaea5d415e97046bb8befe6c8ec02c\""
     },
-    "AssetParametersb965ea3084ec95e24846d4975623e62a02c21883c3ddea9366b2ae42d21cef98ArtifactHash35A756EB": {
+    "AssetParameters4600faecd25ab407ff0a9d16f935c93062aaea5d415e97046bb8befe6c8ec02cS3VersionKey77CF589B": {
       "Type": "String",
-      "Description": "Artifact hash for asset \"b965ea3084ec95e24846d4975623e62a02c21883c3ddea9366b2ae42d21cef98\""
+      "Description": "S3 key for asset version \"4600faecd25ab407ff0a9d16f935c93062aaea5d415e97046bb8befe6c8ec02c\""
+    },
+    "AssetParameters4600faecd25ab407ff0a9d16f935c93062aaea5d415e97046bb8befe6c8ec02cArtifactHash86CFA15D": {
+      "Type": "String",
+      "Description": "Artifact hash for asset \"4600faecd25ab407ff0a9d16f935c93062aaea5d415e97046bb8befe6c8ec02c\""
     }
   }
 }

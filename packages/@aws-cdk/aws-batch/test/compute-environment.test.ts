@@ -214,7 +214,9 @@ describe('Batch Compute Evironment', () => {
           AllocationStrategy: batch.AllocationStrategy.BEST_FIT,
           DesiredvCpus: props.computeResources.desiredvCpus,
           Ec2KeyPair: props.computeResources.ec2KeyPair,
-          ImageId: '{{resolve:ssm:/aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id}}',
+          ImageId: {
+            Ref: 'SsmParameterValueawsserviceecsoptimizedamiamazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter',
+          },
           InstanceRole: {
             'Fn::GetAtt': [
               props.computeResources.instanceRole ? 'InstanceProfile' : '',
