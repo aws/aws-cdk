@@ -2,6 +2,31 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.105.0](https://github.com/aws/aws-cdk/compare/v1.104.0...v1.105.0) (2021-05-19)
+
+
+### ⚠ BREAKING CHANGES TO EXPERIMENTAL FEATURES
+
+* **lambda-nodejs:** using `banner` and `footer` now requires `esbuild` >= 0.9.0
+
+### Features
+
+* **apigatewayv2:** http api - lambda authorizer ([#13181](https://github.com/aws/aws-cdk/issues/13181)) ([4da78f6](https://github.com/aws/aws-cdk/commit/4da78f6ba2036f4a94d0e47c8581131b9bc23e14)), closes [#10534](https://github.com/aws/aws-cdk/issues/10534) [/github.com/aws/aws-cdk/issues/10534#issuecomment-780271588](https://github.com/aws//github.com/aws/aws-cdk/issues/10534/issues/issuecomment-780271588)
+* **custom-resources:** restrict output of AwsCustomResource to list of paths ([#14041](https://github.com/aws/aws-cdk/issues/14041)) ([773ca8c](https://github.com/aws/aws-cdk/commit/773ca8c5d2a845f392f530d7710020075b884c72)), closes [/github.com/aws/aws-cdk/issues/2825#issuecomment-814999890](https://github.com/aws//github.com/aws/aws-cdk/issues/2825/issues/issuecomment-814999890)
+* **stepfunctions:** Add support for ResultSelector ([#14648](https://github.com/aws/aws-cdk/issues/14648)) ([50d486a](https://github.com/aws/aws-cdk/commit/50d486ad4e7d175dfac048dbb4abf5e4084ce4fe)), closes [#9904](https://github.com/aws/aws-cdk/issues/9904)
+
+
+### Bug Fixes
+
+* **cli:** Updated typo user to uses ([#14357](https://github.com/aws/aws-cdk/issues/14357)) ([7fe329c](https://github.com/aws/aws-cdk/commit/7fe329cd17502cf04c451153f6d19955621952dc))
+* **core:** cannot determine packaging when bundling that produces an archive is skipped ([#14372](https://github.com/aws/aws-cdk/issues/14372)) ([163e812](https://github.com/aws/aws-cdk/commit/163e8122db994d0bea7077f025876dbeac490ead)), closes [#14369](https://github.com/aws/aws-cdk/issues/14369)
+* **ecr:** add validations for ECR repository names ([#12613](https://github.com/aws/aws-cdk/issues/12613)) ([396dca9](https://github.com/aws/aws-cdk/commit/396dca965b56bfbe8a7aedb2bcaddb196b5560c4)), closes [#9877](https://github.com/aws/aws-cdk/issues/9877)
+* **lambda:** unable to access SingletonFunction vpc connections ([#14533](https://github.com/aws/aws-cdk/issues/14533)) ([49d18ab](https://github.com/aws/aws-cdk/commit/49d18ab8e8f55f8b36584f7fb95427106139a140)), closes [#6261](https://github.com/aws/aws-cdk/issues/6261)
+* **lambda-nodejs:** banner and footer values not escaped ([#14743](https://github.com/aws/aws-cdk/issues/14743)) ([81aa612](https://github.com/aws/aws-cdk/commit/81aa61213b4f5e3bd9cbbc155264252bd64d0f5b)), closes [#13576](https://github.com/aws/aws-cdk/issues/13576)
+* **pipelines:** self-mutating builds cannot be run in privileged mode ([#14655](https://github.com/aws/aws-cdk/issues/14655)) ([73b9b4a](https://github.com/aws/aws-cdk/commit/73b9b4a89078d1425f4acdf50a6e9b5275b7e555)), closes [#11425](https://github.com/aws/aws-cdk/issues/11425)
+* **pipelines:** stackOutput generates names too long to be used in useOutputs ([#14680](https://github.com/aws/aws-cdk/issues/14680)) ([d81e06d](https://github.com/aws/aws-cdk/commit/d81e06d5a5651cf332614d73e27bf6ed95d083a3)), closes [#13552](https://github.com/aws/aws-cdk/issues/13552)
+* **pipelines:** synth fails if 'aws-cdk' is not in `package.json` ([#14745](https://github.com/aws/aws-cdk/issues/14745)) ([0b8ee97](https://github.com/aws/aws-cdk/commit/0b8ee97b7c029c5195de694a1d2eea309c343f61)), closes [#14658](https://github.com/aws/aws-cdk/issues/14658)
+
 ## [1.104.0](https://github.com/aws/aws-cdk/compare/v1.103.0...v1.104.0) (2021-05-14)
 
 
