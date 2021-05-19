@@ -1,4 +1,3 @@
-import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnGatewayRoute } from './appmesh.generated';
@@ -27,16 +26,6 @@ export interface IGatewayRoute extends cdk.IResource {
    * The VirtualGateway the GatewayRoute belongs to
    */
   readonly virtualGateway: IVirtualGateway;
-
-  /**
-   * Grants the given entity all read permissions for this GatewayRoute.
-   */
-  grantRead(identity: iam.IGrantable): iam.Grant;
-
-  /**
-   * Grants the given entity all write permissions for this GatewayRoute.
-   */
-  grantWrite(identity: iam.IGrantable): iam.Grant;
 }
 
 abstract class GatewayRouteBase extends cdk.Resource implements IGatewayRoute {

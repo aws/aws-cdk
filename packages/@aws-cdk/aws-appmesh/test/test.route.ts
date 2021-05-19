@@ -1,5 +1,4 @@
 import { ABSENT, expect, haveResourceLike } from '@aws-cdk/assert-internal';
-import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 
@@ -888,113 +887,6 @@ export = {
     // THEN
     test.equal(route.routeName, routeName);
     test.equal(route.virtualRouter.mesh.meshName, meshName);
-
-    test.done();
-  },
-
-  'Can grant an identity all read permissions for a given Route'(test: Test) {
-    // GIVEN
-    const stack = new cdk.Stack();
-    const mesh = new appmesh.Mesh(stack, 'mesh', {
-      meshName: 'test-mesh',
-    });
-    const router = mesh.addVirtualRouter('http-router-listener');
-
-    const node = mesh.addVirtualNode('test-node', {
-      serviceDiscovery: appmesh.ServiceDiscovery.dns('test'),
-      listeners: [appmesh.VirtualNodeListener.http()],
-    });
-
-    const route = router.addRoute('test-http-route', {
-      routeSpec: appmesh.RouteSpec.http({
-        weightedTargets: [
-          {
-            virtualNode: node,
-          },
-        ],
-        timeout: {
-          idle: cdk.Duration.seconds(10),
-          perRequest: cdk.Duration.seconds(11),
-        },
-      }),
-    });
-
-    // WHEN
-    const user = new iam.User(stack, 'test');
-    route.grantRead(user);
-
-    // THEN
-    expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
-      PolicyDocument: {
-        Statement: [
-          {
-            Action: [
-              'appmesh:DescribeRoute',
-              'appmesh:ListRoute',
-            ],
-            Effect: 'Allow',
-            Resource: {
-              Ref: 'meshhttprouterlistenertesthttprouteDAB0AC41',
-            },
-          },
-        ],
-      },
-    }));
-
-    test.done();
-  },
-
-  'Can grant an identity all write permissions for a given Route'(test: Test) {
-    // GIVEN
-    const stack = new cdk.Stack();
-    const mesh = new appmesh.Mesh(stack, 'mesh', {
-      meshName: 'test-mesh',
-    });
-    const router = mesh.addVirtualRouter('http-router-listener');
-
-    const node = mesh.addVirtualNode('test-node', {
-      serviceDiscovery: appmesh.ServiceDiscovery.dns('test'),
-      listeners: [appmesh.VirtualNodeListener.http()],
-    });
-
-    const route = router.addRoute('test-http-route', {
-      routeSpec: appmesh.RouteSpec.http({
-        weightedTargets: [
-          {
-            virtualNode: node,
-          },
-        ],
-        timeout: {
-          idle: cdk.Duration.seconds(10),
-          perRequest: cdk.Duration.seconds(11),
-        },
-      }),
-    });
-
-    // WHEN
-    const user = new iam.User(stack, 'test');
-    route.grantWrite(user);
-
-    // THEN
-    expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
-      PolicyDocument: {
-        Statement: [
-          {
-            Action: [
-              'appmesh:CreateRoute',
-              'appmesh:UpdateRoute',
-              'appmesh:DeleteRoute',
-              'appmesh:TagResource',
-              'appmesh:UntagResource',
-            ],
-            Effect: 'Allow',
-            Resource: {
-              Ref: 'meshhttprouterlistenertesthttprouteDAB0AC41',
-            },
-          },
-        ],
-      },
-    }));
 
     test.done();
   },

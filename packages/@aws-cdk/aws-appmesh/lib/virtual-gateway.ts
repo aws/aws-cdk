@@ -120,17 +120,6 @@ abstract class VirtualGatewayBase extends cdk.Resource implements IVirtualGatewa
       resourceArns: [this.virtualGatewayArn],
     });
   }
-
-  /**
-   * Grant the specified actions for this VirtualGateway.
-   */
-  private grant(grantee: iam.IGrantable, ...actions: string[]) {
-    return iam.Grant.addToPrincipal({
-      grantee,
-      actions,
-      resourceArns: [this.virtualGatewayArn],
-    });
-  }
 }
 
 /**

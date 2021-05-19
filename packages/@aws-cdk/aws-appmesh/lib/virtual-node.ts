@@ -124,17 +124,6 @@ abstract class VirtualNodeBase extends cdk.Resource implements IVirtualNode {
       resourceArns: [this.virtualNodeArn],
     });
   }
-
-  /**
-   * Grant the specified actions for this VirtualNode.
-   */
-  private grant(grantee: iam.IGrantable, ...actions: string[]) {
-    return iam.Grant.addToPrincipal({
-      grantee,
-      actions,
-      resourceArns: [this.virtualNodeArn],
-    });
-  }
 }
 
 /**
