@@ -1231,6 +1231,57 @@ export = {
         test.done();
       },
 
+      'when the same new secret is provided with different JSON keys, only adds the resource once'(test: Test) {
+        // GIVEN
+        const stack = new cdk.Stack();
+
+        // WHEN
+        const secret = new secretsmanager.Secret(stack, 'Secret');
+        new codebuild.PipelineProject(stack, 'Project', {
+          environmentVariables: {
+            'ENV_VAR1': {
+              type: codebuild.BuildEnvironmentVariableType.SECRETS_MANAGER,
+              value: `${secret.secretArn}:json-key1`,
+            },
+            'ENV_VAR2': {
+              type: codebuild.BuildEnvironmentVariableType.SECRETS_MANAGER,
+              value: `${secret.secretArn}:json-key2`,
+            },
+          },
+        });
+
+        // THEN
+        expect(stack).to(haveResourceLike('AWS::CodeBuild::Project', {
+          'Environment': {
+            'EnvironmentVariables': [
+              {
+                'Name': 'ENV_VAR1',
+                'Type': 'SECRETS_MANAGER',
+                'Value': { 'Fn::Join': ['', [{ 'Ref': 'SecretA720EF05' }, ':json-key1']] },
+              },
+              {
+                'Name': 'ENV_VAR2',
+                'Type': 'SECRETS_MANAGER',
+                'Value': { 'Fn::Join': ['', [{ 'Ref': 'SecretA720EF05' }, ':json-key2']] },
+              },
+            ],
+          },
+        }));
+
+        // THEN
+        expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
+          'PolicyDocument': {
+            'Statement': arrayWith({
+              'Action': 'secretsmanager:GetSecretValue',
+              'Effect': 'Allow',
+              'Resource': { 'Ref': 'SecretA720EF05' },
+            }),
+          },
+        }));
+
+        test.done();
+      },
+
       'can be provided as the ARN attribute of a new Secret, followed by a JSON key'(test: Test) {
         // GIVEN
         const stack = new cdk.Stack();

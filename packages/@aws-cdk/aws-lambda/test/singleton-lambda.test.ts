@@ -1,5 +1,6 @@
 import '@aws-cdk/assert-internal/jest';
 import { ResourcePart } from '@aws-cdk/assert-internal';
+import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import * as lambda from '../lib';
@@ -173,5 +174,28 @@ describe('singleton lambda', () => {
         Ref: 'SingletonLambda84c0de93353f42179b0b45b6c993251a840BCC38',
       },
     });
+  });
+
+  test('bind to vpc and access connections', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC', { maxAzs: 2 });
+    const securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup', {
+      vpc: vpc,
+    });
+
+    // WHEN
+    const singleton = new lambda.SingletonFunction(stack, 'Singleton', {
+      uuid: '84c0de93-353f-4217-9b0b-45b6c993251a',
+      code: new lambda.InlineCode('foo'),
+      runtime: lambda.Runtime.NODEJS_12_X,
+      handler: 'index.handler',
+      securityGroups: [securityGroup],
+      vpc: vpc,
+    });
+
+    // THEN
+    expect(singleton.isBoundToVpc).toBeTruthy();
+    expect(singleton.connections).toEqual(new ec2.Connections({ securityGroups: [securityGroup] }));
   });
 });

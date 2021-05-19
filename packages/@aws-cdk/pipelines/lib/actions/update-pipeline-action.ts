@@ -37,6 +37,13 @@ export interface UpdatePipelineActionProps {
    * @default - Automatically generated
    */
   readonly projectName?: string;
+
+  /**
+   * Whether the build step should run in privileged mode.
+   *
+   * @default - false
+   */
+  readonly privileged?: boolean
 }
 
 /**
@@ -58,7 +65,10 @@ export class UpdatePipelineAction extends CoreConstruct implements codepipeline.
 
     const selfMutationProject = new codebuild.PipelineProject(this, 'SelfMutation', {
       projectName: props.projectName,
-      environment: { buildImage: codebuild.LinuxBuildImage.STANDARD_4_0 },
+      environment: {
+        buildImage: codebuild.LinuxBuildImage.STANDARD_5_0,
+        privileged: props.privileged ?? false,
+      },
       buildSpec: codebuild.BuildSpec.fromObject({
         version: '0.2',
         phases: {

@@ -51,7 +51,7 @@ export abstract class AlarmBase extends Resource implements IAlarm {
    * AlarmRule indicating ALARM state for Alarm.
    */
   public renderAlarmRule(): string {
-    return `ALARM(${this.alarmArn})`;
+    return `ALARM("${this.alarmArn}")`;
   }
 
   /**

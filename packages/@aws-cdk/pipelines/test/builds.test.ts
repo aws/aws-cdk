@@ -43,7 +43,7 @@ test('SimpleSynthAction takes arrays of commands', () => {
   // THEN
   expect(pipelineStack).toHaveResourceLike('AWS::CodeBuild::Project', {
     Environment: {
-      Image: 'aws/codebuild/standard:4.0',
+      Image: 'aws/codebuild/standard:5.0',
     },
     Source: {
       BuildSpec: encodedJson(deepObjectLike({
@@ -80,7 +80,7 @@ test.each([['npm'], ['yarn']])('%s build automatically determines artifact base-
   // THEN
   expect(pipelineStack).toHaveResourceLike('AWS::CodeBuild::Project', {
     Environment: {
-      Image: 'aws/codebuild/standard:4.0',
+      Image: 'aws/codebuild/standard:5.0',
     },
     Source: {
       BuildSpec: encodedJson(deepObjectLike({
@@ -107,7 +107,7 @@ test.each([['npm'], ['yarn']])('%s build respects subdirectory', (npmYarn) => {
   // THEN
   expect(pipelineStack).toHaveResourceLike('AWS::CodeBuild::Project', {
     Environment: {
-      Image: 'aws/codebuild/standard:4.0',
+      Image: 'aws/codebuild/standard:5.0',
     },
     Source: {
       BuildSpec: encodedJson(deepObjectLike({
@@ -124,6 +124,31 @@ test.each([['npm'], ['yarn']])('%s build respects subdirectory', (npmYarn) => {
   });
 });
 
+test.each([['npm'], ['yarn']])('%s build sets UNSAFE_PERM=true', (npmYarn) => {
+  // WHEN
+  new TestGitHubNpmPipeline(pipelineStack, 'Cdk', {
+    sourceArtifact,
+    cloudAssemblyArtifact,
+    synthAction: npmYarnBuild(npmYarn)({
+      sourceArtifact,
+      cloudAssemblyArtifact,
+    }),
+  });
+
+  // THEN
+  expect(pipelineStack).toHaveResourceLike('AWS::CodeBuild::Project', {
+    Environment: {
+      EnvironmentVariables: [
+        {
+          Name: 'NPM_CONFIG_UNSAFE_PERM',
+          Type: 'PLAINTEXT',
+          Value: 'true',
+        },
+      ],
+    },
+  });
+});
+
 test.each([['npm'], ['yarn']])('%s assumes no build step by default', (npmYarn) => {
   // WHEN
   new TestGitHubNpmPipeline(pipelineStack, 'Cdk', {
@@ -135,7 +160,7 @@ test.each([['npm'], ['yarn']])('%s assumes no build step by default', (npmYarn) 
   // THEN
   expect(pipelineStack).toHaveResourceLike('AWS::CodeBuild::Project', {
     Environment: {
-      Image: 'aws/codebuild/standard:4.0',
+      Image: 'aws/codebuild/standard:5.0',
     },
     Source: {
       BuildSpec: encodedJson(deepObjectLike({
@@ -259,7 +284,7 @@ test.each([['npm'], ['yarn']])('%s can have its install command overridden', (np
   // THEN
   expect(pipelineStack).toHaveResourceLike('AWS::CodeBuild::Project', {
     Environment: {
-      Image: 'aws/codebuild/standard:4.0',
+      Image: 'aws/codebuild/standard:5.0',
     },
     Source: {
       BuildSpec: encodedJson(deepObjectLike({
@@ -294,7 +319,7 @@ test('Standard (NPM) synth can output additional artifacts', () => {
   // THEN
   expect(pipelineStack).toHaveResourceLike('AWS::CodeBuild::Project', {
     Environment: {
-      Image: 'aws/codebuild/standard:4.0',
+      Image: 'aws/codebuild/standard:5.0',
     },
     Source: {
       BuildSpec: encodedJson(deepObjectLike({
