@@ -9,9 +9,7 @@ import { EventSourceMapping, EventSourceMappingOptions } from './event-source-ma
 import { IVersion } from './lambda-version';
 import { CfnPermission } from './lambda.generated';
 import { Permission } from './permission';
-import { addAlias } from './util';
-
-const PERMISSION_SUPPORTED_PRINCIPAL_CONDITIONS = [{ operator: 'ArnLike', key: 'aws:SourceArn' }, { operator: 'StringEquals', key: 'aws:SourceAccount' }];
+import { addAlias, flatMap } from './util';
 
 export interface IFunction extends IResource, ec2.IConnectable, iam.IGrantable {
 
@@ -437,32 +435,36 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
   }
 
   private parseConditions(principal: iam.IPrincipal): { sourceAccount: string, sourceArn: string } | null {
-    if ('conditions' in principal) {
-      const conditions: iam.Conditions = (principal as iam.PrincipalWithConditions).policyFragment.conditions;
-      const conditionPairs = Object.entries(conditions)
-        .reduce(
-          (accumulator, [operator, conditionObjs]) =>
-            accumulator.concat(Object.keys(conditionObjs as object).map(key => { return { operator, key }; })),
-          ([] as {operator: string, key: string}[]),
-        );
-      const conditionsAreSupported = conditionPairs.every(
-        (condition) => PERMISSION_SUPPORTED_PRINCIPAL_CONDITIONS.some(
+    if (this.isPrincipalWithConditions(principal)) {
+      const conditions: iam.Conditions = principal.policyFragment.conditions;
+      const conditionPairs = flatMap(
+        Object.entries(conditions),
+        ([operator, conditionObjs]) => Object.keys(conditionObjs as object).map(key => { return { operator, key }; }),
+      );
+      const supportedPrincipalConditions = [{ operator: 'ArnLike', key: 'aws:SourceArn' }, { operator: 'StringEquals', key: 'aws:SourceAccount' }];
+
+      const unsupportedConditions = conditionPairs.filter(
+        (condition) => !supportedPrincipalConditions.some(
           (supportedCondition) => supportedCondition.operator === condition.operator && supportedCondition.key === condition.key,
         ),
       );
 
-      if (conditionsAreSupported) {
+      if (unsupportedConditions.length == 0) {
         return {
           sourceAccount: conditions.StringEquals['aws:SourceAccount'],
           sourceArn: conditions.ArnLike['aws:SourceArn'],
         };
       } else {
-        throw new Error(`PrincipalWithConditions had unsupported conditions for Lambda permission statement: ${JSON.stringify(conditions)}. ` +
-          `Supported operator/condition pairs: ${JSON.stringify(PERMISSION_SUPPORTED_PRINCIPAL_CONDITIONS)}`);
+        throw new Error(`PrincipalWithConditions had unsupported conditions for Lambda permission statement: ${JSON.stringify(unsupportedConditions)}. ` +
+          `Supported operator/condition pairs: ${JSON.stringify(supportedPrincipalConditions)}`);
       }
     } else {
       return null;
     }
+  }
+
+  private isPrincipalWithConditions(principal: iam.IPrincipal): principal is iam.PrincipalWithConditions {
+    return 'conditions' in principal;
   }
 }
 
