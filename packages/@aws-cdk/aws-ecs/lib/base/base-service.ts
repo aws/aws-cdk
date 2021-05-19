@@ -429,43 +429,41 @@ export abstract class BaseService extends Resource
       this.enableExecuteCommand();
 
       const logging = this.cluster.executeCommandConfiguration?.logging || ExecuteCommandLogging.DEFAULT;
-      if (logging === ExecuteCommandLogging.OVERRIDE) {
-        this.executeCommandLogConfiguration(this.cluster.executeCommandConfiguration?.logConfiguration);
-      } if (logging === ExecuteCommandLogging.DEFAULT) {
-        this.executeCommandLogConfiguration();
-      }
+      if (logging !== ExecuteCommandLogging.NONE) {
+        this.executeCommandLogConfiguration(logging, this.cluster.executeCommandConfiguration?.logConfiguration);
 
-      if (this.cluster.executeCommandConfiguration?.kmsKey) {
-        this.taskDefinition.addToTaskRolePolicy(new iam.PolicyStatement({
-          actions: [
-            'kms:Decrypt',
-            'kms:GenerateDataKey',
-          ],
-          resources: [`${this.cluster.executeCommandConfiguration.kmsKey.keyArn}`],
-        }));
+        if (this.cluster.executeCommandConfiguration?.kmsKey) {
+          this.taskDefinition.addToTaskRolePolicy(new iam.PolicyStatement({
+            actions: [
+              'kms:Decrypt',
+              'kms:GenerateDataKey',
+            ],
+            resources: [`${this.cluster.executeCommandConfiguration.kmsKey.keyArn}`],
+          }));
 
-        this.cluster.executeCommandConfiguration.kmsKey.addToResourcePolicy(new iam.PolicyStatement({
-          actions: [
-            'kms:*',
-          ],
-          resources: ['*'],
-          principals: [new iam.ArnPrincipal(`arn:aws:iam::${this.stack.account}:root`)],
-        }));
+          this.cluster.executeCommandConfiguration.kmsKey.addToResourcePolicy(new iam.PolicyStatement({
+            actions: [
+              'kms:*',
+            ],
+            resources: ['*'],
+            principals: [new iam.ArnPrincipal(`arn:aws:iam::${this.stack.account}:root`)],
+          }));
 
-        this.cluster.executeCommandConfiguration.kmsKey.addToResourcePolicy(new iam.PolicyStatement({
-          actions: [
-            'kms:Encrypt*',
-            'kms:Decrypt*',
-            'kms:ReEncrypt*',
-            'kms:GenerateDataKey*',
-            'kms:Describe*',
-          ],
-          resources: ['*'],
-          principals: [new iam.ServicePrincipal(`logs.${this.stack.region}.amazonaws.com`)],
-          conditions: {
-            ArnLike: { 'kms:EncryptionContext:aws:logs:arn': `arn:aws:logs:${this.stack.region}:${this.stack.account}:*` },
-          },
-        }));
+          this.cluster.executeCommandConfiguration.kmsKey.addToResourcePolicy(new iam.PolicyStatement({
+            actions: [
+              'kms:Encrypt*',
+              'kms:Decrypt*',
+              'kms:ReEncrypt*',
+              'kms:GenerateDataKey*',
+              'kms:Describe*',
+            ],
+            resources: ['*'],
+            principals: [new iam.ServicePrincipal(`logs.${this.stack.region}.amazonaws.com`)],
+            conditions: {
+              ArnLike: { 'kms:EncryptionContext:aws:logs:arn': `arn:aws:logs:${this.stack.region}:${this.stack.account}:*` },
+            },
+          }));
+        }
       }
     }
     this.node.defaultChild = this.resource;
@@ -478,23 +476,25 @@ export abstract class BaseService extends Resource
     return this.cloudmapService;
   }
 
-  private executeCommandLogConfiguration(logConfiguration?: ExecuteCommandLogConfiguration) {
-    this.taskDefinition.addToTaskRolePolicy(new iam.PolicyStatement({
-      actions: [
-        'logs:DescribeLogGroups',
-      ],
-      resources: ['*'],
-    }));
+  private executeCommandLogConfiguration(logging: ExecuteCommandLogging, logConfiguration?: ExecuteCommandLogConfiguration) {
+    if (logging == ExecuteCommandLogging.DEFAULT || (logging == ExecuteCommandLogging.OVERRIDE && logConfiguration?.cloudWatchLogGroupName)) {
+      this.taskDefinition.addToTaskRolePolicy(new iam.PolicyStatement({
+        actions: [
+          'logs:DescribeLogGroups',
+        ],
+        resources: ['*'],
+      }));
 
-    const logGroupArn = logConfiguration?.cloudWatchLogGroupName ? `arn:aws:logs:${this.stack.region}:${this.stack.account}:log-group:${logConfiguration.cloudWatchLogGroupName}:*` : '*';
-    this.taskDefinition.addToTaskRolePolicy(new iam.PolicyStatement({
-      actions: [
-        'logs:CreateLogStream',
-        'logs:DescribeLogStreams',
-        'logs:PutLogEvents',
-      ],
-      resources: [logGroupArn],
-    }));
+      const logGroupArn = logConfiguration?.cloudWatchLogGroupName ? `arn:aws:logs:${this.stack.region}:${this.stack.account}:log-group:${logConfiguration.cloudWatchLogGroupName}:*` : '*';
+      this.taskDefinition.addToTaskRolePolicy(new iam.PolicyStatement({
+        actions: [
+          'logs:CreateLogStream',
+          'logs:DescribeLogStreams',
+          'logs:PutLogEvents',
+        ],
+        resources: [logGroupArn],
+      }));
+    }
 
     if (logConfiguration?.s3BucketName) {
       this.taskDefinition.addToTaskRolePolicy(new iam.PolicyStatement({
@@ -505,16 +505,18 @@ export abstract class BaseService extends Resource
       }));
       this.taskDefinition.addToTaskRolePolicy(new iam.PolicyStatement({
         actions: [
-          's3:GetEncryptionConfiguration',
-        ],
-        resources: [`arn:aws:s3:::${logConfiguration.s3BucketName}`],
-      }));
-      this.taskDefinition.addToTaskRolePolicy(new iam.PolicyStatement({
-        actions: [
           's3:PutObject',
         ],
         resources: [`arn:aws:s3:::${logConfiguration.s3BucketName}/*`],
       }));
+      if (logConfiguration.s3EncryptionEnabled) {
+        this.taskDefinition.addToTaskRolePolicy(new iam.PolicyStatement({
+          actions: [
+            's3:GetEncryptionConfiguration',
+          ],
+          resources: [`arn:aws:s3:::${logConfiguration.s3BucketName}`],
+        }));
+      }
     }
   }
 
