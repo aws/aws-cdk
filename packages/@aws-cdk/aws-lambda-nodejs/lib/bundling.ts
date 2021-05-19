@@ -2,10 +2,12 @@ import * as os from 'os';
 import * as path from 'path';
 import { AssetCode, Code, Runtime } from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
+import { EsbuildInstallation } from './esbuild-installation';
+import { PackageManager } from './package-manager';
 import { BundlingOptions } from './types';
-import { exec, extractDependencies, findUp, getEsBuildVersion, LockFile } from './util';
+import { exec, extractDependencies, findUp } from './util';
 
-const ESBUILD_VERSION = '0';
+const ESBUILD_MAJOR_VERSION = '0';
 
 /**
  * Bundling properties
@@ -41,11 +43,11 @@ export class Bundling implements cdk.BundlingOptions {
     });
   }
 
-  public static clearRunsLocallyCache(): void {
-    this.runsLocally = undefined;
+  public static clearEsbuildInstallationCache(): void {
+    this.esbuildInstallation = undefined;
   }
 
-  private static runsLocally?: boolean;
+  private static esbuildInstallation?: EsbuildInstallation;
 
   // Core bundling options
   public readonly image: cdk.DockerImage;
@@ -54,20 +56,22 @@ export class Bundling implements cdk.BundlingOptions {
   public readonly workingDirectory: string;
   public readonly local?: cdk.ILocalBundling;
 
+  private readonly projectRoot: string;
   private readonly relativeEntryPath: string;
   private readonly relativeTsconfigPath?: string;
   private readonly externals: string[];
+  private readonly packageManager: PackageManager;
 
   constructor(private readonly props: BundlingProps) {
-    Bundling.runsLocally = Bundling.runsLocally
-      ?? getEsBuildVersion()?.startsWith(ESBUILD_VERSION)
-      ?? false;
+    this.packageManager = PackageManager.fromLockFile(props.depsLockFilePath);
 
-    const projectRoot = path.dirname(props.depsLockFilePath);
-    this.relativeEntryPath = path.relative(projectRoot, path.resolve(props.entry));
+    Bundling.esbuildInstallation = Bundling.esbuildInstallation ?? EsbuildInstallation.detect();
+
+    this.projectRoot = path.dirname(props.depsLockFilePath);
+    this.relativeEntryPath = path.relative(this.projectRoot, path.resolve(props.entry));
 
     if (props.tsconfig) {
-      this.relativeTsconfigPath = path.relative(projectRoot, path.resolve(props.tsconfig));
+      this.relativeTsconfigPath = path.relative(this.projectRoot, path.resolve(props.tsconfig));
     }
 
     this.externals = [
@@ -76,18 +80,23 @@ export class Bundling implements cdk.BundlingOptions {
     ];
 
     // Docker bundling
-    const shouldBuildImage = props.forceDockerBundling || !Bundling.runsLocally;
+    const shouldBuildImage = props.forceDockerBundling || !Bundling.esbuildInstallation;
     this.image = shouldBuildImage
       ? props.dockerImage ?? cdk.DockerImage.fromBuild(path.join(__dirname, '../lib'), {
         buildArgs: {
           ...props.buildArgs ?? {},
-          IMAGE: props.runtime.bundlingDockerImage.image,
-          ESBUILD_VERSION: props.esbuildVersion ?? ESBUILD_VERSION,
+          IMAGE: props.runtime.bundlingImage.image,
+          ESBUILD_VERSION: props.esbuildVersion ?? ESBUILD_MAJOR_VERSION,
         },
       })
       : cdk.DockerImage.fromRegistry('dummy'); // Do not build if we don't need to
 
-    const bundlingCommand = this.createBundlingCommand(cdk.AssetStaging.BUNDLING_INPUT_DIR, cdk.AssetStaging.BUNDLING_OUTPUT_DIR);
+    const bundlingCommand = this.createBundlingCommand({
+      inputDir: cdk.AssetStaging.BUNDLING_INPUT_DIR,
+      outputDir: cdk.AssetStaging.BUNDLING_OUTPUT_DIR,
+      esbuildRunner: 'esbuild', // esbuild is installed globally in the docker image
+      osPlatform: 'linux', // linux docker image
+    });
     this.command = ['bash', '-c', bundlingCommand];
     this.environment = props.environment;
     // Bundling sets the working directory to cdk.AssetStaging.BUNDLING_INPUT_DIR
@@ -96,54 +105,22 @@ export class Bundling implements cdk.BundlingOptions {
 
     // Local bundling
     if (!props.forceDockerBundling) { // only if Docker is not forced
-      const osPlatform = os.platform();
-      const createLocalCommand = (outputDir: string) => this.createBundlingCommand(projectRoot, outputDir, osPlatform);
-
-      this.local = {
-        tryBundle(outputDir: string) {
-          if (Bundling.runsLocally === false) {
-            process.stderr.write('esbuild cannot run locally. Switching to Docker bundling.\n');
-            return false;
-          }
-
-          const localCommand = createLocalCommand(outputDir);
-
-          exec(
-            osPlatform === 'win32' ? 'cmd' : 'bash',
-            [
-              osPlatform === 'win32' ? '/c' : '-c',
-              localCommand,
-            ],
-            {
-              env: { ...process.env, ...props.environment ?? {} },
-              stdio: [ // show output
-                'ignore', // ignore stdio
-                process.stderr, // redirect stdout to stderr
-                'inherit', // inherit stderr
-              ],
-              cwd: path.dirname(props.entry),
-              windowsVerbatimArguments: osPlatform === 'win32',
-            });
-
-          return true;
-        },
-      };
+      this.local = this.getLocalBundlingProvider();
     }
   }
 
-  public createBundlingCommand(inputDir: string, outputDir: string, osPlatform: NodeJS.Platform = 'linux'): string {
-    const pathJoin = osPathJoin(osPlatform);
+  private createBundlingCommand(options: BundlingCommandOptions): string {
+    const pathJoin = osPathJoin(options.osPlatform);
 
-    const npx = osPlatform === 'win32' ? 'npx.cmd' : 'npx';
     const loaders = Object.entries(this.props.loader ?? {});
     const defines = Object.entries(this.props.define ?? {});
 
-    const esbuildCommand: string = [
-      npx, 'esbuild',
-      '--bundle', `"${pathJoin(inputDir, this.relativeEntryPath)}"`,
+    const esbuildCommand: string[] = [
+      options.esbuildRunner,
+      '--bundle', `"${pathJoin(options.inputDir, this.relativeEntryPath)}"`,
       `--target=${this.props.target ?? toTarget(this.props.runtime)}`,
       '--platform=node',
-      `--outfile="${pathJoin(outputDir, 'index.js')}"`,
+      `--outfile="${pathJoin(options.outputDir, 'index.js')}"`,
       ...this.props.minify ? ['--minify'] : [],
       ...this.props.sourceMap ? ['--sourcemap'] : [],
       ...this.externals.map(external => `--external:${external}`),
@@ -151,11 +128,11 @@ export class Bundling implements cdk.BundlingOptions {
       ...defines.map(([key, value]) => `--define:${key}=${JSON.stringify(value)}`),
       ...this.props.logLevel ? [`--log-level=${this.props.logLevel}`] : [],
       ...this.props.keepNames ? ['--keep-names'] : [],
-      ...this.relativeTsconfigPath ? [`--tsconfig=${pathJoin(inputDir, this.relativeTsconfigPath)}`] : [],
-      ...this.props.metafile ? [`--metafile=${pathJoin(outputDir, 'index.meta.json')}`] : [],
+      ...this.relativeTsconfigPath ? [`--tsconfig=${pathJoin(options.inputDir, this.relativeTsconfigPath)}`] : [],
+      ...this.props.metafile ? [`--metafile=${pathJoin(options.outputDir, 'index.meta.json')}`] : [],
       ...this.props.banner ? [`--banner:js=${JSON.stringify(this.props.banner)}`] : [],
       ...this.props.footer ? [`--footer:js=${JSON.stringify(this.props.footer)}`] : [],
-    ].join(' ');
+    ];
 
     let depsCommand = '';
     if (this.props.nodeModules) {
@@ -168,37 +145,78 @@ export class Bundling implements cdk.BundlingOptions {
 
       // Determine dependencies versions, lock file and installer
       const dependencies = extractDependencies(pkgPath, this.props.nodeModules);
-      let installer = Installer.NPM;
-      let lockFile = LockFile.NPM;
-      if (this.props.depsLockFilePath.endsWith(LockFile.YARN)) {
-        lockFile = LockFile.YARN;
-        installer = Installer.YARN;
-      }
-
-      const osCommand = new OsCommand(osPlatform);
+      const osCommand = new OsCommand(options.osPlatform);
 
       // Create dummy package.json, copy lock file if any and then install
       depsCommand = chain([
-        osCommand.writeJson(pathJoin(outputDir, 'package.json'), { dependencies }),
-        osCommand.copy(pathJoin(inputDir, lockFile), pathJoin(outputDir, lockFile)),
-        osCommand.changeDirectory(outputDir),
-        `${installer} install`,
+        osCommand.writeJson(pathJoin(options.outputDir, 'package.json'), { dependencies }),
+        osCommand.copy(pathJoin(options.inputDir, this.packageManager.lockFile), pathJoin(options.outputDir, this.packageManager.lockFile)),
+        osCommand.changeDirectory(options.outputDir),
+        this.packageManager.installCommand.join(' '),
       ]);
     }
 
     return chain([
-      ...this.props.commandHooks?.beforeBundling(inputDir, outputDir) ?? [],
-      esbuildCommand,
-      ...(this.props.nodeModules && this.props.commandHooks?.beforeInstall(inputDir, outputDir)) ?? [],
+      ...this.props.commandHooks?.beforeBundling(options.inputDir, options.outputDir) ?? [],
+      esbuildCommand.join(' '),
+      ...(this.props.nodeModules && this.props.commandHooks?.beforeInstall(options.inputDir, options.outputDir)) ?? [],
       depsCommand,
-      ...this.props.commandHooks?.afterBundling(inputDir, outputDir) ?? [],
+      ...this.props.commandHooks?.afterBundling(options.inputDir, options.outputDir) ?? [],
     ]);
+  }
+
+  private getLocalBundlingProvider(): cdk.ILocalBundling {
+    const osPlatform = os.platform();
+    const createLocalCommand = (outputDir: string, esbuild: EsbuildInstallation) => this.createBundlingCommand({
+      inputDir: this.projectRoot,
+      outputDir,
+      esbuildRunner: esbuild.isLocal ? this.packageManager.runBinCommand('esbuild') : 'esbuild',
+      osPlatform,
+    });
+    const environment = this.props.environment ?? {};
+    const cwd = path.dirname(this.props.entry);
+
+    return {
+      tryBundle(outputDir: string) {
+        if (!Bundling.esbuildInstallation) {
+          process.stderr.write('esbuild cannot run locally. Switching to Docker bundling.\n');
+          return false;
+        }
+
+        if (!Bundling.esbuildInstallation.version.startsWith(`${ESBUILD_MAJOR_VERSION}.`)) {
+          throw new Error(`Expected esbuild version ${ESBUILD_MAJOR_VERSION}.x but got ${Bundling.esbuildInstallation.version}`);
+        }
+
+        const localCommand = createLocalCommand(outputDir, Bundling.esbuildInstallation);
+
+        exec(
+          osPlatform === 'win32' ? 'cmd' : 'bash',
+          [
+            osPlatform === 'win32' ? '/c' : '-c',
+            localCommand,
+          ],
+          {
+            env: { ...process.env, ...environment },
+            stdio: [ // show output
+              'ignore', // ignore stdio
+              process.stderr, // redirect stdout to stderr
+              'inherit', // inherit stderr
+            ],
+            cwd,
+            windowsVerbatimArguments: osPlatform === 'win32',
+          });
+
+        return true;
+      },
+    };
   }
 }
 
-enum Installer {
-  NPM = 'npm',
-  YARN = 'yarn',
+interface BundlingCommandOptions {
+  readonly inputDir: string;
+  readonly outputDir: string;
+  readonly esbuildRunner: string;
+  readonly osPlatform: NodeJS.Platform;
 }
 
 /**
