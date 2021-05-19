@@ -7,7 +7,7 @@ import { PackageManager } from './package-manager';
 import { BundlingOptions } from './types';
 import { exec, extractDependencies, findUp } from './util';
 
-const ESBUILD_VERSION = '0';
+const ESBUILD_MAJOR_VERSION = '0';
 
 /**
  * Bundling properties
@@ -56,6 +56,7 @@ export class Bundling implements cdk.BundlingOptions {
   public readonly workingDirectory: string;
   public readonly local?: cdk.ILocalBundling;
 
+  private readonly projectRoot: string;
   private readonly relativeEntryPath: string;
   private readonly relativeTsconfigPath?: string;
   private readonly externals: string[];
@@ -65,13 +66,12 @@ export class Bundling implements cdk.BundlingOptions {
     this.packageManager = PackageManager.fromLockFile(props.depsLockFilePath);
 
     Bundling.esbuildInstallation = Bundling.esbuildInstallation ?? EsbuildInstallation.detect();
-    const mustRunInDocker = !Bundling.esbuildInstallation?.version.startsWith(ESBUILD_VERSION);
 
-    const projectRoot = path.dirname(props.depsLockFilePath);
-    this.relativeEntryPath = path.relative(projectRoot, path.resolve(props.entry));
+    this.projectRoot = path.dirname(props.depsLockFilePath);
+    this.relativeEntryPath = path.relative(this.projectRoot, path.resolve(props.entry));
 
     if (props.tsconfig) {
-      this.relativeTsconfigPath = path.relative(projectRoot, path.resolve(props.tsconfig));
+      this.relativeTsconfigPath = path.relative(this.projectRoot, path.resolve(props.tsconfig));
     }
 
     this.externals = [
@@ -80,13 +80,13 @@ export class Bundling implements cdk.BundlingOptions {
     ];
 
     // Docker bundling
-    const shouldBuildImage = props.forceDockerBundling || mustRunInDocker;
+    const shouldBuildImage = props.forceDockerBundling || !Bundling.esbuildInstallation;
     this.image = shouldBuildImage
       ? props.dockerImage ?? cdk.DockerImage.fromBuild(path.join(__dirname, '../lib'), {
         buildArgs: {
           ...props.buildArgs ?? {},
-          IMAGE: props.runtime.bundlingDockerImage.image,
-          ESBUILD_VERSION: props.esbuildVersion ?? ESBUILD_VERSION,
+          IMAGE: props.runtime.bundlingImage.image,
+          ESBUILD_VERSION: props.esbuildVersion ?? ESBUILD_MAJOR_VERSION,
         },
       })
       : cdk.DockerImage.fromRegistry('dummy'); // Do not build if we don't need to
@@ -105,47 +105,11 @@ export class Bundling implements cdk.BundlingOptions {
 
     // Local bundling
     if (!props.forceDockerBundling) { // only if Docker is not forced
-      const osPlatform = os.platform();
-      const createLocalCommand = (outputDir: string, esbuild: EsbuildInstallation) => this.createBundlingCommand({
-        inputDir: projectRoot,
-        outputDir,
-        esbuildRunner: esbuild.isLocal ? this.packageManager.runBinCommand('esbuild') : 'esbuild',
-        osPlatform,
-      });
-
-      this.local = {
-        tryBundle(outputDir: string) {
-          if (!Bundling.esbuildInstallation || mustRunInDocker) {
-            process.stderr.write('esbuild cannot run locally. Switching to Docker bundling.\n');
-            return false;
-          }
-
-          const localCommand = createLocalCommand(outputDir, Bundling.esbuildInstallation);
-
-          exec(
-            osPlatform === 'win32' ? 'cmd' : 'bash',
-            [
-              osPlatform === 'win32' ? '/c' : '-c',
-              localCommand,
-            ],
-            {
-              env: { ...process.env, ...props.environment ?? {} },
-              stdio: [ // show output
-                'ignore', // ignore stdio
-                process.stderr, // redirect stdout to stderr
-                'inherit', // inherit stderr
-              ],
-              cwd: path.dirname(props.entry),
-              windowsVerbatimArguments: osPlatform === 'win32',
-            });
-
-          return true;
-        },
-      };
+      this.local = this.getLocalBundlingProvider();
     }
   }
 
-  public createBundlingCommand(options: BundlingCommandOptions): string {
+  private createBundlingCommand(options: BundlingCommandOptions): string {
     const pathJoin = osPathJoin(options.osPlatform);
 
     const loaders = Object.entries(this.props.loader ?? {});
@@ -199,6 +163,52 @@ export class Bundling implements cdk.BundlingOptions {
       depsCommand,
       ...this.props.commandHooks?.afterBundling(options.inputDir, options.outputDir) ?? [],
     ]);
+  }
+
+  private getLocalBundlingProvider(): cdk.ILocalBundling {
+    const osPlatform = os.platform();
+    const createLocalCommand = (outputDir: string, esbuild: EsbuildInstallation) => this.createBundlingCommand({
+      inputDir: this.projectRoot,
+      outputDir,
+      esbuildRunner: esbuild.isLocal ? this.packageManager.runBinCommand('esbuild') : 'esbuild',
+      osPlatform,
+    });
+    const environment = this.props.environment ?? {};
+    const cwd = path.dirname(this.props.entry);
+
+    return {
+      tryBundle(outputDir: string) {
+        if (!Bundling.esbuildInstallation) {
+          process.stderr.write('esbuild cannot run locally. Switching to Docker bundling.\n');
+          return false;
+        }
+
+        if (!Bundling.esbuildInstallation.version.startsWith(`${ESBUILD_MAJOR_VERSION}.`)) {
+          throw new Error(`Expected esbuild version ${ESBUILD_MAJOR_VERSION}.x but got ${Bundling.esbuildInstallation.version}`);
+        }
+
+        const localCommand = createLocalCommand(outputDir, Bundling.esbuildInstallation);
+
+        exec(
+          osPlatform === 'win32' ? 'cmd' : 'bash',
+          [
+            osPlatform === 'win32' ? '/c' : '-c',
+            localCommand,
+          ],
+          {
+            env: { ...process.env, ...environment },
+            stdio: [ // show output
+              'ignore', // ignore stdio
+              process.stderr, // redirect stdout to stderr
+              'inherit', // inherit stderr
+            ],
+            cwd,
+            windowsVerbatimArguments: osPlatform === 'win32',
+          });
+
+        return true;
+      },
+    };
   }
 }
 

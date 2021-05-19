@@ -108,7 +108,7 @@ test('esbuild bundling with tsx handler', () => {
 });
 
 test('esbuild with Windows paths', () => {
-  const osPlatformMock = jest.spyOn(os, 'platform').mockReturnValueOnce('win32');
+  const osPlatformMock = jest.spyOn(os, 'platform').mockReturnValue('win32');
   // Mock path.basename() because it cannot extract the basename of a Windows
   // path when running on Linux
   jest.spyOn(path, 'basename').mockReturnValueOnce('package-lock.json');
@@ -301,8 +301,9 @@ test('Incorrect esbuild version', () => {
     runtime: Runtime.NODEJS_12_X,
   });
 
-  const tryBundle = bundler.local?.tryBundle('/outdir', { image: Runtime.NODEJS_12_X.bundlingDockerImage });
-  expect(tryBundle).toBe(false);
+  expect(() => bundler.local?.tryBundle('/outdir', {
+    image: Runtime.NODEJS_12_X.bundlingImage,
+  })).toThrow(/Expected esbuild version 0.x but got 3.4.5/);
 });
 
 test('Custom bundling docker image', () => {
