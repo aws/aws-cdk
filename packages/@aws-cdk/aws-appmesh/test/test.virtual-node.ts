@@ -164,7 +164,7 @@ export = {
           serviceDiscovery: appmesh.ServiceDiscovery.dns('test'),
           listeners: [appmesh.VirtualNodeListener.http2({
             port: 80,
-            healthCheck: {},
+            healthCheck: appmesh.HealthCheck.http2(),
             timeout: { idle: cdk.Duration.seconds(10) },
           })],
         });
@@ -220,7 +220,9 @@ export = {
 
         node.addListener(appmesh.VirtualNodeListener.tcp({
           port: 80,
-          healthCheck: { timeout: cdk.Duration.seconds(3) },
+          healthCheck: appmesh.HealthCheck.tcp({
+            timeout: cdk.Duration.seconds(3),
+          }),
           timeout: { idle: cdk.Duration.seconds(10) },
         }));
 

@@ -11,8 +11,6 @@
 
 This library provides constructs for Node.js Lambda functions.
 
-To use this module, you will need to have Docker installed.
-
 ## Node.js Function
 
 Define a `NodejsFunction`:
@@ -144,10 +142,10 @@ new lambda.NodejsFunction(this, 'my-handler', {
     },
     logLevel: LogLevel.SILENT, // defaults to LogLevel.WARNING
     keepNames: true, // defaults to false
-    tsconfig: 'custom-tsconfig.json' // use custom-tsconfig.json instead of default,
+    tsconfig: 'custom-tsconfig.json', // use custom-tsconfig.json instead of default,
     metafile: true, // include meta file, defaults to false
-    banner : '/* comments */', // by default no comments are passed
-    footer : '/* comments */', // by default no comments are passed
+    banner : '/* comments */', // requires esbuild >= 0.9.0, defaults to none
+    footer : '/* comments */', // requires esbuild >= 0.9.0, defaults to none
   },
 });
 ```
@@ -168,7 +166,6 @@ new lambda.NodejsFunction(this, 'my-handler-with-commands', {
     }
     // ...
   }
-  
 });
 ```
 
