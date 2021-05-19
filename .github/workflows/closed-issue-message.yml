@@ -4,6 +4,8 @@ on:
        types: [closed]
 jobs:
     auto_comment:
+        permissions:
+          issues: write
         runs-on: ubuntu-latest
         steps:
         - uses: aws-actions/closed-issue-message@v1

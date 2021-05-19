@@ -83,6 +83,9 @@ jobs:
   pr:
     name: Create Pull Request
     needs: upgrade
+    permissions:
+      contents: write
+      pull-requests: write
     runs-on: ubuntu-latest
     steps:
       - name: Check Out
@@ -112,5 +115,4 @@ jobs:
             Ran npm-check-updates and yarn upgrade to keep the `yarn.lock` file up-to-date.
           labels: contribution/core,dependencies,pr/auto-approve
           team-reviewers: aws-cdk-team
-          # Privileged token so automated PR validation happens
-          token: ${{ secrets.AUTOMATION_GITHUB_TOKEN }}
+          token: ${{ secrets.GITHUB_TOKEN }}
