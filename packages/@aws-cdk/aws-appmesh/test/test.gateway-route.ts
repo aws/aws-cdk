@@ -154,7 +154,6 @@ export = {
     test.equal(gatewayRoute.virtualGateway.mesh.meshName, meshName);
     test.done();
   },
-
   'Can import Gateway Routes using attributes'(test: Test) {
     const app = new cdk.App();
     // GIVEN

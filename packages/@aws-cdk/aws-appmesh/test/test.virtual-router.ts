@@ -393,7 +393,6 @@ export = {
 
     test.done();
   },
-
   'Can import Virtual Routers using attributes'(test: Test) {
     // GIVEN
     const stack = new cdk.Stack();

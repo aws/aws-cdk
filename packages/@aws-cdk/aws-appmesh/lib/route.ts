@@ -61,38 +61,17 @@ export interface RouteProps extends RouteBaseProps {
   readonly virtualRouter: IVirtualRouter;
 }
 
-abstract class RouteBase extends cdk.Resource implements IRoute {
-  /**
-   * The name of the Route
-   *
-   * @attribute
-   */
-  public abstract readonly routeName: string;
-
-  /**
-   * The Amazon Resource Name (ARN) for the Route
-   *
-   * @attribute
-   */
-  public abstract readonly routeArn: string;
-
-  /**
-   * The VirtualRouter the Route belongs to
-   */
-  public abstract readonly virtualRouter: IVirtualRouter;
-}
-
 /**
  * Route represents a new or existing route attached to a VirtualRouter and Mesh
  *
  * @see https://docs.aws.amazon.com/app-mesh/latest/userguide/routes.html
  */
-export class Route extends RouteBase {
+export class Route extends cdk.Resource implements IRoute {
   /**
    * Import an existing Route given an ARN
    */
   public static fromRouteArn(scope: Construct, id: string, routeArn: string): IRoute {
-    return new class extends RouteBase {
+    return new class extends cdk.Resource implements IRoute {
       readonly routeArn = routeArn;
       readonly virtualRouter = VirtualRouter.fromVirtualRouterArn(this, 'VirtualRouter', routeArn);
       readonly routeName = cdk.Fn.select(4, cdk.Fn.split('/', cdk.Stack.of(scope).parseArn(routeArn).resourceName!));
@@ -103,7 +82,7 @@ export class Route extends RouteBase {
    * Import an existing Route given attributes
    */
   public static fromRouteAttributes(scope: Construct, id: string, attrs: RouteAttributes): IRoute {
-    return new class extends RouteBase {
+    return new class extends cdk.Resource implements IRoute {
       readonly routeName = attrs.routeName;
       readonly virtualRouter = attrs.virtualRouter;
       readonly routeArn = cdk.Stack.of(this).formatArn({

@@ -50,27 +50,6 @@ export interface VirtualServiceProps {
   readonly virtualServiceProvider: VirtualServiceProvider;
 }
 
-abstract class VirtualServiceBase extends cdk.Resource implements IVirtualService {
-  /**
-   * The name of the VirtualService
-   *
-   * @attribute
-   */
-  public abstract readonly virtualServiceName: string;
-
-  /**
-   * The Amazon Resource Name (ARN) for the virtual service
-   *
-   * @attribute
-   */
-  public abstract readonly virtualServiceArn: string;
-
-  /**
-   * The Mesh which the VirtualService belongs to
-   */
-  public abstract readonly mesh: IMesh;
-}
-
 /**
  * VirtualService represents a service inside an AppMesh
  *
@@ -78,12 +57,12 @@ abstract class VirtualServiceBase extends cdk.Resource implements IVirtualServic
  *
  * @see https://docs.aws.amazon.com/app-mesh/latest/userguide/virtual_services.html
  */
-export class VirtualService extends VirtualServiceBase {
+export class VirtualService extends cdk.Resource implements IVirtualService {
   /**
    * Import an existing VirtualService given an ARN
    */
   public static fromVirtualServiceArn(scope: Construct, id: string, virtualServiceArn: string): IVirtualService {
-    return new class extends VirtualServiceBase {
+    return new class extends cdk.Resource implements IVirtualService {
       readonly virtualServiceArn = virtualServiceArn;
       private readonly parsedArn = cdk.Fn.split('/', cdk.Stack.of(scope).parseArn(virtualServiceArn).resourceName!);
       readonly virtualServiceName = cdk.Fn.select(2, this.parsedArn);
@@ -95,7 +74,7 @@ export class VirtualService extends VirtualServiceBase {
    * Import an existing VirtualService given its attributes
    */
   public static fromVirtualServiceAttributes(scope: Construct, id: string, attrs: VirtualServiceAttributes): IVirtualService {
-    return new class extends VirtualServiceBase {
+    return new class extends cdk.Resource implements IVirtualService {
       readonly virtualServiceName = attrs.virtualServiceName;
       readonly mesh = attrs.mesh;
       readonly virtualServiceArn = cdk.Stack.of(this).formatArn({

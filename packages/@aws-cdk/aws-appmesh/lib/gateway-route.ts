@@ -28,27 +28,6 @@ export interface IGatewayRoute extends cdk.IResource {
   readonly virtualGateway: IVirtualGateway;
 }
 
-abstract class GatewayRouteBase extends cdk.Resource implements IGatewayRoute {
-  /**
-   * The name of the GatewayRoute
-   *
-   * @attribute
-   */
-  public abstract readonly gatewayRouteName: string;
-
-  /**
-   * The Amazon Resource Name (ARN) for the GatewayRoute
-   *
-   * @attribute
-   */
-  public abstract readonly gatewayRouteArn: string;
-
-  /**
-   * The VirtualGateway the GatewayRoute belongs to
-   */
-  public abstract readonly virtualGateway: IVirtualGateway;
-}
-
 /**
  * Basic configuration properties for a GatewayRoute
  */
@@ -81,12 +60,12 @@ export interface GatewayRouteProps extends GatewayRouteBaseProps {
  *
  * @see https://docs.aws.amazon.com/app-mesh/latest/userguide/gateway-routes.html
  */
-export class GatewayRoute extends GatewayRouteBase {
+export class GatewayRoute extends cdk.Resource implements IGatewayRoute {
   /**
    * Import an existing GatewayRoute given an ARN
    */
   public static fromGatewayRouteArn(scope: Construct, id: string, gatewayRouteArn: string): IGatewayRoute {
-    return new class extends GatewayRouteBase {
+    return new class extends cdk.Resource implements IGatewayRoute {
       readonly gatewayRouteArn = gatewayRouteArn;
       readonly gatewayRouteName = cdk.Fn.select(4, cdk.Fn.split('/', cdk.Stack.of(scope).parseArn(gatewayRouteArn).resourceName!));
       readonly virtualGateway = VirtualGateway.fromVirtualGatewayArn(this, 'virtualGateway', gatewayRouteArn);
@@ -97,7 +76,7 @@ export class GatewayRoute extends GatewayRouteBase {
    * Import an existing GatewayRoute given attributes
    */
   public static fromGatewayRouteAttributes(scope: Construct, id: string, attrs: GatewayRouteAttributes): IGatewayRoute {
-    return new class extends GatewayRouteBase {
+    return new class extends cdk.Resource implements IGatewayRoute {
       readonly gatewayRouteName = attrs.gatewayRouteName;
       readonly gatewayRouteArn = cdk.Stack.of(scope).formatArn({
         service: 'appmesh',
