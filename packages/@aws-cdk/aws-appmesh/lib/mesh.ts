@@ -55,16 +55,6 @@ export interface IMesh extends cdk.IResource {
    * Adds a VirtualGateway to the Mesh
    */
   addVirtualGateway(id: string, props?: VirtualGatewayBaseProps): VirtualGateway;
-
-  /**
-   * Grants the given entity all read permissions for this mesh.
-   */
-  grantRead(identity: iam.IGrantable): iam.Grant;
-
-  /**
-   * Grants the given entity all write permissions for this mesh.
-   */
-  grantWrite(identity: iam.IGrantable): iam.Grant;
 }
 
 /**
@@ -108,32 +98,6 @@ abstract class MeshBase extends cdk.Resource implements IMesh {
     return new VirtualGateway(this, id, {
       ...props,
       mesh: this,
-    });
-  }
-
-  public grantRead(identity: iam.IGrantable): iam.Grant {
-    return this.grant(identity,
-      'appmesh:DescribeMesh',
-      'appmesh:ListMeshes',
-      'appmesh:ListTagsForResource',
-    );
-  }
-
-  public grantWrite(identity: iam.IGrantable): iam.Grant {
-    return this.grant(identity,
-      'appmesh:CreateMesh',
-      'appmesh:UpdateMesh',
-      'appmesh:DeleteMesh',
-      'appmesh:TagResource',
-      'appmesh:UntagResource',
-    );
-  }
-
-  private grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
-    return iam.Grant.addToPrincipal({
-      grantee,
-      actions,
-      resourceArns: [this.meshArn],
     });
   }
 }

@@ -35,16 +35,6 @@ export interface IVirtualNode extends cdk.IResource {
   readonly mesh: IMesh;
 
   /**
-   * Grants the given entity all read permissions for this VirtualNode.
-   */
-  grantRead(identity: iam.IGrantable): iam.Grant;
-
-  /**
-   * Grants the given entity all write permissions for this VirtualNode.
-   */
-  grantWrite(identity: iam.IGrantable): iam.Grant;
-
-  /**
    * Grants the given entity `appmesh:StreamAggregatedResources`.
    */
   grantStreamAggregatedResources(identity: iam.IGrantable): iam.Grant;
@@ -123,30 +113,6 @@ abstract class VirtualNodeBase extends cdk.Resource implements IVirtualNode {
    * The Mesh which the VirtualNode belongs to
    */
   public abstract readonly mesh: IMesh;
-
-  /**
-   * Grants the given entity all read permissions for this VirtualNode.
-   */
-  public grantRead(identity: iam.IGrantable): iam.Grant {
-    return this.grant(identity,
-      'appmesh:DescribeVirtualNode',
-      'appmesh:ListVirtualNode',
-      'appmesh:ListTagsForResource',
-    );
-  }
-
-  /**
-   * Grants the given entity all write permissions for this VirtualNode.
-   */
-  public grantWrite(identity: iam.IGrantable): iam.Grant {
-    return this.grant(identity,
-      'appmesh:CreateVirtualNode',
-      'appmesh:UpdateVirtualNode',
-      'appmesh:DeleteVirtualNode',
-      'appmesh:TagResource',
-      'appmesh:UntagResource',
-    );
-  }
 
   /**
    * Grants the given entity `appmesh:StreamAggregatedResources`.

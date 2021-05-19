@@ -36,16 +36,6 @@ export interface IVirtualGateway extends cdk.IResource {
   addGatewayRoute(id: string, route: GatewayRouteBaseProps): GatewayRoute;
 
   /**
-   * Grants the given entity all read permissions for this VirtualGateway.
-   */
-  grantRead(identity: iam.IGrantable): iam.Grant;
-
-  /**
-   * Grants the given entity all write permissions for this VirtualGateway.
-   */
-  grantWrite(identity: iam.IGrantable): iam.Grant;
-
-  /**
    * Grants the given entity `appmesh:StreamAggregatedResources`.
    */
   grantStreamAggregatedResources(identity: iam.IGrantable): iam.Grant;
@@ -118,30 +108,6 @@ abstract class VirtualGatewayBase extends cdk.Resource implements IVirtualGatewa
       ...props,
       virtualGateway: this,
     });
-  }
-
-  /**
-   * Grants the given entity all read permissions for this VirtualGateway.
-   */
-  public grantRead(identity: iam.IGrantable): iam.Grant {
-    return this.grant(identity,
-      'appmesh:DescribeVirtualGateway',
-      'appmesh:ListVirtualGateway',
-      'appmesh:ListTagsForResource',
-    );
-  }
-
-  /**
-   * Grants the given entity all write permissions for this VirtualGateway.
-   */
-  public grantWrite(identity: iam.IGrantable): iam.Grant {
-    return this.grant(identity,
-      'appmesh:CreateVirtualGateway',
-      'appmesh:UpdateVirtualGateway',
-      'appmesh:DeleteVirtualGateway',
-      'appmesh:TagResource',
-      'appmesh:UntagResource',
-    );
   }
 
   /**

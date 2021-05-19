@@ -1,4 +1,3 @@
-import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnVirtualService } from './appmesh.generated';
@@ -28,16 +27,6 @@ export interface IVirtualService extends cdk.IResource {
    * The Mesh which the VirtualService belongs to
    */
   readonly mesh: IMesh;
-
-  /**
-   * Grants the given entity all read permissions for this VirtualService.
-   */
-  grantRead(identity: iam.IGrantable): iam.Grant;
-
-  /**
-   * Grants the given entity all write permissions for this VirtualService.
-   */
-  grantWrite(identity: iam.IGrantable): iam.Grant;
 }
 
 /**
@@ -80,41 +69,6 @@ abstract class VirtualServiceBase extends cdk.Resource implements IVirtualServic
    * The Mesh which the VirtualService belongs to
    */
   public abstract readonly mesh: IMesh;
-
-  /**
-   * Grants the given entity all read permissions for this VirtualService.
-   */
-  public grantRead(identity: iam.IGrantable): iam.Grant {
-    return this.grant(identity,
-      'appmesh:DescribeVirtualService',
-      'appmesh:ListVirtualService',
-      'appmesh:ListTagsForResource',
-    );
-  }
-
-  /**
-   * Grants the given entity all write permissions for this VirtualService.
-   */
-  public grantWrite(identity: iam.IGrantable): iam.Grant {
-    return this.grant(identity,
-      'appmesh:CreateVirtualService',
-      'appmesh:UpdateVirtualService',
-      'appmesh:DeleteVirtualService',
-      'appmesh:TagResource',
-      'appmesh:UntagResource',
-    );
-  }
-
-  /**
-   * Grant the specified actions for this VirtualService.
-   */
-  private grant(grantee: iam.IGrantable, ...actions: string[]) {
-    return iam.Grant.addToPrincipal({
-      grantee,
-      actions,
-      resourceArns: [this.virtualServiceArn],
-    });
-  }
 }
 
 /**

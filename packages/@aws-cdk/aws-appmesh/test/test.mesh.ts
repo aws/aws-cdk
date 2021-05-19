@@ -1,6 +1,5 @@
 import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert-internal';
 import * as ec2 from '@aws-cdk/aws-ec2';
-import * as iam from '@aws-cdk/aws-iam';
 import * as cloudmap from '@aws-cdk/aws-servicediscovery';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
@@ -313,72 +312,6 @@ export = {
         VirtualServiceName: 'test.domain.local',
       }),
     );
-
-    test.done();
-  },
-  'Can grant an identity all read permissions for a given mesh'(test: Test) {
-    // GIVEN
-    const stack = new cdk.Stack();
-    const mesh = new appmesh.Mesh(stack, 'mesh', {
-      meshName: 'test-mesh',
-    });
-
-    // WHEN
-    const user = new iam.User(stack, 'test');
-    mesh.grantRead(user);
-
-    // THEN
-    expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
-      PolicyDocument: {
-        Statement: [
-          {
-            Action: [
-              'appmesh:DescribeMesh',
-              'appmesh:ListMeshes',
-              'appmesh:ListTagsForResource',
-            ],
-            Effect: 'Allow',
-            Resource: {
-              Ref: 'meshACDFE68E',
-            },
-          },
-        ],
-      },
-    }));
-
-    test.done();
-  },
-  'Can grant an identity all write permissions for a given mesh'(test: Test) {
-    // GIVEN
-    const stack = new cdk.Stack();
-    const mesh = new appmesh.Mesh(stack, 'mesh', {
-      meshName: 'test-mesh',
-    });
-
-    // WHEN
-    const user = new iam.User(stack, 'test');
-    mesh.grantWrite(user);
-
-    // THEN
-    expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
-      PolicyDocument: {
-        Statement: [
-          {
-            Action: [
-              'appmesh:CreateMesh',
-              'appmesh:UpdateMesh',
-              'appmesh:DeleteMesh',
-              'appmesh:TagResource',
-              'appmesh:UntagResource',
-            ],
-            Effect: 'Allow',
-            Resource: {
-              Ref: 'meshACDFE68E',
-            },
-          },
-        ],
-      },
-    }));
 
     test.done();
   },

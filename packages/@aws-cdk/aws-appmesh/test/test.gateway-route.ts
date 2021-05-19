@@ -1,5 +1,4 @@
 import { expect, haveResourceLike } from '@aws-cdk/assert-internal';
-import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import { Test } from 'nodeunit';
 
@@ -178,102 +177,6 @@ export = {
     // THEN
     test.equal(gatewayRoute.gatewayRouteName, gatewayRouteName);
     test.equal(gatewayRoute.virtualGateway.mesh.meshName, meshName);
-    test.done();
-  },
-
-  'Can grant an identity all read permissions for a given GatewayRoute'(test: Test) {
-    // GIVEN
-    const stack = new cdk.Stack();
-    const mesh = new appmesh.Mesh(stack, 'mesh', {
-      meshName: 'test-mesh',
-    });
-    const gateway = new appmesh.VirtualGateway(stack, 'testGateway', {
-      mesh: mesh,
-    });
-    const myService = new appmesh.VirtualService(stack, 'vs-1', {
-      virtualServiceProvider: appmesh.VirtualServiceProvider.none(mesh),
-      virtualServiceName: 'target.local',
-    });
-
-    const gr = gateway.addGatewayRoute('gateway-http-route', {
-      routeSpec: appmesh.GatewayRouteSpec.http({
-        routeTarget: myService,
-      }),
-      gatewayRouteName: 'gateway-http-route',
-    });
-
-    // WHEN
-    const user = new iam.User(stack, 'test');
-    gr.grantRead(user);
-
-    // THEN
-    expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
-      PolicyDocument: {
-        Statement: [
-          {
-            Action: [
-              'appmesh:DescribeGatewayRoute',
-              'appmesh:ListGatewayRoute',
-              'appmesh:ListTagsForResource',
-            ],
-            Effect: 'Allow',
-            Resource: {
-              Ref: 'testGatewaygatewayhttprouteD65B806A',
-            },
-          },
-        ],
-      },
-    }));
-
-    test.done();
-  },
-
-  'Can grant an identity all write permissions for a given GatewayRoute'(test: Test) {
-    // GIVEN
-    const stack = new cdk.Stack();
-    const mesh = new appmesh.Mesh(stack, 'mesh', {
-      meshName: 'test-mesh',
-    });
-    const gateway = new appmesh.VirtualGateway(stack, 'testGateway', {
-      mesh: mesh,
-    });
-    const myService = new appmesh.VirtualService(stack, 'vs-1', {
-      virtualServiceProvider: appmesh.VirtualServiceProvider.none(mesh),
-      virtualServiceName: 'target.local',
-    });
-
-    const gr = gateway.addGatewayRoute('gateway-http-route', {
-      routeSpec: appmesh.GatewayRouteSpec.http({
-        routeTarget: myService,
-      }),
-      gatewayRouteName: 'gateway-http-route',
-    });
-
-    // WHEN
-    const user = new iam.User(stack, 'test');
-    gr.grantWrite(user);
-
-    // THEN
-    expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
-      PolicyDocument: {
-        Statement: [
-          {
-            Action: [
-              'appmesh:CreateGatewayRoute',
-              'appmesh:UpdateGatewayRoute',
-              'appmesh:DeleteGatewayRoute',
-              'appmesh:TagResource',
-              'appmesh:UntagResource',
-            ],
-            Effect: 'Allow',
-            Resource: {
-              Ref: 'testGatewaygatewayhttprouteD65B806A',
-            },
-          },
-        ],
-      },
-    }));
-
     test.done();
   },
 };
