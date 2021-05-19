@@ -118,7 +118,7 @@ export class CloudAssembly {
 
       for (const stack of stacks) {
         const hierarchicalId = stack.hierarchicalId;
-        const matchFound = minimatch(hierarchicalId, pattern) || minimatch(stack.stackName, pattern);
+        const matchFound = minimatch(hierarchicalId, pattern);
         if (matchFound && !selectedStacks.has(hierarchicalId)) {
           selectedStacks.set(hierarchicalId, stack);
           found = true;
