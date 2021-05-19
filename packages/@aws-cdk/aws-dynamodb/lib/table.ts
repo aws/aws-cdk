@@ -1121,7 +1121,7 @@ export class Table extends TableBase {
       sseSpecification,
       streamSpecification,
       timeToLiveSpecification: props.timeToLiveAttribute ? { attributeName: props.timeToLiveAttribute, enabled: true } : undefined,
-      contributorInsightsSpecification: props.contributorInsightsEnabled ? { enabled: props.contributorInsightsEnabled } : undefined,
+      contributorInsightsSpecification: props.contributorInsightsEnabled !== undefined ? { enabled: props.contributorInsightsEnabled } : undefined,
     });
     this.table.applyRemovalPolicy(props.removalPolicy);
 
