@@ -153,8 +153,8 @@ export class Bundling implements cdk.BundlingOptions {
       ...this.props.keepNames ? ['--keep-names'] : [],
       ...this.relativeTsconfigPath ? [`--tsconfig=${pathJoin(inputDir, this.relativeTsconfigPath)}`] : [],
       ...this.props.metafile ? [`--metafile=${pathJoin(outputDir, 'index.meta.json')}`] : [],
-      ...this.props.banner ? [`--banner='${this.props.banner}'`] : [],
-      ...this.props.footer ? [`--footer='${this.props.footer}'`] : [],
+      ...this.props.banner ? [`--banner:js=${JSON.stringify(this.props.banner)}`] : [],
+      ...this.props.footer ? [`--footer:js=${JSON.stringify(this.props.footer)}`] : [],
     ].join(' ');
 
     let depsCommand = '';
