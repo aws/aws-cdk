@@ -330,6 +330,7 @@ test('when specifying every property', () => {
     timeToLiveAttribute: 'timeToLive',
     partitionKey: TABLE_PARTITION_KEY,
     sortKey: TABLE_SORT_KEY,
+    contributorInsightsEnabled: true,
   });
   Tags.of(table).add('Environment', 'Production');
 
@@ -353,6 +354,7 @@ test('when specifying every property', () => {
       TableName: 'MyTable',
       Tags: [{ Key: 'Environment', Value: 'Production' }],
       TimeToLiveSpecification: { AttributeName: 'timeToLive', Enabled: true },
+      ContributorInsightsSpecification: { Enabled: true },
     },
   );
 });
