@@ -2,8 +2,9 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as lambda from '@aws-cdk/aws-lambda';
 import { Bundling } from './bundling';
+import { PackageManager } from './package-manager';
 import { BundlingOptions } from './types';
-import { callsites, findUp, LockFile } from './util';
+import { callsites, findUp } from './util';
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
 // eslint-disable-next-line no-duplicate-imports, import/order
@@ -94,7 +95,7 @@ export class NodejsFunction extends lambda.Function {
       }
       depsLockFilePath = path.resolve(props.depsLockFilePath);
     } else {
-      const lockFile = findUp(LockFile.YARN) ?? findUp(LockFile.NPM);
+      const lockFile = findUp(PackageManager.YARN.lockFile) ?? findUp(PackageManager.NPM.lockFile);
       if (!lockFile) {
         throw new Error('Cannot find a package lock file (`yarn.lock` or `package-lock.json`). Please specify it with `depsFileLockPath`.');
       }
