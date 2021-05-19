@@ -1,10 +1,9 @@
 name: Yarn Upgrade
 
 on:
-  # Disable this workflow
-  #schedule:
+  schedule:
     # Every wednesday at 13:37 UTC
-    #- cron: 37 13 * * 3
+    - cron: 37 13 * * 3
   workflow_dispatch: {}
 
 jobs:
@@ -69,6 +68,39 @@ jobs:
         # also - jest-enviroment-jsdom doesnt actually require 16.5.1 (https://github.com/facebook/jest/blob/master/packages/jest-environment-jsdom/package.json#L23)
         run: yarn upgrade --pattern '!(jsdom)'
 
+      # Next, create and upload the changes as a patch file. This will later be downloaded to create a pull request
+      # Creating a pull request requires write permissions and it's best to keep write privileges isolated.
+      - name: Create Patch
+        run: |-
+          git add .
+          git diff --patch --staged > ${{ runner.temp }}/upgrade.patch
+      - name: Upload Patch
+        uses: actions/upload-artifact@v2
+        with:
+          name: upgrade.patch
+          path: ${{ runner.temp }}/upgrade.patch
+
+  pr:
+    name: Create Pull Request
+    needs: upgrade
+    permissions:
+      contents: write
+      pull-requests: write
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check Out
+        uses: actions/checkout@v2
+
+      - name: Download patch
+        uses: actions/download-artifact@v2
+        with:
+          name: upgrade.patch
+          path: ${{ runner.temp }}
+
+      - name: Apply patch
+        run: '[ -s ${{ runner.temp }}/upgrade.patch ] && git apply ${{ runner.temp
+          }}/upgrade.patch || echo "Empty patch. Skipping."'
+
       - name: Make Pull Request
         uses: peter-evans/create-pull-request@v3
         with:
@@ -83,5 +115,4 @@ jobs:
             Ran npm-check-updates and yarn upgrade to keep the `yarn.lock` file up-to-date.
           labels: contribution/core,dependencies,pr/auto-approve
           team-reviewers: aws-cdk-team
-          # Privileged token so automated PR validation happens
-          token: ${{ secrets.AUTOMATION_GITHUB_TOKEN }}
+          token: ${{ secrets.GITHUB_TOKEN }}
