@@ -9,6 +9,8 @@ import {
 import * as autoscaling from '@aws-cdk/aws-autoscaling';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as kms from '@aws-cdk/aws-kms';
+import * as logs from '@aws-cdk/aws-logs';
+import * as s3 from '@aws-cdk/aws-s3';
 import * as cloudmap from '@aws-cdk/aws-servicediscovery';
 import * as cdk from '@aws-cdk/core';
 import { nodeunitShim, Test } from 'nodeunit-shim';
@@ -1945,6 +1947,145 @@ nodeunitShim({
       ],
       DefaultCapacityProviderStrategy: [],
     }));
+    test.done();
+  },
+
+  'correctly sets log configuration for execute command'(test: Test) {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'test');
+
+    const kmsKey = new kms.Key(stack, 'KmsKey');
+
+    const logGroup = new logs.LogGroup(stack, 'LogGroup', {
+      encryptionKey: kmsKey,
+    });
+
+    const execBucket = new s3.Bucket(stack, 'EcsExecBucket', {
+      encryptionKey: kmsKey,
+    });
+
+    // WHEN
+    new ecs.Cluster(stack, 'EcsCluster', {
+      executeCommandConfiguration: {
+        kmsKey: kmsKey,
+        logConfiguration: {
+          cloudWatchLogGroupName: logGroup.logGroupName,
+          cloudWatchEncryptionEnabled: true,
+          s3BucketName: execBucket.bucketName,
+          s3EncryptionEnabled: true,
+          s3KeyPrefix: 'exec-output',
+        },
+        logging: ecs.ExecuteCommandLogging.OVERRIDE,
+      },
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::ECS::Cluster', {
+      Configuration: {
+        ExecuteCommandConfiguration: {
+          KmsKeyId: {
+            'Fn::GetAtt': [
+              'KmsKey46693ADD',
+              'Arn',
+            ],
+          },
+          LogConfiguration: {
+            CloudWatchEncryptionEnabled: true,
+            CloudWatchLogGroupName: {
+              Ref: 'LogGroupF5B46931',
+            },
+            S3BucketName: {
+              Ref: 'EcsExecBucket4F468651',
+            },
+            S3EncryptionEnabled: true,
+            S3KeyPrefix: 'exec-output',
+          },
+          Logging: 'OVERRIDE',
+        },
+      },
+    }));
+
+    test.done();
+  },
+
+  'throws when no log configuration is provided when logging is set to OVERRIDE'(test: Test) {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'test');
+
+    // THEN
+    test.throws(() => {
+      new ecs.Cluster(stack, 'EcsCluster', {
+        executeCommandConfiguration: {
+          logging: ecs.ExecuteCommandLogging.OVERRIDE,
+        },
+      });
+    }, /Need to provide log configuration when setting execute command logging field to OVERRIDE/);
+
+    test.done();
+  },
+
+  'throws when log configuration provided but logging is set to DEFAULT'(test: Test) {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'test');
+
+    const logGroup = new logs.LogGroup(stack, 'LogGroup');
+
+    // THEN
+    test.throws(() => {
+      new ecs.Cluster(stack, 'EcsCluster', {
+        executeCommandConfiguration: {
+          logConfiguration: {
+            cloudWatchLogGroupName: logGroup.logGroupName,
+          },
+          logging: ecs.ExecuteCommandLogging.DEFAULT,
+        },
+      });
+    }, /Log configuration provided but execute command logging field not set to OVERRIDE. Please set logging to OVERRIDE./);
+
+    test.done();
+  },
+
+
+  'throws when CloudWatchEncryptionEnabled without providing CloudWatch Logs log group name'(test: Test) {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'test');
+
+    // THEN
+    test.throws(() => {
+      new ecs.Cluster(stack, 'EcsCluster', {
+        executeCommandConfiguration: {
+          logConfiguration: {
+            cloudWatchEncryptionEnabled: true,
+          },
+          logging: ecs.ExecuteCommandLogging.OVERRIDE,
+        },
+      });
+    }, /CloudWatchEncryptionEnabled without specifying a CloudWatch Logs log group in execute command log configuration./);
+
+    test.done();
+  },
+
+  'throws when S3EncryptionEnabled without providing S3 Bucket name'(test: Test) {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'test');
+
+    // THEN
+    test.throws(() => {
+      new ecs.Cluster(stack, 'EcsCluster', {
+        executeCommandConfiguration: {
+          logConfiguration: {
+            s3EncryptionEnabled: true,
+          },
+          logging: ecs.ExecuteCommandLogging.OVERRIDE,
+        },
+      });
+    }, /S3EncryptionEnabled without specifying an S3 Bucket in execute command log configuration./);
+
     test.done();
   },
 });
