@@ -228,9 +228,9 @@ export interface TableOptions {
   /**
    * Whether CloudWatch contributor insights is enabled.
    *
-   * @default - contributor-insights is disabled
+   * @default false
    */
-  readonly contributorInsights?: boolean;
+  readonly contributorInsightsEnabled?: boolean;
 }
 
 /**
@@ -1121,7 +1121,7 @@ export class Table extends TableBase {
       sseSpecification,
       streamSpecification,
       timeToLiveSpecification: props.timeToLiveAttribute ? { attributeName: props.timeToLiveAttribute, enabled: true } : undefined,
-      contributorInsightsSpecification: props.contributorInsights ? { enabled: props.contributorInsights } : undefined,
+      contributorInsightsSpecification: props.contributorInsightsEnabled ? { enabled: props.contributorInsightsEnabled } : undefined,
     });
     this.table.applyRemovalPolicy(props.removalPolicy);
 
