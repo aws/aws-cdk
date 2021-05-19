@@ -46,8 +46,8 @@ when working with the AWS SDK for JavaScript. Set the `awsSdkConnectionReuse` pr
 
 ## Lock file
 
-The `NodejsFunction` requires a dependencies lock file (`yarn.lock`, `package-lock.json` or
-`pnpm-lock.yml`). When bundling in a Docker container, the path containing this lock file is
+The `NodejsFunction` requires a dependencies lock file (`yarn.lock`, `pnpm-lock.yaml` or
+`package-lock.json`). When bundling in a Docker container, the path containing this lock file is
 used as the source (`/asset-input`) for the volume mounted in the container.
 
 By default, the construct will try to automatically determine your project lock file.
@@ -114,7 +114,7 @@ new lambda.NodejsFunction(this, 'my-handler', {
 
 The modules listed in `nodeModules` must be present in the `package.json`'s dependencies or
 installed. The same version will be used for installation. The lock file (`yarn.lock`,
-`pnpm-lock.yml` or `package-lock.json`) will be used along with the right installer (`yarn`,
+`pnpm-lock.yaml` or `package-lock.json`) will be used along with the right installer (`yarn`,
 `pnpm` or `npm`).
 
 When working with `nodeModules` using native dependencies, you might want to force bundling in a

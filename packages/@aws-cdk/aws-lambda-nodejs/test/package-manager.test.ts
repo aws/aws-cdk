@@ -15,7 +15,7 @@ test('from a yarn.lock', () => {
   expect(packageManager.runBinCommand('my-bin')).toBe('yarn run my-bin');
 });
 
-test('from a pnpm-lock.yml', () => {
+test('from a pnpm-lock.yaml', () => {
   const packageManager = PackageManager.fromLockFile('/path/to/pnpm-lock.yaml');
   expect(packageManager).toEqual(PackageManager.PNPM);
 
