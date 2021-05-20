@@ -538,6 +538,62 @@ export = {
     ));
     test.done();
   },
+  'add node group with taints'(test: Test) {
+    // GIVEN
+    const { stack, vpc } = testFixture();
+    const cluster = new eks.Cluster(stack, 'Cluster', {
+      vpc,
+      defaultCapacity: 0,
+      version: CLUSTER_VERSION,
+    });
+
+    // WHEN
+    cluster.addNodegroupCapacity('ng', {
+      taints: [
+        {
+          effect: eks.TaintEffect.NO_SCHEDULE,
+          key: 'foo',
+          value: 'bar',
+        },
+      ],
+    });
+
+    // THEN
+    expect(stack).to(haveResourceLike('AWS::EKS::Nodegroup', {
+      ClusterName: {
+        Ref: 'Cluster9EE0221C',
+      },
+      NodeRole: {
+        'Fn::GetAtt': [
+          'ClusterNodegroupngNodeGroupRoleDA0D35DA',
+          'Arn',
+        ],
+      },
+      Subnets: [
+        {
+          Ref: 'VPCPrivateSubnet1Subnet8BCA10E0',
+        },
+        {
+          Ref: 'VPCPrivateSubnet2SubnetCFCDAA7A',
+        },
+      ],
+      Taints: [
+        {
+          Effect: 'NO_SCHEDULE',
+          Key: 'foo',
+          Value: 'bar',
+        },
+      ],
+      ForceUpdateEnabled: true,
+      ScalingConfig: {
+        DesiredSize: 2,
+        MaxSize: 2,
+        MinSize: 1,
+      },
+    },
+    ));
+    test.done();
+  },
   'throws when desiredSize > maxSize'(test: Test) {
     // GIVEN
     const { stack, vpc } = testFixture();
