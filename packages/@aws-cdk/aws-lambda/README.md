@@ -125,7 +125,7 @@ functions. You can also restrict permissions given to AWS services by providing
 a source account or ARN (representing the account and identifier of the resource
 that accesses the function or layer).
 
-```ts
+```ts fixture=function
 import * as iam from '@aws-cdk/aws-iam';
 const principal = new iam.ServicePrincipal('my-service');
 
@@ -148,7 +148,7 @@ principal in question has conditions limiting the source account or ARN of the
 operation (see above), these conditions will be automatically added to the
 resource policy.
 
-```ts
+```ts fixture=function
 import * as iam from '@aws-cdk/aws-iam';
 const servicePrincipal = new iam.ServicePrincipal('my-service');
 const sourceArn = 'arn:aws:s3:::my-bucket';
