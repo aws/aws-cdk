@@ -181,7 +181,9 @@
     "announce": false
   },
   "nozem": {
-    "ostools": ["docker"]
+    "ostools": [
+      "docker"
+    ]
   },
   "maturity": "stable",
   "publishConfig": {
