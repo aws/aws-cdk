@@ -2476,6 +2476,205 @@ nodeunitShim({
       test.done();
     },
 
+    'enables only execute command session encryption'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+
+      const kmsKey = new kms.Key(stack, 'KmsKey');
+
+      const logGroup = new logs.LogGroup(stack, 'LogGroup');
+
+      const execBucket = new s3.Bucket(stack, 'EcsExecBucket');
+
+      // WHEN
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', {
+        vpc,
+        executeCommandConfiguration: {
+          kmsKey,
+          logConfiguration: {
+            cloudWatchLogGroupName: logGroup.logGroupName,
+            s3BucketName: execBucket.bucketName,
+          },
+          logging: ecs.ExecuteCommandLogging.OVERRIDE,
+        },
+      });
+
+      cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+      const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
+
+      taskDefinition.addContainer('web', {
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+        memoryLimitMiB: 512,
+      });
+
+      new ecs.FargateService(stack, 'Ec2Service', {
+        cluster,
+        taskDefinition,
+        enableExecuteCommand: true,
+      });
+
+      // THEN
+      expect(stack).to(haveResource('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Statement: [
+            {
+              Action: [
+                'ssmmessages:CreateControlChannel',
+                'ssmmessages:CreateDataChannel',
+                'ssmmessages:OpenControlChannel',
+                'ssmmessages:OpenDataChannel',
+              ],
+              Effect: 'Allow',
+              Resource: '*',
+            },
+            {
+              Action: 'logs:DescribeLogGroups',
+              Effect: 'Allow',
+              Resource: '*',
+            },
+            {
+              Action: [
+                'logs:CreateLogStream',
+                'logs:DescribeLogStreams',
+                'logs:PutLogEvents',
+              ],
+              Effect: 'Allow',
+              Resource: {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:aws:logs:',
+                    {
+                      Ref: 'AWS::Region',
+                    },
+                    ':',
+                    {
+                      Ref: 'AWS::AccountId',
+                    },
+                    ':log-group:',
+                    {
+                      Ref: 'LogGroupF5B46931',
+                    },
+                    ':*',
+                  ],
+                ],
+              },
+            },
+            {
+              Action: 's3:GetBucketLocation',
+              Effect: 'Allow',
+              Resource: '*',
+            },
+            {
+              Action: 's3:PutObject',
+              Effect: 'Allow',
+              Resource: {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:aws:s3:::',
+                    {
+                      Ref: 'EcsExecBucket4F468651',
+                    },
+                    '/*',
+                  ],
+                ],
+              },
+            },
+            {
+              Action: [
+                'kms:Decrypt',
+                'kms:GenerateDataKey',
+              ],
+              Effect: 'Allow',
+              Resource: {
+                'Fn::GetAtt': [
+                  'KmsKey46693ADD',
+                  'Arn',
+                ],
+              },
+            },
+          ],
+          Version: '2012-10-17',
+        },
+        PolicyName: 'FargateTaskDefTaskRoleDefaultPolicy8EB25BBD',
+        Roles: [
+          {
+            Ref: 'FargateTaskDefTaskRole0B257552',
+          },
+        ],
+      }));
+
+      expect(stack).to(haveResource('AWS::KMS::Key', {
+        KeyPolicy: {
+          Statement: [
+            {
+              Action: [
+                'kms:Create*',
+                'kms:Describe*',
+                'kms:Enable*',
+                'kms:List*',
+                'kms:Put*',
+                'kms:Update*',
+                'kms:Revoke*',
+                'kms:Disable*',
+                'kms:Get*',
+                'kms:Delete*',
+                'kms:ScheduleKeyDeletion',
+                'kms:CancelKeyDeletion',
+                'kms:GenerateDataKey',
+                'kms:TagResource',
+                'kms:UntagResource',
+              ],
+              Effect: 'Allow',
+              Principal: {
+                AWS: {
+                  'Fn::Join': [
+                    '',
+                    [
+                      'arn:',
+                      {
+                        Ref: 'AWS::Partition',
+                      },
+                      ':iam::',
+                      {
+                        Ref: 'AWS::AccountId',
+                      },
+                      ':root',
+                    ],
+                  ],
+                },
+              },
+              Resource: '*',
+            },
+            {
+              Action: 'kms:*',
+              Effect: 'Allow',
+              Principal: {
+                AWS: {
+                  'Fn::Join': [
+                    '',
+                    [
+                      'arn:aws:iam::',
+                      {
+                        Ref: 'AWS::AccountId',
+                      },
+                      ':root',
+                    ],
+                  ],
+                },
+              },
+              Resource: '*',
+            },
+          ],
+          Version: '2012-10-17',
+        },
+      }));
+
+      test.done();
+    },
+
     'enables encryption for execute command logging'(test: Test) {
       // GIVEN
       const stack = new cdk.Stack();
