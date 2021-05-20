@@ -23,6 +23,12 @@ export class PackageManager {
     runCommand: ['yarn', 'run'],
   });
 
+  public static PNPM = new PackageManager({
+    lockFile: 'pnpm-lock.yaml',
+    installCommand: ['pnpm', 'install'],
+    runCommand: ['pnpm', 'run'],
+  });
+
   public static fromLockFile(lockFilePath: string): PackageManager {
     const lockFile = path.basename(lockFilePath);
 
@@ -31,6 +37,8 @@ export class PackageManager {
         return PackageManager.NPM;
       case PackageManager.YARN.lockFile:
         return PackageManager.YARN;
+      case PackageManager.PNPM.lockFile:
+        return PackageManager.PNPM;
       default:
         return PackageManager.NPM;
     }
