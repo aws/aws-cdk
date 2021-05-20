@@ -765,7 +765,7 @@ workstation's version or upgrade the CodeBuild version.
 
 If, in the 'Synth' action (inside the 'Build' stage) of your pipeline, you get an error like this:
 
-```
+```console
 stderr: docker: Cannot connect to the Docker daemon at unix:///var/run/docker.sock. Is the docker daemon running?.   
 See 'docker run --help'. 
 ```
