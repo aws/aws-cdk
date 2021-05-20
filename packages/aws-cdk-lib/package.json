@@ -284,6 +284,8 @@
     "@aws-cdk/aws-sns-subscriptions": "0.0.0",
     "@aws-cdk/aws-sqs": "0.0.0",
     "@aws-cdk/aws-ssm": "0.0.0",
+    "@aws-cdk/aws-ssmcontacts": "0.0.0",
+    "@aws-cdk/aws-ssmincidents": "0.0.0",
     "@aws-cdk/aws-sso": "0.0.0",
     "@aws-cdk/aws-stepfunctions": "0.0.0",
     "@aws-cdk/aws-stepfunctions-tasks": "0.0.0",
