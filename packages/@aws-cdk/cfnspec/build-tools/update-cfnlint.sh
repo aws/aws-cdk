@@ -6,7 +6,7 @@ scriptdir=$(cd $(dirname $0) && pwd)
 intermediate="$(mktemp -d)/tmp.zip"
 
 url="https://github.com/aws-cloudformation/cfn-lint/archive/master.zip"
-echo >&2 "Downloading from ${url}..."
+echo >&2 "Downloading from ${url} ..."
 curl -sSfL "${url}" -o ${intermediate}
 
 for file in StatefulResources; do
