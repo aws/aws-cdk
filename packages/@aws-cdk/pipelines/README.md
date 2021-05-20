@@ -761,6 +761,37 @@ leading NPM 6 reading that same file to not install all required packages anymor
 Make sure you are using the same NPM version everywhere, either downgrade your
 workstation's version or upgrade the CodeBuild version.
 
+### Cannot connect to the Docker daemon at unix:///var/run/docker.sock
+
+If, in the 'Synth' action (inside the 'Build' stage) of your pipeline, you get an error like this:
+
+```
+stderr: docker: Cannot connect to the Docker daemon at unix:///var/run/docker.sock. Is the docker daemon running?.   
+See 'docker run --help'. 
+```
+
+It means that the AWS CodeBuild project for 'Synth' is not configured to run in privileged mode, 
+which prevents Docker builds from happening.
+
+Make sure you set the `privileged` environment variable to `true` in the synth definition:
+
+```typescript
+    const pipeline = new CdkPipeline(this, 'MyPipeline', {
+      ...
+      
+      synthAction: SimpleSynthAction.standardNpmSynth({
+        sourceArtifact: ...,
+        cloudAssemblyArtifact: ...,
+
+        environment: {
+          privileged: true,
+        },
+      }),
+    });
+```
+
+
+
 ## Current Limitations
 
 Limitations that we are aware of and will address:
