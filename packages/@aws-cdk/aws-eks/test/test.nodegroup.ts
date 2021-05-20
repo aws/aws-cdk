@@ -563,20 +563,6 @@ export = {
       ClusterName: {
         Ref: 'Cluster9EE0221C',
       },
-      NodeRole: {
-        'Fn::GetAtt': [
-          'ClusterNodegroupngNodeGroupRoleDA0D35DA',
-          'Arn',
-        ],
-      },
-      Subnets: [
-        {
-          Ref: 'VPCPrivateSubnet1Subnet8BCA10E0',
-        },
-        {
-          Ref: 'VPCPrivateSubnet2SubnetCFCDAA7A',
-        },
-      ],
       Taints: [
         {
           Effect: 'NO_SCHEDULE',
@@ -584,12 +570,6 @@ export = {
           Value: 'bar',
         },
       ],
-      ForceUpdateEnabled: true,
-      ScalingConfig: {
-        DesiredSize: 2,
-        MaxSize: 2,
-        MinSize: 1,
-      },
     },
     ));
     test.done();
