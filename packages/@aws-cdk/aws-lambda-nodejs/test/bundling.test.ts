@@ -231,6 +231,27 @@ test('Detects yarn.lock', () => {
   });
 });
 
+test('Detects pnpm-lock.yaml', () => {
+  const pnpmLock = '/project/pnpm-lock.yaml';
+  Bundling.bundle({
+    entry: __filename,
+    depsLockFilePath: pnpmLock,
+    runtime: Runtime.NODEJS_12_X,
+    nodeModules: ['delay'],
+    forceDockerBundling: true,
+  });
+
+  // Correctly bundles with esbuild
+  expect(Code.fromAsset).toHaveBeenCalledWith(path.dirname(pnpmLock), {
+    assetHashType: AssetHashType.OUTPUT,
+    bundling: expect.objectContaining({
+      command: expect.arrayContaining([
+        expect.stringMatching(/pnpm-lock\.yaml.+pnpm install/),
+      ]),
+    }),
+  });
+});
+
 test('with Docker build args', () => {
   Bundling.bundle({
     entry,
