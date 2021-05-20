@@ -771,7 +771,9 @@ See 'docker run --help'.
 ```
 
 It means that the AWS CodeBuild project for 'Synth' is not configured to run in privileged mode, 
-which prevents Docker builds from happening.
+which prevents Docker builds from happening. This typically happens if you use a CDK construct 
+that bundles asset using tools run via Docker, like `aws-lambda-nodejs`, `aws-lambda-python`, 
+`aws-lambda-go` and others. 
 
 Make sure you set the `privileged` environment variable to `true` in the synth definition:
 
@@ -790,7 +792,9 @@ Make sure you set the `privileged` environment variable to `true` in the synth d
     });
 ```
 
-
+After turning on `privilegedMode: true`, you will need to do a one-time manual cdk deploy of your 
+pipeline to get it going again (as with a broken 'synth' the pipeline will not be able to self 
+update to the right state). 
 
 ## Current Limitations
 
