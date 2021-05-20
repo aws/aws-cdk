@@ -1,3 +1,4 @@
+import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnVirtualNode } from './appmesh.generated';
@@ -33,6 +34,10 @@ export interface IVirtualNode extends cdk.IResource {
    */
   readonly mesh: IMesh;
 
+  /**
+   * Grants the given entity `appmesh:StreamAggregatedResources`.
+   */
+  grantStreamAggregatedResources(identity: iam.IGrantable): iam.Grant;
 }
 
 /**
@@ -108,6 +113,14 @@ abstract class VirtualNodeBase extends cdk.Resource implements IVirtualNode {
    * The Mesh which the VirtualNode belongs to
    */
   public abstract readonly mesh: IMesh;
+
+  public grantStreamAggregatedResources(identity: iam.IGrantable): iam.Grant {
+    return iam.Grant.addToPrincipal({
+      grantee: identity,
+      actions: ['appmesh:StreamAggregatedResources'],
+      resourceArns: [this.virtualNodeArn],
+    });
+  }
 }
 
 /**
