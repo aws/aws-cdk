@@ -114,9 +114,6 @@ abstract class VirtualNodeBase extends cdk.Resource implements IVirtualNode {
    */
   public abstract readonly mesh: IMesh;
 
-  /**
-   * Grants the given entity `appmesh:StreamAggregatedResources`.
-   */
   public grantStreamAggregatedResources(identity: iam.IGrantable): iam.Grant {
     return iam.Grant.addToPrincipal({
       grantee: identity,
