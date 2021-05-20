@@ -60,6 +60,12 @@ export interface StandardAttributes {
    * @default - see the defaults under `StandardAttribute`
    */
   readonly fullname?: StandardAttribute;
+ 
+  /**
+   * The user's name.
+   * @default - see the defaults under `StandardAttribute`
+   */
+  readonly name?: StandardAttribute;
 
   /**
    * The user's nickname or casual name.
@@ -415,6 +421,12 @@ export interface StandardAttributesMask {
    */
   readonly fullname?: boolean;
 
+  /**
+   * The user's name.
+   * @default false
+   */
+  readonly name?: boolean;
+  
   /**
    * The user's nickname or casual name.
    * @default false
