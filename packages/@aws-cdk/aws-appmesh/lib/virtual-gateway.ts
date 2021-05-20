@@ -110,9 +110,6 @@ abstract class VirtualGatewayBase extends cdk.Resource implements IVirtualGatewa
     });
   }
 
-  /**
-   * Grants the given entity `appmesh:StreamAggregatedResources`.
-   */
   public grantStreamAggregatedResources(identity: iam.IGrantable): iam.Grant {
     return iam.Grant.addToPrincipal({
       grantee: identity,
