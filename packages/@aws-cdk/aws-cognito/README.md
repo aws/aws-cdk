@@ -214,6 +214,12 @@ Custom attributes cannot be marked as required.
 All custom attributes share the property `mutable` that specifies whether the value of the attribute can be changed.
 The default value is `false`.
 
+User pools come with two 'built-in' attributes - `email_verified` and `phone_number_verified`. These cannot be
+configured (required-ness or mutability) as part of user pool creation. However, user pool administrators can modify
+them for specific users using the [AdminUpdateUserAttributes API].
+
+[AdminUpdateUserAttributes API]: https://docs.aws.amazon.com/cognito-user-identity-pools/latest/APIReference/API_AdminUpdateUserAttributes.html
+
 ### Security
 
 Cognito sends various messages to its users via SMS, for different actions, ranging from account verification to
