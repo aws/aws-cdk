@@ -190,9 +190,8 @@ export interface BaseServiceOptions {
    */
   readonly capacityProviderStrategies?: CapacityProviderStrategy[];
 
-
   /**
-   * Whether to enable ability to exec into a container
+   * Whether to enable the ability to execute into a container
    *
    *  @default - undefined
    */
