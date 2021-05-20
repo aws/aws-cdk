@@ -82,6 +82,42 @@ export = {
 
       test.done();
     },
+    'undefined secret'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const fn = new TestFunction(stack, 'Fn');
+      const kafkaTopic = 'some-topic';
+      const bootstrapServers = ['kafka-broker:9092'];
+
+      // WHEN
+      fn.addEventSource(new sources.SelfManagedKafkaEventSource(
+        {
+          bootstrapServers: bootstrapServers,
+          topic: kafkaTopic,
+          startingPosition: lambda.StartingPosition.TRIM_HORIZON,
+        }));
+
+      // THEN
+      expect(stack).notTo(haveResource('AWS::IAM::Policy'));
+      expect(stack).to(haveResource('AWS::Lambda::EventSourceMapping', {
+        FunctionName: {
+          Ref: 'Fn9270CBC0',
+        },
+        BatchSize: 100,
+        SelfManagedEventSource: {
+          Endpoints: {
+            KafkaBootstrapServers: bootstrapServers,
+          },
+        },
+        StartingPosition: 'TRIM_HORIZON',
+        Topics: [
+          kafkaTopic,
+        ],
+        SourceAccessConfigurations: [],
+      }));
+
+      test.done();
+    },
   },
 
   'self managed kafka': {
@@ -149,6 +185,42 @@ export = {
             },
           },
         ],
+      }));
+
+      test.done();
+    },
+    'undefined secret'(test: Test) {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const fn = new TestFunction(stack, 'Fn');
+      const kafkaTopic = 'some-topic';
+      const bootstrapServers = ['kafka-broker:9092'];
+
+      // WHEN
+      fn.addEventSource(new sources.SelfManagedKafkaEventSource(
+        {
+          bootstrapServers: bootstrapServers,
+          topic: kafkaTopic,
+          startingPosition: lambda.StartingPosition.TRIM_HORIZON,
+        }));
+
+      // THEN
+      expect(stack).notTo(haveResource('AWS::IAM::Policy'));
+      expect(stack).to(haveResource('AWS::Lambda::EventSourceMapping', {
+        FunctionName: {
+          Ref: 'Fn9270CBC0',
+        },
+        BatchSize: 100,
+        SelfManagedEventSource: {
+          Endpoints: {
+            KafkaBootstrapServers: bootstrapServers,
+          },
+        },
+        StartingPosition: 'TRIM_HORIZON',
+        Topics: [
+          kafkaTopic,
+        ],
+        SourceAccessConfigurations: [],
       }));
 
       test.done();
