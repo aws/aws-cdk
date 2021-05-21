@@ -806,7 +806,7 @@ export class Project extends ProjectBase {
             try {
               parsedArn = stack.parseArn(envVariableValue, ':');
             } catch (e) {}
-            const secretSpecifier: string = parsedArn ? parsedArn.resourceName : envVariableValue;
+            const secretSpecifier: string = parsedArn && parsedArn.resourceName ? parsedArn.resourceName : envVariableValue;
 
             // the value of the property can be a complex string, separated by ':';
             // see https://docs.aws.amazon.com/codebuild/latest/userguide/build-spec-ref.html#build-spec.env.secrets-manager
