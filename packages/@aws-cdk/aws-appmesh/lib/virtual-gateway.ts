@@ -198,8 +198,7 @@ export class VirtualGateway extends VirtualGatewayBase {
         backendDefaults: props.backendDefaults !== undefined
           ? {
             clientPolicy: {
-              tls: tlsClientPolicy ? renderTlsClientPolicy(this, tlsClientPolicy,
-                (config) => config.virtualGatewayClientTlsValidationTrust) : undefined,
+              tls: renderTlsClientPolicy(this, tlsClientPolicy, (config) => config.virtualGatewayClientTlsValidationTrust),
             },
           }
           : undefined,

@@ -36,13 +36,15 @@ export interface ConnectionPoolConfig {
  * This is the helper method to render TLS property of client policy.
  *
  */
-export function renderTlsClientPolicy(scope: Construct, tlsClientPolicy: TlsClientPolicy,
-  extractor: (c: TlsValidationTrustConfig) => CfnVirtualNode.TlsValidationContextTrustProperty): CfnVirtualNode.ClientPolicyTlsProperty {
-  return {
-    ports: tlsClientPolicy.ports,
-    enforce: tlsClientPolicy.enforce,
-    validation: {
-      trust: extractor(tlsClientPolicy.validation.trust.bind(scope)),
-    },
-  };
+export function renderTlsClientPolicy(scope: Construct, tlsClientPolicy: TlsClientPolicy | undefined,
+  extractor: (c: TlsValidationTrustConfig) => CfnVirtualNode.TlsValidationContextTrustProperty): CfnVirtualNode.ClientPolicyTlsProperty | undefined {
+  return tlsClientPolicy
+    ? {
+      ports: tlsClientPolicy.ports,
+      enforce: tlsClientPolicy.enforce,
+      validation: {
+        trust: extractor(tlsClientPolicy.validation.trust.bind(scope)),
+      },
+    }
+    : undefined;
 }
