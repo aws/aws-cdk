@@ -1,20 +1,15 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
-
 import { Construct } from 'constructs';
 import { CfnVirtualNode } from './appmesh.generated';
 import { IMesh, Mesh } from './mesh';
+import { renderTlsClientPolicy } from './private/utils';
 import { ServiceDiscovery } from './service-discovery';
 import { AccessLog, BackendDefaults, Backend } from './shared-interfaces';
-import { renderTlsPolicy } from './tls-validation';
 import { VirtualNodeListener, VirtualNodeListenerConfig } from './virtual-node-listener';
 
 /**
- * Interface which
-
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct as CoreConstruct } from '@aws-cdk/core'; all VirtualNode based classes must implement
+ * Interface which all VirtualNode based classes must implement
  */
 export interface IVirtualNode extends cdk.IResource {
   /**
@@ -203,10 +198,10 @@ export class VirtualNode extends VirtualNodeBase {
       spec: {
         backends: cdk.Lazy.any({ produce: () => this.backends }, { omitEmptyArray: true }),
         listeners: cdk.Lazy.any({ produce: () => this.listeners.map(listener => listener.listener) }, { omitEmptyArray: true }),
-        backendDefaults: props.backendDefaults
+        backendDefaults: props.backendDefaults !== undefined
           ? {
             clientPolicy: {
-              tls: tlsClientPolicy ? renderTlsPolicy(this, tlsClientPolicy,
+              tls: tlsClientPolicy ? renderTlsClientPolicy(this, tlsClientPolicy,
                 (config) => config.virtualNodeClientTlsValidationTrust) : undefined,
             },
           }

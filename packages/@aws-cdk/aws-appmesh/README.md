@@ -183,14 +183,14 @@ const node = new VirtualNode(this, 'node', {
     },
   })],
   backendDefaults: {
-      tlsClientPolicy: {
-        tlsValidationContext: {
-          trust: appmesh.TlsValidationTrust.file({
-            certificateChain: '/keys/local_cert_chain.pem',
-          }),
-        },
+    tlsClientPolicy: {
+      tlsValidationContext: {
+        trust: appmesh.TlsValidationTrust.file({
+          certificateChain: '/keys/local_cert_chain.pem',
+        }),
       },
     },
+  },
   accessLog: appmesh.AccessLog.fromFilePath('/dev/stdout'),
 });
 
@@ -497,15 +497,15 @@ const gateway = new appmesh.VirtualGateway(stack, 'gateway', {
     }),
   })],
   backendDefaults: {
-      tlsClientPolicy: {
-        ports: [8080, 8081],
-        tlsValidationContext: {
-          trust: appmesh.TlsValidationTrust.acm({
-            certificateAuthorities: [acmpca.CertificateAuthority.fromCertificateAuthorityArn(stack, 'certificate', certificateAuthorityArn)],
-          }),
-        },
+    tlsClientPolicy: {
+      ports: [8080, 8081],
+      tlsValidationContext: {
+        trust: appmesh.TlsValidationTrust.acm({
+          certificateAuthorities: [acmpca.CertificateAuthority.fromCertificateAuthorityArn(stack, 'certificate', certificateAuthorityArn)],
+        }),
       },
     },
+  },
   accessLog: appmesh.AccessLog.fromFilePath('/dev/stdout'),
   virtualGatewayName: 'virtualGateway',
 });

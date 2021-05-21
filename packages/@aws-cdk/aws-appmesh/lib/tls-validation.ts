@@ -27,7 +27,7 @@ export interface TlsClientPolicy {
   /**
    * Represents the object for TLS validation context
    */
-  readonly tlsValidationContext: TlsValidation;
+  readonly validation: TlsValidation;
 }
 
 /**
@@ -97,14 +97,14 @@ export abstract class TlsValidationTrust {
    * Tells envoy where to fetch the validation context from
    */
   public static file(props: TlsValidationFileTrustOptions): TlsValidationTrust {
-    return new TlsValidationFileTrustImpl(props);
+    return new TlsValidationFileTrust(props);
   }
 
   /**
    * TLS validation context trust for ACM Private Certificate Authority (CA).
    */
   public static acm(props: TlsValidationAcmTrustOptions): TlsValidationTrust {
-    return new TlsValidationAcmTrustImpl(props);
+    return new TlsValidationAcmTrust(props);
   }
 
   /**
@@ -114,7 +114,7 @@ export abstract class TlsValidationTrust {
 
 }
 
-class TlsValidationAcmTrustImpl extends TlsValidationTrust {
+class TlsValidationAcmTrust extends TlsValidationTrust {
   /**
    * Contains information for your private certificate authority
    */
@@ -147,7 +147,7 @@ class TlsValidationAcmTrustImpl extends TlsValidationTrust {
   }
 }
 
-class TlsValidationFileTrustImpl extends TlsValidationTrust {
+class TlsValidationFileTrust extends TlsValidationTrust {
   /**
    * Path to the Certificate Chain file on the file system where the Envoy is deployed.
    */
@@ -182,15 +182,4 @@ class TlsValidationFileTrustImpl extends TlsValidationTrust {
       },
     };
   }
-}
-
-export function renderTlsPolicy(scope: Construct, tlsClientPolicy: TlsClientPolicy,
-  extractor: (c: TlsValidationTrustConfig) => CfnVirtualNode.TlsValidationContextTrustProperty): CfnVirtualNode.ClientPolicyTlsProperty {
-  return {
-    ports: tlsClientPolicy.ports,
-    enforce: tlsClientPolicy.enforce,
-    validation: {
-      trust: extractor(tlsClientPolicy.tlsValidationContext.trust.bind(scope)),
-    },
-  };
 }

@@ -333,7 +333,7 @@ export = {
           backendDefaults: {
             tlsClientPolicy: {
               ports: [8080, 8081],
-              tlsValidationContext: {
+              validation: {
                 trust: appmesh.TlsValidationTrust.acm({
                   certificateAuthorities: [acmpca.CertificateAuthority.fromCertificateAuthorityArn(stack, 'certificate', certificateAuthorityArn)],
                 }),
@@ -389,7 +389,7 @@ export = {
         node.addBackend(appmesh.Backend.virtualService(service1, {
           tlsClientPolicy: {
             ports: [8080, 8081],
-            tlsValidationContext: {
+            validation: {
               trust: appmesh.TlsValidationTrust.file({
                 certificateChain: 'path-to-certificate',
               }),
